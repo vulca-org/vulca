@@ -103,11 +103,13 @@ def _get_provider(name: str, config: DraftConfig | None = None) -> AbstractProvi
         # Wrap KoalaProvider in the AbstractProvider interface
         return _KoalaProviderAdapter(kp, config)
     if name == "nb2":
-        import os
+        from app.core.config import settings as _settings
         api_key = (
             (config.api_key if config else "")
             or os.environ.get("GOOGLE_API_KEY", "")
             or os.environ.get("GEMINI_API_KEY", "")
+            or _settings.GOOGLE_API_KEY
+            or _settings.GEMINI_API_KEY
         )
         if not api_key:
             raise ValueError("GOOGLE_API_KEY (or GEMINI_API_KEY) required for nb2 provider")
