@@ -15,6 +15,10 @@ from app.prototype.agents.critic_types import (
 )
 from app.prototype.checkpoints.critic_checkpoint import save_critic_checkpoint
 
+__all__ = [
+    "CriticAgent",
+]
+
 
 class CriticAgent:
     """Score candidates on L1-L5, apply risk tags, and emit gate decisions."""
@@ -48,11 +52,13 @@ class CriticAgent:
         scored: list[CandidateScore] = []
 
         for candidate in critique_input.candidates:
-            # 1. L1-L5 dimension scores
+            # 1. L1-L5 dimension scores (with image-aware CLIP blending)
             dim_scores = self._rules.score(
                 candidate=candidate,
                 evidence=critique_input.evidence,
                 cultural_tradition=critique_input.cultural_tradition,
+                subject=critique_input.subject,
+                use_vlm=self._config.use_vlm,
             )
 
             # 2. Risk tags

@@ -1,0 +1,143 @@
+{
+  "task_id": "treatment_vulca-bench-0020",
+  "original_task_id": "vulca-bench-0020",
+  "success": true,
+  "error": null,
+  "final_decision": "stop",
+  "best_candidate_id": "draft-treatment_vulca-bench-0020-0",
+  "total_latency_ms": 205557,
+  "total_rounds": 3,
+  "stages": [
+    {
+      "stage": "scout",
+      "status": "completed",
+      "latency_ms": 2676,
+      "output_summary": {
+        "sample_matches": 1,
+        "terminology_hits": 3,
+        "taboo_violations": 0,
+        "evidence_pack_anchors": 3
+      }
+    },
+    {
+      "stage": "draft",
+      "status": "completed",
+      "latency_ms": 234,
+      "output_summary": {
+        "n_candidates": 4,
+        "round": 1,
+        "model_ref": "mock-v1"
+      }
+    },
+    {
+      "stage": "critic",
+      "status": "completed",
+      "latency_ms": 66780,
+      "output_summary": {
+        "best_candidate_id": "draft-treatment_vulca-bench-0020-0",
+        "best_weighted_total": 0.7362903225806452,
+        "rerun_hint": [],
+        "hitl_constraints_applied": false
+      }
+    },
+    {
+      "stage": "queen",
+      "status": "completed",
+      "latency_ms": 0,
+      "output_summary": {
+        "action": "rerun",
+        "reason": "cross-layer signal: rerun ['cultural_context']",
+        "round": 1
+      }
+    },
+    {
+      "stage": "draft_refine",
+      "status": "completed",
+      "latency_ms": 142,
+      "output_summary": {
+        "base_candidate_id": "draft-treatment_vulca-bench-0020-0",
+        "target_layers": [
+          "cultural_context"
+        ],
+        "round": 1
+      }
+    },
+    {
+      "stage": "draft",
+      "status": "completed",
+      "latency_ms": 171,
+      "output_summary": {
+        "n_candidates": 4,
+        "round": 2,
+        "model_ref": "mock-v1"
+      }
+    },
+    {
+      "stage": "critic",
+      "status": "completed",
+      "latency_ms": 67553,
+      "output_summary": {
+        "best_candidate_id": "draft-treatment_vulca-bench-0020-0",
+        "best_weighted_total": 0.7347560975609756,
+        "rerun_hint": [],
+        "hitl_constraints_applied": false
+      }
+    },
+    {
+      "stage": "queen",
+      "status": "completed",
+      "latency_ms": 0,
+      "output_summary": {
+        "action": "rerun",
+        "reason": "cross-layer signal: rerun ['cultural_context']",
+        "round": 2
+      }
+    },
+    {
+      "stage": "draft_refine",
+      "status": "completed",
+      "latency_ms": 138,
+      "output_summary": {
+        "base_candidate_id": "draft-treatment_vulca-bench-0020-0",
+        "target_layers": [
+          "cultural_context"
+        ],
+        "round": 2
+      }
+    },
+    {
+      "stage": "draft",
+      "status": "completed",
+      "latency_ms": 218,
+      "output_summary": {
+        "n_candidates": 4,
+        "round": 3,
+        "model_ref": "mock-v1"
+      }
+    },
+    {
+      "stage": "critic",
+      "status": "completed",
+      "latency_ms": 67436,
+      "output_summary": {
+        "best_candidate_id": "draft-treatment_vulca-bench-0020-0",
+        "best_weighted_total": 0.7331967213114754,
+        "rerun_hint": [],
+        "hitl_constraints_applied": false
+      }
+    },
+    {
+      "stage": "queen",
+      "status": "completed",
+      "latency_ms": 0,
+      "output_summary": {
+        "action": "stop",
+        "reason": "max rounds reached: 3 >= 3",
+        "round": 3
+      }
+    }
+  ],
+  "seed": 274923976,
+  "group": "treatment",
+  "run_latency_ms": 205635
+}

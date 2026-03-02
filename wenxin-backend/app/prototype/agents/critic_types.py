@@ -4,6 +4,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+__all__ = [
+    "CandidateScore",
+    "CritiqueInput",
+    "CritiqueOutput",
+    "DimensionScore",
+]
+
 
 @dataclass
 class CritiqueInput:

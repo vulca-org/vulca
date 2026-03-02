@@ -7,6 +7,7 @@ enabling experience-based retrieval for future runs.
 
 from __future__ import annotations
 
+import hashlib
 import time
 import uuid
 from dataclasses import dataclass, field
@@ -26,7 +27,6 @@ class PromptTrace:
         if self.timestamp == 0.0:
             self.timestamp = time.time()
         if not self.prompt_hash:
-            import hashlib
             self.prompt_hash = hashlib.md5(self.enhanced_prompt.encode()).hexdigest()[:12]
 
     def to_dict(self) -> dict:
@@ -116,7 +116,7 @@ class CriticFindings:
 class DecisionLog:
     """Records a single Queen decision."""
 
-    action: str  # accept/rerun/rerun_local/stop/downgrade
+    action: str  # accept/rerun/rerun_local/stop
     reason: str
     round_num: int
     threshold: float = 0.0

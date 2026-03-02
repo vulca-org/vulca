@@ -2,10 +2,10 @@
 
 Decision priority:
 1. Early stop: gate_passed AND weighted_total >= early_stop_threshold → ACCEPT
-2. Over rounds: rounds_used >= max_rounds → STOP
-3. Over budget: total_cost >= max_cost_usd → STOP
-4. Downgrade: total_cost >= max_cost_usd * downgrade_at_cost_pct → DOWNGRADE
-5. Threshold accept: gate_passed AND weighted_total >= accept_threshold → ACCEPT
+2. Threshold accept: gate_passed AND weighted_total >= accept_threshold → ACCEPT
+3. Over rounds: rounds_used >= max_rounds → STOP
+4. Over budget: total_cost >= max_cost_usd → STOP
+5b. Cross-layer signal: reinterpret targets from signal → RERUN (with preserve)
 6. Rerun hint: has rerun_hint AND rounds_used < max_rounds → RERUN
 7. Insufficient improvement: delta < min_improvement → STOP
 8. Default → RERUN
@@ -16,6 +16,7 @@ from __future__ import annotations
 import time
 from datetime import datetime, timezone
 
+from app.prototype.agents.critic_config import DIMENSIONS
 from app.prototype.agents.queen_config import QueenConfig
 from app.prototype.agents.queen_types import (
     BudgetState,
@@ -24,9 +25,17 @@ from app.prototype.agents.queen_types import (
     QueenOutput,
 )
 
+__all__ = [
+    "QueenAgent",
+]
+
+
+# L-label → dimension ID mapping, derived from canonical DIMENSIONS
+_LABEL_TO_DIM = {f"L{i+1}": dim for i, dim in enumerate(DIMENSIONS)}
+
 
 class QueenAgent:
-    """Decide accept / rerun / stop / downgrade based on Critic output and budget."""
+    """Decide accept / rerun / stop based on Critic output and budget."""
 
     def __init__(self, config: QueenConfig | None = None) -> None:
         self._config = config or QueenConfig()
@@ -124,36 +133,25 @@ class QueenAgent:
                 reason=f"early stop: weighted_total {best_score:.4f} >= {cfg.early_stop_threshold}",
             )
 
-        # 2. Over rounds
+        # 2. Threshold accept (before over_rounds so max_rounds=1 can still accept)
+        if best_gate_passed and best_score >= cfg.accept_threshold:
+            return QueenDecision(
+                action="accept",
+                reason=f"threshold accept: weighted_total {best_score:.4f} >= {cfg.accept_threshold}",
+            )
+
+        # 3. Over rounds
         if budget.rounds_used >= cfg.max_rounds:
             return QueenDecision(
                 action="stop",
                 reason=f"max rounds reached: {budget.rounds_used} >= {cfg.max_rounds}",
             )
 
-        # 3. Over budget
+        # 4. Over budget
         if budget.total_cost_usd >= cfg.max_cost_usd:
             return QueenDecision(
                 action="stop",
                 reason=f"budget exhausted: ${budget.total_cost_usd:.4f} >= ${cfg.max_cost_usd:.4f}",
-            )
-
-        # 4. Downgrade
-        if budget.total_cost_usd >= cfg.max_cost_usd * cfg.downgrade_at_cost_pct:
-            return QueenDecision(
-                action="downgrade",
-                downgrade_params={"reduce_candidates": 2, "reduce_steps": 10},
-                reason=(
-                    f"cost ${budget.total_cost_usd:.4f} >= "
-                    f"{cfg.downgrade_at_cost_pct*100:.0f}% of ${cfg.max_cost_usd:.4f}"
-                ),
-            )
-
-        # 5. Threshold accept
-        if best_gate_passed and best_score >= cfg.accept_threshold:
-            return QueenDecision(
-                action="accept",
-                reason=f"threshold accept: weighted_total {best_score:.4f} >= {cfg.accept_threshold}",
             )
 
         # 5b. Cross-layer signal driven rerun
@@ -163,21 +161,12 @@ class QueenAgent:
                 if sig.signal_type.value in ("reinterpret", "conflict", "evidence_gap"):
                     if sig.strength >= 0.3:
                         # Map target layer label to dimension ID
-                        _label_to_dim = {
-                            "L1": "visual_perception", "L2": "technical_analysis",
-                            "L3": "cultural_context", "L4": "critical_interpretation",
-                            "L5": "philosophical_aesthetic",
-                        }
-                        dim = _label_to_dim.get(sig.target_layer, sig.target_layer)
+                        dim = _LABEL_TO_DIM.get(sig.target_layer, sig.target_layer)
                         if dim not in reinterpret_targets:
                             reinterpret_targets.append(dim)
             if reinterpret_targets:
                 # Determine preserve dimensions (everything not being rerun)
-                all_dims = [
-                    "visual_perception", "technical_analysis", "cultural_context",
-                    "critical_interpretation", "philosophical_aesthetic",
-                ]
-                preserve = [d for d in all_dims if d not in reinterpret_targets]
+                preserve = [d for d in DIMENSIONS if d not in reinterpret_targets]
                 # Clear consumed signals
                 plan_state.cross_layer_signals = []
                 return QueenDecision(
@@ -189,9 +178,11 @@ class QueenAgent:
 
         # 6. Rerun hint
         if rerun_hint and budget.rounds_used < cfg.max_rounds:
+            preserve = [d for d in DIMENSIONS if d not in rerun_hint]
             return QueenDecision(
                 action="rerun",
                 rerun_dimensions=rerun_hint,
+                preserve_dimensions=preserve,
                 reason=f"rerun dimensions {rerun_hint} (round {budget.rounds_used}/{cfg.max_rounds})",
             )
 
@@ -205,7 +196,7 @@ class QueenAgent:
                     reason=f"insufficient improvement: delta {delta:.4f} < {cfg.min_improvement}",
                 )
 
-        # 8. Default rerun
+        # 8. Default rerun (no specific targets → no preservation)
         return QueenDecision(
             action="rerun",
             rerun_dimensions=rerun_hint or [],

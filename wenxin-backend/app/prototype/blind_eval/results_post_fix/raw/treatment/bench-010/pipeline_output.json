@@ -1,0 +1,125 @@
+{
+  "task_id": "treatment_bench-010",
+  "original_task_id": "bench-010",
+  "success": true,
+  "error": null,
+  "final_decision": "stop",
+  "best_candidate_id": null,
+  "total_latency_ms": 2339,
+  "total_rounds": 3,
+  "stages": [
+    {
+      "stage": "scout",
+      "status": "completed",
+      "latency_ms": 1721,
+      "output_summary": {
+        "sample_matches": 3,
+        "terminology_hits": 3,
+        "taboo_violations": 1,
+        "evidence_pack_anchors": 3
+      }
+    },
+    {
+      "stage": "draft",
+      "status": "completed",
+      "latency_ms": 160,
+      "output_summary": {
+        "n_candidates": 4,
+        "round": 1,
+        "model_ref": "mock-v1"
+      }
+    },
+    {
+      "stage": "critic",
+      "status": "completed",
+      "latency_ms": 9,
+      "output_summary": {
+        "best_candidate_id": null,
+        "best_weighted_total": 0.60859375,
+        "rerun_hint": [
+          "critical_interpretation"
+        ],
+        "hitl_constraints_applied": false
+      }
+    },
+    {
+      "stage": "queen",
+      "status": "completed",
+      "latency_ms": 0,
+      "output_summary": {
+        "action": "rerun",
+        "reason": "cross-layer signal: rerun ['visual_perception']",
+        "round": 1
+      }
+    },
+    {
+      "stage": "draft",
+      "status": "completed",
+      "latency_ms": 138,
+      "output_summary": {
+        "n_candidates": 4,
+        "round": 2,
+        "model_ref": "mock-v1"
+      }
+    },
+    {
+      "stage": "critic",
+      "status": "completed",
+      "latency_ms": 9,
+      "output_summary": {
+        "best_candidate_id": null,
+        "best_weighted_total": 0.6388053797468355,
+        "rerun_hint": [
+          "critical_interpretation"
+        ],
+        "hitl_constraints_applied": false
+      }
+    },
+    {
+      "stage": "queen",
+      "status": "completed",
+      "latency_ms": 0,
+      "output_summary": {
+        "action": "rerun",
+        "reason": "cross-layer signal: rerun ['visual_perception']",
+        "round": 2
+      }
+    },
+    {
+      "stage": "draft",
+      "status": "completed",
+      "latency_ms": 170,
+      "output_summary": {
+        "n_candidates": 4,
+        "round": 3,
+        "model_ref": "mock-v1"
+      }
+    },
+    {
+      "stage": "critic",
+      "status": "completed",
+      "latency_ms": 12,
+      "output_summary": {
+        "best_candidate_id": null,
+        "best_weighted_total": 0.6409455128205129,
+        "rerun_hint": [
+          "critical_interpretation"
+        ],
+        "hitl_constraints_applied": false
+      }
+    },
+    {
+      "stage": "queen",
+      "status": "completed",
+      "latency_ms": 0,
+      "output_summary": {
+        "action": "stop",
+        "reason": "max rounds reached: 3 >= 3",
+        "round": 3
+      }
+    }
+  ],
+  "seed": 1182316226,
+  "group": "treatment",
+  "run_latency_ms": 2378
+}

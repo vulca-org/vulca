@@ -20,18 +20,20 @@ Cost guardrails:
 
 from __future__ import annotations
 
-import asyncio
 import logging
 import os
 import time
-from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from app.prototype.agents.fix_it_plan import FixItPlan
+    from app.prototype.agents.need_more_evidence import NeedMoreEvidence
 
 from app.prototype.agents.agent_runtime import AgentContext, AgentResult, AgentRuntime
 from app.prototype.agents.critic_config import CriticConfig, DIMENSIONS
 from app.prototype.agents.critic_risk import RiskTagger
-from app.prototype.agents.critic_rules import CriticRules
+from app.prototype.agents.critic_rules import CriticRules, _clamp
 from app.prototype.agents.critic_types import (
     CandidateScore,
     CritiqueInput,
@@ -45,12 +47,17 @@ from app.prototype.agents.layer_state import (
     init_layer_states,
 )
 from app.prototype.agents.model_router import ModelRouter
+from app.prototype.utils.async_bridge import run_async_from_sync
 from app.prototype.agents.tool_registry import build_critic_tool_registry
 from app.prototype.checkpoints.critic_checkpoint import save_critic_checkpoint
 
+__all__ = [
+    "CriticLLM",
+]
+
 logger = logging.getLogger(__name__)
 
-# Layer ID -> label mapping
+# Dimension name -> layer label mapping (authoritative source)
 _LAYER_LABELS: dict[str, str] = {
     "visual_perception": "L1",
     "technical_analysis": "L2",
@@ -58,10 +65,6 @@ _LAYER_LABELS: dict[str, str] = {
     "critical_interpretation": "L4",
     "philosophical_aesthetic": "L5",
 }
-
-# Thread pool for sync -> async bridge
-_EXECUTOR = ThreadPoolExecutor(max_workers=2, thread_name_prefix="critic_llm")
-
 
 class CriticLLM:
     """Hybrid rule + LLM critic with the same interface as CriticAgent."""
@@ -81,6 +84,7 @@ class CriticLLM:
         self._max_agent_steps = max_agent_steps
         self._scout_service = scout_service
         self._progressive = progressive  # v2: L1→L5 serial mode
+        self._has_api_key: bool = self._check_api_keys()
 
         # Agent-ness metrics (cumulative across all candidates)
         self._total_escalations = 0
@@ -95,6 +99,30 @@ class CriticLLM:
         self.fix_it_plan: "FixItPlan | None" = None
         # Layer 1c: NeedMoreEvidence (set after run(), consumed by orchestrator)
         self.need_more_evidence: "NeedMoreEvidence | None" = None
+
+    # ------------------------------------------------------------------
+    # Shared helpers
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _build_candidate_summary(candidate: dict) -> str:
+        return (
+            f"Prompt: {candidate.get('prompt', 'N/A')}\n"
+            f"Model: {candidate.get('model_ref', 'N/A')}\n"
+            f"Steps: {candidate.get('steps', 'N/A')}\n"
+            f"Sampler: {candidate.get('sampler', 'N/A')}"
+        )
+
+    @staticmethod
+    def _build_evidence_summary(evidence: dict) -> str:
+        parts = []
+        if evidence.get("terminology_hits"):
+            parts.append(f"Terminology hits: {len(evidence['terminology_hits'])}")
+        if evidence.get("sample_matches"):
+            parts.append(f"Sample matches: {len(evidence['sample_matches'])}")
+        if evidence.get("taboo_violations"):
+            parts.append(f"Taboo violations: {len(evidence['taboo_violations'])}")
+        return "; ".join(parts) if parts else "(no evidence)"
 
     # ------------------------------------------------------------------
     # Public API — identical to CriticAgent.run()
@@ -130,11 +158,13 @@ class CriticLLM:
         scored: list[CandidateScore] = []
 
         for candidate in critique_input.candidates:
-            # 1. Rule-based baseline scores for all L1-L5 dims
+            # 1. Rule-based baseline scores for all L1-L5 dims (with CLIP blending)
             dim_scores = self._rules.score(
                 candidate=candidate,
                 evidence=critique_input.evidence,
                 cultural_tradition=critique_input.cultural_tradition,
+                subject=critique_input.subject,
+                use_vlm=self._config.use_vlm,
             )
 
             # 2. Risk tags
@@ -240,7 +270,7 @@ class CriticLLM:
         )
 
         # Layer 1b: Generate FixItPlan from low-scoring dimensions
-        self.fix_it_plan = self._generate_fix_it_plan(scored)
+        self.fix_it_plan = self._generate_fix_it_plan(scored, critique_input.evidence)
 
         # Layer 1c: Check for evidence gaps
         evidence_coverage = critique_input.evidence.get("evidence_coverage", 0.0)
@@ -365,11 +395,14 @@ class CriticLLM:
     @staticmethod
     def _generate_fix_it_plan(
         scored_candidates: list[CandidateScore],
+        evidence: dict | None = None,
     ) -> "FixItPlan | None":
         """Generate a targeted FixItPlan from low-scoring dimensions.
 
         Examines the best candidate's dimension scores and creates
-        repair instructions for dimensions scoring below 6.0 (0.6).
+        repair instructions for dimensions scoring below 0.75.
+        Uses rationale text to build specific, actionable prompt deltas
+        rather than generic suggestions.
         """
         from app.prototype.agents.fix_it_plan import FixItem, FixItPlan
 
@@ -380,17 +413,8 @@ class CriticLLM:
         low_items: list[FixItem] = []
         source_scores: dict[str, float] = {}
 
-        # Layer dimension → L-label mapping
-        dim_to_label = {
-            "visual_perception": "L1",
-            "technical_analysis": "L2",
-            "cultural_context": "L3",
-            "critical_interpretation": "L4",
-            "philosophical_aesthetic": "L5",
-        }
-
-        # Layer → prompt fix suggestions
-        fix_suggestions = {
+        # Layer → fallback prompt fix suggestions (used when rationale is empty)
+        fallback_suggestions = {
             "L1": ("weak visual composition", "improve visual clarity, sharper details, better composition"),
             "L2": ("poor technique execution", "refine brushwork technique, improve material rendering"),
             "L3": ("insufficient cultural grounding", "strengthen cultural symbolism and tradition-specific elements"),
@@ -401,24 +425,36 @@ class CriticLLM:
         # Layer → mask region hints
         mask_hints = {
             "L1": "full",
-            "L2": "foreground",
-            "L3": "centre",
-            "L4": "upper_third",
-            "L5": "full",
+            "L2": "centre",
+            "L3": "foreground",
+            "L4": "upper",
+            "L5": "diffuse",
         }
+
+        # Build reference suggestion from evidence if available
+        ref_hint = ""
+        if evidence:
+            matches = evidence.get("sample_matches", [])
+            if matches:
+                titles = [m.get("title", "") for m in matches[:3] if m.get("title")]
+                if titles:
+                    ref_hint = f"reference: {', '.join(titles)}"
 
         priority = 1
         for ds in best.dimension_scores:
             source_scores[ds.dimension] = ds.score
-            if ds.score < 0.6:
-                label = dim_to_label.get(ds.dimension, "L1")
-                issue, delta = fix_suggestions.get(label, ("low score", "improve quality"))
+            if ds.score < 0.75:
+                label = _LAYER_LABELS.get(ds.dimension, "L1")
+                # Extract specific issues from rationale
+                issue, delta = CriticLLM._rationale_to_fix(
+                    label, ds.rationale, ds.score, fallback_suggestions,
+                )
                 low_items.append(FixItem(
                     target_layer=label,
                     issue=issue,
                     prompt_delta=delta,
                     mask_region_hint=mask_hints.get(label, "full"),
-                    reference_suggestion="",
+                    reference_suggestion=ref_hint,
                     priority=priority,
                 ))
                 priority += 1
@@ -426,7 +462,12 @@ class CriticLLM:
         if not low_items:
             return None
 
-        strategy = "full_regenerate" if len(low_items) >= 3 else "targeted_inpaint"
+        # Taboo critical (L4 <= 0.3) → force full regeneration, not targeted inpaint
+        has_taboo = any(
+            i.target_layer == "L4" and source_scores.get("critical_interpretation", 1.0) <= 0.3
+            for i in low_items
+        )
+        strategy = "full_regenerate" if has_taboo or len(low_items) >= 3 else "targeted_inpaint"
         estimated_improvement = min(0.3, 0.1 * len(low_items))
 
         return FixItPlan(
@@ -435,6 +476,97 @@ class CriticLLM:
             estimated_improvement=estimated_improvement,
             source_scores=source_scores,
         )
+
+    @staticmethod
+    def _rationale_to_fix(
+        label: str,
+        rationale: str,
+        score: float,
+        fallback_suggestions: dict[str, tuple[str, str]],
+    ) -> tuple[str, str]:
+        """Convert a dimension's rationale into a specific (issue, prompt_delta) pair.
+
+        Parses the rationale string to identify which scoring components
+        were missing, then builds targeted prompt guidance.
+        """
+        if not rationale:
+            return fallback_suggestions.get(label, ("low score", "improve quality"))
+
+        rationale_lower = rationale.lower()
+
+        # Merged/agent rationales (e.g. "rule=0.50; agent=0.72; merged=0.65")
+        # don't contain rule-level bonus tokens — skip fine-grained keyword
+        # detection and use fallback suggestions instead.
+        if "merged=" in rationale_lower:
+            return fallback_suggestions.get(label, ("low score", "improve quality"))
+
+        # Build specific fix based on layer + missing bonuses
+        fix_parts: list[str] = []
+        issue_parts: list[str] = []
+
+        if label == "L1":
+            if "style_match" not in rationale_lower:
+                fix_parts.append("match the target artistic style more precisely")
+                issue_parts.append("style mismatch")
+            if "terminology" not in rationale_lower:
+                fix_parts.append("incorporate tradition-specific visual vocabulary")
+                issue_parts.append("missing visual terminology")
+            if "prompt_length" not in rationale_lower:
+                fix_parts.append("add more descriptive visual detail")
+                issue_parts.append("under-specified prompt")
+        elif label == "L2":
+            if "steps" not in rationale_lower:
+                fix_parts.append("increase rendering detail and precision")
+                issue_parts.append("insufficient rendering steps")
+            if "sampler" not in rationale_lower:
+                fix_parts.append("use appropriate sampling technique")
+                issue_parts.append("sampler not specified")
+            if "model_ref" not in rationale_lower:
+                fix_parts.append("specify generation model explicitly")
+                issue_parts.append("model reference missing")
+        elif label == "L3":
+            if "term_hits" not in rationale_lower:
+                fix_parts.append("add cultural terminology and symbolic elements")
+                issue_parts.append("missing cultural terms")
+            if "sample_matches" not in rationale_lower:
+                fix_parts.append("align with reference artworks from this tradition")
+                issue_parts.append("no matching reference samples")
+            if "taboo_" in rationale_lower and "no_taboo" not in rationale_lower:
+                fix_parts.append("avoid cultural taboo elements")
+                issue_parts.append("potential cultural violation")
+        elif label == "L4":
+            if "taboo_critical" in rationale_lower:
+                fix_parts.append("remove all culturally offensive elements")
+                issue_parts.append("critical taboo violation")
+            elif "taboo_high" in rationale_lower:
+                fix_parts.append("address high-severity cultural sensitivity issues")
+                issue_parts.append("high-severity taboo")
+            else:
+                if "terminology" not in rationale_lower:
+                    fix_parts.append("strengthen interpretive depth with critical vocabulary")
+                    issue_parts.append("lacks critical terminology")
+                if "sample_evidence" not in rationale_lower:
+                    fix_parts.append("ground interpretation in tradition evidence")
+                    issue_parts.append("insufficient evidence grounding")
+        elif label == "L5":
+            if "cultural_keywords" not in rationale_lower:
+                fix_parts.append("embed philosophical and aesthetic cultural keywords")
+                issue_parts.append("missing aesthetic keywords")
+            # "no_taboo" is a reward marker (+0.2 when no taboo); its absence means
+            # taboo violations exist — only flag if taboo markers are actually present.
+            if "taboo_" in rationale_lower and "no_taboo" not in rationale_lower:
+                fix_parts.append("ensure cultural purity in philosophical expression")
+                issue_parts.append("taboo concern in aesthetic layer")
+            if "term_coverage" not in rationale_lower:
+                fix_parts.append("broaden terminology coverage for deeper resonance")
+                issue_parts.append("narrow terminology coverage")
+
+        if not fix_parts:
+            return fallback_suggestions.get(label, ("low score", "improve quality"))
+
+        issue = f"{label} ({score:.2f}): {'; '.join(issue_parts)}"
+        delta = ", ".join(fix_parts)
+        return issue, delta
 
     # ------------------------------------------------------------------
     # Layer 1c: Evidence gap detection
@@ -464,13 +596,6 @@ class CriticLLM:
             return None
 
         best = scored_candidates[0]
-        dim_to_label = {
-            "visual_perception": "L1",
-            "technical_analysis": "L2",
-            "cultural_context": "L3",
-            "critical_interpretation": "L4",
-            "philosophical_aesthetic": "L5",
-        }
 
         gaps: list[str] = []
         target_layers: list[str] = []
@@ -478,7 +603,13 @@ class CriticLLM:
 
         for ds in best.dimension_scores:
             if ds.score < 0.5:
-                label = dim_to_label.get(ds.dimension, ds.dimension)
+                # L4 low score driven by taboo is not an evidence gap — skip
+                if ds.dimension == "critical_interpretation" and (
+                    "taboo_critical" in (ds.rationale or "").lower()
+                    or "taboo_high" in (ds.rationale or "").lower()
+                ):
+                    continue
+                label = _LAYER_LABELS.get(ds.dimension, ds.dimension)
                 target_layers.append(label)
                 gaps.append(f"{label} ({ds.dimension}): score {ds.score:.3f} — evidence insufficient")
 
@@ -517,15 +648,16 @@ class CriticLLM:
     # ------------------------------------------------------------------
 
     def _has_any_api_key(self) -> bool:
-        """Check if any supported LLM API key is available."""
-        key_vars = [
-            "DEEPSEEK_API_KEY",
-            "GOOGLE_API_KEY",
-            "GEMINI_API_KEY",
-            "OPENAI_API_KEY",
-            "DEEPINFRA_API_KEY",
-        ]
-        return any(os.environ.get(k) for k in key_vars)
+        """Check if any supported LLM API key is available (cached at init)."""
+        return self._has_api_key
+
+    @staticmethod
+    def _check_api_keys() -> bool:
+        """One-time check for available LLM API keys."""
+        return any(os.environ.get(k) for k in (
+            "GLOBALAI_API_KEY", "DEEPSEEK_API_KEY",
+            "GOOGLE_API_KEY", "GEMINI_API_KEY", "OPENAI_API_KEY",
+        ))
 
     def _escalate_dimensions(
         self,
@@ -564,22 +696,32 @@ class CriticLLM:
             return dim_scores
 
         # Run Agent evaluations
-        agent_results = self._run_agent_evaluations(
-            dims_to_escalate=dims_to_escalate,
-            layer_states=layer_states,
-            candidate=candidate,
-            critique_input=critique_input,
-        )
+        try:
+            agent_results = self._run_agent_evaluations(
+                dims_to_escalate=dims_to_escalate,
+                layer_states=layer_states,
+                candidate=candidate,
+                critique_input=critique_input,
+            )
+        except (TimeoutError, Exception) as exc:
+            logger.warning(
+                "Agent escalation failed (%s), falling back to rule scores: %s",
+                type(exc).__name__, exc,
+            )
+            return dim_scores
 
         # Merge: replace rule scores with Agent scores where successful
         dim_score_map = {ds.dimension: ds for ds in dim_scores}
         for dim_id, agent_result in agent_results.items():
             if agent_result.fallback_used:
                 continue
-            if agent_result.score <= 0:
+            if agent_result.score is None:
                 continue
 
             rule_score = dim_score_map[dim_id].score
+            # Protect taboo overrides: L4 ≤ 0.3 = taboo_critical(0.0) or taboo_high(0.3)
+            if dim_id == "critical_interpretation" and rule_score <= 0.3:
+                continue
             # Merge: weighted average (Agent gets higher weight)
             merged_score = 0.3 * rule_score + 0.7 * agent_result.score
             merged_rationale = (
@@ -590,7 +732,7 @@ class CriticLLM:
 
             dim_score_map[dim_id] = DimensionScore(
                 dimension=dim_id,
-                score=max(0.0, min(1.0, merged_score)),
+                score=_clamp(merged_score),
                 rationale=merged_rationale,
                 agent_metadata={
                     "mode": "agent",
@@ -648,24 +790,8 @@ class CriticLLM:
         )
 
         # Build candidate/evidence summaries
-        candidate_summary = (
-            f"Prompt: {candidate.get('prompt', 'N/A')}\n"
-            f"Model: {candidate.get('model_ref', 'N/A')}\n"
-            f"Steps: {candidate.get('steps', 'N/A')}\n"
-            f"Sampler: {candidate.get('sampler', 'N/A')}"
-        )
-        evidence = critique_input.evidence
-        evidence_parts = []
-        terms = evidence.get("terminology_hits", [])
-        if terms:
-            evidence_parts.append(f"Terminology hits: {len(terms)}")
-        samples = evidence.get("sample_matches", [])
-        if samples:
-            evidence_parts.append(f"Sample matches: {len(samples)}")
-        taboos = evidence.get("taboo_violations", [])
-        if taboos:
-            evidence_parts.append(f"Taboo violations: {len(taboos)}")
-        evidence_summary = "; ".join(evidence_parts) if evidence_parts else "(no evidence)"
+        candidate_summary = self._build_candidate_summary(candidate)
+        evidence_summary = self._build_evidence_summary(critique_input.evidence)
 
         # L1→L5 serial evaluation
         _DIM_ORDER = [
@@ -714,11 +840,14 @@ class CriticLLM:
                 logger.error("Serial Agent evaluation failed for %s: %s", dim_id, exc)
                 agent_result = AgentResult(layer_id=dim_id, fallback_used=True)
 
-            if not agent_result.fallback_used and agent_result.score > 0:
+            if not agent_result.fallback_used and agent_result.score is not None:
                 # Store analysis text for downstream layers
                 ls.analysis_text = agent_result.rationale or ""
 
                 rule_score = dim_score_map[dim_id].score
+                # Protect taboo overrides: L4 ≤ 0.3 = taboo_critical(0.0) or taboo_high(0.3)
+                if dim_id == "critical_interpretation" and rule_score <= 0.3:
+                    continue
                 merged_score = 0.3 * rule_score + 0.7 * agent_result.score
                 merged_rationale = (
                     f"rule={rule_score:.3f}; agent={agent_result.score:.3f} "
@@ -727,7 +856,7 @@ class CriticLLM:
                 )
                 dim_score_map[dim_id] = DimensionScore(
                     dimension=dim_id,
-                    score=max(0.0, min(1.0, merged_score)),
+                    score=_clamp(merged_score),
                     rationale=merged_rationale,
                     agent_metadata={
                         "mode": "agent_progressive",
@@ -781,27 +910,9 @@ class CriticLLM:
             max_steps=self._max_agent_steps,
         )
 
-        # Build candidate summary
-        candidate_summary = (
-            f"Prompt: {candidate.get('prompt', 'N/A')}\n"
-            f"Model: {candidate.get('model_ref', 'N/A')}\n"
-            f"Steps: {candidate.get('steps', 'N/A')}\n"
-            f"Sampler: {candidate.get('sampler', 'N/A')}"
-        )
-
-        # Build evidence summary
-        evidence = critique_input.evidence
-        evidence_parts = []
-        terms = evidence.get("terminology_hits", [])
-        if terms:
-            evidence_parts.append(f"Terminology hits: {len(terms)}")
-        samples = evidence.get("sample_matches", [])
-        if samples:
-            evidence_parts.append(f"Sample matches: {len(samples)}")
-        taboos = evidence.get("taboo_violations", [])
-        if taboos:
-            evidence_parts.append(f"Taboo violations: {len(taboos)}")
-        evidence_summary = "; ".join(evidence_parts) if evidence_parts else "(no evidence)"
+        # Build candidate/evidence summaries
+        candidate_summary = self._build_candidate_summary(candidate)
+        evidence_summary = self._build_evidence_summary(critique_input.evidence)
 
         async def _run_all() -> dict[str, AgentResult]:
             dim_results: dict[str, AgentResult] = {}
@@ -816,9 +927,13 @@ class CriticLLM:
                     cultural_tradition=critique_input.cultural_tradition,
                     candidate_summary=candidate_summary,
                     evidence_summary=evidence_summary,
-                    layer_state=layer_states[dim_id],
+                    layer_state=layer_states.get(dim_id),
                     image_url=image_url,
                 )
+                if ctx.layer_state is None:
+                    logger.warning("layer_states missing key %s, skipping escalation", dim_id)
+                    dim_results[dim_id] = AgentResult(layer_id=dim_id, fallback_used=True)
+                    continue
                 try:
                     result = await runtime.evaluate(ctx)
                 except Exception as exc:  # noqa: BLE001
@@ -832,17 +947,5 @@ class CriticLLM:
 
     @staticmethod
     def _run_async(coro: Any) -> Any:
-        """Run an async coroutine from sync context, handling existing event loops."""
-        try:
-            loop = asyncio.get_running_loop()
-        except RuntimeError:
-            loop = None
-
-        if loop is not None and loop.is_running():
-            # Already inside an event loop — use thread executor
-            import concurrent.futures
-            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
-                future = pool.submit(asyncio.run, coro)
-                return future.result(timeout=60)
-        else:
-            return asyncio.run(coro)
+        """Run an async coroutine from sync context (delegates to shared pool)."""
+        return run_async_from_sync(coro, timeout=60)

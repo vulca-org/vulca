@@ -71,6 +71,11 @@ class TrajectoryRecorder:
 
         # Save previous round if it exists
         if self._current_round is not None:
+            if round_num != self._current_round.round_num + 1:
+                logger.warning(
+                    "Non-sequential round transition: %d -> %d",
+                    self._current_round.round_num, round_num,
+                )
             self._record.rounds.append(self._current_round)
 
         self._current_round = RoundRecord(round_num=round_num)
@@ -114,11 +119,11 @@ class TrajectoryRecorder:
         self._record.total_latency_ms = total_latency_ms
         self._record.total_cost = total_cost
 
-        # Save to JSON
+        # Save to JSON (atomic write for crash safety)
         out_path = self._storage_dir / f"{self._record.trajectory_id}.json"
         try:
-            with open(out_path, "w", encoding="utf-8") as f:
-                json.dump(self._record.to_dict(), f, indent=2, ensure_ascii=False)
+            from app.prototype.checkpoints.utils import atomic_write as _atomic_write
+            _atomic_write(out_path, json.dumps(self._record.to_dict(), indent=2, ensure_ascii=False))
             logger.info("Trajectory saved: %s (score=%.2f)", out_path.name, final_score)
         except Exception as exc:  # noqa: BLE001
             logger.error("Failed to save trajectory: %s", exc)

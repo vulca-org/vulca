@@ -41,6 +41,28 @@ def _sanitize_rationale(text: str) -> str:
     return text
 
 
+# Matches dimension lines like: **dim_name** (score: 0.80): rationale text...
+_DIMENSION_LINE = re.compile(
+    r"(\*\*\w+\*\*\s*\(score:\s*[\d.]+\)):.*",
+)
+
+
+def _strip_dimension_rationale(text: str) -> str:
+    """Strip rationale details from dimension score lines.
+
+    Converts lines like:
+        **philosophical_aesthetic** (score: 0.80): base=0.4; no_taboo=+0.2
+        **philosophical_aesthetic** (score: 0.59): [REDACTED]0.800; [REDACTED]0.500
+    To:
+        **philosophical_aesthetic** (score: 0.80)
+        **philosophical_aesthetic** (score: 0.59)
+
+    This prevents format differences between baseline and treatment from
+    leaking group identity.
+    """
+    return _DIMENSION_LINE.sub(r"\1", text)
+
+
 def _ab_assignment(task_id: str, seed: int) -> bool:
     """Return True if baseline=A, False if baseline=B. Deterministic."""
     h = hashlib.sha256(f"{task_id}:ab:{seed}".encode()).hexdigest()
@@ -249,7 +271,9 @@ class BlindExporter:
                         return json.dumps(critique, indent=2, ensure_ascii=False)
                     return str(critique)
                 if "rerun_hint" in summary:
-                    return f"Rerun suggestion: {summary['rerun_hint']}"
+                    hint = summary["rerun_hint"]
+                    hint_text = ", ".join(hint) if isinstance(hint, (list, tuple)) else str(hint)
+                    return f"Rerun suggestion: {hint_text}"
         except (json.JSONDecodeError, KeyError):
             pass
 
@@ -289,7 +313,8 @@ class BlindExporter:
 
             rerun = data.get("rerun_hint", [])
             if rerun:
-                parts.append(f"**Rerun Suggestion**: {', '.join(rerun)}")
+                rerun_text = ", ".join(rerun) if isinstance(rerun, (list, tuple)) else str(rerun)
+                parts.append(f"**Rerun Suggestion**: {rerun_text}")
 
             return "\n\n".join(parts)
         except (json.JSONDecodeError, KeyError):
@@ -298,6 +323,7 @@ class BlindExporter:
     def _format_critique_md(self, raw_text: str, label: str) -> str:
         """Format and sanitize critique text as markdown."""
         sanitized = _sanitize_rationale(raw_text)
+        sanitized = _strip_dimension_rationale(sanitized)
         return f"# Evaluation {label}\n\n{sanitized}\n"
 
     @staticmethod

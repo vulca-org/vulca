@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
+import logging
 import os
-import re
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -15,6 +15,10 @@ from app.prototype.agents.draft_provider import (
     MockProvider,
     TogetherFluxProvider,
 )
+from app.prototype.agents.nb2_provider import (
+    NB2Provider,
+    build_full_evidence_prompt,
+)
 from app.prototype.agents.draft_types import (
     DraftCandidate,
     DraftInput,
@@ -22,12 +26,19 @@ from app.prototype.agents.draft_types import (
 )
 from app.prototype.agents.inpaint_provider import (
     AbstractInpaintProvider,
+    ControlNetInpaintProviderAdapter,
     DiffusersInpaintProvider,
     MaskGenerator,
     MockInpaintProvider,
 )
 from app.prototype.agents.layer_state import LocalRerunRequest
 from app.prototype.checkpoints.draft_checkpoint import save_draft_checkpoint
+
+__all__ = [
+    "DraftAgent",
+]
+
+logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Cultural tradition → style keyword mapping
@@ -68,7 +79,7 @@ _STYLE_MAP: dict[str, dict[str, str]] = {
     },
 }
 
-_SAFE_TASK_ID_RE = re.compile(r"[^A-Za-z0-9._-]+")
+
 
 
 def _get_provider(name: str, config: DraftConfig | None = None) -> AbstractProvider:
@@ -91,7 +102,13 @@ def _get_provider(name: str, config: DraftConfig | None = None) -> AbstractProvi
         kp = KoalaProvider()
         # Wrap KoalaProvider in the AbstractProvider interface
         return _KoalaProviderAdapter(kp, config)
-    raise ValueError(f"Unknown provider: {name!r} (available: mock, together_flux, diffusers, koala)")
+    if name == "nb2":
+        import os
+        api_key = (config.api_key if config else "") or os.environ.get("GOOGLE_API_KEY", "")
+        if not api_key:
+            raise ValueError("GOOGLE_API_KEY required for nb2 provider")
+        return NB2Provider(api_key=api_key)
+    raise ValueError(f"Unknown provider: {name!r} (available: mock, together_flux, diffusers, koala, nb2)")
 
 
 class _KoalaProviderAdapter(AbstractProvider):
@@ -144,7 +161,19 @@ class DraftAgent:
         safe_task_id = _sanitize_task_id(draft_input.task_id)
 
         # Layer 1a: prefer EvidencePack-based prompt if available
-        if evidence_pack is not None:
+        if evidence_pack is not None and config.enable_full_evidence_injection:
+            # NB2 full-context mode: inject complete EvidencePack into 32K context.
+            # Unlike FLUX (T5, 512 tokens), NB2's Gemini encoder handles the full text.
+            prompt, negative_prompt = build_full_evidence_prompt(
+                subject=draft_input.subject,
+                tradition=draft_input.cultural_tradition,
+                evidence_pack=evidence_pack,
+            )
+            logger.info(
+                "NB2 full-evidence prompt: %d chars for task %s",
+                len(prompt), draft_input.task_id,
+            )
+        elif evidence_pack is not None:
             prompt, negative_prompt = self._build_prompt_from_pack(
                 subject=draft_input.subject,
                 tradition=draft_input.cultural_tradition,
@@ -254,6 +283,7 @@ class DraftAgent:
             image_width=config.width,
             image_height=config.height,
             mask_specs=local_rerun_request.mask_specs or None,
+            preserve_layers=getattr(local_rerun_request, "preserve_layers", None) or None,
         )
 
         # 2. Build prompt delta
@@ -384,6 +414,7 @@ class DraftAgent:
         evidence_pack=None,
         base_image_path: str = "",
         inpaint_provider_name: str = "mock_inpaint",
+        preserve_layers: list[str] | None = None,
     ) -> DraftCandidate:
         """Rerun generation using a targeted FixItPlan from Critic.
 
@@ -391,8 +422,6 @@ class DraftAgent:
         and uses mask hints for targeted inpainting when a base image
         is available.
         """
-        from app.prototype.agents.fix_it_plan import FixItPlan
-
         config = self._default_config
 
         # Build enhanced prompt
@@ -408,16 +437,34 @@ class DraftAgent:
             provider = _get_inpaint_provider(inpaint_provider_name)
             mask_gen = MaskGenerator()
 
-            # Map mask hint to target layers
-            mask_hint = fix_plan.get_mask_hint()
-            target_layers = [item.target_layer for item in fix_plan.items if item.target_layer]
+            # Build per-item mask specs (each FixItem has its own mask_region_hint)
+            target_layers = []
+            mask_specs_list = []
+            if not fix_plan.items:
+                logger.warning("FixItPlan.items is empty (Critic produced no fix items)")
+            for item in fix_plan.items:
+                if item.target_layer:
+                    target_layers.append(item.target_layer)
+                    if item.mask_region_hint:
+                        mask_specs_list.append({
+                            "layer": item.target_layer,
+                            "region": item.mask_region_hint,
+                            "strength": item.strength,
+                        })
             if not target_layers:
+                logger.warning(
+                    "FixItPlan items have no target_layers, defaulting to ['L2'] blind inpaint"
+                )
                 target_layers = ["L2"]  # default
+            if not mask_specs_list:
+                mask_specs_list = None
 
             mask = mask_gen.generate(
                 target_layers=target_layers,
                 image_width=config.width,
                 image_height=config.height,
+                mask_specs=mask_specs_list,
+                preserve_layers=preserve_layers,
             )
 
             negative = ", ".join(negative_additions) if negative_additions else ""
@@ -453,7 +500,7 @@ class DraftAgent:
 
         # No base image — full regeneration with enhanced prompt
         provider = _get_provider(config.provider, config)
-        style_entry = _STYLE_MAP.get("default", _STYLE_MAP["default"])
+        style_entry = _STYLE_MAP["default"]
         negative = style_entry["negative"]
         if negative_additions:
             negative = f"{negative}, {', '.join(negative_additions)}"
@@ -591,10 +638,19 @@ def _get_inpaint_provider(name: str) -> AbstractInpaintProvider:
         return MockInpaintProvider()
     if name in ("diffusers", "diffusers_inpaint"):
         return DiffusersInpaintProvider()
+    if name in ("flux_fill", "flux_fill_dev"):
+        from app.prototype.agents.flux_fill_provider import FluxFillProvider
+        return FluxFillProvider(use_pro=False)
+    if name == "flux_fill_pro":
+        from app.prototype.agents.flux_fill_provider import FluxFillProvider
+        return FluxFillProvider(use_pro=True)
+    if name in ("controlnet_canny", "controlnet_depth"):
+        cn_type = name.split("_", 1)[1]  # "canny" or "depth"
+        return ControlNetInpaintProviderAdapter(cn_type)
     return MockInpaintProvider()  # safe fallback
 
 
 def _sanitize_task_id(task_id: str) -> str:
     """Convert task_id into a filesystem-safe path segment."""
-    cleaned = _SAFE_TASK_ID_RE.sub("_", task_id).strip("._")
-    return cleaned or "task"
+    from app.prototype.checkpoints.utils import safe_task_id
+    return safe_task_id(task_id)

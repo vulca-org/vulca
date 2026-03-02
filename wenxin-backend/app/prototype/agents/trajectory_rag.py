@@ -20,6 +20,11 @@ from app.prototype.trajectory.trajectory_types import TrajectoryRecord
 
 logger = logging.getLogger(__name__)
 
+__all__ = [
+    "TrajectoryPatterns",
+    "TrajectoryRAGService",
+]
+
 _DEFAULT_STORAGE_DIR = Path(__file__).resolve().parent.parent / "data" / "trajectories"
 
 

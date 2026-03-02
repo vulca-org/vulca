@@ -18,6 +18,10 @@ from PIL import Image
 
 logger = logging.getLogger(__name__)
 
+__all__ = [
+    "KoalaProvider",
+]
+
 
 class KoalaProvider:
     """KOALA-Lightning 700M image generation.

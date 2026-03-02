@@ -7,6 +7,8 @@
 
 import { useEffect, useRef } from 'react';
 import type { ScoredCandidate } from '../../hooks/usePrototypePipeline';
+import { PROTOTYPE_DIM_LABELS } from '../../utils/vulca-dimensions';
+import type { PrototypeDimension } from '../../utils/vulca-dimensions';
 
 interface CrossLayerSignal {
   source_layer: string;
@@ -30,14 +32,6 @@ interface Props {
   agentMetrics?: AgentMetrics | null;
   crossLayerSignals?: CrossLayerSignal[];
 }
-
-const LAYER_LABELS: Record<string, string> = {
-  visual_perception: 'L1 Visual Perception',
-  technical_analysis: 'L2 Technical Analysis',
-  cultural_context: 'L3 Cultural Context',
-  critical_interpretation: 'L4 Critical Interpretation',
-  philosophical_aesthetic: 'L5 Philosophical Aesthetic',
-};
 
 const SIGNAL_TYPE_STYLES: Record<string, { bg: string; icon: string }> = {
   REINTERPRET: { bg: 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800', icon: '🔄' },
@@ -162,7 +156,7 @@ export default function CriticDetailModal({ candidate, onClose, agentMetrics, cr
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                          {LAYER_LABELS[d.dimension] ?? d.dimension}
+                          {PROTOTYPE_DIM_LABELS[d.dimension as PrototypeDimension]?.complete ?? d.dimension}
                         </span>
                         <ModeBadge isAgent={isAgent} mode={meta?.mode} />
                       </div>

@@ -12,6 +12,13 @@ from app.prototype.agents.layer_state import (
     init_layer_states,
 )
 
+__all__ = [
+    "BudgetState",
+    "PlanState",
+    "QueenDecision",
+    "QueenOutput",
+]
+
 
 @dataclass
 class BudgetState:
@@ -79,13 +86,12 @@ class PlanState:
 class QueenDecision:
     """A single decision emitted by the Queen Agent.
 
-    v2 adds rerun_local/rerun_global distinction and expected_gain_per_cost.
+    v2 adds rerun_local distinction and expected_gain_per_cost.
     """
 
-    action: str  # "accept" | "rerun" | "rerun_local" | "rerun_global" | "stop" | "downgrade"
+    action: str  # "accept" | "rerun" | "stop" (orchestrator may upgrade to "rerun_local")
     rerun_dimensions: list[str] = field(default_factory=list)
     preserve_dimensions: list[str] = field(default_factory=list)   # v2: layers to protect
-    downgrade_params: dict = field(default_factory=dict)
     reason: str = ""
     expected_gain_per_cost: float = 0.0  # v2: cost-effectiveness estimate
 
@@ -94,7 +100,6 @@ class QueenDecision:
             "action": self.action,
             "rerun_dimensions": self.rerun_dimensions,
             "preserve_dimensions": self.preserve_dimensions,
-            "downgrade_params": self.downgrade_params,
             "reason": self.reason,
             "expected_gain_per_cost": round(self.expected_gain_per_cost, 4),
         }

@@ -17,6 +17,10 @@ from PIL import Image
 
 logger = logging.getLogger(__name__)
 
+__all__ = [
+    "IPAdapterProvider",
+]
+
 
 class IPAdapterProvider:
     """Draft-Style: IP-Adapter-based style transfer on SD 1.5.

@@ -6,6 +6,12 @@ from dataclasses import dataclass, field
 
 from app.prototype.agents.draft_config import DraftConfig
 
+__all__ = [
+    "DraftCandidate",
+    "DraftInput",
+    "DraftOutput",
+]
+
 
 @dataclass
 class DraftInput:

@@ -10,6 +10,17 @@ from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 from pathlib import Path
 
+__all__ = [
+    "AbstractProvider",
+    "AllProvidersFailedError",
+    "DiffusersProvider",
+    "FallbackProvider",
+    "FaultInjectProvider",
+    "MockProvider",
+    "TogetherFluxProvider",
+    "detect_image_format",
+]
+
 
 def detect_image_format(data: bytes) -> str:
     """Detect image format from magic bytes. Returns 'png', 'jpeg', or 'webp'."""
@@ -408,6 +419,11 @@ class FallbackProvider(AbstractProvider):
                         "status": f"failed: {exc}",
                     })
                     errors.append(f"{provider.model_ref} attempt {attempt}: {exc}")
+                    # Exponential backoff between retries (skip on last attempt)
+                    if self._backoff_base_ms > 0 and attempt < self._max_retries:
+                        _MAX_BACKOFF_MS = 30_000  # 30 seconds cap
+                        delay_ms = min(self._backoff_base_ms * (2 ** (attempt - 1)), _MAX_BACKOFF_MS)
+                        time.sleep(delay_ms / 1000.0)
 
         raise AllProvidersFailedError(
             f"All providers failed after exhausting retries: {errors}"

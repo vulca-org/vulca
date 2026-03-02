@@ -20,6 +20,10 @@ from PIL import Image
 
 logger = logging.getLogger(__name__)
 
+__all__ = [
+    "GalleryGPTProvider",
+]
+
 
 class GalleryGPTProvider:
     """Painting-specialized VLM for artwork analysis.

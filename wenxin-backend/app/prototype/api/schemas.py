@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 
@@ -15,8 +17,9 @@ class CreateRunRequest(BaseModel):
     )
     provider: str = Field(default="mock", description="Image provider: mock | together_flux")
     n_candidates: int = Field(default=4, ge=1, le=8, description="Candidates per round")
-    max_rounds: int = Field(default=2, ge=1, le=5, description="Max Queen rounds")
+    max_rounds: int = Field(default=3, ge=1, le=5, description="Max Queen rounds")
     enable_hitl: bool = Field(default=False, description="Enable human-in-the-loop")
+    enable_agent_critic: bool = Field(default=False, description="Use LLM-based Critic (CriticLLM) instead of rule-only scoring")
     idempotency_key: str | None = Field(default=None, description="Optional idempotency key")
 
 
@@ -40,7 +43,9 @@ class RunStatusResponse(BaseModel):
 class SubmitActionRequest(BaseModel):
     """Request body for POST /runs/{id}/action."""
 
-    action: str = Field(..., description="approve | reject | rerun | lock_dimensions | force_accept")
+    action: Literal["approve", "reject", "rerun", "lock_dimensions", "force_accept"] = Field(
+        ..., description="HITL action type",
+    )
     locked_dimensions: list[str] = Field(default_factory=list)
     rerun_dimensions: list[str] = Field(default_factory=list)
     candidate_id: str = ""

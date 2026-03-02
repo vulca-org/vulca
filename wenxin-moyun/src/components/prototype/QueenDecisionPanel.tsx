@@ -7,11 +7,14 @@
 
 import { useState } from 'react';
 import type { QueenDecision, ScoredCandidate } from '../../hooks/usePrototypePipeline';
+import { PROTOTYPE_DIMENSIONS, PROTOTYPE_DIM_LABELS } from '../../utils/vulca-dimensions';
+import type { PrototypeDimension } from '../../utils/vulca-dimensions';
 
 const DECISION_ICONS: Record<string, string> = {
   accept: '✅',
   stop: '🛑',
   rerun: '🔄',
+  rerun_local: '🎯',
   downgrade: '⬇️',
 };
 
@@ -19,23 +22,8 @@ const DECISION_COLORS: Record<string, string> = {
   accept: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-green-200 dark:border-green-800',
   stop: 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800',
   rerun: 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+  rerun_local: 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800',
   downgrade: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800',
-};
-
-const ALL_DIMENSIONS = [
-  'visual_perception',
-  'technical_analysis',
-  'cultural_context',
-  'critical_interpretation',
-  'philosophical_aesthetic',
-];
-
-const DIM_LABELS: Record<string, string> = {
-  visual_perception: 'L1 Visual',
-  technical_analysis: 'L2 Technical',
-  cultural_context: 'L3 Cultural',
-  critical_interpretation: 'L4 Critical',
-  philosophical_aesthetic: 'L5 Aesthetic',
 };
 
 interface Props {
@@ -113,7 +101,7 @@ export default function QueenDecisionPanel({
           <div className="flex flex-wrap gap-1 mt-1">
             {d.rerun_dimensions.map(dim => (
               <span key={dim} className="px-2 py-0.5 bg-white/50 dark:bg-black/20 rounded text-xs">
-                {DIM_LABELS[dim] || dim.replace(/_/g, ' ')}
+                {PROTOTYPE_DIM_LABELS[dim as PrototypeDimension]?.short || dim.replace(/_/g, ' ')}
               </span>
             ))}
           </div>
@@ -158,7 +146,7 @@ export default function QueenDecisionPanel({
               <div>
                 <label className="block text-xs font-semibold mb-1">Lock Dimensions (preserve scores)</label>
                 <div className="flex flex-wrap gap-1">
-                  {ALL_DIMENSIONS.map(dim => (
+                  {PROTOTYPE_DIMENSIONS.map(dim => (
                     <button
                       key={dim}
                       onClick={() => toggleDim(dim, lockedDims, setLockedDims)}
@@ -168,7 +156,7 @@ export default function QueenDecisionPanel({
                           : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
                       }`}
                     >
-                      {lockedDims.has(dim) ? '🔒 ' : ''}{DIM_LABELS[dim] || dim}
+                      {lockedDims.has(dim) ? '🔒 ' : ''}{PROTOTYPE_DIM_LABELS[dim].short}
                     </button>
                   ))}
                 </div>
@@ -178,7 +166,7 @@ export default function QueenDecisionPanel({
               <div>
                 <label className="block text-xs font-semibold mb-1">Rerun Dimensions (re-evaluate only these)</label>
                 <div className="flex flex-wrap gap-1">
-                  {ALL_DIMENSIONS.filter(d => !lockedDims.has(d)).map(dim => (
+                  {PROTOTYPE_DIMENSIONS.filter(d => !lockedDims.has(d)).map(dim => (
                     <button
                       key={dim}
                       onClick={() => toggleDim(dim, rerunDims, setRerunDims)}
@@ -188,7 +176,7 @@ export default function QueenDecisionPanel({
                           : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
                       }`}
                     >
-                      {rerunDims.has(dim) ? '🔄 ' : ''}{DIM_LABELS[dim] || dim}
+                      {rerunDims.has(dim) ? '🔄 ' : ''}{PROTOTYPE_DIM_LABELS[dim].short}
                     </button>
                   ))}
                 </div>

@@ -4,6 +4,10 @@ from __future__ import annotations
 
 from app.prototype.agents.critic_rules import _CULTURE_KEYWORDS
 
+__all__ = [
+    "RiskTagger",
+]
+
 
 class RiskTagger:
     """Deterministic risk tagger based on evidence and candidate metadata."""

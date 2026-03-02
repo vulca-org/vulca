@@ -22,6 +22,12 @@ from PIL import Image
 
 logger = logging.getLogger(__name__)
 
+__all__ = [
+    "ControlNetInpaintProvider",
+    "LAYER_CONTROLNET_MAP",
+    "get_controlnet_type_for_layer",
+]
+
 # L1-L5 → ControlNet type mapping
 LAYER_CONTROLNET_MAP: dict[str, str | None] = {
     "visual_perception": "canny",       # L1: preserve edge structure

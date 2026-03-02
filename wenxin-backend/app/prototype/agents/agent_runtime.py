@@ -15,6 +15,7 @@ from __future__ import annotations
 import base64
 import json
 import logging
+import re
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -25,6 +26,12 @@ from app.prototype.agents.model_router import ModelRouter, ModelSpec
 from app.prototype.agents.tool_registry import ToolRegistry
 
 logger = logging.getLogger(__name__)
+
+__all__ = [
+    "AgentContext",
+    "AgentResult",
+    "AgentRuntime",
+]
 
 
 # ---------------------------------------------------------------------------
@@ -56,7 +63,7 @@ class AgentResult:
     """Result of an Agent evaluation for one layer."""
 
     layer_id: str
-    score: float = 0.0
+    score: float | None = None  # None = not yet scored; valid scores are [0, 1]
     confidence: float = 0.0
     rationale: str = ""
     evidence_refs: list[dict] = field(default_factory=list)
@@ -271,7 +278,7 @@ class AgentRuntime:
                     })
 
             # Phase 2: Force submission with clean context
-            if result.score == 0.0:
+            if result.score is None:
                 submit_result = await self._force_submit(
                     model_spec, ctx, collected_evidence,
                 )
@@ -292,21 +299,21 @@ class AgentRuntime:
                     return result
 
             # Max steps reached without submit_evaluation
-            if result.score == 0.0:
+            if result.score is None:
                 logger.warning(
                     "Max steps (%d) reached for %s without evaluation — fallback",
                     self._max_steps, ctx.layer_id,
                 )
                 result.fallback_used = True
             # Write back whatever result we have to LayerState
-            if result.score > 0:
+            if result.score is not None:
                 ctx.layer_state.record_score(result.score)
                 ctx.layer_state.confidence = result.confidence
                 ctx.layer_state.escalated = not result.fallback_used
                 ctx.layer_state.cost_spent_usd += result.cost_usd
 
         except Exception as exc:  # noqa: BLE001
-            logger.error("Agent runtime error for %s: %s", ctx.layer_id, exc)
+            logger.error("Agent runtime error for %s: %s", ctx.layer_id, exc, exc_info=True)
             result.fallback_used = True
 
         result.latency_ms = int((time.monotonic() - t0) * 1000)
@@ -464,8 +471,7 @@ class AgentRuntime:
         path = Path(image_url)
         if not path.is_file():
             # Try resolving relative to checkpoints
-            from pathlib import Path as _P
-            ckpt_root = _P(__file__).resolve().parent.parent / "checkpoints" / "draft"
+            ckpt_root = Path(__file__).resolve().parent.parent / "checkpoints" / "draft"
             alt = ckpt_root / image_url.lstrip("/")
             if alt.is_file():
                 path = alt
@@ -508,6 +514,15 @@ class AgentRuntime:
                 model_spec.litellm_id, tool_choice,
                 len(tools) if tools else 0, len(messages),
             )
+            # Build optional kwargs for proxy routing
+            extra_kwargs: dict = {}
+            api_base = model_spec.get_api_base()
+            api_key = model_spec.get_api_key()
+            if api_base:
+                extra_kwargs["api_base"] = api_base
+            if api_key:
+                extra_kwargs["api_key"] = api_key
+
             response = await litellm.acompletion(
                 model=model_spec.litellm_id,
                 messages=messages,
@@ -515,40 +530,42 @@ class AgentRuntime:
                 tool_choice=tool_choice if tools else None,
                 max_tokens=model_spec.max_tokens,
                 temperature=model_spec.temperature,
+                **extra_kwargs,
             )
-            if response and response.choices:
-                choice = response.choices[0]
-                has_tc = bool(choice.message.tool_calls)
-                logger.debug(
-                    "LLM response: finish=%s, has_tool_calls=%s, content_len=%d",
-                    choice.finish_reason, has_tc,
-                    len(choice.message.content or ""),
-                )
-                return {
-                    "message": {
-                        "role": "assistant",
-                        "content": getattr(choice.message, "content", None),
-                        "tool_calls": [
-                            {
-                                "id": tc.id,
-                                "type": "function",
-                                "function": {
-                                    "name": tc.function.name,
-                                    "arguments": tc.function.arguments,
-                                },
-                            }
-                            for tc in (choice.message.tool_calls or [])
-                        ] if choice.message.tool_calls else None,
-                    },
-                    "finish_reason": choice.finish_reason,
-                }
+            if not (response and response.choices):
+                logger.warning("LLM returned empty response for model=%s", model_spec.litellm_id)
+                return None
+            choice = response.choices[0]
+            has_tc = bool(choice.message.tool_calls)
+            logger.debug(
+                "LLM response: finish=%s, has_tool_calls=%s, content_len=%d",
+                choice.finish_reason, has_tc,
+                len(choice.message.content or ""),
+            )
+            return {
+                "message": {
+                    "role": "assistant",
+                    "content": getattr(choice.message, "content", None),
+                    "tool_calls": [
+                        {
+                            "id": tc.id,
+                            "type": "function",
+                            "function": {
+                                "name": tc.function.name,
+                                "arguments": tc.function.arguments,
+                            },
+                        }
+                        for tc in (choice.message.tool_calls or [])
+                    ] if choice.message.tool_calls else None,
+                },
+                "finish_reason": choice.finish_reason,
+            }
         except ImportError:
             logger.warning("litellm not installed — cannot call LLM")
             return None
         except Exception as exc:  # noqa: BLE001
-            logger.error("LLM call failed: %s", exc)
+            logger.error("LLM call failed: %s", exc, exc_info=True)
             return None
-        return None
 
     @staticmethod
     def _try_parse_final_answer(content: str) -> dict | None:
@@ -565,7 +582,6 @@ class AgentRuntime:
             pass
 
         # Try to find JSON in markdown code block
-        import re
         match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", content, re.DOTALL)
         if match:
             try:

@@ -105,10 +105,13 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: str = ""
     HUGGINGFACE_API_KEY: str = ""
     DEEPSEEK_API_KEY: str = ""
+    GLOBALAI_API_KEY: str = ""
+    GLOBALAI_API_BASE: str = ""
     QWEN_API_KEY: str = ""
     XAI_API_KEY: str = ""
     OPENROUTER_API_KEY: str = ""
     TOGETHER_API_KEY: str = ""
+    FAL_KEY: str = ""
     GOOGLE_API_KEY: str = ""
     
     # Langfuse Observability

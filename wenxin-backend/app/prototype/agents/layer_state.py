@@ -17,6 +17,17 @@ from enum import Enum
 
 from app.prototype.agents.critic_config import DIMENSIONS
 
+__all__ = [
+    "CrossLayerSignal",
+    "IntentCardV2",
+    "LayerID",
+    "LayerState",
+    "LocalRerunRequest",
+    "SignalType",
+    "compute_budget_allocation",
+    "init_layer_states",
+]
+
 
 # ---------------------------------------------------------------------------
 # Layer identifiers
@@ -96,6 +107,9 @@ class LayerState:
     ) -> bool:
         """Determine whether this layer should escalate to LLM evaluation."""
         if self.locked or self.escalated:
+            return False
+        # Never escalate layers that haven't been scored yet
+        if not self._score_history:
             return False
         if self.priority(weight) > tau_priority:
             return True

@@ -1,0 +1,125 @@
+{
+  "task_id": "treatment_bench-010",
+  "original_task_id": "bench-010",
+  "success": true,
+  "error": null,
+  "final_decision": "stop",
+  "best_candidate_id": null,
+  "total_latency_ms": 404349,
+  "total_rounds": 3,
+  "stages": [
+    {
+      "stage": "scout",
+      "status": "completed",
+      "latency_ms": 2983,
+      "output_summary": {
+        "sample_matches": 3,
+        "terminology_hits": 3,
+        "taboo_violations": 1,
+        "evidence_pack_anchors": 3
+      }
+    },
+    {
+      "stage": "draft",
+      "status": "completed",
+      "latency_ms": 332,
+      "output_summary": {
+        "n_candidates": 4,
+        "round": 1,
+        "model_ref": "mock-v1"
+      }
+    },
+    {
+      "stage": "critic",
+      "status": "completed",
+      "latency_ms": 129586,
+      "output_summary": {
+        "best_candidate_id": null,
+        "best_weighted_total": 0.6131343283582089,
+        "rerun_hint": [
+          "critical_interpretation"
+        ],
+        "hitl_constraints_applied": false
+      }
+    },
+    {
+      "stage": "queen",
+      "status": "completed",
+      "latency_ms": 0,
+      "output_summary": {
+        "action": "rerun",
+        "reason": "cross-layer signal: rerun ['visual_perception', 'technical_analysis']",
+        "round": 1
+      }
+    },
+    {
+      "stage": "draft",
+      "status": "completed",
+      "latency_ms": 216,
+      "output_summary": {
+        "n_candidates": 4,
+        "round": 2,
+        "model_ref": "mock-v1"
+      }
+    },
+    {
+      "stage": "critic",
+      "status": "completed",
+      "latency_ms": 141342,
+      "output_summary": {
+        "best_candidate_id": null,
+        "best_weighted_total": 0.623771600300526,
+        "rerun_hint": [
+          "critical_interpretation"
+        ],
+        "hitl_constraints_applied": false
+      }
+    },
+    {
+      "stage": "queen",
+      "status": "completed",
+      "latency_ms": 0,
+      "output_summary": {
+        "action": "rerun",
+        "reason": "cross-layer signal: rerun ['visual_perception', 'technical_analysis']",
+        "round": 2
+      }
+    },
+    {
+      "stage": "draft",
+      "status": "completed",
+      "latency_ms": 217,
+      "output_summary": {
+        "n_candidates": 4,
+        "round": 3,
+        "model_ref": "mock-v1"
+      }
+    },
+    {
+      "stage": "critic",
+      "status": "completed",
+      "latency_ms": 129316,
+      "output_summary": {
+        "best_candidate_id": null,
+        "best_weighted_total": 0.6263842662632375,
+        "rerun_hint": [
+          "critical_interpretation"
+        ],
+        "hitl_constraints_applied": false
+      }
+    },
+    {
+      "stage": "queen",
+      "status": "completed",
+      "latency_ms": 0,
+      "output_summary": {
+        "action": "stop",
+        "reason": "max rounds reached: 3 >= 3",
+        "round": 3
+      }
+    }
+  ],
+  "seed": 1182316226,
+  "group": "treatment",
+  "run_latency_ms": 404448
+}

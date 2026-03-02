@@ -1,0 +1,57 @@
+{
+  "task_id": "treatment_bench-018",
+  "original_task_id": "bench-018",
+  "success": true,
+  "error": null,
+  "final_decision": "accept",
+  "best_candidate_id": "draft-treatment_bench-018-0",
+  "total_latency_ms": 75561,
+  "total_rounds": 1,
+  "stages": [
+    {
+      "stage": "scout",
+      "status": "completed",
+      "latency_ms": 2719,
+      "output_summary": {
+        "sample_matches": 2,
+        "terminology_hits": 4,
+        "taboo_violations": 0,
+        "evidence_pack_anchors": 4
+      }
+    },
+    {
+      "stage": "draft",
+      "status": "completed",
+      "latency_ms": 368,
+      "output_summary": {
+        "n_candidates": 4,
+        "round": 1,
+        "model_ref": "mock-v1"
+      }
+    },
+    {
+      "stage": "critic",
+      "status": "completed",
+      "latency_ms": 72379,
+      "output_summary": {
+        "best_candidate_id": "draft-treatment_bench-018-0",
+        "best_weighted_total": 0.871,
+        "rerun_hint": [],
+        "hitl_constraints_applied": false
+      }
+    },
+    {
+      "stage": "queen",
+      "status": "completed",
+      "latency_ms": 0,
+      "output_summary": {
+        "action": "accept",
+        "reason": "threshold accept: weighted_total 0.8710 >= 0.8",
+        "round": 1
+      }
+    }
+  ],
+  "seed": 1189490946,
+  "group": "treatment",
+  "run_latency_ms": 75643
+}

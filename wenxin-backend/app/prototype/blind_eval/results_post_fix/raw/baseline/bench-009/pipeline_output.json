@@ -1,0 +1,57 @@
+{
+  "task_id": "baseline_bench-009",
+  "original_task_id": "bench-009",
+  "success": true,
+  "error": null,
+  "final_decision": "accept",
+  "best_candidate_id": "draft-baseline_bench-009-0",
+  "total_latency_ms": 1933,
+  "total_rounds": 1,
+  "stages": [
+    {
+      "stage": "scout",
+      "status": "completed",
+      "latency_ms": 1725,
+      "output_summary": {
+        "sample_matches": 3,
+        "terminology_hits": 6,
+        "taboo_violations": 0,
+        "evidence_pack_anchors": 6
+      }
+    },
+    {
+      "stage": "draft",
+      "status": "completed",
+      "latency_ms": 153,
+      "output_summary": {
+        "n_candidates": 4,
+        "round": 1,
+        "model_ref": "mock-v1"
+      }
+    },
+    {
+      "stage": "critic",
+      "status": "completed",
+      "latency_ms": 8,
+      "output_summary": {
+        "best_candidate_id": "draft-baseline_bench-009-0",
+        "best_weighted_total": 0.9475,
+        "rerun_hint": [],
+        "hitl_constraints_applied": false
+      }
+    },
+    {
+      "stage": "queen",
+      "status": "completed",
+      "latency_ms": 0,
+      "output_summary": {
+        "action": "accept",
+        "reason": "early stop: weighted_total 0.9475 >= 0.93",
+        "round": 1
+      }
+    }
+  ],
+  "seed": 1090696668,
+  "group": "baseline",
+  "run_latency_ms": 1962
+}

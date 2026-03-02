@@ -38,6 +38,11 @@ from app.prototype.agents.trajectory_rag import TrajectoryRAGService
 
 logger = logging.getLogger(__name__)
 
+__all__ = [
+    "QueenLLMAgent",
+    "QueenLLMConfig",
+]
+
 
 @dataclass
 class QueenLLMConfig:
@@ -63,47 +68,34 @@ class QueenLLMConfig:
         }
 
 
-# Hard guardrails that override LLM recommendations
-_HARD_ACTIONS = {"stop", "downgrade"}
-
-
 def _try_llm_call(model: str, messages: list[dict], temperature: float, max_tokens: int) -> str | None:
-    """Attempt an LLM call via multiple providers. Returns response text or None."""
-    # Try DeepSeek (primary)
-    api_key = os.environ.get("DEEPSEEK_API_KEY", "")
-    if api_key and model.startswith("deepseek"):
-        try:
-            import httpx
-            resp = httpx.post(
-                "https://api.deepseek.com/v1/chat/completions",
-                headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-                json={"model": model, "messages": messages, "temperature": temperature, "max_tokens": max_tokens},
-                timeout=30.0,
-            )
-            if resp.status_code == 200:
-                data = resp.json()
-                return data["choices"][0]["message"]["content"]
-            logger.warning("DeepSeek API error: %d %s", resp.status_code, resp.text[:200])
-        except Exception as exc:
-            logger.warning("DeepSeek call failed: %s", exc)
+    """Attempt an LLM call via globalai.vip proxy. Returns response text or None."""
+    # globalai.vip unified proxy — supports DeepSeek, Gemini, GPT, etc.
+    api_key = (
+        os.environ.get("GLOBALAI_API_KEY")
+        or os.environ.get("DEEPSEEK_API_KEY")
+        or ""
+    )
+    if not api_key:
+        logger.warning("No API key found (GLOBALAI_API_KEY / DEEPSEEK_API_KEY)")
+        return None
 
-    # Try OpenAI-compatible (fallback)
-    api_key = os.environ.get("OPENAI_API_KEY", "")
-    if api_key:
-        try:
-            import httpx
-            resp = httpx.post(
-                "https://api.openai.com/v1/chat/completions",
-                headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-                json={"model": "gpt-4o-mini", "messages": messages, "temperature": temperature, "max_tokens": max_tokens},
-                timeout=30.0,
-            )
-            if resp.status_code == 200:
-                data = resp.json()
-                return data["choices"][0]["message"]["content"]
-            logger.warning("OpenAI API error: %d %s", resp.status_code, resp.text[:200])
-        except Exception as exc:
-            logger.warning("OpenAI call failed: %s", exc)
+    api_base = os.environ.get("GLOBALAI_API_BASE", "https://globalai.vip/v1")
+
+    try:
+        import httpx
+        resp = httpx.post(
+            f"{api_base}/chat/completions",
+            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+            json={"model": model, "messages": messages, "temperature": temperature, "max_tokens": max_tokens},
+            timeout=30.0,
+        )
+        if resp.status_code == 200:
+            data = resp.json()
+            return data["choices"][0]["message"]["content"]
+        logger.warning("LLM API error (%s): %d %s", model, resp.status_code, resp.text[:200])
+    except Exception as exc:
+        logger.warning("LLM call failed (%s): %s", model, exc)
 
     return None
 
@@ -264,7 +256,6 @@ class QueenLLMAgent:
             subject = plan_state.task_id
 
         examples_prompt = ""
-        patterns_dict = {}
         if lcfg.enable_rag and self._rag.available:
             similar, patterns = self._rag.retrieve(
                 subject=subject,
@@ -273,7 +264,6 @@ class QueenLLMAgent:
                 top_k=lcfg.top_k_trajectories,
             )
             examples_prompt = self._rag.build_examples_prompt(similar, patterns)
-            patterns_dict = patterns.to_dict()
 
         # Build prompt
         prompt = self._build_prompt(
@@ -316,17 +306,15 @@ class QueenLLMAgent:
     def _system_prompt(self) -> str:
         return (
             "You are the Queen decision agent in the VULCA art evaluation pipeline. "
-            "Your job is to decide whether to ACCEPT the current best candidate, "
-            "RERUN specific dimensions for improvement, or STOP if further rounds "
-            "won't help.\n\n"
+            "Your job is to decide whether to ACCEPT the current best candidate or "
+            "RERUN specific dimensions for improvement.\n\n"
             "Rules:\n"
-            "- ACCEPT: The candidate quality is sufficient (score >= 0.6 with gate passed)\n"
-            "- RERUN: Specific L1-L5 dimensions need improvement and another round would help\n"
-            "- STOP: Further rounds are unlikely to improve the result significantly\n\n"
+            "- ACCEPT: The candidate quality is sufficient, or further rounds are unlikely to help\n"
+            "- RERUN: Specific L1-L5 dimensions need improvement and another round would help\n\n"
             "Available dimensions: visual_perception, technical_analysis, cultural_context, "
             "critical_interpretation, philosophical_aesthetic\n\n"
             "Respond with a JSON object:\n"
-            '{"action": "accept|rerun|stop", "rerun_dimensions": [...], '
+            '{"action": "accept|rerun", "rerun_dimensions": [...], '
             '"confidence": 0.0-1.0, "reason": "brief explanation"}'
         )
 
@@ -408,9 +396,11 @@ class QueenLLMAgent:
                 text = text.strip()
 
             data = json.loads(text)
-            action = data.get("action", "stop")
-            if action not in ("accept", "rerun", "stop"):
-                action = "stop"
+            action = data.get("action", "accept")
+            if action not in ("accept", "rerun"):
+                # LLM "stop"/"downgrade" are not allowed — fall back to accept
+                # to avoid premature pipeline termination bypassing threshold logic
+                action = "accept"
 
             rerun_dims = data.get("rerun_dimensions", [])
             valid_dims = {
@@ -428,7 +418,7 @@ class QueenLLMAgent:
 
             reason = data.get("reason", "LLM decision")
 
-            all_dims = list(valid_dims)
+            all_dims = sorted(valid_dims)
             preserve = [d for d in all_dims if d not in rerun_dims]
 
             return QueenDecision(

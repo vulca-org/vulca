@@ -9,6 +9,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+__all__ = [
+    "FixItem",
+    "FixItPlan",
+]
+
 
 @dataclass
 class FixItem:
@@ -17,9 +22,10 @@ class FixItem:
     target_layer: str  # e.g. "L2", "L3"
     issue: str  # what's wrong
     prompt_delta: str  # what to add/change in the prompt
-    mask_region_hint: str  # e.g. "foreground", "upper_third", "centre"
+    mask_region_hint: str  # "full"(L1), "centre"(L2), "foreground"(L3), "upper"(L4), "diffuse"(L5)
     reference_suggestion: str  # optional reference for improvement
     priority: int  # 1=highest
+    strength: float = 1.0  # mask opacity [0.0, 1.0] for this layer
 
     def to_dict(self) -> dict:
         return {
@@ -29,6 +35,7 @@ class FixItem:
             "mask_region_hint": self.mask_region_hint,
             "reference_suggestion": self.reference_suggestion,
             "priority": self.priority,
+            "strength": round(self.strength, 2),
         }
 
     @classmethod
@@ -40,6 +47,7 @@ class FixItem:
             mask_region_hint=d.get("mask_region_hint", ""),
             reference_suggestion=d.get("reference_suggestion", ""),
             priority=d.get("priority", 5),
+            strength=d.get("strength", 1.0),
         )
 
 

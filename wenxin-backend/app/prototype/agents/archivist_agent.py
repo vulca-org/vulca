@@ -15,6 +15,10 @@ from pathlib import Path
 
 from app.prototype.agents.archivist_types import ArchivistInput, ArchivistOutput
 
+__all__ = [
+    "ArchivistAgent",
+]
+
 _ARCHIVE_ROOT = Path(__file__).resolve().parent.parent / "checkpoints" / "archive"
 _SAFE_RE = re.compile(r"[^A-Za-z0-9._-]+")
 

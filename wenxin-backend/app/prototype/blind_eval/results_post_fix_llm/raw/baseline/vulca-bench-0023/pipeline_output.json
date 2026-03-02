@@ -1,0 +1,57 @@
+{
+  "task_id": "baseline_vulca-bench-0023",
+  "original_task_id": "vulca-bench-0023",
+  "success": true,
+  "error": null,
+  "final_decision": "accept",
+  "best_candidate_id": "draft-baseline_vulca-bench-0023-0",
+  "total_latency_ms": 2964,
+  "total_rounds": 1,
+  "stages": [
+    {
+      "stage": "scout",
+      "status": "completed",
+      "latency_ms": 2649,
+      "output_summary": {
+        "sample_matches": 3,
+        "terminology_hits": 5,
+        "taboo_violations": 0,
+        "evidence_pack_anchors": 5
+      }
+    },
+    {
+      "stage": "draft",
+      "status": "completed",
+      "latency_ms": 232,
+      "output_summary": {
+        "n_candidates": 4,
+        "round": 1,
+        "model_ref": "mock-v1"
+      }
+    },
+    {
+      "stage": "critic",
+      "status": "completed",
+      "latency_ms": 13,
+      "output_summary": {
+        "best_candidate_id": "draft-baseline_vulca-bench-0023-0",
+        "best_weighted_total": 0.9625,
+        "rerun_hint": [],
+        "hitl_constraints_applied": false
+      }
+    },
+    {
+      "stage": "queen",
+      "status": "completed",
+      "latency_ms": 0,
+      "output_summary": {
+        "action": "accept",
+        "reason": "early stop: weighted_total 0.9625 >= 0.93",
+        "round": 1
+      }
+    }
+  ],
+  "seed": 390470062,
+  "group": "baseline",
+  "run_latency_ms": 3021
+}

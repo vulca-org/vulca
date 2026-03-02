@@ -171,11 +171,15 @@ with tempfile.TemporaryDirectory() as tmpdir:
     LEAK_RE = re.compile(
         r"(CriticLLM|agent_critic|enable_agent|rule_only|baseline|treatment|ablation"
         r"|enable_evidence_loop|enable_fix_it_plan|FixItPlan|NeedMoreEvidence"
-        r"|agent=|rule=|hybrid|v2\.6)",
+        r"|agent=|rule=|hybrid|v2\.6|merged=)",
         re.IGNORECASE,
     )
+    REDACTED_RE = re.compile(r"\[REDACTED\]")
+    RATIONALE_LEAK_RE = re.compile(r"\*\*\w+\*\*\s*\(score:\s*[\d.]+\):\s*\S")
 
     leak_found = False
+    redacted_found = False
+    rationale_leak_found = False
     for task in subset_tasks:
         tid = task.task_id
         for label in ["A.md", "B.md"]:
@@ -186,9 +190,15 @@ with tempfile.TemporaryDirectory() as tmpdir:
                 if matches:
                     leak_found = True
                     check(f"No leaks in {tid}/{label}", False, f"found: {matches}")
+                if REDACTED_RE.search(content):
+                    redacted_found = True
+                if RATIONALE_LEAK_RE.search(content):
+                    rationale_leak_found = True
 
     if not leak_found:
         check("No leak patterns in any E2 outputs", True)
+    check("No [REDACTED] residue in E2 outputs", not redacted_found)
+    check("No rationale leak after dimension scores", not rationale_leak_found)
 
     # =========================================================================
     # 6. Annotation template CSV format
@@ -231,6 +241,9 @@ with tempfile.TemporaryDirectory() as tmpdir:
         _cohens_kappa,
         _pearson_correlation,
         _bootstrap_ci,
+        _rank_data,
+        _spearman_correlation,
+        compute_system_human_spearman,
     )
 
     # Create simulated E1 annotations
@@ -266,6 +279,24 @@ with tempfile.TemporaryDirectory() as tmpdir:
 
     r0 = _pearson_correlation([1, 2, 3], [3, 2, 1])
     check("Pearson negative correlation", r0 < 0, f"r={r0}")
+
+    # Spearman correlation tests
+    rho_perfect = _spearman_correlation([1, 2, 3, 4, 5], [1, 2, 3, 4, 5])
+    check("Spearman perfect correlation", abs(rho_perfect - 1.0) < 0.001, f"rho={rho_perfect}")
+
+    rho_inverse = _spearman_correlation([1, 2, 3, 4, 5], [5, 4, 3, 2, 1])
+    check("Spearman inverse correlation", abs(rho_inverse - (-1.0)) < 0.001, f"rho={rho_inverse}")
+
+    rho_ties = _spearman_correlation([1, 2, 2, 4], [1, 3, 3, 4])
+    check("Spearman with ties computable", -1.0 - 1e-9 <= rho_ties <= 1.0 + 1e-9, f"rho={rho_ties}")
+
+    # Rank data tests
+    ranks = _rank_data([10, 30, 20, 20])
+    check("Rank data handles ties", ranks == [1.0, 4.0, 2.5, 2.5], f"ranks={ranks}")
+
+    # compute_system_human_spearman wrapper
+    rho_wrap = compute_system_human_spearman([1, 2, 3], [1, 2, 3])
+    check("compute_system_human_spearman works", abs(rho_wrap - 1.0) < 0.001, f"rho={rho_wrap}")
 
     # Generate report
     report = generate_report(results_dir, e1_annotations=sim_e1_path)

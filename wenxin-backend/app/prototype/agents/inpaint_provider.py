@@ -12,14 +12,19 @@ Usage flow:
 
 from __future__ import annotations
 
-import struct
-import time
-import zlib
 from abc import ABC, abstractmethod
-from datetime import datetime, timezone
 from pathlib import Path
 
 from PIL import Image
+
+__all__ = [
+    "AbstractInpaintProvider",
+    "ControlNetInpaintProviderAdapter",
+    "DiffusersInpaintProvider",
+    "MaskGenerator",
+    "MockInpaintProvider",
+    "get_inpaint_provider",
+]
 
 
 class AbstractInpaintProvider(ABC):
@@ -94,7 +99,8 @@ class MockInpaintProvider(AbstractInpaintProvider):
         steps: int,
         output_path: str,
     ) -> str:
-        base = Image.open(base_image_path).convert("RGB")
+        with Image.open(base_image_path) as raw:
+            base = raw.convert("RGB")
 
         # Resize mask to match base image
         mask = mask_image.convert("L").resize(base.size)
@@ -134,7 +140,7 @@ class DiffusersInpaintProvider(AbstractInpaintProvider):
 
     def __init__(
         self,
-        model_id: str = "runwayml/stable-diffusion-v1-5",
+        model_id: str = "runwayml/stable-diffusion-inpainting",
         device: str = "auto",
     ) -> None:
         self._model_id = model_id
@@ -229,13 +235,19 @@ class MaskGenerator:
     typically manifest in different spatial regions.
     """
 
-    # Dimension → mask strategy mapping
+    # Dimension → mask strategy mapping (accepts both dimension names and L-labels)
     _STRATEGIES: dict[str, str] = {
         "visual_perception": "full",
         "technical_analysis": "centre",
         "cultural_context": "foreground",
         "critical_interpretation": "upper",
         "philosophical_aesthetic": "diffuse",
+        # L-label aliases (FixItPlan uses "L1"-"L5" format)
+        "L1": "full",
+        "L2": "centre",
+        "L3": "foreground",
+        "L4": "upper",
+        "L5": "diffuse",
     }
 
     def generate(
@@ -244,6 +256,7 @@ class MaskGenerator:
         image_width: int = 512,
         image_height: int = 512,
         mask_specs: list[dict] | None = None,
+        preserve_layers: list[str] | None = None,
     ) -> Image.Image:
         """Generate a composite mask for the target layers.
 
@@ -255,6 +268,8 @@ class MaskGenerator:
             Output mask dimensions.
         mask_specs : list[dict], optional
             Override masks with explicit specs: [{layer, strength, region}].
+        preserve_layers : list[str], optional
+            Layers to exclude from the mask (keep unchanged during inpainting).
 
         Returns
         -------
@@ -262,8 +277,12 @@ class MaskGenerator:
             Binary mask — white=repaint, black=preserve. Mode "L".
         """
         mask = Image.new("L", (image_width, image_height), 0)
+        _preserve = set(preserve_layers or [])
 
         for layer_id in target_layers:
+            if layer_id in _preserve:
+                continue
+
             strategy = self._STRATEGIES.get(layer_id, "centre")
             strength = 1.0
 
@@ -274,6 +293,7 @@ class MaskGenerator:
                         strength = spec.get("strength", 1.0)
                         if "region" in spec:
                             strategy = spec["region"]
+                        break
 
             layer_mask = self._generate_strategy_mask(
                 strategy, image_width, image_height, strength,
@@ -392,6 +412,7 @@ def get_inpaint_provider(name: str) -> AbstractInpaintProvider:
 
 def _max_images(a: Image.Image, b: Image.Image) -> Image.Image:
     """Element-wise max of two L-mode images (union of masks)."""
+    assert a.size == b.size, f"Mask size mismatch: {a.size} != {b.size}"
     a_data = a.tobytes()
     b_data = b.tobytes()
     merged = bytes(max(x, y) for x, y in zip(a_data, b_data))

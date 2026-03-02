@@ -3,13 +3,16 @@
 from __future__ import annotations
 
 import json
-import re
+import logging
 from pathlib import Path
 
 from app.prototype.agents.draft_types import DraftOutput
+from app.prototype.checkpoints.utils import atomic_write as _atomic_write
+from app.prototype.checkpoints.utils import safe_task_id as _safe_task_dirname
+
+logger = logging.getLogger(__name__)
 
 _CHECKPOINT_ROOT = Path(__file__).resolve().parent / "draft"
-_SAFE_TASK_ID_RE = re.compile(r"[^A-Za-z0-9._-]+")
 
 
 def save_draft_checkpoint(output: DraftOutput) -> str:
@@ -38,7 +41,7 @@ def save_draft_checkpoint(output: DraftOutput) -> str:
         "success": output.success,
         "error": output.error,
     }
-    run_path.write_text(json.dumps(run_data, indent=2, ensure_ascii=False), encoding="utf-8")
+    _atomic_write(run_path, json.dumps(run_data, indent=2, ensure_ascii=False))
     return str(run_path)
 
 
@@ -47,7 +50,11 @@ def load_draft_checkpoint(task_id: str) -> dict | None:
     run_path = _CHECKPOINT_ROOT / _safe_task_dirname(task_id) / "run.json"
     if not run_path.exists():
         return None
-    return json.loads(run_path.read_text(encoding="utf-8"))
+    try:
+        return json.loads(run_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError) as exc:
+        logger.warning("Corrupted draft checkpoint %s: %s", run_path, exc)
+        return None
 
 
 def _extract_config(output: DraftOutput) -> dict:
@@ -64,6 +71,3 @@ def _extract_config(output: DraftOutput) -> dict:
     }
 
 
-def _safe_task_dirname(task_id: str) -> str:
-    cleaned = _SAFE_TASK_ID_RE.sub("_", task_id).strip("._")
-    return cleaned or "task"

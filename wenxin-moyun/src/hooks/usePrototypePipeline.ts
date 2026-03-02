@@ -57,7 +57,52 @@ export interface QueenDecision {
   action: string;
   reason: string;
   rerun_dimensions: string[];
+  preserve_dimensions: string[];
   round: number;
+  budget_state: BudgetState | null;
+}
+
+export interface BudgetState {
+  rounds_used: number;
+  max_rounds: number;
+  total_cost_usd: number;
+  candidates_generated: number;
+}
+
+export interface CrossLayerSignal {
+  source_layer: string;
+  target_layer: string;
+  signal_type: string;
+  message: string;
+  strength: number;
+}
+
+export interface FixItPlanItem {
+  target_layer: string;
+  issue: string;
+  prompt_delta: string;
+  mask_region_hint: string;
+  reference_suggestion: string;
+  priority: number;
+}
+
+export interface FixItPlan {
+  overall_strategy: string;
+  items: FixItPlanItem[];
+  estimated_improvement: number;
+  source_scores: Record<string, number>;
+}
+
+export interface RoundData {
+  round: number;
+  candidates: DraftCandidate[];
+  scoredCandidates: ScoredCandidate[];
+  bestCandidateId: string | null;
+  weightedTotal: number | null;
+  decision: QueenDecision | null;
+  dynamicWeights: Record<string, number> | null;
+  crossLayerSignals: CrossLayerSignal[] | null;
+  fixItPlan: FixItPlan | null;
 }
 
 export interface HitlConstraints {
@@ -85,9 +130,16 @@ export interface PipelineState {
   scoredCandidates: ScoredCandidate[];
   bestCandidateId: string | null;
   hitlConstraints: HitlConstraints | null;
+  dynamicWeights: Record<string, number> | null;
+  crossLayerSignals: CrossLayerSignal[] | null;
+  fixItPlan: FixItPlan | null;
+  agentMode: string | null;  // 'rule_only' | 'agent_llm' | 'agent_fallback_rules'
 
   // Queen
   decision: QueenDecision | null;
+
+  // Round-by-round history
+  rounds: RoundData[];
 
   // Final
   finalDecision: string | null;
@@ -108,7 +160,12 @@ const INITIAL_STATE: PipelineState = {
   scoredCandidates: [],
   bestCandidateId: null,
   hitlConstraints: null,
+  dynamicWeights: null,
+  crossLayerSignals: null,
+  fixItPlan: null,
+  agentMode: null,
   decision: null,
+  rounds: [],
   finalDecision: null,
   totalCostUsd: 0,
   totalRounds: 0,
@@ -123,6 +180,7 @@ interface CreateRunParams {
   n_candidates?: number;
   max_rounds?: number;
   enable_hitl?: boolean;
+  enable_agent_critic?: boolean;
 }
 
 export function usePrototypePipeline() {
@@ -152,6 +210,10 @@ export function usePrototypePipeline() {
             update.evidence = (payload.evidence as Record<string, unknown>) || null;
           } else if (stage === 'draft') {
             update.candidates = (payload.candidates as DraftCandidate[]) || [];
+          } else if (stage === 'draft_refine') {
+            // Local inpainting produced refined candidates — update gallery
+            update.candidates = (payload.candidates as DraftCandidate[]) || [];
+            update.currentStage = 'draft_refine';
           } else if (stage === 'critic') {
             const critique = payload.critique as Record<string, unknown> | undefined;
             if (critique) {
@@ -170,17 +232,44 @@ export function usePrototypePipeline() {
             } else {
               update.hitlConstraints = null;
             }
+            // Phase 2 enhanced fields
+            update.dynamicWeights = (payload.dynamic_weights as Record<string, number>) || null;
+            update.crossLayerSignals = (payload.cross_layer_signals as CrossLayerSignal[]) || null;
+            update.fixItPlan = (payload.fix_it_plan as FixItPlan) || null;
+            update.agentMode = (payload.agent_mode as string) || null;
           }
           break;
 
-        case 'decision_made':
-          update.decision = {
+        case 'decision_made': {
+          const budgetRaw = payload.budget_state as BudgetState | undefined;
+          const newDecision: QueenDecision = {
             action: payload.action as string,
             reason: payload.reason as string,
             rerun_dimensions: (payload.rerun_dimensions as string[]) || [],
+            preserve_dimensions: (payload.preserve_dimensions as string[]) || [],
             round: payload.round as number,
+            budget_state: budgetRaw || null,
           };
+          update.decision = newDecision;
+
+          // Build round snapshot
+          const bestTotal = prev.scoredCandidates.length > 0
+            ? Math.max(...prev.scoredCandidates.map(sc => sc.weighted_total))
+            : null;
+          const roundSnapshot: RoundData = {
+            round: round_num,
+            candidates: [...prev.candidates],
+            scoredCandidates: [...prev.scoredCandidates],
+            bestCandidateId: prev.bestCandidateId,
+            weightedTotal: bestTotal,
+            decision: newDecision,
+            dynamicWeights: prev.dynamicWeights,
+            crossLayerSignals: prev.crossLayerSignals,
+            fixItPlan: prev.fixItPlan,
+          };
+          update.rounds = [...prev.rounds, roundSnapshot];
           break;
+        }
 
         case 'human_required':
           update.status = 'waiting_human';

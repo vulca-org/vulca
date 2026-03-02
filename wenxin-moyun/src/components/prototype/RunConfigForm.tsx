@@ -7,6 +7,7 @@ import { useState } from 'react';
 const TRADITIONS = [
   { value: 'chinese_xieyi', label: 'Chinese Xieyi' },
   { value: 'chinese_gongbi', label: 'Chinese Gongbi' },
+  { value: 'chinese_guohua', label: 'Chinese Guohua' },
   { value: 'western_academic', label: 'Western Academic' },
   { value: 'islamic_geometric', label: 'Islamic Geometric' },
   { value: 'watercolor', label: 'Watercolor' },
@@ -23,6 +24,7 @@ interface Props {
     n_candidates: number;
     max_rounds: number;
     enable_hitl: boolean;
+    enable_agent_critic: boolean;
   }) => void;
   disabled?: boolean;
 }
@@ -32,8 +34,9 @@ export default function RunConfigForm({ onSubmit, disabled }: Props) {
   const [tradition, setTradition] = useState('chinese_xieyi');
   const [provider, setProvider] = useState('mock');
   const [nCandidates, setNCandidates] = useState(4);
-  const [maxRounds, setMaxRounds] = useState(2);
+  const [maxRounds, setMaxRounds] = useState(3);
   const [enableHitl, setEnableHitl] = useState(false);
+  const [enableAgentCritic, setEnableAgentCritic] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,6 +48,7 @@ export default function RunConfigForm({ onSubmit, disabled }: Props) {
       n_candidates: nCandidates,
       max_rounds: maxRounds,
       enable_hitl: enableHitl,
+      enable_agent_critic: enableAgentCritic,
     });
   };
 
@@ -125,17 +129,32 @@ export default function RunConfigForm({ onSubmit, disabled }: Props) {
         </div>
       </div>
 
-      <div className="flex items-center justify-between">
-        <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-          <input
-            type="checkbox"
-            checked={enableHitl}
-            onChange={e => setEnableHitl(e.target.checked)}
-            className="rounded border-gray-300 dark:border-gray-600"
-            disabled={disabled}
-          />
-          Human-in-the-Loop (pause for review)
-        </label>
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div className="flex items-center gap-6">
+          <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+            <input
+              type="checkbox"
+              checked={enableAgentCritic}
+              onChange={e => setEnableAgentCritic(e.target.checked)}
+              className="rounded border-gray-300 dark:border-gray-600"
+              disabled={disabled}
+            />
+            <span>
+              Agent Critic (LLM)
+              <span className="ml-1 text-xs text-gray-400">uses DeepSeek for scoring + FixItPlan</span>
+            </span>
+          </label>
+          <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+            <input
+              type="checkbox"
+              checked={enableHitl}
+              onChange={e => setEnableHitl(e.target.checked)}
+              className="rounded border-gray-300 dark:border-gray-600"
+              disabled={disabled}
+            />
+            Human-in-the-Loop
+          </label>
+        </div>
 
         <button
           type="submit"

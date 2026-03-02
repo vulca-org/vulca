@@ -9,9 +9,11 @@
  * - Best candidate highlighting
  */
 
-import { useState } from 'react';
+import { useState, Fragment } from 'react';
 import type { ScoredCandidate } from '../../hooks/usePrototypePipeline';
 import CriticDetailModal from './CriticDetailModal';
+import { PROTOTYPE_DIMENSIONS, PROTOTYPE_DIM_LABELS } from '../../utils/vulca-dimensions';
+import type { PrototypeDimension } from '../../utils/vulca-dimensions';
 
 interface CrossLayerSignal {
   source_layer: string;
@@ -35,14 +37,6 @@ interface Props {
   agentMetrics?: AgentMetrics | null;
   crossLayerSignals?: CrossLayerSignal[];
 }
-
-const DIMENSION_LABELS: Record<string, { short: string; full: string; layer: string }> = {
-  visual_perception: { short: 'L1 Visual', full: 'Visual Perception', layer: 'L1' },
-  technical_analysis: { short: 'L2 Technical', full: 'Technical Analysis', layer: 'L2' },
-  cultural_context: { short: 'L3 Cultural', full: 'Cultural Context', layer: 'L3' },
-  critical_interpretation: { short: 'L4 Critical', full: 'Critical Interpretation', layer: 'L4' },
-  philosophical_aesthetic: { short: 'L5 Aesthetic', full: 'Philosophical Aesthetic', layer: 'L5' },
-};
 
 const RISK_TAG_COLORS: Record<string, string> = {
   taboo: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400',
@@ -70,7 +64,7 @@ function ScoreBar({ score }: { score: number }) {
 }
 
 function LayerProgressBar({ scores }: { scores: { dimension: string; score: number }[] }) {
-  const layers = ['visual_perception', 'technical_analysis', 'cultural_context', 'critical_interpretation', 'philosophical_aesthetic'];
+  const layers = PROTOTYPE_DIMENSIONS;
   return (
     <div className="flex gap-0.5 items-end h-6">
       {layers.map(dim => {
@@ -86,7 +80,7 @@ function LayerProgressBar({ scores }: { scores: { dimension: string; score: numb
             key={dim}
             className={`w-2 ${color} rounded-t-sm transition-all`}
             style={{ height: `${Math.max(pct, 4)}%` }}
-            title={`${DIMENSION_LABELS[dim]?.layer ?? dim}: ${score.toFixed(2)}`}
+            title={`${PROTOTYPE_DIM_LABELS[dim as PrototypeDimension]?.layer ?? dim}: ${score.toFixed(2)}`}
           />
         );
       })}
@@ -104,7 +98,7 @@ function RiskTagBadge({ tag }: { tag: string }) {
 }
 
 function RationalePanel({ rationale, dimension }: { rationale: string; dimension: string }) {
-  const info = DIMENSION_LABELS[dimension];
+  const info = PROTOTYPE_DIM_LABELS[dimension as PrototypeDimension];
   if (!rationale) return null;
 
   return (
@@ -168,7 +162,7 @@ export default function CriticScoreTable({ scoredCandidates, bestCandidateId, ag
               </th>
               {scoredCandidates[0]?.dimension_scores.map(d => (
                 <th key={d.dimension} className="text-left py-2 px-2 text-gray-500 dark:text-gray-400 font-medium text-xs">
-                  {DIMENSION_LABELS[d.dimension]?.short || d.dimension}
+                  {PROTOTYPE_DIM_LABELS[d.dimension as PrototypeDimension]?.short || d.dimension}
                 </th>
               ))}
               <th className="text-left py-2 px-2 text-gray-500 dark:text-gray-400 font-medium">Total</th>
@@ -183,9 +177,8 @@ export default function CriticScoreTable({ scoredCandidates, bestCandidateId, ag
               const risksExpanded = expandedRisks.has(sc.candidate_id);
 
               return (
-                <>
+                <Fragment key={sc.candidate_id}>
                   <tr
-                    key={sc.candidate_id}
                     className={`border-b border-gray-100 dark:border-gray-800 ${isBest ? 'bg-yellow-50 dark:bg-yellow-900/10' : ''}`}
                   >
                     <td className="py-2 px-2 font-mono text-xs">
@@ -274,7 +267,7 @@ export default function CriticScoreTable({ scoredCandidates, bestCandidateId, ag
                       </tr>
                     );
                   })}
-                </>
+                </Fragment>
               );
             })}
           </tbody>

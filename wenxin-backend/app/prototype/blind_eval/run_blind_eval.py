@@ -19,8 +19,11 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import csv
 import logging
+import shutil
 import sys
+import zipfile
 from pathlib import Path
 
 # Ensure project root is on path
@@ -40,6 +43,94 @@ logging.basicConfig(
 logger = logging.getLogger("blind_eval")
 
 _RESULTS_DIR = Path(__file__).resolve().parent / "results"
+
+
+_TEMPLATES_DIR = Path(__file__).resolve().parent / "templates"
+
+
+def _create_annotation_package(results_dir: Path) -> Path:
+    """Create a distributable zip package for raters.
+
+    Package structure:
+        vulca-blind-eval-package/
+        ├── README.md
+        ├── SCORING_RUBRIC.md
+        ├── e1/
+        │   ├── annotation.csv
+        │   └── images/{task_id}/A.png, B.png
+        ├── e2/
+        │   ├── annotation.csv
+        │   └── critiques/{task_id}/A.md, B.md
+        └── example/
+            └── filled_example.csv
+    """
+    pkg_name = "vulca-blind-eval-package"
+    zip_path = results_dir / f"{pkg_name}.zip"
+
+    e1_blind = results_dir / "blind" / "e1"
+    e2_blind = results_dir / "blind" / "e2"
+
+    with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
+        # Templates
+        for tmpl in ("README_instructions.md", "SCORING_RUBRIC.md"):
+            src = _TEMPLATES_DIR / tmpl
+            dst_name = "README.md" if "README" in tmpl else "SCORING_RUBRIC.md"
+            if src.exists():
+                zf.write(src, f"{pkg_name}/{dst_name}")
+
+        # E1 materials
+        e1_csv = e1_blind / "annotation_template.csv"
+        if e1_csv.exists():
+            zf.write(e1_csv, f"{pkg_name}/e1/annotation.csv")
+
+        e1_outputs = e1_blind / "outputs"
+        if e1_outputs.exists():
+            for task_dir in sorted(e1_outputs.iterdir()):
+                if not task_dir.is_dir():
+                    continue
+                for img in task_dir.iterdir():
+                    if img.suffix in (".png", ".jpg", ".jpeg"):
+                        zf.write(img, f"{pkg_name}/e1/images/{task_dir.name}/{img.name}")
+
+        # E2 materials
+        e2_csv = e2_blind / "annotation_template.csv"
+        if e2_csv.exists():
+            zf.write(e2_csv, f"{pkg_name}/e2/annotation.csv")
+
+        e2_outputs = e2_blind / "outputs"
+        if e2_outputs.exists():
+            for task_dir in sorted(e2_outputs.iterdir()):
+                if not task_dir.is_dir():
+                    continue
+                for md in task_dir.iterdir():
+                    if md.suffix == ".md":
+                        zf.write(md, f"{pkg_name}/e2/critiques/{task_dir.name}/{md.name}")
+
+        # Example filled CSV
+        example_rows = [
+            {
+                "task_id": "example-001",
+                "rater_id": "rater1",
+                "evidence_chain_A": "4",
+                "evidence_chain_B": "3",
+                "cross_cultural_A": "5",
+                "cross_cultural_B": "2",
+                "self_consistency_A": "4",
+                "self_consistency_B": "4",
+                "preference": "A",
+                "notes": "A provides stronger visual grounding",
+            },
+        ]
+        import io
+        buf = io.StringIO()
+        fieldnames = list(example_rows[0].keys())
+        writer = csv.DictWriter(buf, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(example_rows)
+        zf.writestr(f"{pkg_name}/example/filled_example.csv", buf.getvalue())
+
+    logger.info("Package created: %s (%.1f KB)", zip_path, zip_path.stat().st_size / 1024)
+    return zip_path
 
 
 def main() -> None:
@@ -73,6 +164,10 @@ def main() -> None:
         help="Path to E2 annotation CSV",
     )
     parser.add_argument(
+        "--package", action="store_true",
+        help="Create vulca-blind-eval-package.zip for distribution to raters",
+    )
+    parser.add_argument(
         "--results-dir", type=Path, default=_RESULTS_DIR,
         help="Results directory",
     )
@@ -95,6 +190,11 @@ def main() -> None:
             e2_annotations=args.e2_annotations,
         )
         print(report)
+        return
+
+    if args.package:
+        logger.info("=== Package Mode ===")
+        _create_annotation_package(args.results_dir)
         return
 
     # Sample tasks — use all available when tasks_subset not specified

@@ -50,6 +50,7 @@ class AnalysisReport:
     cohens_kappa: float = 0.0
     pearson_correlations: dict[str, float] = field(default_factory=dict)
     cost_efficiency: dict[str, float] = field(default_factory=dict)
+    # spearman_rho removed — placeholder was never wired to real pipeline output
 
 
 def _bootstrap_ci(
@@ -118,6 +119,10 @@ def _pearson_correlation(x: list[float], y: list[float]) -> float:
 
     cov = sum((xi - mx) * (yi - my) for xi, yi in zip(x, y)) / (n - 1)
     return cov / (sx * sy)
+
+
+## _rank_data, _spearman_correlation, compute_system_human_spearman removed
+## (dead code — Spearman was never wired to real pipeline output)
 
 
 def _load_annotations(csv_path: Path) -> list[dict]:
@@ -392,6 +397,16 @@ def generate_report(
                     f"{t_mean - b_mean:+.2f} |"
                 )
             lines.append("")
+
+    # System-Human Spearman correlation (not yet wired — future work)
+    if e2_annotations and e2_annotations.exists():
+        lines.extend([
+            "## System-Human Agreement",
+            "",
+            "- Spearman rho: N/A (system scores not yet wired to pipeline output)",
+            "- Gate: **SKIP**",
+            "",
+        ])
 
     # Cost analysis from raw outputs
     lines.extend(_cost_analysis(results_dir))

@@ -9,8 +9,10 @@ Endpoints:
 
 from __future__ import annotations
 
+import asyncio
 import json
 import os
+import threading
 import time
 import uuid
 from threading import Thread
@@ -40,10 +42,31 @@ _orchestrators: dict[str, PipelineOrchestrator] = {}
 _run_metadata: dict[str, dict] = {}   # task_id -> {subject, tradition, created_at, ...}
 _event_buffers: dict[str, list[PipelineEvent]] = {}
 _idempotency_map: dict[str, str] = {}  # idempotency_key -> task_id
+_buffer_lock = threading.Lock()  # Protects _event_buffers writes/reads
 
 # Guest rate limit (simple counter)
 _guest_runs_today: dict[str, int] = {}  # date_str -> count
 _GUEST_DAILY_LIMIT = 50
+_TASK_RETENTION_SEC = 3600  # 1 hour TTL for completed runs
+
+
+def _cleanup_expired_runs() -> None:
+    """Remove completed runs older than retention period to prevent memory leak."""
+    now = time.time()
+    expired = [
+        tid for tid, meta in _run_metadata.items()
+        if now - meta.get("created_at", now) > _TASK_RETENTION_SEC
+        and meta.get("completed", False)
+    ]
+    # Also clean stale idempotency entries pointing to expired tasks
+    stale_idem = [k for k, v in _idempotency_map.items() if v in expired]
+    for k in stale_idem:
+        _idempotency_map.pop(k, None)
+    for tid in expired:
+        _orchestrators.pop(tid, None)
+        _run_metadata.pop(tid, None)
+        with _buffer_lock:
+            _event_buffers.pop(tid, None)
 
 
 @router.post("/runs")
@@ -80,6 +103,8 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
         queen_config=q_cfg,
         enable_hitl=req.enable_hitl,
         enable_archivist=True,
+        enable_agent_critic=req.enable_agent_critic,
+        enable_fix_it_plan=req.enable_agent_critic,
     )
     _orchestrators[task_id] = orchestrator
     _run_metadata[task_id] = {
@@ -88,7 +113,8 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
         "provider": req.provider,
         "created_at": time.time(),
     }
-    _event_buffers[task_id] = []
+    with _buffer_lock:
+        _event_buffers[task_id] = []
 
     if req.idempotency_key:
         _idempotency_map[req.idempotency_key] = task_id
@@ -100,7 +126,13 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
 
     def _run_in_background() -> None:
         for event in orchestrator.run_stream(pipeline_input):
-            _event_buffers.setdefault(task_id, []).append(event)
+            with _buffer_lock:
+                _event_buffers.setdefault(task_id, []).append(event)
+        # Mark this run as completed so cleanup won't remove it prematurely
+        if task_id in _run_metadata:
+            _run_metadata[task_id]["completed"] = True
+        # Cleanup expired runs after pipeline completes
+        _cleanup_expired_runs()
 
     thread = Thread(target=_run_in_background, daemon=True)
     thread.start()
@@ -129,7 +161,8 @@ async def stream_events(task_id: str) -> StreamingResponse:
         start = time.monotonic()
 
         while time.monotonic() - start < max_wait:
-            buffer = _event_buffers.get(task_id, [])
+            with _buffer_lock:
+                buffer = list(_event_buffers.get(task_id, []))
             while seen < len(buffer):
                 event = buffer[seen]
                 seen += 1
@@ -140,7 +173,6 @@ async def stream_events(task_id: str) -> StreamingResponse:
                     return
 
             # Brief async sleep
-            import asyncio
             await asyncio.sleep(0.1)
 
         yield f"data: {json.dumps({'event_type': 'timeout', 'payload': {}})}\n\n"
@@ -163,9 +195,7 @@ async def submit_action(task_id: str, req: SubmitActionRequest) -> SubmitActionR
     if orchestrator is None:
         raise HTTPException(404, f"Run {task_id} not found")
 
-    valid_actions = {"approve", "reject", "rerun", "lock_dimensions", "force_accept"}
-    if req.action not in valid_actions:
-        raise HTTPException(400, f"Invalid action: {req.action}. Must be one of {valid_actions}")
+    # Action validation handled by Pydantic Literal in SubmitActionRequest
     if req.action == "force_accept" and not req.candidate_id:
         raise HTTPException(400, "candidate_id is required for force_accept")
 
@@ -190,14 +220,14 @@ async def submit_action(task_id: str, req: SubmitActionRequest) -> SubmitActionR
 def _build_status_response(task_id: str) -> RunStatusResponse:
     """Build status response from orchestrator state and checkpoints."""
     orchestrator = _orchestrators.get(task_id)
-    meta = _run_metadata.get(task_id, {})
 
     # Try to get from orchestrator run state
     if orchestrator:
         run_state = orchestrator.get_run_state(task_id)
         if run_state:
             # Check event buffer for completion
-            buffer = _event_buffers.get(task_id, [])
+            with _buffer_lock:
+                buffer = list(_event_buffers.get(task_id, []))
             completion_event = None
             for ev in reversed(buffer):
                 if ev.event_type in (EventType.PIPELINE_COMPLETED, EventType.PIPELINE_FAILED):

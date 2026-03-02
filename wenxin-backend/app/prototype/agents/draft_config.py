@@ -4,6 +4,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+__all__ = [
+    "DraftConfig",
+]
+
 
 @dataclass
 class DraftConfig:
@@ -36,6 +40,12 @@ class DraftConfig:
     # ControlNet (Draft-Refine)
     controlnet_enabled: bool = False
     controlnet_type: str = "canny"  # "canny" | "depth"
+
+    # NB2 full evidence injection
+    # When True, DraftAgent passes the complete EvidencePack to build_full_evidence_prompt()
+    # instead of compressing to a 512-token FLUX-compatible prompt.
+    # Only effective when provider="nb2"; ignored for FLUX/SD providers.
+    enable_full_evidence_injection: bool = False
 
     def __post_init__(self) -> None:
         self._apply_guardrails()
@@ -81,6 +91,11 @@ class DraftConfig:
             "provider": self.provider,
             "api_key": "***" if self.api_key else "",
             "provider_model": self.provider_model,
+            "ip_adapter_enabled": self.ip_adapter_enabled,
+            "ip_adapter_scale": self.ip_adapter_scale,
+            "controlnet_enabled": self.controlnet_enabled,
+            "controlnet_type": self.controlnet_type,
+            "enable_full_evidence_injection": self.enable_full_evidence_injection,
         }
 
 

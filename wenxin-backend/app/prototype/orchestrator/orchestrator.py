@@ -6,6 +6,8 @@ Supports both synchronous and streaming (generator) modes.
 
 from __future__ import annotations
 
+import dataclasses
+import logging
 import time
 from collections.abc import Iterator
 from datetime import datetime, timezone
@@ -39,6 +41,7 @@ from app.prototype.pipeline.pipeline_types import (
 )
 from app.prototype.cultural_pipelines.dynamic_weights import compute_dynamic_weights
 from app.prototype.cultural_pipelines.pipeline_router import CulturalPipelineRouter
+from app.prototype.agents.prompt_enhancer import PromptEnhancer
 from app.prototype.tools.scout_service import ScoutService
 from app.prototype.trajectory.trajectory_recorder import TrajectoryRecorder
 from app.prototype.trajectory.trajectory_types import (
@@ -48,9 +51,13 @@ from app.prototype.trajectory.trajectory_types import (
     PromptTrace,
 )
 
+logger = logging.getLogger(__name__)
+
 # Cost per image for real providers
 _COST_PER_IMAGE: dict[str, float] = {
-    "together_flux": 0.003,
+    "together_flux": 0.003,  # FLUX.1 Schnell default
+    "together_flux_dev": 0.025,  # FLUX.1 Dev (higher quality)
+    "nb2": 0.067,  # Gemini 3.1 Flash image generation (~1K input tokens)
     "mock": 0.0,
 }
 
@@ -87,6 +94,7 @@ class PipelineOrchestrator:
         enable_evidence_loop: bool = True,
         enable_fix_it_plan: bool = True,
         enable_llm_queen: bool = False,
+        enable_prompt_enhancer: bool = False,
     ) -> None:
         self.d_cfg = draft_config or DraftConfig(provider="mock", n_candidates=4, seed_base=42)
         self.cr_cfg = critic_config or CriticConfig()
@@ -97,6 +105,7 @@ class PipelineOrchestrator:
         self.enable_evidence_loop = enable_evidence_loop
         self.enable_fix_it_plan = enable_fix_it_plan
         self.enable_llm_queen = enable_llm_queen
+        self.enable_prompt_enhancer = enable_prompt_enhancer
 
         # Lazy import to avoid circular dependency
         from app.prototype.observability.langfuse_observer import LangfuseObserver
@@ -110,8 +119,7 @@ class PipelineOrchestrator:
                 self._queen_llm = QueenLLMAgent(config=self.q_cfg)
                 self._queen_llm.build_trajectory_index()
             except Exception as exc:
-                import logging
-                logging.getLogger(__name__).warning("LLM Queen init failed, using rules: %s", exc)
+                logger.warning("LLM Queen init failed, using rules: %s", exc)
                 self._queen_llm = None
 
         # Active runs (task_id -> RunState) for HITL
@@ -175,6 +183,8 @@ class PipelineOrchestrator:
         critique_dicts: list[dict] = []
         queen_dicts: list[dict] = []
         images_generated = 0
+        total_cost = 0.0
+        cost_per_image = _COST_PER_IMAGE.get(self.d_cfg.provider, 0.0)
         provider_used = self.d_cfg.provider
 
         # Resume support
@@ -200,7 +210,18 @@ class PipelineOrchestrator:
             # ==== SCOUT ====
             if resume_from and resume_from in _STAGE_ORDER and _STAGE_ORDER.index(resume_from) > 0:
                 # Skip scout — load from checkpoint
-                evidence_dict = load_pipeline_stage(task_id, "scout")
+                evidence_dict = load_pipeline_stage(task_id, "scout") or {}
+                scout_svc = ScoutService()  # needed for supplementary evidence loop
+                # Reconstruct evidence_pack from checkpoint (E-2 fix)
+                if "evidence_pack" in evidence_dict:
+                    try:
+                        from app.prototype.tools.evidence_pack import EvidencePack
+                        evidence_pack = EvidencePack.from_dict(evidence_dict["evidence_pack"])
+                    except Exception as exc:
+                        logger.warning(
+                            "Failed to reconstruct EvidencePack from checkpoint for %s: %s",
+                            task_id, exc,
+                        )
                 stages.append(StageResult(stage="scout", status="skipped"))
             else:
                 yield self._event(EventType.STAGE_STARTED, "scout", 0, t0)
@@ -250,7 +271,12 @@ class PipelineOrchestrator:
             # ==== CULTURAL ROUTING ====
             router = CulturalPipelineRouter()
             route = router.route(pipeline_input.cultural_tradition)
-            routed_critic_cfg = route.critic_config
+            # Merge: keep caller's CriticConfig but override weights from router.
+            # This ensures all caller fields (use_vlm, thresholds, etc.) are
+            # preserved — no risk of silently losing fields added in the future.
+            routed_critic_cfg = dataclasses.replace(
+                self.cr_cfg, weights=route.critic_config.weights,
+            )
             pipeline_variant = route.variant
 
             # ==== CRITIC → QUEEN LOOP ====
@@ -261,6 +287,7 @@ class PipelineOrchestrator:
             draft_candidates: list[dict] = []
             round_num = 0
             prev_dimension_scores: dict[str, dict[str, tuple[float, str]]] = {}
+            rerun_prompt_delta: str = ""  # FixItPlan prompt enhancement for next round
 
             # Track whether first-round skip is needed
             _skip_draft_first_round = (
@@ -268,18 +295,46 @@ class PipelineOrchestrator:
                 and resume_from in _STAGE_ORDER
                 and _STAGE_ORDER.index(resume_from) > _STAGE_ORDER.index("draft")
             )
+            # R6-1: Skip Draft after successful rerun_local — the refined
+            # image is already in draft_candidates, go straight to Critic.
+            _skip_draft_after_refine = False
 
             while True:
                 round_num += 1
                 run_state.current_round = round_num
 
                 # ==== DRAFT ====
-                if _skip_draft_first_round and round_num == 1:
+                if _skip_draft_after_refine:
+                    # R6-1: After successful rerun_local, the refined image
+                    # is already in draft_candidates — skip Draft, go to Critic.
+                    stages.append(StageResult(stage="draft", status="skipped_after_refine"))
+                    _skip_draft_after_refine = False
+                    rerun_prompt_delta = ""  # Clear stale delta (already applied in rerun_local)
+                    # Record skipped draft in trajectory for completeness
+                    if draft_candidates:
+                        trajectory_recorder.record_draft(
+                            DraftPlan(
+                                prompt_trace=PromptTrace(
+                                    raw_prompt=pipeline_input.subject,
+                                    enhanced_prompt=draft_candidates[0].get("prompt", ""),
+                                    prompt_hash="",
+                                    model_ref=draft_candidates[0].get("model_ref", ""),
+                                ),
+                                provider=self.d_cfg.provider,
+                                generation_params={"reused_from_rerun_local": True},
+                                latency_ms=0,
+                                n_candidates=len(draft_candidates),
+                                success=True,
+                            ),
+                            round_num=round_num,
+                        )
+                elif _skip_draft_first_round and round_num == 1:
                     # Skip draft — load from checkpoint
                     draft_ckpt = load_pipeline_stage(task_id, "draft")
                     draft_candidates = draft_ckpt.get("candidates", []) if draft_ckpt else []
                     stages.append(StageResult(stage="draft", status="skipped"))
                     _skip_draft_first_round = False  # Only skip once
+                    rerun_prompt_delta = ""  # Defensive: clear in case of future changes
                 else:
                     yield self._event(EventType.STAGE_STARTED, "draft", round_num, t0)
                     run_state.current_stage = "draft"
@@ -296,9 +351,33 @@ class PipelineOrchestrator:
                         provider_model=self.d_cfg.provider_model,
                     )
                     draft_agent = DraftAgent(config=round_cfg)
+                    # Apply FixItPlan prompt_delta from previous round's Critic
+                    effective_subject = pipeline_input.subject
+                    if rerun_prompt_delta:
+                        effective_subject = f"{pipeline_input.subject}, {rerun_prompt_delta}"
+                        rerun_prompt_delta = ""  # consumed
+
+                    # Line D: LLM Prompt Enhancement (first round only)
+                    prompt_enhanced = False
+                    if self.enable_prompt_enhancer and round_num == 1:
+                        pre_enhance = effective_subject
+                        enhancer = PromptEnhancer(enabled=True)
+                        effective_subject = enhancer.enhance(
+                            subject=effective_subject,
+                            cultural_tradition=pipeline_input.cultural_tradition,
+                            evidence=evidence_dict,
+                        )
+                        # R8-4: Track whether enhancement actually changed the prompt
+                        # so post-hoc analysis can detect silent failures.
+                        prompt_enhanced = (effective_subject != pre_enhance)
+                        if not prompt_enhanced:
+                            logger.warning(
+                                "PromptEnhancer returned original subject for %s "
+                                "(API key missing or timeout)", task_id,
+                            )
                     draft_input = DraftInput(
                         task_id=task_id,
-                        subject=pipeline_input.subject,
+                        subject=effective_subject,
                         cultural_tradition=pipeline_input.cultural_tradition,
                         evidence=evidence_dict,
                         config=round_cfg,
@@ -320,9 +399,12 @@ class PipelineOrchestrator:
                             f"Cost gate exceeded: ${run_cost:.3f} > ${_MAX_COST_PER_RUN_USD}"
                         )
 
-                    save_pipeline_stage(task_id, "draft", {
+                    draft_ckpt_data: dict = {
                         "candidates": draft_candidates, "latency_ms": draft_ms,
-                    })
+                    }
+                    if self.enable_prompt_enhancer and round_num == 1:
+                        draft_ckpt_data["prompt_enhanced"] = prompt_enhanced
+                    save_pipeline_stage(task_id, "draft", draft_ckpt_data)
                     stages.append(StageResult(
                         stage="draft", status="completed", latency_ms=draft_ms,
                         output_summary={
@@ -366,6 +448,7 @@ class PipelineOrchestrator:
                 yield self._event(EventType.STAGE_STARTED, "critic", round_num, t0)
                 run_state.current_stage = "critic"
 
+                dyn_weights = None  # initialized before conditional assignment
                 st = time.monotonic()
                 if self.enable_agent_critic:
                     from app.prototype.agents.critic_llm import CriticLLM
@@ -380,10 +463,14 @@ class PipelineOrchestrator:
                     candidates=draft_candidates,
                 )
                 critique_output = critic.run(critique_input)
-                # Propagate cross-layer signals to plan_state (for Queen)
+                # R7-2: Replace (not extend) cross_layer_signals each round
+                # to prevent stale signals from prior rounds distorting
+                # dynamic weight modulation.
                 if hasattr(critic, "cross_layer_signals") and critic.cross_layer_signals:
-                    plan_state.cross_layer_signals.extend(critic.cross_layer_signals)
+                    plan_state.cross_layer_signals = critic.cross_layer_signals[:]
                     critic.cross_layer_signals = []  # consumed
+                else:
+                    plan_state.cross_layer_signals = []
                 hitl_constraints = self._apply_hitl_constraints(
                     critique_output=critique_output,
                     previous_dimension_scores=prev_dimension_scores,
@@ -435,11 +522,39 @@ class PipelineOrchestrator:
                         "hitl_constraints_applied": bool(hitl_constraints),
                     },
                 ))
-                yield self._event(EventType.STAGE_COMPLETED, "critic", round_num, t0, {
+                # Build enhanced critic event payload (Phase 2)
+                # Determine agent mode for frontend transparency
+                agent_mode = "rule_only"
+                if self.enable_agent_critic:
+                    agent_mode = "agent_llm" if getattr(critic, "_has_any_api_key", lambda: False)() else "agent_fallback_rules"
+                critic_event_payload = {
                     "latency_ms": critic_ms,
                     "critique": critique_dict,
                     "hitl_constraints": hitl_constraints,
-                })
+                    "agent_mode": agent_mode,
+                }
+                # Add dynamic weights (always include for radar chart)
+                dyn_weights_snapshot = dyn_weights if self.enable_agent_critic else None
+                if dyn_weights_snapshot:
+                    critic_event_payload["dynamic_weights"] = dyn_weights_snapshot
+                elif hasattr(routed_critic_cfg, 'weights'):
+                    critic_event_payload["dynamic_weights"] = routed_critic_cfg.weights
+                # Add cross-layer signals
+                if plan_state.cross_layer_signals:
+                    critic_event_payload["cross_layer_signals"] = [
+                        s.to_dict() if hasattr(s, 'to_dict') else s
+                        for s in plan_state.cross_layer_signals
+                    ]
+                # Add FixItPlan if available
+                if (self.enable_agent_critic
+                        and hasattr(critic, "fix_it_plan") and critic.fix_it_plan):
+                    critic_event_payload["fix_it_plan"] = critic.fix_it_plan.to_dict()
+                # Add NeedMoreEvidence if available
+                if (self.enable_agent_critic
+                        and hasattr(critic, "need_more_evidence") and critic.need_more_evidence):
+                    critic_event_payload["need_more_evidence"] = critic.need_more_evidence.to_dict()
+                yield self._event(EventType.STAGE_COMPLETED, "critic", round_num, t0,
+                                  critic_event_payload)
 
                 # Layer 1c: Supplementary evidence retrieval if Critic detected gaps
                 if (self.enable_agent_critic
@@ -457,8 +572,7 @@ class PipelineOrchestrator:
                         evidence_dict["evidence_pack"] = evidence_pack.to_dict()
                         evidence_dict["evidence_coverage"] = evidence_pack.coverage
                     except Exception as exc:  # noqa: BLE001
-                        import logging as _log
-                        _log.getLogger(__name__).warning("Supplementary retrieval failed: %s", exc)
+                        logger.warning("Supplementary retrieval failed: %s", exc)
 
                 # Layer 2: Record critic findings in trajectory
                 if critique_output.scored_candidates:
@@ -506,13 +620,20 @@ class PipelineOrchestrator:
                     },
                 ))
 
-                # Emit decision
+                # Emit decision (enhanced for Phase 2)
                 decision_payload = {
                     "action": queen_output.decision.action,
                     "reason": queen_output.decision.reason,
                     "rerun_dimensions": queen_output.decision.rerun_dimensions,
+                    "preserve_dimensions": getattr(queen_output.decision, "preserve_dimensions", []),
                     "round": round_num,
                     "latency_ms": queen_ms,
+                    "budget_state": {
+                        "rounds_used": round_num,
+                        "max_rounds": self.q_cfg.max_rounds,
+                        "total_cost_usd": round(images_generated * cost_per_image, 6),
+                        "candidates_generated": images_generated,
+                    },
                 }
                 yield self._event(EventType.DECISION_MADE, "queen", round_num, t0, decision_payload)
 
@@ -530,8 +651,19 @@ class PipelineOrchestrator:
                 final_decision = queen_output.decision.action
                 best_candidate_id = critique_output.best_candidate_id
 
+                # Layer 1b: Upgrade rerun → rerun_local when FixItPlan recommends inpainting
+                if (
+                    final_decision == "rerun"
+                    and self.enable_agent_critic
+                    and self.enable_fix_it_plan
+                    and hasattr(critic, "fix_it_plan")
+                    and critic.fix_it_plan
+                    and critic.fix_it_plan.overall_strategy == "targeted_inpaint"
+                ):
+                    final_decision = "rerun_local"
+
                 # HITL: if enabled, pause for human decision
-                if self.enable_hitl and final_decision in ("accept", "rerun", "stop", "downgrade"):
+                if self.enable_hitl and final_decision in ("accept", "rerun", "rerun_local", "stop"):
                     yield self._event(EventType.HUMAN_REQUIRED, "queen", round_num, t0, {
                         "queen_decision": decision_payload,
                         "plan_state": plan_state.to_dict(),
@@ -571,12 +703,15 @@ class PipelineOrchestrator:
                         # Timeout — proceed with Queen's decision
                         pass
 
-                if final_decision in ("accept", "stop", "downgrade"):
+                if final_decision in ("accept", "stop"):
                     break
 
                 # ==== RERUN_LOCAL: targeted inpainting ====
                 # Cultural variant may prohibit local rerun (e.g. chinese_xieyi)
                 if final_decision == "rerun_local" and not pipeline_variant.allow_local_rerun:
+                    final_decision = "rerun"
+                if final_decision == "rerun_local" and not best_candidate_id:
+                    # Fallback: no best candidate for local rerun, use global rerun instead
                     final_decision = "rerun"
                 if final_decision == "rerun_local" and best_candidate_id:
                     yield self._event(EventType.STAGE_STARTED, "draft_refine", round_num, t0)
@@ -587,22 +722,28 @@ class PipelineOrchestrator:
                     base_image_path = self._find_candidate_image(
                         draft_candidates, best_candidate_id,
                     )
+                    refined = None
                     if base_image_path:
                         # Layer 1b: Use FixItPlan for targeted repair if available
                         critic_fix_plan = getattr(critic, "fix_it_plan", None) if (self.enable_agent_critic and self.enable_fix_it_plan) else None
                         if critic_fix_plan is not None:
                             # Use FixItPlan-guided rerun
                             draft_agent = DraftAgent(config=self.d_cfg)
-                            # Select inpaint provider
-                            inpaint_name = "mock_inpaint"
-                            if self.d_cfg.provider == "diffusers":
-                                inpaint_name = "diffusers_inpaint"
+                            inpaint_name = self._resolve_inpaint_provider_name(
+                                queen_output.decision.rerun_dimensions,
+                            )
+                            # Use best candidate's prompt, not first candidate
+                            best_prompt = next(
+                                (c.get("prompt", "") for c in draft_candidates if c.get("candidate_id") == best_candidate_id),
+                                draft_candidates[0].get("prompt", "") if draft_candidates else pipeline_input.subject,
+                            )
                             refined = draft_agent.rerun_with_fix(
-                                original_prompt=draft_candidates[0].get("prompt", ""),
+                                original_prompt=best_prompt,
                                 fix_plan=critic_fix_plan,
                                 evidence_pack=evidence_pack,
                                 base_image_path=base_image_path,
                                 inpaint_provider_name=inpaint_name,
+                                preserve_layers=queen_output.decision.preserve_dimensions or None,
                             )
                         else:
                             # Legacy path: LocalRerunRequest
@@ -616,35 +757,35 @@ class PipelineOrchestrator:
                             )
                             plan_state.local_rerun_request = local_rerun
 
-                            # Select inpaint provider: ControlNet if enabled and GPU available
-                            inpaint_name = "mock_inpaint"
-                            if self.d_cfg.provider == "diffusers":
-                                if self.d_cfg.controlnet_enabled and queen_output.decision.rerun_dimensions:
-                                    from app.prototype.agents.controlnet_provider import get_controlnet_type_for_layer
-                                    # Pick ControlNet type from the first weak dimension
-                                    cn_type = get_controlnet_type_for_layer(
-                                        queen_output.decision.rerun_dimensions[0]
-                                    )
-                                    if cn_type:
-                                        inpaint_name = f"controlnet_{cn_type}"
-                                    else:
-                                        inpaint_name = "diffusers_inpaint"
-                                else:
-                                    inpaint_name = "diffusers_inpaint"
+                            inpaint_name = self._resolve_inpaint_provider_name(
+                                queen_output.decision.rerun_dimensions,
+                            )
                             draft_agent = DraftAgent(config=self.d_cfg)
                             refined = draft_agent.refine_candidate(
                                 local_rerun_request=local_rerun,
                                 base_image_path=base_image_path,
                                 inpaint_provider_name=inpaint_name,
                             )
+                    refine_ok = refined is not None and refined.image_path
+                    if refine_ok:
                         refined_dict = refined.to_dict()
                         self._attach_candidate_image_urls([refined_dict])
                         draft_candidates = [refined_dict]
+                        best_candidate_id = refined_dict["candidate_id"]
                         images_generated += 1
+                        # R7-1: Persist refined image to draft checkpoint so
+                        # crash-resume picks up the refined (not original) candidates.
+                        save_pipeline_stage(task_id, "draft", {
+                            "candidates": draft_candidates,
+                            "source": "rerun_local",
+                            "round": round_num,
+                        })
 
                     refine_ms = int((time.monotonic() - st) * 1000)
                     stages.append(StageResult(
-                        stage="draft_refine", status="completed", latency_ms=refine_ms,
+                        stage="draft_refine",
+                        status="completed" if refine_ok else "failed",
+                        latency_ms=refine_ms,
                         output_summary={
                             "base_candidate_id": best_candidate_id,
                             "target_layers": queen_output.decision.rerun_dimensions,
@@ -655,10 +796,29 @@ class PipelineOrchestrator:
                         EventType.STAGE_COMPLETED, "draft_refine", round_num, t0,
                         {"latency_ms": refine_ms, "candidates": draft_candidates},
                     )
-                    # After local rerun, loop back to Critic for re-scoring
-                    continue
 
-                # Rerun global — loop continues with next round (full re-generation)
+                    if refine_ok:
+                        # R6-1: Set flag so next iteration skips Draft and
+                        # goes directly to Critic with the refined image.
+                        # Note: rerun_prompt_delta is NOT set here — the skip_draft
+                        # path clears it anyway, and the refined image already
+                        # incorporates the fix.
+                        _skip_draft_after_refine = True
+                        continue
+                    # Local refine failed (empty image) — fall through to global rerun
+                    logger.warning(
+                        "rerun_local failed for %s round %d, falling through to global rerun",
+                        task_id, round_num,
+                    )
+
+                # Rerun global — extract FixItPlan prompt_delta for next round
+                if (
+                    self.enable_agent_critic
+                    and self.enable_fix_it_plan
+                    and hasattr(critic, "fix_it_plan")
+                    and critic.fix_it_plan
+                ):
+                    rerun_prompt_delta = critic.fix_it_plan.to_prompt_delta()
 
             # ==== ARCHIVIST ====
             if self.enable_archivist:
@@ -683,7 +843,7 @@ class PipelineOrchestrator:
                     critique_dicts=critique_dicts,
                     queen_dicts=queen_dicts,
                     draft_config_dict=self.d_cfg.to_dict(),
-                    critic_config_dict=self.cr_cfg.to_dict(),
+                    critic_config_dict=routed_critic_cfg.to_dict(),
                     queen_config_dict=self.q_cfg.to_dict(),
                 )
                 archivist = ArchivistAgent()
@@ -705,8 +865,7 @@ class PipelineOrchestrator:
 
             # ==== PIPELINE COMPLETED ====
             total_ms = int((time.monotonic() - t0) * 1000)
-            cost_per_img = _COST_PER_IMAGE.get(self.d_cfg.provider, 0.0)
-            total_cost = images_generated * cost_per_img
+            total_cost = images_generated * cost_per_image
 
             # Layer 2: Finalize trajectory
             best_score = 0.0
@@ -1006,16 +1165,32 @@ class PipelineOrchestrator:
         return snapshot
 
     @staticmethod
+    def _resolve_inpaint_provider_name(self, rerun_dimensions: list[str] | None) -> str:
+        """Resolve inpaint provider name from draft config + rerun context."""
+        if self.d_cfg.provider == "together_flux":
+            return "flux_fill"
+        if self.d_cfg.provider == "diffusers":
+            if self.d_cfg.controlnet_enabled and rerun_dimensions:
+                from app.prototype.agents.controlnet_provider import get_controlnet_type_for_layer
+                cn_type = get_controlnet_type_for_layer(rerun_dimensions[0])
+                return f"controlnet_{cn_type}" if cn_type else "diffusers_inpaint"
+            return "diffusers_inpaint"
+        return "mock_inpaint"
+
+    @staticmethod
     def _find_candidate_image(
         candidates: list[dict], candidate_id: str,
     ) -> str | None:
         """Find the image path for a candidate by ID."""
         for c in candidates:
             if c.get("candidate_id") == candidate_id:
-                return c.get("image_path", "")
-        # Fallback: return first candidate's path
-        if candidates:
-            return candidates[0].get("image_path", "")
+                path = c.get("image_path", "")
+                return path if path else None
+        # No fallback — returning wrong candidate's image is worse than skipping
+        logger.warning(
+            "candidate_id %s not found in %d candidates",
+            candidate_id, len(candidates),
+        )
         return None
 
     @staticmethod
