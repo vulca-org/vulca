@@ -77,7 +77,7 @@ class ModelSpec:
 # Pre-defined model catalog — all routed through globalai.vip
 MODELS = {
     "deepseek_v3": ModelSpec(
-        litellm_id="deepseek/deepseek-chat",
+        litellm_id="openai/deepseek-chat",
         display_name="DeepSeek V3.2",
         cost_per_call_usd=0.002,
         supports_fc=True,
