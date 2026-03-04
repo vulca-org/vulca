@@ -24,16 +24,29 @@ from app.prototype.agents.critic_config import CriticConfig
 from app.prototype.agents.draft_config import DraftConfig
 from app.prototype.agents.queen_config import QueenConfig
 from app.prototype.api.schemas import (
+    AgentInfo,
     CreateRunRequest,
     RunStatusResponse,
     SubmitActionRequest,
     SubmitActionResponse,
+    ValidateTopologyRequest,
+    ValidationResponse,
 )
 from app.prototype.checkpoints.pipeline_checkpoint import load_pipeline_output
 from app.prototype.orchestrator.events import EventType, PipelineEvent
 from app.prototype.orchestrator.orchestrator import PipelineOrchestrator
 from app.prototype.orchestrator.run_state import RunStatus
 from app.prototype.pipeline.pipeline_types import PipelineInput
+
+# Lazy import for LangGraph orchestrator (only when use_graph=True)
+_GraphOrchestrator = None
+
+def _get_graph_orchestrator_class():
+    global _GraphOrchestrator
+    if _GraphOrchestrator is None:
+        from app.prototype.graph.graph_orchestrator import GraphOrchestrator
+        _GraphOrchestrator = GraphOrchestrator
+    return _GraphOrchestrator
 
 router = APIRouter(prefix="/api/v1/prototype", tags=["prototype"])
 
@@ -86,9 +99,17 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
 
     task_id = f"api-{uuid.uuid4().hex[:8]}"
 
-    api_key = os.environ.get("TOGETHER_API_KEY", "")
-    if req.provider == "together_flux" and not api_key:
-        raise HTTPException(400, "TOGETHER_API_KEY not configured on server")
+    # Resolve API key per provider
+    if req.provider == "together_flux":
+        api_key = os.environ.get("TOGETHER_API_KEY", "")
+        if not api_key:
+            raise HTTPException(400, "TOGETHER_API_KEY not configured on server")
+    elif req.provider == "nb2":
+        api_key = os.environ.get("GOOGLE_API_KEY", "") or os.environ.get("GEMINI_API_KEY", "")
+        if not api_key:
+            raise HTTPException(400, "GOOGLE_API_KEY/GEMINI_API_KEY not configured on server")
+    else:
+        api_key = os.environ.get("TOGETHER_API_KEY", "")
 
     d_cfg = DraftConfig(
         provider=req.provider, api_key=api_key,
@@ -97,15 +118,28 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
     cr_cfg = CriticConfig()
     q_cfg = QueenConfig(max_rounds=req.max_rounds)
 
-    orchestrator = PipelineOrchestrator(
-        draft_config=d_cfg,
-        critic_config=cr_cfg,
-        queen_config=q_cfg,
-        enable_hitl=req.enable_hitl,
-        enable_archivist=True,
-        enable_agent_critic=req.enable_agent_critic,
-        enable_fix_it_plan=req.enable_agent_critic,
-    )
+    # Dual-track: use_graph selects LangGraph-based orchestrator
+    if req.use_graph:
+        GraphOrchestrator = _get_graph_orchestrator_class()
+        orchestrator = GraphOrchestrator(
+            draft_config=d_cfg.to_dict(),
+            critic_config=cr_cfg.to_dict(),
+            queen_config=q_cfg.to_dict(),
+            enable_hitl=req.enable_hitl,
+            enable_agent_critic=req.enable_agent_critic,
+            max_rounds=req.max_rounds,
+            template=req.template,
+        )
+    else:
+        orchestrator = PipelineOrchestrator(
+            draft_config=d_cfg,
+            critic_config=cr_cfg,
+            queen_config=q_cfg,
+            enable_hitl=req.enable_hitl,
+            enable_archivist=True,
+            enable_agent_critic=req.enable_agent_critic,
+            enable_fix_it_plan=req.enable_agent_critic,
+        )
     _orchestrators[task_id] = orchestrator
     _run_metadata[task_id] = {
         "subject": req.subject,
@@ -141,6 +175,78 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
         task_id=task_id,
         status="running",
     )
+
+
+@router.get("/templates")
+async def list_templates() -> list[dict]:
+    """List available graph templates."""
+    try:
+        from app.prototype.graph.templates.template_registry import TemplateRegistry
+        return [
+            {
+                "name": t.name,
+                "display_name": t.display_name,
+                "description": t.description,
+                "nodes": t.nodes,
+                "enable_loop": t.enable_loop,
+                "parallel_critic": t.parallel_critic,
+            }
+            for t in TemplateRegistry.list_templates()
+        ]
+    except ImportError:
+        return [{"name": "default", "display_name": "Standard Pipeline", "description": "Full pipeline", "nodes": ["scout", "router", "draft", "critic", "queen", "archivist"], "enable_loop": True, "parallel_critic": False}]
+
+
+@router.get("/agents")
+async def list_agents() -> list[AgentInfo]:
+    """List all registered agents with metadata."""
+    try:
+        from app.prototype.graph.registry import AgentRegistry
+        import app.prototype.graph.nodes  # noqa: F401 — triggers @register decorators
+
+        result = []
+        for info in AgentRegistry.list_agents_with_metadata():
+            meta = info.get("metadata") or {}
+            result.append(AgentInfo(
+                name=info["name"],
+                display_name=meta.get("display_name", ""),
+                description=info.get("description", ""),
+                supports_hitl=meta.get("supports_hitl", False),
+                estimated_latency_ms=meta.get("estimated_latency_ms", 0),
+                input_keys=meta.get("input_keys", []),
+                output_keys=meta.get("output_keys", []),
+                tags=meta.get("tags", []),
+            ))
+        return result
+    except ImportError:
+        return []
+
+
+@router.post("/topologies/validate")
+async def validate_topology(req: ValidateTopologyRequest) -> ValidationResponse:
+    """Validate a custom topology's I/O contracts."""
+    try:
+        from app.prototype.graph.templates.template_model import GraphTemplate
+        from app.prototype.graph.templates.topology_validator import validate_template
+
+        temp_template = GraphTemplate(
+            name="_custom",
+            display_name="Custom",
+            description="User-defined topology for validation",
+            entry_point=req.nodes[0] if req.nodes else "scout",
+            nodes=req.nodes,
+            edges=req.edges,
+        )
+        result = validate_template(temp_template)
+        return ValidationResponse(
+            valid=result.valid,
+            errors=result.errors,
+            warnings=result.warnings,
+        )
+    except ImportError:
+        return ValidationResponse(valid=False, errors=["Topology validator not available"])
+    except (KeyError, ValueError) as e:
+        return ValidationResponse(valid=False, errors=[str(e)])
 
 
 @router.get("/runs/{task_id}")

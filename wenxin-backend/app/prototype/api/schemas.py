@@ -20,6 +20,8 @@ class CreateRunRequest(BaseModel):
     max_rounds: int = Field(default=3, ge=1, le=5, description="Max Queen rounds")
     enable_hitl: bool = Field(default=False, description="Enable human-in-the-loop")
     enable_agent_critic: bool = Field(default=False, description="Use LLM-based Critic (CriticLLM) instead of rule-only scoring")
+    use_graph: bool = Field(default=False, description="Use LangGraph-based pipeline instead of classic orchestrator")
+    template: str = Field(default="default", description="Graph template: default | fast_draft | critique_only | interactive_full | batch_eval")
     idempotency_key: str | None = Field(default=None, description="Optional idempotency key")
 
 
@@ -57,3 +59,34 @@ class SubmitActionResponse(BaseModel):
 
     accepted: bool
     message: str = ""
+
+
+# ── Agent + Topology schemas ─────────────────────────────────────────
+
+
+class AgentInfo(BaseModel):
+    """Agent metadata returned by GET /agents."""
+
+    name: str
+    display_name: str = ""
+    description: str = ""
+    supports_hitl: bool = False
+    estimated_latency_ms: int = 0
+    input_keys: list[str] = []
+    output_keys: list[str] = []
+    tags: list[str] = []
+
+
+class ValidateTopologyRequest(BaseModel):
+    """Request body for POST /topologies/validate."""
+
+    nodes: list[str] = Field(..., min_length=1)
+    edges: list[tuple[str, str]] = Field(..., min_length=1)
+
+
+class ValidationResponse(BaseModel):
+    """Response for POST /topologies/validate."""
+
+    valid: bool
+    errors: list[str] = []
+    warnings: list[str] = []

@@ -14,7 +14,11 @@ from app.prototype.agents.critic_types import DimensionScore
 
 __all__ = [
     "CriticRules",
+    "ParallelDimensionScorer",
 ]
+
+# Re-export for convenience
+from app.prototype.agents.parallel_scorer import ParallelDimensionScorer  # noqa: E402, F401
 
 logger = logging.getLogger(__name__)
 
