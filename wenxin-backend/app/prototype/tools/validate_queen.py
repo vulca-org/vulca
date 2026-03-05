@@ -75,13 +75,13 @@ def _mock_critique(
 # ---------------------------------------------------------------------------
 
 def test_case_1_early_stop() -> None:
-    """Case 1: High score first round (0.85) → accept (early stop)."""
+    """Case 1: High score first round (0.95) → accept (early stop)."""
     print(f"\n{'='*60}")
     print("  Case 1: High score first round → ACCEPT (early stop)")
     print(f"{'='*60}")
 
     queen = QueenAgent()
-    critique = _mock_critique(weighted_total=0.85, gate_passed=True)
+    critique = _mock_critique(weighted_total=0.95, gate_passed=True)
     plan = PlanState(task_id="d7-case1")
 
     out = queen.decide(critique, plan)
@@ -187,24 +187,20 @@ def test_case_5_over_rounds() -> None:
     check("rounds_used == 2", plan.budget.rounds_used == 2)
 
 
-def test_case_6_downgrade() -> None:
-    """Case 6: Cost >= 80% of max → downgrade."""
+def test_case_6_high_cost_rerun() -> None:
+    """Case 6: High cost but under max → rerun (downgrade removed in R14)."""
     print(f"\n{'='*60}")
-    print("  Case 6: Cost near limit → DOWNGRADE")
+    print("  Case 6: High cost → RERUN (downgrade removed)")
     print(f"{'='*60}")
 
-    # max_cost=0.10, downgrade_at=80% → 0.08
-    # mock_cost_per_round=0.05 → after round 1: cost=0.05 (< 0.08, no downgrade)
-    # We'll pre-load budget to trigger downgrade on first call
     queen = QueenAgent(config=QueenConfig(
         max_cost_usd=0.10,
         max_rounds=5,
-        downgrade_at_cost_pct=0.8,
         mock_cost_per_round=0.02,
     ))
     critique = _mock_critique(weighted_total=0.35, gate_passed=False, rerun_hint=["cultural_context"])
 
-    # Pre-load budget to 0.07 so after +0.02 = 0.09 >= 0.08
+    # Pre-load budget to 0.07 so after +0.02 = 0.09 (under max 0.10)
     plan = PlanState(
         task_id="d7-case6",
         budget=BudgetState(rounds_used=3, total_cost_usd=0.07),
@@ -212,9 +208,9 @@ def test_case_6_downgrade() -> None:
 
     out = queen.decide(critique, plan)
 
-    check("action == 'downgrade'", out.decision.action == "downgrade")
-    check("reason mentions cost percentage", "80%" in out.decision.reason)
-    check("downgrade_params has reduce_candidates", "reduce_candidates" in out.decision.downgrade_params)
+    # With downgrade removed, Queen should rerun (rerun_hint present, rounds < max)
+    check("action == 'rerun'", out.decision.action == "rerun")
+    check("rerun_dimensions includes cultural_context", "cultural_context" in out.decision.rerun_dimensions)
 
 
 def test_case_7_data_contracts() -> None:
@@ -228,6 +224,7 @@ def test_case_7_data_contracts() -> None:
     bs_d = bs.to_dict()
     check("BudgetState.to_dict() has all keys", set(bs_d.keys()) == {
         "rounds_used", "total_cost_usd", "candidates_generated", "critic_calls",
+        "llm_calls", "tool_calls",
     })
 
     # PlanState
@@ -235,13 +232,16 @@ def test_case_7_data_contracts() -> None:
     ps_d = ps.to_dict()
     check("PlanState.to_dict() has all keys", set(ps_d.keys()) == {
         "task_id", "current_round", "confirmed_dimensions", "pending_dimensions", "budget", "history",
+        "human_locked_dimensions", "human_override_history",
+        "layer_states", "intent_card", "cross_layer_signals", "local_rerun_request",
     })
 
     # QueenDecision
     qd = QueenDecision(action="rerun", rerun_dimensions=["L3"], reason="test")
     qd_d = qd.to_dict()
     check("QueenDecision.to_dict() has all keys", set(qd_d.keys()) == {
-        "action", "rerun_dimensions", "downgrade_params", "reason",
+        "action", "rerun_dimensions", "preserve_dimensions",
+        "reason", "expected_gain_per_cost",
     })
 
     # QueenOutput
@@ -261,7 +261,7 @@ def test_case_7_data_contracts() -> None:
     cfg_d = cfg.to_dict()
     check("QueenConfig.to_dict() has all keys", set(cfg_d.keys()) == {
         "max_rounds", "max_cost_usd", "accept_threshold", "early_stop_threshold",
-        "min_improvement", "downgrade_at_cost_pct", "mock_cost_per_round",
+        "min_improvement", "mock_cost_per_round",
     })
 
 

@@ -3,6 +3,7 @@
  */
 
 import { useState } from 'react';
+import TemplateSelector from './TemplateSelector';
 
 const TRADITIONS = [
   { value: 'chinese_xieyi', label: 'Chinese Xieyi' },
@@ -25,6 +26,8 @@ interface Props {
     max_rounds: number;
     enable_hitl: boolean;
     enable_agent_critic: boolean;
+    use_graph: boolean;
+    template: string;
   }) => void;
   disabled?: boolean;
 }
@@ -37,6 +40,8 @@ export default function RunConfigForm({ onSubmit, disabled }: Props) {
   const [maxRounds, setMaxRounds] = useState(3);
   const [enableHitl, setEnableHitl] = useState(false);
   const [enableAgentCritic, setEnableAgentCritic] = useState(false);
+  const [useGraph, setUseGraph] = useState(false);
+  const [template, setTemplate] = useState('default');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,6 +54,8 @@ export default function RunConfigForm({ onSubmit, disabled }: Props) {
       max_rounds: maxRounds,
       enable_hitl: enableHitl,
       enable_agent_critic: enableAgentCritic,
+      use_graph: useGraph,
+      template,
     });
   };
 
@@ -69,6 +76,13 @@ export default function RunConfigForm({ onSubmit, disabled }: Props) {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {useGraph && (
+          <TemplateSelector
+            value={template}
+            onChange={setTemplate}
+            disabled={disabled}
+          />
+        )}
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Tradition
@@ -154,6 +168,19 @@ export default function RunConfigForm({ onSubmit, disabled }: Props) {
               disabled={disabled}
             />
             Human-in-the-Loop
+          </label>
+          <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+            <input
+              type="checkbox"
+              checked={useGraph}
+              onChange={e => setUseGraph(e.target.checked)}
+              className="rounded border-gray-300 dark:border-gray-600"
+              disabled={disabled}
+            />
+            <span>
+              Graph Mode
+              <span className="ml-1 text-xs text-gray-400">LangGraph pipeline</span>
+            </span>
           </label>
         </div>
 

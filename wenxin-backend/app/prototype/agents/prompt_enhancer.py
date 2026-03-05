@@ -1,7 +1,7 @@
 """Prompt Enhancer — LLM-based expansion of short user prompts into
 detailed image generation instructions.
 
-Uses Gemini Flash-Lite (free tier) to:
+Uses Gemini 2.5 Flash (via gemini_direct) to:
 1. Expand semantic intent into visual descriptions
 2. Inject cultural terminology in original language + English
 3. Add compositional principles specific to the tradition
@@ -63,14 +63,14 @@ class PromptEnhancer:
     Parameters
     ----------
     model_key : str
-        Key in MODELS dict. Default "gemini_flash_lite" (free tier).
+        Key in MODELS dict. Default "gemini_direct" (Gemini 2.5 Flash).
     enabled : bool
         If False, enhance() returns the original prompt unchanged.
     """
 
     def __init__(
         self,
-        model_key: str = "gemini_flash_lite",
+        model_key: str = "gemini_direct",
         enabled: bool = True,
     ) -> None:
         self._model_key = model_key

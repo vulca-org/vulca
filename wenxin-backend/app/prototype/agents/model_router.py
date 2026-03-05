@@ -1,12 +1,11 @@
 """Model Router — selects the optimal LLM for each layer and task.
 
 Routes requests through LiteLLM for unified API access. Supports:
-- Per-layer model assignment (L1/L2 VLM, L3-L5 text LLM)
+- Per-layer model assignment (L1-L5 all Gemini)
 - Budget-aware fallback chains
 - Confidence-based escalation
 
-All API models route through globalai.vip proxy (OpenAI-compatible).
-Set GLOBALAI_API_KEY env var or fall back to DEEPSEEK_API_KEY.
+M0 Gemini migration: single-vendor stack via ``gemini/`` LiteLLM prefix.
 """
 
 from __future__ import annotations
@@ -23,17 +22,15 @@ __all__ = [
     "ModelSpec",
 ]
 
-# globalai.vip proxy — unified API gateway
-_GLOBALAI_BASE = "https://globalai.vip/v1"
 
-
-def _globalai_key() -> str:
-    """Get the globalai.vip API key from environment or settings."""
+def _google_api_key() -> str:
+    """Get the Google API key for Gemini direct access."""
     from app.core.config import settings as _settings
     return (
-        os.environ.get("GLOBALAI_API_KEY")
-        or os.environ.get("DEEPSEEK_API_KEY")
-        or _settings.GLOBALAI_API_KEY
+        os.environ.get("GOOGLE_API_KEY")
+        or os.environ.get("GEMINI_API_KEY")
+        or _settings.GOOGLE_API_KEY
+        or _settings.GEMINI_API_KEY
         or ""
     )
 
@@ -70,55 +67,20 @@ class ModelSpec:
 
     def get_api_key(self) -> str | None:
         if self.api_key_env:
-            return os.environ.get(self.api_key_env) or _globalai_key() or None
-        return _globalai_key() or None
+            return os.environ.get(self.api_key_env) or _google_api_key() or None
+        return _google_api_key() or None
 
 
-# Pre-defined model catalog — all routed through globalai.vip
+# Pre-defined model catalog — Gemini single-vendor (M0)
 MODELS = {
-    "deepseek_v3": ModelSpec(
-        litellm_id="openai/deepseek-chat",
-        display_name="DeepSeek V3.2",
-        cost_per_call_usd=0.002,
-        supports_fc=True,
-        supports_vlm=False,
-        temperature=0.3,
-        api_base=_GLOBALAI_BASE,
-    ),
-    "gemini_flash_lite": ModelSpec(
-        litellm_id="openai/gemini-2.5-flash",
+    "gemini_direct": ModelSpec(
+        litellm_id="gemini/gemini-2.5-flash",
         display_name="Gemini 2.5 Flash",
         cost_per_call_usd=0.001,
         supports_fc=True,
         supports_vlm=True,
         temperature=0.3,
-        api_base=_GLOBALAI_BASE,
-    ),
-    "qwen_72b": ModelSpec(
-        litellm_id="openai/Qwen2.5-72B-Instruct",
-        display_name="Qwen2.5-72B",
-        cost_per_call_usd=0.0007,
-        supports_fc=True,
-        supports_vlm=False,
-        temperature=0.3,
-        api_base=_GLOBALAI_BASE,
-    ),
-    "gpt4o_mini": ModelSpec(
-        litellm_id="openai/gpt-4o-mini",
-        display_name="GPT-4o-mini",
-        cost_per_call_usd=0.0009,
-        supports_fc=True,
-        supports_vlm=True,
-        temperature=0.3,
-        api_base=_GLOBALAI_BASE,
-    ),
-    "gallery_gpt": ModelSpec(
-        litellm_id="local/gallery-gpt-7b",
-        display_name="GalleryGPT-7B (local)",
-        cost_per_call_usd=0.0,
-        supports_fc=False,
-        supports_vlm=True,
-        temperature=0.3,
+        api_key_env="GOOGLE_API_KEY",
     ),
 }
 
@@ -128,18 +90,16 @@ MODELS = {
 # ---------------------------------------------------------------------------
 
 DEFAULT_LAYER_MODELS: dict[str, str] = {
-    "visual_perception": "gemini_flash_lite",      # L1: needs VLM
-    "technical_analysis": "gemini_flash_lite",      # L2: needs VLM
-    "cultural_context": "gemini_flash_lite",        # L3: was deepseek_v3, switched for reliability
-    "critical_interpretation": "gemini_flash_lite",  # L4: was deepseek_v3, switched for reliability
-    "philosophical_aesthetic": "gemini_flash_lite",  # L5: was deepseek_v3, switched for reliability
+    "visual_perception": "gemini_direct",      # L1: VLM
+    "technical_analysis": "gemini_direct",      # L2: VLM
+    "cultural_context": "gemini_direct",        # L3: text + VLM
+    "critical_interpretation": "gemini_direct",  # L4: text + VLM
+    "philosophical_aesthetic": "gemini_direct",  # L5: text + VLM
 }
 
-# Fallback chain per model tier
+# Fallback chain — single vendor, no alternative providers
 FALLBACK_CHAINS: dict[str, list[str]] = {
-    "deepseek_v3": ["gpt4o_mini"],
-    "gemini_flash_lite": ["gpt4o_mini"],
-    "gpt4o_mini": [],
+    "gemini_direct": [],
 }
 
 
@@ -170,7 +130,7 @@ class ModelRouter:
         Returns None if no model is affordable or suitable.
         """
         budget = budget_remaining if budget_remaining is not None else self.budget_remaining_usd
-        model_key = self.layer_models.get(layer_id, "deepseek_v3")
+        model_key = self.layer_models.get(layer_id, "gemini_direct")
 
         # Try primary model
         spec = MODELS.get(model_key)

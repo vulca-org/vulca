@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 @AgentRegistry.register("draft")
 class DraftNode(BaseAgent):
     name = "draft"
-    description = "Generate candidate images via configured provider (mock/FLUX/NB2)"
+    description = "Generate candidate images via configured provider (mock/NB2)"
 
     try:
         from app.prototype.graph.agent_metadata import AgentMetadata
@@ -86,8 +86,6 @@ class DraftNode(BaseAgent):
         # Cost tracking
         provider = d_cfg.provider
         cost_per_image = {
-            "together_flux": 0.003,
-            "together_flux_dev": 0.025,
             "nb2": 0.067,
             "mock": 0.0,
         }.get(provider, 0.0)

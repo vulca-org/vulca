@@ -69,31 +69,26 @@ class QueenLLMConfig:
 
 
 def _try_llm_call(model: str, messages: list[dict], temperature: float, max_tokens: int) -> str | None:
-    """Attempt an LLM call via globalai.vip proxy. Returns response text or None."""
-    # globalai.vip unified proxy — supports DeepSeek, Gemini, GPT, etc.
+    """Attempt an LLM call via LiteLLM (Gemini direct). Returns response text or None."""
     api_key = (
-        os.environ.get("GLOBALAI_API_KEY")
-        or os.environ.get("DEEPSEEK_API_KEY")
+        os.environ.get("GOOGLE_API_KEY")
+        or os.environ.get("GEMINI_API_KEY")
         or ""
     )
     if not api_key:
-        logger.warning("No API key found (GLOBALAI_API_KEY / DEEPSEEK_API_KEY)")
+        logger.warning("No API key found (GOOGLE_API_KEY / GEMINI_API_KEY)")
         return None
 
-    api_base = os.environ.get("GLOBALAI_API_BASE", "https://globalai.vip/v1")
-
     try:
-        import httpx
-        resp = httpx.post(
-            f"{api_base}/chat/completions",
-            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-            json={"model": model, "messages": messages, "temperature": temperature, "max_tokens": max_tokens},
+        import litellm
+        resp = litellm.completion(
+            model="gemini/gemini-2.5-flash",
+            messages=messages,
+            temperature=temperature,
+            max_tokens=max_tokens,
             timeout=30.0,
         )
-        if resp.status_code == 200:
-            data = resp.json()
-            return data["choices"][0]["message"]["content"]
-        logger.warning("LLM API error (%s): %d %s", model, resp.status_code, resp.text[:200])
+        return resp.choices[0].message.content
     except Exception as exc:
         logger.warning("LLM call failed (%s): %s", model, exc)
 

@@ -8,7 +8,7 @@ Shows each pipeline stage progressively using PipelineOrchestrator events:
   Stage 4: Queen — accept / rerun / stop decision
   (If rerun → repeat Stage 2-4)
 
-Supports mock (instant) and together_flux (real FLUX images) providers.
+Supports mock (instant) and nb2 (real NB2 images) providers.
 
 Usage::
 
@@ -128,11 +128,11 @@ def run_pipeline_stepwise(
     """Generator that yields UI updates by consuming orchestrator events."""
     task_id = f"gradio-{int(time.time())}"
 
-    api_key = os.environ.get("TOGETHER_API_KEY", "")
-    if provider == "together_flux" and not api_key:
+    api_key = os.environ.get("GOOGLE_API_KEY", "")
+    if provider == "nb2" and not api_key:
         yield (
-            "**ERROR:** TOGETHER_API_KEY environment variable not set.\n\n"
-            "Start with: `TOGETHER_API_KEY=... python -m app.prototype.ui.gradio_demo`",
+            "**ERROR:** GOOGLE_API_KEY environment variable not set.\n\n"
+            "Start with: `GOOGLE_API_KEY=... python -m app.prototype.ui.gradio_demo`",
             _NO_IMAGES, "", "", ""
         )
         return
@@ -281,8 +281,8 @@ def launch() -> None:
         with gr.Row():
             provider_input = gr.Radio(
                 label="Provider",
-                choices=["mock", "together_flux"], value="mock",
-                info="mock = instant placeholders, together_flux = real FLUX images ($0.003/img)",
+                choices=["mock", "nb2"], value="mock",
+                info="mock = instant placeholders, nb2 = real NB2 images ($0.067/img)",
             )
             n_candidates_input = gr.Slider(
                 label="Candidates per round",

@@ -110,8 +110,8 @@ class Settings(BaseSettings):
     QWEN_API_KEY: str = ""
     XAI_API_KEY: str = ""
     OPENROUTER_API_KEY: str = ""
-    TOGETHER_API_KEY: str = ""
-    FAL_KEY: str = ""
+    TOGETHER_API_KEY: str = ""  # deprecated: M0 Gemini migration
+    FAL_KEY: str = ""  # deprecated: M0 Gemini migration
     GOOGLE_API_KEY: str = ""
     
     # Langfuse Observability

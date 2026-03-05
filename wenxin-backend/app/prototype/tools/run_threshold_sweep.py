@@ -5,7 +5,7 @@ Usage::
 
     cd wenxin-backend
     python3 app/prototype/tools/run_threshold_sweep.py [--tasks path/to/tasks.json]
-    python3 app/prototype/tools/run_threshold_sweep.py --provider together_flux --steps 4
+    python3 app/prototype/tools/run_threshold_sweep.py --provider nb2 --steps 4
 """
 
 from __future__ import annotations
@@ -146,10 +146,10 @@ def main() -> None:
     default_tasks = Path(__file__).resolve().parent.parent / "data" / "benchmarks" / "tasks-20.json"
     parser.add_argument("--tasks", default=str(default_tasks), help="Path to tasks JSON")
     parser.add_argument(
-        "--provider", default="mock", choices=["mock", "together_flux"],
+        "--provider", default="mock", choices=["mock", "nb2"],
         help="Image generation provider (default: mock)",
     )
-    parser.add_argument("--api-key", default="", help="Provider API key (fallback: $TOGETHER_API_KEY)")
+    parser.add_argument("--api-key", default="", help="Provider API key (fallback: $GOOGLE_API_KEY)")
     parser.add_argument("--width", type=int, default=512, help="Image width (default: 512)")
     parser.add_argument("--height", type=int, default=512, help="Image height (default: 512)")
     parser.add_argument("--steps", type=int, default=4, help="Inference steps (default: 4)")
@@ -158,9 +158,9 @@ def main() -> None:
     args = parser.parse_args()
 
     # Resolve API key
-    api_key = args.api_key or os.environ.get("TOGETHER_API_KEY", "")
-    if args.provider == "together_flux" and not api_key:
-        print("ERROR: together_flux requires --api-key or $TOGETHER_API_KEY", file=sys.stderr)
+    api_key = args.api_key or os.environ.get("GOOGLE_API_KEY", "")
+    if args.provider == "nb2" and not api_key:
+        print("ERROR: nb2 requires --api-key or $GOOGLE_API_KEY", file=sys.stderr)
         sys.exit(1)
 
     d_cfg = DraftConfig(

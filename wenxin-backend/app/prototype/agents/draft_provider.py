@@ -1,4 +1,4 @@
-"""Draft image providers — AbstractProvider + MockProvider + TogetherFluxProvider."""
+"""Draft image providers — AbstractProvider + MockProvider + utility providers."""
 
 from __future__ import annotations
 
@@ -17,7 +17,6 @@ __all__ = [
     "FallbackProvider",
     "FaultInjectProvider",
     "MockProvider",
-    "TogetherFluxProvider",
     "detect_image_format",
 ]
 
@@ -94,124 +93,6 @@ class MockProvider(AbstractProvider):
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_bytes(png_bytes)
         return str(out)
-
-
-class TogetherFluxProvider(AbstractProvider):
-    """Together.ai FLUX image generation provider.
-
-    Uses the Together.ai Images API with b64_json response format
-    to avoid a second HTTP download.
-    """
-
-    def __init__(
-        self,
-        api_key: str,
-        model: str = "black-forest-labs/FLUX.1-schnell",
-        timeout: int = 120,
-    ) -> None:
-        self._api_key = api_key
-        self._model = model
-        self._timeout = timeout
-        self._call_log: list[dict] = []
-
-    @property
-    def model_ref(self) -> str:
-        return f"together:{self._model.split('/')[-1]}"
-
-    @property
-    def call_log(self) -> list[dict]:
-        return list(self._call_log)
-
-    def generate(
-        self,
-        prompt: str,
-        negative_prompt: str,
-        seed: int,
-        width: int,
-        height: int,
-        steps: int,
-        sampler: str,  # silently ignored — Together.ai doesn't support sampler
-        output_path: str,
-    ) -> str:
-        import requests as _requests
-
-        # FLUX.1-schnell supports 1-4 steps; clamp to avoid API errors
-        clamped_steps = min(steps, 4) if "schnell" in self._model else steps
-
-        payload: dict = {
-            "model": self._model,
-            "prompt": prompt,
-            "width": width,
-            "height": height,
-            "steps": clamped_steps,
-            "seed": seed,
-            "n": 1,
-            "response_format": "b64_json",
-        }
-        if negative_prompt:
-            payload["negative_prompt"] = negative_prompt
-
-        headers = {
-            "Authorization": f"Bearer {self._api_key}",
-            "Content-Type": "application/json",
-        }
-
-        t0 = time.monotonic()
-        resp = None
-        try:
-            resp = _requests.post(
-                "https://api.together.xyz/v1/images/generations",
-                json=payload,
-                headers=headers,
-                timeout=self._timeout,
-            )
-            resp.raise_for_status()
-        except _requests.exceptions.Timeout as exc:
-            self._log_call(payload, None, t0, str(exc))
-            raise TimeoutError(f"Together.ai timeout: {exc}") from exc
-        except _requests.exceptions.ConnectionError as exc:
-            self._log_call(payload, None, t0, str(exc))
-            raise ConnectionError(f"Together.ai connection: {exc}") from exc
-        except _requests.exceptions.RequestException as exc:
-            status = resp.status_code if resp is not None else None
-            self._log_call(payload, status, t0, str(exc))
-            raise OSError(f"Together.ai error ({status}): {exc}") from exc
-
-        data = resp.json()
-        b64_str = data["data"][0]["b64_json"]
-        img_bytes = base64.b64decode(b64_str)
-
-        # Detect actual format and correct extension
-        fmt = detect_image_format(img_bytes)
-        correct_ext = _FORMAT_EXT.get(fmt, ".png")
-        out = Path(output_path)
-        if out.suffix != correct_ext:
-            out = out.with_suffix(correct_ext)
-        out.parent.mkdir(parents=True, exist_ok=True)
-        out.write_bytes(img_bytes)
-
-        self._log_call(payload, resp.status_code, t0, None)
-        return str(out)
-
-    def _log_call(
-        self,
-        payload: dict,
-        status_code: int | None,
-        t0: float,
-        error: str | None,
-    ) -> None:
-        self._call_log.append({
-            "model": payload.get("model"),
-            "prompt_len": len(payload.get("prompt", "")),
-            "width": payload.get("width"),
-            "height": payload.get("height"),
-            "steps": payload.get("steps"),
-            "seed": payload.get("seed"),
-            "status_code": status_code,
-            "latency_ms": int((time.monotonic() - t0) * 1000),
-            "error": error,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-        })
 
 
 class DiffusersProvider(AbstractProvider):

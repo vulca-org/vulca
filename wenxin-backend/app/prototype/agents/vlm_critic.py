@@ -96,7 +96,7 @@ class VLMCritic:
 
     def __init__(
         self,
-        model_key: str = "gemini_flash_lite",
+        model_key: str = "gemini_direct",
     ) -> None:
         self._model_key = model_key
         self._model_spec: ModelSpec | None = MODELS.get(model_key)

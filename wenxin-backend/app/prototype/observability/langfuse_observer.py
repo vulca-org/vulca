@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 
 # Cost estimates per provider per image
 _COST_TABLE: dict[str, float] = {
-    "together_flux": 0.003,
+    "nb2": 0.067,
     "diffusers": 0.0,
     "mock": 0.0,
     "controlnet_canny": 0.0,

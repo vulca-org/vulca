@@ -113,6 +113,13 @@ export interface HitlConstraints {
   candidates_touched: number;
 }
 
+export interface HitlWaitInfo {
+  /** Which stage is waiting for human input: 'scout' | 'draft' | 'critic' | 'queen' */
+  stage: string;
+  /** Optional payload from the backend (queen_decision, plan_state, etc.) */
+  payload: Record<string, unknown>;
+}
+
 export interface PipelineState {
   taskId: string | null;
   status: 'idle' | 'running' | 'waiting_human' | 'completed' | 'failed';
@@ -141,6 +148,9 @@ export interface PipelineState {
   // Round-by-round history
   rounds: RoundData[];
 
+  // HITL — multi-stage wait info
+  hitlWaitInfo: HitlWaitInfo | null;
+
   // Final
   finalDecision: string | null;
   totalCostUsd: number;
@@ -166,6 +176,7 @@ const INITIAL_STATE: PipelineState = {
   agentMode: null,
   decision: null,
   rounds: [],
+  hitlWaitInfo: null,
   finalDecision: null,
   totalCostUsd: 0,
   totalRounds: 0,
@@ -181,6 +192,8 @@ interface CreateRunParams {
   max_rounds?: number;
   enable_hitl?: boolean;
   enable_agent_critic?: boolean;
+  use_graph?: boolean;
+  template?: string;
 }
 
 export function usePrototypePipeline() {
@@ -273,10 +286,15 @@ export function usePrototypePipeline() {
 
         case 'human_required':
           update.status = 'waiting_human';
+          update.hitlWaitInfo = {
+            stage: stage || prev.currentStage || 'queen',
+            payload: payload as Record<string, unknown>,
+          };
           break;
 
         case 'human_received':
           update.status = 'running';
+          update.hitlWaitInfo = null;
           break;
 
         case 'pipeline_completed':

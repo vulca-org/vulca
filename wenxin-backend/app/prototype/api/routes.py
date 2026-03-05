@@ -99,17 +99,16 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
 
     task_id = f"api-{uuid.uuid4().hex[:8]}"
 
-    # Resolve API key per provider
-    if req.provider == "together_flux":
-        api_key = os.environ.get("TOGETHER_API_KEY", "")
-        if not api_key:
-            raise HTTPException(400, "TOGETHER_API_KEY not configured on server")
-    elif req.provider == "nb2":
+    # Resolve API key per provider (M0: unified to GOOGLE_API_KEY)
+    if req.provider == "nb2":
         api_key = os.environ.get("GOOGLE_API_KEY", "") or os.environ.get("GEMINI_API_KEY", "")
         if not api_key:
             raise HTTPException(400, "GOOGLE_API_KEY/GEMINI_API_KEY not configured on server")
+    elif req.provider == "mock":
+        api_key = ""
     else:
-        api_key = os.environ.get("TOGETHER_API_KEY", "")
+        # Default: try Google API key for any provider
+        api_key = os.environ.get("GOOGLE_API_KEY", "") or os.environ.get("GEMINI_API_KEY", "")
 
     d_cfg = DraftConfig(
         provider=req.provider, api_key=api_key,

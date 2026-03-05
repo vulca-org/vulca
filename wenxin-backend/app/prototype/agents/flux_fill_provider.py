@@ -1,4 +1,6 @@
-"""FLUX.1 Fill Inpaint Provider — cloud API-based targeted inpainting.
+"""DEPRECATED: FLUX Fill inpaint removed in M0 Gemini migration. File kept for reference.
+
+FLUX.1 Fill Inpaint Provider — cloud API-based targeted inpainting.
 
 Calls FLUX.1 Fill Dev API (via fal.ai or BFL) for real mask-based
 inpainting. Replaces MockInpaintProvider for FLUX conditions.

@@ -1,17 +1,18 @@
 # VULCA Prototype v2.0（精简执行版）
 
 > 基于 `vulca-prototype-plan-v2.md` 压缩整理
-> 日期：2026-02-12（v2.6 同步 — **三层架构升级完成**，Layer 1-2 信息流 + 轨迹系统上线）
+> 日期：2026-02-15（v2.7 同步 — **Phase 1 Agent 循环激活完成**，rerun 触发率从 7% 预期提升至 60-80%）
 > 前置：v1.1 工程闭环跑通 + Step 2 FLUX 真实放量已验证（320 tasks, 90% pass, $0.0132/task）
 > 目标：22 天（Phase 0 + 4 Phase × 5 天），L1-L5 深度驱动 + 混合 LLM 评审 + 局部重绘 + 文化路由
 
 ---
 
-## 0. 观测同步（2026-02-12，Phase A-D + 进阶 + 全量 GPU 验证 + **三层架构升级** 完成）
+## 0. 观测同步（2026-02-15，Phase A-D + 进阶 + GPU 验证 + 三层架构 + **Phase 1 Agent 循环激活** 完成）
 
 | 观测项 | 当前状态 |
 |------|---------|
-| 主执行链（orchestrator） | 规则主链 + **可选 Agent 模式**（`enable_agent_critic=True`）+ **文化路由** + **ControlNet 条件控制** + **EvidencePack / FixItPlan / Trajectory** |
+| 主执行链（orchestrator） | 规则主链 + **可选 Agent 模式**（`enable_agent_critic=True`）+ **文化路由** + **ControlNet 条件控制** + **EvidencePack / FixItPlan / Trajectory** + **Phase 1 循环激活** |
+| **Phase 1: Agent 循环激活** | ✅ **已完成**（2026-02-14）：L1/L2 base 0.50→0.35, early_stop 0.80→0.93, accept 0.60→0.80, max_rounds 2→3, rerun→rerun_local 升级路径激活, **414/417 验证 PASS** |
 | **Layer 1a: Scout→Draft EvidencePack** | ✅ **已完成**（2026-02-12）：结构化证据包（anchors+compositions+styles+taboos），Draft 精准提示词，50/50 验证 |
 | **Layer 1b: Critic→Draft FixItPlan** | ✅ **已完成**（2026-02-12）：定向修复计划（target_layer+prompt_delta+mask_hint），rerun_with_fix()，50/50 验证 |
 | **Layer 1c: Critic→Scout NeedMoreEvidence** | ✅ **已完成**（2026-02-12）：证据不足自动补检索（gaps+suggested_queries+urgency），gather_supplementary()，50/50 验证 |
@@ -34,17 +35,19 @@
 | GalleryGPT 绘画 VLM | ✅ **GPU 验证通过**（2026-02-12）：LLaVA 1.5 7B 4-bit NF4，**34/35 GPU PASS**（4327MB VRAM，~78s） |
 | KOALA-Lightning 700M | ✅ **GPU 验证通过**（2026-02-12）：SDXL 1024×1024 10步，**16/16 GPU PASS**（5692MB VRAM，~200s） |
 | API 模型连接 | ✅ DeepSeek V3.2 + Gemini Flash-Lite + Together.ai FLUX 已验证 / ❌ GPT-4o-mini key 过期 |
-| 现有测试回归 | ✅ E2E **60/60** 通过（20 样例 × 3 变体），P95=6.2s，$0.00（三层架构升级后零退化） |
+| 盲评实验 | ✅ **已完成**（2026-02-13）：30 tasks × 2 groups, 104/104 验证, L5 gap Δ=−0.258（LLM 更严格） |
+| 现有测试回归 | ✅ E2E **60/60** 通过（20 样例 × 3 变体），P95=6.2s，$0.00（Phase 1 后需 GPU 重验） |
 | **WSL2 GPU 环境** | ✅ **已修复**（2026-02-12）：NVIDIA 572.83 + CUDA 12.8 + TDR=60s，**5/5 GPU 模型全部真实推理通过** |
 
-> 结论：**v2 核心四件事 + 进阶四项 + 全量模型部署 + GPU 真实推理验证 + 三层架构升级（Layer 1-2）全部完成**。
-> 系统从"线性流水线"升级为"结构化信息流管道+轨迹记录+经验检索"：
+> 结论：**v2 核心四件事 + 进阶四项 + 全量模型部署 + GPU 真实推理验证 + 三层架构升级 + Phase 1 Agent 循环激活 全部完成**。
+> 系统从"线性流水线"升级为"结构化信息流管道+轨迹记录+经验检索+多轮自校正"：
 > - Scout→Draft 从传裸词条名升级为 **EvidencePack**（定义+用法+构图+风格+禁忌）
 > - Critic→Draft 从 "improve L2, L3" 字符串升级为 **FixItPlan**（定向修复+mask提示+优先级排序）
 > - Critic→Scout 从完全不存在升级为 **NeedMoreEvidence**（证据缺口自动检测+补充检索）
 > - 每次运行自动记录 **Trajectory**（完整决策链 JSON + FAISS 可检索）
-> 剩余差距：Layer 3 Queen LLM + RAG、GPT-4o-mini key 更新、Langfuse 观测、盲评实验。
-> 总体完成度：**~98%（50/51 项 ✅）**。验证脚本总数：**37 个**。
+> - **Agent 循环从 93% 单轮 accept 变为 60-80% 触发 rerun**（评分校准 + FixItPlan→ControlNet 路径激活）
+> 剩余差距：**Phase 2 Agent 过程可视化** (前端)、Phase 3 HITL 用户干预、Layer 3 Queen LLM + RAG、Langfuse 观测。
+> 总体完成度：**~98%（51/52 项 ✅）**。验证脚本总数：**37 个**。
 
 ---
 

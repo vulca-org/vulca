@@ -14,6 +14,10 @@ import CriticScoreTable from '../../components/prototype/CriticScoreTable';
 import QueenDecisionPanel from '../../components/prototype/QueenDecisionPanel';
 import RoundTimeline from '../../components/prototype/RoundTimeline';
 import CriticRadarChart from '../../components/prototype/CriticRadarChart';
+import ScoutEvidenceEditor from '../../components/prototype/ScoutEvidenceEditor';
+import DraftSelectionPanel from '../../components/prototype/DraftSelectionPanel';
+import CriticOverridePanel from '../../components/prototype/CriticOverridePanel';
+import TopologyViewer from '../../components/prototype/TopologyViewer';
 import { PROTOTYPE_DIM_LABELS } from '../../utils/vulca-dimensions';
 import type { PrototypeDimension } from '../../utils/vulca-dimensions';
 
@@ -24,8 +28,20 @@ function formatDimension(dim: string): string {
 export default function PrototypePage() {
   const { state, startRun, submitAction, reset } = usePrototypePipeline();
   const [selectedCandidateId, setSelectedCandidateId] = useState<string | null>(null);
+  const [activeTemplate, setActiveTemplate] = useState('default');
   const isRunning = state.status === 'running' || state.status === 'waiting_human';
   const isDone = state.status === 'completed' || state.status === 'failed';
+
+  // Track which stages have completed based on events
+  const completedStages = state.events
+    .filter(e => e.event_type === 'stage_completed')
+    .map(e => e.stage)
+    .filter((v, i, a) => a.indexOf(v) === i);
+
+  const handleStartRun = (params: Parameters<typeof startRun>[0]) => {
+    setActiveTemplate(params.template || 'default');
+    startRun(params);
+  };
 
   const handleReset = () => {
     setSelectedCandidateId(null);
@@ -48,10 +64,22 @@ export default function PrototypePage() {
       {/* Config Form */}
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <RunConfigForm
-          onSubmit={startRun}
+          onSubmit={handleStartRun}
           disabled={isRunning}
         />
       </div>
+
+      {/* Topology Viewer */}
+      {state.taskId && (
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+          <TopologyViewer
+            template={activeTemplate}
+            currentStage={state.currentStage}
+            status={state.status}
+            completedStages={completedStages}
+          />
+        </div>
+      )}
 
       {/* Progress */}
       {state.taskId && (
@@ -341,6 +369,37 @@ export default function PrototypePage() {
               </div>
             );
           })()}
+        </div>
+      )}
+
+      {/* Multi-stage HITL Panels */}
+      {state.status === 'waiting_human' && state.hitlWaitInfo && state.hitlWaitInfo.stage !== 'queen' && (
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+            Human Input Required
+            <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300">
+              {state.hitlWaitInfo.stage}
+            </span>
+          </h2>
+          {state.hitlWaitInfo.stage === 'scout' && (
+            <ScoutEvidenceEditor
+              evidence={state.evidence}
+              onAction={submitAction}
+            />
+          )}
+          {state.hitlWaitInfo.stage === 'draft' && (
+            <DraftSelectionPanel
+              candidates={state.candidates}
+              onAction={submitAction}
+            />
+          )}
+          {state.hitlWaitInfo.stage === 'critic' && (
+            <CriticOverridePanel
+              scoredCandidates={state.scoredCandidates}
+              bestCandidateId={state.bestCandidateId}
+              onAction={submitAction}
+            />
+          )}
         </div>
       )}
 

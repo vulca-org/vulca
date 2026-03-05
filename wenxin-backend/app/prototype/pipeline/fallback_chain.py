@@ -3,10 +3,13 @@
 This module provides a convenience factory to build a FallbackProvider
 from a list of provider names.
 
-Default Draft fallback chain: together_flux → koala → diffusers → mock
+Default Draft fallback chain: nb2 → koala → diffusers → mock
 """
 
 from __future__ import annotations
+
+import logging
+import os
 
 from app.prototype.agents.draft_provider import (
     AbstractProvider,
@@ -14,18 +17,17 @@ from app.prototype.agents.draft_provider import (
     FallbackProvider,
     FaultInjectProvider,
     MockProvider,
-    TogetherFluxProvider,
 )
 
+logger = logging.getLogger(__name__)
 
 _PROVIDER_REGISTRY: dict[str, type[AbstractProvider]] = {
     "mock": MockProvider,
-    "together_flux": TogetherFluxProvider,
     "diffusers": DiffusersProvider,
 }
 
-# Default Draft generation fallback order
-DEFAULT_DRAFT_FALLBACK = ["together_flux", "koala", "diffusers", "mock"]
+# Default Draft generation fallback order (M0: nb2 replaces together_flux)
+DEFAULT_DRAFT_FALLBACK = ["nb2", "koala", "diffusers", "mock"]
 
 
 def build_fallback_provider(
@@ -37,7 +39,6 @@ def build_fallback_provider(
     """Build a FallbackProvider from a list of provider names.
 
     Unknown names are skipped. Always ensures MockProvider is the final fallback.
-    For together_flux, an api_key must be provided.
     If provider_names is None, uses DEFAULT_DRAFT_FALLBACK.
     """
     if provider_names is None:
@@ -51,8 +52,23 @@ def build_fallback_provider(
             continue
         seen.add(name)
         if name == "together_flux":
-            if api_key:
-                providers.append(TogetherFluxProvider(api_key=api_key))
+            # M0 compat: redirect to nb2
+            logger.warning("together_flux deprecated, skipping in fallback chain (use nb2)")
+        elif name == "nb2":
+            try:
+                from app.prototype.agents.nb2_provider import NB2Provider
+                from app.core.config import settings as _settings
+                key = (
+                    api_key
+                    or os.environ.get("GOOGLE_API_KEY", "")
+                    or os.environ.get("GEMINI_API_KEY", "")
+                    or _settings.GOOGLE_API_KEY
+                    or _settings.GEMINI_API_KEY
+                )
+                if key:
+                    providers.append(NB2Provider(api_key=key))
+            except ImportError:
+                pass
         elif name == "koala":
             try:
                 from app.prototype.agents.koala_provider import KoalaProvider

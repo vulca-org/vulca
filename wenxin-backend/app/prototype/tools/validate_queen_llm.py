@@ -260,7 +260,7 @@ pi = PipelineInput(
 )
 output = orch2.run_sync(pi)
 check("run_sync completes with LLM Queen", output.success)
-check("has final_decision", output.final_decision in ("accept", "stop", "rerun", "rerun_local", "rerun_global", "downgrade"))
+check("has final_decision", output.final_decision in ("accept", "stop", "rerun", "rerun_local"))
 
 # ============================================================
 print(f"\n{'='*60}")

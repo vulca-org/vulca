@@ -13,7 +13,6 @@ from app.prototype.agents.draft_provider import (
     AbstractProvider,
     DiffusersProvider,
     MockProvider,
-    TogetherFluxProvider,
 )
 from app.prototype.agents.nb2_provider import (
     NB2Provider,
@@ -87,12 +86,9 @@ def _get_provider(name: str, config: DraftConfig | None = None) -> AbstractProvi
     if name == "mock":
         return MockProvider()
     if name == "together_flux":
-        cfg = config or DraftConfig()
-        api_key = cfg.api_key or os.environ.get("TOGETHER_API_KEY", "")
-        if not api_key:
-            raise ValueError("TOGETHER_API_KEY required for together_flux provider")
-        model = cfg.provider_model or "black-forest-labs/FLUX.1-schnell"
-        return TogetherFluxProvider(api_key=api_key, model=model, timeout=cfg.timeout_seconds)
+        # M0 compat alias: together_flux → nb2 (Together.ai removed in Gemini migration)
+        logger.warning("together_flux is deprecated, redirecting to nb2 provider")
+        return _get_provider("nb2", config)
     if name == "diffusers":
         cfg = config or DraftConfig()
         model_id = cfg.provider_model or "runwayml/stable-diffusion-v1-5"
@@ -100,7 +96,6 @@ def _get_provider(name: str, config: DraftConfig | None = None) -> AbstractProvi
     if name == "koala":
         from app.prototype.agents.koala_provider import KoalaProvider
         kp = KoalaProvider()
-        # Wrap KoalaProvider in the AbstractProvider interface
         return _KoalaProviderAdapter(kp, config)
     if name == "nb2":
         from app.core.config import settings as _settings
@@ -114,7 +109,7 @@ def _get_provider(name: str, config: DraftConfig | None = None) -> AbstractProvi
         if not api_key:
             raise ValueError("GOOGLE_API_KEY (or GEMINI_API_KEY) required for nb2 provider")
         return NB2Provider(api_key=api_key)
-    raise ValueError(f"Unknown provider: {name!r} (available: mock, together_flux, diffusers, koala, nb2)")
+    raise ValueError(f"Unknown provider: {name!r} (available: mock, nb2, diffusers, koala)")
 
 
 class _KoalaProviderAdapter(AbstractProvider):
@@ -644,12 +639,14 @@ def _get_inpaint_provider(name: str) -> AbstractInpaintProvider:
         return MockInpaintProvider()
     if name in ("diffusers", "diffusers_inpaint"):
         return DiffusersInpaintProvider()
-    if name in ("flux_fill", "flux_fill_dev"):
-        from app.prototype.agents.flux_fill_provider import FluxFillProvider
-        return FluxFillProvider(use_pro=False)
-    if name == "flux_fill_pro":
-        from app.prototype.agents.flux_fill_provider import FluxFillProvider
-        return FluxFillProvider(use_pro=True)
+    if name in ("flux_fill", "flux_fill_dev", "flux_fill_pro"):
+        # M0: FLUX Fill removed; NB2 doesn't support inpaint → mock fallback
+        logger.warning("flux_fill inpaint deprecated (M0 Gemini migration), using mock")
+        return MockInpaintProvider()
+    if name == "nb2_regenerate":
+        # NB2 doesn't support inpaint; caller should use full regeneration instead.
+        # Return mock as a safe fallback for the inpaint interface.
+        return MockInpaintProvider()
     if name in ("controlnet_canny", "controlnet_depth"):
         cn_type = name.split("_", 1)[1]  # "canny" or "depth"
         return ControlNetInpaintProviderAdapter(cn_type)

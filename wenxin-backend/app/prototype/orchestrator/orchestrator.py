@@ -20,7 +20,7 @@ from app.prototype.agents.critic_config import CriticConfig, DIMENSIONS
 from app.prototype.agents.critic_types import CandidateScore, CritiqueInput, CritiqueOutput
 from app.prototype.agents.draft_agent import DraftAgent
 from app.prototype.agents.draft_config import DraftConfig
-from app.prototype.agents.draft_provider import FallbackProvider, MockProvider, TogetherFluxProvider
+from app.prototype.agents.draft_provider import FallbackProvider, MockProvider
 from app.prototype.agents.draft_types import DraftInput
 from app.prototype.agents.layer_state import LocalRerunRequest
 from app.prototype.agents.queen_agent import QueenAgent
@@ -55,8 +55,6 @@ logger = logging.getLogger(__name__)
 
 # Cost per image for real providers
 _COST_PER_IMAGE: dict[str, float] = {
-    "together_flux": 0.003,  # FLUX.1 Schnell default
-    "together_flux_dev": 0.025,  # FLUX.1 Dev (higher quality)
     "nb2": 0.067,  # Gemini 3.1 Flash image generation (~1K input tokens)
     "mock": 0.0,
 }
@@ -1164,11 +1162,14 @@ class PipelineOrchestrator:
             }
         return snapshot
 
-    @staticmethod
     def _resolve_inpaint_provider_name(self, rerun_dimensions: list[str] | None) -> str:
-        """Resolve inpaint provider name from draft config + rerun context."""
-        if self.d_cfg.provider == "together_flux":
-            return "flux_fill"
+        """Resolve inpaint provider name from draft config + rerun context.
+
+        M0: NB2 doesn't support targeted inpaint. Since Loop is ineffective
+        (+0.002 ns, Ghost Loop 30/30), rerun uses full NB2 regeneration.
+        """
+        if self.d_cfg.provider == "nb2":
+            return "nb2_regenerate"
         if self.d_cfg.provider == "diffusers":
             if self.d_cfg.controlnet_enabled and rerun_dimensions:
                 from app.prototype.agents.controlnet_provider import get_controlnet_type_for_layer

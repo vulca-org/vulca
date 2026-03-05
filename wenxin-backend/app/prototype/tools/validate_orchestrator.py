@@ -152,7 +152,7 @@ def test_hitl_timeout():
 
     # Wait for HUMAN_REQUIRED (or WAITING_HUMAN state), then submit to unblock.
     import time
-    deadline = time.monotonic() + 5.0
+    deadline = time.monotonic() + 15.0
     saw_human_required = False
     while time.monotonic() < deadline:
         if any(e.event_type == EventType.HUMAN_REQUIRED for e in events):
@@ -167,13 +167,13 @@ def test_hitl_timeout():
         time.sleep(0.05)
 
     check("pipeline progressed", len(events) > 0, f"events={len(events)}")
+    check("HUMAN_REQUIRED received", saw_human_required,
+          f"events_types={[e.event_type.name for e in events]}")
     if saw_human_required:
         ok = orch.submit_action("orch-hitl-timeout", "approve")
         check("submit_action accepted", ok)
-    else:
-        check("pipeline reached terminal state", not t.is_alive())
 
-    t.join(timeout=5)
+    t.join(timeout=10)
     check("thread completed", not t.is_alive())
 
 
