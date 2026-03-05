@@ -184,7 +184,7 @@ const INITIAL_STATE: PipelineState = {
   error: null,
 };
 
-interface CreateRunParams {
+export interface CreateRunParams {
   subject: string;
   tradition: string;
   provider?: string;
@@ -192,8 +192,13 @@ interface CreateRunParams {
   max_rounds?: number;
   enable_hitl?: boolean;
   enable_agent_critic?: boolean;
+  enable_parallel_critic?: boolean;
   use_graph?: boolean;
   template?: string;
+  // M3: custom topology
+  custom_nodes?: string[];
+  custom_edges?: [string, string][];
+  node_params?: Record<string, Record<string, unknown>>;
 }
 
 export function usePrototypePipeline() {

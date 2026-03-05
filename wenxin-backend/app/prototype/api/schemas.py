@@ -22,7 +22,13 @@ class CreateRunRequest(BaseModel):
     enable_agent_critic: bool = Field(default=False, description="Use LLM-based Critic (CriticLLM) instead of rule-only scoring")
     use_graph: bool = Field(default=False, description="Use LangGraph-based pipeline instead of classic orchestrator")
     template: str = Field(default="default", description="Graph template: default | fast_draft | critique_only | interactive_full | batch_eval")
+    enable_parallel_critic: bool = Field(default=False, description="Use parallel L1-L5 scoring (ThreadPoolExecutor) for faster Critic")
     idempotency_key: str | None = Field(default=None, description="Optional idempotency key")
+
+    # M3: custom topology support
+    custom_nodes: list[str] | None = Field(default=None, description="Custom topology node list (overrides template)")
+    custom_edges: list[tuple[str, str]] | None = Field(default=None, description="Custom topology edges (overrides template)")
+    node_params: dict[str, dict] | None = Field(default=None, description="Per-node config overrides keyed by agent id")
 
 
 class RunStatusResponse(BaseModel):

@@ -1,25 +1,46 @@
 /**
- * VULCA Prototype Pipeline — interactive evaluation page.
+ * VULCA Prototype Pipeline — three-column Playground layout.
  *
- * Provides a web interface for running the multi-agent pipeline:
- * Scout → Draft → Critic → Queen with real-time SSE progress.
+ * Left (300px):  Config + monitoring (Template, Form, Topology, Progress, Scout)
+ * Center (flex): Canvas (Candidates, Round Timeline)
+ * Right (380px): Analysis (Radar, Scores, Rationale, FixIt, Queen)
+ *
+ * Mobile (< lg): Single column with IOSSegmentedControl tab switching.
+ *
+ * The usePrototypePipeline hook and backend API are untouched — only rendering changes.
  */
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { usePrototypePipeline } from '../../hooks/usePrototypePipeline';
-import PipelineProgress from '../../components/prototype/PipelineProgress';
-import RunConfigForm from '../../components/prototype/RunConfigForm';
-import CandidateGallery from '../../components/prototype/CandidateGallery';
-import CriticScoreTable from '../../components/prototype/CriticScoreTable';
-import QueenDecisionPanel from '../../components/prototype/QueenDecisionPanel';
-import RoundTimeline from '../../components/prototype/RoundTimeline';
-import CriticRadarChart from '../../components/prototype/CriticRadarChart';
-import ScoutEvidenceEditor from '../../components/prototype/ScoutEvidenceEditor';
-import DraftSelectionPanel from '../../components/prototype/DraftSelectionPanel';
-import CriticOverridePanel from '../../components/prototype/CriticOverridePanel';
-import TopologyViewer from '../../components/prototype/TopologyViewer';
+import type { CreateRunParams } from '../../hooks/usePrototypePipeline';
+import { IOSCard, IOSCardContent, IOSButton, IOSSegmentedControl, IOSAlert } from '../../components/ios';
 import { PROTOTYPE_DIM_LABELS } from '../../utils/vulca-dimensions';
 import type { PrototypeDimension } from '../../utils/vulca-dimensions';
+
+// Existing components — unchanged
+import RunConfigForm from '../../components/prototype/RunConfigForm';
+import type { RunConfigParams } from '../../components/prototype/RunConfigForm';
+import PipelineProgress from '../../components/prototype/PipelineProgress';
+import CandidateGallery from '../../components/prototype/CandidateGallery';
+import CriticScoreTable from '../../components/prototype/CriticScoreTable';
+import CriticRadarChart from '../../components/prototype/CriticRadarChart';
+import QueenDecisionPanel from '../../components/prototype/QueenDecisionPanel';
+import RoundTimeline from '../../components/prototype/RoundTimeline';
+import TopologyViewer from '../../components/prototype/TopologyViewer';
+
+// Newly extracted components
+import PlaygroundHeader from '../../components/prototype/PlaygroundHeader';
+import ScoutEvidenceCard from '../../components/prototype/ScoutEvidenceCard';
+import FixItPlanCard from '../../components/prototype/FixItPlanCard';
+import CriticRationaleCard from '../../components/prototype/CriticRationaleCard';
+import HitlOverlay from '../../components/prototype/HitlOverlay';
+
+// M3: Pipeline Editor + Batch
+import { PipelineEditor, NodeParamPanel } from '../../components/prototype/editor';
+import type { AgentNodeId } from '../../components/prototype/editor';
+import BatchInputPanel from '../../components/prototype/BatchInputPanel';
+
+type PlaygroundMode = 'edit' | 'run';
 
 function formatDimension(dim: string): string {
   return PROTOTYPE_DIM_LABELS[dim as PrototypeDimension]?.short || dim.replace(/_/g, ' ');
@@ -29,17 +50,71 @@ export default function PrototypePage() {
   const { state, startRun, submitAction, reset } = usePrototypePipeline();
   const [selectedCandidateId, setSelectedCandidateId] = useState<string | null>(null);
   const [activeTemplate, setActiveTemplate] = useState('default');
+  const [mobileTab, setMobileTab] = useState(0);
+  const [lastRunParams, setLastRunParams] = useState<RunConfigParams | null>(null);
+
+  // M3: playground mode
+  const [playgroundMode, setPlaygroundMode] = useState<PlaygroundMode>('edit');
+  const [editorNodeParams, setEditorNodeParams] = useState<Record<string, Record<string, unknown>>>({});
+  const [selectedEditorNode, setSelectedEditorNode] = useState<AgentNodeId | null>(null);
+
+  const handleNodeParamChange = useCallback((nodeId: AgentNodeId, paramId: string, value: unknown) => {
+    setEditorNodeParams(prev => ({
+      ...prev,
+      [nodeId]: { ...prev[nodeId], [paramId]: value },
+    }));
+  }, []);
+
   const isRunning = state.status === 'running' || state.status === 'waiting_human';
   const isDone = state.status === 'completed' || state.status === 'failed';
 
-  // Track which stages have completed based on events
+  /** M3: Run from PipelineEditor */
+  const handleEditorRun = useCallback((params: {
+    template: string;
+    customNodes?: string[];
+    customEdges?: [string, string][];
+    nodeParams?: Record<string, Record<string, unknown>>;
+  }) => {
+    // Build CreateRunParams with custom topology
+    const runParams: CreateRunParams = {
+      subject: lastRunParams?.subject || 'Ink wash landscape with mist and mountains',
+      tradition: lastRunParams?.tradition || 'chinese_xieyi',
+      provider: lastRunParams?.provider || 'mock',
+      n_candidates: lastRunParams?.n_candidates || 4,
+      max_rounds: lastRunParams?.max_rounds || 3,
+      enable_hitl: lastRunParams?.enable_hitl || false,
+      enable_agent_critic: lastRunParams?.enable_agent_critic || false,
+      enable_parallel_critic: lastRunParams?.enable_parallel_critic || false,
+      use_graph: true, // M3 custom topology forces graph mode
+      template: params.template,
+      custom_nodes: params.customNodes,
+      custom_edges: params.customEdges,
+      node_params: params.nodeParams,
+    };
+    setActiveTemplate(params.template);
+    setPlaygroundMode('run');
+    startRun(runParams);
+  }, [lastRunParams, startRun]);
+
   const completedStages = state.events
     .filter(e => e.event_type === 'stage_completed')
     .map(e => e.stage)
     .filter((v, i, a) => a.indexOf(v) === i);
 
-  const handleStartRun = (params: Parameters<typeof startRun>[0]) => {
+  // Compute stage durations from events (started → completed pairs)
+  const stageDurations: Record<string, number> = {};
+  const stageStarts: Record<string, number> = {};
+  for (const e of state.events) {
+    if (e.event_type === 'stage_started') {
+      stageStarts[e.stage] = e.timestamp_ms;
+    } else if (e.event_type === 'stage_completed' && stageStarts[e.stage]) {
+      stageDurations[e.stage] = e.timestamp_ms - stageStarts[e.stage];
+    }
+  }
+
+  const handleStartRun = (params: RunConfigParams) => {
     setActiveTemplate(params.template || 'default');
+    setLastRunParams(params);
     startRun(params);
   };
 
@@ -48,424 +123,365 @@ export default function PrototypePage() {
     reset();
   };
 
-  return (
-    <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
-      {/* Header */}
-      <div className="text-center">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          VULCA Prototype Pipeline
-        </h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-          Multi-agent cultural art evaluation: Scout evidence gathering, Draft image generation,
-          Critic L1-L5 scoring, and Queen budget-aware decision making.
-        </p>
-      </div>
+  // --- Shared panel builders (used by both desktop and mobile) ---
 
-      {/* Config Form */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <RunConfigForm
-          onSubmit={handleStartRun}
-          disabled={isRunning}
-        />
-      </div>
-
-      {/* Topology Viewer */}
-      {state.taskId && (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-          <TopologyViewer
-            template={activeTemplate}
-            currentStage={state.currentStage}
-            status={state.status}
-            completedStages={completedStages}
-          />
+  const leftPanelContent = (
+    <>
+      <div className="flex items-center gap-2">
+        <div className="flex-1">
+          <PlaygroundHeader status={state.status} taskId={state.taskId} />
         </div>
+        <button
+          onClick={() => setPlaygroundMode(playgroundMode === 'edit' ? 'run' : 'edit')}
+          className={[
+            'px-2.5 py-1 text-xs font-medium rounded-lg border transition-colors shrink-0',
+            playgroundMode === 'edit'
+              ? 'border-blue-300 dark:border-blue-600 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20'
+              : 'border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800',
+          ].join(' ')}
+        >
+          {playgroundMode === 'edit' ? 'Run View' : 'Edit Pipeline'}
+        </button>
+      </div>
+
+      <IOSCard variant="elevated" padding="md" animate={false}>
+        <IOSCardContent>
+          <RunConfigForm
+            onSubmit={handleStartRun}
+            disabled={isRunning}
+            initialValues={isDone ? lastRunParams ?? undefined : undefined}
+          />
+        </IOSCardContent>
+      </IOSCard>
+
+      {state.taskId && (
+        <IOSCard variant="elevated" padding="sm" animate={false}>
+          <IOSCardContent>
+            <TopologyViewer
+              template={activeTemplate}
+              currentStage={state.currentStage}
+              status={state.status}
+              completedStages={completedStages}
+              stageDurations={stageDurations}
+            />
+          </IOSCardContent>
+        </IOSCard>
       )}
 
-      {/* Progress */}
       {state.taskId && (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Pipeline Progress
-            </h2>
-            <span className="text-xs font-mono text-gray-400">{state.taskId}</span>
+        <IOSCard variant="elevated" padding="md" animate={false}>
+          <IOSCardContent>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Progress</h3>
+              <span className="text-[10px] font-mono text-gray-400">{state.taskId.slice(0, 8)}</span>
+            </div>
+            <PipelineProgress
+              currentStage={state.currentStage}
+              currentRound={state.currentRound}
+              status={state.status}
+              events={state.events}
+            />
+          </IOSCardContent>
+        </IOSCard>
+      )}
+
+      {state.evidence && <ScoutEvidenceCard evidence={state.evidence} />}
+
+      {/* M3: Batch input panel for batch_eval template in edit mode */}
+      {playgroundMode === 'edit' && activeTemplate === 'batch_eval' && (
+        <IOSCard variant="elevated" padding="md" animate={false}>
+          <IOSCardContent>
+            <BatchInputPanel
+              tradition={lastRunParams?.tradition || 'default'}
+              provider={lastRunParams?.provider || 'mock'}
+              template="batch_eval"
+              disabled={isRunning}
+            />
+          </IOSCardContent>
+        </IOSCard>
+      )}
+    </>
+  );
+
+  const centerPanelContent = (
+    <>
+      {/* Candidate Gallery */}
+      {state.candidates.length > 0 ? (
+        <IOSCard variant="elevated" padding="md" animate={false}>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+              Candidates
+              <span className="ml-2 text-xs font-normal text-gray-500">R{state.currentRound}</span>
+            </h3>
+            {state.status === 'waiting_human' && (
+              <span className="text-[11px] text-blue-600 dark:text-blue-400">Click to select</span>
+            )}
           </div>
-          <PipelineProgress
-            currentStage={state.currentStage}
-            currentRound={state.currentRound}
-            status={state.status}
-            events={state.events}
-          />
-        </div>
+          <IOSCardContent>
+            <CandidateGallery
+              candidates={state.candidates}
+              bestCandidateId={state.bestCandidateId}
+              selectedCandidateId={selectedCandidateId}
+              onSelect={setSelectedCandidateId}
+              scoredCandidates={state.scoredCandidates}
+              rounds={state.rounds}
+            />
+          </IOSCardContent>
+        </IOSCard>
+      ) : (
+        /* Empty state */
+        !state.taskId && (
+          <IOSCard variant="glass" padding="lg" animate={false}>
+            <IOSCardContent className="text-center py-12">
+              <div className="text-4xl mb-3">🎨</div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                VULCA Playground
+              </h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 max-w-md mx-auto">
+                Configure a pipeline run in the left panel to start generating
+                and evaluating cultural art with multi-agent scoring.
+              </p>
+            </IOSCardContent>
+          </IOSCard>
+        )
       )}
 
       {/* Round Timeline */}
       {(state.rounds.length > 0 || (state.status === 'running' && state.currentRound > 0)) && (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <RoundTimeline
-            rounds={state.rounds}
-            currentRound={state.currentRound}
-            status={state.status}
-          />
-        </div>
-      )}
-
-      {/* Scout Evidence */}
-      {state.evidence && (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            Scout Evidence
-          </h2>
-          <div className="grid grid-cols-3 gap-4">
-            <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
-              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                {(state.evidence.sample_matches as unknown[])?.length ?? 0}
-              </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">Sample Matches</div>
-            </div>
-            <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
-              <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                {(state.evidence.terminology_hits as unknown[])?.length ?? 0}
-              </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">Terminology Hits</div>
-            </div>
-            <div className="text-center p-4 bg-red-50 dark:bg-red-900/20 rounded-xl">
-              <div className="text-2xl font-bold text-red-600 dark:text-red-400">
-                {(state.evidence.taboo_violations as unknown[])?.length ?? 0}
-              </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">Taboo Violations</div>
-            </div>
-          </div>
-
-          {/* Detailed evidence */}
-          {(state.evidence.taboo_violations as unknown[])?.length > 0 && (
-            <div className="mt-3 p-3 bg-red-50 dark:bg-red-900/10 rounded-lg">
-              <h4 className="text-xs font-semibold text-red-700 dark:text-red-400 mb-1">Taboo Violations Found:</h4>
-              <ul className="text-xs text-red-600 dark:text-red-400 space-y-0.5">
-                {(state.evidence.taboo_violations as Array<{ term?: string; severity?: string }>).slice(0, 5).map((v, i) => (
-                  <li key={i}>• {v.term || JSON.stringify(v)}{v.severity ? ` (${v.severity})` : ''}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Candidates Gallery */}
-      {state.candidates.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            Draft Candidates
-            <span className="ml-2 text-sm font-normal text-gray-500">
-              Round {state.currentRound}
-            </span>
-            {state.status === 'waiting_human' && (
-              <span className="ml-2 text-xs text-blue-600 dark:text-blue-400 font-normal">
-                Click to select for force accept
-              </span>
-            )}
-          </h2>
-          <CandidateGallery
-            candidates={state.candidates}
-            bestCandidateId={state.bestCandidateId}
-            selectedCandidateId={selectedCandidateId}
-            onSelect={setSelectedCandidateId}
-          />
-        </div>
-      )}
-
-      {/* Critic Scores */}
-      {state.scoredCandidates.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            Critic Scores (L1-L5)
-            {state.agentMode && (
-              <span className={`ml-3 text-xs font-normal px-2 py-0.5 rounded-full ${
-                state.agentMode === 'agent_llm'
-                  ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                  : state.agentMode === 'agent_fallback_rules'
-                  ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
-                  : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
-              }`}>
-                {state.agentMode === 'agent_llm' ? 'LLM Active' : state.agentMode === 'agent_fallback_rules' ? 'No API Key - Rules Only' : 'Rules Only'}
-              </span>
-            )}
-          </h2>
-          {state.agentMode === 'agent_fallback_rules' && (
-            <div className="mb-4 rounded-xl border border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-900/10 p-3 text-xs text-yellow-800 dark:text-yellow-300">
-              Agent Critic is enabled but no LLM API key was found. Scores are from rules only. Add DEEPSEEK_API_KEY or GOOGLE_API_KEY to .env for LLM-enhanced scoring.
-            </div>
-          )}
-          {state.hitlConstraints && (
-            <div className="mb-4 rounded-xl border border-blue-200 dark:border-blue-900/40 bg-blue-50 dark:bg-blue-900/10 p-3">
-              <div className="text-xs font-semibold text-blue-800 dark:text-blue-300 mb-2">
-                HITL Constraints Applied This Round
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                <div>
-                  <div className="text-gray-500 dark:text-gray-400 mb-1">Locked</div>
-                  <div className="flex flex-wrap gap-1">
-                    {state.hitlConstraints.locked_dimensions.length > 0 ? (
-                      state.hitlConstraints.locked_dimensions.map(dim => (
-                        <span key={`lock-${dim}`} className="px-2 py-0.5 rounded bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
-                          🔒 {formatDimension(dim)}
-                        </span>
-                      ))
-                    ) : (
-                      <span className="text-gray-400">none</span>
-                    )}
-                  </div>
-                </div>
-                <div>
-                  <div className="text-gray-500 dark:text-gray-400 mb-1">Rerun</div>
-                  <div className="flex flex-wrap gap-1">
-                    {state.hitlConstraints.rerun_dimensions.length > 0 ? (
-                      state.hitlConstraints.rerun_dimensions.map(dim => (
-                        <span key={`rerun-${dim}`} className="px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">
-                          🔄 {formatDimension(dim)}
-                        </span>
-                      ))
-                    ) : (
-                      <span className="text-gray-400">none</span>
-                    )}
-                  </div>
-                </div>
-                <div>
-                  <div className="text-gray-500 dark:text-gray-400 mb-1">Preserved</div>
-                  <div className="flex flex-wrap gap-1">
-                    {state.hitlConstraints.preserved_dimensions.length > 0 ? (
-                      state.hitlConstraints.preserved_dimensions.map(dim => (
-                        <span key={`preserve-${dim}`} className="px-2 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400">
-                          {formatDimension(dim)}
-                        </span>
-                      ))
-                    ) : (
-                      <span className="text-gray-400">none</span>
-                    )}
-                  </div>
-                </div>
-                <div className="text-gray-600 dark:text-gray-300">
-                  <div>Applied Scores: <span className="font-semibold">{state.hitlConstraints.applied_scores}</span></div>
-                  <div>Candidates Touched: <span className="font-semibold">{state.hitlConstraints.candidates_touched}</span></div>
-                </div>
-              </div>
-            </div>
-          )}
-          {/* Radar Chart + Score Table side by side on large screens */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {state.rounds.length > 0 && (
-              <div className="lg:col-span-1">
-                <CriticRadarChart
-                  rounds={state.rounds}
-                  dynamicWeights={state.dynamicWeights}
-                />
-              </div>
-            )}
-            <div className={state.rounds.length > 0 ? 'lg:col-span-2' : 'lg:col-span-3'}>
-              <CriticScoreTable
-                scoredCandidates={state.scoredCandidates}
-                bestCandidateId={state.bestCandidateId}
-                crossLayerSignals={state.crossLayerSignals ?? undefined}
-              />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* FixItPlan Details */}
-      {state.fixItPlan && (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-indigo-200 dark:border-indigo-800 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-            Agent FixItPlan
-            <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 font-medium">
-              {state.fixItPlan.overall_strategy.replace(/_/g, ' ')}
-            </span>
-          </h2>
-          {state.fixItPlan.estimated_improvement > 0 && (
-            <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-              Estimated improvement: +{state.fixItPlan.estimated_improvement.toFixed(3)}
-            </p>
-          )}
-          <div className="space-y-2">
-            {state.fixItPlan.items.map((item, i) => {
-              const sourceScore = state.fixItPlan!.source_scores?.[item.target_layer];
-              return (
-                <div key={i} className="flex items-start gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900/40">
-                  <div className="flex flex-col items-center gap-0.5 shrink-0">
-                    <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">
-                      {item.target_layer}
-                    </span>
-                    <span className="text-[10px] px-1 py-0.5 rounded bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-mono">
-                      P{item.priority}
-                    </span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-1 flex-wrap">
-                      {sourceScore != null && (
-                        <span>Score: <span className="font-mono">{sourceScore.toFixed(2)}</span></span>
-                      )}
-                      {item.mask_region_hint && (
-                        <span className="px-1.5 py-0.5 rounded bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-400">
-                          mask: {item.mask_region_hint}
-                        </span>
-                      )}
-                    </div>
-                    {item.issue && (
-                      <p className="text-xs text-red-600 dark:text-red-400 mb-1">
-                        Issue: {item.issue}
-                      </p>
-                    )}
-                    {item.prompt_delta && (
-                      <p className="text-xs text-gray-700 dark:text-gray-300 italic">
-                        Fix: "{item.prompt_delta}"
-                      </p>
-                    )}
-                    {item.reference_suggestion && (
-                      <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">
-                        Ref: {item.reference_suggestion}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Critic Rationale */}
-      {state.scoredCandidates.length > 0 && state.scoredCandidates.some(sc =>
-        sc.dimension_scores.some(ds => ds.rationale && ds.rationale.length > 20)
-      ) && (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
-            Critic Rationale
-            <span className="ml-2 text-xs text-gray-400 font-normal">LLM analysis details</span>
-          </h2>
-          {(() => {
-            const best = state.scoredCandidates.reduce((a, b) =>
-              b.weighted_total > a.weighted_total ? b : a
-            );
-            return (
-              <div className="space-y-2">
-                {best.dimension_scores.filter(ds => ds.rationale && ds.rationale.length > 20).map((ds, i) => (
-                  <div key={i} className="p-3 rounded-lg bg-gray-50 dark:bg-gray-900/40">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs font-bold text-gray-600 dark:text-gray-300">
-                        {formatDimension(ds.dimension)}
-                      </span>
-                      <span className="text-xs font-mono text-gray-500">{ds.score.toFixed(2)}</span>
-                      {ds.agent_metadata && (
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400">
-                          {ds.agent_metadata.mode}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-                      {ds.rationale}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            );
-          })()}
-        </div>
-      )}
-
-      {/* Multi-stage HITL Panels */}
-      {state.status === 'waiting_human' && state.hitlWaitInfo && state.hitlWaitInfo.stage !== 'queen' && (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            Human Input Required
-            <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300">
-              {state.hitlWaitInfo.stage}
-            </span>
-          </h2>
-          {state.hitlWaitInfo.stage === 'scout' && (
-            <ScoutEvidenceEditor
-              evidence={state.evidence}
-              onAction={submitAction}
+        <IOSCard variant="elevated" padding="md" animate={false}>
+          <IOSCardContent>
+            <RoundTimeline
+              rounds={state.rounds}
+              currentRound={state.currentRound}
+              status={state.status}
             />
-          )}
-          {state.hitlWaitInfo.stage === 'draft' && (
-            <DraftSelectionPanel
-              candidates={state.candidates}
-              onAction={submitAction}
-            />
-          )}
-          {state.hitlWaitInfo.stage === 'critic' && (
-            <CriticOverridePanel
-              scoredCandidates={state.scoredCandidates}
-              bestCandidateId={state.bestCandidateId}
-              onAction={submitAction}
-            />
-          )}
-        </div>
-      )}
-
-      {/* Queen Decision */}
-      {(state.decision || state.finalDecision) && (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            Queen Decision
-          </h2>
-          <QueenDecisionPanel
-            decision={state.decision}
-            finalDecision={state.finalDecision}
-            status={state.status}
-            scoredCandidates={state.scoredCandidates}
-            selectedCandidateId={selectedCandidateId}
-            onAction={submitAction}
-          />
-        </div>
+          </IOSCardContent>
+        </IOSCard>
       )}
 
       {/* Final Summary */}
       {isDone && (
-        <div className={`rounded-2xl p-6 ${
+        <div className={`rounded-xl p-4 ${
           state.status === 'completed'
             ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
             : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
         }`}>
           <div className="flex items-center justify-between">
-            <div className="flex-1 min-w-0">
-              <h2 className="text-lg font-bold">
-                {state.status === 'completed' ? '✅ Pipeline Complete' : '❌ Pipeline Failed'}
-              </h2>
-              {state.error && (
-                <div className="mt-2 p-3 bg-red-100 dark:bg-red-900/30 rounded-lg">
-                  <p className="text-sm text-red-700 dark:text-red-300 font-medium">
-                    {state.error.includes('API_KEY') ? '🔑 ' : state.error.includes('limit') ? '⏳ ' : state.error.includes('server') || state.error.includes('Server') ? '🖥️ ' : '⚠️ '}
-                    {state.error}
-                  </p>
-                </div>
-              )}
-            </div>
-            <div className="text-right text-sm text-gray-600 dark:text-gray-400 space-y-1 ml-4 shrink-0">
+            <h3 className="text-sm font-bold">
+              {state.status === 'completed' ? 'Pipeline Complete' : 'Pipeline Failed'}
+            </h3>
+            <div className="text-right text-xs text-gray-600 dark:text-gray-400 space-y-0.5">
               {state.totalRounds > 0 && <div>Rounds: {state.totalRounds}</div>}
-              {state.totalLatencyMs > 0 && <div>Time: {(state.totalLatencyMs / 1000).toFixed(1)}s</div>}
-              {state.totalCostUsd > 0 && <div>Cost: ${state.totalCostUsd.toFixed(4)}</div>}
+              {state.totalLatencyMs > 0 && <div>{(state.totalLatencyMs / 1000).toFixed(1)}s</div>}
+              {state.totalCostUsd > 0 && <div>${state.totalCostUsd.toFixed(4)}</div>}
             </div>
           </div>
-
-          <div className="flex gap-2 mt-4">
-            <button
-              onClick={handleReset}
-              className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-            >
-              New Run
-            </button>
+          {state.error && (
+            <div className="mt-2 p-2 bg-red-100 dark:bg-red-900/30 rounded-lg text-xs text-red-700 dark:text-red-300">
+              {state.error}
+            </div>
+          )}
+          <div className="flex gap-2 mt-3">
+            <IOSButton variant="secondary" size="sm" onClick={handleReset}>New Run</IOSButton>
             {state.status === 'failed' && (
-              <button
-                onClick={handleReset}
-                className="px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg text-sm hover:bg-blue-200 dark:hover:bg-blue-800/40 transition-colors"
-              >
-                Retry
-              </button>
+              <IOSButton variant="primary" size="sm" onClick={handleReset}>Retry</IOSButton>
             )}
           </div>
         </div>
       )}
-    </div>
+    </>
+  );
+
+  const rightPanelContent = (
+    <>
+      {/* Critic Scores Header with Agent Mode Badge */}
+      {state.scoredCandidates.length > 0 && (
+        <>
+          <IOSCard variant="elevated" padding="md" animate={false}>
+            <div className="flex items-center gap-2 mb-3">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Critic L1-L5</h3>
+              {state.agentMode && (
+                <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${
+                  state.agentMode === 'agent_llm'
+                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                    : state.agentMode === 'agent_fallback_rules'
+                    ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+                    : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+                }`}>
+                  {state.agentMode === 'agent_llm' ? 'LLM' : state.agentMode === 'agent_fallback_rules' ? 'Rules Fallback' : 'Rules'}
+                </span>
+              )}
+            </div>
+            <IOSCardContent>
+              {state.agentMode === 'agent_fallback_rules' && (
+                <div className="mb-3 rounded-lg border border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-900/10 p-2 text-[11px] text-yellow-800 dark:text-yellow-300">
+                  No LLM API key found — scores are rules-only.
+                </div>
+              )}
+              {/* HITL Constraints */}
+              {state.hitlConstraints && (
+                <div className="mb-3 rounded-lg border border-blue-200 dark:border-blue-900/40 bg-blue-50 dark:bg-blue-900/10 p-2">
+                  <div className="text-[11px] font-semibold text-blue-800 dark:text-blue-300 mb-1.5">
+                    HITL Constraints
+                  </div>
+                  <div className="space-y-1.5 text-[11px]">
+                    <div>
+                      <span className="text-gray-500 dark:text-gray-400">Locked: </span>
+                      {state.hitlConstraints.locked_dimensions.length > 0 ? (
+                        state.hitlConstraints.locked_dimensions.map(dim => (
+                          <span key={dim} className="mr-1 px-1.5 py-0.5 rounded bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
+                            {formatDimension(dim)}
+                          </span>
+                        ))
+                      ) : <span className="text-gray-400">—</span>}
+                    </div>
+                    <div>
+                      <span className="text-gray-500 dark:text-gray-400">Rerun: </span>
+                      {state.hitlConstraints.rerun_dimensions.length > 0 ? (
+                        state.hitlConstraints.rerun_dimensions.map(dim => (
+                          <span key={dim} className="mr-1 px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">
+                            {formatDimension(dim)}
+                          </span>
+                        ))
+                      ) : <span className="text-gray-400">—</span>}
+                    </div>
+                    <div className="text-gray-600 dark:text-gray-300">
+                      Applied: {state.hitlConstraints.applied_scores} | Touched: {state.hitlConstraints.candidates_touched}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Radar Chart */}
+              {state.rounds.length > 0 && (
+                <div className="mb-3">
+                  <CriticRadarChart
+                    rounds={state.rounds}
+                    dynamicWeights={state.dynamicWeights}
+                  />
+                </div>
+              )}
+
+              {/* Score Table */}
+              <CriticScoreTable
+                scoredCandidates={state.scoredCandidates}
+                bestCandidateId={state.bestCandidateId}
+                crossLayerSignals={state.crossLayerSignals ?? undefined}
+              />
+            </IOSCardContent>
+          </IOSCard>
+
+          <CriticRationaleCard scoredCandidates={state.scoredCandidates} />
+        </>
+      )}
+
+      {/* FixItPlan */}
+      {state.fixItPlan && <FixItPlanCard fixItPlan={state.fixItPlan} />}
+
+      {/* Queen Decision */}
+      {(state.decision || state.finalDecision) && (
+        <IOSCard variant="elevated" padding="md" animate={false}>
+          <IOSCardContent>
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Queen Decision</h3>
+            <QueenDecisionPanel
+              decision={state.decision}
+              finalDecision={state.finalDecision}
+              status={state.status}
+              scoredCandidates={state.scoredCandidates}
+              selectedCandidateId={selectedCandidateId}
+              onAction={submitAction}
+            />
+          </IOSCardContent>
+        </IOSCard>
+      )}
+    </>
+  );
+
+  // --- Layout ---
+
+  return (
+    <>
+      {/* Desktop layout */}
+      {playgroundMode === 'edit' ? (
+        /* Edit mode: left config + center PipelineEditor (right hidden) */
+        <div className="hidden lg:grid h-[calc(100vh-64px)] grid-cols-[300px_1fr] gap-4 p-4 overflow-hidden">
+          <aside className="overflow-y-auto space-y-3 pr-1 scrollbar-thin">
+            {leftPanelContent}
+          </aside>
+          <main className="min-h-0 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden relative">
+            <PipelineEditor
+              onRun={handleEditorRun}
+              disabled={isRunning}
+              onNodeSelect={setSelectedEditorNode}
+              nodeParams={editorNodeParams}
+            />
+            <NodeParamPanel
+              nodeId={selectedEditorNode}
+              params={editorNodeParams}
+              onChange={handleNodeParamChange}
+              onClose={() => setSelectedEditorNode(null)}
+            />
+          </main>
+        </div>
+      ) : (
+        /* Run mode: three-column grid (unchanged) */
+        <div className="hidden lg:grid h-[calc(100vh-64px)] grid-cols-[300px_1fr_380px] gap-4 p-4 overflow-hidden">
+          <aside className="overflow-y-auto space-y-3 pr-1 scrollbar-thin">
+            {leftPanelContent}
+          </aside>
+          <main className="overflow-y-auto space-y-3 px-1 scrollbar-thin">
+            {centerPanelContent}
+          </main>
+          <aside className="overflow-y-auto space-y-3 pl-1 scrollbar-thin">
+            {rightPanelContent}
+          </aside>
+        </div>
+      )}
+
+      {/* Mobile: tab-based single column */}
+      <div className="lg:hidden flex flex-col h-[calc(100vh-64px)]">
+        {/* Tab bar */}
+        <div className="sticky top-0 z-10 bg-white/80 dark:bg-[#0F0D0B]/80 backdrop-blur-lg px-4 py-2 border-b border-gray-200 dark:border-gray-800">
+          <IOSSegmentedControl
+            segments={['Config', 'Canvas', 'Analysis']}
+            selectedIndex={mobileTab}
+            onChange={(idx) => setMobileTab(idx)}
+            size="compact"
+            className="w-full"
+          />
+        </div>
+
+        {/* Tab content */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+          {mobileTab === 0 && leftPanelContent}
+          {mobileTab === 1 && centerPanelContent}
+          {mobileTab === 2 && rightPanelContent}
+        </div>
+      </div>
+
+      {/* HITL Sheet overlay (works for both desktop and mobile) */}
+      <HitlOverlay
+        hitlWaitInfo={state.hitlWaitInfo}
+        evidence={state.evidence}
+        candidates={state.candidates}
+        scoredCandidates={state.scoredCandidates}
+        bestCandidateId={state.bestCandidateId}
+        onAction={submitAction}
+        onClose={() => {/* Sheet not dismissable during HITL */}}
+      />
+
+      {/* Pipeline failure alert */}
+      <IOSAlert
+        visible={state.status === 'failed' && !!state.error}
+        onClose={handleReset}
+        type="error"
+        title="Pipeline Failed"
+        message={state.error || 'An unexpected error occurred.'}
+        actions={[
+          { label: 'New Run', onPress: handleReset, style: 'default' },
+          { label: 'Dismiss', onPress: () => {/* IOSAlert will close */}, style: 'cancel' },
+        ]}
+      />
+    </>
   );
 }

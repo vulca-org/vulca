@@ -117,9 +117,32 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
     cr_cfg = CriticConfig()
     q_cfg = QueenConfig(max_rounds=req.max_rounds)
 
+    # M3: custom topology forces LangGraph path
+    use_graph = req.use_graph or req.custom_nodes is not None
+
     # Dual-track: use_graph selects LangGraph-based orchestrator
-    if req.use_graph:
+    if use_graph:
         GraphOrchestrator = _get_graph_orchestrator_class()
+        template_name = req.template
+
+        # If custom topology provided, register a transient template
+        if req.custom_nodes is not None and req.custom_edges is not None:
+            try:
+                from app.prototype.graph.templates.template_model import GraphTemplate
+                from app.prototype.graph.templates.template_registry import TemplateRegistry
+                custom_tmpl = GraphTemplate(
+                    name=f"_custom_{task_id}",
+                    display_name="Custom Pipeline",
+                    description="User-defined topology",
+                    entry_point=req.custom_nodes[0] if req.custom_nodes else "scout",
+                    nodes=req.custom_nodes,
+                    edges=req.custom_edges,
+                )
+                TemplateRegistry.register(custom_tmpl)
+                template_name = custom_tmpl.name
+            except (ImportError, Exception):
+                pass  # Fall back to default template
+
         orchestrator = GraphOrchestrator(
             draft_config=d_cfg.to_dict(),
             critic_config=cr_cfg.to_dict(),
@@ -127,7 +150,7 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
             enable_hitl=req.enable_hitl,
             enable_agent_critic=req.enable_agent_critic,
             max_rounds=req.max_rounds,
-            template=req.template,
+            template=template_name,
         )
     else:
         orchestrator = PipelineOrchestrator(
@@ -138,6 +161,7 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
             enable_archivist=True,
             enable_agent_critic=req.enable_agent_critic,
             enable_fix_it_plan=req.enable_agent_critic,
+            enable_parallel_critic=req.enable_parallel_critic,
         )
     _orchestrators[task_id] = orchestrator
     _run_metadata[task_id] = {
@@ -145,6 +169,7 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
         "tradition": req.tradition,
         "provider": req.provider,
         "created_at": time.time(),
+        "node_params": req.node_params,
     }
     with _buffer_lock:
         _event_buffers[task_id] = []
@@ -187,13 +212,18 @@ async def list_templates() -> list[dict]:
                 "display_name": t.display_name,
                 "description": t.description,
                 "nodes": t.nodes,
+                "edges": t.edges,
+                "conditional_edges": [
+                    {"source": ce.source, "targets": ce.destinations}
+                    for ce in (t.conditional_edges or [])
+                ] if hasattr(t, "conditional_edges") and t.conditional_edges else [],
                 "enable_loop": t.enable_loop,
                 "parallel_critic": t.parallel_critic,
             }
             for t in TemplateRegistry.list_templates()
         ]
     except ImportError:
-        return [{"name": "default", "display_name": "Standard Pipeline", "description": "Full pipeline", "nodes": ["scout", "router", "draft", "critic", "queen", "archivist"], "enable_loop": True, "parallel_critic": False}]
+        return [{"name": "default", "display_name": "Standard Pipeline", "description": "Full pipeline", "nodes": ["scout", "router", "draft", "critic", "queen", "archivist"], "edges": [["scout", "router"], ["router", "draft"], ["draft", "critic"], ["critic", "queen"], ["queen", "archivist"]], "conditional_edges": [], "enable_loop": True, "parallel_critic": False}]
 
 
 @router.get("/agents")

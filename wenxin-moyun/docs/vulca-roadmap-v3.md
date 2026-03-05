@@ -25,7 +25,7 @@
 
 > **目标**：从 4 供应商统一为 Gemini 单栈，砍掉无效代码路径
 > **M0.1 状态**：✅ 代码准备 + 全量审查修复完成 (2026-03-05)
-> **M0.2 阻塞**：🚫 等投资人 Google Cloud Billing 开通（key 已收到，配额为 0）
+> **M0.2 状态**：✅ 端到端验证通过 (2026-03-05) — wangjindong key 已激活
 
 ### 0.1 代码准备（不依赖 key，现在可做）
 
@@ -45,11 +45,11 @@
 
 ### 0.2 Key 激活后验证
 
-- [ ] **Gemini 文本测试**：Gemini 2.5 Flash 文本推理（替代 DeepSeek V3.2）
-- [ ] **Gemini VLM 测试**：Gemini 2.5 Flash Vision L1-L5 评分（替代 globalai.vip 代理）
-- [ ] **NB2 测试**：gemini-3.1-flash-image-preview 图像生成（已有代码，换 key 即可）
-- [ ] **端到端真实模式**：NB2 + Gemini VLM 全链路，确认得分与消融实验一致
-- [ ] **成本验证**：单任务成本对比（预期 ~$0.04/任务，与 globalai.vip 时期持平）
+- [x] **Gemini 文本测试**：Gemini 2.5 Flash 文本推理（替代 DeepSeek V3.2）✅ 2026-03-05
+- [x] **Gemini VLM 测试**：Gemini 2.5 Flash Vision L1-L5 评分（替代 globalai.vip 代理）✅ 2026-03-05
+- [x] **NB2 测试**：gemini-3.1-flash-image-preview 图像生成（4张写意山水，127.8s）✅ 2026-03-05
+- [x] **端到端真实模式**：NB2 + Gemini VLM 全链路，得分 0.964（首轮 accept）✅ 2026-03-05
+- [x] **成本验证**：$0.268/run（4张NB2），符合预期 ✅ 2026-03-05
 
 ---
 
@@ -58,16 +58,20 @@
 > **目标**：250s → 60s，Playground 体验的前提
 > **依赖**：M0.2 完成（需要真实 API 测速）
 
-- [ ] **启用 ParallelDimensionScorer**：`interactive_full` 模板已配置 `parallel_critic=True`，验证真实模式下并行 L1-L5 评分
-  - 文件：`app/prototype/agents/parallel_scorer.py`, `graph/nodes/critic_node.py`
+- [x] **启用 ParallelDimensionScorer**：PipelineOrchestrator 新增 `enable_parallel_critic` 参数，走 `build_critique_output` + ThreadPoolExecutor 并行路径 ✅ 2026-03-05
+  - 文件：`orchestrator.py`, `parallel_scorer.py`, `api/schemas.py`, `api/routes.py`
   - 预期：Critic 阶段从 ~150s → ~40s（5 并行 vs 5 串行）
-- [ ] **Scout 缓存**：相同 tradition 的 FAISS 检索结果缓存（避免重复检索）
-  - 文件：`app/prototype/agents/scout_service.py`
-- [ ] **NB2 超时调优**：当前 120s timeout，根据实测调整
+- [x] **Scout 缓存**：`gather_evidence()` 实例级 dict 缓存 + deepcopy 隔离 ✅ 2026-03-05
+  - 文件：`app/prototype/tools/scout_service.py`
+- [x] **NB2 超时调优**：`genai.Client` 添加 `http_options={"timeout": self._timeout}` ✅ 2026-03-05
   - 文件：`app/prototype/agents/nb2_provider.py`
-- [ ] **CLIP 加载优化**：Mock 测试时 CLIP 加载 ~53s/轮，改为全局单例懒加载
-  - 文件：`app/prototype/agents/image_scorer.py`（如存在）
+- [x] **CLIP 加载优化**：ImageScorer 添加 `threading.Lock` 双重检查锁，线程安全单例 ✅ 2026-03-05
+  - 文件：`app/prototype/agents/image_scorer.py`
 - [ ] **端到端计时**：目标 < 60s/任务（NB2 生成 ~15s + VLM Critic ~30s + 其他 ~15s）
+  - ⚠️ NB2 `gemini-3.1-flash-image` free tier 配额 limit=0（2026-03-05），需付费升级或等重置
+  - ✅ google-genai v1.21 API 兼容修复：ImageConfig 移除 + timeout 单位 s→ms
+  - ✅ VLM Critic 串行 ~8.3s（CLIP+rules），并行预计 ~2-3s
+  - ✅ 计时脚本 `_test_e2e_timing.py` 已就绪
 
 ---
 
@@ -79,7 +83,7 @@
 
 ### 2.1 布局重组
 
-- [ ] **Playground 页面骨架**：`/prototype` 从单列表单重组为三栏布局
+- [x] **Playground 页面骨架**：`/prototype` 从单列表单重组为三栏布局 ✅ 2026-03-05
   ```
   ┌─────────────────────────────────────────────┐
   │  左栏: 控制面板    │  中栏: Canvas/结果   │  右栏: Agent 面板  │
@@ -93,81 +97,82 @@
 
 ### 2.2 模板驱动体验
 
-- [ ] **模板选择联动**：选不同模板 → 动态显示/隐藏参数项
-  - `default`: 全参数（tradition/subject/max_rounds/enable_hitl）
-  - `fast_draft`: 精简参数（tradition/subject only，无 loop 参数）
-  - `critique_only`: 上传图片 + 选 tradition（评审模式，不生成）
-  - `interactive_full`: 全参数 + HITL 开关高亮
-  - `batch_eval`: 批量输入（多 subject，CSV 或多行文本）
-- [ ] **快速预设场景**：一键填充常见参数组合
-  - "中国水墨风山水画" → tradition=chinese_xieyi, subject=mountain landscape
-  - "浮世绘风格海浪" → tradition=japanese_ukiyoe, subject=ocean waves
-  - "波斯细密画花园" → tradition=persian_miniature, subject=garden with birds
-  - "非洲面具设计" → tradition=african_tribal, subject=ceremonial mask
-  - 预设存储在前端 JSON 中，用户可扩展
+- [x] **模板选择联动**：选不同模板 → 动态显示/隐藏参数项 ✅ 2026-03-05
+  - `TEMPLATE_FIELD_CONFIG`: fast_draft/critique_only/interactive_full/batch_eval 各有字段显隐规则
+  - 新增 Parallel Critic 开关（默认开启，Graph Mode 时禁用）
+- [x] **快速预设场景**：一键填充常见参数组合 ✅ 2026-03-05
+  - 6 个文化预设：水墨山水/工笔花鸟/Ukiyo-e/Persian/African/South Asian
+  - 前端 `PRESETS` 数组，用户可扩展
 
 ### 2.3 Agent 实时面板
 
-- [ ] **事件流美化**：当前 SSE 事件以文本展示，升级为卡片式 Agent 活动日志
-  - 每个 Agent（Scout/Draft/Critic/Queen）一个颜色标识
-  - 展开/折叠详情（Scout 证据、Critic 评分、Queen 决策理由）
-- [ ] **进度可视化**：管线拓扑图实时高亮当前执行节点
-  - 复用 `TopologyViewer.tsx`，添加"当前节点"高亮状态
-- [ ] **HITL 交互**：暂停时显示操作面板
+- [x] **事件流美化**：卡片式 Agent 活动日志 ✅ 2026-03-05
+  - `PipelineProgress.tsx`: 5 Agent 颜色标识 + emoji + 展开/折叠事件日志
+  - 每事件显示：阶段/状态徽标/轮次/耗时/详情摘要
+- [x] **进度可视化**：管线拓扑图实时高亮当前执行节点 ✅ 2026-03-05
+  - `TopologyViewer` 接收 `currentStage` + `completedStages` + `stageDurations`
+- [x] **HITL 交互**：Scout/Draft/Critic/Queen 四阶段暂停点全部实现 ✅ 2026-03-05
   - Scout 暂停：展示检索到的证据，用户可编辑/添加
   - Draft 暂停：展示候选图，用户可选择/否决
   - Critic 暂停：展示评分，用户可覆写分数
   - Queen 暂停：展示决策建议，用户确认/修改
+  - 后端 `orchestrator.py` 3 处新增 + 前端 `HitlOverlay.tsx` 已适配
 
 ### 2.4 结果 Canvas
 
-- [ ] **多变体展示**：候选图网格 + "Best" 标签 + 轮次标注（已有，需美化）
-- [ ] **文化解读卡片**：VLM Critic 的文化分析以可读形式展示（不是原始 JSON）
-  - L1-L5 各维度的自然语言解读
-  - 文化禁忌检测结果（如有）
-  - Scout 证据引用（术语来源、构图参考）
-- [ ] **"调整重跑"**：基于当前结果微调参数再跑（不从零开始）
-  - 保留上一轮的 Scout 证据缓存
-  - 用户可修改 subject/tradition/权重后重跑 Draft+Critic
+- [x] **多变体展示**：CandidateGallery 接入 scoredCandidates + rounds props ✅ 2026-03-05
+- [x] **文化解读卡片**：VLM Critic 文化分析 + Scout 证据详情 ✅ 2026-03-05
+  - `CriticRationaleCard`: L1-L5 维度颜色编码 + 自然语言解读 + [文化标签] 高亮
+  - `ScoutEvidenceCard`: 统计概览 + 可展开术语标签/样本匹配/禁忌详情
+- [x] **"调整重跑"**：基于当前结果微调参数再跑 ✅ 2026-03-05
+  - `RunConfigForm` 新增 `initialValues` prop，完成后预填上次参数
+  - Scout 证据缓存自动保留（后端实例级缓存）
+  - 用户可修改 subject/tradition/其他参数后重跑
 
 ---
 
-## Milestone 3: 弹性管线 Canvas（2-3 周）
+## Milestone 3: 弹性管线 Canvas（2-3 周）✅ 完成 2026-03-05
 
 > **目标**：用户可视化编辑管线拓扑，自定义 Agent 组合
 > **参考**：TapNow 的 Node-Wire-Group 架构
 > **依赖**：M2 完成
+> **产出**：8 个新文件 + 5 个修改文件，Playwright 全部测试通过（0 error）
 
 ### 3.1 节点拖拽编辑器
 
-- [ ] **可视化管线编辑器**：基于 React Flow 或类似库
+- [x] **可视化管线编辑器**：基于 React Flow (`@xyflow/react` v12+) ✅ 2026-03-05
   - 节点 = Agent（Scout/Router/Draft/Critic/Queen/Archivist）
   - 边 = 数据流（含条件边：Queen→rerun 循环）
   - 从预设模板加载初始拓扑，用户可拖拽修改
-- [ ] **实时拓扑校验**：用户修改拓扑时，调用 `POST /topologies/validate` 实时反馈
-  - 合法：绿色边框 + "Ready" 标识
-  - 非法：红色高亮问题边 + 错误描述
-- [ ] **保存/加载自定义模板**：用户创建的管线可保存为自定义模板
-  - 前端 localStorage 存储（MVP）
-  - 后续可升级为服务端存储 + 社区分享
+  - 文件：`editor/PipelineEditor.tsx`(~300行) + `editor/AgentNode.tsx` + `editor/types.ts`
+- [x] **实时拓扑校验**：用户修改拓扑时，调用 `POST /topologies/validate` 实时反馈 ✅ 2026-03-05
+  - 合法：绿色 "Valid" 徽章
+  - 非法：红色 "N errors" 徽章 + 错误描述
+  - debounce 500ms 防抖
+- [x] **保存/加载自定义模板**：用户创建的管线可保存为自定义模板 ✅ 2026-03-05
+  - 前端 localStorage 存储（最多 10 个）
+  - Save/Delete 按钮 + 模板下拉选择
 
 ### 3.2 参数暴露
 
-- [ ] **节点级参数编辑**：点击节点 → 展开参数面板
-  - Scout: 检索深度、术语源选择、FAISS/Jaccard 模式
-  - Draft: 候选数、图像尺寸、NB2 thinking level
-  - Critic: L1-L5 权重手动覆写、评分模式（Rules/VLM/混合）
+- [x] **节点级参数编辑**：点击节点 → 右侧抽屉展开参数面板 ✅ 2026-03-05
+  - Scout: 检索深度、术语源选择
+  - Draft: 候选数、Seed Base、Enhance Prompt
+  - Critic: L1-L5 权重手动覆写（归一化警告）、LLM Scoring 开关
   - Queen: accept 阈值、max_rounds、rerun 策略
-- [ ] **传统权重可视化**：9 传统 × 5 维度的权重矩阵可视化编辑
-  - 热力图或滑块组
-  - 修改后实时预览权重分配
+  - 文件：`editor/NodeParamPanel.tsx` + `editor/agentParamSchema.ts`（schema-driven）
+- [x] **传统权重可视化**：9 传统 × 5 维度的权重矩阵热力图 ✅ 2026-03-05
+  - CSS Grid 热力图 + heatColor() 颜色映射
+  - 嵌入 Critic NodeParamPanel 底部
+  - 文件：`editor/TraditionWeightGrid.tsx`
 
 ### 3.3 批量模式
 
-- [ ] **batch_eval 模板 UI**：多任务输入（CSV/多行文本）→ 批量执行 → 汇总报告
-  - 进度条：N/M 完成
-  - 结果表格：每任务 L1-L5 评分 + 总分
-  - 导出：CSV / PDF 报告
+- [x] **batch_eval 模板 UI**：多任务输入（CSV/多行文本）→ 批量执行 → 汇总报告 ✅ 2026-03-05
+  - 进度条：N/M 完成 + Abort 按钮
+  - 结果表格：每任务 L1-L5 评分 + 总分 + 状态
+  - 导出：CSV
+  - 文件：`BatchInputPanel.tsx`
 
 ---
 
@@ -230,7 +235,7 @@
 
 | 阻塞项 | 阻塞了什么 | 状态 | 负责人 |
 |--------|-----------|------|--------|
-| Google Cloud Billing 未开通 | M0.2 验证 + M1 计时 | 🚫 等投资人（M0.1 代码准备已完成） | wangjindong |
+| ~~Google Cloud Billing 未开通~~ | ~~M0.2 验证 + M1 计时~~ | ✅ 已解决 (2026-03-05) | wangjindong |
 | ACM MM 投稿 3/25 abstract | 时间分配 | ⏰ 半天润色 | yhryzy |
 
 ---
@@ -254,3 +259,6 @@
 |------|------|------|
 | 2026-03-04 | v3.0 | 初始版本，基于投资人会议 + LOVART/TapNow 调研 |
 | 2026-03-05 | v3.1 | M0.1 全部完成 ✅；全量审查修复 12 处（2 critical + 5 medium + 5 low） |
+| 2026-03-05 | v3.2 | M0.2 key 验证 ✅（0.964, $0.268）；M2.1 三栏布局 ✅（5新组件+移动端Tab） |
+| 2026-03-05 | v3.3 | M1: NB2超时+CLIP线程安全 ✅；M2.3 HITL四阶段 ✅；M2.4 Props接线 ✅；Mock E2E通过 |
+| 2026-03-05 | v3.4 | M3 Canvas Editor 全部完成 ✅：React Flow 编辑器 + 5模板切换 + NodeParamPanel + TraditionWeightGrid + BatchInputPanel + localStorage |
