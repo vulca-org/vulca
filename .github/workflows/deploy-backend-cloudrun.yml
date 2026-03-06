@@ -43,6 +43,11 @@ jobs:
           find app/ -name "*.py" | xargs -I{} python -m py_compile {}
           echo "All Python files compiled successfully"
 
+      - name: Install validation dependencies
+        working-directory: wenxin-backend
+        run: |
+          pip install -q -r requirements.render.txt -c constraints.txt
+
       - name: Import chain validation
         working-directory: wenxin-backend
         run: |
