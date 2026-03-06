@@ -48,5 +48,15 @@
     "task_id": "bench-010",
     "subject": "primitive art tribal art savage exotic",
     "cultural_tradition": "western_academic"
+  },
+  {
+    "task_id": "bench-011j",
+    "subject": "Hokusai Great Wave ukiyo-e woodblock print",
+    "cultural_tradition": "japanese_traditional"
+  },
+  {
+    "task_id": "bench-012j",
+    "subject": "Hasegawa Tohaku pine trees in mist sumi-e screen",
+    "cultural_tradition": "japanese_traditional"
   }
 ]

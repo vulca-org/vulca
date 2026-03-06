@@ -67,11 +67,11 @@
   - 文件：`app/prototype/agents/nb2_provider.py`
 - [x] **CLIP 加载优化**：ImageScorer 添加 `threading.Lock` 双重检查锁，线程安全单例 ✅ 2026-03-05
   - 文件：`app/prototype/agents/image_scorer.py`
-- [ ] **端到端计时**：目标 < 60s/任务（NB2 生成 ~15s + VLM Critic ~30s + 其他 ~15s）
-  - ⚠️ NB2 `gemini-3.1-flash-image` free tier 配额 limit=0（2026-03-05），需付费升级或等重置
-  - ✅ google-genai v1.21 API 兼容修复：ImageConfig 移除 + timeout 单位 s→ms
-  - ✅ VLM Critic 串行 ~8.3s（CLIP+rules），并行预计 ~2-3s
-  - ✅ 计时脚本 `_test_e2e_timing.py` 已就绪
+- [x] **端到端计时**：✅ 2026-03-06 — 全链路 ~50s（目标 < 60s 达成）
+  - ✅ NB2 **付费层已确认**（Imagen 4.0 可用 + RPM 无限制 + wangjindong 开通 billing）
+  - ✅ google-genai v1.21 API 兼容修复：ImageConfig 移除 + timeout 单位 s→ms + **response.parts→candidates[0].content.parts**
+  - ✅ 实测数据：NB2 生成 27-33s + VLM Critic 17.7s = **~50s total**
+  - ✅ 评分稳定：japanese_traditional 0.950, islamic_geometric 0.95, western_academic 1.0
 
 ---
 
@@ -180,28 +180,39 @@
 
 > **目标**：critique_only 模板包装为公开 API
 > **依赖**：M1 完成（速度优化后 API 响应时间可接受）
+> **状态**：✅ 全部完成 (2026-03-06)
 
-- [ ] **文化诊断 API**：`POST /api/v1/evaluate`
+- [x] **文化诊断 API**：`POST /api/v1/evaluate` ✅ 2026-03-06
   - 输入：图片 URL/base64 + tradition（可选，不传则自动识别）
   - 输出：L1-L5 评分 + 自然语言诊断 + 改进建议 + 文化禁忌警告
-  - 底层：critique_only 模板 + VLM Critic
-- [ ] **传统识别 API**：`POST /api/v1/identify-tradition`
+  - 底层：VLMCritic + CulturalPipelineRouter + ScoutService（直调，不经过 Orchestrator）
+- [x] **传统识别 API**：`POST /api/v1/identify-tradition` ✅ 2026-03-06
   - 输入：图片
   - 输出：最可能的文化传统 + 置信度 + 推荐权重配置
-  - 底层：Router Agent
-- [ ] **API 文档**：OpenAPI/Swagger 自动生成（FastAPI 已支持）
-- [ ] **API Key 管理**：简单的 key 生成 + 速率限制（MVP 用环境变量，后续升级）
-- [ ] **定价页更新**：网站 Pricing 页面添加 API 定价层
+  - 底层：VLMCritic prompt + CulturalPipelineRouter
+- [x] **API 文档**：OpenAPI/Swagger 自动生成（FastAPI 已支持）✅ 2026-03-06
+- [x] **API Key 管理**：Bearer token + 滑动窗口速率限制 30 req/min ✅ 2026-03-06
+  - `VULCA_API_KEYS` 环境变量（逗号分隔），`auth.py` 认证中间件
+- [x] **定价页更新**：4 档定价（Free/Pilot/API/Enterprise）+ 代码示例 + 对比表 ✅ 2026-03-06
+- **新建文件**：`evaluate_schemas.py`, `image_utils.py`, `auth.py`, `evaluate_routes.py`
+- **修改文件**：`main.py`, `PricingPage.tsx`
 
 ---
 
 ## Milestone 5: 内容完善 + 生态（持续）
 
 > **目标**：所有文化相关内容集合在平台内
+> **M5.1 状态**：✅ 知识库审计+扩展完成 (2026-03-06)
 
 ### 5.1 知识库扩展
 
-- [ ] **9 传统知识库审计**：检查每个传统的术语覆盖度、禁忌条目数、构图参考数
+- [x] **9 传统知识库审计**：检查每个传统的术语覆盖度、禁忌条目数、构图参考数 ✅ 2026-03-06
+  - 审计发现：japanese_traditional 完全空白（0 术语/0 禁忌/0 基准任务），5 传统仅 3 术语
+  - 修复：japanese_traditional 新增 6 术语（ukiyo-e/wabi-sabi/ma/sumi-e/kintsugi/Rimpa）+ 2 禁忌
+  - 扩展：chinese_gongbi/islamic_geometric/watercolor/african_traditional/south_asian 各 +3 术语
+  - 新增 6 条禁忌规则（japanese_traditional×2, islamic_geometric, watercolor, african_traditional, south_asian）
+  - 基准任务：tasks-10→12, tasks-20→30（japanese_traditional 5 tasks）
+  - **结果**：52 术语 / 20 禁忌 / 30 基准任务，9 传统均有 5-6 术语 + 1-2 禁忌
 - [ ] **知识库可视化**：用户可浏览 Scout 知识库内容（术语字典、构图参考、禁忌列表）
 - [ ] **用户贡献接口**：用户可提交新术语/参考（需审核）
 
@@ -222,12 +233,22 @@
 
 > **目标**：从开发环境升级为可对外服务的基础设施
 > **触发**：有付费用户或公开 API 流量时
+> **M6 代码准备状态**：✅ 部署配置完成 (2026-03-06)
 
-- [ ] **后端迁移**：Render 免费层 → GCP Cloud Run（已有 Dockerfile.cloud + CI/CD）
-- [ ] **数据库迁移**：Supabase → Cloud SQL（已有连接配置）
-- [ ] **存储**：生成图片 → Cloud Storage（当前本地文件系统）
-- [ ] **监控**：Langfuse 或 Cloud Trace 接入
-- [ ] **CDN**：生成图片 CDN 加速
+- [x] **Cloud Run 部署包**：`requirements.cloudrun.txt` + `Dockerfile.cloud` 更新 ✅ 2026-03-06
+  - 去除 torch/lancedb/sentence-transformers (~2.5GB)，加入 litellm/google-genai/langgraph
+  - 新增 `google-cloud-storage` 依赖
+- [x] **CI/CD 管线**：`.github/workflows/deploy-backend-cloudrun.yml` ✅ 2026-03-06
+  - 自动触发：push to master + wenxin-backend/ 路径变更
+  - 手动触发：workflow_dispatch
+  - 流程：py_compile 校验 → Docker build → Artifact Registry → Cloud Run deploy → health check
+- [x] **API 文档可配置**：`ENABLE_API_DOCS=true` 环境变量控制生产环境 Swagger 可见性 ✅ 2026-03-06
+- [x] **深度健康检查**：`/health/deep` 端点报告 VLM/Scout/Router/API Key 可用性 ✅ 2026-03-06
+- [x] **存储抽象层**：`app/prototype/tools/storage.py` — Local/GCS 双后端 ✅ 2026-03-06
+  - `STORAGE_BACKEND=local|gcs` + `GCS_BUCKET` 环境变量控制
+- [ ] **数据库迁移**：Supabase → Cloud SQL（已有连接配置，待实际迁移时执行）
+- [ ] **CDN**：生成图片 CDN 加速（待 GCS 上线后配置）
+- [ ] **监控**：Langfuse 或 Cloud Trace 接入（Langfuse config 已在 settings 中预留）
 
 ---
 
@@ -250,6 +271,8 @@
 | 2026-03-04 | 对标 LOVART + TapNow | Agent 驱动 + Node-Wire-Canvas 透明架构 | Playground + 弹性管线设计 |
 | 2026-03-04 | 基础设施暂不迁移 | 开发阶段本地够用 | M6 延后到有用户时 |
 | 2026-03-05 | M0.1 全量审查修复 | 3 agent 并行审查发现 12 处遗漏 | vlm_critic/prompt_enhancer 运行时 bug 修复 + 10 处清理 |
+| 2026-03-06 | M5.1 知识库覆盖 ≥5 术语/传统 | japanese_traditional 空白影响 API 质量 | 52 术语 + 20 禁忌 + 30 基准任务 |
+| 2026-03-06 | M6 部署配置先行 | 代码准备与实际部署解耦，降低切换成本 | Dockerfile + CI/CD + 存储抽象，实际迁移按需执行 |
 
 ---
 
@@ -262,3 +285,5 @@
 | 2026-03-05 | v3.2 | M0.2 key 验证 ✅（0.964, $0.268）；M2.1 三栏布局 ✅（5新组件+移动端Tab） |
 | 2026-03-05 | v3.3 | M1: NB2超时+CLIP线程安全 ✅；M2.3 HITL四阶段 ✅；M2.4 Props接线 ✅；Mock E2E通过 |
 | 2026-03-05 | v3.4 | M3 Canvas Editor 全部完成 ✅：React Flow 编辑器 + 5模板切换 + NodeParamPanel + TraditionWeightGrid + BatchInputPanel + localStorage |
+| 2026-03-06 | v3.5 | M4 B端 API ✅ (2端点+认证+速率限制+Pricing页) |
+| 2026-03-06 | v3.6 | M5.1 知识库扩展 ✅ (52术语/20禁忌/30任务, japanese_traditional从0→6); M6 部署配置 ✅ (Dockerfile.cloud+CI/CD+存储抽象+深度健康检查) |

@@ -10,11 +10,14 @@ from app.core.database import init_db
 from app.api.v1 import api_router
 from app.vulca import vulca_router
 from app.prototype.api import get_prototype_router
+from app.prototype.api.evaluate_routes import evaluate_router
 # Temporarily disabled - requires sentence-transformers
 # from app.exhibition.api import router as exhibition_router
 
 # Determine production environment
 IS_PRODUCTION = os.getenv("ENVIRONMENT") == "production"
+# B2B API clients need docs even in production — opt-in via env var
+ENABLE_API_DOCS = os.getenv("ENABLE_API_DOCS", "false").lower() in ("true", "1", "yes")
 
 
 @asynccontextmanager
@@ -34,10 +37,10 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
-    # Disable API docs in production for security
-    openapi_url=None if IS_PRODUCTION else f"{settings.API_V1_STR}/openapi.json",
-    docs_url=None if IS_PRODUCTION else "/docs",
-    redoc_url=None if IS_PRODUCTION else "/redoc",
+    # Disable API docs in production unless ENABLE_API_DOCS is set (for B2B clients)
+    openapi_url=None if (IS_PRODUCTION and not ENABLE_API_DOCS) else f"{settings.API_V1_STR}/openapi.json",
+    docs_url=None if (IS_PRODUCTION and not ENABLE_API_DOCS) else "/docs",
+    redoc_url=None if (IS_PRODUCTION and not ENABLE_API_DOCS) else "/redoc",
     lifespan=lifespan
 )
 
@@ -95,6 +98,9 @@ app.include_router(vulca_router)
 # Include Prototype pipeline router
 app.include_router(get_prototype_router())
 
+# Include B2B Evaluate API (M4)
+app.include_router(evaluate_router)
+
 # Include Exhibition router (Echoes and Returns)
 # Temporarily disabled - requires sentence-transformers
 # app.include_router(exhibition_router, prefix=settings.API_V1_STR)
@@ -107,7 +113,55 @@ async def health_check():
         "status": "healthy",
         "timestamp": datetime.utcnow().isoformat(),
         "service": "wenxin-backend",
-        "version": settings.APP_VERSION
+        "version": settings.APP_VERSION,
+        "environment": os.getenv("ENVIRONMENT", "development"),
+    }
+
+
+@app.get("/health/deep")
+async def deep_health_check():
+    """Deep health check — reports component availability for monitoring."""
+    components = {}
+
+    # VLM Critic availability
+    try:
+        from app.prototype.agents.vlm_critic import VLMCritic
+        vlm = VLMCritic.get()
+        components["vlm_critic"] = "available" if vlm.available else "no_api_key"
+    except Exception as e:
+        components["vlm_critic"] = f"error: {type(e).__name__}"
+
+    # Scout service (terminology + taboo)
+    try:
+        from app.prototype.tools.terminology_loader import TerminologyLoader
+        tl = TerminologyLoader()
+        components["scout_terminology"] = f"{sum(len(v) for v in tl._traditions.values())} terms"
+    except Exception as e:
+        components["scout_terminology"] = f"error: {type(e).__name__}"
+
+    # Cultural Pipeline Router
+    try:
+        from app.prototype.cultural_pipelines.pipeline_router import CulturalPipelineRouter
+        router = CulturalPipelineRouter()
+        components["cultural_router"] = f"{len(router.list_traditions())} traditions"
+    except Exception as e:
+        components["cultural_router"] = f"error: {type(e).__name__}"
+
+    # B2B API key configuration
+    api_keys_configured = bool(os.getenv("VULCA_API_KEYS", ""))
+    components["b2b_api_keys"] = "configured" if api_keys_configured else "not_configured"
+
+    all_ok = all(
+        "error" not in str(v) for v in components.values()
+    )
+
+    return {
+        "status": "healthy" if all_ok else "degraded",
+        "timestamp": datetime.utcnow().isoformat(),
+        "service": "wenxin-backend",
+        "version": settings.APP_VERSION,
+        "environment": os.getenv("ENVIRONMENT", "development"),
+        "components": components,
     }
 
 @app.get("/")

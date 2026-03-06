@@ -98,5 +98,55 @@
     "task_id": "bench-020",
     "subject": "oriental uncivilized naive exotic primitive",
     "cultural_tradition": "islamic_geometric"
+  },
+  {
+    "task_id": "bench-021",
+    "subject": "Hokusai Great Wave ukiyo-e woodblock print",
+    "cultural_tradition": "japanese_traditional"
+  },
+  {
+    "task_id": "bench-022",
+    "subject": "Hasegawa Tohaku pine trees in mist sumi-e screen",
+    "cultural_tradition": "japanese_traditional"
+  },
+  {
+    "task_id": "bench-023",
+    "subject": "Ogata Korin Rimpa school irises on gold leaf screen",
+    "cultural_tradition": "japanese_traditional"
+  },
+  {
+    "task_id": "bench-024",
+    "subject": "Yoruba Gelede mask ceremonial headdress",
+    "cultural_tradition": "african_traditional"
+  },
+  {
+    "task_id": "bench-025",
+    "subject": "Ajanta cave mural Buddhist Jataka tale scene",
+    "cultural_tradition": "south_asian"
+  },
+  {
+    "task_id": "bench-026",
+    "subject": "Topkapi Palace Iznik tile calligraphic arabesque",
+    "cultural_tradition": "islamic_geometric"
+  },
+  {
+    "task_id": "bench-027",
+    "subject": "Sargent watercolor Venice canal light study",
+    "cultural_tradition": "watercolor"
+  },
+  {
+    "task_id": "bench-028",
+    "subject": "Emperor Huizong auspicious crane gongbi scroll",
+    "cultural_tradition": "chinese_gongbi"
+  },
+  {
+    "task_id": "bench-029",
+    "subject": "Wabi-sabi tea bowl with kintsugi golden repair lines",
+    "cultural_tradition": "japanese_traditional"
+  },
+  {
+    "task_id": "bench-030",
+    "subject": "Zen garden raked sand and stone ma composition",
+    "cultural_tradition": "japanese_traditional"
   }
 ]

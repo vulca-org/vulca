@@ -1,4 +1,6 @@
 # Production Dockerfile for Google Cloud Run
+# Includes: FastAPI + Prototype pipeline + B2B API + GCP integrations
+# Excludes: torch/lancedb/sentence-transformers (~2.5GB saved)
 FROM python:3.13-slim
 
 # Set working directory
@@ -11,18 +13,20 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first (for better caching)
-COPY requirements.prod.txt requirements.txt
+# Copy requirements first (for better Docker layer caching)
+COPY requirements.cloudrun.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY . .
 
-# Copy exhibition data (LanceDB) for dialogue API
-COPY data/exhibition/ ./data/exhibition/
-
-# Create static directory for file uploads
-RUN mkdir -p /app/static/generated_images /app/data
+# Ensure prototype data directories exist and are included
+RUN mkdir -p /app/app/prototype/checkpoints/draft \
+    /app/app/prototype/data/terminology \
+    /app/app/prototype/data/benchmarks \
+    /app/app/prototype/data/samples \
+    /app/static/generated_images \
+    /app/data
 
 # Set environment variables
 ENV PYTHONPATH=/app
@@ -32,15 +36,16 @@ ENV USE_CLOUD_SQL=true
 ENV CLOUD_SQL_INSTANCE=wenxin-moyun-prod-new:asia-east1:wenxin-postgres
 ENV POSTGRES_USER=wenxin
 ENV POSTGRES_DB=wenxin_db
-# DATABASE_URL will be set at runtime by Cloud Run
 
-# Exhibition API configuration
-ENV EXHIBITION_DB_PATH=/app/data/exhibition
-ENV EXHIBITION_API_KEYS=didot-exhibition-2024-prod
+# Enable B2B API docs in production (override main.py default)
+ENV ENABLE_API_DOCS=true
 
 # Expose port
 EXPOSE 8080
 
+# Health check (Cloud Run uses HTTP probes)
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
+    CMD python -c "import httpx; httpx.get('http://localhost:8080/health').raise_for_status()" || exit 1
+
 # Run with production settings using PORT environment variable
-# Database migrations are handled separately via Cloud Run Jobs
 CMD ["sh", "-c", "python -m uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}"]

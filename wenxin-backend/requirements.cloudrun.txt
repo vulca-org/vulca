@@ -1,0 +1,69 @@
+# Cloud Run deployment dependencies
+# = render deps + prototype core (litellm, google-genai) + GCP deps
+# Excludes: torch, sentence-transformers, lancedb, faiss (~2.5GB saved)
+# Install: pip install --no-cache-dir -r requirements.cloudrun.txt
+
+# --- Core Framework ---
+fastapi==0.116.1
+uvicorn[standard]==0.35.0
+pydantic==2.11.7
+pydantic-settings==2.10.1
+python-multipart==0.0.20
+
+# --- Database ---
+sqlalchemy==2.0.43
+sqlmodel==0.0.14
+alembic==1.16.4
+asyncpg==0.30.0
+aiosqlite==0.19.0
+psycopg2-binary==2.9.10
+
+# --- Authentication ---
+python-jose[cryptography]==3.5.0
+passlib[bcrypt]==1.7.4
+bcrypt==4.0.1  # Must be 4.0.x for passlib compatibility
+python-dotenv==1.0.0
+email-validator==2.2.0
+
+# --- HTTP Client ---
+httpx==0.28.1
+
+# --- Email ---
+aiosmtplib==3.0.2
+
+# --- AI Client Libraries ---
+openai==1.99.9
+anthropic==0.64.0
+google-generativeai==0.5.4
+
+# --- Prototype: LLM Gateway (Gemini via LiteLLM) ---
+litellm>=1.50.0
+
+# --- Prototype: NB2 Image Generation (Gemini native) ---
+google-genai>=1.21.0
+
+# --- Prototype: LangGraph Pipeline ---
+langgraph>=0.2.0
+langgraph-checkpoint>=2.0.0
+
+# --- Prototype: Observability ---
+langfuse>=2.50.0
+
+# --- Image Processing ---
+Pillow>=10.0.0
+numpy>=1.24.0
+
+# --- Scientific Computing (VULCA core) ---
+pandas>=2.0.0
+
+# --- Production Server ---
+gunicorn==21.2.0
+
+# --- GCP Integration ---
+cloud-sql-python-connector[asyncpg]==1.18.3
+google-cloud-secret-manager==2.18.1
+google-cloud-logging==3.8.0
+google-cloud-storage>=2.14.0
+
+# --- Security ---
+cryptography==42.0.0

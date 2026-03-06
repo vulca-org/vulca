@@ -1,0 +1,135 @@
+# Backend deployment to Google Cloud Run
+# Trigger: manual dispatch or push to master with backend changes
+# Prerequisites: GCP_SA_KEY secret + billing enabled on wenxin-moyun-prod-new
+
+name: Deploy Backend to Cloud Run
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: false
+        default: 'production'
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'wenxin-backend/**'
+      - '.github/workflows/deploy-backend-cloudrun.yml'
+
+env:
+  PROJECT_ID: wenxin-moyun-prod-new
+  REGION: asia-east1
+  SERVICE_NAME: wenxin-moyun-api
+  REGISTRY: asia-east1-docker.pkg.dev
+  REPOSITORY: wenxin-images
+
+jobs:
+  # Job 1: Validate backend code
+  validate:
+    name: Validate Backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Syntax check (py_compile)
+        working-directory: wenxin-backend
+        run: |
+          find app/ -name "*.py" | xargs -I{} python -m py_compile {}
+          echo "All Python files compiled successfully"
+
+      - name: Import chain validation
+        working-directory: wenxin-backend
+        run: |
+          python -c "
+          import sys; sys.path.insert(0, '.')
+          import os
+          os.environ['SECRET_KEY'] = 'test-ci-key-at-least-32-characters-long'
+          os.environ['DATABASE_URL'] = 'sqlite+aiosqlite:///./test.db'
+          # Validate core imports
+          from app.core.config import settings
+          from app.prototype.api.evaluate_routes import evaluate_router
+          from app.prototype.cultural_pipelines.pipeline_router import CulturalPipelineRouter
+          from app.prototype.tools.terminology_loader import TerminologyLoader
+          print('Import chain validation passed')
+          "
+
+  # Job 2: Build and deploy to Cloud Run
+  deploy:
+    name: Deploy to Cloud Run
+    runs-on: ubuntu-latest
+    needs: validate
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'))
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          project_id: ${{ env.PROJECT_ID }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: |
+          gcloud auth configure-docker ${{ env.REGISTRY }} --quiet
+
+      - name: Build Docker image
+        working-directory: wenxin-backend
+        run: |
+          docker build \
+            -f Dockerfile.cloud \
+            -t ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE_NAME }}:${{ github.sha }} \
+            -t ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE_NAME }}:latest \
+            .
+
+      - name: Push Docker image
+        run: |
+          docker push ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
+          docker push ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE_NAME }}:latest
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy ${{ env.SERVICE_NAME }} \
+            --image ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE_NAME }}:${{ github.sha }} \
+            --region ${{ env.REGION }} \
+            --platform managed \
+            --allow-unauthenticated \
+            --memory 1Gi \
+            --cpu 1 \
+            --timeout 300 \
+            --concurrency 80 \
+            --min-instances 0 \
+            --max-instances 3 \
+            --set-env-vars "ENVIRONMENT=production,ENABLE_API_DOCS=true" \
+            --set-secrets "SECRET_KEY=secret-key:latest,DATABASE_URL=database-url:latest,GOOGLE_API_KEY=gemini-api-key:latest,VULCA_API_KEYS=vulca-api-keys:latest"
+
+      - name: Verify deployment
+        run: |
+          SERVICE_URL=$(gcloud run services describe ${{ env.SERVICE_NAME }} --region ${{ env.REGION }} --format 'value(status.url)')
+          echo "Service URL: $SERVICE_URL"
+          curl -f "$SERVICE_URL/health" || exit 1
+          echo "Health check passed"
+
+      - name: Output deployment info
+        if: success()
+        run: |
+          SERVICE_URL=$(gcloud run services describe ${{ env.SERVICE_NAME }} --region ${{ env.REGION }} --format 'value(status.url)')
+          echo "## Deployment Successful" >> $GITHUB_STEP_SUMMARY
+          echo "- **Service**: ${{ env.SERVICE_NAME }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **URL**: $SERVICE_URL" >> $GITHUB_STEP_SUMMARY
+          echo "- **Image**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **API Docs**: $SERVICE_URL/docs" >> $GITHUB_STEP_SUMMARY
+          echo "- **Health**: $SERVICE_URL/health/deep" >> $GITHUB_STEP_SUMMARY

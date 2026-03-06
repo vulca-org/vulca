@@ -97,6 +97,36 @@
           "l_levels": ["L1", "L2"],
           "aliases": ["bai miao", "line drawing", "outline drawing"],
           "source": "Li Gonglin (Song Dynasty), originator of baimiao style"
+        },
+        {
+          "id": "term-chinese_gongbi-004",
+          "term_zh": "勾勒填彩",
+          "term_en": "outline and fill color",
+          "definition": "The fundamental gongbi method of first drawing precise ink outlines, then filling enclosed areas with layered mineral pigments, maintaining crisp boundaries between colors.",
+          "category": "technique",
+          "l_levels": ["L2"],
+          "aliases": ["goule tiancai", "outline-fill method"],
+          "source": "Traditional gongbi painting manuals"
+        },
+        {
+          "id": "term-chinese_gongbi-005",
+          "term_zh": "没骨法",
+          "term_en": "boneless technique",
+          "definition": "A gongbi sub-technique applying color directly without ink outlines, creating soft, naturalistic forms through layered washes of mineral and plant pigments.",
+          "category": "technique",
+          "l_levels": ["L2", "L3"],
+          "aliases": ["mogu fa", "boneless painting", "no-outline technique"],
+          "source": "Yun Shouping (Qing Dynasty), master of boneless flower painting"
+        },
+        {
+          "id": "term-chinese_gongbi-006",
+          "term_zh": "院体画",
+          "term_en": "court academy painting",
+          "definition": "The painting style cultivated in imperial academies, emphasizing technical virtuosity, realistic representation of nature, and refined elegance, epitomized by the Song Dynasty Hanlin Painting Academy.",
+          "category": "aesthetics",
+          "l_levels": ["L3", "L4"],
+          "aliases": ["yuanti hua", "academy style", "court painting"],
+          "source": "Song Dynasty Imperial Painting Academy tradition"
         }
       ]
     },
@@ -185,6 +215,36 @@
           "l_levels": ["L2", "L3"],
           "aliases": ["stalactite vault", "honeycomb vault"],
           "source": "Islamic architectural tradition"
+        },
+        {
+          "id": "term-islamic_geometric-004",
+          "term_zh": "八角星纹",
+          "term_en": "octagonal star pattern",
+          "definition": "A fundamental motif in Islamic geometric art formed by overlapping two squares at 45 degrees, generating an eight-pointed star (khatam) that serves as the basis for complex interlocking designs.",
+          "category": "composition",
+          "l_levels": ["L1", "L2"],
+          "aliases": ["khatam", "eight-pointed star", "star polygon"],
+          "source": "Islamic geometric design tradition"
+        },
+        {
+          "id": "term-islamic_geometric-005",
+          "term_zh": "书法装饰",
+          "term_en": "calligraphic ornament",
+          "definition": "The integration of Arabic calligraphy as a decorative element in architectural and artistic contexts, where Quranic verses and divine names function simultaneously as text and visual pattern.",
+          "category": "aesthetics",
+          "l_levels": ["L3", "L5"],
+          "aliases": ["Islamic calligraphy", "epigraphic decoration"],
+          "source": "Islamic art and architecture tradition"
+        },
+        {
+          "id": "term-islamic_geometric-006",
+          "term_zh": "几何细分",
+          "term_en": "geometric subdivision",
+          "definition": "The mathematical process of repeatedly subdividing basic geometric shapes to create increasingly complex patterns, reflecting the Islamic concept of the infinite emanating from the unity of the One.",
+          "category": "technique",
+          "l_levels": ["L2", "L5"],
+          "aliases": ["pattern subdivision", "fractal geometry", "self-similar tiling"],
+          "source": "Islamic mathematical art tradition"
         }
       ]
     },
@@ -218,6 +278,36 @@
           "category": "technique",
           "l_levels": ["L2"],
           "aliases": ["paint lifting", "blotting technique"],
+          "source": "Watercolor painting tradition"
+        },
+        {
+          "id": "term-watercolor-004",
+          "term_zh": "干画法",
+          "term_en": "dry brush",
+          "definition": "A watercolor technique using a brush with minimal water to create textured, broken strokes that reveal the paper surface, producing rough, granular effects for depicting bark, stone, or fur.",
+          "category": "technique",
+          "l_levels": ["L2"],
+          "aliases": ["dry-on-dry", "scumbling", "broken wash"],
+          "source": "Watercolor painting tradition"
+        },
+        {
+          "id": "term-watercolor-005",
+          "term_zh": "水彩留白",
+          "term_en": "reserved whites",
+          "definition": "The practice of leaving areas of white paper unpainted to represent highlights, reflections, or luminous areas, since watercolor has no white pigment — the paper itself is the lightest value.",
+          "category": "technique",
+          "l_levels": ["L1", "L2"],
+          "aliases": ["saving whites", "paper white", "negative painting"],
+          "source": "Watercolor painting tradition"
+        },
+        {
+          "id": "term-watercolor-006",
+          "term_zh": "色粒效果",
+          "term_en": "granulation",
+          "definition": "A textural effect caused by heavy pigment particles settling into the valleys of rough paper, creating a mottled, speckled appearance valued for its organic, atmospheric quality.",
+          "category": "technique",
+          "l_levels": ["L2"],
+          "aliases": ["pigment granulation", "sedimentary wash"],
           "source": "Watercolor painting tradition"
         }
       ]
@@ -253,6 +343,36 @@
           "l_levels": ["L3", "L4", "L5"],
           "aliases": ["adinkra symbols", "Akan symbols"],
           "source": "Akan cultural tradition, Ghana"
+        },
+        {
+          "id": "term-african_traditional-004",
+          "term_zh": "面具仪式",
+          "term_en": "masquerade",
+          "definition": "A performative art form combining carved masks, costumes, music, and dance in ceremonial contexts, where the mask transforms the wearer into a spiritual intermediary between human and spirit worlds.",
+          "category": "aesthetics",
+          "l_levels": ["L3", "L4", "L5"],
+          "aliases": ["ritual mask", "ceremonial masking", "spirit embodiment"],
+          "source": "West and Central African masking traditions"
+        },
+        {
+          "id": "term-african_traditional-005",
+          "term_zh": "青铜失蜡铸造",
+          "term_en": "lost-wax casting",
+          "definition": "A sophisticated metalworking technique perfected by the Benin and Ife kingdoms, producing highly detailed bronze sculptures of royalty, warriors, and spiritual figures through the cire perdue process.",
+          "category": "technique",
+          "l_levels": ["L2", "L3"],
+          "aliases": ["cire perdue", "Benin bronze casting", "Ife bronze technique"],
+          "source": "Benin Kingdom and Ife Kingdom metalworking traditions, 12th-19th century"
+        },
+        {
+          "id": "term-african_traditional-006",
+          "term_zh": "泥塑建筑",
+          "term_en": "adobe architecture",
+          "definition": "Earth-based construction tradition producing monumental structures such as the Great Mosque of Djenne, where organic forms, integrated drainage systems, and annual community replastering rituals fuse architecture with living cultural practice.",
+          "category": "technique",
+          "l_levels": ["L2", "L3", "L5"],
+          "aliases": ["mud-brick architecture", "Sudano-Sahelian architecture", "banco construction"],
+          "source": "West African Sudano-Sahelian architectural tradition"
         }
       ]
     },
@@ -287,6 +407,100 @@
           "l_levels": ["L2", "L3"],
           "aliases": ["Indian miniature", "Mughal miniature", "Rajput painting"],
           "source": "South Asian painting traditions, 7th-19th century"
+        },
+        {
+          "id": "term-south_asian-004",
+          "term_zh": "湿壁画",
+          "term_en": "fresco (Ajanta tradition)",
+          "definition": "The mural painting technique of the Ajanta caves, applying pigments to wet lime plaster to create large-scale narrative scenes of Buddhist Jataka tales with flowing contours, rich earth tones, and sophisticated spatial layering.",
+          "category": "technique",
+          "l_levels": ["L2", "L3"],
+          "aliases": ["Ajanta murals", "Indian fresco", "cave painting"],
+          "source": "Ajanta Caves, Maharashtra, 2nd century BCE - 6th century CE"
+        },
+        {
+          "id": "term-south_asian-005",
+          "term_zh": "手印",
+          "term_en": "mudra",
+          "definition": "Symbolic hand gestures in Hindu and Buddhist iconography that convey specific spiritual meanings — teaching (vitarka), meditation (dhyana), fearlessness (abhaya) — essential for identifying deities and narrative context.",
+          "category": "aesthetics",
+          "l_levels": ["L3", "L4"],
+          "aliases": ["hand gesture", "ritual gesture", "iconographic gesture"],
+          "source": "Hindu and Buddhist iconographic tradition"
+        },
+        {
+          "id": "term-south_asian-006",
+          "term_zh": "拉贾斯坦色彩",
+          "term_en": "Rajput color palette",
+          "definition": "The bold, saturated color system of Rajasthani miniature painting using mineral pigments — vivid reds, deep blues, bright yellows, and rich greens — each color carrying symbolic and emotional associations within the rasa framework.",
+          "category": "technique",
+          "l_levels": ["L1", "L2", "L4"],
+          "aliases": ["Rajasthani palette", "Indian mineral colors", "Pahari colors"],
+          "source": "Rajput and Pahari miniature painting traditions, 16th-19th century"
+        }
+      ]
+    },
+    "japanese_traditional": {
+      "terms": [
+        {
+          "id": "term-japanese_traditional-001",
+          "term_zh": "侘寂",
+          "term_en": "wabi-sabi",
+          "definition": "An aesthetic worldview centered on the acceptance of transience and imperfection, finding beauty in simplicity, asymmetry, and the natural cycle of growth and decay.",
+          "category": "aesthetics",
+          "l_levels": ["L4", "L5"],
+          "aliases": ["wabi sabi", "imperfect beauty", "rustic simplicity"],
+          "source": "Japanese aesthetic philosophy, rooted in Zen Buddhism"
+        },
+        {
+          "id": "term-japanese_traditional-002",
+          "term_zh": "间",
+          "term_en": "ma (negative space)",
+          "definition": "The conscious use of empty or void space as an active compositional element, creating pause, tension, and rhythm between objects — not mere absence but a meaningful interval.",
+          "category": "composition",
+          "l_levels": ["L2", "L3", "L5"],
+          "aliases": ["ma", "interval", "void space", "Japanese negative space"],
+          "source": "Japanese spatial aesthetics, applicable to painting, architecture, and music"
+        },
+        {
+          "id": "term-japanese_traditional-003",
+          "term_zh": "浮世绘",
+          "term_en": "ukiyo-e",
+          "definition": "Woodblock prints and paintings depicting the 'floating world' of Edo-period urban pleasures — kabuki actors, courtesans, landscapes, and folk tales — using flat color areas, bold outlines, and dramatic cropping.",
+          "category": "technique",
+          "l_levels": ["L2", "L3"],
+          "aliases": ["floating world pictures", "Japanese woodblock print"],
+          "source": "Edo period (1603-1868) Japanese art tradition"
+        },
+        {
+          "id": "term-japanese_traditional-004",
+          "term_zh": "墨绘",
+          "term_en": "sumi-e",
+          "definition": "Japanese ink wash painting using sumi ink in varying dilutions, emphasizing spontaneous brushwork, spiritual focus, and the beauty of monochrome gradations, deeply influenced by Chinese ink painting via Zen Buddhism.",
+          "category": "technique",
+          "l_levels": ["L2", "L4"],
+          "aliases": ["suiboku-ga", "Japanese ink wash", "ink painting"],
+          "source": "Japanese painting tradition, influenced by Song Dynasty Chinese ink painting"
+        },
+        {
+          "id": "term-japanese_traditional-005",
+          "term_zh": "金継ぎ",
+          "term_en": "kintsugi",
+          "definition": "The art of repairing broken pottery with lacquer mixed with powdered gold, silver, or platinum, treating breakage as part of an object's history rather than something to disguise — a material expression of wabi-sabi philosophy.",
+          "category": "philosophy",
+          "l_levels": ["L3", "L5"],
+          "aliases": ["kintsukuroi", "golden joinery", "golden repair"],
+          "source": "Japanese ceramic repair tradition, 15th century onward"
+        },
+        {
+          "id": "term-japanese_traditional-006",
+          "term_zh": "琳派",
+          "term_en": "Rimpa school",
+          "definition": "A major Japanese decorative art school characterized by bold compositions, lavish use of gold and silver leaf, stylized natural motifs, and flat pictorial space, founded by Tawaraya Sotatsu and Hon'ami Koetsu in the 17th century.",
+          "category": "aesthetics",
+          "l_levels": ["L2", "L3", "L4"],
+          "aliases": ["Rinpa", "Korin school", "decorative school"],
+          "source": "Japanese art history, 17th-19th century"
         }
       ]
     },

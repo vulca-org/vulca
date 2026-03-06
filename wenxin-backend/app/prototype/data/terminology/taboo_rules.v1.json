@@ -113,6 +113,66 @@
       "source": "South Asian art history scholarship; VULCA evaluation guidelines"
     },
     {
+      "rule_id": "taboo-japanese_traditional-001",
+      "cultural_tradition": "japanese_traditional",
+      "description": "Do not interpret minimalism, asymmetry, or deliberate imperfection as lack of skill or incomplete work",
+      "severity": "high",
+      "trigger_patterns": ["unfinished", "incomplete", "lacks detail", "too simple", "not enough effort", "lazy execution"],
+      "explanation": "Japanese traditional aesthetics (wabi-sabi, ma) embrace imperfection, asymmetry, and restraint as core principles. Sparse composition and deliberate incompleteness are philosophical choices reflecting Zen-influenced values, not technical deficiency.",
+      "l_levels": ["L2", "L4", "L5"],
+      "source": "Japanese aesthetic philosophy; VULCA evaluation guidelines"
+    },
+    {
+      "rule_id": "taboo-japanese_traditional-002",
+      "cultural_tradition": "japanese_traditional",
+      "description": "Do not conflate Japanese and Chinese artistic traditions as a single 'East Asian' category without distinguishing their distinct aesthetic philosophies",
+      "severity": "high",
+      "trigger_patterns": ["same as Chinese", "East Asian style", "Oriental painting", "like Chinese art", "no different from Chinese"],
+      "explanation": "While Japanese art was historically influenced by Chinese traditions (particularly ink painting and Buddhism), it developed fundamentally distinct aesthetic values (wabi-sabi, mono no aware, ma) and unique forms (ukiyo-e, Rimpa). Conflating them erases centuries of independent artistic evolution.",
+      "l_levels": ["L3", "L4", "L5"],
+      "source": "Comparative East Asian art history; VULCA evaluation guidelines"
+    },
+    {
+      "rule_id": "taboo-islamic_geometric-002",
+      "cultural_tradition": "islamic_geometric",
+      "description": "Do not reduce Islamic art to a prohibition against figural representation; the aniconism varies significantly across regions and periods",
+      "severity": "medium",
+      "trigger_patterns": ["Islam forbids images", "cannot depict humans", "no figurative art", "images are forbidden"],
+      "explanation": "While some Islamic traditions discourage figural imagery in religious contexts, rich traditions of figural art exist in Persian miniatures, Mughal painting, and Ottoman court art. Blanket statements about Islamic aniconism are historically inaccurate.",
+      "l_levels": ["L3", "L4"],
+      "source": "Islamic art history scholarship; VULCA evaluation guidelines"
+    },
+    {
+      "rule_id": "taboo-watercolor-002",
+      "cultural_tradition": "watercolor",
+      "description": "Do not evaluate watercolor by oil painting standards of opacity, layering capacity, or surface texture",
+      "severity": "medium",
+      "trigger_patterns": ["lacks body", "thin and weak", "not as rich as oil", "insufficient coverage", "washed out"],
+      "explanation": "Watercolor's transparent, luminous quality is its defining strength, not a limitation. Comparing it unfavorably to oil painting's opacity and impasto capacity misapplies medium-specific evaluation criteria.",
+      "l_levels": ["L2", "L4"],
+      "source": "Watercolor painting evaluation guidelines"
+    },
+    {
+      "rule_id": "taboo-african_traditional-002",
+      "cultural_tradition": "african_traditional",
+      "description": "Do not evaluate African sculptural proportions by Western naturalistic anatomical standards",
+      "severity": "high",
+      "trigger_patterns": ["disproportionate", "anatomically incorrect", "distorted body", "unrealistic proportions", "crude form"],
+      "explanation": "Deliberate proportional emphasis in African sculpture (enlarged heads, elongated torsos, abstracted features) serves symbolic, spiritual, and communicative functions within their cultural systems. These are intentional aesthetic choices, not failures of observation.",
+      "l_levels": ["L2", "L3", "L5"],
+      "source": "African art history scholarship; VULCA evaluation guidelines"
+    },
+    {
+      "rule_id": "taboo-south_asian-002",
+      "cultural_tradition": "south_asian",
+      "description": "Do not judge the flat spatial representation in Indian miniature painting as a failure to achieve perspective",
+      "severity": "medium",
+      "trigger_patterns": ["lacks perspective", "no depth", "flat and naive", "primitive spatial sense", "cannot render space"],
+      "explanation": "Indian miniature painting deliberately uses hierarchical scale, bird's-eye viewpoints, and simultaneous narration as sophisticated compositional strategies for depicting multiple narrative moments and spiritual hierarchies within a single frame.",
+      "l_levels": ["L2", "L3", "L4"],
+      "source": "South Asian art history; VULCA evaluation guidelines"
+    },
+    {
       "rule_id": "taboo-default-001",
       "cultural_tradition": "default",
       "description": "Do not assert authorial intent without supporting evidence from documented sources",
