@@ -6,7 +6,7 @@
 ## 执行命令
 
 ```bash
-cd /mnt/i/website/wenxin-backend
+cd <project-root>/wenxin-backend
 
 # Fallback 故障注入基线
 python3 app/prototype/tools/validate_fallback.py
@@ -23,7 +23,7 @@ done
 # 质量门
 python3 app/prototype/tools/validate_regression.py
 python3 app/prototype/tools/validate_pipeline_e2e.py
-cd /mnt/i/website && bash .claude/hooks/post-plan-validate.sh
+cd <project-root> && bash .claude/hooks/post-plan-validate.sh
 ```
 
 ## Fallback 故障注入

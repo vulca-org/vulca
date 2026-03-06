@@ -13,8 +13,9 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 import sys
 
-CHECKPOINT_ROOT = Path("/mnt/i/website/wenxin-backend/app/prototype/checkpoints/draft")
-ABLATION_DATA = Path("/mnt/i/website/wenxin-backend/app/prototype/blind_eval/results/ablation/unified_ablation_results.json")
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+CHECKPOINT_ROOT = PROJECT_ROOT / "wenxin-backend" / "app" / "prototype" / "checkpoints" / "draft"
+ABLATION_DATA = PROJECT_ROOT / "wenxin-backend" / "app" / "prototype" / "blind_eval" / "results" / "ablation" / "unified_ablation_results.json"
 OUTPUT = Path(__file__).resolve().parent / "qualitative.pdf"
 
 # 3 representative tasks

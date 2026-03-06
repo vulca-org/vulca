@@ -42,7 +42,7 @@
 cd wenxin-backend
 venv/bin/python app/prototype/validate_schema.py
 
-cd /mnt/i/website
+cd <project-root>
 bash .claude/hooks/post-plan-validate.sh
 ```
 

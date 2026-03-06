@@ -11,7 +11,7 @@
 ### 1. 启动后端
 
 ```bash
-cd /mnt/i/website/wenxin-backend
+cd <project-root>/wenxin-backend
 
 # Mock 模式（无需 API key，秒级响应）
 python3 -m uvicorn app.main:app --reload --port 8001
@@ -23,7 +23,7 @@ TOGETHER_API_KEY=<your-key> python3 -m uvicorn app.main:app --reload --port 8001
 ### 2. 启动前端
 
 ```bash
-cd /mnt/i/website/wenxin-moyun
+cd <project-root>/wenxin-moyun
 npm run dev
 # → http://localhost:5173
 ```

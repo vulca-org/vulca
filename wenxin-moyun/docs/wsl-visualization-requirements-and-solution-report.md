@@ -7,7 +7,7 @@
 
 ## 2. 已执行解决方案
 - 安装可视化依赖：
-  - `cd /mnt/i/website/wenxin-backend`
+  - `cd <project-root>/wenxin-backend`
   - `venv/bin/pip install gradio>=5.0.0`
 - 启动 Gradio 原型界面（WSL 绑定）：
   - `GRADIO_SERVER_NAME=0.0.0.0 GRADIO_SERVER_PORT=7860 venv/bin/python -m app.prototype.ui.gradio_demo`

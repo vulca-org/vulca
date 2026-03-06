@@ -6,7 +6,7 @@
 ## 执行命令
 
 ```bash
-cd /mnt/i/website/wenxin-backend
+cd <project-root>/wenxin-backend
 
 # Baseline (20t, together_flux)
 TOGETHER_API_KEY=*** python3 app/prototype/tools/run_benchmark.py \

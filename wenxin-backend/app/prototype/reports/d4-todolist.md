@@ -68,6 +68,6 @@ venv/bin/python app/prototype/tools/validate_scout.py
 venv/bin/python app/prototype/validate_schema.py
 venv/bin/python app/prototype/tools/validate_resources.py
 
-cd /mnt/i/website
+cd <project-root>
 bash .claude/hooks/post-plan-validate.sh
 ```

@@ -6,7 +6,7 @@
 ## 执行命令
 
 ```bash
-cd /mnt/i/website/wenxin-backend
+cd <project-root>/wenxin-backend
 
 # 1. 真实 Provider 验证
 TOGETHER_API_KEY=*** python3 app/prototype/tools/validate_provider_real.py
@@ -20,7 +20,7 @@ TOGETHER_API_KEY=*** python3 app/prototype/tools/run_benchmark.py \
 
 # 3. 质量门回归
 python3 app/prototype/tools/validate_regression.py
-cd /mnt/i/website && bash .claude/hooks/post-plan-validate.sh
+cd <project-root> && bash .claude/hooks/post-plan-validate.sh
 ```
 
 ## 关键指标

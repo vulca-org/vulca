@@ -6,7 +6,7 @@
 ## 执行命令
 
 ```bash
-cd /mnt/i/website/wenxin-backend
+cd <project-root>/wenxin-backend
 
 # 20 tasks
 TOGETHER_API_KEY=*** python3 app/prototype/tools/run_benchmark.py \
@@ -24,7 +24,7 @@ TOGETHER_API_KEY=*** python3 app/prototype/tools/run_benchmark.py \
 python3 app/prototype/tools/validate_regression.py
 python3 app/prototype/tools/validate_fallback.py
 python3 app/prototype/tools/validate_demo_api.py
-cd /mnt/i/website && bash .claude/hooks/post-plan-validate.sh
+cd <project-root> && bash .claude/hooks/post-plan-validate.sh
 ```
 
 ## 30 条总体指标

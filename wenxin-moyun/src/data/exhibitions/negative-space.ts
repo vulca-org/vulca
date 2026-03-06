@@ -2,7 +2,7 @@
  * Negative Space of the Tide (潮汐的负形) Exhibition Data
  *
  * Auto-generated from VULCA-EMNLP2025 exhibition data
- * Source: /mnt/i/VULCA-EMNLP2025/exhibitions/negative-space-of-the-tide/
+ * Source: VULCA-EMNLP2025 exhibition data
  *
  * @generated 2026-01-09
  */

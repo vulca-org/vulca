@@ -348,7 +348,7 @@ Every plan execution **must** pass automated validation before completion. A `St
 ### Manual Trigger
 
 ```bash
-cd /mnt/i/website
+cd <project-root>
 .claude/hooks/post-plan-validate.sh
 echo $?  # 0 = pass, 2 = fail
 cat /tmp/vulca-post-plan-validate.log

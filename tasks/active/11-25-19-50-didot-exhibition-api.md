@@ -18,9 +18,9 @@
 - 创建完整的RESTful API
 
 **范围**:
-- 数据源: `/mnt/i/website/Didot_exhibition_Dec/Echoes and Returns.json`
+- 数据源: `<project-root>/Didot_exhibition_Dec/Echoes and Returns.json`
 - 角色: 沿用EMNLP2025-VULCA的8个personas
-- 后端: `/mnt/i/website/wenxin-backend/`
+- 后端: `<project-root>/wenxin-backend/`
 - 新模块: `app/exhibition/`
 
 **排除**:
@@ -257,7 +257,7 @@ GET  /api/v1/exhibition/artists/{id}/artworks # 艺术家作品
 ## 生成对话命令
 ```bash
 # 生成全部对话 (87作品 x 9角色 = 783个对话)
-cd /mnt/i/website/wenxin-backend
+cd <project-root>/wenxin-backend
 source .env && python3 scripts/generate_dialogues.py --db-path data/exhibition
 
 # 只生成特定作品

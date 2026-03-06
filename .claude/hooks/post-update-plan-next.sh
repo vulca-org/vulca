@@ -16,7 +16,7 @@
 
 set -euo pipefail
 
-PROJECT_DIR="${CLAUDE_PROJECT_DIR:-/mnt/i/website}"
+PROJECT_DIR="${CLAUDE_PROJECT_DIR:-/home/yhryzy/projects/website}"
 BACKEND_DIR="$PROJECT_DIR/wenxin-backend"
 DOCS_DIR="$PROJECT_DIR/wenxin-moyun/docs"
 STATE_DIR="/tmp/vulca-hook-state"

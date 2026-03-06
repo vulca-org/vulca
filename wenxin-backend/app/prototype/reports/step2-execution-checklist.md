@@ -62,7 +62,7 @@ venv/bin/python app/prototype/tools/validate_archivist.py
 venv/bin/python app/prototype/tools/validate_fallback.py
 venv/bin/python app/prototype/tools/validate_regression.py
 
-cd /mnt/i/website
+cd <project-root>
 bash .claude/hooks/post-plan-validate.sh
 ```
 

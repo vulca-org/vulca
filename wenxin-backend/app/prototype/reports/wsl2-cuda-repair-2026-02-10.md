@@ -60,7 +60,7 @@ Then reopen WSL and verify:
 
 ```bash
 nvidia-smi
-cd /mnt/i/website/wenxin-backend
+cd <project-root>/wenxin-backend
 venv/bin/python - <<'PY'
 import torch
 print(torch.__version__)

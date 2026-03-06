@@ -22,14 +22,14 @@ python -m app.prototype.ui.cli_demo \
 ## Secrets Safety
 
 ```bash
-cd /mnt/i/website
+cd <project-root>
 
 # 1) Secret scan before commit (recommended if gitleaks is installed)
 gitleaks detect --source . --redact
 ```
 
 ```bash
-cd /mnt/i/website/wenxin-backend
+cd <project-root>/wenxin-backend
 
 # 2) Avoid inline secrets in command history
 # Bad: TOGETHER_API_KEY=xxx python3 ...
@@ -66,7 +66,7 @@ python3 app/prototype/tools/validate_demo_api.py   # D11: Demo (18 checks)
 python3 app/prototype/tools/validate_regression.py # D12: 10-sample (11 checks)
 
 # Post-plan hook
-cd /mnt/i/website && bash .claude/hooks/post-plan-validate.sh
+cd <project-root> && bash .claude/hooks/post-plan-validate.sh
 ```
 
 ## Benchmark Runs
@@ -92,7 +92,7 @@ python3 app/prototype/tools/run_threshold_sweep.py \
 ### Import errors
 ```bash
 # Ensure you're in wenxin-backend/
-cd /mnt/i/website/wenxin-backend
+cd <project-root>/wenxin-backend
 python3 -c "from app.prototype.pipeline.run_pipeline import run_pipeline; print('OK')"
 ```
 
