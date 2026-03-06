@@ -31,6 +31,9 @@ openai==1.99.9
 anthropic==0.64.0
 google-generativeai==0.5.4
 
+# Configuration
+PyYAML>=6.0
+
 # Scientific Computing (used by VULCA core algorithms)
 numpy>=1.24.0
 pandas>=2.0.0

@@ -1,0 +1,83 @@
+name: watercolor
+display_name:
+  en: "Watercolor"
+  zh: "水彩画"
+  ja: "水彩画"
+
+weights:
+  L1: 0.20
+  L2: 0.25
+  L3: 0.15
+  L4: 0.20
+  L5: 0.20
+
+terminology:
+  - term: wet-on-wet
+    term_zh: "湿画法"
+    definition:
+      en: "A watercolor technique of applying wet paint to a wet surface, allowing colors to bleed and blend naturally, creating soft edges and atmospheric effects."
+    category: technique
+    l_levels: [L2]
+    aliases: ["wet-in-wet", "alla prima watercolor"]
+    source: "Watercolor painting tradition"
+
+  - term: glazing
+    term_zh: "罩染法"
+    definition:
+      en: "The application of thin, transparent color washes over dried layers to modify hue, value, or intensity while preserving underlying detail."
+    category: technique
+    l_levels: [L2]
+    aliases: ["color glazing", "transparent layering"]
+    source: "Watercolor painting tradition"
+
+  - term: lifting
+    term_zh: "提白法"
+    definition:
+      en: "A technique of removing wet or re-wetted paint from the paper surface to recover whites or lighten areas, creating highlights and texture."
+    category: technique
+    l_levels: [L2]
+    aliases: ["paint lifting", "blotting technique"]
+    source: "Watercolor painting tradition"
+
+  - term: dry brush
+    term_zh: "干画法"
+    definition:
+      en: "A watercolor technique using a brush with minimal water to create textured, broken strokes that reveal the paper surface."
+    category: technique
+    l_levels: [L2]
+    aliases: ["dry-on-dry", "scumbling", "broken wash"]
+    source: "Watercolor painting tradition"
+
+  - term: reserved whites
+    term_zh: "水彩留白"
+    definition:
+      en: "The practice of leaving areas of white paper unpainted to represent highlights, reflections, or luminous areas, since watercolor has no white pigment."
+    category: technique
+    l_levels: [L1, L2]
+    aliases: ["saving whites", "paper white", "negative painting"]
+    source: "Watercolor painting tradition"
+
+  - term: granulation
+    term_zh: "色粒效果"
+    definition:
+      en: "A textural effect caused by heavy pigment particles settling into the valleys of rough paper, creating a mottled, speckled appearance."
+    category: technique
+    l_levels: [L2]
+    aliases: ["pigment granulation", "sedimentary wash"]
+    source: "Watercolor painting tradition"
+
+taboos:
+  - rule: "Do not treat deliberate watercolor effects (blooms, backruns, reserved whites) as mistakes"
+    severity: medium
+    l_levels: [L2]
+    trigger_patterns: ["accidental stain", "paint ran", "lost control", "muddy wash", "uncontrolled bleeding"]
+    explanation: "Watercolor painting embraces controlled unpredictability; blooms, backruns, and granulation are valued effects."
+
+  - rule: "Do not evaluate watercolor by oil painting standards of opacity, layering capacity, or surface texture"
+    severity: medium
+    l_levels: [L2, L4]
+    trigger_patterns: ["lacks body", "thin and weak", "not as rich as oil", "insufficient coverage", "washed out"]
+    explanation: "Watercolor's transparent, luminous quality is its defining strength, not a limitation."
+
+pipeline:
+  variant: default

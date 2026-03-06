@@ -70,6 +70,9 @@ class PipelineState(TypedDict, total=False):
     # --- Error tracking ---
     error: str | None
 
+    # --- Report summary ---
+    report_output: dict[str, Any] | None
+
     # --- Pipeline result ---
     final_decision: str | None
     best_candidate_id: str | None
@@ -112,6 +115,7 @@ def make_initial_state(
         draft_config=draft_config,
         critic_config=critic_config,
         queen_config=queen_config,
+        report_output=None,
         error=None,
         final_decision=None,
         best_candidate_id=None,

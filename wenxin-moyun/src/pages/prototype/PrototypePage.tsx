@@ -37,10 +37,15 @@ import HitlOverlay from '../../components/prototype/HitlOverlay';
 
 // M3: Pipeline Editor + Batch
 import { PipelineEditor, NodeParamPanel } from '../../components/prototype/editor';
-import type { AgentNodeId } from '../../components/prototype/editor';
+import type { AgentNodeId, StageStatus, ReportOutput } from '../../components/prototype/editor';
 import BatchInputPanel from '../../components/prototype/BatchInputPanel';
 
-type PlaygroundMode = 'edit' | 'run';
+// M7: Community Canvas modes
+import ComparePanel from '../../components/prototype/ComparePanel';
+import TraditionBuilder from '../../components/prototype/TraditionBuilder';
+import TraditionExplorer from '../../components/prototype/TraditionExplorer';
+
+type PlaygroundMode = 'edit' | 'run' | 'build' | 'explore' | 'compare';
 
 function formatDimension(dim: string): string {
   return PROTOTYPE_DIM_LABELS[dim as PrototypeDimension]?.short || dim.replace(/_/g, ' ');
@@ -112,6 +117,30 @@ export default function PrototypePage() {
     }
   }
 
+  // M8: Compute stageStatuses for PipelineEditor node animation
+  const stageStatuses: Record<string, StageStatus> = {};
+  for (const e of state.events) {
+    if (e.event_type === 'stage_started') {
+      stageStatuses[e.stage] = { status: 'running' };
+    } else if (e.event_type === 'stage_completed') {
+      stageStatuses[e.stage] = {
+        status: 'done',
+        duration: stageStarts[e.stage]
+          ? e.timestamp_ms - stageStarts[e.stage]
+          : undefined,
+      };
+    }
+  }
+  if (state.currentStage && !stageStatuses[state.currentStage]) {
+    stageStatuses[state.currentStage] = { status: 'running' };
+  }
+  if (state.status === 'failed' && state.currentStage) {
+    stageStatuses[state.currentStage] = { status: 'error' };
+  }
+
+  // M8: Extract reportOutput for ReportNode
+  const reportOutput = state.reportOutput as ReportOutput | null;
+
   const handleStartRun = (params: RunConfigParams) => {
     setActiveTemplate(params.template || 'default');
     setLastRunParams(params);
@@ -131,17 +160,28 @@ export default function PrototypePage() {
         <div className="flex-1">
           <PlaygroundHeader status={state.status} taskId={state.taskId} />
         </div>
-        <button
-          onClick={() => setPlaygroundMode(playgroundMode === 'edit' ? 'run' : 'edit')}
-          className={[
-            'px-2.5 py-1 text-xs font-medium rounded-lg border transition-colors shrink-0',
-            playgroundMode === 'edit'
-              ? 'border-blue-300 dark:border-blue-600 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20'
-              : 'border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800',
-          ].join(' ')}
-        >
-          {playgroundMode === 'edit' ? 'Run View' : 'Edit Pipeline'}
-        </button>
+        <div className="flex gap-1 shrink-0">
+          {([
+            { mode: 'edit' as const, label: 'Edit' },
+            { mode: 'run' as const, label: 'Run' },
+            { mode: 'build' as const, label: 'Build' },
+            { mode: 'explore' as const, label: 'Explore' },
+            { mode: 'compare' as const, label: 'Compare' },
+          ]).map(({ mode, label }) => (
+            <button
+              key={mode}
+              onClick={() => setPlaygroundMode(mode)}
+              className={[
+                'px-2 py-1 text-[11px] font-medium rounded-lg border transition-colors',
+                playgroundMode === mode
+                  ? 'border-blue-300 dark:border-blue-600 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20'
+                  : 'border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800',
+              ].join(' ')}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <IOSCard variant="elevated" padding="md" animate={false}>
@@ -403,7 +443,7 @@ export default function PrototypePage() {
     <>
       {/* Desktop layout */}
       {playgroundMode === 'edit' ? (
-        /* Edit mode: left config + center PipelineEditor (right hidden) */
+        /* Edit mode: left config + center PipelineEditor */
         <div className="hidden lg:grid h-[calc(100vh-64px)] grid-cols-[300px_1fr] gap-4 p-4 overflow-hidden">
           <aside className="overflow-y-auto space-y-3 pr-1 scrollbar-thin">
             {leftPanelContent}
@@ -414,6 +454,8 @@ export default function PrototypePage() {
               disabled={isRunning}
               onNodeSelect={setSelectedEditorNode}
               nodeParams={editorNodeParams}
+              stageStatuses={isRunning || isDone ? stageStatuses : undefined}
+              reportOutput={reportOutput ?? undefined}
             />
             <NodeParamPanel
               nodeId={selectedEditorNode}
@@ -423,8 +465,8 @@ export default function PrototypePage() {
             />
           </main>
         </div>
-      ) : (
-        /* Run mode: three-column grid (unchanged) */
+      ) : playgroundMode === 'run' ? (
+        /* Run mode: three-column grid */
         <div className="hidden lg:grid h-[calc(100vh-64px)] grid-cols-[300px_1fr_380px] gap-4 p-4 overflow-hidden">
           <aside className="overflow-y-auto space-y-3 pr-1 scrollbar-thin">
             {leftPanelContent}
@@ -435,6 +477,18 @@ export default function PrototypePage() {
           <aside className="overflow-y-auto space-y-3 pl-1 scrollbar-thin">
             {rightPanelContent}
           </aside>
+        </div>
+      ) : (
+        /* Build / Explore / Compare: left config + full center */
+        <div className="hidden lg:grid h-[calc(100vh-64px)] grid-cols-[300px_1fr] gap-4 p-4 overflow-hidden">
+          <aside className="overflow-y-auto space-y-3 pr-1 scrollbar-thin">
+            {leftPanelContent}
+          </aside>
+          <main className="overflow-y-auto px-1 scrollbar-thin">
+            {playgroundMode === 'build' && <TraditionBuilder />}
+            {playgroundMode === 'explore' && <TraditionExplorer />}
+            {playgroundMode === 'compare' && <ComparePanel />}
+          </main>
         </div>
       )}
 

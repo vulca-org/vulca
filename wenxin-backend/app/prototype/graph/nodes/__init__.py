@@ -12,3 +12,4 @@ from app.prototype.graph.nodes.draft_node import DraftNode         # noqa: F401
 from app.prototype.graph.nodes.critic_node import CriticNode       # noqa: F401
 from app.prototype.graph.nodes.queen_node import QueenNode         # noqa: F401
 from app.prototype.graph.nodes.archivist_node import ArchivistNode # noqa: F401
+from app.prototype.graph.nodes.report_node import ReportNode       # noqa: F401

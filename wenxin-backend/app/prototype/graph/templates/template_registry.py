@@ -113,11 +113,128 @@ BATCH_EVAL = GraphTemplate(
     parallel_critic=False,
 )
 
+# ── M8: Quick Evaluate + Scenario Templates ──────────────────────────
+
+QUICK_EVALUATE = GraphTemplate(
+    name="quick_evaluate",
+    display_name="Quick Evaluate",
+    description="2-node evaluation — the fastest path to L1-L5 scores",
+    entry_point="critic",
+    nodes=["critic", "report"],
+    edges=[
+        ("critic", "report"),
+        ("report", "__end__"),
+    ],
+    conditional_edges=[],
+    enable_loop=False,
+    parallel_critic=False,
+)
+
+SCENARIO_A_BRAND_CHECK = GraphTemplate(
+    name="scenario_a_brand_check",
+    display_name="Brand Safety Scan",
+    description="Quick cultural compliance check for brand assets",
+    entry_point="scout",
+    nodes=["scout", "router", "critic", "report"],
+    edges=[
+        ("scout", "router"),
+        ("router", "critic"),
+        ("critic", "report"),
+        ("report", "__end__"),
+    ],
+    conditional_edges=[],
+    enable_loop=False,
+    parallel_critic=False,
+)
+
+SCENARIO_B_DIAGNOSIS = GraphTemplate(
+    name="scenario_b_diagnosis",
+    display_name="Full Diagnosis",
+    description="Complete L1-L5 diagnosis with evidence gathering",
+    entry_point="scout",
+    nodes=["scout", "router", "critic", "report"],
+    edges=[
+        ("scout", "router"),
+        ("router", "critic"),
+        ("critic", "report"),
+        ("report", "__end__"),
+    ],
+    conditional_edges=[],
+    enable_loop=False,
+    parallel_critic=True,
+    node_specs={
+        "critic": NodeSpec(config={"enable_agent_critic": True}),
+    },
+)
+
+SCENARIO_C_COMPARE = GraphTemplate(
+    name="scenario_c_compare",
+    display_name="Before/After Compare",
+    description="Evaluate and compare two images side by side",
+    entry_point="critic",
+    nodes=["critic", "report"],
+    edges=[
+        ("critic", "report"),
+        ("report", "__end__"),
+    ],
+    conditional_edges=[],
+    enable_loop=False,
+    parallel_critic=False,
+)
+
+SCENARIO_D_LEARNING = GraphTemplate(
+    name="scenario_d_learning",
+    display_name="Learning Pipeline",
+    description="Full chain with generation — see how evaluation drives improvement",
+    entry_point="scout",
+    nodes=["scout", "router", "draft", "critic", "report"],
+    edges=[
+        ("scout", "router"),
+        ("router", "draft"),
+        ("draft", "critic"),
+        ("critic", "report"),
+        ("report", "__end__"),
+    ],
+    conditional_edges=[],
+    enable_loop=False,
+    parallel_critic=False,
+)
+
+SCENARIO_E_BATCH = GraphTemplate(
+    name="scenario_e_batch",
+    display_name="Batch + Report",
+    description="Single-pass batch evaluation with in-canvas report",
+    entry_point="scout",
+    nodes=["scout", "router", "draft", "critic", "report"],
+    edges=[
+        ("scout", "router"),
+        ("router", "draft"),
+        ("draft", "critic"),
+        ("critic", "report"),
+        ("report", "__end__"),
+    ],
+    conditional_edges=[],
+    enable_loop=False,
+    parallel_critic=False,
+)
+
 # ── Registry ──────────────────────────────────────────────────────────
 
 _TEMPLATES: dict[str, GraphTemplate] = {
     t.name: t
-    for t in [DEFAULT, FAST_DRAFT, CRITIQUE_ONLY, INTERACTIVE_FULL, BATCH_EVAL]
+    for t in [
+        DEFAULT,
+        FAST_DRAFT,
+        CRITIQUE_ONLY,
+        INTERACTIVE_FULL,
+        BATCH_EVAL,
+        QUICK_EVALUATE,
+        SCENARIO_A_BRAND_CHECK,
+        SCENARIO_B_DIAGNOSIS,
+        SCENARIO_C_COMPARE,
+        SCENARIO_D_LEARNING,
+        SCENARIO_E_BATCH,
+    ]
 }
 
 

@@ -1,0 +1,47 @@
+[
+  {
+    "tradition": "default",
+    "subject": "Abstract contemporary artwork with mixed media elements",
+    "status": "dry-run-ok"
+  },
+  {
+    "tradition": "chinese_xieyi",
+    "subject": "Freehand ink mountain landscape with mist and bamboo",
+    "status": "dry-run-ok"
+  },
+  {
+    "tradition": "chinese_gongbi",
+    "subject": "Detailed meticulous brushwork painting of peonies and birds",
+    "status": "dry-run-ok"
+  },
+  {
+    "tradition": "western_academic",
+    "subject": "Renaissance-style oil portrait with chiaroscuro lighting",
+    "status": "dry-run-ok"
+  },
+  {
+    "tradition": "islamic_geometric",
+    "subject": "Geometric arabesque tile pattern with octagonal star motifs",
+    "status": "dry-run-ok"
+  },
+  {
+    "tradition": "japanese_traditional",
+    "subject": "Ukiyo-e woodblock print of cherry blossoms and Mount Fuji",
+    "status": "dry-run-ok"
+  },
+  {
+    "tradition": "watercolor",
+    "subject": "Impressionist watercolor landscape with soft wet-on-wet technique",
+    "status": "dry-run-ok"
+  },
+  {
+    "tradition": "african_traditional",
+    "subject": "Kente cloth inspired geometric pattern with symbolic colors",
+    "status": "dry-run-ok"
+  },
+  {
+    "tradition": "south_asian",
+    "subject": "Mughal miniature painting with ornate border and garden scene",
+    "status": "dry-run-ok"
+  }
+]

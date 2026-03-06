@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "VULCA TRADITION.yaml",
+  "description": "Schema for VULCA cultural tradition definitions. Community contributors can validate their YAML against this schema before submitting a PR.",
+  "type": "object",
+  "required": ["name", "display_name", "weights", "terminology", "taboos", "pipeline"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "description": "Unique tradition identifier (snake_case)"
+    },
+    "display_name": {
+      "type": "object",
+      "required": ["en"],
+      "properties": {
+        "en": { "type": "string" },
+        "zh": { "type": "string" },
+        "ja": { "type": "string" }
+      },
+      "additionalProperties": { "type": "string" }
+    },
+    "weights": {
+      "type": "object",
+      "required": ["L1", "L2", "L3", "L4", "L5"],
+      "properties": {
+        "L1": { "type": "number", "minimum": 0, "maximum": 1 },
+        "L2": { "type": "number", "minimum": 0, "maximum": 1 },
+        "L3": { "type": "number", "minimum": 0, "maximum": 1 },
+        "L4": { "type": "number", "minimum": 0, "maximum": 1 },
+        "L5": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "additionalProperties": false,
+      "description": "L1-L5 weights must sum to 1.0"
+    },
+    "terminology": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["term", "definition", "l_levels"],
+        "properties": {
+          "term": { "type": "string" },
+          "term_zh": { "type": "string" },
+          "definition": {
+            "oneOf": [
+              { "type": "string" },
+              {
+                "type": "object",
+                "required": ["en"],
+                "properties": {
+                  "en": { "type": "string" },
+                  "zh": { "type": "string" },
+                  "ja": { "type": "string" }
+                },
+                "additionalProperties": { "type": "string" }
+              }
+            ]
+          },
+          "category": {
+            "type": "string",
+            "enum": ["technique", "aesthetics", "composition", "philosophy", "material"]
+          },
+          "l_levels": {
+            "type": "array",
+            "items": { "type": "string", "enum": ["L1", "L2", "L3", "L4", "L5"] },
+            "minItems": 1
+          },
+          "aliases": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "source": { "type": "string" }
+        }
+      },
+      "minItems": 1
+    },
+    "taboos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["rule", "severity"],
+        "properties": {
+          "rule": { "type": "string" },
+          "severity": {
+            "type": "string",
+            "enum": ["low", "medium", "high", "critical"]
+          },
+          "l_levels": {
+            "type": "array",
+            "items": { "type": "string", "enum": ["L1", "L2", "L3", "L4", "L5"] }
+          },
+          "trigger_patterns": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "explanation": { "type": "string" }
+        }
+      }
+    },
+    "pipeline": {
+      "type": "object",
+      "required": ["variant"],
+      "properties": {
+        "variant": {
+          "type": "string",
+          "enum": ["default", "chinese_xieyi", "western_academic"]
+        },
+        "overrides": {
+          "type": "object",
+          "properties": {
+            "scout_focus_layers": {
+              "type": "array",
+              "items": { "type": "string", "enum": ["L1", "L2", "L3", "L4", "L5"] }
+            },
+            "allow_local_rerun": { "type": "boolean" },
+            "accept_threshold": { "type": "number", "minimum": 0, "maximum": 1 },
+            "max_rounds": { "type": "integer", "minimum": 1, "maximum": 10 }
+          }
+        }
+      }
+    },
+    "examples": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "prompt": { "type": "string" },
+          "reference_image": { "type": "string" }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

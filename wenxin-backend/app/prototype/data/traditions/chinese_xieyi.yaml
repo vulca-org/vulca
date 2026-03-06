@@ -1,0 +1,86 @@
+name: chinese_xieyi
+display_name:
+  en: "Chinese Freehand Ink (Xieyi)"
+  zh: "中国写意"
+  ja: "中国写意画"
+
+weights:
+  L1: 0.10
+  L2: 0.15
+  L3: 0.25
+  L4: 0.20
+  L5: 0.30
+
+terminology:
+  - term: hemp-fiber texture stroke
+    term_zh: "披麻皴"
+    definition:
+      en: "A landscape painting texture technique using long, flowing, hemp-like brushstrokes to depict earth and rock surfaces, originated by Dong Yuan in the Five Dynasties period."
+    category: technique
+    l_levels: [L2, L3]
+    aliases: ["pima cun", "hemp-fiber stroke"]
+    source: "VULCA-Bench-v1 terminology annotations"
+
+  - term: spirit resonance and vitality
+    term_zh: "气韵生动"
+    definition:
+      en: "The first of Xie He's Six Principles of Chinese Painting, requiring artworks to convey living spirit and rhythmic vitality beyond mere formal likeness."
+    category: aesthetics
+    l_levels: [L4, L5]
+    aliases: ["qiyun shengdong", "spirit consonance", "rhythmic vitality"]
+    source: "Xie He, Six Principles, 5th century"
+
+  - term: intention before brush
+    term_zh: "意在笔先"
+    definition:
+      en: "The principle that the artist's conceptual vision and emotional intent must be fully formed before the brush touches paper, emphasizing mental preparation over technical execution."
+    category: philosophy
+    l_levels: [L4, L5]
+    aliases: ["yi zai bi xian", "concept precedes execution"]
+    source: "Wang Wei (Tang Dynasty), Discourse on Landscape Painting"
+
+  - term: reserved white space
+    term_zh: "留白"
+    definition:
+      en: "The deliberate use of unpainted areas in a composition, functioning as clouds, mist, water, or spiritual breathing space rather than empty background."
+    category: composition
+    l_levels: [L2, L3, L5]
+    aliases: ["liu bai", "negative space", "blank space"]
+    source: "VULCA-Bench-v1 terminology annotations"
+
+  - term: Six Principles of Painting
+    term_zh: "六法论"
+    definition:
+      en: "Xie He's foundational criteria for evaluating Chinese painting: spirit resonance, bone method, correspondence to object, suitability to type, division and planning, transmission by copying."
+    category: aesthetics
+    l_levels: [L3, L4, L5]
+    aliases: ["liu fa lun", "Six Laws", "Six Canons"]
+    source: "Xie He, Record of the Classification of Old Painters, c. 550 CE"
+
+  - term: splashed ink
+    term_zh: "泼墨"
+    definition:
+      en: "A freehand ink technique involving bold, spontaneous application of diluted ink to create atmospheric, abstract landscape effects, pioneered by Wang Mo in the Tang Dynasty."
+    category: technique
+    l_levels: [L2, L4]
+    aliases: ["po mo", "splash ink", "flung ink"]
+    source: "VULCA-Bench-v1 terminology annotations"
+
+taboos:
+  - rule: "Do not misidentify deliberate xieyi brushwork as technical deficiency or lack of skill"
+    severity: high
+    l_levels: [L2, L4]
+    trigger_patterns: ["sloppy brushwork", "lacks precision", "careless strokes", "poor technique", "unfinished"]
+    explanation: "Xieyi painting prioritizes expressive spontaneity and spiritual resonance over formal accuracy; its intentionally loose brushwork is a deliberate aesthetic choice."
+
+  - rule: "Do not apply anachronistic standards when evaluating works from different historical periods"
+    severity: medium
+    l_levels: [L3, L4]
+    trigger_patterns: ["should have used", "failed to follow", "does not meet the standard of"]
+    explanation: "Evaluating Five Dynasties works by Northern Song standards ignores legitimate historical evolution of style and values."
+
+pipeline:
+  variant: chinese_xieyi
+  overrides:
+    scout_focus_layers: [L3, L5]
+    allow_local_rerun: false

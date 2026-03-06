@@ -1,10 +1,13 @@
 /**
  * PipelineEditor — React Flow-based visual pipeline topology editor.
  *
- * Loads templates from the backend, converts them to React Flow nodes/edges,
- * and lets users drag nodes, add/remove edges, and validate topology in real-time.
- *
- * Custom topologies are serialized as custom_nodes + custom_edges for the run API.
+ * M8 enhancements:
+ * - CanvasToolbar with undo/redo, add-node, template gallery
+ * - Keyboard shortcuts (Ctrl+Z, Ctrl+S, Ctrl+Enter, etc.)
+ * - Node execution status animation via stageStatuses prop
+ * - ReportNode + StickyNote custom node types
+ * - First-visit auto-load of quick_evaluate template
+ * - Template gallery card overlay
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -26,6 +29,12 @@ import '@xyflow/react/dist/style.css';
 
 import { API_PREFIX } from '../../../config/api';
 import AgentNode from './AgentNode';
+import ReportNode from './ReportNode';
+import StickyNote from './StickyNote';
+import CanvasToolbar from './CanvasToolbar';
+import TemplateGallery, { type TemplateInfo } from './TemplateGallery';
+import { useCanvasHistory } from './useCanvasHistory';
+import { useKeyboardShortcuts } from './useKeyboardShortcuts';
 import {
   ALL_AGENT_IDS,
   AGENT_META,
@@ -34,11 +43,13 @@ import {
   type AgentNodeData,
   type SavedTemplate,
   type TopologyState,
+  type ReportOutput,
 } from './types';
 
 /* ──────────────────────── Constants ──────────────────────── */
 
 const STORAGE_KEY = 'vulca-custom-templates';
+const VISITED_KEY = 'vulca-has-visited';
 const MAX_SAVED = 10;
 const VALIDATE_DEBOUNCE = 500;
 
@@ -53,14 +64,24 @@ interface ApiTemplate {
   enable_loop: boolean;
 }
 
-const nodeTypes: NodeTypes = { agent: AgentNode } as unknown as NodeTypes;
+/** Execution status for each agent stage */
+export interface StageStatus {
+  status: 'idle' | 'running' | 'done' | 'error' | 'skipped';
+  duration?: number;
+}
+
+const nodeTypes: NodeTypes = {
+  agent: AgentNode,
+  report: ReportNode,
+  sticky: StickyNote,
+} as unknown as NodeTypes;
 
 /* ──────────────────────── Helpers ──────────────────────── */
 
 function toFlowNodes(agentIds: AgentNodeId[]): Node<AgentNodeData>[] {
   return agentIds.map((id) => ({
     id,
-    type: 'agent',
+    type: id === 'report' ? 'report' : 'agent',
     position: INITIAL_POSITIONS[id] ?? { x: 0, y: 0 },
     data: {
       agentId: id,
@@ -72,7 +93,6 @@ function toFlowNodes(agentIds: AgentNodeId[]): Node<AgentNodeData>[] {
   }));
 }
 
-/** Generate sequential edges from a node list (fallback when API omits edges) */
 function sequentialEdges(nodes: string[]): [string, string][] {
   const pairs: [string, string][] = [];
   for (let i = 0; i < nodes.length - 1; i++) pairs.push([nodes[i], nodes[i + 1]]);
@@ -118,7 +138,9 @@ function extractTopology(
   nodes: Node<AgentNodeData>[],
   edges: Edge[],
 ): TopologyState {
-  const nodeIds = nodes.map((n) => n.id as AgentNodeId);
+  const nodeIds = nodes
+    .filter((n) => n.type !== 'sticky')
+    .map((n) => n.id as AgentNodeId);
   const edgePairs: [string, string][] = edges.map((e) => [e.source, e.target]);
   const hasLoop = edges.some(
     (e) =>
@@ -143,6 +165,14 @@ function persistTemplates(list: SavedTemplate[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(list.slice(0, MAX_SAVED)));
 }
 
+function isFirstVisit(): boolean {
+  return !localStorage.getItem(VISITED_KEY);
+}
+
+function markVisited() {
+  localStorage.setItem(VISITED_KEY, '1');
+}
+
 /* ──────────────────────── Component ──────────────────────── */
 
 interface Props {
@@ -153,10 +183,12 @@ interface Props {
     nodeParams?: Record<string, Record<string, unknown>>;
   }) => void;
   disabled?: boolean;
-  /** Notify parent of selected node for NodeParamPanel */
   onNodeSelect?: (nodeId: AgentNodeId | null) => void;
-  /** External node params (managed by parent via NodeParamPanel) */
   nodeParams?: Record<string, Record<string, unknown>>;
+  /** Live execution status from SSE events */
+  stageStatuses?: Record<string, StageStatus>;
+  /** Report output to display in ReportNode */
+  reportOutput?: ReportOutput;
 }
 
 export default function PipelineEditor({
@@ -164,11 +196,15 @@ export default function PipelineEditor({
   disabled,
   onNodeSelect,
   nodeParams,
+  stageStatuses,
+  reportOutput,
 }: Props) {
   /* ── API templates ── */
   const [apiTemplates, setApiTemplates] = useState<ApiTemplate[]>([]);
   const [activeTemplate, setActiveTemplate] = useState('default');
   const [savedTemplates, setSavedTemplates] = useState(loadSavedTemplates);
+  const [showGallery, setShowGallery] = useState(false);
+  const [showFirstVisitBanner, setShowFirstVisitBanner] = useState(false);
 
   useEffect(() => {
     fetch(`${API_PREFIX}/prototype/templates`)
@@ -182,7 +218,24 @@ export default function PipelineEditor({
   /* ── React Flow state ── */
   const [nodes, setNodes, onNodesChange] = useNodesState<Node<AgentNodeData>>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
-  const [selectedNodeId, setSelectedNodeId] = useState<AgentNodeId | null>(null);
+  const [, setSelectedNodeId] = useState<AgentNodeId | null>(null);
+
+  /* ── Undo / Redo ── */
+  const { pushSnapshot, undo, redo, canUndo, canRedo } = useCanvasHistory();
+
+  const applySnapshot = useCallback(
+    (fn: () => ReturnType<typeof undo>) => {
+      const snap = fn();
+      if (snap) {
+        setNodes(snap.nodes as Node<AgentNodeData>[]);
+        setEdges(snap.edges);
+      }
+    },
+    [setNodes, setEdges],
+  );
+
+  const handleUndo = useCallback(() => applySnapshot(undo), [applySnapshot, undo]);
+  const handleRedo = useCallback(() => applySnapshot(redo), [applySnapshot, redo]);
 
   /* ── Validation ── */
   const [validation, setValidation] = useState<{
@@ -190,7 +243,7 @@ export default function PipelineEditor({
     errors: string[];
     warnings: string[];
   } | null>(null);
-  const validateTimer = useRef<ReturnType<typeof setTimeout>>();
+  const validateTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const runValidation = useCallback(
     (n: Node<AgentNodeData>[], e: Edge[]) => {
@@ -198,7 +251,11 @@ export default function PipelineEditor({
       validateTimer.current = setTimeout(() => {
         const topo = extractTopology(n, e);
         if (topo.nodes.length === 0 || topo.edges.length === 0) {
-          setValidation({ valid: false, errors: ['Topology needs at least 1 node and 1 edge'], warnings: [] });
+          setValidation({
+            valid: false,
+            errors: ['Topology needs at least 1 node and 1 edge'],
+            warnings: [],
+          });
           return;
         }
         fetch(`${API_PREFIX}/prototype/topologies/validate`, {
@@ -221,11 +278,14 @@ export default function PipelineEditor({
   /* ── Load template into canvas ── */
   const loadTemplate = useCallback(
     (name: string) => {
+      // Push snapshot before loading
+      if (nodes.length > 0) pushSnapshot(nodes, edges);
+
       setActiveTemplate(name);
       setSelectedNodeId(null);
       onNodeSelect?.(null);
+      setShowGallery(false);
 
-      // Check saved templates first
       const saved = savedTemplates.find((s) => s.id === name);
       if (saved) {
         const flowNodes = toFlowNodes(saved.topology.nodes);
@@ -236,7 +296,6 @@ export default function PipelineEditor({
         return;
       }
 
-      // API template
       const tmpl = apiTemplates.find((t) => t.name === name);
       if (tmpl) {
         const agentIds = tmpl.nodes.filter((n): n is AgentNodeId =>
@@ -250,8 +309,10 @@ export default function PipelineEditor({
         return;
       }
 
-      // Fallback: default pipeline
-      const defaultIds: AgentNodeId[] = ['scout', 'router', 'draft', 'critic', 'queen', 'archivist'];
+      // Fallback
+      const defaultIds: AgentNodeId[] = [
+        'scout', 'router', 'draft', 'critic', 'queen', 'archivist',
+      ];
       const defaultEdges: [string, string][] = [
         ['scout', 'router'],
         ['router', 'draft'],
@@ -265,10 +326,10 @@ export default function PipelineEditor({
       setEdges(fe);
       runValidation(fn, fe);
     },
-    [apiTemplates, savedTemplates, setNodes, setEdges, runValidation, onNodeSelect],
+    [apiTemplates, savedTemplates, setNodes, setEdges, runValidation, onNodeSelect, nodes, edges, pushSnapshot],
   );
 
-  // Load default on mount / when API templates arrive
+  // Phase 1: load default immediately so canvas is never empty
   const didInit = useRef(false);
   useEffect(() => {
     if (!didInit.current) {
@@ -277,29 +338,39 @@ export default function PipelineEditor({
     }
   }, [loadTemplate]);
 
+  // Phase 2: when API templates arrive, apply first-visit logic
+  const didApplyFirstVisit = useRef(false);
+  useEffect(() => {
+    if (apiTemplates.length > 0 && !didApplyFirstVisit.current) {
+      didApplyFirstVisit.current = true;
+      if (isFirstVisit()) {
+        loadTemplate('quick_evaluate');
+        setShowFirstVisitBanner(true);
+        markVisited();
+        setTimeout(() => setShowFirstVisitBanner(false), 6000);
+      }
+    }
+  }, [apiTemplates, loadTemplate]);
+
   /* ── Edge connection ── */
   const onConnect = useCallback(
     (conn: Connection) => {
+      pushSnapshot(nodes, edges);
       setEdges((eds) => {
         const next = addEdge(
-          {
-            ...conn,
-            markerEnd: { type: MarkerType.ArrowClosed, width: 16, height: 16 },
-          },
+          { ...conn, markerEnd: { type: MarkerType.ArrowClosed, width: 16, height: 16 } },
           eds,
         );
         runValidation(nodes, next);
         return next;
       });
     },
-    [setEdges, nodes, runValidation],
+    [setEdges, nodes, edges, runValidation, pushSnapshot],
   );
 
-  // Re-validate on edge delete
   const handleEdgesChange: typeof onEdgesChange = useCallback(
     (changes) => {
       onEdgesChange(changes);
-      // Defer to next tick so state is updated
       setTimeout(() => {
         setEdges((cur) => {
           runValidation(nodes, cur);
@@ -313,6 +384,7 @@ export default function PipelineEditor({
   /* ── Node selection ── */
   const onNodeClick = useCallback(
     (_: React.MouseEvent, node: Node) => {
+      if (node.type === 'sticky') return;
       const id = node.id as AgentNodeId;
       setSelectedNodeId(id);
       onNodeSelect?.(id);
@@ -325,7 +397,7 @@ export default function PipelineEditor({
     onNodeSelect?.(null);
   }, [onNodeSelect]);
 
-  /* ── Save custom template ── */
+  /* ── Save / Delete custom template ── */
   const handleSave = useCallback(() => {
     const name = prompt('Template name:');
     if (!name?.trim()) return;
@@ -343,7 +415,6 @@ export default function PipelineEditor({
     setActiveTemplate(entry.id);
   }, [nodes, edges, nodeParams, savedTemplates]);
 
-  /* ── Delete saved template ── */
   const handleDeleteSaved = useCallback(
     (id: string) => {
       const next = savedTemplates.filter((s) => s.id !== id);
@@ -354,10 +425,43 @@ export default function PipelineEditor({
     [savedTemplates, activeTemplate, loadTemplate],
   );
 
+  /* ── Add node / sticky note ── */
+  const handleAddNode = useCallback(
+    (nodeId: AgentNodeId) => {
+      pushSnapshot(nodes, edges);
+      const maxX = nodes.reduce((mx, n) => Math.max(mx, n.position.x), 0);
+      const newNode: Node<AgentNodeData> = {
+        id: `${nodeId}-${Date.now()}`,
+        type: nodeId === 'report' ? 'report' : 'agent',
+        position: { x: maxX + 200, y: 80 },
+        data: {
+          agentId: nodeId,
+          label: AGENT_META[nodeId].label,
+          icon: AGENT_META[nodeId].icon,
+          description: AGENT_META[nodeId].description,
+          params: {},
+        },
+      };
+      setNodes((prev) => [...prev, newNode]);
+    },
+    [nodes, edges, setNodes, pushSnapshot],
+  );
+
+  const handleAddStickyNote = useCallback(() => {
+    pushSnapshot(nodes, edges);
+    const maxX = nodes.reduce((mx, n) => Math.max(mx, n.position.x), 0);
+    const newNote: Node = {
+      id: `sticky-${Date.now()}`,
+      type: 'sticky',
+      position: { x: maxX + 200, y: -100 },
+      data: { text: '', color: 'yellow' },
+    };
+    setNodes((prev) => [...prev, newNote as Node<AgentNodeData>]);
+  }, [nodes, edges, setNodes, pushSnapshot]);
+
   /* ── Run ── */
   const handleRun = useCallback(() => {
     const topo = extractTopology(nodes, edges);
-    // If it's a known API template name AND unmodified, just pass template name
     const isApiTemplate = apiTemplates.some((t) => t.name === activeTemplate);
     onRun({
       template: isApiTemplate ? activeTemplate : 'default',
@@ -367,78 +471,124 @@ export default function PipelineEditor({
     });
   }, [nodes, edges, activeTemplate, apiTemplates, nodeParams, onRun]);
 
-  /* ── Template options ── */
-  const templateOptions = useMemo(() => {
-    const api = apiTemplates.map((t) => ({ id: t.name, label: t.display_name }));
-    const custom = savedTemplates.map((s) => ({ id: s.id, label: `Custom: ${s.name}` }));
-    return [...(api.length ? api : [{ id: 'default', label: 'Standard Pipeline' }]), ...custom];
+  /* ── Select all / deselect ── */
+  const selectAll = useCallback(() => {
+    setNodes((nds) => nds.map((n) => ({ ...n, selected: true })));
+  }, [setNodes]);
+
+  const deselectAll = useCallback(() => {
+    setNodes((nds) => nds.map((n) => ({ ...n, selected: false })));
+    setSelectedNodeId(null);
+    onNodeSelect?.(null);
+  }, [setNodes, onNodeSelect]);
+
+  /* ── Keyboard shortcuts ── */
+  useKeyboardShortcuts({
+    onUndo: handleUndo,
+    onRedo: handleRedo,
+    onSave: handleSave,
+    onRun: handleRun,
+    onSelectAll: selectAll,
+    onDeselectAll: deselectAll,
+    disabled,
+  });
+
+  /* ── Propagate stage statuses to node data ── */
+  useEffect(() => {
+    if (!stageStatuses) return;
+    setNodes((nds) =>
+      nds.map((n) => {
+        if (n.type === 'sticky') return n;
+        const st = stageStatuses[n.id];
+        if (!st) return n;
+        return {
+          ...n,
+          data: {
+            ...n.data,
+            status: st.status,
+            duration: st.duration,
+          },
+        };
+      }),
+    );
+  }, [stageStatuses, setNodes]);
+
+  /* ── Propagate report output to report nodes ── */
+  useEffect(() => {
+    if (!reportOutput) return;
+    setNodes((nds) =>
+      nds.map((n) => {
+        if (n.type !== 'report') return n;
+        return { ...n, data: { ...n.data, reportOutput } };
+      }),
+    );
+  }, [reportOutput, setNodes]);
+
+  /* ── Template gallery info ── */
+  const galleryTemplates: TemplateInfo[] = useMemo(() => {
+    const api: TemplateInfo[] = apiTemplates.map((t) => ({
+      id: t.name,
+      name: t.display_name,
+      description: t.description,
+      nodeCount: t.nodes.length,
+      nodes: t.nodes,
+    }));
+    const custom: TemplateInfo[] = savedTemplates.map((s) => ({
+      id: s.id,
+      name: s.name,
+      description: `Custom template (${s.topology.nodes.length} nodes)`,
+      nodeCount: s.topology.nodes.length,
+      nodes: s.topology.nodes,
+      isSaved: true,
+    }));
+    if (!api.length) {
+      api.push({
+        id: 'default',
+        name: 'Standard Pipeline',
+        description: 'Full Scout-Draft-Critic-Queen cycle',
+        nodeCount: 6,
+        nodes: ['scout', 'router', 'draft', 'critic', 'queen', 'archivist'],
+      });
+    }
+    return [...api, ...custom];
   }, [apiTemplates, savedTemplates]);
 
   /* ──────────────────────── Render ──────────────────────── */
   return (
     <div className="flex flex-col h-full">
       {/* Toolbar */}
-      <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex-shrink-0 flex-wrap">
-        {/* Template selector */}
-        <select
-          value={activeTemplate}
-          onChange={(e) => loadTemplate(e.target.value)}
-          className="px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-          disabled={disabled}
-        >
-          {templateOptions.map((t) => (
-            <option key={t.id} value={t.id}>
-              {t.label}
-            </option>
-          ))}
-        </select>
+      <CanvasToolbar
+        onToggleGallery={() => setShowGallery((v) => !v)}
+        onUndo={handleUndo}
+        onRedo={handleRedo}
+        canUndo={canUndo}
+        canRedo={canRedo}
+        onAddNode={handleAddNode}
+        onAddStickyNote={handleAddStickyNote}
+        onSave={handleSave}
+        onRun={handleRun}
+        disabled={!!disabled}
+        validation={validation}
+        activeTemplate={activeTemplate}
+      />
 
-        {/* Save / Delete */}
-        <button
-          onClick={handleSave}
-          className="px-2 py-1 text-xs font-medium text-blue-600 dark:text-blue-400 border border-blue-300 dark:border-blue-600 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
-          disabled={disabled}
-        >
-          Save
-        </button>
-        {activeTemplate.startsWith('custom-') && (
-          <button
-            onClick={() => handleDeleteSaved(activeTemplate)}
-            className="px-2 py-1 text-xs font-medium text-red-600 dark:text-red-400 border border-red-300 dark:border-red-600 rounded-md hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
-          >
-            Delete
-          </button>
-        )}
-
-        <div className="flex-1" />
-
-        {/* Validation badge */}
-        {validation && (
-          <span
-            className={[
-              'text-xs px-2 py-0.5 rounded-full font-medium',
-              validation.valid
-                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400',
-            ].join(' ')}
-            title={[...validation.errors, ...validation.warnings].join('\n')}
-          >
-            {validation.valid ? 'Valid' : `${validation.errors.length} error(s)`}
+      {/* First-visit banner */}
+      {showFirstVisitBanner && (
+        <div className="px-3 py-2 bg-blue-50 dark:bg-blue-900/20 text-xs text-blue-700 dark:text-blue-300 border-b border-blue-200 dark:border-blue-800 flex items-center justify-between">
+          <span>
+            This is the <strong>Quick Evaluate</strong> template. Drop in an image and click Run!
           </span>
-        )}
-
-        {/* Run button */}
-        <button
-          onClick={handleRun}
-          disabled={disabled || !validation?.valid}
-          className="px-4 py-1.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 dark:disabled:bg-gray-600 rounded-lg transition-colors"
-        >
-          Run Pipeline
-        </button>
-      </div>
+          <button
+            onClick={() => setShowFirstVisitBanner(false)}
+            className="text-blue-500 hover:text-blue-700 ml-2"
+          >
+            &times;
+          </button>
+        </div>
+      )}
 
       {/* Canvas */}
-      <div className="flex-1 min-h-0">
+      <div className="flex-1 min-h-0 relative">
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -460,6 +610,20 @@ export default function PipelineEditor({
             className="!bg-white dark:!bg-gray-800 !border-gray-200 dark:!border-gray-700"
           />
         </ReactFlow>
+
+        {/* Template Gallery overlay */}
+        {showGallery && (
+          <TemplateGallery
+            templates={galleryTemplates}
+            activeTemplate={activeTemplate}
+            onSelect={(id) => {
+              loadTemplate(id);
+              setShowGallery(false);
+            }}
+            onDelete={handleDeleteSaved}
+            onClose={() => setShowGallery(false)}
+          />
+        )}
       </div>
 
       {/* Validation messages */}

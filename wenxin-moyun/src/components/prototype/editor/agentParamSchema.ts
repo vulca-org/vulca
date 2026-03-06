@@ -42,7 +42,27 @@ export const AGENT_PARAM_SCHEMA: Record<AgentNodeId, ParamDef[]> = {
     },
   ],
 
-  router: [],
+  router: [
+    {
+      id: 'tradition',
+      label: 'Tradition',
+      type: 'select',
+      default: 'auto',
+      options: [
+        { label: 'Auto-detect', value: 'auto' },
+        { label: 'Chinese Xieyi', value: 'chinese_xieyi' },
+        { label: 'Chinese Gongbi', value: 'chinese_gongbi' },
+        { label: 'Japanese Ukiyo-e', value: 'japanese_ukiyoe' },
+        { label: 'Japanese Nihonga', value: 'japanese_nihonga' },
+        { label: 'Korean Minhwa', value: 'korean_minhwa' },
+        { label: 'Islamic Geometric', value: 'islamic_geometric' },
+        { label: 'Western Classical', value: 'western_classical' },
+        { label: 'Western Modern', value: 'western_modern' },
+        { label: 'Default', value: 'default' },
+      ],
+      description: 'Cultural tradition for routing',
+    },
+  ],
 
   draft: [
     {
@@ -168,4 +188,10 @@ export const AGENT_PARAM_SCHEMA: Record<AgentNodeId, ParamDef[]> = {
   ],
 
   archivist: [],
+
+  upload: [],
+
+  identify: [],
+
+  report: [],
 };

@@ -1,0 +1,74 @@
+name: default
+display_name:
+  en: "General / Cross-cultural"
+  zh: "通用 / 跨文化"
+  ja: "一般 / 異文化"
+
+weights:
+  L1: 0.15
+  L2: 0.20
+  L3: 0.25
+  L4: 0.20
+  L5: 0.20
+
+terminology:
+  - term: composition
+    term_zh: "构图"
+    definition:
+      en: "The arrangement of visual elements within a picture plane, including balance, rhythm, focal points, and the relationship between positive and negative space."
+    category: composition
+    l_levels: [L1, L2]
+    aliases: ["visual arrangement", "pictorial structure"]
+    source: "Cross-cultural art theory"
+
+  - term: color theory
+    term_zh: "色彩理论"
+    definition:
+      en: "The body of practical guidance for color mixing, harmony, and psychological effects, encompassing hue, saturation, value, temperature, and complementary relationships."
+    category: aesthetics
+    l_levels: [L1, L2]
+    aliases: ["chromatics", "color harmony"]
+    source: "Cross-cultural art theory"
+
+  - term: perspective
+    term_zh: "透视法"
+    definition:
+      en: "Systems for representing three-dimensional space on a two-dimensional surface, including linear, atmospheric, and isometric approaches across different cultural traditions."
+    category: technique
+    l_levels: [L1, L2, L3]
+    aliases: ["spatial representation", "depth rendering"]
+    source: "Cross-cultural art theory"
+
+  - term: iconography
+    term_zh: "图像学"
+    definition:
+      en: "The study and interpretation of symbolic imagery, motifs, and visual conventions within specific cultural and historical contexts."
+    category: aesthetics
+    l_levels: [L3, L4]
+    aliases: ["symbolic imagery", "visual symbolism"]
+    source: "Erwin Panofsky, Studies in Iconology"
+
+  - term: medium
+    term_zh: "媒材"
+    definition:
+      en: "The material and technique used to create an artwork, including oil paint, ink, watercolor, bronze, marble, digital media, and mixed media."
+    category: material
+    l_levels: [L1, L2]
+    aliases: ["artistic medium", "material"]
+    source: "Cross-cultural art theory"
+
+taboos:
+  - rule: "Do not assert authorial intent without supporting evidence from documented sources"
+    severity: medium
+    l_levels: [L4, L5]
+    trigger_patterns: ["the artist intended", "the artist meant to", "the artist wanted to express", "clearly the artist"]
+    explanation: "Attributing specific intentions to artists without documentary evidence is speculative. Use hedged language unless evidence supports stronger claims."
+
+  - rule: "Do not project contemporary moral frameworks onto historical works without acknowledging anachronism"
+    severity: medium
+    l_levels: [L3, L4]
+    trigger_patterns: ["problematic", "should not have depicted", "offensive content"]
+    explanation: "Historical artworks must be understood within their period context first."
+
+pipeline:
+  variant: default

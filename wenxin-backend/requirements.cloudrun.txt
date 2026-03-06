@@ -49,6 +49,9 @@ langgraph-checkpoint>=2.0.0
 # --- Prototype: Observability ---
 langfuse>=2.50.0
 
+# --- Configuration ---
+PyYAML>=6.0
+
 # --- Image Processing ---
 Pillow>=10.0.0
 numpy>=1.24.0

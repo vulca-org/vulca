@@ -1,0 +1,145 @@
+% VULCA Agent Loop Architecture Diagram (inline version for main.tex)
+% Requires in preamble: \usepackage{tikz}
+% \usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc, fit, backgrounds}
+
+\definecolor{scoutC}{HTML}{3B82F6}
+\definecolor{draftC}{HTML}{10B981}
+\definecolor{criticC}{HTML}{F59E0B}
+\definecolor{queenC}{HTML}{8B5CF6}
+\definecolor{routerC}{HTML}{EC4899}
+\definecolor{loopC}{HTML}{EF4444}
+\definecolor{vlmC}{HTML}{06B6D4}
+\definecolor{bdr}{HTML}{94A3B8}
+
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+    >=Stealth,
+    agent/.style={
+        rectangle, rounded corners=5pt, draw=#1, fill=#1!8,
+        line width=1pt, minimum width=2.2cm, minimum height=0.9cm,
+        font=\sffamily\footnotesize\bfseries, align=center, text=#1!85!black
+    },
+    sub/.style={font=\sffamily\tiny, text=#1!60!black},
+    data/.style={
+        rectangle, rounded corners=2pt, draw=bdr, fill=white,
+        line width=0.5pt, font=\sffamily\tiny, align=center,
+        minimum height=0.4cm, inner sep=2pt
+    },
+    lbox/.style={
+        rectangle, rounded corners=1.5pt, draw=#1!50, fill=#1!10,
+        line width=0.4pt, font=\sffamily\tiny\bfseries, text=#1!70!black,
+        minimum width=0.48cm, minimum height=0.33cm, inner sep=1pt
+    },
+    arr/.style={->, line width=0.7pt, color=#1!55!black},
+    darr/.style={->, line width=0.7pt, dashed, color=#1!55!black},
+    note/.style={font=\sffamily\tiny\itshape, text=gray!50!black},
+]
+
+% ==================== ROW 1: Input → Scout → Draft → Cands ====================
+\node[data, minimum width=1.4cm] (input) at (0,0) {Task $+$ Tradition};
+
+\node[agent=scoutC] (scout) at (2.7, 0) {Scout};
+\node[sub=scoutC, below=0.01cm of scout] {Evidence Retrieval};
+
+\node[data, below=0.55cm of scout, xshift=-0.7cm] (faiss) {FAISS};
+\node[data, below=0.55cm of scout] (terms) {Terms};
+\node[data, below=0.55cm of scout, xshift=0.7cm] (taboo) {Taboo};
+
+\node[data, fill=scoutC!5, minimum width=1.4cm] (epack) at (5.1, 0) {EvidencePack};
+
+\node[agent=draftC] (draft) at (7.3, 0) {Draft};
+\node[sub=draftC, below=0.01cm of draft] {Image Generation};
+
+\node[data, below=0.55cm of draft, xshift=-0.9cm] (sd) {SD\,1.5};
+\node[data, below=0.55cm of draft, xshift=-0.3cm] (flx) {FLUX};
+\node[data, below=0.55cm of draft, xshift=0.3cm] (nb2) {\textbf{NB2}};
+\node[data, below=0.55cm of draft, xshift=0.9cm] (cn) {CtrlNet};
+
+\node[data, fill=draftC!5, minimum width=1.2cm] (cands) at (9.5, 0) {$n$ Cands};
+
+% ==================== ROW 2: Queen ← Scores ← Critic ====================
+\node[agent=criticC] (critic) at (7.8, -2.8) {Critic};
+\node[sub=criticC, below=0.01cm of critic] {L1--L5 Hybrid};
+
+% L1-L5 boxes — Rule (L1-L2), LLM (L3-L5), VLM (L1-L5)
+\node[lbox=scoutC] (l1) at (6.55, -3.7) {L1};
+\node[lbox=scoutC] (l2) at (7.0, -3.7) {L2};
+\node[lbox=criticC] (l3) at (7.5, -3.7) {L3};
+\node[lbox=criticC] (l4) at (8.0, -3.7) {L4};
+\node[lbox=queenC] (l5) at (8.5, -3.7) {L5};
+\draw[draw=bdr!50, line width=0.3pt] ([yshift=-0.15cm]l1.south west) -- ([yshift=-0.15cm]l2.south east);
+\node[note] at (6.78, -4.08) {Rule};
+\draw[draw=bdr!50, line width=0.3pt] ([yshift=-0.15cm]l3.south west) -- ([yshift=-0.15cm]l5.south east);
+\node[note] at (8.0, -4.08) {LLM};
+
+% VLM evaluation path (spans L1-L5)
+\node[lbox=vlmC] (vlm1) at (6.55, -4.5) {L1};
+\node[lbox=vlmC] (vlm2) at (7.0, -4.5) {L2};
+\node[lbox=vlmC] (vlm3) at (7.5, -4.5) {L3};
+\node[lbox=vlmC] (vlm4) at (8.0, -4.5) {L4};
+\node[lbox=vlmC] (vlm5) at (8.5, -4.5) {L5};
+\draw[draw=bdr!50, line width=0.3pt] ([yshift=-0.15cm]vlm1.south west) -- ([yshift=-0.15cm]vlm5.south east);
+\node[note, text=vlmC!70!black] at (7.53, -4.88) {\textbf{VLM} (Gemini)};
+
+\node[data, fill=criticC!5, minimum width=1.2cm, minimum height=0.5cm] (scores) at (5.5, -2.8) {Scores $+$\\[-1pt]Signals};
+
+\node[agent=queenC] (queen) at (3.2, -2.8) {Queen};
+\node[sub=queenC, below=0.01cm of queen] {Decision Maker};
+
+% Outputs
+\node[data, fill=draftC!10, draw=draftC!60, minimum width=1.1cm, font=\sffamily\tiny\bfseries] (accept) at (2.3, -3.9) {Accept};
+\node[data, minimum width=1.1cm] (stop) at (4.1, -3.9) {Stop};
+
+% Cultural Router
+\node[rectangle, rounded corners=3pt, draw=routerC, fill=routerC!6,
+      line width=0.7pt, minimum width=2.0cm, minimum height=0.55cm,
+      font=\sffamily\footnotesize\bfseries, text=routerC!80!black] (router) at (10.5, -1.7) {Cultural Router};
+\node[note, below=0.01cm of router] {9 traditions $\to$ L-weights};
+
+% ==================== MAIN FLOW ====================
+\draw[arr=gray] (input) -- (scout);
+\draw[arr=scoutC] (scout) -- (epack);
+\draw[arr=scoutC] (epack) -- (draft);
+\draw[arr=draftC] (draft) -- (cands);
+
+% U-turn: Candidates → Critic
+\draw[arr=draftC] (cands.south) |- (critic.east);
+
+% Critic → Scores → Queen
+\draw[arr=criticC] (critic) -- (scores);
+\draw[arr=criticC] (scores) -- (queen);
+
+% Queen → Accept / Stop
+\draw[arr=draftC] (queen.south) -- ++(0, -0.2) -| (accept.north);
+\draw[arr=gray] (queen.south) -- ++(0, -0.2) -| (stop.north);
+
+% Router → Critic (route below to avoid Cands→Critic vertical overlap at x=9.5)
+\draw[darr=routerC] (router.south) -- ++(0, -0.8) -| (critic.north east);
+
+% Tradition → Router (route along bottom to avoid crossing central flow)
+\draw[darr=routerC] (input.south) -- ++(0, -5.3) -| (router.south);
+
+% ==================== SELF-CORRECTION LOOPS ====================
+
+% Loop 1: Rerun + FixItPlan (Queen → Draft, going above)
+\coordinate (loop1top) at (5.2, 1.2);
+\draw[->, line width=0.8pt, dashed, color=loopC!65]
+    (queen.north) -- (queen.north |- loop1top) -- (draft.north |- loop1top)
+    node[note, midway, above, text=loopC!70, font=\sffamily\tiny\bfseries\itshape] {Rerun $+$ FixItPlan}
+    -- (draft.north);
+
+% Loop 2: NeedMoreEvidence (Queen → Scout, going further above)
+\coordinate (loop2top) at (3.0, 1.7);
+\draw[->, line width=0.65pt, dashed, color=scoutC!50]
+    ([xshift=-0.2cm]queen.north) -- ([xshift=-0.2cm]queen.north |- loop2top) -- (scout.north |- loop2top)
+    node[note, midway, above, text=scoutC!60, font=\sffamily\tiny\bfseries\itshape] {NeedMoreEvidence}
+    -- (scout.north);
+
+% ==================== BACKGROUND ====================
+\begin{scope}[on background layer]
+    \node[fill=gray!3, rounded corners=8pt, inner sep=8pt,
+          fit=(scout)(draft)(critic)(queen)(cands)(epack)(scores)(accept)(stop)(l1)(l5)(vlm1)(vlm5)(router)] {};
+\end{scope}
+
+\end{tikzpicture}%
+}

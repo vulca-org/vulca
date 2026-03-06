@@ -1,0 +1,136 @@
+name: Validate Traditions
+
+on:
+  pull_request:
+    paths:
+      - 'wenxin-backend/app/prototype/data/traditions/*.yaml'
+      - 'wenxin-backend/app/prototype/cultural_pipelines/tradition_loader.py'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Validate all tradition YAML files
+        working-directory: wenxin-backend
+        run: |
+          python -c "
+          import sys
+          from pathlib import Path
+
+          # Inline validation (no app imports needed)
+          import yaml
+
+          traditions_dir = Path('app/prototype/data/traditions')
+          errors_total = []
+
+          for f in sorted(traditions_dir.glob('*.yaml')):
+              if f.name.startswith('_'):
+                  continue
+
+              try:
+                  data = yaml.safe_load(f.read_text())
+              except Exception as e:
+                  errors_total.append(f'{f.name}: YAML parse error: {e}')
+                  continue
+
+              if not isinstance(data, dict):
+                  errors_total.append(f'{f.name}: root must be a mapping')
+                  continue
+
+              name = data.get('name', '')
+              file_errors = []
+
+              # Required fields
+              for field in ('name', 'display_name', 'weights', 'terminology', 'taboos', 'pipeline'):
+                  if field not in data:
+                      file_errors.append(f'missing required field: {field}')
+
+              # Name format
+              if name and not all(c.isalnum() or c == '_' for c in name):
+                  file_errors.append(f'name must be snake_case: {name}')
+
+              # Name matches filename
+              expected_name = f.stem
+              if name and name != expected_name:
+                  file_errors.append(f'name \"{name}\" does not match filename \"{expected_name}.yaml\"')
+
+              # Weights sum
+              weights = data.get('weights', {})
+              for lbl in ('L1', 'L2', 'L3', 'L4', 'L5'):
+                  if lbl not in weights:
+                      file_errors.append(f'missing weight: {lbl}')
+              w_sum = sum(v for v in weights.values() if isinstance(v, (int, float)))
+              if abs(w_sum - 1.0) > 0.02:
+                  file_errors.append(f'weights sum to {w_sum:.3f}, expected 1.0')
+
+              # Terminology minimum
+              terms = data.get('terminology', [])
+              if isinstance(terms, list) and len(terms) < 1:
+                  file_errors.append('at least 1 terminology entry required')
+              for i, t in enumerate(terms if isinstance(terms, list) else []):
+                  if not isinstance(t, dict):
+                      file_errors.append(f'terminology[{i}] must be a mapping')
+                  elif 'term' not in t:
+                      file_errors.append(f'terminology[{i}] missing term')
+                  elif 'l_levels' not in t:
+                      file_errors.append(f'terminology[{i}] missing l_levels')
+
+              # Taboos
+              taboos = data.get('taboos', [])
+              for i, tb in enumerate(taboos if isinstance(taboos, list) else []):
+                  if not isinstance(tb, dict):
+                      file_errors.append(f'taboos[{i}] must be a mapping')
+                  elif 'rule' not in tb:
+                      file_errors.append(f'taboos[{i}] missing rule')
+                  elif 'severity' not in tb:
+                      file_errors.append(f'taboos[{i}] missing severity')
+
+              if file_errors:
+                  for e in file_errors:
+                      errors_total.append(f'{f.name}: {e}')
+                  print(f'FAIL {f.name}: {len(file_errors)} errors')
+              else:
+                  n_terms = len(terms) if isinstance(terms, list) else 0
+                  n_taboos = len(taboos) if isinstance(taboos, list) else 0
+                  print(f'PASS {f.name}: {n_terms} terms, {n_taboos} taboos, weights_sum={w_sum:.2f}')
+
+          if errors_total:
+              print(f'\n{len(errors_total)} error(s) found:')
+              for e in errors_total:
+                  print(f'  - {e}')
+              sys.exit(1)
+          else:
+              print(f'\nAll tradition files valid.')
+          "
+
+      - name: Check for duplicate tradition names
+        working-directory: wenxin-backend
+        run: |
+          python -c "
+          import yaml, sys
+          from pathlib import Path
+          from collections import Counter
+
+          names = []
+          for f in Path('app/prototype/data/traditions').glob('*.yaml'):
+              if f.name.startswith('_'):
+                  continue
+              data = yaml.safe_load(f.read_text())
+              if data and 'name' in data:
+                  names.append(data['name'])
+
+          dupes = [n for n, c in Counter(names).items() if c > 1]
+          if dupes:
+              print(f'Duplicate tradition names: {dupes}')
+              sys.exit(1)
+          print(f'No duplicates among {len(names)} traditions.')
+          "

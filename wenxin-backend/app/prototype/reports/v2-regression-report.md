@@ -1,6 +1,6 @@
 # v2 Regression Report (20 samples × 3 variants)
 
-**Date**: 2026-02-12 21:48
+**Date**: 2026-02-16 13:54
 **Total runs**: 60
 **Pass rate**: 60/60 = 100.0%
 **Tracebacks**: 0
@@ -11,14 +11,15 @@
 |------|--------|--------|--------|
 | Pass rate | ≥70% | 100.0% | PASS |
 | Tracebacks | 0 | 0 | PASS |
-| P95 latency | ≤30s | 6.0s | PASS |
+| P95 latency | ≤30s | 7.1s | PASS |
 | Cost/sample | ≤$0.02 | $0.00 | PASS |
 
 ## Decision Distribution
 
 | Decision | Count |
 |----------|-------|
-| accept | 60 |
+| accept | 59 |
+| stop | 1 |
 
 ## Per-Variant Results
 

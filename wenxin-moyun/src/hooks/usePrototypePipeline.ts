@@ -151,6 +151,9 @@ export interface PipelineState {
   // HITL — multi-stage wait info
   hitlWaitInfo: HitlWaitInfo | null;
 
+  // Report
+  reportOutput: Record<string, unknown> | null;
+
   // Final
   finalDecision: string | null;
   totalCostUsd: number;
@@ -177,6 +180,7 @@ const INITIAL_STATE: PipelineState = {
   decision: null,
   rounds: [],
   hitlWaitInfo: null,
+  reportOutput: null,
   finalDecision: null,
   totalCostUsd: 0,
   totalRounds: 0,
@@ -232,6 +236,11 @@ export function usePrototypePipeline() {
             // Local inpainting produced refined candidates — update gallery
             update.candidates = (payload.candidates as DraftCandidate[]) || [];
             update.currentStage = 'draft_refine';
+          } else if (stage === 'report') {
+            const reportOut = payload.report_output as Record<string, unknown> | undefined;
+            if (reportOut) {
+              update.reportOutput = reportOut;
+            }
           } else if (stage === 'critic') {
             const critique = payload.critique as Record<string, unknown> | undefined;
             if (critique) {

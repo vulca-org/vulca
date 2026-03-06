@@ -1,0 +1,51 @@
+/**
+ * StickyNote — decorative canvas annotation node (React Flow custom node).
+ *
+ * Four color variants (yellow/blue/pink/green), editable text via textarea,
+ * no connection handles. Inspired by n8n's sticky notes.
+ */
+
+import { memo, useState, useCallback } from 'react';
+import { useReactFlow, type NodeProps } from '@xyflow/react';
+import type { StickyNoteData } from './types';
+
+const COLOR_CLASSES: Record<StickyNoteData['color'], string> = {
+  yellow: 'bg-yellow-100 dark:bg-yellow-900/40 border-yellow-300 dark:border-yellow-700',
+  blue: 'bg-blue-100 dark:bg-blue-900/40 border-blue-300 dark:border-blue-700',
+  pink: 'bg-pink-100 dark:bg-pink-900/40 border-pink-300 dark:border-pink-700',
+  green: 'bg-green-100 dark:bg-green-900/40 border-green-300 dark:border-green-700',
+};
+
+function StickyNoteComponent({ id, data, selected }: NodeProps & { data: StickyNoteData }) {
+  const { setNodes } = useReactFlow();
+  const [localText, setLocalText] = useState(data.text);
+  const colorClass = COLOR_CLASSES[data.color] || COLOR_CLASSES.yellow;
+
+  const handleBlur = useCallback(() => {
+    setNodes((nodes) =>
+      nodes.map((n) =>
+        n.id === id ? { ...n, data: { ...n.data, text: localText } } : n,
+      ),
+    );
+  }, [id, localText, setNodes]);
+
+  return (
+    <div
+      className={[
+        'min-w-[150px] min-h-[100px] rounded-lg border p-3 shadow-sm',
+        colorClass,
+        selected ? 'ring-2 ring-blue-400/50' : '',
+      ].join(' ')}
+    >
+      <textarea
+        value={localText}
+        onChange={(e) => setLocalText(e.target.value)}
+        onBlur={handleBlur}
+        className="w-full min-h-[80px] bg-transparent resize-none outline-none text-xs text-gray-800 dark:text-gray-200 placeholder-gray-400"
+        placeholder="Type a note..."
+      />
+    </div>
+  );
+}
+
+export default memo(StickyNoteComponent);

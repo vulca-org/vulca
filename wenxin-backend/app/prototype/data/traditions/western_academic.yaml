@@ -1,0 +1,74 @@
+name: western_academic
+display_name:
+  en: "Western Academic"
+  zh: "西洋学院派"
+  ja: "西洋アカデミック"
+
+weights:
+  L1: 0.20
+  L2: 0.25
+  L3: 0.15
+  L4: 0.25
+  L5: 0.15
+
+terminology:
+  - term: chiaroscuro
+    term_zh: "明暗对照法"
+    definition:
+      en: "The use of strong contrasts between light and dark to model three-dimensional forms and create dramatic atmosphere, perfected by Caravaggio and Rembrandt."
+    category: technique
+    l_levels: [L1, L2]
+    aliases: ["light and shadow", "tenebrism"]
+    source: "Western art history canon"
+
+  - term: contrapposto
+    term_zh: "对立式平衡"
+    definition:
+      en: "A pose in which the human figure stands with weight shifted to one leg, creating asymmetric balance through opposing axes of shoulders and hips."
+    category: composition
+    l_levels: [L1, L2]
+    aliases: ["counterpoise", "weight shift pose"]
+    source: "Classical Greek sculpture tradition"
+
+  - term: impasto
+    term_zh: "厚涂法"
+    definition:
+      en: "A technique of applying paint thickly so that brushstrokes or palette knife marks remain visible, creating surface texture and tactile quality."
+    category: technique
+    l_levels: [L2]
+    aliases: ["thick paint", "textured application"]
+    source: "Western oil painting tradition"
+
+  - term: sfumato
+    term_zh: "晕涂法"
+    definition:
+      en: "A painting technique of blending tones and colors so subtly that there are no perceptible transitions, creating a smoky, atmospheric softness. Perfected by Leonardo da Vinci."
+    category: technique
+    l_levels: [L2, L3]
+    aliases: ["smoky blending", "soft shading"]
+    source: "Leonardo da Vinci, Renaissance painting tradition"
+
+  - term: trompe-l'oeil
+    term_zh: "错视画法"
+    definition:
+      en: "An illusionistic painting technique designed to trick the eye into perceiving a painted surface as three-dimensional reality."
+    category: technique
+    l_levels: [L1, L2]
+    aliases: ["eye-deceiving painting", "optical illusion painting"]
+    source: "Western art history, originating in Classical antiquity"
+
+taboos:
+  - rule: "Do not apply Eastern aesthetic criteria to dismiss Western perspectival conventions"
+    severity: medium
+    l_levels: [L3, L4, L5]
+    trigger_patterns: ["lacks spiritual depth", "merely realistic", "too literal", "surface-level realism"]
+    explanation: "Western academic painting's emphasis on optical realism represents a different but equally valid epistemic framework."
+
+  - rule: "Avoid Orientalist bias when comparing Western and non-Western art traditions"
+    severity: high
+    l_levels: [L3, L4, L5]
+    trigger_patterns: ["the West discovered", "Western superiority", "more advanced than", "less developed"]
+    explanation: "Orientalism perpetuates power asymmetries by positioning Western art as progressive and non-Western art as static."
+
+pipeline:
+  variant: western_academic
