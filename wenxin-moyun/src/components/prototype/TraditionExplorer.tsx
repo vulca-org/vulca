@@ -7,7 +7,7 @@
  */
 
 import { useState, useMemo } from 'react';
-import { IOSCard, IOSCardContent, IOSButton } from '../ios';
+import { IOSCard, IOSCardContent } from '../ios';
 
 // Static tradition data (loaded from YAML at build time via API, fallback to inline)
 interface TraditionInfo {

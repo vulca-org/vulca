@@ -21,14 +21,13 @@ function getVal<T>(params: Record<string, Record<string, unknown>>, nodeId: stri
 }
 
 export default function NodeParamPanel({ nodeId, params, onChange, onClose }: Props) {
-  if (!nodeId) return null;
-
-  const schema = AGENT_PARAM_SCHEMA[nodeId];
-  const meta = AGENT_META[nodeId];
+  // useMemo must be called unconditionally (React Hook rules)
+  const schema = useMemo(() => nodeId ? AGENT_PARAM_SCHEMA[nodeId] : [], [nodeId]);
+  const meta = nodeId ? AGENT_META[nodeId] : null;
 
   // Critic L1-L5 weight sum warning
   const weightSum = useMemo(() => {
-    if (nodeId !== 'critic') return null;
+    if (!nodeId || nodeId !== 'critic') return null;
     const weights = ['w_l1', 'w_l2', 'w_l3', 'w_l4', 'w_l5'];
     const sum = weights.reduce(
       (acc, wId) => acc + (getVal<number>(params, nodeId, wId, schema.find(p => p.id === wId)?.default as number ?? 0.2)),
@@ -36,6 +35,8 @@ export default function NodeParamPanel({ nodeId, params, onChange, onClose }: Pr
     );
     return sum;
   }, [nodeId, params, schema]);
+
+  if (!nodeId || !meta) return null;
 
   if (schema.length === 0) {
     return (

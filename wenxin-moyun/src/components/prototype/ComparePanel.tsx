@@ -264,7 +264,7 @@ export default function ComparePanel() {
                 <thead>
                   <tr className="text-gray-500 border-b dark:border-gray-700">
                     <th className="text-left py-1">Dimension</th>
-                    {doneResults.map((r, i) => (
+                    {doneResults.map((r) => (
                       <th key={r.id} className="text-right py-1">
                         <span
                           className="inline-block w-2 h-2 rounded-full mr-1"
@@ -283,7 +283,7 @@ export default function ComparePanel() {
                     return (
                       <tr key={key} className="border-b dark:border-gray-800">
                         <td className="py-1 text-gray-700 dark:text-gray-300">{label}</td>
-                        {doneResults.map((r, i) => (
+                        {doneResults.map((r) => (
                           <td key={r.id} className="text-right font-mono py-1">
                             {(r.scores[key] || 0).toFixed(3)}
                           </td>

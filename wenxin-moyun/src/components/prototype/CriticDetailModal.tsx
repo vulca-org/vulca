@@ -88,7 +88,6 @@ export default function CriticDetailModal({ candidate, onClose, agentMetrics, cr
 
   const shortId = candidate.candidate_id.split('-').pop();
   const agentDims = candidate.dimension_scores.filter(d => d.agent_metadata);
-  const ruleDims = candidate.dimension_scores.filter(d => !d.agent_metadata);
   const totalCost = agentDims.reduce((sum, d) => sum + (d.agent_metadata?.cost_usd ?? 0), 0);
   const totalToolCalls = agentDims.reduce((sum, d) => sum + (d.agent_metadata?.tool_calls_made ?? 0), 0);
   const avgLatency = agentDims.length > 0
