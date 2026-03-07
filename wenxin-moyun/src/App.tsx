@@ -63,6 +63,9 @@ const CompareModelsPage = lazy(() => import('./pages/CompareModelsPage'));
 // Prototype pipeline - lazy loaded
 const PrototypePage = lazy(() => import('./pages/prototype/PrototypePage'));
 
+// Skills marketplace - lazy loaded
+const SkillsPage = lazy(() => import('./pages/SkillsPage'));
+
 // Reusable loading component
 function PageLoader({ text = 'Loading...' }: { text?: string }) {
   return (
@@ -317,6 +320,13 @@ function App() {
               <Route path="/knowledge-base" element={
                 <Suspense fallback={<PageLoader text="Loading Knowledge Base..." />}>
                   <KnowledgeBasePage />
+                </Suspense>
+              } />
+
+              {/* Skills Marketplace */}
+              <Route path="/skills" element={
+                <Suspense fallback={<PageLoader text="Loading Skills..." />}>
+                  <SkillsPage />
                 </Suspense>
               } />
 
