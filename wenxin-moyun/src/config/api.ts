@@ -5,7 +5,7 @@
  * Update PRODUCTION_API_URL here when migrating to a new backend host.
  */
 
-const PRODUCTION_API_URL = 'https://vulca-api.onrender.com';
+const PRODUCTION_API_URL = 'https://wenxin-moyun-api-229980166599.asia-east1.run.app';
 
 const isProduction =
   typeof window !== 'undefined' && window.location.hostname !== 'localhost';

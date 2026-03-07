@@ -1,0 +1,25 @@
+# Prevent Supabase Free tier from pausing due to inactivity (7-day limit)
+# Pings the backend /health/deep endpoint which queries the database
+
+name: Keepalive Supabase
+
+on:
+  schedule:
+    - cron: '0 8 */5 * *'  # Every 5 days at 08:00 UTC
+  workflow_dispatch:
+
+jobs:
+  ping:
+    name: Ping Database
+    runs-on: ubuntu-latest
+    steps:
+      - name: Health check (triggers DB query)
+        run: |
+          response=$(curl -sf https://wenxin-moyun-api-229980166599.asia-east1.run.app/health/deep)
+          echo "$response" | python3 -m json.tool
+          db_status=$(echo "$response" | python3 -c "import sys,json; print(json.load(sys.stdin)['components']['database'])")
+          echo "Database status: $db_status"
+          if [ "$db_status" != "connected" ]; then
+            echo "::error::Database not connected: $db_status"
+            exit 1
+          fi
