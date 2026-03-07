@@ -12,6 +12,9 @@ def get_database_url():
     # In production, use environment variable if set
     env_database_url = os.getenv("DATABASE_URL")
     if env_database_url:
+        # Convert postgresql:// to postgresql+asyncpg:// for SQLAlchemy async
+        if env_database_url.startswith("postgresql://"):
+            env_database_url = env_database_url.replace("postgresql://", "postgresql+asyncpg://", 1)
         if not is_production:
             print("Using DATABASE_URL from environment")
         return env_database_url

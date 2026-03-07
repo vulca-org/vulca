@@ -32,10 +32,6 @@ RUN mkdir -p /app/app/prototype/checkpoints/draft \
 ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
 ENV ENVIRONMENT=production
-ENV USE_CLOUD_SQL=true
-ENV CLOUD_SQL_INSTANCE=wenxin-moyun-prod-new:asia-east1:wenxin-postgres
-ENV POSTGRES_USER=wenxin
-ENV POSTGRES_DB=wenxin_db
 
 # Enable B2B API docs in production (override main.py default)
 ENV ENABLE_API_DOCS=true
