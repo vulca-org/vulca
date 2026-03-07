@@ -11,6 +11,10 @@ from app.api.v1 import api_router
 from app.vulca import vulca_router
 from app.prototype.api import get_prototype_router
 from app.prototype.api.evaluate_routes import evaluate_router
+from app.prototype.feedback.feedback_routes import feedback_router
+from app.prototype.skills.api.skill_routes import skill_api_router
+from app.prototype.skills.api.discussion_routes import discussion_router
+from app.prototype.skills.api.version_routes import version_router
 # Temporarily disabled - requires sentence-transformers
 # from app.exhibition.api import router as exhibition_router
 
@@ -106,6 +110,14 @@ app.include_router(get_prototype_router())
 
 # Include B2B Evaluate API (M4)
 app.include_router(evaluate_router)
+
+# Include Feedback API
+app.include_router(feedback_router)
+
+# Include Skill Marketplace API
+app.include_router(skill_api_router)
+app.include_router(discussion_router)
+app.include_router(version_router)
 
 # Include Exhibition router (Echoes and Returns)
 # Temporarily disabled - requires sentence-transformers

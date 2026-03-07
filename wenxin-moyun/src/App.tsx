@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
 import Layout from './components/common/Layout';
 import ErrorBoundary from './components/common/ErrorBoundary';
@@ -17,20 +17,14 @@ const LoginPage = lazy(() => import('./pages/LoginPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 // Marketing pages - lazy loaded (Scale.com style)
-const ProductPage = lazy(() => import('./pages/ProductPage'));
 const PricingPage = lazy(() => import('./pages/PricingPage'));
 const CustomersPage = lazy(() => import('./pages/CustomersPage'));
 const TrustPage = lazy(() => import('./pages/TrustPage'));
 const BookDemoPage = lazy(() => import('./pages/BookDemoPage'));
 const DemoConfirmationPage = lazy(() => import('./pages/DemoConfirmationPage'));
-const PilotPage = lazy(() => import('./pages/PilotPage'));
-const ChangelogPage = lazy(() => import('./pages/ChangelogPage'));
 
 // Solutions pages - lazy loaded
 const SolutionsPage = lazy(() => import('./pages/solutions/SolutionsPage'));
-const AILabSolutionPage = lazy(() => import('./pages/solutions/AILabSolutionPage'));
-const ResearchSolutionPage = lazy(() => import('./pages/solutions/ResearchSolutionPage'));
-const MuseumSolutionPage = lazy(() => import('./pages/solutions/MuseumSolutionPage'));
 
 // VULCA and Exhibitions - lazy loaded
 const VULCADemoPage = lazy(loadVulcaDemoPage);
@@ -38,14 +32,11 @@ const ExhibitionsPage = lazy(() => import('./pages/exhibitions/ExhibitionsPage')
 const ExhibitionDetailPage = lazy(() => import('./pages/exhibitions/ExhibitionDetailPage'));
 const ArtworkPage = lazy(() => import('./pages/exhibitions/ArtworkPage'));
 
-// Academic/Research pages - lazy loaded
-const MethodologyPage = lazy(() => import('./pages/MethodologyPage'));
-const DatasetPage = lazy(() => import('./pages/DatasetPage'));
-const PapersPage = lazy(() => import('./pages/PapersPage'));
-
-// Trust & Ethics pages - lazy loaded
-const DataEthicsPage = lazy(() => import('./pages/DataEthicsPage'));
-const SOPPage = lazy(() => import('./pages/SOPPage'));
+// New integrated pages
+const EvaluatePage = lazy(() => import('./pages/EvaluatePage'));
+const ResearchPage = lazy(() => import('./pages/ResearchPage'));
+const SkillsPage = lazy(() => import('./pages/SkillsPage'));
+const AdminDashboardPage = lazy(() => import('./pages/AdminDashboardPage'));
 
 // Legal pages - lazy loaded
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
@@ -123,11 +114,6 @@ function App() {
             <Route element={<Layout />}>
               {/* Marketing pages (Scale.com style) */}
               <Route path="/" element={<HomePage />} />
-              <Route path="/product" element={
-                <Suspense fallback={<PageLoader text="Loading Product..." />}>
-                  <ProductPage />
-                </Suspense>
-              } />
               <Route path="/pricing" element={
                 <Suspense fallback={<PageLoader text="Loading Pricing..." />}>
                   <PricingPage />
@@ -153,16 +139,6 @@ function App() {
                   <DemoConfirmationPage />
                 </Suspense>
               } />
-              <Route path="/pilot" element={
-                <Suspense fallback={<PageLoader text="Loading Pilot..." />}>
-                  <PilotPage />
-                </Suspense>
-              } />
-              <Route path="/changelog" element={
-                <Suspense fallback={<PageLoader text="Loading Changelog..." />}>
-                  <ChangelogPage />
-                </Suspense>
-              } />
 
               {/* Solutions pages */}
               <Route path="/solutions" element={
@@ -170,21 +146,9 @@ function App() {
                   <SolutionsPage />
                 </Suspense>
               } />
-              <Route path="/solutions/ai-labs" element={
-                <Suspense fallback={<PageLoader text="Loading AI Labs Solution..." />}>
-                  <AILabSolutionPage />
-                </Suspense>
-              } />
-              <Route path="/solutions/research" element={
-                <Suspense fallback={<PageLoader text="Loading Research Solution..." />}>
-                  <ResearchSolutionPage />
-                </Suspense>
-              } />
-              <Route path="/solutions/museums" element={
-                <Suspense fallback={<PageLoader text="Loading Museums Solution..." />}>
-                  <MuseumSolutionPage />
-                </Suspense>
-              } />
+              <Route path="/solutions/ai-labs" element={<Navigate to="/solutions?tab=ai-labs" replace />} />
+              <Route path="/solutions/research" element={<Navigate to="/solutions?tab=research" replace />} />
+              <Route path="/solutions/museums" element={<Navigate to="/solutions?tab=museums" replace />} />
 
               {/* Public Demo / Models */}
               <Route path="/models" element={
@@ -233,10 +197,38 @@ function App() {
                 </Suspense>
               } />
 
-              {/* Prototype Pipeline */}
-              <Route path="/prototype" element={
-                <Suspense fallback={<PageLoader text="Loading Prototype..." />}>
+              {/* Canvas (renamed from prototype) */}
+              <Route path="/canvas" element={
+                <Suspense fallback={<PageLoader text="Loading Canvas..." />}>
                   <PrototypePage />
+                </Suspense>
+              } />
+
+              {/* Evaluate (NoCode) */}
+              <Route path="/evaluate" element={
+                <Suspense fallback={<PageLoader text="Loading Evaluate..." />}>
+                  <EvaluatePage />
+                </Suspense>
+              } />
+
+              {/* Research (merged academic pages) */}
+              <Route path="/research" element={
+                <Suspense fallback={<PageLoader text="Loading Research..." />}>
+                  <ResearchPage />
+                </Suspense>
+              } />
+
+              {/* Skills Marketplace */}
+              <Route path="/skills" element={
+                <Suspense fallback={<PageLoader text="Loading Skills..." />}>
+                  <SkillsPage />
+                </Suspense>
+              } />
+
+              {/* Admin Dashboard */}
+              <Route path="/admin" element={
+                <Suspense fallback={<PageLoader text="Loading Admin..." />}>
+                  <AdminDashboardPage />
                 </Suspense>
               } />
 
@@ -257,34 +249,15 @@ function App() {
                 </Suspense>
               } />
 
-              {/* Academic/Research Routes */}
-              <Route path="/methodology" element={
-                <Suspense fallback={<PageLoader text="Loading Methodology..." />}>
-                  <MethodologyPage />
-                </Suspense>
-              } />
-              <Route path="/dataset" element={
-                <Suspense fallback={<PageLoader text="Loading Dataset..." />}>
-                  <DatasetPage />
-                </Suspense>
-              } />
-              <Route path="/papers" element={
-                <Suspense fallback={<PageLoader text="Loading Papers..." />}>
-                  <PapersPage />
-                </Suspense>
-              } />
-
-              {/* Trust & Ethics Routes */}
-              <Route path="/data-ethics" element={
-                <Suspense fallback={<PageLoader text="Loading Data & Ethics..." />}>
-                  <DataEthicsPage />
-                </Suspense>
-              } />
-              <Route path="/sop" element={
-                <Suspense fallback={<PageLoader text="Loading SOP..." />}>
-                  <SOPPage />
-                </Suspense>
-              } />
+              {/* Redirects for merged/renamed pages */}
+              <Route path="/product" element={<Navigate to="/" replace />} />
+              <Route path="/pilot" element={<Navigate to="/demo" replace />} />
+              <Route path="/prototype" element={<Navigate to="/canvas" replace />} />
+              <Route path="/methodology" element={<Navigate to="/research?tab=methodology" replace />} />
+              <Route path="/dataset" element={<Navigate to="/research?tab=dataset" replace />} />
+              <Route path="/papers" element={<Navigate to="/research?tab=papers" replace />} />
+              <Route path="/data-ethics" element={<Navigate to="/trust?tab=data-ethics" replace />} />
+              <Route path="/sop" element={<Navigate to="/trust?tab=sop" replace />} />
 
               {/* Legal Pages */}
               <Route path="/privacy" element={

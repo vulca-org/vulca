@@ -13,6 +13,7 @@ class EvaluateRequest(BaseModel):
     tradition: str = Field(default="default", description="Cultural tradition identifier")
     subject: str = Field(default="", description="Artwork subject description")
     include_evidence: bool = Field(default=False, description="Run Scout evidence gathering")
+    intent: str | None = Field(default=None, description="Natural language evaluation intent")
 
     @model_validator(mode="after")
     def _require_image(self) -> EvaluateRequest:
@@ -39,6 +40,8 @@ class EvaluateResponse(BaseModel):
     recommendations: list[str] = Field(default_factory=list)
     risk_flags: list[str] = Field(default_factory=list, description="Cultural taboo/risk flags")
     evidence_summary: dict | None = Field(default=None, description="Scout evidence if requested")
+    intent_resolved: dict | None = Field(default=None, description="Resolved intent details")
+    result_card: dict | None = Field(default=None, description="Formatted result card")
     latency_ms: int
     cost_usd: float = 0.0
 

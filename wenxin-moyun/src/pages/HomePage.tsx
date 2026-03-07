@@ -16,9 +16,16 @@ import {
   Eye,
   AlertTriangle,
   TrendingUp,
-  Download
+  Download,
+  Terminal,
+  Copy,
+  Check,
+  ExternalLink,
+  MessageSquare,
+  GitFork,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 import { useLeaderboard } from '../hooks/useLeaderboard';
 import {
   IOSButton,
@@ -45,6 +52,85 @@ const staggerContainer = {
     }
   }
 };
+
+function OpenSourceInstall() {
+  const [copied, setCopied] = useState(false);
+  const installCmd = 'pip install vulca';
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(installCmd);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = installCmd;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  return (
+    <motion.div
+      className="mt-8 flex flex-col items-center gap-4"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.7 }}
+    >
+      {/* pip install command block */}
+      <div className="flex items-center gap-2 bg-gray-900 dark:bg-gray-950 rounded-xl px-5 py-3 shadow-lg border border-gray-700 dark:border-gray-600">
+        <Terminal className="w-4 h-4 text-green-400 flex-shrink-0" />
+        <code className="font-mono text-sm text-gray-100 select-all">
+          {installCmd}
+        </code>
+        <button
+          onClick={handleCopy}
+          className="ml-3 p-1.5 rounded-md hover:bg-gray-700 transition-colors text-gray-400 hover:text-white"
+          aria-label="Copy install command"
+        >
+          {copied ? (
+            <Check className="w-4 h-4 text-green-400" />
+          ) : (
+            <Copy className="w-4 h-4" />
+          )}
+        </button>
+      </div>
+
+      {/* Open source action buttons */}
+      <div className="flex flex-wrap items-center justify-center gap-3">
+        <Link to="/vulca">
+          <IOSButton
+            variant="secondary"
+            size="sm"
+            className="flex items-center gap-2"
+          >
+            <ExternalLink className="w-4 h-4" />
+            Try Online
+          </IOSButton>
+        </Link>
+        <a
+          href="https://github.com/yha9806/vulca"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <IOSButton
+            variant="secondary"
+            size="sm"
+            className="flex items-center gap-2"
+          >
+            <GitFork className="w-4 h-4" />
+            GitHub
+          </IOSButton>
+        </a>
+      </div>
+    </motion.div>
+  );
+}
 
 export default function HomePage() {
   const { entries: leaderboard } = useLeaderboard();
@@ -153,6 +239,9 @@ export default function HomePage() {
               </IOSButton>
             </Link>
           </motion.div>
+
+          {/* Open Source Install Section */}
+          <OpenSourceInstall />
 
           {/* Enterprise Value Propositions */}
           <motion.div
@@ -402,7 +491,7 @@ export default function HomePage() {
             How It Works
           </h2>
           <p className="text-body max-w-2xl mx-auto">
-            From benchmark selection to actionable report in three steps
+            From natural language intent to structured evaluation in three steps
           </p>
         </motion.div>
 
@@ -420,39 +509,39 @@ export default function HomePage() {
             {/* Step 1 */}
             <motion.div variants={fadeInUp} className="text-center">
               <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800/50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-slate-600 dark:text-slate-300">1</span>
+                <MessageSquare className="w-7 h-7 text-slate-600 dark:text-slate-300" />
               </div>
               <h3 className="text-h3 mb-2">
-                Choose Benchmark
+                Describe Your Intent
               </h3>
               <p className="text-gray-600 dark:text-gray-400">
-                Select from our curated benchmark library or upload your custom evaluation data
+                Tell VULCA what you want to evaluate in natural language — no configuration needed
               </p>
             </motion.div>
 
             {/* Step 2 */}
             <motion.div variants={fadeInUp} className="text-center">
               <div className="w-16 h-16 bg-bronze-500/10 dark:bg-bronze-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-bronze-500 dark:text-bronze-400">2</span>
+                <GitFork className="w-7 h-7 text-bronze-500 dark:text-bronze-400" />
               </div>
               <h3 className="text-h3 mb-2">
-                Run Evaluation
+                Auto-Route to Pipeline
               </h3>
               <p className="text-gray-600 dark:text-gray-400">
-                Execute VULCA 47D evaluation across 8 cultural perspectives with full provenance
+                VULCA routes your request to the right cultural pipeline with matching perspectives and dimensions
               </p>
             </motion.div>
 
             {/* Step 3 */}
             <motion.div variants={fadeInUp} className="text-center">
               <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-green-600 dark:text-green-400">3</span>
+                <BarChart3 className="w-7 h-7 text-green-600 dark:text-green-400" />
               </div>
               <h3 className="text-h3 mb-2">
-                Export & Monitor
+                Get Scores & Recommendations
               </h3>
               <p className="text-gray-600 dark:text-gray-400">
-                Download reports, track regressions, and integrate into your model release workflow
+                Receive structured 47D scores, cultural bias analysis, and actionable recommendations in export-ready reports
               </p>
             </motion.div>
           </div>

@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import {
   Calendar,
   Shield,
@@ -21,7 +22,10 @@ import {
   IOSCardHeader,
   IOSCardContent,
   IOSCardGrid,
+  IOSSegmentedControl,
 } from '../components/ios';
+import DataEthicsPage from './DataEthicsPage';
+import SOPPage from './SOPPage';
 
 const securityFeatures = [
   {
@@ -99,7 +103,33 @@ const complianceItems = [
   { name: 'CCPA', status: 'Aligned', desc: 'Privacy controls aligned with CCPA principles' },
 ];
 
+const TAB_KEYS = ['trust', 'data-ethics', 'sop'] as const;
+const TAB_LABELS = ['Trust & Security', 'Data Ethics', 'SOP'];
+
 export default function TrustPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get('tab');
+  const initialIndex = TAB_KEYS.indexOf(tabParam as typeof TAB_KEYS[number]);
+  const [selectedTab, setSelectedTab] = useState(initialIndex >= 0 ? initialIndex : 0);
+
+  // Sync tab from URL search params
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    const idx = TAB_KEYS.indexOf(tab as typeof TAB_KEYS[number]);
+    if (idx >= 0 && idx !== selectedTab) {
+      setSelectedTab(idx);
+    }
+  }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleTabChange = (index: number) => {
+    setSelectedTab(index);
+    if (index === 0) {
+      setSearchParams({});
+    } else {
+      setSearchParams({ tab: TAB_KEYS[index] });
+    }
+  };
+
   return (
     <div className="space-y-20">
       {/* Hero */}
@@ -140,6 +170,28 @@ export default function TrustPage() {
         </motion.div>
       </section>
 
+      {/* Tab Switcher */}
+      <section className="flex justify-center">
+        <IOSSegmentedControl
+          segments={TAB_LABELS}
+          selectedIndex={selectedTab}
+          onChange={handleTabChange}
+          size="large"
+        />
+      </section>
+
+      {/* Tab Content */}
+      {selectedTab === 0 && <TrustContent />}
+      {selectedTab === 1 && <DataEthicsPage />}
+      {selectedTab === 2 && <SOPPage />}
+    </div>
+  );
+}
+
+/* ---- Trust & Security tab content (original TrustPage body) ---- */
+function TrustContent() {
+  return (
+    <>
       {/* Security Principles */}
       <section className="bg-gray-50 dark:bg-gray-900/50 -mx-4 px-4 py-16 rounded-2xl">
         <motion.div
@@ -382,6 +434,6 @@ export default function TrustPage() {
           Available documentation: DPA, RoPA, Sub-processor list, Security whitepaper
         </p>
       </section>
-    </div>
+    </>
   );
 }

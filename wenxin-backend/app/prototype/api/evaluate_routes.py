@@ -180,11 +180,24 @@ async def evaluate_image(
         # 1. Resolve image to temp file
         tmp_path = await resolve_image_input(req.image_url, req.image_base64)
 
+        # Intent resolution (WU-01)
+        intent_result = None
+        tradition_override = req.tradition
+        if req.intent and req.tradition == "default":
+            try:
+                from app.prototype.intent.intent_agent import IntentAgent
+                agent = IntentAgent.get_instance()
+                intent_result = await agent.resolve(req.intent)
+                if intent_result and intent_result.tradition != "default":
+                    tradition_override = intent_result.tradition
+            except Exception:
+                logger.warning("IntentAgent resolution failed, using default tradition")
+
         # 2. Route tradition → weights
         from app.prototype.cultural_pipelines.pipeline_router import CulturalPipelineRouter
 
         router = CulturalPipelineRouter()
-        route = router.route(req.tradition)
+        route = router.route(tradition_override)
         cfg = route.critic_config
         tradition_used = route.tradition
 
@@ -255,6 +268,35 @@ async def evaluate_image(
 
         elapsed_ms = int((time.monotonic() - t0) * 1000)
 
+        # Build intent and result card dicts
+        intent_resolved_dict = None
+        if intent_result:
+            intent_resolved_dict = {
+                "tradition": intent_result.tradition,
+                "context": intent_result.context,
+                "confidence": intent_result.confidence,
+            }
+
+        result_card_dict = None
+        try:
+            from app.prototype.intent.result_formatter import ResultFormatter
+            formatter = ResultFormatter()
+            response_data = {
+                "scores": scores,
+                "weighted_total": round(weighted_total, 4),
+                "tradition_used": tradition_used,
+                "recommendations": recommendations,
+                "risk_flags": risk_flags,
+            }
+            card = formatter.format(response_data, intent_result)
+            result_card_dict = {
+                "score": card.score,
+                "summary": card.summary,
+                "risk_level": card.risk_level,
+            }
+        except Exception:
+            pass
+
         return EvaluateResponse(
             scores=scores,
             rationales=rationales,
@@ -264,6 +306,8 @@ async def evaluate_image(
             recommendations=recommendations,
             risk_flags=risk_flags,
             evidence_summary=evidence_summary,
+            intent_resolved=intent_resolved_dict,
+            result_card=result_card_dict,
             latency_ms=elapsed_ms,
         )
 

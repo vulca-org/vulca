@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom';
+import { useCallback } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import {
   ArrowRight,
   Calendar,
@@ -19,7 +20,22 @@ import {
   IOSCardHeader,
   IOSCardContent,
   IOSCardGrid,
+  IOSSegmentedControl,
 } from '../../components/ios';
+import type { SegmentItem } from '../../components/ios';
+import AILabSolutionPage from './AILabSolutionPage';
+import ResearchSolutionPage from './ResearchSolutionPage';
+import MuseumSolutionPage from './MuseumSolutionPage';
+
+const TAB_KEYS = ['overview', 'ai-labs', 'research', 'museums'] as const;
+type TabKey = typeof TAB_KEYS[number];
+
+const TAB_SEGMENTS: SegmentItem[] = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'ai-labs', label: 'AI Labs' },
+  { id: 'research', label: 'Research' },
+  { id: 'museums', label: 'Museums' },
+];
 
 const solutions = [
   {
@@ -34,7 +50,7 @@ const solutions = [
       'Competitive benchmarking',
       'Release decision documentation',
     ],
-    link: '/solutions/ai-labs',
+    tabKey: 'ai-labs' as TabKey,
     metrics: [
       { label: 'Dimensions', value: '47' },
       { label: 'Perspectives', value: '8' },
@@ -52,7 +68,7 @@ const solutions = [
       'Standardized benchmark comparisons',
       'Academic collaboration support',
     ],
-    link: '/solutions/research',
+    tabKey: 'research' as TabKey,
     metrics: [
       { label: 'Citation Formats', value: '7' },
       { label: 'Reproducible', value: '100%' },
@@ -70,7 +86,7 @@ const solutions = [
       'Cross-cultural sensitivity analysis',
       'Exhibition AI deployment support',
     ],
-    link: '/solutions/museums',
+    tabKey: 'museums' as TabKey,
     metrics: [
       { label: 'Cultures', value: '8+' },
       { label: 'Art Critics', value: '8' },
@@ -78,39 +94,15 @@ const solutions = [
   },
 ];
 
-export default function SolutionsPage() {
-  return (
-    <div className="space-y-20">
-      {/* Hero */}
-      <section className="pt-8 pb-12">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-center max-w-4xl mx-auto"
-        >
-          <h1 className="text-page-title mb-6">
-            Solutions for Every Team
-          </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-3xl mx-auto">
-            Whether you're building AI, researching models, or deploying cultural technology — VULCA provides the evaluation framework you need.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/demo">
-              <IOSButton variant="primary" size="lg" className="flex items-center gap-2">
-                <Calendar className="w-5 h-5" />
-                Book a Demo
-              </IOSButton>
-            </Link>
-            <Link to="/pricing">
-              <IOSButton variant="secondary" size="lg" className="flex items-center gap-2">
-                View Pricing
-              </IOSButton>
-            </Link>
-          </div>
-        </motion.div>
-      </section>
+function SolutionsOverview() {
+  const [, setSearchParams] = useSearchParams();
 
+  const switchToTab = (tabKey: TabKey) => {
+    setSearchParams({ tab: tabKey });
+  };
+
+  return (
+    <>
       {/* Solutions Grid */}
       <section>
         <div className="space-y-12">
@@ -160,12 +152,15 @@ export default function SolutionsPage() {
                       ))}
                     </div>
 
-                    <Link to={solution.link}>
-                      <IOSButton variant="secondary" size="md" className="flex items-center gap-2">
-                        Learn More
-                        <ArrowRight className="w-4 h-4" />
-                      </IOSButton>
-                    </Link>
+                    <IOSButton
+                      variant="secondary"
+                      size="md"
+                      className="flex items-center gap-2"
+                      onClick={() => switchToTab(solution.tabKey)}
+                    >
+                      Learn More
+                      <ArrowRight className="w-4 h-4" />
+                    </IOSButton>
                   </div>
                 </div>
               </IOSCard>
@@ -208,6 +203,75 @@ export default function SolutionsPage() {
           ))}
         </IOSCardGrid>
       </section>
+    </>
+  );
+}
+
+export default function SolutionsPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentTab = (searchParams.get('tab') ?? 'overview') as TabKey;
+  const selectedIndex = TAB_KEYS.indexOf(currentTab) >= 0 ? TAB_KEYS.indexOf(currentTab) : 0;
+
+  const handleTabChange = useCallback(
+    (index: number) => {
+      const tabKey = TAB_KEYS[index];
+      if (tabKey === 'overview') {
+        setSearchParams({});
+      } else {
+        setSearchParams({ tab: tabKey });
+      }
+    },
+    [setSearchParams],
+  );
+
+  return (
+    <div className="space-y-20">
+      {/* Hero */}
+      <section className="pt-8 pb-12">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-center max-w-4xl mx-auto"
+        >
+          <h1 className="text-page-title mb-6">
+            Solutions for Every Team
+          </h1>
+          <p className="text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-3xl mx-auto">
+            Whether you're building AI, researching models, or deploying cultural technology — VULCA provides the evaluation framework you need.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link to="/demo">
+              <IOSButton variant="primary" size="lg" className="flex items-center gap-2">
+                <Calendar className="w-5 h-5" />
+                Book a Demo
+              </IOSButton>
+            </Link>
+            <Link to="/pricing">
+              <IOSButton variant="secondary" size="lg" className="flex items-center gap-2">
+                View Pricing
+              </IOSButton>
+            </Link>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Tab Switcher */}
+      <section className="flex justify-center">
+        <IOSSegmentedControl
+          segments={TAB_SEGMENTS}
+          selectedIndex={selectedIndex}
+          onChange={handleTabChange}
+          size="regular"
+          className="w-full max-w-lg"
+        />
+      </section>
+
+      {/* Tab Content */}
+      {currentTab === 'overview' && <SolutionsOverview />}
+      {currentTab === 'ai-labs' && <AILabSolutionPage />}
+      {currentTab === 'research' && <ResearchSolutionPage />}
+      {currentTab === 'museums' && <MuseumSolutionPage />}
 
       {/* CTA */}
       <section className="py-12 text-center">
