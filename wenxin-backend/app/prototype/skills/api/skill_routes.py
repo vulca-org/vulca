@@ -160,3 +160,18 @@ async def vote_skill(skill_id: str, body: VoteRequest, _key: str = Depends(verif
     append_jsonl(VOTES_JSONL, vote_record)
     up, down = _vote_counts(skill_id)
     return {"skill_id": skill_id, "upvotes": up, "downvotes": down}
+
+
+@skill_api_router.get("/{skill_name}/skill-md")
+async def get_skill_md(skill_name: str):
+    """Export a built-in skill as SKILL.md format (public)."""
+    from fastapi.responses import PlainTextResponse
+
+    from app.prototype.skills import SkillRegistry, export_skill_md
+
+    registry = SkillRegistry.get_instance()
+    skill = registry.get(skill_name)
+    if skill is None:
+        raise HTTPException(status_code=404, detail=f"Built-in skill '{skill_name}' not found")
+    md = export_skill_md(skill)
+    return PlainTextResponse(content=md, media_type="text/markdown")

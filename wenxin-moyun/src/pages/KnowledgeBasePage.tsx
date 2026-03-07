@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
-import { Search, BookOpen, AlertTriangle, Globe2, ChevronDown, ChevronRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Search, BookOpen, AlertTriangle, Globe2, ChevronDown, ChevronRight, Sparkles } from 'lucide-react';
 import {
   IOSButton,
   IOSCard,
@@ -370,9 +371,15 @@ export default function KnowledgeBasePage() {
           <h1 className="text-3xl md:text-4xl font-bold mb-3 bg-gradient-to-r from-slate-700 to-amber-700 bg-clip-text text-transparent">
             Cultural Knowledge Base
           </h1>
-          <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+          <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-4">
             Browse terminology, taboo rules, and L1-L5 evaluation weights across 9 cultural art traditions used by the VULCA pipeline.
           </p>
+          <Link to="/evaluate">
+            <IOSButton variant="primary" size="sm" className="inline-flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4" />
+              Try Evaluate
+            </IOSButton>
+          </Link>
         </div>
 
         {/* Stats cards */}

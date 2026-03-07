@@ -12,6 +12,7 @@ Usage::
     registry.register(SkillDef(name="my_skill", description="..."))
 """
 
+from app.prototype.skills.skill_md_exporter import export_all_skills_md, export_skill_md
 from app.prototype.skills.skill_registry import SkillRegistry
 from app.prototype.skills.types import SkillDef, SkillResult
 
@@ -19,4 +20,6 @@ __all__ = [
     "SkillDef",
     "SkillRegistry",
     "SkillResult",
+    "export_all_skills_md",
+    "export_skill_md",
 ]

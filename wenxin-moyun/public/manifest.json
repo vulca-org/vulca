@@ -1,0 +1,21 @@
+{
+  "name": "VULCA - AI Quality Intelligence",
+  "short_name": "VULCA",
+  "description": "AI quality intelligence platform with cultural evaluation, brand analysis, and trend detection.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1A1614",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "lang": "en",
+  "dir": "ltr"
+}

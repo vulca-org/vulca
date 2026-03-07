@@ -10,7 +10,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Image, ArrowRight, Calendar, CheckCircle, Globe, MessageSquare, Award } from 'lucide-react';
+import { Image, ArrowRight, Calendar, CheckCircle, Globe, MessageSquare, Award, Sparkles } from 'lucide-react';
 import { ALL_EXHIBITIONS } from '../../data/exhibitions';
 import { EmojiIcon } from '../../components/ios/core/EmojiIcon';
 import { IOSCard, IOSCardContent, IOSCardFooter } from '../../components/ios/core/IOSCard';
@@ -100,6 +100,14 @@ export function ExhibitionsPage() {
             <Award className="w-4 h-4 text-orange-500" />
             <span>RPAIT Scoring</span>
           </div>
+        </div>
+        <div className="mt-6">
+          <Link to="/evaluate">
+            <IOSButton variant="primary" size="sm" className="inline-flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4" />
+              Try VULCA Evaluate
+            </IOSButton>
+          </Link>
         </div>
       </div>
 
