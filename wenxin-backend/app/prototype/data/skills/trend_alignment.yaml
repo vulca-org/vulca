@@ -1,0 +1,8 @@
+name: trend_alignment
+description: "Match content against current aesthetic trends and visual design patterns."
+version: "1.0.0"
+author: vulca
+tags: [trends, aesthetics, design]
+input_types: [image]
+config:
+  trend_categories: [minimalism, maximalism, retro, futuristic, organic]

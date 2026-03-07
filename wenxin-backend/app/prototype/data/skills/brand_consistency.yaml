@@ -1,0 +1,13 @@
+name: brand_consistency
+description: "Evaluate visual consistency with brand guidelines including color palette, typography, and visual identity."
+version: "1.0.0"
+author: vulca
+tags: [brand, design, consistency]
+input_types: [image]
+config:
+  prompt_template: "Analyze this image for brand consistency. Evaluate color palette adherence, typography usage, visual identity elements, and overall coherence with established brand guidelines."
+  scoring_rubric:
+    color_match: 0.3
+    typography: 0.2
+    visual_identity: 0.3
+    overall_coherence: 0.2

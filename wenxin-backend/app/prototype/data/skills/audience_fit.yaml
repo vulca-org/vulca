@@ -1,0 +1,9 @@
+name: audience_fit
+description: "Score visual content for target demographic appeal and engagement potential."
+version: "1.0.0"
+author: vulca
+tags: [audience, marketing, engagement]
+input_types: [image]
+config:
+  demographics: [gen_z, millennial, gen_x, boomer]
+  channels: [social_media, print, web, mobile]
