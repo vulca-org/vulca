@@ -135,14 +135,12 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 
 async def init_db():
     """Initialize database tables and data (idempotent)"""
-    import asyncio
     # Ensure all models are registered in Base.metadata
     import app.models  # noqa: F401
 
     print("init_db: creating tables...")
-    async with asyncio.timeout(30):
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
     print("init_db: tables created")
 
     # Import here to avoid circular imports
