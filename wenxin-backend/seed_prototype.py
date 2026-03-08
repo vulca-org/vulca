@@ -21,12 +21,12 @@ PROTO_DATA = BASE / "app" / "prototype" / "data"
 AGENT_LOGS = BASE / "data" / "agent_logs"
 
 SEED_SKILLS = [
-    {"id": "1", "name": "Brand Consistency", "description": "Evaluate visual consistency with brand guidelines including logo usage, typography, and color palette adherence.", "tags": ["brand", "design"], "author": "vulca", "version": "1.0.0", "upvotes": 42, "downvotes": 3},
-    {"id": "2", "name": "Audience Fit", "description": "Score content for target demographic appeal across 12 audience segments with cultural sensitivity.", "tags": ["audience", "marketing"], "author": "vulca", "version": "1.0.0", "upvotes": 38, "downvotes": 5},
-    {"id": "3", "name": "Trend Alignment", "description": "Match against current aesthetic trends with weekly sync from design trend databases.", "tags": ["trends", "design"], "author": "vulca", "version": "1.0.0", "upvotes": 29, "downvotes": 2},
-    {"id": "4", "name": "Accessibility Check", "description": "Verify content meets WCAG 2.1 AA standards for color contrast, text size, and interactive elements.", "tags": ["accessibility", "quality"], "author": "community", "version": "1.0.0", "upvotes": 55, "downvotes": 1},
-    {"id": "5", "name": "Emotional Resonance", "description": "Analyze the emotional impact of visual content across 8 dimensions including warmth, trust, and excitement.", "tags": ["emotion", "audience"], "author": "vulca", "version": "1.0.0", "upvotes": 33, "downvotes": 4},
-    {"id": "6", "name": "Performance Benchmark", "description": "Measure inference latency and resource consumption for model evaluation pipelines.", "tags": ["performance", "quality"], "author": "community", "version": "1.2.0", "upvotes": 21, "downvotes": 0},
+    {"id": "1", "name": "Brand Consistency", "description": "Evaluate visual consistency with brand guidelines including logo usage, typography, and color palette adherence.", "tags": ["brand", "design"], "author": "vulca", "version": "1.0.0", "created_at": "2026-01-01T00:00:00+00:00", "upvotes": 42, "downvotes": 3},
+    {"id": "2", "name": "Audience Fit", "description": "Score content for target demographic appeal across 12 audience segments with cultural sensitivity.", "tags": ["audience", "marketing"], "author": "vulca", "version": "1.0.0", "created_at": "2026-01-01T00:00:00+00:00", "upvotes": 38, "downvotes": 5},
+    {"id": "3", "name": "Trend Alignment", "description": "Match against current aesthetic trends with weekly sync from design trend databases.", "tags": ["trends", "design"], "author": "vulca", "version": "1.0.0", "created_at": "2026-01-01T00:00:00+00:00", "upvotes": 29, "downvotes": 2},
+    {"id": "4", "name": "Accessibility Check", "description": "Verify content meets WCAG 2.1 AA standards for color contrast, text size, and interactive elements.", "tags": ["accessibility", "quality"], "author": "community", "version": "1.0.0", "created_at": "2026-01-01T00:00:00+00:00", "upvotes": 55, "downvotes": 1},
+    {"id": "5", "name": "Emotional Resonance", "description": "Analyze the emotional impact of visual content across 8 dimensions including warmth, trust, and excitement.", "tags": ["emotion", "audience"], "author": "vulca", "version": "1.0.0", "created_at": "2026-01-01T00:00:00+00:00", "upvotes": 33, "downvotes": 4},
+    {"id": "6", "name": "Performance Benchmark", "description": "Measure inference latency and resource consumption for model evaluation pipelines.", "tags": ["performance", "quality"], "author": "community", "version": "1.2.0", "created_at": "2026-01-01T00:00:00+00:00", "upvotes": 21, "downvotes": 0},
 ]
 
 DEFAULT_EVOLVED_CONTEXT = {
@@ -66,6 +66,8 @@ def main() -> None:
     files = {
         PROTO_DATA / "skills_marketplace.jsonl": lambda p: write_jsonl(p, SEED_SKILLS),
         PROTO_DATA / "skills_votes.jsonl": lambda p: write_jsonl(p, []),
+        PROTO_DATA / "skills_discussions.jsonl": lambda p: write_jsonl(p, []),
+        PROTO_DATA / "skills_discussion_votes.jsonl": lambda p: write_jsonl(p, []),
         PROTO_DATA / "feedback.jsonl": lambda p: write_jsonl(p, []),
         PROTO_DATA / "evolved_context.json": lambda p: write_json(p, DEFAULT_EVOLVED_CONTEXT),
         PROTO_DATA / "quality_baseline.json": lambda p: write_json(p, DEFAULT_QUALITY_BASELINE),

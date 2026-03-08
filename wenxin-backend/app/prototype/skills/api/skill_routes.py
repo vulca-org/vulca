@@ -71,7 +71,7 @@ def _skill_to_list_item(skill: dict) -> dict:
         "tags": skill.get("tags", []),
         "author": skill.get("author", "anonymous"),
         "version": skill.get("version", "1.0.0"),
-        "created_at": skill["created_at"],
+        "created_at": skill.get("created_at", "2026-01-01T00:00:00+00:00"),
         "upvotes": up,
         "downvotes": down,
     }

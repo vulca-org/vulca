@@ -84,9 +84,6 @@ class VulcaAPIClient:
     ) -> dict:
         """Call POST /api/v1/feedback and return the JSON response.
 
-        The feedback endpoint is provided by WU-08.  If it is not yet
-        deployed the caller will receive an ``httpx.HTTPStatusError``.
-
         Parameters
         ----------
         evaluation_id:
@@ -108,6 +105,57 @@ class VulcaAPIClient:
         async with httpx.AsyncClient(timeout=30) as client:
             resp = await client.post(
                 f"{self.base_url}/api/v1/feedback",
+                json=body,
+                headers=self._auth_headers(),
+            )
+            resp.raise_for_status()
+            return resp.json()
+
+    # ------------------------------------------------------------------
+    # Skills API
+    # ------------------------------------------------------------------
+
+    async def get_skills(self) -> list[dict]:
+        """Call GET /api/v1/skills and return the list of skills."""
+        async with httpx.AsyncClient(timeout=30) as client:
+            resp = await client.get(
+                f"{self.base_url}/api/v1/skills",
+                headers=self._auth_headers(),
+            )
+            resp.raise_for_status()
+            return resp.json()
+
+    async def create_skill(self, payload: dict) -> dict:
+        """Call POST /api/v1/skills to create a new skill.
+
+        Parameters
+        ----------
+        payload:
+            Dict with keys ``name``, ``description``, ``tags``, etc.
+        """
+        async with httpx.AsyncClient(timeout=30) as client:
+            resp = await client.post(
+                f"{self.base_url}/api/v1/skills",
+                json=payload,
+                headers=self._auth_headers(),
+            )
+            resp.raise_for_status()
+            return resp.json()
+
+    async def post_discussion(self, skill_id: str, comment: str) -> dict:
+        """Call POST /api/v1/skills/{skill_id}/discussions.
+
+        Parameters
+        ----------
+        skill_id:
+            The skill to comment on.
+        comment:
+            Comment body text.
+        """
+        body = {"content": comment, "author": "agent"}
+        async with httpx.AsyncClient(timeout=30) as client:
+            resp = await client.post(
+                f"{self.base_url}/api/v1/skills/{skill_id}/discussions",
                 json=body,
                 headers=self._auth_headers(),
             )
