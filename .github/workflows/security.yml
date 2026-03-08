@@ -1,0 +1,41 @@
+name: Security Scan
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  schedule:
+    - cron: '0 6 * * 1'  # Weekly Monday UTC 06:00
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+
+      - name: Python dependency audit
+        run: |
+          pip install pip-audit
+          pip-audit -r wenxin-backend/requirements.render.txt --fix --dry-run || true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install frontend dependencies
+        working-directory: wenxin-moyun
+        run: npm ci --legacy-peer-deps
+
+      - name: npm audit
+        working-directory: wenxin-moyun
+        run: npm audit --production --audit-level=high || true
+
+      - name: Gitleaks secret scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

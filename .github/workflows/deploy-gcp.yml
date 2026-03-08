@@ -63,24 +63,35 @@ jobs:
         working-directory: wenxin-moyun
         run: npx tsc --noEmit
 
+      - name: Run frontend unit tests
+        working-directory: wenxin-moyun
+        run: npx vitest run
+
       - name: Run backend tests
         working-directory: wenxin-backend
         run: |
-          python -m pytest tests/test_health.py -v --tb=short || echo "Health tests skipped or failed"
+          PYTHONPATH=. python -m pytest tests/ -v --tb=short -x -m "not slow"
         env:
           DATABASE_URL: sqlite+aiosqlite:///./test.db
           SECRET_KEY: test-secret-key-for-ci-at-least-32-chars
-          DEBUG: true
-        continue-on-error: true
+          DEBUG: "true"
+          VULCA_API_KEYS: demo-key
+
+      - name: Backend test coverage
+        working-directory: wenxin-backend
+        run: |
+          PYTHONPATH=. python -m pytest tests/ -m "not slow" --cov=app --cov-report=term-missing --tb=short || true
+        env:
+          DATABASE_URL: sqlite+aiosqlite:///./test.db
+          SECRET_KEY: test-secret-key-for-ci-at-least-32-chars
+          VULCA_API_KEYS: demo-key
 
       - name: Install Playwright browsers
-        if: github.event_name != 'pull_request'
         working-directory: wenxin-moyun
         run: |
           npx playwright install --with-deps
 
       - name: Initialize test database
-        if: github.event_name != 'pull_request'
         working-directory: wenxin-backend
         run: |
           python init_db.py
@@ -89,13 +100,11 @@ jobs:
           SECRET_KEY: test-secret-key-for-ci-at-least-32-chars
 
       - name: Seed prototype data
-        if: github.event_name != 'pull_request'
         working-directory: wenxin-backend
         run: |
           python seed_prototype.py
 
       - name: Start backend test server
-        if: github.event_name != 'pull_request'
         working-directory: wenxin-backend
         run: |
           python -m uvicorn app.main:app --host 0.0.0.0 --port 8001 &
@@ -107,16 +116,14 @@ jobs:
           ENVIRONMENT: test
 
       - name: Run E2E tests with proper servers
-        if: github.event_name != 'pull_request'
         working-directory: wenxin-moyun
         run: |
-          npx playwright test tests/e2e/specs/auth-fixed.spec.ts tests/e2e/specs/homepage.spec.ts tests/e2e/specs/ai-models.spec.ts tests/e2e/specs/evaluate-page.spec.ts tests/e2e/specs/skills-page.spec.ts tests/e2e/specs/research-page.spec.ts tests/e2e/specs/admin-page.spec.ts --config=tests/e2e/playwright.config.ts
+          npx playwright test tests/e2e/specs/ --config=tests/e2e/playwright.config.ts
         env:
           CI: true
           VITE_API_BASE_URL: http://localhost:8001
           VITE_ROUTER_MODE: hash
         timeout-minutes: 10
-        continue-on-error: true
 
   # Job 2: Deploy frontend to Firebase Hosting
   # Backend is deployed automatically by Render on push

@@ -15,9 +15,13 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 # Set API key env BEFORE importing modules that read it at load time
-os.environ.setdefault("VULCA_API_KEYS", "test-key-smoke")
+os.environ["VULCA_API_KEYS"] = "demo-key"
 
 from app.prototype.api.evaluate_routes import evaluate_router
+
+# Reset cached keys so our env var takes effect when running with other tests
+import app.prototype.api.auth as _auth_mod
+_auth_mod._KEYS = None
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -32,12 +36,16 @@ _1x1_PNG_BYTES = (
 )
 _1x1_PNG_B64 = base64.b64encode(_1x1_PNG_BYTES).decode()
 
-AUTH_HEADER = {"Authorization": "Bearer test-key-smoke"}
+AUTH_HEADER = {"Authorization": "Bearer demo-key"}
 
 
 @pytest.fixture(scope="module")
 def client():
     """Create an in-process test client with the evaluate_router mounted."""
+    # Force reload API keys from env to avoid stale cache from other test modules
+    os.environ["VULCA_API_KEYS"] = "demo-key"
+    _auth_mod._KEYS = None
+
     app = FastAPI()
     app.include_router(evaluate_router)
     with TestClient(app, raise_server_exceptions=False) as c:

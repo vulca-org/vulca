@@ -26,7 +26,10 @@
     "test:mcp": "tsx tests/e2e/mcp/run-tests.ts",
     "test:mcp:homepage": "tsx tests/e2e/mcp/run-tests.ts tests/e2e/specs/homepage.spec.ts",
     "test:mcp:ios": "tsx tests/e2e/mcp/run-tests.ts tests/e2e/specs/ios-components.spec.ts",
-    "validate-env": "node ../scripts/validate-env.js"
+    "validate-env": "node ../scripts/validate-env.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@formkit/auto-animate": "^0.8.0",
@@ -61,26 +64,34 @@
     "zustand": "^4.4.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.1",
     "@eslint/js": "^9.32.0",
     "@playwright/test": "^1.54.2",
     "@tailwindcss/postcss": "^4.1.11",
     "@tailwindcss/vite": "^4.1.11",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^22.17.1",
     "@types/react": "^19.1.9",
     "@types/react-dom": "^19.1.7",
     "@types/react-window": "^1.8.8",
     "@vitejs/plugin-react": "^4.7.0",
+    "@vitest/coverage-v8": "^4.0.18",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.32.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
+    "jsdom": "^28.1.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.11",
     "tsx": "^4.20.4",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.0",
     "vite": "^7.1.0",
-    "vite-prerender-plugin": "^0.5.12"
+    "vite-prerender-plugin": "^0.5.12",
+    "vitest": "^4.0.18"
   }
 }

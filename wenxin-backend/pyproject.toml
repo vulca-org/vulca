@@ -1,0 +1,13 @@
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+markers = ["slow: marks tests as slow"]
+
+[tool.coverage.run]
+source = ["app"]
+omit = ["app/exhibition/*", "*/test_*", "*/__pycache__/*"]
+
+[tool.coverage.report]
+fail_under = 15
+show_missing = true
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:", "if __name__"]

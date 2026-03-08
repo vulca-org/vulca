@@ -1,0 +1,59 @@
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+
+describe('API config module', () => {
+  // We need to isolate module state between tests since the module caches
+  // its computed values at import time.
+
+  beforeEach(() => {
+    vi.stubGlobal('window', { location: { hostname: 'localhost' } })
+    // Reset import.meta.env stubs
+    vi.stubEnv('VITE_API_BASE_URL', '')
+    vi.stubEnv('VITE_API_VERSION', '')
+  })
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+    vi.unstubAllEnvs()
+    vi.resetModules()
+  })
+
+  it('should use localhost:8001 when hostname is localhost', async () => {
+    vi.stubGlobal('window', { location: { hostname: 'localhost' } })
+    const mod = await import('../../config/api')
+    expect(mod.API_BASE_URL).toBe('http://localhost:8001')
+  })
+
+  it('should use production URL when hostname is not localhost', async () => {
+    vi.stubGlobal('window', { location: { hostname: 'vulcaart.art' } })
+    const mod = await import('../../config/api')
+    expect(mod.API_BASE_URL).toBe('https://wenxin-moyun-api-229980166599.asia-east1.run.app')
+  })
+
+  it('should construct API_PREFIX with version', async () => {
+    vi.stubGlobal('window', { location: { hostname: 'localhost' } })
+    const mod = await import('../../config/api')
+    expect(mod.API_PREFIX).toBe(`${mod.API_BASE_URL}/api/${mod.API_VERSION}`)
+  })
+
+  it('should default API_VERSION to v1', async () => {
+    vi.stubGlobal('window', { location: { hostname: 'localhost' } })
+    const mod = await import('../../config/api')
+    expect(mod.API_VERSION).toBe('v1')
+  })
+
+  it('getWebSocketBaseUrl should convert http to ws', async () => {
+    vi.stubGlobal('window', { location: { hostname: 'localhost' } })
+    const mod = await import('../../config/api')
+    const wsUrl = mod.getWebSocketBaseUrl()
+    expect(wsUrl).toMatch(/^ws:\/\//)
+    expect(wsUrl).not.toMatch(/^http/)
+  })
+
+  it('getWebSocketBaseUrl should convert https to wss', async () => {
+    vi.stubGlobal('window', { location: { hostname: 'vulcaart.art' } })
+    const mod = await import('../../config/api')
+    const wsUrl = mod.getWebSocketBaseUrl()
+    expect(wsUrl).toMatch(/^wss:\/\//)
+    expect(wsUrl).not.toMatch(/^https/)
+  })
+})
