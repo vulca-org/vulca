@@ -16,8 +16,11 @@ test.describe('Skills Page', () => {
   });
 
   test('skill cards are visible (fallback data)', async ({ page }) => {
-    const cards = page.locator('[class*="card"], [class*="Card"]');
-    await expect(cards.first()).toBeVisible({ timeout: 15000 });
+    // SkillCard renders skill names as h3 elements inside IOSCard.
+    // IOSCard uses Tailwind utility classes (no "card"/"Card" in class names),
+    // so match by the skill name headings instead.
+    const skillHeading = page.locator('h3:has-text("Brand Consistency"), h3:has-text("Audience Fit"), h3:has-text("Accessibility Check")');
+    await expect(skillHeading.first()).toBeVisible({ timeout: 15000 });
   });
 
   test('search input is functional', async ({ page }) => {

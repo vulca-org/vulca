@@ -12,9 +12,9 @@
 
 import { useState, useCallback } from 'react';
 import { usePrototypePipeline } from '../../hooks/usePrototypePipeline';
-import type { CreateRunParams } from '../../hooks/usePrototypePipeline';
+import type { CreateRunParams, ScoredCandidate } from '../../hooks/usePrototypePipeline';
 import { API_PREFIX } from '../../config/api';
-import { IOSCard, IOSCardContent, IOSButton, IOSSegmentedControl, IOSAlert } from '../../components/ios';
+import { IOSCard, IOSCardContent, IOSButton, IOSSegmentedControl, IOSAlert, IOSToggle } from '../../components/ios';
 import { PROTOTYPE_DIM_LABELS } from '../../utils/vulca-dimensions';
 import type { PrototypeDimension } from '../../utils/vulca-dimensions';
 
@@ -36,11 +36,13 @@ import ScoutEvidenceCard from '../../components/prototype/ScoutEvidenceCard';
 import FixItPlanCard from '../../components/prototype/FixItPlanCard';
 import CriticRationaleCard from '../../components/prototype/CriticRationaleCard';
 import HitlOverlay from '../../components/prototype/HitlOverlay';
+import CriticDetailModal from '../../components/prototype/CriticDetailModal';
 
 // M3: Pipeline Editor + Batch
 import { PipelineEditor, NodeParamPanel } from '../../components/prototype/editor';
 import type { AgentNodeId, StageStatus, ReportOutput } from '../../components/prototype/editor';
 import BatchInputPanel from '../../components/prototype/BatchInputPanel';
+import FeedbackCollector from '../../components/prototype/FeedbackCollector';
 
 // M7: Community Canvas modes
 import ComparePanel from '../../components/prototype/ComparePanel';
@@ -61,6 +63,12 @@ export default function PrototypePage() {
   const [activeTemplate, setActiveTemplate] = useState('default');
   const [mobileTab, setMobileTab] = useState(0);
   const [lastRunParams, setLastRunParams] = useState<RunConfigParams | null>(null);
+
+  // HITL toggle state
+  const [enableHitl, setEnableHitl] = useState(false);
+
+  // Critic Detail Modal state
+  const [criticDetailCandidate, setCriticDetailCandidate] = useState<ScoredCandidate | null>(null);
 
   // Evaluate result from IntentBar image upload
   const [evaluateResult, setEvaluateResult] = useState<Record<string, unknown> | null>(null);
@@ -110,7 +118,7 @@ export default function PrototypePage() {
         provider: lastRunParams?.provider || 'mock',
         n_candidates: lastRunParams?.n_candidates || 4,
         max_rounds: lastRunParams?.max_rounds || 3,
-        enable_hitl: false,
+        enable_hitl: enableHitl,
         enable_agent_critic: true,
         enable_parallel_critic: false,
         use_graph: false,
@@ -120,7 +128,7 @@ export default function PrototypePage() {
       setPlaygroundMode('run');
       startRun(params);
     }
-  }, [lastRunParams, startRun]);
+  }, [lastRunParams, startRun, enableHitl]);
 
   const isRunning = state.status === 'running' || state.status === 'waiting_human';
   const isDone = state.status === 'completed' || state.status === 'failed';
@@ -239,6 +247,19 @@ export default function PrototypePage() {
 
       {/* Quick intent bar */}
       <IntentBar onSubmit={handleIntentSubmit} disabled={isRunning || evaluateLoading} />
+
+      {/* HITL toggle */}
+      <div className="flex items-center justify-between px-1">
+        <IOSToggle
+          checked={enableHitl}
+          onChange={setEnableHitl}
+          disabled={isRunning}
+          size="sm"
+          color="orange"
+          label="Human-in-the-Loop"
+          description="Pause at each stage for human review"
+        />
+      </div>
 
       {/* Detailed config (collapsible) */}
       <details className="group">
@@ -503,6 +524,23 @@ export default function PrototypePage() {
                 </div>
               )}
 
+              {/* View Details button */}
+              {state.scoredCandidates.length > 0 && (
+                <div className="mb-3 flex justify-end">
+                  <IOSButton
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => {
+                      const best = state.scoredCandidates.find(sc => sc.candidate_id === state.bestCandidateId)
+                        ?? state.scoredCandidates[0];
+                      setCriticDetailCandidate(best);
+                    }}
+                  >
+                    查看详情
+                  </IOSButton>
+                </div>
+              )}
+
               {/* Score Table */}
               <CriticScoreTable
                 scoredCandidates={state.scoredCandidates}
@@ -534,6 +572,14 @@ export default function PrototypePage() {
             />
           </IOSCardContent>
         </IOSCard>
+      )}
+
+      {/* Feedback Collector — shown after pipeline completes */}
+      {isDone && state.taskId && (
+        <FeedbackCollector
+          sessionId={state.taskId}
+          evaluationId={state.taskId}
+        />
       )}
     </>
   );
@@ -624,6 +670,15 @@ export default function PrototypePage() {
         onAction={submitAction}
         onClose={() => {/* Sheet not dismissable during HITL */}}
       />
+
+      {/* Critic Detail Modal */}
+      {criticDetailCandidate && (
+        <CriticDetailModal
+          candidate={criticDetailCandidate}
+          onClose={() => setCriticDetailCandidate(null)}
+          crossLayerSignals={state.crossLayerSignals ?? undefined}
+        />
+      )}
 
       {/* Pipeline failure alert */}
       <IOSAlert

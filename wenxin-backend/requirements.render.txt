@@ -30,6 +30,7 @@ aiosmtplib==3.0.2
 openai==2.18.0
 anthropic==0.75.0
 google-generativeai==0.5.4
+google-genai==1.21.0  # NB2Provider uses `from google import genai` (distinct from google-generativeai)
 
 # Configuration
 PyYAML==6.0.1
