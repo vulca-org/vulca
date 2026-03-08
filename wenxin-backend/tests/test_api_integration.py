@@ -12,9 +12,10 @@ from typing import Dict, Any
 BASE_URL = "http://localhost:8001"
 
 
+@pytest.mark.slow
 class TestAPIIntegration:
-    """Test API endpoints integration"""
-    
+    """Test API endpoints integration (requires running server on localhost:8001)."""
+
     @pytest.mark.asyncio
     async def test_models_endpoint_with_vulca(self):
         """Test /api/v1/models endpoint returns VULCA data when requested"""

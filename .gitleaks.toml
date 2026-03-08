@@ -1,0 +1,17 @@
+title = "VULCA Platform Gitleaks Configuration"
+
+[allowlist]
+description = "Allowlist for test fixtures and non-secret values"
+
+# Test SECRET_KEY used in CI/test environments (not a real secret)
+regexTarget = "match"
+regexes = [
+  '''test-secret-key-for-ci-at-least-32-chars''',
+]
+
+# Test files commonly contain fixture API keys
+paths = [
+  '''(^|\/)tests\/''',
+  '''(^|\/)test_''',
+  '''\.test\.(ts|tsx|js|jsx)$''',
+]
