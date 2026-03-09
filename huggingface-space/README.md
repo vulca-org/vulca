@@ -1,7 +1,7 @@
 ---
 title: VULCA - Cultural AI Evaluation
 emoji: 🎨
-colorFrom: amber
+colorFrom: yellow
 colorTo: gray
 sdk: gradio
 sdk_version: "5.12.0"
