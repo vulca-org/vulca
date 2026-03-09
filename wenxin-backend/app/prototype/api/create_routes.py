@@ -293,6 +293,40 @@ async def _run_evaluate_mode(
             cleanup_temp_image(tmp_path)
 
 
+def _process_pipeline_event(
+    event: PipelineEvent,
+    rounds: list[RoundSnapshot],
+    candidate_image_urls: dict[str, str],
+    final_scores: dict[str, float],
+    state: dict,
+) -> None:
+    """Shared event processing for sync and stream paths."""
+    if event.event_type == EventType.DECISION_MADE:
+        p = event.payload
+        rounds.append(RoundSnapshot(
+            round_num=event.round_num,
+            best_candidate_id=p.get("best_candidate_id", ""),
+            weighted_total=p.get("weighted_total", 0.0),
+            decision=p.get("action", ""),
+        ))
+    elif event.event_type == EventType.STAGE_COMPLETED and event.stage == "draft":
+        for c in event.payload.get("candidates", []):
+            if isinstance(c, dict) and c.get("candidate_id") and c.get("image_url"):
+                candidate_image_urls[c["candidate_id"]] = c["image_url"]
+    elif event.event_type == EventType.STAGE_COMPLETED and event.stage == "critic":
+        scored = event.payload.get("scored_candidates", [])
+        if scored:
+            top = scored[0] if isinstance(scored[0], dict) else {}
+            for ds in top.get("dimension_scores", []):
+                if isinstance(ds, dict):
+                    final_scores[ds.get("dimension", "")] = ds.get("score", 0.0)
+    elif event.event_type == EventType.PIPELINE_COMPLETED:
+        p = event.payload
+        state["best_candidate_id"] = p.get("best_candidate_id", "")
+        state["total_rounds"] = p.get("total_rounds", len(rounds))
+        state["total_cost"] = p.get("total_cost_usd", 0.0)
+
+
 async def _run_create_mode_sync(
     req: CreateRequest,
     session_id: str,
@@ -330,51 +364,17 @@ async def _run_create_mode_sync(
 
     # Collect events from synchronous run
     rounds: list[RoundSnapshot] = []
-    best_candidate_id = ""
-    best_image_url = ""
     final_scores: dict[str, float] = {}
-    total_rounds = 0
-    total_cost = 0.0
-    # Track candidate image URLs from draft/critic events (WU-1 fix)
     candidate_image_urls: dict[str, str] = {}
+    state: dict = {"best_candidate_id": "", "total_rounds": 0, "total_cost": 0.0}
 
     for event in orchestrator.run_stream(pipeline_input):
-        if event.event_type == EventType.DECISION_MADE:
-            p = event.payload
-            snap = RoundSnapshot(
-                round_num=event.round_num,
-                best_candidate_id=p.get("best_candidate_id", ""),
-                weighted_total=p.get("weighted_total", 0.0),
-                decision=p.get("action", ""),
-            )
-            rounds.append(snap)
-        elif event.event_type == EventType.STAGE_COMPLETED and event.stage == "draft":
-            # Capture candidate image URLs from draft stage
-            p = event.payload
-            for c in p.get("candidates", []):
-                if isinstance(c, dict) and c.get("id") and c.get("image_url"):
-                    candidate_image_urls[c["id"]] = c["image_url"]
-        elif event.event_type == EventType.STAGE_COMPLETED and event.stage == "critic":
-            p = event.payload
-            scored = p.get("scored_candidates", [])
-            if scored:
-                # Also capture image_url from scored candidates
-                for sc in scored:
-                    if isinstance(sc, dict) and sc.get("id") and sc.get("image_url"):
-                        candidate_image_urls[sc["id"]] = sc["image_url"]
-                top = scored[0] if isinstance(scored[0], dict) else {}
-                for ds in top.get("dimension_scores", []):
-                    if isinstance(ds, dict):
-                        final_scores[ds.get("dimension", "")] = ds.get("score", 0.0)
-        elif event.event_type == EventType.PIPELINE_COMPLETED:
-            p = event.payload
-            best_candidate_id = p.get("best_candidate_id", "")
-            total_rounds = p.get("total_rounds", len(rounds))
-            total_cost = p.get("total_cost_usd", 0.0)
+        _process_pipeline_event(event, rounds, candidate_image_urls, final_scores, state)
 
-    # Resolve best_image_url from collected candidates
-    if best_candidate_id and best_candidate_id in candidate_image_urls:
-        best_image_url = candidate_image_urls[best_candidate_id]
+    best_candidate_id = state["best_candidate_id"]
+    total_rounds = state["total_rounds"]
+    total_cost = state["total_cost"]
+    best_image_url = candidate_image_urls.get(best_candidate_id, "")
 
     elapsed_ms = int((time.monotonic() - t0) * 1000)
 
@@ -458,44 +458,17 @@ def _run_create_mode_stream(
     def _run_in_background() -> None:
         t0 = time.monotonic()
         rounds: list[RoundSnapshot] = []
-        best_candidate_id = ""
-        best_image_url = ""
         final_scores: dict[str, float] = {}
-        total_cost = 0.0
         candidate_image_urls: dict[str, str] = {}
+        state: dict = {"best_candidate_id": "", "total_rounds": 0, "total_cost": 0.0}
 
         for event in orchestrator.run_stream(pipeline_input):
             with _create_buffer_lock:
                 _create_event_buffers.setdefault(session_id, []).append(event)
-            if event.event_type == EventType.DECISION_MADE:
-                p = event.payload
-                rounds.append(RoundSnapshot(
-                    round_num=event.round_num,
-                    best_candidate_id=p.get("best_candidate_id", ""),
-                    weighted_total=p.get("weighted_total", 0.0),
-                    decision=p.get("action", ""),
-                ))
-            elif event.event_type == EventType.STAGE_COMPLETED and event.stage == "draft":
-                for c in event.payload.get("candidates", []):
-                    if isinstance(c, dict) and c.get("id") and c.get("image_url"):
-                        candidate_image_urls[c["id"]] = c["image_url"]
-            elif event.event_type == EventType.STAGE_COMPLETED and event.stage == "critic":
-                scored = event.payload.get("scored_candidates", [])
-                for sc in scored:
-                    if isinstance(sc, dict) and sc.get("id") and sc.get("image_url"):
-                        candidate_image_urls[sc["id"]] = sc["image_url"]
-                if scored:
-                    top = scored[0] if isinstance(scored[0], dict) else {}
-                    for ds in top.get("dimension_scores", []):
-                        if isinstance(ds, dict):
-                            final_scores[ds.get("dimension", "")] = ds.get("score", 0.0)
-            elif event.event_type == EventType.PIPELINE_COMPLETED:
-                p = event.payload
-                best_candidate_id = p.get("best_candidate_id", "")
-                total_cost = p.get("total_cost_usd", 0.0)
+            _process_pipeline_event(event, rounds, candidate_image_urls, final_scores, state)
 
-        if best_candidate_id and best_candidate_id in candidate_image_urls:
-            best_image_url = candidate_image_urls[best_candidate_id]
+        best_candidate_id = state["best_candidate_id"]
+        best_image_url = candidate_image_urls.get(best_candidate_id, "")
 
         # Store digest after pipeline completes
         elapsed_ms = int((time.monotonic() - t0) * 1000)
@@ -509,9 +482,9 @@ def _run_create_mode_stream(
             rounds=rounds,
             final_scores=final_scores,
             best_image_url=best_image_url,
-            total_rounds=len(rounds),
+            total_rounds=state["total_rounds"],
             total_latency_ms=elapsed_ms,
-            total_cost_usd=total_cost,
+            total_cost_usd=state["total_cost"],
         )
         digest.cultural_features = extract_cultural_features(
             tradition=req.tradition,

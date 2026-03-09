@@ -77,7 +77,7 @@ class AgentResult:
     def to_dict(self) -> dict:
         return {
             "layer_id": self.layer_id,
-            "score": round(self.score, 4),
+            "score": round(self.score, 4) if self.score is not None else None,
             "confidence": round(self.confidence, 4),
             "rationale": self.rationale,
             "evidence_refs": self.evidence_refs,

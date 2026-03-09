@@ -20,7 +20,6 @@ from app.prototype.agents.critic_config import CriticConfig, DIMENSIONS
 from app.prototype.agents.critic_types import CandidateScore, CritiqueInput, CritiqueOutput
 from app.prototype.agents.draft_agent import DraftAgent
 from app.prototype.agents.draft_config import DraftConfig
-from app.prototype.agents.draft_provider import FallbackProvider, MockProvider
 from app.prototype.agents.draft_types import DraftInput
 from app.prototype.agents.layer_state import LocalRerunRequest
 from app.prototype.agents.queen_agent import QueenAgent

@@ -10,7 +10,6 @@ from __future__ import annotations
 import json
 import logging
 import time
-import uuid
 from pathlib import Path
 from typing import Any
 
@@ -68,9 +67,6 @@ def _get_traditions() -> list[str]:
         pass
     return _LEGACY_TRADITIONS
 
-
-# Keep _TRADITIONS as a backward-compatible reference
-_TRADITIONS = _LEGACY_TRADITIONS
 
 
 # ── GET /api/v1/knowledge-base ─────────────────────────────────

@@ -83,7 +83,7 @@ def _try_llm_call(model: str, messages: list[dict], temperature: float, max_toke
     try:
         import litellm
         resp = litellm.completion(
-            model=MODEL_DECISION,
+            model=model,
             messages=messages,
             temperature=temperature,
             max_tokens=max_tokens,
