@@ -78,6 +78,81 @@ class FeedbackStore:
         records = self._read_all()
         return records[-limit:]
 
+    def sync_from_sessions(self) -> int:
+        """Sync inline feedback from sessions.jsonl to feedback.jsonl.
+
+        Returns count of new feedback entries synced.
+        """
+        sessions_path = self._path.parent / "sessions.jsonl"
+        if not sessions_path.exists():
+            return 0
+
+        # Load existing feedback evaluation_ids to avoid duplicates
+        existing_ids: set[str] = set()
+        if self._path.exists():
+            for line in self._path.read_text().strip().split("\n"):
+                if line.strip():
+                    try:
+                        entry = json.loads(line)
+                        existing_ids.add(entry.get("evaluation_id", ""))
+                    except json.JSONDecodeError:
+                        pass
+
+        synced = 0
+        for line in sessions_path.read_text().strip().split("\n"):
+            if not line.strip():
+                continue
+            try:
+                session = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+
+            sid = session.get("session_id", "")
+            if not sid or sid in existing_ids:
+                continue
+
+            # Check for inline feedback
+            feedback = session.get("feedback")
+            if not feedback:
+                continue
+
+            # Normalize: feedback may be a dict or a list of dicts
+            if isinstance(feedback, list):
+                feedback_items = [f for f in feedback if isinstance(f, dict)]
+            elif isinstance(feedback, dict):
+                feedback_items = [feedback]
+            else:
+                continue
+
+            for fb in feedback_items:
+                # Determine rating
+                rating = fb.get("rating")
+                if not rating:
+                    if fb.get("liked") is True:
+                        rating = "thumbs_up"
+                    elif fb.get("liked") is False:
+                        rating = "thumbs_down"
+                    else:
+                        continue
+
+                ts = session.get("completed_at") or session.get("created_at", "")
+                if not isinstance(ts, str):
+                    ts = str(ts)
+
+                record = FeedbackRecord(
+                    id=f"sync-{sid}",
+                    evaluation_id=sid,
+                    rating=rating,
+                    comment=fb.get("comment", ""),
+                    feedback_type="implicit",
+                    timestamp=ts,
+                    tradition=session.get("tradition", ""),
+                )
+                self.append(record)
+                synced += 1
+
+        return synced
+
     # ------------------------------------------------------------------
     # Internal helpers
     # ------------------------------------------------------------------

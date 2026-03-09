@@ -161,8 +161,18 @@ class PromptEnhancer:
             evidence_section=evidence_section,
         )
 
+        # Inject evolved context for successful pattern awareness
+        system_prompt = _SYSTEM_PROMPT
+        try:
+            from app.prototype.cultural_pipelines.cultural_weights import get_evolved_prompt_context
+            evolved = get_evolved_prompt_context(tradition)
+            if evolved:
+                system_prompt += evolved
+        except Exception:
+            pass  # Zero regression — on any error, use original prompt
+
         messages = [
-            {"role": "system", "content": _SYSTEM_PROMPT},
+            {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_msg},
         ]
 

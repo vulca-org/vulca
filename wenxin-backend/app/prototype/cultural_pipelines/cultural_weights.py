@@ -15,6 +15,8 @@ from __future__ import annotations
 import json
 import logging
 import os
+import time
+from pathlib import Path
 
 from app.prototype.agents.critic_config import DIMENSIONS
 
@@ -26,74 +28,85 @@ _EVOLVED_CONTEXT_PATH = os.path.join(
 )
 
 # ---------------------------------------------------------------------------
-# Hardcoded fallback (used only if YAML loading fails)
+# Default weights (used when no tradition-specific weights available)
 # ---------------------------------------------------------------------------
 
-_FALLBACK_WEIGHTS: dict[str, dict[str, float]] = {
-    "default": {
-        "visual_perception": 0.15,
-        "technical_analysis": 0.20,
-        "cultural_context": 0.25,
-        "critical_interpretation": 0.20,
-        "philosophical_aesthetic": 0.20,
-    },
-    "chinese_xieyi": {
-        "visual_perception": 0.10,
-        "technical_analysis": 0.15,
-        "cultural_context": 0.25,
-        "critical_interpretation": 0.20,
-        "philosophical_aesthetic": 0.30,
-    },
-    "chinese_gongbi": {
-        "visual_perception": 0.15,
-        "technical_analysis": 0.30,
-        "cultural_context": 0.25,
-        "critical_interpretation": 0.15,
-        "philosophical_aesthetic": 0.15,
-    },
-    "western_academic": {
-        "visual_perception": 0.20,
-        "technical_analysis": 0.25,
-        "cultural_context": 0.15,
-        "critical_interpretation": 0.25,
-        "philosophical_aesthetic": 0.15,
-    },
-    "islamic_geometric": {
-        "visual_perception": 0.25,
-        "technical_analysis": 0.30,
-        "cultural_context": 0.20,
-        "critical_interpretation": 0.15,
-        "philosophical_aesthetic": 0.10,
-    },
-    "japanese_traditional": {
-        "visual_perception": 0.15,
-        "technical_analysis": 0.20,
-        "cultural_context": 0.20,
-        "critical_interpretation": 0.20,
-        "philosophical_aesthetic": 0.25,
-    },
-    "watercolor": {
-        "visual_perception": 0.20,
-        "technical_analysis": 0.25,
-        "cultural_context": 0.15,
-        "critical_interpretation": 0.20,
-        "philosophical_aesthetic": 0.20,
-    },
-    "african_traditional": {
-        "visual_perception": 0.15,
-        "technical_analysis": 0.20,
-        "cultural_context": 0.30,
-        "critical_interpretation": 0.20,
-        "philosophical_aesthetic": 0.15,
-    },
-    "south_asian": {
-        "visual_perception": 0.15,
-        "technical_analysis": 0.20,
-        "cultural_context": 0.25,
-        "critical_interpretation": 0.15,
-        "philosophical_aesthetic": 0.25,
-    },
+_DEFAULT_WEIGHTS: dict[str, float] = {
+    "visual_perception": 0.15,
+    "technical_analysis": 0.20,
+    "cultural_context": 0.25,
+    "critical_interpretation": 0.20,
+    "philosophical_aesthetic": 0.20,
 }
+
+_fallback_weights_cache: dict[str, dict[str, float]] | None = None
+
+
+def _get_fallback_weights() -> dict[str, dict[str, float]]:
+    """Load fallback weights from YAML traditions, cache result.
+
+    Loads all tradition weight tables from YAML files via TraditionLoader.
+    Falls back to a hardcoded default-only dict if YAML is unavailable.
+
+    Returns a cached dict keyed by tradition name -> dimension weights.
+    """
+    global _fallback_weights_cache
+    if _fallback_weights_cache is not None:
+        return _fallback_weights_cache
+
+    weights: dict[str, dict[str, float]] = {"default": _DEFAULT_WEIGHTS.copy()}
+
+    try:
+        from app.prototype.cultural_pipelines.tradition_loader import (
+            TraditionConfig,
+            get_all_traditions,
+        )
+        traditions = get_all_traditions()
+        for name, config in traditions.items():
+            yaml_weights = _extract_weights_from_tradition(config)
+            if yaml_weights:
+                weights[name] = yaml_weights
+    except Exception as exc:
+        logger.debug(
+            "cultural_weights: YAML tradition loading failed (%s), using default-only fallback",
+            exc,
+        )
+
+    _fallback_weights_cache = weights
+    return weights
+
+
+def _extract_weights_from_tradition(config: object) -> dict[str, float] | None:
+    """Extract dimension weights from a TraditionConfig.
+
+    Reads ``weights_dim`` (dimension-keyed dict) from the TraditionConfig
+    dataclass produced by tradition_loader. Returns None if extraction fails.
+    """
+    try:
+        # TraditionConfig.weights_dim maps L-labels to dimension IDs
+        if hasattr(config, "weights_dim"):
+            dim_weights = config.weights_dim
+            if isinstance(dim_weights, dict) and dim_weights:
+                return dict(dim_weights)
+        # Fallback: try weights_l with manual mapping
+        if hasattr(config, "weights_l"):
+            from app.prototype.cultural_pipelines.tradition_loader import _L_TO_DIM
+            w = config.weights_l
+            if isinstance(w, dict) and w:
+                return {_L_TO_DIM[k]: v for k, v in w.items() if k in _L_TO_DIM}
+    except Exception:
+        pass
+    return None
+
+
+def _clear_fallback_cache() -> None:
+    """Clear the fallback weights cache (for testing)."""
+    global _fallback_weights_cache
+    _fallback_weights_cache = None
+
+
+# Backward compatibility alias — deprecated; use _get_fallback_weights()
+_FALLBACK_WEIGHTS = _get_fallback_weights
 
 
 # ---------------------------------------------------------------------------
@@ -145,7 +158,7 @@ def _get_weight_tables() -> dict[str, dict[str, float]]:
     """
     # Start with base tables (YAML or fallback)
     yaml_tables = _try_load_from_yaml()
-    base = yaml_tables if yaml_tables else dict(_FALLBACK_WEIGHTS)
+    base = yaml_tables if yaml_tables else dict(_get_fallback_weights())
 
     # Overlay evolved weights if available
     evolved = _try_load_from_evolved_context()
@@ -167,11 +180,11 @@ def get_known_traditions() -> list[str]:
     Merges tradition names from three sources (in priority order):
     1. evolved_context.json ``tradition_weights`` keys
     2. YAML tradition loader (``data/traditions/*.yaml``)
-    3. Hardcoded ``_FALLBACK_WEIGHTS`` keys
+    3. ``_get_fallback_weights()`` keys (YAML-derived or default)
 
     Returns a sorted, deduplicated list of tradition identifiers.
     """
-    traditions: set[str] = set(_FALLBACK_WEIGHTS.keys())
+    traditions: set[str] = set(_get_fallback_weights().keys())
 
     # Add from evolved_context tradition_weights
     evolved = _try_load_from_evolved_context()
@@ -190,7 +203,7 @@ def get_known_traditions() -> list[str]:
 
 
 # Backward compatibility — deprecated; prefer get_known_traditions()
-KNOWN_TRADITIONS: list[str] = sorted(_FALLBACK_WEIGHTS.keys())
+KNOWN_TRADITIONS: list[str] = sorted(_get_fallback_weights().keys())
 
 
 def get_weights(tradition: str) -> dict[str, float]:
@@ -200,7 +213,7 @@ def get_weights(tradition: str) -> dict[str, float]:
     Prefers YAML data; uses hardcoded fallback if YAML unavailable.
     """
     tables = _get_weight_tables()
-    return dict(tables.get(tradition, tables.get("default", _FALLBACK_WEIGHTS["default"])))
+    return dict(tables.get(tradition, tables.get("default", _DEFAULT_WEIGHTS)))
 
 
 def get_all_weight_tables() -> dict[str, dict[str, float]]:
@@ -253,3 +266,91 @@ def get_prompt_archetypes(tradition: str, top_n: int = 5) -> list[dict]:
     except Exception as exc:
         logger.debug("get_prompt_archetypes: failed to load (%s)", exc)
         return []
+
+
+# ---------------------------------------------------------------------------
+# Evolved prompt context injection
+# ---------------------------------------------------------------------------
+
+_evolved_prompt_cache: dict[str, tuple[float, str]] = {}
+_CACHE_TTL = 300  # 5 minutes
+
+
+def get_evolved_prompt_context(tradition: str = "default", max_tokens: int = 200) -> str:
+    """Get evolved context block for system prompt injection.
+
+    Returns a formatted string (approximate max_tokens words) with:
+    - Archetypes (successful patterns)
+    - Emerged cultural concepts
+    - Weight/preference hints
+
+    Returns ``""`` if no evolved data available (zero regression).
+    """
+    cache_key = f"{tradition}:{max_tokens}"
+    now = time.time()
+    if cache_key in _evolved_prompt_cache:
+        cached_time, cached_val = _evolved_prompt_cache[cache_key]
+        if now - cached_time < _CACHE_TTL:
+            return cached_val
+
+    result = _build_evolved_context(tradition, max_tokens)
+    _evolved_prompt_cache[cache_key] = (now, result)
+    return result
+
+
+def _build_evolved_context(tradition: str, max_tokens: int) -> str:
+    """Build the evolved context string from evolved_context.json."""
+    ctx_path = Path(_EVOLVED_CONTEXT_PATH).resolve()
+    if not ctx_path.exists():
+        return ""
+
+    try:
+        ctx = json.loads(ctx_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return ""
+
+    if ctx.get("evolutions", 0) == 0:
+        return ""
+
+    parts: list[str] = []
+
+    # 1. Archetypes / successful patterns from prompt_contexts
+    prompt_contexts = ctx.get("prompt_contexts", {})
+    tradition_prompts = prompt_contexts.get(tradition, prompt_contexts.get("default", {}))
+    if isinstance(tradition_prompts, dict):
+        top_keywords = tradition_prompts.get("top_keywords", [])[:5]
+        if top_keywords:
+            parts.append(f"Successful patterns: {', '.join(top_keywords)}")
+
+    # 2. Emerged cultural concepts
+    cultures = ctx.get("cultures", {})
+    if isinstance(cultures, dict):
+        relevant = {k: v for k, v in cultures.items()
+                    if isinstance(v, dict) and (v.get("tradition") == tradition or tradition == "default")}
+        if relevant:
+            concept_names = list(relevant.keys())[:3]
+            parts.append(f"Emerged concepts: {', '.join(concept_names)}")
+    elif isinstance(cultures, list):
+        relevant = [c for c in cultures if isinstance(c, dict)
+                    and (c.get("tradition") == tradition or tradition == "default")]
+        if relevant:
+            concept_names = [c.get("name", "unknown") for c in relevant[:3]]
+            parts.append(f"Emerged concepts: {', '.join(concept_names)}")
+
+    # 3. Weight hints from tradition_weights
+    weights = ctx.get("tradition_weights", {}).get(tradition, {})
+    if isinstance(weights, dict) and weights:
+        top_dims = sorted(weights.items(), key=lambda x: x[1], reverse=True)[:3]
+        hints = [f"{d}={v:.2f}" for d, v in top_dims]
+        parts.append(f"Priority dimensions: {', '.join(hints)}")
+
+    if not parts:
+        return ""
+
+    # Truncate to approximate max_tokens
+    context = "\n".join(parts)
+    words = context.split()
+    if len(words) > max_tokens:
+        context = " ".join(words[:max_tokens])
+
+    return f"\n\n[Evolved Context]\n{context}"

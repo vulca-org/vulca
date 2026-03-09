@@ -248,12 +248,12 @@ class TestWeightsConsistency:
             )
 
     def test_yaml_matches_fallback(self):
-        """YAML weights should match hardcoded fallback (regression check)."""
+        """YAML weights should match dynamically loaded fallback (regression check)."""
         from app.prototype.cultural_pipelines.cultural_weights import (
-            _FALLBACK_WEIGHTS,
+            _get_fallback_weights,
             get_weights,
         )
-        for tradition, fallback_w in _FALLBACK_WEIGHTS.items():
+        for tradition, fallback_w in _get_fallback_weights().items():
             yaml_w = get_weights(tradition)
             for dim, expected_val in fallback_w.items():
                 actual_val = yaml_w.get(dim, -1)

@@ -10,6 +10,8 @@ import logging
 import time
 from dataclasses import dataclass, field
 
+from app.prototype.agents.model_router import MODEL_FAST
+
 logger = logging.getLogger("vulca")
 
 _MIN_CLUSTER_SIZE = 3  # Minimum sessions to crystallize a concept
@@ -113,7 +115,7 @@ class ConceptCrystallizer:
             )
 
             response = litellm.completion(
-                model="gemini/gemini-2.0-flash",
+                model=MODEL_FAST,
                 messages=[{"role": "user", "content": prompt}],
                 max_tokens=300,
                 temperature=0.3,

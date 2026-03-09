@@ -23,7 +23,7 @@ from app.prototype.session.store import SessionStore
 logger = logging.getLogger("vulca")
 
 _MAX_DELTA = 0.05
-_MIN_SESSIONS_TO_EVOLVE = 10
+_MIN_SESSIONS_TO_EVOLVE = 5
 
 # Seed sessions use L1-L5 shorthand; weights use full dimension names.
 _DIM_ALIASES: dict[str, str] = {

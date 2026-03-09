@@ -17,10 +17,19 @@ from typing import Any
 __all__ = [
     "DEFAULT_LAYER_MODELS",
     "FALLBACK_CHAINS",
+    "MODEL_DECISION",
+    "MODEL_FAST",
+    "MODEL_VLM",
     "MODELS",
     "ModelRouter",
     "ModelSpec",
 ]
+
+# === Semantic model constants ===
+# Change these to switch all agents to a different model
+MODEL_VLM = "gemini/gemini-2.5-flash"       # Vision-capable (for image analysis)
+MODEL_FAST = "gemini/gemini-2.0-flash"       # Fast text-only (for generation, crystallization)
+MODEL_DECISION = "gemini/gemini-2.5-flash"   # Decision-making (for routing, queen)
 
 
 def _google_api_key() -> str:
@@ -74,7 +83,7 @@ class ModelSpec:
 # Pre-defined model catalog — Gemini single-vendor (M0)
 MODELS = {
     "gemini_direct": ModelSpec(
-        litellm_id="gemini/gemini-2.5-flash",
+        litellm_id=MODEL_VLM,
         display_name="Gemini 2.5 Flash",
         cost_per_call_usd=0.001,
         supports_fc=True,

@@ -1,1 +1,180 @@
-{"tradition_weights": {}, "version": 1, "evolutions": 0}
+{
+  "tradition_weights": {
+    "african_traditional": {
+      "visual_perception": 0.15,
+      "technical_analysis": 0.2,
+      "cultural_context": 0.3,
+      "critical_interpretation": 0.2,
+      "philosophical_aesthetic": 0.15
+    },
+    "chinese_gongbi": {
+      "visual_perception": 0.15,
+      "technical_analysis": 0.3,
+      "cultural_context": 0.25,
+      "critical_interpretation": 0.15,
+      "philosophical_aesthetic": 0.15
+    },
+    "chinese_xieyi": {
+      "visual_perception": 0.1,
+      "technical_analysis": 0.15,
+      "cultural_context": 0.25,
+      "critical_interpretation": 0.2,
+      "philosophical_aesthetic": 0.3
+    },
+    "default": {
+      "visual_perception": 0.15,
+      "technical_analysis": 0.2,
+      "cultural_context": 0.25,
+      "critical_interpretation": 0.2,
+      "philosophical_aesthetic": 0.2
+    },
+    "islamic_geometric": {
+      "visual_perception": 0.25,
+      "technical_analysis": 0.3,
+      "cultural_context": 0.2,
+      "critical_interpretation": 0.15,
+      "philosophical_aesthetic": 0.1
+    },
+    "japanese_traditional": {
+      "visual_perception": 0.15,
+      "technical_analysis": 0.2,
+      "cultural_context": 0.2,
+      "critical_interpretation": 0.2,
+      "philosophical_aesthetic": 0.25
+    },
+    "south_asian": {
+      "visual_perception": 0.15,
+      "technical_analysis": 0.2,
+      "cultural_context": 0.25,
+      "critical_interpretation": 0.15,
+      "philosophical_aesthetic": 0.25
+    },
+    "watercolor": {
+      "visual_perception": 0.2,
+      "technical_analysis": 0.25,
+      "cultural_context": 0.15,
+      "critical_interpretation": 0.2,
+      "philosophical_aesthetic": 0.2
+    },
+    "western_academic": {
+      "visual_perception": 0.2,
+      "technical_analysis": 0.25,
+      "cultural_context": 0.15,
+      "critical_interpretation": 0.25,
+      "philosophical_aesthetic": 0.15
+    }
+  },
+  "version": 2,
+  "evolutions": 1,
+  "cultures": {
+    "chinese_xieyi_l5_emphasis": {
+      "name": "chinese_xieyi_l5_emphasis",
+      "description": "Emerged from 15 sessions in chinese_xieyi tradition",
+      "key_principles": [
+        "High l5_emphasis"
+      ],
+      "l_focus": {
+        "risk_level": 0.0,
+        "l5_emphasis": 0.7927,
+        "avg_score": 0.7304,
+        "tradition_specificity": 0.7333,
+        "cultural_depth": 0.7573
+      },
+      "weights": {
+        "risk_level": 0.0,
+        "l5_emphasis": 0.7927,
+        "avg_score": 0.7304,
+        "tradition_specificity": 0.7333,
+        "cultural_depth": 0.7573
+      },
+      "reference_sessions": [
+        "seed-001",
+        "seed-002",
+        "seed-003",
+        "seed-004",
+        "seed-005",
+        "seed-006",
+        "seed-007",
+        "seed-008",
+        "seed-009",
+        "seed-010"
+      ],
+      "emerged_at": 1773073174.1685658,
+      "confidence": 0.75
+    }
+  },
+  "prompt_contexts": {
+    "archetypes": [
+      {
+        "pattern": "ink",
+        "avg_score": 0.77,
+        "count": 2,
+        "traditions": [
+          "chinese_xieyi"
+        ],
+        "example_prompts": [
+          "mountain landscape in ink wash style",
+          "bamboo in wind ink wash"
+        ]
+      },
+      {
+        "pattern": "wash",
+        "avg_score": 0.77,
+        "count": 2,
+        "traditions": [
+          "chinese_xieyi"
+        ],
+        "example_prompts": [
+          "mountain landscape in ink wash style",
+          "bamboo in wind ink wash"
+        ]
+      },
+      {
+        "pattern": "garden",
+        "avg_score": 0.76,
+        "count": 2,
+        "traditions": [
+          "persian_miniature",
+          "japanese_wabi_sabi"
+        ],
+        "example_prompts": [
+          "persian miniature garden scene",
+          "zen rock garden composition"
+        ]
+      }
+    ]
+  },
+  "feature_space": {
+    "clusters": [
+      {
+        "cluster_id": "cluster-000",
+        "feature_centroid": {
+          "risk_level": 0.0,
+          "l5_emphasis": 0.7927,
+          "avg_score": 0.7304,
+          "tradition_specificity": 0.7333,
+          "cultural_depth": 0.7573
+        },
+        "session_ids": [
+          "seed-001",
+          "seed-002",
+          "seed-003",
+          "seed-004",
+          "seed-005",
+          "seed-006",
+          "seed-007",
+          "seed-008",
+          "seed-009",
+          "seed-010",
+          "seed-011",
+          "seed-012",
+          "seed-013",
+          "seed-014",
+          "seed-015"
+        ],
+        "size": 15,
+        "tradition": "chinese_xieyi"
+      }
+    ]
+  }
+}

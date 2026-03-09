@@ -27,6 +27,7 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 
+from app.prototype.agents.model_router import MODEL_DECISION
 from app.prototype.agents.queen_agent import QueenAgent
 from app.prototype.agents.queen_config import QueenConfig
 from app.prototype.agents.queen_types import (
@@ -48,7 +49,7 @@ __all__ = [
 class QueenLLMConfig:
     """Configuration for the LLM-enhanced Queen."""
 
-    model: str = "deepseek-chat"
+    model: str = MODEL_DECISION
     temperature: float = 0.3
     max_tokens: int = 512
     top_k_trajectories: int = 3
@@ -82,7 +83,7 @@ def _try_llm_call(model: str, messages: list[dict], temperature: float, max_toke
     try:
         import litellm
         resp = litellm.completion(
-            model="gemini/gemini-2.5-flash",
+            model=MODEL_DECISION,
             messages=messages,
             temperature=temperature,
             max_tokens=max_tokens,
@@ -267,7 +268,7 @@ class QueenLLMAgent:
 
         # Call LLM
         messages = [
-            {"role": "system", "content": self._system_prompt()},
+            {"role": "system", "content": self._system_prompt(tradition=tradition)},
             {"role": "user", "content": prompt},
         ]
 
@@ -298,8 +299,8 @@ class QueenLLMAgent:
 
         return decision
 
-    def _system_prompt(self) -> str:
-        return (
+    def _system_prompt(self, tradition: str = "default") -> str:
+        base = (
             "You are the Queen decision agent in the VULCA art evaluation pipeline. "
             "Your job is to decide whether to ACCEPT the current best candidate or "
             "RERUN specific dimensions for improvement.\n\n"
@@ -308,10 +309,23 @@ class QueenLLMAgent:
             "- RERUN: Specific L1-L5 dimensions need improvement and another round would help\n\n"
             "Available dimensions: visual_perception, technical_analysis, cultural_context, "
             "critical_interpretation, philosophical_aesthetic\n\n"
+        )
+
+        # Inject evolved context before JSON format instructions
+        evolved = ""
+        try:
+            from app.prototype.cultural_pipelines.cultural_weights import get_evolved_prompt_context
+            evolved = get_evolved_prompt_context(tradition)
+        except Exception:
+            pass  # Zero regression — on any error, skip evolved context
+
+        json_instruction = (
             "Respond with a JSON object:\n"
             '{"action": "accept|rerun", "rerun_dimensions": [...], '
             '"confidence": 0.0-1.0, "reason": "brief explanation"}'
         )
+
+        return base + evolved + "\n" + json_instruction if evolved else base + json_instruction
 
     def _build_prompt(
         self,

@@ -69,6 +69,16 @@ class TestCoreImports:
         assert hasattr(mod, "ModelSpec")
         assert hasattr(mod, "ModelRouter")
 
+    def test_model_constants_exported(self):
+        """Verify model constants are accessible from model_router."""
+        from app.prototype.agents.model_router import MODEL_VLM, MODEL_FAST, MODEL_DECISION
+        assert isinstance(MODEL_VLM, str)
+        assert isinstance(MODEL_FAST, str)
+        assert isinstance(MODEL_DECISION, str)
+        assert "gemini" in MODEL_VLM
+        assert "gemini" in MODEL_FAST
+        assert "gemini" in MODEL_DECISION
+
     def test_vlm_critic(self):
         mod = importlib.import_module("app.prototype.agents.vlm_critic")
         assert hasattr(mod, "VLMCritic")

@@ -8,6 +8,7 @@ from pathlib import Path
 
 import litellm
 
+from app.prototype.agents.model_router import MODEL_FAST
 from app.prototype.skills.types import SkillResult
 
 
@@ -37,7 +38,7 @@ class BaseSkillExecutor(ABC):
         }.get(suffix, "image/png")
 
         response = await litellm.acompletion(
-            model="gemini/gemini-2.0-flash",
+            model=MODEL_FAST,
             messages=[
                 {
                     "role": "user",

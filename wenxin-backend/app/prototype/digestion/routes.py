@@ -65,6 +65,16 @@ async def digestion_report() -> dict:
 @digestion_router.post("/run")
 async def run_digestion() -> dict:
     """Trigger a full digestion + evolution cycle."""
+    # Sync inline feedback from sessions before running digestion
+    from app.prototype.feedback.feedback_store import FeedbackStore
+    from app.prototype.digestion.feature_extractor import backfill_missing_features
+
+    try:
+        backfill_missing_features()
+        FeedbackStore.get().sync_from_sessions()
+    except Exception:
+        logger.debug("Pre-digestion sync failed (non-fatal)")
+
     evolver = ContextEvolver()
     result = evolver.evolve()
 

@@ -22,6 +22,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
 from app.prototype.api.auth import verify_api_key
+from app.prototype.digestion.feature_extractor import extract_cultural_features
 from app.prototype.orchestrator.events import EventType, PipelineEvent
 from app.prototype.session.store import SessionStore
 from app.prototype.session.types import RoundSnapshot, SessionDigest
@@ -31,39 +32,9 @@ logger = logging.getLogger("vulca")
 create_router = APIRouter(prefix="/api/v1", tags=["create"])
 
 
-def _extract_cultural_features(tradition: str, final_scores: dict[str, float], risk_flags: list[str]) -> dict:
-    """Tier-1: Extract cultural features from session results (rule-based, no LLM call).
-
-    Returns numeric features only. Zero-latency, synchronous.
-    """
-    features: dict = {}
-
-    if not final_scores:
-        return features
-
-    # Tradition specificity: how specific is this tradition (non-default = more specific)
-    features["tradition_specificity"] = 0.3 if tradition == "default" else 0.8
-
-    # L5 emphasis: ratio of L5 to max score
-    score_values = [v for v in final_scores.values() if isinstance(v, (int, float)) and v > 0]
-    if score_values:
-        max_score = max(score_values)
-        l5 = final_scores.get("L5", final_scores.get("philosophical_aesthetic", 0.0))
-        if isinstance(l5, (int, float)) and max_score > 0:
-            features["l5_emphasis"] = round(l5 / max_score, 4)
-
-        # Overall quality
-        features["avg_score"] = round(sum(score_values) / len(score_values), 4)
-
-    # Risk level
-    features["risk_level"] = round(min(1.0, len(risk_flags) * 0.25), 4)
-
-    # Cultural depth: based on L3 score
-    l3 = final_scores.get("L3", final_scores.get("cultural_context", 0.0))
-    if isinstance(l3, (int, float)):
-        features["cultural_depth"] = round(l3, 4)
-
-    return features
+# _extract_cultural_features is now imported from
+# app.prototype.digestion.feature_extractor.extract_cultural_features
+# (see import at top of file)
 
 
 async def _extract_cultural_features_async(intent: str, tradition: str = "default") -> dict:
@@ -102,8 +73,10 @@ async def _extract_cultural_features_async(intent: str, tradition: str = "defaul
             "- Return ONLY the JSON, no markdown fences, no explanation"
         )
 
+        from app.prototype.agents.model_router import MODEL_FAST
+
         response = await litellm.acompletion(
-            model="gemini/gemini-2.0-flash",
+            model=MODEL_FAST,
             messages=[{"role": "user", "content": prompt}],
             temperature=0.3,
             max_tokens=300,
@@ -284,7 +257,7 @@ async def _run_evaluate_mode(
             total_latency_ms=elapsed_ms,
             total_cost_usd=result.cost_usd,
         )
-        digest.cultural_features = _extract_cultural_features(
+        digest.cultural_features = extract_cultural_features(
             tradition=result.tradition_used,
             final_scores=result.scores,
             risk_flags=result.risk_flags if result.risk_flags else [],
@@ -420,7 +393,7 @@ async def _run_create_mode_sync(
         total_latency_ms=elapsed_ms,
         total_cost_usd=total_cost,
     )
-    digest.cultural_features = _extract_cultural_features(
+    digest.cultural_features = extract_cultural_features(
         tradition=req.tradition,
         final_scores=final_scores,
         risk_flags=[],
@@ -540,7 +513,7 @@ def _run_create_mode_stream(
             total_latency_ms=elapsed_ms,
             total_cost_usd=total_cost,
         )
-        digest.cultural_features = _extract_cultural_features(
+        digest.cultural_features = extract_cultural_features(
             tradition=req.tradition,
             final_scores=final_scores,
             risk_flags=[],

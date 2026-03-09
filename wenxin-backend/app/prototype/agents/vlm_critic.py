@@ -243,8 +243,24 @@ class VLMCritic:
             evidence_section=evidence_section,
         )
 
+        # Inject evolved context into system prompt (before JSON format instructions)
+        system_prompt = _SYSTEM_PROMPT
+        try:
+            from app.prototype.cultural_pipelines.cultural_weights import get_evolved_prompt_context
+            evolved = get_evolved_prompt_context(tradition)
+            if evolved:
+                # Insert before the JSON output instruction line
+                json_instruction = "\nOutput ONLY valid JSON"
+                if json_instruction in system_prompt:
+                    idx = system_prompt.index(json_instruction)
+                    system_prompt = system_prompt[:idx] + evolved + system_prompt[idx:]
+                else:
+                    system_prompt += evolved
+        except Exception:
+            pass  # Zero regression — on any error, use original prompt
+
         messages = [
-            {"role": "system", "content": _SYSTEM_PROMPT},
+            {"role": "system", "content": system_prompt},
             {
                 "role": "user",
                 "content": [

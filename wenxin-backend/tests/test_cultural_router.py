@@ -11,7 +11,7 @@ import pytest
 from app.prototype.agents.critic_config import DIMENSIONS
 from app.prototype.cultural_pipelines.cultural_weights import (
     KNOWN_TRADITIONS,
-    _FALLBACK_WEIGHTS,
+    _get_fallback_weights,
     get_known_traditions,
     get_weights,
     get_all_weight_tables,
@@ -154,7 +154,7 @@ def test_evolved_context_empty_dict_no_override() -> None:
             tmp_path,
         ):
             weights = get_weights("chinese_xieyi")
-            fallback = _FALLBACK_WEIGHTS["chinese_xieyi"]
+            fallback = _get_fallback_weights()["chinese_xieyi"]
             # When evolved dict is empty, we should get fallback (or YAML) weights
             assert weights is not None
             assert sum(weights.values()) == pytest.approx(1.0)
@@ -303,9 +303,10 @@ def test_known_traditions_is_sorted() -> None:
 
 def test_all_known_traditions_have_fallback_weights() -> None:
     """Every KNOWN_TRADITIONS entry must have a fallback weight table."""
+    fallback = _get_fallback_weights()
     for tradition in KNOWN_TRADITIONS:
-        assert tradition in _FALLBACK_WEIGHTS, (
-            f"Tradition '{tradition}' in KNOWN_TRADITIONS but not in _FALLBACK_WEIGHTS"
+        assert tradition in fallback, (
+            f"Tradition '{tradition}' in KNOWN_TRADITIONS but not in _get_fallback_weights()"
         )
 
 
@@ -345,9 +346,9 @@ def test_get_known_traditions_superset_of_static() -> None:
 
 
 def test_get_known_traditions_includes_fallback_keys() -> None:
-    """Dynamic traditions must include all _FALLBACK_WEIGHTS keys."""
+    """Dynamic traditions must include all _get_fallback_weights() keys."""
     dynamic = set(get_known_traditions())
-    fallback_keys = set(_FALLBACK_WEIGHTS.keys())
+    fallback_keys = set(_get_fallback_weights().keys())
     assert fallback_keys.issubset(dynamic), (
         f"Fallback keys not in dynamic: {fallback_keys - dynamic}"
     )

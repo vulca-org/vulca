@@ -324,17 +324,17 @@ class TestAuditLog:
 class TestBoundaryConditions:
     """Test edge cases and guardrails."""
 
-    def test_fewer_than_10_sessions_skips(self):
-        """< 10 sessions → skip evolution."""
+    def test_fewer_than_5_sessions_skips(self):
+        """< 5 sessions → skip evolution."""
         with tempfile.TemporaryDirectory() as tmp:
-            sessions = _SEED_SESSIONS[:9]
+            sessions = _SEED_SESSIONS[:4]
 
             store, evolver, context_path = _make_env(tmp, sessions)
 
             result = evolver.evolve()
 
-            assert result.sessions_analyzed == 9
-            assert "Need 10" in result.skipped_reason
+            assert result.sessions_analyzed == 4
+            assert "Need 5" in result.skipped_reason
             assert len(result.actions) == 0
 
     def test_delta_below_threshold_ignored(self):

@@ -73,7 +73,7 @@ class TestSessionDigestExtensions:
 
 class TestExtractCulturalFeaturesTier1:
     def test_basic_extraction(self):
-        from app.prototype.api.create_routes import _extract_cultural_features
+        from app.prototype.digestion.feature_extractor import extract_cultural_features as _extract_cultural_features
         features = _extract_cultural_features(
             tradition="chinese_xieyi",
             final_scores={"L1": 0.8, "L2": 0.7, "L3": 0.9, "L4": 0.6, "L5": 0.85},
@@ -85,17 +85,17 @@ class TestExtractCulturalFeaturesTier1:
         assert features["risk_level"] == 0.0
 
     def test_default_tradition_lower_specificity(self):
-        from app.prototype.api.create_routes import _extract_cultural_features
+        from app.prototype.digestion.feature_extractor import extract_cultural_features as _extract_cultural_features
         features = _extract_cultural_features("default", {"L1": 0.5}, [])
         assert features["tradition_specificity"] == 0.3
 
     def test_empty_scores(self):
-        from app.prototype.api.create_routes import _extract_cultural_features
+        from app.prototype.digestion.feature_extractor import extract_cultural_features as _extract_cultural_features
         features = _extract_cultural_features("default", {}, [])
         assert features == {}
 
     def test_risk_flags_increase_risk_level(self):
-        from app.prototype.api.create_routes import _extract_cultural_features
+        from app.prototype.digestion.feature_extractor import extract_cultural_features as _extract_cultural_features
         features = _extract_cultural_features(
             "chinese_xieyi",
             {"L1": 0.5},
@@ -104,7 +104,7 @@ class TestExtractCulturalFeaturesTier1:
         assert features["risk_level"] == 0.5
 
     def test_l5_emphasis_calculation(self):
-        from app.prototype.api.create_routes import _extract_cultural_features
+        from app.prototype.digestion.feature_extractor import extract_cultural_features as _extract_cultural_features
         features = _extract_cultural_features(
             "japanese_ukiyoe",
             {"L1": 1.0, "L5": 0.5},
@@ -113,7 +113,7 @@ class TestExtractCulturalFeaturesTier1:
         assert features["l5_emphasis"] == 0.5
 
     def test_cultural_depth_from_l3(self):
-        from app.prototype.api.create_routes import _extract_cultural_features
+        from app.prototype.digestion.feature_extractor import extract_cultural_features as _extract_cultural_features
         features = _extract_cultural_features(
             "chinese_xieyi",
             {"L1": 0.5, "L3": 0.75},
@@ -123,7 +123,7 @@ class TestExtractCulturalFeaturesTier1:
 
     def test_returns_dict_type(self):
         """Tier-1 returns a plain dict (not dict[str, float] exclusively)."""
-        from app.prototype.api.create_routes import _extract_cultural_features
+        from app.prototype.digestion.feature_extractor import extract_cultural_features as _extract_cultural_features
         features = _extract_cultural_features("default", {"L1": 0.5}, [])
         assert isinstance(features, dict)
 

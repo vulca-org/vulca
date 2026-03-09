@@ -94,7 +94,7 @@ class AgentResult:
 # System prompts per layer
 # ---------------------------------------------------------------------------
 
-_SYSTEM_PROMPTS: dict[str, str] = {
+_BASE_SYSTEM_PROMPTS: dict[str, str] = {
     "visual_perception": (
         "You are an expert art critic evaluating L1 (Visual Perception). "
         "Analyze the composition, color, form, and spatial arrangement. "
@@ -126,6 +126,23 @@ _SYSTEM_PROMPTS: dict[str, str] = {
         "When ready, call submit_evaluation."
     ),
 }
+
+
+def _get_system_prompt(layer_id: str, tradition: str = "default") -> str:
+    """Get system prompt with evolved context appended.
+
+    When no evolved data is available (evolutions == 0), returns the base
+    prompt unchanged (zero regression).
+    """
+    base = _BASE_SYSTEM_PROMPTS.get(layer_id, _BASE_SYSTEM_PROMPTS.get("cultural_context", ""))
+
+    try:
+        from app.prototype.cultural_pipelines.cultural_weights import get_evolved_prompt_context
+        evolved = get_evolved_prompt_context(tradition)
+    except Exception:
+        evolved = ""
+
+    return base + evolved if evolved else base
 
 
 # ---------------------------------------------------------------------------
@@ -183,7 +200,7 @@ class AgentRuntime:
         result.model_used = model_spec.litellm_id
 
         # Build initial messages
-        system_prompt = _SYSTEM_PROMPTS.get(ctx.layer_id, _SYSTEM_PROMPTS["cultural_context"])
+        system_prompt = _get_system_prompt(ctx.layer_id, ctx.cultural_tradition)
         user_content = self._build_user_message(ctx)
 
         messages: list[dict[str, Any]] = [

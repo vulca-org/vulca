@@ -16,6 +16,7 @@ from app.prototype.agents.draft_provider import (
     DiffusersProvider,
     MockProvider,
 )
+from app.prototype.agents.model_router import MODEL_FAST
 from app.prototype.agents.nb2_provider import (
     NB2Provider,
     build_full_evidence_prompt,
@@ -119,7 +120,7 @@ def _get_style_for_tradition(tradition: str, intent: str = "") -> dict[str, str]
     try:
         import litellm
         response = litellm.completion(
-            model="gemini/gemini-2.0-flash",
+            model=MODEL_FAST,
             messages=[{
                 "role": "user",
                 "content": (
