@@ -134,6 +134,10 @@ async def wait_for_human_required_event(
 ) -> tuple[dict | None, int]:
     """Poll the event buffer until a HUMAN_REQUIRED event for *expected_stage* appears.
 
+    The stage is matched against both ``ev.stage`` (the event-level field) and
+    ``ev.payload.get("stage")`` because different pipeline stages use different
+    conventions (Scout/Draft/Critic set payload["stage"], Queen does not).
+
     Args:
         after_index: Only consider events at this index or later (for round-2 detection).
 
@@ -147,8 +151,10 @@ async def wait_for_human_required_event(
         for i, ev in enumerate(buffer):
             if i < after_index:
                 continue
-            if (ev.event_type == EventType.HUMAN_REQUIRED
-                    and ev.payload.get("stage") == expected_stage):
+            if ev.event_type == EventType.HUMAN_REQUIRED and (
+                ev.stage == expected_stage
+                or ev.payload.get("stage") == expected_stage
+            ):
                 return ev.payload, i
         await asyncio.sleep(0.2)
     return None, -1
