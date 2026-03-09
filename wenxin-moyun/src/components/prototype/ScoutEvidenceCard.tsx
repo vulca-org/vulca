@@ -57,12 +57,12 @@ export default function ScoutEvidenceCard({ evidence }: Props) {
       <IOSCardContent>
         {/* Stats grid */}
         <div className="grid grid-cols-3 gap-3">
-          <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
-            <div className="text-xl font-bold text-blue-600 dark:text-blue-400">{sampleCount}</div>
+          <div className="text-center p-3 bg-[#FAF7F2] dark:bg-[#C87F4A]/10 rounded-xl">
+            <div className="text-xl font-bold text-[#C87F4A] dark:text-[#DDA574]">{sampleCount}</div>
             <div className="text-[11px] text-gray-600 dark:text-gray-400 mt-0.5">Samples</div>
           </div>
-          <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-xl">
-            <div className="text-xl font-bold text-green-600 dark:text-green-400">{termCount}</div>
+          <div className="text-center p-3 bg-[#5F8A50]/5 dark:bg-[#5F8A50]/10 rounded-xl">
+            <div className="text-xl font-bold text-[#5F8A50] dark:text-[#87A878]">{termCount}</div>
             <div className="text-[11px] text-gray-600 dark:text-gray-400 mt-0.5">Terms</div>
           </div>
           <div className="text-center p-3 bg-red-50 dark:bg-red-900/20 rounded-xl">
@@ -85,18 +85,18 @@ export default function ScoutEvidenceCard({ evidence }: Props) {
           <div className="mt-2 space-y-3">
             {/* Terminology hits */}
             {termCount > 0 && terminologyHitsRaw && (
-              <div className="p-2.5 bg-green-50 dark:bg-green-900/10 rounded-lg">
-                <h4 className="text-xs font-semibold text-green-700 dark:text-green-400 mb-1.5">Cultural Terms</h4>
+              <div className="p-2.5 bg-[#5F8A50]/5 dark:bg-[#5F8A50]/5 rounded-lg">
+                <h4 className="text-xs font-semibold text-[#5F8A50] dark:text-[#87A878] mb-1.5">Cultural Terms</h4>
                 <div className="flex flex-wrap gap-1.5">
                   {terminologyHitsRaw.slice(0, 12).map((t, i) => (
                     <span
                       key={i}
-                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300"
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] bg-[#5F8A50]/10 dark:bg-[#5F8A50]/15 text-[#4A7040] dark:text-[#87A878]"
                       title={t.source ? `Source: ${t.source}` : undefined}
                     >
                       {t.term || JSON.stringify(t)}
                       {t.relevance != null && (
-                        <span className="text-green-500 dark:text-green-500 font-mono">{t.relevance.toFixed(2)}</span>
+                        <span className="text-[#5F8A50] dark:text-[#5F8A50] font-mono">{t.relevance.toFixed(2)}</span>
                       )}
                     </span>
                   ))}
@@ -109,8 +109,8 @@ export default function ScoutEvidenceCard({ evidence }: Props) {
 
             {/* Sample matches */}
             {sampleCount > 0 && sampleMatchesRaw && (
-              <div className="p-2.5 bg-blue-50 dark:bg-blue-900/10 rounded-lg">
-                <h4 className="text-xs font-semibold text-blue-700 dark:text-blue-400 mb-1.5">Reference Samples</h4>
+              <div className="p-2.5 bg-[#FAF7F2] dark:bg-[#C87F4A]/10 rounded-lg">
+                <h4 className="text-xs font-semibold text-[#C87F4A] dark:text-[#DDA574] mb-1.5">Reference Samples</h4>
                 <div className="space-y-1">
                   {sampleMatchesRaw.slice(0, 5).map((s, i) => (
                     <div key={i} className="flex items-center justify-between text-[11px]">
@@ -118,7 +118,7 @@ export default function ScoutEvidenceCard({ evidence }: Props) {
                         {s.title || s.name || `Sample ${i + 1}`}
                       </span>
                       {(s.similarity ?? s.score) != null && (
-                        <span className="font-mono text-blue-600 dark:text-blue-400 shrink-0">
+                        <span className="font-mono text-[#C87F4A] dark:text-[#DDA574] shrink-0">
                           {((s.similarity ?? s.score ?? 0) * 100).toFixed(0)}%
                         </span>
                       )}

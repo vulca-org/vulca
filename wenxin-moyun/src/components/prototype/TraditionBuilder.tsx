@@ -265,7 +265,7 @@ export default function TraditionBuilder() {
                   step={0.01}
                   value={weights[l]}
                   onChange={e => handleWeightChange(l, parseFloat(e.target.value))}
-                  className="flex-1 accent-blue-500"
+                  className="flex-1 accent-[#C87F4A]"
                 />
                 <span className="text-xs font-mono w-10 text-right">{weights[l].toFixed(2)}</span>
               </div>
@@ -331,7 +331,7 @@ export default function TraditionBuilder() {
                       className={[
                         'px-2 py-0.5 text-[10px] rounded-full border transition-colors',
                         t.l_levels.includes(l)
-                          ? 'bg-blue-100 border-blue-300 text-blue-700 dark:bg-blue-900/30 dark:border-blue-600 dark:text-blue-400'
+                          ? 'bg-[#C87F4A]/10 border-[#C87F4A]/30 text-[#C87F4A] dark:bg-[#C87F4A]/15 dark:border-[#C87F4A] dark:text-[#DDA574]'
                           : 'border-gray-300 text-gray-400 dark:border-gray-600',
                       ].join(' ')}
                     >
@@ -421,7 +421,7 @@ export default function TraditionBuilder() {
                 className={[
                   'px-3 py-1.5 text-xs rounded-lg border transition-colors',
                   variant === v
-                    ? 'bg-blue-100 border-blue-300 text-blue-700 dark:bg-blue-900/30 dark:border-blue-600 dark:text-blue-400'
+                    ? 'bg-[#C87F4A]/10 border-[#C87F4A]/30 text-[#C87F4A] dark:bg-[#C87F4A]/15 dark:border-[#C87F4A] dark:text-[#DDA574]'
                     : 'border-gray-300 text-gray-500 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800',
                 ].join(' ')}
               >

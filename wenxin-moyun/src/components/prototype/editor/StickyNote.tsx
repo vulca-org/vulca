@@ -11,9 +11,9 @@ import type { StickyNoteData } from './types';
 
 const COLOR_CLASSES: Record<StickyNoteData['color'], string> = {
   yellow: 'bg-yellow-100 dark:bg-yellow-900/40 border-yellow-300 dark:border-yellow-700',
-  blue: 'bg-blue-100 dark:bg-blue-900/40 border-blue-300 dark:border-blue-700',
+  blue: 'bg-[#C87F4A]/10 dark:bg-[#C87F4A]/20 border-[#C9C2B8] dark:border-[#4A433C]',
   pink: 'bg-pink-100 dark:bg-pink-900/40 border-pink-300 dark:border-pink-700',
-  green: 'bg-green-100 dark:bg-green-900/40 border-green-300 dark:border-green-700',
+  green: 'bg-[#5F8A50]/10 dark:bg-[#5F8A50]/20 border-[#5F8A50]/30 dark:border-[#4A7040]',
 };
 
 function StickyNoteComponent({ id, data, selected }: NodeProps & { data: StickyNoteData }) {
@@ -34,7 +34,7 @@ function StickyNoteComponent({ id, data, selected }: NodeProps & { data: StickyN
       className={[
         'min-w-[150px] min-h-[100px] rounded-lg border p-3 shadow-sm',
         colorClass,
-        selected ? 'ring-2 ring-blue-400/50' : '',
+        selected ? 'ring-2 ring-[#C87F4A]/30' : '',
       ].join(' ')}
     >
       <textarea

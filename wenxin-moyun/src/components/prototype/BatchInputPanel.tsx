@@ -268,9 +268,9 @@ export default function BatchInputPanel({ tradition, provider, template, disable
                       className={[
                         'inline-block px-1.5 py-0.5 rounded-full text-[10px] font-medium',
                         r.status === 'completed'
-                          ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                          ? 'bg-[#5F8A50]/10 text-[#5F8A50] dark:bg-[#5F8A50]/15 dark:text-[#87A878]'
                           : r.status === 'running'
-                            ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                            ? 'bg-[#C87F4A]/10 text-[#C87F4A] dark:bg-[#C87F4A]/15 dark:text-[#DDA574]'
                             : r.status === 'failed'
                               ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
                               : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400',

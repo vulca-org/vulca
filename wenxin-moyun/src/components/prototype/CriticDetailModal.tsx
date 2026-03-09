@@ -34,17 +34,17 @@ interface Props {
 }
 
 const SIGNAL_TYPE_STYLES: Record<string, { bg: string; icon: string }> = {
-  REINTERPRET: { bg: 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800', icon: '🔄' },
+  REINTERPRET: { bg: 'bg-[#FAF7F2] dark:bg-[#C87F4A]/10 border-[#C9C2B8] dark:border-[#4A433C]', icon: '🔄' },
   CONFLICT: { bg: 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800', icon: '⚡' },
   EVIDENCE_GAP: { bg: 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800', icon: '🔍' },
-  CONFIRMATION: { bg: 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800', icon: '✓' },
+  CONFIRMATION: { bg: 'bg-[#5F8A50]/5 dark:bg-[#5F8A50]/10 border-[#5F8A50]/20 dark:border-[#4A7040]', icon: '✓' },
 };
 
 function ConfidenceBar({ value }: { value: number }) {
   const pct = Math.round(value * 100);
   const color =
-    value >= 0.8 ? 'bg-green-500' :
-    value >= 0.5 ? 'bg-blue-500' :
+    value >= 0.8 ? 'bg-[#5F8A50]' :
+    value >= 0.5 ? 'bg-[#C87F4A]' :
     'bg-orange-500';
   const label =
     value >= 0.8 ? 'High' :
@@ -65,7 +65,7 @@ function ModeBadge({ isAgent, mode }: { isAgent: boolean; mode?: string }) {
   if (isAgent) {
     const progressive = mode?.includes('progressive');
     return (
-      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400">
+      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-[#C87F4A]/10 dark:bg-[#C87F4A]/15 text-[#C87F4A] dark:text-[#DDA574]">
         🤖 {progressive ? 'Agent (Progressive)' : 'Agent'}
       </span>
     );
@@ -145,7 +145,7 @@ export default function CriticDetailModal({ candidate, onClose, agentMetrics, cr
                 const meta = d.agent_metadata;
                 const isAgent = !!meta && !meta.fallback_used;
                 const scoreColor =
-                  d.score >= 0.7 ? 'text-green-600 dark:text-green-400' :
+                  d.score >= 0.7 ? 'text-[#5F8A50] dark:text-[#87A878]' :
                   d.score >= 0.4 ? 'text-yellow-600 dark:text-yellow-400' :
                   'text-red-600 dark:text-red-400';
 

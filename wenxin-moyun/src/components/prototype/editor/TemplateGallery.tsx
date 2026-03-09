@@ -32,7 +32,7 @@ function MiniPipeline({ nodes }: { nodes?: string[] }) {
       {nodes.map((n, i) => (
         <div key={`${n}-${i}`} className="flex items-center gap-0.5">
           <div
-            className="w-2 h-2 rounded-full bg-blue-400 dark:bg-blue-500"
+            className="w-2 h-2 rounded-full bg-[#C87F4A] dark:bg-[#C87F4A]"
             title={n}
           />
           {i < nodes.length - 1 && (
@@ -63,9 +63,9 @@ function TemplateCard({
       className={[
         'p-3 rounded-lg border cursor-pointer transition-all hover:shadow-sm',
         active
-          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+          ? 'border-[#C87F4A] bg-[#FAF7F2] dark:bg-[#C87F4A]/10'
           : recommended
-            ? 'border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-900/10'
+            ? 'border-[#C9C2B8] dark:border-[#4A433C] bg-[#FAF7F2]/50 dark:bg-[#C87F4A]/5'
             : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600',
       ].join(' ')}
     >
@@ -79,7 +79,7 @@ function TemplateCard({
         {template.description}
       </p>
       {recommended && (
-        <span className="inline-block mt-1 text-[9px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-1.5 py-0.5 rounded-full">
+        <span className="inline-block mt-1 text-[9px] font-semibold text-[#C87F4A] dark:text-[#DDA574] bg-[#C87F4A]/10 dark:bg-[#C87F4A]/15 px-1.5 py-0.5 rounded-full">
           Best for new users
         </span>
       )}
@@ -136,7 +136,7 @@ export default function TemplateGallery({
         <div className="p-3 space-y-2">
           {recommended.length > 0 && (
             <>
-              <div className="text-[10px] font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider">
+              <div className="text-[10px] font-semibold text-[#C87F4A] dark:text-[#DDA574] uppercase tracking-wider">
                 Recommended
               </div>
               {recommended.map((t) => (

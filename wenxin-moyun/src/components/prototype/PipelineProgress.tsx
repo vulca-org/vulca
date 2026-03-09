@@ -22,8 +22,8 @@ const STAGE_LABELS: Record<string, string> = {
 
 // Agent colour theme for event cards
 const AGENT_COLORS: Record<string, { border: string; bg: string; text: string; emoji: string }> = {
-  scout:     { border: 'border-l-blue-500',   bg: 'bg-blue-50 dark:bg-blue-900/20',     text: 'text-blue-600 dark:text-blue-400',   emoji: '\u{1F50D}' },
-  draft:     { border: 'border-l-purple-500',  bg: 'bg-purple-50 dark:bg-purple-900/20',  text: 'text-purple-600 dark:text-purple-400', emoji: '\u{1F3A8}' },
+  scout:     { border: 'border-l-[#C87F4A]',   bg: 'bg-[#FAF7F2] dark:bg-[#C87F4A]/10',     text: 'text-[#C87F4A] dark:text-[#DDA574]',   emoji: '\u{1F50D}' },
+  draft:     { border: 'border-l-[#C87F4A]',  bg: 'bg-[#C87F4A]/5 dark:bg-[#C87F4A]/10',  text: 'text-[#C87F4A] dark:text-[#DDA574]', emoji: '\u{1F3A8}' },
   critic:    { border: 'border-l-orange-500',  bg: 'bg-orange-50 dark:bg-orange-900/20',  text: 'text-orange-600 dark:text-orange-400', emoji: '\u{1F4CA}' },
   queen:     { border: 'border-l-yellow-500',  bg: 'bg-yellow-50 dark:bg-yellow-900/20',  text: 'text-yellow-600 dark:text-yellow-400', emoji: '\u{1F451}' },
   archivist: { border: 'border-l-gray-400',    bg: 'bg-gray-50 dark:bg-gray-800/40',      text: 'text-gray-500 dark:text-gray-400',    emoji: '\u{1F4BE}' },
@@ -109,21 +109,21 @@ export default function PipelineProgress({ currentStage, currentRound, status, e
           return (
             <div key={stage} className="flex items-center">
               {i > 0 && (
-                <div className={`w-8 h-0.5 mx-1 ${isCompleted ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}`} />
+                <div className={`w-8 h-0.5 mx-1 ${isCompleted ? 'bg-[#5F8A50]' : 'bg-gray-300 dark:bg-gray-600'}`} />
               )}
               <div className="flex flex-col items-center gap-1">
                 <div
                   className={`
                     w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium
                     transition-all duration-300
-                    ${isActive ? 'bg-blue-500 text-white ring-2 ring-blue-300 animate-pulse' : ''}
-                    ${isCompleted ? 'bg-green-500 text-white' : ''}
+                    ${isActive ? 'bg-[#C87F4A] text-white ring-2 ring-[#C87F4A]/30 animate-pulse' : ''}
+                    ${isCompleted ? 'bg-[#5F8A50] text-white' : ''}
                     ${isPending ? 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400' : ''}
                   `}
                 >
                   {isCompleted ? '\u2713' : i + 1}
                 </div>
-                <span className={`text-xs ${isActive ? 'text-blue-600 dark:text-blue-400 font-semibold' : 'text-gray-500 dark:text-gray-400'}`}>
+                <span className={`text-xs ${isActive ? 'text-[#C87F4A] dark:text-[#DDA574] font-semibold' : 'text-gray-500 dark:text-gray-400'}`}>
                   {STAGE_LABELS[stage] || stage}
                   {stage !== 'scout' && currentRound > 1 && isActive ? ` R${currentRound}` : ''}
                 </span>
@@ -136,7 +136,7 @@ export default function PipelineProgress({ currentStage, currentRound, status, e
         })}
 
         {status === 'completed' && (
-          <div className="ml-4 px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-sm font-medium">
+          <div className="ml-4 px-3 py-1 bg-[#5F8A50]/10 dark:bg-[#5F8A50]/15 text-[#5F8A50] dark:text-[#87A878] rounded-full text-sm font-medium">
             Done
           </div>
         )}
@@ -178,7 +178,7 @@ export default function PipelineProgress({ currentStage, currentRound, status, e
                           {STAGE_LABELS[e.stage] || e.stage}
                         </span>
                         <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${
-                          isComplete ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400' :
+                          isComplete ? 'bg-[#5F8A50]/10 dark:bg-[#5F8A50]/20 text-[#5F8A50] dark:text-[#87A878]' :
                           isFailed ? 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400' :
                           isHuman ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400' :
                           'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'

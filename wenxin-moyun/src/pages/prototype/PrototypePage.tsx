@@ -236,7 +236,7 @@ export default function PrototypePage() {
               className={[
                 'px-2 py-1 text-[11px] font-medium rounded-lg border transition-colors',
                 playgroundMode === mode
-                  ? 'border-blue-300 dark:border-blue-600 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20'
+                  ? 'border-[#C9C2B8] dark:border-[#C87F4A] text-[#C87F4A] dark:text-[#DDA574] bg-[#FAF7F2] dark:bg-[#C87F4A]/10'
                   : 'border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800',
               ].join(' ')}
             >
@@ -377,7 +377,7 @@ export default function PrototypePage() {
               <span className="ml-2 text-xs font-normal text-gray-500">R{state.currentRound}</span>
             </h3>
             {state.status === 'waiting_human' && (
-              <span className="text-[11px] text-blue-600 dark:text-blue-400">Click to select</span>
+              <span className="text-[11px] text-[#C87F4A] dark:text-[#DDA574]">Click to select</span>
             )}
           </div>
           <IOSCardContent>
@@ -426,7 +426,7 @@ export default function PrototypePage() {
       {isDone && (
         <div className={`rounded-xl p-4 ${
           state.status === 'completed'
-            ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
+            ? 'bg-[#5F8A50]/5 dark:bg-[#5F8A50]/10 border border-[#5F8A50]/20 dark:border-[#4A7040]'
             : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
         }`}>
           <div className="flex items-center justify-between">
@@ -466,7 +466,7 @@ export default function PrototypePage() {
               {state.agentMode && (
                 <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${
                   state.agentMode === 'agent_llm'
-                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                    ? 'bg-[#5F8A50]/10 text-[#5F8A50] dark:bg-[#5F8A50]/15 dark:text-[#87A878]'
                     : state.agentMode === 'agent_fallback_rules'
                     ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
                     : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
@@ -483,8 +483,8 @@ export default function PrototypePage() {
               )}
               {/* HITL Constraints */}
               {state.hitlConstraints && (
-                <div className="mb-3 rounded-lg border border-blue-200 dark:border-blue-900/40 bg-blue-50 dark:bg-blue-900/10 p-2">
-                  <div className="text-[11px] font-semibold text-blue-800 dark:text-blue-300 mb-1.5">
+                <div className="mb-3 rounded-lg border border-[#C9C2B8] dark:border-[#C87F4A]/20 bg-[#FAF7F2] dark:bg-[#C87F4A]/5 p-2">
+                  <div className="text-[11px] font-semibold text-[#334155] dark:text-[#DDA574] mb-1.5">
                     HITL Constraints
                   </div>
                   <div className="space-y-1.5 text-[11px]">
@@ -492,7 +492,7 @@ export default function PrototypePage() {
                       <span className="text-gray-500 dark:text-gray-400">Locked: </span>
                       {state.hitlConstraints.locked_dimensions.length > 0 ? (
                         state.hitlConstraints.locked_dimensions.map(dim => (
-                          <span key={dim} className="mr-1 px-1.5 py-0.5 rounded bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
+                          <span key={dim} className="mr-1 px-1.5 py-0.5 rounded bg-[#5F8A50]/10 dark:bg-[#5F8A50]/15 text-[#5F8A50] dark:text-[#87A878]">
                             {formatDimension(dim)}
                           </span>
                         ))
@@ -502,7 +502,7 @@ export default function PrototypePage() {
                       <span className="text-gray-500 dark:text-gray-400">Rerun: </span>
                       {state.hitlConstraints.rerun_dimensions.length > 0 ? (
                         state.hitlConstraints.rerun_dimensions.map(dim => (
-                          <span key={dim} className="mr-1 px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">
+                          <span key={dim} className="mr-1 px-1.5 py-0.5 rounded bg-[#C87F4A]/10 dark:bg-[#C87F4A]/15 text-[#C87F4A] dark:text-[#DDA574]">
                             {formatDimension(dim)}
                           </span>
                         ))

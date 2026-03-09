@@ -19,10 +19,10 @@ const DECISION_ICONS: Record<string, string> = {
 };
 
 const DECISION_COLORS: Record<string, string> = {
-  accept: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-green-200 dark:border-green-800',
+  accept: 'bg-[#5F8A50]/10 dark:bg-[#5F8A50]/15 text-[#4A7040] dark:text-[#87A878] border-[#5F8A50]/20 dark:border-[#4A7040]',
   stop: 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800',
-  rerun: 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800',
-  rerun_local: 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800',
+  rerun: 'bg-[#C87F4A]/10 dark:bg-[#C87F4A]/15 text-[#334155] dark:text-[#DDA574] border-[#C9C2B8] dark:border-[#4A433C]',
+  rerun_local: 'bg-[#C87F4A]/10 dark:bg-[#C87F4A]/15 text-[#334155] dark:text-[#DDA574] border-[#C9C2B8] dark:border-[#4A433C]',
   downgrade: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800',
 };
 
@@ -115,13 +115,13 @@ export default function QueenDecisionPanel({
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => handleAction('approve')}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition-colors"
+              className="px-4 py-2 bg-[#5F8A50] text-white rounded-lg text-sm font-medium hover:bg-[#4A7040] transition-colors"
             >
               Approve
             </button>
             <button
               onClick={() => handleAction('rerun')}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+              className="px-4 py-2 bg-[#C87F4A] text-white rounded-lg text-sm font-medium hover:bg-[#A85D3B] transition-colors"
             >
               Rerun{rerunDims.size > 0 ? ` (${rerunDims.size} dims)` : ''}
             </button>
@@ -152,7 +152,7 @@ export default function QueenDecisionPanel({
                       onClick={() => toggleDim(dim, lockedDims, setLockedDims)}
                       className={`px-2 py-1 rounded text-xs transition-colors ${
                         lockedDims.has(dim)
-                          ? 'bg-green-500 text-white'
+                          ? 'bg-[#5F8A50] text-white'
                           : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
                       }`}
                     >
@@ -172,7 +172,7 @@ export default function QueenDecisionPanel({
                       onClick={() => toggleDim(dim, rerunDims, setRerunDims)}
                       className={`px-2 py-1 rounded text-xs transition-colors ${
                         rerunDims.has(dim)
-                          ? 'bg-blue-500 text-white'
+                          ? 'bg-[#C87F4A] text-white'
                           : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
                       }`}
                     >
@@ -199,7 +199,7 @@ export default function QueenDecisionPanel({
                 <button
                   onClick={() => handleAction('lock_dimensions')}
                   disabled={lockedDims.size === 0}
-                  className="px-3 py-1.5 bg-green-600 text-white rounded text-xs font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="px-3 py-1.5 bg-[#5F8A50] text-white rounded text-xs font-medium hover:bg-[#4A7040] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   Lock {lockedDims.size} Dimensions
                 </button>

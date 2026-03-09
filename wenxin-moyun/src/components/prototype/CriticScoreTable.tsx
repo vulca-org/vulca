@@ -42,14 +42,14 @@ const RISK_TAG_COLORS: Record<string, string> = {
   taboo: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400',
   cultural_mismatch: 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400',
   color_saturation: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400',
-  detail_consistency: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400',
-  composition_imbalance: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400',
+  detail_consistency: 'bg-[#C87F4A]/10 dark:bg-[#C87F4A]/15 text-[#C87F4A] dark:text-[#DDA574]',
+  composition_imbalance: 'bg-[#C87F4A]/10 dark:bg-[#C87F4A]/15 text-[#C87F4A] dark:text-[#DDA574]',
 };
 
 function ScoreBar({ score }: { score: number }) {
   const pct = Math.round(score * 100);
   const color =
-    score >= 0.7 ? 'bg-green-500' :
+    score >= 0.7 ? 'bg-[#5F8A50]' :
     score >= 0.4 ? 'bg-yellow-500' :
     'bg-red-500';
 
@@ -72,7 +72,7 @@ function LayerProgressBar({ scores }: { scores: { dimension: string; score: numb
         const score = found?.score ?? 0;
         const pct = Math.round(score * 100);
         const color =
-          score >= 0.7 ? 'bg-green-400' :
+          score >= 0.7 ? 'bg-[#5F8A50]' :
           score >= 0.4 ? 'bg-yellow-400' :
           'bg-red-400';
         return (
@@ -186,7 +186,7 @@ export default function CriticScoreTable({ scoredCandidates, bestCandidateId, ag
                         #{shortId}
                         {isBest && <span className="text-yellow-500">★</span>}
                         {sc.dimension_scores.some(d => d.agent_metadata) && (
-                          <span className="text-[10px] text-purple-500" title="Agent-enhanced">🤖</span>
+                          <span className="text-[10px] text-[#C87F4A]" title="Agent-enhanced">🤖</span>
                         )}
                         {hasRisks && (
                           <button
@@ -199,7 +199,7 @@ export default function CriticScoreTable({ scoredCandidates, bestCandidateId, ag
                         )}
                         <button
                           onClick={() => setDetailCandidate(sc)}
-                          className="ml-1 text-[10px] text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+                          className="ml-1 text-[10px] text-[#C87F4A] hover:text-[#A85D3B] dark:text-[#DDA574] dark:hover:text-[#DDA574] transition-colors"
                           title="View critic details"
                         >
                           🔍
@@ -231,7 +231,7 @@ export default function CriticScoreTable({ scoredCandidates, bestCandidateId, ag
                     <td className="py-2 px-2">
                       <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                         sc.gate_passed
-                          ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                          ? 'bg-[#5F8A50]/10 dark:bg-[#5F8A50]/15 text-[#5F8A50] dark:text-[#87A878]'
                           : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
                       }`}>
                         {sc.gate_passed ? 'PASS' : 'FAIL'}
@@ -288,7 +288,7 @@ export default function CriticScoreTable({ scoredCandidates, bestCandidateId, ag
               setExpandedCells(allKeys);
               setExpandedRisks(new Set(scoredCandidates.filter(sc => sc.risk_tags.length > 0).map(sc => sc.candidate_id)));
             }}
-            className="text-[10px] text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+            className="text-[10px] text-[#C87F4A] hover:text-[#A85D3B] dark:text-[#DDA574] dark:hover:text-[#DDA574] transition-colors"
           >
             Expand All
           </button>

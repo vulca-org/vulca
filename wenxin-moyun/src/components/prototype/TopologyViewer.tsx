@@ -79,13 +79,13 @@ function nodeClasses(status: NodeStatus): string {
     case 'inactive':
       return `${base} border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30 opacity-40`;
     case 'pending':
-      return `${base} border-blue-200 dark:border-blue-800 bg-white dark:bg-gray-800`;
+      return `${base} border-[#C9C2B8] dark:border-[#4A433C] bg-white dark:bg-gray-800`;
     case 'active':
-      return `${base} border-blue-500 dark:border-blue-400 bg-blue-50 dark:bg-blue-900/30 ring-2 ring-blue-400/50 animate-pulse`;
+      return `${base} border-[#C87F4A] dark:border-[#DDA574] bg-[#FAF7F2] dark:bg-[#C87F4A]/15 ring-2 ring-[#C87F4A]/30 animate-pulse`;
     case 'waiting':
       return `${base} border-amber-400 dark:border-amber-500 bg-amber-50 dark:bg-amber-900/20 ring-2 ring-amber-400/50 animate-pulse`;
     case 'completed':
-      return `${base} border-green-400 dark:border-green-600 bg-green-50 dark:bg-green-900/20`;
+      return `${base} border-[#5F8A50] dark:border-[#87A878] bg-[#5F8A50]/5 dark:bg-[#5F8A50]/10`;
   }
 }
 
@@ -169,7 +169,7 @@ export default function TopologyViewer({
                   {NODE_LABELS[node]}
                 </span>
                 {nodeStatus === 'completed' && (
-                  <span className="text-[9px] text-green-600 dark:text-green-400">done</span>
+                  <span className="text-[9px] text-[#5F8A50] dark:text-[#87A878]">done</span>
                 )}
                 {nodeStatus === 'waiting' && (
                   <span className="text-[9px] text-amber-600 dark:text-amber-400 font-medium">HITL</span>

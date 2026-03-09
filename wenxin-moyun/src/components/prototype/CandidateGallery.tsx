@@ -88,7 +88,7 @@ export default function CandidateGallery({
               onClick={() => setSelectedRound(i)}
               className={`px-3 py-1 text-xs font-medium rounded-full transition-colors ${
                 i === activeRoundIdx
-                  ? 'bg-blue-500 text-white'
+                  ? 'bg-[#C87F4A] text-white'
                   : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
               }`}
             >
@@ -117,14 +117,14 @@ export default function CandidateGallery({
                 relative rounded-xl overflow-hidden border-2 transition-all
                 ${onSelect ? 'cursor-pointer hover:shadow-md' : ''}
                 ${isSelected
-                  ? 'border-blue-500 dark:border-blue-400 ring-2 ring-blue-200 dark:ring-blue-800'
+                  ? 'border-[#C87F4A] dark:border-[#DDA574] ring-2 ring-[#C87F4A]/20 dark:ring-[#C87F4A]/20'
                   : isBest
                     ? 'border-yellow-400 dark:border-yellow-500 ring-2 ring-yellow-200 dark:ring-yellow-800'
                     : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'}
               `}
             >
               {isSelected && (
-                <div className="absolute top-2 right-2 z-10 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold shadow">
+                <div className="absolute top-2 right-2 z-10 w-6 h-6 bg-[#C87F4A] rounded-full flex items-center justify-center text-white text-xs font-bold shadow">
                   ✓
                 </div>
               )}
@@ -148,7 +148,7 @@ export default function CandidateGallery({
                     }}
                   />
                 ) : (c.image_url || c.image_path) ? (
-                  <div className="w-full h-full bg-gradient-to-br from-blue-200 to-purple-200 dark:from-blue-900 dark:to-purple-900 flex items-center justify-center text-4xl">
+                  <div className="w-full h-full bg-gradient-to-br from-[#C87F4A]/20 to-[#C87F4A]/20 dark:from-[#C87F4A]/10 dark:to-[#C87F4A]/20 flex items-center justify-center text-4xl">
                     🎨
                   </div>
                 ) : (
@@ -166,7 +166,7 @@ export default function CandidateGallery({
                       </span>
                     )}
                     {isSelected && !isBest && (
-                      <span className="text-xs bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-400 px-2 py-0.5 rounded-full">
+                      <span className="text-xs bg-[#C87F4A]/10 dark:bg-[#C87F4A]/25 text-[#C87F4A] dark:text-[#DDA574] px-2 py-0.5 rounded-full">
                         Selected
                       </span>
                     )}

@@ -12,16 +12,16 @@ import type { AgentNodeData } from './types';
 
 const RING_COLORS: Record<string, string> = {
   idle: 'border-gray-300 dark:border-gray-600',
-  running: 'border-blue-500 dark:border-blue-400',
-  done: 'border-green-500 dark:border-green-400',
+  running: 'border-[#C87F4A] dark:border-[#DDA574]',
+  done: 'border-[#5F8A50] dark:border-[#87A878]',
   error: 'border-red-500 dark:border-red-400',
   skipped: 'border-gray-400 dark:border-gray-500',
 };
 
 const BG_COLORS: Record<string, string> = {
   idle: 'bg-white dark:bg-gray-800',
-  running: 'bg-blue-50 dark:bg-blue-900/20',
-  done: 'bg-green-50 dark:bg-green-900/20',
+  running: 'bg-[#FAF7F2] dark:bg-[#C87F4A]/10',
+  done: 'bg-[#5F8A50]/5 dark:bg-[#5F8A50]/10',
   error: 'bg-red-50 dark:bg-red-900/20',
   skipped: 'bg-gray-100 dark:bg-gray-800',
 };
@@ -39,7 +39,7 @@ function AgentNodeComponent({ data, selected }: NodeProps & { data: AgentNodeDat
         'min-w-[100px] transition-all duration-300',
         bgColor,
         selected
-          ? 'border-blue-500 dark:border-blue-400 ring-2 ring-blue-400/50'
+          ? 'border-[#C87F4A] dark:border-[#DDA574] ring-2 ring-[#C87F4A]/30'
           : hasError
             ? 'border-red-400 dark:border-red-500 ring-2 ring-red-400/40'
             : ringColor,
@@ -49,7 +49,7 @@ function AgentNodeComponent({ data, selected }: NodeProps & { data: AgentNodeDat
       <Handle
         type="target"
         position={Position.Left}
-        className="!w-2.5 !h-2.5 !bg-blue-400 !border-white dark:!border-gray-800 !border-2"
+        className="!w-2.5 !h-2.5 !bg-[#C87F4A] !border-white dark:!border-gray-800 !border-2"
       />
 
       {/* Status dot */}
@@ -58,9 +58,9 @@ function AgentNodeComponent({ data, selected }: NodeProps & { data: AgentNodeDat
           className={[
             'absolute -top-1.5 -right-1.5 w-3 h-3 rounded-full border-2 border-white dark:border-gray-800',
             status === 'running'
-              ? 'bg-blue-500 animate-ping'
+              ? 'bg-[#C87F4A] animate-ping'
               : status === 'done'
-                ? 'bg-green-500'
+                ? 'bg-[#5F8A50]'
                 : status === 'error'
                   ? 'bg-red-500'
                   : 'bg-gray-400',
@@ -84,7 +84,7 @@ function AgentNodeComponent({ data, selected }: NodeProps & { data: AgentNodeDat
 
       {/* Duration badge */}
       {status === 'done' && data.duration != null && (
-        <div className="absolute -bottom-1.5 -right-1.5 text-[8px] bg-green-500 text-white rounded-full px-1.5 py-0.5 font-mono leading-none">
+        <div className="absolute -bottom-1.5 -right-1.5 text-[8px] bg-[#5F8A50] text-white rounded-full px-1.5 py-0.5 font-mono leading-none">
           {(data.duration / 1000).toFixed(1)}s
         </div>
       )}
@@ -92,7 +92,7 @@ function AgentNodeComponent({ data, selected }: NodeProps & { data: AgentNodeDat
       <Handle
         type="source"
         position={Position.Right}
-        className="!w-2.5 !h-2.5 !bg-blue-400 !border-white dark:!border-gray-800 !border-2"
+        className="!w-2.5 !h-2.5 !bg-[#C87F4A] !border-white dark:!border-gray-800 !border-2"
       />
     </div>
   );

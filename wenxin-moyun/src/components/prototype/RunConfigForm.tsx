@@ -125,13 +125,13 @@ function TraditionCombobox({
             <li
               key={item.key}
               onClick={() => handleSelect(item.key)}
-              className={`px-3 py-2 cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 text-sm ${
-                item.key === value ? 'bg-blue-50 dark:bg-gray-700 font-medium' : ''
+              className={`px-3 py-2 cursor-pointer hover:bg-[#FAF7F2] dark:hover:bg-gray-700 text-sm ${
+                item.key === value ? 'bg-[#FAF7F2] dark:bg-gray-700 font-medium' : ''
               }`}
             >
               <span className="text-gray-900 dark:text-gray-100">{item.label}</span>
               {item.type === 'emerged' && (
-                <span className="ml-2 text-xs text-purple-500 dark:text-purple-400">emerged</span>
+                <span className="ml-2 text-xs text-[#C87F4A] dark:text-[#DDA574]">emerged</span>
               )}
               {'desc' in item && item.desc && (
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">{item.desc}</p>
@@ -144,10 +144,10 @@ function TraditionCombobox({
         <ul className="absolute z-50 mt-1 w-full rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-lg">
           <li
             onClick={() => handleSelect(query.toLowerCase().replace(/\s+/g, '_'))}
-            className="px-3 py-2 cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 text-sm"
+            className="px-3 py-2 cursor-pointer hover:bg-[#FAF7F2] dark:hover:bg-gray-700 text-sm"
           >
             <span className="text-gray-900 dark:text-gray-100">Use &ldquo;{query}&rdquo;</span>
-            <span className="ml-2 text-xs text-green-500">custom</span>
+            <span className="ml-2 text-xs text-[#5F8A50]">custom</span>
           </li>
         </ul>
       )}
@@ -299,7 +299,7 @@ export default function RunConfigForm({ onSubmit, disabled, initialValues }: Pro
             value={subject}
             onChange={e => setSubject(e.target.value)}
             placeholder="e.g., Dong Yuan landscape with hemp-fiber texture strokes"
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#C87F4A] focus:border-transparent resize-none"
             rows={fieldCfg.subjectMultiline ? 4 : 2}
             disabled={disabled}
           />
@@ -316,7 +316,7 @@ export default function RunConfigForm({ onSubmit, disabled, initialValues }: Pro
           value={culturalIntent}
           onChange={e => setCulturalIntent(e.target.value)}
           placeholder="Describe your cultural vision freely, e.g. 'wabi-sabi minimalism meets Bauhaus'"
-          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#C87F4A] focus:border-transparent"
           disabled={disabled}
         />
       </div>
@@ -335,7 +335,7 @@ export default function RunConfigForm({ onSubmit, disabled, initialValues }: Pro
                 onClick={() => setCulturalIntent(c.name)}
                 title={c.description}
                 disabled={disabled}
-                className="px-3 py-1 text-xs font-medium rounded-full border border-purple-300 dark:border-purple-600 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-800/40 disabled:opacity-50 transition-colors"
+                className="px-3 py-1 text-xs font-medium rounded-full border border-[#C87F4A]/30 dark:border-[#DDA574]/30 bg-[#C87F4A]/10 dark:bg-[#C87F4A]/15 text-[#C87F4A] dark:text-[#DDA574] hover:bg-[#C87F4A]/15 dark:hover:bg-[#C87F4A]/25 disabled:opacity-50 transition-colors"
               >
                 {c.name}
               </button>
@@ -463,7 +463,7 @@ export default function RunConfigForm({ onSubmit, disabled, initialValues }: Pro
         <button
           type="submit"
           disabled={disabled || (!subject.trim() && !fieldCfg.hideSubject)}
-          className="px-6 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="px-6 py-2.5 bg-[#C87F4A] text-white rounded-lg font-medium hover:bg-[#A85D3B] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {disabled ? 'Running...' : 'Run Pipeline'}
         </button>

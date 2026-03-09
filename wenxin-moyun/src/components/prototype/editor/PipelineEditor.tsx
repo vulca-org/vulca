@@ -574,13 +574,13 @@ export default function PipelineEditor({
 
       {/* First-visit banner */}
       {showFirstVisitBanner && (
-        <div className="px-3 py-2 bg-blue-50 dark:bg-blue-900/20 text-xs text-blue-700 dark:text-blue-300 border-b border-blue-200 dark:border-blue-800 flex items-center justify-between">
+        <div className="px-3 py-2 bg-[#FAF7F2] dark:bg-[#C87F4A]/10 text-xs text-[#C87F4A] dark:text-[#DDA574] border-b border-[#C9C2B8] dark:border-[#4A433C] flex items-center justify-between">
           <span>
             This is the <strong>Quick Evaluate</strong> template. Drop in an image and click Run!
           </span>
           <button
             onClick={() => setShowFirstVisitBanner(false)}
-            className="text-blue-500 hover:text-blue-700 ml-2"
+            className="text-[#C87F4A] hover:text-[#A85D3B] ml-2"
           >
             &times;
           </button>

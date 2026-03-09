@@ -14,11 +14,11 @@ import type { ScoredCandidate } from '../../hooks/usePrototypePipeline';
 
 // L1-L5 colour scheme
 const DIM_COLORS: Record<string, { text: string; bg: string; bar: string }> = {
-  L1: { text: 'text-blue-600 dark:text-blue-400',   bg: 'bg-blue-100 dark:bg-blue-900/30',     bar: 'bg-blue-500' },
+  L1: { text: 'text-[#C87F4A] dark:text-[#DDA574]',   bg: 'bg-[#C87F4A]/10 dark:bg-[#C87F4A]/15',     bar: 'bg-[#C87F4A]' },
   L2: { text: 'text-cyan-600 dark:text-cyan-400',   bg: 'bg-cyan-100 dark:bg-cyan-900/30',     bar: 'bg-cyan-500' },
   L3: { text: 'text-orange-600 dark:text-orange-400', bg: 'bg-orange-100 dark:bg-orange-900/30', bar: 'bg-orange-500' },
   L4: { text: 'text-red-600 dark:text-red-400',     bg: 'bg-red-100 dark:bg-red-900/30',       bar: 'bg-red-500' },
-  L5: { text: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-100 dark:bg-purple-900/30', bar: 'bg-purple-500' },
+  L5: { text: 'text-[#C87F4A] dark:text-[#DDA574]', bg: 'bg-[#C87F4A]/10 dark:bg-[#C87F4A]/15', bar: 'bg-[#C87F4A]' },
 };
 
 /** Extract L-level from dimension name. */
@@ -44,7 +44,7 @@ function getDimColor(dim: string) {
 
 /** Score-based colour for the mini progress bar. */
 function scoreBarColor(score: number): string {
-  if (score >= 0.8) return 'bg-green-500';
+  if (score >= 0.8) return 'bg-[#5F8A50]';
   if (score >= 0.5) return 'bg-yellow-500';
   return 'bg-red-500';
 }
@@ -115,7 +115,7 @@ export default function CriticRationaleCard({ scoredCandidates }: Props) {
                     />
                   </div>
                   {ds.agent_metadata && (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400">
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#C87F4A]/10 dark:bg-[#C87F4A]/15 text-[#C87F4A] dark:text-[#DDA574]">
                       {ds.agent_metadata.mode}
                     </span>
                   )}

@@ -161,8 +161,8 @@ export default function ComparePanel() {
         className={[
           'border-2 border-dashed rounded-xl p-8 text-center transition-colors cursor-pointer',
           isDragging
-            ? 'border-blue-400 bg-blue-50 dark:bg-blue-900/20'
-            : 'border-gray-300 dark:border-gray-600 hover:border-blue-300',
+            ? 'border-[#C87F4A] bg-[#FAF7F2] dark:bg-[#C87F4A]/10'
+            : 'border-gray-300 dark:border-gray-600 hover:border-[#C9C2B8]',
           results.length >= 6 ? 'opacity-50 pointer-events-none' : '',
         ].join(' ')}
         onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
@@ -220,7 +220,7 @@ export default function ComparePanel() {
                 </div>
 
                 {r.status === 'loading' && (
-                  <div className="mt-2 text-xs text-blue-500 animate-pulse">Evaluating...</div>
+                  <div className="mt-2 text-xs text-[#C87F4A] animate-pulse">Evaluating...</div>
                 )}
 
                 {r.status === 'error' && (

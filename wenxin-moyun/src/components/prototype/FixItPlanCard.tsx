@@ -11,14 +11,14 @@ interface Props {
 
 export default function FixItPlanCard({ fixItPlan }: Props) {
   return (
-    <IOSCard variant="elevated" padding="md" animate={false} className="border-indigo-200 dark:border-indigo-800">
+    <IOSCard variant="elevated" padding="md" animate={false} className="border-[#C9C2B8] dark:border-[#4A433C]">
       <IOSCardHeader
         title="FixItPlan"
         subtitle={fixItPlan.estimated_improvement > 0
           ? `Est. +${fixItPlan.estimated_improvement.toFixed(3)}`
           : undefined}
         action={
-          <span className="text-[11px] px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 font-medium">
+          <span className="text-[11px] px-2 py-0.5 rounded-full bg-[#C87F4A]/10 dark:bg-[#C87F4A]/20 text-[#C87F4A] dark:text-[#DDA574] font-medium">
             {fixItPlan.overall_strategy.replace(/_/g, ' ')}
           </span>
         }
@@ -30,7 +30,7 @@ export default function FixItPlanCard({ fixItPlan }: Props) {
             return (
               <div key={i} className="flex items-start gap-2 p-2.5 rounded-lg bg-gray-50 dark:bg-gray-900/40">
                 <div className="flex flex-col items-center gap-0.5 shrink-0">
-                  <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">
+                  <span className="text-xs font-bold text-[#C87F4A] dark:text-[#DDA574]">
                     {item.target_layer}
                   </span>
                   <span className="text-[10px] px-1 py-0.5 rounded bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-mono">

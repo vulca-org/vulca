@@ -195,7 +195,7 @@ export default function TraditionExplorer() {
             <div className="space-y-2 max-h-60 overflow-y-auto">
               {searchResults.map((r, i) => (
                 <div key={i} className="flex items-start gap-2 p-2 rounded-lg bg-gray-50 dark:bg-gray-800">
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 shrink-0">
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#C87F4A]/10 text-[#C87F4A] dark:bg-[#C87F4A]/15 dark:text-[#DDA574] shrink-0">
                     {r.tradition}
                   </span>
                   <div>
@@ -249,7 +249,7 @@ export default function TraditionExplorer() {
               variant="elevated"
               padding="sm"
               animate={false}
-              className={isSelected ? 'ring-2 ring-blue-400' : ''}
+              className={isSelected ? 'ring-2 ring-[#C87F4A]' : ''}
             >
               <IOSCardContent>
                 {/* Header */}
@@ -266,7 +266,7 @@ export default function TraditionExplorer() {
                     className={[
                       'px-2 py-1 text-[10px] rounded-lg border transition-colors',
                       isSelected
-                        ? 'bg-blue-100 border-blue-300 text-blue-700 dark:bg-blue-900/30'
+                        ? 'bg-[#C87F4A]/10 border-[#C87F4A]/30 text-[#C87F4A] dark:bg-[#C87F4A]/15'
                         : 'border-gray-300 text-gray-400 hover:bg-gray-50 dark:border-gray-600',
                     ].join(' ')}
                   >
@@ -279,7 +279,7 @@ export default function TraditionExplorer() {
                   {['L1', 'L2', 'L3', 'L4', 'L5'].map(l => (
                     <div
                       key={l}
-                      className="h-2 rounded-full bg-blue-400 dark:bg-blue-500"
+                      className="h-2 rounded-full bg-[#C87F4A] dark:bg-[#C87F4A]"
                       style={{ width: `${(t.weights[l] || 0) * 100}%`, opacity: 0.3 + (t.weights[l] || 0) }}
                       title={`${l}: ${(t.weights[l] || 0).toFixed(2)}`}
                     />

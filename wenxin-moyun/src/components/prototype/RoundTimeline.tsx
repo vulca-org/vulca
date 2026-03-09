@@ -10,10 +10,10 @@ import { PROTOTYPE_DIMENSIONS, PROTOTYPE_DIM_LABELS } from '../../utils/vulca-di
 import type { PrototypeDimension } from '../../utils/vulca-dimensions';
 
 const DECISION_STYLES: Record<string, { icon: string; bg: string; text: string }> = {
-  accept:    { icon: '\u2705', bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-700 dark:text-green-400' },
+  accept:    { icon: '\u2705', bg: 'bg-[#5F8A50]/10 dark:bg-[#5F8A50]/15', text: 'text-[#5F8A50] dark:text-[#87A878]' },
   stop:      { icon: '\u{1F6D1}', bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-700 dark:text-red-400' },
-  rerun:     { icon: '\u{1F504}', bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-700 dark:text-blue-400' },
-  rerun_local: { icon: '\u{1F3AF}', bg: 'bg-indigo-100 dark:bg-indigo-900/30', text: 'text-indigo-700 dark:text-indigo-400' },
+  rerun:     { icon: '\u{1F504}', bg: 'bg-[#C87F4A]/10 dark:bg-[#C87F4A]/15', text: 'text-[#C87F4A] dark:text-[#DDA574]' },
+  rerun_local: { icon: '\u{1F3AF}', bg: 'bg-[#C87F4A]/10 dark:bg-[#C87F4A]/15', text: 'text-[#C87F4A] dark:text-[#DDA574]' },
   downgrade: { icon: '\u2B07\uFE0F', bg: 'bg-yellow-100 dark:bg-yellow-900/30', text: 'text-yellow-700 dark:text-yellow-400' },
 };
 
@@ -55,7 +55,7 @@ function ScoreDelta({ current, previous }: { current: number | null; previous: n
   }
   const isUp = delta > 0;
   return (
-    <span className={`text-[10px] font-mono ${isUp ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+    <span className={`text-[10px] font-mono ${isUp ? 'text-[#5F8A50] dark:text-[#87A878]' : 'text-red-600 dark:text-red-400'}`}>
       {isUp ? '+' : ''}{delta.toFixed(3)}
     </span>
   );
@@ -66,7 +66,7 @@ export default function RoundTimeline({ rounds, currentRound, status }: Props) {
     if (status === 'running' && currentRound > 0) {
       return (
         <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-          <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+          <div className="w-4 h-4 border-2 border-[#C87F4A] border-t-transparent rounded-full animate-spin" />
           Round {currentRound} in progress...
         </div>
       );
@@ -161,7 +161,7 @@ export default function RoundTimeline({ rounds, currentRound, status }: Props) {
                 {/* FixItPlan indicator */}
                 {rd.fixItPlan && (
                   <div className="mt-1.5 flex items-center gap-1">
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 font-medium">
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#C87F4A]/10 dark:bg-[#C87F4A]/20 text-[#C87F4A] dark:text-[#DDA574] font-medium">
                       FixIt: {rd.fixItPlan.overall_strategy.replace(/_/g, ' ')}
                     </span>
                   </div>
@@ -196,9 +196,9 @@ export default function RoundTimeline({ rounds, currentRound, status }: Props) {
                 <div className="w-4 h-0.5 bg-gray-300 dark:bg-gray-600" />
               </div>
             </div>
-            <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-blue-300 dark:border-blue-700 p-3 min-w-[120px]">
-              <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mb-1" />
-              <span className="text-xs text-blue-500 font-medium">R{currentRound}</span>
+            <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#C9C2B8] dark:border-[#4A433C] p-3 min-w-[120px]">
+              <div className="w-5 h-5 border-2 border-[#C87F4A] border-t-transparent rounded-full animate-spin mb-1" />
+              <span className="text-xs text-[#C87F4A] font-medium">R{currentRound}</span>
             </div>
           </div>
         )}

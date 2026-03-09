@@ -16,7 +16,7 @@ function ReportNodeComponent({ data, selected }: NodeProps & { data: AgentNodeDa
   const trafficColor = !report
     ? 'bg-gray-300'
     : report.weighted_total >= 0.85
-      ? 'bg-green-500'
+      ? 'bg-[#5F8A50]'
       : report.weighted_total >= 0.70
         ? 'bg-yellow-500'
         : 'bg-red-500';
@@ -26,7 +26,7 @@ function ReportNodeComponent({ data, selected }: NodeProps & { data: AgentNodeDa
       className={[
         'rounded-xl border-2 bg-white dark:bg-gray-800 min-w-[280px] max-w-[320px] transition-all duration-300',
         selected
-          ? 'border-blue-500 ring-2 ring-blue-400/50'
+          ? 'border-[#C87F4A] ring-2 ring-[#C87F4A]/30'
           : 'border-gray-300 dark:border-gray-600',
         status === 'running' ? 'animate-pulse' : '',
       ].join(' ')}
@@ -34,7 +34,7 @@ function ReportNodeComponent({ data, selected }: NodeProps & { data: AgentNodeDa
       <Handle
         type="target"
         position={Position.Left}
-        className="!w-2.5 !h-2.5 !bg-blue-400 !border-white dark:!border-gray-800 !border-2"
+        className="!w-2.5 !h-2.5 !bg-[#C87F4A] !border-white dark:!border-gray-800 !border-2"
       />
 
       {/* Header */}
@@ -77,7 +77,7 @@ function ReportNodeComponent({ data, selected }: NodeProps & { data: AgentNodeDa
                     <div
                       className={`h-full rounded-full transition-all duration-500 ${
                         d.score >= 0.85
-                          ? 'bg-green-500'
+                          ? 'bg-[#5F8A50]'
                           : d.score >= 0.7
                             ? 'bg-yellow-500'
                             : 'bg-red-500'
@@ -95,7 +95,7 @@ function ReportNodeComponent({ data, selected }: NodeProps & { data: AgentNodeDa
             {/* Tradition badge */}
             {report.tradition && (
               <div className="mt-2 text-center">
-                <span className="text-[9px] bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-2 py-0.5 rounded-full">
+                <span className="text-[9px] bg-[#C87F4A]/10 dark:bg-[#C87F4A]/15 text-[#C87F4A] dark:text-[#DDA574] px-2 py-0.5 rounded-full">
                   {report.tradition}
                 </span>
               </div>
@@ -121,7 +121,7 @@ function ReportNodeComponent({ data, selected }: NodeProps & { data: AgentNodeDa
       <Handle
         type="source"
         position={Position.Right}
-        className="!w-2.5 !h-2.5 !bg-blue-400 !border-white dark:!border-gray-800 !border-2"
+        className="!w-2.5 !h-2.5 !bg-[#C87F4A] !border-white dark:!border-gray-800 !border-2"
       />
     </div>
   );

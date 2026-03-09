@@ -11,9 +11,9 @@ interface Props {
 
 const STATUS_CONFIG: Record<PipelineState['status'], { label: string; color: string }> = {
   idle: { label: 'Ready', color: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400' },
-  running: { label: 'Running', color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' },
+  running: { label: 'Running', color: 'bg-[#C87F4A]/10 text-[#C87F4A] dark:bg-[#C87F4A]/20 dark:text-[#DDA574]' },
   waiting_human: { label: 'HITL', color: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300' },
-  completed: { label: 'Done', color: 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300' },
+  completed: { label: 'Done', color: 'bg-[#5F8A50]/10 text-[#5F8A50] dark:bg-[#5F8A50]/20 dark:text-[#87A878]' },
   failed: { label: 'Failed', color: 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300' },
 };
 

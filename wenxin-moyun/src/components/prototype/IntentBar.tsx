@@ -64,7 +64,7 @@ export default function IntentBar({ onSubmit, disabled = false }: IntentBarProps
             placeholder="Describe your creation intent..."
             disabled={disabled}
             rows={2}
-            className="w-full resize-none rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400 disabled:opacity-50"
+            className="w-full resize-none rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-[#C87F4A] focus:outline-none focus:ring-1 focus:ring-[#C87F4A] disabled:opacity-50"
           />
 
           {/* Image upload zone */}
@@ -76,7 +76,7 @@ export default function IntentBar({ onSubmit, disabled = false }: IntentBarProps
             className={[
               'flex items-center gap-2 rounded-lg border border-dashed px-3 py-2 cursor-pointer transition-colors text-xs',
               dragActive
-                ? 'border-blue-400 bg-blue-50 dark:bg-blue-900/20'
+                ? 'border-[#C87F4A] bg-[#FAF7F2] dark:bg-[#C87F4A]/10'
                 : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500',
               disabled ? 'opacity-50 pointer-events-none' : '',
             ].join(' ')}

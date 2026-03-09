@@ -88,7 +88,7 @@ export default function FeedbackCollector({ sessionId, evaluationId, candidateId
         <IOSCardContent>
           <div className="text-center py-3">
             <div className="text-2xl mb-2">&#x2705;</div>
-            <p className="text-sm font-semibold text-green-700 dark:text-green-400">
+            <p className="text-sm font-semibold text-[#5F8A50] dark:text-[#87A878]">
               Feedback submitted
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -124,7 +124,7 @@ export default function FeedbackCollector({ sessionId, evaluationId, candidateId
                   onMouseLeave={() => setHoveredStar(0)}
                   whileTap={{ scale: 0.85 }}
                   whileHover={{ scale: 1.15 }}
-                  className="p-1 focus:outline-none focus:ring-2 focus:ring-blue-300 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center"
+                  className="p-1 focus:outline-none focus:ring-2 focus:ring-[#C87F4A]/30 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center"
                   aria-label={`${star} star${star > 1 ? 's' : ''}`}
                   role="radio"
                   aria-checked={rating === star}
@@ -155,7 +155,7 @@ export default function FeedbackCollector({ sessionId, evaluationId, candidateId
               onChange={(e) => setComment(e.target.value)}
               placeholder="Add a comment (optional)..."
               rows={3}
-              className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 resize-none focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 focus:border-transparent transition-all"
+              className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 resize-none focus:outline-none focus:ring-2 focus:ring-[#C87F4A]/30 dark:focus:ring-[#C87F4A] focus:border-transparent transition-all"
             />
           </div>
 

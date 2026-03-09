@@ -145,7 +145,7 @@ export default function CanvasToolbar({
           className={[
             'text-xs px-2 py-0.5 rounded-full font-medium',
             validation.valid
-              ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+              ? 'bg-[#5F8A50]/10 dark:bg-[#5F8A50]/15 text-[#5F8A50] dark:text-[#87A878]'
               : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400',
           ].join(' ')}
           title={[...validation.errors, ...validation.warnings].join('\n')}
@@ -163,7 +163,7 @@ export default function CanvasToolbar({
       <button
         onClick={onRun}
         disabled={disabled || !validation?.valid}
-        className="px-3 py-1 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 dark:disabled:bg-gray-600 rounded-lg transition-colors"
+        className="px-3 py-1 text-xs font-semibold text-white bg-[#C87F4A] hover:bg-[#A85D3B] disabled:bg-gray-400 dark:disabled:bg-gray-600 rounded-lg transition-colors"
         title="Run Pipeline (Ctrl+Enter)"
       >
         ▶ Run

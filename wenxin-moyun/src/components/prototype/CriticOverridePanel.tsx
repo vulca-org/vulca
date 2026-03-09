@@ -45,20 +45,20 @@ export default function CriticOverridePanel({ scoredCandidates, bestCandidateId,
   };
 
   return (
-    <div className="rounded-xl border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-900/20 p-4 space-y-4">
+    <div className="rounded-xl border border-[#C9C2B8] dark:border-[#4A433C] bg-[#C87F4A]/5 dark:bg-[#C87F4A]/10 p-4 space-y-4">
       <div className="flex items-center gap-2">
         <span className="text-xl">📊</span>
-        <h3 className="font-semibold text-purple-800 dark:text-purple-300">
+        <h3 className="font-semibold text-[#334155] dark:text-[#DDA574]">
           Review Critic Scores
         </h3>
         {bestCandidate && (
-          <span className="ml-auto text-xs px-2 py-0.5 rounded-full bg-purple-200 dark:bg-purple-800 text-purple-800 dark:text-purple-200">
+          <span className="ml-auto text-xs px-2 py-0.5 rounded-full bg-[#C87F4A]/20 dark:bg-[#C87F4A]/20 text-[#334155] dark:text-[#DDA574]">
             Best: {bestCandidate.weighted_total.toFixed(3)}
           </span>
         )}
       </div>
 
-      <p className="text-xs text-purple-700 dark:text-purple-400">
+      <p className="text-xs text-[#C87F4A] dark:text-[#DDA574]">
         Lock dimensions whose scores you agree with. Locked dimensions will be preserved across reruns.
       </p>
 
@@ -71,7 +71,7 @@ export default function CriticOverridePanel({ scoredCandidates, bestCandidateId,
             const label = PROTOTYPE_DIM_LABELS[dim as PrototypeDimension]?.short || dim;
             const isLocked = lockedDims.has(dim);
             const barWidth = `${Math.min(score * 100, 100)}%`;
-            const barColor = score >= 0.8 ? 'bg-green-500' : score >= 0.5 ? 'bg-amber-500' : 'bg-red-500';
+            const barColor = score >= 0.8 ? 'bg-[#5F8A50]' : score >= 0.5 ? 'bg-amber-500' : 'bg-red-500';
 
             return (
               <button
@@ -79,7 +79,7 @@ export default function CriticOverridePanel({ scoredCandidates, bestCandidateId,
                 onClick={() => toggleDim(dim)}
                 className={`w-full flex items-center gap-2 p-2 rounded-lg transition-colors text-left ${
                   isLocked
-                    ? 'bg-purple-100 dark:bg-purple-900/40 ring-2 ring-purple-400'
+                    ? 'bg-[#C87F4A]/10 dark:bg-[#C87F4A]/20 ring-2 ring-[#C87F4A]'
                     : 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750'
                 }`}
               >
@@ -114,7 +114,7 @@ export default function CriticOverridePanel({ scoredCandidates, bestCandidateId,
       )}
 
       <div>
-        <label className="block text-xs font-semibold text-purple-700 dark:text-purple-400 mb-1">
+        <label className="block text-xs font-semibold text-[#C87F4A] dark:text-[#DDA574] mb-1">
           Override Notes (optional)
         </label>
         <input
@@ -122,21 +122,21 @@ export default function CriticOverridePanel({ scoredCandidates, bestCandidateId,
           value={reason}
           onChange={e => setReason(e.target.value)}
           placeholder="e.g., L5 score seems too low for this tradition"
-          className="w-full px-2 py-1.5 text-sm border border-purple-300 dark:border-purple-700 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+          className="w-full px-2 py-1.5 text-sm border border-[#C87F4A]/30 dark:border-[#4A433C] rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
         />
       </div>
 
       {/* Actions */}
-      <div className="flex flex-wrap gap-2 pt-2 border-t border-purple-200 dark:border-purple-800">
+      <div className="flex flex-wrap gap-2 pt-2 border-t border-[#C9C2B8] dark:border-[#4A433C]">
         <button
           onClick={handleApprove}
-          className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition-colors"
+          className="px-4 py-2 bg-[#5F8A50] text-white rounded-lg text-sm font-medium hover:bg-[#4A7040] transition-colors"
         >
           Approve Scores{lockedDims.size > 0 ? ` (${lockedDims.size} locked)` : ''}
         </button>
         <button
           onClick={() => onAction('rerun', { reason: reason || 'Re-evaluate scores' })}
-          className="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors"
+          className="px-4 py-2 bg-[#C87F4A] text-white rounded-lg text-sm font-medium hover:bg-[#A85D3B] transition-colors"
         >
           Re-evaluate
         </button>
