@@ -136,6 +136,7 @@ ios26_figma_data.json
 !wenxin-moyun/public/**/*.svg
 !wenxin-moyun/src/**/*.png
 !wenxin-moyun/src/**/*.jpg
+!wenxin-moyun/marketing/**/*.png
 
 # Root-level one-off files
 *.html
