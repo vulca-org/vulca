@@ -146,19 +146,17 @@ class VulcaAPIClient:
                 resp.raise_for_status()
                 return resp.json()
             except (httpx.HTTPStatusError, httpx.ConnectError) as exc:
-                logger.debug("POST /create failed (%s), falling back to /evaluate/nocode", exc)
-                # Fallback: use nocode evaluate endpoint
-                fallback_body = {
-                    "intent": intent,
-                    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/1280px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg",
+                logger.warning("POST /create failed: %s", exc)
+                # Return a minimal error response instead of falling back
+                # to evaluate/nocode which produces non-homogeneous sessions
+                return {
+                    "session_id": "",
+                    "mode": "create",
+                    "tradition": tradition,
+                    "error": str(exc),
+                    "best_candidate_id": "",
+                    "total_rounds": 0,
                 }
-                resp = await client.post(
-                    f"{self.base_url}/api/v1/evaluate/nocode",
-                    json=fallback_body,
-                    headers=self._auth_headers(),
-                )
-                resp.raise_for_status()
-                return resp.json()
 
     # ------------------------------------------------------------------
     # Skills API

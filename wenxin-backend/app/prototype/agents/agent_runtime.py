@@ -138,7 +138,7 @@ def _get_system_prompt(layer_id: str, tradition: str = "default") -> str:
 
     try:
         from app.prototype.cultural_pipelines.cultural_weights import get_evolved_prompt_context
-        evolved = get_evolved_prompt_context(tradition)
+        evolved = get_evolved_prompt_context(tradition, layer_id=layer_id)
     except Exception:
         evolved = ""
 

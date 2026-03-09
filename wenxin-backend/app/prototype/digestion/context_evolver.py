@@ -185,8 +185,14 @@ class ContextEvolver:
         except Exception:
             pass  # preferences may not be defined if learner failed
 
-        # --- Phase 1: Four metabolisms (WU-09) ---
+        # --- Phase 1.4: Layer focus generation from session scores ---
         all_sessions = [s for s in (self._store.get_all() if hasattr(self._store, 'get_all') else [])]
+        try:
+            layer_focus = self._extract_layer_focus(all_sessions)
+            if layer_focus:
+                context["layer_focus"] = layer_focus
+        except Exception as exc:
+            logger.debug("Layer focus extraction skipped: %s", exc)
 
         # Catabolic: Cultural clustering
         try:
@@ -396,3 +402,93 @@ class ContextEvolver:
                 f.write(json.dumps(entry, ensure_ascii=False) + "\n")
         except OSError as exc:
             logger.warning("ContextEvolver: failed to write audit log: %s", exc)
+
+    # ------------------------------------------------------------------
+    # Phase 1.4: Layer-specific focus point extraction
+    # ------------------------------------------------------------------
+
+    _DIMENSIONS = [
+        "visual_perception", "technical_analysis", "cultural_context",
+        "critical_interpretation", "philosophical_aesthetic",
+    ]
+
+    # Map tradition → layer → what matters (seeded from domain knowledge)
+    _SEED_FOCUS: dict[str, dict[str, list[str]]] = {
+        "chinese_xieyi": {
+            "visual_perception": ["ink wash gradients", "negative space (留白)", "brush rhythm"],
+            "technical_analysis": ["brushstroke spontaneity", "ink consistency", "rice paper texture"],
+            "cultural_context": ["literati painting tradition", "Daoist nature philosophy", "poem-painting unity"],
+            "critical_interpretation": ["qi yun (气韵生动)", "xie yi spirit over form", "scholar aesthetics"],
+            "philosophical_aesthetic": ["Dao in brushwork", "emptiness as presence", "nature-human unity"],
+        },
+        "chinese_gongbi": {
+            "visual_perception": ["line precision", "color layering", "fine detail rendering"],
+            "technical_analysis": ["silk/paper preparation", "mineral pigment application", "outline control"],
+            "cultural_context": ["court painting tradition", "Tang-Song conventions", "decorative symbolism"],
+        },
+        "islamic_geometric": {
+            "visual_perception": ["geometric symmetry", "tessellation precision", "color harmony"],
+            "technical_analysis": ["compass-ruler construction", "pattern repetition accuracy", "gilding quality"],
+            "cultural_context": ["aniconism principles", "mathematical beauty", "spiritual geometry"],
+        },
+    }
+
+    def _extract_layer_focus(self, sessions: list) -> dict:
+        """Extract per-tradition, per-layer focus points from session data.
+
+        Returns dict of {tradition: {layer_id: {focus_points, anti_focus}}}.
+        Combines seed knowledge with learned patterns from high-scoring sessions.
+        """
+        from collections import defaultdict
+
+        # Collect per-tradition, per-dimension scores
+        tradition_dim_scores: dict[str, dict[str, list[float]]] = defaultdict(
+            lambda: defaultdict(list)
+        )
+
+        for s in sessions:
+            tradition = getattr(s, "tradition", "") or ""
+            scores = getattr(s, "final_scores", {}) or {}
+            if not tradition or not scores:
+                continue
+            for dim, score in scores.items():
+                full_dim = _DIM_ALIASES.get(dim, dim)
+                if full_dim in self._DIMENSIONS and isinstance(score, (int, float)):
+                    tradition_dim_scores[tradition][full_dim].append(score)
+
+        result: dict[str, dict[str, dict]] = {}
+
+        for tradition in set(list(tradition_dim_scores.keys()) + list(self._SEED_FOCUS.keys())):
+            dim_data = tradition_dim_scores.get(tradition, {})
+            seed = self._SEED_FOCUS.get(tradition, {})
+            layers: dict[str, dict] = {}
+
+            for dim in self._DIMENSIONS:
+                scores = dim_data.get(dim, [])
+                focus_points = list(seed.get(dim, []))  # start with seed
+
+                # Learn from patterns: if a dimension scores consistently high,
+                # the focus points for that tradition are working
+                if scores:
+                    avg = sum(scores) / len(scores)
+                    if avg >= 0.7 and not focus_points:
+                        focus_points.append(f"historically strong ({avg:.2f} avg)")
+
+                anti_focus: list[str] = []
+                if scores:
+                    avg = sum(scores) / len(scores)
+                    if avg >= 0.8:
+                        # This dimension doesn't need extra attention
+                        anti_focus.append("already well-captured")
+
+                if focus_points:
+                    layers[dim] = {
+                        "focus_points": focus_points,
+                        "anti_focus": anti_focus,
+                        "session_count": len(scores),
+                    }
+
+            if layers:
+                result[tradition] = layers
+
+        return result

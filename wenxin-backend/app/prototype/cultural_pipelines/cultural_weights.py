@@ -276,29 +276,36 @@ _evolved_prompt_cache: dict[str, tuple[float, str]] = {}
 _CACHE_TTL = 300  # 5 minutes
 
 
-def get_evolved_prompt_context(tradition: str = "default", max_tokens: int = 200) -> str:
+def get_evolved_prompt_context(
+    tradition: str = "default",
+    max_tokens: int = 200,
+    layer_id: str | None = None,
+) -> str:
     """Get evolved context block for system prompt injection.
 
     Returns a formatted string (approximate max_tokens words) with:
     - Archetypes (successful patterns)
     - Emerged cultural concepts
     - Weight/preference hints
+    - Layer-specific focus points (when layer_id is provided)
 
     Returns ``""`` if no evolved data available (zero regression).
     """
-    cache_key = f"{tradition}:{max_tokens}"
+    cache_key = f"{tradition}:{max_tokens}:{layer_id or ''}"
     now = time.time()
     if cache_key in _evolved_prompt_cache:
         cached_time, cached_val = _evolved_prompt_cache[cache_key]
         if now - cached_time < _CACHE_TTL:
             return cached_val
 
-    result = _build_evolved_context(tradition, max_tokens)
+    result = _build_evolved_context(tradition, max_tokens, layer_id)
     _evolved_prompt_cache[cache_key] = (now, result)
     return result
 
 
-def _build_evolved_context(tradition: str, max_tokens: int) -> str:
+def _build_evolved_context(
+    tradition: str, max_tokens: int, layer_id: str | None = None
+) -> str:
     """Build the evolved context string from evolved_context.json."""
     ctx_path = Path(_EVOLVED_CONTEXT_PATH).resolve()
     if not ctx_path.exists():
@@ -314,7 +321,19 @@ def _build_evolved_context(tradition: str, max_tokens: int) -> str:
 
     parts: list[str] = []
 
-    # 1. Archetypes / successful patterns from prompt_contexts
+    # 1. Layer-specific focus points (Phase 1.4)
+    if layer_id:
+        layer_focus = ctx.get("layer_focus", {}).get(tradition, {}).get(layer_id)
+        if isinstance(layer_focus, dict):
+            focus_points = layer_focus.get("focus_points", [])
+            if focus_points:
+                points_str = "; ".join(str(p) for p in focus_points[:4])
+                parts.append(f"For this tradition, focus on: {points_str}")
+            anti_focus = layer_focus.get("anti_focus", [])
+            if anti_focus:
+                parts.append(f"Less important here: {', '.join(str(a) for a in anti_focus[:2])}")
+
+    # 2. Archetypes / successful patterns from prompt_contexts
     prompt_contexts = ctx.get("prompt_contexts", {})
     tradition_prompts = prompt_contexts.get(tradition, prompt_contexts.get("default", {}))
     if isinstance(tradition_prompts, dict):
@@ -322,7 +341,7 @@ def _build_evolved_context(tradition: str, max_tokens: int) -> str:
         if top_keywords:
             parts.append(f"Successful patterns: {', '.join(top_keywords)}")
 
-    # 2. Emerged cultural concepts
+    # 3. Emerged cultural concepts
     cultures = ctx.get("cultures", {})
     if isinstance(cultures, dict):
         relevant = {k: v for k, v in cultures.items()
@@ -337,7 +356,7 @@ def _build_evolved_context(tradition: str, max_tokens: int) -> str:
             concept_names = [c.get("name", "unknown") for c in relevant[:3]]
             parts.append(f"Emerged concepts: {', '.join(concept_names)}")
 
-    # 3. Weight hints from tradition_weights
+    # 4. Weight hints from tradition_weights
     weights = ctx.get("tradition_weights", {}).get(tradition, {})
     if isinstance(weights, dict) and weights:
         top_dims = sorted(weights.items(), key=lambda x: x[1], reverse=True)[:3]

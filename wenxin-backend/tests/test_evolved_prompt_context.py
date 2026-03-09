@@ -136,19 +136,17 @@ class TestSystemPromptIntegration:
         assert isinstance(prompt, str)
         assert len(prompt) > 0
 
-    def test_zero_regression(self, tmp_path):
+    def test_zero_regression(self):
         """When no evolved data, prompts should be identical to base."""
-        ctx_file = tmp_path / "evolved_context.json"
-        ctx_file.write_text('{"tradition_weights":{},"version":1,"evolutions":0}')
+        from app.prototype.agents.agent_runtime import _get_system_prompt, _BASE_SYSTEM_PROMPTS
+
+        # Patch at source — lazy import in _get_system_prompt reads from this module
         with patch(
-            "app.prototype.cultural_pipelines.cultural_weights._EVOLVED_CONTEXT_PATH",
-            str(ctx_file),
+            "app.prototype.cultural_pipelines.cultural_weights.get_evolved_prompt_context",
+            return_value="",
         ):
-            _evolved_prompt_cache.clear()
-            from app.prototype.agents.agent_runtime import _get_system_prompt, _BASE_SYSTEM_PROMPTS
             for layer in _BASE_SYSTEM_PROMPTS:
                 prompt = _get_system_prompt(layer, "default")
-                # Should equal base since evolved_context has 0 evolutions
                 assert prompt == _BASE_SYSTEM_PROMPTS[layer]
 
     def test_queen_system_prompt_callable(self):

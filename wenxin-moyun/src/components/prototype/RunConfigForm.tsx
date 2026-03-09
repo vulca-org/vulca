@@ -7,7 +7,7 @@
  * - TemplateSelector always visible (not gated on Graph Mode)
  */
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { API_PREFIX } from '../../config/api';
 import TemplateSelector from './TemplateSelector';
 
@@ -57,6 +57,103 @@ const PRESETS: Preset[] = [
   { label: 'African Mask', subject: 'Ceremonial mask with bold geometric patterns and spiritual symbols', tradition: 'african_traditional' },
   { label: 'Miniature Court', subject: 'Royal court scene with detailed figures and gold leaf ornaments', tradition: 'south_asian' },
 ];
+
+// --- Tradition Combobox (Phase 3.1: free-text + suggestions) ---
+
+function TraditionCombobox({
+  value,
+  onChange,
+  traditions,
+  emergedConcepts,
+  disabled,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  traditions: string[];
+  emergedConcepts: Array<{ name: string; description: string }>;
+  disabled?: boolean;
+}) {
+  const [query, setQuery] = useState('');
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  // Build unified suggestion list
+  const allItems = [
+    ...traditions.map(t => ({ key: t, label: traditionLabel(t), type: 'tradition' as const })),
+    ...emergedConcepts.map(c => ({ key: c.name, label: c.name, type: 'emerged' as const, desc: c.description })),
+  ];
+
+  const filtered = query
+    ? allItems.filter(item =>
+        item.label.toLowerCase().includes(query.toLowerCase()) ||
+        item.key.toLowerCase().includes(query.toLowerCase())
+      )
+    : allItems;
+
+  const handleSelect = (key: string) => {
+    onChange(key);
+    setQuery('');
+    setOpen(false);
+  };
+
+  return (
+    <div ref={ref} className="relative">
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        Tradition
+      </label>
+      <input
+        type="text"
+        value={open ? query : traditionLabel(value)}
+        onChange={e => { setQuery(e.target.value); setOpen(true); }}
+        onFocus={() => { setQuery(''); setOpen(true); }}
+        placeholder="Type to search or enter custom..."
+        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+        disabled={disabled}
+      />
+      {open && filtered.length > 0 && (
+        <ul className="absolute z-50 mt-1 w-full max-h-60 overflow-auto rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-lg">
+          {filtered.map(item => (
+            <li
+              key={item.key}
+              onClick={() => handleSelect(item.key)}
+              className={`px-3 py-2 cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 text-sm ${
+                item.key === value ? 'bg-blue-50 dark:bg-gray-700 font-medium' : ''
+              }`}
+            >
+              <span className="text-gray-900 dark:text-gray-100">{item.label}</span>
+              {item.type === 'emerged' && (
+                <span className="ml-2 text-xs text-purple-500 dark:text-purple-400">emerged</span>
+              )}
+              {'desc' in item && item.desc && (
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">{item.desc}</p>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+      {open && query && !filtered.some(f => f.key === query) && (
+        <ul className="absolute z-50 mt-1 w-full rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-lg">
+          <li
+            onClick={() => handleSelect(query.toLowerCase().replace(/\s+/g, '_'))}
+            className="px-3 py-2 cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 text-sm"
+          >
+            <span className="text-gray-900 dark:text-gray-100">Use &ldquo;{query}&rdquo;</span>
+            <span className="ml-2 text-xs text-green-500">custom</span>
+          </li>
+        </ul>
+      )}
+    </div>
+  );
+}
 
 export interface RunConfigParams {
   subject: string;
@@ -254,21 +351,13 @@ export default function RunConfigForm({ onSubmit, disabled, initialValues }: Pro
           onTemplateData={handleTemplateData}
           disabled={disabled}
         />
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Tradition
-          </label>
-          <select
-            value={tradition}
-            onChange={e => setTradition(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-            disabled={disabled}
-          >
-            {traditions.map(t => (
-              <option key={t} value={t}>{traditionLabel(t)}</option>
-            ))}
-          </select>
-        </div>
+        <TraditionCombobox
+          value={tradition}
+          onChange={setTradition}
+          traditions={traditions}
+          emergedConcepts={emergedConcepts}
+          disabled={disabled}
+        />
 
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
