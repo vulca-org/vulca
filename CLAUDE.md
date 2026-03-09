@@ -317,7 +317,7 @@ For production (Supabase), the CI/CD pipeline runs this automatically via GitHub
 ## Deployment Pipeline
 
 ### GitHub Actions Workflow (.github/workflows/deploy-gcp.yml)
-1. **Test Phase**: Frontend build, backend tests, Playwright E2E (64 tests)
+1. **Test Phase**: Frontend build, backend tests, Playwright E2E (132 tests)
 2. **Database Init**: Runs `init_db.py` against Supabase
 3. **Backend Deploy**: Docker build → Artifact Registry → Cloud Run
 4. **Frontend Deploy**: Vite build → Firebase Hosting
@@ -352,7 +352,7 @@ Every plan execution **must** pass automated validation before completion. A `St
 | Dependency consistency | `bcrypt` version match between `constraints.txt` and `requirements.render.txt` | Block (exit 2) |
 | passlib+bcrypt compat | Hash generation + verification | Block (exit 2) |
 | TypeScript type check | Recently changed `.ts/.tsx` files | Warning |
-| Report existence | `prototype/reports/*.md` | Info only |
+| Report existence | `prototype/reports/*.md` | Info only (reports archived) |
 
 ### Hook Behavior
 
@@ -382,19 +382,20 @@ cat /tmp/vulca-post-plan-validate.log
 ### Directory Structure
 ```
 wenxin-backend/app/prototype/
-├── __init__.py
-├── agents/              # D4-D7: 5 Agent roles (Curator, Historian, Critic, Creator, Anchor)
-├── pipeline/            # D5+: 8-stage evaluation pipeline
-├── checkpoints/         # Rollback checkpoint management
-├── tools/               # External anchoring tools (Wikidata, GND, ULAN)
-├── router/              # Rule-based router + fallback chain
-├── cultural_pipelines/  # Cultural routing variants
-├── ui/                  # Gradio/Daggr demo UI
-├── data/
-│   ├── samples/         # VULCA-Bench sample subset
-│   ├── terminology/     # Cultural terminology dictionaries
-│   └── generated/       # Generated results
-└── reports/             # Daily output reports (d1-*.md, d2-*.md, ...)
+├── agents/              # Scout, Draft, Critic, Queen + providers (8.3K lines)
+├── api/                 # REST endpoints: create, evaluate, routes (1.9K lines)
+├── cultural_pipelines/  # Cultural weights, YAML tradition loader, pipeline router
+├── digestion/           # ContextEvolver, FeatureExtractor, Clusterer, Distiller
+├── feedback/            # FeedbackStore + sync_from_sessions
+├── intent/              # IntentAgent, SkillSelector, MetaOrchestrator
+├── orchestrator/        # PipelineOrchestrator (Scout→Draft→Critic→Queen loop)
+├── pipeline/            # Pipeline types + fallback chain
+├── session/             # SessionStore + SessionDigest (JSONL-backed)
+├── skills/              # Skill marketplace, executors, discussion
+├── tools/               # Scout service, terminology loader, FAISS index
+├── ui/                  # Gradio demo UI
+├── checkpoints/         # Runtime checkpoint management (data gitignored)
+└── data/                # YAML traditions, sessions.jsonl, evolved_context.json
 ```
 
 ### Prototype Dependencies
@@ -402,7 +403,7 @@ wenxin-backend/app/prototype/
 pip install -r requirements.prototype.txt  # On top of requirements.render.txt
 ```
 
-Key packages: crewai, litellm, langgraph, langfuse, deepeval, diffusers, gradio
+Key packages: litellm, pydantic, pyyaml, faiss-cpu
 
 ## Academic Paper Workflow
 

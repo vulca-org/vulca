@@ -62,3 +62,10 @@ celerybeat.pid
 
 # Docker
 docker-compose.override.yml
+# Pipeline run artifacts (images, checkpoints)
+app/prototype/checkpoints/draft/
+app/prototype/checkpoints/pipeline/
+app/prototype/checkpoints/critique/
+app/prototype/checkpoints/archive/
+# Archived scripts (moved out of prototype)
+_archive/
