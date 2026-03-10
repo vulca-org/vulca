@@ -229,7 +229,7 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
             digest = SessionDigest(
                 session_id=task_id,
                 mode="create",
-                intent=req.subject,
+                intent=req.intent or req.subject,
                 tradition=req.tradition,
                 subject=req.subject,
                 rounds=rounds,

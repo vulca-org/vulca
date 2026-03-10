@@ -20,6 +20,8 @@ def extract_cultural_features(
     tradition: str,
     final_scores: dict[str, float] | None = None,
     risk_flags: list[str] | None = None,
+    total_rounds: int = 0,
+    max_rounds: int = 0,
 ) -> dict[str, Any]:
     """Tier-1 rule-based cultural feature extraction.
 
@@ -51,6 +53,25 @@ def extract_cultural_features(
     l3 = final_scores.get("L3", final_scores.get("cultural_context", 0.0))
     if isinstance(l3, (int, float)):
         features["cultural_depth"] = round(l3, 4)
+
+    # --- New dimensions (5→8 expansion) ---
+
+    # Dimension variance: std dev of L1-L5 scores (measures balance)
+    if len(score_values) >= 2:
+        mean = sum(score_values) / len(score_values)
+        variance = sum((v - mean) ** 2 for v in score_values) / len(score_values)
+        features["dimension_variance"] = round(variance ** 0.5, 4)
+
+    # L4 emphasis: L4 / max_score ratio (mirrors l5_emphasis)
+    if score_values:
+        max_score = max(score_values)
+        l4 = final_scores.get("L4", final_scores.get("critical_interpretation", 0.0))
+        if isinstance(l4, (int, float)) and max_score > 0:
+            features["l4_emphasis"] = round(l4 / max_score, 4)
+
+    # Generation efficiency: 1.0 - total_rounds/max_rounds
+    if total_rounds > 0 and max_rounds > 0:
+        features["generation_efficiency"] = round(1.0 - total_rounds / max_rounds, 4)
 
     return features
 

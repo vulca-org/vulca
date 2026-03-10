@@ -11,6 +11,7 @@ class CreateRunRequest(BaseModel):
     """Request body for POST /runs."""
 
     subject: str = Field(..., min_length=1, max_length=500, description="Artwork subject")
+    intent: str | None = Field(default=None, max_length=500, description="Creative intent (defaults to subject if omitted)")
     tradition: str = Field(
         default="default",
         description="Cultural tradition",
