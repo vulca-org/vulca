@@ -125,7 +125,7 @@ class TestCulturalKeywordBonuses:
         l1 = next(s for s in scores if s.dimension == "visual_perception")
         # base 0.35 + style_match 0.2 = 0.55
         assert l1.score == pytest.approx(0.55, abs=1e-6)
-        assert "style_match" in l1.rationale
+        assert "traditional style" in l1.rationale
 
     def test_no_bonus_for_wrong_tradition(self, scorer: CriticRules) -> None:
         """A chinese_xieyi keyword should NOT trigger bonus under western_academic."""
@@ -455,4 +455,4 @@ class TestCultureKeywords:
         scores = scorer.score(candidate, evidence, "nonexistent_tradition", use_vlm=False)
         l1 = scores[0]
         # "fine art" and "art" and "museum" are all in default keywords
-        assert "style_match" in l1.rationale
+        assert "traditional style" in l1.rationale

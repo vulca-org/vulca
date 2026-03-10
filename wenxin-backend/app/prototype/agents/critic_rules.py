@@ -117,101 +117,101 @@ class CriticRules:
 
         # --- L1: visual_perception ---
         l1 = 0.35
-        rationale_parts_l1 = ["base=0.35"]
+        rationale_parts_l1 = ["Baseline visual composition assessment"]
         if has_style:
             l1 += 0.2
-            rationale_parts_l1.append("style_match=+0.2")
+            rationale_parts_l1.append("Detected visual elements consistent with traditional style")
         if has_terms:
             l1 += 0.15
-            rationale_parts_l1.append("terminology=+0.15")
+            rationale_parts_l1.append("Terminology used to describe visual effects")
         if len(prompt) > 50:
             l1 += 0.15
-            rationale_parts_l1.append("prompt_length>50=+0.15")
+            rationale_parts_l1.append("Detailed and thorough creative intent")
         scores.append(DimensionScore(
             dimension=DIMENSIONS[0],
             score=_clamp(l1),
-            rationale="; ".join(rationale_parts_l1),
+            rationale=". ".join(rationale_parts_l1),
         ))
 
         # --- L2: technical_analysis ---
         l2 = 0.35
-        rationale_parts_l2 = ["base=0.35"]
+        rationale_parts_l2 = ["Baseline technical parameter assessment"]
         if steps >= 15:
             l2 += 0.2
-            rationale_parts_l2.append("steps>=15=+0.2")
+            rationale_parts_l2.append("Sufficient inference steps ensure detail quality")
         if sampler:
             l2 += 0.15
-            rationale_parts_l2.append("sampler_present=+0.15")
+            rationale_parts_l2.append("Appropriate sampler selected")
         if model_ref:
             l2 += 0.15
-            rationale_parts_l2.append("model_ref_present=+0.15")
+            rationale_parts_l2.append("Suitable model choice")
         scores.append(DimensionScore(
             dimension=DIMENSIONS[1],
             score=_clamp(l2),
-            rationale="; ".join(rationale_parts_l2),
+            rationale=". ".join(rationale_parts_l2),
         ))
 
         # --- L3: cultural_context ---
         l3 = 0.3
-        rationale_parts_l3 = ["base=0.3"]
+        rationale_parts_l3 = ["Baseline cultural context assessment"]
         term_bonus = min(len(term_hits) * 0.15, 0.3)
         if term_bonus > 0:
             l3 += term_bonus
-            rationale_parts_l3.append(f"term_hits({len(term_hits)})=+{term_bonus:.2f}")
+            rationale_parts_l3.append(f"Incorporated {len(term_hits)} cultural key element(s)")
         sample_bonus = min(len(sample_matches) * 0.1, 0.2)
         if sample_bonus > 0:
             l3 += sample_bonus
-            rationale_parts_l3.append(f"sample_matches({len(sample_matches)})=+{sample_bonus:.2f}")
+            rationale_parts_l3.append(f"Referenced {len(sample_matches)} traditional exemplar(s)")
         if not taboo_violations:
             l3 += 0.2
-            rationale_parts_l3.append("no_taboo=+0.2")
+            rationale_parts_l3.append("No cultural taboos violated")
         scores.append(DimensionScore(
             dimension=DIMENSIONS[2],
             score=_clamp(l3),
-            rationale="; ".join(rationale_parts_l3),
+            rationale=". ".join(rationale_parts_l3),
         ))
 
         # --- L4: critical_interpretation ---
         l4 = 0.6
-        rationale_parts_l4 = ["base=0.6"]
+        rationale_parts_l4 = ["Baseline critical interpretation assessment"]
         if has_taboo_critical:
             l4 = 0.0
-            rationale_parts_l4 = ["taboo_critical → 0.0"]
+            rationale_parts_l4 = ["Critical cultural taboo (禁忌) detected — requires revision"]
         elif has_taboo_high:
             # Hard cap at 0.3 — no bonus stacking allowed (symmetric with taboo_critical)
             l4 = 0.3
-            rationale_parts_l4 = ["taboo_high → 0.3"]
+            rationale_parts_l4 = ["High cultural sensitivity detected — adjustment recommended"]
         else:
             if has_terms:
                 l4 += 0.2
-                rationale_parts_l4.append("terminology=+0.2")
+                rationale_parts_l4.append("Accurate use of cultural criticism terminology")
             if has_samples:
                 l4 += 0.2
-                rationale_parts_l4.append("sample_evidence=+0.2")
+                rationale_parts_l4.append("Demonstrates depth of dialogue with canonical works")
         scores.append(DimensionScore(
             dimension=DIMENSIONS[3],
             score=_clamp(l4),
-            rationale="; ".join(rationale_parts_l4),
+            rationale=". ".join(rationale_parts_l4),
         ))
 
         # --- L5: philosophical_aesthetic ---
         l5 = 0.4
-        rationale_parts_l5 = ["base=0.4"]
+        rationale_parts_l5 = ["Baseline philosophical-aesthetic (美学哲思) assessment"]
         culture_kws = ["culture", "cultural", "philosophy", "aesthetic",
                        "meaning", "symbolism", "tradition", "heritage"]
         if any(kw in prompt_lower for kw in culture_kws):
             l5 += 0.2
-            rationale_parts_l5.append("cultural_keywords=+0.2")
+            rationale_parts_l5.append("Engages core cultural-philosophical concepts")
         if not taboo_violations:
             l5 += 0.2
-            rationale_parts_l5.append("no_taboo=+0.2")
+            rationale_parts_l5.append("Aesthetic exploration within culturally safe boundaries")
         if len(term_hits) >= 2:
             l5 += 0.2
-            rationale_parts_l5.append("term_coverage>=2=+0.2")
+            rationale_parts_l5.append("Multi-layered depth of cultural understanding")
         scores.append(DimensionScore(
             dimension=DIMENSIONS[4],
             score=_clamp(l5),
-            rationale="; ".join(rationale_parts_l5),
+            rationale=". ".join(rationale_parts_l5),
         ))
 
         # --- Image-aware blending (VLM preferred, CLIP fallback) ---

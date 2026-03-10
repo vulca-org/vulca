@@ -65,6 +65,8 @@ _buffer_lock = threading.Lock()  # Protects _event_buffers writes/reads
 _guest_runs_today: dict[str, int] = {}  # date_str -> count
 _GUEST_DAILY_LIMIT = 50
 _TASK_RETENTION_SEC = 3600  # 1 hour TTL for completed runs
+_EVOLUTION_INTERVAL_SEC = 300  # Throttle: evolve at most once per 5 minutes
+_last_evolution_time = 0.0
 
 
 def _cleanup_expired_runs() -> None:
@@ -187,12 +189,62 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
     )
 
     def _run_in_background() -> None:
+        from app.prototype.api.create_routes import _process_pipeline_event
+        from app.prototype.digestion.feature_extractor import extract_cultural_features
+        from app.prototype.session.store import SessionStore
+        from app.prototype.session.types import RoundSnapshot, SessionDigest
+
+        rounds: list[RoundSnapshot] = []
+        final_scores: dict[str, float] = {}
+        candidate_image_urls: dict[str, str] = {}
+        state: dict = {"best_candidate_id": "", "total_rounds": 0, "total_cost": 0.0}
+        t0 = time.monotonic()
+
         for event in orchestrator.run_stream(pipeline_input):
             with _buffer_lock:
                 _event_buffers.setdefault(task_id, []).append(event)
+            _process_pipeline_event(event, rounds, candidate_image_urls, final_scores, state)
+
         # Mark this run as completed so cleanup won't remove it prematurely
         if task_id in _run_metadata:
             _run_metadata[task_id]["completed"] = True
+
+        # Persist session digest for Gallery
+        if final_scores or state["total_rounds"] > 0:
+            elapsed_ms = int((time.monotonic() - t0) * 1000)
+            best_image_url = candidate_image_urls.get(state["best_candidate_id"], "")
+            digest = SessionDigest(
+                session_id=task_id,
+                mode="create",
+                intent=req.subject,
+                tradition=req.tradition,
+                subject=req.subject,
+                rounds=rounds,
+                final_scores=final_scores,
+                final_weighted_total=sum(final_scores.values()) / max(len(final_scores), 1),
+                best_image_url=best_image_url,
+                total_rounds=state["total_rounds"],
+                total_latency_ms=elapsed_ms,
+                total_cost_usd=state["total_cost"],
+            )
+            digest.cultural_features = extract_cultural_features(
+                tradition=req.tradition,
+                final_scores=final_scores,
+                risk_flags=[],
+            )
+            SessionStore.get().append(digest)
+
+            # Auto-trigger evolution (throttled)
+            global _last_evolution_time
+            now = time.monotonic()
+            if now - _last_evolution_time >= _EVOLUTION_INTERVAL_SEC:
+                _last_evolution_time = now
+                try:
+                    from app.prototype.digestion.context_evolver import ContextEvolver
+                    ContextEvolver().evolve()
+                except Exception:
+                    pass  # Non-fatal
+
         # Cleanup expired runs after pipeline completes
         _cleanup_expired_runs()
 
@@ -432,7 +484,7 @@ async def list_gallery(limit: int = 50, tradition: str | None = None):
 
     gallery_items = []
     for s in reversed(sessions):  # newest first
-        if not s.get("final_weighted_total") and not s.get("final_scores"):
+        if s.get("final_weighted_total") is None and not s.get("final_scores"):
             continue
         if tradition and s.get("tradition") != tradition:
             continue

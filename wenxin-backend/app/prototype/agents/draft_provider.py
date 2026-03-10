@@ -87,7 +87,7 @@ class MockProvider(AbstractProvider):
         output_path: str,
     ) -> str:
         r, g, b = _seed_to_rgb(seed)
-        png_bytes = _make_solid_png(8, 8, r, g, b)
+        png_bytes = _make_placeholder_png(256, 256, r, g, b, seed)
 
         out = Path(output_path)
         out.parent.mkdir(parents=True, exist_ok=True)
@@ -323,32 +323,59 @@ def _seed_to_rgb(seed: int) -> tuple[int, int, int]:
     return r, g, b
 
 
-def _make_solid_png(w: int, h: int, r: int, g: int, b: int) -> bytes:
-    """Create a minimal valid PNG file with a solid colour.
-
-    Follows the PNG specification:
-      Signature | IHDR | IDAT (deflated raw image data) | IEND
-    """
-
-    def _chunk(chunk_type: bytes, data: bytes) -> bytes:
+def _build_png(w: int, h: int, raw: bytes) -> bytes:
+    """Assemble raw RGB scanlines (with filter bytes) into a valid PNG."""
+    def _chunk(ctype: bytes, data: bytes) -> bytes:
         length = struct.pack(">I", len(data))
-        crc = struct.pack(">I", zlib.crc32(chunk_type + data) & 0xFFFFFFFF)
-        return length + chunk_type + data + crc
+        crc = struct.pack(">I", zlib.crc32(ctype + data) & 0xFFFFFFFF)
+        return length + ctype + data + crc
 
-    # PNG signature
     signature = b"\x89PNG\r\n\x1a\n"
-
-    # IHDR: width, height, bit depth 8, colour type 2 (RGB)
-    ihdr_data = struct.pack(">IIBBBBB", w, h, 8, 2, 0, 0, 0)
-    ihdr = _chunk(b"IHDR", ihdr_data)
-
-    # Raw image data: each row is filter-byte (0) + RGB pixels
-    row = bytes([0]) + bytes([r, g, b]) * w
-    raw = row * h
-    compressed = zlib.compress(raw)
-    idat = _chunk(b"IDAT", compressed)
-
-    # IEND
+    ihdr = _chunk(b"IHDR", struct.pack(">IIBBBBB", w, h, 8, 2, 0, 0, 0))
+    idat = _chunk(b"IDAT", zlib.compress(raw))
     iend = _chunk(b"IEND", b"")
-
     return signature + ihdr + idat + iend
+
+
+def _make_solid_png(w: int, h: int, r: int, g: int, b: int) -> bytes:
+    """Create a minimal valid PNG file with a solid colour."""
+    row = bytes([0]) + bytes([r, g, b]) * w
+    return _build_png(w, h, row * h)
+
+
+def _make_placeholder_png(
+    w: int, h: int, r: int, g: int, b: int, seed: int,
+) -> bytes:
+    """Create a PNG with diagonal gradient + checkerboard pattern.
+
+    Deterministic: same seed always produces identical bytes.
+    Uses only stdlib (struct + zlib), no Pillow needed.
+    """
+    r2 = (seed * 83 + 60) % 256
+    g2 = (seed * 151 + 40) % 256
+    b2 = (seed * 59 + 80) % 256
+
+    checker_size = 32
+    denom = max(w + h - 2, 1)
+    dr, dg, db = r2 - r, g2 - g, b2 - b
+
+    raw = bytearray()
+    for y in range(h):
+        raw.append(0)  # PNG filter byte: None
+        t_base = y / denom
+        cy_even = (y // checker_size) % 2 == 0
+        for x in range(w):
+            t = (x / denom) + t_base
+            gr = int(r + dr * t)
+            gg = int(g + dg * t)
+            gb = int(b + db * t)
+
+            # Checkerboard overlay: lighten alternate cells
+            if ((x // checker_size) % 2 == 0) == cy_even:
+                gr = min(255, gr + 25)
+                gg = min(255, gg + 25)
+                gb = min(255, gb + 25)
+
+            raw.extend((gr, gg, gb))
+
+    return _build_png(w, h, bytes(raw))

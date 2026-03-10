@@ -9,7 +9,8 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def create_access_token(
     subject: Union[str, int],
-    expires_delta: Optional[timedelta] = None
+    expires_delta: Optional[timedelta] = None,
+    is_superuser: bool = False,
 ) -> str:
     """Create JWT access token"""
     if expires_delta:
@@ -18,11 +19,12 @@ def create_access_token(
         expire = datetime.now(timezone.utc) + timedelta(
             minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
         )
-    
+
     to_encode = {
         "exp": expire,
         "sub": str(subject),
-        "type": "access"
+        "type": "access",
+        "is_superuser": is_superuser,
     }
     
     encoded_jwt = jwt.encode(
