@@ -116,8 +116,12 @@ class TestDecodeToken:
         assert decode_token("not-a-jwt") is None
 
     def test_tampered_token_returns_none(self, valid_token: str) -> None:
-        # Flip last character to invalidate signature
-        tampered = valid_token[:-1] + ("A" if valid_token[-1] != "A" else "B")
+        # Replace the signature segment entirely to ensure invalidation
+        parts = valid_token.split(".")
+        assert len(parts) == 3, "JWT must have 3 parts"
+        # Reverse the signature to guarantee it's invalid
+        parts[2] = parts[2][::-1]
+        tampered = ".".join(parts)
         assert decode_token(tampered) is None
 
     def test_expired_token_returns_none(self) -> None:
