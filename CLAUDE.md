@@ -19,7 +19,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-VULCA (Visual Understanding and Linguistic Cultural Assessment) - AI model benchmarking platform testing 42 models from 15 organizations across 47 evaluation dimensions and 8 cultural perspectives. Features React 19 frontend with iOS design system, FastAPI backend with async SQLAlchemy, and production GCP deployment.
+VULCA — AI-native creation organism. Create, critique, and evolve cultural art through multi-agent AI pipelines. The core product is **Canvas** (unified creation + evaluation), not the leaderboard. Features React 19 frontend with Art Professional design system, FastAPI backend with async pipeline (Scout→Draft→Critic→Queen), and production GCP deployment.
 
 **Production URLs:**
 - Frontend: https://vulcaart.art (Firebase Hosting)
@@ -48,7 +48,7 @@ npm run dev:clean       # Clear cache and start dev server
 npm run dev:fresh       # Complete cache reset and start
 npm run cache:clear     # Clear all caches (manual)
 
-# Playwright E2E Testing (64 test cases)
+# Playwright E2E Testing (132 test cases)
 npm run test:e2e               # Run all tests headless
 npm run test:e2e:ui            # Interactive test UI
 npm run test:e2e:debug         # Debug mode step-by-step
@@ -95,14 +95,6 @@ src/
 ├── hooks/                # Custom hooks including vulca/useVULCAData
 ├── utils/                # Utilities including vulca/api.ts
 └── types/                # TypeScript definitions
-```
-
-#### HashRouter (Required for Cloud Storage)
-```typescript
-// All routes use hash: #/, #/leaderboard, #/battle, #/model/:id, #/vulca
-const withRoute = (path: string): string => {
-  return ROUTER_MODE === 'hash' ? `/#${path}` : path;
-};
 ```
 
 #### State Management
@@ -244,65 +236,8 @@ bcrypt==4.0.1  # 4.1+ breaks passlib compatibility
 ```
 The passlib library is incompatible with bcrypt 4.1+. Always pin to 4.0.x.
 
-### Hash Router SEO Implications
-The frontend uses HashRouter (`#/pricing`, `#/product`) required for static hosting. This affects:
-- Google cannot directly crawl hash URLs
-- Must manually request indexing via Google Search Console
-- Sitemap includes hash URLs but crawling is limited
-
-## Exhibition Module (Didot Exhibition)
-
-### Overview
-Echoes and Returns (回响与归来) - AI dialogue generation system for 87 contemporary artworks. Generates multi-persona art criticism dialogues with multimodal (image+text) analysis.
-
-### Commands
-```bash
-cd wenxin-backend
-# Generate multimodal dialogues (all 87 artworks)
-python3 scripts/generate_multimodal_dialogues.py --participants 3 --turns 6 --images 3
-
-# Check progress
-cat data/exhibition/multimodal_progress.json
-```
-
-### Architecture
-```
-wenxin-backend/app/exhibition/
-├── models/
-│   ├── persona.py          # 8 historical personas (苏轼, 郭熙, Ruskin, etc.)
-│   └── dialogue.py         # Dialogue data models
-├── services/
-│   ├── multi_agent_generator.py  # Core VLM dialogue generation
-│   ├── lancedb_service.py        # Vector database service
-│   └── image_processor.py        # Aliyun OSS image handling
-└── api/
-    └── exhibition_routes.py      # REST API endpoints
-```
-
-### Data Paths
-- **Source data**: `Didot_exhibition_Dec/Echoes and Returns.json`
-- **Generated dialogues**: `Didot_exhibition_Dec/dialogues.json`
-- **LanceDB storage**: `wenxin-backend/data/exhibition/`
-- **GitHub Raw URL**: `https://raw.githubusercontent.com/yha9806/website/003-ji-vulca-vulca/Didot_exhibition_Dec/dialogues.json`
-
-### Key Parameters
-- Dialogue content: 1-20 characters per turn
-- Participants: 3 personas per dialogue
-- Turns: 6 per dialogue
-- Languages: EN/ZH/JA/RU
-- Multimodal: Image analysis via Claude Vision API
-
-## Task Management System
-
-The project uses a structured task management system:
-```
-tasks/
-├── active/       # Currently active tasks
-├── completed/    # Finished tasks with full documentation
-└── suspended/    # Paused tasks
-```
-
-When working on complex tasks, document in markdown format with sections for requirements, constraints, implementation plan, and progress tracking.
+### BrowserRouter
+The frontend uses BrowserRouter (React Router DOM). Firebase Hosting has rewrite rules for SPA routing.
 
 ## Database Initialization
 
@@ -322,60 +257,9 @@ For production (Supabase), the CI/CD pipeline runs this automatically via GitHub
 3. **Backend Deploy**: Docker build → Artifact Registry → Cloud Run
 4. **Frontend Deploy**: Vite build → Firebase Hosting
 
-### Firebase Hosting Commands
-```bash
-cd wenxin-moyun
-npm run build
-firebase deploy --only hosting
-```
-
 ## Environment
 
 When working with Python in this project, always use the virtualenv Python (not system Python). Check which python/pip is active before installing packages.
-
-### Environment Variables (Cloud Run)
-Secrets are injected from GCP Secret Manager:
-- `DATABASE_URL`: Supabase connection string
-- `SECRET_KEY`: JWT signing key
-- `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`: AI provider keys
-
-## Post-Plan Validation Hook
-
-Every plan execution **must** pass automated validation before completion. A `Stop` hook is configured at `.claude/settings.local.json` that runs `.claude/hooks/post-plan-validate.sh` after each Claude response.
-
-### What the Hook Validates
-
-| Check | Scope | Failure Action |
-|-------|-------|----------------|
-| Python syntax (`py_compile`) | Recently changed `.py` files (last 5 min) | Block (exit 2) |
-| Import chain | `email_service`, `cache_service`, `settings`, `app.prototype` | Block (exit 2) |
-| Dependency consistency | `bcrypt` version match between `constraints.txt` and `requirements.render.txt` | Block (exit 2) |
-| passlib+bcrypt compat | Hash generation + verification | Block (exit 2) |
-| TypeScript type check | Recently changed `.ts/.tsx` files | Warning |
-| Report existence | `prototype/reports/*.md` | Info only (reports archived) |
-
-### Hook Behavior
-
-- **Exit 0**: All checks passed, Claude proceeds normally
-- **Exit 2**: Critical failure detected, Claude is blocked and must fix errors before continuing
-- **Warnings**: Reported as `additionalContext` to Claude, non-blocking
-- **Log file**: `/tmp/vulca-post-plan-validate.log`
-
-### Manual Trigger
-
-```bash
-cd <project-root>
-.claude/hooks/post-plan-validate.sh
-echo $?  # 0 = pass, 2 = fail
-cat /tmp/vulca-post-plan-validate.log
-```
-
-### Quality Gate Principle
-
-**Every plan day (D1, D2, ..., D14) must:**
-1. Pass all automated validation checks (hook enforced)
-2. Generate a report at `wenxin-backend/app/prototype/reports/dN-*.md`
-3. Have zero unresolved import/syntax errors before proceeding to next day
 
 ## VULCA Prototype Architecture
 
