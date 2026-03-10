@@ -210,6 +210,46 @@ class _KoalaProviderAdapter(AbstractProvider):
         )
 
 
+def _inject_evolved_context(prompt_parts: list[str], tradition: str) -> None:
+    """Inject evolved context archetypes into Draft prompt parts.
+
+    Reads successful patterns from evolved_context.json and adds them
+    as style hints to the generation prompt. Zero regression on failure.
+    """
+    try:
+        from app.prototype.cultural_pipelines.cultural_weights import get_prompt_archetypes
+
+        archetypes = get_prompt_archetypes(tradition, top_n=3)
+        for arch in archetypes:
+            pattern = arch.get("pattern", "")
+            if pattern and len(pattern) > 2:
+                prompt_parts.append(pattern)
+            # Add draft-specific insight from agent_insights
+            insights = arch.get("insights", "")
+            if insights:
+                # Extract key phrases (first sentence, capped at 60 chars)
+                first_sentence = insights.split(".")[0].strip()
+                if first_sentence and len(first_sentence) <= 60:
+                    prompt_parts.append(first_sentence)
+    except Exception:
+        pass  # Zero regression
+
+
+def _get_evolved_anti_patterns(tradition: str) -> list[str]:
+    """Get evolved anti-patterns for negative prompt injection."""
+    try:
+        from app.prototype.cultural_pipelines.cultural_weights import get_prompt_archetypes
+
+        anti: list[str] = []
+        for arch in get_prompt_archetypes(tradition, top_n=3):
+            for ap in arch.get("anti_patterns", [])[:2]:
+                if ap and len(ap) <= 80:
+                    anti.append(ap)
+        return anti[:5]
+    except Exception:
+        return []
+
+
 class DraftAgent:
     """Generate 4-6 traceable low-res sketch candidates."""
 
@@ -651,6 +691,7 @@ class DraftAgent:
 
         Uses terminology anchors with usage hints, composition fragments,
         style constraints, and taboo constraints for negative prompt.
+        Injects evolved context (archetypes, insights, anti-patterns).
         """
         style_entry = _get_style_for_tradition(tradition)
         style_kw = style_entry["style"]
@@ -678,11 +719,15 @@ class DraftAgent:
         for style in pack.styles:
             prompt_parts.append(f"{style.attribute}: {style.value}")
 
+        # Evolved context injection (MemRL: archetypes + insights)
+        _inject_evolved_context(prompt_parts, tradition)
+
         prompt = ", ".join(prompt_parts)
 
-        # Negative prompt: base + taboos
+        # Negative prompt: base + taboos + evolved anti-patterns
         neg_parts = [base_neg]
         neg_parts.extend(pack.get_negative_prompt_additions())
+        neg_parts.extend(_get_evolved_anti_patterns(tradition))
         negative_prompt = ", ".join(neg_parts)
 
         return prompt, negative_prompt
@@ -710,14 +755,18 @@ class DraftAgent:
             if term:
                 prompt_parts.append(term)
 
+        # Evolved context injection (MemRL: archetypes + insights)
+        _inject_evolved_context(prompt_parts, tradition)
+
         prompt = ", ".join(prompt_parts)
 
-        # Negative prompt: base + taboo descriptions
+        # Negative prompt: base + taboo descriptions + evolved anti-patterns
         neg_parts = [base_neg]
         for violation in evidence.get("taboo_violations", []):
             desc = violation.get("description", "")
             if desc:
                 neg_parts.append(desc)
+        neg_parts.extend(_get_evolved_anti_patterns(tradition))
 
         negative_prompt = ", ".join(neg_parts)
 

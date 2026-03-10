@@ -65,17 +65,24 @@ _buffer_lock = threading.Lock()  # Protects _event_buffers writes/reads
 _guest_runs_today: dict[str, int] = {}  # date_str -> count
 _GUEST_DAILY_LIMIT = 50
 _TASK_RETENTION_SEC = 3600  # 1 hour TTL for completed runs
+_TASK_HARD_TIMEOUT_SEC = 14400  # 4 hours: force-clean even incomplete runs
 _EVOLUTION_INTERVAL_SEC = 300  # Throttle: evolve at most once per 5 minutes
 _last_evolution_time = 0.0
 
 
 def _cleanup_expired_runs() -> None:
-    """Remove completed runs older than retention period to prevent memory leak."""
+    """Remove completed runs older than retention period to prevent memory leak.
+
+    Also force-cleans any run (including incomplete) older than hard timeout.
+    """
     now = time.time()
     expired = [
         tid for tid, meta in _run_metadata.items()
-        if now - meta.get("created_at", now) > _TASK_RETENTION_SEC
-        and meta.get("completed", False)
+        if (
+            now - meta.get("created_at", now) > _TASK_RETENTION_SEC
+            and meta.get("completed", False)
+        )
+        or now - meta.get("created_at", now) > _TASK_HARD_TIMEOUT_SEC
     ]
     # Also clean stale idempotency entries pointing to expired tasks
     stale_idem = [k for k, v in _idempotency_map.items() if v in expired]
@@ -245,6 +252,11 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
             now = time.monotonic()
             if now - _last_evolution_time >= _EVOLUTION_INTERVAL_SEC:
                 _last_evolution_time = now
+                try:
+                    from app.prototype.feedback.store import FeedbackStore
+                    FeedbackStore.get().sync_from_sessions()
+                except Exception:
+                    pass
                 try:
                     from app.prototype.digestion.context_evolver import ContextEvolver
                     ContextEvolver().evolve()

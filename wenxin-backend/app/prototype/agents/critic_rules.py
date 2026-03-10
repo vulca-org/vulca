@@ -75,8 +75,66 @@ def _clamp(v: float) -> float:
     return max(0.0, min(1.0, v))
 
 
+def _get_evolved_scoring_context(tradition: str) -> dict:
+    """Load evolved scoring hints for Critic from evolved_context.json.
+
+    Returns dict with:
+    - focus_points: {dimension: [str]} per-tradition focus points
+    - evaluation_guidance: {L-label: str} from archetypes
+    - anti_patterns: [str] things to penalize
+    """
+    result: dict = {"focus_points": {}, "evaluation_guidance": {}, "anti_patterns": []}
+    try:
+        import json
+        import os
+        ctx_path = os.path.join(
+            os.path.dirname(__file__), os.pardir, "data", "evolved_context.json"
+        )
+        if not os.path.exists(ctx_path):
+            return result
+        with open(ctx_path, "r", encoding="utf-8") as f:
+            ctx = json.load(f)
+        if ctx.get("evolutions", 0) == 0:
+            return result
+
+        # Layer focus points
+        layer_focus = ctx.get("layer_focus", {}).get(tradition, {})
+        if isinstance(layer_focus, dict):
+            result["focus_points"] = {
+                dim: data.get("focus_points", [])
+                for dim, data in layer_focus.items()
+                if isinstance(data, dict) and data.get("focus_points")
+            }
+
+        # Evaluation guidance from archetypes
+        archetypes = ctx.get("prompt_contexts", {}).get("archetypes", [])
+        if isinstance(archetypes, list):
+            for arch in archetypes:
+                if not isinstance(arch, dict):
+                    continue
+                if tradition not in arch.get("traditions", []) and arch.get("traditions"):
+                    continue
+                guidance = arch.get("evaluation_guidance", {})
+                if isinstance(guidance, dict):
+                    for k, v in guidance.items():
+                        if k not in result["evaluation_guidance"] and v:
+                            result["evaluation_guidance"][k] = str(v)
+                for ap in arch.get("anti_patterns", []):
+                    if ap and ap not in result["anti_patterns"]:
+                        result["anti_patterns"].append(str(ap))
+
+        # Agent-specific critic guidance
+        critic_insight = ctx.get("agent_insights", {}).get("critic", "")
+        if critic_insight:
+            result["critic_insight"] = critic_insight
+
+    except Exception:
+        pass
+    return result
+
+
 class CriticRules:
-    """Rule-based scorer with optional CLIP image blending."""
+    """Rule-based scorer with optional CLIP image blending and evolved context."""
 
     def score(
         self,
@@ -90,7 +148,8 @@ class CriticRules:
 
         If candidate has a valid image_path and CLIP is available,
         image-based scores are blended with rule-based scores.
-        The ``subject`` parameter is used for L1 CLIP comparison.
+        Evolved context (focus points, evaluation guidance) influences
+        scoring when available.
         """
         prompt = candidate.get("prompt", "")
         prompt_lower = prompt.lower()
@@ -113,6 +172,11 @@ class CriticRules:
             v.get("severity") == "high" for v in taboo_violations
         )
 
+        # Load evolved scoring context (zero regression on failure)
+        evo = _get_evolved_scoring_context(cultural_tradition)
+        evo_guidance = evo.get("evaluation_guidance", {})
+        evo_focus = evo.get("focus_points", {})
+
         scores: list[DimensionScore] = []
 
         # --- L1: visual_perception ---
@@ -127,6 +191,14 @@ class CriticRules:
         if len(prompt) > 50:
             l1 += 0.15
             rationale_parts_l1.append("Detailed and thorough creative intent")
+        # Evolved focus bonus: tradition has specific L1 focus points
+        if evo_focus.get("visual_perception"):
+            l1 += 0.05
+            rationale_parts_l1.append(f"Evolved focus: {evo_focus['visual_perception'][0]}")
+        # Evolved evaluation guidance
+        l1_hint = evo_guidance.get("L1") or evo_guidance.get("visual_perception", "")
+        if l1_hint:
+            rationale_parts_l1.append(f"[Evolved] {l1_hint[:80]}")
         scores.append(DimensionScore(
             dimension=DIMENSIONS[0],
             score=_clamp(l1),
@@ -145,6 +217,12 @@ class CriticRules:
         if model_ref:
             l2 += 0.15
             rationale_parts_l2.append("Suitable model choice")
+        if evo_focus.get("technical_analysis"):
+            l2 += 0.05
+            rationale_parts_l2.append(f"Evolved focus: {evo_focus['technical_analysis'][0]}")
+        l2_hint = evo_guidance.get("L2") or evo_guidance.get("technical_analysis", "")
+        if l2_hint:
+            rationale_parts_l2.append(f"[Evolved] {l2_hint[:80]}")
         scores.append(DimensionScore(
             dimension=DIMENSIONS[1],
             score=_clamp(l2),
@@ -165,6 +243,12 @@ class CriticRules:
         if not taboo_violations:
             l3 += 0.2
             rationale_parts_l3.append("No cultural taboos violated")
+        if evo_focus.get("cultural_context"):
+            l3 += 0.05
+            rationale_parts_l3.append(f"Evolved focus: {evo_focus['cultural_context'][0]}")
+        l3_hint = evo_guidance.get("L3") or evo_guidance.get("cultural_context", "")
+        if l3_hint:
+            rationale_parts_l3.append(f"[Evolved] {l3_hint[:80]}")
         scores.append(DimensionScore(
             dimension=DIMENSIONS[2],
             score=_clamp(l3),
@@ -188,6 +272,9 @@ class CriticRules:
             if has_samples:
                 l4 += 0.2
                 rationale_parts_l4.append("Demonstrates depth of dialogue with canonical works")
+        l4_hint = evo_guidance.get("L4") or evo_guidance.get("critical_interpretation", "")
+        if l4_hint:
+            rationale_parts_l4.append(f"[Evolved] {l4_hint[:80]}")
         scores.append(DimensionScore(
             dimension=DIMENSIONS[3],
             score=_clamp(l4),
@@ -208,6 +295,12 @@ class CriticRules:
         if len(term_hits) >= 2:
             l5 += 0.2
             rationale_parts_l5.append("Multi-layered depth of cultural understanding")
+        if evo_focus.get("philosophical_aesthetic"):
+            l5 += 0.05
+            rationale_parts_l5.append(f"Evolved focus: {evo_focus['philosophical_aesthetic'][0]}")
+        l5_hint = evo_guidance.get("L5") or evo_guidance.get("philosophical_aesthetic", "")
+        if l5_hint:
+            rationale_parts_l5.append(f"[Evolved] {l5_hint[:80]}")
         scores.append(DimensionScore(
             dimension=DIMENSIONS[4],
             score=_clamp(l5),

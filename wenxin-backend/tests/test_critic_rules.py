@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+from unittest.mock import patch
 
 import pytest
 
@@ -13,6 +14,19 @@ logger = logging.getLogger("vulca")
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
+_EMPTY_EVO = {"focus_points": {}, "evaluation_guidance": {}, "anti_patterns": []}
+
+
+@pytest.fixture(autouse=True)
+def _no_evolved_context():
+    """Disable evolved context injection so tests verify rule-based logic only."""
+    with patch(
+        "app.prototype.agents.critic_rules._get_evolved_scoring_context",
+        return_value=_EMPTY_EVO,
+    ):
+        yield
+
 
 @pytest.fixture()
 def scorer() -> CriticRules:
