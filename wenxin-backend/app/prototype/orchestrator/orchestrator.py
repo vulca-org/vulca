@@ -1,5 +1,10 @@
 """PipelineOrchestrator — single source of truth for pipeline execution.
 
+Orchestrator Architecture Decision (Route B+, 2026-03-10):
+Status: **PRODUCTION** — all API routes use this orchestrator by default.
+Alternative: app.prototype.graph.GraphOrchestrator (experimental, LangGraph-based)
+Unified entry point: app.prototype.orchestrator.get_orchestrator(mode="pipeline")
+
 All entry points (CLI, Gradio, API, benchmark, AB test) use this class.
 Supports both synchronous and streaming (generator) modes.
 """

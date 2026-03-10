@@ -26,13 +26,28 @@ _MAX_DELTA = 0.05
 _MIN_SESSIONS_TO_EVOLVE = 5
 
 # Seed sessions use L1-L5 shorthand; weights use full dimension names.
-_DIM_ALIASES: dict[str, str] = {
+# This map normalises *any* known alias → canonical full name so that both
+# ``"L1"`` and ``"visual_perception"`` resolve to the same key.
+_LAYER_NAME_MAP: dict[str, str] = {
+    # Short labels (session data)
     "L1": "visual_perception",
     "L2": "technical_analysis",
     "L3": "cultural_context",
     "L4": "critical_interpretation",
     "L5": "philosophical_aesthetic",
+    # Full canonical names (identity)
+    "visual_perception": "visual_perception",
+    "technical_analysis": "technical_analysis",
+    "cultural_context": "cultural_context",
+    "critical_interpretation": "critical_interpretation",
+    "philosophical_aesthetic": "philosophical_aesthetic",
 }
+
+# Reverse: canonical full name → L-label (e.g. for normalising weight keys)
+_DIM_TO_LABEL: dict[str, str] = {v: k for k, v in _LAYER_NAME_MAP.items() if k.startswith("L")}
+
+# Keep backward-compatible alias (several modules import _DIM_ALIASES)
+_DIM_ALIASES = _LAYER_NAME_MAP
 _DEFAULT_CONTEXT_PATH = os.path.join(
     os.path.dirname(__file__), os.pardir, "data", "evolved_context.json"
 )
@@ -226,11 +241,20 @@ class ContextEvolver:
         except Exception as exc:
             logger.debug("Concept crystallization skipped: %s", exc)
 
+        # --- Queen strategy evolution ---
+        try:
+            queen_strategy = self._evolve_queen_strategy(context, patterns)
+            if queen_strategy:
+                context["queen_strategy"] = queen_strategy
+        except Exception as exc:
+            logger.debug("Queen strategy evolution skipped: %s", exc)
+
         # Save if any actions or new data was added (C2: unified save point)
         has_new_data = bool(
             context.get("feature_space", {}).get("clusters")
             or context.get("prompt_contexts", {}).get("archetypes")
             or context.get("cultures")
+            or context.get("queen_strategy")
         )
         if actions or has_new_data:
             self._save_context(context)
@@ -250,11 +274,20 @@ class ContextEvolver:
     def _boost_dimension(self, context: dict, pattern: Pattern) -> EvolutionAction | None:
         """Boost a systematically low dimension's weight, keeping sum=1.0."""
         tradition = pattern.tradition
-        dim = _DIM_ALIASES.get(pattern.dimension, pattern.dimension)
+        dim = _LAYER_NAME_MAP.get(pattern.dimension, pattern.dimension)
 
         weights = context.get("tradition_weights", {}).get(tradition, {})
-        if not weights or dim not in weights:
+        if not weights:
             return None
+
+        # Weights may use either L-labels or full names as keys.
+        # Try full name first, then fall back to L-label.
+        if dim not in weights:
+            label = _DIM_TO_LABEL.get(dim)
+            if label and label in weights:
+                dim = label  # use the L-label key that's in weights
+            else:
+                return None
 
         old_val = weights[dim]
         delta = min(_MAX_DELTA, (0.60 - pattern.avg_score) * 0.1)
@@ -492,3 +525,55 @@ class ContextEvolver:
                 result[tradition] = layers
 
         return result
+
+    # ------------------------------------------------------------------
+    # P2-1: Queen strategy parameter evolution
+    # ------------------------------------------------------------------
+
+    _QUEEN_ADJ_STEP = 0.05       # per-cycle adjustment step
+    _QUEEN_ADJ_CLAMP = 0.15      # absolute limit for cumulative adjustment
+
+    def _evolve_queen_strategy(
+        self, context: dict, patterns: list[Pattern]
+    ) -> dict | None:
+        """Derive ``queen_strategy`` from detected scoring patterns.
+
+        Logic:
+        - ``consistently_high`` patterns → raise accept_threshold (can be stricter)
+        - ``negative_feedback_dominant`` patterns → lower accept_threshold (need diversity)
+        - Adjustment ±0.05 per cycle, clamped to [-0.15, +0.15].
+
+        Returns a queen_strategy dict or *None* if nothing changed.
+        """
+        import time as _time
+
+        prev = context.get("queen_strategy", {})
+        old_adj: float = prev.get("accept_threshold_adjustment", 0.0)
+
+        high_count = sum(
+            1 for p in patterns if p.pattern_type == "consistently_high"
+        )
+        neg_count = sum(
+            1 for p in patterns if p.pattern_type == "negative_feedback_dominant"
+        )
+
+        delta = 0.0
+        if high_count > neg_count:
+            # Quality is consistently good → tighten threshold
+            delta = self._QUEEN_ADJ_STEP
+        elif neg_count > high_count:
+            # Users unhappy → relax threshold for diversity
+            delta = -self._QUEEN_ADJ_STEP
+
+        if delta == 0.0 and not prev:
+            return None  # Nothing to write on first pass with no signal
+
+        new_adj = max(-self._QUEEN_ADJ_CLAMP, min(self._QUEEN_ADJ_CLAMP, old_adj + delta))
+
+        return {
+            "accept_threshold_adjustment": round(new_adj, 4),
+            "prefer_quality_over_speed": new_adj >= 0.0,
+            "high_pattern_count": high_count,
+            "negative_feedback_count": neg_count,
+            "updated_at": _time.strftime("%Y-%m-%dT%H:%M:%S"),
+        }

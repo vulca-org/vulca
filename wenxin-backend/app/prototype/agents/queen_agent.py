@@ -34,6 +34,19 @@ __all__ = [
 _LABEL_TO_DIM = {f"L{i+1}": dim for i, dim in enumerate(DIMENSIONS)}
 
 
+def _get_evolved_threshold_adjustment() -> float:
+    """Load the evolved accept_threshold adjustment (zero regression safe)."""
+    try:
+        from app.prototype.cultural_pipelines.cultural_weights import get_queen_strategy
+        strategy = get_queen_strategy()
+        adj = strategy.get("accept_threshold_adjustment", 0.0)
+        if isinstance(adj, (int, float)):
+            return float(adj)
+    except Exception:
+        pass
+    return 0.0
+
+
 class QueenAgent:
     """Decide accept / rerun / stop based on Critic output and budget."""
 
@@ -126,7 +139,11 @@ class QueenAgent:
         rerun_hint: list[str],
         plan_state: PlanState,
     ) -> QueenDecision:
-        # 1. Early stop
+        # Apply evolved threshold adjustment (zero regression: defaults to 0.0)
+        evolved_adj = _get_evolved_threshold_adjustment()
+        effective_accept = cfg.accept_threshold + evolved_adj
+
+        # 1. Early stop (uses static threshold — not affected by evolution)
         if best_gate_passed and best_score >= cfg.early_stop_threshold:
             return QueenDecision(
                 action="accept",
@@ -134,10 +151,11 @@ class QueenAgent:
             )
 
         # 2. Threshold accept (before over_rounds so max_rounds=1 can still accept)
-        if best_gate_passed and best_score >= cfg.accept_threshold:
+        if best_gate_passed and best_score >= effective_accept:
+            adj_note = f" (evolved adj {evolved_adj:+.4f})" if evolved_adj != 0.0 else ""
             return QueenDecision(
                 action="accept",
-                reason=f"threshold accept: weighted_total {best_score:.4f} >= {cfg.accept_threshold}",
+                reason=f"threshold accept: weighted_total {best_score:.4f} >= {effective_accept:.4f}{adj_note}",
             )
 
         # 3. Over rounds

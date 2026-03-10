@@ -269,6 +269,49 @@ def get_prompt_archetypes(tradition: str, top_n: int = 5) -> list[dict]:
 
 
 # ---------------------------------------------------------------------------
+# Queen strategy (evolved accept_threshold adjustment)
+# ---------------------------------------------------------------------------
+
+_queen_strategy_cache: tuple[float, dict] | None = None
+_QUEEN_CACHE_TTL = 300  # 5 minutes
+
+
+def get_queen_strategy() -> dict:
+    """Return the ``queen_strategy`` block from evolved_context.json.
+
+    Returns an empty dict if no evolved data is available (zero regression).
+    The returned dict may contain:
+    - ``accept_threshold_adjustment``: float in [-0.15, +0.15]
+    - ``prefer_quality_over_speed``: bool
+    - ``updated_at``: ISO timestamp string
+    """
+    global _queen_strategy_cache
+    now = time.time()
+    if _queen_strategy_cache is not None:
+        cached_time, cached_val = _queen_strategy_cache
+        if now - cached_time < _QUEEN_CACHE_TTL:
+            return cached_val
+
+    result = _load_queen_strategy()
+    _queen_strategy_cache = (now, result)
+    return result
+
+
+def _load_queen_strategy() -> dict:
+    try:
+        if not os.path.exists(_EVOLVED_CONTEXT_PATH):
+            return {}
+        with open(_EVOLVED_CONTEXT_PATH, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        strategy = data.get("queen_strategy")
+        if isinstance(strategy, dict):
+            return strategy
+    except (json.JSONDecodeError, OSError):
+        pass
+    return {}
+
+
+# ---------------------------------------------------------------------------
 # Evolved prompt context injection
 # ---------------------------------------------------------------------------
 
@@ -356,7 +399,27 @@ def _build_evolved_context(
             concept_names = [c.get("name", "unknown") for c in relevant[:3]]
             parts.append(f"Emerged concepts: {', '.join(concept_names)}")
 
-    # 4. Weight hints from tradition_weights
+    # 4. Few-shot examples from high-scoring sessions
+    few_shots = ctx.get("few_shot_examples")
+    if isinstance(few_shots, list) and few_shots:
+        # Filter by tradition (include matching + "default" tradition examples)
+        matching = [
+            ex for ex in few_shots
+            if isinstance(ex, dict)
+            and (ex.get("tradition") == tradition or tradition == "default")
+        ]
+        if matching:
+            lines: list[str] = []
+            for ex in matching[:3]:
+                subj = ex.get("subject") or ex.get("intent", "")
+                score = ex.get("score", 0)
+                strengths = ex.get("key_strengths", [])
+                strength_str = f", Strengths: {', '.join(strengths)}" if strengths else ""
+                lines.append(f"- Subject: '{subj}', Score: {score:.2f}{strength_str}")
+            if lines:
+                parts.append("Successful examples in this tradition:\n" + "\n".join(lines))
+
+    # 5. Weight hints from tradition_weights
     weights = ctx.get("tradition_weights", {}).get(tradition, {})
     if isinstance(weights, dict) and weights:
         top_dims = sorted(weights.items(), key=lambda x: x[1], reverse=True)[:3]

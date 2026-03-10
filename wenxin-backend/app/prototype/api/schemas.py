@@ -20,7 +20,7 @@ class CreateRunRequest(BaseModel):
     max_rounds: int = Field(default=3, ge=1, le=5, description="Max Queen rounds")
     enable_hitl: bool = Field(default=False, description="Enable human-in-the-loop")
     enable_agent_critic: bool = Field(default=True, description="Use LLM-based Critic (CriticLLM) instead of rule-only scoring")
-    use_graph: bool = Field(default=False, description="Use LangGraph-based pipeline instead of classic orchestrator")
+    use_graph: bool = Field(default=False, description="Use LangGraph-based pipeline (experimental) instead of classic PipelineOrchestrator (production)")
     template: str = Field(default="default", description="Graph template: default | fast_draft | critique_only | interactive_full | batch_eval")
     enable_parallel_critic: bool = Field(default=False, description="Use parallel L1-L5 scoring (ThreadPoolExecutor) for faster Critic")
     idempotency_key: str | None = Field(default=None, description="Optional idempotency key")

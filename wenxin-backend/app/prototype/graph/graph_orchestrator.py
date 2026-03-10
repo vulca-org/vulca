@@ -1,10 +1,18 @@
-"""GraphOrchestrator — LangGraph-based pipeline executor.
+"""GraphOrchestrator — LangGraph-based pipeline executor (**experimental**).
 
-API-compatible with PipelineOrchestrator: same run_stream() → Iterator[PipelineEvent]
+Orchestrator Architecture Decision (Route B+, 2026-03-10):
+Status: EXPERIMENTAL — not the production default.
+Production orchestrator: app.prototype.orchestrator.PipelineOrchestrator
+Unified entry point: app.prototype.orchestrator.get_orchestrator(mode="graph")
+
+API-compatible with PipelineOrchestrator: same run_stream() -> Iterator[PipelineEvent]
 interface, same submit_action() for HITL, same get_run_state() for status queries.
 
 The key difference is that execution flows through a LangGraph StateGraph
-instead of the monolithic orchestrator.py while loop.
+instead of the monolithic orchestrator.py while loop. Extra capabilities:
+- Template-based topology definitions (template_registry)
+- Custom node/edge topologies via API
+- Agent plugin registry (@AgentRegistry.register)
 """
 
 from __future__ import annotations
@@ -25,6 +33,12 @@ logger = logging.getLogger(__name__)
 
 class GraphOrchestrator:
     """LangGraph-based orchestrator, API-compatible with PipelineOrchestrator.
+
+    .. deprecated:: Route B+ (2026-03-10)
+        This orchestrator is **experimental** and not used in production.
+        Use :class:`~app.prototype.orchestrator.PipelineOrchestrator` for
+        all production workloads. Access via
+        ``get_orchestrator(mode="graph")`` if needed.
 
     Parameters
     ----------

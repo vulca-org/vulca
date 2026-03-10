@@ -78,6 +78,14 @@ async def run_digestion() -> dict:
     evolver = ContextEvolver()
     result = evolver.evolve()
 
+    # Update few-shot examples from high-scoring sessions
+    few_shot_count = 0
+    try:
+        from app.prototype.digestion.few_shot_updater import FewShotUpdater
+        few_shot_count = FewShotUpdater().update()
+    except Exception:
+        logger.debug("Few-shot update failed (non-fatal)")
+
     detector = PatternDetector()
     patterns = detector.detect()
 
@@ -88,4 +96,5 @@ async def run_digestion() -> dict:
         "evolution": result.to_dict(),
         "patterns": [p.to_dict() for p in patterns],
         "preferences": {k: v.to_dict() for k, v in preferences.items()},
+        "few_shot_examples_count": few_shot_count,
     }

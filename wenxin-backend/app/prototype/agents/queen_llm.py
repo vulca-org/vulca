@@ -28,7 +28,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 
 from app.prototype.agents.model_router import MODEL_DECISION
-from app.prototype.agents.queen_agent import QueenAgent
+from app.prototype.agents.queen_agent import QueenAgent, _get_evolved_threshold_adjustment
 from app.prototype.agents.queen_config import QueenConfig
 from app.prototype.agents.queen_types import (
     PlanState,
@@ -339,13 +339,16 @@ class QueenLLMAgent:
         scored = critique_output_dict.get("scored_candidates", [])
         rerun_hint = critique_output_dict.get("rerun_hint", [])
 
-        # Current state summary
+        # Current state summary (include evolved threshold adjustment)
+        evolved_adj = _get_evolved_threshold_adjustment()
+        effective_accept = self._config.accept_threshold + evolved_adj
         lines = [
             "## Current Evaluation State",
             f"- Round: {plan_state.budget.rounds_used + 1}/{self._config.max_rounds}",
             f"- Budget used: ${plan_state.budget.total_cost_usd:.4f} / ${self._config.max_cost_usd:.4f}",
             f"- Best score: {best_score:.3f} (gate: {'PASS' if best_gate else 'FAIL'})",
-            f"- Accept threshold: {self._config.accept_threshold}",
+            f"- Accept threshold: {effective_accept:.4f}"
+            + (f" (base {self._config.accept_threshold} + evolved {evolved_adj:+.4f})" if evolved_adj else ""),
         ]
 
         # Score history

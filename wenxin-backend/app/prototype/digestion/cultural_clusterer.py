@@ -1,15 +1,24 @@
 """CulturalClusterer — cluster sessions by cultural features using cosine similarity.
 
 Uses pure Python + math stdlib (no scipy/sklearn dependency).
+
+Supports two clustering modes:
+- **Intra-tradition** (Mode 1): clusters within each tradition to find sub-styles.
+- **Cross-tradition** (Mode 2): clusters across all traditions to discover
+  emergent cultural patterns that span multiple traditions.
 """
 
 from __future__ import annotations
 
 import logging
 import math
+from collections import defaultdict
 from dataclasses import dataclass, field
 
 logger = logging.getLogger("vulca")
+
+# Minimum number of sessions required to attempt cross-tradition clustering.
+_MIN_CROSS_SESSIONS = 10
 
 
 @dataclass
@@ -21,15 +30,22 @@ class CulturalCluster:
     session_ids: list[str] = field(default_factory=list)
     size: int = 0
     tradition: str = ""
+    # --- Cross-tradition metadata ---
+    source: str = "intra_tradition"  # "intra_tradition" | "cross_tradition"
+    traditions: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict:
-        return {
+        d = {
             "cluster_id": self.cluster_id,
             "feature_centroid": self.feature_centroid,
             "session_ids": self.session_ids,
             "size": self.size,
             "tradition": self.tradition,
+            "source": self.source,
         }
+        if self.traditions:
+            d["traditions"] = self.traditions
+        return d
 
 
 def _cosine_similarity(a: dict[str, float], b: dict[str, float]) -> float:
@@ -69,10 +85,28 @@ def _numeric_features(features: dict) -> dict[str, float]:
 
 
 class CulturalClusterer:
-    """Cluster sessions by cultural features using greedy centroid-based clustering."""
+    """Cluster sessions by cultural features using greedy centroid-based clustering.
 
-    def __init__(self, similarity_threshold: float = 0.80) -> None:
+    Dual-mode clustering:
+      * **Mode 1 (intra-tradition)** — groups sessions *within* each tradition
+        to discover sub-styles (e.g., bold vs. subtle within *chinese_xieyi*).
+      * **Mode 2 (cross-tradition)** — groups *all* sessions together,
+        regardless of tradition label, to discover emergent cultural patterns
+        that span multiple traditions (e.g., "minimalist expressionism" shared
+        by *chinese_xieyi* and *japanese_wabi_sabi*).
+    """
+
+    def __init__(
+        self,
+        similarity_threshold: float = 0.80,
+        min_cross_sessions: int = _MIN_CROSS_SESSIONS,
+    ) -> None:
         self._threshold = similarity_threshold
+        self._min_cross_sessions = min_cross_sessions
+
+    # ------------------------------------------------------------------
+    # Public API
+    # ------------------------------------------------------------------
 
     def cluster(self, sessions: list[dict]) -> list[CulturalCluster]:
         """Cluster sessions by their cultural_features vectors.
@@ -85,9 +119,9 @@ class CulturalClusterer:
         Returns
         -------
         list[CulturalCluster]
-            Clusters with centroids and session IDs.
+            Clusters from both intra- and cross-tradition modes.
         """
-        # Filter sessions that have cultural features
+        # Filter sessions that have valid cultural features
         valid = [
             s for s in sessions
             if s.get("cultural_features") and isinstance(s["cultural_features"], dict)
@@ -95,22 +129,94 @@ class CulturalClusterer:
         if not valid:
             return []
 
+        results: list[CulturalCluster] = []
+
+        # --- Mode 1: intra-tradition clustering ---
+        groups: dict[str, list[dict]] = defaultdict(list)
+        for s in valid:
+            groups[s.get("tradition", "default")].append(s)
+
+        intra_counter = 0
+        for tradition, group_sessions in groups.items():
+            intra_clusters = self._cluster_by_features(
+                group_sessions,
+                id_prefix=f"intra-{intra_counter:03d}",
+            )
+            for c in intra_clusters:
+                c.source = "intra_tradition"
+                c.tradition = tradition
+            intra_counter += len(intra_clusters)
+            results.extend(intra_clusters)
+
+        # --- Mode 2: cross-tradition clustering ---
+        if len(valid) >= self._min_cross_sessions:
+            cross_clusters = self._cluster_by_features(
+                valid,
+                id_prefix="cross",
+            )
+            for c in cross_clusters:
+                # Determine which traditions are represented in this cluster
+                sid_set = set(c.session_ids)
+                traditions_in_cluster = sorted({
+                    s.get("tradition", "default")
+                    for s in valid
+                    if s.get("session_id", "") in sid_set
+                })
+                # Only keep clusters that span >= 2 traditions
+                if len(traditions_in_cluster) >= 2:
+                    c.source = "cross_tradition"
+                    c.traditions = traditions_in_cluster
+                    c.tradition = "+".join(traditions_in_cluster)
+                    results.append(c)
+
+        logger.info(
+            "CulturalClusterer: %d sessions → %d clusters "
+            "(intra=%d, cross=%d)",
+            len(valid),
+            len(results),
+            sum(1 for c in results if c.source == "intra_tradition"),
+            sum(1 for c in results if c.source == "cross_tradition"),
+        )
+        return results
+
+    # ------------------------------------------------------------------
+    # Internal: greedy centroid-based clustering on feature vectors
+    # ------------------------------------------------------------------
+
+    def _cluster_by_features(
+        self,
+        sessions: list[dict],
+        *,
+        id_prefix: str = "cluster",
+    ) -> list[CulturalCluster]:
+        """Greedy centroid-based clustering on numeric cultural feature vectors.
+
+        Parameters
+        ----------
+        sessions : list[dict]
+            Sessions to cluster (must have 'cultural_features').
+        id_prefix : str
+            Prefix for generated cluster IDs.
+
+        Returns
+        -------
+        list[CulturalCluster]
+            Resulting clusters (source/tradition filled by caller).
+        """
         clusters: list[CulturalCluster] = []
         assigned: set[str] = set()
 
-        for session in valid:
+        for session in sessions:
             sid = session.get("session_id", "")
             if sid in assigned:
                 continue
 
             features = _numeric_features(session["cultural_features"])
-            tradition = session.get("tradition", "default")
-
             if not features:
                 continue
 
-            # Try to find an existing cluster to join
-            best_cluster = None
+            # Try to join an existing cluster
+            best_cluster: CulturalCluster | None = None
             best_sim = -1.0
             for cluster in clusters:
                 sim = _cosine_similarity(features, cluster.feature_centroid)
@@ -121,23 +227,22 @@ class CulturalClusterer:
             if best_cluster is not None:
                 best_cluster.session_ids.append(sid)
                 best_cluster.size += 1
-                # Recompute centroid (numeric features only)
+                # Recompute centroid
                 cluster_features = [
-                    _numeric_features(s["cultural_features"]) for s in valid
+                    _numeric_features(s["cultural_features"])
+                    for s in sessions
                     if s.get("session_id", "") in set(best_cluster.session_ids)
                 ]
                 best_cluster.feature_centroid = _compute_centroid(cluster_features)
             else:
-                # Create new cluster
-                cluster_id = f"cluster-{len(clusters):03d}"
+                cluster_id = f"{id_prefix}-{len(clusters):03d}"
                 clusters.append(CulturalCluster(
                     cluster_id=cluster_id,
-                    feature_centroid=dict(features),  # already numeric-only
+                    feature_centroid=dict(features),
                     session_ids=[sid],
                     size=1,
-                    tradition=tradition,
+                    tradition=session.get("tradition", "default"),
                 ))
             assigned.add(sid)
 
-        logger.info("CulturalClusterer: %d sessions → %d clusters", len(valid), len(clusters))
         return clusters

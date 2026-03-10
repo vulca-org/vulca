@@ -88,57 +88,97 @@ class ConceptCrystallizer:
         )
         return concepts
 
+    _LLM_MAX_RETRIES = 3
+    _LLM_RETRY_DELAY_S = 1
+    _LLM_TIMEOUT_S = 30
+
     def _try_llm_crystallize(self, cluster, sessions: list[dict]) -> CulturalConcept | None:
-        """Use LLM to name and describe the emerged concept."""
-        try:
-            import json
-            import litellm
+        """Use LLM to name and describe the emerged concept, with retry."""
+        import json
 
-            # Build context from cluster
-            cluster_sessions = [
-                s for s in sessions
-                if s.get("session_id") in set(cluster.session_ids)
-            ]
-            intents = [s.get("intent", "") for s in cluster_sessions[:5]]
-            traditions = list({s.get("tradition", "") for s in cluster_sessions})
+        # Build context from cluster (done once, outside retry loop)
+        cluster_sessions = [
+            s for s in sessions
+            if s.get("session_id") in set(cluster.session_ids)
+        ]
+        intents = [s.get("intent", "") for s in cluster_sessions[:5]]
+        traditions = list({s.get("tradition", "") for s in cluster_sessions})
 
-            prompt = (
-                "Based on these art creation sessions, identify the emerged cultural concept:\n"
-                f"- Tradition: {cluster.tradition}\n"
-                f"- Related traditions: {', '.join(traditions)}\n"
-                f"- Sample intents: {'; '.join(intents[:5])}\n"
-                f"- Feature centroid: {cluster.feature_centroid}\n\n"
-                "Respond ONLY with valid JSON:\n"
-                '{"name": "concept_name_snake_case", "description": "brief description", '
-                '"key_principles": ["principle1", "principle2"], '
-                '"l_focus": {"L1": 0.X, "L3": 0.X, "L5": 0.X}}'
-            )
+        is_cross = getattr(cluster, "source", "") == "cross_tradition"
+        if is_cross:
+            tradition_line = f"- Cross-tradition cluster spanning: {', '.join(getattr(cluster, 'traditions', traditions))}"
+        else:
+            tradition_line = f"- Tradition: {cluster.tradition}"
 
-            response = litellm.completion(
-                model=MODEL_FAST,
-                messages=[{"role": "user", "content": prompt}],
-                max_tokens=300,
-                temperature=0.3,
-                timeout=15,
-            )
+        prompt = (
+            "Based on these art creation sessions, identify the emerged cultural concept:\n"
+            f"{tradition_line}\n"
+            f"- Related traditions: {', '.join(traditions)}\n"
+            f"- Sample intents: {'; '.join(intents[:5])}\n"
+            f"- Feature centroid: {cluster.feature_centroid}\n\n"
+            "Respond ONLY with valid JSON:\n"
+            '{"name": "concept_name_snake_case", "description": "brief description", '
+            '"key_principles": ["principle1", "principle2"], '
+            '"l_focus": {"L1": 0.X, "L3": 0.X, "L5": 0.X}}'
+        )
 
-            text = response.choices[0].message.content or ""
-            # Parse JSON
-            brace_start = text.find("{")
-            brace_end = text.rfind("}")
-            if brace_start != -1 and brace_end > brace_start:
-                parsed = json.loads(text[brace_start:brace_end + 1])
-                return CulturalConcept(
-                    name=parsed.get("name", f"concept_{cluster.cluster_id}"),
-                    description=parsed.get("description", ""),
-                    key_principles=parsed.get("key_principles", []),
-                    l_focus=parsed.get("l_focus", {}),
-                    weights=dict(cluster.feature_centroid),
-                    reference_sessions=cluster.session_ids[:10],
-                    confidence=min(1.0, cluster.size / 20),
+        last_error: Exception | None = None
+
+        for attempt in range(self._LLM_MAX_RETRIES):
+            try:
+                import litellm
+
+                response = litellm.completion(
+                    model=MODEL_FAST,
+                    messages=[{"role": "user", "content": prompt}],
+                    max_tokens=300,
+                    temperature=0.3,
+                    timeout=self._LLM_TIMEOUT_S,
                 )
-        except Exception:
-            logger.debug("LLM crystallization failed for cluster %s", cluster.cluster_id)
+
+                text = response.choices[0].message.content or ""
+                # Parse JSON
+                brace_start = text.find("{")
+                brace_end = text.rfind("}")
+                if brace_start != -1 and brace_end > brace_start:
+                    parsed = json.loads(text[brace_start:brace_end + 1])
+                    return CulturalConcept(
+                        name=parsed.get("name", f"concept_{cluster.cluster_id}"),
+                        description=parsed.get("description", ""),
+                        key_principles=parsed.get("key_principles", []),
+                        l_focus=parsed.get("l_focus", {}),
+                        weights=dict(cluster.feature_centroid),
+                        reference_sessions=cluster.session_ids[:10],
+                        confidence=min(1.0, cluster.size / 20),
+                    )
+                else:
+                    # LLM returned text without valid JSON braces
+                    raise ValueError(
+                        f"No valid JSON object in LLM response: {text[:200]}"
+                    )
+            except Exception as e:
+                last_error = e
+                logger.warning(
+                    "LLM concept naming attempt %d/%d failed for cluster %s "
+                    "(model=%s, error=%s): %s",
+                    attempt + 1,
+                    self._LLM_MAX_RETRIES,
+                    cluster.cluster_id,
+                    MODEL_FAST,
+                    type(e).__name__,
+                    str(e),
+                )
+                if attempt < self._LLM_MAX_RETRIES - 1:
+                    time.sleep(self._LLM_RETRY_DELAY_S)
+
+        logger.warning(
+            "All %d LLM naming attempts failed for cluster %s, "
+            "falling back to rule-based naming. Last error: %s: %s",
+            self._LLM_MAX_RETRIES,
+            cluster.cluster_id,
+            type(last_error).__name__ if last_error else "Unknown",
+            str(last_error) if last_error else "N/A",
+        )
         return None
 
     def _rule_based_crystallize(self, cluster, sessions: list[dict]) -> CulturalConcept:
@@ -151,11 +191,19 @@ class ConceptCrystallizer:
                 max_val = v
                 dominant_feature = k
 
-        name = f"{cluster.tradition}_{dominant_feature}" if dominant_feature else f"concept_{cluster.cluster_id}"
+        is_cross = getattr(cluster, "source", "") == "cross_tradition"
+        if is_cross:
+            cross_traditions = getattr(cluster, "traditions", [cluster.tradition])
+            tradition_part = "+".join(cross_traditions[:3])
+            name = f"cross_{tradition_part}_{dominant_feature}" if dominant_feature else f"cross_concept_{cluster.cluster_id}"
+            description = f"Emerged from {cluster.size} sessions spanning {', '.join(cross_traditions)} traditions"
+        else:
+            name = f"{cluster.tradition}_{dominant_feature}" if dominant_feature else f"concept_{cluster.cluster_id}"
+            description = f"Emerged from {cluster.size} sessions in {cluster.tradition} tradition"
 
         return CulturalConcept(
             name=name,
-            description=f"Emerged from {cluster.size} sessions in {cluster.tradition} tradition",
+            description=description,
             key_principles=[f"High {dominant_feature}"] if dominant_feature else [],
             l_focus=dict(cluster.feature_centroid),
             weights=dict(cluster.feature_centroid),

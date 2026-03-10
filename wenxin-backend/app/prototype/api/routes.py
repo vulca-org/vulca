@@ -39,6 +39,10 @@ from app.prototype.orchestrator.run_state import RunStatus
 from app.prototype.pipeline.pipeline_types import PipelineInput
 
 # Lazy import for LangGraph orchestrator (only when use_graph=True)
+# Orchestrator Architecture Decision (Route B+, 2026-03-10):
+# Default path (use_graph=False) → PipelineOrchestrator (production)
+# Opt-in path (use_graph=True)   → GraphOrchestrator (experimental)
+# Unified entry point: app.prototype.orchestrator.get_orchestrator()
 _GraphOrchestrator = None
 
 def _get_graph_orchestrator_class():
