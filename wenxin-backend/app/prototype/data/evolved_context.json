@@ -65,7 +65,7 @@
     }
   },
   "version": 2,
-  "evolutions": 1,
+  "evolutions": 3,
   "cultures": {
     "chinese_xieyi_l5_emphasis": {
       "name": "chinese_xieyi_l5_emphasis",
@@ -101,6 +101,97 @@
       ],
       "emerged_at": 1773073174.1685658,
       "confidence": 0.75
+    },
+    "chinese_xieyi_cultural_depth": {
+      "name": "chinese_xieyi_cultural_depth",
+      "description": "Emerged from 3 sessions in chinese_xieyi tradition",
+      "key_principles": [
+        "High cultural_depth"
+      ],
+      "l_focus": {
+        "avg_score": 0.772,
+        "risk_level": 0.0,
+        "tradition_specificity": 0.8,
+        "cultural_depth": 0.8767,
+        "l5_emphasis": 0.7992
+      },
+      "weights": {
+        "avg_score": 0.772,
+        "risk_level": 0.0,
+        "tradition_specificity": 0.8,
+        "cultural_depth": 0.8767,
+        "l5_emphasis": 0.7992
+      },
+      "reference_sessions": [
+        "seed-001",
+        "seed-010",
+        "seed-013"
+      ],
+      "emerged_at": 1773152470.12943,
+      "confidence": 0.15
+    },
+    "japanese_wabi_sabi_tradition_specificity": {
+      "name": "japanese_wabi_sabi_tradition_specificity",
+      "description": "Emerged from 3 sessions in japanese_wabi_sabi tradition",
+      "key_principles": [
+        "High tradition_specificity"
+      ],
+      "l_focus": {
+        "avg_score": 0.754,
+        "risk_level": 0.0,
+        "tradition_specificity": 0.8,
+        "cultural_depth": 0.7767,
+        "l5_emphasis": 0.6615
+      },
+      "weights": {
+        "avg_score": 0.754,
+        "risk_level": 0.0,
+        "tradition_specificity": 0.8,
+        "cultural_depth": 0.7767,
+        "l5_emphasis": 0.6615
+      },
+      "reference_sessions": [
+        "seed-002",
+        "seed-011",
+        "seed-015"
+      ],
+      "emerged_at": 1773152472.3120537,
+      "confidence": 0.15
+    },
+    "cross_african_ubuntu+chinese_xieyi+default_l5_emphasis": {
+      "name": "cross_african_ubuntu+chinese_xieyi+default_l5_emphasis",
+      "description": "Emerged from 15 sessions spanning african_ubuntu, chinese_xieyi, default, european_renaissance, indian_rasa, islamic_geometric, japanese_wabi_sabi, korean_dancheong, persian_miniature traditions",
+      "key_principles": [
+        "High l5_emphasis"
+      ],
+      "l_focus": {
+        "avg_score": 0.7304,
+        "risk_level": 0.0,
+        "tradition_specificity": 0.7333,
+        "cultural_depth": 0.7573,
+        "l5_emphasis": 0.7927
+      },
+      "weights": {
+        "avg_score": 0.7304,
+        "risk_level": 0.0,
+        "tradition_specificity": 0.7333,
+        "cultural_depth": 0.7573,
+        "l5_emphasis": 0.7927
+      },
+      "reference_sessions": [
+        "seed-001",
+        "seed-002",
+        "seed-003",
+        "seed-004",
+        "seed-005",
+        "seed-006",
+        "seed-007",
+        "seed-008",
+        "seed-009",
+        "seed-010"
+      ],
+      "emerged_at": 1773152474.4830184,
+      "confidence": 0.75
     }
   },
   "prompt_contexts": {
@@ -134,8 +225,8 @@
         "avg_score": 0.76,
         "count": 2,
         "traditions": [
-          "persian_miniature",
-          "japanese_wabi_sabi"
+          "japanese_wabi_sabi",
+          "persian_miniature"
         ],
         "example_prompts": [
           "persian miniature garden scene",
@@ -147,13 +238,163 @@
   "feature_space": {
     "clusters": [
       {
-        "cluster_id": "cluster-000",
+        "cluster_id": "intra-000-000",
         "feature_centroid": {
+          "avg_score": 0.772,
           "risk_level": 0.0,
-          "l5_emphasis": 0.7927,
+          "tradition_specificity": 0.8,
+          "cultural_depth": 0.8767,
+          "l5_emphasis": 0.7992
+        },
+        "session_ids": [
+          "seed-001",
+          "seed-010",
+          "seed-013"
+        ],
+        "size": 3,
+        "tradition": "chinese_xieyi",
+        "source": "intra_tradition"
+      },
+      {
+        "cluster_id": "intra-001-000",
+        "feature_centroid": {
+          "avg_score": 0.754,
+          "risk_level": 0.0,
+          "tradition_specificity": 0.8,
+          "cultural_depth": 0.7767,
+          "l5_emphasis": 0.6615
+        },
+        "session_ids": [
+          "seed-002",
+          "seed-011",
+          "seed-015"
+        ],
+        "size": 3,
+        "tradition": "japanese_wabi_sabi",
+        "source": "intra_tradition"
+      },
+      {
+        "cluster_id": "intra-002-000",
+        "feature_centroid": {
+          "avg_score": 0.713,
+          "risk_level": 0.0,
+          "tradition_specificity": 0.8,
+          "cultural_depth": 0.67,
+          "l5_emphasis": 0.9249
+        },
+        "session_ids": [
+          "seed-003",
+          "seed-012"
+        ],
+        "size": 2,
+        "tradition": "european_renaissance",
+        "source": "intra_tradition"
+      },
+      {
+        "cluster_id": "intra-003-000",
+        "feature_centroid": {
+          "tradition_specificity": 0.8,
+          "l5_emphasis": 0.7826,
+          "avg_score": 0.754,
+          "risk_level": 0.0,
+          "cultural_depth": 0.55
+        },
+        "session_ids": [
+          "seed-004"
+        ],
+        "size": 1,
+        "tradition": "islamic_geometric",
+        "source": "intra_tradition"
+      },
+      {
+        "cluster_id": "intra-004-000",
+        "feature_centroid": {
+          "tradition_specificity": 0.8,
+          "l5_emphasis": 0.6882,
+          "avg_score": 0.758,
+          "risk_level": 0.0,
+          "cultural_depth": 0.93
+        },
+        "session_ids": [
+          "seed-005"
+        ],
+        "size": 1,
+        "tradition": "indian_rasa",
+        "source": "intra_tradition"
+      },
+      {
+        "cluster_id": "intra-005-000",
+        "feature_centroid": {
+          "tradition_specificity": 0.8,
+          "l5_emphasis": 0.6591,
+          "avg_score": 0.724,
+          "risk_level": 0.0,
+          "cultural_depth": 0.66
+        },
+        "session_ids": [
+          "seed-006"
+        ],
+        "size": 1,
+        "tradition": "korean_dancheong",
+        "source": "intra_tradition"
+      },
+      {
+        "cluster_id": "intra-006-000",
+        "feature_centroid": {
+          "tradition_specificity": 0.8,
+          "l5_emphasis": 0.9383,
+          "avg_score": 0.726,
+          "risk_level": 0.0,
+          "cultural_depth": 0.81
+        },
+        "session_ids": [
+          "seed-007"
+        ],
+        "size": 1,
+        "tradition": "african_ubuntu",
+        "source": "intra_tradition"
+      },
+      {
+        "cluster_id": "intra-007-000",
+        "feature_centroid": {
+          "tradition_specificity": 0.8,
+          "l5_emphasis": 0.8068,
+          "avg_score": 0.786,
+          "risk_level": 0.0,
+          "cultural_depth": 0.72
+        },
+        "session_ids": [
+          "seed-008"
+        ],
+        "size": 1,
+        "tradition": "persian_miniature",
+        "source": "intra_tradition"
+      },
+      {
+        "cluster_id": "intra-008-000",
+        "feature_centroid": {
+          "avg_score": 0.602,
+          "risk_level": 0.0,
+          "tradition_specificity": 0.3,
+          "cultural_depth": 0.695,
+          "l5_emphasis": 0.8916
+        },
+        "session_ids": [
+          "seed-009",
+          "seed-014"
+        ],
+        "size": 2,
+        "tradition": "default",
+        "source": "intra_tradition"
+      },
+      {
+        "cluster_id": "cross-000",
+        "feature_centroid": {
           "avg_score": 0.7304,
+          "risk_level": 0.0,
           "tradition_specificity": 0.7333,
-          "cultural_depth": 0.7573
+          "cultural_depth": 0.7573,
+          "l5_emphasis": 0.7927
         },
         "session_ids": [
           "seed-001",
@@ -173,8 +414,127 @@
           "seed-015"
         ],
         "size": 15,
-        "tradition": "chinese_xieyi"
+        "tradition": "african_ubuntu+chinese_xieyi+default+european_renaissance+indian_rasa+islamic_geometric+japanese_wabi_sabi+korean_dancheong+persian_miniature",
+        "source": "cross_tradition",
+        "traditions": [
+          "african_ubuntu",
+          "chinese_xieyi",
+          "default",
+          "european_renaissance",
+          "indian_rasa",
+          "islamic_geometric",
+          "japanese_wabi_sabi",
+          "korean_dancheong",
+          "persian_miniature"
+        ]
       }
     ]
+  },
+  "layer_focus": {
+    "islamic_geometric": {
+      "visual_perception": {
+        "focus_points": [
+          "geometric symmetry",
+          "tessellation precision",
+          "color harmony"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "technical_analysis": {
+        "focus_points": [
+          "compass-ruler construction",
+          "pattern repetition accuracy",
+          "gilding quality"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "cultural_context": {
+        "focus_points": [
+          "aniconism principles",
+          "mathematical beauty",
+          "spiritual geometry"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      }
+    },
+    "chinese_gongbi": {
+      "visual_perception": {
+        "focus_points": [
+          "line precision",
+          "color layering",
+          "fine detail rendering"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "technical_analysis": {
+        "focus_points": [
+          "silk/paper preparation",
+          "mineral pigment application",
+          "outline control"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "cultural_context": {
+        "focus_points": [
+          "court painting tradition",
+          "Tang-Song conventions",
+          "decorative symbolism"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      }
+    },
+    "chinese_xieyi": {
+      "visual_perception": {
+        "focus_points": [
+          "ink wash gradients",
+          "negative space (留白)",
+          "brush rhythm"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "technical_analysis": {
+        "focus_points": [
+          "brushstroke spontaneity",
+          "ink consistency",
+          "rice paper texture"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "cultural_context": {
+        "focus_points": [
+          "literati painting tradition",
+          "Daoist nature philosophy",
+          "poem-painting unity"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "critical_interpretation": {
+        "focus_points": [
+          "qi yun (气韵生动)",
+          "xie yi spirit over form",
+          "scholar aesthetics"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "philosophical_aesthetic": {
+        "focus_points": [
+          "Dao in brushwork",
+          "emptiness as presence",
+          "nature-human unity"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      }
+    }
   }
 }
