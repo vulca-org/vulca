@@ -116,7 +116,7 @@ def _extract_semantic_features_llm(intent: str, tradition: str) -> dict[str, Any
             model=MODEL_FAST,
             messages=[{"role": "user", "content": prompt}],
             temperature=0.3,
-            max_tokens=300,
+            max_tokens=2048,
         )
 
         raw = response.choices[0].message.content.strip()

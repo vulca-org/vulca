@@ -65,7 +65,7 @@
     }
   },
   "version": 2,
-  "evolutions": 37,
+  "evolutions": 54,
   "cultures": {
     "chinese_xieyi_l5_emphasis": {
       "name": "chinese_xieyi_l5_emphasis",
@@ -109,25 +109,25 @@
         "High cultural_depth"
       ],
       "l_focus": {
-        "avg_score": 0.772,
-        "risk_level": 0.0,
         "cultural_depth": 0.8767,
+        "avg_score": 0.772,
         "l5_emphasis": 0.7992,
-        "tradition_specificity": 0.8
+        "tradition_specificity": 0.8,
+        "risk_level": 0.0
       },
       "weights": {
-        "avg_score": 0.772,
-        "risk_level": 0.0,
         "cultural_depth": 0.8767,
+        "avg_score": 0.772,
         "l5_emphasis": 0.7992,
-        "tradition_specificity": 0.8
+        "tradition_specificity": 0.8,
+        "risk_level": 0.0
       },
       "reference_sessions": [
         "seed-001",
         "seed-010",
         "seed-013"
       ],
-      "emerged_at": 1773161560.3326283,
+      "emerged_at": 1773183104.8716931,
       "confidence": 0.15
     },
     "japanese_wabi_sabi_tradition_specificity": {
@@ -137,25 +137,25 @@
         "High tradition_specificity"
       ],
       "l_focus": {
-        "avg_score": 0.754,
-        "risk_level": 0.0,
         "cultural_depth": 0.7767,
+        "avg_score": 0.754,
         "l5_emphasis": 0.6615,
-        "tradition_specificity": 0.8
+        "tradition_specificity": 0.8,
+        "risk_level": 0.0
       },
       "weights": {
-        "avg_score": 0.754,
-        "risk_level": 0.0,
         "cultural_depth": 0.7767,
+        "avg_score": 0.754,
         "l5_emphasis": 0.6615,
-        "tradition_specificity": 0.8
+        "tradition_specificity": 0.8,
+        "risk_level": 0.0
       },
       "reference_sessions": [
         "seed-002",
         "seed-011",
         "seed-015"
       ],
-      "emerged_at": 1773161562.4449785,
+      "emerged_at": 1773183107.1612716,
       "confidence": 0.15
     },
     "cross_african_ubuntu+chinese_xieyi+default_l5_emphasis": {
@@ -165,18 +165,18 @@
         "High l5_emphasis"
       ],
       "l_focus": {
-        "avg_score": 0.7304,
-        "risk_level": 0.0,
         "cultural_depth": 0.7573,
+        "avg_score": 0.7304,
         "l5_emphasis": 0.7927,
-        "tradition_specificity": 0.7333
+        "tradition_specificity": 0.7333,
+        "risk_level": 0.0
       },
       "weights": {
-        "avg_score": 0.7304,
-        "risk_level": 0.0,
         "cultural_depth": 0.7573,
+        "avg_score": 0.7304,
         "l5_emphasis": 0.7927,
-        "tradition_specificity": 0.7333
+        "tradition_specificity": 0.7333,
+        "risk_level": 0.0
       },
       "reference_sessions": [
         "seed-001",
@@ -190,8 +190,68 @@
         "seed-009",
         "seed-010"
       ],
-      "emerged_at": 1773161564.5592182,
+      "emerged_at": 1773183109.470633,
       "confidence": 0.75
+    },
+    "chinese_xieyi_ink_painting": {
+      "name": "chinese_xieyi_ink_painting",
+      "description": "A traditional Chinese painting style (Xieyi, 'writing ideas' or 'sketching the spirit') that emphasizes capturing the inner essence, vitality, and philosophical meaning of the subject rather than its precise physical likeness. It utilizes expressive, spontaneous brushwork, often in ink wash, to convey the artist's personal interpretation and emotional depth.",
+      "key_principles": [
+        "Spirit Resonance (Shen Yun): Prioritizing the capture of the subject's inner vitality and essence.",
+        "Expressive Brushwork: Utilizing spontaneous, calligraphic strokes to convey emotion, energy, and the artist's intent.",
+        "Economy of Means: Employing minimal strokes and strategic use of negative space (liu bai) to suggest form and atmosphere.",
+        "Integration of Arts: Often combining painting with poetry, calligraphy, and seal carving to enrich meaning.",
+        "Personal Expression: Reflecting the artist's philosophical insights, emotional state, and understanding of nature."
+      ],
+      "l_focus": {
+        "L1": 0.8,
+        "L3": 0.85,
+        "L5": 0.8
+      },
+      "weights": {
+        "l5_emphasis": 0.7992,
+        "cultural_depth": 0.8767,
+        "tradition_specificity": 0.8,
+        "avg_score": 0.772,
+        "risk_level": 0.0
+      },
+      "reference_sessions": [
+        "seed-001",
+        "seed-010",
+        "seed-013"
+      ],
+      "emerged_at": 1773182722.831842,
+      "confidence": 0.15
+    },
+    "wabi_sabi": {
+      "name": "wabi_sabi",
+      "description": "A Japanese aesthetic philosophy centered on the acceptance of transience and imperfection, finding beauty in the natural cycle of growth and decay, and appreciating the rustic, simple, and understated.",
+      "key_principles": [
+        "Acceptance of imperfection and flaws",
+        "Appreciation of transience and impermanence",
+        "Simplicity, modesty, and understated elegance",
+        "Naturalness and authenticity",
+        "Beauty in age, wear, and weathering (e.g., kintsugi)"
+      ],
+      "l_focus": {
+        "L1": 0.09,
+        "L3": 0.25,
+        "L5": 0.66
+      },
+      "weights": {
+        "l5_emphasis": 0.6615,
+        "cultural_depth": 0.7767,
+        "tradition_specificity": 0.8,
+        "avg_score": 0.754,
+        "risk_level": 0.0
+      },
+      "reference_sessions": [
+        "seed-002",
+        "seed-011",
+        "seed-015"
+      ],
+      "emerged_at": 1773182732.0858486,
+      "confidence": 0.15
     }
   },
   "prompt_contexts": {
@@ -240,11 +300,11 @@
       {
         "cluster_id": "intra-000-000",
         "feature_centroid": {
-          "avg_score": 0.772,
-          "risk_level": 0.0,
           "cultural_depth": 0.8767,
+          "avg_score": 0.772,
           "l5_emphasis": 0.7992,
-          "tradition_specificity": 0.8
+          "tradition_specificity": 0.8,
+          "risk_level": 0.0
         },
         "session_ids": [
           "seed-001",
@@ -258,11 +318,11 @@
       {
         "cluster_id": "intra-001-000",
         "feature_centroid": {
-          "avg_score": 0.754,
-          "risk_level": 0.0,
           "cultural_depth": 0.7767,
+          "avg_score": 0.754,
           "l5_emphasis": 0.6615,
-          "tradition_specificity": 0.8
+          "tradition_specificity": 0.8,
+          "risk_level": 0.0
         },
         "session_ids": [
           "seed-002",
@@ -276,11 +336,11 @@
       {
         "cluster_id": "intra-002-000",
         "feature_centroid": {
-          "avg_score": 0.713,
-          "risk_level": 0.0,
           "cultural_depth": 0.67,
+          "avg_score": 0.713,
           "l5_emphasis": 0.9249,
-          "tradition_specificity": 0.8
+          "tradition_specificity": 0.8,
+          "risk_level": 0.0
         },
         "session_ids": [
           "seed-003",
@@ -373,11 +433,11 @@
       {
         "cluster_id": "intra-008-000",
         "feature_centroid": {
-          "avg_score": 0.602,
-          "risk_level": 0.0,
           "cultural_depth": 0.695,
+          "avg_score": 0.602,
           "l5_emphasis": 0.8916,
-          "tradition_specificity": 0.3
+          "tradition_specificity": 0.3,
+          "risk_level": 0.0
         },
         "session_ids": [
           "seed-009",
@@ -390,11 +450,11 @@
       {
         "cluster_id": "cross-000",
         "feature_centroid": {
-          "avg_score": 0.7304,
-          "risk_level": 0.0,
           "cultural_depth": 0.7573,
+          "avg_score": 0.7304,
           "l5_emphasis": 0.7927,
-          "tradition_specificity": 0.7333
+          "tradition_specificity": 0.7333,
+          "risk_level": 0.0
         },
         "session_ids": [
           "seed-001",
@@ -431,6 +491,53 @@
     ]
   },
   "layer_focus": {
+    "chinese_xieyi": {
+      "visual_perception": {
+        "focus_points": [
+          "ink wash gradients",
+          "negative space (留白)",
+          "brush rhythm"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "technical_analysis": {
+        "focus_points": [
+          "brushstroke spontaneity",
+          "ink consistency",
+          "rice paper texture"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "cultural_context": {
+        "focus_points": [
+          "literati painting tradition",
+          "Daoist nature philosophy",
+          "poem-painting unity"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "critical_interpretation": {
+        "focus_points": [
+          "qi yun (气韵生动)",
+          "xie yi spirit over form",
+          "scholar aesthetics"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "philosophical_aesthetic": {
+        "focus_points": [
+          "Dao in brushwork",
+          "emptiness as presence",
+          "nature-human unity"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      }
+    },
     "chinese_gongbi": {
       "visual_perception": {
         "focus_points": [
@@ -488,53 +595,6 @@
         "anti_focus": [],
         "session_count": 0
       }
-    },
-    "chinese_xieyi": {
-      "visual_perception": {
-        "focus_points": [
-          "ink wash gradients",
-          "negative space (留白)",
-          "brush rhythm"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      },
-      "technical_analysis": {
-        "focus_points": [
-          "brushstroke spontaneity",
-          "ink consistency",
-          "rice paper texture"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      },
-      "cultural_context": {
-        "focus_points": [
-          "literati painting tradition",
-          "Daoist nature philosophy",
-          "poem-painting unity"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      },
-      "critical_interpretation": {
-        "focus_points": [
-          "qi yun (气韵生动)",
-          "xie yi spirit over form",
-          "scholar aesthetics"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      },
-      "philosophical_aesthetic": {
-        "focus_points": [
-          "Dao in brushwork",
-          "emptiness as presence",
-          "nature-human unity"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      }
     }
   },
   "queen_strategy": {
@@ -542,6 +602,114 @@
     "prefer_quality_over_speed": true,
     "high_pattern_count": 2,
     "negative_feedback_count": 0,
-    "updated_at": "2026-03-10T16:52:44"
+    "updated_at": "2026-03-10T22:51:49"
+  },
+  "few_shot_examples": [
+    {
+      "tradition": "persian_miniature",
+      "subject": "garden scene",
+      "intent": "persian miniature garden scene",
+      "score": 0.79,
+      "session_id": "seed-008",
+      "key_strengths": [
+        "L1",
+        "L4"
+      ]
+    },
+    {
+      "tradition": "chinese_xieyi",
+      "subject": "lotus pond",
+      "intent": "lotus pond in misty morning",
+      "score": 0.78,
+      "session_id": "seed-013",
+      "key_strengths": [
+        "L1",
+        "L3"
+      ]
+    },
+    {
+      "tradition": "japanese_wabi_sabi",
+      "subject": "kintsugi vessel",
+      "intent": "kintsugi repaired vessel still life",
+      "score": 0.78,
+      "session_id": "seed-015",
+      "key_strengths": [
+        "L1",
+        "L3",
+        "L4"
+      ]
+    },
+    {
+      "tradition": "chinese_xieyi",
+      "subject": "mountain landscape",
+      "intent": "mountain landscape in ink wash style",
+      "score": 0.77,
+      "session_id": "seed-001",
+      "key_strengths": [
+        "L1",
+        "L3"
+      ]
+    },
+    {
+      "tradition": "chinese_xieyi",
+      "subject": "bamboo",
+      "intent": "bamboo in wind ink wash",
+      "score": 0.77,
+      "session_id": "seed-010",
+      "key_strengths": [
+        "L2",
+        "L3"
+      ]
+    },
+    {
+      "tradition": "indian_rasa",
+      "subject": "dance gesture",
+      "intent": "rasa-inspired dance gesture painting",
+      "score": 0.76,
+      "session_id": "seed-005",
+      "key_strengths": [
+        "L1",
+        "L3"
+      ]
+    },
+    {
+      "tradition": "japanese_wabi_sabi",
+      "subject": "ceramic bowl",
+      "intent": "wabi-sabi ceramic bowl with crack",
+      "score": 0.75,
+      "session_id": "seed-002",
+      "key_strengths": [
+        "L1",
+        "L4"
+      ]
+    },
+    {
+      "tradition": "islamic_geometric",
+      "subject": "tessellation",
+      "intent": "islamic geometric tessellation pattern",
+      "score": 0.75,
+      "session_id": "seed-004",
+      "key_strengths": [
+        "L2",
+        "L4"
+      ]
+    }
+  ],
+  "agent_insights": {
+    "scout": "Focus on dissecting the specific elements contributing to Chinese Xieyi's consistent success at both L1 and L3. Identify key brushwork techniques, compositional strategies, and philosophical undertones that resonate. Analyze if these successful patterns can be adapted or learned from by other traditions, particularly those with less defined 'philosophical aesthetic' weights.",
+    "draft": "For Chinese Xieyi, continue to emphasize expressive brushwork, spontaneous composition, and the integration of philosophical depth, as these are proven successful. For other traditions, consider how elements of 'philosophical aesthetic' or 'cultural context' could be more deeply integrated to enhance their output, drawing inspiration from Xieyi's success.",
+    "critic": "When evaluating Chinese Xieyi, prioritize the nuanced balance between spontaneity (L1) and sophisticated expression (L3), ensuring the 'philosophical aesthetic' is palpable. For other traditions, identify where the output falls short in conveying its core aesthetic or cultural values, especially in contrast to Xieyi's clear success.",
+    "queen": "Leverage the consistent high performance of Chinese Xieyi. Consider further exploration into its successful attributes and how they might be generalized or applied to elevate other traditions. Evaluate if current weight distributions adequately support the unique strengths of other traditions, or if adjustments are needed to foster similar success."
+  },
+  "tradition_insights": {
+    "african_traditional": "This tradition effectively leverages 'cultural_context'. To improve, focus on enhancing 'technical_analysis' and 'critical_interpretation'. Emphasize authentic representation of cultural narratives and symbolism, ensuring technical execution clearly conveys intended meaning and aesthetic. Explore diverse regional styles and their unique visual languages.",
+    "chinese_gongbi": "Strong in 'technical_analysis' and 'cultural_context'. Improvement lies in 'visual_perception'. Maintain precision and intricate detail, but enhance visual appeal by focusing on harmonious color palettes, balanced compositions, and clear narrative through visual elements to better engage the viewer.",
+    "chinese_xieyi": "Consistently high performance at L1 and L3 indicates strong alignment with 'philosophical_aesthetic' and 'cultural_context'. Continue emphasizing expressive brushwork, spontaneous composition, and philosophical depth. Experiment with diverse subject matter while maintaining core principles of 'writing ideas' and capturing the essence rather than mere likeness.",
+    "default": "This tradition has a balanced, generalist approach. To improve, consider incorporating successful elements from high-performing traditions like Xieyi. While maintaining broad appeal, integrate more expressive qualities or deeper philosophical/cultural integration to elevate its general output and prevent generic results.",
+    "islamic_geometric": "Excels in 'technical_analysis' and 'visual_perception'. To improve, deepen the 'cultural_context'. Continue prioritizing precision and intricate geometric patterns, but ensure the designs resonate with the profound cultural and spiritual significance behind them, moving beyond mere aesthetics to convey deeper meaning.",
+    "japanese_traditional": "To improve, focus on capturing the essence of Japanese aesthetics like Wabi-sabi, Yūgen, and Iki. Emphasize natural motifs, balanced asymmetry, and skilled craftsmanship. Explore diverse forms like Ukiyo-e, Nihonga, or Sumi-e, ensuring each piece reflects a deep understanding of its specific cultural and artistic lineage.",
+    "south_asian": "To improve, emphasize the rich cultural narratives, vibrant color palettes, and intricate detailing characteristic of South Asian art. Explore diverse regional styles and their unique iconographies and storytelling traditions, ensuring authenticity and depth in representation.",
+    "watercolor": "To improve, leverage the unique properties of watercolor: transparency, luminosity, and fluid washes. Focus on capturing light and atmosphere, experimenting with wet-on-wet techniques and expressive brushwork to create depth and emotion. Emphasize the spontaneous and ethereal qualities inherent to the medium.",
+    "western_academic": "To improve, prioritize foundational techniques like anatomy, perspective, and chiaroscuro. Focus on realistic representation and classical compositions, while also exploring opportunities for emotional depth and narrative complexity. Strive for technical mastery combined with compelling storytelling and expressive qualities."
   }
 }

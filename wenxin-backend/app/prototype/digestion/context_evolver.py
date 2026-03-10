@@ -28,7 +28,7 @@ logger = logging.getLogger("vulca")
 
 _MAX_DELTA = 0.05
 _MIN_SESSIONS_TO_EVOLVE = 5
-_LLM_TIMEOUT_S = 30
+_LLM_TIMEOUT_S = 60
 _AGENT_ROLES = frozenset({"scout", "draft", "critic", "queen"})
 
 # Seed sessions use L1-L5 shorthand; weights use full dimension names.
@@ -562,7 +562,7 @@ Generate agent insights and tradition-specific guidance based on this data."""
                 {"role": "user", "content": user_msg},
             ],
             temperature=0.3,
-            max_tokens=1500,
+            max_tokens=4096,
             timeout=_LLM_TIMEOUT_S,
         )
 
@@ -570,6 +570,12 @@ Generate agent insights and tradition-specific guidance based on this data."""
 
         raw = (response.choices[0].message.content or "").strip()
         content = strip_markdown_fences(raw)
+
+        # Extract JSON object even if surrounded by extra text
+        brace_start = content.find("{")
+        brace_end = content.rfind("}")
+        if brace_start != -1 and brace_end > brace_start:
+            content = content[brace_start:brace_end + 1]
 
         result = json.loads(content)
         if not isinstance(result, dict):

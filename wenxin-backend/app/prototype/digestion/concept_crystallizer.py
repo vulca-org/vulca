@@ -90,7 +90,7 @@ class ConceptCrystallizer:
 
     _LLM_MAX_RETRIES = 3
     _LLM_RETRY_DELAY_S = 1
-    _LLM_TIMEOUT_S = 30
+    _LLM_TIMEOUT_S = 60
 
     def _try_llm_crystallize(self, cluster, sessions: list[dict]) -> CulturalConcept | None:
         """Use LLM to name and describe the emerged concept, with retry."""
@@ -131,12 +131,15 @@ class ConceptCrystallizer:
                 response = litellm.completion(
                     model=MODEL_FAST,
                     messages=[{"role": "user", "content": prompt}],
-                    max_tokens=300,
+                    max_tokens=4096,
                     temperature=0.3,
                     timeout=self._LLM_TIMEOUT_S,
                 )
 
-                text = response.choices[0].message.content or ""
+                raw = response.choices[0].message.content or ""
+                # Strip markdown fences (Gemini wraps in ```json...```)
+                from app.prototype.digestion.llm_utils import strip_markdown_fences
+                text = strip_markdown_fences(raw)
                 # Parse JSON
                 brace_start = text.find("{")
                 brace_end = text.rfind("}")

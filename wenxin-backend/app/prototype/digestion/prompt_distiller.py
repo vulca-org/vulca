@@ -21,7 +21,7 @@ from dataclasses import dataclass, field
 logger = logging.getLogger("vulca")
 
 _SCORE_THRESHOLD = 0.70  # Only learn from sessions scoring above this
-_LLM_TIMEOUT_S = 30
+_LLM_TIMEOUT_S = 60
 
 
 @dataclass
@@ -187,7 +187,7 @@ class PromptDistiller:
                         {"role": "user", "content": user_msg},
                     ],
                     temperature=0.3,
-                    max_tokens=1500,
+                    max_tokens=4096,
                     timeout=_LLM_TIMEOUT_S,
                 )
 
