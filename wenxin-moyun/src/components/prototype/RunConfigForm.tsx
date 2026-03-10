@@ -159,7 +159,7 @@ function TraditionCombobox({
 export interface RunConfigParams {
   subject: string;
   tradition: string;
-  cultural_intent: string;
+  intent: string;
   provider: string;
   n_candidates: number;
   max_rounds: number;
@@ -230,7 +230,7 @@ export default function RunConfigForm({ onSubmit, disabled, initialValues }: Pro
     if (!initialValues) return;
     if (initialValues.subject !== undefined) setSubject(initialValues.subject);
     if (initialValues.tradition !== undefined) setTradition(initialValues.tradition);
-    if (initialValues.cultural_intent !== undefined) setCulturalIntent(initialValues.cultural_intent);
+    if (initialValues.intent !== undefined) setCulturalIntent(initialValues.intent);
     if (initialValues.provider !== undefined) setProvider(initialValues.provider);
     if (initialValues.n_candidates !== undefined) setNCandidates(initialValues.n_candidates);
     if (initialValues.max_rounds !== undefined) setMaxRounds(initialValues.max_rounds);
@@ -264,7 +264,7 @@ export default function RunConfigForm({ onSubmit, disabled, initialValues }: Pro
     onSubmit({
       subject: subject.trim(),
       tradition,
-      cultural_intent: culturalIntent.trim(),
+      intent: culturalIntent.trim(),
       provider,
       n_candidates: nCandidates,
       max_rounds: maxRounds,

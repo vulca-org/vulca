@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class CreateRunRequest(BaseModel):
@@ -12,6 +12,14 @@ class CreateRunRequest(BaseModel):
 
     subject: str = Field(..., min_length=1, max_length=500, description="Artwork subject")
     intent: str | None = Field(default=None, max_length=500, description="Creative intent (defaults to subject if omitted)")
+
+    @model_validator(mode="before")
+    @classmethod
+    def _accept_cultural_intent(cls, data: dict) -> dict:
+        """Accept 'cultural_intent' as alias for 'intent' (frontend compatibility)."""
+        if isinstance(data, dict) and "cultural_intent" in data and "intent" not in data:
+            data["intent"] = data.pop("cultural_intent")
+        return data
     tradition: str = Field(
         default="default",
         description="Cultural tradition",

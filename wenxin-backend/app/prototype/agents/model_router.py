@@ -28,7 +28,7 @@ __all__ = [
 # === Semantic model constants ===
 # Change these to switch all agents to a different model
 MODEL_VLM = "gemini/gemini-2.5-flash"       # Vision-capable (for image analysis)
-MODEL_FAST = "gemini/gemini-2.0-flash"       # Fast text-only (for generation, crystallization)
+MODEL_FAST = "gemini/gemini-2.5-flash"       # Fast text-only (for generation, crystallization)
 MODEL_DECISION = "gemini/gemini-2.5-flash"   # Decision-making (for routing, queen)
 
 

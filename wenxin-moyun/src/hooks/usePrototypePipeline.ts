@@ -202,7 +202,7 @@ export interface SubStageInfo {
 export interface CreateRunParams {
   subject: string;
   tradition: string;
-  cultural_intent?: string;
+  intent?: string;
   provider?: string;
   n_candidates?: number;
   max_rounds?: number;
