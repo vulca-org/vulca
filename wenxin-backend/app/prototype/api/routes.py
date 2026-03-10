@@ -105,19 +105,23 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
 
     task_id = f"api-{uuid.uuid4().hex[:8]}"
 
-    # Resolve API key per provider (M0: unified to GOOGLE_API_KEY)
-    if req.provider == "nb2":
-        api_key = os.environ.get("GOOGLE_API_KEY", "") or os.environ.get("GEMINI_API_KEY", "")
-        if not api_key:
-            raise HTTPException(400, "GOOGLE_API_KEY/GEMINI_API_KEY not configured on server")
-    elif req.provider == "mock":
+    # Resolve provider: "auto" detects API key availability
+    api_key = os.environ.get("GOOGLE_API_KEY", "") or os.environ.get("GEMINI_API_KEY", "")
+    provider = req.provider
+    if provider == "auto":
+        provider = "nb2" if api_key else "mock"
+    elif provider == "nb2" and not api_key:
+        raise HTTPException(400, "GOOGLE_API_KEY/GEMINI_API_KEY not configured on server")
+    elif provider == "mock":
         api_key = ""
-    else:
-        # Default: try Google API key for any provider
-        api_key = os.environ.get("GOOGLE_API_KEY", "") or os.environ.get("GEMINI_API_KEY", "")
+
+    # Auto-enable LLM features when API key is available
+    has_api_key = bool(api_key)
+    enable_prompt_enhancer = req.enable_prompt_enhancer and has_api_key
+    enable_llm_queen = req.enable_llm_queen and has_api_key
 
     d_cfg = DraftConfig(
-        provider=req.provider, api_key=api_key,
+        provider=provider, api_key=api_key,
         n_candidates=req.n_candidates, seed_base=42,
     )
     cr_cfg = CriticConfig()
@@ -168,12 +172,14 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
             enable_agent_critic=req.enable_agent_critic,
             enable_fix_it_plan=req.enable_agent_critic,
             enable_parallel_critic=req.enable_parallel_critic,
+            enable_prompt_enhancer=enable_prompt_enhancer,
+            enable_llm_queen=enable_llm_queen,
         )
     _orchestrators[task_id] = orchestrator
     _run_metadata[task_id] = {
         "subject": req.subject,
         "tradition": req.tradition,
-        "provider": req.provider,
+        "provider": provider,
         "created_at": time.time(),
         "node_params": req.node_params,
     }
@@ -465,6 +471,24 @@ def _build_status_response(task_id: str) -> RunStatusResponse:
         )
 
     raise HTTPException(404, f"Run {task_id} not found")
+
+
+@router.get("/capabilities")
+async def get_capabilities():
+    """Report server AI capabilities so the frontend can adapt UI."""
+    api_key = os.environ.get("GOOGLE_API_KEY", "") or os.environ.get("GEMINI_API_KEY", "")
+    has_key = bool(api_key)
+    return {
+        "has_api_key": has_key,
+        "default_provider": "nb2" if has_key else "mock",
+        "features": {
+            "real_image_generation": has_key,
+            "vlm_critic": has_key,
+            "llm_agent_critic": has_key,
+            "prompt_enhancer": has_key,
+            "llm_queen": has_key,
+        },
+    }
 
 
 # ---------------------------------------------------------------------------

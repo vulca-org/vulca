@@ -116,7 +116,7 @@ export default function PrototypePage() {
         subject: intent,
         tradition: lastRunParams?.tradition || 'default',
         cultural_intent: lastRunParams?.cultural_intent || '',
-        provider: lastRunParams?.provider || 'mock',
+        provider: lastRunParams?.provider || 'auto',
         n_candidates: lastRunParams?.n_candidates || 4,
         max_rounds: lastRunParams?.max_rounds || 3,
         enable_hitl: enableHitl,
@@ -145,11 +145,11 @@ export default function PrototypePage() {
     const runParams: CreateRunParams = {
       subject: lastRunParams?.subject || 'Ink wash landscape with mist and mountains',
       tradition: lastRunParams?.tradition || 'chinese_xieyi',
-      provider: lastRunParams?.provider || 'mock',
+      provider: lastRunParams?.provider || 'auto',
       n_candidates: lastRunParams?.n_candidates || 4,
       max_rounds: lastRunParams?.max_rounds || 3,
       enable_hitl: lastRunParams?.enable_hitl || false,
-      enable_agent_critic: lastRunParams?.enable_agent_critic || false,
+      enable_agent_critic: lastRunParams?.enable_agent_critic ?? true,
       enable_parallel_critic: lastRunParams?.enable_parallel_critic || false,
       use_graph: true, // M3 custom topology forces graph mode
       template: params.template,
@@ -318,7 +318,7 @@ export default function PrototypePage() {
           <IOSCardContent>
             <BatchInputPanel
               tradition={lastRunParams?.tradition || 'default'}
-              provider={lastRunParams?.provider || 'mock'}
+              provider={lastRunParams?.provider || 'auto'}
               template="batch_eval"
               disabled={isRunning}
             />

@@ -15,11 +15,13 @@ class CreateRunRequest(BaseModel):
         default="default",
         description="Cultural tradition",
     )
-    provider: str = Field(default="nb2", description="Image provider: nb2 | mock")
+    provider: str = Field(default="auto", description="Image provider: auto | nb2 | mock (auto detects API key)")
     n_candidates: int = Field(default=4, ge=1, le=8, description="Candidates per round")
     max_rounds: int = Field(default=3, ge=1, le=5, description="Max Queen rounds")
     enable_hitl: bool = Field(default=False, description="Enable human-in-the-loop")
     enable_agent_critic: bool = Field(default=True, description="Use LLM-based Critic (CriticLLM) instead of rule-only scoring")
+    enable_prompt_enhancer: bool = Field(default=True, description="Inject evolved context into Draft prompts")
+    enable_llm_queen: bool = Field(default=False, description="Use LLM+RAG Queen for ambiguous decisions")
     use_graph: bool = Field(default=False, description="Use LangGraph-based pipeline (experimental) instead of classic PipelineOrchestrator (production)")
     template: str = Field(default="default", description="Graph template: default | fast_draft | critique_only | interactive_full | batch_eval")
     enable_parallel_critic: bool = Field(default=False, description="Use parallel L1-L5 scoring (ThreadPoolExecutor) for faster Critic")
