@@ -380,7 +380,80 @@ class CriticRules:
                     scores, image_path, subject, cultural_tradition,
                 )
 
+        # --- Generate human-readable summaries ---
+        scores = self._add_summaries(scores, cultural_tradition)
+
         return scores
+
+    # ------------------------------------------------------------------
+    # Human-readable summaries
+    # ------------------------------------------------------------------
+
+    # Score quality labels
+    _QUALITY_LABELS = [
+        (0.8, "excellent"), (0.65, "good"), (0.5, "adequate"),
+        (0.35, "needs improvement"), (0.0, "weak"),
+    ]
+
+    # Dimension display names (bilingual)
+    _DIM_NAMES: dict[str, str] = {
+        "visual_perception": "Visual (视觉感知)",
+        "technical_analysis": "Technical (技法分析)",
+        "cultural_context": "Cultural (文化语境)",
+        "critical_interpretation": "Critique (批评解读)",
+        "philosophical_aesthetic": "Philosophy (美学哲思)",
+    }
+
+    @classmethod
+    def _score_label(cls, score: float) -> str:
+        for threshold, label in cls._QUALITY_LABELS:
+            if score >= threshold:
+                return label
+        return "weak"
+
+    @staticmethod
+    def _add_summaries(
+        scores: list[DimensionScore], tradition: str,
+    ) -> list[DimensionScore]:
+        """Add one-sentence human-readable summaries to each DimensionScore."""
+        result = []
+        for ds in scores:
+            label = CriticRules._score_label(ds.score)
+            dim_name = CriticRules._DIM_NAMES.get(ds.dimension, ds.dimension)
+            # Pick the most informative rationale part (skip "Baseline...")
+            parts = [p.strip() for p in ds.rationale.split(". ") if p.strip()]
+            key_insight = next(
+                (p for p in parts if not p.startswith("Baseline")), parts[0] if parts else ""
+            )
+            summary = f"{dim_name}: {label} ({ds.score:.0%}) — {key_insight}"
+            result.append(DimensionScore(
+                dimension=ds.dimension,
+                score=ds.score,
+                rationale=ds.rationale,
+                summary=summary,
+                agent_metadata=ds.agent_metadata,
+            ))
+        return result
+
+    @staticmethod
+    def generate_evaluation_summary(scores: list[DimensionScore], tradition: str = "") -> str:
+        """Generate an overall 1-2 sentence evaluation summary from dimension scores."""
+        if not scores:
+            return ""
+        avg = sum(ds.score for ds in scores) / len(scores)
+        label = CriticRules._score_label(avg)
+        # Find strongest and weakest dimensions
+        sorted_scores = sorted(scores, key=lambda ds: ds.score, reverse=True)
+        strong = CriticRules._DIM_NAMES.get(sorted_scores[0].dimension, sorted_scores[0].dimension)
+        weak = CriticRules._DIM_NAMES.get(sorted_scores[-1].dimension, sorted_scores[-1].dimension)
+
+        tradition_label = tradition.replace("_", " ") if tradition and tradition != "default" else "general"
+        summary = (
+            f"Overall {label} ({avg:.0%}) for {tradition_label}. "
+            f"Strongest: {strong} ({sorted_scores[0].score:.0%}), "
+            f"needs attention: {weak} ({sorted_scores[-1].score:.0%})."
+        )
+        return summary
 
     @staticmethod
     def _blend_image_scores(

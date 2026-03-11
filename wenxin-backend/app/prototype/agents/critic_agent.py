@@ -154,11 +154,22 @@ def build_critique_output(
 
     elapsed_ms = int((time.monotonic() - t0) * 1000)
 
+    # Generate human-readable evaluation summary from best candidate scores
+    eval_summary = ""
+    try:
+        from app.prototype.agents.critic_rules import CriticRules
+        best_scores = next((s.dimension_scores for s in scored if s.candidate_id == best_id), None)
+        if best_scores:
+            eval_summary = CriticRules.generate_evaluation_summary(best_scores, cultural_tradition)
+    except Exception:
+        pass
+
     output = CritiqueOutput(
         task_id=task_id,
         scored_candidates=scored,
         best_candidate_id=best_id,
         rerun_hint=sorted(low_dims),
+        evaluation_summary=eval_summary,
         created_at=datetime.now(timezone.utc).isoformat(),
         latency_ms=elapsed_ms,
         success=True,

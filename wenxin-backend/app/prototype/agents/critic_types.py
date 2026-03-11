@@ -39,6 +39,7 @@ class DimensionScore:
     dimension: str    # "visual_perception" | ... | "philosophical_aesthetic"
     score: float      # [0.0, 1.0]
     rationale: str    # scoring rationale
+    summary: str = ""  # one-sentence human-readable summary
     agent_metadata: dict | None = None  # AgentResult details when escalated
 
     def to_dict(self) -> dict:
@@ -47,6 +48,8 @@ class DimensionScore:
             "score": round(self.score, 4),
             "rationale": self.rationale,
         }
+        if self.summary:
+            d["summary"] = self.summary
         if self.agent_metadata:
             d["agent_metadata"] = self.agent_metadata
         return d
@@ -82,6 +85,7 @@ class CritiqueOutput:
     scored_candidates: list[CandidateScore] = field(default_factory=list)
     best_candidate_id: str | None = None
     rerun_hint: list[str] = field(default_factory=list)
+    evaluation_summary: str = ""      # human-readable 1-2 sentence overall summary
     created_at: str = ""              # ISO 8601
     latency_ms: int = 0
     success: bool = True
@@ -100,6 +104,8 @@ class CritiqueOutput:
             "success": self.success,
             "error": self.error,
         }
+        if self.evaluation_summary:
+            d["evaluation_summary"] = self.evaluation_summary
         if self.agent_metrics:
             d["agent_metrics"] = self.agent_metrics
         if self.cross_layer_signals:
