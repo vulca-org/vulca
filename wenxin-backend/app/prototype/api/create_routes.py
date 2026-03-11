@@ -318,7 +318,9 @@ def _process_pipeline_event(
             if isinstance(c, dict) and c.get("candidate_id") and c.get("image_url"):
                 candidate_image_urls[c["candidate_id"]] = c["image_url"]
     elif event.event_type == EventType.STAGE_COMPLETED and event.stage == "critic":
-        scored = event.payload.get("scored_candidates", [])
+        # scored_candidates is nested inside payload.critique (not top-level)
+        critique = event.payload.get("critique", event.payload)
+        scored = critique.get("scored_candidates", [])
         if scored:
             top = scored[0] if isinstance(scored[0], dict) else {}
             for ds in top.get("dimension_scores", []):

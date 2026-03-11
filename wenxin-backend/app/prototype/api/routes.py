@@ -205,6 +205,7 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
     )
 
     def _run_in_background() -> None:
+      try:
         from app.prototype.api.create_routes import _build_implicit_feedback, _process_pipeline_event
         from app.prototype.digestion.feature_extractor import extract_cultural_features
         from app.prototype.session.store import SessionStore
@@ -269,6 +270,10 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
 
         # Cleanup expired runs after pipeline completes
         _cleanup_expired_runs()
+      except Exception:
+        logging.getLogger("vulca.pipeline").exception(
+            "Background pipeline %s crashed", task_id,
+        )
 
     thread = Thread(target=_run_in_background, daemon=True)
     thread.start()
