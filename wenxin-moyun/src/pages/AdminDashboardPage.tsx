@@ -23,6 +23,18 @@ interface EvolutionData {
   last_evolved_at: string | null;
 }
 
+interface DigestionStatusData {
+  total_sessions: number;
+  traditions: Record<string, unknown>;
+  cultures: Record<string, unknown>;
+  prompt_contexts: { archetypes?: unknown[] };
+  feature_space: { clusters?: unknown[] };
+  agent_insights: Record<string, string>;
+  tradition_insights: Record<string, string>;
+  evolutions: number;
+  last_evolved_at: string | null;
+}
+
 interface FeedbackStatsData {
   total: number;
   thumbsUp: number;
@@ -99,6 +111,7 @@ export default function AdminDashboardPage() {
   const [feedbackStats, setFeedbackStats] = useState<FeedbackStatsData>(DEFAULT_FEEDBACK);
   const [skillEcosystem, setSkillEcosystem] = useState<SkillEcosystemData>(DEFAULT_SKILLS);
   const [evolution, setEvolution] = useState<EvolutionData | null>(null);
+  const [digestionStatus, setDigestionStatus] = useState<DigestionStatusData | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -178,6 +191,18 @@ export default function AdminDashboardPage() {
       }
     })();
 
+    // Fetch detailed digestion status
+    (async () => {
+      try {
+        const res = await fetch(`${API_PREFIX}/digestion/status`);
+        if (!res.ok) throw new Error('API unavailable');
+        const data = await res.json();
+        if (!cancelled) setDigestionStatus(data);
+      } catch {
+        // keep null
+      }
+    })();
+
     return () => { cancelled = true; };
   }, []);
 
@@ -249,6 +274,97 @@ export default function AdminDashboardPage() {
           </IOSCard>
         </IOSCardGrid>
       </section>
+
+      {/* Digestion System Details */}
+      {digestionStatus && (
+        <section className="mb-8">
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">
+            Evolved Context Coverage
+          </h2>
+          <IOSCardGrid columns={2} gap="md">
+            {/* Context Coverage Stats */}
+            <IOSCard variant="elevated" padding="lg">
+              <IOSCardHeader
+                title="Context Coverage"
+                subtitle="Evolved context data dimensions"
+              />
+              <IOSCardContent>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-500 dark:text-gray-400">Cultures emerged</span>
+                    <span className="text-lg font-bold text-[#C87F4A]">
+                      {Object.keys(digestionStatus.cultures ?? {}).length}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-500 dark:text-gray-400">Prompt archetypes</span>
+                    <span className="text-lg font-bold text-[#B8923D]">
+                      {Array.isArray(digestionStatus.prompt_contexts?.archetypes)
+                        ? digestionStatus.prompt_contexts.archetypes.length
+                        : 0}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-500 dark:text-gray-400">Feature clusters</span>
+                    <span className="text-lg font-bold text-[#5F8A50]">
+                      {Array.isArray(digestionStatus.feature_space?.clusters)
+                        ? digestionStatus.feature_space.clusters.length
+                        : 0}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-500 dark:text-gray-400">Tradition weights</span>
+                    <span className="text-lg font-bold text-[#334155] dark:text-gray-300">
+                      {Object.keys(digestionStatus.traditions ?? {}).length}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-500 dark:text-gray-400">Evolution cycles</span>
+                    <span className="text-lg font-bold text-[#C65D4D]">
+                      {digestionStatus.evolutions ?? 0}
+                    </span>
+                  </div>
+                  {digestionStatus.last_evolved_at && (
+                    <div className="pt-2 border-t border-gray-100 dark:border-gray-800">
+                      <span className="text-xs text-gray-400 dark:text-gray-500">
+                        Last evolution: {digestionStatus.last_evolved_at}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </IOSCardContent>
+            </IOSCard>
+
+            {/* Agent Insights Summary */}
+            <IOSCard variant="elevated" padding="lg">
+              <IOSCardHeader
+                title="Agent Insights"
+                subtitle="LLM-generated guidance for pipeline agents"
+              />
+              <IOSCardContent>
+                {digestionStatus.agent_insights && Object.keys(digestionStatus.agent_insights).length > 0 ? (
+                  <div className="space-y-3">
+                    {Object.entries(digestionStatus.agent_insights).map(([role, insight]) => (
+                      <div key={role} className="p-2.5 rounded-lg bg-gray-50 dark:bg-gray-800/50">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-xs font-semibold text-[#C87F4A] uppercase">{role}</span>
+                        </div>
+                        <p className="text-[11px] text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-3">
+                          {insight}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-6 text-gray-400 dark:text-gray-500 text-sm">
+                    No agent insights yet. Run a digestion cycle with LLM to generate.
+                  </div>
+                )}
+              </IOSCardContent>
+            </IOSCard>
+          </IOSCardGrid>
+        </section>
+      )}
 
       {/* Agent Status Section */}
       <section className="mb-8">

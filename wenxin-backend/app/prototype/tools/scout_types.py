@@ -62,10 +62,14 @@ class ScoutEvidence:
     sample_matches: list[SampleMatchResult] = field(default_factory=list)
     terminology_hits: list[TerminologyHitResult] = field(default_factory=list)
     taboo_violations: list[TabooViolationResult] = field(default_factory=list)
+    notes: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict:
-        return {
+        result = {
             "sample_matches": [m.to_dict() for m in self.sample_matches],
             "terminology_hits": [h.to_dict() for h in self.terminology_hits],
             "taboo_violations": [v.to_dict() for v in self.taboo_violations],
         }
+        if self.notes:
+            result["notes"] = list(self.notes)
+        return result

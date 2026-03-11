@@ -202,7 +202,7 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
     )
 
     def _run_in_background() -> None:
-        from app.prototype.api.create_routes import _process_pipeline_event
+        from app.prototype.api.create_routes import _build_implicit_feedback, _process_pipeline_event
         from app.prototype.digestion.feature_extractor import extract_cultural_features
         from app.prototype.session.store import SessionStore
         from app.prototype.session.types import RoundSnapshot, SessionDigest
@@ -239,6 +239,7 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
                 total_rounds=state["total_rounds"],
                 total_latency_ms=elapsed_ms,
                 total_cost_usd=state["total_cost"],
+                feedback=_build_implicit_feedback(state, final_scores),
             )
             digest.cultural_features = extract_cultural_features(
                 tradition=req.tradition,

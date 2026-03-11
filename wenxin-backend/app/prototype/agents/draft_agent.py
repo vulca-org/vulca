@@ -214,10 +214,15 @@ def _inject_evolved_context(prompt_parts: list[str], tradition: str) -> None:
     """Inject evolved context archetypes into Draft prompt parts.
 
     Reads successful patterns from evolved_context.json and adds them
-    as style hints to the generation prompt. Zero regression on failure.
+    as style hints to the generation prompt. Also injects the LLM-generated
+    draft agent insight from ``agent_insights["draft"]``.
+    Zero regression on failure.
     """
     try:
-        from app.prototype.cultural_pipelines.cultural_weights import get_prompt_archetypes
+        from app.prototype.cultural_pipelines.cultural_weights import (
+            get_agent_insight,
+            get_prompt_archetypes,
+        )
 
         archetypes = get_prompt_archetypes(tradition, top_n=3)
         for arch in archetypes:
@@ -231,6 +236,24 @@ def _inject_evolved_context(prompt_parts: list[str], tradition: str) -> None:
                 first_sentence = insights.split(".")[0].strip()
                 if first_sentence and len(first_sentence) <= 60:
                     prompt_parts.append(first_sentence)
+
+        # Inject agent-level draft insight (top-level agent_insights["draft"])
+        draft_insight = get_agent_insight("draft")
+        if draft_insight:
+            prompt_parts.append(f"[Expert guidance] {draft_insight[:200]}")
+    except Exception:
+        pass  # Zero regression
+
+    # Tradition-specific narrative insight injection (MemRL tradition_insights)
+    try:
+        from app.prototype.cultural_pipelines.cultural_weights import get_tradition_insight
+
+        t_insight = get_tradition_insight(tradition)
+        if t_insight:
+            # Extract first sentence, capped at 200 chars for prompt brevity
+            first_sentence = t_insight.split(".")[0].strip()
+            if first_sentence and len(first_sentence) <= 200:
+                prompt_parts.append(first_sentence)
     except Exception:
         pass  # Zero regression
 

@@ -240,6 +240,67 @@ def get_all_weight_tables() -> dict[str, dict[str, float]]:
     return {k: dict(v) for k, v in tables.items()}
 
 
+def get_agent_insight(agent: str) -> str:
+    """Return the LLM-generated insight for a specific agent role.
+
+    Reads the ``agent_insights`` top-level section from evolved_context.json.
+
+    Parameters
+    ----------
+    agent:
+        Agent role key: ``"scout"``, ``"draft"``, ``"critic"``, or ``"queen"``.
+
+    Returns
+    -------
+    str
+        The insight string, or ``""`` if unavailable (zero regression).
+    """
+    try:
+        if not os.path.exists(_EVOLVED_CONTEXT_PATH):
+            return ""
+        with open(_EVOLVED_CONTEXT_PATH, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        insights = data.get("agent_insights")
+        if isinstance(insights, dict):
+            val = insights.get(agent, "")
+            return str(val) if val else ""
+    except (json.JSONDecodeError, OSError):
+        pass
+    return ""
+
+
+def get_tradition_insight(tradition: str) -> str:
+    """Return the LLM-generated narrative insight for a specific tradition.
+
+    Reads the ``tradition_insights`` top-level section from evolved_context.json.
+
+    Parameters
+    ----------
+    tradition:
+        Cultural tradition key (e.g. ``"chinese_xieyi"``).
+
+    Returns
+    -------
+    str
+        The tradition insight string (capped at 200 chars for prompt injection),
+        or ``""`` if unavailable (zero regression).
+    """
+    try:
+        if not os.path.exists(_EVOLVED_CONTEXT_PATH):
+            return ""
+        with open(_EVOLVED_CONTEXT_PATH, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        insights = data.get("tradition_insights")
+        if isinstance(insights, dict):
+            val = insights.get(tradition, "")
+            if val:
+                text = str(val)[:200]
+                return text
+    except (json.JSONDecodeError, OSError):
+        pass
+    return ""
+
+
 def get_prompt_archetypes(tradition: str, top_n: int = 5) -> list[dict]:
     """Return top-N prompt archetypes for a tradition from evolved_context.json.
 

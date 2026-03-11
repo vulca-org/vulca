@@ -32,6 +32,10 @@ async def digestion_status() -> dict:
     cultures: dict = {}
     prompt_contexts: dict = {}
     feature_space: dict = {}
+    agent_insights: dict = {}
+    tradition_insights: dict = {}
+    evolutions: int = 0
+    last_evolved_at: str | None = None
     if context_path.exists():
         try:
             with open(context_path, "r", encoding="utf-8") as f:
@@ -39,6 +43,10 @@ async def digestion_status() -> dict:
             cultures = ctx.get("cultures", {})
             prompt_contexts = ctx.get("prompt_contexts", {})
             feature_space = ctx.get("feature_space", {})
+            agent_insights = ctx.get("agent_insights", {})
+            tradition_insights = ctx.get("tradition_insights", {})
+            evolutions = ctx.get("evolutions", 0)
+            last_evolved_at = ctx.get("last_evolved_at")
         except Exception:
             pass
 
@@ -48,6 +56,10 @@ async def digestion_status() -> dict:
         "cultures": cultures,
         "prompt_contexts": prompt_contexts,
         "feature_space": feature_space,
+        "agent_insights": agent_insights,
+        "tradition_insights": tradition_insights,
+        "evolutions": evolutions,
+        "last_evolved_at": last_evolved_at,
     }
 
 
@@ -56,10 +68,24 @@ async def digestion_report() -> dict:
     """Return a summary report of the evolved context state.
 
     Replaces the old evolution/ AdminAgent weekly report with a
-    lightweight, digestion-native summary.
+    lightweight, digestion-native summary.  Also includes agent_insights
+    and tradition_insights from the evolved context.
     """
     evolver = ContextEvolver()
-    return evolver.generate_report()
+    report = evolver.generate_report()
+
+    # Augment with insights from evolved context
+    context_path = Path(__file__).resolve().parent.parent / "data" / "evolved_context.json"
+    if context_path.exists():
+        try:
+            with open(context_path, "r", encoding="utf-8") as f:
+                ctx = json.load(f)
+            report["agent_insights"] = ctx.get("agent_insights", {})
+            report["tradition_insights"] = ctx.get("tradition_insights", {})
+        except Exception:
+            pass
+
+    return report
 
 
 @digestion_router.post("/run")

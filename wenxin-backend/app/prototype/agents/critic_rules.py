@@ -128,6 +128,13 @@ def _get_evolved_scoring_context(tradition: str) -> dict:
         if critic_insight:
             result["critic_insight"] = critic_insight
 
+        # Tradition-specific narrative insight (MemRL tradition_insights)
+        tradition_insights = ctx.get("tradition_insights", {})
+        if isinstance(tradition_insights, dict):
+            t_insight = tradition_insights.get(tradition, "")
+            if t_insight:
+                result["tradition_insight"] = str(t_insight)[:200]
+
     except Exception:
         pass
     return result
@@ -176,6 +183,7 @@ class CriticRules:
         evo = _get_evolved_scoring_context(cultural_tradition)
         evo_guidance = evo.get("evaluation_guidance", {})
         evo_focus = evo.get("focus_points", {})
+        evo_tradition_insight = evo.get("tradition_insight", "")
 
         scores: list[DimensionScore] = []
 
@@ -199,6 +207,10 @@ class CriticRules:
         l1_hint = evo_guidance.get("L1") or evo_guidance.get("visual_perception", "")
         if l1_hint:
             rationale_parts_l1.append(f"[Evolved] {l1_hint[:80]}")
+        # Tradition insight bonus: +0.02 for tradition-relevant dimensions
+        if evo_tradition_insight:
+            l1 += 0.02
+            rationale_parts_l1.append("[Tradition insight] visual guidance available")
         scores.append(DimensionScore(
             dimension=DIMENSIONS[0],
             score=_clamp(l1),
@@ -249,6 +261,10 @@ class CriticRules:
         l3_hint = evo_guidance.get("L3") or evo_guidance.get("cultural_context", "")
         if l3_hint:
             rationale_parts_l3.append(f"[Evolved] {l3_hint[:80]}")
+        # Tradition insight bonus: +0.02 for tradition-relevant dimensions
+        if evo_tradition_insight:
+            l3 += 0.02
+            rationale_parts_l3.append("[Tradition insight] cultural guidance available")
         scores.append(DimensionScore(
             dimension=DIMENSIONS[2],
             score=_clamp(l3),
@@ -301,11 +317,52 @@ class CriticRules:
         l5_hint = evo_guidance.get("L5") or evo_guidance.get("philosophical_aesthetic", "")
         if l5_hint:
             rationale_parts_l5.append(f"[Evolved] {l5_hint[:80]}")
+        # Tradition insight bonus: +0.02 for tradition-relevant dimensions
+        if evo_tradition_insight:
+            l5 += 0.02
+            rationale_parts_l5.append("[Tradition insight] aesthetic guidance available")
         scores.append(DimensionScore(
             dimension=DIMENSIONS[4],
             score=_clamp(l5),
             rationale=". ".join(rationale_parts_l5),
         ))
+
+        # --- Evolved context scoring bonuses (Task A + Task B) ---
+        # Task B: evaluation_guidance bonus (+0.03 per dimension with guidance)
+        _guidance_bonus_map = {
+            0: l1_hint,  # L1
+            1: l2_hint,  # L2
+            2: l3_hint,  # L3
+            3: l4_hint,  # L4
+            4: l5_hint,  # L5
+        }
+        total_evo_bonus = 0.0
+        max_evo_bonus = 0.15  # Cap total evolved bonuses
+        for idx, hint in _guidance_bonus_map.items():
+            if hint and total_evo_bonus < max_evo_bonus:
+                bonus = min(0.03, max_evo_bonus - total_evo_bonus)
+                old_s = scores[idx]
+                scores[idx] = DimensionScore(
+                    dimension=old_s.dimension,
+                    score=_clamp(old_s.score + bonus),
+                    rationale=old_s.rationale,
+                    agent_metadata=old_s.agent_metadata,
+                )
+                total_evo_bonus += bonus
+
+        # Task A: critic_insight alignment bonus (+0.02 spread across all dims)
+        critic_insight = evo.get("critic_insight", "")
+        if critic_insight and total_evo_bonus < max_evo_bonus:
+            insight_bonus = min(0.02, max_evo_bonus - total_evo_bonus)
+            for idx in range(len(scores)):
+                old_s = scores[idx]
+                scores[idx] = DimensionScore(
+                    dimension=old_s.dimension,
+                    score=_clamp(old_s.score + insight_bonus),
+                    rationale=old_s.rationale,
+                    agent_metadata=old_s.agent_metadata,
+                )
+            total_evo_bonus += insight_bonus
 
         # --- Image-aware blending (VLM preferred, CLIP fallback) ---
         image_path = candidate.get("image_path", "")

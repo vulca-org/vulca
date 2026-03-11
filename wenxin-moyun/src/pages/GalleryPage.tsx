@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Filter, Palette, Layers, Sparkles, Loader2 } from 'lucide-react';
+import { Filter, Palette, Layers, Sparkles, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
 import {
   IOSButton,
   IOSCard,
@@ -33,6 +33,11 @@ interface EvolutionStats {
   emerged_concepts: { name: string; description: string }[];
   archetypes: string[];
   last_evolved_at: string | null;
+}
+
+interface DigestionInsights {
+  agent_insights: Record<string, string>;
+  tradition_insights: Record<string, string>;
 }
 
 // ---------------------------------------------------------------------------
@@ -176,6 +181,131 @@ function EvolutionBanner({ stats }: { stats: EvolutionStats | null }) {
 }
 
 // ---------------------------------------------------------------------------
+// Agent role display config
+// ---------------------------------------------------------------------------
+
+const AGENT_CONFIG: Record<string, { emoji: string; label: string; color: string }> = {
+  scout: { emoji: '\uD83D\uDD0D', label: 'Scout', color: '#B8923D' },
+  draft: { emoji: '\uD83C\uDFA8', label: 'Draft', color: '#C87F4A' },
+  critic: { emoji: '\uD83D\uDCDD', label: 'Critic', color: '#5F8A50' },
+  queen: { emoji: '\uD83D\uDC51', label: 'Queen', color: '#C65D4D' },
+};
+
+// ---------------------------------------------------------------------------
+// Evolution Insights Panel (collapsible)
+// ---------------------------------------------------------------------------
+
+function EvolutionInsightsPanel({ insights }: { insights: DigestionInsights | null }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [expandedTradition, setExpandedTradition] = useState<string | null>(null);
+
+  if (!insights) return null;
+
+  const hasAgentInsights = insights.agent_insights && Object.keys(insights.agent_insights).length > 0;
+  const hasTraditionInsights = insights.tradition_insights && Object.keys(insights.tradition_insights).length > 0;
+
+  if (!hasAgentInsights && !hasTraditionInsights) return null;
+
+  return (
+    <div className="mb-6">
+      {/* Toggle button */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-[#C87F4A]/20 dark:border-[#C87F4A]/30 bg-[#C87F4A]/5 dark:bg-[#C87F4A]/10 hover:bg-[#C87F4A]/10 dark:hover:bg-[#C87F4A]/15 transition-colors text-left"
+      >
+        <div className="flex items-center gap-2">
+          <span className="text-[#C87F4A] dark:text-[#DDA574] font-semibold text-sm">
+            Evolution Insights
+          </span>
+          <span className="text-[10px] text-gray-400 dark:text-gray-500">
+            {hasAgentInsights ? `${Object.keys(insights.agent_insights).length} agents` : ''}
+            {hasAgentInsights && hasTraditionInsights ? ' · ' : ''}
+            {hasTraditionInsights ? `${Object.keys(insights.tradition_insights).length} traditions` : ''}
+          </span>
+        </div>
+        {isOpen
+          ? <ChevronUp className="w-4 h-4 text-gray-400" />
+          : <ChevronDown className="w-4 h-4 text-gray-400" />
+        }
+      </button>
+
+      {/* Collapsible content */}
+      {isOpen && (
+        <div className="mt-3 space-y-4">
+          {/* Agent Insights */}
+          {hasAgentInsights && (
+            <div>
+              <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+                Agent Insights
+              </h3>
+              <IOSCardGrid columns={2} gap="sm">
+                {Object.entries(AGENT_CONFIG).map(([role, config]) => {
+                  const insight = insights.agent_insights[role];
+                  if (!insight) return null;
+                  return (
+                    <IOSCard key={role} variant="elevated" padding="md">
+                      <IOSCardContent>
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-lg">{config.emoji}</span>
+                          <span className="font-semibold text-sm" style={{ color: config.color }}>
+                            {config.label}
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                          {insight}
+                        </p>
+                      </IOSCardContent>
+                    </IOSCard>
+                  );
+                })}
+              </IOSCardGrid>
+            </div>
+          )}
+
+          {/* Tradition Insights */}
+          {hasTraditionInsights && (
+            <div>
+              <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+                Tradition Insights
+              </h3>
+              <div className="space-y-1.5">
+                {Object.entries(insights.tradition_insights).map(([tradition, insight]) => {
+                  const isExpanded = expandedTradition === tradition;
+                  const displayName = TRADITION_LABELS[tradition] ?? tradition.replace(/_/g, ' ');
+                  return (
+                    <div key={tradition} className="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                      <button
+                        onClick={() => setExpandedTradition(isExpanded ? null : tradition)}
+                        className="w-full flex items-center justify-between px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                      >
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                          {displayName}
+                        </span>
+                        {isExpanded
+                          ? <ChevronUp className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+                          : <ChevronDown className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+                        }
+                      </button>
+                      {isExpanded && (
+                        <div className="px-3 pb-3 border-t border-gray-100 dark:border-gray-800">
+                          <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed pt-2">
+                            {insight}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Artwork card
 // ---------------------------------------------------------------------------
 
@@ -243,6 +373,7 @@ function ArtworkCard({ artwork }: { artwork: GalleryItem }) {
 export default function GalleryPage() {
   const [artworks, setArtworks] = useState<GalleryItem[]>(MOCK_GALLERY);
   const [evolutionStats, setEvolutionStats] = useState<EvolutionStats | null>(null);
+  const [digestionInsights, setDigestionInsights] = useState<DigestionInsights | null>(null);
   const [loading, setLoading] = useState(true);
   const [isLive, setIsLive] = useState(false);  // true if data came from API
   const [selectedTradition, setSelectedTradition] = useState<string>('all');
@@ -282,8 +413,33 @@ export default function GalleryPage() {
       }
     }
 
+    async function fetchDigestionInsights() {
+      try {
+        const res = await fetch(`${API_PREFIX}/digestion/status`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (!cancelled) {
+          // Extract agent_insights and tradition_insights from the evolved context
+          // The /digestion/status endpoint returns cultures, prompt_contexts, etc.
+          // but the insights are in the evolved context which is loaded by the endpoint
+          // We need to check if agent_insights/tradition_insights are in the response
+          const agentInsights = data.agent_insights ?? {};
+          const traditionInsights = data.tradition_insights ?? {};
+          if (Object.keys(agentInsights).length > 0 || Object.keys(traditionInsights).length > 0) {
+            setDigestionInsights({
+              agent_insights: agentInsights,
+              tradition_insights: traditionInsights,
+            });
+          }
+        }
+      } catch {
+        // Digestion insights unavailable — no panel
+      }
+    }
+
     fetchGallery();
     fetchEvolution();
+    fetchDigestionInsights();
 
     return () => { cancelled = true; };
   }, []);
@@ -330,6 +486,9 @@ export default function GalleryPage() {
 
         {/* Evolution banner (P2) */}
         <EvolutionBanner stats={evolutionStats} />
+
+        {/* Evolution Insights Panel (collapsible) */}
+        <EvolutionInsightsPanel insights={digestionInsights} />
 
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-3 mb-6 items-start sm:items-center">

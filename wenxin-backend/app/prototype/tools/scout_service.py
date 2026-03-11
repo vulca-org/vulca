@@ -89,6 +89,18 @@ class ScoutService:
             logger.debug("Scout cache HIT: %s", cache_key)
             return copy.deepcopy(self._evidence_cache[cache_key])
 
+        # Load evolved scout insight (zero regression on failure)
+        scout_notes: list[str] = []
+        try:
+            from app.prototype.cultural_pipelines.cultural_weights import get_agent_insight
+            scout_insight = get_agent_insight("scout")
+            if scout_insight:
+                # Cap at 200 chars for evidence brevity
+                scout_notes.append(f"[Scout insight] {scout_insight[:200]}")
+                logger.debug("Scout evolved insight loaded (%d chars)", len(scout_insight))
+        except Exception:
+            pass  # Zero regression
+
         sample_matches = self._sample_matcher.match(
             subject=subject,
             cultural_tradition=cultural_tradition,
@@ -108,6 +120,7 @@ class ScoutService:
             sample_matches=sample_matches,
             terminology_hits=terminology_hits,
             taboo_violations=taboo_violations,
+            notes=scout_notes,
         )
         self._evidence_cache[cache_key] = evidence
         logger.debug("Scout cache MISS, stored: %s", cache_key)

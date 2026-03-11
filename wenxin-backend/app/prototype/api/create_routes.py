@@ -329,6 +329,34 @@ def _process_pipeline_event(
         state["best_candidate_id"] = p.get("best_candidate_id", "")
         state["total_rounds"] = p.get("total_rounds", len(rounds))
         state["total_cost"] = p.get("total_cost_usd", 0.0)
+        state["final_decision"] = p.get("final_decision", "")
+
+
+def _build_implicit_feedback(state: dict, final_scores: dict[str, float]) -> list[dict]:
+    """Build implicit feedback from pipeline completion state.
+
+    Maps Queen decision to a thumbs-up/down signal so that
+    FeedbackStore.sync_from_sessions() can pick it up.
+    """
+    final_decision = state.get("final_decision", "")
+    if not final_decision:
+        return []
+
+    # accept → positive implicit signal; stop → negative
+    liked = final_decision == "accept"
+    weighted_total = (
+        sum(final_scores.values()) / max(len(final_scores), 1)
+        if final_scores else 0.0
+    )
+
+    return [{
+        "type": "implicit",
+        "liked": liked,
+        "action": final_decision,
+        "final_score": round(weighted_total, 4),
+        "rounds_used": state.get("total_rounds", 0),
+        "total_cost_usd": state.get("total_cost", 0.0),
+    }]
 
 
 async def _run_create_mode_sync(
@@ -396,6 +424,7 @@ async def _run_create_mode_sync(
         total_rounds=total_rounds,
         total_latency_ms=elapsed_ms,
         total_cost_usd=total_cost,
+        feedback=_build_implicit_feedback(state, final_scores),
     )
     digest.cultural_features = extract_cultural_features(
         tradition=req.tradition,
@@ -489,6 +518,7 @@ def _run_create_mode_stream(
             total_rounds=state["total_rounds"],
             total_latency_ms=elapsed_ms,
             total_cost_usd=state["total_cost"],
+            feedback=_build_implicit_feedback(state, final_scores),
         )
         digest.cultural_features = extract_cultural_features(
             tradition=req.tradition,
