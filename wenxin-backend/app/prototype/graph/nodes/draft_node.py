@@ -80,6 +80,10 @@ class DraftNode(BaseAgent):
 
         draft_output = draft_agent.run(draft_input, evidence_pack=evidence_pack)
         draft_candidates = [c.to_dict() for c in draft_output.candidates]
+        # Convert absolute image paths to web-accessible /static/ URLs
+        for dc in draft_candidates:
+            if dc.get("image_path"):
+                dc["image_path"] = _to_static_url(dc["image_path"])
         draft_ms = int((time.monotonic() - t0) * 1000)
 
         n_new = len(draft_candidates)

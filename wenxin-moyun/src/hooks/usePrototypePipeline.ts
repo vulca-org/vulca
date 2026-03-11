@@ -42,6 +42,7 @@ export interface DimensionScore {
   dimension: string;
   score: number;
   rationale: string;
+  summary?: string;
   agent_metadata?: AgentMetadata;
 }
 

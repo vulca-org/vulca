@@ -226,7 +226,7 @@ export default function CriticScoreTable({ scoredCandidates, bestCandidateId, ag
                           <button
                             onClick={() => hasRationale && toggleCell(cellKey)}
                             className={`w-full text-left ${hasRationale ? 'cursor-pointer hover:opacity-80' : 'cursor-default'}`}
-                            title={hasRationale ? 'Click for analysis details' : undefined}
+                            title={d.summary || (hasRationale ? 'Click for analysis details' : undefined)}
                           >
                             <ScoreBar score={d.score} />
                           </button>
