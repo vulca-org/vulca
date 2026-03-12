@@ -3,6 +3,9 @@
 
 @import 'tailwindcss';
 
+/* Tailwind v4: enable class-based dark mode (toggle via .dark on <html>) */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   body {
     @apply antialiased transition-colors duration-300;

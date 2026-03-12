@@ -43,6 +43,7 @@ import { PipelineEditor, NodeParamPanel } from '../../components/prototype/edito
 import type { AgentNodeId, StageStatus, ReportOutput } from '../../components/prototype/editor';
 import BatchInputPanel from '../../components/prototype/BatchInputPanel';
 import FeedbackCollector from '../../components/prototype/FeedbackCollector';
+import FinalResultPanel from '../../components/prototype/FinalResultPanel';
 
 // M7: Community Canvas modes
 import ComparePanel from '../../components/prototype/ComparePanel';
@@ -522,8 +523,22 @@ export default function PrototypePage() {
         </IOSCard>
       )}
 
-      {/* Final Summary */}
-      {isDone && (
+      {/* Final Results — rich panel for completed, simple banner for failed */}
+      {state.status === 'completed' && state.scoredCandidates.length > 0 && (
+        <FinalResultPanel
+          candidates={state.candidates}
+          scoredCandidates={state.scoredCandidates}
+          bestCandidateId={state.bestCandidateId}
+          finalDecision={state.finalDecision}
+          totalRounds={state.totalRounds}
+          totalLatencyMs={state.totalLatencyMs}
+          totalCostUsd={state.totalCostUsd}
+          rounds={state.rounds}
+          onNewRun={handleReset}
+        />
+      )}
+      {/* Fallback: completed but no scores, or failed */}
+      {isDone && (state.status === 'failed' || (state.status === 'completed' && state.scoredCandidates.length === 0)) && (
         <div className={`rounded-xl p-4 ${
           state.status === 'completed'
             ? 'bg-[#5F8A50]/5 dark:bg-[#5F8A50]/10 border border-[#5F8A50]/20 dark:border-[#4A7040]'

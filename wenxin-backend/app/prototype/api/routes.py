@@ -523,18 +523,33 @@ async def get_capabilities():
 # ---------------------------------------------------------------------------
 
 @router.get("/gallery")
-async def list_gallery(limit: int = 50, tradition: str | None = None):
+async def list_gallery(
+    limit: int = 50,
+    offset: int = 0,
+    tradition: str | None = None,
+    sort_by: str = "newest",
+    sort_order: str = "desc",
+):
     """Return completed sessions for the Gallery page.
 
-    Returns a list of artworks derived from session digests, newest first.
+    Supports pagination via limit/offset and sorting.
+
+    Query params:
+        limit:      Max items to return (default 50).
+        offset:     Number of items to skip (default 0).
+        tradition:  Filter by cultural tradition (optional).
+        sort_by:    Sort key — "newest" (created_at), "score" (overall),
+                    "rounds" (total_rounds). Default "newest".
+        sort_order: "asc" or "desc" (default "desc").
     """
     from app.prototype.session.store import SessionStore
 
     store = SessionStore.get()
     sessions = store.get_all()
 
+    # Build full list of gallery-eligible items (unsliced)
     gallery_items = []
-    for s in reversed(sessions):  # newest first
+    for s in sessions:
         if s.get("final_weighted_total") is None and not s.get("final_scores"):
             continue
         if tradition and s.get("tradition") != tradition:
@@ -554,10 +569,22 @@ async def list_gallery(limit: int = 50, tradition: str | None = None):
             "created_at": s.get("created_at", 0),
         })
 
-        if len(gallery_items) >= limit:
-            break
+    # Sort
+    sort_key_map = {
+        "newest": "created_at",
+        "score": "overall",
+        "rounds": "total_rounds",
+    }
+    key_field = sort_key_map.get(sort_by, "created_at")
+    reverse = sort_order != "asc"
+    gallery_items.sort(key=lambda x: x.get(key_field, 0), reverse=reverse)
 
-    return {"items": gallery_items, "total": len(gallery_items)}
+    total = len(gallery_items)
+
+    # Paginate
+    paginated = gallery_items[offset : offset + limit]
+
+    return {"items": paginated, "total": total}
 
 
 @router.get("/evolution")

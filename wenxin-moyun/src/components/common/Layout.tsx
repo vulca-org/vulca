@@ -48,7 +48,7 @@ export default function Layout() {
   }, []);
   
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden">
+    <div className="min-h-screen flex flex-col relative overflow-hidden bg-[var(--bg-base)] transition-colors duration-300">
       {/* 3D Background - Scale AI inspired (React Three Fiber) */}
       <Vulca3DBackground />
 

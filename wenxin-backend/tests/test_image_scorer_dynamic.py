@@ -4,6 +4,7 @@ import pytest
 from unittest.mock import patch, MagicMock
 
 from app.prototype.agents.image_scorer import (
+    ImageScorer,
     _get_references_dynamic,
     _LEGACY_TRADITION_REFERENCES,
 )
@@ -42,3 +43,115 @@ class TestGetReferencesDynamic:
         assert "L1" in result
         assert "L3" in result
         assert "L5" in result
+
+
+class TestImageScorerLoadFailed:
+    """Test that _load_failed flag prevents repeated model load attempts."""
+
+    # SentenceTransformer is imported locally inside _load_model(), so we
+    # patch at the sentence_transformers module level.
+    _ST_PATCH = "sentence_transformers.SentenceTransformer"
+
+    def _make_fresh_scorer(self) -> ImageScorer:
+        """Create a fresh ImageScorer instance (not the singleton)."""
+        scorer = ImageScorer.__new__(ImageScorer)
+        scorer._model = None
+        scorer._available = None
+        scorer._load_failed = False
+        return scorer
+
+    def test_load_failed_flag_set_on_meta_tensor_error(self):
+        """When SentenceTransformer raises meta tensor error, _load_failed is set."""
+        scorer = self._make_fresh_scorer()
+        scorer._available = True  # Pretend imports are available
+
+        meta_error = NotImplementedError(
+            "Cannot copy out of meta tensor; no data! "
+            "Please use torch.nn.Module.to_empty()"
+        )
+        with patch(self._ST_PATCH, side_effect=meta_error):
+            scorer._load_model()
+
+        assert scorer._load_failed is True
+        assert scorer._model is None
+        assert scorer.available is False
+
+    def test_load_failed_flag_set_on_runtime_error(self):
+        """When SentenceTransformer raises RuntimeError with meta, _load_failed is set."""
+        scorer = self._make_fresh_scorer()
+        scorer._available = True
+
+        meta_error = RuntimeError(
+            "Cannot copy out of meta tensor; no data!"
+        )
+        with patch(self._ST_PATCH, side_effect=meta_error):
+            scorer._load_model()
+
+        assert scorer._load_failed is True
+        assert scorer._model is None
+
+    def test_meta_tensor_error_cpu_fallback_succeeds(self):
+        """When initial load fails with meta tensor, CPU fallback is tried."""
+        scorer = self._make_fresh_scorer()
+        scorer._available = True
+
+        mock_model = MagicMock()
+        call_count = 0
+
+        def side_effect(*args, **kwargs):
+            nonlocal call_count
+            call_count += 1
+            if call_count == 1 and "device" not in kwargs:
+                raise NotImplementedError("Cannot copy out of meta tensor")
+            return mock_model
+
+        with patch(self._ST_PATCH, side_effect=side_effect):
+            scorer._load_model()
+
+        assert scorer._load_failed is False
+        assert scorer._model is mock_model
+
+    def test_load_failed_prevents_retry(self):
+        """Once _load_failed is True, _load_model returns immediately."""
+        scorer = self._make_fresh_scorer()
+        scorer._load_failed = True
+
+        # Should not attempt to import or load anything
+        scorer._load_model()
+        assert scorer._model is None
+
+    def test_available_returns_false_when_load_failed(self):
+        """available property returns False when _load_failed is True."""
+        scorer = self._make_fresh_scorer()
+        scorer._load_failed = True
+        assert scorer.available is False
+
+    def test_score_image_returns_none_when_load_fails(self, tmp_path):
+        """score_image gracefully returns None when model loading fails."""
+        scorer = self._make_fresh_scorer()
+        scorer._available = True
+
+        # Create a dummy image file
+        img_path = tmp_path / "test.png"
+        from app.prototype.agents.draft_provider import _make_placeholder_png
+        img_path.write_bytes(_make_placeholder_png(8, 8, 128, 128, 128, 42))
+
+        meta_error = NotImplementedError("Cannot copy out of meta tensor")
+        with patch(self._ST_PATCH, side_effect=meta_error):
+            result = scorer.score_image(
+                str(img_path), "test subject", "chinese_xieyi"
+            )
+
+        assert result is None
+        assert scorer._load_failed is True
+
+    def test_unexpected_exception_sets_load_failed(self):
+        """Non-meta-tensor exceptions also set _load_failed to prevent retries."""
+        scorer = self._make_fresh_scorer()
+        scorer._available = True
+
+        with patch(self._ST_PATCH, side_effect=OSError("disk full")):
+            scorer._load_model()
+
+        assert scorer._load_failed is True
+        assert scorer._model is None

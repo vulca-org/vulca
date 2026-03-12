@@ -1,8 +1,6 @@
-"""Integration tests for the 4 community agents.
+"""Unit tests for the community agents.
 
-Runs against a live local backend (localhost:8001).
-Start the backend before running:
-    VULCA_API_KEYS=test-key python -m uvicorn app.main:app --port 8001
+All HTTP interactions are mocked so that no running backend is required.
 
 Usage:
     python -m pytest tests/test_community_agents.py -v
@@ -16,43 +14,28 @@ import asyncio
 import json
 import sys
 from pathlib import Path
+from unittest.mock import AsyncMock, patch
 
 import pytest
-import httpx
 
 BASE_URL = "http://localhost:8001"
 TEST_API_KEY = "test-key"
 
-
 # ---------------------------------------------------------------------------
-# Helpers
+# Seed data returned by mocked get_skills
 # ---------------------------------------------------------------------------
-
-async def _backend_is_up() -> bool:
-    try:
-        async with httpx.AsyncClient(timeout=5) as c:
-            r = await c.get(f"{BASE_URL}/health")
-            return r.status_code == 200
-    except Exception:
-        return False
-
-
-async def _ensure_seed_skills():
-    """Make sure at least one skill exists (needed by Discussant + Curator)."""
-    async with httpx.AsyncClient(timeout=10) as c:
-        r = await c.get(f"{BASE_URL}/api/v1/skills")
-        skills = r.json()
-        if len(skills) == 0:
-            await c.post(
-                f"{BASE_URL}/api/v1/skills",
-                json={
-                    "name": "test_skill",
-                    "description": "A test skill for agent integration tests with sufficient description length.",
-                    "tags": ["test", "integration"],
-                    "author": "test",
-                },
-                headers={"Authorization": f"Bearer {TEST_API_KEY}"},
-            )
+_SEED_SKILLS: list[dict] = [
+    {
+        "id": "1",
+        "name": "test_skill",
+        "description": "A test skill for agent integration tests with sufficient description length.",
+        "tags": ["test", "integration"],
+        "author": "test",
+        "upvotes": 10,
+        "downvotes": 1,
+        "discussions": [],
+    },
+]
 
 
 # ---------------------------------------------------------------------------
@@ -66,14 +49,6 @@ def event_loop():
     loop.close()
 
 
-@pytest.fixture(scope="module", autouse=True)
-def check_backend(event_loop):
-    up = event_loop.run_until_complete(_backend_is_up())
-    if not up:
-        pytest.skip("Backend not running at localhost:8001")
-    event_loop.run_until_complete(_ensure_seed_skills())
-
-
 # ---------------------------------------------------------------------------
 # 1. VulcaAPIClient
 # ---------------------------------------------------------------------------
@@ -83,6 +58,7 @@ class TestVulcaAPIClient:
         from app.prototype.community.api_client import VulcaAPIClient
 
         client = VulcaAPIClient(base_url=BASE_URL)
+        client.get_skills = AsyncMock(return_value=list(_SEED_SKILLS))
         skills = event_loop.run_until_complete(client.get_skills())
         assert isinstance(skills, list)
         assert len(skills) > 0
@@ -98,6 +74,7 @@ class TestVulcaAPIClient:
             "tags": ["test"],
             "author": "pytest",
         }
+        client.create_skill = AsyncMock(return_value={"id": "42", **payload})
         result = event_loop.run_until_complete(client.create_skill(payload))
         assert result["name"] == "api_test_skill"
         assert "id" in result
@@ -106,6 +83,10 @@ class TestVulcaAPIClient:
         from app.prototype.community.api_client import VulcaAPIClient
 
         client = VulcaAPIClient(base_url=BASE_URL, api_key=TEST_API_KEY)
+        client.get_skills = AsyncMock(return_value=list(_SEED_SKILLS))
+        client.post_discussion = AsyncMock(
+            return_value={"id": "disc-1", "content": "Test comment from pytest", "author": "agent"}
+        )
         # Get a skill to comment on
         skills = event_loop.run_until_complete(client.get_skills())
         skill_id = skills[0]["id"]
@@ -120,11 +101,14 @@ class TestVulcaAPIClient:
 # ---------------------------------------------------------------------------
 
 class TestCuratorAgent:
-    def test_run_cycle(self, event_loop):
+    def test_run_cycle(self, event_loop, tmp_path):
         from app.prototype.community.curator_agent import CuratorAgent
         from app.prototype.community.api_client import VulcaAPIClient
 
-        agent = CuratorAgent(client=VulcaAPIClient(base_url=BASE_URL))
+        client = VulcaAPIClient(base_url=BASE_URL)
+        client.get_skills = AsyncMock(return_value=list(_SEED_SKILLS))
+        agent = CuratorAgent(client=client)
+        agent.log_path = tmp_path / "curator.jsonl"
         result = event_loop.run_until_complete(agent.run_cycle())
         assert "featured" in result
         assert "reviewed" in result
@@ -150,11 +134,17 @@ class TestCuratorAgent:
 # ---------------------------------------------------------------------------
 
 class TestDiscussantAgent:
-    def test_run_cycle(self, event_loop):
+    def test_run_cycle(self, event_loop, tmp_path):
         from app.prototype.community.discussant_agent import DiscussantAgent
         from app.prototype.community.api_client import VulcaAPIClient
 
-        agent = DiscussantAgent(client=VulcaAPIClient(base_url=BASE_URL, api_key=TEST_API_KEY))
+        client = VulcaAPIClient(base_url=BASE_URL, api_key=TEST_API_KEY)
+        client.get_skills = AsyncMock(return_value=list(_SEED_SKILLS))
+        client.post_discussion = AsyncMock(
+            return_value={"id": "disc-1", "content": "mock", "author": "agent"}
+        )
+        agent = DiscussantAgent(client=client)
+        agent.log_path = tmp_path / "discussant.jsonl"
         result = event_loop.run_until_complete(agent.run_cycle())
         assert "skill_id" in result
         assert "persona" in result
@@ -180,10 +170,12 @@ class TestSkillCreatorAgent:
         from app.prototype.community.skill_creator_agent import SkillCreatorAgent
         from app.prototype.community.api_client import VulcaAPIClient
 
+        client = VulcaAPIClient(base_url=BASE_URL, api_key=TEST_API_KEY)
         agent = SkillCreatorAgent(
-            client=VulcaAPIClient(base_url=BASE_URL, api_key=TEST_API_KEY),
+            client=client,
             feedback_dir=tmp_path,  # empty dir = no patterns
         )
+        agent.log_path = tmp_path / "skill_creator.jsonl"
         result = event_loop.run_until_complete(agent.run_cycle())
         assert result["created"] is None
         assert result["patterns_found"] == 0
@@ -202,11 +194,16 @@ class TestSkillCreatorAgent:
                 else json.dumps(record) + "\n"
             )
 
+        client = VulcaAPIClient(base_url=BASE_URL, api_key=TEST_API_KEY)
+        client.create_skill = AsyncMock(
+            return_value={"id": "99", "name": "auto_accessibility"}
+        )
         agent = SkillCreatorAgent(
-            client=VulcaAPIClient(base_url=BASE_URL, api_key=TEST_API_KEY),
+            client=client,
             feedback_dir=tmp_path,
             threshold=3,
         )
+        agent.log_path = tmp_path / "skill_creator.jsonl"
         result = event_loop.run_until_complete(agent.run_cycle())
         assert result["patterns_found"] >= 1
         assert result["created"] is not None
@@ -260,13 +257,16 @@ class TestSimUserAgent:
 # ---------------------------------------------------------------------------
 
 class TestAgentScheduler:
-    def test_register_and_run_once(self, event_loop):
+    def test_register_and_run_once(self, event_loop, tmp_path):
         from app.prototype.community.scheduler import AgentScheduler
         from app.prototype.community.curator_agent import CuratorAgent
         from app.prototype.community.api_client import VulcaAPIClient
 
+        client = VulcaAPIClient(base_url=BASE_URL)
+        client.get_skills = AsyncMock(return_value=list(_SEED_SKILLS))
         scheduler = AgentScheduler()
-        agent = CuratorAgent(client=VulcaAPIClient(base_url=BASE_URL))
+        agent = CuratorAgent(client=client)
+        agent.log_path = tmp_path / "curator.jsonl"
         scheduler.register(agent, interval_seconds=0)  # 0 = run immediately
 
         results = event_loop.run_until_complete(scheduler.run_once())
@@ -274,13 +274,16 @@ class TestAgentScheduler:
         assert results[0]["agent"] == "curator"
         assert "reviewed" in results[0]
 
-    def test_interval_prevents_rerun(self, event_loop):
+    def test_interval_prevents_rerun(self, event_loop, tmp_path):
         from app.prototype.community.scheduler import AgentScheduler
         from app.prototype.community.curator_agent import CuratorAgent
         from app.prototype.community.api_client import VulcaAPIClient
 
+        client = VulcaAPIClient(base_url=BASE_URL)
+        client.get_skills = AsyncMock(return_value=list(_SEED_SKILLS))
         scheduler = AgentScheduler()
-        agent = CuratorAgent(client=VulcaAPIClient(base_url=BASE_URL))
+        agent = CuratorAgent(client=client)
+        agent.log_path = tmp_path / "curator.jsonl"
         scheduler.register(agent, interval_seconds=9999)
 
         # First run should execute

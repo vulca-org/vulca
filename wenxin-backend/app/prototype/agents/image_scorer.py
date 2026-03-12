@@ -144,10 +144,13 @@ class ImageScorer:
     def __init__(self) -> None:
         self._model = None
         self._available: bool | None = None
+        self._load_failed: bool = False
 
     @property
     def available(self) -> bool:
         """Check if CLIP model can be loaded."""
+        if self._load_failed:
+            return False
         if self._available is not None:
             return self._available
         try:
@@ -163,14 +166,56 @@ class ImageScorer:
     def _load_model(self) -> None:
         if self._model is not None:
             return
+        if self._load_failed:
+            return
         with self._lock:
             if self._model is not None:
                 return  # Another thread loaded while we waited
+            if self._load_failed:
+                return
             from sentence_transformers import SentenceTransformer
 
             logger.info("Loading CLIP ViT-B/32 for image scoring...")
-            self._model = SentenceTransformer("clip-ViT-B-32")
-            logger.info("CLIP ViT-B/32 loaded for image scoring")
+            try:
+                self._model = SentenceTransformer("clip-ViT-B-32")
+            except (NotImplementedError, RuntimeError) as e:
+                # Handle meta tensor error: "Cannot copy out of meta tensor"
+                # This occurs when torch loads model weights as meta tensors
+                # and SentenceTransformer internally calls .to(device).
+                # Retry with explicit CPU device to avoid meta tensor issues.
+                if "meta tensor" in str(e) or "meta" in str(e).lower():
+                    logger.warning(
+                        "CLIP load hit meta tensor error, retrying with device='cpu': %s", e
+                    )
+                    try:
+                        self._model = SentenceTransformer(
+                            "clip-ViT-B-32", device="cpu"
+                        )
+                    except Exception as e2:
+                        logger.error(
+                            "CLIP model load failed on CPU fallback: %s", e2
+                        )
+                        self._load_failed = True
+                        self._available = False
+                        return
+                else:
+                    logger.error("CLIP model load failed: %s", e)
+                    self._load_failed = True
+                    self._available = False
+                    return
+            except Exception as e:
+                logger.error(
+                    "CLIP model load failed (unexpected error): %s", e
+                )
+                self._load_failed = True
+                self._available = False
+                return
+
+            if self._model is not None:
+                logger.info("CLIP ViT-B/32 loaded for image scoring")
+            else:
+                self._load_failed = True
+                self._available = False
 
     def score_image(
         self,
@@ -201,6 +246,10 @@ class ImageScorer:
             import numpy as np
 
             self._load_model()
+
+            # _load_model may have failed gracefully (sets _load_failed)
+            if self._model is None:
+                return None
 
             # Encode image ONCE
             img = Image.open(path).convert("RGB")

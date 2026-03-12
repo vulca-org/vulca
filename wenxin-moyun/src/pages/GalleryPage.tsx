@@ -1,6 +1,6 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { Filter, Palette, Layers, Sparkles, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Filter, Palette, Layers, Sparkles, Loader2, ChevronDown, ChevronUp, ArrowUpDown } from 'lucide-react';
 import {
   IOSButton,
   IOSCard,
@@ -380,37 +380,93 @@ function ArtworkCard({ artwork }: { artwork: GalleryItem }) {
 // Page Component
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Sort options
+// ---------------------------------------------------------------------------
+
+type SortOption = 'newest' | 'score' | 'rounds';
+
+const SORT_LABELS: Record<SortOption, string> = {
+  newest: 'Newest First',
+  score: 'Highest Score',
+  rounds: 'Most Rounds',
+};
+
+const PAGE_SIZE = 50;
+
 export default function GalleryPage() {
   const [artworks, setArtworks] = useState<GalleryItem[]>(MOCK_GALLERY);
+  const [totalCount, setTotalCount] = useState<number>(MOCK_GALLERY.length);
   const [evolutionStats, setEvolutionStats] = useState<EvolutionStats | null>(null);
   const [digestionInsights, setDigestionInsights] = useState<DigestionInsights | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [isLive, setIsLive] = useState(false);  // true if data came from API
   const [selectedTradition, setSelectedTradition] = useState<string>('all');
   const [minScore, setMinScore] = useState<number>(0);
+  const [sortBy, setSortBy] = useState<SortOption>('newest');
+  const [currentOffset, setCurrentOffset] = useState(0);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    async function fetchGallery() {
+  // Fetch gallery items from API with pagination + sorting
+  const fetchGalleryPage = useCallback(async (
+    offset: number,
+    sort: SortOption,
+    tradition: string,
+    append: boolean,
+  ) => {
+    if (append) {
+      setLoadingMore(true);
+    } else {
       setLoading(true);
-      try {
-        const res = await fetch(`${API_PREFIX}/prototype/gallery?limit=50`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        if (!cancelled && Array.isArray(data.items)) {
-          // Use API data if available, otherwise keep mock
+    }
+
+    try {
+      const params = new URLSearchParams({
+        limit: String(PAGE_SIZE),
+        offset: String(offset),
+        sort_by: sort,
+        sort_order: 'desc',
+      });
+      if (tradition !== 'all') {
+        params.set('tradition', tradition);
+      }
+
+      const res = await fetch(`${API_PREFIX}/prototype/gallery?${params.toString()}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+
+      if (Array.isArray(data.items)) {
+        if (data.items.length > 0 || data.total === 0) {
+          if (append) {
+            setArtworks(prev => [...prev, ...data.items]);
+          } else {
+            setArtworks(data.items.length > 0 ? data.items : MOCK_GALLERY);
+          }
+          setTotalCount(data.total ?? data.items.length);
+          setCurrentOffset(offset + data.items.length);
           if (data.items.length > 0) {
-            setArtworks(data.items);
             setIsLive(true);
           }
         }
-      } catch {
-        // API unavailable — keep mock data
-      } finally {
-        if (!cancelled) setLoading(false);
       }
+    } catch {
+      // API unavailable — keep mock data on initial load
+      if (!append) {
+        setArtworks(MOCK_GALLERY);
+        setTotalCount(MOCK_GALLERY.length);
+        setIsLive(false);
+      }
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
     }
+  }, []);
+
+  // Initial fetch + evolution/insights
+  useEffect(() => {
+    let cancelled = false;
+
+    fetchGalleryPage(0, sortBy, selectedTradition, false);
 
     async function fetchEvolution() {
       try {
@@ -429,10 +485,6 @@ export default function GalleryPage() {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (!cancelled) {
-          // Extract agent_insights and tradition_insights from the evolved context
-          // The /digestion/status endpoint returns cultures, prompt_contexts, etc.
-          // but the insights are in the evolved context which is loaded by the endpoint
-          // We need to check if agent_insights/tradition_insights are in the response
           const agentInsights = data.agent_insights ?? {};
           const traditionInsights = data.tradition_insights ?? {};
           if (Object.keys(agentInsights).length > 0 || Object.keys(traditionInsights).length > 0) {
@@ -447,25 +499,40 @@ export default function GalleryPage() {
       }
     }
 
-    fetchGallery();
     fetchEvolution();
     fetchDigestionInsights();
 
     return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Re-fetch when sort or tradition filter changes (reset to page 1)
+  useEffect(() => {
+    // Skip the initial render (handled by the fetch above)
+    fetchGalleryPage(0, sortBy, selectedTradition, false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sortBy, selectedTradition]);
+
+  const handleLoadMore = () => {
+    fetchGalleryPage(currentOffset, sortBy, selectedTradition, true);
+  };
 
   const traditions = useMemo(
     () => Array.from(new Set(artworks.map(a => a.tradition))),
     [artworks],
   );
 
+  // Client-side min-score filter (applied on top of server-side tradition/sort)
   const filtered = useMemo(() => {
-    return artworks.filter((a) => {
-      if (selectedTradition !== 'all' && a.tradition !== selectedTradition) return false;
-      if (a.overall < minScore) return false;
-      return true;
-    });
-  }, [artworks, selectedTradition, minScore]);
+    if (minScore <= 0) return artworks;
+    return artworks.filter((a) => a.overall >= minScore);
+  }, [artworks, minScore]);
+
+  const hasMore = isLive && currentOffset < totalCount;
+
+  // Display range: "Showing 1-50 of 670"
+  const rangeStart = filtered.length > 0 ? 1 : 0;
+  const rangeEnd = filtered.length;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-white dark:from-black dark:via-gray-900 dark:to-black">
@@ -500,7 +567,7 @@ export default function GalleryPage() {
         {/* Evolution Insights Panel (collapsible) */}
         <EvolutionInsightsPanel insights={digestionInsights} />
 
-        {/* Filters */}
+        {/* Filters + Sort */}
         <div className="flex flex-col sm:flex-row gap-3 mb-6 items-start sm:items-center">
           <div className="flex items-center gap-2">
             <Filter className="w-4 h-4 text-gray-400" />
@@ -532,15 +599,31 @@ export default function GalleryPage() {
             </select>
           </div>
 
-          {(selectedTradition !== 'all' || minScore > 0) && (
-            <IOSButton variant="text" size="sm" onClick={() => { setSelectedTradition('all'); setMinScore(0); }}>
+          <div className="flex items-center gap-2">
+            <ArrowUpDown className="w-4 h-4 text-gray-400" />
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as SortOption)}
+              className="px-3 py-2 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-500/40 transition"
+            >
+              {(Object.entries(SORT_LABELS) as [SortOption, string][]).map(([key, label]) => (
+                <option key={key} value={key}>{label}</option>
+              ))}
+            </select>
+          </div>
+
+          {(selectedTradition !== 'all' || minScore > 0 || sortBy !== 'newest') && (
+            <IOSButton variant="text" size="sm" onClick={() => { setSelectedTradition('all'); setMinScore(0); setSortBy('newest'); }}>
               Reset
             </IOSButton>
           )}
 
           <span className="text-xs text-gray-400 dark:text-gray-500 sm:ml-auto flex items-center gap-1.5">
             {loading && <Loader2 className="w-3 h-3 animate-spin" />}
-            {filtered.length} artwork{filtered.length !== 1 ? 's' : ''}
+            {isLive
+              ? `Showing ${rangeStart}–${rangeEnd} of ${totalCount}`
+              : `${filtered.length} artwork${filtered.length !== 1 ? 's' : ''}`
+            }
             {isLive && (
               <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#5F8A50]" title="Live data" />
             )}
@@ -549,11 +632,38 @@ export default function GalleryPage() {
 
         {/* Gallery grid */}
         {filtered.length > 0 ? (
-          <IOSCardGrid columns={4} gap="md">
-            {filtered.map((artwork) => (
-              <ArtworkCard key={artwork.id} artwork={artwork} />
-            ))}
-          </IOSCardGrid>
+          <>
+            <IOSCardGrid columns={4} gap="md">
+              {filtered.map((artwork) => (
+                <ArtworkCard key={artwork.id} artwork={artwork} />
+              ))}
+            </IOSCardGrid>
+
+            {/* Load More / Pagination footer */}
+            {hasMore && (
+              <div className="flex flex-col items-center gap-3 mt-8">
+                <IOSButton
+                  variant="secondary"
+                  size="sm"
+                  onClick={handleLoadMore}
+                  disabled={loadingMore}
+                  className="inline-flex items-center gap-2 min-w-[160px] justify-center"
+                >
+                  {loadingMore ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Loading...
+                    </>
+                  ) : (
+                    <>Load More</>
+                  )}
+                </IOSButton>
+                <span className="text-[11px] text-gray-400 dark:text-gray-500">
+                  {totalCount - currentOffset} more artwork{totalCount - currentOffset !== 1 ? 's' : ''} available
+                </span>
+              </div>
+            )}
+          </>
         ) : (
           <div className="text-center py-24">
             <Palette className="w-14 h-14 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
