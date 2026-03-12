@@ -106,6 +106,57 @@ class TestGenerationEfficiency:
         assert "generation_efficiency" not in features
 
 
+class TestAll8Features:
+    """Verify all 8 features are extracted when all data is available."""
+
+    def test_all_8_features_present(self):
+        """When all inputs are provided, all 8 features are extracted."""
+        features = extract_cultural_features(
+            "chinese_xieyi",
+            final_scores={"L1": 0.8, "L2": 0.7, "L3": 0.9, "L4": 0.6, "L5": 0.75},
+            risk_flags=["minor_issue"],
+            total_rounds=2,
+            max_rounds=5,
+        )
+        expected_keys = {
+            # Original 5
+            "tradition_specificity",
+            "l5_emphasis",
+            "avg_score",
+            "risk_level",
+            "cultural_depth",
+            # New 3
+            "dimension_variance",
+            "l4_emphasis",
+            "generation_efficiency",
+        }
+        assert set(features.keys()) == expected_keys
+        assert len(features) == 8
+
+    def test_backward_compat_5_features_when_no_rounds(self):
+        """When total_rounds=0 (default), only the original 5 + variance + l4 are present.
+
+        generation_efficiency is skipped, so we get 7 features.
+        With total_rounds=0, backward compat means callers that don't pass
+        total_rounds still get a valid (non-crashing) result without
+        generation_efficiency.
+        """
+        features = extract_cultural_features(
+            "chinese_xieyi",
+            final_scores={"L1": 0.8, "L2": 0.7, "L3": 0.9, "L4": 0.6, "L5": 0.75},
+            risk_flags=["minor_issue"],
+        )
+        # Original 5 all present
+        for key in ("tradition_specificity", "l5_emphasis", "avg_score",
+                     "risk_level", "cultural_depth"):
+            assert key in features, f"Missing original feature: {key}"
+        # New dimension_variance and l4_emphasis present (data-driven)
+        assert "dimension_variance" in features
+        assert "l4_emphasis" in features
+        # generation_efficiency NOT present (total_rounds defaults to 0)
+        assert "generation_efficiency" not in features
+
+
 class TestBackwardCompatibility:
     """Verify original 5 features still work."""
 
