@@ -120,11 +120,15 @@ export default function EvolutionCurveChart() {
                 <XAxis
                   dataKey="date"
                   stroke={rechartsTheme.axis.stroke}
-                  tick={rechartsTheme.axis.tick}
+                  tick={{ ...rechartsTheme.axis.tick, fontSize: 11 }}
+                  minTickGap={60}
                   tickFormatter={(v: string) => {
-                    // Show short date only
                     const parts = v.split(' ');
-                    return parts[0] ?? v;
+                    const d = parts[0] ?? v;
+                    const t = parts[1] ?? '';
+                    // Show "M/D HH:mm" — concise and non-repeating
+                    const shortDate = d.replace(/^\d{4}-/, '');
+                    return t ? `${shortDate} ${t}` : shortDate;
                   }}
                 />
                 <YAxis
