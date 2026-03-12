@@ -46,31 +46,50 @@ class TestGetReferencesDynamic:
 
 
 class TestImageScorerLoadFailed:
-    """Test that _load_failed flag prevents repeated model load attempts."""
+    """Test that _load_failed flag prevents repeated model load attempts.
 
-    # SentenceTransformer is imported locally inside _load_model(), so we
-    # patch at the sentence_transformers module level.
-    _ST_PATCH = "sentence_transformers.SentenceTransformer"
+    We mock sentence_transformers at the module level via sys.modules so that
+    the ``from sentence_transformers import SentenceTransformer`` inside
+    ``_load_model`` picks up our mock — even when the real package is not
+    installed (e.g. CI with requirements.render.txt).
+    """
 
-    def _make_fresh_scorer(self) -> ImageScorer:
+    @staticmethod
+    def _make_fresh_scorer() -> ImageScorer:
         """Create a fresh ImageScorer instance (not the singleton)."""
         scorer = ImageScorer.__new__(ImageScorer)
         scorer._model = None
         scorer._available = None
         scorer._load_failed = False
+        import threading
+        scorer._lock = threading.Lock()
         return scorer
+
+    @pytest.fixture(autouse=True)
+    def _mock_st_module(self):
+        """Inject a fake sentence_transformers module into sys.modules."""
+        import sys
+        fake_st = MagicMock()
+        saved = sys.modules.get("sentence_transformers")
+        sys.modules["sentence_transformers"] = fake_st
+        self._fake_st = fake_st
+        yield
+        if saved is None:
+            sys.modules.pop("sentence_transformers", None)
+        else:
+            sys.modules["sentence_transformers"] = saved
 
     def test_load_failed_flag_set_on_meta_tensor_error(self):
         """When SentenceTransformer raises meta tensor error, _load_failed is set."""
         scorer = self._make_fresh_scorer()
-        scorer._available = True  # Pretend imports are available
+        scorer._available = True
 
         meta_error = NotImplementedError(
             "Cannot copy out of meta tensor; no data! "
             "Please use torch.nn.Module.to_empty()"
         )
-        with patch(self._ST_PATCH, side_effect=meta_error):
-            scorer._load_model()
+        self._fake_st.SentenceTransformer.side_effect = meta_error
+        scorer._load_model()
 
         assert scorer._load_failed is True
         assert scorer._model is None
@@ -84,8 +103,8 @@ class TestImageScorerLoadFailed:
         meta_error = RuntimeError(
             "Cannot copy out of meta tensor; no data!"
         )
-        with patch(self._ST_PATCH, side_effect=meta_error):
-            scorer._load_model()
+        self._fake_st.SentenceTransformer.side_effect = meta_error
+        scorer._load_model()
 
         assert scorer._load_failed is True
         assert scorer._model is None
@@ -105,8 +124,8 @@ class TestImageScorerLoadFailed:
                 raise NotImplementedError("Cannot copy out of meta tensor")
             return mock_model
 
-        with patch(self._ST_PATCH, side_effect=side_effect):
-            scorer._load_model()
+        self._fake_st.SentenceTransformer.side_effect = side_effect
+        scorer._load_model()
 
         assert scorer._load_failed is False
         assert scorer._model is mock_model
@@ -116,7 +135,6 @@ class TestImageScorerLoadFailed:
         scorer = self._make_fresh_scorer()
         scorer._load_failed = True
 
-        # Should not attempt to import or load anything
         scorer._load_model()
         assert scorer._model is None
 
@@ -131,16 +149,15 @@ class TestImageScorerLoadFailed:
         scorer = self._make_fresh_scorer()
         scorer._available = True
 
-        # Create a dummy image file
         img_path = tmp_path / "test.png"
         from app.prototype.agents.draft_provider import _make_placeholder_png
         img_path.write_bytes(_make_placeholder_png(8, 8, 128, 128, 128, 42))
 
         meta_error = NotImplementedError("Cannot copy out of meta tensor")
-        with patch(self._ST_PATCH, side_effect=meta_error):
-            result = scorer.score_image(
-                str(img_path), "test subject", "chinese_xieyi"
-            )
+        self._fake_st.SentenceTransformer.side_effect = meta_error
+        result = scorer.score_image(
+            str(img_path), "test subject", "chinese_xieyi"
+        )
 
         assert result is None
         assert scorer._load_failed is True
@@ -150,8 +167,8 @@ class TestImageScorerLoadFailed:
         scorer = self._make_fresh_scorer()
         scorer._available = True
 
-        with patch(self._ST_PATCH, side_effect=OSError("disk full")):
-            scorer._load_model()
+        self._fake_st.SentenceTransformer.side_effect = OSError("disk full")
+        scorer._load_model()
 
         assert scorer._load_failed is True
         assert scorer._model is None

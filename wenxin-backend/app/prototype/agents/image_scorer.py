@@ -173,7 +173,13 @@ class ImageScorer:
                 return  # Another thread loaded while we waited
             if self._load_failed:
                 return
-            from sentence_transformers import SentenceTransformer
+            try:
+                from sentence_transformers import SentenceTransformer
+            except ImportError:
+                logger.warning("sentence_transformers not installed — CLIP scoring disabled")
+                self._load_failed = True
+                self._available = False
+                return
 
             logger.info("Loading CLIP ViT-B/32 for image scoring...")
             try:
