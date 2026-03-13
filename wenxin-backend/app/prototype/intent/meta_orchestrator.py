@@ -263,29 +263,24 @@ class MetaOrchestrator:
         image_path: str,
         context: dict,
     ) -> list[dict]:
-        """Run non-cultural skills (brand, audience, trend)."""
+        """Run non-cultural skills via auto-registered executors."""
         if not skill_names:
             return []
 
-        from app.prototype.skills.executors import (
-            AudienceExecutor,
-            BrandExecutor,
-            TrendExecutor,
-        )
+        from app.prototype.skills.executors.base import BaseSkillExecutor
 
-        executor_map = {
-            "brand_consistency": BrandExecutor,
-            "audience_fit": AudienceExecutor,
-            "trend_alignment": TrendExecutor,
-        }
+        # Ensure all built-in executors are imported so __init_subclass__
+        # registers them.  The executors __init__.py re-exports them.
+        import app.prototype.skills.executors  # noqa: F401
 
         results = []
         for name in skill_names:
-            executor_cls = executor_map.get(name)
+            executor_cls = BaseSkillExecutor.get_executor(name)
             if executor_cls is None:
+                logger.debug("No executor registered for skill %r", name)
                 continue
             try:
-                executor = executor_cls(name)
+                executor = executor_cls()
                 result = await executor.execute(image_path, context)
                 results.append({
                     "skill": result.skill_name,

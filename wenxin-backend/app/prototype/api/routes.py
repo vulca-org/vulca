@@ -20,9 +20,10 @@ from threading import Thread
 
 import logging
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
 
+from app.prototype.api.auth import verify_api_key
 from app.prototype.agents.critic_config import CriticConfig
 from app.prototype.agents.draft_config import DraftConfig
 from app.prototype.agents.queen_config import QueenConfig
@@ -729,3 +730,45 @@ async def get_evolution_timeline():
 
     result["points"] = points
     return result
+
+
+# ---------------------------------------------------------------------------
+# Traditions management endpoints
+# ---------------------------------------------------------------------------
+
+@router.get("/traditions")
+async def list_traditions():
+    """List all loaded cultural traditions with their metadata."""
+    from app.prototype.cultural_pipelines.tradition_loader import (
+        get_known_traditions,
+        get_tradition,
+    )
+
+    traditions = []
+    for name in get_known_traditions():
+        t = get_tradition(name)
+        if t is None:
+            continue
+        traditions.append({
+            "name": name,
+            "display_name": t.display_name.get("en", t.name),
+            "dimension_count": len(t.weights_l) if t.weights_l else 0,
+            "taboo_count": len(t.taboos) if t.taboos else 0,
+            "terminology_count": len(t.terminology) if t.terminology else 0,
+        })
+    return {"traditions": traditions, "total": len(traditions)}
+
+
+@router.post("/traditions/reload")
+async def reload_traditions_endpoint(
+    _key: str = Depends(verify_api_key),
+):
+    """Hot-reload all tradition YAML files without restarting the server.
+
+    Requires Bearer token authentication.
+    Useful during development or after adding new tradition definitions.
+    """
+    from app.prototype.cultural_pipelines.tradition_loader import reload_traditions
+
+    count = reload_traditions()
+    return {"reloaded": count, "message": f"Reloaded {count} traditions"}

@@ -25,6 +25,8 @@ _TRENDS = ("minimalism", "maximalism", "retro", "futuristic", "organic")
 class TrendExecutor(BaseSkillExecutor):
     """Evaluates trend alignment of visual content."""
 
+    SKILL_NAME = "trend_alignment"
+
     def __init__(self) -> None:
         super().__init__(skill_name="trend_alignment")
 

@@ -13,10 +13,39 @@ from app.prototype.skills.types import SkillResult
 
 
 class BaseSkillExecutor(ABC):
-    """Abstract base class for all skill executors."""
+    """Abstract base class for all skill executors.
+
+    Subclasses set ``SKILL_NAME`` to auto-register themselves::
+
+        class MyExecutor(BaseSkillExecutor):
+            SKILL_NAME = "my_skill"
+
+    Then look them up via ``BaseSkillExecutor.get_executor("my_skill")``.
+    """
+
+    # Override in subclasses to auto-register into the executor registry.
+    SKILL_NAME: str = ""
+
+    # Auto-populated by __init_subclass__: skill_name → executor class.
+    _registry: dict[str, type["BaseSkillExecutor"]] = {}
+
+    def __init_subclass__(cls, **kwargs: object) -> None:
+        super().__init_subclass__(**kwargs)
+        if cls.SKILL_NAME:
+            BaseSkillExecutor._registry[cls.SKILL_NAME] = cls
 
     def __init__(self, skill_name: str):
         self.skill_name = skill_name
+
+    @classmethod
+    def get_executor(cls, skill_name: str) -> type["BaseSkillExecutor"] | None:
+        """Look up a registered executor by skill name."""
+        return cls._registry.get(skill_name)
+
+    @classmethod
+    def list_executors(cls) -> dict[str, type["BaseSkillExecutor"]]:
+        """Return all registered executors."""
+        return dict(cls._registry)
 
     @abstractmethod
     async def execute(

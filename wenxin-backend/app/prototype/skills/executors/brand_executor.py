@@ -28,6 +28,8 @@ _WEIGHTS = {
 class BrandExecutor(BaseSkillExecutor):
     """Evaluates brand consistency of visual content."""
 
+    SKILL_NAME = "brand_consistency"
+
     def __init__(self) -> None:
         super().__init__(skill_name="brand_consistency")
 

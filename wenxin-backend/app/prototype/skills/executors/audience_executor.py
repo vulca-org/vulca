@@ -23,6 +23,8 @@ _DEMOGRAPHICS = ("gen_z", "millennial", "gen_x", "boomer")
 class AudienceExecutor(BaseSkillExecutor):
     """Evaluates target audience fit of visual content."""
 
+    SKILL_NAME = "audience_fit"
+
     def __init__(self) -> None:
         super().__init__(skill_name="audience_fit")
 
