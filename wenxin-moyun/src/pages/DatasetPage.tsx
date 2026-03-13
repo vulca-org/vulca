@@ -25,8 +25,7 @@ import {
   Image,
   FileText,
 } from 'lucide-react';
-import { IOSCard, IOSCardContent, IOSCardHeader } from '../components/ios/core/IOSCard';
-import { IOSButton } from '../components/ios/core/IOSButton';
+import { IOSCard, IOSCardContent, IOSCardHeader, IOSButton } from '../components/ios';
 import { ProvenanceCard } from '../components/trustlayer';
 import { VULCA_VERSION } from '../config/version';
 

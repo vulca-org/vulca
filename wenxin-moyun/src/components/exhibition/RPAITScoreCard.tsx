@@ -8,7 +8,7 @@
 import { motion } from 'framer-motion';
 import type { RPAITScores, Persona } from '../../types/exhibition';
 import { RPAIT_LABELS, RPAIT_COLORS } from '../../types/exhibition';
-import { IOSCard, IOSCardContent, IOSCardHeader } from '../ios/core/IOSCard';
+import { IOSCard, IOSCardContent, IOSCardHeader } from '../ios';
 
 interface RPAITScoreCardProps {
   scores: RPAITScores;

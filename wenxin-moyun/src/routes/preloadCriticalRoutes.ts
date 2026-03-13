@@ -12,7 +12,7 @@ const criticalRouteLoaders: Record<string, RouteLoader> = {
 const preloaded = new Set<string>();
 
 function normalizeCriticalRoute(pathname: string): '/models' | null {
-  if (pathname.startsWith('/models') || pathname.startsWith('/leaderboard') || pathname.startsWith('/model/')) {
+  if (pathname.startsWith('/models') || pathname.startsWith('/model/')) {
     return '/models';
   }
   return null;

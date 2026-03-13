@@ -27,7 +27,7 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
-import { API_PREFIX } from '../../../config/api';
+import { API_PREFIX } from '@/config/api';
 import AgentNode from './AgentNode';
 import ReportNode from './ReportNode';
 import StickyNote from './StickyNote';

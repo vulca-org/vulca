@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('VULCA 47D Display Issues', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/leaderboard');
+    await page.goto('/models');
     await page.waitForLoadState('networkidle');
   });
 

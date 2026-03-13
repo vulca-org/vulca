@@ -23,19 +23,17 @@ export default function Layout() {
   const getPageName = (pathname: string) => {
     const routes: Record<string, string> = {
       '/': 'Home',
-      '/leaderboard': 'Leaderboard',
-      '/battle': 'Battle',
-      '/compare': 'Compare',
-      '/dashboard': 'Dashboard',
-      '/evaluations': 'Evaluations',
+      '/canvas': 'Canvas',
       '/gallery': 'Gallery',
-      '/about': 'About',
+      '/models': 'Models',
+      '/admin': 'Admin',
+      '/research': 'Research',
+      '/skills': 'Skills',
     };
 
     // Handle dynamic routes
     if (pathname.startsWith('/model/')) return 'Model Detail';
-    if (pathname.startsWith('/evaluations/')) return 'Evaluation Detail';
-    if (pathname.startsWith('/leaderboard/')) return 'Leaderboard';
+    if (pathname.startsWith('/exhibitions/')) return 'Exhibition';
 
     return routes[pathname] || 'Page';
   };

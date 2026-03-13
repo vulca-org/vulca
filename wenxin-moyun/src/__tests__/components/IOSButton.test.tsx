@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
-import { IOSButton } from '../../components/ios/core/IOSButton'
+import { IOSButton } from '@/components/ios'
 
 describe('IOSButton', () => {
   it('should render children text', () => {

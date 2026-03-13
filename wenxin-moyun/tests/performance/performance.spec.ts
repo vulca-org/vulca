@@ -1,10 +1,4 @@
 import { test, expect } from '@playwright/test';
-import { 
-  HomePage, 
-  LeaderboardPage, 
-  EvaluationPage,
-  BattlePage 
-} from '../e2e/fixtures/page-objects';
 
 interface PerformanceMetrics {
   pageLoad: number;
@@ -123,8 +117,8 @@ test.describe('Performance Monitoring', () => {
   }
 
   test('Homepage performance metrics', async ({ page }) => {
-    // Start recording - use hash route format
-    await page.goto('/#/', { waitUntil: 'networkidle' });
+    // Start recording
+    await page.goto('/', { waitUntil: 'networkidle' });
     
     // Collect metrics
     const metrics = await collectPerformanceMetrics(page);
@@ -148,7 +142,7 @@ test.describe('Performance Monitoring', () => {
   });
 
   test('Resource loading analysis', async ({ page }) => {
-    await page.goto('/#/');
+    await page.goto('/');
     
     const resources = await collectResourceTimings(page);
     
@@ -186,41 +180,32 @@ test.describe('Performance Monitoring', () => {
     expect(largeResources.length).toBeLessThanOrEqual(15);
   });
 
-  test('Evaluation page performance with interactions', async ({ page }) => {
-    await page.goto('/#/evaluations');
-    
+  test('Canvas page performance with interactions', async ({ page }) => {
+    await page.goto('/canvas');
+
     // Initial load metrics
     const initialMetrics = await collectPerformanceMetrics(page);
-    
-    // Interact with the page
-    const evaluationPage = new EvaluationPage(page);
-    
-    // Measure interaction responsiveness
-    const interactionStart = Date.now();
-    await evaluationPage.newEvaluationButton.click();
-    const interactionEnd = Date.now();
-    const interactionTime = interactionEnd - interactionStart;
-    
-    console.log('Interaction Response Time:', interactionTime, 'ms');
-    
-    // Should respond quickly
-    expect(interactionTime).toBeLessThan(200);
-    
-    // Check for memory leaks after interactions
+
+    console.log('Canvas page load metrics:', initialMetrics);
+
+    // Assert page load performance
+    expect(initialMetrics.pageLoad).toBeLessThan(performanceThresholds.pageLoad);
+
+    // Check for memory leaks after waiting
     if (initialMetrics.memoryUsage) {
       await page.waitForTimeout(2000);
       const afterMetrics = await collectPerformanceMetrics(page);
-      
+
       const memoryIncrease = afterMetrics.memoryUsage! - initialMetrics.memoryUsage;
-      console.log('Memory increase after interaction:', memoryIncrease, 'bytes');
-      
+      console.log('Memory increase after idle:', memoryIncrease, 'bytes');
+
       // Memory shouldn't increase dramatically
       expect(memoryIncrease).toBeLessThan(5000000); // 5MB
     }
   });
 
   test('Animation performance monitoring', async ({ page }) => {
-    await page.goto('/#/');
+    await page.goto('/');
     
     // Monitor animation frame rate
     const fps = await page.evaluate(() => {
@@ -257,7 +242,7 @@ test.describe('Performance Monitoring', () => {
 
   test('Network performance and caching', async ({ page }) => {
     // First load
-    await page.goto('/#/');
+    await page.goto('/');
     const firstLoadResources = await collectResourceTimings(page);
     const firstLoadTotal = firstLoadResources.reduce((sum, r) => sum + r.duration, 0);
     
@@ -275,7 +260,7 @@ test.describe('Performance Monitoring', () => {
   });
 
   test('Bundle size analysis', async ({ page }) => {
-    await page.goto('/#/');
+    await page.goto('/');
     
     const resources = await collectResourceTimings(page);
     
@@ -313,7 +298,7 @@ test.describe('Performance Monitoring', () => {
       setTimeout(() => route.continue(), 100); // Add 100ms latency
     });
     
-    await page.goto('/#/');
+    await page.goto('/');
 
     const metrics = await collectPerformanceMetrics(page);
 
@@ -336,7 +321,7 @@ test.describe('Performance Monitoring', () => {
       maxFontCount: 5
     };
     
-    await page.goto('/#/');
+    await page.goto('/');
 
     const resources = await collectResourceTimings(page);
 

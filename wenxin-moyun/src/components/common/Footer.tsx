@@ -31,10 +31,10 @@ const footerLinks = {
   product: {
     title: 'Product',
     links: [
-      { name: 'Features', href: '/product' },
+      { name: 'Canvas', href: '/canvas' },
+      { name: 'Gallery', href: '/gallery' },
       { name: 'Pricing', href: '/pricing' },
-      { name: 'Public Demo', href: '/vulca' },
-      { name: 'Leaderboard', href: '/models' },
+      { name: 'Models', href: '/models' },
       { name: 'Exhibitions', href: '/exhibitions' },
     ]
   },
@@ -58,9 +58,7 @@ const footerLinks = {
   resources: {
     title: 'Resources',
     links: [
-      { name: 'Methodology', href: '/methodology' },
-      { name: 'Dataset', href: '/dataset' },
-      { name: 'Papers', href: '/papers' },
+      { name: 'Research', href: '/research' },
       { name: 'GitHub', href: 'https://github.com/yha9806/EMNLP2025-VULCA', external: true },
     ]
   }

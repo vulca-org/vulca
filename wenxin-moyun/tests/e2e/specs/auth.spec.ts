@@ -165,9 +165,9 @@ test.describe('Authentication Flow', () => {
     expect(session).toHaveProperty('dailyUsage');
     expect(session.dailyUsage).toBe(0);
     
-    // Verify can access evaluation page as guest (/evaluations redirects to /canvas)
-    await page.goto('/evaluations');
-    await expect(page).toHaveURL(/\/(evaluations|canvas)/);
+    // Verify can access canvas page as guest
+    await page.goto('/canvas');
+    await expect(page).toHaveURL(/\/canvas/);
   });
 
   test('Login fails with invalid credentials', async ({ page }) => {

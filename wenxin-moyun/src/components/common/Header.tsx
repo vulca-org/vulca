@@ -26,13 +26,12 @@ export default function Header() {
   const primaryNav = [
     { name: 'Canvas', href: '/canvas' },
     { name: 'Gallery', href: '/gallery' },
-    { name: 'About', href: '/methodology' },
+    { name: 'About', href: '/research' },
   ];
 
   // "More" dropdown — support + academic reference
   const moreItems = [
     { name: 'Models', href: '/models' },
-    { name: 'Leaderboard', href: '/leaderboard' },
     { name: 'Exhibitions', href: '/exhibitions' },
     { name: 'Research', href: '/research' },
     { name: 'Solutions', href: '/solutions' },

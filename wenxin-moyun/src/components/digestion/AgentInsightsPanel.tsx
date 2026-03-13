@@ -7,6 +7,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { IOSCard, IOSCardContent, IOSCardHeader } from '../ios';
+import { formatDimensionTitleCase } from '../../utils/formatDimension';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -100,12 +101,6 @@ function extractBullets(text: string): string[] {
 function truncateLines(text: string, maxLines: number): string {
   const sentences = text.split(/\.\s+/);
   return sentences.slice(0, maxLines).join('. ').trim() + (sentences.length > maxLines ? '...' : '');
-}
-
-function formatDimension(dim: string): string {
-  return dim
-    .replace(/_/g, ' ')
-    .replace(/\b\w/g, c => c.toUpperCase());
 }
 
 function formatTradition(key: string): string {
@@ -354,7 +349,7 @@ export default function AgentInsightsPanel({
                     key={dim}
                     className="text-[10px] px-2 py-0.5 rounded-full bg-[#C65D4D]/10 text-[#C65D4D] dark:text-[#E08A7D] font-medium"
                   >
-                    {formatDimension(dim)}
+                    {formatDimensionTitleCase(dim)}
                   </span>
                 ))}
               </div>

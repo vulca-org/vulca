@@ -27,19 +27,6 @@ export const testModels = [
   }
 ];
 
-export const testBattles = [
-  {
-    id: 'battle-1',
-    model1: 'test-gpt-4',
-    model2: 'test-claude-3',
-    status: 'active',
-    votes: {
-      model1: 150,
-      model2: 120
-    }
-  }
-];
-
 export const testUsers = [
   {
     username: 'testuser',
@@ -68,11 +55,12 @@ export const testEvaluations = [
 // 测试用的URL常量
 export const testUrls = {
   homepage: '/',
-  leaderboard: '/leaderboard',
-  battle: '/battle',
+  canvas: '/canvas',
   gallery: '/gallery',
+  models: '/models',
+  research: '/research',
+  skills: '/skills',
   login: '/login',
-  about: '/about'
 };
 
 // 测试用的CSS选择器
@@ -80,9 +68,9 @@ export const testSelectors = {
   navigation: {
     navbar: 'nav, [role="navigation"]',
     homeLink: 'a[href="/"], [href="#home"]',
-    leaderboardLink: 'a[href*="leaderboard"]',
-    battleLink: 'a[href*="battle"]',
-    galleryLink: 'a[href*="gallery"]'
+    canvasLink: 'a[href*="canvas"]',
+    galleryLink: 'a[href*="gallery"]',
+    modelsLink: 'a[href*="models"]',
   },
   components: {
     iosButton: '[class*="ios-button"], button[class*="ios"]',
@@ -91,18 +79,12 @@ export const testSelectors = {
     errorMessage: '[class*="error"], [role="alert"]',
     successMessage: '[class*="success"], [class*="toast"]'
   },
-  leaderboard: {
+  models: {
     modelList: '[class*="model-list"], table, [class*="leaderboard"]',
     modelCard: '[class*="model-card"], tr',
     scoreDisplay: '[class*="score"]',
     filterPanel: '[class*="filter"], [class*="tabs"]'
   },
-  battle: {
-    battleCard: '[class*="battle"], [class*="comparison"]',
-    voteButton: 'button:has-text("Vote"), button[class*="vote"]',
-    modelA: '[data-model="a"], [class*="model-a"]',
-    modelB: '[data-model="b"], [class*="model-b"]'
-  }
 };
 
 // 测试用的等待时间配置
@@ -132,9 +114,9 @@ export const performanceThresholds = {
 // API测试端点（仅用于前端测试，不包含实际API密钥）
 export const apiEndpoints = {
   models: '/api/v1/models',
-  battles: '/api/v1/battles',
   evaluations: '/api/v1/evaluations',
-  leaderboard: '/api/v1/leaderboard'
+  prototypeRuns: '/api/v1/prototype/runs',
+  gallery: '/api/v1/prototype/gallery',
 };
 
 // 测试用的表单数据
@@ -145,10 +127,6 @@ export const testFormData = {
     language: 'zh',
     model: 'test-model'
   },
-  battle: {
-    category: 'poetry',
-    difficulty: 'medium'
-  }
 };
 
 // 可访问性测试配置

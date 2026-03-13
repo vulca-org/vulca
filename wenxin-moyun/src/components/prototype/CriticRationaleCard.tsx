@@ -8,8 +8,7 @@
  */
 
 import { IOSCard, IOSCardHeader, IOSCardContent } from '../ios';
-import { PROTOTYPE_DIM_LABELS } from '../../utils/vulca-dimensions';
-import type { PrototypeDimension } from '../../utils/vulca-dimensions';
+import { formatDimension } from '../../utils/formatDimension';
 import type { ScoredCandidate } from '../../hooks/usePrototypePipeline';
 
 // L1-L5 colour scheme
@@ -62,10 +61,6 @@ function renderRationale(text: string) {
     }
     return <span key={i}>{part}</span>;
   });
-}
-
-function formatDimension(dim: string): string {
-  return PROTOTYPE_DIM_LABELS[dim as PrototypeDimension]?.short || dim.replace(/_/g, ' ');
 }
 
 interface Props {

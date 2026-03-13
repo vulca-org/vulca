@@ -13,38 +13,27 @@ test.describe('Homepage', () => {
   });
 
   test('应该正确显示页面标题和主要导航', async ({ page }) => {
-    // 检查页面标题
     await expect(page).toHaveTitle(/VULCA/);
 
-    // 检查主要导航元素使用精确选择器
     await expect(homePage.navMenu).toBeVisible();
     await expect(homePage.leaderboardLink).toBeVisible();
     await expect(homePage.battleLink).toBeVisible();
   });
 
   test('应该显示主要内容区域', async ({ page }) => {
-    // 检查主要标题使用特定选择器
     await expect(homePage.heroTitle).toBeVisible();
-    await expect(homePage.heroTitle).toContainText(/Evaluate AI Models|Cultural Understanding/);
 
-    // 检查iOS组件按钮
-    await expect(homePage.exploreRankingsButton).toBeVisible();
-    await expect(homePage.modelBattleButton).toBeVisible();
-
-    // 检查是否有iOS风格的卡片组件
+    // Check for iOS-style glass card components
     const iosCards = page.locator('.liquid-glass-container');
     await expect(iosCards.first()).toBeVisible();
   });
 
   test('应该响应式适配移动端', async ({ page }) => {
-    // 设置移动端视口
     await page.setViewportSize({ width: 375, height: 667 });
 
-    // 检查页面仍然可访问
     await expect(page.locator('nav')).toBeVisible();
     await expect(page.locator('main').getByRole('heading', { level: 1 })).toBeVisible();
 
-    // 检查移动端导航是否正确显示 - 使用CSS选择器列表
     const mobileNav = page.locator('[class*="mobile"], [class*="hamburger"]').first();
     if (await mobileNav.isVisible({ timeout: 2000 }).catch(() => false)) {
       await expect(mobileNav).toBeVisible();
@@ -52,37 +41,32 @@ test.describe('Homepage', () => {
   });
 
   test('导航链接应该正确跳转', async ({ page }) => {
-    // 测试通过按钮跳转到排行榜
+    // Test explore rankings → /models
     await homePage.clickExploreRankings();
-    await expect(page).toHaveURL(/\/(models|leaderboard)/);
+    await expect(page).toHaveURL(/\/models/);
 
-    // 返回首页
     await homePage.navigate('/');
 
-    // 测试通过按钮跳转到 VULCA 页面
+    // Test try canvas button → /canvas
     await homePage.clickModelBattle();
-    await expect(page).toHaveURL(/\/vulca/);
+    await expect(page).toHaveURL(/\/canvas/);
 
-    // 返回首页
     await homePage.navigate('/');
 
-    // 测试导航链接
+    // Test models nav link
     await homePage.leaderboardLink.click();
-    await expect(page).toHaveURL(/\/(models|leaderboard)/);
+    await expect(page).toHaveURL(/\/models/);
   });
 
   test('页面加载性能测试', async ({ page }) => {
-    // 监听页面加载时间
     const startTime = Date.now();
     await homePage.navigate('/');
     const loadTime = Date.now() - startTime;
 
-    // 页面应该在10秒内加载完成 (CI environments can be slower)
+    // Page should load within 10 seconds (CI environments can be slower)
     expect(loadTime).toBeLessThan(10000);
 
-    // 检查关键内容是否已加载
     await expect(homePage.heroTitle).toBeVisible();
     await expect(homePage.navMenu).toBeVisible();
-    await expect(homePage.exploreRankingsButton).toBeVisible();
   });
 });

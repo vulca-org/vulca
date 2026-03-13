@@ -1,16 +1,45 @@
-<testsuites id="" name="" tests="71" failures="0" skipped="19" errors="0" time="286.443701">
-<testsuite name="ai-models.spec.ts" timestamp="2026-02-07T22:32:13.508Z" hostname="chromium" tests="8" failures="0" skipped="0" time="38.763" errors="0">
-<testcase name="AI Models Leaderboard › 应该显示AI模型排行榜" classname="ai-models.spec.ts" time="9.126">
+<testsuites id="" name="" tests="96" failures="9" skipped="19" errors="0" time="646.6026830000001">
+<testsuite name="a11y.spec.ts" timestamp="2026-03-12T15:03:42.608Z" hostname="chromium" tests="1" failures="0" skipped="0" time="9.073" errors="0">
+<testcase name="Accessibility (WCAG 2.2 AA) › homepage should have no critical accessibility violations" classname="a11y.spec.ts" time="9.073">
+<system-out>
+<![CDATA[All a11y violations: [
+  {
+    id: [32m'color-contrast'[39m,
+    impact: [32m'serious'[39m,
+    description: [32m'Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds'[39m,
+    nodes: [33m3[39m
+  },
+  {
+    id: [32m'target-size'[39m,
+    impact: [32m'serious'[39m,
+    description: [32m'Ensure touch targets have sufficient size and space'[39m,
+    nodes: [33m1[39m
+  }
+]
+]]>
+</system-out>
 </testcase>
-<testcase name="AI Models Leaderboard › 应该正确处理NULL分数显示" classname="ai-models.spec.ts" time="4.104">
+</testsuite>
+<testsuite name="admin-page.spec.ts" timestamp="2026-03-12T15:03:42.608Z" hostname="chromium" tests="3" failures="0" skipped="0" time="19.139" errors="0">
+<testcase name="Admin Page › unauthenticated user is redirected to login" classname="admin-page.spec.ts" time="5.874">
 </testcase>
-<testcase name="AI Models Leaderboard › 应该支持模型类型筛选" classname="ai-models.spec.ts" time="3.134">
+<testcase name="Admin Page › non-admin user is redirected to home" classname="admin-page.spec.ts" time="5.736">
 </testcase>
-<testcase name="AI Models Leaderboard › 应该支持排序功能" classname="ai-models.spec.ts" time="3.225">
+<testcase name="Admin Page › admin user sees dashboard" classname="admin-page.spec.ts" time="7.529">
 </testcase>
-<testcase name="AI Models Leaderboard › 模型详情页面跳转" classname="ai-models.spec.ts" time="4.033">
+</testsuite>
+<testsuite name="ai-models.spec.ts" timestamp="2026-03-12T15:03:42.608Z" hostname="chromium" tests="8" failures="0" skipped="0" time="38.24" errors="0">
+<testcase name="AI Models Leaderboard › 应该显示AI模型排行榜" classname="ai-models.spec.ts" time="5.643">
 </testcase>
-<testcase name="AI Models Leaderboard › 响应式设计测试" classname="ai-models.spec.ts" time="9.048">
+<testcase name="AI Models Leaderboard › 应该正确处理NULL分数显示" classname="ai-models.spec.ts" time="3.739">
+</testcase>
+<testcase name="AI Models Leaderboard › 应该支持模型类型筛选" classname="ai-models.spec.ts" time="3.645">
+</testcase>
+<testcase name="AI Models Leaderboard › 应该支持排序功能" classname="ai-models.spec.ts" time="3.613">
+</testcase>
+<testcase name="AI Models Leaderboard › 模型详情页面跳转" classname="ai-models.spec.ts" time="4.268">
+</testcase>
+<testcase name="AI Models Leaderboard › 响应式设计测试" classname="ai-models.spec.ts" time="8.825">
 <system-out>
 <![CDATA[开始响应式设计测试
 测试桌面端布局 (1920x1080)
@@ -21,17 +50,15 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="AI Models Leaderboard › 搜索功能测试" classname="ai-models.spec.ts" time="2.962">
+<testcase name="AI Models Leaderboard › 搜索功能测试" classname="ai-models.spec.ts" time="3.587">
 </testcase>
-<testcase name="AI Models Leaderboard › 数据加载状态测试" classname="ai-models.spec.ts" time="3.131">
+<testcase name="AI Models Leaderboard › 数据加载状态测试" classname="ai-models.spec.ts" time="4.92">
 </testcase>
 </testsuite>
-<testsuite name="auth.spec.ts" timestamp="2026-02-07T22:32:13.508Z" hostname="chromium" tests="7" failures="0" skipped="0" time="44.184" errors="0">
-<testcase name="Authentication Flow › User can successfully login with valid credentials" classname="auth.spec.ts" time="5.597">
+<testsuite name="auth.spec.ts" timestamp="2026-03-12T15:03:42.608Z" hostname="chromium" tests="7" failures="1" skipped="0" time="100.754" errors="0">
+<testcase name="Authentication Flow › User can successfully login with valid credentials" classname="auth.spec.ts" time="8.047">
 <system-out>
-<![CDATA[Auth API response: http://127.0.0.1:5173/src/components/auth/LoginPrompt.tsx [33m200[39m
-Response body: import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/auth/LoginPrompt.tsx");import __vite__cjsImport0_react_jsxDevRu
-Test: Starting login test with credentials: demo
+<![CDATA[Test: Starting login test with credentials: demo
 Test: Navigating to login page
 Auth API response: http://localhost:5173/login [33m200[39m
 Response body: <!doctype html>
@@ -41,8 +68,6 @@ Response body: <!doctype html>
 injectIntoGlobalHook(window);
 window.$RefreshReg$ = () => {};
 window.$Refr
-Auth API response: http://localhost:5173/src/components/auth/LoginPrompt.tsx [33m200[39m
-Response body: import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/auth/LoginPrompt.tsx");import __vite__cjsImport0_react_jsxDevRu
 Test: Login form is visible
 Test: Filling login form
 Mock: Intercepting login request to: http://localhost:8001/api/v1/auth/login
@@ -50,7 +75,7 @@ Login request data: username=demo&password=demo123
 Login credentials: demo [REDACTED]
 Mock: Sending successful login response
 Auth API response: http://localhost:8001/api/v1/auth/login [33m200[39m
-Response body: {"access_token":"mock-jwt-token-1770503596458","token_type":"bearer"}
+Response body: {"access_token":"mock-jwt-token-1773327904067","token_type":"bearer"}
 Test: Waiting for redirect to home page
 Test: Checking auth token storage
 Test: Auth token retrieved: YES
@@ -59,21 +84,114 @@ Test: Login test completed successfully
 ]]>
 </system-out>
 </testcase>
-<testcase name="Authentication Flow › Guest mode allows access without authentication" classname="auth.spec.ts" time="5.427">
+<testcase name="Authentication Flow › Guest mode allows access without authentication" classname="auth.spec.ts" time="46.188">
+<failure message="auth.spec.ts:142:3 Guest mode allows access without authentication" type="FAILURE">
+<![CDATA[  [chromium] › auth.spec.ts:142:3 › Authentication Flow › Guest mode allows access without authentication 
+
+    Error: expect(page).toHaveURL(expected) failed
+
+    Expected pattern: /\/evaluations/
+    Received string:  "http://localhost:5174/canvas"
+    Timeout: 15000ms
+
+    Call log:
+      - Expect "toHaveURL" with timeout 15000ms
+        17 × unexpected value "http://localhost:5174/canvas"
+
+
+      168 |     // Verify can access evaluation page as guest
+      169 |     await page.goto('/evaluations');
+    > 170 |     await expect(page).toHaveURL(/\/evaluations/);
+          |                        ^
+      171 |   });
+      172 |
+      173 |   test('Login fails with invalid credentials', async ({ page }) => {
+        at /home/yhryzy/projects/website/wenxin-moyun/tests/e2e/specs/auth.spec.ts:170:24
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../test-results/auth-Authentication-Flow-G-660e8-cess-without-authentication-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../../test-results/auth-Authentication-Flow-G-660e8-cess-without-authentication-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../test-results/auth-Authentication-Flow-G-660e8-cess-without-authentication-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../test-results/auth-Authentication-Flow-G-660e8-cess-without-authentication-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../test-results/auth-Authentication-Flow-G-660e8-cess-without-authentication-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: expect(page).toHaveURL(expected) failed
+
+    Expected pattern: /\/evaluations/
+    Received string:  "http://localhost:5174/canvas"
+    Timeout: 15000ms
+
+    Call log:
+      - Expect "toHaveURL" with timeout 15000ms
+        17 × unexpected value "http://localhost:5174/canvas"
+
+
+      168 |     // Verify can access evaluation page as guest
+      169 |     await page.goto('/evaluations');
+    > 170 |     await expect(page).toHaveURL(/\/evaluations/);
+          |                        ^
+      171 |   });
+      172 |
+      173 |   test('Login fails with invalid credentials', async ({ page }) => {
+        at /home/yhryzy/projects/website/wenxin-moyun/tests/e2e/specs/auth.spec.ts:170:24
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../test-results/auth-Authentication-Flow-G-660e8-cess-without-authentication-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../../test-results/auth-Authentication-Flow-G-660e8-cess-without-authentication-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../test-results/auth-Authentication-Flow-G-660e8-cess-without-authentication-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../test-results/auth-Authentication-Flow-G-660e8-cess-without-authentication-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../test-results/auth-Authentication-Flow-G-660e8-cess-without-authentication-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
 <system-out>
-<![CDATA[Auth API response: http://127.0.0.1:5173/src/components/auth/LoginPrompt.tsx [33m200[39m
-Response body: import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/auth/LoginPrompt.tsx");import __vite__cjsImport0_react_jsxDevRu
+<![CDATA[Start experience button not found, setting guest mode via JavaScript
+
+[[ATTACHMENT|../../test-results/auth-Authentication-Flow-G-660e8-cess-without-authentication-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|../../test-results/auth-Authentication-Flow-G-660e8-cess-without-authentication-chromium/video.webm]]
+
+[[ATTACHMENT|../../test-results/auth-Authentication-Flow-G-660e8-cess-without-authentication-chromium/error-context.md]]
+
+[[ATTACHMENT|../../test-results/auth-Authentication-Flow-G-660e8-cess-without-authentication-chromium/trace.zip]]
 Start experience button not found, setting guest mode via JavaScript
-Auth API response: http://127.0.0.1:5173/src/components/auth/LoginPrompt.tsx [33m200[39m
-Response body: import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/auth/LoginPrompt.tsx");import __vite__cjsImport0_react_jsxDevRu
+
+[[ATTACHMENT|../../test-results/auth-Authentication-Flow-G-660e8-cess-without-authentication-chromium-retry1/test-failed-1.png]]
+
+[[ATTACHMENT|../../test-results/auth-Authentication-Flow-G-660e8-cess-without-authentication-chromium-retry1/video.webm]]
+
+[[ATTACHMENT|../../test-results/auth-Authentication-Flow-G-660e8-cess-without-authentication-chromium-retry1/error-context.md]]
+
+[[ATTACHMENT|../../test-results/auth-Authentication-Flow-G-660e8-cess-without-authentication-chromium-retry1/trace.zip]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Authentication Flow › Login fails with invalid credentials" classname="auth.spec.ts" time="5.218">
+<testcase name="Authentication Flow › Login fails with invalid credentials" classname="auth.spec.ts" time="8.975">
 <system-out>
-<![CDATA[Auth API response: http://127.0.0.1:5173/src/components/auth/LoginPrompt.tsx [33m200[39m
-Response body: import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/auth/LoginPrompt.tsx");import __vite__cjsImport0_react_jsxDevRu
-Auth API response: http://localhost:5173/login [33m200[39m
+<![CDATA[Auth API response: http://localhost:5173/login [33m200[39m
 Response body: <!doctype html>
 <html lang="en">
   <head>
@@ -81,8 +199,6 @@ Response body: <!doctype html>
 injectIntoGlobalHook(window);
 window.$RefreshReg$ = () => {};
 window.$Refr
-Auth API response: http://localhost:5173/src/components/auth/LoginPrompt.tsx [33m200[39m
-Response body: import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/auth/LoginPrompt.tsx");import __vite__cjsImport0_react_jsxDevRu
 Mock: Intercepting login request to: http://localhost:8001/api/v1/auth/login
 Login request data: username=invalid_user&password=wrong_password
 Login credentials: invalid_user [REDACTED]
@@ -92,11 +208,9 @@ Response body: {"detail":"Invalid username or password"}
 ]]>
 </system-out>
 </testcase>
-<testcase name="Authentication Flow › JWT token persists across page refreshes" classname="auth.spec.ts" time="10.94">
+<testcase name="Authentication Flow › JWT token persists across page refreshes" classname="auth.spec.ts" time="14.067">
 <system-out>
-<![CDATA[Auth API response: http://127.0.0.1:5173/src/components/auth/LoginPrompt.tsx [33m200[39m
-Response body: import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/auth/LoginPrompt.tsx");import __vite__cjsImport0_react_jsxDevRu
-Auth API response: http://localhost:5173/login [33m200[39m
+<![CDATA[Auth API response: http://localhost:5173/login [33m200[39m
 Response body: <!doctype html>
 <html lang="en">
   <head>
@@ -104,27 +218,21 @@ Response body: <!doctype html>
 injectIntoGlobalHook(window);
 window.$RefreshReg$ = () => {};
 window.$Refr
-Auth API response: http://localhost:5173/src/components/auth/LoginPrompt.tsx [33m200[39m
-Response body: import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/auth/LoginPrompt.tsx");import __vite__cjsImport0_react_jsxDevRu
 Mock: Intercepting login request to: http://localhost:8001/api/v1/auth/login
 Login request data: username=demo&password=demo123
 Login credentials: demo [REDACTED]
 Mock: Sending successful login response
 Auth API response: http://localhost:8001/api/v1/auth/login [33m200[39m
-Response body: {"access_token":"mock-jwt-token-1770503612872","token_type":"bearer"}
-Initial token set: mock-jwt-token-1770503612872
-Auth API response: http://localhost:5173/src/components/auth/LoginPrompt.tsx [33m200[39m
-Response body: import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/auth/LoginPrompt.tsx");import __vite__cjsImport0_react_jsxDevRu
-Token after refresh: mock-jwt-token-1770503612872
+Response body: {"access_token":"mock-jwt-token-1773327976396","token_type":"bearer"}
+Initial token set: mock-jwt-token-1773327976396
+Token after refresh: mock-jwt-token-1773327976396
 Application can access token: [33mtrue[39m
 ]]>
 </system-out>
 </testcase>
-<testcase name="Authentication Flow › Logout functionality clears authentication" classname="auth.spec.ts" time="8.232">
+<testcase name="Authentication Flow › Logout functionality clears authentication" classname="auth.spec.ts" time="11.504">
 <system-out>
-<![CDATA[Auth API response: http://127.0.0.1:5173/src/components/auth/LoginPrompt.tsx [33m200[39m
-Response body: import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/auth/LoginPrompt.tsx");import __vite__cjsImport0_react_jsxDevRu
-Auth API response: http://localhost:5173/login [33m200[39m
+<![CDATA[Auth API response: http://localhost:5173/login [33m200[39m
 Response body: <!doctype html>
 <html lang="en">
   <head>
@@ -132,16 +240,14 @@ Response body: <!doctype html>
 injectIntoGlobalHook(window);
 window.$RefreshReg$ = () => {};
 window.$Refr
-Auth API response: http://localhost:5173/src/components/auth/LoginPrompt.tsx [33m200[39m
-Response body: import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/auth/LoginPrompt.tsx");import __vite__cjsImport0_react_jsxDevRu
 Mock: Intercepting login request to: http://localhost:8001/api/v1/auth/login
 Login request data: username=demo&password=demo123
 Login credentials: demo [REDACTED]
 Mock: Sending successful login response
 Auth API response: http://localhost:8001/api/v1/auth/login [33m200[39m
-Response body: {"access_token":"mock-jwt-token-1770503626021","token_type":"bearer"}
+Response body: {"access_token":"mock-jwt-token-1773327990405","token_type":"bearer"}
 Token after logout: CLEARED
-Auth API response: http://127.0.0.1:5173/login [33m200[39m
+Auth API response: http://localhost:5174/login [33m200[39m
 Response body: <!doctype html>
 <html lang="en">
   <head>
@@ -149,17 +255,13 @@ Response body: <!doctype html>
 injectIntoGlobalHook(window);
 window.$RefreshReg$ = () => {};
 window.$Refr
-Auth API response: http://127.0.0.1:5173/src/components/auth/LoginPrompt.tsx [33m200[39m
-Response body: import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/auth/LoginPrompt.tsx");import __vite__cjsImport0_react_jsxDevRu
 ✅ Logout functionality verified: token cleared and can access login page
 ]]>
 </system-out>
 </testcase>
-<testcase name="Authentication Flow › Admin user has access to admin features" classname="auth.spec.ts" time="5.438">
+<testcase name="Authentication Flow › Admin user has access to admin features" classname="auth.spec.ts" time="7.349">
 <system-out>
-<![CDATA[Auth API response: http://127.0.0.1:5173/src/components/auth/LoginPrompt.tsx [33m200[39m
-Response body: import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/auth/LoginPrompt.tsx");import __vite__cjsImport0_react_jsxDevRu
-Auth API response: http://localhost:5173/login [33m200[39m
+<![CDATA[Auth API response: http://localhost:5173/login [33m200[39m
 Response body: <!doctype html>
 <html lang="en">
   <head>
@@ -167,32 +269,28 @@ Response body: <!doctype html>
 injectIntoGlobalHook(window);
 window.$RefreshReg$ = () => {};
 window.$Refr
-Auth API response: http://localhost:5173/src/components/auth/LoginPrompt.tsx [33m200[39m
-Response body: import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/auth/LoginPrompt.tsx");import __vite__cjsImport0_react_jsxDevRu
 Mock: Intercepting login request to: http://localhost:8001/api/v1/auth/login
 Login request data: username=admin&password=admin123
 Login credentials: admin [REDACTED]
 Mock: Sending successful login response
 Auth API response: http://localhost:8001/api/v1/auth/login [33m200[39m
-Response body: {"access_token":"mock-jwt-token-1770503634141","token_type":"bearer"}
+Response body: {"access_token":"mock-jwt-token-1773328004945","token_type":"bearer"}
 ]]>
 </system-out>
 </testcase>
-<testcase name="Authentication Flow › Guest session respects daily usage limits" classname="auth.spec.ts" time="3.332">
+<testcase name="Authentication Flow › Guest session respects daily usage limits" classname="auth.spec.ts" time="4.624">
 <system-out>
-<![CDATA[Auth API response: http://127.0.0.1:5173/src/components/auth/LoginPrompt.tsx [33m200[39m
-Response body: import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/auth/LoginPrompt.tsx");import __vite__cjsImport0_react_jsxDevRu
-✅ Guest session functionality verified: data storage works correctly
+<![CDATA[✅ Guest session functionality verified: data storage works correctly
 ]]>
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="basic-navigation.spec.ts" timestamp="2026-02-07T22:32:13.508Z" hostname="chromium" tests="4" failures="0" skipped="1" time="12.011" errors="0">
-<testcase name="Basic Navigation › Homepage loads successfully" classname="basic-navigation.spec.ts" time="5.085">
+<testsuite name="basic-navigation.spec.ts" timestamp="2026-03-12T15:03:42.608Z" hostname="chromium" tests="4" failures="0" skipped="1" time="16.109" errors="0">
+<testcase name="Basic Navigation › Homepage loads successfully" classname="basic-navigation.spec.ts" time="5.929">
 </testcase>
-<testcase name="Basic Navigation › Can navigate to leaderboard" classname="basic-navigation.spec.ts" time="4.565">
+<testcase name="Basic Navigation › Can navigate to leaderboard" classname="basic-navigation.spec.ts" time="6.464">
 </testcase>
-<testcase name="Basic Navigation › Can navigate to login page directly" classname="basic-navigation.spec.ts" time="2.361">
+<testcase name="Basic Navigation › Can navigate to login page directly" classname="basic-navigation.spec.ts" time="3.716">
 </testcase>
 <testcase name="Basic Navigation › Backend health check works" classname="basic-navigation.spec.ts" time="0">
 <properties>
@@ -203,20 +301,21 @@ Response body: import { createHotContext as __vite__createHotContext } from "/@v
 </skipped>
 </testcase>
 </testsuite>
-<testsuite name="battle.spec.ts" timestamp="2026-02-07T22:32:13.508Z" hostname="chromium" tests="4" failures="0" skipped="2" time="16.316" errors="0">
-<testcase name="Battle System › Random model matchup generation" classname="battle.spec.ts" time="6.77">
+<testsuite name="battle.spec.ts" timestamp="2026-03-12T15:03:42.608Z" hostname="chromium" tests="4" failures="0" skipped="2" time="20.861" errors="0">
+<testcase name="Battle System › Random model matchup generation" classname="battle.spec.ts" time="7.243">
 <system-out>
 <![CDATA[Starting battle matchup test...
 API Request: GET http://localhost:8001/api/v1/models/
 API Request: GET http://localhost:8001/api/v1/artworks/
 API Response: [33m200[39m http://localhost:8001/api/v1/models/
+API Response: [33m200[39m http://localhost:8001/api/v1/artworks/
 ✅ Battle page navigation and basic content verified
 Vote buttons present: false
 ✅ Battle test completed successfully
 ]]>
 </system-out>
 </testcase>
-<testcase name="Battle System › Vote submission and result update" classname="battle.spec.ts" time="3.258">
+<testcase name="Battle System › Vote submission and result update" classname="battle.spec.ts" time="4.431">
 <properties>
 <property name="skip" value="Battle voting UI not available in current frontend build">
 </property>
@@ -224,7 +323,7 @@ Vote buttons present: false
 <skipped>
 </skipped>
 </testcase>
-<testcase name="Battle System › Battle statistics tracking" classname="battle.spec.ts" time="3.205">
+<testcase name="Battle System › Battle statistics tracking" classname="battle.spec.ts" time="4.506">
 <properties>
 <property name="skip" value="Battle voting UI not available in current frontend build">
 </property>
@@ -232,161 +331,1361 @@ Vote buttons present: false
 <skipped>
 </skipped>
 </testcase>
-<testcase name="Battle System › Skip battle functionality" classname="battle.spec.ts" time="3.083">
+<testcase name="Battle System › Skip battle functionality" classname="battle.spec.ts" time="4.681">
 <system-out>
 <![CDATA[Skip/Refresh button not found - feature may not be implemented
 ]]>
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="evaluation.spec.ts" timestamp="2026-02-07T22:32:13.508Z" hostname="chromium" tests="7" failures="0" skipped="0" time="38.064" errors="0">
-<testcase name="Evaluation System › Create new evaluation task successfully" classname="evaluation.spec.ts" time="11.034">
+<testsuite name="evaluate-page.spec.ts" timestamp="2026-03-12T15:03:42.608Z" hostname="chromium" tests="3" failures="0" skipped="0" time="18.554" errors="0">
+<testcase name="Evaluate Page › page loads and shows heading" classname="evaluate-page.spec.ts" time="8.282">
+</testcase>
+<testcase name="Evaluate Page › intent input area is visible" classname="evaluate-page.spec.ts" time="4.548">
+</testcase>
+<testcase name="Evaluate Page › no console errors on load" classname="evaluate-page.spec.ts" time="5.724">
+</testcase>
+</testsuite>
+<testsuite name="evaluation.spec.ts" timestamp="2026-03-12T15:03:42.608Z" hostname="chromium" tests="7" failures="7" skipped="0" time="111.934" errors="0">
+<testcase name="Evaluation System › Create new evaluation task successfully" classname="evaluation.spec.ts" time="14.604">
+<failure message="evaluation.spec.ts:120:3 Create new evaluation task successfully" type="FAILURE">
+<![CDATA[  [chromium] › evaluation.spec.ts:120:3 › Evaluation System › Create new evaluation task successfully 
+
+    Error: locator.click: Error: strict mode violation: locator('button:has-text("Create Task"), button:has-text("新建评测"), button:has-text("开始评测"), button:has-text("New Evaluation"), button:has-text("Start Evaluation"), button:has-text("Create"), .ios-button:has-text("New"), .ios-button:has-text("Start")') resolved to 2 elements:
+        1) <button disabled tabindex="0" class="relative inline-flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none bg-slate-700 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white shadow-md shadow-gray-900/15 focus:ring-slate-400 border border-slate-600/30 px-4 py-2.5 text-sm font-medium min-h-[44px] min-w-[44px] w-full">…</button> aka getByRole('button', { name: 'Create' })
+        2) <button disabled tabindex="0" class="relative inline-flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none bg-slate-700 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white shadow-md shadow-gray-900/15 focus:ring-slate-400 border border-slate-600/30 px-4 py-2.5 text-sm font-medium min-h-[44px] min-w-[44px] w-full">…</button> aka locator('button').filter({ hasText: 'Create' }).nth(1)
+
+    Call log:
+      - waiting for locator('button:has-text("Create Task"), button:has-text("新建评测"), button:has-text("开始评测"), button:has-text("New Evaluation"), button:has-text("Start Evaluation"), button:has-text("Create"), .ios-button:has-text("New"), .ios-button:has-text("Start")')
+
+
+      120 |   test('Create new evaluation task successfully', async ({ page }) => {
+      121 |     // Simplified test that just verifies the modal opens and basic functionality
+    > 122 |     await evaluationPage.newEvaluationButton.click();
+          |                                              ^
+      123 |     
+      124 |     // Wait for modal to open
+      125 |     await expect(page.locator('.fixed.inset-0 form')).toBeVisible({ timeout: 10000 });
+        at /home/yhryzy/projects/website/wenxin-moyun/tests/e2e/specs/evaluation.spec.ts:122:46
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-Syst-449a7-valuation-task-successfully-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-Syst-449a7-valuation-task-successfully-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../test-results/evaluation-Evaluation-Syst-449a7-valuation-task-successfully-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-Syst-449a7-valuation-task-successfully-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../test-results/evaluation-Evaluation-Syst-449a7-valuation-task-successfully-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: locator.click: Error: strict mode violation: locator('button:has-text("Create Task"), button:has-text("新建评测"), button:has-text("开始评测"), button:has-text("New Evaluation"), button:has-text("Start Evaluation"), button:has-text("Create"), .ios-button:has-text("New"), .ios-button:has-text("Start")') resolved to 2 elements:
+        1) <button disabled tabindex="0" class="relative inline-flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none bg-slate-700 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white shadow-md shadow-gray-900/15 focus:ring-slate-400 border border-slate-600/30 px-4 py-2.5 text-sm font-medium min-h-[44px] min-w-[44px] w-full">…</button> aka getByRole('button', { name: 'Create' })
+        2) <button disabled tabindex="0" class="relative inline-flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none bg-slate-700 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white shadow-md shadow-gray-900/15 focus:ring-slate-400 border border-slate-600/30 px-4 py-2.5 text-sm font-medium min-h-[44px] min-w-[44px] w-full">…</button> aka locator('button').filter({ hasText: 'Create' }).nth(1)
+
+    Call log:
+      - waiting for locator('button:has-text("Create Task"), button:has-text("新建评测"), button:has-text("开始评测"), button:has-text("New Evaluation"), button:has-text("Start Evaluation"), button:has-text("Create"), .ios-button:has-text("New"), .ios-button:has-text("Start")')
+
+
+      120 |   test('Create new evaluation task successfully', async ({ page }) => {
+      121 |     // Simplified test that just verifies the modal opens and basic functionality
+    > 122 |     await evaluationPage.newEvaluationButton.click();
+          |                                              ^
+      123 |     
+      124 |     // Wait for modal to open
+      125 |     await expect(page.locator('.fixed.inset-0 form')).toBeVisible({ timeout: 10000 });
+        at /home/yhryzy/projects/website/wenxin-moyun/tests/e2e/specs/evaluation.spec.ts:122:46
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-Syst-449a7-valuation-task-successfully-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-Syst-449a7-valuation-task-successfully-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../test-results/evaluation-Evaluation-Syst-449a7-valuation-task-successfully-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-Syst-449a7-valuation-task-successfully-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../test-results/evaluation-Evaluation-Syst-449a7-valuation-task-successfully-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
 <system-out>
-<![CDATA[API Request: GET https://vulca-api.onrender.com/api/v1/evaluations/?skip=0&limit=10
-API Request: GET https://vulca-api.onrender.com/api/v1/evaluations/?skip=0&limit=10
-API Request: GET https://vulca-api.onrender.com/api/v1/models/?is_active=true
-Mock: Intercepting models request: https://vulca-api.onrender.com/api/v1/models/?is_active=true
-API Request: GET https://vulca-api.onrender.com/api/v1/models/?is_active=true
-Mock: Intercepting models request: https://vulca-api.onrender.com/api/v1/models/?is_active=true
-API Response: [33m200[39m https://vulca-api.onrender.com/api/v1/models/?is_active=true
-API Response: [33m200[39m https://vulca-api.onrender.com/api/v1/models/?is_active=true
-API Request: GET https://vulca-api.onrender.com/api/v1/models/
-Mock: Intercepting models request: https://vulca-api.onrender.com/api/v1/models/
-API Request: GET https://vulca-api.onrender.com/api/v1/artworks/
-API Response: [33m200[39m https://vulca-api.onrender.com/api/v1/models/
-API Response: [33m200[39m https://vulca-api.onrender.com/api/v1/artworks/
-Found 3 model options
-API Request: POST https://vulca-api.onrender.com/api/v1/evaluations/
+<![CDATA[API Request: GET http://localhost:8001/api/v1/models/
+Mock: Intercepting models request: http://localhost:8001/api/v1/models/
+API Request: GET http://localhost:8001/api/v1/artworks/
+API Response: [33m200[39m http://localhost:8001/api/v1/artworks/
+API Response: [33m200[39m http://localhost:8001/api/v1/models/
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Request: POST http://localhost:8001/api/v1/prototype/topologies/validate
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/topologies/validate
+API Request: POST http://localhost:8001/api/v1/prototype/topologies/validate
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/topologies/validate
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-Syst-449a7-valuation-task-successfully-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-Syst-449a7-valuation-task-successfully-chromium/video.webm]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-Syst-449a7-valuation-task-successfully-chromium/error-context.md]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-Syst-449a7-valuation-task-successfully-chromium/trace.zip]]
+API Request: GET http://localhost:8001/api/v1/models/
+Mock: Intercepting models request: http://localhost:8001/api/v1/models/
+API Request: GET http://localhost:8001/api/v1/artworks/
+API Response: [33m200[39m http://localhost:8001/api/v1/models/
+API Response: [33m200[39m http://localhost:8001/api/v1/artworks/
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Request: POST http://localhost:8001/api/v1/prototype/topologies/validate
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/topologies/validate
+API Request: POST http://localhost:8001/api/v1/prototype/topologies/validate
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/topologies/validate
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-Syst-449a7-valuation-task-successfully-chromium-retry1/test-failed-1.png]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-Syst-449a7-valuation-task-successfully-chromium-retry1/video.webm]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-Syst-449a7-valuation-task-successfully-chromium-retry1/error-context.md]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-Syst-449a7-valuation-task-successfully-chromium-retry1/trace.zip]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Evaluation System › Real-time progress update visualization" classname="evaluation.spec.ts" time="4.216">
+<testcase name="Evaluation System › Real-time progress update visualization" classname="evaluation.spec.ts" time="16.049">
+<failure message="evaluation.spec.ts:166:3 Real-time progress update visualization" type="FAILURE">
+<![CDATA[  [chromium] › evaluation.spec.ts:166:3 › Evaluation System › Real-time progress update visualization 
+
+    Error: locator.click: Error: strict mode violation: locator('button:has-text("Create Task"), button:has-text("新建评测"), button:has-text("开始评测"), button:has-text("New Evaluation"), button:has-text("Start Evaluation"), button:has-text("Create"), .ios-button:has-text("New"), .ios-button:has-text("Start")') resolved to 2 elements:
+        1) <button disabled tabindex="0" class="relative inline-flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none bg-slate-700 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white shadow-md shadow-gray-900/15 focus:ring-slate-400 border border-slate-600/30 px-4 py-2.5 text-sm font-medium min-h-[44px] min-w-[44px] w-full">…</button> aka getByRole('button', { name: 'Create' })
+        2) <button disabled tabindex="0" class="relative inline-flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none bg-slate-700 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white shadow-md shadow-gray-900/15 focus:ring-slate-400 border border-slate-600/30 px-4 py-2.5 text-sm font-medium min-h-[44px] min-w-[44px] w-full">…</button> aka locator('button').filter({ hasText: 'Create' }).nth(1)
+
+    Call log:
+      - waiting for locator('button:has-text("Create Task"), button:has-text("新建评测"), button:has-text("开始评测"), button:has-text("New Evaluation"), button:has-text("Start Evaluation"), button:has-text("Create"), .ios-button:has-text("New"), .ios-button:has-text("Start")')
+
+
+      166 |   test('Real-time progress update visualization', async ({ page }) => {
+      167 |     // Simplified progress test for CI stability - just verify progress UI components
+    > 168 |     await evaluationPage.newEvaluationButton.click();
+          |                                              ^
+      169 |     await page.waitForSelector('.fixed.inset-0 form', { timeout: 10000 });
+      170 |     
+      171 |     // Verify form elements exist
+        at /home/yhryzy/projects/website/wenxin-moyun/tests/e2e/specs/evaluation.spec.ts:168:46
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-Syst-872d1-ogress-update-visualization-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-Syst-872d1-ogress-update-visualization-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../test-results/evaluation-Evaluation-Syst-872d1-ogress-update-visualization-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-Syst-872d1-ogress-update-visualization-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../test-results/evaluation-Evaluation-Syst-872d1-ogress-update-visualization-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: locator.click: Error: strict mode violation: locator('button:has-text("Create Task"), button:has-text("新建评测"), button:has-text("开始评测"), button:has-text("New Evaluation"), button:has-text("Start Evaluation"), button:has-text("Create"), .ios-button:has-text("New"), .ios-button:has-text("Start")') resolved to 2 elements:
+        1) <button disabled tabindex="0" class="relative inline-flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none bg-slate-700 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white shadow-md shadow-gray-900/15 focus:ring-slate-400 border border-slate-600/30 px-4 py-2.5 text-sm font-medium min-h-[44px] min-w-[44px] w-full">…</button> aka getByRole('button', { name: 'Create' })
+        2) <button disabled tabindex="0" class="relative inline-flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none bg-slate-700 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white shadow-md shadow-gray-900/15 focus:ring-slate-400 border border-slate-600/30 px-4 py-2.5 text-sm font-medium min-h-[44px] min-w-[44px] w-full">…</button> aka locator('button').filter({ hasText: 'Create' }).nth(1)
+
+    Call log:
+      - waiting for locator('button:has-text("Create Task"), button:has-text("新建评测"), button:has-text("开始评测"), button:has-text("New Evaluation"), button:has-text("Start Evaluation"), button:has-text("Create"), .ios-button:has-text("New"), .ios-button:has-text("Start")')
+
+
+      166 |   test('Real-time progress update visualization', async ({ page }) => {
+      167 |     // Simplified progress test for CI stability - just verify progress UI components
+    > 168 |     await evaluationPage.newEvaluationButton.click();
+          |                                              ^
+      169 |     await page.waitForSelector('.fixed.inset-0 form', { timeout: 10000 });
+      170 |     
+      171 |     // Verify form elements exist
+        at /home/yhryzy/projects/website/wenxin-moyun/tests/e2e/specs/evaluation.spec.ts:168:46
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-Syst-872d1-ogress-update-visualization-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-Syst-872d1-ogress-update-visualization-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../test-results/evaluation-Evaluation-Syst-872d1-ogress-update-visualization-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-Syst-872d1-ogress-update-visualization-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../test-results/evaluation-Evaluation-Syst-872d1-ogress-update-visualization-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
 <system-out>
-<![CDATA[API Request: GET https://vulca-api.onrender.com/api/v1/evaluations/?skip=0&limit=10
-API Request: GET https://vulca-api.onrender.com/api/v1/evaluations/?skip=0&limit=10
-API Request: GET https://vulca-api.onrender.com/api/v1/models/?is_active=true
-Mock: Intercepting models request: https://vulca-api.onrender.com/api/v1/models/?is_active=true
-API Request: GET https://vulca-api.onrender.com/api/v1/models/?is_active=true
-Mock: Intercepting models request: https://vulca-api.onrender.com/api/v1/models/?is_active=true
-API Response: [33m200[39m https://vulca-api.onrender.com/api/v1/models/?is_active=true
-API Response: [33m200[39m https://vulca-api.onrender.com/api/v1/models/?is_active=true
+<![CDATA[API Request: GET http://localhost:8001/api/v1/models/
+Mock: Intercepting models request: http://localhost:8001/api/v1/models/
+API Request: GET http://localhost:8001/api/v1/artworks/
+API Response: [33m200[39m http://localhost:8001/api/v1/artworks/
+API Response: [33m200[39m http://localhost:8001/api/v1/models/
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Request: POST http://localhost:8001/api/v1/prototype/topologies/validate
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/topologies/validate
+API Request: POST http://localhost:8001/api/v1/prototype/topologies/validate
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/topologies/validate
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-Syst-872d1-ogress-update-visualization-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-Syst-872d1-ogress-update-visualization-chromium/video.webm]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-Syst-872d1-ogress-update-visualization-chromium/error-context.md]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-Syst-872d1-ogress-update-visualization-chromium/trace.zip]]
+API Request: GET http://localhost:8001/api/v1/models/
+Mock: Intercepting models request: http://localhost:8001/api/v1/models/
+API Request: GET http://localhost:8001/api/v1/artworks/
+API Response: [33m200[39m http://localhost:8001/api/v1/models/
+API Response: [33m200[39m http://localhost:8001/api/v1/artworks/
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Request: POST http://localhost:8001/api/v1/prototype/topologies/validate
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/topologies/validate
+API Request: POST http://localhost:8001/api/v1/prototype/topologies/validate
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/topologies/validate
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-Syst-872d1-ogress-update-visualization-chromium-retry1/test-failed-1.png]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-Syst-872d1-ogress-update-visualization-chromium-retry1/video.webm]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-Syst-872d1-ogress-update-visualization-chromium-retry1/error-context.md]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-Syst-872d1-ogress-update-visualization-chromium-retry1/trace.zip]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Evaluation System › Display evaluation results with scoring" classname="evaluation.spec.ts" time="4.161">
+<testcase name="Evaluation System › Display evaluation results with scoring" classname="evaluation.spec.ts" time="15.881">
+<failure message="evaluation.spec.ts:183:3 Display evaluation results with scoring" type="FAILURE">
+<![CDATA[  [chromium] › evaluation.spec.ts:183:3 › Evaluation System › Display evaluation results with scoring 
+
+    Error: locator.click: Error: strict mode violation: locator('button:has-text("Create Task"), button:has-text("新建评测"), button:has-text("开始评测"), button:has-text("New Evaluation"), button:has-text("Start Evaluation"), button:has-text("Create"), .ios-button:has-text("New"), .ios-button:has-text("Start")') resolved to 2 elements:
+        1) <button disabled tabindex="0" class="relative inline-flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none bg-slate-700 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white shadow-md shadow-gray-900/15 focus:ring-slate-400 border border-slate-600/30 px-4 py-2.5 text-sm font-medium min-h-[44px] min-w-[44px] w-full">…</button> aka getByRole('button', { name: 'Create' })
+        2) <button disabled tabindex="0" class="relative inline-flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none bg-slate-700 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white shadow-md shadow-gray-900/15 focus:ring-slate-400 border border-slate-600/30 px-4 py-2.5 text-sm font-medium min-h-[44px] min-w-[44px] w-full">…</button> aka locator('button').filter({ hasText: 'Create' }).nth(1)
+
+    Call log:
+      - waiting for locator('button:has-text("Create Task"), button:has-text("新建评测"), button:has-text("开始评测"), button:has-text("New Evaluation"), button:has-text("Start Evaluation"), button:has-text("Create"), .ios-button:has-text("New"), .ios-button:has-text("Start")')
+
+
+      183 |   test('Display evaluation results with scoring', async ({ page }) => {
+      184 |     // Simplified results display test - verify UI components without full evaluation flow
+    > 185 |     await evaluationPage.newEvaluationButton.click();
+          |                                              ^
+      186 |     await page.waitForSelector('.fixed.inset-0 form', { timeout: 10000 });
+      187 |     
+      188 |     // Verify result-related UI components exist in the evaluation interface
+        at /home/yhryzy/projects/website/wenxin-moyun/tests/e2e/specs/evaluation.spec.ts:185:46
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-Syst-534d9-uation-results-with-scoring-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-Syst-534d9-uation-results-with-scoring-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../test-results/evaluation-Evaluation-Syst-534d9-uation-results-with-scoring-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-Syst-534d9-uation-results-with-scoring-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../test-results/evaluation-Evaluation-Syst-534d9-uation-results-with-scoring-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: locator.click: Error: strict mode violation: locator('button:has-text("Create Task"), button:has-text("新建评测"), button:has-text("开始评测"), button:has-text("New Evaluation"), button:has-text("Start Evaluation"), button:has-text("Create"), .ios-button:has-text("New"), .ios-button:has-text("Start")') resolved to 2 elements:
+        1) <button disabled tabindex="0" class="relative inline-flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none bg-slate-700 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white shadow-md shadow-gray-900/15 focus:ring-slate-400 border border-slate-600/30 px-4 py-2.5 text-sm font-medium min-h-[44px] min-w-[44px] w-full">…</button> aka getByRole('button', { name: 'Create' })
+        2) <button disabled tabindex="0" class="relative inline-flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none bg-slate-700 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white shadow-md shadow-gray-900/15 focus:ring-slate-400 border border-slate-600/30 px-4 py-2.5 text-sm font-medium min-h-[44px] min-w-[44px] w-full">…</button> aka locator('button').filter({ hasText: 'Create' }).nth(1)
+
+    Call log:
+      - waiting for locator('button:has-text("Create Task"), button:has-text("新建评测"), button:has-text("开始评测"), button:has-text("New Evaluation"), button:has-text("Start Evaluation"), button:has-text("Create"), .ios-button:has-text("New"), .ios-button:has-text("Start")')
+
+
+      183 |   test('Display evaluation results with scoring', async ({ page }) => {
+      184 |     // Simplified results display test - verify UI components without full evaluation flow
+    > 185 |     await evaluationPage.newEvaluationButton.click();
+          |                                              ^
+      186 |     await page.waitForSelector('.fixed.inset-0 form', { timeout: 10000 });
+      187 |     
+      188 |     // Verify result-related UI components exist in the evaluation interface
+        at /home/yhryzy/projects/website/wenxin-moyun/tests/e2e/specs/evaluation.spec.ts:185:46
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-Syst-534d9-uation-results-with-scoring-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-Syst-534d9-uation-results-with-scoring-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../test-results/evaluation-Evaluation-Syst-534d9-uation-results-with-scoring-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-Syst-534d9-uation-results-with-scoring-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../test-results/evaluation-Evaluation-Syst-534d9-uation-results-with-scoring-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
 <system-out>
-<![CDATA[API Request: GET https://vulca-api.onrender.com/api/v1/evaluations/?skip=0&limit=10
-API Request: GET https://vulca-api.onrender.com/api/v1/evaluations/?skip=0&limit=10
-API Request: GET https://vulca-api.onrender.com/api/v1/models/?is_active=true
-Mock: Intercepting models request: https://vulca-api.onrender.com/api/v1/models/?is_active=true
-API Request: GET https://vulca-api.onrender.com/api/v1/models/?is_active=true
-Mock: Intercepting models request: https://vulca-api.onrender.com/api/v1/models/?is_active=true
-API Response: [33m200[39m https://vulca-api.onrender.com/api/v1/models/?is_active=true
-API Response: [33m200[39m https://vulca-api.onrender.com/api/v1/models/?is_active=true
+<![CDATA[API Request: GET http://localhost:8001/api/v1/models/
+Mock: Intercepting models request: http://localhost:8001/api/v1/models/
+API Request: GET http://localhost:8001/api/v1/artworks/
+API Response: [33m200[39m http://localhost:8001/api/v1/models/
+API Response: [33m200[39m http://localhost:8001/api/v1/artworks/
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Request: POST http://localhost:8001/api/v1/prototype/topologies/validate
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/topologies/validate
+API Request: POST http://localhost:8001/api/v1/prototype/topologies/validate
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/topologies/validate
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-Syst-534d9-uation-results-with-scoring-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-Syst-534d9-uation-results-with-scoring-chromium/video.webm]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-Syst-534d9-uation-results-with-scoring-chromium/error-context.md]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-Syst-534d9-uation-results-with-scoring-chromium/trace.zip]]
+API Request: GET http://localhost:8001/api/v1/models/
+Mock: Intercepting models request: http://localhost:8001/api/v1/models/
+API Request: GET http://localhost:8001/api/v1/artworks/
+API Response: [33m200[39m http://localhost:8001/api/v1/models/
+API Response: [33m200[39m http://localhost:8001/api/v1/artworks/
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Request: POST http://localhost:8001/api/v1/prototype/topologies/validate
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/topologies/validate
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-Syst-534d9-uation-results-with-scoring-chromium-retry1/test-failed-1.png]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-Syst-534d9-uation-results-with-scoring-chromium-retry1/video.webm]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-Syst-534d9-uation-results-with-scoring-chromium-retry1/error-context.md]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-Syst-534d9-uation-results-with-scoring-chromium-retry1/trace.zip]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Evaluation System › Guest evaluation daily limit enforcement" classname="evaluation.spec.ts" time="4.428">
+<testcase name="Evaluation System › Guest evaluation daily limit enforcement" classname="evaluation.spec.ts" time="14.649">
+<failure message="evaluation.spec.ts:211:3 Guest evaluation daily limit enforcement" type="FAILURE">
+<![CDATA[  [chromium] › evaluation.spec.ts:211:3 › Evaluation System › Guest evaluation daily limit enforcement 
+
+    Error: locator.click: Error: strict mode violation: locator('button:has-text("Create Task"), button:has-text("新建评测"), button:has-text("开始评测"), button:has-text("New Evaluation"), button:has-text("Start Evaluation"), button:has-text("Create"), .ios-button:has-text("New"), .ios-button:has-text("Start")') resolved to 2 elements:
+        1) <button disabled tabindex="0" class="relative inline-flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none bg-slate-700 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white shadow-md shadow-gray-900/15 focus:ring-slate-400 border border-slate-600/30 px-4 py-2.5 text-sm font-medium min-h-[44px] min-w-[44px] w-full">…</button> aka getByRole('button', { name: 'Create' })
+        2) <button disabled tabindex="0" class="relative inline-flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none bg-slate-700 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white shadow-md shadow-gray-900/15 focus:ring-slate-400 border border-slate-600/30 px-4 py-2.5 text-sm font-medium min-h-[44px] min-w-[44px] w-full">…</button> aka locator('button').filter({ hasText: 'Create' }).nth(1)
+
+    Call log:
+      - waiting for locator('button:has-text("Create Task"), button:has-text("新建评测"), button:has-text("开始评测"), button:has-text("New Evaluation"), button:has-text("Start Evaluation"), button:has-text("Create"), .ios-button:has-text("New"), .ios-button:has-text("Start")')
+
+
+      211 |   test('Guest evaluation daily limit enforcement', async ({ page }) => {
+      212 |     // Simplified limit test - just verify UI shows limit controls
+    > 213 |     await evaluationPage.newEvaluationButton.click();
+          |                                              ^
+      214 |     await page.waitForSelector('.fixed.inset-0 form', { timeout: 10000 });
+      215 |     
+      216 |     // Verify limit-related UI elements exist (usage indicators, warnings, etc.)
+        at /home/yhryzy/projects/website/wenxin-moyun/tests/e2e/specs/evaluation.spec.ts:213:46
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-Syst-e9306-ion-daily-limit-enforcement-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-Syst-e9306-ion-daily-limit-enforcement-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../test-results/evaluation-Evaluation-Syst-e9306-ion-daily-limit-enforcement-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-Syst-e9306-ion-daily-limit-enforcement-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../test-results/evaluation-Evaluation-Syst-e9306-ion-daily-limit-enforcement-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: locator.click: Error: strict mode violation: locator('button:has-text("Create Task"), button:has-text("新建评测"), button:has-text("开始评测"), button:has-text("New Evaluation"), button:has-text("Start Evaluation"), button:has-text("Create"), .ios-button:has-text("New"), .ios-button:has-text("Start")') resolved to 2 elements:
+        1) <button disabled tabindex="0" class="relative inline-flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none bg-slate-700 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white shadow-md shadow-gray-900/15 focus:ring-slate-400 border border-slate-600/30 px-4 py-2.5 text-sm font-medium min-h-[44px] min-w-[44px] w-full">…</button> aka getByRole('button', { name: 'Create' })
+        2) <button disabled tabindex="0" class="relative inline-flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none bg-slate-700 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white shadow-md shadow-gray-900/15 focus:ring-slate-400 border border-slate-600/30 px-4 py-2.5 text-sm font-medium min-h-[44px] min-w-[44px] w-full">…</button> aka locator('button').filter({ hasText: 'Create' }).nth(1)
+
+    Call log:
+      - waiting for locator('button:has-text("Create Task"), button:has-text("新建评测"), button:has-text("开始评测"), button:has-text("New Evaluation"), button:has-text("Start Evaluation"), button:has-text("Create"), .ios-button:has-text("New"), .ios-button:has-text("Start")')
+
+
+      211 |   test('Guest evaluation daily limit enforcement', async ({ page }) => {
+      212 |     // Simplified limit test - just verify UI shows limit controls
+    > 213 |     await evaluationPage.newEvaluationButton.click();
+          |                                              ^
+      214 |     await page.waitForSelector('.fixed.inset-0 form', { timeout: 10000 });
+      215 |     
+      216 |     // Verify limit-related UI elements exist (usage indicators, warnings, etc.)
+        at /home/yhryzy/projects/website/wenxin-moyun/tests/e2e/specs/evaluation.spec.ts:213:46
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-Syst-e9306-ion-daily-limit-enforcement-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-Syst-e9306-ion-daily-limit-enforcement-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../test-results/evaluation-Evaluation-Syst-e9306-ion-daily-limit-enforcement-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-Syst-e9306-ion-daily-limit-enforcement-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../test-results/evaluation-Evaluation-Syst-e9306-ion-daily-limit-enforcement-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
 <system-out>
-<![CDATA[API Request: GET https://vulca-api.onrender.com/api/v1/evaluations/?skip=0&limit=10
-API Request: GET https://vulca-api.onrender.com/api/v1/evaluations/?skip=0&limit=10
-API Request: GET https://vulca-api.onrender.com/api/v1/models/?is_active=true
-Mock: Intercepting models request: https://vulca-api.onrender.com/api/v1/models/?is_active=true
-API Request: GET https://vulca-api.onrender.com/api/v1/models/?is_active=true
-Mock: Intercepting models request: https://vulca-api.onrender.com/api/v1/models/?is_active=true
-API Response: [33m200[39m https://vulca-api.onrender.com/api/v1/models/?is_active=true
-API Response: [33m200[39m https://vulca-api.onrender.com/api/v1/models/?is_active=true
-API Request: GET https://vulca-api.onrender.com/api/v1/models/
-API Request: GET https://vulca-api.onrender.com/api/v1/artworks/
+<![CDATA[API Request: GET http://localhost:8001/api/v1/models/
+Mock: Intercepting models request: http://localhost:8001/api/v1/models/
+API Request: GET http://localhost:8001/api/v1/artworks/
+API Response: [33m200[39m http://localhost:8001/api/v1/artworks/
+API Response: [33m200[39m http://localhost:8001/api/v1/models/
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Request: POST http://localhost:8001/api/v1/prototype/topologies/validate
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/topologies/validate
+API Request: POST http://localhost:8001/api/v1/prototype/topologies/validate
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/topologies/validate
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-Syst-e9306-ion-daily-limit-enforcement-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-Syst-e9306-ion-daily-limit-enforcement-chromium/video.webm]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-Syst-e9306-ion-daily-limit-enforcement-chromium/error-context.md]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-Syst-e9306-ion-daily-limit-enforcement-chromium/trace.zip]]
+API Request: GET http://localhost:8001/api/v1/models/
+Mock: Intercepting models request: http://localhost:8001/api/v1/models/
+API Request: GET http://localhost:8001/api/v1/artworks/
+API Response: [33m200[39m http://localhost:8001/api/v1/models/
+API Response: [33m200[39m http://localhost:8001/api/v1/artworks/
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Request: POST http://localhost:8001/api/v1/prototype/topologies/validate
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/topologies/validate
+API Request: POST http://localhost:8001/api/v1/prototype/topologies/validate
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/topologies/validate
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-Syst-e9306-ion-daily-limit-enforcement-chromium-retry1/test-failed-1.png]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-Syst-e9306-ion-daily-limit-enforcement-chromium-retry1/video.webm]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-Syst-e9306-ion-daily-limit-enforcement-chromium-retry1/error-context.md]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-Syst-e9306-ion-daily-limit-enforcement-chromium-retry1/trace.zip]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Evaluation System › View evaluation history" classname="evaluation.spec.ts" time="6.418">
+<testcase name="Evaluation System › View evaluation history" classname="evaluation.spec.ts" time="22.158">
+<failure message="evaluation.spec.ts:238:3 View evaluation history" type="FAILURE">
+<![CDATA[  [chromium] › evaluation.spec.ts:238:3 › Evaluation System › View evaluation history ──────────────
+
+    Error: locator.isVisible: Error: strict mode violation: locator('button:has-text("Create Task"), button:has-text("新建评测"), button:has-text("开始评测"), button:has-text("New Evaluation"), button:has-text("Start Evaluation"), button:has-text("Create"), .ios-button:has-text("New"), .ios-button:has-text("Start")') resolved to 2 elements:
+        1) <button disabled tabindex="0" class="relative inline-flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none bg-slate-700 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white shadow-md shadow-gray-900/15 focus:ring-slate-400 border border-slate-600/30 px-4 py-2.5 text-sm font-medium min-h-[44px] min-w-[44px] w-full">…</button> aka getByRole('button', { name: 'Create' })
+        2) <button disabled tabindex="0" class="relative inline-flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none bg-slate-700 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white shadow-md shadow-gray-900/15 focus:ring-slate-400 border border-slate-600/30 px-4 py-2.5 text-sm font-medium min-h-[44px] min-w-[44px] w-full">…</button> aka locator('button').filter({ hasText: 'Create' }).nth(1)
+
+    Call log:
+        - checking visibility of locator('button:has-text("Create Task"), button:has-text("新建评测"), button:has-text("开始评测"), button:has-text("New Evaluation"), button:has-text("Start Evaluation"), button:has-text("Create"), .ios-button:has-text("New"), .ios-button:has-text("Start")')
+
+
+      262 |     
+      263 |     // Success if we find history UI OR can access evaluation creation (indicates history system exists)
+    > 264 |     expect(foundHistoryElement || await evaluationPage.newEvaluationButton.isVisible()).toBeTruthy();
+          |                                                                            ^
+      265 |   });
+      266 |
+      267 |   test('Evaluation task error handling', async ({ page }) => {
+        at /home/yhryzy/projects/website/wenxin-moyun/tests/e2e/specs/evaluation.spec.ts:264:76
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-System-View-evaluation-history-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-System-View-evaluation-history-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../test-results/evaluation-Evaluation-System-View-evaluation-history-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-System-View-evaluation-history-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../test-results/evaluation-Evaluation-System-View-evaluation-history-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: locator.isVisible: Error: strict mode violation: locator('button:has-text("Create Task"), button:has-text("新建评测"), button:has-text("开始评测"), button:has-text("New Evaluation"), button:has-text("Start Evaluation"), button:has-text("Create"), .ios-button:has-text("New"), .ios-button:has-text("Start")') resolved to 2 elements:
+        1) <button disabled tabindex="0" class="relative inline-flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none bg-slate-700 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white shadow-md shadow-gray-900/15 focus:ring-slate-400 border border-slate-600/30 px-4 py-2.5 text-sm font-medium min-h-[44px] min-w-[44px] w-full">…</button> aka getByRole('button', { name: 'Create' })
+        2) <button disabled tabindex="0" class="relative inline-flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none bg-slate-700 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white shadow-md shadow-gray-900/15 focus:ring-slate-400 border border-slate-600/30 px-4 py-2.5 text-sm font-medium min-h-[44px] min-w-[44px] w-full">…</button> aka locator('button').filter({ hasText: 'Create' }).nth(1)
+
+    Call log:
+        - checking visibility of locator('button:has-text("Create Task"), button:has-text("新建评测"), button:has-text("开始评测"), button:has-text("New Evaluation"), button:has-text("Start Evaluation"), button:has-text("Create"), .ios-button:has-text("New"), .ios-button:has-text("Start")')
+
+
+      262 |     
+      263 |     // Success if we find history UI OR can access evaluation creation (indicates history system exists)
+    > 264 |     expect(foundHistoryElement || await evaluationPage.newEvaluationButton.isVisible()).toBeTruthy();
+          |                                                                            ^
+      265 |   });
+      266 |
+      267 |   test('Evaluation task error handling', async ({ page }) => {
+        at /home/yhryzy/projects/website/wenxin-moyun/tests/e2e/specs/evaluation.spec.ts:264:76
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-System-View-evaluation-history-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-System-View-evaluation-history-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../test-results/evaluation-Evaluation-System-View-evaluation-history-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-System-View-evaluation-history-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../test-results/evaluation-Evaluation-System-View-evaluation-history-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
 <system-out>
-<![CDATA[API Request: GET https://vulca-api.onrender.com/api/v1/evaluations/?skip=0&limit=10
-API Request: GET https://vulca-api.onrender.com/api/v1/evaluations/?skip=0&limit=10
-API Request: GET https://vulca-api.onrender.com/api/v1/evaluations/?skip=0&limit=10
-API Request: GET https://vulca-api.onrender.com/api/v1/evaluations/?skip=0&limit=10
-API Request: GET https://vulca-api.onrender.com/api/v1/models/
-Mock: Intercepting models request: https://vulca-api.onrender.com/api/v1/models/
-API Request: GET https://vulca-api.onrender.com/api/v1/artworks/
-API Response: [33m200[39m https://vulca-api.onrender.com/api/v1/models/
+<![CDATA[API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/models/
+Mock: Intercepting models request: http://localhost:8001/api/v1/models/
+API Request: GET http://localhost:8001/api/v1/artworks/
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/models/
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/artworks/
+API Request: POST http://localhost:8001/api/v1/prototype/topologies/validate
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/topologies/validate
+API Request: POST http://localhost:8001/api/v1/prototype/topologies/validate
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/topologies/validate
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-System-View-evaluation-history-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-System-View-evaluation-history-chromium/video.webm]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-System-View-evaluation-history-chromium/error-context.md]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-System-View-evaluation-history-chromium/trace.zip]]
+API Request: GET http://localhost:8001/api/v1/models/
+Mock: Intercepting models request: http://localhost:8001/api/v1/models/
+API Request: GET http://localhost:8001/api/v1/artworks/
+API Response: [33m200[39m http://localhost:8001/api/v1/models/
+API Response: [33m200[39m http://localhost:8001/api/v1/artworks/
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Request: POST http://localhost:8001/api/v1/prototype/topologies/validate
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/topologies/validate
+API Request: POST http://localhost:8001/api/v1/prototype/topologies/validate
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/topologies/validate
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-System-View-evaluation-history-chromium-retry1/test-failed-1.png]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-System-View-evaluation-history-chromium-retry1/video.webm]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-System-View-evaluation-history-chromium-retry1/error-context.md]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-System-View-evaluation-history-chromium-retry1/trace.zip]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Evaluation System › Evaluation task error handling" classname="evaluation.spec.ts" time="4.208">
+<testcase name="Evaluation System › Evaluation task error handling" classname="evaluation.spec.ts" time="14.046">
+<failure message="evaluation.spec.ts:267:3 Evaluation task error handling" type="FAILURE">
+<![CDATA[  [chromium] › evaluation.spec.ts:267:3 › Evaluation System › Evaluation task error handling ───────
+
+    Error: locator.click: Error: strict mode violation: locator('button:has-text("Create Task"), button:has-text("新建评测"), button:has-text("开始评测"), button:has-text("New Evaluation"), button:has-text("Start Evaluation"), button:has-text("Create"), .ios-button:has-text("New"), .ios-button:has-text("Start")') resolved to 2 elements:
+        1) <button disabled tabindex="0" class="relative inline-flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none bg-slate-700 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white shadow-md shadow-gray-900/15 focus:ring-slate-400 border border-slate-600/30 px-4 py-2.5 text-sm font-medium min-h-[44px] min-w-[44px] w-full">…</button> aka getByRole('button', { name: 'Create' })
+        2) <button disabled tabindex="0" class="relative inline-flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none bg-slate-700 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white shadow-md shadow-gray-900/15 focus:ring-slate-400 border border-slate-600/30 px-4 py-2.5 text-sm font-medium min-h-[44px] min-w-[44px] w-full">…</button> aka locator('button').filter({ hasText: 'Create' }).nth(1)
+
+    Call log:
+      - waiting for locator('button:has-text("Create Task"), button:has-text("新建评测"), button:has-text("开始评测"), button:has-text("New Evaluation"), button:has-text("Start Evaluation"), button:has-text("Create"), .ios-button:has-text("New"), .ios-button:has-text("Start")')
+
+
+      267 |   test('Evaluation task error handling', async ({ page }) => {
+      268 |     // Simplified error handling test - verify form validation UI exists
+    > 269 |     await evaluationPage.newEvaluationButton.click();
+          |                                              ^
+      270 |     await page.waitForSelector('.fixed.inset-0 form', { timeout: 10000 });
+      271 |     
+      272 |     // Verify form validation elements exist
+        at /home/yhryzy/projects/website/wenxin-moyun/tests/e2e/specs/evaluation.spec.ts:269:46
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-System-Evaluation-task-error-handling-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-System-Evaluation-task-error-handling-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../test-results/evaluation-Evaluation-System-Evaluation-task-error-handling-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-System-Evaluation-task-error-handling-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../test-results/evaluation-Evaluation-System-Evaluation-task-error-handling-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: locator.click: Error: strict mode violation: locator('button:has-text("Create Task"), button:has-text("新建评测"), button:has-text("开始评测"), button:has-text("New Evaluation"), button:has-text("Start Evaluation"), button:has-text("Create"), .ios-button:has-text("New"), .ios-button:has-text("Start")') resolved to 2 elements:
+        1) <button disabled tabindex="0" class="relative inline-flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none bg-slate-700 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white shadow-md shadow-gray-900/15 focus:ring-slate-400 border border-slate-600/30 px-4 py-2.5 text-sm font-medium min-h-[44px] min-w-[44px] w-full">…</button> aka getByRole('button', { name: 'Create' })
+        2) <button disabled tabindex="0" class="relative inline-flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none bg-slate-700 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white shadow-md shadow-gray-900/15 focus:ring-slate-400 border border-slate-600/30 px-4 py-2.5 text-sm font-medium min-h-[44px] min-w-[44px] w-full">…</button> aka locator('button').filter({ hasText: 'Create' }).nth(1)
+
+    Call log:
+      - waiting for locator('button:has-text("Create Task"), button:has-text("新建评测"), button:has-text("开始评测"), button:has-text("New Evaluation"), button:has-text("Start Evaluation"), button:has-text("Create"), .ios-button:has-text("New"), .ios-button:has-text("Start")')
+
+
+      267 |   test('Evaluation task error handling', async ({ page }) => {
+      268 |     // Simplified error handling test - verify form validation UI exists
+    > 269 |     await evaluationPage.newEvaluationButton.click();
+          |                                              ^
+      270 |     await page.waitForSelector('.fixed.inset-0 form', { timeout: 10000 });
+      271 |     
+      272 |     // Verify form validation elements exist
+        at /home/yhryzy/projects/website/wenxin-moyun/tests/e2e/specs/evaluation.spec.ts:269:46
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-System-Evaluation-task-error-handling-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-System-Evaluation-task-error-handling-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../test-results/evaluation-Evaluation-System-Evaluation-task-error-handling-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-System-Evaluation-task-error-handling-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../test-results/evaluation-Evaluation-System-Evaluation-task-error-handling-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
 <system-out>
-<![CDATA[API Request: GET https://vulca-api.onrender.com/api/v1/evaluations/?skip=0&limit=10
-API Request: GET https://vulca-api.onrender.com/api/v1/evaluations/?skip=0&limit=10
-API Request: GET https://vulca-api.onrender.com/api/v1/models/?is_active=true
-Mock: Intercepting models request: https://vulca-api.onrender.com/api/v1/models/?is_active=true
-API Request: GET https://vulca-api.onrender.com/api/v1/models/?is_active=true
-Mock: Intercepting models request: https://vulca-api.onrender.com/api/v1/models/?is_active=true
-API Response: [33m200[39m https://vulca-api.onrender.com/api/v1/models/?is_active=true
-API Response: [33m200[39m https://vulca-api.onrender.com/api/v1/models/?is_active=true
-API Request: GET https://vulca-api.onrender.com/api/v1/models/
-API Request: GET https://vulca-api.onrender.com/api/v1/artworks/
+<![CDATA[API Request: GET http://localhost:8001/api/v1/models/
+Mock: Intercepting models request: http://localhost:8001/api/v1/models/
+API Request: GET http://localhost:8001/api/v1/artworks/
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/models/
+API Response: [33m200[39m http://localhost:8001/api/v1/artworks/
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Request: POST http://localhost:8001/api/v1/prototype/topologies/validate
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/topologies/validate
+API Request: POST http://localhost:8001/api/v1/prototype/topologies/validate
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/topologies/validate
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-System-Evaluation-task-error-handling-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-System-Evaluation-task-error-handling-chromium/video.webm]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-System-Evaluation-task-error-handling-chromium/error-context.md]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-System-Evaluation-task-error-handling-chromium/trace.zip]]
+API Request: GET http://localhost:8001/api/v1/models/
+Mock: Intercepting models request: http://localhost:8001/api/v1/models/
+API Request: GET http://localhost:8001/api/v1/artworks/
+API Response: [33m200[39m http://localhost:8001/api/v1/artworks/
+API Response: [33m200[39m http://localhost:8001/api/v1/models/
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Request: POST http://localhost:8001/api/v1/prototype/topologies/validate
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/topologies/validate
+API Request: POST http://localhost:8001/api/v1/prototype/topologies/validate
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/topologies/validate
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-System-Evaluation-task-error-handling-chromium-retry1/test-failed-1.png]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-System-Evaluation-task-error-handling-chromium-retry1/video.webm]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-System-Evaluation-task-error-handling-chromium-retry1/error-context.md]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-System-Evaluation-task-error-handling-chromium-retry1/trace.zip]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="Evaluation System › Cancel ongoing evaluation" classname="evaluation.spec.ts" time="3.599">
+<testcase name="Evaluation System › Cancel ongoing evaluation" classname="evaluation.spec.ts" time="14.547">
+<failure message="evaluation.spec.ts:302:3 Cancel ongoing evaluation" type="FAILURE">
+<![CDATA[  [chromium] › evaluation.spec.ts:302:3 › Evaluation System › Cancel ongoing evaluation ────────────
+
+    Error: locator.click: Error: strict mode violation: locator('button:has-text("Create Task"), button:has-text("新建评测"), button:has-text("开始评测"), button:has-text("New Evaluation"), button:has-text("Start Evaluation"), button:has-text("Create"), .ios-button:has-text("New"), .ios-button:has-text("Start")') resolved to 2 elements:
+        1) <button disabled tabindex="0" class="relative inline-flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none bg-slate-700 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white shadow-md shadow-gray-900/15 focus:ring-slate-400 border border-slate-600/30 px-4 py-2.5 text-sm font-medium min-h-[44px] min-w-[44px] w-full">…</button> aka getByRole('button', { name: 'Create' })
+        2) <button disabled tabindex="0" class="relative inline-flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none bg-slate-700 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white shadow-md shadow-gray-900/15 focus:ring-slate-400 border border-slate-600/30 px-4 py-2.5 text-sm font-medium min-h-[44px] min-w-[44px] w-full">…</button> aka locator('button').filter({ hasText: 'Create' }).nth(1)
+
+    Call log:
+      - waiting for locator('button:has-text("Create Task"), button:has-text("新建评测"), button:has-text("开始评测"), button:has-text("New Evaluation"), button:has-text("Start Evaluation"), button:has-text("Create"), .ios-button:has-text("New"), .ios-button:has-text("Start")')
+
+
+      302 |   test('Cancel ongoing evaluation', async ({ page }) => {
+      303 |     // Simplified cancel test - verify cancel UI components exist
+    > 304 |     await evaluationPage.newEvaluationButton.click();
+          |                                              ^
+      305 |     await page.waitForSelector('.fixed.inset-0 form', { timeout: 10000 });
+      306 |     
+      307 |     // Verify cancel-related UI elements exist
+        at /home/yhryzy/projects/website/wenxin-moyun/tests/e2e/specs/evaluation.spec.ts:304:46
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-System-Cancel-ongoing-evaluation-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-System-Cancel-ongoing-evaluation-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../test-results/evaluation-Evaluation-System-Cancel-ongoing-evaluation-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-System-Cancel-ongoing-evaluation-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../test-results/evaluation-Evaluation-System-Cancel-ongoing-evaluation-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: locator.click: Error: strict mode violation: locator('button:has-text("Create Task"), button:has-text("新建评测"), button:has-text("开始评测"), button:has-text("New Evaluation"), button:has-text("Start Evaluation"), button:has-text("Create"), .ios-button:has-text("New"), .ios-button:has-text("Start")') resolved to 2 elements:
+        1) <button disabled tabindex="0" class="relative inline-flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none bg-slate-700 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white shadow-md shadow-gray-900/15 focus:ring-slate-400 border border-slate-600/30 px-4 py-2.5 text-sm font-medium min-h-[44px] min-w-[44px] w-full">…</button> aka getByRole('button', { name: 'Create' })
+        2) <button disabled tabindex="0" class="relative inline-flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none bg-slate-700 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white shadow-md shadow-gray-900/15 focus:ring-slate-400 border border-slate-600/30 px-4 py-2.5 text-sm font-medium min-h-[44px] min-w-[44px] w-full">…</button> aka locator('button').filter({ hasText: 'Create' }).nth(1)
+
+    Call log:
+      - waiting for locator('button:has-text("Create Task"), button:has-text("新建评测"), button:has-text("开始评测"), button:has-text("New Evaluation"), button:has-text("Start Evaluation"), button:has-text("Create"), .ios-button:has-text("New"), .ios-button:has-text("Start")')
+
+
+      302 |   test('Cancel ongoing evaluation', async ({ page }) => {
+      303 |     // Simplified cancel test - verify cancel UI components exist
+    > 304 |     await evaluationPage.newEvaluationButton.click();
+          |                                              ^
+      305 |     await page.waitForSelector('.fixed.inset-0 form', { timeout: 10000 });
+      306 |     
+      307 |     // Verify cancel-related UI elements exist
+        at /home/yhryzy/projects/website/wenxin-moyun/tests/e2e/specs/evaluation.spec.ts:304:46
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-System-Cancel-ongoing-evaluation-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-System-Cancel-ongoing-evaluation-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../test-results/evaluation-Evaluation-System-Cancel-ongoing-evaluation-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../test-results/evaluation-Evaluation-System-Cancel-ongoing-evaluation-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../test-results/evaluation-Evaluation-System-Cancel-ongoing-evaluation-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
 <system-out>
-<![CDATA[API Request: GET https://vulca-api.onrender.com/api/v1/evaluations/?skip=0&limit=10
-API Request: GET https://vulca-api.onrender.com/api/v1/evaluations/?skip=0&limit=10
-API Request: GET https://vulca-api.onrender.com/api/v1/models/?is_active=true
-Mock: Intercepting models request: https://vulca-api.onrender.com/api/v1/models/?is_active=true
-API Request: GET https://vulca-api.onrender.com/api/v1/models/?is_active=true
-Mock: Intercepting models request: https://vulca-api.onrender.com/api/v1/models/?is_active=true
-API Response: [33m200[39m https://vulca-api.onrender.com/api/v1/models/?is_active=true
-API Response: [33m200[39m https://vulca-api.onrender.com/api/v1/models/?is_active=true
+<![CDATA[API Request: GET http://localhost:8001/api/v1/models/
+Mock: Intercepting models request: http://localhost:8001/api/v1/models/
+API Request: GET http://localhost:8001/api/v1/artworks/
+API Response: [33m200[39m http://localhost:8001/api/v1/models/
+API Response: [33m200[39m http://localhost:8001/api/v1/artworks/
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Request: POST http://localhost:8001/api/v1/prototype/topologies/validate
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/topologies/validate
+API Request: POST http://localhost:8001/api/v1/prototype/topologies/validate
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/topologies/validate
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-System-Cancel-ongoing-evaluation-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-System-Cancel-ongoing-evaluation-chromium/video.webm]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-System-Cancel-ongoing-evaluation-chromium/error-context.md]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-System-Cancel-ongoing-evaluation-chromium/trace.zip]]
+API Request: GET http://localhost:8001/api/v1/models/
+Mock: Intercepting models request: http://localhost:8001/api/v1/models/
+API Request: GET http://localhost:8001/api/v1/artworks/
+API Response: [33m200[39m http://localhost:8001/api/v1/models/
+API Response: [33m200[39m http://localhost:8001/api/v1/artworks/
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/prototype/templates
+API Request: GET http://localhost:8001/api/v1/knowledge-base
+API Request: GET http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/templates
+API Response: [33m200[39m http://localhost:8001/api/v1/digestion/status
+API Response: [33m200[39m http://localhost:8001/api/v1/knowledge-base
+API Request: POST http://localhost:8001/api/v1/prototype/topologies/validate
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/topologies/validate
+API Request: POST http://localhost:8001/api/v1/prototype/topologies/validate
+API Response: [33m200[39m http://localhost:8001/api/v1/prototype/topologies/validate
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-System-Cancel-ongoing-evaluation-chromium-retry1/test-failed-1.png]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-System-Cancel-ongoing-evaluation-chromium-retry1/video.webm]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-System-Cancel-ongoing-evaluation-chromium-retry1/error-context.md]]
+
+[[ATTACHMENT|../../test-results/evaluation-Evaluation-System-Cancel-ongoing-evaluation-chromium-retry1/trace.zip]]
 ]]>
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="homepage.spec.ts" timestamp="2026-02-07T22:32:13.508Z" hostname="chromium" tests="5" failures="0" skipped="0" time="23.04" errors="0">
-<testcase name="Homepage › 应该正确显示页面标题和主要导航" classname="homepage.spec.ts" time="2.902">
+<testsuite name="homepage.spec.ts" timestamp="2026-03-12T15:03:42.608Z" hostname="chromium" tests="5" failures="0" skipped="0" time="33.422" errors="0">
+<testcase name="Homepage › 应该正确显示页面标题和主要导航" classname="homepage.spec.ts" time="4.536">
 </testcase>
-<testcase name="Homepage › 应该显示主要内容区域" classname="homepage.spec.ts" time="3.094">
+<testcase name="Homepage › 应该显示主要内容区域" classname="homepage.spec.ts" time="4.812">
 </testcase>
-<testcase name="Homepage › 应该响应式适配移动端" classname="homepage.spec.ts" time="2.647">
+<testcase name="Homepage › 应该响应式适配移动端" classname="homepage.spec.ts" time="3.818">
 </testcase>
-<testcase name="Homepage › 导航链接应该正确跳转" classname="homepage.spec.ts" time="9.565">
+<testcase name="Homepage › 导航链接应该正确跳转" classname="homepage.spec.ts" time="13.884">
 </testcase>
-<testcase name="Homepage › 页面加载性能测试" classname="homepage.spec.ts" time="4.832">
+<testcase name="Homepage › 页面加载性能测试" classname="homepage.spec.ts" time="6.372">
 </testcase>
 </testsuite>
-<testsuite name="ios-components.spec.ts" timestamp="2026-02-07T22:32:13.508Z" hostname="chromium" tests="10" failures="0" skipped="0" time="31.989" errors="0">
-<testcase name="iOS Components › iOS button components should render and interact correctly" classname="ios-components.spec.ts" time="2.751">
+<testsuite name="ios-components.spec.ts" timestamp="2026-03-12T15:03:42.608Z" hostname="chromium" tests="10" failures="0" skipped="0" time="45.62" errors="0">
+<testcase name="iOS Components › iOS button components should render and interact correctly" classname="ios-components.spec.ts" time="3.852">
 </testcase>
-<testcase name="iOS Components › iOS card components should display correctly" classname="ios-components.spec.ts" time="2.825">
+<testcase name="iOS Components › iOS card components should display correctly" classname="ios-components.spec.ts" time="4.126">
 </testcase>
-<testcase name="iOS Components › iOS-style glass morphism effects" classname="ios-components.spec.ts" time="2.917">
+<testcase name="iOS Components › iOS-style glass morphism effects" classname="ios-components.spec.ts" time="4.561">
 </testcase>
-<testcase name="iOS Components › iOS color system application" classname="ios-components.spec.ts" time="3.057">
+<testcase name="iOS Components › iOS color system application" classname="ios-components.spec.ts" time="4.652">
 </testcase>
-<testcase name="iOS Components › iOS typography system application" classname="ios-components.spec.ts" time="3.257">
+<testcase name="iOS Components › iOS typography system application" classname="ios-components.spec.ts" time="4.883">
 </testcase>
-<testcase name="iOS Components › iOS toggle switch components" classname="ios-components.spec.ts" time="2.74">
+<testcase name="iOS Components › iOS toggle switch components" classname="ios-components.spec.ts" time="4.025">
 </testcase>
-<testcase name="iOS Components › iOS slider components" classname="ios-components.spec.ts" time="2.916">
+<testcase name="iOS Components › iOS slider components" classname="ios-components.spec.ts" time="3.885">
 </testcase>
-<testcase name="iOS Components › iOS alerts and modal dialogs" classname="ios-components.spec.ts" time="2.701">
+<testcase name="iOS Components › iOS alerts and modal dialogs" classname="ios-components.spec.ts" time="3.921">
 </testcase>
-<testcase name="iOS Components › Responsive iOS component adaptation" classname="ios-components.spec.ts" time="6.068">
+<testcase name="iOS Components › Responsive iOS component adaptation" classname="ios-components.spec.ts" time="7.639">
 </testcase>
-<testcase name="iOS Components › iOS component animations and transition effects" classname="ios-components.spec.ts" time="2.757">
+<testcase name="iOS Components › iOS component animations and transition effects" classname="ios-components.spec.ts" time="4.076">
 <system-out>
 <![CDATA[No iOS buttons found for animation test
 ]]>
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="navigation.spec.ts" timestamp="2026-02-07T22:32:13.508Z" hostname="chromium" tests="5" failures="0" skipped="1" time="38.47" errors="0">
-<testcase name="Navigation System › Main navigation menu functionality" classname="navigation.spec.ts" time="11.852">
+<testsuite name="mobile-viewport.spec.ts" timestamp="2026-03-12T15:03:42.608Z" hostname="chromium" tests="4" failures="0" skipped="0" time="17.177" errors="0">
+<testcase name="Mobile viewport (375x812) › homepage should render without horizontal overflow" classname="mobile-viewport.spec.ts" time="3.798">
 </testcase>
-<testcase name="Navigation System › Route switching and page transitions" classname="navigation.spec.ts" time="13.429">
+<testcase name="Mobile viewport (375x812) › models page should render without horizontal overflow" classname="mobile-viewport.spec.ts" time="6.272">
 </testcase>
-<testcase name="Navigation System › 404 page handling for invalid routes" classname="navigation.spec.ts" time="6.983">
+<testcase name="Mobile viewport (375x812) › homepage should show navigation at mobile width" classname="mobile-viewport.spec.ts" time="3.485">
+</testcase>
+<testcase name="Mobile viewport (375x812) › main heading should be visible on mobile" classname="mobile-viewport.spec.ts" time="3.622">
+</testcase>
+</testsuite>
+<testsuite name="navigation.spec.ts" timestamp="2026-03-12T15:03:42.608Z" hostname="chromium" tests="5" failures="1" skipped="1" time="57.097" errors="0">
+<testcase name="Navigation System › Main navigation menu functionality" classname="navigation.spec.ts" time="5.96">
+</testcase>
+<testcase name="Navigation System › Route switching and page transitions" classname="navigation.spec.ts" time="33.906">
+<failure message="navigation.spec.ts:49:3 Route switching and page transitions" type="FAILURE">
+<![CDATA[  [chromium] › navigation.spec.ts:49:3 › Navigation System › Route switching and page transitions ──
+
+    Error: expect(received).toMatch(expected)
+
+    Expected pattern: /\/evaluations/
+    Received string:  "http://localhost:5174/canvas"
+
+      64 |
+      65 |       // Verify URL changed (handle redirects like /vulca -> /canvas)
+    > 66 |       expect(page.url()).toMatch(new RegExp(route.urlMatch));
+         |                          ^
+      67 |
+      68 |       // Check for page-specific content to ensure proper loading
+      69 |       if (route.check === 'leaderboard') {
+        at /home/yhryzy/projects/website/wenxin-moyun/tests/e2e/specs/navigation.spec.ts:66:26
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../test-results/navigation-Navigation-Syst-4b95e-tching-and-page-transitions-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../../test-results/navigation-Navigation-Syst-4b95e-tching-and-page-transitions-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../test-results/navigation-Navigation-Syst-4b95e-tching-and-page-transitions-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../test-results/navigation-Navigation-Syst-4b95e-tching-and-page-transitions-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../test-results/navigation-Navigation-Syst-4b95e-tching-and-page-transitions-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: expect(received).toMatch(expected)
+
+    Expected pattern: /\/evaluations/
+    Received string:  "http://localhost:5174/canvas"
+
+      64 |
+      65 |       // Verify URL changed (handle redirects like /vulca -> /canvas)
+    > 66 |       expect(page.url()).toMatch(new RegExp(route.urlMatch));
+         |                          ^
+      67 |
+      68 |       // Check for page-specific content to ensure proper loading
+      69 |       if (route.check === 'leaderboard') {
+        at /home/yhryzy/projects/website/wenxin-moyun/tests/e2e/specs/navigation.spec.ts:66:26
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../test-results/navigation-Navigation-Syst-4b95e-tching-and-page-transitions-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../../test-results/navigation-Navigation-Syst-4b95e-tching-and-page-transitions-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../test-results/navigation-Navigation-Syst-4b95e-tching-and-page-transitions-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../test-results/navigation-Navigation-Syst-4b95e-tching-and-page-transitions-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../test-results/navigation-Navigation-Syst-4b95e-tching-and-page-transitions-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../../test-results/navigation-Navigation-Syst-4b95e-tching-and-page-transitions-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|../../test-results/navigation-Navigation-Syst-4b95e-tching-and-page-transitions-chromium/video.webm]]
+
+[[ATTACHMENT|../../test-results/navigation-Navigation-Syst-4b95e-tching-and-page-transitions-chromium/error-context.md]]
+
+[[ATTACHMENT|../../test-results/navigation-Navigation-Syst-4b95e-tching-and-page-transitions-chromium/trace.zip]]
+
+[[ATTACHMENT|../../test-results/navigation-Navigation-Syst-4b95e-tching-and-page-transitions-chromium-retry1/test-failed-1.png]]
+
+[[ATTACHMENT|../../test-results/navigation-Navigation-Syst-4b95e-tching-and-page-transitions-chromium-retry1/video.webm]]
+
+[[ATTACHMENT|../../test-results/navigation-Navigation-Syst-4b95e-tching-and-page-transitions-chromium-retry1/error-context.md]]
+
+[[ATTACHMENT|../../test-results/navigation-Navigation-Syst-4b95e-tching-and-page-transitions-chromium-retry1/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Navigation System › 404 page handling for invalid routes" classname="navigation.spec.ts" time="8.637">
 </testcase>
 <testcase name="Navigation System › Breadcrumb navigation functionality" classname="navigation.spec.ts" time="0">
 <properties>
@@ -396,11 +1695,45 @@ API Response: [33m200[39m https://vulca-api.onrender.com/api/v1/models/?is_activ
 <skipped>
 </skipped>
 </testcase>
-<testcase name="Navigation System › Mobile navigation menu (responsive)" classname="navigation.spec.ts" time="6.206">
+<testcase name="Navigation System › Mobile navigation menu (responsive)" classname="navigation.spec.ts" time="8.594">
 </testcase>
 </testsuite>
-<testsuite name="vulca-47d-issue.spec.ts" timestamp="2026-02-07T22:32:13.508Z" hostname="chromium" tests="3" failures="0" skipped="0" time="8.986" errors="0">
-<testcase name="VULCA 47D Display Issues › 检查47D按钮和数据显示问题" classname="vulca-47d-issue.spec.ts" time="3.032">
+<testsuite name="prototype-smoke.spec.ts" timestamp="2026-03-12T15:03:42.608Z" hostname="chromium" tests="7" failures="0" skipped="0" time="55.543" errors="0">
+<testcase name="Prototype Page Smoke › page loads without crash" classname="prototype-smoke.spec.ts" time="4.934">
+</testcase>
+<testcase name="Prototype Page Smoke › all 5 mode buttons are visible" classname="prototype-smoke.spec.ts" time="6.737">
+</testcase>
+<testcase name="Prototype Page Smoke › clicking mode buttons switches view without crash" classname="prototype-smoke.spec.ts" time="14.041">
+</testcase>
+<testcase name="Prototype Page Smoke › Edit mode shows editor or config UI" classname="prototype-smoke.spec.ts" time="7.488">
+</testcase>
+<testcase name="Prototype Page Smoke › Build mode renders content" classname="prototype-smoke.spec.ts" time="7.847">
+</testcase>
+<testcase name="Prototype Page Smoke › Explore mode renders content" classname="prototype-smoke.spec.ts" time="7.355">
+</testcase>
+<testcase name="Prototype Page Smoke › Compare mode renders content" classname="prototype-smoke.spec.ts" time="7.141">
+</testcase>
+</testsuite>
+<testsuite name="research-page.spec.ts" timestamp="2026-03-12T15:03:42.608Z" hostname="chromium" tests="3" failures="0" skipped="0" time="12.501" errors="0">
+<testcase name="Research Page › page loads and shows heading" classname="research-page.spec.ts" time="3.776">
+</testcase>
+<testcase name="Research Page › tab navigation is present" classname="research-page.spec.ts" time="3.456">
+</testcase>
+<testcase name="Research Page › no console errors on load" classname="research-page.spec.ts" time="5.269">
+</testcase>
+</testsuite>
+<testsuite name="skills-page.spec.ts" timestamp="2026-03-12T15:03:42.608Z" hostname="chromium" tests="4" failures="0" skipped="0" time="19.082" errors="0">
+<testcase name="Skills Page › page loads and shows heading" classname="skills-page.spec.ts" time="4.765">
+</testcase>
+<testcase name="Skills Page › skill cards are visible (fallback data)" classname="skills-page.spec.ts" time="4.461">
+</testcase>
+<testcase name="Skills Page › search input is functional" classname="skills-page.spec.ts" time="4.005">
+</testcase>
+<testcase name="Skills Page › no console errors on load" classname="skills-page.spec.ts" time="5.851">
+</testcase>
+</testsuite>
+<testsuite name="vulca-47d-issue.spec.ts" timestamp="2026-03-12T15:03:42.608Z" hostname="chromium" tests="3" failures="0" skipped="0" time="13.271" errors="0">
+<testcase name="VULCA 47D Display Issues › 检查47D按钮和数据显示问题" classname="vulca-47d-issue.spec.ts" time="3.498">
 <system-out>
 <![CDATA[开始检查47D显示问题...
 47D按钮存在: false
@@ -408,25 +1741,25 @@ API Response: [33m200[39m https://vulca-api.onrender.com/api/v1/models/?is_activ
 ]]>
 </system-out>
 </testcase>
-<testcase name="VULCA 47D Display Issues › 检查47D数据完整性" classname="vulca-47d-issue.spec.ts" time="2.782">
+<testcase name="VULCA 47D Display Issues › 检查47D数据完整性" classname="vulca-47d-issue.spec.ts" time="6.378">
 <system-out>
 <![CDATA[47D按钮未找到，跳过数据完整性检查
 ]]>
 </system-out>
 </testcase>
-<testcase name="VULCA 47D Display Issues › 检查47D视图切换功能" classname="vulca-47d-issue.spec.ts" time="3.172">
+<testcase name="VULCA 47D Display Issues › 检查47D视图切换功能" classname="vulca-47d-issue.spec.ts" time="3.395">
 <system-out>
 <![CDATA[47D按钮未找到，跳过视图切换功能检查
 ]]>
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="vulca-simple.spec.ts" timestamp="2026-02-07T22:32:13.508Z" hostname="chromium" tests="6" failures="0" skipped="3" time="14.866" errors="0">
-<testcase name="VULCA Simple Tests › should navigate to VULCA page" classname="vulca-simple.spec.ts" time="5.703">
+<testsuite name="vulca-simple.spec.ts" timestamp="2026-03-12T15:03:42.608Z" hostname="chromium" tests="6" failures="0" skipped="3" time="20.942" errors="0">
+<testcase name="VULCA Simple Tests › should navigate to VULCA page (redirects to canvas)" classname="vulca-simple.spec.ts" time="6.404">
 </testcase>
-<testcase name="VULCA Simple Tests › should show loading or content" classname="vulca-simple.spec.ts" time="6.163">
+<testcase name="VULCA Simple Tests › should show loading or content" classname="vulca-simple.spec.ts" time="7.797">
 </testcase>
-<testcase name="VULCA Simple Tests › should eventually show main content" classname="vulca-simple.spec.ts" time="3">
+<testcase name="VULCA Simple Tests › should eventually show main content" classname="vulca-simple.spec.ts" time="6.741">
 </testcase>
 <testcase name="VULCA API Tests › should have working VULCA API" classname="vulca-simple.spec.ts" time="0">
 <properties>
@@ -453,7 +1786,7 @@ API Response: [33m200[39m https://vulca-api.onrender.com/api/v1/models/?is_activ
 </skipped>
 </testcase>
 </testsuite>
-<testsuite name="vulca.spec.ts" timestamp="2026-02-07T22:32:13.508Z" hostname="chromium" tests="12" failures="0" skipped="12" time="0" errors="0">
+<testsuite name="vulca.spec.ts" timestamp="2026-03-12T15:03:42.608Z" hostname="chromium" tests="12" failures="0" skipped="12" time="0" errors="0">
 <testcase name="VULCA Integration Tests › should load VULCA page successfully" classname="vulca.spec.ts" time="0">
 <properties>
 <property name="skip" value="VULCA integration tests require running backend with VULCA API">

@@ -7,9 +7,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Dialogue, DialogueTurn } from '../../types/exhibition';
-import { IOSCard, IOSCardContent, IOSCardHeader } from '../ios/core/IOSCard';
-import { IOSButton } from '../ios/core/IOSButton';
-import { EmojiIcon } from '../ios/core/EmojiIcon';
+import { IOSCard, IOSCardContent, IOSCardHeader, IOSButton, EmojiIcon } from '../ios';
 
 interface DialogueViewerProps {
   dialogues: Dialogue[];

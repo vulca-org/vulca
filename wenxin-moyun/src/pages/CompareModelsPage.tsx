@@ -401,7 +401,7 @@ export default function CompareModelsPage() {
               Book a Demo
             </IOSButton>
           </Link>
-          <Link to="/vulca">
+          <Link to="/canvas">
             <IOSButton variant="secondary" size="lg" className="flex items-center gap-2">
               Try VULCA Demo
               <ArrowRight className="w-4 h-4" />

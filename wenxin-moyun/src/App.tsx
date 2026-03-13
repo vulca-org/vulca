@@ -5,81 +5,58 @@ import ErrorBoundary from './components/common/ErrorBoundary';
 import RequireAdmin from './components/common/RequireAdmin';
 import { cacheUtils } from './services/api';
 import { useEffect, Suspense, lazy } from 'react';
+import type { ComponentType } from 'react';
 import { loadModelsPage, setupCriticalRoutePreload } from './routes/preloadCriticalRoutes';
 
 // Core pages - eagerly loaded
 import HomePage from './pages/HomePage';
+
+// Lazy-loaded pages
 const ModelsPage = lazy(loadModelsPage);
 const ModelDetailPage = lazy(() => import('./pages/ModelDetailPage'));
-// EvaluationsPage and EvaluationDetailPage routes redirect to /canvas (see routes below)
 const GalleryPage = lazy(() => import('./pages/GalleryPage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
-
-// Marketing pages - lazy loaded (Scale.com style)
 const PricingPage = lazy(() => import('./pages/PricingPage'));
 const CustomersPage = lazy(() => import('./pages/CustomersPage'));
 const TrustPage = lazy(() => import('./pages/TrustPage'));
 const BookDemoPage = lazy(() => import('./pages/BookDemoPage'));
 const DemoConfirmationPage = lazy(() => import('./pages/DemoConfirmationPage'));
-
-// Solutions pages - lazy loaded
 const SolutionsPage = lazy(() => import('./pages/solutions/SolutionsPage'));
-
-// Exhibitions - lazy loaded
 const ExhibitionsPage = lazy(() => import('./pages/exhibitions/ExhibitionsPage'));
 const ExhibitionDetailPage = lazy(() => import('./pages/exhibitions/ExhibitionDetailPage'));
 const ArtworkPage = lazy(() => import('./pages/exhibitions/ArtworkPage'));
-
-// EvaluatePage — superseded by /canvas (PrototypePage); kept for reference
-// const EvaluatePage = lazy(() => import('./pages/EvaluatePage'));
 const ResearchPage = lazy(() => import('./pages/ResearchPage'));
 const SkillsPage = lazy(() => import('./pages/SkillsPage'));
 const AdminDashboardPage = lazy(() => import('./pages/AdminDashboardPage'));
-
-// Legal pages - lazy loaded
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
 const TermsPage = lazy(() => import('./pages/TermsPage'));
-
-// Knowledge Base page - lazy loaded
-const KnowledgeBasePage = lazy(() => import('./pages/KnowledgeBasePage'));
-
-// Report page - lazy loaded
-const ModelReportPage = lazy(() => import('./pages/ModelReportPage'));
-
-// Comparison page - lazy loaded
 const CompareModelsPage = lazy(() => import('./pages/CompareModelsPage'));
-
-// Prototype pipeline - lazy loaded
 const PrototypePage = lazy(() => import('./pages/prototype/PrototypePage'));
 
-// CreatePage — superseded by /canvas (PrototypePage); kept for reference
-// const CreatePage = lazy(() => import('./pages/CreatePage'));
-
-// Reusable loading component
-function PageLoader({ text = 'Loading...' }: { text?: string }) {
+/** Reduces Suspense boilerplate for lazy-loaded routes. */
+function LazyRoute({ component: Component, text = 'Loading...' }: { component: ComponentType; text?: string }) {
   return (
-    <div className="flex items-center justify-center min-h-[60vh]">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-600 mx-auto mb-4"></div>
-        <p className="text-gray-600 dark:text-gray-400">{text}</p>
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-600 mx-auto mb-4" />
+          <p className="text-gray-600 dark:text-gray-400">{text}</p>
+        </div>
       </div>
-    </div>
+    }>
+      <Component />
+    </Suspense>
   );
 }
 
 function App() {
-  // Initialize cache warming on app start with version check
   useEffect(() => {
     const versionUpdated = cacheUtils.checkVersion();
-
     const timer = setTimeout(() => {
-      if (versionUpdated) {
-        console.log('App: Version updated, warming cache with fresh data');
-      }
+      if (versionUpdated) console.log('App: Version updated, warming cache with fresh data');
       cacheUtils.warmUp();
     }, versionUpdated ? 500 : 2000);
-
     return () => clearTimeout(timer);
   }, []);
 
@@ -94,10 +71,6 @@ function App() {
       componentStack: errorInfo.componentStack,
       timestamp: new Date().toISOString(),
     });
-
-    if (process.env.NODE_ENV === 'production') {
-      // Error reporting would go here
-    }
   };
 
   return (
@@ -105,187 +78,70 @@ function App() {
       <ThemeProvider>
         <Router>
           <Routes>
-            {/* Login page without Layout */}
-            <Route path="/login" element={
-              <Suspense fallback={<PageLoader text="Loading Login..." />}>
-                <LoginPage />
-              </Suspense>
-            } />
+            {/* Login — no Layout wrapper */}
+            <Route path="/login" element={<LazyRoute component={LoginPage} text="Loading Login..." />} />
 
-            {/* All other pages with Layout */}
             <Route element={<Layout />}>
-              {/* Marketing pages (Scale.com style) */}
+              {/* ── Core product ── */}
               <Route path="/" element={<HomePage />} />
-              <Route path="/pricing" element={
-                <Suspense fallback={<PageLoader text="Loading Pricing..." />}>
-                  <PricingPage />
-                </Suspense>
-              } />
-              <Route path="/customers" element={
-                <Suspense fallback={<PageLoader text="Loading Customers..." />}>
-                  <CustomersPage />
-                </Suspense>
-              } />
-              <Route path="/trust" element={
-                <Suspense fallback={<PageLoader text="Loading Trust & Security..." />}>
-                  <TrustPage />
-                </Suspense>
-              } />
-              <Route path="/demo" element={
-                <Suspense fallback={<PageLoader text="Loading Demo Scheduler..." />}>
-                  <BookDemoPage />
-                </Suspense>
-              } />
-              <Route path="/demo/confirmation" element={
-                <Suspense fallback={<PageLoader text="Loading..." />}>
-                  <DemoConfirmationPage />
-                </Suspense>
+              <Route path="/canvas" element={<LazyRoute component={PrototypePage} text="Loading Canvas..." />} />
+              <Route path="/gallery" element={<LazyRoute component={GalleryPage} text="Loading Gallery..." />} />
+
+              {/* ── Supporting ── */}
+              <Route path="/models" element={<LazyRoute component={ModelsPage} text="Loading Models..." />} />
+              <Route path="/models/:category" element={<LazyRoute component={ModelsPage} text="Loading Models..." />} />
+              <Route path="/model/:id" element={<LazyRoute component={ModelDetailPage} text="Loading Model..." />} />
+              <Route path="/compare/:comparison" element={<LazyRoute component={CompareModelsPage} text="Loading Comparison..." />} />
+              <Route path="/research" element={<LazyRoute component={ResearchPage} text="Loading Research..." />} />
+              <Route path="/skills" element={<LazyRoute component={SkillsPage} text="Loading Skills..." />} />
+              <Route path="/admin" element={
+                <RequireAdmin>
+                  <LazyRoute component={AdminDashboardPage} text="Loading Admin..." />
+                </RequireAdmin>
               } />
 
-              {/* Solutions pages */}
-              <Route path="/solutions" element={
-                <Suspense fallback={<PageLoader text="Loading Solutions..." />}>
-                  <SolutionsPage />
-                </Suspense>
-              } />
+              {/* ── Marketing ── */}
+              <Route path="/pricing" element={<LazyRoute component={PricingPage} text="Loading Pricing..." />} />
+              <Route path="/customers" element={<LazyRoute component={CustomersPage} text="Loading Customers..." />} />
+              <Route path="/trust" element={<LazyRoute component={TrustPage} text="Loading Trust..." />} />
+              <Route path="/demo" element={<LazyRoute component={BookDemoPage} text="Loading Demo..." />} />
+              <Route path="/demo/confirmation" element={<LazyRoute component={DemoConfirmationPage} />} />
+              <Route path="/solutions" element={<LazyRoute component={SolutionsPage} text="Loading Solutions..." />} />
+
+              {/* ── Exhibitions ── */}
+              <Route path="/exhibitions" element={<LazyRoute component={ExhibitionsPage} text="Loading Exhibitions..." />} />
+              <Route path="/exhibitions/:id" element={<LazyRoute component={ExhibitionDetailPage} text="Loading Exhibition..." />} />
+              <Route path="/exhibitions/:id/:artworkId" element={<LazyRoute component={ArtworkPage} text="Loading Artwork..." />} />
+
+              {/* ── Legal ── */}
+              <Route path="/privacy" element={<LazyRoute component={PrivacyPage} />} />
+              <Route path="/terms" element={<LazyRoute component={TermsPage} />} />
+
+              {/* ── Legacy redirects (consolidated) ── */}
+              <Route path="/vulca" element={<Navigate to="/canvas" replace />} />
+              <Route path="/create" element={<Navigate to="/canvas" replace />} />
+              <Route path="/evaluate" element={<Navigate to="/canvas" replace />} />
+              <Route path="/prototype" element={<Navigate to="/canvas" replace />} />
+              <Route path="/evaluations" element={<Navigate to="/canvas" replace />} />
+              <Route path="/evaluations/:id" element={<Navigate to="/canvas" replace />} />
+              <Route path="/leaderboard" element={<Navigate to="/models" replace />} />
+              <Route path="/leaderboard/:category" element={<Navigate to="/models" replace />} />
+              <Route path="/model/:id/report" element={<Navigate to="/models" replace />} />
+              <Route path="/product" element={<Navigate to="/" replace />} />
+              <Route path="/changelog" element={<Navigate to="/" replace />} />
+              <Route path="/pilot" element={<Navigate to="/demo" replace />} />
+              <Route path="/methodology" element={<Navigate to="/research?tab=methodology" replace />} />
+              <Route path="/dataset" element={<Navigate to="/research?tab=dataset" replace />} />
+              <Route path="/papers" element={<Navigate to="/research?tab=papers" replace />} />
+              <Route path="/knowledge-base" element={<Navigate to="/research" replace />} />
+              <Route path="/data-ethics" element={<Navigate to="/trust?tab=data-ethics" replace />} />
+              <Route path="/sop" element={<Navigate to="/trust?tab=sop" replace />} />
               <Route path="/solutions/ai-labs" element={<Navigate to="/solutions?tab=ai-labs" replace />} />
               <Route path="/solutions/research" element={<Navigate to="/solutions?tab=research" replace />} />
               <Route path="/solutions/museums" element={<Navigate to="/solutions?tab=museums" replace />} />
 
-              {/* Public Demo / Models */}
-              <Route path="/models" element={
-                <Suspense fallback={<PageLoader text="Loading Models..." />}>
-                  <ModelsPage />
-                </Suspense>
-              } />
-              <Route path="/models/:category" element={
-                <Suspense fallback={<PageLoader text="Loading Models..." />}>
-                  <ModelsPage />
-                </Suspense>
-              } />
-              {/* Legacy route redirects */}
-              <Route path="/leaderboard" element={
-                <Suspense fallback={<PageLoader text="Loading Models..." />}>
-                  <ModelsPage />
-                </Suspense>
-              } />
-              <Route path="/leaderboard/:category" element={
-                <Suspense fallback={<PageLoader text="Loading Models..." />}>
-                  <ModelsPage />
-                </Suspense>
-              } />
-              <Route path="/model/:id" element={
-                <Suspense fallback={<PageLoader text="Loading Model..." />}>
-                  <ModelDetailPage />
-                </Suspense>
-              } />
-              <Route path="/model/:id/report" element={
-                <Suspense fallback={<PageLoader text="Loading Report..." />}>
-                  <ModelReportPage />
-                </Suspense>
-              } />
-
-              {/* Model Comparison - SEO-friendly URLs */}
-              <Route path="/compare/:comparison" element={
-                <Suspense fallback={<PageLoader text="Loading Comparison..." />}>
-                  <CompareModelsPage />
-                </Suspense>
-              } />
-
-              {/* Canvas — unified creation/evaluation entry point */}
-              <Route path="/canvas" element={
-                <Suspense fallback={<PageLoader text="Loading Canvas..." />}>
-                  <PrototypePage />
-                </Suspense>
-              } />
-
-              {/* All creation/evaluation routes redirect to /canvas */}
-              <Route path="/create" element={<Navigate to="/canvas" replace />} />
-              <Route path="/evaluate" element={<Navigate to="/canvas" replace />} />
-              <Route path="/vulca" element={<Navigate to="/canvas" replace />} />
-
-              {/* Research (merged academic pages) */}
-              <Route path="/research" element={
-                <Suspense fallback={<PageLoader text="Loading Research..." />}>
-                  <ResearchPage />
-                </Suspense>
-              } />
-
-              {/* Skills Marketplace */}
-              <Route path="/skills" element={
-                <Suspense fallback={<PageLoader text="Loading Skills..." />}>
-                  <SkillsPage />
-                </Suspense>
-              } />
-
-              {/* Admin Dashboard */}
-              <Route path="/admin" element={
-                <RequireAdmin>
-                  <Suspense fallback={<PageLoader text="Loading Admin..." />}>
-                    <AdminDashboardPage />
-                  </Suspense>
-                </RequireAdmin>
-              } />
-
-              {/* Exhibition Routes */}
-              <Route path="/exhibitions" element={
-                <Suspense fallback={<PageLoader text="Loading Exhibitions..." />}>
-                  <ExhibitionsPage />
-                </Suspense>
-              } />
-              <Route path="/exhibitions/:id" element={
-                <Suspense fallback={<PageLoader text="Loading Exhibition..." />}>
-                  <ExhibitionDetailPage />
-                </Suspense>
-              } />
-              <Route path="/exhibitions/:id/:artworkId" element={
-                <Suspense fallback={<PageLoader text="Loading Artwork..." />}>
-                  <ArtworkPage />
-                </Suspense>
-              } />
-
-              {/* Redirects for merged/renamed pages */}
-              <Route path="/product" element={<Navigate to="/" replace />} />
-              <Route path="/pilot" element={<Navigate to="/demo" replace />} />
-              <Route path="/prototype" element={<Navigate to="/canvas" replace />} />
-              <Route path="/methodology" element={<Navigate to="/research?tab=methodology" replace />} />
-              <Route path="/dataset" element={<Navigate to="/research?tab=dataset" replace />} />
-              <Route path="/papers" element={<Navigate to="/research?tab=papers" replace />} />
-              <Route path="/data-ethics" element={<Navigate to="/trust?tab=data-ethics" replace />} />
-              <Route path="/sop" element={<Navigate to="/trust?tab=sop" replace />} />
-
-              {/* Legal Pages */}
-              <Route path="/privacy" element={
-                <Suspense fallback={<PageLoader text="Loading Privacy Policy..." />}>
-                  <PrivacyPage />
-                </Suspense>
-              } />
-              <Route path="/terms" element={
-                <Suspense fallback={<PageLoader text="Loading Terms of Service..." />}>
-                  <TermsPage />
-                </Suspense>
-              } />
-
-              {/* Evaluations → redirect to Canvas (unified creation+evaluation) */}
-              <Route path="/evaluations" element={<Navigate to="/canvas" replace />} />
-              <Route path="/evaluations/:id" element={<Navigate to="/canvas" replace />} />
-              <Route path="/gallery" element={
-                <Suspense fallback={<PageLoader text="Loading Gallery..." />}>
-                  <GalleryPage />
-                </Suspense>
-              } />
-              <Route path="/knowledge-base" element={
-                <Suspense fallback={<PageLoader text="Loading Knowledge Base..." />}>
-                  <KnowledgeBasePage />
-                </Suspense>
-              } />
-
-              {/* 404 catch-all route */}
-              <Route path="*" element={
-                <Suspense fallback={<PageLoader text="Loading..." />}>
-                  <NotFoundPage />
-                </Suspense>
-              } />
+              {/* 404 */}
+              <Route path="*" element={<LazyRoute component={NotFoundPage} />} />
             </Route>
           </Routes>
         </Router>

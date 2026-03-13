@@ -70,6 +70,7 @@ export default function IntentBar({ onSubmit, onIntentChange, disabled = false, 
         <div className="space-y-2">
           {/* Text input */}
           <textarea
+            data-testid="intent-input"
             value={intent}
             onChange={(e) => { setIntent(e.target.value); onIntentChange?.(e.target.value); }}
             onKeyDown={handleKeyDown}
@@ -120,6 +121,7 @@ export default function IntentBar({ onSubmit, onIntentChange, disabled = false, 
             onClick={handleSubmit}
             disabled={disabled || (!intent.trim() && !imageFile)}
             className="w-full"
+            data-testid="intent-submit"
           >
             {imageFile ? 'Evaluate' : 'Create'}
           </IOSButton>

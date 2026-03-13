@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('VULCA-Rankings Integration', () => {
   test.beforeEach(async ({ page }) => {
     // Use relative path - baseURL set in playwright.config.ts
-    await page.goto('/#/leaderboard');
+    await page.goto('/models');
   });
 
   test('should display 47D button for models with VULCA data', async ({ page }) => {
@@ -97,7 +97,7 @@ test.describe('VULCA-Rankings Integration', () => {
   test('performance: should load leaderboard quickly', async ({ page }) => {
     const startTime = Date.now();
 
-    await page.goto('/#/leaderboard');
+    await page.goto('/models');
     await page.waitForSelector('table, .leaderboard-table, [data-testid="leaderboard"], h1, h2', { timeout: 15000 });
 
     const loadTime = Date.now() - startTime;
@@ -116,7 +116,7 @@ test.describe('VULCA-Rankings Integration', () => {
       });
     });
 
-    await page.goto('/#/leaderboard');
+    await page.goto('/models');
 
     // Wait for page to attempt to load
     await page.waitForTimeout(3000);

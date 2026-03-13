@@ -11,7 +11,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Copy, Check, Download, FileText, ExternalLink } from 'lucide-react';
-import { IOSButton } from '../ios/core/IOSButton';
+import { IOSButton } from '../ios';
 import {
   type Citation,
   type CitationFormat,

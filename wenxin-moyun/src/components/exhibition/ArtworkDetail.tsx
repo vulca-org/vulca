@@ -7,9 +7,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Artwork } from '../../types/exhibition';
-import { IOSButton } from '../ios/core/IOSButton';
-import { IOSCard, IOSCardContent } from '../ios/core/IOSCard';
-import { EmojiIcon } from '../ios/core/EmojiIcon';
+import { IOSButton, IOSCard, IOSCardContent, EmojiIcon } from '../ios';
 
 interface ArtworkDetailProps {
   artwork: Artwork;

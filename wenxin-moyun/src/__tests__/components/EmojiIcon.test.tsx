@@ -40,7 +40,7 @@ vi.mock('framer-motion', () => {
 })
 
 import React from 'react'
-import { EmojiIcon, StatusEmoji, RankEmoji, TypeEmoji } from '../../components/ios/core/EmojiIcon'
+import { EmojiIcon, StatusEmoji, RankEmoji, TypeEmoji } from '@/components/ios'
 
 describe('EmojiIcon', () => {
   it('should render an emoji for a known category and name', () => {

@@ -11,12 +11,12 @@ export class HomePage extends BasePage {
     return this.page.locator('[data-testid="explore-rankings-button"]').first();
   }
 
-  get modelBattleButton() {
-    return this.page.locator('[data-testid="model-battle-button"]').first();
+  get tryCanvasButton() {
+    return this.page.locator('[data-testid="hero-try-demo"], a[href="/canvas"]').first();
   }
 
-  get leaderboardLink() {
-    return this.page.locator('a[href*="leaderboard"], [data-testid="explore-rankings-button"]').first();
+  get modelsLink() {
+    return this.page.locator('a[href*="models"], [data-testid="explore-rankings-button"]').first();
   }
 
   get userAvatar() {
@@ -29,27 +29,25 @@ export class HomePage extends BasePage {
   }
 
   async navigateToLogin() {
-    // Since there's no login button on homepage, navigate directly to login page
     await this.navigateTo('/login');
   }
 
-  async navigateToLeaderboard() {
-    await this.leaderboardLink.click();
-    await this.waitForNavigation('/leaderboard');
+  async navigateToModels() {
+    await this.modelsLink.click();
+    await this.waitForNavigation('/models');
   }
 
   async clickExploreRankings() {
     await this.exploreRankingsButton.click();
-    await this.waitForNavigation('/leaderboard');
+    await this.waitForNavigation('/models');
   }
 
-  async clickModelBattle() {
-    await this.modelBattleButton.click();
-    await this.waitForNavigation('/battle');
+  async clickTryCanvas() {
+    await this.tryCanvasButton.click();
+    await this.waitForNavigation('/canvas');
   }
 
   async setGuestMode() {
-    // Set guest mode directly via JavaScript since there's no guest button
     await this.page.evaluate(() => {
       const guestId = `guest-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       localStorage.setItem('guest_session_id', guestId);

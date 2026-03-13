@@ -56,7 +56,7 @@ export default function ResearchSolutionPage() {
                 Request Academic Access
               </IOSButton>
             </Link>
-            <Link to="/papers">
+            <Link to="/research">
               <IOSButton variant="secondary" size="lg" className="flex items-center gap-2">
                 View Publications
               </IOSButton>
@@ -239,7 +239,7 @@ export default function ResearchSolutionPage() {
         </div>
 
         <div className="text-center mt-8">
-          <Link to="/papers">
+          <Link to="/research">
             <IOSButton variant="secondary" size="md" className="flex items-center gap-2 mx-auto">
               View All Papers
               <ArrowRight className="w-4 h-4" />
@@ -263,7 +263,7 @@ export default function ResearchSolutionPage() {
               Request Academic Access
             </IOSButton>
           </Link>
-          <Link to="/dataset">
+          <Link to="/research">
             <IOSButton variant="secondary" size="lg" className="flex items-center gap-2">
               Explore Dataset
             </IOSButton>

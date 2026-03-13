@@ -13,8 +13,7 @@ import { useUIStore } from '../store/uiStore';
 import { useFilterStore } from '../store/filterStore';
 import type { LeaderboardEntry } from '../types/types';
 import type { FilterState } from '../store/filterStore';
-import { IOSButton } from '../components/ios/core/IOSButton';
-import { IOSCard, IOSCardHeader, IOSCardContent } from '../components/ios/core/IOSCard';
+import { IOSButton, IOSCard, IOSCardHeader, IOSCardContent } from '../components/ios';
 import {
   Trophy, ScrollText, Palette, BookOpen, Music, RefreshCw, Search,
   TrendingUp, Quote, Copy, Check, Calendar, ArrowRight, FileText, ExternalLink
@@ -412,7 +411,7 @@ function TopDeltaSection({ topModels }: { topModels: LeaderboardEntry[] }) {
               These dimensions show the most significant performance differences. Use this data to identify
               specific areas where models excel or need improvement.
             </p>
-            <Link to="/vulca" className="inline-flex items-center gap-1 mt-2 text-sm text-slate-700 dark:text-slate-500 hover:underline">
+            <Link to="/canvas" className="inline-flex items-center gap-1 mt-2 text-sm text-slate-700 dark:text-slate-500 hover:underline">
               Explore full 47D analysis
               <ExternalLink className="w-3 h-3" />
             </Link>
@@ -505,7 +504,7 @@ function CitationSection({
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-4">
             For reproducibility, please include the version number and evaluation date in your citations.
             Full methodology available in our{' '}
-            <Link to="/methodology" className="text-slate-700 dark:text-slate-500 hover:underline">documentation</Link>.
+            <Link to="/research" className="text-slate-700 dark:text-slate-500 hover:underline">documentation</Link>.
           </p>
         </IOSCardContent>
       </IOSCard>

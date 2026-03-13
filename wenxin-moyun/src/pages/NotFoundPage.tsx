@@ -10,12 +10,12 @@ export default function NotFoundPage() {
         <div className="flex justify-center">
           <EmojiIcon category="status" name="error" size="2xl" />
         </div>
-        
+
         {/* 404 Title */}
         <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-200">
           404
         </h1>
-        
+
         {/* Error Message */}
         <div className="space-y-2">
           <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300">
@@ -25,7 +25,7 @@ export default function NotFoundPage() {
             The page you're looking for doesn't exist or has been moved.
           </p>
         </div>
-        
+
         {/* Actions */}
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link to="/">
@@ -34,44 +34,38 @@ export default function NotFoundPage() {
               Go Home
             </IOSButton>
           </Link>
-          
-          <Link to="/leaderboard">
+
+          <Link to="/canvas">
             <IOSButton variant="secondary" size="lg">
               <EmojiIcon category="content" name="ranking" size="sm" />
-              View Rankings
+              Try Canvas
             </IOSButton>
           </Link>
         </div>
-        
+
         {/* Additional Help */}
         <div className="pt-8 border-t border-gray-200 dark:border-gray-700">
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
             You can also try:
           </p>
           <div className="flex flex-wrap justify-center gap-4 text-sm">
-            <Link 
-              to="/battle" 
-              className="text-slate-700 hover:text-slate-800 dark:text-slate-500 dark:hover:text-slate-400"
-            >
-              Model Battle
-            </Link>
-            <Link 
-              to="/evaluations" 
-              className="text-slate-700 hover:text-slate-800 dark:text-slate-500 dark:hover:text-slate-400"
-            >
-              Evaluations
-            </Link>
-            <Link 
-              to="/gallery" 
+            <Link
+              to="/gallery"
               className="text-slate-700 hover:text-slate-800 dark:text-slate-500 dark:hover:text-slate-400"
             >
               Gallery
             </Link>
-            <Link 
-              to="/about" 
+            <Link
+              to="/models"
               className="text-slate-700 hover:text-slate-800 dark:text-slate-500 dark:hover:text-slate-400"
             >
-              About
+              Models
+            </Link>
+            <Link
+              to="/research"
+              className="text-slate-700 hover:text-slate-800 dark:text-slate-500 dark:hover:text-slate-400"
+            >
+              Research
             </Link>
           </div>
         </div>

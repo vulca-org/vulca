@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
-import { IOSSegmentedControl } from '../../components/ios/core/IOSSegmentedControl'
-import type { SegmentItem } from '../../components/ios/core/IOSSegmentedControl'
+import { IOSSegmentedControl } from '@/components/ios'
+import type { SegmentItem } from '@/components/ios'
 
 // Mock framer-motion
 vi.mock('framer-motion', () => ({
@@ -40,7 +40,7 @@ vi.mock('../../components/ios/utils/animations', () => ({
 }))
 
 // Mock EmojiIcon
-vi.mock('../../components/ios/core/EmojiIcon', () => ({
+vi.mock('@/components/ios/core/EmojiIcon', () => ({
   EmojiIcon: ({ category, name, size }: any) => (
     <span data-testid={`emoji-${name}`}>{name}</span>
   ),

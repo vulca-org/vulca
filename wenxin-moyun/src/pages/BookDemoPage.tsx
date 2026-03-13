@@ -312,13 +312,13 @@ export default function BookDemoPage() {
           >
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Want to explore first?</p>
             <div className="flex flex-wrap gap-3">
-              <Link to="/vulca">
+              <Link to="/canvas">
                 <IOSButton variant="secondary" size="sm" className="flex items-center gap-1">
                   Try Public Demo
                   <ArrowRight className="w-4 h-4" />
                 </IOSButton>
               </Link>
-              <Link to="/methodology">
+              <Link to="/research">
                 <IOSButton variant="secondary" size="sm" className="flex items-center gap-1">
                   Read Documentation
                 </IOSButton>

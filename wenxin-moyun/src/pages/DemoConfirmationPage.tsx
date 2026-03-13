@@ -47,19 +47,19 @@ const exploreLinks = [
     icon: FileText,
     title: 'Read the Documentation',
     desc: 'Learn about our 47D evaluation framework',
-    href: '/methodology',
+    href: '/research',
   },
   {
     icon: Users,
-    title: 'View Public Leaderboard',
+    title: 'View Models',
     desc: 'See how top AI models perform',
-    href: '/leaderboard',
+    href: '/models',
   },
   {
     icon: ArrowRight,
-    title: 'Try Public Demo',
-    desc: 'Explore VULCA\'s capabilities',
-    href: '/vulca',
+    title: 'Try Canvas',
+    desc: 'Create cultural art with AI',
+    href: '/canvas',
   },
 ];
 

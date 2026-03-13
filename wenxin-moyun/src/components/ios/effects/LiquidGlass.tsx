@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import type { ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import { shouldUseGlassEffect, detectDevicePerformance } from '../../../utils/devicePerformance';
+import { shouldUseGlassEffect, detectDevicePerformance } from '@/utils/devicePerformance';
 
 interface LiquidGlassProps {
   children: ReactNode;

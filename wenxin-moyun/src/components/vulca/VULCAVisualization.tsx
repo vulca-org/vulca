@@ -24,8 +24,7 @@ import {
   Scatter,
   Cell,
 } from 'recharts';
-import { IOSCard } from '../ios/core/IOSCard';
-import { IOSButton } from '../ios/core/IOSButton';
+import { IOSCard, IOSButton } from '../ios';
 import { ZoomableChartWrapper } from './ZoomableChartWrapper';
 import type {
   ViewMode,

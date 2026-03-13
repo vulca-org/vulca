@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
-import { IOSToggle } from '../../components/ios/core/IOSToggle'
+import { IOSToggle } from '@/components/ios'
 
 // Mock framer-motion to avoid animation complexity in tests
 vi.mock('framer-motion', () => ({

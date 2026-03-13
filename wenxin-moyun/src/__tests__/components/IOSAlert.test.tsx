@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { IOSAlert } from '../../components/ios/core/IOSAlert'
+import { IOSAlert } from '@/components/ios'
 
 describe('IOSAlert', () => {
   it('should not render anything when visible is false', () => {

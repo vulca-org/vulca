@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import { IOSSlider } from '../../components/ios/core/IOSSlider'
+import { IOSSlider } from '@/components/ios'
 
 // Mock framer-motion
 vi.mock('framer-motion', () => ({

@@ -31,7 +31,7 @@ export default function PlaygroundHeader({ status, taskId }: Props) {
         </p>
       </div>
       <div className="flex items-center gap-2">
-        <span className={`text-[11px] font-medium px-2 py-1 rounded-full ${cfg.color}`}>
+        <span data-testid="pipeline-status" className={`text-[11px] font-medium px-2 py-1 rounded-full ${cfg.color}`}>
           {cfg.label}
         </span>
         {taskId && (

@@ -561,7 +561,7 @@ export default function LeaderboardTable({
       {/* 表格 */}
       <div className="leaderboard-table overflow-x-auto ios-glass liquid-glass-container rounded-lg border border-gray-200 dark:border-gray-700">
         <table className="w-full">
-          <caption className="sr-only">AI Model Leaderboard Rankings with scores and metrics</caption>
+          <caption className="sr-only">AI Models Rankings with scores and metrics</caption>
           <thead className="ios-glass backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
             {table.getHeaderGroups().map(headerGroup => (
               <tr key={headerGroup.id}>

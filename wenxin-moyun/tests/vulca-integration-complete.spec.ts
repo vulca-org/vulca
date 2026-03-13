@@ -67,7 +67,7 @@ test.describe('VULCA-Rankings Complete Integration Test', () => {
   // ========== 2. Rankings页面VULCA展示测试 ==========
   test.describe('Rankings Page VULCA Display', () => {
     test('Rankings page should show 47D button for models with VULCA data', async ({ page }) => {
-      await page.goto('/#/leaderboard');
+      await page.goto('/models');
 
       // Wait for leaderboard to load
       await page.waitForSelector('table, .leaderboard-table, [data-testid="leaderboard"], h1, h2', { timeout: 15000 });
@@ -82,7 +82,7 @@ test.describe('VULCA-Rankings Complete Integration Test', () => {
     });
 
     test('Clicking 47D button should expand VULCA visualization', async ({ page }) => {
-      await page.goto('/#/leaderboard');
+      await page.goto('/models');
       await page.waitForSelector('table, .leaderboard-table, [data-testid="leaderboard"], h1, h2', { timeout: 15000 });
 
       // Find first 47D button
@@ -101,7 +101,7 @@ test.describe('VULCA-Rankings Complete Integration Test', () => {
     });
 
     test('VULCA expansion should be toggleable', async ({ page }) => {
-      await page.goto('/#/leaderboard');
+      await page.goto('/models');
       await page.waitForSelector('table, .leaderboard-table, [data-testid="leaderboard"], h1, h2', { timeout: 15000 });
 
       const vulcaButton = page.locator('button:has-text("47D")').first();
@@ -129,7 +129,7 @@ test.describe('VULCA-Rankings Complete Integration Test', () => {
   // ========== 3. VULCA页面动态加载测试 ==========
   test.describe('VULCA Page Dynamic Loading', () => {
     test('VULCA page should load and display models', async ({ page }) => {
-      await page.goto('/#/vulca');
+      await page.goto('/canvas');
 
       // Wait for page to load
       await page.waitForSelector('[class*="vulca"], [class*="VULCA"], h1, h2', { timeout: 15000 });
@@ -140,7 +140,7 @@ test.describe('VULCA-Rankings Complete Integration Test', () => {
     });
 
     test('VULCA page should not be limited to 5 hardcoded models', async ({ page }) => {
-      await page.goto('/#/vulca');
+      await page.goto('/canvas');
       await page.waitForSelector('[class*="vulca"], [class*="VULCA"], h1', { timeout: 15000 });
 
       // Look for model selectors or dropdowns
@@ -187,7 +187,7 @@ test.describe('VULCA-Rankings Complete Integration Test', () => {
     test('Rankings page should load within 3 seconds', async ({ page }) => {
       const start = Date.now();
 
-      await page.goto('/#/leaderboard');
+      await page.goto('/models');
       await page.waitForSelector('table, .leaderboard-table, [data-testid="leaderboard"], h1, h2', { timeout: 15000 });
 
       const loadTime = Date.now() - start;
@@ -226,7 +226,7 @@ test.describe('VULCA-Rankings Complete Integration Test', () => {
       const apiModels = await response.json();
 
       // Visit Rankings page
-      await page.goto('/#/leaderboard');
+      await page.goto('/models');
       await page.waitForSelector('table, .leaderboard-table, [data-testid="leaderboard"], h1, h2', { timeout: 15000 });
 
       // Check if scores displayed match API data
@@ -242,7 +242,7 @@ test.describe('VULCA-Rankings Complete Integration Test', () => {
   test.describe('Error Handling', () => {
     test('Should handle API errors gracefully', async ({ page }) => {
       // Navigate to page even if API is down
-      await page.goto('/#/leaderboard');
+      await page.goto('/models');
 
       // Wait for page to load
       await page.waitForTimeout(3000);

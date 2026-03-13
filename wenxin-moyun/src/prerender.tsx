@@ -9,14 +9,24 @@ import { PrerenderPage } from './prerender/PrerenderPage';
 // Page-specific SEO data
 const pagesSEO: Record<string, { title: string; description: string; keywords: string }> = {
   '/': {
-    title: 'VULCA - Cultural AI Evaluation Platform',
-    description: '47-dimension evaluation across 8 cultural perspectives. Reproducible benchmarking for AI art and culture understanding.',
-    keywords: 'AI evaluation, cultural AI, art evaluation, AI benchmark, VULCA',
+    title: 'VULCA - AI-Native Creation Organism',
+    description: 'Create, critique, and evolve cultural art through multi-agent AI pipelines.',
+    keywords: 'AI creation, cultural AI, art creation, AI benchmark, VULCA',
   },
-  '/product': {
-    title: 'Product - VULCA Cultural AI Evaluation',
-    description: 'Comprehensive 47D evaluation framework with 8 cultural perspectives. Benchmark library, evaluation engine, and explainable diagnostics.',
-    keywords: 'AI product, evaluation framework, cultural benchmark, 47 dimensions',
+  '/canvas': {
+    title: 'Canvas - VULCA',
+    description: 'Unified creation and evaluation workspace with Scout, Draft, Critic, and Queen AI agents.',
+    keywords: 'AI canvas, art creation, AI pipeline, cultural creation',
+  },
+  '/gallery': {
+    title: 'Gallery - VULCA',
+    description: 'Community gallery of AI-created cultural artworks. Like, fork, and evolve creations.',
+    keywords: 'AI gallery, art gallery, community art, cultural art',
+  },
+  '/research': {
+    title: 'Research - VULCA',
+    description: 'L1-L5 cognitive framework, 6D to 47D evaluation, methodology, dataset, and publications.',
+    keywords: 'VULCA research, methodology, dataset, EMNLP 2025, cultural AI',
   },
   '/pricing': {
     title: 'Pricing - VULCA AI Evaluation',
@@ -43,30 +53,10 @@ const pagesSEO: Record<string, { title: string; description: string; keywords: s
     description: 'Our 5-step evaluation process. From benchmark selection to report generation in a clear, repeatable methodology.',
     keywords: 'AI SOP, evaluation process, pilot evaluation, enterprise SOP',
   },
-  '/methodology': {
-    title: 'Methodology - VULCA Evaluation Framework',
-    description: 'L1-L5 cognitive framework, 6D to 47D dimension expansion, and 8 cultural perspectives methodology.',
-    keywords: 'AI methodology, evaluation methodology, cognitive framework, cultural perspectives',
-  },
-  '/dataset': {
-    title: 'Dataset - VULCA Benchmark',
-    description: '130 artworks, 7,410+ annotations. Open benchmark dataset for AI cultural understanding evaluation.',
-    keywords: 'AI dataset, benchmark dataset, art dataset, cultural dataset',
-  },
-  '/papers': {
-    title: 'Papers - VULCA Research',
-    description: 'EMNLP 2025, WiNLP 2025, and arXiv publications. Academic research on AI cultural evaluation.',
-    keywords: 'AI papers, EMNLP, research papers, academic AI',
-  },
-  '/vulca': {
-    title: 'VULCA Demo - Interactive AI Evaluation',
-    description: 'Try the VULCA evaluation framework. Explore 47 dimensions across 8 cultural perspectives.',
-    keywords: 'AI demo, interactive demo, VULCA demo, evaluation demo',
-  },
   '/models': {
-    title: 'AI Models Leaderboard - VULCA',
+    title: 'Models - VULCA',
     description: '42+ AI models evaluated across 47 dimensions. Compare GPT, Claude, Gemini, and more.',
-    keywords: 'AI leaderboard, model comparison, GPT, Claude, AI ranking',
+    keywords: 'AI models, model comparison, GPT, Claude, AI ranking',
   },
   '/solutions': {
     title: 'Solutions - VULCA',
@@ -92,11 +82,6 @@ const pagesSEO: Record<string, { title: string; description: string; keywords: s
     title: 'Customers - VULCA',
     description: 'Trusted by AI labs, researchers, and museums worldwide for cultural AI evaluation.',
     keywords: 'VULCA customers, AI customers, testimonials',
-  },
-  '/pilot': {
-    title: 'Pilot Program - VULCA',
-    description: 'Start your 2-week pilot evaluation. $2,500 for comprehensive AI cultural assessment.',
-    keywords: 'AI pilot, pilot program, evaluation pilot',
   },
   '/exhibitions': {
     title: 'Exhibitions - VULCA',

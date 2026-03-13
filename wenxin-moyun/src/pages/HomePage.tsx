@@ -8,14 +8,11 @@ import {
   Zap,
   Building2,
   GraduationCap,
-  Palette,
   FileText,
-  Globe,
   Layers,
   Target,
   Eye,
   AlertTriangle,
-  TrendingUp,
   Download,
   Terminal,
   Copy,
@@ -23,12 +20,7 @@ import {
   ExternalLink,
   MessageSquare,
   GitFork,
-  Play,
   Sparkles,
-  Code2,
-  ScanEye,
-  Brain,
-  ImageOff,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
@@ -38,7 +30,6 @@ import {
   IOSCard,
   IOSCardHeader,
   IOSCardContent,
-  IOSCardFooter,
   IOSCardGrid,
 } from '../components/ios';
 import { downloadSampleReport } from '../utils/pdfExport';
@@ -109,7 +100,7 @@ function OpenSourceInstall() {
 
       {/* Open source action buttons */}
       <div className="flex flex-wrap items-center justify-center gap-3">
-        <Link to="/vulca">
+        <Link to="/canvas">
           <IOSButton
             variant="secondary"
             size="sm"
@@ -133,68 +124,6 @@ function OpenSourceInstall() {
             GitHub
           </IOSButton>
         </a>
-      </div>
-    </motion.div>
-  );
-}
-
-function TerminalInstallCard() {
-  const [copied, setCopied] = useState(false);
-  const installCmd = 'pip install vulca';
-
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(installCmd);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      const textArea = document.createElement('textarea');
-      textArea.value = installCmd;
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textArea);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
-  return (
-    <motion.div
-      className="rounded-xl overflow-hidden shadow-lg border border-gray-700/50 max-w-md mx-auto"
-      initial={{ opacity: 0, scale: 0.95 }}
-      whileInView={{ opacity: 1, scale: 1 }}
-      viewport={{ once: true, amount: 0.1 }}
-      transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-    >
-      {/* Terminal title bar */}
-      <div className="flex items-center gap-2 px-4 py-2.5 bg-[#1A1714]">
-        <div className="flex gap-1.5">
-          <div className="w-3 h-3 rounded-full bg-red-500/80" />
-          <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
-          <div className="w-3 h-3 rounded-full bg-green-500/80" />
-        </div>
-        <span className="text-xs text-gray-500 font-mono ml-2">terminal</span>
-      </div>
-      {/* Terminal body */}
-      <div className="bg-[#0F0D0B] px-5 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-green-400 font-mono text-sm select-none">$</span>
-          <code className="font-mono text-sm text-gray-100 select-all tracking-wide">
-            {installCmd}
-          </code>
-        </div>
-        <button
-          onClick={handleCopy}
-          className="p-2 rounded-lg hover:bg-white/10 transition-colors text-gray-400 hover:text-white"
-          aria-label="Copy install command"
-        >
-          {copied ? (
-            <Check className="w-4 h-4 text-green-400" />
-          ) : (
-            <Copy className="w-4 h-4" />
-          )}
-        </button>
       </div>
     </motion.div>
   );
@@ -315,7 +244,7 @@ export default function HomePage() {
                 Try It Now
               </IOSButton>
             </Link>
-            <Link to="/vulca">
+            <Link to="/canvas">
               <IOSButton
                 variant="text"
                 size="lg"
@@ -636,287 +565,6 @@ export default function HomePage() {
         </motion.div>
       </section>
 
-      {/* ============= SEE VULCA IN ACTION ============= */}
-      <section className="bg-gradient-to-b from-white to-gray-50 dark:from-gray-900/0 dark:to-gray-900/50 -mx-4 px-4 py-16 rounded-2xl">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.1 }}
-          className="text-center mb-12"
-        >
-          <h2 className="text-h1 mb-4">
-            See VULCA in Action
-          </h2>
-          <p className="text-body max-w-2xl mx-auto">
-            Real scenarios where cultural evaluation prevents costly mistakes
-          </p>
-        </motion.div>
-
-        <motion.div
-          variants={staggerContainer}
-          initial="initial"
-          whileInView="animate"
-          viewport={{ once: true, amount: 0.1 }}
-        >
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {[
-              {
-                icon: <ImageOff className="w-6 h-6 text-red-500" />,
-                title: 'Culture Fail',
-                pain: 'Your AI passed every benchmark, but showed a Buddhist monk eating beef. Cultural blind spots cost real money.',
-                solution: 'VULCA catches cultural taboos before they ship.',
-                gradient: 'from-red-500/20 to-orange-500/20',
-              },
-              {
-                icon: <Target className="w-6 h-6 text-slate-600" />,
-                title: 'One Score Problem',
-                pain: 'A single accuracy number hides critical failures. VULCA breaks evaluation into 47 dimensions across 8 cultural perspectives.',
-                solution: 'Multi-dimensional scoring reveals hidden weaknesses.',
-                gradient: 'from-slate-500/20 to-slate-400/20',
-              },
-              {
-                icon: <ScanEye className="w-6 h-6 text-bronze-500" />,
-                title: 'No-Code Audit',
-                pain: 'Upload an image. Get a cultural audit in 60 seconds. No ML expertise required.',
-                solution: 'Accessible evaluation for every team member.',
-                gradient: 'from-bronze-500/20 to-amber-500/20',
-              },
-              {
-                icon: <Globe className="w-6 h-6 text-green-600" />,
-                title: '8 Perspectives',
-                pain: 'Chinese, Japanese, Islamic, Western... same artwork, completely different evaluations. That\'s the point.',
-                solution: 'True cross-cultural assessment, not Western-default.',
-                gradient: 'from-green-500/20 to-teal-500/20',
-              },
-              {
-                icon: <Brain className="w-6 h-6 text-[#C87F4A]" />,
-                title: 'Self-Evolution',
-                pain: 'VULCA doesn\'t just evaluate \u2014 it learns. Every session makes the system smarter.',
-                solution: 'Frozen models + evolving context = continuous improvement.',
-                gradient: 'from-[#C87F4A]/20 to-[#C65D4D]/20',
-              },
-              {
-                icon: <Code2 className="w-6 h-6 text-emerald-600" />,
-                title: 'API Integration',
-                pain: 'pip install vulca. Three lines of code. Full cultural evaluation pipeline.',
-                solution: 'Developer-first design for seamless CI/CD integration.',
-                gradient: 'from-emerald-500/20 to-cyan-500/20',
-              },
-            ].map((scenario) => (
-              <motion.div key={scenario.title} variants={fadeInUp}>
-                <IOSCard variant="elevated" className="h-full group">
-                  <IOSCardContent className="p-0">
-                    {/* Video placeholder thumbnail */}
-                    <div
-                      className={`relative bg-gradient-to-br ${scenario.gradient} rounded-t-xl h-40 flex items-center justify-center overflow-hidden`}
-                    >
-                      <div
-                        className="absolute inset-0 opacity-30"
-                        style={{
-                          backdropFilter: 'blur(25px) saturate(180%)',
-                          WebkitBackdropFilter: 'blur(25px) saturate(180%)',
-                        }}
-                      />
-                      <motion.div
-                        className="relative z-10 w-14 h-14 bg-white/90 dark:bg-gray-800/90 rounded-full flex items-center justify-center shadow-lg cursor-pointer"
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.95 }}
-                        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                      >
-                        <Play className="w-6 h-6 text-[#334155] dark:text-white ml-0.5" />
-                      </motion.div>
-                      <span className="absolute bottom-2 right-3 text-xs text-gray-600 dark:text-gray-300 bg-white/70 dark:bg-gray-900/70 px-2 py-0.5 rounded-full">
-                        Coming soon
-                      </span>
-                    </div>
-                    {/* Card content */}
-                    <div className="p-5">
-                      <div className="flex items-center gap-2 mb-3">
-                        {scenario.icon}
-                        <h3 className="text-h3 !text-base font-semibold">{scenario.title}</h3>
-                      </div>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 leading-relaxed">
-                        {scenario.pain}
-                      </p>
-                      <p className="text-xs text-[#B0683A] dark:text-bronze-400 font-medium">
-                        {scenario.solution}
-                      </p>
-                    </div>
-                  </IOSCardContent>
-                </IOSCard>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-      </section>
-
-      {/* ============= TERMINAL INSTALL CARD ============= */}
-      <section className="py-12">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.1 }}
-          className="max-w-xl mx-auto text-center"
-        >
-          <h2 className="text-h2 mb-3">Get Started in Seconds</h2>
-          <p className="text-body mb-8 text-gray-500 dark:text-gray-400">
-            Install VULCA and run your first cultural evaluation
-          </p>
-          <TerminalInstallCard />
-          <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link to="/canvas">
-              <IOSButton
-                variant="primary"
-                size="md"
-                className="flex items-center gap-2 !bg-[#B0683A] hover:!bg-[#9A5A32] !border-[#B0683A]"
-              >
-                <Sparkles className="w-4 h-4" />
-                Try It Now
-              </IOSButton>
-            </Link>
-            <a
-              href="https://github.com/yha9806/vulca"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <IOSButton
-                variant="secondary"
-                size="md"
-                className="flex items-center gap-2"
-              >
-                <GitFork className="w-4 h-4" />
-                View on GitHub
-              </IOSButton>
-            </a>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* ============= SOLUTIONS (3 Customer Segments) ============= */}
-      <section className="bg-gray-50 dark:bg-gray-900/50 -mx-4 px-4 py-16 rounded-2xl">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.1 }}
-          className="text-center mb-12"
-        >
-          <h2 className="text-h1 mb-4">
-            Solutions for Every Team
-          </h2>
-          <p className="text-body max-w-2xl mx-auto">
-            Whether you're building, researching, or curating AI — we have you covered
-          </p>
-        </motion.div>
-
-        <motion.div
-          variants={staggerContainer}
-          initial="initial"
-          whileInView="animate"
-          viewport={{ once: true, amount: 0.1 }}
-        >
-          <IOSCardGrid columns={3} gap="lg">
-            {/* AI Labs */}
-            <motion.div variants={fadeInUp}>
-              <IOSCard variant="elevated" interactive className="h-full">
-                <IOSCardHeader
-                  emoji={<Building2 className="w-10 h-10 text-slate-500" />}
-                  title="AI Labs & Companies"
-                  subtitle="Model selection & release"
-                />
-                <IOSCardContent>
-                  <p className="text-gray-600 dark:text-gray-400 mb-4">
-                    Make informed decisions for model selection, fine-tuning validation, and safe public release.
-                  </p>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                      <TrendingUp className="w-4 h-4 text-slate-500" />
-                      Pre-release cultural audits
-                    </div>
-                    <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                      <Target className="w-4 h-4 text-slate-500" />
-                      47D regression tracking
-                    </div>
-                  </div>
-                </IOSCardContent>
-                <IOSCardFooter>
-                  <Link to="/solutions/ai-labs" className="w-full">
-                    <IOSButton variant="secondary" size="sm" className="w-full">
-                      Learn More <ArrowRight className="w-4 h-4 ml-1" />
-                    </IOSButton>
-                  </Link>
-                </IOSCardFooter>
-              </IOSCard>
-            </motion.div>
-
-            {/* Research */}
-            <motion.div variants={fadeInUp}>
-              <IOSCard variant="elevated" interactive className="h-full">
-                <IOSCardHeader
-                  emoji={<GraduationCap className="w-10 h-10 text-bronze-500" />}
-                  title="Research Institutions"
-                  subtitle="Academic benchmarking"
-                />
-                <IOSCardContent>
-                  <p className="text-gray-600 dark:text-gray-400 mb-4">
-                    Publish with confidence using reproducible, citable evaluation methodology.
-                  </p>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                      <FileText className="w-4 h-4 text-bronze-500" />
-                      Citation-ready reports
-                    </div>
-                    <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                      <CheckCircle2 className="w-4 h-4 text-bronze-500" />
-                      Version-controlled reproducibility
-                    </div>
-                  </div>
-                </IOSCardContent>
-                <IOSCardFooter>
-                  <Link to="/solutions/research" className="w-full">
-                    <IOSButton variant="secondary" size="sm" className="w-full">
-                      Learn More <ArrowRight className="w-4 h-4 ml-1" />
-                    </IOSButton>
-                  </Link>
-                </IOSCardFooter>
-              </IOSCard>
-            </motion.div>
-
-            {/* Museums */}
-            <motion.div variants={fadeInUp}>
-              <IOSCard variant="elevated" interactive className="h-full">
-                <IOSCardHeader
-                  emoji={<Palette className="w-10 h-10 text-orange-500" />}
-                  title="Museums & Galleries"
-                  subtitle="Cultural AI curation"
-                />
-                <IOSCardContent>
-                  <p className="text-gray-600 dark:text-gray-400 mb-4">
-                    Deploy AI for cultural interpretation with confidence in cross-cultural accuracy.
-                  </p>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                      <Globe className="w-4 h-4 text-orange-500" />
-                      Multi-cultural validation
-                    </div>
-                    <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                      <Eye className="w-4 h-4 text-orange-500" />
-                      Interpretive AI quality
-                    </div>
-                  </div>
-                </IOSCardContent>
-                <IOSCardFooter>
-                  <Link to="/solutions/museums" className="w-full">
-                    <IOSButton variant="secondary" size="sm" className="w-full">
-                      Learn More <ArrowRight className="w-4 h-4 ml-1" />
-                    </IOSButton>
-                  </Link>
-                </IOSCardFooter>
-              </IOSCard>
-            </motion.div>
-          </IOSCardGrid>
-        </motion.div>
-      </section>
-
       {/* ============= EVIDENCE / STATS ============= */}
       <section>
         <motion.div
@@ -978,182 +626,6 @@ export default function HomePage() {
                 Download Sample Report
               </IOSButton>
             </div>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* ============= SAMPLE REPORT PREVIEW ============= */}
-      <section className="bg-gradient-to-r from-slate-50 to-bronze-500/5 dark:from-slate-900/50 dark:to-bronze-500/10 -mx-4 px-4 py-16 rounded-2xl">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.1 }}
-          className="text-center mb-12"
-        >
-          <h2 className="text-h1 mb-4">
-            What You Get: Sample Report Preview
-          </h2>
-          <p className="text-body max-w-2xl mx-auto">
-            See what a VULCA evaluation delivers — executive insights, dimensional analysis, and cultural bias identification
-          </p>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true, amount: 0.1 }}
-          className="max-w-5xl mx-auto"
-        >
-          <IOSCardGrid columns={3} gap="md">
-            {/* Preview 1: Executive Summary */}
-            <IOSCard variant="elevated" className="h-full">
-              <IOSCardHeader
-                emoji={<FileText className="w-6 h-6 text-slate-600" />}
-                title="Executive Summary"
-                subtitle="High-level findings"
-              />
-              <IOSCardContent>
-                <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 mb-4 min-h-[120px] flex items-center justify-center">
-                  <div className="text-center">
-                    <BarChart3 className="w-12 h-12 text-slate-400 mx-auto mb-2" />
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Overall score + key metrics</p>
-                  </div>
-                </div>
-                <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-green-500" />
-                    Model comparison ranking
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-green-500" />
-                    Top 3 strengths & weaknesses
-                  </li>
-                </ul>
-              </IOSCardContent>
-            </IOSCard>
-
-            {/* Preview 2: 47D Radar Chart */}
-            <IOSCard variant="elevated" className="h-full">
-              <IOSCardHeader
-                emoji={<Target className="w-6 h-6 text-bronze-500" />}
-                title="47D Radar Analysis"
-                subtitle="Dimensional breakdown"
-              />
-              <IOSCardContent>
-                <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 mb-4 min-h-[120px] flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="w-16 h-16 border-4 border-dashed border-bronze-400 rounded-full mx-auto mb-2 flex items-center justify-center">
-                      <Layers className="w-8 h-8 text-bronze-400" />
-                    </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">47-dimension radar chart</p>
-                  </div>
-                </div>
-                <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-green-500" />
-                    6D core → 47D expanded view
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-green-500" />
-                    Dimension group analysis
-                  </li>
-                </ul>
-              </IOSCardContent>
-            </IOSCard>
-
-            {/* Preview 3: Cultural Bias Analysis */}
-            <IOSCard variant="elevated" className="h-full">
-              <IOSCardHeader
-                emoji={<Globe className="w-6 h-6 text-orange-500" />}
-                title="Cultural Bias Analysis"
-                subtitle="8 perspective comparison"
-              />
-              <IOSCardContent>
-                <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 mb-4 min-h-[120px] flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="flex justify-center gap-1 mb-2">
-                      <div className="w-8 h-8 bg-red-200 dark:bg-red-900/30 rounded text-xs flex items-center justify-center">CN</div>
-                      <div className="w-8 h-8 bg-slate-200 dark:bg-slate-900/30 rounded text-xs flex items-center justify-center">US</div>
-                      <div className="w-8 h-8 bg-green-200 dark:bg-green-900/30 rounded text-xs flex items-center justify-center">EU</div>
-                    </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Cross-cultural variance</p>
-                  </div>
-                </div>
-                <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-green-500" />
-                    East vs West perspective gaps
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-green-500" />
-                    Risk flagging with evidence
-                  </li>
-                </ul>
-              </IOSCardContent>
-            </IOSCard>
-          </IOSCardGrid>
-
-          {/* Download CTA */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true, amount: 0.1 }}
-            className="text-center mt-10"
-          >
-            <IOSButton
-              variant="primary"
-              size="lg"
-              className="inline-flex items-center gap-2"
-              onClick={downloadSampleReport}
-            >
-              <Download className="w-5 h-5" />
-              Download Sample Report (PDF)
-            </IOSButton>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">
-              Full 47D evaluation report with evidence samples and recommendations
-            </p>
-          </motion.div>
-        </motion.div>
-      </section>
-
-      {/* ============= TRUST TEASER ============= */}
-      <section className="bg-gray-900 dark:bg-gray-800 text-white -mx-4 px-4 py-12 rounded-2xl">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.1 }}
-          className="flex flex-col md:flex-row items-center justify-between gap-8"
-        >
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center">
-              <Shield className="w-6 h-6 text-green-400" />
-            </div>
-            <div>
-              <h3 className="text-h3 !text-white">Trust by Default</h3>
-              <p className="text-gray-400">
-                Enterprise-grade security, version control, and audit trails
-              </p>
-            </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <Link to="/trust">
-              <IOSButton variant="secondary" size="md" className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white border-white/20">
-                Security & Compliance
-                <ArrowRight className="w-4 h-4" />
-              </IOSButton>
-            </Link>
-            <Link to="/data-ethics">
-              <IOSButton variant="text" size="md" className="flex items-center gap-2 text-gray-300 hover:text-white">
-                Data & Ethics
-                <ArrowRight className="w-4 h-4" />
-              </IOSButton>
-            </Link>
-            <Link to="/sop">
-              <IOSButton variant="text" size="md" className="flex items-center gap-2 text-gray-300 hover:text-white">
-                View Our SOP
-                <ArrowRight className="w-4 h-4" />
-              </IOSButton>
-            </Link>
           </div>
         </motion.div>
       </section>

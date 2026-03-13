@@ -1,15 +1,15 @@
 export const TEST_USERS = {
-  valid: { 
-    username: 'demo', 
+  valid: {
+    username: 'demo',
     password: 'demo123',
     displayName: 'Demo User'
   },
-  admin: { 
-    username: 'admin', 
+  admin: {
+    username: 'admin',
     password: 'admin123',
     displayName: 'Admin User'
   },
-  guest: { 
+  guest: {
     id: 'test-guest-001',
     dailyLimit: 3
   },
@@ -20,13 +20,13 @@ export const TEST_USERS = {
 };
 
 export const TEST_MODELS = {
-  model1: { 
-    id: 'gpt-4', 
+  model1: {
+    id: 'gpt-4',
     name: 'GPT-4',
     description: '最新的GPT-4模型，具有强大的创作能力'
   },
-  model2: { 
-    id: 'claude-3', 
+  model2: {
+    id: 'claude-3',
     name: 'Claude 3',
     description: 'Anthropic的Claude 3模型'
   },
@@ -65,9 +65,10 @@ export const TEST_TIMEOUTS = {
 export const TEST_URLS = {
   home: '/',
   login: '/login',
-  leaderboard: '/leaderboard',
-  battle: '/battle',
-  evaluations: '/evaluations',
-  vulca: '/vulca',
-  about: '/about'
+  canvas: '/canvas',
+  gallery: '/gallery',
+  models: '/models',
+  research: '/research',
+  skills: '/skills',
+  admin: '/admin',
 };

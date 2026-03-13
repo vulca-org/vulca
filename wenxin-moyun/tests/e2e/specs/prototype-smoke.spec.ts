@@ -2,8 +2,8 @@
  * Unit 5: Prototype page smoke test.
  *
  * Minimal Playwright test covering the Prototype page rendering.
- * /prototype redirects to /canvas (PrototypePage). Verifies all 5 mode
- * buttons, basic view switching, and page responsiveness.
+ * /prototype redirects to /canvas (PrototypePage). Verifies all 3 mode
+ * buttons (Edit, Run, Traditions), basic view switching, and page responsiveness.
  * Frontend-only — no backend API calls needed.
  */
 
@@ -30,8 +30,8 @@ test.describe('Prototype Page Smoke', () => {
     expect(textContent).toBeTruthy();
   });
 
-  test('all 5 mode buttons are visible', async ({ page }) => {
-    const modes = ['Edit', 'Run', 'Build', 'Explore', 'Compare'];
+  test('all 3 mode buttons are visible', async ({ page }) => {
+    const modes = ['Edit', 'Run', 'Traditions'];
     for (const mode of modes) {
       const btn = page.locator(`button:has-text("${mode}")`).first();
       await expect(btn).toBeVisible({ timeout: 10000 });
@@ -39,7 +39,7 @@ test.describe('Prototype Page Smoke', () => {
   });
 
   test('clicking mode buttons switches view without crash', async ({ page }) => {
-    const modes = ['Edit', 'Run', 'Build', 'Explore', 'Compare'];
+    const modes = ['Edit', 'Run', 'Traditions'];
     for (const mode of modes) {
       const btn = page.locator(`button:has-text("${mode}")`).first();
       await btn.click();
@@ -55,44 +55,21 @@ test.describe('Prototype Page Smoke', () => {
     const editBtn = page.locator('button:has-text("Edit")').first();
     await editBtn.click();
     await page.waitForTimeout(500);
-    // Edit mode shows PipelineEditor or config elements — verify the mode
-    // button is in active state (has blue styling) and page has content
     const body = page.locator('body');
     await expect(body).toBeVisible();
     const textContent = await body.textContent();
-    // Should have some pipeline/editor/config related content or at minimum the mode buttons
     expect(textContent).toBeTruthy();
     expect(textContent!.length).toBeGreaterThan(50);
   });
 
-  test('Build mode renders content', async ({ page }) => {
-    const buildBtn = page.locator('button:has-text("Build")').first();
-    await buildBtn.click();
+  test('Traditions mode renders Browse/Create sub-tabs', async ({ page }) => {
+    const traditionsBtn = page.locator('button:has-text("Traditions")').first();
+    await traditionsBtn.click();
     await page.waitForTimeout(500);
-    // Build mode should render TraditionBuilder — just verify page is responsive
+    // Traditions mode should show Browse/Create segmented control
     const body = page.locator('body');
     await expect(body).toBeVisible();
     const textContent = await body.textContent();
     expect(textContent).toBeTruthy();
-  });
-
-  test('Explore mode renders content', async ({ page }) => {
-    const exploreBtn = page.locator('button:has-text("Explore")').first();
-    await exploreBtn.click();
-    await page.waitForTimeout(500);
-    // Explore mode should render TraditionExplorer — verify page is responsive
-    const body = page.locator('body');
-    await expect(body).toBeVisible();
-    const textContent = await body.textContent();
-    expect(textContent).toBeTruthy();
-  });
-
-  test('Compare mode renders content', async ({ page }) => {
-    const compareBtn = page.locator('button:has-text("Compare")').first();
-    await compareBtn.click();
-    await page.waitForTimeout(500);
-    // Compare mode should render ComparePanel — verify page is responsive
-    const body = page.locator('body');
-    await expect(body).toBeVisible();
   });
 });

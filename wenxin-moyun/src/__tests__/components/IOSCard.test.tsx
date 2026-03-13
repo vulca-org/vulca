@@ -5,7 +5,7 @@ import {
   IOSCardHeader,
   IOSCardContent,
   IOSCardFooter,
-} from '../../components/ios/core/IOSCard'
+} from '@/components/ios'
 
 // Mock framer-motion
 vi.mock('framer-motion', () => ({

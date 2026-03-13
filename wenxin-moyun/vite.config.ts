@@ -15,23 +15,16 @@ export default defineConfig(({ command }) => ({
       prerenderScript: path.resolve(__dirname, 'src/prerender.tsx'),
       additionalPrerenderRoutes: [
         '/',
-        '/product',
+        '/canvas',
+        '/gallery',
+        '/models',
+        '/research',
+        '/skills',
         '/pricing',
         '/demo',
         '/trust',
-        '/data-ethics',
-        '/sop',
-        '/methodology',
-        '/dataset',
-        '/papers',
-        '/vulca',
-        '/models',
         '/solutions',
-        '/solutions/ai-labs',
-        '/solutions/research',
-        '/solutions/museums',
         '/customers',
-        '/pilot',
         '/exhibitions',
       ],
     }),
@@ -135,8 +128,10 @@ export default defineConfig(({ command }) => ({
   
   // Module resolution optimization - 关键配置解决 CI 构建问题
   resolve: {
-    // 注意: 不使用 alias 直接指向目录，这会导致 Vite 尝试加载目录作为文件
-    // 让 Vite 自己解析模块入口点
+    // Path alias — matches tsconfig.app.json paths
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+    },
     // Preserve symlinks for better module resolution
     preserveSymlinks: false,
     // Optimize extension resolution

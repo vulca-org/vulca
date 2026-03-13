@@ -6,6 +6,6 @@
  * @module components/trustlayer
  */
 
-export { CiteModal, default as CiteModalDefault } from './CiteModal';
-export { DimensionDrawer, default as DimensionDrawerDefault } from './DimensionDrawer';
-export { ProvenanceCard, default as ProvenanceCardDefault } from './ProvenanceCard';
+export { CiteModal } from './CiteModal';
+export { DimensionDrawer } from './DimensionDrawer';
+export { ProvenanceCard } from './ProvenanceCard';

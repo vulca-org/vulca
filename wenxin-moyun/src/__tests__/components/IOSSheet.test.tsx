@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
-import { IOSSheet } from '../../components/ios/core/IOSSheet'
+import { IOSSheet } from '@/components/ios'
 
 // Mock framer-motion
 vi.mock('framer-motion', () => ({

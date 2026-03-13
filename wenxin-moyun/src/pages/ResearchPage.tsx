@@ -12,8 +12,8 @@ import React, { Suspense, lazy, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FlaskConical } from 'lucide-react';
-import { IOSSegmentedControl } from '../components/ios/core/IOSSegmentedControl';
-import type { SegmentItem } from '../components/ios/core/IOSSegmentedControl';
+import { IOSSegmentedControl } from '../components/ios';
+import type { SegmentItem } from '../components/ios';
 
 const MethodologyPage = lazy(() => import('./MethodologyPage'));
 const DatasetPage = lazy(() => import('./DatasetPage'));

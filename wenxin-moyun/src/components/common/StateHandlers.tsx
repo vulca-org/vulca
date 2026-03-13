@@ -14,7 +14,7 @@ import {
   Inbox,
   ImageOff
 } from 'lucide-react';
-import { IOSButton } from '../ios/core/IOSButton';
+import { IOSButton } from '../ios';
 
 // ============================================
 // Empty State Component

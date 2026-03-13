@@ -4,7 +4,7 @@
  * Navigation tabs for exhibition chapters
  */
 
-import { IOSSegmentedControl } from '../ios/core/IOSSegmentedControl';
+import { IOSSegmentedControl } from '../ios';
 import type { Chapter } from '../../types/exhibition';
 
 interface ChapterNavProps {

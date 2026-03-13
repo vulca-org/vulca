@@ -37,7 +37,7 @@ const plans = [
     icon: Sparkles,
     color: 'gray',
     cta: 'Try Public Demo',
-    ctaLink: '/vulca',
+    ctaLink: '/canvas',
     ctaVariant: 'secondary' as const,
     deliverables: ['Public demo access', '6D overview only'],
     features: [

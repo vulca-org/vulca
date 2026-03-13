@@ -329,7 +329,7 @@ export default function SOPPage() {
         </IOSCardGrid>
 
         <div className="text-center mt-8">
-          <Link to="/pilot">
+          <Link to="/demo">
             <IOSButton variant="primary" size="lg" className="flex items-center gap-2">
               <Calendar className="w-5 h-5" />
               Start Pilot Evaluation

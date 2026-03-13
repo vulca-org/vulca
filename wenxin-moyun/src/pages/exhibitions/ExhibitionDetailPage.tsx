@@ -9,8 +9,7 @@ import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useExhibitions } from '../../hooks/exhibitions';
 import { ArtworkCard, ChapterPills } from '../../components/exhibition';
-import { IOSButton } from '../../components/ios/core/IOSButton';
-import { EmojiIcon } from '../../components/ios/core/EmojiIcon';
+import { IOSButton, EmojiIcon } from '../../components/ios';
 
 export function ExhibitionDetailPage() {
   const { id } = useParams<{ id: string }>();

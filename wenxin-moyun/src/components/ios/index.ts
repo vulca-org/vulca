@@ -39,9 +39,7 @@ export type {
 } from './core/IOSFilterPanel';
 
 export { IOSAlert } from './core/IOSAlert';
-export { showIOSAlert } from './core/showIOSAlert';
 export type { IOSAlertProps, IOSAlertAction } from './core/IOSAlert';
-export type { ShowAlertOptions } from './core/showIOSAlert';
 
 export { IOSTabBar } from './core/IOSTabBar';
 export type { IOSTabBarProps, TabBarItem } from './core/IOSTabBar';
@@ -53,21 +51,6 @@ export { IOSSheet } from './core/IOSSheet';
 export { useIOSSheet } from './core/useIOSSheet';
 export type { IOSSheetProps } from './core/IOSSheet';
 
-export { IOSActionSheet } from './core/IOSActionSheet';
-export { useIOSActionSheet } from './core/useIOSActionSheet';
-export type { IOSActionSheetProps, ActionSheetItem } from './core/IOSActionSheet';
-
-export { IOSContextMenu } from './core/IOSContextMenu';
-export type { IOSContextMenuProps, ContextMenuItem } from './core/IOSContextMenu';
-
-export { IOSPopupButton } from './core/IOSPopupButton';
-export type { IOSPopupButtonProps, PopupMenuItem } from './core/IOSPopupButton';
-
-export { IOSNotificationList } from './core/IOSNotificationList';
-export type { IOSNotificationListProps, NotificationItem, NotificationGroup } from './core/IOSNotificationList';
-
-export { LiquidGlassBackground } from './core/LiquidGlassBackground';
-export type { LiquidGlassBackgroundProps } from './core/LiquidGlassBackground';
 
 // Utils
 export { 

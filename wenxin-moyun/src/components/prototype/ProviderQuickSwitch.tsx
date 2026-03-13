@@ -6,7 +6,7 @@
  */
 
 import { IOSSegmentedControl } from '../ios';
-import type { SegmentItem } from '../ios/core/IOSSegmentedControl';
+import type { SegmentItem } from '../ios';
 
 const PROVIDER_SEGMENTS: SegmentItem[] = [
   { id: 'mock', label: 'Mock', value: 'mock' },

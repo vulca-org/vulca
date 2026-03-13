@@ -6,9 +6,7 @@
 
 import { Link } from 'react-router-dom';
 import type { Exhibition } from '../../types/exhibition';
-import { IOSCard, IOSCardHeader, IOSCardContent, IOSCardFooter } from '../ios/core/IOSCard';
-import { IOSButton } from '../ios/core/IOSButton';
-import { EmojiIcon } from '../ios/core/EmojiIcon';
+import { IOSCard, IOSCardHeader, IOSCardContent, IOSCardFooter, IOSButton, EmojiIcon } from '../ios';
 
 interface ExhibitionCardProps {
   exhibition: Exhibition;

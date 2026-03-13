@@ -18,7 +18,7 @@ import {
   GitBranch,
   FileCode,
 } from 'lucide-react';
-import { IOSCard } from '../ios/core/IOSCard';
+import { IOSCard } from '../ios';
 
 interface ProvenanceCardProps {
   /** Data source name */

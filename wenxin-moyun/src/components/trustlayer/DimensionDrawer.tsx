@@ -10,8 +10,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Layers, BookOpen, Scale, TrendingUp, Palette, Link2 } from 'lucide-react';
-import { IOSSheet } from '../ios/core/IOSSheet';
-import { IOSCard } from '../ios/core/IOSCard';
+import { IOSSheet, IOSCard } from '../ios';
 import {
   dimensionsService,
   type Dimension6D,
@@ -304,7 +303,7 @@ export const DimensionDrawer: React.FC<DimensionDrawerProps> = ({
             This dimension is defined in the VULCA framework (EMNLP 2025 Findings).
             See the{' '}
             <a
-              href="#/papers"
+              href="#/research"
               className="text-slate-600 hover:underline"
               onClick={onClose}
             >

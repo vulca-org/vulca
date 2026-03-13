@@ -6,7 +6,7 @@
 
 import { Link } from 'react-router-dom';
 import type { Artwork } from '../../types/exhibition';
-import { IOSCard, IOSCardContent } from '../ios/core/IOSCard';
+import { IOSCard, IOSCardContent } from '../ios';
 
 interface ArtworkCardProps {
   artwork: Artwork;

@@ -22,8 +22,7 @@ import {
   Award,
   BookOpen,
 } from 'lucide-react';
-import { IOSCard, IOSCardContent } from '../components/ios/core/IOSCard';
-import { IOSButton } from '../components/ios/core/IOSButton';
+import { IOSCard, IOSCardContent, IOSButton } from '../components/ios';
 import { CiteModal, ProvenanceCard } from '../components/trustlayer';
 import type { Citation } from '../utils/trustedExport';
 import { VULCA_VERSION } from '../config/version';

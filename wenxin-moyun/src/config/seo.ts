@@ -27,14 +27,34 @@ export const DEFAULT_SEO: PageSEO = {
 
 export const PAGE_SEO: Record<string, PageSEO> = {
   '/': {
-    title: 'VULCA - Cultural AI Evaluation Platform',
-    description: 'Evaluate AI models across 47 dimensions and 8 cultural perspectives. Reproducible benchmarks for cultural AI understanding.',
-    keywords: ['AI evaluation', 'cultural AI', 'VLM benchmark', 'VULCA framework'],
+    title: 'VULCA - AI-Native Creation Organism',
+    description: 'Create, critique, and evolve cultural art through multi-agent AI pipelines. Canvas-first creation with Scout, Draft, Critic, and Queen agents.',
+    keywords: ['AI creation', 'cultural AI', 'art creation', 'VULCA', 'AI pipeline'],
   },
-  '/product': {
-    title: 'Product - VULCA',
-    description: 'VULCA evaluation framework: 47-dimensional analysis with 8 cultural perspectives for comprehensive AI assessment.',
-    keywords: ['VULCA product', 'AI evaluation framework', '47 dimensions', 'cultural perspectives'],
+  '/canvas': {
+    title: 'Canvas - VULCA',
+    description: 'Unified creation and evaluation workspace. Create cultural art with AI agents — Scout, Draft, Critic, and Queen collaborate in real-time.',
+    keywords: ['AI canvas', 'art creation', 'AI pipeline', 'cultural creation', 'VULCA canvas'],
+  },
+  '/gallery': {
+    title: 'Gallery - VULCA',
+    description: 'Community gallery of AI-created cultural artworks. Like, fork, and evolve creations from the VULCA community.',
+    keywords: ['AI gallery', 'art gallery', 'community art', 'cultural art', 'VULCA gallery'],
+  },
+  '/research': {
+    title: 'Research - VULCA',
+    description: 'VULCA research: L1-L5 cognitive framework, 6D to 47D evaluation, 8 cultural perspectives, methodology, dataset, and publications.',
+    keywords: ['VULCA research', 'methodology', 'dataset', 'EMNLP 2025', 'cultural AI evaluation'],
+  },
+  '/models': {
+    title: 'Models - VULCA',
+    description: 'AI models evaluated on cultural understanding. Compare GPT-4V, Claude, Gemini and more across 47 dimensions.',
+    keywords: ['AI models', 'model comparison', 'VLM ranking', 'benchmark results'],
+  },
+  '/skills': {
+    title: 'Skills - VULCA',
+    description: 'Browse and create evaluation skills for the VULCA platform. Extend the creation pipeline with custom skill executors.',
+    keywords: ['VULCA skills', 'skill marketplace', 'evaluation skills', 'custom skills'],
   },
   '/pricing': {
     title: 'Pricing - VULCA',
@@ -71,31 +91,6 @@ export const PAGE_SEO: Record<string, PageSEO> = {
     description: 'Data security, privacy, audit trails, and compliance information for VULCA evaluation platform.',
     keywords: ['data security', 'privacy', 'compliance', 'audit trail'],
   },
-  '/methodology': {
-    title: 'Methodology - VULCA',
-    description: 'VULCA evaluation methodology: L1-L5 layers, 6D to 47D expansion, 8 cultural perspectives, and scoring rubrics.',
-    keywords: ['methodology', 'evaluation framework', 'cultural dimensions', 'scoring rubric'],
-  },
-  '/dataset': {
-    title: 'Dataset - VULCA',
-    description: 'VULCA-BENCH: 7,410 image-text pairs, 8 cultures, 225 dimensions. Download and citation information.',
-    keywords: ['VULCA dataset', 'benchmark data', 'cultural AI data', 'VLM training'],
-  },
-  '/papers': {
-    title: 'Papers - VULCA',
-    description: 'Academic publications: EMNLP 2025 Findings, WiNLP 2025, and VULCA-BENCH dataset paper.',
-    keywords: ['VULCA papers', 'EMNLP 2025', 'academic research', 'VLM evaluation'],
-  },
-  '/models': {
-    title: 'Model Leaderboard - VULCA',
-    description: 'Public leaderboard of AI models evaluated on cultural understanding. Compare GPT-4V, Claude, Gemini and more.',
-    keywords: ['AI leaderboard', 'model comparison', 'VLM ranking', 'benchmark results'],
-  },
-  '/vulca': {
-    title: 'VULCA Demo - Cultural AI Evaluation',
-    description: 'Interactive demo of VULCA 47-dimensional evaluation. Compare models across cultural perspectives.',
-    keywords: ['VULCA demo', 'interactive evaluation', 'model comparison', 'cultural AI'],
-  },
   '/exhibitions': {
     title: 'Exhibitions - VULCA',
     description: 'AI-generated art critiques and multi-persona dialogues. Explore cultural interpretations of contemporary art.',
@@ -105,16 +100,6 @@ export const PAGE_SEO: Record<string, PageSEO> = {
     title: 'Book a Demo - VULCA',
     description: 'Schedule a demo of VULCA evaluation platform. Get personalized assessment for your AI models.',
     keywords: ['book demo', 'VULCA demo', 'AI evaluation demo', 'contact sales'],
-  },
-  '/pilot': {
-    title: 'Request Pilot Evaluation - VULCA',
-    description: 'Get a comprehensive VULCA pilot evaluation report for your AI model. 47-dimension cultural analysis with cross-cultural perspectives delivered in 2 weeks.',
-    keywords: ['VULCA pilot', 'AI evaluation report', 'cultural analysis', 'model evaluation'],
-  },
-  '/changelog': {
-    title: 'Changelog - VULCA',
-    description: 'See what\'s new in VULCA. Latest updates, features, improvements, and bug fixes for the AI cultural evaluation platform.',
-    keywords: ['VULCA changelog', 'release notes', 'updates', 'new features'],
   },
 };
 
@@ -222,7 +207,7 @@ export function getDatasetStructuredData(): object {
     '@type': 'Dataset',
     name: 'VULCA-BENCH',
     description: 'A Multicultural Vision-Language Benchmark for Culturally Grounded Art Understanding',
-    url: 'https://vulcaart.art/dataset',
+    url: 'https://vulcaart.art/research',
     license: 'https://creativecommons.org/licenses/by-nc/4.0/',
     creator: {
       '@type': 'Organization',

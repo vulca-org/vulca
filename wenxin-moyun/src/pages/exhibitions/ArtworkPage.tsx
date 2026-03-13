@@ -8,8 +8,7 @@ import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useExhibitions } from '../../hooks/exhibitions';
 import { ArtworkDetail, DialogueViewer, ArtworkCard, CritiqueViewer } from '../../components/exhibition';
-import { IOSButton } from '../../components/ios/core/IOSButton';
-import { EmojiIcon } from '../../components/ios/core/EmojiIcon';
+import { IOSButton, EmojiIcon } from '../../components/ios';
 
 export function ArtworkPage() {
   const { id: exhibitionId, artworkId } = useParams<{ id: string; artworkId: string }>();

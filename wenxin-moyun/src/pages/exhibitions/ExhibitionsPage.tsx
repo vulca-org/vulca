@@ -12,9 +12,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Image, ArrowRight, Calendar, CheckCircle, Globe, MessageSquare, Award, Sparkles } from 'lucide-react';
 import { ALL_EXHIBITIONS } from '../../data/exhibitions';
-import { EmojiIcon } from '../../components/ios/core/EmojiIcon';
-import { IOSCard, IOSCardContent, IOSCardFooter } from '../../components/ios/core/IOSCard';
-import { IOSButton } from '../../components/ios/core/IOSButton';
+import { EmojiIcon, IOSCard, IOSCardContent, IOSCardFooter, IOSButton } from '../../components/ios';
 import { StateHandler } from '../../components/common/StateHandlers';
 
 export function ExhibitionsPage() {
