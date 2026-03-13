@@ -65,7 +65,7 @@
     }
   },
   "version": 2,
-  "evolutions": 140,
+  "evolutions": 158,
   "cultures": {
     "chinese_xieyi_l5_emphasis": {
       "name": "chinese_xieyi_l5_emphasis",
@@ -136,31 +136,36 @@
     },
     "japanese_wabi_sabi_tradition_specificity": {
       "name": "japanese_wabi_sabi_tradition_specificity",
-      "description": "Emerged from 3 sessions in japanese_wabi_sabi tradition",
+      "description": "Emerged from 4 sessions in japanese_wabi_sabi tradition",
       "key_principles": [
         "High tradition_specificity"
       ],
       "l_focus": {
-        "tradition_specificity": 0.8,
+        "avg_score": 0.763,
+        "l5_emphasis": 0.7318,
+        "dimension_variance": 0.015,
+        "l4_emphasis": 0.2356,
         "risk_level": 0.0,
-        "avg_score": 0.754,
-        "cultural_depth": 0.7767,
-        "l5_emphasis": 0.6615
+        "tradition_specificity": 0.8,
+        "cultural_depth": 0.7625
       },
       "weights": {
-        "tradition_specificity": 0.8,
+        "avg_score": 0.763,
+        "l5_emphasis": 0.7318,
+        "dimension_variance": 0.015,
+        "l4_emphasis": 0.2356,
         "risk_level": 0.0,
-        "avg_score": 0.754,
-        "cultural_depth": 0.7767,
-        "l5_emphasis": 0.6615
+        "tradition_specificity": 0.8,
+        "cultural_depth": 0.7625
       },
       "reference_sessions": [
         "seed-002",
         "seed-011",
-        "seed-015"
+        "seed-015",
+        "api-14ce443b"
       ],
-      "emerged_at": 1773333317.1276615,
-      "confidence": 0.15
+      "emerged_at": 1773442007.781143,
+      "confidence": 0.2
     },
     "cross_african_ubuntu+chinese_xieyi+default_l5_emphasis": {
       "name": "cross_african_ubuntu+chinese_xieyi+default_l5_emphasis",
@@ -2266,27 +2271,27 @@
     },
     "default_l5_emphasis": {
       "name": "default_l5_emphasis",
-      "description": "Emerged from 27 sessions in default tradition",
+      "description": "Emerged from 29 sessions in default tradition",
       "key_principles": [
         "High l5_emphasis"
       ],
       "l_focus": {
-        "tradition_specificity": 0.3,
+        "avg_score": 0.8067,
         "risk_level": 0.0,
-        "avg_score": 0.8076,
-        "dimension_variance": 0.0872,
-        "cultural_depth": 0.7682,
-        "l4_emphasis": 0.8626,
-        "l5_emphasis": 0.8919
+        "tradition_specificity": 0.3,
+        "dimension_variance": 0.0887,
+        "cultural_depth": 0.7665,
+        "l4_emphasis": 0.8721,
+        "l5_emphasis": 0.8832
       },
       "weights": {
-        "tradition_specificity": 0.3,
+        "avg_score": 0.8067,
         "risk_level": 0.0,
-        "avg_score": 0.8076,
-        "dimension_variance": 0.0872,
-        "cultural_depth": 0.7682,
-        "l4_emphasis": 0.8626,
-        "l5_emphasis": 0.8919
+        "tradition_specificity": 0.3,
+        "dimension_variance": 0.0887,
+        "cultural_depth": 0.7665,
+        "l4_emphasis": 0.8721,
+        "l5_emphasis": 0.8832
       },
       "reference_sessions": [
         "seed-009",
@@ -2300,7 +2305,7 @@
         "api-e2a32d0d",
         "api-72b6d52a"
       ],
-      "emerged_at": 1773333319.4430692,
+      "emerged_at": 1773411549.2911696,
       "confidence": 1.0
     },
     "cross_Default+african_ubuntu+chinese_xieyi_l5_emphasis": {
@@ -2344,27 +2349,27 @@
     },
     "chinese_xieyi_l4_emphasis": {
       "name": "chinese_xieyi_l4_emphasis",
-      "description": "Emerged from 242 sessions in chinese_xieyi tradition",
+      "description": "Emerged from 303 sessions in chinese_xieyi tradition",
       "key_principles": [
         "High l4_emphasis"
       ],
       "l_focus": {
-        "tradition_specificity": 0.8,
+        "avg_score": 0.7966,
+        "l5_emphasis": 0.8103,
+        "dimension_variance": 0.1287,
+        "l4_emphasis": 0.9256,
         "risk_level": 0.0,
-        "avg_score": 0.8149,
-        "dimension_variance": 0.1169,
-        "cultural_depth": 0.7542,
-        "l4_emphasis": 0.9077,
-        "l5_emphasis": 0.8485
+        "tradition_specificity": 0.8,
+        "cultural_depth": 0.7336
       },
       "weights": {
-        "tradition_specificity": 0.8,
+        "avg_score": 0.7966,
+        "l5_emphasis": 0.8103,
+        "dimension_variance": 0.1287,
+        "l4_emphasis": 0.9256,
         "risk_level": 0.0,
-        "avg_score": 0.8149,
-        "dimension_variance": 0.1169,
-        "cultural_depth": 0.7542,
-        "l4_emphasis": 0.9077,
-        "l5_emphasis": 0.8485
+        "tradition_specificity": 0.8,
+        "cultural_depth": 0.7336
       },
       "reference_sessions": [
         "seed-001",
@@ -2378,7 +2383,7 @@
         "api-1b355515",
         "api-87cf832e"
       ],
-      "emerged_at": 1773333314.7355638,
+      "emerged_at": 1773442005.4146469,
       "confidence": 1.0
     },
     "spirit_of_xieyi_ink": {
@@ -2920,27 +2925,27 @@
     },
     "cross_Default+african_ubuntu+chinese_xieyi_l4_emphasis": {
       "name": "cross_Default+african_ubuntu+chinese_xieyi_l4_emphasis",
-      "description": "Emerged from 281 sessions spanning Default, african_ubuntu, chinese_xieyi, default, european_renaissance, indian_rasa, islamic_geometric, japanese_traditional, japanese_wabi_sabi, korean_dancheong, persian_miniature traditions",
+      "description": "Emerged from 354 sessions spanning Default, african_ubuntu, chinese_xieyi, default, european_renaissance, indian, indian_rasa, islamic, islamic_geometric, japanese, japanese_traditional, japanese_wabi_sabi, korean, korean_dancheong, persian_miniature, western traditions",
       "key_principles": [
         "High l4_emphasis"
       ],
       "l_focus": {
-        "tradition_specificity": 0.752,
+        "avg_score": 0.7951,
+        "l5_emphasis": 0.8178,
+        "dimension_variance": 0.1207,
+        "l4_emphasis": 0.8939,
         "risk_level": 0.0,
-        "avg_score": 0.8114,
-        "dimension_variance": 0.1097,
-        "cultural_depth": 0.7541,
-        "l4_emphasis": 0.87,
-        "l5_emphasis": 0.8508
+        "tradition_specificity": 0.7534,
+        "cultural_depth": 0.7343
       },
       "weights": {
-        "tradition_specificity": 0.752,
+        "avg_score": 0.7951,
+        "l5_emphasis": 0.8178,
+        "dimension_variance": 0.1207,
+        "l4_emphasis": 0.8939,
         "risk_level": 0.0,
-        "avg_score": 0.8114,
-        "dimension_variance": 0.1097,
-        "cultural_depth": 0.7541,
-        "l4_emphasis": 0.87,
-        "l5_emphasis": 0.8508
+        "tradition_specificity": 0.7534,
+        "cultural_depth": 0.7343
       },
       "reference_sessions": [
         "seed-001",
@@ -2954,7 +2959,7 @@
         "seed-009",
         "seed-010"
       ],
-      "emerged_at": 1773333322.022554,
+      "emerged_at": 1773442012.4994788,
       "confidence": 1.0
     },
     "spirit_ink_contemplation": {
@@ -3594,382 +3599,470 @@
       ],
       "emerged_at": 1773350997.3961883,
       "confidence": 1.0
+    },
+    "ink_spirit_contemplation": {
+      "name": "ink_spirit_contemplation",
+      "description": "Captures the expressive and spiritual essence of Chinese Xieyi ink wash painting, focusing on the inner vitality of nature and the artist's contemplative spirit.",
+      "key_principles": [
+        "Essence over Form: Prioritizing the spirit (qi) and inner vitality of the subject over realistic depiction.",
+        "Spiritual Resonance: Conveying deep philosophical meaning and emotional depth through natural motifs.",
+        "Spontaneous Expression: Utilizing fluid ink strokes and washes to reflect the artist's immediate feeling and meditative state.",
+        "Nature as Metaphor: Employing natural elements as symbols for human virtues, philosophical concepts, and the cosmic order."
+      ],
+      "l_focus": {
+        "L1": 0.7,
+        "L3": 0.65
+      },
+      "weights": {
+        "tradition_specificity": 0.8,
+        "dimension_variance": 0.1206,
+        "cultural_depth": 0.7473,
+        "l4_emphasis": 0.9139,
+        "l5_emphasis": 0.836,
+        "avg_score": 0.8087,
+        "risk_level": 0.0
+      },
+      "reference_sessions": [
+        "seed-001",
+        "seed-010",
+        "seed-013",
+        "api-2e6e7847",
+        "api-ee3cd490",
+        "api-d3362ccb",
+        "api-73d4d7bf",
+        "api-b7762fb0",
+        "api-1b355515",
+        "api-87cf832e"
+      ],
+      "emerged_at": 1773354812.8757336,
+      "confidence": 1.0
+    },
+    "Imperfect_Grace": {
+      "name": "Imperfect_Grace",
+      "description": "An aesthetic philosophy celebrating the profound beauty found in the transient, imperfect, and natural aspects of existence, embracing the wisdom of impermanence and the elegance of authenticity.",
+      "key_principles": [
+        "Acceptance of impermanence and natural cycles",
+        "Appreciation for the beauty of flaws and authenticity",
+        "Finding serenity in simplicity and understated elegance",
+        "Valuing the history and mending of objects (e.g., Kintsugi)"
+      ],
+      "l_focus": {
+        "L1": 0.0,
+        "L3": 0.0
+      },
+      "weights": {
+        "tradition_specificity": 0.8,
+        "dimension_variance": 0.015,
+        "cultural_depth": 0.7625,
+        "l4_emphasis": 0.2356,
+        "l5_emphasis": 0.7318,
+        "avg_score": 0.763,
+        "risk_level": 0.0
+      },
+      "reference_sessions": [
+        "seed-002",
+        "seed-011",
+        "seed-015",
+        "api-14ce443b"
+      ],
+      "emerged_at": 1773354820.9728112,
+      "confidence": 0.2
+    },
+    "autumn_mist_contemplation": {
+      "name": "autumn_mist_contemplation",
+      "description": "A concept exploring the meditative and abstract qualities of traditional East Asian landscape aesthetics, focusing on atmospheric depth, seasonal beauty, and spiritual contemplation. It blends the serene imagery of misty mountains and autumn foliage with abstract compositions and color fields to evoke a sense of profound tranquility and cultural resonance.",
+      "key_principles": [
+        "Atmospheric Abstraction: Capturing the essence of natural landscapes through subtle color fields, mist, and simplified forms.",
+        "Meditative Contemplation: Fostering a sense of inner peace and reflection through serene imagery and composition.",
+        "East Asian Aesthetic Resonance: Drawing deeply from the cultural and philosophical traditions of East Asian art, particularly landscape painting.",
+        "Spiritual Depth: Emphasizing higher-level meanings, symbolism, and a connection to the transcendent."
+      ],
+      "l_focus": {
+        "L1": 0.6,
+        "L3": 0.4,
+        "L4": 0.87,
+        "L5": 0.88
+      },
+      "weights": {
+        "tradition_specificity": 0.3,
+        "dimension_variance": 0.0887,
+        "cultural_depth": 0.7665,
+        "l4_emphasis": 0.8721,
+        "l5_emphasis": 0.8832,
+        "avg_score": 0.8067,
+        "risk_level": 0.0
+      },
+      "reference_sessions": [
+        "seed-009",
+        "seed-014",
+        "api-fcdcadff",
+        "api-4a366360",
+        "api-bf4f4a4f",
+        "api-efe2b962",
+        "api-c4e5b5f1",
+        "api-c5ddcc2b",
+        "api-e2a32d0d",
+        "api-72b6d52a"
+      ],
+      "emerged_at": 1773354831.0806851,
+      "confidence": 1.0
+    },
+    "essence_convergence": {
+      "name": "essence_convergence",
+      "description": "A cultural concept centered on the deep integration and harmonious synthesis of core aesthetic principles and philosophical underpinnings drawn from distinct global art traditions, resulting in cohesive and culturally profound artistic expressions.",
+      "key_principles": [
+        "Deep Cultural Immersion: Engaging with the philosophical, historical, and spiritual roots of diverse art traditions.",
+        "Aesthetic Synthesis: Harmonizing distinct stylistic elements and artistic principles into a unified and coherent aesthetic.",
+        "Respectful Integration: Drawing inspiration from specific traditions while honoring their unique identities and inherent meanings."
+      ],
+      "l_focus": {
+        "L1": 0.75,
+        "L3": 0.78
+      },
+      "weights": {
+        "tradition_specificity": 0.7531,
+        "dimension_variance": 0.113,
+        "cultural_depth": 0.7459,
+        "l4_emphasis": 0.8784,
+        "l5_emphasis": 0.8412,
+        "avg_score": 0.8053,
+        "risk_level": 0.0
+      },
+      "reference_sessions": [
+        "seed-001",
+        "seed-002",
+        "seed-003",
+        "seed-004",
+        "seed-005",
+        "seed-006",
+        "seed-007",
+        "seed-008",
+        "seed-009",
+        "seed-010"
+      ],
+      "emerged_at": 1773354839.7588313,
+      "confidence": 1.0
+    },
+    "default_l4_emphasis": {
+      "name": "default_l4_emphasis",
+      "description": "Emerged from 33 sessions in default tradition",
+      "key_principles": [
+        "High l4_emphasis"
+      ],
+      "l_focus": {
+        "avg_score": 0.8052,
+        "l5_emphasis": 0.8689,
+        "dimension_variance": 0.0913,
+        "l4_emphasis": 0.8876,
+        "risk_level": 0.0,
+        "tradition_specificity": 0.3,
+        "cultural_depth": 0.7637
+      },
+      "weights": {
+        "avg_score": 0.8052,
+        "l5_emphasis": 0.8689,
+        "dimension_variance": 0.0913,
+        "l4_emphasis": 0.8876,
+        "risk_level": 0.0,
+        "tradition_specificity": 0.3,
+        "cultural_depth": 0.7637
+      },
+      "reference_sessions": [
+        "seed-009",
+        "seed-014",
+        "api-fcdcadff",
+        "api-4a366360",
+        "api-bf4f4a4f",
+        "api-efe2b962",
+        "api-c4e5b5f1",
+        "api-c5ddcc2b",
+        "api-e2a32d0d",
+        "api-72b6d52a"
+      ],
+      "emerged_at": 1773442010.1046348,
+      "confidence": 1.0
     }
   },
   "prompt_contexts": {
     "archetypes": [
       {
-        "pattern": "Zen Garden / Karesansui",
-        "avg_score": 0.8438,
-        "count": 1,
+        "pattern": "landscape",
+        "avg_score": 0.7995,
+        "count": 284,
         "traditions": [
-          "japanese_traditional"
+          "chinese_xieyi"
         ],
         "example_prompts": [
-          "Zen garden with raked sand, moss stones, bamboo fence, morning mist"
-        ],
-        "insights": "This pattern leverages the profound cultural and philosophical depth of Japanese Zen gardens. Success stems from a minimalist approach, emphasizing natural elements, negative space, and symbolic representation. The raked sand patterns, carefully placed stones, and subtle atmospheric effects (like mist) evoke tranquility, contemplation, and the principles of Zen Buddhism (e.g., wabi-sabi, yūgen). The composition often relies on asymmetrical balance and implied landscapes, inviting viewers to engage in meditative interpretation.",
-        "evaluation_guidance": {
-          "L1": "Look for clear rendering of textures (raked sand, moss, stone), effective atmospheric perspective (mist), and a harmonious, subdued color palette. Visual clarity of individual elements and their overall integration into a cohesive scene are key.",
-          "L2": "Assess the technical execution of sand patterns (precision, consistency), the naturalistic depiction of stones and moss, and the structural integrity of elements like bamboo fences. Evaluate compositional balance, depth of field, and the skillful use of light and shadow to enhance mood.",
-          "L3": "Evaluate adherence to traditional Zen garden aesthetics and symbolism. Are the elements (stone arrangements, sand patterns) culturally authentic? Does the work subtly reference concepts like islands, mountains, or water, as is common in Karesansui? Does it embody principles like wabi-sabi or yūgen?",
-          "L4": "Interpret how effectively the artwork conveys a sense of peace, contemplation, or spiritual depth. Does it invite the viewer to engage in meditative thought or interpret its symbolic meanings? Look for an implied narrative or emotional resonance beyond mere depiction.",
-          "L5": "Examine how the artwork reflects core philosophical tenets of Zen Buddhism, such as emptiness (mu), impermanence (mujō), or the interconnectedness of nature. Does it foster a sense of timelessness or encourage profound introspection? The subtlety and depth of its philosophical engagement are paramount."
-        },
-        "anti_patterns": [
-          "Overly complex or cluttered compositions that contradict the minimalist essence.",
-          "Unnatural or vibrant color schemes that detract from the serene aesthetic.",
-          "Lack of distinct texture or detail for key elements like sand or stones.",
-          "Symmetrical or rigid arrangements that ignore the principles of asymmetrical balance.",
-          "Misunderstanding or misapplication of symbolic elements (e.g., random stone placement)."
+          "mountain landscape in ink wash style",
+          "Ink wash landscape with mist and mountains",
+          "Dong Yuan landscape"
         ]
       },
       {
-        "pattern": "East Asian Landscape - Autumn Mist",
-        "avg_score": 0.8292,
-        "count": 26,
+        "pattern": "dong",
+        "avg_score": 0.7992,
+        "count": 282,
+        "traditions": [
+          "chinese_xieyi"
+        ],
+        "example_prompts": [
+          "Dong Yuan landscape",
+          "Dong Yuan landscape",
+          "Dong Yuan landscape"
+        ]
+      },
+      {
+        "pattern": "yuan",
+        "avg_score": 0.7992,
+        "count": 282,
+        "traditions": [
+          "chinese_xieyi"
+        ],
+        "example_prompts": [
+          "Dong Yuan landscape",
+          "Dong Yuan landscape",
+          "Dong Yuan landscape"
+        ]
+      },
+      {
+        "pattern": "test",
+        "avg_score": 0.8132,
+        "count": 36,
+        "traditions": [
+          "default",
+          "Default",
+          "chinese_xieyi"
+        ],
+        "example_prompts": [
+          "test",
+          "test",
+          "test from browser"
+        ]
+      },
+      {
+        "pattern": "timeout",
+        "avg_score": 0.8173,
+        "count": 16,
         "traditions": [
           "default"
         ],
         "example_prompts": [
-          "Misty mountain waterfall in autumn with red maple leaves",
+          "test timeout",
           "test timeout",
           "test timeout"
-        ],
-        "insights": "This pattern leverages deep cultural resonance with traditional East Asian landscape painting (e.g., Shan shui). Success comes from the evocative combination of natural elements (mountains, water, mist, seasonal foliage) which are central to these traditions. The 'misty' element adds depth, atmosphere, and a sense of the sublime or ephemeral, while 'autumn' and 'red maple leaves' provide specific color and seasonal beauty, often symbolizing change, reflection, or the transient nature of life. The prompt is specific enough to guide the AI to a well-defined aesthetic rooted in a rich artistic tradition.",
-        "evaluation_guidance": {
-          "L1": "Look for harmonious composition, depth created by atmospheric perspective (mist), clear distinction between foreground, midground, and background elements. Evaluate the naturalistic depiction of water flow, rock formations, and leaf textures.",
-          "L2": "Assess the rendering of mist and water (e.g., soft gradients, dynamic flow). Evaluate color palette for authentic autumn tones, especially the vibrancy and naturalness of red maple leaves. Look for brushwork or stylistic elements that evoke traditional ink wash or similar painting techniques (even if digital).",
-          "L3": "Consider references to Shan shui (mountain-water) painting, the symbolism of mountains (stability, grandeur), water (flow, change), and mist (mystery, transcendence). The significance of autumn and maple leaves in East Asian cultures (e.g., momiji-gari in Japan) should be evident.",
-          "L4": "Interpret themes of nature's grandeur, the passage of time, human insignificance in the face of nature, tranquility, or contemplation. How does the artwork evoke a sense of peace, awe, or a meditative state?",
-          "L5": "Evaluate the embodiment of Taoist or Zen principles (e.g., harmony with nature, emptiness/fullness, the ephemeral). Does it achieve a sense of 'qi' (life force) or 'yinyang' balance? Does it invite profound philosophical reflection on existence and nature?"
-        },
-        "anti_patterns": [
-          "Lack of atmospheric depth; mist appears flat or artificial.",
-          "Unnatural color saturation or unrealistic depiction of autumn leaves.",
-          "Stiff or static composition lacking natural flow and dynamism.",
-          "Absence of cultural resonance; merely a generic landscape without the characteristic aesthetic or philosophical undertones.",
-          "Overly literal depiction, losing the poetic or symbolic quality."
         ]
       },
       {
-        "pattern": "Classical Ink Landscape (山水 Shan Shui)",
-        "avg_score": 0.8115,
-        "count": 259,
+        "pattern": "subject",
+        "avg_score": 0.835,
+        "count": 13,
         "traditions": [
-          "chinese_xieyi"
+          "default"
         ],
         "example_prompts": [
-          "mountain landscape in ink wash style",
-          "bamboo in wind ink wash",
-          "lotus pond in misty morning"
-        ],
-        "insights": "This pattern excels when evoking the grandeur and tranquility of traditional Chinese landscapes, often incorporating atmospheric elements like mist, rain, or clouds. High-scoring examples demonstrate a deep understanding of compositional principles (e.g., 'three distances') and expressive brushwork to capture the essence of mountains, water, and vegetation. Specific cultural references, such as regional styles (Jiangnan) or historical masters (Dong Yuan), significantly enhance cultural context and philosophical depth.",
-        "evaluation_guidance": {
-          "L1": "Look for dynamic yet balanced compositions, effective use of negative space, and atmospheric perspective that creates depth and a sense of vastness. The interplay of solid forms and ethereal elements (mist, water) is crucial.",
-          "L2": "Assess the mastery of ink wash techniques: varied ink tones (from rich black to subtle grey), controlled water application, and expressive brushstrokes that convey texture, form, and movement without excessive detail. 'Bone method' (gufa yongbi) should be evident in structural elements.",
-          "L3": "Evaluate adherence to traditional Chinese landscape conventions, symbolism (e.g., mountains as strength, water as fluidity), and historical stylistic influences. Recognition of specific regions (e.g., misty Jiangnan water towns) or master painters (e.g., Dong Yuan, Ni Zan) is a strong indicator.",
-          "L4": "Interpret the underlying mood (serenity, awe, melancholy) and the artist's philosophical perspective on humanity's place within nature. Look for a sense of harmony, impermanence, or the sublime.",
-          "L5": "Consider how the work embodies Daoist principles of harmony with nature, the concept of 'qi' (vital energy) flowing through the landscape, or Chan Buddhist notions of emptiness and interconnectedness. The 'spirit resonance' (qiyun) should be palpable."
-        },
-        "anti_patterns": [
-          "Lack of atmospheric depth or flat composition.",
-          "Overly detailed or photographic rendering, losing the 'xieyi' (spirit-writing) essence.",
-          "Inconsistent or uncontrolled ink tones and brushwork.",
-          "Generic landscape that lacks specific cultural or historical resonance.",
-          "Absence of philosophical depth or emotional resonance."
+          "test subject",
+          "test subject",
+          "test subject"
         ]
       },
       {
-        "pattern": "Expressive Floral/Botanical (花鸟 Hua Niao)",
-        "avg_score": 0.8115,
-        "count": 259,
+        "pattern": "garden",
+        "avg_score": 0.7939,
+        "count": 7,
         "traditions": [
-          "chinese_xieyi"
-        ],
-        "example_prompts": [
-          "mountain landscape in ink wash style",
-          "bamboo in wind ink wash",
-          "lotus pond in misty morning"
-        ],
-        "insights": "This archetype focuses on specific natural subjects, primarily plants like bamboo, lotus, or plum blossom, rendered with expressive brushwork to capture their spirit and symbolic meaning. Success lies in conveying not just the physical form but the inherent character and emotional qualities of the subject, often enhanced by specific environmental conditions (e.g., 'spring rain,' 'wind'). These subjects are often part of the 'Four Gentlemen' (bamboo, orchid, plum blossom, chrysanthemum), embodying Confucian virtues.",
-        "evaluation_guidance": {
-          "L1": "Look for dynamic and elegant compositions that highlight the subject's form and movement. Effective use of negative space to emphasize the subject and create visual balance. The overall impression should be lively and spirited.",
-          "L2": "Assess the calligraphic quality of brushstrokes, demonstrating control over line weight, speed, and ink saturation. Each stroke should contribute to the subject's 'bone' and 'flesh,' conveying vitality and texture with minimal lines.",
-          "L3": "Evaluate the accurate representation of the plant's traditional symbolic meaning (e.g., bamboo for resilience and integrity, lotus for purity). Recognition of established conventions for depicting these subjects in Chinese painting.",
-          "L4": "Interpret the emotional resonance and the artist's personal expression through the subject. How does the chosen setting (rain, wind, mist) amplify the plant's symbolic qualities or evoke a particular mood?",
-          "L5": "Consider how the work reflects Confucian ideals of virtue and character (e.g., bamboo's uprightness), or Buddhist/Daoist principles related to purity, endurance, and the ephemeral nature of beauty. The emphasis is on 'writing the idea' (xieyi) rather than mere depiction.",
-          "L6": "N/A"
-        },
-        "anti_patterns": [
-          "Stiff or lifeless brushwork lacking calligraphic energy.",
-          "Over-reliance on detail at the expense of expressive spirit.",
-          "Ignoring the symbolic meaning of the chosen flora.",
-          "Flat composition without a sense of movement or atmosphere.",
-          "Lack of emotional depth or personal interpretation."
-        ]
-      },
-      {
-        "pattern": "Paradise Garden Miniature",
-        "avg_score": 0.79,
-        "count": 1,
-        "traditions": [
-          "persian_miniature"
-        ],
-        "example_prompts": [
-          "persian miniature garden scene"
-        ],
-        "insights": "This pattern is highly successful due to the deep cultural resonance of the garden in Persian tradition, symbolizing paradise, order, and spiritual contemplation. The success stems from the meticulous attention to detail, vibrant color palettes (often jewel tones and gold), and a characteristic flat, non-perspectival composition. The scenes often depict idealized natural settings, sometimes with figures engaged in leisure or contemplation, embodying a sense of tranquility and beauty. Each element, from cypress trees to water channels, carries symbolic weight, enriching the visual narrative.",
-        "evaluation_guidance": {
-          "L1": "Look for exceptional clarity and precision in line work, vibrant and harmonious color schemes (e.g., lapis lazuli, emerald green, gold), and intricate detailing in foliage, architecture, and figures. Evaluate the overall visual balance and the characteristic flat, non-perspectival rendering.",
-          "L2": "Assess the fidelity to traditional Persian miniature techniques, such as fine brushwork, opaque pigment layering, and the use of gold/silver leaf. Evaluate the accuracy in depicting traditional Persian architectural elements (e.g., iwans, tilework) and the skill in rendering intricate patterns (arabesques, geometric motifs). Compositional adherence to traditional layouts like the charbagh is crucial.",
-          "L3": "Verify the authenticity of garden elements (cypress, rose, jasmine, water channels) and the inclusion of culturally significant motifs or figures (e.g., lovers, poets, musicians). The artwork should effectively reflect the concept of 'paradise garden' (pairi-daeza) as a spiritual and earthly ideal, utilizing appropriate symbolism for plants, animals, and architectural features.",
-          "L4": "Interpret how effectively the scene evokes a sense of tranquility, beauty, or spiritual contemplation. Analyze the implied narrative or potential story within the garden setting (e.g., a romantic encounter, a philosophical discussion). Consider the interplay between human figures and the idealized natural/architectural environment, and the artist's ability to convey mood within the stylistic constraints.",
-          "L5": "Examine the representation of an idealized world, a microcosm of divine order and beauty. Explore the concept of the garden as a metaphor for the soul's journey or spiritual enlightenment. Evaluate the aesthetic principle of 'hidden beauty' through intricate detail and the interplay between earthly delight and spiritual aspiration, potentially reflecting Sufi mystical themes."
-        },
-        "anti_patterns": [
-          "Lack of intricate detail, resulting in a simplistic or unfinished appearance.",
-          "Inaccurate or anachronistic color palette, deviating from traditional jewel tones and natural pigments.",
-          "Introduction of Western perspective or shading, breaking the characteristic flat aesthetic of miniatures.",
-          "Absence of symbolic elements or culturally relevant motifs, making the scene generic.",
-          "Cluttered or unbalanced composition, failing to achieve the harmonious and orderly ideal."
-        ]
-      },
-      {
-        "pattern": "Wabi-Sabi Object Study",
-        "avg_score": 0.7625,
-        "count": 4,
-        "traditions": [
-          "japanese_wabi_sabi"
-        ],
-        "example_prompts": [
-          "wabi-sabi ceramic bowl with crack",
-          "zen rock garden composition",
-          "kintsugi repaired vessel still life"
-        ],
-        "insights": "This pattern succeeds by directly embodying core wabi-sabi principles: acceptance of transience, imperfection, and natural aging. The focus on objects like ceramics or kintsugi vessels provides tangible examples of these concepts. The success often comes from the subtle interplay of texture, form, and the narrative implied by wear or repair, inviting contemplation rather than demanding attention. The cultural resonance is high due to the direct reference to Japanese aesthetic principles.",
-        "evaluation_guidance": {
-          "L1": "Look for authentic textures (e.g., unglazed clay, crack lines, gold lacquer), naturalistic lighting that highlights imperfections, balanced composition that emphasizes the object's unique character without being overly dramatic. Subtlety in color palette.",
-          "L2": "Assess the rendering of materials (ceramic, metal, wood), the fidelity of cracks or repairs (e.g., kintsugi lines should look like actual repair, not just decorative lines), depth of field that draws attention to the focal imperfection, and atmospheric perspective if applicable (e.g., in a still life setting).",
-          "L3": "Evaluate how well it references wabi-sabi principles (imperfection, transience, simplicity, naturalness, austerity, asymmetry, profundity). Specific cultural references like kintsugi (the art of repairing pottery with gold) are direct indicators.",
-          "L4": "Does the piece evoke a sense of quiet contemplation, the beauty of age, or the narrative of an object's life? Does it challenge conventional notions of beauty by highlighting flaws? Is there a sense of humility or understated elegance?",
-          "L5": "Does it successfully convey the philosophical underpinnings of wabi-sabi – mono no aware (pathos of things), mujo (impermanence), or the acceptance of natural cycles of growth and decay? Does it invite a deeper reflection on existence and beauty?"
-        },
-        "anti_patterns": [
-          "Overly pristine or 'perfect' imperfections that look artificial.",
-          "Exaggerated cracks or repairs that become grotesque rather than subtle.",
-          "Lack of texture or material fidelity, making objects look generic.",
-          "Bright, artificial lighting that detracts from the contemplative mood.",
-          "Ignoring the cultural context, making the object merely 'broken' rather than 'wabi-sabi.'"
-        ]
-      },
-      {
-        "pattern": "Zen Garden Contemplation",
-        "avg_score": 0.7625,
-        "count": 4,
-        "traditions": [
-          "japanese_wabi_sabi"
-        ],
-        "example_prompts": [
-          "wabi-sabi ceramic bowl with crack",
-          "zen rock garden composition",
-          "kintsugi repaired vessel still life"
-        ],
-        "insights": "This pattern is successful because it taps into the universally appealing concepts of peace, order, and natural beauty, filtered through the lens of Japanese Zen aesthetics. The minimalist composition, often involving rocks, sand/gravel, and sometimes sparse vegetation, creates a space for meditation and introspection. The success lies in conveying a sense of profound stillness and balance, often enhanced by atmospheric elements like mist or specific lighting.",
-        "evaluation_guidance": {
-          "L1": "Look for balanced asymmetry, harmonious arrangement of elements (rocks, raked sand patterns), effective use of negative space, subtle color palettes (greys, greens, earth tones), and a sense of depth and tranquility.",
-          "L2": "Assess the rendering of textures (rock surfaces, sand grains, raked patterns), realistic lighting (e.g., soft morning light, diffused mist), atmospheric effects (fog, haze) that enhance mood, and precise composition that guides the viewer's eye without being overtly structured.",
-          "L3": "Evaluate adherence to principles of karesansui (dry landscape gardens), symbolism of rocks (mountains, islands) and raked sand (water, ripples), and the overall evocation of Zen Buddhist philosophy (meditation, enlightenment, emptiness).",
-          "L4": "Does the garden invite contemplation and introspection? Does it convey a sense of timelessness or spiritual calm? Is there a subtle narrative or symbolic meaning in the arrangement of elements? Does it evoke a feeling of 'ma' (empty space/pause)?",
-          "L5": "Does it successfully communicate the Zen ideals of simplicity (kanso), naturalness (shizen), austerity (koko), and profound grace (yugen)? Does it serve as a metaphor for the universe or the human mind?"
-        },
-        "anti_patterns": [
-          "Overly complex or cluttered compositions that lose the minimalist essence.",
-          "Unrealistic rock formations or sand patterns.",
-          "Bright, harsh lighting that destroys the serene atmosphere.",
-          "Lack of depth or flatness, making the garden appear two-dimensional.",
-          "Ignoring the symbolic meaning, reducing it to mere decorative landscaping."
-        ]
-      },
-      {
-        "pattern": "Embodied Rasa through Dance Gesture",
-        "avg_score": 0.76,
-        "count": 1,
-        "traditions": [
-          "indian_rasa"
-        ],
-        "example_prompts": [
-          "rasa-inspired dance gesture painting"
-        ],
-        "insights": "This pattern successfully leverages the profound Indian aesthetic theory of Rasa, focusing on evoking specific emotional states (bhava) through the expressive power of classical Indian dance gestures (mudras, karanas). Its success lies in the deep cultural resonance of Rasa, combined with dynamic visual compositions that capture movement and emotional intensity. High scores in cultural context (L3) and visual perception (L1) indicate effective communication of complex emotional concepts through stylized, yet impactful, human form and movement.",
-        "evaluation_guidance": {
-          "L1": "Assess the clarity and expressiveness of the dance gestures; do they unequivocally convey the intended rasa? Evaluate the dynamism of the composition, the sense of movement, and how color choices enhance or detract from the evoked emotion. Look for strong visual impact and immediate communication of a specific emotional state.",
-          "L2": "Analyze the technical execution of the human form, even if stylized, ensuring anatomical plausibility. Evaluate how brushwork, line quality, and medium handling contribute to the fluidity and intensity of dance. Assess compositional balance and the effective use of light and shadow to define form and mood.",
-          "L3": "Verify the authenticity and accuracy of the depicted rasa and the specific dance gestures/mudras. Look for alignment with established vocabularies of classical Indian dance forms (e.g., Bharatanatyam, Kathak). Identify any symbolic elements (colors, motifs, attire) that resonate with Indian aesthetic traditions.",
-          "L4": "Interpret the artwork's emotional resonance: how effectively does it evoke the intended rasa in the viewer? Consider any implied narrative or a moment within a larger story suggested by the gesture. Evaluate the depth of expression, moving beyond mere depiction to convey nuanced emotional states, and any originality within traditional frameworks.",
-          "L5": "Explore whether the artwork elevates the depicted emotion to a universal or spiritual experience, engaging with the philosophical concept of 'Bhava' transforming into 'Rasa'. Assess its connection to the aesthetic theories of the Natyashastra and its capacity to create a contemplative or immersive emotional experience for the audience."
-        },
-        "anti_patterns": [
-          "Generic emotional depiction lacking specific ties to a recognized rasa or a superficial representation.",
-          "Inaccurate, invented, or culturally inappropriate mudras/gestures that undermine authenticity.",
-          "Static or lifeless compositions that fail to convey the inherent dynamism and fluidity of dance.",
-          "Clashing or inappropriate color palettes that contradict or dilute the intended emotional impact.",
-          "Overly literal or illustrative rendering that lacks the poetic abstraction often found in rasa-inspired art."
-        ]
-      },
-      {
-        "pattern": "Islamic Geometric Tessellation",
-        "avg_score": 0.75,
-        "count": 1,
-        "traditions": [
-          "islamic_geometric"
-        ],
-        "example_prompts": [
-          "islamic geometric tessellation pattern"
-        ],
-        "insights": "This archetype emphasizes the core principles of Islamic geometric art: precise mathematical construction, intricate tessellation, and a focus on abstract beauty and spiritual harmony. Success hinges on technical accuracy (L2), the effective communication of underlying mathematical and conceptual ideas (L4), and the evocation of a contemplative aesthetic (L5). The patterns often convey a sense of infinite repetition and divine order, avoiding figural representation.",
-        "evaluation_guidance": {
-          "L1": "Assess clarity of lines, crispness of edges, and overall visual coherence. Evaluate color harmony and balance, ensuring they enhance rather than detract from the geometric structure. Look for visual engagement and a sense of order.",
-          "L2": "Crucially, evaluate the precision of geometric construction: perfect symmetry, accurate angles, consistent line weights, and seamless repetition of modules. Verify mathematical soundness of the tessellation (no gaps/overlaps). Assess complexity and skill in execution.",
-          "L3": "Determine adherence to established visual vocabulary and principles of Islamic geometric art. Does it evoke historical and cultural significance? Is there an understanding of the non-representational nature and spiritual intent?",
-          "L4": "Interpret how effectively the pattern communicates concepts of infinite repetition, underlying order, and mathematical principles (e.g., rotational symmetry). Does it invite contemplation or reveal deeper structural relationships upon inspection?",
-          "L5": "Evaluate if the pattern evokes harmony, balance, and divine order. Does it reflect Islamic philosophical concepts like Tawhid (oneness) through unity and infinite extension? Does it create a meditative or contemplative experience?"
-        },
-        "anti_patterns": [
-          "Lack of Precision: Sloppy lines, inaccurate angles, imperfect symmetry, or visible construction errors.",
-          "Broken Tessellation: Gaps, overlaps, or non-repeating elements that disrupt the continuous pattern.",
-          "Inappropriate Color Schemes: Jarring or distracting colors that do not complement the geometric structure or deviate significantly from traditional palettes without clear artistic intent.",
-          "Over-simplification: Patterns that are too basic or lack the characteristic complexity and intricacy expected.",
-          "Inclusion of Figurative Elements: Introducing representational forms, which is generally avoided in traditional Islamic geometric art."
-        ]
-      },
-      {
-        "pattern": "Renaissance Chiaroscuro Portraiture",
-        "avg_score": 0.73,
-        "count": 1,
-        "traditions": [
-          "european_renaissance"
-        ],
-        "example_prompts": [
-          "renaissance portrait with chiaroscuro"
-        ],
-        "insights": "This pattern leverages the iconic visual language of the European Renaissance, focusing on the individual through realistic depiction and dramatic lighting. Chiaroscuro (strong contrasts between light and dark) is key, adding volume, psychological depth, and a sense of drama, making the subject feel tangible and present. The success lies in combining technical mastery with a humanistic approach to portraiture, capturing both likeness and inner character.",
-        "evaluation_guidance": {
-          "L1": "Look for clear definition of form and volume achieved through light and shadow. Assess the realism of facial features, skin tones, and textures. Evaluate the overall visual impact and balance created by the interplay of light and dark areas.",
-          "L2": "Evaluate the mastery of chiaroscuro: precise control of light sources, subtle gradations from light to shadow (sfumato if present), and effective use of reflected light. Assess anatomical accuracy, proportional correctness, and skilled rendering techniques that build form.",
-          "L3": "Check for adherence to Renaissance aesthetic ideals such as humanism, idealized realism, and the dignity of the individual. Identify appropriate period attire, hairstyles, and subtle symbolic elements that resonate with the cultural context of the era.",
-          "L4": "Interpret the psychological depth conveyed by the subject's expression and pose. Does the portrait suggest a narrative or inner life beyond mere likeness? Analyze how the chiaroscuro enhances the subject's presence, mood, or character.",
-          "L5": "Consider the philosophical implications of humanism and the celebration of the individual. Explore how the interplay of light and shadow might symbolize broader concepts (e.g., knowledge/ignorance, life/death) or contribute to the aesthetic pursuit of verisimilitude and ideal beauty."
-        },
-        "anti_patterns": [
-          "Flat or uninspired lighting lacking dramatic contrast and depth.",
-          "Anatomical inaccuracies or disproportionate features that detract from realism.",
-          "Anachronistic elements (clothing, objects, hairstyles) that break the period immersion.",
-          "Lack of psychological depth, resulting in a generic or lifeless depiction.",
-          "Overly harsh, cartoonish, or poorly blended contrasts that fail to achieve subtle gradations."
-        ]
-      },
-      {
-        "pattern": "Ubuntu Communal Sculpture",
-        "avg_score": 0.73,
-        "count": 1,
-        "traditions": [
-          "african_ubuntu"
-        ],
-        "example_prompts": [
-          "ubuntu communal art sculpture"
-        ],
-        "insights": "This pattern succeeds by directly embodying the core philosophy of Ubuntu ('I am because we are') through a tangible, communal art form. The emphasis on shared creation, interconnectedness, and collective identity resonates deeply, fostering a sense of belonging and shared humanity. Sculpture as a medium allows for physical interaction and a strong presence, reinforcing the idea of a collective body or spirit.",
-        "evaluation_guidance": {
-          "L1": "Look for visual cues of unity, integration, and shared purpose. Forms should suggest interconnectedness, warmth, and an inviting presence. Evaluate how well diverse elements (if present) are harmonized to create a cohesive whole.",
-          "L2": "Assess the craftsmanship in joining, shaping, and finishing elements to ensure structural integrity and aesthetic cohesion. Consider the choice of materials – do they reflect local resources, sustainability, or the idea of shared contribution? Evaluate the scale and placement for communal interaction and impact.",
-          "L3": "Determine if the sculpture clearly references and embodies the principles of Ubuntu (interconnectedness, humanity, compassion, community). Look for authentic engagement with African cultural motifs or artistic traditions that support the communal theme, avoiding superficial stereotypes.",
-          "L4": "Interpret how effectively the sculpture communicates the abstract idea of 'Ubuntu.' Does it invite contemplation on human relationships, collective responsibility, or shared identity? Does it challenge individualistic notions and promote a sense of belonging or collective narrative?",
-          "L5": "Evaluate if the artwork evokes a profound sense of human connection and shared existence. Does it embody the ethical and moral dimensions of Ubuntu, inspiring empathy, understanding, and a sense of collective well-being? Does it transcend mere representation to become a symbol of a deeper philosophical truth?"
-        },
-        "anti_patterns": [
-          "Individualistic focus: The sculpture appears to be the work of a single artist with no visual or conceptual hint of communal input or theme.",
-          "Stereotypical representation: Relying on superficial or clichéd African imagery without deeper engagement with the Ubuntu philosophy.",
-          "Lack of cohesion: Elements feel disjointed or fragmented, failing to convey unity or interconnectedness.",
-          "Purely decorative: The artwork lacks the deeper philosophical or social commentary inherent in Ubuntu, serving only an aesthetic purpose.",
-          "Impersonal/Cold: The sculpture fails to evoke warmth, humanity, or inviting interaction, feeling detached or unapproachable."
-        ]
-      },
-      {
-        "pattern": "Architectural Dancheong Embellishment",
-        "avg_score": 0.72,
-        "count": 1,
-        "traditions": [
-          "korean_dancheong"
-        ],
-        "example_prompts": [
-          "dancheong palace beam ornament"
-        ],
-        "insights": "This pattern succeeds by accurately depicting Dancheong's vibrant colors, intricate geometric and natural patterns, and its characteristic application on traditional Korean architectural elements like palace beams. Its success stems from the immediate cultural recognition of Dancheong as a symbol of protection, auspiciousness, and grandeur associated with significant structures. Technical precision in line work, color layering, and the faithful reproduction of traditional motifs are crucial. The high critical interpretation score suggests that the artwork effectively conveys the functional and symbolic purpose of the ornamentation within its architectural context.",
-        "evaluation_guidance": {
-          "L1": "Look for vibrant, distinct traditional Dancheong colors (red, blue, green, yellow, white, black). Assess the clarity, sharpness, and intricacy of lines and patterns. Evaluate the overall visual impact and aesthetic appeal, ensuring patterns are well-defined and not muddy.",
-          "L2": "Examine the precision of geometric patterns and the smoothness of curves. Evaluate the evenness and layering of color application, characteristic of Dancheong's technique. Check for correct rendering of traditional motifs (e.g., lotus, phoenix, cloud patterns). Assess how harmoniously the Dancheong design integrates with the architectural form (e.g., a beam, bracket, eaves).",
-          "L3": "Identify the appropriate use of Dancheong motifs and color schemes typical for palaces or temples. Verify the correct placement and function of the Dancheong on the architectural element. Look for evidence of understanding the symbolic meanings of specific colors (e.g., red for protection) and motifs (e.g., lotus for purity, dragon for royalty).",
-          "L4": "Assess if the artwork effectively conveys the protective, auspicious, or hierarchical function of Dancheong in its architectural context. Does it evoke a sense of tradition, history, or cultural identity? How well does the ornamentation enhance or define the grandeur and significance of the structure?",
-          "L5": "While often less explicit, look for subtle hints of underlying cosmological principles (e.g., Five Elements theory, Yin-Yang) in color arrangement or pattern balance. Does the piece suggest a harmony between human artistry and natural forms, or a deeper spiritual connection inherent in traditional Korean architecture?"
-        },
-        "anti_patterns": [
-          "Inaccurate or non-traditional color palettes that deviate from Dancheong's established scheme.",
-          "Lack of precision in lines, resulting in blurry or uneven geometric patterns.",
-          "Incorrectly rendered or anachronistic motifs that do not belong to traditional Dancheong.",
-          "Dancheong patterns that appear detached or poorly integrated with the architectural element.",
-          "Flat, single-layer coloring that lacks the depth and vibrancy achieved through traditional layering."
-        ]
-      },
-      {
-        "pattern": "Minimalist Philosophical Expression",
-        "avg_score": 0.71,
-        "count": 1,
-        "traditions": [
-          "Default"
-        ],
-        "example_prompts": [
-          "test"
-        ],
-        "insights": "This pattern excels by prioritizing profound conceptual depth and refined technical execution over explicit narrative or overt cultural references. Its success lies in its ability to evoke introspection and universal themes through simplicity, precision, and a deliberate use of form and space. The high scores in technical analysis and philosophical aesthetic indicate a strong emphasis on skillful execution and the successful communication of abstract, contemplative ideas.",
-        "evaluation_guidance": {
-          "L1": "Assess the clarity and impact of visual elements. Look for harmonious composition, effective use of negative space, and a strong sense of balance. Visuals should guide the eye and evoke a specific mood or idea without being overly complex or distracting.",
-          "L2": "Evaluate the precision and mastery of the chosen medium. Technical skill should be evident in clean lines, smooth transitions, deliberate textures, and intentionality in every mark or placement. Any imperfections are magnified by the minimalist approach.",
-          "L3": "Consider how universal themes (e.g., existence, void, time, connection, impermanence) are presented. While explicit cultural markers might be subdued, assess if the work subtly draws from broader human experiences or philosophical traditions (e.g., Zen aesthetics, existentialism) in a way that resonates globally.",
-          "L4": "Look for works that provoke multiple layers of interpretation and invite viewers to project their own thoughts and feelings. The ambiguity should be intentional, fostering contemplation and personal reflection rather than confusion or a lack of meaning.",
-          "L5": "Assess the depth and originality of the underlying concept or question. Does the work successfully communicate a profound idea, evoke a sense of wonder, introspection, or existential inquiry through its aesthetic choices and minimalist presentation?"
-        },
-        "anti_patterns": [
-          "Pretentious Obscurity: Artwork that is minimalist for the sake of being minimalist, lacking genuine depth or clear intent, leading to confusion rather than contemplation.",
-          "Technical Sloppiness: Simplicity amplifies imperfections; poor execution undermines the intended philosophical impact and aesthetic integrity.",
-          "Derivative Abstraction: Replicating existing minimalist or abstract styles without adding a unique voice, perspective, or a fresh conceptual angle.",
-          "Lack of Engagement: Artwork that is too sterile, cold, or emotionally detached, failing to connect with the viewer on an intellectual or emotional level."
-        ]
-      },
-      {
-        "pattern": "Mughal Courtly Grandeur",
-        "avg_score": 0.71,
-        "count": 1,
-        "traditions": [
+          "japanese_wabi_sabi",
+          "chinese_xieyi",
+          "japanese_traditional",
+          "persian_miniature",
           "indian"
         ],
         "example_prompts": [
-          "Royal elephant procession through a Mughal garden palace with fountains"
+          "persian miniature garden scene",
+          "zen rock garden composition",
+          "Zen garden with raked sand, moss stones, bamboo fence, morning mist"
+        ]
+      },
+      {
+        "pattern": "zen",
+        "avg_score": 0.8114,
+        "count": 5,
+        "traditions": [
+          "japanese_traditional",
+          "japanese_wabi_sabi",
+          "chinese_xieyi"
         ],
-        "insights": "This pattern excels by leveraging the rich visual vocabulary and historical significance of Mughal art. Its success stems from the cultural resonance of imperial splendor, intricate craftsmanship, and a harmonious blend of Persian, Islamic, and Indian aesthetics. The detailed depiction of royal processions, architectural marvels, and lush gardens evokes a sense of opulence, power, and an idealized earthly paradise, appealing to both historical accuracy and aesthetic beauty.",
-        "evaluation_guidance": {
-          "L1": "Look for vibrant, jewel-toned color palettes, clear delineation of forms (elephants, figures, architecture), and a strong sense of visual depth and perspective, even if stylized. Assess the overall visual impact and aesthetic appeal of the grand scene.",
-          "L2": "Evaluate the precision and intricacy of details in architectural motifs, elephant caparisons, royal attire, and garden elements (fountains, flora). Assess compositional balance, the dynamic flow of a procession, and skillful rendering of textures (silk, stone, water, animal hide).",
-          "L3": "Verify the authenticity of Mughal architectural styles (e.g., arches, domes, chhatris), garden layouts (e.g., charbagh), and royal regalia. Ensure cultural accuracy in the depiction of figures, costumes, and the overall historical context of a royal court.",
-          "L4": "Interpret how effectively the artwork conveys themes of imperial power, majesty, and spectacle. Look for subtle narratives or symbolic elements within the scene that enhance its interpretive depth, such as the relationship between nature and royalty, or the transient nature of earthly power.",
-          "L5": "Assess how the artwork embodies Mughal aesthetic principles of beauty, order, and harmony, often expressed through symmetry, intricate patterns, and idealized forms. Consider its connection to the philosophical concept of 'paradise on earth' often associated with Mughal gardens and courtly life."
-        },
-        "anti_patterns": [
-          "Lack of intricate detail, resulting in a generic or simplified appearance that loses the essence of Mughal craftsmanship.",
-          "Inaccurate or anachronistic historical and cultural elements (e.g., incorrect architecture, inappropriate attire, non-Mughal flora).",
-          "Muddled or unbalanced composition that fails to convey the grandeur, movement, or focal points of a royal procession.",
-          "Dull, inconsistent, or anachronistic color palettes that do not capture the characteristic vibrancy and richness of Mughal art.",
-          "Failing to evoke the 'royal' or 'grand' aspect, making the scene appear mundane or lacking in imperial significance."
+        "example_prompts": [
+          "zen rock garden composition",
+          "Zen garden with raked sand, moss stones, bamboo fence, morning mist",
+          "A serene Japanese zen garden with raked sand patterns and autumn maple trees"
+        ]
+      },
+      {
+        "pattern": "ink",
+        "avg_score": 0.8237,
+        "count": 4,
+        "traditions": [
+          "chinese_xieyi"
+        ],
+        "example_prompts": [
+          "mountain landscape in ink wash style",
+          "bamboo in wind ink wash",
+          "Ink wash landscape with mist and mountains"
+        ]
+      },
+      {
+        "pattern": "wash",
+        "avg_score": 0.8237,
+        "count": 4,
+        "traditions": [
+          "chinese_xieyi"
+        ],
+        "example_prompts": [
+          "mountain landscape in ink wash style",
+          "bamboo in wind ink wash",
+          "Ink wash landscape with mist and mountains"
+        ]
+      },
+      {
+        "pattern": "style",
+        "avg_score": 0.811,
+        "count": 4,
+        "traditions": [
+          "korean",
+          "chinese_xieyi"
+        ],
+        "example_prompts": [
+          "mountain landscape in ink wash style",
+          "A misty mountain landscape in the style of Dong Yuan with flowing water and ancient pines",
+          "Bamboo forest under moonlight in ink wash style"
+        ]
+      },
+      {
+        "pattern": "bamboo",
+        "avg_score": 0.8385,
+        "count": 4,
+        "traditions": [
+          "japanese_traditional",
+          "chinese_xieyi"
+        ],
+        "example_prompts": [
+          "bamboo in wind ink wash",
+          "Bamboo grove in spring rain",
+          "Zen garden with raked sand, moss stones, bamboo fence, morning mist"
+        ]
+      },
+      {
+        "pattern": "mountain",
+        "avg_score": 0.8047,
+        "count": 3,
+        "traditions": [
+          "default",
+          "chinese_xieyi"
+        ],
+        "example_prompts": [
+          "mountain landscape in ink wash style",
+          "Misty mountain waterfall in autumn with red maple leaves",
+          "A misty mountain landscape in the style of Dong Yuan with flowing water and ancient pines"
+        ]
+      },
+      {
+        "pattern": "misty",
+        "avg_score": 0.808,
+        "count": 3,
+        "traditions": [
+          "default",
+          "chinese_xieyi"
+        ],
+        "example_prompts": [
+          "lotus pond in misty morning",
+          "Misty mountain waterfall in autumn with red maple leaves",
+          "A misty mountain landscape in the style of Dong Yuan with flowing water and ancient pines"
+        ]
+      },
+      {
+        "pattern": "morning",
+        "avg_score": 0.8046,
+        "count": 3,
+        "traditions": [
+          "japanese_traditional",
+          "japanese_wabi_sabi",
+          "chinese_xieyi"
+        ],
+        "example_prompts": [
+          "lotus pond in misty morning",
+          "Zen garden with raked sand, moss stones, bamboo fence, morning mist",
+          "A zen garden in morning mist"
+        ]
+      },
+      {
+        "pattern": "autumn",
+        "avg_score": 0.8317,
+        "count": 3,
+        "traditions": [
+          "default",
+          "chinese_xieyi"
+        ],
+        "example_prompts": [
+          "Misty mountain waterfall in autumn with red maple leaves",
+          "A serene Japanese zen garden with raked sand patterns and autumn maple trees",
+          "A serene Japanese zen garden with raked sand patterns and autumn maple trees"
+        ]
+      },
+      {
+        "pattern": "maple",
+        "avg_score": 0.8317,
+        "count": 3,
+        "traditions": [
+          "default",
+          "chinese_xieyi"
+        ],
+        "example_prompts": [
+          "Misty mountain waterfall in autumn with red maple leaves",
+          "A serene Japanese zen garden with raked sand patterns and autumn maple trees",
+          "A serene Japanese zen garden with raked sand patterns and autumn maple trees"
+        ]
+      },
+      {
+        "pattern": "raked",
+        "avg_score": 0.8457,
+        "count": 3,
+        "traditions": [
+          "japanese_traditional",
+          "chinese_xieyi"
+        ],
+        "example_prompts": [
+          "Zen garden with raked sand, moss stones, bamboo fence, morning mist",
+          "A serene Japanese zen garden with raked sand patterns and autumn maple trees",
+          "A serene Japanese zen garden with raked sand patterns and autumn maple trees"
+        ]
+      },
+      {
+        "pattern": "sand",
+        "avg_score": 0.8457,
+        "count": 3,
+        "traditions": [
+          "japanese_traditional",
+          "chinese_xieyi"
+        ],
+        "example_prompts": [
+          "Zen garden with raked sand, moss stones, bamboo fence, morning mist",
+          "A serene Japanese zen garden with raked sand patterns and autumn maple trees",
+          "A serene Japanese zen garden with raked sand patterns and autumn maple trees"
+        ]
+      },
+      {
+        "pattern": "mist",
+        "avg_score": 0.8489,
+        "count": 3,
+        "traditions": [
+          "japanese_traditional",
+          "japanese_wabi_sabi",
+          "chinese_xieyi"
+        ],
+        "example_prompts": [
+          "Zen garden with raked sand, moss stones, bamboo fence, morning mist",
+          "Ink wash landscape with mist and mountains",
+          "A zen garden in morning mist"
         ]
       }
     ]
@@ -3979,13 +4072,13 @@
       {
         "cluster_id": "intra-000-000",
         "feature_centroid": {
+          "avg_score": 0.7966,
+          "l5_emphasis": 0.8103,
+          "dimension_variance": 0.1287,
+          "l4_emphasis": 0.9256,
+          "risk_level": 0.0,
           "tradition_specificity": 0.8,
-          "dimension_variance": 0.1206,
-          "cultural_depth": 0.7473,
-          "l4_emphasis": 0.9139,
-          "l5_emphasis": 0.836,
-          "avg_score": 0.8087,
-          "risk_level": 0.0
+          "cultural_depth": 0.7336
         },
         "session_ids": [
           "seed-001",
@@ -4249,22 +4342,63 @@
           "api-89a3c73b",
           "api-70a33a0f",
           "api-452df92e",
-          "api-d6acff54"
+          "api-d6acff54",
+          "api-bd57fe91",
+          "api-99a7f15f",
+          "api-247894ac",
+          "api-5abab58a",
+          "api-36ec3dac",
+          "api-0be829d9",
+          "api-ddb380e8",
+          "api-8a56010f",
+          "api-563cb1eb",
+          "api-b2f5c348",
+          "api-e93b5978",
+          "api-051276d5",
+          "api-bf17d7a1",
+          "api-78438753",
+          "api-dbb89212",
+          "api-4a758464",
+          "api-69c9cc4b",
+          "api-d00bbdbd",
+          "api-5fc1e70f",
+          "api-42c2b1ae",
+          "api-30b5320a",
+          "api-cf4958bc",
+          "api-dfc18d5a",
+          "api-e48c5649",
+          "api-5faa092b",
+          "api-089c1bc3",
+          "api-69e87961",
+          "api-2031b282",
+          "api-6ddcd799",
+          "api-0669d549",
+          "api-80cbd648",
+          "api-bee6fc80",
+          "api-2896c820",
+          "api-5ce01b30",
+          "api-b86be7fc",
+          "api-c39e1ce9",
+          "api-7101c56b",
+          "api-7f2b914b",
+          "api-b1d37d57",
+          "api-b762e047",
+          "api-09477558"
         ],
-        "size": 262,
+        "size": 303,
         "tradition": "chinese_xieyi",
         "source": "intra_tradition"
       },
       {
         "cluster_id": "intra-001-000",
         "feature_centroid": {
-          "tradition_specificity": 0.8,
-          "dimension_variance": 0.015,
-          "cultural_depth": 0.7625,
-          "l4_emphasis": 0.2356,
-          "l5_emphasis": 0.7318,
           "avg_score": 0.763,
-          "risk_level": 0.0
+          "l5_emphasis": 0.7318,
+          "dimension_variance": 0.015,
+          "l4_emphasis": 0.2356,
+          "risk_level": 0.0,
+          "tradition_specificity": 0.8,
+          "cultural_depth": 0.7625
         },
         "session_ids": [
           "seed-002",
@@ -4279,11 +4413,11 @@
       {
         "cluster_id": "intra-002-000",
         "feature_centroid": {
-          "tradition_specificity": 0.8,
-          "cultural_depth": 0.67,
-          "l5_emphasis": 0.9249,
           "avg_score": 0.713,
-          "risk_level": 0.0
+          "l5_emphasis": 0.9249,
+          "risk_level": 0.0,
+          "tradition_specificity": 0.8,
+          "cultural_depth": 0.67
         },
         "session_ids": [
           "seed-003",
@@ -4376,13 +4510,13 @@
       {
         "cluster_id": "intra-008-000",
         "feature_centroid": {
+          "avg_score": 0.8052,
+          "l5_emphasis": 0.8689,
+          "dimension_variance": 0.0913,
+          "l4_emphasis": 0.8876,
+          "risk_level": 0.0,
           "tradition_specificity": 0.3,
-          "dimension_variance": 0.0887,
-          "cultural_depth": 0.7665,
-          "l4_emphasis": 0.8721,
-          "l5_emphasis": 0.8832,
-          "avg_score": 0.8067,
-          "risk_level": 0.0
+          "cultural_depth": 0.7637
         },
         "session_ids": [
           "seed-009",
@@ -4413,9 +4547,13 @@
           "api-d49542a7",
           "api-0ace8c10",
           "api-8fc323c7",
-          "api-221c7f23"
+          "api-221c7f23",
+          "api-6e5e3caa",
+          "api-5a06dbe8",
+          "api-ddac9526",
+          "api-a07ce53f"
         ],
-        "size": 29,
+        "size": 33,
         "tradition": "default",
         "source": "intra_tradition"
       },
@@ -4474,15 +4612,87 @@
         "source": "intra_tradition"
       },
       {
+        "cluster_id": "intra-012-000",
+        "feature_centroid": {
+          "tradition_specificity": 0.8,
+          "l5_emphasis": 0.9425,
+          "avg_score": 0.79,
+          "risk_level": 0.0,
+          "cultural_depth": 0.72,
+          "dimension_variance": 0.06,
+          "l4_emphasis": 0.9425
+        },
+        "session_ids": [
+          "api-bf9d26dc"
+        ],
+        "size": 1,
+        "tradition": "korean",
+        "source": "intra_tradition"
+      },
+      {
+        "cluster_id": "intra-013-000",
+        "feature_centroid": {
+          "tradition_specificity": 0.8,
+          "l5_emphasis": 0.9425,
+          "avg_score": 0.79,
+          "risk_level": 0.0,
+          "cultural_depth": 0.72,
+          "dimension_variance": 0.06,
+          "l4_emphasis": 0.9425
+        },
+        "session_ids": [
+          "api-f902d7e4"
+        ],
+        "size": 1,
+        "tradition": "western",
+        "source": "intra_tradition"
+      },
+      {
+        "cluster_id": "intra-014-000",
+        "feature_centroid": {
+          "tradition_specificity": 0.8,
+          "l5_emphasis": 0.9425,
+          "avg_score": 0.77,
+          "risk_level": 0.0,
+          "cultural_depth": 0.62,
+          "dimension_variance": 0.0894,
+          "l4_emphasis": 0.9425
+        },
+        "session_ids": [
+          "api-3c178cda"
+        ],
+        "size": 1,
+        "tradition": "islamic",
+        "source": "intra_tradition"
+      },
+      {
+        "cluster_id": "intra-015-000",
+        "feature_centroid": {
+          "tradition_specificity": 0.8,
+          "l5_emphasis": 0.9425,
+          "avg_score": 0.71,
+          "risk_level": 0.0,
+          "cultural_depth": 0.52,
+          "dimension_variance": 0.1281,
+          "l4_emphasis": 0.7126
+        },
+        "session_ids": [
+          "api-3554024a"
+        ],
+        "size": 1,
+        "tradition": "japanese",
+        "source": "intra_tradition"
+      },
+      {
         "cluster_id": "cross-000",
         "feature_centroid": {
-          "tradition_specificity": 0.7525,
-          "dimension_variance": 0.1134,
-          "cultural_depth": 0.7472,
-          "l4_emphasis": 0.8783,
-          "l5_emphasis": 0.8399,
-          "avg_score": 0.8058,
-          "risk_level": 0.0
+          "avg_score": 0.7951,
+          "l5_emphasis": 0.8178,
+          "dimension_variance": 0.1207,
+          "l4_emphasis": 0.8939,
+          "risk_level": 0.0,
+          "tradition_specificity": 0.7534,
+          "cultural_depth": 0.7343
         },
         "session_ids": [
           "seed-001",
@@ -4789,10 +4999,59 @@
           "api-14ce443b",
           "api-452df92e",
           "api-d6acff54",
-          "api-5e1b2063"
+          "api-5e1b2063",
+          "api-bf9d26dc",
+          "api-f902d7e4",
+          "api-3c178cda",
+          "api-3554024a",
+          "api-bd57fe91",
+          "api-99a7f15f",
+          "api-247894ac",
+          "api-5abab58a",
+          "api-36ec3dac",
+          "api-0be829d9",
+          "api-ddb380e8",
+          "api-8a56010f",
+          "api-563cb1eb",
+          "api-6e5e3caa",
+          "api-b2f5c348",
+          "api-e93b5978",
+          "api-051276d5",
+          "api-bf17d7a1",
+          "api-78438753",
+          "api-5a06dbe8",
+          "api-dbb89212",
+          "api-4a758464",
+          "api-69c9cc4b",
+          "api-d00bbdbd",
+          "api-5fc1e70f",
+          "api-42c2b1ae",
+          "api-30b5320a",
+          "api-cf4958bc",
+          "api-dfc18d5a",
+          "api-e48c5649",
+          "api-5faa092b",
+          "api-089c1bc3",
+          "api-69e87961",
+          "api-2031b282",
+          "api-ddac9526",
+          "api-6ddcd799",
+          "api-0669d549",
+          "api-80cbd648",
+          "api-bee6fc80",
+          "api-a07ce53f",
+          "api-2896c820",
+          "api-5ce01b30",
+          "api-b86be7fc",
+          "api-c39e1ce9",
+          "api-7101c56b",
+          "api-7f2b914b",
+          "api-b1d37d57",
+          "api-b762e047",
+          "api-09477558"
         ],
-        "size": 305,
-        "tradition": "Default+african_ubuntu+chinese_xieyi+default+european_renaissance+indian+indian_rasa+islamic_geometric+japanese_traditional+japanese_wabi_sabi+korean_dancheong+persian_miniature",
+        "size": 354,
+        "tradition": "Default+african_ubuntu+chinese_xieyi+default+european_renaissance+indian+indian_rasa+islamic+islamic_geometric+japanese+japanese_traditional+japanese_wabi_sabi+korean+korean_dancheong+persian_miniature+western",
         "source": "cross_tradition",
         "traditions": [
           "Default",
@@ -4802,56 +5061,62 @@
           "european_renaissance",
           "indian",
           "indian_rasa",
+          "islamic",
           "islamic_geometric",
+          "japanese",
           "japanese_traditional",
           "japanese_wabi_sabi",
+          "korean",
           "korean_dancheong",
-          "persian_miniature"
+          "persian_miniature",
+          "western"
         ]
       }
     ]
   },
   "layer_focus": {
-    "islamic_geometric": {
+    "chinese_xieyi": {
       "visual_perception": {
         "focus_points": [
-          "geometric symmetry",
-          "tessellation precision",
-          "color harmony"
+          "ink wash gradients",
+          "negative space (留白)",
+          "brush rhythm"
         ],
         "anti_focus": [],
         "session_count": 0
       },
       "technical_analysis": {
         "focus_points": [
-          "compass-ruler construction",
-          "pattern repetition accuracy",
-          "gilding quality"
+          "brushstroke spontaneity",
+          "ink consistency",
+          "rice paper texture"
         ],
         "anti_focus": [],
         "session_count": 0
       },
       "cultural_context": {
         "focus_points": [
-          "aniconism principles",
-          "mathematical beauty",
-          "spiritual geometry"
+          "literati painting tradition",
+          "Daoist nature philosophy",
+          "poem-painting unity"
         ],
         "anti_focus": [],
         "session_count": 0
       },
       "critical_interpretation": {
         "focus_points": [
-          "infinite pattern meditation",
-          "unity in multiplicity"
+          "qi yun (气韵生动)",
+          "xie yi spirit over form",
+          "scholar aesthetics"
         ],
         "anti_focus": [],
         "session_count": 0
       },
       "philosophical_aesthetic": {
         "focus_points": [
-          "divine order through geometry",
-          "transcendence of material form"
+          "Dao in brushwork",
+          "emptiness as presence",
+          "nature-human unity"
         ],
         "anti_focus": [],
         "session_count": 0
@@ -4898,190 +5163,6 @@
           "wabi-sabi acceptance",
           "nature-art continuity",
           "quiet depth"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      }
-    },
-    "western_academic": {
-      "visual_perception": {
-        "focus_points": [
-          "chiaroscuro modeling",
-          "linear perspective",
-          "anatomical proportion"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      },
-      "technical_analysis": {
-        "focus_points": [
-          "oil layering technique",
-          "color theory application",
-          "canvas preparation"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      },
-      "cultural_context": {
-        "focus_points": [
-          "classical tradition",
-          "art historical references",
-          "genre conventions"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      },
-      "critical_interpretation": {
-        "focus_points": [
-          "iconographic analysis",
-          "formal composition critique"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      },
-      "philosophical_aesthetic": {
-        "focus_points": [
-          "mimesis vs. expression",
-          "beauty and sublimity",
-          "artistic genius"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      }
-    },
-    "south_asian": {
-      "visual_perception": {
-        "focus_points": [
-          "vivid color saturation",
-          "ornamental density",
-          "narrative composition"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      },
-      "technical_analysis": {
-        "focus_points": [
-          "miniature painting precision",
-          "natural dye mastery",
-          "gold detailing"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      },
-      "cultural_context": {
-        "focus_points": [
-          "rasa theory (emotional essence)",
-          "mythological narratives",
-          "devotional art"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      },
-      "critical_interpretation": {
-        "focus_points": [
-          "rasa identification",
-          "darshan (sacred seeing)",
-          "iconometric rules"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      },
-      "philosophical_aesthetic": {
-        "focus_points": [
-          "divine beauty manifestation",
-          "cyclical time in art",
-          "sensory transcendence"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      }
-    },
-    "watercolor": {
-      "visual_perception": {
-        "focus_points": [
-          "luminous transparency",
-          "wet-on-wet diffusion",
-          "paper white preservation"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      },
-      "technical_analysis": {
-        "focus_points": [
-          "wash control",
-          "granulation effects",
-          "lifting and blotting"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      },
-      "cultural_context": {
-        "focus_points": [
-          "plein air tradition",
-          "botanical illustration heritage",
-          "travel sketching"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      },
-      "critical_interpretation": {
-        "focus_points": [
-          "spontaneity vs. control balance",
-          "light as subject"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      },
-      "philosophical_aesthetic": {
-        "focus_points": [
-          "ephemerality of the medium",
-          "harmony with accident"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      }
-    },
-    "african_traditional": {
-      "visual_perception": {
-        "focus_points": [
-          "bold pattern rhythms",
-          "symbolic color use",
-          "sculptural form"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      },
-      "technical_analysis": {
-        "focus_points": [
-          "material authenticity",
-          "textile/carving technique",
-          "natural pigments"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      },
-      "cultural_context": {
-        "focus_points": [
-          "communal storytelling",
-          "ritual significance",
-          "ancestral symbolism"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      },
-      "critical_interpretation": {
-        "focus_points": [
-          "spiritual function",
-          "social identity encoding"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      },
-      "philosophical_aesthetic": {
-        "focus_points": [
-          "art as life force",
-          "collective memory",
-          "spiritual embodiment"
         ],
         "anti_focus": [],
         "session_count": 0
@@ -5134,48 +5215,230 @@
         "session_count": 0
       }
     },
-    "chinese_xieyi": {
+    "south_asian": {
       "visual_perception": {
         "focus_points": [
-          "ink wash gradients",
-          "negative space (留白)",
-          "brush rhythm"
+          "vivid color saturation",
+          "ornamental density",
+          "narrative composition"
         ],
         "anti_focus": [],
         "session_count": 0
       },
       "technical_analysis": {
         "focus_points": [
-          "brushstroke spontaneity",
-          "ink consistency",
-          "rice paper texture"
+          "miniature painting precision",
+          "natural dye mastery",
+          "gold detailing"
         ],
         "anti_focus": [],
         "session_count": 0
       },
       "cultural_context": {
         "focus_points": [
-          "literati painting tradition",
-          "Daoist nature philosophy",
-          "poem-painting unity"
+          "rasa theory (emotional essence)",
+          "mythological narratives",
+          "devotional art"
         ],
         "anti_focus": [],
         "session_count": 0
       },
       "critical_interpretation": {
         "focus_points": [
-          "qi yun (气韵生动)",
-          "xie yi spirit over form",
-          "scholar aesthetics"
+          "rasa identification",
+          "darshan (sacred seeing)",
+          "iconometric rules"
         ],
         "anti_focus": [],
         "session_count": 0
       },
       "philosophical_aesthetic": {
         "focus_points": [
-          "Dao in brushwork",
-          "emptiness as presence",
-          "nature-human unity"
+          "divine beauty manifestation",
+          "cyclical time in art",
+          "sensory transcendence"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      }
+    },
+    "african_traditional": {
+      "visual_perception": {
+        "focus_points": [
+          "bold pattern rhythms",
+          "symbolic color use",
+          "sculptural form"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "technical_analysis": {
+        "focus_points": [
+          "material authenticity",
+          "textile/carving technique",
+          "natural pigments"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "cultural_context": {
+        "focus_points": [
+          "communal storytelling",
+          "ritual significance",
+          "ancestral symbolism"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "critical_interpretation": {
+        "focus_points": [
+          "spiritual function",
+          "social identity encoding"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "philosophical_aesthetic": {
+        "focus_points": [
+          "art as life force",
+          "collective memory",
+          "spiritual embodiment"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      }
+    },
+    "watercolor": {
+      "visual_perception": {
+        "focus_points": [
+          "luminous transparency",
+          "wet-on-wet diffusion",
+          "paper white preservation"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "technical_analysis": {
+        "focus_points": [
+          "wash control",
+          "granulation effects",
+          "lifting and blotting"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "cultural_context": {
+        "focus_points": [
+          "plein air tradition",
+          "botanical illustration heritage",
+          "travel sketching"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "critical_interpretation": {
+        "focus_points": [
+          "spontaneity vs. control balance",
+          "light as subject"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "philosophical_aesthetic": {
+        "focus_points": [
+          "ephemerality of the medium",
+          "harmony with accident"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      }
+    },
+    "islamic_geometric": {
+      "visual_perception": {
+        "focus_points": [
+          "geometric symmetry",
+          "tessellation precision",
+          "color harmony"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "technical_analysis": {
+        "focus_points": [
+          "compass-ruler construction",
+          "pattern repetition accuracy",
+          "gilding quality"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "cultural_context": {
+        "focus_points": [
+          "aniconism principles",
+          "mathematical beauty",
+          "spiritual geometry"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "critical_interpretation": {
+        "focus_points": [
+          "infinite pattern meditation",
+          "unity in multiplicity"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "philosophical_aesthetic": {
+        "focus_points": [
+          "divine order through geometry",
+          "transcendence of material form"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      }
+    },
+    "western_academic": {
+      "visual_perception": {
+        "focus_points": [
+          "chiaroscuro modeling",
+          "linear perspective",
+          "anatomical proportion"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "technical_analysis": {
+        "focus_points": [
+          "oil layering technique",
+          "color theory application",
+          "canvas preparation"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "cultural_context": {
+        "focus_points": [
+          "classical tradition",
+          "art historical references",
+          "genre conventions"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "critical_interpretation": {
+        "focus_points": [
+          "iconographic analysis",
+          "formal composition critique"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "philosophical_aesthetic": {
+        "focus_points": [
+          "mimesis vs. expression",
+          "beauty and sublimity",
+          "artistic genius"
         ],
         "anti_focus": [],
         "session_count": 0
@@ -5185,9 +5448,9 @@
   "queen_strategy": {
     "accept_threshold_adjustment": 0.15,
     "prefer_quality_over_speed": true,
-    "high_pattern_count": 8,
+    "high_pattern_count": 7,
     "negative_feedback_count": 0,
-    "updated_at": "2026-03-12T21:29:58"
+    "updated_at": "2026-03-13T22:46:53"
   },
   "few_shot_examples": [
     {
@@ -5310,6 +5573,30 @@
       ]
     },
     {
+      "tradition": "korean",
+      "subject": "Tiger and magpie beneath an ancient pine tree in folk painting style",
+      "intent": "Tiger and magpie beneath an ancient pine tree in folk painting style",
+      "score": 0.7899999999999999,
+      "session_id": "api-bf9d26dc",
+      "key_strengths": [
+        "technical_analysis",
+        "critical_interpretation",
+        "philosophical_aesthetic"
+      ]
+    },
+    {
+      "tradition": "western",
+      "subject": "Still life with peonies, grapes, and a golden chalice in warm afternoon light",
+      "intent": "Still life with peonies, grapes, and a golden chalice in warm afternoon light",
+      "score": 0.7899999999999999,
+      "session_id": "api-f902d7e4",
+      "key_strengths": [
+        "technical_analysis",
+        "critical_interpretation",
+        "philosophical_aesthetic"
+      ]
+    },
+    {
       "tradition": "japanese_wabi_sabi",
       "subject": "kintsugi vessel",
       "intent": "kintsugi repaired vessel still life",
@@ -5319,6 +5606,18 @@
         "L1",
         "L3",
         "L4"
+      ]
+    },
+    {
+      "tradition": "islamic",
+      "subject": "Intricate arabesque patterns adorning a mosque dome with golden light",
+      "intent": "Intricate arabesque patterns adorning a mosque dome with golden light",
+      "score": 0.7699999999999999,
+      "session_id": "api-3c178cda",
+      "key_strengths": [
+        "technical_analysis",
+        "critical_interpretation",
+        "philosophical_aesthetic"
       ]
     },
     {
@@ -5342,38 +5641,27 @@
         "L1",
         "L4"
       ]
-    },
-    {
-      "tradition": "islamic_geometric",
-      "subject": "tessellation",
-      "intent": "islamic geometric tessellation pattern",
-      "score": 0.75,
-      "session_id": "seed-004",
-      "key_strengths": [
-        "L2",
-        "L4"
-      ]
     }
   ],
   "agent_insights": {
-    "scout": "Focus on identifying subjects that allow for deep philosophical and critical interpretation, especially within Chinese Xieyi and Default traditions. Prioritize subjects with strong cultural resonance and potential for expressive brushwork or conceptual depth.",
-    "draft": "Emphasize the philosophical and expressive qualities, particularly for Chinese Xieyi, focusing on 'spirit resonance' and spontaneous ink. For Default, balance technical execution with critical and philosophical depth, ensuring conceptual clarity.",
-    "critic": "Prioritize evaluation based on philosophical depth, critical interpretation, and technical mastery, especially for Chinese Xieyi and Default. Assess how well the art embodies underlying concepts and cultural context, rewarding nuanced expression.",
-    "queen": "Favor decisions that align with strong philosophical and critical interpretations, and robust technical execution, particularly in Chinese Xieyi and Default. Look for innovative expressions that deepen the understanding of these successful areas."
+    "scout": "Focus on identifying subjects that allow for deep philosophical and critical interpretation, particularly those resonating with the expressive and spontaneous qualities of Chinese Xieyi. Also, seek subjects that demand robust technical analysis and demonstrate clear conceptual depth, aligning with high-performing 'default' attributes.",
+    "draft": "Emphasize generating images that embody the philosophical depth and expressive brushwork characteristic of Chinese Xieyi. For 'default' creations, prioritize technical precision and compositions that invite critical engagement, ensuring a strong conceptual foundation alongside visual mastery.",
+    "critic": "Prioritize evaluating how effectively images convey philosophical meaning and expressive vitality, especially within Chinese Xieyi. For 'default' works, assess the technical execution and the depth of critical interpretation they provoke, looking for sophisticated formal and conceptual solutions.",
+    "queen": "Consider selections that prominently showcase the successful integration of philosophical depth and expressive technique, particularly within Chinese Xieyi. Favor pieces that demonstrate robust technical mastery and critical engagement, ensuring they align with the consistently high-performing attributes identified across sessions."
   },
   "tradition_insights": {
-    "african_traditional": "This tradition shows a good foundation in cultural context. To improve, focus on translating the rich symbolism and storytelling into compelling visual narratives. Explore how specific cultural functions or rituals can inform artistic choices, enhancing both technical and interpretive depth.",
-    "chinese_gongbi": "Gongbi demonstrates a solid understanding of technical analysis and cultural context. To evolve, integrate stronger critical interpretation and philosophical depth. Explore how meticulous detail and vibrant colors can convey subtle narratives or profound aesthetic principles, moving beyond mere representation.",
-    "chinese_xieyi": "Chinese Xieyi is performing exceptionally well across all detected patterns, indicating a strong grasp of its core principles. Continue to push the boundaries of expressive brushwork and spontaneous ink washes. Deepen the connection between form and philosophical concepts, emphasizing 'spirit resonance' and inner vitality with innovative approaches.",
-    "default": "The 'default' tradition shows consistent high performance in technical, critical, and philosophical aspects. Leverage this robust understanding to explore diverse subjects and styles. Seek to imbue each piece with a unique philosophical perspective, moving beyond general interpretations to more specific and impactful artistic statements.",
-    "islamic_geometric": "This tradition has a strong focus on technical precision and visual perception. To improve, delve deeper into the philosophical and spiritual dimensions inherent in Islamic geometric art. Explore how intricate patterns and tessellations embody concepts of infinity, divine order, and unity, enhancing their conceptual weight.",
-    "japanese_traditional": "This tradition needs more focused development. Explore core Japanese aesthetics like Wabi-Sabi, Mono no Aware, and Yugen. Emphasize natural motifs, delicate lines, and balanced compositions to convey tranquility and profound beauty, ensuring cultural authenticity and emotional resonance.",
-    "south_asian": "This tradition needs more focused development. Explore the vibrant narratives, intricate details, and rich symbolism prevalent in South Asian art. Focus on depicting mythological themes, daily life, and spiritual concepts with expressive color palettes and dynamic compositions, capturing cultural richness.",
-    "watercolor": "This tradition needs more focused development. Harness the fluidity and transparency of watercolor to create luminous effects and atmospheric depth. Experiment with washes, layering, and dry brush techniques to capture light and texture effectively, pushing the medium's expressive potential.",
-    "western_academic": "This tradition needs more focused development. Revisit classical principles of anatomy, perspective, and composition. Focus on realistic representation, chiaroscuro, and narrative clarity. Explore how academic rigor can be applied to contemporary subjects, bridging traditional techniques with modern interpretations."
+    "african_traditional": "What's working: The strong emphasis on cultural context is a solid foundation for this tradition. What needs improvement: The absence of 'consistently_high' patterns suggests opportunities to deepen engagement. Guidance: Explore how specific cultural narratives, symbolism, and material practices can be more vividly integrated into the visual language, enhancing both technical and critical interpretations unique to diverse African art forms.",
+    "chinese_gongbi": "What's working: The focus on technical analysis and cultural context aligns well with Gongbi's meticulous nature. What needs improvement: Lack of 'consistently_high' patterns indicates room for improvement in overall impact. Guidance: Enhance the depiction of intricate details, precise brushwork, and vibrant, layered colors. Focus on capturing the delicate beauty and symbolic richness through meticulous execution, ensuring the visual perception of its refined aesthetic is paramount.",
+    "chinese_xieyi": "What's working: This tradition is performing exceptionally well across philosophical aesthetic, critical interpretation, and technical analysis, with strong engagement at multiple levels. What needs improvement: Continuous refinement of expressive freedom. Guidance: Continue to emphasize spontaneous, calligraphic brushwork and deep philosophical underpinnings. Explore new ways to convey 'spirit resonance' (qi yun) and the artist's inner world, pushing boundaries while maintaining authentic styli",
+    "default": "What's working: Strong performance in technical analysis, critical interpretation, and philosophical aesthetic. What needs improvement: While philosophical aesthetic is high in patterns, its weight could be further optimized to match its impact. Guidance: Leverage the strong performance in technical and critical analysis by exploring diverse subjects that allow for sophisticated formal and conceptual exploration. Integrate philosophical depth more explicitly, ensuring generated art prompts deepe",
+    "islamic_geometric": "What's working: The strong focus on technical analysis and visual perception is crucial for this tradition. What needs improvement: The absence of 'consistently_high' patterns suggests a need to deepen engagement. Guidance: Focus on precise construction and intricate tessellations, ensuring mathematical accuracy and visual harmony. Explore the spiritual and philosophical dimensions of the patterns, conveying the infinite nature and underlying order through sophisticated compositions and color pa",
+    "japanese_traditional": "What's working: N/A (no specific data). What needs improvement: N/A (no specific data). Guidance: Focus on capturing distinctive aesthetic principles like *wabi-sabi*, *yūgen*, and *iki*. Emphasize delicate brushwork, evocative compositions, and the interplay of negative space. Explore traditional subjects like ukiyo-e landscapes, sumi-e, or nihonga, ensuring cultural authenticity and stylistic integrity.",
+    "south_asian": "What's working: N/A (no specific data). What needs improvement: N/A (no specific data). Guidance: Explore the rich diversity of South Asian art forms, from miniature paintings to temple sculptures. Emphasize vibrant color palettes, intricate detailing, and narrative storytelling. Ensure accurate representation of mythological, religious, and cultural themes, reflecting the region's spiritual and historical depth.",
+    "watercolor": "What's working: N/A (no specific data). What needs improvement: N/A (no specific data). Guidance: Focus on the unique properties of watercolor: transparency, luminosity, and fluidity. Experiment with washes, layering, and wet-on-wet techniques to create atmospheric effects and vibrant textures. Emphasize light and shadow, capturing the ephemeral beauty and spontaneous nature inherent to the medium.",
+    "western_academic": "What's working: N/A (no specific data). What needs improvement: N/A (no specific data). Guidance: Emphasize classical principles of composition, anatomy, perspective, and chiaroscuro. Focus on realistic representation, technical mastery, and narrative clarity. Explore traditional genres like portraiture, landscape, and historical painting, ensuring a strong foundation in academic drawing and painting techniques."
   },
   "trajectory_insights": {
-    "total_trajectories": 967,
+    "total_trajectories": 1012,
     "common_weak_dimensions": [
       "visual_perception",
       "cultural_context",
@@ -5382,9 +5670,9 @@
       "critical_interpretation"
     ],
     "avg_rounds_to_accept": 1.17,
-    "repair_success_rate": 0.181,
+    "repair_success_rate": 0.177,
     "tradition_avg_rounds": {
-      "default": 1.16,
+      "default": 1.17,
       "chinese_xieyi": 1.1,
       "islamic": 2.0,
       "chinese_painting": 1.0,
