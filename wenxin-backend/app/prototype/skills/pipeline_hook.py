@@ -78,8 +78,9 @@ def run_pipeline_skills(
     Returns:
         List of skill result dicts with keys: skill_name, success, result/error.
     """
-    # Lazy import to avoid circular dependencies and ensure executors
-    # are registered by the time we look them up.
+    # Import executors package (not just base) to trigger __init_subclass__
+    # registration of all concrete executors.
+    import app.prototype.skills.executors  # noqa: F401 — triggers registration
     from app.prototype.skills.executors.base import BaseSkillExecutor
 
     # Determine which skills to run
@@ -152,7 +153,12 @@ def _run_async_skill(
     2. Running event loop with ``nest_asyncio`` available — patch and run.
     3. Running event loop without ``nest_asyncio`` — run in a new thread.
     """
-    coro = executor.execute(image_path, context=context)  # type: ignore[attr-defined]
+
+    async def _coro():
+        return await asyncio.wait_for(
+            executor.execute(image_path, context=context),  # type: ignore[attr-defined]
+            timeout=timeout,
+        )
 
     try:
         loop = asyncio.get_running_loop()
@@ -161,7 +167,7 @@ def _run_async_skill(
 
     if loop is None:
         # No running event loop — simplest path
-        return asyncio.run(asyncio.wait_for(coro, timeout=timeout))
+        return asyncio.run(_coro())
 
     # There is already a running event loop.
     # Try nest_asyncio first (common in Jupyter / Gradio contexts).
@@ -169,7 +175,7 @@ def _run_async_skill(
         import nest_asyncio
 
         nest_asyncio.apply()
-        return loop.run_until_complete(asyncio.wait_for(coro, timeout=timeout))
+        return loop.run_until_complete(_coro())
     except ImportError:
         pass
 
@@ -177,7 +183,5 @@ def _run_async_skill(
     import concurrent.futures
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
-        future = pool.submit(
-            asyncio.run, asyncio.wait_for(coro, timeout=timeout)
-        )
+        future = pool.submit(asyncio.run, _coro())
         return future.result(timeout=timeout + 5)

@@ -69,7 +69,12 @@ def create_agent(name: str, **kwargs: Any) -> Any:
         )
 
     module = importlib.import_module(module_path)
-    cls = getattr(module, class_name)
+    cls = getattr(module, class_name, None)
+    if cls is None:
+        raise AttributeError(
+            f"Agent '{name}': class '{class_name}' not found in module '{module_path}'. "
+            f"Check the catalog entry or module path."
+        )
     logger.debug("Creating agent '%s' via %s.%s", name, module_path, class_name)
     return cls(**kwargs)
 

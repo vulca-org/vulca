@@ -48,10 +48,11 @@ class TestStepRegistration:
         ordered = BaseDigester.get_ordered_digesters()
         priorities = [d.PRIORITY for d in ordered]
         assert priorities == sorted(priorities), "Steps not in priority order"
-        # Verify the 9 core steps appear in the expected order
+        # Verify enabled core steps appear in the expected order
+        # (InsightStep PRIORITY=90 is ENABLED_BY_DEFAULT=False, excluded)
         core_steps = [d for d in ordered if d.PRIORITY <= 90]
         core_priorities = [d.PRIORITY for d in core_steps]
-        expected_order = [10, 20, 30, 40, 50, 60, 70, 80, 90]
+        expected_order = [10, 20, 30, 40, 50, 60, 70, 80]
         assert core_priorities == expected_order
 
     def test_list_digesters(self):

@@ -153,6 +153,18 @@ def test_skill_hook_import_error_returns_empty():
     assert result == []
 
 
+def test_skill_hook_general_exception_returns_empty():
+    """_run_skill_hook returns [] gracefully when run_pipeline_skills raises."""
+    from app.prototype.orchestrator.orchestrator import PipelineOrchestrator
+
+    with patch("app.prototype.observability.langfuse_observer.LangfuseObserver"):
+        orch = PipelineOrchestrator(enable_skill_hook=True)
+
+    with patch("app.prototype.skills.pipeline_hook.run_pipeline_skills", side_effect=RuntimeError("boom")):
+        result = orch._run_skill_hook(image_path="/tmp/test.png", tradition="chinese_painting")
+    assert result == []
+
+
 # ---------------------------------------------------------------------------
 # test_catalog_matches_actual_modules
 # ---------------------------------------------------------------------------

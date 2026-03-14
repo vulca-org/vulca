@@ -110,7 +110,6 @@ class ContextEvolver:
         self._store = store or SessionStore.get()
         self._context_path = Path(context_path or _DEFAULT_CONTEXT_PATH).resolve()
         self._detector = PatternDetector(DigestAggregator(self._store))
-        self._learner = PreferenceLearner(self._store)
 
     def evolve(self) -> EvolutionResult:
         """Run full evolution cycle: detect -> learn -> adjust -> save.
@@ -141,7 +140,7 @@ class ContextEvolver:
                 logger.warning("ContextEvolver: could not initialize tradition_weights from cultural_weights")
 
         # Gather all sessions for pipeline steps
-        all_sessions = [s for s in (self._store.get_all() if hasattr(self._store, 'get_all') else [])]
+        all_sessions = self._store.get_all()
 
         # Build shared DigestContext
         ctx = DigestContext(
@@ -236,6 +235,14 @@ class ContextEvolver:
 
         # Store actions on ctx for potential use by later introspection
         ctx.actions = actions
+
+        # Run InsightStep explicitly (ENABLED_BY_DEFAULT=False because it
+        # depends on ctx.actions which is populated above, after the step loop).
+        try:
+            from app.prototype.digestion.steps.insight_step import InsightStep
+            ctx = InsightStep().digest(all_sessions, ctx)
+        except Exception as exc:
+            logger.debug("InsightStep (post-actions) failed: %s", exc)
 
         # Save if any actions or new data was added (C2: unified save point)
         has_new_data = bool(

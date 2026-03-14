@@ -10,10 +10,17 @@ logger = logging.getLogger(__name__)
 
 
 class InsightStep(BaseDigester):
-    """Generate agent and tradition insights via LLM (MemRL evolving context)."""
+    """Generate agent and tradition insights via LLM (MemRL evolving context).
+
+    Disabled by default because this step depends on ``ctx.actions`` which is
+    populated by the inline orchestration block *after* the step loop completes.
+    The ``ContextEvolver.evolve()`` method calls this step explicitly once
+    actions are available.
+    """
 
     STEP_NAME = "llm_insights"
     PRIORITY = 90
+    ENABLED_BY_DEFAULT = False
 
     def digest(self, sessions: list, ctx: DigestContext) -> DigestContext:
         """Delegate to ContextEvolver._generate_llm_insights."""

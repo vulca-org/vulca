@@ -27,12 +27,12 @@ The ``ContextEvolver`` can then pick up your step automatically:
 
 from __future__ import annotations
 
+import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import Any, ClassVar
 
-if TYPE_CHECKING:
-    pass
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -101,6 +101,12 @@ class BaseDigester(ABC):
     def __init_subclass__(cls, **kwargs: object) -> None:
         super().__init_subclass__(**kwargs)
         if cls.STEP_NAME:
+            existing = BaseDigester._registry.get(cls.STEP_NAME)
+            if existing is not None and existing is not cls:
+                logger.warning(
+                    "BaseDigester: STEP_NAME '%s' already registered by %s, overriding with %s",
+                    cls.STEP_NAME, existing.__name__, cls.__name__,
+                )
             BaseDigester._registry[cls.STEP_NAME] = cls
 
     @abstractmethod
@@ -132,7 +138,7 @@ class BaseDigester(ABC):
         """Return enabled digesters sorted by PRIORITY (ascending)."""
         return sorted(
             [d for d in cls._registry.values() if d.ENABLED_BY_DEFAULT],
-            key=lambda d: d.PRIORITY,
+            key=lambda d: (d.PRIORITY, d.STEP_NAME),
         )
 
     @classmethod
@@ -141,7 +147,7 @@ class BaseDigester(ABC):
 
         Each entry contains ``name``, ``priority``, and ``enabled`` keys.
         """
-        all_digesters = sorted(cls._registry.values(), key=lambda d: d.PRIORITY)
+        all_digesters = sorted(cls._registry.values(), key=lambda d: (d.PRIORITY, d.STEP_NAME))
         return [
             {
                 "name": d.STEP_NAME,

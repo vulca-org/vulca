@@ -53,7 +53,7 @@ from app.prototype.pipeline.pipeline_types import (
 from app.prototype.cultural_pipelines.dynamic_weights import compute_dynamic_weights
 from app.prototype.cultural_pipelines.pipeline_router import CulturalPipelineRouter
 from app.prototype.agents.prompt_enhancer import PromptEnhancer
-from app.prototype.tools.scout_service import ScoutService, get_scout_service
+from app.prototype.tools.scout_service import get_scout_service
 from app.prototype.trajectory.trajectory_recorder import TrajectoryRecorder
 from app.prototype.trajectory.trajectory_types import (
     CriticFindings,
@@ -150,7 +150,7 @@ class PipelineOrchestrator:
         if not self.enable_skill_hook:
             return []
         try:
-            from ..skills.pipeline_hook import run_pipeline_skills
+            from app.prototype.skills.pipeline_hook import run_pipeline_skills
             return run_pipeline_skills(
                 image_path=image_path,
                 tradition=tradition,
@@ -707,6 +707,21 @@ class PipelineOrchestrator:
                         ),
                         round_num=round_num,
                     )
+
+                # ==== SKILL HOOK (post_critic) ====
+                if self.enable_skill_hook and critique_output.best_candidate_id:
+                    for cand in draft_candidates:
+                        if cand.get("candidate_id") == critique_output.best_candidate_id:
+                            cand_path = cand.get("image_path", "")
+                            if cand_path:
+                                skill_results = self._run_skill_hook(
+                                    cand_path,
+                                    pipeline_input.cultural_tradition,
+                                    stage="post_critic",
+                                )
+                                if skill_results:
+                                    critique_dict["skill_results"] = skill_results
+                            break
 
                 # ==== QUEEN ====
                 yield self._event(EventType.STAGE_STARTED, "queen", round_num, t0)

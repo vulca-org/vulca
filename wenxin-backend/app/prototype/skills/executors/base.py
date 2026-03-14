@@ -5,6 +5,7 @@ import json
 import re
 from abc import ABC, abstractmethod
 from pathlib import Path
+from typing import ClassVar
 
 import litellm
 
@@ -27,7 +28,7 @@ class BaseSkillExecutor(ABC):
     SKILL_NAME: str = ""
 
     # Auto-populated by __init_subclass__: skill_name → executor class.
-    _registry: dict[str, type["BaseSkillExecutor"]] = {}
+    _registry: ClassVar[dict[str, type["BaseSkillExecutor"]]] = {}
 
     def __init_subclass__(cls, **kwargs: object) -> None:
         super().__init_subclass__(**kwargs)
