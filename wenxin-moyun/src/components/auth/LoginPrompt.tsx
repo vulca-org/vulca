@@ -28,7 +28,7 @@ const LoginPrompt: React.FC<LoginPromptProps> = ({
         return {
           icon: Clock,
           title: 'Daily Trial Limit Reached',
-          subtitle: `You've used all 3 free evaluations today`,
+          subtitle: `You've used all 10 free evaluations today`,
           description: 'Register to enjoy unlimited use and save your evaluation history.',
           buttonText: 'Sign Up Now',
           urgency: 'high' as const
@@ -139,7 +139,7 @@ const LoginPrompt: React.FC<LoginPromptProps> = ({
                     <div className="flex-1 bg-neutral-50 bg-opacity-20 rounded-full h-2">
                       <div className="h-full bg-neutral-50 rounded-full" style={{ width: '100%' }} />
                     </div>
-                    <span className="text-sm font-medium">3/3</span>
+                    <span className="text-sm font-medium">10/10</span>
                   </div>
                 )}
               </div>

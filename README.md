@@ -123,15 +123,18 @@ taboos:
 | Design System | Art Professional (warm gallery palette, glass morphism) |
 | Backend | FastAPI, Python 3.13, LiteLLM, asyncio |
 | Database | PostgreSQL (Supabase) / SQLite (local) |
-| AI Models | Gemini 2.5 Pro/Flash, NB2, Stable Diffusion |
+| AI Models | Gemini 2.5 Pro/Flash, NB2, FLUX.2 Pro, DALL-E 3, Diffusers, Mock |
 | Deployment | GCP Cloud Run, Firebase Hosting, GitHub Actions |
 | Testing | Playwright E2E (132 tests), pytest (824 tests) |
 
 ## API
 
-101 endpoints. Key ones:
+101+ endpoints. Key ones:
 
 ```
+POST /api/v1/auth/register             -- Register new user
+POST /api/v1/auth/login                -- OAuth2 login
+GET  /api/v1/auth/me                   -- Current user profile
 POST /api/v1/prototype/runs            -- Start a pipeline run
 GET  /api/v1/prototype/runs/{id}/events -- SSE event stream
 GET  /api/v1/prototype/gallery          -- Browse creations

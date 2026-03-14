@@ -10,7 +10,7 @@ export interface GuestSession {
 }
 
 const GUEST_SESSION_KEY = 'wenxin_guest_session';
-const DAILY_LIMIT = 3;
+const DAILY_LIMIT = 10;
 
 // UUID v4 format validation regex
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;

@@ -13,6 +13,7 @@ from app.core.security import (
     verify_password,
     get_password_hash
 )
+from app.api.deps import get_current_user
 from app.models.user import User
 from app.schemas.user import User as UserSchema, UserCreate, Token
 
@@ -21,6 +22,14 @@ class LoginRequest(BaseModel):
     password: str
 
 router = APIRouter()
+
+
+@router.get("/me", response_model=UserSchema)
+async def get_me(
+    current_user: User = Depends(get_current_user),
+) -> Any:
+    """Return current authenticated user profile"""
+    return current_user
 
 
 @router.post("/register", response_model=UserSchema)

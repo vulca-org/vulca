@@ -70,7 +70,7 @@ _buffer_lock = threading.Lock()  # Protects _event_buffers writes/reads
 
 # Guest rate limit (simple counter)
 _guest_runs_today: dict[str, int] = {}  # date_str -> count
-_GUEST_DAILY_LIMIT = 50
+_GUEST_DAILY_LIMIT = 10
 _TASK_RETENTION_SEC = 3600  # 1 hour TTL for completed runs
 _TASK_HARD_TIMEOUT_SEC = 14400  # 4 hours: force-clean even incomplete runs
 _EVOLUTION_INTERVAL_SEC = 300  # Throttle: evolve at most once per 5 minutes

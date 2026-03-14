@@ -16,6 +16,7 @@ const ModelsPage = lazy(loadModelsPage);
 const ModelDetailPage = lazy(() => import('./pages/ModelDetailPage'));
 const GalleryPage = lazy(() => import('./pages/GalleryPage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
+const RegisterPage = lazy(() => import('./pages/RegisterPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 const PricingPage = lazy(() => import('./pages/PricingPage'));
 const CustomersPage = lazy(() => import('./pages/CustomersPage'));
@@ -78,8 +79,9 @@ function App() {
       <ThemeProvider>
         <Router>
           <Routes>
-            {/* Login — no Layout wrapper */}
+            {/* Auth — no Layout wrapper */}
             <Route path="/login" element={<LazyRoute component={LoginPage} text="Loading Login..." />} />
+            <Route path="/register" element={<LazyRoute component={RegisterPage} text="Loading Register..." />} />
 
             <Route element={<Layout />}>
               {/* ── Core product ── */}

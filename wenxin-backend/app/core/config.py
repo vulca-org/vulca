@@ -71,7 +71,7 @@ class Settings(BaseSettings):
     ]
     
     # Rate Limiting
-    GUEST_DAILY_LIMIT: int = 5
+    GUEST_DAILY_LIMIT: int = 10
     AUTHENTICATED_DAILY_LIMIT: int = 50
     RATE_LIMIT_PER_MINUTE: int = 60
     

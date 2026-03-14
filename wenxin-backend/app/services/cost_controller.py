@@ -30,18 +30,23 @@ class CostController:
     # Daily quotas by user tier
     USER_QUOTAS = {
         "guest": {
-            "daily_requests": 3,
+            "daily_requests": 10,
             "daily_budget": 0.0,  # No paid services
-            "allowed_providers": ["gemini", "huggingface", "mock"]
+            "allowed_providers": ["gemini", "mock"]
         },
         "user": {
             "daily_requests": 10,
             "daily_budget": 1.0,  # $1 per day
-            "allowed_providers": ["openai", "gemini", "huggingface", "mock"]
+            "allowed_providers": ["gemini", "huggingface", "mock"]
         },
         "premium": {
             "daily_requests": 50,
             "daily_budget": 5.0,  # $5 per day
+            "allowed_providers": ["gemini", "huggingface", "mock"]
+        },
+        "self_hosted": {
+            "daily_requests": -1,  # Unlimited
+            "daily_budget": 0.0,  # Self-hosted, no external cost
             "allowed_providers": ["openai", "gemini", "huggingface", "mock"]
         },
         "vip": {

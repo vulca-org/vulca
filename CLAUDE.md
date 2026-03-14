@@ -110,8 +110,13 @@ src/
 ### Backend Architecture
 
 #### OAuth2 Authentication
+```
+POST /auth/register   — Create new user (JSON body)
+POST /auth/login      — OAuth2 token (form-urlencoded)
+GET  /auth/me         — Current user profile (Bearer token)
+```
 ```typescript
-// Must use form-urlencoded, NOT JSON
+// Login must use form-urlencoded, NOT JSON
 const formParams = new URLSearchParams();
 formParams.append('username', username);
 formParams.append('password', password);

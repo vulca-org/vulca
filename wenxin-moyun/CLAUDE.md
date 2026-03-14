@@ -272,6 +272,10 @@ plugins: [react(), tailwindcss()]
 - `/canvas` - Creation + evaluation (THE PRODUCT)
 - `/gallery` - Creation results display
 
+**Auth (outside Layout):**
+- `/login` - User login
+- `/register` - User registration (auto-login on success)
+
 **Support:**
 - `/vulca` - 47D visualization
 - `/methodology`, `/about` - How it works

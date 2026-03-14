@@ -125,7 +125,7 @@ class GuestSession:
     def __init__(self, guest_id: str, usage_count: int = 0, first_activity: datetime = None):
         self.guest_id = guest_id
         self.is_guest = True
-        self.daily_limit = 3  # Daily evaluation limit for guests
+        self.daily_limit = 10  # Daily evaluation limit for guests
         self.usage_count = usage_count
         self.remaining_uses = max(0, self.daily_limit - usage_count)
         self.created_at = first_activity or datetime.now(timezone.utc)
