@@ -246,6 +246,7 @@ class ComfyUIProvider(AbstractProvider):
 | File | Purpose |
 |------|---------|
 | `wenxin-backend/app/prototype/agents/draft_provider.py` | `AbstractProvider` base class |
+| `wenxin-backend/app/prototype/agents/replicate_provider.py` | FLUX.2 Pro / FLUX Schnell provider |
 | `wenxin-backend/app/prototype/agents/draft_agent.py` | `_get_provider()` factory |
 | `wenxin-backend/app/prototype/api/routes.py` | `/capabilities` endpoint |
 | `wenxin-moyun/src/components/prototype/ProviderQuickSwitch.tsx` | Frontend provider selector |

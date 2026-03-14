@@ -512,12 +512,13 @@ async def get_capabilities():
 
     # NOTE: ProviderRegistry (draft_provider.py) tracks registered providers,
     # but this list includes cost/availability metadata the registry doesn't track.
+    # FLUX.2 Pro pricing: ~$0.05/image (vs $0.003 for Schnell).
     providers = [
         {"id": "mock", "label": "Mock", "cost": 0, "available": True},
         {"id": "nb2", "label": "NB2", "cost": 0.067, "available": has_key},
         {"id": "diffusers", "label": "Diffusers", "cost": 0, "available": True},
         {"id": "openai", "label": "DALL-E 3", "cost": 0.04, "available": bool(os.environ.get("OPENAI_API_KEY"))},
-        {"id": "replicate", "label": "Flux", "cost": 0.003, "available": bool(os.environ.get("REPLICATE_API_TOKEN"))},
+        {"id": "replicate", "label": "FLUX.2 Pro", "cost": 0.05, "available": bool(os.environ.get("REPLICATE_API_TOKEN"))},
     ]
 
     return {

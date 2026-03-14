@@ -1,4 +1,7 @@
-"""NB2 Provider — Nano Banana 2 (gemini-3.1-flash-image-preview) draft image generator.
+"""NB2 Provider — Nano Banana 2 (Gemini 3.1 Flash Image) draft image generator.
+
+Model: gemini-3.1-flash-image-preview (upgraded 2026-03)
+Supports 512/1K/2K resolutions via prompt-based size directives.
 
 Key differences from FLUX/SD providers:
 - No seed control (NB2 is internally stochastic, accept_threshold relies on score not seed)
