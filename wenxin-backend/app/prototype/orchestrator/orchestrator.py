@@ -17,19 +17,26 @@ import time
 from collections.abc import Iterator
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-from app.prototype.agents.archivist_agent import ArchivistAgent
 from app.prototype.agents.archivist_types import ArchivistInput
-from app.prototype.agents.critic_agent import CriticAgent, build_critique_output
+from app.prototype.agents.critic_agent import build_critique_output
 from app.prototype.agents.critic_config import CriticConfig, DIMENSIONS
 from app.prototype.agents.critic_types import CandidateScore, CritiqueInput, CritiqueOutput
-from app.prototype.agents.draft_agent import DraftAgent
 from app.prototype.agents.draft_config import DraftConfig
 from app.prototype.agents.draft_types import DraftInput
 from app.prototype.agents.layer_state import LocalRerunRequest
-from app.prototype.agents.queen_agent import QueenAgent
 from app.prototype.agents.queen_config import QueenConfig
 from app.prototype.agents.queen_types import PlanState
+from app.prototype.orchestrator.agent_factory import create_agent
+
+if TYPE_CHECKING:
+    from app.prototype.agents.archivist_agent import ArchivistAgent
+    from app.prototype.agents.critic_agent import CriticAgent
+    from app.prototype.agents.critic_llm import CriticLLM
+    from app.prototype.agents.draft_agent import DraftAgent
+    from app.prototype.agents.queen_agent import QueenAgent
+    from app.prototype.agents.queen_llm import QueenLLMAgent
 from app.prototype.checkpoints.pipeline_checkpoint import (
     load_pipeline_stage,
     save_pipeline_output,
@@ -98,6 +105,8 @@ class PipelineOrchestrator:
         enable_llm_queen: bool = False,
         enable_prompt_enhancer: bool = False,
         enable_parallel_critic: bool = False,
+        enable_skill_hook: bool = False,
+        skill_hook_names: list[str] | None = None,
     ) -> None:
         self.d_cfg = draft_config or DraftConfig(provider="nb2", n_candidates=4, seed_base=42)
         self.cr_cfg = critic_config or CriticConfig()
@@ -110,6 +119,8 @@ class PipelineOrchestrator:
         self.enable_llm_queen = enable_llm_queen
         self.enable_prompt_enhancer = enable_prompt_enhancer
         self.enable_parallel_critic = enable_parallel_critic
+        self.enable_skill_hook = enable_skill_hook
+        self.skill_hook_names = skill_hook_names
 
         # Lazy import to avoid circular dependency
         from app.prototype.observability.langfuse_observer import LangfuseObserver
@@ -119,8 +130,7 @@ class PipelineOrchestrator:
         self._queen_llm = None
         if enable_llm_queen:
             try:
-                from app.prototype.agents.queen_llm import QueenLLMAgent
-                self._queen_llm = QueenLLMAgent(config=self.q_cfg)
+                self._queen_llm = create_agent("queen_llm", config=self.q_cfg)
                 self._queen_llm.build_trajectory_index()
             except Exception as exc:
                 logger.warning("LLM Queen init failed, using rules: %s", exc)
@@ -132,6 +142,27 @@ class PipelineOrchestrator:
     def get_run_state(self, task_id: str) -> RunState | None:
         """Get the RunState for an active run."""
         return self._runs.get(task_id)
+
+    def _run_skill_hook(
+        self, image_path: str, tradition: str, stage: str = "post_critic",
+    ) -> list[dict]:
+        """Run marketplace skills on pipeline artifacts after Critic stage."""
+        if not self.enable_skill_hook:
+            return []
+        try:
+            from ..skills.pipeline_hook import run_pipeline_skills
+            return run_pipeline_skills(
+                image_path=image_path,
+                tradition=tradition,
+                stage=stage,
+                skill_names=self.skill_hook_names,
+            )
+        except ImportError:
+            logger.debug("pipeline_hook not available, skipping skill hook")
+            return []
+        except Exception as exc:
+            logger.warning("Skill hook failed: %s", exc)
+            return []
 
     # ------------------------------------------------------------------
     # Public API: synchronous mode
@@ -301,7 +332,7 @@ class PipelineOrchestrator:
 
             # ==== CRITIC → QUEEN LOOP ====
             plan_state = PlanState(task_id=task_id)
-            queen = QueenAgent(config=self.q_cfg)
+            queen = create_agent("queen", config=self.q_cfg)
             final_decision = "stop"
             best_candidate_id: str | None = None
             draft_candidates: list[dict] = []
@@ -370,7 +401,7 @@ class PipelineOrchestrator:
                         height=self.d_cfg.height,
                         provider_model=self.d_cfg.provider_model,
                     )
-                    draft_agent = DraftAgent(config=round_cfg)
+                    draft_agent = create_agent("draft", config=round_cfg)
                     # Apply FixItPlan prompt_delta from previous round's Critic
                     effective_subject = pipeline_input.subject
                     if rerun_prompt_delta:
@@ -492,8 +523,7 @@ class PipelineOrchestrator:
                 dyn_weights = None  # initialized before conditional assignment
                 st = time.monotonic()
                 if self.enable_agent_critic:
-                    from app.prototype.agents.critic_llm import CriticLLM
-                    critic = CriticLLM(config=routed_critic_cfg)
+                    critic = create_agent("critic_llm", config=routed_critic_cfg)
                     critique_input = CritiqueInput(
                         task_id=task_id,
                         subject=pipeline_input.subject,
@@ -518,7 +548,7 @@ class PipelineOrchestrator:
                     )
                     critic = None  # no CriticAgent instance in parallel path
                 else:
-                    critic = CriticAgent(config=routed_critic_cfg)
+                    critic = create_agent("critic", config=routed_critic_cfg)
                     critique_input = CritiqueInput(
                         task_id=task_id,
                         subject=pipeline_input.subject,
@@ -810,7 +840,7 @@ class PipelineOrchestrator:
                         critic_fix_plan = getattr(critic, "fix_it_plan", None) if (self.enable_agent_critic and self.enable_fix_it_plan) else None
                         if critic_fix_plan is not None:
                             # Use FixItPlan-guided rerun
-                            draft_agent = DraftAgent(config=self.d_cfg)
+                            draft_agent = create_agent("draft", config=self.d_cfg)
                             inpaint_name = self._resolve_inpaint_provider_name(
                                 queen_output.decision.rerun_dimensions,
                             )
@@ -842,7 +872,7 @@ class PipelineOrchestrator:
                             inpaint_name = self._resolve_inpaint_provider_name(
                                 queen_output.decision.rerun_dimensions,
                             )
-                            draft_agent = DraftAgent(config=self.d_cfg)
+                            draft_agent = create_agent("draft", config=self.d_cfg)
                             refined = draft_agent.refine_candidate(
                                 local_rerun_request=local_rerun,
                                 base_image_path=base_image_path,
@@ -928,7 +958,7 @@ class PipelineOrchestrator:
                     critic_config_dict=routed_critic_cfg.to_dict(),
                     queen_config_dict=self.q_cfg.to_dict(),
                 )
-                archivist = ArchivistAgent()
+                archivist = create_agent("archivist")
                 arch_out = archivist.run(arch_input)
 
                 stages.append(StageResult(

@@ -2,7 +2,7 @@
 
 Two-phase evolution:
 1. **Rule-based** (always runs): Weight adjustments with safety guardrails
-   (single adjustment ≤ ±0.05, weights sum to 1.0, minimum sessions).
+   (single adjustment <= +/-0.05, weights sum to 1.0, minimum sessions).
 2. **LLM-powered** (when API key available): Generates ``agent_insights``
    and ``tradition_insights`` — narrative guidance injected into agent
    system prompts.  This is the MemRL core: frozen model + evolving context.
@@ -20,6 +20,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from app.prototype.digestion.aggregator import DigestAggregator
+from app.prototype.digestion.base import BaseDigester, DigestContext
 from app.prototype.digestion.pattern_detector import Pattern, PatternDetector
 from app.prototype.digestion.preference_learner import PreferenceLearner
 from app.prototype.session.store import SessionStore
@@ -32,7 +33,7 @@ _LLM_TIMEOUT_S = 60
 _AGENT_ROLES = frozenset({"scout", "draft", "critic", "queen"})
 
 # Seed sessions use L1-L5 shorthand; weights use full dimension names.
-# This map normalises *any* known alias → canonical full name so that both
+# This map normalises *any* known alias -> canonical full name so that both
 # ``"L1"`` and ``"visual_perception"`` resolve to the same key.
 _LAYER_NAME_MAP: dict[str, str] = {
     # Short labels (session data)
@@ -49,7 +50,7 @@ _LAYER_NAME_MAP: dict[str, str] = {
     "philosophical_aesthetic": "philosophical_aesthetic",
 }
 
-# Reverse: canonical full name → L-label (e.g. for normalising weight keys)
+# Reverse: canonical full name -> L-label (e.g. for normalising weight keys)
 _DIM_TO_LABEL: dict[str, str] = {v: k for k, v in _LAYER_NAME_MAP.items() if k.startswith("L")}
 
 # Keep backward-compatible alias (several modules import _DIM_ALIASES)
@@ -112,7 +113,12 @@ class ContextEvolver:
         self._learner = PreferenceLearner(self._store)
 
     def evolve(self) -> EvolutionResult:
-        """Run full evolution cycle: detect → learn → adjust → save."""
+        """Run full evolution cycle: detect -> learn -> adjust -> save.
+
+        Uses the step adapter pipeline (``BaseDigester.get_ordered_digesters``)
+        for pluggable digestion steps, with inline orchestration for weight
+        adjustments and preference boosts that depend on cross-step data.
+        """
         session_count = self._store.count()
 
         if session_count < _MIN_SESSIONS_TO_EVOLVE:
@@ -120,9 +126,6 @@ class ContextEvolver:
                 sessions_analyzed=session_count,
                 skipped_reason=f"Need {_MIN_SESSIONS_TO_EVOLVE} sessions, have {session_count}",
             )
-
-        # Detect patterns
-        patterns = self._detector.detect()
 
         # Load current context
         context = self._load_context()
@@ -137,8 +140,33 @@ class ContextEvolver:
             except Exception:
                 logger.warning("ContextEvolver: could not initialize tradition_weights from cultural_weights")
 
-        # Generate evolution actions from patterns
+        # Gather all sessions for pipeline steps
+        all_sessions = [s for s in (self._store.get_all() if hasattr(self._store, 'get_all') else [])]
+
+        # Build shared DigestContext
+        ctx = DigestContext(
+            data=context,
+            session_count=session_count,
+            sessions=all_sessions,
+            evolver=self,
+        )
+
+        # --- Run registered pipeline steps ---
+        # Import steps module to trigger __init_subclass__ registration
+        import app.prototype.digestion.steps  # noqa: F401
+
+        for digester_cls in BaseDigester.get_ordered_digesters():
+            step_name = digester_cls.STEP_NAME
+            try:
+                digester = digester_cls()
+                ctx = digester.digest(all_sessions, ctx)
+            except Exception as exc:
+                logger.debug("Digestion step '%s' failed: %s", step_name, exc)
+
+        # --- Inline orchestration: weight adjustments from patterns ---
         actions: list[EvolutionAction] = []
+        patterns = ctx.patterns
+
         for pattern in patterns:
             if pattern.pattern_type == "systematically_low" and pattern.dimension != "feedback":
                 action = self._boost_dimension(context, pattern)
@@ -148,14 +176,14 @@ class ContextEvolver:
                 # Don't auto-adjust for feedback patterns; log only
                 logger.info("Feedback pattern detected for %s: %s", pattern.tradition, pattern.description)
 
-        # Consume preference learner output (WU-10)
+        # --- Inline orchestration: preference boost/reduce ---
+        preferences = ctx.data.pop("_preferences", {})
         try:
-            preferences = self._learner.learn()
             for tradition, profile in preferences.items():
                 weights = context.get("tradition_weights", {}).get(tradition)
                 if not weights:
                     continue
-                # Boost preferred dimensions slightly (within ±0.05 guardrail)
+                # Boost preferred dimensions slightly (within +/-0.05 guardrail)
                 for dim in profile.preferred_dimensions:
                     if dim in weights:
                         old_val = weights[dim]
@@ -176,7 +204,7 @@ class ContextEvolver:
                     for d in weights:
                         weights[d] = weights[d] / total
         except Exception as exc:
-            logger.debug("Preference learning skipped: %s", exc)
+            logger.debug("Preference boost skipped: %s", exc)
 
         # Consume avoided dimensions from preference learner (C3)
         try:
@@ -206,75 +234,8 @@ class ContextEvolver:
         except Exception:
             pass  # preferences may not be defined if learner failed
 
-        # --- Phase 1.4: Layer focus generation from session scores ---
-        all_sessions = [s for s in (self._store.get_all() if hasattr(self._store, 'get_all') else [])]
-        try:
-            layer_focus = self._extract_layer_focus(all_sessions)
-            if layer_focus:
-                context["layer_focus"] = layer_focus
-        except Exception as exc:
-            logger.debug("Layer focus extraction skipped: %s", exc)
-
-        # Catabolic: Cultural clustering
-        try:
-            from app.prototype.digestion.cultural_clusterer import CulturalClusterer
-            clusterer = CulturalClusterer()
-            clusters = clusterer.cluster(all_sessions)
-            if clusters:
-                context.setdefault("feature_space", {})["clusters"] = [c.to_dict() for c in clusters]
-        except Exception as exc:
-            logger.debug("Cultural clustering skipped: %s", exc)
-            clusters = []
-
-        # Anabolic: Prompt distillation
-        try:
-            from app.prototype.digestion.prompt_distiller import PromptDistiller
-            distiller = PromptDistiller()
-            archetypes = distiller.distill(all_sessions)
-            if archetypes:
-                context.setdefault("prompt_contexts", {})["archetypes"] = [a.to_dict() for a in archetypes]
-        except Exception as exc:
-            logger.debug("Prompt distillation skipped: %s", exc)
-
-        # Growth: Concept crystallization
-        try:
-            from app.prototype.digestion.concept_crystallizer import ConceptCrystallizer
-            crystallizer = ConceptCrystallizer()
-            concepts = crystallizer.crystallize(clusters, all_sessions)
-            if concepts:
-                for concept in concepts:
-                    context.setdefault("cultures", {})[concept.name] = concept.to_dict()
-        except Exception as exc:
-            logger.debug("Concept crystallization skipped: %s", exc)
-
-        # --- Trajectory-based learning ---
-        try:
-            trajectory_insights = self._extract_trajectory_insights()
-            if trajectory_insights:
-                context.setdefault("trajectory_insights", {}).update(trajectory_insights)
-        except Exception as exc:
-            logger.debug("Trajectory learning skipped: %s", exc)
-
-        # --- Queen strategy evolution ---
-        try:
-            queen_strategy = self._evolve_queen_strategy(context, patterns)
-            if queen_strategy:
-                context["queen_strategy"] = queen_strategy
-        except Exception as exc:
-            logger.debug("Queen strategy evolution skipped: %s", exc)
-
-        # --- LLM insights generation (MemRL: evolving context) ---
-        try:
-            insights = self._generate_llm_insights(
-                context, patterns, actions, all_sessions,
-            )
-            if insights:
-                if insights.get("agent_insights"):
-                    context["agent_insights"] = insights["agent_insights"]
-                if insights.get("tradition_insights"):
-                    context["tradition_insights"] = insights["tradition_insights"]
-        except Exception as exc:
-            logger.debug("LLM insights generation skipped: %s", exc)
+        # Store actions on ctx for potential use by later introspection
+        ctx.actions = actions
 
         # Save if any actions or new data was added (C2: unified save point)
         has_new_data = bool(
@@ -361,7 +322,7 @@ class ContextEvolver:
             try:
                 with open(self._context_path, "r", encoding="utf-8") as f:
                     context = json.load(f)
-                # v1 → v2 auto-upgrade
+                # v1 -> v2 auto-upgrade
                 if "cultures" not in context:
                     context["cultures"] = {}
                 if "prompt_contexts" not in context:
@@ -475,12 +436,12 @@ You are an expert cultural art evolution analyst for the VULCA system.
 Analyze session patterns and generate actionable insights for AI agents.
 
 Output valid JSON with two keys:
-1. "agent_insights": dict mapping agent role → guidance string
+1. "agent_insights": dict mapping agent role -> guidance string
    - "scout": What the Scout agent should focus on when analyzing subjects
    - "draft": What the Draft agent should emphasize when generating images
    - "critic": What the Critic agent should prioritize when evaluating
    - "queen": What the Queen agent should consider when making final decisions
-2. "tradition_insights": dict mapping tradition name → narrative string
+2. "tradition_insights": dict mapping tradition name -> narrative string
    Each narrative should describe what's working, what needs improvement,
    and specific guidance for creating better art in that tradition.
 
@@ -533,7 +494,7 @@ Generate agent insights and tradition-specific guidance based on this data."""
         ) or "none detected"
 
         action_summary = "; ".join(
-            f"{a.dimension} {a.old_value:.2f}→{a.new_value:.2f} ({a.reason})"
+            f"{a.dimension} {a.old_value:.2f}->{a.new_value:.2f} ({a.reason})"
             for a in actions[:5]
         ) or "none"
 
@@ -621,13 +582,13 @@ Generate agent insights and tradition-specific guidance based on this data."""
         "critical_interpretation", "philosophical_aesthetic",
     ]
 
-    # Map tradition → layer → what matters (seeded from domain knowledge)
+    # Map tradition -> layer -> what matters (seeded from domain knowledge)
     _SEED_FOCUS: dict[str, dict[str, list[str]]] = {
         "chinese_xieyi": {
-            "visual_perception": ["ink wash gradients", "negative space (留白)", "brush rhythm"],
+            "visual_perception": ["ink wash gradients", "negative space (\u7559\u767d)", "brush rhythm"],
             "technical_analysis": ["brushstroke spontaneity", "ink consistency", "rice paper texture"],
             "cultural_context": ["literati painting tradition", "Daoist nature philosophy", "poem-painting unity"],
-            "critical_interpretation": ["qi yun (气韵生动)", "xie yi spirit over form", "scholar aesthetics"],
+            "critical_interpretation": ["qi yun (\u6c14\u97f5\u751f\u52a8)", "xie yi spirit over form", "scholar aesthetics"],
             "philosophical_aesthetic": ["Dao in brushwork", "emptiness as presence", "nature-human unity"],
         },
         "chinese_gongbi": {
@@ -647,8 +608,8 @@ Generate agent insights and tradition-specific guidance based on this data."""
         "japanese_traditional": {
             "visual_perception": ["seasonal motifs", "asymmetric balance", "wabi-sabi textures"],
             "technical_analysis": ["sumi ink gradation", "woodblock layering", "gold leaf application"],
-            "cultural_context": ["mono no aware (物の哀れ)", "Zen simplicity", "seasonal awareness"],
-            "critical_interpretation": ["ma (間) spatial reading", "impermanence as beauty"],
+            "cultural_context": ["mono no aware (\u7269\u306e\u54c0\u308c)", "Zen simplicity", "seasonal awareness"],
+            "critical_interpretation": ["ma (\u9593) spatial reading", "impermanence as beauty"],
             "philosophical_aesthetic": ["wabi-sabi acceptance", "nature-art continuity", "quiet depth"],
         },
         "western_academic": {
@@ -832,9 +793,9 @@ Generate agent insights and tradition-specific guidance based on this data."""
         """Derive ``queen_strategy`` from detected scoring patterns.
 
         Logic:
-        - ``consistently_high`` patterns → raise accept_threshold (can be stricter)
-        - ``negative_feedback_dominant`` patterns → lower accept_threshold (need diversity)
-        - Adjustment ±0.05 per cycle, clamped to [-0.15, +0.15].
+        - ``consistently_high`` patterns -> raise accept_threshold (can be stricter)
+        - ``negative_feedback_dominant`` patterns -> lower accept_threshold (need diversity)
+        - Adjustment +/-0.05 per cycle, clamped to [-0.15, +0.15].
 
         Returns a queen_strategy dict or *None* if nothing changed.
         """
@@ -852,10 +813,10 @@ Generate agent insights and tradition-specific guidance based on this data."""
 
         delta = 0.0
         if high_count > neg_count:
-            # Quality is consistently good → tighten threshold
+            # Quality is consistently good -> tighten threshold
             delta = self._QUEEN_ADJ_STEP
         elif neg_count > high_count:
-            # Users unhappy → relax threshold for diversity
+            # Users unhappy -> relax threshold for diversity
             delta = -self._QUEEN_ADJ_STEP
 
         if delta == 0.0 and not prev:

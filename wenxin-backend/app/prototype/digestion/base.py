@@ -11,6 +11,7 @@ Example — adding a new digester::
 
     class SentimentAnalyzer(BaseDigester):
         STEP_NAME = "sentiment"
+        PRIORITY = 55
 
         def digest(self, sessions: list, ctx: DigestContext) -> DigestContext:
             # ... your logic here ...
@@ -19,7 +20,7 @@ Example — adding a new digester::
 
 The ``ContextEvolver`` can then pick up your step automatically:
 
-    for digester_cls in BaseDigester.list_digesters().values():
+    for digester_cls in BaseDigester.get_ordered_digesters():
         digester = digester_cls()
         ctx = digester.digest(sessions, ctx)
 """
@@ -28,6 +29,10 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, Any, ClassVar
+
+if TYPE_CHECKING:
+    pass
 
 
 @dataclass
@@ -36,11 +41,27 @@ class DigestContext:
 
     Each digester reads from and writes to ``data``, a free-form dict
     that ultimately gets persisted as ``evolved_context.json``.
+
+    Additional typed fields (``sessions``, ``patterns``, ``clusters``,
+    ``actions``) carry intermediate results between pipeline steps.
+    The ``evolver`` reference allows step adapters to call private
+    methods on the ``ContextEvolver`` instance when needed.
     """
 
     data: dict = field(default_factory=dict)
     session_count: int = 0
     changed: bool = False
+
+    # Inter-step data carriers
+    sessions: list = field(default_factory=list)
+    patterns: list = field(default_factory=list)
+    clusters: list = field(default_factory=list)
+    actions: list = field(default_factory=list)
+
+    # Reference to the ContextEvolver instance (for steps that wrap
+    # private methods like _extract_layer_focus, _extract_trajectory_insights,
+    # _evolve_queen_strategy, _generate_llm_insights).
+    evolver: Any = None
 
     def set(self, key: str, value: object) -> None:
         """Write a key into the context, marking it changed."""
@@ -58,12 +79,24 @@ class BaseDigester(ABC):
     Subclasses must set ``STEP_NAME`` and implement ``digest()``.
     Setting ``STEP_NAME`` auto-registers the class into the digester
     registry via ``__init_subclass__``.
+
+    Class attributes
+    ----------------
+    STEP_NAME : str
+        Unique identifier for this step (empty = abstract, not registered).
+    PRIORITY : int
+        Execution order — lower values run earlier (default 100).
+    ENABLED_BY_DEFAULT : bool
+        Whether this step is included in ``get_ordered_digesters()``
+        (default ``True``).
     """
 
     STEP_NAME: str = ""
+    PRIORITY: int = 100
+    ENABLED_BY_DEFAULT: bool = True
 
     # Auto-populated: step_name -> digester class
-    _registry: dict[str, type[BaseDigester]] = {}
+    _registry: ClassVar[dict[str, type[BaseDigester]]] = {}
 
     def __init_subclass__(cls, **kwargs: object) -> None:
         super().__init_subclass__(**kwargs)
@@ -95,6 +128,25 @@ class BaseDigester(ABC):
         return cls._registry.get(step_name)
 
     @classmethod
-    def list_digesters(cls) -> dict[str, type[BaseDigester]]:
-        """Return all registered digesters."""
-        return dict(cls._registry)
+    def get_ordered_digesters(cls) -> list[type[BaseDigester]]:
+        """Return enabled digesters sorted by PRIORITY (ascending)."""
+        return sorted(
+            [d for d in cls._registry.values() if d.ENABLED_BY_DEFAULT],
+            key=lambda d: d.PRIORITY,
+        )
+
+    @classmethod
+    def list_digesters(cls) -> list[dict]:
+        """Return metadata for all registered digesters, ordered by priority.
+
+        Each entry contains ``name``, ``priority``, and ``enabled`` keys.
+        """
+        all_digesters = sorted(cls._registry.values(), key=lambda d: d.PRIORITY)
+        return [
+            {
+                "name": d.STEP_NAME,
+                "priority": d.PRIORITY,
+                "enabled": d.ENABLED_BY_DEFAULT,
+            }
+            for d in all_digesters
+        ]
