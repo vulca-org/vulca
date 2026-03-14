@@ -65,16 +65,20 @@ class CandidateScore:
     risk_tags: list[str] = field(default_factory=list)
     gate_passed: bool = False
     rejected_reasons: list[str] = field(default_factory=list)
+    agentic_insights: dict | None = None  # AgenticInsights.to_dict() when enabled
 
     def to_dict(self) -> dict:
-        return {
+        d = {
             "candidate_id": self.candidate_id,
-            "dimension_scores": [d.to_dict() for d in self.dimension_scores],
+            "dimension_scores": [d_.to_dict() for d_ in self.dimension_scores],
             "weighted_total": round(self.weighted_total, 4),
             "risk_tags": self.risk_tags,
             "gate_passed": self.gate_passed,
             "rejected_reasons": self.rejected_reasons,
         }
+        if self.agentic_insights:
+            d["agentic_insights"] = self.agentic_insights
+        return d
 
 
 @dataclass

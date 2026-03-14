@@ -40,6 +40,7 @@ class CriticConfig:
     critical_risk_blocks: bool = True     # critical risk tag → auto reject
     top_k: int = 1                        # select top-k passing candidates
     use_vlm: bool = True                   # use VLM scoring if available (False = CLIP only)
+    enable_agentic_vision: bool = False    # deep Think→Act→Observe analysis (L1/L3/L5)
 
     def __post_init__(self) -> None:
         total = sum(self.weights.values())
@@ -54,4 +55,5 @@ class CriticConfig:
             "critical_risk_blocks": self.critical_risk_blocks,
             "top_k": self.top_k,
             "use_vlm": self.use_vlm,
+            "enable_agentic_vision": self.enable_agentic_vision,
         }

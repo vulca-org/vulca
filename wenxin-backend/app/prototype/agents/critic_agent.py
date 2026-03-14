@@ -140,6 +140,10 @@ def build_critique_output(
     scored.sort(key=lambda s: s.weighted_total, reverse=True)
     scored = scored[:cfg.top_k]
 
+    # --- Agentic Vision: deep Think→Act→Observe analysis (optional) ---
+    if cfg.enable_agentic_vision:
+        _run_agentic_vision(scored, candidates, cultural_tradition, subject, evidence)
+
     best_id: str | None = None
     for s in scored:
         if s.gate_passed:
@@ -176,6 +180,71 @@ def build_critique_output(
     )
     save_critic_checkpoint(output)
     return output
+
+
+def _run_agentic_vision(
+    scored: list[CandidateScore],
+    candidates: list[dict[str, Any]],
+    cultural_tradition: str,
+    subject: str,
+    evidence: dict[str, Any],
+) -> None:
+    """Run AgenticVisionAnalyzer on scored candidates that have image_path.
+
+    Mutates ``scored`` in-place by attaching ``agentic_insights`` dicts.
+    Supplementary data only — does NOT change scores.
+    """
+    # Build candidate_id → original candidate dict lookup
+    cand_by_id: dict[str, dict[str, Any]] = {}
+    for cand in candidates:
+        cid = cand.get("candidate_id", "unknown")
+        cand_by_id[cid] = cand
+
+    # Collect terminology hints from evidence for the analyzer
+    terminology_hints: list[str] = []
+    for hit in evidence.get("terminology_hits", []):
+        term = hit.get("term", "")
+        if term:
+            terminology_hints.append(term)
+
+    try:
+        from app.prototype.agents.agentic_vision import AgenticVisionAnalyzer
+        from app.prototype.utils.async_bridge import run_async_from_sync
+
+        analyzer = AgenticVisionAnalyzer()
+
+        for cs in scored:
+            original = cand_by_id.get(cs.candidate_id, {})
+            image_path = original.get("image_path", "")
+            if not image_path:
+                continue
+
+            try:
+                insights = run_async_from_sync(
+                    analyzer.analyze(
+                        image_path=image_path,
+                        tradition=cultural_tradition,
+                        subject=subject,
+                        terminology_hints=terminology_hints or None,
+                    ),
+                    timeout=120,
+                )
+                if insights and insights.analysis_steps > 0:
+                    cs.agentic_insights = insights.to_dict()
+                    logger.info(
+                        "Agentic vision completed for %s: %d steps, %d observations",
+                        cs.candidate_id,
+                        insights.analysis_steps,
+                        len(insights.observations),
+                    )
+            except Exception:
+                logger.exception(
+                    "Agentic vision failed for candidate %s", cs.candidate_id,
+                )
+    except ImportError:
+        logger.warning("Agentic vision module not available")
+    except Exception:
+        logger.exception("Agentic vision integration error")
 
 
 class CriticAgent:
