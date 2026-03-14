@@ -1,29 +1,29 @@
 # VULCA — AI-Native Creation Organism
 
-Create, critique, and evolve cultural art through multi-agent AI pipelines.
+> Create, critique, and evolve cultural art through multi-agent AI pipelines.
 
-**VULCA** unifies generation, evaluation, and learning into one creative process. A multi-agent pipeline (Scout, Draft, Critic, Queen) creates culturally-aware art, scores it across L1-L5 dimensions, and evolves its understanding through each session.
+VULCA is an open-source creative platform where generation, evaluation, and learning are seamless stages of one process. The core product is **Canvas** -- a unified creation and evaluation playground powered by a 9-node multi-agent pipeline. Eight cultural traditions (Chinese Xieyi, Japanese Wabi-sabi, Persian Miniature, and more) shape how art is generated and scored. No API keys required to start -- the built-in mock provider runs the full pipeline locally.
 
 **Live:** [vulcaart.art](https://vulcaart.art) | **Papers:** EMNLP 2025, WiNLP 2025, arXiv 2026
 
 ## Quick Start
 
-### Docker (recommended)
-
 ```bash
+git clone https://github.com/yha9806/website.git vulca
+cd vulca
 docker-compose up
 # Frontend: http://localhost:5173
-# Backend:  http://localhost:8001
-# No API keys needed — uses mock provider
+# Backend API: http://localhost:8001
+# Demo account: demo / demo123
 ```
 
-### Manual
+### Manual Setup
 
 ```bash
 # Backend
 cd wenxin-backend
 pip install -r requirements.txt -c constraints.txt
-python init_db.py                                    # Seed database
+python init_db.py
 python -m uvicorn app.main:app --reload --port 8001
 
 # Frontend (separate terminal)
@@ -34,101 +34,121 @@ npm run dev
 
 **Test accounts:** `demo` / `demo123` or `admin` / `admin123`
 
-## Core Product: Canvas
+## How It Works
 
-The Canvas page is the product — a unified creation + evaluation playground.
-
-```
-Intent → Scout (cultural research) → Draft (image generation) → Critic (L1-L5 scoring) → Queen (accept/rerun)
-```
-
-### Features
-
-- **Pipeline Editor** — Visual node graph (React Flow) for editing Scout→Draft→Critic→Queen topology
-- **5 Modes** — Edit, Run, Build, Explore, Compare
-- **12 Templates** — Standard Pipeline, Quick Evaluate, Batch, HITL, Brand Safety, etc.
-- **Mock Provider** — Full pipeline works without API keys (generates placeholder images)
-- **Human-in-the-Loop** — Pause at any stage for human review
-- **SSE Streaming** — Real-time pipeline progress via Server-Sent Events
-- **Cultural Traditions** — 8 traditions (Chinese Xieyi, Japanese Wabi-sabi, Persian Miniature, etc.)
-
-### Key Endpoints
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/v1/prototype/runs` | POST | Create a pipeline run |
-| `/api/v1/prototype/runs/{id}/events` | GET | SSE event stream |
-| `/api/v1/prototype/runs/{id}/action` | POST | HITL action |
-| `/api/v1/prototype/gallery` | GET | Gallery items (completed sessions) |
-| `/api/v1/prototype/evolution` | GET | System evolution stats |
-| `/api/v1/create` | POST | Quick evaluate (image upload) |
-
-## Architecture
+The Canvas pipeline processes creative intent through 9 specialized agents:
 
 ```
-wenxin-moyun/          React 19 + TypeScript + Vite + Tailwind
-  src/pages/prototype/   Canvas (PrototypePage) — THE PRODUCT
-  src/pages/             Gallery, Home, Admin, Leaderboard (academic)
-  src/components/ios/    Art Professional design system
-  src/hooks/             usePrototypePipeline (SSE), useLeaderboard, etc.
-
-wenxin-backend/         FastAPI + async SQLAlchemy
-  app/prototype/
-    agents/              Scout, Draft, Critic, Queen (+ providers)
-    orchestrator/        PipelineOrchestrator (event-driven loop)
-    session/             JSONL session store
-    digestion/           ContextEvolver, FeatureExtractor, Clusterer
-    cultural_pipelines/  8 tradition configs + weight tables
-    api/                 REST endpoints for runs, gallery, evolution
-  app/                   Auth, models CRUD, battles (academic legacy)
+Intent --> Scout --> Router --> Draft --> Critic --> Queen --> Archivist
+            🔍        🚦        🎨        📊        👑         💾
 ```
 
-### Tech Stack
+| Agent | Role | Technology |
+|-------|------|------------|
+| Scout | Cultural evidence retrieval | Gemini 2.5 Flash |
+| Router | Tradition routing (8 YAML traditions) | Rule-based + LLM |
+| Draft | Image generation | Mock / NB2 / Diffusers / DALL-E / Flux |
+| Critic | L1-L5 multi-dimensional scoring | Gemini 2.5 Pro (VLM) |
+| Queen | Accept/rerun decision gate | Gemini 2.5 Flash |
+| Archivist | Result archival + Gallery | PostgreSQL / JSONL |
 
-| Layer | Stack |
-|-------|-------|
-| Frontend | React 19, TypeScript 5.8, Vite 7.1, Tailwind 4.1, Framer Motion |
-| Backend | FastAPI, SQLAlchemy (async), LiteLLM, FAISS |
-| Database | SQLite (dev) / PostgreSQL (prod) |
-| Design | Art Professional palette (warm tones, zero blue/purple) |
-| Deployment | Docker, Cloud Run, Firebase Hosting |
+## Extend VULCA
+
+### Add a Provider (like ComfyUI nodes)
+
+```python
+from app.prototype.agents.draft_provider import AbstractProvider
+
+class MyProvider(AbstractProvider):
+    @property
+    def model_ref(self) -> str:
+        return "my-model-v1"
+
+    def generate(self, prompt, negative_prompt, seed, width, height, steps, sampler, output_path) -> str:
+        # Your generation logic
+        return output_path
+```
+
+### Add an Agent
+
+```python
+from app.prototype.agents.interfaces import BaseAgent, AgentRegistry
+
+@AgentRegistry.register("my_agent")
+class MyAgent(BaseAgent):
+    name = "my_agent"
+    def execute(self, state) -> dict:
+        return {"my_result": ...}
+```
+
+### Add a Skill
+
+```python
+from app.prototype.skills.executors.base import BaseSkillExecutor
+
+class MySkillExecutor(BaseSkillExecutor):
+    SKILL_NAME = "my_skill"
+    async def execute(self, image_path, context) -> SkillResult:
+        return SkillResult(skill_name="my_skill", score=0.85, details={})
+```
+
+### Add a Cultural Tradition
+
+```yaml
+# wenxin-backend/app/prototype/data/traditions/my_tradition.yaml
+name: my_tradition
+display_name:
+  en: My Tradition
+  zh: 我的传统
+weights_l:
+  visual_perception: 0.20
+  technical_analysis: 0.20
+  cultural_context: 0.25
+  critical_interpretation: 0.20
+  philosophical_aesthetic: 0.15
+terminology:
+  - term: key_concept
+    en: Key Concept
+    weight: 0.8
+taboos:
+  - pattern: "inappropriate_element"
+    severity: high
+```
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React 19, TypeScript 5.8, Vite 7.1, Tailwind 4.1 |
+| Design System | Art Professional (warm gallery palette, glass morphism) |
+| Backend | FastAPI, Python 3.13, LiteLLM, asyncio |
+| Database | PostgreSQL (Supabase) / SQLite (local) |
+| AI Models | Gemini 2.5 Pro/Flash, NB2, Stable Diffusion |
+| Deployment | GCP Cloud Run, Firebase Hosting, GitHub Actions |
 | Testing | Playwright E2E (132 tests), pytest (824 tests) |
 
-## Design System
+## API
 
-Art Professional palette — gallery-inspired warm tones:
+101 endpoints. Key ones:
 
-| Token | Color | Hex |
-|-------|-------|-----|
-| Primary | Slate Gray | `#334155` |
-| Accent | Warm Bronze | `#C87F4A` |
-| Success | Sage Green | `#5F8A50` |
-| Warning | Amber Gold | `#B8923D` |
-| Error | Coral Red | `#C65D4D` |
-
-Zero blue/purple/indigo/violet in the entire codebase.
-
-## Navigation
-
-**Primary:** Canvas, Gallery, About
-**More dropdown:** Models, Leaderboard, Exhibitions, Research, Solutions, Pricing, Trust
-
-The Leaderboard and Battle pages are academic references from EMNLP papers — preserved but not the product focus.
-
-## Environment Variables
-
-Copy `.env.example` to `.env`:
-
-```env
-DEMO_MODE=true                                          # No API keys needed
-SECRET_KEY=demo-secret-key-for-local-dev-only-32chars
-DATABASE_URL=sqlite+aiosqlite:///./wenxin.db
-
-# Optional (for real AI generation)
-OPENAI_API_KEY=
-ANTHROPIC_API_KEY=
-GEMINI_API_KEY=
 ```
+POST /api/v1/prototype/runs            -- Start a pipeline run
+GET  /api/v1/prototype/runs/{id}/events -- SSE event stream
+GET  /api/v1/prototype/gallery          -- Browse creations
+GET  /api/v1/prototype/traditions       -- List cultural traditions
+GET  /api/v1/prototype/capabilities     -- Server capabilities
+```
+
+Full API docs: set `ENABLE_API_DOCS=true` and visit `/docs`.
+
+## Production
+
+| Service | URL |
+|---------|-----|
+| Frontend | https://vulcaart.art |
+| Backend | Cloud Run (asia-east1) |
+| Database | Supabase PostgreSQL |
+| CI/CD | GitHub Actions (test --> deploy) |
 
 ## Testing
 
@@ -143,28 +163,25 @@ cd wenxin-moyun && npm run build
 cd wenxin-moyun && npm run test:e2e
 ```
 
-## Deployment
-
-Production deploys via GitHub Actions on push to `master`:
-
-1. Test phase: frontend build + backend pytest + Playwright E2E
-2. Backend: Docker build -> Artifact Registry -> Cloud Run
-3. Frontend: Vite build -> Firebase Hosting
-
-**Production URLs:**
-- Frontend: https://vulcaart.art
-- Backend: https://wenxin-moyun-api-229980166599.asia-east1.run.app
-- API docs: `{backend}/docs`
-
 ## Research
 
-| Paper | Venue | Contribution |
-|-------|-------|-------------|
-| VULCA Framework | EMNLP 2025 Findings | 5-dimension evaluation framework |
-| VULCA-Bench | arXiv:2601.07986 | L1-L5 definition + 7,410 samples |
-| Fire Imagery | WiNLP 2025 | Cultural symbol reasoning |
-| Art Critique | arXiv:2601.07984 | Cross-cultural evaluation |
+VULCA builds on peer-reviewed research:
+
+- **VULCA Framework** -- EMNLP 2025 Findings (5-dimension evaluation)
+- **VULCA-Bench** -- arXiv:2601.07986 (L1-L5 definitions, 7,410 samples)
+- **Fire Imagery** -- WiNLP 2025 (cultural symbol reasoning)
+
+## Citation
+
+```bibtex
+@inproceedings{yu2025vulca,
+  title={VULCA: A Framework for Culturally-Aware Visual Understanding},
+  author={Yu, Haorui},
+  booktitle={Findings of EMNLP 2025},
+  year={2025}
+}
+```
 
 ## License
 
-MIT License. See [LICENSE](LICENSE).
+Apache 2.0 -- see [LICENSE](LICENSE).

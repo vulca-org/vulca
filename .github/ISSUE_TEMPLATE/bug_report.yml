@@ -1,0 +1,32 @@
+name: Bug Report
+description: Report a bug in VULCA
+labels: ["bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      placeholder: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      placeholder: What should have happened?
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Canvas Pipeline
+        - Gallery
+        - Frontend UI
+        - Backend API
+        - Traditions
+        - Other
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      placeholder: "1. Go to...\n2. Click on...\n3. See error"

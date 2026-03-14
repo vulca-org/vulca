@@ -1,0 +1,23 @@
+name: New Cultural Tradition
+description: Propose a new cultural tradition YAML
+labels: ["tradition", "contribution"]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Tradition name
+      placeholder: e.g., japanese_ukiyo_e
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      placeholder: Describe the cultural tradition and its artistic characteristics
+    validations:
+      required: true
+  - type: textarea
+    id: weights
+    attributes:
+      label: Proposed L1-L5 weights
+      placeholder: "visual_perception: 0.20\ntechnical_analysis: 0.20\n..."
