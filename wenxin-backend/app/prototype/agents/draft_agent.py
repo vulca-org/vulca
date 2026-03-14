@@ -40,7 +40,6 @@ from app.prototype.checkpoints.draft_checkpoint import save_draft_checkpoint
 
 __all__ = [
     "DraftAgent",
-    "_LAYER_REFINEMENT_STRATEGIES",
 ]
 
 logger = logging.getLogger(__name__)
@@ -79,8 +78,6 @@ _LAYER_REFINEMENT_STRATEGIES: dict[str, str] = {
 
 # L-label to dimension name mapping
 _LAYER_NAME_MAP: dict[str, str] = {lid.name: lid.value for lid in LayerID}
-# Also support reverse lookup (dimension name -> L-label)
-_DIM_TO_LABEL: dict[str, str] = {lid.value: lid.name for lid in LayerID}
 
 
 def _resolve_layer_name(layer: str) -> str:

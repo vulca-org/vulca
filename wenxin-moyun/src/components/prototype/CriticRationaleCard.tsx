@@ -11,13 +11,13 @@ import { IOSCard, IOSCardHeader, IOSCardContent } from '../ios';
 import { formatDimension } from '../../utils/formatDimension';
 import type { ScoredCandidate } from '../../hooks/usePrototypePipeline';
 
-// L1-L5 colour scheme
+// L1-L5 colour scheme (Art Professional palette)
 const DIM_COLORS: Record<string, { text: string; bg: string; bar: string }> = {
-  L1: { text: 'text-[#C87F4A] dark:text-[#DDA574]',   bg: 'bg-[#C87F4A]/10 dark:bg-[#C87F4A]/15',     bar: 'bg-[#C87F4A]' },
-  L2: { text: 'text-cyan-600 dark:text-cyan-400',   bg: 'bg-cyan-100 dark:bg-cyan-900/30',     bar: 'bg-cyan-500' },
-  L3: { text: 'text-orange-600 dark:text-orange-400', bg: 'bg-orange-100 dark:bg-orange-900/30', bar: 'bg-orange-500' },
-  L4: { text: 'text-red-600 dark:text-red-400',     bg: 'bg-red-100 dark:bg-red-900/30',       bar: 'bg-red-500' },
-  L5: { text: 'text-[#C87F4A] dark:text-[#DDA574]', bg: 'bg-[#C87F4A]/10 dark:bg-[#C87F4A]/15', bar: 'bg-[#C87F4A]' },
+  L1: { text: 'text-[#334155] dark:text-[#94A3B8]',   bg: 'bg-[#334155]/10 dark:bg-[#334155]/15',     bar: 'bg-[#334155]' },
+  L2: { text: 'text-[#6B8E7A] dark:text-[#87A878]',   bg: 'bg-[#6B8E7A]/10 dark:bg-[#6B8E7A]/15',     bar: 'bg-[#6B8E7A]' },
+  L3: { text: 'text-[#B8923D] dark:text-[#D4AE5A]',   bg: 'bg-[#B8923D]/10 dark:bg-[#B8923D]/15',     bar: 'bg-[#B8923D]' },
+  L4: { text: 'text-[#C65D4D] dark:text-[#E07B6D]',   bg: 'bg-[#C65D4D]/10 dark:bg-[#C65D4D]/15',     bar: 'bg-[#C65D4D]' },
+  L5: { text: 'text-[#C87F4A] dark:text-[#DDA574]',   bg: 'bg-[#C87F4A]/10 dark:bg-[#C87F4A]/15',     bar: 'bg-[#C87F4A]' },
 };
 
 /** Extract L-level from dimension name. */

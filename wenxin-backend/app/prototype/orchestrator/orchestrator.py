@@ -680,6 +680,7 @@ class PipelineOrchestrator:
                         evidence_pack = scout_svc.gather_supplementary(
                             need=critic.need_more_evidence,
                             existing_pack=evidence_pack,
+                            target_layers=queen_output.decision.rerun_dimensions if queen_output else None,
                         )
                         evidence_dict["evidence_pack"] = evidence_pack.to_dict()
                         evidence_dict["evidence_coverage"] = evidence_pack.coverage

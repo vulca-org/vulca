@@ -53,11 +53,11 @@ function truncate(text: string, maxLen: number): string {
 
 /** L1-L5 dimension labels for the detail sheet. */
 const L1_L5_LABELS: Record<string, string> = {
-  cultural_authenticity: 'L1 Cultural Auth.',
-  aesthetic_quality: 'L2 Aesthetic',
-  technical_execution: 'L3 Technical',
-  creative_innovation: 'L4 Innovation',
-  emotional_resonance: 'L5 Emotion',
+  visual_perception: 'L1 Visual',
+  technical_analysis: 'L2 Technical',
+  cultural_context: 'L3 Cultural',
+  critical_interpretation: 'L4 Critical',
+  philosophical_aesthetic: 'L5 Philosophical',
 };
 
 interface RunHistoryPanelProps {
