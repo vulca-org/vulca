@@ -152,10 +152,10 @@ describe('guestSession', () => {
       expect(hasReachedDailyLimit()).toBe(false)
     })
 
-    it('should return true when usage equals daily limit (3)', () => {
+    it('should return true when usage equals daily limit (10)', () => {
       const session: GuestSession = {
         id: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
-        dailyUsage: 3,
+        dailyUsage: 10,
         lastReset: new Date().toDateString(),
         evaluations: [],
         createdAt: new Date().toISOString(),
@@ -168,7 +168,7 @@ describe('guestSession', () => {
     it('should return true when usage exceeds daily limit', () => {
       const session: GuestSession = {
         id: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
-        dailyUsage: 5,
+        dailyUsage: 15,
         lastReset: new Date().toDateString(),
         evaluations: [],
         createdAt: new Date().toISOString(),
@@ -180,15 +180,15 @@ describe('guestSession', () => {
   })
 
   describe('getRemainingUsage', () => {
-    it('should return 3 for a fresh session', () => {
+    it('should return 10 for a fresh session', () => {
       getGuestSession()
-      expect(getRemainingUsage()).toBe(3)
+      expect(getRemainingUsage()).toBe(10)
     })
 
     it('should return 0 when limit is reached', () => {
       const session: GuestSession = {
         id: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
-        dailyUsage: 3,
+        dailyUsage: 10,
         lastReset: new Date().toDateString(),
         evaluations: [],
         createdAt: new Date().toISOString(),
