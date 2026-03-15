@@ -129,5 +129,8 @@ export function useSubStageExpansion() {
     [],
   );
 
-  return { isExpanded, expandNode, collapseNode };
+  /** True if any Draft node is currently expanded into sub-stages. */
+  const hasExpandedDraft = [...expansionState.expandedNodes].some((id) => id === 'draft');
+
+  return { isExpanded, expandNode, collapseNode, hasExpandedDraft };
 }

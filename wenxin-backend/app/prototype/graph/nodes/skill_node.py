@@ -56,15 +56,23 @@ class SkillNode(BaseCustomNode):
         # Try to run the skill via pipeline_hook
         results = []
         try:
-            from app.prototype.skills.executor import execute_skill
-            result = execute_skill(
-                self._skill_name,
-                subject=state.get("subject", ""),
+            from app.prototype.skills.pipeline_hook import run_pipeline_skills
+            image_path = ""
+            # Extract image from draft candidates if available
+            candidates = state.get("draft_candidates") or state.get("candidates") or []
+            if candidates and isinstance(candidates, list):
+                best = candidates[0] if isinstance(candidates[0], dict) else {}
+                image_path = best.get("image_path", "")
+            results = run_pipeline_skills(
+                image_path=image_path,
                 tradition=state.get("cultural_tradition", "default"),
-                config=self._skill_config,
+                stage="post_critic",
+                skill_names=[self._skill_name],
+                context={
+                    "subject": state.get("subject", ""),
+                    **(self._skill_config or {}),
+                },
             )
-            if result:
-                results = [result] if isinstance(result, dict) else list(result)
         except (ImportError, Exception) as e:
             results = [{"error": str(e), "skill_name": self._skill_name}]
 

@@ -172,6 +172,16 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
             except (ImportError, Exception):
                 pass  # Fall back to default template
 
+        # Extract skill/substage config from node_params
+        draft_params = (req.node_params or {}).get("draft", {})
+        if draft_params.get("enable_sub_stages"):
+            d_cfg.enable_sub_stages = True
+            if draft_params.get("recipe_name"):
+                d_cfg.recipe_name = draft_params["recipe_name"]
+
+        skill_names = (req.node_params or {}).get("_skill_hook_names", [])
+        enable_skill = bool(skill_names) or (req.node_params or {}).get("_enable_skill_hook", False)
+
         orchestrator = GraphOrchestratorClass(
             draft_config=d_cfg.to_dict(),
             critic_config=cr_cfg.to_dict(),
@@ -180,6 +190,8 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
             enable_agent_critic=req.enable_agent_critic,
             max_rounds=req.max_rounds,
             template=template_name,
+            enable_skill_hook=enable_skill,
+            skill_hook_names=skill_names if skill_names else None,
         )
     else:
         # Fallback to PipelineOrchestrator if GraphOrchestrator unavailable

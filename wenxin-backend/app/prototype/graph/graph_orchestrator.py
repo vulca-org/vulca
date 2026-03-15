@@ -260,6 +260,24 @@ class GraphOrchestrator:
                     if node_name == "critic" and self._enable_agent_critic:
                         self._apply_dynamic_weights(state_update, initial_state)
 
+                    # ── Skill hook after critic ────────────────────────
+                    if node_name == "critic" and self._enable_skill_hook:
+                        try:
+                            from app.prototype.skills.pipeline_hook import run_pipeline_skills
+                            candidates = state_update.get("candidates") or initial_state.get("candidates") or []
+                            tradition = initial_state.get("cultural_tradition", "default")
+                            for cand in (candidates if isinstance(candidates, list) else []):
+                                img = cand.get("image_path", "") if isinstance(cand, dict) else ""
+                                if img:
+                                    run_pipeline_skills(
+                                        image_path=img,
+                                        tradition=tradition,
+                                        stage="post_critic",
+                                        skill_names=self._skill_hook_names or None,
+                                    )
+                        except Exception:
+                            pass  # skill hook is best-effort
+
                     # ── Trajectory recording per node ─────────────────
                     self._record_node_trajectory(
                         trajectory_recorder, node_name, state_update,

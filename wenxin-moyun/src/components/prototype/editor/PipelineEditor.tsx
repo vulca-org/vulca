@@ -313,7 +313,7 @@ export default function PipelineEditor({
 
   /* ── Phase 5 hooks ── */
   const { states: nodeVisualStates, toggleMute, toggleBypass, toggleCollapse } = useNodeStates();
-  const { isExpanded, expandNode, collapseNode } = useSubStageExpansion();
+  const { isExpanded, expandNode, collapseNode, hasExpandedDraft } = useSubStageExpansion();
   const { arrange } = useAutoArrange();
 
   /* ── Undo / Redo ── */
@@ -714,13 +714,24 @@ export default function PipelineEditor({
   const handleRun = useCallback(() => {
     const topo = extractTopology(nodes, edges);
     const isApiTemplate = apiTemplates.some((t) => t.name === activeTemplate);
+
+    // Inject sub-stage expansion state into node_params
+    const mergedParams = { ...nodeParams };
+    if (hasExpandedDraft) {
+      mergedParams.draft = {
+        ...(mergedParams.draft || {}),
+        enable_sub_stages: true,
+        recipe_name: 'image_standard',
+      };
+    }
+
     onRun({
       template: isApiTemplate ? activeTemplate : 'default',
       customNodes: isApiTemplate ? undefined : topo.nodes,
       customEdges: isApiTemplate ? undefined : topo.edges,
-      nodeParams,
+      nodeParams: mergedParams,
     });
-  }, [nodes, edges, activeTemplate, apiTemplates, nodeParams, onRun]);
+  }, [nodes, edges, activeTemplate, apiTemplates, nodeParams, hasExpandedDraft, onRun]);
 
   /* ── Select all / deselect ── */
   const selectAll = useCallback(() => {
