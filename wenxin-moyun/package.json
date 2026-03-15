@@ -32,6 +32,7 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@dagrejs/dagre": "^2.0.4",
     "@formkit/auto-animate": "^0.8.0",
     "@headlessui/react": "^2.0.0",
     "@react-three/drei": "^10.7.7",

@@ -1,48 +1,52 @@
 """PipelineOrchestrator — unified pipeline execution core.
 
-Orchestrator Architecture Decision (Route B+, 2026-03-10):
-- PipelineOrchestrator: **Production** orchestrator, used by all API routes.
-  Entry points: /api/v1/create, /api/v1/prototype/runs (default), CLI, Gradio.
-- GraphOrchestrator (app.prototype.graph.graph_orchestrator): **Experimental**
-  LangGraph-based orchestrator. Only activated when use_graph=True in
-  /api/v1/prototype/runs. Has extra capabilities (templates, custom topologies,
-  agent registry) but no test coverage and not used in production.
-  Kept for future migration. If migrating, update create_routes.py and routes.py.
-
-To get the production orchestrator, use:
-    from app.prototype.orchestrator import get_orchestrator
-    orch = get_orchestrator()  # Returns PipelineOrchestrator (default)
+.. deprecated:: Phase 5D
+    The default orchestrator mode has changed from "pipeline" to "graph".
+    The PipelineOrchestrator is still available via mode="pipeline" but
+    is deprecated. Use GraphOrchestrator (mode="graph", now default).
 """
+
+import warnings
 
 from app.prototype.orchestrator.events import EventType, PipelineEvent
 from app.prototype.orchestrator.orchestrator import PipelineOrchestrator
 from app.prototype.orchestrator.run_state import RunState, RunStatus
 
 
-def get_orchestrator(mode: str = "pipeline", **kwargs):
+def get_orchestrator(mode: str = "graph", **kwargs):
     """Unified entry point for obtaining an orchestrator instance.
+
+    .. versionchanged:: Phase 5D
+        Default mode changed from "pipeline" to "graph".
 
     Parameters
     ----------
     mode : str
-        "pipeline" (default) — Returns PipelineOrchestrator (production).
-        "graph" — Returns GraphOrchestrator (experimental, LangGraph-based).
-        "auto" — Same as "pipeline" (reserved for future config-driven selection).
+        "graph" (default) — Returns GraphOrchestrator (production).
+        "pipeline" — Returns PipelineOrchestrator (deprecated).
+        "auto" — Same as "graph".
     **kwargs
         Forwarded to the orchestrator constructor.
 
     Returns
     -------
-    PipelineOrchestrator or GraphOrchestrator
+    GraphOrchestrator or PipelineOrchestrator
     """
-    if mode in ("pipeline", "auto"):
+    if mode == "pipeline":
+        warnings.warn(
+            "mode='pipeline' is deprecated since Phase 5D. "
+            "Use mode='graph' (now default) instead. "
+            "PipelineOrchestrator will be removed in a future version.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return PipelineOrchestrator(**kwargs)
-    elif mode == "graph":
+    elif mode in ("graph", "auto"):
         from app.prototype.graph.graph_orchestrator import GraphOrchestrator
         return GraphOrchestrator(**kwargs)
     else:
         raise ValueError(
-            f"Unknown orchestrator mode '{mode}'. Choose 'pipeline', 'graph', or 'auto'."
+            f"Unknown orchestrator mode '{mode}'. Choose 'graph', 'pipeline', or 'auto'."
         )
 
 

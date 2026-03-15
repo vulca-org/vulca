@@ -3,6 +3,7 @@
  *
  * Core shortcuts: Ctrl+Z, Ctrl+Shift+Z, Ctrl+S, Ctrl+Enter, Ctrl+A, Escape
  * ComfyUI-style: Space → node search, Delete → remove, D → duplicate, F → fit view
+ * Phase 5: M → mute, B → bypass, H → collapse, Ctrl+J → frame, Shift+A → auto-arrange
  */
 
 import { useEffect } from 'react';
@@ -22,6 +23,16 @@ interface ShortcutHandlers {
   onDuplicateSelected?: () => void;
   /** F fits view */
   onFitView?: () => void;
+  /** M toggles mute on selected nodes */
+  onMuteSelected?: () => void;
+  /** B toggles bypass on selected nodes */
+  onBypassSelected?: () => void;
+  /** H toggles collapse on selected nodes */
+  onCollapseSelected?: () => void;
+  /** Ctrl+J adds frame around selection */
+  onAddFrame?: () => void;
+  /** Shift+A auto-arranges all nodes */
+  onAutoArrange?: () => void;
   disabled?: boolean;
 }
 
@@ -36,6 +47,11 @@ export function useKeyboardShortcuts({
   onDeleteSelected,
   onDuplicateSelected,
   onFitView,
+  onMuteSelected,
+  onBypassSelected,
+  onCollapseSelected,
+  onAddFrame,
+  onAutoArrange,
   disabled,
 }: ShortcutHandlers) {
   useEffect(() => {
@@ -63,6 +79,10 @@ export function useKeyboardShortcuts({
       } else if (mod && e.key === 'a') {
         e.preventDefault();
         onSelectAll();
+      } else if (mod && e.key === 'j' && onAddFrame) {
+        // Ctrl+J → add frame
+        e.preventDefault();
+        onAddFrame();
       } else if (e.key === 'Escape') {
         onDeselectAll();
       } else if (e.key === ' ' && !mod && onOpenNodeSearch) {
@@ -77,10 +97,23 @@ export function useKeyboardShortcuts({
       } else if (e.key === 'f' && !mod && onFitView) {
         e.preventDefault();
         onFitView();
+      } else if (e.key === 'm' && !mod && onMuteSelected) {
+        e.preventDefault();
+        onMuteSelected();
+      } else if (e.key === 'b' && !mod && onBypassSelected) {
+        e.preventDefault();
+        onBypassSelected();
+      } else if (e.key === 'h' && !mod && onCollapseSelected) {
+        e.preventDefault();
+        onCollapseSelected();
+      } else if (e.key === 'A' && e.shiftKey && !mod && onAutoArrange) {
+        // Shift+A → auto-arrange
+        e.preventDefault();
+        onAutoArrange();
       }
     };
 
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
-  }, [onUndo, onRedo, onSave, onRun, onSelectAll, onDeselectAll, onOpenNodeSearch, onDeleteSelected, onDuplicateSelected, onFitView, disabled]);
+  }, [onUndo, onRedo, onSave, onRun, onSelectAll, onDeselectAll, onOpenNodeSearch, onDeleteSelected, onDuplicateSelected, onFitView, onMuteSelected, onBypassSelected, onCollapseSelected, onAddFrame, onAutoArrange, disabled]);
 }

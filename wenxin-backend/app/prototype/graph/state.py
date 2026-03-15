@@ -71,6 +71,10 @@ class PipelineState(TypedDict, total=False):
     media_type: str  # "image" | "video" | "3d_model" | "sound"
     sub_stage_results: list[dict[str, Any]]
 
+    # --- Node runtime states (mute/bypass/expand) ---
+    node_runtime: dict[str, dict[str, Any]]
+    enable_sub_stages: bool
+
     # --- Error tracking ---
     error: str | None
 
@@ -122,6 +126,8 @@ def make_initial_state(
         queen_config=queen_config,
         media_type=media_type,
         sub_stage_results=[],
+        node_runtime={},
+        enable_sub_stages=False,
         report_output=None,
         error=None,
         final_decision=None,

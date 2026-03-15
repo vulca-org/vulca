@@ -13,3 +13,6 @@ from app.prototype.graph.nodes.critic_node import CriticNode       # noqa: F401
 from app.prototype.graph.nodes.queen_node import QueenNode         # noqa: F401
 from app.prototype.graph.nodes.archivist_node import ArchivistNode # noqa: F401
 from app.prototype.graph.nodes.report_node import ReportNode       # noqa: F401
+from app.prototype.graph.nodes.skill_node import SkillNode       # noqa: F401
+from app.prototype.graph.nodes.gate_node import GateNode         # noqa: F401
+from app.prototype.graph.nodes.loop_node import LoopNode         # noqa: F401

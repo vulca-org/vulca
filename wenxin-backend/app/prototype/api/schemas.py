@@ -31,7 +31,7 @@ class CreateRunRequest(BaseModel):
     enable_agent_critic: bool = Field(default=True, description="Use LLM-based Critic (CriticLLM) instead of rule-only scoring")
     enable_prompt_enhancer: bool = Field(default=True, description="Inject evolved context into Draft prompts")
     enable_llm_queen: bool = Field(default=False, description="Use LLM+RAG Queen for ambiguous decisions")
-    use_graph: bool = Field(default=False, description="Use LangGraph-based pipeline (experimental) instead of classic PipelineOrchestrator (production)")
+    use_graph: bool = Field(default=True, description="(Deprecated) GraphOrchestrator is now default. This parameter is accepted but ignored.")
     template: str = Field(default="default", description="Graph template: default | fast_draft | critique_only | interactive_full | batch_eval")
     enable_parallel_critic: bool = Field(default=False, description="Use parallel L1-L5 scoring (ThreadPoolExecutor) for faster Critic")
     idempotency_key: str | None = Field(default=None, description="Optional idempotency key")
@@ -107,3 +107,51 @@ class ValidationResponse(BaseModel):
     valid: bool
     errors: list[str] = []
     warnings: list[str] = []
+
+
+# ── Graph execution schemas (Phase 5D) ─────────────────────────────
+
+class ExecuteGraphRequest(BaseModel):
+    """Request for POST /graph/execute (headless execution)."""
+    subject: str = Field(..., min_length=1, max_length=500)
+    tradition: str = Field(default="default")
+    template: str = Field(default="default")
+    max_rounds: int = Field(default=3, ge=1, le=5)
+    enable_agent_critic: bool = Field(default=True)
+    custom_nodes: list[str] | None = None
+    custom_edges: list[tuple[str, str]] | None = None
+    node_params: dict[str, dict] | None = None
+    node_runtime: dict[str, dict] | None = Field(
+        default=None,
+        description="Per-node runtime state: {node_name: {muted: bool, bypassed: bool, expanded: bool}}",
+    )
+
+
+class ExecuteGraphResponse(BaseModel):
+    """Response for POST /graph/execute."""
+    task_id: str
+    success: bool
+    error: str | None = None
+    events: list[dict] = []
+
+
+class GraphValidateRequest(BaseModel):
+    """Request for POST /graph/validate."""
+    nodes: list[str] = Field(..., min_length=1)
+    edges: list[tuple[str, str]] = Field(..., min_length=1)
+    check_ports: bool = Field(default=True, description="Also validate port contract compatibility")
+
+
+class GraphValidateResponse(BaseModel):
+    """Response for POST /graph/validate."""
+    valid: bool
+    errors: list[str] = []
+    warnings: list[str] = []
+    port_contracts: dict[str, dict] | None = None
+
+
+class NodeRuntimeToggleResponse(BaseModel):
+    """Response for POST /graph/nodes/{name}/mute|bypass|expand."""
+    node_name: str
+    state: str  # "muted" | "bypassed" | "expanded"
+    value: bool

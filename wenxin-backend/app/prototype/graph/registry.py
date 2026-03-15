@@ -80,6 +80,16 @@ class AgentRegistry:
         return result
 
     @classmethod
+    def list_by_category(cls, category: str) -> list[str]:
+        """Return agent names filtered by category (if BaseCustomNode)."""
+        result = []
+        for name, agent_cls in sorted(cls._agents.items()):
+            cat = getattr(agent_cls, "category", "agent")
+            if cat == category:
+                result.append(name)
+        return result
+
+    @classmethod
     def clear(cls) -> None:
         """Clear registry (useful for testing)."""
         cls._agents.clear()

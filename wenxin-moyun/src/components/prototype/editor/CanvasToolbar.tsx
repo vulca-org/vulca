@@ -1,14 +1,18 @@
 /**
  * CanvasToolbar — compact toolbar strip above the React Flow canvas.
  *
- * Left:   Template button, Undo/Redo, Add Node/Note
- * Right:  Validation badge, Save, Run Pipeline
+ * Left:   Template button, Undo/Redo, Add Node/Note, Frame, Reroute, Skills
+ * Right:  Auto-arrange, Validation badge, Save, Run Pipeline
  *
- * Tooltips show keyboard shortcuts. ComfyUI/n8n toolbar reference.
+ * Phase 5: Added Frame, Reroute, Auto-arrange, Skills buttons.
  */
 
 import { useState } from 'react';
 import { ALL_AGENT_IDS, AGENT_META, type AgentNodeId } from './types';
+import { INPUT_NODE_META } from './inputNodes';
+import { PROCESSING_NODE_META } from './processingNodes';
+import { FLOW_NODE_META } from './flowNodes';
+import { OUTPUT_NODE_META } from './outputNodes';
 
 interface Props {
   onToggleGallery: () => void;
@@ -16,13 +20,18 @@ interface Props {
   onRedo: () => void;
   canUndo: boolean;
   canRedo: boolean;
-  onAddNode: (nodeId: AgentNodeId) => void;
+  onAddNode: (nodeId: AgentNodeId | string) => void;
   onAddStickyNote: () => void;
   onSave: () => void;
   onRun: () => void;
   disabled: boolean;
   validation: { valid: boolean; errors: string[]; warnings: string[] } | null;
   activeTemplate: string;
+  /** Phase 5 */
+  onAddFrame?: () => void;
+  onAddReroute?: () => void;
+  onAutoArrange?: () => void;
+  onToggleSkills?: () => void;
 }
 
 function IconBtn({
@@ -73,6 +82,10 @@ export default function CanvasToolbar({
   disabled,
   validation,
   activeTemplate,
+  onAddFrame,
+  onAddReroute,
+  onAutoArrange,
+  onToggleSkills,
 }: Props) {
   const [showAddMenu, setShowAddMenu] = useState(false);
 
@@ -100,7 +113,7 @@ export default function CanvasToolbar({
 
       <Separator />
 
-      {/* Add Node dropdown */}
+      {/* Add Node dropdown — now with categories */}
       <div className="relative">
         <button
           onClick={() => setShowAddMenu(!showAddMenu)}
@@ -110,21 +123,69 @@ export default function CanvasToolbar({
           + Node <span className="text-[9px] text-gray-400 ml-0.5">Space</span>
         </button>
         {showAddMenu && (
-          <div className="absolute top-full left-0 mt-1 w-44 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-40 py-1">
+          <div className="absolute top-full left-0 mt-1 w-52 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-40 py-1 max-h-80 overflow-y-auto">
+            {/* Agents */}
+            <div className="px-3 py-1 text-[9px] font-semibold text-gray-400 uppercase tracking-wider">Agents</div>
             {ALL_AGENT_IDS.map((id) => (
               <button
                 key={id}
-                onClick={() => {
-                  onAddNode(id);
-                  setShowAddMenu(false);
-                }}
+                onClick={() => { onAddNode(id); setShowAddMenu(false); }}
                 className="w-full px-3 py-1.5 text-left text-xs hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
               >
                 <span>{AGENT_META[id].icon}</span>
                 <span className="text-gray-800 dark:text-gray-200">{AGENT_META[id].label}</span>
-                <span className="text-[10px] text-gray-400 ml-auto">
-                  {AGENT_META[id].description}
-                </span>
+              </button>
+            ))}
+
+            {/* Inputs */}
+            <div className="px-3 py-1 text-[9px] font-semibold text-gray-400 uppercase tracking-wider mt-1">Inputs</div>
+            {Object.entries(INPUT_NODE_META).map(([id, meta]) => (
+              <button
+                key={id}
+                onClick={() => { onAddNode(id); setShowAddMenu(false); }}
+                className="w-full px-3 py-1.5 text-left text-xs hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+              >
+                <span>{meta.icon}</span>
+                <span className="text-gray-800 dark:text-gray-200">{meta.label}</span>
+              </button>
+            ))}
+
+            {/* Processing */}
+            <div className="px-3 py-1 text-[9px] font-semibold text-gray-400 uppercase tracking-wider mt-1">Processing</div>
+            {Object.entries(PROCESSING_NODE_META).map(([id, meta]) => (
+              <button
+                key={id}
+                onClick={() => { onAddNode(id); setShowAddMenu(false); }}
+                className="w-full px-3 py-1.5 text-left text-xs hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+              >
+                <span>{meta.icon}</span>
+                <span className="text-gray-800 dark:text-gray-200">{meta.label}</span>
+              </button>
+            ))}
+
+            {/* Flow Control */}
+            <div className="px-3 py-1 text-[9px] font-semibold text-gray-400 uppercase tracking-wider mt-1">Flow Control</div>
+            {Object.entries(FLOW_NODE_META).map(([id, meta]) => (
+              <button
+                key={id}
+                onClick={() => { onAddNode(id); setShowAddMenu(false); }}
+                className="w-full px-3 py-1.5 text-left text-xs hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+              >
+                <span>{meta.icon}</span>
+                <span className="text-gray-800 dark:text-gray-200">{meta.label}</span>
+              </button>
+            ))}
+
+            {/* Output */}
+            <div className="px-3 py-1 text-[9px] font-semibold text-gray-400 uppercase tracking-wider mt-1">Output</div>
+            {Object.entries(OUTPUT_NODE_META).map(([id, meta]) => (
+              <button
+                key={id}
+                onClick={() => { onAddNode(id); setShowAddMenu(false); }}
+                className="w-full px-3 py-1.5 text-left text-xs hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+              >
+                <span>{meta.icon}</span>
+                <span className="text-gray-800 dark:text-gray-200">{meta.label}</span>
               </button>
             ))}
           </div>
@@ -135,6 +196,34 @@ export default function CanvasToolbar({
       <IconBtn onClick={onAddStickyNote} disabled={disabled} title="Add sticky note">
         📝
       </IconBtn>
+
+      {/* Frame + Reroute */}
+      {onAddFrame && (
+        <IconBtn onClick={onAddFrame} disabled={disabled} title="Add Frame (Ctrl+J)">
+          🔲
+        </IconBtn>
+      )}
+      {onAddReroute && (
+        <IconBtn onClick={onAddReroute} disabled={disabled} title="Add Reroute">
+          ◆
+        </IconBtn>
+      )}
+
+      <Separator />
+
+      {/* Skills browser toggle */}
+      {onToggleSkills && (
+        <IconBtn onClick={onToggleSkills} disabled={disabled} title="Skills Marketplace">
+          ⚡
+        </IconBtn>
+      )}
+
+      {/* Auto-arrange */}
+      {onAutoArrange && (
+        <IconBtn onClick={onAutoArrange} disabled={disabled} title="Auto-arrange (Shift+A)">
+          📊
+        </IconBtn>
+      )}
 
       {/* Spacer */}
       <div className="flex-1" />

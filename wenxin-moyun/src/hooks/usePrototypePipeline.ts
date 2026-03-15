@@ -382,6 +382,15 @@ export function usePrototypePipeline() {
           update.status = 'failed';
           update.error = (payload.error as string) || 'Unknown error';
           break;
+
+        // Phase 5: skill/processing/flow events
+        case 'skill_started':
+        case 'skill_completed':
+        case 'processing_started':
+        case 'processing_completed':
+        case 'flow_gate_evaluation':
+          // Handled by PipelineEditor via stageStatuses — no global state change needed
+          break;
       }
 
       return { ...prev, ...update };

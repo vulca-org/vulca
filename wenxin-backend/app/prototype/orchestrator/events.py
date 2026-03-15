@@ -20,6 +20,16 @@ class EventType(Enum):
     SUBSTAGE_STARTED = "substage_started"
     SUBSTAGE_COMPLETED = "substage_completed"
 
+    # Phase 5 node editor events
+    NODE_EXPANDED = "node_expanded"
+    NODE_COLLAPSED = "node_collapsed"
+    INLINE_PREVIEW_DATA = "inline_preview_data"
+    SKILL_STARTED = "skill_started"
+    SKILL_COMPLETED = "skill_completed"
+    FLOW_DECISION = "flow_decision"
+    MUTE_TOGGLED = "mute_toggled"
+    BYPASS_TOGGLED = "bypass_toggled"
+
 
 @dataclass
 class PipelineEvent:

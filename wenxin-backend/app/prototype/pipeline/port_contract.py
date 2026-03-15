@@ -31,6 +31,19 @@ class DataType(Enum):
     ARCHIVE = "archive"                      # ArchivistOutput
     SKILL_RESULTS = "skill_results"          # list[dict] from pipeline_hook
 
+    # Extended types for node editor (Phase 5)
+    IMAGE = "image"              # Raw image data
+    TEXT = "text"                # Text/prompt
+    SKETCH = "sketch"            # Sketch/line art
+    MASK = "mask"                # Mask/region
+    AUDIO = "audio"              # Audio data
+    VIDEO = "video"              # Video data
+    MODEL_3D = "model_3d"        # 3D model
+    CONFIG = "config"            # Configuration params
+    STYLE = "style"              # Style vector
+    SCORES = "scores"            # L1-L5 scores
+    DECISION = "decision"        # Queen decision
+
 
 @dataclass(frozen=True)
 class PortSpec:
@@ -191,4 +204,62 @@ ARCHIVIST_CONTRACT = register_contract(StageContract(
         PortSpec("archive", DataType.ARCHIVE, PortDirection.OUTPUT),
     ],
     description="Archive the pipeline run results and artifacts",
+))
+
+# ---------------------------------------------------------------------------
+# Phase 5 node editor contracts
+# ---------------------------------------------------------------------------
+
+SKILL_CONTRACT = register_contract(StageContract(
+    stage_name="skill",
+    input_ports=[
+        PortSpec("pipeline_input", DataType.PIPELINE_INPUT, PortDirection.INPUT),
+        PortSpec("data_in", DataType.TEXT, PortDirection.INPUT, required=False),
+    ],
+    output_ports=[
+        PortSpec("skill_results", DataType.SKILL_RESULTS, PortDirection.OUTPUT),
+    ],
+    description="Execute a skill from the marketplace",
+))
+
+PROCESSING_CONTRACT = register_contract(StageContract(
+    stage_name="processing",
+    input_ports=[
+        PortSpec("image_in", DataType.IMAGE, PortDirection.INPUT),
+        PortSpec("config", DataType.CONFIG, PortDirection.INPUT, required=False),
+    ],
+    output_ports=[
+        PortSpec("image_out", DataType.IMAGE, PortDirection.OUTPUT),
+    ],
+    description="Apply image processing operations",
+))
+
+GATE_CONTRACT = register_contract(StageContract(
+    stage_name="gate",
+    input_ports=[
+        PortSpec("scores", DataType.SCORES, PortDirection.INPUT),
+        PortSpec("config", DataType.CONFIG, PortDirection.INPUT, required=False),
+    ],
+    output_ports=[
+        PortSpec("decision", DataType.DECISION, PortDirection.OUTPUT),
+    ],
+    description="Quality gate with conditional routing",
+))
+
+INPUT_CONTRACT = register_contract(StageContract(
+    stage_name="input",
+    input_ports=[],
+    output_ports=[
+        PortSpec("data_out", DataType.TEXT, PortDirection.OUTPUT),
+    ],
+    description="External data input node",
+))
+
+OUTPUT_CONTRACT = register_contract(StageContract(
+    stage_name="output",
+    input_ports=[
+        PortSpec("data_in", DataType.PIPELINE_OUTPUT, PortDirection.INPUT),
+    ],
+    output_ports=[],
+    description="Pipeline output/export node",
 ))

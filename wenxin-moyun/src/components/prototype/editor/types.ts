@@ -1,7 +1,12 @@
 /**
  * M3 Pipeline Editor — type definitions
  * Shared between PipelineEditor, AgentNode, NodeParamPanel, etc.
+ *
+ * Phase 5: Extended with typed ports, node states, sub-stages,
+ * inline previews, and new node categories.
  */
+
+import type { DataType } from './dataTypeColors';
 
 export type AgentNodeId =
   | 'scout'
@@ -18,6 +23,13 @@ export const ALL_AGENT_IDS: AgentNodeId[] = [
   'scout', 'router', 'draft', 'critic', 'queen', 'archivist',
   'upload', 'identify', 'report',
 ];
+
+/** Port specification for typed handles */
+export interface PortSpec {
+  name: string;
+  dataType: DataType;
+  required?: boolean;
+}
 
 /** Report output embedded in ReportNode data */
 export interface ReportOutput {
@@ -39,6 +51,19 @@ export interface AgentNodeData {
   status?: 'idle' | 'running' | 'done' | 'error' | 'skipped';
   duration?: number;
   reportOutput?: ReportOutput;
+  /** Phase 5A: Typed port specs */
+  inputPorts?: PortSpec[];
+  outputPorts?: PortSpec[];
+  /** Phase 5A: Node visual states */
+  muted?: boolean;
+  bypassed?: boolean;
+  collapsed?: boolean;
+  /** Phase 5B: Inline preview data */
+  candidates?: { image_url?: string; candidate_id?: string }[];
+  scores?: { dimension: string; score: number }[];
+  decision?: { action: string; reason?: string; round?: number };
+  /** Phase 5C: Evolution suggestion */
+  evolutionSuggestion?: string;
 }
 
 /** StickyNote data — decorative canvas annotation */
@@ -46,6 +71,29 @@ export interface StickyNoteData {
   [key: string]: unknown;
   text: string;
   color: 'yellow' | 'blue' | 'pink' | 'green';
+}
+
+/** Phase 5A: Frame node data */
+export interface FrameNodeData {
+  [key: string]: unknown;
+  label: string;
+  color: string;
+}
+
+/** Phase 5A: Reroute node data */
+export interface RerouteNodeData {
+  [key: string]: unknown;
+}
+
+/** Phase 5B: Sub-stage node data */
+export interface SubStageNodeData {
+  [key: string]: unknown;
+  label: string;
+  icon: string;
+  parentAgent: string;
+  subStageId: string;
+  status?: 'pending' | 'running' | 'completed' | 'failed' | 'skipped';
+  durationMs?: number;
 }
 
 /** Serialisable topology state (for localStorage & API) */

@@ -30,6 +30,11 @@ from app.prototype.agents.queen_config import QueenConfig
 from app.prototype.api.schemas import (
     AgentInfo,
     CreateRunRequest,
+    ExecuteGraphRequest,
+    ExecuteGraphResponse,
+    GraphValidateRequest,
+    GraphValidateResponse,
+    NodeRuntimeToggleResponse,
     RunStatusResponse,
     SubmitActionRequest,
     SubmitActionResponse,
@@ -144,15 +149,9 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
     cr_cfg = CriticConfig(use_vlm=(provider != "mock"))
     q_cfg = QueenConfig(max_rounds=req.max_rounds)
 
-    # M3: custom topology forces LangGraph path
-    use_graph = req.use_graph or req.custom_nodes is not None
-
-    # Dual-track: use_graph selects LangGraph-based orchestrator
-    GraphOrchestrator = _get_graph_orchestrator_class() if use_graph else None
-    if use_graph and GraphOrchestrator is None:
-        # langgraph not installed — fall back to standard pipeline
-        use_graph = False
-    if use_graph:
+    # Phase 5D: GraphOrchestrator is now default; PipelineOrchestrator as fallback
+    GraphOrchestratorClass = _get_graph_orchestrator_class()
+    if GraphOrchestratorClass is not None:
         template_name = req.template
 
         # If custom topology provided, register a transient template
@@ -173,7 +172,7 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
             except (ImportError, Exception):
                 pass  # Fall back to default template
 
-        orchestrator = GraphOrchestrator(
+        orchestrator = GraphOrchestratorClass(
             draft_config=d_cfg.to_dict(),
             critic_config=cr_cfg.to_dict(),
             queen_config=q_cfg.to_dict(),
@@ -183,6 +182,7 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
             template=template_name,
         )
     else:
+        # Fallback to PipelineOrchestrator if GraphOrchestrator unavailable
         orchestrator = PipelineOrchestrator(
             draft_config=d_cfg,
             critic_config=cr_cfg,
@@ -443,6 +443,167 @@ async def submit_action(task_id: str, req: SubmitActionRequest) -> SubmitActionR
         )
 
     return SubmitActionResponse(accepted=True, message=f"Action '{req.action}' accepted")
+
+
+@router.get("/datatypes")
+async def list_datatypes():
+    """List all DataType values with their socket colors."""
+    from app.prototype.pipeline.socket_colors import get_all_socket_colors
+    from app.prototype.pipeline.port_contract import DataType
+    return {
+        "datatypes": [
+            {"value": dt.value, "color": get_all_socket_colors().get(dt.value, "#6B7B8D")}
+            for dt in DataType
+        ]
+    }
+
+
+# ---------------------------------------------------------------------------
+# Graph execution API (Phase 5D)
+# ---------------------------------------------------------------------------
+
+# In-memory node runtime managers per task (capped to prevent unbounded growth)
+_node_runtime_managers: dict[str, "NodeRuntimeManager"] = {}
+_NODE_RUNTIME_MAX = 100
+
+
+def _get_runtime_manager(task_id: str) -> "NodeRuntimeManager":
+    """Get or create a NodeRuntimeManager, evicting oldest if over limit."""
+    from app.prototype.graph.node_runtime import NodeRuntimeManager
+    if task_id not in _node_runtime_managers:
+        # Evict oldest entries if over limit
+        while len(_node_runtime_managers) >= _NODE_RUNTIME_MAX:
+            oldest = next(iter(_node_runtime_managers))
+            del _node_runtime_managers[oldest]
+        _node_runtime_managers[task_id] = NodeRuntimeManager()
+    return _node_runtime_managers[task_id]
+
+
+@router.post("/graph/execute")
+async def execute_graph(req: ExecuteGraphRequest) -> ExecuteGraphResponse:
+    """Execute a graph synchronously (headless mode)."""
+    import uuid
+    from app.prototype.graph.graph_orchestrator import GraphOrchestrator
+    from app.prototype.pipeline.pipeline_types import PipelineInput
+
+    task_id = f"graph-{uuid.uuid4().hex[:8]}"
+
+    orch = GraphOrchestrator(
+        enable_agent_critic=req.enable_agent_critic,
+        max_rounds=req.max_rounds,
+        template=req.template,
+    )
+
+    pipeline_input = PipelineInput(
+        task_id=task_id,
+        subject=req.subject,
+        cultural_tradition=req.tradition,
+    )
+
+    result = orch.run_sync(pipeline_input)
+
+    return ExecuteGraphResponse(
+        task_id=task_id,
+        success=result.get("success", False),
+        error=result.get("error"),
+        events=result.get("events", []),
+    )
+
+
+@router.post("/graph/validate")
+async def validate_graph(req: GraphValidateRequest) -> GraphValidateResponse:
+    """Validate graph topology with optional port contract checking."""
+    try:
+        from app.prototype.graph.templates.template_model import GraphTemplate
+        from app.prototype.graph.templates.topology_validator import validate_template
+        from app.prototype.pipeline.port_contract import get_contract, list_contracts
+
+        temp_template = GraphTemplate(
+            name="_validate",
+            display_name="Validation",
+            description="Topology for validation",
+            entry_point=req.nodes[0] if req.nodes else "scout",
+            nodes=req.nodes,
+            edges=req.edges,
+        )
+        result = validate_template(temp_template)
+
+        port_contracts = None
+        if req.check_ports:
+            contracts = list_contracts()
+            port_contracts = {}
+            for node_name in req.nodes:
+                contract = contracts.get(node_name)
+                if contract:
+                    port_contracts[node_name] = {
+                        "inputs": [{"name": p.name, "type": p.data_type.value, "required": p.required} for p in contract.input_ports],
+                        "outputs": [{"name": p.name, "type": p.data_type.value} for p in contract.output_ports],
+                    }
+
+        return GraphValidateResponse(
+            valid=result.valid,
+            errors=result.errors,
+            warnings=result.warnings,
+            port_contracts=port_contracts,
+        )
+    except (ImportError, KeyError, ValueError) as e:
+        return GraphValidateResponse(valid=False, errors=[str(e)])
+
+
+@router.get("/graph/templates")
+async def list_graph_templates_with_ports():
+    """Enhanced template listing with port contract info."""
+    try:
+        from app.prototype.graph.templates.template_registry import TemplateRegistry
+        from app.prototype.pipeline.port_contract import get_contract
+
+        templates = []
+        for t in TemplateRegistry.list_templates():
+            tmpl_data = {
+                "name": t.name,
+                "display_name": t.display_name,
+                "description": t.description,
+                "nodes": t.nodes,
+                "edges": t.edges,
+                "enable_loop": t.enable_loop,
+                "parallel_critic": t.parallel_critic,
+                "port_contracts": {},
+            }
+            for node_name in t.nodes:
+                contract = get_contract(node_name)
+                if contract:
+                    tmpl_data["port_contracts"][node_name] = {
+                        "inputs": [{"name": p.name, "type": p.data_type.value, "required": p.required} for p in contract.input_ports],
+                        "outputs": [{"name": p.name, "type": p.data_type.value} for p in contract.output_ports],
+                    }
+            templates.append(tmpl_data)
+        return templates
+    except ImportError:
+        return []
+
+
+@router.post("/graph/nodes/{node_name}/mute")
+async def toggle_node_mute(node_name: str, task_id: str = Query(default="global")) -> NodeRuntimeToggleResponse:
+    """Toggle mute state for a node."""
+    mgr = _get_runtime_manager(task_id)
+    value = mgr.toggle_mute(node_name)
+    return NodeRuntimeToggleResponse(node_name=node_name, state="muted", value=value)
+
+
+@router.post("/graph/nodes/{node_name}/bypass")
+async def toggle_node_bypass(node_name: str, task_id: str = Query(default="global")) -> NodeRuntimeToggleResponse:
+    """Toggle bypass state for a node."""
+    mgr = _get_runtime_manager(task_id)
+    value = mgr.toggle_bypass(node_name)
+    return NodeRuntimeToggleResponse(node_name=node_name, state="bypassed", value=value)
+
+
+@router.post("/graph/nodes/{node_name}/expand")
+async def toggle_node_expand(node_name: str, task_id: str = Query(default="global")) -> NodeRuntimeToggleResponse:
+    """Toggle expand state for a node."""
+    mgr = _get_runtime_manager(task_id)
+    value = mgr.toggle_expand(node_name)
+    return NodeRuntimeToggleResponse(node_name=node_name, state="expanded", value=value)
 
 
 def _build_status_response(task_id: str) -> RunStatusResponse:

@@ -1,13 +1,14 @@
 /**
  * PipelineEditor — React Flow-based visual pipeline topology editor.
  *
- * M8 enhancements:
- * - CanvasToolbar with undo/redo, add-node, template gallery
- * - Keyboard shortcuts (Ctrl+Z, Ctrl+S, Ctrl+Enter, etc.)
- * - Node execution status animation via stageStatuses prop
- * - ReportNode + StickyNote custom node types
- * - First-visit auto-load of quick_evaluate template
- * - Template gallery card overlay
+ * Phase 5 enhancements:
+ * - All new node types: frame, reroute, substage, skill, processing, flow, output, inputs
+ * - TypedEdge with DataType-colored strokes
+ * - Mute/bypass/collapse node states
+ * - Sub-stage expansion (double-click Draft/Critic)
+ * - Skill browser drawer (drag & drop)
+ * - Auto-arrange via dagre
+ * - Inline preview data propagation
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -23,6 +24,7 @@ import {
   type Edge,
   type Node,
   type NodeTypes,
+  type EdgeTypes,
   MarkerType,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
@@ -31,11 +33,51 @@ import { API_PREFIX } from '@/config/api';
 import AgentNode from './AgentNode';
 import ReportNode from './ReportNode';
 import StickyNote from './StickyNote';
+import FrameNode from './FrameNode';
+import RerouteNode from './RerouteNode';
+import SubStageNode from './SubStageNode';
+import SkillNode from './SkillNode';
+import SkillBrowser from './SkillBrowser';
+import TypedEdge from './TypedEdge';
 import CanvasToolbar from './CanvasToolbar';
 import TemplateGallery, { type TemplateInfo } from './TemplateGallery';
 import NodeSearchPopup from './NodeSearchPopup';
 import { useCanvasHistory } from './useCanvasHistory';
 import { useKeyboardShortcuts } from './useKeyboardShortcuts';
+import { useNodeStates } from './useNodeStates';
+import { useSubStageExpansion } from './useSubStageExpansion';
+import { useAutoArrange } from './useAutoArrange';
+import {
+  SketchUploadNode,
+  ReferenceImageNode,
+  MaskRegionNode,
+  TextPromptNode,
+  ScriptNode,
+  ModelImportNode,
+  AudioImportNode,
+} from './inputNodes';
+import {
+  StyleTransferNode,
+  ColorHarmonyNode,
+  CompositionBalanceNode,
+  UpscaleNode,
+  DepthMapNode,
+  EdgeDetectionNode,
+  ElementExtractNode,
+} from './processingNodes';
+import {
+  IfElseNode,
+  LoopNode as FlowLoopNode,
+  MergeNode,
+  SplitNode,
+  GateNode as FlowGateNode,
+} from './flowNodes';
+import {
+  SaveNode,
+  GalleryPublishNode,
+  ExportNode,
+  CompareNode,
+} from './outputNodes';
 import {
   ALL_AGENT_IDS,
   AGENT_META,
@@ -71,11 +113,51 @@ export interface StageStatus {
   duration?: number;
 }
 
+/* ──────────────────────── Node & Edge Types ──────────────── */
+
 const nodeTypes: NodeTypes = {
   agent: AgentNode,
   report: ReportNode,
   sticky: StickyNote,
+  // Phase 5A
+  frame: FrameNode,
+  reroute: RerouteNode,
+  // Phase 5B
+  substage: SubStageNode,
+  // Phase 5C
+  skill: SkillNode,
+  // Input nodes
+  sketch: SketchUploadNode,
+  reference: ReferenceImageNode,
+  mask: MaskRegionNode,
+  textPrompt: TextPromptNode,
+  script: ScriptNode,
+  modelImport: ModelImportNode,
+  audioImport: AudioImportNode,
+  // Processing nodes
+  styleTransfer: StyleTransferNode,
+  colorHarmony: ColorHarmonyNode,
+  compositionBalance: CompositionBalanceNode,
+  upscale: UpscaleNode,
+  depthMap: DepthMapNode,
+  edgeDetection: EdgeDetectionNode,
+  elementExtract: ElementExtractNode,
+  // Flow control nodes
+  ifElse: IfElseNode,
+  loop: FlowLoopNode,
+  merge: MergeNode,
+  split: SplitNode,
+  gate: FlowGateNode,
+  // Output nodes
+  save: SaveNode,
+  galleryPublish: GalleryPublishNode,
+  export: ExportNode,
+  compare: CompareNode,
 } as unknown as NodeTypes;
+
+const edgeTypes: EdgeTypes = {
+  typed: TypedEdge,
+} as unknown as EdgeTypes;
 
 /* ──────────────────────── Helpers ──────────────────────── */
 
@@ -140,7 +222,7 @@ function extractTopology(
   edges: Edge[],
 ): TopologyState {
   const nodeIds = nodes
-    .filter((n) => n.type !== 'sticky')
+    .filter((n) => n.type !== 'sticky' && n.type !== 'frame' && n.type !== 'reroute')
     .map((n) => n.id as AgentNodeId);
   const edgePairs: [string, string][] = edges.map((e) => [e.source, e.target]);
   const hasLoop = edges.some(
@@ -190,6 +272,10 @@ interface Props {
   stageStatuses?: Record<string, StageStatus>;
   /** Report output to display in ReportNode */
   reportOutput?: ReportOutput;
+  /** Phase 5: Pipeline candidate/score/decision data */
+  candidates?: { image_url?: string; candidate_id?: string }[];
+  scoredCandidates?: { dimension: string; score: number }[];
+  queenDecision?: { action: string; reason?: string; round?: number };
 }
 
 export default function PipelineEditor({
@@ -199,6 +285,9 @@ export default function PipelineEditor({
   nodeParams,
   stageStatuses,
   reportOutput,
+  candidates,
+  scoredCandidates,
+  queenDecision,
 }: Props) {
   /* ── API templates ── */
   const [apiTemplates, setApiTemplates] = useState<ApiTemplate[]>([]);
@@ -206,6 +295,7 @@ export default function PipelineEditor({
   const [savedTemplates, setSavedTemplates] = useState(loadSavedTemplates);
   const [showGallery, setShowGallery] = useState(false);
   const [showFirstVisitBanner, setShowFirstVisitBanner] = useState(false);
+  const [showSkillBrowser, setShowSkillBrowser] = useState(false);
 
   useEffect(() => {
     fetch(`${API_PREFIX}/prototype/templates`)
@@ -220,6 +310,11 @@ export default function PipelineEditor({
   const [nodes, setNodes, onNodesChange] = useNodesState<Node<AgentNodeData>>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [, setSelectedNodeId] = useState<AgentNodeId | null>(null);
+
+  /* ── Phase 5 hooks ── */
+  const { states: nodeVisualStates, toggleMute, toggleBypass, toggleCollapse } = useNodeStates();
+  const { isExpanded, expandNode, collapseNode } = useSubStageExpansion();
+  const { arrange } = useAutoArrange();
 
   /* ── Undo / Redo ── */
   const { pushSnapshot, undo, redo, canUndo, canRedo } = useCanvasHistory();
@@ -279,7 +374,6 @@ export default function PipelineEditor({
   /* ── Load template into canvas ── */
   const loadTemplate = useCallback(
     (name: string) => {
-      // Push snapshot before loading
       if (nodes.length > 0) pushSnapshot(nodes, edges);
 
       setActiveTemplate(name);
@@ -311,15 +405,10 @@ export default function PipelineEditor({
       }
 
       // Fallback
-      const defaultIds: AgentNodeId[] = [
-        'scout', 'router', 'draft', 'critic', 'queen', 'archivist',
-      ];
+      const defaultIds: AgentNodeId[] = ['scout', 'router', 'draft', 'critic', 'queen', 'archivist'];
       const defaultEdges: [string, string][] = [
-        ['scout', 'router'],
-        ['router', 'draft'],
-        ['draft', 'critic'],
-        ['critic', 'queen'],
-        ['queen', 'archivist'],
+        ['scout', 'router'], ['router', 'draft'], ['draft', 'critic'],
+        ['critic', 'queen'], ['queen', 'archivist'],
       ];
       const fn = toFlowNodes(defaultIds);
       const fe = toFlowEdges(defaultEdges);
@@ -330,7 +419,7 @@ export default function PipelineEditor({
     [apiTemplates, savedTemplates, setNodes, setEdges, runValidation, onNodeSelect, nodes, edges, pushSnapshot],
   );
 
-  // Phase 1: load default immediately so canvas is never empty
+  // Phase 1: load default immediately
   const didInit = useRef(false);
   useEffect(() => {
     if (!didInit.current) {
@@ -339,7 +428,7 @@ export default function PipelineEditor({
     }
   }, [loadTemplate]);
 
-  // Phase 2: when API templates arrive, apply first-visit logic
+  // Phase 2: first-visit logic
   const didApplyFirstVisit = useRef(false);
   useEffect(() => {
     if (apiTemplates.length > 0 && !didApplyFirstVisit.current) {
@@ -385,7 +474,7 @@ export default function PipelineEditor({
   /* ── Node selection ── */
   const onNodeClick = useCallback(
     (_: React.MouseEvent, node: Node) => {
-      if (node.type === 'sticky') return;
+      if (node.type === 'sticky' || node.type === 'frame' || node.type === 'reroute') return;
       const id = node.id as AgentNodeId;
       setSelectedNodeId(id);
       onNodeSelect?.(id);
@@ -397,6 +486,29 @@ export default function PipelineEditor({
     setSelectedNodeId(null);
     onNodeSelect?.(null);
   }, [onNodeSelect]);
+
+  /* ── Double-click for sub-stage expansion ── */
+  const handleNodeDoubleClick = useCallback(
+    (_: React.MouseEvent, node: Node) => {
+      const agentId = (node.data as AgentNodeData)?.agentId;
+      if (agentId !== 'draft' && agentId !== 'critic') return;
+
+      if (isExpanded(node.id)) {
+        const originalNode = {
+          ...node,
+          data: { ...(node.data as AgentNodeData) },
+        };
+        const result = collapseNode(node.id, agentId, originalNode, nodes, edges);
+        setNodes(result.nodes as Node<AgentNodeData>[]);
+        setEdges(result.edges);
+      } else {
+        const result = expandNode(node.id, agentId, nodes, edges);
+        setNodes(result.nodes as Node<AgentNodeData>[]);
+        setEdges(result.edges);
+      }
+    },
+    [nodes, edges, setNodes, setEdges, isExpanded, expandNode, collapseNode],
+  );
 
   /* ── Save / Delete custom template ── */
   const handleSave = useCallback(() => {
@@ -426,24 +538,45 @@ export default function PipelineEditor({
     [savedTemplates, activeTemplate, loadTemplate],
   );
 
-  /* ── Add node / sticky note ── */
+  /* ── Add node ── */
   const handleAddNode = useCallback(
-    (nodeId: AgentNodeId) => {
+    (nodeId: AgentNodeId | string) => {
       pushSnapshot(nodes, edges);
       const maxX = nodes.reduce((mx, n) => Math.max(mx, n.position.x), 0);
-      const newNode: Node<AgentNodeData> = {
-        id: `${nodeId}-${Date.now()}`,
-        type: nodeId === 'report' ? 'report' : 'agent',
-        position: { x: maxX + 200, y: 80 },
-        data: {
-          agentId: nodeId,
-          label: AGENT_META[nodeId].label,
-          icon: AGENT_META[nodeId].icon,
-          description: AGENT_META[nodeId].description,
+
+      // Determine node type
+      let type: string;
+      let data: Record<string, unknown>;
+
+      if (ALL_AGENT_IDS.includes(nodeId as AgentNodeId)) {
+        const id = nodeId as AgentNodeId;
+        type = id === 'report' ? 'report' : 'agent';
+        data = {
+          agentId: id,
+          label: AGENT_META[id].label,
+          icon: AGENT_META[id].icon,
+          description: AGENT_META[id].description,
           params: {},
-        },
+        };
+      } else if (nodeId === 'frame') {
+        type = 'frame';
+        data = { label: 'Frame', color: '#334155' };
+      } else if (nodeId === 'reroute') {
+        type = 'reroute';
+        data = {};
+      } else {
+        // All other node types use their nodeId as type
+        type = nodeId;
+        data = {};
+      }
+
+      const newNode: Node = {
+        id: `${nodeId}-${Date.now()}`,
+        type,
+        position: { x: maxX + 200, y: 80 },
+        data,
       };
-      setNodes((prev) => [...prev, newNode]);
+      setNodes((prev) => [...prev, newNode as Node<AgentNodeData>]);
     },
     [nodes, edges, setNodes, pushSnapshot],
   );
@@ -460,7 +593,23 @@ export default function PipelineEditor({
     setNodes((prev) => [...prev, newNote as Node<AgentNodeData>]);
   }, [nodes, edges, setNodes, pushSnapshot]);
 
-  /* ── Node search popup (Space to open, ComfyUI-style) ── */
+  /* ── Frame + Reroute ── */
+  const handleAddFrame = useCallback(() => {
+    handleAddNode('frame');
+  }, [handleAddNode]);
+
+  const handleAddReroute = useCallback(() => {
+    handleAddNode('reroute');
+  }, [handleAddNode]);
+
+  /* ── Auto-arrange ── */
+  const handleAutoArrange = useCallback(() => {
+    pushSnapshot(nodes, edges);
+    const arranged = arrange(nodes, edges);
+    setNodes(arranged as Node<AgentNodeData>[]);
+  }, [nodes, edges, setNodes, pushSnapshot, arrange]);
+
+  /* ── Node search popup ── */
   const [showNodeSearch, setShowNodeSearch] = useState(false);
 
   const handleDeleteSelected = useCallback(() => {
@@ -491,6 +640,76 @@ export default function PipelineEditor({
     rfInstance.current?.fitView();
   }, []);
 
+  /* ── Mute/Bypass/Collapse selected ── */
+  const handleMuteSelected = useCallback(() => {
+    setNodes((nds) =>
+      nds.map((n) => {
+        if (!n.selected) return n;
+        const newVal = !n.data.muted;
+        toggleMute(n.id);
+        return { ...n, data: { ...n.data, muted: newVal } };
+      }),
+    );
+  }, [setNodes, toggleMute]);
+
+  const handleBypassSelected = useCallback(() => {
+    setNodes((nds) =>
+      nds.map((n) => {
+        if (!n.selected) return n;
+        const newVal = !n.data.bypassed;
+        toggleBypass(n.id);
+        return { ...n, data: { ...n.data, bypassed: newVal } };
+      }),
+    );
+  }, [setNodes, toggleBypass]);
+
+  const handleCollapseSelected = useCallback(() => {
+    setNodes((nds) =>
+      nds.map((n) => {
+        if (!n.selected) return n;
+        const newVal = !n.data.collapsed;
+        toggleCollapse(n.id);
+        return { ...n, data: { ...n.data, collapsed: newVal } };
+      }),
+    );
+  }, [nodes, setNodes, toggleCollapse, nodeVisualStates]);
+
+  /* ── Drag & drop from skill browser ── */
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      const skillData = e.dataTransfer.getData('application/vulca-skill');
+      if (!skillData) return;
+
+      try {
+        const skill = JSON.parse(skillData);
+        const position = rfInstance.current
+          ? { x: e.clientX - 200, y: e.clientY - 100 }
+          : { x: e.clientX, y: e.clientY };
+
+        const newNode: Node = {
+          id: `skill-${Date.now()}`,
+          type: 'skill',
+          position,
+          data: {
+            skillName: skill.display_name || skill.name,
+            skillId: skill.name,
+            tags: skill.tags || [],
+          },
+        };
+        setNodes((prev) => [...prev, newNode as Node<AgentNodeData>]);
+      } catch {
+        // Invalid drag data
+      }
+    },
+    [setNodes],
+  );
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  }, []);
+
   /* ── Run ── */
   const handleRun = useCallback(() => {
     const topo = extractTopology(nodes, edges);
@@ -514,7 +733,7 @@ export default function PipelineEditor({
     onNodeSelect?.(null);
   }, [setNodes, onNodeSelect]);
 
-  /* ── Keyboard shortcuts (core + ComfyUI-style) ── */
+  /* ── Keyboard shortcuts ── */
   useKeyboardShortcuts({
     onUndo: handleUndo,
     onRedo: handleRedo,
@@ -526,28 +745,45 @@ export default function PipelineEditor({
     onDeleteSelected: handleDeleteSelected,
     onDuplicateSelected: handleDuplicateSelected,
     onFitView: handleFitView,
+    onMuteSelected: handleMuteSelected,
+    onBypassSelected: handleBypassSelected,
+    onCollapseSelected: handleCollapseSelected,
+    onAddFrame: handleAddFrame,
+    onAutoArrange: handleAutoArrange,
     disabled,
   });
 
-  /* ── Propagate stage statuses to node data ── */
+  /* ── Propagate stage statuses + inline preview data to node data ── */
   useEffect(() => {
-    if (!stageStatuses) return;
+    if (!stageStatuses && !candidates && !scoredCandidates && !queenDecision) return;
     setNodes((nds) =>
       nds.map((n) => {
-        if (n.type === 'sticky') return n;
-        const st = stageStatuses[n.id];
-        if (!st) return n;
-        return {
-          ...n,
-          data: {
-            ...n.data,
-            status: st.status,
-            duration: st.duration,
-          },
-        };
+        if (n.type === 'sticky' || n.type === 'frame' || n.type === 'reroute') return n;
+        const st = stageStatuses?.[n.id];
+        const agentId = (n.data as AgentNodeData)?.agentId;
+        const updates: Partial<AgentNodeData> = {};
+
+        if (st) {
+          updates.status = st.status;
+          updates.duration = st.duration;
+        }
+
+        // Propagate inline preview data
+        if (agentId === 'draft' && candidates) {
+          updates.candidates = candidates;
+        }
+        if (agentId === 'critic' && scoredCandidates) {
+          updates.scores = scoredCandidates;
+        }
+        if (agentId === 'queen' && queenDecision) {
+          updates.decision = queenDecision;
+        }
+
+        if (Object.keys(updates).length === 0) return n;
+        return { ...n, data: { ...n.data, ...updates } };
       }),
     );
-  }, [stageStatuses, setNodes]);
+  }, [stageStatuses, candidates, scoredCandidates, queenDecision, setNodes]);
 
   /* ── Propagate report output to report nodes ── */
   useEffect(() => {
@@ -606,6 +842,10 @@ export default function PipelineEditor({
         disabled={!!disabled}
         validation={validation}
         activeTemplate={activeTemplate}
+        onAddFrame={handleAddFrame}
+        onAddReroute={handleAddReroute}
+        onAutoArrange={handleAutoArrange}
+        onToggleSkills={() => setShowSkillBrowser((v) => !v)}
       />
 
       {/* First-visit banner */}
@@ -625,6 +865,12 @@ export default function PipelineEditor({
 
       {/* Canvas */}
       <div className="flex-1 min-h-0 relative">
+        {/* Skill browser drawer */}
+        <SkillBrowser
+          visible={showSkillBrowser}
+          onClose={() => setShowSkillBrowser(false)}
+        />
+
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -632,8 +878,12 @@ export default function PipelineEditor({
           onEdgesChange={handleEdgesChange}
           onConnect={onConnect}
           onNodeClick={onNodeClick}
+          onNodeDoubleClick={handleNodeDoubleClick}
           onPaneClick={onPaneClick}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
           nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
           onInit={(instance) => { rfInstance.current = instance; }}
           fitView
           fitViewOptions={{ padding: 0.3 }}
@@ -648,7 +898,7 @@ export default function PipelineEditor({
           />
         </ReactFlow>
 
-        {/* Node search popup (Space to open) */}
+        {/* Node search popup */}
         <NodeSearchPopup
           visible={showNodeSearch}
           onClose={() => setShowNodeSearch(false)}

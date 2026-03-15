@@ -1,17 +1,68 @@
 /**
  * NodeSearchPopup — ComfyUI-style floating search for adding nodes.
  *
+ * Phase 5: Extended with Input, Processing, Flow Control, Output categories.
  * Opened by pressing Space in the pipeline editor.
- * Filters agent nodes by name/description, click or Enter to add.
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { ALL_AGENT_IDS, AGENT_META, type AgentNodeId } from './types';
+import { INPUT_NODE_META } from './inputNodes';
+import { PROCESSING_NODE_META } from './processingNodes';
+import { FLOW_NODE_META } from './flowNodes';
+import { OUTPUT_NODE_META } from './outputNodes';
+
+interface SearchItem {
+  id: string;
+  label: string;
+  icon: string;
+  description: string;
+  category: string;
+}
+
+/** Build the full searchable items list */
+function buildSearchItems(): SearchItem[] {
+  const items: SearchItem[] = [];
+
+  // Agent nodes
+  for (const id of ALL_AGENT_IDS) {
+    const meta = AGENT_META[id];
+    items.push({ id, label: meta.label, icon: meta.icon, description: meta.description, category: 'Agents' });
+  }
+
+  // Input nodes
+  for (const [id, meta] of Object.entries(INPUT_NODE_META)) {
+    items.push({ id, label: meta.label, icon: meta.icon, description: meta.description, category: 'Inputs' });
+  }
+
+  // Processing nodes
+  for (const [id, meta] of Object.entries(PROCESSING_NODE_META)) {
+    items.push({ id, label: meta.label, icon: meta.icon, description: meta.description, category: 'Processing' });
+  }
+
+  // Flow control nodes
+  for (const [id, meta] of Object.entries(FLOW_NODE_META)) {
+    items.push({ id, label: meta.label, icon: meta.icon, description: meta.description, category: 'Flow Control' });
+  }
+
+  // Output nodes
+  for (const [id, meta] of Object.entries(OUTPUT_NODE_META)) {
+    items.push({ id, label: meta.label, icon: meta.icon, description: meta.description, category: 'Output' });
+  }
+
+  // Utility nodes
+  items.push({ id: 'frame', label: 'Frame', icon: '🔲', description: 'Group container', category: 'Utility' });
+  items.push({ id: 'reroute', label: 'Reroute', icon: '◆', description: 'Edge junction', category: 'Utility' });
+
+  return items;
+}
+
+const ALL_ITEMS = buildSearchItems();
 
 interface Props {
   visible: boolean;
   onClose: () => void;
-  onAddNode: (nodeId: AgentNodeId) => void;
+  onAddNode: (nodeId: AgentNodeId | string) => void;
   /** Screen position to render at (near cursor or center) */
   position?: { x: number; y: number };
 }
@@ -32,19 +83,39 @@ export default function NodeSearchPopup({ visible, onClose, onAddNode, position 
 
   if (!visible) return null;
 
-  const filtered = ALL_AGENT_IDS.filter(id => {
+  const filtered = ALL_ITEMS.filter(item => {
     if (!query.trim()) return true;
     const q = query.toLowerCase();
-    const meta = AGENT_META[id];
     return (
-      id.includes(q) ||
-      meta.label.toLowerCase().includes(q) ||
-      meta.description.toLowerCase().includes(q)
+      item.id.toLowerCase().includes(q) ||
+      item.label.toLowerCase().includes(q) ||
+      item.description.toLowerCase().includes(q) ||
+      item.category.toLowerCase().includes(q)
     );
   });
 
-  const handleSelect = (id: AgentNodeId) => {
-    onAddNode(id);
+  // Group by category
+  const categories = new Map<string, SearchItem[]>();
+  for (const item of filtered) {
+    const cat = item.category;
+    if (!categories.has(cat)) categories.set(cat, []);
+    categories.get(cat)!.push(item);
+  }
+
+  // Build a flat-index lookup for keyboard navigation (StrictMode-safe)
+  const flatIndexMap = useMemo(() => {
+    const map = new Map<string, number>();
+    let idx = 0;
+    for (const [, items] of categories.entries()) {
+      for (const item of items) {
+        map.set(item.id, idx++);
+      }
+    }
+    return map;
+  }, [categories]);
+
+  const handleSelect = (id: string) => {
+    onAddNode(id as AgentNodeId);
     onClose();
   };
 
@@ -60,13 +131,13 @@ export default function NodeSearchPopup({ visible, onClose, onAddNode, position 
     } else if (e.key === 'Enter') {
       e.preventDefault();
       if (filtered[highlightIndex]) {
-        handleSelect(filtered[highlightIndex]);
+        handleSelect(filtered[highlightIndex].id);
       }
     }
   };
 
   const posStyle = position
-    ? { left: Math.min(position.x, window.innerWidth - 260), top: Math.min(position.y, window.innerHeight - 300) }
+    ? { left: Math.min(position.x, window.innerWidth - 280), top: Math.min(position.y, window.innerHeight - 400) }
     : { left: '50%', top: '30%', transform: 'translate(-50%, -50%)' };
 
   return (
@@ -76,7 +147,7 @@ export default function NodeSearchPopup({ visible, onClose, onAddNode, position 
 
       {/* Popup */}
       <div
-        className="fixed z-50 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden"
+        className="fixed z-50 w-64 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden"
         style={posStyle}
       >
         {/* Search input */}
@@ -95,38 +166,45 @@ export default function NodeSearchPopup({ visible, onClose, onAddNode, position 
           />
         </div>
 
-        {/* Results */}
-        <ul className="max-h-48 overflow-y-auto py-1">
+        {/* Results grouped by category */}
+        <ul className="max-h-64 overflow-y-auto py-1">
           {filtered.length === 0 && (
             <li className="px-3 py-2 text-[11px] text-gray-400">No matching nodes</li>
           )}
-          {filtered.map((id, idx) => {
-            const meta = AGENT_META[id];
-            return (
-              <li key={id}>
-                <button
-                  onClick={() => handleSelect(id)}
-                  onMouseEnter={() => setHighlightIndex(idx)}
-                  className={[
-                    'w-full flex items-center gap-2 px-3 py-1.5 text-left transition-colors',
-                    idx === highlightIndex
-                      ? 'bg-[#C87F4A]/10 dark:bg-[#C87F4A]/20'
-                      : 'hover:bg-gray-50 dark:hover:bg-gray-700',
-                  ].join(' ')}
-                >
-                  <span className="text-sm">{meta.icon}</span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium text-gray-800 dark:text-gray-200">
-                      {meta.label}
-                    </p>
-                    <p className="text-[9px] text-gray-400 dark:text-gray-500 truncate">
-                      {meta.description}
-                    </p>
-                  </div>
-                </button>
-              </li>
-            );
-          })}
+          {Array.from(categories.entries()).map(([category, items]) => (
+            <li key={category}>
+              {/* Category header */}
+              <div className="px-3 py-1 text-[9px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider bg-gray-50 dark:bg-gray-750">
+                {category}
+              </div>
+              {items.map((item) => {
+                const idx = flatIndexMap.get(item.id) ?? 0;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => handleSelect(item.id)}
+                    onMouseEnter={() => setHighlightIndex(idx)}
+                    className={[
+                      'w-full flex items-center gap-2 px-3 py-1.5 text-left transition-colors',
+                      idx === highlightIndex
+                        ? 'bg-[#C87F4A]/10 dark:bg-[#C87F4A]/20'
+                        : 'hover:bg-gray-50 dark:hover:bg-gray-700',
+                    ].join(' ')}
+                  >
+                    <span className="text-sm">{item.icon}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-gray-800 dark:text-gray-200">
+                        {item.label}
+                      </p>
+                      <p className="text-[9px] text-gray-400 dark:text-gray-500 truncate">
+                        {item.description}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
+            </li>
+          ))}
         </ul>
 
         {/* Shortcut hints */}

@@ -91,6 +91,8 @@ class GraphOrchestrator:
         enable_agent_critic: bool = False,
         max_rounds: int = 3,
         template: str = "default",
+        enable_skill_hook: bool = False,
+        skill_hook_names: list[str] | None = None,
     ) -> None:
         self._draft_config = draft_config
         self._critic_config = critic_config
@@ -99,6 +101,8 @@ class GraphOrchestrator:
         self._enable_agent_critic = enable_agent_critic
         self._max_rounds = max_rounds
         self._template_name = template
+        self._enable_skill_hook = enable_skill_hook
+        self._skill_hook_names = skill_hook_names or []
 
         # Resolve template (graceful fallback to None → uses build_default_graph)
         self._template = None
@@ -106,6 +110,14 @@ class GraphOrchestrator:
             from app.prototype.graph.templates.template_registry import TemplateRegistry
             self._template = TemplateRegistry.get(template)
         except (ImportError, KeyError):
+            pass
+
+        # Optional Langfuse observer (same pattern as PipelineOrchestrator)
+        self._langfuse = None
+        try:
+            from langfuse import Langfuse
+            self._langfuse = Langfuse()
+        except (ImportError, Exception):
             pass
 
         # Active runs tracking
@@ -345,6 +357,15 @@ class GraphOrchestrator:
                 },
                 timestamp_ms=total_ms,
             )
+        finally:
+            if self._langfuse:
+                try:
+                    self._langfuse.flush()
+                except Exception:
+                    pass
+            # Cleanup graphs/configs
+            self._graphs.pop(task_id, None)
+            self._configs.pop(task_id, None)
 
     # ------------------------------------------------------------------
     # Dynamic weights integration
@@ -507,6 +528,33 @@ class GraphOrchestrator:
         )
         run_state.submit_human_action(ha)
         return True
+
+    def run_sync(self, pipeline_input: PipelineInput) -> dict[str, Any]:
+        """Execute pipeline synchronously, returning final state.
+
+        Collects all events and returns a dict with:
+        - events: list of all PipelineEvent dicts
+        - final_state: last known state
+        - success: bool
+        - error: str or None
+        """
+        events = []
+        final_event = None
+        for event in self.run_stream(pipeline_input):
+            events.append(event.to_dict())
+            final_event = event
+
+        success = final_event is not None and final_event.event_type == EventType.PIPELINE_COMPLETED
+        error = None
+        if final_event and final_event.event_type == EventType.PIPELINE_FAILED:
+            error = final_event.payload.get("error", "Unknown error")
+
+        return {
+            "events": events,
+            "success": success,
+            "error": error,
+            "task_id": pipeline_input.task_id,
+        }
 
 
 def _dict_to_pipeline_event(evt_dict: dict, t0: float) -> PipelineEvent:
