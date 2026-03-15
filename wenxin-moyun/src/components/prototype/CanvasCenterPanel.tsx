@@ -122,7 +122,7 @@ export default function CanvasCenterPanel({
             <IOSCardContent className="text-center py-12">
               <div className="text-4xl mb-3">🎨</div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-                VULCA Playground
+                VULCA Canvas
               </h3>
               <p className="text-sm text-gray-500 dark:text-gray-400 max-w-md mx-auto">
                 Configure a pipeline run in the left panel to start generating

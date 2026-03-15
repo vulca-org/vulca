@@ -99,16 +99,16 @@ function ArrowSvg({ active }: { active: boolean }) {
     <svg width="24" height="16" viewBox="0 0 24 16" className="shrink-0 mx-0.5">
       <line
         x1="0" y1="8" x2="18" y2="8"
-        stroke={active ? '#92400e' : '#d1d5db'}
+        stroke={active ? '#C87F4A' : '#d1d5db'}
         strokeWidth="2"
         className="dark:stroke-current"
-        style={{ color: active ? '#60a5fa' : '#4b5563' }}
+        style={{ color: active ? '#DDA574' : '#4b5563' }}
       />
       <polygon
         points="16,4 24,8 16,12"
-        fill={active ? '#92400e' : '#d1d5db'}
+        fill={active ? '#C87F4A' : '#d1d5db'}
         className="dark:fill-current"
-        style={{ color: active ? '#60a5fa' : '#4b5563' }}
+        style={{ color: active ? '#DDA574' : '#4b5563' }}
       />
     </svg>
   );

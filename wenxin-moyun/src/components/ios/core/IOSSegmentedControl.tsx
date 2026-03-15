@@ -107,22 +107,21 @@ export const IOSSegmentedControl: React.FC<IOSSegmentedControlProps> = ({
       {/* Background indicator for selected segment */}
       {style === 'filled' && (
         <motion.div
-          className="absolute inset-y-0.5 bg-white dark:bg-gray-800 rounded-md shadow-sm z-0"
+          className="absolute inset-y-0.5 z-0 px-0.5"
           initial={false}
           animate={{
-            x: `${(selectedIndex / normalizedSegments.length) * 100}%`,
-            width: `${100 / normalizedSegments.length}%`
+            x: `${selectedIndex * 100}%`,
           }}
           transition={{
             ...iosAnimations.spring,
-            duration: 0.3
+            duration: 0.3,
           }}
           style={{
-            marginLeft: '2px',
-            marginRight: '2px',
-            width: `calc(${100 / normalizedSegments.length}% - 4px)`
+            width: `${100 / normalizedSegments.length}%`,
           }}
-        />
+        >
+          <div className="w-full h-full rounded-md bg-white dark:bg-gray-800 shadow-sm" />
+        </motion.div>
       )}
 
       {/* Segments */}

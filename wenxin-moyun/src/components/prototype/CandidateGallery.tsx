@@ -137,7 +137,7 @@ export default function CandidateGallery({
               {/* Score badge overlay */}
               {score != null && (
                 <div className="absolute bottom-12 right-2 z-10 bg-black/60 text-white text-xs rounded px-1.5 py-0.5 font-mono">
-                  {score.toFixed(3)}
+                  {score.toFixed(2)}
                 </div>
               )}
 
@@ -177,8 +177,8 @@ export default function CandidateGallery({
                     )}
                   </div>
                 </div>
-                <div className="text-xs text-gray-400 mt-1 truncate">
-                  seed: {c.seed} | {c.model_ref}
+                <div className="text-[10px] text-gray-400 mt-1 truncate">
+                  {c.prompt ? c.prompt.slice(0, 50) + (c.prompt.length > 50 ? '...' : '') : `#${shortId}`}
                 </div>
               </div>
             </div>

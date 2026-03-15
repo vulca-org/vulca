@@ -64,7 +64,7 @@ export default function CanvasRightPanel({
               {pipeline.hitlConstraints && (
                 <div className="mb-3 rounded-lg border border-[#C9C2B8] dark:border-[#C87F4A]/20 bg-[#FAF7F2] dark:bg-[#C87F4A]/5 p-2">
                   <div className="text-[11px] font-semibold text-[#334155] dark:text-[#DDA574] mb-1.5">
-                    HITL Constraints
+                    Your Preferences
                   </div>
                   <div className="space-y-1.5 text-[11px]">
                     <div>
@@ -88,7 +88,7 @@ export default function CanvasRightPanel({
                       ) : <span className="text-gray-400">—</span>}
                     </div>
                     <div className="text-gray-600 dark:text-gray-300">
-                      Applied: {pipeline.hitlConstraints.applied_scores} | Touched: {pipeline.hitlConstraints.candidates_touched}
+                      {pipeline.hitlConstraints.applied_scores} scores applied to {pipeline.hitlConstraints.candidates_touched} candidates
                     </div>
                   </div>
                 </div>
@@ -116,7 +116,7 @@ export default function CanvasRightPanel({
                       onViewCriticDetail(best);
                     }}
                   >
-                    查看详情
+                    View Details
                   </IOSButton>
                 </div>
               )}

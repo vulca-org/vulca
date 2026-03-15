@@ -145,7 +145,7 @@ export default function PrototypePage() {
       provider: currentProvider,
       n_candidates: lastRunParams?.n_candidates || 4,
       max_rounds: lastRunParams?.max_rounds || 3,
-      enable_hitl: lastRunParams?.enable_hitl || false,
+      enable_hitl: enableHitl,
       enable_agent_critic: lastRunParams?.enable_agent_critic ?? true,
       enable_parallel_critic: lastRunParams?.enable_parallel_critic || false,
       use_graph: lastRunParams?.use_graph || false,
@@ -157,7 +157,7 @@ export default function PrototypePage() {
     setActiveTemplate(params.template);
     setPlaygroundMode('run');
     startRun(runParams);
-  }, [lastRunParams, startRun, currentSubject, currentTradition, currentProvider, setPlaygroundMode]);
+  }, [lastRunParams, startRun, currentSubject, currentTradition, currentProvider, enableHitl, setPlaygroundMode]);
 
   const handleFork = useCallback((params: { subject: string; tradition: string }) => {
     setCurrentSubject(params.subject);
@@ -341,7 +341,7 @@ export default function PrototypePage() {
         scoredCandidates={state.scoredCandidates}
         bestCandidateId={state.bestCandidateId}
         onAction={submitAction}
-        onClose={() => {}}
+        onClose={() => submitAction({ action: 'approve' })}
       />
 
       {criticDetailCandidate && (

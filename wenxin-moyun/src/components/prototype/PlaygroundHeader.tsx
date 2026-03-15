@@ -24,7 +24,7 @@ export default function PlaygroundHeader({ status, taskId }: Props) {
     <div className="flex items-center justify-between">
       <div>
         <h1 className="text-lg font-bold text-gray-900 dark:text-white leading-tight">
-          Playground
+          Canvas
         </h1>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
           Multi-agent cultural art pipeline

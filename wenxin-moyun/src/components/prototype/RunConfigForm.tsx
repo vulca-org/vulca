@@ -7,8 +7,9 @@
  * - TemplateSelector always visible (not gated on Graph Mode)
  */
 
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { API_PREFIX } from '../../config/api';
+import { useCanvasStore, creationModeToParams } from '@/store/canvasStore';
 import TemplateSelector from './TemplateSelector';
 import MediaTypeSelector from './MediaTypeSelector';
 
@@ -30,16 +31,13 @@ function traditionLabel(key: string): string {
 // --- Template-driven field config ---
 interface FieldConfig {
   hideMaxRounds?: boolean;
-  hideHitl?: boolean;
   hideSubject?: boolean;
-  autoHitl?: boolean;
   subjectMultiline?: boolean;
 }
 
 const TEMPLATE_FIELD_CONFIG: Record<string, FieldConfig> = {
-  fast_draft: { hideMaxRounds: true, hideHitl: true },
+  fast_draft: { hideMaxRounds: true },
   critique_only: { hideSubject: true },
-  interactive_full: { autoHitl: true },
   batch_eval: { subjectMultiline: true },
 };
 
@@ -179,13 +177,12 @@ interface Props {
 }
 
 export default function RunConfigForm({ onSubmit, disabled, initialValues }: Props) {
+  const creationMode = useCanvasStore(s => s.creationMode);
   const [subject, setSubject] = useState('');
   const [tradition, setTradition] = useState('chinese_xieyi');
   const [culturalIntent, setCulturalIntent] = useState('');
-  const [provider, setProvider] = useState('mock');
   const [nCandidates, setNCandidates] = useState(4);
   const [maxRounds, setMaxRounds] = useState(3);
-  const [enableHitl, setEnableHitl] = useState(false);
   const [enableAgentCritic, setEnableAgentCritic] = useState(false);
   const [useGraph, setUseGraph] = useState(false);
   const [enableParallelCritic, setEnableParallelCritic] = useState(true);
@@ -231,10 +228,9 @@ export default function RunConfigForm({ onSubmit, disabled, initialValues }: Pro
     if (initialValues.subject !== undefined) setSubject(initialValues.subject);
     if (initialValues.tradition !== undefined) setTradition(initialValues.tradition);
     if (initialValues.intent !== undefined) setCulturalIntent(initialValues.intent);
-    if (initialValues.provider !== undefined) setProvider(initialValues.provider);
+    // provider + enable_hitl are now derived from CreationModeSelector (store)
     if (initialValues.n_candidates !== undefined) setNCandidates(initialValues.n_candidates);
     if (initialValues.max_rounds !== undefined) setMaxRounds(initialValues.max_rounds);
-    if (initialValues.enable_hitl !== undefined) setEnableHitl(initialValues.enable_hitl);
     if (initialValues.enable_agent_critic !== undefined) setEnableAgentCritic(initialValues.enable_agent_critic);
     if (initialValues.enable_parallel_critic !== undefined) setEnableParallelCritic(initialValues.enable_parallel_critic);
     if (initialValues.use_graph !== undefined) setUseGraph(initialValues.use_graph);
@@ -245,13 +241,6 @@ export default function RunConfigForm({ onSubmit, disabled, initialValues }: Pro
   // Derive field config from current template
   const fieldCfg = TEMPLATE_FIELD_CONFIG[template] || {};
 
-  // Template data callback: auto-apply HITL if template demands it
-  const handleTemplateData = useCallback((data: { value: string } | undefined) => {
-    if (!data) return;
-    const cfg = TEMPLATE_FIELD_CONFIG[data.value];
-    if (cfg?.autoHitl) setEnableHitl(true);
-  }, []);
-
   // Preset click handler
   const applyPreset = (p: Preset) => {
     setSubject(p.subject);
@@ -261,6 +250,7 @@ export default function RunConfigForm({ onSubmit, disabled, initialValues }: Pro
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!subject.trim() && !fieldCfg.hideSubject) return;
+    const { provider, enableHitl } = creationModeToParams(creationMode);
     onSubmit({
       subject: subject.trim(),
       tradition,
@@ -356,11 +346,10 @@ export default function RunConfigForm({ onSubmit, disabled, initialValues }: Pro
         </div>
       )}
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <TemplateSelector
           value={template}
           onChange={setTemplate}
-          onTemplateData={handleTemplateData}
           disabled={disabled}
         />
         <TraditionCombobox
@@ -370,21 +359,6 @@ export default function RunConfigForm({ onSubmit, disabled, initialValues }: Pro
           emergedConcepts={emergedConcepts}
           disabled={disabled}
         />
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Provider
-          </label>
-          <select
-            value={provider}
-            onChange={e => setProvider(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-            disabled={disabled}
-          >
-            <option value="mock">Mock (instant, free)</option>
-            <option value="nb2">NB2 / Gemini Image ($0.067/img)</option>
-          </select>
-        </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -428,22 +402,10 @@ export default function RunConfigForm({ onSubmit, disabled, initialValues }: Pro
               disabled={disabled}
             />
             <span>
-              Agent Critic (LLM)
-              <span className="ml-1 text-xs text-gray-400">uses Gemini for scoring + FixItPlan</span>
+              AI Scoring
+              <span className="ml-1 text-xs text-gray-400">deeper cultural evaluation</span>
             </span>
           </label>
-          {!fieldCfg.hideHitl && (
-            <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-              <input
-                type="checkbox"
-                checked={enableHitl}
-                onChange={e => setEnableHitl(e.target.checked)}
-                className="rounded border-gray-300 dark:border-gray-600"
-                disabled={disabled}
-              />
-              Human-in-the-Loop
-            </label>
-          )}
           <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
             <input
               type="checkbox"
@@ -453,8 +415,8 @@ export default function RunConfigForm({ onSubmit, disabled, initialValues }: Pro
               disabled={disabled || useGraph}
             />
             <span>
-              Parallel Critic
-              <span className="ml-1 text-xs text-gray-400">5x faster L1-L5</span>
+              Fast Scoring
+              <span className="ml-1 text-xs text-gray-400">evaluate all dimensions at once</span>
             </span>
           </label>
           <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
@@ -466,8 +428,8 @@ export default function RunConfigForm({ onSubmit, disabled, initialValues }: Pro
               disabled={disabled}
             />
             <span>
-              Graph Mode
-              <span className="ml-1 text-xs text-gray-400">LangGraph pipeline</span>
+              Advanced Pipeline
+              <span className="ml-1 text-xs text-gray-400">graph-based orchestration</span>
             </span>
           </label>
         </div>

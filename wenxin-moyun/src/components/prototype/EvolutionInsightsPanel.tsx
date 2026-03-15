@@ -36,22 +36,8 @@ export default function EvolutionInsightsPanel() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) {
-    return (
-      <IOSCard variant="elevated" padding="md" animate={false}>
-        <IOSCardContent>
-          <div className="animate-pulse space-y-2">
-            <div className="h-3 w-24 rounded bg-stone-200 dark:bg-stone-700" />
-            <div className="h-2 w-full rounded bg-stone-200 dark:bg-stone-700" />
-            <div className="h-2 w-3/4 rounded bg-stone-200 dark:bg-stone-700" />
-          </div>
-        </IOSCardContent>
-      </IOSCard>
-    );
-  }
-
-  if (!stats || (stats.total_sessions === 0 && stats.evolutions_count === 0)) {
-    return null; // Nothing to show yet
+  if (loading || !stats || (stats.total_sessions === 0 && stats.evolutions_count === 0)) {
+    return null; // Nothing to show until data arrives
   }
 
   return (
