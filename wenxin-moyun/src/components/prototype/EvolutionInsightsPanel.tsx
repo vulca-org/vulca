@@ -120,7 +120,7 @@ export default function EvolutionInsightsPanel() {
         )}
 
         {/* Agent Insights */}
-        {Object.keys(stats.agent_insights).length > 0 && (
+        {stats.agent_insights && Object.keys(stats.agent_insights).length > 0 && (
           <div className="mb-2">
             <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-1">Agent Insights</p>
             <div className="space-y-1">

@@ -82,7 +82,7 @@ test.describe('Navigation System', () => {
     for (const redirect of redirects) {
       await page.goto(redirect.from);
       await page.waitForLoadState('domcontentloaded');
-      await page.waitForTimeout(1000);
+      await page.waitForURL(`**${redirect.to}*`, { timeout: 10000 }).catch(() => {});
       expect(page.url()).toContain(redirect.to);
     }
   });

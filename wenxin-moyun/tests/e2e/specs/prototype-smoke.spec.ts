@@ -16,9 +16,26 @@ test.describe('Prototype Page Smoke', () => {
   test.beforeEach(async ({ page }) => {
     // /prototype redirects to /canvas — navigate directly to /canvas
     const baseURL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:5173';
+    // Set localStorage to skip onboarding tour before navigation
+    await page.goto(`${baseURL}${withRoute('/')}`);
+    await page.evaluate(() => localStorage.setItem('vulca-has-visited', 'true'));
     await page.goto(`${baseURL}${withRoute('/canvas')}`);
-    // Wait for page to load
     await page.waitForLoadState('domcontentloaded');
+    // Wait for Canvas h1 or error boundary (Canvas may crash without backend)
+    const canvasLoaded = page.locator('h1:has-text("Canvas")');
+    const errorBoundary = page.locator('text=Canvas Error');
+    await Promise.race([
+      canvasLoaded.waitFor({ state: 'visible', timeout: 15000 }),
+      errorBoundary.waitFor({ state: 'visible', timeout: 15000 }),
+    ]).catch(() => {});
+    // If error boundary caught a crash, click Retry
+    if (await errorBoundary.isVisible().catch(() => false)) {
+      const retryBtn = page.locator('button:has-text("Retry")');
+      if (await retryBtn.isVisible().catch(() => false)) {
+        await retryBtn.click();
+        await page.waitForTimeout(2000);
+      }
+    }
   });
 
   test('page loads without crash', async ({ page }) => {

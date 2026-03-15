@@ -32,14 +32,15 @@ test.describe('Basic Navigation', () => {
   });
 
   test('Can navigate to canvas page', async ({ page }) => {
+    // Skip onboarding tour via localStorage
+    await page.evaluate(() => localStorage.setItem('vulca-has-visited', 'true'));
     await page.goto('/canvas');
     await page.waitForLoadState('domcontentloaded');
-    await page.waitForTimeout(2000);
 
     const url = page.url();
     expect(url).toContain('/canvas');
 
-    const hasContent = await page.locator('h1, button:has-text("Edit"), button:has-text("Run")').first().isVisible({ timeout: 10000 }).catch(() => false);
+    const hasContent = await page.locator('h1:has-text("Canvas"), button:has-text("Edit"), button:has-text("Run")').first().isVisible({ timeout: 15000 }).catch(() => false);
     expect(hasContent).toBeTruthy();
   });
 
