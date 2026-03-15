@@ -18,7 +18,7 @@ from dataclasses import dataclass, field
 logger = logging.getLogger("vulca")
 
 # Minimum number of sessions required to attempt cross-tradition clustering.
-_MIN_CROSS_SESSIONS = 10
+_MIN_CROSS_SESSIONS = 4
 
 
 @dataclass
@@ -98,7 +98,7 @@ class CulturalClusterer:
 
     def __init__(
         self,
-        similarity_threshold: float = 0.80,
+        similarity_threshold: float = 0.72,
         min_cross_sessions: int = _MIN_CROSS_SESSIONS,
     ) -> None:
         self._threshold = similarity_threshold

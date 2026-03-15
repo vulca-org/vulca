@@ -206,24 +206,38 @@ class ContextEvolver:
             logger.debug("Preference boost skipped: %s", exc)
 
         # Consume avoided dimensions from preference learner (C3)
+        # Scale delta by comment intensity: more/stronger complaints → larger adjustment
         try:
             for tradition, profile in preferences.items():
                 weights = context.get("tradition_weights", {}).get(tradition)
                 if not weights:
                     continue
+                # Compute comment intensity multiplier (1.0 = baseline, up to 2.0)
+                comment_boost = 1.0
+                if profile.negative_comments:
+                    strong = ["wrong", "broken", "terrible", "useless", "错误", "完全", "不可接受", "penalize", "unfair"]
+                    strong_count = sum(
+                        1 for c in profile.negative_comments
+                        if any(kw in c.lower() for kw in strong)
+                    )
+                    comment_boost = min(2.0, 1.0 + strong_count * 0.3 + len(profile.negative_comments) * 0.1)
                 for dim in profile.avoided_dimensions:
                     if dim in weights:
                         old_val = weights[dim]
-                        delta = min(_MAX_DELTA * 0.5, 0.025)
+                        delta = min(_MAX_DELTA * 0.5 * comment_boost, _MAX_DELTA)
                         new_val = max(0.05, old_val - delta)
                         if new_val != old_val:
                             weights[dim] = new_val
+                            reason = f"preference_reduce ({profile.total_negative} negative"
+                            if profile.negative_comments:
+                                reason += f", {len(profile.negative_comments)} comments, intensity={comment_boost:.1f}"
+                            reason += ")"
                             actions.append(EvolutionAction(
                                 tradition=tradition,
                                 dimension=dim,
                                 old_value=old_val,
                                 new_value=new_val,
-                                reason=f"preference_reduce ({profile.total_negative} negative signals)",
+                                reason=reason,
                             ))
                 # Re-normalize after avoided adjustments
                 total = sum(weights.values())
@@ -255,6 +269,8 @@ class ContextEvolver:
             or context.get("trajectory_insights")
         )
         if actions or has_new_data:
+            from datetime import datetime, timezone
+            context["last_evolved_at"] = datetime.now(timezone.utc).isoformat()
             self._save_context(context)
 
         result = EvolutionResult(

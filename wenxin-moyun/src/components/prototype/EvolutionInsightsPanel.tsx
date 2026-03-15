@@ -1,11 +1,13 @@
 /**
  * EvolutionInsightsPanel — shows the system's self-evolution state.
  *
- * Fetches from GET /api/v1/prototype/evolution/stats and displays:
- * - Session count (how many runs the system has learned from)
- * - Active traditions (which cultures the system understands)
- * - Emerged concepts (patterns the system has discovered)
- * - Evolution count + last evolution timestamp
+ * Fetches from GET /api/v1/prototype/evolution and displays:
+ * - Session count, evolution count, culture count
+ * - Active traditions
+ * - Emerged concepts (from clustering)
+ * - Archetypes (from prompt distillation)
+ * - Agent insights (what each agent learned)
+ * - Last evolution timestamp
  */
 
 import { useState, useEffect } from 'react';
@@ -19,17 +21,17 @@ interface EvolutionStats {
   evolutions_count: number;
   emerged_concepts: { name: string; description: string }[];
   archetypes: string[];
+  agent_insights: Record<string, string>;
   last_evolved_at: string | null;
 }
 
 export default function EvolutionInsightsPanel() {
   const [stats, setStats] = useState<EvolutionStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [expandedAgent, setExpandedAgent] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch(`${API_PREFIX}/prototype/evolution/stats`, {
-      headers: { Authorization: 'Bearer demo-key' },
-    })
+    fetch(`${API_PREFIX}/prototype/evolution`)
       .then(r => r.ok ? r.json() : null)
       .then(data => { if (data) setStats(data); })
       .catch(() => {})
@@ -37,8 +39,15 @@ export default function EvolutionInsightsPanel() {
   }, []);
 
   if (loading || !stats || (stats.total_sessions === 0 && stats.evolutions_count === 0)) {
-    return null; // Nothing to show until data arrives
+    return null;
   }
+
+  const agentLabels: Record<string, string> = {
+    scout: 'Scout',
+    draft: 'Draft',
+    critic: 'Critic',
+    queen: 'Queen',
+  };
 
   return (
     <IOSCard variant="elevated" padding="md" animate={false}>
@@ -63,9 +72,9 @@ export default function EvolutionInsightsPanel() {
           </div>
           <div className="text-center py-1.5 rounded-lg bg-stone-50 dark:bg-stone-800/50">
             <p className="text-lg font-bold font-mono text-[#B8923D] dark:text-[#D4AE5A]">
-              {stats.traditions_active.length}
+              {stats.emerged_concepts.length}
             </p>
-            <p className="text-[9px] text-gray-400 dark:text-gray-500">Cultures</p>
+            <p className="text-[9px] text-gray-400 dark:text-gray-500">Concepts</p>
           </div>
         </div>
 
@@ -96,7 +105,7 @@ export default function EvolutionInsightsPanel() {
                   <span className="text-[9px] text-[#5F8A50] mt-0.5">●</span>
                   <div className="flex-1 min-w-0">
                     <span className="text-[11px] font-medium text-gray-700 dark:text-gray-300">
-                      {c.name}
+                      {c.name.replace(/_/g, ' ')}
                     </span>
                     {c.description && (
                       <p className="text-[9px] text-gray-400 dark:text-gray-500 line-clamp-2">
@@ -105,6 +114,31 @@ export default function EvolutionInsightsPanel() {
                     )}
                   </div>
                 </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Agent Insights */}
+        {Object.keys(stats.agent_insights).length > 0 && (
+          <div className="mb-2">
+            <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-1">Agent Insights</p>
+            <div className="space-y-1">
+              {Object.entries(stats.agent_insights).map(([agent, insight]) => (
+                <button
+                  key={agent}
+                  onClick={() => setExpandedAgent(expandedAgent === agent ? null : agent)}
+                  className="w-full text-left px-2 py-1 rounded-md bg-stone-50 dark:bg-stone-800/50 hover:bg-stone-100 dark:hover:bg-stone-700/50 transition-colors"
+                >
+                  <span className="text-[10px] font-semibold text-[#334155] dark:text-[#94A3B8]">
+                    {agentLabels[agent] || agent}
+                  </span>
+                  {expandedAgent === agent && typeof insight === 'string' && (
+                    <p className="text-[9px] text-gray-500 dark:text-gray-400 mt-0.5 leading-relaxed">
+                      {insight}
+                    </p>
+                  )}
+                </button>
               ))}
             </div>
           </div>
@@ -120,7 +154,7 @@ export default function EvolutionInsightsPanel() {
                   key={a}
                   className="text-[9px] px-1.5 py-0.5 rounded bg-[#334155]/10 dark:bg-[#334155]/20 text-[#334155] dark:text-[#94A3B8]"
                 >
-                  {a.replace(/_/g, ' ')}
+                  {a}
                 </span>
               ))}
             </div>

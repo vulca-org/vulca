@@ -24,6 +24,8 @@ class PreferenceProfile:
     preferred_traditions: list[str] = field(default_factory=list)
     total_positive: int = 0
     total_negative: int = 0
+    negative_comments: list[str] = field(default_factory=list)  # user complaint text
+    positive_comments: list[str] = field(default_factory=list)  # user praise text
 
     def to_dict(self) -> dict:
         return {
@@ -65,14 +67,22 @@ class PreferenceLearner:
             for s in sess_list:
                 scores = s.get("final_scores", {})
                 for fb in s.get("feedback", []):
+                    liked = fb.get("liked")
                     rating = fb.get("rating", "")
-                    if rating == "thumbs_up":
+                    comment = fb.get("comment", "").strip()
+                    is_positive = liked is True or rating == "thumbs_up"
+                    is_negative = liked is False or rating == "thumbs_down"
+                    if is_positive:
                         profile.total_positive += 1
+                        if comment:
+                            profile.positive_comments.append(comment)
                         for dim, score in scores.items():
                             if isinstance(score, (int, float)):
                                 pos_dim_scores[dim].append(score)
-                    elif rating == "thumbs_down":
+                    elif is_negative:
                         profile.total_negative += 1
+                        if comment:
+                            profile.negative_comments.append(comment)
                         for dim, score in scores.items():
                             if isinstance(score, (int, float)):
                                 neg_dim_scores[dim].append(score)

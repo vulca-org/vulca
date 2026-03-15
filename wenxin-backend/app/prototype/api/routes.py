@@ -816,6 +816,8 @@ async def get_evolution_stats():
         "emerged_concepts": [],
         "archetypes": [],
         "last_evolved_at": None,
+        "agent_insights": {},
+        "weight_changes": [],
     }
 
     # Session count
@@ -839,14 +841,32 @@ async def get_evolution_stats():
             stats["evolutions_count"] = ctx.get("evolutions", 0)
             stats["last_evolved_at"] = ctx.get("last_evolved_at")
 
-            concepts = ctx.get("emerged_concepts", [])
+            # Read cultures (emerged concepts from clustering + crystallization)
+            cultures = ctx.get("cultures", {})
             stats["emerged_concepts"] = [
-                {"name": c.get("name", ""), "description": c.get("description", "")}
-                for c in concepts[:10]
+                {"name": name, "description": info.get("description", "")}
+                for name, info in sorted(
+                    cultures.items(),
+                    key=lambda x: len(x[1].get("reference_sessions", [])),
+                    reverse=True,
+                )[:10]
             ]
 
-            archetypes = ctx.get("archetypes", {})
-            stats["archetypes"] = list(archetypes.keys())[:10]
+            # Read prompt archetypes
+            archetypes = ctx.get("prompt_contexts", {}).get("archetypes", [])
+            stats["archetypes"] = [
+                a.get("pattern", "") for a in archetypes[:10]
+                if isinstance(a, dict) and a.get("pattern")
+            ]
+
+            # Agent insights (short summaries)
+            agent_insights = ctx.get("agent_insights", {})
+            stats["agent_insights"] = {
+                k: v[:120] + "..." if isinstance(v, str) and len(v) > 120 else v
+                for k, v in agent_insights.items()
+            }
+
+            stats["last_evolved_at"] = ctx.get("last_evolved_at")
         except (json.JSONDecodeError, OSError):
             pass
 
