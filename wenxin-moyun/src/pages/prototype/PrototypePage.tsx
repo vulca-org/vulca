@@ -341,7 +341,7 @@ export default function PrototypePage() {
         scoredCandidates={state.scoredCandidates}
         bestCandidateId={state.bestCandidateId}
         onAction={submitAction}
-        onClose={() => submitAction({ action: 'approve' })}
+        onClose={() => submitAction('approve')}
       />
 
       {criticDetailCandidate && (
