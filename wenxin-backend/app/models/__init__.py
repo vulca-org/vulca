@@ -7,6 +7,7 @@ from .battle import Battle, BattleVote
 from .artwork import Artwork
 from .benchmark_suite import BenchmarkSuite, BenchmarkRun, BenchmarkStatus
 from .lead import Lead, LeadStatus, LeadSource, LeadUseCase
+from .prototype_session import PrototypeSession
 
 __all__ = [
     "User",
@@ -24,5 +25,6 @@ __all__ = [
     "Lead",
     "LeadStatus",
     "LeadSource",
-    "LeadUseCase"
+    "LeadUseCase",
+    "PrototypeSession",
 ]

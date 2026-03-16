@@ -1,6 +1,7 @@
 import os
+from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import declarative_base, sessionmaker
 from typing import AsyncGenerator
 from .config import settings
 
@@ -118,6 +119,14 @@ AsyncSessionLocal = async_sessionmaker(
 
 # Create base class for models
 Base = declarative_base()
+
+# Sync engine/session for non-async code (SessionStore, migration scripts)
+_sync_url = database_url.replace("+asyncpg", "").replace("+aiosqlite", "")
+if _sync_url.startswith("sqlite"):
+    _sync_engine = create_engine(_sync_url, connect_args={"check_same_thread": False})
+else:
+    _sync_engine = create_engine(_sync_url, pool_size=5, pool_pre_ping=True)
+SyncSessionLocal = sessionmaker(bind=_sync_engine, expire_on_commit=False)
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
