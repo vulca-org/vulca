@@ -15,6 +15,7 @@ env:
   PROJECT_ID: wenxin-moyun-prod-new
   REGION: asia-east1
   REPO_NAME: wenxin-images
+  CLOUD_RUN_SERVICE_URL: wenxin-moyun-api-229980166599.asia-east1.run.app
 
 jobs:
   init-production-data:
@@ -144,7 +145,7 @@ jobs:
           echo "🎉 Production data initialization successful!"
           echo "✅ 42 AI models loaded with all classification fields"
           echo "📊 Frontend: https://storage.googleapis.com/${{ env.PROJECT_ID }}-static/"
-          echo "🔗 API: https://wenxin-moyun-api-229980166599.asia-east1.run.app"
+          echo "🔗 API: https://${{ env.CLOUD_RUN_SERVICE_URL }}"
 
       - name: Notify failure
         if: failure()

@@ -210,3 +210,26 @@ vulca-pkg/
 render.yaml
 AGENTS.md
 .gcloudignore
+.claude/hooks/
+.claude/skills/prospect-manager/
+.claude/skills/northeast-review/
+.github/DEPLOYMENT_LOG.md
+
+# Internal deployment scripts
+wenxin-backend/PRODUCTION_INIT.md
+wenxin-backend/cloud_shell_import.md
+wenxin-backend/cloud_shell_upload.sh
+wenxin-backend/cloudbuild-import.yaml
+wenxin-backend/deploy_import.sh
+wenxin-backend/deploy_with_gcloud.bat
+wenxin-backend/fix_import_script.py
+wenxin-backend/run_import_on_cloud.sh
+wenxin-backend/simple_import.sql
+wenxin-backend/start_proxy.bat
+wenxin-backend/.gcloudignore
+wenxin-backend/Dockerfile.import
+wenxin-backend/cloud_sql_proxy*
+wenxin-backend/tests/smoke/test_import_chain.py
+wenxin-moyun/DEPLOYMENT.md
+wenxin-moyun/gcp-alerts.json
+wenxin-moyun/.firebase/

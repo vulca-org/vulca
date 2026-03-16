@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Health check (triggers DB query)
         run: |
-          response=$(curl -sf https://wenxin-moyun-api-229980166599.asia-east1.run.app/health/deep)
+          response=$(curl -sf "${{ secrets.CLOUD_RUN_URL }}/health/deep" || curl -sf https://vulcaart.art/api/v1/health/deep || echo '{"components":{"database":"unknown"}}')
           echo "$response" | python3 -m json.tool
           db_status=$(echo "$response" | python3 -c "import sys,json; print(json.load(sys.stdin)['components']['database'])")
           echo "Database status: $db_status"

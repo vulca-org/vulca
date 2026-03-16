@@ -200,7 +200,7 @@ jobs:
         run: |
           echo "Deployment successful!"
           echo "Frontend: https://vulcaart.art"
-          echo "Backend: https://wenxin-moyun-api-229980166599.asia-east1.run.app (Cloud Run)"
+          echo "Backend: Cloud Run (asia-east1)"
 
       - name: Notify deployment failure
         if: failure()
