@@ -200,3 +200,13 @@ ACMMM2026-AgentLoop/
 ios26_assets/
 specs/
 tasks/
+.playwright-mcp/
+wenxinmoyun/
+references/
+benchmark_results/
+huggingface-space/
+monitoring/
+vulca-pkg/
+render.yaml
+AGENTS.md
+.gcloudignore

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * 环境验证脚本 - 确保本地环境与GitHub Actions CI保持一致
- * 验证Node.js、Python版本，npm配置和关键依赖
+ * Environment validation script — ensures local env matches GitHub Actions CI.
+ * Validates Node.js, Python versions, npm config, and key dependencies.
  */
 
 import { execSync } from 'child_process';
