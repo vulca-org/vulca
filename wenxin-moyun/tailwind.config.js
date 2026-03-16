@@ -3,11 +3,11 @@
 /**
  * Art Professional Design System Configuration
  *
- * 设计理念: 温暖、专业、艺术品味
- * 参考: 博物馆、画廊、艺术期刊的视觉语言
+ * Warm, professional, gallery-inspired palette.
+ * Reference: museums, galleries, art journals.
+ * Full spec: docs/design-system.md
  *
- * 更新日期: 2026-01-14
- * 设计系统版本: Art Professional v1.0
+ * Version: Art Professional v1.1 (2026-03-16)
  */
 
 export default {
@@ -21,7 +21,7 @@ export default {
       colors: {
         // Art Professional Color System
 
-        // Primary: 墨石灰 - 使用 slate 作为主色
+        // Primary: Ink Slate
         primary: {
           50: '#F8FAFC',
           100: '#F1F5F9',
@@ -35,21 +35,21 @@ export default {
           900: '#0F172A',
           DEFAULT: '#334155',
         },
-        // Secondary: 暖铜棕 - 使用 bronze 作为辅助色
+        // Secondary: Warm Bronze — accent color
         secondary: {
           50: '#FDF8F4',
           100: '#FAEFE6',
           200: '#F4DCC9',
           300: '#EBC4A1',
           400: '#DDA574',
-          500: '#B0683A',
-          600: '#9A5A32',
+          500: '#C87F4A',
+          600: '#A86838',
           700: '#8F5530',
           800: '#6D4127',
           900: '#4A2C1A',
-          DEFAULT: '#B0683A',
+          DEFAULT: '#C87F4A',
         },
-        // Success: 鼠尾草绿
+        // Success: Sage Green
         success: {
           50: '#F0F7ED',
           100: '#E1EFDB',
@@ -63,7 +63,7 @@ export default {
           900: '#131C10',
           DEFAULT: '#5F8A50',
         },
-        // Warning: 琥珀黄
+        // Warning: Amber Gold
         warning: {
           50: '#FDF8ED',
           100: '#FAF1DB',
@@ -77,22 +77,22 @@ export default {
           900: '#251E0C',
           DEFAULT: '#B8923D',
         },
-        // Error: 珊瑚红
+        // Error: Coral Red
         error: {
           50: '#FCF0EF',
           100: '#F9E1DF',
           200: '#F3C3BF',
           300: '#EDA59F',
-          400: '#C97064',
-          500: '#B35A50',
-          600: '#8F4840',
-          700: '#6B3630',
-          800: '#482420',
-          900: '#241210',
-          DEFAULT: '#B35A50',
+          400: '#D98070',
+          500: '#C65D4D',
+          600: '#A84A3D',
+          700: '#8A3D32',
+          800: '#6B2F27',
+          900: '#4D211C',
+          DEFAULT: '#C65D4D',
         },
 
-        // 主色: 墨石灰 - 专业沉稳
+        // Ink Slate scale (extends default slate)
         slate: {
           50: '#F8FAFC',
           100: '#F1F5F9',
@@ -107,29 +107,28 @@ export default {
           950: '#020617',
           DEFAULT: '#334155',
         },
-        // 强调色: 暖铜棕 - 艺术品味
-        // WCAG AA 对比度优化: 500 调整为 4.5:1+ 以满足可访问性标准
+        // Warm Bronze scale (accent)
         bronze: {
           50: '#FDF8F4',
           100: '#FAEFE6',
           200: '#F4DCC9',
           300: '#EBC4A1',
           400: '#DDA574',
-          500: '#B0683A', // 主暖铜棕 (WCAG AA compliant - 4.6:1 contrast)
-          600: '#9A5A32',
+          500: '#C87F4A', // Warm Bronze (matches iosTheme.ts)
+          600: '#A86838',
           700: '#8F5530',
           800: '#6D4127',
           900: '#4A2C1A',
-          DEFAULT: '#B0683A',
+          DEFAULT: '#C87F4A',
         },
-        // 兼容色: 保留 blue 用于系统兼容
+        // Blue mapped to slate for Art Professional compatibility
         blue: {
           50: '#F8FAFC',
           100: '#F1F5F9',
           200: '#E2E8F0',
           300: '#CBD5E1',
           400: '#94A3B8',
-          500: '#64748B', // 替换为 slate
+          500: '#64748B', // Mapped to slate
           600: '#475569',
           700: '#334155',
           800: '#1E293B',
@@ -175,14 +174,14 @@ export default {
           900: '#330C09',
           DEFAULT: '#FF3B30',
         },
-        // 辅助暖色: 陶土色 - 用于次要强调
+        // Terracotta (replaces purple in Art Professional)
         purple: {
           50: '#FAF5F0',
           100: '#F4EAE0',
           200: '#E8D4C2',
           300: '#D9B99A',
           400: '#C49976',
-          500: '#9B6B56', // 陶土色 (替代紫色)
+          500: '#9B6B56', // Terracotta
           600: '#7D5645',
           700: '#5F4235',
           800: '#422E25',
@@ -268,7 +267,7 @@ export default {
         'ios-xl': '0 20px 25px rgba(0,0,0,0.15)',
         'ios-2xl': '0 25px 50px rgba(0,0,0,0.25)',
         'ios-inner': 'inset 0 1px 3px rgba(0,0,0,0.06)',
-        'ios-focus': '0 0 0 3px rgba(0,122,255,0.5)',
+        'ios-focus': '0 0 0 3px rgba(200,127,74,0.5)',
       },
       borderRadius: {
         'ios-sm': '6px',

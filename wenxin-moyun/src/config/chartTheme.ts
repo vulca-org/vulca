@@ -1,46 +1,46 @@
 /**
  * Art Professional Chart Theme
- * 温暖、专业、艺术品味的图表配色
- * 支持深色/浅色模式自动切换
+ * Warm, professional chart colors with light/dark mode support.
+ * See docs/design-system.md for full spec.
  */
 
 import { ORGANIZATION_COLORS, getOrganizationColor } from '../constants/organizationColors';
 
-// ============= Art Professional 色彩系统 =============
+// ============= Art Professional Color System =============
 
 export const iosSystemColors = {
-  // 主色调 - 暖色系艺术风格
-  bronze: '#C87F4A',      // 暖铜棕 - 主色
-  terracotta: '#9B6B56',  // 陶土色 - 次要强调
-  sage: '#5F8A50',        // 鼠尾草绿
-  amber: '#B8923D',       // 琥珀黄
-  slate: '#64748B',       // 墨石灰
-  coral: '#B35A50',       // 珊瑚红
-  ochre: '#8F7860',       // 赭石色
-  olive: '#4A7A46',       // 橄榄绿
-  // 兼容旧代码
-  blue: '#64748B',        // 映射到墨石灰
+  // Primary warm palette
+  bronze: '#C87F4A',      // Warm Bronze — primary accent
+  terracotta: '#9B6B56',  // Terracotta — secondary accent
+  sage: '#5F8A50',        // Sage Green
+  amber: '#B8923D',       // Amber Gold
+  slate: '#64748B',       // Ink Slate
+  coral: '#C65D4D',       // Coral Red (unified)
+  ochre: '#8F7860',       // Ochre
+  olive: '#4A7A46',       // Olive Green
+  // Legacy compatibility aliases
+  blue: '#64748B',        // Mapped to Ink Slate
   green: '#5F8A50',
   orange: '#C87F4A',
-  red: '#B35A50',
+  red: '#C65D4D',
   purple: '#9B6B56',
   teal: '#4A7A46',
   indigo: '#64748B',
-  pink: '#B35A50',
+  pink: '#C65D4D',
   yellow: '#B8923D',
 };
 
-// 深色模式系统色 (更亮的暖色版本)
+// Dark mode (lighter variants)
 export const iosDarkSystemColors = {
-  bronze: '#DDA574',      // 暖铜棕亮
-  terracotta: '#C49976',  // 陶土色亮
-  sage: '#87A878',        // 鼠尾草绿亮
-  amber: '#D4A84B',       // 琥珀黄亮
-  slate: '#94A3B8',       // 墨石灰亮
-  coral: '#C97064',       // 珊瑚红亮
-  ochre: '#B8A089',       // 赭石色亮
-  olive: '#7A9B76',       // 橄榄绿亮
-  // 兼容旧代码
+  bronze: '#DDA574',      // Light Bronze
+  terracotta: '#C49976',  // Light Terracotta
+  sage: '#87A878',        // Light Sage
+  amber: '#D4A84B',       // Light Amber
+  slate: '#94A3B8',       // Light Slate
+  coral: '#C97064',       // Light Coral
+  ochre: '#B8A089',       // Light Ochre
+  olive: '#7A9B76',       // Light Olive
+  // Legacy compatibility
   blue: '#94A3B8',
   green: '#87A878',
   orange: '#DDA574',
@@ -52,22 +52,22 @@ export const iosDarkSystemColors = {
   yellow: '#D4A84B',
 };
 
-// ============= 浅色模式图表配置 =============
+// ============= Light Mode Chart Config =============
 
 export const chartColorsLight = {
-  // Art Professional 颜色序列
+  // Art Professional color sequence
   primary: [
-    iosSystemColors.bronze,      // #C87F4A 暖铜棕
-    iosSystemColors.terracotta,  // #9B6B56 陶土色
-    iosSystemColors.sage,        // #5F8A50 鼠尾草绿
-    iosSystemColors.amber,       // #B8923D 琥珀黄
-    iosSystemColors.slate,       // #64748B 墨石灰
-    iosSystemColors.coral,       // #B35A50 珊瑚红
-    iosSystemColors.ochre,       // #8F7860 赭石色
-    iosSystemColors.olive,       // #4A7A46 橄榄绿
+    iosSystemColors.bronze,      // #C87F4A Warm Bronze
+    iosSystemColors.terracotta,  // #9B6B56 Terracotta
+    iosSystemColors.sage,        // #5F8A50 Sage Green
+    iosSystemColors.amber,       // #B8923D Amber Gold
+    iosSystemColors.slate,       // #64748B Ink Slate
+    iosSystemColors.coral,       // #C65D4D Coral Red
+    iosSystemColors.ochre,       // #8F7860 Ochre
+    iosSystemColors.olive,       // #4A7A46 Olive
   ],
 
-  // 渐变色配置 - 暖色调渐变
+  // Warm gradient pairs
   gradients: {
     primaryToSuccess: [iosSystemColors.slate, iosSystemColors.sage],
     primaryToAccent: [iosSystemColors.slate, iosSystemColors.bronze],
@@ -75,13 +75,13 @@ export const chartColorsLight = {
     purpleToBlue: [iosSystemColors.terracotta, iosSystemColors.slate],
   },
 
-  // 语义色 - Art Professional 风格
+  // Semantic colors
   semantic: {
-    success: '#5F8A50',       // 鼠尾草绿
-    warning: '#B8923D',       // 琥珀黄
-    error: '#B35A50',         // 珊瑚红
-    info: '#64748B',          // 墨石灰
-    neutral: '#7A726A',       // 暖灰
+    success: '#5F8A50',       // Sage Green
+    warning: '#B8923D',       // Amber Gold
+    error: '#C65D4D',         // Coral Red (unified)
+    info: '#64748B',          // Ink Slate
+    neutral: '#7A726A',       // Warm Gray
   },
 
   // 网格和轴线颜色 - WCAG AA 对比度优化

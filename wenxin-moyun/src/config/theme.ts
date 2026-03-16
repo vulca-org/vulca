@@ -90,16 +90,16 @@ export const themes = {
       inverse: '#FAF7F2',
     },
 
-    // 语义色彩系统 - Art Professional Light
+    // Semantic colors — Art Professional Light
     semantic: {
-      primary: '#334155',   // 墨石灰 - 主色
-      accent: '#C87F4A',    // 暖铜棕 - 强调
-      green: '#5F8A50',     // 鼠尾草绿深
-      yellow: '#B8923D',    // 琥珀黄深
-      red: '#B35A50',       // 珊瑚红深
-      bronze: '#B06B3A',    // 暖铜棕深
-      terracotta: '#7D5645',// 陶土色深
-      sage: '#5F8A50',      // 鼠尾草绿深
+      primary: '#334155',   // Ink Slate
+      accent: '#C87F4A',    // Warm Bronze
+      green: '#5F8A50',     // Sage Green
+      yellow: '#B8923D',    // Amber Gold
+      red: '#C65D4D',       // Coral Red (unified)
+      bronze: '#C87F4A',    // Warm Bronze (unified)
+      terracotta: '#7D5645',// Terracotta
+      sage: '#5F8A50',      // Sage Green
     },
 
     chart: {
@@ -109,7 +109,7 @@ export const themes = {
       quaternary: '#B8923D',
       series: [
         '#C87F4A', '#9B6B56', '#5F8A50', '#B8923D',
-        '#334155', '#B35A50', '#8F7860', '#4A7A46'
+        '#334155', '#C65D4D', '#8F7860', '#4A7A46'
       ]
     },
 

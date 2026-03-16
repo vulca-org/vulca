@@ -187,7 +187,7 @@ export default function HomePage() {
           </motion.p>
 
           <motion.p
-            className="text-xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#B0683A] to-slate-600 dark:from-[#B0683A] dark:to-slate-400 mb-3 max-w-2xl mx-auto"
+            className="text-xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#C87F4A] to-slate-600 dark:from-[#C87F4A] dark:to-slate-400 mb-3 max-w-2xl mx-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.45 }}
@@ -237,7 +237,7 @@ export default function HomePage() {
               <IOSButton
                 variant="primary"
                 size="lg"
-                className="flex items-center gap-2 min-w-[180px] justify-center !bg-[#B0683A] hover:!bg-[#9A5A32] !border-[#B0683A]"
+                className="flex items-center gap-2 min-w-[180px] justify-center !bg-[#C87F4A] hover:!bg-[#A86838] !border-[#C87F4A]"
                 data-testid="hero-try-now"
               >
                 <Sparkles className="w-5 h-5" />

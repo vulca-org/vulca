@@ -70,13 +70,13 @@ const TRADITION_COLORS: Record<string, string> = {
   indian_rasa: '#9B6B56',
   korean_dancheong: '#8F7860',
   african_ubuntu: '#4A7A46',
-  persian_miniature: '#B35A50',
+  persian_miniature: '#C65D4D',
   default: '#64748B',
 };
 
 const FALLBACK_COLORS = [
   '#C87F4A', '#5F8A50', '#B8923D', '#C65D4D', '#9B6B56',
-  '#8F7860', '#4A7A46', '#B35A50', '#64748B', '#6B8E7A',
+  '#8F7860', '#4A7A46', '#C65D4D', '#64748B', '#6B8E7A',
 ];
 
 function getTraditionColor(tradition: string, index: number): string {
