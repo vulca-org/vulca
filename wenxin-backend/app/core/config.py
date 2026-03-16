@@ -7,7 +7,7 @@ import json
 
 class Settings(BaseSettings):
     # Application
-    APP_NAME: str = "WenxinMoyun"
+    APP_NAME: str = "VULCA"
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = False  # Default to False for security, enable via env var
     API_V1_STR: str = "/api/v1"

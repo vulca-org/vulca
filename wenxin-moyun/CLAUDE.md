@@ -10,11 +10,11 @@ VULCA — a **creation organism** where generation, evaluation, refinement, and 
 
 Gallery-inspired warm color palette replacing the original iOS blue/purple:
 
-- **Color System**: Warm art-professional tones (墨石灰 #334155, 暖铜棕 #C87F4A, 鼠尾草绿 #5F8A50, 琥珀金 #B8923D, 珊瑚红 #C65D4D)
+- **Color System**: Warm art-professional tones (Ink Slate #334155, Warm Bronze #C87F4A, Sage Green #5F8A50, Amber Gold #B8923D, Coral Red #C65D4D)
 - **Typography**: iOS San Francisco font stack with art-professional sizing
 - **Component System**: IOSButton, IOSCard, IOSToggle, IOSSlider, IOSAlert (retained naming)
-- **Glass Morphism**: Liquid Glass effects with warm tint (bg-base: #FAF7F2 奶油白)
-- **Dark Mode**: Full dark palette (暖铜棕亮 #DDA574, 鼠尾草绿亮 #87A878)
+- **Glass Morphism**: Liquid Glass effects with warm tint (bg-base: #FAF7F2 Cream White)
+- **Dark Mode**: Full dark palette (Light Bronze #DDA574, Light Sage #87A878)
 - **Prototype Components**: 28 files fully aligned to Art Professional palette (zero blue/purple/indigo)
 - **60+ Fluent Emojis**: Semantic emoji system for intuitive interactions
 
@@ -204,12 +204,12 @@ Layout (wraps all pages with Header/Footer)
 **Art Professional Design Tokens** (`src/components/ios/utils/iosTheme.ts`)
 ```typescript
 export const iosColors = {
-  blue: '#334155',      // 墨石灰 (slate) — primary
-  green: '#5F8A50',     // 鼠尾草绿 — success
-  orange: '#B8923D',    // 琥珀金 — warning
-  purple: '#C87F4A',    // 暖铜棕 (bronze) — accent
-  red: '#C65D4D',       // 珊瑚红 — destructive
-  teal: '#6B8E7A',      // 青铜绿 — info
+  blue: '#334155',      // Ink Slate — primary
+  green: '#5F8A50',     // Sage Green — success
+  orange: '#B8923D',    // Amber Gold — warning
+  purple: '#C87F4A',    // Warm Bronze — accent
+  red: '#C65D4D',       // Coral Red — destructive
+  teal: '#6B8E7A',      // Patina Green — info
 }
 
 export const iosShadows = {

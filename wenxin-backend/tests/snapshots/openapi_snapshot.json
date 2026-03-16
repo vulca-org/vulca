@@ -1,5 +1,5 @@
 {
-  "endpoint_count": 103,
+  "endpoint_count": 104,
   "paths": [
     "/",
     "/api/v1/admin/clear-all-mock-models",
@@ -65,6 +65,7 @@
     "/api/v1/prototype/gallery",
     "/api/v1/prototype/gallery/likes",
     "/api/v1/prototype/gallery/{session_id}/like",
+    "/api/v1/prototype/gallery/{session_id}/publish",
     "/api/v1/prototype/graph/execute",
     "/api/v1/prototype/graph/nodes/{node_name}/bypass",
     "/api/v1/prototype/graph/nodes/{node_name}/expand",

@@ -1,5 +1,5 @@
 # VULCA Platform CI/CD Pipeline
-# Frontend: Firebase Hosting | Backend: Render (auto-deploys from GitHub)
+# Frontend: Firebase Hosting | Backend: Cloud Run (GCP)
 # Auto-deploys frontend on push to main/master branch
 
 name: Deploy VULCA Platform

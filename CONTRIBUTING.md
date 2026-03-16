@@ -93,11 +93,7 @@ Skills auto-register via the executor base class and appear in the Skill Browser
 
 ## Adding New Traditions
 
-This is the most impactful way to contribute. VULCA evaluates AI-generated art across cultural dimensions using `TRADITION.yaml` files.
-
-## Adding a New Tradition
-
-VULCA evaluates AI-generated art across cultural dimensions using `TRADITION.yaml` files. Each tradition defines evaluation weights, terminology, and cultural taboos.
+VULCA evaluates AI-generated art across cultural dimensions using `TRADITION.yaml` files. Each tradition defines evaluation weights, terminology, and cultural taboos. This is the most impactful way to contribute.
 
 ### Quick Start (5 minutes)
 

@@ -250,7 +250,7 @@ async def health_check():
     return {
         "status": "healthy",
         "timestamp": datetime.now(timezone.utc).isoformat(),
-        "service": "wenxin-backend",
+        "service": "vulca-api",
         "version": settings.APP_VERSION,
         "environment": os.getenv("ENVIRONMENT", "development"),
     }
@@ -306,7 +306,7 @@ async def deep_health_check():
     return {
         "status": "healthy" if all_ok else "degraded",
         "timestamp": datetime.now(timezone.utc).isoformat(),
-        "service": "wenxin-backend",
+        "service": "vulca-api",
         "version": settings.APP_VERSION,
         "environment": os.getenv("ENVIRONMENT", "development"),
         "components": components,
@@ -366,7 +366,7 @@ else:
         """Root endpoint - redirect to frontend"""
         html_content = f"""
         <!DOCTYPE html>
-        <html lang="zh-CN">
+        <html lang="en">
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">

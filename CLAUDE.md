@@ -12,10 +12,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 | Paper | Status | Core Contribution |
 |-------|--------|-------------------|
-| **VULCA Framework** | EMNLP 2025 Findings | 五维度评测框架 |
-| **VULCA-Bench** | arXiv:2601.07986 | L1-L5 五层定义 + 7,410 样本 |
-| **火意象研究** | WiNLP 2025 | 火文化符号推理 |
-| **Art Critique** | arXiv:2601.07984 | 跨文化评论评测 |
+| **VULCA Framework** | EMNLP 2025 Findings | 5-dimension evaluation framework |
+| **VULCA-Bench** | arXiv:2601.07986 | L1-L5 five-level definitions + 7,410 samples |
+| **Fire Imagery** | WiNLP 2025 | Cultural symbol reasoning |
+| **Art Critique** | arXiv:2601.07984 | Cross-cultural critique evaluation |
 
 ## Project Overview
 
@@ -23,9 +23,8 @@ VULCA — AI-native creation organism. Create, critique, and evolve cultural art
 
 **Production URLs:**
 - Frontend: https://vulcaart.art (Firebase Hosting)
-- Backend API: https://wenxin-moyun-api-229980166599.asia-east1.run.app (Cloud Run)
+- Backend API: Cloud Run (asia-east1)
 - Database: Supabase PostgreSQL (free tier)
-- Demo Booking: https://cal.com/vulcaart/demo (Cal.com)
 
 ## Essential Commands
 
@@ -216,21 +215,12 @@ Run proper alembic upgrade, not manual schema changes
 - Demo: `demo` / `demo123`
 - Admin: `admin` / `admin123`
 
-## External Services
-
-### Cal.com (Demo Booking)
-- Account: `vulcaart` (yuhaorui48@gmail.com)
-- Public Link: https://cal.com/vulcaart/demo
-- Used in: `src/pages/BookDemoPage.tsx`
-- Duration: 30 minutes, Cal Video conferencing
-
 ## GCP Configuration
-- Project ID: `wenxin-moyun-prod-new`
 - Region: `asia-east1`
 - Services: Cloud Run, Firebase Hosting, Secret Manager
-- Artifact Registry: `asia-east1-docker.pkg.dev/wenxin-moyun-prod-new/wenxin-images`
-- Database: Supabase PostgreSQL (replaced Cloud SQL for cost savings)
+- Database: Supabase PostgreSQL
 - Domain: vulcaart.art (Firebase Hosting custom domain)
+- Note: GCP Project IDs and service URLs are managed via GitHub Secrets and environment variables, not hardcoded.
 
 ## Critical Dependency Issues
 

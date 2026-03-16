@@ -6,15 +6,15 @@
 export const iosColors = {
   // Art Professional Color Palette
   // Replacing iOS blue/purple with warm, artistic tones
-  blue: '#334155',       // 墨石灰 (slate) - replaces iOS blue
-  green: '#5F8A50',      // 鼠尾草绿 - softer green
-  indigo: '#4A433C',     // 暖灰 - muted indigo replacement
-  orange: '#B8923D',     // 琥珀金 - warm amber
-  pink: '#9B6B56',       // 陶土色 - terracotta replaces pink
-  purple: '#C87F4A',     // 暖铜棕 (bronze) - replaces iOS purple
-  red: '#C65D4D',        // 珊瑚红 - softer red
-  teal: '#6B8E7A',       // 青铜绿 - muted teal
-  yellow: '#D4A84B',     // 暖金 - warm gold
+  blue: '#334155',       // Ink Slate — replaces iOS blue
+  green: '#5F8A50',      // Sage Green — softer green
+  indigo: '#4A433C',     // Warm Gray — muted indigo replacement
+  orange: '#B8923D',     // Amber Gold — warm amber
+  pink: '#9B6B56',       // Terracotta — replaces pink
+  purple: '#C87F4A',     // Warm Bronze — replaces iOS purple
+  red: '#C65D4D',        // Coral Red — softer red
+  teal: '#6B8E7A',       // Patina Green — muted teal
+  yellow: '#D4A84B',     // Warm Gold — warm gold
   
   // Gray Scale
   gray: {

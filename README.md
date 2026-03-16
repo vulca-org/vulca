@@ -32,7 +32,19 @@ VULCA is an open-source creative platform where generation, evaluation, and lear
                           Evolved Context → Pipeline
 ```
 
-<!-- TODO: Add screenshots -->
+
+## Directory Structure
+
+> **Note**: `wenxin-moyun` (frontend) and `wenxin-backend` are the original Chinese names meaning "Heart of Ink and Cloud". They are preserved for backward compatibility.
+
+```
+vulca/
+├── wenxin-moyun/          # Frontend (React 19 + TypeScript)
+├── wenxin-backend/        # Backend (FastAPI + Python 3.13)
+├── docker-compose.yml     # One-command local setup
+├── CONTRIBUTING.md        # How to contribute
+└── SECURITY.md            # Vulnerability reporting
+```
 
 ## Quick Start
 

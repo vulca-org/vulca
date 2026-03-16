@@ -184,3 +184,19 @@ wenxin-moyun/docs/*.zip
 Didot_exhibition_Dec/*.pdf
 network-log.txt
 wenxin-moyun/marketing/exports/
+
+# Video production scripts (personal tooling)
+add-audio.sh
+cut-demo-b.sh
+make-video.sh
+produce-demo.sh
+finalize-demo-v3.sh
+finalize-demo-v4.sh
+
+# Non-product directories
+Didot_exhibition_Dec/
+EMNLP2025-VULCA/
+ACMMM2026-AgentLoop/
+ios26_assets/
+specs/
+tasks/
