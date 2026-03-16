@@ -32,7 +32,8 @@ describe('API config module', () => {
   it('should use production URL when hostname is not localhost', async () => {
     vi.stubGlobal('window', { location: { hostname: 'vulcaart.art' } })
     const mod = await import('../../config/api')
-    expect(mod.API_BASE_URL).toBe('https://vulcaart.art/api')
+    // Fallback points to Cloud Run backend, not the Firebase frontend domain
+    expect(mod.API_BASE_URL).toBe('https://wenxin-moyun-api-229980166599.asia-east1.run.app')
   })
 
   it('should construct API_PREFIX with version', async () => {
