@@ -315,8 +315,10 @@ def _process_pipeline_event(
         ))
     elif event.event_type == EventType.STAGE_COMPLETED and event.stage == "draft":
         for c in event.payload.get("candidates", []):
-            if isinstance(c, dict) and c.get("candidate_id") and c.get("image_url"):
-                candidate_image_urls[c["candidate_id"]] = c["image_url"]
+            if isinstance(c, dict) and c.get("candidate_id"):
+                img = c.get("image_url") or c.get("image_path") or ""
+                if img:
+                    candidate_image_urls[c["candidate_id"]] = img
     elif event.event_type == EventType.STAGE_COMPLETED and event.stage == "critic":
         # scored_candidates is nested inside payload.critique (not top-level)
         critique = event.payload.get("critique", event.payload)

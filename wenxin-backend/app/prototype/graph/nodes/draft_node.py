@@ -83,7 +83,9 @@ class DraftNode(BaseAgent):
         # Convert absolute image paths to web-accessible /static/ URLs
         for dc in draft_candidates:
             if dc.get("image_path"):
-                dc["image_path"] = _to_static_url(dc["image_path"])
+                static_url = _to_static_url(dc["image_path"])
+                dc["image_path"] = static_url
+                dc["image_url"] = static_url  # _process_pipeline_event reads image_url
         draft_ms = int((time.monotonic() - t0) * 1000)
 
         n_new = len(draft_candidates)
