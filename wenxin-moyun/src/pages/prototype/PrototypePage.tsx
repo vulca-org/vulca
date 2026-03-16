@@ -10,6 +10,7 @@
 
 import { useState, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import toast, { Toaster } from 'react-hot-toast';
 import { usePrototypePipeline } from '@/hooks/usePrototypePipeline';
 import type { CreateRunParams, ScoredCandidate } from '@/hooks/usePrototypePipeline';
 import { useCanvasStore } from '@/store/canvasStore';
@@ -103,13 +104,14 @@ export default function PrototypePage() {
         if (res.ok) {
           setEvaluateResult(await res.json());
           setPlaygroundMode('run');
+          toast.success('Evaluation complete!');
         } else {
-          console.warn(`[Canvas] /create returned ${res.status}`);
+          toast.error(`Evaluation failed (${res.status})`);
           setEvaluateResult({ error: `Server error (${res.status})`, scores: null, summary: 'Evaluation unavailable — backend returned an error.' });
           setPlaygroundMode('run');
         }
       } catch (err) {
-        console.warn('[Canvas] Backend unavailable:', err);
+        toast.error('Backend unavailable — running in offline mode');
         setEvaluateResult({ error: 'offline', scores: null, summary: 'Backend unavailable — running in offline mode.' });
         setPlaygroundMode('run');
       } finally {
@@ -361,6 +363,20 @@ export default function PrototypePage() {
       )}
 
       <OnboardingTour />
+
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          style: {
+            background: '#FAF7F2',
+            color: '#334155',
+            border: '1px solid #E8E0D4',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+          },
+          success: { iconTheme: { primary: '#5F8A50', secondary: '#FAF7F2' } },
+          error: { iconTheme: { primary: '#C65D4D', secondary: '#FAF7F2' } },
+        }}
+      />
 
       <IOSAlert
         visible={state.status === 'failed' && !!state.error}

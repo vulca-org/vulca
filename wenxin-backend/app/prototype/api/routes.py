@@ -749,25 +749,40 @@ async def list_gallery(
     limit: int = 50,
     offset: int = 0,
     tradition: str | None = None,
+    subject: str | None = None,
+    min_score: float | None = None,
+    max_score: float | None = None,
     sort_by: str = "newest",
     sort_order: str = "desc",
+    published_only: bool = False,
 ):
     """Return completed sessions for the Gallery page.
 
-    Supports pagination via limit/offset and sorting.
+    Supports pagination via limit/offset, filtering, and sorting.
 
     Query params:
-        limit:      Max items to return (default 50).
-        offset:     Number of items to skip (default 0).
-        tradition:  Filter by cultural tradition (optional).
-        sort_by:    Sort key — "newest" (created_at), "score" (overall),
-                    "rounds" (total_rounds). Default "newest".
-        sort_order: "asc" or "desc" (default "desc").
+        limit:          Max items to return (default 50).
+        offset:         Number of items to skip (default 0).
+        tradition:      Filter by cultural tradition (optional).
+        subject:        Full-text search on subject field (optional).
+        min_score:      Minimum overall score filter (optional).
+        max_score:      Maximum overall score filter (optional).
+        sort_by:        Sort key — "newest" (created_at), "score" (overall),
+                        "rounds" (total_rounds), "likes". Default "newest".
+        sort_order:     "asc" or "desc" (default "desc").
+        published_only: If true, only show published items (default false).
     """
     from app.prototype.session.store import SessionStore
 
     store = SessionStore.get()
     sessions = store.get_all()
+
+    # Load like counts for likes_count field and sort_by=likes
+    try:
+        from app.prototype.api.gallery_social import _count_likes
+        likes_map = _count_likes()
+    except Exception:
+        likes_map = {}
 
     # Build full list of gallery-eligible items (unsliced)
     gallery_items = []
@@ -776,19 +791,33 @@ async def list_gallery(
             continue
         if tradition and s.get("tradition") != tradition:
             continue
+        if published_only and not s.get("published"):
+            continue
+
+        item_subject = s.get("subject", s.get("intent", "Untitled"))
+        if subject and subject.lower() not in item_subject.lower():
+            continue
+
+        overall = s.get("final_weighted_total", 0.0)
+        if min_score is not None and overall < min_score:
+            continue
+        if max_score is not None and overall > max_score:
+            continue
 
         scores = s.get("final_scores", {})
+        session_id = s.get("session_id", "")
         gallery_items.append({
-            "id": s.get("session_id", ""),
-            "subject": s.get("subject", s.get("intent", "Untitled")),
+            "id": session_id,
+            "subject": item_subject,
             "tradition": s.get("tradition", "default"),
             "media_type": s.get("media_type", "image"),
             "scores": scores,
-            "overall": s.get("final_weighted_total", 0.0),
+            "overall": overall,
             "best_image_url": s.get("best_image_url", ""),
             "total_rounds": s.get("total_rounds", 0),
             "total_latency_ms": s.get("total_latency_ms", 0),
             "created_at": s.get("created_at", 0),
+            "likes_count": likes_map.get(session_id, 0),
         })
 
     # Sort
@@ -796,6 +825,7 @@ async def list_gallery(
         "newest": "created_at",
         "score": "overall",
         "rounds": "total_rounds",
+        "likes": "likes_count",
     }
     key_field = sort_key_map.get(sort_by, "created_at")
     reverse = sort_order != "asc"

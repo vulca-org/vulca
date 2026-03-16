@@ -2,7 +2,10 @@
  * Canvas center panel — candidates, timeline, results.
  */
 
+import { useState, useCallback } from 'react';
+import toast from 'react-hot-toast';
 import { IOSCard, IOSCardContent, IOSButton } from '@/components/ios';
+import { API_PREFIX } from '@/config/api';
 import type { PipelineState } from '@/hooks/usePrototypePipeline';
 
 import CandidateGallery from './CandidateGallery';
@@ -28,6 +31,28 @@ export default function CanvasCenterPanel({
   onClearEvaluate,
   onReset,
 }: CanvasCenterPanelProps) {
+  const [publishing, setPublishing] = useState(false);
+
+  const handlePublish = useCallback(async () => {
+    if (!pipeline.taskId) return;
+    setPublishing(true);
+    try {
+      const res = await fetch(`${API_PREFIX}/gallery/${pipeline.taskId}/publish`, {
+        method: 'POST',
+        headers: { Authorization: 'Bearer demo-key' },
+      });
+      if (res.ok) {
+        toast.success('Published to Gallery!');
+      } else {
+        toast.error(`Publish failed (${res.status})`);
+      }
+    } catch {
+      toast.error('Failed to publish — backend unavailable');
+    } finally {
+      setPublishing(false);
+    }
+  }, [pipeline.taskId]);
+
   return (
     <>
       {/* Evaluate result (from IntentBar image upload) */}
@@ -158,6 +183,7 @@ export default function CanvasCenterPanel({
           totalCostUsd={pipeline.totalCostUsd}
           rounds={pipeline.rounds}
           onNewRun={onReset}
+          taskId={pipeline.taskId}
         />
       )}
 
@@ -187,6 +213,16 @@ export default function CanvasCenterPanel({
             <IOSButton variant="secondary" size="sm" onClick={onReset}>New Run</IOSButton>
             {pipeline.status === 'failed' && (
               <IOSButton variant="primary" size="sm" onClick={onReset}>Retry</IOSButton>
+            )}
+            {pipeline.status === 'completed' && (
+              <IOSButton
+                variant="primary"
+                size="sm"
+                onClick={handlePublish}
+                disabled={publishing}
+              >
+                {publishing ? 'Publishing...' : 'Publish to Gallery'}
+              </IOSButton>
             )}
           </div>
         </div>

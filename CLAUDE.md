@@ -374,6 +374,30 @@ SessionStore → DigestAggregator → PatternDetector → PreferenceLearner
 - 3 new cultural traditions emerged from 20 seed sessions
 - Agent insights updated and injected into system prompts
 
+## Upcoming: Phase 7D — Multimodal Activation
+
+**STATUS: UPCOMING — not yet implemented**
+
+### Video Minimal Loop
+1. FFmpeg keyframe extraction → video composition (`final_compose` handler)
+2. Frontend Video Player component (HTML5 `<video>` with poster frame)
+3. MediaType selector UI activation in Canvas IntentBar
+
+### 3D Model Handlers (deferred)
+- Three.js / Babylon.js mesh viewer component
+- Concept → mesh → texture → lighting → render pipeline
+- GLB/GLTF export support
+
+### Sound/Audio Handlers (deferred)
+- Stable Audio API integration
+- Mood → instruments → melody → arrangement → mix pipeline
+- Waveform visualization component
+
+### Mobile Canvas (deferred)
+- ReactFlow tablet adaptation (touch gestures, pinch zoom)
+- Responsive node sizes and connection handles
+- Mobile-friendly NodeParamPanel drawer
+
 ## Academic Paper Workflow
 
 For academic paper edits: always verify terminology/naming against the user's most recent instructions before making global changes. Do not assume prior names are correct — ask if ambiguous (e.g., CPD vs CPSR vs CPC).

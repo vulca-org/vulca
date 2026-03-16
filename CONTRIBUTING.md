@@ -1,6 +1,99 @@
 # Contributing to VULCA
 
-Thank you for your interest in contributing to VULCA! This guide focuses on the most impactful way to contribute: **adding new cultural traditions**.
+Thank you for your interest in contributing to VULCA! This guide covers development setup, contribution workflows, and extension points.
+
+## Development Setup
+
+```bash
+# 1. Clone and enter the project
+git clone https://github.com/yha9806/website.git vulca
+cd vulca
+
+# 2. Backend setup
+cd wenxin-backend
+python -m venv venv && source venv/bin/activate  # or venv\Scripts\activate on Windows
+pip install -r requirements.txt -c constraints.txt
+python init_db.py
+python -m uvicorn app.main:app --reload --port 8001
+
+# 3. Frontend setup (separate terminal)
+cd wenxin-moyun
+npm install --legacy-peer-deps
+npm run dev
+
+# 4. Verify
+# Frontend: http://localhost:5173
+# Backend: http://localhost:8001/health
+# Login: demo / demo123
+```
+
+## PR Process
+
+1. **Branch naming**: `feat/<description>`, `fix/<description>`, `docs/<description>`
+2. **Commit messages**: Use conventional format — `feat:`, `fix:`, `docs:`, `refactor:`, `test:`
+3. **Before submitting**:
+   - Backend: `cd wenxin-backend && python -m pytest tests/ -x -q`
+   - Frontend: `cd wenxin-moyun && npx tsc --noEmit && npm run build`
+4. **PR description**: Include what changed, why, and how to test
+5. **Review**: Maintainer will review within 48 hours
+
+## Security Guidelines
+
+- **Never** commit `.env` files, API keys, or credentials
+- Use `.env.example` files with placeholder values for new environment variables
+- Store secrets in GitHub Secrets or your cloud provider's secret manager
+- If you discover a security issue, see [SECURITY.md](SECURITY.md)
+
+## Code Conventions
+
+### Backend (Python)
+
+- Use `from __future__ import annotations` in all new files
+- Wrap optional imports in `try/except ImportError`
+- Use `logger.debug()` for non-critical logs, `logger.warning()` for important ones
+- Pin dependency versions with `==` in `requirements.txt`
+- Run `python -m pytest tests/ -x -q` before submitting
+
+### Frontend (TypeScript/React)
+
+- Art Professional palette only (warm gallery tones — no blue/purple/indigo)
+- Tailwind CSS with `dark:` prefix for dark mode support
+- Guard all API-fetched data with null checks before `Object.entries/keys/values`
+- Use `memo()` on components, `useCallback` on handlers
+- Use `react-hot-toast` for user notifications
+
+## Adding New Agent Types
+
+```python
+# wenxin-backend/app/prototype/agents/interfaces.py
+from app.prototype.agents.interfaces import BaseAgent, AgentRegistry
+
+@AgentRegistry.register("my_agent")
+class MyAgent(BaseAgent):
+    name = "my_agent"
+    def execute(self, state) -> dict:
+        return {"my_result": ...}
+```
+
+Register the agent, add a port contract in `pipeline/port_contract.py`, and create a node component in `wenxin-moyun/src/components/prototype/editor/nodes/`.
+
+## Adding New Skills
+
+```python
+# wenxin-backend/app/prototype/skills/executors/
+from app.prototype.skills.executors.base import BaseSkillExecutor
+
+class MySkillExecutor(BaseSkillExecutor):
+    SKILL_NAME = "my_skill"
+    async def execute(self, image_path, context) -> SkillResult:
+        return SkillResult(skill_name="my_skill", score=0.85, details={})
+```
+
+Skills auto-register via the executor base class and appear in the Skill Browser panel.
+
+## Adding New Traditions
+
+This is the most impactful way to contribute. VULCA evaluates AI-generated art across cultural dimensions using `TRADITION.yaml` files.
 
 ## Adding a New Tradition
 

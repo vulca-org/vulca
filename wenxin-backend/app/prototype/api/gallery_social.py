@@ -83,3 +83,39 @@ async def like_artwork(session_id: str, client_id: str = ""):
 async def get_all_likes():
     """Return like counts for all artworks: {session_id: count}."""
     return _count_likes()
+
+
+class PublishResponse(BaseModel):
+    session_id: str
+    published: bool
+    message: str
+
+
+@gallery_social_router.post("/{session_id}/publish", response_model=PublishResponse)
+async def publish_to_gallery(session_id: str):
+    """Publish a session to the public Gallery.
+
+    Sets the ``published`` flag on the session digest so it appears
+    in Gallery listings when ``published_only=true`` is used.
+    """
+    from app.prototype.session.store import SessionStore
+
+    store = SessionStore.get()
+    sessions = store.get_all()
+    found = False
+    for s in sessions:
+        if s.get("session_id") == session_id:
+            found = True
+            break
+
+    if not found:
+        raise HTTPException(404, f"Session {session_id} not found")
+
+    # Mark as published in the session store
+    store.update_field(session_id, "published", True)
+
+    return PublishResponse(
+        session_id=session_id,
+        published=True,
+        message="Successfully published to Gallery",
+    )

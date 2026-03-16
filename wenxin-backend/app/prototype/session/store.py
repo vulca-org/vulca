@@ -77,3 +77,23 @@ class SessionStore:
                 if line.strip():
                     count += 1
         return count
+
+    def update_field(self, session_id: str, field: str, value: object) -> bool:
+        """Update a single field on a session by rewriting the JSONL file.
+
+        Returns True if the session was found and updated.
+        """
+        with self._write_lock:
+            records = self.get_all()
+            found = False
+            for rec in records:
+                if rec.get("session_id") == session_id:
+                    rec[field] = value
+                    found = True
+                    break
+            if not found:
+                return False
+            with open(self._path, "w", encoding="utf-8") as f:
+                for rec in records:
+                    f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+            return True

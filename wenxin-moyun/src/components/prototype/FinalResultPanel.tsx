@@ -7,12 +7,14 @@
  * Art Professional palette: #334155 #C87F4A #5F8A50 #B8923D #C65D4D bg:#FAF7F2
  */
 
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import type { DraftCandidate, ScoredCandidate, RoundData } from '../../hooks/usePrototypePipeline';
 import { PROTOTYPE_DIMENSIONS, PROTOTYPE_DIM_LABELS } from '../../utils/vulca-dimensions';
 import type { PrototypeDimension } from '../../utils/vulca-dimensions';
 import { IOSButton } from '../../components/ios';
-import { API_BASE_URL } from '../../config/api';
+import { API_BASE_URL, API_PREFIX } from '../../config/api';
 
 interface Props {
   /** All candidates from the final round */
@@ -33,6 +35,8 @@ interface Props {
   rounds: RoundData[];
   /** Handler to reset and start a new run */
   onNewRun: () => void;
+  /** Pipeline task ID for publishing */
+  taskId?: string | null;
 }
 
 /** Resolve image source from candidate metadata (mirrors CandidateGallery logic). */
@@ -70,8 +74,30 @@ export default function FinalResultPanel({
   totalCostUsd,
   rounds,
   onNewRun,
+  taskId,
 }: Props) {
   const navigate = useNavigate();
+  const [publishing, setPublishing] = useState(false);
+
+  const handlePublish = useCallback(async () => {
+    if (!taskId) return;
+    setPublishing(true);
+    try {
+      const res = await fetch(`${API_PREFIX}/gallery/${taskId}/publish`, {
+        method: 'POST',
+        headers: { Authorization: 'Bearer demo-key' },
+      });
+      if (res.ok) {
+        toast.success('Published to Gallery!');
+      } else {
+        toast.error(`Publish failed (${res.status})`);
+      }
+    } catch {
+      toast.error('Failed to publish — backend unavailable');
+    } finally {
+      setPublishing(false);
+    }
+  }, [taskId]);
 
   // Find the best scored candidate
   const bestScored = scoredCandidates.find(sc => sc.candidate_id === bestCandidateId)
@@ -220,8 +246,11 @@ export default function FinalResultPanel({
 
         {/* Actions */}
         <div className="mt-5 flex items-center gap-3">
-          <IOSButton variant="primary" size="sm" onClick={() => navigate('/gallery')}>
-            View in Gallery
+          <IOSButton variant="primary" size="sm" onClick={handlePublish} disabled={publishing}>
+            {publishing ? 'Publishing...' : 'Publish to Gallery'}
+          </IOSButton>
+          <IOSButton variant="secondary" size="sm" onClick={() => navigate('/gallery')}>
+            View Gallery
           </IOSButton>
           <IOSButton variant="secondary" size="sm" onClick={onNewRun}>
             New Run

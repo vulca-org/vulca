@@ -247,20 +247,36 @@ class TestWeightsConsistency:
                 f"get_weights('{tradition}') sums to {total:.4f}"
             )
 
-    def test_yaml_matches_fallback(self):
-        """YAML weights should match dynamically loaded fallback (regression check)."""
-        from app.prototype.cultural_pipelines.cultural_weights import (
-            _get_fallback_weights,
-            get_weights,
-        )
-        for tradition, fallback_w in _get_fallback_weights().items():
-            yaml_w = get_weights(tradition)
-            for dim, expected_val in fallback_w.items():
-                actual_val = yaml_w.get(dim, -1)
-                assert abs(actual_val - expected_val) < 0.001, (
-                    f"Tradition '{tradition}' dim '{dim}': "
-                    f"YAML={actual_val} != fallback={expected_val}"
+    def test_yaml_weights_structural_integrity(self):
+        """YAML weights have correct structure and valid ranges.
+
+        Note: We no longer compare YAML weights to fallback values because
+        the digestion system intentionally drifts weights via evolution.
+        Instead we verify structural properties that must always hold.
+        """
+        from app.prototype.cultural_pipelines.cultural_weights import get_weights
+
+        dim_ids = [
+            "visual_perception", "technical_analysis", "cultural_context",
+            "critical_interpretation", "philosophical_aesthetic",
+        ]
+        for tradition in EXPECTED_TRADITIONS:
+            weights = get_weights(tradition)
+            # All 5 dimensions present
+            for dim in dim_ids:
+                assert dim in weights, (
+                    f"Tradition '{tradition}' missing dimension '{dim}'"
                 )
+            # All values in valid range
+            for dim, val in weights.items():
+                assert 0 <= val <= 1, (
+                    f"Tradition '{tradition}' dim '{dim}'={val} out of [0,1]"
+                )
+            # Sum approximately 1.0
+            total = sum(weights[d] for d in dim_ids)
+            assert abs(total - 1.0) < 0.02, (
+                f"Tradition '{tradition}' weights sum to {total:.4f} (expected ~1.0)"
+            )
 
 
 # ---------------------------------------------------------------------------

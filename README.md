@@ -1,10 +1,38 @@
 # VULCA — AI-Native Creation Organism
 
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![CI](https://github.com/yha9806/website/actions/workflows/deploy-gcp.yml/badge.svg)](https://github.com/yha9806/website/actions)
+[![Python 3.13](https://img.shields.io/badge/Python-3.13-green.svg)](https://python.org)
+[![Node 20](https://img.shields.io/badge/Node.js-20-green.svg)](https://nodejs.org)
+
 > Create, critique, and evolve cultural art through multi-agent AI pipelines.
 
 VULCA is an open-source creative platform where generation, evaluation, and learning are seamless stages of one process. The core product is **Canvas** -- a unified creation and evaluation playground powered by a 9-node multi-agent pipeline. Eight cultural traditions (Chinese Xieyi, Japanese Wabi-sabi, Persian Miniature, and more) shape how art is generated and scored. No API keys required to start -- the built-in mock provider runs the full pipeline locally.
 
 **Live:** [vulcaart.art](https://vulcaart.art) | **Papers:** EMNLP 2025, WiNLP 2025, arXiv 2026
+
+```
+                          ┌─────────────────────────────────┐
+  User Intent ──────────► │  Canvas Pipeline                │
+                          │  Scout → Router → Draft          │
+                          │    → Critic → Queen → Archivist  │
+                          └──────────┬──────────────────────┘
+                                     │
+                                     ▼
+                          ┌──────────────────────┐
+                          │  Gallery + Feedback   │
+                          └──────────┬───────────┘
+                                     │
+                          ┌──────────▼───────────┐
+                          │  Digestion System     │
+                          │  (Cultural Emergence) │
+                          └──────────┬───────────┘
+                                     │
+                                     ▼
+                          Evolved Context → Pipeline
+```
+
+<!-- TODO: Add screenshots -->
 
 ## Quick Start
 
@@ -174,6 +202,21 @@ VULCA builds on peer-reviewed research:
 - **VULCA-Bench** -- arXiv:2601.07986 (L1-L5 definitions, 7,410 samples)
 - **Fire Imagery** -- WiNLP 2025 (cultural symbol reasoning)
 
+## Security Notes
+
+- **Never** commit `.env` files or API keys to the repository
+- Use `.env.example` or `.env.production.local` for local overrides
+- Rotate API keys regularly — see [SECURITY.md](SECURITY.md) for vulnerability reporting
+- CI/CD secrets are managed via GitHub Secrets (not hardcoded in workflows)
+
+## Extending VULCA
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for:
+- Development setup and PR process
+- Adding new cultural traditions (YAML-based, 5-minute quickstart)
+- Adding new agents, skills, and providers
+- Code conventions and security guidelines
+
 ## Citation
 
 ```bibtex
@@ -182,6 +225,13 @@ VULCA builds on peer-reviewed research:
   author={Yu, Haorui},
   booktitle={Findings of EMNLP 2025},
   year={2025}
+}
+
+@article{yu2026vulcabench,
+  title={VULCA-Bench: A Benchmark for Culturally-Aware Visual Understanding at Five Levels},
+  author={Yu, Haorui},
+  journal={arXiv preprint arXiv:2601.07986},
+  year={2026}
 }
 ```
 

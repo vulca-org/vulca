@@ -180,8 +180,8 @@ jobs:
           VITE_API_VERSION: v1
           VITE_API_TIMEOUT: 60000
           VITE_ENVIRONMENT: production
-          VITE_SUPABASE_URL: https://rorpznpcwdjnncozlbrf.supabase.co
-          VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJvcnB6bnBjd2Rqbm5jb3psYnJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgyMzcyMjUsImV4cCI6MjA4MzgxMzIyNX0.XkhXTJpDz3xw7_jcwdX4vbSMf4jBozGq9x-QXAM5mVg
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
       - name: Deploy frontend to Firebase Hosting
         working-directory: wenxin-moyun
