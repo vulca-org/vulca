@@ -96,7 +96,7 @@ jobs:
           import os, sys
           sys.path.insert(0, '.')
           os.environ['DATABASE_URL'] = os.environ['DB_URL']
-          os.environ['SECRET_KEY'] = 'migration-key'
+          os.environ['SECRET_KEY'] = 'migration-key-at-least-32-characters-long-for-validation'
           os.environ['ENVIRONMENT'] = 'production'
 
           from app.core.database import SyncSessionLocal
