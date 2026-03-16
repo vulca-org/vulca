@@ -15,7 +15,8 @@ env:
   PROJECT_ID: wenxin-moyun-prod-new
   REGION: asia-east1
   REPO_NAME: wenxin-images
-  CLOUD_RUN_SERVICE_URL: wenxin-moyun-api-229980166599.asia-east1.run.app
+  # Set CLOUD_RUN_URL in GitHub Secrets for your deployment
+  CLOUD_RUN_SERVICE_URL: ${{ secrets.CLOUD_RUN_URL }}
 
 jobs:
   init-production-data:

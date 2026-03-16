@@ -32,7 +32,7 @@ describe('API config module', () => {
   it('should use production URL when hostname is not localhost', async () => {
     vi.stubGlobal('window', { location: { hostname: 'vulcaart.art' } })
     const mod = await import('../../config/api')
-    expect(mod.API_BASE_URL).toBe('https://wenxin-moyun-api-229980166599.asia-east1.run.app')
+    expect(mod.API_BASE_URL).toBe('https://vulcaart.art/api')
   })
 
   it('should construct API_PREFIX with version', async () => {
