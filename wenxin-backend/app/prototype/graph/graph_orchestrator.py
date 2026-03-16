@@ -330,7 +330,14 @@ class GraphOrchestrator:
             total_ms = int((time.monotonic() - t0) * 1000)
 
             # Get final state for completion payload
-            final_state = compiled.get_state(config).values if self._enable_hitl else {}
+            raw_state = compiled.get_state(config).values if self._enable_hitl else {}
+            # Guard: ensure final_state is a dict (LangGraph may return tuple/namedtuple)
+            if isinstance(raw_state, dict):
+                final_state = raw_state
+            elif hasattr(raw_state, '_asdict'):
+                final_state = raw_state._asdict()
+            else:
+                final_state = {}
 
             total_cost = run_cost_usd or (
                 round(final_state.get("total_cost_usd", 0.0), 6) if final_state else 0.0

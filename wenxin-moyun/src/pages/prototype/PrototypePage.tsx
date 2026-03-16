@@ -32,7 +32,11 @@ import type { EditorRunParams } from '@/components/prototype/CanvasLeftPanel';
 import CanvasCenterPanel from '@/components/prototype/CanvasCenterPanel';
 import CanvasRightPanel from '@/components/prototype/CanvasRightPanel';
 
-const PROTO_AUTH = { Authorization: 'Bearer demo-key' } as const;
+/** Auth headers for prototype API calls — reads real user token from localStorage */
+function getProtoAuthHeaders(): Record<string, string> {
+  const token = localStorage.getItem('access_token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
 
 export default function PrototypePage() {
   // --- Core pipeline hook ---
@@ -98,7 +102,7 @@ export default function PrototypePage() {
         });
         const res = await fetch(`${API_PREFIX}/create`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', ...PROTO_AUTH },
+          headers: { 'Content-Type': 'application/json', ...getProtoAuthHeaders() },
           body: JSON.stringify({ intent, image_base64: base64, tradition: currentTradition }),
         });
         if (res.ok) {
@@ -386,7 +390,7 @@ export default function PrototypePage() {
         message={state.error || 'An unexpected error occurred.'}
         actions={[
           { label: 'New Run', onPress: handleReset, style: 'default' },
-          { label: 'Dismiss', onPress: () => {}, style: 'cancel' },
+          { label: 'Dismiss', onPress: handleReset, style: 'cancel' },
         ]}
       />
     </>

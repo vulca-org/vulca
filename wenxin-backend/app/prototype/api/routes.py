@@ -637,6 +637,9 @@ def _build_status_response(task_id: str) -> RunStatusResponse:
 
             if completion_event:
                 p = completion_event.payload
+                # Guard against non-dict payloads (e.g. tuple from LangGraph state)
+                if not isinstance(p, dict):
+                    p = p._asdict() if hasattr(p, '_asdict') else {}
                 return RunStatusResponse(
                     task_id=task_id,
                     status=run_state.status.value,
