@@ -1,0 +1,148 @@
+# One-time: upload draft images to GCS bucket and update DB URLs
+# Manual trigger only — delete after successful run
+
+name: Upload Images to GCS
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "yes" to run upload'
+        required: true
+        default: 'no'
+
+env:
+  PROJECT_ID: wenxin-moyun-prod-new
+  REGION: asia-east1
+  BUCKET_NAME: vulca-draft-images
+
+jobs:
+  upload:
+    name: Upload to GCS
+    runs-on: ubuntu-latest
+    if: github.event.inputs.confirm == 'yes'
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          project_id: ${{ env.PROJECT_ID }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Download images from release
+        run: |
+          gh release download draft-images-migration -p "draft-images.tar.gz" -D /tmp/
+          ls -lh /tmp/draft-images.tar.gz
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Extract images
+        run: |
+          mkdir -p /tmp/images
+          tar xzf /tmp/draft-images.tar.gz -C /tmp/images/
+          echo "Extracted files:"
+          find /tmp/images/draft/ -name "*.png" | wc -l
+
+      - name: Create GCS bucket (if not exists)
+        run: |
+          if gsutil ls -b gs://${{ env.BUCKET_NAME }} 2>/dev/null; then
+            echo "Bucket exists"
+          else
+            gsutil mb -l ${{ env.REGION }} -p ${{ env.PROJECT_ID }} gs://${{ env.BUCKET_NAME }}
+            echo "Bucket created"
+          fi
+          # Make bucket publicly readable for serving images
+          gsutil iam ch allUsers:objectViewer gs://${{ env.BUCKET_NAME }}
+          # Set CORS for frontend access
+          echo '[{"origin": ["https://vulcaart.art", "http://localhost:5173"], "method": ["GET"], "maxAgeSeconds": 3600}]' > /tmp/cors.json
+          gsutil cors set /tmp/cors.json gs://${{ env.BUCKET_NAME }}
+
+      - name: Upload images to GCS
+        run: |
+          echo "Uploading images to GCS..."
+          gsutil -m cp -r /tmp/images/draft/* gs://${{ env.BUCKET_NAME }}/prototype/draft/
+          echo "Upload complete"
+          gsutil ls gs://${{ env.BUCKET_NAME }}/prototype/draft/ | wc -l
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        working-directory: wenxin-backend
+        run: pip install -q -r requirements.render.txt -c constraints.txt
+
+      - name: Get database URL
+        id: db
+        run: |
+          DB_URL=$(gcloud secrets versions access latest --secret="supabase-database-url" --project=${{ env.PROJECT_ID }})
+          echo "::add-mask::$DB_URL"
+          echo "url=$DB_URL" >> $GITHUB_OUTPUT
+
+      - name: Update image URLs in database
+        working-directory: wenxin-backend
+        run: |
+          python3 -c "
+          import os, sys
+          sys.path.insert(0, '.')
+          os.environ['DATABASE_URL'] = os.environ['DB_URL']
+          os.environ['SECRET_KEY'] = 'migration-key'
+          os.environ['ENVIRONMENT'] = 'production'
+
+          from app.core.database import SyncSessionLocal
+          from app.models.prototype_session import PrototypeSession
+
+          BUCKET = 'vulca-draft-images'
+          GCS_BASE = f'https://storage.googleapis.com/{BUCKET}'
+
+          with SyncSessionLocal() as session:
+              rows = session.query(PrototypeSession).filter(
+                  PrototypeSession.best_image_url != '',
+                  PrototypeSession.best_image_url.isnot(None),
+              ).all()
+              updated = 0
+              for row in rows:
+                  url = row.best_image_url
+                  if url and url.startswith('/static/prototype/draft/'):
+                      # /static/prototype/draft/api-xxx/file.png -> GCS URL
+                      relative = url.replace('/static/prototype/draft/', '')
+                      row.best_image_url = f'{GCS_BASE}/prototype/draft/{relative}'
+                      updated += 1
+              session.commit()
+              print(f'Updated {updated} image URLs to GCS')
+              # Show sample
+              sample = session.query(PrototypeSession).filter(
+                  PrototypeSession.best_image_url.like('%storage.googleapis%')
+              ).first()
+              if sample:
+                  print(f'Sample: {sample.best_image_url}')
+          "
+        env:
+          DB_URL: ${{ steps.db.outputs.url }}
+
+      - name: Verify
+        run: |
+          # Check a random image is accessible
+          SERVICE_URL=$(gcloud run services describe wenxin-moyun-api --region ${{ env.REGION }} --format 'value(status.url)')
+          GALLERY=$(curl -s "$SERVICE_URL/api/v1/prototype/gallery?limit=1")
+          IMG_URL=$(echo "$GALLERY" | python3 -c "import sys,json; items=json.load(sys.stdin).get('items',[]); print(items[0].get('best_image_url','') if items else '')")
+          echo "First image URL: $IMG_URL"
+          if [ -n "$IMG_URL" ]; then
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$IMG_URL")
+            echo "Image HTTP status: $STATUS"
+            if [ "$STATUS" = "200" ]; then
+              echo "Image verification PASSED"
+            else
+              echo "WARNING: Image returned status $STATUS"
+            fi
+          fi
