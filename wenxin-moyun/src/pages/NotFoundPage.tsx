@@ -4,7 +4,7 @@ import { EmojiIcon } from '../components/ios';
 
 export default function NotFoundPage() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen px-6 text-center">
+    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)] px-6 text-center">
       <div className="space-y-6">
         {/* 404 Icon */}
         <div className="flex justify-center">

@@ -244,17 +244,6 @@ export default function HomePage() {
                 Try It Now
               </IOSButton>
             </Link>
-            <Link to="/canvas">
-              <IOSButton
-                variant="text"
-                size="lg"
-                className="flex items-center gap-2 min-w-[160px] justify-center text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-300"
-                data-testid="hero-try-demo"
-              >
-                Try Public Demo
-                <ArrowRight className="w-4 h-4" />
-              </IOSButton>
-            </Link>
           </motion.div>
 
           {/* Open Source Install Section */}

@@ -18,6 +18,13 @@ import {
 } from '../components/ios';
 import { VULCA_VERSION } from '../config/version';
 
+// Static color mapping for Tailwind v4 compatibility (no dynamic class interpolation)
+const COLOR_MAP: Record<string, { text: string; bg: string; darkBg: string; textSm: string; darkTextSm: string }> = {
+  purple: { text: 'text-[#C87F4A]',   bg: 'bg-[#C87F4A]/10',  darkBg: 'dark:bg-[#C87F4A]/20', textSm: 'text-[#C87F4A]',   darkTextSm: 'dark:text-[#DDA574]' },
+  blue:   { text: 'text-[#334155]',   bg: 'bg-[#334155]/10',  darkBg: 'dark:bg-[#334155]/20', textSm: 'text-[#334155]',   darkTextSm: 'dark:text-[#94a3b8]' },
+  orange: { text: 'text-[#B8923D]',   bg: 'bg-[#B8923D]/10',  darkBg: 'dark:bg-[#B8923D]/20', textSm: 'text-[#B8923D]',   darkTextSm: 'dark:text-[#D4A84E]' },
+};
+
 // Research institutions and organizations using VULCA evaluation framework
 const customerLogos = [
   { name: 'ACL Research', category: 'research' },
@@ -175,9 +182,9 @@ export default function CustomersPage() {
               <IOSCard variant="elevated">
                 <div className="md:flex">
                   {/* Left: Category */}
-                  <div className={`md:w-1/4 p-6 bg-${study.color}-50 dark:bg-${study.color}-900/20 flex flex-col items-center justify-center text-center`}>
-                    <study.icon className={`w-12 h-12 text-${study.color}-500 mb-3`} />
-                    <span className={`text-sm font-medium text-${study.color}-600 dark:text-${study.color}-400`}>
+                  <div className={`md:w-1/4 p-6 ${COLOR_MAP[study.color]?.bg ?? 'bg-gray-50'} ${COLOR_MAP[study.color]?.darkBg ?? 'dark:bg-gray-900/20'} flex flex-col items-center justify-center text-center`}>
+                    <study.icon className={`w-12 h-12 ${COLOR_MAP[study.color]?.text ?? 'text-gray-500'} mb-3`} />
+                    <span className={`text-sm font-medium ${COLOR_MAP[study.color]?.textSm ?? 'text-gray-600'} ${COLOR_MAP[study.color]?.darkTextSm ?? 'dark:text-gray-400'}`}>
                       {study.category}
                     </span>
                     <span className="text-xs text-gray-500 dark:text-gray-400 mt-1">

@@ -129,9 +129,10 @@ export default function Footer() {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="Enter your email"
                       disabled={isLoading}
+                      aria-label="Email address"
                       className="flex-1 px-3 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-600 disabled:opacity-50"
                     />
-                    <IOSButton variant="primary" size="sm" type="submit" disabled={isLoading || !email}>
+                    <IOSButton variant="primary" size="sm" type="submit" disabled={isLoading || !email} aria-label="Subscribe">
                       {isLoading ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (

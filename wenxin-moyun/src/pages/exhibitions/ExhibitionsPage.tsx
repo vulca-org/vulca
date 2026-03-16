@@ -172,7 +172,15 @@ export function ExhibitionsPage() {
                     alt={exhibition.name}
                     className="w-full h-full object-cover"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = '/placeholder-exhibition.jpg';
+                      const img = e.target as HTMLImageElement;
+                      img.style.display = 'none';
+                      const parent = img.parentElement;
+                      if (parent && !parent.querySelector('.fallback-gradient')) {
+                        const fallback = document.createElement('div');
+                        fallback.className = 'fallback-gradient w-full h-full absolute inset-0';
+                        fallback.style.background = 'linear-gradient(135deg, #334155 0%, #C87F4A 50%, #B8923D 100%)';
+                        parent.insertBefore(fallback, parent.firstChild);
+                      }
                     }}
                   />
                   {/* Gradient Overlay */}
@@ -196,9 +204,11 @@ export function ExhibitionsPage() {
                     <h3 className="text-xl font-bold text-white mb-1">
                       {exhibition.name}
                     </h3>
-                    <p className="text-sm text-white/80">
-                      {exhibition.name_zh}
-                    </p>
+                    {exhibition.name_zh && (
+                      <p className="text-sm text-white/80 italic">
+                        {exhibition.name_zh}
+                      </p>
+                    )}
                   </div>
                 </div>
 

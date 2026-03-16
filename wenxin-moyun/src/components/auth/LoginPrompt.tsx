@@ -70,9 +70,9 @@ const LoginPrompt: React.FC<LoginPromptProps> = ({
     switch (config.urgency) {
       case 'high':
         return {
-          iconColor: 'text-red-500',
-          gradient: 'from-red-500 to-pink-500',
-          buttonClass: 'bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700'
+          iconColor: 'text-[#C65D4D]',
+          gradient: 'from-[#C65D4D] to-[#B8923D]',
+          buttonClass: 'bg-gradient-to-r from-[#C65D4D] to-[#B8923D] hover:from-[#A84A3D] hover:to-[#937531]'
         };
       case 'medium':
         return {

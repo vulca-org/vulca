@@ -22,6 +22,16 @@ import {
 } from '../components/ios';
 import { VULCA_VERSION } from '../config/version';
 
+// Static color mapping for Tailwind v4 compatibility (no dynamic class interpolation)
+const COLOR_MAP: Record<string, { text: string; bg: string; darkBg: string; border: string; darkText: string }> = {
+  gray:    { text: 'text-gray-500',    bg: 'bg-gray-100',      darkBg: 'dark:bg-gray-900/30',    border: 'border-gray-200',    darkText: 'dark:text-gray-400' },
+  blue:    { text: 'text-[#334155]',   bg: 'bg-[#334155]/10',  darkBg: 'dark:bg-[#334155]/20',   border: 'border-[#334155]/20', darkText: 'dark:text-[#94a3b8]' },
+  emerald: { text: 'text-[#5F8A50]',   bg: 'bg-[#5F8A50]/10',  darkBg: 'dark:bg-[#5F8A50]/20',   border: 'border-[#5F8A50]/20', darkText: 'dark:text-[#87A878]' },
+  purple:  { text: 'text-[#C87F4A]',   bg: 'bg-[#C87F4A]/10',  darkBg: 'dark:bg-[#C87F4A]/20',   border: 'border-[#C87F4A]/20', darkText: 'dark:text-[#DDA574]' },
+  green:   { text: 'text-[#5F8A50]',   bg: 'bg-[#5F8A50]/10',  darkBg: 'dark:bg-[#5F8A50]/20',   border: 'border-[#5F8A50]/20', darkText: 'dark:text-[#87A878]' },
+  slate:   { text: 'text-[#334155]',   bg: 'bg-[#334155]/10',  darkBg: 'dark:bg-[#334155]/20',   border: 'border-[#334155]/20', darkText: 'dark:text-[#94a3b8]' },
+};
+
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
@@ -195,7 +205,7 @@ export default function PricingPage() {
                   </div>
                 )}
                 <IOSCardHeader
-                  emoji={<plan.icon className={`w-8 h-8 text-${plan.color}-500`} />}
+                  emoji={<plan.icon className={`w-8 h-8 ${COLOR_MAP[plan.color]?.text ?? 'text-gray-500'}`} />}
                   title={plan.name}
                   subtitle={plan.description}
                 />
@@ -350,8 +360,8 @@ export default function PricingPage() {
                 className="relative flex flex-col items-center text-center"
               >
                 {/* Step circle */}
-                <div className={`w-16 h-16 rounded-full bg-${item.color}-100 dark:bg-${item.color}-900/30 flex items-center justify-center mb-4 relative z-10 border-4 border-white dark:border-gray-900`}>
-                  <item.icon className={`w-6 h-6 text-${item.color}-600 dark:text-${item.color}-400`} />
+                <div className={`w-16 h-16 rounded-full ${COLOR_MAP[item.color]?.bg ?? 'bg-gray-100'} ${COLOR_MAP[item.color]?.darkBg ?? 'dark:bg-gray-900/30'} flex items-center justify-center mb-4 relative z-10 border-4 border-white dark:border-gray-900`}>
+                  <item.icon className={`w-6 h-6 ${COLOR_MAP[item.color]?.text ?? 'text-gray-600'} ${COLOR_MAP[item.color]?.darkText ?? 'dark:text-gray-400'}`} />
                 </div>
 
                 {/* Step number badge */}

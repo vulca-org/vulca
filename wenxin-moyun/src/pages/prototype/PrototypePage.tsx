@@ -8,7 +8,7 @@
  *   Mobile:          Single column with tab switching.
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 import { usePrototypePipeline } from '@/hooks/usePrototypePipeline';
@@ -60,13 +60,13 @@ export default function PrototypePage() {
   const urlSubject = searchParams.get('subject') || '';
   const urlTradition = searchParams.get('tradition') || '';
   // Initialize store from URL params on first render
-  useState(() => {
+  useEffect(() => {
     if (urlSubject) setCurrentSubject(urlSubject);
     if (urlTradition) {
       setCurrentTradition(urlTradition);
       setTraditionManuallySet(true);
     }
-  });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // --- Local UI state (not shared across panels) ---
   const [selectedCandidateId, setSelectedCandidateId] = useState<string | null>(null);

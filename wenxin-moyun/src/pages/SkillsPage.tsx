@@ -93,7 +93,7 @@ export default function SkillsPage() {
   }, [skills, activeTag, searchQuery]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-white dark:from-black dark:via-gray-900 dark:to-black">
+    <div className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-white dark:from-[#0F0D0B] dark:via-gray-900 dark:to-[#0F0D0B]">
       <div className="container mx-auto px-4 py-8 max-w-6xl">
 
         {/* Page header */}

@@ -464,9 +464,11 @@ export default function AdminDashboardPage() {
                   </div>
                 </div>
                 {/* Chart placeholder */}
-                <div className="mt-4 h-24 bg-gray-50 dark:bg-gray-800/50 rounded-lg flex items-center justify-center border border-dashed border-gray-300 dark:border-gray-600">
-                  <span className="text-sm text-gray-400 dark:text-gray-500">Feedback trend chart (coming soon)</span>
-                </div>
+                {feedbackStats.total === 0 && (
+                  <div className="mt-4 h-24 bg-gray-50 dark:bg-gray-800/50 rounded-lg flex items-center justify-center">
+                    <span className="text-sm text-gray-400 dark:text-gray-500">No feedback data yet</span>
+                  </div>
+                )}
               </div>
             </IOSCardContent>
           </IOSCard>

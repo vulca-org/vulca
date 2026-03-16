@@ -559,7 +559,7 @@ export default function GalleryPage() {
   const rangeEnd = filtered.length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-white dark:from-black dark:via-gray-900 dark:to-black">
+    <div className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-white dark:from-[#0F0D0B] dark:via-gray-900 dark:to-[#0F0D0B]">
       <div className="container mx-auto px-4 py-8 max-w-6xl">
 
         {/* Page header */}
@@ -598,6 +598,7 @@ export default function GalleryPage() {
             <select
               value={selectedTradition}
               onChange={(e) => setSelectedTradition(e.target.value)}
+              aria-label="Filter by tradition"
               className="px-3 py-2 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-500/40 transition"
             >
               <option value="all">All Traditions</option>
@@ -614,6 +615,7 @@ export default function GalleryPage() {
             <select
               value={String(minScore)}
               onChange={(e) => setMinScore(Number(e.target.value))}
+              aria-label="Filter by minimum score"
               className="px-3 py-2 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-500/40 transition"
             >
               <option value="0">Min Score: Any</option>
@@ -628,6 +630,7 @@ export default function GalleryPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as SortOption)}
+              aria-label="Sort artworks"
               className="px-3 py-2 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-500/40 transition"
             >
               {(Object.entries(SORT_LABELS) as [SortOption, string][]).map(([key, label]) => (
