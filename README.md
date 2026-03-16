@@ -1,7 +1,7 @@
 # VULCA — AI-Native Creation Organism
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
-[![CI](https://github.com/yha9806/website/actions/workflows/deploy-gcp.yml/badge.svg)](https://github.com/yha9806/website/actions)
+[![CI](https://github.com/vulca-org/vulca/actions/workflows/deploy-gcp.yml/badge.svg)](https://github.com/vulca-org/vulca/actions)
 [![Python 3.13](https://img.shields.io/badge/Python-3.13-green.svg)](https://python.org)
 [![Node 20](https://img.shields.io/badge/Node.js-20-green.svg)](https://nodejs.org)
 
@@ -37,7 +37,7 @@ VULCA is an open-source creative platform where generation, evaluation, and lear
 ## Quick Start
 
 ```bash
-git clone https://github.com/yha9806/website.git vulca
+git clone https://github.com/vulca-org/vulca.git vulca
 cd vulca
 docker-compose up
 # Frontend: http://localhost:5173

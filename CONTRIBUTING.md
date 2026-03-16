@@ -6,7 +6,7 @@ Thank you for your interest in contributing to VULCA! This guide covers developm
 
 ```bash
 # 1. Clone and enter the project
-git clone https://github.com/yha9806/website.git vulca
+git clone https://github.com/vulca-org/vulca.git vulca
 cd vulca
 
 # 2. Backend setup
