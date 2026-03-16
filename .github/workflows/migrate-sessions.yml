@@ -32,7 +32,7 @@ jobs:
       - name: Install dependencies
         working-directory: wenxin-backend
         run: |
-          pip install -q sqlalchemy psycopg2-binary python-jose passlib python-dotenv pyyaml
+          pip install -q -r requirements.render.txt -c constraints.txt
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
