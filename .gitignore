@@ -250,3 +250,5 @@ wenxin-moyun/*.png
 wenxin-moyun/*.txt
 wenxin-backend/OPENAI_BENCHMARK_SUMMARY.md
 wenxin-backend/OPTIMIZATION_SUCCESS_REPORT.md
+wenxin-moyun/tsconfig.app.tsbuildinfo
+wenxin-moyun/vulca_test_results.json
