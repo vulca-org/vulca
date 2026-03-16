@@ -58,8 +58,8 @@ const LoginPage: React.FC = () => {
 
   const handleDemoLogin = () => {
     setFormData({
-      username: 'admin',
-      password: 'admin123'
+      username: 'demo',
+      password: 'demo123'
     });
   };
 
@@ -145,13 +145,13 @@ const LoginPage: React.FC = () => {
           {/* Demo Account */}
           <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
             <div className="text-center text-sm text-gray-600 dark:text-gray-400">
-              <p className="mb-2">Test Account</p>
+              <p className="mb-2">Try it out</p>
               <button
                 type="button"
                 onClick={handleDemoLogin}
                 className="text-amber-700 dark:text-amber-500 hover:text-[#C87F4A] dark:hover:text-amber-400 font-medium"
               >
-                Use admin account (admin/admin123)
+                Use demo account
               </button>
             </div>
           </div>

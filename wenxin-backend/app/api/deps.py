@@ -190,17 +190,10 @@ async def get_current_user_or_guest(
 ) -> Union[User, GuestSession]:
     """Get current authenticated user or create guest session"""
     
-    # Debug logging
-    print(f"[DEBUG] get_current_user_or_guest called!")
-    print(f"[DEBUG] Request headers: {dict(request.headers)}")
-    print(f"[DEBUG] Request method: {request.method}")
-    print(f"[DEBUG] Request URL: {request.url}")
-    
     # Try to get token from Authorization header
     auth_header = request.headers.get("authorization") or request.headers.get("Authorization")
     if auth_header and auth_header.startswith("Bearer "):
         token = auth_header[7:]  # Remove "Bearer " prefix
-        print(f"[DEBUG] Found Bearer token: {token[:20] if len(token) > 20 else token}...")
         try:
             payload = jwt.decode(
                 token,
@@ -215,17 +208,15 @@ async def get_current_user_or_guest(
                 )
                 user = result.scalar_one_or_none()
                 if user and user.is_active:
-                    print(f"[DEBUG] Authenticated user: {user.username}")
                     return user
-        except JWTError as e:
-            print(f"[DEBUG] JWT decode error: {e}")
-    
+        except JWTError:
+            pass  # Fall through to guest session
+
     # Create or get guest session
     guest_id = request.headers.get("x-guest-id") or request.headers.get("X-Guest-ID")
     if not guest_id:
         guest_id = str(uuid.uuid4())
-    
-    print(f"[DEBUG] Creating guest session: {guest_id}")
+
     return GuestSession(guest_id)
 
 

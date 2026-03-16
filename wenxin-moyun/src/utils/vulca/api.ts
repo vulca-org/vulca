@@ -123,7 +123,7 @@ const vulcaApi = axios.create({
 // Request interceptor for auth token
 vulcaApi.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem('access_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -145,7 +145,7 @@ vulcaApi.interceptors.response.use(
     
     // Handle 401 Unauthorized
     if (error.response?.status === 401) {
-      localStorage.removeItem('authToken');
+      localStorage.removeItem('access_token');
       // Don't redirect if already on login page
       if (!window.location.pathname.includes('/login')) {
         window.location.href = '/login';

@@ -201,7 +201,7 @@ declare const __APP_VERSION__: string;
 declare const __BUILD_TIME__: string;
 const CACHE_VERSION = `${__APP_VERSION__}-${__BUILD_TIME__?.slice(0, 10) || 'dev'}`;
 const VERSION_KEY = 'cache_version';
-const EXPECTED_MODEL_COUNT = 28; // Expected number of real models
+const EXPECTED_MODEL_COUNT = 42; // Expected number of real models (init_db.py)
 
 type ApiQueryParams = Record<string, string | number | boolean | null | undefined>;
 

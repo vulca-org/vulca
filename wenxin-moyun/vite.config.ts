@@ -30,11 +30,8 @@ export default defineConfig(({ command }) => ({
     }),
   ].filter(Boolean),
 
-  // Set base URL for production deployment to Cloud Storage
-  // Using 'command' parameter instead of process.env.NODE_ENV for Vite best practices
-  base: command === 'build'
-    ? './'
-    : '/',
+  // Always use absolute base URL — required for BrowserRouter + Firebase Hosting
+  base: '/',
   
   // Vite cache optimization for Windows compatibility
   cacheDir: '.vite',

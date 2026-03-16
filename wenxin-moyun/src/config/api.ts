@@ -5,7 +5,8 @@
  * Update PRODUCTION_API_URL here when migrating to a new backend host.
  */
 
-const PRODUCTION_API_URL = import.meta.env.VITE_API_BASE_URL || 'https://vulcaart.art/api';
+// Fallback must point to Cloud Run backend, NOT the Firebase frontend domain
+const PRODUCTION_API_URL = import.meta.env.VITE_API_BASE_URL || 'https://wenxin-moyun-api-229980166599.asia-east1.run.app';
 
 // Detect environment:
 // 1. Local app mode: served from backend (localhost but NOT Vite dev ports)
