@@ -3,7 +3,7 @@
 This module provides a convenience factory to build a FallbackProvider
 from a list of provider names.
 
-Default Draft fallback chain: nb2 → koala → diffusers → mock
+Default Draft fallback chain: nb2 → diffusers → mock
 """
 
 from __future__ import annotations
@@ -27,7 +27,7 @@ _PROVIDER_REGISTRY: dict[str, type[AbstractProvider]] = {
 }
 
 # Default Draft generation fallback order (M0: nb2 replaces together_flux)
-DEFAULT_DRAFT_FALLBACK = ["nb2", "koala", "diffusers", "mock"]
+DEFAULT_DRAFT_FALLBACK = ["nb2", "diffusers", "mock"]
 
 
 def build_fallback_provider(

@@ -48,7 +48,7 @@ npm run dev:clean       # Clear cache and start dev server
 npm run dev:fresh       # Complete cache reset and start
 npm run cache:clear     # Clear all caches (manual)
 
-# Playwright E2E Testing (132 test cases)
+# Playwright E2E Testing (95 tests, 17 spec files)
 npm run test:e2e               # Run all tests headless
 npm run test:e2e:ui            # Interactive test UI
 npm run test:e2e:debug         # Debug mode step-by-step
@@ -257,7 +257,7 @@ For production (Supabase), the CI/CD pipeline runs this automatically via GitHub
 ## Deployment Pipeline
 
 ### GitHub Actions Workflow (.github/workflows/deploy-gcp.yml)
-1. **Test Phase**: Frontend build, backend tests, Playwright E2E (132 tests)
+1. **Test Phase**: Frontend build, backend tests (1076+, 60 files), Playwright E2E (95 tests, 17 specs)
 2. **Database Init**: Runs `init_db.py` against Supabase
 3. **Backend Deploy**: Docker build → Artifact Registry → Cloud Run
 4. **Frontend Deploy**: Vite build → Firebase Hosting
@@ -277,7 +277,8 @@ wenxin-backend/app/prototype/
 ├── digestion/           # ContextEvolver, FeatureExtractor, Clusterer, Distiller
 ├── feedback/            # FeedbackStore + sync_from_sessions
 ├── intent/              # IntentAgent, SkillSelector, MetaOrchestrator
-├── orchestrator/        # PipelineOrchestrator (Scout→Draft→Critic→Queen loop)
+├── graph/               # GraphOrchestrator (LangGraph, PRODUCTION default since Phase 5D)
+├── orchestrator/        # PipelineOrchestrator (legacy, deprecated)
 ├── pipeline/            # Pipeline types + fallback chain
 ├── session/             # SessionStore + SessionDigest (JSONL-backed)
 ├── skills/              # Skill marketplace, executors, discussion
@@ -321,6 +322,57 @@ Key files:
 - `app/prototype/media/sub_stage_executor.py` — Sub-stage runtime
 
 Sub-stages are disabled by default (`enable_sub_stages=False`).
+
+## Node Editor (Phase 5, 95% complete)
+
+Visual pipeline editor with 30 nodeTypes, 21 DataType, and 6 editor hooks.
+
+### Editor Architecture
+```
+wenxin-moyun/src/components/prototype/editor/
+├── PipelineEditor.tsx        # Main editor canvas (ReactFlow)
+├── nodes/                    # 30 custom node types
+│   ├── AgentNodes (scout, draft, critic, queen)
+│   ├── DataNodes (input, output, merge, filter)
+│   ├── SkillNode             # Skill marketplace integration
+│   ├── SubStageNode          # Sub-stage expansion
+│   └── CustomNode            # User-defined nodes
+├── edges/                    # TypedEdge with DataType colors
+├── hooks/                    # useEditorState, useNodeSelection, etc.
+├── panels/                   # Inspector, SkillBrowser, TemplateManager
+└── utils/                    # Validation, topology extraction
+```
+
+### Key Features
+- **Socket-based connections**: 21 DataType with color coding
+- **15 keyboard shortcuts**: Ctrl+Z/Y undo/redo, Del delete, Ctrl+A select all
+- **Inline preview**: Image/text preview in nodes
+- **Sub-stage expansion**: Expand draft node to show mood_palette → final_render
+- **Mute/Bypass**: Per-node mute (skip) and bypass (pass-through) runtime controls
+- **Skill drag-and-drop**: Drag skills from browser, auto-connects to nearest node
+
+## Digestion System (Phase 5, closed-loop verified)
+
+Cultural emergence pipeline: sessions → patterns → weight evolution → agent insights.
+
+### Pipeline
+```
+SessionStore → DigestAggregator → PatternDetector → PreferenceLearner
+     ↓               ↓                  ↓                   ↓
+  sessions      aggregated stats    patterns         user preferences
+     └──────────────────────────┬──────────────────────────────┘
+                                ↓
+                         ContextEvolver
+                         ├── Weight adjustment (±0.05 guardrail)
+                         ├── LLM insights (agent_insights, tradition_insights)
+                         ├── Queen strategy evolution
+                         └── evolution_log.jsonl audit trail
+```
+
+### Verified Results
+- 112 emerged cultures, 203+ evolutions
+- 3 new cultural traditions emerged from 20 seed sessions
+- Agent insights updated and injected into system prompts
 
 ## Academic Paper Workflow
 

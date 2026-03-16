@@ -29,10 +29,19 @@ langchain-openai==0.0.5
 transformers==4.37.0
 torch==2.1.2
 sentence-transformers==2.2.2
-openai==1.99.9
+openai>=1.99.0
 google-generativeai==0.5.4
 huggingface-hub==0.23.0
 anthropic==0.64.0
+
+# GraphOrchestrator dependencies (Phase 5D)
+langgraph==0.2.76
+langgraph-checkpoint==2.0.26
+langfuse==2.60.10
+google-genai==1.21.1
+litellm==1.81.9
+PyYAML>=6.0
+Pillow>=10.0
 
 # Vector Database
 qdrant-client==1.7.0

@@ -279,8 +279,8 @@ class ContextEvolver:
             sessions_analyzed=session_count,
         )
 
-        # Audit log
-        if actions:
+        # Audit log — always log when context was saved (not just when actions exist)
+        if actions or has_new_data:
             self._log_evolution(result)
 
         return result

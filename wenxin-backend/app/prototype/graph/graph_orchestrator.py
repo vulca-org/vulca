@@ -33,6 +33,7 @@ from app.prototype.checkpoints.pipeline_checkpoint import (
     save_pipeline_stage,
 )
 from app.prototype.cultural_pipelines.dynamic_weights import compute_dynamic_weights
+from app.prototype.graph.node_runtime import NodeRuntimeManager
 from app.prototype.graph.pipeline_graph import build_default_graph
 from app.prototype.graph.state import PipelineState, make_initial_state
 from app.prototype.orchestrator.events import EventType, PipelineEvent
@@ -125,10 +126,16 @@ class GraphOrchestrator:
         # Compiled graph instances per task (for HITL resume)
         self._graphs: dict[str, Any] = {}
         self._configs: dict[str, dict] = {}
+        # Node runtime managers per task (mute/bypass/expand)
+        self._node_runtimes: dict[str, NodeRuntimeManager] = {}
 
     def get_run_state(self, task_id: str) -> RunState | None:
         """Get the RunState for an active run."""
         return self._runs.get(task_id)
+
+    def set_node_runtime(self, task_id: str, manager: NodeRuntimeManager) -> None:
+        """Attach a NodeRuntimeManager for mute/bypass checks during execution."""
+        self._node_runtimes[task_id] = manager
 
     def run_stream(self, pipeline_input: PipelineInput) -> Iterator[PipelineEvent]:
         """Execute pipeline as an event stream, compatible with SSE routes.
@@ -236,11 +243,35 @@ class GraphOrchestrator:
 
             # Stream through graph nodes
             seen_events = 0
+            nrt = self._node_runtimes.get(task_id)
             for chunk in compiled.stream(initial_state, config=config):
                 # LangGraph stream yields: {node_name: state_update}
                 for node_name, state_update in chunk.items():
                     if node_name == "__end__":
                         continue
+
+                    # ── Mute/Bypass runtime checks ─────────────────────
+                    if nrt is not None:
+                        if nrt.is_muted(node_name):
+                            logger.info("Node '%s' is muted — skipping effects", node_name)
+                            yield PipelineEvent(
+                                event_type=EventType.STAGE_STARTED,
+                                stage=node_name,
+                                round_num=0,
+                                payload={"muted": True},
+                                timestamp_ms=int((time.monotonic() - t0) * 1000),
+                            )
+                            continue
+                        if nrt.is_bypassed(node_name):
+                            logger.info("Node '%s' is bypassed — pass-through", node_name)
+                            yield PipelineEvent(
+                                event_type=EventType.STAGE_STARTED,
+                                stage=node_name,
+                                round_num=0,
+                                payload={"bypassed": True},
+                                timestamp_ms=int((time.monotonic() - t0) * 1000),
+                            )
+                            continue
 
                     # Update run_state for API queries
                     run_state.current_stage = node_name
@@ -381,9 +412,10 @@ class GraphOrchestrator:
                     self._langfuse.flush()
                 except Exception:
                     pass
-            # Cleanup graphs/configs
+            # Cleanup graphs/configs/runtimes
             self._graphs.pop(task_id, None)
             self._configs.pop(task_id, None)
+            self._node_runtimes.pop(task_id, None)
 
     # ------------------------------------------------------------------
     # Dynamic weights integration

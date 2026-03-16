@@ -1,8 +1,8 @@
 """LangGraph-based pipeline execution engine (**experimental**).
 
 Orchestrator Architecture Decision (Route B+, 2026-03-10):
-Status: EXPERIMENTAL — not used in production API routes by default.
-Production orchestrator: app.prototype.orchestrator.PipelineOrchestrator
+Status: PRODUCTION — default orchestrator since Phase 5D (083728c).
+Legacy orchestrator: app.prototype.orchestrator.PipelineOrchestrator
 
 This package provides a composable, graph-based alternative to the
 monolithic PipelineOrchestrator, with native support for multi-stage

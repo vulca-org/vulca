@@ -687,8 +687,9 @@ export default function PipelineEditor({
           ? { x: e.clientX - 200, y: e.clientY - 100 }
           : { x: e.clientX, y: e.clientY };
 
+        const newNodeId = `skill-${Date.now()}`;
         const newNode: Node = {
-          id: `skill-${Date.now()}`,
+          id: newNodeId,
           type: 'skill',
           position,
           data: {
@@ -698,11 +699,38 @@ export default function PipelineEditor({
           },
         };
         setNodes((prev) => [...prev, newNode as Node<AgentNodeData>]);
+
+        // Auto-connect: prefer selected node, else nearest node within 200px
+        const selectedNodes = nodes.filter((n) => n.selected);
+        let sourceNode: Node | null = selectedNodes[0] ?? null;
+        if (!sourceNode && nodes.length > 0) {
+          let minDist = Infinity;
+          for (const n of nodes) {
+            const dist = Math.hypot(n.position.x - position.x, n.position.y - position.y);
+            if (dist < minDist) {
+              minDist = dist;
+              sourceNode = n;
+            }
+          }
+          if (minDist > 200) sourceNode = null;
+        }
+        if (sourceNode) {
+          setEdges((prev) => [
+            ...prev,
+            {
+              id: `${sourceNode!.id}->${newNodeId}`,
+              source: sourceNode!.id,
+              target: newNodeId,
+              type: 'typed',
+              markerEnd: { type: MarkerType.ArrowClosed, width: 16, height: 16 },
+            },
+          ]);
+        }
       } catch {
         // Invalid drag data
       }
     },
-    [setNodes],
+    [setNodes, setEdges, nodes],
   );
 
   const handleDragOver = useCallback((e: React.DragEvent) => {

@@ -103,7 +103,15 @@ export default function PrototypePage() {
         if (res.ok) {
           setEvaluateResult(await res.json());
           setPlaygroundMode('run');
+        } else {
+          console.warn(`[Canvas] /create returned ${res.status}`);
+          setEvaluateResult({ error: `Server error (${res.status})`, scores: null, summary: 'Evaluation unavailable — backend returned an error.' });
+          setPlaygroundMode('run');
         }
+      } catch (err) {
+        console.warn('[Canvas] Backend unavailable:', err);
+        setEvaluateResult({ error: 'offline', scores: null, summary: 'Backend unavailable — running in offline mode.' });
+        setPlaygroundMode('run');
       } finally {
         setEvaluateLoading(false);
       }

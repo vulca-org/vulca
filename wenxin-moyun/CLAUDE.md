@@ -75,6 +75,20 @@ Layout (wraps all pages with Header/Footer)
             └── Adapter Layer (ChineseButton → IOSButton compatibility)
        └── Feature Components (evaluation/, auth/, charts/)
             └── Legacy Components (being phased out)
+       └── Prototype Editor (src/components/prototype/editor/)
+            ├── PipelineEditor.tsx          # Main canvas (ReactFlow)
+            ├── AgentNode.tsx               # Scout/Draft/Critic/Queen nodes
+            ├── SkillNode.tsx + SkillBrowser.tsx  # Skill marketplace
+            ├── SubStageNode.tsx            # Sub-stage expansion
+            ├── TypedEdge.tsx + TypedHandle.tsx  # 21 DataType connections
+            ├── inputNodes/ (7)             # Sketch, Reference, Mask, Text, Script, Model, Audio
+            ├── processingNodes/ (7)        # Style, Color, Composition, Upscale, Depth, Edge, Element
+            ├── flowNodes/ (5)              # IfElse, Loop, Merge, Split, Gate
+            ├── outputNodes/ (4)            # Save, Gallery, Export, Compare
+            ├── inlinePreviews/ (3)         # Draft, Critic, Queen inline views
+            ├── FrameNode, RerouteNode, StickyNote, ReportNode  # Utility nodes
+            ├── CanvasToolbar, NodeSearchPopup, EvolutionBadge  # UI panels
+            └── NodeParamPanel, TemplateGallery, TraditionWeightGrid  # Config panels
 ```
 
 ## iOS Component System

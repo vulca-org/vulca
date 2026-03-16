@@ -211,7 +211,7 @@ export default function RunConfigForm({ onSubmit, disabled, initialValues }: Pro
     fetch(`${API_PREFIX}/digestion/status`)
       .then(res => (res.ok ? res.json() : null))
       .then(data => {
-        if (data?.cultures) {
+        if (data?.cultures && typeof data.cultures === 'object' && !Array.isArray(data.cultures)) {
           const concepts = (Object.values(data.cultures) as Record<string, unknown>[]).map((c) => ({
             name: (c.name as string) || '',
             description: (c.description as string) || '',
