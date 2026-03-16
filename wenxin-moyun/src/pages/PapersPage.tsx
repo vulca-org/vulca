@@ -54,7 +54,7 @@ const papers: Paper[] = [
     abstract: `We introduce VULCA—the Vision-Understanding and Language-based Cultural Adaptability Framework—a structured evaluation and enhancement framework for assessing VLMs in culturally situated tasks. VULCA combines three core components: (1) a multi-dimensional human expert benchmark (MHEB) constructed from 163 art commentaries annotated across five cultural capability dimensions; (2) a persona-guided recontextualization mechanism using eight interpretive personas and a domain-specific knowledge base; and (3) a joint evaluation pipeline integrating vector-space semantic alignment with rubric-based capability scoring. We demonstrate over 20% improvement in symbolic reasoning and over 30% improvement in argumentative coherence on Gemini 2.5 Pro using our proposed method.`,
     doi: '10.18653/v1/2025.findings-emnlp.103',
     arxiv: '2509.23208',
-    github: 'https://github.com/yha9806/EMNLP2025-VULCA',
+    github: 'https://github.com/vulca-org/vulca',
     demo: 'https://vulcaart.art/#/vulca',
     bibtexKey: 'yu2025vulca',
     tags: ['Framework', 'Multimodal', 'Cultural AI', 'Evaluation'],
@@ -68,7 +68,7 @@ const papers: Paper[] = [
     year: 2026,
     abstract: `We present VULCA-Bench, a multicultural art-critique benchmark containing 7,410 matched image-critique pairs spanning eight cultural traditions with Chinese-English bilingual coverage. The benchmark is operationalized through a five-layer framework (L1–L5) spanning 225 culture-specific dimensions that preserve Cultural Symmetry—equal methodological treatment across cultures regardless of sample size. We formalize the Cultural Symmetry Principle, which enforces schema and protocol parity across cultures. Pilot experiments show that VULCA-Bench exposes systematic failures in higher-layer cultural reasoning (L3–L5) not captured by standard VLM benchmarks. The complete dataset is available under CC BY 4.0 license.`,
     arxiv: '2601.07986',
-    github: 'https://github.com/yha9806/EMNLP2025-VULCA',
+    github: 'https://github.com/vulca-org/vulca',
     bibtexKey: 'yu2026vulcabench',
     tags: ['Dataset', 'Benchmark', 'Multilingual', 'Cultural Symmetry'],
     featured: true,
@@ -92,7 +92,7 @@ const papers: Paper[] = [
     year: 2025,
     abstract: `Vision-Language Models often appear culturally competent but rely on superficial pattern matching rather than genuine cultural understanding. We introduce a diagnostic framework to probe VLM reasoning on fire-themed cultural imagery through both classification and explanation analysis. Testing 11 models (including GPT-4o, Claude 3.5/3.7/4, Qwen2.5-VL, Aya Vision) on Western festivals, non-Western traditions, and emergency scenes reveals systematic biases: models correctly identify prominent Western festivals but struggle with underrepresented cultural events, frequently offering vague labels or dangerously misclassifying emergencies as celebrations.`,
     arxiv: '2509.23311',
-    github: 'https://github.com/yha9806/EMNLP2025-VULCA',
+    github: 'https://github.com/vulca-org/vulca',
     bibtexKey: 'yu2025firesymbols',
     tags: ['Bias Analysis', 'VLM', 'Cultural Reasoning', 'Diagnostics'],
   },
@@ -150,7 +150,7 @@ const PapersPage: React.FC = () => {
           lastUpdated={VULCA_VERSION.lastUpdated}
           license="Academic Use"
           doi="10.18653/v1/2025.findings-emnlp.103"
-          github="https://github.com/yha9806/EMNLP2025-VULCA"
+          github="https://github.com/vulca-org/vulca"
         />
       </section>
 

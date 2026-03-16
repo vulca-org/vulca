@@ -59,13 +59,13 @@ const footerLinks = {
     title: 'Resources',
     links: [
       { name: 'Research', href: '/research' },
-      { name: 'GitHub', href: 'https://github.com/yha9806/EMNLP2025-VULCA', external: true },
+      { name: 'GitHub', href: 'https://github.com/vulca-org/vulca', external: true },
     ]
   }
 };
 
 const socialLinks = [
-  { name: 'GitHub', icon: Github, href: 'https://github.com/yha9806/EMNLP2025-VULCA' },
+  { name: 'GitHub', icon: Github, href: 'https://github.com/vulca-org/vulca' },
   { name: 'Twitter', icon: Twitter, href: 'https://twitter.com/vulca_ai' },
   { name: 'LinkedIn', icon: Linkedin, href: 'https://linkedin.com/company/vulca-ai' },
   { name: 'Email', icon: Mail, href: 'mailto:hello@vulcaart.art' },
@@ -244,7 +244,7 @@ export default function Footer() {
               <p className="flex items-center gap-1">
                 Made with <Heart className="w-4 h-4 text-red-500" /> by VULCA Team
               </p>
-              <p className="mt-1">© 2025 VULCA. All rights reserved.</p>
+              <p className="mt-1">© 2025-2026 VULCA. All rights reserved.</p>
             </div>
 
             {/* Social Links */}

@@ -151,7 +151,7 @@ async function getStats() {
           license="CC BY-NC 4.0"
           doi="10.5281/zenodo.12345678"
           algorithm={`VULCA Annotation Pipeline v${VULCA_VERSION.protocol}`}
-          github="https://github.com/yha9806/EMNLP2025-VULCA"
+          github="https://github.com/vulca-org/vulca"
         />
       </section>
 

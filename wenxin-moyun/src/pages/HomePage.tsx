@@ -111,7 +111,7 @@ function OpenSourceInstall() {
           </IOSButton>
         </Link>
         <a
-          href="https://github.com/yha9806/vulca"
+          href="https://github.com/vulca-org/vulca"
           target="_blank"
           rel="noopener noreferrer"
         >

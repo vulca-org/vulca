@@ -88,7 +88,7 @@ const MethodologyPage: React.FC = () => {
           license="Apache 2.0"
           doi="10.18653/v1/2025.findings-emnlp.103"
           algorithm={`VULCA Core v${VULCA_VERSION.protocol}`}
-          github="https://github.com/yha9806/EMNLP2025-VULCA"
+          github="https://github.com/vulca-org/vulca"
         />
       </section>
 

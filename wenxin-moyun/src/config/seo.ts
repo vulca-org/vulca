@@ -168,7 +168,7 @@ export function getOrganizationStructuredData(): object {
     logo: 'https://vulcaart.art/logo.png',
     description: 'Cultural AI Evaluation Platform',
     sameAs: [
-      'https://github.com/yha9806/EMNLP2025-VULCA',
+      'https://github.com/vulca-org/vulca',
       'https://twitter.com/vulca_ai',
     ],
   };
