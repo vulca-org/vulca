@@ -40,6 +40,7 @@ yarn-error.log*
 .env.production.local
 .env.development.local
 .env.test.local
+.claude/settings.local.json
 
 # IDE
 .vscode/
