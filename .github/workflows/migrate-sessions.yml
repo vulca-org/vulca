@@ -1,0 +1,71 @@
+# One-time migration: import sessions.jsonl into Supabase PostgreSQL
+# Manual trigger only — run once then delete this workflow
+
+name: Migrate Sessions to DB
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "yes" to run migration'
+        required: true
+        default: 'no'
+
+env:
+  PROJECT_ID: wenxin-moyun-prod-new
+  REGION: asia-east1
+
+jobs:
+  migrate:
+    name: Import Sessions
+    runs-on: ubuntu-latest
+    if: github.event.inputs.confirm == 'yes'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        working-directory: wenxin-backend
+        run: |
+          pip install -q sqlalchemy psycopg2-binary python-jose passlib python-dotenv pyyaml
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          project_id: ${{ env.PROJECT_ID }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Get database URL
+        id: db
+        run: |
+          DB_URL=$(gcloud secrets versions access latest --secret="supabase-database-url" --project=${{ env.PROJECT_ID }})
+          echo "::add-mask::$DB_URL"
+          echo "url=$DB_URL" >> $GITHUB_OUTPUT
+
+      - name: Run migration
+        working-directory: wenxin-backend
+        run: |
+          python migrate_sessions_to_db.py
+        env:
+          DATABASE_URL: ${{ steps.db.outputs.url }}
+          SECRET_KEY: migration-temp-key-not-used-for-auth
+          ENVIRONMENT: production
+
+      - name: Verify migration
+        run: |
+          SERVICE_URL=$(gcloud run services describe wenxin-moyun-api --region ${{ env.REGION }} --format 'value(status.url)')
+          GALLERY_COUNT=$(curl -s "$SERVICE_URL/api/v1/prototype/gallery?limit=1" | python3 -c "import sys,json; print(json.load(sys.stdin).get('total', 0))")
+          echo "Gallery items after migration: $GALLERY_COUNT"
+          if [ "$GALLERY_COUNT" -gt 100 ]; then
+            echo "Migration successful!"
+          else
+            echo "WARNING: Only $GALLERY_COUNT items found, expected 1000+"
+          fi
