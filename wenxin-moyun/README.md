@@ -109,5 +109,5 @@ MIT
 
 ## Contact
 
-- GitHub: [EMNLP2025-VULCA](https://github.com/yha9806/EMNLP2025-VULCA)
+- GitHub: [EMNLP2025-VULCA](https://github.com/vulca-org/vulca)
 - Email: hello@vulca.ai

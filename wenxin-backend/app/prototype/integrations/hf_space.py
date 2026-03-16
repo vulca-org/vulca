@@ -257,7 +257,7 @@ def build_app():
             # 🎨 VULCA — Cultural Art Evaluator
             Upload an image to evaluate its cultural authenticity across 5 dimensions (L1-L5).
 
-            **[Full Platform](https://vulcaart.art)** | **[GitHub](https://github.com/yha9806/website)** | **[Paper (EMNLP 2025)](https://arxiv.org/abs/2601.07986)**
+            **[Full Platform](https://vulcaart.art)** | **[GitHub](https://github.com/vulca-org/vulca)** | **[Paper (EMNLP 2025)](https://arxiv.org/abs/2601.07986)**
             """
         )
 

@@ -30,7 +30,7 @@ print(result.dimensions)  # L1-L5 scores
 ### Development Setup
 
 ```bash
-git clone https://github.com/yha9806/website.git
+git clone https://github.com/vulca-org/vulca.git
 cd website/wenxin-backend
 pip install -e ".[app,dev]"
 vulca serve --port 8001
