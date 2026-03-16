@@ -15,18 +15,18 @@
       "philosophical_aesthetic": 0.15
     },
     "chinese_xieyi": {
-      "visual_perception": 0.2222471827784939,
-      "technical_analysis": 0.09460615037791899,
-      "cultural_context": 0.3168533331564131,
-      "critical_interpretation": 0.12614153383722532,
-      "philosophical_aesthetic": 0.24015179984994878
+      "visual_perception": 0.23547350740808942,
+      "technical_analysis": 0.09010109559801809,
+      "cultural_context": 0.32557460300610774,
+      "critical_interpretation": 0.12013479413069077,
+      "philosophical_aesthetic": 0.22871599985709407
     },
     "default": {
-      "visual_perception": 0.23053792387788033,
-      "technical_analysis": 0.1121404466786759,
-      "cultural_context": 0.28660814721721845,
-      "critical_interpretation": 0.1121404466786759,
-      "philosophical_aesthetic": 0.2585730355475494
+      "visual_perception": 0.23770969663058636,
+      "technical_analysis": 0.1043166945848148,
+      "cultural_context": 0.2898680439229939,
+      "critical_interpretation": 0.1043166945848148,
+      "philosophical_aesthetic": 0.26378887027679015
     },
     "islamic_geometric": {
       "visual_perception": 0.25,
@@ -65,7 +65,7 @@
     }
   },
   "version": 2,
-  "evolutions": 218,
+  "evolutions": 219,
   "cultures": {
     "chinese_xieyi_l5_emphasis": {
       "name": "chinese_xieyi_l5_emphasis",
@@ -141,21 +141,21 @@
         "High tradition_specificity"
       ],
       "l_focus": {
-        "risk_level": 0.0,
-        "l4_emphasis": 0.2356,
-        "cultural_depth": 0.7625,
-        "dimension_variance": 0.015,
         "l5_emphasis": 0.7318,
         "tradition_specificity": 0.8,
+        "l4_emphasis": 0.2356,
+        "dimension_variance": 0.015,
+        "cultural_depth": 0.7625,
+        "risk_level": 0.0,
         "avg_score": 0.763
       },
       "weights": {
-        "risk_level": 0.0,
-        "l4_emphasis": 0.2356,
-        "cultural_depth": 0.7625,
-        "dimension_variance": 0.015,
         "l5_emphasis": 0.7318,
         "tradition_specificity": 0.8,
+        "l4_emphasis": 0.2356,
+        "dimension_variance": 0.015,
+        "cultural_depth": 0.7625,
+        "risk_level": 0.0,
         "avg_score": 0.763
       },
       "reference_sessions": [
@@ -164,7 +164,7 @@
         "seed-015",
         "api-14ce443b"
       ],
-      "emerged_at": 1773669291.4903007,
+      "emerged_at": 1773669575.822346,
       "confidence": 0.2
     },
     "cross_african_ubuntu+chinese_xieyi+default_l5_emphasis": {
@@ -2353,29 +2353,29 @@
     },
     "chinese_xieyi_l4_emphasis": {
       "name": "chinese_xieyi_l4_emphasis",
-      "description": "Emerged from 701 sessions in chinese_xieyi tradition",
+      "description": "Emerged from 720 sessions in chinese_xieyi tradition",
       "key_principles": [
         "High l4_emphasis"
       ],
       "l_focus": {
-        "risk_level": 0.0007,
-        "l4_emphasis": 0.9608,
-        "generation_efficiency": 0.0038,
-        "cultural_depth": 0.6801,
-        "dimension_variance": 0.1559,
-        "l5_emphasis": 0.7244,
+        "l5_emphasis": 0.7225,
         "tradition_specificity": 0.8,
-        "avg_score": 0.7501
+        "l4_emphasis": 0.9618,
+        "generation_efficiency": 0.0037,
+        "dimension_variance": 0.1565,
+        "cultural_depth": 0.6793,
+        "risk_level": 0.0007,
+        "avg_score": 0.7494
       },
       "weights": {
-        "risk_level": 0.0007,
-        "l4_emphasis": 0.9608,
-        "generation_efficiency": 0.0038,
-        "cultural_depth": 0.6801,
-        "dimension_variance": 0.1559,
-        "l5_emphasis": 0.7244,
+        "l5_emphasis": 0.7225,
         "tradition_specificity": 0.8,
-        "avg_score": 0.7501
+        "l4_emphasis": 0.9618,
+        "generation_efficiency": 0.0037,
+        "dimension_variance": 0.1565,
+        "cultural_depth": 0.6793,
+        "risk_level": 0.0007,
+        "avg_score": 0.7494
       },
       "reference_sessions": [
         "seed-001",
@@ -2389,7 +2389,7 @@
         "api-1b355515",
         "api-87cf832e"
       ],
-      "emerged_at": 1773669288.8764715,
+      "emerged_at": 1773669573.1993353,
       "confidence": 1.0
     },
     "spirit_of_xieyi_ink": {
@@ -3751,28 +3751,28 @@
     },
     "default_l4_emphasis": {
       "name": "default_l4_emphasis",
-      "description": "Emerged from 76 sessions in default tradition",
+      "description": "Emerged from 78 sessions in default tradition",
       "key_principles": [
         "High l4_emphasis"
       ],
       "l_focus": {
-        "risk_level": 0.0,
-        "l4_emphasis": 0.9451,
-        "generation_efficiency": 0.0088,
-        "cultural_depth": 0.7434,
-        "dimension_variance": 0.1008,
-        "l5_emphasis": 0.8145,
+        "l5_emphasis": 0.8132,
         "tradition_specificity": 0.3,
+        "l4_emphasis": 0.9466,
+        "generation_efficiency": 0.0086,
+        "dimension_variance": 0.101,
+        "cultural_depth": 0.7434,
+        "risk_level": 0.0,
         "avg_score": 0.7935
       },
       "weights": {
-        "risk_level": 0.0,
-        "l4_emphasis": 0.9451,
-        "generation_efficiency": 0.0088,
-        "cultural_depth": 0.7434,
-        "dimension_variance": 0.1008,
-        "l5_emphasis": 0.8145,
+        "l5_emphasis": 0.8132,
         "tradition_specificity": 0.3,
+        "l4_emphasis": 0.9466,
+        "generation_efficiency": 0.0086,
+        "dimension_variance": 0.101,
+        "cultural_depth": 0.7434,
+        "risk_level": 0.0,
         "avg_score": 0.7935
       },
       "reference_sessions": [
@@ -3787,7 +3787,7 @@
         "api-e2a32d0d",
         "api-72b6d52a"
       ],
-      "emerged_at": 1773669296.2008507,
+      "emerged_at": 1773669580.4566672,
       "confidence": 1.0
     },
     "xieyi_ink_zenith": {
@@ -3899,23 +3899,23 @@
         "High l5_emphasis"
       ],
       "l_focus": {
-        "risk_level": 0.0,
-        "l4_emphasis": 0.6188,
-        "generation_efficiency": 0.3333,
-        "cultural_depth": 0.75,
-        "dimension_variance": 0.0203,
         "l5_emphasis": 0.8686,
         "tradition_specificity": 0.8,
+        "l4_emphasis": 0.6188,
+        "generation_efficiency": 0.3333,
+        "dimension_variance": 0.0203,
+        "cultural_depth": 0.75,
+        "risk_level": 0.0,
         "avg_score": 0.8293
       },
       "weights": {
-        "risk_level": 0.0,
-        "l4_emphasis": 0.6188,
-        "generation_efficiency": 0.3333,
-        "cultural_depth": 0.75,
-        "dimension_variance": 0.0203,
         "l5_emphasis": 0.8686,
         "tradition_specificity": 0.8,
+        "l4_emphasis": 0.6188,
+        "generation_efficiency": 0.3333,
+        "dimension_variance": 0.0203,
+        "cultural_depth": 0.75,
+        "risk_level": 0.0,
         "avg_score": 0.8293
       },
       "reference_sessions": [
@@ -3923,7 +3923,7 @@
         "usr-b78bdc029b3b",
         "usr-c4b3d8441f48"
       ],
-      "emerged_at": 1773669293.822458,
+      "emerged_at": 1773669578.126268,
       "confidence": 0.15
     },
     "japanese_traditional_l5_emphasis": {
@@ -3933,23 +3933,23 @@
         "High l5_emphasis"
       ],
       "l_focus": {
-        "risk_level": 0.0,
-        "l4_emphasis": 0.8837,
-        "generation_efficiency": 0.4467,
-        "cultural_depth": 0.832,
-        "dimension_variance": 0.0482,
         "l5_emphasis": 0.9312,
         "tradition_specificity": 0.8,
+        "l4_emphasis": 0.8837,
+        "generation_efficiency": 0.4467,
+        "dimension_variance": 0.0482,
+        "cultural_depth": 0.832,
+        "risk_level": 0.0,
         "avg_score": 0.8313
       },
       "weights": {
-        "risk_level": 0.0,
-        "l4_emphasis": 0.8837,
-        "generation_efficiency": 0.4467,
-        "cultural_depth": 0.832,
-        "dimension_variance": 0.0482,
         "l5_emphasis": 0.9312,
         "tradition_specificity": 0.8,
+        "l4_emphasis": 0.8837,
+        "generation_efficiency": 0.4467,
+        "dimension_variance": 0.0482,
+        "cultural_depth": 0.832,
+        "risk_level": 0.0,
         "avg_score": 0.8313
       },
       "reference_sessions": [
@@ -3957,34 +3957,34 @@
         "usr-c157e32d5886",
         "usr-ee4c81f021e5"
       ],
-      "emerged_at": 1773669298.652699,
+      "emerged_at": 1773669582.880344,
       "confidence": 0.15
     },
     "cross_Default+african_traditional+african_ubuntu_l4_emphasis": {
       "name": "cross_Default+african_traditional+african_ubuntu_l4_emphasis",
-      "description": "Emerged from 809 sessions spanning Default, african_traditional, african_ubuntu, chinese_gongbi, chinese_xieyi, default, european_renaissance, indian, indian_rasa, islamic, islamic_geometric, japanese, japanese_traditional, japanese_wabi_sabi, korean, korean_dancheong, persian_miniature, south_asian, watercolor, western, western_academic traditions",
+      "description": "Emerged from 830 sessions spanning Default, african_traditional, african_ubuntu, chinese_gongbi, chinese_xieyi, default, european_renaissance, indian, indian_rasa, islamic, islamic_geometric, japanese, japanese_traditional, japanese_wabi_sabi, korean, korean_dancheong, persian_miniature, south_asian, watercolor, western, western_academic traditions",
       "key_principles": [
         "High l4_emphasis"
       ],
       "l_focus": {
-        "risk_level": 0.0019,
-        "l4_emphasis": 0.9458,
-        "generation_efficiency": 0.0132,
-        "cultural_depth": 0.6874,
-        "dimension_variance": 0.1462,
-        "l5_emphasis": 0.7385,
+        "l5_emphasis": 0.7366,
         "tradition_specificity": 0.753,
-        "avg_score": 0.7543
+        "l4_emphasis": 0.9472,
+        "generation_efficiency": 0.0129,
+        "dimension_variance": 0.1468,
+        "cultural_depth": 0.6867,
+        "risk_level": 0.0018,
+        "avg_score": 0.7537
       },
       "weights": {
-        "risk_level": 0.0019,
-        "l4_emphasis": 0.9458,
-        "generation_efficiency": 0.0132,
-        "cultural_depth": 0.6874,
-        "dimension_variance": 0.1462,
-        "l5_emphasis": 0.7385,
+        "l5_emphasis": 0.7366,
         "tradition_specificity": 0.753,
-        "avg_score": 0.7543
+        "l4_emphasis": 0.9472,
+        "generation_efficiency": 0.0129,
+        "dimension_variance": 0.1468,
+        "cultural_depth": 0.6867,
+        "risk_level": 0.0018,
+        "avg_score": 0.7537
       },
       "reference_sessions": [
         "seed-001",
@@ -3998,7 +3998,7 @@
         "seed-009",
         "seed-010"
       ],
-      "emerged_at": 1773669301.4730442,
+      "emerged_at": 1773669585.3407931,
       "confidence": 1.0
     }
   },
@@ -4006,11 +4006,11 @@
     "archetypes": [
       {
         "pattern": "landscape",
-        "avg_score": 0.7551,
-        "count": 659,
+        "avg_score": 0.7541,
+        "count": 678,
         "traditions": [
-          "chinese_xieyi",
-          "default"
+          "default",
+          "chinese_xieyi"
         ],
         "example_prompts": [
           "mountain landscape in ink wash style",
@@ -4020,8 +4020,8 @@
       },
       {
         "pattern": "dong",
-        "avg_score": 0.7548,
-        "count": 656,
+        "avg_score": 0.7539,
+        "count": 675,
         "traditions": [
           "chinese_xieyi"
         ],
@@ -4033,8 +4033,8 @@
       },
       {
         "pattern": "yuan",
-        "avg_score": 0.7548,
-        "count": 656,
+        "avg_score": 0.7539,
+        "count": 675,
         "traditions": [
           "chinese_xieyi"
         ],
@@ -4046,12 +4046,12 @@
       },
       {
         "pattern": "test",
-        "avg_score": 0.8032,
-        "count": 76,
+        "avg_score": 0.8029,
+        "count": 78,
         "traditions": [
+          "default",
           "Default",
-          "chinese_xieyi",
-          "default"
+          "chinese_xieyi"
         ],
         "example_prompts": [
           "test",
@@ -4061,8 +4061,8 @@
       },
       {
         "pattern": "timeout",
-        "avg_score": 0.8059,
-        "count": 37,
+        "avg_score": 0.8056,
+        "count": 38,
         "traditions": [
           "default"
         ],
@@ -4074,8 +4074,8 @@
       },
       {
         "pattern": "subject",
-        "avg_score": 0.8088,
-        "count": 32,
+        "avg_score": 0.8082,
+        "count": 33,
         "traditions": [
           "default"
         ],
@@ -4116,11 +4116,11 @@
         "avg_score": 0.7896,
         "count": 8,
         "traditions": [
-          "japanese_wabi_sabi",
-          "chinese_xieyi",
           "japanese_traditional",
+          "japanese_wabi_sabi",
+          "persian_miniature",
           "indian",
-          "persian_miniature"
+          "chinese_xieyi"
         ],
         "example_prompts": [
           "persian miniature garden scene",
@@ -4133,10 +4133,10 @@
         "avg_score": 0.8049,
         "count": 7,
         "traditions": [
-          "western_academic",
           "indian_rasa",
-          "chinese_xieyi",
-          "korean"
+          "western_academic",
+          "korean",
+          "chinese_xieyi"
         ],
         "example_prompts": [
           "mountain landscape in ink wash style",
@@ -4149,9 +4149,9 @@
         "avg_score": 0.8114,
         "count": 5,
         "traditions": [
-          "japanese_wabi_sabi",
+          "japanese_traditional",
           "chinese_xieyi",
-          "japanese_traditional"
+          "japanese_wabi_sabi"
         ],
         "example_prompts": [
           "zen rock garden composition",
@@ -4164,8 +4164,8 @@
         "avg_score": 0.8385,
         "count": 4,
         "traditions": [
-          "chinese_xieyi",
-          "japanese_traditional"
+          "japanese_traditional",
+          "chinese_xieyi"
         ],
         "example_prompts": [
           "bamboo in wind ink wash",
@@ -4178,8 +4178,8 @@
         "avg_score": 0.8047,
         "count": 3,
         "traditions": [
-          "chinese_xieyi",
-          "default"
+          "default",
+          "chinese_xieyi"
         ],
         "example_prompts": [
           "mountain landscape in ink wash style",
@@ -4193,8 +4193,8 @@
         "count": 3,
         "traditions": [
           "western_academic",
-          "chinese_gongbi",
-          "european_renaissance"
+          "european_renaissance",
+          "chinese_gongbi"
         ],
         "example_prompts": [
           "renaissance portrait with chiaroscuro",
@@ -4207,8 +4207,8 @@
         "avg_score": 0.808,
         "count": 3,
         "traditions": [
-          "chinese_xieyi",
-          "default"
+          "default",
+          "chinese_xieyi"
         ],
         "example_prompts": [
           "lotus pond in misty morning",
@@ -4221,9 +4221,9 @@
         "avg_score": 0.8046,
         "count": 3,
         "traditions": [
+          "japanese_traditional",
           "japanese_wabi_sabi",
-          "chinese_xieyi",
-          "japanese_traditional"
+          "chinese_xieyi"
         ],
         "example_prompts": [
           "lotus pond in misty morning",
@@ -4236,9 +4236,9 @@
         "avg_score": 0.7567,
         "count": 3,
         "traditions": [
-          "japanese_wabi_sabi",
           "western_academic",
-          "western"
+          "western",
+          "japanese_wabi_sabi"
         ],
         "example_prompts": [
           "kintsugi repaired vessel still life",
@@ -4251,9 +4251,9 @@
         "avg_score": 0.7567,
         "count": 3,
         "traditions": [
-          "japanese_wabi_sabi",
           "western_academic",
-          "western"
+          "western",
+          "japanese_wabi_sabi"
         ],
         "example_prompts": [
           "kintsugi repaired vessel still life",
@@ -4296,14 +4296,14 @@
       {
         "cluster_id": "intra-000-000",
         "feature_centroid": {
-          "risk_level": 0.0007,
-          "l4_emphasis": 0.9608,
-          "generation_efficiency": 0.0038,
-          "cultural_depth": 0.6801,
-          "dimension_variance": 0.1559,
-          "l5_emphasis": 0.7244,
+          "l5_emphasis": 0.7225,
           "tradition_specificity": 0.8,
-          "avg_score": 0.7501
+          "l4_emphasis": 0.9618,
+          "generation_efficiency": 0.0037,
+          "dimension_variance": 0.1565,
+          "cultural_depth": 0.6793,
+          "risk_level": 0.0007,
+          "avg_score": 0.7494
         },
         "session_ids": [
           "seed-001",
@@ -5006,21 +5006,40 @@
           "api-ace27515",
           "api-720b080b",
           "api-10be728e",
-          "api-06e55b14"
+          "api-06e55b14",
+          "api-4f335011",
+          "api-4329bde2",
+          "api-bb737324",
+          "api-d831049c",
+          "api-ba112e8b",
+          "api-d8cccc4a",
+          "api-ed66d059",
+          "api-a1d6cb17",
+          "api-3824de84",
+          "api-244e6d66",
+          "api-f033a8c7",
+          "api-ace46dac",
+          "api-67109ca6",
+          "api-a7cb4b9f",
+          "api-869db392",
+          "api-76cba2c0",
+          "api-30dd8157",
+          "api-37247a0b",
+          "api-1ef9713e"
         ],
-        "size": 701,
+        "size": 720,
         "tradition": "chinese_xieyi",
         "source": "intra_tradition"
       },
       {
         "cluster_id": "intra-001-000",
         "feature_centroid": {
-          "risk_level": 0.0,
-          "l4_emphasis": 0.2356,
-          "cultural_depth": 0.7625,
-          "dimension_variance": 0.015,
           "l5_emphasis": 0.7318,
           "tradition_specificity": 0.8,
+          "l4_emphasis": 0.2356,
+          "dimension_variance": 0.015,
+          "cultural_depth": 0.7625,
+          "risk_level": 0.0,
           "avg_score": 0.763
         },
         "session_ids": [
@@ -5036,10 +5055,10 @@
       {
         "cluster_id": "intra-002-000",
         "feature_centroid": {
-          "risk_level": 0.0,
-          "cultural_depth": 0.67,
           "l5_emphasis": 0.9249,
           "tradition_specificity": 0.8,
+          "cultural_depth": 0.67,
+          "risk_level": 0.0,
           "avg_score": 0.713
         },
         "session_ids": [
@@ -5053,13 +5072,13 @@
       {
         "cluster_id": "intra-003-000",
         "feature_centroid": {
-          "risk_level": 0.0,
-          "l4_emphasis": 0.6188,
-          "generation_efficiency": 0.3333,
-          "cultural_depth": 0.75,
-          "dimension_variance": 0.0203,
           "l5_emphasis": 0.8686,
           "tradition_specificity": 0.8,
+          "l4_emphasis": 0.6188,
+          "generation_efficiency": 0.3333,
+          "dimension_variance": 0.0203,
+          "cultural_depth": 0.75,
+          "risk_level": 0.0,
           "avg_score": 0.8293
         },
         "session_ids": [
@@ -5074,13 +5093,13 @@
       {
         "cluster_id": "intra-004-000",
         "feature_centroid": {
-          "risk_level": 0.0,
-          "l4_emphasis": 0.4545,
-          "generation_efficiency": 0.165,
-          "cultural_depth": 0.905,
-          "dimension_variance": 0.02,
           "l5_emphasis": 0.793,
           "tradition_specificity": 0.8,
+          "l4_emphasis": 0.4545,
+          "generation_efficiency": 0.165,
+          "dimension_variance": 0.02,
+          "cultural_depth": 0.905,
+          "risk_level": 0.0,
           "avg_score": 0.789
         },
         "session_ids": [
@@ -5142,13 +5161,13 @@
       {
         "cluster_id": "intra-008-000",
         "feature_centroid": {
-          "risk_level": 0.0,
-          "l4_emphasis": 0.9451,
-          "generation_efficiency": 0.0088,
-          "cultural_depth": 0.7434,
-          "dimension_variance": 0.1008,
-          "l5_emphasis": 0.8145,
+          "l5_emphasis": 0.8132,
           "tradition_specificity": 0.3,
+          "l4_emphasis": 0.9466,
+          "generation_efficiency": 0.0086,
+          "dimension_variance": 0.101,
+          "cultural_depth": 0.7434,
+          "risk_level": 0.0,
           "avg_score": 0.7935
         },
         "session_ids": [
@@ -5227,9 +5246,11 @@
           "api-447ebb75",
           "api-24ec320b",
           "api-ca37fe3a",
-          "api-22f86fc0"
+          "api-22f86fc0",
+          "api-e2b83b00",
+          "api-9dcce3a8"
         ],
-        "size": 76,
+        "size": 78,
         "tradition": "default",
         "source": "intra_tradition"
       },
@@ -5254,13 +5275,13 @@
       {
         "cluster_id": "intra-010-000",
         "feature_centroid": {
-          "risk_level": 0.0,
-          "l4_emphasis": 0.8837,
-          "generation_efficiency": 0.4467,
-          "cultural_depth": 0.832,
-          "dimension_variance": 0.0482,
           "l5_emphasis": 0.9312,
           "tradition_specificity": 0.8,
+          "l4_emphasis": 0.8837,
+          "generation_efficiency": 0.4467,
+          "dimension_variance": 0.0482,
+          "cultural_depth": 0.832,
+          "risk_level": 0.0,
           "avg_score": 0.8313
         },
         "session_ids": [
@@ -5365,13 +5386,13 @@
       {
         "cluster_id": "intra-016-000",
         "feature_centroid": {
-          "risk_level": 0.375,
-          "l4_emphasis": 0.9575,
-          "generation_efficiency": 0.5,
-          "cultural_depth": 0.465,
-          "dimension_variance": 0.0535,
           "l5_emphasis": 0.8644,
           "tradition_specificity": 0.8,
+          "l4_emphasis": 0.9575,
+          "generation_efficiency": 0.5,
+          "dimension_variance": 0.0535,
+          "cultural_depth": 0.465,
+          "risk_level": 0.375,
           "avg_score": 0.524
         },
         "session_ids": [
@@ -5385,13 +5406,13 @@
       {
         "cluster_id": "intra-017-000",
         "feature_centroid": {
-          "risk_level": 0.0,
-          "l4_emphasis": 0.9688,
-          "generation_efficiency": 0.67,
-          "cultural_depth": 0.71,
-          "dimension_variance": 0.042,
           "l5_emphasis": 0.9006,
           "tradition_specificity": 0.8,
+          "l4_emphasis": 0.9688,
+          "generation_efficiency": 0.67,
+          "dimension_variance": 0.042,
+          "cultural_depth": 0.71,
+          "risk_level": 0.0,
           "avg_score": 0.75
         },
         "session_ids": [
@@ -5405,13 +5426,13 @@
       {
         "cluster_id": "intra-018-000",
         "feature_centroid": {
-          "risk_level": 0.0,
-          "l4_emphasis": 0.8955,
-          "generation_efficiency": 0.5,
-          "cultural_depth": 0.85,
-          "dimension_variance": 0.045,
           "l5_emphasis": 0.8681,
           "tradition_specificity": 0.8,
+          "l4_emphasis": 0.8955,
+          "generation_efficiency": 0.5,
+          "dimension_variance": 0.045,
+          "cultural_depth": 0.85,
+          "risk_level": 0.0,
           "avg_score": 0.851
         },
         "session_ids": [
@@ -5425,13 +5446,13 @@
       {
         "cluster_id": "intra-019-000",
         "feature_centroid": {
-          "risk_level": 0.0,
-          "l4_emphasis": 0.9363,
-          "generation_efficiency": 0.335,
-          "cultural_depth": 0.76,
-          "dimension_variance": 0.035,
           "l5_emphasis": 0.8792,
           "tradition_specificity": 0.8,
+          "l4_emphasis": 0.9363,
+          "generation_efficiency": 0.335,
+          "dimension_variance": 0.035,
+          "cultural_depth": 0.76,
+          "risk_level": 0.0,
           "avg_score": 0.769
         },
         "session_ids": [
@@ -5464,14 +5485,14 @@
       {
         "cluster_id": "cross-000",
         "feature_centroid": {
-          "risk_level": 0.0019,
-          "l4_emphasis": 0.9458,
-          "generation_efficiency": 0.0132,
-          "cultural_depth": 0.6874,
-          "dimension_variance": 0.1462,
-          "l5_emphasis": 0.7385,
+          "l5_emphasis": 0.7366,
           "tradition_specificity": 0.753,
-          "avg_score": 0.7543
+          "l4_emphasis": 0.9472,
+          "generation_efficiency": 0.0129,
+          "dimension_variance": 0.1468,
+          "cultural_depth": 0.6867,
+          "risk_level": 0.0018,
+          "avg_score": 0.7537
         },
         "session_ids": [
           "seed-001",
@@ -6282,9 +6303,30 @@
           "api-ace27515",
           "api-720b080b",
           "api-10be728e",
-          "api-06e55b14"
+          "api-06e55b14",
+          "api-4f335011",
+          "api-4329bde2",
+          "api-bb737324",
+          "api-d831049c",
+          "api-ba112e8b",
+          "api-e2b83b00",
+          "api-d8cccc4a",
+          "api-ed66d059",
+          "api-a1d6cb17",
+          "api-3824de84",
+          "api-244e6d66",
+          "api-9dcce3a8",
+          "api-f033a8c7",
+          "api-ace46dac",
+          "api-67109ca6",
+          "api-a7cb4b9f",
+          "api-869db392",
+          "api-76cba2c0",
+          "api-30dd8157",
+          "api-37247a0b",
+          "api-1ef9713e"
         ],
-        "size": 809,
+        "size": 830,
         "tradition": "Default+african_traditional+african_ubuntu+chinese_gongbi+chinese_xieyi+default+european_renaissance+indian+indian_rasa+islamic+islamic_geometric+japanese+japanese_traditional+japanese_wabi_sabi+korean+korean_dancheong+persian_miniature+south_asian+watercolor+western+western_academic",
         "source": "cross_tradition",
         "traditions": [
@@ -6314,47 +6356,94 @@
     ]
   },
   "layer_focus": {
-    "western_academic": {
+    "japanese_traditional": {
       "visual_perception": {
         "focus_points": [
-          "chiaroscuro modeling",
-          "linear perspective",
-          "anatomical proportion"
+          "seasonal motifs",
+          "asymmetric balance",
+          "wabi-sabi textures"
         ],
         "anti_focus": [],
         "session_count": 0
       },
       "technical_analysis": {
         "focus_points": [
-          "oil layering technique",
-          "color theory application",
-          "canvas preparation"
+          "sumi ink gradation",
+          "woodblock layering",
+          "gold leaf application"
         ],
         "anti_focus": [],
         "session_count": 0
       },
       "cultural_context": {
         "focus_points": [
-          "classical tradition",
-          "art historical references",
-          "genre conventions"
+          "mono no aware (物の哀れ)",
+          "Zen simplicity",
+          "seasonal awareness"
         ],
         "anti_focus": [],
         "session_count": 0
       },
       "critical_interpretation": {
         "focus_points": [
-          "iconographic analysis",
-          "formal composition critique"
+          "ma (間) spatial reading",
+          "impermanence as beauty"
         ],
         "anti_focus": [],
         "session_count": 0
       },
       "philosophical_aesthetic": {
         "focus_points": [
-          "mimesis vs. expression",
-          "beauty and sublimity",
-          "artistic genius"
+          "wabi-sabi acceptance",
+          "nature-art continuity",
+          "quiet depth"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      }
+    },
+    "south_asian": {
+      "visual_perception": {
+        "focus_points": [
+          "vivid color saturation",
+          "ornamental density",
+          "narrative composition"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "technical_analysis": {
+        "focus_points": [
+          "miniature painting precision",
+          "natural dye mastery",
+          "gold detailing"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "cultural_context": {
+        "focus_points": [
+          "rasa theory (emotional essence)",
+          "mythological narratives",
+          "devotional art"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "critical_interpretation": {
+        "focus_points": [
+          "rasa identification",
+          "darshan (sacred seeing)",
+          "iconometric rules"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "philosophical_aesthetic": {
+        "focus_points": [
+          "divine beauty manifestation",
+          "cyclical time in art",
+          "sensory transcendence"
         ],
         "anti_focus": [],
         "session_count": 0
@@ -6453,53 +6542,6 @@
         "session_count": 0
       }
     },
-    "chinese_xieyi": {
-      "visual_perception": {
-        "focus_points": [
-          "ink wash gradients",
-          "negative space (留白)",
-          "brush rhythm"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      },
-      "technical_analysis": {
-        "focus_points": [
-          "brushstroke spontaneity",
-          "ink consistency",
-          "rice paper texture"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      },
-      "cultural_context": {
-        "focus_points": [
-          "literati painting tradition",
-          "Daoist nature philosophy",
-          "poem-painting unity"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      },
-      "critical_interpretation": {
-        "focus_points": [
-          "qi yun (气韵生动)",
-          "xie yi spirit over form",
-          "scholar aesthetics"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      },
-      "philosophical_aesthetic": {
-        "focus_points": [
-          "Dao in brushwork",
-          "emptiness as presence",
-          "nature-human unity"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      }
-    },
     "islamic_geometric": {
       "visual_perception": {
         "focus_points": [
@@ -6545,94 +6587,47 @@
         "session_count": 0
       }
     },
-    "japanese_traditional": {
+    "western_academic": {
       "visual_perception": {
         "focus_points": [
-          "seasonal motifs",
-          "asymmetric balance",
-          "wabi-sabi textures"
+          "chiaroscuro modeling",
+          "linear perspective",
+          "anatomical proportion"
         ],
         "anti_focus": [],
         "session_count": 0
       },
       "technical_analysis": {
         "focus_points": [
-          "sumi ink gradation",
-          "woodblock layering",
-          "gold leaf application"
+          "oil layering technique",
+          "color theory application",
+          "canvas preparation"
         ],
         "anti_focus": [],
         "session_count": 0
       },
       "cultural_context": {
         "focus_points": [
-          "mono no aware (物の哀れ)",
-          "Zen simplicity",
-          "seasonal awareness"
+          "classical tradition",
+          "art historical references",
+          "genre conventions"
         ],
         "anti_focus": [],
         "session_count": 0
       },
       "critical_interpretation": {
         "focus_points": [
-          "ma (間) spatial reading",
-          "impermanence as beauty"
+          "iconographic analysis",
+          "formal composition critique"
         ],
         "anti_focus": [],
         "session_count": 0
       },
       "philosophical_aesthetic": {
         "focus_points": [
-          "wabi-sabi acceptance",
-          "nature-art continuity",
-          "quiet depth"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      }
-    },
-    "south_asian": {
-      "visual_perception": {
-        "focus_points": [
-          "vivid color saturation",
-          "ornamental density",
-          "narrative composition"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      },
-      "technical_analysis": {
-        "focus_points": [
-          "miniature painting precision",
-          "natural dye mastery",
-          "gold detailing"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      },
-      "cultural_context": {
-        "focus_points": [
-          "rasa theory (emotional essence)",
-          "mythological narratives",
-          "devotional art"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      },
-      "critical_interpretation": {
-        "focus_points": [
-          "rasa identification",
-          "darshan (sacred seeing)",
-          "iconometric rules"
-        ],
-        "anti_focus": [],
-        "session_count": 0
-      },
-      "philosophical_aesthetic": {
-        "focus_points": [
-          "divine beauty manifestation",
-          "cyclical time in art",
-          "sensory transcendence"
+          "mimesis vs. expression",
+          "beauty and sublimity",
+          "artistic genius"
         ],
         "anti_focus": [],
         "session_count": 0
@@ -6682,6 +6677,53 @@
         "anti_focus": [],
         "session_count": 0
       }
+    },
+    "chinese_xieyi": {
+      "visual_perception": {
+        "focus_points": [
+          "ink wash gradients",
+          "negative space (留白)",
+          "brush rhythm"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "technical_analysis": {
+        "focus_points": [
+          "brushstroke spontaneity",
+          "ink consistency",
+          "rice paper texture"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "cultural_context": {
+        "focus_points": [
+          "literati painting tradition",
+          "Daoist nature philosophy",
+          "poem-painting unity"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "critical_interpretation": {
+        "focus_points": [
+          "qi yun (气韵生动)",
+          "xie yi spirit over form",
+          "scholar aesthetics"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      },
+      "philosophical_aesthetic": {
+        "focus_points": [
+          "Dao in brushwork",
+          "emptiness as presence",
+          "nature-human unity"
+        ],
+        "anti_focus": [],
+        "session_count": 0
+      }
     }
   },
   "queen_strategy": {
@@ -6689,7 +6731,7 @@
     "prefer_quality_over_speed": true,
     "high_pattern_count": 5,
     "negative_feedback_count": 0,
-    "updated_at": "2026-03-16T13:55:03"
+    "updated_at": "2026-03-16T13:59:51"
   },
   "few_shot_examples": [
     {
@@ -6913,7 +6955,7 @@
     "western_academic": "This tradition currently lacks specific high-performing patterns. To improve, establish clear foundational and expressive focuses. Prioritize foundational principles like anatomy, perspective, and chiaroscuro. Focus on realistic representation, classical compositions, and conveying narrative or emotional depth through traditional techniques."
   },
   "trajectory_insights": {
-    "total_trajectories": 1457,
+    "total_trajectories": 1478,
     "common_weak_dimensions": [
       "visual_perception",
       "cultural_context",
@@ -6936,5 +6978,5 @@
       "korean": 2.0
     }
   },
-  "last_evolved_at": "2026-03-16T13:55:03.632818+00:00"
+  "last_evolved_at": "2026-03-16T13:59:51.459195+00:00"
 }
