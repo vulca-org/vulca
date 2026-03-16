@@ -30,10 +30,11 @@ describe('API config module', () => {
   })
 
   it('should use production URL when hostname is not localhost', async () => {
+    // In production, VITE_API_BASE_URL is injected by CI secrets
+    vi.stubEnv('VITE_API_BASE_URL', 'https://my-api.run.app')
     vi.stubGlobal('window', { location: { hostname: 'vulcaart.art' } })
     const mod = await import('../../config/api')
-    // Fallback points to Cloud Run backend, not the Firebase frontend domain
-    expect(mod.API_BASE_URL).toBe('https://wenxin-moyun-api-229980166599.asia-east1.run.app')
+    expect(mod.API_BASE_URL).toBe('https://my-api.run.app')
   })
 
   it('should construct API_PREFIX with version', async () => {
@@ -57,6 +58,7 @@ describe('API config module', () => {
   })
 
   it('getWebSocketBaseUrl should convert https to wss', async () => {
+    vi.stubEnv('VITE_API_BASE_URL', 'https://my-api.run.app')
     vi.stubGlobal('window', { location: { hostname: 'vulcaart.art' } })
     const mod = await import('../../config/api')
     const wsUrl = mod.getWebSocketBaseUrl()
