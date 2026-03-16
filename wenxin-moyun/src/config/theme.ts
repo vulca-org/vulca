@@ -1,74 +1,74 @@
 // Art Professional Theme System
-// 温暖、专业、艺术品味的视觉风格
-// 参考: 博物馆、画廊、艺术期刊的视觉语言
+// Warm, professional, gallery-inspired visual style.
+// See docs/design-system.md for full spec.
 
 export const themes = {
   dark: {
-    // 背景层级系统 - 暖色调深色
+    // Background layers — warm dark tones
     bg: {
-      base: '#0F0D0B',      // 暖黑 - 页面底色
-      surface: '#1A1614',   // 暖表面 - 卡片/面板背景
-      elevated: '#211D1A',  // 暖提升 - 悬浮层/模态框
-      overlay: '#2A2521',   // 暖覆盖 - dropdown/tooltip
-      hover: '#342E28',     // 暖悬停态背景
-      active: '#3E3731',    // 暖激活态背景
+      base: '#0F0D0B',      // Warm Black — page background
+      surface: '#1A1614',   // Warm Surface — cards/panels
+      elevated: '#211D1A',  // Elevated — floating/modal
+      overlay: '#2A2521',   // Overlay — dropdown/tooltip
+      hover: '#342E28',     // Hover state
+      active: '#3E3731',    // Active/pressed state
     },
 
-    // 边框系统 - 暖色调
+    // Border system
     border: {
-      default: '#4A433C',   // 暖边框 (对比度 3.2:1)
-      muted: '#342E28',     // 弱边框 - 分割线
-      strong: '#6B6259',    // 强边框 - 焦点/选中
-      subtle: '#251F1B',    // 极弱边框
+      default: '#4A433C',   // Default border (3.2:1 contrast)
+      muted: '#342E28',     // Muted — dividers
+      strong: '#6B6259',    // Strong — focus/selected
+      subtle: '#251F1B',    // Ultra-subtle
     },
 
-    // 文字层级系统
+    // Text hierarchy
     text: {
-      primary: '#F5F0EB',   // 奶油白 - 标题/重要内容
-      secondary: '#A89E94', // 暖灰 - 正文
-      tertiary: '#7A726A',  // 辅助 - 说明/提示
-      muted: '#524B44',     // 禁用文字
-      inverse: '#0F0D0B',   // 反色文字
+      primary: '#F5F0EB',   // Cream White — headings
+      secondary: '#A89E94', // Warm Gray — body
+      tertiary: '#7A726A',  // Tertiary — hints
+      muted: '#524B44',     // Disabled text
+      inverse: '#0F0D0B',   // Inverse text
     },
 
-    // 语义色彩系统 - Art Professional
+    // Semantic colors — Art Professional Dark
     semantic: {
-      primary: '#94A3B8',   // 墨石灰 - 主色/主按钮
-      accent: '#DDA574',    // 暖铜棕亮 - 强调
-      green: '#87A878',     // 鼠尾草绿 - 成功
-      yellow: '#D4A84B',    // 琥珀黄 - 警告
-      red: '#C97064',       // 珊瑚红 - 错误
-      bronze: '#C87F4A',    // 暖铜棕 - 特殊亮点
-      terracotta: '#9B6B56',// 陶土色 - 次要强调
-      sage: '#87A878',      // 鼠尾草绿
+      primary: '#94A3B8',   // Ink Slate (light)
+      accent: '#DDA574',    // Light Bronze
+      green: '#87A878',     // Light Sage
+      yellow: '#D4A84B',    // Light Amber
+      red: '#C97064',       // Light Coral
+      bronze: '#C87F4A',    // Warm Bronze
+      terracotta: '#9B6B56',// Terracotta
+      sage: '#87A878',      // Light Sage
     },
 
-    // 图表专用色板 - 暖色调
+    // Chart palette — warm tones
     chart: {
-      primary: '#C87F4A',   // 暖铜棕
-      secondary: '#9B6B56', // 陶土色
-      tertiary: '#87A878',  // 鼠尾草绿
-      quaternary: '#D4A84B',// 琥珀黄
+      primary: '#C87F4A',   // Warm Bronze
+      secondary: '#9B6B56', // Terracotta
+      tertiary: '#87A878',  // Light Sage
+      quaternary: '#D4A84B',// Light Amber
       series: [
         '#C87F4A', '#9B6B56', '#87A878', '#D4A84B',
         '#94A3B8', '#C97064', '#B8A089', '#7A9B76'
       ]
     },
 
-    // 特殊用途
+    // Special purpose
     special: {
-      gold: 'linear-gradient(135deg, #D4A84B 0%, #C87F4A 100%)',     // 金牌
-      silver: 'linear-gradient(135deg, #94A3B8 0%, #64748B 100%)',   // 银牌
-      bronze: 'linear-gradient(135deg, #C87F4A 0%, #9B6B56 100%)',   // 铜牌
-      gradient: 'linear-gradient(135deg, #334155 0%, #C87F4A 100%)', // 品牌渐变 (墨石灰→暖铜棕)
+      gold: 'linear-gradient(135deg, #D4A84B 0%, #C87F4A 100%)',
+      silver: 'linear-gradient(135deg, #94A3B8 0%, #64748B 100%)',
+      bronze: 'linear-gradient(135deg, #C87F4A 0%, #9B6B56 100%)',
+      gradient: 'linear-gradient(135deg, #334155 0%, #C87F4A 100%)', // Brand gradient
     }
   },
 
   light: {
-    // 浅色主题 - 画廊风格
+    // Background layers — gallery style
     bg: {
-      base: '#FAF7F2',      // 奶油白背景
-      surface: '#FFFFFF',   // 纯白表面
+      base: '#FAF7F2',      // Cream White
+      surface: '#FFFFFF',   // Pure White
       elevated: '#FFFFFF',
       overlay: '#FFFFFF',
       hover: '#F5F0E8',
@@ -76,17 +76,17 @@ export const themes = {
     },
 
     border: {
-      default: '#C9C2B8',   // 暖灰边框
-      muted: '#E5DFD5',
+      default: '#C9C2B8',   // Warm Gray border
+      muted: '#E8E0D4',
       strong: '#9B9387',
       subtle: '#F0EBE3',
     },
 
     text: {
-      primary: '#1E1B18',   // 暖黑
-      secondary: '#524B44', // 暖深灰
-      tertiary: '#7A726A',  // 暖中灰
-      muted: '#A89E94',     // 暖浅灰
+      primary: '#1E1B18',   // Warm Black
+      secondary: '#524B44', // Warm Dark Gray
+      tertiary: '#7A726A',  // Warm Mid Gray
+      muted: '#A89E94',     // Warm Light Gray
       inverse: '#FAF7F2',
     },
 
@@ -117,54 +117,51 @@ export const themes = {
       gold: 'linear-gradient(135deg, #D4A84B 0%, #C87F4A 100%)',
       silver: 'linear-gradient(135deg, #94A3B8 0%, #64748B 100%)',
       bronze: 'linear-gradient(135deg, #C87F4A 0%, #9B6B56 100%)',
-      gradient: 'linear-gradient(135deg, #334155 0%, #C87F4A 100%)',
+      gradient: 'linear-gradient(135deg, #334155 0%, #C87F4A 100%)', // Brand gradient
     }
-  }
+  },
 };
 
-// 导出类型定义
+// Type exports
 export type Theme = typeof themes.dark;
 export type ThemeMode = keyof typeof themes;
 
-// 获取当前主题
-export const getTheme = (mode: ThemeMode): Theme => {
+// Get theme by mode
+export function getTheme(mode: ThemeMode): Theme {
   return themes[mode];
-};
+}
 
-// CSS 变量生成器
-export const generateCSSVariables = (theme: Theme): string => {
-  const cssVars: string[] = [];
-  
-  const processObject = (obj: Record<string, unknown>, prefix: string = '') => {
-    Object.entries(obj).forEach(([key, value]) => {
+// CSS variable generator
+export function generateCSSVariables(theme: Theme): string {
+  const vars: string[] = [];
+  function flatten(obj: Record<string, unknown>, prefix = '') {
+    for (const [key, value] of Object.entries(obj)) {
       const varName = prefix ? `${prefix}-${key}` : key;
-      if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-        processObject(value as Record<string, unknown>, varName);
-      } else if (!Array.isArray(value)) {
-        cssVars.push(`--${varName}: ${value};`);
+      if (typeof value === 'string') {
+        vars.push(`--${varName}: ${value};`);
+      } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+        flatten(value as Record<string, unknown>, varName);
       }
-    });
-  };
-  
-  processObject(theme);
-  return cssVars.join('\n  ');
-};
+    }
+  }
+  flatten(theme as unknown as Record<string, unknown>);
+  return vars.join('\n');
+}
 
-// 主题类名映射
+// Theme class mapping
 export const themeClasses = {
-  // 背景类
-  bgBase: 'bg-[var(--bg-base)]',
-  bgSurface: 'bg-[var(--bg-surface)]',
-  bgElevated: 'bg-[var(--bg-elevated)]',
-  bgOverlay: 'bg-[var(--bg-overlay)]',
-  
-  // 文字类
-  textPrimary: 'text-[var(--text-primary)]',
-  textSecondary: 'text-[var(--text-secondary)]',
-  textTertiary: 'text-[var(--text-tertiary)]',
-  
-  // 边框类
-  borderDefault: 'border-[var(--border-default)]',
-  borderMuted: 'border-[var(--border-muted)]',
-  borderStrong: 'border-[var(--border-strong)]',
-};
+  // Background classes
+  'bg-base': 'bg-[var(--bg-base)]',
+  'bg-surface': 'bg-[var(--bg-surface)]',
+  'bg-elevated': 'bg-[var(--bg-elevated)]',
+  'bg-overlay': 'bg-[var(--bg-overlay)]',
+  // Text classes
+  'text-primary': 'text-[var(--text-primary)]',
+  'text-secondary': 'text-[var(--text-secondary)]',
+  'text-tertiary': 'text-[var(--text-tertiary)]',
+  'text-muted': 'text-[var(--text-muted)]',
+  // Border classes
+  'border-default': 'border-[var(--border-default)]',
+  'border-subtle': 'border-[var(--border-subtle)]',
+  'border-strong': 'border-[var(--border-strong)]',
+} as const;

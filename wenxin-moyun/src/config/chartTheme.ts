@@ -84,15 +84,15 @@ export const chartColorsLight = {
     neutral: '#7A726A',       // Warm Gray
   },
 
-  // 网格和轴线颜色 - WCAG AA 对比度优化
+  // Grid and axis colors — WCAG AA optimized
   grid: {
-    line: '#999999',        // 对比度 3.5:1 (原 #E5E5EA 1.14:1)
+    line: '#999999',        // contrast 3.5:1
     text: '#636366',        // iOS Gray 600 - 5.34:1 ✓
-    subText: '#707070',     // 对比度 4.5:1 (原 #8E8E93 3.01:1)
-    axis: '#808080',        // 对比度 4.0:1 (原 #C7C7CC 1.53:1)
+    subText: '#707070',     // contrast 4.5:1
+    axis: '#808080',        // contrast 4.0:1
   },
 
-  // 背景色
+  // Background
   background: {
     card: '#FFFFFF',
     hover: '#F2F2F7',       // iOS Gray 50
@@ -100,7 +100,7 @@ export const chartColorsLight = {
     tooltip: 'rgba(0, 0, 0, 0.85)',
   },
 
-  // 工具提示
+  // Tooltip
   tooltip: {
     background: 'rgba(0, 0, 0, 0.85)',
     text: '#FFFFFF',
@@ -108,22 +108,22 @@ export const chartColorsLight = {
   },
 };
 
-// ============= 深色模式图表配置 =============
+// ============= Dark Mode Chart Config =============
 
 export const chartColorsDark = {
-  // Art Professional 深色模式颜色序列
+  // Art Professional dark mode color sequence
   primary: [
-    iosDarkSystemColors.bronze,      // #DDA574 暖铜棕亮
-    iosDarkSystemColors.terracotta,  // #C49976 陶土色亮
-    iosDarkSystemColors.sage,        // #87A878 鼠尾草绿亮
-    iosDarkSystemColors.amber,       // #D4A84B 琥珀黄亮
-    iosDarkSystemColors.slate,       // #94A3B8 墨石灰亮
-    iosDarkSystemColors.coral,       // #C97064 珊瑚红亮
-    iosDarkSystemColors.ochre,       // #B8A089 赭石色亮
-    iosDarkSystemColors.olive,       // #7A9B76 橄榄绿亮
+    iosDarkSystemColors.bronze,      // #DDA574 Light Bronze
+    iosDarkSystemColors.terracotta,  // #C49976 Light Terracotta
+    iosDarkSystemColors.sage,        // #87A878 Light Sage
+    iosDarkSystemColors.amber,       // #D4A84B Light Amber
+    iosDarkSystemColors.slate,       // #94A3B8 Light Slate
+    iosDarkSystemColors.coral,       // #C97064 Light Coral
+    iosDarkSystemColors.ochre,       // #B8A089 Light Ochre
+    iosDarkSystemColors.olive,       // #7A9B76 Light Olive
   ],
 
-  // 渐变色配置 - 暖色调渐变
+  // Warm gradient pairs
   gradients: {
     primaryToSuccess: [iosDarkSystemColors.slate, iosDarkSystemColors.sage],
     primaryToAccent: [iosDarkSystemColors.slate, iosDarkSystemColors.bronze],
@@ -131,7 +131,7 @@ export const chartColorsDark = {
     purpleToBlue: [iosDarkSystemColors.terracotta, iosDarkSystemColors.slate],
   },
 
-  // 语义色 - Art Professional 深色模式
+  // Semantic colors — Art Professional dark
   semantic: {
     success: iosDarkSystemColors.sage,
     warning: iosDarkSystemColors.amber,
@@ -140,15 +140,15 @@ export const chartColorsDark = {
     neutral: '#A89E94',
   },
 
-  // 网格和轴线颜色 - WCAG AA 对比度优化
+  // Grid and axis colors — WCAG AA optimized
   grid: {
-    line: '#555555',        // 对比度 3.0:1 (原 #3A3A3C 1.11:1)
+    line: '#555555',        // contrast 3.0:1
     text: '#AEAEB2',        // iOS Gray 400 - 9.04:1 ✓
     subText: '#8E8E93',     // iOS Gray 500 - 5.0:1 ✓
-    axis: '#666666',        // 对比度 3.5:1 (原 #48484A 1.5:1)
+    axis: '#666666',        // contrast 3.5:1
   },
 
-  // 背景色
+  // Background
   background: {
     card: '#1C1C1E',        // iOS Dark Gray 900
     hover: '#2C2C2E',       // iOS Gray 900
@@ -156,7 +156,7 @@ export const chartColorsDark = {
     tooltip: 'rgba(255, 255, 255, 0.9)',
   },
 
-  // 工具提示
+  // Tooltip
   tooltip: {
     background: 'rgba(255, 255, 255, 0.9)',
     text: '#000000',
@@ -164,43 +164,43 @@ export const chartColorsDark = {
   },
 };
 
-// ============= 组织机构品牌色映射 =============
+// ============= Organization Brand Colors =============
 // Re-export from centralized constants for backward compatibility
 export const organizationColors = ORGANIZATION_COLORS;
 
-// ============= VULCA 维度类别色 - Art Professional =============
+// ============= VULCA Dimension Category Colors =============
 
 export const vulcaCategoryColors = {
   creativity: {
-    light: iosSystemColors.bronze,      // 暖铜棕 - 创造力
+    light: iosSystemColors.bronze,      // Warm Bronze — Creativity
     dark: iosDarkSystemColors.bronze,
   },
   technical: {
-    light: iosSystemColors.sage,        // 鼠尾草绿 - 技术
+    light: iosSystemColors.sage,        // Sage Green — Technical
     dark: iosDarkSystemColors.sage,
   },
   emotional: {
-    light: iosSystemColors.coral,       // 珊瑚红 - 情感
+    light: iosSystemColors.coral,       // Coral Red — Emotional
     dark: iosDarkSystemColors.coral,
   },
   contextual: {
-    light: iosSystemColors.slate,       // 墨石灰 - 语境
+    light: iosSystemColors.slate,       // Ink Slate — Contextual
     dark: iosDarkSystemColors.slate,
   },
   innovation: {
-    light: iosSystemColors.amber,       // 琥珀黄 - 创新
+    light: iosSystemColors.amber,       // Amber Gold — Innovation
     dark: iosDarkSystemColors.amber,
   },
   impact: {
-    light: iosSystemColors.terracotta,  // 陶土色 - 影响
+    light: iosSystemColors.terracotta,  // Terracotta — Impact
     dark: iosDarkSystemColors.terracotta,
   },
 };
 
-// ============= 图表通用配置 =============
+// ============= Chart Common Config =============
 
 export const chartConfig = {
-  // 字体配置 - iOS 系统字体
+  // Font config — iOS system font
   font: {
     family: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif',
     sizes: {
@@ -218,7 +218,7 @@ export const chartConfig = {
     },
   },
 
-  // 动画配置 - iOS 风格
+  // Animation config — iOS style
   animation: {
     duration: 300,
     easing: 'ease-out',
@@ -228,7 +228,7 @@ export const chartConfig = {
     },
   },
 
-  // 边距配置
+  // Margin config
   margin: {
     top: 20,
     right: 20,
@@ -236,7 +236,7 @@ export const chartConfig = {
     left: 20,
   },
 
-  // 圆角配置 - iOS 风格
+  // Border radius — iOS style
   borderRadius: {
     sm: 6,
     md: 10,
@@ -245,17 +245,17 @@ export const chartConfig = {
   },
 };
 
-// ============= 工具函数 =============
+// ============= Utility Functions =============
 
 /**
- * 获取当前主题的图表颜色
+ * Get current theme chart colors
  */
 export const getChartColors = (isDark: boolean = false) => {
   return isDark ? chartColorsDark : chartColorsLight;
 };
 
 /**
- * 获取数据系列颜色
+ * Get data series color
  */
 export const getSeriesColors = (count: number, isDark: boolean = false): string[] => {
   const colors = isDark ? chartColorsDark.primary : chartColorsLight.primary;
@@ -264,7 +264,7 @@ export const getSeriesColors = (count: number, isDark: boolean = false): string[
     return colors.slice(0, count);
   }
 
-  // 如果需要更多颜色，循环使用并调整透明度
+  // Cycle colors with adjusted opacity if needed
   const result: string[] = [];
   for (let i = 0; i < count; i++) {
     const baseColor = colors[i % colors.length];
@@ -275,7 +275,7 @@ export const getSeriesColors = (count: number, isDark: boolean = false): string[
 };
 
 /**
- * 获取组织机构颜色
+ * Get organization color
  * Uses centralized organizationColors from constants
  */
 export const getOrgColor = (orgName: string): string => {
@@ -283,7 +283,7 @@ export const getOrgColor = (orgName: string): string => {
 };
 
 /**
- * 获取 VULCA 维度类别颜色
+ * Get VULCA dimension category color
  */
 export const getVulcaCategoryColor = (
   category: keyof typeof vulcaCategoryColors,
@@ -294,7 +294,7 @@ export const getVulcaCategoryColor = (
 };
 
 /**
- * 获取渐变色 CSS
+ * Get gradient CSS
  */
 export const getGradientCSS = (
   gradientKey: keyof typeof chartColorsLight.gradients,
@@ -307,13 +307,13 @@ export const getGradientCSS = (
 };
 
 /**
- * Recharts 专用配置生成器
+ * Recharts config generator
  */
 export const getRechartsTheme = (isDark: boolean = false) => {
   const colors = getChartColors(isDark);
 
   return {
-    // 轴线配置
+    // Axis config
     axis: {
       stroke: colors.grid.axis,
       tick: {
@@ -323,14 +323,14 @@ export const getRechartsTheme = (isDark: boolean = false) => {
       },
     },
 
-    // 网格配置
+    // Grid config
     cartesianGrid: {
       stroke: colors.grid.line,
       strokeDasharray: '3 3',
       strokeOpacity: isDark ? 0.3 : 0.5,
     },
 
-    // 工具提示配置
+    // Tooltip config
     tooltip: {
       contentStyle: {
         backgroundColor: colors.tooltip.background,
@@ -352,7 +352,7 @@ export const getRechartsTheme = (isDark: boolean = false) => {
       },
     },
 
-    // 图例配置
+    // Legend config
     legend: {
       wrapperStyle: {
         paddingTop: '20px',
@@ -361,7 +361,7 @@ export const getRechartsTheme = (isDark: boolean = false) => {
       },
     },
 
-    // 雷达图配置
+    // Radar chart config
     radar: {
       polarGrid: {
         stroke: colors.grid.line,
@@ -386,11 +386,11 @@ export const getRechartsTheme = (isDark: boolean = false) => {
   };
 };
 
-// ============= 向后兼容导出 =============
+// ============= Backward Compat Exports =============
 
 export const chartColors = chartColorsLight;
 
-// 类型导出
+// Type exports
 export type ChartColors = typeof chartColorsLight;
 export type OrganizationColorKey = keyof typeof organizationColors;
 export type VulcaCategoryKey = keyof typeof vulcaCategoryColors;

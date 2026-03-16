@@ -9,16 +9,16 @@
 @layer base {
   body {
     @apply antialiased transition-colors duration-300;
-    /* 移除背景色，由 Layout 组件控制 */
+    /* Background controlled by Layout component */
     @apply text-gray-900 dark:text-[#F0F6FC];
-    /* 字体渲染优化 - 确保 dev/prod 一致性 */
+    /* Font rendering — ensure dev/prod consistency */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     font-feature-settings: "kern" 1;
   }
   
-  /* 滚动条样式 - 深色主题优化 */
+  /* Scrollbar — dark theme optimized */
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -41,49 +41,49 @@
 :root {
   --ios-font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
   --ios-font-text: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
-  --ios-color-primary: #1E1B18;   /* 暖黑 */
-  --ios-color-secondary: #524B44; /* 暖灰 */
-  --ios-color-primary-dark: #F5F0EB;   /* 奶油白 */
-  --ios-color-secondary-dark: #A89E94; /* 暖灰亮 */
+  --ios-color-primary: #1E1B18;   /* Warm Black */
+  --ios-color-secondary: #524B44; /* Warm Gray */
+  --ios-color-primary-dark: #F5F0EB;   /* Cream White */
+  --ios-color-secondary-dark: #A89E94; /* Light Warm Gray */
 
-  /* 边框颜色 - Art Professional */
+  /* Border — Art Professional */
   --border-subtle: #F0EBE3;
   --border-default: #C9C2B8;
   --border-strong: #9B9387;
-  --border-focus: #C87F4A;  /* 暖铜棕 */
+  --border-focus: #C87F4A;  /* Warm Bronze */
 
-  /* 背景颜色 - 画廊风格 */
-  --bg-base: #FAF7F2;       /* 奶油白 */
+  /* Background — gallery style */
+  --bg-base: #FAF7F2;       /* Cream White */
   --bg-surface: #FFFFFF;
   --bg-elevated: #FFFFFF;
   --bg-hover: #F5F0E8;
 
-  /* 语义颜色 - Art Professional */
-  --color-primary: #334155;  /* 墨石灰 */
-  --color-accent: #C87F4A;   /* 暖铜棕 */
-  --color-success: #5F8A50;  /* 鼠尾草绿 */
-  --color-warning: #B8923D;  /* 琥珀黄 */
-  --color-error: #B35A50;    /* 珊瑚红 */
-  --color-info: #64748B;     /* 墨石灰浅 */
+  /* Semantic colors — Art Professional */
+  --color-primary: #334155;  /* Ink Slate */
+  --color-accent: #C87F4A;   /* Warm Bronze */
+  --color-success: #5F8A50;  /* Sage Green */
+  --color-warning: #B8923D;  /* Amber Gold */
+  --color-error: #C65D4D;    /* Coral Red (unified) */
+  --color-info: #64748B;     /* Ink Slate light */
 }
 
 .dark {
   --border-subtle: #251F1B;
   --border-default: #4A433C;
   --border-strong: #6B6259;
-  --border-focus: #DDA574;  /* 暖铜棕亮 */
+  --border-focus: #DDA574;  /* Light Bronze */
 
-  --bg-base: #0F0D0B;       /* 暖黑 */
+  --bg-base: #0F0D0B;       /* Warm Black */
   --bg-surface: #1A1614;
   --bg-elevated: #211D1A;
   --bg-hover: #342E28;
 
-  --color-primary: #94A3B8;  /* 墨石灰亮 */
-  --color-accent: #DDA574;   /* 暖铜棕亮 */
-  --color-success: #87A878;  /* 鼠尾草绿亮 */
-  --color-warning: #D4A84B;  /* 琥珀黄亮 */
-  --color-error: #C97064;    /* 珊瑚红亮 */
-  --color-info: #94A3B8;     /* 墨石灰亮 */
+  --color-primary: #94A3B8;  /* Light Ink Slate */
+  --color-accent: #DDA574;   /* Light Bronze */
+  --color-success: #87A878;  /* Light Sage */
+  --color-warning: #D4A84B;  /* Light Amber */
+  --color-error: #C97064;    /* Light Coral */
+  --color-info: #94A3B8;     /* Light Ink Slate */
 }
 
 /* Base iOS font class */
@@ -95,15 +95,15 @@
   font-family: var(--ios-font-text);
 }
 
-/* Typography classes - 匹配 Tailwind text-4xl/3xl/2xl 尺寸 */
-/* 桌面: text-h1=36px, text-h2=30px, text-h3=24px */
-/* 参考: text-4xl=36px, text-3xl=30px, text-2xl=24px, text-xl=20px */
+/* Typography classes - matches Tailwind text-4xl/3xl/2xl sizes */
+/* Desktop: text-h1=36px, text-h2=30px, text-h3=24px */
+/* Ref: text-4xl=36px, text-3xl=30px, text-2xl=24px, text-xl=20px */
 
-/* 页面标题 - 用于次级页面的主标题，介于 large-title 和 h1 之间 */
-/* 匹配 text-4xl md:text-5xl = 36px → 48px */
+/* Page title — secondary page headings, between large-title and h1 */
+/* Matches text-4xl md:text-5xl = 36px → 48px */
 .text-page-title {
   font-family: var(--ios-font-display);
-  font-size: 48px;  /* 对应 text-5xl */
+  font-size: 48px;  /* text-5xl */
   line-height: 1.15;
   font-weight: 700;
   letter-spacing: -0.6px;
@@ -116,7 +116,7 @@
 
 .text-h1 {
   font-family: var(--ios-font-display);
-  font-size: 36px;  /* 对应 text-4xl */
+  font-size: 36px;  /* = text-4xl */
   line-height: 1.2;
   font-weight: 700;
   letter-spacing: -0.4px;
@@ -129,7 +129,7 @@
 
 .text-h2 {
   font-family: var(--ios-font-display);
-  font-size: 30px;  /* 对应 text-3xl */
+  font-size: 30px;  /* = text-3xl */
   line-height: 1.25;
   font-weight: 600;
   letter-spacing: -0.3px;
@@ -142,7 +142,7 @@
 
 .text-h3 {
   font-family: var(--ios-font-display);
-  font-size: 24px;  /* 对应 text-2xl */
+  font-size: 24px;  /* = text-2xl */
   line-height: 1.3;
   font-weight: 600;
   letter-spacing: -0.2px;
@@ -183,10 +183,10 @@
   color: var(--ios-color-secondary-dark);
 }
 
-/* iOS Large Title - Hero 大标题，匹配 text-6xl=60px */
+/* iOS Large Title — Hero heading, = text-6xl (60px) */
 .text-large-title {
   font-family: var(--ios-font-display);
-  font-size: 60px;  /* 对应 text-6xl */
+  font-size: 60px;  /* = text-6xl */
   line-height: 1.1;
   font-weight: 700;
   letter-spacing: -0.8px;
@@ -214,7 +214,7 @@
 
 /* Legacy card classes removed - Use IOSCard component instead */
 
-/* 进度条系统 Progress Bar System */
+/* Progress Bar System */
 .progress-bar {
   height: 0.5rem;
   background-color: rgb(235 236 240);
@@ -226,17 +226,17 @@
   height: 100%;
   border-radius: 9999px;
   transition: all 400ms ease-in-out;
-  background: linear-gradient(90deg, #334155, #C87F4A);  /* 墨石灰→暖铜棕 */
+  background: linear-gradient(90deg, #334155, #C87F4A);  /* Ink Slate → Warm Bronze */
 }
 
-/* 数据高亮动效 Data Highlight Animation */
+/* Data Highlight Animation */
 .highlight-flash {
   animation: highlightFlash 0.6s ease-out;
 }
 
-/* 专业动画效果 - 移除水墨动画 */
+/* Professional animation effects */
 
-/* Loading 骨架屏效果 */
+/* Loading skeleton shimmer */
 .skeleton {
   @apply bg-gray-200 dark:bg-[#251F1B] rounded;
   background: linear-gradient(
@@ -249,9 +249,9 @@
   animation: shimmer 2s infinite;
 }
 
-/* 品牌渐变 - Art Professional */
+/* Brand gradient — Art Professional */
 .bg-gradient-brand {
-  background: linear-gradient(135deg, #334155 0%, #C87F4A 100%);  /* 墨石灰→暖铜棕 */
+  background: linear-gradient(135deg, #334155 0%, #C87F4A 100%);  /* Ink Slate → Warm Bronze */
 }
 
 @layer utilities {
@@ -260,7 +260,7 @@
   }
   
   .gradient-text {
-    background: linear-gradient(to right, #334155, #C87F4A);  /* 墨石灰→暖铜棕 */
+    background: linear-gradient(to right, #334155, #C87F4A);  /* Ink Slate → Warm Bronze */
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -273,7 +273,7 @@
     backdrop-filter: blur(1rem);
   }
   
-  /* 间距系统 Spacing System */
+  /* Spacing System */
   .page-padding {
     @apply px-6;
   }
@@ -506,7 +506,7 @@
   animation: emojiFloat 3s ease-in-out infinite;
 }
 
-/* ============= 无障碍支持 - prefers-reduced-motion ============= */
+/* ============= Accessibility — prefers-reduced-motion ============= */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -531,7 +531,7 @@
   }
 }
 
-/* ============= 屏幕阅读器专用 ============= */
+/* ============= Screen reader only ============= */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -568,7 +568,7 @@
   overflow: visible !important;
   clip: auto !important;
   white-space: normal !important;
-  background-color: #334155 !important;  /* 墨石灰 */
+  background-color: #334155 !important;  /* Ink Slate */
   color: white !important;
   border-radius: 0.5rem !important;
   font-weight: 600 !important;
@@ -577,11 +577,11 @@
   outline-offset: 2px !important;
 }
 
-/* ============= 响应式标题字体 ============= */
-/* 平板 (md): text-large-title=48px, page-title=42px, h1=30px, h2=24px, h3=20px */
+/* ============= Responsive heading fonts ============= */
+/* Tablet (md): text-large-title=48px, page-title=42px, h1=30px, h2=24px, h3=20px */
 @media (max-width: 1023px) {
   .text-large-title {
-    font-size: 48px;  /* 对应 text-5xl */
+    font-size: 48px;  /* text-5xl */
     letter-spacing: -0.6px;
   }
 
@@ -591,24 +591,24 @@
   }
 
   .text-h1 {
-    font-size: 30px;  /* 对应 text-3xl */
+    font-size: 30px;  /* = text-3xl */
     letter-spacing: -0.3px;
   }
 
   .text-h2 {
-    font-size: 24px;  /* 对应 text-2xl */
+    font-size: 24px;  /* = text-2xl */
     letter-spacing: -0.2px;
   }
 
   .text-h3 {
-    font-size: 20px;  /* 对应 text-xl */
+    font-size: 20px;  /* = text-xl */
   }
 }
 
-/* 手机 (sm): text-large-title=36px, page-title=32px, h1=24px, h2=20px, h3=18px */
+/* Mobile (sm): text-large-title=36px, page-title=32px, h1=24px, h2=20px, h3=18px */
 @media (max-width: 639px) {
   .text-large-title {
-    font-size: 36px;  /* 对应 text-4xl */
+    font-size: 36px;  /* = text-4xl */
     letter-spacing: -0.4px;
   }
 
@@ -618,23 +618,23 @@
   }
 
   .text-h1 {
-    font-size: 24px;  /* 对应 text-2xl */
+    font-size: 24px;  /* = text-2xl */
     letter-spacing: -0.2px;
   }
 
   .text-h2 {
-    font-size: 20px;  /* 对应 text-xl */
+    font-size: 20px;  /* = text-xl */
     letter-spacing: -0.1px;
   }
 
   .text-h3 {
-    font-size: 18px;  /* 对应 text-lg */
+    font-size: 18px;  /* = text-lg */
   }
 }
 
-/* ============= 打印样式支持 ============= */
+/* ============= Print styles ============= */
 @media print {
-  /* 隐藏不需要打印的元素 */
+  /* Hide non-printable elements */
   header,
   footer,
   nav,
@@ -647,7 +647,7 @@
     display: none !important;
   }
 
-  /* 重置背景和阴影 */
+  /* Reset backgrounds and shadows */
   *,
   *::before,
   *::after {
@@ -656,33 +656,33 @@
     text-shadow: none !important;
   }
 
-  /* 确保文本可读性 */
+  /* Ensure text readability */
   body {
     color: #000 !important;
     font-size: 12pt !important;
     line-height: 1.5 !important;
   }
 
-  /* 链接样式 - 显示 URL */
+  /* Link styles — show URL */
   a[href]::after {
     content: " (" attr(href) ")";
     font-size: 10pt;
     color: #666;
   }
 
-  /* 内部链接不显示完整 URL */
+  /* Internal links — hide full URL */
   a[href^="#"]::after,
   a[href^="javascript:"]::after {
     content: "";
   }
 
-  /* 图片适应页面 */
+  /* Images fit page */
   img {
     max-width: 100% !important;
     page-break-inside: avoid;
   }
 
-  /* 表格样式 */
+  /* Table styles */
   table {
     border-collapse: collapse !important;
   }
@@ -693,7 +693,7 @@
     padding: 8px !important;
   }
 
-  /* 防止元素被分页切断 */
+  /* Prevent page breaks inside elements */
   h1, h2, h3, h4, h5, h6 {
     page-break-after: avoid;
     page-break-inside: avoid;
@@ -703,7 +703,7 @@
     page-break-inside: avoid;
   }
 
-  /* 卡片和容器 */
+  /* Cards and containers */
   .ios-glass,
   .liquid-glass-container,
   .liquid-glass-hero,
@@ -713,7 +713,7 @@
     page-break-inside: avoid;
   }
 
-  /* 确保内容区域全宽 */
+  /* Ensure content area is full width */
   main,
   .container,
   [role="main"] {
@@ -723,12 +723,12 @@
     margin: 0 !important;
   }
 
-  /* 页面边距 */
+  /* Page margins */
   @page {
     margin: 2cm;
   }
 
-  /* 首页特殊处理 */
+  /* Homepage special handling */
   @page :first {
     margin-top: 3cm;
   }
