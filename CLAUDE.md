@@ -140,6 +140,22 @@ app/vulca/schemas/                    # Pydantic schemas
 app/vulca/vulca.py                    # FastAPI endpoints (8 routes)
 ```
 
+## Design System
+
+The **Art Professional** design system uses a gallery-inspired warm palette (no iOS blue/purple/indigo). Full reference at [`docs/design-system.md`](docs/design-system.md).
+
+**Core colors**: Ink Slate `#334155` | Warm Bronze `#C87F4A` | Sage Green `#5F8A50` | Amber Gold `#B8923D` | Coral Red `#C65D4D`
+
+**Background**: Light `#FAF7F2` (Cream White) | Dark `#0F0D0B` (Warm Black)
+
+**Components**: IOSButton, IOSCard, IOSToggle, IOSSlider, IOSAlert, IOSSheet, IOSSegmentedControl (all with glass morphism and spring animations)
+
+**Rules**:
+- Never use blue/purple/indigo from standard iOS palette
+- All interactive elements must meet 44px minimum touch target (iOS HIG)
+- Use `react-hot-toast` for notifications, not browser alerts
+- Guard API data with null checks before `Object.entries/keys/values`
+
 ## Code Quality & Auditing
 
 When auditing or fixing files, always scope searches to active/current files only — exclude archived, deprecated, or backup directories to avoid false positives.
