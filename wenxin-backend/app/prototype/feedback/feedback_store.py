@@ -81,24 +81,29 @@ class FeedbackStore:
     def sync_from_sessions(self) -> int:
         """Sync inline feedback from sessions to feedback.jsonl.
 
-        Reads from SessionStore (supports Supabase DB + JSONL fallback).
+        Reads from local JSONL first (co-located sessions.jsonl), then
+        falls back to SessionStore (Supabase DB) if JSONL doesn't exist.
         Returns count of new feedback entries synced.
         """
-        try:
-            from app.prototype.session.store import SessionStore
-            all_sessions = SessionStore.get().get_all()
-        except Exception:
-            # Fallback: try JSONL directly
-            sessions_path = self._path.parent / "sessions.jsonl"
-            if not sessions_path.exists():
-                return 0
-            all_sessions = []
+        all_sessions: list = []
+
+        # Primary: read co-located sessions.jsonl (works in tests + dev)
+        sessions_path = self._path.parent / "sessions.jsonl"
+        if sessions_path.exists():
             for line in sessions_path.read_text().strip().split("\n"):
                 if line.strip():
                     try:
                         all_sessions.append(json.loads(line))
                     except json.JSONDecodeError:
                         continue
+
+        # Fallback: SessionStore (Supabase DB in prod)
+        if not all_sessions:
+            try:
+                from app.prototype.session.store import SessionStore
+                all_sessions = SessionStore.get().get_all()
+            except Exception:
+                pass
 
         if not all_sessions:
             return 0

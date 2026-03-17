@@ -113,10 +113,14 @@ class TestFeedbackSyncFromSessions:
         assert second == 0  # No new entries
         assert store.get_stats().total_feedback == 5
 
-    def test_sync_handles_missing_sessions(self, tmp_path):
-        """sync_from_sessions() returns 0 when sessions.jsonl doesn't exist."""
+    def test_sync_handles_missing_sessions(self, tmp_path, monkeypatch):
+        """sync_from_sessions() returns 0 when no local sessions exist."""
         feedback_path = str(tmp_path / "feedback.jsonl")
         store = FeedbackStore(feedback_path)
+
+        # Block SessionStore DB fallback so only local JSONL is tested
+        import app.prototype.session.store as _ss_mod
+        monkeypatch.setattr(_ss_mod.SessionStore, "get", classmethod(lambda cls: (_ for _ in ()).throw(RuntimeError("no DB"))))
 
         synced = store.sync_from_sessions()
         assert synced == 0
