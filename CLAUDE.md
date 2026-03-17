@@ -343,21 +343,21 @@ MCP server and CLI upgrade are Phase 9 (pending).
 ### Directory Structure
 ```
 wenxin-backend/app/prototype/
-├── agents/              # Scout, Draft, Critic, Queen + providers (8.3K lines)
-├── api/                 # REST endpoints: create, evaluate, routes (1.9K lines)
+├── agents/              # Scout, Draft, Critic, Queen + providers
+├── api/                 # REST endpoints: create, evaluate, routes
 ├── cultural_pipelines/  # Cultural weights, YAML tradition loader, pipeline router
 ├── digestion/           # ContextEvolver, FeatureExtractor, Clusterer, Distiller
-├── feedback/            # FeedbackStore + sync_from_sessions ⚠️ JSONL-only, broken in prod
+├── feedback/            # FeedbackStore ⚠️ JSONL-only, writes but nothing reads
 ├── intent/              # IntentAgent, SkillSelector, MetaOrchestrator
-├── orchestrator/        # PipelineOrchestrator (legacy) ← ACTUAL production path
+├── observability/       # LangfuseObserver
+├── orchestrator/        # PipelineOrchestrator ← ACTUAL production path (pending Phase 9 migration to vulca/)
 ├── pipeline/            # Pipeline types + fallback chain
 ├── session/             # SessionStore + SessionDigest (DB in prod, JSONL in dev)
-├── skills/              # Skill marketplace, executors, discussion ⚠️ JSONL+YAML dual store
+├── skills/              # Skill API routes + executors (partially connected)
 ├── tools/               # Scout service, terminology loader, FAISS index
-├── checkpoints/         # ⚠️ Ephemeral on Cloud Run — resume_from broken in prod
-└── data/                # YAML traditions, evolved_context.json
+└── data/                # YAML traditions
 ```
-**Deleted in three-in-one merge**: `graph/` (LangGraph, unused), `ui/` (Gradio demo), `trajectory/` (ephemeral logs).
+**Deleted in merge cleanup**: `graph/` (LangGraph), `trajectory/`, `ui/` (Gradio), `community/` (8.4K), `integrations/` (30K), `blind_eval/`, `app/vulca/` (47D).
 
 ### Prototype Dependencies
 ```bash
@@ -366,86 +366,20 @@ pip install -r requirements.prototype.txt  # On top of requirements.render.txt
 
 Key packages: litellm, pydantic, pyyaml, faiss-cpu
 
-## Multimodal Architecture
+## Node Editor (Canvas)
 
-### Media Types
-The system supports multiple media types through the `MediaType` enum:
-- **Image** (active): Full pipeline support via `vulca/` package and `prototype/`
-- **Video**: Dead code path — `sub_stage_executor.py` and `video_handlers.py` deleted in merge
-- **3D Model**: Dead code path — recipe type exists but zero handlers
-- **Sound**: Dead code path — recipe type exists but zero handlers
+Visual pipeline editor. 30 node types in frontend but **only 6 connected to backend** (Agent nodes). 24 nodes are UI-only — Phase 9C will hide them until backend support exists.
 
-### Sub-Stage System — DELETED
-The sub-stage system (`sub_stage_executor.py`) was deleted in the three-in-one merge.
-It was permanently broken (`DraftOutput(candidates=[])` in sub-stage mode) and never
-produced a successful result. Sub-stages are no longer part of the architecture.
+Canvas purpose: transparent pipeline visualization + evolution feedback interface. Not a general-purpose node editor.
 
-## Node Editor (Phase 5, 95% frontend / ~40% backend wired)
+## Digestion System (⚠️ broken in prod)
 
-Visual pipeline editor with 30 nodeTypes, 21 DataType, and 6 editor hooks.
+Self-evolution pipeline verified in dev (112 cultures, 203+ evolutions). Production data flow broken:
+- `sessions.jsonl` → Supabase migration broke FewShotUpdater/FeedbackStore
+- `POST /feedback` writes but nothing consumes
+- ContextEvolver evolves weights only, not topology
 
-### Editor Architecture
-```
-wenxin-moyun/src/components/prototype/editor/
-├── PipelineEditor.tsx        # Main editor canvas (ReactFlow)
-├── nodes/                    # 30 custom node types
-│   ├── AgentNodes (scout, draft, critic, queen)  ← backend-connected
-│   ├── DataNodes (input, output, merge, filter)  ← ⚠️ UI only, data not sent to backend
-│   ├── FlowNodes (ifElse, loop, gate, split)     ← ⚠️ UI only, no backend routing
-│   ├── ProcessingNodes (styleTransfer, upscale)   ← ⚠️ UI only, executors exist but unwired
-│   ├── SkillNode             # ⚠️ drag-drop works but skill not executed on Run
-│   ├── SubStageNode          # ⚠️ visual only, sub-stages broken (candidates=[])
-│   └── CustomNode            # User-defined nodes
-├── edges/                    # TypedEdge ⚠️ colors are decorative, no type checking
-├── hooks/                    # useEditorState, useNodeSelection, etc.
-├── panels/                   # Inspector ⚠️ L1-L5 weights/Scout params not sent to backend
-└── utils/                    # Validation, topology extraction
-```
-
-### What Actually Works vs What Looks Like It Works
-| Feature | Frontend | Backend | Status |
-|---------|:--------:|:-------:|--------|
-| Agent nodes (scout→queen) | ✅ | ✅ | Works |
-| Template selection | ✅ | ✅ | Works |
-| Custom topology drawing | ✅ | ❌ | **Broken** — TemplateRegistry.register() missing |
-| Sub-stage expansion | ✅ | ❌ | **Broken** — candidates=[] kills pipeline |
-| Mute/Bypass | ✅ | ❌ | API exists but frontend never calls it |
-| L1-L5 weight sliders | ✅ | ❌ | Backend ignores node_params.critic |
-| Input node files | ✅ | ❌ | extractTopology() doesn't collect file data |
-| Skill drag-drop | ✅ | ❌ | _skill_hook_names path disconnected |
-| TypedEdge colors | ✅ | ❌ | All edges render as default gray |
-| Flow control nodes | ✅ | ❌ | ifElse/loop/gate have zero backend logic |
-
-## Digestion System (Phase 5, closed-loop verified in dev, ⚠️ broken in prod)
-
-Cultural emergence pipeline: sessions → patterns → weight evolution → agent insights.
-
-### Pipeline
-```
-SessionStore → DigestAggregator → PatternDetector → PreferenceLearner
-     ↓               ↓                  ↓                   ↓
-  sessions      aggregated stats    patterns         user preferences
-     └──────────────────────────┬──────────────────────────────┘
-                                ↓
-                         ContextEvolver
-                         ├── Weight adjustment (±0.05 guardrail)
-                         ├── LLM insights (agent_insights, tradition_insights)
-                         ├── Queen strategy evolution
-                         └── evolution_log.jsonl audit trail
-```
-
-### ⚠️ Production Data Flow Breaks
-- `FeedbackStore.sync_from_sessions()` reads `sessions.jsonl` (doesn't exist in prod) → always returns 0
-- `FewShotUpdater._load_sessions()` same issue → few-shot examples always empty in prod
-- `POST /feedback` explicit feedback → stored in JSONL → **never consumed** by any digestion step
-- `"stop"` queen decision mapped to `liked=False` → almost all sessions generate negative signal
-- Checkpoints and trajectories stored on ephemeral Cloud Run filesystem → lost on restart
-- ContextEvolver only evolves weights and prompts, **never pipeline topology**
-
-### Verified Results (dev environment only)
-- 112 emerged cultures, 203+ evolutions
-- 3 new cultural traditions emerged from 20 seed sessions
-- Agent insights updated and injected into system prompts
+Phase 9D will reconnect evolution to `vulca/` engine.
 
 ## Academic Paper Workflow
 
