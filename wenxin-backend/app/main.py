@@ -13,7 +13,6 @@ import os
 from app.core.config import settings
 from app.core.database import init_db
 from app.api.v1 import api_router
-from app.vulca import vulca_router
 from app.prototype.api import get_prototype_router
 from app.prototype.api.evaluate_routes import evaluate_router
 from app.prototype.feedback.feedback_routes import feedback_router
@@ -212,9 +211,6 @@ else:
 
 # Include API router
 app.include_router(api_router, prefix=settings.API_V1_STR)
-
-# Include VULCA router
-app.include_router(vulca_router)
 
 # Include Prototype pipeline router
 app.include_router(get_prototype_router())

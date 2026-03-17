@@ -77,45 +77,6 @@ def test_model_detail_with_vulca():
     assert data2["id"] == model_id
 
 
-def test_vulca_models_endpoint():
-    """GET /api/v1/vulca/models returns model list with VULCA metadata."""
-    response = client.get("/api/v1/vulca/models")
-    if response.status_code >= 500:
-        pytest.skip(f"VULCA models endpoint returned {response.status_code}")
-    assert response.status_code == 200
-    data = response.json()
-
-    assert "total" in data
-    assert "models" in data
-    assert isinstance(data["models"], list)
-
-    if len(data["models"]) > 0:
-        model = data["models"][0]
-        assert "id" in model
-        assert "name" in model
-        assert "organization" in model
-        assert "has_vulca" in model
-        assert "vulca_sync_status" in model
-
-
-def test_vulca_evaluate_with_sync():
-    """POST /api/v1/vulca/evaluate accepts 6D scores."""
-    evaluation_request = {
-        "model_id": 1,
-        "model_name": "Test Model",
-        "scores_6d": {
-            "creativity": 85.0, "technique": 88.0, "emotion": 82.0,
-            "context": 86.0, "innovation": 84.0, "impact": 87.0,
-        },
-    }
-    response = client.post("/api/v1/vulca/evaluate", json=evaluation_request)
-    assert response.status_code in [200, 422, 500]
-    if response.status_code == 200:
-        data = response.json()
-        assert "scores_47d" in data
-        assert "cultural_perspectives" in data
-        assert len(data["scores_47d"]) == 47
-
 
 def test_vulca_sync_status():
     """Models report a valid vulca_sync_status."""
