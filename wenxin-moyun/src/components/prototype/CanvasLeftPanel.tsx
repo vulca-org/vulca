@@ -3,10 +3,15 @@
  * Reads shared state from useCanvasStore; pipeline state via props.
  */
 
+import { useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { IOSCard, IOSCardContent } from '@/components/ios';
 import { useCanvasStore } from '@/store/canvasStore';
+import type { CreationMode } from '@/store/canvasStore';
 import type { PipelineState } from '@/hooks/usePrototypePipeline';
 import type { RunConfigParams } from '@/components/prototype/RunConfigForm';
+import { isGuestMode } from '@/utils/guestSession';
 
 import PlaygroundHeader from './PlaygroundHeader';
 import IntentBar from './IntentBar';
@@ -63,6 +68,18 @@ export default function CanvasLeftPanel({
     creationMode, setCreationMode,
   } = useCanvasStore();
 
+  const navigate = useNavigate();
+  const guest = isGuestMode();
+
+  const handleAuthRequired = useCallback((mode: CreationMode) => {
+    const label = mode === 'guided' ? 'Guided' : 'Generate';
+    toast(`Please sign in to use ${label} mode`, {
+      icon: '🔒',
+      duration: 3000,
+    });
+    navigate('/login');
+  }, [navigate]);
+
   return (
     <>
       <div className="space-y-2">
@@ -118,7 +135,9 @@ export default function CanvasLeftPanel({
           value={creationMode}
           onChange={setCreationMode}
           disabled={isRunning}
-          nCandidates={lastRunParams?.n_candidates || 4}
+          nCandidates={lastRunParams?.n_candidates || 2}
+          isGuest={guest}
+          onAuthRequired={handleAuthRequired}
         />
       </div>
 

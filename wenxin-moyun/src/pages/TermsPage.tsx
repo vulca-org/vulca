@@ -6,7 +6,7 @@ import {
   Scale,
   Shield,
   Users,
-  CreditCard,
+  Code,
   Ban,
   RefreshCw,
   Gavel,
@@ -21,7 +21,7 @@ import {
   IOSCardContent,
 } from '../components/ios';
 
-const lastUpdated = 'January 20, 2026';
+const lastUpdated = 'March 17, 2026';
 
 export default function TermsPage() {
   return (
@@ -63,7 +63,7 @@ export default function TermsPage() {
             {[
               { icon: CheckCircle2, title: 'Fair Use', desc: 'Use our platform for legitimate evaluation purposes' },
               { icon: Shield, title: 'Your Data', desc: 'You retain ownership of your evaluation data' },
-              { icon: CreditCard, title: 'Billing', desc: 'Clear pricing with no hidden fees' },
+              { icon: Code, title: 'Open Source', desc: 'Apache 2.0 licensed, free to use and self-host' },
               { icon: Scale, title: 'Disputes', desc: 'Good faith resolution process' },
             ].map((item) => (
               <div key={item.title} className="text-center">
@@ -111,7 +111,7 @@ export default function TermsPage() {
               <li>Benchmark evaluation using our curated artwork dataset</li>
               <li>Comparative analysis and diagnostic reports</li>
               <li>API access for programmatic evaluation</li>
-              <li>Enterprise features including custom benchmarks and continuous monitoring</li>
+              <li>Self-hosted deployment with full customization capabilities</li>
             </ul>
             <p className="text-gray-600 dark:text-gray-400 mt-4">
               Service features may vary. See our GitHub repository for details.
@@ -205,20 +205,18 @@ export default function TermsPage() {
           </IOSCardContent>
         </IOSCard>
 
-        {/* Section 7: Payment Terms */}
+        {/* Section 7: Licensing & Usage */}
         <IOSCard variant="elevated">
           <IOSCardHeader
-            emoji={<CreditCard className="w-6 h-6 text-[#C87F4A]" />}
-            title="7. Payment Terms"
+            emoji={<Code className="w-6 h-6 text-[#C87F4A]" />}
+            title="7. Licensing & Usage"
           />
           <IOSCardContent className="prose dark:prose-invert max-w-none">
             <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-              <li><strong>Pricing:</strong> VULCA is open source under Apache 2.0. Self-hosted usage is free.</li>
-              <li><strong>Billing:</strong> Paid plans are billed in advance on a monthly or annual basis.</li>
-              <li><strong>Pilot Engagements:</strong> One-time payments are due upon signing the engagement agreement.</li>
-              <li><strong>Refunds:</strong> We offer refunds within 14 days of purchase if you are not satisfied, provided no evaluation reports have been generated.</li>
-              <li><strong>Taxes:</strong> Prices exclude applicable taxes, which will be added at checkout.</li>
-              <li><strong>Late Payment:</strong> Accounts with overdue payments may have service access suspended.</li>
+              <li><strong>Open Source:</strong> VULCA is released under the Apache License 2.0. You are free to use, modify, and distribute the software in accordance with the license terms.</li>
+              <li><strong>Self-Hosting:</strong> You may self-host VULCA at no cost. Self-hosted deployments are your responsibility to maintain and secure.</li>
+              <li><strong>Hosted Service:</strong> If we offer a hosted version of VULCA, separate terms and pricing may apply and will be communicated clearly before use.</li>
+              <li><strong>Attribution:</strong> When redistributing or using VULCA in derivative works, you must retain the original copyright notice and license as required by Apache 2.0.</li>
             </ul>
           </IOSCardContent>
         </IOSCard>
@@ -239,9 +237,9 @@ export default function TermsPage() {
 
             <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Your Rights</h4>
             <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-              <li>You may cancel your subscription at any time through your account settings.</li>
+              <li>You may delete your account at any time through your account settings.</li>
               <li>You may request data export before account termination.</li>
-              <li>Annual subscriptions may be refunded on a pro-rata basis for significant service changes.</li>
+              <li>As an open-source project, you may fork and self-host VULCA at any time.</li>
             </ul>
           </IOSCardContent>
         </IOSCard>
@@ -267,7 +265,7 @@ export default function TermsPage() {
               <li>The Service will meet all your requirements</li>
             </ul>
             <p className="text-gray-600 dark:text-gray-400 mt-4">
-              TO THE MAXIMUM EXTENT PERMITTED BY LAW, OUR TOTAL LIABILITY FOR ANY CLAIMS ARISING FROM THESE TERMS OR USE OF THE SERVICE SHALL NOT EXCEED THE AMOUNT YOU PAID US IN THE 12 MONTHS PRECEDING THE CLAIM.
+              TO THE MAXIMUM EXTENT PERMITTED BY LAW, OUR TOTAL LIABILITY FOR ANY CLAIMS ARISING FROM THESE TERMS OR USE OF THE SERVICE SHALL NOT EXCEED USD $100.
             </p>
           </IOSCardContent>
         </IOSCard>

@@ -181,7 +181,7 @@ export default function RunConfigForm({ onSubmit, disabled, initialValues }: Pro
   const [subject, setSubject] = useState('');
   const [tradition, setTradition] = useState('chinese_xieyi');
   const [culturalIntent, setCulturalIntent] = useState('');
-  const [nCandidates, setNCandidates] = useState(4);
+  const [nCandidates, setNCandidates] = useState(2);
   const [maxRounds, setMaxRounds] = useState(3);
   const [enableAgentCritic, setEnableAgentCritic] = useState(false);
   const [useGraph, setUseGraph] = useState(false);

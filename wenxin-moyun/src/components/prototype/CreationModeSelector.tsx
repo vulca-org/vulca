@@ -22,17 +22,23 @@ interface Props {
   onChange: (mode: CreationMode) => void;
   disabled?: boolean;
   nCandidates?: number;
+  /** Called when a guest user tries to select a gated mode (guided/generate). */
+  onAuthRequired?: (mode: CreationMode) => void;
+  /** Whether the user is a guest (shows lock icons on gated modes). */
+  isGuest?: boolean;
 }
 
 export default function CreationModeSelector({
   value,
   onChange,
   disabled = false,
-  nCandidates = 4,
+  nCandidates = 2,
+  onAuthRequired,
+  isGuest = false,
 }: Props) {
   const segments: SegmentItem[] = MODES.map(m => ({
     id: m.id,
-    label: m.label,
+    label: isGuest && m.id !== 'preview' ? `${m.label} 🔒` : m.label,
     value: m.id,
   }));
 
@@ -57,7 +63,12 @@ export default function CreationModeSelector({
         selectedIndex={selectedIndex}
         onChange={(idx) => {
           const m = MODES[idx];
-          if (m) onChange(m.id);
+          if (!m) return;
+          if (isGuest && m.id !== 'preview') {
+            onAuthRequired?.(m.id);
+            return;
+          }
+          onChange(m.id);
         }}
         size="compact"
         disabled={disabled}
