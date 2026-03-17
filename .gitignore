@@ -155,6 +155,7 @@ gh_installer.msi
 # Prototype temporary outputs
 wenxin-backend/tmp/
 wenxin-backend/venv/
+wenxin-backend/vulca
 wenxin-backend/=*
 
 # Prototype runtime artifacts (images + checkpoints + data)

@@ -53,6 +53,10 @@ jobs:
         working-directory: wenxin-moyun
         run: npm ci --legacy-peer-deps
 
+      - name: Sync vulca/ package to backend
+        run: |
+          cp -r vulca/src/vulca wenxin-backend/vulca
+
       - name: Install backend dependencies
         working-directory: wenxin-backend
         run: |
