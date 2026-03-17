@@ -79,12 +79,28 @@ class FeedbackStore:
         return records[-limit:]
 
     def sync_from_sessions(self) -> int:
-        """Sync inline feedback from sessions.jsonl to feedback.jsonl.
+        """Sync inline feedback from sessions to feedback.jsonl.
 
+        Reads from SessionStore (supports Supabase DB + JSONL fallback).
         Returns count of new feedback entries synced.
         """
-        sessions_path = self._path.parent / "sessions.jsonl"
-        if not sessions_path.exists():
+        try:
+            from app.prototype.session.store import SessionStore
+            all_sessions = SessionStore.get().get_all()
+        except Exception:
+            # Fallback: try JSONL directly
+            sessions_path = self._path.parent / "sessions.jsonl"
+            if not sessions_path.exists():
+                return 0
+            all_sessions = []
+            for line in sessions_path.read_text().strip().split("\n"):
+                if line.strip():
+                    try:
+                        all_sessions.append(json.loads(line))
+                    except json.JSONDecodeError:
+                        continue
+
+        if not all_sessions:
             return 0
 
         # Load existing feedback evaluation_ids to avoid duplicates
@@ -99,12 +115,12 @@ class FeedbackStore:
                         pass
 
         synced = 0
-        for line in sessions_path.read_text().strip().split("\n"):
-            if not line.strip():
-                continue
-            try:
-                session = json.loads(line)
-            except json.JSONDecodeError:
+        for session in all_sessions:
+            if isinstance(session, dict):
+                pass  # already a dict
+            elif hasattr(session, "to_dict"):
+                session = session.to_dict()
+            else:
                 continue
 
             sid = session.get("session_id", "")

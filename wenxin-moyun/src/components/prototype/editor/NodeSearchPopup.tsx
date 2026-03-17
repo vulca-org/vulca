@@ -20,39 +20,38 @@ interface SearchItem {
   category: string;
 }
 
-/** Build the full searchable items list */
+// Nodes with actual backend support (ONE PIPELINE: vulca/ engine)
+const BACKEND_SUPPORTED_AGENTS = new Set(['draft', 'critic', 'queen']);
+const BACKEND_SUPPORTED_INPUTS = new Set(['textPrompt']);
+const BACKEND_SUPPORTED_OUTPUTS = new Set(['save']);
+
+/** Build the searchable items list — only nodes with backend support */
 function buildSearchItems(): SearchItem[] {
   const items: SearchItem[] = [];
 
-  // Agent nodes
+  // Agent nodes (only backend-connected)
   for (const id of ALL_AGENT_IDS) {
+    if (!BACKEND_SUPPORTED_AGENTS.has(id)) continue;
     const meta = AGENT_META[id];
     items.push({ id, label: meta.label, icon: meta.icon, description: meta.description, category: 'Agents' });
   }
 
-  // Input nodes
+  // Input nodes (only textPrompt has backend support)
   for (const [id, meta] of Object.entries(INPUT_NODE_META)) {
+    if (!BACKEND_SUPPORTED_INPUTS.has(id)) continue;
     items.push({ id, label: meta.label, icon: meta.icon, description: meta.description, category: 'Inputs' });
   }
 
-  // Processing nodes
-  for (const [id, meta] of Object.entries(PROCESSING_NODE_META)) {
-    items.push({ id, label: meta.label, icon: meta.icon, description: meta.description, category: 'Processing' });
-  }
-
-  // Flow control nodes
-  for (const [id, meta] of Object.entries(FLOW_NODE_META)) {
-    items.push({ id, label: meta.label, icon: meta.icon, description: meta.description, category: 'Flow Control' });
-  }
-
-  // Output nodes
+  // Output nodes (only save)
   for (const [id, meta] of Object.entries(OUTPUT_NODE_META)) {
+    if (!BACKEND_SUPPORTED_OUTPUTS.has(id)) continue;
     items.push({ id, label: meta.label, icon: meta.icon, description: meta.description, category: 'Output' });
   }
 
-  // Utility nodes
+  // Utility nodes (pure UI, always available)
   items.push({ id: 'frame', label: 'Frame', icon: '🔲', description: 'Group container', category: 'Utility' });
   items.push({ id: 'reroute', label: 'Reroute', icon: '◆', description: 'Edge junction', category: 'Utility' });
+  items.push({ id: 'sticky', label: 'Sticky Note', icon: '📝', description: 'Annotate your pipeline', category: 'Utility' });
 
   return items;
 }

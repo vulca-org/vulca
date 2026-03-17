@@ -130,17 +130,22 @@ class FewShotUpdater:
         return strengths[:5]
 
     def _load_sessions(self) -> list[dict]:
-        """Load all sessions from the JSONL file."""
-        if not self._sessions_path.exists():
-            return []
-        sessions: list[dict] = []
-        for line in self._sessions_path.read_text(encoding="utf-8").strip().split("\n"):
-            if line.strip():
-                try:
-                    sessions.append(json.loads(line))
-                except json.JSONDecodeError:
-                    continue
-        return sessions
+        """Load sessions from SessionStore (supports DB + JSONL fallback)."""
+        try:
+            from app.prototype.session.store import SessionStore
+            return SessionStore.get().get_all()
+        except Exception:
+            # Fallback to JSONL for dev/offline environments
+            if not self._sessions_path.exists():
+                return []
+            sessions: list[dict] = []
+            for line in self._sessions_path.read_text(encoding="utf-8").strip().split("\n"):
+                if line.strip():
+                    try:
+                        sessions.append(json.loads(line))
+                    except json.JSONDecodeError:
+                        continue
+            return sessions
 
     def _save_examples(self, examples: list[dict]) -> None:
         """Merge few_shot_examples into evolved_context.json."""
