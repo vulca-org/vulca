@@ -47,20 +47,24 @@ def _write_sessions(path: Path, sessions: list[dict]) -> None:
 class TestFewShotUpdaterEmpty:
     """Tests with no sessions / empty data."""
 
-    def test_no_sessions_file(self, tmp_path: Path) -> None:
+    def test_no_sessions_file(self, tmp_path: Path, monkeypatch) -> None:
         updater = FewShotUpdater(
             sessions_path=str(tmp_path / "missing.jsonl"),
             evolved_path=str(tmp_path / "evolved.json"),
         )
+        # Ensure only local JSONL path is tested (no DB fallback)
+        monkeypatch.setattr(updater, "_load_sessions", lambda: [])
         assert updater.update() == 0
 
-    def test_empty_sessions(self, tmp_path: Path) -> None:
+    def test_empty_sessions(self, tmp_path: Path, monkeypatch) -> None:
         sessions_path = tmp_path / "sessions.jsonl"
         sessions_path.write_text("")
         updater = FewShotUpdater(
             sessions_path=str(sessions_path),
             evolved_path=str(tmp_path / "evolved.json"),
         )
+        # Ensure only local JSONL path is tested (no DB fallback)
+        monkeypatch.setattr(updater, "_load_sessions", lambda: [])
         assert updater.update() == 0
 
     def test_all_below_threshold(self, tmp_path: Path) -> None:
