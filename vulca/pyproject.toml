@@ -57,6 +57,7 @@ Issues = "https://github.com/yha9806/vulca/issues"
 
 [project.scripts]
 vulca = "vulca.cli:main"
+vulca-mcp = "vulca.mcp_server:mcp.run"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/vulca"]
