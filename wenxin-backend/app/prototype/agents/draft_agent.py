@@ -545,7 +545,10 @@ class DraftAgent:
         for the media type) and executes all sub-stages in order.
         """
         from app.prototype.media.recipes import get_default_recipe, get_recipe
-        from app.prototype.media.sub_stage_executor import SubStageExecutor
+        try:
+            from app.prototype.media.sub_stage_executor import SubStageExecutor
+        except ImportError:
+            SubStageExecutor = None
         from app.prototype.media.types import MediaType
 
         # Resolve recipe
@@ -565,8 +568,12 @@ class DraftAgent:
             from app.prototype.media.image_handlers import get_image_handlers
             handlers = get_image_handlers()
         elif recipe.media_type == MediaType.VIDEO:
-            from app.prototype.media.video_handlers import get_video_handlers
-            handlers = get_video_handlers()
+            try:
+                from app.prototype.media.video_handlers import get_video_handlers
+                handlers = get_video_handlers()
+            except ImportError:
+                logger.warning("video_handlers removed, falling back to image handlers")
+                handlers = {}
 
         executor = SubStageExecutor(recipe=recipe, handlers=handlers)
 

@@ -26,6 +26,37 @@ VULCA — AI-native creation organism. Create, critique, and evolve cultural art
 - Backend API: Cloud Run (asia-east1)
 - Database: Supabase PostgreSQL (free tier)
 
+## VULCA Unified Package (vulca/)
+
+The `vulca/` directory is the unified Python SDK (3,514 lines, 40 files, 189 tests).
+This replaces the old `app/vulca/` backend module and consolidates logic from `vulca-pkg`.
+
+### Quick Start
+```python
+import vulca
+result = vulca.evaluate("artwork.png", tradition="chinese_xieyi")
+result = vulca.create("水墨山水", provider="mock", mode="local")
+```
+
+### Package Structure
+```
+vulca/src/vulca/
+├── pipeline/     # Execution engine + 3 built-in nodes + 3 templates
+├── cultural/     # 9 YAML tradition configs with L1-L5 weights
+├── scoring/      # VLM model routing + L1-L5 evaluation types
+├── storage/      # Session/Feedback protocol + JSONL backend
+├── intent/       # Natural language → tradition resolution
+├── media/        # MediaType enum + creation recipe types
+├── _vlm.py       # Gemini Vision L1-L5 scoring (core)
+├── _engine.py    # Evaluation engine singleton
+└── cli.py        # vulca evaluate/create/traditions
+```
+
+### Testing
+```bash
+cd vulca && .venv/bin/python -m pytest tests/ -v  # 189 tests
+```
+
 ## Essential Commands
 
 ### Quick Start
@@ -132,13 +163,15 @@ formParams.append('password', password);
 
 #### VULCA Integration
 ```python
-# Backend modules
-app/vulca/core/vulca_core_adapter.py  # 6D→47D expansion algorithm
-app/vulca/services/vulca_service.py   # Async business logic
-app/vulca/models/                     # SQLAlchemy models
-app/vulca/schemas/                    # Pydantic schemas
-app/vulca/vulca.py                    # FastAPI endpoints (8 routes)
+# Unified VULCA package (vulca/)
+from vulca import evaluate, create, session  # Public API
+# Pipeline engine
+from vulca.pipeline import execute, DEFAULT, FAST
+# CLI
+vulca evaluate image.png --tradition chinese_xieyi
+vulca create "水墨山水" --provider mock
 ```
+Note: The old `app/vulca/` backend module has been deleted. All VULCA logic now lives in the unified `vulca/` package.
 
 ## Design System
 
@@ -277,32 +310,33 @@ When working with Python in this project, always use the virtualenv Python (not 
 Full audit found **85 design-vs-implementation conflicts** across 6 subsystems.
 See memory file `full-conflict-audit.md` for complete details.
 
-### 6 Systemic Break Chains
+### 6 Systemic Break Chains (updated 2026-03-17)
 
-1. **Canvas topology never executes** — `TemplateRegistry.register()` doesn't exist, custom topologies silently discarded
-2. **Sub-stages are dead path** — `enable_sub_stages=True` → `DraftOutput(candidates=[])` → Critic fails → pipeline dies
-3. **Explicit feedback dead end** — `POST /feedback` → FeedbackStore(JSONL) → no consumer ever reads it
-4. **Production JSONL blindspot** — `FeedbackStore` and `FewShotUpdater` read `sessions.jsonl` (migrated to Supabase, file doesn't exist) → always return empty
-5. **LangGraph vs Legacy dual-track** — CLAUDE.md says Graph is production default, but `create_routes.py` still uses legacy `PipelineOrchestrator`. FixItPlan/CrossLayerSignals/cultural variants only work in legacy path
-6. **47D expansion is random noise** — `vulca_core_adapter.py` 6D→47D = `np.random.seed(42)` + Gaussian noise, 41 dimensions have no real semantics
+1. **Canvas topology never executes** — `TemplateRegistry.register()` doesn't exist, custom topologies silently discarded. Lives in `prototype/`, not blocking `vulca/` package.
+2. **Sub-stages are dead path** — `enable_sub_stages=True` → `DraftOutput(candidates=[])` → Critic fails → pipeline dies. Lives in `prototype/`, not blocking `vulca/` package.
+3. **Explicit feedback dead end** — `POST /feedback` → FeedbackStore(JSONL) → no consumer ever reads it. Lives in `prototype/`, not blocking `vulca/` package.
+4. **Production JSONL blindspot** — `FeedbackStore` and `FewShotUpdater` read `sessions.jsonl` (migrated to Supabase, file doesn't exist) → always return empty. Lives in `prototype/`, not blocking `vulca/` package.
+5. ~~**LangGraph vs Legacy dual-track**~~ — **FIXED**: `graph/` directory deleted in three-in-one merge. Only legacy `PipelineOrchestrator` remains.
+6. ~~**47D expansion is random noise**~~ — **FIXED**: `app/vulca/` deleted entirely. Replaced by `vulca/_vlm.py` with real L1-L5 VLM evaluation.
 
 ### Critical Rule
-Before adding any new feature, check if it touches a broken data path listed above. Fix the break first.
+Before adding any new feature to `prototype/`, check if it touches a broken data path listed above (#1-#4). Fix the break first. The `vulca/` package is clean of these issues.
 
-## New Direction: SDK/CLI/MCP (Phase 8)
+## SDK/CLI/MCP Architecture
 
-VULCA is expanding from a web app to an AI-native creation infrastructure:
+The `vulca/` unified package now EXISTS with a working pipeline engine (Phase 4 complete).
 ```
 ┌─────────────────────────────────────┐
-│  MCP Server / ComfyUI Nodes        │  ← Ecosystem adapters
+│  MCP Server / ComfyUI Nodes        │  ← Phase 9 (pending)
 ├─────────────────────────────────────┤
-│  CLI  (vulca create / critique)     │  ← Universal entry point
+│  CLI  (vulca create / evaluate)     │  ← Working (vulca/cli.py)
 ├─────────────────────────────────────┤
-│  Python SDK  (from vulca import *)  │  ← Core engine
+│  Python SDK  (from vulca import *)  │  ← Working (vulca/ package)
 └─────────────────────────────────────┘
 ```
 Three entry points (Canvas/SDK/MCP) share ONE dynamic execution engine.
 Pipeline is a first-class evolvable object, not a hardcoded topology.
+MCP server and CLI upgrade are Phase 9 (pending).
 
 ## VULCA Prototype Architecture
 
@@ -315,16 +349,15 @@ wenxin-backend/app/prototype/
 ├── digestion/           # ContextEvolver, FeatureExtractor, Clusterer, Distiller
 ├── feedback/            # FeedbackStore + sync_from_sessions ⚠️ JSONL-only, broken in prod
 ├── intent/              # IntentAgent, SkillSelector, MetaOrchestrator
-├── graph/               # GraphOrchestrator (LangGraph) ⚠️ NOT actually used in prod API
 ├── orchestrator/        # PipelineOrchestrator (legacy) ← ACTUAL production path
 ├── pipeline/            # Pipeline types + fallback chain
 ├── session/             # SessionStore + SessionDigest (DB in prod, JSONL in dev)
 ├── skills/              # Skill marketplace, executors, discussion ⚠️ JSONL+YAML dual store
 ├── tools/               # Scout service, terminology loader, FAISS index
-├── ui/                  # Gradio demo UI
 ├── checkpoints/         # ⚠️ Ephemeral on Cloud Run — resume_from broken in prod
 └── data/                # YAML traditions, evolved_context.json
 ```
+**Deleted in three-in-one merge**: `graph/` (LangGraph, unused), `ui/` (Gradio demo), `trajectory/` (ephemeral logs).
 
 ### Prototype Dependencies
 ```bash
@@ -337,30 +370,15 @@ Key packages: litellm, pydantic, pyyaml, faiss-cpu
 
 ### Media Types
 The system supports multiple media types through the `MediaType` enum:
-- **Image** (active): Full pipeline support with sub-stages ⚠️ sub-stages broken (see below)
-- **Video**: Recipes defined, handlers return text only (no actual video output)
-- **3D Model**: Recipe defined, zero handlers implemented
-- **Sound**: Recipe defined, zero handlers implemented
+- **Image** (active): Full pipeline support via `vulca/` package and `prototype/`
+- **Video**: Dead code path — `sub_stage_executor.py` and `video_handlers.py` deleted in merge
+- **3D Model**: Dead code path — recipe type exists but zero handlers
+- **Sound**: Dead code path — recipe type exists but zero handlers
 
-### Sub-Stage System ⚠️ BROKEN
-Generation (Draft agent) supports fine-grained sub-stages via `CreationRecipe`:
-```
-CreateRequest → Scout → Router → Draft [sub-stages] → Critic → Queen
-                                   ├─ mood_palette
-                                   ├─ composition_sketch
-                                   ├─ element_studies
-                                   ├─ style_reference
-                                   ├─ storyboard
-                                   └─ final_render ← produces sub_stage_results
-                                                      but candidates=[] ← FATAL
-                                                      Critic: "no candidates" ← pipeline dies
-```
-
-**Critical bug**: `draft_agent.py:606` returns `DraftOutput(candidates=[])` in sub-stage mode.
-Critic receives empty candidates and fails. Sub-stages have never produced a successful result
-in the LangGraph path.
-
-Sub-stages are disabled by default (`enable_sub_stages=False`).
+### Sub-Stage System — DELETED
+The sub-stage system (`sub_stage_executor.py`) was deleted in the three-in-one merge.
+It was permanently broken (`DraftOutput(candidates=[])` in sub-stage mode) and never
+produced a successful result. Sub-stages are no longer part of the architecture.
 
 ## Node Editor (Phase 5, 95% frontend / ~40% backend wired)
 
@@ -428,30 +446,6 @@ SessionStore → DigestAggregator → PatternDetector → PreferenceLearner
 - 112 emerged cultures, 203+ evolutions
 - 3 new cultural traditions emerged from 20 seed sessions
 - Agent insights updated and injected into system prompts
-
-## Upcoming: Phase 7D — Multimodal Activation
-
-**STATUS: UPCOMING — not yet implemented**
-
-### Video Minimal Loop
-1. FFmpeg keyframe extraction → video composition (`final_compose` handler)
-2. Frontend Video Player component (HTML5 `<video>` with poster frame)
-3. MediaType selector UI activation in Canvas IntentBar
-
-### 3D Model Handlers (deferred)
-- Three.js / Babylon.js mesh viewer component
-- Concept → mesh → texture → lighting → render pipeline
-- GLB/GLTF export support
-
-### Sound/Audio Handlers (deferred)
-- Stable Audio API integration
-- Mood → instruments → melody → arrangement → mix pipeline
-- Waveform visualization component
-
-### Mobile Canvas (deferred)
-- ReactFlow tablet adaptation (touch gestures, pinch zoom)
-- Responsive node sizes and connection handles
-- Mobile-friendly NodeParamPanel drawer
 
 ## Academic Paper Workflow
 
