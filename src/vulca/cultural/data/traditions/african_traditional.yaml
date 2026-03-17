@@ -1,0 +1,83 @@
+name: african_traditional
+display_name:
+  en: "African Traditional"
+  zh: "非洲传统"
+  ja: "アフリカ伝統"
+
+weights:
+  L1: 0.15
+  L2: 0.20
+  L3: 0.30
+  L4: 0.20
+  L5: 0.15
+
+terminology:
+  - term: scarification
+    term_zh: "刻痕装饰"
+    definition:
+      en: "The practice of intentionally scarring the skin in culturally specific patterns serving as markers of identity, status, beauty, and spiritual protection."
+    category: technique
+    l_levels: [L2, L3, L5]
+    aliases: ["cicatrization", "skin marking"]
+    source: "African body art traditions"
+
+  - term: kente patterns
+    term_zh: "肯特布纹样"
+    definition:
+      en: "Woven strip-cloth patterns from the Asante and Ewe peoples of Ghana, where specific color combinations and geometric motifs carry symbolic meanings."
+    category: material
+    l_levels: [L2, L3]
+    aliases: ["kente cloth", "kente weaving"]
+    source: "Asante and Ewe textile traditions, Ghana"
+
+  - term: adinkra
+    term_zh: "阿丁克拉符号"
+    definition:
+      en: "Visual symbols originating from the Akan people of Ghana, each encoding philosophical concepts, proverbs, or historical events through abstract geometric forms."
+    category: aesthetics
+    l_levels: [L3, L4, L5]
+    aliases: ["adinkra symbols", "Akan symbols"]
+    source: "Akan cultural tradition, Ghana"
+
+  - term: masquerade
+    term_zh: "面具仪式"
+    definition:
+      en: "A performative art form combining carved masks, costumes, music, and dance in ceremonial contexts, where the mask transforms the wearer into a spiritual intermediary."
+    category: aesthetics
+    l_levels: [L3, L4, L5]
+    aliases: ["ritual mask", "ceremonial masking", "spirit embodiment"]
+    source: "West and Central African masking traditions"
+
+  - term: lost-wax casting
+    term_zh: "青铜失蜡铸造"
+    definition:
+      en: "A sophisticated metalworking technique perfected by the Benin and Ife kingdoms, producing highly detailed bronze sculptures through the cire perdue process."
+    category: technique
+    l_levels: [L2, L3]
+    aliases: ["cire perdue", "Benin bronze casting", "Ife bronze technique"]
+    source: "Benin Kingdom and Ife Kingdom, 12th-19th century"
+
+  - term: adobe architecture
+    term_zh: "泥塑建筑"
+    definition:
+      en: "Earth-based construction tradition producing monumental structures such as the Great Mosque of Djenne, where organic forms and annual community replastering rituals fuse architecture with living cultural practice."
+    category: technique
+    l_levels: [L2, L3, L5]
+    aliases: ["mud-brick architecture", "Sudano-Sahelian architecture", "banco construction"]
+    source: "West African Sudano-Sahelian architectural tradition"
+
+taboos:
+  - rule: "Do not use colonialist terminology such as 'primitive art' or 'tribal art'"
+    severity: critical
+    l_levels: [L3, L4, L5]
+    trigger_patterns: ["primitive", "tribal", "fetish", "idol", "artifact"]
+    explanation: "These terms originate from colonial classification that denied African works the status of 'art'. Use 'African traditional art' or specific cultural identifiers."
+
+  - rule: "Do not evaluate African sculptural proportions by Western naturalistic anatomical standards"
+    severity: high
+    l_levels: [L2, L3, L5]
+    trigger_patterns: ["disproportionate", "anatomically incorrect", "distorted body", "unrealistic proportions", "crude form"]
+    explanation: "Deliberate proportional emphasis in African sculpture serves symbolic, spiritual, and communicative functions within their cultural systems."
+
+pipeline:
+  variant: default

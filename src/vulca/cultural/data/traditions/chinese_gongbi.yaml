@@ -1,0 +1,77 @@
+name: chinese_gongbi
+display_name:
+  en: "Chinese Meticulous Painting (Gongbi)"
+  zh: "中国工笔"
+  ja: "中国工筆画"
+
+weights:
+  L1: 0.15
+  L2: 0.30
+  L3: 0.25
+  L4: 0.15
+  L5: 0.15
+
+terminology:
+  - term: meticulous heavy-color painting
+    term_zh: "工笔重彩"
+    definition:
+      en: "A refined painting style combining precise brushwork with richly layered mineral pigments, producing vivid and detailed representations of subjects."
+    category: technique
+    l_levels: [L2, L3]
+    aliases: ["gongbi zhongcai", "fine brushwork with heavy colors"]
+    source: "VULCA-Bench-v1 terminology annotations"
+
+  - term: triple alum nine washes
+    term_zh: "三矾九染"
+    definition:
+      en: "A layering technique applying alum fixative between successive translucent color washes to build depth and luminosity in gongbi painting."
+    category: technique
+    l_levels: [L2]
+    aliases: ["sanfan jiuran", "alum and wash layering"]
+    source: "Traditional gongbi painting manuals"
+
+  - term: plain line drawing
+    term_zh: "白描"
+    definition:
+      en: "A monochrome ink-line technique using only varying line weights without color or shading to delineate forms, fundamental to gongbi painting."
+    category: technique
+    l_levels: [L1, L2]
+    aliases: ["bai miao", "line drawing", "outline drawing"]
+    source: "Li Gonglin (Song Dynasty)"
+
+  - term: outline and fill color
+    term_zh: "勾勒填彩"
+    definition:
+      en: "The fundamental gongbi method of first drawing precise ink outlines, then filling enclosed areas with layered mineral pigments."
+    category: technique
+    l_levels: [L2]
+    aliases: ["goule tiancai", "outline-fill method"]
+    source: "Traditional gongbi painting manuals"
+
+  - term: boneless technique
+    term_zh: "没骨法"
+    definition:
+      en: "A gongbi sub-technique applying color directly without ink outlines, creating soft, naturalistic forms through layered washes of mineral and plant pigments."
+    category: technique
+    l_levels: [L2, L3]
+    aliases: ["mogu fa", "boneless painting", "no-outline technique"]
+    source: "Yun Shouping (Qing Dynasty)"
+
+  - term: court academy painting
+    term_zh: "院体画"
+    definition:
+      en: "The painting style cultivated in imperial academies, emphasizing technical virtuosity, realistic representation of nature, and refined elegance."
+    category: aesthetics
+    l_levels: [L3, L4]
+    aliases: ["yuanti hua", "academy style", "court painting"]
+    source: "Song Dynasty Imperial Painting Academy tradition"
+
+taboos:
+  - rule: "Do not equate gongbi meticulous precision with lack of creativity or artistic expression"
+    severity: medium
+    l_levels: [L4, L5]
+    trigger_patterns: ["merely decorative", "lacks creativity", "mechanical", "mere craft", "just illustration"]
+    explanation: "Gongbi painting's technical refinement is a vehicle for subtle emotional expression and philosophical meaning."
+
+pipeline:
+  variant: default

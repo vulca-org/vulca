@@ -1,0 +1,50 @@
+# VULCA TRADITION.yaml Template
+# Copy this file, rename to your_tradition.yaml, and fill in the details.
+# See schema.json for full validation rules.
+# Submit a PR to contribute your tradition!
+
+name: your_tradition_name          # snake_case, unique identifier
+
+display_name:
+  en: "Your Tradition Name"        # required
+  zh: "你的传统名称"                # optional
+  ja: "あなたの伝統名"             # optional
+
+# L1-L5 evaluation weights (MUST sum to 1.0)
+# L1: Visual Perception    — color, form, spatial layout
+# L2: Technical Analysis   — medium mastery, brushwork, craft
+# L3: Cultural Context     — tradition-specific knowledge, symbolism
+# L4: Critical Interpretation — meaning-making, narrative, dialogue
+# L5: Philosophical Aesthetic — worldview, beauty concept, transcendence
+weights:
+  L1: 0.20
+  L2: 0.20
+  L3: 0.20
+  L4: 0.20
+  L5: 0.20
+
+# Key terminology for this tradition (minimum 3, recommended 5-8)
+terminology:
+  - term: "example term"           # English term name
+    term_zh: "示例术语"            # Chinese term (optional)
+    definition:
+      en: "A clear definition explaining this concept and its significance."
+    category: technique            # technique | aesthetics | composition | philosophy | material
+    l_levels: [L2, L3]            # which L-levels this term relates to
+    aliases: ["alternate name"]    # other names for this term
+    source: "Where this term comes from"
+
+# Cultural taboos and evaluation pitfalls (minimum 1)
+taboos:
+  - rule: "Do not [specific mistake to avoid]"
+    severity: medium               # low | medium | high | critical
+    l_levels: [L3, L4]
+    trigger_patterns: ["phrase that indicates this mistake"]
+    explanation: "Why this is problematic in this cultural context."
+
+# Pipeline configuration
+pipeline:
+  variant: default                 # default | chinese_xieyi | western_academic
+  # overrides:                     # optional pipeline parameter overrides
+  #   accept_threshold: 0.85
+  #   max_rounds: 2

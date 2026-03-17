@@ -1,0 +1,192 @@
+"""Pipeline subsystem types -- input/output, state, definitions, events."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any
+
+
+class RunStatus(str, Enum):
+    """Pipeline execution status."""
+
+    PENDING = "pending"
+    RUNNING = "running"
+    WAITING_HUMAN = "waiting_human"
+    COMPLETED = "completed"
+    FAILED = "failed"
+
+
+class EventType(str, Enum):
+    """Pipeline event types for streaming progress."""
+
+    STAGE_STARTED = "stage_started"
+    STAGE_COMPLETED = "stage_completed"
+    DECISION_MADE = "decision_made"
+    HUMAN_REQUIRED = "human_required"
+    HUMAN_RECEIVED = "human_received"
+    PIPELINE_COMPLETED = "pipeline_completed"
+    PIPELINE_FAILED = "pipeline_failed"
+    SESSION_DIGEST = "session_digest"
+    SUBSTAGE_STARTED = "substage_started"
+    SUBSTAGE_COMPLETED = "substage_completed"
+
+
+@dataclass
+class PipelineEvent:
+    """A single event emitted during pipeline execution."""
+
+    event_type: EventType
+    stage: str = ""
+    round_num: int = 0
+    payload: dict[str, Any] = field(default_factory=dict)
+    timestamp_ms: int = 0
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "event_type": self.event_type.value,
+            "stage": self.stage,
+            "round_num": self.round_num,
+            "payload": self.payload,
+            "timestamp_ms": self.timestamp_ms,
+        }
+
+
+@dataclass
+class RoundSnapshot:
+    """Snapshot of a single pipeline round."""
+
+    round_num: int
+    candidates_generated: int = 0
+    best_candidate_id: str = ""
+    weighted_total: float = 0.0
+    dimension_scores: dict[str, float] = field(default_factory=dict)
+    decision: str = ""
+    latency_ms: int = 0
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "round_num": self.round_num,
+            "candidates_generated": self.candidates_generated,
+            "best_candidate_id": self.best_candidate_id,
+            "weighted_total": self.weighted_total,
+            "dimension_scores": self.dimension_scores,
+            "decision": self.decision,
+            "latency_ms": self.latency_ms,
+        }
+
+
+@dataclass
+class PipelineInput:
+    """Input to a VULCA creation/evaluation pipeline."""
+
+    subject: str
+    intent: str = ""
+    tradition: str = "default"
+    provider: str = "nb2"
+    n_candidates: int = 2
+    max_rounds: int = 3
+    template: str = "default"
+    enable_hitl: bool = False
+    enable_sub_stages: bool = False
+    node_params: dict[str, dict] = field(default_factory=dict)
+    custom_nodes: list[str] | None = None
+    custom_edges: list[tuple[str, str]] | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "subject": self.subject,
+            "intent": self.intent,
+            "tradition": self.tradition,
+            "provider": self.provider,
+            "n_candidates": self.n_candidates,
+            "max_rounds": self.max_rounds,
+            "template": self.template,
+            "enable_hitl": self.enable_hitl,
+            "enable_sub_stages": self.enable_sub_stages,
+        }
+
+
+@dataclass
+class PipelineOutput:
+    """Output from a completed pipeline run."""
+
+    session_id: str
+    status: str = "completed"
+    tradition: str = "default"
+    best_candidate_id: str = ""
+    best_image_url: str = ""
+    final_scores: dict[str, float] = field(default_factory=dict)
+    weighted_total: float = 0.0
+    rounds: list[RoundSnapshot] = field(default_factory=list)
+    events: list[PipelineEvent] = field(default_factory=list)
+    total_rounds: int = 0
+    total_latency_ms: int = 0
+    total_cost_usd: float = 0.0
+    risk_flags: list[str] = field(default_factory=list)
+    recommendations: list[str] = field(default_factory=list)
+    summary: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "session_id": self.session_id,
+            "status": self.status,
+            "tradition": self.tradition,
+            "best_candidate_id": self.best_candidate_id,
+            "best_image_url": self.best_image_url,
+            "final_scores": self.final_scores,
+            "weighted_total": self.weighted_total,
+            "rounds": [r.to_dict() for r in self.rounds],
+            "total_rounds": self.total_rounds,
+            "total_latency_ms": self.total_latency_ms,
+            "total_cost_usd": self.total_cost_usd,
+            "risk_flags": self.risk_flags,
+            "recommendations": self.recommendations,
+            "summary": self.summary,
+        }
+
+
+@dataclass(frozen=True)
+class ConditionalEdge:
+    """A conditional edge in a pipeline graph template."""
+
+    source: str
+    route_function: str
+    destinations: dict[str, str] = field(default_factory=dict)
+
+
+@dataclass(frozen=True)
+class PipelineDefinition:
+    """Immutable definition of a pipeline topology.
+
+    This is a first-class evolvable object -- pipelines can be created,
+    modified, and evolved by the system or by users.
+    """
+
+    name: str
+    display_name: str = ""
+    description: str = ""
+    entry_point: str = "scout"
+    nodes: tuple[str, ...] = ("scout", "draft", "critic", "queen")
+    edges: tuple[tuple[str, str], ...] = (
+        ("scout", "draft"),
+        ("draft", "critic"),
+        ("critic", "queen"),
+    )
+    conditional_edges: tuple[ConditionalEdge, ...] = ()
+    enable_loop: bool = True
+    parallel_critic: bool = False
+    interrupt_before: tuple[str, ...] = ()
+    node_specs: dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "name": self.name,
+            "display_name": self.display_name,
+            "description": self.description,
+            "entry_point": self.entry_point,
+            "nodes": list(self.nodes),
+            "edges": [list(e) for e in self.edges],
+            "enable_loop": self.enable_loop,
+            "parallel_critic": self.parallel_critic,
+        }
