@@ -15,8 +15,12 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 
-from app.prototype.trajectory.trajectory_recorder import TrajectoryRecorder
-from app.prototype.trajectory.trajectory_types import TrajectoryRecord
+try:
+    from app.prototype.trajectory.trajectory_recorder import TrajectoryRecorder
+    from app.prototype.trajectory.trajectory_types import TrajectoryRecord
+except ImportError:
+    TrajectoryRecorder = None  # type: ignore[misc,assignment]
+    TrajectoryRecord = dict  # type: ignore[misc,assignment]
 
 logger = logging.getLogger(__name__)
 

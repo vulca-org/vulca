@@ -17,7 +17,10 @@ from app.prototype.media.recipes import (
     get_default_recipe,
     get_recipe,
 )
-from app.prototype.media.sub_stage_executor import SubStageExecutor
+try:
+    from app.prototype.media.sub_stage_executor import SubStageExecutor
+except ImportError:
+    SubStageExecutor = None  # type: ignore[misc,assignment]
 
 __all__ = [
     "CreationRecipe",

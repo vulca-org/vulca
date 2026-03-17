@@ -35,7 +35,10 @@ from app.prototype.agents.queen_types import (
     QueenDecision,
     QueenOutput,
 )
-from app.prototype.agents.trajectory_rag import TrajectoryRAGService
+try:
+    from app.prototype.agents.trajectory_rag import TrajectoryRAGService
+except ImportError:
+    TrajectoryRAGService = None  # type: ignore[misc,assignment]
 
 logger = logging.getLogger(__name__)
 

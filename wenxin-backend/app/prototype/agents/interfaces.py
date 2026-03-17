@@ -30,7 +30,32 @@ For LLM model routing, add entries to
 ``app.prototype.agents.model_router.MODELS``.
 """
 
-from app.prototype.graph.base_agent import BaseAgent
-from app.prototype.graph.registry import AgentRegistry
+try:
+    from app.prototype.graph.base_agent import BaseAgent
+    from app.prototype.graph.registry import AgentRegistry
+except ImportError:
+    # graph/ module removed in unified merge -- provide minimal stubs
+    from abc import ABC, abstractmethod
+
+    class BaseAgent(ABC):  # type: ignore[no-redef]
+        name: str = ""
+        description: str = ""
+
+        @abstractmethod
+        def execute(self, state: dict) -> dict: ...
+
+    class AgentRegistry:  # type: ignore[no-redef]
+        _agents: dict = {}
+
+        @classmethod
+        def register(cls, name: str):
+            def decorator(agent_cls):
+                cls._agents[name] = agent_cls
+                return agent_cls
+            return decorator
+
+        @classmethod
+        def list_agents(cls) -> list[str]:
+            return list(cls._agents.keys())
 
 __all__ = ["BaseAgent", "AgentRegistry"]

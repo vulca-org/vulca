@@ -54,13 +54,20 @@ from app.prototype.cultural_pipelines.dynamic_weights import compute_dynamic_wei
 from app.prototype.cultural_pipelines.pipeline_router import CulturalPipelineRouter
 from app.prototype.agents.prompt_enhancer import PromptEnhancer
 from app.prototype.tools.scout_service import get_scout_service
-from app.prototype.trajectory.trajectory_recorder import TrajectoryRecorder
-from app.prototype.trajectory.trajectory_types import (
-    CriticFindings,
-    DecisionLog,
-    DraftPlan,
-    PromptTrace,
-)
+try:
+    from app.prototype.trajectory.trajectory_recorder import TrajectoryRecorder
+    from app.prototype.trajectory.trajectory_types import (
+        CriticFindings,
+        DecisionLog,
+        DraftPlan,
+        PromptTrace,
+    )
+except ImportError:
+    TrajectoryRecorder = None  # type: ignore[misc,assignment]
+    CriticFindings = dict  # type: ignore[misc,assignment]
+    DecisionLog = dict  # type: ignore[misc,assignment]
+    DraftPlan = dict  # type: ignore[misc,assignment]
+    PromptTrace = dict  # type: ignore[misc,assignment]
 
 logger = logging.getLogger(__name__)
 
