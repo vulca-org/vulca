@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import logging
+import os
 import time
 import uuid
-from typing import Any
+from typing import Any, Callable
 
 from vulca.pipeline.node import NodeContext, PipelineNode
 from vulca.pipeline.types import (
@@ -20,6 +21,14 @@ from vulca.pipeline.types import (
 
 logger = logging.getLogger("vulca")
 
+# Cost per image by provider (USD)
+_COST_PER_IMAGE: dict[str, float] = {
+    "nb2": 0.067,
+    "mock": 0.0,
+    "openai": 0.04,
+    "replicate": 0.05,
+}
+
 
 def _resolve_nodes(
     definition: PipelineDefinition,
@@ -33,12 +42,11 @@ def _resolve_nodes(
         "decide": DecideNode,
     }
 
-    # Also accept legacy names
     _ALIASES: dict[str, str] = {
         "draft": "generate",
         "critic": "evaluate",
         "queen": "decide",
-        "scout": "generate",  # Scout → just generate in slim mode
+        "scout": "generate",
     }
 
     nodes: dict[str, PipelineNode] = {}
@@ -50,7 +58,6 @@ def _resolve_nodes(
                 f"Unknown node {node_name!r} (canonical: {canonical!r}). "
                 f"Available: {list(_BUILTINS)}"
             )
-        # Pass node_specs if available
         specs = definition.node_specs.get(node_name, {})
         if specs and canonical == "decide":
             nodes[node_name] = cls(**specs)
@@ -80,7 +87,6 @@ def _topo_order(definition: PipelineDefinition) -> list[str]:
             if neighbor not in visited:
                 queue.append(neighbor)
 
-    # Add any unvisited nodes at the end
     for n in definition.nodes:
         if n not in visited:
             order.append(n)
@@ -88,9 +94,20 @@ def _topo_order(definition: PipelineDefinition) -> list[str]:
     return order
 
 
+def _resolve_api_key(pipeline_input: PipelineInput) -> str:
+    """Resolve API key from input, then environment."""
+    return (
+        pipeline_input.api_key
+        or os.environ.get("GEMINI_API_KEY", "")
+        or os.environ.get("GOOGLE_API_KEY", "")
+    )
+
+
 async def execute(
     definition: PipelineDefinition,
     pipeline_input: PipelineInput,
+    *,
+    event_callback: Callable[[PipelineEvent], None] | None = None,
 ) -> PipelineOutput:
     """Execute a pipeline definition to completion.
 
@@ -100,6 +117,8 @@ async def execute(
         The pipeline topology (nodes, edges, conditional edges).
     pipeline_input:
         Input parameters (subject, provider, max_rounds, etc.).
+    event_callback:
+        Optional callback invoked for each event (for SSE streaming).
 
     Returns
     -------
@@ -113,14 +132,22 @@ async def execute(
     node_instances = _resolve_nodes(definition)
     exec_order = _topo_order(definition)
 
+    api_key = _resolve_api_key(pipeline_input)
+
     ctx = NodeContext(
         subject=pipeline_input.subject,
         intent=pipeline_input.intent or pipeline_input.subject,
         tradition=pipeline_input.tradition,
         provider=pipeline_input.provider,
-        api_key="",
+        api_key=api_key,
         max_rounds=pipeline_input.max_rounds,
+        max_cost_usd=pipeline_input.max_cost_usd,
     )
+
+    def _emit(event: PipelineEvent) -> None:
+        events.append(event)
+        if event_callback:
+            event_callback(event)
 
     status = RunStatus.RUNNING
     final_decision = "stop"
@@ -131,7 +158,7 @@ async def execute(
 
         for node_name in exec_order:
             node = node_instances[node_name]
-            events.append(
+            _emit(
                 PipelineEvent(
                     event_type=EventType.STAGE_STARTED,
                     stage=node_name,
@@ -144,7 +171,7 @@ async def execute(
                 output = await node.run(ctx)
             except Exception as exc:
                 logger.error("Node %s failed: %s", node_name, exc)
-                events.append(
+                _emit(
                     PipelineEvent(
                         event_type=EventType.PIPELINE_FAILED,
                         stage=node_name,
@@ -160,14 +187,38 @@ async def execute(
             if output:
                 ctx.data.update(output)
 
-            events.append(
+            # Include node output in stage_completed payload
+            _emit(
                 PipelineEvent(
                     event_type=EventType.STAGE_COMPLETED,
                     stage=node_name,
                     round_num=round_num,
+                    payload=output or {},
                     timestamp_ms=int((time.monotonic() - t0) * 1000),
                 )
             )
+
+            # Cost gate: check after generate nodes
+            if node_name in ("generate", "draft") and ctx.provider != "mock":
+                cost_per = _COST_PER_IMAGE.get(ctx.provider, 0.067)
+                ctx.cost_usd += cost_per
+                if ctx.cost_usd > ctx.max_cost_usd:
+                    logger.warning(
+                        "Cost gate: $%.2f > $%.2f limit",
+                        ctx.cost_usd,
+                        ctx.max_cost_usd,
+                    )
+                    _emit(
+                        PipelineEvent(
+                            event_type=EventType.PIPELINE_FAILED,
+                            stage=node_name,
+                            round_num=round_num,
+                            payload={"error": "Cost gate exceeded", "cost_usd": ctx.cost_usd},
+                            timestamp_ms=int((time.monotonic() - t0) * 1000),
+                        )
+                    )
+                    status = RunStatus.FAILED
+                    break
 
         if status == RunStatus.FAILED:
             break
@@ -188,12 +239,21 @@ async def execute(
             )
         )
 
-        events.append(
+        _emit(
             PipelineEvent(
                 event_type=EventType.DECISION_MADE,
                 stage="decide",
                 round_num=round_num,
-                payload={"decision": decision},
+                payload={
+                    "decision": decision,
+                    "weighted_total": ctx.get("weighted_total", 0.0),
+                    "round": round_num,
+                    "budget_state": {
+                        "rounds_used": round_num,
+                        "max_rounds": ctx.max_rounds,
+                        "cost_usd": ctx.cost_usd,
+                    },
+                },
                 timestamp_ms=int((time.monotonic() - t0) * 1000),
             )
         )
@@ -204,18 +264,24 @@ async def execute(
         elif decision == "stop":
             status = RunStatus.COMPLETED
             break
-        # decision == "rerun" → continue loop
 
     if status == RunStatus.RUNNING:
         status = RunStatus.COMPLETED
 
     total_ms = int((time.monotonic() - t0) * 1000)
 
-    events.append(
+    _emit(
         PipelineEvent(
             event_type=EventType.PIPELINE_COMPLETED,
             round_num=len(rounds),
-            payload={"status": status.value, "decision": final_decision},
+            payload={
+                "status": status.value,
+                "decision": final_decision,
+                "total_cost_usd": ctx.cost_usd,
+                "total_rounds": len(rounds),
+                "total_latency_ms": total_ms,
+                "best_candidate_id": ctx.get("candidate_id", ""),
+            },
             timestamp_ms=total_ms,
         )
     )
@@ -238,5 +304,6 @@ async def execute(
         events=events,
         total_rounds=len(rounds),
         total_latency_ms=total_ms,
+        total_cost_usd=ctx.cost_usd,
         summary=summary,
     )

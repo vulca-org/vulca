@@ -18,6 +18,8 @@ class NodeContext:
     api_key: str = ""
     round_num: int = 0
     max_rounds: int = 3
+    cost_usd: float = 0.0
+    max_cost_usd: float = 2.0
     data: dict[str, Any] = field(default_factory=dict)
 
     def set(self, key: str, value: Any) -> None:
