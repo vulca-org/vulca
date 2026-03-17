@@ -107,7 +107,7 @@ export default function TermsPage() {
               VULCA provides AI model evaluation services, including:
             </p>
             <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-              <li>Cultural understanding assessment across 47 dimensions and 8 cultural perspectives</li>
+              <li>Cultural understanding assessment across L1-L5 dimensions and 9 cultural traditions</li>
               <li>Benchmark evaluation using our curated artwork dataset</li>
               <li>Comparative analysis and diagnostic reports</li>
               <li>API access for programmatic evaluation</li>

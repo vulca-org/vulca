@@ -152,7 +152,7 @@ export default function HomePage() {
           </div>
 
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            9 agents. 8 traditions. One pipeline.
+            4 agents. 9 traditions. One pipeline.
           </h2>
           <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
             Scout, Draft, Critic, and Queen collaborate to create and evaluate cultural art in real time.
@@ -175,7 +175,7 @@ export default function HomePage() {
                 <Paintbrush className="w-10 h-10 text-[#C87F4A] mx-auto mb-4" />
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Create</h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  Generate cultural art through multi-agent collaboration with 8 cultural traditions.
+                  Generate cultural art through multi-agent collaboration with 9 cultural traditions.
                 </p>
               </IOSCardContent>
             </IOSCard>
@@ -185,7 +185,7 @@ export default function HomePage() {
                 <Eye className="w-10 h-10 text-[#5F8A50] mx-auto mb-4" />
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Critique</h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  47-dimension evaluation across 8 cultural perspectives with explainable diagnostics.
+                  L1-L5 cultural evaluation across 9 traditions with explainable diagnostics.
                 </p>
               </IOSCardContent>
             </IOSCard>
