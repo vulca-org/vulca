@@ -311,7 +311,7 @@ export default function LeaderboardPage() {
         modelCount={filteredData.length}
       />
 
-      {/* CTA Banner */}
+      {/* Open Source CTA */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -320,21 +320,15 @@ export default function LeaderboardPage() {
       >
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <div>
-            <h3 className="text-2xl font-bold mb-2">Need Custom Model Evaluation?</h3>
+            <h3 className="text-2xl font-bold mb-2">Try Full 47D Evaluation</h3>
             <p className="text-slate-100">
-              Get comprehensive 47-dimensional analysis with cultural perspective insights for your AI models.
+              Run comprehensive cultural evaluation with all 47 dimensions and 8 cultural perspectives in Canvas.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3">
-            <Link to="/demo">
-              <IOSButton variant="glass" size="lg" className="bg-white/20 hover:bg-white/30 text-white border-white/30">
-                <Calendar className="w-5 h-5 mr-2" />
-                Book a Demo
-              </IOSButton>
-            </Link>
-            <Link to="/pricing">
+            <Link to="/canvas">
               <IOSButton variant="secondary" size="lg" className="bg-white text-slate-700 hover:bg-slate-50">
-                View Pricing
+                Open Canvas
                 <ArrowRight className="w-4 h-4 ml-2" />
               </IOSButton>
             </Link>

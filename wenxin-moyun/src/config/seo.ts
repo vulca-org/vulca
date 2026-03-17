@@ -51,56 +51,6 @@ export const PAGE_SEO: Record<string, PageSEO> = {
     description: 'AI models evaluated on cultural understanding. Compare GPT-4V, Claude, Gemini and more across 47 dimensions.',
     keywords: ['AI models', 'model comparison', 'VLM ranking', 'benchmark results'],
   },
-  '/skills': {
-    title: 'Skills - VULCA',
-    description: 'Browse and create evaluation skills for the VULCA platform. Extend the creation pipeline with custom skill executors.',
-    keywords: ['VULCA skills', 'skill marketplace', 'evaluation skills', 'custom skills'],
-  },
-  '/pricing': {
-    title: 'Pricing - VULCA',
-    description: 'VULCA pricing plans: Free demo, Pilot evaluation, and Enterprise solutions for AI cultural understanding assessment.',
-    keywords: ['VULCA pricing', 'AI evaluation pricing', 'enterprise AI', 'pilot program'],
-  },
-  '/customers': {
-    title: 'Customers - VULCA',
-    description: 'See how AI labs, research institutions, and museums use VULCA for cultural AI evaluation and benchmarking.',
-    keywords: ['VULCA customers', 'case studies', 'AI research', 'cultural AI'],
-  },
-  '/solutions': {
-    title: 'Solutions - VULCA',
-    description: 'VULCA solutions for AI Labs, Research Institutions, and Museums. Comprehensive cultural AI evaluation.',
-    keywords: ['VULCA solutions', 'AI labs', 'research', 'museums'],
-  },
-  '/solutions/ai-labs': {
-    title: 'AI Labs Solution - VULCA',
-    description: 'Pre-release cultural audits, model selection, and release gates for AI companies and model vendors.',
-    keywords: ['AI labs', 'model evaluation', 'pre-release audit', 'cultural safety'],
-  },
-  '/solutions/research': {
-    title: 'Research Solution - VULCA',
-    description: 'Reproducible benchmarks, academic citations, and version-controlled evaluations for research publications.',
-    keywords: ['AI research', 'academic benchmark', 'reproducible evaluation', 'citation'],
-  },
-  '/solutions/museums': {
-    title: 'Museums Solution - VULCA',
-    description: 'AI curator validation, multi-perspective interpretation, and cultural sensitivity for digital exhibitions.',
-    keywords: ['museum AI', 'cultural AI', 'digital exhibition', 'art interpretation'],
-  },
-  '/trust': {
-    title: 'Trust & Security - VULCA',
-    description: 'Data security, privacy, audit trails, and compliance information for VULCA evaluation platform.',
-    keywords: ['data security', 'privacy', 'compliance', 'audit trail'],
-  },
-  '/exhibitions': {
-    title: 'Exhibitions - VULCA',
-    description: 'AI-generated art critiques and multi-persona dialogues. Explore cultural interpretations of contemporary art.',
-    keywords: ['AI art critique', 'digital exhibition', 'cultural dialogue', 'art interpretation'],
-  },
-  '/demo': {
-    title: 'Book a Demo - VULCA',
-    description: 'Schedule a demo of VULCA evaluation platform. Get personalized assessment for your AI models.',
-    keywords: ['book demo', 'VULCA demo', 'AI evaluation demo', 'contact sales'],
-  },
 };
 
 /**

@@ -161,7 +161,7 @@ export default function PrivacyPage() {
               <li><strong>Monitoring:</strong> Continuous security monitoring and incident response procedures.</li>
             </ul>
             <p className="text-gray-600 dark:text-gray-400 mt-4">
-              For more details, visit our <Link to="/trust" className="text-slate-600 dark:text-slate-400 hover:underline">Trust & Security</Link> page.
+              For more details, see our Trust &amp; Security documentation.
             </p>
           </IOSCardContent>
         </IOSCard>
@@ -287,10 +287,10 @@ export default function PrivacyPage() {
               privacy@vulcaart.art
             </IOSButton>
           </a>
-          <Link to="/trust">
+          <Link to="/">
             <IOSButton variant="secondary" size="lg" className="flex items-center gap-2">
               <Shield className="w-5 h-5" />
-              View Security & Trust
+              Back to Home
             </IOSButton>
           </Link>
         </div>

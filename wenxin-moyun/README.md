@@ -1,21 +1,20 @@
-# VULCA - Cultural AI Evaluation Platform
+# VULCA - AI-Native Creation Organism
 
-**VULCA** (Visually-grounded Understanding and Learning for Cultural Aesthetics) is a comprehensive 47-dimension evaluation framework for assessing AI models' cultural and artistic understanding across 8 cultural perspectives.
+Create, critique, and evolve cultural art through multi-agent AI pipelines.
 
 ## Key Features
 
-- **47-Dimension Evaluation**: Comprehensive framework covering creativity, technique, emotion, context, innovation, and impact
-- **8 Cultural Perspectives**: Eastern (Chinese, Japanese, Islamic, South Asian) + Western (Classical, Contemporary, Latin American) + Universal (African)
-- **Reproducible Benchmarking**: Version-controlled evaluations with BibTeX citation support
-- **Enterprise Reports**: Detailed diagnostic reports for model selection and release decisions
-- **Public Demo**: Free access to leaderboards, VULCA demo, and cross-cultural exhibitions
+- **Multi-Agent Pipeline**: Scout, Draft, Critic, and Queen agents collaborate in real time
+- **8 Cultural Traditions**: Chinese, Japanese, Islamic, South Asian, Classical, Contemporary, Latin American, African
+- **47-Dimension Evaluation**: Comprehensive cultural understanding assessment
+- **Node Editor**: Visual pipeline editor with 30 node types
+- **Open Source**: Apache 2.0 licensed
 
 ## Tech Stack
 
 - **Frontend**: React 19 + TypeScript 5.8 + Vite 7.1
-- **Styling**: Tailwind CSS 4.1 with iOS Design System
+- **Styling**: Tailwind CSS 4.1 with Art Professional Design System
 - **State**: Zustand 4.4
-- **Charts**: Recharts 3.1
 - **Animation**: Framer Motion 12.23
 - **Testing**: Playwright E2E
 
@@ -35,48 +34,15 @@ npm run build
 npm run test:e2e
 ```
 
-## Project Structure
-
-```
-src/
-├── components/
-│   ├── ios/           # iOS Design System components
-│   ├── vulca/         # VULCA evaluation components
-│   ├── report/        # Report generation components
-│   └── common/        # Shared components
-├── pages/
-│   ├── HomePage.tsx           # Marketing landing
-│   ├── LeaderboardPage.tsx    # Model rankings
-│   ├── ModelDetailPage.tsx    # Model details + report
-│   ├── vulca/                 # VULCA demo pages
-│   ├── solutions/             # Solution pages
-│   └── exhibitions/           # Cross-cultural exhibitions
-├── hooks/             # Custom React hooks
-├── services/          # API services
-├── utils/             # Utilities
-└── types/             # TypeScript definitions
-```
-
 ## URL Structure
 
 ```
-/                    - Marketing homepage
-/product             - Product overview
-/solutions/*         - Solution pages (AI Labs, Research, Museums)
-/customers           - Customer cases
-/pricing             - Pricing tiers
-/trust               - Trust & Security
-/demo                - Book a demo
-
-/models              - Public leaderboard
+/                    - Homepage
+/canvas              - Creation + evaluation (core product)
+/gallery             - Community gallery
+/models              - Model rankings
 /model/:id           - Model details
-/model/:id/report    - Evaluation report
-/vulca               - VULCA demo
-/exhibitions         - Cross-cultural evidence
-
-/methodology         - Framework documentation
-/dataset             - Dataset access
-/papers              - Academic papers
+/research            - Methodology, dataset, papers
 ```
 
 ## VULCA Framework
@@ -98,16 +64,16 @@ src/
 
 ## Deployment
 
-- **Frontend**: GCP Cloud Storage (static hosting)
-- **Backend**: GCP Cloud Run
-- **Database**: Cloud SQL (PostgreSQL)
+- **Frontend**: Firebase Hosting (vulcaart.art)
+- **Backend**: GCP Cloud Run (asia-east1)
+- **Database**: Supabase PostgreSQL
 - **CI/CD**: GitHub Actions
 
 ## License
 
-MIT
+Apache 2.0
 
-## Contact
+## Links
 
-- GitHub: [EMNLP2025-VULCA](https://github.com/vulca-org/vulca)
-- Email: hello@vulca.ai
+- GitHub: [vulca-org/vulca](https://github.com/vulca-org/vulca)
+- Website: [vulcaart.art](https://vulcaart.art)

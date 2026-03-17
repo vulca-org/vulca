@@ -395,15 +395,9 @@ export default function CompareModelsPage() {
           with detailed evidence samples and actionable recommendations.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link to="/demo">
-            <IOSButton variant="primary" size="lg" className="flex items-center gap-2">
-              <Calendar className="w-5 h-5" />
-              Book a Demo
-            </IOSButton>
-          </Link>
           <Link to="/canvas">
-            <IOSButton variant="secondary" size="lg" className="flex items-center gap-2">
-              Try VULCA Demo
+            <IOSButton variant="primary" size="lg" className="flex items-center gap-2">
+              Try in Canvas
               <ArrowRight className="w-4 h-4" />
             </IOSButton>
           </Link>

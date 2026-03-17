@@ -28,65 +28,10 @@ const pagesSEO: Record<string, { title: string; description: string; keywords: s
     description: 'L1-L5 cognitive framework, 6D to 47D evaluation, methodology, dataset, and publications.',
     keywords: 'VULCA research, methodology, dataset, EMNLP 2025, cultural AI',
   },
-  '/pricing': {
-    title: 'Pricing - VULCA AI Evaluation',
-    description: 'Free tier, Pilot ($2,500), and Enterprise ($15,000+) plans. Start evaluating your AI models for cultural understanding today.',
-    keywords: 'AI pricing, evaluation pricing, VULCA plans, enterprise AI',
-  },
-  '/demo': {
-    title: 'Book a Demo - VULCA',
-    description: 'Schedule a personalized demo to see how VULCA can help evaluate your AI models for cultural understanding.',
-    keywords: 'AI demo, evaluation demo, book demo, VULCA demo',
-  },
-  '/trust': {
-    title: 'Trust & Security - VULCA',
-    description: 'Enterprise-grade security with AES-256 encryption, RBAC, audit logging, and GDPR compliance. Your data, your control.',
-    keywords: 'AI security, data privacy, GDPR compliance, enterprise security',
-  },
-  '/data-ethics': {
-    title: 'Data & Ethics - VULCA',
-    description: 'Our commitment to ethical AI evaluation. Data processing policies, AI ethics framework, and model rights.',
-    keywords: 'AI ethics, data ethics, responsible AI, model rights',
-  },
-  '/sop': {
-    title: 'Standard Operating Procedures - VULCA',
-    description: 'Our 5-step evaluation process. From benchmark selection to report generation in a clear, repeatable methodology.',
-    keywords: 'AI SOP, evaluation process, pilot evaluation, enterprise SOP',
-  },
   '/models': {
     title: 'Models - VULCA',
     description: '42+ AI models evaluated across 47 dimensions. Compare GPT, Claude, Gemini, and more.',
     keywords: 'AI models, model comparison, GPT, Claude, AI ranking',
-  },
-  '/solutions': {
-    title: 'Solutions - VULCA',
-    description: 'Solutions for AI Labs, Research Institutions, and Museums. Cultural AI evaluation for every team.',
-    keywords: 'AI solutions, enterprise AI, research AI, museum AI',
-  },
-  '/solutions/ai-labs': {
-    title: 'AI Labs Solution - VULCA',
-    description: 'Pre-release cultural audits and 47D regression tracking for AI labs and companies.',
-    keywords: 'AI labs, model selection, pre-release audit, AI company',
-  },
-  '/solutions/research': {
-    title: 'Research Solution - VULCA',
-    description: 'Citation-ready reports and version-controlled reproducibility for academic research.',
-    keywords: 'AI research, academic AI, reproducible research, citation',
-  },
-  '/solutions/museums': {
-    title: 'Museums Solution - VULCA',
-    description: 'Multi-cultural validation and interpretive AI quality for museums and galleries.',
-    keywords: 'museum AI, cultural AI, gallery AI, interpretive AI',
-  },
-  '/customers': {
-    title: 'Customers - VULCA',
-    description: 'Trusted by AI labs, researchers, and museums worldwide for cultural AI evaluation.',
-    keywords: 'VULCA customers, AI customers, testimonials',
-  },
-  '/exhibitions': {
-    title: 'Exhibitions - VULCA',
-    description: 'AI-powered art exhibitions and cultural dialogues. Explore the intersection of AI and art.',
-    keywords: 'AI exhibitions, art exhibitions, cultural AI',
   },
 };
 

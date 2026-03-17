@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { ThemeProvider } from './contexts/ThemeContext';
 import Layout from './components/common/Layout';
 import ErrorBoundary from './components/common/ErrorBoundary';
-import RequireAdmin from './components/common/RequireAdmin';
 import { cacheUtils } from './services/api';
 import { useEffect, Suspense, lazy } from 'react';
 import type { ComponentType } from 'react';
@@ -18,21 +17,9 @@ const GalleryPage = lazy(() => import('./pages/GalleryPage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const RegisterPage = lazy(() => import('./pages/RegisterPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
-const PricingPage = lazy(() => import('./pages/PricingPage'));
-const CustomersPage = lazy(() => import('./pages/CustomersPage'));
-const TrustPage = lazy(() => import('./pages/TrustPage'));
-const BookDemoPage = lazy(() => import('./pages/BookDemoPage'));
-const DemoConfirmationPage = lazy(() => import('./pages/DemoConfirmationPage'));
-const SolutionsPage = lazy(() => import('./pages/solutions/SolutionsPage'));
-const ExhibitionsPage = lazy(() => import('./pages/exhibitions/ExhibitionsPage'));
-const ExhibitionDetailPage = lazy(() => import('./pages/exhibitions/ExhibitionDetailPage'));
-const ArtworkPage = lazy(() => import('./pages/exhibitions/ArtworkPage'));
 const ResearchPage = lazy(() => import('./pages/ResearchPage'));
-const SkillsPage = lazy(() => import('./pages/SkillsPage'));
-const AdminDashboardPage = lazy(() => import('./pages/AdminDashboardPage'));
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
 const TermsPage = lazy(() => import('./pages/TermsPage'));
-const CompareModelsPage = lazy(() => import('./pages/CompareModelsPage'));
 const PrototypePage = lazy(() => import('./pages/prototype/PrototypePage'));
 
 /** Reduces Suspense boilerplate for lazy-loaded routes. */
@@ -93,33 +80,27 @@ function App() {
               <Route path="/models" element={<LazyRoute component={ModelsPage} text="Loading Models..." />} />
               <Route path="/models/:category" element={<LazyRoute component={ModelsPage} text="Loading Models..." />} />
               <Route path="/model/:id" element={<LazyRoute component={ModelDetailPage} text="Loading Model..." />} />
-              <Route path="/compare/:comparison" element={<LazyRoute component={CompareModelsPage} text="Loading Comparison..." />} />
               <Route path="/research" element={<LazyRoute component={ResearchPage} text="Loading Research..." />} />
-              <Route path="/skills" element={<LazyRoute component={SkillsPage} text="Loading Skills..." />} />
-              <Route path="/admin" element={
-                <RequireAdmin>
-                  <LazyRoute component={AdminDashboardPage} text="Loading Admin..." />
-                </RequireAdmin>
-              } />
-
-              {/* ── Marketing ── */}
-              <Route path="/pricing" element={<LazyRoute component={PricingPage} text="Loading Pricing..." />} />
-              <Route path="/customers" element={<LazyRoute component={CustomersPage} text="Loading Customers..." />} />
-              <Route path="/trust" element={<LazyRoute component={TrustPage} text="Loading Trust..." />} />
-              <Route path="/demo" element={<LazyRoute component={BookDemoPage} text="Loading Demo..." />} />
-              <Route path="/demo/confirmation" element={<LazyRoute component={DemoConfirmationPage} />} />
-              <Route path="/solutions" element={<LazyRoute component={SolutionsPage} text="Loading Solutions..." />} />
-
-              {/* ── Exhibitions ── */}
-              <Route path="/exhibitions" element={<LazyRoute component={ExhibitionsPage} text="Loading Exhibitions..." />} />
-              <Route path="/exhibitions/:id" element={<LazyRoute component={ExhibitionDetailPage} text="Loading Exhibition..." />} />
-              <Route path="/exhibitions/:id/:artworkId" element={<LazyRoute component={ArtworkPage} text="Loading Artwork..." />} />
 
               {/* ── Legal ── */}
               <Route path="/privacy" element={<LazyRoute component={PrivacyPage} />} />
               <Route path="/terms" element={<LazyRoute component={TermsPage} />} />
 
-              {/* ── Legacy redirects (consolidated) ── */}
+              {/* ── Redirects for removed pages ── */}
+              <Route path="/pricing" element={<Navigate to="/" replace />} />
+              <Route path="/demo" element={<Navigate to="/" replace />} />
+              <Route path="/demo/confirmation" element={<Navigate to="/" replace />} />
+              <Route path="/solutions" element={<Navigate to="/" replace />} />
+              <Route path="/solutions/*" element={<Navigate to="/" replace />} />
+              <Route path="/exhibitions" element={<Navigate to="/gallery" replace />} />
+              <Route path="/exhibitions/*" element={<Navigate to="/gallery" replace />} />
+              <Route path="/skills" element={<Navigate to="/canvas" replace />} />
+              <Route path="/admin" element={<Navigate to="/" replace />} />
+              <Route path="/compare/*" element={<Navigate to="/models" replace />} />
+              <Route path="/trust" element={<Navigate to="/" replace />} />
+              <Route path="/customers" element={<Navigate to="/" replace />} />
+
+              {/* ── Legacy redirects (preserved) ── */}
               <Route path="/vulca" element={<Navigate to="/canvas" replace />} />
               <Route path="/create" element={<Navigate to="/canvas" replace />} />
               <Route path="/evaluate" element={<Navigate to="/canvas" replace />} />
@@ -131,16 +112,13 @@ function App() {
               <Route path="/model/:id/report" element={<Navigate to="/models" replace />} />
               <Route path="/product" element={<Navigate to="/" replace />} />
               <Route path="/changelog" element={<Navigate to="/" replace />} />
-              <Route path="/pilot" element={<Navigate to="/demo" replace />} />
-              <Route path="/methodology" element={<Navigate to="/research?tab=methodology" replace />} />
-              <Route path="/dataset" element={<Navigate to="/research?tab=dataset" replace />} />
-              <Route path="/papers" element={<Navigate to="/research?tab=papers" replace />} />
+              <Route path="/pilot" element={<Navigate to="/" replace />} />
+              <Route path="/methodology" element={<Navigate to="/research" replace />} />
+              <Route path="/dataset" element={<Navigate to="/research" replace />} />
+              <Route path="/papers" element={<Navigate to="/research" replace />} />
               <Route path="/knowledge-base" element={<Navigate to="/research" replace />} />
-              <Route path="/data-ethics" element={<Navigate to="/trust?tab=data-ethics" replace />} />
-              <Route path="/sop" element={<Navigate to="/trust?tab=sop" replace />} />
-              <Route path="/solutions/ai-labs" element={<Navigate to="/solutions?tab=ai-labs" replace />} />
-              <Route path="/solutions/research" element={<Navigate to="/solutions?tab=research" replace />} />
-              <Route path="/solutions/museums" element={<Navigate to="/solutions?tab=museums" replace />} />
+              <Route path="/data-ethics" element={<Navigate to="/" replace />} />
+              <Route path="/sop" element={<Navigate to="/" replace />} />
 
               {/* 404 */}
               <Route path="*" element={<LazyRoute component={NotFoundPage} />} />

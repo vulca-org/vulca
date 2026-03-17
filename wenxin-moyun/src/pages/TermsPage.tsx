@@ -114,7 +114,7 @@ export default function TermsPage() {
               <li>Enterprise features including custom benchmarks and continuous monitoring</li>
             </ul>
             <p className="text-gray-600 dark:text-gray-400 mt-4">
-              Service features may vary by subscription tier. See our <Link to="/pricing" className="text-amber-700 dark:text-amber-400 hover:underline">Pricing</Link> page for details.
+              Service features may vary. See our GitHub repository for details.
             </p>
           </IOSCardContent>
         </IOSCard>
@@ -213,7 +213,7 @@ export default function TermsPage() {
           />
           <IOSCardContent className="prose dark:prose-invert max-w-none">
             <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-              <li><strong>Pricing:</strong> Current pricing is available at <Link to="/pricing" className="text-amber-700 dark:text-amber-400 hover:underline">vulcaart.art/pricing</Link>. Prices are subject to change with 30 days notice.</li>
+              <li><strong>Pricing:</strong> VULCA is open source under Apache 2.0. Self-hosted usage is free.</li>
               <li><strong>Billing:</strong> Paid plans are billed in advance on a monthly or annual basis.</li>
               <li><strong>Pilot Engagements:</strong> One-time payments are due upon signing the engagement agreement.</li>
               <li><strong>Refunds:</strong> We offer refunds within 14 days of purchase if you are not satisfied, provided no evaluation reports have been generated.</li>

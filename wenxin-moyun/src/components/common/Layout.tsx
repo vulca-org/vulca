@@ -1,7 +1,6 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
-import FloatingCTA from './FloatingCTA';
 import PageErrorBoundary from './PageErrorBoundary';
 import CacheStats from './CacheStats';
 import Vulca3DBackground from './Vulca3DBackground';
@@ -19,6 +18,8 @@ export default function Layout() {
   // Update SEO meta tags on route change
   useSEO();
 
+  const isCanvas = location.pathname === '/canvas';
+
   // Get page name from route for error boundary
   const getPageName = (pathname: string) => {
     const routes: Record<string, string> = {
@@ -26,14 +27,11 @@ export default function Layout() {
       '/canvas': 'Canvas',
       '/gallery': 'Gallery',
       '/models': 'Models',
-      '/admin': 'Admin',
       '/research': 'Research',
-      '/skills': 'Skills',
     };
 
     // Handle dynamic routes
     if (pathname.startsWith('/model/')) return 'Model Detail';
-    if (pathname.startsWith('/exhibitions/')) return 'Exhibition';
 
     return routes[pathname] || 'Page';
   };
@@ -44,7 +42,7 @@ export default function Layout() {
     setPerformanceLevel(level);
     console.log('Device performance level:', level);
   }, []);
-  
+
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden bg-[var(--bg-base)] transition-colors duration-300">
       {/* 3D Background - Scale AI inspired (React Three Fiber) */}
@@ -59,7 +57,7 @@ export default function Layout() {
 
       {/* Cache Statistics (development only) */}
       {process.env.NODE_ENV === 'development' && <CacheStats />}
-      
+
       {/* Content layer */}
       <div className="relative z-10 flex flex-col min-h-screen">
         {/* Skip to main content link for accessibility */}
@@ -71,17 +69,20 @@ export default function Layout() {
         </a>
         <Header />
         <main id="main-content" className="flex-grow" tabIndex={-1}>
-          <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
-            <PageErrorBoundary pageName={getPageName(location.pathname)}>
+          {isCanvas ? (
+            <PageErrorBoundary pageName="Canvas">
               <Outlet />
             </PageErrorBoundary>
-          </div>
+          ) : (
+            <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
+              <PageErrorBoundary pageName={getPageName(location.pathname)}>
+                <Outlet />
+              </PageErrorBoundary>
+            </div>
+          )}
         </main>
-        <Footer />
+        {!isCanvas && <Footer />}
       </div>
-
-      {/* Floating CTA - Shows after scrolling */}
-      <FloatingCTA scrollThreshold={400} showOnMobile={true} />
     </div>
   );
 }
