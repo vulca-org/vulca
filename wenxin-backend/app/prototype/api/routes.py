@@ -346,7 +346,7 @@ async def get_run_status(task_id: str) -> RunStatusResponse:
 @router.get("/runs/{task_id}/events")
 async def stream_events(task_id: str) -> StreamingResponse:
     """SSE event stream for a pipeline run."""
-    if task_id not in _orchestrators and task_id not in _run_metadata:
+    if task_id not in _run_metadata:
         raise HTTPException(404, f"Run {task_id} not found")
 
     async def generate():
@@ -573,48 +573,35 @@ async def toggle_node_expand(node_name: str, task_id: str = Query(default="globa
 
 
 def _build_status_response(task_id: str) -> RunStatusResponse:
-    """Build status response from orchestrator state and checkpoints."""
-    orchestrator = _orchestrators.get(task_id)
+    """Build status response from event buffer, metadata, or checkpoints."""
+    # Check event buffer for status
+    if task_id in _run_metadata:
+        with _buffer_lock:
+            buffer = list(_event_buffers.get(task_id, []))
 
-    # Try to get from orchestrator run state
-    if orchestrator:
-        run_state = orchestrator.get_run_state(task_id)
-        if run_state:
-            # Check event buffer for completion
-            with _buffer_lock:
-                buffer = list(_event_buffers.get(task_id, []))
-            completion_event = None
-            for ev in reversed(buffer):
-                if ev.event_type in (EventType.PIPELINE_COMPLETED, EventType.PIPELINE_FAILED):
-                    completion_event = ev
-                    break
+        # Find completion event
+        completion_event = None
+        for ev in reversed(buffer):
+            evt = ev.event_type if isinstance(ev.event_type, str) else ev.event_type.value
+            if evt in ("pipeline_completed", "pipeline_failed"):
+                completion_event = ev
+                break
 
-            if completion_event:
-                p = completion_event.payload
-                # Guard against non-dict payloads (e.g. tuple from LangGraph state)
-                if not isinstance(p, dict):
-                    p = p._asdict() if hasattr(p, '_asdict') else {}
-                return RunStatusResponse(
-                    task_id=task_id,
-                    status=run_state.status.value,
-                    current_stage=run_state.current_stage,
-                    current_round=run_state.current_round,
-                    final_decision=p.get("final_decision"),
-                    best_candidate_id=p.get("best_candidate_id"),
-                    total_rounds=p.get("total_rounds", 0),
-                    total_latency_ms=p.get("total_latency_ms", 0),
-                    total_cost_usd=p.get("total_cost_usd", 0.0),
-                    success=p.get("success"),
-                    error=p.get("error"),
-                    stages=[s.to_dict() if hasattr(s, 'to_dict') else s for s in p.get("stages", [])],
-                )
-
+        if completion_event:
+            p = completion_event.payload if isinstance(completion_event.payload, dict) else {}
+            status = "completed" if "completed" in str(completion_event.event_type) else "failed"
             return RunStatusResponse(
                 task_id=task_id,
-                status=run_state.status.value,
-                current_stage=run_state.current_stage,
-                current_round=run_state.current_round,
+                status=status,
+                final_decision=p.get("decision"),
+                best_candidate_id=p.get("best_candidate_id"),
+                total_rounds=p.get("total_rounds", 0),
+                total_latency_ms=p.get("total_latency_ms", 0),
+                total_cost_usd=p.get("total_cost_usd", 0.0),
             )
+
+        # Still running
+        return RunStatusResponse(task_id=task_id, status="running")
 
     # Fallback: check checkpoint
     saved = load_pipeline_output(task_id)
