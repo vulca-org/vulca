@@ -43,7 +43,10 @@ class ParallelDimensionScorer:
         Falls back to sequential scoring (via CriticRules.score) if the
         parallel execution encounters errors.
         """
-        from app.prototype.agents.critic_rules import CriticRules
+        try:
+            from app.prototype.agents.critic_rules import CriticRules
+        except ImportError:
+            raise RuntimeError("critic_rules module removed; use vulca.pipeline.nodes.evaluate instead")
 
         rules = CriticRules()
 

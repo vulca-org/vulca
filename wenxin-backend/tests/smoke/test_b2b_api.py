@@ -129,9 +129,9 @@ class TestKnowledgeBase:
 class TestEvaluate:
     """POST /api/v1/evaluate — requires Bearer auth, mocked VLM."""
 
-    @patch("app.prototype.agents.vlm_critic.VLMCritic")
-    def test_evaluate_with_base64(self, mock_vlm_cls, client: TestClient):
-        mock_vlm_cls.get.return_value = _make_mock_vlm()
+    @patch("vulca._vlm.score_image", new_callable=AsyncMock, side_effect=lambda *a, **kw: _mock_vlm_scores())
+    def test_evaluate_with_base64(self, mock_vlm, client: TestClient):
+        # vulca._vlm.score_image already mocked by decorator
         resp = client.post(
             "/api/v1/evaluate",
             json={
@@ -152,9 +152,9 @@ class TestEvaluate:
         assert "latency_ms" in data
         assert data["weighted_total"] > 0
 
-    @patch("app.prototype.agents.vlm_critic.VLMCritic")
-    def test_evaluate_response_schema(self, mock_vlm_cls, client: TestClient):
-        mock_vlm_cls.get.return_value = _make_mock_vlm()
+    @patch("vulca._vlm.score_image", new_callable=AsyncMock, side_effect=lambda *a, **kw: _mock_vlm_scores())
+    def test_evaluate_response_schema(self, mock_vlm, client: TestClient):
+        # vulca._vlm.score_image already mocked by decorator
         resp = client.post(
             "/api/v1/evaluate",
             json={
@@ -176,10 +176,10 @@ class TestEvaluate:
         assert isinstance(data["latency_ms"], int)
         assert data["tradition_used"] == "chinese_xieyi"
 
-    @patch("app.prototype.agents.vlm_critic.VLMCritic")
-    def test_evaluate_all_traditions(self, mock_vlm_cls, client: TestClient):
+    @patch("vulca._vlm.score_image", new_callable=AsyncMock, side_effect=lambda *a, **kw: _mock_vlm_scores())
+    def test_evaluate_all_traditions(self, mock_vlm, client: TestClient):
         """Evaluate endpoint works for all 9 known traditions."""
-        mock_vlm_cls.get.return_value = _make_mock_vlm()
+        # vulca._vlm.score_image already mocked by decorator
         traditions = [
             "default", "chinese_xieyi", "chinese_gongbi", "western_academic",
             "islamic_geometric", "japanese_traditional", "watercolor",
@@ -214,9 +214,9 @@ class TestIdentifyTradition:
         new_callable=AsyncMock,
         return_value='{"tradition": "chinese_xieyi", "confidence": 0.85, "alternatives": [{"tradition": "japanese_traditional", "confidence": 0.10}]}',
     )
-    @patch("app.prototype.agents.vlm_critic.VLMCritic")
-    def test_identify_tradition(self, mock_vlm_cls, mock_call, client: TestClient):
-        mock_vlm_cls.get.return_value = _make_mock_vlm()
+    @patch("vulca._vlm.score_image", new_callable=AsyncMock, side_effect=lambda *a, **kw: _mock_vlm_scores())
+    def test_identify_tradition(self, mock_vlm, mock_call, client: TestClient):
+        # vulca._vlm.score_image already mocked by decorator
         resp = client.post(
             "/api/v1/identify-tradition",
             json={"image_base64": _1x1_PNG_B64},
@@ -234,9 +234,9 @@ class TestIdentifyTradition:
         new_callable=AsyncMock,
         return_value='{"tradition": "chinese_xieyi", "confidence": 0.85, "alternatives": []}',
     )
-    @patch("app.prototype.agents.vlm_critic.VLMCritic")
-    def test_identify_returns_valid_tradition(self, mock_vlm_cls, mock_call, client: TestClient):
-        mock_vlm_cls.get.return_value = _make_mock_vlm()
+    @patch("vulca._vlm.score_image", new_callable=AsyncMock, side_effect=lambda *a, **kw: _mock_vlm_scores())
+    def test_identify_returns_valid_tradition(self, mock_vlm, mock_call, client: TestClient):
+        # vulca._vlm.score_image already mocked by decorator
         resp = client.post(
             "/api/v1/identify-tradition",
             json={"image_base64": _1x1_PNG_B64},

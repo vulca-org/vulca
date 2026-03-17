@@ -2,7 +2,11 @@
 
 from __future__ import annotations
 
-from app.prototype.agents.critic_rules import _get_cultural_keywords
+try:
+    from app.prototype.agents.critic_rules import _get_cultural_keywords
+except ImportError:
+    def _get_cultural_keywords(tradition: str) -> list[str]:
+        return []
 
 __all__ = [
     "RiskTagger",

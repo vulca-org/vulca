@@ -9,7 +9,10 @@ from __future__ import annotations
 from app.prototype.agents.critic_config import CriticConfig
 from app.prototype.agents.draft_config import DraftConfig
 from app.prototype.agents.queen_config import QueenConfig
-from app.prototype.orchestrator.orchestrator import PipelineOrchestrator
+try:
+    from app.prototype.orchestrator.orchestrator import PipelineOrchestrator
+except ImportError:
+    PipelineOrchestrator = None  # type: ignore[misc,assignment]
 from app.prototype.pipeline.pipeline_types import (
     PipelineInput,
     PipelineOutput,

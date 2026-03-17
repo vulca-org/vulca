@@ -43,7 +43,6 @@ from app.prototype.api.schemas import (
 )
 from app.prototype.checkpoints.pipeline_checkpoint import load_pipeline_output
 from app.prototype.orchestrator.events import EventType, PipelineEvent
-from app.prototype.orchestrator.orchestrator import PipelineOrchestrator
 from app.prototype.orchestrator.run_state import RunStatus
 from app.prototype.pipeline.pipeline_types import PipelineInput
 
@@ -149,65 +148,20 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
     cr_cfg = CriticConfig(use_vlm=(provider != "mock"))
     q_cfg = QueenConfig(max_rounds=req.max_rounds)
 
-    # Phase 5D: GraphOrchestrator is now default; PipelineOrchestrator as fallback
-    GraphOrchestratorClass = _get_graph_orchestrator_class()
-    if GraphOrchestratorClass is not None:
-        template_name = req.template
+    # ONE PIPELINE: use vulca/ engine directly (Phase 9B)
+    from vulca.pipeline.templates import DEFAULT, TEMPLATES
+    from vulca.pipeline.types import PipelineInput as VulcaPipelineInput
 
-        # If custom topology provided, register a transient template
-        if req.custom_nodes is not None and req.custom_edges is not None:
-            try:
-                from app.prototype.graph.templates.template_model import GraphTemplate
-                from app.prototype.graph.templates.template_registry import TemplateRegistry
-                custom_tmpl = GraphTemplate(
-                    name=f"_custom_{task_id}",
-                    display_name="Custom Pipeline",
-                    description="User-defined topology",
-                    entry_point=req.custom_nodes[0] if req.custom_nodes else "scout",
-                    nodes=req.custom_nodes,
-                    edges=req.custom_edges,
-                )
-                TemplateRegistry.register(custom_tmpl)
-                template_name = custom_tmpl.name
-            except (ImportError, Exception):
-                pass  # Fall back to default template
+    template_name = req.template or "default"
+    definition = TEMPLATES.get(template_name, DEFAULT)
 
-        # Extract skill/substage config from node_params
-        draft_params = (req.node_params or {}).get("draft", {})
-        if draft_params.get("enable_sub_stages"):
-            d_cfg.enable_sub_stages = True
-            if draft_params.get("recipe_name"):
-                d_cfg.recipe_name = draft_params["recipe_name"]
-
-        skill_names = (req.node_params or {}).get("_skill_hook_names", [])
-        enable_skill = bool(skill_names) or (req.node_params or {}).get("_enable_skill_hook", False)
-
-        orchestrator = GraphOrchestratorClass(
-            draft_config=d_cfg.to_dict(),
-            critic_config=cr_cfg.to_dict(),
-            queen_config=q_cfg.to_dict(),
-            enable_hitl=req.enable_hitl,
-            enable_agent_critic=req.enable_agent_critic,
-            max_rounds=req.max_rounds,
-            template=template_name,
-            enable_skill_hook=enable_skill,
-            skill_hook_names=skill_names if skill_names else None,
-        )
-    else:
-        # Fallback to PipelineOrchestrator if GraphOrchestrator unavailable
-        orchestrator = PipelineOrchestrator(
-            draft_config=d_cfg,
-            critic_config=cr_cfg,
-            queen_config=q_cfg,
-            enable_hitl=req.enable_hitl,
-            enable_archivist=True,
-            enable_agent_critic=req.enable_agent_critic and not is_mock,
-            enable_fix_it_plan=req.enable_agent_critic and not is_mock,
-            enable_parallel_critic=req.enable_parallel_critic,
-            enable_prompt_enhancer=enable_prompt_enhancer,
-            enable_llm_queen=enable_llm_queen,
-        )
-    _orchestrators[task_id] = orchestrator
+    vulca_input = VulcaPipelineInput(
+        subject=req.subject,
+        intent=req.intent or req.subject,
+        tradition=req.tradition,
+        provider=provider,
+        max_rounds=req.max_rounds,
+    )
     _run_metadata[task_id] = {
         "subject": req.subject,
         "tradition": req.tradition,
@@ -228,48 +182,54 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
 
     def _run_in_background() -> None:
       try:
-        from app.prototype.api.create_routes import _build_implicit_feedback, _process_pipeline_event
+        from vulca.pipeline.engine import execute
+        from app.prototype.api.create_routes import _build_implicit_feedback
         from app.prototype.digestion.feature_extractor import extract_cultural_features
         from app.prototype.session.store import SessionStore
-        from app.prototype.session.types import RoundSnapshot, SessionDigest
+        from app.prototype.session.types import SessionDigest
 
-        rounds: list[RoundSnapshot] = []
-        final_scores: dict[str, float] = {}
-        candidate_image_urls: dict[str, str] = {}
-        state: dict = {"best_candidate_id": "", "total_rounds": 0, "total_cost": 0.0}
         t0 = time.monotonic()
 
-        for event in orchestrator.run_stream(pipeline_input):
+        def _emit_event(event) -> None:
             with _buffer_lock:
                 _event_buffers.setdefault(task_id, []).append(event)
-            _process_pipeline_event(event, rounds, candidate_image_urls, final_scores, state)
 
-        # Mark this run as completed so cleanup won't remove it prematurely
+        loop = asyncio.new_event_loop()
+        try:
+            output = loop.run_until_complete(
+                execute(definition, vulca_input, event_callback=_emit_event)
+            )
+        finally:
+            loop.close()
+
+        # Mark this run as completed
         if task_id in _run_metadata:
             _run_metadata[task_id]["completed"] = True
 
         # Persist session digest for Gallery
-        if final_scores or state["total_rounds"] > 0:
+        if output.final_scores or output.total_rounds > 0:
             elapsed_ms = int((time.monotonic() - t0) * 1000)
-            best_image_url = candidate_image_urls.get(state["best_candidate_id"], "")
             digest = SessionDigest(
                 session_id=task_id,
                 mode="create",
                 intent=req.intent or req.subject,
                 tradition=req.tradition,
                 subject=req.subject,
-                rounds=rounds,
-                final_scores=final_scores,
-                final_weighted_total=sum(final_scores.values()) / max(len(final_scores), 1),
-                best_image_url=best_image_url,
-                total_rounds=state["total_rounds"],
+                rounds=[],
+                final_scores=output.final_scores,
+                final_weighted_total=output.weighted_total,
+                best_image_url=output.best_image_url,
+                total_rounds=output.total_rounds,
                 total_latency_ms=elapsed_ms,
-                total_cost_usd=state["total_cost"],
-                feedback=_build_implicit_feedback(state, final_scores),
+                total_cost_usd=output.total_cost_usd,
+                feedback=_build_implicit_feedback(
+                    {"best_candidate_id": output.best_candidate_id, "total_rounds": output.total_rounds},
+                    output.final_scores,
+                ),
             )
             digest.cultural_features = extract_cultural_features(
                 tradition=req.tradition,
-                final_scores=final_scores,
+                final_scores=output.final_scores,
                 risk_flags=[],
             )
             SessionStore.get().append(digest)
@@ -280,17 +240,11 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
             if now - _last_evolution_time >= _EVOLUTION_INTERVAL_SEC:
                 _last_evolution_time = now
                 try:
-                    from app.prototype.feedback.store import FeedbackStore
-                    FeedbackStore.get().sync_from_sessions()
-                except Exception:
-                    pass
-                try:
                     from app.prototype.digestion.context_evolver import ContextEvolver
                     ContextEvolver().evolve()
                 except Exception:
                     pass  # Non-fatal
 
-        # Cleanup expired runs after pipeline completes
         _cleanup_expired_runs()
       except Exception:
         logging.getLogger("vulca.pipeline").exception(

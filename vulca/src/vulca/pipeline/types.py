@@ -84,14 +84,12 @@ class PipelineInput:
     intent: str = ""
     tradition: str = "default"
     provider: str = "nb2"
+    api_key: str = ""
     n_candidates: int = 2
     max_rounds: int = 3
+    max_cost_usd: float = 2.0
     template: str = "default"
-    enable_hitl: bool = False
-    enable_sub_stages: bool = False
     node_params: dict[str, dict] = field(default_factory=dict)
-    custom_nodes: list[str] | None = None
-    custom_edges: list[tuple[str, str]] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -101,9 +99,8 @@ class PipelineInput:
             "provider": self.provider,
             "n_candidates": self.n_candidates,
             "max_rounds": self.max_rounds,
+            "max_cost_usd": self.max_cost_usd,
             "template": self.template,
-            "enable_hitl": self.enable_hitl,
-            "enable_sub_stages": self.enable_sub_stages,
         }
 
 

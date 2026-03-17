@@ -368,49 +368,20 @@ async def _run_create_mode_sync(
     session_id: str,
     t0: float,
 ) -> CreateResponse:
-    """Run full pipeline synchronously and return JSON."""
-    from app.prototype.agents.critic_config import CriticConfig
-    from app.prototype.agents.draft_config import DraftConfig
-    from app.prototype.agents.queen_config import QueenConfig
-    from app.prototype.orchestrator.orchestrator import PipelineOrchestrator
-    from app.prototype.pipeline.pipeline_types import PipelineInput
+    """Run full pipeline synchronously via vulca/ engine and return JSON."""
+    from vulca.pipeline.engine import execute
+    from vulca.pipeline.templates import DEFAULT
+    from vulca.pipeline.types import PipelineInput as VulcaPipelineInput
 
-    api_key = os.environ.get("GOOGLE_API_KEY", "") or os.environ.get("GEMINI_API_KEY", "")
-
-    d_cfg = DraftConfig(
-        provider=req.provider,
-        api_key=api_key,
-        n_candidates=req.n_candidates,
-    )
-    q_cfg = QueenConfig(max_rounds=req.max_rounds)
-
-    orchestrator = PipelineOrchestrator(
-        draft_config=d_cfg,
-        critic_config=CriticConfig(),
-        queen_config=q_cfg,
-        enable_agent_critic=req.enable_agent_critic,
-        enable_fix_it_plan=req.enable_agent_critic,
-    )
-
-    pipeline_input = PipelineInput(
-        task_id=session_id,
+    vulca_input = VulcaPipelineInput(
         subject=req.subject or req.intent,
-        cultural_tradition=req.tradition,
+        intent=req.intent,
+        tradition=req.tradition,
+        provider=req.provider,
+        max_rounds=req.max_rounds,
     )
 
-    # Collect events from synchronous run
-    rounds: list[RoundSnapshot] = []
-    final_scores: dict[str, float] = {}
-    candidate_image_urls: dict[str, str] = {}
-    state: dict = {"best_candidate_id": "", "total_rounds": 0, "total_cost": 0.0}
-
-    for event in orchestrator.run_stream(pipeline_input):
-        _process_pipeline_event(event, rounds, candidate_image_urls, final_scores, state)
-
-    best_candidate_id = state["best_candidate_id"]
-    total_rounds = state["total_rounds"]
-    total_cost = state["total_cost"]
-    best_image_url = candidate_image_urls.get(best_candidate_id, "")
+    output = await execute(DEFAULT, vulca_input)
 
     elapsed_ms = int((time.monotonic() - t0) * 1000)
 
@@ -422,22 +393,24 @@ async def _run_create_mode_sync(
         tradition=req.tradition,
         subject=req.subject or req.intent,
         user_type=req.user_type,
-        rounds=rounds,
-        final_scores=final_scores,
-        best_image_url=best_image_url,
-        total_rounds=total_rounds,
+        rounds=[],
+        final_scores=output.final_scores,
+        best_image_url=output.best_image_url,
+        total_rounds=output.total_rounds,
         total_latency_ms=elapsed_ms,
-        total_cost_usd=total_cost,
-        feedback=_build_implicit_feedback(state, final_scores),
+        total_cost_usd=output.total_cost_usd,
+        feedback=_build_implicit_feedback(
+            {"best_candidate_id": output.best_candidate_id, "total_rounds": output.total_rounds},
+            output.final_scores,
+        ),
     )
     digest.cultural_features = extract_cultural_features(
         tradition=req.tradition,
-        final_scores=final_scores,
+        final_scores=output.final_scores,
         risk_flags=[],
     )
     SessionStore.get().append(digest)
 
-    # Fire-and-forget Tier-2 LLM enrichment
     asyncio.ensure_future(_enrich_cultural_features_background(
         digest, intent=req.intent, tradition=req.tradition,
     ))
@@ -446,12 +419,12 @@ async def _run_create_mode_sync(
         session_id=session_id,
         mode="create",
         tradition=req.tradition,
-        best_candidate_id=best_candidate_id,
-        best_image_url=best_image_url,
-        total_rounds=total_rounds,
-        rounds=[r.to_dict() for r in rounds],
+        best_candidate_id=output.best_candidate_id,
+        best_image_url=output.best_image_url,
+        total_rounds=output.total_rounds,
+        rounds=[r.to_dict() for r in output.rounds],
         latency_ms=elapsed_ms,
-        cost_usd=total_cost,
+        cost_usd=output.total_cost_usd,
     )
 
 
@@ -459,55 +432,36 @@ def _run_create_mode_stream(
     req: CreateRequest,
     session_id: str,
 ) -> StreamingResponse:
-    """Run full pipeline with SSE streaming (mirrors routes.py pattern)."""
-    from app.prototype.agents.critic_config import CriticConfig
-    from app.prototype.agents.draft_config import DraftConfig
-    from app.prototype.agents.queen_config import QueenConfig
-    from app.prototype.orchestrator.orchestrator import PipelineOrchestrator
-    from app.prototype.pipeline.pipeline_types import PipelineInput
+    """Run full pipeline with SSE streaming via vulca/ engine."""
+    from vulca.pipeline.engine import execute
+    from vulca.pipeline.templates import DEFAULT
+    from vulca.pipeline.types import PipelineInput as VulcaPipelineInput
 
-    api_key = os.environ.get("GOOGLE_API_KEY", "") or os.environ.get("GEMINI_API_KEY", "")
-
-    d_cfg = DraftConfig(
-        provider=req.provider,
-        api_key=api_key,
-        n_candidates=req.n_candidates,
-    )
-    q_cfg = QueenConfig(max_rounds=req.max_rounds)
-
-    orchestrator = PipelineOrchestrator(
-        draft_config=d_cfg,
-        critic_config=CriticConfig(),
-        queen_config=q_cfg,
-        enable_agent_critic=req.enable_agent_critic,
-        enable_fix_it_plan=req.enable_agent_critic,
-    )
-
-    pipeline_input = PipelineInput(
-        task_id=session_id,
+    vulca_input = VulcaPipelineInput(
         subject=req.subject or req.intent,
-        cultural_tradition=req.tradition,
+        intent=req.intent,
+        tradition=req.tradition,
+        provider=req.provider,
+        max_rounds=req.max_rounds,
     )
 
     with _create_buffer_lock:
         _create_event_buffers[session_id] = []
 
+    def _emit_event(event) -> None:
+        with _create_buffer_lock:
+            _create_event_buffers.setdefault(session_id, []).append(event)
+
     def _run_in_background() -> None:
         t0 = time.monotonic()
-        rounds: list[RoundSnapshot] = []
-        final_scores: dict[str, float] = {}
-        candidate_image_urls: dict[str, str] = {}
-        state: dict = {"best_candidate_id": "", "total_rounds": 0, "total_cost": 0.0}
+        loop = asyncio.new_event_loop()
+        try:
+            output = loop.run_until_complete(
+                execute(DEFAULT, vulca_input, event_callback=_emit_event)
+            )
+        finally:
+            loop.close()
 
-        for event in orchestrator.run_stream(pipeline_input):
-            with _create_buffer_lock:
-                _create_event_buffers.setdefault(session_id, []).append(event)
-            _process_pipeline_event(event, rounds, candidate_image_urls, final_scores, state)
-
-        best_candidate_id = state["best_candidate_id"]
-        best_image_url = candidate_image_urls.get(best_candidate_id, "")
-
-        # Store digest after pipeline completes
         elapsed_ms = int((time.monotonic() - t0) * 1000)
         digest = SessionDigest(
             session_id=session_id,
@@ -516,28 +470,30 @@ def _run_create_mode_stream(
             tradition=req.tradition,
             subject=req.subject or req.intent,
             user_type=req.user_type,
-            rounds=rounds,
-            final_scores=final_scores,
-            best_image_url=best_image_url,
-            total_rounds=state["total_rounds"],
+            rounds=[],
+            final_scores=output.final_scores,
+            best_image_url=output.best_image_url,
+            total_rounds=output.total_rounds,
             total_latency_ms=elapsed_ms,
-            total_cost_usd=state["total_cost"],
-            feedback=_build_implicit_feedback(state, final_scores),
+            total_cost_usd=output.total_cost_usd,
+            feedback=_build_implicit_feedback(
+                {"best_candidate_id": output.best_candidate_id, "total_rounds": output.total_rounds},
+                output.final_scores,
+            ),
         )
         digest.cultural_features = extract_cultural_features(
             tradition=req.tradition,
-            final_scores=final_scores,
+            final_scores=output.final_scores,
             risk_flags=[],
         )
         SessionStore.get().append(digest)
 
-        # Tier-2 LLM enrichment (within background thread, need new event loop)
         try:
-            loop = asyncio.new_event_loop()
-            loop.run_until_complete(_enrich_cultural_features_background(
+            loop2 = asyncio.new_event_loop()
+            loop2.run_until_complete(_enrich_cultural_features_background(
                 digest, intent=req.intent, tradition=req.tradition,
             ))
-            loop.close()
+            loop2.close()
         except Exception as exc:
             logger.warning("Streaming mode Tier-2 enrichment failed: %s", exc)
 

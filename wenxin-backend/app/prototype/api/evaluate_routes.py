@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import time
 from pathlib import Path
 from typing import Any
@@ -230,22 +231,31 @@ async def evaluate_image(
                 "taboo_violations": len(evidence.taboo_violations),
             }
 
-        # 4. VLM scoring
-        from app.prototype.agents.vlm_critic import VLMCritic
+        # 4. VLM scoring via vulca._vlm
+        import base64
+        from vulca._vlm import score_image as _vlm_score
 
-        vlm = VLMCritic.get()
-        if not vlm.available:
+        api_key = os.environ.get("GEMINI_API_KEY", "") or os.environ.get("GOOGLE_API_KEY", "")
+        if not api_key:
             raise HTTPException(status_code=503, detail="VLM service unavailable (no API key)")
 
-        raw_scores = vlm.score_image(
-            image_path=tmp_path,
-            subject=req.subject,
-            cultural_tradition=tradition_used,
-            evidence=evidence_dict or None,
+        img_data = Path(tmp_path).read_bytes()
+        img_b64 = base64.b64encode(img_data).decode()
+        suffix = Path(tmp_path).suffix.lower()
+        mime = {"png": "image/png", "jpg": "image/jpeg", "jpeg": "image/jpeg", "webp": "image/webp"}.get(
+            suffix.lstrip("."), "image/png"
         )
 
-        if raw_scores is None:
-            raise HTTPException(status_code=502, detail="VLM scoring failed")
+        raw_scores = await _vlm_score(
+            img_b64=img_b64,
+            mime=mime,
+            subject=req.subject,
+            tradition=tradition_used,
+            api_key=api_key,
+        )
+
+        if raw_scores.get("error"):
+            raise HTTPException(status_code=502, detail=f"VLM scoring failed: {raw_scores['error']}")
 
         # 5. Extract L1-L5 scores and rationales
         scores: dict[str, float] = {}
@@ -403,11 +413,14 @@ async def identify_tradition(
     try:
         tmp_path = await resolve_image_input(req.image_url, req.image_base64)
 
-        from app.prototype.agents.vlm_critic import VLMCritic
-
-        vlm = VLMCritic.get()
-        if not vlm.available:
+        api_key_id = os.environ.get("GEMINI_API_KEY", "") or os.environ.get("GOOGLE_API_KEY", "")
+        if not api_key_id:
             raise HTTPException(status_code=503, detail="VLM service unavailable")
+
+        # Create a minimal VLM proxy object for _call_vlm_tradition compatibility
+        class _VLMProxy:
+            available = True
+        vlm = _VLMProxy()
 
         # Direct VLM call with tradition-identification prompt (not score_image)
         tradition_list = ", ".join(t for t in _get_traditions() if t != "default")
