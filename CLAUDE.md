@@ -272,6 +272,38 @@ For production (Supabase), the CI/CD pipeline runs this automatically via GitHub
 
 When working with Python in this project, always use the virtualenv Python (not system Python). Check which python/pip is active before installing packages.
 
+## ⚠️ Known Architecture Issues (2026-03-17 Audit)
+
+Full audit found **85 design-vs-implementation conflicts** across 6 subsystems.
+See memory file `full-conflict-audit.md` for complete details.
+
+### 6 Systemic Break Chains
+
+1. **Canvas topology never executes** — `TemplateRegistry.register()` doesn't exist, custom topologies silently discarded
+2. **Sub-stages are dead path** — `enable_sub_stages=True` → `DraftOutput(candidates=[])` → Critic fails → pipeline dies
+3. **Explicit feedback dead end** — `POST /feedback` → FeedbackStore(JSONL) → no consumer ever reads it
+4. **Production JSONL blindspot** — `FeedbackStore` and `FewShotUpdater` read `sessions.jsonl` (migrated to Supabase, file doesn't exist) → always return empty
+5. **LangGraph vs Legacy dual-track** — CLAUDE.md says Graph is production default, but `create_routes.py` still uses legacy `PipelineOrchestrator`. FixItPlan/CrossLayerSignals/cultural variants only work in legacy path
+6. **47D expansion is random noise** — `vulca_core_adapter.py` 6D→47D = `np.random.seed(42)` + Gaussian noise, 41 dimensions have no real semantics
+
+### Critical Rule
+Before adding any new feature, check if it touches a broken data path listed above. Fix the break first.
+
+## New Direction: SDK/CLI/MCP (Phase 8)
+
+VULCA is expanding from a web app to an AI-native creation infrastructure:
+```
+┌─────────────────────────────────────┐
+│  MCP Server / ComfyUI Nodes        │  ← Ecosystem adapters
+├─────────────────────────────────────┤
+│  CLI  (vulca create / critique)     │  ← Universal entry point
+├─────────────────────────────────────┤
+│  Python SDK  (from vulca import *)  │  ← Core engine
+└─────────────────────────────────────┘
+```
+Three entry points (Canvas/SDK/MCP) share ONE dynamic execution engine.
+Pipeline is a first-class evolvable object, not a hardcoded topology.
+
 ## VULCA Prototype Architecture
 
 ### Directory Structure
@@ -281,17 +313,17 @@ wenxin-backend/app/prototype/
 ├── api/                 # REST endpoints: create, evaluate, routes (1.9K lines)
 ├── cultural_pipelines/  # Cultural weights, YAML tradition loader, pipeline router
 ├── digestion/           # ContextEvolver, FeatureExtractor, Clusterer, Distiller
-├── feedback/            # FeedbackStore + sync_from_sessions
+├── feedback/            # FeedbackStore + sync_from_sessions ⚠️ JSONL-only, broken in prod
 ├── intent/              # IntentAgent, SkillSelector, MetaOrchestrator
-├── graph/               # GraphOrchestrator (LangGraph, PRODUCTION default since Phase 5D)
-├── orchestrator/        # PipelineOrchestrator (legacy, deprecated)
+├── graph/               # GraphOrchestrator (LangGraph) ⚠️ NOT actually used in prod API
+├── orchestrator/        # PipelineOrchestrator (legacy) ← ACTUAL production path
 ├── pipeline/            # Pipeline types + fallback chain
-├── session/             # SessionStore + SessionDigest (JSONL-backed)
-├── skills/              # Skill marketplace, executors, discussion
+├── session/             # SessionStore + SessionDigest (DB in prod, JSONL in dev)
+├── skills/              # Skill marketplace, executors, discussion ⚠️ JSONL+YAML dual store
 ├── tools/               # Scout service, terminology loader, FAISS index
 ├── ui/                  # Gradio demo UI
-├── checkpoints/         # Runtime checkpoint management (data gitignored)
-└── data/                # YAML traditions, sessions.jsonl, evolved_context.json
+├── checkpoints/         # ⚠️ Ephemeral on Cloud Run — resume_from broken in prod
+└── data/                # YAML traditions, evolved_context.json
 ```
 
 ### Prototype Dependencies
@@ -301,16 +333,16 @@ pip install -r requirements.prototype.txt  # On top of requirements.render.txt
 
 Key packages: litellm, pydantic, pyyaml, faiss-cpu
 
-## Multimodal Architecture (New)
+## Multimodal Architecture
 
 ### Media Types
 The system supports multiple media types through the `MediaType` enum:
-- **Image** (active): Full pipeline support with sub-stages
-- **Video** (coming soon): Keyframe → motion → style → interpolation → render
-- **3D Model** (coming soon): Concept → mesh → texture → lighting → render
-- **Sound** (coming soon): Mood → instruments → melody → arrangement → mix
+- **Image** (active): Full pipeline support with sub-stages ⚠️ sub-stages broken (see below)
+- **Video**: Recipes defined, handlers return text only (no actual video output)
+- **3D Model**: Recipe defined, zero handlers implemented
+- **Sound**: Recipe defined, zero handlers implemented
 
-### Sub-Stage System
+### Sub-Stage System ⚠️ BROKEN
 Generation (Draft agent) supports fine-grained sub-stages via `CreationRecipe`:
 ```
 CreateRequest → Scout → Router → Draft [sub-stages] → Critic → Queen
@@ -319,17 +351,18 @@ CreateRequest → Scout → Router → Draft [sub-stages] → Critic → Queen
                                    ├─ element_studies
                                    ├─ style_reference
                                    ├─ storyboard
-                                   └─ final_render
+                                   └─ final_render ← produces sub_stage_results
+                                                      but candidates=[] ← FATAL
+                                                      Critic: "no candidates" ← pipeline dies
 ```
 
-Key files:
-- `app/prototype/media/types.py` — Core type definitions
-- `app/prototype/media/recipes.py` — Creation recipes per media type
-- `app/prototype/media/sub_stage_executor.py` — Sub-stage runtime
+**Critical bug**: `draft_agent.py:606` returns `DraftOutput(candidates=[])` in sub-stage mode.
+Critic receives empty candidates and fails. Sub-stages have never produced a successful result
+in the LangGraph path.
 
 Sub-stages are disabled by default (`enable_sub_stages=False`).
 
-## Node Editor (Phase 5, 95% complete)
+## Node Editor (Phase 5, 95% frontend / ~40% backend wired)
 
 Visual pipeline editor with 30 nodeTypes, 21 DataType, and 6 editor hooks.
 
@@ -338,26 +371,34 @@ Visual pipeline editor with 30 nodeTypes, 21 DataType, and 6 editor hooks.
 wenxin-moyun/src/components/prototype/editor/
 ├── PipelineEditor.tsx        # Main editor canvas (ReactFlow)
 ├── nodes/                    # 30 custom node types
-│   ├── AgentNodes (scout, draft, critic, queen)
-│   ├── DataNodes (input, output, merge, filter)
-│   ├── SkillNode             # Skill marketplace integration
-│   ├── SubStageNode          # Sub-stage expansion
+│   ├── AgentNodes (scout, draft, critic, queen)  ← backend-connected
+│   ├── DataNodes (input, output, merge, filter)  ← ⚠️ UI only, data not sent to backend
+│   ├── FlowNodes (ifElse, loop, gate, split)     ← ⚠️ UI only, no backend routing
+│   ├── ProcessingNodes (styleTransfer, upscale)   ← ⚠️ UI only, executors exist but unwired
+│   ├── SkillNode             # ⚠️ drag-drop works but skill not executed on Run
+│   ├── SubStageNode          # ⚠️ visual only, sub-stages broken (candidates=[])
 │   └── CustomNode            # User-defined nodes
-├── edges/                    # TypedEdge with DataType colors
+├── edges/                    # TypedEdge ⚠️ colors are decorative, no type checking
 ├── hooks/                    # useEditorState, useNodeSelection, etc.
-├── panels/                   # Inspector, SkillBrowser, TemplateManager
+├── panels/                   # Inspector ⚠️ L1-L5 weights/Scout params not sent to backend
 └── utils/                    # Validation, topology extraction
 ```
 
-### Key Features
-- **Socket-based connections**: 21 DataType with color coding
-- **15 keyboard shortcuts**: Ctrl+Z/Y undo/redo, Del delete, Ctrl+A select all
-- **Inline preview**: Image/text preview in nodes
-- **Sub-stage expansion**: Expand draft node to show mood_palette → final_render
-- **Mute/Bypass**: Per-node mute (skip) and bypass (pass-through) runtime controls
-- **Skill drag-and-drop**: Drag skills from browser, auto-connects to nearest node
+### What Actually Works vs What Looks Like It Works
+| Feature | Frontend | Backend | Status |
+|---------|:--------:|:-------:|--------|
+| Agent nodes (scout→queen) | ✅ | ✅ | Works |
+| Template selection | ✅ | ✅ | Works |
+| Custom topology drawing | ✅ | ❌ | **Broken** — TemplateRegistry.register() missing |
+| Sub-stage expansion | ✅ | ❌ | **Broken** — candidates=[] kills pipeline |
+| Mute/Bypass | ✅ | ❌ | API exists but frontend never calls it |
+| L1-L5 weight sliders | ✅ | ❌ | Backend ignores node_params.critic |
+| Input node files | ✅ | ❌ | extractTopology() doesn't collect file data |
+| Skill drag-drop | ✅ | ❌ | _skill_hook_names path disconnected |
+| TypedEdge colors | ✅ | ❌ | All edges render as default gray |
+| Flow control nodes | ✅ | ❌ | ifElse/loop/gate have zero backend logic |
 
-## Digestion System (Phase 5, closed-loop verified)
+## Digestion System (Phase 5, closed-loop verified in dev, ⚠️ broken in prod)
 
 Cultural emergence pipeline: sessions → patterns → weight evolution → agent insights.
 
@@ -375,7 +416,15 @@ SessionStore → DigestAggregator → PatternDetector → PreferenceLearner
                          └── evolution_log.jsonl audit trail
 ```
 
-### Verified Results
+### ⚠️ Production Data Flow Breaks
+- `FeedbackStore.sync_from_sessions()` reads `sessions.jsonl` (doesn't exist in prod) → always returns 0
+- `FewShotUpdater._load_sessions()` same issue → few-shot examples always empty in prod
+- `POST /feedback` explicit feedback → stored in JSONL → **never consumed** by any digestion step
+- `"stop"` queen decision mapped to `liked=False` → almost all sessions generate negative signal
+- Checkpoints and trajectories stored on ephemeral Cloud Run filesystem → lost on restart
+- ContextEvolver only evolves weights and prompts, **never pipeline topology**
+
+### Verified Results (dev environment only)
 - 112 emerged cultures, 203+ evolutions
 - 3 new cultural traditions emerged from 20 seed sessions
 - Agent insights updated and injected into system prompts

@@ -927,6 +927,7 @@ export default function PipelineEditor({
           fitView
           fitViewOptions={{ padding: 0.3 }}
           deleteKeyCode="Backspace"
+          proOptions={{ hideAttribution: true }}
           className="bg-gray-50 dark:bg-gray-900"
         >
           <Background gap={20} size={1} />

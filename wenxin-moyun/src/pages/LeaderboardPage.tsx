@@ -165,7 +165,7 @@ export default function LeaderboardPage() {
       </div>
 
       {/* Category Tabs */}
-      <div className="mb-8 overflow-x-auto">
+      <div className="mb-8 overflow-x-auto scrollbar-hide">
         <div className="flex space-x-2 min-w-max">
           {categories.map((cat) => (
             <button
@@ -316,7 +316,7 @@ export default function LeaderboardPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="mt-12 bg-gradient-to-r from-slate-700 to-amber-700 rounded-2xl p-8 text-white"
+        className="mt-12 bg-gradient-to-br from-[#334155] to-[#C87F4A] rounded-2xl p-8 text-white"
       >
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <div>

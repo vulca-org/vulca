@@ -337,16 +337,24 @@ function ArtworkCard({ artwork, likeCount }: { artwork: GalleryItem; likeCount: 
   return (
     <IOSCard variant="elevated" padding="none" className="overflow-hidden h-full flex flex-col">
       {/* Image or gradient placeholder */}
-      <div className="w-full aspect-[4/3] relative">
-        {hasImage ? (
+      <div className="w-full aspect-[4/3] relative bg-slate-100 dark:bg-slate-800">
+        {/* Fallback: gradient background with artwork title */}
+        <div className="absolute inset-0 flex items-end p-3" style={{ background: gradient }}>
+          <span className="text-white text-xs font-medium drop-shadow-md line-clamp-2">
+            {artwork.subject}
+          </span>
+        </div>
+        {/* Image overlay — hides on error to reveal fallback */}
+        {hasImage && (
           <img
             src={resolvedImageUrl}
             alt={artwork.subject}
-            className="w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover"
             loading="lazy"
+            onError={(e) => {
+              (e.currentTarget as HTMLImageElement).style.display = 'none';
+            }}
           />
-        ) : (
-          <div className="w-full h-full" style={{ background: gradient }} />
         )}
         <span className="absolute top-2 left-2 text-[10px] font-medium px-2 py-0.5 rounded-full bg-black/40 text-white backdrop-blur-sm">
           {traditionLabel}
@@ -572,7 +580,7 @@ export default function GalleryPage() {
           </p>
           <div className="flex items-center justify-center gap-3">
             <Link to="/canvas">
-              <IOSButton variant="primary" size="sm" className="inline-flex items-center gap-1.5">
+              <IOSButton variant="primary" size="md" className="inline-flex items-center gap-1.5">
                 <Sparkles className="w-4 h-4" />
                 Create Your Own
               </IOSButton>

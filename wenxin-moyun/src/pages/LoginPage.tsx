@@ -136,7 +136,7 @@ const LoginPage: React.FC = () => {
               type="submit"
               disabled={isLoading}
               data-testid="login-submit"
-              className="w-full py-3 bg-gradient-to-r from-amber-700 to-slate-700 text-white rounded-lg font-medium hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-amber-600 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-3 bg-[#334155] hover:bg-[#475569] text-white rounded-lg font-medium hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-[#334155]/50 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Signing in...' : 'Sign In'}
             </button>

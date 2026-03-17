@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Minus, Trophy, Zap, Users, ChevronRight, Star } from 'lucide-react';
 import RouterLink from '../common/RouterLink';
@@ -8,6 +9,29 @@ interface LeaderboardCardProps {
   index: number;
   viewMode: 'card' | 'compact' | 'detailed';
   onHover?: (entry: LeaderboardEntry | null) => void;
+}
+
+/** Renders model avatar with a letter fallback when the image is missing or fails to load. */
+function ModelAvatar({ src, name, size = 'md' }: { src?: string; name: string; size?: 'sm' | 'md' }) {
+  const [failed, setFailed] = useState(false);
+  const sizeClass = size === 'sm' ? 'w-10 h-10' : 'w-12 h-12';
+  const textSize = size === 'sm' ? 'text-sm' : 'text-base';
+
+  if (!src || failed) {
+    return (
+      <div className={`${sizeClass} rounded-lg bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 font-semibold ${textSize} select-none`}>
+        {name.charAt(0).toUpperCase()}
+      </div>
+    );
+  }
+  return (
+    <img
+      src={src}
+      alt={name}
+      className={`${sizeClass} rounded-lg object-cover shadow-sm`}
+      onError={() => setFailed(true)}
+    />
+  );
 }
 
 export default function LeaderboardCard({ entry, index, viewMode, onHover }: LeaderboardCardProps) {
@@ -39,7 +63,7 @@ export default function LeaderboardCard({ entry, index, viewMode, onHover }: Lea
           <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${getRankStyle(entry.rank)}`}>
             {entry.rank}
           </div>
-          <img src={entry.model.avatar} alt={entry.model.name} className="w-10 h-10 rounded-lg" />
+          <ModelAvatar src={entry.model.avatar} name={entry.model.name} size="sm" />
           <div>
             <h4 className="font-semibold text-gray-800 dark:text-gray-200">{entry.model.name}</h4>
             <p className="text-xs text-gray-500 dark:text-gray-400">{entry.model.organization}</p>
@@ -86,11 +110,7 @@ export default function LeaderboardCard({ entry, index, viewMode, onHover }: Lea
             {/* Model Info */}
             <div className="flex-1">
               <div className="flex items-center gap-2">
-                <img 
-                  src={entry.model.avatar} 
-                  alt={entry.model.name}
-                  className="w-12 h-12 rounded-lg object-cover shadow-sm"
-                />
+                <ModelAvatar src={entry.model.avatar} name={entry.model.name} size="md" />
                 <div>
                   <h3 className="font-bold text-lg text-gray-800 dark:text-gray-200">
                     {entry.model.name}

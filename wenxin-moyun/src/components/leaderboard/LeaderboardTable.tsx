@@ -140,6 +140,26 @@ const VULCADataDisplay: React.FC<VULCADataDisplayProps> = ({
   );
 };
 
+/** Avatar with letter fallback for models without images. */
+function TableModelAvatar({ src, name }: { src?: string; name: string }) {
+  const [failed, setFailed] = React.useState(false);
+  if (!src || failed) {
+    return (
+      <div className="w-10 h-10 rounded-lg bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 font-semibold text-sm select-none shadow-sm">
+        {name.charAt(0).toUpperCase()}
+      </div>
+    );
+  }
+  return (
+    <img
+      src={src}
+      alt={name}
+      className="w-10 h-10 rounded-lg shadow-sm group-hover:shadow-md transition-shadow"
+      onError={() => setFailed(true)}
+    />
+  );
+}
+
 interface LeaderboardTableProps {
   data: LeaderboardEntry[];
   loading?: boolean;
@@ -319,11 +339,7 @@ export default function LeaderboardTable({
             to={`/model/${model.id}`}
             className="flex items-center gap-3 group hover:text-slate-700 dark:hover:text-slate-500"
           >
-            <img 
-              src={model.avatar} 
-              alt={model.name}
-              className="w-10 h-10 rounded-lg shadow-sm group-hover:shadow-md transition-shadow"
-            />
+            <TableModelAvatar src={model.avatar} name={model.name} />
             <div>
               <div className="font-medium">{model.name}</div>
               <div className="text-xs text-gray-500 dark:text-gray-400">{model.organization}</div>

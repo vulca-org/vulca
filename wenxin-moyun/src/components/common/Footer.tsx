@@ -6,7 +6,7 @@ export default function Footer() {
     <footer className="border-t border-gray-200 dark:border-gray-800 mt-auto">
       <div className="container mx-auto px-4 py-4">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-gray-500 dark:text-gray-400">
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4">
             <Link to="/canvas" className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors">Canvas</Link>
             <Link to="/gallery" className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors">Gallery</Link>
             <a
