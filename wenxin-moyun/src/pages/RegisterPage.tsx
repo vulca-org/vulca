@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { UserPlus, User, Lock, Mail, ArrowLeft, Type } from 'lucide-react';
+import { IOSButton } from '../components/ios';
 import apiClient from '../services/api';
 import { setItem } from '../utils/storageUtils';
 
@@ -174,14 +175,16 @@ const RegisterPage: React.FC = () => {
               </div>
             </div>
 
-            <button
+            <IOSButton
               type="submit"
+              variant="primary"
+              size="lg"
               disabled={isLoading}
               data-testid="register-submit"
-              className="w-full py-3 bg-gradient-to-r from-amber-700 to-slate-700 text-white rounded-lg font-medium hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-amber-600 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full"
             >
               {isLoading ? 'Creating Account...' : 'Create Account'}
-            </button>
+            </IOSButton>
           </form>
 
           {/* Login Link */}
@@ -192,7 +195,7 @@ const RegisterPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => navigate('/login')}
-                  className="text-amber-700 dark:text-amber-500 hover:text-[#C87F4A] dark:hover:text-amber-400 font-medium"
+                  className="text-[#C87F4A] hover:text-[#B8923D] dark:text-[#DDA574] dark:hover:text-[#C87F4A] font-medium transition-colors"
                 >
                   Sign In
                 </button>

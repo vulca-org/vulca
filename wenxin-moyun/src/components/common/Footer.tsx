@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom';
 import { Github } from 'lucide-react';
+import { isGuestMode } from '../../utils/guestSession';
 
 export default function Footer() {
+  const guest = isGuestMode();
+
   return (
     <footer className="border-t border-gray-200 dark:border-gray-800 mt-auto">
       <div className="container mx-auto px-4 py-4">
@@ -19,6 +22,9 @@ export default function Footer() {
               GitHub
             </a>
             <Link to="/research" className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors">Docs</Link>
+            {guest && (
+              <Link to="/login" className="hover:text-[#C87F4A] dark:hover:text-[#DDA574] transition-colors">Sign In</Link>
+            )}
             <span className="text-gray-400 dark:text-gray-600">Apache 2.0</span>
           </div>
           <span>&copy; 2025-2026 VULCA</span>

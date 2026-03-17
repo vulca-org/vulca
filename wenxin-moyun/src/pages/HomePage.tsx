@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
-import { Github, Terminal, Copy, Check, ArrowRight, Paintbrush, Eye, RefreshCw, Search, PenTool, MessageSquare, Crown } from 'lucide-react';
+import { Github, Terminal, Copy, Check, ArrowRight, Paintbrush, Eye, RefreshCw, Search, PenTool, MessageSquare, Crown, LogIn } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { IOSButton, IOSCard, IOSCardContent } from '../components/ios';
+import { isGuestMode } from '../utils/guestSession';
 
 function CopyableTerminal({ command }: { command: string }) {
   const [copied, setCopied] = useState(false);
@@ -38,6 +39,8 @@ function CopyableTerminal({ command }: { command: string }) {
 }
 
 export default function HomePage() {
+  const guest = isGuestMode();
+
   return (
     <div className="-mx-4 sm:-mx-6">
       {/* ===== Section 1: Hero ===== */}
@@ -80,6 +83,18 @@ export default function HomePage() {
                 GitHub
               </IOSButton>
             </a>
+            {guest && (
+              <Link to="/login">
+                <IOSButton
+                  variant="text"
+                  size="lg"
+                  className="flex items-center gap-2 min-w-[140px] justify-center"
+                >
+                  <LogIn className="w-5 h-5" />
+                  Sign In
+                </IOSButton>
+              </Link>
+            )}
           </div>
 
           <CopyableTerminal command="docker-compose up" />

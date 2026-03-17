@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { LogIn, User, Lock, ArrowLeft } from 'lucide-react';
+import { IOSButton } from '../components/ios';
 import apiClient from '../services/api';
 import { setItem } from '../utils/storageUtils';
 
@@ -132,14 +133,16 @@ const LoginPage: React.FC = () => {
               </div>
             </div>
 
-            <button
+            <IOSButton
               type="submit"
+              variant="primary"
+              size="lg"
               disabled={isLoading}
               data-testid="login-submit"
-              className="w-full py-3 bg-[#334155] hover:bg-[#475569] text-white rounded-lg font-medium hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-[#334155]/50 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full"
             >
               {isLoading ? 'Signing in...' : 'Sign In'}
-            </button>
+            </IOSButton>
           </form>
 
           {/* Demo Account */}
@@ -149,7 +152,7 @@ const LoginPage: React.FC = () => {
               <button
                 type="button"
                 onClick={handleDemoLogin}
-                className="text-amber-700 dark:text-amber-500 hover:text-[#C87F4A] dark:hover:text-amber-400 font-medium"
+                className="text-[#C87F4A] hover:text-[#B8923D] dark:text-[#DDA574] dark:hover:text-[#C87F4A] font-medium transition-colors"
               >
                 Use demo account
               </button>
@@ -162,7 +165,7 @@ const LoginPage: React.FC = () => {
               Don't have an account?{' '}
               <button
                 onClick={() => navigate('/register')}
-                className="text-amber-700 dark:text-amber-500 hover:text-[#C87F4A] dark:hover:text-amber-400 font-medium"
+                className="text-[#C87F4A] hover:text-[#B8923D] dark:text-[#DDA574] dark:hover:text-[#C87F4A] font-medium transition-colors"
               >
                 Register
               </button>

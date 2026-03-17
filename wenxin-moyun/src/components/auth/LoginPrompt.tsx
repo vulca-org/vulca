@@ -2,6 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, User, Shield, Clock, TrendingUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { IOSButton } from '../ios';
 
 export interface LoginPromptProps {
   isOpen: boolean;
@@ -22,6 +23,10 @@ const LoginPrompt: React.FC<LoginPromptProps> = ({
     navigate(`/login?from=${returnUrl}`);
   };
 
+  const handleRegister = () => {
+    navigate('/register');
+  };
+
   const getTriggerConfig = () => {
     switch (trigger) {
       case 'limit_reached':
@@ -30,7 +35,8 @@ const LoginPrompt: React.FC<LoginPromptProps> = ({
           title: 'Daily Trial Limit Reached',
           subtitle: `You've used all 10 free evaluations today`,
           description: 'Register to enjoy unlimited use and save your evaluation history.',
-          buttonText: 'Sign Up Now',
+          buttonText: 'Register Now',
+          secondaryAction: handleRegister,
           urgency: 'high' as const
         };
       case 'save_progress':
@@ -39,7 +45,8 @@ const LoginPrompt: React.FC<LoginPromptProps> = ({
           title: 'Save Your Evaluation Progress',
           subtitle: 'Prevent data loss and build your evaluation portfolio',
           description: 'Sign in to save all evaluation records and view historical data and trend analysis.',
-          buttonText: 'Save Progress',
+          buttonText: 'Sign In',
+          secondaryAction: null,
           urgency: 'medium' as const
         };
       case 'share_result':
@@ -48,7 +55,8 @@ const LoginPrompt: React.FC<LoginPromptProps> = ({
           title: 'Share Your Amazing Work',
           subtitle: 'Let others see your creative achievements',
           description: 'Sign in to share evaluation results, join community discussions, and discover more excellent works.',
-          buttonText: 'Start Sharing',
+          buttonText: 'Sign In',
+          secondaryAction: null,
           urgency: 'low' as const
         };
       case 'advanced_features':
@@ -56,8 +64,9 @@ const LoginPrompt: React.FC<LoginPromptProps> = ({
           icon: User,
           title: 'Unlock Advanced Features',
           subtitle: 'Professional evaluation tools await',
-          description: 'Logged-in users can access batch evaluation, detailed reports, custom templates and more.',
-          buttonText: 'Unlock Now',
+          description: 'Sign in to access batch evaluation, detailed reports, custom templates and more.',
+          buttonText: 'Sign In',
+          secondaryAction: null,
           urgency: 'medium' as const
         };
     }
@@ -72,19 +81,16 @@ const LoginPrompt: React.FC<LoginPromptProps> = ({
         return {
           iconColor: 'text-[#C65D4D]',
           gradient: 'from-[#C65D4D] to-[#B8923D]',
-          buttonClass: 'bg-gradient-to-r from-[#C65D4D] to-[#B8923D] hover:from-[#A84A3D] hover:to-[#937531]'
         };
       case 'medium':
         return {
-          iconColor: 'text-orange-500',
-          gradient: 'from-orange-500 to-amber-500',
-          buttonClass: 'bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700'
+          iconColor: 'text-[#B8923D]',
+          gradient: 'from-[#B8923D] to-[#C87F4A]',
         };
       case 'low':
         return {
-          iconColor: 'text-slate-600',
-          gradient: 'from-slate-600 to-amber-600',
-          buttonClass: 'bg-gradient-to-r from-slate-700 to-amber-700 hover:from-slate-700 hover:to-amber-700'
+          iconColor: 'text-[#334155]',
+          gradient: 'from-[#334155] to-[#B8923D]',
         };
     }
   };
@@ -153,33 +159,36 @@ const LoginPrompt: React.FC<LoginPromptProps> = ({
                 {/* Benefits list */}
                 <div className="space-y-3 mb-6">
                   <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-green-500 rounded-full" />
+                    <div className="w-2 h-2 bg-[#5F8A50] rounded-full" />
                     <span className="text-sm text-gray-700 dark:text-gray-300">Unlimited evaluations</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-green-500 rounded-full" />
+                    <div className="w-2 h-2 bg-[#5F8A50] rounded-full" />
                     <span className="text-sm text-gray-700 dark:text-gray-300">Save evaluation history</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-green-500 rounded-full" />
+                    <div className="w-2 h-2 bg-[#5F8A50] rounded-full" />
                     <span className="text-sm text-gray-700 dark:text-gray-300">Advanced analytics features</span>
                   </div>
                 </div>
 
                 {/* Action buttons */}
                 <div className="flex space-x-3">
-                  <button
-                    onClick={handleLogin}
-                    className={`flex-1 ${styles.buttonClass} text-white px-4 py-3 rounded-lg font-medium transition-all hover:shadow-lg`}
+                  <IOSButton
+                    variant="primary"
+                    size="md"
+                    onClick={trigger === 'limit_reached' ? handleRegister : handleLogin}
+                    className="flex-1"
                   >
                     {config.buttonText}
-                  </button>
-                  <button
+                  </IOSButton>
+                  <IOSButton
+                    variant="secondary"
+                    size="md"
                     onClick={onClose}
-                    className="px-4 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                   >
                     Later
-                  </button>
+                  </IOSButton>
                 </div>
 
                 {/* Guest continue option for non-critical prompts */}
