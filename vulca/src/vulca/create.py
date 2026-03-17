@@ -66,6 +66,7 @@ async def _create_local(
 ) -> CreateResult:
     """Run the slim pipeline engine locally."""
     from vulca.pipeline.engine import execute
+    from vulca.pipeline.hooks import default_on_complete
     from vulca.pipeline.templates import DEFAULT
     from vulca.pipeline.types import PipelineInput
 
@@ -76,7 +77,7 @@ async def _create_local(
         provider=provider,
     )
 
-    output = await execute(DEFAULT, pipeline_input)
+    output = await execute(DEFAULT, pipeline_input, on_complete=default_on_complete)
 
     return CreateResult(
         session_id=output.session_id,

@@ -78,7 +78,6 @@ _GUEST_DAILY_LIMIT = 10
 _TASK_RETENTION_SEC = 3600  # 1 hour TTL for completed runs
 _TASK_HARD_TIMEOUT_SEC = 14400  # 4 hours: force-clean even incomplete runs
 _EVOLUTION_INTERVAL_SEC = 300  # Throttle: evolve at most once per 5 minutes
-_last_evolution_time = 0.0
 
 
 def _cleanup_expired_runs() -> None:
@@ -155,12 +154,25 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
     template_name = req.template or "default"
     definition = TEMPLATES.get(template_name, DEFAULT)
 
+    # Extract custom L1-L5 weights from node_params (Canvas weight sliders)
+    _node_params: dict[str, dict] = {}
+    if req.node_params:
+        critic_params = req.node_params.get("critic", {})
+        custom_weights: dict[str, float] = {}
+        for i in range(1, 6):
+            key = f"w_l{i}"
+            if key in critic_params:
+                custom_weights[f"L{i}"] = float(critic_params[key])
+        if custom_weights:
+            _node_params["evaluate"] = {"custom_weights": custom_weights}
+
     vulca_input = VulcaPipelineInput(
         subject=req.subject,
         intent=req.intent or req.subject,
         tradition=req.tradition,
         provider=provider,
         max_rounds=req.max_rounds,
+        node_params=_node_params,
     )
     _run_metadata[task_id] = {
         "subject": req.subject,
@@ -234,16 +246,15 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
             )
             SessionStore.get().append(digest)
 
-            # Auto-trigger evolution (throttled)
-            global _last_evolution_time
-            now = time.monotonic()
-            if now - _last_evolution_time >= _EVOLUTION_INTERVAL_SEC:
-                _last_evolution_time = now
-                try:
-                    from app.prototype.digestion.context_evolver import ContextEvolver
-                    ContextEvolver().evolve()
-                except Exception:
-                    pass  # Non-fatal
+            # Auto-trigger evolution (throttled, shared with SDK/CLI)
+            try:
+                from vulca.pipeline.hooks import _maybe_evolve
+                import asyncio as _asyncio
+                _evo_loop = _asyncio.new_event_loop()
+                _evo_loop.run_until_complete(_maybe_evolve(task_id))
+                _evo_loop.close()
+            except Exception:
+                pass  # Non-fatal
 
         _cleanup_expired_runs()
       except Exception:

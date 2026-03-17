@@ -33,6 +33,16 @@ class EvaluateNode(PipelineNode):
         return await self._vlm_scores(ctx, img_b64, img_mime)
 
     @staticmethod
+    def _get_weights(ctx: NodeContext) -> dict[str, float]:
+        """Resolve L1-L5 weights: custom (from Canvas slider) > tradition default."""
+        node_params = ctx.get("node_params") or {}
+        custom = (node_params.get("evaluate") or {}).get("custom_weights")
+        if custom and isinstance(custom, dict):
+            return custom
+        from vulca.cultural import get_weights
+        return get_weights(ctx.tradition)
+
+    @staticmethod
     def _mock_scores(ctx: NodeContext) -> dict[str, Any]:
         """Return deterministic mock scores for testing."""
         base = 0.65 + (ctx.round_num * 0.05)
@@ -45,8 +55,7 @@ class EvaluateNode(PipelineNode):
         }
         rationales = {f"{k}_rationale": f"Mock score for {k}" for k in scores}
 
-        from vulca.cultural import get_weights
-        weights = get_weights(ctx.tradition)
+        weights = EvaluateNode._get_weights(ctx)
         weighted_total = sum(scores[k] * weights.get(k, 0.2) for k in scores)
 
         return {
@@ -75,8 +84,7 @@ class EvaluateNode(PipelineNode):
             f"L{i}_rationale": data.get(f"L{i}_rationale", "") for i in range(1, 6)
         }
 
-        from vulca.cultural import get_weights
-        weights = get_weights(ctx.tradition)
+        weights = EvaluateNode._get_weights(ctx)
         weighted_total = sum(scores[k] * weights.get(k, 0.2) for k in scores)
 
         return {

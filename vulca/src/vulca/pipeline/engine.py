@@ -108,6 +108,8 @@ async def execute(
     pipeline_input: PipelineInput,
     *,
     event_callback: Callable[[PipelineEvent], None] | None = None,
+    on_complete: Callable[[PipelineOutput], Any] | None = None,
+    interrupt_before: set[str] | None = None,
 ) -> PipelineOutput:
     """Execute a pipeline definition to completion.
 
@@ -119,6 +121,13 @@ async def execute(
         Input parameters (subject, provider, max_rounds, etc.).
     event_callback:
         Optional callback invoked for each event (for SSE streaming).
+    on_complete:
+        Optional async callback invoked after successful completion.
+        Receives the PipelineOutput. Errors are logged but not raised.
+    interrupt_before:
+        Set of node names to pause before executing (HITL).
+        When a node in this set is reached, the pipeline returns with
+        status="waiting_human" and interrupted_at set to that node name.
 
     Returns
     -------
@@ -144,6 +153,10 @@ async def execute(
         max_cost_usd=pipeline_input.max_cost_usd,
     )
 
+    # Inject node_params so individual nodes can read them
+    if pipeline_input.node_params:
+        ctx.set("node_params", pipeline_input.node_params)
+
     def _emit(event: PipelineEvent) -> None:
         events.append(event)
         if event_callback:
@@ -157,6 +170,35 @@ async def execute(
         round_t0 = time.monotonic()
 
         for node_name in exec_order:
+            # HITL: pause before this node if requested
+            if interrupt_before and node_name in interrupt_before:
+                _emit(
+                    PipelineEvent(
+                        event_type=EventType.HUMAN_REQUIRED,
+                        stage=node_name,
+                        round_num=round_num,
+                        payload={"reason": f"Human review required before {node_name}"},
+                        timestamp_ms=int((time.monotonic() - t0) * 1000),
+                    )
+                )
+                total_ms = int((time.monotonic() - t0) * 1000)
+                return PipelineOutput(
+                    session_id=session_id,
+                    status=RunStatus.WAITING_HUMAN.value,
+                    tradition=ctx.tradition,
+                    best_candidate_id=ctx.get("candidate_id", ""),
+                    best_image_url=ctx.get("image_url", ""),
+                    final_scores=ctx.get("scores", {}),
+                    weighted_total=ctx.get("weighted_total", 0.0),
+                    rounds=rounds,
+                    events=events,
+                    total_rounds=len(rounds),
+                    total_latency_ms=total_ms,
+                    total_cost_usd=ctx.cost_usd,
+                    interrupted_at=node_name,
+                    summary=f"Pipeline paused before '{node_name}' for human review.",
+                )
+
             node = node_instances[node_name]
             _emit(
                 PipelineEvent(
@@ -292,7 +334,7 @@ async def execute(
         f"Weighted total: {ctx.get('weighted_total', 0.0):.3f}"
     )
 
-    return PipelineOutput(
+    output = PipelineOutput(
         session_id=session_id,
         status=status.value,
         tradition=ctx.tradition,
@@ -307,3 +349,14 @@ async def execute(
         total_cost_usd=ctx.cost_usd,
         summary=summary,
     )
+
+    # Fire on_complete hook (non-fatal)
+    if on_complete and status != RunStatus.FAILED:
+        try:
+            result = on_complete(output)
+            if hasattr(result, "__await__"):
+                await result
+        except Exception as exc:
+            logger.warning("on_complete hook failed: %s", exc)
+
+    return output
