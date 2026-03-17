@@ -26,7 +26,7 @@ const STAGE_LABELS: Record<string, string> = {
 const AGENT_COLORS: Record<string, { border: string; bg: string; text: string; emoji: string }> = {
   scout:     { border: 'border-l-[#C87F4A]',   bg: 'bg-[#FAF7F2] dark:bg-[#C87F4A]/10',     text: 'text-[#C87F4A] dark:text-[#DDA574]',   emoji: '\u{1F50D}' },
   draft:     { border: 'border-l-[#C87F4A]',  bg: 'bg-[#C87F4A]/5 dark:bg-[#C87F4A]/10',  text: 'text-[#C87F4A] dark:text-[#DDA574]', emoji: '\u{1F3A8}' },
-  critic:    { border: 'border-l-orange-500',  bg: 'bg-orange-50 dark:bg-orange-900/20',  text: 'text-orange-600 dark:text-orange-400', emoji: '\u{1F4CA}' },
+  critic:    { border: 'border-l-[#B8923D]',  bg: 'bg-[#B8923D]/5 dark:bg-[#B8923D]/10',  text: 'text-[#B8923D] dark:text-[#D4A94E]', emoji: '\u{1F4CA}' },
   queen:     { border: 'border-l-yellow-500',  bg: 'bg-yellow-50 dark:bg-yellow-900/20',  text: 'text-yellow-600 dark:text-yellow-400', emoji: '\u{1F451}' },
   archivist: { border: 'border-l-gray-400',    bg: 'bg-gray-50 dark:bg-gray-800/40',      text: 'text-gray-500 dark:text-gray-400',    emoji: '\u{1F4BE}' },
 };

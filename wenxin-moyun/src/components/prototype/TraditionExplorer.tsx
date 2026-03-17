@@ -130,7 +130,7 @@ const TRADITIONS: TraditionInfo[] = [
 const COLORS = ['#007AFF', '#34C759', '#FF9500', '#AF52DE', '#FF2D55', '#5AC8FA'];
 const SEVERITY_COLORS: Record<string, string> = {
   critical: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-  high: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
+  high: 'bg-[#B8923D]/10 text-[#8F7030] dark:bg-[#B8923D]/10 dark:text-[#D4A94E]',
   medium: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
   low: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400',
 };

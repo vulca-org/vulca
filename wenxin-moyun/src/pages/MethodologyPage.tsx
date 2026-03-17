@@ -178,7 +178,7 @@ const MethodologyPage: React.FC = () => {
       {/* 6D to 47D Expansion */}
       <section className="mb-12">
         <div className="flex items-center gap-3 mb-6">
-          <GitBranch className="w-6 h-6 text-green-500" />
+          <GitBranch className="w-6 h-6 text-[#5F8A50]" />
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
             6D to 47D Dimension Expansion
           </h2>
@@ -226,7 +226,7 @@ const MethodologyPage: React.FC = () => {
                   </div>
                   <ChevronRight className="w-5 h-5 text-gray-400" />
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-green-500">47</div>
+                    <div className="text-2xl font-bold text-[#5F8A50]">47</div>
                     <div className="text-gray-500">Sub-dimensions</div>
                   </div>
                   <ChevronRight className="w-5 h-5 text-gray-400" />
@@ -244,7 +244,7 @@ const MethodologyPage: React.FC = () => {
       {/* Cultural Perspectives */}
       <section className="mb-12">
         <div className="flex items-center gap-3 mb-6">
-          <Globe className="w-6 h-6 text-orange-500" />
+          <Globe className="w-6 h-6 text-[#B8923D]" />
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
             8 Cultural Perspectives
           </h2>

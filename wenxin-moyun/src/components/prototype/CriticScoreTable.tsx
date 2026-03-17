@@ -41,7 +41,7 @@ interface Props {
 
 const RISK_TAG_COLORS: Record<string, string> = {
   taboo: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400',
-  cultural_mismatch: 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400',
+  cultural_mismatch: 'bg-[#B8923D]/10 dark:bg-[#B8923D]/10 text-[#8F7030] dark:text-[#D4A94E]',
   color_saturation: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400',
   detail_consistency: 'bg-[#C87F4A]/10 dark:bg-[#C87F4A]/15 text-[#C87F4A] dark:text-[#DDA574]',
   composition_imbalance: 'bg-[#C87F4A]/10 dark:bg-[#C87F4A]/15 text-[#C87F4A] dark:text-[#DDA574]',
@@ -199,7 +199,7 @@ export default function CriticScoreTable({ scoredCandidates, bestCandidateId, ag
                         {hasRisks && (
                           <button
                             onClick={() => toggleRisks(sc.candidate_id)}
-                            className="ml-1 text-[10px] text-orange-500 hover:text-orange-600 transition-colors"
+                            className="ml-1 text-[10px] text-[#B8923D] hover:text-[#8F7030] transition-colors"
                             title={`${sc.risk_tags.length} risk tag(s)`}
                           >
                             ⚠ {sc.risk_tags.length}
@@ -251,8 +251,8 @@ export default function CriticScoreTable({ scoredCandidates, bestCandidateId, ag
                   {risksExpanded && hasRisks && (
                     <tr key={`${sc.candidate_id}-risks`}>
                       <td colSpan={scoredCandidates[0].dimension_scores.length + 4} className="px-2 pb-2">
-                        <div className="flex flex-wrap gap-1 py-1.5 px-2 bg-orange-50 dark:bg-orange-900/10 rounded-lg">
-                          <span className="text-[10px] font-semibold text-orange-700 dark:text-orange-400 mr-1 self-center">
+                        <div className="flex flex-wrap gap-1 py-1.5 px-2 bg-[#B8923D]/5 dark:bg-[#B8923D]/10 rounded-lg">
+                          <span className="text-[10px] font-semibold text-[#8F7030] dark:text-[#D4A94E] mr-1 self-center">
                             Risk Tags:
                           </span>
                           {sc.risk_tags.map(tag => (

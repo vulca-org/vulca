@@ -29,7 +29,7 @@ interface ResponseDisplayProps {
 const dimensionConfig: Record<string, { color: string; icon: React.ElementType; label: string }> = {
   rhythm: { color: 'text-amber-700', icon: MessageSquare, label: 'Rhythm & Meter' },
   composition: { color: 'text-slate-700', icon: Target, label: 'Composition' },
-  narrative: { color: 'text-green-600', icon: MessageSquare, label: 'Narrative' },
+  narrative: { color: 'text-[#5F8A50]', icon: MessageSquare, label: 'Narrative' },
   emotion: { color: 'text-red-600', icon: Star, label: 'Emotion' },
   creativity: { color: 'text-yellow-600', icon: Lightbulb, label: 'Creativity' },
   cultural: { color: 'text-slate-600', icon: Star, label: 'Cultural' },
@@ -76,9 +76,9 @@ const ResponseCard: React.FC<{ detail: ResponseDetail }> = ({ detail }) => {
                 <span key={`${index}-${splitIndex}`} className="group relative inline-block">
                   <mark className={`
                     px-1.5 py-0.5 rounded-md cursor-help backdrop-blur-sm transition-all duration-200
-                    ${score >= 90 
-                      ? 'bg-gradient-to-r from-green-200/90 to-emerald-200/90 border border-green-300/50 hover:shadow-sm' 
-                      : score >= 85 
+                    ${score >= 90
+                      ? 'bg-gradient-to-r from-[#5F8A50]/20 to-[#5F8A50]/15 border border-[#5F8A50]/30 hover:shadow-sm'
+                      : score >= 85
                       ? 'bg-gradient-to-r from-slate-200/90 to-slate-300/90 border border-slate-400/50 hover:shadow-sm'
                       : 'bg-gradient-to-r from-yellow-200/90 to-amber-200/90 border border-yellow-300/50 hover:shadow-sm'
                     }
@@ -116,7 +116,7 @@ const ResponseCard: React.FC<{ detail: ResponseDetail }> = ({ detail }) => {
   };
 
   const getScoreBadgeColor = (score: number) => {
-    if (score >= 80) return 'bg-green-100 text-green-800';
+    if (score >= 80) return 'bg-[#5F8A50]/10 text-[#3D5E35]';
     if (score >= 60) return 'bg-slate-100 text-slate-800';
     return 'bg-red-100 text-red-800';
   };
@@ -193,17 +193,17 @@ const ResponseCard: React.FC<{ detail: ResponseDetail }> = ({ detail }) => {
           <div className="space-y-3 pt-3 border-t">
             {/* Highlights with iOS glass effect */}
             {(detail.analysis.highlights?.length > 0 || detail.analysis.strengths?.length > 0) && (
-              <div className="relative overflow-hidden rounded-xl p-4 bg-gradient-to-br from-green-50/80 to-emerald-50/80 dark:from-green-900/20 dark:to-emerald-900/20 backdrop-blur-sm border border-green-200/50 dark:border-green-700/50">
+              <div className="relative overflow-hidden rounded-xl p-4 bg-gradient-to-br from-[#5F8A50]/5 to-[#5F8A50]/5 dark:from-[#5F8A50]/10 dark:to-[#5F8A50]/10 backdrop-blur-sm border border-[#5F8A50]/20 dark:border-[#5F8A50]/20">
                 <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent"></div>
                 <div className="relative">
-                  <h5 className="text-xs font-semibold text-green-700 dark:text-green-400 mb-2 flex items-center">
+                  <h5 className="text-xs font-semibold text-[#4A7040] dark:text-[#87A878] mb-2 flex items-center">
                     <EmojiIcon category="rating" name="star" size="xs" className="mr-1.5" />
                     Highlights & Strengths
                   </h5>
                   <ul className="space-y-1.5">
                     {(detail.analysis.highlights || detail.analysis.strengths || []).map((item, idx) => (
-                      <li key={idx} className="text-xs text-green-600 dark:text-green-300 flex items-start">
-                        <span className="mr-2 mt-0.5 text-green-500">✦</span>
+                      <li key={idx} className="text-xs text-[#5F8A50] dark:text-[#87A878] flex items-start">
+                        <span className="mr-2 mt-0.5 text-[#5F8A50]">✦</span>
                         <span className="leading-relaxed">{item}</span>
                       </li>
                     ))}
@@ -214,17 +214,17 @@ const ResponseCard: React.FC<{ detail: ResponseDetail }> = ({ detail }) => {
 
             {/* Weaknesses with iOS glass effect */}
             {detail.analysis.weaknesses?.length > 0 && (
-              <div className="relative overflow-hidden rounded-xl p-4 bg-gradient-to-br from-orange-50/80 to-amber-50/80 dark:from-orange-900/20 dark:to-amber-900/20 backdrop-blur-sm border border-orange-200/50 dark:border-orange-700/50">
+              <div className="relative overflow-hidden rounded-xl p-4 bg-gradient-to-br from-[#B8923D]/5 to-[#B8923D]/5 dark:from-[#B8923D]/10 dark:to-[#B8923D]/10 backdrop-blur-sm border border-[#B8923D]/20 dark:border-[#B8923D]/20">
                 <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent"></div>
                 <div className="relative">
-                  <h5 className="text-xs font-semibold text-orange-700 dark:text-orange-400 mb-2 flex items-center">
+                  <h5 className="text-xs font-semibold text-[#8F7030] dark:text-[#D4A94E] mb-2 flex items-center">
                     <span className="mr-1.5">⚠️</span>
                     Areas for Improvement
                   </h5>
                   <ul className="space-y-1.5">
                     {detail.analysis.weaknesses.map((weakness, idx) => (
-                      <li key={idx} className="text-xs text-orange-600 dark:text-orange-300 flex items-start">
-                        <span className="mr-2 mt-0.5 text-orange-500">◈</span>
+                      <li key={idx} className="text-xs text-[#B8923D] dark:text-[#D4A94E] flex items-start">
+                        <span className="mr-2 mt-0.5 text-[#B8923D]">◈</span>
                         <span className="leading-relaxed">{weakness}</span>
                       </li>
                     ))}

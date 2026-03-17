@@ -117,8 +117,8 @@ export default function PrivacyPage() {
               <li><strong>Security:</strong> Detect and prevent fraud, abuse, and security incidents.</li>
               <li><strong>Legal Compliance:</strong> Meet regulatory requirements and respond to legal requests.</li>
             </ul>
-            <div className="mt-6 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-              <p className="text-sm text-green-800 dark:text-green-300 font-medium">
+            <div className="mt-6 p-4 bg-[#5F8A50]/5 dark:bg-[#5F8A50]/10 rounded-lg">
+              <p className="text-sm text-[#3D5E35] dark:text-[#87A878] font-medium">
                 <strong>Important:</strong> We do NOT use your evaluation data or model outputs to train our own AI systems. Your data is processed solely to provide the evaluation service you requested.
               </p>
             </div>

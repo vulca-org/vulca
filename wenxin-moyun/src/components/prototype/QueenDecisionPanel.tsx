@@ -206,7 +206,7 @@ export default function QueenDecisionPanel({
                 <button
                   onClick={() => handleAction('force_accept')}
                   disabled={!selectedCandidateId}
-                  className="px-3 py-1.5 bg-orange-600 text-white rounded text-xs font-medium hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="px-3 py-1.5 bg-[#B8923D] text-white rounded text-xs font-medium hover:bg-[#8F7030] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   title={selectedCandidateId ? `Force accept: ${selectedCandidateId}` : 'Select a candidate first'}
                 >
                   Force Accept{selectedCandidateId ? ` #${selectedCandidateId.split('-').pop()}` : ''}
@@ -214,7 +214,7 @@ export default function QueenDecisionPanel({
               </div>
 
               {scoredCandidates && scoredCandidates.length > 0 && !selectedCandidateId && (
-                <p className="text-xs text-orange-600 dark:text-orange-400">
+                <p className="text-xs text-[#B8923D] dark:text-[#D4A94E]">
                   Tip: Click a candidate in the gallery above to select it for Force Accept.
                 </p>
               )}

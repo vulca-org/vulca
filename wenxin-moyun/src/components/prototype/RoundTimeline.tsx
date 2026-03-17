@@ -173,7 +173,7 @@ export default function RoundTimeline({ rounds, currentRound, status }: Props) {
                     {rd.crossLayerSignals.slice(0, 3).map((sig, j) => (
                       <span
                         key={j}
-                        className="text-[8px] px-1 py-0.5 rounded bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400"
+                        className="text-[8px] px-1 py-0.5 rounded bg-[#B8923D]/10 dark:bg-[#B8923D]/10 text-[#B8923D] dark:text-[#D4A94E]"
                         title={sig.message}
                       >
                         {sig.signal_type}

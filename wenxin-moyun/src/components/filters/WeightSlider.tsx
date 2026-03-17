@@ -76,7 +76,7 @@ export default function WeightSlider({
             {showTotal && (
               <span className={`text-xs font-medium px-2 py-1 rounded ${
                 isNormalized 
-                  ? 'bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400' 
+                  ? 'bg-[#5F8A50]/10 dark:bg-[#5F8A50]/10 text-[#5F8A50] dark:text-[#87A878]'
                   : 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400'
               }`}>
                 Total: {totalWeight.toFixed(1)}%

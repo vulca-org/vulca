@@ -126,7 +126,7 @@ const MOCK_GALLERY: GalleryItem[] = [
 function ScoreBar({ label, value }: { label: string; value: number }) {
   const pct = Math.round(value * 100);
   const barColor =
-    value >= 0.9 ? 'bg-green-500 dark:bg-green-400' :
+    value >= 0.9 ? 'bg-[#5F8A50] dark:bg-[#87A878]' :
     value >= 0.8 ? 'bg-slate-500 dark:bg-slate-400' :
     'bg-amber-500 dark:bg-amber-400';
 
@@ -313,7 +313,7 @@ function EvolutionInsightsPanel({ insights }: { insights: DigestionInsights | nu
 function ArtworkCard({ artwork, likeCount }: { artwork: GalleryItem; likeCount: number }) {
   const overallPct = Math.round(artwork.overall * 100);
   const overallColor =
-    artwork.overall >= 0.9 ? 'text-green-600 dark:text-green-400' :
+    artwork.overall >= 0.9 ? 'text-[#5F8A50] dark:text-[#87A878]' :
     artwork.overall >= 0.85 ? 'text-slate-600 dark:text-slate-400' :
     'text-amber-600 dark:text-amber-400';
 

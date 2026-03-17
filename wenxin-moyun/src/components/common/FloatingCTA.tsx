@@ -87,7 +87,7 @@ export function FloatingCTA({
                     <h4 className="font-semibold">Get Started</h4>
                     <button
                       onClick={() => setIsExpanded(false)}
-                      className="p-1 hover:bg-white/20 rounded-lg transition-colors"
+                      className="p-1 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-white/20 rounded-lg transition-colors"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -124,8 +124,8 @@ export function FloatingCTA({
                     className="w-full"
                   >
                     <div className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group">
-                      <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                        <FileText className="w-5 h-5 text-green-600 dark:text-green-400" />
+                      <div className="w-10 h-10 rounded-full bg-[#5F8A50]/10 dark:bg-[#5F8A50]/15 flex items-center justify-center">
+                        <FileText className="w-5 h-5 text-[#5F8A50] dark:text-[#87A878]" />
                       </div>
                       <div className="flex-1 text-left">
                         <p className="font-medium text-gray-900 dark:text-white text-sm">
@@ -135,7 +135,7 @@ export function FloatingCTA({
                           Free 25-page PDF download
                         </p>
                       </div>
-                      <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-green-600 transition-colors" />
+                      <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-[#5F8A50] transition-colors" />
                     </div>
                   </button>
 

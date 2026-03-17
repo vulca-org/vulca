@@ -60,9 +60,9 @@ export const IOSSlider: React.FC<IOSSliderProps> = ({
   // Color configurations - Art Professional palette
   const colorConfig = {
     primary: 'bg-slate-600',
-    green: 'bg-emerald-600',
+    green: 'bg-[#5F8A50]',
     orange: 'bg-amber-600',
-    red: 'bg-rose-600',
+    red: 'bg-[#C65D4D]',
   };
 
   const config = sizeConfig[size];

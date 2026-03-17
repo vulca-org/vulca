@@ -43,7 +43,7 @@ export default function FixItPlanCard({ fixItPlan }: Props) {
                       <span>Score: <span className="font-mono">{sourceScore.toFixed(2)}</span></span>
                     )}
                     {item.mask_region_hint && (
-                      <span className="px-1 py-0.5 rounded bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-400">
+                      <span className="px-1 py-0.5 rounded bg-[#6B8E7A]/10 dark:bg-[#6B8E7A]/10 text-[#6B8E7A] dark:text-[#87A878]">
                         mask: {item.mask_region_hint}
                       </span>
                     )}

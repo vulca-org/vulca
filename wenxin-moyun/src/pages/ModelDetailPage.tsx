@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import RouterLink from '../components/common/RouterLink';
 import { Breadcrumb } from '../components/common/Breadcrumb';
 import { Loader2, Cpu, FileText, Quote, Share2, Sparkles } from 'lucide-react';
@@ -158,7 +159,7 @@ export default function ModelDetailPage() {
                       });
                     } else {
                       navigator.clipboard.writeText(window.location.href);
-                      alert('Link copied to clipboard!');
+                      toast.success('Link copied to clipboard!');
                     }
                   }}
                 >
@@ -264,10 +265,10 @@ export default function ModelDetailPage() {
               <div className="space-y-6">
                 {radarData.map((item, index) => {
                   const getScoreColor = (score: number) => {
-                    if (score >= 90) return 'from-green-500 to-green-600';
+                    if (score >= 90) return 'from-[#5F8A50] to-[#4A7040]';
                     if (score >= 80) return 'from-slate-600 to-slate-700';
-                    if (score >= 70) return 'from-orange-500 to-orange-600';
-                    return 'from-red-500 to-red-600';
+                    if (score >= 70) return 'from-[#B8923D] to-[#8F7030]';
+                    return 'from-[#C65D4D] to-[#A04A3D]';
                   };
                   
                   const getScoreEmoji = (score: number) => {
@@ -332,13 +333,13 @@ export default function ModelDetailPage() {
                   emoji={<EmojiIcon category="rating" name="star" size="md" />}
                 />
                 <IOSCardContent>
-                  <div className="relative overflow-hidden rounded-xl p-4 bg-gradient-to-br from-green-50/80 to-emerald-50/80 dark:from-green-900/20 dark:to-emerald-900/20 backdrop-blur-sm border border-green-200/50 dark:border-green-700/50">
+                  <div className="relative overflow-hidden rounded-xl p-4 bg-gradient-to-br from-[#5F8A50]/5 to-[#5F8A50]/5 dark:from-[#5F8A50]/10 dark:to-[#5F8A50]/10 backdrop-blur-sm border border-[#5F8A50]/20 dark:border-[#5F8A50]/20">
                     <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent"></div>
                     <div className="relative space-y-3">
                       {model.scoreHighlights.map((highlight, idx) => (
                         <div key={idx} className="flex items-start">
-                          <span className="text-green-500 mr-3 mt-0.5">✦</span>
-                          <span className="text-sm text-green-700 dark:text-green-300 leading-relaxed">
+                          <span className="text-[#5F8A50] mr-3 mt-0.5">✦</span>
+                          <span className="text-sm text-[#4A7040] dark:text-[#87A878] leading-relaxed">
                             {highlight}
                           </span>
                         </div>
@@ -357,13 +358,13 @@ export default function ModelDetailPage() {
                   emoji={<EmojiIcon category="feedback" name="error" size="md" />}
                 />
                 <IOSCardContent>
-                  <div className="relative overflow-hidden rounded-xl p-4 bg-gradient-to-br from-orange-50/80 to-amber-50/80 dark:from-orange-900/20 dark:to-amber-900/20 backdrop-blur-sm border border-orange-200/50 dark:border-orange-700/50">
+                  <div className="relative overflow-hidden rounded-xl p-4 bg-gradient-to-br from-[#B8923D]/5 to-[#B8923D]/5 dark:from-[#B8923D]/10 dark:to-[#B8923D]/10 backdrop-blur-sm border border-[#B8923D]/20 dark:border-[#B8923D]/20">
                     <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent"></div>
                     <div className="relative space-y-3">
                       {model.scoreWeaknesses.map((weakness, idx) => (
                         <div key={idx} className="flex items-start">
-                          <span className="text-orange-500 mr-3 mt-0.5">◈</span>
-                          <span className="text-sm text-orange-700 dark:text-orange-300 leading-relaxed">
+                          <span className="text-[#B8923D] mr-3 mt-0.5">◈</span>
+                          <span className="text-sm text-[#8F7030] dark:text-[#D4A94E] leading-relaxed">
                             {weakness}
                           </span>
                         </div>

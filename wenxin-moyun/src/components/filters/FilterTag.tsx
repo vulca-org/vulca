@@ -6,14 +6,14 @@ interface FilterTagProps {
   label: string;
   value: string | number | string[];
   onRemove: () => void;
-  color?: 'blue' | 'green' | 'yellow' | 'red' | 'purple' | 'gray';
+  color?: 'slate' | 'green' | 'yellow' | 'red' | 'amber' | 'gray';
 }
 
 export default function FilterTag({
   label,
   value,
   onRemove,
-  color = 'blue'
+  color = 'slate'
 }: FilterTagProps) {
   const formatValue = () => {
     if (Array.isArray(value)) {
@@ -25,11 +25,11 @@ export default function FilterTag({
   };
 
   const colorClasses = {
-    blue: 'bg-slate-50 dark:bg-slate-900/20 text-slate-700 dark:text-slate-400 border-slate-200 dark:border-slate-700',
-    green: 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800',
+    slate: 'bg-slate-50 dark:bg-slate-900/20 text-slate-700 dark:text-slate-400 border-slate-200 dark:border-slate-700',
+    green: 'bg-[#5F8A50]/5 dark:bg-[#5F8A50]/10 text-[#5F8A50] dark:text-[#87A878] border-[#5F8A50]/20 dark:border-[#5F8A50]/30',
     yellow: 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800',
-    red: 'bg-rose-50 dark:bg-rose-900/20 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800',
-    purple: 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-700',
+    red: 'bg-[#C65D4D]/5 dark:bg-[#C65D4D]/10 text-[#C65D4D] dark:text-[#D4736A] border-[#C65D4D]/20 dark:border-[#C65D4D]/30',
+    amber: 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-700',
     gray: 'bg-gray-50 dark:bg-gray-900/20 text-gray-700 dark:text-gray-400 border-gray-200 dark:border-gray-800'
   };
 

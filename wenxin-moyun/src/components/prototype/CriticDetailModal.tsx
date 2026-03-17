@@ -36,7 +36,7 @@ interface Props {
 const SIGNAL_TYPE_STYLES: Record<string, { bg: string; icon: string }> = {
   REINTERPRET: { bg: 'bg-[#FAF7F2] dark:bg-[#C87F4A]/10 border-[#C9C2B8] dark:border-[#4A433C]', icon: '🔄' },
   CONFLICT: { bg: 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800', icon: '⚡' },
-  EVIDENCE_GAP: { bg: 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800', icon: '🔍' },
+  EVIDENCE_GAP: { bg: 'bg-[#B8923D]/5 dark:bg-[#B8923D]/10 border-[#B8923D]/30 dark:border-[#B8923D]/30', icon: '🔍' },
   CONFIRMATION: { bg: 'bg-[#5F8A50]/5 dark:bg-[#5F8A50]/10 border-[#5F8A50]/20 dark:border-[#4A7040]', icon: '✓' },
 };
 
@@ -45,7 +45,7 @@ function ConfidenceBar({ value }: { value: number }) {
   const color =
     value >= 0.8 ? 'bg-[#5F8A50]' :
     value >= 0.5 ? 'bg-[#C87F4A]' :
-    'bg-orange-500';
+    'bg-[#B8923D]';
   const label =
     value >= 0.8 ? 'High' :
     value >= 0.5 ? 'Medium' :

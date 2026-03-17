@@ -129,9 +129,9 @@ async function getStats() {
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.2, type: 'spring' }}
-          className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-green-100 dark:bg-green-900/30 mb-4"
+          className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#5F8A50]/10 dark:bg-[#5F8A50]/15 mb-4"
         >
-          <Database className="w-8 h-8 text-green-500" />
+          <Database className="w-8 h-8 text-[#5F8A50]" />
         </motion.div>
         <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
           VULCA-BENCH Dataset
@@ -166,7 +166,7 @@ async function getStats() {
               transition={{ delay: index * 0.1 }}
             >
               <IOSCard variant="elevated" className="text-center p-6">
-                <stat.icon className="w-8 h-8 mx-auto mb-3 text-green-500" />
+                <stat.icon className="w-8 h-8 mx-auto mb-3 text-[#5F8A50]" />
                 <div className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
                   {stat.value}
                 </div>
@@ -197,19 +197,19 @@ async function getStats() {
             <IOSCardContent>
               <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400 mb-4">
                 <li className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <CheckCircle className="w-4 h-4 text-[#5F8A50]" />
                   7,410 image-text pairs
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <CheckCircle className="w-4 h-4 text-[#5F8A50]" />
                   47D evaluation scores
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <CheckCircle className="w-4 h-4 text-[#5F8A50]" />
                   Human annotations
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <CheckCircle className="w-4 h-4 text-[#5F8A50]" />
                   Cultural metadata
                 </li>
               </ul>
@@ -244,19 +244,19 @@ async function getStats() {
             <IOSCardContent>
               <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400 mb-4">
                 <li className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <CheckCircle className="w-4 h-4 text-[#5F8A50]" />
                   500 curated samples
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <CheckCircle className="w-4 h-4 text-[#5F8A50]" />
                   Balanced across cultures
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <CheckCircle className="w-4 h-4 text-[#5F8A50]" />
                   JSON + Parquet formats
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <CheckCircle className="w-4 h-4 text-[#5F8A50]" />
                   Ready for fine-tuning
                 </li>
               </ul>
@@ -333,7 +333,7 @@ async function getStats() {
                   onClick={() => copyToClipboard(pythonExample, 'python')}
                 >
                   {copiedCode === 'python' ? (
-                    <CheckCircle className="w-4 h-4 text-green-500" />
+                    <CheckCircle className="w-4 h-4 text-[#5F8A50]" />
                   ) : (
                     <Copy className="w-4 h-4" />
                   )}
@@ -359,7 +359,7 @@ async function getStats() {
                   onClick={() => copyToClipboard(jsExample, 'js')}
                 >
                   {copiedCode === 'js' ? (
-                    <CheckCircle className="w-4 h-4 text-green-500" />
+                    <CheckCircle className="w-4 h-4 text-[#5F8A50]" />
                   ) : (
                     <Copy className="w-4 h-4" />
                   )}
@@ -378,7 +378,7 @@ async function getStats() {
       {/* Data Format */}
       <section className="mb-12">
         <div className="flex items-center gap-3 mb-6">
-          <FileJson className="w-6 h-6 text-orange-500" />
+          <FileJson className="w-6 h-6 text-[#B8923D]" />
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
             Data Format
           </h2>
@@ -395,7 +395,7 @@ async function getStats() {
                 onClick={() => copyToClipboard(dataFormatExample, 'format')}
               >
                 {copiedCode === 'format' ? (
-                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <CheckCircle className="w-4 h-4 text-[#5F8A50]" />
                 ) : (
                   <Copy className="w-4 h-4" />
                 )}
@@ -413,7 +413,7 @@ async function getStats() {
       {/* Cultural Distribution */}
       <section>
         <div className="flex items-center gap-3 mb-6">
-          <Globe className="w-6 h-6 text-teal-500" />
+          <Globe className="w-6 h-6 text-[#6B8E7A]" />
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
             Cultural Distribution
           </h2>
@@ -444,7 +444,7 @@ async function getStats() {
                       initial={{ width: 0 }}
                       animate={{ width: `${item.percentage}%` }}
                       transition={{ duration: 0.5, delay: 0.1 }}
-                      className="h-2 rounded-full bg-teal-500"
+                      className="h-2 rounded-full bg-[#6B8E7A]"
                     />
                   </div>
                 </div>

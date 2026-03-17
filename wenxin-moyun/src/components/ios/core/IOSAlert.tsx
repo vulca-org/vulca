@@ -51,15 +51,15 @@ export const IOSAlert: React.FC<IOSAlertProps> = ({
     },
     success: {
       emoji: 'completed',
-      titleColor: 'text-green-900 dark:text-green-100',
-      borderColor: 'border-green-200 dark:border-green-800',
-      bgColor: 'bg-green-50/80 dark:bg-green-900/20',
+      titleColor: 'text-[#3D5E35] dark:text-[#87A878]',
+      borderColor: 'border-[#5F8A50]/20 dark:border-[#5F8A50]/30',
+      bgColor: 'bg-[#5F8A50]/5 dark:bg-[#5F8A50]/10',
     },
     warning: {
       emoji: 'pending',
-      titleColor: 'text-orange-900 dark:text-orange-100',
-      borderColor: 'border-orange-200 dark:border-orange-800',
-      bgColor: 'bg-orange-50/80 dark:bg-orange-900/20',
+      titleColor: 'text-[#8F7030] dark:text-[#D4A94E]',
+      borderColor: 'border-[#B8923D]/20 dark:border-[#B8923D]/30',
+      bgColor: 'bg-[#B8923D]/5 dark:bg-[#B8923D]/10',
     },
     error: {
       emoji: 'failed',

@@ -68,11 +68,11 @@ export const CacheStats: React.FC<CacheStatsProps> = ({ show = false }) => {
                     <span className="font-mono ml-1">{stats.api.total}</span>
                   </div>
                   <div>
-                    <span className="text-green-600 dark:text-green-400">Fresh:</span>
+                    <span className="text-[#5F8A50] dark:text-[#87A878]">Fresh:</span>
                     <span className="font-mono ml-1">{stats.api.fresh}</span>
                   </div>
                   <div>
-                    <span className="text-orange-600 dark:text-orange-400">Stale:</span>
+                    <span className="text-[#B8923D] dark:text-[#D4A94E]">Stale:</span>
                     <span className="font-mono ml-1">{stats.api.stale}</span>
                   </div>
                   <div>
@@ -93,11 +93,11 @@ export const CacheStats: React.FC<CacheStatsProps> = ({ show = false }) => {
                     <span className="font-mono ml-1">{stats.static.total}</span>
                   </div>
                   <div>
-                    <span className="text-green-600 dark:text-green-400">Fresh:</span>
+                    <span className="text-[#5F8A50] dark:text-[#87A878]">Fresh:</span>
                     <span className="font-mono ml-1">{stats.static.fresh}</span>
                   </div>
                   <div>
-                    <span className="text-orange-600 dark:text-orange-400">Stale:</span>
+                    <span className="text-[#B8923D] dark:text-[#D4A94E]">Stale:</span>
                     <span className="font-mono ml-1">{stats.static.stale}</span>
                   </div>
                   <div>
@@ -118,11 +118,11 @@ export const CacheStats: React.FC<CacheStatsProps> = ({ show = false }) => {
                     <span className="font-mono ml-1">{stats.realtime.total}</span>
                   </div>
                   <div>
-                    <span className="text-green-600 dark:text-green-400">Fresh:</span>
+                    <span className="text-[#5F8A50] dark:text-[#87A878]">Fresh:</span>
                     <span className="font-mono ml-1">{stats.realtime.fresh}</span>
                   </div>
                   <div>
-                    <span className="text-orange-600 dark:text-orange-400">Stale:</span>
+                    <span className="text-[#B8923D] dark:text-[#D4A94E]">Stale:</span>
                     <span className="font-mono ml-1">{stats.realtime.stale}</span>
                   </div>
                   <div>
@@ -134,7 +134,7 @@ export const CacheStats: React.FC<CacheStatsProps> = ({ show = false }) => {
 
               {/* User Cache */}
               <div className="bg-white/50 dark:bg-black/20 rounded-lg p-3">
-                <h4 className="font-semibold text-green-600 dark:text-green-400 mb-2">
+                <h4 className="font-semibold text-[#5F8A50] dark:text-[#87A878] mb-2">
                   👤 User Cache
                 </h4>
                 <div className="grid grid-cols-2 gap-2 text-xs">
@@ -143,11 +143,11 @@ export const CacheStats: React.FC<CacheStatsProps> = ({ show = false }) => {
                     <span className="font-mono ml-1">{stats.user.total}</span>
                   </div>
                   <div>
-                    <span className="text-green-600 dark:text-green-400">Fresh:</span>
+                    <span className="text-[#5F8A50] dark:text-[#87A878]">Fresh:</span>
                     <span className="font-mono ml-1">{stats.user.fresh}</span>
                   </div>
                   <div>
-                    <span className="text-orange-600 dark:text-orange-400">Stale:</span>
+                    <span className="text-[#B8923D] dark:text-[#D4A94E]">Stale:</span>
                     <span className="font-mono ml-1">{stats.user.stale}</span>
                   </div>
                   <div>

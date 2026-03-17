@@ -1,7 +1,7 @@
 /**
  * StickyNote — decorative canvas annotation node (React Flow custom node).
  *
- * Four color variants (yellow/blue/pink/green), editable text via textarea,
+ * Four color variants (yellow/bronze/coral/green), editable text via textarea,
  * no connection handles. Inspired by n8n's sticky notes.
  */
 
@@ -11,8 +11,8 @@ import type { StickyNoteData } from './types';
 
 const COLOR_CLASSES: Record<StickyNoteData['color'], string> = {
   yellow: 'bg-yellow-100 dark:bg-yellow-900/40 border-yellow-300 dark:border-yellow-700',
-  blue: 'bg-[#C87F4A]/10 dark:bg-[#C87F4A]/20 border-[#C9C2B8] dark:border-[#4A433C]',
-  pink: 'bg-pink-100 dark:bg-pink-900/40 border-pink-300 dark:border-pink-700',
+  bronze: 'bg-[#C87F4A]/10 dark:bg-[#C87F4A]/20 border-[#C9C2B8] dark:border-[#4A433C]',
+  coral: 'bg-[#C65D4D]/10 dark:bg-[#C65D4D]/20 border-[#C65D4D]/30 dark:border-[#A04A3D]',
   green: 'bg-[#5F8A50]/10 dark:bg-[#5F8A50]/20 border-[#5F8A50]/30 dark:border-[#4A7040]',
 };
 

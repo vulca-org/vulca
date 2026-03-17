@@ -427,7 +427,7 @@ export const VULCAVisualization: React.FC<VULCAVisualizationProps> = ({
                           <span className="font-medium">
                             {entry.value?.toFixed(1)}
                             {data[`${entry.dataKey}_diff`] > 10 && (
-                              <span className="text-orange-500 ml-1">⚡</span>
+                              <span className="text-[#B8923D] ml-1">⚡</span>
                             )}
                           </span>
                         </div>
@@ -528,9 +528,9 @@ export const VULCAVisualization: React.FC<VULCAVisualizationProps> = ({
             </div>
           </IOSCard>
           
-          <IOSCard variant="flat" className="border-l-4 border-green-500">
+          <IOSCard variant="flat" className="border-l-4 border-[#5F8A50]">
             <div className="p-4">
-              <h5 className="text-sm font-medium text-green-600 dark:text-green-400 flex items-center">
+              <h5 className="text-sm font-medium text-[#5F8A50] dark:text-[#87A878] flex items-center">
                 🏆 Highest Performing
               </h5>
               <p className="text-lg font-semibold mt-1">
@@ -545,7 +545,7 @@ export const VULCAVisualization: React.FC<VULCAVisualizationProps> = ({
                   return perfDims[0] ? getDimensionLabel(perfDims[0].dim.id) : 'N/A';
                 })()}
               </p>
-              <p className="text-sm text-green-500 mt-1">
+              <p className="text-sm text-[#5F8A50] mt-1">
                 Avg: {(() => {
                   const perfDims = dimensionVariances.map(dv => {
                     const avg = evaluations.reduce((sum, e) => {
@@ -596,7 +596,7 @@ export const VULCAVisualization: React.FC<VULCAVisualizationProps> = ({
           </h5>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 text-xs">
             <div className="flex items-center gap-2">
-              <div className="w-4 h-0.5 bg-green-500"></div>
+              <div className="w-4 h-0.5 bg-[#5F8A50]"></div>
               <span>High Variance + High Score</span>
             </div>
             <div className="flex items-center gap-2">

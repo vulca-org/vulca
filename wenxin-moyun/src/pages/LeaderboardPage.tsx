@@ -291,7 +291,7 @@ export default function LeaderboardPage() {
           <p className="text-gray-600 dark:text-gray-400 mt-2">Highest Score</p>
         </div>
         <div className="ios-glass liquid-glass-container rounded-lg p-6 text-center">
-          <div className="text-3xl font-bold text-green-600 dark:text-green-400">
+          <div className="text-3xl font-bold text-[#5F8A50] dark:text-[#87A878]">
             {filteredData.length > 0 && filteredData.some(e => e.score != null)
               ? (filteredData.filter(e => e.score != null).reduce((acc, e) => acc + (e.score || 0), 0) / filteredData.filter(e => e.score != null).length).toFixed(3)
               : 'N/A'}
@@ -327,7 +327,7 @@ export default function LeaderboardPage() {
           </div>
           <div className="flex flex-col sm:flex-row gap-3">
             <Link to="/canvas">
-              <IOSButton variant="secondary" size="lg" className="bg-white text-slate-700 hover:bg-slate-50">
+              <IOSButton variant="secondary" size="lg">
                 Open Canvas
                 <ArrowRight className="w-4 h-4 ml-2" />
               </IOSButton>
@@ -380,10 +380,10 @@ function TopDeltaSection({ topModels }: { topModels: LeaderboardEntry[] }) {
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-sm font-medium text-gray-900 dark:text-white">{dim.name}</span>
                     <div className="flex items-center gap-2 text-sm">
-                      <span className="text-green-600 dark:text-green-400 font-medium">{dim.model1Score.toFixed(2)}</span>
+                      <span className="text-[#5F8A50] dark:text-[#87A878] font-medium">{dim.model1Score.toFixed(2)}</span>
                       <span className="text-gray-400">vs</span>
                       <span className="text-gray-600 dark:text-gray-400">{dim.model2Score.toFixed(2)}</span>
-                      <span className="ml-2 px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded text-xs font-medium">
+                      <span className="ml-2 px-2 py-0.5 bg-[#5F8A50]/10 dark:bg-[#5F8A50]/15 text-[#4A7040] dark:text-[#87A878] rounded text-xs font-medium">
                         +{(dim.delta * 100).toFixed(0)}%
                       </span>
                     </div>

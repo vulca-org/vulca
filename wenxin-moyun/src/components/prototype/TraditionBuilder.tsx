@@ -395,7 +395,7 @@ export default function TraditionBuilder() {
                       className={[
                         'px-2 py-0.5 text-[10px] rounded-full border transition-colors',
                         t.l_levels.includes(l)
-                          ? 'bg-orange-100 border-orange-300 text-orange-700 dark:bg-orange-900/30 dark:border-orange-600 dark:text-orange-400'
+                          ? 'bg-[#B8923D]/10 border-[#B8923D]/30 text-[#8F7030] dark:bg-[#B8923D]/10 dark:border-[#B8923D]/30 dark:text-[#D4A94E]'
                           : 'border-gray-300 text-gray-400 dark:border-gray-600',
                       ].join(' ')}
                     >

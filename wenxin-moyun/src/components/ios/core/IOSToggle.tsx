@@ -59,9 +59,9 @@ export const IOSToggle: React.FC<IOSToggleProps> = ({
   // Color configurations - Art Professional palette
   const colorConfig = {
     primary: checked ? 'bg-slate-600' : 'bg-gray-300',
-    green: checked ? 'bg-emerald-600' : 'bg-gray-300',
+    green: checked ? 'bg-[#5F8A50]' : 'bg-gray-300',
     orange: checked ? 'bg-amber-600' : 'bg-gray-300',
-    red: checked ? 'bg-rose-600' : 'bg-gray-300',
+    red: checked ? 'bg-[#C65D4D]' : 'bg-gray-300',
   };
 
   const config = sizeConfig[size];

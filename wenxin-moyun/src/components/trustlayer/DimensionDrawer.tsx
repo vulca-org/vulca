@@ -223,10 +223,10 @@ export const DimensionDrawer: React.FC<DimensionDrawerProps> = ({
 
           {dim6d?.range && (
             <InfoCard
-              icon={<TrendingUp className="w-5 h-5 text-green-500" />}
+              icon={<TrendingUp className="w-5 h-5 text-[#5F8A50]" />}
               title="Score Range"
             >
-              <p className="text-3xl font-bold text-green-500">
+              <p className="text-3xl font-bold text-[#5F8A50]">
                 {dim6d.range[0]} - {dim6d.range[1]}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -237,10 +237,10 @@ export const DimensionDrawer: React.FC<DimensionDrawerProps> = ({
 
           {dim47d && (
             <InfoCard
-              icon={<TrendingUp className="w-5 h-5 text-green-500" />}
+              icon={<TrendingUp className="w-5 h-5 text-[#5F8A50]" />}
               title="Index"
             >
-              <p className="text-3xl font-bold text-green-500">
+              <p className="text-3xl font-bold text-[#5F8A50]">
                 #{dim47d.index}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -275,7 +275,7 @@ export const DimensionDrawer: React.FC<DimensionDrawerProps> = ({
         {/* Child Dimensions (for 6D) */}
         {dim6d?.childDimensions && dim6d.childDimensions.length > 0 && (
           <InfoCard
-            icon={<Layers className="w-5 h-5 text-orange-500" />}
+            icon={<Layers className="w-5 h-5 text-[#B8923D]" />}
             title={`Sub-dimensions (${dim6d.childDimensions.length})`}
           >
             <div className="flex flex-wrap gap-2">

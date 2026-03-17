@@ -36,14 +36,14 @@ function ModelAvatar({ src, name, size = 'md' }: { src?: string; name: string; s
 
 export default function LeaderboardCard({ entry, index, viewMode, onHover }: LeaderboardCardProps) {
   const getRankStyle = (rank: number) => {
-    if (rank === 1) return 'bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-white';
+    if (rank === 1) return 'bg-gradient-to-r from-[#B8923D] via-[#A0802E] to-[#8F7030] text-white';
     if (rank === 2) return 'bg-gradient-to-r from-gray-300 via-gray-400 to-gray-500 text-white';
-    if (rank === 3) return 'bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600 text-white';
+    if (rank === 3) return 'bg-gradient-to-r from-[#C87F4A] via-[#B46B3C] to-[#A06038] text-white';
     return 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300';
   };
 
   const getTrendIcon = (change: number) => {
-    if (change > 0) return <TrendingUp className="w-4 h-4 text-green-500" />;
+    if (change > 0) return <TrendingUp className="w-4 h-4 text-[#5F8A50]" />;
     if (change < 0) return <TrendingDown className="w-4 h-4 text-red-500" />;
     return <Minus className="w-4 h-4 text-gray-400 dark:text-gray-500" />;
   };
@@ -127,7 +127,7 @@ export default function LeaderboardCard({ entry, index, viewMode, onHover }: Lea
               {getTrendIcon(entry.change)}
               {entry.change !== 0 && (
                 <span className={`text-xs font-medium ${
-                  entry.change > 0 ? 'text-green-500' : 'text-red-500'
+                  entry.change > 0 ? 'text-[#5F8A50]' : 'text-red-500'
                 }`}>
                   {Math.abs(entry.change)}
                 </span>
@@ -149,7 +149,7 @@ export default function LeaderboardCard({ entry, index, viewMode, onHover }: Lea
           </div>
           
           <div className="text-center p-3 ios-glass rounded-lg">
-            <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+            <div className="text-2xl font-bold text-[#5F8A50] dark:text-[#87A878]">
               {entry.winRate != null ? `${entry.winRate.toFixed(0)}%` : 'N/A'}
             </div>
             <div className="text-xs text-gray-600 dark:text-gray-400 flex items-center justify-center gap-1">
@@ -180,7 +180,7 @@ export default function LeaderboardCard({ entry, index, viewMode, onHover }: Lea
               initial={{ width: '0%' }}
               animate={{ width: `${entry.winRate}%` }}
               transition={{ delay: index * 0.05 + 0.2, duration: 0.8 }}
-              className="h-full bg-green-500 rounded-full"
+              className="h-full bg-[#5F8A50] rounded-full"
             />
           </div>
         </div>

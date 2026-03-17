@@ -79,7 +79,7 @@ describe('IOSSlider', () => {
     const { container } = render(
       <IOSSlider value={50} onChange={vi.fn()} color="green" />
     )
-    expect(container.querySelector('.bg-emerald-600')).toBeTruthy()
+    expect(container.querySelector('.bg-\\[\\#5F8A50\\]')).toBeTruthy()
   })
 
   it('should apply primary color by default', () => {
@@ -93,7 +93,7 @@ describe('IOSSlider', () => {
     const { container } = render(
       <IOSSlider value={50} onChange={vi.fn()} color="red" />
     )
-    expect(container.querySelector('.bg-rose-600')).toBeTruthy()
+    expect(container.querySelector('.bg-\\[\\#C65D4D\\]')).toBeTruthy()
   })
 
   it('should apply orange color class', () => {

@@ -100,7 +100,7 @@ export default function AdvancedFilterPanel({
       id: 'orgs',
       label: 'Organizations',
       value: values.organizations,
-      color: 'blue' as const
+      color: 'slate' as const
     });
   }
   if (values.tags.length > 0) {
@@ -116,7 +116,7 @@ export default function AdvancedFilterPanel({
       id: 'score',
       label: 'Score',
       value: `${values.scoreRange[0]}-${values.scoreRange[1]}`,
-      color: 'purple' as const
+      color: 'amber' as const
     });
   }
 

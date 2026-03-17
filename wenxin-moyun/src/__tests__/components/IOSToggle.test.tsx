@@ -92,7 +92,7 @@ describe('IOSToggle', () => {
       <IOSToggle checked={true} onChange={vi.fn()} color="green" />
     )
     // The inner track div should have the emerald color
-    const trackDiv = container.querySelector('.bg-emerald-600')
+    const trackDiv = container.querySelector('.bg-\\[\\#5F8A50\\]')
     expect(trackDiv).toBeTruthy()
   })
 
@@ -108,7 +108,7 @@ describe('IOSToggle', () => {
     const { container } = render(
       <IOSToggle checked={true} onChange={vi.fn()} color="red" />
     )
-    const trackDiv = container.querySelector('.bg-rose-600')
+    const trackDiv = container.querySelector('.bg-\\[\\#C65D4D\\]')
     expect(trackDiv).toBeTruthy()
   })
 

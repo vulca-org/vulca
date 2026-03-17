@@ -70,7 +70,7 @@ export interface AgentNodeData {
 export interface StickyNoteData {
   [key: string]: unknown;
   text: string;
-  color: 'yellow' | 'blue' | 'pink' | 'green';
+  color: 'yellow' | 'bronze' | 'coral' | 'green';
 }
 
 /** Phase 5A: Frame node data */

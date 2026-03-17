@@ -311,9 +311,9 @@ export default function LeaderboardTable({
       cell: ({ getValue }) => {
         const rank = getValue();
         const getRankStyle = () => {
-          if (rank === 1) return 'bg-gradient-to-r from-yellow-400 to-yellow-600 text-white';
+          if (rank === 1) return 'bg-gradient-to-r from-[#B8923D] to-[#8F7030] text-white';
           if (rank === 2) return 'bg-gradient-to-r from-gray-300 to-gray-500 text-white';
-          if (rank === 3) return 'bg-gradient-to-r from-orange-400 to-orange-600 text-white';
+          if (rank === 3) return 'bg-gradient-to-r from-[#C87F4A] to-[#A06038] text-white';
           return 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300';
         };
         
@@ -401,7 +401,7 @@ export default function LeaderboardTable({
       cell: ({ getValue }) => {
         const rate = getValue();
         const getColor = () => {
-          if (rate >= 70) return 'text-green-600 dark:text-green-400';
+          if (rate >= 70) return 'text-[#5F8A50] dark:text-[#87A878]';
           if (rate >= 50) return 'text-slate-700 dark:text-slate-500';
           return 'text-gray-600 dark:text-gray-400';
         };
@@ -432,7 +432,7 @@ export default function LeaderboardTable({
         if (change === 0) return <Minus className="w-4 h-4 text-gray-400 dark:text-gray-500 mx-auto" />;
         if (change > 0) {
           return (
-            <div className="flex items-center justify-center gap-1 text-green-600 dark:text-green-400">
+            <div className="flex items-center justify-center gap-1 text-[#5F8A50] dark:text-[#87A878]">
               <TrendingUp className="w-4 h-4" />
               <span className="text-sm font-medium">{change}</span>
             </div>
