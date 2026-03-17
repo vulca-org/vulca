@@ -4,6 +4,8 @@ import Footer from './Footer';
 import PageErrorBoundary from './PageErrorBoundary';
 import CacheStats from './CacheStats';
 import Vulca3DBackground from './Vulca3DBackground';
+import BackToTop from './BackToTop';
+import OfflineBanner from './OfflineBanner';
 import { useState, useEffect } from 'react';
 import {
   detectDevicePerformance,
@@ -68,6 +70,7 @@ export default function Layout() {
           Skip to main content
         </a>
         <Header />
+        <OfflineBanner />
         <main id="main-content" className="flex-grow" tabIndex={-1}>
           {isCanvas ? (
             <PageErrorBoundary pageName="Canvas">
@@ -82,6 +85,7 @@ export default function Layout() {
           )}
         </main>
         {!isCanvas && <Footer />}
+        <BackToTop />
       </div>
     </div>
   );

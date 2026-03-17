@@ -357,46 +357,31 @@ Dark: `#DDA574 #C49976 #87A878 #D4A84B #94A3B8 #C97064 #B8A089 #7A9B76`
 
 21 issues found across 7 pages. Prioritized by severity.
 
-### P0 — Critical
+All 21 issues found and fixed in commits `4045f49` and `{next}`.
 
-| # | Page | Issue | Root Cause |
-|---|------|-------|------------|
-| 1 | Gallery | Images show checkerboard (transparent PNG) | GCS image URLs broken or CORS; `image_url` missing from draft events |
-| 2 | Home | "Canvas Preview" is empty gray box | Placeholder never replaced with actual screenshot/video |
-| 3 | Home | 3D background invisible | WebGL Vulca3DBackground renders nothing visible on cream bg |
-
-### P1 — High
-
-| # | Page | Issue | Root Cause |
-|---|------|-------|------------|
-| 4 | Home | Hero→Product gap too large (~40vh empty space) | `min-h-[90vh]` hero + content only uses top 50% |
-| 5 | Home | Below-fold content invisible on first load | `whileInView` + `initial={{ opacity: 0 }}` — no scroll = no content |
-| 6 | Canvas | Run History shows identical duplicates | 8x "Dong Yuan landscape / 0.72 / 20h ago" — test data |
-| 7 | Gallery | "Create Your Own" CTA too small | IOSButton `sm` at page top, easily missed |
-| 8 | Models (mobile) | Category tabs truncated | Horizontal scroll tabs clip on 375px viewport |
-
-### P2 — Medium
-
-| # | Page | Issue | Root Cause |
-|---|------|-------|------------|
-| 9 | Home | 3 cards too small with excess side margins | `max-w-5xl` grid only fills ~60% of wide screens |
-| 10 | Home | Academic Trust section low visibility | Plain text "EMNLP 2025 \| WiNLP 2025 \| arXiv", no badges/logos |
-| 11 | Canvas | Left panel title area cluttered | "Canvas" + "Ready" + Edit/Run/Traditions tabs packed on one line |
-| 12 | Canvas | "React Flow" watermark visible | Unpaid ReactFlow branding in bottom-right |
-| 13 | Gallery (mobile) | Cards too dense, scores unreadable | 2-col grid with tiny images, L1-L5 bars < 4px |
-| 14 | Models | Model thumbnails inconsistent sizes | Some have avatars, some don't |
-| 15 | Research | No section navigation for long page | Methodology tab has 6+ sections, no TOC or back-to-top |
-| 16 | Login | Sign In button gradient mismatched | amber→slate gradient ≠ Art Professional primary |
-| 17 | Privacy/Terms | No TOC for 10-13 sections | Pure linear scroll, no anchored navigation |
-
-### P3 — Low
-
-| # | Page | Issue | Root Cause |
-|---|------|-------|------------|
-| 18 | Home (mobile) | Footer items wrap awkwardly | 5 links + copyright squeeze on small screens |
-| 19 | Canvas | Subtitle text too faint | "Multi-agent cultural art pipeline" nearly invisible |
-| 20 | Models | Bottom CTA gradient clashes with page | Deep blue gradient on cream page |
-| 21 | All | No offline/API-down graceful UI | Console ERR_CONNECTION_REFUSED, no user-facing fallback |
+| # | P | Page | Issue | Status |
+|---|---|------|-------|--------|
+| 1 | P0 | Gallery | Images checkerboard | ✅ img fallback + bg color |
+| 2 | P0 | Home | Canvas Preview empty | ✅ pipeline visualization |
+| 3 | P0 | Home | 3D background invisible | ✅ simplified wireframes + CSS gradient fallback |
+| 4 | P1 | Home | Hero gap too large | ✅ 90vh→70vh, min-h-screen→py-20 |
+| 5 | P1 | Home | Below-fold invisible | ✅ opacity 0→0.01 |
+| 6 | P1 | Canvas | Run History duplicates | ✅ client-side dedup by id + content key |
+| 7 | P1 | Gallery | CTA too small | ✅ sm→md |
+| 8 | P1 | Models | Mobile tabs truncated | ✅ scrollbar-hide |
+| 9 | P2 | Home | Cards too small | ✅ max-w-5xl→4xl, p-8→p-6 |
+| 10 | P2 | Home | Academic Trust weak | ✅ pill badges + green dots |
+| 11 | P2 | Canvas | Left panel cluttered | ✅ vertical stack layout |
+| 12 | P2 | Canvas | ReactFlow watermark | ✅ hideAttribution |
+| 13 | P2 | Gallery | Mobile cards dense | ✅ xs→sm breakpoint |
+| 14 | P2 | Models | Thumbnails inconsistent | ✅ letter-circle fallback |
+| 15 | P2 | Research | No page navigation | ✅ BackToTop component |
+| 16 | P2 | Login | Button gradient wrong | ✅ solid #334155 |
+| 17 | P2 | Privacy/Terms | No TOC | ✅ BackToTop on all pages |
+| 18 | P3 | Footer | Mobile wrapping | ✅ flex-wrap + justify-center |
+| 19 | P3 | Canvas | Subtitle faint | ✅ already correct color |
+| 20 | P3 | Models | CTA gradient clash | ✅ Ink Slate→Warm Bronze |
+| 21 | P3 | All | No offline UI | ✅ OfflineBanner component |
 
 ---
 

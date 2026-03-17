@@ -65,11 +65,12 @@ export default function CanvasLeftPanel({
 
   return (
     <>
-      <div className="flex items-center gap-2">
-        <div className="flex-1">
-          <PlaygroundHeader status={pipeline.status} taskId={pipeline.taskId} />
-        </div>
-        <div data-tour-modes className="flex gap-1 shrink-0">
+      <div className="space-y-2">
+        {/* Row 1: Title + Status badge */}
+        <PlaygroundHeader status={pipeline.status} taskId={pipeline.taskId} />
+
+        {/* Row 2: Mode tabs */}
+        <div data-tour-modes className="flex gap-1.5">
           {([
             { mode: 'edit' as const, label: 'Edit' },
             { mode: 'run' as const, label: 'Run' },
@@ -79,7 +80,7 @@ export default function CanvasLeftPanel({
               key={mode}
               onClick={() => setPlaygroundMode(mode)}
               className={[
-                'px-2 py-1 text-[11px] font-medium rounded-lg border transition-colors',
+                'px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors',
                 playgroundMode === mode
                   ? 'border-[#C9C2B8] dark:border-[#C87F4A] text-[#C87F4A] dark:text-[#DDA574] bg-[#FAF7F2] dark:bg-[#C87F4A]/10'
                   : 'border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800',

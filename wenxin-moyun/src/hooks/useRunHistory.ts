@@ -40,7 +40,21 @@ export function useRunHistory(limit = 10): UseRunHistoryReturn {
       );
       if (!res.ok) throw new Error(`Gallery API ${res.status}`);
       const data = await res.json();
-      setItems(data.items ?? []);
+      const raw: RunHistoryItem[] = data.items ?? [];
+
+      // Deduplicate: by id first, then collapse entries with identical subject+score+timestamp
+      const seenIds = new Set<string>();
+      const seenKeys = new Set<string>();
+      const deduped: RunHistoryItem[] = [];
+      for (const item of raw) {
+        if (seenIds.has(item.id)) continue;
+        seenIds.add(item.id);
+        const compositeKey = `${item.subject}|${item.overall}|${item.created_at}`;
+        if (seenKeys.has(compositeKey)) continue;
+        seenKeys.add(compositeKey);
+        deduped.push(item);
+      }
+      setItems(deduped);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load history');
       setItems([]);
