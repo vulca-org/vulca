@@ -305,59 +305,54 @@ For production (Supabase), the CI/CD pipeline runs this automatically via GitHub
 
 When working with Python in this project, always use the virtualenv Python (not system Python). Check which python/pip is active before installing packages.
 
-## ⚠️ Known Architecture Issues (2026-03-17 Audit)
+## Architecture Status (2026-03-17, Phase 9 complete)
 
-Full audit found **85 design-vs-implementation conflicts** across 6 subsystems.
-See memory file `full-conflict-audit.md` for complete details.
+**ONE PIPELINE achieved**: All API routes use `vulca.pipeline.execute()`. The old `PipelineOrchestrator` (1,082 lines) has been deleted.
 
-### 6 Systemic Break Chains (updated 2026-03-17)
+### 6 Systemic Break Chains — Resolution Status
 
-1. **Canvas topology never executes** — `TemplateRegistry.register()` doesn't exist, custom topologies silently discarded. Lives in `prototype/`, not blocking `vulca/` package.
-2. **Sub-stages are dead path** — `enable_sub_stages=True` → `DraftOutput(candidates=[])` → Critic fails → pipeline dies. Lives in `prototype/`, not blocking `vulca/` package.
-3. **Explicit feedback dead end** — `POST /feedback` → FeedbackStore(JSONL) → no consumer ever reads it. Lives in `prototype/`, not blocking `vulca/` package.
-4. **Production JSONL blindspot** — `FeedbackStore` and `FewShotUpdater` read `sessions.jsonl` (migrated to Supabase, file doesn't exist) → always return empty. Lives in `prototype/`, not blocking `vulca/` package.
-5. ~~**LangGraph vs Legacy dual-track**~~ — **FIXED**: `graph/` directory deleted in three-in-one merge. Only legacy `PipelineOrchestrator` remains.
-6. ~~**47D expansion is random noise**~~ — **FIXED**: `app/vulca/` deleted entirely. Replaced by `vulca/_vlm.py` with real L1-L5 VLM evaluation.
+1. ~~**Canvas topology never executes**~~ — **MITIGATED**: Graph code deleted, NodeSearchPopup hides unsupported nodes. Custom topologies not supported (by design: Apple principle).
+2. ~~**Sub-stages are dead path**~~ — **FIXED**: `sub_stage_executor.py` deleted, `enable_sub_stages` disabled.
+3. ~~**Explicit feedback dead end**~~ — **FIXED (9D)**: `FeedbackStore.sync_from_sessions()` reads from SessionStore (DB).
+4. ~~**Production JSONL blindspot**~~ — **FIXED (9D)**: `FewShotUpdater._load_sessions()` reads from SessionStore (DB).
+5. ~~**LangGraph vs Legacy dual-track**~~ — **FIXED**: Both `graph/` and `orchestrator.py` deleted. Only `vulca/` engine.
+6. ~~**47D expansion is random noise**~~ — **FIXED**: `app/vulca/` deleted. Replaced by `vulca/_vlm.py`.
 
-### Critical Rule
-Before adding any new feature to `prototype/`, check if it touches a broken data path listed above (#1-#4). Fix the break first. The `vulca/` package is clean of these issues.
+### SDK/CLI/MCP Architecture
 
-## SDK/CLI/MCP Architecture
-
-The `vulca/` unified package now EXISTS with a working pipeline engine (Phase 4 complete).
 ```
 ┌─────────────────────────────────────┐
-│  MCP Server / ComfyUI Nodes        │  ← Phase 9 (pending)
+│  MCP Server / ComfyUI Nodes        │  ← Pending (independent task)
 ├─────────────────────────────────────┤
 │  CLI  (vulca create / evaluate)     │  ← Working (vulca/cli.py)
 ├─────────────────────────────────────┤
 │  Python SDK  (from vulca import *)  │  ← Working (vulca/ package)
+├─────────────────────────────────────┤
+│  Canvas UI → FastAPI → execute()    │  ← Working (Phase 9B)
 └─────────────────────────────────────┘
 ```
-Three entry points (Canvas/SDK/MCP) share ONE dynamic execution engine.
-Pipeline is a first-class evolvable object, not a hardcoded topology.
-MCP server and CLI upgrade are Phase 9 (pending).
+All entry points share ONE engine: `vulca.pipeline.execute()`.
 
-## VULCA Prototype Architecture
+## VULCA Prototype Architecture (post Phase 9)
 
 ### Directory Structure
 ```
 wenxin-backend/app/prototype/
-├── agents/              # Scout, Draft, Critic, Queen + providers
-├── api/                 # REST endpoints: create, evaluate, routes
-├── cultural_pipelines/  # Cultural weights, YAML tradition loader, pipeline router
-├── digestion/           # ContextEvolver, FeatureExtractor, Clusterer, Distiller
-├── feedback/            # FeedbackStore ⚠️ JSONL-only, writes but nothing reads
-├── intent/              # IntentAgent, SkillSelector, MetaOrchestrator
+├── agents/              # Draft providers (NB2/Mock) — reference code
+├── api/                 # REST endpoints → call vulca.pipeline.execute()
+├── cultural_pipelines/  # Cultural weights, YAML tradition configs
+├── digestion/           # ContextEvolver, PatternDetector, FewShotUpdater
+├── feedback/            # FeedbackStore (reads from SessionStore DB)
+├── intent/              # IntentAgent, MetaOrchestrator
 ├── observability/       # LangfuseObserver
-├── orchestrator/        # PipelineOrchestrator ← ACTUAL production path (pending Phase 9 migration to vulca/)
+├── orchestrator/        # Events + RunState types only (orchestrator.py deleted)
 ├── pipeline/            # Pipeline types + fallback chain
-├── session/             # SessionStore + SessionDigest (DB in prod, JSONL in dev)
-├── skills/              # Skill API routes + executors (partially connected)
-├── tools/               # Scout service, terminology loader, FAISS index
+├── session/             # SessionStore (Supabase DB in prod, JSONL in dev)
+├── skills/              # Skill API routes + executors
+├── tools/               # Scout service, terminology loader
 └── data/                # YAML traditions
 ```
-**Deleted in merge cleanup**: `graph/` (LangGraph), `trajectory/`, `ui/` (Gradio), `community/` (8.4K), `integrations/` (30K), `blind_eval/`, `app/vulca/` (47D).
+**Deleted**: `orchestrator.py`, `agent_factory.py`, `critic_agent/llm/rules.py`, `queen_agent/llm.py`, `vlm_critic.py`, `graph/`, `trajectory/`, `ui/`, `community/`, `integrations/`, `blind_eval/`, `app/vulca/`.
 
 ### Prototype Dependencies
 ```bash
