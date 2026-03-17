@@ -1,27 +1,14 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
-import { vitePrerenderPlugin } from 'vite-prerender-plugin'
 import path from 'path'
 
 // https://vite.dev/config/
-export default defineConfig(({ command }) => ({
+export default defineConfig(() => ({
   plugins: [
     react(),
     tailwindcss(),
-    // Prerender marketing pages for SEO
-    command === 'build' && vitePrerenderPlugin({
-      renderTarget: '#root',
-      prerenderScript: path.resolve(__dirname, 'src/prerender.tsx'),
-      additionalPrerenderRoutes: [
-        '/',
-        '/canvas',
-        '/gallery',
-        '/models',
-        '/research',
-      ],
-    }),
-  ].filter(Boolean),
+  ],
 
   // Always use absolute base URL — required for BrowserRouter + Firebase Hosting
   base: '/',
@@ -32,7 +19,7 @@ export default defineConfig(({ command }) => ({
   // Production optimizations
   build: {
     target: 'esnext',
-    minify: 'esbuild',
+    minify: 'esbuild' as const,
     sourcemap: false, // Disable in production for security
     chunkSizeWarningLimit: 1000,
     
@@ -109,11 +96,7 @@ export default defineConfig(({ command }) => ({
       '@react-three/fiber',
       '@react-three/drei'
     ],
-    exclude: ['@vite/client', '@vite/env'],
-    // 使用缓存提升启动速度 (移除force:true)
-    force: false,
-    // Entries to scan for dependencies
-    entries: ['src/**/*.tsx', 'src/**/*.ts']
+    exclude: ['@vite/client', '@vite/env']
   },
   
   // Module resolution optimization - 关键配置解决 CI 构建问题

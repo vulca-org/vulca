@@ -1,8 +1,45 @@
-# VULCA Design System — Art Professional v1.0
+# VULCA Design System — Art Professional v1.1
 
 Gallery-inspired warm color palette. iOS Human Interface Guidelines adapted with art-professional tones.
 
 **Stack**: Tailwind CSS 4.1 + Framer Motion 12.23 + iOS HIG
+
+**Updated**: 2026-03-17 — Phase 8 product simplification applied.
+
+---
+
+## Product Surface (Post-Phase 8)
+
+### Active Pages
+
+| Route | Page | Description |
+|-------|------|-------------|
+| `/` | HomePage | Hero + Product + Differentiators + Academic Trust + Get Started |
+| `/canvas` | PrototypePage | Three-panel Canvas (Edit/Run/Traditions) |
+| `/gallery` | GalleryPage | Community artwork gallery with filtering |
+| `/models` | LeaderboardPage | AI model leaderboard (42 models) |
+| `/model/:id` | ModelDetailPage | Radar chart + scores + works |
+| `/research` | ResearchPage | Tabbed: Methodology / Dataset / Papers |
+| `/privacy` | PrivacyPage | 10-section privacy policy |
+| `/terms` | TermsPage | 13-section terms of service |
+| `/login` | LoginPage | Auth (outside Layout) |
+| `/register` | RegisterPage | Auth (outside Layout) |
+
+### Header (2 nav items)
+
+`Canvas` | `Gallery` | GitHub icon | Theme toggle
+
+### Footer (single row)
+
+`Canvas` | `Gallery` | `GitHub` | `Docs` | `Apache 2.0` | `© 2025-2026 VULCA`
+
+### HomePage (5 sections, 212 lines)
+
+1. **Hero** (90vh): "VULCA" + "AI that understands cultural context." + `Try Canvas` (primary) + `GitHub` (secondary) + `docker-compose up` terminal
+2. **Product** (100vh): Canvas screenshot placeholder + "9 agents. 8 traditions. One pipeline."
+3. **Differentiators** (3 cards): Create (#C87F4A) / Critique (#5F8A50) / Evolve (#334155)
+4. **Academic Trust**: EMNLP 2025 | WiNLP 2025 | arXiv
+5. **Get Started**: git clone code block + "Star on GitHub" button
 
 ---
 
