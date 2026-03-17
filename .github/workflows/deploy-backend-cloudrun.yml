@@ -69,7 +69,8 @@ jobs:
     name: Deploy to Cloud Run
     runs-on: ubuntu-latest
     needs: validate
-    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'))
+    # Only deploy from yha9806/website (vulca-org has no GCP credentials)
+    if: (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'))) && github.repository_owner == 'yha9806'
 
     permissions:
       contents: read
