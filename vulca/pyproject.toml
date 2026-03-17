@@ -1,0 +1,69 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "vulca"
+version = "0.2.0"
+description = "AI-native creation organism. Create, critique, and evolve cultural art."
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.10"
+authors = [
+    { name = "Yu Haorui", email = "yuhaorui48@gmail.com" },
+]
+keywords = ["ai", "art", "evaluation", "cultural", "vlm", "pipeline", "creation"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Multimedia :: Graphics",
+]
+dependencies = [
+    "litellm>=1.0.0",
+    "httpx>=0.25.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+pipeline = []
+scout = [
+    "sentence-transformers>=2.2.2",
+    "faiss-cpu>=1.7.0",
+]
+graph = [
+    "langgraph>=0.2.0",
+]
+mcp = [
+    "fastmcp>=3.0",
+]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+]
+
+[project.urls]
+Homepage = "https://vulcaart.art"
+Documentation = "https://github.com/yha9806/vulca"
+Repository = "https://github.com/yha9806/vulca"
+Issues = "https://github.com/yha9806/vulca/issues"
+
+[project.scripts]
+vulca = "vulca.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/vulca"]
+
+[tool.hatch.build]
+artifacts = ["src/vulca/cultural/data/**"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

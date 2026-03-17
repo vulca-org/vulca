@@ -1,0 +1,83 @@
+name: south_asian
+display_name:
+  en: "South Asian"
+  zh: "南亚传统"
+  ja: "南アジア伝統"
+
+weights:
+  L1: 0.15
+  L2: 0.20
+  L3: 0.25
+  L4: 0.15
+  L5: 0.25
+
+terminology:
+  - term: rasa
+    term_zh: "拉萨/味"
+    definition:
+      en: "In Indian aesthetics, the essence of emotional flavor evoked in the audience through artistic expression, systematized into nine fundamental rasas (navarasas)."
+    category: aesthetics
+    l_levels: [L4, L5]
+    aliases: ["rasa theory", "navarasa", "aesthetic flavor"]
+    source: "Bharata Muni, Natya Shastra, c. 200 BCE - 200 CE"
+
+  - term: mandala
+    term_zh: "曼陀罗"
+    definition:
+      en: "A geometric configuration of symbols representing the cosmos or spiritual universe, used as a meditation aid and architectural plan in Hindu and Buddhist traditions."
+    category: composition
+    l_levels: [L3, L5]
+    aliases: ["sacred diagram", "cosmic diagram"]
+    source: "Hindu and Buddhist religious art traditions"
+
+  - term: miniature painting
+    term_zh: "细密画"
+    definition:
+      en: "Small-scale, highly detailed paintings on paper or ivory, encompassing Mughal, Rajput, Pahari, and Deccan traditions with distinct stylistic vocabularies."
+    category: technique
+    l_levels: [L2, L3]
+    aliases: ["Indian miniature", "Mughal miniature", "Rajput painting"]
+    source: "South Asian painting traditions, 7th-19th century"
+
+  - term: fresco (Ajanta tradition)
+    term_zh: "湿壁画"
+    definition:
+      en: "The mural painting technique of the Ajanta caves, applying pigments to wet lime plaster to create large-scale narrative scenes of Buddhist Jataka tales."
+    category: technique
+    l_levels: [L2, L3]
+    aliases: ["Ajanta murals", "Indian fresco", "cave painting"]
+    source: "Ajanta Caves, Maharashtra, 2nd century BCE - 6th century CE"
+
+  - term: mudra
+    term_zh: "手印"
+    definition:
+      en: "Symbolic hand gestures in Hindu and Buddhist iconography that convey specific spiritual meanings -- teaching (vitarka), meditation (dhyana), fearlessness (abhaya)."
+    category: aesthetics
+    l_levels: [L3, L4]
+    aliases: ["hand gesture", "ritual gesture", "iconographic gesture"]
+    source: "Hindu and Buddhist iconographic tradition"
+
+  - term: Rajput color palette
+    term_zh: "拉贾斯坦色彩"
+    definition:
+      en: "The bold, saturated color system of Rajasthani miniature painting using mineral pigments -- vivid reds, deep blues, bright yellows -- each carrying symbolic and emotional associations within the rasa framework."
+    category: technique
+    l_levels: [L1, L2, L4]
+    aliases: ["Rajasthani palette", "Indian mineral colors", "Pahari colors"]
+    source: "Rajput and Pahari miniature painting traditions, 16th-19th century"
+
+taboos:
+  - rule: "Do not interpret religious imagery outside its theological and devotional context"
+    severity: high
+    l_levels: [L3, L4, L5]
+    trigger_patterns: ["just mythology", "superstitious", "purely decorative gods", "fictional characters"]
+    explanation: "Hindu, Buddhist, and Jain religious images function within active devotional traditions; interpreting deities as fictional characters misses their primary function."
+
+  - rule: "Do not judge flat spatial representation in Indian miniature painting as a failure to achieve perspective"
+    severity: medium
+    l_levels: [L2, L3, L4]
+    trigger_patterns: ["lacks perspective", "no depth", "flat and naive", "primitive spatial sense", "cannot render space"]
+    explanation: "Indian miniature painting deliberately uses hierarchical scale and simultaneous narration as sophisticated compositional strategies."
+
+pipeline:
+  variant: default

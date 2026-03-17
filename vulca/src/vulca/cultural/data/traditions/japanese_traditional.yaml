@@ -1,0 +1,83 @@
+name: japanese_traditional
+display_name:
+  en: "Japanese Traditional"
+  zh: "日本传统"
+  ja: "日本伝統"
+
+weights:
+  L1: 0.15
+  L2: 0.20
+  L3: 0.20
+  L4: 0.20
+  L5: 0.25
+
+terminology:
+  - term: wabi-sabi
+    term_zh: "侘寂"
+    definition:
+      en: "An aesthetic worldview centered on the acceptance of transience and imperfection, finding beauty in simplicity, asymmetry, and the natural cycle of growth and decay."
+    category: aesthetics
+    l_levels: [L4, L5]
+    aliases: ["wabi sabi", "imperfect beauty", "rustic simplicity"]
+    source: "Japanese aesthetic philosophy, rooted in Zen Buddhism"
+
+  - term: ma (negative space)
+    term_zh: "间"
+    definition:
+      en: "The conscious use of empty or void space as an active compositional element, creating pause, tension, and rhythm between objects -- not mere absence but a meaningful interval."
+    category: composition
+    l_levels: [L2, L3, L5]
+    aliases: ["ma", "interval", "void space", "Japanese negative space"]
+    source: "Japanese spatial aesthetics"
+
+  - term: ukiyo-e
+    term_zh: "浮世绘"
+    definition:
+      en: "Woodblock prints and paintings depicting the 'floating world' of Edo-period urban pleasures -- kabuki actors, courtesans, landscapes, and folk tales -- using flat color areas, bold outlines, and dramatic cropping."
+    category: technique
+    l_levels: [L2, L3]
+    aliases: ["floating world pictures", "Japanese woodblock print"]
+    source: "Edo period (1603-1868) Japanese art tradition"
+
+  - term: sumi-e
+    term_zh: "墨绘"
+    definition:
+      en: "Japanese ink wash painting using sumi ink in varying dilutions, emphasizing spontaneous brushwork, spiritual focus, and the beauty of monochrome gradations."
+    category: technique
+    l_levels: [L2, L4]
+    aliases: ["suiboku-ga", "Japanese ink wash", "ink painting"]
+    source: "Japanese painting tradition, influenced by Song Dynasty Chinese ink painting"
+
+  - term: kintsugi
+    term_zh: "金継ぎ"
+    definition:
+      en: "The art of repairing broken pottery with lacquer mixed with powdered gold, treating breakage as part of an object's history -- a material expression of wabi-sabi philosophy."
+    category: philosophy
+    l_levels: [L3, L5]
+    aliases: ["kintsukuroi", "golden joinery", "golden repair"]
+    source: "Japanese ceramic repair tradition, 15th century onward"
+
+  - term: Rimpa school
+    term_zh: "琳派"
+    definition:
+      en: "A major Japanese decorative art school characterized by bold compositions, lavish use of gold and silver leaf, stylized natural motifs, and flat pictorial space."
+    category: aesthetics
+    l_levels: [L2, L3, L4]
+    aliases: ["Rinpa", "Korin school", "decorative school"]
+    source: "Japanese art history, 17th-19th century"
+
+taboos:
+  - rule: "Do not interpret minimalism, asymmetry, or deliberate imperfection as lack of skill or incomplete work"
+    severity: high
+    l_levels: [L2, L4, L5]
+    trigger_patterns: ["unfinished", "incomplete", "lacks detail", "too simple", "not enough effort", "lazy execution"]
+    explanation: "Japanese traditional aesthetics (wabi-sabi, ma) embrace imperfection, asymmetry, and restraint as core principles reflecting Zen-influenced values."
+
+  - rule: "Do not conflate Japanese and Chinese artistic traditions as a single 'East Asian' category"
+    severity: high
+    l_levels: [L3, L4, L5]
+    trigger_patterns: ["same as Chinese", "East Asian style", "Oriental painting", "like Chinese art", "no different from Chinese"]
+    explanation: "While historically influenced by Chinese traditions, Japanese art developed fundamentally distinct aesthetic values (wabi-sabi, mono no aware, ma) and unique forms (ukiyo-e, Rimpa)."
+
+pipeline:
+  variant: default

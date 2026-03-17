@@ -1,0 +1,83 @@
+name: islamic_geometric
+display_name:
+  en: "Islamic Geometric"
+  zh: "伊斯兰几何"
+  ja: "イスラム幾何学"
+
+weights:
+  L1: 0.25
+  L2: 0.30
+  L3: 0.20
+  L4: 0.15
+  L5: 0.10
+
+terminology:
+  - term: tessellation
+    term_zh: "密铺"
+    definition:
+      en: "The tiling of a plane using geometric shapes with no overlaps or gaps, central to Islamic decorative arts as an expression of infinite divine order."
+    category: composition
+    l_levels: [L1, L2, L5]
+    aliases: ["tiling", "geometric tiling"]
+    source: "Islamic geometric art tradition"
+
+  - term: arabesque
+    term_zh: "蔓藤花纹"
+    definition:
+      en: "Flowing, interlacing vegetal ornament based on rhythmic linear patterns, symbolizing the infinite nature of creation in Islamic art."
+    category: aesthetics
+    l_levels: [L2, L3, L5]
+    aliases: ["vegetal scroll", "rumi pattern"]
+    source: "Islamic decorative arts tradition"
+
+  - term: muqarnas
+    term_zh: "蜂窝拱"
+    definition:
+      en: "Three-dimensional stalactite-like ornamental vaulting composed of tiers of niche-like elements, used in domes, arches, and cornices in Islamic architecture."
+    category: technique
+    l_levels: [L2, L3]
+    aliases: ["stalactite vault", "honeycomb vault"]
+    source: "Islamic architectural tradition"
+
+  - term: octagonal star pattern
+    term_zh: "八角星纹"
+    definition:
+      en: "A fundamental motif formed by overlapping two squares at 45 degrees, generating an eight-pointed star (khatam) that serves as the basis for complex interlocking designs."
+    category: composition
+    l_levels: [L1, L2]
+    aliases: ["khatam", "eight-pointed star", "star polygon"]
+    source: "Islamic geometric design tradition"
+
+  - term: calligraphic ornament
+    term_zh: "书法装饰"
+    definition:
+      en: "The integration of Arabic calligraphy as a decorative element where Quranic verses and divine names function simultaneously as text and visual pattern."
+    category: aesthetics
+    l_levels: [L3, L5]
+    aliases: ["Islamic calligraphy", "epigraphic decoration"]
+    source: "Islamic art and architecture tradition"
+
+  - term: geometric subdivision
+    term_zh: "几何细分"
+    definition:
+      en: "The mathematical process of repeatedly subdividing basic geometric shapes to create increasingly complex patterns, reflecting the Islamic concept of the infinite emanating from the unity of the One."
+    category: technique
+    l_levels: [L2, L5]
+    aliases: ["pattern subdivision", "fractal geometry", "self-similar tiling"]
+    source: "Islamic mathematical art tradition"
+
+taboos:
+  - rule: "Do not characterize geometric abstraction as lacking expressiveness or emotional content"
+    severity: medium
+    l_levels: [L4, L5]
+    trigger_patterns: ["lacks expression", "emotionless", "cold and mathematical", "merely decorative pattern"]
+    explanation: "Islamic geometric art encodes profound theological concepts -- divine unity (tawhid), infinity, and cosmic order -- through mathematical precision."
+
+  - rule: "Do not reduce Islamic art to a prohibition against figural representation"
+    severity: medium
+    l_levels: [L3, L4]
+    trigger_patterns: ["Islam forbids images", "cannot depict humans", "no figurative art", "images are forbidden"]
+    explanation: "Rich traditions of figural art exist in Persian miniatures, Mughal painting, and Ottoman court art. Blanket statements about Islamic aniconism are historically inaccurate."
+
+pipeline:
+  variant: default
