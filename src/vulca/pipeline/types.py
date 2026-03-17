@@ -122,6 +122,7 @@ class PipelineOutput:
     total_cost_usd: float = 0.0
     risk_flags: list[str] = field(default_factory=list)
     recommendations: list[str] = field(default_factory=list)
+    interrupted_at: str = ""
     summary: str = ""
 
     def to_dict(self) -> dict[str, Any]:
@@ -139,6 +140,7 @@ class PipelineOutput:
             "total_cost_usd": self.total_cost_usd,
             "risk_flags": self.risk_flags,
             "recommendations": self.recommendations,
+            "interrupted_at": self.interrupted_at,
             "summary": self.summary,
         }
 

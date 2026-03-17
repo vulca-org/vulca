@@ -320,6 +320,137 @@ class TestExecute:
         assert result.weighted_total > 0
 
 
+# ── on_complete hook ────────────────────────────────────────────────
+
+class TestOnComplete:
+    @pytest.mark.asyncio
+    async def test_on_complete_called(self):
+        """on_complete hook is called after successful pipeline."""
+        called = []
+
+        async def hook(output):
+            called.append(output.session_id)
+
+        pi = PipelineInput(subject="test", provider="mock")
+        await execute(DEFAULT, pi, on_complete=hook)
+        assert len(called) == 1
+        assert called[0]  # non-empty session_id
+
+    @pytest.mark.asyncio
+    async def test_on_complete_not_called_on_failure(self):
+        """on_complete hook is NOT called when pipeline fails."""
+        called = []
+
+        async def hook(output):
+            called.append(output.session_id)
+
+        # Create a definition with an unknown node to force failure
+        bad = PipelineDefinition(
+            name="force_fail",
+            entry_point="generate",
+            nodes=("generate", "evaluate", "decide"),
+            edges=(("generate", "evaluate"), ("evaluate", "decide")),
+        )
+        # Monkey-patch a node to raise
+        from vulca.pipeline.nodes import GenerateNode
+        original_run = GenerateNode.run
+
+        async def _failing_run(self, ctx):
+            raise RuntimeError("forced failure")
+
+        GenerateNode.run = _failing_run
+        try:
+            pi = PipelineInput(subject="test", provider="mock")
+            result = await execute(bad, pi, on_complete=hook)
+            assert result.status == "failed"
+            assert len(called) == 0
+        finally:
+            GenerateNode.run = original_run
+
+    @pytest.mark.asyncio
+    async def test_on_complete_error_is_non_fatal(self):
+        """on_complete hook errors are logged but don't crash pipeline."""
+        async def bad_hook(output):
+            raise ValueError("hook exploded")
+
+        pi = PipelineInput(subject="test", provider="mock")
+        result = await execute(DEFAULT, pi, on_complete=bad_hook)
+        assert result.status in ("completed",)
+        assert result.total_rounds >= 1
+
+    @pytest.mark.asyncio
+    async def test_sync_on_complete_works(self):
+        """A synchronous on_complete function also works."""
+        called = []
+
+        def sync_hook(output):
+            called.append(output.session_id)
+
+        pi = PipelineInput(subject="test", provider="mock")
+        await execute(DEFAULT, pi, on_complete=sync_hook)
+        assert len(called) == 1
+
+
+# ── interrupt_before (HITL) ────────────────────────────────────────
+
+class TestInterruptBefore:
+    @pytest.mark.asyncio
+    async def test_interrupt_before_evaluate(self):
+        """Pipeline pauses before 'evaluate' node."""
+        pi = PipelineInput(subject="test", provider="mock")
+        result = await execute(DEFAULT, pi, interrupt_before={"evaluate"})
+        assert result.status == "waiting_human"
+        assert result.interrupted_at == "evaluate"
+        assert result.total_rounds == 0  # no rounds completed yet
+
+    @pytest.mark.asyncio
+    async def test_interrupt_emits_human_required_event(self):
+        """HUMAN_REQUIRED event is emitted when interrupting."""
+        events_captured = []
+
+        def capture(event):
+            events_captured.append(event)
+
+        pi = PipelineInput(subject="test", provider="mock")
+        result = await execute(
+            DEFAULT, pi,
+            event_callback=capture,
+            interrupt_before={"decide"},
+        )
+        assert result.status == "waiting_human"
+        event_types = [e.event_type.value for e in events_captured]
+        assert "human_required" in event_types
+
+    @pytest.mark.asyncio
+    async def test_no_interrupt_without_matching_nodes(self):
+        """Pipeline runs normally if interrupt_before doesn't match any node."""
+        pi = PipelineInput(subject="test", provider="mock")
+        result = await execute(DEFAULT, pi, interrupt_before={"nonexistent_node"})
+        assert result.status in ("completed",)
+        assert result.interrupted_at == ""
+
+
+# ── custom_weights via node_params ─────────────────────────────────
+
+class TestCustomWeights:
+    @pytest.mark.asyncio
+    async def test_custom_weights_affect_total(self):
+        """Passing custom_weights via node_params changes weighted_total."""
+        pi_default = PipelineInput(subject="test", provider="mock")
+        result_default = await execute(DEFAULT, pi_default)
+
+        pi_custom = PipelineInput(
+            subject="test", provider="mock",
+            node_params={"evaluate": {"custom_weights": {
+                "L1": 1.0, "L2": 0.0, "L3": 0.0, "L4": 0.0, "L5": 0.0,
+            }}},
+        )
+        result_custom = await execute(DEFAULT, pi_custom)
+
+        # Different weights → different weighted_total
+        assert result_default.weighted_total != result_custom.weighted_total
+
+
 # ── create() local mode ─────────────────────────────────────────────
 
 class TestCreateLocal:
