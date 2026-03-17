@@ -157,18 +157,17 @@ wenxin-backend/tmp/
 wenxin-backend/venv/
 wenxin-backend/=*
 
-# Prototype runtime artifacts (images + checkpoints + trajectories)
-wenxin-backend/app/prototype/checkpoints/archive/
-wenxin-backend/app/prototype/checkpoints/critique/
-wenxin-backend/app/prototype/checkpoints/draft/
-wenxin-backend/app/prototype/checkpoints/pipeline/
-wenxin-backend/app/prototype/checkpoints/substages/
+# Prototype runtime artifacts (images + checkpoints + data)
+wenxin-backend/app/prototype/checkpoints/
+wenxin-backend/app/prototype/data/*.jsonl
+wenxin-backend/app/prototype/data/evolved_context.json
 wenxin-backend/app/prototype/data/trajectories/
 wenxin-backend/app/prototype/data/generated/
-wenxin-backend/app/prototype/data/sessions.jsonl
-wenxin-backend/app/prototype/data/skills_marketplace.jsonl
-wenxin-backend/app/prototype/data/skills_votes.jsonl
 wenxin-backend/app/prototype/blind_eval/results/
+
+# VULCA unified package virtual environment
+.venv/
+vulca/.venv/
 
 # LaTeX artifacts
 *.aux
