@@ -246,7 +246,7 @@ class PipelineOrchestrator:
                         )
 
             # Layer 2: Trajectory recorder
-            trajectory_recorder = TrajectoryRecorder()
+            trajectory_recorder = TrajectoryRecorder() if TrajectoryRecorder else None
             evidence_pack = None  # Layer 1a: will be set after Scout
 
             # ==== SCOUT ====

@@ -67,7 +67,7 @@ class TrajectoryRAGService:
 
     def __init__(self, storage_dir: str | Path | None = None) -> None:
         self._storage_dir = Path(storage_dir) if storage_dir else _DEFAULT_STORAGE_DIR
-        self._recorder = TrajectoryRecorder(self._storage_dir)
+        self._recorder = TrajectoryRecorder(self._storage_dir) if TrajectoryRecorder else None
         self._faiss_svc = None
         self._index_built = False
 

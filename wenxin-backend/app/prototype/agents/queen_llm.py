@@ -115,7 +115,7 @@ class QueenLLMAgent:
         self._config = config or QueenConfig()
         self._llm_config = llm_config or QueenLLMConfig()
         self._rule_agent = QueenAgent(config=self._config)
-        self._rag = TrajectoryRAGService()
+        self._rag = TrajectoryRAGService() if TrajectoryRAGService else None
         self._llm_decisions: int = 0
         self._rule_fallbacks: int = 0
 
