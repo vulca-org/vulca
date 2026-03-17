@@ -33,6 +33,15 @@ Gallery-inspired warm color palette. iOS Human Interface Guidelines adapted with
 
 `Canvas` | `Gallery` | `GitHub` | `Docs` | `Apache 2.0` | `© 2025-2026 VULCA`
 
+### Authentication & Cost Control
+
+**Current**: Login/Register routes exist (`/login`, `/register`) but **no UI entry point** in Header/Footer. Guest users get 10/day client-side limit (localStorage, bypassable). No payment system.
+
+**Target (3-layer):**
+1. **Frontend**: Default to mock mode. Real API (Generate) requires login.
+2. **Backend**: Server-side rate limit — Guest 3/day, Logged-in 10/day, 429 on exceed.
+3. **BYOK**: Free users mock-only. Bring-Your-Own-Key for real API. Enterprise gets managed key.
+
 ### HomePage (5 sections, 212 lines)
 
 1. **Hero** (90vh): "VULCA" + "AI that understands cultural context." + `Try Canvas` (primary) + `GitHub` (secondary) + `docker-compose up` terminal
