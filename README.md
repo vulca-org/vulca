@@ -156,17 +156,6 @@ class MyAgent(BaseAgent):
         return {"my_result": ...}
 ```
 
-### Add a Skill
-
-```python
-from app.prototype.skills.executors.base import BaseSkillExecutor
-
-class MySkillExecutor(BaseSkillExecutor):
-    SKILL_NAME = "my_skill"
-    async def execute(self, image_path, context) -> SkillResult:
-        return SkillResult(skill_name="my_skill", score=0.85, details={})
-```
-
 ### Add a Cultural Tradition
 
 ```yaml
