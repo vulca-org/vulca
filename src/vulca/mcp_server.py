@@ -12,11 +12,35 @@ from fastmcp import FastMCP
 mcp = FastMCP("VULCA", instructions="AI-native cultural art creation & evaluation")
 
 
+def _parse_weights_str(raw: str) -> dict[str, float]:
+    """Parse "L1=0.3,L2=0.2,..." into a weights dict.
+
+    Returns empty dict if raw is empty or invalid.
+    """
+    if not raw or not raw.strip():
+        return {}
+    weights: dict[str, float] = {}
+    for pair in raw.split(","):
+        pair = pair.strip()
+        if not pair or "=" not in pair:
+            continue
+        key, val = pair.split("=", 1)
+        key = key.strip().upper()
+        if key in ("L1", "L2", "L3", "L4", "L5"):
+            try:
+                weights[key] = float(val.strip())
+            except ValueError:
+                continue
+    return weights
+
+
 @mcp.tool()
 async def create_artwork(
     intent: str,
     tradition: str = "default",
     provider: str = "mock",
+    hitl: bool = False,
+    weights: str = "",
 ) -> dict:
     """Create cultural artwork through the VULCA pipeline.
 
@@ -24,21 +48,44 @@ async def create_artwork(
         intent: Natural language description of what to create.
         tradition: Cultural tradition (e.g. chinese_xieyi, western_academic).
         provider: Image generation provider (mock | nb2).
+        hitl: Enable human-in-the-loop (pipeline pauses before decide node).
+        weights: Custom L1-L5 weights as string "L1=0.3,L2=0.2,...".
 
     Returns:
-        Session ID, scores, weighted total, and creation summary.
+        Session ID, scores, weighted total, status, and creation summary.
     """
-    from vulca import acreate
+    from vulca.pipeline.engine import execute
+    from vulca.pipeline.templates import DEFAULT
+    from vulca.pipeline.types import PipelineInput
 
-    result = await acreate(intent, tradition=tradition, provider=provider, mode="local")
+    parsed_weights = _parse_weights_str(weights)
+
+    node_params: dict[str, dict] = {}
+    if parsed_weights:
+        node_params["evaluate"] = {"custom_weights": parsed_weights}
+
+    pipeline_input = PipelineInput(
+        subject=intent,
+        intent=intent,
+        tradition=tradition,
+        provider=provider,
+        node_params=node_params,
+    )
+
+    interrupt_before = {"decide"} if hitl else None
+
+    output = await execute(DEFAULT, pipeline_input, interrupt_before=interrupt_before)
+
     return {
-        "session_id": result.session_id,
-        "tradition": result.tradition,
-        "weighted_total": result.weighted_total,
-        "scores": result.scores,
-        "total_rounds": result.total_rounds,
-        "summary": result.summary,
-        "cost_usd": result.cost_usd,
+        "session_id": output.session_id,
+        "status": output.status,
+        "interrupted_at": output.interrupted_at,
+        "tradition": output.tradition,
+        "weighted_total": output.weighted_total,
+        "scores": output.final_scores,
+        "total_rounds": output.total_rounds,
+        "summary": output.summary,
+        "cost_usd": output.total_cost_usd,
     }
 
 

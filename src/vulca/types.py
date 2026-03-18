@@ -99,6 +99,12 @@ class CreateResult:
     mode: str = "create"
     """Session mode: 'create' or 'evaluate'."""
 
+    status: str = "completed"
+    """Run status: 'completed' or 'waiting_human'."""
+
+    interrupted_at: str = ""
+    """Node name where pipeline was interrupted (HITL), empty if completed."""
+
     tradition: str = "default"
     """Cultural tradition used."""
 
@@ -138,5 +144,5 @@ class CreateResult:
     def __repr__(self) -> str:
         return (
             f"CreateResult(session_id={self.session_id!r}, mode={self.mode!r}, "
-            f"rounds={self.total_rounds}, tradition={self.tradition!r})"
+            f"status={self.status!r}, rounds={self.total_rounds}, tradition={self.tradition!r})"
         )
