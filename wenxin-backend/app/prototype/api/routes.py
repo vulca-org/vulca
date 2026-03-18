@@ -151,8 +151,27 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
     from vulca.pipeline.templates import DEFAULT, TEMPLATES
     from vulca.pipeline.types import PipelineInput as VulcaPipelineInput
 
-    template_name = req.template or "default"
-    definition = TEMPLATES.get(template_name, DEFAULT)
+    # Resolve pipeline definition: custom topology > template > default
+    from vulca.pipeline.types import PipelineDefinition
+    if req.custom_nodes and req.custom_edges:
+        # Validate: all nodes must be known builtins or aliases
+        _KNOWN_NODES = {"generate", "evaluate", "decide", "scout", "draft", "critic", "queen"}
+        unknown = set(req.custom_nodes) - _KNOWN_NODES
+        if unknown:
+            raise HTTPException(400, f"Unknown node(s): {unknown}. Available: {sorted(_KNOWN_NODES)}")
+        if not req.custom_edges:
+            raise HTTPException(400, "custom_edges required when custom_nodes provided")
+        definition = PipelineDefinition(
+            name="custom",
+            display_name="Custom Topology",
+            entry_point=req.custom_nodes[0],
+            nodes=tuple(req.custom_nodes),
+            edges=tuple(tuple(e) for e in req.custom_edges),
+            enable_loop=True,
+        )
+    else:
+        template_name = req.template or "default"
+        definition = TEMPLATES.get(template_name, DEFAULT)
 
     # Extract custom L1-L5 weights from node_params (Canvas weight sliders)
     _node_params: dict[str, dict] = {}

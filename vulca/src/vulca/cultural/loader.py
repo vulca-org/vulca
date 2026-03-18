@@ -189,16 +189,68 @@ def get_known_traditions() -> list[str]:
     return list(TRADITIONS)
 
 
+def _load_evolved_weights(tradition: str) -> dict[str, float] | None:
+    """Try to load evolved weights from evolved_context.json.
+
+    Returns L1-L5 keyed dict, or None if unavailable.
+    The evolution system stores weights with full dimension names
+    (visual_perception, etc.) — convert to L1-L5 format.
+    """
+    try:
+        import json
+        # Check multiple possible locations for evolved_context.json
+        # Two possible layouts:
+        # 1. Monorepo: .../vulca/src/vulca/cultural/loader.py → .parent^5 = repo root
+        # 2. Backend copy: .../wenxin-backend/vulca/cultural/loader.py → .parent^3 = wenxin-backend/
+        loader_path = Path(__file__).resolve()
+        candidates = [
+            # Backend copy layout (production)
+            loader_path.parent.parent.parent / "app" / "prototype" / "data" / "evolved_context.json",
+            # Monorepo layout (development)
+            loader_path.parent.parent.parent.parent.parent / "wenxin-backend" / "app" / "prototype" / "data" / "evolved_context.json",
+        ]
+        # Also check env override
+        env_path = os.environ.get("VULCA_EVOLVED_CONTEXT")
+        if env_path:
+            candidates.insert(0, Path(env_path))
+
+        for path in candidates:
+            if path.is_file():
+                with open(path, "r", encoding="utf-8") as f:
+                    ctx = json.load(f)
+                tw = ctx.get("tradition_weights", {}).get(tradition)
+                if not tw:
+                    return None
+                # Convert full names → L1-L5
+                result: dict[str, float] = {}
+                for full_name, val in tw.items():
+                    l_key = _DIM_TO_L.get(full_name)
+                    if l_key:
+                        result[l_key] = float(val)
+                if len(result) == 5:
+                    return result
+                return None
+    except Exception:
+        return None
+
+
 def get_weights(tradition: str) -> dict[str, float]:
     """Get L1-L5 weights for a tradition.
 
-    Priority: YAML config > hardcoded TRADITION_WEIGHTS > default.
+    Priority: evolved_context.json > YAML config > hardcoded > default.
     """
+    # 1. Evolved weights (from self-evolution system)
+    evolved = _load_evolved_weights(tradition)
+    if evolved:
+        return evolved
+
+    # 2. YAML config
     _ensure_loaded()
     tc = _traditions.get(tradition)
     if tc:
         return dict(tc.weights_l)
-    # Fallback to hardcoded
+
+    # 3. Hardcoded fallback
     from vulca.cultural import TRADITION_WEIGHTS
     return dict(TRADITION_WEIGHTS.get(tradition, _DEFAULT_WEIGHTS))
 

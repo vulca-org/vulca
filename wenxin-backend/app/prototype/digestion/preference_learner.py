@@ -45,7 +45,7 @@ class PreferenceLearner:
         self._store = store or SessionStore.get()
 
     def learn(self) -> dict[str, PreferenceProfile]:
-        """Analyze sessions to build preference profiles by tradition."""
+        """Analyze sessions + explicit feedback to build preference profiles."""
         sessions = self._store.get_all()
         if not sessions:
             return {}
@@ -55,6 +55,9 @@ class PreferenceLearner:
         for s in sessions:
             if s.get("feedback"):
                 by_tradition[s.get("tradition", "default")].append(s)
+
+        # Also ingest explicit feedback from FeedbackStore (POST /feedback)
+        self._ingest_explicit_feedback(sessions, by_tradition)
 
         profiles: dict[str, PreferenceProfile] = {}
         for tradition, sess_list in by_tradition.items():
@@ -130,3 +133,65 @@ class PreferenceLearner:
             profiles[tradition] = profile
 
         return profiles
+
+    def _ingest_explicit_feedback(
+        self,
+        sessions: list[dict],
+        by_tradition: dict[str, list[dict]],
+    ) -> None:
+        """Merge explicit feedback (POST /feedback → feedback.jsonl) into session groups.
+
+        For each feedback record, find the matching session and inject the
+        feedback if not already present. This bridges the gap between
+        FeedbackStore (explicit) and SessionStore (implicit) feedback.
+        """
+        try:
+            from app.prototype.feedback.feedback_store import FeedbackStore
+            fb_store = FeedbackStore.get()
+            records = fb_store.get_recent(limit=200)
+        except Exception:
+            return
+
+        if not records:
+            return
+
+        # Build session lookup by ID
+        session_by_id: dict[str, dict] = {}
+        for s in sessions:
+            sid = s.get("session_id", "")
+            if sid:
+                session_by_id[sid] = s
+
+        for record in records:
+            eid = record.evaluation_id
+            if not eid:
+                continue
+            session = session_by_id.get(eid)
+            if not session:
+                continue
+
+            tradition = record.tradition or session.get("tradition", "default")
+
+            # Inject feedback into session if not already there
+            existing_fb = session.get("feedback") or []
+            if isinstance(existing_fb, dict):
+                existing_fb = [existing_fb]
+
+            # Check if this feedback is already present
+            already = any(
+                fb.get("rating") == record.rating and fb.get("comment") == record.comment
+                for fb in existing_fb
+                if isinstance(fb, dict)
+            )
+            if not already:
+                new_fb = {
+                    "liked": record.rating == "thumbs_up",
+                    "rating": record.rating,
+                    "comment": record.comment,
+                }
+                existing_fb.append(new_fb)
+                session["feedback"] = existing_fb
+
+                # Ensure this session is in the tradition group
+                if session not in by_tradition.get(tradition, []):
+                    by_tradition[tradition].append(session)
