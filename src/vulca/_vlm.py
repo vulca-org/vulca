@@ -82,6 +82,39 @@ _TRADITION_GUIDANCE: dict[str, str] = {
 }
 
 
+def _build_tradition_guidance(tradition: str) -> str:
+    """Build rich tradition guidance from YAML data + hardcoded fallback."""
+    base = _TRADITION_GUIDANCE.get(tradition, _TRADITION_GUIDANCE["default"])
+
+    try:
+        from vulca.cultural.loader import get_tradition
+        tc = get_tradition(tradition)
+        if tc is None:
+            return base
+
+        parts = [base]
+
+        # Inject terminology
+        if tc.terminology:
+            terms_text = "\n".join(
+                f"  - **{t.term}** ({t.term_zh}): {t.definition if isinstance(t.definition, str) else t.definition.get('en', '')}"
+                for t in tc.terminology[:8]
+            )
+            parts.append(f"\n### Key Cultural Terminology\n{terms_text}")
+
+        # Inject taboos
+        if tc.taboos:
+            taboos_text = "\n".join(
+                f"  - ⚠️ {t.rule}" + (f" — {t.explanation}" if t.explanation else "")
+                for t in tc.taboos
+            )
+            parts.append(f"\n### Evaluation Taboos (MUST respect)\n{taboos_text}")
+
+        return "\n".join(parts)
+    except Exception:
+        return base
+
+
 async def score_image(
     img_b64: str,
     mime: str,
@@ -93,7 +126,7 @@ async def score_image(
 
     Returns a dict with L1-L5 scores and rationales, or fallback zeros on error.
     """
-    tradition_guidance = _TRADITION_GUIDANCE.get(tradition, _TRADITION_GUIDANCE["default"])
+    tradition_guidance = _build_tradition_guidance(tradition)
     system_msg = _SYSTEM_PROMPT.format(
         tradition=tradition.replace("_", " ").title(),
         tradition_guidance=tradition_guidance,
