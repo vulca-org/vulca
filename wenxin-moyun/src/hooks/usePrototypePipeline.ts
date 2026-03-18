@@ -267,12 +267,41 @@ export function usePrototypePipeline() {
             if (reportOut) {
               update.reportOutput = reportOut;
             }
-          } else if (stage === 'critic') {
+          } else if (stage === 'critic' || stage === 'evaluate') {
+            // Support both old format (critique.scored_candidates) and
+            // vulca engine format (flat scores + weighted_total)
             const critique = payload.critique as Record<string, unknown> | undefined;
             if (critique) {
               update.scoredCandidates = (critique.scored_candidates as ScoredCandidate[]) || [];
               update.bestCandidateId = (critique.best_candidate_id as string) || null;
               update.evaluationSummary = (critique.evaluation_summary as string) || null;
+            }
+            // vulca engine: flat {scores: {L1: 0.75, ...}, weighted_total: 0.754}
+            const scores = payload.scores as Record<string, number> | undefined;
+            const wt = payload.weighted_total as number | undefined;
+            if (scores && typeof wt === 'number') {
+              // Map L1-L5 to full dimension names used by frontend components
+              const L_TO_DIM: Record<string, string> = {
+                L1: 'visual_perception',
+                L2: 'technical_analysis',
+                L3: 'cultural_context',
+                L4: 'critical_interpretation',
+                L5: 'philosophical_aesthetic',
+              };
+              const dimScores: DimensionScore[] = Object.entries(scores).map(([dim, score]) => ({
+                dimension: L_TO_DIM[dim] || dim,
+                score: score as number,
+                rationale: '',
+              }));
+              const candidateId = (payload.candidate_id as string) || prev.bestCandidateId || 'mock';
+              update.scoredCandidates = [{
+                candidate_id: candidateId,
+                dimension_scores: dimScores,
+                weighted_total: wt,
+                gate_passed: true,
+                risk_tags: [],
+              }];
+              update.bestCandidateId = candidateId;
             }
             const rawConstraints = payload.hitl_constraints as Partial<HitlConstraints> | undefined;
             if (rawConstraints && typeof rawConstraints === 'object' && Object.keys(rawConstraints).length > 0) {
@@ -332,20 +361,26 @@ export function usePrototypePipeline() {
 
         case 'decision_made': {
           const budgetRaw = payload.budget_state as BudgetState | undefined;
+          // Support both old format (action) and vulca engine format (decision)
+          const decisionAction = (payload.action as string) || (payload.decision as string) || 'unknown';
           const newDecision: QueenDecision = {
-            action: payload.action as string,
-            reason: payload.reason as string,
+            action: decisionAction,
+            reason: (payload.reason as string) || '',
             rerun_dimensions: (payload.rerun_dimensions as string[]) || [],
             preserve_dimensions: (payload.preserve_dimensions as string[]) || [],
-            round: payload.round as number,
+            round: (payload.round as number) || round_num,
             budget_state: budgetRaw || null,
           };
           update.decision = newDecision;
 
           // Build round snapshot
-          const bestTotal = prev.scoredCandidates.length > 0
-            ? Math.max(...prev.scoredCandidates.map(sc => sc.weighted_total))
-            : null;
+          // vulca engine sends weighted_total directly in decision_made
+          const decisionWT = payload.weighted_total as number | undefined;
+          const bestTotal = decisionWT != null
+            ? decisionWT
+            : prev.scoredCandidates.length > 0
+              ? Math.max(...prev.scoredCandidates.map(sc => sc.weighted_total))
+              : null;
           const roundSnapshot: RoundData = {
             round: round_num,
             candidates: [...prev.candidates],
