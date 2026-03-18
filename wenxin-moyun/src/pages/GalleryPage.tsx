@@ -210,9 +210,10 @@ function EvolutionInsightsPanel({ insights }: { insights: DigestionInsights | nu
   return (
     <div className="mb-6">
       {/* Toggle button */}
-      <button
+      <IOSButton
+        variant="glass"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-[#C87F4A]/20 dark:border-[#C87F4A]/30 bg-[#C87F4A]/5 dark:bg-[#C87F4A]/10 hover:bg-[#C87F4A]/10 dark:hover:bg-[#C87F4A]/15 transition-colors text-left"
+        className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-[#C87F4A]/20 dark:border-[#C87F4A]/30 bg-[#C87F4A]/5 dark:bg-[#C87F4A]/10 text-left"
       >
         <div className="flex items-center gap-2">
           <span className="text-[#C87F4A] dark:text-[#DDA574] font-semibold text-sm">
@@ -228,7 +229,7 @@ function EvolutionInsightsPanel({ insights }: { insights: DigestionInsights | nu
           ? <ChevronUp className="w-4 h-4 text-gray-400" />
           : <ChevronDown className="w-4 h-4 text-gray-400" />
         }
-      </button>
+      </IOSButton>
 
       {/* Collapsible content */}
       {isOpen && (
@@ -275,9 +276,10 @@ function EvolutionInsightsPanel({ insights }: { insights: DigestionInsights | nu
                   const displayName = TRADITION_LABELS[tradition] ?? tradition.replace(/_/g, ' ');
                   return (
                     <div key={tradition} className="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-                      <button
+                      <IOSButton
+                        variant="text"
                         onClick={() => setExpandedTradition(isExpanded ? null : tradition)}
-                        className="w-full flex items-center justify-between px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                        className="w-full flex items-center justify-between px-3 py-2.5 text-left"
                       >
                         <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                           {displayName}
@@ -286,7 +288,7 @@ function EvolutionInsightsPanel({ insights }: { insights: DigestionInsights | nu
                           ? <ChevronUp className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
                           : <ChevronDown className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
                         }
-                      </button>
+                      </IOSButton>
                       {isExpanded && (
                         <div className="px-3 pb-3 border-t border-gray-100 dark:border-gray-800">
                           <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed pt-2">

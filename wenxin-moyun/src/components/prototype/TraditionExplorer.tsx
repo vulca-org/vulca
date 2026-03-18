@@ -127,7 +127,7 @@ const TRADITIONS: TraditionInfo[] = [
   },
 ];
 
-const COLORS = ['#007AFF', '#34C759', '#FF9500', '#AF52DE', '#FF2D55', '#5AC8FA'];
+const COLORS = ['#334155', '#5F8A50', '#B8923D', '#C87F4A', '#C65D4D', '#6B8E7A'];
 const SEVERITY_COLORS: Record<string, string> = {
   critical: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
   high: 'bg-[#B8923D]/10 text-[#8F7030] dark:bg-[#B8923D]/10 dark:text-[#D4A94E]',

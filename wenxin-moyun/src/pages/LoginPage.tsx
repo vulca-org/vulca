@@ -149,13 +149,14 @@ const LoginPage: React.FC = () => {
           <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
             <div className="text-center text-sm text-gray-600 dark:text-gray-400">
               <p className="mb-2">Try it out</p>
-              <button
+              <IOSButton
                 type="button"
+                variant="text"
+                size="sm"
                 onClick={handleDemoLogin}
-                className="text-[#C87F4A] hover:text-[#B8923D] dark:text-[#DDA574] dark:hover:text-[#C87F4A] font-medium transition-colors"
               >
                 Use demo account
-              </button>
+              </IOSButton>
             </div>
           </div>
 
@@ -163,24 +164,28 @@ const LoginPage: React.FC = () => {
           <div className="mt-4 text-center">
             <p className="text-sm text-gray-600 dark:text-gray-400">
               Don't have an account?{' '}
-              <button
+              <IOSButton
+                variant="text"
+                size="sm"
                 onClick={() => navigate('/register')}
-                className="text-[#C87F4A] hover:text-[#B8923D] dark:text-[#DDA574] dark:hover:text-[#C87F4A] font-medium transition-colors"
+                className="inline"
               >
                 Register
-              </button>
+              </IOSButton>
             </p>
           </div>
 
           {/* Back to Home */}
           <div className="mt-4 text-center">
-            <button
+            <IOSButton
+              variant="text"
+              size="sm"
               onClick={() => navigate('/')}
-              className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+              className="inline-flex items-center gap-2"
             >
               <ArrowLeft className="w-4 h-4" />
               Return to Home
-            </button>
+            </IOSButton>
           </div>
         </div>
 

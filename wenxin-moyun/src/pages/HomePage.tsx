@@ -27,13 +27,15 @@ function CopyableTerminal({ command }: { command: string }) {
     <div className="flex items-center gap-2 bg-gray-900 dark:bg-gray-950 rounded-xl px-5 py-3 shadow-lg border border-gray-700 dark:border-gray-600">
       <Terminal className="w-4 h-4 text-green-400 flex-shrink-0" />
       <code className="font-mono text-sm text-gray-100 select-all">{command}</code>
-      <button
+      <IOSButton
+        variant="text"
+        size="sm"
         onClick={handleCopy}
-        className="ml-3 p-1.5 rounded-md hover:bg-gray-700 transition-colors text-gray-400 hover:text-white"
+        className="ml-3 p-1.5 text-gray-400 hover:text-white"
         aria-label="Copy command"
       >
         {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
-      </button>
+      </IOSButton>
     </div>
   );
 }

@@ -12,9 +12,9 @@ export function convertToCSV<T extends object>(data: T[], columns?: { key: strin
   if (data.length === 0) return '';
   
   // 如果没有指定列，则使用数据的所有键
-  const headers = columns 
+  const headers = columns
     ? columns.map(col => col.label)
-    : Object.keys(data[0] as Record<string, unknown>);
+    : Object.keys((data[0] ?? {}) as Record<string, unknown>);
   
   const rows = data.map(row => {
     const values = columns

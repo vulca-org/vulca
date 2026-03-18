@@ -346,26 +346,31 @@ export default function PipelineEditor({
       clearTimeout(validateTimer.current);
       validateTimer.current = setTimeout(() => {
         const topo = extractTopology(n, e);
+        const errors: string[] = [];
+        const warnings: string[] = [];
+
         if (topo.nodes.length === 0 || topo.edges.length === 0) {
-          setValidation({
-            valid: false,
-            errors: ['Topology needs at least 1 node and 1 edge'],
-            warnings: [],
-          });
-          return;
+          errors.push('Topology needs at least 1 node and 1 edge');
+        } else {
+          // Check all edge endpoints reference existing nodes
+          const nodeSet = new Set(topo.nodes as string[]);
+          for (const [src, tgt] of topo.edges) {
+            if (!nodeSet.has(src)) errors.push(`Edge source "${src}" not found in nodes`);
+            if (!nodeSet.has(tgt)) errors.push(`Edge target "${tgt}" not found in nodes`);
+          }
+          // Check for disconnected nodes
+          const connected = new Set<string>();
+          for (const [src, tgt] of topo.edges) {
+            connected.add(src);
+            connected.add(tgt);
+          }
+          const disconnected = topo.nodes.filter((id) => !connected.has(id));
+          if (disconnected.length > 0) {
+            warnings.push(`Disconnected nodes: ${disconnected.join(', ')}`);
+          }
         }
-        fetch(`${API_PREFIX}/prototype/topologies/validate`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ nodes: topo.nodes, edges: topo.edges }),
-        })
-          .then((r) => r.json())
-          .then((data: { valid: boolean; errors: string[]; warnings: string[] }) =>
-            setValidation(data),
-          )
-          .catch(() =>
-            setValidation({ valid: true, errors: [], warnings: ['Validation API unavailable'] }),
-          );
+
+        setValidation({ valid: errors.length === 0, errors, warnings });
       }, VALIDATE_DEBOUNCE);
     },
     [],

@@ -30,28 +30,28 @@ const defaultGroups: DimensionGroup[] = [
     id: 'technical',
     name: 'Technical Skills',
     dimensions: ['dim_0', 'dim_1', 'dim_2', 'dim_3', 'dim_4', 'dim_5'],
-    color: '#64748B',
+    color: '#334155',
     icon: 'gear'
   },
   {
     id: 'creative',
     name: 'Creative Expression',
     dimensions: ['dim_6', 'dim_7', 'dim_8', 'dim_9', 'dim_10', 'dim_11'],
-    color: '#FF9500',
+    color: '#B8923D',
     icon: 'palette'
   },
   {
     id: 'emotional',
     name: 'Emotional Depth',
     dimensions: ['dim_12', 'dim_13', 'dim_14', 'dim_15', 'dim_16'],
-    color: '#FF3B30',
+    color: '#C65D4D',
     icon: 'heart'
   },
   {
     id: 'contextual',
     name: 'Contextual Understanding',
     dimensions: ['dim_17', 'dim_18', 'dim_19', 'dim_20', 'dim_21', 'dim_22'],
-    color: '#34C759',
+    color: '#5F8A50',
     icon: 'globe'
   },
   {
@@ -65,21 +65,21 @@ const defaultGroups: DimensionGroup[] = [
     id: 'cultural',
     name: 'Cultural Relevance',
     dimensions: ['dim_29', 'dim_30', 'dim_31', 'dim_32', 'dim_33'],
-    color: '#5856D6',
+    color: '#9B6B56',
     icon: 'world'
   },
   {
     id: 'impact',
     name: 'Impact & Influence',
     dimensions: ['dim_34', 'dim_35', 'dim_36', 'dim_37', 'dim_38', 'dim_39'],
-    color: '#FF2D55',
+    color: '#8F7860',
     icon: 'trending'
   },
   {
     id: 'synthesis',
     name: 'Synthesis & Integration',
     dimensions: ['dim_40', 'dim_41', 'dim_42', 'dim_43', 'dim_44', 'dim_45', 'dim_46'],
-    color: '#00C7BE',
+    color: '#6B8E7A',
     icon: 'merge'
   }
 ];

@@ -135,7 +135,7 @@ export function getTheme(mode: ThemeMode): Theme {
 export function generateCSSVariables(theme: Theme): string {
   const vars: string[] = [];
   function flatten(obj: Record<string, unknown>, prefix = '') {
-    for (const [key, value] of Object.entries(obj)) {
+    for (const [key, value] of Object.entries(obj ?? {})) {
       const varName = prefix ? `${prefix}-${key}` : key;
       if (typeof value === 'string') {
         vars.push(`--${varName}: ${value};`);

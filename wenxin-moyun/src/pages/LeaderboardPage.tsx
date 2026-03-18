@@ -168,21 +168,16 @@ export default function LeaderboardPage() {
       <div className="mb-8 overflow-x-auto scrollbar-hide">
         <div className="flex space-x-2 min-w-max">
           {categories.map((cat) => (
-            <button
+            <IOSButton
               key={cat.id}
+              variant={selectedCategory === cat.id ? 'primary' : 'secondary'}
+              size="md"
               onClick={() => setSelectedCategory(cat.id)}
-              className={`
-                px-4 py-2.5 rounded-xl font-medium transition-all flex items-center gap-2 min-h-[44px]
-                focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2
-                ${selectedCategory === cat.id
-                  ? 'bg-slate-700 text-white shadow-lg'
-                  : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-                }
-              `}
+              className="flex items-center gap-2"
             >
               {categoryIcons[cat.id]}
               <span>{cat.name}</span>
-            </button>
+            </IOSButton>
           ))}
         </div>
       </div>

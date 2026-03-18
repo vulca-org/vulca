@@ -7,14 +7,14 @@ interface ComparisonRadarProps {
   title?: string;
 }
 
-// iOS Color System
+// Art Professional Color System
 const COLORS = [
-  '#64748B', // iOS Blue
-  '#FF3B30', // iOS Red
-  '#34C759', // iOS Green
-  '#FF9500', // iOS Orange
-  '#C87F4A', // iOS Purple
-  '#5AC8FA'  // iOS Teal
+  '#334155', // Ink Slate
+  '#C65D4D', // Coral Red
+  '#5F8A50', // Sage Green
+  '#B8923D', // Amber Gold
+  '#C87F4A', // Warm Bronze
+  '#6B8E7A'  // Patina Green
 ];
 
 export default function ComparisonRadar({ models, title = "Model Comparison" }: ComparisonRadarProps) {
@@ -78,8 +78,8 @@ export default function ComparisonRadar({ models, title = "Model Comparison" }: 
           />
           <PolarAngleAxis 
             dataKey="dimension"
-            tick={{ 
-              fill: '#64748B', 
+            tick={{
+              fill: '#334155',
               fontSize: 13,
               fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif'
             }}
