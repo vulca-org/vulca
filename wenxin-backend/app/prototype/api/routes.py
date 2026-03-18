@@ -698,7 +698,9 @@ def _build_status_response(task_id: str) -> RunStatusResponse:
 
         if completion_event:
             p = completion_event.payload if isinstance(completion_event.payload, dict) else {}
-            status = "completed" if "completed" in str(completion_event.event_type) else "failed"
+            # Use .value for enum (str(enum) returns "ClassName.MEMBER" in Python 3.11+)
+            evt_val = completion_event.event_type.value if hasattr(completion_event.event_type, 'value') else str(completion_event.event_type)
+            status = "completed" if "completed" in evt_val else "failed"
             return RunStatusResponse(
                 task_id=task_id,
                 status=status,
