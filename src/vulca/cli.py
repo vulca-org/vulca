@@ -58,6 +58,7 @@ def main(argv: list[str] | None = None) -> None:
     eval_p.add_argument("--skills", default="", help="Comma-separated extra skills: brand,audience,trend")
     eval_p.add_argument("--json", action="store_true", help="Output raw JSON")
     eval_p.add_argument("--api-key", default="", help="Google API key (or set GOOGLE_API_KEY)")
+    eval_p.add_argument("--mock", action="store_true", help="Use mock scoring (no API key required)")
 
     # create command
     create_p = sub.add_parser("create", aliases=["c"], help="Create artwork via pipeline")
@@ -104,6 +105,7 @@ def _cmd_evaluate(args: argparse.Namespace) -> None:
             subject=args.subject,
             skills=skills,
             api_key=args.api_key,
+            mock=args.mock,
         )
     except ValueError as e:
         print(f"Error: {e}", file=sys.stderr)

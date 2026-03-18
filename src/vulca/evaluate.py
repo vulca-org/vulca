@@ -18,6 +18,7 @@ async def aevaluate(
     skills: list[str] | None = None,
     include_evidence: bool = False,
     api_key: str = "",
+    mock: bool = False,
 ) -> EvalResult:
     """Evaluate an artwork image asynchronously.
 
@@ -41,6 +42,8 @@ async def aevaluate(
         Whether to gather cultural evidence before scoring.
     api_key:
         Google API key. If empty, reads from ``GOOGLE_API_KEY`` env var.
+    mock:
+        Use mock scoring (no API key required). Useful for testing.
 
     Returns
     -------
@@ -49,7 +52,7 @@ async def aevaluate(
     """
     from vulca._engine import Engine
 
-    engine = Engine.get_instance(api_key=api_key)
+    engine = Engine.get_instance(api_key=api_key, mock=mock)
     t0 = time.monotonic()
     result = await engine.run(
         image=str(image),
@@ -72,6 +75,7 @@ def evaluate(
     skills: list[str] | None = None,
     include_evidence: bool = False,
     api_key: str = "",
+    mock: bool = False,
 ) -> EvalResult:
     """Evaluate an artwork image (synchronous wrapper).
 
@@ -96,6 +100,7 @@ def evaluate(
                     skills=skills,
                     include_evidence=include_evidence,
                     api_key=api_key,
+                    mock=mock,
                 ),
             )
             return future.result()
@@ -109,5 +114,6 @@ def evaluate(
                 skills=skills,
                 include_evidence=include_evidence,
                 api_key=api_key,
+                mock=mock,
             )
         )

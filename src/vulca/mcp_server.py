@@ -94,6 +94,7 @@ async def evaluate_artwork(
     image_path: str,
     tradition: str = "",
     intent: str = "",
+    mock: bool = False,
 ) -> dict:
     """Evaluate artwork on L1-L5 cultural dimensions.
 
@@ -101,13 +102,14 @@ async def evaluate_artwork(
         image_path: Path to the image file.
         tradition: Cultural tradition (auto-detected if empty).
         intent: Optional evaluation intent.
+        mock: Use mock scoring (no API key required). Useful for testing.
 
     Returns:
         Overall score, L1-L5 dimension scores, and recommendations.
     """
     from vulca import aevaluate
 
-    result = await aevaluate(image_path, tradition=tradition, intent=intent)
+    result = await aevaluate(image_path, tradition=tradition, intent=intent, mock=mock)
     return {
         "score": result.score,
         "tradition": result.tradition,
