@@ -25,20 +25,21 @@ _instance: Engine | None = None
 class Engine:
     """Stateless evaluation engine. Use ``Engine.get_instance()``."""
 
-    def __init__(self, api_key: str = "") -> None:
+    def __init__(self, api_key: str = "", mock: bool = False) -> None:
+        self.mock = mock
         self.api_key = api_key or os.environ.get("GOOGLE_API_KEY", "") or os.environ.get("GEMINI_API_KEY", "")
-        if not self.api_key:
+        if not self.api_key and not self.mock:
             raise ValueError(
-                "No API key found. Set GOOGLE_API_KEY environment variable "
-                "or pass api_key='...' to vulca.evaluate()."
+                "No API key found. Set GOOGLE_API_KEY environment variable, "
+                "pass api_key='...' to vulca.evaluate(), or use mock=True."
             )
 
     @classmethod
-    def get_instance(cls, api_key: str = "") -> Engine:
+    def get_instance(cls, api_key: str = "", mock: bool = False) -> Engine:
         global _instance
         key = api_key or os.environ.get("GOOGLE_API_KEY", "") or os.environ.get("GEMINI_API_KEY", "")
-        if _instance is None or (api_key and _instance.api_key != key):
-            _instance = cls(api_key=key)
+        if _instance is None or (api_key and _instance.api_key != key) or (mock != (_instance.mock if _instance else False)):
+            _instance = cls(api_key=key, mock=mock)
         return _instance
 
     async def run(
@@ -50,32 +51,38 @@ class Engine:
         skills: list[str] | None = None,
         include_evidence: bool = False,
     ) -> EvalResult:
-        # Step 1: Load image
-        img_b64, mime = await load_image_base64(image)
+        # Step 1: Load image (skip for mock)
+        if not self.mock:
+            img_b64, mime = await load_image_base64(image)
+        else:
+            img_b64, mime = "", "image/png"
 
         # Step 2: Resolve intent -> tradition
         intent_confidence = 0.0
         if tradition and tradition in TRADITIONS:
             resolved_tradition = tradition
             intent_confidence = 1.0
-        elif intent:
+        elif intent and not self.mock:
             resolved_tradition, intent_confidence = await resolve_intent(
                 intent, api_key=self.api_key
             )
         else:
-            resolved_tradition = "default"
+            resolved_tradition = tradition or "default"
 
         # Step 3: Get cultural weights
         weights = get_weights(resolved_tradition)
 
         # Step 4: VLM scoring (L1-L5)
-        vlm_result = await score_image(
-            img_b64=img_b64,
-            mime=mime,
-            subject=subject or intent,
-            tradition=resolved_tradition,
-            api_key=self.api_key,
-        )
+        if self.mock:
+            vlm_result = _mock_scores(resolved_tradition)
+        else:
+            vlm_result = await score_image(
+                img_b64=img_b64,
+                mime=mime,
+                subject=subject or intent,
+                tradition=resolved_tradition,
+                api_key=self.api_key,
+            )
 
         # Step 5: Compute weighted total
         dimensions = {}
@@ -170,3 +177,24 @@ def _estimate_cost(skills: list[str]) -> float:
     intent = 0.0001  # intent resolution
     per_skill = 0.0002  # each extra skill
     return round(base + intent + len(skills) * per_skill, 6)
+
+
+def _mock_scores(tradition: str = "default") -> dict:
+    """Return deterministic mock L1-L5 scores for testing without API key."""
+    import hashlib
+
+    seed = int(hashlib.md5(tradition.encode()).hexdigest()[:8], 16) % 1000
+    base = 0.65 + (seed % 20) / 100  # 0.65 - 0.84
+    return {
+        "L1": round(min(base + 0.05, 1.0), 4),
+        "L2": round(min(base + 0.00, 1.0), 4),
+        "L3": round(min(base + 0.10, 1.0), 4),
+        "L4": round(min(base + 0.03, 1.0), 4),
+        "L5": round(min(base + 0.08, 1.0), 4),
+        "L1_rationale": "Mock: Visual composition assessment.",
+        "L2_rationale": "Mock: Technical execution assessment.",
+        "L3_rationale": "Mock: Cultural context assessment.",
+        "L4_rationale": "Mock: Critical interpretation assessment.",
+        "L5_rationale": "Mock: Philosophical aesthetics assessment.",
+        "risk_flags": [],
+    }

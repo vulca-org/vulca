@@ -47,12 +47,6 @@ class DraftConfig:
     # Only effective when provider="nb2"; ignored for FLUX/SD providers.
     enable_full_evidence_injection: bool = False
 
-    # Sub-stage pipeline
-    # When True, DraftAgent uses SubStageExecutor to run the recipe's sub-stages
-    # instead of the single-step generation path.  Default False for backward compat.
-    enable_sub_stages: bool = False
-    recipe_name: str = ""  # Recipe name to use (e.g. "image_standard"); empty = default
-
     def __post_init__(self) -> None:
         self._apply_guardrails()
 
