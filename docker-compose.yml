@@ -22,6 +22,7 @@ services:
     volumes:
       # Mount source code for hot-reload; exclude heavy/generated dirs
       - ./wenxin-backend:/app
+      - ./vulca/src/vulca:/app/vulca
       - /app/__pycache__
       - /app/.pytest_cache
     environment:

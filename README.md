@@ -206,7 +206,7 @@ taboos:
 
 ## API
 
-101+ endpoints. Key ones:
+Key endpoints:
 
 ```
 POST /api/v1/auth/register             -- Register new user
