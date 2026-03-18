@@ -5,7 +5,7 @@ AI-native creation organism. Create, critique, and evolve cultural art.
 ## Install
 
 ```bash
-pip install -e vulca/   # From repo root
+pip install vulca
 ```
 
 ## Quick Start
