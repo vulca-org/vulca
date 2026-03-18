@@ -321,9 +321,9 @@ For production (Supabase), the CI/CD pipeline runs this automatically via GitHub
 
 When working with Python in this project, always use the virtualenv Python (not system Python). Check which python/pip is active before installing packages.
 
-## Architecture Status (2026-03-17, Phase 9 complete)
+## Architecture Status (2026-03-18, Phase F1 complete)
 
-**ONE PIPELINE achieved**: All API routes use `vulca.pipeline.execute()`. The old `PipelineOrchestrator` (1,082 lines) has been deleted.
+**ONE PIPELINE + EVOLUTION LOOP achieved**: All API routes use `vulca.pipeline.execute()`. The self-evolution feedback loop is fully closed — evolved weights, few-shot examples, and tradition insights are injected into VLM scoring prompts.
 
 ### 6 Systemic Break Chains — Resolution Status
 
@@ -379,18 +379,19 @@ Key packages: litellm, pydantic, pyyaml, faiss-cpu
 
 ## Node Editor (Canvas)
 
-Visual pipeline editor. 30 node types in frontend but **only 6 connected to backend** (Agent nodes). 24 nodes are UI-only — Phase 9C will hide them until backend support exists.
+Visual pipeline editor. NodeSearchPopup shows only 8 backend-connected nodes (agent nodes + utility). Topology validation runs locally (no remote API dependency).
 
 Canvas purpose: transparent pipeline visualization + evolution feedback interface. Not a general-purpose node editor.
 
-## Digestion System (⚠️ broken in prod)
+## Digestion System (✅ connected, Phase F1)
 
-Self-evolution pipeline verified in dev (112 cultures, 203+ evolutions). Production data flow broken:
-- `sessions.jsonl` → Supabase migration broke FewShotUpdater/FeedbackStore
-- `POST /feedback` writes but nothing consumes
-- ContextEvolver evolves weights only, not topology
-
-Phase 9D will reconnect evolution to `vulca/` engine.
+Self-evolution pipeline fully connected:
+- **ContextEvolver**: Adjusts L1-L5 weights per tradition (e.g., xieyi L1: 0.10→0.35) every 5 minutes
+- **FewShotUpdater**: Selects high-scoring examples (≥0.75) as calibration references (15 examples)
+- **PreferenceLearner**: Consumes explicit feedback from FeedbackStore (1176 entries)
+- **VLM prompt**: Receives evolved weights, few-shot benchmarks, and tradition insights
+- **get_weights()**: Returns evolved weights from evolved_context.json, falling back to YAML
+- **Feedback**: POST /feedback → feedback.jsonl → PreferenceLearner → weight adjustments
 
 ## Academic Paper Workflow
 

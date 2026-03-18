@@ -7,7 +7,7 @@
 
 > Create, critique, and evolve cultural art through multi-agent AI pipelines.
 
-VULCA is an open-source creative platform where generation, evaluation, and learning are seamless stages of one process. The core product is **Canvas** -- a unified creation and evaluation playground powered by a 9-node multi-agent pipeline. Eight cultural traditions (Chinese Xieyi, Japanese Wabi-sabi, Persian Miniature, and more) shape how art is generated and scored. No API keys required to start -- the built-in mock provider runs the full pipeline locally.
+VULCA is an open-source creative platform where generation, evaluation, and learning are seamless stages of one process. The core product is **Canvas** -- a unified creation and evaluation playground powered by a multi-agent pipeline. Nine cultural traditions shape how art is generated and scored. The system **learns from every session** -- evolved weights, few-shot references, and cultural insights feed back into the evaluation prompt automatically. No API keys required to start -- the built-in mock provider runs the full pipeline locally.
 
 **Live:** [vulcaart.art](https://vulcaart.art) | **Papers:** EMNLP 2025, WiNLP 2025, arXiv 2026
 
@@ -33,12 +33,38 @@ VULCA is an open-source creative platform where generation, evaluation, and lear
 ```
 
 
+## Four Ways to Use VULCA
+
+```python
+# 1. Python SDK
+import vulca
+result = vulca.evaluate("artwork.png", tradition="chinese_xieyi")
+result = vulca.create("水墨山水", provider="mock")
+```
+
+```bash
+# 2. CLI
+vulca evaluate painting.jpg --tradition watercolor
+vulca create "Misty mountains" --provider mock --hitl
+```
+
+```bash
+# 3. MCP Server (for AI agents like Claude Code)
+vulca-mcp  # Exposes create_artwork, evaluate_artwork, list_traditions
+```
+
+```
+# 4. Canvas Web UI (https://vulcaart.art)
+Intent → Scout → Draft → Critic → Queen → Gallery → Evolve
+```
+
 ## Directory Structure
 
 > **Note**: `wenxin-moyun` (frontend) and `wenxin-backend` are the original Chinese names meaning "Heart of Ink and Cloud". They are preserved for backward compatibility.
 
 ```
-vulca/
+├── vulca/                 # Unified Python SDK (218 tests)
+│   └── src/vulca/         #   pipeline/, cultural/, scoring/, storage/, cli, mcp
 ├── wenxin-moyun/          # Frontend (React 19 + TypeScript)
 ├── wenxin-backend/        # Backend (FastAPI + Python 3.13)
 ├── docker-compose.yml     # One-command local setup
@@ -76,7 +102,7 @@ npm run dev
 
 ## How It Works
 
-The Canvas pipeline processes creative intent through 9 specialized agents:
+The Canvas pipeline processes creative intent through 6 specialized agents:
 
 ```
 Intent --> Scout --> Router --> Draft --> Critic --> Queen --> Archivist
@@ -86,11 +112,20 @@ Intent --> Scout --> Router --> Draft --> Critic --> Queen --> Archivist
 | Agent | Role | Technology |
 |-------|------|------------|
 | Scout | Cultural evidence retrieval | Gemini 2.5 Flash |
-| Router | Tradition routing (8 YAML traditions) | Rule-based + LLM |
+| Router | Tradition routing (9 YAML traditions) | Rule-based + LLM |
 | Draft | Image generation | Mock / NB2 / Diffusers / DALL-E / Flux |
-| Critic | L1-L5 multi-dimensional scoring | Gemini 2.5 Pro (VLM) |
+| Critic | L1-L5 multi-dimensional scoring | Gemini 2.5 Flash (VLM) |
 | Queen | Accept/rerun decision gate | Gemini 2.5 Flash |
 | Archivist | Result archival + Gallery | PostgreSQL / JSONL |
+
+### Self-Evolution (the closed loop)
+
+Every session feeds back into the system:
+
+1. **ContextEvolver** adjusts L1-L5 weights per tradition (e.g., xieyi L1: 0.10 → 0.35)
+2. **FewShotUpdater** selects high-scoring examples as calibration references
+3. **VLM prompt** receives evolved weights, few-shot benchmarks, and tradition insights
+4. Next evaluation is shaped by all previous sessions -- the system gets culturally smarter
 
 ## Extend VULCA
 
@@ -135,23 +170,25 @@ class MySkillExecutor(BaseSkillExecutor):
 ### Add a Cultural Tradition
 
 ```yaml
-# wenxin-backend/app/prototype/data/traditions/my_tradition.yaml
+# vulca/src/vulca/cultural/data/traditions/my_tradition.yaml
 name: my_tradition
 display_name:
   en: My Tradition
   zh: 我的传统
-weights_l:
-  visual_perception: 0.20
-  technical_analysis: 0.20
-  cultural_context: 0.25
-  critical_interpretation: 0.20
-  philosophical_aesthetic: 0.15
+weights:
+  L1: 0.20
+  L2: 0.20
+  L3: 0.25
+  L4: 0.20
+  L5: 0.15
 terminology:
   - term: key_concept
-    en: Key Concept
-    weight: 0.8
+    term_zh: 核心概念
+    definition: A foundational concept in this tradition
+    l_levels: [L3, L5]
+    category: aesthetics
 taboos:
-  - pattern: "inappropriate_element"
+  - rule: Do not apply external standards
     severity: high
 ```
 
@@ -165,7 +202,7 @@ taboos:
 | Database | PostgreSQL (Supabase) / SQLite (local) |
 | AI Models | Gemini 2.5 Pro/Flash, NB2, FLUX.2 Pro, DALL-E 3, Diffusers, Mock |
 | Deployment | GCP Cloud Run, Firebase Hosting, GitHub Actions |
-| Testing | Playwright E2E (132 tests), pytest (824 tests) |
+| Testing | Playwright E2E (95 tests), pytest (218 vulca + backend tests) |
 
 ## API
 
@@ -196,13 +233,16 @@ Full API docs: set `ENABLE_API_DOCS=true` and visit `/docs`.
 ## Testing
 
 ```bash
-# Backend (824 tests)
+# VULCA SDK (218 tests)
+cd vulca && .venv/bin/python -m pytest tests/ -v
+
+# Backend
 cd wenxin-backend && pytest tests/ -v
 
 # Frontend type check + build
 cd wenxin-moyun && npm run build
 
-# E2E (132 tests)
+# E2E (95 tests, 17 spec files)
 cd wenxin-moyun && npm run test:e2e
 ```
 
