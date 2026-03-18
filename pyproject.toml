@@ -51,9 +51,9 @@ dev = [
 
 [project.urls]
 Homepage = "https://vulcaart.art"
-Documentation = "https://github.com/yha9806/vulca"
-Repository = "https://github.com/yha9806/vulca"
-Issues = "https://github.com/yha9806/vulca/issues"
+Documentation = "https://github.com/vulca-org/vulca"
+Repository = "https://github.com/vulca-org/vulca"
+Issues = "https://github.com/vulca-org/vulca/issues"
 
 [project.scripts]
 vulca = "vulca.cli:main"
