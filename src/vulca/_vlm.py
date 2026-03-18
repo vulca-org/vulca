@@ -82,8 +82,32 @@ _TRADITION_GUIDANCE: dict[str, str] = {
 }
 
 
+def _load_evolved_context() -> dict | None:
+    """Load evolved_context.json if available."""
+    import os
+    from pathlib import Path
+
+    try:
+        candidates = []
+        env_path = os.environ.get("VULCA_EVOLVED_CONTEXT")
+        if env_path:
+            candidates.append(Path(env_path))
+        vlm_path = Path(__file__).resolve()
+        # Backend copy layout
+        candidates.append(vlm_path.parent.parent / "app" / "prototype" / "data" / "evolved_context.json")
+        # Monorepo layout
+        candidates.append(vlm_path.parent.parent.parent.parent / "wenxin-backend" / "app" / "prototype" / "data" / "evolved_context.json")
+
+        for path in candidates:
+            if path.is_file():
+                return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        pass
+    return None
+
+
 def _build_tradition_guidance(tradition: str) -> str:
-    """Build rich tradition guidance from YAML data + hardcoded fallback."""
+    """Build rich tradition guidance from YAML data, evolved context, and few-shot examples."""
     base = _TRADITION_GUIDANCE.get(tradition, _TRADITION_GUIDANCE["default"])
 
     try:
@@ -110,9 +134,55 @@ def _build_tradition_guidance(tradition: str) -> str:
             )
             parts.append(f"\n### Evaluation Taboos (MUST respect)\n{taboos_text}")
 
+        # Inject evolved weight guidance + few-shot examples
+        evolved = _load_evolved_context()
+        if evolved:
+            _inject_evolved_guidance(parts, tradition, evolved)
+
         return "\n".join(parts)
     except Exception:
         return base
+
+
+_L_LABELS = {
+    "L1": "Visual Perception", "L2": "Technical Execution",
+    "L3": "Cultural Context", "L4": "Critical Interpretation",
+    "L5": "Philosophical Aesthetics",
+}
+
+_DIM_NAME_TO_L = {
+    "visual_perception": "L1", "technical_analysis": "L2",
+    "cultural_context": "L3", "critical_interpretation": "L4",
+    "philosophical_aesthetic": "L5",
+}
+
+
+def _inject_evolved_guidance(parts: list[str], tradition: str, evolved: dict) -> None:
+    """Inject evolved weights and few-shot examples into the prompt."""
+    # 1. Evolved weight emphasis — tell the VLM which dimensions matter most
+    tw = evolved.get("tradition_weights", {}).get(tradition)
+    if tw and isinstance(tw, dict):
+        weights_l = {_DIM_NAME_TO_L.get(k, k): v for k, v in tw.items() if _DIM_NAME_TO_L.get(k)}
+        if weights_l:
+            ranked = sorted(weights_l.items(), key=lambda x: x[1], reverse=True)
+            emphasis = ", ".join(f"{k} ({_L_LABELS.get(k, k)}) {v:.0%}" for k, v in ranked)
+            parts.append(f"\n### Dimension Weights (from system evolution)\nPrioritize by weight: {emphasis}")
+
+    # 2. Few-shot reference examples — calibrate scoring
+    fse = evolved.get("few_shot_examples", [])
+    tradition_examples = [ex for ex in fse if ex.get("tradition") == tradition][:2]
+    if tradition_examples:
+        examples_text = "\n".join(
+            f"  - \"{ex.get('subject', 'N/A')}\" — overall {ex.get('score', 0):.2f}"
+            + (f" (strengths: {', '.join(ex['key_strengths'])})" if ex.get('key_strengths') else "")
+            for ex in tradition_examples
+        )
+        parts.append(f"\n### Reference Benchmarks (high-scoring works in this tradition)\n{examples_text}")
+
+    # 3. Tradition-specific insights from evolution
+    ti = evolved.get("tradition_insights", {}).get(tradition)
+    if ti and isinstance(ti, str) and len(ti) < 300:
+        parts.append(f"\n### Evolved Insight\n{ti}")
 
 
 async def score_image(
