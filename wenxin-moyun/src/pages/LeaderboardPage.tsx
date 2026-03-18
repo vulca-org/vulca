@@ -315,9 +315,9 @@ export default function LeaderboardPage() {
       >
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <div>
-            <h3 className="text-2xl font-bold mb-2">Try Full 47D Evaluation</h3>
+            <h3 className="text-2xl font-bold mb-2">Try Full L1-L5 Evaluation</h3>
             <p className="text-slate-100">
-              Run comprehensive cultural evaluation with all 47 dimensions and 8 cultural perspectives in Canvas.
+              Run comprehensive cultural evaluation with L1-L5 dimensions across 9 cultural traditions in Canvas.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3">
@@ -401,7 +401,7 @@ function TopDeltaSection({ topModels }: { topModels: LeaderboardEntry[] }) {
               specific areas where models excel or need improvement.
             </p>
             <Link to="/canvas" className="inline-flex items-center gap-1 mt-2 text-sm text-slate-700 dark:text-slate-500 hover:underline">
-              Explore full 47D analysis
+              Explore full evaluation
               <ExternalLink className="w-3 h-3" />
             </Link>
           </div>
@@ -434,7 +434,7 @@ function CitationSection({
     key: `vulca_leaderboard_${category}_2025`,
     title: `VULCA Leaderboard: ${category.charAt(0).toUpperCase() + category.slice(1)} Category Evaluation Results`,
     authors: ['VULCA Team'],
-    booktitle: 'VULCA Cultural AI Evaluation Platform',
+    booktitle: 'VULCA AI-Native Creation Organism',
     year: 2025,
     doi: '10.18653/v1/2025.findings-emnlp.103',
     url: `https://vulcaart.art/models/${category}`,

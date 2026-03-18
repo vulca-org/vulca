@@ -96,8 +96,6 @@ class DraftConfig:
             "controlnet_enabled": self.controlnet_enabled,
             "controlnet_type": self.controlnet_type,
             "enable_full_evidence_injection": self.enable_full_evidence_injection,
-            "enable_sub_stages": self.enable_sub_stages,
-            "recipe_name": self.recipe_name,
         }
 
 

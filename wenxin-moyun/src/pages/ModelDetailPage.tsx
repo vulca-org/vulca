@@ -132,7 +132,7 @@ export default function ModelDetailPage() {
                     VULCA Evaluation Report
                   </h4>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    47-dimension analysis across 8 cultural perspectives
+                    L1-L5 analysis across 9 cultural traditions
                   </p>
                 </div>
               </div>
@@ -537,7 +537,7 @@ export default function ModelDetailPage() {
           key: `vulca_${model.id}_${new Date().getFullYear()}`,
           title: `VULCA Evaluation Report: ${model.name} Cultural AI Assessment`,
           authors: ['VULCA Team'],
-          booktitle: 'VULCA Cultural AI Evaluation Platform',
+          booktitle: 'VULCA AI-Native Creation Organism',
           year: 2025,
           doi: '10.18653/v1/2025.findings-emnlp.103',
           url: `https://vulcaart.art/model/${model.id}`,

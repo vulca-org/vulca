@@ -5,9 +5,9 @@ build-backend = "hatchling.build"
 [project]
 name = "vulca"
 version = "0.2.0"
-description = "Cultural-aware AI art evaluation — local app & SDK"
+description = "AI-native creation organism backend -- FastAPI + multi-agent pipeline"
 readme = "README.md"
-license = "MIT"
+license = "Apache-2.0"
 requires-python = ">=3.10"
 authors = [
     {name = "Yu Haorui", email = "yuhaorui48@gmail.com"},
@@ -16,7 +16,7 @@ keywords = ["art", "evaluation", "cultural", "ai", "vlm"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",

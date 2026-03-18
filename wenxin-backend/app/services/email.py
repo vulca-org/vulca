@@ -262,15 +262,15 @@ class EmailService:
         <p>In the meantime, feel free to explore:</p>
 
         <div class="cta">
-            <a href="https://vulca.ai/vulca">Try the Public Demo</a>
+            <a href="https://vulcaart.art/vulca">Try the Public Demo</a>
         </div>
 
-        <p>Or learn more about our methodology at <a href="https://vulca.ai/methodology" style="color: #007AFF;">vulca.ai/methodology</a></p>
+        <p>Or learn more about our methodology at <a href="https://vulcaart.art/methodology" style="color: #007AFF;">vulcaart.art/methodology</a></p>
 
         <div class="footer">
-            <p>Have questions? Reply to this email or contact us at <a href="mailto:demo@vulca.ai">demo@vulca.ai</a></p>
+            <p>Have questions? Reply to this email or contact us at <a href="mailto:demo@vulcaart.art">demo@vulcaart.art</a></p>
             <p class="ref">Reference: {lead_id[:8]}</p>
-            <p>VULCA - Cultural AI Evaluation Platform</p>
+            <p>VULCA - AI-Native Creation Organism</p>
         </div>
     </div>
 </body>
@@ -294,16 +294,16 @@ Your interest: {use_case_display}
 A member of our team will reach out to you within 24 hours to schedule a personalized demo session.
 
 In the meantime, feel free to explore:
-- Try the Public Demo: https://vulca.ai/vulca
-- Learn about our Methodology: https://vulca.ai/methodology
+- Try the Public Demo: https://vulcaart.art/vulca
+- Learn about our Methodology: https://vulcaart.art/methodology
 
-Have questions? Reply to this email or contact us at demo@vulca.ai
+Have questions? Reply to this email or contact us at demo@vulcaart.art
 
 Reference: {lead_id[:8]}
 
 ---
-VULCA - Cultural AI Evaluation Platform
-https://vulca.ai
+VULCA - AI-Native Creation Organism
+https://vulcaart.art
 """
 
 

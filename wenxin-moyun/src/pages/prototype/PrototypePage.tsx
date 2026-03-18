@@ -301,7 +301,7 @@ export default function PrototypePage() {
                 className="w-48"
               />
               <span className="text-xs text-gray-400 dark:text-gray-500">
-                {store.traditionsTab === 'browse' ? '8 cultural traditions' : 'Define custom traditions'}
+                {store.traditionsTab === 'browse' ? '9 cultural traditions' : 'Define custom traditions'}
               </span>
             </div>
             {store.traditionsTab === 'browse' ? <TraditionExplorer /> : <TraditionBuilder />}

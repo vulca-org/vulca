@@ -1,4 +1,4 @@
-# VULCA AI Art Evaluation Platform
+# VULCA AI-Native Creation Organism
 # https://vulcaart.art
 
 User-agent: *

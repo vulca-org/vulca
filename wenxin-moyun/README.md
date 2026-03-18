@@ -5,8 +5,8 @@ Create, critique, and evolve cultural art through multi-agent AI pipelines.
 ## Key Features
 
 - **Multi-Agent Pipeline**: Scout, Draft, Critic, and Queen agents collaborate in real time
-- **8 Cultural Traditions**: Chinese, Japanese, Islamic, South Asian, Classical, Contemporary, Latin American, African
-- **47-Dimension Evaluation**: Comprehensive cultural understanding assessment
+- **9 Cultural Traditions**: Chinese Xieyi, Chinese Gongbi, Japanese, Islamic, South Asian, Western Academic, Watercolor, African, General
+- **L1-L5 Evaluation**: Five-level cultural understanding assessment (Visual Perception to Philosophical Aesthetic)
 - **Node Editor**: Visual pipeline editor with 30 node types
 - **Open Source**: Apache 2.0 licensed
 
@@ -47,20 +47,20 @@ npm run test:e2e
 
 ## VULCA Framework
 
-### 6D Core Dimensions
-| Dimension | Description |
-|-----------|-------------|
-| Creativity | Originality and imagination |
-| Technique | Mastery of artistic forms |
-| Emotion | Emotional expression and resonance |
-| Context | Historical and cultural understanding |
-| Innovation | Breaking traditional boundaries |
-| Impact | Social influence potential |
+### L1-L5 Evaluation Framework
+| Level | Dimension | Description |
+|-------|-----------|-------------|
+| L1 | Visual Perception | Surface-level visual understanding |
+| L2 | Technical Analysis | Mastery of artistic forms and technique |
+| L3 | Cultural Context | Historical and cultural understanding |
+| L4 | Critical Interpretation | Interpretive depth and reasoning |
+| L5 | Philosophical Aesthetic | Deep aesthetic and philosophical insight |
 
-### 8 Cultural Perspectives
-- **Eastern**: Chinese, Japanese, Islamic, South Asian
-- **Western**: Classical, Contemporary, Latin American
-- **Universal**: African
+### 9 Cultural Traditions
+- **Chinese**: Xieyi (Freehand), Gongbi (Meticulous)
+- **East Asian**: Japanese Traditional
+- **Western**: Western Academic, Watercolor
+- **Other**: Islamic Geometric, South Asian, African Traditional, General/Cross-Cultural
 
 ## Deployment
 

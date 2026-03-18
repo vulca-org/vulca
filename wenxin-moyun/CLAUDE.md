@@ -291,7 +291,7 @@ plugins: [react(), tailwindcss()]
 - `/register` - User registration (auto-login on success)
 
 **Support:**
-- `/vulca` - 47D visualization
+- `/vulca` - L1-L5 visualization
 - `/methodology`, `/about` - How it works
 - `/admin` - System monitoring
 

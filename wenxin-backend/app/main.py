@@ -366,7 +366,7 @@ else:
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>VULCA - AI Art Evaluation Platform</title>
+            <title>VULCA - AI-Native Creation Organism</title>
             <style>
                 body {{
                     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -388,7 +388,7 @@ else:
         <body>
             <div class="container">
                 <div class="logo">VULCA</div>
-                <div class="subtitle">AI Art Evaluation Platform</div>
+                <div class="subtitle">AI-Native Creation Organism</div>
                 <p>You are accessing the backend API server</p>
 
                 <a href="http://localhost:5173" class="btn">Frontend App</a>

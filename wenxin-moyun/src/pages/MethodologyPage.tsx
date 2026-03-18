@@ -3,8 +3,8 @@
  *
  * Detailed explanation of the VULCA evaluation methodology including:
  * - L1-L5 Five-Layer Framework
- * - 6D to 47D Expansion Algorithm
- * - 8 Cultural Perspectives
+ * - L1-L5 Evaluation Architecture
+ * - 9 Cultural Traditions
  * - Technical Implementation Details
  *
  * @module pages/MethodologyPage
@@ -74,8 +74,8 @@ const MethodologyPage: React.FC = () => {
           VULCA Methodology
         </h1>
         <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-          A comprehensive framework for evaluating AI-generated art across 47 dimensions
-          and 8 cultural perspectives, based on the L1-L5 five-layer evaluation model.
+          A comprehensive framework for evaluating AI-generated art across five L1-L5 dimensions
+          and 9 cultural traditions, based on the L1-L5 five-layer evaluation model.
         </p>
       </section>
 
@@ -175,12 +175,12 @@ const MethodologyPage: React.FC = () => {
         )}
       </section>
 
-      {/* 6D to 47D Expansion */}
+      {/* L1-L5 Evaluation Architecture */}
       <section className="mb-12">
         <div className="flex items-center gap-3 mb-6">
           <GitBranch className="w-6 h-6 text-[#5F8A50]" />
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-            6D to 47D Dimension Expansion
+            L1-L5 Evaluation Architecture
           </h2>
         </div>
 
@@ -189,16 +189,15 @@ const MethodologyPage: React.FC = () => {
             <div className="grid md:grid-cols-2 gap-6">
               <div>
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
-                  Core 6D Dimensions
+                  Five Cognitive Levels
                 </h3>
                 <ul className="space-y-2">
                   {[
-                    { name: 'Creativity', color: '#FF6B6B' },
-                    { name: 'Technique', color: '#4ECDC4' },
-                    { name: 'Emotion', color: '#45B7D1' },
-                    { name: 'Context', color: '#96CEB4' },
-                    { name: 'Innovation', color: '#FFEAA7' },
-                    { name: 'Impact', color: '#DDA0DD' },
+                    { name: 'L1 — Visual Perception', color: '#22c55e' },
+                    { name: 'L2 — Contextual Understanding', color: '#334155' },
+                    { name: 'L3 — Emotional Resonance', color: '#f59e0b' },
+                    { name: 'L4 — Cultural Reasoning', color: '#ef4444' },
+                    { name: 'L5 — Philosophical Aesthetics', color: '#C87F4A' },
                   ].map(dim => (
                     <li key={dim.name} className="flex items-center gap-2">
                       <div
@@ -213,26 +212,26 @@ const MethodologyPage: React.FC = () => {
 
               <div>
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
-                  Expansion Algorithm
+                  Hierarchical Scoring
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                  Each 6D dimension expands into 7-8 sub-dimensions using an inter-dimensional
-                  correlation matrix derived from art theory and empirical validation.
+                  Each level builds on the previous, with increasing cultural and contextual
+                  complexity. Scores are weighted per tradition using YAML-defined cultural configs.
                 </p>
                 <div className="flex items-center gap-4 text-sm">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-slate-600">6</div>
-                    <div className="text-gray-500">Core</div>
+                    <div className="text-2xl font-bold text-slate-600">5</div>
+                    <div className="text-gray-500">Levels</div>
                   </div>
                   <ChevronRight className="w-5 h-5 text-gray-400" />
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-[#5F8A50]">47</div>
-                    <div className="text-gray-500">Sub-dimensions</div>
+                    <div className="text-2xl font-bold text-[#5F8A50]">9</div>
+                    <div className="text-gray-500">Traditions</div>
                   </div>
                   <ChevronRight className="w-5 h-5 text-gray-400" />
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-amber-600">8</div>
-                    <div className="text-gray-500">Perspectives</div>
+                    <div className="text-2xl font-bold text-amber-600">VLM</div>
+                    <div className="text-gray-500">Scoring</div>
                   </div>
                 </div>
               </div>
@@ -246,11 +245,11 @@ const MethodologyPage: React.FC = () => {
         <div className="flex items-center gap-3 mb-6">
           <Globe className="w-6 h-6 text-[#B8923D]" />
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-            8 Cultural Perspectives
+            9 Cultural Traditions
           </h2>
         </div>
         <p className="text-gray-600 dark:text-gray-400 mb-6">
-          VULCA evaluates art through 8 distinct cultural lenses, each with unique
+          VULCA evaluates art through 9 distinct cultural traditions, each with unique
           aesthetic values and interpretive frameworks.
         </p>
 
@@ -339,11 +338,11 @@ const MethodologyPage: React.FC = () => {
               <h3>Algorithm Overview</h3>
               <ul>
                 <li>
-                  <strong>Inter-dimensional Correlation Matrix:</strong> A 6×47 matrix
-                  mapping core dimensions to sub-dimensions based on art theory
+                  <strong>L1-L5 Scoring Pipeline:</strong> Hierarchical evaluation across
+                  five cognitive levels with tradition-specific weight configurations
                 </li>
                 <li>
-                  <strong>Cultural Weight Adjustment:</strong> Perspective-specific
+                  <strong>Cultural Weight Adjustment:</strong> Tradition-specific
                   weights applied to emphasize culturally-relevant dimensions
                 </li>
                 <li>
@@ -359,7 +358,7 @@ const MethodologyPage: React.FC = () => {
               <h3>Validation</h3>
               <p>
                 The VULCA framework was validated against human expert annotations
-                across 7,410 image-text pairs spanning 8 cultures. Inter-annotator
+                across 7,410 image-text pairs spanning 9 cultural traditions. Inter-annotator
                 agreement (Krippendorff's alpha) exceeded 0.85 for all core dimensions.
               </p>
             </div>

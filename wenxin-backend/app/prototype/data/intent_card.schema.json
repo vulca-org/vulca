@@ -57,7 +57,7 @@
         "south_asian",
         "default"
       ],
-      "description": "One of 8 cultural traditions that drives routing and weighting"
+      "description": "One of 9 cultural traditions that drives routing and weighting"
     },
     "subject": {
       "type": "string",

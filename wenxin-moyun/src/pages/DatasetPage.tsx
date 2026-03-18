@@ -2,7 +2,7 @@
  * DatasetPage - VULCA-BENCH Dataset Information
  *
  * Provides detailed information about the VULCA-BENCH dataset:
- * - Dataset statistics (7410 pairs, 8 cultures, 47D)
+ * - Dataset statistics (7410 pairs, 9 traditions, L1-L5)
  * - Download links and license information
  * - Usage examples in Python and JavaScript
  * - Data format specifications
@@ -51,7 +51,7 @@ for item in dataset["train"]:
     print(f"Image: {item['image_url']}")
     print(f"Culture: {item['culture']}")
     print(f"L1-L5 Level: {item['l1l5_level']}")
-    print(f"47D Scores: {item['scores_47d']}")
+    print(f"L1-L5 Scores: {item['l1l5_scores']}")
     break
 
 # Filter by culture
@@ -71,7 +71,7 @@ async function loadVULCABench() {
   data.samples.forEach(sample => {
     console.log('Image:', sample.imageUrl);
     console.log('Culture:', sample.culture);
-    console.log('47D Scores:', sample.scores47D);
+    console.log('L1-L5 Scores:', sample.l1l5Scores);
   });
 
   return data;
@@ -101,7 +101,7 @@ async function getStats() {
       "innovation": 0.88,
       "impact": 0.76
     },
-    "scores47D": [0.82, 0.79, ...],  // 47 dimension scores
+    "l1l5Scores": {"L1": 0.82, "L2": 0.79, "L3": 0.85, "L4": 0.71, "L5": 0.76},
     "annotations": {
       "humanRating": 4.2,
       "annotatorCount": 3,
@@ -112,8 +112,8 @@ async function getStats() {
 
   const stats = [
     { label: 'Image-Text Pairs', value: '7,410', icon: Image },
-    { label: 'Cultural Perspectives', value: '8', icon: Globe },
-    { label: 'Evaluation Dimensions', value: '47', icon: Scale },
+    { label: 'Cultural Traditions', value: '9', icon: Globe },
+    { label: 'Evaluation Levels', value: '5 (L1-L5)', icon: Scale },
     { label: 'Human Annotators', value: '24', icon: FileText },
   ];
 
@@ -138,7 +138,7 @@ async function getStats() {
         </h1>
         <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
           A comprehensive benchmark dataset for evaluating AI-generated art across
-          47 dimensions and 8 cultural perspectives.
+          L1-L5 dimensions across 9 cultural traditions.
         </p>
       </section>
 
@@ -202,7 +202,7 @@ async function getStats() {
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle className="w-4 h-4 text-[#5F8A50]" />
-                  47D evaluation scores
+                  L1-L5 evaluation scores
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle className="w-4 h-4 text-[#5F8A50]" />

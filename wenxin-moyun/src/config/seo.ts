@@ -19,8 +19,8 @@ export interface PageSEO {
 }
 
 export const DEFAULT_SEO: PageSEO = {
-  title: 'VULCA - Cultural AI Evaluation Platform',
-  description: '47-dimension evaluation across 8 cultural perspectives. Reproducible benchmarking for AI art and culture understanding.',
+  title: 'VULCA - AI-Native Creation Organism',
+  description: 'L1-L5 evaluation across 9 cultural traditions. Reproducible benchmarking for AI art and culture understanding.',
   keywords: ['AI evaluation', 'cultural AI', 'VLM benchmark', 'art understanding', 'VULCA'],
   ogImage: '/og-image.png',
 };
@@ -43,12 +43,12 @@ export const PAGE_SEO: Record<string, PageSEO> = {
   },
   '/research': {
     title: 'Research - VULCA',
-    description: 'VULCA research: L1-L5 cognitive framework, 6D to 47D evaluation, 8 cultural perspectives, methodology, dataset, and publications.',
+    description: 'VULCA research: L1-L5 cognitive framework, evaluation methodology, 9 cultural traditions, dataset, and publications.',
     keywords: ['VULCA research', 'methodology', 'dataset', 'EMNLP 2025', 'cultural AI evaluation'],
   },
   '/models': {
     title: 'Models - VULCA',
-    description: 'AI models evaluated on cultural understanding. Compare GPT-4V, Claude, Gemini and more across 47 dimensions.',
+    description: 'AI models evaluated on cultural understanding. Compare GPT-4V, Claude, Gemini and more across L1-L5 dimensions.',
     keywords: ['AI models', 'model comparison', 'VLM ranking', 'benchmark results'],
   },
 };
@@ -116,7 +116,7 @@ export function getOrganizationStructuredData(): object {
     name: 'VULCA',
     url: 'https://vulcaart.art',
     logo: 'https://vulcaart.art/logo.png',
-    description: 'Cultural AI Evaluation Platform',
+    description: 'AI-Native Creation Organism',
     sameAs: [
       'https://github.com/vulca-org/vulca',
       'https://twitter.com/vulca_ai',
@@ -169,8 +169,8 @@ export function getDatasetStructuredData(): object {
       contentUrl: 'https://vulcaart.art/dataset/download',
     },
     variableMeasured: [
-      '47 evaluation dimensions',
-      '8 cultural perspectives',
+      'L1-L5 evaluation dimensions',
+      '9 cultural traditions',
       '7,410 image-text pairs',
     ],
   };
