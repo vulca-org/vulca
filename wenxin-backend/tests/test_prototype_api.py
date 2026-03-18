@@ -247,89 +247,108 @@ class TestSSEStream:
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.skip(reason="HITL requires orchestrator, pending Phase 9D migration to vulca/ engine")
 class TestHITLActions:
-    """Test all 5 HITL action types."""
+    """Test HITL action types via vulca/ engine's interrupt_before mechanism."""
+
+    @staticmethod
+    async def _create_waiting_run(client: httpx.AsyncClient) -> dict:
+        """Set up a fake waiting run by directly populating in-memory stores."""
+        import time as _time
+        from app.prototype.api.routes import (
+            _event_buffers, _buffer_lock, _run_metadata,
+        )
+        from app.prototype.orchestrator.events import EventType, PipelineEvent
+
+        task_id = f"api-hitltest-{int(_time.time() * 1000) % 100000}"
+        _run_metadata[task_id] = {
+            "subject": "HITL test",
+            "tradition": "default",
+            "provider": "mock",
+            "created_at": _time.time(),
+        }
+        with _buffer_lock:
+            _event_buffers[task_id] = [
+                PipelineEvent(
+                    event_type=EventType.HUMAN_REQUIRED,
+                    stage="critic",
+                    payload={"reason": "Test HITL pause"},
+                )
+            ]
+        return {"task_id": task_id, "status": "waiting_human"}
 
     @pytest.mark.asyncio
     async def test_action_on_non_waiting_run(self, client: httpx.AsyncClient):
         """Action on a non-HITL run returns not-waiting message."""
-        data = await create_run(client, enable_hitl=False)
-        await _sleep(0.2)
+        data = await create_run(client)
+        # Wait for pipeline to complete (no human_required event)
+        await wait_for_completion(client, data["task_id"], timeout=5)
 
         res = await client.post(f"{API}/runs/{data['task_id']}/action", json={
             "action": "approve",
         })
         assert res.status_code == 200
         body = res.json()
-        assert "accepted" in body
+        assert body["accepted"] is False
 
     @pytest.mark.asyncio
     async def test_action_approve(self, client: httpx.AsyncClient):
-        """Submit 'approve' action."""
-        data = await create_run(client, enable_hitl=False)
-        await _sleep(0.2)
-
+        """Submit 'approve' action on waiting run."""
+        data = await self._create_waiting_run(client)
         res = await client.post(f"{API}/runs/{data['task_id']}/action", json={
             "action": "approve",
         })
         assert res.status_code == 200
+        assert res.json()["accepted"] is True
 
     @pytest.mark.asyncio
     async def test_action_reject(self, client: httpx.AsyncClient):
         """Submit 'reject' action with reason."""
-        data = await create_run(client, enable_hitl=False)
-        await _sleep(0.2)
-
+        data = await self._create_waiting_run(client)
         res = await client.post(f"{API}/runs/{data['task_id']}/action", json={
             "action": "reject",
             "reason": "Test rejection",
         })
         assert res.status_code == 200
+        assert res.json()["accepted"] is True
 
     @pytest.mark.asyncio
     async def test_action_rerun_with_dimensions(self, client: httpx.AsyncClient):
         """Submit 'rerun' action with specific dimensions."""
-        data = await create_run(client, enable_hitl=False)
-        await _sleep(0.2)
-
+        data = await self._create_waiting_run(client)
         res = await client.post(f"{API}/runs/{data['task_id']}/action", json={
             "action": "rerun",
             "rerun_dimensions": ["visual_perception", "cultural_context"],
         })
         assert res.status_code == 200
+        assert res.json()["accepted"] is True
 
     @pytest.mark.asyncio
     async def test_action_lock_dimensions(self, client: httpx.AsyncClient):
         """Submit 'lock_dimensions' action."""
-        data = await create_run(client, enable_hitl=False)
-        await _sleep(0.2)
-
+        data = await self._create_waiting_run(client)
         res = await client.post(f"{API}/runs/{data['task_id']}/action", json={
             "action": "lock_dimensions",
             "locked_dimensions": ["visual_perception", "technical_analysis"],
         })
         assert res.status_code == 200
+        assert res.json()["accepted"] is True
 
     @pytest.mark.asyncio
     async def test_action_force_accept(self, client: httpx.AsyncClient):
         """Submit 'force_accept' action with candidate_id."""
-        data = await create_run(client, enable_hitl=False)
-        await _sleep(0.2)
-
+        data = await self._create_waiting_run(client)
         res = await client.post(f"{API}/runs/{data['task_id']}/action", json={
             "action": "force_accept",
             "candidate_id": "test-candidate-1",
             "reason": "Manual override for testing",
         })
         assert res.status_code == 200
+        assert res.json()["accepted"] is True
 
     @pytest.mark.asyncio
     async def test_action_force_accept_requires_candidate(self, client: httpx.AsyncClient):
         """force_accept without candidate_id should be rejected."""
-        data = await create_run(client, enable_hitl=False)
-        await _sleep(0.2)
-
+        data = await self._create_waiting_run(client)
         res = await client.post(f"{API}/runs/{data['task_id']}/action", json={
             "action": "force_accept",
             "reason": "missing candidate id",
@@ -338,10 +357,8 @@ class TestHITLActions:
 
     @pytest.mark.asyncio
     async def test_action_invalid(self, client: httpx.AsyncClient):
-        """Invalid action returns 400 or 422."""
-        data = await create_run(client, enable_hitl=False)
-        await _sleep(0.1)
-
+        """Invalid action returns 422."""
+        data = await self._create_waiting_run(client)
         res = await client.post(f"{API}/runs/{data['task_id']}/action", json={
             "action": "invalid_action",
         })

@@ -165,6 +165,9 @@ export interface PipelineState {
   totalRounds: number;
   totalLatencyMs: number;
   error: string | null;
+
+  // Evolution
+  evolutionSuggestion: string | null;
 }
 
 const INITIAL_STATE: PipelineState = {
@@ -193,6 +196,7 @@ const INITIAL_STATE: PipelineState = {
   totalRounds: 0,
   totalLatencyMs: 0,
   error: null,
+  evolutionSuggestion: null,
 };
 
 export interface SubStageInfo {
@@ -376,6 +380,12 @@ export function usePrototypePipeline() {
           update.totalCostUsd = (payload.total_cost_usd as number) || 0;
           update.totalRounds = (payload.total_rounds as number) || 0;
           update.totalLatencyMs = (payload.total_latency_ms as number) || 0;
+          break;
+
+        case 'session_digest':
+          if (payload.evolution_suggestion) {
+            update.evolutionSuggestion = payload.evolution_suggestion as string;
+          }
           break;
 
         case 'pipeline_failed':

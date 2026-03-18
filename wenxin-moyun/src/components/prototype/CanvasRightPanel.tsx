@@ -13,6 +13,7 @@ import CriticRationaleCard from './CriticRationaleCard';
 import FixItPlanCard from './FixItPlanCard';
 import QueenDecisionPanel from './QueenDecisionPanel';
 import FeedbackCollector from './FeedbackCollector';
+import EvolutionBadge from './editor/EvolutionBadge';
 
 export interface CanvasRightPanelProps {
   pipeline: PipelineState;
@@ -151,6 +152,21 @@ export default function CanvasRightPanel({
               selectedCandidateId={selectedCandidateId}
               onAction={onAction}
             />
+          </IOSCardContent>
+        </IOSCard>
+      )}
+
+      {/* Evolution Suggestion */}
+      {isDone && pipeline.evolutionSuggestion && (
+        <IOSCard variant="elevated" padding="md" animate={false}>
+          <IOSCardContent>
+            <div className="flex items-center gap-2 mb-2">
+              <EvolutionBadge suggestion={pipeline.evolutionSuggestion} />
+              <h3 className="text-sm font-semibold text-[#B8923D] dark:text-[#DDA574]">Evolution Insight</h3>
+            </div>
+            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+              {pipeline.evolutionSuggestion}
+            </p>
           </IOSCardContent>
         </IOSCard>
       )}

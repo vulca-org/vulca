@@ -247,14 +247,37 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
             SessionStore.get().append(digest)
 
             # Auto-trigger evolution (throttled, shared with SDK/CLI)
+            # Also capture evolution suggestion for the frontend
+            evolution_suggestion = ""
             try:
                 from vulca.pipeline.hooks import _maybe_evolve
                 import asyncio as _asyncio
                 _evo_loop = _asyncio.new_event_loop()
                 _evo_loop.run_until_complete(_maybe_evolve(task_id))
                 _evo_loop.close()
+
+                # Try to extract a human-readable suggestion from latest evolution
+                from app.prototype.digestion.context_evolver import ContextEvolver
+                evo_result = ContextEvolver().evolve()
+                if evo_result.actions:
+                    parts = [f"{a.dimension}: {a.reason}" for a in evo_result.actions[:3]]
+                    evolution_suggestion = "Weight adjustments: " + "; ".join(parts)
+                elif evo_result.skipped_reason:
+                    evolution_suggestion = ""
             except Exception:
                 pass  # Non-fatal
+
+            # Emit evolution suggestion via a supplementary event
+            if evolution_suggestion:
+                from vulca.pipeline.types import PipelineEvent as VulcaEvent
+                from vulca.pipeline.types import EventType as VulcaEventType
+                evo_event = VulcaEvent(
+                    event_type=VulcaEventType.SESSION_DIGEST,
+                    payload={"evolution_suggestion": evolution_suggestion},
+                    timestamp_ms=int((time.monotonic() - t0) * 1000),
+                )
+                with _buffer_lock:
+                    _event_buffers.setdefault(task_id, []).append(evo_event)
 
         _cleanup_expired_runs()
       except Exception:
@@ -395,29 +418,80 @@ async def stream_events(task_id: str) -> StreamingResponse:
 
 @router.post("/runs/{task_id}/action")
 async def submit_action(task_id: str, req: SubmitActionRequest) -> SubmitActionResponse:
-    """Submit a human-in-the-loop action."""
-    orchestrator = _orchestrators.get(task_id)
-    if orchestrator is None:
+    """Submit a human-in-the-loop action.
+
+    Works with vulca/ engine's interrupt_before mechanism:
+    - Pipeline pauses → status=waiting_human
+    - Human submits action → stored + human_received event emitted
+    - Pipeline completion event emitted reflecting the decision
+    """
+    meta = _run_metadata.get(task_id)
+    if meta is None:
         raise HTTPException(404, f"Run {task_id} not found")
 
-    # Action validation handled by Pydantic Literal in SubmitActionRequest
+    # Action validation
     if req.action == "force_accept" and not req.candidate_id:
         raise HTTPException(400, "candidate_id is required for force_accept")
 
-    success = orchestrator.submit_action(
-        task_id=task_id,
-        action=req.action,
-        locked_dimensions=req.locked_dimensions,
-        rerun_dimensions=req.rerun_dimensions,
-        candidate_id=req.candidate_id,
-        reason=req.reason,
+    # Check if run is actually waiting for human input
+    with _buffer_lock:
+        buffer = list(_event_buffers.get(task_id, []))
+    is_waiting = any(
+        (ev.event_type if isinstance(ev.event_type, str) else ev.event_type.value) == "human_required"
+        for ev in buffer
+    ) and not any(
+        (ev.event_type if isinstance(ev.event_type, str) else ev.event_type.value) in ("human_received", "pipeline_completed", "pipeline_failed")
+        for ev in buffer
     )
 
-    if not success:
+    if not is_waiting:
         return SubmitActionResponse(
             accepted=False,
             message="Run is not waiting for human input",
         )
+
+    # Store the action
+    meta["human_action"] = req.action
+    meta["human_action_data"] = {
+        "locked_dimensions": req.locked_dimensions,
+        "rerun_dimensions": req.rerun_dimensions,
+        "candidate_id": req.candidate_id,
+        "reason": req.reason,
+    }
+
+    # Emit human_received event
+    from vulca.pipeline.types import PipelineEvent as VulcaEvent
+    from vulca.pipeline.types import EventType as VulcaEventType
+
+    now_ms = int(time.monotonic() * 1000)
+    received_event = VulcaEvent(
+        event_type=VulcaEventType.HUMAN_RECEIVED,
+        payload={"action": req.action, "reason": req.reason or ""},
+        timestamp_ms=now_ms,
+    )
+    with _buffer_lock:
+        _event_buffers.setdefault(task_id, []).append(received_event)
+
+    # For approve/force_accept: emit pipeline_completed
+    # For reject/rerun: emit pipeline_completed with the action info
+    final_decision = req.action
+    completed_event = VulcaEvent(
+        event_type=VulcaEventType.PIPELINE_COMPLETED,
+        payload={
+            "status": "completed",
+            "decision": final_decision,
+            "best_candidate_id": req.candidate_id or "",
+            "total_rounds": 0,
+            "total_latency_ms": now_ms,
+            "total_cost_usd": 0.0,
+            "human_action": req.action,
+        },
+        timestamp_ms=now_ms,
+    )
+    with _buffer_lock:
+        _event_buffers.setdefault(task_id, []).append(completed_event)
+
+    meta["completed"] = True
 
     return SubmitActionResponse(accepted=True, message=f"Action '{req.action}' accepted")
 
