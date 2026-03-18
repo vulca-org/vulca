@@ -221,7 +221,7 @@ const RegisterPage: React.FC = () => {
 
         {/* Footer Info */}
         <div className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
-          <p>VULCA - Cultural AI Evaluation Platform</p>
+          <p>VULCA - AI-Native Creation Organism</p>
           <p className="mt-1">&copy; 2025-2026 VULCA Team. All rights reserved</p>
         </div>
       </motion.div>

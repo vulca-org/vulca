@@ -57,11 +57,30 @@ const LoginPage: React.FC = () => {
     }
   };
 
-  const handleDemoLogin = () => {
-    setFormData({
-      username: 'demo',
-      password: 'demo123'
-    });
+  const handleDemoLogin = async () => {
+    setError('');
+    setIsLoading(true);
+    try {
+      const formParams = new URLSearchParams();
+      formParams.append('username', 'demo');
+      formParams.append('password', 'demo123');
+
+      const response = await apiClient.post('/auth/login', formParams, {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      });
+
+      if (response.data.access_token) {
+        setItem('access_token', response.data.access_token);
+        setItem('username', 'demo');
+        const from = new URLSearchParams(window.location.search).get('from') || '/';
+        navigate(from);
+      }
+    } catch (err) {
+      const loginError = err as LoginErrorShape;
+      setError(loginError.response?.data?.detail || 'Demo login failed. The server may be unavailable.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -191,7 +210,7 @@ const LoginPage: React.FC = () => {
 
         {/* Footer Info */}
         <div className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
-          <p>VULCA - Cultural AI Evaluation Platform</p>
+          <p>VULCA - AI-Native Creation Organism</p>
           <p className="mt-1">© 2025-2026 VULCA Team. All rights reserved</p>
         </div>
       </motion.div>
