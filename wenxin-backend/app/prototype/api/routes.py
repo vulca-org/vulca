@@ -66,7 +66,7 @@ def _get_graph_orchestrator_class():
 router = APIRouter(prefix="/api/v1/prototype", tags=["prototype"])
 
 # In-memory stores (sufficient for prototype stage)
-_orchestrators: dict[str, PipelineOrchestrator] = {}
+_orchestrators: dict = {}  # task_id -> reserved for future use
 _run_metadata: dict[str, dict] = {}   # task_id -> {subject, tradition, created_at, ...}
 _event_buffers: dict[str, list[PipelineEvent]] = {}
 _idempotency_map: dict[str, str] = {}  # idempotency_key -> task_id
@@ -206,20 +206,34 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
             with _buffer_lock:
                 _event_buffers.setdefault(task_id, []).append(event)
 
+        _interrupt_before = {"decide"} if req.enable_hitl else None
+
         loop = asyncio.new_event_loop()
         try:
             output = loop.run_until_complete(
-                execute(definition, vulca_input, event_callback=_emit_event)
+                execute(definition, vulca_input, event_callback=_emit_event, interrupt_before=_interrupt_before)
             )
         finally:
             loop.close()
 
-        # Mark this run as completed
+        # Store pipeline output for submit_action to read real scores
         if task_id in _run_metadata:
+            _run_metadata[task_id]["pipeline_output"] = {
+                "scores": output.final_scores,
+                "weighted_total": output.weighted_total,
+                "best_candidate_id": output.best_candidate_id,
+                "total_rounds": output.total_rounds,
+                "total_cost_usd": output.total_cost_usd,
+                "total_latency_ms": output.total_latency_ms,
+            }
+
+        # Mark this run as completed (unless waiting for human input)
+        is_waiting = output.status == "waiting_human"
+        if task_id in _run_metadata and not is_waiting:
             _run_metadata[task_id]["completed"] = True
 
-        # Persist session digest for Gallery
-        if output.final_scores or output.total_rounds > 0:
+        # Persist session digest for Gallery (skip if waiting for human)
+        if not is_waiting and (output.final_scores or output.total_rounds > 0):
             elapsed_ms = int((time.monotonic() - t0) * 1000)
             digest = SessionDigest(
                 session_id=task_id,
@@ -256,14 +270,19 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
                 _evo_loop.run_until_complete(_maybe_evolve(task_id))
                 _evo_loop.close()
 
-                # Try to extract a human-readable suggestion from latest evolution
-                from app.prototype.digestion.context_evolver import ContextEvolver
-                evo_result = ContextEvolver().evolve()
-                if evo_result.actions:
-                    parts = [f"{a.dimension}: {a.reason}" for a in evo_result.actions[:3]]
-                    evolution_suggestion = "Weight adjustments: " + "; ".join(parts)
-                elif evo_result.skipped_reason:
-                    evolution_suggestion = ""
+                # Lightweight fallback: generate suggestion from weakest dimension
+                # of this session (no 5-session gate — works for new users too)
+                if not evolution_suggestion and output.final_scores:
+                    dim_names = {"L1": "Visual Perception", "L2": "Technical Execution",
+                                 "L3": "Cultural Context", "L4": "Critical Interpretation",
+                                 "L5": "Philosophical Aesthetics"}
+                    weakest = min(output.final_scores, key=lambda k: output.final_scores.get(k, 1.0))
+                    weakest_score = output.final_scores.get(weakest, 0.0)
+                    if weakest_score < 0.7:
+                        evolution_suggestion = (
+                            f"Focus on {dim_names.get(weakest, weakest)}: "
+                            f"scored {weakest_score:.0%}, consider increasing {weakest} weight"
+                        )
             except Exception:
                 pass  # Non-fatal
 
@@ -472,6 +491,9 @@ async def submit_action(task_id: str, req: SubmitActionRequest) -> SubmitActionR
     with _buffer_lock:
         _event_buffers.setdefault(task_id, []).append(received_event)
 
+    # Read real pipeline data if available
+    pipe_out = meta.get("pipeline_output", {})
+
     # For approve/force_accept: emit pipeline_completed
     # For reject/rerun: emit pipeline_completed with the action info
     final_decision = req.action
@@ -480,10 +502,12 @@ async def submit_action(task_id: str, req: SubmitActionRequest) -> SubmitActionR
         payload={
             "status": "completed",
             "decision": final_decision,
-            "best_candidate_id": req.candidate_id or "",
-            "total_rounds": 0,
-            "total_latency_ms": now_ms,
-            "total_cost_usd": 0.0,
+            "best_candidate_id": req.candidate_id or pipe_out.get("best_candidate_id", ""),
+            "scores": pipe_out.get("scores", {}),
+            "weighted_total": pipe_out.get("weighted_total", 0.0),
+            "total_rounds": pipe_out.get("total_rounds", 0),
+            "total_latency_ms": pipe_out.get("total_latency_ms", now_ms),
+            "total_cost_usd": pipe_out.get("total_cost_usd", 0.0),
             "human_action": req.action,
         },
         timestamp_ms=now_ms,
@@ -684,6 +708,14 @@ def _build_status_response(task_id: str) -> RunStatusResponse:
                 total_latency_ms=p.get("total_latency_ms", 0),
                 total_cost_usd=p.get("total_cost_usd", 0.0),
             )
+
+        # Check for waiting_human (HITL)
+        is_waiting = any(
+            (ev.event_type if isinstance(ev.event_type, str) else ev.event_type.value) == "human_required"
+            for ev in buffer
+        )
+        if is_waiting:
+            return RunStatusResponse(task_id=task_id, status="waiting_human")
 
         # Still running
         return RunStatusResponse(task_id=task_id, status="running")

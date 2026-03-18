@@ -17,6 +17,8 @@ async def acreate(
     mode: str = "auto",
     base_url: str = "",
     api_key: str = "",
+    hitl: bool = False,
+    weights: dict[str, float] | None = None,
 ) -> CreateResult:
     """Create artwork via local pipeline or remote API (async).
 
@@ -37,6 +39,10 @@ async def acreate(
         VULCA API base URL (remote mode). Defaults to VULCA_API_URL env.
     api_key:
         API key. Defaults to VULCA_API_KEY env.
+    hitl:
+        Enable human-in-the-loop. Pipeline pauses before 'decide' node.
+    weights:
+        Custom L1-L5 weights, e.g. {"L1": 0.3, "L2": 0.2, ...}.
 
     Returns
     -------
@@ -45,7 +51,12 @@ async def acreate(
     """
     if mode == "local" or (mode == "auto" and provider == "mock"):
         return await _create_local(
-            intent, tradition=tradition, subject=subject, provider=provider
+            intent,
+            tradition=tradition,
+            subject=subject,
+            provider=provider,
+            hitl=hitl,
+            weights=weights,
         )
     return await _create_remote(
         intent,
@@ -63,6 +74,8 @@ async def _create_local(
     tradition: str = "",
     subject: str = "",
     provider: str = "mock",
+    hitl: bool = False,
+    weights: dict[str, float] | None = None,
 ) -> CreateResult:
     """Run the slim pipeline engine locally."""
     from vulca.pipeline.engine import execute
@@ -70,18 +83,35 @@ async def _create_local(
     from vulca.pipeline.templates import DEFAULT
     from vulca.pipeline.types import PipelineInput
 
+    # Build node_params from custom weights
+    node_params: dict[str, dict] = {}
+    if weights:
+        node_params["evaluate"] = {"custom_weights": weights}
+
     pipeline_input = PipelineInput(
         subject=subject or intent,
         intent=intent,
         tradition=tradition or "default",
         provider=provider,
+        node_params=node_params,
     )
 
-    output = await execute(DEFAULT, pipeline_input, on_complete=default_on_complete)
+    # HITL: interrupt before decide node; skip on_complete (pipeline incomplete)
+    interrupt_before = {"decide"} if hitl else None
+    on_complete = None if hitl else default_on_complete
+
+    output = await execute(
+        DEFAULT,
+        pipeline_input,
+        on_complete=on_complete,
+        interrupt_before=interrupt_before,
+    )
 
     return CreateResult(
         session_id=output.session_id,
         mode="create",
+        status=output.status,
+        interrupted_at=output.interrupted_at,
         tradition=output.tradition,
         scores=output.final_scores,
         weighted_total=output.weighted_total,
@@ -160,6 +190,8 @@ def create(
     mode: str = "auto",
     base_url: str = "",
     api_key: str = "",
+    hitl: bool = False,
+    weights: dict[str, float] | None = None,
 ) -> CreateResult:
     """Create artwork (synchronous wrapper).
 
@@ -178,6 +210,8 @@ def create(
         mode=mode,
         base_url=base_url,
         api_key=api_key,
+        hitl=hitl,
+        weights=weights,
     )
 
     if loop and loop.is_running():

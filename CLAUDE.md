@@ -167,11 +167,27 @@ formParams.append('password', password);
 from vulca import evaluate, create, session  # Public API
 # Pipeline engine
 from vulca.pipeline import execute, DEFAULT, FAST
-# CLI
+# SDK: HITL + custom weights
+result = create("水墨山水", provider="mock", hitl=True, weights={"L1": 0.3, "L2": 0.2})
+# result.status == "waiting_human", result.interrupted_at == "decide"
+```
+```bash
+# CLI: HITL + custom weights
 vulca evaluate image.png --tradition chinese_xieyi
 vulca create "水墨山水" --provider mock
+vulca create "水墨山水" --hitl --weights "L1=0.3,L2=0.2,L3=0.2,L4=0.15,L5=0.15"
+```
+```python
+# MCP: create_artwork(intent, hitl=True, weights="L1=0.3,L2=0.2,...")
 ```
 Note: The old `app/vulca/` backend module has been deleted. All VULCA logic now lives in the unified `vulca/` package.
+
+**HITL / Weights / Evolution across all 4 entry points:**
+| Feature | Canvas UI | CLI | SDK | MCP |
+|---------|-----------|-----|-----|-----|
+| HITL | `enable_hitl` in CreateRunRequest | `--hitl` flag | `hitl=True` | `hitl=True` |
+| Custom weights | Canvas weight sliders → `node_params` | `--weights "L1=0.3,..."` | `weights={"L1": 0.3}` | `weights="L1=0.3,..."` |
+| Evolution | Auto (throttled, lightweight fallback) | Auto via on_complete | Auto via on_complete | Not yet |
 
 ## Design System
 
