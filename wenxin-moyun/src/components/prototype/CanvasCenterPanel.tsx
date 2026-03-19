@@ -37,7 +37,7 @@ export default function CanvasCenterPanel({
     if (!pipeline.taskId) return;
     setPublishing(true);
     try {
-      const res = await fetch(`${API_PREFIX}/gallery/${pipeline.taskId}/publish`, {
+      const res = await fetch(`${API_PREFIX}/prototype/gallery/${pipeline.taskId}/publish`, {
         method: 'POST',
         headers: { Authorization: 'Bearer demo-key' },
       });

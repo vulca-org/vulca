@@ -83,7 +83,7 @@ export default function FinalResultPanel({
     if (!taskId) return;
     setPublishing(true);
     try {
-      const res = await fetch(`${API_PREFIX}/gallery/${taskId}/publish`, {
+      const res = await fetch(`${API_PREFIX}/prototype/gallery/${taskId}/publish`, {
         method: 'POST',
         headers: { Authorization: 'Bearer demo-key' },
       });
