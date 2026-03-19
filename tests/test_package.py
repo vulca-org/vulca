@@ -100,6 +100,7 @@ def test_dunder_all():
     expected = {
         "__version__", "evaluate", "aevaluate",
         "create", "acreate", "session", "asession",
+        "traditions", "get_weights",
         "EvalResult", "CreateResult", "SkillResult",
     }
     assert set(vulca.__all__) == expected
