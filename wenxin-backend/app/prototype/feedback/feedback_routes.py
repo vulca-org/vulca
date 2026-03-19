@@ -6,9 +6,8 @@ import hashlib
 import uuid
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 
-from app.prototype.api.auth import verify_api_key
 from app.prototype.feedback.feedback_store import FeedbackStore
 from app.prototype.feedback.types import FeedbackRecord, FeedbackStats, FeedbackSubmit
 
@@ -23,9 +22,8 @@ def _hash_key(api_key: str) -> str:
 @feedback_router.post("/feedback")
 async def submit_feedback(
     req: FeedbackSubmit,
-    api_key: str = Depends(verify_api_key),
 ) -> dict:
-    """Submit evaluation feedback (requires API key)."""
+    """Submit evaluation feedback."""
     record = FeedbackRecord(
         id=uuid.uuid4().hex,
         evaluation_id=req.evaluation_id,

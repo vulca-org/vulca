@@ -4,7 +4,7 @@
  * Features:
  * - 5-star clickable rating with hover preview
  * - Text comment textarea
- * - Submit to POST /api/v1/feedback with Bearer demo-key auth
+ * - Submit to POST /api/v1/feedback (no auth required for feedback)
  * - Success/failure state feedback via inline banners
  *
  * Backend maps: rating >= 3 stars → "thumbs_up", < 3 → "thumbs_down".

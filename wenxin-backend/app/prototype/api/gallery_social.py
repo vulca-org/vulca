@@ -11,10 +11,8 @@ import time
 from collections import defaultdict
 from pathlib import Path
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-
-from app.prototype.api.auth import verify_api_key
 
 gallery_social_router = APIRouter(
     prefix="/api/v1/prototype/gallery", tags=["gallery-social"]
@@ -94,7 +92,7 @@ class PublishResponse(BaseModel):
 
 
 @gallery_social_router.post("/{session_id}/publish", response_model=PublishResponse)
-async def publish_to_gallery(session_id: str, _key: str = Depends(verify_api_key)):
+async def publish_to_gallery(session_id: str):
     """Publish a session to the public Gallery.
 
     Sets the ``published`` flag on the session digest so it appears

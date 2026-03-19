@@ -31,10 +31,10 @@ export const iosColors = {
   
   // Semantic Colors
   background: {
-    primary: '#FFFFFF',
-    secondary: '#F2F2F7',
-    tertiary: '#FFFFFF',
-    grouped: '#F2F2F7',
+    primary: '#ffffff',          // surface-container-lowest
+    secondary: '#f6f3ee',        // surface-container-low
+    tertiary: '#ffffff',
+    grouped: '#fcf9f4',          // surface (bg-base)
   },
   
   backgroundDark: {
@@ -65,20 +65,20 @@ export const iosColors = {
 };
 
 export const iosShadows = {
-  sm: '0 1px 3px rgba(0, 0, 0, 0.12)',
-  md: '0 4px 6px rgba(0, 0, 0, 0.07)',
-  lg: '0 10px 15px rgba(0, 0, 0, 0.1)',
-  xl: '0 20px 25px rgba(0, 0, 0, 0.1)',
-  '2xl': '0 25px 50px rgba(0, 0, 0, 0.15)',
+  sm: '0 2px 12px rgba(28, 28, 25, 0.04)',
+  md: '0 4px 24px rgba(28, 28, 25, 0.06)',
+  lg: '0 8px 40px rgba(28, 28, 25, 0.06)',
+  xl: '0 12px 56px rgba(28, 28, 25, 0.08)',
+  '2xl': '0 20px 80px rgba(28, 28, 25, 0.10)',
 };
 
 export const iosRadius = {
   xs: '4px',
-  sm: '6px',
-  md: '8px',
-  lg: '12px',
-  xl: '14px',
-  '2xl': '20px',
+  sm: '8px',       // 0.5rem
+  md: '12px',      // 0.75rem
+  lg: '16px',      // 1rem — cards
+  xl: '24px',      // 1.5rem — buttons
+  '2xl': '32px',   // 2rem
   full: '9999px',
 };
 

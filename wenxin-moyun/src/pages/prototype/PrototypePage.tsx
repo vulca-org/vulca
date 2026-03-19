@@ -374,7 +374,7 @@ export default function PrototypePage() {
           style: {
             background: '#fcf9f4',
             color: '#1c1c19',
-            border: '1px solid #E8E0D4',
+            boxShadow: '0 4px 24px rgba(28,28,25,0.06)',
             fontFamily: 'Inter, system-ui, sans-serif',
           },
           success: { iconTheme: { primary: '#5F8A50', secondary: '#fcf9f4' } },

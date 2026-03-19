@@ -50,7 +50,7 @@ export default function Header() {
   }, [isUserMenuOpen]);
 
   return (
-    <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-surface-container-high/50 dark:border-gray-700/20 shadow-sm">
+    <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl shadow-ambient-sm">
       <nav className="max-w-7xl mx-auto px-6">
         <div className="flex items-center justify-between h-14">
           {/* Logo */}
