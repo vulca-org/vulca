@@ -31,7 +31,7 @@ async def submit_feedback(
         comment=req.comment,
         feedback_type=req.feedback_type,
         timestamp=datetime.now(timezone.utc).isoformat(),
-        api_key_hash=_hash_key(api_key),
+        api_key_hash="anonymous",
         candidate_id=req.candidate_id,
         tradition=req.tradition,
         scores_snapshot=req.scores_snapshot,
