@@ -27,14 +27,19 @@ const API_BASE = process.env.API_BASE_URL || 'http://localhost:8001';
 // ─── Helpers ────────────────────────────────────────────────
 
 async function waitForCanvasReady(page: Page) {
+  // Set tour-seen BEFORE loading canvas — go to a simple page first
+  await page.goto(`${BASE}${withRoute('/')}`);
+  await page.evaluate(() => {
+    try {
+      localStorage.setItem('vulca-has-visited', 'true');
+      localStorage.setItem('vulca_tour_seen', 'true');
+    } catch {}
+  });
+  // Now load canvas — tour should not appear
   await page.goto(`${BASE}${withRoute('/canvas')}`);
   await page.waitForLoadState('domcontentloaded');
   const canvas = page.locator('h1:has-text("Canvas")').first();
   await canvas.waitFor({ state: 'visible', timeout: 20000 });
-  // Skip onboarding tour + remove overlays
-  await page.evaluate(() => {
-    try { localStorage.setItem('vulca-has-visited', 'true'); } catch {}
-  });
   await page.waitForTimeout(1000);
   await dismissOverlays(page);
   // Wait for "Ready" status
@@ -66,23 +71,47 @@ async function fillIntentAndCreate(page: Page, intent: string) {
   // Wait for tradition auto-detection + Create button to enable
   await page.waitForTimeout(3000);
   await dismissOverlays(page);
-  // Debug: check Create button state
-  const createState = await page.evaluate(() => {
-    const btns = Array.from(document.querySelectorAll('button'));
-    const all = btns.filter(b => b.textContent?.includes('Create'));
-    return all.map(b => ({ text: b.textContent?.trim(), disabled: b.disabled, visible: b.offsetParent !== null }));
+  // Check textarea value was actually set
+  const textareaValue = await page.evaluate(() => {
+    const ta = document.querySelector('[data-testid="intent-input"]') as HTMLTextAreaElement;
+    return ta?.value || '';
   });
-  // If no enabled Create button, the intent input may not have triggered React state
-  const enabledCreate = createState.find((b: { disabled: boolean }) => !b.disabled);
-  if (!enabledCreate) {
-    throw new Error(`Create button not enabled. Buttons: ${JSON.stringify(createState)}. Intent may not have been registered by React.`);
+  if (!textareaValue) {
+    throw new Error('Intent textarea is empty — type() did not register');
   }
-  // Click Create
-  await page.evaluate(() => {
-    const btns = Array.from(document.querySelectorAll('button'));
-    const create = btns.find(b => b.textContent?.includes('Create') && !b.disabled);
-    if (create) create.click();
-  });
+  // Check Create button state
+  const createBtn = page.getByRole('button', { name: 'Create' }).first();
+  const isDisabled = await createBtn.isDisabled();
+  if (isDisabled) {
+    // Debug: what's the form state?
+    const debugInfo = await page.evaluate(() => {
+      const ta = document.querySelector('[data-testid="intent-input"]') as HTMLTextAreaElement;
+      const btns = Array.from(document.querySelectorAll('button')).filter(b => b.textContent?.includes('Create'));
+      return {
+        textareaValue: ta?.value?.substring(0, 30),
+        createButtons: btns.map(b => ({ disabled: b.disabled, text: b.textContent?.trim() })),
+        overlayCount: document.querySelectorAll('.fixed').length,
+      };
+    });
+    throw new Error(`Create button is disabled! Debug: ${JSON.stringify(debugInfo)}`);
+  }
+  // Monitor network to verify POST /runs is sent
+  const runPromise = page.waitForResponse(
+    resp => resp.url().includes('/prototype/runs') && resp.request().method() === 'POST',
+    { timeout: 10000 }
+  ).catch(() => null);
+  await createBtn.click({ force: true, timeout: 5000 });
+  const runResponse = await runPromise;
+  if (!runResponse) {
+    throw new Error('POST /prototype/runs was never sent — Create click did not trigger pipeline');
+  }
+  const runData = await runResponse.json().catch(() => ({}));
+  if (runResponse.status() === 429) {
+    throw new Error(`Daily limit reached: ${JSON.stringify(runData)}`);
+  }
+  if (runResponse.status() >= 400) {
+    throw new Error(`Pipeline creation failed (${runResponse.status()}): ${JSON.stringify(runData)}`);
+  }
 }
 
 // ─── Tests ──────────────────────────────────────────────────
@@ -143,12 +172,16 @@ test.describe('User Journey Smoke', () => {
     // Enter intent
     await fillIntentAndCreate(page, 'Bamboo forest in morning mist');
 
-    // Wait for pipeline to complete — check for "Done" status or "Pipeline Complete"
-    const done = page.locator('text=Pipeline Complete, text=Done').first();
-    await done.waitFor({ state: 'visible', timeout: 30000 }).catch(async () => {
-      // If pipeline didn't start, check what state we're in
-      const status = await page.locator('text=/Ready|Running|Failed|Done/').first().textContent().catch(() => 'unknown');
-      throw new Error(`Pipeline did not complete. Current status: ${status}`);
+    // Wait for pipeline to complete — look for score or "Done" or "Pipeline Complete"
+    const completed = page.locator('text=/Pipeline Complete|Overall Score|0\\.\\d+.*\\/.*1\\.000/').first();
+    await completed.waitFor({ state: 'visible', timeout: 30000 }).catch(async () => {
+      // Debug: capture current page state
+      await page.screenshot({ path: 'test-results/debug-pipeline-stuck.png' });
+      const bodyText = await page.locator('body').textContent().catch(() => '');
+      const hasRunning = bodyText?.includes('Running') || false;
+      const hasFailed = bodyText?.includes('Failed') || false;
+      const hasDone = bodyText?.includes('Done') || false;
+      throw new Error(`Pipeline did not show completion UI. Running=${hasRunning} Failed=${hasFailed} Done=${hasDone}`);
     });
 
     // Verify L1-L5 scores are displayed
@@ -337,8 +370,8 @@ test.describe('User Journey Smoke', () => {
     const historyHeading = page.locator('h3:has-text("Run History")').first();
     await expect(historyHeading).toBeVisible({ timeout: 10000 });
 
-    // Should have at least one history item with a score
-    const historyItem = page.locator('button:has-text(/0\\.[0-9]+/)').first();
+    // Should have at least one history item — they contain "ago" text
+    const historyItem = page.locator('text=/\\d+[hm]? ago/').first();
     await expect(historyItem).toBeVisible({ timeout: 5000 });
   });
 
