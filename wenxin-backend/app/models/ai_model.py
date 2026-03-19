@@ -70,7 +70,7 @@ class AIModel(Base):
     
     # VULCA Integration fields
     vulca_scores_47d = Column(JSON, nullable=True)  # 47-dimensional VULCA scores
-    vulca_cultural_perspectives = Column(JSON, nullable=True)  # 8 cultural perspective scores
+    vulca_cultural_perspectives = Column(JSON, nullable=True)  # 9 cultural tradition scores
     vulca_evaluation_date = Column(DateTime(timezone=True), nullable=True)  # Last VULCA evaluation
     vulca_sync_status = Column(String(20), default="pending")  # pending, syncing, completed, failed
     
