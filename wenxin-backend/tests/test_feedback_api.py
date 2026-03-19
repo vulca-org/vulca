@@ -127,7 +127,7 @@ async def test_submit_feedback_missing_rating(client: httpx.AsyncClient):
 
 @pytest.mark.asyncio
 async def test_submit_feedback_no_auth(client: httpx.AsyncClient):
-    """No Authorization header → 401."""
+    """Feedback no longer requires auth — should accept without headers."""
     resp = await client.post(
         "/api/v1/feedback",
         json={
@@ -135,35 +135,21 @@ async def test_submit_feedback_no_auth(client: httpx.AsyncClient):
             "rating": "thumbs_up",
         },
     )
-    assert resp.status_code == 401
+    assert resp.status_code == 200
 
 
 @pytest.mark.asyncio
-async def test_submit_feedback_invalid_bearer(client: httpx.AsyncClient):
-    """Invalid bearer token → 403."""
+async def test_submit_feedback_with_any_auth(client: httpx.AsyncClient):
+    """Feedback ignores auth headers — should accept regardless."""
     resp = await client.post(
         "/api/v1/feedback",
         json={
             "evaluation_id": "eval-005",
             "rating": "thumbs_up",
         },
-        headers={"Authorization": "Bearer wrong-key"},
+        headers={"Authorization": "Bearer any-token"},
     )
-    assert resp.status_code == 403
-
-
-@pytest.mark.asyncio
-async def test_submit_feedback_malformed_auth(client: httpx.AsyncClient):
-    """Authorization header without Bearer prefix → 401."""
-    resp = await client.post(
-        "/api/v1/feedback",
-        json={
-            "evaluation_id": "eval-006",
-            "rating": "thumbs_up",
-        },
-        headers={"Authorization": "Token some-value"},
-    )
-    assert resp.status_code == 401
+    assert resp.status_code == 200
 
 
 # ---- GET /api/v1/feedback/stats --------------------------------------
