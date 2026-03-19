@@ -448,7 +448,7 @@ describe('generateCSSVariables', () => {
 
   it('should handle nested objects', () => {
     const result = generateCSSVariables(themes.light)
-    expect(result).toContain('--bg-surface: #FFFFFF')
+    expect(result).toContain('--bg-surface: #ffffff')
     expect(result).toContain('--semantic-primary: #1275E2')
     expect(result).toContain('--border-default: #e4e1dc')
   })
