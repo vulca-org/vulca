@@ -200,9 +200,9 @@ export const vulcaCategoryColors = {
 // ============= Chart Common Config =============
 
 export const chartConfig = {
-  // Font config — iOS system font
+  // Font config — Digital Curator
   font: {
-    family: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif',
+    family: 'Inter, system-ui, sans-serif',
     sizes: {
       title: 17,      // iOS Body
       label: 15,      // iOS Subheadline

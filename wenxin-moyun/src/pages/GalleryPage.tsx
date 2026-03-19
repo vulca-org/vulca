@@ -569,26 +569,27 @@ export default function GalleryPage() {
   const rangeEnd = filtered.length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-white dark:from-[#0F0D0B] dark:via-gray-900 dark:to-[#0F0D0B]">
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <div className="min-h-screen bg-surface dark:bg-[#0F0D0B]">
+      <div className="max-w-[1440px] mx-auto px-6 sm:px-10 py-10">
 
-        {/* Page header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold mb-3 bg-gradient-to-r from-slate-700 to-amber-700 bg-clip-text text-transparent">
-            Creation Gallery
+        {/* Page header — Gallery hero */}
+        <div className="mb-12">
+          <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl font-bold text-on-surface mb-2 tracking-tight leading-[0.95]">
+            CULTURAL<br />
+            <span className="text-primary-500">GALLERY</span>
           </h1>
-          <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-4">
-            Cultural artworks created through the VULCA pipeline — each scored across L1-L5 dimensions by multi-agent critics.
+          <p className="text-on-surface-variant max-w-lg mt-4 text-sm leading-relaxed">
+            A curated showcase of cultural artifacts, digital heritage, and artistic expressions generated through the VULCA pipeline.
           </p>
-          <div className="flex items-center justify-center gap-3">
+          <div className="flex items-center gap-3 mt-5">
             <Link to="/canvas">
-              <IOSButton variant="primary" size="md" className="inline-flex items-center gap-1.5">
+              <button className="bg-primary-500 text-white px-6 py-2.5 rounded-full font-medium text-sm hover:bg-primary-600 active:scale-95 transition-all inline-flex items-center gap-1.5">
                 <Sparkles className="w-4 h-4" />
                 Create Your Own
-              </IOSButton>
+              </button>
             </Link>
             {!isLive && !loading && (
-              <span className="text-[10px] text-gray-400 dark:text-gray-500 px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-800">
+              <span className="text-[10px] text-outline px-3 py-1 rounded-full bg-surface-container-high">
                 Demo data — start the backend to see live creations
               </span>
             )}
@@ -602,14 +603,14 @@ export default function GalleryPage() {
         <EvolutionInsightsPanel insights={digestionInsights} />
 
         {/* Filters + Sort */}
-        <div className="flex flex-col sm:flex-row gap-3 mb-6 items-start sm:items-center">
+        <div className="flex flex-col sm:flex-row gap-3 mb-8 items-start sm:items-center">
           <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-gray-400" />
+            <Filter className="w-4 h-4 text-outline" />
             <select
               value={selectedTradition}
               onChange={(e) => setSelectedTradition(e.target.value)}
               aria-label="Filter by tradition"
-              className="px-3 py-2 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-500/40 transition"
+              className="px-4 py-2.5 rounded-full bg-surface-container-lowest text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition"
             >
               <option value="all">All Traditions</option>
               {traditions.map((t) => (
@@ -621,12 +622,12 @@ export default function GalleryPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <Layers className="w-4 h-4 text-gray-400" />
+            <Layers className="w-4 h-4 text-outline" />
             <select
               value={String(minScore)}
               onChange={(e) => setMinScore(Number(e.target.value))}
               aria-label="Filter by minimum score"
-              className="px-3 py-2 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-500/40 transition"
+              className="px-4 py-2.5 rounded-full bg-surface-container-lowest text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition"
             >
               <option value="0">Min Score: Any</option>
               <option value="0.80">Min Score: 80%</option>
@@ -636,12 +637,12 @@ export default function GalleryPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <ArrowUpDown className="w-4 h-4 text-gray-400" />
+            <ArrowUpDown className="w-4 h-4 text-outline" />
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as SortOption)}
               aria-label="Sort artworks"
-              className="px-3 py-2 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-500/40 transition"
+              className="px-4 py-2.5 rounded-full bg-surface-container-lowest text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition"
             >
               {(Object.entries(SORT_LABELS) as [SortOption, string][]).map(([key, label]) => (
                 <option key={key} value={key}>{label}</option>

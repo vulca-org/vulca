@@ -50,65 +50,78 @@ export default function Header() {
   }, [isUserMenuOpen]);
 
   return (
-    <header className="ios-glass border-b border-gray-200/20 dark:border-gray-700/20 sticky top-0 z-50 backdrop-blur-xl">
-      <nav className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
+    <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-surface-container-high/50 dark:border-gray-700/20 shadow-sm">
+      <nav className="max-w-7xl mx-auto px-6">
+        <div className="flex items-center justify-between h-14">
           {/* Logo */}
-          <Link to="/" className="group">
-            <VulcaLogo size="lg" showSubtitle={false} variant="header" />
-          </Link>
+          <div className="flex items-center gap-8">
+            <Link to="/" className="group">
+              <span className="text-xl font-bold tracking-tighter text-on-surface">VULCA AI</span>
+            </Link>
+
+          </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-1">
-            {primaryNav.map((item) => (
-              <Link key={item.name} to={item.href}>
-                <IOSButton
-                  variant={isActive(item.href) ? "primary" : "text"}
-                  size="sm"
+          <div className="hidden lg:flex items-center gap-4">
+            <nav className="flex items-center gap-6">
+              {primaryNav.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className={`text-sm font-medium transition-colors ${
+                    isActive(item.href)
+                      ? 'text-primary-500 font-semibold'
+                      : 'text-on-surface-variant hover:text-on-surface'
+                  }`}
                   data-testid={`nav-${item.name.toLowerCase()}`}
                 >
                   {item.name}
-                </IOSButton>
-              </Link>
-            ))}
+                </Link>
+              ))}
+              <a
+                href="https://github.com/vulca-org/vulca"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm font-medium text-on-surface-variant hover:text-on-surface transition-colors"
+              >
+                GitHub
+              </a>
+            </nav>
 
             {/* Sign In / User */}
             {guest ? (
               <Link to="/login">
-                <IOSButton
-                  variant={isActive('/login') ? 'primary' : 'text'}
-                  size="sm"
+                <button
+                  className="bg-primary-500 text-white px-5 py-2 rounded-full font-medium text-sm hover:bg-primary-600 active:scale-95 transition-all"
                   data-testid="nav-signin"
                 >
-                  <LogIn className="w-4 h-4 mr-1.5" />
                   Sign In
-                </IOSButton>
+                </button>
               </Link>
             ) : (
               <div className="relative" ref={userMenuRef}>
                 <button
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-[#334155] dark:text-gray-200 hover:bg-gray-100/50 dark:hover:bg-gray-800/50 transition-colors min-h-[44px]"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium text-on-surface hover:bg-surface-container-high transition-colors min-h-[44px]"
                   data-testid="nav-user-menu"
                 >
-                  <User className="w-4 h-4 text-[#C87F4A]" />
+                  <User className="w-4 h-4 text-secondary-500" />
                   <span>{username || 'User'}</span>
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
                 {isUserMenuOpen && (
-                  <div className="absolute right-0 top-full mt-1 w-48 py-1 bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                  <div className="absolute right-0 top-full mt-2 w-48 py-1 bg-white dark:bg-gray-900 rounded-xl shadow-ambient-lg z-50">
                     <Link
                       to="/canvas"
                       onClick={() => setIsUserMenuOpen(false)}
-                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-on-surface hover:bg-surface-container-low transition-colors"
                     >
-                      <User className="w-4 h-4 text-[#C87F4A]" />
+                      <User className="w-4 h-4 text-secondary-500" />
                       Canvas
                     </Link>
-                    <div className="border-t border-gray-100 dark:border-gray-800 my-1" />
                     <button
                       onClick={handleLogout}
-                      className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-[#C65D4D] hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                      className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-error-500 hover:bg-error-50 transition-colors"
                       data-testid="nav-logout"
                     >
                       <LogOut className="w-4 h-4" />
@@ -119,21 +132,6 @@ export default function Header() {
               </div>
             )}
 
-            {/* GitHub icon link */}
-            <a
-              href="https://github.com/vulca-org/vulca"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/50 dark:hover:bg-gray-800/50 transition-colors"
-              aria-label="GitHub"
-            >
-              <Github className="w-5 h-5" />
-            </a>
-
-            {/* Divider */}
-            <div className="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-2" />
-
-            {/* Theme Toggle */}
             <HeaderControls />
           </div>
 

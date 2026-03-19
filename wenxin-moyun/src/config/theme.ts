@@ -1,6 +1,6 @@
-// Art Professional Theme System
-// Warm, professional, gallery-inspired visual style.
-// See docs/design-system.md for full spec.
+// Digital Curator Theme System
+// Bridges "Tech Trust" (Blue) with "Cultural Artistry" (Bronze & Cream).
+// Reference: vulca_ethos/DESIGN.md
 
 export const themes = {
   dark: {
@@ -31,9 +31,9 @@ export const themes = {
       inverse: '#0F0D0B',   // Inverse text
     },
 
-    // Semantic colors — Art Professional Dark
+    // Semantic colors — Digital Curator Dark
     semantic: {
-      primary: '#94A3B8',   // Ink Slate (light)
+      primary: '#AAC8F4',   // Light Blue
       accent: '#DDA574',    // Light Bronze
       green: '#87A878',     // Light Sage
       yellow: '#D4A84B',    // Light Amber
@@ -50,8 +50,8 @@ export const themes = {
       tertiary: '#87A878',  // Light Sage
       quaternary: '#D4A84B',// Light Amber
       series: [
-        '#C87F4A', '#9B6B56', '#87A878', '#D4A84B',
-        '#94A3B8', '#C97064', '#B8A089', '#7A9B76'
+        '#AAC8F4', '#DDA574', '#87A878', '#D4A84B',
+        '#7FAAEE', '#C97064', '#B8A089', '#7A9B76'
       ]
     },
 
@@ -60,56 +60,56 @@ export const themes = {
       gold: 'linear-gradient(135deg, #D4A84B 0%, #C87F4A 100%)',
       silver: 'linear-gradient(135deg, #94A3B8 0%, #64748B 100%)',
       bronze: 'linear-gradient(135deg, #C87F4A 0%, #9B6B56 100%)',
-      gradient: 'linear-gradient(135deg, #334155 0%, #C87F4A 100%)', // Brand gradient
+      gradient: 'linear-gradient(135deg, #AAC8F4 0%, #DDA574 100%)', // Brand gradient (dark)
     }
   },
 
   light: {
-    // Background layers — gallery style
+    // Background layers — warm gallery-white
     bg: {
-      base: '#FAF7F2',      // Cream White
-      surface: '#FFFFFF',   // Pure White
-      elevated: '#FFFFFF',
-      overlay: '#FFFFFF',
-      hover: '#F5F0E8',
-      active: '#EDE6DB',
+      base: '#fcf9f4',      // Gallery White (Ethos surface)
+      surface: '#ffffff',   // Cards
+      elevated: '#ffffff',
+      overlay: '#ffffff',
+      hover: '#f6f3ee',     // Surface Container Low
+      active: '#f0ede8',    // Surface Container
     },
 
     border: {
-      default: '#C9C2B8',   // Warm Gray border
-      muted: '#E8E0D4',
-      strong: '#9B9387',
-      subtle: '#F0EBE3',
+      default: '#e4e1dc',   // Outline variant
+      muted: '#f0ede8',
+      strong: '#c9c5be',
+      subtle: '#f6f3ee',
     },
 
     text: {
-      primary: '#1E1B18',   // Warm Black
-      secondary: '#524B44', // Warm Dark Gray
-      tertiary: '#7A726A',  // Warm Mid Gray
-      muted: '#A89E94',     // Warm Light Gray
-      inverse: '#FAF7F2',
+      primary: '#1c1c19',   // On-Surface (Ethos)
+      secondary: '#4a4740', // On-Surface-Variant
+      tertiary: '#7a7770',  // Outline
+      muted: '#c9c5be',     // Outline Variant
+      inverse: '#fcf9f4',
     },
 
-    // Semantic colors — Art Professional Light
+    // Semantic colors — Digital Curator Light
     semantic: {
-      primary: '#334155',   // Ink Slate
+      primary: '#1275E2',   // Tech Trust Blue
       accent: '#C87F4A',    // Warm Bronze
       green: '#5F8A50',     // Sage Green
       yellow: '#B8923D',    // Amber Gold
-      red: '#C65D4D',       // Coral Red (unified)
-      bronze: '#C87F4A',    // Warm Bronze (unified)
+      red: '#C65D4D',       // Coral Red
+      bronze: '#C87F4A',    // Warm Bronze
       terracotta: '#7D5645',// Terracotta
       sage: '#5F8A50',      // Sage Green
     },
 
     chart: {
-      primary: '#C87F4A',
-      secondary: '#9B6B56',
+      primary: '#1275E2',
+      secondary: '#C87F4A',
       tertiary: '#5F8A50',
       quaternary: '#B8923D',
       series: [
-        '#C87F4A', '#9B6B56', '#5F8A50', '#B8923D',
-        '#334155', '#C65D4D', '#8F7860', '#4A7A46'
+        '#1275E2', '#C87F4A', '#5F8A50', '#B8923D',
+        '#0C4F9C', '#C65D4D', '#8F7860', '#4A7A46'
       ]
     },
 
@@ -117,7 +117,7 @@ export const themes = {
       gold: 'linear-gradient(135deg, #D4A84B 0%, #C87F4A 100%)',
       silver: 'linear-gradient(135deg, #94A3B8 0%, #64748B 100%)',
       bronze: 'linear-gradient(135deg, #C87F4A 0%, #9B6B56 100%)',
-      gradient: 'linear-gradient(135deg, #334155 0%, #C87F4A 100%)', // Brand gradient
+      gradient: 'linear-gradient(135deg, #1275E2 0%, #C87F4A 100%)', // Brand gradient: Blue → Bronze
     }
   },
 };

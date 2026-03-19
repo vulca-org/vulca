@@ -1,13 +1,12 @@
 /** @type {import('tailwindcss').Config} */
 
 /**
- * Art Professional Design System Configuration
+ * VULCA Design System — "The Digital Curator"
  *
- * Warm, professional, gallery-inspired palette.
- * Reference: museums, galleries, art journals.
- * Full spec: docs/design-system.md
+ * Bridges "Tech Trust" (Blue) with "Cultural Artistry" (Bronze & Cream).
+ * Reference: vulca_ethos/DESIGN.md
  *
- * Version: Art Professional v1.1 (2026-03-16)
+ * Version: Digital Curator v2.0 (2026-03-19)
  */
 
 export default {
@@ -19,23 +18,23 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Art Professional Color System
+        // ── Digital Curator Color System ──────────────────────────
 
-        // Primary: Ink Slate
+        // Primary: Tech Trust Blue — the engine
         primary: {
-          50: '#F8FAFC',
-          100: '#F1F5F9',
-          200: '#E2E8F0',
-          300: '#CBD5E1',
-          400: '#94A3B8',
-          500: '#64748B',
-          600: '#475569',
-          700: '#334155',
-          800: '#1E293B',
-          900: '#0F172A',
-          DEFAULT: '#334155',
+          50: '#EEF4FC',
+          100: '#D5E6FA',
+          200: '#AAC8F4',
+          300: '#7FAAEE',
+          400: '#4A8CE8',
+          500: '#1275E2',
+          600: '#0F62BF',
+          700: '#0C4F9C',
+          800: '#093D79',
+          900: '#062A56',
+          DEFAULT: '#1275E2',
         },
-        // Secondary: Warm Bronze — accent color
+        // Secondary: Cultural Artistry Bronze — the human element
         secondary: {
           50: '#FDF8F4',
           100: '#FAEFE6',
@@ -92,7 +91,35 @@ export default {
           DEFAULT: '#C65D4D',
         },
 
-        // Ink Slate scale (extends default slate)
+        // Warm Bronze alias (direct access)
+        bronze: {
+          50: '#FDF8F4',
+          100: '#FAEFE6',
+          200: '#F4DCC9',
+          300: '#EBC4A1',
+          400: '#DDA574',
+          500: '#C87F4A',
+          600: '#A86838',
+          700: '#8F5530',
+          800: '#6D4127',
+          900: '#4A2C1A',
+          DEFAULT: '#C87F4A',
+        },
+        // Blue: proper blue scale (restored)
+        blue: {
+          50: '#EEF4FC',
+          100: '#D5E6FA',
+          200: '#AAC8F4',
+          300: '#7FAAEE',
+          400: '#4A8CE8',
+          500: '#1275E2',
+          600: '#0F62BF',
+          700: '#0C4F9C',
+          800: '#093D79',
+          900: '#062A56',
+          DEFAULT: '#1275E2',
+        },
+        // Slate: neutral cool gray (standard Tailwind)
         slate: {
           50: '#F8FAFC',
           100: '#F1F5F9',
@@ -105,109 +132,34 @@ export default {
           800: '#1E293B',
           900: '#0F172A',
           950: '#020617',
-          DEFAULT: '#334155',
         },
-        // Warm Bronze scale (accent)
-        bronze: {
-          50: '#FDF8F4',
-          100: '#FAEFE6',
-          200: '#F4DCC9',
-          300: '#EBC4A1',
-          400: '#DDA574',
-          500: '#C87F4A', // Warm Bronze (matches iosTheme.ts)
-          600: '#A86838',
-          700: '#8F5530',
-          800: '#6D4127',
-          900: '#4A2C1A',
-          DEFAULT: '#C87F4A',
-        },
-        // Blue mapped to slate for Art Professional compatibility
-        blue: {
-          50: '#F8FAFC',
-          100: '#F1F5F9',
-          200: '#E2E8F0',
-          300: '#CBD5E1',
-          400: '#94A3B8',
-          500: '#64748B', // Mapped to slate
-          600: '#475569',
-          700: '#334155',
-          800: '#1E293B',
-          900: '#0F172A',
-          DEFAULT: '#334155',
-        },
-        green: {
-          50: '#E6F7EC',
-          100: '#CEF0D9',
-          200: '#9DE1B3',
-          300: '#6BD28D',
-          400: '#4AC771',
-          500: '#34C759', // iOS Green
-          600: '#2AA047',
-          700: '#1F7835',
-          800: '#155024',
-          900: '#0A2812',
-          DEFAULT: '#34C759',
-        },
-        orange: {
-          50: '#FFF4E5',
-          100: '#FFE9CC',
-          200: '#FFD399',
-          300: '#FFBC66',
-          400: '#FFA633',
-          500: '#FF9500', // iOS Orange
-          600: '#CC7700',
-          700: '#995900',
-          800: '#663C00',
-          900: '#331E00',
-          DEFAULT: '#FF9500',
-        },
-        red: {
-          50: '#FFEBE9',
-          100: '#FFD6D3',
-          200: '#FFADA7',
-          300: '#FF857B',
-          400: '#FF5C4F',
-          500: '#FF3B30', // iOS Red
-          600: '#CC2F26',
-          700: '#99231D',
-          800: '#661813',
-          900: '#330C09',
-          DEFAULT: '#FF3B30',
-        },
-        // Terracotta (replaces purple in Art Professional)
-        purple: {
-          50: '#FAF5F0',
-          100: '#F4EAE0',
-          200: '#E8D4C2',
-          300: '#D9B99A',
-          400: '#C49976',
-          500: '#9B6B56', // Terracotta
-          600: '#7D5645',
-          700: '#5F4235',
-          800: '#422E25',
-          900: '#251A15',
-          DEFAULT: '#9B6B56',
-        },
-        
-        // iOS Gray Scale
+
+        // ── Surface System (Warm Gallery-White) ──────────────────
+        // Three-tier layering: surface → container-low → container-lowest
+        'surface': '#fcf9f4',
+        'surface-dim': '#e8e4df',
+        'surface-bright': '#fdfaf5',
+        'surface-container-lowest': '#ffffff',
+        'surface-container-low': '#f6f3ee',
+        'surface-container': '#f0ede8',
+        'surface-container-high': '#eae7e2',
+        'surface-container-highest': '#e4e1dc',
+
+        // ── On-colors (text on surfaces) ─────────────────────────
+        'on-surface': '#1c1c19',
+        'on-surface-variant': '#4a4740',
+        'on-primary': '#ffffff',
+        'on-secondary': '#ffffff',
+        'on-error': '#ffffff',
+
+        // ── Outline (No-Line Rule: prefer tonal shifts) ──────────
+        'outline': '#7a7770',
+        'outline-variant': '#c9c5be',
+
+        // Gray scale
         gray: {
-          50: '#F2F2F7',   // iOS Light Gray 6
-          100: '#E5E5EA',  // iOS Light Gray 5  
-          200: '#D1D1D6',  // iOS Light Gray 4
-          300: '#C7C7CC',  // iOS Light Gray 3
-          400: '#AEAEB2',  // iOS Light Gray 2
-          500: '#8E8E93',  // iOS Light Gray
-          600: '#636366',  // iOS Dark Gray
-          700: '#48484A',  // iOS Dark Gray 2
-          800: '#3A3A3C',  // iOS Dark Gray 3
-          900: '#1C1C1E',  // iOS Dark Gray 4
-          950: '#000000',  // iOS Dark Gray 6
-        },
-        
-        // Neutral mapping for compatibility
-        neutral: {
           50: '#F2F2F7',
-          100: '#E5E5EA', 
+          100: '#E5E5EA',
           200: '#D1D1D6',
           300: '#C7C7CC',
           400: '#AEAEB2',
@@ -217,12 +169,30 @@ export default {
           800: '#3A3A3C',
           900: '#1C1C1E',
           950: '#000000',
-        }
+        },
+        neutral: {
+          50: '#F2F2F7',
+          100: '#E5E5EA',
+          200: '#D1D1D6',
+          300: '#C7C7CC',
+          400: '#AEAEB2',
+          500: '#8E8E93',
+          600: '#636366',
+          700: '#48484A',
+          800: '#3A3A3C',
+          900: '#1C1C1E',
+          950: '#000000',
+        },
       },
       fontFamily: {
-        sans: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'SF Pro Text', 'system-ui', 'sans-serif'],
-        display: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'system-ui', 'sans-serif'],
-        text: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'system-ui', 'sans-serif'],
+        // Dual-typeface: Noto Serif (gallery voice) + Inter (tech clarity)
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ["'Noto Serif'", 'Georgia', 'serif'],
+        headline: ["'Noto Serif'", 'Georgia', 'serif'],
+        body: ['Inter', 'system-ui', 'sans-serif'],
+        label: ['Inter', 'system-ui', 'sans-serif'],
+        text: ['Inter', 'system-ui', 'sans-serif'],
+        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',
@@ -261,22 +231,38 @@ export default {
         '3xl': '40px',
       },
       boxShadow: {
-        'ios-sm': '0 1px 2px rgba(0,0,0,0.05)',
-        'ios-md': '0 4px 6px rgba(0,0,0,0.07)',
-        'ios-lg': '0 10px 15px rgba(0,0,0,0.1)',
-        'ios-xl': '0 20px 25px rgba(0,0,0,0.15)',
-        'ios-2xl': '0 25px 50px rgba(0,0,0,0.25)',
-        'ios-inner': 'inset 0 1px 3px rgba(0,0,0,0.06)',
-        'ios-focus': '0 0 0 3px rgba(200,127,74,0.5)',
+        // Ambient shadows — warm, soft-box lighting (6% on-surface opacity)
+        'ambient-sm': '0 2px 12px rgba(28,28,25,0.04)',
+        'ambient-md': '0 4px 24px rgba(28,28,25,0.06)',
+        'ambient-lg': '0 8px 40px rgba(28,28,25,0.06)',
+        'ambient-xl': '0 12px 56px rgba(28,28,25,0.08)',
+        'ambient-2xl': '0 20px 80px rgba(28,28,25,0.10)',
+        // Legacy aliases
+        'ios-sm': '0 2px 12px rgba(28,28,25,0.04)',
+        'ios-md': '0 4px 24px rgba(28,28,25,0.06)',
+        'ios-lg': '0 8px 40px rgba(28,28,25,0.06)',
+        'ios-xl': '0 12px 56px rgba(28,28,25,0.08)',
+        'ios-2xl': '0 20px 80px rgba(28,28,25,0.10)',
+        'ios-inner': 'inset 0 1px 3px rgba(28,28,25,0.04)',
+        'ios-focus': '0 0 0 3px rgba(18,117,226,0.3)',
       },
       borderRadius: {
-        'ios-sm': '6px',
-        'ios': '10px',
-        'ios-md': '12px',
-        'ios-lg': '16px',
-        'ios-xl': '20px',
-        'ios-2xl': '24px',
-        'ios-3xl': '32px',
+        // Digital Curator: Apple-style organic radii
+        'DEFAULT': '1rem',      // 16px — cards, modules
+        'sm': '0.5rem',         // 8px — small elements
+        'md': '0.75rem',        // 12px — medium elements
+        'lg': '1rem',           // 16px — standard
+        'xl': '1.5rem',         // 24px — buttons, inputs
+        '2xl': '2rem',          // 32px — large containers
+        '3xl': '3rem',          // 48px — hero sections
+        // Legacy aliases
+        'ios-sm': '0.5rem',
+        'ios': '0.75rem',
+        'ios-md': '1rem',
+        'ios-lg': '1rem',
+        'ios-xl': '1.5rem',
+        'ios-2xl': '2rem',
+        'ios-3xl': '3rem',
       },
       transitionTimingFunction: {
         'ios': 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',

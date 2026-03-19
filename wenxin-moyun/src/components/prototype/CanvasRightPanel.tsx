@@ -63,8 +63,8 @@ export default function CanvasRightPanel({
 
               {/* HITL Constraints */}
               {pipeline.hitlConstraints && (
-                <div className="mb-3 rounded-lg border border-[#C9C2B8] dark:border-[#C87F4A]/20 bg-[#FAF7F2] dark:bg-[#C87F4A]/5 p-2">
-                  <div className="text-[11px] font-semibold text-[#334155] dark:text-[#DDA574] mb-1.5">
+                <div className="mb-3 rounded-lg border border-surface-container-high dark:border-secondary-500/20 bg-surface dark:bg-secondary-500/5 p-2">
+                  <div className="text-[11px] font-semibold text-on-surface dark:text-secondary-400 mb-1.5">
                     Your Preferences
                   </div>
                   <div className="space-y-1.5 text-[11px]">

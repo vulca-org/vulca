@@ -1,20 +1,19 @@
 /**
- * iOS Design System Theme Configuration
- * Based on iOS 26 and Apple Human Interface Guidelines
+ * VULCA Design System — "The Digital Curator"
+ * Bridges Tech Trust (Blue) with Cultural Artistry (Bronze & Cream).
  */
 
 export const iosColors = {
-  // Art Professional Color Palette
-  // Replacing iOS blue/purple with warm, artistic tones
-  blue: '#334155',       // Ink Slate — replaces iOS blue
-  green: '#5F8A50',      // Sage Green — softer green
-  indigo: '#4A433C',     // Warm Gray — muted indigo replacement
-  orange: '#B8923D',     // Amber Gold — warm amber
-  pink: '#9B6B56',       // Terracotta — replaces pink
-  purple: '#C87F4A',     // Warm Bronze — replaces iOS purple
-  red: '#C65D4D',        // Coral Red — softer red
-  teal: '#6B8E7A',       // Patina Green — muted teal
-  yellow: '#D4A84B',     // Warm Gold — warm gold
+  // Digital Curator Color Palette
+  blue: '#1275E2',       // Tech Trust Blue — primary
+  green: '#5F8A50',      // Sage Green — success
+  indigo: '#0C4F9C',     // Deep Blue — primary dark
+  orange: '#B8923D',     // Amber Gold — warning
+  pink: '#9B6B56',       // Terracotta
+  purple: '#C87F4A',     // Warm Bronze — secondary / cultural accent
+  red: '#C65D4D',        // Coral Red — error
+  teal: '#6B8E7A',       // Patina Green — info
+  yellow: '#D4A84B',     // Warm Gold
   
   // Gray Scale
   gray: {

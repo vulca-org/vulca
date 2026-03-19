@@ -1,4 +1,4 @@
-/* iOS San Francisco font stack - no external fonts needed */
+/* Digital Curator Design System — Inter + Noto Serif */
 @import './styles/browser-compat.css';
 
 @import 'tailwindcss';
@@ -9,9 +9,9 @@
 @layer base {
   body {
     @apply antialiased transition-colors duration-300;
-    /* Background controlled by Layout component */
-    @apply text-gray-900 dark:text-[#F0F6FC];
-    /* Font rendering — ensure dev/prod consistency */
+    @apply text-[#1c1c19] dark:text-[#F0F6FC];
+    font-family: 'Inter', system-ui, sans-serif;
+    background-color: #fcf9f4;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
@@ -37,34 +37,39 @@
   }
 }
 
-/* Art Professional Typography System with CSS Variables */
+/* Digital Curator Typography System with CSS Variables */
 :root {
-  --ios-font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
-  --ios-font-text: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
-  --ios-color-primary: #1E1B18;   /* Warm Black */
-  --ios-color-secondary: #524B44; /* Warm Gray */
-  --ios-color-primary-dark: #F5F0EB;   /* Cream White */
-  --ios-color-secondary-dark: #A89E94; /* Light Warm Gray */
+  --font-display: 'Noto Serif', Georgia, serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  /* Legacy aliases */
+  --ios-font-display: 'Noto Serif', Georgia, serif;
+  --ios-font-text: 'Inter', system-ui, sans-serif;
 
-  /* Border — Art Professional */
-  --border-subtle: #F0EBE3;
-  --border-default: #C9C2B8;
-  --border-strong: #9B9387;
-  --border-focus: #C87F4A;  /* Warm Bronze */
+  --ios-color-primary: #1c1c19;
+  --ios-color-secondary: #4a4740;
+  --ios-color-primary-dark: #f6f3ee;
+  --ios-color-secondary-dark: #c9c5be;
 
-  /* Background — gallery style */
-  --bg-base: #FAF7F2;       /* Cream White */
-  --bg-surface: #FFFFFF;
-  --bg-elevated: #FFFFFF;
-  --bg-hover: #F5F0E8;
+  /* Border — prefer tonal shifts per No-Line Rule */
+  --border-subtle: #f0ede8;
+  --border-default: #e4e1dc;
+  --border-strong: #c9c5be;
+  --border-focus: #1275E2;  /* Primary Blue */
 
-  /* Semantic colors — Art Professional */
-  --color-primary: #334155;  /* Ink Slate */
-  --color-accent: #C87F4A;   /* Warm Bronze */
+  /* Background — warm gallery-white (from Ethos) */
+  --bg-base: #fcf9f4;
+  --bg-surface: #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-hover: #f6f3ee;
+
+  /* Semantic colors — Digital Curator */
+  --color-primary: #1275E2;  /* Tech Trust Blue */
+  --color-accent: #C87F4A;   /* Cultural Artistry Bronze */
   --color-success: #5F8A50;  /* Sage Green */
   --color-warning: #B8923D;  /* Amber Gold */
-  --color-error: #C65D4D;    /* Coral Red (unified) */
-  --color-info: #64748B;     /* Ink Slate light */
+  --color-error: #C65D4D;    /* Coral Red */
+  --color-info: #64748B;     /* Neutral gray */
 }
 
 .dark {
@@ -78,21 +83,21 @@
   --bg-elevated: #211D1A;
   --bg-hover: #342E28;
 
-  --color-primary: #94A3B8;  /* Light Ink Slate */
+  --color-primary: #AAC8F4;  /* Light Blue */
   --color-accent: #DDA574;   /* Light Bronze */
   --color-success: #87A878;  /* Light Sage */
   --color-warning: #D4A84B;  /* Light Amber */
   --color-error: #C97064;    /* Light Coral */
-  --color-info: #94A3B8;     /* Light Ink Slate */
+  --color-info: #94A3B8;     /* Neutral gray */
 }
 
-/* Base iOS font class */
-.ios-font-display {
-  font-family: var(--ios-font-display);
+/* Base font classes — Digital Curator dual-typeface */
+.ios-font-display, .font-display {
+  font-family: var(--font-display);
 }
 
-.ios-font-text {
-  font-family: var(--ios-font-text);
+.ios-font-text, .font-body {
+  font-family: var(--font-body);
 }
 
 /* Typography classes - matches Tailwind text-4xl/3xl/2xl sizes */
@@ -102,11 +107,11 @@
 /* Page title — secondary page headings, between large-title and h1 */
 /* Matches text-4xl md:text-5xl = 36px → 48px */
 .text-page-title {
-  font-family: var(--ios-font-display);
-  font-size: 48px;  /* text-5xl */
+  font-family: var(--font-display);
+  font-size: 48px;
   line-height: 1.15;
   font-weight: 700;
-  letter-spacing: -0.6px;
+  letter-spacing: -0.02em;
   color: var(--ios-color-primary);
 }
 
@@ -115,7 +120,7 @@
 }
 
 .text-h1 {
-  font-family: var(--ios-font-display);
+  font-family: var(--font-display);
   font-size: 36px;  /* = text-4xl */
   line-height: 1.2;
   font-weight: 700;
@@ -128,7 +133,7 @@
 }
 
 .text-h2 {
-  font-family: var(--ios-font-display);
+  font-family: var(--font-display);
   font-size: 30px;  /* = text-3xl */
   line-height: 1.25;
   font-weight: 600;
@@ -141,7 +146,7 @@
 }
 
 .text-h3 {
-  font-family: var(--ios-font-display);
+  font-family: var(--font-display);
   font-size: 24px;  /* = text-2xl */
   line-height: 1.3;
   font-weight: 600;
@@ -185,7 +190,7 @@
 
 /* iOS Large Title — Hero heading, = text-6xl (60px) */
 .text-large-title {
-  font-family: var(--ios-font-display);
+  font-family: var(--font-display);
   font-size: 60px;  /* = text-6xl */
   line-height: 1.1;
   font-weight: 700;
@@ -226,7 +231,7 @@
   height: 100%;
   border-radius: 9999px;
   transition: all 400ms ease-in-out;
-  background: linear-gradient(90deg, #334155, #C87F4A);  /* Ink Slate → Warm Bronze */
+  background: linear-gradient(90deg, #1275E2, #C87F4A);  /* Ink Slate → Warm Bronze */
 }
 
 /* Data Highlight Animation */
@@ -251,7 +256,7 @@
 
 /* Brand gradient — Art Professional */
 .bg-gradient-brand {
-  background: linear-gradient(135deg, #334155 0%, #C87F4A 100%);  /* Ink Slate → Warm Bronze */
+  background: linear-gradient(135deg, #1275E2 0%, #C87F4A 100%);  /* Ink Slate → Warm Bronze */
 }
 
 @layer utilities {
@@ -260,7 +265,7 @@
   }
   
   .gradient-text {
-    background: linear-gradient(to right, #334155, #C87F4A);  /* Ink Slate → Warm Bronze */
+    background: linear-gradient(to right, #1275E2, #C87F4A);  /* Ink Slate → Warm Bronze */
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -568,7 +573,7 @@
   overflow: visible !important;
   clip: auto !important;
   white-space: normal !important;
-  background-color: #334155 !important;  /* Ink Slate */
+  background-color: #1275E2 !important;  /* Ink Slate */
   color: white !important;
   border-radius: 0.5rem !important;
   font-weight: 600 !important;

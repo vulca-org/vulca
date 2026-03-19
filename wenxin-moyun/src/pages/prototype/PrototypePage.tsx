@@ -372,13 +372,13 @@ export default function PrototypePage() {
         position="top-right"
         toastOptions={{
           style: {
-            background: '#FAF7F2',
-            color: '#334155',
+            background: '#fcf9f4',
+            color: '#1c1c19',
             border: '1px solid #E8E0D4',
-            fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif',
+            fontFamily: 'Inter, system-ui, sans-serif',
           },
-          success: { iconTheme: { primary: '#5F8A50', secondary: '#FAF7F2' } },
-          error: { iconTheme: { primary: '#C65D4D', secondary: '#FAF7F2' } },
+          success: { iconTheme: { primary: '#5F8A50', secondary: '#fcf9f4' } },
+          error: { iconTheme: { primary: '#C65D4D', secondary: '#fcf9f4' } },
         }}
       />
 
