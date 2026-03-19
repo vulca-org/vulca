@@ -122,7 +122,14 @@ jobs:
         working-directory: wenxin-backend
         run: |
           python -m uvicorn app.main:app --host 0.0.0.0 --port 8001 &
-          sleep 10
+          echo "Waiting for backend to start..."
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:8001/health > /dev/null 2>&1; then
+              echo "Backend ready after ${i}s"
+              break
+            fi
+            sleep 1
+          done
           curl -f http://localhost:8001/health || exit 1
         env:
           DATABASE_URL: sqlite+aiosqlite:///./test.db
