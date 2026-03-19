@@ -94,7 +94,7 @@ class GenerateNode(PipelineNode):
         )
 
         response = client.models.generate_content(
-            model="gemini-2.0-flash-preview-image-generation",
+            model="gemini-3.1-flash-image-preview",
             contents=full_prompt,
             config=types.GenerateContentConfig(
                 response_modalities=["TEXT", "IMAGE"],
