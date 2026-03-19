@@ -68,6 +68,10 @@ jobs:
         working-directory: wenxin-moyun
         run: npx tsc --noEmit
 
+      - name: ESLint (errors block deploy)
+        working-directory: wenxin-moyun
+        run: npx eslint src/ --quiet
+
       - name: Run frontend unit tests
         working-directory: wenxin-moyun
         run: npx vitest run
@@ -119,14 +123,28 @@ jobs:
         env:
           DATABASE_URL: sqlite+aiosqlite:///./test.db
           SECRET_KEY: test-secret-key-for-ci-at-least-32-chars
-          GEMINI_API_KEY: test-fake-key-for-ci
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           ENVIRONMENT: test
+          VULCA_DAILY_LIMIT: "100"
+          VULCA_API_KEYS: demo-key
 
-      - name: Run E2E tests with proper servers
+      - name: Run E2E smoke tests (blocks deploy)
+        working-directory: wenxin-moyun
+        run: |
+          npx playwright test tests/e2e/specs/user-journey-smoke.spec.ts --config=tests/e2e/playwright.config.ts
+        env:
+          CI: true
+          PLAYWRIGHT_BASE_URL: http://localhost:5173
+          API_BASE_URL: http://localhost:8001
+          VITE_API_BASE_URL: http://localhost:8001
+        timeout-minutes: 10
+
+      - name: Run other E2E tests (non-blocking)
         working-directory: wenxin-moyun
         continue-on-error: true
         run: |
-          npx playwright test tests/e2e/specs/ --config=tests/e2e/playwright.config.ts || echo "E2E: some tests failed (non-blocking)"
+          npx playwright test tests/e2e/specs/ --config=tests/e2e/playwright.config.ts --ignore=tests/e2e/specs/user-journey-smoke.spec.ts || echo "E2E: some tests failed (non-blocking)"
         env:
           CI: true
           VITE_API_BASE_URL: http://localhost:8001
