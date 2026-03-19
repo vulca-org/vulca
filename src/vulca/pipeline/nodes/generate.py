@@ -1,4 +1,4 @@
-"""GenerateNode -- image generation via provider API or mock."""
+"""GenerateNode -- image generation via Gemini or mock."""
 
 from __future__ import annotations
 
@@ -6,6 +6,8 @@ import base64
 import hashlib
 import logging
 import os
+import time
+from pathlib import Path
 from typing import Any
 
 from vulca.pipeline.node import NodeContext, PipelineNode
@@ -18,7 +20,7 @@ class GenerateNode(PipelineNode):
 
     Supports two providers:
     - ``mock``: returns a deterministic 1x1 PNG (no external calls).
-    - ``nb2``: calls NovitaAI / compatible API for real image generation.
+    - ``nb2``: calls Google Gemini image generation model.
     """
 
     name = "generate"
@@ -29,7 +31,7 @@ class GenerateNode(PipelineNode):
         if provider == "mock":
             return self._mock_generate(ctx)
 
-        return await self._nb2_generate(ctx)
+        return await self._gemini_generate(ctx)
 
     # ------------------------------------------------------------------
     # Mock provider
@@ -58,67 +60,69 @@ class GenerateNode(PipelineNode):
         }
 
     # ------------------------------------------------------------------
-    # NB2 / NovitaAI provider
+    # Gemini image generation (NB2)
     # ------------------------------------------------------------------
 
     @staticmethod
-    async def _nb2_generate(ctx: NodeContext) -> dict[str, Any]:
-        """Call NovitaAI-compatible txt2img endpoint."""
-        import httpx
+    async def _gemini_generate(ctx: NodeContext) -> dict[str, Any]:
+        """Call Google Gemini image generation model."""
+        try:
+            from google import genai
+            from google.genai import types
+        except ImportError as exc:
+            raise ImportError(
+                "google-genai package required for image generation: "
+                "pip install google-genai"
+            ) from exc
 
-        api_key = ctx.api_key or os.environ.get("NB2_API_KEY", "")
-        base_url = os.environ.get(
-            "NB2_BASE_URL", "https://api.novita.ai/v3/async"
-        )
+        api_key = ctx.api_key or os.environ.get("GOOGLE_API_KEY", "") or os.environ.get("GEMINI_API_KEY", "")
+        if not api_key:
+            raise ValueError("GOOGLE_API_KEY or GEMINI_API_KEY required for image generation")
 
         prompt = ctx.get("prompt") or ctx.subject or ctx.intent
         tradition_hint = ctx.tradition.replace("_", " ")
-        full_prompt = f"{prompt}, {tradition_hint} style"
+        full_prompt = (
+            f"Generate a high-quality artwork: {prompt}\n"
+            f"Style: {tradition_hint} tradition\n"
+            f"Output image aspect ratio: 1:1, resolution: 1024x1024"
+        )
 
-        payload = {
-            "model_name": "sd_xl_base_1.0.safetensors",
-            "prompt": full_prompt,
-            "negative_prompt": "nsfw, watermark, low quality, blurry",
-            "width": 1024,
-            "height": 1024,
-            "steps": 25,
-            "seed": -1,
-        }
+        t0 = time.monotonic()
+        client = genai.Client(
+            api_key=api_key,
+            http_options={"timeout": 120_000},
+        )
 
-        headers = {
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-        }
+        response = client.models.generate_content(
+            model="gemini-2.0-flash-preview-image-generation",
+            contents=full_prompt,
+            config=types.GenerateContentConfig(
+                response_modalities=["TEXT", "IMAGE"],
+                temperature=1.0,
+            ),
+        )
 
-        async with httpx.AsyncClient(timeout=90) as client:
-            resp = await client.post(
-                f"{base_url}/txt2img",
-                json=payload,
-                headers=headers,
-            )
-            resp.raise_for_status()
-            data = resp.json()
+        # Extract image from response parts
+        img_bytes = None
+        for part in response.candidates[0].content.parts:
+            if hasattr(part, "inline_data") and part.inline_data is not None:
+                img_bytes = part.inline_data.data
+                break
 
-        # Extract image from response
-        images = data.get("images") or data.get("data", {}).get("imgs", [])
-        if not images:
-            raise RuntimeError("NB2 returned no images")
+        if not img_bytes:
+            raise RuntimeError("Gemini returned no image in response")
 
-        img_data = images[0]
-        if isinstance(img_data, dict):
-            img_b64 = img_data.get("image_file", "")
-            img_url = img_data.get("image_url", "")
-        else:
-            img_b64 = img_data
-            img_url = ""
-
+        latency_ms = int((time.monotonic() - t0) * 1000)
+        img_b64 = base64.b64encode(img_bytes).decode()
         candidate_id = hashlib.sha256(
-            f"{ctx.subject}:{ctx.round_num}:nb2".encode()
+            f"{ctx.subject}:{ctx.round_num}:gemini".encode()
         ).hexdigest()[:12]
+
+        logger.info("Gemini generated image (%dms, %d bytes)", latency_ms, len(img_bytes))
 
         return {
             "image_b64": img_b64,
             "image_mime": "image/png",
             "candidate_id": candidate_id,
-            "image_url": img_url or f"nb2://{candidate_id}.png",
+            "image_url": f"gemini://{candidate_id}.png",
         }
