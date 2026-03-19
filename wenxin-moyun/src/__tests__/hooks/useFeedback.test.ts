@@ -2,9 +2,10 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { renderHook, act, waitFor } from '@testing-library/react'
 import { useFeedback } from '../../hooks/useFeedback'
 
-// Mock API_PREFIX
+// Mock API config
 vi.mock('../../config/api', () => ({
   API_PREFIX: 'http://localhost:8001/api/v1',
+  getProtoAuthHeaders: () => ({ Authorization: 'Bearer test-token' }),
 }))
 
 describe('useFeedback', () => {
@@ -157,7 +158,7 @@ describe('useFeedback', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer demo-key',
+        Authorization: 'Bearer test-token',
       },
     })
 
