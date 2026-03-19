@@ -17,6 +17,10 @@ on:
         required: false
         default: 'production'
 
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   PROJECT_ID: wenxin-moyun-prod-new
   FIREBASE_PROJECT: wenxin-moyun-prod-new
