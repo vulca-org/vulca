@@ -27,91 +27,34 @@ const API_BASE = process.env.API_BASE_URL || 'http://localhost:8001';
 // ─── Helpers ────────────────────────────────────────────────
 
 async function waitForCanvasReady(page: Page) {
-  // Set tour-seen BEFORE loading canvas — go to a simple page first
-  await page.goto(`${BASE}${withRoute('/')}`);
-  await page.evaluate(() => {
-    try {
-      localStorage.setItem('vulca-has-visited', 'true');
-      localStorage.setItem('vulca_tour_seen', 'true');
-    } catch {}
-  });
-  // Now load canvas — tour should not appear
+  // Playwright sets navigator.webdriver=true, so tour auto-skips
   await page.goto(`${BASE}${withRoute('/canvas')}`);
   await page.waitForLoadState('domcontentloaded');
   const canvas = page.locator('h1:has-text("Canvas")').first();
   await canvas.waitFor({ state: 'visible', timeout: 20000 });
-  await page.waitForTimeout(1000);
-  await dismissOverlays(page);
-  // Wait for "Ready" status
   await expect(page.locator('text=Ready').first()).toBeVisible({ timeout: 10000 });
-  // Click Run tab
-  const runTab = page.getByRole('button', { name: 'Run' });
-  if (await runTab.isVisible({ timeout: 2000 }).catch(() => false)) {
-    await runTab.click({ force: true });
-    await page.waitForTimeout(500);
-  }
-}
-
-async function dismissOverlays(page: Page) {
-  await page.evaluate(() => {
-    document.querySelectorAll('.fixed').forEach(el => {
-      const z = window.getComputedStyle(el).zIndex;
-      if (z && parseInt(z) >= 10000) el.remove();
-    });
-  });
 }
 
 async function fillIntentAndCreate(page: Page, intent: string) {
-  await dismissOverlays(page);
-  // Click on the textarea first, then type (triggers React onChange properly)
   const input = page.getByTestId('intent-input').first();
-  await input.click({ force: true });
-  await input.clear();
-  await input.type(intent, { delay: 10 });
-  // Wait for tradition auto-detection + Create button to enable
-  await page.waitForTimeout(3000);
-  await dismissOverlays(page);
-  // Check textarea value was actually set
-  const textareaValue = await page.evaluate(() => {
-    const ta = document.querySelector('[data-testid="intent-input"]') as HTMLTextAreaElement;
-    return ta?.value || '';
-  });
-  if (!textareaValue) {
-    throw new Error('Intent textarea is empty — type() did not register');
-  }
-  // Check Create button state
-  const createBtn = page.getByRole('button', { name: 'Create' }).first();
-  const isDisabled = await createBtn.isDisabled();
-  if (isDisabled) {
-    // Debug: what's the form state?
-    const debugInfo = await page.evaluate(() => {
-      const ta = document.querySelector('[data-testid="intent-input"]') as HTMLTextAreaElement;
-      const btns = Array.from(document.querySelectorAll('button')).filter(b => b.textContent?.includes('Create'));
-      return {
-        textareaValue: ta?.value?.substring(0, 30),
-        createButtons: btns.map(b => ({ disabled: b.disabled, text: b.textContent?.trim() })),
-        overlayCount: document.querySelectorAll('.fixed').length,
-      };
-    });
-    throw new Error(`Create button is disabled! Debug: ${JSON.stringify(debugInfo)}`);
-  }
-  // Monitor network to verify POST /runs is sent
+  await input.click();
+  await input.fill(intent);
+  // Wait for tradition auto-detection
+  await page.waitForTimeout(2000);
+  // Click Create and verify POST is sent
   const runPromise = page.waitForResponse(
     resp => resp.url().includes('/prototype/runs') && resp.request().method() === 'POST',
     { timeout: 10000 }
-  ).catch(() => null);
-  await createBtn.click({ force: true, timeout: 5000 });
+  );
+  const createBtn = page.getByRole('button', { name: 'Create' }).first();
+  await expect(createBtn).toBeEnabled({ timeout: 5000 });
+  await createBtn.click();
   const runResponse = await runPromise;
-  if (!runResponse) {
-    throw new Error('POST /prototype/runs was never sent — Create click did not trigger pipeline');
-  }
-  const runData = await runResponse.json().catch(() => ({}));
   if (runResponse.status() === 429) {
-    throw new Error(`Daily limit reached: ${JSON.stringify(runData)}`);
+    const data = await runResponse.json().catch(() => ({}));
+    throw new Error(`Daily limit reached: ${JSON.stringify(data)}`);
   }
-  if (runResponse.status() >= 400) {
-    throw new Error(`Pipeline creation failed (${runResponse.status()}): ${JSON.stringify(runData)}`);
-  }
+  expect(runResponse.status()).toBeLessThan(400);
 }
 
 // ─── Tests ──────────────────────────────────────────────────
@@ -253,19 +196,12 @@ test.describe('User Journey Smoke', () => {
 
   test('5. Gallery tradition filter works', async () => {
     const filter = page.getByLabel('Filter by tradition');
-    await expect(filter).toBeVisible();
+    await expect(filter).toBeVisible({ timeout: 5000 });
 
-    // Get initial count text
-    const countText = page.locator('text=/\\d+ artwork/');
-    const initialText = await countText.textContent().catch(() => '');
-
-    // Select a specific tradition
-    await filter.selectOption({ index: 1 }); // First non-"All" option
+    // Select a specific tradition and verify page doesn't crash
+    await filter.selectOption({ index: 1 });
     await page.waitForTimeout(1000);
-
-    // Page should still render without errors
-    const body = page.locator('body');
-    await expect(body).toBeVisible();
+    await expect(page.locator('body')).toBeVisible();
   });
 
   // ─── Step 6: Evolution Banner ─────────────────────────────
@@ -301,12 +237,9 @@ test.describe('User Journey Smoke', () => {
     await waitForCanvasReady(page);
 
     // Switch to Generate mode
-    // Click Generate mode — use evaluate to bypass any overlay
-    await page.evaluate(() => {
-      const btns = Array.from(document.querySelectorAll('button'));
-      const gen = btns.find(b => b.textContent?.includes('Generate'));
-      if (gen) gen.click();
-    });
+    // Switch to Generate mode
+    const generateBtn = page.getByRole('button', { name: 'Generate' }).first();
+    await generateBtn.click();
     await page.waitForTimeout(500);
 
     // Create with real API
@@ -390,6 +323,6 @@ test.describe('User Journey Smoke', () => {
     await expect(overallTab).toBeVisible();
 
     // Should show model count
-    await expect(page.locator('text=/\\d+.*models/')).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('text=/Showing.*\\d+.*models/').first()).toBeVisible({ timeout: 5000 });
   });
 });

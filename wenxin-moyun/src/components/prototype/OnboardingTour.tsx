@@ -238,10 +238,10 @@ export default function OnboardingTour() {
             )}
           </motion.div>
 
-          {/* Clickable highlight area — prevents backdrop dismiss when clicking target */}
+          {/* Highlight area — pointer-events-none so users can interact with the target */}
           {targetRect && (
             <div
-              className="fixed z-[10001] rounded-xl"
+              className="fixed z-[10001] rounded-xl pointer-events-none"
               style={{
                 top: targetRect.top,
                 left: targetRect.left,

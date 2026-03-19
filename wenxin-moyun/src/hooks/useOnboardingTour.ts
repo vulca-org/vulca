@@ -48,13 +48,16 @@ export function useOnboardingTour() {
   const [isOpen, setIsOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
 
-  // Show tour on first visit
+  // Show tour on first visit (skip in CI/test/Playwright environments)
   useEffect(() => {
+    const isTest = navigator.webdriver || window.location.search.includes('skip_tour');
     const seen = localStorage.getItem(STORAGE_KEY);
-    if (!seen) {
-      // Small delay so the page finishes rendering before the overlay appears
+    if (!seen && !isTest) {
       const timer = setTimeout(() => setIsOpen(true), 800);
       return () => clearTimeout(timer);
+    }
+    if (isTest && !seen) {
+      localStorage.setItem(STORAGE_KEY, 'true');
     }
   }, []);
 
