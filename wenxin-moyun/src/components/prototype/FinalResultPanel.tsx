@@ -14,7 +14,7 @@ import type { DraftCandidate, ScoredCandidate, RoundData } from '../../hooks/use
 import { PROTOTYPE_DIMENSIONS, PROTOTYPE_DIM_LABELS } from '../../utils/vulca-dimensions';
 import type { PrototypeDimension } from '../../utils/vulca-dimensions';
 import { IOSButton } from '../../components/ios';
-import { API_BASE_URL, API_PREFIX } from '../../config/api';
+import { API_BASE_URL, API_PREFIX, getProtoAuthHeaders } from '../../config/api';
 
 interface Props {
   /** All candidates from the final round */
@@ -37,6 +37,8 @@ interface Props {
   onNewRun: () => void;
   /** Pipeline task ID for publishing */
   taskId?: string | null;
+  /** Resolved image URL from status API (static path) */
+  bestImageUrl?: string | null;
 }
 
 /** Resolve image source from candidate metadata (mirrors CandidateGallery logic). */
@@ -75,6 +77,7 @@ export default function FinalResultPanel({
   rounds,
   onNewRun,
   taskId,
+  bestImageUrl: bestImageUrlProp,
 }: Props) {
   const navigate = useNavigate();
   const [publishing, setPublishing] = useState(false);
@@ -85,7 +88,7 @@ export default function FinalResultPanel({
     try {
       const res = await fetch(`${API_PREFIX}/prototype/gallery/${taskId}/publish`, {
         method: 'POST',
-        headers: { Authorization: 'Bearer demo-key' },
+        headers: getProtoAuthHeaders(),
       });
       if (res.ok) {
         toast.success('Published to Gallery!');
@@ -112,7 +115,11 @@ export default function FinalResultPanel({
     ?? rounds.flatMap(r => r.candidates).find(c => c.candidate_id === bestScored.candidate_id)
     : null;
 
-  const bestImageUrl = bestDraft ? resolveImageUrl(bestDraft) : null;
+  // Prefer the resolved static URL from the status API, fall back to candidate URL
+  const resolvedFromProp = bestImageUrlProp
+    ? (bestImageUrlProp.startsWith('/') ? `${API_BASE_URL}${bestImageUrlProp}` : bestImageUrlProp)
+    : null;
+  const bestImageUrl = resolvedFromProp || (bestDraft ? resolveImageUrl(bestDraft) : null);
   const overallScore = bestScored?.weighted_total ?? 0;
 
   // Determine which round produced the winning candidate

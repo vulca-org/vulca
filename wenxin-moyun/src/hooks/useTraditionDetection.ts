@@ -6,10 +6,8 @@
  */
 
 import { useEffect, useRef } from 'react';
-import { API_PREFIX } from '@/config/api';
+import { API_PREFIX, getProtoAuthHeaders } from '@/config/api';
 import { useCanvasStore } from '@/store/canvasStore';
-
-const PROTO_AUTH = { Authorization: 'Bearer demo-key' } as const;
 
 /** Keyword → tradition mapping for auto-detection from subject text. */
 const TRADITION_KEYWORDS: Array<{ keywords: string[]; tradition: string }> = [
@@ -39,7 +37,7 @@ async function classifyTraditionRemote(
   try {
     const res = await fetch(
       `${API_PREFIX}/prototype/classify-tradition?subject=${encodeURIComponent(subject)}`,
-      { headers: PROTO_AUTH },
+      { headers: getProtoAuthHeaders() },
     );
     if (!res.ok) return null;
     return await res.json();

@@ -5,7 +5,7 @@
 import { useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { IOSCard, IOSCardContent, IOSButton } from '@/components/ios';
-import { API_PREFIX } from '@/config/api';
+import { API_PREFIX, getProtoAuthHeaders } from '@/config/api';
 import type { PipelineState } from '@/hooks/usePrototypePipeline';
 
 import CandidateGallery from './CandidateGallery';
@@ -39,7 +39,7 @@ export default function CanvasCenterPanel({
     try {
       const res = await fetch(`${API_PREFIX}/prototype/gallery/${pipeline.taskId}/publish`, {
         method: 'POST',
-        headers: { Authorization: 'Bearer demo-key' },
+        headers: getProtoAuthHeaders(),
       });
       if (res.ok) {
         toast.success('Published to Gallery!');
@@ -184,6 +184,7 @@ export default function CanvasCenterPanel({
           rounds={pipeline.rounds}
           onNewRun={onReset}
           taskId={pipeline.taskId}
+          bestImageUrl={pipeline.bestImageUrl}
         />
       )}
 

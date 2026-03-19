@@ -168,6 +168,9 @@ export interface PipelineState {
 
   // Evolution
   evolutionSuggestion: string | null;
+
+  // Best image URL (resolved from status API after completion)
+  bestImageUrl: string | null;
 }
 
 const INITIAL_STATE: PipelineState = {
@@ -197,6 +200,7 @@ const INITIAL_STATE: PipelineState = {
   totalLatencyMs: 0,
   error: null,
   evolutionSuggestion: null,
+  bestImageUrl: null,
 };
 
 export interface SubStageInfo {
@@ -443,6 +447,11 @@ export function usePrototypePipeline() {
   }, []);
 
   const startRun = useCallback(async (params: CreateRunParams) => {
+    // Close any existing SSE connection before starting a new run
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close();
+      eventSourceRef.current = null;
+    }
     // Reset state
     setState({ ...INITIAL_STATE, status: 'running' });
 
@@ -493,6 +502,18 @@ export function usePrototypePipeline() {
           if (event.event_type === 'pipeline_completed' || event.event_type === 'pipeline_failed') {
             es.close();
             eventSourceRef.current = null;
+
+            // Fetch final status to get real image URL (static path, not gemini://)
+            if (event.event_type === 'pipeline_completed') {
+              fetch(`${API_PREFIX}/prototype/runs/${taskId}`)
+                .then(r => r.ok ? r.json() : null)
+                .then(status => {
+                  if (status?.best_image_url) {
+                    setState(prev => ({ ...prev, bestImageUrl: status.best_image_url }));
+                  }
+                })
+                .catch(() => { /* non-critical */ });
+            }
           }
         } catch {
           // Skip malformed events

@@ -59,7 +59,7 @@ class PageErrorBoundary extends React.Component<PageErrorBoundaryProps, PageErro
                 </p>
 
                 {/* Show error details in development */}
-                {process.env.NODE_ENV === 'development' && (
+                {import.meta.env.DEV && (
                   <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-left">
                     <p className="text-xs text-red-700 dark:text-red-300 font-mono">
                       <strong>Error:</strong> {this.state.error.message}

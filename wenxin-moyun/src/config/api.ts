@@ -38,3 +38,9 @@ export const API_PREFIX = `${API_BASE_URL}/api/${API_VERSION}`;
  */
 export const getWebSocketBaseUrl = (): string =>
   API_BASE_URL.replace('https://', 'wss://').replace('http://', 'ws://');
+
+/** Auth headers for prototype API calls — reads real user token from localStorage. */
+export function getProtoAuthHeaders(): Record<string, string> {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}

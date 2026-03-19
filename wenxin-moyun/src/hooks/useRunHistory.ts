@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { API_PREFIX } from '../config/api';
+import { API_PREFIX, getProtoAuthHeaders } from '../config/api';
 
 export interface RunHistoryItem {
   id: string;
@@ -36,7 +36,7 @@ export function useRunHistory(limit = 10): UseRunHistoryReturn {
     try {
       const res = await fetch(
         `${API_PREFIX}/prototype/gallery?limit=${limit}&sort_by=newest`,
-        { headers: { Authorization: 'Bearer demo-key' } },
+        { headers: getProtoAuthHeaders() },
       );
       if (!res.ok) throw new Error(`Gallery API ${res.status}`);
       const data = await res.json();

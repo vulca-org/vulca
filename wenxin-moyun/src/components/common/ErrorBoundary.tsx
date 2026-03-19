@@ -88,7 +88,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
                 </p>
 
                 {/* Error details in development */}
-                {process.env.NODE_ENV === 'development' && (
+                {import.meta.env.DEV && (
                   <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-left">
                     <h3 className="text-sm font-semibold text-red-800 dark:text-red-200 mb-2">
                       Error Details (Development):

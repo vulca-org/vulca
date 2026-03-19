@@ -51,14 +51,14 @@ export default function Layout() {
       <Vulca3DBackground />
 
       {/* Performance indicator (development only) */}
-      {process.env.NODE_ENV === 'development' && (
+      {import.meta.env.DEV && (
         <div className="fixed bottom-4 left-4 z-50 px-3 py-1 bg-black/50 text-white text-xs rounded-full backdrop-blur-md">
           Performance: {performanceLevel}
         </div>
       )}
 
       {/* Cache Statistics (development only) */}
-      {process.env.NODE_ENV === 'development' && <CacheStats />}
+      {import.meta.env.DEV && <CacheStats />}
 
       {/* Content layer */}
       <div className="relative z-10 flex flex-col min-h-screen">

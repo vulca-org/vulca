@@ -31,8 +31,7 @@ class CreateRunRequest(BaseModel):
     enable_agent_critic: bool = Field(default=True, description="Use LLM-based Critic (CriticLLM) instead of rule-only scoring")
     enable_prompt_enhancer: bool = Field(default=True, description="Inject evolved context into Draft prompts")
     enable_llm_queen: bool = Field(default=False, description="Use LLM+RAG Queen for ambiguous decisions")
-    use_graph: bool = Field(default=True, description="(Deprecated) GraphOrchestrator is now default. This parameter is accepted but ignored.")
-    template: str = Field(default="default", description="Graph template: default | fast_draft | critique_only | interactive_full | batch_eval")
+    template: str = Field(default="default", description="Pipeline template: default | fast | critique_only")
     enable_parallel_critic: bool = Field(default=False, description="Use parallel L1-L5 scoring (ThreadPoolExecutor) for faster Critic")
     idempotency_key: str | None = Field(default=None, description="Optional idempotency key")
 
@@ -51,12 +50,16 @@ class RunStatusResponse(BaseModel):
     current_round: int = 0
     final_decision: str | None = None
     best_candidate_id: str | None = None
+    best_image_url: str | None = None
     total_rounds: int = 0
     total_latency_ms: int = 0
     total_cost_usd: float = 0.0
+    final_scores: dict = Field(default_factory=dict)
+    weighted_total: float = 0.0
+    rounds: list[dict] = Field(default_factory=list)
     success: bool | None = None
     error: str | None = None
-    stages: list[dict] = []
+    stages: list[dict] = Field(default_factory=list)
 
 
 class SubmitActionRequest(BaseModel):
@@ -78,80 +81,3 @@ class SubmitActionResponse(BaseModel):
     message: str = ""
 
 
-# ── Agent + Topology schemas ─────────────────────────────────────────
-
-
-class AgentInfo(BaseModel):
-    """Agent metadata returned by GET /agents."""
-
-    name: str
-    display_name: str = ""
-    description: str = ""
-    supports_hitl: bool = False
-    estimated_latency_ms: int = 0
-    input_keys: list[str] = []
-    output_keys: list[str] = []
-    tags: list[str] = []
-
-
-class ValidateTopologyRequest(BaseModel):
-    """Request body for POST /topologies/validate."""
-
-    nodes: list[str] = Field(..., min_length=1)
-    edges: list[tuple[str, str]] = Field(..., min_length=1)
-
-
-class ValidationResponse(BaseModel):
-    """Response for POST /topologies/validate."""
-
-    valid: bool
-    errors: list[str] = []
-    warnings: list[str] = []
-
-
-# ── Graph execution schemas (Phase 5D) ─────────────────────────────
-
-class ExecuteGraphRequest(BaseModel):
-    """Request for POST /graph/execute (headless execution)."""
-    subject: str = Field(..., min_length=1, max_length=500)
-    tradition: str = Field(default="default")
-    template: str = Field(default="default")
-    max_rounds: int = Field(default=3, ge=1, le=5)
-    enable_agent_critic: bool = Field(default=True)
-    custom_nodes: list[str] | None = None
-    custom_edges: list[tuple[str, str]] | None = None
-    node_params: dict[str, dict] | None = None
-    node_runtime: dict[str, dict] | None = Field(
-        default=None,
-        description="Per-node runtime state: {node_name: {muted: bool, bypassed: bool, expanded: bool}}",
-    )
-
-
-class ExecuteGraphResponse(BaseModel):
-    """Response for POST /graph/execute."""
-    task_id: str
-    success: bool
-    error: str | None = None
-    events: list[dict] = []
-
-
-class GraphValidateRequest(BaseModel):
-    """Request for POST /graph/validate."""
-    nodes: list[str] = Field(..., min_length=1)
-    edges: list[tuple[str, str]] = Field(..., min_length=1)
-    check_ports: bool = Field(default=True, description="Also validate port contract compatibility")
-
-
-class GraphValidateResponse(BaseModel):
-    """Response for POST /graph/validate."""
-    valid: bool
-    errors: list[str] = []
-    warnings: list[str] = []
-    port_contracts: dict[str, dict] | None = None
-
-
-class NodeRuntimeToggleResponse(BaseModel):
-    """Response for POST /graph/nodes/{name}/mute|bypass|expand."""
-    node_name: str
-    state: str  # "muted" | "bypassed" | "expanded"
-    value: bool

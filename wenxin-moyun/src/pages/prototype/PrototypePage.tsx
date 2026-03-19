@@ -355,7 +355,7 @@ export default function PrototypePage() {
         scoredCandidates={state.scoredCandidates}
         bestCandidateId={state.bestCandidateId}
         onAction={submitAction}
-        onClose={() => submitAction('approve')}
+        onClose={() => { /* HITL requires explicit action — do not auto-approve on close */ }}
       />
 
       {criticDetailCandidate && (

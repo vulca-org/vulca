@@ -14,7 +14,7 @@
 import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { IOSCard, IOSCardHeader, IOSCardContent, IOSButton } from '../ios';
-import { API_PREFIX } from '../../config/api';
+import { API_PREFIX, getProtoAuthHeaders } from '../../config/api';
 
 interface FeedbackCollectorProps {
   sessionId: string;
@@ -56,7 +56,7 @@ export default function FeedbackCollector({ sessionId, evaluationId, candidateId
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: 'Bearer demo-key',
+          ...getProtoAuthHeaders(),
         },
         body: JSON.stringify({
           evaluation_id: evaluationId,

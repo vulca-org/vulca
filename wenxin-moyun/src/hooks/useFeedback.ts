@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { API_PREFIX } from '../config/api';
+import { API_PREFIX, getProtoAuthHeaders } from '../config/api';
 
 interface UseFeedbackReturn {
   submit: (
@@ -34,7 +34,7 @@ export function useFeedback(): UseFeedbackReturn {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: 'Bearer demo-key',
+            ...getProtoAuthHeaders(),
           },
           body: JSON.stringify({
             evaluation_id: evaluationId,
