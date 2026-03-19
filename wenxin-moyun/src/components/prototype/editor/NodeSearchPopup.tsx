@@ -8,8 +8,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { ALL_AGENT_IDS, AGENT_META, type AgentNodeId } from './types';
 import { INPUT_NODE_META } from './inputNodes';
-import { PROCESSING_NODE_META } from './processingNodes';
-import { FLOW_NODE_META } from './flowNodes';
 import { OUTPUT_NODE_META } from './outputNodes';
 
 interface SearchItem {
@@ -80,38 +78,38 @@ export default function NodeSearchPopup({ visible, onClose, onAddNode, position 
     }
   }, [visible]);
 
-  if (!visible) return null;
+  // All hooks must be called before any early return (React rules)
+  const { filtered, categories, flatIndexMap } = useMemo(() => {
+    const f = ALL_ITEMS.filter(item => {
+      if (!query.trim()) return true;
+      const q = query.toLowerCase();
+      return (
+        item.id.toLowerCase().includes(q) ||
+        item.label.toLowerCase().includes(q) ||
+        item.description.toLowerCase().includes(q) ||
+        item.category.toLowerCase().includes(q)
+      );
+    });
 
-  const filtered = ALL_ITEMS.filter(item => {
-    if (!query.trim()) return true;
-    const q = query.toLowerCase();
-    return (
-      item.id.toLowerCase().includes(q) ||
-      item.label.toLowerCase().includes(q) ||
-      item.description.toLowerCase().includes(q) ||
-      item.category.toLowerCase().includes(q)
-    );
-  });
+    const cats = new Map<string, SearchItem[]>();
+    for (const item of f) {
+      const cat = item.category;
+      if (!cats.has(cat)) cats.set(cat, []);
+      cats.get(cat)!.push(item);
+    }
 
-  // Group by category
-  const categories = new Map<string, SearchItem[]>();
-  for (const item of filtered) {
-    const cat = item.category;
-    if (!categories.has(cat)) categories.set(cat, []);
-    categories.get(cat)!.push(item);
-  }
-
-  // Build a flat-index lookup for keyboard navigation (StrictMode-safe)
-  const flatIndexMap = useMemo(() => {
-    const map = new Map<string, number>();
+    const idxMap = new Map<string, number>();
     let idx = 0;
-    for (const [, items] of categories.entries()) {
+    for (const [, items] of cats.entries()) {
       for (const item of items) {
-        map.set(item.id, idx++);
+        idxMap.set(item.id, idx++);
       }
     }
-    return map;
-  }, [categories]);
+
+    return { filtered: f, categories: cats, flatIndexMap: idxMap };
+  }, [query]);
+
+  if (!visible) return null;
 
   const handleSelect = (id: string) => {
     onAddNode(id as AgentNodeId);
