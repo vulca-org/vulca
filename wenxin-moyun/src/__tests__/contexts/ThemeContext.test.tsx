@@ -287,8 +287,8 @@ describe('ThemeContext', () => {
     )
 
     const styleEl = document.getElementById('theme-variables')
-    // Light theme bg.base is #FAF7F2
-    expect(styleEl?.textContent).toContain('#FAF7F2')
+    // Light theme bg.base is #fcf9f4
+    expect(styleEl?.textContent).toContain('#fcf9f4')
   })
 
   it('should update CSS variables when theme changes', () => {
@@ -301,7 +301,7 @@ describe('ThemeContext', () => {
     )
 
     const styleEl = document.getElementById('theme-variables')
-    expect(styleEl?.textContent).toContain('#FAF7F2') // light bg.base
+    expect(styleEl?.textContent).toContain('#fcf9f4') // light bg.base
 
     act(() => {
       screen.getByTestId('toggle-btn').click()
@@ -310,7 +310,7 @@ describe('ThemeContext', () => {
     // Dark theme bg.base is #0F0D0B
     expect(styleEl?.textContent).toContain('#0F0D0B')
     // Light bg color should no longer be present
-    expect(styleEl?.textContent).not.toContain('#FAF7F2')
+    expect(styleEl?.textContent).not.toContain('#fcf9f4')
   })
 
   // --- Transition Animation ---
@@ -449,8 +449,8 @@ describe('generateCSSVariables', () => {
   it('should handle nested objects', () => {
     const result = generateCSSVariables(themes.light)
     expect(result).toContain('--bg-surface: #FFFFFF')
-    expect(result).toContain('--semantic-primary: #334155')
-    expect(result).toContain('--border-default: #C9C2B8')
+    expect(result).toContain('--semantic-primary: #1275E2')
+    expect(result).toContain('--border-default: #e4e1dc')
   })
 
   it('should produce different variables for dark vs light themes', () => {
@@ -458,6 +458,6 @@ describe('generateCSSVariables', () => {
     const lightVars = generateCSSVariables(themes.light)
     // Both should have the same variable names but different values
     expect(darkVars).toContain('--bg-base: #0F0D0B')
-    expect(lightVars).toContain('--bg-base: #FAF7F2')
+    expect(lightVars).toContain('--bg-base: #fcf9f4')
   })
 })
