@@ -28,6 +28,19 @@ from vulca.evaluate import aevaluate, evaluate
 from vulca.session import asession, session
 from vulca.types import CreateResult, EvalResult, SkillResult
 
+
+def traditions() -> list[str]:
+    """List all available cultural traditions."""
+    from vulca.cultural import TRADITIONS
+    return list(TRADITIONS)
+
+
+def get_weights(tradition: str) -> dict[str, float]:
+    """Get L1-L5 weights for a tradition (evolved if available)."""
+    from vulca.cultural import get_weights as _get_weights
+    return _get_weights(tradition)
+
+
 __all__ = [
     "__version__",
     "evaluate",
@@ -36,6 +49,8 @@ __all__ = [
     "acreate",
     "session",
     "asession",
+    "traditions",
+    "get_weights",
     "EvalResult",
     "CreateResult",
     "SkillResult",
