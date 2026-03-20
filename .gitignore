@@ -210,7 +210,7 @@ vulca-pkg/
 render.yaml
 AGENTS.md
 .gcloudignore
-.claude/hooks/
+# .claude/hooks/ — now tracked (scripts needed by settings.json hooks config)
 .claude/skills/prospect-manager/
 .claude/skills/northeast-review/
 .claude/phase-current.json
