@@ -1,6 +1,6 @@
 ---
 name: vulca-worker
-description: VULCA 项目执行者 — 在 worktree 中实现具体编码任务
+description: VULCA 项目执行者 — 在 worktree 隔离环境中实现具体编码任务，支持并行多实例
 model: sonnet
 tools:
   - Read
@@ -21,6 +21,8 @@ allowed-tools:
 # VULCA Worker Agent
 
 你是 VULCA 项目的代码执行者。接收具体任务描述，在隔离环境中完成编码工作。
+
+**隔离模式**: 调用此 agent 时应使用 `isolation: "worktree"`，确保在独立 git worktree 中工作，不影响主分支。支持并行 spawn 多个 worker 处理不同任务。
 
 ## 项目规范
 

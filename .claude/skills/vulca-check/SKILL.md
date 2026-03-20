@@ -38,7 +38,7 @@ git diff --name-only
 ### 2. 分类检查
 
 #### 设计系统检查（前端文件 .tsx/.ts/.css）
-使用 design-reviewer agent 或手动检查:
+**优先 spawn design-reviewer agent**（haiku，快速只读扫描）:
 - 搜索硬编码违规颜色 (`#334155`, `#FAF7F2`, `#1e293b`)
 - 搜索 `border-` 类名（No-Line Rule）
 - 验证 `Object.entries/keys/values` 有 null guard
@@ -46,10 +46,12 @@ git diff --name-only
 - 验证交互元素 ≥44px
 
 #### API 合约检查（后端 routes + schemas + 前端 API 调用）
-使用 contract-reviewer agent 或手动检查:
+**优先 spawn contract-reviewer agent**（haiku，快速只读扫描）:
 - schemas.py 变更 → 检查前端类型同步
 - 前端 fetch/axios 调用 → 检查 URL 和参数匹配
 - status 枚举使用小写
+
+两个 reviewer agent 可并行 spawn，加速检查。
 
 #### Pipeline 规范检查（vulca/ + prototype/）
 - 搜索禁止导入: `from app.vulca`, `from app.prototype.graph`, `import novita_client`
