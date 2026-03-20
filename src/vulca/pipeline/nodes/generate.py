@@ -77,25 +77,57 @@ class GenerateNode(PipelineNode):
     # Mock provider
     # ------------------------------------------------------------------
 
+    # Tradition → background color for mock SVG placeholders
+    _TRADITION_COLORS: dict[str, str] = {
+        "chinese_xieyi": "#3a3a3a",
+        "chinese_gongbi": "#c43f2f",
+        "japanese_traditional": "#264653",
+        "japanese_wabi_sabi": "#264653",
+        "islamic_geometric": "#2a9d8f",
+        "watercolor": "#89c2d9",
+        "western_academic": "#8a5a44",
+        "western_classical": "#8a5a44",
+        "african_traditional": "#bc6c25",
+        "african_ubuntu": "#bc6c25",
+        "south_asian": "#e9c46a",
+        "persian_miniature": "#2a9d8f",
+        "korean_minhwa": "#5F8A50",
+    }
+
     @staticmethod
     def _mock_generate(ctx: NodeContext) -> dict[str, Any]:
-        """Return a deterministic 1x1 white PNG."""
-        png_bytes = (
-            b"\x89PNG\r\n\x1a\n"
-            b"\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01"
-            b"\x08\x02\x00\x00\x00\x90wS\xde"
-            b"\x00\x00\x00\x0cIDATx\x9cc\xf8\x0f\x00\x00\x01\x01\x00\x05"
-            b"\x18\xd8N\x00\x00\x00\x00IEND\xaeB`\x82"
-        )
-        img_b64 = base64.b64encode(png_bytes).decode()
+        """Return a deterministic SVG placeholder with tradition/subject info."""
         candidate_id = hashlib.sha256(
             f"{ctx.subject}:{ctx.round_num}".encode()
         ).hexdigest()[:12]
+        tradition = ctx.tradition or "default"
+        bg = GenerateNode._TRADITION_COLORS.get(tradition, "#5F8A50")
+        tradition_display = tradition.replace("_", " ").title()
+        subject_display = (ctx.subject or "Untitled")[:50]
+        # Escape XML special characters
+        for old, new in [("&", "&amp;"), ("<", "&lt;"), (">", "&gt;"), ('"', "&quot;")]:
+            subject_display = subject_display.replace(old, new)
+            tradition_display = tradition_display.replace(old, new)
+
+        svg = (
+            f'<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512">'
+            f'<rect width="512" height="512" fill="{bg}" rx="24"/>'
+            f'<text x="256" y="200" text-anchor="middle" font-size="28" '
+            f'fill="white" font-family="sans-serif">{tradition_display}</text>'
+            f'<text x="256" y="256" text-anchor="middle" font-size="20" '
+            f'fill="rgba(255,255,255,0.7)" font-family="sans-serif">Round {ctx.round_num}</text>'
+            f'<text x="256" y="310" text-anchor="middle" font-size="16" '
+            f'fill="rgba(255,255,255,0.5)" font-family="sans-serif">{subject_display}</text>'
+            f'<text x="256" y="420" text-anchor="middle" font-size="14" '
+            f'fill="rgba(255,255,255,0.3)" font-family="sans-serif">VULCA Preview</text>'
+            f'</svg>'
+        )
+        img_b64 = base64.b64encode(svg.encode()).decode()
         return {
             "image_b64": img_b64,
-            "image_mime": "image/png",
+            "image_mime": "image/svg+xml",
             "candidate_id": candidate_id,
-            "image_url": f"mock://{candidate_id}.png",
+            "image_url": f"mock://{candidate_id}.svg",
         }
 
     # ------------------------------------------------------------------
@@ -231,8 +263,12 @@ class GenerateNode(PipelineNode):
             if improvement:
                 prompt_parts.append(f"\n{improvement}")
 
-        # Reference image guidance
+        # Reference image guidance (check both top-level and node_params)
         ref_b64 = ctx.get("reference_image_b64")
+        if not ref_b64:
+            node_params = ctx.get("node_params") or {}
+            gen_params = node_params.get("generate") or {}
+            ref_b64 = gen_params.get("reference_image_b64")
         if ref_b64:
             prompt_parts.append(
                 "\nUse the provided reference image as style/composition guidance. "

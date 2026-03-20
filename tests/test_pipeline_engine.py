@@ -78,7 +78,7 @@ class TestGenerateNode:
         assert "image_b64" in result
         assert "image_mime" in result
         assert "candidate_id" in result
-        assert result["image_mime"] == "image/png"
+        assert result["image_mime"] in ("image/png", "image/svg+xml")
         assert len(result["image_b64"]) > 0
         assert len(result["candidate_id"]) == 12
 
