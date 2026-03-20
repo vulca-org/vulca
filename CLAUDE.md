@@ -20,10 +20,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Live Project Status (auto-updated)
 
 <!-- AUTO-STATUS-START -->
-- **Branch**: master | Last commit: pending first update
-- **Phase**: No active phase
+- **Branch**: master | Last commit: b44c45d feat: Dynamic config system — SessionStart hook, DCI skills, instinct logging
+- **Active Phase**: Phase C2 — 设计 token 统一迁移
+- **Evolution**: 9 traditions evolved (last: 2026-03-20)
 - **Config**: 7 agents / 8 skills / 5 rules
-- **Auto-updated**: awaiting first Stop hook trigger
+- **Auto-updated**: 2026-03-20 16:06
 <!-- AUTO-STATUS-END -->
 
 ## Project Overview
