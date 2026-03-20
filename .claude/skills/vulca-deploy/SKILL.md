@@ -11,6 +11,9 @@ allowed-tools:
 
 # /vulca-deploy — 安全部署
 
+## 实时上下文
+!`cd /home/yhryzy/projects/website && echo "Branch: $(git branch --show-current)" && echo "Uncommitted: $(git status --porcelain 2>/dev/null | wc -l) files" && echo "Last commit: $(git log --oneline -1)" && echo "bcrypt: $(grep 'bcrypt==' wenxin-backend/constraints.txt 2>/dev/null || echo 'not found')"`
+
 VULCA 项目的安全部署流程。
 
 ## 用法

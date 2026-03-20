@@ -12,6 +12,9 @@ allowed-tools:
 
 # /vulca-check — 预提交验证
 
+## 实时上下文
+!`cd /home/yhryzy/projects/website && echo "Branch: $(git branch --show-current)" && echo "Changed files:" && git diff --name-only HEAD 2>/dev/null | head -15 && echo "Staged:" && git diff --name-only --cached 2>/dev/null | head -10`
+
 对当前变更运行 VULCA 项目规范检查。
 
 ## 用法

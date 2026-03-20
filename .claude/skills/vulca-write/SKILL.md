@@ -15,6 +15,9 @@ allowed-tools:
 
 # /vulca-write — 内容生成
 
+## 实时上下文
+!`cd /home/yhryzy/projects/website && echo "Recent commits (content source):" && git log --oneline -10 2>/dev/null && echo "---Existing content:" && ls -t docs/reports/*.md 2>/dev/null | head -5 || echo "  None"`
+
 将技术成果转化为多渠道内容。
 
 ## 用法

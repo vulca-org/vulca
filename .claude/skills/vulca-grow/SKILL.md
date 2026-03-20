@@ -14,6 +14,9 @@ allowed-tools:
 
 # /vulca-grow — 增长与产品分析
 
+## 实时上下文
+!`cd /home/yhryzy/projects/website && echo "Recent growth reports:" && ls -t docs/reports/growth-*.md 2>/dev/null | head -3 || echo "  None" && echo "Recent product reports:" && ls -t docs/reports/product-*.md 2>/dev/null | head -3 || echo "  None" && echo "Last 3 commits:" && git log --oneline -3 2>/dev/null`
+
 多维度分析 VULCA 的产品和增长状况。
 
 ## 用法

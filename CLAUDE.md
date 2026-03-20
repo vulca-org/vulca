@@ -17,6 +17,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | **Fire Imagery** | WiNLP 2025 | Cultural symbol reasoning |
 | **Art Critique** | arXiv:2601.07984 | Cross-cultural critique evaluation |
 
+## Live Project Status (auto-updated)
+
+<!-- AUTO-STATUS-START -->
+- **Branch**: master | Last commit: pending first update
+- **Phase**: No active phase
+- **Config**: 7 agents / 8 skills / 5 rules
+- **Auto-updated**: awaiting first Stop hook trigger
+<!-- AUTO-STATUS-END -->
+
 ## Project Overview
 
 VULCA — AI-native creation organism. Create, critique, and evolve cultural art through multi-agent AI pipelines. The core product is **Canvas** (unified creation + evaluation), not the leaderboard. Features React 19 frontend with **Digital Curator** design system (v2.0, 2026-03-19), FastAPI backend with async pipeline (Scout→Draft→Critic→Queen), and production GCP deployment.

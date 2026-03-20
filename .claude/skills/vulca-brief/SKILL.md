@@ -13,6 +13,9 @@ allowed-tools:
 
 # /vulca-brief — 会话简报
 
+## 实时上下文
+!`cd /home/yhryzy/projects/website && echo "Branch: $(git branch --show-current) | Uncommitted: $(git status --porcelain 2>/dev/null | wc -l)" && git log --oneline -5 2>/dev/null && echo "---Phases:" && ls .claude/phases/phase-*.json 2>/dev/null | while read f; do python3 -c "import json; d=json.load(open('$f')); print(f\"  {d.get('name','?')}: {d.get('description','')}\")" 2>/dev/null; done || echo "  None" && echo "---Reports:" && ls -t docs/reports/*.md 2>/dev/null | head -3 || echo "  None"`
+
 汇总项目全貌，给出多维度状态和推荐行动。
 
 ## 用法

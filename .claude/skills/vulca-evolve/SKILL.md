@@ -11,6 +11,9 @@ allowed-tools:
 
 # /vulca-evolve — 进化系统交互
 
+## 实时上下文
+!`cd /home/yhryzy/projects/website && EVOLVED="wenxin-backend/app/prototype/data/evolved_context.json" && if [ -f "$EVOLVED" ]; then python3 -c "import json,os; from datetime import datetime; f='$EVOLVED'; mtime=datetime.fromtimestamp(os.path.getmtime(f)).strftime('%Y-%m-%d %H:%M'); d=json.load(open(f)); ts=[k for k in d if isinstance(d[k],dict)]; print(f'Evolved: {len(ts)} traditions | Last: {mtime}')"; else echo "No evolution data"; fi && echo "YAML traditions:" && ls vulca/src/vulca/cultural/*.yaml 2>/dev/null | wc -l`
+
 查看和管理 VULCA 自进化系统状态。
 
 ## 用法

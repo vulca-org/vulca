@@ -12,6 +12,9 @@ allowed-tools:
 
 # /vulca-test — 多层测试编排
 
+## 实时上下文
+!`cd /home/yhryzy/projects/website && echo "Changed:" && git diff --name-only HEAD 2>/dev/null | head -10 && echo "---" && echo "SDK tests: $(ls vulca/tests/test_*.py 2>/dev/null | wc -l) files" && echo "Backend tests: $(ls wenxin-backend/tests/test_*.py 2>/dev/null | wc -l) files"`
+
 按层级运行 VULCA 项目测试。
 
 ## 用法
