@@ -5,9 +5,9 @@
 
 export const iosColors = {
   // Digital Curator Color Palette
-  blue: '#1275E2',       // Tech Trust Blue — primary
+  blue: '#005ab4',       // Tech Trust Blue — primary (design HTML)
   green: '#5F8A50',      // Sage Green — success
-  indigo: '#0C4F9C',     // Deep Blue — primary dark
+  indigo: '#003F80',     // Deep Blue — primary dark
   orange: '#B8923D',     // Amber Gold — warning
   pink: '#9B6B56',       // Terracotta
   purple: '#C87F4A',     // Warm Bronze — secondary / cultural accent
@@ -32,9 +32,9 @@ export const iosColors = {
   // Semantic Colors
   background: {
     primary: '#ffffff',          // surface-container-lowest
-    secondary: '#f6f3ee',        // surface-container-low
+    secondary: '#f2f3fd',        // surface-container-low
     tertiary: '#ffffff',
-    grouped: '#fcf9f4',          // surface (bg-base)
+    grouped: '#f9f9ff',          // surface (bg-base)
   },
   
   backgroundDark: {

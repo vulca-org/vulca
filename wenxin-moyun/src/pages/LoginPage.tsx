@@ -75,7 +75,7 @@ const LoginPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-surface flex flex-col">
       {/* Nav */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl px-6 py-3 flex items-center justify-between">
+      <header className="sticky top-0 z-50 bg-surface-container-lowest/80 backdrop-blur-xl px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-8">
           <Link to="/" className="text-xl font-bold tracking-tighter text-on-surface">VULCA AI</Link>
           <nav className="hidden sm:flex items-center gap-6">
@@ -84,9 +84,7 @@ const LoginPage: React.FC = () => {
             <a href="https://github.com/vulca-org/vulca" target="_blank" rel="noopener noreferrer" className="text-sm text-on-surface-variant hover:text-on-surface transition-colors">GitHub</a>
           </nav>
         </div>
-        <Link to="/login">
-          <button className="text-sm font-medium text-primary-500 hover:text-primary-600 transition-colors">Sign In</button>
-        </Link>
+        <span className="text-sm font-semibold text-primary-500">Sign In</span>
       </header>
 
       {/* Main Content */}
@@ -98,7 +96,7 @@ const LoginPage: React.FC = () => {
           className="w-full max-w-[460px]"
         >
           {/* Card */}
-          <div className="bg-white rounded-2xl shadow-ambient-xl p-8 sm:p-10">
+          <div className="bg-surface-container-lowest rounded-2xl shadow-ambient-xl p-8 sm:p-10">
             {/* Icon + Title */}
             <div className="text-center mb-8">
               <div className="w-16 h-16 bg-primary-500 rounded-2xl mx-auto mb-5 flex items-center justify-center shadow-lg shadow-primary-500/20">
@@ -118,9 +116,10 @@ const LoginPage: React.FC = () => {
             </button>
 
             {/* Divider */}
-            <div className="relative mb-6">
-              <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-surface-container-high" /></div>
-              <div className="relative flex justify-center text-xs"><span className="px-3 bg-white text-on-surface-variant uppercase tracking-wider">or continue with email</span></div>
+            <div className="relative flex justify-center items-center gap-3 text-xs text-on-surface-variant mb-6">
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent to-surface-container-high" />
+              <span className="uppercase tracking-wider">or continue with email</span>
+              <div className="flex-1 h-px bg-gradient-to-l from-transparent to-surface-container-high" />
             </div>
 
             {/* Error */}
@@ -142,7 +141,7 @@ const LoginPage: React.FC = () => {
                   type="text"
                   value={formData.username}
                   onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
-                  className="w-full px-5 py-3.5 bg-surface-container-high rounded-xl text-on-surface text-sm placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:bg-white transition-all"
+                  className="w-full px-5 py-3.5 bg-surface-container-high rounded-xl text-on-surface text-sm placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:bg-surface-container-lowest transition-all"
                   placeholder="name@company.com"
                   required
                   aria-invalid={error ? 'true' : undefined}
@@ -165,7 +164,7 @@ const LoginPage: React.FC = () => {
                   type="password"
                   value={formData.password}
                   onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                  className="w-full px-5 py-3.5 bg-surface-container-high rounded-xl text-on-surface text-sm placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:bg-white transition-all"
+                  className="w-full px-5 py-3.5 bg-surface-container-high rounded-xl text-on-surface text-sm placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:bg-surface-container-lowest transition-all"
                   placeholder="••••••••"
                   required
                   aria-invalid={error ? 'true' : undefined}

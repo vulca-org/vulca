@@ -38,10 +38,10 @@ function CopyableTerminal({ command }: { command: string }) {
 }
 
 const fadeUp = {
-  initial: { opacity: 0, y: 24 },
+  initial: { opacity: 0.01, y: 10 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, amount: 0.3 },
-  transition: { duration: 0.7 },
+  viewport: { once: true, amount: 0.05 },
+  transition: { duration: 0.6 },
 };
 
 export default function HomePage() {
@@ -49,12 +49,26 @@ export default function HomePage() {
 
   return (
     <div className="-mx-4 sm:-mx-6">
-      {/* ===== Hero ===== */}
-      <section className="min-h-[75vh] flex flex-col items-center justify-center px-4 sm:px-6 text-center relative overflow-hidden">
+      {/* ===== Hero with Background Image ===== */}
+      <section className="min-h-[85vh] flex flex-col items-center justify-center px-4 sm:px-6 text-center relative overflow-hidden">
+        {/* Hero background — from design HTML line 176-181 */}
+        <div className="absolute inset-0 -z-10 overflow-hidden">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[120%] opacity-40">
+            <div className="absolute inset-0 bg-gradient-to-b from-primary-500/10 to-transparent" />
+            <img
+              src="/images/hero-bg.jpg"
+              alt=""
+              className="w-full h-full object-cover"
+              loading="eager"
+              style={{ maskImage: 'linear-gradient(to bottom, black 20%, transparent 80%)', WebkitMaskImage: 'linear-gradient(to bottom, black 20%, transparent 80%)' }}
+            />
+          </div>
+        </div>
+
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
+          transition={{ duration: 0.8 }}
           className="max-w-3xl mx-auto relative z-10"
         >
           <h1 className="font-display text-6xl sm:text-7xl lg:text-8xl font-bold tracking-tight text-on-surface mb-6 leading-[0.95]">
@@ -83,7 +97,21 @@ export default function HomePage() {
             </a>
           </div>
 
-          <CopyableTerminal command="pip install vulca" />
+          {/* Floating glass terminal preview */}
+          <div className="bg-gray-900/80 backdrop-blur-2xl rounded-2xl p-5 text-left shadow-2xl max-w-lg mx-auto border border-white/10">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-3 h-3 rounded-full bg-red-500/80" />
+              <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
+              <div className="w-3 h-3 rounded-full bg-green-500/80" />
+              <span className="ml-2 text-[10px] text-gray-500 font-mono">vulca-pipeline</span>
+            </div>
+            <code className="font-mono text-[11px] text-gray-300 leading-relaxed block">
+              <span className="text-blue-400">[SCOUT]</span> Analyzing &quot;水墨山水&quot; — tradition: chinese_xieyi<br/>
+              <span className="text-blue-400">[DRAFT]</span> Generating 4 candidates via Gemini 3.1...<br/>
+              <span className="text-green-400">[CRITIC]</span> L1: 0.92 | L2: 0.88 | L3: 0.95 | L4: 0.90 | L5: 0.87<br/>
+              <span className="text-yellow-400">[QUEEN]</span> Decision: accept (weighted: 0.912)
+            </code>
+          </div>
         </motion.div>
       </section>
 
@@ -97,19 +125,23 @@ export default function HomePage() {
             A multi-layered intelligence architecture designed to refine and validate every cultural nuance with surgical precision.
           </p>
 
-          <div className="flex items-center justify-center gap-4 sm:gap-8 mb-16">
-            {[
-              { icon: 'search', label: 'Scout', active: false },
-              { icon: 'edit_note', label: 'Draft', active: false },
-              { icon: 'spellcheck', label: 'Critic', active: false },
-              { icon: 'auto_awesome', label: 'Queen', active: true },
-            ].map((agent, i) => (
-              <div key={agent.label} className="flex items-center gap-4 sm:gap-8">
-                <div className="flex flex-col items-center gap-3">
-                  <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center ${
+          {/* Glass container with agents + connecting line */}
+          <div className="relative bg-surface-container-lowest/60 backdrop-blur-xl rounded-3xl p-8 sm:p-10 shadow-ambient-lg mx-auto max-w-2xl">
+            {/* Connecting gradient line (desktop) */}
+            <div className="hidden sm:block absolute top-1/2 left-[15%] right-[15%] h-px -translate-y-4 bg-gradient-to-r from-transparent via-primary-200 to-transparent" />
+
+            <div className="flex items-center justify-center gap-6 sm:gap-12 relative z-10">
+              {[
+                { icon: 'search', label: 'Scout', active: false },
+                { icon: 'edit_note', label: 'Draft', active: false },
+                { icon: 'spellcheck', label: 'Critic', active: false },
+                { icon: 'auto_awesome', label: 'Queen', active: true },
+              ].map((agent) => (
+                <div key={agent.label} className="flex flex-col items-center gap-3">
+                  <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center transition-all ${
                     agent.active
-                      ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30'
-                      : 'bg-surface-container-lowest text-on-surface-variant shadow-ambient-sm'
+                      ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30 animate-pulse-glow'
+                      : 'bg-surface-container-lowest text-on-surface-variant shadow-ambient-sm hover:scale-110 hover:shadow-ambient-md'
                   }`}>
                     <span className="material-symbols-outlined text-2xl">{agent.icon}</span>
                   </div>
@@ -117,11 +149,8 @@ export default function HomePage() {
                     {agent.label}
                   </span>
                 </div>
-                {i < 3 && (
-                  <div className="w-8 sm:w-12 h-px bg-surface-container-highest" />
-                )}
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </motion.div>
       </section>
@@ -186,7 +215,13 @@ export default function HomePage() {
             Deploy VULCA AI to your ecosystem in seconds with our CLI.
           </p>
 
-          <div className="bg-gray-900 rounded-2xl p-6 text-left mb-8">
+          <div className="bg-gray-900/90 backdrop-blur-2xl rounded-2xl p-6 text-left mb-8 shadow-2xl border border-white/5">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-3 h-3 rounded-full bg-red-500/80" />
+              <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
+              <div className="w-3 h-3 rounded-full bg-green-500/80" />
+              <span className="ml-2 text-[10px] text-gray-500 font-mono">terminal</span>
+            </div>
             <code className="font-mono text-sm text-gray-100 leading-relaxed block">
               <span className="text-green-400">$</span> pip install vulca<br />
               <span className="text-green-400">$</span> vulca create &quot;水墨山水&quot; --tradition chinese_xieyi<br />

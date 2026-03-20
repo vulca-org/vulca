@@ -3,15 +3,117 @@
 
 @import 'tailwindcss';
 
+/* ══ Digital Curator Design Tokens (Tailwind v4 @theme) ══════════════ */
+@theme {
+  /* Primary: Tech Trust Blue (matched to design HTML) */
+  --color-primary-50: #E8F0FB;
+  --color-primary-100: #C7DAF5;
+  --color-primary-200: #91B5EB;
+  --color-primary-300: #5B90E1;
+  --color-primary-400: #2570D4;
+  --color-primary-500: #005ab4;
+  --color-primary-600: #004D9A;
+  --color-primary-700: #003F80;
+  --color-primary-800: #003166;
+  --color-primary-900: #00234D;
+
+  /* Secondary: Cultural Artistry Bronze */
+  --color-secondary-50: #FDF8F4;
+  --color-secondary-100: #FAEFE6;
+  --color-secondary-200: #F4DCC9;
+  --color-secondary-300: #EBC4A1;
+  --color-secondary-400: #DDA574;
+  --color-secondary-500: #C87F4A;
+  --color-secondary-600: #A86838;
+  --color-secondary-700: #8F5530;
+  --color-secondary-800: #6D4127;
+  --color-secondary-900: #4A2C1A;
+
+  /* Success: Sage Green */
+  --color-success-50: #F0F7ED;
+  --color-success-100: #E1EFDB;
+  --color-success-200: #C3DFB7;
+  --color-success-300: #A5CF93;
+  --color-success-400: #7FB86A;
+  --color-success-500: #5F8A50;
+  --color-success-600: #4C6E40;
+  --color-success-700: #395330;
+
+  /* Warning: Amber Gold */
+  --color-warning-50: #FDF8ED;
+  --color-warning-100: #FAF1DB;
+  --color-warning-500: #B8923D;
+
+  /* Error: Coral Red */
+  --color-error-50: #FCF0EF;
+  --color-error-100: #F9E1DF;
+  --color-error-200: #F3C3BF;
+  --color-error-500: #C65D4D;
+  --color-error-700: #8A3D32;
+
+  /* Surface System (Cool White — matched to design HTML #f9f9ff) */
+  --color-surface: #f9f9ff;
+  --color-surface-dim: #d8dae3;
+  --color-surface-bright: #f9f9ff;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f2f3fd;
+  --color-surface-container: #ecedf7;
+  --color-surface-container-high: #e6e8f1;
+  --color-surface-container-highest: #e0e2ec;
+
+  /* On-colors (text on surfaces — matched to design HTML) */
+  --color-on-surface: #181c22;
+  --color-on-surface-variant: #414753;
+  --color-on-primary: #ffffff;
+  --color-on-secondary: #ffffff;
+  --color-on-error: #ffffff;
+
+  /* Outline (matched to design HTML) */
+  --color-outline: #717785;
+  --color-outline-variant: #c1c6d5;
+
+  /* Bronze alias */
+  --color-bronze-50: #FDF8F4;
+  --color-bronze-100: #FAEFE6;
+  --color-bronze-200: #F4DCC9;
+  --color-bronze-300: #EBC4A1;
+  --color-bronze-400: #DDA574;
+  --color-bronze-500: #C87F4A;
+  --color-bronze-600: #A86838;
+  --color-bronze-700: #8F5530;
+
+  /* Fonts */
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'Noto Serif', Georgia, serif;
+  --font-headline: 'Noto Serif', Georgia, serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-label: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Shadows (warm ambient) */
+  --shadow-ambient-sm: 0 2px 12px rgba(28,28,25,0.04);
+  --shadow-ambient-md: 0 4px 24px rgba(28,28,25,0.06);
+  --shadow-ambient-lg: 0 8px 40px rgba(28,28,25,0.06);
+  --shadow-ambient-xl: 0 12px 56px rgba(28,28,25,0.08);
+
+  /* Border radius */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-2xl: 2rem;
+  --radius-3xl: 3rem;
+}
+
 /* Tailwind v4: enable class-based dark mode (toggle via .dark on <html>) */
 @custom-variant dark (&:where(.dark, .dark *));
 
 @layer base {
   body {
     @apply antialiased transition-colors duration-300;
-    @apply text-[#1c1c19] dark:text-[#F0F6FC];
+    @apply text-[#181c22] dark:text-[#F0F6FC];
     font-family: 'Inter', system-ui, sans-serif;
-    background-color: #fcf9f4;
+    background-color: #f9f9ff;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
@@ -55,16 +157,16 @@
   --border-subtle: #f0ede8;
   --border-default: #e4e1dc;
   --border-strong: #c9c5be;
-  --border-focus: #1275E2;  /* Primary Blue */
+  --border-focus: #005ab4;  /* Primary Blue */
 
   /* Background — warm gallery-white (from Ethos) */
-  --bg-base: #fcf9f4;
+  --bg-base: #f9f9ff;
   --bg-surface: #ffffff;
   --bg-elevated: #ffffff;
-  --bg-hover: #f6f3ee;
+  --bg-hover: #f2f3fd;
 
   /* Semantic colors — Digital Curator */
-  --color-primary: #1275E2;  /* Tech Trust Blue */
+  --color-primary: #005ab4;  /* Tech Trust Blue (design HTML) */
   --color-accent: #C87F4A;   /* Cultural Artistry Bronze */
   --color-success: #5F8A50;  /* Sage Green */
   --color-warning: #B8923D;  /* Amber Gold */

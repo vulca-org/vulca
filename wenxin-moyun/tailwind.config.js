@@ -20,19 +20,19 @@ export default {
       colors: {
         // ── Digital Curator Color System ──────────────────────────
 
-        // Primary: Tech Trust Blue — the engine
+        // Primary: Tech Trust Blue (matched to design HTML #005ab4)
         primary: {
-          50: '#EEF4FC',
-          100: '#D5E6FA',
-          200: '#AAC8F4',
-          300: '#7FAAEE',
-          400: '#4A8CE8',
-          500: '#1275E2',
-          600: '#0F62BF',
-          700: '#0C4F9C',
-          800: '#093D79',
-          900: '#062A56',
-          DEFAULT: '#1275E2',
+          50: '#E8F0FB',
+          100: '#C7DAF5',
+          200: '#91B5EB',
+          300: '#5B90E1',
+          400: '#2570D4',
+          500: '#005ab4',
+          600: '#004D9A',
+          700: '#003F80',
+          800: '#003166',
+          900: '#00234D',
+          DEFAULT: '#005ab4',
         },
         // Secondary: Cultural Artistry Bronze — the human element
         secondary: {
@@ -105,19 +105,19 @@ export default {
           900: '#4A2C1A',
           DEFAULT: '#C87F4A',
         },
-        // Blue: proper blue scale (restored)
+        // Blue: same as primary for consistency
         blue: {
-          50: '#EEF4FC',
-          100: '#D5E6FA',
-          200: '#AAC8F4',
-          300: '#7FAAEE',
-          400: '#4A8CE8',
-          500: '#1275E2',
-          600: '#0F62BF',
-          700: '#0C4F9C',
-          800: '#093D79',
-          900: '#062A56',
-          DEFAULT: '#1275E2',
+          50: '#E8F0FB',
+          100: '#C7DAF5',
+          200: '#91B5EB',
+          300: '#5B90E1',
+          400: '#2570D4',
+          500: '#005ab4',
+          600: '#004D9A',
+          700: '#003F80',
+          800: '#003166',
+          900: '#00234D',
+          DEFAULT: '#005ab4',
         },
         // Slate: neutral cool gray (standard Tailwind)
         slate: {
@@ -134,16 +134,16 @@ export default {
           950: '#020617',
         },
 
-        // ── Surface System (Warm Gallery-White) ──────────────────
+        // ── Surface System (Cool White — matched to design HTML) ──
         // Three-tier layering: surface → container-low → container-lowest
-        'surface': '#fcf9f4',
-        'surface-dim': '#e8e4df',
-        'surface-bright': '#fdfaf5',
+        'surface': '#f9f9ff',
+        'surface-dim': '#d8dae3',
+        'surface-bright': '#f9f9ff',
         'surface-container-lowest': '#ffffff',
-        'surface-container-low': '#f6f3ee',
-        'surface-container': '#f0ede8',
-        'surface-container-high': '#eae7e2',
-        'surface-container-highest': '#e4e1dc',
+        'surface-container-low': '#f2f3fd',
+        'surface-container': '#ecedf7',
+        'surface-container-high': '#e6e8f1',
+        'surface-container-highest': '#e0e2ec',
 
         // ── On-colors (text on surfaces) ─────────────────────────
         'on-surface': '#1c1c19',
@@ -196,9 +196,14 @@ export default {
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',
+        'fade-in-up': 'fadeInUp 1s cubic-bezier(0.2,0.8,0.2,1) forwards',
         'slide-up': 'slideUp 0.5s ease-out',
         'slide-down': 'slideDown 0.5s ease-out',
         'scale-in': 'scaleIn 0.3s ease-out',
+        'float': 'float 6s ease-in-out infinite',
+        'soft-float': 'softFloat 3s ease-in-out infinite',
+        'pulse-glow': 'pulseGlow 3s cubic-bezier(0.4,0,0.6,1) infinite',
+        'blink': 'blink 1s step-end infinite',
         'spin-slow': 'spin 3s linear infinite',
         'pulse-slow': 'pulse 3s ease-in-out infinite',
         'bounce-slow': 'bounce 2s infinite',
@@ -207,6 +212,10 @@ export default {
         fadeIn: {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' },
+        },
+        fadeInUp: {
+          '0%': { opacity: '0', transform: 'translateY(40px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         slideUp: {
           '0%': { transform: 'translateY(20px)', opacity: '0' },
@@ -219,6 +228,22 @@ export default {
         scaleIn: {
           '0%': { transform: 'scale(0.9)', opacity: '0' },
           '100%': { transform: 'scale(1)', opacity: '1' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-20px)' },
+        },
+        softFloat: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-8px)' },
+        },
+        pulseGlow: {
+          '0%, 100%': { boxShadow: '0 0 0 0 rgba(18,117,226,0.2)' },
+          '50%': { boxShadow: '0 0 24px 8px rgba(18,117,226,0.15)' },
+        },
+        blink: {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0' },
         },
       },
       backdropBlur: {

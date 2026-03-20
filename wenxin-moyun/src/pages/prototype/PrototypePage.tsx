@@ -19,10 +19,7 @@ import { API_PREFIX } from '@/config/api';
 import { IOSSegmentedControl, IOSAlert } from '@/components/ios';
 
 import type { RunConfigParams } from '@/components/prototype/RunConfigForm';
-import type { AgentNodeId, StageStatus, ReportOutput } from '@/components/prototype/editor';
-import { PipelineEditor, NodeParamPanel } from '@/components/prototype/editor';
-import TraditionBuilder from '@/components/prototype/TraditionBuilder';
-import TraditionExplorer from '@/components/prototype/TraditionExplorer';
+import type { StageStatus, ReportOutput } from '@/components/prototype/editor';
 import HitlOverlay from '@/components/prototype/HitlOverlay';
 import CriticDetailModal from '@/components/prototype/CriticDetailModal';
 import OnboardingTour from '@/components/prototype/OnboardingTour';
@@ -31,6 +28,8 @@ import CanvasLeftPanel from '@/components/prototype/CanvasLeftPanel';
 import type { EditorRunParams } from '@/components/prototype/CanvasLeftPanel';
 import CanvasCenterPanel from '@/components/prototype/CanvasCenterPanel';
 import CanvasRightPanel from '@/components/prototype/CanvasRightPanel';
+import CanvasV2Layout from '@/components/prototype/canvas-v2/CanvasV2Layout';
+import PipelineEditorModal from '@/components/prototype/canvas-v2/PipelineEditorModal';
 
 /** Auth headers for prototype API calls — reads real user token from localStorage */
 function getProtoAuthHeaders(): Record<string, string> {
@@ -40,7 +39,7 @@ function getProtoAuthHeaders(): Record<string, string> {
 
 export default function PrototypePage() {
   // --- Core pipeline hook ---
-  const { state, startRun, submitAction, reset } = usePrototypePipeline();
+  const { state, startRun, connectToRun, submitAction, reset } = usePrototypePipeline();
 
   // --- Shared canvas store ---
   const store = useCanvasStore();
@@ -74,10 +73,9 @@ export default function PrototypePage() {
   const [mobileTab, setMobileTab] = useState(0);
   const [lastRunParams, setLastRunParams] = useState<RunConfigParams | null>(null);
   const [criticDetailCandidate, setCriticDetailCandidate] = useState<ScoredCandidate | null>(null);
+  const [pipelineEditorOpen, setPipelineEditorOpen] = useState(false);
   const [evaluateResult, setEvaluateResult] = useState<Record<string, unknown> | null>(null);
   const [evaluateLoading, setEvaluateLoading] = useState(false);
-  const [editorNodeParams, setEditorNodeParams] = useState<Record<string, Record<string, unknown>>>({});
-  const [selectedEditorNode, setSelectedEditorNode] = useState<AgentNodeId | null>(null);
 
   const isRunning = state.status === 'running' || state.status === 'waiting_human';
   const isDone = state.status === 'completed' || state.status === 'failed';
@@ -152,27 +150,6 @@ export default function PrototypePage() {
     startRun(params);
   }, [startRun, setCurrentSubject, setCurrentTradition, setTraditionManuallySet]);
 
-  const handleEditorRun = useCallback((params: EditorRunParams) => {
-    const runParams: CreateRunParams = {
-      subject: currentSubject.trim() || lastRunParams?.subject || 'Ink wash landscape with mist and mountains',
-      tradition: currentTradition || lastRunParams?.tradition || 'chinese_xieyi',
-      provider: currentProvider,
-      n_candidates: lastRunParams?.n_candidates || 2,
-      max_rounds: lastRunParams?.max_rounds || 3,
-      enable_hitl: enableHitl,
-      enable_agent_critic: lastRunParams?.enable_agent_critic ?? true,
-      enable_parallel_critic: lastRunParams?.enable_parallel_critic || false,
-      use_graph: lastRunParams?.use_graph || false,
-      template: params.template,
-      custom_nodes: params.customNodes,
-      custom_edges: params.customEdges,
-      node_params: params.nodeParams,
-    };
-    setActiveTemplate(params.template);
-    setPlaygroundMode('run');
-    startRun(runParams);
-  }, [lastRunParams, startRun, currentSubject, currentTradition, currentProvider, enableHitl, setPlaygroundMode]);
-
   const handleFork = useCallback((params: { subject: string; tradition: string }) => {
     setCurrentSubject(params.subject);
     setCurrentTradition(params.tradition);
@@ -186,12 +163,6 @@ export default function PrototypePage() {
     reset();
   }, [reset, setTraditionManuallySet]);
 
-  const handleNodeParamChange = useCallback((nodeId: AgentNodeId, paramId: string, value: unknown) => {
-    setEditorNodeParams(prev => ({
-      ...prev,
-      [nodeId]: { ...prev[nodeId], [paramId]: value },
-    }));
-  }, []);
 
   // --- Computed stage data ---
 
@@ -235,79 +206,47 @@ export default function PrototypePage() {
 
   return (
     <>
-      {/* Desktop layout */}
-      {playgroundMode === 'edit' ? (
-        <div className="hidden lg:grid h-[calc(100vh-64px)] grid-cols-[300px_1fr] gap-4 p-4 overflow-hidden">
-          <aside className="overflow-y-auto space-y-3 pr-1 scrollbar-thin">
-            <CanvasLeftPanel {...leftProps} />
-          </aside>
-          <main data-tour-canvas className="min-h-0 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden relative">
-            <PipelineEditor
-              onRun={handleEditorRun}
-              disabled={isRunning}
-              onNodeSelect={setSelectedEditorNode}
-              nodeParams={editorNodeParams}
-              stageStatuses={isRunning || isDone ? stageStatuses : undefined}
-              reportOutput={reportOutput ?? undefined}
-            />
-            <NodeParamPanel
-              nodeId={selectedEditorNode}
-              params={editorNodeParams}
-              onChange={handleNodeParamChange}
-              onClose={() => setSelectedEditorNode(null)}
-            />
-          </main>
-        </div>
-      ) : playgroundMode === 'run' ? (
-        <div className="hidden lg:grid h-[calc(100vh-64px)] grid-cols-[300px_1fr_380px] gap-4 p-4 overflow-hidden">
-          <aside className="overflow-y-auto space-y-3 pr-1 scrollbar-thin">
-            <CanvasLeftPanel {...leftProps} />
-          </aside>
-          <main className="overflow-y-auto space-y-3 px-1 scrollbar-thin">
-            <CanvasCenterPanel
-              pipeline={state}
-              isDone={isDone}
-              evaluateResult={evaluateResult}
-              selectedCandidateId={selectedCandidateId}
-              onSelectCandidate={setSelectedCandidateId}
-              onClearEvaluate={() => setEvaluateResult(null)}
-              onReset={handleReset}
-            />
-          </main>
-          <aside className="overflow-y-auto space-y-3 pl-1 scrollbar-thin">
-            <CanvasRightPanel
-              pipeline={state}
-              isDone={isDone}
-              selectedCandidateId={selectedCandidateId}
-              lastRunParams={lastRunParams}
-              onAction={submitAction}
-              onReset={handleReset}
-              onViewCriticDetail={setCriticDetailCandidate}
-            />
-          </aside>
-        </div>
-      ) : (
-        <div className="hidden lg:grid h-[calc(100vh-64px)] grid-cols-[300px_1fr] gap-4 p-4 overflow-hidden">
-          <aside className="overflow-y-auto space-y-3 pr-1 scrollbar-thin">
-            <CanvasLeftPanel {...leftProps} />
-          </aside>
-          <main className="overflow-y-auto px-1 scrollbar-thin">
-            <div className="flex items-center gap-2 mb-4">
-              <IOSSegmentedControl
-                segments={['Browse', 'Create']}
-                selectedIndex={store.traditionsTab === 'browse' ? 0 : 1}
-                onChange={(idx) => store.setTraditionsTab(idx === 0 ? 'browse' : 'create')}
-                size="compact"
-                className="w-48"
-              />
-              <span className="text-xs text-gray-400 dark:text-gray-500">
-                {store.traditionsTab === 'browse' ? '9 cultural traditions' : 'Define custom traditions'}
-              </span>
-            </div>
-            {store.traditionsTab === 'browse' ? <TraditionExplorer /> : <TraditionBuilder />}
-          </main>
-        </div>
-      )}
+      {/* Desktop: Single unified Canvas V2 layout (no tabs, no mode switching) */}
+      <div className="hidden lg:block h-[calc(100vh-56px)]">
+        <CanvasV2Layout
+          pipeline={state}
+          onAction={submitAction}
+          onReset={handleReset}
+          onOpenPipelineEditor={() => setPipelineEditorOpen(true)}
+          onStartPipeline={(subject, tradition, provider) => {
+            store.setCurrentSubject(subject);
+            store.setCurrentTradition(tradition);
+            startRun({ subject, tradition, provider, n_candidates: 4, max_rounds: 3, enable_hitl: store.enableHitl, enable_agent_critic: true });
+          }}
+          onInstruct={async (instruction) => {
+            if (state.taskId) {
+              // Instruct API creates a new run server-side, returns new_task_id
+              try {
+                const res = await fetch(`${API_PREFIX}/prototype/runs/${state.taskId}/instruct`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json', ...getProtoAuthHeaders() },
+                  body: JSON.stringify({ instruction }),
+                });
+                if (res.ok) {
+                  const data = await res.json();
+                  store.setCurrentSubject(instruction);
+                  // Connect SSE to the new run (don't create another one)
+                  connectToRun(data.new_task_id);
+                  toast.success('Instruction sent');
+                } else {
+                  toast.error(`Instruct failed (${res.status})`);
+                }
+              } catch {
+                toast.error('Failed to send instruction');
+              }
+            } else {
+              // No previous run — create a fresh one
+              store.setCurrentSubject(instruction);
+              startRun({ subject: instruction, tradition: store.currentTradition || 'default', provider: 'auto', n_candidates: 4, max_rounds: 3, enable_hitl: store.enableHitl, enable_agent_critic: true });
+            }
+          }}
+        />
+      </div>
 
       {/* Mobile: tab-based single column */}
       <div className="lg:hidden flex flex-col h-[calc(100vh-64px)]">
@@ -368,12 +307,21 @@ export default function PrototypePage() {
 
       <OnboardingTour />
 
+      {/* Pipeline Editor Modal */}
+      <PipelineEditorModal
+        open={pipelineEditorOpen}
+        onClose={() => setPipelineEditorOpen(false)}
+        isRunning={isRunning}
+        stageStatuses={isRunning || isDone ? stageStatuses : undefined}
+        reportOutput={reportOutput ?? undefined}
+      />
+
       <Toaster
         position="top-right"
         toastOptions={{
           style: {
-            background: '#fcf9f4',
-            color: '#1c1c19',
+            background: '#f9f9ff',
+            color: '#181c22',
             boxShadow: '0 4px 24px rgba(28,28,25,0.06)',
             fontFamily: 'Inter, system-ui, sans-serif',
           },

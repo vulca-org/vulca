@@ -52,7 +52,7 @@ interface CanvasActions {
 }
 
 const initialState: CanvasState = {
-  playgroundMode: 'edit',
+  playgroundMode: 'run',
   currentSubject: '',
   currentTradition: 'chinese_xieyi',
   creationMode: 'preview',

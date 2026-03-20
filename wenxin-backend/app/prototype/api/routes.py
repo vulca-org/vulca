@@ -464,6 +464,54 @@ async def submit_action(task_id: str, req: SubmitActionRequest) -> SubmitActionR
     return SubmitActionResponse(accepted=True, message=f"Action '{req.action}' accepted")
 
 
+@router.post("/runs/{task_id}/instruct")
+async def instruct_run(task_id: str, req: dict) -> dict:
+    """Send a follow-up instruction to a completed run.
+
+    Creates a new pipeline run inheriting context from the previous run.
+    Uses the SAME _run_in_background pattern as create_run for proper
+    SSE event emission and pipeline execution.
+
+    Body: { "instruction": "Refine L3 dimension" }
+    Returns: { "new_task_id": "...", "status": "running" }
+    """
+    instruction = (req.get("instruction") or "").strip()
+    if not instruction:
+        raise HTTPException(400, "instruction is required")
+
+    meta = _run_metadata.get(task_id)
+    if meta is None:
+        raise HTTPException(404, f"Run {task_id} not found")
+
+    # Inherit context from previous run
+    prev_tradition = meta.get("tradition", "default")
+    prev_subject = meta.get("subject", "")
+    prev_provider = meta.get("provider", "mock")
+
+    enhanced_subject = f"{instruction} (context: {prev_subject})" if prev_subject else instruction
+
+    # Create new run via the normal create_run endpoint internally
+    new_req = CreateRunRequest(
+        subject=enhanced_subject,
+        tradition=prev_tradition,
+        provider=prev_provider,
+        max_rounds=3,
+        n_candidates=4,
+        enable_agent_critic=True,
+    )
+
+    # Call create_run directly — this handles _run_in_background, SSE, etc.
+    result = await create_run(new_req)
+
+    return {
+        "new_task_id": result.task_id,
+        "instruction": instruction,
+        "parent_task_id": task_id,
+        "status": "running",
+        "tradition": prev_tradition,
+    }
+
+
 @router.get("/datatypes")
 async def list_datatypes():
     """List all DataType values with their socket colors."""

@@ -67,11 +67,11 @@ export const themes = {
   light: {
     // Background layers — warm gallery-white
     bg: {
-      base: '#fcf9f4',      // Gallery White (Ethos surface)
+      base: '#f9f9ff',      // Gallery White (Ethos surface)
       surface: '#ffffff',   // Cards
       elevated: '#ffffff',
       overlay: '#ffffff',
-      hover: '#f6f3ee',     // Surface Container Low
+      hover: '#f2f3fd',     // Surface Container Low
       active: '#f0ede8',    // Surface Container
     },
 
@@ -79,7 +79,7 @@ export const themes = {
       default: '#e4e1dc',   // Outline variant
       muted: '#f0ede8',
       strong: '#c9c5be',
-      subtle: '#f6f3ee',
+      subtle: '#f2f3fd',
     },
 
     text: {
@@ -87,12 +87,12 @@ export const themes = {
       secondary: '#4a4740', // On-Surface-Variant
       tertiary: '#7a7770',  // Outline
       muted: '#c9c5be',     // Outline Variant
-      inverse: '#fcf9f4',
+      inverse: '#f9f9ff',
     },
 
     // Semantic colors — Digital Curator Light
     semantic: {
-      primary: '#1275E2',   // Tech Trust Blue
+      primary: '#005ab4',   // Tech Trust Blue
       accent: '#C87F4A',    // Warm Bronze
       green: '#5F8A50',     // Sage Green
       yellow: '#B8923D',    // Amber Gold
@@ -103,12 +103,12 @@ export const themes = {
     },
 
     chart: {
-      primary: '#1275E2',
+      primary: '#005ab4',
       secondary: '#C87F4A',
       tertiary: '#5F8A50',
       quaternary: '#B8923D',
       series: [
-        '#1275E2', '#C87F4A', '#5F8A50', '#B8923D',
+        '#005ab4', '#C87F4A', '#5F8A50', '#B8923D',
         '#0C4F9C', '#C65D4D', '#8F7860', '#4A7A46'
       ]
     },
@@ -117,7 +117,7 @@ export const themes = {
       gold: 'linear-gradient(135deg, #D4A84B 0%, #C87F4A 100%)',
       silver: 'linear-gradient(135deg, #94A3B8 0%, #64748B 100%)',
       bronze: 'linear-gradient(135deg, #C87F4A 0%, #9B6B56 100%)',
-      gradient: 'linear-gradient(135deg, #1275E2 0%, #C87F4A 100%)', // Brand gradient: Blue → Bronze
+      gradient: 'linear-gradient(135deg, #005ab4 0%, #C87F4A 100%)', // Brand gradient: Blue → Bronze
     }
   },
 };

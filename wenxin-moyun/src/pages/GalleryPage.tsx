@@ -312,13 +312,7 @@ function EvolutionInsightsPanel({ insights }: { insights: DigestionInsights | nu
 // Artwork card
 // ---------------------------------------------------------------------------
 
-function ArtworkCard({ artwork, likeCount }: { artwork: GalleryItem; likeCount: number }) {
-  const overallPct = Math.round(artwork.overall * 100);
-  const overallColor =
-    artwork.overall >= 0.9 ? 'text-[#5F8A50] dark:text-[#87A878]' :
-    artwork.overall >= 0.85 ? 'text-slate-600 dark:text-slate-400' :
-    'text-amber-600 dark:text-amber-400';
-
+function ArtworkCard({ artwork, likeCount, onSelect }: { artwork: GalleryItem; likeCount: number; onSelect: (a: GalleryItem) => void }) {
   const traditionLabel = TRADITION_LABELS[artwork.tradition] ?? artwork.tradition.replace(/_/g, ' ');
   const gradient = TRADITION_GRADIENTS[artwork.tradition] ?? TRADITION_GRADIENTS.default;
   const resolvedImageUrl = (() => {
@@ -332,66 +326,40 @@ function ArtworkCard({ artwork, likeCount }: { artwork: GalleryItem; likeCount: 
     return url;
   })();
   const hasImage = !!resolvedImageUrl;
-  const dateStr = artwork.created_at
-    ? new Date(artwork.created_at * 1000).toLocaleDateString()
-    : '';
 
   return (
-    <IOSCard variant="elevated" padding="none" className="overflow-hidden h-full flex flex-col">
-      {/* Image or gradient placeholder */}
-      <div className="w-full aspect-[4/3] relative bg-slate-100 dark:bg-slate-800">
-        {/* Fallback: gradient background with artwork title */}
-        <div className="absolute inset-0 flex items-end p-3" style={{ background: gradient }}>
-          <span className="text-white text-xs font-medium drop-shadow-md line-clamp-2">
-            {artwork.subject}
-          </span>
-        </div>
-        {/* Image overlay — hides on error to reveal fallback */}
+    <div
+      className="group cursor-pointer"
+      onClick={() => onSelect(artwork)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter') onSelect(artwork); }}
+    >
+      {/* Image — vertical aspect 4/5, large rounded corners */}
+      <div className="aspect-[4/5] rounded-3xl overflow-hidden relative bg-surface-container-high">
+        <div className="absolute inset-0" style={{ background: gradient }} />
         {hasImage && (
           <img
             src={resolvedImageUrl}
             alt={artwork.subject}
-            className="absolute inset-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700"
             loading="lazy"
-            onError={(e) => {
-              (e.currentTarget as HTMLImageElement).style.display = 'none';
-            }}
+            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
           />
         )}
-        <span className="absolute top-2 left-2 text-[10px] font-medium px-2 py-0.5 rounded-full bg-black/40 text-white backdrop-blur-sm">
+        {/* Tradition badge — top right */}
+        <span className="absolute top-5 right-5 text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full bg-white/90 backdrop-blur-xl text-on-surface-variant">
           {traditionLabel}
-        </span>
-        <span className={`absolute top-2 right-2 text-xs font-bold px-2 py-0.5 rounded-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm ${overallColor}`}>
-          {overallPct}%
         </span>
       </div>
 
-      {/* Content */}
-      <IOSCardContent className="p-4 flex-1 flex flex-col">
-        <h3 className="font-semibold text-sm text-gray-900 dark:text-white mb-1 line-clamp-2">
+      {/* Title + minimal info */}
+      <div className="pt-5 pb-2 px-1">
+        <h3 className="font-semibold text-base text-on-surface line-clamp-2 group-hover:text-primary-500 transition-colors">
           {artwork.subject}
         </h3>
-        <p className="text-[11px] text-gray-400 dark:text-gray-500 mb-3">
-          {artwork.total_rounds} round{artwork.total_rounds !== 1 ? 's' : ''}
-          {dateStr && <> &middot; {dateStr}</>}
-        </p>
-
-        {/* Score bars */}
-        <div className="space-y-1 mt-auto">
-          {Object.entries(artwork.scores).map(([k, v]) => (
-            <ScoreBar key={k} label={k} value={v} />
-          ))}
-        </div>
-
-        {/* Social actions: Like + Fork */}
-        <GalleryCardActions
-          sessionId={artwork.id}
-          subject={artwork.subject}
-          tradition={artwork.tradition}
-          initialLikes={likeCount}
-        />
-      </IOSCardContent>
-    </IOSCard>
+      </div>
+    </div>
   );
 }
 
@@ -411,7 +379,7 @@ const SORT_LABELS: Record<SortOption, string> = {
   rounds: 'Most Rounds',
 };
 
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 9; // Gallery "curated" feel — 3x3 grid per page
 
 export default function GalleryPage() {
   const [artworks, setArtworks] = useState<GalleryItem[]>(MOCK_GALLERY);
@@ -424,6 +392,7 @@ export default function GalleryPage() {
   const [isLive, setIsLive] = useState(false);  // true if data came from API
   const [selectedTradition, setSelectedTradition] = useState<string>('all');
   const [minScore, setMinScore] = useState<number>(0);
+  const [selectedArtwork, setSelectedArtwork] = useState<GalleryItem | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [currentOffset, setCurrentOffset] = useState(0);
 
@@ -668,14 +637,14 @@ export default function GalleryPage() {
           </span>
         </div>
 
-        {/* Gallery grid */}
+        {/* Gallery grid — 3-column curated layout per design spec */}
         {filtered.length > 0 ? (
           <>
-            <IOSCardGrid columns={4} gap="md">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
               {filtered.map((artwork) => (
-                <ArtworkCard key={artwork.id} artwork={artwork} likeCount={likeCounts[artwork.id] ?? 0} />
+                <ArtworkCard key={artwork.id} artwork={artwork} likeCount={likeCounts[artwork.id] ?? 0} onSelect={setSelectedArtwork} />
               ))}
-            </IOSCardGrid>
+            </div>
 
             {/* Load More / Pagination footer */}
             {hasMore && (
@@ -720,6 +689,73 @@ export default function GalleryPage() {
           </div>
         )}
       </div>
+
+      {/* Detail Modal */}
+      {selectedArtwork && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+          onClick={() => setSelectedArtwork(null)}
+        >
+          <div
+            className="bg-surface-container-lowest rounded-2xl shadow-ambient-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="aspect-[16/9] relative rounded-t-2xl overflow-hidden bg-surface-container-high">
+              {selectedArtwork.best_image_url ? (
+                <img
+                  src={(() => {
+                    const url = selectedArtwork.best_image_url;
+                    if (url.startsWith('data:') || url.startsWith('http')) return url;
+                    if (url.startsWith('/static/') || url.startsWith('static/'))
+                      return `${API_BASE_URL}${url.startsWith('/') ? url : `/${url}`}`;
+                    return url;
+                  })()}
+                  alt={selectedArtwork.subject}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center" style={{ background: TRADITION_GRADIENTS[selectedArtwork.tradition] ?? TRADITION_GRADIENTS.default }}>
+                  <span className="text-white text-4xl">🎨</span>
+                </div>
+              )}
+              <button onClick={() => setSelectedArtwork(null)} className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/40 text-white flex items-center justify-center hover:bg-black/60 transition-colors backdrop-blur-sm" aria-label="Close">✕</button>
+            </div>
+            <div className="p-8">
+              <div className="flex items-start justify-between mb-6">
+                <div>
+                  <h2 className="font-display text-2xl font-bold text-on-surface mb-2">{selectedArtwork.subject}</h2>
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-primary-500 bg-primary-50 px-3 py-1 rounded-full">
+                    {TRADITION_LABELS[selectedArtwork.tradition] ?? selectedArtwork.tradition.replace(/_/g, ' ')}
+                  </span>
+                </div>
+                <div className="text-right">
+                  <span className="text-3xl font-bold text-on-surface">{Math.round(selectedArtwork.overall * 100)}%</span>
+                  <p className="text-[11px] text-on-surface-variant">Overall Score</p>
+                </div>
+              </div>
+              <div className="mb-6">
+                <h3 className="text-[11px] font-bold uppercase tracking-widest text-outline mb-3">Dimension Scores</h3>
+                <div className="grid grid-cols-5 gap-3">
+                  {Object.entries(selectedArtwork.scores).map(([dim, score]) => (
+                    <div key={dim} className="text-center">
+                      <div className={`w-full aspect-square rounded-xl flex items-center justify-center text-sm font-bold mb-1 ${score >= 0.9 ? 'bg-primary-500 text-white' : 'bg-surface-container-high text-on-surface-variant'}`}>{dim}</div>
+                      <span className="text-[10px] font-bold text-on-surface-variant">{Math.round(score * 100)}%</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="flex items-center gap-4 text-[11px] text-on-surface-variant">
+                <span>{selectedArtwork.total_rounds} round{selectedArtwork.total_rounds !== 1 ? 's' : ''}</span>
+                <span>{(selectedArtwork.total_latency_ms / 1000).toFixed(1)}s</span>
+                {selectedArtwork.created_at && <span>{new Date(selectedArtwork.created_at * 1000).toLocaleDateString()}</span>}
+              </div>
+              <div className="flex items-center gap-3 mt-6 pt-6">
+                <GalleryCardActions sessionId={selectedArtwork.id} subject={selectedArtwork.subject} tradition={selectedArtwork.tradition} initialLikes={likeCounts[selectedArtwork.id] ?? 0} />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

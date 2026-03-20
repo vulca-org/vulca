@@ -577,9 +577,52 @@ export function usePrototypePipeline() {
     };
   }, []);
 
+  /** Connect to an existing run's SSE stream without creating a new one.
+   *  Used by instruct flow where the backend already created the run. */
+  const connectToRun = useCallback((taskId: string) => {
+    // Close existing
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close();
+      eventSourceRef.current = null;
+    }
+    setState({ ...INITIAL_STATE, status: 'running', taskId });
+
+    const es = new EventSource(`${API_PREFIX}/prototype/runs/${taskId}/events`);
+    eventSourceRef.current = es;
+
+    es.onmessage = (msg) => {
+      try {
+        const event = JSON.parse(msg.data) as PipelineEvent;
+        processEvent(event);
+
+        if (event.event_type === 'pipeline_completed' || event.event_type === 'pipeline_failed') {
+          es.close();
+          eventSourceRef.current = null;
+          if (event.event_type === 'pipeline_completed') {
+            fetch(`${API_PREFIX}/prototype/runs/${taskId}`)
+              .then(r => r.ok ? r.json() : null)
+              .then(status => {
+                if (status?.best_image_url) {
+                  setState(prev => ({ ...prev, bestImageUrl: status.best_image_url }));
+                }
+              })
+              .catch(() => {});
+          }
+        }
+      } catch { /* skip malformed */ }
+    };
+
+    es.onerror = () => {
+      es.close();
+      eventSourceRef.current = null;
+      setState(prev => prev.status === 'running' ? { ...prev, status: 'failed', error: 'Connection lost.' } : prev);
+    };
+  }, [processEvent]);
+
   return {
     state,
     startRun,
+    connectToRun,
     submitAction,
     reset,
   };

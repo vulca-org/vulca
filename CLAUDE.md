@@ -19,7 +19,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-VULCA — AI-native creation organism. Create, critique, and evolve cultural art through multi-agent AI pipelines. The core product is **Canvas** (unified creation + evaluation), not the leaderboard. Features React 19 frontend with Art Professional design system, FastAPI backend with async pipeline (Scout→Draft→Critic→Queen), and production GCP deployment.
+VULCA — AI-native creation organism. Create, critique, and evolve cultural art through multi-agent AI pipelines. The core product is **Canvas** (unified creation + evaluation), not the leaderboard. Features React 19 frontend with **Digital Curator** design system (v2.0, 2026-03-19), FastAPI backend with async pipeline (Scout→Draft→Critic→Queen), and production GCP deployment.
 
 **Production URLs:**
 - Frontend: https://vulcaart.art (Firebase Hosting)
@@ -189,21 +189,48 @@ Note: The old `app/vulca/` backend module has been deleted. All VULCA logic now 
 | Custom weights | Canvas weight sliders → `node_params` | `--weights "L1=0.3,..."` | `weights={"L1": 0.3}` | `weights="L1=0.3,..."` |
 | Evolution | Auto (throttled, lightweight fallback) | Auto via on_complete | Auto via on_complete | Not yet |
 
-## Design System
+## Design System — "The Digital Curator" (v2.1, 2026-03-19)
 
-The **Art Professional** design system uses a gallery-inspired warm palette (no iOS blue/purple/indigo). Full reference at [`docs/design-system.md`](docs/design-system.md).
+以设计稿 HTML 为准（非 Ethos）。Reference: `stitch (2).zip` design files.
 
-**Core colors**: Ink Slate `#334155` | Warm Bronze `#C87F4A` | Sage Green `#5F8A50` | Amber Gold `#B8923D` | Coral Red `#C65D4D`
+**Core colors**: Primary Blue `#005ab4` | Bronze `#C87F4A` | Sage Green `#5F8A50` | Amber Gold `#B8923D` | Coral Red `#C65D4D`
 
-**Background**: Light `#FAF7F2` (Cream White) | Dark `#0F0D0B` (Warm Black)
+**Background**: Light `#f9f9ff` (Cool White) | Dark `#0F0D0B` (Warm Black)
 
-**Components**: IOSButton, IOSCard, IOSToggle, IOSSlider, IOSAlert, IOSSheet, IOSSegmentedControl (all with glass morphism and spring animations)
+**Surface layering**: `#f9f9ff` (base) → `#f2f3fd` (sections) → `#ffffff` (cards)
+
+**Typography**: Noto Serif (headlines ≥24px) + Inter (body/UI)
+
+**Radius**: 16px cards | 24px buttons | 48px hero containers
+
+**Components**: IOSButton, IOSCard, IOSToggle, IOSSlider, IOSAlert, IOSSheet, IOSSegmentedControl
+
+**Canvas (Single Interface, No Tabs)**:
+- 三栏布局 — AI Collective (w-80) | Artwork HUD (~70%) + Log (~18%) + Chat (~12%) | L1-L5 + Tags + Finalize
+- 空闲态：中央放意图输入框 + 配置面板
+- 运行态：全出血艺术品大图 + Glass HUD + 分析热点 + Intelligence Log
+- 完成态：Finalize Artifact + Feedback + Confidence/Cost
+- 底部聊天栏："Instruct the Collective..." + 📎🖼️📊🔗 工具
+- Pipeline Editor：左侧 ⚙️ 按钮 → 全屏 Modal（ReactFlow）
+- `POST /runs/{task_id}/instruct`：追加指令 API
+
+**Gallery**: 画廊精选风格
+- 竖版大图 3 列，aspect-4/5，rounded-3xl
+- 卡片只显示：标题 + 传统 badge（右上）
+- 点击卡片 → Modal 详情（大图 + L1-L5 分数 + rationale + log）
+- 筛选用 pill 按钮组
+
+**Landing Page**:
+- Hero 有流动抽象艺术背景图 + 浮动 glass 终端预览
+- Agent Pipeline 有 glass 容器和连接线
 
 **Rules**:
-- Never use blue/purple/indigo from standard iOS palette
-- All interactive elements must meet 44px minimum touch target (iOS HIG)
-- Use `react-hot-toast` for notifications, not browser alerts
+- **No-Line Rule**: No 1px borders — use tonal shifts and negative space
+- Demo mode 提示改为右下角 toast，不占 Header 空间
+- All interactive elements must meet 44px minimum touch target
 - Guard API data with null checks before `Object.entries/keys/values`
+- Ambient shadows `rgba(28,28,25,0.06)`
+- Serif font (Noto Serif) for text ≥24px, Inter for everything else
 
 ## Code Quality & Auditing
 

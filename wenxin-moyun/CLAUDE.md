@@ -4,19 +4,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-VULCA — a **creation organism** where generation, evaluation, refinement, and learning are seamless stages of one creative process. The core product is **Canvas** (unified creation + evaluation), not the leaderboard. React 19 frontend with **Art Professional design system**, FastAPI backend with async AI pipeline (Scout->Draft->Critic->Queen), and production GCP deployment.
+VULCA — a **creation organism** where generation, evaluation, refinement, and learning are seamless stages of one creative process. The core product is **Canvas** (unified creation + evaluation), not the leaderboard. React 19 frontend with **Digital Curator design system** (v2.0), FastAPI backend with async AI pipeline (Scout->Draft->Critic->Queen), and production GCP deployment.
 
-### Art Professional Design System (Updated 2026-03-09)
+### Digital Curator Design System (v2.0, 2026-03-19)
 
-Gallery-inspired warm color palette replacing the original iOS blue/purple:
+Bridges "Tech Trust" (Blue) with "Cultural Artistry" (Bronze & Cream). Reference: `vulca_ethos/DESIGN.md`.
 
-- **Color System**: Warm art-professional tones (Ink Slate #334155, Warm Bronze #C87F4A, Sage Green #5F8A50, Amber Gold #B8923D, Coral Red #C65D4D)
-- **Typography**: iOS San Francisco font stack with art-professional sizing
+- **Color System**: Primary Blue `#1275E2` | Bronze `#C87F4A` | Sage Green `#5F8A50` | Amber Gold `#B8923D` | Coral Red `#C65D4D`
+- **Surface System**: Gallery White `#fcf9f4` (base) → `#f6f3ee` (sections) → `#ffffff` (cards)
+- **Typography**: Noto Serif (headlines ≥24px, "gallery voice") + Inter (body/UI, "tech clarity")
 - **Component System**: IOSButton, IOSCard, IOSToggle, IOSSlider, IOSAlert (retained naming)
-- **Glass Morphism**: Liquid Glass effects with warm tint (bg-base: #FAF7F2 Cream White)
-- **Dark Mode**: Full dark palette (Light Bronze #DDA574, Light Sage #87A878)
-- **Prototype Components**: 28 files fully aligned to Art Professional palette (zero blue/purple/indigo)
-- **60+ Fluent Emojis**: Semantic emoji system for intuitive interactions
+- **Glass Morphism**: Liquid Glass effects with warm tint (bg-base: #fcf9f4 Gallery White)
+- **Dark Mode**: Full dark palette (Light Blue #AAC8F4, Light Bronze #DDA574)
+- **No-Line Rule**: No 1px borders — use tonal shifts and negative space
+- **Radius**: 16px cards | 24px buttons | 48px hero containers
+- **Shadows**: Warm ambient `rgba(28,28,25,0.06)` — never black opacity
+- **Canvas V2**: AI Collective sidebar + Artwork HUD + Intelligence Log + L1-L5 Maturity Panel
 
 ## Essential Commands
 
