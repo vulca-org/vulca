@@ -894,7 +894,7 @@ export default function PipelineEditor({
 
       {/* First-visit banner */}
       {showFirstVisitBanner && (
-        <div className="px-3 py-2 bg-[#FAF7F2] dark:bg-[#C87F4A]/10 text-xs text-[#C87F4A] dark:text-[#DDA574] border-b border-[#C9C2B8] dark:border-[#4A433C] flex items-center justify-between">
+        <div className="px-3 py-2 bg-[#f9f9ff] dark:bg-[#C87F4A]/10 text-xs text-[#C87F4A] dark:text-[#DDA574] border-b border-[#C9C2B8] dark:border-[#4A433C] flex items-center justify-between">
           <span>
             This is the <strong>Quick Evaluate</strong> template. Drop in an image and click Run!
           </span>

@@ -124,7 +124,7 @@ const LoginPage: React.FC = () => {
 
             {/* Error */}
             {error && (
-              <div id="login-error" role="alert" aria-live="assertive" className="mb-4 p-3 bg-error-50 border border-error-200 rounded-lg text-error-700 text-sm">
+              <div id="login-error" role="alert" aria-live="assertive" className="mb-4 p-3 bg-cultural-coral-50 border border-cultural-coral-200 rounded-lg text-cultural-coral-700 text-sm">
                 {error}
               </div>
             )}

@@ -83,23 +83,24 @@ export const themes = {
     },
 
     text: {
-      primary: '#1c1c19',   // On-Surface (Ethos)
+      primary: '#181c22',   // On-Surface (MD3 on-surface)
       secondary: '#4a4740', // On-Surface-Variant
-      tertiary: '#7a7770',  // Outline
+      tertiary: '#717785',  // Outline (MD3 outline)
       muted: '#c9c5be',     // Outline Variant
       inverse: '#f9f9ff',
     },
 
     // Semantic colors — Digital Curator Light
+    // Note: accent/green/yellow/red map to cultural-* tokens in tailwind.config.js
     semantic: {
-      primary: '#005ab4',   // Tech Trust Blue
-      accent: '#C87F4A',    // Warm Bronze
-      green: '#5F8A50',     // Sage Green
-      yellow: '#B8923D',    // Amber Gold
-      red: '#C65D4D',       // Coral Red
-      bronze: '#C87F4A',    // Warm Bronze
+      primary: '#005ab4',   // Tech Trust Blue (MD3 primary)
+      accent: '#C87F4A',    // cultural-bronze
+      green: '#5F8A50',     // cultural-sage
+      yellow: '#B8923D',    // cultural-amber
+      red: '#C65D4D',       // cultural-coral
+      bronze: '#C87F4A',    // cultural-bronze (alias)
       terracotta: '#7D5645',// Terracotta
-      sage: '#5F8A50',      // Sage Green
+      sage: '#5F8A50',      // cultural-sage (alias)
     },
 
     chart: {

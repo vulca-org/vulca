@@ -31,8 +31,8 @@ const RangeBar: React.FC<RangeBarProps> = ({
     if (!benchmark) return null;
     const diff = value - benchmark;
     if (Math.abs(diff) < 1) return <Minus className="w-4 h-4 text-neutral-500" />;
-    if (diff > 0) return <TrendingUp className="w-4 h-4 text-success-500" />;
-    return <TrendingDown className="w-4 h-4 text-error-500" />;
+    if (diff > 0) return <TrendingUp className="w-4 h-4 text-cultural-sage-500" />;
+    return <TrendingDown className="w-4 h-4 text-cultural-coral-500" />;
   };
 
   const getValueColor = () => {

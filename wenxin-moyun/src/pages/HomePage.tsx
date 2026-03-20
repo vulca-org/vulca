@@ -198,7 +198,7 @@ export default function HomePage() {
         <div className="max-w-3xl mx-auto flex flex-wrap justify-center items-center gap-4">
           {['EMNLP 2025', 'WiNLP 2025', 'arXiv'].map((venue) => (
             <span key={venue} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface-container-lowest text-sm font-semibold text-on-surface-variant shadow-ambient-sm">
-              <span className="w-2 h-2 rounded-full bg-success-500" />
+              <span className="w-2 h-2 rounded-full bg-cultural-sage-500" />
               {venue}
             </span>
           ))}

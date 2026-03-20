@@ -81,7 +81,7 @@ function nodeClasses(status: NodeStatus): string {
     case 'pending':
       return `${base} border-[#C9C2B8] dark:border-[#4A433C] bg-white dark:bg-gray-800`;
     case 'active':
-      return `${base} border-[#C87F4A] dark:border-[#DDA574] bg-[#FAF7F2] dark:bg-[#C87F4A]/15 ring-2 ring-[#C87F4A]/30 animate-pulse`;
+      return `${base} border-[#C87F4A] dark:border-[#DDA574] bg-[#f9f9ff] dark:bg-[#C87F4A]/15 ring-2 ring-[#C87F4A]/30 animate-pulse`;
     case 'waiting':
       return `${base} border-amber-400 dark:border-amber-500 bg-amber-50 dark:bg-amber-900/20 ring-2 ring-amber-400/50 animate-pulse`;
     case 'completed':

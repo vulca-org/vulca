@@ -83,7 +83,7 @@ export default function MaturityLevelPanel({ scoredCandidates, bestCandidateId, 
               )}
               {isLocked && (
                 <div className="absolute -top-1 -left-1 z-10">
-                  <Lock className="w-3 h-3 text-warning-500" />
+                  <Lock className="w-3 h-3 text-cultural-amber-500" />
                 </div>
               )}
               <button
@@ -96,7 +96,7 @@ export default function MaturityLevelPanel({ scoredCandidates, bestCandidateId, 
                   isActive
                     ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30 ring-2 ring-primary-500/20'
                     : isLocked
-                      ? 'bg-warning-50 text-warning-700 ring-2 ring-warning-300'
+                      ? 'bg-cultural-amber-50 text-cultural-amber-700 ring-2 ring-cultural-amber-300'
                       : hasScores && score != null
                         ? 'bg-surface-container-lowest text-on-surface-variant shadow-ambient-sm hover:bg-white hover:ring-1 hover:ring-primary-500/20'
                         : 'bg-surface-container-high text-outline'
@@ -106,7 +106,7 @@ export default function MaturityLevelPanel({ scoredCandidates, bestCandidateId, 
                 {l}
               </button>
               {score != null && (
-                <span className={`text-[9px] mt-1 font-bold ${isActive ? 'text-primary-500' : isLocked ? 'text-warning-600' : 'text-on-surface-variant'}`}>
+                <span className={`text-[9px] mt-1 font-bold ${isActive ? 'text-primary-500' : isLocked ? 'text-cultural-amber-600' : 'text-on-surface-variant'}`}>
                   {(score * 100).toFixed(0)}%
                 </span>
               )}
@@ -127,7 +127,7 @@ export default function MaturityLevelPanel({ scoredCandidates, bestCandidateId, 
         <div className="mt-4 bg-surface-container-low/50 p-3 rounded-lg">
           <p className="text-[10px] font-bold text-on-surface-variant mb-1">
             {L_LABELS[activeL] || activeL}
-            {lockedDimensions.includes(activeL) && <span className="ml-1 text-warning-500">🔒 Locked</span>}
+            {lockedDimensions.includes(activeL) && <span className="ml-1 text-cultural-amber-500">🔒 Locked</span>}
           </p>
           <p className="text-[11px] text-on-surface-variant leading-relaxed italic">
             {activeInfo.rationale || 'No rationale available.'}

@@ -26,8 +26,8 @@ export default function HitlDecisionPanel({ pipelineStatus, lockedDimensions, we
 
       {/* Improvement suggestion */}
       {rerunDimensions.length > 0 && (
-        <div className="bg-warning-50 rounded-lg p-3 mb-3">
-          <p className="text-[11px] text-warning-700 font-medium">
+        <div className="bg-cultural-amber-50 rounded-lg p-3 mb-3">
+          <p className="text-[11px] text-cultural-amber-700 font-medium">
             Suggested focus: {rerunDimensions.join(', ')} could be improved
           </p>
         </div>
@@ -37,7 +37,7 @@ export default function HitlDecisionPanel({ pipelineStatus, lockedDimensions, we
       <div className="flex gap-2">
         <button
           onClick={() => onAction('approve')}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-success-500 text-white rounded-xl text-sm font-semibold hover:bg-success-600 active:scale-[0.98] transition-all"
+          className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-cultural-sage-500 text-white rounded-xl text-sm font-semibold hover:bg-cultural-sage-600 active:scale-[0.98] transition-all"
         >
           <Check className="w-4 h-4" />
           Accept
@@ -51,7 +51,7 @@ export default function HitlDecisionPanel({ pipelineStatus, lockedDimensions, we
         </button>
         <button
           onClick={() => onAction('reject')}
-          className="flex items-center justify-center gap-1.5 py-2.5 px-4 bg-surface-container-high text-on-surface-variant rounded-xl text-sm font-medium hover:bg-error-50 hover:text-error-600 active:scale-[0.98] transition-all"
+          className="flex items-center justify-center gap-1.5 py-2.5 px-4 bg-surface-container-high text-on-surface-variant rounded-xl text-sm font-medium hover:bg-cultural-coral-50 hover:text-cultural-coral-600 active:scale-[0.98] transition-all"
         >
           <X className="w-4 h-4" />
         </button>

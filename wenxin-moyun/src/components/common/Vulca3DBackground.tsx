@@ -14,11 +14,11 @@ const COLORS = {
     ],
   },
   light: {
-    background: '#FAF7F2',
+    background: '#f9f9ff',
     shapes: [
-      { color: '#334155', opacity: 0.04 },   // Ink Slate
+      { color: '#414753', opacity: 0.04 },   // MD3 on-surface-variant
       { color: '#C87F4A', opacity: 0.035 },  // Warm Bronze
-      { color: '#334155', opacity: 0.03 },    // Ink Slate lighter
+      { color: '#414753', opacity: 0.03 },    // MD3 on-surface-variant lighter
     ],
   },
 };
@@ -153,8 +153,8 @@ function CSSFallback({ isDark }: { isDark: boolean }) {
           `
           : `
             radial-gradient(ellipse at 25% 30%, rgba(200, 127, 74, 0.05) 0%, transparent 55%),
-            radial-gradient(ellipse at 75% 65%, rgba(51, 65, 85, 0.04) 0%, transparent 55%),
-            #FAF7F2
+            radial-gradient(ellipse at 75% 65%, rgba(65, 71, 83, 0.04) 0%, transparent 55%),
+            #f9f9ff
           `,
       }}
     />

@@ -9,25 +9,26 @@ import { ORGANIZATION_COLORS, getOrganizationColor } from '../constants/organiza
 // ============= Art Professional Color System =============
 
 export const iosSystemColors = {
-  // Primary warm palette
-  bronze: '#C87F4A',      // Warm Bronze — primary accent
+  // Primary warm palette — maps to Tailwind cultural-* tokens
+  bronze: '#C87F4A',      // cultural-bronze — primary accent
   terracotta: '#9B6B56',  // Terracotta — secondary accent
-  sage: '#5F8A50',        // Sage Green
-  amber: '#B8923D',       // Amber Gold
+  sage: '#5F8A50',        // cultural-sage
+  amber: '#B8923D',       // cultural-amber
   slate: '#64748B',       // Ink Slate
-  coral: '#C65D4D',       // Coral Red (unified)
+  coral: '#C65D4D',       // cultural-coral (unified)
   ochre: '#8F7860',       // Ochre
   olive: '#4A7A46',       // Olive Green
   // Legacy compatibility aliases
-  blue: '#64748B',        // Mapped to Ink Slate
-  green: '#5F8A50',
-  orange: '#C87F4A',
-  red: '#C65D4D',
+  // Note: 'blue' here is Ink Slate for chart use; MD3 primary (#005ab4) lives in iosTheme.ts
+  blue: '#64748B',        // Mapped to Ink Slate (chart axis/grid only)
+  green: '#5F8A50',       // cultural-sage
+  orange: '#C87F4A',      // cultural-bronze
+  red: '#C65D4D',         // cultural-coral
   purple: '#9B6B56',
   teal: '#4A7A46',
   indigo: '#64748B',
-  pink: '#C65D4D',
-  yellow: '#B8923D',
+  pink: '#C65D4D',        // cultural-coral
+  yellow: '#B8923D',      // cultural-amber
 };
 
 // Dark mode (lighter variants)
