@@ -14,16 +14,6 @@ INSTINCTS_FILE="$PROJECT_DIR/.claude/instincts.jsonl"
 TIMESTAMP=$(date -Is 2>/dev/null || date '+%Y-%m-%dT%H:%M:%S')
 BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
 
-# 变更文件列表（最近 5 分钟内修改的文件）
-CHANGED_FILES=$(find "$PROJECT_DIR" -maxdepth 4 \
-    -not -path "*/node_modules/*" \
-    -not -path "*/.git/*" \
-    -not -path "*/__pycache__/*" \
-    -not -path "*/venv/*" \
-    -not -path "*/.venv/*" \
-    -name "*.py" -o -name "*.ts" -o -name "*.tsx" -o -name "*.json" -o -name "*.md" \
-    2>/dev/null | xargs -r find 2>/dev/null -maxdepth 0 -mmin -5 2>/dev/null | head -20 || true)
-
 # 活跃 phase
 ACTIVE_PHASE=""
 PHASE_DIR="$PROJECT_DIR/.claude/phases"
@@ -33,21 +23,66 @@ if [ -d "$PHASE_DIR" ]; then
     done
 fi
 
-# 用 python3 生成 JSON（避免 shell 转义问题）
+# 用 python3 一次性收集 git 变更 + 生成 JSON（避免 shell 转义问题）
 python3 -c "
-import json, sys
+import json, subprocess, os
 
-files = '''$CHANGED_FILES'''.strip().split('\n') if '''$CHANGED_FILES'''.strip() else []
-# 转为相对路径
-import os
-base = '$PROJECT_DIR'
-files = [os.path.relpath(f, base) for f in files if f]
+project = '$PROJECT_DIR'
+
+# 用 git 检测变更文件（比 find -mmin 更可靠）
+files = set()
+
+# 未暂存的修改
+try:
+    out = subprocess.check_output(
+        ['git', 'diff', '--name-only'],
+        cwd=project, text=True, stderr=subprocess.DEVNULL
+    ).strip()
+    if out:
+        files.update(out.splitlines())
+except: pass
+
+# 已暂存的修改
+try:
+    out = subprocess.check_output(
+        ['git', 'diff', '--name-only', '--cached'],
+        cwd=project, text=True, stderr=subprocess.DEVNULL
+    ).strip()
+    if out:
+        files.update(out.splitlines())
+except: pass
+
+# 未跟踪的新文件（排除常见临时目录）
+try:
+    out = subprocess.check_output(
+        ['git', 'ls-files', '--others', '--exclude-standard'],
+        cwd=project, text=True, stderr=subprocess.DEVNULL
+    ).strip()
+    if out:
+        for f in out.splitlines():
+            if not any(f.startswith(p) for p in ['node_modules/', 'venv/', '.venv/', '__pycache__/', 'demo_output/']):
+                files.add(f)
+except: pass
+
+# 最近一次 commit 的变更（如果是刚提交的）
+try:
+    out = subprocess.check_output(
+        ['git', 'diff', '--name-only', 'HEAD~1', 'HEAD'],
+        cwd=project, text=True, stderr=subprocess.DEVNULL
+    ).strip()
+    if out:
+        files.update(out.splitlines())
+except: pass
+
+files = sorted(files)[:30]
+
+phase = '$ACTIVE_PHASE' if '$ACTIVE_PHASE' else None
 
 entry = {
     'ts': '$TIMESTAMP',
     'branch': '$BRANCH',
-    'phase': '$ACTIVE_PHASE' or None,
-    'files_touched': files[:20],
+    'phase': phase,
+    'files_touched': files,
     'file_count': len(files)
 }
 print(json.dumps(entry, ensure_ascii=False))
