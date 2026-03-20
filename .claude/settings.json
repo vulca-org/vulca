@@ -11,7 +11,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/session-state-inject.sh",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/session-state-inject.sh",
             "timeout": 10
           }
         ]
@@ -23,7 +23,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/protect-files.sh"
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/protect-files.sh"
           }
         ]
       }
@@ -34,7 +34,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/auto-format.sh"
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/auto-format.sh"
           }
         ]
       }
@@ -45,7 +45,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/instinct-logger.sh",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/instinct-logger.sh",
             "timeout": 10
           }
         ]
@@ -55,7 +55,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/update-claude-md.sh",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/update-claude-md.sh",
             "timeout": 15
           }
         ]
