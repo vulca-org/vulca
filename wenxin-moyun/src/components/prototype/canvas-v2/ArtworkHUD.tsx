@@ -57,7 +57,7 @@ export default function ArtworkHUD({ bestImageUrl, candidates, currentStage, sub
   // Idle state: intent input
   const [intentText, setIntentText] = useState('');
   const [tradition, setTradition] = useState('default');
-  const [provider, setProvider] = useState('auto');
+  const [provider, setProvider] = useState('mock');
   const [showConfig, setShowConfig] = useState(false);
 
   const handleSubmit = () => {
