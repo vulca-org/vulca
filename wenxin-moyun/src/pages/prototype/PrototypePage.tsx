@@ -199,10 +199,10 @@ export default function PrototypePage() {
           onAction={submitAction}
           onReset={handleReset}
           onOpenPipelineEditor={() => setPipelineEditorOpen(true)}
-          onStartPipeline={(subject, tradition, provider, nodeParams) => {
+          onStartPipeline={(subject, tradition, provider, nodeParams, referenceImageBase64) => {
             store.setCurrentSubject(subject);
             store.setCurrentTradition(tradition);
-            startRun({ subject, tradition, provider, n_candidates: 4, max_rounds: 3, enable_hitl: true, enable_agent_critic: true, node_params: nodeParams });
+            startRun({ subject, tradition, provider, n_candidates: 4, max_rounds: 3, enable_hitl: true, enable_agent_critic: true, node_params: nodeParams, reference_image_base64: referenceImageBase64 });
           }}
           onInstruct={async (instruction) => {
             if (state.taskId) {
@@ -244,10 +244,10 @@ export default function PrototypePage() {
             currentStage={state.currentStage}
             subject={store.currentSubject || ''}
             pipelineStatus={state.status}
-            onStartPipeline={(subject, tradition, provider) => {
+            onStartPipeline={(subject, tradition, provider, referenceImageBase64) => {
               store.setCurrentSubject(subject);
               store.setCurrentTradition(tradition);
-              startRun({ subject, tradition, provider, n_candidates: 4, max_rounds: 3, enable_hitl: true, enable_agent_critic: true });
+              startRun({ subject, tradition, provider, n_candidates: 4, max_rounds: 3, enable_hitl: true, enable_agent_critic: true, reference_image_base64: referenceImageBase64 });
             }}
           />
 

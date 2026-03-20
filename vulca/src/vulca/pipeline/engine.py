@@ -230,12 +230,22 @@ async def execute(
                 ctx.data.update(output)
 
             # Include node output in stage_completed payload
+            # WU-1: Inject candidates array for generate/draft nodes
+            stage_payload = dict(output) if output else {}
+            if node_name in ("generate", "draft") and output and "image_b64" in output:
+                stage_payload["candidates"] = [{
+                    "candidate_id": output.get("candidate_id", ""),
+                    "image_url": output.get("image_url", ""),
+                    "image_b64": output.get("image_b64", ""),
+                    "image_mime": output.get("image_mime", "image/png"),
+                    "round_num": round_num,
+                }]
             _emit(
                 PipelineEvent(
                     event_type=EventType.STAGE_COMPLETED,
                     stage=node_name,
                     round_num=round_num,
-                    payload=output or {},
+                    payload=stage_payload,
                     timestamp_ms=int((time.monotonic() - t0) * 1000),
                 )
             )

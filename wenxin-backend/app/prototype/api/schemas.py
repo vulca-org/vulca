@@ -80,5 +80,6 @@ class SubmitActionResponse(BaseModel):
 
     accepted: bool
     message: str = ""
+    new_task_id: str | None = None
 
 

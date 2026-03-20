@@ -233,6 +233,7 @@ export interface CreateRunParams {
   custom_nodes?: string[];
   custom_edges?: [string, string][];
   node_params?: Record<string, Record<string, unknown>>;
+  reference_image_base64?: string;
 }
 
 export function usePrototypePipeline() {
@@ -260,8 +261,36 @@ export function usePrototypePipeline() {
         case 'stage_completed':
           if (stage === 'scout') {
             update.evidence = (payload.evidence as Record<string, unknown>) || null;
-          } else if (stage === 'draft') {
-            update.candidates = (payload.candidates as DraftCandidate[]) || [];
+          } else if (stage === 'generate' || stage === 'draft') {
+            // WU-6: Handle both single-candidate and array formats
+            const candidatesRaw = payload.candidates as DraftCandidate[] | undefined;
+            const genCandidates: DraftCandidate[] = candidatesRaw ? [...candidatesRaw] : [];
+
+            if (!candidatesRaw && payload.candidate_id) {
+              genCandidates.push({
+                candidate_id: payload.candidate_id as string,
+                image_url: (payload.image_url as string) || '',
+                image_path: '',
+                prompt: '',
+                seed: 0,
+                model_ref: '',
+              });
+            }
+
+            if (genCandidates.length > 0) {
+              update.candidates = genCandidates;
+            }
+
+            // Set bestImageUrl immediately for real-time display
+            const imgUrl = (payload.image_url as string) || '';
+            const imgB64 = (payload.image_b64 as string) || '';
+            const imgMime = (payload.image_mime as string) || 'image/png';
+
+            if (imgUrl && !imgUrl.startsWith('mock://') && !imgUrl.startsWith('gemini://')) {
+              update.bestImageUrl = imgUrl;
+            } else if (imgB64) {
+              update.bestImageUrl = `data:${imgMime};base64,${imgB64}`;
+            }
           } else if (stage === 'draft_refine') {
             // Local inpainting produced refined candidates — update gallery
             update.candidates = (payload.candidates as DraftCandidate[]) || [];
@@ -539,27 +568,6 @@ export function usePrototypePipeline() {
     }
   }, [updateState, processEvent]);
 
-  const submitAction = useCallback(async (
-    action: string,
-    options?: { locked_dimensions?: string[]; rerun_dimensions?: string[]; candidate_id?: string; reason?: string },
-  ) => {
-    if (!state.taskId) return;
-
-    try {
-      const res = await fetch(`${API_PREFIX}/prototype/runs/${state.taskId}/action`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action, ...options }),
-      });
-
-      if (!res.ok) {
-        console.error('Failed to submit action:', await res.text());
-      }
-    } catch (err) {
-      console.error('Submit action error:', err);
-    }
-  }, [state.taskId]);
-
   const reset = useCallback(() => {
     if (eventSourceRef.current) {
       eventSourceRef.current.close();
@@ -618,6 +626,33 @@ export function usePrototypePipeline() {
       setState(prev => prev.status === 'running' ? { ...prev, status: 'failed', error: 'Connection lost.' } : prev);
     };
   }, [processEvent]);
+
+  const submitAction = useCallback(async (
+    action: string,
+    options?: { locked_dimensions?: string[]; rerun_dimensions?: string[]; candidate_id?: string; reason?: string },
+  ) => {
+    if (!state.taskId) return;
+
+    try {
+      const res = await fetch(`${API_PREFIX}/prototype/runs/${state.taskId}/action`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, ...options }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        // WU-5: Rerun creates a new pipeline — connect to its SSE stream
+        if (data.new_task_id) {
+          connectToRun(data.new_task_id);
+        }
+      } else {
+        console.error('Failed to submit action:', await res.text());
+      }
+    } catch (err) {
+      console.error('Submit action error:', err);
+    }
+  }, [state.taskId, connectToRun]);
 
   return {
     state,

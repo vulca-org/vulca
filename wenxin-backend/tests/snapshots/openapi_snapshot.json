@@ -1,5 +1,5 @@
 {
-  "endpoint_count": 86,
+  "endpoint_count": 87,
   "paths": [
     "/",
     "/api/v1/admin/clear-all-mock-models",
@@ -69,6 +69,7 @@
     "/api/v1/prototype/runs/{task_id}",
     "/api/v1/prototype/runs/{task_id}/action",
     "/api/v1/prototype/runs/{task_id}/events",
+    "/api/v1/prototype/runs/{task_id}/instruct",
     "/api/v1/prototype/traditions",
     "/api/v1/prototype/traditions/reload",
     "/api/v1/scoring-advice/comparison/{task_type}",

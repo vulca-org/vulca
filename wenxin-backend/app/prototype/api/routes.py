@@ -206,6 +206,29 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
         t0 = time.monotonic()
 
         def _emit_event(event) -> None:
+            # WU-6: Inline image save for immediate frontend access
+            ep = event.payload if isinstance(event.payload, dict) else {}
+            evt_raw = event.event_type
+            evt = evt_raw.value if hasattr(evt_raw, 'value') else str(evt_raw)
+            stage = event.stage if hasattr(event, 'stage') else ""
+            if "stage_completed" in evt and stage in ("generate", "draft") and ep.get("image_b64"):
+                try:
+                    import base64 as _b64
+                    img_bytes = _b64.b64decode(ep["image_b64"])
+                    draft_dir = Path(__file__).resolve().parent.parent / "checkpoints" / "draft"
+                    draft_dir.mkdir(parents=True, exist_ok=True)
+                    cid = ep.get("candidate_id", "img")
+                    ext = "svg" if ep.get("image_mime") == "image/svg+xml" else "png"
+                    fname = f"{task_id}_{cid}.{ext}"
+                    (draft_dir / fname).write_bytes(img_bytes)
+                    real_url = f"/static/prototype/draft/{fname}"
+                    event.payload["image_url"] = real_url
+                    # Update candidates array if present (from WU-1)
+                    if "candidates" in event.payload:
+                        for c in event.payload["candidates"]:
+                            c["image_url"] = real_url
+                except Exception:
+                    pass
             with _buffer_lock:
                 _event_buffers.setdefault(task_id, []).append(event)
 
@@ -444,8 +467,59 @@ async def submit_action(task_id: str, req: SubmitActionRequest) -> SubmitActionR
     # Read real pipeline data if available
     pipe_out = meta.get("pipeline_output", {})
 
-    # For approve/force_accept: emit pipeline_completed
-    # For reject/rerun: emit pipeline_completed with the action info
+    # WU-5: Rerun creates a new pipeline with improvement context
+    if req.action == "rerun":
+        prev_subject = meta.get("subject", "")
+        prev_tradition = meta.get("tradition", "default")
+        prev_provider = meta.get("provider", "mock")
+
+        # Build node_params with improvement focus
+        node_params_rerun: dict[str, dict] = {}
+        if req.rerun_dimensions:
+            node_params_rerun["generate"] = {
+                "improvement_focus": req.rerun_dimensions,
+                "locked_dimensions": req.locked_dimensions,
+            }
+        if req.locked_dimensions:
+            node_params_rerun["evaluate"] = {
+                "locked_dimensions": req.locked_dimensions,
+            }
+
+        focus_desc = ", ".join(req.rerun_dimensions) if req.rerun_dimensions else "improvement"
+        new_req = CreateRunRequest(
+            subject=prev_subject,
+            intent=f"[Rerun] Focus on {focus_desc}",
+            tradition=prev_tradition,
+            provider=prev_provider,
+            max_rounds=3,
+            enable_hitl=True,
+            node_params=node_params_rerun or None,
+        )
+
+        new_result = await create_run(new_req)
+
+        # Emit completed event on original task with redirect info
+        completed_event = VulcaEvent(
+            event_type=VulcaEventType.PIPELINE_COMPLETED,
+            payload={
+                "status": "completed",
+                "decision": "rerun",
+                "redirect_task_id": new_result.task_id,
+                "human_action": "rerun",
+            },
+            timestamp_ms=now_ms,
+        )
+        with _buffer_lock:
+            _event_buffers.setdefault(task_id, []).append(completed_event)
+
+        meta["completed"] = True
+        return SubmitActionResponse(
+            accepted=True,
+            message=f"Rerun started as {new_result.task_id}",
+            new_task_id=new_result.task_id,
+        )
+
+    # For approve/force_accept/reject: emit pipeline_completed
     final_decision = req.action
     completed_event = VulcaEvent(
         event_type=VulcaEventType.PIPELINE_COMPLETED,

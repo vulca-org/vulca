@@ -4,7 +4,7 @@
  * Running/Complete: shows artwork + status HUD.
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { ArrowRight, ImagePlus, X } from 'lucide-react';
 import type { DraftCandidate } from '@/hooks/usePrototypePipeline';
 import { API_BASE_URL } from '@/config/api';
@@ -15,19 +15,13 @@ interface Props {
   currentStage: string;
   subject: string;
   pipelineStatus: string;
-  onStartPipeline?: (subject: string, tradition: string, provider: string) => void;
+  onStartPipeline?: (subject: string, tradition: string, provider: string, referenceImageBase64?: string) => void;
 }
 
-const TRADITIONS = [
+const FALLBACK_TRADITIONS = [
   { value: 'default', label: 'Auto-detect' },
   { value: 'chinese_xieyi', label: 'Chinese Xieyi' },
   { value: 'chinese_gongbi', label: 'Chinese Gongbi' },
-  { value: 'japanese_wabi_sabi', label: 'Japanese Wabi-Sabi' },
-  { value: 'persian_miniature', label: 'Persian Miniature' },
-  { value: 'western_classical', label: 'Western Classical' },
-  { value: 'african_ubuntu', label: 'African Ubuntu' },
-  { value: 'indian_miniature', label: 'Indian Miniature' },
-  { value: 'korean_minhwa', label: 'Korean Minhwa' },
 ];
 
 function resolveUrl(url: string | undefined | null): string | null {
@@ -36,6 +30,8 @@ function resolveUrl(url: string | undefined | null): string | null {
   if (url.startsWith('/static/') || url.startsWith('static/')) {
     return `${API_BASE_URL}${url.startsWith('/') ? url : `/${url}`}`;
   }
+  // mock:// and gemini:// are not displayable URLs
+  if (url.startsWith('mock://') || url.startsWith('gemini://')) return null;
   return url;
 }
 
@@ -61,10 +57,32 @@ export default function ArtworkHUD({ bestImageUrl, candidates, currentStage, sub
   const [showConfig, setShowConfig] = useState(false);
   const [referencePreview, setReferencePreview] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [traditions, setTraditions] = useState(FALLBACK_TRADITIONS);
+
+  // WU-4: Dynamic traditions loading from backend API
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/api/v1/prototype/traditions`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.traditions?.length) {
+          setTraditions([
+            { value: 'default', label: 'Auto-detect' },
+            ...data.traditions
+              .filter((t: { name: string }) => t.name !== 'default')
+              .map((t: { name: string; display_name?: string }) => ({
+                value: t.name,
+                label: t.display_name || t.name.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()),
+              })),
+          ]);
+        }
+      })
+      .catch(() => {}); // Use fallback silently
+  }, []);
 
   const handleSubmit = () => {
     if (!intentText.trim() || !onStartPipeline) return;
-    onStartPipeline(intentText.trim(), tradition, provider);
+    const refB64 = referencePreview?.replace(/^data:image\/[^;]+;base64,/, '') || undefined;
+    onStartPipeline(intentText.trim(), tradition, provider, refB64);
   };
 
   const handleDrop = useCallback((e: React.DragEvent) => {
@@ -155,7 +173,7 @@ export default function ArtworkHUD({ bestImageUrl, candidates, currentStage, sub
                     onChange={(e) => setTradition(e.target.value)}
                     className="w-full px-4 py-2.5 bg-surface-container-lowest rounded-lg text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-500/20"
                   >
-                    {TRADITIONS.map((t) => (
+                    {traditions.map((t) => (
                       <option key={t.value} value={t.value}>{t.label}</option>
                     ))}
                   </select>

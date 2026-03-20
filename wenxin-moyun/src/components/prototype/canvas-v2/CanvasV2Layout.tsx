@@ -26,7 +26,7 @@ interface Props {
   pipeline: PipelineState;
   onAction: (action: string, options?: Record<string, unknown>) => Promise<void>;
   onReset: () => void;
-  onStartPipeline?: (subject: string, tradition: string, provider: string, nodeParams?: Record<string, Record<string, unknown>>) => void;
+  onStartPipeline?: (subject: string, tradition: string, provider: string, nodeParams?: Record<string, Record<string, unknown>>, referenceImageBase64?: string) => void;
   onInstruct?: (instruction: string) => void;
   onOpenPipelineEditor?: () => void;
 }
@@ -87,7 +87,7 @@ export default function CanvasV2Layout({ pipeline, onAction, onReset, onStartPip
               currentStage={pipeline.currentStage}
               subject={currentSubject || ''}
               pipelineStatus={pipeline.status}
-              onStartPipeline={(subject, tradition, provider) => {
+              onStartPipeline={(subject, tradition, provider, referenceImageBase64) => {
                 // Build node_params with weight sliders
                 const nodeParams: Record<string, Record<string, unknown>> = {
                   critic: {
@@ -95,7 +95,7 @@ export default function CanvasV2Layout({ pipeline, onAction, onReset, onStartPip
                     w_l4: weights.L4, w_l5: weights.L5,
                   },
                 };
-                onStartPipeline?.(subject, tradition, provider, nodeParams);
+                onStartPipeline?.(subject, tradition, provider, nodeParams, referenceImageBase64);
               }}
             />
           </div>
