@@ -3,5 +3,40 @@
     "feature-dev@claude-plugins-official": true,
     "figma@claude-plugins-official": true,
     "frontend-design@claude-plugins-official": true
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/protect-files.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/auto-format.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "如果本次修改涉及 API 路由(routes.py/schemas.py)、设计系统(*.tsx 颜色/布局)、或架构变更(pipeline/engine)，请提醒用户同步相关文档(CLAUDE.md/README)和前后端类型定义。"
+          }
+        ]
+      }
+    ]
   }
 }

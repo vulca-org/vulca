@@ -213,6 +213,7 @@ AGENTS.md
 .claude/hooks/
 .claude/skills/prospect-manager/
 .claude/skills/northeast-review/
+.claude/phase-current.json
 .github/DEPLOYMENT_LOG.md
 
 # Internal deployment scripts
