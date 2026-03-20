@@ -36,7 +36,9 @@ export default function HitlOverlay({
   onAction,
   onClose,
 }: Props) {
-  const visible = hitlWaitInfo != null && hitlWaitInfo.stage !== 'queen';
+  // Only show bottom sheet for stages with dedicated panels (scout/draft/critic).
+  // Queen/decide stage is handled inline in the right column — no overlay needed.
+  const visible = hitlWaitInfo != null && ['scout', 'draft', 'critic'].includes(hitlWaitInfo.stage);
   const stage = hitlWaitInfo?.stage ?? '';
 
   return (

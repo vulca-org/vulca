@@ -320,11 +320,11 @@ function ArtworkCard({ artwork, likeCount, onSelect }: { artwork: GalleryItem; l
     const url = artwork.best_image_url;
     if (!url) return null;
     if (url.startsWith('data:') || url.startsWith('http://') || url.startsWith('https://')) return url;
-    if (url.startsWith('/static/') || url.startsWith('static/')) {
-      const normalized = url.startsWith('/') ? url : `/${url}`;
-      return `${API_BASE_URL}${normalized}`;
-    }
-    return url;
+    // Non-displayable schemes
+    if (url.startsWith('mock://') || url.startsWith('gemini://')) return null;
+    // Relative paths — prefix with API base URL
+    if (url.startsWith('/')) return `${API_BASE_URL}${url}`;
+    return `${API_BASE_URL}/${url}`;
   })();
   const hasImage = !!resolvedImageUrl;
 
@@ -721,14 +721,13 @@ export default function GalleryPage() {
               transition={{ type: 'spring', stiffness: 400, damping: 30 }}
             >
               <div className="aspect-[16/9] relative rounded-t-2xl overflow-hidden bg-surface-container-high">
-                {selectedArtwork.best_image_url ? (
+                {selectedArtwork.best_image_url && !selectedArtwork.best_image_url.startsWith('mock://') && !selectedArtwork.best_image_url.startsWith('gemini://') ? (
                   <img
                     src={(() => {
                       const url = selectedArtwork.best_image_url;
                       if (url.startsWith('data:') || url.startsWith('http')) return url;
-                      if (url.startsWith('/static/') || url.startsWith('static/'))
-                        return `${API_BASE_URL}${url.startsWith('/') ? url : `/${url}`}`;
-                      return url;
+                      if (url.startsWith('/')) return `${API_BASE_URL}${url}`;
+                      return `${API_BASE_URL}/${url}`;
                     })()}
                     alt={selectedArtwork.subject}
                     className="w-full h-full object-cover"
