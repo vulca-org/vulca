@@ -16,7 +16,7 @@ import type { CreateRunParams, ScoredCandidate } from '@/hooks/usePrototypePipel
 import { useCanvasStore } from '@/store/canvasStore';
 import { useTraditionDetection } from '@/hooks/useTraditionDetection';
 import { API_PREFIX } from '@/config/api';
-import { IOSSegmentedControl, IOSAlert } from '@/components/ios';
+import { IOSAlert } from '@/components/ios';
 
 import type { RunConfigParams } from '@/components/prototype/RunConfigForm';
 import type { StageStatus, ReportOutput } from '@/components/prototype/editor';
@@ -24,11 +24,10 @@ import HitlOverlay from '@/components/prototype/HitlOverlay';
 import CriticDetailModal from '@/components/prototype/CriticDetailModal';
 import OnboardingTour from '@/components/prototype/OnboardingTour';
 
-import CanvasLeftPanel from '@/components/prototype/CanvasLeftPanel';
-import type { EditorRunParams } from '@/components/prototype/CanvasLeftPanel';
-import CanvasCenterPanel from '@/components/prototype/CanvasCenterPanel';
-import CanvasRightPanel from '@/components/prototype/CanvasRightPanel';
+// Old 3-panel layout replaced by CanvasV2Layout + mobile simplified view
 import CanvasV2Layout from '@/components/prototype/canvas-v2/CanvasV2Layout';
+import ArtworkHUD from '@/components/prototype/canvas-v2/ArtworkHUD';
+import IntelligenceLog from '@/components/prototype/canvas-v2/IntelligenceLog';
 import PipelineEditorModal from '@/components/prototype/canvas-v2/PipelineEditorModal';
 
 /** Auth headers for prototype API calls — reads real user token from localStorage */
@@ -70,7 +69,6 @@ export default function PrototypePage() {
   // --- Local UI state (not shared across panels) ---
   const [selectedCandidateId, setSelectedCandidateId] = useState<string | null>(null);
   const [activeTemplate, setActiveTemplate] = useState('default');
-  const [mobileTab, setMobileTab] = useState(0);
   const [lastRunParams, setLastRunParams] = useState<RunConfigParams | null>(null);
   const [criticDetailCandidate, setCriticDetailCandidate] = useState<ScoredCandidate | null>(null);
   const [pipelineEditorOpen, setPipelineEditorOpen] = useState(false);
@@ -190,18 +188,6 @@ export default function PrototypePage() {
 
   const reportOutput = state.reportOutput as ReportOutput | null;
 
-  // --- Shared panel props ---
-  const leftProps = {
-    pipeline: state,
-    isRunning, isDone, evaluateLoading,
-    lastRunParams, activeTemplate,
-    completedStages, stageDurations,
-    onIntentSubmit: handleIntentSubmit,
-    onIntentChange: handleIntentChange,
-    onStartRun: handleStartRun,
-    onFork: handleFork,
-  };
-
   // --- Layout ---
 
   return (
@@ -213,10 +199,10 @@ export default function PrototypePage() {
           onAction={submitAction}
           onReset={handleReset}
           onOpenPipelineEditor={() => setPipelineEditorOpen(true)}
-          onStartPipeline={(subject, tradition, provider) => {
+          onStartPipeline={(subject, tradition, provider, nodeParams) => {
             store.setCurrentSubject(subject);
             store.setCurrentTradition(tradition);
-            startRun({ subject, tradition, provider, n_candidates: 4, max_rounds: 3, enable_hitl: true, enable_agent_critic: true });
+            startRun({ subject, tradition, provider, n_candidates: 4, max_rounds: 3, enable_hitl: true, enable_agent_critic: true, node_params: nodeParams });
           }}
           onInstruct={async (instruction) => {
             if (state.taskId) {
@@ -248,40 +234,58 @@ export default function PrototypePage() {
         />
       </div>
 
-      {/* Mobile: tab-based single column */}
-      <div className="lg:hidden flex flex-col h-[calc(100vh-64px)]">
-        <div className="sticky top-0 z-10 bg-white/80 dark:bg-[#0F0D0B]/80 backdrop-blur-lg px-4 py-2 border-b border-gray-200 dark:border-gray-800">
-          <IOSSegmentedControl
-            segments={['Config', 'Canvas', 'Analysis']}
-            selectedIndex={mobileTab}
-            onChange={setMobileTab}
-            size="compact"
-            className="w-full"
+      {/* Mobile: simplified single-column Canvas V2 view */}
+      <div className="lg:hidden flex flex-col h-[calc(100vh-64px)] overflow-y-auto bg-surface-container-low">
+        <div className="p-4 space-y-4">
+          {/* Artwork + Intent Input */}
+          <ArtworkHUD
+            bestImageUrl={state.bestImageUrl}
+            candidates={state.candidates}
+            currentStage={state.currentStage}
+            subject={store.currentSubject || ''}
+            pipelineStatus={state.status}
+            onStartPipeline={(subject, tradition, provider) => {
+              store.setCurrentSubject(subject);
+              store.setCurrentTradition(tradition);
+              startRun({ subject, tradition, provider, n_candidates: 4, max_rounds: 3, enable_hitl: true, enable_agent_critic: true });
+            }}
           />
-        </div>
-        <div className="flex-1 overflow-y-auto p-4 space-y-3">
-          {mobileTab === 0 && <CanvasLeftPanel {...leftProps} />}
-          {mobileTab === 1 && (
-            <CanvasCenterPanel
-              pipeline={state}
-              isDone={isDone}
-              evaluateResult={evaluateResult}
-              selectedCandidateId={selectedCandidateId}
-              onSelectCandidate={setSelectedCandidateId}
-              onClearEvaluate={() => setEvaluateResult(null)}
-              onReset={handleReset}
-            />
+
+          {/* Intelligence Log */}
+          <IntelligenceLog
+            events={state.events}
+            currentStage={state.currentStage}
+            status={state.status}
+          />
+
+          {/* L1-L5 scores (when available) */}
+          {state.scoredCandidates.length > 0 && (
+            <div className="bg-white rounded-xl p-4">
+              <h3 className="text-[10px] font-bold uppercase tracking-widest text-outline mb-3">Scores</h3>
+              <div className="grid grid-cols-5 gap-2">
+                {(state.scoredCandidates[0]?.dimension_scores || []).map((ds) => {
+                  const lKey = ds.dimension.startsWith('L') ? ds.dimension : '';
+                  return (
+                    <div key={ds.dimension} className="text-center">
+                      <div className={`w-full aspect-square rounded-lg flex items-center justify-center text-xs font-bold ${ds.score >= 0.9 ? 'bg-primary-500 text-white' : 'bg-surface-container-high text-on-surface-variant'}`}>
+                        {lKey || ds.dimension.slice(0, 3)}
+                      </div>
+                      <span className="text-[9px] font-bold text-on-surface-variant">{Math.round(ds.score * 100)}%</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           )}
-          {mobileTab === 2 && (
-            <CanvasRightPanel
-              pipeline={state}
-              isDone={isDone}
-              selectedCandidateId={selectedCandidateId}
-              lastRunParams={lastRunParams}
-              onAction={submitAction}
-              onReset={handleReset}
-              onViewCriticDetail={setCriticDetailCandidate}
-            />
+
+          {/* Actions */}
+          {(state.status === 'completed' || state.status === 'failed') && (
+            <button
+              onClick={handleReset}
+              className="w-full bg-primary-500 text-white py-3 rounded-xl font-semibold text-sm active:scale-[0.98] transition-all"
+            >
+              {state.status === 'failed' ? 'Retry' : 'New Creation'}
+            </button>
           )}
         </div>
       </div>

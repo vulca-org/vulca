@@ -42,7 +42,7 @@ export default function MediaTypeSelector({ value, onChange, disabled }: Props) 
           } else if (!opt.enabled) {
             className = 'bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500 cursor-not-allowed';
           } else {
-            className = 'bg-white border-[#C9C2B8] text-[#334155] dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700';
+            className = 'bg-white border-surface-container-high text-on-surface hover:bg-surface-container-low transition-colors';
           }
 
           return (

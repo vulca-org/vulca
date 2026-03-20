@@ -19,12 +19,14 @@ import MetadataTagsPanel from './MetadataTagsPanel';
 import FinalizeSection from './FinalizeSection';
 import FeedbackCollector from '../FeedbackCollector';
 import HitlDecisionPanel from './HitlDecisionPanel';
+import WeightSlidersPanel from './WeightSlidersPanel';
+import RoundComparisonChart from './RoundComparisonChart';
 
 interface Props {
   pipeline: PipelineState;
   onAction: (action: string, options?: Record<string, unknown>) => Promise<void>;
   onReset: () => void;
-  onStartPipeline?: (subject: string, tradition: string, provider: string) => void;
+  onStartPipeline?: (subject: string, tradition: string, provider: string, nodeParams?: Record<string, Record<string, unknown>>) => void;
   onInstruct?: (instruction: string) => void;
   onOpenPipelineEditor?: () => void;
 }
@@ -33,6 +35,9 @@ export default function CanvasV2Layout({ pipeline, onAction, onReset, onStartPip
   const { currentSubject, currentTradition } = useCanvasStore();
   const [instructText, setInstructText] = useState('');
   const [lockedDimensions, setLockedDimensions] = useState<string[]>([]);
+  const [weights, setWeights] = useState<Record<string, number>>({
+    L1: 0.20, L2: 0.20, L3: 0.25, L4: 0.20, L5: 0.15,
+  });
   const imageUploadRef = useRef<HTMLInputElement>(null);
   const rightPanelRef = useRef<HTMLElement>(null);
 
@@ -82,7 +87,16 @@ export default function CanvasV2Layout({ pipeline, onAction, onReset, onStartPip
               currentStage={pipeline.currentStage}
               subject={currentSubject || ''}
               pipelineStatus={pipeline.status}
-              onStartPipeline={onStartPipeline}
+              onStartPipeline={(subject, tradition, provider) => {
+                // Build node_params with weight sliders
+                const nodeParams: Record<string, Record<string, unknown>> = {
+                  critic: {
+                    w_l1: weights.L1, w_l2: weights.L2, w_l3: weights.L3,
+                    w_l4: weights.L4, w_l5: weights.L5,
+                  },
+                };
+                onStartPipeline?.(subject, tradition, provider, nodeParams);
+              }}
             />
           </div>
 
@@ -198,6 +212,18 @@ export default function CanvasV2Layout({ pipeline, onAction, onReset, onStartPip
 
         {/* Right: Curation Engine */}
         <aside ref={rightPanelRef} className="w-80 p-6 overflow-y-auto shrink-0 flex flex-col bg-surface-container-low/30">
+          {/* Weight sliders — visible when idle or configuring */}
+          {(pipeline.status === 'idle' || pipeline.status === 'waiting_human') && (
+            <WeightSlidersPanel
+              weights={weights}
+              onChange={setWeights}
+              disabled={isRunning}
+            />
+          )}
+
+          {/* Round comparison chart — visible when we have round data */}
+          <RoundComparisonChart rounds={pipeline.rounds} />
+
           <MaturityLevelPanel
             scoredCandidates={pipeline.scoredCandidates}
             bestCandidateId={pipeline.bestCandidateId}

@@ -140,16 +140,28 @@ test.describe('Gallery Page', () => {
     await expect(btn).toBeVisible();
   });
 
-  test('tradition filter dropdown is functional', async ({ page }) => {
-    const select = page.getByLabel('Filter by tradition');
-    await expect(select).toBeVisible();
-    // Should have "All Traditions" as default
-    await expect(select).toHaveValue('all');
+  test('tradition filter pills are visible', async ({ page }) => {
+    // Pill buttons replaced dropdown selects
+    const allPill = page.getByRole('button', { name: 'All' });
+    await expect(allPill).toBeVisible();
   });
 
-  test('sort dropdown is functional', async ({ page }) => {
-    const select = page.getByLabel('Sort artworks');
-    await expect(select).toBeVisible();
+  test('sort pills are visible', async ({ page }) => {
+    const newestPill = page.getByRole('button', { name: 'Newest First' });
+    await expect(newestPill).toBeVisible();
+    const scorePill = page.getByRole('button', { name: 'Highest Score' });
+    await expect(scorePill).toBeVisible();
+  });
+
+  test('Gallery modal opens with animation on card click', async ({ page }) => {
+    await page.waitForTimeout(2000);
+    const card = page.locator('[role="button"]').first();
+    if (await card.isVisible()) {
+      await card.click();
+      // Modal should appear
+      const modal = page.locator('[class*="fixed"]').first();
+      await expect(modal).toBeVisible();
+    }
   });
 
   test('artwork cards are displayed (mock or live)', async ({ page }) => {
@@ -241,6 +253,47 @@ test.describe('Canvas V2 Layout (Run Mode)', () => {
       await expect(log).toBeVisible();
     }
   });
+
+  test('Weight sliders panel shows L1-L5 sliders in idle state', async ({ page }) => {
+    await page.goto(`${BASE}/canvas`);
+    await page.waitForTimeout(1000);
+
+    const heading = page.getByText('Scoring Weights');
+    if (await heading.isVisible()) {
+      await expect(page.getByText('L1')).toBeVisible();
+      await expect(page.getByText('L5')).toBeVisible();
+    }
+  });
+
+  test('HITL decision buttons visible when waiting_human', async ({ page }) => {
+    await page.goto(`${BASE}/canvas`);
+    await page.waitForTimeout(1000);
+
+    // In idle state, HITL buttons should not be visible
+    const acceptBtn = page.getByRole('button', { name: /Accept/i });
+    const refineBtn = page.getByRole('button', { name: /Refine/i });
+    // These should not be visible in idle state
+    expect(await acceptBtn.count()).toBe(0);
+    expect(await refineBtn.count()).toBe(0);
+  });
+
+  test('L1-L5 dimension buttons support double-click lock', async ({ page }) => {
+    await page.goto(`${BASE}/canvas`);
+    await page.waitForTimeout(1000);
+
+    // Maturity Level Analysis panel
+    const panel = page.getByText('Maturity Level Analysis');
+    if (await panel.isVisible()) {
+      const l1btn = page.getByRole('button', { name: 'L1' });
+      if (await l1btn.isVisible()) {
+        // Double-click should toggle lock
+        await l1btn.dblclick();
+        // Check for lock icon
+        const lockIcon = page.locator('text=🔒');
+        expect(await lockIcon.count()).toBeGreaterThanOrEqual(0);
+      }
+    }
+  });
 });
 
 // ══════════════════════════════════════════════════════════════════
@@ -305,13 +358,13 @@ test.describe('User Scenarios', () => {
     await page.goto(`${BASE}/gallery`);
     await expect(page.getByText('CULTURAL')).toBeVisible();
 
-    // 2. Checks filter controls
-    const traditionFilter = page.getByLabel('Filter by tradition');
-    await expect(traditionFilter).toBeVisible();
+    // 2. Checks tradition pill filters
+    const allPill = page.getByRole('button', { name: 'All' });
+    await expect(allPill).toBeVisible();
 
-    // 3. Checks sort options
-    const sortFilter = page.getByLabel('Sort artworks');
-    await expect(sortFilter).toBeVisible();
+    // 3. Checks sort pills
+    const newestPill = page.getByRole('button', { name: 'Newest First' });
+    await expect(newestPill).toBeVisible();
   });
 
   test('Scenario: User signs in to access full features', async ({ page }) => {

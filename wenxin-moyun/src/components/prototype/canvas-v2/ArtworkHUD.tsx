@@ -4,8 +4,8 @@
  * Running/Complete: shows artwork + status HUD.
  */
 
-import { useState } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { useState, useCallback } from 'react';
+import { ArrowRight, ImagePlus, X } from 'lucide-react';
 import type { DraftCandidate } from '@/hooks/usePrototypePipeline';
 import { API_BASE_URL } from '@/config/api';
 
@@ -59,18 +59,46 @@ export default function ArtworkHUD({ bestImageUrl, candidates, currentStage, sub
   const [tradition, setTradition] = useState('default');
   const [provider, setProvider] = useState('mock');
   const [showConfig, setShowConfig] = useState(false);
+  const [referencePreview, setReferencePreview] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   const handleSubmit = () => {
     if (!intentText.trim() || !onStartPipeline) return;
     onStartPipeline(intentText.trim(), tradition, provider);
   };
 
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files[0];
+    if (!file || !file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      setReferencePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  }, []);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
   const stageLabel = STAGE_LABELS[currentStage] || (currentStage ? currentStage.replace(/_/g, ' ') : 'Initializing');
 
   // ── Idle state: input form ──
   if (isIdle && !imageUrl) {
     return (
-      <div className="flex-1 relative rounded-2xl overflow-hidden bg-surface-container-lowest flex flex-col items-center justify-center p-8">
+      <div
+        className={`flex-1 relative rounded-2xl overflow-hidden bg-surface-container-lowest flex flex-col items-center justify-center p-8 transition-all ${isDragging ? 'ring-2 ring-primary-500 ring-offset-2' : ''}`}
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+      >
         <div className="max-w-lg w-full text-center">
           <div className="text-5xl mb-6 opacity-30">🎨</div>
           <h2 className="font-display text-2xl font-bold text-on-surface mb-2">Create Cultural Art</h2>
@@ -93,6 +121,28 @@ export default function ArtworkHUD({ bestImageUrl, candidates, currentStage, sub
               Next <ArrowRight className="w-4 h-4" />
             </button>
           </div>
+
+          {/* Reference image preview */}
+          {referencePreview && (
+            <div className="mb-4 relative inline-block">
+              <img src={referencePreview} alt="Reference" className="w-20 h-20 rounded-xl object-cover shadow-ambient-md" />
+              <button
+                onClick={() => setReferencePreview(null)}
+                className="absolute -top-2 -right-2 w-5 h-5 bg-on-surface text-white rounded-full flex items-center justify-center text-[10px] hover:bg-error-500 transition-colors"
+              >
+                <X className="w-3 h-3" />
+              </button>
+              <span className="text-[9px] text-on-surface-variant mt-1 block">Reference</span>
+            </div>
+          )}
+
+          {/* Drop hint */}
+          {isDragging && (
+            <div className="mb-4 flex items-center gap-2 text-primary-500 text-sm font-medium animate-pulse">
+              <ImagePlus className="w-5 h-5" />
+              Drop reference image here
+            </div>
+          )}
 
           {/* Quick config panel */}
           {showConfig && (
@@ -122,6 +172,30 @@ export default function ArtworkHUD({ bestImageUrl, candidates, currentStage, sub
                   </select>
                 </div>
               </div>
+
+              {/* Reference image upload (if not already dropped) */}
+              {!referencePreview && (
+                <label className="block mb-4 cursor-pointer">
+                  <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-surface-container-lowest text-on-surface-variant text-sm hover:bg-surface-container-high transition-colors">
+                    <ImagePlus className="w-4 h-4" />
+                    <span>Add reference image (optional)</span>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      e.target.value = '';
+                      const reader = new FileReader();
+                      reader.onload = () => setReferencePreview(reader.result as string);
+                      reader.readAsDataURL(file);
+                    }}
+                  />
+                </label>
+              )}
+
               <button
                 onClick={handleSubmit}
                 className="w-full bg-primary-500 text-white py-3 rounded-xl font-semibold text-sm hover:bg-primary-600 active:scale-[0.98] transition-all shadow-lg shadow-primary-500/20"

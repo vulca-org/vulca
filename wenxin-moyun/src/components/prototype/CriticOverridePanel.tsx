@@ -48,11 +48,11 @@ export default function CriticOverridePanel({ scoredCandidates, bestCandidateId,
     <div className="rounded-xl border border-[#C9C2B8] dark:border-[#4A433C] bg-[#C87F4A]/5 dark:bg-[#C87F4A]/10 p-4 space-y-4">
       <div className="flex items-center gap-2">
         <span className="text-xl">📊</span>
-        <h3 className="font-semibold text-[#334155] dark:text-[#DDA574]">
+        <h3 className="font-semibold text-on-surface">
           Review Critic Scores
         </h3>
         {bestCandidate && (
-          <span className="ml-auto text-xs px-2 py-0.5 rounded-full bg-[#C87F4A]/20 dark:bg-[#C87F4A]/20 text-[#334155] dark:text-[#DDA574]">
+          <span className="ml-auto text-xs px-2 py-0.5 rounded-full bg-[#C87F4A]/20 text-on-surface">
             Best: {bestCandidate.weighted_total.toFixed(3)}
           </span>
         )}

@@ -75,7 +75,7 @@ export default function SubStageProgress({ stages, recipeName, onRegenerate }: P
   };
 
   return (
-    <div className="bg-[#FAF7F2] dark:bg-gray-800/40 border-l-2 border-[#C87F4A] pl-4 py-3 rounded-r-lg">
+    <div className="bg-surface-container-low border-l-2 border-[#C87F4A] pl-4 py-3 rounded-r-lg">
       {recipeName && (
         <p className="text-xs font-medium text-[#C87F4A] dark:text-[#DDA574] mb-2">
           {recipeName}

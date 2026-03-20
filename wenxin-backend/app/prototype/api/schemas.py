@@ -39,6 +39,7 @@ class CreateRunRequest(BaseModel):
     custom_nodes: list[str] | None = Field(default=None, description="Custom topology node list (overrides template)")
     custom_edges: list[tuple[str, str]] | None = Field(default=None, description="Custom topology edges (overrides template)")
     node_params: dict[str, dict] | None = Field(default=None, description="Per-node config overrides keyed by agent id")
+    reference_image_base64: str | None = Field(default=None, description="Base64-encoded reference image for style guidance")
 
 
 class RunStatusResponse(BaseModel):

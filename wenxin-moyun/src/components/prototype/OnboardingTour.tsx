@@ -117,7 +117,7 @@ function TourTooltip({
         </div>
 
         {/* Title */}
-        <h3 className="text-base font-semibold text-[#334155] dark:text-white mb-1.5">
+        <h3 className="text-base font-semibold text-on-surface mb-1.5">
           {step.title}
         </h3>
 

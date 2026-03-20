@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { Filter, Palette, Layers, Sparkles, Loader2, ChevronDown, ChevronUp, ArrowUpDown } from 'lucide-react';
+import { Palette, Sparkles, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   IOSButton,
   IOSCard,
@@ -328,15 +329,17 @@ function ArtworkCard({ artwork, likeCount, onSelect }: { artwork: GalleryItem; l
   const hasImage = !!resolvedImageUrl;
 
   return (
-    <div
+    <motion.div
       className="group cursor-pointer"
       onClick={() => onSelect(artwork)}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => { if (e.key === 'Enter') onSelect(artwork); }}
+      whileHover={{ scale: 1.02 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 30 }}
     >
       {/* Image — vertical aspect 4/5, large rounded corners */}
-      <div className="aspect-[4/5] rounded-3xl overflow-hidden relative bg-surface-container-high">
+      <div className="aspect-[4/5] rounded-3xl overflow-hidden relative bg-surface-container-high shadow-ambient-md group-hover:shadow-ambient-xl transition-shadow duration-500">
         <div className="absolute inset-0" style={{ background: gradient }} />
         {hasImage && (
           <img
@@ -359,7 +362,7 @@ function ArtworkCard({ artwork, likeCount, onSelect }: { artwork: GalleryItem; l
           {artwork.subject}
         </h3>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -571,61 +574,69 @@ export default function GalleryPage() {
         {/* Evolution Insights Panel (collapsible) */}
         <EvolutionInsightsPanel insights={digestionInsights} />
 
-        {/* Filters + Sort */}
-        <div className="flex flex-col sm:flex-row gap-3 mb-8 items-start sm:items-center">
-          <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-outline" />
-            <select
-              value={selectedTradition}
-              onChange={(e) => setSelectedTradition(e.target.value)}
-              aria-label="Filter by tradition"
-              className="px-4 py-2.5 rounded-full bg-surface-container-lowest text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition"
-            >
-              <option value="all">All Traditions</option>
-              {traditions.map((t) => (
-                <option key={t} value={t}>
-                  {TRADITION_LABELS[t] ?? t.replace(/_/g, ' ')}
-                </option>
-              ))}
-            </select>
-          </div>
+        {/* Tradition pills */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          {['all', ...traditions].map((t) => {
+            const label = t === 'all' ? 'All' : (TRADITION_LABELS[t] ?? t.replace(/_/g, ' '));
+            const isActive = selectedTradition === t;
+            return (
+              <button
+                key={t}
+                onClick={() => setSelectedTradition(t)}
+                className={`px-4 py-2 rounded-full text-xs font-semibold transition-all ${
+                  isActive
+                    ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/20'
+                    : 'bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container-high'
+                }`}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
 
-          <div className="flex items-center gap-2">
-            <Layers className="w-4 h-4 text-outline" />
-            <select
-              value={String(minScore)}
-              onChange={(e) => setMinScore(Number(e.target.value))}
-              aria-label="Filter by minimum score"
-              className="px-4 py-2.5 rounded-full bg-surface-container-lowest text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition"
+        {/* Sort pills + score filter + count */}
+        <div className="flex flex-wrap gap-2 mb-8 items-center">
+          {(Object.entries(SORT_LABELS) as [SortOption, string][]).map(([key, label]) => (
+            <button
+              key={key}
+              onClick={() => setSortBy(key)}
+              className={`px-4 py-2 rounded-full text-xs font-semibold transition-all ${
+                sortBy === key
+                  ? 'bg-on-surface text-white'
+                  : 'bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container-high'
+              }`}
             >
-              <option value="0">Min Score: Any</option>
-              <option value="0.80">Min Score: 80%</option>
-              <option value="0.85">Min Score: 85%</option>
-              <option value="0.90">Min Score: 90%</option>
-            </select>
-          </div>
+              {label}
+            </button>
+          ))}
 
-          <div className="flex items-center gap-2">
-            <ArrowUpDown className="w-4 h-4 text-outline" />
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as SortOption)}
-              aria-label="Sort artworks"
-              className="px-4 py-2.5 rounded-full bg-surface-container-lowest text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition"
+          <span className="mx-1 text-surface-container-high">|</span>
+
+          {[0, 0.80, 0.85, 0.90].map((score) => (
+            <button
+              key={score}
+              onClick={() => setMinScore(score)}
+              className={`px-3 py-2 rounded-full text-xs font-semibold transition-all ${
+                minScore === score
+                  ? 'bg-on-surface text-white'
+                  : 'bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container-high'
+              }`}
             >
-              {(Object.entries(SORT_LABELS) as [SortOption, string][]).map(([key, label]) => (
-                <option key={key} value={key}>{label}</option>
-              ))}
-            </select>
-          </div>
+              {score === 0 ? 'Any Score' : `≥${Math.round(score * 100)}%`}
+            </button>
+          ))}
 
           {(selectedTradition !== 'all' || minScore > 0 || sortBy !== 'newest') && (
-            <IOSButton variant="text" size="sm" onClick={() => { setSelectedTradition('all'); setMinScore(0); setSortBy('newest'); }}>
+            <button
+              onClick={() => { setSelectedTradition('all'); setMinScore(0); setSortBy('newest'); }}
+              className="px-3 py-2 rounded-full text-xs font-semibold text-primary-500 hover:bg-primary-50 transition-all"
+            >
               Reset
-            </IOSButton>
+            </button>
           )}
 
-          <span className="text-xs text-gray-400 dark:text-gray-500 sm:ml-auto flex items-center gap-1.5">
+          <span className="text-xs text-on-surface-variant/60 sm:ml-auto flex items-center gap-1.5">
             {loading && <Loader2 className="w-3 h-3 animate-spin" />}
             {isLive
               ? `Showing ${rangeStart}–${rangeEnd} of ${totalCount}`
@@ -690,72 +701,82 @@ export default function GalleryPage() {
         )}
       </div>
 
-      {/* Detail Modal */}
-      {selectedArtwork && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-          onClick={() => setSelectedArtwork(null)}
-        >
-          <div
-            className="bg-surface-container-lowest rounded-2xl shadow-ambient-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
+      {/* Detail Modal with AnimatePresence */}
+      <AnimatePresence>
+        {selectedArtwork && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            onClick={() => setSelectedArtwork(null)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
           >
-            <div className="aspect-[16/9] relative rounded-t-2xl overflow-hidden bg-surface-container-high">
-              {selectedArtwork.best_image_url ? (
-                <img
-                  src={(() => {
-                    const url = selectedArtwork.best_image_url;
-                    if (url.startsWith('data:') || url.startsWith('http')) return url;
-                    if (url.startsWith('/static/') || url.startsWith('static/'))
-                      return `${API_BASE_URL}${url.startsWith('/') ? url : `/${url}`}`;
-                    return url;
-                  })()}
-                  alt={selectedArtwork.subject}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center" style={{ background: TRADITION_GRADIENTS[selectedArtwork.tradition] ?? TRADITION_GRADIENTS.default }}>
-                  <span className="text-white text-4xl">🎨</span>
+            <motion.div
+              className="bg-surface-container-lowest rounded-2xl shadow-ambient-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+            >
+              <div className="aspect-[16/9] relative rounded-t-2xl overflow-hidden bg-surface-container-high">
+                {selectedArtwork.best_image_url ? (
+                  <img
+                    src={(() => {
+                      const url = selectedArtwork.best_image_url;
+                      if (url.startsWith('data:') || url.startsWith('http')) return url;
+                      if (url.startsWith('/static/') || url.startsWith('static/'))
+                        return `${API_BASE_URL}${url.startsWith('/') ? url : `/${url}`}`;
+                      return url;
+                    })()}
+                    alt={selectedArtwork.subject}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center" style={{ background: TRADITION_GRADIENTS[selectedArtwork.tradition] ?? TRADITION_GRADIENTS.default }}>
+                    <span className="text-white text-4xl">🎨</span>
+                  </div>
+                )}
+                <button onClick={() => setSelectedArtwork(null)} className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/40 text-white flex items-center justify-center hover:bg-black/60 transition-colors backdrop-blur-sm" aria-label="Close">✕</button>
+              </div>
+              <div className="p-8">
+                <div className="flex items-start justify-between mb-6">
+                  <div>
+                    <h2 className="font-display text-2xl font-bold text-on-surface mb-2">{selectedArtwork.subject}</h2>
+                    <span className="text-[11px] font-bold uppercase tracking-widest text-primary-500 bg-primary-50 px-3 py-1 rounded-full">
+                      {TRADITION_LABELS[selectedArtwork.tradition] ?? selectedArtwork.tradition.replace(/_/g, ' ')}
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-3xl font-bold text-on-surface">{Math.round(selectedArtwork.overall * 100)}%</span>
+                    <p className="text-[11px] text-on-surface-variant">Overall Score</p>
+                  </div>
                 </div>
-              )}
-              <button onClick={() => setSelectedArtwork(null)} className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/40 text-white flex items-center justify-center hover:bg-black/60 transition-colors backdrop-blur-sm" aria-label="Close">✕</button>
-            </div>
-            <div className="p-8">
-              <div className="flex items-start justify-between mb-6">
-                <div>
-                  <h2 className="font-display text-2xl font-bold text-on-surface mb-2">{selectedArtwork.subject}</h2>
-                  <span className="text-[11px] font-bold uppercase tracking-widest text-primary-500 bg-primary-50 px-3 py-1 rounded-full">
-                    {TRADITION_LABELS[selectedArtwork.tradition] ?? selectedArtwork.tradition.replace(/_/g, ' ')}
-                  </span>
+                <div className="mb-6">
+                  <h3 className="text-[11px] font-bold uppercase tracking-widest text-outline mb-3">Dimension Scores</h3>
+                  <div className="grid grid-cols-5 gap-3">
+                    {Object.entries(selectedArtwork.scores).map(([dim, score]) => (
+                      <div key={dim} className="text-center">
+                        <div className={`w-full aspect-square rounded-xl flex items-center justify-center text-sm font-bold mb-1 ${score >= 0.9 ? 'bg-primary-500 text-white' : 'bg-surface-container-high text-on-surface-variant'}`}>{dim}</div>
+                        <span className="text-[10px] font-bold text-on-surface-variant">{Math.round(score * 100)}%</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="text-right">
-                  <span className="text-3xl font-bold text-on-surface">{Math.round(selectedArtwork.overall * 100)}%</span>
-                  <p className="text-[11px] text-on-surface-variant">Overall Score</p>
+                <div className="flex items-center gap-4 text-[11px] text-on-surface-variant">
+                  <span>{selectedArtwork.total_rounds} round{selectedArtwork.total_rounds !== 1 ? 's' : ''}</span>
+                  <span>{(selectedArtwork.total_latency_ms / 1000).toFixed(1)}s</span>
+                  {selectedArtwork.created_at && <span>{new Date(selectedArtwork.created_at * 1000).toLocaleDateString()}</span>}
+                </div>
+                <div className="flex items-center gap-3 mt-6 pt-6">
+                  <GalleryCardActions sessionId={selectedArtwork.id} subject={selectedArtwork.subject} tradition={selectedArtwork.tradition} initialLikes={likeCounts[selectedArtwork.id] ?? 0} />
                 </div>
               </div>
-              <div className="mb-6">
-                <h3 className="text-[11px] font-bold uppercase tracking-widest text-outline mb-3">Dimension Scores</h3>
-                <div className="grid grid-cols-5 gap-3">
-                  {Object.entries(selectedArtwork.scores).map(([dim, score]) => (
-                    <div key={dim} className="text-center">
-                      <div className={`w-full aspect-square rounded-xl flex items-center justify-center text-sm font-bold mb-1 ${score >= 0.9 ? 'bg-primary-500 text-white' : 'bg-surface-container-high text-on-surface-variant'}`}>{dim}</div>
-                      <span className="text-[10px] font-bold text-on-surface-variant">{Math.round(score * 100)}%</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="flex items-center gap-4 text-[11px] text-on-surface-variant">
-                <span>{selectedArtwork.total_rounds} round{selectedArtwork.total_rounds !== 1 ? 's' : ''}</span>
-                <span>{(selectedArtwork.total_latency_ms / 1000).toFixed(1)}s</span>
-                {selectedArtwork.created_at && <span>{new Date(selectedArtwork.created_at * 1000).toLocaleDateString()}</span>}
-              </div>
-              <div className="flex items-center gap-3 mt-6 pt-6">
-                <GalleryCardActions sessionId={selectedArtwork.id} subject={selectedArtwork.subject} tradition={selectedArtwork.tradition} initialLikes={likeCounts[selectedArtwork.id] ?? 0} />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

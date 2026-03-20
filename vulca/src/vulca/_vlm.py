@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 
 import litellm
 
@@ -212,7 +213,7 @@ async def score_image(
 
     try:
         resp = await litellm.acompletion(
-            model="gemini/gemini-2.5-flash",
+            model=os.environ.get("VULCA_VLM_MODEL", "gemini/gemini-2.5-flash"),
             messages=[
                 {"role": "system", "content": system_msg},
                 {"role": "user", "content": user_parts},

@@ -40,10 +40,10 @@ export default function DraftSelectionPanel({ candidates, onAction }: Props) {
   };
 
   return (
-    <div className="rounded-xl border border-[#C9C2B8] dark:border-[#4A433C] bg-[#FAF7F2] dark:bg-[#C87F4A]/10 p-4 space-y-4">
+    <div className="rounded-xl border border-surface-container-high bg-surface-container-low p-4 space-y-4">
       <div className="flex items-center gap-2">
         <span className="text-xl">🎨</span>
-        <h3 className="font-semibold text-[#334155] dark:text-[#DDA574]">
+        <h3 className="font-semibold text-on-surface">
           Review Draft Candidates
         </h3>
         <span className="ml-auto text-xs text-[#C87F4A] dark:text-[#DDA574]">

@@ -163,6 +163,12 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
         if custom_weights:
             _node_params["evaluate"] = {"custom_weights": custom_weights}
 
+    # Inject reference image into generate node params
+    if req.reference_image_base64:
+        gen_params = _node_params.get("generate", {})
+        gen_params["reference_image_b64"] = req.reference_image_base64
+        _node_params["generate"] = gen_params
+
     vulca_input = VulcaPipelineInput(
         subject=req.subject,
         intent=req.intent or req.subject,

@@ -130,7 +130,7 @@ export default function EvolutionInsightsPanel() {
                   onClick={() => setExpandedAgent(expandedAgent === agent ? null : agent)}
                   className="w-full text-left px-2 py-1 rounded-md bg-stone-50 dark:bg-stone-800/50 hover:bg-stone-100 dark:hover:bg-stone-700/50 transition-colors"
                 >
-                  <span className="text-[10px] font-semibold text-[#334155] dark:text-[#94A3B8]">
+                  <span className="text-[10px] font-semibold text-on-surface">
                     {agentLabels[agent] || agent}
                   </span>
                   {expandedAgent === agent && typeof insight === 'string' && (
@@ -152,7 +152,7 @@ export default function EvolutionInsightsPanel() {
               {stats.archetypes.map(a => (
                 <span
                   key={a}
-                  className="text-[9px] px-1.5 py-0.5 rounded bg-[#334155]/10 dark:bg-[#334155]/20 text-[#334155] dark:text-[#94A3B8]"
+                  className="text-[9px] px-1.5 py-0.5 rounded bg-surface-container-high text-on-surface"
                 >
                   {a}
                 </span>

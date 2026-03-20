@@ -58,7 +58,7 @@ export default function ScoutEvidenceCard({ evidence }: Props) {
       <IOSCardContent>
         {/* Stats grid */}
         <div className="grid grid-cols-3 gap-3">
-          <div className="text-center p-3 bg-[#FAF7F2] dark:bg-[#C87F4A]/10 rounded-xl">
+          <div className="text-center p-3 bg-surface-container-low rounded-xl">
             <div className="text-xl font-bold text-[#C87F4A] dark:text-[#DDA574]">{sampleCount}</div>
             <div className="text-[11px] text-gray-600 dark:text-gray-400 mt-0.5">Samples</div>
           </div>
@@ -110,7 +110,7 @@ export default function ScoutEvidenceCard({ evidence }: Props) {
 
             {/* Sample matches */}
             {sampleCount > 0 && sampleMatchesRaw && (
-              <div className="p-2.5 bg-[#FAF7F2] dark:bg-[#C87F4A]/10 rounded-lg">
+              <div className="p-2.5 bg-surface-container-low rounded-lg">
                 <h4 className="text-xs font-semibold text-[#C87F4A] dark:text-[#DDA574] mb-1.5">Reference Samples</h4>
                 <div className="space-y-1">
                   {sampleMatchesRaw.slice(0, 5).map((s, i) => (
