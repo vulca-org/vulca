@@ -36,7 +36,7 @@ export const ScoringReference: React.FC<ScoringReferenceProps> = ({
 
   const getConfidenceColor = (confidence: string) => {
     switch (confidence) {
-      case 'high': return 'text-success-500';
+      case 'high': return 'text-cultural-sage-500';
       case 'medium': return 'text-accent-500';
       default: return 'text-neutral-400';
     }
@@ -111,7 +111,7 @@ export const ScoringReference: React.FC<ScoringReferenceProps> = ({
         <div className="flex justify-between mt-2 text-xs text-neutral-500">
           <span>建议范围: {data.score_range.min}-{data.score_range.max}分</span>
           {currentScore && (
-            <span className={currentScore >= data.score_range.min && currentScore <= data.score_range.max ? 'text-success-500' : 'text-warning-500'}>
+            <span className={currentScore >= data.score_range.min && currentScore <= data.score_range.max ? 'text-cultural-sage-500' : 'text-cultural-amber-500'}>
               当前评分: {currentScore}分
             </span>
           )}

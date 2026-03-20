@@ -72,6 +72,30 @@
   --color-outline: #717785;
   --color-outline-variant: #c1c6d5;
 
+  /* MD3 extended tokens */
+  --color-primary-container: #0873df;
+  --color-primary-fixed: #d6e3ff;
+  --color-primary-fixed-dim: #aac7ff;
+  --color-secondary: #465f89;
+  --color-secondary-container: #b7cfff;
+  --color-tertiary: #964400;
+  --color-tertiary-container: #bd5700;
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-surface-tint: #005db8;
+  --color-surface-variant: #e0e2ec;
+  --color-background: #f9f9ff;
+  --color-on-background: #181c22;
+  --color-inverse-surface: #2d3038;
+  --color-inverse-on-surface: #eff0fa;
+  --color-inverse-primary: #aac7ff;
+
+  /* Cultural palette tokens */
+  --color-cultural-bronze: #C87F4A;
+  --color-cultural-sage: #5F8A50;
+  --color-cultural-amber: #B8923D;
+  --color-cultural-coral: #C65D4D;
+
   /* Bronze alias */
   --color-bronze-50: #FDF8F4;
   --color-bronze-100: #FAEFE6;
@@ -166,12 +190,16 @@
   --bg-hover: #f2f3fd;
 
   /* Semantic colors — Digital Curator */
-  --color-primary: #005ab4;  /* Tech Trust Blue (design HTML) */
-  --color-accent: #C87F4A;   /* Cultural Artistry Bronze */
-  --color-success: #5F8A50;  /* Sage Green */
-  --color-warning: #B8923D;  /* Amber Gold */
-  --color-error: #C65D4D;    /* Coral Red */
-  --color-info: #64748B;     /* Neutral gray */
+  --color-primary: #005ab4;         /* Tech Trust Blue (design HTML) */
+  --color-accent: #C87F4A;          /* Cultural Artistry Bronze (legacy alias) */
+  --color-cultural-bronze: #C87F4A; /* Cultural Bronze */
+  --color-cultural-sage: #5F8A50;   /* Cultural Sage */
+  --color-cultural-amber: #B8923D;  /* Cultural Amber */
+  --color-cultural-coral: #C65D4D;  /* Cultural Coral */
+  --color-success: #5F8A50;         /* Sage Green */
+  --color-warning: #B8923D;         /* Amber Gold */
+  --color-error: #C65D4D;           /* Coral Red */
+  --color-info: #64748B;            /* Neutral gray */
 }
 
 .dark {
@@ -333,7 +361,7 @@
   height: 100%;
   border-radius: 9999px;
   transition: all 400ms ease-in-out;
-  background: linear-gradient(90deg, #1275E2, #C87F4A);  /* Ink Slate → Warm Bronze */
+  background: linear-gradient(90deg, #005ab4, #C87F4A);  /* Primary Blue → Warm Bronze */
 }
 
 /* Data Highlight Animation */
@@ -358,7 +386,7 @@
 
 /* Brand gradient — Art Professional */
 .bg-gradient-brand {
-  background: linear-gradient(135deg, #1275E2 0%, #C87F4A 100%);  /* Ink Slate → Warm Bronze */
+  background: linear-gradient(135deg, #005ab4 0%, #C87F4A 100%);  /* Primary Blue → Warm Bronze */
 }
 
 @layer utilities {
@@ -367,7 +395,7 @@
   }
   
   .gradient-text {
-    background: linear-gradient(to right, #1275E2, #C87F4A);  /* Ink Slate → Warm Bronze */
+    background: linear-gradient(to right, #005ab4, #C87F4A);  /* Primary Blue → Warm Bronze */
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -675,7 +703,7 @@
   overflow: visible !important;
   clip: auto !important;
   white-space: normal !important;
-  background-color: #1275E2 !important;  /* Ink Slate */
+  background-color: #005ab4 !important;  /* Primary Blue */
   color: white !important;
   border-radius: 0.5rem !important;
   font-weight: 600 !important;

@@ -280,7 +280,7 @@ export default function LeaderboardPage() {
           <p className="text-gray-600 dark:text-gray-400 mt-2">Evaluated Models</p>
         </div>
         <div className="ios-glass liquid-glass-container rounded-lg p-6 text-center">
-          <div className="text-3xl font-bold text-secondary-600 dark:text-secondary-400">
+          <div className="text-3xl font-bold text-cultural-bronze-600 dark:text-cultural-bronze-400">
             {filteredData[0]?.score != null ? filteredData[0].score.toFixed(3) : 0}
           </div>
           <p className="text-gray-600 dark:text-gray-400 mt-2">Highest Score</p>

@@ -4,7 +4,7 @@
  * Shows the winning candidate image, overall weighted score, per-dimension
  * L1-L5 score bars, round info, latency/cost stats, and a link to Gallery.
  *
- * Art Professional palette: #334155 #C87F4A #5F8A50 #B8923D #C65D4D bg:#FAF7F2
+ * Art Professional palette: #334155 #C87F4A #5F8A50 #B8923D #C65D4D bg:#f9f9ff
  */
 
 import { useState, useCallback } from 'react';
@@ -226,7 +226,7 @@ export default function FinalResultPanel({
 
         {/* Final decision rationale */}
         {finalDecision && (
-          <div className="mt-4 p-3 bg-[#FAF7F2] dark:bg-[#1F1D1A] rounded-lg border border-[#C9C2B8]/30 dark:border-gray-700">
+          <div className="mt-4 p-3 bg-[#f9f9ff] dark:bg-[#1F1D1A] rounded-lg border border-[#C9C2B8]/30 dark:border-gray-700">
             <div className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
               Queen's Decision
             </div>

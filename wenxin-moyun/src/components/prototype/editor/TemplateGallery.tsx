@@ -63,9 +63,9 @@ function TemplateCard({
       className={[
         'p-3 rounded-lg border cursor-pointer transition-all hover:shadow-sm',
         active
-          ? 'border-[#C87F4A] bg-[#FAF7F2] dark:bg-[#C87F4A]/10'
+          ? 'border-[#C87F4A] bg-[#f9f9ff] dark:bg-[#C87F4A]/10'
           : recommended
-            ? 'border-[#C9C2B8] dark:border-[#4A433C] bg-[#FAF7F2]/50 dark:bg-[#C87F4A]/5'
+            ? 'border-[#C9C2B8] dark:border-[#4A433C] bg-[#f9f9ff]/50 dark:bg-[#C87F4A]/5'
             : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600',
       ].join(' ')}
     >

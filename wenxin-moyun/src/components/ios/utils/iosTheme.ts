@@ -5,13 +5,19 @@
 
 export const iosColors = {
   // Digital Curator Color Palette
-  blue: '#005ab4',       // Tech Trust Blue — primary (design HTML)
-  green: '#5F8A50',      // Sage Green — success
+  // Tailwind cultural-* token mapping:
+  //   blue   → MD3 primary (#005ab4)
+  //   green  → cultural-sage (#5F8A50)
+  //   orange → cultural-amber (#B8923D)
+  //   purple → cultural-bronze (#C87F4A)
+  //   red    → cultural-coral (#C65D4D)
+  blue: '#005ab4',       // Tech Trust Blue — MD3 primary
+  green: '#5F8A50',      // cultural-sage — success
   indigo: '#003F80',     // Deep Blue — primary dark
-  orange: '#B8923D',     // Amber Gold — warning
+  orange: '#B8923D',     // cultural-amber — warning
   pink: '#9B6B56',       // Terracotta
-  purple: '#C87F4A',     // Warm Bronze — secondary / cultural accent
-  red: '#C65D4D',        // Coral Red — error
+  purple: '#C87F4A',     // cultural-bronze — secondary / cultural accent
+  red: '#C65D4D',        // cultural-coral — error
   teal: '#6B8E7A',       // Patina Green — info
   yellow: '#D4A84B',     // Warm Gold
   

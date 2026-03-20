@@ -34,7 +34,7 @@ interface Props {
 }
 
 const SIGNAL_TYPE_STYLES: Record<string, { bg: string; icon: string }> = {
-  REINTERPRET: { bg: 'bg-[#FAF7F2] dark:bg-[#C87F4A]/10 border-[#C9C2B8] dark:border-[#4A433C]', icon: '🔄' },
+  REINTERPRET: { bg: 'bg-[#f9f9ff] dark:bg-[#C87F4A]/10 border-[#C9C2B8] dark:border-[#4A433C]', icon: '🔄' },
   CONFLICT: { bg: 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800', icon: '⚡' },
   EVIDENCE_GAP: { bg: 'bg-[#B8923D]/5 dark:bg-[#B8923D]/10 border-[#B8923D]/30 dark:border-[#B8923D]/30', icon: '🔍' },
   CONFIRMATION: { bg: 'bg-[#5F8A50]/5 dark:bg-[#5F8A50]/10 border-[#5F8A50]/20 dark:border-[#4A7040]', icon: '✓' },

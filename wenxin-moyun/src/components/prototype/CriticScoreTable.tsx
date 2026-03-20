@@ -154,7 +154,7 @@ export default function CriticScoreTable({ scoredCandidates, bestCandidateId, ag
     <div className="space-y-3">
       {/* Evaluation summary */}
       {evaluationSummary && (
-        <div className="px-3 py-2 bg-[#FAF7F2] dark:bg-gray-800/40 border-l-2 border-[#5F8A50] rounded-r-lg text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+        <div className="px-3 py-2 bg-[#f9f9ff] dark:bg-gray-800/40 border-l-2 border-[#5F8A50] rounded-r-lg text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
           {evaluationSummary}
         </div>
       )}

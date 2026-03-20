@@ -128,7 +128,7 @@ export default function ArtworkHUD({ bestImageUrl, candidates, currentStage, sub
               <img src={referencePreview} alt="Reference" className="w-20 h-20 rounded-xl object-cover shadow-ambient-md" />
               <button
                 onClick={() => setReferencePreview(null)}
-                className="absolute -top-2 -right-2 w-5 h-5 bg-on-surface text-white rounded-full flex items-center justify-center text-[10px] hover:bg-error-500 transition-colors"
+                className="absolute -top-2 -right-2 w-5 h-5 bg-on-surface text-white rounded-full flex items-center justify-center text-[10px] hover:bg-cultural-coral-500 transition-colors"
               >
                 <X className="w-3 h-3" />
               </button>

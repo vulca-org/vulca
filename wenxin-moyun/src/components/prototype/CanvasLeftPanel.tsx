@@ -99,7 +99,7 @@ export default function CanvasLeftPanel({
               className={[
                 'px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors',
                 playgroundMode === mode
-                  ? 'border-secondary-200 dark:border-secondary-500 text-secondary-500 dark:text-secondary-400 bg-secondary-50 dark:bg-secondary-500/10'
+                  ? 'border-cultural-bronze-200 dark:border-cultural-bronze-500 text-cultural-bronze-500 dark:text-cultural-bronze-400 bg-cultural-bronze-50 dark:bg-cultural-bronze-500/10'
                   : 'border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800',
               ].join(' ')}
             >

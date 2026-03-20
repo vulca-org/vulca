@@ -124,8 +124,8 @@ function TraditionCombobox({
             <li
               key={item.key}
               onClick={() => handleSelect(item.key)}
-              className={`px-3 py-2 cursor-pointer hover:bg-[#FAF7F2] dark:hover:bg-gray-700 text-sm ${
-                item.key === value ? 'bg-[#FAF7F2] dark:bg-gray-700 font-medium' : ''
+              className={`px-3 py-2 cursor-pointer hover:bg-[#f9f9ff] dark:hover:bg-gray-700 text-sm ${
+                item.key === value ? 'bg-[#f9f9ff] dark:bg-gray-700 font-medium' : ''
               }`}
             >
               <span className="text-gray-900 dark:text-gray-100">{item.label}</span>
@@ -143,7 +143,7 @@ function TraditionCombobox({
         <ul className="absolute z-50 mt-1 w-full rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-lg">
           <li
             onClick={() => handleSelect(query.toLowerCase().replace(/\s+/g, '_'))}
-            className="px-3 py-2 cursor-pointer hover:bg-[#FAF7F2] dark:hover:bg-gray-700 text-sm"
+            className="px-3 py-2 cursor-pointer hover:bg-[#f9f9ff] dark:hover:bg-gray-700 text-sm"
           >
             <span className="text-gray-900 dark:text-gray-100">Use &ldquo;{query}&rdquo;</span>
             <span className="ml-2 text-xs text-[#5F8A50]">custom</span>

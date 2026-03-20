@@ -89,7 +89,7 @@ export default function IntentBar({ onSubmit, onIntentChange, disabled = false, 
             className={[
               'flex items-center gap-2 rounded-lg border border-dashed px-3 py-2 cursor-pointer transition-colors text-xs',
               dragActive
-                ? 'border-[#C87F4A] bg-[#FAF7F2] dark:bg-[#C87F4A]/10'
+                ? 'border-[#C87F4A] bg-[#f9f9ff] dark:bg-[#C87F4A]/10'
                 : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500',
               disabled ? 'opacity-50 pointer-events-none' : '',
             ].join(' ')}

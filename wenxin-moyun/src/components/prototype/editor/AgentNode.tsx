@@ -50,7 +50,7 @@ const RING_COLORS: Record<string, string> = {
 
 const BG_COLORS: Record<string, string> = {
   idle: 'bg-white dark:bg-gray-800',
-  running: 'bg-[#FAF7F2] dark:bg-[#C87F4A]/10',
+  running: 'bg-[#f9f9ff] dark:bg-[#C87F4A]/10',
   done: 'bg-[#5F8A50]/5 dark:bg-[#5F8A50]/10',
   error: 'bg-red-50 dark:bg-red-900/20',
   skipped: 'bg-gray-100 dark:bg-gray-800',

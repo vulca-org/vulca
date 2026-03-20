@@ -21,8 +21,8 @@ interface Props {
 const AGENTS = [
   { id: 'scout', label: 'Scout', icon: 'explore', desc: 'Identifying data sources and initial research nodes.', activeBg: 'border-primary-500/10 bg-primary-50/30 hover:bg-primary-50/50 shadow-sm', dotColor: 'bg-primary-500 ring-4 ring-primary-500/10', iconBg: 'bg-primary-500 text-white' },
   { id: 'draft', label: 'Draft', icon: 'edit_note', desc: 'Synthesizing raw findings into structured narrative.', activeBg: 'border-primary-500/10 bg-primary-50/30 hover:bg-primary-50/50 shadow-sm', dotColor: 'bg-primary-500 ring-4 ring-primary-500/10', iconBg: 'bg-primary-500 text-white' },
-  { id: 'critic', label: 'Critic', icon: 'gavel', desc: 'Challenging assumptions and refining logic.', activeBg: 'border-warning-500/10 bg-warning-50/30 hover:bg-warning-50/50 shadow-sm', dotColor: 'bg-warning-400', iconBg: 'bg-warning-50 text-warning-700' },
-  { id: 'queen', label: 'Queen', icon: 'crown', desc: 'Orchestrating workflows and final approvals.', activeBg: 'border-secondary-500/10 bg-secondary-50/30 hover:bg-secondary-50/50 shadow-sm', dotColor: 'bg-secondary-500', iconBg: 'bg-secondary-50 text-secondary-700' },
+  { id: 'critic', label: 'Critic', icon: 'gavel', desc: 'Challenging assumptions and refining logic.', activeBg: 'border-cultural-amber-500/10 bg-cultural-amber-50/30 hover:bg-cultural-amber-50/50 shadow-sm', dotColor: 'bg-cultural-amber-400', iconBg: 'bg-cultural-amber-50 text-cultural-amber-700' },
+  { id: 'queen', label: 'Queen', icon: 'crown', desc: 'Orchestrating workflows and final approvals.', activeBg: 'border-cultural-bronze-500/10 bg-cultural-bronze-50/30 hover:bg-cultural-bronze-50/50 shadow-sm', dotColor: 'bg-cultural-bronze-500', iconBg: 'bg-cultural-bronze-50 text-cultural-bronze-700' },
 ] as const;
 
 function getAgentStatus(agentId: string, currentStage: string, pipelineStatus: string, completedStages: Set<string>): 'active' | 'done' | 'idle' {
@@ -111,7 +111,7 @@ export default function AICollectiveSidebar({ currentStage, pipelineStatus, even
       {/* Tradition indicator */}
       {tradition && tradition !== 'default' && (
         <div className="px-8 mb-4">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-secondary-500">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-cultural-bronze-500">
             {tradition.replace(/_/g, ' ')}
           </span>
         </div>

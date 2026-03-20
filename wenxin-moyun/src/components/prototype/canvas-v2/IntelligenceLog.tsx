@@ -25,7 +25,7 @@ function formatEvent(e: PipelineEvent): { prefix: string; prefixColor: string; t
   if (type === 'stage_completed') {
     const payload = e.payload || {};
     const latency = payload.latency_ms ? ` (${Math.round(Number(payload.latency_ms))}ms)` : '';
-    return { prefix: `[${stage}]`, prefixColor: 'text-success-500', text: `Stage complete${latency}` };
+    return { prefix: `[${stage}]`, prefixColor: 'text-cultural-sage-500', text: `Stage complete${latency}` };
   }
   if (type === 'decision_made') {
     const action = (e.payload?.action || e.payload?.decision || 'unknown') as string;
@@ -38,22 +38,22 @@ function formatEvent(e: PipelineEvent): { prefix: string; prefixColor: string; t
       hint = ` → Focus on: ${weakest.join(', ')}`;
     }
     if (focus) hint += ` — "${focus}"`;
-    return { prefix: '[QUEEN]', prefixColor: 'text-secondary-500', text: `Decision: ${action}${extra}${hint}` };
+    return { prefix: '[QUEEN]', prefixColor: 'text-cultural-bronze-500', text: `Decision: ${action}${extra}${hint}` };
   }
   if (type === 'human_required') {
-    return { prefix: '[HITL]', prefixColor: 'text-warning-500', text: `Waiting for human input at ${stage}` };
+    return { prefix: '[HITL]', prefixColor: 'text-cultural-amber-500', text: `Waiting for human input at ${stage}` };
   }
   if (type === 'human_received') {
-    return { prefix: '[HITL]', prefixColor: 'text-success-500', text: 'Human action received — resuming pipeline' };
+    return { prefix: '[HITL]', prefixColor: 'text-cultural-sage-500', text: 'Human action received — resuming pipeline' };
   }
   if (type === 'pipeline_completed') {
-    return { prefix: '[SUCCESS]', prefixColor: 'text-success-500', text: 'Pipeline complete. Evolution Phase enabled.' };
+    return { prefix: '[SUCCESS]', prefixColor: 'text-cultural-sage-500', text: 'Pipeline complete. Evolution Phase enabled.' };
   }
   if (type === 'pipeline_failed') {
-    return { prefix: '[ERROR]', prefixColor: 'text-error-500', text: `Failed: ${e.payload?.error || 'Unknown error'}` };
+    return { prefix: '[ERROR]', prefixColor: 'text-cultural-coral-500', text: `Failed: ${e.payload?.error || 'Unknown error'}` };
   }
   if (type === 'session_digest') {
-    return { prefix: '[EVOLUTION]', prefixColor: 'text-secondary-500', text: 'Session digest generated — weights updated' };
+    return { prefix: '[EVOLUTION]', prefixColor: 'text-cultural-bronze-500', text: 'Session digest generated — weights updated' };
   }
   return { prefix: `[${stage || 'SYS'}]`, prefixColor: 'text-primary-400', text: type.replace(/_/g, ' ') };
 }
@@ -81,7 +81,7 @@ export default function IntelligenceLog({ events, currentStage, status }: Props)
           <span className="text-primary-500 font-bold text-[10px] animate-pulse">LIVE FEED</span>
         )}
         {status === 'completed' && (
-          <span className="text-success-500 font-bold text-[10px]">COMPLETE</span>
+          <span className="text-cultural-sage-500 font-bold text-[10px]">COMPLETE</span>
         )}
       </div>
 

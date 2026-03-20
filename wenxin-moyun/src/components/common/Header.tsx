@@ -105,7 +105,7 @@ export default function Header() {
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium text-on-surface hover:bg-surface-container-high transition-colors min-h-[44px]"
                   data-testid="nav-user-menu"
                 >
-                  <User className="w-4 h-4 text-secondary-500" />
+                  <User className="w-4 h-4 text-cultural-bronze-500" />
                   <span>{username || 'User'}</span>
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
@@ -116,12 +116,12 @@ export default function Header() {
                       onClick={() => setIsUserMenuOpen(false)}
                       className="flex items-center gap-2 px-4 py-2.5 text-sm text-on-surface hover:bg-surface-container-low transition-colors"
                     >
-                      <User className="w-4 h-4 text-secondary-500" />
+                      <User className="w-4 h-4 text-cultural-bronze-500" />
                       Canvas
                     </Link>
                     <button
                       onClick={handleLogout}
-                      className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-error-500 hover:bg-error-50 transition-colors"
+                      className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-cultural-coral-500 hover:bg-cultural-coral-50 transition-colors"
                       data-testid="nav-logout"
                     >
                       <LogOut className="w-4 h-4" />
