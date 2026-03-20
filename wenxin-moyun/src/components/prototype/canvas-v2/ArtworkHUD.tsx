@@ -81,12 +81,12 @@ export default function ArtworkHUD({ bestImageUrl, candidates, currentStage, sub
               type="text"
               value={intentText}
               onChange={(e) => setIntentText(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') { showConfig ? handleSubmit() : setShowConfig(true); } }}
+              onKeyDown={(e) => { if (e.key === 'Enter') { if (showConfig) { handleSubmit(); } else { setShowConfig(true); } } }}
               placeholder="e.g. 水墨山水, Edo-period landscape, Persian garden..."
               className="flex-1 px-5 py-3.5 bg-surface-container-high rounded-xl text-on-surface text-sm placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:bg-surface-container-lowest transition-all"
             />
             <button
-              onClick={() => intentText.trim() ? setShowConfig(true) : undefined}
+              onClick={() => { if (intentText.trim()) setShowConfig(true); }}
               disabled={!intentText.trim()}
               className="bg-primary-500 text-white px-6 py-3.5 rounded-xl font-medium text-sm hover:bg-primary-600 active:scale-95 transition-all disabled:opacity-40 disabled:pointer-events-none flex items-center gap-2"
             >
