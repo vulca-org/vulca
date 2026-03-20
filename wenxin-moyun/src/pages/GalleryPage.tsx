@@ -425,9 +425,9 @@ export default function GalleryPage() {
 
       const res = await fetch(`${API_PREFIX}/prototype/gallery?${params.toString()}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
+      const data = await res.json().catch(() => null);
 
-      if (Array.isArray(data.items)) {
+      if (data && Array.isArray(data.items)) {
         if (data.items.length > 0 || data.total === 0) {
           if (append) {
             setArtworks(prev => [...prev, ...data.items]);
@@ -756,7 +756,7 @@ export default function GalleryPage() {
                 <div className="mb-6">
                   <h3 className="text-[11px] font-bold uppercase tracking-widest text-outline mb-3">Dimension Scores</h3>
                   <div className="grid grid-cols-5 gap-3">
-                    {Object.entries(selectedArtwork.scores).map(([dim, score]) => (
+                    {Object.entries(selectedArtwork.scores ?? {}).map(([dim, score]) => (
                       <div key={dim} className="text-center">
                         <div className={`w-full aspect-square rounded-xl flex items-center justify-center text-sm font-bold mb-1 ${score >= 0.9 ? 'bg-primary-500 text-white' : 'bg-surface-container-high text-on-surface-variant'}`}>{dim}</div>
                         <span className="text-[10px] font-bold text-on-surface-variant">{Math.round(score * 100)}%</span>

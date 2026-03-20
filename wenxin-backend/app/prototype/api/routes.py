@@ -349,10 +349,26 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
                     _event_buffers.setdefault(task_id, []).append(evo_event)
 
         _cleanup_expired_runs()
-      except Exception:
+      except Exception as exc:
         logging.getLogger("vulca.pipeline").exception(
             "Background pipeline %s crashed", task_id,
         )
+        # Mark task as failed so frontend doesn't spin forever
+        if task_id in _run_metadata:
+            _run_metadata[task_id]["completed"] = True
+        # Emit pipeline_failed event so SSE stream terminates
+        try:
+            from vulca.pipeline.types import PipelineEvent as VulcaEvent
+            from vulca.pipeline.types import EventType as VulcaEventType
+            failed_event = VulcaEvent(
+                event_type=VulcaEventType.PIPELINE_FAILED,
+                payload={"error": str(exc), "stage": "pipeline_execution"},
+                timestamp_ms=0,
+            )
+            with _buffer_lock:
+                _event_buffers.setdefault(task_id, []).append(failed_event)
+        except Exception:
+            pass  # Last resort: at least the metadata is marked completed
 
     thread = Thread(target=_run_in_background, daemon=True)
     thread.start()

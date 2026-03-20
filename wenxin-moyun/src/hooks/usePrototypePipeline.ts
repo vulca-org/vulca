@@ -528,9 +528,16 @@ export function usePrototypePipeline() {
           const event = JSON.parse(msg.data) as PipelineEvent;
           processEvent(event);
 
-          if (event.event_type === 'pipeline_completed' || event.event_type === 'pipeline_failed') {
+          if (event.event_type === 'pipeline_completed' || event.event_type === 'pipeline_failed' || event.event_type === 'timeout') {
             es.close();
             eventSourceRef.current = null;
+
+            if (event.event_type === 'pipeline_failed') {
+              const errMsg = (event.payload as Record<string, unknown>)?.error;
+              setState(prev => ({ ...prev, status: 'failed', error: `Pipeline failed: ${errMsg || 'unknown error'}` }));
+            } else if (event.event_type === 'timeout') {
+              setState(prev => ({ ...prev, status: 'failed', error: 'Pipeline timed out. The server stopped streaming events.' }));
+            }
 
             // Fetch final status to get real image URL (static path, not gemini://)
             if (event.event_type === 'pipeline_completed') {
@@ -603,9 +610,17 @@ export function usePrototypePipeline() {
         const event = JSON.parse(msg.data) as PipelineEvent;
         processEvent(event);
 
-        if (event.event_type === 'pipeline_completed' || event.event_type === 'pipeline_failed') {
+        if (event.event_type === 'pipeline_completed' || event.event_type === 'pipeline_failed' || event.event_type === 'timeout') {
           es.close();
           eventSourceRef.current = null;
+
+          if (event.event_type === 'pipeline_failed') {
+            const errMsg = (event.payload as Record<string, unknown>)?.error;
+            setState(prev => ({ ...prev, status: 'failed', error: `Pipeline failed: ${errMsg || 'unknown error'}` }));
+          } else if (event.event_type === 'timeout') {
+            setState(prev => ({ ...prev, status: 'failed', error: 'Pipeline timed out.' }));
+          }
+
           if (event.event_type === 'pipeline_completed') {
             fetch(`${API_PREFIX}/prototype/runs/${taskId}`)
               .then(r => r.ok ? r.json() : null)

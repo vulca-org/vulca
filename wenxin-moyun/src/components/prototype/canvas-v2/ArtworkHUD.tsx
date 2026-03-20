@@ -26,13 +26,13 @@ const FALLBACK_TRADITIONS = [
 
 function resolveUrl(url: string | undefined | null): string | null {
   if (!url) return null;
+  // Already absolute
   if (url.startsWith('data:') || url.startsWith('http://') || url.startsWith('https://')) return url;
-  if (url.startsWith('/static/') || url.startsWith('static/')) {
-    return `${API_BASE_URL}${url.startsWith('/') ? url : `/${url}`}`;
-  }
-  // mock:// and gemini:// are not displayable URLs
+  // Non-displayable schemes
   if (url.startsWith('mock://') || url.startsWith('gemini://')) return null;
-  return url;
+  // Relative paths — prefix with API base URL
+  if (url.startsWith('/')) return `${API_BASE_URL}${url}`;
+  return `${API_BASE_URL}/${url}`;
 }
 
 const STAGE_LABELS: Record<string, string> = {

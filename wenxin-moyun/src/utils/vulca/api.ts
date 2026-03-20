@@ -472,7 +472,7 @@ export const vulcaService = {
               modelName: model.model_name || model.modelName,
               scores6D,
               scores47D,
-              culturalPerspectives: Object.values(culturalPerspectives).some(value => value !== 0)
+              culturalPerspectives: (culturalPerspectives && Object.values(culturalPerspectives).some(value => value !== 0))
                 ? culturalPerspectives
                 : fallbackCulturalPerspectives,
               evaluationDate: model.evaluation_date || model.evaluationDate || new Date().toISOString()

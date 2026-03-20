@@ -28,7 +28,7 @@ class OpenRouterProvider(AIProvider):
             api_key=self.api_key,
             base_url="https://openrouter.ai/api/v1",
             default_headers={
-                "HTTP-Referer": "http://localhost:8001",  # Required by OpenRouter
+                "HTTP-Referer": os.environ.get("BACKEND_URL", "https://vulcaart.art"),  # Required by OpenRouter
                 "X-Title": "WenXin MoYun Platform",  # Optional, for dashboard
             }
         )

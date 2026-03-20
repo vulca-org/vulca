@@ -11,7 +11,7 @@ class OpenRouterAdapter(BaseAdapter):
         return AsyncOpenAI(
             api_key=api_key,
             base_url="https://openrouter.ai/api/v1",
-            default_headers={"HTTP-Referer": "http://localhost:8001"}
+            default_headers={"HTTP-Referer": os.environ.get("BACKEND_URL", "https://vulcaart.art")}
         )
     
     async def generate(self, request):
