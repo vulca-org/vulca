@@ -231,15 +231,24 @@ class GenerateNode(PipelineNode):
             if improvement:
                 prompt_parts.append(f"\n{improvement}")
 
+        # Reference image guidance
+        ref_b64 = ctx.get("reference_image_b64")
+        if ref_b64:
+            prompt_parts.append(
+                "\nUse the provided reference image as style/composition guidance. "
+                "Incorporate its aesthetic qualities while creating an original work."
+            )
+
         prompt_parts.append(
             "\nOutput image aspect ratio: 1:1, resolution: 1024x1024"
         )
         full_prompt = "\n".join(prompt_parts)
 
         logger.info(
-            "GenerateNode round %d prompt (%d chars)",
+            "GenerateNode round %d prompt (%d chars%s)",
             ctx.round_num,
             len(full_prompt),
+            ", +ref_image" if ref_b64 else "",
         )
 
         t0 = time.monotonic()
@@ -249,9 +258,21 @@ class GenerateNode(PipelineNode):
                 http_options={"timeout": 120_000},
             )
 
+            # Build contents: text prompt + optional reference image
+            contents: list[Any] = [full_prompt]
+            if ref_b64:
+                try:
+                    ref_bytes = base64.b64decode(ref_b64)
+                    contents.insert(0, types.Part.from_bytes(
+                        data=ref_bytes,
+                        mime_type="image/png",
+                    ))
+                except Exception as ref_err:
+                    logger.warning("Failed to decode reference image: %s", ref_err)
+
             response = client.models.generate_content(
                 model="gemini-3.1-flash-image-preview",
-                contents=full_prompt,
+                contents=contents,
                 config=types.GenerateContentConfig(
                     response_modalities=["TEXT", "IMAGE"],
                     temperature=1.0,
