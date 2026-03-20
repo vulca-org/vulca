@@ -6,7 +6,6 @@
  */
 
 import { useState, useCallback, useRef } from 'react';
-// useRef still needed for rightPanelRef
 import { Paperclip, Image, BarChart3, Link2, Send } from 'lucide-react';
 import toast from 'react-hot-toast';
 import type { PipelineState } from '@/hooks/usePrototypePipeline';
@@ -19,6 +18,7 @@ import MaturityLevelPanel from './MaturityLevelPanel';
 import MetadataTagsPanel from './MetadataTagsPanel';
 import FinalizeSection from './FinalizeSection';
 import FeedbackCollector from '../FeedbackCollector';
+import HitlDecisionPanel from './HitlDecisionPanel';
 
 interface Props {
   pipeline: PipelineState;
@@ -32,6 +32,8 @@ interface Props {
 export default function CanvasV2Layout({ pipeline, onAction, onReset, onStartPipeline, onInstruct, onOpenPipelineEditor }: Props) {
   const { currentSubject, currentTradition } = useCanvasStore();
   const [instructText, setInstructText] = useState('');
+  const [lockedDimensions, setLockedDimensions] = useState<string[]>([]);
+  const imageUploadRef = useRef<HTMLInputElement>(null);
   const rightPanelRef = useRef<HTMLElement>(null);
 
   const isComplete = pipeline.status === 'completed';
@@ -97,7 +99,40 @@ export default function CanvasV2Layout({ pipeline, onAction, onReset, onStartPip
           <div className="px-4 py-3 shrink-0">
             <div className="bg-surface-container-lowest/90 backdrop-blur-xl border border-surface-container-high/60 shadow-ambient-lg rounded-full px-4 py-2.5 flex items-center gap-3">
               {/* Tool icons — 📎 🖼️ 📊 🔗 */}
-              {/* Hidden file input for image upload (Phase 2) */}
+              {/* Image upload for evaluate mode */}
+              <input
+                ref={imageUploadRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  e.target.value = '';
+                  try {
+                    const base64 = await new Promise<string>((resolve, reject) => {
+                      const reader = new FileReader();
+                      reader.onload = () => resolve((reader.result as string).split(',')[1] ?? '');
+                      reader.onerror = reject;
+                      reader.readAsDataURL(file);
+                    });
+                    const { API_PREFIX } = await import('@/config/api');
+                    const res = await fetch(`${API_PREFIX}/create`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ intent: 'evaluate', image_base64: base64, tradition: currentTradition || 'default' }),
+                    });
+                    if (res.ok) {
+                      const result = await res.json();
+                      toast.success(`Evaluation complete: ${result.overall_score ? (result.overall_score * 100).toFixed(0) + '%' : 'Done'}`);
+                    } else {
+                      toast.error(`Evaluation failed (${res.status})`);
+                    }
+                  } catch {
+                    toast.error('Image evaluation failed — backend may be unavailable');
+                  }
+                }}
+              />
               <div className="flex items-center gap-1">
                 <button
                   className="p-2 rounded-full hover:bg-surface-container-high text-on-surface-variant transition-colors"
@@ -109,7 +144,7 @@ export default function CanvasV2Layout({ pipeline, onAction, onReset, onStartPip
                 <button
                   className="p-2 rounded-full hover:bg-surface-container-high text-on-surface-variant transition-colors"
                   title="Upload image to evaluate"
-                  onClick={() => toast('Image evaluation coming soon', { icon: '🖼️' })}
+                  onClick={() => imageUploadRef.current?.click()}
                 >
                   <Image className="w-4 h-4" />
                 </button>
@@ -166,6 +201,18 @@ export default function CanvasV2Layout({ pipeline, onAction, onReset, onStartPip
           <MaturityLevelPanel
             scoredCandidates={pipeline.scoredCandidates}
             bestCandidateId={pipeline.bestCandidateId}
+            lockedDimensions={lockedDimensions}
+            onToggleLock={(dim) => setLockedDimensions(prev =>
+              prev.includes(dim) ? prev.filter(d => d !== dim) : [...prev, dim]
+            )}
+          />
+
+          {/* HITL Decision Panel */}
+          <HitlDecisionPanel
+            pipelineStatus={pipeline.status}
+            lockedDimensions={lockedDimensions}
+            weakestDimensions={pipeline.decision?.rerun_dimensions}
+            onAction={onAction}
           />
 
           <MetadataTagsPanel

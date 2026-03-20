@@ -213,6 +213,10 @@ Note: The old `app/vulca/` backend module has been deleted. All VULCA logic now 
 - 底部聊天栏："Instruct the Collective..." + 📎🖼️📊🔗 工具
 - Pipeline Editor：左侧 ⚙️ 按钮 → 全屏 Modal（ReactFlow）
 - `POST /runs/{task_id}/instruct`：追加指令 API
+- HITL 决策：右侧面板 Accept/Refine/Reject + L1-L5 维度锁定
+- 多轮候选图：中央显示每轮 4 张候选，用户可点选
+- 图片评估：🖼️ 按钮 → POST /create + image_base64
+- 权重控制：L1-L5 滑块调节评分权重
 
 **Gallery**: 画廊精选风格
 - 竖版大图 3 列，aspect-4/5，rounded-3xl

@@ -216,7 +216,7 @@ export default function PrototypePage() {
           onStartPipeline={(subject, tradition, provider) => {
             store.setCurrentSubject(subject);
             store.setCurrentTradition(tradition);
-            startRun({ subject, tradition, provider, n_candidates: 4, max_rounds: 3, enable_hitl: store.enableHitl, enable_agent_critic: true });
+            startRun({ subject, tradition, provider, n_candidates: 4, max_rounds: 3, enable_hitl: true, enable_agent_critic: true });
           }}
           onInstruct={async (instruction) => {
             if (state.taskId) {
@@ -242,7 +242,7 @@ export default function PrototypePage() {
             } else {
               // No previous run — create a fresh one
               store.setCurrentSubject(instruction);
-              startRun({ subject: instruction, tradition: store.currentTradition || 'default', provider: 'auto', n_candidates: 4, max_rounds: 3, enable_hitl: store.enableHitl, enable_agent_critic: true });
+              startRun({ subject: instruction, tradition: store.currentTradition || 'default', provider: 'auto', n_candidates: 4, max_rounds: 3, enable_hitl: true, enable_agent_critic: true });
             }
           }}
         />

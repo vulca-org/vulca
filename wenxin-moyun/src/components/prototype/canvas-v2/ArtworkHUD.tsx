@@ -135,7 +135,32 @@ export default function ArtworkHUD({ bestImageUrl, candidates, currentStage, sub
     );
   }
 
-  // ── Running / Complete state: artwork + HUD ──
+  // ── Multiple candidates: show grid for user to pick ──
+  const resolvedCandidates = candidates.map(c => ({ ...c, resolvedUrl: resolveUrl(c.image_url) })).filter(c => c.resolvedUrl);
+  const showCandidateGrid = resolvedCandidates.length > 1 && !bestImageUrl && isRunning;
+
+  if (showCandidateGrid) {
+    return (
+      <div className="flex-1 relative rounded-2xl overflow-hidden bg-surface-container-lowest p-4">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-[11px] font-bold uppercase tracking-widest text-primary-500">Candidates — Round {candidates[0]?.seed ? '1' : '?'}</h3>
+          <span className="text-[10px] text-on-surface-variant">Click to select best</span>
+        </div>
+        <div className="grid grid-cols-2 gap-3 h-[calc(100%-2rem)]">
+          {resolvedCandidates.slice(0, 4).map((c) => (
+            <div key={c.candidate_id} className="relative rounded-xl overflow-hidden bg-surface-container-high cursor-pointer hover:ring-2 hover:ring-primary-500 transition-all group">
+              <img src={c.resolvedUrl!} alt={c.prompt || subject} className="w-full h-full object-cover" onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
+              <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                <span className="text-white text-[10px] font-medium">Select this candidate</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // ── Running / Complete state: single artwork + HUD ──
   return (
     <div className="flex-1 relative rounded-2xl overflow-hidden bg-surface-container-high shadow-ambient-xl group">
       {imageUrl ? (

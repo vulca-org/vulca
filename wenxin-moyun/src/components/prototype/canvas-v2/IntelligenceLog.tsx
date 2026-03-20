@@ -31,7 +31,14 @@ function formatEvent(e: PipelineEvent): { prefix: string; prefixColor: string; t
     const action = (e.payload?.action || e.payload?.decision || 'unknown') as string;
     const wt = e.payload?.weighted_total;
     const extra = wt ? ` (score: ${Number(wt).toFixed(3)})` : '';
-    return { prefix: '[QUEEN]', prefixColor: 'text-secondary-500', text: `Decision: ${action}${extra}` };
+    const weakest = e.payload?.weakest_dimensions as string[] | undefined;
+    const focus = e.payload?.improvement_focus as string | undefined;
+    let hint = '';
+    if (action === 'rerun' && weakest?.length) {
+      hint = ` → Focus on: ${weakest.join(', ')}`;
+    }
+    if (focus) hint += ` — "${focus}"`;
+    return { prefix: '[QUEEN]', prefixColor: 'text-secondary-500', text: `Decision: ${action}${extra}${hint}` };
   }
   if (type === 'human_required') {
     return { prefix: '[HITL]', prefixColor: 'text-warning-500', text: `Waiting for human input at ${stage}` };
