@@ -216,7 +216,6 @@ AGENTS.md
 .claude/phase-current.json
 .claude/phases/
 .claude/instincts.jsonl
-.claude/phases/
 .github/DEPLOYMENT_LOG.md
 
 # Internal deployment scripts
