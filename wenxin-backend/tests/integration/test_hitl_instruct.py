@@ -546,23 +546,22 @@ class TestEdgeCases:
         )
 
     @pytest.mark.asyncio
-    async def test_instruct_empty_instruction_returns_400(self, client: httpx.AsyncClient):
-        """POST /instruct with empty instruction string must return 400."""
+    async def test_instruct_empty_instruction_returns_422(self, client: httpx.AsyncClient):
+        """POST /instruct with empty instruction string must return 422 (Pydantic min_length)."""
         data = await _create_run(client)
         task_id = data["task_id"]
 
-        # Don't wait for completion — the endpoint checks instruction before metadata
-        res = await client.post(f"{API}/runs/{task_id}/instruct", json={"instruction": "   "})
-        assert res.status_code == 400
+        res = await client.post(f"{API}/runs/{task_id}/instruct", json={"instruction": ""})
+        assert res.status_code == 422
 
     @pytest.mark.asyncio
     async def test_instruct_missing_instruction_key(self, client: httpx.AsyncClient):
-        """POST /instruct with body missing 'instruction' key must return 400."""
+        """POST /instruct with body missing 'instruction' key must return 422."""
         data = await _create_run(client)
         task_id = data["task_id"]
 
         res = await client.post(f"{API}/runs/{task_id}/instruct", json={"note": "this won't work"})
-        assert res.status_code == 400
+        assert res.status_code == 422
 
     @pytest.mark.asyncio
     async def test_action_not_accepted_when_not_waiting(self, client: httpx.AsyncClient):

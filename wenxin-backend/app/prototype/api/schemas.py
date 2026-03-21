@@ -57,10 +57,17 @@ class RunStatusResponse(BaseModel):
     total_cost_usd: float = 0.0
     final_scores: dict = Field(default_factory=dict)
     weighted_total: float = 0.0
+    rationales: dict = Field(default_factory=dict, description="L1-L5 rationale texts from VLM evaluation")
     rounds: list[dict] = Field(default_factory=list)
     success: bool | None = None
     error: str | None = None
     stages: list[dict] = Field(default_factory=list)
+
+
+class InstructRequest(BaseModel):
+    """Request body for POST /runs/{id}/instruct."""
+
+    instruction: str = Field(..., min_length=1, max_length=1000, description="Follow-up instruction text")
 
 
 class SubmitActionRequest(BaseModel):

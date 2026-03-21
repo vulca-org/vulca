@@ -28,6 +28,7 @@ from fastapi.responses import StreamingResponse
 from app.prototype.api.auth import verify_api_key
 from app.prototype.api.schemas import (
     CreateRunRequest,
+    InstructRequest,
     RunStatusResponse,
     SubmitActionRequest,
     SubmitActionResponse,
@@ -547,7 +548,7 @@ async def submit_action(task_id: str, req: SubmitActionRequest) -> SubmitActionR
 
 
 @router.post("/runs/{task_id}/instruct")
-async def instruct_run(task_id: str, req: dict) -> dict:
+async def instruct_run(task_id: str, req: InstructRequest) -> dict:
     """Send a follow-up instruction to a completed run.
 
     Creates a new pipeline run inheriting context from the previous run.
@@ -557,9 +558,7 @@ async def instruct_run(task_id: str, req: dict) -> dict:
     Body: { "instruction": "Refine L3 dimension" }
     Returns: { "new_task_id": "...", "status": "running" }
     """
-    instruction = (req.get("instruction") or "").strip()
-    if not instruction:
-        raise HTTPException(400, "instruction is required")
+    instruction = req.instruction.strip()
 
     meta = _run_metadata.get(task_id)
     if meta is None:
@@ -655,6 +654,18 @@ def _build_status_response(task_id: str) -> RunStatusResponse:
                     round_snapshots.append(snapshot)
                     current_round_scores = {}
 
+            # Extract rationales from evaluate stage_completed events
+            rationales: dict = {}
+            for ev in reversed(buffer):
+                evt = ev.event_type if isinstance(ev.event_type, str) else ev.event_type.value
+                if evt == "stage_completed" and ev.stage == "evaluate":
+                    ep = ev.payload if isinstance(ev.payload, dict) else {}
+                    rationales = ep.get("rationales", {})
+                    break
+            # Fallback: check pipeline_output
+            if not rationales:
+                rationales = pipe_out.get("rationales", {})
+
             return RunStatusResponse(
                 task_id=task_id,
                 status=status,
@@ -666,6 +677,7 @@ def _build_status_response(task_id: str) -> RunStatusResponse:
                 total_cost_usd=p.get("total_cost_usd", 0.0),
                 final_scores=pipe_out.get("scores", {}),
                 weighted_total=pipe_out.get("weighted_total", 0.0),
+                rationales=rationales,
                 rounds=round_snapshots,
             )
 
