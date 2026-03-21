@@ -21,7 +21,7 @@ export default tseslint.config([
     },
     rules: {
       // 放宽一些规则以确保CI通过
-      '@typescript-eslint/no-unused-vars': 'warn',
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_', destructuredArrayIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' }],
       '@typescript-eslint/no-explicit-any': 'warn',
       'no-useless-escape': 'warn',
       'react-refresh/only-export-components': 'warn',

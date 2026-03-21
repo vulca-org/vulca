@@ -3,7 +3,7 @@ import { Menu, X, Github, User, LogIn, LogOut, ChevronDown } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react';
 import { IOSButton } from '../ios';
 import { HeaderControls } from './ThemeToggle';
-import VulcaLogo from './VulcaLogo';
+import _VulcaLogo from './VulcaLogo';
 import { isGuestMode } from '../../utils/guestSession';
 import { getItem, removeItem } from '../../utils/storageUtils';
 

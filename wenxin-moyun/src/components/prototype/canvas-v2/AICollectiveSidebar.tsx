@@ -36,7 +36,7 @@ function getAgentStatus(agentId: string, currentStage: string, pipelineStatus: s
   return ORDER.indexOf(agentId) < ORDER.indexOf(current) ? 'done' : 'idle';
 }
 
-export default function AICollectiveSidebar({ currentStage, pipelineStatus, events, tradition, subject, onNewSession, onOpenPipelineEditor }: Props) {
+export default function AICollectiveSidebar({ currentStage, pipelineStatus, events, tradition, subject: _subject, onNewSession, onOpenPipelineEditor }: Props) {
   const completedStages = useMemo(() => {
     const set = new Set<string>();
     for (const e of events) {

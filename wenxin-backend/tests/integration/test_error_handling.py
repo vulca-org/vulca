@@ -358,12 +358,12 @@ class TestInstructNotFound:
             f"/api/v1/prototype/runs/{task_id}/instruct",
             json={"instruction": ""},
         )
-        assert resp.status_code == 400, (
-            f"Empty instruction should return 400, got {resp.status_code}"
+        assert resp.status_code == 422, (
+            f"Empty instruction should return 422 (Pydantic validation), got {resp.status_code}"
         )
 
-    def test_instruct_missing_instruction_key_returns_400(self, client):
-        """Missing 'instruction' key should return 400."""
+    def test_instruct_missing_instruction_key_returns_422(self, client):
+        """Missing 'instruction' key should return 422 (Pydantic validation)."""
         create_resp = client.post(
             "/api/v1/prototype/runs",
             json={"subject": "test instruct artwork", "provider": "mock"},
@@ -374,8 +374,8 @@ class TestInstructNotFound:
             f"/api/v1/prototype/runs/{task_id}/instruct",
             json={},
         )
-        assert resp.status_code == 400, (
-            f"Missing instruction key should return 400, got {resp.status_code}"
+        assert resp.status_code == 422, (
+            f"Missing instruction key should return 422, got {resp.status_code}"
         )
 
     def test_instruct_whitespace_only_instruction_returns_400(self, client):

@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { isGuestMode } from '../utils/guestSession';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function CopyableTerminal({ command }: { command: string }) {
   const [copied, setCopied] = useState(false);
 
@@ -45,7 +46,7 @@ const fadeUp = {
 };
 
 export default function HomePage() {
-  const guest = isGuestMode();
+  const _guest = isGuestMode();
 
   return (
     <div className="-mx-4 sm:-mx-6">

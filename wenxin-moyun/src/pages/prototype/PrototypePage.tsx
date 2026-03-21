@@ -315,7 +315,7 @@ export default function PrototypePage() {
       <PipelineEditorModal
         open={pipelineEditorOpen}
         onClose={() => setPipelineEditorOpen(false)}
-        isRunning={isRunning}
+        isRunning={state.status === 'running'}
         stageStatuses={isRunning || isDone ? stageStatuses : undefined}
         reportOutput={reportOutput ?? undefined}
         onStartPipeline={(params) => {

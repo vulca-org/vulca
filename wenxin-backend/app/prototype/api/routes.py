@@ -568,6 +568,8 @@ async def instruct_run(task_id: str, req: InstructRequest) -> dict:
     Returns: { "new_task_id": "...", "status": "running" }
     """
     instruction = req.instruction.strip()
+    if not instruction:
+        raise HTTPException(400, "instruction must not be empty or whitespace-only")
 
     meta = _run_metadata.get(task_id)
     if meta is None:
@@ -603,6 +605,28 @@ async def instruct_run(task_id: str, req: InstructRequest) -> dict:
         "status": "running",
         "tradition": prev_tradition,
     }
+
+
+@router.get("/templates")
+async def list_templates():
+    """List available pipeline templates for the Pipeline Editor."""
+    from vulca.pipeline.templates import TEMPLATES
+    # Map engine node names to frontend agent names
+    _ENGINE_TO_AGENT = {"generate": "draft", "evaluate": "critic", "decide": "queen"}
+    results = []
+    for t in TEMPLATES.values():
+        agent_nodes = [_ENGINE_TO_AGENT.get(n, n) for n in t.nodes]
+        # Build sequential edges from node order
+        edges = [[agent_nodes[i], agent_nodes[i + 1]] for i in range(len(agent_nodes) - 1)]
+        results.append({
+            "id": t.name,
+            "name": t.display_name,
+            "description": f"{t.display_name} pipeline",
+            "nodeCount": len(agent_nodes),
+            "nodes": agent_nodes,
+            "edges": edges,
+        })
+    return results
 
 
 @router.get("/datatypes")

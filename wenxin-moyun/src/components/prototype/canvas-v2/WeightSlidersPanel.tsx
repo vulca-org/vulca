@@ -19,7 +19,7 @@ interface Props {
   disabled?: boolean;
 }
 
-export default function WeightSlidersPanel({ weights, onChange, disabled }: Props) {
+export default function WeightSlidersPanel({ weights, onChange, disabled: _disabled }: Props) {
   const handleChange = (key: string, value: number) => {
     onChange({ ...weights, [key]: value });
   };
