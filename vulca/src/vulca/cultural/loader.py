@@ -262,3 +262,67 @@ def get_all_weight_tables() -> dict[str, dict[str, float]]:
         return {name: dict(tc.weights_l) for name, tc in _traditions.items()}
     from vulca.cultural import TRADITION_WEIGHTS
     return dict(TRADITION_WEIGHTS)
+
+
+def get_tradition_guide(tradition: str) -> dict | None:
+    """Get full cultural guide for a tradition (for MCP/CLI).
+
+    Returns dict with weights, evolved_weights, terminology, taboos, description.
+    Returns None if tradition not found.
+    """
+    _ensure_loaded()
+    tc = _traditions.get(tradition)
+    if tc is None:
+        return None
+
+    evolved = _load_evolved_weights(tradition)
+
+    # Count sessions from evolved context
+    sessions_count = 0
+    try:
+        import json as _json
+        loader_path = Path(__file__).resolve()
+        candidates = [
+            loader_path.parent.parent.parent.parent.parent / "wenxin-backend" / "app" / "prototype" / "data" / "evolved_context.json",
+        ]
+        env_path = os.environ.get("VULCA_EVOLVED_CONTEXT")
+        if env_path:
+            candidates.insert(0, Path(env_path))
+        for path in candidates:
+            if path.is_file():
+                with open(path, "r", encoding="utf-8") as f:
+                    ctx = _json.load(f)
+                sessions_count = ctx.get("total_sessions", 0)
+                break
+    except Exception:
+        pass
+
+    # Build terminology list
+    terms = []
+    for t in tc.terminology:
+        entry: dict = {"term": t.term, "definition": t.definition}
+        if t.term_zh:
+            entry["translation"] = t.term_zh
+        terms.append(entry)
+
+    # Build taboos list
+    taboos = [tb.rule for tb in tc.taboos if tb.rule]
+
+    # Description from display name
+    desc = tc.display_name.get("en", tradition.replace("_", " ").title())
+
+    # Emphasis (highest weighted dimension)
+    dim_names = {"L1": "Visual", "L2": "Technical", "L3": "Cultural", "L4": "Critical", "L5": "Philosophical"}
+    emphasis_dim = max(tc.weights_l, key=tc.weights_l.get) if tc.weights_l else "L3"
+    emphasis = dim_names.get(emphasis_dim, emphasis_dim)
+
+    return {
+        "tradition": tradition,
+        "description": desc,
+        "emphasis": emphasis,
+        "weights": dict(tc.weights_l),
+        "evolved_weights": evolved,
+        "sessions_count": sessions_count,
+        "terminology": terms,
+        "taboos": taboos,
+    }

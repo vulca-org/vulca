@@ -148,3 +148,35 @@ class TestProviderRegistry:
         from vulca.providers import get_image_provider
         p = get_image_provider("nb2", api_key="test")
         assert p is not None
+
+
+class TestTraditionGuide:
+    def test_returns_guide(self):
+        from vulca.cultural.loader import get_tradition_guide
+        guide = get_tradition_guide("chinese_xieyi")
+        assert guide is not None
+        assert guide["tradition"] == "chinese_xieyi"
+        assert "weights" in guide
+        assert "terminology" in guide
+        assert "taboos" in guide
+        assert isinstance(guide["terminology"], list)
+        assert isinstance(guide["taboos"], list)
+        assert "emphasis" in guide
+
+    def test_has_weight_keys(self):
+        from vulca.cultural.loader import get_tradition_guide
+        guide = get_tradition_guide("chinese_xieyi")
+        for key in ("L1", "L2", "L3", "L4", "L5"):
+            assert key in guide["weights"]
+
+    def test_unknown_tradition(self):
+        from vulca.cultural.loader import get_tradition_guide
+        guide = get_tradition_guide("nonexistent_tradition")
+        assert guide is None
+
+    def test_all_traditions_have_guides(self):
+        from vulca.cultural.loader import get_known_traditions, get_tradition_guide
+        for name in get_known_traditions():
+            guide = get_tradition_guide(name)
+            assert guide is not None, f"No guide for {name}"
+            assert guide["tradition"] == name
