@@ -83,7 +83,10 @@ include = ["app/**", "vulca/**", "frontend/dist/**", "init_db.py", "seed_prototy
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
-markers = ["slow: marks tests as slow"]
+markers = [
+    "slow: marks tests as slow",
+    "integration: real API calls (requires GEMINI_API_KEY)",
+]
 
 [tool.coverage.run]
 source = ["app"]

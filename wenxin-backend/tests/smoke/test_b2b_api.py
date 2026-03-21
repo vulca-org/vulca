@@ -16,6 +16,9 @@ from fastapi.testclient import TestClient
 
 # Set API key env BEFORE importing modules that read it at load time
 os.environ["VULCA_API_KEYS"] = "demo-key"
+# Evaluate routes check GEMINI_API_KEY before calling score_image —
+# set a dummy value so the env check passes and the @patch mock can intercept.
+os.environ.setdefault("GEMINI_API_KEY", "test-fake-key-for-mock")
 
 from app.prototype.api.evaluate_routes import evaluate_router
 

@@ -127,6 +127,8 @@ ios26_figma_data.json
 *.png
 *.jpg
 *.jpeg
+# Exception: test fixture images
+!wenxin-backend/tests/integration/fixtures/*.png
 *.exe
 *.msi
 *.zip
