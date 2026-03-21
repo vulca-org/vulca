@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import base64
 import hashlib
 import logging
@@ -65,13 +66,26 @@ class GenerateNode(PipelineNode):
 
     name = "generate"
 
+    _GENERATE_TIMEOUT_S = 150  # Hard timeout for Gemini image generation
+
     async def run(self, ctx: NodeContext) -> dict[str, Any]:
         provider = ctx.provider or "mock"
 
         if provider == "mock":
             return self._mock_generate(ctx)
 
-        return await self._gemini_generate(ctx)
+        # Run Gemini in a thread with hard timeout to prevent indefinite hang
+        try:
+            return await asyncio.wait_for(
+                asyncio.to_thread(self._gemini_generate_sync, ctx),
+                timeout=self._GENERATE_TIMEOUT_S,
+            )
+        except asyncio.TimeoutError:
+            logger.warning(
+                "Gemini generation timed out after %ds — falling back to mock",
+                self._GENERATE_TIMEOUT_S,
+            )
+            return self._mock_generate(ctx)
 
     # ------------------------------------------------------------------
     # Mock provider
@@ -253,7 +267,7 @@ class GenerateNode(PipelineNode):
     # ------------------------------------------------------------------
 
     @staticmethod
-    async def _gemini_generate(ctx: NodeContext) -> dict[str, Any]:
+    def _gemini_generate_sync(ctx: NodeContext) -> dict[str, Any]:
         """Call Google Gemini image generation model.
 
         Falls back to mock on quota/rate-limit errors so the pipeline
