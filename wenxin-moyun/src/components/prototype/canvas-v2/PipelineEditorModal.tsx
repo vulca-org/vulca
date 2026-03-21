@@ -1,12 +1,12 @@
 /**
- * Pipeline Editor Modal — Full-screen ReactFlow editor.
+ * Pipeline Viewer Modal — Read-only visualization of the Scout→Draft→Critic→Queen pipeline.
+ * Shows real-time stage status during execution.
  * Opens from ⚙️ button in AI Collective sidebar.
  */
 
 import { X } from 'lucide-react';
-import { PipelineEditor, NodeParamPanel } from '../editor';
-import type { StageStatus, ReportOutput, AgentNodeId } from '../editor';
-import { useState } from 'react';
+import { PipelineEditor } from '../editor';
+import type { StageStatus, ReportOutput } from '../editor';
 
 interface Props {
   open: boolean;
@@ -14,13 +14,10 @@ interface Props {
   isRunning: boolean;
   stageStatuses?: Record<string, StageStatus>;
   reportOutput?: ReportOutput;
-  onStartPipeline?: (params: { template: string; customNodes?: string[]; customEdges?: [string, string][]; nodeParams?: Record<string, Record<string, unknown>> }) => void;
+  onStartPipeline?: (params: { template: string; nodeParams?: Record<string, Record<string, unknown>> }) => void;
 }
 
 export default function PipelineEditorModal({ open, onClose, isRunning, stageStatuses, reportOutput, onStartPipeline }: Props) {
-  const [selectedNode, setSelectedNode] = useState<AgentNodeId | null>(null);
-  const [nodeParams, setNodeParams] = useState<Record<string, Record<string, unknown>>>({});
-
   if (!open) return null;
 
   return (
@@ -29,42 +26,28 @@ export default function PipelineEditorModal({ open, onClose, isRunning, stageSta
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-3 bg-white shadow-ambient-sm shrink-0">
           <div className="flex items-center gap-3">
-            <span className="material-symbols-outlined text-primary-500">tune</span>
-            <h2 className="text-sm font-bold text-on-surface">Pipeline Editor</h2>
-            <span className="text-[10px] text-outline">Drag nodes to customize the pipeline topology</span>
+            <span className="material-symbols-outlined text-primary-500">visibility</span>
+            <h2 className="text-sm font-bold text-on-surface">Pipeline Viewer</h2>
+            <span className="text-[10px] text-outline">Scout → Draft → Critic → Queen evaluation pipeline</span>
           </div>
           <button
             onClick={onClose}
-            className="w-10 h-10 rounded-full hover:bg-surface-container-high flex items-center justify-center transition-colors"
+            className="min-w-[44px] min-h-[44px] rounded-full hover:bg-surface-container-high flex items-center justify-center transition-colors"
           >
             <X className="w-5 h-5 text-on-surface-variant" />
           </button>
         </div>
 
-        {/* Editor */}
+        {/* Viewer (read-only pipeline) */}
         <div className="flex-1 relative overflow-hidden">
           <PipelineEditor
             onRun={(params) => {
-              const merged = { ...params, nodeParams: { ...nodeParams, ...params.nodeParams } };
-              onStartPipeline?.(merged);
+              onStartPipeline?.({ template: params.template, nodeParams: params.nodeParams });
               onClose();
             }}
             disabled={isRunning}
-            onNodeSelect={setSelectedNode}
-            nodeParams={nodeParams}
             stageStatuses={stageStatuses}
             reportOutput={reportOutput}
-          />
-          <NodeParamPanel
-            nodeId={selectedNode}
-            params={nodeParams}
-            onChange={(nodeId, key, value) => {
-              setNodeParams(prev => ({
-                ...prev,
-                [nodeId]: { ...prev[nodeId], [key]: value },
-              }));
-            }}
-            onClose={() => setSelectedNode(null)}
           />
         </div>
       </div>
