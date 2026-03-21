@@ -130,17 +130,21 @@ export default function ArtworkHUD({ bestImageUrl, candidates, currentStage, sub
     onStartPipeline(intentText.trim(), tradition, provider, refB64);
   };
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    const file = e.dataTransfer.files[0];
-    if (!file || !file.type.startsWith('image/')) return;
+  const handleReferenceImage = useCallback((file: File) => {
+    if (!file.type.startsWith('image/')) return;
     const reader = new FileReader();
     reader.onload = () => {
       setReferencePreview(reader.result as string);
     };
     reader.readAsDataURL(file);
   }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files[0];
+    if (file) handleReferenceImage(file);
+  }, [handleReferenceImage]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();

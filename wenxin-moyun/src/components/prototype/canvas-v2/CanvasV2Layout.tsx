@@ -276,7 +276,7 @@ export default function CanvasV2Layout({ pipeline, onAction, onReset, onStartPip
                 scoredCandidates={pipeline.scoredCandidates}
                 bestCandidateId={pipeline.bestCandidateId}
                 tradition={currentTradition || 'default'}
-                scoresSnapshot={bestScoresSnapshot}
+                scoresSnapshot={bestScoresSnapshot || {}}
                 onReset={onReset}
               />
             </div>

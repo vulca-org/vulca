@@ -328,8 +328,6 @@ export default function PrototypePage() {
             enable_hitl: store.enableHitl,
             enable_agent_critic: true,
             template: params.template,
-            custom_nodes: params.customNodes,
-            custom_edges: params.customEdges,
             node_params: params.nodeParams,
           });
         }}
