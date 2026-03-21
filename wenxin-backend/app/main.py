@@ -268,13 +268,16 @@ async def deep_health_check():
     except Exception as e:
         components["database"] = f"error: {type(e).__name__}: {e}"
 
-    # VLM Critic availability
+    # VLM scoring availability (unified vulca package)
     try:
-        from app.prototype.agents.vlm_critic import VLMCritic
-        vlm = VLMCritic.get()
-        components["vlm_critic"] = "available" if vlm.available else "no_api_key"
+        api_key = os.getenv("GOOGLE_API_KEY", "") or os.getenv("GEMINI_API_KEY", "")
+        if api_key:
+            # Quick validation: real keys start with "AIza"
+            components["vlm_scoring"] = "available" if api_key.startswith("AIza") else "key_configured"
+        else:
+            components["vlm_scoring"] = "no_api_key"
     except Exception as e:
-        components["vlm_critic"] = f"error: {type(e).__name__}"
+        components["vlm_scoring"] = f"error: {type(e).__name__}"
 
     # Scout service (terminology + taboo)
     try:
