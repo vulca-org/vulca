@@ -181,7 +181,24 @@ class GenerateNode(PipelineNode):
         prev_rationales: dict[str, str] = ctx.get("rationales", {})
         weakest: list[str] = ctx.get("weakest_dimensions", [])
 
+        # Also check node_params for improvement_focus (from HITL rerun)
+        node_params = ctx.get("node_params") or {}
+        gen_params = node_params.get("generate") or {}
+        improvement_focus = gen_params.get("improvement_focus", [])
+        if improvement_focus and not weakest:
+            weakest = improvement_focus
+
         if not prev_scores:
+            # Even without prev_scores, if we have improvement_focus, generate guidance
+            if improvement_focus:
+                dim_names = [_L_TO_DIM.get(d, d) for d in improvement_focus]
+                strategies = [_REFINEMENT_STRATEGIES.get(dn, "") for dn in dim_names]
+                parts = [f"IMPROVEMENT FOCUS (Round {ctx.round_num}):"]
+                for dim, strategy in zip(improvement_focus, strategies):
+                    parts.append(f"\n  Focus on {_L_TO_DIM.get(dim, dim)}:")
+                    if strategy:
+                        parts.append(f"    Strategy: {strategy}")
+                return "\n".join(parts)
             return ""
 
         if not weakest:
