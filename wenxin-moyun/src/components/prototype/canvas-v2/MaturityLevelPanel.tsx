@@ -4,7 +4,7 @@
  */
 
 import { useState, useMemo, useCallback } from 'react';
-import { Lock, Unlock } from 'lucide-react';
+import { Lock } from 'lucide-react';
 import type { ScoredCandidate } from '@/hooks/usePrototypePipeline';
 
 interface Props {

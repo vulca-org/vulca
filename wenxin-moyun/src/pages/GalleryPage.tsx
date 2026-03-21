@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Palette, Sparkles, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   IOSButton,
   IOSCard,
@@ -9,7 +9,6 @@ import {
   IOSCardGrid,
 } from '../components/ios';
 import { API_PREFIX, API_BASE_URL } from '../config/api';
-import GalleryCardActions from '../components/gallery/GalleryCardActions';
 import GalleryDetailModal from '../components/gallery/GalleryDetailModal';
 
 // ---------------------------------------------------------------------------
@@ -110,28 +109,6 @@ const MOCK_GALLERY: GalleryItem[] = [
     overall: 0.874, best_image_url: '', total_rounds: 3, total_latency_ms: 14000, created_at: 1740700800, likes_count: 0,
   },
 ];
-
-// ---------------------------------------------------------------------------
-// Score bar
-// ---------------------------------------------------------------------------
-
-function ScoreBar({ label, value }: { label: string; value: number }) {
-  const pct = Math.round(value * 100);
-  const barColor =
-    value >= 0.9 ? 'bg-[#5F8A50] dark:bg-[#87A878]' :
-    value >= 0.8 ? 'bg-slate-500 dark:bg-slate-400' :
-    'bg-amber-500 dark:bg-amber-400';
-
-  return (
-    <div className="flex items-center gap-1.5">
-      <span className="w-5 text-[10px] font-mono text-gray-400">{label}</span>
-      <div className="flex-1 h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-        <div className={`h-full rounded-full ${barColor} transition-all duration-300`} style={{ width: `${pct}%` }} />
-      </div>
-      <span className="w-8 text-[10px] text-right font-mono text-gray-500 dark:text-gray-400">{pct}%</span>
-    </div>
-  );
-}
 
 // ---------------------------------------------------------------------------
 // Evolution banner
@@ -304,7 +281,7 @@ function EvolutionInsightsPanel({ insights }: { insights: DigestionInsights | nu
 // Artwork card
 // ---------------------------------------------------------------------------
 
-function ArtworkCard({ artwork, likeCount, onSelect }: { artwork: GalleryItem; likeCount: number; onSelect: (a: GalleryItem) => void }) {
+function ArtworkCard({ artwork, onSelect }: { artwork: GalleryItem; onSelect: (a: GalleryItem) => void }) {
   const traditionLabel = TRADITION_LABELS[artwork.tradition] ?? artwork.tradition.replace(/_/g, ' ');
   const gradient = TRADITION_GRADIENTS[artwork.tradition] ?? TRADITION_GRADIENTS.default;
   const resolvedImageUrl = (() => {
@@ -629,7 +606,7 @@ export default function GalleryPage() {
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
               {filtered.map((artwork) => (
-                <ArtworkCard key={artwork.id} artwork={artwork} likeCount={artwork.likes_count ?? 0} onSelect={setSelectedArtwork} />
+                <ArtworkCard key={artwork.id} artwork={artwork} onSelect={setSelectedArtwork} />
               ))}
             </div>
 
