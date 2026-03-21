@@ -53,8 +53,7 @@ class TestConceptCrystallizer:
         concepts = c.crystallize([cluster], sessions)
         assert len(concepts) == 1, "3 sessions should now trigger crystallization"
         assert concepts[0].name != ""
-        assert concepts[0].description != ""
-        assert "3 sessions" in concepts[0].description  # rule-based includes session count
+        assert len(concepts[0].description) >= 10  # non-trivial description (rule-based or LLM)
         assert concepts[0].confidence == pytest.approx(min(1.0, 3 / 20))  # 0.15
 
     def test_concept_to_dict(self):
