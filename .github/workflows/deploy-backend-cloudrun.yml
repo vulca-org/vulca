@@ -117,8 +117,9 @@ jobs:
             --region ${{ env.REGION }} \
             --platform managed \
             --allow-unauthenticated \
-            --memory 1Gi \
-            --cpu 1 \
+            --memory 2Gi \
+            --cpu 2 \
+            --cpu-boost \
             --timeout 300 \
             --concurrency 80 \
             --min-instances 0 \
