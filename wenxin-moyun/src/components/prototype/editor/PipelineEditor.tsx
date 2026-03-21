@@ -312,7 +312,7 @@ export default function PipelineEditor({
   const [, setSelectedNodeId] = useState<AgentNodeId | null>(null);
 
   /* ── Phase 5 hooks ── */
-  const { states: nodeVisualStates, toggleMute, toggleBypass, toggleCollapse } = useNodeStates();
+  const { states: _nodeVisualStates, toggleMute, toggleBypass, toggleCollapse } = useNodeStates();
   const { isExpanded, expandNode, collapseNode, hasExpandedDraft } = useSubStageExpansion();
   const { arrange } = useAutoArrange();
 
@@ -677,7 +677,7 @@ export default function PipelineEditor({
         return { ...n, data: { ...n.data, collapsed: newVal } };
       }),
     );
-  }, [nodes, setNodes, toggleCollapse, nodeVisualStates]);
+  }, [setNodes, toggleCollapse]);
 
   /* ── Drag & drop from skill browser ── */
   const handleDrop = useCallback(

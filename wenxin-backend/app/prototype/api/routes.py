@@ -380,8 +380,10 @@ async def stream_events(task_id: str) -> StreamingResponse:
 
     async def generate():
         seen = 0
-        max_wait = 300  # 5 minutes timeout
+        max_wait = 1800  # 30 minutes — generous for HITL workflows
         start = time.monotonic()
+        last_heartbeat = time.monotonic()
+        heartbeat_interval = 15  # Send keepalive every 15 seconds
 
         while time.monotonic() - start < max_wait:
             with _buffer_lock:
@@ -391,12 +393,19 @@ async def stream_events(task_id: str) -> StreamingResponse:
                 seen += 1
                 data = json.dumps(event.to_dict(), ensure_ascii=False)
                 yield f"data: {data}\n\n"
+                last_heartbeat = time.monotonic()  # Reset heartbeat on real events
 
                 if event.event_type in (EventType.PIPELINE_COMPLETED, EventType.PIPELINE_FAILED):
                     return
 
+            # Send SSE keepalive comment to prevent proxy/browser timeout
+            now = time.monotonic()
+            if now - last_heartbeat >= heartbeat_interval:
+                yield ": keepalive\n\n"
+                last_heartbeat = now
+
             # Brief async sleep
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.3)
 
         yield f"data: {json.dumps({'event_type': 'timeout', 'payload': {}})}\n\n"
 

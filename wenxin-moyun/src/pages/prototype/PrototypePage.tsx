@@ -43,8 +43,8 @@ export default function PrototypePage() {
   // --- Shared canvas store ---
   const store = useCanvasStore();
   const {
-    playgroundMode, setPlaygroundMode,
-    currentSubject, setCurrentSubject,
+    playgroundMode: _playgroundMode, setPlaygroundMode,
+    currentSubject: _currentSubject, setCurrentSubject,
     currentTradition, setCurrentTradition,
     currentProvider, enableHitl,
     setTraditionManuallySet,
@@ -67,24 +67,24 @@ export default function PrototypePage() {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // --- Local UI state (not shared across panels) ---
-  const [selectedCandidateId, setSelectedCandidateId] = useState<string | null>(null);
-  const [activeTemplate, setActiveTemplate] = useState('default');
+  const [_selectedCandidateId, setSelectedCandidateId] = useState<string | null>(null);
+  const [_activeTemplate, setActiveTemplate] = useState('default');
   const [lastRunParams, setLastRunParams] = useState<RunConfigParams | null>(null);
   const [criticDetailCandidate, setCriticDetailCandidate] = useState<ScoredCandidate | null>(null);
   const [pipelineEditorOpen, setPipelineEditorOpen] = useState(false);
-  const [evaluateResult, setEvaluateResult] = useState<Record<string, unknown> | null>(null);
-  const [evaluateLoading, setEvaluateLoading] = useState(false);
+  const [_evaluateResult, setEvaluateResult] = useState<Record<string, unknown> | null>(null);
+  const [_evaluateLoading, setEvaluateLoading] = useState(false);
 
   const isRunning = state.status === 'running' || state.status === 'waiting_human';
   const isDone = state.status === 'completed' || state.status === 'failed';
 
   // --- Handlers ---
 
-  const handleIntentChange = useCallback((text: string) => {
+  const _handleIntentChange = useCallback((text: string) => {
     setCurrentSubject(text);
   }, [setCurrentSubject]);
 
-  const handleIntentSubmit = useCallback(async (intent: string, imageFile?: File) => {
+  const _handleIntentSubmit = useCallback(async (intent: string, imageFile?: File) => {
     setEvaluateResult(null);
     setCurrentSubject(intent);
     if (imageFile) {
@@ -110,7 +110,7 @@ export default function PrototypePage() {
           setEvaluateResult({ error: `Server error (${res.status})`, scores: null, summary: 'Evaluation unavailable — backend returned an error.' });
           setPlaygroundMode('run');
         }
-      } catch (err) {
+      } catch (_err) {
         toast.error('Backend unavailable — running in offline mode');
         setEvaluateResult({ error: 'offline', scores: null, summary: 'Backend unavailable — running in offline mode.' });
         setPlaygroundMode('run');
@@ -137,7 +137,7 @@ export default function PrototypePage() {
     }
   }, [lastRunParams, startRun, enableHitl, currentTradition, currentProvider, setCurrentSubject, setPlaygroundMode]);
 
-  const handleStartRun = useCallback((params: RunConfigParams) => {
+  const _handleStartRun = useCallback((params: RunConfigParams) => {
     setActiveTemplate(params.template || 'default');
     setLastRunParams(params);
     if (params.subject) setCurrentSubject(params.subject);
@@ -148,7 +148,7 @@ export default function PrototypePage() {
     startRun(params);
   }, [startRun, setCurrentSubject, setCurrentTradition, setTraditionManuallySet]);
 
-  const handleFork = useCallback((params: { subject: string; tradition: string }) => {
+  const _handleFork = useCallback((params: { subject: string; tradition: string }) => {
     setCurrentSubject(params.subject);
     setCurrentTradition(params.tradition);
     setTraditionManuallySet(true);
@@ -164,7 +164,7 @@ export default function PrototypePage() {
 
   // --- Computed stage data ---
 
-  const completedStages = state.events
+  const _completedStages = state.events
     .filter(e => e.event_type === 'stage_completed')
     .map(e => e.stage)
     .filter((v, i, a) => a.indexOf(v) === i);

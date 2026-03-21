@@ -4,10 +4,11 @@
  * Running/Complete: shows artwork + status HUD.
  */
 
-import { useState, useCallback, useEffect } from 'react';
-import { ArrowRight, ImagePlus, X } from 'lucide-react';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { ArrowRight, ImagePlus, X, ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
 import type { DraftCandidate } from '@/hooks/usePrototypePipeline';
 import { API_BASE_URL } from '@/config/api';
+import { useCanvasStore } from '@/store/canvasStore';
 
 interface Props {
   bestImageUrl: string | null;
@@ -55,11 +56,53 @@ export default function ArtworkHUD({ bestImageUrl, candidates, currentStage, sub
   // Idle state: intent input
   const [intentText, setIntentText] = useState('');
   const [tradition, setTradition] = useState('default');
-  const [provider, setProvider] = useState('mock');
+  const setStoreProvider = useCanvasStore(s => s.setCurrentProvider);
+  const [provider, setProviderLocal] = useState('mock');
+  const setProvider = (p: string) => {
+    setProviderLocal(p);
+    setStoreProvider(p); // Sync to Zustand store so Pipeline Editor Run uses the same provider
+  };
   const [showConfig, setShowConfig] = useState(false);
   const [referencePreview, setReferencePreview] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [traditions, setTraditions] = useState(FALLBACK_TRADITIONS);
+
+  // ── Zoom/Pan state for artwork viewer ──
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [isPanning, setIsPanning] = useState(false);
+  const panStart = useRef({ x: 0, y: 0, panX: 0, panY: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Register non-passive wheel listener to prevent page scroll when zooming
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const handler = (e: WheelEvent) => {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -0.15 : 0.15;
+      setZoom(z => Math.max(0.5, Math.min(5, z + delta)));
+    };
+    el.addEventListener('wheel', handler, { passive: false });
+    return () => el.removeEventListener('wheel', handler);
+  }, []);
+
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    if (zoom <= 1) return;
+    setIsPanning(true);
+    panStart.current = { x: e.clientX, y: e.clientY, panX: pan.x, panY: pan.y };
+  }, [zoom, pan]);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!isPanning) return;
+    setPan({
+      x: panStart.current.panX + (e.clientX - panStart.current.x),
+      y: panStart.current.panY + (e.clientY - panStart.current.y),
+    });
+  }, [isPanning]);
+
+  const handleMouseUp = useCallback(() => setIsPanning(false), []);
+  const resetView = useCallback(() => { setZoom(1); setPan({ x: 0, y: 0 }); }, []);
 
   // WU-4: Dynamic traditions loading from backend API
   useEffect(() => {
@@ -266,12 +309,31 @@ export default function ArtworkHUD({ bestImageUrl, candidates, currentStage, sub
   return (
     <div className="flex-1 relative rounded-2xl overflow-hidden bg-surface-container-high shadow-ambient-xl group">
       {imageUrl ? (
-        <img
-          src={imageUrl}
-          alt={subject || 'VULCA artwork'}
-          className="w-full h-full object-cover"
-          onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-        />
+        <div
+          ref={containerRef}
+          className="w-full h-full overflow-auto"
+          style={{ cursor: isPanning ? 'grabbing' : 'grab' }}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+        >
+          <img
+            src={imageUrl}
+            alt={subject || 'VULCA artwork'}
+            className="select-none"
+            draggable={false}
+            style={{
+              width: `${zoom * 100}%`,
+              minWidth: '100%',
+              height: 'auto',
+              display: 'block',
+              transform: `translate(${pan.x}px, ${pan.y}px)`,
+              transition: isPanning ? 'none' : 'transform 0.2s ease-out',
+            }}
+            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+          />
+        </div>
       ) : (
         <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-surface-container to-surface-container-high">
           <div className="text-center">
@@ -280,6 +342,24 @@ export default function ArtworkHUD({ bestImageUrl, candidates, currentStage, sub
               {isRunning ? 'Generating artwork...' : 'Waiting for pipeline...'}
             </p>
           </div>
+        </div>
+      )}
+
+      {/* Zoom controls */}
+      {imageUrl && (
+        <div className="absolute bottom-4 left-4 pointer-events-auto flex items-center gap-1 bg-white/80 backdrop-blur-xl rounded-full px-2 py-1 shadow-ambient-md z-10">
+          <button onClick={() => setZoom(z => Math.max(0.5, z - 0.25))} className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors" title="Zoom out">
+            <ZoomOut className="w-3.5 h-3.5 text-on-surface-variant" />
+          </button>
+          <span className="text-[10px] font-medium text-on-surface-variant min-w-[36px] text-center">{Math.round(zoom * 100)}%</span>
+          <button onClick={() => setZoom(z => Math.min(5, z + 0.25))} className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors" title="Zoom in">
+            <ZoomIn className="w-3.5 h-3.5 text-on-surface-variant" />
+          </button>
+          {zoom !== 1 && (
+            <button onClick={resetView} className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors" title="Reset view">
+              <Maximize2 className="w-3.5 h-3.5 text-on-surface-variant" />
+            </button>
+          )}
         </div>
       )}
 
