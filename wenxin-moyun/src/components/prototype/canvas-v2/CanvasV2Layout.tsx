@@ -17,7 +17,7 @@ import IntelligenceLog from './IntelligenceLog';
 import MaturityLevelPanel from './MaturityLevelPanel';
 import MetadataTagsPanel from './MetadataTagsPanel';
 import FinalizeSection from './FinalizeSection';
-import FeedbackCollector from '../FeedbackCollector';
+import CompletionCard from './CompletionCard';
 import HitlDecisionPanel from './HitlDecisionPanel';
 import WeightSlidersPanel from './WeightSlidersPanel';
 import RoundComparisonChart from './RoundComparisonChart';
@@ -264,36 +264,20 @@ export default function CanvasV2Layout({ pipeline, onAction, onReset, onStartPip
             riskTags={bestRiskTags}
           />
 
+          {/* Unified completion card — score + rationale + feedback + finalize */}
           {isComplete && pipeline.taskId && (
             <div className="mb-4">
-              <FeedbackCollector
-                sessionId={pipeline.taskId}
-                evaluationId={pipeline.taskId}
-                candidateId={pipeline.bestCandidateId || ''}
-                tradition={currentTradition || ''}
+              <CompletionCard
+                taskId={pipeline.taskId}
+                totalLatencyMs={pipeline.totalLatencyMs}
+                totalCostUsd={pipeline.totalCostUsd}
+                weightedTotal={bestWeightedTotal}
+                scoredCandidates={pipeline.scoredCandidates}
+                bestCandidateId={pipeline.bestCandidateId}
+                tradition={currentTradition || 'default'}
                 scoresSnapshot={bestScoresSnapshot}
-                onCreateAnother={onReset}
+                onReset={onReset}
               />
-            </div>
-          )}
-
-          {/* Confidence / Cost stats (from Refined Spacing design) */}
-          {(isComplete || pipeline.status === 'running') && (
-            <div className="bg-white rounded-xl p-4 mb-4">
-              <div className="grid grid-cols-2 gap-8">
-                <div className="flex flex-col gap-1">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Confidence</span>
-                  <span className="text-xl font-bold text-slate-900">
-                    {bestWeightedTotal != null ? `${(bestWeightedTotal * 100).toFixed(1)}%` : '—'}
-                  </span>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Cost</span>
-                  <span className="text-xl font-bold text-slate-900">
-                    {pipeline.totalCostUsd > 0 ? `$${pipeline.totalCostUsd.toFixed(2)}` : '—'}
-                  </span>
-                </div>
-              </div>
             </div>
           )}
 
@@ -310,14 +294,17 @@ export default function CanvasV2Layout({ pipeline, onAction, onReset, onStartPip
             </div>
           )}
 
-          <FinalizeSection
-            taskId={pipeline.taskId}
-            pipelineStatus={pipeline.status}
-            totalLatencyMs={pipeline.totalLatencyMs}
-            totalCostUsd={pipeline.totalCostUsd}
-            weightedTotal={bestWeightedTotal}
-            onReset={onReset}
-          />
+          {/* FinalizeSection only shown when NOT complete (processing/waiting states) */}
+          {!isComplete && (
+            <FinalizeSection
+              taskId={pipeline.taskId}
+              pipelineStatus={pipeline.status}
+              totalLatencyMs={pipeline.totalLatencyMs}
+              totalCostUsd={pipeline.totalCostUsd}
+              weightedTotal={bestWeightedTotal}
+              onReset={onReset}
+            />
+          )}
         </aside>
       </div>
     </div>
