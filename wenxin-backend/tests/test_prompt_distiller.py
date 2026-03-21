@@ -32,9 +32,12 @@ class TestPromptDistiller:
             {"intent": "abstract modern art", "final_weighted_total": 0.75, "tradition": "default"},
         ]
         archetypes = PromptDistiller().distill(sessions)
-        # "mountain" and "landscape" appear in 2 sessions each
-        patterns = [a.pattern for a in archetypes]
-        assert "mountain" in patterns or "landscape" in patterns
+        assert len(archetypes) >= 1, "High-scoring sessions should produce archetypes"
+        # Patterns should relate to the input intents (keyword or LLM-generated)
+        all_patterns = " ".join(a.pattern.lower() for a in archetypes)
+        assert "mountain" in all_patterns or "landscape" in all_patterns, (
+            f"Expected mountain/landscape in patterns, got: {[a.pattern for a in archetypes]}"
+        )
 
     def test_chinese_intent_keywords(self):
         """Chinese bigrams/trigrams should be extracted from intent text."""
@@ -44,9 +47,12 @@ class TestPromptDistiller:
             {"intent": "水墨 art", "final_weighted_total": 0.78, "tradition": "chinese_xieyi"},
         ]
         archetypes = PromptDistiller().distill(sessions)
-        patterns = [a.pattern for a in archetypes]
-        # "水墨" should appear as extracted Chinese keyword (in 3 sessions)
-        assert "水墨" in patterns, f"Expected '水墨' in patterns, got {patterns}"
+        assert len(archetypes) >= 1, "Should produce archetypes from Chinese intents"
+        # Pattern should relate to 水墨/ink wash (keyword or LLM-generated)
+        all_patterns = " ".join(a.pattern for a in archetypes)
+        assert "水墨" in all_patterns or "ink" in all_patterns.lower() or "wash" in all_patterns.lower(), (
+            f"Expected ink wash related pattern, got: {[a.pattern for a in archetypes]}"
+        )
 
     def test_extract_keywords_mixed(self):
         """Mixed English+Chinese text should extract both."""
