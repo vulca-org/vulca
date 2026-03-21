@@ -10,6 +10,7 @@ import {
 } from '../components/ios';
 import { API_PREFIX, API_BASE_URL } from '../config/api';
 import GalleryCardActions from '../components/gallery/GalleryCardActions';
+import GalleryDetailModal from '../components/gallery/GalleryDetailModal';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -687,81 +688,8 @@ export default function GalleryPage() {
         )}
       </div>
 
-      {/* Detail Modal with AnimatePresence */}
-      <AnimatePresence>
-        {selectedArtwork && (
-          <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-            onClick={() => setSelectedArtwork(null)}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            <motion.div
-              className="bg-surface-container-lowest rounded-2xl shadow-ambient-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto"
-              onClick={(e) => e.stopPropagation()}
-              initial={{ scale: 0.95, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-            >
-              <div className="aspect-[16/9] relative rounded-t-2xl overflow-hidden bg-surface-container-high">
-                {selectedArtwork.best_image_url && !selectedArtwork.best_image_url.startsWith('mock://') && !selectedArtwork.best_image_url.startsWith('gemini://') ? (
-                  <img
-                    src={(() => {
-                      const url = selectedArtwork.best_image_url;
-                      if (url.startsWith('data:') || url.startsWith('http')) return url;
-                      if (url.startsWith('/')) return `${API_BASE_URL}${url}`;
-                      return `${API_BASE_URL}/${url}`;
-                    })()}
-                    alt={selectedArtwork.subject}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center" style={{ background: TRADITION_GRADIENTS[selectedArtwork.tradition] ?? TRADITION_GRADIENTS.default }}>
-                    <span className="text-white text-4xl">🎨</span>
-                  </div>
-                )}
-                <button onClick={() => setSelectedArtwork(null)} className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/40 text-white flex items-center justify-center hover:bg-black/60 transition-colors backdrop-blur-sm" aria-label="Close">✕</button>
-              </div>
-              <div className="p-8">
-                <div className="flex items-start justify-between mb-6">
-                  <div>
-                    <h2 className="font-display text-2xl font-bold text-on-surface mb-2">{selectedArtwork.subject}</h2>
-                    <span className="text-[11px] font-bold uppercase tracking-widest text-primary-500 bg-primary-50 px-3 py-1 rounded-full">
-                      {TRADITION_LABELS[selectedArtwork.tradition] ?? selectedArtwork.tradition.replace(/_/g, ' ')}
-                    </span>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-3xl font-bold text-on-surface">{Math.round(selectedArtwork.overall * 100)}%</span>
-                    <p className="text-[11px] text-on-surface-variant">Overall Score</p>
-                  </div>
-                </div>
-                <div className="mb-6">
-                  <h3 className="text-[11px] font-bold uppercase tracking-widest text-outline mb-3">Dimension Scores</h3>
-                  <div className="grid grid-cols-5 gap-3">
-                    {Object.entries(selectedArtwork.scores ?? {}).map(([dim, score]) => (
-                      <div key={dim} className="text-center">
-                        <div className={`w-full aspect-square rounded-xl flex items-center justify-center text-sm font-bold mb-1 ${score >= 0.9 ? 'bg-primary-500 text-white' : 'bg-surface-container-high text-on-surface-variant'}`}>{dim}</div>
-                        <span className="text-[10px] font-bold text-on-surface-variant">{Math.round(score * 100)}%</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className="flex items-center gap-4 text-[11px] text-on-surface-variant">
-                  <span>{selectedArtwork.total_rounds} round{selectedArtwork.total_rounds !== 1 ? 's' : ''}</span>
-                  <span>{(selectedArtwork.total_latency_ms / 1000).toFixed(1)}s</span>
-                  {selectedArtwork.created_at && <span>{new Date(selectedArtwork.created_at * 1000).toLocaleDateString()}</span>}
-                </div>
-                <div className="flex items-center gap-3 mt-6 pt-6">
-                  <GalleryCardActions sessionId={selectedArtwork.id} subject={selectedArtwork.subject} tradition={selectedArtwork.tradition} initialLikes={selectedArtwork.likes_count ?? 0} />
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Detail Modal */}
+      <GalleryDetailModal artwork={selectedArtwork} onClose={() => setSelectedArtwork(null)} />
     </div>
   );
 }

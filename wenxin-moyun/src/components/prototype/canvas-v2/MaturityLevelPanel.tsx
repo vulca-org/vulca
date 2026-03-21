@@ -47,13 +47,14 @@ export default function MaturityLevelPanel({ scoredCandidates, bestCandidateId, 
     return map;
   }, [bestCandidate]);
 
-  const highestL = useMemo(() => {
-    let best = 'L1';
-    let bestScore = 0;
+  const { highestL, lowestL } = useMemo(() => {
+    let best = 'L1', worst = 'L5';
+    let bestScore = -1, worstScore = 2;
     for (const [k, v] of Object.entries(scores)) {
       if (v.score > bestScore) { bestScore = v.score; best = k; }
+      if (v.score < worstScore) { worstScore = v.score; worst = k; }
     }
-    return best;
+    return { highestL: best, lowestL: worst };
   }, [scores]);
 
   const activeL = selectedL || highestL;
@@ -122,9 +123,9 @@ export default function MaturityLevelPanel({ scoredCandidates, bestCandidateId, 
         </p>
       )}
 
-      {/* Rationale card */}
-      {hasScores && activeInfo && (
-        <div className="mt-4 bg-surface-container-low/50 p-3 rounded-lg">
+      {/* Rationale cards — show selected or default highest + lowest */}
+      {hasScores && selectedL && activeInfo ? (
+        <div className="mt-4 bg-surface-container-low/50 p-3 rounded-2xl">
           <p className="text-[10px] font-bold text-on-surface-variant mb-1">
             {L_LABELS[activeL] || activeL}
             {lockedDimensions.includes(activeL) && <span className="ml-1 text-cultural-amber-500">🔒 Locked</span>}
@@ -133,7 +134,37 @@ export default function MaturityLevelPanel({ scoredCandidates, bestCandidateId, 
             {activeInfo.rationale || 'No rationale available.'}
           </p>
         </div>
-      )}
+      ) : hasScores && highestL !== lowestL ? (
+        <div className="mt-4 space-y-2">
+          {/* Strongest dimension */}
+          {scores[highestL]?.rationale && (
+            <div className="bg-cultural-sage-50/60 p-3 rounded-2xl">
+              <p className="text-[10px] font-bold text-cultural-sage-700 mb-1">
+                Strongest: {highestL} {L_LABELS[highestL]} — {((scores[highestL]?.score ?? 0) * 100).toFixed(0)}%
+              </p>
+              <p className="text-[11px] text-on-surface-variant leading-relaxed italic">
+                {scores[highestL].rationale.length > 120 ? scores[highestL].rationale.slice(0, 117) + '...' : scores[highestL].rationale}
+              </p>
+            </div>
+          )}
+          {/* Weakest dimension */}
+          {scores[lowestL]?.rationale && (
+            <div className="bg-cultural-coral-50/40 p-3 rounded-2xl">
+              <p className="text-[10px] font-bold text-cultural-coral-600 mb-1">
+                Needs work: {lowestL} {L_LABELS[lowestL]} — {((scores[lowestL]?.score ?? 0) * 100).toFixed(0)}%
+              </p>
+              <p className="text-[11px] text-on-surface-variant leading-relaxed italic">
+                {scores[lowestL].rationale.length > 120 ? scores[lowestL].rationale.slice(0, 117) + '...' : scores[lowestL].rationale}
+              </p>
+            </div>
+          )}
+        </div>
+      ) : hasScores && activeInfo ? (
+        <div className="mt-4 bg-surface-container-low/50 p-3 rounded-2xl">
+          <p className="text-[10px] font-bold text-on-surface-variant mb-1">{L_LABELS[activeL] || activeL}</p>
+          <p className="text-[11px] text-on-surface-variant leading-relaxed italic">{activeInfo.rationale || 'No rationale available.'}</p>
+        </div>
+      ) : null}
 
       {!hasScores && (
         <p className="mt-4 text-[11px] text-outline italic">

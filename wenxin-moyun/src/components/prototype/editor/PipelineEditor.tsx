@@ -228,7 +228,7 @@ function extractTopology(
   const hasLoop = edges.some(
     (e) =>
       (e.source === 'queen' && e.target === 'draft') ||
-      (e.source === 'queen' && e.target === 'router'),
+      (e.source === 'queen' && e.target === 'scout'),
   );
   return { nodes: nodeIds, edges: edgePairs, enableLoop: hasLoop };
 }
@@ -410,10 +410,10 @@ export default function PipelineEditor({
       }
 
       // Fallback
-      const defaultIds: AgentNodeId[] = ['scout', 'router', 'draft', 'critic', 'queen', 'archivist'];
+      const defaultIds: AgentNodeId[] = ['scout', 'draft', 'critic', 'queen'];
       const defaultEdges: [string, string][] = [
-        ['scout', 'router'], ['router', 'draft'], ['draft', 'critic'],
-        ['critic', 'queen'], ['queen', 'archivist'],
+        ['scout', 'draft'], ['draft', 'critic'],
+        ['critic', 'queen'],
       ];
       const fn = toFlowNodes(defaultIds);
       const fe = toFlowEdges(defaultEdges);
@@ -862,8 +862,8 @@ export default function PipelineEditor({
         id: 'default',
         name: 'Standard Pipeline',
         description: 'Full Scout-Draft-Critic-Queen cycle',
-        nodeCount: 6,
-        nodes: ['scout', 'router', 'draft', 'critic', 'queen', 'archivist'],
+        nodeCount: 4,
+        nodes: ['scout', 'draft', 'critic', 'queen'],
       });
     }
     return [...api, ...custom];

@@ -38,7 +38,7 @@ export default function HitlDecisionPanel({ pipelineStatus, lockedDimensions, we
       <div className="flex gap-2">
         <button
           onClick={() => onAction('approve')}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-cultural-sage-500 text-white rounded-xl text-sm font-semibold hover:bg-cultural-sage-600 active:scale-[0.98] transition-all"
+          className="flex-1 flex items-center justify-center gap-1.5 min-h-[44px] bg-cultural-sage-500 text-white rounded-2xl text-sm font-semibold hover:bg-cultural-sage-600 active:scale-[0.98] transition-all"
         >
           <Check className="w-4 h-4" />
           Accept
@@ -49,14 +49,14 @@ export default function HitlDecisionPanel({ pipelineStatus, lockedDimensions, we
             rerun_dimensions: rerunDimensions,
             ...(weights ? { node_params: { critic: { w_l1: weights.L1, w_l2: weights.L2, w_l3: weights.L3, w_l4: weights.L4, w_l5: weights.L5 } } } : {}),
           })}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-primary-500 text-white rounded-xl text-sm font-semibold hover:bg-primary-600 active:scale-[0.98] transition-all"
+          className="flex-1 flex items-center justify-center gap-1.5 min-h-[44px] bg-primary-500 text-white rounded-2xl text-sm font-semibold hover:bg-primary-600 active:scale-[0.98] transition-all"
         >
           <RefreshCw className="w-4 h-4" />
           Refine
         </button>
         <button
           onClick={() => onAction('reject')}
-          className="flex items-center justify-center gap-1.5 py-2.5 px-4 bg-surface-container-high text-on-surface-variant rounded-xl text-sm font-medium hover:bg-cultural-coral-50 hover:text-cultural-coral-600 active:scale-[0.98] transition-all"
+          className="flex items-center justify-center gap-1.5 min-h-[44px] px-4 bg-surface-container-high text-on-surface-variant rounded-2xl text-sm font-medium hover:bg-cultural-coral-50 hover:text-cultural-coral-600 active:scale-[0.98] transition-all"
         >
           <X className="w-4 h-4" />
         </button>

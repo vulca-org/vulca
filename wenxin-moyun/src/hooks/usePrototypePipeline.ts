@@ -321,10 +321,11 @@ export function usePrototypePipeline() {
                 L4: 'critical_interpretation',
                 L5: 'philosophical_aesthetic',
               };
+              const rationales = payload.rationales as Record<string, string> | undefined;
               const dimScores: DimensionScore[] = Object.entries(scores).map(([dim, score]) => ({
                 dimension: L_TO_DIM[dim] || dim,
                 score: score as number,
-                rationale: '',
+                rationale: rationales?.[`${dim}_rationale`] || '',
               }));
               const candidateId = (payload.candidate_id as string) || prev.bestCandidateId || 'mock';
               update.scoredCandidates = [{

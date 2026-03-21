@@ -71,7 +71,7 @@ export default function RoundComparisonChart({ rounds }: Props) {
       <h3 className="text-[10px] font-bold uppercase tracking-widest text-outline mb-3">
         Round Progress
       </h3>
-      <div className="bg-white rounded-xl p-4">
+      <div className="bg-white rounded-2xl p-4">
         <ResponsiveContainer width="100%" height={140}>
           <LineChart data={data} margin={{ top: 4, right: 8, bottom: 0, left: -20 }}>
             <XAxis

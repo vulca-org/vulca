@@ -29,7 +29,7 @@ export default function WeightSlidersPanel({ weights, onChange, disabled }: Prop
       <h3 className="text-[10px] font-bold uppercase tracking-widest text-outline mb-3">
         Scoring Weights
       </h3>
-      <div className="bg-white rounded-xl p-4 space-y-3">
+      <div className="bg-white rounded-2xl p-4 space-y-3">
         {DIMENSIONS.map(({ key, label, color }) => (
           <IOSSlider
             key={key}

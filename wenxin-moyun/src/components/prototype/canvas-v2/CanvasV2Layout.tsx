@@ -207,7 +207,7 @@ export default function CanvasV2Layout({ pipeline, onAction, onReset, onStartPip
                 value={instructText}
                 onChange={(e) => setInstructText(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleInstruct(); } }}
-                placeholder={isRunning ? 'Pipeline running...' : 'Instruct the Collective...'}
+                placeholder={isRunning ? 'Pipeline running...' : pipeline.status === 'completed' ? 'Refine with a new instruction...' : pipeline.status === 'waiting_human' ? 'Add guidance for next round...' : 'Instruct the Collective...'}
                 disabled={isRunning}
                 className="flex-1 bg-transparent border-none focus:ring-0 text-sm placeholder:text-on-surface-variant/50 italic font-medium text-on-surface disabled:opacity-40"
               />
@@ -294,6 +294,19 @@ export default function CanvasV2Layout({ pipeline, onAction, onReset, onStartPip
                   </span>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* Evolution Insight — from digestion system */}
+          {pipeline.evolutionSuggestion && (
+            <div className="mb-3 p-3 bg-cultural-bronze-50 rounded-xl">
+              <div className="flex items-center gap-1.5 mb-1.5">
+                <span className="material-symbols-outlined text-cultural-bronze-500 text-sm">auto_awesome</span>
+                <span className="text-[10px] font-bold text-cultural-bronze-600 uppercase tracking-widest">Evolution Insight</span>
+              </div>
+              <p className="text-[11px] text-cultural-bronze-800 leading-relaxed">
+                {pipeline.evolutionSuggestion}
+              </p>
             </div>
           )}
 
