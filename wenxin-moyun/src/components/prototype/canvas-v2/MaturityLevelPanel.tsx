@@ -14,13 +14,7 @@ interface Props {
   onToggleLock?: (dimension: string) => void;
 }
 
-const L_LABELS: Record<string, string> = {
-  L1: 'Visual Perception',
-  L2: 'Technical Execution',
-  L3: 'Cultural Context',
-  L4: 'Critical Interpretation',
-  L5: 'Philosophical Aesthetics',
-};
+import { L_LABELS } from '@/utils/tradition-labels';
 
 const DIM_TO_L: Record<string, string> = {
   visual_perception: 'L1', technical_analysis: 'L2', technical_execution: 'L2',
@@ -143,7 +137,7 @@ export default function MaturityLevelPanel({ scoredCandidates, bestCandidateId, 
                 Strongest: {highestL} {L_LABELS[highestL]} — {((scores[highestL]?.score ?? 0) * 100).toFixed(0)}%
               </p>
               <p className="text-[11px] text-on-surface-variant leading-relaxed italic">
-                {scores[highestL].rationale.length > 120 ? scores[highestL].rationale.slice(0, 117) + '...' : scores[highestL].rationale}
+                {scores[highestL].rationale.length > 120 ? scores[highestL].rationale.slice(0, 120).replace(/\s+\S*$/, '') + '...' : scores[highestL].rationale}
               </p>
             </div>
           )}
@@ -154,7 +148,7 @@ export default function MaturityLevelPanel({ scoredCandidates, bestCandidateId, 
                 Needs work: {lowestL} {L_LABELS[lowestL]} — {((scores[lowestL]?.score ?? 0) * 100).toFixed(0)}%
               </p>
               <p className="text-[11px] text-on-surface-variant leading-relaxed italic">
-                {scores[lowestL].rationale.length > 120 ? scores[lowestL].rationale.slice(0, 117) + '...' : scores[lowestL].rationale}
+                {scores[lowestL].rationale.length > 120 ? scores[lowestL].rationale.slice(0, 120).replace(/\s+\S*$/, '') + '...' : scores[lowestL].rationale}
               </p>
             </div>
           )}

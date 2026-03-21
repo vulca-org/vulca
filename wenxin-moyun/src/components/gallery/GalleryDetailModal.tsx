@@ -3,9 +3,11 @@
  * Triggered when user clicks a gallery card.
  */
 
+import { useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { API_BASE_URL } from '@/config/api';
+import { getTraditionLabel, L_LABELS } from '@/utils/tradition-labels';
 
 interface GalleryItem {
   id: string;
@@ -25,26 +27,6 @@ interface Props {
   onClose: () => void;
 }
 
-const TRADITION_LABELS: Record<string, string> = {
-  chinese_xieyi: 'Chinese Xieyi',
-  chinese_gongbi: 'Chinese Gongbi',
-  islamic_geometric: 'Islamic Geometric',
-  japanese_traditional: 'Japanese Traditional',
-  western_academic: 'Western Academic',
-  african_traditional: 'African Traditional',
-  south_asian: 'South Asian',
-  watercolor: 'Watercolor',
-  default: 'Default',
-};
-
-const L_LABELS: Record<string, string> = {
-  L1: 'Visual Perception',
-  L2: 'Technical Analysis',
-  L3: 'Cultural Context',
-  L4: 'Critical Interpretation',
-  L5: 'Philosophical Aesthetic',
-};
-
 const L_COLORS: Record<string, string> = {
   L1: 'bg-primary-500',
   L2: 'bg-cultural-sage-500',
@@ -62,10 +44,21 @@ function resolveImageUrl(url: string | null | undefined): string | null {
 }
 
 export default function GalleryDetailModal({ artwork, onClose }: Props) {
+  // Escape key handler
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === 'Escape') onClose();
+  }, [onClose]);
+
+  useEffect(() => {
+    if (!artwork) return;
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [artwork, handleKeyDown]);
+
   if (!artwork) return null;
 
   const imageUrl = resolveImageUrl(artwork.best_image_url);
-  const traditionLabel = TRADITION_LABELS[artwork.tradition] ?? artwork.tradition.replace(/_/g, ' ');
+  const traditionLabel = getTraditionLabel(artwork.tradition);
   const scores = artwork.scores || {};
   const sortedDims = ['L1', 'L2', 'L3', 'L4', 'L5'].filter(d => scores[d] != null);
 
@@ -101,6 +94,9 @@ export default function GalleryDetailModal({ artwork, onClose }: Props) {
 
         {/* Modal */}
         <motion.div
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Artwork detail: ${artwork.subject}`}
           className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-surface rounded-3xl shadow-2xl"
           initial={{ scale: 0.95, opacity: 0, y: 20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -111,7 +107,8 @@ export default function GalleryDetailModal({ artwork, onClose }: Props) {
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white/80 backdrop-blur-xl text-on-surface-variant hover:bg-white hover:text-on-surface transition-all shadow-ambient-sm"
+            aria-label="Close"
+            className="absolute top-4 right-4 z-10 min-w-[44px] min-h-[44px] w-11 h-11 flex items-center justify-center rounded-full bg-white/80 backdrop-blur-xl text-on-surface-variant hover:bg-white hover:text-on-surface transition-all shadow-ambient-sm"
           >
             <X className="w-5 h-5" />
           </button>

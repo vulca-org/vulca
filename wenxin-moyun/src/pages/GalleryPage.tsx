@@ -48,18 +48,7 @@ interface DigestionInsights {
 // Tradition display labels
 // ---------------------------------------------------------------------------
 
-const TRADITION_LABELS: Record<string, string> = {
-  chinese_ink: 'Chinese Ink',
-  chinese_xieyi: 'Chinese Xieyi',
-  japanese_ukiyoe: 'Japanese Ukiyo-e',
-  persian_miniature: 'Persian Miniature',
-  indian_mughal: 'Mughal Painting',
-  korean_minhwa: 'Korean Minhwa',
-  islamic_geometric: 'Islamic Geometric',
-  byzantine_icon: 'Byzantine Icon',
-  tibetan_thangka: 'Tibetan Thangka',
-  default: 'Default',
-};
+import { TRADITION_LABELS } from '@/utils/tradition-labels';
 
 // Gradient placeholders per tradition (used when no image URL)
 const TRADITION_GRADIENTS: Record<string, string> = {
