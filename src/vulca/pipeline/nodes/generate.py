@@ -123,11 +123,29 @@ class GenerateNode(PipelineNode):
             f'</svg>'
         )
         img_b64 = base64.b64encode(svg.encode()).decode()
+
+        # Extract cultural guidance used (for frontend visibility)
+        cultural_terms: list[str] = []
+        cultural_taboos: list[str] = []
+        try:
+            from vulca.cultural.loader import get_tradition
+            tc = get_tradition(tradition)
+            if tc:
+                cultural_terms = [t.term for t in (tc.terminology or [])[:6]]
+                cultural_taboos = [t.rule for t in (tc.taboos or [])]
+        except Exception:
+            pass
+
         return {
             "image_b64": img_b64,
             "image_mime": "image/svg+xml",
             "candidate_id": candidate_id,
             "image_url": f"mock://{candidate_id}.svg",
+            "cultural_guidance": {
+                "terminology": cultural_terms,
+                "taboos": cultural_taboos,
+                "tradition": tradition,
+            },
         }
 
     # ------------------------------------------------------------------
@@ -354,11 +372,28 @@ class GenerateNode(PipelineNode):
                 len(img_bytes),
             )
 
+            # Extract cultural guidance used (for frontend visibility)
+            cultural_terms: list[str] = []
+            cultural_taboos: list[str] = []
+            try:
+                from vulca.cultural.loader import get_tradition
+                tc = get_tradition(ctx.tradition)
+                if tc:
+                    cultural_terms = [t.term for t in (tc.terminology or [])[:6]]
+                    cultural_taboos = [t.rule for t in (tc.taboos or [])]
+            except Exception:
+                pass
+
             return {
                 "image_b64": img_b64,
                 "image_mime": "image/png",
                 "candidate_id": candidate_id,
                 "image_url": f"gemini://{candidate_id}.png",
+                "cultural_guidance": {
+                    "terminology": cultural_terms,
+                    "taboos": cultural_taboos,
+                    "tradition": ctx.tradition,
+                },
             }
 
         except Exception as exc:
