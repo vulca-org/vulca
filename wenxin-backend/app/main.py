@@ -102,31 +102,10 @@ async def lifespan(app: FastAPI):
         if not IS_PRODUCTION:
             raise
 
-    # Bootstrap check: backfill cultural features + sync feedback if no evolutions yet
-    try:
-        from app.prototype.digestion.feature_extractor import backfill_missing_features
-        from app.prototype.feedback.feedback_store import FeedbackStore
-
-        _evolved_path = Path(__file__).parent / "prototype" / "data" / "evolved_context.json"
-        _should_bootstrap = True
-        if _evolved_path.exists():
-            import json as _json
-            _ctx = _json.loads(_evolved_path.read_text())
-            if _ctx.get("evolutions", 0) > 0:
-                _should_bootstrap = False
-
-        if _should_bootstrap:
-            _bootstrap_logger = logging.getLogger("vulca.bootstrap")
-            _bootstrap_logger.info("No evolutions yet — running bootstrap backfill")
-            _bf_count = backfill_missing_features()
-            _bootstrap_logger.info("Backfilled %d sessions", _bf_count)
-            FeedbackStore.get().sync_from_sessions()
-            from app.prototype.digestion.context_evolver import ContextEvolver
-            _evolver = ContextEvolver()
-            _evolver.evolve()
-            _bootstrap_logger.info("Bootstrap evolution complete")
-    except Exception as _bootstrap_exc:
-        print(f"WARNING: Bootstrap backfill failed (non-fatal): {_bootstrap_exc}")
+    # Bootstrap check: defer to periodic digestion instead of blocking startup.
+    # Previous approach ran full evolve() (including LLM calls) synchronously
+    # during lifespan startup, causing Cloud Run startup probe timeout (>240s).
+    # The periodic digestion task (30s initial delay) handles this safely.
 
     # Start periodic digestion background task
     digestion_task = asyncio.create_task(_periodic_digestion())
