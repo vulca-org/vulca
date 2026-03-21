@@ -26,6 +26,7 @@ interface GalleryItem {
   total_rounds: number;
   total_latency_ms: number;
   created_at: number;
+  likes_count: number;
 }
 
 interface EvolutionStats {
@@ -81,42 +82,42 @@ const MOCK_GALLERY: GalleryItem[] = [
   {
     id: 'art-001', subject: 'Misty Mountains at Dawn', tradition: 'chinese_ink',
     media_type: 'image', scores: { L1: 0.91, L2: 0.88, L3: 0.95, L4: 0.93, L5: 0.90 },
-    overall: 0.914, best_image_url: '', total_rounds: 3, total_latency_ms: 12400, created_at: 1741132800,
+    overall: 0.914, best_image_url: '', total_rounds: 3, total_latency_ms: 12400, created_at: 1741132800, likes_count: 0,
   },
   {
     id: 'art-002', subject: 'The Great Wave Reimagined', tradition: 'japanese_ukiyoe',
     media_type: 'image', scores: { L1: 0.89, L2: 0.85, L3: 0.92, L4: 0.88, L5: 0.87 },
-    overall: 0.882, best_image_url: '', total_rounds: 2, total_latency_ms: 9800, created_at: 1741046400,
+    overall: 0.882, best_image_url: '', total_rounds: 2, total_latency_ms: 9800, created_at: 1741046400, likes_count: 0,
   },
   {
     id: 'art-003', subject: 'Garden of Paradise', tradition: 'persian_miniature',
     media_type: 'image', scores: { L1: 0.87, L2: 0.83, L3: 0.90, L4: 0.92, L5: 0.86 },
-    overall: 0.876, best_image_url: '', total_rounds: 3, total_latency_ms: 15200, created_at: 1741046400,
+    overall: 0.876, best_image_url: '', total_rounds: 3, total_latency_ms: 15200, created_at: 1741046400, likes_count: 0,
   },
   {
     id: 'art-004', subject: 'Court of the Mughal Emperor', tradition: 'indian_mughal',
     media_type: 'image', scores: { L1: 0.86, L2: 0.84, L3: 0.88, L4: 0.90, L5: 0.85 },
-    overall: 0.866, best_image_url: '', total_rounds: 2, total_latency_ms: 8400, created_at: 1740960000,
+    overall: 0.866, best_image_url: '', total_rounds: 2, total_latency_ms: 8400, created_at: 1740960000, likes_count: 0,
   },
   {
     id: 'art-005', subject: 'Longevity Symbols', tradition: 'korean_minhwa',
     media_type: 'image', scores: { L1: 0.84, L2: 0.82, L3: 0.89, L4: 0.86, L5: 0.91 },
-    overall: 0.864, best_image_url: '', total_rounds: 3, total_latency_ms: 11600, created_at: 1740960000,
+    overall: 0.864, best_image_url: '', total_rounds: 3, total_latency_ms: 11600, created_at: 1740960000, likes_count: 0,
   },
   {
     id: 'art-006', subject: 'Alhambra Tessellation', tradition: 'islamic_geometric',
     media_type: 'image', scores: { L1: 0.93, L2: 0.91, L3: 0.88, L4: 0.85, L5: 0.83 },
-    overall: 0.880, best_image_url: '', total_rounds: 2, total_latency_ms: 7800, created_at: 1740873600,
+    overall: 0.880, best_image_url: '', total_rounds: 2, total_latency_ms: 7800, created_at: 1740873600, likes_count: 0,
   },
   {
     id: 'art-007', subject: 'Theotokos of Compassion', tradition: 'byzantine_icon',
     media_type: 'image', scores: { L1: 0.85, L2: 0.87, L3: 0.86, L4: 0.92, L5: 0.88 },
-    overall: 0.876, best_image_url: '', total_rounds: 2, total_latency_ms: 9200, created_at: 1740787200,
+    overall: 0.876, best_image_url: '', total_rounds: 2, total_latency_ms: 9200, created_at: 1740787200, likes_count: 0,
   },
   {
     id: 'art-008', subject: 'Medicine Buddha Mandala', tradition: 'tibetan_thangka',
     media_type: 'image', scores: { L1: 0.82, L2: 0.84, L3: 0.87, L4: 0.93, L5: 0.91 },
-    overall: 0.874, best_image_url: '', total_rounds: 3, total_latency_ms: 14000, created_at: 1740700800,
+    overall: 0.874, best_image_url: '', total_rounds: 3, total_latency_ms: 14000, created_at: 1740700800, likes_count: 0,
   },
 ];
 
@@ -389,7 +390,6 @@ export default function GalleryPage() {
   const [totalCount, setTotalCount] = useState<number>(MOCK_GALLERY.length);
   const [evolutionStats, setEvolutionStats] = useState<EvolutionStats | null>(null);
   const [digestionInsights, setDigestionInsights] = useState<DigestionInsights | null>(null);
-  const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [isLive, setIsLive] = useState(false);  // true if data came from API
@@ -491,22 +491,8 @@ export default function GalleryPage() {
       }
     }
 
-    async function fetchLikes() {
-      try {
-        const res = await fetch(`${API_PREFIX}/prototype/gallery/likes`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        if (!cancelled && data && typeof data === 'object') {
-          setLikeCounts(data);
-        }
-      } catch {
-        // Likes unavailable — show zero counts
-      }
-    }
-
     fetchEvolution();
     fetchDigestionInsights();
-    fetchLikes();
 
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -653,7 +639,7 @@ export default function GalleryPage() {
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
               {filtered.map((artwork) => (
-                <ArtworkCard key={artwork.id} artwork={artwork} likeCount={likeCounts[artwork.id] ?? 0} onSelect={setSelectedArtwork} />
+                <ArtworkCard key={artwork.id} artwork={artwork} likeCount={artwork.likes_count ?? 0} onSelect={setSelectedArtwork} />
               ))}
             </div>
 
@@ -769,7 +755,7 @@ export default function GalleryPage() {
                   {selectedArtwork.created_at && <span>{new Date(selectedArtwork.created_at * 1000).toLocaleDateString()}</span>}
                 </div>
                 <div className="flex items-center gap-3 mt-6 pt-6">
-                  <GalleryCardActions sessionId={selectedArtwork.id} subject={selectedArtwork.subject} tradition={selectedArtwork.tradition} initialLikes={likeCounts[selectedArtwork.id] ?? 0} />
+                  <GalleryCardActions sessionId={selectedArtwork.id} subject={selectedArtwork.subject} tradition={selectedArtwork.tradition} initialLikes={selectedArtwork.likes_count ?? 0} />
                 </div>
               </div>
             </motion.div>

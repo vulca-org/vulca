@@ -43,6 +43,23 @@ class EvaluateNode(PipelineNode):
         return get_weights(ctx.tradition)
 
     @staticmethod
+    def _apply_locked_dimensions(
+        new_scores: dict[str, float],
+        locked: list[str],
+        previous: dict[str, float],
+    ) -> dict[str, float]:
+        """Overwrite locked dimensions with previous-round scores.
+
+        Returns a copy of *new_scores* with locked dimensions replaced by
+        values from *previous* (when available).
+        """
+        result = dict(new_scores)
+        for dim in locked:
+            if dim in previous:
+                result[dim] = previous[dim]
+        return result
+
+    @staticmethod
     def _mock_scores(ctx: NodeContext) -> dict[str, Any]:
         """Return deterministic mock scores for testing."""
         base = 0.65 + (ctx.round_num * 0.05)
@@ -54,6 +71,12 @@ class EvaluateNode(PipelineNode):
             "L5": min(1.0, base + 0.08),
         }
         rationales = {f"{k}_rationale": f"Mock score for {k}" for k in scores}
+
+        node_params = ctx.get("node_params") or {}
+        locked: list[str] = (node_params.get("evaluate") or {}).get("locked_dimensions", [])
+        previous: dict[str, float] = ctx.get("scores") or {}
+        if locked and previous:
+            scores = EvaluateNode._apply_locked_dimensions(scores, locked, previous)
 
         weights = EvaluateNode._get_weights(ctx)
         weighted_total = sum(scores[k] * weights.get(k, 0.2) for k in scores)
@@ -83,6 +106,12 @@ class EvaluateNode(PipelineNode):
         rationales = {
             f"L{i}_rationale": data.get(f"L{i}_rationale", "") for i in range(1, 6)
         }
+
+        node_params = ctx.get("node_params") or {}
+        locked_vlm: list[str] = (node_params.get("evaluate") or {}).get("locked_dimensions", [])
+        previous_vlm: dict[str, float] = ctx.get("scores") or {}
+        if locked_vlm and previous_vlm:
+            scores = EvaluateNode._apply_locked_dimensions(scores, locked_vlm, previous_vlm)
 
         weights = EvaluateNode._get_weights(ctx)
         weighted_total = sum(scores[k] * weights.get(k, 0.2) for k in scores)

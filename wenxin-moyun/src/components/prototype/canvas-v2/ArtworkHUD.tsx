@@ -16,6 +16,8 @@ interface Props {
   subject: string;
   pipelineStatus: string;
   onStartPipeline?: (subject: string, tradition: string, provider: string, referenceImageBase64?: string) => void;
+  onSelectCandidate?: (candidateId: string) => void;
+  selectedCandidateId?: string | null;
 }
 
 const FALLBACK_TRADITIONS = [
@@ -44,7 +46,7 @@ const STAGE_LABELS: Record<string, string> = {
   decide: 'Queen Deliberating',
 };
 
-export default function ArtworkHUD({ bestImageUrl, candidates, currentStage, subject, pipelineStatus, onStartPipeline }: Props) {
+export default function ArtworkHUD({ bestImageUrl, candidates, currentStage, subject, pipelineStatus, onStartPipeline, onSelectCandidate, selectedCandidateId }: Props) {
   const imageUrl = resolveUrl(bestImageUrl) || (candidates.length > 0 ? resolveUrl(candidates[0].image_url) : null);
   const isIdle = pipelineStatus === 'idle';
   const isRunning = pipelineStatus === 'running';
@@ -240,10 +242,18 @@ export default function ArtworkHUD({ bestImageUrl, candidates, currentStage, sub
         </div>
         <div className="grid grid-cols-2 gap-3 h-[calc(100%-2rem)]">
           {resolvedCandidates.slice(0, 4).map((c) => (
-            <div key={c.candidate_id} className="relative rounded-xl overflow-hidden bg-surface-container-high cursor-pointer hover:ring-2 hover:ring-primary-500 transition-all group">
+            <div
+              key={c.candidate_id}
+              className={`relative rounded-xl overflow-hidden bg-surface-container-high cursor-pointer hover:ring-2 hover:ring-primary-500 transition-all group ${
+                selectedCandidateId === c.candidate_id ? 'ring-2 ring-primary-500 ring-offset-2' : ''
+              }`}
+              onClick={() => onSelectCandidate?.(c.candidate_id)}
+            >
               <img src={c.resolvedUrl!} alt={c.prompt || subject} className="w-full h-full object-cover" onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
               <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                <span className="text-white text-[10px] font-medium">Select this candidate</span>
+                <span className="text-white text-[10px] font-medium">
+                  {selectedCandidateId === c.candidate_id ? 'Selected' : 'Select this candidate'}
+                </span>
               </div>
             </div>
           ))}

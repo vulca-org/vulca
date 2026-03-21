@@ -14,9 +14,10 @@ interface Props {
   isRunning: boolean;
   stageStatuses?: Record<string, StageStatus>;
   reportOutput?: ReportOutput;
+  onStartPipeline?: (params: { template: string; customNodes?: string[]; customEdges?: [string, string][]; nodeParams?: Record<string, Record<string, unknown>> }) => void;
 }
 
-export default function PipelineEditorModal({ open, onClose, isRunning, stageStatuses, reportOutput }: Props) {
+export default function PipelineEditorModal({ open, onClose, isRunning, stageStatuses, reportOutput, onStartPipeline }: Props) {
   const [selectedNode, setSelectedNode] = useState<AgentNodeId | null>(null);
   const [nodeParams, setNodeParams] = useState<Record<string, Record<string, unknown>>>({});
 
@@ -43,7 +44,11 @@ export default function PipelineEditorModal({ open, onClose, isRunning, stageSta
         {/* Editor */}
         <div className="flex-1 relative overflow-hidden">
           <PipelineEditor
-            onRun={() => { onClose(); }}
+            onRun={(params) => {
+              const merged = { ...params, nodeParams: { ...nodeParams, ...params.nodeParams } };
+              onStartPipeline?.(merged);
+              onClose();
+            }}
             disabled={isRunning}
             onNodeSelect={setSelectedNode}
             nodeParams={nodeParams}

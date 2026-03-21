@@ -318,6 +318,21 @@ export default function PrototypePage() {
         isRunning={isRunning}
         stageStatuses={isRunning || isDone ? stageStatuses : undefined}
         reportOutput={reportOutput ?? undefined}
+        onStartPipeline={(params) => {
+          startRun({
+            subject: store.currentSubject || 'Untitled',
+            tradition: store.currentTradition || 'default',
+            provider: store.currentProvider || 'auto',
+            n_candidates: 4,
+            max_rounds: 3,
+            enable_hitl: store.enableHitl,
+            enable_agent_critic: true,
+            template: params.template,
+            custom_nodes: params.customNodes,
+            custom_edges: params.customEdges,
+            node_params: params.nodeParams,
+          });
+        }}
       />
 
       <Toaster

@@ -28,11 +28,11 @@ class CreateRunRequest(BaseModel):
     n_candidates: int = Field(default=4, ge=1, le=8, description="Candidates per round")
     max_rounds: int = Field(default=3, ge=1, le=5, description="Max Queen rounds")
     enable_hitl: bool = Field(default=False, description="Enable human-in-the-loop")
-    enable_agent_critic: bool = Field(default=True, description="Use LLM-based Critic (CriticLLM) instead of rule-only scoring")
-    enable_prompt_enhancer: bool = Field(default=True, description="Inject evolved context into Draft prompts")
-    enable_llm_queen: bool = Field(default=False, description="Use LLM+RAG Queen for ambiguous decisions")
+    enable_agent_critic: bool = Field(default=True, description="[Deprecated: always enabled] Use LLM-based Critic")
+    enable_prompt_enhancer: bool = Field(default=True, description="[Deprecated: auto-detected from API key] Inject evolved context into Draft prompts")
+    enable_llm_queen: bool = Field(default=False, description="[Deprecated: auto-detected from API key] Use LLM+RAG Queen")
     template: str = Field(default="default", description="Pipeline template: default | fast | critique_only")
-    enable_parallel_critic: bool = Field(default=False, description="Use parallel L1-L5 scoring (ThreadPoolExecutor) for faster Critic")
+    enable_parallel_critic: bool = Field(default=False, description="[Deprecated: not supported in vulca engine] Parallel L1-L5 scoring")
     idempotency_key: str | None = Field(default=None, description="Optional idempotency key")
 
     # M3: custom topology support

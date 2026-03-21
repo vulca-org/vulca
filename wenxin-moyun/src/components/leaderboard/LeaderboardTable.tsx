@@ -538,12 +538,9 @@ export default function LeaderboardTable({
                 {selectedRows.length} items selected
               </span>
               <button
-                onClick={() => {
-                  const selectedData = selectedRows.map(row => row.original);
-                  // TODO: 实现对比功能
-                  console.log('Compare:', selectedData);
-                }}
-                className="text-sm text-slate-700 dark:text-slate-500 hover:underline"
+                disabled
+                className="text-sm text-slate-400 dark:text-slate-600 cursor-not-allowed"
+                title="Compare feature coming soon"
               >
                 Compare
               </button>

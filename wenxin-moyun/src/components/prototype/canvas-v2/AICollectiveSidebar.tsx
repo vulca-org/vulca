@@ -61,7 +61,7 @@ export default function AICollectiveSidebar({ currentStage, pipelineStatus, even
             return (
               <div
                 key={agent.id}
-                className={`p-5 rounded-2xl border flex flex-col gap-3.5 group cursor-pointer transition-all ${
+                className={`p-5 rounded-2xl border flex flex-col gap-3.5 group transition-all ${
                   isActive
                     ? agent.activeBg
                     : 'border-slate-200/60 bg-white hover:bg-slate-50'

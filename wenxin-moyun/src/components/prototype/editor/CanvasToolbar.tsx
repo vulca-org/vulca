@@ -10,9 +10,11 @@
 import { useState } from 'react';
 import { ALL_AGENT_IDS, AGENT_META, type AgentNodeId } from './types';
 import { INPUT_NODE_META } from './inputNodes';
-import { PROCESSING_NODE_META } from './processingNodes';
-import { FLOW_NODE_META } from './flowNodes';
 import { OUTPUT_NODE_META } from './outputNodes';
+
+const BACKEND_SUPPORTED_AGENTS = new Set(['draft', 'critic', 'queen']);
+const BACKEND_SUPPORTED_INPUTS = new Set(['textPrompt']);
+const BACKEND_SUPPORTED_OUTPUTS = new Set(['save']);
 
 interface Props {
   onToggleGallery: () => void;
@@ -124,9 +126,9 @@ export default function CanvasToolbar({
         </button>
         {showAddMenu && (
           <div className="absolute top-full left-0 mt-1 w-52 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-40 py-1 max-h-80 overflow-y-auto">
-            {/* Agents */}
+            {/* Agents — backend-supported only */}
             <div className="px-3 py-1 text-[9px] font-semibold text-gray-400 uppercase tracking-wider">Agents</div>
-            {ALL_AGENT_IDS.map((id) => (
+            {ALL_AGENT_IDS.filter((id) => BACKEND_SUPPORTED_AGENTS.has(id)).map((id) => (
               <button
                 key={id}
                 onClick={() => { onAddNode(id); setShowAddMenu(false); }}
@@ -137,9 +139,9 @@ export default function CanvasToolbar({
               </button>
             ))}
 
-            {/* Inputs */}
+            {/* Inputs — backend-supported only */}
             <div className="px-3 py-1 text-[9px] font-semibold text-gray-400 uppercase tracking-wider mt-1">Inputs</div>
-            {Object.entries(INPUT_NODE_META).map(([id, meta]) => (
+            {Object.entries(INPUT_NODE_META).filter(([id]) => BACKEND_SUPPORTED_INPUTS.has(id)).map(([id, meta]) => (
               <button
                 key={id}
                 onClick={() => { onAddNode(id); setShowAddMenu(false); }}
@@ -150,35 +152,9 @@ export default function CanvasToolbar({
               </button>
             ))}
 
-            {/* Processing */}
-            <div className="px-3 py-1 text-[9px] font-semibold text-gray-400 uppercase tracking-wider mt-1">Processing</div>
-            {Object.entries(PROCESSING_NODE_META).map(([id, meta]) => (
-              <button
-                key={id}
-                onClick={() => { onAddNode(id); setShowAddMenu(false); }}
-                className="w-full px-3 py-1.5 text-left text-xs hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
-              >
-                <span>{meta.icon}</span>
-                <span className="text-gray-800 dark:text-gray-200">{meta.label}</span>
-              </button>
-            ))}
-
-            {/* Flow Control */}
-            <div className="px-3 py-1 text-[9px] font-semibold text-gray-400 uppercase tracking-wider mt-1">Flow Control</div>
-            {Object.entries(FLOW_NODE_META).map(([id, meta]) => (
-              <button
-                key={id}
-                onClick={() => { onAddNode(id); setShowAddMenu(false); }}
-                className="w-full px-3 py-1.5 text-left text-xs hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
-              >
-                <span>{meta.icon}</span>
-                <span className="text-gray-800 dark:text-gray-200">{meta.label}</span>
-              </button>
-            ))}
-
-            {/* Output */}
+            {/* Output — backend-supported only */}
             <div className="px-3 py-1 text-[9px] font-semibold text-gray-400 uppercase tracking-wider mt-1">Output</div>
-            {Object.entries(OUTPUT_NODE_META).map(([id, meta]) => (
+            {Object.entries(OUTPUT_NODE_META).filter(([id]) => BACKEND_SUPPORTED_OUTPUTS.has(id)).map(([id, meta]) => (
               <button
                 key={id}
                 onClick={() => { onAddNode(id); setShowAddMenu(false); }}
@@ -186,6 +162,28 @@ export default function CanvasToolbar({
               >
                 <span>{meta.icon}</span>
                 <span className="text-gray-800 dark:text-gray-200">{meta.label}</span>
+              </button>
+            ))}
+
+            {/* Utility — pure UI nodes, always available */}
+            <div className="px-3 py-1 text-[9px] font-semibold text-gray-400 uppercase tracking-wider mt-1">Utility</div>
+            {[
+              { id: 'frame', icon: '🔲', label: 'Frame' },
+              { id: 'reroute', icon: '◆', label: 'Reroute' },
+              { id: 'sticky', icon: '📝', label: 'Sticky Note' },
+            ].map(({ id, icon, label }) => (
+              <button
+                key={id}
+                onClick={() => {
+                  if (id === 'sticky') onAddStickyNote();
+                  else if (id === 'frame') onAddFrame?.();
+                  else if (id === 'reroute') onAddReroute?.();
+                  setShowAddMenu(false);
+                }}
+                className="w-full px-3 py-1.5 text-left text-xs hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+              >
+                <span>{icon}</span>
+                <span className="text-gray-800 dark:text-gray-200">{label}</span>
               </button>
             ))}
           </div>

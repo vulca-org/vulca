@@ -9,10 +9,11 @@ interface Props {
   pipelineStatus: string;
   lockedDimensions: string[];
   weakestDimensions?: string[];
+  weights?: Record<string, number>;
   onAction: (action: string, options?: Record<string, unknown>) => Promise<void>;
 }
 
-export default function HitlDecisionPanel({ pipelineStatus, lockedDimensions, weakestDimensions, onAction }: Props) {
+export default function HitlDecisionPanel({ pipelineStatus, lockedDimensions, weakestDimensions, weights, onAction }: Props) {
   const showPanel = pipelineStatus === 'waiting_human' || pipelineStatus === 'completed';
   if (!showPanel) return null;
 
@@ -43,7 +44,11 @@ export default function HitlDecisionPanel({ pipelineStatus, lockedDimensions, we
           Accept
         </button>
         <button
-          onClick={() => onAction('rerun', { locked_dimensions: lockedDimensions, rerun_dimensions: rerunDimensions })}
+          onClick={() => onAction('rerun', {
+            locked_dimensions: lockedDimensions,
+            rerun_dimensions: rerunDimensions,
+            ...(weights ? { node_params: { critic: { w_l1: weights.L1, w_l2: weights.L2, w_l3: weights.L3, w_l4: weights.L4, w_l5: weights.L5 } } } : {}),
+          })}
           className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-primary-500 text-white rounded-xl text-sm font-semibold hover:bg-primary-600 active:scale-[0.98] transition-all"
         >
           <RefreshCw className="w-4 h-4" />

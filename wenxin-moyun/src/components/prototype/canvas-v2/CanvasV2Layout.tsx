@@ -5,7 +5,7 @@
  * Exact Tailwind classes extracted from design HTML files.
  */
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useMemo } from 'react';
 import { Paperclip, Image, BarChart3, Link2, Send } from 'lucide-react';
 import toast from 'react-hot-toast';
 import type { PipelineState } from '@/hooks/usePrototypePipeline';
@@ -38,10 +38,22 @@ export default function CanvasV2Layout({ pipeline, onAction, onReset, onStartPip
   const [weights, setWeights] = useState<Record<string, number>>({
     L1: 0.20, L2: 0.20, L3: 0.25, L4: 0.20, L5: 0.15,
   });
+  const [selectedCandidateId, setSelectedCandidateId] = useState<string | null>(null);
   const imageUploadRef = useRef<HTMLInputElement>(null);
   const rightPanelRef = useRef<HTMLElement>(null);
+  const maturityRef = useRef<HTMLDivElement>(null);
 
   const isComplete = pipeline.status === 'completed';
+
+  const bestScoresSnapshot = useMemo(() => {
+    if (pipeline.scoredCandidates.length === 0) return undefined;
+    const best = pipeline.scoredCandidates.find(c => c.candidate_id === pipeline.bestCandidateId) || pipeline.scoredCandidates[0];
+    const snapshot: Record<string, number> = {};
+    for (const ds of best.dimension_scores) {
+      snapshot[ds.dimension] = ds.score;
+    }
+    return snapshot;
+  }, [pipeline.scoredCandidates, pipeline.bestCandidateId]);
   const isRunning = pipeline.status === 'running';
   const bestRiskTags = pipeline.scoredCandidates.length > 0
     ? (pipeline.scoredCandidates.find(c => c.candidate_id === pipeline.bestCandidateId) || pipeline.scoredCandidates[0])?.risk_tags
@@ -87,6 +99,8 @@ export default function CanvasV2Layout({ pipeline, onAction, onReset, onStartPip
               currentStage={pipeline.currentStage}
               subject={currentSubject || ''}
               pipelineStatus={pipeline.status}
+              selectedCandidateId={selectedCandidateId}
+              onSelectCandidate={setSelectedCandidateId}
               onStartPipeline={(subject, tradition, provider, referenceImageBase64) => {
                 // Build node_params with weight sliders
                 const nodeParams: Record<string, Record<string, unknown>> = {
@@ -149,9 +163,9 @@ export default function CanvasV2Layout({ pipeline, onAction, onReset, onStartPip
               />
               <div className="flex items-center gap-1">
                 <button
-                  className="p-2 rounded-full hover:bg-surface-container-high text-on-surface-variant transition-colors"
-                  title="Attach file"
-                  onClick={() => toast('File attachment coming soon', { icon: '📎' })}
+                  className="p-2 rounded-full text-on-surface-variant/40 cursor-not-allowed"
+                  title="File attachment — coming soon"
+                  disabled
                 >
                   <Paperclip className="w-4 h-4" />
                 </button>
@@ -165,7 +179,7 @@ export default function CanvasV2Layout({ pipeline, onAction, onReset, onStartPip
                 <button
                   className="p-2 rounded-full hover:bg-surface-container-high text-on-surface-variant transition-colors"
                   title="View scores"
-                  onClick={() => rightPanelRef.current?.scrollTo({ top: 0, behavior: 'smooth' })}
+                  onClick={() => maturityRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
                 >
                   <BarChart3 className="w-4 h-4" />
                 </button>
@@ -224,20 +238,23 @@ export default function CanvasV2Layout({ pipeline, onAction, onReset, onStartPip
           {/* Round comparison chart — visible when we have round data */}
           <RoundComparisonChart rounds={pipeline.rounds} />
 
-          <MaturityLevelPanel
-            scoredCandidates={pipeline.scoredCandidates}
-            bestCandidateId={pipeline.bestCandidateId}
-            lockedDimensions={lockedDimensions}
-            onToggleLock={(dim) => setLockedDimensions(prev =>
-              prev.includes(dim) ? prev.filter(d => d !== dim) : [...prev, dim]
-            )}
-          />
+          <div ref={maturityRef}>
+            <MaturityLevelPanel
+              scoredCandidates={pipeline.scoredCandidates}
+              bestCandidateId={pipeline.bestCandidateId}
+              lockedDimensions={lockedDimensions}
+              onToggleLock={(dim) => setLockedDimensions(prev =>
+                prev.includes(dim) ? prev.filter(d => d !== dim) : [...prev, dim]
+              )}
+            />
+          </div>
 
           {/* HITL Decision Panel */}
           <HitlDecisionPanel
             pipelineStatus={pipeline.status}
             lockedDimensions={lockedDimensions}
             weakestDimensions={pipeline.decision?.rerun_dimensions}
+            weights={weights}
             onAction={onAction}
           />
 
@@ -254,6 +271,8 @@ export default function CanvasV2Layout({ pipeline, onAction, onReset, onStartPip
                 evaluationId={pipeline.taskId}
                 candidateId={pipeline.bestCandidateId || ''}
                 tradition={currentTradition || ''}
+                scoresSnapshot={bestScoresSnapshot}
+                onCreateAnother={onReset}
               />
             </div>
           )}

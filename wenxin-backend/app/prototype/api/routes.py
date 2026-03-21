@@ -26,9 +26,6 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
 
 from app.prototype.api.auth import verify_api_key
-from app.prototype.agents.critic_config import CriticConfig
-from app.prototype.agents.draft_config import DraftConfig
-from app.prototype.agents.queen_config import QueenConfig
 from app.prototype.api.schemas import (
     CreateRunRequest,
     RunStatusResponse,
@@ -110,21 +107,6 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
     elif provider == "mock":
         api_key = ""
 
-    # Auto-enable LLM features when API key is available
-    # Disable LLM-heavy features for mock provider (scoring colored rectangles is pointless)
-    has_api_key = bool(api_key)
-    is_mock = (provider == "mock")
-    enable_prompt_enhancer = req.enable_prompt_enhancer and has_api_key and not is_mock
-    enable_llm_queen = req.enable_llm_queen and has_api_key and not is_mock
-
-    d_cfg = DraftConfig(
-        provider=provider, api_key=api_key,
-        n_candidates=req.n_candidates, seed_base=42,
-    )
-    # Disable VLM for mock provider (scoring colored rectangles is pointless)
-    cr_cfg = CriticConfig(use_vlm=(provider != "mock"))
-    q_cfg = QueenConfig(max_rounds=req.max_rounds)
-
     # ONE PIPELINE: use vulca/ engine directly (Phase 9B)
     from vulca.pipeline.templates import DEFAULT, TEMPLATES
     from vulca.pipeline.types import PipelineInput as VulcaPipelineInput
@@ -183,6 +165,10 @@ async def create_run(req: CreateRunRequest) -> RunStatusResponse:
         "provider": provider,
         "created_at": time.time(),
         "node_params": req.node_params,
+        "enable_hitl": req.enable_hitl,
+        "max_rounds": req.max_rounds,
+        "n_candidates": req.n_candidates,
+        "reference_image_base64": req.reference_image_base64,
     }
     with _buffer_lock:
         _event_buffers[task_id] = []
@@ -519,7 +505,7 @@ async def submit_action(task_id: str, req: SubmitActionRequest) -> SubmitActionR
             event_type=VulcaEventType.PIPELINE_COMPLETED,
             payload={
                 "status": "completed",
-                "decision": "rerun",
+                "final_decision": "rerun",
                 "redirect_task_id": new_result.task_id,
                 "human_action": "rerun",
             },
@@ -541,7 +527,7 @@ async def submit_action(task_id: str, req: SubmitActionRequest) -> SubmitActionR
         event_type=VulcaEventType.PIPELINE_COMPLETED,
         payload={
             "status": "completed",
-            "decision": final_decision,
+            "final_decision": final_decision,
             "best_candidate_id": req.candidate_id or pipe_out.get("best_candidate_id", ""),
             "scores": pipe_out.get("scores", {}),
             "weighted_total": pipe_out.get("weighted_total", 0.0),
@@ -591,9 +577,12 @@ async def instruct_run(task_id: str, req: dict) -> dict:
         subject=enhanced_subject,
         tradition=prev_tradition,
         provider=prev_provider,
-        max_rounds=3,
-        n_candidates=4,
+        max_rounds=meta.get("max_rounds", 3),
+        n_candidates=meta.get("n_candidates", 4),
+        enable_hitl=meta.get("enable_hitl", False),
         enable_agent_critic=True,
+        node_params=meta.get("node_params"),
+        reference_image_base64=meta.get("reference_image_base64"),
     )
 
     # Call create_run directly — this handles _run_in_background, SSE, etc.
