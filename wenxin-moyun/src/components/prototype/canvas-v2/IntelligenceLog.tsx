@@ -10,6 +10,7 @@ interface Props {
   events: PipelineEvent[];
   currentStage: string;
   status: string;
+  tradition?: string;
 }
 
 interface LogLine {
@@ -26,15 +27,36 @@ const L_LABELS: Record<string, string> = {
   L5: 'Philosophical Aesthetic',
 };
 
-function formatEvent(e: PipelineEvent): LogLine[] {
+function formatEvent(e: PipelineEvent, tradition?: string): LogLine[] {
   const type = e.event_type;
   const stage = (e.stage || '').toUpperCase().replace('GENERATE', 'DRAFT').replace('EVALUATE', 'CRITIC').replace('DECIDE', 'QUEEN');
 
   if (type === 'pipeline_started') {
-    return [{ prefix: '[SYSTEM]', prefixColor: 'text-primary-400', text: 'Initializing cultural synthesis module...' }];
+    const lines: LogLine[] = [
+      { prefix: '[SYSTEM]', prefixColor: 'text-primary-400', text: 'Initializing cultural synthesis module...' },
+    ];
+    // Planning summary — show what cultural rules are being applied
+    if (tradition && tradition !== 'default') {
+      const tradLabel = tradition.replace(/_/g, ' ');
+      lines.push({ prefix: '[SCOUT]', prefixColor: 'text-cultural-bronze-500', text: `Tradition: ${tradLabel} — loading cultural ruleset` });
+      lines.push({ prefix: '', prefixColor: '', text: `  ↳ L1-L5 evaluation weights + terminology + taboos will be injected` });
+      lines.push({ prefix: '', prefixColor: '', text: `  ↳ Evolved weights from session history will override YAML defaults` });
+    }
+    return lines;
   }
   if (type === 'stage_started') {
-    return [{ prefix: `[AGENT/${stage}]`, prefixColor: 'text-primary-400', text: `${stage} agent activated — round ${e.round_num}` }];
+    const lines: LogLine[] = [
+      { prefix: `[AGENT/${stage}]`, prefixColor: 'text-primary-400', text: `${stage} agent activated — round ${e.round_num}` },
+    ];
+    // First-round DRAFT: show what the generation will do
+    if (stage === 'DRAFT' && e.round_num === 1) {
+      lines.push({ prefix: '', prefixColor: '', text: '  ↳ Generating artwork with cultural guidance injection...' });
+    }
+    // CRITIC activation: explain what it evaluates
+    if (stage === 'CRITIC') {
+      lines.push({ prefix: '', prefixColor: '', text: '  ↳ Evaluating L1 Visual → L2 Technical → L3 Cultural → L4 Critical → L5 Philosophical' });
+    }
+    return lines;
   }
   if (type === 'stage_completed') {
     const payload = e.payload || {};
@@ -117,7 +139,7 @@ function formatEvent(e: PipelineEvent): LogLine[] {
   return [{ prefix: `[${stage || 'SYS'}]`, prefixColor: 'text-primary-400', text: type.replace(/_/g, ' ') }];
 }
 
-export default function IntelligenceLog({ events, currentStage, status }: Props) {
+export default function IntelligenceLog({ events, currentStage, status, tradition }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -131,7 +153,7 @@ export default function IntelligenceLog({ events, currentStage, status }: Props)
   // Flatten multi-line events
   const allLines: { key: string; line: LogLine }[] = [];
   events.forEach((e, i) => {
-    const lines = formatEvent(e);
+    const lines = formatEvent(e, tradition);
     lines.forEach((line, j) => {
       allLines.push({ key: `${i}-${j}`, line });
     });

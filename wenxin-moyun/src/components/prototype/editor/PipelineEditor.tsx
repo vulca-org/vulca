@@ -47,37 +47,9 @@ import { useKeyboardShortcuts } from './useKeyboardShortcuts';
 import { useNodeStates } from './useNodeStates';
 import { useSubStageExpansion } from './useSubStageExpansion';
 import { useAutoArrange } from './useAutoArrange';
-import {
-  SketchUploadNode,
-  ReferenceImageNode,
-  MaskRegionNode,
-  TextPromptNode,
-  ScriptNode,
-  ModelImportNode,
-  AudioImportNode,
-} from './inputNodes';
-import {
-  StyleTransferNode,
-  ColorHarmonyNode,
-  CompositionBalanceNode,
-  UpscaleNode,
-  DepthMapNode,
-  EdgeDetectionNode,
-  ElementExtractNode,
-} from './processingNodes';
-import {
-  IfElseNode,
-  LoopNode as FlowLoopNode,
-  MergeNode,
-  SplitNode,
-  GateNode as FlowGateNode,
-} from './flowNodes';
-import {
-  SaveNode,
-  GalleryPublishNode,
-  ExportNode,
-  CompareNode,
-} from './outputNodes';
+// Note: inputNodes/, processingNodes/, flowNodes/, outputNodes/ removed.
+// These were UI-only shells with no backend implementation.
+// Pipeline direction: "transparent judge" not "node workbench" (2026-03-21).
 import {
   ALL_AGENT_IDS,
   AGENT_META,
@@ -116,43 +88,15 @@ export interface StageStatus {
 /* ──────────────────────── Node & Edge Types ──────────────── */
 
 const nodeTypes: NodeTypes = {
+  // Core pipeline agents (backed by vulca engine)
   agent: AgentNode,
   report: ReportNode,
+  // Utility (UI-only, by design)
   sticky: StickyNote,
-  // Phase 5A
   frame: FrameNode,
   reroute: RerouteNode,
-  // Phase 5B
   substage: SubStageNode,
-  // Phase 5C
   skill: SkillNode,
-  // Input nodes
-  sketch: SketchUploadNode,
-  reference: ReferenceImageNode,
-  mask: MaskRegionNode,
-  textPrompt: TextPromptNode,
-  script: ScriptNode,
-  modelImport: ModelImportNode,
-  audioImport: AudioImportNode,
-  // Processing nodes
-  styleTransfer: StyleTransferNode,
-  colorHarmony: ColorHarmonyNode,
-  compositionBalance: CompositionBalanceNode,
-  upscale: UpscaleNode,
-  depthMap: DepthMapNode,
-  edgeDetection: EdgeDetectionNode,
-  elementExtract: ElementExtractNode,
-  // Flow control nodes
-  ifElse: IfElseNode,
-  loop: FlowLoopNode,
-  merge: MergeNode,
-  split: SplitNode,
-  gate: FlowGateNode,
-  // Output nodes
-  save: SaveNode,
-  galleryPublish: GalleryPublishNode,
-  export: ExportNode,
-  compare: CompareNode,
 } as unknown as NodeTypes;
 
 const edgeTypes: EdgeTypes = {

@@ -120,6 +120,7 @@ export default function CanvasV2Layout({ pipeline, onAction, onReset, onStartPip
               events={pipeline.events}
               currentStage={pipeline.currentStage}
               status={pipeline.status}
+              tradition={currentTradition}
             />
           </div>
 
