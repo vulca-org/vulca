@@ -87,6 +87,8 @@ jobs:
         env:
           DATABASE_URL: sqlite+aiosqlite:///./test.db
           SECRET_KEY: test-secret-key-for-ci-at-least-32-chars
+          GEMINI_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           DEBUG: "true"
           VULCA_API_KEYS: demo-key
 
@@ -136,6 +138,8 @@ jobs:
         env:
           DATABASE_URL: sqlite+aiosqlite:///./test.db
           SECRET_KEY: test-secret-key-for-ci-at-least-32-chars
+          GEMINI_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           ENVIRONMENT: test
           VULCA_DAILY_LIMIT: "100"
           VULCA_API_KEYS: demo-key
