@@ -90,9 +90,9 @@ export default function CanvasV2Layout({ pipeline, onAction, onReset, onStartPip
         />
 
         {/* Center: Artwork + Log + Chat Bar */}
-        <section className="flex-1 flex flex-col relative bg-surface-container-low overflow-hidden">
-          {/* Artwork area */}
-          <div className="flex-1 p-4 pb-0 overflow-hidden">
+        <section className="flex-1 flex flex-col relative bg-surface-container-low overflow-hidden min-h-0">
+          {/* Artwork area — near full-bleed, minimal padding for rounded corners */}
+          <div className="flex-1 p-1.5 pb-0 overflow-hidden min-h-0">
             <ArtworkHUD
               bestImageUrl={pipeline.bestImageUrl}
               candidates={pipeline.candidates}
@@ -114,8 +114,8 @@ export default function CanvasV2Layout({ pipeline, onAction, onReset, onStartPip
             />
           </div>
 
-          {/* Intelligence Log */}
-          <div className="px-4 pb-0">
+          {/* Intelligence Log — fixed height, does not squeeze artwork */}
+          <div className="px-3 pb-0 shrink-0">
             <IntelligenceLog
               events={pipeline.events}
               currentStage={pipeline.currentStage}

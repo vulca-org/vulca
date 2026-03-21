@@ -138,7 +138,7 @@ export default function IntelligenceLog({ events, currentStage, status }: Props)
   });
 
   return (
-    <div className="mt-4 bg-white/70 backdrop-blur-xl rounded-xl p-4 font-mono text-[11px] h-52 overflow-hidden relative shadow-ambient-md">
+    <div className="mt-2 bg-white/70 backdrop-blur-xl rounded-xl p-3 font-mono text-[11px] h-36 overflow-hidden relative shadow-ambient-md">
       {/* Header */}
       <div className="flex items-center justify-between mb-3 pb-2">
         <span className="text-outline flex items-center gap-2">
