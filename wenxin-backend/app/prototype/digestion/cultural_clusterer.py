@@ -33,6 +33,20 @@ class CulturalCluster:
     # --- Cross-tradition metadata ---
     source: str = "intra_tradition"  # "intra_tradition" | "cross_tradition"
     traditions: list[str] = field(default_factory=list)
+    # --- Incremental centroid tracking (O(1) update instead of O(n) rescan) ---
+    _feature_sums: dict[str, float] = field(default_factory=dict, repr=False)
+
+    def add_session(self, sid: str, features: dict[str, float]) -> None:
+        """Add a session and update centroid incrementally in O(d) time."""
+        self.session_ids.append(sid)
+        self.size += 1
+        # Accumulate feature sums
+        for k, v in features.items():
+            self._feature_sums[k] = self._feature_sums.get(k, 0.0) + v
+        # Recompute centroid from sums (O(d) where d = number of features)
+        self.feature_centroid = {
+            k: round(s / self.size, 4) for k, s in self._feature_sums.items()
+        }
 
     def to_dict(self) -> dict:
         d = {
@@ -225,15 +239,8 @@ class CulturalClusterer:
                     best_sim = sim
 
             if best_cluster is not None:
-                best_cluster.session_ids.append(sid)
-                best_cluster.size += 1
-                # Recompute centroid
-                cluster_features = [
-                    _numeric_features(s["cultural_features"])
-                    for s in sessions
-                    if s.get("session_id", "") in set(best_cluster.session_ids)
-                ]
-                best_cluster.feature_centroid = _compute_centroid(cluster_features)
+                # O(d) incremental centroid update instead of O(n) full rescan
+                best_cluster.add_session(sid, features)
             else:
                 cluster_id = f"{id_prefix}-{len(clusters):03d}"
                 clusters.append(CulturalCluster(
@@ -242,6 +249,7 @@ class CulturalClusterer:
                     session_ids=[sid],
                     size=1,
                     tradition=session.get("tradition", "default"),
+                    _feature_sums=dict(features),
                 ))
             assigned.add(sid)
 

@@ -253,47 +253,63 @@ class TestDigestionReport:
 class TestDigestionRun:
     """POST /api/v1/digestion/run.
 
-    Marked @pytest.mark.integration because ContextEvolver.evolve() runs FAISS
-    clustering over all stored sessions (1600+ on a full dataset), which can
-    take 30-120 seconds.  Run with: pytest -m integration tests/integration/test_digestion.py
+    Marked @pytest.mark.integration because ContextEvolver.evolve() may call
+    LLM for insights generation (up to 60s timeout per call).  To avoid N×60s
+    overhead, we cache the first POST response and reuse it for schema tests.
+    Run with: pytest -m integration tests/integration/test_digestion.py
     """
 
+    _cached_resp = None
+    _cached_body = None
+
+    @classmethod
+    def _get_run_response(cls, client):
+        """Cache the first digestion run to avoid repeated LLM calls."""
+        if cls._cached_resp is None:
+            cls._cached_resp = client.post("/api/v1/digestion/run")
+            if cls._cached_resp.status_code == 200:
+                cls._cached_body = cls._cached_resp.json()
+            else:
+                cls._cached_body = {}
+        return cls._cached_resp, cls._cached_body
+
     def test_digestion_run_returns_200(self, client):
-        resp = client.post("/api/v1/digestion/run")
+        resp, _ = self._get_run_response(client)
         assert resp.status_code == 200, resp.text
 
     def test_digestion_run_response_schema(self, client):
-        body = client.post("/api/v1/digestion/run").json()
+        _, body = self._get_run_response(client)
         required = {"evolution", "patterns", "preferences", "few_shot_examples_count"}
         missing = required - set(body.keys())
         assert not missing, f"Digestion run response missing keys: {missing}"
 
     def test_digestion_run_evolution_is_dict(self, client):
-        body = client.post("/api/v1/digestion/run").json()
+        _, body = self._get_run_response(client)
         assert isinstance(body["evolution"], dict), (
             f"'evolution' must be a dict, got {type(body['evolution'])}"
         )
 
     def test_digestion_run_patterns_is_list(self, client):
-        body = client.post("/api/v1/digestion/run").json()
+        _, body = self._get_run_response(client)
         assert isinstance(body["patterns"], list), (
             f"'patterns' must be a list, got {type(body['patterns'])}"
         )
 
     def test_digestion_run_preferences_is_dict(self, client):
-        body = client.post("/api/v1/digestion/run").json()
+        _, body = self._get_run_response(client)
         assert isinstance(body["preferences"], dict), (
             f"'preferences' must be a dict, got {type(body['preferences'])}"
         )
 
     def test_digestion_run_few_shot_count_is_non_negative(self, client):
-        body = client.post("/api/v1/digestion/run").json()
+        _, body = self._get_run_response(client)
         assert isinstance(body["few_shot_examples_count"], int)
         assert body["few_shot_examples_count"] >= 0
 
     def test_digestion_run_is_idempotent(self, client):
         """Running digestion twice should not crash — both calls succeed."""
-        resp1 = client.post("/api/v1/digestion/run")
+        # First call is cached; second call is fresh
+        resp1, _ = self._get_run_response(client)
         resp2 = client.post("/api/v1/digestion/run")
         assert resp1.status_code == 200
         assert resp2.status_code == 200
