@@ -71,3 +71,80 @@ class TestMockVLMProvider:
     def test_protocol_compliance(self):
         from vulca.providers.mock import MockVLMProvider
         assert isinstance(MockVLMProvider(), VLMProvider)
+
+
+class TestGeminiImageProvider:
+    def test_instantiation(self):
+        from vulca.providers.gemini import GeminiImageProvider
+        p = GeminiImageProvider(api_key="test-key")
+        assert isinstance(p, ImageProvider)
+
+    def test_no_key_raises(self):
+        import os
+        from vulca.providers.gemini import GeminiImageProvider
+        old = os.environ.pop("GOOGLE_API_KEY", None)
+        old2 = os.environ.pop("GEMINI_API_KEY", None)
+        try:
+            p = GeminiImageProvider(api_key="")
+            with pytest.raises(ValueError, match="API key"):
+                asyncio.run(p.generate("test"))
+        finally:
+            if old: os.environ["GOOGLE_API_KEY"] = old
+            if old2: os.environ["GEMINI_API_KEY"] = old2
+
+
+class TestOpenAIImageProvider:
+    def test_instantiation(self):
+        from vulca.providers.openai_provider import OpenAIImageProvider
+        p = OpenAIImageProvider(api_key="test-key")
+        assert isinstance(p, ImageProvider)
+
+
+class TestComfyUIImageProvider:
+    def test_instantiation(self):
+        from vulca.providers.comfyui import ComfyUIImageProvider
+        p = ComfyUIImageProvider(base_url="http://localhost:8188")
+        assert isinstance(p, ImageProvider)
+
+
+class TestLiteLLMVLMProvider:
+    def test_instantiation(self):
+        from vulca.providers.vlm_litellm import LiteLLMVLMProvider
+        p = LiteLLMVLMProvider(model="gemini/gemini-2.5-flash")
+        assert isinstance(p, VLMProvider)
+
+    def test_parse_response(self):
+        from vulca.providers.vlm_litellm import LiteLLMVLMProvider
+        p = LiteLLMVLMProvider()
+        text = '{"L1": 0.8, "L2": 0.7, "L3": 0.9, "L4": 0.75, "L5": 0.85, "L1_rationale": "Good", "L2_rationale": "OK"}'
+        result = p._parse_response(text)
+        assert result.L1 == 0.8
+        assert result.L3 == 0.9
+        assert result.rationales["L1"] == "Good"
+
+
+class TestProviderRegistry:
+    def test_get_mock_image(self):
+        from vulca.providers import get_image_provider
+        p = get_image_provider("mock")
+        assert p is not None
+
+    def test_get_mock_vlm(self):
+        from vulca.providers import get_vlm_provider
+        p = get_vlm_provider("mock")
+        assert p is not None
+
+    def test_unknown_raises(self):
+        from vulca.providers import get_image_provider
+        with pytest.raises(ValueError, match="Unknown"):
+            get_image_provider("nonexistent")
+
+    def test_registry_has_gemini(self):
+        from vulca.providers import get_image_provider
+        p = get_image_provider("gemini", api_key="test")
+        assert p is not None
+
+    def test_nb2_alias(self):
+        from vulca.providers import get_image_provider
+        p = get_image_provider("nb2", api_key="test")
+        assert p is not None
