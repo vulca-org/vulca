@@ -1,0 +1,7 @@
+{
+  "vulca": {
+    "command": "vulca-mcp",
+    "args": [],
+    "env": {}
+  }
+}

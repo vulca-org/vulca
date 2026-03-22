@@ -1,0 +1,21 @@
+{
+  "name": "vulca",
+  "description": "Cultural art evaluation and guided creation. L1-L5 scoring across 13+ traditions, pluggable image/VLM providers, self-evolving weights.",
+  "version": "0.3.0",
+  "author": {
+    "name": "Yu Haorui",
+    "email": "yuhaorui48@gmail.com"
+  },
+  "homepage": "https://pypi.org/project/vulca/",
+  "repository": "https://github.com/vulca-org/vulca-plugin",
+  "license": "Apache-2.0",
+  "keywords": [
+    "art",
+    "evaluation",
+    "cultural",
+    "mcp",
+    "image-generation",
+    "vlm",
+    "l1-l5"
+  ]
+}
