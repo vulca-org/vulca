@@ -329,15 +329,19 @@ class GenerateNode(PipelineNode):
         )
         full_prompt = "\n".join(prompt_parts)
 
+        _progress = ctx.emit_progress or (lambda _msg: None)
+
         logger.info(
             "GenerateNode round %d prompt (%d chars%s)",
             ctx.round_num,
             len(full_prompt),
             ", +ref_image" if ref_b64 else "",
         )
+        _progress(f"Cultural prompt built ({len(full_prompt)} chars, {tradition_hint})")
 
         t0 = time.monotonic()
         try:
+            _progress("Connecting to Gemini image generation API...")
             client = genai.Client(
                 api_key=api_key,
                 http_options={"timeout": 120_000},
@@ -355,6 +359,7 @@ class GenerateNode(PipelineNode):
                 except Exception as ref_err:
                     logger.warning("Failed to decode reference image: %s", ref_err)
 
+            _progress("Generating artwork with Gemini... typically 30-60s")
             response = client.models.generate_content(
                 model="gemini-3.1-flash-image-preview",
                 contents=contents,
@@ -365,6 +370,7 @@ class GenerateNode(PipelineNode):
             )
 
             # Extract image from response parts
+            _progress("Extracting image from Gemini response...")
             img_bytes = None
             for part in response.candidates[0].content.parts:
                 if hasattr(part, "inline_data") and part.inline_data is not None:
@@ -375,6 +381,7 @@ class GenerateNode(PipelineNode):
                 raise RuntimeError("Gemini returned no image in response")
 
             latency_ms = int((time.monotonic() - t0) * 1000)
+            _progress(f"Image generated in {latency_ms / 1000:.1f}s — preparing for evaluation")
             img_b64 = base64.b64encode(img_bytes).decode()
             candidate_id = hashlib.sha256(
                 f"{ctx.subject}:{ctx.round_num}:gemini".encode()

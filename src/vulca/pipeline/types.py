@@ -21,6 +21,7 @@ class EventType(str, Enum):
     """Pipeline event types for streaming progress."""
 
     STAGE_STARTED = "stage_started"
+    STAGE_PROGRESS = "stage_progress"
     STAGE_COMPLETED = "stage_completed"
     DECISION_MADE = "decision_made"
     HUMAN_REQUIRED = "human_required"

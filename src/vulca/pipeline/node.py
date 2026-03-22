@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -21,6 +22,8 @@ class NodeContext:
     cost_usd: float = 0.0
     max_cost_usd: float = 2.0
     data: dict[str, Any] = field(default_factory=dict)
+    # Optional progress callback for nodes to emit intermediate status
+    emit_progress: Callable[[str], None] | None = field(default=None, repr=False)
 
     def set(self, key: str, value: Any) -> None:
         self.data[key] = value

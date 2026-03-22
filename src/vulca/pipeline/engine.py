@@ -143,6 +143,20 @@ async def execute(
 
     api_key = _resolve_api_key(pipeline_input)
 
+    def _emit(event: PipelineEvent) -> None:
+        events.append(event)
+        if event_callback:
+            event_callback(event)
+
+    def _emit_progress(message: str) -> None:
+        """Emit a progress event from within a node (e.g., generation steps)."""
+        _emit(PipelineEvent(
+            event_type=EventType.STAGE_PROGRESS,
+            stage="generate",
+            payload={"message": message},
+            timestamp_ms=int((time.monotonic() - t0) * 1000),
+        ))
+
     ctx = NodeContext(
         subject=pipeline_input.subject,
         intent=pipeline_input.intent or pipeline_input.subject,
@@ -151,16 +165,12 @@ async def execute(
         api_key=api_key,
         max_rounds=pipeline_input.max_rounds,
         max_cost_usd=pipeline_input.max_cost_usd,
+        emit_progress=_emit_progress,
     )
 
     # Inject node_params so individual nodes can read them
     if pipeline_input.node_params:
         ctx.set("node_params", pipeline_input.node_params)
-
-    def _emit(event: PipelineEvent) -> None:
-        events.append(event)
-        if event_callback:
-            event_callback(event)
 
     status = RunStatus.RUNNING
     final_decision = "stop"
