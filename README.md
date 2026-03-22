@@ -58,13 +58,17 @@ Your image / Any generator's output
 pip install vulca
 ```
 
-**Prerequisites**: Python 3.10+ and a [Google API key](https://aistudio.google.com/apikey) (free tier works for evaluation). No API key needed for `--mock` mode.
+**Try it in 10 seconds** — no API key needed:
 
 ```bash
-# Set your API key
-export GOOGLE_API_KEY=your-key-here
+vulca evaluate painting.jpg --mock --tradition chinese_xieyi
+vulca create "水墨山水" --provider mock
+```
 
-# Verify it works
+**For real scoring**, set a [Google API key](https://aistudio.google.com/apikey) (free tier works):
+
+```bash
+export GOOGLE_API_KEY=your-key-here
 vulca evaluate painting.jpg --tradition chinese_xieyi
 ```
 
@@ -228,7 +232,8 @@ Five layers of evaluation, each reinterpreted per domain:
 
 Weights shift per domain — Chinese Xieyi weights L5 (philosophy) at 30%, Brand Design weights L2 (system adherence) at 30%.
 
-### Domain Weights
+<details>
+<summary><strong>Domain Weights (click to expand)</strong></summary>
 
 | Domain | Emphasis | L1 | L2 | L3 | L4 | L5 |
 |--------|----------|----|----|----|----|-----|
@@ -238,9 +243,14 @@ Weights shift per domain — Chinese Xieyi weights L5 (philosophy) at 30%, Brand
 | Islamic Geometric | Technical | .25 | **.30** | .20 | .15 | .10 |
 | Western Academic | Technical | .20 | **.25** | .15 | .25 | .15 |
 | African Traditional | Cultural | .15 | .20 | **.30** | .20 | .15 |
+| South Asian | Cultural | .15 | .20 | **.25** | .15 | .25 |
+| Watercolor | Balanced | .20 | **.25** | .15 | .20 | .20 |
+| Contemporary Art | Art-Historical | .10 | .15 | **.30** | .25 | .20 |
 | Photography | Balanced | **.25** | .25 | .20 | .20 | .10 |
 | Brand Design | Technical | .25 | **.30** | .25 | .15 | .05 |
 | UI/UX Design | Technical | .20 | **.30** | .25 | .20 | .05 |
+
+</details>
 
 All weights evolve automatically from evaluation sessions. Run `vulca tradition <name>` to see domain-specific terminology and taboos.
 
