@@ -37,9 +37,6 @@ scout = [
     "sentence-transformers>=2.2.2",
     "faiss-cpu>=1.7.0",
 ]
-graph = [
-    "langgraph>=0.2.0",
-]
 mcp = [
     "fastmcp>=3.0",
 ]

@@ -259,7 +259,7 @@ def test_create_result_defaults():
 def test_cultural_weights():
     from vulca.cultural import get_weights, TRADITIONS
 
-    assert len(TRADITIONS) == 9
+    assert len(TRADITIONS) == 13
     assert "chinese_xieyi" in TRADITIONS
 
     weights = get_weights("chinese_xieyi")

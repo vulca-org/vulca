@@ -55,8 +55,9 @@ async def acreate(
     """
     use_local = (
         mode == "local"
-        or (mode == "auto" and provider == "mock")
         or image_provider is not None  # custom provider requires local execution
+        or (mode == "auto" and not base_url and not os.environ.get("VULCA_API_URL"))
+        # auto mode: prefer local unless a remote API URL is explicitly configured
     )
     if use_local:
         return await _create_local(

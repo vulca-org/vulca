@@ -37,7 +37,9 @@ class OpenAIImageProvider:
         if tradition and tradition != "default":
             full_prompt = f"{prompt} (cultural tradition: {tradition.replace('_', ' ')})"
 
-        size = f"{width}x{height}" if width == height and width in (256, 512, 1024, 1792) else "1024x1024"
+        # DALL-E 3 only supports: 1024x1024, 1024x1792, 1792x1024
+        dalle3_sizes = {(1024, 1024), (1024, 1792), (1792, 1024)}
+        size = f"{width}x{height}" if (width, height) in dalle3_sizes else "1024x1024"
 
         async with httpx.AsyncClient(timeout=120) as client:
             resp = await client.post(
