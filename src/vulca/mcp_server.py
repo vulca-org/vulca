@@ -147,7 +147,7 @@ async def create_artwork(
     Args:
         intent: Natural language description of what to create.
         tradition: Cultural tradition (e.g. chinese_xieyi, western_academic).
-        provider: Image generation provider (mock | nb2).
+        provider: Image generation provider (mock | gemini | nb2 | openai | comfyui).
         hitl: Enable human-in-the-loop (pipeline pauses before decide node).
         weights: Custom L1-L5 weights as string "L1=0.3,L2=0.2,...".
         view: Response verbosity — "summary" (default) or "detailed".
