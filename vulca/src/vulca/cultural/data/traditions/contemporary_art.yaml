@@ -1,0 +1,86 @@
+name: contemporary_art
+display_name:
+  en: "Contemporary Art"
+  zh: "当代艺术"
+  ja: "現代アート"
+
+weights:
+  L1: 0.10
+  L2: 0.15
+  L3: 0.30
+  L4: 0.25
+  L5: 0.20
+
+terminology:
+  - term: site-specificity
+    term_zh: "场域特定性"
+    definition:
+      en: "The principle that a work is conceived and created in relation to the particular conditions of a specific location, rendering the work inseparable from its site."
+    category: aesthetics
+    l_levels: [L3, L4]
+    aliases: ["site-specific", "site-determined"]
+    source: "Robert Irwin, Gordon Matta-Clark; institutionalized through 1970s Land Art"
+
+  - term: appropriation
+    term_zh: "挪用"
+    definition:
+      en: "The intentional borrowing, copying, or alteration of pre-existing images, objects, or styles from art history or popular culture, questioning originality and authorship."
+    category: technique
+    l_levels: [L3, L4, L5]
+    aliases: ["appropriation art", "found imagery"]
+    source: "Sherrie Levine, Richard Prince; theorized through postmodern discourse"
+
+  - term: institutional critique
+    term_zh: "机构批评"
+    definition:
+      en: "An artistic practice that examines and challenges the conventions, assumptions, and power structures of art institutions such as museums, galleries, and the market."
+    category: aesthetics
+    l_levels: [L3, L5]
+    aliases: ["critique of institutions", "meta-institutional art"]
+    source: "Hans Haacke, Andrea Fraser; emerged in 1960s-70s conceptual art"
+
+  - term: readymade
+    term_zh: "现成品"
+    definition:
+      en: "An ordinary manufactured object elevated to the status of art by the artist's selection and declaration, first proposed by Marcel Duchamp, collapsing the boundary between art and everyday life."
+    category: philosophy
+    l_levels: [L3, L5]
+    aliases: ["found object", "objet trouvé"]
+    source: "Marcel Duchamp, Fountain (1917)"
+
+  - term: relational aesthetics
+    term_zh: "关系美学"
+    definition:
+      en: "A theory and practice centered on human relations and social context as the substance of art, where the artwork creates intersubjective encounters rather than autonomous objects."
+    category: aesthetics
+    l_levels: [L4, L5]
+    aliases: ["relational art", "participatory art"]
+    source: "Nicolas Bourriaud, Relational Aesthetics (1998)"
+
+  - term: post-internet art
+    term_zh: "后网络艺术"
+    definition:
+      en: "Art produced in a cultural context shaped by ubiquitous internet access, often engaging with digital visual culture, meme aesthetics, and the circulation of images online."
+    category: aesthetics
+    l_levels: [L3, L4]
+    aliases: ["net art", "internet-aware art"]
+    source: "Marisa Olson, Artie Vierkant; theorized c. 2008-2014"
+
+taboos:
+  - rule: "Do not judge intentionally rough or abject aesthetics as technical deficiency"
+    severity: high
+    l_levels: [L2, L4]
+    trigger_patterns: ["poorly made", "lacks craft", "looks unfinished", "bad technique", "sloppy execution"]
+    explanation: "Contemporary art frequently employs anti-aesthetic, abject, or deliberately low-fi visual strategies as conceptual positions; evaluating these as failures of craft misses the work's critical intent."
+
+  - rule: "Do not equate commercial market value or institutional prestige with artistic merit"
+    severity: medium
+    l_levels: [L3, L5]
+    trigger_patterns: ["sold for", "gallery representation", "auction record", "famous artist", "art fair"]
+    explanation: "Institutional critique and conceptual art traditions actively challenge market valuations; conflating price with quality reproduces the ideology the work may be critiquing."
+
+pipeline:
+  variant: default
+  overrides:
+    scout_focus_layers: [L3, L4, L5]
+    allow_local_rerun: false
