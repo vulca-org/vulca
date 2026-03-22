@@ -108,6 +108,10 @@ function formatEvent(e: PipelineEvent, tradition?: string): LogLine[] {
 
     return [{ prefix: `[${stage}]`, prefixColor: 'text-cultural-sage-500', text: `Stage complete${latency}` }];
   }
+  if (type === 'stage_progress') {
+    const message = (e.payload?.message || '') as string;
+    return [{ prefix: `[${stage || 'DRAFT'}]`, prefixColor: 'text-primary-300', text: `  ${message}` }];
+  }
   if (type === 'decision_made') {
     const action = (e.payload?.action || e.payload?.decision || 'unknown') as string;
     const wt = e.payload?.weighted_total;

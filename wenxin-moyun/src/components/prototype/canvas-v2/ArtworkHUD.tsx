@@ -365,8 +365,11 @@ export default function ArtworkHUD({ bestImageUrl, candidates, currentStage, sub
           <div className="text-center">
             <span className="text-6xl block mb-4 opacity-20">🎨</span>
             <p className="text-sm text-on-surface-variant">
-              {isRunning ? 'Generating artwork...' : 'Waiting for pipeline...'}
+              {isRunning ? 'Generating artwork with cultural guidance...' : 'Waiting for pipeline...'}
             </p>
+            {isRunning && (
+              <p className="text-[11px] text-outline mt-2">Typically 1-2 minutes for Gemini generation + L1-L5 evaluation</p>
+            )}
           </div>
         </div>
       )}

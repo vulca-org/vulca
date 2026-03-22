@@ -1,0 +1,42 @@
+name: Periodic Digestion (Evolution)
+
+on:
+  schedule:
+    # Run every 6 hours
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  trigger-digestion:
+    name: Trigger Evolution Cycle
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'yha9806'
+    steps:
+      - name: Trigger digestion run
+        env:
+          BACKEND_URL: ${{ secrets.CLOUD_RUN_URL }}
+        run: |
+          echo "Triggering digestion at $BACKEND_URL..."
+          RESPONSE=$(curl -s -m 120 -X POST "$BACKEND_URL/api/v1/digestion/run" \
+            -H "Content-Type: application/json" \
+            -w "\n%{http_code}")
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -n -1)
+
+          echo "HTTP $HTTP_CODE"
+          echo "$BODY" | python3 -c "
+          import sys, json
+          try:
+              d = json.loads(sys.stdin.read())
+              print(f'Evolution: {len(d.get(\"evolution\", {}))} keys')
+              print(f'Patterns: {len(d.get(\"patterns\", []))}')
+              print(f'Preferences: {len(d.get(\"preferences\", {}))} traditions')
+              print(f'Few-shot: {d.get(\"few_shot_examples_count\", 0)} examples')
+          except: print('Could not parse response')
+          " || true
+
+          if [ "$HTTP_CODE" -ne 200 ]; then
+            echo "::warning::Digestion returned HTTP $HTTP_CODE"
+          else
+            echo "Digestion completed successfully"
+          fi
