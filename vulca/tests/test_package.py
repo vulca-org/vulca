@@ -20,7 +20,7 @@ def test_import():
     assert hasattr(vulca, "EvalResult")
     assert hasattr(vulca, "SkillResult")
     assert hasattr(vulca, "__version__")
-    assert vulca.__version__ == "0.2.0"
+    assert vulca.__version__ == "0.3.0"
 
 
 def test_import_all_modules():
