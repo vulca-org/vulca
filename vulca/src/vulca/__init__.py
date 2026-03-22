@@ -32,6 +32,13 @@ from vulca.types import CreateResult, EvalResult, SkillResult
 
 def traditions() -> list[str]:
     """List all available cultural traditions."""
+    try:
+        from vulca.cultural.loader import get_known_traditions
+        result = get_known_traditions()
+        if result:
+            return result
+    except Exception:
+        pass
     from vulca.cultural import TRADITIONS
     return list(TRADITIONS)
 
