@@ -140,15 +140,12 @@ class TestPipelineTypes:
         with pytest.raises(AttributeError):
             pd.name = "changed"
 
-    def test_conditional_edge(self):
-        from vulca.pipeline.types import ConditionalEdge
-        ce = ConditionalEdge(
-            source="queen",
-            route_function="route_queen_decision",
-            destinations={"accept": "archivist", "rerun": "draft"},
-        )
-        assert ce.source == "queen"
-        assert ce.destinations["accept"] == "archivist"
+    def test_pipeline_definition_serializes(self):
+        from vulca.pipeline.types import PipelineDefinition
+        pd = PipelineDefinition(name="test")
+        d = pd.to_dict()
+        assert d["name"] == "test"
+        assert "enable_loop" in d
 
 
 # -- Cultural Types --------------------------------------------------------

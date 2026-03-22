@@ -1,4 +1,4 @@
-"""GenerateNode -- image generation via Gemini or mock."""
+"""GenerateNode -- image generation via pluggable providers."""
 
 from __future__ import annotations
 
@@ -6,7 +6,6 @@ import asyncio
 import base64
 import hashlib
 import logging
-import os
 import time
 from typing import Any
 
@@ -54,11 +53,10 @@ _REFINEMENT_STRATEGIES: dict[str, str] = {
 
 
 class GenerateNode(PipelineNode):
-    """Generate an image from a text prompt.
+    """Generate an image from a text prompt via the Provider Registry.
 
-    Supports two providers:
-    - ``mock``: returns a deterministic 1x1 PNG (no external calls).
-    - ``nb2``: calls Google Gemini image generation model.
+    Supports any registered provider (mock, gemini/nb2, openai, comfyui, or
+    custom ``ImageProvider`` instances passed via ``ctx.image_provider``).
 
     On round >= 2, incorporates previous round's critique feedback into the
     generation prompt for targeted improvement.
@@ -66,29 +64,137 @@ class GenerateNode(PipelineNode):
 
     name = "generate"
 
-    _GENERATE_TIMEOUT_S = 150  # Hard timeout for Gemini image generation
+    _GENERATE_TIMEOUT_S = 150  # Hard timeout for image generation
 
     async def run(self, ctx: NodeContext) -> dict[str, Any]:
         provider = ctx.provider or "mock"
 
-        if provider == "mock":
+        if provider == "mock" and ctx.image_provider is None:
             return self._mock_generate(ctx)
 
-        # Run Gemini in a thread with hard timeout to prevent indefinite hang
+        # Route through Provider Registry (or custom image_provider)
+        return await self._provider_generate(ctx, provider)
+
+    # ------------------------------------------------------------------
+    # Provider-based generation (uses Registry or custom instance)
+    # ------------------------------------------------------------------
+
+    async def _provider_generate(
+        self, ctx: NodeContext, provider_name: str
+    ) -> dict[str, Any]:
+        """Generate image using the Provider Registry or a custom instance."""
+        from vulca.providers import get_image_provider
+
+        prompt = ctx.get("prompt") or ctx.subject or ctx.intent
+
+        # Build extra kwargs with cultural guidance + improvement instructions
+        extra_kwargs: dict[str, Any] = {}
+
+        cultural_guidance = self._build_generation_guidance(ctx.tradition)
+        if cultural_guidance:
+            extra_kwargs["cultural_guidance"] = cultural_guidance
+
+        if ctx.round_num >= 2:
+            improvement = self._build_improvement_prompt(ctx)
+            if improvement:
+                extra_kwargs["improvement_focus"] = improvement
+
+        # Resolve reference image (top-level or node_params)
+        ref_b64 = ctx.get("reference_image_b64") or ""
+        if not ref_b64:
+            node_params = ctx.get("node_params") or {}
+            gen_params = node_params.get("generate") or {}
+            ref_b64 = gen_params.get("reference_image_b64", "")
+
+        _progress = ctx.emit_progress or (lambda _msg: None)
+
+        logger.info(
+            "GenerateNode round %d via '%s' (%d chars prompt%s)",
+            ctx.round_num,
+            provider_name,
+            len(prompt),
+            ", +ref_image" if ref_b64 else "",
+        )
+        _progress(f"Generating via {provider_name} provider...")
+
+        t0 = time.monotonic()
         try:
-            return await asyncio.wait_for(
-                asyncio.to_thread(self._gemini_generate_sync, ctx),
+            # Use custom image_provider if available, else Registry lookup
+            if ctx.image_provider is not None:
+                provider_instance = ctx.image_provider
+            else:
+                provider_instance = get_image_provider(
+                    provider_name, api_key=ctx.api_key
+                )
+
+            result = await asyncio.wait_for(
+                provider_instance.generate(
+                    prompt,
+                    tradition=ctx.tradition,
+                    subject=ctx.subject or "",
+                    reference_image_b64=ref_b64,
+                    **extra_kwargs,
+                ),
                 timeout=self._GENERATE_TIMEOUT_S,
             )
         except asyncio.TimeoutError:
             logger.warning(
-                "Gemini generation timed out after %ds — falling back to mock",
+                "%s generation timed out after %ds — falling back to mock",
+                provider_name,
                 self._GENERATE_TIMEOUT_S,
             )
             return self._mock_generate(ctx)
+        except Exception as exc:
+            err = str(exc).lower()
+            recoverable = any(
+                k in err
+                for k in ("429", "quota", "rate", "503", "unavailable", "timeout")
+            )
+            if recoverable:
+                logger.warning(
+                    "%s API error — falling back to mock: %s", provider_name, exc
+                )
+                return self._mock_generate(ctx)
+            raise
+
+        latency_ms = int((time.monotonic() - t0) * 1000)
+        _progress(
+            f"Image generated in {latency_ms / 1000:.1f}s — preparing for evaluation"
+        )
+
+        candidate_id = (
+            (result.metadata or {}).get("candidate_id")
+            or hashlib.sha256(
+                f"{ctx.subject}:{ctx.round_num}:{provider_name}".encode()
+            ).hexdigest()[:12]
+        )
+        image_url = (result.metadata or {}).get(
+            "image_url"
+        ) or f"{provider_name}://{candidate_id}"
+
+        logger.info(
+            "%s generated image (%dms, %d chars b64)",
+            provider_name,
+            latency_ms,
+            len(result.image_b64),
+        )
+
+        cultural_terms, cultural_taboos = self._extract_cultural_info(ctx.tradition)
+
+        return {
+            "image_b64": result.image_b64,
+            "image_mime": result.mime,
+            "candidate_id": candidate_id,
+            "image_url": image_url,
+            "cultural_guidance": {
+                "terminology": cultural_terms,
+                "taboos": cultural_taboos,
+                "tradition": ctx.tradition,
+            },
+        }
 
     # ------------------------------------------------------------------
-    # Mock provider
+    # Mock provider (fast path, no external calls)
     # ------------------------------------------------------------------
 
     # Tradition → background color for mock SVG placeholders
@@ -138,17 +244,7 @@ class GenerateNode(PipelineNode):
         )
         img_b64 = base64.b64encode(svg.encode()).decode()
 
-        # Extract cultural guidance used (for frontend visibility)
-        cultural_terms: list[str] = []
-        cultural_taboos: list[str] = []
-        try:
-            from vulca.cultural.loader import get_tradition
-            tc = get_tradition(tradition)
-            if tc:
-                cultural_terms = [t.term for t in (tc.terminology or [])[:6]]
-                cultural_taboos = [t.rule for t in (tc.taboos or [])]
-        except Exception:
-            pass
+        cultural_terms, cultural_taboos = GenerateNode._extract_cultural_info(tradition)
 
         return {
             "image_b64": img_b64,
@@ -161,6 +257,25 @@ class GenerateNode(PipelineNode):
                 "tradition": tradition,
             },
         }
+
+    # ------------------------------------------------------------------
+    # Shared helpers
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _extract_cultural_info(tradition: str) -> tuple[list[str], list[str]]:
+        """Extract cultural terms and taboos for frontend visibility."""
+        cultural_terms: list[str] = []
+        cultural_taboos: list[str] = []
+        try:
+            from vulca.cultural.loader import get_tradition
+            tc = get_tradition(tradition)
+            if tc:
+                cultural_terms = [t.term for t in (tc.terminology or [])[:6]]
+                cultural_taboos = [t.rule for t in (tc.taboos or [])]
+        except Exception:
+            logger.debug("Failed to extract cultural info for %s", tradition)
+        return cultural_terms, cultural_taboos
 
     # ------------------------------------------------------------------
     # Cultural guidance for generation
@@ -198,7 +313,7 @@ class GenerateNode(PipelineNode):
                 parts.append(f"Cultural constraints (must respect):\n{taboos}")
 
         except Exception:
-            pass
+            logger.debug("Cultural guidance not available for %s", tradition)
 
         return "\n\n".join(parts)
 
@@ -261,171 +376,3 @@ class GenerateNode(PipelineNode):
         )
 
         return "\n".join(parts)
-
-    # ------------------------------------------------------------------
-    # Gemini image generation (NB2)
-    # ------------------------------------------------------------------
-
-    @staticmethod
-    def _gemini_generate_sync(ctx: NodeContext) -> dict[str, Any]:
-        """Call Google Gemini image generation model.
-
-        Falls back to mock on quota/rate-limit errors so the pipeline
-        continues instead of crashing.
-        """
-        try:
-            from google import genai
-            from google.genai import types
-        except ImportError as exc:
-            raise ImportError(
-                "google-genai package required for image generation: "
-                "pip install google-genai"
-            ) from exc
-
-        api_key = (
-            ctx.api_key
-            or os.environ.get("GOOGLE_API_KEY", "")
-            or os.environ.get("GEMINI_API_KEY", "")
-        )
-        if not api_key:
-            raise ValueError(
-                "GOOGLE_API_KEY or GEMINI_API_KEY required for image generation"
-            )
-
-        prompt = ctx.get("prompt") or ctx.subject or ctx.intent
-        tradition_hint = ctx.tradition.replace("_", " ")
-
-        # Build the full prompt with cultural guidance
-        prompt_parts = [
-            f"Generate a high-quality artwork: {prompt}",
-            f"Style: {tradition_hint} tradition",
-        ]
-
-        # Inject cultural guidance (terminology + taboos)
-        cultural_guidance = GenerateNode._build_generation_guidance(ctx.tradition)
-        if cultural_guidance:
-            prompt_parts.append(f"\n{cultural_guidance}")
-
-        # On round >= 2: inject critique-driven improvement instructions
-        if ctx.round_num >= 2:
-            improvement = GenerateNode._build_improvement_prompt(ctx)
-            if improvement:
-                prompt_parts.append(f"\n{improvement}")
-
-        # Reference image guidance (check both top-level and node_params)
-        ref_b64 = ctx.get("reference_image_b64")
-        if not ref_b64:
-            node_params = ctx.get("node_params") or {}
-            gen_params = node_params.get("generate") or {}
-            ref_b64 = gen_params.get("reference_image_b64")
-        if ref_b64:
-            prompt_parts.append(
-                "\nUse the provided reference image as style/composition guidance. "
-                "Incorporate its aesthetic qualities while creating an original work."
-            )
-
-        prompt_parts.append(
-            "\nOutput image aspect ratio: 1:1, resolution: 1024x1024"
-        )
-        full_prompt = "\n".join(prompt_parts)
-
-        _progress = ctx.emit_progress or (lambda _msg: None)
-
-        logger.info(
-            "GenerateNode round %d prompt (%d chars%s)",
-            ctx.round_num,
-            len(full_prompt),
-            ", +ref_image" if ref_b64 else "",
-        )
-        _progress(f"Cultural prompt built ({len(full_prompt)} chars, {tradition_hint})")
-
-        t0 = time.monotonic()
-        try:
-            _progress("Connecting to Gemini image generation API...")
-            client = genai.Client(
-                api_key=api_key,
-                http_options={"timeout": 120_000},
-            )
-
-            # Build contents: text prompt + optional reference image
-            contents: list[Any] = [full_prompt]
-            if ref_b64:
-                try:
-                    ref_bytes = base64.b64decode(ref_b64)
-                    contents.insert(0, types.Part.from_bytes(
-                        data=ref_bytes,
-                        mime_type="image/png",
-                    ))
-                except Exception as ref_err:
-                    logger.warning("Failed to decode reference image: %s", ref_err)
-
-            _progress("Generating artwork with Gemini... typically 30-60s")
-            response = client.models.generate_content(
-                model="gemini-3.1-flash-image-preview",
-                contents=contents,
-                config=types.GenerateContentConfig(
-                    response_modalities=["TEXT", "IMAGE"],
-                    temperature=1.0,
-                ),
-            )
-
-            # Extract image from response parts
-            _progress("Extracting image from Gemini response...")
-            img_bytes = None
-            for part in response.candidates[0].content.parts:
-                if hasattr(part, "inline_data") and part.inline_data is not None:
-                    img_bytes = part.inline_data.data
-                    break
-
-            if not img_bytes:
-                raise RuntimeError("Gemini returned no image in response")
-
-            latency_ms = int((time.monotonic() - t0) * 1000)
-            _progress(f"Image generated in {latency_ms / 1000:.1f}s — preparing for evaluation")
-            img_b64 = base64.b64encode(img_bytes).decode()
-            candidate_id = hashlib.sha256(
-                f"{ctx.subject}:{ctx.round_num}:gemini".encode()
-            ).hexdigest()[:12]
-
-            logger.info(
-                "Gemini generated image (%dms, %d bytes)",
-                latency_ms,
-                len(img_bytes),
-            )
-
-            # Extract cultural guidance used (for frontend visibility)
-            cultural_terms: list[str] = []
-            cultural_taboos: list[str] = []
-            try:
-                from vulca.cultural.loader import get_tradition
-                tc = get_tradition(ctx.tradition)
-                if tc:
-                    cultural_terms = [t.term for t in (tc.terminology or [])[:6]]
-                    cultural_taboos = [t.rule for t in (tc.taboos or [])]
-            except Exception:
-                pass
-
-            return {
-                "image_b64": img_b64,
-                "image_mime": "image/png",
-                "candidate_id": candidate_id,
-                "image_url": f"gemini://{candidate_id}.png",
-                "cultural_guidance": {
-                    "terminology": cultural_terms,
-                    "taboos": cultural_taboos,
-                    "tradition": ctx.tradition,
-                },
-            }
-
-        except Exception as exc:
-            err = str(exc).lower()
-            recoverable = any(
-                k in err
-                for k in ("429", "quota", "rate", "503", "unavailable", "timeout")
-            )
-            if recoverable:
-                logger.warning(
-                    "Gemini API quota/rate limit — falling back to mock: %s", exc
-                )
-                return GenerateNode._mock_generate(ctx)
-            raise

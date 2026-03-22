@@ -102,6 +102,11 @@ class EvaluateNode(PipelineNode):
             api_key=ctx.api_key,
         )
 
+        # If VLM failed (quota/network error), fall back to mock scores
+        if data.get("error"):
+            logger.warning("VLM scoring failed, falling back to mock: %s", data["error"])
+            return EvaluateNode._mock_scores(ctx)
+
         scores = {f"L{i}": data.get(f"L{i}", 0.0) for i in range(1, 6)}
         rationales = {
             f"L{i}_rationale": data.get(f"L{i}_rationale", "") for i in range(1, 6)

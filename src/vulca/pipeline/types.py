@@ -86,11 +86,12 @@ class PipelineInput:
     tradition: str = "default"
     provider: str = "nb2"
     api_key: str = ""
-    n_candidates: int = 2
     max_rounds: int = 3
     max_cost_usd: float = 2.0
     template: str = "default"
     node_params: dict[str, dict] = field(default_factory=dict)
+    # Custom ImageProvider instance (not serialized; overrides provider lookup)
+    image_provider: Any = field(default=None, repr=False)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -98,7 +99,6 @@ class PipelineInput:
             "intent": self.intent,
             "tradition": self.tradition,
             "provider": self.provider,
-            "n_candidates": self.n_candidates,
             "max_rounds": self.max_rounds,
             "max_cost_usd": self.max_cost_usd,
             "template": self.template,
@@ -147,15 +147,6 @@ class PipelineOutput:
 
 
 @dataclass(frozen=True)
-class ConditionalEdge:
-    """A conditional edge in a pipeline graph template."""
-
-    source: str
-    route_function: str
-    destinations: dict[str, str] = field(default_factory=dict)
-
-
-@dataclass(frozen=True)
 class PipelineDefinition:
     """Immutable definition of a pipeline topology.
 
@@ -173,9 +164,7 @@ class PipelineDefinition:
         ("draft", "critic"),
         ("critic", "queen"),
     )
-    conditional_edges: tuple[ConditionalEdge, ...] = ()
     enable_loop: bool = True
-    parallel_critic: bool = False
     interrupt_before: tuple[str, ...] = ()
     node_specs: dict[str, Any] = field(default_factory=dict)
 
@@ -188,5 +177,4 @@ class PipelineDefinition:
             "nodes": list(self.nodes),
             "edges": [list(e) for e in self.edges],
             "enable_loop": self.enable_loop,
-            "parallel_critic": self.parallel_critic,
         }

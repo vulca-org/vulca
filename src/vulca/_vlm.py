@@ -103,7 +103,7 @@ def _load_evolved_context() -> dict | None:
             if path.is_file():
                 return json.loads(path.read_text(encoding="utf-8"))
     except Exception:
-        pass
+        logger.debug("Failed to load evolved context")
     return None
 
 
@@ -142,6 +142,7 @@ def _build_tradition_guidance(tradition: str) -> str:
 
         return "\n".join(parts)
     except Exception:
+        logger.debug("Tradition guidance fallback for %s", tradition)
         return base
 
 

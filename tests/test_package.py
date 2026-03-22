@@ -102,6 +102,7 @@ def test_dunder_all():
         "create", "acreate", "session", "asession",
         "traditions", "get_weights",
         "EvalResult", "CreateResult", "SkillResult",
+        "ImageProvider", "VLMProvider", "ImageResult", "L1L5Scores",
     }
     assert set(vulca.__all__) == expected
 

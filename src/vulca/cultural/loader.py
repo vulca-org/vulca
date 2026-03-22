@@ -231,6 +231,7 @@ def _load_evolved_weights(tradition: str) -> dict[str, float] | None:
                     return result
                 return None
     except Exception:
+        logger.debug("Failed to load evolved weights for %s", tradition)
         return None
 
 
@@ -295,7 +296,7 @@ def get_tradition_guide(tradition: str) -> dict | None:
                 sessions_count = ctx.get("total_sessions", 0)
                 break
     except Exception:
-        pass
+        logger.debug("Failed to load sessions count for tradition guide")
 
     # Build terminology list
     terms = []

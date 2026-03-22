@@ -14,6 +14,7 @@ async def acreate(
     tradition: str = "",
     subject: str = "",
     provider: str = "nb2",
+    image_provider: object | None = None,
     mode: str = "auto",
     base_url: str = "",
     api_key: str = "",
@@ -31,10 +32,13 @@ async def acreate(
     subject:
         Optional artwork subject/title.
     provider:
-        Image generation provider (nb2 | mock).
+        Image generation provider name (nb2 | mock | gemini | openai | comfyui).
+    image_provider:
+        Custom ``ImageProvider`` instance. Overrides the ``provider`` string
+        lookup in the registry. Must implement the ``ImageProvider`` protocol.
     mode:
         Execution mode: 'local' (pipeline engine), 'remote' (API call),
-        or 'auto' (local if mock, else remote).
+        or 'auto' (local if mock or custom provider, else remote).
     base_url:
         VULCA API base URL (remote mode). Defaults to VULCA_API_URL env.
     api_key:
@@ -49,12 +53,18 @@ async def acreate(
     CreateResult
         Complete creation result with session ID, rounds, and scores.
     """
-    if mode == "local" or (mode == "auto" and provider == "mock"):
+    use_local = (
+        mode == "local"
+        or (mode == "auto" and provider == "mock")
+        or image_provider is not None  # custom provider requires local execution
+    )
+    if use_local:
         return await _create_local(
             intent,
             tradition=tradition,
             subject=subject,
             provider=provider,
+            image_provider=image_provider,
             hitl=hitl,
             weights=weights,
         )
@@ -74,6 +84,7 @@ async def _create_local(
     tradition: str = "",
     subject: str = "",
     provider: str = "mock",
+    image_provider: object | None = None,
     hitl: bool = False,
     weights: dict[str, float] | None = None,
 ) -> CreateResult:
@@ -94,6 +105,7 @@ async def _create_local(
         tradition=tradition or "default",
         provider=provider,
         node_params=node_params,
+        image_provider=image_provider,
     )
 
     # HITL: interrupt before decide node; skip on_complete (pipeline incomplete)
@@ -187,6 +199,7 @@ def create(
     tradition: str = "",
     subject: str = "",
     provider: str = "nb2",
+    image_provider: object | None = None,
     mode: str = "auto",
     base_url: str = "",
     api_key: str = "",
@@ -207,6 +220,7 @@ def create(
         tradition=tradition,
         subject=subject,
         provider=provider,
+        image_provider=image_provider,
         mode=mode,
         base_url=base_url,
         api_key=api_key,

@@ -24,7 +24,8 @@ async def load_image_base64(image: str) -> tuple[str, str]:
 
     # URL
     if image.startswith(("http://", "https://")):
-        async with httpx.AsyncClient(timeout=30, follow_redirects=True) as client:
+        headers = {"User-Agent": "VULCA/0.3 (https://github.com/vulca-org/vulca)"}
+        async with httpx.AsyncClient(timeout=30, follow_redirects=True, headers=headers) as client:
             resp = await client.get(image)
             resp.raise_for_status()
             content_type = resp.headers.get("content-type", "image/jpeg")

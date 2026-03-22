@@ -24,6 +24,8 @@ class NodeContext:
     data: dict[str, Any] = field(default_factory=dict)
     # Optional progress callback for nodes to emit intermediate status
     emit_progress: Callable[[str], None] | None = field(default=None, repr=False)
+    # Optional custom ImageProvider instance (overrides provider string lookup)
+    image_provider: Any = field(default=None, repr=False)
 
     def set(self, key: str, value: Any) -> None:
         self.data[key] = value

@@ -14,7 +14,7 @@ class GeminiImageProvider:
     def __init__(
         self,
         api_key: str = "",
-        model: str = "gemini-2.0-flash-exp-image-generation",
+        model: str = "gemini-3.1-flash-image-preview",
         timeout: int = 90,
     ):
         self.api_key = (
@@ -88,12 +88,16 @@ class GeminiImageProvider:
         raise RuntimeError("Gemini returned no image data")
 
     def _build_prompt(self, prompt: str, tradition: str, subject: str, kwargs: dict) -> str:
-        parts = [f"Generate an artwork: {prompt}"]
+        parts = [f"Generate a high-quality artwork: {prompt}"]
         if tradition and tradition != "default":
-            parts.append(f"Cultural tradition: {tradition.replace('_', ' ')}")
+            parts.append(f"Style: {tradition.replace('_', ' ')} tradition")
         if subject:
             parts.append(f"Subject: {subject}")
+        cultural_guidance = kwargs.get("cultural_guidance", "")
+        if cultural_guidance:
+            parts.append(f"\n{cultural_guidance}")
         improvement_focus = kwargs.get("improvement_focus", "")
         if improvement_focus:
-            parts.append(f"Improvement focus:\n{improvement_focus}")
+            parts.append(f"\n{improvement_focus}")
+        parts.append("\nOutput image aspect ratio: 1:1, resolution: 1024x1024")
         return "\n".join(parts)

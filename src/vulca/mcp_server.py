@@ -638,7 +638,7 @@ async def get_evolution_status(
                 sessions_count = ctx.get("total_sessions", 0)
                 break
     except Exception:
-        pass
+        logging.getLogger("vulca").debug("Failed to load evolved context for evolution status")
 
     result: dict = {
         "tradition": tradition,
