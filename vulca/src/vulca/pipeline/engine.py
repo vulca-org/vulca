@@ -166,6 +166,7 @@ async def execute(
         max_rounds=pipeline_input.max_rounds,
         max_cost_usd=pipeline_input.max_cost_usd,
         emit_progress=_emit_progress,
+        image_provider=pipeline_input.image_provider,
     )
 
     # Inject node_params so individual nodes can read them

@@ -25,6 +25,7 @@ Usage::
 from vulca._version import __version__
 from vulca.create import acreate, create
 from vulca.evaluate import aevaluate, evaluate
+from vulca.providers.base import ImageProvider, ImageResult, L1L5Scores, VLMProvider
 from vulca.session import asession, session
 from vulca.types import CreateResult, EvalResult, SkillResult
 
@@ -54,4 +55,8 @@ __all__ = [
     "EvalResult",
     "CreateResult",
     "SkillResult",
+    "ImageProvider",
+    "VLMProvider",
+    "ImageResult",
+    "L1L5Scores",
 ]

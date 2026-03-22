@@ -35,4 +35,5 @@ def get_weights(tradition: str) -> dict[str, float]:
         from vulca.cultural.loader import get_weights as _yaml_get_weights
         return _yaml_get_weights(tradition)
     except Exception:
+        logging.getLogger("vulca").debug("YAML weight loader unavailable, using hardcoded weights")
         return TRADITION_WEIGHTS.get(tradition, TRADITION_WEIGHTS["default"])

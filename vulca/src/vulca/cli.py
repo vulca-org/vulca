@@ -286,7 +286,7 @@ def _cmd_create_hitl(args: argparse.Namespace) -> None:
             oc_loop.run_until_complete(default_on_complete(output))
             oc_loop.close()
         except Exception:
-            pass
+            logging.getLogger("vulca").debug("on_complete hook failed in HITL accept")
     else:
         print("  -> Quit. Session discarded.")
     print()

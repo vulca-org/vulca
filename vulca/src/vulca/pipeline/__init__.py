@@ -5,7 +5,6 @@ from vulca.pipeline.hooks import default_on_complete
 from vulca.pipeline.node import NodeContext, PipelineNode
 from vulca.pipeline.templates import CRITIQUE_ONLY, DEFAULT, FAST, TEMPLATES
 from vulca.pipeline.types import (
-    ConditionalEdge,
     PipelineDefinition,
     PipelineEvent,
     PipelineInput,
@@ -23,7 +22,6 @@ __all__ = [
     "FAST",
     "CRITIQUE_ONLY",
     "TEMPLATES",
-    "ConditionalEdge",
     "PipelineDefinition",
     "PipelineEvent",
     "PipelineInput",

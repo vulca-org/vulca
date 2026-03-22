@@ -180,10 +180,36 @@ result = vulca.create("landscape", image_provider=MyLocalSD())
 
 Built-in providers: `mock`, `gemini` (Google), `openai` (DALL-E 3), `comfyui` (local).
 
-For VLM scoring, any LiteLLM-supported model works:
+### BYOK Quick Start
 
+**Gemini** (Google AI):
+```bash
+export GOOGLE_API_KEY=your-key-here
+vulca create "Misty mountains" --provider gemini --tradition chinese_xieyi
+vulca evaluate painting.jpg --tradition chinese_xieyi  # VLM scoring uses same key
+```
+
+**OpenAI** (DALL-E 3):
+```bash
+export OPENAI_API_KEY=your-key-here
+vulca create "Zen garden" --provider openai --tradition japanese_traditional
+```
+
+**ComfyUI** (local Stable Diffusion):
+```bash
+# Start ComfyUI server first, then:
+vulca create "Oil painting" --provider comfyui --image-base-url http://localhost:8188
+```
+
+**Local VLM** (Ollama, vLLM, etc.):
 ```bash
 vulca evaluate photo.jpg --vlm-model ollama/llava --vlm-base-url http://localhost:11434
+```
+
+**No API key?** Use mock mode for testing:
+```bash
+vulca create "水墨山水" --provider mock
+vulca evaluate painting.jpg --mock
 ```
 
 ## Self-Evolution

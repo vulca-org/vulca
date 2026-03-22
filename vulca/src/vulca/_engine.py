@@ -49,7 +49,7 @@ class Engine:
         tradition: str = "",
         subject: str = "",
         skills: list[str] | None = None,
-        include_evidence: bool = False,
+        include_evidence: bool = False,  # noqa: ARG002 — reserved, not yet implemented
     ) -> EvalResult:
         # Step 1: Load image (skip for mock)
         if not self.mock:

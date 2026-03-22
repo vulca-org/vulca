@@ -34,7 +34,7 @@ def _get_known_traditions() -> list[str]:
         if traditions:
             return traditions
     except Exception:
-        pass
+        logging.getLogger("vulca").debug("YAML traditions not available, using legacy list")
     return _LEGACY_KNOWN_TRADITIONS
 
 
