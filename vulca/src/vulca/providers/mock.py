@@ -21,6 +21,9 @@ _TRADITION_COLORS: dict[str, str] = {
 class MockImageProvider:
     """Generates deterministic SVG placeholder images."""
 
+    def __init__(self, **kwargs):
+        pass  # Accept and ignore any kwargs for registry compatibility
+
     async def generate(
         self,
         prompt: str,
@@ -59,6 +62,9 @@ class MockImageProvider:
 
 class MockVLMProvider:
     """Returns deterministic scores based on tradition weights."""
+
+    def __init__(self, **kwargs):
+        pass  # Accept and ignore any kwargs for registry compatibility
 
     async def score(
         self,

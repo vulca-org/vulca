@@ -369,14 +369,13 @@ async def get_tradition_guide(
         return {"error": f"Unknown tradition: {tradition!r}. Use list_traditions() to see available traditions."}
 
     if view == "summary":
-        # Strip verbose lists for summary
-        result = {
-            "tradition": guide["tradition"],
-            "description": guide["description"],
-            "emphasis": guide["emphasis"],
-            "weights": guide["weights"],
-            "evolved_weights": guide["evolved_weights"],
-        }
+        # Summary still includes terminology/taboos (core value of this tool)
+        # but truncates long lists
+        result = dict(guide)
+        if result.get("terminology") and len(result["terminology"]) > 5:
+            result["terminology"] = result["terminology"][:5]
+        if result.get("taboos") and len(result["taboos"]) > 3:
+            result["taboos"] = result["taboos"][:3]
     else:
         result = dict(guide)
 
