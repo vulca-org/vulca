@@ -293,14 +293,15 @@ def _cmd_create_hitl(args: argparse.Namespace) -> None:
 
 
 def _cmd_traditions() -> None:
-    from vulca.cultural import TRADITION_WEIGHTS
+    from vulca.cultural.loader import get_all_weight_tables
 
-    print("\n  Available Cultural Traditions:")
+    weights_all = get_all_weight_tables()
+    print(f"\n  Available Domains ({len(weights_all)}):")
     print(f"  {'=' * 50}")
-    for name, weights in TRADITION_WEIGHTS.items():
+    dim_names = {"L1": "Visual", "L2": "Technical", "L3": "Cultural", "L4": "Critical", "L5": "Philosophical"}
+    for name, weights in sorted(weights_all.items()):
         emphasis = max(weights, key=weights.get)
-        names = {"L1": "Visual", "L2": "Technical", "L3": "Cultural", "L4": "Critical", "L5": "Philosophical"}
-        print(f"    {name:<25s} emphasis: {names.get(emphasis, emphasis)} ({weights[emphasis]:.0%})")
+        print(f"    {name:<25s} emphasis: {dim_names.get(emphasis, emphasis)} ({weights[emphasis]:.0%})")
     print()
 
 
