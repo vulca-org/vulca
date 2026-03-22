@@ -21,6 +21,10 @@ TRADITION_WEIGHTS: dict[str, dict[str, float]] = {
     "watercolor": {"L1": 0.15, "L2": 0.20, "L3": 0.25, "L4": 0.20, "L5": 0.20},
     "african_traditional": {"L1": 0.15, "L2": 0.20, "L3": 0.25, "L4": 0.20, "L5": 0.20},
     "south_asian": {"L1": 0.15, "L2": 0.20, "L3": 0.25, "L4": 0.20, "L5": 0.20},
+    "contemporary_art": {"L1": 0.10, "L2": 0.15, "L3": 0.30, "L4": 0.25, "L5": 0.20},
+    "photography": {"L1": 0.25, "L2": 0.25, "L3": 0.20, "L4": 0.20, "L5": 0.10},
+    "brand_design": {"L1": 0.25, "L2": 0.30, "L3": 0.25, "L4": 0.15, "L5": 0.05},
+    "ui_ux_design": {"L1": 0.20, "L2": 0.30, "L3": 0.25, "L4": 0.20, "L5": 0.05},
 }
 
 TRADITIONS = list(TRADITION_WEIGHTS.keys())

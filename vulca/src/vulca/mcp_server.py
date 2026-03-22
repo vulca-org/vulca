@@ -7,6 +7,8 @@ Usage:
 
 from __future__ import annotations
 
+import logging
+
 from fastmcp import FastMCP
 
 mcp = FastMCP("VULCA", instructions="AI-native cultural art creation & evaluation")
