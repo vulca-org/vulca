@@ -59,7 +59,7 @@ class TestCreateArtworkTool:
         result = await create_artwork("test artwork", provider="mock", hitl=True)
         assert result["status"] == "waiting_human"
         assert result["interrupted_at"] == "decide"
-        assert result["scores"]  # evaluate ran
+        assert result["weighted_total"]  # evaluate ran
 
     @pytest.mark.asyncio
     async def test_weights_create(self):
