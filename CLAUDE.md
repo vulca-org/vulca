@@ -20,12 +20,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Live Project Status (auto-updated)
 
 <!-- AUTO-STATUS-START -->
-- **Branch**: master | Last commit: 257116c fix: Phase C3 — 产品可用性实战验证, fix 5 production bugs
-- **Phase**: No active phase
-- **Evolution**: 9 traditions evolved (last: 2026-03-20)
-- **Sessions logged**: 10
-- **Config**: 7 agents / 8 skills / 5 rules
-- **Auto-updated**: 2026-03-20 16:37
+- **Branch**: master | Last commit: 5c351d8 fix: mock providers accept kwargs + tradition guide includes terminology in summary
+- **Active Phase**: Phase D1 — Pipeline 可见性修复 — rationale/evolution/instruct/cultural injection
+- **Evolution**: 9 traditions evolved (last: 2026-03-22)
+- **Sessions logged**: 290
+- **Config**: 7 agents / 8 skills / 6 rules
+- **Auto-updated**: 2026-03-22 22:32
 <!-- AUTO-STATUS-END -->
 
 ## Project Overview
