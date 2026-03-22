@@ -59,6 +59,8 @@ def main(argv: list[str] | None = None) -> None:
     eval_p.add_argument("--json", action="store_true", help="Output raw JSON")
     eval_p.add_argument("--api-key", default="", help="Google API key (or set GOOGLE_API_KEY)")
     eval_p.add_argument("--mock", action="store_true", help="Use mock scoring (no API key required)")
+    eval_p.add_argument("--vlm-model", default="", help="VLM model (LiteLLM format, e.g. ollama/llava)")
+    eval_p.add_argument("--vlm-base-url", default="", help="VLM base URL (for local models)")
 
     # create command
     create_p = sub.add_parser("create", aliases=["c"], help="Create artwork via pipeline")
@@ -71,9 +73,21 @@ def main(argv: list[str] | None = None) -> None:
     create_p.add_argument("--base-url", default="", help="VULCA API base URL")
     create_p.add_argument("--hitl", action="store_true", help="Enable human-in-the-loop (pause before decide)")
     create_p.add_argument("--weights", default="", help="Custom L1-L5 weights: 'L1=0.3,L2=0.2,...'")
+    create_p.add_argument("--image-provider", default="", help="Image provider: mock|gemini|openai|comfyui")
+    create_p.add_argument("--image-base-url", default="", help="Image provider base URL (for comfyui)")
 
     # traditions command
     sub.add_parser("traditions", aliases=["t"], help="List available cultural traditions")
+
+    # tradition detail command
+    trad_p = sub.add_parser("tradition", aliases=["td"], help="Get cultural tradition guide")
+    trad_p.add_argument("name", help="Tradition name (e.g. chinese_xieyi)")
+    trad_p.add_argument("--json", action="store_true", help="Output raw JSON")
+
+    # evolution status command
+    evo_p = sub.add_parser("evolution", aliases=["evo"], help="Get evolution status for a tradition")
+    evo_p.add_argument("name", help="Tradition name")
+    evo_p.add_argument("--json", action="store_true", help="Output raw JSON")
 
     args = parser.parse_args(argv)
 
@@ -86,6 +100,10 @@ def main(argv: list[str] | None = None) -> None:
             _cmd_create(args)
     elif args.command in ("traditions", "t"):
         _cmd_traditions()
+    elif args.command in ("tradition", "td"):
+        _cmd_tradition(args)
+    elif args.command in ("evolution", "evo"):
+        _cmd_evolution(args)
     else:
         parser.print_help()
         sys.exit(1)
@@ -93,7 +111,13 @@ def main(argv: list[str] | None = None) -> None:
 
 def _cmd_evaluate(args: argparse.Namespace) -> None:
     import json as json_mod
+    import os
     from vulca import evaluate
+
+    if hasattr(args, 'vlm_model') and args.vlm_model:
+        os.environ["VULCA_VLM_MODEL"] = args.vlm_model
+    if hasattr(args, 'vlm_base_url') and args.vlm_base_url:
+        os.environ["VULCA_VLM_BASE_URL"] = args.vlm_base_url
 
     skills = [s.strip() for s in args.skills.split(",") if s.strip()] if args.skills else None
 
@@ -147,7 +171,13 @@ def _cmd_evaluate(args: argparse.Namespace) -> None:
 
 def _cmd_create(args: argparse.Namespace) -> None:
     import json as json_mod
+    import os
     from vulca import create
+
+    if args.image_provider:
+        os.environ["VULCA_IMAGE_PROVIDER"] = args.image_provider
+    if hasattr(args, 'image_base_url') and args.image_base_url:
+        os.environ["VULCA_IMAGE_BASE_URL"] = args.image_base_url
 
     weights = _parse_weights(args.weights) if args.weights else None
 
@@ -271,6 +301,98 @@ def _cmd_traditions() -> None:
         emphasis = max(weights, key=weights.get)
         names = {"L1": "Visual", "L2": "Technical", "L3": "Cultural", "L4": "Critical", "L5": "Philosophical"}
         print(f"    {name:<25s} emphasis: {names.get(emphasis, emphasis)} ({weights[emphasis]:.0%})")
+    print()
+
+
+def _cmd_tradition(args: argparse.Namespace) -> None:
+    import json as json_mod
+    from vulca.cultural.loader import get_tradition_guide
+
+    guide = get_tradition_guide(args.name)
+    if guide is None:
+        print(f"Error: Unknown tradition '{args.name}'", file=sys.stderr)
+        print("Run 'vulca traditions' to see available traditions.")
+        sys.exit(1)
+
+    if args.json:
+        print(json_mod.dumps(guide, indent=2, ensure_ascii=False))
+        return
+
+    print(f"\n  Cultural Guide: {guide['tradition']}")
+    print(f"  {'=' * 50}")
+    print(f"  Description: {guide['description']}")
+    print(f"  Emphasis:    {guide['emphasis']}")
+    print()
+    print(f"  L1-L5 Weights:")
+    for level in ("L1", "L2", "L3", "L4", "L5"):
+        w = guide["weights"].get(level, 0)
+        bar = "\u2588" * int(w * 20) + "\u2591" * (20 - int(w * 20))
+        print(f"    {level} {bar} {w:.0%}")
+
+    if guide.get("evolved_weights"):
+        print(f"\n  Evolved Weights (from {guide.get('sessions_count', 0)} sessions):")
+        for level in ("L1", "L2", "L3", "L4", "L5"):
+            ew = guide["evolved_weights"].get(level, 0)
+            bar = "\u2588" * int(ew * 20) + "\u2591" * (20 - int(ew * 20))
+            print(f"    {level} {bar} {ew:.0%}")
+
+    if guide.get("terminology"):
+        print(f"\n  Terminology ({len(guide['terminology'])} terms):")
+        for t in guide["terminology"][:10]:
+            term = t.get("term", "")
+            trans = t.get("translation", "")
+            raw_defn = t.get("definition", "")
+            if isinstance(raw_defn, dict):
+                defn = raw_defn.get("en", "")[:60]
+            else:
+                defn = str(raw_defn)[:60]
+            if trans:
+                print(f"    {term} ({trans}): {defn}")
+            else:
+                print(f"    {term}: {defn}")
+
+    if guide.get("taboos"):
+        print(f"\n  Taboos ({len(guide['taboos'])}):")
+        for tb in guide["taboos"][:5]:
+            print(f"    - {tb}")
+
+    print()
+
+
+def _cmd_evolution(args: argparse.Namespace) -> None:
+    import json as json_mod
+    from vulca.cultural.loader import get_weights
+    from vulca.cultural import TRADITION_WEIGHTS
+
+    original = TRADITION_WEIGHTS.get(args.name)
+    if original is None:
+        print(f"Error: Unknown tradition '{args.name}'", file=sys.stderr)
+        sys.exit(1)
+
+    evolved = get_weights(args.name)
+
+    result = {
+        "tradition": args.name,
+        "original_weights": original,
+        "evolved_weights": evolved,
+        "weight_changes": {k: f"{evolved.get(k, 0) - original.get(k, 0):+.3f}" for k in original},
+    }
+
+    if args.json:
+        print(json_mod.dumps(result, indent=2, ensure_ascii=False))
+        return
+
+    print(f"\n  Evolution Status: {args.name}")
+    print(f"  {'=' * 50}")
+    names = {"L1": "Visual", "L2": "Technical", "L3": "Cultural", "L4": "Critical", "L5": "Philosophical"}
+    print(f"  {'Dim':<5} {'Original':>10} {'Evolved':>10} {'Change':>10}")
+    print(f"  {'-'*5} {'-'*10} {'-'*10} {'-'*10}")
+    for level in ("L1", "L2", "L3", "L4", "L5"):
+        o = original.get(level, 0)
+        e = evolved.get(level, 0)
+        delta = e - o
+        sign = "+" if delta >= 0 else ""
+        print(f"  {level:<5} {o:>9.1%} {e:>9.1%} {sign}{delta:>8.1%}")
     print()
 
 
