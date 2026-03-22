@@ -71,6 +71,15 @@ export function updatePageMeta(path: string): void {
   }
   metaDescription.setAttribute('content', seo.description);
 
+  // Update canonical link
+  let canonical = document.querySelector('link[rel="canonical"]');
+  if (!canonical) {
+    canonical = document.createElement('link');
+    canonical.setAttribute('rel', 'canonical');
+    document.head.appendChild(canonical);
+  }
+  canonical.setAttribute('href', `https://vulcaart.art${path === '/' ? '/' : path}`);
+
   // Update OG tags
   const ogTags = {
     'og:title': seo.title,

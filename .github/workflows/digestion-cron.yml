@@ -12,12 +12,19 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository_owner == 'yha9806'
     steps:
+      - name: Wake up Cloud Run (cold start)
+        env:
+          BACKEND_URL: ${{ secrets.CLOUD_RUN_URL }}
+        run: |
+          echo "Warming up backend..."
+          curl -s -m 30 -o /dev/null "$BACKEND_URL/health" || true
+
       - name: Trigger digestion run
         env:
           BACKEND_URL: ${{ secrets.CLOUD_RUN_URL }}
         run: |
           echo "Triggering digestion at $BACKEND_URL..."
-          RESPONSE=$(curl -s -m 120 -X POST "$BACKEND_URL/api/v1/digestion/run" \
+          RESPONSE=$(curl -s -m 300 --retry 2 --retry-delay 10 -X POST "$BACKEND_URL/api/v1/digestion/run" \
             -H "Content-Type: application/json" \
             -w "\n%{http_code}")
           HTTP_CODE=$(echo "$RESPONSE" | tail -1)

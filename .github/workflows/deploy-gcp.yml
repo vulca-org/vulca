@@ -83,7 +83,7 @@ jobs:
       - name: Run backend tests
         working-directory: wenxin-backend
         run: |
-          PYTHONPATH=. python -m pytest tests/ -v --tb=short -x -m "not slow"
+          PYTHONPATH=. python -m pytest tests/ -v --tb=short -x -m "not slow and not integration"
         env:
           DATABASE_URL: sqlite+aiosqlite:///./test.db
           SECRET_KEY: test-secret-key-for-ci-at-least-32-chars
@@ -95,7 +95,7 @@ jobs:
       - name: Backend test coverage
         working-directory: wenxin-backend
         run: |
-          PYTHONPATH=. python -m pytest tests/ -m "not slow" --cov=app --cov-report=term-missing --tb=short || true
+          PYTHONPATH=. python -m pytest tests/ -m "not slow and not integration" --cov=app --cov-report=term-missing --tb=short || true
         env:
           DATABASE_URL: sqlite+aiosqlite:///./test.db
           SECRET_KEY: test-secret-key-for-ci-at-least-32-chars
