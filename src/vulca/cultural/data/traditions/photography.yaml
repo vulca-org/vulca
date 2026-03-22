@@ -1,0 +1,86 @@
+name: photography
+display_name:
+  en: "Photography"
+  zh: "摄影"
+  ja: "写真"
+
+weights:
+  L1: 0.25
+  L2: 0.25
+  L3: 0.20
+  L4: 0.20
+  L5: 0.10
+
+terminology:
+  - term: decisive moment
+    term_zh: "决定性瞬间"
+    definition:
+      en: "The instant at which all visual and narrative elements of a scene align into a perfectly balanced and emotionally resonant composition, as theorized by Henri Cartier-Bresson."
+    category: aesthetics
+    l_levels: [L4, L5]
+    aliases: ["l'instant decisif", "peak action"]
+    source: "Henri Cartier-Bresson, Images à la sauvette (The Decisive Moment, 1952)"
+
+  - term: bokeh
+    term_zh: "焦外虚化"
+    definition:
+      en: "The aesthetic quality of the out-of-focus areas in a photograph, particularly the rendering of light sources and background elements, often used to isolate subjects and create visual depth."
+    category: technique
+    l_levels: [L1, L2]
+    aliases: ["depth of field blur", "background separation"]
+    source: "Japanese photography criticism; popularized in Western discourse in the 1990s"
+
+  - term: zone system
+    term_zh: "区域曝光系统"
+    definition:
+      en: "A systematic method of controlling photographic exposure and development to achieve desired tonal values across the full range from pure black to pure white, developed by Ansel Adams and Fred Archer."
+    category: technique
+    l_levels: [L2]
+    aliases: ["Adams zone system", "tonal mapping"]
+    source: "Ansel Adams and Fred Archer, 1940"
+
+  - term: straight photography
+    term_zh: "纯粹摄影"
+    definition:
+      en: "A photographic approach that emphasizes sharp focus, full tonal range, and absence of manipulation, treating the camera as a tool for direct visual truth rather than pictorial imitation."
+    category: philosophy
+    l_levels: [L3, L5]
+    aliases: ["pure photography", "f/64 style"]
+    source: "Group f/64; Edward Weston, Ansel Adams, Imogen Cunningham"
+
+  - term: pictorialism
+    term_zh: "画意摄影"
+    definition:
+      en: "A photographic movement that sought to establish photography as a fine art by emulating the aesthetic qualities of painting through soft focus, toning, and darkroom manipulation."
+    category: aesthetics
+    l_levels: [L3, L5]
+    aliases: ["pictorialist photography", "soft-focus photography"]
+    source: "Alfred Stieglitz, Gertrude Käsebier; late 19th–early 20th century"
+
+  - term: golden ratio
+    term_zh: "黄金分割"
+    definition:
+      en: "A compositional principle derived from the mathematical ratio approximately 1.618:1, used to place subjects and horizons in positions perceived as naturally balanced and visually harmonious."
+    category: composition
+    l_levels: [L1]
+    aliases: ["golden section", "phi ratio", "rule of thirds approximation"]
+    source: "Classical mathematics; applied to visual arts through Renaissance and formalized in photography pedagogy"
+
+taboos:
+  - rule: "Do not penalize intentional grain or high ISO noise as a technical flaw"
+    severity: high
+    l_levels: [L2, L4]
+    trigger_patterns: ["too grainy", "noisy image", "poor image quality", "lacks sharpness", "blurry"]
+    explanation: "Grain and noise are frequently intentional aesthetic choices in documentary, street, and fine-art photography, invoking texture, authenticity, and historical visual languages; treating them as errors misreads the photographer's intent."
+
+  - rule: "Do not assume color photography is superior to monochrome"
+    severity: medium
+    l_levels: [L1, L3]
+    trigger_patterns: ["would be better in color", "lacks color", "only black and white", "missing color information"]
+    explanation: "Monochrome photography has a distinct tradition, aesthetic vocabulary, and tonal language; the absence of color is a deliberate choice that foregrounds form, texture, and contrast rather than a technical limitation."
+
+pipeline:
+  variant: default
+  overrides:
+    scout_focus_layers: [L1, L2, L4]
+    allow_local_rerun: false

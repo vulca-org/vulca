@@ -1,0 +1,86 @@
+name: ui_ux_design
+display_name:
+  en: "UI/UX Design"
+  zh: "界面与体验设计"
+  ja: "UI/UXデザイン"
+
+weights:
+  L1: 0.20
+  L2: 0.30
+  L3: 0.25
+  L4: 0.20
+  L5: 0.05
+
+terminology:
+  - term: affordance
+    term_zh: "可供性"
+    definition:
+      en: "The perceived or actual property of an object that suggests how it can be used; in UI design, visual cues that communicate an element's interactivity and function without explicit instruction."
+    category: philosophy
+    l_levels: [L1, L3]
+    aliases: ["perceived affordance", "signifier"]
+    source: "James J. Gibson (1977); popularized in design by Don Norman, The Design of Everyday Things (1988)"
+
+  - term: Fitts's law
+    term_zh: "费茨定律"
+    definition:
+      en: "A predictive model of human movement stating that the time to acquire a target is a function of the distance to and size of the target, used to optimize touch target sizing and interactive element placement."
+    category: technique
+    l_levels: [L2, L4]
+    aliases: ["target acquisition law", "touch target sizing"]
+    source: "Paul Fitts, Journal of Experimental Psychology (1954)"
+
+  - term: progressive disclosure
+    term_zh: "渐进式披露"
+    definition:
+      en: "An interaction design pattern that sequences information and actions to reduce cognitive load, presenting only necessary or requested information at each step rather than overwhelming users with all options simultaneously."
+    category: technique
+    l_levels: [L2, L3]
+    aliases: ["staged disclosure", "layered information architecture"]
+    source: "Jef Raskin, The Humane Interface (2000); formalized in Nielsen Norman Group research"
+
+  - term: dark pattern
+    term_zh: "黑暗模式"
+    definition:
+      en: "A user interface design that tricks or manipulates users into unintended actions — such as hidden opt-outs, confusing cancellation flows, or misleading confirmations — prioritizing business goals over user wellbeing."
+    category: philosophy
+    l_levels: [L4, L5]
+    aliases: ["deceptive design", "anti-pattern", "manipulative UX"]
+    source: "Harry Brignull, darkpatterns.org (2010)"
+
+  - term: information architecture
+    term_zh: "信息架构"
+    definition:
+      en: "The structural design of shared information environments; the organization, labeling, navigation, and search systems that help users find and understand information within a digital product."
+    category: composition
+    l_levels: [L2, L3]
+    aliases: ["IA", "content structure", "navigation design"]
+    source: "Peter Morville and Louis Rosenfeld, Information Architecture for the World Wide Web (1998)"
+
+  - term: cognitive load
+    term_zh: "认知负荷"
+    definition:
+      en: "The mental effort required to process and understand information; UI/UX design aims to minimize extraneous cognitive load through clear visual hierarchy, consistent patterns, and appropriate chunking of information."
+    category: philosophy
+    l_levels: [L1, L3, L4]
+    aliases: ["mental load", "cognitive overhead"]
+    source: "John Sweller, cognitive load theory (1988); applied to UX through Nielsen Norman Group"
+
+taboos:
+  - rule: "Do not judge aesthetic minimalism without considering the task complexity it serves"
+    severity: high
+    l_levels: [L1, L2]
+    trigger_patterns: ["too minimal", "lacks features", "not enough options", "sparse interface", "missing elements"]
+    explanation: "Minimalist UI is often a deliberate reduction of cognitive load optimized for specific task flows; evaluating sparseness as incompleteness ignores the underlying information architecture decisions and user research that justify the design."
+
+  - rule: "Do not penalize unconventional navigation patterns if they match established mental models in the domain"
+    severity: medium
+    l_levels: [L3, L4]
+    trigger_patterns: ["unusual navigation", "non-standard", "doesn't follow convention", "unexpected layout", "confusing structure"]
+    explanation: "Domain-specific applications (creative tools, developer environments, medical systems) often require navigation patterns that deviate from general consumer conventions in order to match expert user mental models; unfamiliarity to a general reviewer does not constitute a usability failure."
+
+pipeline:
+  variant: default
+  overrides:
+    scout_focus_layers: [L2, L3, L4]
+    allow_local_rerun: false

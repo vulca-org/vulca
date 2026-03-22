@@ -1,0 +1,86 @@
+name: brand_design
+display_name:
+  en: "Brand & Commercial Design"
+  zh: "品牌设计"
+  ja: "ブランドデザイン"
+
+weights:
+  L1: 0.25
+  L2: 0.30
+  L3: 0.25
+  L4: 0.15
+  L5: 0.05
+
+terminology:
+  - term: brand equity
+    term_zh: "品牌资产"
+    definition:
+      en: "The commercial and perceptual value added to a product or service by its brand, encompassing recognition, associations, perceived quality, and loyalty that a distinctive visual identity builds over time."
+    category: philosophy
+    l_levels: [L3, L4]
+    aliases: ["brand value", "brand capital"]
+    source: "David Aaker, Managing Brand Equity (1991)"
+
+  - term: visual hierarchy
+    term_zh: "视觉层级"
+    definition:
+      en: "The arrangement and presentation of design elements in order of importance, guiding the viewer's eye through the composition using size, contrast, color, and spacing to communicate priority."
+    category: composition
+    l_levels: [L1, L2]
+    aliases: ["information hierarchy", "typographic hierarchy"]
+    source: "Gestalt psychology; formalized in graphic design pedagogy"
+
+  - term: design tokens
+    term_zh: "设计令牌"
+    definition:
+      en: "Named entities that store visual design decisions — colors, typography, spacing, shadows — as reusable variables, enabling consistent implementation across platforms and systematic brand scaling."
+    category: technique
+    l_levels: [L2]
+    aliases: ["design variables", "style tokens", "design constants"]
+    source: "Salesforce Lightning Design System; popularized through atomic design methodology"
+
+  - term: white space as premium signal
+    term_zh: "留白即高端"
+    definition:
+      en: "The convention in luxury and premium brand design that generous negative space communicates exclusivity, confidence, and quality, as opposed to dense or crowded layouts that signal mass-market positioning."
+    category: aesthetics
+    l_levels: [L1, L3]
+    aliases: ["negative space", "breathing room", "luxury whitespace"]
+    source: "Luxury brand design canon; codified in contemporary brand strategy"
+
+  - term: design system
+    term_zh: "设计系统"
+    definition:
+      en: "A comprehensive set of reusable components, guidelines, and standards that govern the visual and interaction language of a brand across all touchpoints, ensuring consistency and scalability."
+    category: technique
+    l_levels: [L2, L3]
+    aliases: ["component library", "pattern library", "brand guidelines"]
+    source: "Google Material Design, IBM Design Language, Apple Human Interface Guidelines"
+
+  - term: atomic design
+    term_zh: "原子设计"
+    definition:
+      en: "A methodology for creating design systems that breaks interfaces into five hierarchical levels — atoms, molecules, organisms, templates, and pages — enabling systematic and scalable design construction."
+    category: technique
+    l_levels: [L2]
+    aliases: ["component-driven design", "modular design system"]
+    source: "Brad Frost, Atomic Design (2013)"
+
+taboos:
+  - rule: "Do not use click-through rate or conversion metrics as the sole measure of design quality"
+    severity: medium
+    l_levels: [L4, L5]
+    trigger_patterns: ["not converting", "low engagement", "poor performance", "ineffective", "does not drive clicks"]
+    explanation: "Brand design operates on long-term equity building, emotional resonance, and cultural positioning; short-term performance metrics capture only one dimension of design value and can actively mislead evaluation of premium brand work."
+
+  - rule: "Do not judge minimalism as lack of effort or content"
+    severity: high
+    l_levels: [L1, L2]
+    trigger_patterns: ["too simple", "not enough", "lacks detail", "empty", "bare", "nothing happening"]
+    explanation: "Minimalist brand design is a deliberate strategic position requiring rigorous reduction and precise execution; the absence of visual complexity signals restraint and confidence rather than insufficient work."
+
+pipeline:
+  variant: default
+  overrides:
+    scout_focus_layers: [L1, L2, L3]
+    allow_local_rerun: false
