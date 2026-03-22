@@ -43,7 +43,8 @@ jobs:
           " || true
 
           if [ "$HTTP_CODE" -ne 200 ]; then
-            echo "::warning::Digestion returned HTTP $HTTP_CODE"
+            echo "::error::Digestion failed with HTTP $HTTP_CODE"
+            exit 1
           else
             echo "Digestion completed successfully"
           fi

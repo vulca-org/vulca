@@ -1,114 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Core Product Pages - High Priority -->
+  <!-- Core Product Pages -->
   <url>
     <loc>https://vulcaart.art/</loc>
-    <lastmod>2026-03-13</lastmod>
+    <lastmod>2026-03-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vulcaart.art/canvas</loc>
-    <lastmod>2026-03-13</lastmod>
+    <lastmod>2026-03-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://vulcaart.art/gallery</loc>
-    <lastmod>2026-03-13</lastmod>
+    <lastmod>2026-03-22</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://vulcaart.art/pricing</loc>
-    <lastmod>2026-03-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://vulcaart.art/demo</loc>
-    <lastmod>2026-03-13</lastmod>
-    <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
 
-  <!-- Support Pages -->
+  <!-- Academic & Reference -->
   <url>
     <loc>https://vulcaart.art/research</loc>
-    <lastmod>2026-03-13</lastmod>
+    <lastmod>2026-03-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vulcaart.art/models</loc>
-    <lastmod>2026-03-13</lastmod>
+    <lastmod>2026-03-22</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://vulcaart.art/skills</loc>
-    <lastmod>2026-03-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://vulcaart.art/customers</loc>
-    <lastmod>2026-03-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://vulcaart.art/trust</loc>
-    <lastmod>2026-03-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- Solutions Pages -->
-  <url>
-    <loc>https://vulcaart.art/solutions</loc>
-    <lastmod>2026-03-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://vulcaart.art/solutions/ai-labs</loc>
-    <lastmod>2026-03-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://vulcaart.art/solutions/research</loc>
-    <lastmod>2026-03-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://vulcaart.art/solutions/museums</loc>
-    <lastmod>2026-03-13</lastmod>
-    <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
-  <!-- Exhibition & Community -->
+  <!-- Legal -->
   <url>
-    <loc>https://vulcaart.art/exhibitions</loc>
-    <lastmod>2026-03-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-
-  <!-- Trust & Ethics -->
-  <url>
-    <loc>https://vulcaart.art/data-ethics</loc>
-    <lastmod>2026-03-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <loc>https://vulcaart.art/privacy</loc>
+    <lastmod>2026-03-22</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://vulcaart.art/sop</loc>
-    <lastmod>2026-03-13</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <loc>https://vulcaart.art/terms</loc>
+    <lastmod>2026-03-22</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
   </url>
 </urlset>

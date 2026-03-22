@@ -4,46 +4,15 @@
 User-agent: *
 Allow: /
 
-# Core Marketing Pages - Priority Crawling
-Allow: /product
-Allow: /pricing
-Allow: /demo
-Allow: /customers
-Allow: /trust
-Allow: /pilot
-Allow: /changelog
-
-# Solutions Pages
-Allow: /solutions
-Allow: /solutions/ai-labs
-Allow: /solutions/research
-Allow: /solutions/museums
-
-# Academic Resources
-Allow: /methodology
-Allow: /dataset
-Allow: /papers
-
-# Public Demo
-Allow: /vulca
-Allow: /models
-Allow: /exhibitions
-
-# Trust & Ethics
-Allow: /data-ethics
-Allow: /sop
-
 # Disallow internal/protected paths
 Disallow: /api/
 Disallow: /login
-Disallow: /evaluations
-Disallow: /demo/confirmation
-Disallow: /model/*/report
+Disallow: /register
+Disallow: /admin
+Disallow: /test-ios
 
-# Disallow static assets crawling
+# Disallow static build assets
 Disallow: /assets/
-Disallow: /*.js$
-Disallow: /*.css$
 
 # Sitemap location
 Sitemap: https://vulcaart.art/sitemap.xml

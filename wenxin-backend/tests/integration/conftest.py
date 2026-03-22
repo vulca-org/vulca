@@ -50,8 +50,10 @@ def _is_real_api_key(key: str) -> bool:
 
 _has_real_key = _is_real_api_key(_gemini_key)
 
-# Auto-skip all tests in this directory if no real key
-pytestmark = pytest.mark.integration
+# Note: do NOT set pytestmark = pytest.mark.integration here.
+# Only test_real_*.py and test_sdk_real*.py files carry their own
+# @pytest.mark.integration marker. Mock-based integration tests
+# (test_canvas_pipeline, test_digestion, etc.) must run in CI.
 
 
 def pytest_collection_modifyitems(config, items):
