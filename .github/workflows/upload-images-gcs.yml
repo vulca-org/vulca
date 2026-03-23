@@ -134,7 +134,7 @@ jobs:
         run: |
           # Check a random image is accessible
           SERVICE_URL=$(gcloud run services describe wenxin-moyun-api --region ${{ env.REGION }} --format 'value(status.url)')
-          GALLERY=$(curl -s "$SERVICE_URL/api/v1/prototype/gallery?limit=1")
+          GALLERY=$(curl -sf -m 30 "$SERVICE_URL/api/v1/prototype/gallery?limit=1" || echo '{}')
           IMG_URL=$(echo "$GALLERY" | python3 -c "import sys,json; items=json.load(sys.stdin).get('items',[]); print(items[0].get('best_image_url','') if items else '')")
           echo "First image URL: $IMG_URL"
           if [ -n "$IMG_URL" ]; then

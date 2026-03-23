@@ -62,7 +62,7 @@ jobs:
       - name: Verify migration
         run: |
           SERVICE_URL=$(gcloud run services describe wenxin-moyun-api --region ${{ env.REGION }} --format 'value(status.url)')
-          GALLERY_COUNT=$(curl -s "$SERVICE_URL/api/v1/prototype/gallery?limit=1" | python3 -c "import sys,json; print(json.load(sys.stdin).get('total', 0))")
+          GALLERY_COUNT=$(curl -sf -m 30 "$SERVICE_URL/api/v1/prototype/gallery?limit=1" | python3 -c "import sys,json; print(json.load(sys.stdin).get('total', 0))")
           echo "Gallery items after migration: $GALLERY_COUNT"
           if [ "$GALLERY_COUNT" -gt 100 ]; then
             echo "Migration successful!"

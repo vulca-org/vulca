@@ -126,15 +126,15 @@ jobs:
           
           # Check model count
           echo "Checking model count..."
-          MODEL_COUNT=$(curl -s "$BACKEND_URL/api/v1/models/" | jq '. | length')
+          MODEL_COUNT=$(curl -sf -m 30 "$BACKEND_URL/api/v1/models/" | jq '. | length')
           echo "Found $MODEL_COUNT models in production"
-          
+
           if [ "$MODEL_COUNT" -eq "42" ]; then
             echo "✅ All 42 models successfully loaded!"
-            
+
             # Show top 5 models
             echo "Top 5 models by score:"
-            curl -s "$BACKEND_URL/api/v1/models/" | jq -r '.[:5] | .[] | "\(.name) (\(.organization)): Score \(.overall_score // "N/A") | Type: \(.model_type // "N/A")"'
+            curl -sf -m 30 "$BACKEND_URL/api/v1/models/" | jq -r '.[:5] | .[] | "\(.name) (\(.organization)): Score \(.overall_score // "N/A") | Type: \(.model_type // "N/A")"'
           else
             echo "❌ Expected 42 models, found $MODEL_COUNT"
             exit 1

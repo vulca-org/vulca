@@ -218,7 +218,15 @@ jobs:
 
       - name: Build frontend for production
         working-directory: wenxin-moyun
-        run: timeout 120 npm run build:prod || if [ -d dist ]; then echo "Build completed (process hung, killed by timeout)"; else exit 1; fi
+        run: |
+          timeout 120 npm run build:prod || {
+            if [ -d dist ] && [ "$(find dist -name '*.js' -type f | wc -l)" -gt 0 ]; then
+              echo "Build completed (timeout reached but output exists)"
+            else
+              echo "::error::Build failed or incomplete"
+              exit 1
+            fi
+          }
         env:
           VITE_API_BASE_URL: ${{ secrets.CLOUD_RUN_URL }}
           VITE_API_VERSION: v1

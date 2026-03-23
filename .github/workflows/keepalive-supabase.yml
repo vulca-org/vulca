@@ -17,6 +17,10 @@ jobs:
         env:
           BACKEND_URL: ${{ secrets.CLOUD_RUN_URL }}
         run: |
+          if [ -z "$BACKEND_URL" ]; then
+            echo "::error::CLOUD_RUN_URL secret not configured"
+            exit 1
+          fi
           echo "Warming up backend..."
           curl -s -m 60 -o /dev/null "$BACKEND_URL/health" || true
 
