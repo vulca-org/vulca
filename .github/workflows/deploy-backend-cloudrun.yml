@@ -120,7 +120,7 @@ jobs:
             --memory 2Gi \
             --cpu 2 \
             --cpu-boost \
-            --timeout 300 \
+            --timeout 540 \
             --concurrency 80 \
             --min-instances 0 \
             --max-instances 3 \

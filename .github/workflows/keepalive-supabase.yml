@@ -13,9 +13,18 @@ jobs:
     name: Ping Database
     runs-on: ubuntu-latest
     steps:
-      - name: Health check (triggers DB query)
+      - name: Wake up Cloud Run (cold start)
+        env:
+          BACKEND_URL: ${{ secrets.CLOUD_RUN_URL }}
         run: |
-          response=$(curl -sf "${{ secrets.CLOUD_RUN_URL }}/health/deep" || curl -sf https://vulcaart.art/api/v1/health/deep || echo '{"components":{"database":"unknown"}}')
+          echo "Warming up backend..."
+          curl -s -m 60 -o /dev/null "$BACKEND_URL/health" || true
+
+      - name: Health check (triggers DB query)
+        env:
+          BACKEND_URL: ${{ secrets.CLOUD_RUN_URL }}
+        run: |
+          response=$(curl -sf -m 120 "$BACKEND_URL/health/deep" || echo '{"components":{"database":"unknown"}}')
           echo "$response" | python3 -m json.tool
           db_status=$(echo "$response" | python3 -c "import sys,json; print(json.load(sys.stdin)['components']['database'])")
           echo "Database status: $db_status"

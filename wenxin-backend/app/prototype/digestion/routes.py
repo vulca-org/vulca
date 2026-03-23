@@ -99,7 +99,7 @@ async def run_digestion() -> dict:
     from app.prototype.digestion.feature_extractor import backfill_missing_features
 
     try:
-        backfill_missing_features()
+        backfill_missing_features(use_llm=False)  # skip LLM calls in cron context
         FeedbackStore.get().sync_from_sessions()
     except Exception:
         logger.debug("Pre-digestion sync failed (non-fatal)")
