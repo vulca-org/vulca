@@ -7,6 +7,10 @@
 
 **Make any image generator culturally accurate.** VULCA scores visual works on 5 dimensions (L1-L5), tells you exactly what's wrong, and guides the next generation to fix it.
 
+<p align="center">
+  <img src="assets/demo.gif" alt="VULCA CLI Demo" width="700">
+</p>
+
 ```bash
 pip install vulca
 export GOOGLE_API_KEY=your-key
