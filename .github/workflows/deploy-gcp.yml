@@ -170,7 +170,7 @@ jobs:
         timeout-minutes: 15
 
   # Job 2: Deploy frontend to Firebase Hosting
-  # Backend is deployed automatically by Render on push
+  # Backend is deployed separately by deploy-backend-cloudrun.yml
   deploy:
     name: Deploy Frontend to Firebase
     runs-on: ubuntu-latest

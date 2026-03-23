@@ -3,6 +3,14 @@
 # Excludes: torch/lancedb/sentence-transformers (~2.5GB saved)
 FROM python:3.13-slim
 
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PYTHONPATH=/app \
+    ENVIRONMENT=production \
+    ENABLE_API_DOCS=true
+
 # Set working directory
 WORKDIR /app
 
@@ -11,37 +19,38 @@ RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
     libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
+    curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Create non-root user for security
+RUN groupadd -r appuser && useradd -r -g appuser -u 1000 appuser
 
 # Copy requirements first (for better Docker layer caching)
 COPY requirements.cloudrun.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
-COPY . .
+COPY --chown=appuser:appuser . .
 
-# Ensure prototype data directories exist and are included
+# Ensure prototype data directories exist
 RUN mkdir -p /app/app/prototype/checkpoints/draft \
     /app/app/prototype/data/terminology \
     /app/app/prototype/data/benchmarks \
     /app/app/prototype/data/samples \
     /app/static/generated_images \
-    /app/data
+    /app/data \
+    && chown -R appuser:appuser /app
 
-# Set environment variables
-ENV PYTHONPATH=/app
-ENV PYTHONUNBUFFERED=1
-ENV ENVIRONMENT=production
-
-# Enable B2B API docs in production (override main.py default)
-ENV ENABLE_API_DOCS=true
+# Switch to non-root user
+USER appuser
 
 # Expose port
 EXPOSE 8080
 
-# Health check (Cloud Run uses HTTP probes)
-HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
-    CMD python -c "import httpx; httpx.get('http://localhost:8080/health').raise_for_status()" || exit 1
+# Health check (Cloud Run uses HTTP probes, curl is lighter than httpx)
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:${PORT:-8080}/health || exit 1
 
-# Run with production settings using PORT environment variable
+# Run with production settings — sh -c expands $PORT from Cloud Run
 CMD ["sh", "-c", "python -m uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}"]
