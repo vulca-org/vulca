@@ -580,8 +580,8 @@ class TestEvolutionDiscovery:
         resp = client.get(f"{_API}/traditions")
         assert resp.status_code == 200
         traditions = resp.json().get("traditions", [])
-        assert len(traditions) == 9, (
-            f"Expected 9 traditions, got {len(traditions)}"
+        assert len(traditions) == 13, (
+            f"Expected 13 traditions, got {len(traditions)}"
         )
 
     def test_each_tradition_has_display_name(self, client):

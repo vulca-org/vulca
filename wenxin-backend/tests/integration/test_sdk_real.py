@@ -310,7 +310,7 @@ class TestVulcaCreateCustomWeights:
 # ---------------------------------------------------------------------------
 
 class TestVulcaTraditions:
-    """vulca.traditions() returns all 9 known tradition names."""
+    """vulca.traditions() returns all 13 known tradition names."""
 
     _EXPECTED = {
         "default",
@@ -322,15 +322,19 @@ class TestVulcaTraditions:
         "watercolor",
         "african_traditional",
         "south_asian",
+        "contemporary_art",
+        "photography",
+        "brand_design",
+        "ui_ux_design",
     }
 
     def test_returns_list(self):
         result = vulca.traditions()
         assert isinstance(result, list)
 
-    def test_returns_9_traditions(self):
+    def test_returns_13_traditions(self):
         result = vulca.traditions()
-        assert len(result) == 9, f"Expected 9 traditions, got {len(result)}: {result}"
+        assert len(result) == 13, f"Expected 13 traditions, got {len(result)}: {result}"
 
     def test_all_expected_names_present(self):
         result = set(vulca.traditions())

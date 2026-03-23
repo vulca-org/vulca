@@ -227,7 +227,7 @@ class TestKnowledgeBaseIntegration:
         resp = api_client.get("/api/v1/knowledge-base")
         assert resp.status_code == 200
         data = resp.json()
-        assert data["summary"]["total_traditions"] == 9
+        assert data["summary"]["total_traditions"] == 13
 
     def test_every_tradition_has_weights(self, api_client):
         resp = api_client.get("/api/v1/knowledge-base")

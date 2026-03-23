@@ -7,7 +7,7 @@ Lifecycle tested:
     POST /prototype/runs → GET /prototype/runs/{id} (poll) → verify schema + scores
     GET  /prototype/runs/{id}/events → SSE event list
     GET  /prototype/gallery          → list endpoint
-    GET  /prototype/traditions        → 9 traditions
+    GET  /prototype/traditions        → 13 traditions
 """
 
 from __future__ import annotations
@@ -626,7 +626,7 @@ class TestGalleryEndpoint:
 # ---------------------------------------------------------------------------
 
 class TestTraditionsEndpoint:
-    """GET /prototype/traditions returns all 9 traditions."""
+    """GET /prototype/traditions returns all 13 traditions."""
 
     def test_traditions_returns_200(self, client):
         """GET /traditions responds with HTTP 200."""
@@ -640,8 +640,8 @@ class TestTraditionsEndpoint:
         resp = client.get(f"{_PROTOTYPE_PREFIX}/traditions")
         data = resp.json()
         traditions = data.get("traditions", [])
-        assert len(traditions) == 9, (
-            f"Expected 9 traditions, got {len(traditions)}: "
+        assert len(traditions) == 13, (
+            f"Expected 13 traditions, got {len(traditions)}: "
             f"{[t.get('name') for t in traditions]}"
         )
 
