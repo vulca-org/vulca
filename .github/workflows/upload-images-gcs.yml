@@ -138,7 +138,7 @@ jobs:
           IMG_URL=$(echo "$GALLERY" | python3 -c "import sys,json; items=json.load(sys.stdin).get('items',[]); print(items[0].get('best_image_url','') if items else '')")
           echo "First image URL: $IMG_URL"
           if [ -n "$IMG_URL" ]; then
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$IMG_URL")
+            STATUS=$(curl -s -m 30 -o /dev/null -w "%{http_code}" "$IMG_URL")
             echo "Image HTTP status: $STATUS"
             if [ "$STATUS" = "200" ]; then
               echo "Image verification PASSED"
