@@ -131,7 +131,7 @@ jobs:
         run: |
           SERVICE_URL=$(gcloud run services describe ${{ env.SERVICE_NAME }} --region ${{ env.REGION }} --format 'value(status.url)')
           echo "Service URL: $SERVICE_URL"
-          curl -f "$SERVICE_URL/health" || exit 1
+          curl -f -m 30 "$SERVICE_URL/health" || exit 1
           echo "Health check passed"
 
       - name: Output deployment info

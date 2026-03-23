@@ -80,6 +80,7 @@ async def _extract_cultural_features_async(intent: str, tradition: str = "defaul
             messages=[{"role": "user", "content": prompt}],
             temperature=0.3,
             max_tokens=300,
+            timeout=60,
         )
 
         raw = response.choices[0].message.content.strip()

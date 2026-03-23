@@ -12,6 +12,7 @@ jobs:
   ping:
     name: Ping Database
     runs-on: ubuntu-latest
+    if: github.repository_owner == 'yha9806'
     steps:
       - name: Wake up Cloud Run (cold start)
         env:

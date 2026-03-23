@@ -556,6 +556,7 @@ class AgentRuntime:
                 tool_choice=tool_choice if tools else None,
                 max_tokens=model_spec.max_tokens,
                 temperature=model_spec.temperature,
+                timeout=120,
                 **extra_kwargs,
             )
             if not (response and response.choices):

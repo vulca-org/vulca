@@ -127,7 +127,7 @@ jobs:
           python -m uvicorn app.main:app --host 0.0.0.0 --port 8001 &
           echo "Waiting for backend to start..."
           for i in $(seq 1 60); do
-            if curl -sf http://localhost:8001/health > /dev/null 2>&1; then
+            if curl -sf -m 5 http://localhost:8001/health > /dev/null 2>&1; then
               echo "Backend ready after ${i}s"
               exit 0
             fi
@@ -244,7 +244,7 @@ jobs:
       # Health checks
       - name: Health check frontend (Firebase)
         run: |
-          curl -f "https://vulcaart.art" || curl -f "https://${{ env.FIREBASE_PROJECT }}.web.app" || exit 1
+          curl -f -m 30 "https://vulcaart.art" || curl -f -m 30 "https://${{ env.FIREBASE_PROJECT }}.web.app" || exit 1
 
       # Notifications
       - name: Notify deployment success
