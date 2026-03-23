@@ -28,7 +28,7 @@ export const DEFAULT_SEO: PageSEO = {
 export const PAGE_SEO: Record<string, PageSEO> = {
   '/': {
     title: 'VULCA - AI-Native Creation Organism',
-    description: 'Create, critique, and evolve cultural art through multi-agent AI pipelines. Canvas-first creation with Scout, Draft, Critic, and Queen agents.',
+    description: 'Create, critique, and evolve cultural art through multi-agent AI pipelines. L1-L5 evaluation across 9 cultural traditions.',
     keywords: ['AI creation', 'cultural AI', 'art creation', 'VULCA', 'AI pipeline'],
   },
   '/canvas': {
@@ -86,7 +86,8 @@ export function updatePageMeta(path: string): void {
     canonical.setAttribute('rel', 'canonical');
     document.head.appendChild(canonical);
   }
-  canonical.setAttribute('href', `https://vulcaart.art${path === '/' ? '/' : path}`);
+  const canonicalPath = path === '/' ? '' : path;
+  canonical.setAttribute('href', `https://vulcaart.art${canonicalPath}`);
 
   // Update OG tags
   const ogTags = {
@@ -133,10 +134,9 @@ export function getOrganizationStructuredData(): object {
     name: 'VULCA',
     url: 'https://vulcaart.art',
     logo: 'https://vulcaart.art/favicon.svg',
-    description: 'AI-Native Creation Organism',
+    description: 'AI-native creation organism. Create, critique, and evolve cultural art through multi-agent pipelines with L1-L5 evaluation across 9 traditions.',
     sameAs: [
       'https://github.com/vulca-org/vulca',
-      'https://twitter.com/vulca_ai',
     ],
   };
 }
@@ -149,8 +149,9 @@ export function getSoftwareApplicationStructuredData(): object {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
     name: 'VULCA',
-    applicationCategory: 'AI Evaluation Tool',
+    applicationCategory: 'DeveloperApplication',
     operatingSystem: 'Web',
+    description: 'AI-native creation organism. Create, critique, and evolve cultural art through multi-agent AI pipelines.',
     offers: {
       '@type': 'Offer',
       price: '0',
