@@ -46,35 +46,41 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Serif:ital,wght@0,400;0,600;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
 
-    <!-- JSON-LD Structured Data -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "VULCA",
-      "url": "https://vulcaart.art",
-      "logo": "https://vulcaart.art/favicon.svg",
-      "description": "AI-native creation organism. Create, critique, and evolve cultural art through multi-agent pipelines with L1-L5 evaluation across 9 traditions.",
-      "sameAs": [
-        "https://github.com/vulca-org/vulca"
-      ]
-    }
-    </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "name": "VULCA",
-      "applicationCategory": "DeveloperApplication",
-      "operatingSystem": "Web",
-      "description": "AI-native creation organism. Create, critique, and evolve cultural art through multi-agent AI pipelines.",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD",
-        "description": "Open source under Apache 2.0"
+    <!-- JSON-LD Structured Data (data-seo prevents useSEO hook from adding duplicates) -->
+    <script type="application/ld+json" data-seo="structured-data">
+    [
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "VULCA",
+        "url": "https://vulcaart.art",
+        "logo": "https://vulcaart.art/favicon.svg",
+        "description": "AI-native creation organism. Create, critique, and evolve cultural art through multi-agent pipelines with L1-L5 evaluation across 9 traditions.",
+        "sameAs": ["https://github.com/vulca-org/vulca"]
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "VULCA",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Web",
+        "description": "AI-native creation organism. Create, critique, and evolve cultural art through multi-agent AI pipelines.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD",
+          "description": "Open source under Apache 2.0"
+        }
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "Dataset",
+        "name": "VULCA-BENCH",
+        "description": "A Multicultural Vision-Language Benchmark for Culturally Grounded Art Understanding",
+        "url": "https://vulcaart.art/research",
+        "license": "https://creativecommons.org/licenses/by-nc/4.0/"
       }
-    }
+    ]
     </script>
   </head>
   <body>
