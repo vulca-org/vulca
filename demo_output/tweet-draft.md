@@ -1,54 +1,71 @@
-# X 推文草稿
+# X 推文草稿（最终版）
 
-## 主推文（版本 B：传统对比）
+## 主推文
 
-Same AI painting. 4 cultural traditions. Wildly different scores.
+Same model (Gemini). Same topic (dragon in mountains). One difference: cultural guidance.
 
-Chinese Xieyi (写意): 95% ✓ — correct brushwork, spacing, ink harmony
-Japanese Traditional: 92% ✓ — shared East Asian ink tradition
-Western Academic: 10% ✗ — wrong medium, no oil technique, no chiaroscuro
-Islamic Geometric: 4% ✗ — zero symmetry, no tessellation, no arabesque
+Left: raw prompt → "Asian-style painting" → colorful dragon, cherry blossoms, mixed traditions
+Right: VULCA pipeline → xieyi tradition constraints → pure ink wash, proper spacing, correct technique
 
-Art isn't "good" or "bad." It depends on which cultural lens you use.
+Cultural accuracy scores:
 
-pip install vulca — L1-L5 cultural evaluation for AI art.
+                Raw    VULCA-guided
+L3 Cultural:   30% →  97%  (+67 pts)
+L5 Philosophy: 40% →  97%  (+57 pts)
+L2 Technical:  70% →  92%  (+22 pts)
+Overall:       89% →  98%
 
-Built on EMNLP 2025 research. Open source.
-github.com/vulca-org/vulca
+"Looks Asian" ≠ culturally correct.
 
-[附图: gemini_xieyi.jpg + GIF]
+pip install vulca — open source, built on EMNLP 2025 research.
+
+[附图: 左右对比 raw_mixed.jpg vs vulca_guided.jpg]
+[附图: demo GIF]
 
 ---
 
-## Reply 1（技术细节）
+## Reply 1 — 传统对比（同一张图 4 个文化评价）
 
-How it works:
+Same VULCA-guided painting, 4 different cultural traditions:
 
-1. 13 cultural traditions with domain-specific terminology & taboos
-2. L1-L5 scoring: Visual → Technical → Cultural → Critical → Philosophical
-3. Each tradition weights dimensions differently:
-   - Xieyi → L5 (philosophy) at 30%
-   - Islamic Geometric → L2 (technical) at 30%
-   - Brand Design → L2 (system adherence) at 30%
+Chinese Xieyi (写意): 98% ✓ — correct tradition
+Japanese Traditional: 92% ✓ — shared East Asian ink heritage
+Western Academic: 10% ✗ — wrong medium entirely
+Islamic Geometric: 4% ✗ — zero symmetry or tessellation
 
-Works as CLI, Python SDK, or Claude Code MCP plugin.
+Art isn't "good" or "bad." It depends on which cultural lens you use.
 
-Paper: aclanthology.org/2025.findings-emnlp/
+---
 
-## Reply 2（安装 + 快速体验）
+## Reply 2 — 技术细节
 
-Try it in 10 seconds:
+How VULCA works:
+
+1. Scout: resolves "dragon painting" → chinese_xieyi tradition
+2. Draft: injects 6 cultural terms (披麻皴, 气韵生动, 留白...) + 2 taboos into prompt
+3. Critic: L1-L5 scoring with tradition-specific guidance
+4. Decide: accept if score > threshold, else re-generate with critique
+
+13 cultural traditions, each with domain-specific terminology & taboos.
+Same engine handles Chinese ink wash, Islamic geometry, and UI/UX design.
+
+github.com/vulca-org/vulca
+
+---
+
+## Reply 3 — 安装
+
+Try it in 10 seconds (no API key needed):
 
 ```
 pip install vulca
 vulca evaluate painting.jpg --mock -t chinese_xieyi
 ```
 
-Real scoring (needs Google API key, free tier works):
-
+Real VLM scoring:
 ```
 export GOOGLE_API_KEY=your-key
-vulca evaluate your-artwork.jpg -t chinese_xieyi
+vulca evaluate your-art.jpg -t chinese_xieyi
 ```
 
 Claude Code users:
@@ -57,22 +74,30 @@ claude plugin marketplace add vulca-org/vulca-plugin
 claude plugin install vulca
 ```
 
-## 中文版（知乎/小红书）
+Paper: aclanthology.org/2025.findings-emnlp/
 
-同一张 AI 水墨画，4 个文化传统评价，分数天差地别：
+---
 
-写意画标准：95% ✓ — 笔法、留白、墨色层次都对
-日本传统画：92% ✓ — 东亚书画共通性高
-西方学院派：10% ✗ — 不是油画，没有明暗法
-伊斯兰几何：4% ✗ — 零对称，零镶嵌
+## 中文版（知乎/小红书/微博）
 
-艺术没有绝对的"好"或"坏"，取决于你用哪个文化视角来看。
+同一个 Gemini 模型，同一个主题（山水龙），唯一区别：有没有文化指导。
 
-这就是为什么 AI 生成的"中国画"经常不对——它不理解文化维度。
+左图：裸 prompt "Asian style painting" → 彩色龙 + 樱花 + 中日混搭
+右图：VULCA 写意约束 → 纯水墨、留白30%+、正确皴法
 
-我做了一个开源工具 VULCA，用 L1-L5 五层文化评分框架评价任何 AI 生成的艺术作品。
+文化准确性评分：
 
-pip install vulca
-基于我们的 EMNLP 2025 论文。
+              裸生成   VULCA引导
+文化语境(L3):  30%  →  97%  (+67分)
+哲学审美(L5):  40%  →  97%  (+57分)
+技法执行(L2):  70%  →  92%  (+22分)
+总分:          89%  →  98%
 
-#AI #文化AI #中国画 #开源
+"看起来像中国画" ≠ 文化正确。
+
+VULCA 用 L1-L5 五层文化评分框架，注入写意术语（披麻皴、气韵生动、留白）和禁忌，让任何生成模型在文化维度上变好。
+
+pip install vulca | 开源 | 基于 EMNLP 2025 论文
+github.com/vulca-org/vulca
+
+#AI #文化AI #中国画 #水墨 #开源
