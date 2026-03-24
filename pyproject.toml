@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "vulca"
-version = "0.4.0"
+version = "0.5.0"
 description = "Make any image generator culturally accurate. L1-L5 scoring, actionable suggestions, and guided re-generation across 13+ traditions."
 readme = "README.md"
 license = "Apache-2.0"
