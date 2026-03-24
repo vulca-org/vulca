@@ -62,19 +62,27 @@ class StudioSession:
         return state_file
 
     async def accept(self, *, data_dir: str = "") -> dict:
-        """Accept the artwork and trigger digestion."""
+        """Accept the artwork and trigger digestion.
+
+        Digestion is fire-and-forget — failure does not block accept.
+        """
         if self.state != SessionState.DONE:
             self.state = SessionState.DONE
 
         self.save()
 
-        # Digestion
-        from vulca.digestion.store import StudioStore
-        from vulca.digestion.signals import extract_signals
+        # Digestion (non-fatal)
+        signals: dict = {}
+        try:
+            from vulca.digestion.store import StudioStore
+            from vulca.digestion.signals import extract_signals
 
-        store = StudioStore(data_dir=data_dir) if data_dir else StudioStore()
-        store.save_session(self.brief, user_feedback="accept")
-        signals = extract_signals(self.brief, user_feedback="accept")
+            store = StudioStore(data_dir=data_dir) if data_dir else StudioStore()
+            store.save_session(self.brief, user_feedback="accept")
+            signals = extract_signals(self.brief, user_feedback="accept")
+        except Exception as exc:
+            import logging
+            logging.getLogger("vulca.studio").warning("Digestion failed (non-fatal): %s", exc)
 
         return {
             "status": "accepted",

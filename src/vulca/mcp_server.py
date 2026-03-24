@@ -839,5 +839,27 @@ async def studio_select_concept(
     return _format_response(result, "json")
 
 
+async def _studio_accept_impl(project_dir: str) -> dict:
+    """Implementation for studio_accept."""
+    from vulca.studio.session import StudioSession
+    session = StudioSession.load(project_dir)
+    return await session.accept(data_dir=project_dir)
+
+
+@mcp.tool()
+async def studio_accept(
+    project_dir: str,
+) -> str:
+    """Accept the current artwork and finalize the Studio session.
+
+    Saves session data and triggers digestion (signal extraction).
+
+    Args:
+        project_dir: Path to project with brief.yaml and session.yaml
+    """
+    result = await _studio_accept_impl(project_dir)
+    return _format_response(result, "json")
+
+
 if __name__ == "__main__":
     mcp.run()

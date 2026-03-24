@@ -185,12 +185,8 @@ def apply_update(brief: Brief, result: NLUpdateResult) -> None:
     Ensures updated_at advances past created_at even when both operations
     happen within the same second (uses a brief sleep if timestamps match).
     """
-    # Guarantee updated_at differs from created_at
-    while True:
-        now = datetime.now(timezone.utc).isoformat(timespec="seconds")
-        if now != brief.created_at:
-            break
-        time.sleep(0.001)  # <1ms spin — only triggers in fast test envs
+    # Use microsecond precision to guarantee updated_at differs from created_at
+    now = datetime.now(timezone.utc).isoformat(timespec="microseconds")
 
     for field_name, value in result.field_updates.items():
         if field_name == "mood":

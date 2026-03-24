@@ -16,13 +16,21 @@ _DEFAULT_CRITERIA = {
 
 
 def generate_eval_criteria_sync(brief: Brief, *, use_llm: bool = True) -> dict[str, str]:
+    """Generate L1-L5 eval criteria. Safe to call from both sync and async contexts."""
     if use_llm:
         try:
             import asyncio
-            loop = asyncio.new_event_loop()
-            result = loop.run_until_complete(generate_eval_criteria(brief))
-            loop.close()
-            return result
+            try:
+                asyncio.get_running_loop()
+                # Already in async context — can't nest event loops, use fallback
+                logger.debug("In async context, using fallback criteria (no nested loop)")
+            except RuntimeError:
+                # No running loop — safe to create one
+                loop = asyncio.new_event_loop()
+                try:
+                    return loop.run_until_complete(generate_eval_criteria(brief))
+                finally:
+                    loop.close()
         except Exception:
             logger.debug("LLM eval criteria generation failed, using fallback")
     return _fallback_criteria(brief)
