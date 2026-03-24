@@ -90,16 +90,32 @@ class EvaluatePhase:
             logger.warning("Failed to load image %s: %s", image_path, exc)
             return {f"L{i}": 0.0 for i in range(1, 6)}
 
-        # Call VLM with Brief-enhanced prompt
+        # Call VLM with Brief-enhanced prompt (C2 fix: use Brief criteria, not default)
         try:
-            from vulca._vlm import score_image
-            tradition = brief.style_mix[0].tradition if brief.style_mix else "default"
-            result = await score_image(
-                img_b64=img_b64, mime=mime,
-                subject=brief.intent, tradition=tradition,
+            import os
+            import litellm
+            from vulca._parse import parse_llm_json
+
+            system_prompt = self.build_eval_prompt(brief)
+            user_parts = [
+                {"type": "image_url", "image_url": {"url": f"data:{mime};base64,{img_b64}"}},
+                {"type": "text", "text": f"Evaluate this artwork. Subject: {brief.intent}"},
+            ]
+
+            resp = await litellm.acompletion(
+                model=os.environ.get("VULCA_VLM_MODEL", "gemini/gemini-2.5-flash"),
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_parts},
+                ],
+                max_tokens=4096,
+                temperature=0.1,
                 api_key=api_key,
+                timeout=55,
             )
-            return {f"L{i}": result.get(f"L{i}", 0.0) for i in range(1, 6)}
+            text = resp.choices[0].message.content.strip()
+            data = parse_llm_json(text)
+            return {f"L{i}": max(0.0, min(1.0, float(data.get(f"L{i}", 0.0)))) for i in range(1, 6)}
         except Exception as exc:
             logger.warning("VLM evaluation failed: %s", exc)
             return {f"L{i}": 0.0 for i in range(1, 6)}

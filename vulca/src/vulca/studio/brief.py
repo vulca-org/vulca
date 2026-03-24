@@ -93,13 +93,29 @@ class Brief:
     def load(cls, project_dir: str | Path) -> Brief:
         return cls.from_yaml((Path(project_dir) / "brief.yaml").read_text(encoding="utf-8"))
 
+    # Known Brief fields for validation
+    _KNOWN_FIELDS = {
+        "session_id", "version", "created_at", "updated_at",
+        "intent", "mood", "style_mix", "references", "user_sketch",
+        "concept_candidates", "selected_concept", "concept_notes",
+        "composition", "palette", "elements",
+        "must_have", "must_avoid", "eval_criteria",
+        "generations", "updates",
+    }
+
     def update_field(self, field_path: str, value: Any) -> None:
+        """Update a field by dotted path. Validates field exists."""
         now = datetime.now(timezone.utc).isoformat(timespec="seconds")
         self.updated_at = now
         parts = field_path.split(".")
+        if parts[0] not in self._KNOWN_FIELDS:
+            raise ValueError(f"Unknown Brief field: {parts[0]}")
         if len(parts) == 1:
             setattr(self, parts[0], value)
         elif len(parts) == 2:
-            setattr(getattr(self, parts[0]), parts[1], value)
+            parent = getattr(self, parts[0])
+            if not hasattr(parent, parts[1]):
+                raise ValueError(f"Unknown nested field: {field_path}")
+            setattr(parent, parts[1], value)
         self.updates.append(BriefUpdate(timestamp=now, instruction=f"set {field_path} = {value!r}",
                                         fields_changed=[field_path]))
