@@ -20,7 +20,7 @@ export interface PageSEO {
 
 export const DEFAULT_SEO: PageSEO = {
   title: 'VULCA - AI-Native Creation Organism',
-  description: 'Create, critique, and evolve cultural art through multi-agent AI pipelines. L1-L5 evaluation across 9 cultural traditions.',
+  description: 'Create, critique, and evolve cultural art through multi-agent AI pipelines. L1-L5 evaluation across 13 cultural traditions.',
   keywords: ['AI evaluation', 'cultural AI', 'VLM benchmark', 'art understanding', 'VULCA'],
   ogImage: '/og-image.png',
 };
@@ -28,7 +28,7 @@ export const DEFAULT_SEO: PageSEO = {
 export const PAGE_SEO: Record<string, PageSEO> = {
   '/': {
     title: 'VULCA - AI-Native Creation Organism',
-    description: 'Create, critique, and evolve cultural art through multi-agent AI pipelines. L1-L5 evaluation across 9 cultural traditions.',
+    description: 'Create, critique, and evolve cultural art through multi-agent AI pipelines. L1-L5 evaluation across 13 cultural traditions.',
     keywords: ['AI creation', 'cultural AI', 'art creation', 'VULCA', 'AI pipeline'],
   },
   '/canvas': {
@@ -134,7 +134,7 @@ export function getOrganizationStructuredData(): object {
     name: 'VULCA',
     url: 'https://vulcaart.art',
     logo: 'https://vulcaart.art/favicon.svg',
-    description: 'AI-native creation organism. Create, critique, and evolve cultural art through multi-agent pipelines with L1-L5 evaluation across 9 traditions.',
+    description: 'AI-native creation organism. Create, critique, and evolve cultural art through multi-agent pipelines with L1-L5 evaluation across 13 traditions.',
     sameAs: [
       'https://github.com/vulca-org/vulca',
     ],

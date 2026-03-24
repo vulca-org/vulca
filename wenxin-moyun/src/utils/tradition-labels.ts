@@ -1,10 +1,10 @@
 /**
  * Shared tradition display labels used across Gallery, Canvas, and Modal.
- * Single source of truth — covers all 9 YAML traditions + legacy/alias names.
+ * Single source of truth — covers all 13 YAML traditions + legacy/alias names.
  */
 
 export const TRADITION_LABELS: Record<string, string> = {
-  // 9 canonical traditions (from vulca/cultural/ YAML configs)
+  // 13 canonical traditions (from vulca/cultural/ YAML configs)
   chinese_xieyi: 'Chinese Xieyi',
   chinese_gongbi: 'Chinese Gongbi',
   islamic_geometric: 'Islamic Geometric',

@@ -81,7 +81,7 @@ All image providers implement `AbstractProvider` and register via `@ProviderRegi
 
 Adding a provider is zero-config beyond the class definition — the `@ProviderRegistry.register("name")` decorator handles discovery. No orchestrator changes needed.
 
-### Cultural Tradition System (9 Traditions)
+### Cultural Tradition System (13 Traditions)
 
 Each tradition is a single YAML file in `data/traditions/`. Loaded at startup, hot-reloadable via `reload_traditions()`.
 

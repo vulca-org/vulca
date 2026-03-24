@@ -1,5 +1,5 @@
 /**
- * TraditionWeightGrid — 9 traditions × 5 dimensions heatmap.
+ * TraditionWeightGrid — 13 traditions × 5 dimensions heatmap.
  * Embedded at the bottom of Critic's NodeParamPanel.
  *
  * Shows how the cultural router adjusts L1-L5 weights per tradition.

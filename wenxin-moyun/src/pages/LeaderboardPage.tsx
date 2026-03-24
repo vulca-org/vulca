@@ -317,7 +317,7 @@ export default function LeaderboardPage() {
           <div>
             <h3 className="text-2xl font-bold mb-2">Try Full L1-L5 Evaluation</h3>
             <p className="text-slate-100">
-              Run comprehensive cultural evaluation with L1-L5 dimensions across 9 cultural traditions in Canvas.
+              Run comprehensive cultural evaluation with L1-L5 dimensions across 13 cultural traditions in Canvas.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3">

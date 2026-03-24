@@ -132,7 +132,7 @@ export default function ModelDetailPage() {
                     VULCA Evaluation Report
                   </h4>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    L1-L5 analysis across 9 cultural traditions
+                    L1-L5 analysis across 13 cultural traditions
                   </p>
                 </div>
               </div>
