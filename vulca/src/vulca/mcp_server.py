@@ -687,5 +687,179 @@ async def get_evolution_status(
     return result
 
 
+# ── Studio Tools ────────────────────────────────────────────────────
+
+
+def _format_response(data: dict, fmt: str = "json") -> str:
+    """Format a dict as JSON string."""
+    import json
+    return json.dumps(data, ensure_ascii=False, indent=2)
+
+
+async def _studio_create_brief_impl(
+    intent: str, mood: str = "", project_dir: str = "",
+) -> dict:
+    """Implementation for studio_create_brief."""
+    from pathlib import Path
+    from vulca.studio.brief import Brief
+    from vulca.studio.phases.intent import IntentPhase
+
+    b = Brief.new(intent, mood=mood)
+    phase = IntentPhase()
+    phase.parse_intent(b)
+
+    if project_dir:
+        b.save(Path(project_dir))
+
+    return {
+        "session_id": b.session_id,
+        "intent": b.intent,
+        "mood": b.mood,
+        "style_mix": [{"tradition": s.tradition, "tag": s.tag, "weight": s.weight} for s in b.style_mix],
+        "project_dir": project_dir,
+    }
+
+
+async def _studio_update_brief_impl(
+    project_dir: str, instruction: str,
+) -> dict:
+    """Implementation for studio_update_brief."""
+    from pathlib import Path
+    from vulca.studio.brief import Brief
+    from vulca.studio.nl_update import parse_nl_update, apply_update
+
+    b = Brief.load(Path(project_dir))
+    result = parse_nl_update(instruction, b)
+    apply_update(b, result)
+    b.save(Path(project_dir))
+
+    return {
+        "rollback_to": result.rollback_to.value,
+        "field_updates": {k: str(v) for k, v in result.field_updates.items()},
+        "explanation": result.explanation,
+    }
+
+
+async def _studio_generate_concepts_impl(
+    project_dir: str, count: int = 4, provider: str = "mock",
+) -> dict:
+    """Implementation for studio_generate_concepts."""
+    from pathlib import Path
+    from vulca.studio.brief import Brief
+    from vulca.studio.phases.concept import ConceptPhase
+
+    b = Brief.load(Path(project_dir))
+    phase = ConceptPhase()
+    paths = await phase.generate_concepts(b, count=count, provider=provider, project_dir=project_dir)
+    b.save(Path(project_dir))
+
+    return {"concepts": paths, "count": len(paths)}
+
+
+async def _studio_select_concept_impl(
+    project_dir: str, index: int, notes: str = "",
+) -> dict:
+    """Implementation for studio_select_concept."""
+    from pathlib import Path
+    from vulca.studio.brief import Brief
+    from vulca.studio.phases.concept import ConceptPhase
+
+    b = Brief.load(Path(project_dir))
+    phase = ConceptPhase()
+    phase.select(b, index=index - 1, notes=notes)  # User-facing 1-based
+    b.save(Path(project_dir))
+
+    return {"selected": b.selected_concept, "notes": b.concept_notes}
+
+
+# Register MCP tools
+@mcp.tool()
+async def studio_create_brief(
+    intent: str,
+    mood: str = "",
+    project_dir: str = "",
+) -> str:
+    """Create a new Studio creative brief.
+
+    Args:
+        intent: Creative vision description (e.g., "赛博朋克水墨山水")
+        mood: Emotional target (e.g., "epic-solitary", "serene", "mystical")
+        project_dir: Directory to save brief (optional)
+    """
+    result = await _studio_create_brief_impl(intent, mood, project_dir)
+    return _format_response(result, "json")
+
+
+@mcp.tool()
+async def studio_update_brief(
+    project_dir: str,
+    instruction: str,
+) -> str:
+    """Update a Brief with natural language instruction.
+
+    Args:
+        project_dir: Path to project directory containing brief.yaml
+        instruction: Natural language update (e.g., "把山改成更高更陡的")
+    """
+    result = await _studio_update_brief_impl(project_dir, instruction)
+    return _format_response(result, "json")
+
+
+@mcp.tool()
+async def studio_generate_concepts(
+    project_dir: str,
+    count: int = 4,
+    provider: str = "mock",
+) -> str:
+    """Generate concept design images from a Brief.
+
+    Args:
+        project_dir: Path to project with brief.yaml
+        count: Number of concepts (default 4)
+        provider: Image provider (mock, gemini, openai)
+    """
+    result = await _studio_generate_concepts_impl(project_dir, count, provider)
+    return _format_response(result, "json")
+
+
+@mcp.tool()
+async def studio_select_concept(
+    project_dir: str,
+    index: int,
+    notes: str = "",
+) -> str:
+    """Select a concept and optionally add refinement notes.
+
+    Args:
+        project_dir: Path to project with brief.yaml
+        index: Concept number to select (1-based)
+        notes: Optional refinement notes (e.g., "mountain taller")
+    """
+    result = await _studio_select_concept_impl(project_dir, index, notes)
+    return _format_response(result, "json")
+
+
+async def _studio_accept_impl(project_dir: str) -> dict:
+    """Implementation for studio_accept."""
+    from vulca.studio.session import StudioSession
+    session = StudioSession.load(project_dir)
+    return await session.accept(data_dir=project_dir)
+
+
+@mcp.tool()
+async def studio_accept(
+    project_dir: str,
+) -> str:
+    """Accept the current artwork and finalize the Studio session.
+
+    Saves session data and triggers digestion (signal extraction).
+
+    Args:
+        project_dir: Path to project with brief.yaml and session.yaml
+    """
+    result = await _studio_accept_impl(project_dir)
+    return _format_response(result, "json")
+
+
 if __name__ == "__main__":
     mcp.run()
