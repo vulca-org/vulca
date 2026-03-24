@@ -648,3 +648,152 @@ def _cmd_evolution(args: argparse.Namespace) -> None:
 
 if __name__ == "__main__":
     main()
+
+
+# ---------------------------------------------------------------------------
+# Click-based CLI group (used by CliRunner in tests and as alternative entry)
+# ---------------------------------------------------------------------------
+
+try:
+    import click as _click
+
+    @_click.group()
+    def cli() -> None:
+        """VULCA -- AI-native cultural art advisor."""
+
+    @cli.command("brief")
+    @_click.argument("project_dir")
+    @_click.option("--intent", "-i", default="", help="Creative intent (creates new Brief if provided)")
+    @_click.option("--mood", "-m", default="", help="Mood/atmosphere")
+    def brief_cmd(project_dir: str, intent: str, mood: str) -> None:
+        """Create or show a Studio Brief."""
+        from pathlib import Path
+        from vulca.studio.brief import Brief
+
+        project = Path(project_dir)
+        brief_file = project / "brief.yaml"
+
+        if intent:
+            b = Brief.new(intent, mood=mood)
+            filepath = b.save(project)
+            _click.echo(f"Brief created: {filepath}")
+            _click.echo(f"  Intent: {b.intent}")
+            _click.echo(f"  Session: {b.session_id}")
+            if b.mood:
+                _click.echo(f"  Mood: {b.mood}")
+        elif brief_file.exists():
+            b = Brief.load(project)
+            _click.echo(f"VULCA Brief -- {b.session_id}")
+            _click.echo(f"  Intent: {b.intent}")
+            if b.mood:
+                _click.echo(f"  Mood: {b.mood}")
+            if b.style_mix:
+                styles = ", ".join(s.tradition or s.tag for s in b.style_mix)
+                _click.echo(f"  Style: {styles}")
+            if b.selected_concept:
+                _click.echo(f"  Concept: {b.selected_concept}")
+            if b.generations:
+                _click.echo(f"  Generations: {len(b.generations)}")
+        else:
+            _click.echo(
+                f"No brief found at {project}. Use --intent to create one.", err=True
+            )
+            raise SystemExit(1)
+
+    @cli.command("brief-update")
+    @_click.argument("project_dir")
+    @_click.argument("instruction")
+    def brief_update_cmd(project_dir: str, instruction: str) -> None:
+        """Update a Brief with natural language instruction."""
+        from pathlib import Path
+        from vulca.studio.brief import Brief
+        from vulca.studio.nl_update import apply_update, parse_nl_update
+
+        b = Brief.load(Path(project_dir))
+        result = parse_nl_update(instruction, b)
+        apply_update(b, result)
+        b.save(Path(project_dir))
+
+        _click.echo(f"Brief updated (rollback to: {result.rollback_to.value})")
+        _click.echo(f"  Changes: {', '.join(result.field_updates.keys())}")
+        _click.echo(f"  {result.explanation}")
+
+    @cli.command("concept")
+    @_click.argument("project_dir")
+    @_click.option("--count", "-n", default=4, help="Number of concepts to generate")
+    @_click.option("--mock", "use_mock", is_flag=True, help="Use mock provider")
+    @_click.option("--provider", "-p", default="mock", help="Image provider")
+    @_click.option("--select", "-s", type=int, default=None, help="Select concept by index (1-based)")
+    @_click.option("--notes", default="", help="Notes for selected concept")
+    def concept_cmd(
+        project_dir: str,
+        count: int,
+        use_mock: bool,
+        provider: str,
+        select: int | None,
+        notes: str,
+    ) -> None:
+        """Generate or select concept designs."""
+        import asyncio
+        from pathlib import Path
+        from vulca.studio.brief import Brief
+        from vulca.studio.phases.concept import ConceptPhase
+
+        b = Brief.load(Path(project_dir))
+        phase = ConceptPhase()
+
+        if select is not None:
+            phase.select(b, index=select - 1, notes=notes)
+            b.save(Path(project_dir))
+            _click.echo(f"Selected concept {select}: {b.selected_concept}")
+            return
+
+        if use_mock:
+            provider = "mock"
+
+        loop = asyncio.new_event_loop()
+        paths = loop.run_until_complete(
+            phase.generate_concepts(b, count=count, provider=provider, project_dir=project_dir)
+        )
+        loop.close()
+        b.save(Path(project_dir))
+
+        _click.echo(f"Generated {len(paths)} concepts:")
+        for i, p in enumerate(paths, 1):
+            _click.echo(f"  {i}. {p}")
+        _click.echo(f"\nSelect with: vulca concept {project_dir} --select N")
+
+    @cli.command("studio")
+    @_click.argument("intent_or_dir")
+    @_click.option("--provider", "-p", default="mock", help="Image provider")
+    @_click.option("--count", "-n", default=4, help="Number of concepts")
+    @_click.option("--resume", is_flag=True, help="Resume from saved session")
+    @_click.option("--api-key", default="", help="API key")
+    def studio_cmd(intent_or_dir: str, provider: str, count: int, resume: bool, api_key: str) -> None:
+        """Run interactive VULCA Studio creative session."""
+        from vulca.studio.interactive import run_studio
+
+        if resume:
+            from vulca.studio.session import StudioSession
+            session = StudioSession.load(intent_or_dir)
+            _click.echo(f"Resuming session {session.session_id}...")
+            result = run_studio(
+                session.brief.intent,
+                project_dir=intent_or_dir,
+                provider=provider,
+                concept_count=count,
+                api_key=api_key,
+            )
+        else:
+            result = run_studio(
+                intent_or_dir,
+                provider=provider,
+                concept_count=count,
+                api_key=api_key,
+            )
+
+        if result:
+            _click.echo(f"\nSession {result.get('session_id', '?')}: {result.get('status', 'unknown')}")
+
+except ImportError:
+    pass  # click not installed; click-based CLI unavailable
