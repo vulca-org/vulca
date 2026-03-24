@@ -61,6 +61,40 @@ class StudioSession:
                       allow_unicode=True), encoding="utf-8")
         return state_file
 
+    async def accept(self, *, data_dir: str = "") -> dict:
+        """Accept the artwork and trigger digestion."""
+        if self.state != SessionState.DONE:
+            self.state = SessionState.DONE
+
+        self.save()
+
+        # Digestion
+        from vulca.digestion.store import StudioStore
+        from vulca.digestion.signals import extract_signals
+
+        store = StudioStore(data_dir=data_dir) if data_dir else StudioStore()
+        store.save_session(self.brief, user_feedback="accept")
+        signals = extract_signals(self.brief, user_feedback="accept")
+
+        return {
+            "status": "accepted",
+            "session_id": self.session_id,
+            "signals": signals,
+        }
+
+    async def on_complete(self, *, data_dir: str = "") -> None:
+        """Trigger digestion after session completion."""
+        from vulca.digestion.store import StudioStore
+        from vulca.digestion.signals import extract_signals
+        store = StudioStore(data_dir=data_dir) if data_dir else StudioStore()
+        store.save_session(self.brief, user_feedback="complete")
+
+    def on_complete_sync(self, *, data_dir: str = "") -> None:
+        """Synchronous version of on_complete for non-async contexts."""
+        from vulca.digestion.store import StudioStore
+        store = StudioStore(data_dir=data_dir) if data_dir else StudioStore()
+        store.save_session(self.brief, user_feedback="complete")
+
     @classmethod
     def load(cls, project_dir: str | Path) -> StudioSession:
         pdir = Path(project_dir)
