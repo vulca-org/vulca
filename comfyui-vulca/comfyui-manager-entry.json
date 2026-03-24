@@ -1,0 +1,9 @@
+{
+    "title": "ComfyUI-VULCA",
+    "reference": "https://github.com/vulca-org/comfyui-vulca",
+    "files": ["https://github.com/vulca-org/comfyui-vulca"],
+    "install_type": "git-clone",
+    "description": "Cultural art evaluation nodes — L1-L5 scoring across 15+ traditions, Brief-driven creative workflows, and natural language feedback. Evaluate AI-generated art for cultural accuracy and get actionable improvement suggestions.",
+    "author": "yhryzy",
+    "tags": ["evaluation", "cultural", "art", "L1-L5", "creative"]
+}
