@@ -145,20 +145,28 @@ class StudioSession:
     async def intent(self, user_input: str, sketch: str = "") -> Brief
     async def scout(self, queries: list[str] = []) -> list[Reference]
     async def concept(self, count: int = 4) -> list[Path]
+    async def select_concept(self, index: int, notes: str = "") -> Brief  # C1 fix
     async def generate(self, provider: str = "gemini") -> Path
     async def evaluate(self) -> EvalResult
     async def update(self, instruction: str) -> Brief  # NL update, any phase
+    async def accept(self) -> dict  # Finalize session, trigger digestion
 
     # Lifecycle
     def save(self) -> Path             # Serialize Brief + state to YAML
     @classmethod
-    def load(cls, path: Path) -> "StudioSession"
+    def load(cls, path: Path) -> "StudioSession"  # Handles partial states (S4)
     async def on_complete(self)        # Trigger digestion
 ```
 
-### Reference
+### Supporting Types (I1 fix)
 
 ```python
+@dataclass
+class StyleWeight:
+    tradition: str = ""      # Predefined tradition name (e.g., "chinese_xieyi")
+    tag: str = ""            # Free-form style tag (e.g., "cyberpunk")
+    weight: float = 0.5      # 0.0-1.0, weights in style_mix should sum to 1.0
+
 @dataclass
 class Reference:
     path: str                # Local file path
@@ -167,6 +175,104 @@ class Reference:
     prompt: str = ""         # Generation prompt (if source=generate)
     url: str = ""            # Original URL (if source=search)
     note: str = ""           # User annotation
+
+@dataclass
+class Composition:
+    layout: str = ""         # e.g., "upper 2/3 mountains, lower 1/3 water reflection"
+    focal_point: str = ""    # e.g., "pavilion on cliff"
+    aspect_ratio: str = "1:1"  # "1:1" | "4:3" | "16:9" | "3:4" | "9:16"
+    negative_space: str = "" # e.g., "20%+ blank space on right"
+
+@dataclass
+class Palette:
+    primary: list[str] = field(default_factory=list)   # Hex colors ["#1a1a2e"]
+    accent: list[str] = field(default_factory=list)     # Highlight colors ["#00f5d4"]
+    mood: str = ""           # e.g., "cold dark base + bright accents"
+
+@dataclass
+class Element:
+    name: str                # e.g., "hemp-fiber texture stroke"
+    category: str = ""       # "technique" | "effect" | "texture" | "symbol" | "overlay"
+    note: str = ""           # Optional description
+
+@dataclass
+class GenerationRound:
+    round_num: int
+    image_path: str
+    scores: dict[str, float] = field(default_factory=dict)  # L1-L5
+    suggestions: dict[str, str] = field(default_factory=dict)
+    feedback: str = ""       # User's NL feedback for this round
+
+@dataclass
+class BriefUpdate:
+    timestamp: str
+    instruction: str         # Original NL instruction
+    fields_changed: list[str] = field(default_factory=list)
+    rollback_to: str = ""    # Phase to rollback to
+```
+
+### Eval Criteria Generation (C2 fix)
+
+When Phase 2 completes (concept selected), the system auto-generates `Brief.eval_criteria`:
+
+```python
+async def generate_eval_criteria(brief: Brief) -> dict[str, str]:
+    """Convert Brief content into per-dimension L1-L5 evaluation criteria.
+
+    Uses the same VLM model as scoring (VULCA_VLM_MODEL env var,
+    default gemini/gemini-2.5-flash via litellm).
+
+    Fallback: If LLM call fails, derive criteria from Brief.style_mix
+    traditions' YAML definitions (get_tradition() for each tradition in mix).
+    """
+    prompt = f"""Based on this creative brief, generate specific evaluation criteria
+for each of the 5 dimensions (L1-L5). Each criterion should be concrete and
+measurable against the brief's intent.
+
+Brief:
+  Intent: {brief.intent}
+  Mood: {brief.mood}
+  Style mix: {brief.style_mix}
+  Composition: {brief.composition}
+  Palette: {brief.palette}
+  Elements: {brief.elements}
+  Must have: {brief.must_have}
+  Must avoid: {brief.must_avoid}
+
+Respond with JSON:
+{{
+  "L1": "<Visual Perception criterion specific to this brief>",
+  "L2": "<Technical Execution criterion>",
+  "L3": "<Cultural/Style Context criterion>",
+  "L4": "<Interpretation/Constraint criterion>",
+  "L5": "<Aesthetic/Emotional criterion>"
+}}"""
+
+    # Call via litellm (same model as VLM scoring)
+    # On failure: fallback to YAML tradition criteria for each style_mix tradition
+    # On fallback: merge criteria from multiple traditions weighted by style_mix.weight
+```
+
+### NL Update Schema (I2 fix)
+
+```python
+@dataclass
+class NLUpdateResult:
+    """Structured output from NL instruction parsing."""
+    field_updates: dict[str, Any]    # Brief field path → new value
+    rollback_to: SessionState        # Determined by rules below
+    confidence: float                # 0-1, if < 0.5 ask user to clarify
+    explanation: str                 # Why this interpretation
+
+# Rollback determination rules (deterministic, not LLM-decided):
+# - If any of {intent, mood, style_mix} changed → rollback to INTENT
+# - If any of {composition, palette, elements, must_have, must_avoid} changed → rollback to CONCEPT
+# - If only eval_criteria changed → rollback to EVALUATE
+# - If only generation params changed (provider, etc.) → rollback to GENERATE
+# - LLM only parses WHICH fields change; rollback phase is rule-based
+
+# Validation: parsed field names must exist on Brief dataclass.
+# Unknown fields → ask user for clarification, do not apply.
 ```
 
 ## Phase Details
@@ -190,11 +296,21 @@ Process:
 **ScoutPhase** (runs in parallel with intent):
 
 Process:
-1. Extract search terms from intent
-2. Web search for reference images (image search API)
-3. Generate AI reference images (mood boards, style samples, palette studies)
+1. Extract search terms from intent (LLM call)
+2. Generate AI reference images via existing provider (mood boards, style samples, palette studies)
+3. Web search for reference images (optional, requires API key)
 4. Download and save to project directory
 5. Add to Brief.references
+
+**Scout dependency strategy (C3 fix)**:
+- **V1 (initial)**: Scout supports `source: "upload"` and `source: "generate"` only.
+  Generation uses existing ImageProvider (Gemini/mock) with a reference-style prompt.
+  No new dependencies. Web search is deferred.
+- **V2 (later)**: Add web image search via `httpx` (already a dependency) + a search API.
+  Candidate APIs: Google Custom Search (free tier 100/day), or SerpAPI, or Brave Search.
+  Added as optional dependency: `pip install vulca[search]`.
+- **Failure handling**: Scout is non-blocking. If generation fails, Brief gets empty references.
+  IntentPhase continues regardless. User can always `vulca brief upload` manually.
 
 **Key**: Scout starts immediately when user provides intent. By the time intent questions are answered, references are ready.
 
@@ -383,27 +499,39 @@ session.save()
 restored = StudioSession.load("./my-project")
 ```
 
-### MCP Tools
+### MCP Tools (I3 fix: backward compatible)
+
+Existing tools remain unchanged. New Studio tools are ADDED, not replaced:
 
 ```
-create_brief(intent, mood?, sketch_path?, references?) → brief_id
-update_brief(brief_id, instruction) → updated_brief
-search_references(brief_id, query, count?) → [reference_paths]
-generate_concepts(brief_id, count?) → [concept_paths]
-select_concept(brief_id, index, notes?) → updated_brief
-create_artwork(brief_id, provider?) → image_path       # Enhanced existing
-evaluate_artwork(image_path, brief_id) → EvalResult     # Enhanced existing
-accept_artwork(brief_id) → session_summary
+# NEW Studio tools
+studio_create_brief(intent, mood?, sketch_path?, references?) → brief_id
+studio_update_brief(brief_id, instruction) → updated_brief
+studio_search_references(brief_id, query, count?) → [reference_paths]
+studio_generate_concepts(brief_id, count?) → [concept_paths]
+studio_select_concept(brief_id, index, notes?) → updated_brief
+studio_accept(brief_id) → session_summary
+
+# EXISTING tools — enhanced with optional brief_id parameter
+create_artwork(intent, tradition, ..., brief_id?) → result    # brief_id optional
+evaluate_artwork(image_path, tradition, ..., brief_id?) → EvalResult  # brief_id optional
+
+# When brief_id is provided, the existing tools use Brief-based criteria.
+# When brief_id is omitted, they work exactly as before (backward compatible).
 ```
 
-### ComfyUI Nodes
+### ComfyUI Nodes (I4 fix: preliminary)
+
+> **Note**: ComfyUI node specifications are preliminary. Detailed input/output
+> socket types and ComfyUI-specific data flow will be defined during
+> implementation step 11, following ComfyUI custom node conventions.
 
 ```
-VULCABriefNode:       text_intent → brief_yaml
-VULCAConceptNode:     brief + [sketch] → 4 concept images
-VULCAGenerateNode:    brief + concept → image  (wraps existing generate)
-VULCAEvaluateNode:    image + brief → scores + suggestions
-VULCAUpdateNode:      brief + NL_instruction → updated_brief
+VULCABriefNode:       STRING (intent) → STRING (brief_yaml path)
+VULCAConceptNode:     STRING (brief_yaml) + IMAGE? (sketch) → IMAGE[] (4 concepts)
+VULCAGenerateNode:    STRING (brief_yaml) + IMAGE (concept) → IMAGE (final)
+VULCAEvaluateNode:    IMAGE (artwork) + STRING (brief_yaml) → STRING (scores JSON)
+VULCAUpdateNode:      STRING (brief_yaml) + STRING (instruction) → STRING (updated brief_yaml)
 ```
 
 ## File Structure
@@ -626,6 +754,22 @@ test_mcp_studio.py
   - test_mcp_update_brief
   - test_mcp_generate_concepts
   - test_mcp_evaluate_with_brief
+```
+
+### Phase 8: Integration + Backward Compatibility (I5 fix)
+```
+test_studio_integration.py
+  - test_full_session_intent_to_accept (end-to-end with mocks)
+  - test_session_save_load_resume (file I/O roundtrip)
+  - test_session_nl_update_mid_flow (update during concept phase)
+  - test_session_with_user_sketch_input
+
+test_backward_compat.py
+  - test_existing_evaluate_unchanged (same API signature, same result)
+  - test_existing_create_unchanged (same API signature, same result)
+  - test_existing_mcp_create_artwork_no_brief (brief_id omitted)
+  - test_existing_mcp_evaluate_artwork_no_brief
+  - test_existing_cli_evaluate_no_brief
 ```
 
 ## Implementation Order
