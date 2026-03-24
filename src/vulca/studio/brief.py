@@ -56,7 +56,10 @@ class Brief:
 
     @classmethod
     def from_yaml(cls, yaml_str: str) -> Brief:
-        return cls._from_dict(yaml.safe_load(yaml_str))
+        data = yaml.safe_load(yaml_str)
+        if not isinstance(data, dict):
+            return cls()  # Empty or invalid YAML → return default Brief
+        return cls._from_dict(data)
 
     @classmethod
     def _from_dict(cls, data: dict[str, Any]) -> Brief:
