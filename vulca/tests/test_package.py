@@ -96,16 +96,26 @@ def test_version_module():
 
 
 def test_dunder_all():
-    """__all__ should list every public name."""
+    """__all__ should list every public name.
+
+    Studio Pipeline V2 names (Brief, SessionState, StudioSession) are
+    included when the optional vulca.studio module is installed.
+    """
     import vulca
-    expected = {
+    required = {
         "__version__", "evaluate", "aevaluate",
         "create", "acreate", "session", "asession",
         "traditions", "get_weights",
         "EvalResult", "CreateResult", "SkillResult",
         "ImageProvider", "VLMProvider", "ImageResult", "L1L5Scores",
     }
-    assert set(vulca.__all__) == expected
+    studio_names = {"Brief", "SessionState", "StudioSession"}
+    actual = set(vulca.__all__)
+    # Core names must always be present
+    assert required <= actual, f"Missing from __all__: {required - actual}"
+    # Only studio names are allowed as additions
+    extra = actual - required
+    assert extra <= studio_names, f"Unexpected names in __all__: {extra - studio_names}"
 
 
 # -- Type Tests ------------------------------------------------------------

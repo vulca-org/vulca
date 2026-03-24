@@ -2,6 +2,10 @@
 
 Create, critique, and evolve cultural art through multi-agent AI pipelines.
 
+v0.5.0 adds Studio Pipeline V2: a Brief-driven creative collaboration system
+with 5 phases (Intent → Concept → Generate → Evaluate → Refine), natural
+language Brief updates, and CLI/MCP/ComfyUI integration.
+
 Usage::
 
     import vulca
@@ -20,6 +24,11 @@ Usage::
 
     # Async
     result = await vulca.aevaluate("painting.jpg", intent="...")
+
+    # Studio Pipeline V2
+    from vulca.studio import Brief, SessionState, StudioSession
+    brief = Brief.from_intent("水墨山水，强调留白")
+    session = StudioSession(brief=brief)
 """
 
 from vulca._version import __version__
@@ -28,6 +37,13 @@ from vulca.evaluate import aevaluate, evaluate
 from vulca.providers.base import ImageProvider, ImageResult, L1L5Scores, VLMProvider
 from vulca.session import asession, session
 from vulca.types import CreateResult, EvalResult, SkillResult
+
+# Studio Pipeline V2 (v0.5.0) — conditional import, module ships separately
+try:
+    from vulca.studio import Brief, SessionState, StudioSession
+    _STUDIO_AVAILABLE = True
+except ImportError:
+    _STUDIO_AVAILABLE = False
 
 
 def traditions() -> list[str]:
@@ -67,3 +83,7 @@ __all__ = [
     "ImageResult",
     "L1L5Scores",
 ]
+
+# Studio Pipeline V2 (v0.5.0) — extend __all__ when module is available
+if _STUDIO_AVAILABLE:
+    __all__ += ["Brief", "SessionState", "StudioSession"]
