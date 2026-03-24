@@ -50,6 +50,7 @@ class Engine:
         subject: str = "",
         skills: list[str] | None = None,
         include_evidence: bool = False,  # noqa: ARG002 — reserved, not yet implemented
+        mode: str = "strict",
     ) -> EvalResult:
         # Step 1: Load image (skip for mock)
         if not self.mock:
@@ -84,12 +85,16 @@ class Engine:
                 api_key=self.api_key,
             )
 
-        # Step 5: Compute weighted total
+        # Step 5: Compute weighted total + extract suggestions/deviations
         dimensions = {}
         rationales = {}
+        suggestions = {}
+        deviation_types = {}
         for level in ("L1", "L2", "L3", "L4", "L5"):
             dimensions[level] = vlm_result.get(level, 0.0)
             rationales[level] = vlm_result.get(f"{level}_rationale", "")
+            suggestions[level] = vlm_result.get(f"{level}_suggestion", "")
+            deviation_types[level] = vlm_result.get(f"{level}_deviation_type", "traditional")
 
         weighted_total = sum(
             dimensions.get(f"L{i}", 0) * weights.get(f"L{i}", 0.2)
@@ -114,9 +119,9 @@ class Engine:
         risk_flags = vlm_result.get("risk_flags", [])
         risk_level = "high" if risk_flags else ("medium" if weighted_total < 0.5 else "low")
 
-        recommendations = _build_recommendations(dimensions, weights, resolved_tradition)
+        recommendations = _build_recommendations(dimensions, weights, resolved_tradition, suggestions)
 
-        summary = _build_summary(weighted_total, resolved_tradition, dimensions)
+        summary = _build_summary(weighted_total, resolved_tradition, dimensions, mode)
 
         cost = _estimate_cost(skills or [])
 
@@ -129,6 +134,9 @@ class Engine:
             risk_level=risk_level,
             risk_flags=risk_flags,
             recommendations=recommendations,
+            suggestions=suggestions,
+            deviation_types=deviation_types,
+            eval_mode=mode,
             skills=skill_results,
             intent_confidence=intent_confidence,
             cost_usd=cost,
@@ -136,9 +144,8 @@ class Engine:
         )
 
 
-def _build_summary(score: float, tradition: str, dims: dict) -> str:
+def _build_summary(score: float, tradition: str, dims: dict, mode: str = "strict") -> str:
     """Generate a human-readable summary."""
-    quality = "excellent" if score >= 0.8 else "good" if score >= 0.6 else "fair" if score >= 0.4 else "needs improvement"
     tradition_label = tradition.replace("_", " ").title()
 
     strongest = max(dims, key=lambda k: dims.get(k, 0)) if dims else "L1"
@@ -146,6 +153,15 @@ def _build_summary(score: float, tradition: str, dims: dict) -> str:
 
     level_names = {"L1": "Visual Perception", "L2": "Technical Execution", "L3": "Cultural Context", "L4": "Critical Interpretation", "L5": "Philosophical Aesthetics"}
 
+    if mode == "reference":
+        alignment = "high" if score >= 0.8 else "moderate" if score >= 0.5 else "low"
+        return (
+            f"{alignment.title()} alignment ({score:.0%}) with {tradition_label} tradition. "
+            f"Closest: {level_names.get(strongest, strongest)} ({dims.get(strongest, 0):.0%}). "
+            f"Most divergent: {level_names.get(weakest, weakest)} ({dims.get(weakest, 0):.0%})."
+        )
+
+    quality = "excellent" if score >= 0.8 else "good" if score >= 0.6 else "fair" if score >= 0.4 else "needs improvement"
     return (
         f"Overall {quality} ({score:.0%}) under {tradition_label} tradition. "
         f"Strongest: {level_names.get(strongest, strongest)} ({dims.get(strongest, 0):.0%}). "
@@ -153,10 +169,16 @@ def _build_summary(score: float, tradition: str, dims: dict) -> str:
     )
 
 
-def _build_recommendations(dims: dict, weights: dict, tradition: str) -> list[str]:
-    """Generate actionable recommendations based on weak dimensions."""
+def _build_recommendations(
+    dims: dict, weights: dict, tradition: str, suggestions: dict | None = None,
+) -> list[str]:
+    """Generate actionable recommendations based on weak dimensions.
+
+    Prefers VLM-generated suggestions when available (more specific),
+    falls back to generic advice.
+    """
     recs = []
-    advice = {
+    generic_advice = {
         "L1": "Improve composition, layout, and spatial arrangement for stronger visual impact.",
         "L2": "Focus on technical execution -- rendering quality, detail precision, and medium fidelity.",
         "L3": "Deepen cultural context -- incorporate tradition-specific motifs, terminology, and conventions.",
@@ -165,7 +187,12 @@ def _build_recommendations(dims: dict, weights: dict, tradition: str) -> list[st
     }
     for level in sorted(dims, key=lambda k: dims.get(k, 0)):
         if dims.get(level, 0) < 0.7:
-            recs.append(advice.get(level, f"Improve {level}."))
+            # Prefer VLM suggestion (specific) over generic advice
+            vlm_suggestion = (suggestions or {}).get(level, "")
+            if vlm_suggestion:
+                recs.append(vlm_suggestion)
+            else:
+                recs.append(generic_advice.get(level, f"Improve {level}."))
         if len(recs) >= 3:
             break
     return recs
@@ -185,6 +212,7 @@ def _mock_scores(tradition: str = "default") -> dict:
 
     seed = int(hashlib.md5(tradition.encode()).hexdigest()[:8], 16) % 1000
     base = 0.65 + (seed % 20) / 100  # 0.65 - 0.84
+    tradition_label = tradition.replace("_", " ").title()
     return {
         "L1": round(min(base + 0.05, 1.0), 4),
         "L2": round(min(base + 0.00, 1.0), 4),
@@ -196,5 +224,15 @@ def _mock_scores(tradition: str = "default") -> dict:
         "L3_rationale": "Mock: Cultural context assessment.",
         "L4_rationale": "Mock: Critical interpretation assessment.",
         "L5_rationale": "Mock: Philosophical aesthetics assessment.",
+        "L1_suggestion": f"Enhance spatial balance with {tradition_label}-appropriate composition.",
+        "L2_suggestion": f"Refine technique precision for {tradition_label} standards.",
+        "L3_suggestion": f"Incorporate more {tradition_label} cultural motifs and terminology.",
+        "L4_suggestion": "Ensure cultural references are respectful and contextually appropriate.",
+        "L5_suggestion": "Deepen philosophical resonance through symbolic layering.",
+        "L1_deviation_type": "traditional",
+        "L2_deviation_type": "traditional",
+        "L3_deviation_type": "traditional",
+        "L4_deviation_type": "traditional",
+        "L5_deviation_type": "traditional",
         "risk_flags": [],
     }

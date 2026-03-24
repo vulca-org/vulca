@@ -90,6 +90,8 @@ class PipelineInput:
     max_cost_usd: float = 2.0
     template: str = "default"
     node_params: dict[str, dict] = field(default_factory=dict)
+    eval_mode: str = "strict"
+    """Evaluation mode: strict|reference|fusion."""
     # Custom ImageProvider instance (not serialized; overrides provider lookup)
     image_provider: Any = field(default=None, repr=False)
 

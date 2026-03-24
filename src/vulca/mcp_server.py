@@ -141,6 +141,7 @@ async def create_artwork(
     provider: str = "mock",
     hitl: bool = False,
     weights: str = "",
+    mode: str = "strict",
     view: str = "summary",
     format: str = "json",
 ) -> dict | str:
@@ -149,15 +150,17 @@ async def create_artwork(
     Args:
         intent: Natural language description of what to create.
         tradition: Cultural tradition (e.g. chinese_xieyi, western_academic).
+            Also accepts a file path to a custom YAML tradition.
         provider: Image generation provider (mock | gemini | nb2 | openai | comfyui).
         hitl: Enable human-in-the-loop (pipeline pauses before decide node).
         weights: Custom L1-L5 weights as string "L1=0.3,L2=0.2,...".
+        mode: Evaluation mode — "strict" (judge, default), "reference" (advisor, no forced reruns).
         view: Response verbosity — "summary" (default) or "detailed".
         format: Output format — "json" (default) or "markdown".
 
     Returns:
         Summary: session_id, status, tradition, weighted_total, best_image_url, best_candidate_id.
-        Detailed adds: scores, rationales, rounds, cost_usd, summary, risk_flags.
+        Detailed adds: scores, rationales, suggestions, rounds, cost_usd, summary, risk_flags.
     """
     from vulca.pipeline.engine import execute
     from vulca.pipeline.templates import DEFAULT
@@ -175,6 +178,7 @@ async def create_artwork(
         tradition=tradition,
         provider=provider,
         node_params=node_params,
+        eval_mode=mode,
     )
 
     interrupt_before = {"decide"} if hitl else None
@@ -232,6 +236,7 @@ async def evaluate_artwork(
     tradition: str = "",
     intent: str = "",
     mock: bool = False,
+    mode: str = "strict",
     view: str = "summary",
     format: str = "json",
 ) -> dict | str:
@@ -240,24 +245,30 @@ async def evaluate_artwork(
     Args:
         image_path: Path to the image file.
         tradition: Cultural tradition (auto-detected if empty).
+            Also accepts a file path to a custom YAML tradition.
         intent: Optional evaluation intent.
         mock: Use mock scoring (no API key required). Useful for testing.
+        mode: Evaluation mode — "strict" (judge), "reference" (advisor, no judgment).
         view: Response verbosity — "summary" (default) or "detailed".
         format: Output format — "json" (default) or "markdown".
 
     Returns:
-        Summary: score, tradition, dimensions, summary, cost_usd.
-        Detailed adds: rationales, recommendations, risk_flags.
+        Summary: score, tradition, dimensions, suggestions, summary, cost_usd.
+        Detailed adds: rationales, recommendations, deviation_types, risk_flags.
     """
     from vulca import aevaluate
 
-    result_obj = await aevaluate(image_path, tradition=tradition, intent=intent, mock=mock)
+    result_obj = await aevaluate(
+        image_path, tradition=tradition, intent=intent, mock=mock, mode=mode,
+    )
 
     # Summary fields
     result: dict = {
         "score": result_obj.score,
         "tradition": result_obj.tradition,
         "dimensions": result_obj.dimensions,
+        "suggestions": result_obj.suggestions,
+        "eval_mode": result_obj.eval_mode,
         "summary": result_obj.summary,
         "cost_usd": result_obj.cost_usd,
     }
@@ -266,6 +277,7 @@ async def evaluate_artwork(
         result.update({
             "rationales": result_obj.rationales,
             "recommendations": result_obj.recommendations,
+            "deviation_types": result_obj.deviation_types,
             "risk_flags": result_obj.risk_flags,
             "risk_level": result_obj.risk_level,
         })

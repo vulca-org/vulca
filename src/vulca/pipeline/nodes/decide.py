@@ -38,8 +38,12 @@ class DecideNode(PipelineNode):
         rationales: dict[str, str] = ctx.get("rationales", {})
         round_num = ctx.round_num
         max_rounds = ctx.max_rounds
+        eval_mode = ctx.get("eval_mode", "strict")
 
-        if weighted_total >= self.accept_threshold:
+        # In reference mode, always accept — don't "correct" the artist
+        if eval_mode == "reference":
+            decision = "accept"
+        elif weighted_total >= self.accept_threshold:
             decision = "accept"
         elif round_num < max_rounds:
             decision = "rerun"

@@ -167,8 +167,135 @@ def reload_traditions() -> int:
     return count
 
 
+def _load_single_yaml(path: Path) -> TraditionConfig | None:
+    """Load a single YAML tradition file (custom or built-in)."""
+    try:
+        import yaml
+    except ImportError:
+        logger.warning("PyYAML not installed, cannot load custom tradition file")
+        return None
+
+    if not path.is_file():
+        logger.warning("Tradition file not found: %s", path)
+        return None
+
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = yaml.safe_load(f)
+        if not isinstance(data, dict):
+            return None
+
+        name = data.get("name", path.stem)
+
+        # Parse weights
+        weights_raw = data.get("weights", {})
+        weights_l: dict[str, float] = {}
+        for key, val in weights_raw.items():
+            l_key = key if key.startswith("L") else _DIM_TO_L.get(key, key)
+            weights_l[l_key] = float(val)
+        if not weights_l:
+            # Check for parent tradition and inherit weights
+            parent = data.get("parent", "")
+            if parent:
+                _ensure_loaded()
+                parent_tc = _traditions.get(parent)
+                if parent_tc:
+                    weights_l = dict(parent_tc.weights_l)
+            if not weights_l:
+                weights_l = dict(_DEFAULT_WEIGHTS)
+
+        # Apply override_weights on top
+        override_raw = data.get("override_weights", {})
+        for key, val in override_raw.items():
+            l_key = key if key.startswith("L") else _DIM_TO_L.get(key, key)
+            weights_l[l_key] = float(val)
+
+        # Parse terminology
+        terms = []
+        for t in data.get("terminology", []):
+            if isinstance(t, dict):
+                terms.append(TermEntry(
+                    term=t.get("term", ""),
+                    term_zh=t.get("term_zh", ""),
+                    definition=t.get("definition", ""),
+                    category=t.get("category", ""),
+                    l_levels=t.get("l_levels", []),
+                    aliases=t.get("aliases", []),
+                    source=t.get("source", ""),
+                ))
+
+        # Inherit parent terminology if specified
+        parent_name = data.get("parent", "")
+        if parent_name:
+            _ensure_loaded()
+            parent_tc = _traditions.get(parent_name)
+            if parent_tc:
+                terms = list(parent_tc.terminology) + terms
+
+        # Parse taboos
+        taboos = []
+        for tb in data.get("taboos", []):
+            if isinstance(tb, dict):
+                taboos.append(TabooEntry(
+                    rule=tb.get("rule", ""),
+                    severity=tb.get("severity", "medium"),
+                    l_levels=tb.get("l_levels", []),
+                    trigger_patterns=tb.get("trigger_patterns", []),
+                    explanation=tb.get("explanation", ""),
+                ))
+
+        # Inherit parent taboos, minus removals
+        taboos_remove = set(data.get("taboos_remove", []))
+        if parent_name:
+            _ensure_loaded()
+            parent_tc = _traditions.get(parent_name)
+            if parent_tc:
+                inherited_taboos = [
+                    tb for tb in parent_tc.taboos
+                    if tb.rule not in taboos_remove
+                ]
+                taboos = inherited_taboos + taboos
+
+        # Parse pipeline config
+        pipe_data = data.get("pipeline", {})
+        pipeline = PipelineConfig(
+            variant=pipe_data.get("variant", "default"),
+            overrides=pipe_data.get("overrides", {}),
+        )
+
+        # Display name
+        display_raw = data.get("display_name", {})
+        if isinstance(display_raw, str):
+            display_name = {"en": display_raw, "zh": ""}
+        elif isinstance(display_raw, dict):
+            display_name = {"en": display_raw.get("en", name), "zh": display_raw.get("zh", "")}
+        else:
+            display_name = {"en": name, "zh": ""}
+
+        return TraditionConfig(
+            name=name,
+            display_name=display_name,
+            weights_l=weights_l,
+            terminology=terms,
+            taboos=taboos,
+            pipeline=pipeline,
+            examples=data.get("examples", []),
+        )
+    except Exception as exc:
+        logger.warning("Failed to load custom tradition %s: %s", path, exc)
+        return None
+
+
 def get_tradition(name: str) -> TraditionConfig | None:
-    """Get a single tradition config by name."""
+    """Get a single tradition config by name or file path.
+
+    If *name* ends with ``.yaml`` or contains a path separator, it is
+    treated as a file path to a custom tradition YAML.
+    """
+    # Custom YAML file path
+    if name.endswith(".yaml") or name.endswith(".yml") or os.sep in name or "/" in name:
+        return _load_single_yaml(Path(name))
+
     _ensure_loaded()
     return _traditions.get(name)
 
