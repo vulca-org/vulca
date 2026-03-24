@@ -19,6 +19,7 @@ async def aevaluate(
     include_evidence: bool = False,
     api_key: str = "",
     mock: bool = False,
+    mode: str = "strict",
 ) -> EvalResult:
     """Evaluate an artwork image asynchronously.
 
@@ -33,7 +34,8 @@ async def aevaluate(
         Cultural tradition to use. If empty, auto-detected from intent.
         One of: default, chinese_xieyi, chinese_gongbi, western_academic,
         islamic_geometric, japanese_traditional, watercolor,
-        african_traditional, south_asian.
+        african_traditional, south_asian.  Also accepts a file path to
+        a custom YAML tradition file.
     subject:
         Optional subject/title of the artwork.
     skills:
@@ -44,11 +46,16 @@ async def aevaluate(
         Google API key. If empty, reads from ``GOOGLE_API_KEY`` env var.
     mock:
         Use mock scoring (no API key required). Useful for testing.
+    mode:
+        Evaluation mode:
+        - ``"strict"`` (default): Judge mode — scores reflect conformance.
+        - ``"reference"``: Advisor mode — scores show alignment without judgment.
+        - ``"fusion"``: Multi-tradition comparison (pass comma-separated traditions).
 
     Returns
     -------
     EvalResult
-        Complete evaluation result with scores, rationales, and recommendations.
+        Complete evaluation result with scores, rationales, suggestions, and recommendations.
     """
     from vulca._engine import Engine
 
@@ -61,6 +68,7 @@ async def aevaluate(
         subject=subject,
         skills=skills or [],
         include_evidence=include_evidence,
+        mode=mode,
     )
     result.latency_ms = int((time.monotonic() - t0) * 1000)
     return result
@@ -76,6 +84,7 @@ def evaluate(
     include_evidence: bool = False,
     api_key: str = "",
     mock: bool = False,
+    mode: str = "strict",
 ) -> EvalResult:
     """Evaluate an artwork image (synchronous wrapper).
 
@@ -86,34 +95,22 @@ def evaluate(
     except RuntimeError:
         loop = None
 
+    coro = aevaluate(
+        image,
+        intent=intent,
+        tradition=tradition,
+        subject=subject,
+        skills=skills,
+        include_evidence=include_evidence,
+        api_key=api_key,
+        mock=mock,
+        mode=mode,
+    )
+
     if loop and loop.is_running():
         import concurrent.futures
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
-            future = pool.submit(
-                asyncio.run,
-                aevaluate(
-                    image,
-                    intent=intent,
-                    tradition=tradition,
-                    subject=subject,
-                    skills=skills,
-                    include_evidence=include_evidence,
-                    api_key=api_key,
-                    mock=mock,
-                ),
-            )
-            return future.result()
+            return pool.submit(asyncio.run, coro).result()
     else:
-        return asyncio.run(
-            aevaluate(
-                image,
-                intent=intent,
-                tradition=tradition,
-                subject=subject,
-                skills=skills,
-                include_evidence=include_evidence,
-                api_key=api_key,
-                mock=mock,
-            )
-        )
+        return asyncio.run(coro)

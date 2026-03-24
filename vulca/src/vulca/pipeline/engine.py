@@ -173,6 +173,9 @@ async def execute(
     if pipeline_input.node_params:
         ctx.set("node_params", pipeline_input.node_params)
 
+    # Inject eval_mode so DecideNode can adapt behavior
+    ctx.set("eval_mode", pipeline_input.eval_mode)
+
     status = RunStatus.RUNNING
     final_decision = "stop"
 

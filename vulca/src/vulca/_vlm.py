@@ -33,15 +33,25 @@ spiritual qualities, aesthetic harmony, and philosophical alignment with the tra
 
 ## Instructions
 
-Score each dimension 0.0-1.0. Provide a brief rationale (1-2 sentences) for each.
+Score each dimension 0.0-1.0. For each dimension provide:
+1. **rationale**: What you observe (1-2 sentences).
+2. **suggestion**: A specific, actionable improvement tip if the artist wants to \
+align more closely with the tradition. Include concrete techniques, terms, or \
+compositional advice (1 sentence). If the work already excels, suggest how to \
+push it further.
+3. **deviation_type**: Classify as one of:
+   - "traditional": follows the tradition's conventions closely
+   - "intentional_departure": appears to deliberately deviate (e.g., mixing \
+modern elements with traditional forms)
+   - "experimental": significantly outside the tradition's scope
 
 Respond with ONLY a JSON object:
 {{
-    "L1": <float>, "L1_rationale": "<string>",
-    "L2": <float>, "L2_rationale": "<string>",
-    "L3": <float>, "L3_rationale": "<string>",
-    "L4": <float>, "L4_rationale": "<string>",
-    "L5": <float>, "L5_rationale": "<string>"
+    "L1": <float>, "L1_rationale": "<string>", "L1_suggestion": "<string>", "L1_deviation_type": "<string>",
+    "L2": <float>, "L2_rationale": "<string>", "L2_suggestion": "<string>", "L2_deviation_type": "<string>",
+    "L3": <float>, "L3_rationale": "<string>", "L3_suggestion": "<string>", "L3_deviation_type": "<string>",
+    "L4": <float>, "L4_rationale": "<string>", "L4_suggestion": "<string>", "L4_deviation_type": "<string>",
+    "L5": <float>, "L5_rationale": "<string>", "L5_suggestion": "<string>", "L5_deviation_type": "<string>"
 }}
 """
 
@@ -228,7 +238,8 @@ async def score_image(
         from vulca._parse import parse_llm_json
         data = parse_llm_json(text)
 
-        # Validate and clamp scores
+        # Validate and clamp scores, ensure all fields present
+        _VALID_DEVIATION_TYPES = {"traditional", "intentional_departure", "experimental"}
         for level in ("L1", "L2", "L3", "L4", "L5"):
             if level in data:
                 data[level] = max(0.0, min(1.0, float(data[level])))
@@ -236,16 +247,21 @@ async def score_image(
                 data[level] = 0.0
             if f"{level}_rationale" not in data:
                 data[f"{level}_rationale"] = ""
+            if f"{level}_suggestion" not in data:
+                data[f"{level}_suggestion"] = ""
+            if f"{level}_deviation_type" not in data:
+                data[f"{level}_deviation_type"] = "traditional"
+            elif data[f"{level}_deviation_type"] not in _VALID_DEVIATION_TYPES:
+                data[f"{level}_deviation_type"] = "traditional"
 
         return data
 
     except Exception as exc:
         logger.error("VLM scoring failed: %s", exc)
-        return {
-            "L1": 0.0, "L1_rationale": f"Scoring failed: {exc}",
-            "L2": 0.0, "L2_rationale": "",
-            "L3": 0.0, "L3_rationale": "",
-            "L4": 0.0, "L4_rationale": "",
-            "L5": 0.0, "L5_rationale": "",
-            "error": str(exc),
-        }
+        fallback: dict = {"error": str(exc)}
+        for level in ("L1", "L2", "L3", "L4", "L5"):
+            fallback[level] = 0.0
+            fallback[f"{level}_rationale"] = f"Scoring failed: {exc}" if level == "L1" else ""
+            fallback[f"{level}_suggestion"] = ""
+            fallback[f"{level}_deviation_type"] = "traditional"
+        return fallback

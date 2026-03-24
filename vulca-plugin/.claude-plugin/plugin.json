@@ -1,7 +1,7 @@
 {
   "name": "vulca",
-  "description": "Cultural art evaluation and guided creation. L1-L5 scoring across 13+ traditions, pluggable image/VLM providers, self-evolving weights.",
-  "version": "0.3.0",
+  "description": "Cultural art advisor and guided creation. L1-L5 scoring with actionable suggestions across 13+ traditions. Strict, reference, and fusion evaluation modes. Custom tradition YAML support.",
+  "version": "0.4.0",
   "author": {
     "name": "Yu Haorui",
     "email": "yuhaorui48@gmail.com"

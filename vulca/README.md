@@ -5,7 +5,7 @@
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-green.svg)](https://github.com/vulca-org/vulca/blob/main/LICENSE)
 [![Tests](https://img.shields.io/badge/tests-276%20passing-brightgreen.svg)]()
 
-**Make any image generator culturally accurate.** VULCA scores visual works on 5 dimensions (L1-L5), tells you exactly what's wrong, and guides the next generation to fix it.
+**Make any image generator culturally accurate.** VULCA scores visual works on 5 dimensions (L1-L5), gives actionable suggestions, and guides the next generation to fix it — or tells you where you're deliberately breaking tradition.
 
 <p align="center">
   <img src="assets/demo.gif" alt="VULCA CLI Demo" width="700">
@@ -19,21 +19,27 @@ vulca evaluate painting.jpg --tradition chinese_xieyi
 
 ```
 VULCA Evaluation Result
-========================================
-Score:     95%
+==================================================
+Score:     72%
 Tradition: chinese_xieyi
 
 Dimensions:
-  L1 Visual Perception         ███████████████████░ 95%
-  L2 Technical Execution       ██████████████████░░ 90%
-  L3 Cultural Context          ████████████████████ 98%
-  L4 Critical Interpretation   ███████████████████░ 95%
-  L5 Philosophical Aesthetics  ███████████████████░ 95%
+  L1 Visual Perception         ████████████████░░░░ 82%  ✓
+  L2 Technical Execution       ██████████░░░░░░░░░░ 51%  ✗
+  L3 Cultural Context          ██████████████░░░░░░ 68%  ✗
+  L4 Critical Interpretation   ███████████████░░░░░ 78%  ✓
+  L5 Philosophical Aesthetics  ████████████████░░░░ 81%  ✓
 
-Summary: Overall excellent (95%) under Chinese Xieyi tradition.
-  Strongest: Cultural Context (98%).
-  Room for growth: Technical Execution (90%).
+Suggestions:
+  L2: Replace axe-cut texture (斧劈皴) with hemp-fiber strokes (披麻皴)
+  L3: Add more blank space (留白 30%+) and use scatter perspective
+
+Recommendations:
+  - Replace axe-cut texture (斧劈皴) with hemp-fiber strokes (披麻皴)
+  - Add more blank space (留白 30%+) and use scatter perspective
 ```
+
+**New in v0.4:** VULCA now gives specific, actionable suggestions per dimension — not just scores.
 
 > Based on peer-reviewed research: [VULCA Framework](https://aclanthology.org/2025.findings-emnlp/) (EMNLP 2025 Findings) and [VULCA-Bench](https://arxiv.org/abs/2601.07986) (7,410 samples, 9 traditions).
 
@@ -83,18 +89,27 @@ import vulca
 
 # Evaluate any image (file path, URL, or base64)
 result = vulca.evaluate("painting.jpg", tradition="chinese_xieyi")
-print(result.score)          # 0.82
-print(result.dimensions)     # {"L1": 0.75, "L2": 0.82, "L3": 0.86, ...}
-print(result.rationales)     # {"L1": "Masterful use of blank space (留白)...", ...}
-print(result.recommendations)  # ["Improve technical execution...", ...]
+print(result.score)          # 0.72
+print(result.dimensions)     # {"L1": 0.82, "L2": 0.51, "L3": 0.68, ...}
+print(result.suggestions)    # {"L2": "Replace axe-cut texture with hemp-fiber strokes", ...}
+print(result.deviation_types)  # {"L2": "intentional_departure", "L3": "experimental", ...}
+print(result.recommendations)  # ["Replace axe-cut texture...", ...]
 
-# Evaluate from URL
-result = vulca.evaluate("https://example.com/artwork.jpg", tradition="watercolor")
+# Reference mode — advisor, not judge (no forced reruns in create)
+result = vulca.evaluate("painting.jpg", tradition="chinese_xieyi", mode="reference")
+print(result.eval_mode)      # "reference"
+print(result.summary)        # "Moderate alignment (72%) with Chinese Xieyi tradition..."
 
 # Create through the full pipeline (Generate → Evaluate → Decide)
 result = vulca.create("Misty mountains in ink wash", tradition="chinese_xieyi", provider="gemini")
 print(result.weighted_total) # 0.95
-print(result.scores)         # {"L1": 0.95, "L2": 0.90, "L3": 0.95, ...}
+print(result.suggestions)    # per-dimension improvement tips
+
+# Reference mode create — don't force cultural correction
+result = vulca.create("cyberpunk ink wash", eval_mode="reference", provider="mock")
+
+# Use a custom tradition YAML
+result = vulca.evaluate("painting.jpg", tradition="./my_cyberpunk_ink.yaml")
 
 # Bring your own image generator
 from vulca import ImageProvider, ImageResult
@@ -113,23 +128,30 @@ result = vulca.evaluate("painting.jpg", mock=True)
 ## Quick Start — CLI
 
 ```bash
-# Evaluate artwork with real Gemini VLM scoring
+# Evaluate artwork (strict mode — judge, default)
 vulca evaluate painting.jpg --tradition chinese_xieyi
 
-# Evaluate from URL
-vulca evaluate "https://example.com/art.jpg" -t watercolor
+# Reference mode — advisor, shows alignment without judgment
+vulca evaluate painting.jpg -t chinese_xieyi --mode reference
+
+# Fusion mode — compare across multiple traditions at once
+vulca evaluate painting.jpg -t chinese_xieyi,watercolor,western_academic --mode fusion
+
+# Use a custom tradition YAML
+vulca tradition --init cyberpunk_ink > cyberpunk_ink.yaml  # generate template
+vulca evaluate painting.jpg -t ./cyberpunk_ink.yaml        # use it
 
 # Create artwork via Gemini image generation + evaluation
-vulca create "仿倪瓒枯木竹石，干笔淡墨" --provider gemini -t chinese_xieyi
+vulca create "仿倪瓒枯木竹石" --provider gemini -t chinese_xieyi
 
-# List all 13 available traditions
+# Reference mode create — don't force cultural correction
+vulca create "cyberpunk ink wash" --mode reference --provider mock
+
+# List all 13+ available traditions
 vulca traditions
 
 # Get cultural guide (terminology, taboos, weights)
 vulca tradition chinese_xieyi
-
-# Check how weights have evolved
-vulca evolution chinese_xieyi
 
 # HITL mode with custom L1-L5 weights
 vulca create "水墨山水" --hitl --weights "L1=0.3,L2=0.2,L3=0.2,L4=0.15,L5=0.15"
@@ -141,7 +163,7 @@ vulca evaluate painting.jpg --mock --json
 ### Example Output — `vulca traditions`
 
 ```
-Available Domains (13):
+Available Traditions (13):
 ==================================================
   african_traditional       emphasis: Cultural (30%)
   brand_design              emphasis: Technical (30%)
@@ -155,6 +177,9 @@ Available Domains (13):
   ui_ux_design              emphasis: Technical (30%)
   watercolor                emphasis: Technical (25%)
   western_academic          emphasis: Technical (25%)
+
+  Use a custom tradition: vulca evaluate img.jpg -t ./my_tradition.yaml
+  Create a template:      vulca tradition --init my_style > my_tradition.yaml
 ```
 
 ## BYOK — Bring Your Own Key / Model
@@ -204,12 +229,12 @@ Once installed, ask Claude Code naturally:
 
 | Tool | Description |
 |------|-------------|
-| `create_artwork` | Create artwork through the pipeline, returns image + L1-L5 scores |
-| `evaluate_artwork` | Evaluate artwork on L1-L5 dimensions with rationale text |
-| `list_traditions` | List all 13 domains with weights and emphasis |
+| `create_artwork` | Create artwork through the pipeline, returns image + L1-L5 scores + suggestions |
+| `evaluate_artwork` | Evaluate artwork on L1-L5 with rationale, suggestions, and deviation analysis |
+| `list_traditions` | List all 13+ traditions with weights and emphasis |
 | `get_tradition_guide` | Full cultural context: terminology, taboos, weights |
 | `resume_artwork` | HITL continuation: accept, refine, or reject |
-| `get_evolution_status` | Weight evolution history and insights per domain |
+| `get_evolution_status` | Weight evolution history and insights per tradition |
 
 ### Other AI Assistants
 
@@ -267,30 +292,32 @@ The system learns from every evaluation session:
 3. **VLM prompt** receives evolved weights, few-shot references, and domain insights
 4. `vulca.get_weights(domain)` returns evolved weights, falling back to YAML defaults
 
-## Contributing a Domain
+## Custom Traditions
 
-Add a YAML file to `src/vulca/cultural/data/traditions/`:
+Create your own tradition YAML — for any style, not just historical ones:
 
-```yaml
-name: my_domain
-display_name:
-  en: "My Domain"
-  zh: ""
-weights:
-  L1: 0.20
-  L2: 0.20
-  L3: 0.20
-  L4: 0.20
-  L5: 0.20
-terminology:
-  - term: "key concept"
-    definition: "What this means in this domain"
-taboos:
-  - rule: "Do not judge X as Y in this domain"
-    severity: medium
+```bash
+# Generate a template
+vulca tradition --init pixel_art_retro > pixel_art_retro.yaml
+
+# Edit the YAML (set weights, terminology, taboos)
+# Then use it directly:
+vulca evaluate game_screenshot.png -t ./pixel_art_retro.yaml
 ```
 
-See `_template.yaml` for the full schema. PRs welcome.
+You can inherit from built-in traditions:
+
+```yaml
+name: cyberpunk_ink
+parent: chinese_xieyi          # inherits terminology, taboos, weights
+override_weights:
+  L1: 0.30                     # visual impact matters more
+  L3: 0.10                     # cultural conformance matters less
+taboos_remove:
+  - "Avoid excessive realism"  # remove inherited taboo
+```
+
+**Contributing built-in traditions**: Add a YAML file to `src/vulca/cultural/data/traditions/`. See `_template.yaml` for the full schema. PRs welcome.
 
 ## Architecture
 
@@ -311,7 +338,7 @@ vulca/
 
 ```bash
 pip install vulca[dev]
-pytest tests/ -v  # 276 tests
+pytest tests/ -v  # 276 tests, 0 failures
 ```
 
 ## Citation

@@ -44,6 +44,15 @@ class EvalResult:
     recommendations: list[str]
     """Actionable recommendations for improvement."""
 
+    suggestions: dict[str, str] = field(default_factory=dict)
+    """Per-dimension actionable suggestions from VLM (L1→suggestion text)."""
+
+    deviation_types: dict[str, str] = field(default_factory=dict)
+    """Per-dimension deviation classification: traditional|intentional_departure|experimental."""
+
+    eval_mode: str = "strict"
+    """Evaluation mode: 'strict' (judge), 'reference' (advisor), or 'fusion' (multi-tradition)."""
+
     skills: dict[str, SkillResult] = field(default_factory=dict)
     """Results from extra skills (brand, audience, trend)."""
 
@@ -131,6 +140,15 @@ class CreateResult:
 
     recommendations: list[str] = field(default_factory=list)
     """Actionable recommendations."""
+
+    suggestions: dict[str, str] = field(default_factory=dict)
+    """Per-dimension actionable suggestions (L1→suggestion text)."""
+
+    deviation_types: dict[str, str] = field(default_factory=dict)
+    """Per-dimension deviation classification."""
+
+    eval_mode: str = "strict"
+    """Evaluation mode used: strict|reference|fusion."""
 
     latency_ms: int = 0
     """Total latency in milliseconds."""

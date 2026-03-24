@@ -3,11 +3,11 @@
 Usage::
 
     vulca evaluate painting.jpg
-    vulca evaluate painting.jpg --intent "check ink wash style"
-    vulca evaluate painting.jpg --tradition chinese_xieyi
-    vulca evaluate painting.jpg --skills brand,audience,trend
-    vulca create "水墨山水" --hitl
+    vulca evaluate painting.jpg --tradition chinese_xieyi --mode reference
+    vulca evaluate painting.jpg -t chinese_xieyi,ukiyoe --mode fusion
+    vulca create "水墨山水" --hitl --mode reference
     vulca create "水墨山水" --weights "L1=0.3,L2=0.2,L3=0.2,L4=0.15,L5=0.15"
+    vulca tradition --init my_style > my_tradition.yaml
 """
 
 from __future__ import annotations
@@ -17,6 +17,22 @@ import logging
 import sys
 
 from vulca._version import __version__
+
+_VALID_MODES = ("strict", "reference", "fusion")
+
+_DIM_NAMES = {
+    "L1": "Visual Perception",
+    "L2": "Technical Execution",
+    "L3": "Cultural Context",
+    "L4": "Critical Interpretation",
+    "L5": "Philosophical Aesthetics",
+}
+
+_DEVIATION_LABELS = {
+    "traditional": "traditional",
+    "intentional_departure": "intentional departure",
+    "experimental": "experimental",
+}
 
 
 def _parse_weights(raw: str) -> dict[str, float]:
@@ -44,7 +60,7 @@ def _parse_weights(raw: str) -> dict[str, float]:
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
         prog="vulca",
-        description="VULCA -- AI-native creation organism",
+        description="VULCA -- AI-native cultural art advisor",
     )
     parser.add_argument("--version", action="version", version=f"vulca {__version__}")
 
@@ -54,8 +70,10 @@ def main(argv: list[str] | None = None) -> None:
     eval_p = sub.add_parser("evaluate", aliases=["eval", "e"], help="Evaluate an artwork")
     eval_p.add_argument("image", help="Image file path or URL")
     eval_p.add_argument("--intent", "-i", default="", help="Natural language evaluation intent")
-    eval_p.add_argument("--tradition", "-t", default="", help="Cultural tradition (auto-detected if empty)")
+    eval_p.add_argument("--tradition", "-t", default="", help="Cultural tradition or path to custom YAML")
     eval_p.add_argument("--subject", "-s", default="", help="Artwork subject/title")
+    eval_p.add_argument("--mode", "-m", default="strict", choices=_VALID_MODES,
+                        help="Evaluation mode: strict (judge), reference (advisor), fusion (multi-tradition)")
     eval_p.add_argument("--skills", default="", help="Comma-separated extra skills: brand,audience,trend")
     eval_p.add_argument("--json", action="store_true", help="Output raw JSON")
     eval_p.add_argument("--api-key", default="", help="Google API key (or set GOOGLE_API_KEY)")
@@ -66,9 +84,11 @@ def main(argv: list[str] | None = None) -> None:
     # create command
     create_p = sub.add_parser("create", aliases=["c"], help="Create artwork via pipeline")
     create_p.add_argument("intent", help="Natural language creation intent")
-    create_p.add_argument("--tradition", "-t", default="", help="Cultural tradition (auto-detected if empty)")
+    create_p.add_argument("--tradition", "-t", default="", help="Cultural tradition or path to custom YAML")
     create_p.add_argument("--subject", "-s", default="", help="Artwork subject/title")
     create_p.add_argument("--provider", default="nb2", help="Image generation provider")
+    create_p.add_argument("--mode", "-m", default="strict", choices=_VALID_MODES,
+                          help="Evaluation mode: strict (judge), reference (advisor)")
     create_p.add_argument("--json", action="store_true", help="Output raw JSON")
     create_p.add_argument("--api-key", default="", help="VULCA API key (or set VULCA_API_KEY)")
     create_p.add_argument("--base-url", default="", help="VULCA API base URL")
@@ -82,7 +102,8 @@ def main(argv: list[str] | None = None) -> None:
 
     # tradition detail command
     trad_p = sub.add_parser("tradition", aliases=["td"], help="Get cultural tradition guide")
-    trad_p.add_argument("name", help="Tradition name (e.g. chinese_xieyi)")
+    trad_p.add_argument("name", nargs="?", default="", help="Tradition name (e.g. chinese_xieyi)")
+    trad_p.add_argument("--init", default="", metavar="NAME", help="Generate a template YAML for a custom tradition")
     trad_p.add_argument("--json", action="store_true", help="Output raw JSON")
 
     # evolution status command
@@ -102,13 +123,23 @@ def main(argv: list[str] | None = None) -> None:
     elif args.command in ("traditions", "t"):
         _cmd_traditions()
     elif args.command in ("tradition", "td"):
-        _cmd_tradition(args)
+        if args.init:
+            _cmd_tradition_init(args)
+        elif args.name:
+            _cmd_tradition(args)
+        else:
+            print("Error: provide a tradition name or use --init NAME", file=sys.stderr)
+            sys.exit(1)
     elif args.command in ("evolution", "evo"):
         _cmd_evolution(args)
     else:
         parser.print_help()
         sys.exit(1)
 
+
+# ---------------------------------------------------------------------------
+# Evaluate command
+# ---------------------------------------------------------------------------
 
 def _cmd_evaluate(args: argparse.Namespace) -> None:
     import json as json_mod
@@ -121,6 +152,12 @@ def _cmd_evaluate(args: argparse.Namespace) -> None:
         os.environ["VULCA_VLM_BASE_URL"] = args.vlm_base_url
 
     skills = [s.strip() for s in args.skills.split(",") if s.strip()] if args.skills else None
+    mode = args.mode
+
+    # Fusion mode: evaluate against multiple traditions
+    if mode == "fusion" and "," in args.tradition:
+        _cmd_evaluate_fusion(args, skills)
+        return
 
     try:
         result = evaluate(
@@ -131,6 +168,7 @@ def _cmd_evaluate(args: argparse.Namespace) -> None:
             skills=skills,
             api_key=args.api_key,
             mock=args.mock,
+            mode=mode,
         )
     except ValueError as e:
         print(f"Error: {e}", file=sys.stderr)
@@ -141,20 +179,35 @@ def _cmd_evaluate(args: argparse.Namespace) -> None:
         print(json_mod.dumps(dataclasses.asdict(result), indent=2, ensure_ascii=False))
         return
 
+    if mode == "reference":
+        _print_reference_result(result)
+    else:
+        _print_strict_result(result)
+
+
+def _print_strict_result(result) -> None:
+    """Strict mode output: judge style with pass/fail indicators."""
     print(f"\n  VULCA Evaluation Result")
-    print(f"  {'=' * 40}")
+    print(f"  {'=' * 50}")
     print(f"  Score:     {result.score:.0%}")
     print(f"  Tradition: {result.tradition}")
     print(f"  Risk:      {result.risk_level}")
     print()
     print(f"  Dimensions:")
-    names = {"L1": "Visual Perception", "L2": "Technical Execution", "L3": "Cultural Context", "L4": "Critical Interpretation", "L5": "Philosophical Aesthetics"}
     for level in ("L1", "L2", "L3", "L4", "L5"):
         score = result.dimensions.get(level, 0)
         bar = "\u2588" * int(score * 20) + "\u2591" * (20 - int(score * 20))
-        print(f"    {level} {names[level]:<25s} {bar} {score:.0%}")
+        indicator = "\u2713" if score >= 0.7 else "\u2717"
+        print(f"    {level} {_DIM_NAMES[level]:<25s} {bar} {score:.0%}  {indicator}")
     print()
     print(f"  Summary: {result.summary}")
+
+    if result.suggestions:
+        print(f"\n  Suggestions:")
+        for level in ("L1", "L2", "L3", "L4", "L5"):
+            s = result.suggestions.get(level, "")
+            if s and result.dimensions.get(level, 0) < 0.7:
+                print(f"    {level}: {s}")
 
     if result.recommendations:
         print(f"\n  Recommendations:")
@@ -169,6 +222,126 @@ def _cmd_evaluate(args: argparse.Namespace) -> None:
     print(f"\n  Latency: {result.latency_ms}ms | Cost: ${result.cost_usd:.4f}")
     print()
 
+
+def _print_reference_result(result) -> None:
+    """Reference mode output: advisor style with deviation analysis."""
+    print(f"\n  VULCA Cultural Analysis (reference mode)")
+    print(f"  {'=' * 50}")
+    print(f"  Alignment: {result.score:.0%}")
+    print(f"  Tradition: {result.tradition}")
+    print()
+    print(f"  Dimension Analysis:")
+    for level in ("L1", "L2", "L3", "L4", "L5"):
+        score = result.dimensions.get(level, 0)
+        bar = "\u2588" * int(score * 20) + "\u2591" * (20 - int(score * 20))
+        deviation = result.deviation_types.get(level, "traditional")
+        dev_label = _DEVIATION_LABELS.get(deviation, deviation)
+        print(f"    {level} {_DIM_NAMES[level]:<25s} {bar} {score:.0%}  ({dev_label})")
+
+        # Show rationale for divergent dimensions
+        if deviation != "traditional":
+            rationale = result.rationales.get(level, "")
+            if rationale:
+                print(f"       Divergence: {rationale}")
+
+        # Show suggestion
+        suggestion = result.suggestions.get(level, "")
+        if suggestion:
+            if deviation == "traditional":
+                print(f"       To push further: {suggestion}")
+            else:
+                print(f"       To align with tradition: {suggestion}")
+                print(f"       To lean into departure: consider amplifying the experimental elements")
+
+    print()
+    print(f"  Summary: {result.summary}")
+    print(f"\n  Latency: {result.latency_ms}ms | Cost: ${result.cost_usd:.4f}")
+    print()
+
+
+def _cmd_evaluate_fusion(args: argparse.Namespace, skills: list[str] | None) -> None:
+    """Fusion mode: evaluate against multiple traditions and compare."""
+    import json as json_mod
+    from vulca import evaluate
+
+    traditions = [t.strip() for t in args.tradition.split(",") if t.strip()]
+    results = []
+
+    for tradition in traditions:
+        try:
+            result = evaluate(
+                args.image,
+                intent=args.intent,
+                tradition=tradition,
+                subject=args.subject,
+                skills=skills,
+                api_key=args.api_key,
+                mock=args.mock,
+                mode="reference",
+            )
+            results.append((tradition, result))
+        except ValueError as e:
+            print(f"  Warning: {tradition} failed: {e}", file=sys.stderr)
+
+    if not results:
+        print("Error: no traditions evaluated successfully", file=sys.stderr)
+        sys.exit(1)
+
+    if args.json:
+        import dataclasses
+        all_data = {t: dataclasses.asdict(r) for t, r in results}
+        print(json_mod.dumps(all_data, indent=2, ensure_ascii=False))
+        return
+
+    print(f"\n  VULCA Fusion Analysis ({len(results)} traditions)")
+    print(f"  {'=' * 60}")
+    print()
+
+    # Comparison table header
+    trad_labels = [t.replace("_", " ").title()[:15] for t, _ in results]
+    header = f"    {'Dimension':<25s}" + "".join(f" {tl:>15s}" for tl in trad_labels)
+    print(header)
+    print(f"    {'-' * 25}" + "".join(f" {'-' * 15}" for _ in results))
+
+    for level in ("L1", "L2", "L3", "L4", "L5"):
+        row = f"    {_DIM_NAMES[level]:<25s}"
+        for _, result in results:
+            score = result.dimensions.get(level, 0)
+            deviation = result.deviation_types.get(level, "traditional")
+            marker = "*" if deviation != "traditional" else " "
+            row += f" {score:>13.0%}{marker} "
+        print(row)
+
+    print()
+    print(f"    {'Overall Alignment':<25s}", end="")
+    for _, result in results:
+        print(f" {result.score:>14.0%} ", end="")
+    print()
+
+    # Best tradition analysis
+    best_trad, best_result = max(results, key=lambda x: x[1].score)
+    print(f"\n  Closest tradition: {best_trad} ({best_result.score:.0%})")
+
+    # Divergence highlights
+    print(f"\n  Divergence highlights:")
+    for tradition, result in results:
+        departures = [
+            level for level in ("L1", "L2", "L3", "L4", "L5")
+            if result.deviation_types.get(level) != "traditional"
+        ]
+        if departures:
+            dims = ", ".join(f"{d} ({_DIM_NAMES[d]})" for d in departures)
+            print(f"    vs {tradition}: departures in {dims}")
+
+    total_cost = sum(r.cost_usd for _, r in results)
+    total_latency = sum(r.latency_ms for _, r in results)
+    print(f"\n  Latency: {total_latency}ms | Cost: ${total_cost:.4f}")
+    print()
+
+
+# ---------------------------------------------------------------------------
+# Create command
+# ---------------------------------------------------------------------------
 
 def _cmd_create(args: argparse.Namespace) -> None:
     import json as json_mod
@@ -191,6 +364,7 @@ def _cmd_create(args: argparse.Namespace) -> None:
             api_key=args.api_key,
             base_url=args.base_url,
             weights=weights,
+            eval_mode=args.mode,
         )
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
@@ -204,13 +378,21 @@ def _cmd_create(args: argparse.Namespace) -> None:
     print(f"\n  VULCA Creation Result")
     print(f"  {'=' * 40}")
     print(f"  Session:   {result.session_id}")
-    print(f"  Mode:      {result.mode}")
+    print(f"  Mode:      {result.mode} (eval: {result.eval_mode})")
     print(f"  Tradition: {result.tradition}")
     print(f"  Rounds:    {result.total_rounds}")
     if result.best_candidate_id:
         print(f"  Best:      {result.best_candidate_id}")
     if result.summary:
         print(f"  Summary:   {result.summary}")
+
+    if result.suggestions:
+        print(f"\n  Suggestions:")
+        for level in ("L1", "L2", "L3", "L4", "L5"):
+            s = result.suggestions.get(level, "")
+            if s:
+                print(f"    {level}: {s}")
+
     if result.recommendations:
         print(f"\n  Recommendations:")
         for r in result.recommendations:
@@ -239,6 +421,7 @@ def _cmd_create_hitl(args: argparse.Namespace) -> None:
         tradition=args.tradition or "default",
         provider=args.provider,
         node_params=node_params,
+        eval_mode=args.mode,
     )
 
     try:
@@ -256,19 +439,18 @@ def _cmd_create_hitl(args: argparse.Namespace) -> None:
         return
 
     # Display L1-L5 scores as bar chart
-    print(f"\n  VULCA HITL Review")
+    print(f"\n  VULCA HITL Review (mode: {args.mode})")
     print(f"  {'=' * 40}")
     print(f"  Session:   {output.session_id}")
     print(f"  Tradition: {output.tradition}")
     print(f"  Status:    {output.status}")
     print()
     print(f"  L1-L5 Scores:")
-    names = {"L1": "Visual Perception", "L2": "Technical Execution", "L3": "Cultural Context", "L4": "Critical Interpretation", "L5": "Philosophical Aesthetics"}
     scores = output.final_scores
     for level in ("L1", "L2", "L3", "L4", "L5"):
         score = scores.get(level, 0.0)
         bar = "\u2588" * int(score * 20) + "\u2591" * (20 - int(score * 20))
-        print(f"    {level} {names[level]:<25s} {bar} {score:.0%}")
+        print(f"    {level} {_DIM_NAMES[level]:<25s} {bar} {score:.0%}")
     print(f"\n  Weighted Total: {output.weighted_total:.0%}")
     print()
 
@@ -293,16 +475,22 @@ def _cmd_create_hitl(args: argparse.Namespace) -> None:
     print()
 
 
+# ---------------------------------------------------------------------------
+# Tradition commands
+# ---------------------------------------------------------------------------
+
 def _cmd_traditions() -> None:
     from vulca.cultural.loader import get_all_weight_tables
 
     weights_all = get_all_weight_tables()
-    print(f"\n  Available Domains ({len(weights_all)}):")
+    print(f"\n  Available Traditions ({len(weights_all)}):")
     print(f"  {'=' * 50}")
     dim_names = {"L1": "Visual", "L2": "Technical", "L3": "Cultural", "L4": "Critical", "L5": "Philosophical"}
     for name, weights in sorted(weights_all.items()):
         emphasis = max(weights, key=weights.get)
         print(f"    {name:<25s} emphasis: {dim_names.get(emphasis, emphasis)} ({weights[emphasis]:.0%})")
+    print(f"\n  Use a custom tradition: vulca evaluate img.jpg -t ./my_tradition.yaml")
+    print(f"  Create a template:      vulca tradition --init my_style > my_tradition.yaml")
     print()
 
 
@@ -360,6 +548,66 @@ def _cmd_tradition(args: argparse.Namespace) -> None:
 
     print()
 
+
+def _cmd_tradition_init(args: argparse.Namespace) -> None:
+    """Generate a custom tradition YAML template."""
+    name = args.init
+    template = f"""# VULCA Custom Tradition: {name}
+# Usage: vulca evaluate painting.jpg -t ./{name}.yaml
+
+name: {name}
+
+display_name:
+  en: "{name.replace('_', ' ').title()}"
+  zh: ""
+
+# Optional: inherit from a built-in tradition (weights, terminology, taboos)
+# parent: chinese_xieyi
+
+# L1-L5 evaluation weights (MUST sum to 1.0)
+# L1: Visual Perception | L2: Technical Execution | L3: Cultural Context
+# L4: Critical Interpretation | L5: Philosophical Aesthetics
+weights:
+  L1: 0.20
+  L2: 0.20
+  L3: 0.20
+  L4: 0.20
+  L5: 0.20
+
+# Override parent weights (only if 'parent' is set):
+# override_weights:
+#   L1: 0.30
+#   L3: 0.10
+
+# Cultural terminology specific to this tradition
+terminology:
+  - term: "example_technique"
+    term_zh: ""
+    definition:
+      en: "Description of this technique and its significance."
+    category: technique
+    l_levels: [L2]
+
+# Cultural taboos to watch for
+taboos:
+  - rule: "Avoid this specific mistake"
+    severity: medium
+    l_levels: [L3]
+    explanation: "Why this is problematic in this context."
+
+# Remove inherited taboos (only if 'parent' is set):
+# taboos_remove:
+#   - "Inherited taboo rule text to remove"
+
+pipeline:
+  variant: default
+"""
+    print(template)
+
+
+# ---------------------------------------------------------------------------
+# Evolution command
+# ---------------------------------------------------------------------------
 
 def _cmd_evolution(args: argparse.Namespace) -> None:
     import json as json_mod

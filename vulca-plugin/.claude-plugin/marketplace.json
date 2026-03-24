@@ -8,8 +8,8 @@
     {
       "name": "vulca",
       "source": "./",
-      "description": "Cultural art evaluation and guided creation with L1-L5 scoring across 13+ traditions",
-      "version": "0.3.0"
+      "description": "Cultural art advisor with L1-L5 scoring, suggestions, and deviation analysis across 13+ traditions",
+      "version": "0.4.0"
     }
   ]
 }

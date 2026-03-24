@@ -20,6 +20,7 @@ async def acreate(
     api_key: str = "",
     hitl: bool = False,
     weights: dict[str, float] | None = None,
+    eval_mode: str = "strict",
 ) -> CreateResult:
     """Create artwork via local pipeline or remote API (async).
 
@@ -68,6 +69,7 @@ async def acreate(
             image_provider=image_provider,
             hitl=hitl,
             weights=weights,
+            eval_mode=eval_mode,
         )
     return await _create_remote(
         intent,
@@ -88,6 +90,7 @@ async def _create_local(
     image_provider: object | None = None,
     hitl: bool = False,
     weights: dict[str, float] | None = None,
+    eval_mode: str = "strict",
 ) -> CreateResult:
     """Run the slim pipeline engine locally."""
     from vulca.pipeline.engine import execute
@@ -107,6 +110,7 @@ async def _create_local(
         provider=provider,
         node_params=node_params,
         image_provider=image_provider,
+        eval_mode=eval_mode,
     )
 
     # HITL: interrupt before decide node; skip on_complete (pipeline incomplete)
@@ -119,6 +123,15 @@ async def _create_local(
         on_complete=on_complete,
         interrupt_before=interrupt_before,
     )
+
+    # Extract suggestions/deviation_types from events
+    suggestions: dict[str, str] = {}
+    deviation_types: dict[str, str] = {}
+    for event in output.events:
+        if event.event_type.value == "stage_completed" and event.stage == "evaluate":
+            suggestions = event.payload.get("suggestions", {})
+            deviation_types = event.payload.get("deviation_types", {})
+            break
 
     return CreateResult(
         session_id=output.session_id,
@@ -134,6 +147,9 @@ async def _create_local(
         rounds=[r.to_dict() for r in output.rounds],
         summary=output.summary,
         recommendations=output.recommendations,
+        suggestions=suggestions,
+        deviation_types=deviation_types,
+        eval_mode=eval_mode,
         latency_ms=output.total_latency_ms,
         cost_usd=output.total_cost_usd,
         raw=output.to_dict(),
@@ -206,6 +222,7 @@ def create(
     api_key: str = "",
     hitl: bool = False,
     weights: dict[str, float] | None = None,
+    eval_mode: str = "strict",
 ) -> CreateResult:
     """Create artwork (synchronous wrapper).
 
@@ -227,6 +244,7 @@ def create(
         api_key=api_key,
         hitl=hitl,
         weights=weights,
+        eval_mode=eval_mode,
     )
 
     if loop and loop.is_running():

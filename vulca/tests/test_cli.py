@@ -60,7 +60,8 @@ def test_cli_version():
     """``vulca --version`` prints the version string."""
     result = _run_cli("--version")
     assert result.returncode == 0
-    assert "0.3.1" in result.stdout
+    from vulca._version import __version__
+    assert __version__ in result.stdout
 
 
 # -- Traditions Command ----------------------------------------------------
