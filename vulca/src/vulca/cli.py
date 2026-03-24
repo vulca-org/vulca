@@ -763,5 +763,37 @@ try:
             _click.echo(f"  {i}. {p}")
         _click.echo(f"\nSelect with: vulca concept {project_dir} --select N")
 
+    @cli.command("studio")
+    @_click.argument("intent_or_dir")
+    @_click.option("--provider", "-p", default="mock", help="Image provider")
+    @_click.option("--count", "-n", default=4, help="Number of concepts")
+    @_click.option("--resume", is_flag=True, help="Resume from saved session")
+    @_click.option("--api-key", default="", help="API key")
+    def studio_cmd(intent_or_dir: str, provider: str, count: int, resume: bool, api_key: str) -> None:
+        """Run interactive VULCA Studio creative session."""
+        from vulca.studio.interactive import run_studio
+
+        if resume:
+            from vulca.studio.session import StudioSession
+            session = StudioSession.load(intent_or_dir)
+            _click.echo(f"Resuming session {session.session_id}...")
+            result = run_studio(
+                session.brief.intent,
+                project_dir=intent_or_dir,
+                provider=provider,
+                concept_count=count,
+                api_key=api_key,
+            )
+        else:
+            result = run_studio(
+                intent_or_dir,
+                provider=provider,
+                concept_count=count,
+                api_key=api_key,
+            )
+
+        if result:
+            _click.echo(f"\nSession {result.get('session_id', '?')}: {result.get('status', 'unknown')}")
+
 except ImportError:
     pass  # click not installed; click-based CLI unavailable
