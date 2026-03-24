@@ -20,12 +20,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Live Project Status (auto-updated)
 
 <!-- AUTO-STATUS-START -->
-- **Branch**: master | Last commit: 5c351d8 fix: mock providers accept kwargs + tradition guide includes terminology in summary
+- **Branch**: master | Last commit: 1cc53ab feat: v0.4.0 — Judge-to-Advisor pivot with suggestions, modes, and custom traditions
 - **Active Phase**: Phase D1 — Pipeline 可见性修复 — rationale/evolution/instruct/cultural injection
-- **Evolution**: 9 traditions evolved (last: 2026-03-22)
-- **Sessions logged**: 290
+- **Evolution**: 9 traditions evolved (last: 2026-03-24)
+- **Sessions logged**: 390
 - **Config**: 7 agents / 8 skills / 6 rules
-- **Auto-updated**: 2026-03-22 22:32
+- **Auto-updated**: 2026-03-24 08:36
 <!-- AUTO-STATUS-END -->
 
 ## Project Overview
@@ -39,33 +39,42 @@ VULCA — AI-native creation organism. Create, critique, and evolve cultural art
 
 ## VULCA Unified Package (vulca/)
 
-The `vulca/` directory is the unified Python SDK (3,514 lines, 40 files, 189 tests).
+The `vulca/` directory is the unified Python SDK (v0.4.0, 276 tests).
 This replaces the old `app/vulca/` backend module and consolidates logic from `vulca-pkg`.
 
 ### Quick Start
 ```python
 import vulca
 result = vulca.evaluate("artwork.png", tradition="chinese_xieyi")
-result = vulca.create("水墨山水", provider="mock", mode="local")
+print(result.suggestions)    # per-dimension actionable advice
+print(result.deviation_types) # traditional / intentional_departure / experimental
+
+# Reference mode (advisor, not judge)
+result = vulca.evaluate("artwork.png", tradition="chinese_xieyi", mode="reference")
+
+# Create with eval_mode
+result = vulca.create("水墨山水", provider="mock", eval_mode="reference")
 ```
 
 ### Package Structure
 ```
 vulca/src/vulca/
 ├── pipeline/     # Execution engine + 3 built-in nodes + 3 templates
-├── cultural/     # 9 YAML tradition configs with L1-L5 weights
+├── cultural/     # 13 YAML tradition configs with L1-L5 weights
+├── providers/    # Pluggable ImageProvider + VLMProvider protocols
 ├── scoring/      # VLM model routing + L1-L5 evaluation types
 ├── storage/      # Session/Feedback protocol + JSONL backend
 ├── intent/       # Natural language → tradition resolution
 ├── media/        # MediaType enum + creation recipe types
-├── _vlm.py       # Gemini Vision L1-L5 scoring (core)
+├── _vlm.py       # Gemini Vision L1-L5 scoring + suggestions + deviation analysis
 ├── _engine.py    # Evaluation engine singleton
-└── cli.py        # vulca evaluate/create/traditions
+├── cli.py        # vulca evaluate/create/traditions (--mode strict|reference|fusion)
+└── mcp_server.py # MCP server (6 tools, FastMCP)
 ```
 
 ### Testing
 ```bash
-cd vulca && .venv/bin/python -m pytest tests/ -v  # 189 tests
+cd vulca && .venv/bin/python -m pytest tests/ -v  # 276 tests
 ```
 
 ## Essential Commands

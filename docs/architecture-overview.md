@@ -14,7 +14,7 @@ This document is for developers extending VULCA, and for anyone comparing it aga
 | Custom Models | Any .safetensors | No | No | AbstractProvider + ProviderRegistry |
 | Distributable Apps | App Builder (Mar 2026) | No | No | No (pipeline-as-a-unit) |
 | Automated Critique | No | No | No | L1-L5 Critic (VLM-based) |
-| Cultural Awareness | No | No | No | 9 YAML traditions + terminology + taboos |
+| Cultural Awareness | No | No | No | 13 YAML traditions + terminology + taboos + custom YAML |
 | Quality Gate | No | No | No | Queen agent (accept/rerun/pause) |
 | Evolution / Learning | No | No | No | ContextEvolver + MemRL insights |
 | Evaluation Skills | No | No | No | 6 pluggable skill executors |

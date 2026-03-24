@@ -7,7 +7,7 @@
 
 > Create, critique, and evolve cultural art through multi-agent AI pipelines.
 
-VULCA is an open-source creative platform where generation, evaluation, and learning are seamless stages of one process. The core product is **Canvas** -- a unified creation and evaluation playground powered by a multi-agent pipeline. Nine cultural traditions shape how art is generated and scored. The system **learns from every session** -- evolved weights, few-shot references, and cultural insights feed back into the evaluation prompt automatically. No API keys required to start -- the built-in mock provider runs the full pipeline locally.
+VULCA is an open-source creative platform where generation, evaluation, and learning are seamless stages of one process. The core product is **Canvas** -- a unified creation and evaluation playground powered by a multi-agent pipeline. 13 cultural traditions shape how art is generated and scored. The system **learns from every session** -- evolved weights, few-shot references, and cultural insights feed back into the evaluation prompt automatically. No API keys required to start -- the built-in mock provider runs the full pipeline locally.
 
 **Live:** [vulcaart.art](https://vulcaart.art) | **Papers:** EMNLP 2025, WiNLP 2025, arXiv 2026
 
@@ -63,7 +63,7 @@ Intent → Scout → Draft → Critic → Queen → Gallery → Evolve
 > **Note**: `wenxin-moyun` (frontend) and `wenxin-backend` are the original Chinese names meaning "Heart of Ink and Cloud". They are preserved for backward compatibility.
 
 ```
-├── vulca/                 # Unified Python SDK (218 tests)
+├── vulca/                 # Unified Python SDK (276 tests)
 │   └── src/vulca/         #   pipeline/, cultural/, scoring/, storage/, cli, mcp
 ├── wenxin-moyun/          # Frontend (React 19 + TypeScript)
 ├── wenxin-backend/        # Backend (FastAPI + Python 3.13)
@@ -112,7 +112,7 @@ Intent --> Scout --> Router --> Draft --> Critic --> Queen --> Archivist
 | Agent | Role | Technology |
 |-------|------|------------|
 | Scout | Cultural evidence retrieval | Gemini 2.5 Flash |
-| Router | Tradition routing (9 YAML traditions) | Rule-based + LLM |
+| Router | Tradition routing (13 YAML traditions) | Rule-based + LLM |
 | Draft | Image generation | Mock / NB2 / Diffusers / DALL-E / Flux |
 | Critic | L1-L5 multi-dimensional scoring | Gemini 2.5 Flash (VLM) |
 | Queen | Accept/rerun decision gate | Gemini 2.5 Flash |
@@ -191,7 +191,7 @@ taboos:
 | Database | PostgreSQL (Supabase) / SQLite (local) |
 | AI Models | Gemini 2.5 Pro/Flash, NB2, FLUX.2 Pro, DALL-E 3, Diffusers, Mock |
 | Deployment | GCP Cloud Run, Firebase Hosting, GitHub Actions |
-| Testing | Playwright E2E (95 tests), pytest (218 vulca + backend tests) |
+| Testing | Playwright E2E (95 tests), pytest (276 vulca + 1067 backend tests) |
 
 ## API
 
@@ -222,7 +222,7 @@ Full API docs: set `ENABLE_API_DOCS=true` and visit `/docs`.
 ## Testing
 
 ```bash
-# VULCA SDK (218 tests)
+# VULCA SDK (276 tests)
 cd vulca && .venv/bin/python -m pytest tests/ -v
 
 # Backend

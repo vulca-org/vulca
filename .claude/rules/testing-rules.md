@@ -27,8 +27,8 @@ await expect(page.locator('.success-message')).toBeVisible();
 
 | 层级 | 命令 | 说明 |
 |------|------|------|
-| SDK 单测 | `cd vulca && .venv/bin/python -m pytest tests/ -v` | 218 tests |
-| Backend 单测 | `cd wenxin-backend && venv/bin/python -m pytest tests/ -v` | 14+ tests |
+| SDK 单测 | `cd vulca && .venv/bin/python -m pytest tests/ -v` | 276 tests |
+| Backend 单测 | `cd wenxin-backend && python3 -m pytest tests/ -v` | 1067 tests |
 | Frontend 类型 | `cd wenxin-moyun && npm run type-check` | TypeScript 验证 |
 | Frontend lint | `cd wenxin-moyun && npm run lint` | ESLint 验证 |
 | E2E | `cd wenxin-moyun && npm run test:e2e` | 95 tests, 需后端 |
