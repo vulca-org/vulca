@@ -2,9 +2,9 @@
 
 Create, critique, and evolve cultural art through multi-agent AI pipelines.
 
-v0.5.0 adds Studio Pipeline V2: a Brief-driven creative collaboration system
-with 5 phases (Intent → Concept → Generate → Evaluate → Refine), natural
-language Brief updates, and CLI/MCP/ComfyUI integration.
+v0.6.0 adds Gemini LLM intent parsing (implicit element extraction),
+Digestion V2 (4-layer learning system), and Studio polish (preloader,
+style weights, concept preview). 10/10 E2E agent test pass rate.
 
 Usage::
 
