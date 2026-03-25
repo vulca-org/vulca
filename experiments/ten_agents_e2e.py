@@ -23,7 +23,7 @@ from vulca.studio.phases.scout import ScoutPhase
 from vulca.studio.phases.concept import ConceptPhase
 from vulca.studio.phases.generate import GeneratePhase
 from vulca.studio.phases.evaluate import EvaluatePhase
-from vulca.studio.nl_update import parse_nl_update, apply_update
+from vulca.studio.nl_update import parse_nl_update, parse_nl_update_llm, apply_update
 
 
 @dataclass
@@ -381,7 +381,7 @@ async def run_agent(persona: AgentPersona, output_dir: Path) -> AgentReport:
 
     # Apply NL updates
     for instruction in persona.update_instructions:
-        nl_result = parse_nl_update(instruction, session.brief)
+        nl_result = await parse_nl_update_llm(instruction, session.brief)
         apply_update(session.brief, nl_result)
 
         update_obs = PhaseObservation(
