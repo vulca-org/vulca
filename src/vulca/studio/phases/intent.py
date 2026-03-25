@@ -257,6 +257,82 @@ class IntentPhase:
 
         return questions[:5]
 
+    async def generate_questions_llm(self, brief: Brief) -> list[dict[str, Any]]:
+        """Generate domain-adaptive questions using LLM. Falls back to keyword questions."""
+        try:
+            import litellm
+            from vulca._parse import parse_llm_json
+
+            model = os.environ.get("VULCA_VLM_MODEL", "gemini/gemini-2.5-flash")
+
+            # Build context about what's already known
+            known_parts = []
+            if brief.mood:
+                known_parts.append(f"mood: {brief.mood}")
+            if brief.style_mix:
+                styles = ", ".join(s.tradition or s.tag for s in brief.style_mix)
+                known_parts.append(f"style: {styles}")
+            if brief.elements:
+                known_parts.append(f"elements: {', '.join(e.name for e in brief.elements)}")
+            if brief.composition.layout:
+                known_parts.append(f"layout: {brief.composition.layout}")
+            if brief.palette.mood or brief.palette.primary:
+                known_parts.append(f"palette: {brief.palette.mood or brief.palette.primary}")
+
+            known = "; ".join(known_parts) if known_parts else "nothing yet"
+
+            system_prompt = (
+                "You are a creative brief assistant. Generate 2-4 clarifying questions "
+                "to fill gaps in the user's creative brief.\n\n"
+                f"Already known: {known}\n"
+                f"Intent: {brief.intent}\n\n"
+                "Return ONLY valid JSON:\n"
+                '{"questions": [\n'
+                '  {"text": "<question>", "field": "<brief_field>", '
+                '"options": ["<opt1>", ...], "labels": ["<label1>", ...]}\n'
+                "]}\n\n"
+                "Rules:\n"
+                "- Do NOT ask about fields already known\n"
+                "- Adapt questions to the art domain (geometric → symmetry, commercial → dimensions)\n"
+                "- 2-4 options per question, plus include a '自定义' option\n"
+                "- field must be one of: mood, composition, palette, elements, technique, constraints\n"
+                "- CRITICAL: Return ONLY the JSON, no extra text"
+            )
+
+            resp = await litellm.acompletion(
+                model=model,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": f"Generate questions for: {brief.intent}"},
+                ],
+                max_tokens=1024,
+                temperature=0.3,
+                timeout=20,
+            )
+            text = resp.choices[0].message.content.strip()
+            data = parse_llm_json(text)
+
+            questions = []
+            for q in data.get("questions", []):
+                if isinstance(q, dict) and "text" in q and "options" in q:
+                    if "labels" not in q:
+                        q["labels"] = q["options"]
+                    if "field" not in q:
+                        q["field"] = "custom"
+                    # Ensure 自定义 option
+                    if not any("自定义" in l or "custom" in l.lower() for l in q["labels"]):
+                        q["options"].append("custom")
+                        q["labels"].append("自定义 (custom)")
+                    questions.append(q)
+
+            if questions:
+                return questions[:5]
+
+        except Exception as exc:
+            logger.warning("LLM question generation failed, using keyword fallback: %s", exc)
+
+        return self.generate_questions(brief)
+
     def apply_answer(self, brief: Brief, question: dict, answer: str) -> None:
         field = question.get("field", "")
         if field == "mood":
