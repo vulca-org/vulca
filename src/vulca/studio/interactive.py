@@ -12,7 +12,7 @@ from vulca.studio.phases.scout import ScoutPhase
 from vulca.studio.phases.concept import ConceptPhase
 from vulca.studio.phases.generate import GeneratePhase
 from vulca.studio.phases.evaluate import EvaluatePhase
-from vulca.studio.nl_update import parse_nl_update, apply_update
+from vulca.studio.nl_update import parse_nl_update, parse_nl_update_llm, apply_update
 
 logger = logging.getLogger("vulca.studio")
 
@@ -210,7 +210,7 @@ async def _run_studio_async(
             else:
                 instruction = _ask("Update instruction: ").strip()
             if instruction:
-                nl_result = parse_nl_update(instruction, session.brief)
+                nl_result = await parse_nl_update_llm(instruction, session.brief)
                 apply_update(session.brief, nl_result)
                 _print(f"  Brief updated → rollback to {nl_result.rollback_to.value}")
                 session.rollback_to(SessionState.GENERATE)

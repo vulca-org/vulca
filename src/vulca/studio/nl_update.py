@@ -1,6 +1,8 @@
 """NL Update parser -- parse natural language into Brief field updates."""
 from __future__ import annotations
 
+import logging
+import os
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -9,6 +11,8 @@ from typing import Any
 from vulca.studio.brief import Brief
 from vulca.studio.session import SessionState
 from vulca.studio.types import BriefUpdate, Element
+
+logger = logging.getLogger("vulca.studio")
 
 
 @dataclass
@@ -225,3 +229,73 @@ def apply_update(brief: Brief, result: NLUpdateResult) -> None:
         fields_changed=list(result.field_updates.keys()),
         rollback_to=result.rollback_to.value,
     ))
+
+
+async def parse_nl_update_llm(instruction: str, brief: Brief) -> NLUpdateResult:
+    """Parse NL update using LLM for complex instructions. Falls back to keyword parsing."""
+    try:
+        import litellm
+        from vulca._parse import parse_llm_json
+
+        model = os.environ.get("VULCA_VLM_MODEL", "gemini/gemini-2.5-flash")
+
+        # Brief context
+        brief_ctx = []
+        if brief.mood:
+            brief_ctx.append(f"mood: {brief.mood}")
+        if brief.elements:
+            brief_ctx.append(f"elements: {', '.join(e.name for e in brief.elements[:5])}")
+        if brief.composition.layout:
+            brief_ctx.append(f"layout: {brief.composition.layout}")
+
+        system_prompt = (
+            "You are a creative brief update parser. Given an update instruction, "
+            "extract which Brief fields should change.\n\n"
+            f"Current Brief: {'; '.join(brief_ctx) or 'empty'}\n\n"
+            "Return ONLY valid JSON:\n"
+            "{\n"
+            '  "field_updates": {"<field>": "<new_value>", ...},\n'
+            '  "explanation": "<what this update does>"\n'
+            "}\n\n"
+            "Valid fields: mood, composition, palette, elements, must_have, must_avoid, "
+            "style_mix, eval_criteria\n"
+            "Rules:\n"
+            "- Extract ALL field changes from the instruction\n"
+            "- A single instruction can update multiple fields\n"
+            "- Position/layout changes → composition field\n"
+            "- Color/tone changes → palette field\n"
+            "- Add/remove objects → elements field\n"
+            "- Return ONLY the JSON"
+        )
+
+        resp = await litellm.acompletion(
+            model=model,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": instruction},
+            ],
+            max_tokens=512,
+            temperature=0.0,
+            timeout=15,
+        )
+        text = resp.choices[0].message.content.strip()
+        data = parse_llm_json(text)
+
+        updates = data.get("field_updates", {})
+        explanation = data.get("explanation", "")
+
+        if updates:
+            changed = list(updates.keys())
+            rollback = determine_rollback(changed)
+            return NLUpdateResult(
+                field_updates=updates,
+                rollback_to=rollback,
+                confidence=0.85,
+                explanation=explanation,
+            )
+
+    except Exception as exc:
+        logger.warning("LLM NL update parsing failed, using keyword fallback: %s", exc)
+
+    # Fallback to keyword parsing
+    return parse_nl_update(instruction, brief)
