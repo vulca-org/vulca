@@ -25,6 +25,32 @@ class EvaluatePhase:
         if not brief.eval_criteria:
             brief.eval_criteria = generate_eval_criteria_sync(brief, use_llm=False)
 
+    @staticmethod
+    def _mock_scores(brief: Brief) -> dict[str, float]:
+        """Generate mock scores that vary by session and respond to Brief completeness."""
+        import hashlib
+
+        round_num = len(brief.generations) + 1
+        seed = hashlib.md5(f"{brief.session_id}:{round_num}".encode()).digest()
+
+        # Brief completeness drives base score: 0.45 (empty) → 0.70 (complete)
+        completeness = sum([
+            bool(brief.mood),
+            bool(brief.style_mix),
+            bool(brief.composition.layout),
+            bool(brief.palette.primary),
+            bool(brief.elements),
+            bool(brief.must_have),
+            bool(brief.selected_concept),
+        ]) / 7.0
+        base = 0.45 + completeness * 0.25
+
+        scores = {}
+        for i, dim in enumerate(("L1", "L2", "L3", "L4", "L5")):
+            noise = (seed[i] / 255.0 - 0.5) * 0.3  # ±0.15
+            scores[dim] = round(max(0.1, min(0.95, base + noise)), 2)
+        return scores
+
     def build_eval_prompt(self, brief: Brief) -> str:
         """Build VLM system prompt with Brief-specific criteria."""
         self.ensure_eval_criteria(brief)
@@ -78,8 +104,7 @@ class EvaluatePhase:
         self.ensure_eval_criteria(brief)
 
         if mock or not image_path:
-            # Return mock scores
-            return {f"L{i}": 0.65 + i * 0.03 for i in range(1, 6)}
+            return self._mock_scores(brief)
 
         # Load image
         try:
