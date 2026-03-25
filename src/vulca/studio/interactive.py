@@ -13,6 +13,7 @@ from vulca.studio.phases.concept import ConceptPhase
 from vulca.studio.phases.generate import GeneratePhase
 from vulca.studio.phases.evaluate import EvaluatePhase
 from vulca.studio.nl_update import parse_nl_update, parse_nl_update_llm, apply_update
+from vulca.digestion.preloader import preload_intelligence
 
 logger = logging.getLogger("vulca.studio")
 
@@ -34,6 +35,7 @@ def run_studio(
     provider: str = "mock",
     concept_count: int = 4,
     api_key: str = "",
+    data_dir: str = "",
 ) -> dict:
     """Run interactive studio session. Returns summary dict."""
     loop = asyncio.new_event_loop()
@@ -45,6 +47,7 @@ def run_studio(
                 provider=provider,
                 concept_count=concept_count,
                 api_key=api_key,
+                data_dir=data_dir,
             )
         )
     finally:
@@ -58,6 +61,7 @@ async def _run_studio_async(
     provider: str = "mock",
     concept_count: int = 4,
     api_key: str = "",
+    data_dir: str = "",
 ) -> dict:
     # Create session
     session = StudioSession.new(intent, project_dir=project_dir)
@@ -65,6 +69,14 @@ async def _run_studio_async(
 
     _print(f"\nVULCA Studio — session {session.session_id}")
     _print(f"Project: {session.project_dir}/\n")
+
+    # ── Layer 0: Pre-session intelligence ──
+    preload_ctx = preload_intelligence(intent, data_dir=data_dir)
+    if preload_ctx.get("suggested_traditions"):
+        _print(f"  Suggested styles: {', '.join(preload_ctx['suggested_traditions'])}")
+    if preload_ctx.get("prompt_hints"):
+        for hint in preload_ctx["prompt_hints"]:
+            _print(f"  Hint: {hint}")
 
     # ── Sketch prompt ──
     sketch_path = _ask("Reference sketch? (path or Enter to skip): ").strip()
@@ -84,6 +96,22 @@ async def _run_studio_async(
             f"{s.tradition or s.tag} ({s.weight:.0%})" for s in session.brief.style_mix
         )
         _print(f"  Style detected: {styles}")
+
+        # Style weight adjustment
+        if len(session.brief.style_mix) >= 2:
+            adj = _ask("  Adjust weights? (e.g. 70/30, or Enter to keep): ").strip()
+            if adj and "/" in adj:
+                parts = adj.split("/")
+                try:
+                    raw = [float(p) for p in parts]
+                    total = sum(raw)
+                    if total > 0:
+                        for i, s in enumerate(session.brief.style_mix):
+                            if i < len(raw):
+                                s.weight = round(raw[i] / total, 2)
+                        _print(f"  Weights adjusted: {', '.join(f'{s.tradition or s.tag} ({s.weight:.0%})' for s in session.brief.style_mix)}")
+                except ValueError:
+                    pass
 
     # Ask clarifying questions
     questions = intent_phase.generate_questions(session.brief)
@@ -128,7 +156,10 @@ async def _run_studio_async(
         project_dir=pdir, api_key=api_key
     )
     for i, p in enumerate(paths, 1):
-        _print(f"  {i}. {p}")
+        ppath = Path(p)
+        size = ppath.stat().st_size if ppath.exists() else 0
+        size_str = f"{size / 1024:.0f}KB" if size >= 1024 else f"{size}B"
+        _print(f"  {i}. {ppath.name} ({size_str})")
 
     answer = _ask("Select (1-N, or describe changes): ").strip()
     if answer.lower() == "q":

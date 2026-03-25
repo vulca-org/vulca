@@ -151,8 +151,9 @@ def test_style_weight_adjustment(tmp_path, monkeypatch):
     """User should be able to adjust style weights after detection."""
     from vulca.studio.interactive import run_studio
 
-    # sketch=skip, weights="70/30" or Enter to keep, 5 questions=1, concept=1, accept=a
-    inputs = iter(["", "", "1", "1", "1", "1", "1", "1", "a"])
+    # sketch=skip, weights="70/30", 5 questions=1, concept=1, accept=a
+    # "赛博朋克水墨" → 2 styles detected → weight prompt appears
+    inputs = iter(["", "70/30", "1", "1", "1", "1", "1", "1", "a"])
     monkeypatch.setattr("builtins.input", lambda _="": next(inputs))
 
     result = run_studio(
