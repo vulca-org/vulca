@@ -7,12 +7,46 @@ from vulca.studio.brief import Brief
 from vulca.studio.types import StyleWeight, Element
 
 _TRADITION_HINTS: dict[str, str] = {
+    # Chinese Xieyi (freehand ink)
     "水墨": "chinese_xieyi", "写意": "chinese_xieyi", "ink wash": "chinese_xieyi",
-    "xieyi": "chinese_xieyi", "工笔": "chinese_gongbi", "gongbi": "chinese_gongbi",
+    "xieyi": "chinese_xieyi", "泼墨": "chinese_xieyi", "山水": "chinese_xieyi",
+    "江南": "chinese_xieyi", "桃花": "chinese_xieyi", "中国风": "chinese_xieyi",
+    "国画": "chinese_xieyi", "chinese painting": "chinese_xieyi",
+    "chinese ink": "chinese_xieyi", "shanshui": "chinese_xieyi",
+    # Chinese Gongbi (meticulous)
+    "工笔": "chinese_gongbi", "gongbi": "chinese_gongbi", "细笔": "chinese_gongbi",
+    "meticulous": "chinese_gongbi",
+    # Japanese
     "浮世绘": "japanese_traditional", "ukiyo": "japanese_traditional",
+    "日本画": "japanese_traditional", "和风": "japanese_traditional",
+    "japanese": "japanese_traditional",
+    # Western Academic
     "油画": "western_academic", "oil painting": "western_academic",
-    "watercolor": "watercolor", "水彩": "watercolor",
+    "古典": "western_academic", "renaissance": "western_academic",
+    "classical": "western_academic", "academic": "western_academic",
+    # Watercolor
+    "watercolor": "watercolor", "水彩": "watercolor", "aquarelle": "watercolor",
+    # Islamic Geometric
     "几何": "islamic_geometric", "geometric": "islamic_geometric",
+    "tessellation": "islamic_geometric", "islamic": "islamic_geometric",
+    # Contemporary Art
+    "抽象": "contemporary_art", "abstract": "contemporary_art",
+    "当代艺术": "contemporary_art", "contemporary": "contemporary_art",
+    "modern art": "contemporary_art", "现代艺术": "contemporary_art",
+    # Brand Design
+    "商业": "brand_design", "品牌": "brand_design", "brand": "brand_design",
+    "海报": "brand_design", "poster": "brand_design", "logo": "brand_design",
+    "广告": "brand_design", "commercial": "brand_design",
+    # Photography
+    "摄影": "photography", "photo": "photography", "photography": "photography",
+    # UI/UX
+    "ui": "ui_ux_design", "ux": "ui_ux_design", "界面": "ui_ux_design",
+    "app design": "ui_ux_design",
+    # African Traditional
+    "african": "african_traditional", "非洲": "african_traditional",
+    # South Asian
+    "印度": "south_asian", "indian": "south_asian", "south asian": "south_asian",
+    "mughal": "south_asian", "mandala": "south_asian",
 }
 
 _TAG_HINTS = ["cyberpunk", "赛博朋克", "steampunk", "蒸汽朋克", "pixel", "像素",
