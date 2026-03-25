@@ -307,7 +307,7 @@ class IntentPhase:
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": brief.intent},
                 ],
-                max_tokens=1024,
+                max_tokens=2048,
                 temperature=0.1,
                 timeout=30,
             )
