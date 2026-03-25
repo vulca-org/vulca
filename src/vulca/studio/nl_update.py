@@ -79,7 +79,9 @@ _AVOID_KEYWORDS = [
 
 _ADD_KEYWORDS = [
     "加入", "添加", "增加", "加上",
-    "add ", "include ",
+    "加一", "放一", "画一", "来一", "搞一",
+    "加些", "加点", "放些", "放点",
+    "add ", "include ", "put ",
 ]
 
 _COMPOSITION_KEYWORDS = [
@@ -88,6 +90,12 @@ _COMPOSITION_KEYWORDS = [
     "taller", "bigger", "closer", "farther", "steeper",
     "山", "水", "天空", "前景", "背景",
     "mountain", "water", "sky", "foreground", "background",
+    # Position keywords
+    "远处", "近处", "左边", "右边", "上方", "下方",
+    "左侧", "右侧", "中间", "中央", "角落",
+    "左上", "右上", "左下", "右下",
+    "far", "near", "left", "right", "top", "bottom", "center",
+    "移到", "挪到", "放到",
 ]
 
 _COLOR_KEYWORDS = [
