@@ -295,7 +295,10 @@ class IntentPhase:
                 "- Detect color information even from adjectives (cold, warm, monochrome)\n"
                 "- Set composition from spatial cues (perspective, negative space, aspect ratio)\n"
                 "- Use empty string/list for unknown fields, never omit fields\n"
-                "- Respond in the same language as the input for mood/element names"
+                "- Respond in the same language as the input for mood/element names\n"
+                "- CRITICAL: elements MUST be [{\"name\": \"...\", \"category\": \"...\"}] format\n"
+                "- CRITICAL: style_mix MUST be [{\"tradition\": \"...\", \"tag\": \"...\", \"weight\": N}] format\n"
+                "- CRITICAL: Return ONLY the JSON object, no extra text or explanation"
             )
 
             resp = await litellm.acompletion(
@@ -321,12 +324,15 @@ class IntentPhase:
 
     @staticmethod
     def _apply_llm_result(brief: Brief, data: dict) -> None:
-        """Apply parsed LLM JSON to Brief fields (additive, no overwrite of existing)."""
+        """Apply parsed LLM JSON to Brief fields (additive, no overwrite of existing).
+
+        Handles both strict schema (dicts) and loose schema (strings) from LLMs.
+        """
         # Mood
         if data.get("mood") and not brief.mood:
-            brief.mood = data["mood"]
+            brief.mood = str(data["mood"])
 
-        # Style mix
+        # Style mix — handle both dict list and string list
         if data.get("style_mix") and not brief.style_mix:
             styles = []
             for s in data["style_mix"]:
@@ -336,32 +342,55 @@ class IntentPhase:
                         tag=s.get("tag", ""),
                         weight=float(s.get("weight", 0.5)),
                     ))
+                elif isinstance(s, str) and s:
+                    # Check if it matches a known tradition
+                    s_lower = s.lower().replace(" ", "_")
+                    known = {v for v in _TRADITION_HINTS.values()}
+                    if s_lower in known:
+                        styles.append(StyleWeight(tradition=s_lower, weight=0.5))
+                    else:
+                        styles.append(StyleWeight(tag=s, weight=0.5))
             if styles:
+                for st in styles:
+                    st.weight = round(1.0 / len(styles), 2)
                 brief.style_mix = styles
 
-        # Elements (additive)
+        # Elements (additive) — handle both dict list and string list
         existing_names = {e.name.lower() for e in brief.elements}
         for e in data.get("elements", []):
             if isinstance(e, dict):
                 name = e.get("name", "")
-                if name and name.lower() not in existing_names:
-                    brief.elements.append(Element(
-                        name=name,
-                        category=e.get("category", ""),
-                    ))
-                    existing_names.add(name.lower())
+                cat = e.get("category", "")
+            elif isinstance(e, str):
+                name = e
+                cat = ""
+            else:
+                continue
+            if name and name.lower() not in existing_names:
+                brief.elements.append(Element(name=name, category=cat))
+                existing_names.add(name.lower())
 
-        # Palette
+        # Palette — handle non-standard keys (base/accents vs primary/accent/mood)
         pal = data.get("palette", {})
         if isinstance(pal, dict):
-            if pal.get("primary") and not brief.palette.primary:
-                brief.palette.primary = [c for c in pal["primary"] if isinstance(c, str)]
-            if pal.get("accent") and not brief.palette.accent:
-                brief.palette.accent = [c for c in pal["accent"] if isinstance(c, str)]
-            if pal.get("mood") and not brief.palette.mood:
-                brief.palette.mood = pal["mood"]
+            primary = pal.get("primary") or pal.get("base_colors", [])
+            accent = pal.get("accent") or pal.get("accents") or pal.get("accent_colors", [])
+            mood = pal.get("mood") or pal.get("base") or pal.get("tone", "")
 
-        # Composition
+            if primary and not brief.palette.primary:
+                if isinstance(primary, list):
+                    brief.palette.primary = [c for c in primary if isinstance(c, str)]
+                elif isinstance(primary, str):
+                    brief.palette.primary = [primary]
+            if accent and not brief.palette.accent:
+                if isinstance(accent, list):
+                    brief.palette.accent = [c for c in accent if isinstance(c, str)]
+                elif isinstance(accent, str):
+                    brief.palette.accent = [accent]
+            if mood and not brief.palette.mood:
+                brief.palette.mood = str(mood)
+
+        # Composition — handle both dict and string
         comp = data.get("composition", {})
         if isinstance(comp, dict):
             if comp.get("layout") and not brief.composition.layout:
@@ -372,6 +401,8 @@ class IntentPhase:
                 brief.composition.aspect_ratio = comp["aspect_ratio"]
             if comp.get("negative_space") and not brief.composition.negative_space:
                 brief.composition.negative_space = comp["negative_space"]
+        elif isinstance(comp, str) and comp and not brief.composition.layout:
+            brief.composition.layout = comp
 
         # Must have / avoid (additive)
         for item in data.get("must_have", []):
