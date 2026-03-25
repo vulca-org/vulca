@@ -77,7 +77,7 @@ async def _run_studio_async(
 
     # ── Phase 1: INTENT ──
     _print("[Intent] Analyzing your creative vision...")
-    intent_phase.parse_intent(session.brief)
+    await intent_phase.parse_intent_llm(session.brief)
 
     if session.brief.style_mix:
         styles = ", ".join(
