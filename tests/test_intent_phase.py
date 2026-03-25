@@ -148,6 +148,91 @@ def test_extract_composition_layout_type():
     assert "diagonal" in b.composition.layout.lower() or "对角" in b.composition.layout
 
 
+# --- Step 1.6: Dynamic Questions (E5) ---
+
+
+def test_no_mood_question_if_mood_already_set():
+    """If Brief already has mood, don't ask about mood."""
+    from vulca.studio.phases.intent import IntentPhase
+    from vulca.studio.brief import Brief
+
+    b = Brief.new("test", mood="serene")
+    phase = IntentPhase()
+    questions = phase.generate_questions(b)
+
+    fields = [q["field"] for q in questions]
+    assert "mood" not in fields
+
+
+def test_composition_question_when_layout_empty():
+    """If composition.layout is empty, should ask composition question."""
+    from vulca.studio.phases.intent import IntentPhase
+    from vulca.studio.brief import Brief
+
+    b = Brief.new("test")
+    # mood is empty → mood question will be asked
+    # composition is empty → composition question should be asked
+    phase = IntentPhase()
+    questions = phase.generate_questions(b)
+
+    fields = [q["field"] for q in questions]
+    assert "composition" in fields, f"Expected composition question, got fields: {fields}"
+
+
+def test_palette_question_when_no_colors():
+    """If palette has no colors, should ask palette question."""
+    from vulca.studio.phases.intent import IntentPhase
+    from vulca.studio.brief import Brief
+
+    b = Brief.new("test")
+    phase = IntentPhase()
+    questions = phase.generate_questions(b)
+
+    fields = [q["field"] for q in questions]
+    assert "palette" in fields, f"Expected palette question, got fields: {fields}"
+
+
+def test_elements_question_when_no_elements():
+    """If no elements, should ask about elements."""
+    from vulca.studio.phases.intent import IntentPhase
+    from vulca.studio.brief import Brief
+
+    b = Brief.new("test")
+    phase = IntentPhase()
+    questions = phase.generate_questions(b)
+
+    fields = [q["field"] for q in questions]
+    assert "elements" in fields, f"Expected elements question, got fields: {fields}"
+
+
+def test_max_5_questions():
+    """Never generate more than 5 questions."""
+    from vulca.studio.phases.intent import IntentPhase
+    from vulca.studio.brief import Brief
+
+    b = Brief.new("test")  # All fields empty → max questions
+    phase = IntentPhase()
+    questions = phase.generate_questions(b)
+
+    assert len(questions) <= 5, f"Too many questions: {len(questions)}"
+
+
+def test_free_text_option_always_present():
+    """Every question should include a free-text / custom option."""
+    from vulca.studio.phases.intent import IntentPhase
+    from vulca.studio.brief import Brief
+
+    b = Brief.new("test")
+    phase = IntentPhase()
+    questions = phase.generate_questions(b)
+
+    assert len(questions) > 0
+    for q in questions:
+        labels = q.get("labels", [])
+        has_custom = any("自定义" in l or "custom" in l.lower() for l in labels)
+        assert has_custom, f"Question '{q['text']}' missing free-text option, labels: {labels}"
+
+
 # --- Step 1.3: Tradition Keywords Expansion (E4) ---
 
 
