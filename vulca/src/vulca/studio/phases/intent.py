@@ -204,7 +204,8 @@ class IntentPhase:
             brief.composition.aspect_ratio = m.group(1)
 
     def generate_questions(self, brief: Brief) -> list[dict[str, Any]]:
-        questions = []
+        questions: list[dict[str, Any]] = []
+
         if not brief.mood:
             questions.append({
                 "text": "What mood/atmosphere?",
@@ -212,6 +213,31 @@ class IntentPhase:
                 "options": [o["value"] for o in _MOOD_OPTIONS],
                 "labels": [o["label"] for o in _MOOD_OPTIONS],
             })
+
+        if not brief.composition.layout:
+            questions.append({
+                "text": "Composition/layout preference?",
+                "field": "composition",
+                "options": ["rule-of-thirds", "centered", "diagonal", "symmetrical", "golden-ratio"],
+                "labels": ["三分法", "居中", "对角线", "对称", "黄金分割"],
+            })
+
+        if not brief.palette.primary and not brief.palette.mood:
+            questions.append({
+                "text": "Color palette?",
+                "field": "palette",
+                "options": ["warm", "cool", "monochrome", "earth-tones", "vibrant"],
+                "labels": ["暖色调", "冷色调", "单色", "大地色系", "鲜艳明快"],
+            })
+
+        if not brief.elements:
+            questions.append({
+                "text": "Key elements to include?",
+                "field": "elements",
+                "options": ["nature", "architecture", "figures", "abstract-forms"],
+                "labels": ["自然元素", "建筑元素", "人物", "抽象形态"],
+            })
+
         if not any(e.category == "technique" for e in brief.elements):
             questions.append({
                 "text": "Brush/rendering style?",
@@ -219,7 +245,13 @@ class IntentPhase:
                 "options": [o["value"] for o in _BRUSH_OPTIONS],
                 "labels": [o["label"] for o in _BRUSH_OPTIONS],
             })
-        return questions
+
+        # Add 自定义 option to each question
+        for q in questions:
+            q["options"].append("custom")
+            q["labels"].append("自定义 (custom)")
+
+        return questions[:5]
 
     def apply_answer(self, brief: Brief, question: dict, answer: str) -> None:
         field = question.get("field", "")
