@@ -140,3 +140,85 @@ def test_no_fallback_for_position_instructions():
     assert "(fallback)" not in result.explanation, (
         f"Position instruction should not be fallback: {result.explanation}"
     )
+
+
+# --- NL Update LLM Parsing ---
+
+
+@pytest.mark.asyncio
+async def test_nl_update_llm_parses_complex_instruction(monkeypatch):
+    """LLM should parse complex Chinese instructions into structured field updates."""
+    from vulca.studio.nl_update import parse_nl_update_llm
+    from vulca.studio.brief import Brief
+    import json
+
+    async def fake_acompletion(**kwargs):
+        class _C:
+            message = type("M", (), {"content": json.dumps({
+                "field_updates": {
+                    "composition": "茶壶放在画面中央偏下",
+                    "elements": "茶壶位置调整",
+                },
+                "explanation": "调整茶壶位置到中央偏下区域",
+            })})()
+        class _R:
+            choices = [_C()]
+        return _R()
+
+    monkeypatch.setattr("litellm.acompletion", fake_acompletion)
+
+    b = Brief.new("茶叶包装插画")
+    result = await parse_nl_update_llm("茶壶要放在画面中央偏下的位置", b)
+
+    assert len(result.field_updates) >= 1
+    assert result.explanation, "LLM should provide explanation"
+    assert "(fallback)" not in result.explanation
+
+
+@pytest.mark.asyncio
+async def test_nl_update_llm_fallback_to_keyword(monkeypatch):
+    """If LLM fails, should fall back to keyword parsing."""
+    from vulca.studio.nl_update import parse_nl_update_llm
+    from vulca.studio.brief import Brief
+
+    async def failing_acompletion(**kwargs):
+        raise Exception("API error")
+
+    monkeypatch.setattr("litellm.acompletion", failing_acompletion)
+
+    b = Brief.new("test")
+    result = await parse_nl_update_llm("把山改得更高更陡", b)
+
+    # Should still return a valid result via keyword fallback
+    assert len(result.field_updates) >= 1
+
+
+@pytest.mark.asyncio
+async def test_nl_update_llm_multi_field(monkeypatch):
+    """LLM should extract multiple field changes from a single instruction."""
+    from vulca.studio.nl_update import parse_nl_update_llm
+    from vulca.studio.brief import Brief
+    import json
+
+    async def fake_acompletion(**kwargs):
+        class _C:
+            message = type("M", (), {"content": json.dumps({
+                "field_updates": {
+                    "elements": "雪山",
+                    "palette": "冷色调",
+                    "composition": "远景增加雪山",
+                },
+                "explanation": "添加远处雪山并调整为冷色调",
+            })})()
+        class _R:
+            choices = [_C()]
+        return _R()
+
+    monkeypatch.setattr("litellm.acompletion", fake_acompletion)
+
+    b = Brief.new("山水画")
+    result = await parse_nl_update_llm("在远处加一座雪山，配色改成冷色调", b)
+
+    assert len(result.field_updates) >= 2, (
+        f"Expected multi-field update, got {result.field_updates}"
+    )
