@@ -146,3 +146,66 @@ def test_extract_composition_layout_type():
 
     assert b.composition.layout, "layout should be set for '对角线构图'"
     assert "diagonal" in b.composition.layout.lower() or "对角" in b.composition.layout
+
+
+# --- Step 1.3: Tradition Keywords Expansion (E4) ---
+
+
+def test_detect_jiangnan():
+    """'江南水乡' should detect chinese_xieyi."""
+    from vulca.studio.phases.intent import IntentPhase
+    from vulca.studio.brief import Brief
+
+    b = Brief.new("春天桃花盛开的江南水乡")
+    IntentPhase().parse_intent(b)
+
+    traditions = [s.tradition for s in b.style_mix]
+    assert "chinese_xieyi" in traditions
+
+
+def test_detect_zhongguofeng():
+    """'中国风' should detect a Chinese tradition."""
+    from vulca.studio.phases.intent import IntentPhase
+    from vulca.studio.brief import Brief
+
+    b = Brief.new("中国风的古建筑画")
+    IntentPhase().parse_intent(b)
+
+    traditions = [s.tradition for s in b.style_mix]
+    assert "chinese_xieyi" in traditions or "chinese_gongbi" in traditions
+
+
+def test_detect_abstract():
+    """'抽象画' should detect contemporary_art."""
+    from vulca.studio.phases.intent import IntentPhase
+    from vulca.studio.brief import Brief
+
+    b = Brief.new("一幅抽象画，色彩丰富")
+    IntentPhase().parse_intent(b)
+
+    traditions = [s.tradition for s in b.style_mix]
+    assert "contemporary_art" in traditions
+
+
+def test_detect_commercial():
+    """'商业设计' / 'brand' should detect brand_design."""
+    from vulca.studio.phases.intent import IntentPhase
+    from vulca.studio.brief import Brief
+
+    b = Brief.new("一个商业品牌设计海报")
+    IntentPhase().parse_intent(b)
+
+    traditions = [s.tradition for s in b.style_mix]
+    assert "brand_design" in traditions
+
+
+def test_detect_taohua_spring():
+    """'桃花' with spring context should detect chinese_xieyi."""
+    from vulca.studio.phases.intent import IntentPhase
+    from vulca.studio.brief import Brief
+
+    b = Brief.new("春天桃花落英缤纷的山水画")
+    IntentPhase().parse_intent(b)
+
+    traditions = [s.tradition for s in b.style_mix]
+    assert "chinese_xieyi" in traditions
