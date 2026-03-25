@@ -294,3 +294,155 @@ def test_detect_taohua_spring():
 
     traditions = [s.tradition for s in b.style_mix]
     assert "chinese_xieyi" in traditions
+
+
+# --- Step 2.1: LLM Intent Parsing ---
+
+
+def _make_mock_llm_response(json_content: dict):
+    """Helper: create a mock litellm response object."""
+    import json
+
+    class _Choice:
+        def __init__(self, text):
+            self.message = type("Msg", (), {"content": text})()
+
+    class _Response:
+        def __init__(self, text):
+            self.choices = [_Choice(text)]
+
+    return _Response(json.dumps(json_content, ensure_ascii=False))
+
+
+@pytest.mark.asyncio
+async def test_intent_llm_extracts_all_fields(monkeypatch):
+    """LLM intent parsing should extract mood, elements, palette, composition from free text."""
+    from vulca.studio.phases.intent import IntentPhase
+    from vulca.studio.brief import Brief
+
+    # Mock LLM returns structured JSON
+    mock_response = _make_mock_llm_response({
+        "mood": "serene-contemplative",
+        "style_mix": [{"tradition": "chinese_xieyi", "weight": 1.0}],
+        "elements": [
+            {"name": "远山", "category": "subject"},
+            {"name": "烟雾", "category": "atmosphere"},
+            {"name": "石桥", "category": "subject"},
+            {"name": "流水", "category": "subject"},
+        ],
+        "palette": {"primary": [], "accent": [], "mood": "ink-wash monochrome"},
+        "composition": {"layout": "散点透视", "negative_space": "heavy"},
+        "must_have": ["留白三成"],
+        "must_avoid": [],
+    })
+
+    async def fake_acompletion(**kwargs):
+        return mock_response
+
+    monkeypatch.setattr("litellm.acompletion", fake_acompletion)
+
+    b = Brief.new("一幅传统水墨山水画，远山含烟，近水有桥，留白三成，散点透视")
+    phase = IntentPhase()
+    await phase.parse_intent_llm(b)
+
+    # Should extract elements that keyword parsing misses
+    element_names = [e.name for e in b.elements]
+    assert len(element_names) >= 3, f"Expected 3+ elements, got {element_names}"
+    assert any("山" in n for n in element_names)
+    assert any("桥" in n or "石桥" in n for n in element_names)
+
+    # Should set mood
+    assert b.mood, "mood should be set"
+
+    # Should set composition
+    assert b.composition.negative_space, "negative_space should be set"
+
+    # Should set must_have
+    assert len(b.must_have) >= 1
+
+
+@pytest.mark.asyncio
+async def test_intent_llm_fallback_to_keyword_on_failure(monkeypatch):
+    """If LLM call fails, should fall back to keyword parsing without error."""
+    from vulca.studio.phases.intent import IntentPhase
+    from vulca.studio.brief import Brief
+
+    async def failing_acompletion(**kwargs):
+        raise Exception("API quota exceeded")
+
+    monkeypatch.setattr("litellm.acompletion", failing_acompletion)
+
+    b = Brief.new("赛博朋克水墨山水")
+    phase = IntentPhase()
+    await phase.parse_intent_llm(b)
+
+    # Should still work via keyword fallback
+    traditions = [s.tradition for s in b.style_mix]
+    assert "chinese_xieyi" in traditions, "keyword fallback should detect traditions"
+
+
+@pytest.mark.asyncio
+async def test_intent_llm_structured_json_output(monkeypatch):
+    """LLM should be called with a system prompt requesting structured JSON."""
+    from vulca.studio.phases.intent import IntentPhase
+    from vulca.studio.brief import Brief
+
+    captured_kwargs = {}
+
+    async def capture_acompletion(**kwargs):
+        captured_kwargs.update(kwargs)
+        return _make_mock_llm_response({
+            "mood": "warm",
+            "style_mix": [],
+            "elements": [{"name": "sunset", "category": "subject"}],
+            "palette": {"primary": ["#FF6B35"], "mood": "warm tones"},
+            "composition": {},
+            "must_have": [],
+            "must_avoid": [],
+        })
+
+    monkeypatch.setattr("litellm.acompletion", capture_acompletion)
+
+    b = Brief.new("a warm sunset painting")
+    phase = IntentPhase()
+    await phase.parse_intent_llm(b)
+
+    # Should have called litellm with proper structure
+    assert "messages" in captured_kwargs
+    assert "model" in captured_kwargs
+    # System prompt should request JSON output
+    system_msg = captured_kwargs["messages"][0]["content"]
+    assert "JSON" in system_msg or "json" in system_msg
+
+
+@pytest.mark.asyncio
+async def test_intent_llm_english_implicit_elements(monkeypatch):
+    """LLM should extract implicit elements from English text that keyword parsing misses."""
+    from vulca.studio.phases.intent import IntentPhase
+    from vulca.studio.brief import Brief
+
+    mock_response = _make_mock_llm_response({
+        "mood": "warm-romantic",
+        "style_mix": [],
+        "elements": [
+            {"name": "sunset", "category": "subject"},
+            {"name": "ocean", "category": "subject"},
+        ],
+        "palette": {"primary": ["#FF6B35", "#FF8C42"], "mood": "warm tones"},
+        "composition": {},
+        "must_have": [],
+        "must_avoid": [],
+    })
+
+    async def fake_acompletion(**kwargs):
+        return mock_response
+
+    monkeypatch.setattr("litellm.acompletion", fake_acompletion)
+
+    b = Brief.new("a beautiful sunset over the ocean with warm colors")
+    phase = IntentPhase()
+    await phase.parse_intent_llm(b)
+
+    element_names = [e.name.lower() for e in b.elements]
+    assert "sunset" in element_names
+    assert "ocean" in element_names
