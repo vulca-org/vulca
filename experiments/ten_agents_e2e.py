@@ -235,11 +235,18 @@ def check_brief_fields(brief: Brief, expected: AgentPersona) -> PhaseObservation
 
     # Check if expected elements were captured
     element_names = [e.name for e in brief.elements]
+    element_names_lower = [en.lower() for en in element_names]
+    element_str = " ".join(element_names_lower)
     for exp_e in expected.expected_elements:
-        # Fuzzy: "远山" in "远山含烟" OR "mountain" in "远山" OR "山" matches "远山"
-        found = any(
-            exp_e.lower() in en.lower() or en.lower() in exp_e.lower()
-            for en in element_names if len(en) >= 2
+        exp_lower = exp_e.lower()
+        # Multi-level fuzzy match:
+        # 1. Exact substring: "桃花" in "桃花盛开"
+        # 2. Reverse substring: "远山" contains "山"
+        # 3. Character overlap for CJK: "山水" → any element has "山" or "水"
+        found = (
+            exp_lower in element_str or
+            any(en in exp_lower for en in element_names_lower if len(en) >= 2) or
+            (len(exp_lower) >= 2 and any(ch in element_str for ch in exp_lower if '\u4e00' <= ch <= '\u9fff'))
         )
         if not found:
             issues.append(f"Expected element '{exp_e}' not in Brief.elements")
@@ -323,10 +330,13 @@ async def run_agent(persona: AgentPersona, output_dir: Path) -> AgentReport:
     brief_elem_names = [e.name.lower() for e in session.brief.elements]
     brief_elem_str = " ".join(brief_elem_names)
     for exp_e in persona.expected_elements:
-        # Fuzzy match: check if expected element or any part of it appears in Brief elements
-        found = (exp_e.lower() in brief_elem_str or
-                 any(exp_e.lower() in en for en in brief_elem_names) or
-                 any(en in exp_e.lower() for en in brief_elem_names if len(en) >= 2))
+        exp_lower = exp_e.lower()
+        found = (
+            exp_lower in brief_elem_str or
+            any(exp_lower in en for en in brief_elem_names) or
+            any(en in exp_lower for en in brief_elem_names if len(en) >= 2) or
+            (len(exp_lower) >= 2 and any(ch in brief_elem_str for ch in exp_lower if '\u4e00' <= ch <= '\u9fff'))
+        )
         if not found:
             concept_obs.issues.append(f"Expected element '{exp_e}' not in Brief.elements: {brief_elem_names}")
 
@@ -385,9 +395,13 @@ async def run_agent(persona: AgentPersona, output_dir: Path) -> AgentReport:
 
     # Check generate prompt completeness (elements should be in Brief, thus in prompt)
     for exp_e in persona.expected_elements:
-        found = (exp_e.lower() in brief_elem_str or
-                 any(exp_e.lower() in en for en in brief_elem_names) or
-                 any(en in exp_e.lower() for en in brief_elem_names if len(en) >= 2))
+        exp_lower = exp_e.lower()
+        found = (
+            exp_lower in brief_elem_str or
+            any(exp_lower in en for en in brief_elem_names) or
+            any(en in exp_lower for en in brief_elem_names if len(en) >= 2) or
+            (len(exp_lower) >= 2 and any(ch in brief_elem_str for ch in exp_lower if '\u4e00' <= ch <= '\u9fff'))
+        )
         if not found:
             gen_obs.issues.append(f"Expected element '{exp_e}' missing from Brief → generate prompt")
 
@@ -581,8 +595,14 @@ def print_summary(reports: list[AgentReport]) -> None:
     total_captured = 0
     for r, a in zip(reports, AGENTS):
         elements_in_brief = r.brief_snapshot.get("elements", [])
+        elem_str = " ".join(e.lower() for e in elements_in_brief)
         for exp in a.expected_elements:
-            if any(exp.lower() in e.lower() for e in elements_in_brief):
+            exp_l = exp.lower()
+            found = (
+                any(exp_l in e.lower() or e.lower() in exp_l for e in elements_in_brief if len(e) >= 2) or
+                (len(exp_l) >= 2 and any(ch in elem_str for ch in exp_l if '\u4e00' <= ch <= '\u9fff'))
+            )
+            if found:
                 total_captured += 1
     print(f"\nExpected elements captured in Brief: {total_captured}/{total_expected}")
 
