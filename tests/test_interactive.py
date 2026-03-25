@@ -8,8 +8,8 @@ def test_interactive_run_mock(tmp_path, monkeypatch):
     """Full studio run with simulated user input."""
     from vulca.studio.interactive import run_studio
 
-    # Simulate user inputs: sketch=skip, mood=1, brush=1, select concept=1, accept=a
-    inputs = iter(["", "1", "1", "1", "a"])
+    # sketch=skip, mood=1, composition=1, palette=1, elements=1, brush=1, concept=1, accept=a
+    inputs = iter(["", "1", "1", "1", "1", "1", "1", "a"])
     monkeypatch.setattr("builtins.input", lambda _="": next(inputs))
 
     result = run_studio(
@@ -26,8 +26,8 @@ def test_interactive_run_mock(tmp_path, monkeypatch):
 
 def test_interactive_with_update(tmp_path, monkeypatch):
     """Studio run where user updates Brief mid-flow."""
-    # sketch=skip, mood=1, brush=1, select=1, then update instead of accept, then accept
-    inputs = iter(["", "1", "1", "1", "u", "加入更多雾气", "a"])
+    # sketch=skip, 5 questions=1, concept=1, update, instruction, accept
+    inputs = iter(["", "1", "1", "1", "1", "1", "1", "u", "加入更多雾气", "a"])
     monkeypatch.setattr("builtins.input", lambda _="": next(inputs))
 
     from vulca.studio.interactive import run_studio
@@ -66,8 +66,8 @@ def test_interactive_asks_for_sketch(tmp_path, monkeypatch):
     from vulca.studio.interactive import run_studio
 
     asked_prompts = []
-    # sketch=empty, mood=1, brush=1, select=1, accept=a
-    inputs = iter(["", "1", "1", "1", "a"])
+    # sketch=empty, 5 questions=1, concept=1, accept=a
+    inputs = iter(["", "1", "1", "1", "1", "1", "1", "a"])
 
     def fake_input(prompt=""):
         asked_prompts.append(prompt)
@@ -90,8 +90,8 @@ def test_interactive_sketch_path_set_on_brief(tmp_path, monkeypatch):
     sketch = tmp_path / "sketch.jpg"
     sketch.write_bytes(b"\xff\xd8\xff")  # Fake JPEG header
 
-    # sketch=path, mood=1, brush=1, select=1, accept=a
-    inputs = iter([str(sketch), "1", "1", "1", "a"])
+    # sketch=path, 5 questions=1, concept=1, accept=a
+    inputs = iter([str(sketch), "1", "1", "1", "1", "1", "1", "a"])
     monkeypatch.setattr("builtins.input", lambda _="": next(inputs))
 
     result = run_studio(
@@ -112,8 +112,8 @@ def test_interactive_sketch_skip_on_empty(tmp_path, monkeypatch):
     """Empty Enter should skip sketch, user_sketch stays empty."""
     from vulca.studio.interactive import run_studio
 
-    # sketch=empty, mood=1, brush=1, select=1, accept=a
-    inputs = iter(["", "1", "1", "1", "a"])
+    # sketch=empty, 5 questions=1, concept=1, accept=a
+    inputs = iter(["", "1", "1", "1", "1", "1", "1", "a"])
     monkeypatch.setattr("builtins.input", lambda _="": next(inputs))
 
     result = run_studio(
