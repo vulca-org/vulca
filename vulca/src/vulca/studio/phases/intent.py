@@ -384,7 +384,7 @@ class IntentPhase:
                     {"role": "user", "content": brief.intent},
                 ],
                 max_tokens=2048,
-                temperature=0.1,
+                temperature=0.0,
                 timeout=30,
             )
             text = resp.choices[0].message.content.strip()
