@@ -67,3 +67,86 @@ def extract_signals(brief: Brief, *, user_feedback: str = "") -> dict:
     signals["generation_count"] = len(brief.generations)
 
     return signals
+
+
+def extract_action_signal(brief: Brief, *, action: str, instruction: str = "") -> dict:
+    """Extract a signal from a specific user action (deterministic, no LLM).
+
+    Actions: concept_select, nl_update, evaluate, accept, reject, quit.
+    """
+    signal: dict = {
+        "action": action,
+        "session_id": brief.session_id,
+    }
+
+    if action == "concept_select":
+        idx = -1
+        if brief.selected_concept and brief.concept_candidates:
+            try:
+                idx = brief.concept_candidates.index(brief.selected_concept)
+            except ValueError:
+                idx = -1
+        signal["concept_index"] = idx
+        signal["total_candidates"] = len(brief.concept_candidates)
+        signal["had_notes"] = bool(brief.concept_notes)
+        signal["concept_notes"] = brief.concept_notes
+
+    elif action == "nl_update":
+        signal["instruction"] = instruction
+        # Extract fields changed from latest update
+        if brief.updates:
+            latest = brief.updates[-1]
+            signal["fields_changed"] = latest.fields_changed
+            signal["rollback_to"] = getattr(latest, "rollback_to", "")
+        else:
+            signal["fields_changed"] = []
+            signal["rollback_to"] = ""
+
+    elif action == "evaluate":
+        if brief.generations:
+            last = brief.generations[-1]
+            signal["round_num"] = last.round_num
+            signal["scores"] = dict(last.scores) if last.scores else {}
+            if last.scores:
+                signal["weakest"] = min(last.scores, key=last.scores.get)
+                signal["strongest"] = max(last.scores, key=last.scores.get)
+        else:
+            signal["round_num"] = 0
+            signal["scores"] = {}
+
+    elif action in ("accept", "reject", "quit"):
+        signal["total_rounds"] = len(brief.generations)
+        signal["total_updates"] = len(brief.updates)
+
+    return signal
+
+
+def accumulate_preferences(signals: list[dict]) -> dict:
+    """Accumulate multiple action signals into a preference profile (deterministic)."""
+    prefs: dict = {}
+
+    for sig in signals:
+        action = sig.get("action", "")
+
+        if action == "concept_select":
+            idx = sig.get("concept_index", -1)
+            total = sig.get("total_candidates", 0)
+            if total > 0 and idx >= 0:
+                # Normalize position: 0.0 (first) to 1.0 (last)
+                prefs["concept_position_preference"] = round(idx / max(total - 1, 1), 2)
+            prefs["prefers_notes"] = sig.get("had_notes", False)
+
+        elif action == "evaluate":
+            if sig.get("weakest"):
+                prefs["weak_dimension"] = sig["weakest"]
+            if sig.get("strongest"):
+                prefs["strong_dimension"] = sig["strongest"]
+
+        elif action == "nl_update":
+            fields = sig.get("fields_changed", [])
+            if "frequently_changed" not in prefs:
+                prefs["frequently_changed"] = {}
+            for f in fields:
+                prefs["frequently_changed"][f] = prefs["frequently_changed"].get(f, 0) + 1
+
+    return prefs
