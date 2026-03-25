@@ -446,3 +446,41 @@ async def test_intent_llm_english_implicit_elements(monkeypatch):
     element_names = [e.name.lower() for e in b.elements]
     assert "sunset" in element_names
     assert "ocean" in element_names
+
+
+@pytest.mark.asyncio
+async def test_intent_llm_handles_loose_schema(monkeypatch):
+    """LLM may return elements as strings instead of dicts. Should handle both."""
+    from vulca.studio.phases.intent import IntentPhase
+    from vulca.studio.brief import Brief
+
+    # Gemini sometimes returns simplified format
+    mock_response = _make_mock_llm_response({
+        "mood": "contemplative",
+        "style_mix": ["chinese_xieyi", "cyberpunk"],  # strings instead of dicts
+        "elements": ["neon lights", "mountains", "water"],  # strings instead of dicts
+        "palette": {"base": "dark tones", "accents": "neon colors"},  # non-standard keys
+        "composition": "traditional landscape with futuristic overlay",  # string instead of dict
+        "must_have": ["neon-ink fusion"],
+        "must_avoid": [],
+    })
+
+    async def fake_acompletion(**kwargs):
+        return mock_response
+
+    monkeypatch.setattr("litellm.acompletion", fake_acompletion)
+
+    b = Brief.new("赛博朋克水墨山水")
+    phase = IntentPhase()
+    await phase.parse_intent_llm(b)
+
+    # Elements should be captured even as strings
+    element_names = [e.name.lower() for e in b.elements]
+    assert len(element_names) >= 2, f"Expected 2+ elements from string list, got {element_names}"
+    assert "mountains" in element_names or "neon lights" in element_names
+
+    # Mood should be set
+    assert b.mood == "contemplative"
+
+    # Must have should work
+    assert "neon-ink fusion" in b.must_have
