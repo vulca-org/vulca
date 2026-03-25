@@ -1,10 +1,14 @@
 """IntentPhase -- parse user intent and generate clarifying questions."""
 from __future__ import annotations
 
+import logging
+import os
 import re
 from typing import Any
 from vulca.studio.brief import Brief
-from vulca.studio.types import StyleWeight, Element
+from vulca.studio.types import Composition, Palette, StyleWeight, Element
+
+logger = logging.getLogger("vulca.studio")
 
 _TRADITION_HINTS: dict[str, str] = {
     # Chinese Xieyi (freehand ink)
@@ -261,6 +265,121 @@ class IntentPhase:
             brief.elements.append(Element(name=answer, category="technique"))
             from datetime import datetime, timezone
             brief.updated_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+    async def parse_intent_llm(self, brief: Brief) -> Brief:
+        """Parse intent using LLM for deep extraction. Falls back to keyword parsing."""
+        try:
+            import litellm
+            from vulca._parse import parse_llm_json
+
+            model = os.environ.get("VULCA_VLM_MODEL", "gemini/gemini-2.5-flash")
+            system_prompt = (
+                "You are a creative brief analyst. Given the user's creative intent, "
+                "extract structured information into JSON.\n\n"
+                "Return ONLY valid JSON with these fields:\n"
+                "{\n"
+                '  "mood": "<string: emotional atmosphere, e.g. serene, dynamic, mystical>",\n'
+                '  "style_mix": [{"tradition": "<yaml_key>", "tag": "<free_tag>", "weight": <0-1>}],\n'
+                '  "elements": [{"name": "<string>", "category": "<subject|technique|atmosphere>"}],\n'
+                '  "palette": {"primary": ["<hex>"], "accent": ["<hex>"], "mood": "<string>"},\n'
+                '  "composition": {"layout": "<string>", "focal_point": "<string>", '
+                '"aspect_ratio": "<W:H>", "negative_space": "<none|light|heavy>"},\n'
+                '  "must_have": ["<string>"],\n'
+                '  "must_avoid": ["<string>"]\n'
+                "}\n\n"
+                "Available traditions: chinese_xieyi, chinese_gongbi, japanese_traditional, "
+                "western_academic, watercolor, islamic_geometric, contemporary_art, "
+                "brand_design, photography, ui_ux_design, african_traditional, south_asian.\n\n"
+                "Rules:\n"
+                "- Extract ALL implicit subjects/objects as elements (mountains, bridges, flowers, etc.)\n"
+                "- Detect color information even from adjectives (cold, warm, monochrome)\n"
+                "- Set composition from spatial cues (perspective, negative space, aspect ratio)\n"
+                "- Use empty string/list for unknown fields, never omit fields\n"
+                "- Respond in the same language as the input for mood/element names"
+            )
+
+            resp = await litellm.acompletion(
+                model=model,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": brief.intent},
+                ],
+                max_tokens=1024,
+                temperature=0.1,
+                timeout=30,
+            )
+            text = resp.choices[0].message.content.strip()
+            data = parse_llm_json(text)
+            self._apply_llm_result(brief, data)
+
+        except Exception as exc:
+            logger.warning("LLM intent parsing failed, falling back to keywords: %s", exc)
+
+        # Always run keyword parsing as supplement (fills gaps LLM missed)
+        self.parse_intent(brief)
+        return brief
+
+    @staticmethod
+    def _apply_llm_result(brief: Brief, data: dict) -> None:
+        """Apply parsed LLM JSON to Brief fields (additive, no overwrite of existing)."""
+        # Mood
+        if data.get("mood") and not brief.mood:
+            brief.mood = data["mood"]
+
+        # Style mix
+        if data.get("style_mix") and not brief.style_mix:
+            styles = []
+            for s in data["style_mix"]:
+                if isinstance(s, dict):
+                    styles.append(StyleWeight(
+                        tradition=s.get("tradition", ""),
+                        tag=s.get("tag", ""),
+                        weight=float(s.get("weight", 0.5)),
+                    ))
+            if styles:
+                brief.style_mix = styles
+
+        # Elements (additive)
+        existing_names = {e.name.lower() for e in brief.elements}
+        for e in data.get("elements", []):
+            if isinstance(e, dict):
+                name = e.get("name", "")
+                if name and name.lower() not in existing_names:
+                    brief.elements.append(Element(
+                        name=name,
+                        category=e.get("category", ""),
+                    ))
+                    existing_names.add(name.lower())
+
+        # Palette
+        pal = data.get("palette", {})
+        if isinstance(pal, dict):
+            if pal.get("primary") and not brief.palette.primary:
+                brief.palette.primary = [c for c in pal["primary"] if isinstance(c, str)]
+            if pal.get("accent") and not brief.palette.accent:
+                brief.palette.accent = [c for c in pal["accent"] if isinstance(c, str)]
+            if pal.get("mood") and not brief.palette.mood:
+                brief.palette.mood = pal["mood"]
+
+        # Composition
+        comp = data.get("composition", {})
+        if isinstance(comp, dict):
+            if comp.get("layout") and not brief.composition.layout:
+                brief.composition.layout = comp["layout"]
+            if comp.get("focal_point") and not brief.composition.focal_point:
+                brief.composition.focal_point = comp["focal_point"]
+            if comp.get("aspect_ratio") and comp["aspect_ratio"] != "1:1":
+                brief.composition.aspect_ratio = comp["aspect_ratio"]
+            if comp.get("negative_space") and not brief.composition.negative_space:
+                brief.composition.negative_space = comp["negative_space"]
+
+        # Must have / avoid (additive)
+        for item in data.get("must_have", []):
+            if isinstance(item, str) and item and item not in brief.must_have:
+                brief.must_have.append(item)
+        for item in data.get("must_avoid", []):
+            if isinstance(item, str) and item and item not in brief.must_avoid:
+                brief.must_avoid.append(item)
 
     def set_sketch(self, brief: Brief, sketch_path: str) -> None:
         brief.update_field("user_sketch", sketch_path)
