@@ -66,9 +66,17 @@ async def _run_studio_async(
     _print(f"\nVULCA Studio — session {session.session_id}")
     _print(f"Project: {session.project_dir}/\n")
 
+    # ── Sketch prompt ──
+    sketch_path = _ask("Reference sketch? (path or Enter to skip): ").strip()
+    if sketch_path and Path(sketch_path).exists():
+        intent_phase = IntentPhase()
+        intent_phase.set_sketch(session.brief, sketch_path)
+        _print(f"  Sketch loaded: {sketch_path}")
+    else:
+        intent_phase = IntentPhase()
+
     # ── Phase 1: INTENT ──
     _print("[Intent] Analyzing your creative vision...")
-    intent_phase = IntentPhase()
     intent_phase.parse_intent(session.brief)
 
     if session.brief.style_mix:
