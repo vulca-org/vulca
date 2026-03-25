@@ -484,3 +484,97 @@ async def test_intent_llm_handles_loose_schema(monkeypatch):
 
     # Must have should work
     assert "neon-ink fusion" in b.must_have
+
+
+# --- Step 2.2: LLM Dynamic Questions ---
+
+
+@pytest.mark.asyncio
+async def test_generate_questions_llm_adapts_to_domain(monkeypatch):
+    """LLM should generate domain-specific questions based on detected style."""
+    from vulca.studio.phases.intent import IntentPhase
+    from vulca.studio.brief import Brief
+    from vulca.studio.types import StyleWeight
+    import json
+
+    captured = {}
+
+    async def fake_acompletion(**kwargs):
+        captured.update(kwargs)
+        return _make_mock_llm_response({
+            "questions": [
+                {"text": "What ink density do you prefer?", "field": "technique",
+                 "options": ["light wash", "heavy ink", "mixed"], "labels": ["淡墨", "浓墨", "混合"]},
+                {"text": "What season atmosphere?", "field": "mood",
+                 "options": ["spring", "autumn", "winter"], "labels": ["春", "秋", "冬"]},
+            ]
+        })
+
+    monkeypatch.setattr("litellm.acompletion", fake_acompletion)
+
+    b = Brief.new("水墨山水", style_mix=[StyleWeight(tradition="chinese_xieyi", weight=1.0)])
+    b.mood = "serene"  # already set → LLM should not ask about mood
+
+    phase = IntentPhase()
+    questions = await phase.generate_questions_llm(b)
+
+    assert len(questions) >= 1
+    # Should have called LLM
+    assert "messages" in captured
+    # Questions should have standard structure
+    for q in questions:
+        assert "text" in q
+        assert "options" in q
+
+
+@pytest.mark.asyncio
+async def test_generate_questions_llm_geometric_asks_symmetry(monkeypatch):
+    """For geometric art, LLM should ask about symmetry/precision."""
+    from vulca.studio.phases.intent import IntentPhase
+    from vulca.studio.brief import Brief
+    from vulca.studio.types import StyleWeight
+
+    async def fake_acompletion(**kwargs):
+        return _make_mock_llm_response({
+            "questions": [
+                {"text": "Symmetry type?", "field": "composition",
+                 "options": ["rotational-8", "reflective", "translational"],
+                 "labels": ["8-fold rotational", "Reflective", "Translational"]},
+                {"text": "Precision level?", "field": "technique",
+                 "options": ["mathematical", "hand-drawn", "mixed"],
+                 "labels": ["Mathematical", "Hand-drawn", "Mixed"]},
+            ]
+        })
+
+    monkeypatch.setattr("litellm.acompletion", fake_acompletion)
+
+    b = Brief.new("Islamic geometric pattern", style_mix=[StyleWeight(tradition="islamic_geometric", weight=1.0)])
+    phase = IntentPhase()
+    questions = await phase.generate_questions_llm(b)
+
+    # Should ask about symmetry/precision for geometric art
+    all_text = " ".join(q["text"].lower() for q in questions)
+    assert "symmetry" in all_text or "precision" in all_text, (
+        f"Geometric art should ask about symmetry/precision, got: {[q['text'] for q in questions]}"
+    )
+
+
+@pytest.mark.asyncio
+async def test_generate_questions_llm_fallback_on_failure(monkeypatch):
+    """If LLM fails, should fall back to keyword-based questions."""
+    from vulca.studio.phases.intent import IntentPhase
+    from vulca.studio.brief import Brief
+
+    async def failing_acompletion(**kwargs):
+        raise Exception("API error")
+
+    monkeypatch.setattr("litellm.acompletion", failing_acompletion)
+
+    b = Brief.new("test")
+    phase = IntentPhase()
+    questions = await phase.generate_questions_llm(b)
+
+    # Should still return keyword-based questions as fallback
+    assert len(questions) >= 1
+    fields = [q["field"] for q in questions]
+    assert "mood" in fields  # Basic keyword question should be there
