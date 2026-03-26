@@ -251,24 +251,17 @@ class EvaluationEngine:
         }
     
     async def _evaluate_painting(self, task: EvaluationTask, model_id: str) -> Dict[str, Any]:
-        """Evaluate painting generation (placeholder - would use image models)"""
-        # For now, return mock result since we focus on text models
-        return {
-            "content": {"title": "Mock Painting", "url": "/mock-image.jpg"},
-            "raw": {"mock": True},
-            "score": 75.0,
-            "metrics": {"creativity": 0.8, "technical": 0.7}
-        }
-    
+        """Painting evaluation requires a VLM-enabled model."""
+        raise NotImplementedError(
+            f"Painting evaluation not implemented for model '{model_id}'. "
+            "Use the vulca SDK (vulca evaluate) for image evaluation with L1-L5 scoring."
+        )
+
     async def _evaluate_music(self, task: EvaluationTask, model_id: str) -> Dict[str, Any]:
-        """Evaluate music generation (placeholder)"""
-        # For now, return mock result since we focus on text models
-        return {
-            "content": {"title": "Mock Music", "url": "/mock-audio.mp3"},
-            "raw": {"mock": True},
-            "score": 70.0,
-            "metrics": {"rhythm": 0.7, "melody": 0.6}
-        }
+        """Music evaluation is not yet supported."""
+        raise NotImplementedError(
+            f"Music evaluation not implemented for model '{model_id}'."
+        )
     
     async def _create_artwork_from_evaluation(self, task: EvaluationTask, result: Dict[str, Any]) -> Optional[Artwork]:
         """Automatically create Artwork from completed evaluation task"""

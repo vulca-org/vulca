@@ -131,8 +131,13 @@ class FewShotUpdater:
 
     def _load_sessions(self) -> list[dict]:
         """Load sessions from local JSONL first, then SessionStore (DB) fallback."""
+        _digestion_logger = logging.getLogger("vulca.digestion")
         # Primary: read local JSONL (works in tests + dev)
         if self._sessions_path.exists():
+            _digestion_logger.info(
+                "Loading sessions from local JSONL: %s (use SessionStore for production data)",
+                self._sessions_path,
+            )
             sessions: list[dict] = []
             for line in self._sessions_path.read_text(encoding="utf-8").strip().split("\n"):
                 if line.strip():

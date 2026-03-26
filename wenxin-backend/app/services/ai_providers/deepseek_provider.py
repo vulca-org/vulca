@@ -159,5 +159,5 @@ Requirements: Complete plot, vivid characters, engaging language."""
                 max_tokens=10
             )
             return True
-        except:
+        except Exception:
             return False

@@ -407,6 +407,10 @@ def get_inpaint_provider(name: str) -> AbstractInpaintProvider:
         return ControlNetInpaintProviderAdapter("canny")
     if name == "controlnet_depth":
         return ControlNetInpaintProviderAdapter("depth")
+    import logging
+    logging.getLogger("vulca").warning(
+        "Unknown inpaint provider '%s', falling back to MockInpaintProvider", name
+    )
     return MockInpaintProvider()
 
 

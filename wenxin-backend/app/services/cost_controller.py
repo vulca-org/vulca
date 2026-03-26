@@ -196,14 +196,21 @@ class CostController:
         quota = self.USER_QUOTAS.get(user_tier, self.USER_QUOTAS["guest"])
         allowed_providers = quota["allowed_providers"]
         
+        import logging
+        _logger = logging.getLogger("vulca")
+
         if budget_remaining <= 0.0 or user_tier == "guest":
             # Use free providers
             free_providers = ["gemini", "huggingface", "mock"]
             for provider in free_providers:
                 if provider in allowed_providers:
                     return provider
+            _logger.warning(
+                "Budget exhausted (remaining=%.4f), falling back to mock provider",
+                budget_remaining,
+            )
             return "mock"
-        
+
         # Use premium providers if budget allows
         if task_type == "painting" and budget_remaining >= 0.04:
             return "openai"
@@ -212,6 +219,13 @@ class CostController:
         elif "gemini" in allowed_providers:
             return "gemini"
         else:
+            _logger.warning(
+                "No suitable provider found for task_type='%s' "
+                "(remaining=%.4f, tier='%s'), falling back to mock provider",
+                task_type,
+                budget_remaining,
+                user_tier,
+            )
             return "mock"
     
     def _get_total_daily_cost(self, date: str) -> float:
