@@ -20,12 +20,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Live Project Status (auto-updated)
 
 <!-- AUTO-STATUS-START -->
-- **Branch**: master | Last commit: 1cc53ab feat: v0.4.0 — Judge-to-Advisor pivot with suggestions, modes, and custom traditions
-- **Active Phase**: Phase D1 — Pipeline 可见性修复 — rationale/evolution/instruct/cultural injection
+- **Branch**: master | Last commit: 1987f35 docs: update README for v0.6.0 — Studio + Digestion V2
+- **Active Phase**: v0.6.0 released — Studio Intelligence + Digestion V2 + PyPI published
 - **Evolution**: 9 traditions evolved (last: 2026-03-24)
-- **Sessions logged**: 390
+- **Sessions logged**: 476
 - **Config**: 7 agents / 8 skills / 6 rules
-- **Auto-updated**: 2026-03-24 08:36
+- **Auto-updated**: 2026-03-26 08:45
 <!-- AUTO-STATUS-END -->
 
 ## Project Overview
@@ -39,7 +39,7 @@ VULCA — AI-native creation organism. Create, critique, and evolve cultural art
 
 ## VULCA Unified Package (vulca/)
 
-The `vulca/` directory is the unified Python SDK (v0.4.0, 276 tests).
+The `vulca/` directory is the unified Python SDK (v0.6.0, 462 tests).
 This replaces the old `app/vulca/` backend module and consolidates logic from `vulca-pkg`.
 
 ### Quick Start
