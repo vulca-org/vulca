@@ -29,6 +29,18 @@ TRADITION_WEIGHTS: dict[str, dict[str, float]] = {
 
 TRADITIONS = list(TRADITION_WEIGHTS.keys())
 
+from vulca.cultural.engram import CulturalEngram, CulturalFragment, EngramQuery, EngramResult  # noqa: E402
+
+__all__ = [
+    "TRADITION_WEIGHTS",
+    "TRADITIONS",
+    "get_weights",
+    "CulturalEngram",
+    "CulturalFragment",
+    "EngramQuery",
+    "EngramResult",
+]
+
 
 def get_weights(tradition: str) -> dict[str, float]:
     """Return L1-L5 weights for a given tradition.
