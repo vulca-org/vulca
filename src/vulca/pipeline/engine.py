@@ -9,6 +9,10 @@ import uuid
 from typing import Any, Callable
 
 from vulca.pipeline.node import NodeContext, PipelineNode
+try:
+    from vulca.pipeline.residuals import AgentResiduals
+except ImportError:
+    AgentResiduals = None  # type: ignore[assignment,misc]
 from vulca.pipeline.types import (
     EventType,
     PipelineDefinition,
@@ -176,6 +180,9 @@ async def execute(
     # Inject eval_mode so DecideNode can adapt behavior
     ctx.set("eval_mode", pipeline_input.eval_mode)
 
+    # Agent Residuals setup (AttnRes-inspired)
+    _residuals = AgentResiduals() if (AgentResiduals is not None and pipeline_input.residuals) else None
+
     status = RunStatus.RUNNING
     final_decision = "stop"
 
@@ -223,6 +230,18 @@ async def execute(
                 )
             )
 
+            # Inject residual context before decide node
+            if _residuals is not None and node_name in ("decide", "queen"):
+                _history = _residuals.get_history()
+                if _history:
+                    _weights = _residuals.compute_weights(
+                        pipeline_input.subject + " " + pipeline_input.intent,
+                        _history,
+                    )
+                    from dataclasses import asdict as _asdict
+                    ctx.data["residual_context"] = _residuals.aggregate(_weights, _history)
+                    ctx.data["residual_weights"] = _asdict(_weights)
+
             try:
                 output = await node.run(ctx)
             except Exception as exc:
@@ -242,6 +261,10 @@ async def execute(
             # Merge node output into context
             if output:
                 ctx.data.update(output)
+
+            # Record node snapshot for Agent Residuals
+            if _residuals is not None:
+                _residuals.record(node_name, round_num, output)
 
             # Include node output in stage_completed payload
             # WU-1: Inject candidates array for generate/draft nodes
