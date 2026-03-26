@@ -15,6 +15,7 @@ from vulca.scoring.types import (
     DIMENSIONS,
 )
 from vulca.scoring.model_router import ModelRouter, ModelSpec
+from vulca.scoring.sparse import BriefIndexer, DimensionActivation
 
 __all__ = [
     "CriticConfig",
@@ -25,4 +26,6 @@ __all__ = [
     "LayerState",
     "ModelRouter",
     "ModelSpec",
+    "BriefIndexer",
+    "DimensionActivation",
 ]
