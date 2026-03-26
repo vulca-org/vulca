@@ -304,7 +304,10 @@ Requirements:
         **kwargs
     ):
         """Qwen doesn't support image generation"""
-        raise NotImplementedError("Qwen models do not support image generation")
+        raise NotImplementedError(
+            "Qwen does not support image generation. "
+            "Use vulca SDK with provider='mock' or provider='gemini' for image generation."
+        )
     
     async def generate_music(
         self,
@@ -313,7 +316,10 @@ Requirements:
         **kwargs
     ):
         """Qwen doesn't support music generation"""
-        raise NotImplementedError("Qwen models do not support music generation")
+        raise NotImplementedError(
+            "Qwen does not support music generation. "
+            "Use vulca SDK with provider='mock' or provider='gemini' for image generation."
+        )
     
     async def health_check(self) -> bool:
         """Check if the provider is available"""

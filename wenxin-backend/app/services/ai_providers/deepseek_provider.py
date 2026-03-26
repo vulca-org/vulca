@@ -139,7 +139,10 @@ Requirements: Complete plot, vivid characters, engaging language."""
         **kwargs
     ) -> ImageResponse:
         """DeepSeek doesn't support image generation"""
-        raise NotImplementedError("DeepSeek does not support image generation")
+        raise NotImplementedError(
+            "DeepSeek does not support image generation. "
+            "Use vulca SDK with provider='mock' or provider='gemini' for image generation."
+        )
     
     async def generate_music(
         self,
@@ -148,7 +151,10 @@ Requirements: Complete plot, vivid characters, engaging language."""
         **kwargs
     ) -> MusicResponse:
         """DeepSeek doesn't support music generation"""
-        raise NotImplementedError("DeepSeek does not support music generation")
+        raise NotImplementedError(
+            "DeepSeek does not support music generation. "
+            "Use vulca SDK with provider='mock' or provider='gemini' for image generation."
+        )
     
     async def health_check(self) -> bool:
         """Check if the provider is available"""

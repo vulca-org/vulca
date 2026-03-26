@@ -22,8 +22,8 @@ from app.prototype.skills.api.version_routes import version_router
 from app.prototype.api.create_routes import create_router
 from app.prototype.digestion.routes import digestion_router
 from app.prototype.api.gallery_social import gallery_social_router
-# Temporarily disabled - requires sentence-transformers
-# from app.exhibition.api import router as exhibition_router
+# Exhibition module disabled — requires sentence-transformers (not in requirements.txt)
+# Re-enable when embedding search is needed: from app.exhibition.api import router as exhibition_router
 
 # Determine production environment
 IS_PRODUCTION = os.getenv("ENVIRONMENT") == "production"

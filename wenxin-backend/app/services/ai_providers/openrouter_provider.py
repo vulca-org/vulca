@@ -170,7 +170,10 @@ Requirements:
         **kwargs
     ) -> ImageResponse:
         """OpenRouter text models don't support image generation"""
-        raise NotImplementedError("OpenRouter text models do not support image generation")
+        raise NotImplementedError(
+            "OpenRouter text models do not support image generation. "
+            "Use vulca SDK with provider='mock' or provider='gemini' for image generation."
+        )
     
     async def generate_music(
         self,
@@ -179,7 +182,10 @@ Requirements:
         **kwargs
     ) -> MusicResponse:
         """OpenRouter text models don't support music generation"""
-        raise NotImplementedError("OpenRouter text models do not support music generation")
+        raise NotImplementedError(
+            "OpenRouter text models do not support music generation. "
+            "Use vulca SDK with provider='mock' or provider='gemini' for image generation."
+        )
     
     async def health_check(self) -> bool:
         """Check if the provider is available"""

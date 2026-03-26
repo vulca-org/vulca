@@ -293,7 +293,10 @@ Provide scores in JSON format with witty but constructive feedback."""
         **kwargs
     ):
         """X AI doesn't support image generation"""
-        raise NotImplementedError("X AI models do not support image generation")
+        raise NotImplementedError(
+            "X AI does not support image generation. "
+            "Use vulca SDK with provider='mock' or provider='gemini' for image generation."
+        )
     
     async def generate_music(
         self,
@@ -302,7 +305,10 @@ Provide scores in JSON format with witty but constructive feedback."""
         **kwargs
     ):
         """X AI doesn't support music generation"""
-        raise NotImplementedError("X AI models do not support music generation")
+        raise NotImplementedError(
+            "X AI does not support music generation. "
+            "Use vulca SDK with provider='mock' or provider='gemini' for image generation."
+        )
     
     async def health_check(self) -> bool:
         """Check if the provider is available"""
