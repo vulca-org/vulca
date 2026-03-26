@@ -10,6 +10,7 @@ from vulca.digestion.artifact_analysis import ArtifactAnalysis
 from vulca.digestion.evolver import detect_patterns, evolve_weights
 from vulca.digestion.preferences import SessionPreferences
 from vulca.digestion.preloader import preload_intelligence
+from vulca.digestion.retrieval import QuantizedRetriever, SessionVector, RetrievalResult
 from vulca.digestion.signals import accumulate_preferences, extract_action_signal
 from vulca.digestion.storage import JsonlStudioStorage
 from vulca.digestion.trajectory import build_session_digest
@@ -25,4 +26,7 @@ __all__ = [
     "detect_patterns",
     "evolve_weights",
     "build_session_digest",
+    "QuantizedRetriever",
+    "SessionVector",
+    "RetrievalResult",
 ]
