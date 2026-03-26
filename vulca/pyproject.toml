@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "vulca"
-version = "0.6.0"
-description = "AI-native cultural art creation organism. Brief-driven Studio pipeline, L1-L5 evaluation, Digestion V2 learning system, and 13+ traditions."
+version = "0.7.0"
+description = "AI-native cultural art creation organism. Selective Pipeline (Agent Residuals + Cultural Engram + Sparse Eval + Quantized Retrieval), Brief-driven Studio, L1-L5 evaluation, Digestion V2, and 15+ traditions."
 readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.10"
