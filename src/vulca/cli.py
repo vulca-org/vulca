@@ -80,6 +80,7 @@ def main(argv: list[str] | None = None) -> None:
     eval_p.add_argument("--mock", action="store_true", help="Use mock scoring (no API key required)")
     eval_p.add_argument("--vlm-model", default="", help="VLM model (LiteLLM format, e.g. ollama/llava)")
     eval_p.add_argument("--vlm-base-url", default="", help="VLM base URL (for local models)")
+    eval_p.add_argument("--sparse-eval", action="store_true", help="Enable sparse evaluation (score only relevant dimensions)")
 
     # create command
     create_p = sub.add_parser("create", aliases=["c"], help="Create artwork via pipeline")
@@ -96,6 +97,8 @@ def main(argv: list[str] | None = None) -> None:
     create_p.add_argument("--weights", default="", help="Custom L1-L5 weights: 'L1=0.3,L2=0.2,...'")
     create_p.add_argument("--image-provider", default="", help="Image provider: mock|gemini|openai|comfyui")
     create_p.add_argument("--image-base-url", default="", help="Image provider base URL (for comfyui)")
+    create_p.add_argument("--residuals", action="store_true", help="Enable Agent Residuals (selective node aggregation)")
+    create_p.add_argument("--sparse-eval", action="store_true", help="Enable sparse evaluation (score only relevant dimensions)")
 
     # traditions command
     sub.add_parser("traditions", aliases=["t"], help="List available cultural traditions")
@@ -365,6 +368,8 @@ def _cmd_create(args: argparse.Namespace) -> None:
             base_url=args.base_url,
             weights=weights,
             eval_mode=args.mode,
+            residuals=getattr(args, "residuals", False),
+            sparse_eval=getattr(args, "sparse_eval", False),
         )
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
