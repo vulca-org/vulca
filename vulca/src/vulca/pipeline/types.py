@@ -94,6 +94,8 @@ class PipelineInput:
     """Evaluation mode: strict|reference|fusion."""
     # Custom ImageProvider instance (not serialized; overrides provider lookup)
     image_provider: Any = field(default=None, repr=False)
+    residuals: bool = False       # P1: enable Agent Residuals
+    sparse_eval: bool = False     # P3: enable dimension-sparse evaluation
 
     def to_dict(self) -> dict[str, Any]:
         return {
