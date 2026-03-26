@@ -148,29 +148,34 @@ def _build_tradition_guidance(
 
         parts = [base]
 
-        # Inject terminology
-        if tc.terminology:
-            terms_text = "\n".join(
-                f"  - **{t.term}** ({t.term_zh}): {t.definition if isinstance(t.definition, str) else t.definition.get('en', '')}"
-                for t in tc.terminology[:8]
-            )
-            parts.append(f"\n### Key Cultural Terminology\n{terms_text}")
+        if engram_fragments:
+            # Engram mode: use selected fragments INSTEAD of full terminology/taboos
+            # This is the key optimization — selective retrieval replaces full dump
+            _append_sparse_guidance(parts, engram_fragments, active_dimensions)
+        else:
+            # Full mode: inject all terminology + taboos (original behavior)
+            if tc.terminology:
+                terms_text = "\n".join(
+                    f"  - **{t.term}** ({t.term_zh}): {t.definition if isinstance(t.definition, str) else t.definition.get('en', '')}"
+                    for t in tc.terminology[:8]
+                )
+                parts.append(f"\n### Key Cultural Terminology\n{terms_text}")
 
-        # Inject taboos
-        if tc.taboos:
-            taboos_text = "\n".join(
-                f"  - ⚠️ {t.rule}" + (f" — {t.explanation}" if t.explanation else "")
-                for t in tc.taboos
-            )
-            parts.append(f"\n### Evaluation Taboos (MUST respect)\n{taboos_text}")
+            if tc.taboos:
+                taboos_text = "\n".join(
+                    f"  - ⚠️ {t.rule}" + (f" — {t.explanation}" if t.explanation else "")
+                    for t in tc.taboos
+                )
+                parts.append(f"\n### Evaluation Taboos (MUST respect)\n{taboos_text}")
 
-        # Inject evolved weight guidance + few-shot examples
+            # Active dimension focus without engram (sparse eval only)
+            if active_dimensions:
+                _append_sparse_guidance(parts, None, active_dimensions)
+
+        # Inject evolved weight guidance + few-shot examples (always, if available)
         evolved = _load_evolved_context()
         if evolved:
             _inject_evolved_guidance(parts, tradition, evolved)
-
-        # Engram fragments + active dimension focus (sparse eval)
-        _append_sparse_guidance(parts, engram_fragments, active_dimensions)
 
         return "\n".join(parts)
     except Exception:
