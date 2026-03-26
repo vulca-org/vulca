@@ -20,12 +20,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Live Project Status (auto-updated)
 
 <!-- AUTO-STATUS-START -->
-- **Branch**: master | Last commit: 1987f35 docs: update README for v0.6.0 — Studio + Digestion V2
-- **Active Phase**: v0.6.0 released — Studio Intelligence + Digestion V2 + PyPI published
+- **Branch**: master | Last commit: a994d0b feat(cli): GREEN — add --residuals and --sparse-eval flags to CLI (5 tests pass)
+- **Active Phase**: Phase D1 — Pipeline 可见性修复 — rationale/evolution/instruct/cultural injection
 - **Evolution**: 9 traditions evolved (last: 2026-03-24)
-- **Sessions logged**: 476
+- **Sessions logged**: 510
 - **Config**: 7 agents / 8 skills / 6 rules
-- **Auto-updated**: 2026-03-26 08:45
+- **Auto-updated**: 2026-03-26 22:51
 <!-- AUTO-STATUS-END -->
 
 ## Project Overview
@@ -39,7 +39,7 @@ VULCA — AI-native creation organism. Create, critique, and evolve cultural art
 
 ## VULCA Unified Package (vulca/)
 
-The `vulca/` directory is the unified Python SDK (v0.6.0, 462 tests).
+The `vulca/` directory is the unified Python SDK (v0.7.0, 538 tests).
 This replaces the old `app/vulca/` backend module and consolidates logic from `vulca-pkg`.
 
 ### Quick Start
@@ -363,7 +363,7 @@ For production (Supabase), the CI/CD pipeline runs this automatically via GitHub
 ## Deployment Pipeline
 
 ### GitHub Actions Workflow (.github/workflows/deploy-gcp.yml)
-1. **Test Phase**: Frontend build, backend tests (1076+, 60 files), Playwright E2E (95 tests, 17 specs)
+1. **Test Phase**: Frontend build, backend tests (~920, 51 files), Playwright E2E (95 tests, 17 specs)
 2. **Database Init**: Runs `init_db.py` against Supabase
 3. **Backend Deploy**: Docker build → Artifact Registry → Cloud Run
 4. **Frontend Deploy**: Vite build → Firebase Hosting
