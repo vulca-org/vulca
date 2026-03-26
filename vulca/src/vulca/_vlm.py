@@ -117,15 +117,34 @@ def _load_evolved_context() -> dict | None:
     return None
 
 
-def _build_tradition_guidance(tradition: str) -> str:
-    """Build rich tradition guidance from YAML data, evolved context, and few-shot examples."""
+def _build_tradition_guidance(
+    tradition: str,
+    *,
+    engram_fragments: list | None = None,
+    active_dimensions: list[str] | None = None,
+) -> str:
+    """Build rich tradition guidance from YAML data, evolved context, and few-shot examples.
+
+    Parameters
+    ----------
+    tradition:
+        Tradition key (e.g. "chinese_xieyi").
+    engram_fragments:
+        Optional list of CulturalFragment objects retrieved from CulturalEngram.
+        When provided, their content is injected into the prompt as "Cultural Memory".
+    active_dimensions:
+        Optional list of active L-dimension keys (e.g. ["L1", "L3", "L5"]).
+        When provided, a focus hint is appended so the VLM prioritises these dims.
+    """
     base = _TRADITION_GUIDANCE.get(tradition, _TRADITION_GUIDANCE["default"])
 
     try:
         from vulca.cultural.loader import get_tradition
         tc = get_tradition(tradition)
         if tc is None:
-            return base
+            parts = [base]
+            _append_sparse_guidance(parts, engram_fragments, active_dimensions)
+            return "\n".join(parts)
 
         parts = [base]
 
@@ -150,10 +169,40 @@ def _build_tradition_guidance(tradition: str) -> str:
         if evolved:
             _inject_evolved_guidance(parts, tradition, evolved)
 
+        # Engram fragments + active dimension focus (sparse eval)
+        _append_sparse_guidance(parts, engram_fragments, active_dimensions)
+
         return "\n".join(parts)
     except Exception:
         logger.debug("Tradition guidance fallback for %s", tradition)
         return base
+
+
+def _append_sparse_guidance(
+    parts: list[str],
+    engram_fragments: list | None,
+    active_dimensions: list[str] | None,
+) -> None:
+    """Append engram fragments and active-dimension focus hint to prompt parts."""
+    # Engram fragments (selective cultural knowledge)
+    if engram_fragments:
+        frag_lines = []
+        for frag in engram_fragments:
+            frag_lines.append(f"- [{frag.category}] {frag.content}")
+        if frag_lines:
+            parts.append("\n### Cultural Memory (Selected)\n" + "\n".join(frag_lines))
+
+    # Active dimension focus hint
+    if active_dimensions:
+        dim_names = {
+            "L1": "Visual Perception", "L2": "Technical Execution",
+            "L3": "Cultural Context", "L4": "Critical Interpretation",
+            "L5": "Philosophical Aesthetics",
+        }
+        focus_list = ", ".join(
+            f"{d} ({dim_names.get(d, d)})" for d in active_dimensions
+        )
+        parts.append(f"\n### Evaluation Focus\nPrioritize these dimensions: {focus_list}")
 
 
 _L_LABELS = {
@@ -203,12 +252,26 @@ async def score_image(
     subject: str,
     tradition: str,
     api_key: str,
+    *,
+    engram_fragments: list | None = None,
+    active_dimensions: list[str] | None = None,
 ) -> dict:
     """Call Gemini Vision to score an image on L1-L5.
 
     Returns a dict with L1-L5 scores and rationales, or fallback zeros on error.
+
+    Parameters
+    ----------
+    engram_fragments:
+        Optional CulturalFragment list from CulturalEngram retrieval.
+    active_dimensions:
+        Optional list of active L-dimension keys for focus hint in prompt.
     """
-    tradition_guidance = _build_tradition_guidance(tradition)
+    tradition_guidance = _build_tradition_guidance(
+        tradition,
+        engram_fragments=engram_fragments,
+        active_dimensions=active_dimensions,
+    )
     system_msg = _SYSTEM_PROMPT.format(
         tradition=tradition.replace("_", " ").title(),
         tradition_guidance=tradition_guidance,

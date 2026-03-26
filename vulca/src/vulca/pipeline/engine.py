@@ -180,6 +180,10 @@ async def execute(
     # Inject eval_mode so DecideNode can adapt behavior
     ctx.set("eval_mode", pipeline_input.eval_mode)
 
+    # Inject sparse_eval flag so EvaluateNode can run BriefIndexer + CulturalEngram
+    if pipeline_input.sparse_eval:
+        ctx.set("sparse_eval", True)
+
     # Agent Residuals setup (AttnRes-inspired)
     _residuals = AgentResiduals() if (AgentResiduals is not None and pipeline_input.residuals) else None
 
