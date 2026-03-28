@@ -246,6 +246,16 @@ def _print_strict_result(result) -> None:
         bar = "\u2588" * int(score * 20) + "\u2591" * (20 - int(score * 20))
         indicator = "\u2713" if score >= 0.7 else "\u2717"
         print(f"    {level} {_DIM_NAMES[level]:<25s} {bar} {score:.0%}  {indicator}")
+
+    # Extra dimensions (tradition-specific)
+    if result.extra_scores:
+        print(f"\n  Tradition-Specific:")
+        for ekey, escore in result.extra_scores.items():
+            ename = result.raw.get(f"{ekey}_name", ekey)
+            bar = "\u2588" * int(escore * 20) + "\u2591" * (20 - int(escore * 20))
+            mark = "\u2713" if escore >= 0.6 else "\u2717"
+            print(f"    {ename:<32s} {bar} {escore:.0%}  {mark}")
+
     print()
     print(f"  Summary: {result.summary}")
 
@@ -299,6 +309,15 @@ def _print_reference_result(result) -> None:
             else:
                 print(f"       To align with tradition: {suggestion}")
                 print(f"       To lean into departure: consider amplifying the experimental elements")
+
+    # Extra dimensions (tradition-specific)
+    if result.extra_scores:
+        print(f"\n  Tradition-Specific:")
+        for ekey, escore in result.extra_scores.items():
+            ename = result.raw.get(f"{ekey}_name", ekey)
+            bar = "\u2588" * int(escore * 20) + "\u2591" * (20 - int(escore * 20))
+            mark = "\u2713" if escore >= 0.6 else "\u2717"
+            print(f"    {ename:<32s} {bar} {escore:.0%}  {mark}")
 
     print()
     print(f"  Summary: {result.summary}")
