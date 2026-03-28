@@ -144,6 +144,9 @@ async def create_artwork(
     mode: str = "strict",
     view: str = "summary",
     format: str = "json",
+    sketch_path: str = "",
+    reference_path: str = "",
+    ref_type: str = "full",
 ) -> dict | str:
     """Create cultural artwork through the VULCA pipeline.
 
@@ -157,6 +160,9 @@ async def create_artwork(
         mode: Evaluation mode — "strict" (judge, default), "reference" (advisor, no forced reruns).
         view: Response verbosity — "summary" (default) or "detailed".
         format: Output format — "json" (default) or "markdown".
+        sketch_path: Path or base64 of a sketch image to guide generation.
+        reference_path: Path or base64 of a reference image for style/composition guidance.
+        ref_type: Reference type — "style", "composition", or "full" (default).
 
     Returns:
         Summary: session_id, status, tradition, weighted_total, best_image_url, best_candidate_id.

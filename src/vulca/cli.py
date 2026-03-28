@@ -81,6 +81,7 @@ def main(argv: list[str] | None = None) -> None:
     eval_p.add_argument("--vlm-model", default="", help="VLM model (LiteLLM format, e.g. ollama/llava)")
     eval_p.add_argument("--vlm-base-url", default="", help="VLM base URL (for local models)")
     eval_p.add_argument("--sparse-eval", action="store_true", help="Enable sparse evaluation (score only relevant dimensions)")
+    eval_p.add_argument("--reference", default="", help="Reference image path or base64 for comparison")
 
     # create command
     create_p = sub.add_parser("create", aliases=["c"], help="Create artwork via pipeline")
@@ -99,6 +100,10 @@ def main(argv: list[str] | None = None) -> None:
     create_p.add_argument("--image-base-url", default="", help="Image provider base URL (for comfyui)")
     create_p.add_argument("--residuals", action="store_true", help="Enable Agent Residuals (selective node aggregation)")
     create_p.add_argument("--sparse-eval", action="store_true", help="Enable sparse evaluation (score only relevant dimensions)")
+    create_p.add_argument("--sketch", default="", help="Sketch image path or base64")
+    create_p.add_argument("--reference", default="", help="Reference image path or base64")
+    create_p.add_argument("--ref-type", default="full", choices=["style", "composition", "full"],
+                          help="Reference type: style, composition, or full")
 
     # traditions command
     sub.add_parser("traditions", aliases=["t"], help="List available cultural traditions")

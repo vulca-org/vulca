@@ -23,6 +23,9 @@ async def acreate(
     eval_mode: str = "strict",
     residuals: bool = False,
     sparse_eval: bool = False,
+    sketch: str = "",
+    reference: str = "",
+    ref_type: str = "full",
 ) -> CreateResult:
     """Create artwork via local pipeline or remote API (async).
 
@@ -74,6 +77,9 @@ async def acreate(
             eval_mode=eval_mode,
             residuals=residuals,
             sparse_eval=sparse_eval,
+            sketch=sketch,
+            reference=reference,
+            ref_type=ref_type,
         )
     return await _create_remote(
         intent,
@@ -97,6 +103,9 @@ async def _create_local(
     eval_mode: str = "strict",
     residuals: bool = False,
     sparse_eval: bool = False,
+    sketch: str = "",
+    reference: str = "",
+    ref_type: str = "full",
 ) -> CreateResult:
     """Run the slim pipeline engine locally."""
     from vulca.pipeline.engine import execute
@@ -233,6 +242,9 @@ def create(
     eval_mode: str = "strict",
     residuals: bool = False,
     sparse_eval: bool = False,
+    sketch: str = "",
+    reference: str = "",
+    ref_type: str = "full",
 ) -> CreateResult:
     """Create artwork (synchronous wrapper).
 
@@ -257,6 +269,9 @@ def create(
         eval_mode=eval_mode,
         residuals=residuals,
         sparse_eval=sparse_eval,
+        sketch=sketch,
+        reference=reference,
+        ref_type=ref_type,
     )
 
     if loop and loop.is_running():
