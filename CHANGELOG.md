@@ -1,5 +1,31 @@
 # Changelog
 
+## [0.7.0] - 2026-03-28
+
+### Selective Pipeline
+- **Agent Residuals**: Selective aggregation of agent outputs — only consume what downstream nodes actually need
+- **Cultural Engram**: Hash-indexed cultural knowledge retrieval — terminology and taboos injected via REPLACE (not append)
+- **Sparse Eval**: BriefIndexer activates only relevant L1-L5 dimensions per Brief, skipped dimensions get baseline scores
+- **Quantized Retrieval**: Zero-training session search for few-shot example selection
+
+### Integrity Fixes
+- Reset collapsed evolution weights to YAML defaults
+- Replace mock return values with proper errors in production paths
+- Evolution guard requires 3+ real human feedback entries before evolving
+- Full evolution reset: counter, cultures, few-shot, insights
+
+### CLI
+- `--residuals` flag for selective agent output aggregation
+- `--sparse-eval` flag for Brief-driven dimension activation
+
+### VLM Integration
+- Engram fragments REPLACE terminology/taboos instead of appending (prevents prompt bloat)
+- Sparse dimensions integrated into VLM scoring prompts
+
+### Testing
+- 538 tests (up from 455), strict TDD red-green discipline
+- 8 evolution guard boundary cases
+
 ## [0.6.0] - 2026-03-25
 
 ### Studio Intelligence (Phase 2)
