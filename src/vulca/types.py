@@ -50,6 +50,12 @@ class EvalResult:
     deviation_types: dict[str, str] = field(default_factory=dict)
     """Per-dimension deviation classification: traditional|intentional_departure|experimental."""
 
+    observations: dict[str, str] = field(default_factory=dict)
+    """Per-dimension visual observations from VLM (factual, not evaluative)."""
+
+    reference_techniques: dict[str, str] = field(default_factory=dict)
+    """Per-dimension most relevant traditional technique name."""
+
     eval_mode: str = "strict"
     """Evaluation mode: 'strict' (judge), 'reference' (advisor), or 'fusion' (multi-tradition)."""
 
