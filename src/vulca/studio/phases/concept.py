@@ -11,10 +11,26 @@ logger = logging.getLogger("vulca.studio")
 
 
 class ConceptPhase:
-    def build_concept_prompt(self, brief: Brief) -> str:
+    def build_concept_prompt(self, brief: Brief, *, variation_strength: float = 0.0) -> str:
         parts = [f"Create a concept design artwork: {brief.intent}"]
 
-        if brief.user_sketch:
+        if variation_strength > 0:
+            if variation_strength >= 0.6:
+                parts.append(
+                    "Create a SIGNIFICANT rework of the reference image. "
+                    "Keep the core subject but substantially change composition, style, or mood."
+                )
+            elif variation_strength >= 0.35:
+                parts.append(
+                    "Create a variation of the reference image. "
+                    "Preserve the overall composition but apply the requested changes."
+                )
+            else:
+                parts.append(
+                    "Create a subtle refinement of the reference image. "
+                    "Keep composition and style very close, apply only minor adjustments."
+                )
+        elif brief.user_sketch:
             parts.append(
                 "This should be a refined variation of the provided reference sketch, "
                 "preserving its composition while improving detail and style."
@@ -45,13 +61,22 @@ class ConceptPhase:
     async def generate_concepts(
         self, brief: Brief, *, count: int = 4, provider: str = "mock",
         project_dir: str = "", api_key: str = "",
+        reference_image: str = "",
+        variation_strength: float = 0.0,
     ) -> list[str]:
         project = Path(project_dir) if project_dir else Path(".")
         concepts_dir = project / "concepts"
         concepts_dir.mkdir(parents=True, exist_ok=True)
 
-        prompt = self.build_concept_prompt(brief)
+        prompt = self.build_concept_prompt(brief, variation_strength=variation_strength)
         paths: list[str] = []
+
+        # Determine reference image: explicit param > brief.user_sketch
+        ref_b64 = ""
+        if reference_image:
+            ref_b64 = self._load_sketch_b64(reference_image)
+        elif brief.user_sketch:
+            ref_b64 = self._load_sketch_b64(brief.user_sketch)
 
         try:
             from vulca.providers import get_image_provider
@@ -70,7 +95,7 @@ class ConceptPhase:
                 result = await img_provider.generate(
                     varied, tradition=brief.style_mix[0].tradition if brief.style_mix else "",
                     subject=brief.intent,
-                    reference_image_b64=self._load_sketch_b64(brief.user_sketch) if brief.user_sketch else "",
+                    reference_image_b64=ref_b64,
                 )
                 ext = "png" if "png" in result.mime else "jpg"
                 filepath = concepts_dir / f"c{i + 1}.{ext}"
