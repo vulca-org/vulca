@@ -31,6 +31,29 @@ _EVALUATE_FIELDS = {"eval_criteria"}
 _GENERATE_FIELDS = {"provider", "generation_params"}
 
 
+_HIGH_STRENGTH_WORDS = {"completely", "replace", "different", "redo", "start over", "totally", "entirely", "scratch"}
+_MEDIUM_STRENGTH_WORDS = {"change", "modify", "more", "less", "stronger", "weaker", "increase", "decrease", "add", "remove"}
+_LOW_STRENGTH_WORDS = {"adjust", "refine", "subtle", "slightly", "tweak", "fine-tune", "minor", "touch up"}
+
+
+def infer_variation_strength(instruction: str) -> float:
+    """Infer variation strength from NL update text (0.0-1.0).
+
+    High (0.7): major rework keywords.
+    Medium (0.4): moderate change keywords.
+    Low (0.2): fine-tuning keywords.
+    Default: 0.3.
+    """
+    words = set(instruction.lower().split())
+    if words & _HIGH_STRENGTH_WORDS:
+        return 0.7
+    if words & _MEDIUM_STRENGTH_WORDS:
+        return 0.4
+    if words & _LOW_STRENGTH_WORDS:
+        return 0.2
+    return 0.3
+
+
 def determine_rollback(changed_fields: list[str]) -> SessionState:
     """Determine rollback phase from changed field names (deterministic).
 
