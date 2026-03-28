@@ -27,6 +27,8 @@ class Brief:
     style_mix: list[StyleWeight] = field(default_factory=list)
     references: list[Reference] = field(default_factory=list)
     user_sketch: str = ""
+    reference_path: str = ""
+    reference_type: str = "full"  # "style" | "composition" | "full"
 
     concept_candidates: list[str] = field(default_factory=list)
     selected_concept: str = ""
@@ -65,7 +67,8 @@ class Brief:
     def _from_dict(cls, data: dict[str, Any]) -> Brief:
         b = cls()
         for key in ("session_id", "version", "created_at", "updated_at", "intent", "mood",
-                     "user_sketch", "selected_concept", "concept_notes", "concept_candidates",
+                     "user_sketch", "reference_path", "reference_type",
+                     "selected_concept", "concept_notes", "concept_candidates",
                      "must_have", "must_avoid", "eval_criteria"):
             if key in data:
                 setattr(b, key, data[key])
@@ -100,6 +103,7 @@ class Brief:
     _KNOWN_FIELDS = {
         "session_id", "version", "created_at", "updated_at",
         "intent", "mood", "style_mix", "references", "user_sketch",
+        "reference_path", "reference_type",
         "concept_candidates", "selected_concept", "concept_notes",
         "composition", "palette", "elements",
         "must_have", "must_avoid", "eval_criteria",

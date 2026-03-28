@@ -9,6 +9,26 @@ from pathlib import Path
 import httpx
 
 
+def resolve_image_input(value: str) -> str:
+    """Resolve image input to base64 string.
+
+    Accepts file path (starts with /, ~, or drive letter) or raw base64.
+    Returns empty string for empty input.
+    """
+    if not value:
+        return ""
+
+    # Check if it looks like a file path
+    if value.startswith(("/", "~")) or (len(value) >= 3 and value[1] == ":"):
+        path = Path(value).expanduser().resolve()
+        if not path.exists():
+            raise FileNotFoundError(f"Image not found: {path}")
+        return base64.b64encode(path.read_bytes()).decode()
+
+    # Assume base64
+    return value
+
+
 async def load_image_base64(image: str) -> tuple[str, str]:
     """Load an image and return ``(base64_string, mime_type)``.
 
