@@ -23,6 +23,24 @@ class GeneratePhase:
                 "Preserve its layout while rendering at full quality and detail."
             )
 
+        if brief.reference_path:
+            ref_prompts = {
+                "style": (
+                    "Apply the style, color palette, and brushwork of the reference image "
+                    "to this artwork. Do not copy the composition."
+                ),
+                "composition": (
+                    "Use the reference image as a composition and spatial layout guide. "
+                    "Apply different style and colors."
+                ),
+                "full": (
+                    "Use the reference image as both a style guide and composition blueprint. "
+                    "Match its visual language and spatial arrangement."
+                ),
+            }
+            ref_type = brief.reference_type if brief.reference_type in ref_prompts else "full"
+            parts.append(ref_prompts[ref_type])
+
         # Style
         if brief.style_mix:
             styles = ", ".join(s.tradition.replace("_", " ") or s.tag for s in brief.style_mix)

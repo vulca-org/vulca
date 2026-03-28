@@ -36,6 +36,24 @@ class ConceptPhase:
                 "preserving its composition while improving detail and style."
             )
 
+        if brief.reference_path and not variation_strength:
+            ref_prompts = {
+                "style": (
+                    "Apply the style, color palette, and brushwork of the reference image "
+                    "to this artwork. Do not copy the composition."
+                ),
+                "composition": (
+                    "Use the reference image as a composition and spatial layout guide. "
+                    "Apply different style and colors."
+                ),
+                "full": (
+                    "Use the reference image as both a style guide and composition blueprint. "
+                    "Match its visual language and spatial arrangement."
+                ),
+            }
+            ref_type = brief.reference_type if brief.reference_type in ref_prompts else "full"
+            parts.append(ref_prompts[ref_type])
+
         if brief.style_mix:
             styles = ", ".join(s.tradition.replace("_", " ") or s.tag for s in brief.style_mix)
             parts.append(f"Style: {styles}")
@@ -71,10 +89,12 @@ class ConceptPhase:
         prompt = self.build_concept_prompt(brief, variation_strength=variation_strength)
         paths: list[str] = []
 
-        # Determine reference image: explicit param > brief.user_sketch
+        # Determine reference image: explicit param > brief.reference_path > brief.user_sketch
         ref_b64 = ""
         if reference_image:
             ref_b64 = self._load_sketch_b64(reference_image)
+        elif brief.reference_path:
+            ref_b64 = self._load_sketch_b64(brief.reference_path)
         elif brief.user_sketch:
             ref_b64 = self._load_sketch_b64(brief.user_sketch)
 
