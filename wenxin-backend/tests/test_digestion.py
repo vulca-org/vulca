@@ -146,11 +146,18 @@ def test_context_evolver_skips_when_too_few_sessions():
 
 def test_context_evolver_produces_actions():
     """With enough sessions having low L1 scores, should produce evolution actions."""
+    from unittest.mock import MagicMock
+
+    # Use mock store with user_feedback to pass the evolution guard
     sessions = [
-        SessionDigest(tradition="watercolor", final_scores={"L1": 0.35, "L2": 0.8, "L3": 0.7, "L4": 0.6, "L5": 0.7})
-        for _ in range(15)
+        {"session_id": f"api-{i}", "tradition": "watercolor",
+         "final_scores": {"L1": 0.35, "L2": 0.8, "L3": 0.7, "L4": 0.6, "L5": 0.7},
+         "user_feedback": "accepted" if i < 5 else ""}
+        for i in range(15)
     ]
-    store = _make_store(sessions)
+    store = MagicMock()
+    store.count.return_value = len(sessions)
+    store.get_all.return_value = sessions
 
     tmpdir = tempfile.mkdtemp()
     ctx_path = str(Path(tmpdir) / "evolved_context.json")
@@ -180,8 +187,6 @@ def test_context_evolver_produces_actions():
         # Sum should still be ~1.0
         total = sum(saved["tradition_weights"]["watercolor"].values())
         assert abs(total - 1.0) < 0.001
-
-    SessionStore._instance = None
 
 
 def test_evolution_result_to_dict():
