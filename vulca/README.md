@@ -3,9 +3,9 @@
 [![PyPI version](https://img.shields.io/pypi/v/vulca.svg)](https://pypi.org/project/vulca/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://pypi.org/project/vulca/)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-green.svg)](https://github.com/vulca-org/vulca/blob/main/LICENSE)
-[![Tests](https://img.shields.io/badge/tests-462%20passing-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-538%20passing-brightgreen.svg)]()
 
-**AI-native cultural art creation organism.** Brief-driven Studio pipeline, L1-L5 evaluation with actionable suggestions, Digestion learning system, and 13+ cultural traditions.
+**AI-native cultural art creation organism.** Selective Pipeline (Agent Residuals + Cultural Engram + Sparse Eval), Brief-driven Studio, L1-L5 evaluation with actionable suggestions, Digestion V2 learning system, and 13 cultural traditions.
 
 ```bash
 pip install vulca
@@ -15,11 +15,11 @@ vulca studio "水墨山水，远山含烟，留白三成"
 
 > Based on peer-reviewed research: [VULCA Framework](https://aclanthology.org/2025.findings-emnlp/) (EMNLP 2025 Findings) and [VULCA-Bench](https://arxiv.org/abs/2601.07986) (7,410 samples, 9 traditions).
 
-## What's New in v0.6.0
+## What's New in v0.7.0
 
-**Studio Intelligence** — Gemini LLM extracts implicit elements, palette, and composition from free-text intent. 10/10 simulated users complete sessions successfully.
+**Selective Pipeline** — Agent Residuals selectively aggregate outputs; Cultural Engram injects tradition knowledge via REPLACE; Sparse Eval activates only relevant L1-L5 dimensions per Brief; Quantized Retrieval finds similar sessions without training.
 
-**Digestion V2** — 4-layer learning system that accumulates user preferences in real-time, analyzes creative trajectories, and evolves tradition weights from real feedback.
+**Integrity Hardening** — Evolution now requires 3+ real human feedback entries before adjusting weights. Collapsed weights reset to YAML defaults. Mock returns replaced with proper errors in production paths.
 
 ## Quick Start
 
@@ -135,7 +135,7 @@ Five layers of evaluation, reinterpreted per domain:
 
 ```
 vulca/
-├── studio/           # Brief-driven creative collaboration (462 tests)
+├── studio/           # Brief-driven creative collaboration
 │   ├── phases/       # Intent (LLM+keyword), Scout, Concept, Generate, Evaluate
 │   ��── brief.py      # Living YAML document
 │   ├── nl_update.py  # NL instruction parsing (LLM + keyword fallback)
@@ -149,7 +149,7 @@ vulca/
 │   └── archiver.py   # Cold storage for long-term retention
 ├── pipeline/         # Execution engine + built-in nodes
 ├── providers/        # Pluggable ImageProvider + VLMProvider protocols
-├── cultural/         # 13+ YAML tradition configs with L1-L5 weights
+├── cultural/         # 13 YAML tradition configs with L1-L5 weights
 ├── cli.py            # CLI entry point
 └── mcp_server.py     # MCP server (6 tools, FastMCP)
 ```
@@ -183,7 +183,7 @@ claude plugin install vulca
 | `evaluate_artwork` | Evaluate on L1-L5 with rationale + deviation analysis |
 | `studio_create_brief` | Start a Brief-driven Studio session |
 | `studio_update_brief` | Update Brief with natural language |
-| `list_traditions` | List 13+ traditions with weights |
+| `list_traditions` | List 13 traditions with weights |
 | `get_tradition_guide` | Full cultural context: terminology, taboos |
 
 ## Custom Traditions
@@ -197,7 +197,7 @@ vulca evaluate game.png -t ./pixel_art_retro.yaml
 
 ```bash
 pip install vulca[dev]
-pytest tests/ -v  # 462 tests, 0 failures
+pytest tests/ -v  # 538 tests, 0 failures
 ```
 
 ## Citation

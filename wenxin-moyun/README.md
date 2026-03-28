@@ -5,9 +5,9 @@ Create, critique, and evolve cultural art through multi-agent AI pipelines.
 ## Key Features
 
 - **Multi-Agent Pipeline**: Scout, Draft, Critic, and Queen agents collaborate in real time
-- **9 Cultural Traditions**: Chinese Xieyi, Chinese Gongbi, Japanese, Islamic, South Asian, Western Academic, Watercolor, African, General
+- **13 Cultural Traditions**: Chinese Xieyi, Chinese Gongbi, Japanese, Islamic, South Asian, Western Academic, Watercolor, African, Contemporary Art, Photography, Brand Design, UI/UX Design, Default
 - **L1-L5 Evaluation**: Five-level cultural understanding assessment (Visual Perception to Philosophical Aesthetic)
-- **Node Editor**: Visual pipeline editor with 30 node types
+- **Node Editor**: Visual pipeline editor for Canvas workflows
 - **Open Source**: Apache 2.0 licensed
 
 ## Tech Stack
@@ -56,11 +56,12 @@ npm run test:e2e
 | L4 | Critical Interpretation | Interpretive depth and reasoning |
 | L5 | Philosophical Aesthetic | Deep aesthetic and philosophical insight |
 
-### 9 Cultural Traditions
+### 13 Cultural Traditions
 - **Chinese**: Xieyi (Freehand), Gongbi (Meticulous)
 - **East Asian**: Japanese Traditional
-- **Western**: Western Academic, Watercolor
-- **Other**: Islamic Geometric, South Asian, African Traditional, General/Cross-Cultural
+- **Western**: Western Academic, Watercolor, Contemporary Art
+- **Design**: Brand Design, UI/UX Design, Photography
+- **Other**: Islamic Geometric, South Asian, African Traditional, Default
 
 ## Deployment
 

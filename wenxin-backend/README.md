@@ -1,39 +1,17 @@
 # VULCA Backend API
 
-FastAPI + LangChain backend for the VULCA cultural AI creation platform.
+FastAPI backend for the VULCA platform. Serves the Canvas web UI and exposes REST API endpoints for pipeline execution, gallery, and authentication.
 
-## Quick Start
+> **Note**: This is the web backend component of the [VULCA monorepo](https://github.com/vulca-org/vulca). For the standalone Python SDK/CLI, see [`vulca/`](../vulca/) or `pip install vulca`.
 
-### As a Local App (Full UI + API)
-
-```bash
-pip install vulca[app]
-vulca serve              # Opens browser to http://localhost:8001
-```
-
-### As an SDK (Lightweight, No Server)
-
-```bash
-pip install vulca
-vulca evaluate painting.jpg                    # CLI evaluation
-vulca evaluate painting.jpg --tradition chinese_xieyi  # With cultural context
-```
-
-```python
-from vulca import evaluate
-
-result = evaluate("painting.jpg")
-print(result.score, result.tradition)
-print(result.dimensions)  # L1-L5 scores
-```
-
-### Development Setup
+## Development Setup
 
 ```bash
 git clone https://github.com/vulca-org/vulca.git
-cd website/wenxin-backend
-pip install -e ".[app,dev]"
-vulca serve --port 8001
+cd vulca/wenxin-backend
+pip install -r requirements.txt -c constraints.txt
+python init_db.py
+python -m uvicorn app.main:app --reload --port 8001
 ```
 
 ## Tech Stack

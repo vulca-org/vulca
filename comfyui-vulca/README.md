@@ -15,7 +15,7 @@ Cultural art evaluation and Brief-driven creative workflows for ComfyUI.
 ## Installation
 
 1. Copy this folder to `ComfyUI/custom_nodes/comfyui-vulca/`
-2. Install dependency: `pip install vulca>=0.5.0`
+2. Install dependency: `pip install vulca>=0.7.0`
 3. Restart ComfyUI
 
 ## Usage
@@ -30,5 +30,5 @@ VULCA Brief → VULCA Concept → VULCA Generate → VULCA Evaluate
 ## Requirements
 
 - Python 3.10+
-- `vulca>=0.5.0` (PyPI)
+- `vulca>=0.7.0` (PyPI)
 - ComfyUI (any recent version)

@@ -1,67 +1,82 @@
-# VULCA — Claude Code Plugin
+# VULCA Claude Code Plugin
 
-Cultural art advisor for Claude Code. Score artworks on L1-L5 dimensions with actionable suggestions across 13+ cultural traditions. Supports strict (judge), reference (advisor), and fusion (multi-tradition comparison) modes.
+AI-native cultural art creation organism for Claude Code. Selective Pipeline, Brief-driven Studio, L1-L5 evaluation with actionable suggestions, Digestion V2 learning system, and 13 cultural traditions.
 
 ## Install
 
 ```bash
-# 1. Install the SDK (required)
 pip install vulca[mcp]
-
-# 2. Add the plugin marketplace
-claude plugin marketplace add vulca-org/vulca-plugin
-
-# 3. Install the plugin
-claude plugin install vulca
+claude plugin install vulca-org/vulca-plugin
 ```
 
-**For real VLM scoring** (optional):
+**For real VLM scoring + image generation** (optional):
 ```bash
 export GOOGLE_API_KEY=your-key-here
 ```
 
 Mock mode works without any API key.
 
-## What's Included
+### MCP Tools (11 tools)
 
-| Type | Name | Description |
-|------|------|-------------|
-| MCP Tool | `evaluate_artwork` | L1-L5 scoring with rationale, suggestions, and deviation analysis |
-| MCP Tool | `create_artwork` | Generate → Evaluate → Decide pipeline with mode control |
-| MCP Tool | `list_traditions` | Browse 13 cultural traditions |
-| MCP Tool | `get_tradition_guide` | Terminology, taboos, weights |
-| MCP Tool | `resume_artwork` | HITL: accept / refine / reject |
-| MCP Tool | `get_evolution_status` | Weight evolution history |
-| Skill | `/evaluate` | "Evaluate this artwork for Chinese xieyi" |
-| Skill | `/create` | "Create a Japanese ink wash landscape" |
-| Skill | `/tradition` | "What traditions are available?" |
-| Agent | cultural-critic | Deep cross-tradition analysis |
+| Tool | Description |
+|------|-------------|
+| `evaluate_artwork` | L1-L5 cultural evaluation |
+| `create_artwork` | Generate culturally-guided artwork |
+| `list_traditions` | List 13 cultural traditions |
+| `get_tradition_guide` | Detailed tradition reference |
+| `resume_artwork` | Resume HITL paused sessions |
+| `get_evolution_status` | Check weight evolution |
+| **`studio_create_brief`** | Create Brief from creative intent |
+| **`studio_update_brief`** | NL update Brief |
+| **`studio_generate_concepts`** | Generate concept designs |
+| **`studio_select_concept`** | Select + refine concept |
+| **`studio_accept`** | Finalize session + digest |
 
-## Usage
+### Skills (4 skills)
 
-Just ask Claude Code naturally:
+| Skill | Trigger | Description |
+|-------|---------|-------------|
+| evaluate | "evaluate this painting" | Quick L1-L5 evaluation |
+| create | "create artwork" | Cultural artwork generation |
+| tradition | "show me xieyi guide" | Tradition reference lookup |
+| **studio** | "start a studio session" | Brief-driven creative collaboration |
 
-> "Evaluate painting.jpg for Chinese xieyi tradition"
+### Agents (1 agent)
 
-> "Evaluate this image in reference mode — I want to see where it diverges from tradition"
+| Agent | Description |
+|-------|-------------|
+| cultural-critic | Deep cross-cultural analysis |
 
-> "Create a misty mountain landscape in ink wash style"
+## Studio Pipeline (v0.7.0)
 
-> "Compare how this image scores in watercolor vs photography traditions"
+```
+Intent → Concept → Generate → Evaluate → Refine
+  ↑                                        ↓
+  └──── Brief (living creative document) ←─┘
+```
 
-### New in v0.4: Evaluation Modes
+- **LLM intent parsing**: Gemini extracts implicit elements, palette, composition
+- **Dynamic questions**: Domain-adaptive clarifying questions
+- **Natural language updates**: "Put the teapot in the lower center"
+- **Digestion V2**: Learns from your preferences across sessions
 
-- **strict** (default): Judge mode — scores reflect conformance, pipeline reruns to improve
-- **reference**: Advisor mode — shows alignment without judgment, no forced reruns
+### Evaluation Modes
+
+- **strict** (default): Judge mode — scores reflect conformance
+- **reference**: Advisor mode — shows alignment without judgment
 - **fusion**: Compare against multiple traditions at once
 
-## Providers
+## Requirements
 
-Image generation: `mock` (no key), `gemini` (Google), `openai` (DALL-E 3), `comfyui` (local SD)
+- Python 3.10+
+- `pip install vulca` (v0.7.0+)
+- Gemini API key (for real VLM evaluation)
 
-VLM scoring: Gemini (default), or any LiteLLM-supported model via `--vlm-model`
+## License
+
+Apache-2.0
 
 ## Links
 
-- SDK: [vulca-org/vulca](https://github.com/vulca-org/vulca) | [PyPI](https://pypi.org/project/vulca/)
+- SDK: [PyPI](https://pypi.org/project/vulca/) (v0.7.0, 538 tests)
 - Paper: [VULCA Framework](https://aclanthology.org/2025.findings-emnlp/) (EMNLP 2025)

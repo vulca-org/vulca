@@ -2,14 +2,14 @@
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![CI](https://github.com/vulca-org/vulca/actions/workflows/deploy-gcp.yml/badge.svg)](https://github.com/vulca-org/vulca/actions)
-[![Python 3.13](https://img.shields.io/badge/Python-3.13-green.svg)](https://python.org)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10+-green.svg)](https://python.org)
 [![Node 20](https://img.shields.io/badge/Node.js-20-green.svg)](https://nodejs.org)
 
 > Create, critique, and evolve cultural art through multi-agent AI pipelines.
 
 VULCA is an open-source creative platform where generation, evaluation, and learning are seamless stages of one process. The core product is **Canvas** -- a unified creation and evaluation playground powered by a multi-agent pipeline. 13 cultural traditions shape how art is generated and scored. The system **learns from every session** -- evolved weights, few-shot references, and cultural insights feed back into the evaluation prompt automatically. No API keys required to start -- the built-in mock provider runs the full pipeline locally.
 
-**Live:** [vulcaart.art](https://vulcaart.art) | **Papers:** EMNLP 2025, WiNLP 2025, arXiv 2026
+**Live:** [vulcaart.art](https://vulcaart.art) | **Papers:** [EMNLP 2025](https://aclanthology.org/2025.findings-emnlp/), [WiNLP 2025](https://www.winlp.org/), [arXiv:2601.07986](https://arxiv.org/abs/2601.07986)
 
 ```
                           ┌─────────────────────────────────┐
@@ -63,10 +63,12 @@ Intent → Scout → Draft → Critic → Queen → Gallery → Evolve
 > **Note**: `wenxin-moyun` (frontend) and `wenxin-backend` are the original Chinese names meaning "Heart of Ink and Cloud". They are preserved for backward compatibility.
 
 ```
-├── vulca/                 # Unified Python SDK (276 tests)
-│   └── src/vulca/         #   pipeline/, cultural/, scoring/, storage/, cli, mcp
-├── wenxin-moyun/          # Frontend (React 19 + TypeScript)
-├── wenxin-backend/        # Backend (FastAPI + Python 3.13)
+├── vulca/                 # Python SDK + CLI (v0.7.0, 538 tests) → PyPI: `pip install vulca`
+│   └── src/vulca/         #   pipeline/, cultural/, studio/, digestion/, scoring/, cli, mcp
+├── comfyui-vulca/         # ComfyUI custom nodes (5 nodes, depends on vulca SDK)
+├── vulca-plugin/          # Claude Code MCP plugin (11 tools, 4 skills)
+├── wenxin-moyun/          # Frontend (React 19 + TypeScript + Tailwind 4.1)
+├── wenxin-backend/        # Backend API (FastAPI + Python 3.13)
 ├── docker-compose.yml     # One-command local setup
 ├── CONTRIBUTING.md        # How to contribute
 └── SECURITY.md            # Vulnerability reporting
@@ -112,7 +114,7 @@ Intent --> Scout --> Router --> Draft --> Critic --> Queen --> Archivist
 | Agent | Role | Technology |
 |-------|------|------------|
 | Scout | Cultural evidence retrieval | Gemini 2.5 Flash |
-| Router | Tradition routing (13 YAML traditions) | Rule-based + LLM |
+| Router | Tradition routing (13 traditions) | Rule-based + LLM |
 | Draft | Image generation | Mock / NB2 / Diffusers / DALL-E / Flux |
 | Critic | L1-L5 multi-dimensional scoring | Gemini 2.5 Flash (VLM) |
 | Queen | Accept/rerun decision gate | Gemini 2.5 Flash |
@@ -129,31 +131,15 @@ Every session feeds back into the system:
 
 ## Extend VULCA
 
-### Add a Provider (like ComfyUI nodes)
+### Add a Provider
 
 ```python
-from app.prototype.agents.draft_provider import AbstractProvider
+from vulca.providers import ImageProvider
 
-class MyProvider(AbstractProvider):
-    @property
-    def model_ref(self) -> str:
-        return "my-model-v1"
-
-    def generate(self, prompt, negative_prompt, seed, width, height, steps, sampler, output_path) -> str:
-        # Your generation logic
-        return output_path
-```
-
-### Add an Agent
-
-```python
-from app.prototype.agents.interfaces import BaseAgent, AgentRegistry
-
-@AgentRegistry.register("my_agent")
-class MyAgent(BaseAgent):
-    name = "my_agent"
-    def execute(self, state) -> dict:
-        return {"my_result": ...}
+class MyProvider(ImageProvider):
+    def generate(self, prompt: str, **kwargs) -> bytes:
+        # Your generation logic — return image bytes
+        ...
 ```
 
 ### Add a Cultural Tradition
@@ -191,7 +177,7 @@ taboos:
 | Database | PostgreSQL (Supabase) / SQLite (local) |
 | AI Models | Gemini 2.5 Pro/Flash, NB2, FLUX.2 Pro, DALL-E 3, Diffusers, Mock |
 | Deployment | GCP Cloud Run, Firebase Hosting, GitHub Actions |
-| Testing | Playwright E2E (95 tests), pytest (276 vulca + 1067 backend tests) |
+| Testing | Playwright E2E (95 tests), pytest (538 vulca tests) |
 
 ## API
 
@@ -222,7 +208,7 @@ Full API docs: set `ENABLE_API_DOCS=true` and visit `/docs`.
 ## Testing
 
 ```bash
-# VULCA SDK (276 tests)
+# VULCA SDK (538 tests)
 cd vulca && .venv/bin/python -m pytest tests/ -v
 
 # Backend
