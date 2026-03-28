@@ -76,8 +76,29 @@ Respond with ONLY a JSON object:
 }}
 """
 
+def _build_extra_dimensions_prompt(extras: list[dict]) -> str:
+    """Build prompt section for tradition-specific extra dimensions (E1-E3, max 3)."""
+    if not extras:
+        return ""
+    # Limit to 3
+    extras = extras[:3]
+    lines = [
+        "\n## Tradition-Specific Dimensions\n",
+        "In addition to L1-L5, evaluate these tradition-specific dimensions:\n",
+    ]
+    for e in extras:
+        lines.append(f"- **{e['key']} ({e['name']})**: {e['description']}")
+    lines.append(
+        "\nScore each with the same format as L1-L5 "
+        "(observations, rationale, suggestion, reference_technique, deviation_type)."
+    )
+    return "\n".join(lines)
+
+
 def _parse_vlm_response(
     raw: dict,
+    *,
+    extra_keys: list[str] | None = None,
 ) -> tuple[dict[str, float], dict[str, str], dict[str, str], dict[str, str], dict[str, str], dict[str, str]]:
     """Parse VLM JSON response into (scores, rationales, suggestions, deviations, observations, ref_techniques)."""
     scores: dict[str, float] = {}
@@ -89,6 +110,17 @@ def _parse_vlm_response(
 
     for i in range(1, 6):
         key = f"L{i}"
+        val = raw.get(key, 0.0)
+        scores[key] = max(0.0, min(1.0, float(val))) if val else 0.0
+        rationales[key] = str(raw.get(f"{key}_rationale", ""))
+        suggestions[key] = str(raw.get(f"{key}_suggestion", ""))
+        dev = str(raw.get(f"{key}_deviation_type", "traditional"))
+        deviations[key] = dev if dev in ("traditional", "intentional_departure", "experimental") else "traditional"
+        observations[key] = str(raw.get(f"{key}_observations", ""))
+        ref_techniques[key] = str(raw.get(f"{key}_reference_technique", ""))
+
+    # Parse extra dimensions (E1-E3)
+    for key in (extra_keys or []):
         val = raw.get(key, 0.0)
         scores[key] = max(0.0, min(1.0, float(val))) if val else 0.0
         rationales[key] = str(raw.get(f"{key}_rationale", ""))
@@ -293,6 +325,32 @@ def _inject_evolved_guidance(parts: list[str], tradition: str, evolved: dict) ->
         parts.append(f"\n### Evolved Insight\n{ti}")
 
 
+def _load_extra_dimensions(tradition: str) -> list[dict]:
+    """Load extra_dimensions from tradition YAML config (if defined)."""
+    try:
+        from vulca.cultural.loader import get_tradition
+        tc = get_tradition(tradition)
+        if tc is None:
+            return []
+        # extra_dimensions is an optional list of dicts on TraditionConfig
+        extras = getattr(tc, "extra_dimensions", None)
+        if not extras:
+            return []
+        # Normalise: each item must have key, name, description
+        result = []
+        for item in extras:
+            if isinstance(item, dict) and "key" in item and "name" in item:
+                result.append({
+                    "key": item["key"],
+                    "name": item["name"],
+                    "description": item.get("description", ""),
+                })
+        return result
+    except Exception:
+        logger.debug("Could not load extra_dimensions for tradition %s", tradition)
+        return []
+
+
 async def score_image(
     img_b64: str,
     mime: str,
@@ -319,10 +377,19 @@ async def score_image(
         engram_fragments=engram_fragments,
         active_dimensions=active_dimensions,
     )
+
+    # Load tradition-specific extra dimensions and build prompt extension
+    extra_dims = _load_extra_dimensions(tradition)
+    extra_prompt = _build_extra_dimensions_prompt(extra_dims)
+    extra_keys = [e["key"] for e in extra_dims[:3]]
+
     system_msg = _SYSTEM_PROMPT.format(
         tradition=tradition.replace("_", " ").title(),
         tradition_guidance=tradition_guidance,
     )
+    # Append extra dimensions prompt if any
+    if extra_prompt:
+        system_msg = system_msg + "\n" + extra_prompt
 
     user_parts = [
         {"type": "image_url", "image_url": {"url": f"data:{mime};base64,{img_b64}"}},
@@ -348,24 +415,29 @@ async def score_image(
         from vulca._parse import parse_llm_json
         parsed_json = parse_llm_json(text)
 
-        # Use _parse_vlm_response to extract and validate all fields
-        scores, rationales, suggestions, deviations, observations, ref_techniques = _parse_vlm_response(parsed_json)
+        # Use _parse_vlm_response to extract and validate all fields (including extras)
+        scores, rationales, suggestions, deviations, observations, ref_techniques = _parse_vlm_response(
+            parsed_json, extra_keys=extra_keys
+        )
 
         # Rebuild flat dict (backward-compatible with callers expecting flat dict)
         data: dict = {}
-        for level in ("L1", "L2", "L3", "L4", "L5"):
-            data[level] = scores[level]
-            data[f"{level}_rationale"] = rationales[level]
-            data[f"{level}_suggestion"] = suggestions[level]
-            data[f"{level}_deviation_type"] = deviations[level]
-            data[f"{level}_observations"] = observations[level]
-            data[f"{level}_reference_technique"] = ref_techniques[level]
+        all_levels = list(("L1", "L2", "L3", "L4", "L5")) + extra_keys
+        for level in all_levels:
+            data[level] = scores.get(level, 0.0)
+            data[f"{level}_rationale"] = rationales.get(level, "")
+            data[f"{level}_suggestion"] = suggestions.get(level, "")
+            data[f"{level}_deviation_type"] = deviations.get(level, "traditional")
+            data[f"{level}_observations"] = observations.get(level, "")
+            data[f"{level}_reference_technique"] = ref_techniques.get(level, "")
+        # Store extra_keys in data so _engine.py can split core vs extra
+        data["_extra_keys"] = extra_keys
 
         return data
 
     except Exception as exc:
         logger.error("VLM scoring failed: %s", exc)
-        fallback: dict = {"error": str(exc)}
+        fallback: dict = {"error": str(exc), "_extra_keys": extra_keys}
         for level in ("L1", "L2", "L3", "L4", "L5"):
             fallback[level] = 0.0
             fallback[f"{level}_rationale"] = f"Scoring failed: {exc}" if level == "L1" else ""

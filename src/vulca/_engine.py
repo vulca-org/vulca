@@ -100,6 +100,18 @@ class Engine:
             observations[level] = vlm_result.get(f"{level}_observations", "")
             reference_techniques[level] = vlm_result.get(f"{level}_reference_technique", "")
 
+        # Extract extra dimension results (E1-E3, tradition-specific)
+        extra_keys: list[str] = vlm_result.get("_extra_keys", [])
+        extra_scores: dict[str, float] = {}
+        extra_rationales: dict[str, str] = {}
+        extra_suggestions: dict[str, str] = {}
+        extra_observations: dict[str, str] = {}
+        for ekey in extra_keys:
+            extra_scores[ekey] = vlm_result.get(ekey, 0.0)
+            extra_rationales[ekey] = vlm_result.get(f"{ekey}_rationale", "")
+            extra_suggestions[ekey] = vlm_result.get(f"{ekey}_suggestion", "")
+            extra_observations[ekey] = vlm_result.get(f"{ekey}_observations", "")
+
         weighted_total = sum(
             dimensions.get(f"L{i}", 0) * weights.get(f"L{i}", 0.2)
             for i in range(1, 6)
@@ -142,6 +154,10 @@ class Engine:
             deviation_types=deviation_types,
             observations=observations,
             reference_techniques=reference_techniques,
+            extra_scores=extra_scores,
+            extra_rationales=extra_rationales,
+            extra_suggestions=extra_suggestions,
+            extra_observations=extra_observations,
             eval_mode=mode,
             skills=skill_results,
             intent_confidence=intent_confidence,

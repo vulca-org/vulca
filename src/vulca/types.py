@@ -56,6 +56,18 @@ class EvalResult:
     reference_techniques: dict[str, str] = field(default_factory=dict)
     """Per-dimension most relevant traditional technique name."""
 
+    extra_scores: dict[str, float] = field(default_factory=dict)
+    """Tradition-specific extra dimension scores (E1-E3)."""
+
+    extra_rationales: dict[str, str] = field(default_factory=dict)
+    """Tradition-specific extra dimension rationales."""
+
+    extra_suggestions: dict[str, str] = field(default_factory=dict)
+    """Tradition-specific extra dimension suggestions."""
+
+    extra_observations: dict[str, str] = field(default_factory=dict)
+    """Tradition-specific extra dimension observations."""
+
     eval_mode: str = "strict"
     """Evaluation mode: 'strict' (judge), 'reference' (advisor), or 'fusion' (multi-tradition)."""
 
