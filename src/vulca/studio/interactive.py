@@ -18,6 +18,19 @@ from vulca.digestion.preloader import preload_intelligence
 logger = logging.getLogger("vulca.studio")
 
 
+def should_suggest_stop(score_history: list[float], *, target: float = 0.85) -> bool:
+    """Suggest stopping when score reaches target OR converges (<3% change for 2 rounds)."""
+    if len(score_history) == 0:
+        return False
+    if score_history[-1] >= target:
+        return True
+    if len(score_history) >= 2:
+        delta = abs(score_history[-1] - score_history[-2])
+        if delta < 0.03:
+            return True
+    return False
+
+
 def _print(msg: str) -> None:
     """Print with VULCA prefix."""
     print(msg)
@@ -216,6 +229,19 @@ async def _run_studio_async(
 
         session.save()
 
+        # Auto-stop suggestion
+        all_scores = []
+        for g in session.brief.generations:
+            if g.scores:
+                vals = [v for v in g.scores.values() if isinstance(v, (int, float))]
+                if vals:
+                    all_scores.append(sum(vals) / len(vals))
+        if should_suggest_stop(all_scores):
+            if all_scores and all_scores[-1] >= 0.85:
+                _print(f"\n  Score target reached ({all_scores[-1]:.0%}). Consider accepting.")
+            elif len(all_scores) >= 2:
+                _print(f"\n  Score plateaued ({all_scores[-2]:.0%} -> {all_scores[-1]:.0%}). Consider accepting or trying a different approach.")
+
         # User decision
         _print("\n  Next: (a)ccept  (u)pdate  (r)egenerate  (q)uit")
         decision = _ask("> ").strip().lower()
@@ -246,6 +272,30 @@ async def _run_studio_async(
                 _print(f"  Brief updated → rollback to {nl_result.rollback_to.value}")
                 session.rollback_to(SessionState.GENERATE)
                 entered_evaluate = False
+                # Regenerate concepts as variations of selected
+                if session.brief.selected_concept and Path(session.brief.selected_concept).exists():
+                    from vulca.studio.nl_update import infer_variation_strength
+                    strength = infer_variation_strength(instruction)
+                    _print(f"\n[Concept] Generating {concept_count} variations (strength: {strength:.1f})...")
+                    concept_phase_loop = ConceptPhase()
+                    loop_paths = await concept_phase_loop.generate_concepts(
+                        session.brief, count=concept_count, provider=provider,
+                        project_dir=pdir, api_key=api_key,
+                        reference_image=session.brief.selected_concept,
+                        variation_strength=strength,
+                    )
+                    for ci, cp in enumerate(loop_paths, 1):
+                        cppath = Path(cp)
+                        sz = cppath.stat().st_size if cppath.exists() else 0
+                        sz_str = f"{sz / 1024:.0f}KB" if sz >= 1024 else f"{sz}B"
+                        _print(f"  {ci}. {cppath.name} ({sz_str})")
+                    sel_answer = _ask("Select variation (1-N): ").strip()
+                    try:
+                        sel_idx = int(sel_answer.split()[0]) - 1
+                        concept_phase_loop.select(session.brief, index=sel_idx)
+                    except (ValueError, IndexError):
+                        concept_phase_loop.select(session.brief, index=0)
+                    session.save()
             # Continue loop → regenerate
         else:
             # Default: regenerate — rollback to GENERATE state
