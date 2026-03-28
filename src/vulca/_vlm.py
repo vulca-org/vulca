@@ -5,10 +5,14 @@ from __future__ import annotations
 import json
 import logging
 import os
+from pathlib import Path
 
 import litellm
 
 logger = logging.getLogger("vulca")
+
+# Local user data path -- preferred evolved context source
+_LOCAL_EVOLVED_PATH = Path.home() / ".vulca" / "data" / "evolved_context.json"
 
 _SYSTEM_PROMPT = """\
 You are VULCA, a cultural-aware art evaluation system. Evaluate the given \
@@ -136,24 +140,20 @@ _TRADITION_GUIDANCE: dict[str, str] = {
 
 
 def _load_evolved_context() -> dict | None:
-    """Load evolved_context.json if available."""
-    import os
-    from pathlib import Path
+    """Load evolved_context.json, preferring local user file (~/.vulca/data/).
 
+    Search order:
+    1. VULCA_EVOLVED_CONTEXT env var (explicit override)
+    2. _LOCAL_EVOLVED_PATH (~/.vulca/data/evolved_context.json), written by LocalEvolver
+    """
     try:
-        candidates = []
         env_path = os.environ.get("VULCA_EVOLVED_CONTEXT")
         if env_path:
-            candidates.append(Path(env_path))
-        vlm_path = Path(__file__).resolve()
-        # Backend copy layout
-        candidates.append(vlm_path.parent.parent / "app" / "prototype" / "data" / "evolved_context.json")
-        # Monorepo layout
-        candidates.append(vlm_path.parent.parent.parent.parent / "wenxin-backend" / "app" / "prototype" / "data" / "evolved_context.json")
-
-        for path in candidates:
-            if path.is_file():
-                return json.loads(path.read_text(encoding="utf-8"))
+            p = Path(env_path)
+            if p.is_file():
+                return json.loads(p.read_text(encoding="utf-8"))
+        if _LOCAL_EVOLVED_PATH.is_file():
+            return json.loads(_LOCAL_EVOLVED_PATH.read_text(encoding="utf-8"))
     except Exception:
         logger.debug("Failed to load evolved context")
     return None

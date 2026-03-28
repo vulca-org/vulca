@@ -33,23 +33,33 @@ async def default_on_complete(output: PipelineOutput) -> None:
 
 
 async def _maybe_evolve(session_id: str = "") -> None:
-    """Trigger ContextEvolver at most once per _EVOLUTION_INTERVAL seconds.
+    """Trigger evolution at most once per _EVOLUTION_INTERVAL seconds.
 
-    Shared by both headless (default_on_complete) and Web App routes.
-    Import of ContextEvolver is deferred -- standalone usage without
-    the prototype backend simply skips evolution.
+    Tries local evolution first (works without backend), then backend
+    ContextEvolver if available.  Both failures are non-fatal.
     """
     global _last_evolution_time
     now = time.monotonic()
     if now - _last_evolution_time < _EVOLUTION_INTERVAL:
         return
     _last_evolution_time = now
+
+    # Try local evolution first (works without backend)
+    try:
+        from vulca.digestion.local_evolver import LocalEvolver
+
+        LocalEvolver().evolve()
+        logger.debug("Local evolution triggered (session=%s)", session_id)
+    except Exception as exc:
+        logger.debug("Local evolution failed (non-fatal): %s", exc)
+
+    # Then try backend evolution if available
     try:
         from app.prototype.digestion.context_evolver import ContextEvolver
 
         ContextEvolver().evolve()
-        logger.debug("Evolution triggered (session=%s)", session_id)
+        logger.debug("Backend evolution triggered (session=%s)", session_id)
     except ImportError:
         pass  # Standalone mode -- no prototype backend
     except Exception as exc:
-        logger.debug("Evolution failed (non-fatal): %s", exc)
+        logger.debug("Backend evolution failed (non-fatal): %s", exc)
