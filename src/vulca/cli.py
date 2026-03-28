@@ -114,6 +114,30 @@ def main(argv: list[str] | None = None) -> None:
     evo_p.add_argument("name", help="Tradition name")
     evo_p.add_argument("--json", action="store_true", help="Output raw JSON")
 
+    # Studio commands
+    studio_parser = sub.add_parser("studio", help="Run interactive Studio session")
+    studio_parser.add_argument("intent_or_dir", help="Creative intent or project dir (with --resume)")
+    studio_parser.add_argument("--provider", "-p", default="mock", help="Image provider")
+    studio_parser.add_argument("--count", "-n", type=int, default=4, help="Number of concepts")
+    studio_parser.add_argument("--resume", action="store_true", help="Resume from saved session")
+    studio_parser.add_argument("--api-key", default="", help="API key")
+
+    brief_parser = sub.add_parser("brief", help="Create or show a Studio Brief")
+    brief_parser.add_argument("project_dir", help="Project directory")
+    brief_parser.add_argument("--intent", "-i", default="", help="Creative intent")
+    brief_parser.add_argument("--mood", "-m", default="", help="Mood/atmosphere")
+
+    brief_update_parser = sub.add_parser("brief-update", help="Update Brief with NL instruction")
+    brief_update_parser.add_argument("project_dir", help="Project directory")
+    brief_update_parser.add_argument("instruction", help="Natural language update")
+
+    concept_parser = sub.add_parser("concept", help="Generate or select concepts")
+    concept_parser.add_argument("project_dir", help="Project directory")
+    concept_parser.add_argument("--count", "-n", type=int, default=4, help="Number of concepts")
+    concept_parser.add_argument("--provider", "-p", default="mock", help="Image provider")
+    concept_parser.add_argument("--select", "-s", type=int, default=None, help="Select concept (1-based)")
+    concept_parser.add_argument("--notes", default="", help="Notes for selection")
+
     args = parser.parse_args(argv)
 
     if args.command in ("evaluate", "eval", "e"):
@@ -135,6 +159,14 @@ def main(argv: list[str] | None = None) -> None:
             sys.exit(1)
     elif args.command in ("evolution", "evo"):
         _cmd_evolution(args)
+    elif args.command == "studio":
+        _cmd_studio(args)
+    elif args.command == "brief":
+        _cmd_brief(args)
+    elif args.command == "brief-update":
+        _cmd_brief_update(args)
+    elif args.command == "concept":
+        _cmd_concept(args)
     else:
         parser.print_help()
         sys.exit(1)
@@ -656,149 +688,102 @@ if __name__ == "__main__":
 
 
 # ---------------------------------------------------------------------------
-# Click-based CLI group (used by CliRunner in tests and as alternative entry)
+# Studio commands
 # ---------------------------------------------------------------------------
 
-try:
-    import click as _click
+def _cmd_studio(args: argparse.Namespace) -> None:
+    from vulca.studio.interactive import run_studio
 
-    @_click.group()
-    def cli() -> None:
-        """VULCA -- AI-native cultural art advisor."""
+    if args.resume:
+        from vulca.studio.session import StudioSession
+        session = StudioSession.load(args.intent_or_dir)
+        print(f"Resuming session {session.session_id}...")
+        result = run_studio(
+            session.brief.intent,
+            project_dir=args.intent_or_dir,
+            provider=args.provider,
+            concept_count=args.count,
+            api_key=args.api_key,
+        )
+    else:
+        result = run_studio(
+            args.intent_or_dir,
+            provider=args.provider,
+            concept_count=args.count,
+            api_key=args.api_key,
+        )
+    if result:
+        print(f"\nSession {result.get('session_id', '?')}: {result.get('status', 'unknown')}")
 
-    @cli.command("brief")
-    @_click.argument("project_dir")
-    @_click.option("--intent", "-i", default="", help="Creative intent (creates new Brief if provided)")
-    @_click.option("--mood", "-m", default="", help="Mood/atmosphere")
-    def brief_cmd(project_dir: str, intent: str, mood: str) -> None:
-        """Create or show a Studio Brief."""
-        from pathlib import Path
-        from vulca.studio.brief import Brief
 
-        project = Path(project_dir)
-        brief_file = project / "brief.yaml"
+def _cmd_brief(args: argparse.Namespace) -> None:
+    from pathlib import Path
+    from vulca.studio.brief import Brief
 
-        if intent:
-            b = Brief.new(intent, mood=mood)
-            filepath = b.save(project)
-            _click.echo(f"Brief created: {filepath}")
-            _click.echo(f"  Intent: {b.intent}")
-            _click.echo(f"  Session: {b.session_id}")
-            if b.mood:
-                _click.echo(f"  Mood: {b.mood}")
-        elif brief_file.exists():
-            b = Brief.load(project)
-            _click.echo(f"VULCA Brief -- {b.session_id}")
-            _click.echo(f"  Intent: {b.intent}")
-            if b.mood:
-                _click.echo(f"  Mood: {b.mood}")
-            if b.style_mix:
-                styles = ", ".join(s.tradition or s.tag for s in b.style_mix)
-                _click.echo(f"  Style: {styles}")
-            if b.selected_concept:
-                _click.echo(f"  Concept: {b.selected_concept}")
-            if b.generations:
-                _click.echo(f"  Generations: {len(b.generations)}")
-        else:
-            _click.echo(
-                f"No brief found at {project}. Use --intent to create one.", err=True
-            )
-            raise SystemExit(1)
+    project = Path(args.project_dir)
+    brief_file = project / "brief.yaml"
 
-    @cli.command("brief-update")
-    @_click.argument("project_dir")
-    @_click.argument("instruction")
-    def brief_update_cmd(project_dir: str, instruction: str) -> None:
-        """Update a Brief with natural language instruction."""
-        from pathlib import Path
-        from vulca.studio.brief import Brief
-        from vulca.studio.nl_update import apply_update, parse_nl_update
+    if args.intent:
+        b = Brief.new(args.intent, mood=args.mood)
+        filepath = b.save(project)
+        print(f"Brief created: {filepath}")
+        print(f"  Intent: {b.intent}")
+        print(f"  Session: {b.session_id}")
+        if b.mood:
+            print(f"  Mood: {b.mood}")
+    elif brief_file.exists():
+        b = Brief.load(project)
+        print(f"VULCA Brief -- {b.session_id}")
+        print(f"  Intent: {b.intent}")
+        if b.mood:
+            print(f"  Mood: {b.mood}")
+        if b.style_mix:
+            styles = ", ".join(s.tradition or s.tag for s in b.style_mix)
+            print(f"  Style: {styles}")
+        if b.selected_concept:
+            print(f"  Concept: {b.selected_concept}")
+        if b.generations:
+            print(f"  Generations: {len(b.generations)}")
+    else:
+        print(f"No brief found at {project}. Use --intent to create one.", file=sys.stderr)
+        sys.exit(1)
 
-        b = Brief.load(Path(project_dir))
-        result = parse_nl_update(instruction, b)
-        apply_update(b, result)
-        b.save(Path(project_dir))
 
-        _click.echo(f"Brief updated (rollback to: {result.rollback_to.value})")
-        _click.echo(f"  Changes: {', '.join(result.field_updates.keys())}")
-        _click.echo(f"  {result.explanation}")
+def _cmd_brief_update(args: argparse.Namespace) -> None:
+    from pathlib import Path
+    from vulca.studio.brief import Brief
+    from vulca.studio.nl_update import apply_update, parse_nl_update
 
-    @cli.command("concept")
-    @_click.argument("project_dir")
-    @_click.option("--count", "-n", default=4, help="Number of concepts to generate")
-    @_click.option("--mock", "use_mock", is_flag=True, help="Use mock provider")
-    @_click.option("--provider", "-p", default="mock", help="Image provider")
-    @_click.option("--select", "-s", type=int, default=None, help="Select concept by index (1-based)")
-    @_click.option("--notes", default="", help="Notes for selected concept")
-    def concept_cmd(
-        project_dir: str,
-        count: int,
-        use_mock: bool,
-        provider: str,
-        select: int | None,
-        notes: str,
-    ) -> None:
-        """Generate or select concept designs."""
-        import asyncio
-        from pathlib import Path
-        from vulca.studio.brief import Brief
-        from vulca.studio.phases.concept import ConceptPhase
+    b = Brief.load(Path(args.project_dir))
+    result = parse_nl_update(args.instruction, b)
+    apply_update(b, result)
+    b.save(Path(args.project_dir))
+    print(f"Brief updated (rollback to: {result.rollback_to.value})")
+    print(f"  Changes: {', '.join(result.field_updates.keys())}")
+    print(f"  {result.explanation}")
 
-        b = Brief.load(Path(project_dir))
-        phase = ConceptPhase()
 
-        if select is not None:
-            phase.select(b, index=select - 1, notes=notes)
-            b.save(Path(project_dir))
-            _click.echo(f"Selected concept {select}: {b.selected_concept}")
-            return
+def _cmd_concept(args: argparse.Namespace) -> None:
+    import asyncio
+    from pathlib import Path
+    from vulca.studio.brief import Brief
+    from vulca.studio.phases.concept import ConceptPhase
 
-        if use_mock:
-            provider = "mock"
+    b = Brief.load(Path(args.project_dir))
+    phase = ConceptPhase()
 
+    if args.select is not None:
+        phase.select(b, index=args.select - 1, notes=args.notes)
+        b.save(Path(args.project_dir))
+        print(f"Selected concept {args.select}: {b.selected_concept}")
+    else:
         loop = asyncio.new_event_loop()
         paths = loop.run_until_complete(
-            phase.generate_concepts(b, count=count, provider=provider, project_dir=project_dir)
+            phase.generate_concepts(b, count=args.count, provider=args.provider, project_dir=args.project_dir)
         )
         loop.close()
-        b.save(Path(project_dir))
-
-        _click.echo(f"Generated {len(paths)} concepts:")
+        b.save(Path(args.project_dir))
+        print(f"Generated {len(paths)} concepts:")
         for i, p in enumerate(paths, 1):
-            _click.echo(f"  {i}. {p}")
-        _click.echo(f"\nSelect with: vulca concept {project_dir} --select N")
-
-    @cli.command("studio")
-    @_click.argument("intent_or_dir")
-    @_click.option("--provider", "-p", default="mock", help="Image provider")
-    @_click.option("--count", "-n", default=4, help="Number of concepts")
-    @_click.option("--resume", is_flag=True, help="Resume from saved session")
-    @_click.option("--api-key", default="", help="API key")
-    def studio_cmd(intent_or_dir: str, provider: str, count: int, resume: bool, api_key: str) -> None:
-        """Run interactive VULCA Studio creative session."""
-        from vulca.studio.interactive import run_studio
-
-        if resume:
-            from vulca.studio.session import StudioSession
-            session = StudioSession.load(intent_or_dir)
-            _click.echo(f"Resuming session {session.session_id}...")
-            result = run_studio(
-                session.brief.intent,
-                project_dir=intent_or_dir,
-                provider=provider,
-                concept_count=count,
-                api_key=api_key,
-            )
-        else:
-            result = run_studio(
-                intent_or_dir,
-                provider=provider,
-                concept_count=count,
-                api_key=api_key,
-            )
-
-        if result:
-            _click.echo(f"\nSession {result.get('session_id', '?')}: {result.get('status', 'unknown')}")
-
-except ImportError:
-    pass  # click not installed; click-based CLI unavailable
+            print(f"  {i}. {p}")
+        print(f"\nSelect with: vulca concept {args.project_dir} --select N")
