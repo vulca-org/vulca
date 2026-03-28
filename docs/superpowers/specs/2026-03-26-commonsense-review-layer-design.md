@@ -103,10 +103,11 @@ class CommonsenseReviewNode(PipelineNode):
         }
 ```
 
-**Creative context 构建**——两种入口：
+**Creative context 构建**——两种入口 + Engram 优化：
 - **Studio 模式**（有 Brief）：注入 intent, style_mix, must_have, concept_notes
 - **SDK/CLI 模式**（无 Brief）：注入 subject, intent, tradition
 - **进化上下文**：注入 `evolved_commonsense.json` 中该传统/风格的已知例外
+- **Engram 模式**：当 `engram_fragments` 可用时，用精选文化片段 REPLACE 完整 tradition guidance（与 `_vlm.py` 的 Engram 优化一致——fragments 替代而非追加，节省 ~52% token）
 
 ### 2. VLM Prompt 策略 (`commonsense/prompt.py`)
 
