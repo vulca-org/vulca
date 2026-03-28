@@ -79,6 +79,17 @@ taboos:
     trigger_patterns: ["would be better in color", "lacks color", "only black and white", "missing color information"]
     explanation: "Monochrome photography has a distinct tradition, aesthetic vocabulary, and tonal language; the absence of color is a deliberate choice that foregrounds form, texture, and contrast rather than a technical limitation."
 
+extra_dimensions:
+  - key: E1
+    name: Technical Exposure
+    description: "Mastery of exposure triangle: dynamic range utilization, highlight/shadow detail preservation, noise management, and intentional exposure choices."
+  - key: E2
+    name: Narrative Moment
+    description: "Capture of decisive moment: emotional peak timing, gesture significance, environmental storytelling, and visual tension or resolution."
+  - key: E3
+    name: Print/Screen Readiness
+    description: "Technical suitability for final output: resolution adequacy, color space correctness, sharpening appropriateness, and format optimization."
+
 pipeline:
   variant: default
   overrides:

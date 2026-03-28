@@ -79,6 +79,17 @@ taboos:
     trigger_patterns: ["unusual navigation", "non-standard", "doesn't follow convention", "unexpected layout", "confusing structure"]
     explanation: "Domain-specific applications (creative tools, developer environments, medical systems) often require navigation patterns that deviate from general consumer conventions in order to match expert user mental models; unfamiliarity to a general reviewer does not constitute a usability failure."
 
+extra_dimensions:
+  - key: E1
+    name: Usability Clarity
+    description: "Clarity of interaction affordances: button visibility, touch target sizing, information hierarchy, cognitive load management, and error prevention signals."
+  - key: E2
+    name: Platform Convention
+    description: "Adherence to platform-specific design guidelines: iOS Human Interface, Material Design, or web accessibility standards including responsive behavior."
+  - key: E3
+    name: Interaction Affordance
+    description: "Visual cues that communicate interactivity: hover states, tap feedback, transition hints, loading indicators, and gesture discoverability."
+
 pipeline:
   variant: default
   overrides:

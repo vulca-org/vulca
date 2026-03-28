@@ -79,6 +79,17 @@ taboos:
     trigger_patterns: ["too simple", "not enough", "lacks detail", "empty", "bare", "nothing happening"]
     explanation: "Minimalist brand design is a deliberate strategic position requiring rigorous reduction and precise execution; the absence of visual complexity signals restraint and confidence rather than insufficient work."
 
+extra_dimensions:
+  - key: E1
+    name: Brand Consistency
+    description: "Adherence to brand guidelines: color palette, typography hierarchy, logo usage, visual identity coherence across all elements."
+  - key: E2
+    name: Target Audience Fit
+    description: "Alignment with target audience expectations: age group aesthetics, cultural resonance, platform conventions, and emotional trigger appropriateness."
+  - key: E3
+    name: Market Differentiation
+    description: "Visual distinctiveness from competitors: unique selling proposition visibility, memorability, shelf impact, and category-breaking potential."
+
 pipeline:
   variant: default
   overrides:
