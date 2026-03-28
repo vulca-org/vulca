@@ -85,16 +85,20 @@ class Engine:
                 api_key=self.api_key,
             )
 
-        # Step 5: Compute weighted total + extract suggestions/deviations
+        # Step 5: Compute weighted total + extract suggestions/deviations/observations
         dimensions = {}
         rationales = {}
         suggestions = {}
         deviation_types = {}
+        observations = {}
+        reference_techniques = {}
         for level in ("L1", "L2", "L3", "L4", "L5"):
             dimensions[level] = vlm_result.get(level, 0.0)
             rationales[level] = vlm_result.get(f"{level}_rationale", "")
             suggestions[level] = vlm_result.get(f"{level}_suggestion", "")
             deviation_types[level] = vlm_result.get(f"{level}_deviation_type", "traditional")
+            observations[level] = vlm_result.get(f"{level}_observations", "")
+            reference_techniques[level] = vlm_result.get(f"{level}_reference_technique", "")
 
         weighted_total = sum(
             dimensions.get(f"L{i}", 0) * weights.get(f"L{i}", 0.2)
@@ -136,6 +140,8 @@ class Engine:
             recommendations=recommendations,
             suggestions=suggestions,
             deviation_types=deviation_types,
+            observations=observations,
+            reference_techniques=reference_techniques,
             eval_mode=mode,
             skills=skill_results,
             intent_confidence=intent_confidence,

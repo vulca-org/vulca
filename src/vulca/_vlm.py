@@ -33,27 +33,69 @@ spiritual qualities, aesthetic harmony, and philosophical alignment with the tra
 
 ## Instructions
 
-Score each dimension 0.0-1.0. For each dimension provide:
-1. **rationale**: What you observe (1-2 sentences).
-2. **suggestion**: A specific, actionable improvement tip if the artist wants to \
-align more closely with the tradition. Include concrete techniques, terms, or \
-compositional advice (1 sentence). If the work already excels, suggest how to \
-push it further.
-3. **deviation_type**: Classify as one of:
-   - "traditional": follows the tradition's conventions closely
-   - "intentional_departure": appears to deliberately deviate (e.g., mixing \
-modern elements with traditional forms)
-   - "experimental": significantly outside the tradition's scope
+### Phase 1 — OBSERVE
+
+Before scoring, describe what you see in the artwork in detail:
+- Brushwork / rendering technique (type, quality, consistency)
+- Color palette (dominant colors, harmony, contrast, temperature)
+- Composition structure (layout, focal points, spatial relationships, depth)
+- Texture and medium characteristics
+- Subject matter and cultural elements present
+- Use of space (negative space, layering, balance)
+
+### Phase 2 — EVALUATE
+
+Based on your observations, score each dimension 0.0-1.0. For each provide:
+1. **observations**: 3-5 specific visual observations relevant to this dimension \
+(factual descriptions, not judgments).
+2. **rationale**: What you conclude from these observations (2-3 sentences).
+3. **suggestion**: A SPECIFIC, ACTIONABLE improvement containing: \
+(a) the exact technique name in original language if applicable, \
+(b) how to apply it (e.g., "use broader horizontal strokes in the middle ground"), \
+(c) what effect it would achieve. If the work excels, suggest how to push further.
+4. **reference_technique**: The single most relevant traditional technique name \
+for this dimension (bilingual if applicable, e.g., "reserved white space (留白)").
+5. **deviation_type**: One of "traditional", "intentional_departure", or "experimental".
 
 Respond with ONLY a JSON object:
 {{
-    "L1": <float>, "L1_rationale": "<string>", "L1_suggestion": "<string>", "L1_deviation_type": "<string>",
-    "L2": <float>, "L2_rationale": "<string>", "L2_suggestion": "<string>", "L2_deviation_type": "<string>",
-    "L3": <float>, "L3_rationale": "<string>", "L3_suggestion": "<string>", "L3_deviation_type": "<string>",
-    "L4": <float>, "L4_rationale": "<string>", "L4_suggestion": "<string>", "L4_deviation_type": "<string>",
-    "L5": <float>, "L5_rationale": "<string>", "L5_suggestion": "<string>", "L5_deviation_type": "<string>"
+    "L1": <float>, "L1_observations": "<string>", "L1_rationale": "<string>", \
+"L1_suggestion": "<string>", "L1_reference_technique": "<string>", "L1_deviation_type": "<string>",
+    "L2": <float>, "L2_observations": "<string>", "L2_rationale": "<string>", \
+"L2_suggestion": "<string>", "L2_reference_technique": "<string>", "L2_deviation_type": "<string>",
+    "L3": <float>, "L3_observations": "<string>", "L3_rationale": "<string>", \
+"L3_suggestion": "<string>", "L3_reference_technique": "<string>", "L3_deviation_type": "<string>",
+    "L4": <float>, "L4_observations": "<string>", "L4_rationale": "<string>", \
+"L4_suggestion": "<string>", "L4_reference_technique": "<string>", "L4_deviation_type": "<string>",
+    "L5": <float>, "L5_observations": "<string>", "L5_rationale": "<string>", \
+"L5_suggestion": "<string>", "L5_reference_technique": "<string>", "L5_deviation_type": "<string>"
 }}
 """
+
+def _parse_vlm_response(
+    raw: dict,
+) -> tuple[dict[str, float], dict[str, str], dict[str, str], dict[str, str], dict[str, str], dict[str, str]]:
+    """Parse VLM JSON response into (scores, rationales, suggestions, deviations, observations, ref_techniques)."""
+    scores: dict[str, float] = {}
+    rationales: dict[str, str] = {}
+    suggestions: dict[str, str] = {}
+    deviations: dict[str, str] = {}
+    observations: dict[str, str] = {}
+    ref_techniques: dict[str, str] = {}
+
+    for i in range(1, 6):
+        key = f"L{i}"
+        val = raw.get(key, 0.0)
+        scores[key] = max(0.0, min(1.0, float(val))) if val else 0.0
+        rationales[key] = str(raw.get(f"{key}_rationale", ""))
+        suggestions[key] = str(raw.get(f"{key}_suggestion", ""))
+        dev = str(raw.get(f"{key}_deviation_type", "traditional"))
+        deviations[key] = dev if dev in ("traditional", "intentional_departure", "experimental") else "traditional"
+        observations[key] = str(raw.get(f"{key}_observations", ""))
+        ref_techniques[key] = str(raw.get(f"{key}_reference_technique", ""))
+
+    return scores, rationales, suggestions, deviations, observations, ref_techniques
+
 
 _TRADITION_GUIDANCE: dict[str, str] = {
     "default": "Apply general art evaluation principles. No specific cultural tradition.",
@@ -297,30 +339,27 @@ async def score_image(
                 {"role": "system", "content": system_msg},
                 {"role": "user", "content": user_parts},
             ],
-            max_tokens=4096,
+            max_tokens=6144,
             temperature=0.1,
             api_key=api_key,
             timeout=55,
         )
         text = resp.choices[0].message.content.strip()
         from vulca._parse import parse_llm_json
-        data = parse_llm_json(text)
+        parsed_json = parse_llm_json(text)
 
-        # Validate and clamp scores, ensure all fields present
-        _VALID_DEVIATION_TYPES = {"traditional", "intentional_departure", "experimental"}
+        # Use _parse_vlm_response to extract and validate all fields
+        scores, rationales, suggestions, deviations, observations, ref_techniques = _parse_vlm_response(parsed_json)
+
+        # Rebuild flat dict (backward-compatible with callers expecting flat dict)
+        data: dict = {}
         for level in ("L1", "L2", "L3", "L4", "L5"):
-            if level in data:
-                data[level] = max(0.0, min(1.0, float(data[level])))
-            else:
-                data[level] = 0.0
-            if f"{level}_rationale" not in data:
-                data[f"{level}_rationale"] = ""
-            if f"{level}_suggestion" not in data:
-                data[f"{level}_suggestion"] = ""
-            if f"{level}_deviation_type" not in data:
-                data[f"{level}_deviation_type"] = "traditional"
-            elif data[f"{level}_deviation_type"] not in _VALID_DEVIATION_TYPES:
-                data[f"{level}_deviation_type"] = "traditional"
+            data[level] = scores[level]
+            data[f"{level}_rationale"] = rationales[level]
+            data[f"{level}_suggestion"] = suggestions[level]
+            data[f"{level}_deviation_type"] = deviations[level]
+            data[f"{level}_observations"] = observations[level]
+            data[f"{level}_reference_technique"] = ref_techniques[level]
 
         return data
 
@@ -332,4 +371,6 @@ async def score_image(
             fallback[f"{level}_rationale"] = f"Scoring failed: {exc}" if level == "L1" else ""
             fallback[f"{level}_suggestion"] = ""
             fallback[f"{level}_deviation_type"] = "traditional"
+            fallback[f"{level}_observations"] = ""
+            fallback[f"{level}_reference_technique"] = ""
         return fallback
