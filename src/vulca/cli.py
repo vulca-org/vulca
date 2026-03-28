@@ -683,10 +683,6 @@ def _cmd_evolution(args: argparse.Namespace) -> None:
     print()
 
 
-if __name__ == "__main__":
-    main()
-
-
 # ---------------------------------------------------------------------------
 # Studio commands
 # ---------------------------------------------------------------------------
@@ -787,3 +783,7 @@ def _cmd_concept(args: argparse.Namespace) -> None:
         for i, p in enumerate(paths, 1):
             print(f"  {i}. {p}")
         print(f"\nSelect with: vulca concept {args.project_dir} --select N")
+
+
+if __name__ == "__main__":
+    main()
