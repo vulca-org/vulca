@@ -29,6 +29,7 @@ logger = logging.getLogger("vulca")
 
 _MAX_DELTA = 0.05
 _MIN_SESSIONS_TO_EVOLVE = 5
+_MIN_HUMAN_FEEDBACK = 3  # Require at least 3 real human feedback sessions before evolving
 _LLM_TIMEOUT_S = 60
 _AGENT_ROLES = frozenset({"scout", "draft", "critic", "queen"})
 
@@ -117,6 +118,10 @@ class ContextEvolver:
         Uses the step adapter pipeline (``BaseDigester.get_ordered_digesters``)
         for pluggable digestion steps, with inline orchestration for weight
         adjustments and preference boosts that depend on cross-step data.
+
+        **Guard**: Requires at least ``_MIN_HUMAN_FEEDBACK`` sessions with
+        explicit human feedback (accepted/rejected) from non-seed sources.
+        Without real human input, evolution would overfit to synthetic data.
         """
         session_count = self._store.count()
 
@@ -124,6 +129,23 @@ class ContextEvolver:
             return EvolutionResult(
                 sessions_analyzed=session_count,
                 skipped_reason=f"Need {_MIN_SESSIONS_TO_EVOLVE} sessions, have {session_count}",
+            )
+
+        # Guard: require real human feedback before evolving weights.
+        # Seed sessions (seed-*) and sessions without explicit feedback don't count.
+        all_sessions = self._store.get_all()
+        human_feedback_count = sum(
+            1 for s in all_sessions
+            if s.get("user_feedback") in ("accepted", "rejected")
+            and not str(s.get("session_id", "")).startswith("seed-")
+        )
+        if human_feedback_count < _MIN_HUMAN_FEEDBACK:
+            return EvolutionResult(
+                sessions_analyzed=session_count,
+                skipped_reason=(
+                    f"Need {_MIN_HUMAN_FEEDBACK} sessions with real human feedback, "
+                    f"have {human_feedback_count} (seed sessions excluded)"
+                ),
             )
 
         # Load current context
@@ -139,8 +161,7 @@ class ContextEvolver:
             except Exception:
                 logger.warning("ContextEvolver: could not initialize tradition_weights from cultural_weights")
 
-        # Gather all sessions for pipeline steps
-        all_sessions = self._store.get_all()
+        # all_sessions already loaded in the human feedback guard above
 
         # Build shared DigestContext
         ctx = DigestContext(
