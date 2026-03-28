@@ -193,6 +193,27 @@ async def test_nl_update_llm_fallback_to_keyword(monkeypatch):
     assert len(result.field_updates) >= 1
 
 
+from vulca.studio.nl_update import infer_variation_strength
+
+
+class TestInferVariationStrength:
+    def test_high_strength_keywords(self):
+        assert infer_variation_strength("completely redo the composition") >= 0.6
+
+    def test_medium_strength_keywords(self):
+        s = infer_variation_strength("change the color to warmer tones")
+        assert 0.3 <= s <= 0.5
+
+    def test_low_strength_keywords(self):
+        assert infer_variation_strength("slightly adjust the brightness") <= 0.3
+
+    def test_default_strength(self):
+        assert infer_variation_strength("make it better") == 0.3
+
+    def test_empty_string(self):
+        assert infer_variation_strength("") == 0.3
+
+
 @pytest.mark.asyncio
 async def test_nl_update_llm_multi_field(monkeypatch):
     """LLM should extract multiple field changes from a single instruction."""
