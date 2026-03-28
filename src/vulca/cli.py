@@ -138,6 +138,11 @@ def main(argv: list[str] | None = None) -> None:
     concept_parser.add_argument("--select", "-s", type=int, default=None, help="Select concept (1-based)")
     concept_parser.add_argument("--notes", default="", help="Notes for selection")
 
+    # sync command
+    sync_parser = sub.add_parser("sync", help="Sync local session data with cloud")
+    sync_parser.add_argument("--push-only", action="store_true", help="Only push local data")
+    sync_parser.add_argument("--pull-only", action="store_true", help="Only pull evolved weights")
+
     args = parser.parse_args(argv)
 
     if args.command in ("evaluate", "eval", "e"):
@@ -167,6 +172,8 @@ def main(argv: list[str] | None = None) -> None:
         _cmd_brief_update(args)
     elif args.command == "concept":
         _cmd_concept(args)
+    elif args.command == "sync":
+        _cmd_sync(args)
     else:
         parser.print_help()
         sys.exit(1)
@@ -783,6 +790,87 @@ def _cmd_concept(args: argparse.Namespace) -> None:
         for i, p in enumerate(paths, 1):
             print(f"  {i}. {p}")
         print(f"\nSelect with: vulca concept {args.project_dir} --select N")
+
+
+# ---------------------------------------------------------------------------
+# Sync command
+# ---------------------------------------------------------------------------
+
+def _cmd_sync(args: argparse.Namespace) -> None:
+    import json as json_mod
+    import os
+    from pathlib import Path
+
+    api_url = os.environ.get("VULCA_API_URL", "")
+    api_key = os.environ.get("VULCA_API_KEY", "")
+    if not api_url:
+        print("Error: Set VULCA_API_URL environment variable.", file=sys.stderr)
+        print("  export VULCA_API_URL='https://your-backend.com'", file=sys.stderr)
+        print("  export VULCA_API_KEY='your-key'", file=sys.stderr)
+        sys.exit(1)
+
+    data_dir = Path.home() / ".vulca" / "data"
+
+    if not args.pull_only:
+        # Push local sessions
+        sessions_file = data_dir / "sessions.jsonl"
+        synced_file = data_dir / "synced.json"
+
+        synced_ids: set[str] = set()
+        if synced_file.exists():
+            synced_ids = set(json_mod.loads(synced_file.read_text()))
+
+        to_push = []
+        if sessions_file.exists():
+            for line in sessions_file.read_text().splitlines():
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    entry = json_mod.loads(line)
+                    sid = entry.get("session_id", "")
+                    if sid and sid not in synced_ids:
+                        to_push.append(entry)
+                        synced_ids.add(sid)
+                except json_mod.JSONDecodeError:
+                    continue
+
+        if to_push:
+            import httpx
+            try:
+                resp = httpx.post(
+                    f"{api_url.rstrip('/')}/api/v1/sync",
+                    json={"sessions": to_push},
+                    headers={"Authorization": f"Bearer {api_key}"},
+                    timeout=30,
+                )
+                resp.raise_for_status()
+                synced_file.parent.mkdir(parents=True, exist_ok=True)
+                synced_file.write_text(json_mod.dumps(sorted(synced_ids)))
+                print(f"Pushed {len(to_push)} sessions to {api_url}")
+            except Exception as exc:
+                print(f"Push failed: {exc}", file=sys.stderr)
+                sys.exit(1)
+        else:
+            print("No new sessions to push.")
+
+    if not args.push_only:
+        # Pull evolved context
+        import httpx
+        try:
+            resp = httpx.get(
+                f"{api_url.rstrip('/')}/api/v1/evolved-context",
+                headers={"Authorization": f"Bearer {api_key}"},
+                timeout=30,
+            )
+            resp.raise_for_status()
+            evolved_path = data_dir / "evolved_context.json"
+            evolved_path.parent.mkdir(parents=True, exist_ok=True)
+            evolved_path.write_text(resp.text)
+            print(f"Pulled evolved context -> {evolved_path}")
+        except Exception as exc:
+            print(f"Pull failed: {exc}", file=sys.stderr)
+            sys.exit(1)
 
 
 if __name__ == "__main__":
