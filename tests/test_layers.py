@@ -119,6 +119,32 @@ class TestCompositeLayers:
             assert comp.getpixel((5, 5))[:3] == (0, 0, 255)
 
 
+from vulca.layers.generate import build_layer_prompt, infer_bg_color
+
+
+class TestLayerGeneration:
+    def test_infer_bg_color_solid(self):
+        assert infer_bg_color("normal") == "white"
+
+    def test_infer_bg_color_screen(self):
+        assert infer_bg_color("screen") == "black"
+
+    def test_infer_bg_color_multiply(self):
+        assert infer_bg_color("multiply") == "gray"
+
+    def test_build_layer_prompt(self):
+        info = LayerInfo(name="pavilion", description="ancient Chinese pavilion", bbox={"x": 20, "y": 30, "w": 60, "h": 50}, z_index=1, bg_color="white")
+        prompt = build_layer_prompt(info, tradition="chinese_xieyi")
+        assert "pavilion" in prompt
+        assert "white background" in prompt.lower() or "solid white" in prompt.lower()
+        assert "transparent" in prompt.lower() or "isolated" in prompt.lower()
+
+    def test_build_layer_prompt_screen(self):
+        info = LayerInfo(name="glow", description="neon glow effects", bbox={"x": 0, "y": 0, "w": 100, "h": 100}, z_index=3, blend_mode="screen", bg_color="black")
+        prompt = build_layer_prompt(info, tradition="default")
+        assert "black background" in prompt.lower()
+
+
 from vulca.layers.export import export_psd
 
 
