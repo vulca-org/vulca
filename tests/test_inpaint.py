@@ -134,6 +134,79 @@ class TestInpaintPublicAPI:
                 pass  # Expected — mock inpaint not implemented yet
 
 
+import tempfile
+from pathlib import Path
+from PIL import Image
+
+
+class TestBlendPixelPreservation:
+    """Pixels outside bbox must be identical to original after blend."""
+
+    def test_blend_preserves_outside_pixels(self):
+        """feather=0: clean boundary, outside pixels exactly match original."""
+        import asyncio
+        from vulca.studio.phases.inpaint import InpaintPhase
+
+        with tempfile.TemporaryDirectory() as td:
+            # Red original
+            original = Image.new("RGBA", (100, 100), (255, 0, 0, 255))
+            orig_path = Path(td) / "original.png"
+            original.save(str(orig_path))
+
+            # Blue variant (what Gemini returned)
+            variant = Image.new("RGBA", (100, 100), (0, 0, 255, 255))
+            var_path = Path(td) / "variant.png"
+            variant.save(str(var_path))
+
+            bbox = {"x": 30, "y": 30, "w": 40, "h": 40}
+            phase = InpaintPhase()
+            loop = asyncio.new_event_loop()
+            result_path = loop.run_until_complete(
+                phase.blend(str(orig_path), str(var_path), bbox=bbox, feather=0,
+                           output_path=str(Path(td) / "blended.png"))
+            )
+            loop.close()
+            result = Image.open(result_path).convert("RGBA")
+
+            # Outside bbox: must be red (original)
+            assert result.getpixel((0, 0))[:3] == (255, 0, 0), "Top-left should be original red"
+            assert result.getpixel((99, 99))[:3] == (255, 0, 0), "Bottom-right should be original red"
+            assert result.getpixel((29, 29))[:3] == (255, 0, 0), "Just outside bbox should be red"
+
+            # Inside bbox: must be blue (variant)
+            assert result.getpixel((50, 50))[:3] == (0, 0, 255), "Center should be variant blue"
+            assert result.getpixel((31, 31))[:3] == (0, 0, 255), "Just inside bbox should be blue"
+
+    def test_blend_with_feather(self):
+        """feather>0: edges are blended, but far-outside pixels still match original."""
+        import asyncio
+        from vulca.studio.phases.inpaint import InpaintPhase
+
+        with tempfile.TemporaryDirectory() as td:
+            original = Image.new("RGBA", (100, 100), (255, 0, 0, 255))
+            orig_path = Path(td) / "original.png"
+            original.save(str(orig_path))
+
+            variant = Image.new("RGBA", (100, 100), (0, 0, 255, 255))
+            var_path = Path(td) / "variant.png"
+            variant.save(str(var_path))
+
+            bbox = {"x": 30, "y": 30, "w": 40, "h": 40}
+            phase = InpaintPhase()
+            loop = asyncio.new_event_loop()
+            result_path = loop.run_until_complete(
+                phase.blend(str(orig_path), str(var_path), bbox=bbox, feather=5,
+                           output_path=str(Path(td) / "blended.png"))
+            )
+            loop.close()
+            result = Image.open(result_path).convert("RGBA")
+
+            # Far outside bbox: must be original
+            assert result.getpixel((0, 0))[:3] == (255, 0, 0)
+            # Deep inside bbox: must be variant
+            assert result.getpixel((50, 50))[:3] == (0, 0, 255)
+
+
 import subprocess
 import sys
 

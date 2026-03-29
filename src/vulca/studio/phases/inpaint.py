@@ -160,32 +160,41 @@ class InpaintPhase:
         repaint_path: str,
         *,
         bbox: dict,
+        feather: int = 5,
         output_path: str = "",
         api_key: str = "",
     ) -> str:
-        """Blend repainted region back into original via Gemini."""
-        import os
-        from vulca.providers import get_image_provider
+        """Blend repainted region back into original via PIL paste.
 
-        prompt = self.build_blend_prompt(bbox=bbox)
-        ref_b64 = base64.b64encode(Path(original_path).read_bytes()).decode()
+        Pixels outside bbox are guaranteed identical to original.
+        Feather creates a smooth gradient at bbox edges.
+        """
+        original = Image.open(original_path).convert("RGBA")
+        variant = Image.open(repaint_path).convert("RGBA")
 
-        provider = get_image_provider("gemini", api_key=api_key or os.environ.get("GOOGLE_API_KEY", ""))
+        x = int(variant.width * bbox["x"] / 100)
+        y = int(variant.height * bbox["y"] / 100)
+        w = int(variant.width * bbox["w"] / 100)
+        h = int(variant.height * bbox["h"] / 100)
+        region = variant.crop((x, y, x + w, y + h))
 
-        result = await provider.generate(
-            prompt,
-            reference_image_b64=ref_b64,
-        )
+        # Build feathered mask: solid center, gradient edges
+        mask = Image.new("L", (w, h), 255)
+        if feather > 0 and w > feather * 2 and h > feather * 2:
+            from PIL import ImageFilter, ImageDraw
+            edge_mask = Image.new("L", (w, h), 0)
+            inner = (feather, feather, w - feather, h - feather)
+            ImageDraw.Draw(edge_mask).rectangle(inner, fill=255)
+            mask = edge_mask.filter(ImageFilter.GaussianBlur(feather))
+
+        original.paste(region, (x, y), mask)
 
         out = (
             Path(output_path)
             if output_path
-            else Path(original_path).parent / f"blended_{Path(original_path).name}"
+            else Path(original_path).parent / f"inpainted_{Path(original_path).name}"
         )
-        ext = "png" if "png" in result.mime else "jpg"
-        if not str(out).endswith(ext):
-            out = out.with_suffix(f".{ext}")
-        out.write_bytes(base64.b64decode(result.image_b64))
+        original.save(str(out))
         return str(out)
 
 
