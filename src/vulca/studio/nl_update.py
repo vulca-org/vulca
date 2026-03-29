@@ -45,12 +45,13 @@ def infer_variation_strength(instruction: str) -> float:
     Default: 0.3.
     """
     words = set(instruction.lower().split())
+    # Check most specific first: low-strength words are intentional refinement signals
+    if words & _LOW_STRENGTH_WORDS:
+        return 0.2
     if words & _HIGH_STRENGTH_WORDS:
         return 0.7
     if words & _MEDIUM_STRENGTH_WORDS:
         return 0.4
-    if words & _LOW_STRENGTH_WORDS:
-        return 0.2
     return 0.3
 
 

@@ -1,5 +1,46 @@
 # Changelog
 
+## [0.8.0] - 2026-03-29
+
+### Multi-round img2img Iteration (P0-A)
+- **Round-to-round reference**: Selected concept from Round N becomes reference for Round N+1 variations
+- **Variation strength inference**: Auto-detects strength from NL update keywords (refine=0.2, change=0.4, redo=0.7)
+- **Auto-stop suggestion**: Triggers when score >= 85% or converges (< 3% delta for 2 rounds)
+- **Round-separated storage**: Concept images saved to `r{N}/concepts/` instead of overwriting
+
+### VLM Analysis Depth (P0-B)
+- **Two-phase prompt**: OBSERVE (visual analysis) → EVALUATE (scoring), replacing single-pass scoring
+- **Per-dimension observations**: 3-5 factual visual observations per L1-L5 dimension
+- **Reference techniques**: Most relevant traditional technique name per dimension (bilingual)
+- **Enhanced suggestions**: Now include technique name + how to apply + expected effect
+- `max_tokens` increased from 4096 to 6144
+
+### CLI Unification (P0-C)
+- **9 unified commands**: evaluate, create, traditions, tradition, evolution, studio, brief, brief-update, concept
+- **Click dependency removed**: All commands now use argparse (stdlib)
+- `vulca sync` command for cloud data synchronization
+
+### Data Flow (P1-A)
+- **LocalEvolver**: Reads `~/.vulca/data/sessions.jsonl` for local evolution
+- **Local evolved_context**: VLM reads `~/.vulca/evolved_context.json` before YAML defaults
+- **vulca sync**: Push local sessions to cloud, pull aggregated evolved weights (asymmetric)
+
+### Sketch & Reference Upload (P1-B)
+- **All entry points**: CLI (`--sketch`, `--reference`, `--ref-type`), SDK, MCP
+- **3 reference types**: `style` (color/brushwork only), `composition` (layout only), `full` (both)
+- **Dual input mode**: File path or base64 string, auto-detected
+- `resolve_image_input()` utility for path/base64 resolution
+
+### Commercial Extra Dimensions (P1-C)
+- **Tradition-specific E1-E3**: Up to 3 extra evaluation dimensions per tradition YAML
+- **brand_design**: Brand Consistency, Target Audience Fit, Market Differentiation
+- **ui_ux_design**: Usability Clarity, Platform Convention, Interaction Affordance
+- **photography**: Technical Exposure, Narrative Moment, Print/Screen Readiness
+- Extra scores independent from L1-L5 total (displayed separately)
+
+### Testing
+- 603 tests (up from 538), strict TDD red-green discipline (15 RED→GREEN cycles)
+
 ## [0.7.0] - 2026-03-28
 
 ### Selective Pipeline

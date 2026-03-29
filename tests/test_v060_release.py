@@ -8,7 +8,7 @@ import pytest
 def test_version_is_current():
     """Version must match pyproject.toml."""
     from vulca._version import __version__
-    assert __version__ == "0.7.0"
+    assert __version__ == "0.8.0"
 
 
 def test_pyproject_version_matches():
