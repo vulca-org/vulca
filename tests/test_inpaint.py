@@ -1,4 +1,6 @@
+import tempfile
 import pytest
+from pathlib import Path
 from vulca.types import InpaintResult
 from vulca.studio.phases.inpaint import parse_region_coordinates
 
@@ -49,3 +51,56 @@ class TestParseRegionCoordinates:
         assert is_coordinate_string("fix the sky") is False
         assert is_coordinate_string("10, 20, 50, 30") is True
         assert is_coordinate_string("50") is False
+
+
+from PIL import Image
+from vulca.studio.phases.inpaint import crop_region, InpaintPhase
+
+
+class TestCropRegion:
+    def test_crop_produces_correct_size(self):
+        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as f:
+            img = Image.new("RGB", (1024, 1024), "red")
+            img.save(f.name)
+            cropped_path = crop_region(
+                f.name,
+                {"x": 0, "y": 0, "w": 50, "h": 50},
+                output_dir=tempfile.gettempdir(),
+            )
+            cropped = Image.open(cropped_path)
+            assert cropped.size == (512, 512)
+
+    def test_crop_quarter(self):
+        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as f:
+            img = Image.new("RGB", (100, 100), "blue")
+            img.save(f.name)
+            cropped_path = crop_region(
+                f.name,
+                {"x": 50, "y": 50, "w": 50, "h": 50},
+                output_dir=tempfile.gettempdir(),
+            )
+            cropped = Image.open(cropped_path)
+            assert cropped.size == (50, 50)
+
+
+class TestInpaintPhase:
+    def test_instantiation(self):
+        phase = InpaintPhase()
+        assert phase is not None
+
+    def test_build_repaint_prompt(self):
+        phase = InpaintPhase()
+        prompt = phase.build_repaint_prompt(
+            instruction="add storm clouds",
+            tradition="chinese_xieyi",
+        )
+        assert "storm clouds" in prompt
+        assert "chinese_xieyi" in prompt or "xieyi" in prompt
+
+    def test_build_blend_prompt(self):
+        phase = InpaintPhase()
+        prompt = phase.build_blend_prompt(
+            bbox={"x": 0, "y": 0, "w": 100, "h": 35},
+        )
+        assert "0%" in prompt or "0," in prompt
+        assert "seamless" in prompt.lower() or "blend" in prompt.lower()
