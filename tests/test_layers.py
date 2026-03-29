@@ -329,6 +329,43 @@ class TestRoundtripIntegrity:
             corner = result.getpixel((5, 5))
             assert corner[:3] == (0, 0, 255), f"Corner should be blue, got {corner[:3]}"
 
+    def test_split_composite_roundtrip(self):
+        """L3: composite(split(img)) should approximately reconstruct the original."""
+        with tempfile.TemporaryDirectory() as td:
+            # Blue canvas with red center square
+            original = Image.new("RGBA", (100, 100), (0, 0, 255, 255))
+            for x in range(25, 75):
+                for y in range(25, 75):
+                    original.putpixel((x, y), (255, 0, 0, 255))
+            src = Path(td) / "original.png"
+            original.save(str(src))
+
+            bg_info = LayerInfo(name="bg", description="blue background",
+                              bbox={"x": 0, "y": 0, "w": 100, "h": 100}, z_index=0)
+            fg_info = LayerInfo(name="fg", description="red square",
+                              bbox={"x": 25, "y": 25, "w": 50, "h": 50}, z_index=1)
+
+            bg_path = crop_layer(str(src), bg_info, output_dir=td)
+            fg_path = crop_layer(str(src), fg_info, output_dir=td)
+
+            # Verify minimal crop sizes (Approach B)
+            assert Image.open(bg_path).size == (100, 100)
+            assert Image.open(fg_path).size == (50, 50)
+
+            layers = [
+                LayerResult(info=bg_info, image_path=bg_path),
+                LayerResult(info=fg_info, image_path=fg_path),
+            ]
+            out = Path(td) / "roundtrip.png"
+            composite_layers(layers, width=100, height=100, output_path=str(out))
+            result = Image.open(str(out)).convert("RGBA")
+
+            # L3: roundtrip pixel integrity
+            center = result.getpixel((50, 50))
+            assert center[:3] == (255, 0, 0), f"Center should be red, got {center[:3]}"
+            corner = result.getpixel((5, 5))
+            assert corner[:3] == (0, 0, 255), f"Corner should be blue, got {corner[:3]}"
+
 
 import subprocess
 import sys
