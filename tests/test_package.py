@@ -109,7 +109,8 @@ def test_dunder_all():
         "EvalResult", "CreateResult", "SkillResult",
         "ImageProvider", "VLMProvider", "ImageResult", "L1L5Scores",
     }
-    studio_names = {"Brief", "SessionState", "StudioSession", "inpaint", "ainpaint", "InpaintResult"}
+    studio_names = {"Brief", "SessionState", "StudioSession", "inpaint", "ainpaint", "InpaintResult",
+                    "LayerInfo", "LayerResult", "LayeredArtwork"}
     actual = set(vulca.__all__)
     # Core names must always be present
     assert required <= actual, f"Missing from __all__: {required - actual}"

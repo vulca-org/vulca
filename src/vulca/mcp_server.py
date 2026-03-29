@@ -906,5 +906,32 @@ async def inpaint_artwork(
     }
 
 
+@mcp.tool()
+async def analyze_layers(image_path: str) -> dict:
+    """Analyze an image and identify its semantic layers.
+
+    Args:
+        image_path: Path to the image file.
+
+    Returns:
+        Layer structure with name, description, bbox, z_index, blend_mode per layer.
+    """
+    from vulca.layers.analyze import analyze_layers as _analyze
+    layers = await _analyze(image_path)
+    return {
+        "layers": [
+            {
+                "name": la.name,
+                "description": la.description,
+                "bbox": la.bbox,
+                "z_index": la.z_index,
+                "blend_mode": la.blend_mode,
+                "bg_color": la.bg_color,
+            }
+            for la in layers
+        ]
+    }
+
+
 if __name__ == "__main__":
     mcp.run()

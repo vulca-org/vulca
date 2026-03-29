@@ -46,6 +46,13 @@ try:
 except ImportError:
     _STUDIO_AVAILABLE = False
 
+# Layers module (v0.7.0) — conditional import
+try:
+    from vulca.layers import LayerInfo, LayerResult, LayeredArtwork
+    _LAYERS_AVAILABLE = True
+except ImportError:
+    _LAYERS_AVAILABLE = False
+
 
 def traditions() -> list[str]:
     """List all available cultural traditions."""
@@ -91,3 +98,7 @@ __all__ = [
 # Studio Pipeline V2 (v0.5.0) — extend __all__ when module is available
 if _STUDIO_AVAILABLE:
     __all__ += ["Brief", "SessionState", "StudioSession"]
+
+# Layers module (v0.7.0) — extend __all__ when module is available
+if _LAYERS_AVAILABLE:
+    __all__ += ["LayerInfo", "LayerResult", "LayeredArtwork"]
