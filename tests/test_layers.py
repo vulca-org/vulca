@@ -189,3 +189,20 @@ class TestExportPSD:
             export_psd(layers, width=100, height=100, output_path=str(psd_path))
             assert psd_path.exists()
             assert psd_path.stat().st_size > 0
+
+
+import subprocess
+import sys
+
+VULCA = [sys.executable, "-m", "vulca.cli"]
+
+
+class TestLayersCLI:
+    def test_layers_analyze_help(self):
+        result = subprocess.run(VULCA + ["layers", "--help"], capture_output=True, text=True, timeout=10)
+        assert result.returncode == 0
+        assert "analyze" in result.stdout
+
+    def test_layers_in_main_help(self):
+        result = subprocess.run(VULCA + ["--help"], capture_output=True, text=True, timeout=10)
+        assert "layers" in result.stdout
