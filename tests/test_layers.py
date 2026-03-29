@@ -172,6 +172,35 @@ class TestCompositeLayers:
             # Corner should be blue (background)
             assert comp.getpixel((5, 5))[:3] == (0, 0, 255)
 
+    def test_composite_offset_layers(self):
+        """Approach B: composite pastes cropped layers at bbox offset positions."""
+        with tempfile.TemporaryDirectory() as td:
+            # Background: full-size blue (100x100, bbox covers entire canvas)
+            bg = Image.new("RGBA", (100, 100), (0, 0, 255, 255))
+            bg_path = Path(td) / "bg.png"
+            bg.save(str(bg_path))
+
+            # Foreground: small red crop (50x50, placed at center)
+            fg = Image.new("RGBA", (50, 50), (255, 0, 0, 255))
+            fg_path = Path(td) / "fg.png"
+            fg.save(str(fg_path))
+
+            bg_info = LayerInfo(name="bg", description="", bbox={"x": 0, "y": 0, "w": 100, "h": 100}, z_index=0)
+            fg_info = LayerInfo(name="fg", description="", bbox={"x": 25, "y": 25, "w": 50, "h": 50}, z_index=1)
+            layers = [
+                LayerResult(info=bg_info, image_path=str(bg_path)),
+                LayerResult(info=fg_info, image_path=str(fg_path)),
+            ]
+            out = Path(td) / "composite.png"
+            composite_layers(layers, width=100, height=100, output_path=str(out))
+            comp = Image.open(str(out))
+            # Center should be red (foreground at offset 25,25)
+            assert comp.getpixel((50, 50))[:3] == (255, 0, 0)
+            # Corner should be blue (background, untouched by fg)
+            assert comp.getpixel((5, 5))[:3] == (0, 0, 255)
+            # Edge at (24, 24) should still be blue (just outside fg bbox)
+            assert comp.getpixel((24, 24))[:3] == (0, 0, 255)
+
 
 from vulca.layers.generate import build_layer_prompt, infer_bg_color
 
