@@ -867,5 +867,44 @@ async def studio_accept(
     return _format_response(result, "json")
 
 
+@mcp.tool()
+async def inpaint_artwork(
+    image_path: str,
+    region: str,
+    instruction: str,
+    tradition: str = "default",
+    count: int = 4,
+    select: int = 1,
+) -> dict:
+    """Repaint a region of an artwork.
+
+    Args:
+        image_path: Path to the image file.
+        region: NL description ("fix the sky") or coordinates ("0,0,100,35").
+        instruction: What to change in the region.
+        tradition: Cultural tradition for style consistency.
+        count: Number of repaint variants.
+        select: Variant to select (1-based).
+    """
+    from vulca.inpaint import ainpaint
+
+    result = await ainpaint(
+        image_path,
+        region=region,
+        instruction=instruction,
+        tradition=tradition,
+        count=count,
+        select=select - 1,
+    )
+    return {
+        "bbox": result.bbox,
+        "variants": result.variants,
+        "selected": result.selected + 1,
+        "blended": result.blended,
+        "latency_ms": result.latency_ms,
+        "cost_usd": result.cost_usd,
+    }
+
+
 if __name__ == "__main__":
     mcp.run()

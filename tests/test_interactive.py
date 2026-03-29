@@ -26,8 +26,8 @@ def test_interactive_run_mock(tmp_path, monkeypatch):
 
 def test_interactive_with_update(tmp_path, monkeypatch):
     """Studio run where user updates Brief mid-flow."""
-    # sketch=skip, 5 questions=1, concept=1, update, instruction, accept
-    inputs = iter(["", "1", "1", "1", "1", "1", "1", "u", "加入更多雾气", "a"])
+    # sketch=skip, 5 questions=1, concept=1, update, instruction, concept=1, accept
+    inputs = iter(["", "1", "1", "1", "1", "1", "1", "u", "加入更多雾气", "1", "a"])
     monkeypatch.setattr("builtins.input", lambda _="": next(inputs))
 
     from vulca.studio.interactive import run_studio
