@@ -160,6 +160,35 @@ def main(argv: list[str] | None = None) -> None:
     inpaint_p.add_argument("--output", "-o", default="", help="Output path")
     inpaint_p.add_argument("--mock", action="store_true", help="Use mock mode")
 
+    # layers command group
+    layers_p = sub.add_parser("layers", help="Layered artwork analysis, editing, and export")
+    layers_sub = layers_p.add_subparsers(dest="layers_command")
+
+    layers_analyze = layers_sub.add_parser("analyze", help="Analyze image into semantic layers")
+    layers_analyze.add_argument("image", help="Path to image")
+
+    layers_split = layers_sub.add_parser("split", help="Split image into layer PNGs")
+    layers_split.add_argument("image", help="Path to image")
+    layers_split.add_argument("--output", "-o", default="", help="Output directory")
+
+    layers_composite = layers_sub.add_parser("composite", help="Composite layers into flat image")
+    layers_composite.add_argument("artwork_dir", help="Directory with layer PNGs + manifest")
+    layers_composite.add_argument("--output", "-o", default="", help="Output path")
+
+    layers_export = layers_sub.add_parser("export", help="Export layers as PSD/PNG")
+    layers_export.add_argument("artwork_dir", help="Directory with layers")
+    layers_export.add_argument("--format", "-f", default="png", choices=["png", "psd"])
+    layers_export.add_argument("--output", "-o", default="", help="Output path")
+
+    layers_regen = layers_sub.add_parser("regenerate", help="Regenerate unified image from composite")
+    layers_regen.add_argument("artwork_dir", help="Directory with composite + layers")
+    layers_regen.add_argument("--tradition", "-t", default="default")
+    layers_regen.add_argument("--provider", "-p", default="gemini")
+
+    layers_eval = layers_sub.add_parser("evaluate", help="Per-layer L1-L5 evaluation")
+    layers_eval.add_argument("artwork_dir", help="Directory with layers")
+    layers_eval.add_argument("--tradition", "-t", default="default")
+
     args = parser.parse_args(argv)
 
     if args.command in ("evaluate", "eval", "e"):
@@ -196,6 +225,11 @@ def main(argv: list[str] | None = None) -> None:
         _cmd_sync(args)
     elif args.command == "inpaint":
         _cmd_inpaint(args)
+    elif args.command == "layers":
+        if not args.layers_command:
+            layers_p.print_help()
+            sys.exit(0)
+        _cmd_layers(args)
     else:
         parser.print_help()
         sys.exit(1)
@@ -941,6 +975,101 @@ def _cmd_inpaint(args: argparse.Namespace) -> None:
     print(f"  Selected: v{result.selected + 1}")
     print(f"  Blended: {result.blended}")
     print(f"  Latency: {result.latency_ms}ms | Cost: ${result.cost_usd:.4f}")
+
+
+# ---------------------------------------------------------------------------
+# Layers command group
+# ---------------------------------------------------------------------------
+
+def _cmd_layers(args: argparse.Namespace) -> None:
+    import asyncio
+    from pathlib import Path
+
+    if args.layers_command == "analyze":
+        from vulca.layers.analyze import analyze_layers
+        loop = asyncio.new_event_loop()
+        layers = loop.run_until_complete(analyze_layers(args.image))
+        loop.close()
+        print(f"\n  Identified {len(layers)} layers:")
+        for la in layers:
+            print(f"    [{la.z_index}] {la.name}: {la.description} ({la.blend_mode})")
+            print(f"        bbox: {la.bbox}")
+
+    elif args.layers_command == "split":
+        from vulca.layers.analyze import analyze_layers
+        from vulca.layers.split import crop_layer
+        loop = asyncio.new_event_loop()
+        layers = loop.run_until_complete(analyze_layers(args.image))
+        loop.close()
+        out_dir = args.output or str(Path(args.image).parent)
+        print(f"\n  Splitting {len(layers)} layers -> {out_dir}")
+        for la in layers:
+            path = crop_layer(args.image, la, output_dir=out_dir)
+            print(f"    [{la.z_index}] {la.name} -> {path}")
+
+    elif args.layers_command == "composite":
+        from vulca.layers.edit import load_artwork
+        from vulca.layers.composite import composite_layers
+        artwork = load_artwork(args.artwork_dir)
+        out = args.output or str(Path(args.artwork_dir) / "composite.png")
+        composite_layers(artwork.layers, output_path=out)
+        print(f"  Composite: {out}")
+
+    elif args.layers_command == "regenerate":
+        from vulca.layers.regenerate import regenerate_from_composite
+        from vulca.layers.edit import load_artwork
+        artwork = load_artwork(args.artwork_dir)
+        loop = asyncio.new_event_loop()
+        out = loop.run_until_complete(regenerate_from_composite(
+            artwork.composite_path, tradition=args.tradition, provider=args.provider,
+        ))
+        loop.close()
+        print(f"  Regenerated: {out}")
+
+    elif args.layers_command == "evaluate":
+        from vulca.layers.edit import load_artwork
+        import vulca
+        artwork = load_artwork(args.artwork_dir)
+        for layer in artwork.layers:
+            r = vulca.evaluate(layer.image_path, tradition=args.tradition)
+            layer.scores = r.dimensions
+            print(f"  [{layer.info.z_index}] {layer.info.name}: {r.score:.0%}")
+            for dk, dv in r.dimensions.items():
+                print(f"      {dk}: {dv:.0%}")
+
+    elif args.layers_command == "export":
+        from vulca.layers.edit import load_artwork
+        from vulca.layers.export import export_psd
+        from vulca.layers.composite import composite_layers
+        artwork = load_artwork(args.artwork_dir)
+        if args.format == "psd":
+            out = args.output or str(Path(args.artwork_dir) / "layers.psd")
+            import json
+            manifest_path = Path(args.artwork_dir) / "manifest.json"
+            if manifest_path.exists():
+                manifest = json.loads(manifest_path.read_text())
+                width = manifest.get("width", 1024)
+                height = manifest.get("height", 1024)
+            else:
+                width = height = 1024
+            export_psd(artwork.layers, width=width, height=height, output_path=out)
+            print(f"  Exported PSD: {out}")
+        else:
+            out = args.output or str(Path(args.artwork_dir) / "composite.png")
+            import json
+            manifest_path = Path(args.artwork_dir) / "manifest.json"
+            if manifest_path.exists():
+                manifest = json.loads(manifest_path.read_text())
+                width = manifest.get("width", 1024)
+                height = manifest.get("height", 1024)
+            else:
+                width = height = 1024
+            composite_layers(artwork.layers, width=width, height=height, output_path=out)
+            print(f"  Exported PNG: {out}")
+
+    else:
+        print(f"Unknown layers command: {args.layers_command}", file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == "__main__":
