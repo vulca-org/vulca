@@ -145,6 +145,21 @@ class TestLayerGeneration:
         assert "black background" in prompt.lower()
 
 
+from vulca.layers.regenerate import build_regenerate_prompt
+
+
+class TestRegenerate:
+    def test_build_regenerate_prompt(self):
+        prompt = build_regenerate_prompt(tradition="chinese_xieyi")
+        assert "reference" in prompt.lower()
+        assert "unified" in prompt.lower() or "consistent" in prompt.lower()
+        assert "chinese" in prompt.lower() or "xieyi" in prompt.lower()
+
+    def test_build_regenerate_prompt_default(self):
+        prompt = build_regenerate_prompt()
+        assert "reference" in prompt.lower()
+
+
 from vulca.layers.export import export_psd
 
 
