@@ -117,3 +117,34 @@ class TestCompositeLayers:
             assert comp.getpixel((50, 50))[:3] == (255, 0, 0)
             # Corner should be blue (background)
             assert comp.getpixel((5, 5))[:3] == (0, 0, 255)
+
+
+from vulca.layers.export import export_psd
+
+
+class TestExportPSD:
+    def test_export_creates_psd(self):
+        with tempfile.TemporaryDirectory() as td:
+            # Create two layer PNGs
+            bg = Image.new("RGBA", (100, 100), (0, 0, 255, 255))
+            bg_path = Path(td) / "bg.png"
+            bg.save(str(bg_path))
+
+            fg = Image.new("RGBA", (100, 100), (255, 0, 0, 128))
+            fg_path = Path(td) / "fg.png"
+            fg.save(str(fg_path))
+
+            layers = [
+                LayerResult(
+                    info=LayerInfo(name="background", description="blue", bbox={"x": 0, "y": 0, "w": 100, "h": 100}, z_index=0),
+                    image_path=str(bg_path),
+                ),
+                LayerResult(
+                    info=LayerInfo(name="foreground", description="red", bbox={"x": 0, "y": 0, "w": 100, "h": 100}, z_index=1),
+                    image_path=str(fg_path),
+                ),
+            ]
+            psd_path = Path(td) / "output.psd"
+            export_psd(layers, width=100, height=100, output_path=str(psd_path))
+            assert psd_path.exists()
+            assert psd_path.stat().st_size > 0
