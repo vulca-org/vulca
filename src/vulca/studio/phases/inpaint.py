@@ -81,18 +81,28 @@ class InpaintPhase:
                     {"type": "text", "text": f"Region: {description}"},
                 ]},
             ],
-            max_tokens=256,
+            max_tokens=512,
             temperature=0.1,
             api_key=api_key or os.environ.get("GOOGLE_API_KEY", ""),
             timeout=30,
         )
 
         text = resp.choices[0].message.content.strip()
-        match = re.search(r'\{[^}]+\}', text)
+        # Strip markdown code block wrapping
+        if text.startswith("```"):
+            text = re.sub(r'^```\w*\n?', '', text)
+            text = re.sub(r'\n?```$', '', text)
+            text = text.strip()
+        # Match JSON object (may span multiple lines)
+        match = re.search(r'\{[^{}]*\}', text, re.DOTALL)
         if not match:
-            raise ValueError(f"Could not parse bbox from VLM response: {text}")
-
-        raw = json.loads(match.group())
+            # Try parsing the entire text as JSON
+            try:
+                raw = json.loads(text)
+            except json.JSONDecodeError:
+                raise ValueError(f"Could not parse bbox from VLM response: {text}")
+        else:
+            raw = json.loads(match.group())
         bbox = {
             "x": max(0, min(100, int(raw.get("x", 0)))),
             "y": max(0, min(100, int(raw.get("y", 0)))),
