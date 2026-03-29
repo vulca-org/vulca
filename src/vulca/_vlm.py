@@ -430,8 +430,9 @@ async def score_image(
             data[f"{level}_deviation_type"] = deviations.get(level, "traditional")
             data[f"{level}_observations"] = observations.get(level, "")
             data[f"{level}_reference_technique"] = ref_techniques.get(level, "")
-        # Store extra_keys in data so _engine.py can split core vs extra
+        # Store extra_keys and names in data so _engine.py can split core vs extra
         data["_extra_keys"] = extra_keys
+        data["_extra_names"] = {e["key"]: e["name"] for e in extra_dims[:3]}
 
         return data
 

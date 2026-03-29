@@ -24,7 +24,11 @@ async def default_on_complete(output: PipelineOutput) -> None:
         from vulca.storage.jsonl import JsonlSessionBackend
 
         backend = JsonlSessionBackend()
-        backend.append(output.to_dict())
+        data = output.to_dict()
+        # Pipeline-completed sessions count as accepted for evolution
+        if "user_feedback" not in data:
+            data["user_feedback"] = "accepted"
+        backend.append(data)
     except Exception as exc:
         logger.debug("JSONL session storage failed (non-fatal): %s", exc)
 

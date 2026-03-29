@@ -153,6 +153,9 @@ def main(argv: list[str] | None = None) -> None:
     if args.command in ("evaluate", "eval", "e"):
         _cmd_evaluate(args)
     elif args.command in ("create", "c"):
+        if not args.intent.strip():
+            print("Error: intent cannot be empty.", file=sys.stderr)
+            sys.exit(1)
         if args.hitl:
             _cmd_create_hitl(args)
         else:
@@ -251,7 +254,8 @@ def _print_strict_result(result) -> None:
     if result.extra_scores:
         print(f"\n  Tradition-Specific:")
         for ekey, escore in result.extra_scores.items():
-            ename = result.raw.get(f"{ekey}_name", ekey)
+            extra_names = result.raw.get("_extra_names", {})
+            ename = extra_names.get(ekey, ekey)
             bar = "\u2588" * int(escore * 20) + "\u2591" * (20 - int(escore * 20))
             mark = "\u2713" if escore >= 0.6 else "\u2717"
             print(f"    {ename:<32s} {bar} {escore:.0%}  {mark}")
@@ -314,7 +318,8 @@ def _print_reference_result(result) -> None:
     if result.extra_scores:
         print(f"\n  Tradition-Specific:")
         for ekey, escore in result.extra_scores.items():
-            ename = result.raw.get(f"{ekey}_name", ekey)
+            extra_names = result.raw.get("_extra_names", {})
+            ename = extra_names.get(ekey, ekey)
             bar = "\u2588" * int(escore * 20) + "\u2591" * (20 - int(escore * 20))
             mark = "\u2713" if escore >= 0.6 else "\u2717"
             print(f"    {ename:<32s} {bar} {escore:.0%}  {mark}")
