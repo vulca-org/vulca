@@ -132,3 +132,27 @@ class TestInpaintPublicAPI:
                 )
             except Exception:
                 pass  # Expected — mock inpaint not implemented yet
+
+
+import subprocess
+import sys
+
+VULCA = [sys.executable, "-m", "vulca.cli"]
+
+
+class TestInpaintCLI:
+    def test_inpaint_help(self):
+        result = subprocess.run(
+            VULCA + ["inpaint", "--help"],
+            capture_output=True, text=True, timeout=10,
+        )
+        assert result.returncode == 0
+        assert "--region" in result.stdout
+        assert "--instruction" in result.stdout
+
+    def test_inpaint_in_help_list(self):
+        result = subprocess.run(
+            VULCA + ["--help"],
+            capture_output=True, text=True, timeout=10,
+        )
+        assert "inpaint" in result.stdout
