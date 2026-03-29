@@ -55,3 +55,65 @@ class TestLayerTypes:
         li = LayerInfo(name="effects", description="glow", bbox={"x": 0, "y": 0, "w": 100, "h": 100}, z_index=3, blend_mode="screen", bg_color="black")
         assert li.blend_mode == "screen"
         assert li.bg_color == "black"
+
+
+import tempfile
+from pathlib import Path
+from PIL import Image
+from vulca.layers.split import crop_layer, chromakey_white
+from vulca.layers.composite import composite_layers
+
+
+class TestSplitLayers:
+    def test_crop_layer(self):
+        with tempfile.TemporaryDirectory() as td:
+            img = Image.new("RGB", (100, 100), "red")
+            src = Path(td) / "src.png"
+            img.save(str(src))
+            info = LayerInfo(name="test", description="", bbox={"x": 0, "y": 0, "w": 50, "h": 50}, z_index=0)
+            out = crop_layer(str(src), info, output_dir=td)
+            cropped = Image.open(out)
+            assert cropped.size == (50, 50)
+
+    def test_chromakey_white(self):
+        # Create image with white background and red square
+        img = Image.new("RGBA", (100, 100), (255, 255, 255, 255))
+        for x in range(25, 75):
+            for y in range(25, 75):
+                img.putpixel((x, y), (255, 0, 0, 255))
+        result = chromakey_white(img, threshold=30)
+        # Corners should be transparent
+        assert result.getpixel((0, 0))[3] == 0
+        # Center should be opaque
+        assert result.getpixel((50, 50))[3] == 255
+
+
+class TestCompositeLayers:
+    def test_composite_two_layers(self):
+        with tempfile.TemporaryDirectory() as td:
+            # Background: blue
+            bg = Image.new("RGBA", (100, 100), (0, 0, 255, 255))
+            bg_path = Path(td) / "bg.png"
+            bg.save(str(bg_path))
+
+            # Foreground: red square with alpha
+            fg = Image.new("RGBA", (100, 100), (0, 0, 0, 0))
+            for x in range(25, 75):
+                for y in range(25, 75):
+                    fg.putpixel((x, y), (255, 0, 0, 255))
+            fg_path = Path(td) / "fg.png"
+            fg.save(str(fg_path))
+
+            bg_info = LayerInfo(name="bg", description="", bbox={"x": 0, "y": 0, "w": 100, "h": 100}, z_index=0)
+            fg_info = LayerInfo(name="fg", description="", bbox={"x": 0, "y": 0, "w": 100, "h": 100}, z_index=1)
+            layers = [
+                LayerResult(info=bg_info, image_path=str(bg_path)),
+                LayerResult(info=fg_info, image_path=str(fg_path)),
+            ]
+            out = Path(td) / "composite.png"
+            composite_layers(layers, width=100, height=100, output_path=str(out))
+            comp = Image.open(str(out))
+            # Center should be red (foreground)
+            assert comp.getpixel((50, 50))[:3] == (255, 0, 0)
+            # Corner should be blue (background)
+            assert comp.getpixel((5, 5))[:3] == (0, 0, 255)
