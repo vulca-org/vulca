@@ -16,26 +16,16 @@ def export_psd(
     height: int = 1024,
     output_path: str,
 ) -> str:
-    """Export layers as a PSD file with named layers.
+    """Export layers as PNG directory with full-canvas expanded layers + manifest.
 
-    Uses psd-tools for proper PSD generation.
-    Fallback: if psd-tools fails, export as PNG directory.
+    Each minimal crop is expanded to full canvas (width x height) with transparency,
+    matching Photoshop's layer display behavior.
+
+    PSD binary format is not yet supported. If output_path ends in .psd,
+    creates a PNG directory alongside it.
     """
-    try:
-        from psd_tools import PSDImage
-        from psd_tools.api.layers import PixelLayer
-
-        # psd-tools v2 approach: compose from scratch is complex,
-        # so we create a minimal PSD structure
-        # Simpler fallback: use Pillow to create layered TIFF
-        # (PSD creation from scratch is not well-supported in psd-tools)
-        raise ImportError("Use PNG fallback")
-    except ImportError:
-        pass
-
-    # Fallback: export as PNG directory + manifest
     out = Path(output_path)
-    # If path ends in .psd, create directory alongside
+    # Create PNG directory alongside .psd path (or use path directly)
     if out.suffix == ".psd":
         png_dir = out.with_suffix("")
     else:
@@ -46,10 +36,13 @@ def export_psd(
     for layer in sorted_layers:
         try:
             img = Image.open(layer.image_path).convert("RGBA")
-            if img.size != (width, height):
-                img = img.resize((width, height), Image.LANCZOS)
+            # Approach B: expand minimal crop to full canvas for export
+            full = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+            x = int(width * layer.info.bbox["x"] / 100)
+            y = int(height * layer.info.bbox["y"] / 100)
+            full.paste(img, (x, y), img)
             dest = png_dir / f"{layer.info.z_index:02d}_{layer.info.name}.png"
-            img.save(str(dest))
+            full.save(str(dest))
         except Exception:
             continue
 
@@ -64,6 +57,7 @@ def export_psd(
                 "file": f"{l.info.z_index:02d}_{l.info.name}.png",
                 "z_index": l.info.z_index,
                 "blend_mode": l.info.blend_mode,
+                "bbox": l.info.bbox,
                 "scores": l.scores,
             }
             for l in sorted_layers
@@ -71,9 +65,5 @@ def export_psd(
     }
     manifest_path = png_dir / "manifest.json"
     manifest_path.write_text(json.dumps(manifest, indent=2))
-
-    # Create a dummy .psd file marker (so the test passes)
-    if out.suffix == ".psd":
-        out.write_bytes(b"PSD_PLACEHOLDER")
 
     return str(out)

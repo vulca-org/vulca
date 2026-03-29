@@ -247,31 +247,64 @@ from vulca.layers.export import export_psd
 
 
 class TestExportPSD:
-    def test_export_creates_psd(self):
+    def test_export_creates_png_directory(self):
+        """Export creates PNG directory with full-canvas layers + manifest."""
         with tempfile.TemporaryDirectory() as td:
-            # Create two layer PNGs
+            # Create two minimal crop layers (Approach B)
             bg = Image.new("RGBA", (100, 100), (0, 0, 255, 255))
             bg_path = Path(td) / "bg.png"
             bg.save(str(bg_path))
 
-            fg = Image.new("RGBA", (100, 100), (255, 0, 0, 128))
+            fg = Image.new("RGBA", (50, 50), (255, 0, 0, 255))
             fg_path = Path(td) / "fg.png"
             fg.save(str(fg_path))
 
             layers = [
                 LayerResult(
-                    info=LayerInfo(name="background", description="blue", bbox={"x": 0, "y": 0, "w": 100, "h": 100}, z_index=0),
+                    info=LayerInfo(name="bg", description="", bbox={"x": 0, "y": 0, "w": 100, "h": 100}, z_index=0),
                     image_path=str(bg_path),
                 ),
                 LayerResult(
-                    info=LayerInfo(name="foreground", description="red", bbox={"x": 0, "y": 0, "w": 100, "h": 100}, z_index=1),
+                    info=LayerInfo(name="fg", description="", bbox={"x": 25, "y": 25, "w": 50, "h": 50}, z_index=1),
                     image_path=str(fg_path),
                 ),
             ]
+
+            out_dir = Path(td) / "export"
+            export_psd(layers, width=100, height=100, output_path=str(out_dir / "layers.psd"))
+
+            # PNG directory should exist with full-canvas expanded layers
+            png_dir = out_dir / "layers"
+            assert png_dir.exists()
+            exported_bg = Image.open(str(png_dir / "00_bg.png"))
+            exported_fg = Image.open(str(png_dir / "01_fg.png"))
+            # Both exported as full-canvas (100x100)
+            assert exported_bg.size == (100, 100)
+            assert exported_fg.size == (100, 100)
+            # fg layer: transparent at corner, opaque at center
+            assert exported_fg.getpixel((5, 5))[3] == 0      # outside bbox: transparent
+            assert exported_fg.getpixel((50, 50))[3] == 255   # inside bbox: opaque red
+            # Manifest written
+            assert (png_dir / "manifest.json").exists()
+
+    def test_export_psd_format_no_fake_file(self):
+        """--format psd must NOT write fake PSD placeholder."""
+        with tempfile.TemporaryDirectory() as td:
+            bg = Image.new("RGBA", (10, 10), (0, 0, 255, 255))
+            bg_path = Path(td) / "bg.png"
+            bg.save(str(bg_path))
+            layers = [
+                LayerResult(
+                    info=LayerInfo(name="bg", description="", bbox={"x": 0, "y": 0, "w": 100, "h": 100}, z_index=0),
+                    image_path=str(bg_path),
+                ),
+            ]
             psd_path = Path(td) / "output.psd"
-            export_psd(layers, width=100, height=100, output_path=str(psd_path))
-            assert psd_path.exists()
-            assert psd_path.stat().st_size > 0
+            export_psd(layers, width=10, height=10, output_path=str(psd_path))
+            # Must NOT write fake PSD placeholder
+            if psd_path.exists():
+                content = psd_path.read_bytes()
+                assert content != b"PSD_PLACEHOLDER", "Must not write fake PSD file"
 
 
 class TestRoundtripIntegrity:
