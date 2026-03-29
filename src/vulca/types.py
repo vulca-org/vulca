@@ -182,3 +182,32 @@ class CreateResult:
             f"CreateResult(session_id={self.session_id!r}, mode={self.mode!r}, "
             f"status={self.status!r}, rounds={self.total_rounds}, tradition={self.tradition!r})"
         )
+
+
+@dataclass
+class InpaintResult:
+    """Result from an inpainting operation."""
+
+    bbox: dict
+    """Bounding box as percentages: {"x": int, "y": int, "w": int, "h": int}."""
+
+    variants: list[str]
+    """Paths to variant images."""
+
+    selected: int
+    """Index of selected variant (0-based)."""
+
+    blended: str
+    """Path to final blended image."""
+
+    original: str
+    """Path to original image."""
+
+    instruction: str
+    """User's repaint instruction."""
+
+    tradition: str
+    """Tradition used for style consistency."""
+
+    latency_ms: int = 0
+    cost_usd: float = 0.0
