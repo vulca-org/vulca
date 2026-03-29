@@ -74,6 +74,7 @@ class TraditionConfig:
     taboos: list[TabooEntry] = field(default_factory=list)
     pipeline: PipelineConfig = field(default_factory=PipelineConfig)
     examples: list[dict[str, str]] = field(default_factory=list)
+    extra_dimensions: list[dict] = field(default_factory=list)
 
     # Dimension name mapping: L-code -> snake_case
     _L_TO_DIM: dict[str, str] = field(default_factory=dict, repr=False, init=False)

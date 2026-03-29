@@ -83,12 +83,7 @@ class ConceptPhase:
         variation_strength: float = 0.0,
     ) -> list[str]:
         project = Path(project_dir) if project_dir else Path(".")
-        # Use round-numbered dir if this is a variation round (reference provided)
-        round_num = len(brief.generations) + 1 if reference_image else 0
-        if round_num > 0:
-            concepts_dir = project / f"r{round_num}" / "concepts"
-        else:
-            concepts_dir = project / "concepts"
+        concepts_dir = project / "concepts"
         concepts_dir.mkdir(parents=True, exist_ok=True)
 
         prompt = self.build_concept_prompt(brief, variation_strength=variation_strength)

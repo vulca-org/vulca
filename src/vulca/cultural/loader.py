@@ -154,6 +154,7 @@ def reload_traditions() -> int:
                 taboos=taboos,
                 pipeline=pipeline,
                 examples=data.get("examples", []),
+                extra_dimensions=data.get("extra_dimensions", []),
             )
             new_traditions[name] = tc
             count += 1
@@ -280,6 +281,7 @@ def _load_single_yaml(path: Path) -> TraditionConfig | None:
             taboos=taboos,
             pipeline=pipeline,
             examples=data.get("examples", []),
+            extra_dimensions=data.get("extra_dimensions", []),
         )
     except Exception as exc:
         logger.warning("Failed to load custom tradition %s: %s", path, exc)
