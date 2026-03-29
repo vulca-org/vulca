@@ -243,7 +243,7 @@ async def _run_studio_async(
                 _print(f"\n  Score plateaued ({all_scores[-2]:.0%} -> {all_scores[-1]:.0%}). Consider accepting or trying a different approach.")
 
         # User decision
-        _print("\n  Next: (a)ccept  (u)pdate  (r)egenerate  (q)uit")
+        _print("\n  Next: (a)ccept  (u)pdate  (r)egenerate  (i)npaint  (q)uit")
         decision = _ask("> ").strip().lower()
 
         if decision in ("a", "accept"):
@@ -297,6 +297,43 @@ async def _run_studio_async(
                         concept_phase_loop.select(session.brief, index=0)
                     session.save()
             # Continue loop → regenerate
+        elif decision.startswith("i"):
+            # Inpaint mode
+            region_input = _ask("Describe region to repaint (or x,y,w,h %): ").strip()
+            inpaint_instruction = _ask("Repaint instruction: ").strip()
+            if region_input and inpaint_instruction:
+                from vulca.inpaint import ainpaint
+                _print("\n[Inpaint] Processing...")
+                inpaint_result = await ainpaint(
+                    result_path,
+                    region=region_input,
+                    instruction=inpaint_instruction,
+                    tradition=session.brief.style_mix[0].tradition if session.brief.style_mix else "default",
+                    count=4,
+                    api_key=api_key,
+                )
+                if inpaint_result.variants:
+                    _print(f"  {len(inpaint_result.variants)} variants generated:")
+                    for vi, vp in enumerate(inpaint_result.variants, 1):
+                        _print(f"    {vi}. {Path(vp).name}")
+                    sel = _ask("Select (1-N): ").strip()
+                    try:
+                        sel_idx = int(sel) - 1
+                    except ValueError:
+                        sel_idx = 0
+
+                    # Re-blend with selected variant
+                    from vulca.studio.phases.inpaint import InpaintPhase
+                    phase = InpaintPhase()
+                    blended = await phase.blend(
+                        result_path, inpaint_result.variants[sel_idx],
+                        bbox=inpaint_result.bbox, api_key=api_key,
+                    )
+                    result_path = blended
+                    session.brief.selected_concept = blended
+                    _print(f"  Blended: {blended}")
+                    session.save()
+            # Continue loop
         else:
             # Default: regenerate — rollback to GENERATE state
             session.rollback_to(SessionState.GENERATE)

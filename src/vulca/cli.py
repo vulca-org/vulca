@@ -149,6 +149,17 @@ def main(argv: list[str] | None = None) -> None:
     sync_parser.add_argument("--push-only", action="store_true", help="Only push local data")
     sync_parser.add_argument("--pull-only", action="store_true", help="Only pull evolved weights")
 
+    # inpaint command
+    inpaint_p = sub.add_parser("inpaint", help="Repaint a region of an artwork")
+    inpaint_p.add_argument("image", help="Path to image")
+    inpaint_p.add_argument("--region", required=True, help="Region: NL description or 'x,y,w,h' coordinates (%%)")
+    inpaint_p.add_argument("--instruction", required=True, help="What to change in the region")
+    inpaint_p.add_argument("--tradition", "-t", default="default", help="Cultural tradition")
+    inpaint_p.add_argument("--count", "-n", type=int, default=4, help="Number of variants")
+    inpaint_p.add_argument("--select", "-s", type=int, default=None, help="Auto-select variant (1-based)")
+    inpaint_p.add_argument("--output", "-o", default="", help="Output path")
+    inpaint_p.add_argument("--mock", action="store_true", help="Use mock mode")
+
     args = parser.parse_args(argv)
 
     if args.command in ("evaluate", "eval", "e"):
@@ -183,6 +194,8 @@ def main(argv: list[str] | None = None) -> None:
         _cmd_concept(args)
     elif args.command == "sync":
         _cmd_sync(args)
+    elif args.command == "inpaint":
+        _cmd_inpaint(args)
     else:
         parser.print_help()
         sys.exit(1)
@@ -901,6 +914,33 @@ def _cmd_sync(args: argparse.Namespace) -> None:
         except Exception as exc:
             print(f"Pull failed: {exc}", file=sys.stderr)
             sys.exit(1)
+
+
+# ---------------------------------------------------------------------------
+# Inpaint command
+# ---------------------------------------------------------------------------
+
+def _cmd_inpaint(args: argparse.Namespace) -> None:
+    from vulca.inpaint import inpaint as do_inpaint
+
+    select_idx = (args.select - 1) if args.select else 0
+    result = do_inpaint(
+        args.image,
+        region=args.region,
+        instruction=args.instruction,
+        tradition=args.tradition,
+        count=args.count,
+        select=select_idx,
+        output=args.output,
+        mock=args.mock,
+    )
+    print(f"\n  VULCA Inpaint Result")
+    print(f"  {'='*40}")
+    print(f"  Region: {result.bbox}")
+    print(f"  Variants: {len(result.variants)}")
+    print(f"  Selected: v{result.selected + 1}")
+    print(f"  Blended: {result.blended}")
+    print(f"  Latency: {result.latency_ms}ms | Cost: ${result.cost_usd:.4f}")
 
 
 if __name__ == "__main__":
