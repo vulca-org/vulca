@@ -933,5 +933,238 @@ async def analyze_layers(image_path: str) -> dict:
     }
 
 
+@mcp.tool()
+async def sync_data(push_only: bool = False, pull_only: bool = False) -> dict:
+    """Sync local session data with cloud. Requires VULCA_API_URL env var.
+
+    Args:
+        push_only: Only push local sessions, skip pulling evolved weights.
+        pull_only: Only pull evolved weights, skip pushing sessions.
+
+    Returns:
+        pushed_count, pulled_evolved (bool), api_url, error (if any).
+    """
+    import json as json_mod
+    import os
+    from pathlib import Path
+
+    api_url = os.environ.get("VULCA_API_URL", "")
+    api_key = os.environ.get("VULCA_API_KEY", "")
+    if not api_url:
+        return {
+            "error": "VULCA_API_URL not set. "
+            "Set VULCA_API_URL and optionally VULCA_API_KEY env vars.",
+        }
+
+    data_dir = Path.home() / ".vulca" / "data"
+    pushed_count = 0
+    pulled_evolved = False
+
+    if not pull_only:
+        sessions_file = data_dir / "sessions.jsonl"
+        synced_file = data_dir / "synced.json"
+
+        synced_ids: set[str] = set()
+        if synced_file.exists():
+            synced_ids = set(json_mod.loads(synced_file.read_text()))
+
+        to_push: list[dict] = []
+        if sessions_file.exists():
+            for line in sessions_file.read_text().splitlines():
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    entry = json_mod.loads(line)
+                    sid = entry.get("session_id", "")
+                    if sid and sid not in synced_ids:
+                        to_push.append(entry)
+                        synced_ids.add(sid)
+                except json_mod.JSONDecodeError:
+                    continue
+
+        if to_push:
+            try:
+                import httpx
+                resp = httpx.post(
+                    f"{api_url.rstrip('/')}/api/v1/sync",
+                    json={"sessions": to_push},
+                    headers={"Authorization": f"Bearer {api_key}"},
+                    timeout=30,
+                )
+                resp.raise_for_status()
+                synced_file.parent.mkdir(parents=True, exist_ok=True)
+                synced_file.write_text(json_mod.dumps(sorted(synced_ids)))
+                pushed_count = len(to_push)
+            except Exception as exc:
+                return {"error": f"Push failed: {exc}", "api_url": api_url}
+
+    if not push_only:
+        try:
+            import httpx
+            resp = httpx.get(
+                f"{api_url.rstrip('/')}/api/v1/evolved-context",
+                headers={"Authorization": f"Bearer {api_key}"},
+                timeout=30,
+            )
+            resp.raise_for_status()
+            evolved_path = data_dir / "evolved_context.json"
+            evolved_path.parent.mkdir(parents=True, exist_ok=True)
+            evolved_path.write_text(resp.text)
+            pulled_evolved = True
+        except Exception as exc:
+            return {
+                "error": f"Pull failed: {exc}",
+                "api_url": api_url,
+                "pushed_count": pushed_count,
+            }
+
+    return {
+        "api_url": api_url,
+        "pushed_count": pushed_count,
+        "pulled_evolved": pulled_evolved,
+    }
+
+
+@mcp.tool()
+async def layers_composite(artwork_dir: str, output_path: str = "") -> dict:
+    """Composite layers from an artwork directory into a single flat image.
+
+    Args:
+        artwork_dir: Directory containing layer PNGs and manifest.json.
+        output_path: Output file path (default: <artwork_dir>/composite.png).
+
+    Returns:
+        composite_path: Absolute path to the composited image.
+    """
+    import json as json_mod
+    from pathlib import Path
+    from vulca.layers.edit import load_artwork
+    from vulca.layers.composite import composite_layers as _composite
+
+    artwork = load_artwork(artwork_dir)
+    out = output_path or str(Path(artwork_dir) / "composite.png")
+
+    # Read width/height from manifest if available
+    manifest_path = Path(artwork_dir) / "manifest.json"
+    width = height = 1024
+    if manifest_path.exists():
+        try:
+            m = json_mod.loads(manifest_path.read_text())
+            width = m.get("width", 1024)
+            height = m.get("height", 1024)
+        except Exception:
+            pass
+
+    _composite(artwork.layers, width=width, height=height, output_path=out)
+    return {"composite_path": out}
+
+
+@mcp.tool()
+async def layers_export(
+    artwork_dir: str,
+    format: str = "png",
+    output_path: str = "",
+) -> dict:
+    """Export layers as PNG directory or PSD file.
+
+    Args:
+        artwork_dir: Directory containing layer PNGs and manifest.json.
+        format: Export format — "png" (default, PNG directory) or "psd".
+        output_path: Output path (default: <artwork_dir>/export.<format>).
+
+    Returns:
+        export_path: Absolute path to exported file or directory.
+    """
+    import json as json_mod
+    from pathlib import Path
+    from vulca.layers.edit import load_artwork
+    from vulca.layers.export import export_psd
+    from vulca.layers.composite import composite_layers
+
+    artwork = load_artwork(artwork_dir)
+
+    # Read width/height from manifest if available
+    manifest_path = Path(artwork_dir) / "manifest.json"
+    width = height = 1024
+    if manifest_path.exists():
+        try:
+            m = json_mod.loads(manifest_path.read_text())
+            width = m.get("width", 1024)
+            height = m.get("height", 1024)
+        except Exception:
+            pass
+
+    if format == "psd":
+        out = output_path or str(Path(artwork_dir) / "layers.psd")
+        export_psd(artwork.layers, width=width, height=height, output_path=out)
+    else:
+        out = output_path or str(Path(artwork_dir) / "composite.png")
+        composite_layers(artwork.layers, width=width, height=height, output_path=out)
+
+    return {"export_path": out}
+
+
+@mcp.tool()
+async def layers_evaluate(
+    artwork_dir: str,
+    tradition: str = "default",
+) -> dict:
+    """Evaluate each layer independently with L1-L5 scoring.
+
+    Args:
+        artwork_dir: Directory containing layer PNGs and manifest.json.
+        tradition: Cultural tradition for evaluation (default: auto-detect).
+
+    Returns:
+        layers: Dict mapping layer name to score and dimensions.
+    """
+    from vulca.layers.edit import load_artwork
+    from vulca import aevaluate
+
+    artwork = load_artwork(artwork_dir)
+    results: dict[str, dict] = {}
+
+    for layer in artwork.layers:
+        try:
+            r = await aevaluate(layer.image_path, tradition=tradition)
+            results[layer.info.name] = {
+                "score": r.score,
+                "dimensions": r.dimensions,
+            }
+        except Exception as exc:
+            results[layer.info.name] = {"error": str(exc)}
+
+    return {"layers": results}
+
+
+@mcp.tool()
+async def layers_regenerate(
+    artwork_dir: str,
+    tradition: str = "default",
+    provider: str = "gemini",
+) -> dict:
+    """Regenerate a unified image from composite, solving cross-layer consistency.
+
+    Args:
+        artwork_dir: Directory containing composite image and manifest.json.
+        tradition: Cultural tradition for style guidance.
+        provider: Image generation provider (gemini | mock | openai).
+
+    Returns:
+        regenerated_path: Absolute path to the regenerated image.
+    """
+    from vulca.layers.edit import load_artwork
+    from vulca.layers.regenerate import regenerate_from_composite
+
+    artwork = load_artwork(artwork_dir)
+    out = await regenerate_from_composite(
+        artwork.composite_path,
+        tradition=tradition,
+        provider=provider,
+    )
+    return {"regenerated_path": out}
+
+
 if __name__ == "__main__":
     mcp.run()
