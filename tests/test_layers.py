@@ -60,12 +60,13 @@ class TestLayerTypes:
 import tempfile
 from pathlib import Path
 from PIL import Image
-from vulca.layers.split import crop_layer, chromakey_white
+from vulca.layers.split import crop_layer, chromakey_white, write_manifest
 from vulca.layers.composite import composite_layers
 
 
 class TestSplitLayers:
     def test_crop_layer(self):
+        """Approach B: crop_layer outputs minimal-size RGBA crop, not full canvas."""
         with tempfile.TemporaryDirectory() as td:
             img = Image.new("RGB", (100, 100), "red")
             src = Path(td) / "src.png"
@@ -73,7 +74,32 @@ class TestSplitLayers:
             info = LayerInfo(name="test", description="", bbox={"x": 0, "y": 0, "w": 50, "h": 50}, z_index=0)
             out = crop_layer(str(src), info, output_dir=td)
             cropped = Image.open(out)
-            assert cropped.size == (50, 50)
+            # Approach B: minimal crop size, NOT full canvas
+            assert cropped.size == (50, 50), f"Expected minimal crop (50, 50), got {cropped.size}"
+            # Must be RGBA (chromakey always converts)
+            assert cropped.mode == "RGBA"
+            # Content should be red
+            assert cropped.getpixel((25, 25))[:3] == (255, 0, 0)
+
+    def test_crop_layer_chromakey_white(self):
+        """crop_layer with bg_color='white' removes white background."""
+        with tempfile.TemporaryDirectory() as td:
+            # White background with red center
+            img = Image.new("RGB", (100, 100), (255, 255, 255))
+            for x in range(25, 75):
+                for y in range(25, 75):
+                    img.putpixel((x, y), (255, 0, 0))
+            src = Path(td) / "src.png"
+            img.save(str(src))
+            info = LayerInfo(name="test", description="", bbox={"x": 0, "y": 0, "w": 100, "h": 100},
+                           z_index=0, bg_color="white")
+            out = crop_layer(str(src), info, output_dir=td)
+            cropped = Image.open(out)
+            assert cropped.mode == "RGBA"
+            # White corners should be transparent
+            assert cropped.getpixel((5, 5))[3] == 0
+            # Red center should be opaque
+            assert cropped.getpixel((50, 50))[3] == 255
 
     def test_chromakey_white(self):
         # Create image with white background and red square
@@ -189,6 +215,62 @@ class TestExportPSD:
             export_psd(layers, width=100, height=100, output_path=str(psd_path))
             assert psd_path.exists()
             assert psd_path.stat().st_size > 0
+
+
+class TestRoundtripIntegrity:
+    """L3: composite(split(img)) approx img — roundtrip integrity for Approach B."""
+
+    def test_crop_outputs_minimal_rgba(self):
+        """Approach B: each layer is a minimal-size RGBA crop."""
+        with tempfile.TemporaryDirectory() as td:
+            img = Image.new("RGB", (100, 100), "red")
+            for x in range(50, 100):
+                for y in range(100):
+                    img.putpixel((x, y), (0, 0, 255))
+            src = Path(td) / "src.png"
+            img.save(str(src))
+
+            info = LayerInfo(name="left", description="", bbox={"x": 0, "y": 0, "w": 50, "h": 100}, z_index=0)
+            out = crop_layer(str(src), info, output_dir=td)
+            cropped = Image.open(out)
+
+            assert cropped.mode == "RGBA"
+            # Approach B: minimal crop (50x100), NOT full canvas (100x100)
+            assert cropped.size == (50, 100), (
+                f"Approach B: layer should be minimal crop (50, 100), got {cropped.size}"
+            )
+
+    def test_split_composite_roundtrip_full_bbox(self):
+        """Approach B: single full-canvas layer roundtrip (no bbox offset needed)."""
+        with tempfile.TemporaryDirectory() as td:
+            # Single layer with full bbox — no offset, roundtrip should preserve content
+            original = Image.new("RGBA", (100, 100), (0, 0, 255, 255))
+            for x in range(25, 75):
+                for y in range(25, 75):
+                    original.putpixel((x, y), (255, 0, 0, 255))
+            src = Path(td) / "original.png"
+            original.save(str(src))
+
+            # Full-canvas layer (bbox covers entire image — crop == full image)
+            bg_info = LayerInfo(name="bg", description="full canvas",
+                              bbox={"x": 0, "y": 0, "w": 100, "h": 100}, z_index=0)
+            bg_path = crop_layer(str(src), bg_info, output_dir=td)
+            bg_crop = Image.open(bg_path)
+
+            # Approach B: full-bbox crop is same size as original
+            assert bg_crop.size == (100, 100)
+            assert bg_crop.mode == "RGBA"
+
+            layers = [LayerResult(info=bg_info, image_path=bg_path)]
+            out = Path(td) / "roundtrip.png"
+            composite_layers(layers, width=100, height=100, output_path=str(out))
+            result = Image.open(str(out)).convert("RGBA")
+
+            # Full-canvas layer: composite should preserve content
+            center = result.getpixel((50, 50))
+            assert center[:3] == (255, 0, 0), f"Center should be red, got {center[:3]}"
+            corner = result.getpixel((5, 5))
+            assert corner[:3] == (0, 0, 255), f"Corner should be blue, got {corner[:3]}"
 
 
 import subprocess
