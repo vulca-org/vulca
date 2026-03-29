@@ -192,6 +192,11 @@ async def execute(
 
     for round_num in range(1, pipeline_input.max_rounds + 1):
         ctx.round_num = round_num
+
+        # Multi-round coherence: use previous round's image as reference
+        if round_num >= 2 and ctx.get("image_b64"):
+            ctx.set("reference_image_b64", ctx.get("image_b64"))
+
         round_t0 = time.monotonic()
 
         for node_name in exec_order:

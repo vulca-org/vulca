@@ -295,6 +295,37 @@ class TestExecute:
         assert result.total_rounds == 3
 
     @pytest.mark.asyncio
+    async def test_round2_receives_previous_image(self):
+        """Round 2+ must get previous round's image as reference_image_b64."""
+        captured_refs = []
+        original_run = GenerateNode.run
+
+        async def spy_run(self_node, ctx):
+            captured_refs.append(ctx.get("reference_image_b64") or "")
+            return await original_run(self_node, ctx)
+
+        GenerateNode.run = spy_run
+        try:
+            high_threshold = PipelineDefinition(
+                name="strict",
+                entry_point="generate",
+                nodes=("generate", "evaluate", "decide"),
+                edges=(("generate", "evaluate"), ("evaluate", "decide")),
+                enable_loop=True,
+                node_specs={"decide": {"accept_threshold": 0.99}},
+            )
+            pi = PipelineInput(subject="test", provider="mock", max_rounds=3)
+            result = await execute(high_threshold, pi)
+            assert result.total_rounds == 3
+            # Round 1: no reference (empty string)
+            assert captured_refs[0] == ""
+            # Round 2+: must have previous round's generated image
+            assert captured_refs[1] != "", "Round 2 should receive Round 1's image as reference"
+            assert captured_refs[2] != "", "Round 3 should receive Round 2's image as reference"
+        finally:
+            GenerateNode.run = original_run
+
+    @pytest.mark.asyncio
     async def test_tradition_propagated(self):
         pi = PipelineInput(
             subject="test", provider="mock", tradition="chinese_xieyi"
