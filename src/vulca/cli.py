@@ -104,6 +104,7 @@ def main(argv: list[str] | None = None) -> None:
     create_p.add_argument("--reference", default="", help="Reference image path or base64")
     create_p.add_argument("--ref-type", default="full", choices=["style", "composition", "full"],
                           help="Reference type: style, composition, or full")
+    create_p.add_argument("--colors", default="", help="Hex color palette (comma-separated, e.g. '#C87F4A,#5F8A50')")
 
     # traditions command
     sub.add_parser("traditions", aliases=["t"], help="List available cultural traditions")

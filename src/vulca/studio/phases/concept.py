@@ -66,7 +66,17 @@ class ConceptPhase:
         if brief.palette.mood:
             parts.append(f"Color mood: {brief.palette.mood}")
         if brief.palette.primary:
-            parts.append(f"Primary colors: {', '.join(brief.palette.primary)}")
+            has_hex = any(c.startswith("#") for c in brief.palette.primary)
+            if has_hex:
+                parts.append(f"Primary colors (use these exact hex values): {', '.join(brief.palette.primary)}")
+            else:
+                parts.append(f"Primary colors: {', '.join(brief.palette.primary)}")
+        if brief.palette.accent:
+            has_hex = any(c.startswith("#") for c in brief.palette.accent)
+            if has_hex:
+                parts.append(f"Accent colors (use these exact hex values): {', '.join(brief.palette.accent)}")
+            else:
+                parts.append(f"Accent colors: {', '.join(brief.palette.accent)}")
         if brief.elements:
             parts.append(f"Key elements: {', '.join(e.name for e in brief.elements[:6])}")
         if brief.must_have:
