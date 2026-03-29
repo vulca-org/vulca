@@ -114,6 +114,34 @@ class TestSplitLayers:
         assert result.getpixel((50, 50))[3] == 255
 
 
+class TestManifest:
+    def test_write_manifest(self):
+        """write_manifest creates manifest.json with bbox and layer metadata."""
+        with tempfile.TemporaryDirectory() as td:
+            infos = [
+                LayerInfo(name="bg", description="background", bbox={"x": 0, "y": 0, "w": 100, "h": 100},
+                         z_index=0, blend_mode="normal", bg_color="white"),
+                LayerInfo(name="fg", description="foreground", bbox={"x": 25, "y": 25, "w": 50, "h": 50},
+                         z_index=1, blend_mode="normal", bg_color="white"),
+            ]
+            path = write_manifest(infos, output_dir=td, width=1024, height=1024)
+            assert Path(path).exists()
+            manifest = json.loads(Path(path).read_text())
+            assert manifest["version"] == 1
+            assert manifest["width"] == 1024
+            assert manifest["height"] == 1024
+            assert len(manifest["layers"]) == 2
+            # Sorted by z_index
+            assert manifest["layers"][0]["name"] == "bg"
+            assert manifest["layers"][1]["name"] == "fg"
+            # bbox preserved as percentages
+            assert manifest["layers"][1]["bbox"] == {"x": 25, "y": 25, "w": 50, "h": 50}
+            # bg_color included
+            assert manifest["layers"][0]["bg_color"] == "white"
+            # file field points to PNG
+            assert manifest["layers"][0]["file"] == "bg.png"
+
+
 class TestCompositeLayers:
     def test_composite_two_layers(self):
         with tempfile.TemporaryDirectory() as td:

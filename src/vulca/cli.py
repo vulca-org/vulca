@@ -486,6 +486,10 @@ def _cmd_create(args: argparse.Namespace) -> None:
             eval_mode=args.mode,
             residuals=getattr(args, "residuals", False),
             sparse_eval=getattr(args, "sparse_eval", False),
+            sketch=getattr(args, "sketch", "") or "",
+            reference=getattr(args, "reference", "") or "",
+            ref_type=getattr(args, "ref_type", "full") or "full",
+            colors=getattr(args, "colors", "") or "",
         )
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
@@ -997,7 +1001,8 @@ def _cmd_layers(args: argparse.Namespace) -> None:
 
     elif args.layers_command == "split":
         from vulca.layers.analyze import analyze_layers
-        from vulca.layers.split import crop_layer
+        from vulca.layers.split import crop_layer, write_manifest
+        from PIL import Image as _PILImage
         loop = asyncio.new_event_loop()
         layers = loop.run_until_complete(analyze_layers(args.image))
         loop.close()
@@ -1006,6 +1011,10 @@ def _cmd_layers(args: argparse.Namespace) -> None:
         for la in layers:
             path = crop_layer(args.image, la, output_dir=out_dir)
             print(f"    [{la.z_index}] {la.name} -> {path}")
+        # Write manifest for downstream composite/export/evaluate
+        _img = _PILImage.open(args.image)
+        write_manifest(layers, output_dir=out_dir, width=_img.width, height=_img.height)
+        print(f"    manifest.json -> {Path(out_dir) / 'manifest.json'}")
 
     elif args.layers_command == "composite":
         from vulca.layers.edit import load_artwork
