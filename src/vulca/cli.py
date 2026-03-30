@@ -203,6 +203,12 @@ def main(argv: list[str] | None = None) -> None:
     sessions_list.add_argument("--limit", "-n", type=int, default=20, help="Max sessions to show")
     sessions_list.add_argument("--sort", default="date", choices=["score", "date"], help="Sort order")
 
+    # resume command
+    resume_p = sub.add_parser("resume", help="Resume pipeline from checkpoint")
+    resume_p.add_argument("session_id", help="Session ID to resume")
+    resume_p.add_argument("--from-round", type=int, default=0, help="Resume from this round (0 = last)")
+    resume_p.add_argument("--provider", "-p", default="", help="Override provider (default: from checkpoint)")
+
     # tools command — delegates to CLI adapter
     tools_parser = sub.add_parser("tools", help="Run algorithmic analysis/processing tools")
     tools_parser.add_argument("tools_args", nargs=argparse.REMAINDER)
@@ -253,6 +259,8 @@ def main(argv: list[str] | None = None) -> None:
             sessions_p.print_help()
             sys.exit(0)
         _cmd_sessions(args)
+    elif args.command == "resume":
+        _cmd_resume(args)
     elif args.command == "tools":
         from vulca.tools.adapters.cli import build_tools_parser, run_tools_command
         from vulca.tools.registry import ToolRegistry
@@ -1148,6 +1156,69 @@ def _cmd_sessions(args: argparse.Namespace) -> None:
     else:
         print(f"Unknown sessions command: {args.sessions_command}", file=sys.stderr)
         sys.exit(1)
+
+
+# ---------------------------------------------------------------------------
+# Resume command
+# ---------------------------------------------------------------------------
+
+def _cmd_resume(args: argparse.Namespace) -> None:
+    import asyncio
+    from vulca.pipeline.checkpoint import CheckpointStore
+    from vulca.pipeline import execute, DEFAULT
+    from vulca.pipeline.types import PipelineInput
+
+    store = CheckpointStore()
+    cp = store.load_checkpoint(args.session_id)
+    if cp is None:
+        print(f"  No checkpoint found for session {args.session_id}", file=sys.stderr)
+        sys.exit(1)
+
+    meta = cp["metadata"]
+    rounds = cp["rounds"]
+    if not rounds:
+        print(f"  Checkpoint has no rounds to resume from", file=sys.stderr)
+        sys.exit(1)
+
+    from_round = args.from_round or len(rounds)
+    target_round = None
+    for r in rounds:
+        if r["round_num"] == from_round:
+            target_round = r
+            break
+    if target_round is None:
+        print(
+            f"  Round {from_round} not found in checkpoint "
+            f"(available: {[r['round_num'] for r in rounds]})",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    provider = args.provider or meta.get("provider", "mock")
+    print(f"\n  Resuming session {args.session_id} from round {from_round}")
+    print(f"  Provider: {provider} | Tradition: {meta.get('tradition', 'default')}")
+    print(f"  Last score: {target_round.get('weighted_total', 0.0):.3f}")
+
+    pi = PipelineInput(
+        subject=meta.get("subject", ""),
+        intent=meta.get("intent", ""),
+        tradition=meta.get("tradition", "default"),
+        provider=provider,
+        max_rounds=meta.get("max_rounds", 3),
+    )
+
+    ref_b64 = target_round.get("image_b64", "")
+    if ref_b64:
+        pi.node_params["generate"] = {"reference_image_b64": ref_b64}
+
+    loop = asyncio.new_event_loop()
+    result = loop.run_until_complete(execute(DEFAULT, pi))
+    loop.close()
+
+    print(f"\n  Resumed pipeline completed:")
+    print(f"    Rounds: {result.total_rounds}")
+    print(f"    Score: {result.weighted_total:.3f}")
+    print(f"    Status: {result.status}")
 
 
 if __name__ == "__main__":
