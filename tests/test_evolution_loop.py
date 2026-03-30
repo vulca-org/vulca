@@ -153,7 +153,7 @@ class TestDecideNodeEvolution:
                 ctx = _make_decide_ctx(tradition="t1", weighted_total=0.73, scores={"L1": 0.7, "L2": 0.76},
                                        round_num=1, max_rounds=3)
                 import asyncio
-                result = asyncio.get_event_loop().run_until_complete(node.run(ctx))
+                result = asyncio.run(node.run(ctx))
                 # threshold 0.7 + 0.05 = 0.75. Score 0.73 < 0.75 → rerun
                 assert result["decision"] == "rerun"
             finally:
@@ -168,7 +168,7 @@ class TestDecideNodeEvolution:
             ctx = _make_decide_ctx(tradition="t1", weighted_total=0.73, scores={"L1": 0.7, "L2": 0.76},
                                    round_num=1, max_rounds=3)
             import asyncio
-            result = asyncio.get_event_loop().run_until_complete(node.run(ctx))
+            result = asyncio.run(node.run(ctx))
             # No evolution → threshold stays 0.7. Score 0.73 >= 0.7 → accept
             assert result["decision"] == "accept"
         finally:
@@ -187,7 +187,7 @@ class TestDecideNodeEvolution:
                                        round_num=1, max_rounds=3,
                                        node_params={"decide": {"accept_threshold": 0.5}})
                 import asyncio
-                result = asyncio.get_event_loop().run_until_complete(node.run(ctx))
+                result = asyncio.run(node.run(ctx))
                 # User set threshold=0.5. Score 0.65 >= 0.5 → accept (evolution ignored)
                 assert result["decision"] == "accept"
             finally:
@@ -205,7 +205,7 @@ class TestDecideNodeEvolution:
                 ctx = _make_decide_ctx(tradition="t1", weighted_total=0.30, scores={"L1": 0.3},
                                        round_num=1, max_rounds=3, eval_mode="reference")
                 import asyncio
-                result = asyncio.get_event_loop().run_until_complete(node.run(ctx))
+                result = asyncio.run(node.run(ctx))
                 assert result["decision"] == "accept"
             finally:
                 os.environ.pop("VULCA_EVOLVED_DATA_DIR", None)
@@ -372,7 +372,7 @@ class TestModeAwareThreshold:
                 ctx = _make_decide_ctx(tradition="t1", weighted_total=0.74, scores={"L1": 0.74},
                                        round_num=1, max_rounds=3)
                 import asyncio
-                result = asyncio.get_event_loop().run_until_complete(node.run(ctx))
+                result = asyncio.run(node.run(ctx))
                 # strict_ratio=0.9, mode_adj=0.05*(0.9-0.5)=+0.02
                 # evolution_adj=0.05, total=0.07, threshold=0.7+0.07=0.77
                 # capped at min(0.77, 0.85*0.95=0.8075) = 0.77
@@ -395,7 +395,7 @@ class TestModeAwareThreshold:
                 ctx = _make_decide_ctx(tradition="t1", weighted_total=0.71, scores={"L1": 0.71},
                                        round_num=1, max_rounds=3)
                 import asyncio
-                result = asyncio.get_event_loop().run_until_complete(node.run(ctx))
+                result = asyncio.run(node.run(ctx))
                 # < 5 sessions but hist_avg > 0.5 → simple adjustment
                 # adjusted = min(0.7 + 0.05, 0.95*0.95=0.9025) = 0.75
                 # 0.71 < 0.75 → rerun
