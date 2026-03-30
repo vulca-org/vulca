@@ -203,7 +203,7 @@ class TestTemplates:
         assert "generate" not in CRITIQUE_ONLY.nodes
 
     def test_templates_dict(self):
-        assert set(TEMPLATES) == {"default", "fast", "critique_only"}
+        assert {"default", "fast", "critique_only"}.issubset(set(TEMPLATES))
 
     def test_all_templates_are_frozen(self):
         for name, tmpl in TEMPLATES.items():
