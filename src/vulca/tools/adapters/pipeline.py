@@ -60,15 +60,23 @@ def tool_as_pipeline_node(tool_cls: Type[VulcaTool]) -> Type[PipelineNode]:
             # 1. Read image_b64 from ctx; base64-decode to bytes
             # ------------------------------------------------------------------
             image_b64: str = ctx.get("image_b64", "") or ""
+            image_mime: str = ctx.get("image_mime", "image/png") or "image/png"
+
             if image_b64:
                 try:
-                    image_bytes = base64.b64decode(image_b64)
+                    raw_bytes = base64.b64decode(image_b64)
+                    # SVG is not a raster image — tool pixel algorithms cannot
+                    # process it.  Convert to a small raster PNG placeholder.
+                    if "svg" in image_mime.lower() or _is_svg(raw_bytes):
+                        image_bytes = _svg_to_png(raw_bytes)
+                    else:
+                        image_bytes = raw_bytes
                 except Exception as exc:
                     logger.error(
                         "WrappedToolNode(%s): failed to decode image_b64: %s",
                         _tool_name, exc,
                     )
-                    image_bytes = b""
+                    image_bytes = _empty_png()
             else:
                 # No image yet — produce empty 1x1 white PNG as fallback
                 image_bytes = _empty_png()
@@ -156,6 +164,40 @@ def _empty_png() -> bytes:
     from PIL import Image
 
     img = Image.new("RGB", (1, 1), (255, 255, 255))
+    buf = io.BytesIO()
+    img.save(buf, format="PNG", optimize=False, compress_level=1)
+    return buf.getvalue()
+
+
+def _is_svg(data: bytes) -> bool:
+    """Return True if *data* looks like SVG markup."""
+    try:
+        head = data[:200].lstrip()
+        return head.startswith(b"<svg") or b"<svg" in head[:100]
+    except Exception:
+        return False
+
+
+def _svg_to_png(svg_bytes: bytes) -> bytes:
+    """Convert SVG bytes to a small 64×64 raster PNG for tool processing.
+
+    Falls back to a solid-colour placeholder if conversion fails.
+    """
+    import io
+    from PIL import Image
+
+    # Try cairosvg first (optional dep); fall back to placeholder
+    try:
+        import cairosvg  # type: ignore[import]
+        png_bytes: bytes = cairosvg.svg2png(
+            bytestring=svg_bytes, output_width=64, output_height=64
+        )
+        return png_bytes
+    except Exception:
+        pass
+
+    # Fallback: return a 64×64 mid-grey PNG
+    img = Image.new("RGB", (64, 64), (128, 128, 128))
     buf = io.BytesIO()
     img.save(buf, format="PNG", optimize=False, compress_level=1)
     return buf.getvalue()

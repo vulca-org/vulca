@@ -37,7 +37,13 @@ _COST_PER_IMAGE: dict[str, float] = {
 def _resolve_nodes(
     definition: PipelineDefinition,
 ) -> dict[str, PipelineNode]:
-    """Instantiate built-in nodes from a pipeline definition."""
+    """Instantiate built-in nodes from a pipeline definition.
+
+    Falls back to ToolRegistry when a node name is not found in builtins.
+    This enables hybrid pipelines that mix built-in nodes (generate, evaluate,
+    decide) with algorithmic tool nodes (whitespace_analyze, color_gamut_check,
+    composition_analyze, etc.).
+    """
     from vulca.pipeline.nodes import DecideNode, EvaluateNode, GenerateNode
 
     _BUILTINS: dict[str, type[PipelineNode]] = {
@@ -53,20 +59,39 @@ def _resolve_nodes(
         "scout": "generate",
     }
 
+    # Lazy-initialised ToolRegistry (only created when a non-builtin node is seen)
+    _tool_registry = None
+
     nodes: dict[str, PipelineNode] = {}
     for node_name in definition.nodes:
         canonical = _ALIASES.get(node_name, node_name)
         cls = _BUILTINS.get(canonical)
-        if cls is None:
-            raise ValueError(
-                f"Unknown node {node_name!r} (canonical: {canonical!r}). "
-                f"Available: {list(_BUILTINS)}"
-            )
-        specs = definition.node_specs.get(node_name, {})
-        if specs and canonical == "decide":
-            nodes[node_name] = cls(**specs)
+        if cls is not None:
+            specs = definition.node_specs.get(node_name, {})
+            if specs and canonical == "decide":
+                nodes[node_name] = cls(**specs)
+            else:
+                nodes[node_name] = cls()
         else:
-            nodes[node_name] = cls()
+            # NEW: fall back to ToolRegistry for algorithmic tool nodes
+            if _tool_registry is None:
+                from vulca.tools.registry import ToolRegistry
+                from vulca.tools.adapters.pipeline import tool_as_pipeline_node
+                _tool_registry = ToolRegistry()
+                _tool_registry.discover()
+            try:
+                tool = _tool_registry.get(node_name)
+            except KeyError:
+                available_tools = sorted(
+                    t.name for t in _tool_registry.list_all()
+                )
+                raise ValueError(
+                    f"Unknown node {node_name!r} (canonical: {canonical!r}). "
+                    f"Available built-in nodes: {list(_BUILTINS)}. "
+                    f"Available tool nodes: {available_tools}"
+                ) from None
+            NodeCls = tool_as_pipeline_node(type(tool))
+            nodes[node_name] = NodeCls()
     return nodes
 
 
