@@ -3,9 +3,15 @@
 [![PyPI version](https://img.shields.io/pypi/v/vulca.svg)](https://pypi.org/project/vulca/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://pypi.org/project/vulca/)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-green.svg)](https://github.com/vulca-org/vulca/blob/main/LICENSE)
-[![Tests](https://img.shields.io/badge/tests-538%20passing-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-813%20passing-brightgreen.svg)]()
 
-**AI-native cultural art creation organism.** Selective Pipeline (Agent Residuals + Cultural Engram + Sparse Eval), Brief-driven Studio, L1-L5 evaluation with actionable suggestions, Digestion V2 learning system, and 13 cultural traditions.
+<p align="center">
+  <img src="assets/demo-v070.svg" alt="VULCA CLI Demo" width="800">
+</p>
+
+> [Watch on asciinema](https://asciinema.org/a/1TyfQZ93bYHoFytZ) if the animation doesn't play.
+
+**AI-native cultural art creation organism.** Multi-round img2img iteration, Layered Generation + Inpainting, two-phase VLM evaluation (OBSERVE+EVALUATE), Brief-driven Studio with sketch/reference upload, Selective Pipeline, Digestion V2 learning system, and 13 cultural traditions.
 
 ```bash
 pip install vulca
@@ -15,11 +21,15 @@ vulca studio "水墨山水，远山含烟，留白三成"
 
 > Based on peer-reviewed research: [VULCA Framework](https://aclanthology.org/2025.findings-emnlp/) (EMNLP 2025 Findings) and [VULCA-Bench](https://arxiv.org/abs/2601.07986) (7,410 samples, 9 traditions).
 
-## What's New in v0.7.0
+## What's New in v0.9.0
 
-**Selective Pipeline** — Agent Residuals selectively aggregate outputs; Cultural Engram injects tradition knowledge via REPLACE; Sparse Eval activates only relevant L1-L5 dimensions per Brief; Quantized Retrieval finds similar sessions without training.
+**Layered Generation + Inpainting** — VLM decomposes artwork into semantic layers (background, midground, foreground, detail); per-layer regeneration with chromakey isolation; region-based inpainting with PIL local blend; PSD/PNG export with layer manifest.
 
-**Integrity Hardening** — Evolution now requires 3+ real human feedback entries before adjusting weights. Collapsed weights reset to YAML defaults. Mock returns replaced with proper errors in production paths.
+**Multi-round img2img** (v0.8.0) — Selected concept from Round N becomes reference for Round N+1; variation strength auto-inferred from NL keywords; auto-stop when score ≥ 85% or convergence detected.
+
+**Two-phase VLM** (v0.8.0) — OBSERVE (visual analysis) → EVALUATE (scoring) replaces single-pass; per-dimension observations, reference techniques, and enhanced suggestions.
+
+**Sketch & Reference Upload** (v0.8.0) — CLI `--sketch`, `--reference`, `--ref-type` (style/composition/full); SDK and MCP parity.
 
 ## Quick Start
 
@@ -149,9 +159,10 @@ vulca/
 │   └── archiver.py   # Cold storage for long-term retention
 ├── pipeline/         # Execution engine + built-in nodes
 ├── providers/        # Pluggable ImageProvider + VLMProvider protocols
-├── cultural/         # 13 YAML tradition configs with L1-L5 weights
-├── cli.py            # CLI entry point
-└── mcp_server.py     # MCP server (6 tools, FastMCP)
+├── layers/           # VLM layer analysis, chromakey, composite, PSD export
+├── cultural/         # 14 YAML tradition configs with L1-L5 weights
+├── cli.py            # 9 CLI commands (argparse)
+└── mcp_server.py     # MCP server (18 tools, FastMCP)
 ```
 
 ## BYOK (Bring Your Own Key / Model)
@@ -183,8 +194,20 @@ claude plugin install vulca
 | `evaluate_artwork` | Evaluate on L1-L5 with rationale + deviation analysis |
 | `studio_create_brief` | Start a Brief-driven Studio session |
 | `studio_update_brief` | Update Brief with natural language |
+| `studio_generate_concepts` | Generate concept variations |
+| `studio_select_concept` | Select + refine concept |
+| `studio_accept` | Finalize session + digest |
+| `inpaint_artwork` | Region-based inpainting |
+| `analyze_layers` | Decompose artwork into semantic layers |
+| `layers_composite` | Composite layers back into artwork |
+| `layers_export` | Export layers to PSD/PNG |
+| `layers_evaluate` | Evaluate layer quality |
 | `list_traditions` | List 13 traditions with weights |
 | `get_tradition_guide` | Full cultural context: terminology, taboos |
+| `resume_artwork` | Resume HITL paused sessions |
+| `get_evolution_status` | Check weight evolution |
+| `sync_data` | Push sessions to cloud, pull evolved context |
+| `layers_regenerate` | Regenerate a specific layer |
 
 ## Custom Traditions
 
@@ -197,7 +220,7 @@ vulca evaluate game.png -t ./pixel_art_retro.yaml
 
 ```bash
 pip install vulca[dev]
-pytest tests/ -v  # 538 tests, 0 failures
+pytest tests/ -v  # 813 tests, 0 failures
 ```
 
 ## Citation

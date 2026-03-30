@@ -1,5 +1,35 @@
 # Changelog
 
+## [0.9.0] - 2026-03-29
+
+### Layered Generation
+- **VLM layer analysis**: Decompose artwork into semantic layers (background, midground, foreground, detail)
+- **Per-layer generation**: Chromakey isolation + independent regeneration per layer
+- **Layer composite**: Reassemble layers with bbox offset paste
+- **PSD/PNG export**: Export with layer manifest (manifest.json with bbox + bg_color metadata)
+- **CLI**: `vulca layers analyze`, `vulca layers export`, `vulca layers composite`
+- **MCP**: `analyze_layers`, `layers_composite`, `layers_export`, `layers_evaluate`, `layers_regenerate`
+
+### Inpainting
+- **Region-based inpainting**: PIL local blend replaces full regeneration — pixels outside bbox guaranteed unchanged
+- **VLM-guided**: Tradition-aware repaint prompts with cultural terminology injection
+- **CLI**: `vulca inpaint` command
+- **MCP**: `inpaint_artwork` tool
+- **SDK**: `vulca.inpaint()` public API
+
+### Hex Color Input
+- Palette accepts `#hex` values with strict prompt injection into generation
+
+### ComfyUI Parity
+- 11 nodes (up from 8): added Evolution, Traditions, LayersExport nodes
+- 18 tests pass
+
+### MCP Parity
+- 18 tools (up from 13): added `sync_data`, `layers_*`, `layers_regenerate`
+
+### Testing
+- 813 tests (up from 603), strict TDD red-green discipline
+
 ## [0.8.0] - 2026-03-29
 
 ### Multi-round img2img Iteration (P0-A)
