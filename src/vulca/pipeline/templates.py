@@ -40,8 +40,39 @@ CRITIQUE_ONLY = PipelineDefinition(
     node_specs={"decide": {"accept_threshold": 0.0}},
 )
 
+CULTURAL_XIEYI = PipelineDefinition(
+    name="cultural_xieyi",
+    display_name="Cultural Xieyi Pipeline",
+    description=(
+        "Hybrid pipeline for Chinese Xieyi ink-wash art: "
+        "Generate → WhitespaceAnalyze → ColorGamutCheck → CompositionAnalyze "
+        "→ Evaluate (algo-augmented) → Decide. "
+        "Algorithmic tools cover L1 (whitespace), L3 (gamut), L3 (composition) "
+        "before VLM evaluation, replacing Gemini calls for covered dimensions."
+    ),
+    entry_point="generate",
+    nodes=(
+        "generate",
+        "whitespace_analyze",
+        "color_gamut_check",
+        "composition_analyze",
+        "evaluate",
+        "decide",
+    ),
+    edges=(
+        ("generate", "whitespace_analyze"),
+        ("whitespace_analyze", "color_gamut_check"),
+        ("color_gamut_check", "composition_analyze"),
+        ("composition_analyze", "evaluate"),
+        ("evaluate", "decide"),
+    ),
+    enable_loop=False,
+    node_specs={"decide": {"accept_threshold": 0.0}},
+)
+
 TEMPLATES: dict[str, PipelineDefinition] = {
     "default": DEFAULT,
     "fast": FAST,
     "critique_only": CRITIQUE_ONLY,
+    "cultural_xieyi": CULTURAL_XIEYI,
 }
