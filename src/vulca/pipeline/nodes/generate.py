@@ -298,29 +298,27 @@ class GenerateNode(PipelineNode):
         try:
             from vulca.cultural.loader import get_tradition
             tc = get_tradition(tradition)
-            if tc is None:
-                return ""
+            if tc is not None:
+                if tc.terminology:
+                    terms = "\n".join(
+                        f"  - Apply {t.term} ({t.term_zh}): "
+                        f"{t.definition if isinstance(t.definition, str) else t.definition.get('en', '')}"
+                        for t in tc.terminology[:6]
+                    )
+                    parts.append(f"Cultural techniques to incorporate:\n{terms}")
 
-            if tc.terminology:
-                terms = "\n".join(
-                    f"  - Apply {t.term} ({t.term_zh}): "
-                    f"{t.definition if isinstance(t.definition, str) else t.definition.get('en', '')}"
-                    for t in tc.terminology[:6]
-                )
-                parts.append(f"Cultural techniques to incorporate:\n{terms}")
-
-            if tc.taboos:
-                taboos = "\n".join(
-                    f"  - AVOID: {t.rule}"
-                    + (f" ({t.explanation})" if t.explanation else "")
-                    for t in tc.taboos
-                )
-                parts.append(f"Cultural constraints (must respect):\n{taboos}")
+                if tc.taboos:
+                    taboos = "\n".join(
+                        f"  - AVOID: {t.rule}"
+                        + (f" ({t.explanation})" if t.explanation else "")
+                        for t in tc.taboos
+                    )
+                    parts.append(f"Cultural constraints (must respect):\n{taboos}")
 
         except Exception:
             logger.debug("Cultural guidance not available for %s", tradition)
 
-        # Inject evolution hint (weak dimensions for this tradition)
+        # Inject evolution context (simple hint or rich trend, based on data volume)
         try:
             import os
             from vulca.digestion.local_evolver import LocalEvolver
@@ -328,18 +326,42 @@ class GenerateNode(PipelineNode):
             evolver = LocalEvolver(data_dir=data_dir) if data_dir else LocalEvolver()
             evolved = evolver.load_evolved(tradition)
             if evolved and evolved.get("weak_dimensions"):
+                session_count = evolved.get("session_count", 0)
                 dim_labels = {
                     "L1": "Visual Perception", "L2": "Technical Execution",
                     "L3": "Cultural Context", "L4": "Critical Interpretation",
                     "L5": "Philosophical Aesthetics",
                 }
-                weak_text = ", ".join(
-                    f"{d} ({dim_labels.get(d, d)})" for d in evolved["weak_dimensions"]
-                )
-                parts.append(
-                    f"Evolution hint: historically weaker dimensions for {tradition}: "
-                    f"{weak_text}. Give extra attention to these areas in your generation."
-                )
+
+                if session_count >= 5 and evolved.get("strict_weak"):
+                    # Rich trend context (iteration 4)
+                    core_dims = evolved.get("strict_weak", evolved["weak_dimensions"])
+                    innovation = evolved.get("innovation_signals", []) + evolved.get("reference_trends", [])
+                    innovation = list(dict.fromkeys(innovation))  # dedupe preserving order
+                    # Stable = not in core or innovation
+                    all_dims = ["L1", "L2", "L3", "L4", "L5"]
+                    stable = [d for d in all_dims if d not in core_dims and d not in innovation]
+
+                    lines = [f"Evolution context for {tradition} (based on {session_count} sessions):"]
+                    if core_dims:
+                        core_text = ", ".join(f"{d} ({dim_labels.get(d, d)})" for d in core_dims)
+                        lines.append(f"- Strengthen: {core_text} — historically weaker in traditional use")
+                    if innovation:
+                        innov_text = ", ".join(f"{d} ({dim_labels.get(d, d)})" for d in innovation)
+                        lines.append(f"- Creative space: {innov_text} — often explored by experimental users")
+                    if stable:
+                        stable_text = ", ".join(f"{d} ({dim_labels.get(d, d)})" for d in stable)
+                        lines.append(f"- Maintain: {stable_text} — consistent across modes")
+                    parts.append("\n".join(lines))
+                else:
+                    # Simple hint (iteration 1 fallback for < 5 sessions)
+                    weak_text = ", ".join(
+                        f"{d} ({dim_labels.get(d, d)})" for d in evolved["weak_dimensions"]
+                    )
+                    parts.append(
+                        f"Evolution hint: historically weaker dimensions for {tradition}: "
+                        f"{weak_text}. Give extra attention to these areas in your generation."
+                    )
         except Exception:
             pass  # Evolution is advisory, never blocks generation
 

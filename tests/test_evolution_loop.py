@@ -307,3 +307,98 @@ class TestDeviationTypeFiltering:
             evolver = LocalEvolver(data_dir=td)
             result = evolver.evolve()
             assert len(result["traditions"]["t1"]["weak_dimensions"]) >= 1
+
+
+class TestFullTrendInjection:
+    """Iteration 4: rich trend context in GenerateNode prompt."""
+
+    def test_prompt_has_strengthen_and_creative(self):
+        from vulca.pipeline.nodes.generate import GenerateNode
+        with tempfile.TemporaryDirectory() as td:
+            evolved = {"traditions": {"t1": {
+                "weak_dimensions": ["L2"],
+                "strict_weak": ["L2"],
+                "reference_trends": ["L3", "L5"],
+                "innovation_signals": ["L1"],
+                "overall_avg": 0.82,
+                "session_count": 20,
+                "strict_count": 15,
+                "reference_count": 5,
+                "dimension_averages": {"L1": 0.80, "L2": 0.72, "L3": 0.88, "L4": 0.85, "L5": 0.83},
+            }}}
+            (Path(td) / "evolved_context.json").write_text(json.dumps(evolved))
+            import os
+            os.environ["VULCA_EVOLVED_DATA_DIR"] = td
+            try:
+                guidance = GenerateNode._build_generation_guidance("t1")
+                assert "Strengthen" in guidance
+                assert "Creative space" in guidance
+                assert "L2" in guidance  # in Strengthen
+                assert "L1" in guidance  # in Creative space (innovation_signal)
+            finally:
+                os.environ.pop("VULCA_EVOLVED_DATA_DIR", None)
+
+    def test_few_sessions_uses_simple_hint(self):
+        from vulca.pipeline.nodes.generate import GenerateNode
+        with tempfile.TemporaryDirectory() as td:
+            evolved = {"traditions": {"t1": {
+                "weak_dimensions": ["L1", "L2"], "session_count": 3, "overall_avg": 0.75,
+            }}}
+            (Path(td) / "evolved_context.json").write_text(json.dumps(evolved))
+            import os
+            os.environ["VULCA_EVOLVED_DATA_DIR"] = td
+            try:
+                guidance = GenerateNode._build_generation_guidance("t1")
+                assert "Evolution hint" in guidance
+                assert "Strengthen" not in guidance  # not enough data
+            finally:
+                os.environ.pop("VULCA_EVOLVED_DATA_DIR", None)
+
+
+class TestModeAwareThreshold:
+    """Iteration 4: DecideNode adjusts threshold by strict/reference ratio."""
+
+    def test_strict_heavy_raises_threshold(self):
+        from vulca.pipeline.nodes.decide import DecideNode
+        with tempfile.TemporaryDirectory() as td:
+            evolved = {"traditions": {"t1": {
+                "overall_avg": 0.85, "strict_count": 90, "reference_count": 10, "session_count": 100,
+            }}}
+            (Path(td) / "evolved_context.json").write_text(json.dumps(evolved))
+            import os
+            os.environ["VULCA_EVOLVED_DATA_DIR"] = td
+            try:
+                node = DecideNode(accept_threshold=0.7)
+                ctx = _make_decide_ctx(tradition="t1", weighted_total=0.74, scores={"L1": 0.74},
+                                       round_num=1, max_rounds=3)
+                import asyncio
+                result = asyncio.get_event_loop().run_until_complete(node.run(ctx))
+                # strict_ratio=0.9, mode_adj=0.05*(0.9-0.5)=+0.02
+                # evolution_adj=0.05, total=0.07, threshold=0.7+0.07=0.77
+                # capped at min(0.77, 0.85*0.95=0.8075) = 0.77
+                # 0.74 < 0.77 → rerun
+                assert result["decision"] == "rerun"
+            finally:
+                os.environ.pop("VULCA_EVOLVED_DATA_DIR", None)
+
+    def test_min_sessions_guard(self):
+        from vulca.pipeline.nodes.decide import DecideNode
+        with tempfile.TemporaryDirectory() as td:
+            evolved = {"traditions": {"t1": {
+                "overall_avg": 0.95, "strict_count": 2, "reference_count": 1, "session_count": 3,
+            }}}
+            (Path(td) / "evolved_context.json").write_text(json.dumps(evolved))
+            import os
+            os.environ["VULCA_EVOLVED_DATA_DIR"] = td
+            try:
+                node = DecideNode(accept_threshold=0.7)
+                ctx = _make_decide_ctx(tradition="t1", weighted_total=0.71, scores={"L1": 0.71},
+                                       round_num=1, max_rounds=3)
+                import asyncio
+                result = asyncio.get_event_loop().run_until_complete(node.run(ctx))
+                # < 5 sessions but hist_avg > 0.5 → simple adjustment
+                # adjusted = min(0.7 + 0.05, 0.95*0.95=0.9025) = 0.75
+                # 0.71 < 0.75 → rerun
+                assert result["decision"] == "rerun"
+            finally:
+                os.environ.pop("VULCA_EVOLVED_DATA_DIR", None)
