@@ -3,7 +3,7 @@
 [![PyPI version](https://img.shields.io/pypi/v/vulca.svg)](https://pypi.org/project/vulca/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://pypi.org/project/vulca/)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-green.svg)](https://github.com/vulca-org/vulca/blob/main/LICENSE)
-[![Tests](https://img.shields.io/badge/tests-813%20passing-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-877%20passing-brightgreen.svg)]()
 
 <p align="center">
   <img src="assets/demo-v070.svg" alt="VULCA CLI Demo" width="800">
@@ -237,3 +237,8 @@ pytest tests/ -v  # 813 tests, 0 failures
 ## License
 
 Apache 2.0
+
+
+---
+
+> **Source of truth**: This repository is synced from the [VULCA monorepo](https://github.com/yha9806/website) via `git subtree`. Development happens in the monorepo; this repo is the public distribution mirror. Issues and PRs are welcome here.
