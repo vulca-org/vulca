@@ -49,7 +49,6 @@ def test_import_subpackages():
     import vulca.cultural
     import vulca.intent
     import vulca.pipeline
-    import vulca.media
     import vulca.storage
 
 
