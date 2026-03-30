@@ -3,9 +3,9 @@
 [![PyPI version](https://img.shields.io/pypi/v/vulca.svg)](https://pypi.org/project/vulca/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://pypi.org/project/vulca/)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-green.svg)](https://github.com/vulca-org/vulca/blob/main/LICENSE)
-[![Tests](https://img.shields.io/badge/tests-875%20passing-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-877%20passing-brightgreen.svg)]()
 
-**AI-native cultural art creation organism.** Create, evaluate, and evolve artwork across 13 cultural traditions with L1-L5 scoring, self-evolving weights, and 5 algorithmic analysis tools — all from one `pip install`.
+**AI-native cultural art creation organism.** Create, evaluate, and evolve artwork across 13 cultural traditions with L1-L5 scoring, self-evolving weights, and 5 algorithmic analysis tools — 18 MCP tools, all from one `pip install`.
 
 <p align="center">
   <img src="assets/demo/hero-shanshui.jpg" alt="VULCA — Chinese Xieyi ink wash landscape, generated and scored 92%" width="600">
