@@ -139,6 +139,7 @@ async def execute(
     event_callback: Callable[[PipelineEvent], None] | None = None,
     on_complete: Callable[[PipelineOutput], Any] | None = None,
     interrupt_before: set[str] | None = None,
+    checkpoint: bool = True,
 ) -> PipelineOutput:
     """Execute a pipeline definition to completion.
 
@@ -169,6 +170,20 @@ async def execute(
     rounds: list[RoundSnapshot] = []
     node_instances = _resolve_nodes(definition)
     exec_order = _topo_order(definition)
+
+    # Checkpoint store
+    _checkpoint_store = None
+    if checkpoint:
+        from vulca.pipeline.checkpoint import CheckpointStore
+        _checkpoint_store = CheckpointStore()
+        _checkpoint_store.save_metadata(session_id, {
+            "pipeline_name": definition.name,
+            "subject": pipeline_input.subject,
+            "intent": pipeline_input.intent,
+            "tradition": pipeline_input.tradition,
+            "provider": pipeline_input.provider,
+            "max_rounds": pipeline_input.max_rounds,
+        })
 
     api_key = _resolve_api_key(pipeline_input)
 
@@ -361,6 +376,18 @@ async def execute(
                 latency_ms=round_ms,
             )
         )
+
+        # Persist round checkpoint
+        if _checkpoint_store is not None:
+            _checkpoint_store.save_round(session_id, round_num, {
+                "scores": dict(ctx.get("scores", {})),
+                "weighted_total": ctx.get("weighted_total", 0.0),
+                "candidate_id": ctx.get("candidate_id", ""),
+                "image_b64": ctx.get("image_b64", ""),
+                "tradition": ctx.tradition,
+                "eval_mode": ctx.get("eval_mode", "strict"),
+                "decision": decision,
+            })
 
         _emit(
             PipelineEvent(

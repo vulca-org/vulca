@@ -129,3 +129,73 @@ class TestCheckpointStore:
             store = CheckpointStore(data_dir=td)
             assert store.load_checkpoint("nonexistent") is None
             assert store.get_round("nonexistent", 1) is None
+
+
+import os
+
+class TestEngineCheckpointIntegration:
+    def test_pipeline_creates_checkpoint(self):
+        """Running a mock pipeline should produce checkpoint files."""
+        import asyncio
+        from vulca.pipeline import execute
+        from vulca.pipeline.types import PipelineInput, PipelineDefinition
+
+        with tempfile.TemporaryDirectory() as td:
+            os.environ["VULCA_DATA_DIR"] = td
+            try:
+                defn = PipelineDefinition(
+                    name="default",
+                    entry_point="generate",
+                    nodes=("generate", "evaluate", "decide"),
+                    edges=(("generate", "evaluate"), ("evaluate", "decide")),
+                    enable_loop=True,
+                    node_specs={"decide": {"accept_threshold": 0.0}},
+                )
+                pi = PipelineInput(subject="test", provider="mock", max_rounds=1)
+
+                loop = asyncio.new_event_loop()
+                result = loop.run_until_complete(execute(defn, pi))
+                loop.close()
+
+                cp_dir = Path(td) / "checkpoints" / result.session_id
+                assert cp_dir.exists(), f"Checkpoint dir not created: {cp_dir}"
+                assert (cp_dir / "metadata.json").exists()
+                assert (cp_dir / "rounds.jsonl").exists()
+
+                from vulca.pipeline.checkpoint import CheckpointStore
+                store = CheckpointStore(data_dir=str(Path(td) / "checkpoints"))
+                cp = store.load_checkpoint(result.session_id)
+                assert cp is not None
+                assert len(cp["rounds"]) == 1
+                assert cp["rounds"][0]["round_num"] == 1
+            finally:
+                os.environ.pop("VULCA_DATA_DIR", None)
+
+    def test_checkpoint_disabled(self):
+        """checkpoint=False should produce no checkpoint files."""
+        import asyncio
+        from vulca.pipeline import execute
+        from vulca.pipeline.types import PipelineInput, PipelineDefinition
+
+        with tempfile.TemporaryDirectory() as td:
+            os.environ["VULCA_DATA_DIR"] = td
+            try:
+                defn = PipelineDefinition(
+                    name="default",
+                    entry_point="generate",
+                    nodes=("generate", "evaluate", "decide"),
+                    edges=(("generate", "evaluate"), ("evaluate", "decide")),
+                    enable_loop=True,
+                    node_specs={"decide": {"accept_threshold": 0.0}},
+                )
+                pi = PipelineInput(subject="test", provider="mock", max_rounds=1)
+
+                loop = asyncio.new_event_loop()
+                result = loop.run_until_complete(execute(defn, pi, checkpoint=False))
+                loop.close()
+
+                cp_dir = Path(td) / "checkpoints"
+                if cp_dir.exists():
+                    assert len(list(cp_dir.iterdir())) == 0
+            finally:
+                os.environ.pop("VULCA_DATA_DIR", None)
