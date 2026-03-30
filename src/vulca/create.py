@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import os
+from typing import Any
 
 from vulca.types import CreateResult
 
@@ -26,6 +27,7 @@ async def acreate(
     sketch: str = "",
     reference: str = "",
     ref_type: str = "full",
+    colors: str = "",
 ) -> CreateResult:
     """Create artwork via local pipeline or remote API (async).
 
@@ -80,6 +82,7 @@ async def acreate(
             sketch=sketch,
             reference=reference,
             ref_type=ref_type,
+            colors=colors,
         )
     return await _create_remote(
         intent,
@@ -106,8 +109,10 @@ async def _create_local(
     sketch: str = "",
     reference: str = "",
     ref_type: str = "full",
+    colors: str = "",
 ) -> CreateResult:
     """Run the slim pipeline engine locally."""
+    from vulca._image import resolve_image_input
     from vulca.pipeline.engine import execute
     from vulca.pipeline.hooks import default_on_complete
     from vulca.pipeline.templates import DEFAULT
@@ -117,6 +122,18 @@ async def _create_local(
     node_params: dict[str, dict] = {}
     if weights:
         node_params["evaluate"] = {"custom_weights": weights}
+
+    # Inject reference/sketch/colors into generate node params
+    gen_params: dict[str, Any] = {}
+    if reference:
+        gen_params["reference_image_b64"] = resolve_image_input(reference)
+        gen_params["reference_type"] = ref_type
+    if sketch:
+        gen_params["sketch_b64"] = resolve_image_input(sketch)
+    if colors:
+        gen_params["color_palette"] = colors
+    if gen_params:
+        node_params["generate"] = {**node_params.get("generate", {}), **gen_params}
 
     pipeline_input = PipelineInput(
         subject=subject or intent,
@@ -141,14 +158,20 @@ async def _create_local(
         interrupt_before=interrupt_before,
     )
 
-    # Extract suggestions/deviation_types from events
+    # Extract suggestions/deviation_types/image_b64 from events
     suggestions: dict[str, str] = {}
     deviation_types: dict[str, str] = {}
+    best_image_b64: str = ""
     for event in output.events:
         if event.event_type.value == "stage_completed" and event.stage == "evaluate":
             suggestions = event.payload.get("suggestions", {})
             deviation_types = event.payload.get("deviation_types", {})
-            break
+        if event.event_type.value == "stage_completed" and event.stage in ("generate", "draft"):
+            candidates = event.payload.get("candidates", [])
+            if candidates:
+                best_image_b64 = candidates[-1].get("image_b64", "")
+            elif event.payload.get("image_b64"):
+                best_image_b64 = event.payload["image_b64"]
 
     return CreateResult(
         session_id=output.session_id,
@@ -160,6 +183,7 @@ async def _create_local(
         weighted_total=output.weighted_total,
         best_candidate_id=output.best_candidate_id,
         best_image_url=output.best_image_url,
+        best_image_b64=best_image_b64,
         total_rounds=output.total_rounds,
         rounds=[r.to_dict() for r in output.rounds],
         summary=output.summary,
@@ -245,6 +269,7 @@ def create(
     sketch: str = "",
     reference: str = "",
     ref_type: str = "full",
+    colors: str = "",
 ) -> CreateResult:
     """Create artwork (synchronous wrapper).
 
@@ -272,6 +297,7 @@ def create(
         sketch=sketch,
         reference=reference,
         ref_type=ref_type,
+        colors=colors,
     )
 
     if loop and loop.is_running():

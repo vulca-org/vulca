@@ -40,10 +40,15 @@ class DecideNode(PipelineNode):
         max_rounds = ctx.max_rounds
         eval_mode = ctx.get("eval_mode", "strict")
 
+        # Allow per-request threshold override via node_params
+        node_params = ctx.get("node_params") or {}
+        decide_params = node_params.get("decide") or {}
+        threshold = decide_params.get("accept_threshold", self.accept_threshold)
+
         # In reference mode, always accept — don't "correct" the artist
         if eval_mode == "reference":
             decision = "accept"
-        elif weighted_total >= self.accept_threshold:
+        elif weighted_total >= threshold:
             decision = "accept"
         elif round_num < max_rounds:
             decision = "rerun"

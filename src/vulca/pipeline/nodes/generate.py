@@ -101,10 +101,15 @@ class GenerateNode(PipelineNode):
 
         # Resolve reference image (top-level or node_params)
         ref_b64 = ctx.get("reference_image_b64") or ""
+        node_params = ctx.get("node_params") or {}
+        gen_params = node_params.get("generate") or {}
         if not ref_b64:
-            node_params = ctx.get("node_params") or {}
-            gen_params = node_params.get("generate") or {}
             ref_b64 = gen_params.get("reference_image_b64", "")
+
+        # Inject color palette into prompt if provided
+        color_palette = gen_params.get("color_palette", "")
+        if color_palette:
+            prompt = f"{prompt}\n\nColor palette: use these exact colors: {color_palette}"
 
         _progress = ctx.emit_progress or (lambda _msg: None)
 

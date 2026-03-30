@@ -147,6 +147,9 @@ class CreateResult:
     best_image_url: str = ""
     """URL of the best generated image."""
 
+    best_image_b64: str = ""
+    """Base64-encoded image data of the best candidate (if available)."""
+
     total_rounds: int = 0
     """Number of pipeline rounds completed."""
 

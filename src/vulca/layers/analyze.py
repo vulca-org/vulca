@@ -65,7 +65,7 @@ async def analyze_layers(image_path: str, *, api_key: str = "") -> list[LayerInf
                 {"type": "text", "text": "Identify the semantic layers of this artwork."},
             ]},
         ],
-        max_tokens=2048,
+        max_tokens=4096,
         temperature=0.1,
         api_key=api_key or os.environ.get("GOOGLE_API_KEY", ""),
         timeout=30,
@@ -82,23 +82,13 @@ async def analyze_layers(image_path: str, *, api_key: str = "") -> list[LayerInf
     try:
         raw = json.loads(text)
     except json.JSONDecodeError:
-        # Fallback: find outermost JSON object
+        # Fallback: extract JSON between first { and last }
         start = text.find("{")
-        if start == -1:
+        end = text.rfind("}")
+        if start == -1 or end == -1 or end <= start:
             raise ValueError(f"Could not parse layer analysis: {text[:200]}")
-        # Find matching closing brace by counting
-        depth = 0
-        end = start
-        for i in range(start, len(text)):
-            if text[i] == "{":
-                depth += 1
-            elif text[i] == "}":
-                depth -= 1
-                if depth == 0:
-                    end = i + 1
-                    break
         try:
-            raw = json.loads(text[start:end])
+            raw = json.loads(text[start:end + 1])
         except json.JSONDecodeError:
             raise ValueError(f"Could not parse layer analysis: {text[:200]}")
     return parse_layer_response(raw)
