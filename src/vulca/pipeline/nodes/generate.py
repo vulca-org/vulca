@@ -320,6 +320,29 @@ class GenerateNode(PipelineNode):
         except Exception:
             logger.debug("Cultural guidance not available for %s", tradition)
 
+        # Inject evolution hint (weak dimensions for this tradition)
+        try:
+            import os
+            from vulca.digestion.local_evolver import LocalEvolver
+            data_dir = os.environ.get("VULCA_EVOLVED_DATA_DIR", "")
+            evolver = LocalEvolver(data_dir=data_dir) if data_dir else LocalEvolver()
+            evolved = evolver.load_evolved(tradition)
+            if evolved and evolved.get("weak_dimensions"):
+                dim_labels = {
+                    "L1": "Visual Perception", "L2": "Technical Execution",
+                    "L3": "Cultural Context", "L4": "Critical Interpretation",
+                    "L5": "Philosophical Aesthetics",
+                }
+                weak_text = ", ".join(
+                    f"{d} ({dim_labels.get(d, d)})" for d in evolved["weak_dimensions"]
+                )
+                parts.append(
+                    f"Evolution hint: historically weaker dimensions for {tradition}: "
+                    f"{weak_text}. Give extra attention to these areas in your generation."
+                )
+        except Exception:
+            pass  # Evolution is advisory, never blocks generation
+
         return "\n\n".join(parts)
 
     # ------------------------------------------------------------------

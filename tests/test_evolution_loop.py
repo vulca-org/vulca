@@ -8,6 +8,24 @@ from pathlib import Path
 import pytest
 
 
+def _make_decide_ctx(*, tradition="default", weighted_total=0.8, scores=None,
+                     round_num=1, max_rounds=3, eval_mode="strict", node_params=None):
+    """Create a minimal mock NodeContext for DecideNode tests."""
+    from unittest.mock import MagicMock
+    ctx = MagicMock()
+    ctx.tradition = tradition
+    ctx.round_num = round_num
+    ctx.max_rounds = max_rounds
+    ctx.get = lambda key, default=None: {
+        "weighted_total": weighted_total,
+        "scores": scores or {},
+        "rationales": {},
+        "eval_mode": eval_mode,
+        "node_params": node_params or {},
+    }.get(key, default)
+    return ctx
+
+
 class TestLocalEvolverRelativeWeak:
     """Iteration 1: relative weak dimensions instead of absolute threshold."""
 
@@ -79,3 +97,42 @@ class TestLocalEvolverRelativeWeak:
             (Path(td) / "evolved_context.json").write_text("{corrupt")
             evolver = LocalEvolver(data_dir=td)
             assert evolver.load_evolved("t1") is None
+
+
+class TestGenerateNodeEvolution:
+    """Iteration 1: GenerateNode includes evolution hint in guidance."""
+
+    def test_guidance_includes_evolution_hint(self):
+        from vulca.pipeline.nodes.generate import GenerateNode
+        with tempfile.TemporaryDirectory() as td:
+            evolved = {"traditions": {"chinese_xieyi": {
+                "weak_dimensions": ["L1", "L2"], "overall_avg": 0.82
+            }}}
+            (Path(td) / "evolved_context.json").write_text(json.dumps(evolved))
+            import os
+            old = os.environ.get("VULCA_EVOLVED_DATA_DIR")
+            os.environ["VULCA_EVOLVED_DATA_DIR"] = td
+            try:
+                guidance = GenerateNode._build_generation_guidance("chinese_xieyi")
+                assert "Evolution hint" in guidance
+                assert "L1" in guidance
+                assert "L2" in guidance
+            finally:
+                if old is None:
+                    os.environ.pop("VULCA_EVOLVED_DATA_DIR", None)
+                else:
+                    os.environ["VULCA_EVOLVED_DATA_DIR"] = old
+
+    def test_guidance_without_evolution_still_works(self):
+        from vulca.pipeline.nodes.generate import GenerateNode
+        import os
+        old = os.environ.get("VULCA_EVOLVED_DATA_DIR")
+        os.environ["VULCA_EVOLVED_DATA_DIR"] = "/tmp/nonexistent_vulca_test_dir"
+        try:
+            guidance = GenerateNode._build_generation_guidance("chinese_xieyi")
+            assert "Evolution hint" not in guidance
+        finally:
+            if old is None:
+                os.environ.pop("VULCA_EVOLVED_DATA_DIR", None)
+            else:
+                os.environ["VULCA_EVOLVED_DATA_DIR"] = old
