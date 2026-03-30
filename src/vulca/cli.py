@@ -189,6 +189,20 @@ def main(argv: list[str] | None = None) -> None:
     layers_eval.add_argument("artwork_dir", help="Directory with layers")
     layers_eval.add_argument("--tradition", "-t", default="default")
 
+    # sessions command group
+    sessions_p = sub.add_parser("sessions", help="Session data analytics")
+    sessions_sub = sessions_p.add_subparsers(dest="sessions_command")
+
+    sessions_stats = sessions_sub.add_parser("stats", help="Show session statistics")
+    sessions_stats.add_argument("--tradition", "-t", default="", help="Filter by tradition")
+    sessions_stats.add_argument("--since", default="", help="Filter since date (YYYY-MM-DD)")
+    sessions_stats.add_argument("--format", "-f", default="text", choices=["text", "json"], help="Output format")
+
+    sessions_list = sessions_sub.add_parser("list", help="List sessions")
+    sessions_list.add_argument("--tradition", "-t", default="", help="Filter by tradition")
+    sessions_list.add_argument("--limit", "-n", type=int, default=20, help="Max sessions to show")
+    sessions_list.add_argument("--sort", default="date", choices=["score", "date"], help="Sort order")
+
     # tools command — delegates to CLI adapter
     tools_parser = sub.add_parser("tools", help="Run algorithmic analysis/processing tools")
     tools_parser.add_argument("tools_args", nargs=argparse.REMAINDER)
@@ -234,6 +248,11 @@ def main(argv: list[str] | None = None) -> None:
             layers_p.print_help()
             sys.exit(0)
         _cmd_layers(args)
+    elif args.command == "sessions":
+        if not args.sessions_command:
+            sessions_p.print_help()
+            sys.exit(0)
+        _cmd_sessions(args)
     elif args.command == "tools":
         from vulca.tools.adapters.cli import build_tools_parser, run_tools_command
         from vulca.tools.registry import ToolRegistry
@@ -1091,6 +1110,43 @@ def _cmd_layers(args: argparse.Namespace) -> None:
 
     else:
         print(f"Unknown layers command: {args.layers_command}", file=sys.stderr)
+        sys.exit(1)
+
+
+def _cmd_sessions(args: argparse.Namespace) -> None:
+    import json as _json
+    from vulca.storage.jsonl import JsonlSessionBackend
+    from vulca.stats import compute_session_stats, format_stats_text
+
+    store = JsonlSessionBackend()
+    sessions = store.get_all()
+
+    if args.sessions_command == "stats":
+        stats = compute_session_stats(sessions, tradition=args.tradition, since=args.since)
+        if args.format == "json":
+            print(_json.dumps(stats, indent=2, default=str))
+        else:
+            print(format_stats_text(stats))
+
+    elif args.sessions_command == "list":
+        filtered = sessions
+        if args.tradition:
+            filtered = [s for s in filtered if s.get("tradition") == args.tradition]
+        if args.sort == "score":
+            filtered.sort(key=lambda s: s.get("final_weighted_total", 0.0), reverse=True)
+        else:
+            filtered.sort(key=lambda s: s.get("created_at", 0), reverse=True)
+        filtered = filtered[:args.limit]
+        print(f"\n  Showing {len(filtered)} of {len(sessions)} sessions:\n")
+        for s in filtered:
+            sid = s.get("session_id", "?")[:12]
+            score = s.get("final_weighted_total", 0.0)
+            trad = s.get("tradition", "?")
+            mode = s.get("mode", "?")
+            print(f"    {sid}  {score:.2f}  {trad:25s}  {mode}")
+
+    else:
+        print(f"Unknown sessions command: {args.sessions_command}", file=sys.stderr)
         sys.exit(1)
 
 
