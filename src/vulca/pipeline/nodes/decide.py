@@ -54,10 +54,30 @@ class DecideNode(PipelineNode):
                 evolver = LocalEvolver(data_dir=data_dir) if data_dir else LocalEvolver()
                 evolved = evolver.load_evolved(ctx.tradition)
                 if evolved:
+                    session_count = evolved.get("session_count", 0)
                     hist_avg = evolved.get("overall_avg", 0.0)
-                    if hist_avg > 0.5:
+
+                    if session_count >= 5 and hist_avg > 0.5:
+                        # Base evolution adjustment
+                        evolution_adj = 0.05
+
+                        # Mode-aware adjustment (iteration 4)
+                        strict_count = evolved.get("strict_count", session_count)
+                        reference_count = evolved.get("reference_count", 0)
+                        total = max(strict_count + reference_count, 1)
+                        strict_ratio = strict_count / total
+                        mode_adj = 0.05 * (strict_ratio - 0.5)  # [-0.025, +0.025]
+
+                        # Total adjustment capped
+                        total_adj = max(-0.05, min(evolution_adj + mode_adj, 0.10))
+                        adjusted = min(threshold + total_adj, hist_avg * 0.95)
+                        # Only raise threshold, never lower it
+                        if adjusted > threshold:
+                            threshold = adjusted
+                    elif hist_avg > 0.5:
+                        # Few sessions: simple adjustment only, no mode awareness
                         adjusted = min(threshold + 0.05, hist_avg * 0.95)
-                        if adjusted > threshold:  # Only raise, never lower
+                        if adjusted > threshold:
                             threshold = adjusted
             except Exception:
                 pass  # Evolution is advisory

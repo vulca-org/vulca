@@ -174,11 +174,17 @@ class TestDecideNode:
 
     @pytest.mark.asyncio
     async def test_custom_threshold(self):
-        node = DecideNode(accept_threshold=0.3)
-        ctx = NodeContext(max_rounds=3, round_num=1)
-        ctx.set("weighted_total", 0.35)
-        result = await node.run(ctx)
-        assert result["decision"] == "accept"
+        import os, tempfile
+        with tempfile.TemporaryDirectory() as td:
+            os.environ["VULCA_EVOLVED_DATA_DIR"] = td  # isolate from real evolution data
+            try:
+                node = DecideNode(accept_threshold=0.3)
+                ctx = NodeContext(max_rounds=3, round_num=1)
+                ctx.set("weighted_total", 0.35)
+                result = await node.run(ctx)
+                assert result["decision"] == "accept"
+            finally:
+                os.environ.pop("VULCA_EVOLVED_DATA_DIR", None)
 
 
 # ── Templates ───────────────────────────────────────────────────────
