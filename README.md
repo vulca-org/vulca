@@ -3,13 +3,161 @@
 [![PyPI version](https://img.shields.io/pypi/v/vulca.svg)](https://pypi.org/project/vulca/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://pypi.org/project/vulca/)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-green.svg)](https://github.com/vulca-org/vulca/blob/main/LICENSE)
-[![Tests](https://img.shields.io/badge/tests-877%20passing-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-875%20passing-brightgreen.svg)]()
 
-Cultural AI art evaluation and creation SDK. Score artwork on 5 dimensions (L1-L5) across 13 cultural traditions. Self-evolving — the system learns from every session.
+**AI-native cultural art creation organism.** Create, evaluate, and evolve artwork across 13 cultural traditions with L1-L5 scoring, self-evolving weights, and 5 algorithmic analysis tools — all from one `pip install`.
 
 <p align="center">
-  <img src="assets/demo-v070.svg" alt="VULCA CLI Demo" width="800">
+  <img src="assets/demo/hero-shanshui.jpg" alt="VULCA — Chinese Xieyi ink wash landscape, generated and scored 92%" width="600">
 </p>
+
+```bash
+pip install vulca
+export GOOGLE_API_KEY=your-key
+vulca create "Misty mountains after rain, pine pavilion in clouds" -t chinese_xieyi
+# → Score: 0.915 | Tradition: chinese_xieyi | 1 round | 39s
+```
+
+> Based on peer-reviewed research: [VULCA Framework](https://aclanthology.org/2025.findings-emnlp/) (EMNLP 2025 Findings) and [VULCA-Bench](https://arxiv.org/abs/2601.07986) (7,410 samples, 9 traditions).
+
+---
+
+## Demo
+
+### Create — One Command, Multiple Styles
+
+<p align="center">
+  <img src="assets/demo/create-showcase.jpg" alt="Three artworks: ink landscape, tea packaging with brand colors, zen garden via style transfer" width="900">
+</p>
+
+```bash
+# Chinese ink wash landscape
+vulca create "Misty mountains after rain" -t chinese_xieyi
+
+# Brand design with color injection
+vulca create "Tea packaging, Eastern aesthetics" -t brand_design --colors "#C87F4A,#5F8A50,#B8923D"
+
+# Style transfer from reference image
+vulca create "Zen garden" --reference shanshui.png --ref-type style -t japanese_traditional
+```
+
+### Evaluate — Judge vs Advisor
+
+Two modes that serve different purposes:
+
+**Strict mode** (judge) — pass/fail with scores:
+```
+$ vulca evaluate artwork.png -t chinese_xieyi
+
+  Score:     93%    Tradition: chinese_xieyi    Risk: low
+
+    L1 Visual Perception         ██████████████████░░ 90%  ✓
+    L2 Technical Execution       ██████████████████░░ 90%  ✓
+    L3 Cultural Context          ███████████████████░ 95%  ✓
+    L4 Critical Interpretation   ████████████████████ 100%  ✓
+    L5 Philosophical Aesthetics  ██████████████████░░ 90%  ✓
+```
+
+**Reference mode** (advisor) — cultural guidance with professional terminology:
+```
+$ vulca evaluate artwork.png -t chinese_xieyi --mode reference
+
+  L2 Technical Execution  85%  (traditional)
+     To push further: practice more varied 'splashed ink' (泼墨) techniques
+     in the distant mountains for greater expressive freedom...
+
+  L3 Cultural Context  95%  (traditional)
+     To push further: incorporate a classical poem (题画诗) to enhance
+     the 'poetry-calligraphy-painting-seal' (诗书画印) integration...
+```
+
+### Fusion — Cross-Cultural Comparison
+
+Evaluate one artwork against multiple traditions simultaneously:
+
+```
+$ vulca evaluate artwork.png -t chinese_xieyi,japanese_traditional,western_academic --mode fusion
+
+  Dimension                   Chinese Xieyi  Japanese Trad  Western Academic
+  ------------------------- --------------- -------------- ----------------
+  Visual Perception                   90%            85%             40%
+  Technical Execution                 85%            90%             30%
+  Cultural Context                    95%            30%             10%
+  Critical Interpretation             95%            95%             90%
+  Philosophical Aesthetics            90%            70%             30%
+
+  Overall Alignment                    92%            73%             44%
+
+  Closest tradition: chinese_xieyi (92%)
+```
+
+### Style Transfer — Reference-Based Creation
+
+<p align="center">
+  <img src="assets/demo/style-transfer.jpg" alt="Chinese shanshui → Japanese zen garden via style transfer" width="700">
+</p>
+
+```bash
+vulca create "Zen garden at moonlight" \
+  --reference shanshui.png --ref-type style -t japanese_traditional
+# Chinese ink style preserved → Japanese zen composition
+```
+
+### Layers — Semantic Decomposition
+
+<p align="center">
+  <img src="assets/demo/layers-showcase.jpg" alt="Original artwork decomposed into semantic layers" width="900">
+</p>
+
+```bash
+vulca layers analyze artwork.png          # identify 6 semantic layers
+vulca layers split artwork.png -o ./out/  # extract as PNGs + manifest
+vulca layers composite ./out/             # reconstruct from layers
+vulca layers evaluate ./out/ -t chinese_xieyi  # per-layer L1-L5 scoring
+```
+
+### Tools — Algorithmic Analysis (No API Required)
+
+5 tools that run locally with zero API cost:
+
+```
+$ vulca tools run brushstroke_analyze --image artwork.png --tradition chinese_xieyi
+  Brushstroke energy (0.96) aligns with chinese_xieyi's expressive style.
+  Confidence: 0.90
+
+$ vulca tools run whitespace_analyze --image artwork.png --tradition chinese_xieyi
+  Whitespace (43.9%) is within the chinese_xieyi ideal range (30%-55%).
+  The top_heavy distribution aligns well with tradition expectations.
+  Confidence: 0.90
+
+$ vulca tools run composition_analyze --image artwork.png --tradition chinese_xieyi
+  Rule-of-thirds alignment (0.74), bottom_heavy asymmetry aligns with
+  chinese_xieyi's preference for asymmetric, dynamic arrangements.
+```
+
+### Studio — Brief-Driven Creative Session
+
+<p align="center">
+  <img src="assets/demo/concepts-grid.jpg" alt="4 concept variations generated from a cyberpunk ink wash brief" width="600">
+</p>
+
+```bash
+# Interactive multi-round session
+vulca studio "Cyberpunk ink wash, neon pavilions in misty mountains" -p gemini
+
+# Or step by step:
+vulca brief ./project -i "Cyberpunk shanshui" -m "epic-futuristic"
+vulca brief-update ./project "Add more negative space, reduce neon intensity"
+vulca concept ./project -n 4 -p gemini    # → 4 concept variations
+vulca concept ./project --select 1         # pick the best
+```
+
+```
+Studio session: R1 → 92% → NL update → R2 → 98% → Accept
+Score progression shows iterative improvement through human-AI collaboration.
+```
+
+---
 
 ## Where to Use
 
@@ -22,7 +170,7 @@ claude plugin install vulca-org/vulca-plugin
 
 Then just ask: *"Evaluate this painting for Chinese xieyi style"* — Claude calls VULCA automatically.
 
-18 MCP tools available: `evaluate_artwork`, `create_artwork`, `studio_create_brief`, `inpaint_artwork`, `analyze_layers`, and more.
+23 MCP tools available: `evaluate_artwork`, `create_artwork`, `studio_create_brief`, `analyze_layers`, 5 Tool Protocol tools (`tool_brushstroke_analyze`, `tool_whitespace_analyze`, etc.), and more.
 
 ### ComfyUI
 
