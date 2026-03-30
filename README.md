@@ -5,50 +5,47 @@
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-green.svg)](https://github.com/vulca-org/vulca/blob/main/LICENSE)
 [![Tests](https://img.shields.io/badge/tests-877%20passing-brightgreen.svg)]()
 
+Cultural AI art evaluation and creation SDK. Score artwork on 5 dimensions (L1-L5) across 13 cultural traditions. Self-evolving — the system learns from every session.
+
 <p align="center">
   <img src="assets/demo-v070.svg" alt="VULCA CLI Demo" width="800">
 </p>
 
-> [Watch on asciinema](https://asciinema.org/a/1TyfQZ93bYHoFytZ) if the animation doesn't play.
+## Where to Use
 
-**AI-native cultural art creation organism.** Multi-round img2img iteration, Layered Generation + Inpainting, two-phase VLM evaluation (OBSERVE+EVALUATE), Brief-driven Studio with sketch/reference upload, Selective Pipeline, Digestion V2 learning system, and 13 cultural traditions.
+### Claude Code / Cursor (MCP Plugin)
+
+```bash
+pip install vulca[mcp]
+claude plugin install vulca-org/vulca-plugin
+```
+
+Then just ask: *"Evaluate this painting for Chinese xieyi style"* — Claude calls VULCA automatically.
+
+18 MCP tools available: `evaluate_artwork`, `create_artwork`, `studio_create_brief`, `inpaint_artwork`, `analyze_layers`, and more.
+
+### ComfyUI
+
+```bash
+# In ComfyUI/custom_nodes/
+git clone https://github.com/vulca-org/comfyui-vulca
+pip install vulca>=0.9.1
+```
+
+11 nodes: Brief, Concept, Generate, Evaluate, Update, Inpaint, Layers Analyze/Composite/Export, Evolution, Traditions.
+
+### CLI
 
 ```bash
 pip install vulca
-export GOOGLE_API_KEY=your-key
-vulca studio "水墨山水，远山含烟，留白三成"
-```
 
-> Based on peer-reviewed research: [VULCA Framework](https://aclanthology.org/2025.findings-emnlp/) (EMNLP 2025 Findings) and [VULCA-Bench](https://arxiv.org/abs/2601.07986) (7,410 samples, 9 traditions).
-
-## What's New in v0.9.0
-
-**Layered Generation + Inpainting** — VLM decomposes artwork into semantic layers (background, midground, foreground, detail); per-layer regeneration with chromakey isolation; region-based inpainting with PIL local blend; PSD/PNG export with layer manifest.
-
-**Multi-round img2img** (v0.8.0) — Selected concept from Round N becomes reference for Round N+1; variation strength auto-inferred from NL keywords; auto-stop when score ≥ 85% or convergence detected.
-
-**Two-phase VLM** (v0.8.0) — OBSERVE (visual analysis) → EVALUATE (scoring) replaces single-pass; per-dimension observations, reference techniques, and enhanced suggestions.
-
-**Sketch & Reference Upload** (v0.8.0) — CLI `--sketch`, `--reference`, `--ref-type` (style/composition/full); SDK and MCP parity.
-
-## Quick Start
-
-### Studio Pipeline (Brief-driven creation)
-
-```bash
-# Interactive creative session
-vulca studio "赛博朋克水墨山水，霓虹灯光与传统笔触融合"
-
-# With real image generation
-vulca studio "misty mountain landscape" --provider gemini
-```
-
-The Studio walks you through 5 phases:
-
-```
-Intent → Concept → Generate → Evaluate → Refine
-  ↑                                        ↓
-  └──── Brief (living creative document) ←─┘
+vulca evaluate painting.jpg --tradition chinese_xieyi
+vulca create "Misty mountains in ink wash" --provider mock
+vulca studio                                    # interactive Brief-driven session
+vulca layers split artwork.png --output ./layers
+vulca inpaint artwork.png --region "sky" --instruction "add clouds"
+vulca sessions stats                            # analyze 800+ local sessions
+vulca resume <session-id>                       # resume from checkpoint
 ```
 
 ### Python SDK
@@ -56,178 +53,129 @@ Intent → Concept → Generate → Evaluate → Refine
 ```python
 import vulca
 
-# Evaluate any image
-result = vulca.evaluate("painting.jpg", tradition="chinese_xieyi")
-print(result.score)          # 0.72
-print(result.suggestions)    # {"L2": "Replace axe-cut texture with hemp-fiber strokes", ...}
+# Evaluate
+result = vulca.evaluate("artwork.png", tradition="chinese_xieyi")
+print(result.score, result.dimensions, result.suggestions)
 
-# Studio Pipeline V2
-from vulca.studio import Brief, StudioSession
-from vulca.studio.phases.intent import IntentPhase
+# Create
+result = vulca.create("Tea packaging with mountain landscape", provider="mock")
+print(result.best_image_b64[:50], result.weighted_total)
 
-brief = Brief.new("水墨山水，远山含烟，近水有桥")
-phase = IntentPhase()
-await phase.parse_intent_llm(brief)  # LLM extracts elements, palette, composition
-print(brief.elements)  # [Element(name='远山'), Element(name='烟雾'), Element(name='桥')]
-
-# Digestion V2 — learning from sessions
-from vulca.digestion import (
-    JsonlStudioStorage, SessionPreferences,
-    preload_intelligence, build_session_digest,
-)
-
-# Pre-load intelligence from past sessions
-ctx = preload_intelligence("水墨山水", data_dir="~/.vulca/data")
-print(ctx["suggested_traditions"])  # ["chinese_xieyi"]
-
-# Accumulate preferences during session
-prefs = SessionPreferences()
-prefs.update_from_signal({"action": "evaluate", "weakest": "L2", "strongest": "L5"})
-print(prefs.to_prompt_hints())  # ["Pay special attention to L2..."]
+# Studio (Brief-driven multi-round)
+session = vulca.StudioSession.from_intent("Zen garden at dawn")
+session.generate_concepts()
+session.select(0)
+session.accept()
 ```
 
-### CLI
+## Features
 
-```bash
-# Evaluate artwork
-vulca evaluate painting.jpg --tradition chinese_xieyi
+### Evaluation (L1-L5)
 
-# Reference mode (advisor, not judge)
-vulca evaluate painting.jpg -t chinese_xieyi --mode reference
+5-dimension cultural scoring based on peer-reviewed research:
 
-# Create through pipeline
-vulca create "仿倪瓒枯木竹石" --provider gemini -t chinese_xieyi
+| Dimension | What it measures |
+|-----------|-----------------|
+| **L1** Visual Perception | Composition, color harmony, spatial arrangement |
+| **L2** Technical Execution | Rendering quality, technique fidelity, craftsmanship |
+| **L3** Cultural Context | Tradition-specific motifs, canonical conventions |
+| **L4** Critical Interpretation | Cultural sensitivity, contextual framing |
+| **L5** Philosophical Aesthetics | Artistic depth, emotional resonance, spiritual qualities |
 
-# List traditions
-vulca traditions
+Each dimension returns: score (0-1), observations, rationale, actionable suggestion, reference technique, deviation type.
 
-# HITL mode with custom weights
-vulca create "水墨山水" --hitl --weights "L1=0.3,L2=0.2,L3=0.2,L4=0.15,L5=0.15"
+### Three Evaluation Modes
 
-# No API key needed for testing
-vulca evaluate painting.jpg --mock
-vulca studio "test artwork" --provider mock
-```
+- **strict** (default): Judge — scores reflect tradition conformance
+- **reference**: Advisor — shows cultural alignment without judgment
+- **fusion**: Compare against multiple traditions simultaneously
 
-## L1-L5 Evaluation Framework
-
-Five layers of evaluation, reinterpreted per domain:
-
-| Layer | What it measures | Traditional Art | UI/UX Design |
-|-------|-----------------|----------------|--------------|
-| **L1** | Surface Perception | Composition, ink harmony | Visual discoverability |
-| **L2** | Technical Execution | Brushwork, medium mastery | Pattern compliance, WCAG |
-| **L3** | Contextual Fit | Cultural tradition adherence | User mental model match |
-| **L4** | Critical Reading | Narrative depth, symbolism | Intent-behavior alignment |
-| **L5** | Deeper Meaning | Philosophical aesthetics | Design ethics |
-
-<details>
-<summary><strong>Domain Weights (click to expand)</strong></summary>
-
-| Domain | Emphasis | L1 | L2 | L3 | L4 | L5 |
-|--------|----------|----|----|----|----|-----|
-| Chinese Xieyi | Philosophical | .10 | .15 | .25 | .20 | **.30** |
-| Chinese Gongbi | Technical | .15 | **.30** | .25 | .15 | .15 |
-| Japanese Traditional | Philosophical | .15 | .20 | .20 | .20 | **.25** |
-| Islamic Geometric | Technical | .25 | **.30** | .20 | .15 | .10 |
-| Western Academic | Technical | .20 | **.25** | .15 | .25 | .15 |
-| African Traditional | Cultural | .15 | .20 | **.30** | .20 | .15 |
-| South Asian | Cultural | .15 | .20 | **.25** | .15 | .25 |
-| Watercolor | Balanced | .20 | **.25** | .15 | .20 | .20 |
-| Contemporary Art | Art-Historical | .10 | .15 | **.30** | .25 | .20 |
-| Photography | Balanced | **.25** | .25 | .20 | .20 | .10 |
-| Brand Design | Technical | .25 | **.30** | .25 | .15 | .05 |
-| UI/UX Design | Technical | .20 | **.30** | .25 | .20 | .05 |
-
-</details>
-
-## Architecture
+### Creation Pipeline
 
 ```
-vulca/
-├── studio/           # Brief-driven creative collaboration
-│   ├── phases/       # Intent (LLM+keyword), Scout, Concept, Generate, Evaluate
-│   ��── brief.py      # Living YAML document
-│   ├── nl_update.py  # NL instruction parsing (LLM + keyword fallback)
-│   └── interactive.py # Terminal UI with preloader + sketch + weight adjustment
-├── digestion/        # 4-layer learning system
-│   ��── preloader.py  # Layer 0: pre-session intelligence
-│   ├── preferences.py # Layer 1: real-time preference accumulation
-│   ├── trajectory.py # Layer 2: session completion analysis
-│   ├── evolver.py    # Layer 3: cross-session evolution
-│   ├── storage.py    # JSONL backend (Supabase-ready)
-│   └── archiver.py   # Cold storage for long-term retention
-├── pipeline/         # Execution engine + built-in nodes
-├── providers/        # Pluggable ImageProvider + VLMProvider protocols
-├── layers/           # VLM layer analysis, chromakey, composite, PSD export
-├── cultural/         # 14 YAML tradition configs with L1-L5 weights
-├── cli.py            # 9 CLI commands (argparse)
-└── mcp_server.py     # MCP server (18 tools, FastMCP)
+Generate → Evaluate → Decide → (loop if below threshold)
 ```
 
-## BYOK (Bring Your Own Key / Model)
+Multi-round with automatic improvement: each round targets the weakest dimensions from the previous evaluation. HITL (Human-in-the-Loop) pause supported.
 
-```bash
-# Gemini (evaluation + image generation)
-export GOOGLE_API_KEY=your-key
+### Studio (Brief-Driven)
 
-# OpenAI DALL-E 3 (image generation)
-export OPENAI_API_KEY=your-key
-
-# ComfyUI / local Stable Diffusion
-vulca create "Oil painting" --provider comfyui --image-base-url http://localhost:8188
-
-# No API key — mock mode
-vulca evaluate painting.jpg --mock
+```
+Intent → Brief → Concepts → Select → Generate → Evaluate → Refine
 ```
 
-## Claude Code Plugin
+Natural language throughout: *"Make the teapot larger"*, *"Add more warmth to the color palette"*.
 
-```bash
-claude plugin marketplace add vulca-org/vulca-plugin
-claude plugin install vulca
-```
+### Layers
 
-| Tool | Description |
+Split artwork into semantic layers (Photoshop-style minimal crop + bbox offset), composite back, export as PNG directory with manifest.
+
+### Inpainting
+
+Region-based repaint with pixel-level guarantee: pixels outside the bounding box are 100% preserved (PIL local blend, not full-image regeneration).
+
+### Tool Protocol (v0.9.1)
+
+5 algorithmic analysis tools that run without API calls:
+
+| Tool | What it does |
 |------|-------------|
-| `create_artwork` | Create through pipeline with L1-L5 scores + suggestions |
-| `evaluate_artwork` | Evaluate on L1-L5 with rationale + deviation analysis |
-| `studio_create_brief` | Start a Brief-driven Studio session |
-| `studio_update_brief` | Update Brief with natural language |
-| `studio_generate_concepts` | Generate concept variations |
-| `studio_select_concept` | Select + refine concept |
-| `studio_accept` | Finalize session + digest |
-| `inpaint_artwork` | Region-based inpainting |
-| `analyze_layers` | Decompose artwork into semantic layers |
-| `layers_composite` | Composite layers back into artwork |
-| `layers_export` | Export layers to PSD/PNG |
-| `layers_evaluate` | Evaluate layer quality |
-| `list_traditions` | List 13 traditions with weights |
-| `get_tradition_guide` | Full cultural context: terminology, taboos |
-| `resume_artwork` | Resume HITL paused sessions |
-| `get_evolution_status` | Check weight evolution |
-| `sync_data` | Push sessions to cloud, pull evolved context |
-| `layers_regenerate` | Regenerate a specific layer |
+| `whitespace_analyze` | Detect negative space patterns |
+| `composition_analyze` | Rule of thirds, center weight, balance |
+| `color_gamut_check` | Saturation profiling + fix mode |
+| `brushstroke_analyze` | Sobel gradient direction detection |
+| `color_correct` | Color correction with check/fix/suggest |
 
-## Custom Traditions
+Hybrid pipeline: algorithmic tools run first, VLM evaluation covers remaining dimensions.
+
+### Self-Evolution (Closed Loop)
+
+The system learns from every session:
+
+1. Pipeline scores feed into `LocalEvolver` → evolved weights
+2. **GenerateNode** reads evolved weights → strengthens historically weak dimensions
+3. **EvaluateNode** reads evolved weights → calibrated scoring
+4. **DecideNode** reads evolved threshold → adaptive accept/rerun decisions
+5. `eval_mode` aware: strict sessions strengthen tradition; reference sessions track exploration trends
+6. `deviation_type` filtering: intentional departures are not treated as weaknesses
+
+### Pipeline Checkpoint
+
+Every round auto-saved to `~/.vulca/data/checkpoints/`. Resume from any round:
 
 ```bash
-vulca tradition --init pixel_art_retro > pixel_art_retro.yaml
-vulca evaluate game.png -t ./pixel_art_retro.yaml
+vulca resume <session-id> --from-round 2
 ```
 
-## Tests
+## 13 Cultural Traditions
+
+`chinese_xieyi` `chinese_gongbi` `japanese_traditional` `western_academic` `islamic_geometric` `watercolor` `african_traditional` `south_asian` `contemporary_art` `photography` `brand_design` `ui_ux_design` + `default`
+
+Custom traditions via YAML:
 
 ```bash
-pip install vulca[dev]
-pytest tests/ -v  # 813 tests, 0 failures
+vulca tradition --init my_style.yaml   # generate template
+vulca evaluate painting.jpg --tradition ./my_style.yaml
+```
+
+## Install
+
+```bash
+pip install vulca           # core SDK + CLI
+pip install vulca[mcp]      # + MCP server for Claude Code / Cursor
+```
+
+No API key required for mock mode. For real VLM scoring:
+
+```bash
+export GOOGLE_API_KEY=your-key
 ```
 
 ## Citation
 
 ```bibtex
 @inproceedings{yu2025vulca,
-  title={VULCA: A Framework for Cultural Art Evaluation},
+  title={VULCA: A Framework for Culturally-Aware Visual Understanding},
   author={Yu, Haorui},
   booktitle={Findings of EMNLP 2025},
   year={2025}
@@ -237,7 +185,6 @@ pytest tests/ -v  # 813 tests, 0 failures
 ## License
 
 Apache 2.0
-
 
 ---
 
