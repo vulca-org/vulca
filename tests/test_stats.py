@@ -6,16 +6,16 @@ from vulca.stats import compute_session_stats
 
 SAMPLE_SESSIONS = [
     {"session_id": "s1", "mode": "create", "tradition": "chinese_xieyi",
-     "final_weighted_total": 0.82, "status": "completed", "total_rounds": 3,
+     "weighted_total": 0.82, "status": "completed", "total_rounds": 3,
      "created_at": 1711756800},
     {"session_id": "s2", "mode": "create", "tradition": "chinese_xieyi",
-     "final_weighted_total": 0.75, "status": "completed", "total_rounds": 2,
+     "weighted_total": 0.75, "status": "completed", "total_rounds": 2,
      "created_at": 1711760400},
     {"session_id": "s3", "mode": "evaluate", "tradition": "brand_design",
-     "final_weighted_total": 0.90, "status": "completed", "total_rounds": 1,
+     "weighted_total": 0.90, "status": "completed", "total_rounds": 1,
      "created_at": 1711764000},
     {"session_id": "s4", "mode": "create", "tradition": "brand_design",
-     "final_weighted_total": 0.41, "status": "failed", "total_rounds": 0,
+     "weighted_total": 0.41, "status": "failed", "total_rounds": 0,
      "created_at": 1711767600},
 ]
 

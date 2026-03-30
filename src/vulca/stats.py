@@ -31,7 +31,7 @@ def compute_session_stats(
     trad_groups: dict[str, list[float]] = {}
     for s in filtered:
         t = s.get("tradition", "unknown")
-        score = s.get("final_weighted_total", 0.0)
+        score = s.get("weighted_total", 0.0)
         trad_groups.setdefault(t, []).append(score)
 
     by_tradition = sorted(
@@ -42,12 +42,12 @@ def compute_session_stats(
         key=lambda x: x["count"], reverse=True,
     )
 
-    all_scores = [s.get("final_weighted_total", 0.0) for s in filtered if s.get("final_weighted_total") is not None]
+    all_scores = [s.get("weighted_total", 0.0) for s in filtered if s.get("weighted_total") is not None]
     dist = _distribution(all_scores)
 
     low_scores = [
-        {"session_id": s.get("session_id", ""), "score": s.get("final_weighted_total", 0.0), "tradition": s.get("tradition", "")}
-        for s in filtered if (s.get("final_weighted_total") or 0.0) < 0.5
+        {"session_id": s.get("session_id", ""), "score": s.get("weighted_total", 0.0), "tradition": s.get("tradition", "")}
+        for s in filtered if (s.get("weighted_total") or 0.0) < 0.5
     ]
     failed = [
         {"session_id": s.get("session_id", ""), "status": s.get("status", ""), "tradition": s.get("tradition", "")}
@@ -58,10 +58,10 @@ def compute_session_stats(
         for s in filtered if s.get("total_rounds", -1) == 0
     ]
 
-    scored = [s for s in filtered if s.get("final_weighted_total") is not None]
-    scored_sorted = sorted(scored, key=lambda s: s.get("final_weighted_total", 0.0), reverse=True)
-    top = [{"session_id": s.get("session_id", ""), "score": s.get("final_weighted_total", 0.0), "tradition": s.get("tradition", "")} for s in scored_sorted[:5]]
-    bottom = [{"session_id": s.get("session_id", ""), "score": s.get("final_weighted_total", 0.0), "tradition": s.get("tradition", "")} for s in reversed(scored_sorted[-5:])] if scored_sorted else []
+    scored = [s for s in filtered if s.get("weighted_total") is not None]
+    scored_sorted = sorted(scored, key=lambda s: s.get("weighted_total", 0.0), reverse=True)
+    top = [{"session_id": s.get("session_id", ""), "score": s.get("weighted_total", 0.0), "tradition": s.get("tradition", "")} for s in scored_sorted[:5]]
+    bottom = [{"session_id": s.get("session_id", ""), "score": s.get("weighted_total", 0.0), "tradition": s.get("tradition", "")} for s in reversed(scored_sorted[-5:])] if scored_sorted else []
 
     return {
         "total": total, "by_mode": by_mode, "by_tradition": by_tradition,

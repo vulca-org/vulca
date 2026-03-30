@@ -105,6 +105,7 @@ def main(argv: list[str] | None = None) -> None:
     create_p.add_argument("--ref-type", default="full", choices=["style", "composition", "full"],
                           help="Reference type: style, composition, or full")
     create_p.add_argument("--colors", default="", help="Hex color palette (comma-separated, e.g. '#C87F4A,#5F8A50')")
+    create_p.add_argument("--output", "-o", default="", help="Save generated image to this path (default: ./vulca-<session>.png)")
 
     # traditions command
     sub.add_parser("traditions", aliases=["t"], help="List available cultural traditions")
@@ -535,9 +536,24 @@ def _cmd_create(args: argparse.Namespace) -> None:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
 
+    # Save image to file
+    import base64 as _b64
+    from pathlib import Path as _Path
+
+    image_path = ""
+    if result.best_image_b64:
+        out_path = args.output if args.output else f"vulca-{result.session_id}.png"
+        out_path = str(_Path(out_path).resolve())
+        _Path(out_path).parent.mkdir(parents=True, exist_ok=True)
+        _Path(out_path).write_bytes(_b64.b64decode(result.best_image_b64))
+        image_path = out_path
+
     if args.json:
         import dataclasses
-        print(json_mod.dumps(dataclasses.asdict(result), indent=2, ensure_ascii=False))
+        data = dataclasses.asdict(result)
+        if image_path:
+            data["image_path"] = image_path
+        print(json_mod.dumps(data, indent=2, ensure_ascii=False))
         return
 
     print(f"\n  VULCA Creation Result")
@@ -548,6 +564,8 @@ def _cmd_create(args: argparse.Namespace) -> None:
     print(f"  Rounds:    {result.total_rounds}")
     if result.best_candidate_id:
         print(f"  Best:      {result.best_candidate_id}")
+    if image_path:
+        print(f"  Image:     {image_path}")
     if result.summary:
         print(f"  Summary:   {result.summary}")
 
@@ -1141,14 +1159,14 @@ def _cmd_sessions(args: argparse.Namespace) -> None:
         if args.tradition:
             filtered = [s for s in filtered if s.get("tradition") == args.tradition]
         if args.sort == "score":
-            filtered.sort(key=lambda s: s.get("final_weighted_total", 0.0), reverse=True)
+            filtered.sort(key=lambda s: s.get("weighted_total", 0.0), reverse=True)
         else:
             filtered.sort(key=lambda s: s.get("created_at", 0), reverse=True)
         filtered = filtered[:args.limit]
         print(f"\n  Showing {len(filtered)} of {len(sessions)} sessions:\n")
         for s in filtered:
             sid = s.get("session_id", "?")[:12]
-            score = s.get("final_weighted_total", 0.0)
+            score = s.get("weighted_total", 0.0)
             trad = s.get("tradition", "?")
             mode = s.get("mode", "?")
             print(f"    {sid}  {score:.2f}  {trad:25s}  {mode}")
