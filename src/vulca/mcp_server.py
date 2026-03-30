@@ -13,6 +13,16 @@ from fastmcp import FastMCP
 
 mcp = FastMCP("VULCA", instructions="AI-native cultural art creation & evaluation")
 
+# Auto-register Tool Protocol tools (whitespace_analyze, color_correct, etc.)
+try:
+    from vulca.tools.registry import ToolRegistry
+    from vulca.tools.adapters.mcp import register_tools_on_mcp
+    _tool_registry = ToolRegistry()
+    _tool_registry.discover()
+    register_tools_on_mcp(mcp, _tool_registry)
+except ImportError:
+    pass
+
 # Module-level store for HITL sessions pending human action.
 # Maps session_id -> PipelineOutput (or similar dict)
 _pending_sessions: dict[str, object] = {}
