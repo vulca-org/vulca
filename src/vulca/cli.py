@@ -189,6 +189,10 @@ def main(argv: list[str] | None = None) -> None:
     layers_eval.add_argument("artwork_dir", help="Directory with layers")
     layers_eval.add_argument("--tradition", "-t", default="default")
 
+    # tools command — delegates to CLI adapter
+    tools_parser = sub.add_parser("tools", help="Run algorithmic analysis/processing tools")
+    tools_parser.add_argument("tools_args", nargs=argparse.REMAINDER)
+
     args = parser.parse_args(argv)
 
     if args.command in ("evaluate", "eval", "e"):
@@ -230,6 +234,15 @@ def main(argv: list[str] | None = None) -> None:
             layers_p.print_help()
             sys.exit(0)
         _cmd_layers(args)
+    elif args.command == "tools":
+        from vulca.tools.adapters.cli import build_tools_parser, run_tools_command
+        from vulca.tools.registry import ToolRegistry
+        reg = ToolRegistry()
+        reg.discover()
+        tools_p = build_tools_parser(reg)
+        tools_args = tools_p.parse_args(args.tools_args)
+        output = run_tools_command(tools_args, reg)
+        print(output)
     else:
         parser.print_help()
         sys.exit(1)
