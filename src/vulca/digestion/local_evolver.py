@@ -56,12 +56,19 @@ class LocalEvolver:
                         dim_counts[dim] += 1
 
             dim_avgs = {d: dim_totals[d] / dim_counts[d] for d in dim_totals if dim_counts[d] > 0}
-            weak_dims = [d for d, avg in dim_avgs.items() if avg < 0.5]
+            # Relative weak: bottom 2 dimensions by average (always produces output)
+            sorted_dims = sorted(dim_avgs.items(), key=lambda x: x[1])
+            weak_dims = [d for d, _ in sorted_dims[:2]]
+
+            # Overall average for threshold adjustment
+            all_scores = [v for v in dim_avgs.values()]
+            overall_avg = round(sum(all_scores) / len(all_scores), 4) if all_scores else 0.0
 
             evolved["traditions"][tradition] = {
                 "session_count": len(tradition_sessions),
                 "dimension_averages": {d: round(v, 3) for d, v in dim_avgs.items()},
                 "weak_dimensions": weak_dims,
+                "overall_avg": overall_avg,
                 "weight_adjustments": {d: _ADJUSTMENT for d in weak_dims},
             }
 
@@ -72,6 +79,17 @@ class LocalEvolver:
         logger.debug("Local evolution written to %s", evolved_path)
 
         return evolved
+
+    def load_evolved(self, tradition: str) -> dict | None:
+        """Load evolved data for a specific tradition (read-only, no evolution trigger)."""
+        evolved_path = self.data_dir / "evolved_context.json"
+        if not evolved_path.exists():
+            return None
+        try:
+            ctx = json.loads(evolved_path.read_text())
+            return ctx.get("traditions", {}).get(tradition)
+        except Exception:
+            return None
 
     def _load_sessions(self) -> list[dict]:
         """Load sessions from local JSONL."""
