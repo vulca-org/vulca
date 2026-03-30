@@ -136,3 +136,76 @@ class TestGenerateNodeEvolution:
                 os.environ.pop("VULCA_EVOLVED_DATA_DIR", None)
             else:
                 os.environ["VULCA_EVOLVED_DATA_DIR"] = old
+
+
+class TestDecideNodeEvolution:
+    """Iteration 1: DecideNode micro-adjusts threshold from evolution data."""
+
+    def test_high_avg_raises_threshold(self):
+        from vulca.pipeline.nodes.decide import DecideNode
+        with tempfile.TemporaryDirectory() as td:
+            evolved = {"traditions": {"t1": {"overall_avg": 0.85, "weak_dimensions": ["L1"]}}}
+            (Path(td) / "evolved_context.json").write_text(json.dumps(evolved))
+            import os
+            os.environ["VULCA_EVOLVED_DATA_DIR"] = td
+            try:
+                node = DecideNode(accept_threshold=0.7)
+                ctx = _make_decide_ctx(tradition="t1", weighted_total=0.73, scores={"L1": 0.7, "L2": 0.76},
+                                       round_num=1, max_rounds=3)
+                import asyncio
+                result = asyncio.get_event_loop().run_until_complete(node.run(ctx))
+                # threshold 0.7 + 0.05 = 0.75. Score 0.73 < 0.75 → rerun
+                assert result["decision"] == "rerun"
+            finally:
+                os.environ.pop("VULCA_EVOLVED_DATA_DIR", None)
+
+    def test_without_evolution_uses_default(self):
+        from vulca.pipeline.nodes.decide import DecideNode
+        import os
+        os.environ["VULCA_EVOLVED_DATA_DIR"] = "/tmp/nonexistent_vulca_test_dir"
+        try:
+            node = DecideNode(accept_threshold=0.7)
+            ctx = _make_decide_ctx(tradition="t1", weighted_total=0.73, scores={"L1": 0.7, "L2": 0.76},
+                                   round_num=1, max_rounds=3)
+            import asyncio
+            result = asyncio.get_event_loop().run_until_complete(node.run(ctx))
+            # No evolution → threshold stays 0.7. Score 0.73 >= 0.7 → accept
+            assert result["decision"] == "accept"
+        finally:
+            os.environ.pop("VULCA_EVOLVED_DATA_DIR", None)
+
+    def test_user_threshold_overrides_evolution(self):
+        from vulca.pipeline.nodes.decide import DecideNode
+        with tempfile.TemporaryDirectory() as td:
+            evolved = {"traditions": {"t1": {"overall_avg": 0.90}}}
+            (Path(td) / "evolved_context.json").write_text(json.dumps(evolved))
+            import os
+            os.environ["VULCA_EVOLVED_DATA_DIR"] = td
+            try:
+                node = DecideNode(accept_threshold=0.7)
+                ctx = _make_decide_ctx(tradition="t1", weighted_total=0.65, scores={"L1": 0.6, "L2": 0.7},
+                                       round_num=1, max_rounds=3,
+                                       node_params={"decide": {"accept_threshold": 0.5}})
+                import asyncio
+                result = asyncio.get_event_loop().run_until_complete(node.run(ctx))
+                # User set threshold=0.5. Score 0.65 >= 0.5 → accept (evolution ignored)
+                assert result["decision"] == "accept"
+            finally:
+                os.environ.pop("VULCA_EVOLVED_DATA_DIR", None)
+
+    def test_reference_mode_always_accepts(self):
+        from vulca.pipeline.nodes.decide import DecideNode
+        with tempfile.TemporaryDirectory() as td:
+            evolved = {"traditions": {"t1": {"overall_avg": 0.95}}}
+            (Path(td) / "evolved_context.json").write_text(json.dumps(evolved))
+            import os
+            os.environ["VULCA_EVOLVED_DATA_DIR"] = td
+            try:
+                node = DecideNode(accept_threshold=0.7)
+                ctx = _make_decide_ctx(tradition="t1", weighted_total=0.30, scores={"L1": 0.3},
+                                       round_num=1, max_rounds=3, eval_mode="reference")
+                import asyncio
+                result = asyncio.get_event_loop().run_until_complete(node.run(ctx))
+                assert result["decision"] == "accept"
+            finally:
+                os.environ.pop("VULCA_EVOLVED_DATA_DIR", None)

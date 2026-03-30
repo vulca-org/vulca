@@ -45,6 +45,23 @@ class DecideNode(PipelineNode):
         decide_params = node_params.get("decide") or {}
         threshold = decide_params.get("accept_threshold", self.accept_threshold)
 
+        # Evolution micro-adjustment (only if user didn't set explicit threshold)
+        if not decide_params.get("accept_threshold"):
+            try:
+                import os
+                from vulca.digestion.local_evolver import LocalEvolver
+                data_dir = os.environ.get("VULCA_EVOLVED_DATA_DIR", "")
+                evolver = LocalEvolver(data_dir=data_dir) if data_dir else LocalEvolver()
+                evolved = evolver.load_evolved(ctx.tradition)
+                if evolved:
+                    hist_avg = evolved.get("overall_avg", 0.0)
+                    if hist_avg > 0.5:
+                        adjusted = min(threshold + 0.05, hist_avg * 0.95)
+                        if adjusted > threshold:  # Only raise, never lower
+                            threshold = adjusted
+            except Exception:
+                pass  # Evolution is advisory
+
         # In reference mode, always accept — don't "correct" the artist
         if eval_mode == "reference":
             decision = "accept"
