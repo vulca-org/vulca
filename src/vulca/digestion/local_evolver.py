@@ -45,7 +45,11 @@ class LocalEvolver:
             if len(tradition_sessions) < 2:
                 continue
 
-            # Find weak dimensions (average score < 0.5)
+            # Split by eval_mode (iteration 2)
+            strict_sessions = [s for s in tradition_sessions if s.get("eval_mode", "strict") == "strict"]
+            reference_sessions = [s for s in tradition_sessions if s.get("eval_mode") == "reference"]
+
+            # Compute dimension averages from ALL sessions (for backward compat)
             dim_totals: dict[str, float] = defaultdict(float)
             dim_counts: dict[str, int] = defaultdict(int)
             for s in tradition_sessions:
@@ -56,18 +60,50 @@ class LocalEvolver:
                         dim_counts[dim] += 1
 
             dim_avgs = {d: dim_totals[d] / dim_counts[d] for d in dim_totals if dim_counts[d] > 0}
-            # Relative weak: bottom 2 dimensions by average (always produces output)
+
+            # Relative weak: bottom 2 dimensions by average
             sorted_dims = sorted(dim_avgs.items(), key=lambda x: x[1])
             weak_dims = [d for d, _ in sorted_dims[:2]]
 
-            # Overall average for threshold adjustment
+            # Strict-only weak dims
+            strict_weak = self._relative_weak(strict_sessions) if len(strict_sessions) >= 2 else weak_dims
+
+            # Reference exploration trends (dims with lowest scores = where users experiment)
+            reference_trends = self._relative_weak(reference_sessions) if len(reference_sessions) >= 2 else []
+
+            # Iteration 3: filter out dimensions with high intentional_departure ratio
+            intentional_counts: dict[str, int] = defaultdict(int)
+            total_strict = len(strict_sessions) if strict_sessions else len(tradition_sessions)
+            for s in (strict_sessions or tradition_sessions):
+                for dim, dev_type in s.get("deviation_types", {}).items():
+                    if dev_type == "intentional_departure":
+                        intentional_counts[dim] += 1
+
+            intentional_ratio = {d: intentional_counts.get(d, 0) / max(total_strict, 1) for d in dim_avgs}
+            innovation_signals = [d for d, ratio in intentional_ratio.items() if ratio >= 0.3]
+
+            # Exclude high-departure dims from weak (>30% intentional = creative choice)
+            weak_dims = [d for d in weak_dims if intentional_ratio.get(d, 0) < 0.3]
+            strict_weak = [d for d in strict_weak if intentional_ratio.get(d, 0) < 0.3]
+
+            # If all weak dims were excluded, take next-lowest that isn't excluded
+            if not weak_dims:
+                remaining = [d for d, _ in sorted_dims if intentional_ratio.get(d, 0) < 0.3]
+                weak_dims = remaining[:2]
+
+            # Overall average
             all_scores = [v for v in dim_avgs.values()]
             overall_avg = round(sum(all_scores) / len(all_scores), 4) if all_scores else 0.0
 
             evolved["traditions"][tradition] = {
                 "session_count": len(tradition_sessions),
+                "strict_count": len(strict_sessions),
+                "reference_count": len(reference_sessions),
                 "dimension_averages": {d: round(v, 3) for d, v in dim_avgs.items()},
                 "weak_dimensions": weak_dims,
+                "strict_weak": strict_weak,
+                "reference_trends": reference_trends,
+                "innovation_signals": innovation_signals,
                 "overall_avg": overall_avg,
                 "weight_adjustments": {d: _ADJUSTMENT for d in weak_dims},
             }
@@ -90,6 +126,20 @@ class LocalEvolver:
             return ctx.get("traditions", {}).get(tradition)
         except Exception:
             return None
+
+    @staticmethod
+    def _relative_weak(sessions: list[dict]) -> list[str]:
+        """Get bottom 2 dimensions by average score from a set of sessions."""
+        dim_totals: defaultdict[str, float] = defaultdict(float)
+        dim_counts: defaultdict[str, int] = defaultdict(int)
+        for s in sessions:
+            for dim, score in s.get("final_scores", {}).items():
+                if isinstance(score, (int, float)):
+                    dim_totals[dim] += score
+                    dim_counts[dim] += 1
+        dim_avgs = {d: dim_totals[d] / dim_counts[d] for d in dim_totals if dim_counts[d] > 0}
+        sorted_dims = sorted(dim_avgs.items(), key=lambda x: x[1])
+        return [d for d, _ in sorted_dims[:2]]
 
     def _load_sessions(self) -> list[dict]:
         """Load sessions from local JSONL."""

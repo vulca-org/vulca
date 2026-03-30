@@ -209,3 +209,101 @@ class TestDecideNodeEvolution:
                 assert result["decision"] == "accept"
             finally:
                 os.environ.pop("VULCA_EVOLVED_DATA_DIR", None)
+
+
+class TestEvalModeAwareness:
+    """Iteration 2: evolution separates strict vs reference sessions."""
+
+    def _write_sessions(self, data_dir: Path, sessions: list[dict]) -> None:
+        jsonl_path = data_dir / "sessions.jsonl"
+        data_dir.mkdir(parents=True, exist_ok=True)
+        with open(jsonl_path, "w") as f:
+            for s in sessions:
+                f.write(json.dumps(s) + "\n")
+
+    def test_strict_and_reference_produce_different_signals(self):
+        from vulca.digestion.local_evolver import LocalEvolver
+        with tempfile.TemporaryDirectory() as td:
+            strict = [
+                {"tradition": "t1", "final_scores": {"L1": 0.70, "L2": 0.90, "L3": 0.85, "L4": 0.88, "L5": 0.92},
+                 "user_feedback": "accepted", "eval_mode": "strict", "session_id": f"strict{i}"}
+                for i in range(5)
+            ]
+            reference = [
+                {"tradition": "t1", "final_scores": {"L1": 0.90, "L2": 0.85, "L3": 0.50, "L4": 0.88, "L5": 0.45},
+                 "user_feedback": "accepted", "eval_mode": "reference", "session_id": f"ref{i}"}
+                for i in range(5)
+            ]
+            self._write_sessions(Path(td), strict + reference)
+            evolver = LocalEvolver(data_dir=td)
+            result = evolver.evolve()
+            t1 = result["traditions"]["t1"]
+            # Strict: L1 is weakest (0.70)
+            assert "L1" in t1["strict_weak"]
+            # Reference: L3 and L5 are low (exploration trends)
+            assert "L3" in t1["reference_trends"] or "L5" in t1["reference_trends"]
+            # Counts
+            assert t1["strict_count"] == 5
+            assert t1["reference_count"] == 5
+
+    def test_missing_eval_mode_defaults_to_strict(self):
+        from vulca.digestion.local_evolver import LocalEvolver
+        with tempfile.TemporaryDirectory() as td:
+            sessions = [
+                {"tradition": "t1", "final_scores": {"L1": 0.75, "L2": 0.80, "L3": 0.85, "L4": 0.90, "L5": 0.88},
+                 "user_feedback": "accepted", "session_id": f"s{i}"}
+                for i in range(5)
+            ]
+            self._write_sessions(Path(td), sessions)
+            evolver = LocalEvolver(data_dir=td)
+            result = evolver.evolve()
+            t1 = result["traditions"]["t1"]
+            assert len(t1["weak_dimensions"]) >= 1
+            assert t1["strict_count"] >= 5
+
+
+class TestDeviationTypeFiltering:
+    """Iteration 3: intentional_departure excluded from weak dimensions."""
+
+    def _write_sessions(self, data_dir: Path, sessions: list[dict]) -> None:
+        jsonl_path = data_dir / "sessions.jsonl"
+        data_dir.mkdir(parents=True, exist_ok=True)
+        with open(jsonl_path, "w") as f:
+            for s in sessions:
+                f.write(json.dumps(s) + "\n")
+
+    def test_intentional_departure_excluded_from_weak(self):
+        from vulca.digestion.local_evolver import LocalEvolver
+        with tempfile.TemporaryDirectory() as td:
+            sessions = []
+            for i in range(10):
+                dev_types = {"L1": "intentional_departure" if i < 5 else "traditional",
+                             "L2": "traditional", "L3": "traditional", "L4": "traditional", "L5": "traditional"}
+                sessions.append({
+                    "tradition": "t1", "eval_mode": "strict", "user_feedback": "accepted",
+                    "final_scores": {"L1": 0.65, "L2": 0.70, "L3": 0.90, "L4": 0.85, "L5": 0.88},
+                    "deviation_types": dev_types, "session_id": f"s{i}",
+                })
+            self._write_sessions(Path(td), sessions)
+            evolver = LocalEvolver(data_dir=td)
+            result = evolver.evolve()
+            weak = result["traditions"]["t1"]["weak_dimensions"]
+            # L1 should be EXCLUDED (50% intentional_departure > 30% threshold)
+            assert "L1" not in weak
+            # L2 should be in weak (lowest after excluding L1)
+            assert "L2" in weak
+            # L1 should appear in innovation_signals
+            assert "L1" in result["traditions"]["t1"]["innovation_signals"]
+
+    def test_missing_deviation_types_still_works(self):
+        from vulca.digestion.local_evolver import LocalEvolver
+        with tempfile.TemporaryDirectory() as td:
+            sessions = [
+                {"tradition": "t1", "final_scores": {"L1": 0.75, "L2": 0.80, "L3": 0.85, "L4": 0.90, "L5": 0.88},
+                 "user_feedback": "accepted", "eval_mode": "strict", "session_id": f"s{i}"}
+                for i in range(5)
+            ]
+            self._write_sessions(Path(td), sessions)
+            evolver = LocalEvolver(data_dir=td)
+            result = evolver.evolve()
+            assert len(result["traditions"]["t1"]["weak_dimensions"]) >= 1
