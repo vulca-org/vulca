@@ -1,4 +1,4 @@
-"""Export layered artwork to PSD and PNG directory."""
+"""Export layered artwork to PSD and PNG directory (V2)."""
 from __future__ import annotations
 
 import json
@@ -16,16 +16,13 @@ def export_psd(
     height: int = 1024,
     output_path: str,
 ) -> str:
-    """Export layers as PNG directory with full-canvas expanded layers + manifest.
+    """Export layers as PNG directory with full-canvas layers + manifest.
 
-    Each minimal crop is expanded to full canvas (width x height) with transparency,
-    matching Photoshop's layer display behavior.
-
-    PSD binary format is not yet supported. If output_path ends in .psd,
-    creates a PNG directory alongside it.
+    V2: Layers are already full-canvas, so no bbox expansion needed.
+    If output_path ends in .psd, creates a PNG directory alongside it.
+    If output_path is a directory (or no suffix), uses it directly.
     """
     out = Path(output_path)
-    # Create PNG directory alongside .psd path (or use path directly)
     if out.suffix == ".psd":
         png_dir = out.with_suffix("")
     else:
@@ -36,17 +33,22 @@ def export_psd(
     for layer in sorted_layers:
         try:
             img = Image.open(layer.image_path).convert("RGBA")
-            # Approach B: expand minimal crop to full canvas for export
-            full = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-            x = int(width * layer.info.bbox["x"] / 100)
-            y = int(height * layer.info.bbox["y"] / 100)
-            full.paste(img, (x, y), img)
+            # V2: layers should already be full-canvas
+            # V1 compat: if they're not, expand using bbox if available
+            if img.size != (width, height):
+                if layer.info.bbox:
+                    full = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+                    x = int(width * layer.info.bbox["x"] / 100)
+                    y = int(height * layer.info.bbox["y"] / 100)
+                    full.paste(img, (x, y), img)
+                    img = full
+                else:
+                    img = img.resize((width, height), Image.LANCZOS)
             dest = png_dir / f"{layer.info.z_index:02d}_{layer.info.name}.png"
-            full.save(str(dest))
+            img.save(str(dest))
         except Exception:
             continue
 
-    # Write manifest
     manifest = {
         "width": width,
         "height": height,
@@ -57,7 +59,6 @@ def export_psd(
                 "file": f"{l.info.z_index:02d}_{l.info.name}.png",
                 "z_index": l.info.z_index,
                 "blend_mode": l.info.blend_mode,
-                "bbox": l.info.bbox,
                 "scores": l.scores,
             }
             for l in sorted_layers
@@ -65,5 +66,4 @@ def export_psd(
     }
     manifest_path = png_dir / "manifest.json"
     manifest_path.write_text(json.dumps(manifest, indent=2))
-
     return str(out)

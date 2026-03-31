@@ -171,6 +171,20 @@ def main(argv: list[str] | None = None) -> None:
     layers_split = layers_sub.add_parser("split", help="Split image into layer PNGs")
     layers_split.add_argument("image", help="Path to image")
     layers_split.add_argument("--output", "-o", default="", help="Output directory")
+    layers_split.add_argument("--mode", "-m", default="regenerate", choices=["regenerate", "extract"],
+                              help="Split mode: regenerate (img2img, default) or extract (color-range, no API)")
+    layers_split.add_argument("--provider", "-p", default="gemini", help="Image provider (regenerate mode)")
+    layers_split.add_argument("--tradition", "-t", default="default", help="Cultural tradition")
+
+    layers_redraw = layers_sub.add_parser("redraw", help="Redraw layer(s) via img2img")
+    layers_redraw.add_argument("artwork_dir", help="Directory with layers")
+    layers_redraw.add_argument("--layer", help="Single layer name to redraw")
+    layers_redraw.add_argument("--layers", help="Comma-separated layer names to merge+redraw")
+    layers_redraw.add_argument("--instruction", "-i", required=True, help="Redraw instruction")
+    layers_redraw.add_argument("--merge", action="store_true", help="Merge selected layers before redraw")
+    layers_redraw.add_argument("--merged-name", default="merged", help="Name for merged output layer")
+    layers_redraw.add_argument("--provider", "-p", default="gemini", help="Image provider")
+    layers_redraw.add_argument("--tradition", "-t", default="default", help="Cultural tradition")
 
     layers_composite = layers_sub.add_parser("composite", help="Composite layers into flat image")
     layers_composite.add_argument("artwork_dir", help="Directory with layer PNGs + manifest")
@@ -1054,32 +1068,68 @@ def _cmd_layers(args: argparse.Namespace) -> None:
         loop.close()
         print(f"\n  Identified {len(layers)} layers:")
         for la in layers:
-            print(f"    [{la.z_index}] {la.name}: {la.description} ({la.blend_mode})")
-            print(f"        bbox: {la.bbox}")
+            print(f"    [{la.z_index}] {la.name} ({la.content_type}, {la.blend_mode})")
+            print(f"        {la.description}")
+            if la.dominant_colors:
+                print(f"        colors: {', '.join(la.dominant_colors)}")
 
     elif args.layers_command == "split":
         from vulca.layers.analyze import analyze_layers
-        from vulca.layers.split import crop_layer, write_manifest
-        from PIL import Image as _PILImage
         loop = asyncio.new_event_loop()
         layers = loop.run_until_complete(analyze_layers(args.image))
+        out_dir = args.output or str(Path(args.image).parent / "layers")
+        print(f"\n  Splitting {len(layers)} layers ({args.mode} mode) -> {out_dir}")
+        if args.mode == "extract":
+            from vulca.layers.split import split_extract
+            results = split_extract(args.image, layers, output_dir=out_dir)
+        else:
+            from vulca.layers.split import split_regenerate
+            results = loop.run_until_complete(
+                split_regenerate(args.image, layers, output_dir=out_dir,
+                                 provider=args.provider, tradition=args.tradition)
+            )
         loop.close()
-        out_dir = args.output or str(Path(args.image).parent)
-        print(f"\n  Splitting {len(layers)} layers -> {out_dir}")
-        for la in layers:
-            path = crop_layer(args.image, la, output_dir=out_dir)
-            print(f"    [{la.z_index}] {la.name} -> {path}")
-        # Write manifest for downstream composite/export/evaluate
-        _img = _PILImage.open(args.image)
-        write_manifest(layers, output_dir=out_dir, width=_img.width, height=_img.height)
+        for r in results:
+            print(f"    [{r.info.z_index}] {r.info.name} -> {r.image_path}")
         print(f"    manifest.json -> {Path(out_dir) / 'manifest.json'}")
 
+    elif args.layers_command == "redraw":
+        from vulca.layers.manifest import load_manifest
+        from vulca.layers.redraw import redraw_layer, redraw_merged
+        artwork = load_manifest(args.artwork_dir)
+        loop = asyncio.new_event_loop()
+        if args.layers and args.merge:
+            layer_names = [n.strip() for n in args.layers.split(",")]
+            result = loop.run_until_complete(
+                redraw_merged(artwork, layer_names=layer_names,
+                              instruction=args.instruction, merged_name=args.merged_name,
+                              provider=args.provider, tradition=args.tradition,
+                              artwork_dir=args.artwork_dir)
+            )
+            print(f"  Merged redraw: {result.info.name} -> {result.image_path}")
+        elif args.layer:
+            result = loop.run_until_complete(
+                redraw_layer(artwork, layer_name=args.layer,
+                             instruction=args.instruction, provider=args.provider,
+                             tradition=args.tradition, artwork_dir=args.artwork_dir)
+            )
+            print(f"  Redrawn: {result.info.name} -> {result.image_path}")
+        else:
+            print("  Error: specify --layer or --layers with --merge", file=sys.stderr)
+            sys.exit(1)
+        loop.close()
+
     elif args.layers_command == "composite":
-        from vulca.layers.edit import load_artwork
+        from vulca.layers.manifest import load_manifest
         from vulca.layers.composite import composite_layers
-        artwork = load_artwork(args.artwork_dir)
+        artwork = load_manifest(args.artwork_dir)
         out = args.output or str(Path(args.artwork_dir) / "composite.png")
-        composite_layers(artwork.layers, output_path=out)
+        import json as _json
+        manifest_path = Path(args.artwork_dir) / "manifest.json"
+        manifest = _json.loads(manifest_path.read_text())
+        width = manifest.get("width", 1024)
+        height = manifest.get("height", 1024)
+        composite_layers(artwork.layers, width=width, height=height, output_path=out)
         print(f"  Composite: {out}")
 
     elif args.layers_command == "regenerate":

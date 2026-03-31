@@ -918,13 +918,14 @@ async def inpaint_artwork(
 
 @mcp.tool()
 async def analyze_layers(image_path: str) -> dict:
-    """Analyze an image and identify its semantic layers.
+    """Analyze an image and identify its semantic layers (V2).
 
     Args:
         image_path: Path to the image file.
 
     Returns:
-        Layer structure with name, description, bbox, z_index, blend_mode per layer.
+        Layer structure with name, description, z_index, blend_mode, content_type,
+        dominant_colors, regeneration_prompt per layer.
     """
     from vulca.layers.analyze import analyze_layers as _analyze
     layers = await _analyze(image_path)
@@ -933,13 +934,121 @@ async def analyze_layers(image_path: str) -> dict:
             {
                 "name": la.name,
                 "description": la.description,
-                "bbox": la.bbox,
                 "z_index": la.z_index,
                 "blend_mode": la.blend_mode,
-                "bg_color": la.bg_color,
+                "content_type": la.content_type,
+                "dominant_colors": la.dominant_colors,
+                "regeneration_prompt": la.regeneration_prompt,
             }
             for la in layers
         ]
+    }
+
+
+@mcp.tool()
+async def layers_split(
+    image_path: str,
+    output_dir: str = "",
+    mode: str = "regenerate",
+    provider: str = "gemini",
+    tradition: str = "default",
+) -> dict:
+    """Split an image into full-canvas RGBA layers.
+
+    Args:
+        image_path: Path to the image file.
+        output_dir: Output directory (default: image parent/layers).
+        mode: Split mode — "regenerate" (img2img, default) or "extract" (color-range, no API).
+        provider: Image provider for regenerate mode.
+        tradition: Cultural tradition for styling.
+
+    Returns:
+        layers list, manifest_path, split_mode.
+    """
+    from vulca.layers.analyze import analyze_layers as _analyze
+    from vulca.layers.split import split_extract, split_regenerate
+    from pathlib import Path
+
+    layers = await _analyze(image_path)
+    out = output_dir or str(Path(image_path).parent / "layers")
+
+    if mode == "extract":
+        results = split_extract(image_path, layers, output_dir=out)
+    else:
+        results = await split_regenerate(
+            image_path, layers, output_dir=out,
+            provider=provider, tradition=tradition,
+        )
+
+    return {
+        "split_mode": mode,
+        "manifest_path": str(Path(out) / "manifest.json"),
+        "layers": [
+            {
+                "name": r.info.name,
+                "file": r.image_path,
+                "z_index": r.info.z_index,
+                "content_type": r.info.content_type,
+                "blend_mode": r.info.blend_mode,
+            }
+            for r in results
+        ],
+    }
+
+
+@mcp.tool()
+async def layers_redraw(
+    artwork_dir: str,
+    layer: str = "",
+    layers: str = "",
+    instruction: str = "",
+    merge: bool = False,
+    merged_name: str = "merged",
+    provider: str = "gemini",
+    tradition: str = "default",
+) -> dict:
+    """Redraw layer(s) via img2img.
+
+    Args:
+        artwork_dir: Directory with layer PNGs + manifest.
+        layer: Single layer name to redraw.
+        layers: Comma-separated layer names to merge+redraw.
+        instruction: What to change.
+        merge: If true, merge selected layers before redraw.
+        merged_name: Name for merged output layer.
+        provider: Image provider.
+        tradition: Cultural tradition.
+
+    Returns:
+        Redrawn layer info with file path.
+    """
+    from vulca.layers.manifest import load_manifest
+    from vulca.layers.redraw import redraw_layer, redraw_merged
+
+    artwork = load_manifest(artwork_dir)
+
+    if layers and merge:
+        layer_names = [n.strip() for n in layers.split(",")]
+        result = await redraw_merged(
+            artwork, layer_names=layer_names,
+            instruction=instruction, merged_name=merged_name,
+            provider=provider, tradition=tradition,
+            artwork_dir=artwork_dir,
+        )
+    elif layer:
+        result = await redraw_layer(
+            artwork, layer_name=layer,
+            instruction=instruction, provider=provider,
+            tradition=tradition, artwork_dir=artwork_dir,
+        )
+    else:
+        return {"error": "Specify 'layer' or 'layers' with merge=true"}
+
+    return {
+        "name": result.info.name,
+        "file": result.image_path,
+        "z_index": result.info.z_index,
+        "content_type": result.info.content_type,
     }
 
 
