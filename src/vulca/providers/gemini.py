@@ -1,15 +1,63 @@
-"""Gemini image generation provider."""
+"""Gemini image generation provider.
+
+Supports imageSize (512/1K/2K/4K) and aspectRatio via Google GenAI API.
+"""
 from __future__ import annotations
 
 import asyncio
 import base64
+import math
 import os
 
 from vulca.providers.base import ImageProvider, ImageResult
 
+# Gemini API uses named size tiers, not arbitrary pixel dimensions.
+# Map pixel dimensions to the closest imageSize tier.
+_SIZE_TIERS = [
+    (512, "512"),
+    (1024, "1K"),
+    (2048, "2K"),
+    (4096, "4K"),
+]
+
+# Supported aspect ratios (Gemini API).
+_ASPECT_RATIOS = {
+    "1:1", "1:4", "1:8", "2:3", "3:2", "3:4", "4:1",
+    "4:3", "4:5", "5:4", "8:1", "9:16", "16:9", "21:9",
+}
+
+
+def _pixels_to_image_size(long_edge: int) -> str:
+    """Map pixel dimension (long edge) to Gemini imageSize tier."""
+    for threshold, tier in _SIZE_TIERS:
+        if long_edge <= threshold:
+            return tier
+    return "4K"
+
+
+def _dims_to_aspect_ratio(width: int, height: int) -> str:
+    """Find the closest supported aspect ratio for given dimensions."""
+    if width == height:
+        return "1:1"
+    target = width / height
+    best_ratio = "1:1"
+    best_diff = float("inf")
+    for ar in _ASPECT_RATIOS:
+        a, b = ar.split(":")
+        ratio = int(a) / int(b)
+        diff = abs(ratio - target)
+        if diff < best_diff:
+            best_diff = diff
+            best_ratio = ar
+    return best_ratio
+
 
 class GeminiImageProvider:
-    """Image generation via Google Gemini API."""
+    """Image generation via Google Gemini API.
+
+    Supports imageSize control (512/1K/2K/4K) and aspectRatio.
+    Width/height params are mapped to the closest Gemini tier + ratio.
+    """
 
     def __init__(
         self,
@@ -48,7 +96,12 @@ class GeminiImageProvider:
 
         client = genai.Client(api_key=self.api_key)
 
-        full_prompt = self._build_prompt(prompt, tradition, subject, kwargs)
+        # Map width/height to Gemini imageSize + aspectRatio
+        long_edge = max(width, height)
+        image_size = kwargs.pop("image_size", None) or _pixels_to_image_size(long_edge)
+        aspect_ratio = kwargs.pop("aspect_ratio", None) or _dims_to_aspect_ratio(width, height)
+
+        full_prompt = self._build_prompt(prompt, tradition, subject, aspect_ratio, kwargs)
 
         contents: list = []
         if reference_image_b64:
@@ -60,6 +113,10 @@ class GeminiImageProvider:
 
         config = types.GenerateContentConfig(
             response_modalities=["Text", "Image"],
+            image_config=types.ImageConfig(
+                image_size=image_size,
+                aspect_ratio=aspect_ratio,
+            ),
         )
 
         try:
@@ -82,12 +139,19 @@ class GeminiImageProvider:
                     return ImageResult(
                         image_b64=img_b64,
                         mime=part.inline_data.mime_type,
-                        metadata={"model": self.model},
+                        metadata={
+                            "model": self.model,
+                            "image_size": image_size,
+                            "aspect_ratio": aspect_ratio,
+                        },
                     )
 
         raise RuntimeError("Gemini returned no image data")
 
-    def _build_prompt(self, prompt: str, tradition: str, subject: str, kwargs: dict) -> str:
+    def _build_prompt(
+        self, prompt: str, tradition: str, subject: str,
+        aspect_ratio: str, kwargs: dict,
+    ) -> str:
         parts = [f"Generate a high-quality artwork: {prompt}"]
         if tradition and tradition != "default":
             parts.append(f"Style: {tradition.replace('_', ' ')} tradition")
@@ -99,5 +163,4 @@ class GeminiImageProvider:
         improvement_focus = kwargs.get("improvement_focus", "")
         if improvement_focus:
             parts.append(f"\n{improvement_focus}")
-        parts.append("\nOutput image aspect ratio: 1:1, resolution: 1024x1024")
         return "\n".join(parts)

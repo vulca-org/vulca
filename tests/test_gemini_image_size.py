@@ -1,0 +1,98 @@
+"""Tests for Gemini provider imageSize + aspectRatio mapping."""
+from vulca.providers.gemini import (
+    _pixels_to_image_size,
+    _dims_to_aspect_ratio,
+    GeminiImageProvider,
+)
+
+
+class TestPixelsToImageSize:
+    def test_256_maps_to_512(self):
+        assert _pixels_to_image_size(256) == "512"
+
+    def test_512_maps_to_512(self):
+        assert _pixels_to_image_size(512) == "512"
+
+    def test_768_maps_to_1K(self):
+        assert _pixels_to_image_size(768) == "1K"
+
+    def test_1024_maps_to_1K(self):
+        assert _pixels_to_image_size(1024) == "1K"
+
+    def test_1536_maps_to_2K(self):
+        assert _pixels_to_image_size(1536) == "2K"
+
+    def test_2048_maps_to_2K(self):
+        assert _pixels_to_image_size(2048) == "2K"
+
+    def test_3000_maps_to_4K(self):
+        assert _pixels_to_image_size(3000) == "4K"
+
+    def test_4096_maps_to_4K(self):
+        assert _pixels_to_image_size(4096) == "4K"
+
+    def test_8000_maps_to_4K(self):
+        assert _pixels_to_image_size(8000) == "4K"
+
+
+class TestDimsToAspectRatio:
+    def test_square(self):
+        assert _dims_to_aspect_ratio(1024, 1024) == "1:1"
+
+    def test_square_any_size(self):
+        assert _dims_to_aspect_ratio(256, 256) == "1:1"
+
+    def test_landscape_16_9(self):
+        result = _dims_to_aspect_ratio(1920, 1080)
+        assert result == "16:9"
+
+    def test_portrait_9_16(self):
+        result = _dims_to_aspect_ratio(1080, 1920)
+        assert result == "9:16"
+
+    def test_4_3(self):
+        result = _dims_to_aspect_ratio(1024, 768)
+        assert result == "4:3"
+
+    def test_3_4(self):
+        result = _dims_to_aspect_ratio(768, 1024)
+        assert result == "3:4"
+
+    def test_3_2(self):
+        result = _dims_to_aspect_ratio(1500, 1000)
+        assert result == "3:2"
+
+    def test_2_3(self):
+        result = _dims_to_aspect_ratio(1000, 1500)
+        assert result == "2:3"
+
+    def test_ultrawide_21_9(self):
+        result = _dims_to_aspect_ratio(2560, 1080)
+        assert result == "21:9"
+
+
+class TestGeminiProviderConfig:
+    def test_default_model(self):
+        p = GeminiImageProvider(api_key="fake")
+        assert p.model == "gemini-3.1-flash-image-preview"
+
+    def test_custom_model(self):
+        p = GeminiImageProvider(api_key="fake", model="gemini-2.5-flash-image")
+        assert p.model == "gemini-2.5-flash-image"
+
+    def test_build_prompt_no_hardcoded_resolution(self):
+        """Prompt should NOT contain hardcoded 1024x1024."""
+        p = GeminiImageProvider(api_key="fake")
+        prompt = p._build_prompt("test artwork", "chinese_xieyi", "", "1:1", {})
+        assert "1024x1024" not in prompt
+        assert "resolution:" not in prompt.lower()
+
+    def test_build_prompt_has_tradition(self):
+        p = GeminiImageProvider(api_key="fake")
+        prompt = p._build_prompt("test", "chinese_xieyi", "", "1:1", {})
+        assert "chinese xieyi" in prompt.lower()
+
+    def test_build_prompt_no_tradition_for_default(self):
+        p = GeminiImageProvider(api_key="fake")
+        prompt = p._build_prompt("test", "default", "", "1:1", {})
+        assert "tradition" not in prompt.lower()
