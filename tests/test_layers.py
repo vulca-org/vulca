@@ -175,20 +175,23 @@ class TestCompositeLayers:
             assert comp.getpixel((5, 5))[:3] == (0, 0, 255)
 
     def test_composite_offset_layers(self):
-        """Approach B: composite pastes cropped layers at bbox offset positions."""
+        """V2: composite uses full-canvas layers with alpha transparency."""
         with tempfile.TemporaryDirectory() as td:
-            # Background: full-size blue (100x100, bbox covers entire canvas)
+            # Background: full-size blue
             bg = Image.new("RGBA", (100, 100), (0, 0, 255, 255))
             bg_path = Path(td) / "bg.png"
             bg.save(str(bg_path))
 
-            # Foreground: small red crop (50x50, placed at center)
-            fg = Image.new("RGBA", (50, 50), (255, 0, 0, 255))
+            # Foreground: full-canvas with red center square (V2 style)
+            fg = Image.new("RGBA", (100, 100), (0, 0, 0, 0))
+            for x in range(25, 75):
+                for y in range(25, 75):
+                    fg.putpixel((x, y), (255, 0, 0, 255))
             fg_path = Path(td) / "fg.png"
             fg.save(str(fg_path))
 
-            bg_info = LayerInfo(name="bg", description="", bbox={"x": 0, "y": 0, "w": 100, "h": 100}, z_index=0)
-            fg_info = LayerInfo(name="fg", description="", bbox={"x": 25, "y": 25, "w": 50, "h": 50}, z_index=1)
+            bg_info = LayerInfo(name="bg", description="", z_index=0)
+            fg_info = LayerInfo(name="fg", description="", z_index=1)
             layers = [
                 LayerResult(info=bg_info, image_path=str(bg_path)),
                 LayerResult(info=fg_info, image_path=str(fg_path)),
@@ -196,11 +199,11 @@ class TestCompositeLayers:
             out = Path(td) / "composite.png"
             composite_layers(layers, width=100, height=100, output_path=str(out))
             comp = Image.open(str(out))
-            # Center should be red (foreground at offset 25,25)
+            # Center should be red (foreground)
             assert comp.getpixel((50, 50))[:3] == (255, 0, 0)
-            # Corner should be blue (background, untouched by fg)
+            # Corner should be blue (background shows through transparent fg)
             assert comp.getpixel((5, 5))[:3] == (0, 0, 255)
-            # Edge at (24, 24) should still be blue (just outside fg bbox)
+            # Edge at (24, 24) should still be blue (just outside fg content)
             assert comp.getpixel((24, 24))[:3] == (0, 0, 255)
 
 
@@ -365,31 +368,26 @@ class TestRoundtripIntegrity:
             assert corner[:3] == (0, 0, 255), f"Corner should be blue, got {corner[:3]}"
 
     def test_split_composite_roundtrip(self):
-        """L3: composite(split(img)) should approximately reconstruct the original."""
+        """V2 L3: full-canvas layers composite correctly."""
         with tempfile.TemporaryDirectory() as td:
-            # Blue canvas with red center square
-            original = Image.new("RGBA", (100, 100), (0, 0, 255, 255))
+            # Create two full-canvas layers (V2 style)
+            bg = Image.new("RGBA", (100, 100), (0, 0, 255, 255))
+            bg_path = Path(td) / "bg.png"
+            bg.save(str(bg_path))
+
+            fg = Image.new("RGBA", (100, 100), (0, 0, 0, 0))
             for x in range(25, 75):
                 for y in range(25, 75):
-                    original.putpixel((x, y), (255, 0, 0, 255))
-            src = Path(td) / "original.png"
-            original.save(str(src))
+                    fg.putpixel((x, y), (255, 0, 0, 255))
+            fg_path = Path(td) / "fg.png"
+            fg.save(str(fg_path))
 
-            bg_info = LayerInfo(name="bg", description="blue background",
-                              bbox={"x": 0, "y": 0, "w": 100, "h": 100}, z_index=0)
-            fg_info = LayerInfo(name="fg", description="red square",
-                              bbox={"x": 25, "y": 25, "w": 50, "h": 50}, z_index=1)
-
-            bg_path = crop_layer(str(src), bg_info, output_dir=td)
-            fg_path = crop_layer(str(src), fg_info, output_dir=td)
-
-            # Verify minimal crop sizes (Approach B)
-            assert Image.open(bg_path).size == (100, 100)
-            assert Image.open(fg_path).size == (50, 50)
+            bg_info = LayerInfo(name="bg", description="blue background", z_index=0)
+            fg_info = LayerInfo(name="fg", description="red square", z_index=1)
 
             layers = [
-                LayerResult(info=bg_info, image_path=bg_path),
-                LayerResult(info=fg_info, image_path=fg_path),
+                LayerResult(info=bg_info, image_path=str(bg_path)),
+                LayerResult(info=fg_info, image_path=str(fg_path)),
             ]
             out = Path(td) / "roundtrip.png"
             composite_layers(layers, width=100, height=100, output_path=str(out))
