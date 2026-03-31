@@ -21,7 +21,7 @@ For each layer provide:
       "blend_mode": "normal|screen|multiply",
       "dominant_colors": ["#hex1", "#hex2"],
       "content_type": "background|subject|detail|effect|text",
-      "regeneration_prompt": "Prompt to regenerate ONLY this layer on transparent background, preserving the original style"
+      "regeneration_prompt": "Prompt to regenerate ONLY this layer's content as a complete painting, preserving the original style"
     }
   ]
 }
