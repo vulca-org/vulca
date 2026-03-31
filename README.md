@@ -236,24 +236,27 @@ vulca create "Cultural festival poster, modern typography overlay" \
 
 ### Scenario 2b: Frontend Parallax (Web Developers)
 
-*Export each layer as an independent CSS element → scroll-driven parallax depth effect.*
+*Any hero image → extract semantic layers → CSS parallax with depth.*
 
 <p align="center">
-  <img src="assets/demo/v2/scenario2-parallax.png" alt="Layers as CSS parallax elements" width="800">
+  <img src="assets/demo/v2/scenario2b-web-mockup.png" alt="Travel website with VULCA layer export for CSS parallax" width="800">
 </p>
 
 ```bash
-vulca layers split artwork.png -o ./layers/ --mode extract
-vulca layers export ./layers/ -o ./web-assets.psd
-# → 00_background.png, 01_mountains.png, 03_pavilion.png, 05_calligraphy.png
-# Each layer = independent PNG with transparency → CSS transform: translateZ()
+# Generate or use any hero image
+vulca create "Mountain lake at golden hour, wooden dock, canoe" -t photography -o hero.png
+# Split into depth layers
+vulca layers split hero.png -o ./layers/ --mode extract
+vulca layers export ./layers/ -o ./web-assets/
+# → 00_sky.png, 01_mountains.png, 02_lake.png, 03_dock.png (each with transparency)
 ```
 
 ```css
-.bg        { transform: translateZ(-3px) scale(4); }  /* slowest scroll */
+/* Each exported layer = independent scroll-speed element */
+.sky       { transform: translateZ(-3px) scale(4); }  /* slowest */
 .mountains { transform: translateZ(-2px) scale(3); }
-.pavilion  { transform: translateZ(-1px) scale(2); }
-.text      { transform: translateZ(0);             }  /* normal scroll */
+.lake      { transform: translateZ(-1px) scale(2); }
+.dock      { transform: translateZ(0);             }  /* normal scroll */
 ```
 
 ### Scenario 3: Per-Layer Cultural Evaluation (Researchers)

@@ -1,0 +1,79 @@
+{
+  "version": 2,
+  "width": 1024,
+  "height": 1024,
+  "source_image": "",
+  "split_mode": "extract",
+  "created_at": "2026-03-31T23:42:05Z",
+  "layers": [
+    {
+      "id": "layer_f60bf67e",
+      "name": "background_landscape",
+      "description": "A breathtaking landscape featuring a vibrant orange and pink sunset sky with soft clouds, majestic snow-capped mountains, a dense evergreen forest, and calm, turquoise lake water. This layer forms the base scene without any foreground objects.",
+      "z_index": 0,
+      "blend_mode": "normal",
+      "content_type": "background",
+      "visible": true,
+      "locked": false,
+      "file": "background_landscape.png",
+      "dominant_colors": [
+        "#87CEEB",
+        "#D2B48C",
+        "#4CAF50",
+        "#FFDAB9"
+      ],
+      "regeneration_prompt": "A breathtaking landscape painting of a serene mountain lake at sunset. The sky is filled with vibrant orange, pink, and soft white clouds. Majestic snow-capped mountains rise dramatically in the background, flanked by a dense evergreen forest. The calm lake water is a brilliant turquoise, reflecting the sky's colors. No foreground objects, dock, canoe, or people are present."
+    },
+    {
+      "id": "layer_f065f3a5",
+      "name": "wooden_dock",
+      "description": "A rustic wooden dock, constructed from weathered planks and sturdy vertical posts, extends from the lower left into the lake. The dock is empty and shows texture and age.",
+      "z_index": 1,
+      "blend_mode": "normal",
+      "content_type": "subject",
+      "visible": true,
+      "locked": false,
+      "file": "wooden_dock.png",
+      "dominant_colors": [
+        "#A0522D",
+        "#CD853F",
+        "#8B4513"
+      ],
+      "regeneration_prompt": "A rustic wooden dock, made of weathered planks and sturdy vertical posts, extending from the lower left into calm water. The dock is empty, with no people or boats. The wood shows texture and age."
+    },
+    {
+      "id": "layer_5c7fd7ff",
+      "name": "canoe_and_person",
+      "description": "A bright red canoe, with 'AURORA' written on its side, floats gently beside the wooden dock. A person wearing a beige sweater and hat is seated in the canoe, facing away from the viewer.",
+      "z_index": 2,
+      "blend_mode": "normal",
+      "content_type": "subject",
+      "visible": true,
+      "locked": false,
+      "file": "canoe_and_person.png",
+      "dominant_colors": [
+        "#FF0000",
+        "#D2B48C",
+        "#808080"
+      ],
+      "regeneration_prompt": "A bright red canoe with the word 'AURORA' written on its side, floating gently on calm water. A person wearing a beige sweater and hat is sitting in the canoe, facing away from the viewer. No dock or background elements are present."
+    },
+    {
+      "id": "layer_02b2ad64",
+      "name": "reflections_and_shadows_on_water",
+      "description": "The distinct, shimmering reflections and subtle shadows of the wooden dock, the red canoe, and the person are visible on the calm, turquoise surface of the lake water, creating a distorted visual effect.",
+      "z_index": 3,
+      "blend_mode": "normal",
+      "content_type": "effect",
+      "visible": true,
+      "locked": false,
+      "file": "reflections_and_shadows_on_water.png",
+      "dominant_colors": [
+        "#40E0D0",
+        "#87CEEB",
+        "#A0522D"
+      ],
+      "regeneration_prompt": "Abstract, shimmering reflections and subtle shadows of a wooden dock, a red canoe, and a person on a calm, turquoise water surface. The reflections are distorted and wavy, showing the shapes of the objects above. This layer contains only the reflections and shadows, not the objects themselves or the main water body."
+    }
+  ]
+}
