@@ -10,6 +10,11 @@ from vulca.layers.mask import build_color_mask, apply_mask_to_image
 from vulca.layers.prompt import build_analyze_prompt, build_regeneration_prompt, parse_v2_response
 from vulca.layers.redraw import redraw_layer, redraw_merged
 from vulca.layers.regenerate import build_regenerate_prompt, regenerate_from_composite
+from vulca.layers.ops import (
+    add_layer, remove_layer, reorder_layer, toggle_visibility,
+    lock_layer, merge_layers, duplicate_layer,
+)
+from vulca.layers.sam import SAM_AVAILABLE
 
 # V1 compat re-exports
 from vulca.layers.manifest import load_manifest as load_artwork
@@ -27,5 +32,8 @@ __all__ = [
     "build_analyze_prompt", "build_regeneration_prompt", "parse_v2_response",
     "redraw_layer", "redraw_merged",
     "build_regenerate_prompt", "regenerate_from_composite",
+    "add_layer", "remove_layer", "reorder_layer", "toggle_visibility",
+    "lock_layer", "merge_layers", "duplicate_layer",
+    "SAM_AVAILABLE",
     "load_artwork",
 ]
