@@ -334,7 +334,7 @@ Then ask: *"Evaluate this painting for Chinese xieyi style"* — Claude calls VU
 ```bash
 # In ComfyUI/custom_nodes/
 git clone https://github.com/vulca-org/comfyui-vulca
-pip install vulca>=0.9.1
+pip install vulca>=0.9.2
 ```
 
 11 nodes: Brief, Concept, Generate, Evaluate, Update, Inpaint, Layers Analyze/Composite/Export, Evolution, Traditions.
