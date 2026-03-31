@@ -24,7 +24,7 @@ def _build_redraw_prompt(
     parts = [instruction.strip()]
     if descriptions:
         parts.append("Layer context: " + "; ".join(d for d in descriptions if d))
-    parts.append("TRANSPARENT background — output must be RGBA with transparency preserved.")
+    parts.append("Generate a complete image filling the entire canvas. Do NOT include any checkerboard pattern, grid, or transparency indicators — output a fully painted image.")
     if canvas_size:
         parts.append(f"Canvas size: {canvas_size}.")
     if tradition and tradition != "default":

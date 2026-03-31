@@ -112,7 +112,7 @@ def build_regeneration_prompt(
 
     parts = [
         base,
-        f"TRANSPARENT background.",
+        f"Paint ONLY this layer's content on a plain white background. Do NOT draw checkerboard patterns or transparency grids.",
         f"Canvas size: {width}x{height}.",
     ]
 
