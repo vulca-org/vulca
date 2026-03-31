@@ -200,6 +200,11 @@ def merge_layers(
     # Collect target layers (validates they exist)
     target_layers = [_find_layer(artwork, name) for name in layer_names]
 
+    # Refuse to merge locked layers (data loss protection)
+    locked = [lr.info.name for lr in target_layers if lr.info.locked]
+    if locked:
+        raise ValueError(f"Cannot merge locked layer(s): {', '.join(locked)} — unlock first")
+
     width, height = _read_dimensions(artwork_dir)
     min_z = min(lr.info.z_index for lr in target_layers)
 
