@@ -20,6 +20,7 @@ async def aevaluate(
     api_key: str = "",
     mock: bool = False,
     mode: str = "strict",
+    sparse: bool = False,
 ) -> EvalResult:
     """Evaluate an artwork image asynchronously.
 
@@ -71,6 +72,17 @@ async def aevaluate(
         mode=mode,
     )
     result.latency_ms = int((time.monotonic() - t0) * 1000)
+
+    if sparse:
+        from vulca.scoring.sparse import BriefIndexer
+        indexer = BriefIndexer()
+        activation = indexer.index(intent or subject or "", tradition=tradition)
+        result.sparse_activation = {
+            "active": activation.active,
+            "skipped": activation.skipped,
+            "method": activation.method,
+        }
+
     return result
 
 
@@ -85,6 +97,7 @@ def evaluate(
     api_key: str = "",
     mock: bool = False,
     mode: str = "strict",
+    sparse: bool = False,
 ) -> EvalResult:
     """Evaluate an artwork image (synchronous wrapper).
 
@@ -105,6 +118,7 @@ def evaluate(
         api_key=api_key,
         mock=mock,
         mode=mode,
+        sparse=sparse,
     )
 
     if loop and loop.is_running():

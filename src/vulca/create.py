@@ -193,6 +193,7 @@ async def _create_local(
         eval_mode=eval_mode,
         latency_ms=output.total_latency_ms,
         cost_usd=output.total_cost_usd,
+        residuals=output.residual_context,
         raw=output.to_dict(),
     )
 

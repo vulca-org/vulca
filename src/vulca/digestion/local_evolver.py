@@ -108,6 +108,11 @@ class LocalEvolver:
                 "weight_adjustments": {d: _ADJUSTMENT for d in weak_dims},
             }
 
+        # Aggregate total session count at root level
+        evolved["total_sessions"] = sum(
+            t.get("session_count", 0) for t in evolved["traditions"].values()
+        )
+
         # Write to file
         evolved_path = self.data_dir / "evolved_context.json"
         evolved_path.parent.mkdir(parents=True, exist_ok=True)

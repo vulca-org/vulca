@@ -129,6 +129,7 @@ class PipelineOutput:
     recommendations: list[str] = field(default_factory=list)
     interrupted_at: str = ""
     summary: str = ""
+    residual_context: dict[str, Any] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {

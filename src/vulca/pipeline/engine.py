@@ -251,6 +251,17 @@ async def execute(
                         timestamp_ms=int((time.monotonic() - t0) * 1000),
                     )
                 )
+                # Save checkpoint BEFORE returning so image is persisted
+                if _checkpoint_store is not None and ctx.get("image_b64"):
+                    _checkpoint_store.save_round(session_id, round_num, {
+                        "scores": dict(ctx.get("scores", {})),
+                        "weighted_total": ctx.get("weighted_total", 0.0),
+                        "candidate_id": ctx.get("candidate_id", ""),
+                        "image_b64": ctx.get("image_b64", ""),
+                        "tradition": ctx.tradition,
+                        "eval_mode": ctx.get("eval_mode", "strict"),
+                        "decision": "waiting_human",
+                    })
                 total_ms = int((time.monotonic() - t0) * 1000)
                 return PipelineOutput(
                     session_id=session_id,
@@ -456,6 +467,7 @@ async def execute(
         total_latency_ms=total_ms,
         total_cost_usd=ctx.cost_usd,
         summary=summary,
+        residual_context=ctx.data.get("residual_context"),
     )
 
     # Fire on_complete hook (non-fatal)

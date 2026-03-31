@@ -353,6 +353,7 @@ def _cmd_evaluate(args: argparse.Namespace) -> None:
         _cmd_evaluate_fusion(args, skills)
         return
 
+    sparse = getattr(args, "sparse_eval", False)
     try:
         result = evaluate(
             args.image,
@@ -363,6 +364,7 @@ def _cmd_evaluate(args: argparse.Namespace) -> None:
             api_key=args.api_key,
             mock=args.mock,
             mode=mode,
+            sparse=sparse,
         )
     except ValueError as e:
         print(f"Error: {e}", file=sys.stderr)
@@ -377,6 +379,15 @@ def _cmd_evaluate(args: argparse.Namespace) -> None:
         _print_reference_result(result)
     else:
         _print_strict_result(result)
+
+    if result.sparse_activation:
+        active = result.sparse_activation.get("active", {})
+        skipped = result.sparse_activation.get("skipped", {})
+        print(f"  Sparse: {len(active)}/5 dims active")
+        for dim, conf in active.items():
+            print(f"    {dim}: active ({conf:.0%} confidence)")
+        for dim, reason in skipped.items():
+            print(f"    {dim}: skipped ({reason})")
 
 
 def _print_strict_result(result) -> None:
@@ -635,6 +646,15 @@ def _cmd_create(args: argparse.Namespace) -> None:
         print(f"\n  Recommendations:")
         for r in result.recommendations:
             print(f"    - {r}")
+
+    if result.residuals:
+        print(f"\n  Residual Analysis:")
+        weights = result.residuals.get("attention_weights", {})
+        dominant = result.residuals.get("dominant_node", "")
+        for node, w in sorted(weights.items(), key=lambda x: -x[1]):
+            marker = " <-" if node == dominant else ""
+            print(f"    {node:<15s} {w:.1%}{marker}")
+
     print(f"\n  Latency: {result.latency_ms}ms | Cost: ${result.cost_usd:.4f}")
     print()
 
@@ -881,6 +901,28 @@ def _cmd_evolution(args: argparse.Namespace) -> None:
         delta = e - o
         sign = "+" if delta >= 0 else ""
         print(f"  {level:<5} {o:>9.1%} {e:>9.1%} {sign}{delta:>8.1%}")
+
+    # Show session count from evolved_context.json
+    try:
+        from vulca.digestion.local_evolver import LocalEvolver
+        evolver = LocalEvolver()
+        evolved_data = evolver.load_evolved(args.name)
+        if evolved_data:
+            count = evolved_data.get("session_count", 0)
+            print(f"  Sessions: {count}")
+        else:
+            # Try loading total from evolved_context.json directly
+            from pathlib import Path
+            import json as _j
+            ctx_path = evolver.data_dir / "evolved_context.json"
+            if ctx_path.exists():
+                ctx = _j.loads(ctx_path.read_text())
+                total = ctx.get("total_sessions", 0)
+                tradition_data = ctx.get("traditions", {}).get(args.name, {})
+                t_count = tradition_data.get("session_count", 0)
+                print(f"  Sessions: {t_count} ({total} total across all traditions)")
+    except Exception:
+        pass
     print()
 
 
