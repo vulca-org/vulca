@@ -25,7 +25,7 @@ vulca create "Misty mountains after rain, pine pavilion in clouds" -t chinese_xi
 <details>
 <summary><strong>See it in action</strong> (GIF)</summary>
 <p align="center">
-  <img src="assets/demo/v2/gif-full.gif" alt="VULCA full demo — create, evaluate, layers, tools, studio, evolution" width="800">
+  <img src="assets/demo/v2/vhs-full.gif" alt="VULCA full demo — create, evaluate, layers, tools, studio, evolution" width="800">
 </p>
 </details>
 
@@ -85,7 +85,7 @@ graph LR
 <details>
 <summary>See create workflow (GIF)</summary>
 <p align="center">
-  <img src="assets/demo/v2/gif-create.gif" alt="Create workflow demo" width="800">
+  <img src="assets/demo/v2/vhs-create.gif" alt="Create workflow demo" width="800">
 </p>
 </details>
 
@@ -113,7 +113,7 @@ vulca create "Zen garden" --reference shanshui.png --ref-type style -t japanese_
 <details>
 <summary>See all 3 modes in action (GIF)</summary>
 <p align="center">
-  <img src="assets/demo/v2/gif-evaluate.gif" alt="Evaluate 3 modes demo" width="800">
+  <img src="assets/demo/v2/vhs-create.gif" alt="Evaluate 3 modes demo" width="800">
 </p>
 </details>
 
@@ -189,7 +189,7 @@ Every layer is **full-canvas RGBA** (not bbox crops). Proper blend modes. 3 spli
 <details>
 <summary>See layer decomposition in action (GIF)</summary>
 <p align="center">
-  <img src="assets/demo/v2/gif-layers.gif" alt="Layers V2 decomposition demo" width="800">
+  <img src="assets/demo/v2/vhs-layers.gif" alt="Layers V2 decomposition demo" width="800">
 </p>
 </details>
 
@@ -261,6 +261,13 @@ vulca layers evaluate ./layers/ -t chinese_xieyi   # per-layer L1-L5 scoring
 ## Tools — Algorithmic Analysis (No API Required)
 
 5 tools that run locally with zero API cost, using OpenCV and NumPy:
+
+<details>
+<summary>See all 5 tools in action (GIF)</summary>
+<p align="center">
+  <img src="assets/demo/v2/vhs-tools.gif" alt="Tools demo" width="800">
+</p>
+</details>
 
 <p align="center">
   <img src="assets/demo/v2/tools-viz.png" alt="Tool analysis evidence: brushstroke energy, whitespace ratio, composition alignment" width="800">
@@ -342,6 +349,13 @@ print(result.blended)    # final blended output path
 ## Studio — Brief-Driven Creative Session
 
 Multi-round creative collaboration with natural language control:
+
+<details>
+<summary>See studio workflow (GIF)</summary>
+<p align="center">
+  <img src="assets/demo/v2/vhs-studio.gif" alt="Studio workflow demo" width="800">
+</p>
+</details>
 
 <p align="center">
   <img src="assets/demo/v2/studio-c1.jpg" alt="Concept 1" width="180">
