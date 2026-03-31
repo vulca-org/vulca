@@ -88,6 +88,22 @@ async def redraw_layer(
     out_path = Path(artwork_dir) / f"{layer_name}.png"
     _save_as_rgba(result.image_b64, result.mime, out_path, width=canvas_w, height=canvas_h)
 
+    # 5b. Apply alpha mask from source image if available (hybrid: Gemini content + extract alpha)
+    source_img_name = manifest_data.get("source_image", "")
+    if source_img_name and target.info.dominant_colors:
+        source_path = Path(artwork_dir) / source_img_name
+        if not source_path.exists():
+            source_path = Path(artwork_dir).parent / source_img_name
+        if source_path.exists():
+            from vulca.layers.mask import build_color_mask
+            from PIL import Image as _PIL
+            source_img = _PIL.open(str(source_path))
+            gen_img = _PIL.open(str(out_path))
+            mask = build_color_mask(source_img, target.info, tolerance=30)
+            r, g, b, _ = gen_img.convert("RGBA").split()
+            hybrid = _PIL.merge("RGBA", (r, g, b, mask))
+            hybrid.save(str(out_path))
+
     # 6. Update target and return
     target.image_path = str(out_path)
     return target

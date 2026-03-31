@@ -147,6 +147,14 @@ async def split_regenerate(
         if gen_img.size != (w, h):
             gen_img = gen_img.resize((w, h), Image.LANCZOS)
 
+        # Hybrid: apply color mask from ORIGINAL image to get real transparency.
+        # Gemini can't generate true alpha — we use extract's mask for alpha channel
+        # combined with Gemini's high-quality RGB content.
+        if info.dominant_colors:
+            mask = build_color_mask(img, info, tolerance=30)
+            r, g, b, _ = gen_img.split()
+            gen_img = Image.merge("RGBA", (r, g, b, mask))
+
         out_path = out_dir / f"{info.name}.png"
         gen_img.save(str(out_path))
         results.append(LayerResult(info=info, image_path=str(out_path)))
