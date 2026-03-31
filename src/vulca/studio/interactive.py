@@ -36,8 +36,15 @@ def _print(msg: str) -> None:
     print(msg)
 
 
-def _ask(prompt: str) -> str:
-    """Ask user for input."""
+_AUTO_MODE = False
+
+
+def _ask(prompt: str, default: str = "") -> str:
+    """Ask user for input. In auto mode, return default immediately."""
+    if _AUTO_MODE:
+        if default:
+            _print(f"{prompt}{default} (auto)")
+        return default
     return input(prompt)
 
 
@@ -49,8 +56,17 @@ def run_studio(
     concept_count: int = 4,
     api_key: str = "",
     data_dir: str = "",
+    auto: bool = False,
+    max_rounds: int = 3,
 ) -> dict:
-    """Run interactive studio session. Returns summary dict."""
+    """Run studio session. If auto=True, skips all prompts and auto-accepts.
+
+    Args:
+        auto: Non-interactive mode — skip all prompts, use defaults, auto-accept.
+        max_rounds: Max generate→evaluate rounds in auto mode (default 3).
+    """
+    global _AUTO_MODE
+    _AUTO_MODE = auto
     loop = asyncio.new_event_loop()
     try:
         return loop.run_until_complete(
@@ -61,9 +77,12 @@ def run_studio(
                 concept_count=concept_count,
                 api_key=api_key,
                 data_dir=data_dir,
+                auto=auto,
+                max_rounds=max_rounds,
             )
         )
     finally:
+        _AUTO_MODE = False
         loop.close()
 
 
@@ -75,6 +94,8 @@ async def _run_studio_async(
     concept_count: int = 4,
     api_key: str = "",
     data_dir: str = "",
+    auto: bool = False,
+    max_rounds: int = 3,
 ) -> dict:
     # Create session
     session = StudioSession.new(intent, project_dir=project_dir)
@@ -194,8 +215,10 @@ async def _run_studio_async(
     # ── Generate → Evaluate → Decide loop ──
     # Track whether we've entered EVALUATE state already to avoid advance_to errors
     entered_evaluate = False
+    round_count = 0
 
     while True:
+        round_count += 1
         # Phase 3: GENERATE
         _print(f"\n[Generate] Creating artwork via {provider}...")
         gen_phase = GeneratePhase()
@@ -244,7 +267,16 @@ async def _run_studio_async(
 
         # User decision
         _print("\n  Next: (a)ccept  (u)pdate  (r)egenerate  (i)npaint  (q)uit")
-        decision = _ask("> ").strip().lower()
+        if auto:
+            # Auto mode: accept if target reached or max rounds hit
+            if (all_scores and all_scores[-1] >= 0.85) or round_count >= max_rounds:
+                decision = "a"
+                _print(f"> a (auto: round {round_count}/{max_rounds})")
+            else:
+                decision = "r"
+                _print(f"> r (auto: round {round_count}/{max_rounds})")
+        else:
+            decision = _ask("> ").strip().lower()
 
         if decision in ("a", "accept"):
             _print("\nArtwork accepted!")

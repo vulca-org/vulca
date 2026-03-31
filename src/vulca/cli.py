@@ -127,6 +127,8 @@ def main(argv: list[str] | None = None) -> None:
     studio_parser.add_argument("--provider", "-p", default="mock", help="Image provider")
     studio_parser.add_argument("--count", "-n", type=int, default=4, help="Number of concepts")
     studio_parser.add_argument("--resume", action="store_true", help="Resume from saved session")
+    studio_parser.add_argument("--auto", action="store_true", help="Non-interactive: skip prompts, auto-accept")
+    studio_parser.add_argument("--max-rounds", type=int, default=3, help="Max rounds in auto mode (default 3)")
     studio_parser.add_argument("--api-key", default="", help="API key")
 
     brief_parser = sub.add_parser("brief", help="Create or show a Studio Brief")
@@ -933,6 +935,8 @@ def _cmd_evolution(args: argparse.Namespace) -> None:
 def _cmd_studio(args: argparse.Namespace) -> None:
     from vulca.studio.interactive import run_studio
 
+    auto = getattr(args, "auto", False)
+    max_rounds = getattr(args, "max_rounds", 3)
     if args.resume:
         from vulca.studio.session import StudioSession
         session = StudioSession.load(args.intent_or_dir)
@@ -943,6 +947,8 @@ def _cmd_studio(args: argparse.Namespace) -> None:
             provider=args.provider,
             concept_count=args.count,
             api_key=args.api_key,
+            auto=auto,
+            max_rounds=max_rounds,
         )
     else:
         result = run_studio(
@@ -950,6 +956,8 @@ def _cmd_studio(args: argparse.Namespace) -> None:
             provider=args.provider,
             concept_count=args.count,
             api_key=args.api_key,
+            auto=auto,
+            max_rounds=max_rounds,
         )
     if result:
         print(f"\nSession {result.get('session_id', '?')}: {result.get('status', 'unknown')}")
