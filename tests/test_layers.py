@@ -25,14 +25,16 @@ class TestAnalyzeLayers:
         layers = parse_layer_response(raw)
         assert layers[0].blend_mode == "normal"
 
-    def test_parse_assigns_bg_color_from_blend(self):
+    def test_parse_assigns_bg_color_default_in_v2(self):
+        # V2 no longer derives bg_color from blend_mode (_BLEND_TO_BG removed).
+        # bg_color defaults to "white" regardless of blend_mode.
         raw = {
             "layers": [
                 {"name": "glow", "description": "light", "bbox": {"x": 0, "y": 0, "w": 100, "h": 100}, "z_index": 1, "blend_mode": "screen"}
             ]
         }
         layers = parse_layer_response(raw)
-        assert layers[0].bg_color == "black"  # screen blend → black bg
+        assert layers[0].bg_color == "white"  # V2: bg_color always defaults to "white"
 
 
 class TestLayerTypes:

@@ -1,24 +1,176 @@
-"""Split a flat image into alpha-channel layers."""
+"""Split a flat image into alpha-channel layers.
+
+Supports two modes:
+  - split_extract  : color-range masking → full-canvas RGBA layers
+  - split_regenerate: img2img per layer → full-canvas RGBA layers (async)
+
+V1 compat functions (crop_layer, chromakey_white, chromakey_black,
+write_manifest) are kept at the bottom for backward compatibility with
+test_layers.py and any other callers that import write_manifest from here.
+The V1 write_manifest writes version=1 JSON with bbox/bg_color fields.
+For V2, split_extract/split_regenerate use manifest.write_manifest internally.
+"""
 from __future__ import annotations
 
+import base64
 import json
 from pathlib import Path
 
 from PIL import Image
 
-from vulca.layers.types import LayerInfo
+from vulca.layers.types import LayerInfo, LayerResult
+from vulca.layers.mask import build_color_mask, apply_mask_to_image
+from vulca.layers.manifest import write_manifest as _write_manifest_v2
+from vulca.layers.prompt import build_regeneration_prompt
 
+
+# ---------------------------------------------------------------------------
+# V2 API — Extract mode (synchronous, color-range masking)
+# ---------------------------------------------------------------------------
+
+def split_extract(
+    image_path: str,
+    layers: list[LayerInfo],
+    *,
+    output_dir: str,
+    tolerance: int = 30,
+) -> list[LayerResult]:
+    """Extract mode: color-range masking → full-canvas RGBA layers.
+
+    For each LayerInfo, builds a color-range mask based on dominant_colors and
+    content_type, applies it to the source image, and saves a full-canvas RGBA
+    PNG to output_dir.
+
+    Args:
+        image_path: Path to the source image.
+        layers: LayerInfo list describing the semantic layers.
+        output_dir: Directory to write layer PNGs and manifest.json.
+        tolerance: Color-distance tolerance for mask generation (default 30).
+
+    Returns:
+        List of LayerResult sorted by z_index ascending.
+    """
+    img = Image.open(image_path)
+    w, h = img.size
+
+    out_dir = Path(output_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    results: list[LayerResult] = []
+    for info in sorted(layers, key=lambda l: l.z_index):
+        mask = build_color_mask(img, info, tolerance=tolerance)
+        layer_img = apply_mask_to_image(img, mask)
+
+        out_path = out_dir / f"{info.name}.png"
+        layer_img.save(str(out_path))
+        results.append(LayerResult(info=info, image_path=str(out_path)))
+
+    _write_manifest_v2(layers, output_dir=output_dir, width=w, height=h, split_mode="extract")
+    return results
+
+
+# ---------------------------------------------------------------------------
+# V2 API — Regenerate mode (async, img2img per layer)
+# ---------------------------------------------------------------------------
+
+async def split_regenerate(
+    image_path: str,
+    layers: list[LayerInfo],
+    *,
+    output_dir: str,
+    provider: str = "gemini",
+    tradition: str = "default",
+    api_key: str = "",
+) -> list[LayerResult]:
+    """Regenerate mode: img2img per layer → full-canvas RGBA layers.
+
+    Uses an image provider to regenerate each layer independently,
+    using the source image as a reference.  The provider is called once per
+    layer with a per-layer prompt built from LayerInfo.
+
+    Args:
+        image_path: Path to the source image (used as img2img reference).
+        layers: LayerInfo list describing the semantic layers.
+        output_dir: Directory to write layer PNGs and manifest.json.
+        provider: Provider name — "gemini", "mock", "openai", etc.
+        tradition: Cultural tradition name injected into generation prompts.
+        api_key: API key forwarded to the provider (empty = env-var fallback).
+
+    Returns:
+        List of LayerResult sorted by z_index ascending.
+    """
+    from vulca.providers import get_image_provider
+
+    img = Image.open(image_path)
+    w, h = img.size
+
+    ref_b64 = base64.b64encode(Path(image_path).read_bytes()).decode()
+
+    img_provider = get_image_provider(provider, api_key=api_key)
+
+    out_dir = Path(output_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    results: list[LayerResult] = []
+    sorted_layers = sorted(layers, key=lambda l: l.z_index)
+
+    for info in sorted_layers:
+        other_names = [li.name for li in sorted_layers if li.name != info.name]
+        prompt = build_regeneration_prompt(
+            info,
+            width=w,
+            height=h,
+            tradition=tradition,
+            other_layer_names=other_names,
+        )
+
+        image_result = await img_provider.generate(
+            prompt,
+            tradition=tradition,
+            reference_image_b64=ref_b64,
+            width=w,
+            height=h,
+        )
+
+        # Decode the generated image
+        import io
+        raw_bytes = base64.b64decode(image_result.image_b64)
+        mime = getattr(image_result, "mime", "") or ""
+        if "svg" in mime:
+            # SVG output (e.g. mock provider): create a transparent placeholder
+            gen_img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+        else:
+            gen_img = Image.open(io.BytesIO(raw_bytes))
+
+        # Ensure RGBA and full-canvas size
+        gen_img = gen_img.convert("RGBA")
+        if gen_img.size != (w, h):
+            gen_img = gen_img.resize((w, h), Image.LANCZOS)
+
+        out_path = out_dir / f"{info.name}.png"
+        gen_img.save(str(out_path))
+        results.append(LayerResult(info=info, image_path=str(out_path)))
+
+    _write_manifest_v2(layers, output_dir=output_dir, width=w, height=h, split_mode="regenerate")
+    return results
+
+
+# ---------------------------------------------------------------------------
+# V1 compat — kept for backward compatibility (test_layers.py)
+# ---------------------------------------------------------------------------
 
 def crop_layer(image_path: str, info: LayerInfo, *, output_dir: str = "") -> str:
-    """Crop a region from image based on percentage bbox, apply chromakey. Returns path to RGBA PNG."""
+    """Crop a region from image based on percentage bbox, apply chromakey.
+
+    V1 compat function.  Returns path to RGBA PNG (minimal crop size).
+    """
     img = Image.open(image_path)
     x = int(img.width * info.bbox["x"] / 100)
     y = int(img.height * info.bbox["y"] / 100)
-    w = int(img.width * info.bbox["w"] / 100)
-    h = int(img.height * info.bbox["h"] / 100)
-    cropped = img.crop((x, y, x + w, y + h))
+    cw = int(img.width * info.bbox["w"] / 100)
+    ch = int(img.height * info.bbox["h"] / 100)
+    cropped = img.crop((x, y, x + cw, y + ch))
 
-    # Apply chromakey based on layer's generation background color
     if info.bg_color == "white":
         cropped = chromakey_white(cropped)
     elif info.bg_color == "black":
@@ -68,7 +220,12 @@ def write_manifest(
     width: int,
     height: int,
 ) -> str:
-    """Write manifest.json for split layers. Stores bbox as percentages."""
+    """V1 compat: write manifest.json (version=1) with bbox and bg_color.
+
+    This function preserves the original V1 format used by test_layers.py and
+    any callers that import write_manifest from split.py.  For V2 format, use
+    vulca.layers.manifest.write_manifest() directly.
+    """
     manifest = {
         "version": 1,
         "width": width,

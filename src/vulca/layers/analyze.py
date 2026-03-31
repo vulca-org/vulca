@@ -8,71 +8,22 @@ import re
 
 import litellm
 
+from vulca.layers.prompt import build_analyze_prompt, parse_v2_response
 from vulca.layers.types import LayerInfo
 
 logger = logging.getLogger("vulca.layers")
 
-_BLEND_TO_BG = {"screen": "black", "multiply": "gray", "normal": "white"}
-
-_ANALYZE_PROMPT = """\
-Analyze this image and identify its semantic layers (3-6 layers).
-For each layer, provide:
-- name: short snake_case identifier
-- description: what this layer contains (under 15 words)
-- bbox: bounding box as percentages {"x": 0-100, "y": 0-100, "w": 1-100, "h": 1-100}
-- z_index: stacking order (0 = bottom/background)
-- blend_mode: "normal" for solid objects, "screen" for light/glow effects, "multiply" for shadows/mist
-
-Keep descriptions concise. Return ONLY a JSON object (no markdown):
-{"layers": [{"name": "...", "description": "...", "bbox": {...}, "z_index": 0, "blend_mode": "..."}]}
-"""
+_MAX_RETRIES = 2
 
 
-def parse_layer_response(raw: dict) -> list[LayerInfo]:
-    """Parse VLM JSON response into LayerInfo list."""
-    layers_raw = raw.get("layers", [])
-    result: list[LayerInfo] = []
-    for item in layers_raw:
-        blend = item.get("blend_mode", "normal")
-        if blend not in ("normal", "screen", "multiply"):
-            blend = "normal"
-        bg_color = _BLEND_TO_BG.get(blend, "white")
-        result.append(LayerInfo(
-            name=item.get("name", f"layer_{len(result)}"),
-            description=item.get("description", ""),
-            bbox=item.get("bbox", {"x": 0, "y": 0, "w": 100, "h": 100}),
-            z_index=item.get("z_index", len(result)),
-            blend_mode=blend,
-            bg_color=bg_color,
-        ))
-    result.sort(key=lambda l: l.z_index)
-    return result
+def _extract_json(text: str) -> dict:
+    """Extract and parse JSON from VLM response text.
 
-
-async def analyze_layers(image_path: str, *, api_key: str = "") -> list[LayerInfo]:
-    """Use VLM to identify semantic layers in an image."""
-    from vulca._image import load_image_base64
-
-    img_b64, mime = await load_image_base64(image_path)
-    model = os.environ.get("VULCA_VLM_MODEL", "gemini/gemini-2.5-flash")
-
-    resp = await litellm.acompletion(
-        model=model,
-        messages=[
-            {"role": "system", "content": _ANALYZE_PROMPT},
-            {"role": "user", "content": [
-                {"type": "image_url", "image_url": {"url": f"data:{mime};base64,{img_b64}"}},
-                {"type": "text", "text": "Identify the semantic layers of this artwork."},
-            ]},
-        ],
-        max_tokens=4096,
-        temperature=0.1,
-        api_key=api_key or os.environ.get("GOOGLE_API_KEY", ""),
-        timeout=30,
-    )
-
-    text = resp.choices[0].message.content.strip()
-    # Strip markdown code block
+    Strips markdown code fences, then tries json.loads directly.
+    Falls back to extracting content between first { and last }.
+    Raises ValueError if no valid JSON can be extracted.
+    """
+    # Strip markdown code block fences
     if text.startswith("```"):
         text = re.sub(r'^```\w*\n?', '', text)
         text = re.sub(r'\n?```$', '', text)
@@ -80,15 +31,69 @@ async def analyze_layers(image_path: str, *, api_key: str = "") -> list[LayerInf
 
     # Try parsing the full text as JSON first (most reliable)
     try:
-        raw = json.loads(text)
+        return json.loads(text)
     except json.JSONDecodeError:
-        # Fallback: extract JSON between first { and last }
-        start = text.find("{")
-        end = text.rfind("}")
-        if start == -1 or end == -1 or end <= start:
-            raise ValueError(f"Could not parse layer analysis: {text[:200]}")
+        pass
+
+    # Fallback: extract JSON between first { and last }
+    start = text.find("{")
+    end = text.rfind("}")
+    if start == -1 or end == -1 or end <= start:
+        raise ValueError(f"Could not parse layer analysis: {text[:200]}")
+    try:
+        return json.loads(text[start:end + 1])
+    except json.JSONDecodeError:
+        raise ValueError(f"Could not parse layer analysis: {text[:200]}")
+
+
+def parse_layer_response(raw: dict) -> list[LayerInfo]:
+    """Parse VLM JSON response into LayerInfo list.
+
+    Delegates to parse_v2_response for V2 format (no bbox,
+    includes content_type / dominant_colors / regeneration_prompt).
+    Kept for backward compatibility.
+    """
+    return parse_v2_response(raw)
+
+
+async def analyze_layers(image_path: str, *, api_key: str = "") -> list[LayerInfo]:
+    """Use VLM to identify semantic layers in an image.
+
+    Retries up to _MAX_RETRIES times on transient failures.
+    Uses V2 prompt from build_analyze_prompt().
+    """
+    from vulca._image import load_image_base64
+
+    img_b64, mime = await load_image_base64(image_path)
+    model = os.environ.get("VULCA_VLM_MODEL", "gemini/gemini-2.5-flash")
+    prompt = build_analyze_prompt()
+
+    last_err: Exception = ValueError("No attempts made")
+    for attempt in range(_MAX_RETRIES + 1):
         try:
-            raw = json.loads(text[start:end + 1])
-        except json.JSONDecodeError:
-            raise ValueError(f"Could not parse layer analysis: {text[:200]}")
-    return parse_layer_response(raw)
+            resp = await litellm.acompletion(
+                model=model,
+                messages=[
+                    {"role": "system", "content": prompt},
+                    {"role": "user", "content": [
+                        {"type": "image_url", "image_url": {"url": f"data:{mime};base64,{img_b64}"}},
+                        {"type": "text", "text": "Identify the semantic layers of this artwork."},
+                    ]},
+                ],
+                max_tokens=4096,
+                temperature=0.1,
+                api_key=api_key or os.environ.get("GOOGLE_API_KEY", ""),
+                timeout=30,
+            )
+            text = resp.choices[0].message.content.strip()
+            raw = _extract_json(text)
+            return parse_layer_response(raw)
+        except Exception as e:
+            last_err = e
+            if attempt < _MAX_RETRIES:
+                logger.warning("Layer analysis attempt %d failed: %s", attempt + 1, e)
+                continue
+
+    raise ValueError(
+        f"Layer analysis failed after {_MAX_RETRIES + 1} attempts: {last_err}"
+    )

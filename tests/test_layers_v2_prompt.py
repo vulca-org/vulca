@@ -208,3 +208,21 @@ class TestRegenerationPrompt:
         prompt = build_regeneration_prompt(layer, width=1024, height=1024)
         assert "Misty forest" in prompt
         assert "transparent" in prompt.lower()
+
+
+class TestAnalyzeV2Integration:
+    def test_parse_layer_response_delegates_to_v2(self):
+        from vulca.layers.analyze import parse_layer_response
+        raw = {
+            "layers": [{
+                "name": "bg", "description": "sky", "z_index": 0,
+                "content_type": "background",
+                "dominant_colors": ["#87CEEB"],
+                "regeneration_prompt": "Blue sky",
+            }]
+        }
+        layers = parse_layer_response(raw)
+        assert layers[0].content_type == "background"
+        assert layers[0].dominant_colors == ["#87CEEB"]
+        assert layers[0].regeneration_prompt == "Blue sky"
+        assert layers[0].bbox is None
