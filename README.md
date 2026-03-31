@@ -168,14 +168,14 @@ $ vulca layers split artwork.png -o ./layers/ --mode regenerate --provider gemin
 ```
 
 <p align="center">
-  <img src="assets/demo/v2/hero-xieyi.png" alt="Original artwork" width="200">
+  <img src="assets/demo/v2/hero-xieyi.png" alt="Original artwork" width="180">
   →
-  <img src="assets/demo/v2/layers-split/background_paper.png" alt="Layer: background" width="130">
-  <img src="assets/demo/v2/layers-split/distant_mountains.png" alt="Layer: mountains" width="130">
-  <img src="assets/demo/v2/layers-split/pavilion_and_pine_trees.png" alt="Layer: pavilion" width="130">
-  <img src="assets/demo/v2/layers-split/calligraphy_and_seals.png" alt="Layer: calligraphy" width="130">
+  <img src="assets/demo/v2/layers-extract/background_paper.png" alt="Layer: background (32% opaque)" width="120">
+  <img src="assets/demo/v2/layers-extract/distant_mountains.png" alt="Layer: mountains (48% opaque)" width="120">
+  <img src="assets/demo/v2/layers-extract/central_pavilion_and_pine_trees.png" alt="Layer: pavilion (34% opaque)" width="120">
+  <img src="assets/demo/v2/layers-extract/calligraphy_and_seals.png" alt="Layer: calligraphy (6% opaque)" width="120">
   →
-  <img src="assets/demo/v2/layers-composite.png" alt="Composite" width="200">
+  <img src="assets/demo/v2/layers-extract/composite.png" alt="Composite" width="180">
 </p>
 
 ### Three Split Modes
@@ -251,6 +251,43 @@ Hybrid pipeline: algorithmic tools run first, VLM evaluation covers remaining di
 
 ---
 
+## Inpainting — Region-Based Repaint
+
+Repaint specific regions while **guaranteeing pixel-level preservation** outside the bounding box. Not full-image regeneration — PIL local blend.
+
+```bash
+# Natural language region description
+vulca inpaint artwork.png --region "the sky in the upper portion" \
+  --instruction "replace with dramatic stormy clouds" -t chinese_xieyi
+
+# Or precise coordinates (x, y, w, h as percentages)
+vulca inpaint artwork.png --region "0,0,100,40" \
+  --instruction "add golden sunset gradient" --count 4 --select 1
+```
+
+How it works:
+1. **Region detection**: NL description → VLM identifies bounding box, or use explicit coordinates
+2. **Variant generation**: Generate N repaint variants for the region (default 4)
+3. **Pixel-level blend**: Only pixels inside the bbox are replaced — everything outside is the original, untouched
+4. **Selection**: Auto-select best variant or manually pick with `--select N`
+
+```python
+from vulca import ainpaint
+
+result = await ainpaint(
+    "artwork.png",
+    region="the mountains in the background",
+    instruction="make them more misty and ethereal",
+    tradition="chinese_xieyi",
+    count=4,
+)
+print(result.bbox)       # {"x": 0, "y": 10, "w": 100, "h": 45}
+print(result.variants)   # [path1, path2, path3, path4]
+print(result.blended)    # final blended output path
+```
+
+---
+
 ## Studio — Brief-Driven Creative Session
 
 Multi-round creative collaboration with natural language control:
@@ -306,13 +343,41 @@ $ vulca evolution chinese_xieyi
   Sessions: 71
 ```
 
-Closed loop:
-1. Pipeline scores → `LocalEvolver` → evolved weights per tradition
-2. **GenerateNode** reads evolved weights → strengthens historically weak dimensions
-3. **EvaluateNode** reads evolved weights → calibrated scoring
-4. **DecideNode** reads evolved threshold → adaptive accept/rerun decisions
-5. `eval_mode` aware: strict sessions strengthen tradition; reference sessions track exploration
-6. `deviation_type` filtering: intentional departures are not treated as weaknesses
+```mermaid
+graph LR
+    C[Create/Evaluate] -->|scores| S[Session Store]
+    S -->|every 5 min| LE[LocalEvolver]
+    LE -->|per tradition| EW[Evolved Weights]
+    EW -->|read| G[GenerateNode<br/>strengthen weak dims]
+    EW -->|read| E[EvaluateNode<br/>calibrated scoring]
+    EW -->|read| D[DecideNode<br/>adaptive threshold]
+    G --> C
+    E --> C
+```
+
+**How users interact with evolution:**
+
+```bash
+# View current evolved state for any tradition
+vulca evolution chinese_xieyi
+
+# Compare multiple traditions
+vulca evolution default
+vulca evolution japanese_traditional
+
+# Evolution happens automatically — every create/evaluate session
+# contributes to weight refinement. No manual intervention needed.
+
+# Session data:
+vulca sessions stats    # 1100+ sessions, per-tradition breakdown
+vulca sessions list -t chinese_xieyi --sort score  # browse by tradition
+```
+
+**Key design choices:**
+- `strict` mode sessions strengthen tradition conformance weights
+- `reference` mode sessions track exploration trends without penalizing
+- `deviation_type=intentional_departure` is not treated as a weakness
+- Weights converge after ~50 sessions per tradition
 
 ---
 
@@ -445,4 +510,4 @@ Apache 2.0
 
 ---
 
-> **Source of truth**: This repository is synced from the [VULCA monorepo](https://github.com/yha9806/website) via `git subtree`. Development happens in the monorepo; this repo is the public distribution mirror. Issues and PRs are welcome here.
+> Issues and PRs welcome. Development happens in a private monorepo and is synced here via `git subtree`.
