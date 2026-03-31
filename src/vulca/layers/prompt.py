@@ -1,0 +1,126 @@
+"""V2 analysis prompt engine for VULCA layered artwork."""
+from __future__ import annotations
+
+from vulca.layers.types import LayerInfo
+
+ANALYZE_PROMPT = """Analyze this image and decompose it into 3-6 independent semantic layers.
+
+Rules:
+- Layers MUST NOT overlap in content — each pixel belongs to exactly one layer
+- Background layer covers the full canvas
+- Foreground objects are separate from their background
+- Effects (mist, glow, shadows) are separate layers
+
+For each layer provide:
+{
+  "layers": [
+    {
+      "name": "snake_case_name",
+      "description": "Detailed description sufficient to regenerate this layer independently (20-40 words)",
+      "z_index": 0,
+      "blend_mode": "normal|screen|multiply",
+      "dominant_colors": ["#hex1", "#hex2"],
+      "content_type": "background|subject|detail|effect|text",
+      "regeneration_prompt": "Prompt to regenerate ONLY this layer on transparent background, preserving the original style"
+    }
+  ]
+}
+
+Important:
+- DO NOT include bbox — layers are full-canvas
+- Each layer's regeneration_prompt must describe ONLY what this layer contains
+- Background layer should describe the base texture/color without foreground objects
+- Subject layers should describe the object without background
+- Return ONLY a JSON object (no markdown fences, no explanation)"""
+
+_VALID_BLEND_MODES = {"normal", "screen", "multiply"}
+_VALID_CONTENT_TYPES = {"background", "subject", "detail", "effect", "text"}
+
+
+def build_analyze_prompt() -> str:
+    """Return the V2 analysis system prompt."""
+    return ANALYZE_PROMPT
+
+
+def parse_v2_response(raw: dict) -> list[LayerInfo]:
+    """Parse VLM V2 response into LayerInfo list.
+
+    Args:
+        raw: Dict with a "layers" key containing a list of layer dicts.
+
+    Returns:
+        List of LayerInfo sorted by z_index ascending.
+    """
+    layers_data = raw.get("layers", [])
+    results: list[LayerInfo] = []
+
+    for item in layers_data:
+        name = item.get("name", "")
+        description = item.get("description", "")
+        z_index = int(item.get("z_index", 0))
+
+        blend_mode = item.get("blend_mode", "normal")
+        if blend_mode not in _VALID_BLEND_MODES:
+            blend_mode = "normal"
+
+        content_type = item.get("content_type", "background")
+        if content_type not in _VALID_CONTENT_TYPES:
+            content_type = "background"
+
+        dominant_colors = item.get("dominant_colors", [])
+        if not isinstance(dominant_colors, list):
+            dominant_colors = []
+
+        regeneration_prompt = item.get("regeneration_prompt", "")
+
+        layer = LayerInfo(
+            name=name,
+            description=description,
+            z_index=z_index,
+            blend_mode=blend_mode,
+            content_type=content_type,
+            dominant_colors=dominant_colors,
+            regeneration_prompt=regeneration_prompt,
+        )
+        results.append(layer)
+
+    results.sort(key=lambda li: li.z_index)
+    return results
+
+
+def build_regeneration_prompt(
+    info: LayerInfo,
+    *,
+    width: int = 1024,
+    height: int = 1024,
+    tradition: str = "",
+    other_layer_names: list[str] | None = None,
+) -> str:
+    """Build prompt for regenerating a single layer via img2img.
+
+    Args:
+        info: The LayerInfo for the layer to regenerate.
+        width: Canvas width in pixels.
+        height: Canvas height in pixels.
+        tradition: Cultural tradition name; included in prompt when non-empty.
+        other_layer_names: Names of other layers to exclude from this layer.
+
+    Returns:
+        A complete regeneration prompt string.
+    """
+    base = info.regeneration_prompt if info.regeneration_prompt else info.description
+
+    parts = [
+        base,
+        f"TRANSPARENT background.",
+        f"Canvas size: {width}x{height}.",
+    ]
+
+    if tradition:
+        parts.append(f"Cultural tradition: {tradition}.")
+
+    if other_layer_names:
+        names_str = ", ".join(other_layer_names)
+        parts.append(f"DO NOT include any elements from these other layers: {names_str}.")
+
+    return " ".join(parts)
