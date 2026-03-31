@@ -203,18 +203,17 @@ Every layer is **full-canvas RGBA** with real transparency. Proper blend modes (
 *"The sky doesn't feel right, but the mountains are perfect."*
 
 <p align="center">
-  <img src="assets/demo/v2/scenario1-comparison.png" alt="Original → mist hidden → sunset mist" width="800">
+  <img src="assets/demo/v2/scenario1-comparison.png" alt="Before vs after: sky redrawn as sunset, mountains untouched" width="800">
 </p>
 
+Only the sky/mist layer was redrawn — mountains, pavilion, pine trees, and calligraphy are pixel-identical.
+
 ```bash
-vulca layers split artwork.png -o ./layers/ --mode extract
-vulca layers lock ./layers/ --layer calligraphy_and_seals         # protect
-vulca layers toggle ./layers/ --layer mist_and_clouds --visible false
-vulca layers composite ./layers/ -o preview-no-mist.png           # preview
-vulca layers toggle ./layers/ --layer mist_and_clouds --visible true
-vulca layers redraw ./layers/ --layer mist_and_clouds \
-  -i "dramatic sunset gradient, warm orange to purple"            # redraw only this layer
-vulca layers composite ./layers/ -o final.png                     # done
+vulca layers split artwork.png -o ./layers/ --mode regenerate --provider gemini
+vulca layers lock ./layers/ --layer calligraphy_and_seals         # protect from edits
+vulca layers redraw ./layers/ --layer background_sky_and_mist \
+  -i "warm golden sunset with orange and purple gradients"        # redraw ONLY this layer
+vulca layers composite ./layers/ -o final.png                     # other layers untouched
 ```
 
 ### Scenario 2: Design Asset Extraction (Designers)

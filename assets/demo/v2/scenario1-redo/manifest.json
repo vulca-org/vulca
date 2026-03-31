@@ -1,0 +1,95 @@
+{
+  "version": 2,
+  "width": 1024,
+  "height": 1024,
+  "source_image": "original.png",
+  "split_mode": "regenerate",
+  "created_at": "2026-03-31T22:19:20Z",
+  "layers": [
+    {
+      "id": "layer_0550b063",
+      "name": "background_sky_and_mist",
+      "description": "The base layer of the painting, featuring a light, off-white paper texture with soft, ethereal ink washes creating a sense of distant sky and atmospheric mist throughout the landscape.",
+      "z_index": 0,
+      "blend_mode": "normal",
+      "content_type": "background",
+      "visible": true,
+      "locked": false,
+      "file": "background_sky_and_mist.png",
+      "dominant_colors": [
+        "#F8F7F2",
+        "#D0D0D0"
+      ],
+      "regeneration_prompt": "A traditional Chinese ink wash painting background, depicting a vast, empty sky with subtle, ethereal light grey ink washes suggesting distant mist and clouds, on an off-white paper texture."
+    },
+    {
+      "id": "layer_8e0545bc",
+      "name": "distant_mountains",
+      "description": "Majestic, rugged mountain ranges in the upper background, rendered with strong, dark ink strokes, partially obscured by and emerging from the atmospheric mist. They have a textured, rocky appearance.",
+      "z_index": 1,
+      "blend_mode": "normal",
+      "content_type": "subject",
+      "visible": true,
+      "locked": false,
+      "file": "distant_mountains.png",
+      "dominant_colors": [
+        "#3A3A3A",
+        "#707070",
+        "#B0B0B0"
+      ],
+      "regeneration_prompt": "A traditional Chinese ink wash painting of towering, jagged mountain peaks in the distance, rendered with dark, textured ink strokes, partially shrouded in soft grey mist. The mountains are the sole subject, filling the upper portion of the canvas."
+    },
+    {
+      "id": "layer_32e6dd24",
+      "name": "midground_landscape",
+      "description": "The midground landscape featuring a winding river with cascading waterfalls, lush green-tinted hillsides, and dense dark green forests on the slopes, including the winding path leading up to the foreground island.",
+      "z_index": 2,
+      "blend_mode": "normal",
+      "content_type": "subject",
+      "visible": true,
+      "locked": false,
+      "file": "midground_landscape.png",
+      "dominant_colors": [
+        "#4A5C4A",
+        "#2A3A2A",
+        "#808080",
+        "#C0C0C0"
+      ],
+      "regeneration_prompt": "A traditional Chinese ink wash painting depicting a midground landscape with a winding river flowing through a valley, featuring cascading waterfalls and rapids. The river is flanked by rolling hillsides covered in dense, dark green forests and a winding dirt path."
+    },
+    {
+      "id": "layer_c08cad5b",
+      "name": "foreground_island_pavilion_pines",
+      "description": "A prominent rocky island in the mid-left, featuring a small, detailed traditional Chinese pavilion with a yellow roof, surrounded by several distinct, gnarled pine trees with dark green needles.",
+      "z_index": 3,
+      "blend_mode": "normal",
+      "content_type": "subject",
+      "visible": true,
+      "locked": false,
+      "file": "foreground_island_pavilion_pines.png",
+      "dominant_colors": [
+        "#607060",
+        "#203020",
+        "#D0B080",
+        "#304030"
+      ],
+      "regeneration_prompt": "A traditional Chinese ink wash painting of a rocky island outcrop in the foreground, featuring a small, intricately detailed traditional Chinese pavilion with a yellow roof. Several ancient, gnarled pine trees with dark green needles grow prominently on the island."
+    },
+    {
+      "id": "layer_408881f5",
+      "name": "calligraphy_and_seals",
+      "description": "Traditional Chinese calligraphy in black ink, accompanied by two red square seals, positioned in the upper right corner of the canvas.",
+      "z_index": 4,
+      "blend_mode": "normal",
+      "content_type": "text",
+      "visible": true,
+      "locked": false,
+      "file": "calligraphy_and_seals.png",
+      "dominant_colors": [
+        "#000000",
+        "#CC0000"
+      ],
+      "regeneration_prompt": "Traditional Chinese calligraphy in black ink, with two square red seals below it, positioned in the upper right corner of a blank canvas. The text reads '\u96f2\u96e8\u540e\u96e8 \u677e\u4ead\u96b1\u79d8\u751f\u975c' and the seals are typical Chinese artist seals."
+    }
+  ]
+}
