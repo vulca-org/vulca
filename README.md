@@ -216,20 +216,44 @@ vulca layers redraw ./layers/ --layer background_sky_and_mist \
 vulca layers composite ./layers/ -o final.png                     # other layers untouched
 ```
 
-### Scenario 2: Design Asset Extraction (Designers)
+### Scenario 2a: Event Poster Design (Graphic Designers)
 
-*Like Figma's component extraction, but for cultural art.*
+*Extract the full painting as background → generate poster with modern typography overlay.*
 
 <p align="center">
-  <img src="assets/demo/v2/scenario2-design-flow.png" alt="Source → extract element → brand design" width="800">
+  <img src="assets/demo/v2/hero-xieyi.png" alt="Source artwork" width="300">
+  →
+  <img src="assets/demo/v2/scenario2-poster.png" alt="Cultural festival poster" width="300">
+</p>
+<p align="center"><em>Ink wash painting → event poster with typography (92% brand consistency)</em></p>
+
+```bash
+vulca layers split artwork.png -o ./layers/ --mode extract
+vulca layers merge ./layers/ --layers mountains,pavilion,mist --name "poster_bg"
+vulca create "Cultural festival poster, modern typography overlay" \
+  -t brand_design --reference ./layers/poster_bg.png
+```
+
+### Scenario 2b: Frontend Parallax (Web Developers)
+
+*Export each layer as an independent CSS element → scroll-driven parallax depth effect.*
+
+<p align="center">
+  <img src="assets/demo/v2/scenario2-parallax.png" alt="Layers as CSS parallax elements" width="800">
 </p>
 
 ```bash
 vulca layers split artwork.png -o ./layers/ --mode extract
-vulca layers merge ./layers/ --layers pavilion,calligraphy --name "hero_element"
-vulca layers add ./layers/ --name "golden_glow" --z-index 6 --content-type effect
-vulca layers export ./layers/ -o ./design-assets.psd
-# → 00_background.png, 01_mountains.png, ... + manifest.json
+vulca layers export ./layers/ -o ./web-assets.psd
+# → 00_background.png, 01_mountains.png, 03_pavilion.png, 05_calligraphy.png
+# Each layer = independent PNG with transparency → CSS transform: translateZ()
+```
+
+```css
+.bg        { transform: translateZ(-3px) scale(4); }  /* slowest scroll */
+.mountains { transform: translateZ(-2px) scale(3); }
+.pavilion  { transform: translateZ(-1px) scale(2); }
+.text      { transform: translateZ(0);             }  /* normal scroll */
 ```
 
 ### Scenario 3: Per-Layer Cultural Evaluation (Researchers)
