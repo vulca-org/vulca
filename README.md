@@ -196,7 +196,7 @@ Each dimension returns: score (0-1), observations, rationale, actionable suggest
 
 ## Layers V2 — Full Editing System
 
-Every layer is **full-canvas RGBA** (not bbox crops). Proper blend modes. 3 split modes. 7 editing operations. 14 CLI subcommands.
+Every layer is **full-canvas RGBA** (not bbox crops). Proper blend modes (normal/screen/multiply). 3 split modes. 7 editing operations. 14 CLI subcommands.
 
 <details>
 <summary>See layer decomposition in action (GIF)</summary>
@@ -204,20 +204,6 @@ Every layer is **full-canvas RGBA** (not bbox crops). Proper blend modes. 3 spli
   <img src="assets/demo/v2/vhs-layers.gif" alt="Layers V2 decomposition demo" width="800">
 </p>
 </details>
-
-### Split an Artwork into Layers
-
-```
-$ vulca layers split artwork.png -o ./layers/ --mode regenerate --provider gemini
-
-  Splitting 6 layers (regenerate mode) -> ./layers/
-    [0] background_paper       -> ./layers/background_paper.png
-    [1] distant_mountains      -> ./layers/distant_mountains.png
-    [2] mist_and_clouds        -> ./layers/mist_and_clouds.png
-    [3] midground_landscape    -> ./layers/midground_landscape.png
-    [4] pavilion_and_pine_trees -> ./layers/pavilion_and_pine_trees.png
-    [5] calligraphy_and_seals  -> ./layers/calligraphy_and_seals.png
-```
 
 <p align="center">
   <img src="assets/demo/v2/hero-xieyi.png" alt="Original artwork" width="180">
@@ -230,42 +216,93 @@ $ vulca layers split artwork.png -o ./layers/ --mode regenerate --provider gemin
   <img src="assets/demo/v2/layers-extract/composite.png" alt="Composite" width="180">
 </p>
 
-### Three Split Modes
+### Scenario 1: Non-Destructive Editing (Artists)
+
+*"The sky doesn't feel right, but the mountains are perfect"* — edit one layer without touching the rest.
+
+```bash
+# Decompose into semantic layers
+vulca layers split artwork.png -o ./layers/ --mode extract
+
+# Redraw only the sky — mountains, pavilion, calligraphy untouched
+vulca layers redraw ./layers/ --layer mist_and_clouds \
+  -i "replace with dramatic sunset gradient, warm orange to purple"
+
+# Composite back with blend modes
+vulca layers composite ./layers/ -o final.png
+```
+
+Lock layers you want to protect, toggle visibility to preview changes:
+
+```bash
+vulca layers lock ./layers/ --layer calligraphy_and_seals   # prevent accidental edits
+vulca layers toggle ./layers/ --layer mist --visible false   # preview without mist
+vulca layers composite ./layers/ -o preview-no-mist.png      # see the difference
+```
+
+### Scenario 2: Element Extraction for Design (Designers)
+
+*Already shown above in [Layer-Driven Design Transfer](#create--one-command-multiple-styles)* — extract mountain layer → brand packaging. Additional design operations:
+
+```bash
+# Add a new effect layer (e.g., golden glow overlay)
+vulca layers add ./layers/ --name "golden_glow" --z-index 6 --content-type effect
+
+# Merge foreground elements into a single design asset
+vulca layers merge ./layers/ --layers pavilion_and_pine_trees,calligraphy_and_seals \
+  --name "hero_element"
+
+# Export as PNG directory (Photoshop-compatible structure)
+vulca layers export ./layers/ -o ./design-assets.psd
+# → 00_background.png, 01_mountains.png, ... + manifest.json
+```
+
+### Scenario 3: Per-Layer Cultural Evaluation (Researchers)
+
+*Which element carries the most cultural weight?* Evaluate each layer independently:
+
+```
+$ vulca layers evaluate ./layers/ -t chinese_xieyi
+
+  [0] background_paper              90%   (traditional paper texture)
+  [1] distant_mountains             92%   ← highest: classic ink wash technique
+  [2] mist_and_clouds               90%   (atmospheric perspective)
+  [3] midground_landscape           87%   (room for improvement)
+  [4] central_pavilion              90%   (canonical motif)
+  [5] calligraphy_and_seals         88%   (cultural integration)
+```
+
+Discover that `distant_mountains` scores highest (92%) because ink wash mountain technique is central to xieyi tradition — while `midground_landscape` at 87% could benefit from more varied texture strokes.
+
+### Technical Reference
+
+**3 split modes:**
 
 | Mode | Command | How it works | API cost |
 |------|---------|-------------|:--------:|
-| **regenerate** (default) | `--mode regenerate` | img2img per layer via Gemini | ~$0.05/layer |
 | **extract** | `--mode extract` | Color-range masking, no API | Free |
-| **sam** | `--mode sam` | SAM2 pixel-precise masks | Free (local) |
+| **regenerate** | `--mode regenerate` | img2img per layer via Gemini | ~$0.05/layer |
+| **sam** | `--mode sam` | SAM2 pixel-precise masks (`pip install vulca[sam]`) | Free (local) |
 
-### Edit Layers
+**7 editing operations:**
 
-```bash
-vulca layers add ./layers/ --name "glow" --z-index 6 --content-type effect
-vulca layers remove ./layers/ --layer calligraphy
-vulca layers reorder ./layers/ --layer foreground --z-index 0
-vulca layers toggle ./layers/ --layer mist --visible false
-vulca layers lock ./layers/ --layer background
-vulca layers merge ./layers/ --layers fg,mid --name merged
-vulca layers duplicate ./layers/ --layer background --name bg_v2
-```
+| Operation | Command | What it does |
+|-----------|---------|-------------|
+| **add** | `vulca layers add` | Create new transparent layer at z-index |
+| **remove** | `vulca layers remove` | Delete layer (blocked if locked) |
+| **reorder** | `vulca layers reorder` | Move layer to new z-index |
+| **toggle** | `vulca layers toggle` | Show/hide layer in composite |
+| **lock** | `vulca layers lock` | Prevent accidental deletion/merge |
+| **merge** | `vulca layers merge` | Combine selected layers into one |
+| **duplicate** | `vulca layers duplicate` | Copy layer for experimentation |
 
-### Redraw via img2img
-
-```bash
-# Single layer
-vulca layers redraw ./layers/ --layer foreground -i "add autumn colors to the trees"
-
-# Merge + redraw
-vulca layers redraw ./layers/ --layers foreground,midground --merge -i "strengthen depth"
-```
-
-### Composite with Blend Modes
+**Composite + export:**
 
 ```bash
-vulca layers composite ./layers/ -o final.png     # normal + screen + multiply
-vulca layers export ./layers/ -o ./export.psd      # PNG directory per layer
-vulca layers evaluate ./layers/ -t chinese_xieyi   # per-layer L1-L5 scoring
+vulca layers composite ./layers/ -o final.png        # blend-mode-aware composite
+vulca layers export ./layers/ -o ./assets.psd         # PNG directory per layer
+vulca layers redraw ./layers/ --layer sky -i "..."    # single-layer img2img
+vulca layers redraw ./layers/ --layers a,b --merge    # merge + redraw
 ```
 
 ---
