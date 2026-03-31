@@ -1,0 +1,112 @@
+{
+  "version": 2,
+  "width": 1024,
+  "height": 1024,
+  "source_image": "",
+  "split_mode": "regenerate",
+  "created_at": "2026-03-31T14:52:15Z",
+  "layers": [
+    {
+      "id": "layer_be51dec4",
+      "name": "background_paper",
+      "description": "The base layer of the artwork, an off-white, slightly textured paper canvas, providing the foundation for the ink painting.",
+      "z_index": 0,
+      "blend_mode": "normal",
+      "content_type": "background",
+      "visible": true,
+      "locked": false,
+      "file": "background_paper.png",
+      "dominant_colors": [
+        "#f8f7f2",
+        "#e8e7e2"
+      ],
+      "regeneration_prompt": "A blank, slightly textured off-white rice paper canvas, traditional Chinese painting style."
+    },
+    {
+      "id": "layer_3738f4a9",
+      "name": "distant_mountains",
+      "description": "Majestic, dark, and misty mountains rendered with varying shades of black ink washes, forming the rugged peaks in the far background, partially obscured by mist.",
+      "z_index": 1,
+      "blend_mode": "normal",
+      "content_type": "subject",
+      "visible": true,
+      "locked": false,
+      "file": "distant_mountains.png",
+      "dominant_colors": [
+        "#3a3d3e",
+        "#7a7d7e",
+        "#b5b7b8"
+      ],
+      "regeneration_prompt": "Distant, towering mountains in traditional Chinese ink wash painting style, rendered with dark grey and black ink, partially obscured by mist, on a transparent background."
+    },
+    {
+      "id": "layer_11bdef8f",
+      "name": "mist_and_clouds",
+      "description": "Soft, ethereal white and light grey mist and clouds that drift between the mountain peaks and through the valleys, creating a sense of depth and atmosphere.",
+      "z_index": 2,
+      "blend_mode": "normal",
+      "content_type": "effect",
+      "visible": true,
+      "locked": false,
+      "file": "mist_and_clouds.png",
+      "dominant_colors": [
+        "#e0e0e0",
+        "#f0f0f0",
+        "#c0c0c0"
+      ],
+      "regeneration_prompt": "Ethereal white and light grey mist and clouds, traditional Chinese ink wash painting style, flowing through a landscape, on a transparent background."
+    },
+    {
+      "id": "layer_9306889d",
+      "name": "midground_landscape",
+      "description": "The detailed midground landscape featuring green-tinted rocky hills, dense dark green forests, a winding river with white waterfalls, and a narrow stone path.",
+      "z_index": 3,
+      "blend_mode": "normal",
+      "content_type": "subject",
+      "visible": true,
+      "locked": false,
+      "file": "midground_landscape.png",
+      "dominant_colors": [
+        "#4a5a4d",
+        "#808c82",
+        "#c0c0c0",
+        "#2a2a2a"
+      ],
+      "regeneration_prompt": "A midground landscape in traditional Chinese ink wash painting style, featuring green-tinted rocky hills, dense dark green forests, a winding river with white waterfalls, and a narrow stone path, on a transparent background."
+    },
+    {
+      "id": "layer_23a5beaa",
+      "name": "pavilion_and_pine_trees",
+      "description": "A small, traditional wooden pavilion with a distinctive roof, nestled on a prominent hill, surrounded by gnarled, ancient pine trees with dark green needles.",
+      "z_index": 4,
+      "blend_mode": "normal",
+      "content_type": "subject",
+      "visible": true,
+      "locked": false,
+      "file": "pavilion_and_pine_trees.png",
+      "dominant_colors": [
+        "#8b6e4e",
+        "#3a4a3d",
+        "#2a2a2a",
+        "#c0c0c0"
+      ],
+      "regeneration_prompt": "A small, traditional Chinese wooden pavilion with a distinctive roof, surrounded by gnarled, ancient pine trees with dark green needles, in traditional ink wash painting style, on a transparent background."
+    },
+    {
+      "id": "layer_9097ddd0",
+      "name": "calligraphy_and_seals",
+      "description": "Black ink calligraphy characters arranged vertically in the upper right corner, accompanied by two small, square red seals.",
+      "z_index": 5,
+      "blend_mode": "normal",
+      "content_type": "text",
+      "visible": true,
+      "locked": false,
+      "file": "calligraphy_and_seals.png",
+      "dominant_colors": [
+        "#2a2a2a",
+        "#cc3333"
+      ],
+      "regeneration_prompt": "Traditional Chinese black ink calligraphy characters arranged vertically, with two small square red seals, in the upper right corner, on a transparent background."
+    }
+  ]
+}

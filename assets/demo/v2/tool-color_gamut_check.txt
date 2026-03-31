@@ -1,0 +1,6 @@
+Tool: color_gamut_check
+
+  cultural_verdict: Excellent gamut compliance (96.2%) for chinese_xieyi. Mean saturation (21.2/255) well within the chinese_xieyi threshold of 60/255.
+
+  Summary: Color gamut compliance: 96.2% (3.8% out-of-gamut, mean S=21.2/255, max_sat=60). Excellent gamut compliance (96.2%) for chinese_xieyi. Mean saturation (21.2/255) well within the chinese_xieyi threshold of 60/255.
+  Confidence: 0.90

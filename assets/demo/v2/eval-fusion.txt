@@ -1,0 +1,20 @@
+
+  VULCA Fusion Analysis (3 traditions)
+  ============================================================
+
+    Dimension                   Chinese Xieyi Japanese Tradit Western Academi
+    ------------------------- --------------- --------------- ---------------
+    Visual Perception                   90%             90%             10%  
+    Technical Execution                 90%             90%             10%  
+    Cultural Context                    95%             80%              0%  
+    Critical Interpretation            100%            100%             10%  
+    Philosophical Aesthetics            90%             90%             10%  
+
+    Overall Alignment                    93%             90%              8% 
+
+  Closest tradition: chinese_xieyi (93%)
+
+  Divergence highlights:
+
+  Latency: 78208ms | Cost: $0.0033
+

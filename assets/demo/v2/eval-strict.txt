@@ -1,0 +1,20 @@
+
+  VULCA Evaluation Result
+  ==================================================
+  Score:     90%
+  Tradition: chinese_xieyi
+  Risk:      low
+
+  Dimensions:
+    L1 Visual Perception         ██████████████████░░ 90%  ✓
+    L2 Technical Execution       █████████████████░░░ 85%  ✓
+    L3 Cultural Context          ██████████████████░░ 90%  ✓
+    L4 Critical Interpretation   ████████████████████ 100%  ✓
+    L5 Philosophical Aesthetics  ██████████████████░░ 90%  ✓
+
+  Summary: Overall excellent (90%) under Chinese Xieyi tradition. Strongest: Critical Interpretation (100%). Room for growth: Technical Execution (85%).
+
+  Suggestions:
+
+  Latency: 20420ms | Cost: $0.0011
+

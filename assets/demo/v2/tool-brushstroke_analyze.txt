@@ -1,0 +1,6 @@
+Tool: brushstroke_analyze
+
+  cultural_verdict: Brushstroke energy (0.87) aligns with chinese_xieyi's expressive style. Visible, dynamic strokes are consistent with tradition expectations.
+
+  Summary: Texture energy: 0.87, edge density: 13.0%, direction: none. Brushstroke energy (0.87) aligns with chinese_xieyi's expressive style. Visible, dynamic strokes are consistent with tradition expectations.
+  Confidence: 0.90

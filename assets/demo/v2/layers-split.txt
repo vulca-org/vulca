@@ -1,0 +1,9 @@
+
+  Splitting 6 layers (regenerate mode) -> assets/demo/v2/layers-split
+    [0] background_paper -> assets/demo/v2/layers-split/background_paper.png
+    [1] distant_mountains -> assets/demo/v2/layers-split/distant_mountains.png
+    [2] mist_and_clouds -> assets/demo/v2/layers-split/mist_and_clouds.png
+    [3] midground_landscape -> assets/demo/v2/layers-split/midground_landscape.png
+    [4] pavilion_and_pine_trees -> assets/demo/v2/layers-split/pavilion_and_pine_trees.png
+    [5] calligraphy_and_seals -> assets/demo/v2/layers-split/calligraphy_and_seals.png
+    manifest.json -> assets/demo/v2/layers-split/manifest.json

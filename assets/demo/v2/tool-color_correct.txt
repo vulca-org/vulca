@@ -1,0 +1,9 @@
+Tool: color_correct
+
+  brightness: 149.23480224609375
+  contrast: 74.60437774658203
+  channel_bias: {'red': 0.013870618234272913, 'green': 0.007068429585375854, 'blue': -0.020939047819648657}
+  suggestions: []
+
+  Summary: Color balance is acceptable (max bias 0.021).
+  Confidence: 0.77

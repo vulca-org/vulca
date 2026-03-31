@@ -1,0 +1,6 @@
+Tool: composition_analyze
+
+  cultural_verdict: The rule-of-thirds alignment, left_heavy asymmetry aligns well with chinese_xieyi's preference for asymmetric, dynamic arrangements. Thirds alignment: 0.75; balance: left_heavy.
+
+  Summary: Visual center at (0.46, 0.55); center_weight=0.11, thirds_alignment=0.75; balance=left_heavy. Rules: rule_of_thirds, asymmetric_balance.
+  Confidence: 0.90

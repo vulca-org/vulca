@@ -1,0 +1,8 @@
+Tool: whitespace_analyze
+
+  ratio: 0.32790470123291016
+  distribution: top_heavy
+  cultural_verdict: Whitespace (32.8%) is within the chinese_xieyi ideal range (30%–55%). The top_heavy distribution aligns well with tradition expectations.
+
+  Summary: Whitespace ratio: 32.8% (top_heavy). Whitespace (32.8%) is within the chinese_xieyi ideal range (30%–55%). The top_heavy distribution aligns well with tradition expectations.
+  Confidence: 0.75

@@ -1,0 +1,20 @@
+
+  Identified 6 layers:
+    [0] background_paper (background, normal)
+        The base layer of the artwork, an off-white, slightly textured paper canvas, providing a neutral ground for the ink painting.
+        colors: #F8F7F2, #EFEFEA
+    [1] distant_mountains (subject, normal)
+        Majestic, rugged mountain peaks rendered with dark ink washes and fine brushstrokes, forming the upper background, partially emerging from mist.
+        colors: #2C2C2C, #6D6D6D, #BDBDBD
+    [2] mist_and_clouds (effect, normal)
+        Soft, ethereal white and light grey atmospheric elements, representing mist and clouds, weaving through the mountains and valleys, creating depth and a sense of vastness.
+        colors: #FFFFFF, #E0E0E0
+    [3] midground_landscape (subject, normal)
+        Detailed midground elements including green-tinged hills, a winding river with waterfalls, a narrow path, and general forestation, excluding the central pavilion and prominent pine trees.
+        colors: #4A6B5C, #8B9E8F, #333333, #FFFFFF
+    [4] prominent_pine_trees_and_pavilion (subject, normal)
+        A small, traditional Chinese pavilion nestled on a central hill, surrounded by several ancient, gnarled pine trees with dark green needles and intricate branches.
+        colors: #2A3B2F, #6B4F3A, #D4C1A7
+    [5] calligraphy_and_seals (text, normal)
+        Vertical Chinese calligraphy text in black ink and two square red seals, positioned in the upper right corner of the composition.
+        colors: #000000, #CC3333

@@ -1,0 +1,22 @@
+
+  VULCA Cultural Analysis (reference mode)
+  ==================================================
+  Alignment: 92%
+  Tradition: chinese_xieyi
+
+  Dimension Analysis:
+    L1 Visual Perception         ██████████████████░░ 90%  (traditional)
+       To push further: To further enhance the visual impact, consider varying the density of the mist (留白) in the middle ground more dramatically, perhaps using a slightly darker, more diffused wash in some areas to suggest deeper valleys, thereby emphasizing the contrast with the crisp white of the sky.
+    L2 Technical Execution       █████████████████░░░ 85%  (traditional)
+       To push further: While the hemp-fiber texture strokes are present, exploring a wider variety of texture strokes (e.g., axe-cut strokes 斧劈皴 for sharper rocks, or rain-drop strokes 雨点皴 for more rounded forms) could add further textural richness and demonstrate broader technical mastery within the Xieyi tradition.
+    L3 Cultural Context          ███████████████████░ 95%  (traditional)
+       To push further: To deepen the cultural context, the artist could consider adding a short poem (题画诗) that directly relates to the scene or evokes a specific philosophical sentiment, further integrating the 'poetry-calligraphy-painting-seal' (诗书画印) harmony.
+    L4 Critical Interpretation   ███████████████████░ 95%  (traditional)
+       To push further: To further enhance the contextual framing, the artist might consider including a subtle human figure (e.g., a scholar in the pavilion or on the path) to emphasize the human connection to nature and the theme of reclusion, a common and respected motif.
+    L5 Philosophical Aesthetics  ██████████████████░░ 90%  (traditional)
+       To push further: To push the philosophical depth further, the artist could experiment with 'splashed ink' (泼墨) in the distant background to create an even more ethereal and abstract representation of the mountains, emphasizing the boundless and formless aspects of nature, thereby deepening the spiritual connection.
+
+  Summary: High alignment (92%) with Chinese Xieyi tradition. Closest: Cultural Context (95%). Most divergent: Technical Execution (85%).
+
+  Latency: 19490ms | Cost: $0.0011
+
