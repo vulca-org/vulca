@@ -3,9 +3,9 @@
 [![PyPI version](https://img.shields.io/pypi/v/vulca.svg)](https://pypi.org/project/vulca/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://pypi.org/project/vulca/)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-green.svg)](https://github.com/vulca-org/vulca/blob/main/LICENSE)
-[![Tests](https://img.shields.io/badge/tests-877%20passing-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-1104%20passing-brightgreen.svg)]()
 
-**AI-native cultural art creation organism.** Create, evaluate, and evolve artwork across 13 cultural traditions with L1-L5 scoring, self-evolving weights, and 5 algorithmic analysis tools — 18 MCP tools, all from one `pip install`.
+**AI-native cultural art creation organism.** Create, evaluate, and evolve artwork across 13 cultural traditions with L1-L5 scoring, self-evolving weights, and 5 algorithmic analysis tools — 21 MCP tools, all from one `pip install`.
 
 <p align="center">
   <img src="assets/demo/hero-shanshui.jpg" alt="VULCA — Chinese Xieyi ink wash landscape, generated and scored 92%" width="600">
@@ -14,8 +14,9 @@
 ```bash
 pip install vulca
 export GOOGLE_API_KEY=your-key
-vulca create "Misty mountains after rain, pine pavilion in clouds" -t chinese_xieyi
+vulca create "Misty mountains after rain, pine pavilion in clouds" -t chinese_xieyi -o artwork.png
 # → Score: 0.915 | Tradition: chinese_xieyi | 1 round | 39s
+# → Image: artwork.png
 ```
 
 > Based on peer-reviewed research: [VULCA Framework](https://aclanthology.org/2025.findings-emnlp/) (EMNLP 2025 Findings) and [VULCA-Bench](https://arxiv.org/abs/2601.07986) (7,410 samples, 9 traditions).
@@ -103,16 +104,37 @@ vulca create "Zen garden at moonlight" \
 # Chinese ink style preserved → Japanese zen composition
 ```
 
-### Layers — Semantic Decomposition
+### Layers — Full Editing System (V2)
 
 <p align="center">
   <img src="assets/demo/layers-showcase.jpg" alt="Original artwork decomposed into semantic layers" width="900">
 </p>
 
+Full-canvas RGBA layers with proper blend modes (normal/screen/multiply), 3 split modes, and Photoshop-style layer editing — 13 CLI subcommands:
+
 ```bash
-vulca layers analyze artwork.png          # identify 6 semantic layers
-vulca layers split artwork.png -o ./out/  # extract as PNGs + manifest
-vulca layers composite ./out/             # reconstruct from layers
+# Analyze & split (3 modes)
+vulca layers analyze artwork.png                         # VLM semantic analysis
+vulca layers split artwork.png -o ./out/                 # regenerate mode (img2img per layer)
+vulca layers split artwork.png -o ./out/ --mode extract  # color-range masking (no API cost)
+vulca layers split artwork.png -o ./out/ --mode sam      # SAM2 pixel-precise (pip install vulca[sam])
+
+# Edit
+vulca layers add ./out/ --name "glow" --z-index 5 --content-type effect
+vulca layers remove ./out/ --layer calligraphy
+vulca layers reorder ./out/ --layer foreground --z-index 0
+vulca layers toggle ./out/ --layer mist --visible false
+vulca layers lock ./out/ --layer background
+vulca layers merge ./out/ --layers fg,mid --name merged
+vulca layers duplicate ./out/ --layer background --name bg_v2
+
+# Redraw (img2img)
+vulca layers redraw ./out/ --layer foreground -i "add autumn colors"
+vulca layers redraw ./out/ --layers fg,mid --merge -i "strengthen depth"
+
+# Composite & export
+vulca layers composite ./out/ -o final.png     # blend-mode-aware composite
+vulca layers export ./out/ -o ./export.psd     # PNG directory + manifest
 vulca layers evaluate ./out/ -t chinese_xieyi  # per-layer L1-L5 scoring
 ```
 
@@ -145,6 +167,9 @@ $ vulca tools run composition_analyze --image artwork.png --tradition chinese_xi
 # Interactive multi-round session
 vulca studio "Cyberpunk ink wash, neon pavilions in misty mountains" -p gemini
 
+# Non-interactive (scriptable, CI/CD friendly)
+vulca studio "Zen garden at dawn" -p gemini --auto --max-rounds 3
+
 # Or step by step:
 vulca brief ./project -i "Cyberpunk shanshui" -m "epic-futuristic"
 vulca brief-update ./project "Add more negative space, reduce neon intensity"
@@ -170,7 +195,7 @@ claude plugin install vulca-org/vulca-plugin
 
 Then just ask: *"Evaluate this painting for Chinese xieyi style"* — Claude calls VULCA automatically.
 
-23 MCP tools available: `evaluate_artwork`, `create_artwork`, `studio_create_brief`, `analyze_layers`, 5 Tool Protocol tools (`tool_brushstroke_analyze`, `tool_whitespace_analyze`, etc.), and more.
+21 MCP tools available: `evaluate_artwork`, `create_artwork`, `studio_create_brief`, `analyze_layers`, `layers_split`, `layers_redraw`, `layers_edit` (7 operations), and more. Plus 5 Tool Protocol tools (`tool_brushstroke_analyze`, `tool_whitespace_analyze`, etc.).
 
 ### ComfyUI
 
@@ -187,13 +212,19 @@ pip install vulca>=0.9.1
 ```bash
 pip install vulca
 
-vulca evaluate painting.jpg --tradition chinese_xieyi
-vulca create "Misty mountains in ink wash" --provider mock
-vulca studio                                    # interactive Brief-driven session
-vulca layers split artwork.png --output ./layers
+vulca evaluate painting.jpg -t chinese_xieyi
+vulca evaluate painting.jpg -t chinese_xieyi --sparse-eval  # only relevant dimensions
+vulca create "Misty mountains in ink wash" -p gemini -o artwork.png
+vulca create "Tea packaging" -p gemini --residuals           # show agent attention weights
+vulca studio "Zen garden" -p gemini                          # interactive session
+vulca studio "Zen garden" -p gemini --auto                   # non-interactive
+vulca layers split artwork.png -o ./layers                   # 3 modes: regenerate/extract/sam
+vulca layers redraw ./layers --layer sky -i "add sunset"     # img2img per layer
+vulca layers add ./layers --name glow --content-type effect  # 7 editing operations
 vulca inpaint artwork.png --region "sky" --instruction "add clouds"
-vulca sessions stats                            # analyze 800+ local sessions
-vulca resume <session-id>                       # resume from checkpoint
+vulca evolution chinese_xieyi                                # see evolved weights + session count
+vulca sessions stats                                         # analyze 1100+ local sessions
+vulca resume <session-id>                                    # resume from checkpoint
 ```
 
 ### Python SDK
@@ -244,7 +275,7 @@ Each dimension returns: score (0-1), observations, rationale, actionable suggest
 Generate → Evaluate → Decide → (loop if below threshold)
 ```
 
-Multi-round with automatic improvement: each round targets the weakest dimensions from the previous evaluation. HITL (Human-in-the-Loop) pause supported.
+Multi-round with automatic improvement: each round targets the weakest dimensions from the previous evaluation. HITL (Human-in-the-Loop) pause supported with checkpoint save. Use `--output` to save generated images to disk.
 
 ### Studio (Brief-Driven)
 
@@ -254,9 +285,9 @@ Intent → Brief → Concepts → Select → Generate → Evaluate → Refine
 
 Natural language throughout: *"Make the teapot larger"*, *"Add more warmth to the color palette"*.
 
-### Layers
+### Layers (V2)
 
-Split artwork into semantic layers (Photoshop-style minimal crop + bbox offset), composite back, export as PNG directory with manifest.
+Industry-aligned layer editing: every layer is full-canvas RGBA (not bbox crops). 3 split modes (regenerate/extract/SAM), proper blend modes (normal/screen/multiply), 7 editing operations (add/remove/reorder/toggle/lock/merge/duplicate), single-layer and multi-layer redraw via img2img.
 
 ### Inpainting
 
@@ -289,7 +320,7 @@ The system learns from every session:
 
 ### Pipeline Checkpoint
 
-Every round auto-saved to `~/.vulca/data/checkpoints/`. Resume from any round:
+Every round auto-saved to `~/.vulca/data/checkpoints/` — including HITL paused sessions with generated images. Resume from any round:
 
 ```bash
 vulca resume <session-id> --from-round 2
@@ -311,13 +342,16 @@ vulca evaluate painting.jpg --tradition ./my_style.yaml
 ```bash
 pip install vulca           # core SDK + CLI
 pip install vulca[mcp]      # + MCP server for Claude Code / Cursor
+pip install vulca[sam]      # + SAM2 pixel-precise layer extraction
 ```
 
-No API key required for mock mode. For real VLM scoring:
+No API key required for mock mode. For real VLM scoring + image generation:
 
 ```bash
 export GOOGLE_API_KEY=your-key
 ```
+
+Gemini image generation supports **512/1K/2K/4K** output with automatic size mapping — pass any width/height and VULCA selects the optimal `imageSize` tier and `aspectRatio`.
 
 ## Citation
 
