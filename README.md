@@ -80,9 +80,42 @@ graph LR
 
 ---
 
+## Create — One Command, Multiple Styles
+
+<details>
+<summary>See create workflow (GIF)</summary>
+<p align="center">
+  <img src="assets/demo/v2/gif-create.gif" alt="Create workflow demo" width="800">
+</p>
+</details>
+
+```bash
+vulca create "Misty mountains after rain" -t chinese_xieyi -o landscape.png
+vulca create "Tea packaging, Eastern aesthetics" -t brand_design --colors "#C87F4A,#5F8A50"
+vulca create "Zen garden" --reference shanshui.png --ref-type style -t japanese_traditional
+```
+
+**Style Transfer** — use any image as reference:
+
+<p align="center">
+  <img src="assets/demo/v2/style-before.png" alt="Chinese xieyi original" width="300">
+  →
+  <img src="assets/demo/v2/style-after.png" alt="Japanese style transfer" width="300">
+</p>
+<p align="center"><em>Chinese Xieyi (0.915) → Japanese style transfer reference (0.932)</em></p>
+
+---
+
 ## Evaluate — Three Modes
 
 ### Strict Mode (Judge)
+
+<details>
+<summary>See all 3 modes in action (GIF)</summary>
+<p align="center">
+  <img src="assets/demo/v2/gif-evaluate.gif" alt="Evaluate 3 modes demo" width="800">
+</p>
+</details>
 
 Scores reflect tradition conformance with pass/fail indicators:
 
@@ -153,6 +186,13 @@ Each dimension returns: score (0-1), observations, rationale, actionable suggest
 
 Every layer is **full-canvas RGBA** (not bbox crops). Proper blend modes. 3 split modes. 7 editing operations. 14 CLI subcommands.
 
+<details>
+<summary>See layer decomposition in action (GIF)</summary>
+<p align="center">
+  <img src="assets/demo/v2/gif-layers.gif" alt="Layers V2 decomposition demo" width="800">
+</p>
+</details>
+
 ### Split an Artwork into Layers
 
 ```
@@ -222,6 +262,10 @@ vulca layers evaluate ./layers/ -t chinese_xieyi   # per-layer L1-L5 scoring
 
 5 tools that run locally with zero API cost, using OpenCV and NumPy:
 
+<p align="center">
+  <img src="assets/demo/v2/tools-viz.png" alt="Tool analysis evidence: brushstroke energy, whitespace ratio, composition alignment" width="800">
+</p>
+
 ```
 $ vulca tools run brushstroke_analyze --image artwork.png -t chinese_xieyi
   Brushstroke energy (0.87) aligns with chinese_xieyi's expressive style.
@@ -254,6 +298,13 @@ Hybrid pipeline: algorithmic tools run first, VLM evaluation covers remaining di
 ## Inpainting — Region-Based Repaint
 
 Repaint specific regions while **guaranteeing pixel-level preservation** outside the bounding box. Not full-image regeneration — PIL local blend.
+
+<p align="center">
+  <img src="assets/demo/v2/hero-xieyi.png" alt="Before inpainting" width="350">
+  →
+  <img src="assets/demo/v2/inpaint-after.png" alt="After inpainting — sky replaced with sunset" width="350">
+</p>
+<p align="center"><em>Left: original | Right: sky region replaced with golden sunset (mountains untouched)</em></p>
 
 ```bash
 # Natural language region description
@@ -291,6 +342,14 @@ print(result.blended)    # final blended output path
 ## Studio — Brief-Driven Creative Session
 
 Multi-round creative collaboration with natural language control:
+
+<p align="center">
+  <img src="assets/demo/v2/studio-c1.jpg" alt="Concept 1" width="180">
+  <img src="assets/demo/v2/studio-c2.jpg" alt="Concept 2" width="180">
+  <img src="assets/demo/v2/studio-c3.jpg" alt="Concept 3" width="180">
+  <img src="assets/demo/v2/studio-c4.jpg" alt="Concept 4" width="180">
+</p>
+<p align="center"><em>4 concept variations from brief: "Cyberpunk ink wash, neon pavilions" → select best → generate → evaluate</em></p>
 
 ```
 $ vulca studio "Cyberpunk ink wash neon pavilions in misty mountains" --provider gemini --auto
