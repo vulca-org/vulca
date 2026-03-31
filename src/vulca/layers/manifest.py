@@ -75,7 +75,7 @@ def load_manifest(artwork_dir: str) -> LayeredArtwork:
                 name=item["name"],
                 description=item.get("description", ""),
                 z_index=item.get("z_index", index),
-                id=item["id"],
+                id=item.get("id", f"layer_{item['name']}_{index:03d}"),
                 content_type=item.get("content_type", "background"),
                 dominant_colors=item.get("dominant_colors", []),
                 regeneration_prompt=item.get("regeneration_prompt", ""),

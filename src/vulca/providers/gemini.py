@@ -37,7 +37,7 @@ def _pixels_to_image_size(long_edge: int) -> str:
 
 def _dims_to_aspect_ratio(width: int, height: int) -> str:
     """Find the closest supported aspect ratio for given dimensions."""
-    if width == height:
+    if width == height or width <= 0 or height <= 0:
         return "1:1"
     target = width / height
     best_ratio = "1:1"
