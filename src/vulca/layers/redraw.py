@@ -100,7 +100,8 @@ async def redraw_merged(
     tradition: str = "default",
     api_key: str = "",
     artwork_dir: str,
-) -> LayerResult:
+    re_split: bool = False,
+) -> LayerResult | list[LayerResult]:
     """Merge selected layers, redraw via img2img, return as single new layer.
 
     Composites the selected layers into a temporary file, uses that as the
@@ -173,7 +174,32 @@ async def redraw_merged(
         z_index=min_z,
         content_type="subject",
     )
-    return LayerResult(info=merged_info, image_path=str(out_path))
+    if not re_split:
+        return LayerResult(info=merged_info, image_path=str(out_path))
+
+    # Re-split: analyze the merged result and split into extract mode layers
+    from vulca.layers.analyze import analyze_layers
+    from vulca.layers.split import split_extract
+    import shutil
+
+    new_layers = await analyze_layers(str(out_path), api_key=api_key)
+    resplit_dir = Path(artwork_dir) / f"_resplit_{merged_name}"
+    results = split_extract(str(out_path), new_layers, output_dir=str(resplit_dir))
+
+    # Move re-split layer files to artwork_dir
+    final_results = []
+    for r in results:
+        dest = Path(artwork_dir) / Path(r.image_path).name
+        if Path(r.image_path) != dest:
+            shutil.move(str(r.image_path), str(dest))
+        r.image_path = str(dest)
+        final_results.append(r)
+
+    # Cleanup temp dir and merged file
+    shutil.rmtree(str(resplit_dir), ignore_errors=True)
+    out_path.unlink(missing_ok=True)
+
+    return final_results
 
 
 # ---------------------------------------------------------------------------

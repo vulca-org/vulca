@@ -1053,6 +1053,81 @@ async def layers_redraw(
 
 
 @mcp.tool()
+async def layers_edit(
+    artwork_dir: str,
+    operation: str,
+    layer: str = "",
+    layers: str = "",
+    name: str = "",
+    description: str = "",
+    z_index: int = -1,
+    content_type: str = "subject",
+    visible: bool = True,
+    locked: bool = True,
+) -> dict:
+    """Edit layers — add, remove, reorder, toggle, lock, merge, duplicate.
+
+    Args:
+        artwork_dir: Directory with layer PNGs + manifest.
+        operation: One of: add, remove, reorder, toggle, lock, merge, duplicate.
+        layer: Layer name (for remove/reorder/toggle/lock/duplicate).
+        layers: Comma-separated layer names (for merge).
+        name: New layer name (for add/merge/duplicate).
+        description: Layer description (for add).
+        z_index: Z-index (for add/reorder, -1 = top).
+        content_type: Content type for add (background|subject|detail|effect|text).
+        visible: Visibility state (for toggle).
+        locked: Lock state (for lock).
+
+    Returns:
+        Operation result with updated layer info.
+    """
+    from vulca.layers.manifest import load_manifest
+    from vulca.layers.ops import (
+        add_layer, remove_layer, reorder_layer, toggle_visibility,
+        lock_layer, merge_layers, duplicate_layer,
+    )
+
+    artwork = load_manifest(artwork_dir)
+
+    if operation == "add":
+        result = add_layer(artwork, artwork_dir=artwork_dir, name=name,
+                          description=description, z_index=z_index,
+                          content_type=content_type)
+        return {"operation": "add", "name": result.info.name, "z_index": result.info.z_index}
+
+    elif operation == "remove":
+        remove_layer(artwork, artwork_dir=artwork_dir, layer_name=layer)
+        return {"operation": "remove", "removed": layer}
+
+    elif operation == "reorder":
+        reorder_layer(artwork, artwork_dir=artwork_dir, layer_name=layer, new_z_index=z_index)
+        return {"operation": "reorder", "layer": layer, "new_z_index": z_index}
+
+    elif operation == "toggle":
+        toggle_visibility(artwork, artwork_dir=artwork_dir, layer_name=layer, visible=visible)
+        return {"operation": "toggle", "layer": layer, "visible": visible}
+
+    elif operation == "lock":
+        lock_layer(artwork, artwork_dir=artwork_dir, layer_name=layer, locked=locked)
+        return {"operation": "lock", "layer": layer, "locked": locked}
+
+    elif operation == "merge":
+        layer_names = [n.strip() for n in layers.split(",")]
+        result = merge_layers(artwork, artwork_dir=artwork_dir,
+                             layer_names=layer_names, merged_name=name or "merged")
+        return {"operation": "merge", "merged": result.info.name, "source": layer_names}
+
+    elif operation == "duplicate":
+        result = duplicate_layer(artwork, artwork_dir=artwork_dir,
+                                layer_name=layer, new_name=name)
+        return {"operation": "duplicate", "source": layer, "new": result.info.name}
+
+    else:
+        return {"error": f"Unknown operation: {operation}. Use: add/remove/reorder/toggle/lock/merge/duplicate"}
+
+
+@mcp.tool()
 async def sync_data(push_only: bool = False, pull_only: bool = False) -> dict:
     """Sync local session data with cloud. Requires VULCA_API_URL env var.
 

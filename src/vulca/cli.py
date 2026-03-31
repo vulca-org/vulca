@@ -171,8 +171,9 @@ def main(argv: list[str] | None = None) -> None:
     layers_split = layers_sub.add_parser("split", help="Split image into layer PNGs")
     layers_split.add_argument("image", help="Path to image")
     layers_split.add_argument("--output", "-o", default="", help="Output directory")
-    layers_split.add_argument("--mode", "-m", default="regenerate", choices=["regenerate", "extract"],
-                              help="Split mode: regenerate (img2img, default) or extract (color-range, no API)")
+    layers_split.add_argument("--mode", "-m", default="regenerate",
+                              choices=["regenerate", "extract", "sam"],
+                              help="Split mode: regenerate | extract | sam (needs vulca[sam])")
     layers_split.add_argument("--provider", "-p", default="gemini", help="Image provider (regenerate mode)")
     layers_split.add_argument("--tradition", "-t", default="default", help="Cultural tradition")
 
@@ -185,6 +186,8 @@ def main(argv: list[str] | None = None) -> None:
     layers_redraw.add_argument("--merged-name", default="merged", help="Name for merged output layer")
     layers_redraw.add_argument("--provider", "-p", default="gemini", help="Image provider")
     layers_redraw.add_argument("--tradition", "-t", default="default", help="Cultural tradition")
+    layers_redraw.add_argument("--re-split", action="store_true",
+                               help="After merge+redraw, re-analyze and split back")
 
     layers_composite = layers_sub.add_parser("composite", help="Composite layers into flat image")
     layers_composite.add_argument("artwork_dir", help="Directory with layer PNGs + manifest")
@@ -203,6 +206,44 @@ def main(argv: list[str] | None = None) -> None:
     layers_eval = layers_sub.add_parser("evaluate", help="Per-layer L1-L5 evaluation")
     layers_eval.add_argument("artwork_dir", help="Directory with layers")
     layers_eval.add_argument("--tradition", "-t", default="default")
+
+    # P2 layer editing subcommands
+    layers_add = layers_sub.add_parser("add", help="Add new transparent layer")
+    layers_add.add_argument("artwork_dir", help="Directory with layers")
+    layers_add.add_argument("--name", "-n", required=True, help="Layer name")
+    layers_add.add_argument("--description", "-d", default="", help="Layer description")
+    layers_add.add_argument("--z-index", type=int, default=-1, help="Z-index (-1 = top)")
+    layers_add.add_argument("--content-type", default="subject",
+                            choices=["background", "subject", "detail", "effect", "text"])
+
+    layers_remove = layers_sub.add_parser("remove", help="Remove a layer")
+    layers_remove.add_argument("artwork_dir", help="Directory with layers")
+    layers_remove.add_argument("--layer", "-l", required=True, help="Layer name to remove")
+
+    layers_reorder = layers_sub.add_parser("reorder", help="Change layer z-index")
+    layers_reorder.add_argument("artwork_dir", help="Directory with layers")
+    layers_reorder.add_argument("--layer", "-l", required=True, help="Layer name")
+    layers_reorder.add_argument("--z-index", type=int, required=True, help="New z-index")
+
+    layers_toggle = layers_sub.add_parser("toggle", help="Toggle layer visibility")
+    layers_toggle.add_argument("artwork_dir", help="Directory with layers")
+    layers_toggle.add_argument("--layer", "-l", required=True, help="Layer name")
+    layers_toggle.add_argument("--visible", required=True, help="true or false")
+
+    layers_lock_p = layers_sub.add_parser("lock", help="Lock/unlock a layer")
+    layers_lock_p.add_argument("artwork_dir", help="Directory with layers")
+    layers_lock_p.add_argument("--layer", "-l", required=True, help="Layer name")
+    layers_lock_p.add_argument("--locked", default="true", help="true or false (default: true)")
+
+    layers_merge = layers_sub.add_parser("merge", help="Merge layers into one")
+    layers_merge.add_argument("artwork_dir", help="Directory with layers")
+    layers_merge.add_argument("--layers", required=True, help="Comma-separated layer names")
+    layers_merge.add_argument("--name", "-n", default="merged", help="Merged layer name")
+
+    layers_dup = layers_sub.add_parser("duplicate", help="Duplicate a layer")
+    layers_dup.add_argument("artwork_dir", help="Directory with layers")
+    layers_dup.add_argument("--layer", "-l", required=True, help="Source layer name")
+    layers_dup.add_argument("--name", "-n", default="", help="New layer name")
 
     # sessions command group
     sessions_p = sub.add_parser("sessions", help="Session data analytics")
@@ -1082,6 +1123,9 @@ def _cmd_layers(args: argparse.Namespace) -> None:
         if args.mode == "extract":
             from vulca.layers.split import split_extract
             results = split_extract(args.image, layers, output_dir=out_dir)
+        elif args.mode == "sam":
+            from vulca.layers.sam import sam_split
+            results = sam_split(args.image, layers, output_dir=out_dir)
         else:
             from vulca.layers.split import split_regenerate
             results = loop.run_until_complete(
@@ -1104,9 +1148,15 @@ def _cmd_layers(args: argparse.Namespace) -> None:
                 redraw_merged(artwork, layer_names=layer_names,
                               instruction=args.instruction, merged_name=args.merged_name,
                               provider=args.provider, tradition=args.tradition,
-                              artwork_dir=args.artwork_dir)
+                              artwork_dir=args.artwork_dir,
+                              re_split=getattr(args, 're_split', False))
             )
-            print(f"  Merged redraw: {result.info.name} -> {result.image_path}")
+            if isinstance(result, list):
+                print(f"  Merge+redraw+re-split: {len(result)} layers")
+                for r in result:
+                    print(f"    [{r.info.z_index}] {r.info.name} -> {r.image_path}")
+            else:
+                print(f"  Merged redraw: {result.info.name} -> {result.image_path}")
         elif args.layer:
             result = loop.run_until_complete(
                 redraw_layer(artwork, layer_name=args.layer,
@@ -1183,6 +1233,65 @@ def _cmd_layers(args: argparse.Namespace) -> None:
                 width = height = 1024
             composite_layers(artwork.layers, width=width, height=height, output_path=out)
             print(f"  Exported PNG: {out}")
+
+    elif args.layers_command == "add":
+        from vulca.layers.manifest import load_manifest
+        from vulca.layers.ops import add_layer
+        artwork = load_manifest(args.artwork_dir)
+        result = add_layer(artwork, artwork_dir=args.artwork_dir, name=args.name,
+                          description=args.description, z_index=args.z_index,
+                          content_type=args.content_type)
+        print(f"  Added: [{result.info.z_index}] {result.info.name} -> {result.image_path}")
+
+    elif args.layers_command == "remove":
+        from vulca.layers.manifest import load_manifest
+        from vulca.layers.ops import remove_layer
+        artwork = load_manifest(args.artwork_dir)
+        remove_layer(artwork, artwork_dir=args.artwork_dir, layer_name=args.layer)
+        print(f"  Removed: {args.layer}")
+
+    elif args.layers_command == "reorder":
+        from vulca.layers.manifest import load_manifest
+        from vulca.layers.ops import reorder_layer
+        artwork = load_manifest(args.artwork_dir)
+        reorder_layer(artwork, artwork_dir=args.artwork_dir, layer_name=args.layer,
+                     new_z_index=args.z_index)
+        print(f"  Reordered: {args.layer} -> z_index={args.z_index}")
+
+    elif args.layers_command == "toggle":
+        from vulca.layers.manifest import load_manifest
+        from vulca.layers.ops import toggle_visibility
+        artwork = load_manifest(args.artwork_dir)
+        visible = args.visible.lower() in ("true", "1", "yes")
+        toggle_visibility(artwork, artwork_dir=args.artwork_dir,
+                         layer_name=args.layer, visible=visible)
+        print(f"  Toggle: {args.layer} visible={visible}")
+
+    elif args.layers_command == "lock":
+        from vulca.layers.manifest import load_manifest
+        from vulca.layers.ops import lock_layer
+        artwork = load_manifest(args.artwork_dir)
+        locked = args.locked.lower() in ("true", "1", "yes")
+        lock_layer(artwork, artwork_dir=args.artwork_dir,
+                  layer_name=args.layer, locked=locked)
+        print(f"  Lock: {args.layer} locked={locked}")
+
+    elif args.layers_command == "merge":
+        from vulca.layers.manifest import load_manifest
+        from vulca.layers.ops import merge_layers
+        artwork = load_manifest(args.artwork_dir)
+        layer_names = [n.strip() for n in args.layers.split(",")]
+        result = merge_layers(artwork, artwork_dir=args.artwork_dir,
+                             layer_names=layer_names, merged_name=args.name)
+        print(f"  Merged: {', '.join(layer_names)} -> {result.info.name}")
+
+    elif args.layers_command == "duplicate":
+        from vulca.layers.manifest import load_manifest
+        from vulca.layers.ops import duplicate_layer
+        artwork = load_manifest(args.artwork_dir)
+        result = duplicate_layer(artwork, artwork_dir=args.artwork_dir,
+                                layer_name=args.layer, new_name=args.name)
+        print(f"  Duplicated: {args.layer} -> {result.info.name}")
 
     else:
         print(f"Unknown layers command: {args.layers_command}", file=sys.stderr)
