@@ -220,16 +220,25 @@ Every layer is **full-canvas RGBA** (not bbox crops). Proper blend modes (normal
 
 *"The sky doesn't feel right, but the mountains are perfect"* — edit one layer without touching the rest.
 
+<p align="center">
+  <img src="assets/demo/v2/scenario1-comparison.png" alt="Original → preview without mist → final with sunset mist" width="800">
+</p>
+
 ```bash
 # Decompose into semantic layers
 vulca layers split artwork.png -o ./layers/ --mode extract
 
-# Redraw only the sky — mountains, pavilion, calligraphy untouched
+# Preview: toggle mist off to see the difference
+vulca layers toggle ./layers/ --layer mist_and_clouds --visible false
+vulca layers composite ./layers/ -o preview-no-mist.png
+
+# Redraw only the mist layer — mountains, pavilion, calligraphy untouched
+vulca layers toggle ./layers/ --layer mist_and_clouds --visible true
 vulca layers redraw ./layers/ --layer mist_and_clouds \
   -i "replace with dramatic sunset gradient, warm orange to purple"
 
 # Composite back with blend modes
-vulca layers composite ./layers/ -o final.png
+vulca layers composite ./layers/ -o final-with-sunset.png
 ```
 
 Lock layers you want to protect, toggle visibility to preview changes:
@@ -261,18 +270,22 @@ vulca layers export ./layers/ -o ./design-assets.psd
 
 *Which element carries the most cultural weight?* Evaluate each layer independently:
 
+<p align="center">
+  <img src="assets/demo/v2/scenario3-eval-chart.png" alt="Per-layer evaluation scores" width="700">
+</p>
+
 ```
 $ vulca layers evaluate ./layers/ -t chinese_xieyi
 
-  [0] background_paper              90%   (traditional paper texture)
-  [1] distant_mountains             92%   ← highest: classic ink wash technique
-  [2] mist_and_clouds               90%   (atmospheric perspective)
-  [3] midground_landscape           87%   (room for improvement)
-  [4] central_pavilion              90%   (canonical motif)
-  [5] calligraphy_and_seals         88%   (cultural integration)
+  [0] background_canvas:       92%  L3=95%
+  [1] distant_mountains:       88%  L3=90%
+  [2] mist_and_clouds:         88%  L3=90%
+  [3] foreground_landscape:    92%  L3=95%  ← highest cultural alignment
+  [4] pavilion_and_pines:      92%  L3=95%  ← canonical xieyi motif
+  [5] calligraphy_and_seals:   89%  L3=90%
 ```
 
-Discover that `distant_mountains` scores highest (92%) because ink wash mountain technique is central to xieyi tradition — while `midground_landscape` at 87% could benefit from more varied texture strokes.
+`pavilion_and_pines` scores highest on L2 Technical (90%) — the ink wash rendering of pine trees is the most technically accomplished layer. `distant_mountains` at L2=80% suggests the mountain strokes could benefit from more texture variation (axe-cut 斧劈皴 or rain-drop 雨点皴 strokes).
 
 ### Technical Reference
 

@@ -1,0 +1,39 @@
+/home/yhryzy/projects/website/vulca/.venv/lib/python3.12/site-packages/litellm/litellm_core_utils/logging_worker.py:75: RuntimeWarning: coroutine 'Logging.async_success_handler' was never awaited
+  self._queue = None
+RuntimeWarning: Enable tracemalloc to get the object allocation traceback
+  [0] background_canvas: 92%
+      L1: 90%
+      L2: 85%
+      L3: 95%
+      L4: 95%
+      L5: 90%
+  [1] distant_mountains: 88%
+      L1: 85%
+      L2: 80%
+      L3: 90%
+      L4: 95%
+      L5: 88%
+  [2] mist_and_clouds: 88%
+      L1: 85%
+      L2: 80%
+      L3: 90%
+      L4: 95%
+      L5: 88%
+  [3] foreground_landscape: 92%
+      L1: 90%
+      L2: 85%
+      L3: 95%
+      L4: 95%
+      L5: 90%
+  [4] pavilion_and_pines: 92%
+      L1: 90%
+      L2: 90%
+      L3: 95%
+      L4: 95%
+      L5: 90%
+  [5] calligraphy_and_seals: 89%
+      L1: 90%
+      L2: 85%
+      L3: 90%
+      L4: 95%
+      L5: 88%
