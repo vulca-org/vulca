@@ -22,6 +22,13 @@ vulca create "Misty mountains after rain, pine pavilion in clouds" -t chinese_xi
 # → Image: artwork.png
 ```
 
+<details>
+<summary><strong>See it in action</strong> (GIF)</summary>
+<p align="center">
+  <img src="assets/demo/v2/gif-full.gif" alt="VULCA full demo — create, evaluate, layers, tools, studio, evolution" width="800">
+</p>
+</details>
+
 > Based on peer-reviewed research: [VULCA Framework](https://aclanthology.org/2025.findings-emnlp/) (EMNLP 2025 Findings) and [VULCA-Bench](https://arxiv.org/abs/2601.07986) (7,410 samples, 9 traditions).
 
 ---
