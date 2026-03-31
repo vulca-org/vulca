@@ -18,12 +18,14 @@ def resolve_image_input(value: str) -> str:
     if not value:
         return ""
 
-    # Check if it looks like a file path
-    if value.startswith(("/", "~")) or (len(value) >= 3 and value[1] == ":"):
-        path = Path(value).expanduser().resolve()
-        if not path.exists():
-            raise FileNotFoundError(f"Image not found: {path}")
-        return base64.b64encode(path.read_bytes()).decode()
+    # Check if it looks like a file path (absolute, relative, or home-relative)
+    path = Path(value).expanduser()
+    if path.exists():
+        return base64.b64encode(path.resolve().read_bytes()).decode()
+
+    # Check common path patterns that might not exist yet
+    if value.startswith(("/", "~", ".")) or (len(value) >= 3 and value[1] == ":"):
+        raise FileNotFoundError(f"Image not found: {path.resolve()}")
 
     # Assume base64
     return value

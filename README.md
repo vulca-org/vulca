@@ -92,17 +92,29 @@ graph LR
 ```bash
 vulca create "Misty mountains after rain" -t chinese_xieyi -o landscape.png
 vulca create "Tea packaging, Eastern aesthetics" -t brand_design --colors "#C87F4A,#5F8A50"
-vulca create "Zen garden" --reference shanshui.png --ref-type style -t japanese_traditional
 ```
 
-**Style Transfer** — use any image as reference:
+**Layer-Driven Design Transfer** — extract elements from art, transform into products:
+
+```bash
+# 1. Extract mountain layer from ink wash painting
+vulca layers split landscape.png -o ./layers/ --mode extract
+# → [1] distant_mountains (subject, 48% opaque)
+
+# 2. Use the mountain layer as reference → create brand packaging
+vulca create "Premium tea packaging, mountain silhouette as watermark" \
+  -t brand_design --reference ./layers/distant_mountains.png
+# → Score: 0.92 | Brand consistency maintained
+```
 
 <p align="center">
-  <img src="assets/demo/v2/style-before.png" alt="Chinese xieyi original" width="300">
+  <img src="assets/demo/v2/hero-xieyi.png" alt="Original ink wash landscape" width="220">
   →
-  <img src="assets/demo/v2/style-after.png" alt="Japanese style transfer" width="300">
+  <img src="assets/demo/v2/workflow-test/distant_mountains.png" alt="Extracted mountain layer" width="220">
+  →
+  <img src="assets/demo/v2/workflow-brand-output.png" alt="Brand design using mountain reference" width="220">
 </p>
-<p align="center"><em>Chinese Xieyi (0.915) → Japanese style transfer reference (0.932)</em></p>
+<p align="center"><em>Ink wash landscape → extract mountain layer → tea packaging design (92%)</em></p>
 
 ---
 
