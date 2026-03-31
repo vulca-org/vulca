@@ -64,15 +64,13 @@ graph LR
 
     subgraph LayersV2["Layers V2"]
         AN[Analyze] --> SP{Split}
-        SP -->|regenerate| IG[img2img per layer]
+        SP -->|regenerate| IG[Gemini + mask alpha]
         SP -->|extract| CM[Color mask]
         SP -->|sam| SAM[SAM2 pixel mask]
         IG --> FC[Full-canvas RGBA]
         CM --> FC
         SAM --> FC
-        FC --> ED[Edit: add/remove/reorder<br/>merge/lock/toggle/duplicate]
-        ED --> RD[Redraw via img2img]
-        RD --> CO[Composite<br/>normal/screen/multiply]
+        FC --> ED[Edit / Redraw / Composite]
     end
 ```
 
@@ -80,56 +78,48 @@ graph LR
 
 ---
 
-## Create — One Command, Multiple Styles
+## Create
 
 <details>
-<summary>See create workflow (GIF)</summary>
+<summary>See create + evaluate workflow (GIF)</summary>
 <p align="center">
-  <img src="assets/demo/v2/vhs-create.gif" alt="Create workflow demo" width="800">
+  <img src="assets/demo/v2/vhs-create.gif" alt="Create and evaluate workflow" width="800">
 </p>
 </details>
 
 ```bash
 vulca create "Misty mountains after rain" -t chinese_xieyi -o landscape.png
 vulca create "Tea packaging, Eastern aesthetics" -t brand_design --colors "#C87F4A,#5F8A50"
+vulca create "Zen garden" -t japanese_traditional --provider gemini --hitl  # pause for review
 ```
 
-**Layer-Driven Design Transfer** — extract elements from art, transform into products:
+### Layer-Driven Design Transfer
+
+Extract elements from artwork, transform into new designs while maintaining cultural consistency:
 
 ```bash
 # 1. Extract mountain layer from ink wash painting
 vulca layers split landscape.png -o ./layers/ --mode extract
-# → [1] distant_mountains (subject, 48% opaque)
-
 # 2. Use the mountain layer as reference → create brand packaging
 vulca create "Premium tea packaging, mountain silhouette as watermark" \
   -t brand_design --reference ./layers/distant_mountains.png
-# → Score: 0.92 | Brand consistency maintained
+# → Score: 0.92
 ```
 
 <p align="center">
   <img src="assets/demo/v2/hero-xieyi.png" alt="Original ink wash landscape" width="220">
   →
-  <img src="assets/demo/v2/workflow-test/distant_mountains.png" alt="Extracted mountain layer" width="220">
+  <img src="assets/demo/v2/display-workflow-mountains.png" alt="Extracted mountain layer" width="220">
   →
   <img src="assets/demo/v2/workflow-brand-output.png" alt="Brand design using mountain reference" width="220">
 </p>
-<p align="center"><em>Ink wash landscape → extract mountain layer → tea packaging design (92%)</em></p>
+<p align="center"><em>Ink wash landscape → extract mountain layer (checkerboard = transparent) → tea packaging (92%)</em></p>
 
 ---
 
 ## Evaluate — Three Modes
 
 ### Strict Mode (Judge)
-
-<details>
-<summary>See all 3 modes in action (GIF)</summary>
-<p align="center">
-  <img src="assets/demo/v2/vhs-create.gif" alt="Evaluate 3 modes demo" width="800">
-</p>
-</details>
-
-Scores reflect tradition conformance with pass/fail indicators:
 
 ```
 $ vulca evaluate artwork.png -t chinese_xieyi
@@ -151,32 +141,25 @@ Cultural guidance with professional terminology — not a judge, a mentor:
 $ vulca evaluate artwork.png -t chinese_xieyi --mode reference
 
   L2 Technical Execution  85%  (traditional)
-     To push further: exploring a wider variety of texture strokes
-     (e.g., axe-cut strokes 斧劈皴 for sharper rocks, or rain-drop
-     strokes 雨点皴 for more rounded forms) could add further
-     textural richness.
+     To push further: exploring texture strokes — axe-cut (斧劈皴)
+     for sharper rocks, rain-drop (雨点皴) for rounded forms.
 
   L3 Cultural Context  95%  (traditional)
-     To push further: adding a short poem (题画诗) that directly
-     relates to the scene, further integrating the 'poetry-calligraphy-
-     painting-seal' (诗书画印) harmony.
+     To push further: adding a poem (题画诗) for poetry-calligraphy-
+     painting-seal (诗书画印) harmony.
 ```
 
 ### Fusion Mode (Cross-Cultural Comparison)
-
-Evaluate one artwork against multiple traditions simultaneously:
 
 ```
 $ vulca evaluate artwork.png -t chinese_xieyi,japanese_traditional,western_academic --mode fusion
 
   Dimension                   Chinese Xieyi Japanese Tradit Western Academi
-  ------------------------- --------------- --------------- ---------------
   Visual Perception                   90%             90%             10%
   Technical Execution                 90%             90%             10%
   Cultural Context                    95%             80%              0%
   Critical Interpretation            100%            100%             10%
   Philosophical Aesthetics            90%             90%             10%
-
   Overall Alignment                    93%             90%              8%
 
   Closest tradition: chinese_xieyi (93%)
@@ -190,13 +173,11 @@ $ vulca evaluate artwork.png -t chinese_xieyi,japanese_traditional,western_acade
 | **L4** Critical Interpretation | Cultural sensitivity, contextual framing |
 | **L5** Philosophical Aesthetics | Artistic depth, emotional resonance, spiritual qualities |
 
-Each dimension returns: score (0-1), observations, rationale, actionable suggestion, reference technique, deviation type (traditional / intentional_departure / experimental).
-
 ---
 
-## Layers V2 — Full Editing System
+## Layers V2
 
-Every layer is **full-canvas RGBA** (not bbox crops). Proper blend modes (normal/screen/multiply). 3 split modes. 7 editing operations. 14 CLI subcommands.
+Every layer is **full-canvas RGBA** with real transparency. Proper blend modes (normal/screen/multiply). 14 CLI subcommands.
 
 <details>
 <summary>See layer decomposition in action (GIF)</summary>
@@ -206,230 +187,155 @@ Every layer is **full-canvas RGBA** (not bbox crops). Proper blend modes (normal
 </details>
 
 <p align="center">
-  <img src="assets/demo/v2/hero-xieyi.png" alt="Original artwork" width="180">
+  <img src="assets/demo/v2/hero-xieyi.png" alt="Original artwork" width="160">
   →
-  <img src="assets/demo/v2/layers-extract/background_paper.png" alt="Layer: background (32% opaque)" width="120">
-  <img src="assets/demo/v2/layers-extract/distant_mountains.png" alt="Layer: mountains (48% opaque)" width="120">
-  <img src="assets/demo/v2/layers-extract/central_pavilion_and_pine_trees.png" alt="Layer: pavilion (34% opaque)" width="120">
-  <img src="assets/demo/v2/layers-extract/calligraphy_and_seals.png" alt="Layer: calligraphy (6% opaque)" width="120">
+  <img src="assets/demo/v2/display-background_paper.png" alt="Background (32%)" width="110">
+  <img src="assets/demo/v2/display-distant_mountains.png" alt="Mountains (54%)" width="110">
+  <img src="assets/demo/v2/display-central_pavilion_and_pine_trees.png" alt="Pavilion (32%)" width="110">
+  <img src="assets/demo/v2/display-calligraphy_and_seals.png" alt="Calligraphy (3%)" width="110">
   →
-  <img src="assets/demo/v2/layers-extract/composite.png" alt="Composite" width="180">
+  <img src="assets/demo/v2/display-composite.png" alt="Composite" width="160">
 </p>
+<p align="center"><em>Checkerboard = transparent areas. Calligraphy layer is only 3% opaque — just the text and seals.</em></p>
 
 ### Scenario 1: Non-Destructive Editing (Artists)
 
-*"The sky doesn't feel right, but the mountains are perfect"* — edit one layer without touching the rest.
+*"The sky doesn't feel right, but the mountains are perfect."*
 
 <p align="center">
-  <img src="assets/demo/v2/scenario1-comparison.png" alt="Original → preview without mist → final with sunset mist" width="800">
+  <img src="assets/demo/v2/scenario1-comparison.png" alt="Original → mist hidden → sunset mist" width="800">
 </p>
 
 ```bash
-# Decompose into semantic layers
 vulca layers split artwork.png -o ./layers/ --mode extract
-
-# Preview: toggle mist off to see the difference
+vulca layers lock ./layers/ --layer calligraphy_and_seals         # protect
 vulca layers toggle ./layers/ --layer mist_and_clouds --visible false
-vulca layers composite ./layers/ -o preview-no-mist.png
-
-# Redraw only the mist layer — mountains, pavilion, calligraphy untouched
+vulca layers composite ./layers/ -o preview-no-mist.png           # preview
 vulca layers toggle ./layers/ --layer mist_and_clouds --visible true
 vulca layers redraw ./layers/ --layer mist_and_clouds \
-  -i "replace with dramatic sunset gradient, warm orange to purple"
-
-# Composite back with blend modes
-vulca layers composite ./layers/ -o final-with-sunset.png
+  -i "dramatic sunset gradient, warm orange to purple"            # redraw only this layer
+vulca layers composite ./layers/ -o final.png                     # done
 ```
 
-Lock layers you want to protect, toggle visibility to preview changes:
+### Scenario 2: Design Asset Extraction (Designers)
 
-```bash
-vulca layers lock ./layers/ --layer calligraphy_and_seals   # prevent accidental edits
-vulca layers toggle ./layers/ --layer mist --visible false   # preview without mist
-vulca layers composite ./layers/ -o preview-no-mist.png      # see the difference
-```
-
-### Scenario 2: Element Extraction for Design (Designers)
-
-*Like Figma's component extraction, but for cultural art* — pull out elements, transform into design assets, maintain cultural consistency.
+*Like Figma's component extraction, but for cultural art.*
 
 <p align="center">
-  <img src="assets/demo/v2/scenario2-design-flow.png" alt="Source artwork → extract mountain layer → brand packaging design" width="800">
+  <img src="assets/demo/v2/scenario2-design-flow.png" alt="Source → extract element → brand design" width="800">
 </p>
 
 ```bash
-# 1. Extract the mountain element from an ink wash painting
 vulca layers split artwork.png -o ./layers/ --mode extract
-
-# 2. Use it as reference for brand packaging design
-vulca create "Premium tea packaging, mountain silhouette as watermark" \
-  -t brand_design --reference ./layers/distant_mountains.png
-# → Score: 0.92 | Cultural motif preserved in commercial context
-
-# 3. Or merge elements into a reusable design asset
-vulca layers merge ./layers/ --layers pavilion_and_pine_trees,calligraphy_and_seals \
-  --name "hero_element"
-
-# 4. Add design layers (glow, overlay, etc.)
+vulca layers merge ./layers/ --layers pavilion,calligraphy --name "hero_element"
 vulca layers add ./layers/ --name "golden_glow" --z-index 6 --content-type effect
-
-# 5. Export as Photoshop-compatible structure
 vulca layers export ./layers/ -o ./design-assets.psd
 # → 00_background.png, 01_mountains.png, ... + manifest.json
 ```
 
-**Design workflow parallel**: Split → Extract element → Reference for new creation → Evaluate cultural consistency — like using Figma's "Detach Instance" to pull out a component, then placing it in a new frame with different styling.
-
 ### Scenario 3: Per-Layer Cultural Evaluation (Researchers)
 
-*Which element carries the most cultural weight?* Evaluate each layer independently:
+*Which element carries the most cultural weight?*
 
 <p align="center">
-  <img src="assets/demo/v2/scenario3-eval-chart.png" alt="Per-layer evaluation scores" width="700">
+  <img src="assets/demo/v2/scenario3-eval-chart.png" alt="Per-layer scores" width="700">
 </p>
 
 ```
 $ vulca layers evaluate ./layers/ -t chinese_xieyi
 
   [0] background_canvas:       92%  L3=95%
-  [1] distant_mountains:       88%  L3=90%
-  [2] mist_and_clouds:         88%  L3=90%
-  [3] foreground_landscape:    92%  L3=95%  ← highest cultural alignment
-  [4] pavilion_and_pines:      92%  L3=95%  ← canonical xieyi motif
+  [1] distant_mountains:       88%  L3=90%  ← L2=80%, room for texture variation
+  [3] foreground_landscape:    92%  L3=95%
+  [4] pavilion_and_pines:      92%  L2=90%  ← highest technical execution
   [5] calligraphy_and_seals:   89%  L3=90%
 ```
 
-`pavilion_and_pines` scores highest on L2 Technical (90%) — the ink wash rendering of pine trees is the most technically accomplished layer. `distant_mountains` at L2=80% suggests the mountain strokes could benefit from more texture variation (axe-cut 斧劈皴 or rain-drop 雨点皴 strokes).
+<details>
+<summary>Technical reference: 3 split modes + 7 editing operations</summary>
 
-### Technical Reference
+**3 split modes** — all produce full-canvas RGBA with real transparency:
 
-**3 split modes:**
+| Mode | How it works | API cost |
+|------|-------------|:--------:|
+| **extract** | Color-range masking from original image | Free |
+| **regenerate** | Gemini redraws each layer (hybrid: Gemini content + extract alpha mask) | ~$0.05/layer |
+| **sam** | SAM2 pixel-precise segmentation (`pip install vulca[sam]`) | Free (local) |
 
-| Mode | Command | How it works | API cost |
-|------|---------|-------------|:--------:|
-| **extract** | `--mode extract` | Color-range masking, no API | Free |
-| **regenerate** | `--mode regenerate` | img2img per layer via Gemini | ~$0.05/layer |
-| **sam** | `--mode sam` | SAM2 pixel-precise masks (`pip install vulca[sam]`) | Free (local) |
+*Hybrid regenerate*: Gemini can't generate real transparency, so regenerate mode combines Gemini's high-quality content with extract's color mask for the alpha channel. Result: Gemini quality + real transparency.
 
 **7 editing operations:**
 
-| Operation | Command | What it does |
-|-----------|---------|-------------|
-| **add** | `vulca layers add` | Create new transparent layer at z-index |
-| **remove** | `vulca layers remove` | Delete layer (blocked if locked) |
-| **reorder** | `vulca layers reorder` | Move layer to new z-index |
-| **toggle** | `vulca layers toggle` | Show/hide layer in composite |
-| **lock** | `vulca layers lock` | Prevent accidental deletion/merge |
-| **merge** | `vulca layers merge` | Combine selected layers into one |
-| **duplicate** | `vulca layers duplicate` | Copy layer for experimentation |
+| Operation | What it does |
+|-----------|-------------|
+| `add` | Create new transparent layer |
+| `remove` | Delete layer (blocked if locked) |
+| `reorder` | Move layer z-index |
+| `toggle` | Show/hide in composite |
+| `lock` | Prevent deletion/merge |
+| `merge` | Combine selected layers |
+| `duplicate` | Copy for experimentation |
 
-**Composite + export:**
-
-```bash
-vulca layers composite ./layers/ -o final.png        # blend-mode-aware composite
-vulca layers export ./layers/ -o ./assets.psd         # PNG directory per layer
-vulca layers redraw ./layers/ --layer sky -i "..."    # single-layer img2img
-vulca layers redraw ./layers/ --layers a,b --merge    # merge + redraw
-```
+</details>
 
 ---
 
-## Tools — Algorithmic Analysis (No API Required)
+## Tools — Algorithmic Analysis (No API)
 
-5 tools that run locally with zero API cost, using OpenCV and NumPy:
+5 tools that run locally with zero API cost:
 
 <details>
-<summary>See all 5 tools in action (GIF)</summary>
+<summary>See all 5 tools (GIF)</summary>
 <p align="center">
   <img src="assets/demo/v2/vhs-tools.gif" alt="Tools demo" width="800">
 </p>
 </details>
 
 <p align="center">
-  <img src="assets/demo/v2/tools-viz.png" alt="Tool analysis evidence: brushstroke energy, whitespace ratio, composition alignment" width="800">
+  <img src="assets/demo/v2/tools-viz.png" alt="Brushstroke, whitespace, and composition analysis" width="800">
 </p>
 
 ```
 $ vulca tools run brushstroke_analyze --image artwork.png -t chinese_xieyi
-  Brushstroke energy (0.87) aligns with chinese_xieyi's expressive style.
-  Visible, dynamic strokes are consistent with tradition expectations.
-  Confidence: 0.90
+  Energy: 0.87 — aligns with xieyi's expressive style. Confidence: 0.90
 
 $ vulca tools run whitespace_analyze --image artwork.png -t chinese_xieyi
-  Whitespace (32.8%) is within the chinese_xieyi ideal range (30%-55%).
-  The top_heavy distribution aligns well with tradition expectations.
-  Confidence: 0.75
+  Whitespace: 32.8% — in ideal range (30%-55%). Distribution: top_heavy.
 
 $ vulca tools run composition_analyze --image artwork.png -t chinese_xieyi
-  Rule-of-thirds alignment (0.75), left_heavy asymmetry aligns with
-  chinese_xieyi's preference for asymmetric, dynamic arrangements.
-  Confidence: 0.90
+  Thirds alignment: 0.75 — asymmetric, dynamic arrangement. Confidence: 0.90
 ```
 
-| Tool | What it detects | Zero API |
-|------|----------------|:--------:|
-| `brushstroke_analyze` | Stroke energy, edge density, direction | ✓ |
-| `whitespace_analyze` | Negative space ratio, distribution | ✓ |
-| `composition_analyze` | Rule of thirds, center weight, balance | ✓ |
-| `color_gamut_check` | Saturation profiling + auto-fix mode | ✓ |
-| `color_correct` | Color correction with check/fix/suggest | ✓ |
-
-Hybrid pipeline: algorithmic tools run first, VLM evaluation covers remaining dimensions.
+Also: `color_gamut_check` (saturation profiling + fix) and `color_correct` (check/fix/suggest).
 
 ---
 
 ## Inpainting — Region-Based Repaint
 
-Repaint specific regions while **guaranteeing pixel-level preservation** outside the bounding box. Not full-image regeneration — PIL local blend.
+Pixel-level preservation outside the bounding box — PIL local blend, not full-image regeneration.
 
 <p align="center">
-  <img src="assets/demo/v2/hero-xieyi.png" alt="Before inpainting" width="350">
+  <img src="assets/demo/v2/hero-xieyi.png" alt="Before" width="350">
   →
-  <img src="assets/demo/v2/inpaint-after.png" alt="After inpainting — sky replaced with sunset" width="350">
+  <img src="assets/demo/v2/inpaint-after.png" alt="After — sky replaced" width="350">
 </p>
-<p align="center"><em>Left: original | Right: sky region replaced with golden sunset (mountains untouched)</em></p>
+<p align="center"><em>Left: original | Right: sky replaced with golden sunset (mountains untouched)</em></p>
 
 ```bash
-# Natural language region description
 vulca inpaint artwork.png --region "the sky in the upper portion" \
   --instruction "replace with dramatic stormy clouds" -t chinese_xieyi
-
-# Or precise coordinates (x, y, w, h as percentages)
 vulca inpaint artwork.png --region "0,0,100,40" \
-  --instruction "add golden sunset gradient" --count 4 --select 1
-```
-
-How it works:
-1. **Region detection**: NL description → VLM identifies bounding box, or use explicit coordinates
-2. **Variant generation**: Generate N repaint variants for the region (default 4)
-3. **Pixel-level blend**: Only pixels inside the bbox are replaced — everything outside is the original, untouched
-4. **Selection**: Auto-select best variant or manually pick with `--select N`
-
-```python
-from vulca import ainpaint
-
-result = await ainpaint(
-    "artwork.png",
-    region="the mountains in the background",
-    instruction="make them more misty and ethereal",
-    tradition="chinese_xieyi",
-    count=4,
-)
-print(result.bbox)       # {"x": 0, "y": 10, "w": 100, "h": 45}
-print(result.variants)   # [path1, path2, path3, path4]
-print(result.blended)    # final blended output path
+  --instruction "golden sunset gradient" --count 4 --select 1
 ```
 
 ---
 
 ## Studio — Brief-Driven Creative Session
 
-Multi-round creative collaboration with natural language control:
-
 <details>
 <summary>See studio workflow (GIF)</summary>
 <p align="center">
-  <img src="assets/demo/v2/vhs-studio.gif" alt="Studio workflow demo" width="800">
+  <img src="assets/demo/v2/vhs-studio.gif" alt="Studio workflow" width="800">
 </p>
 </details>
 
@@ -439,51 +345,24 @@ Multi-round creative collaboration with natural language control:
   <img src="assets/demo/v2/studio-c3.jpg" alt="Concept 3" width="180">
   <img src="assets/demo/v2/studio-c4.jpg" alt="Concept 4" width="180">
 </p>
-<p align="center"><em>4 concept variations from brief: "Cyberpunk ink wash, neon pavilions" → select best → generate → evaluate</em></p>
-
-```
-$ vulca studio "Cyberpunk ink wash neon pavilions in misty mountains" --provider gemini --auto
-
-  Suggested styles: chinese_xieyi
-  Style detected: chinese_xieyi (50%), cyberpunk (50%)
-
-  [Concept] 4 concepts generated (831-921KB each)
-  [Generate] Creating artwork via gemini...
-  [Evaluate] L1-L5:
-    L1 ███████████████████░ 95%
-    L2 ██████████████████░░ 90%
-    L3 █████████████████░░░ 85%
-    L4 ████████████████████ 100%
-    L5 ███████████████████░ 95%
-
-  Score target reached (93%). Accepted.
-```
+<p align="center"><em>4 concepts from brief: "Cyberpunk ink wash, neon pavilions" → select → generate → 93% → accept</em></p>
 
 ```bash
-# Interactive mode (with prompts at each step)
-vulca studio "Zen garden at dawn" --provider gemini
-
-# Non-interactive (scriptable, CI/CD friendly)
-vulca studio "Zen garden at dawn" --provider gemini --auto --max-rounds 3
-
-# Step by step
-vulca brief ./project -i "Cyberpunk shanshui" -m "epic-futuristic"
-vulca brief-update ./project "Add more negative space, reduce neon intensity"
-vulca concept ./project -n 4 --provider gemini
-vulca concept ./project --select 1
+vulca studio "Cyberpunk ink wash" --provider gemini               # interactive
+vulca studio "Zen garden at dawn" --provider gemini --auto         # non-interactive
+vulca brief ./project -i "Cyberpunk shanshui" -m "epic-futuristic"  # step by step
 ```
 
 ---
 
 ## Self-Evolution
 
-The system learns from every session. After 1100+ sessions, weights evolve per tradition:
+The system learns from every session. After 1100+ sessions:
 
 ```
 $ vulca evolution chinese_xieyi
 
   Dim     Original    Evolved     Change
-  ----- ---------- ---------- ----------
   L1        10.0%     10.0% +    0.0%
   L2        15.0%     20.0% +    5.0%    ← Technical Execution strengthened
   L3        25.0%     35.0% +   10.0%    ← Cultural Context most evolved
@@ -497,36 +376,14 @@ graph LR
     C[Create/Evaluate] -->|scores| S[Session Store]
     S -->|every 5 min| LE[LocalEvolver]
     LE -->|per tradition| EW[Evolved Weights]
-    EW -->|read| G[GenerateNode<br/>strengthen weak dims]
-    EW -->|read| E[EvaluateNode<br/>calibrated scoring]
-    EW -->|read| D[DecideNode<br/>adaptive threshold]
+    EW -->|read| G[GenerateNode]
+    EW -->|read| E[EvaluateNode]
+    EW -->|read| D[DecideNode]
     G --> C
     E --> C
 ```
 
-**How users interact with evolution:**
-
-```bash
-# View current evolved state for any tradition
-vulca evolution chinese_xieyi
-
-# Compare multiple traditions
-vulca evolution default
-vulca evolution japanese_traditional
-
-# Evolution happens automatically — every create/evaluate session
-# contributes to weight refinement. No manual intervention needed.
-
-# Session data:
-vulca sessions stats    # 1100+ sessions, per-tradition breakdown
-vulca sessions list -t chinese_xieyi --sort score  # browse by tradition
-```
-
-**Key design choices:**
-- `strict` mode sessions strengthen tradition conformance weights
-- `reference` mode sessions track exploration trends without penalizing
-- `deviation_type=intentional_departure` is not treated as a weakness
-- Weights converge after ~50 sessions per tradition
+Evolution is automatic — every session contributes. `strict` mode strengthens tradition conformance, `reference` mode tracks exploration trends, `intentional_departure` deviations are not penalized.
 
 ---
 
@@ -539,15 +396,12 @@ pip install vulca[mcp]
 claude plugin install vulca-org/vulca-plugin
 ```
 
-Then ask: *"Evaluate this painting for Chinese xieyi style"* — Claude calls VULCA automatically.
-
-21 MCP tools: `evaluate_artwork`, `create_artwork`, `analyze_layers`, `layers_split`, `layers_redraw`, `layers_edit` (7 operations), `studio_create_brief`, `inpaint_artwork`, 5 Tool Protocol tools, and more.
+21 MCP tools: `evaluate_artwork`, `create_artwork`, `analyze_layers`, `layers_split`, `layers_redraw`, `layers_edit`, `studio_create_brief`, `inpaint_artwork`, 5 Tool Protocol tools, and more.
 
 ### ComfyUI
 
 ```bash
-# In ComfyUI/custom_nodes/
-git clone https://github.com/vulca-org/comfyui-vulca
+git clone https://github.com/vulca-org/comfyui-vulca  # in custom_nodes/
 pip install vulca>=0.9.2
 ```
 
@@ -558,24 +412,12 @@ pip install vulca>=0.9.2
 ```python
 import vulca
 
-# Evaluate
 result = vulca.evaluate("artwork.png", tradition="chinese_xieyi")
-print(result.score)        # 0.90
-print(result.suggestions)  # {"L2": "explore axe-cut strokes...", ...}
-print(result.L3)           # 0.95
+print(result.score, result.suggestions, result.L3)
 
-# Create
-result = vulca.create("Tea packaging with mountain landscape",
-                       provider="gemini", tradition="brand_design")
-print(result.weighted_total)  # 0.88
-print(result.best_image_b64[:20])  # base64 image data
+result = vulca.create("Tea packaging", provider="gemini", tradition="brand_design")
+print(result.weighted_total, result.best_image_b64[:20])
 
-# Sparse evaluation (only relevant dimensions)
-result = vulca.evaluate("artwork.png", tradition="chinese_xieyi",
-                         sparse=True, intent="文化传统符号")
-print(result.sparse_activation)  # {"active": {"L3": 0.9, ...}, "skipped": {...}}
-
-# Layers
 from vulca.layers import analyze_layers, split_extract, composite_layers
 import asyncio
 layers = asyncio.run(analyze_layers("artwork.png"))
@@ -583,32 +425,41 @@ results = split_extract("artwork.png", layers, output_dir="./layers")
 composite_layers(results, width=1024, height=1024, output_path="composite.png")
 ```
 
-### CLI Reference
+<details>
+<summary>Full CLI reference</summary>
 
 ```bash
-vulca evaluate painting.jpg -t chinese_xieyi                    # strict mode
-vulca evaluate painting.jpg -t chinese_xieyi --mode reference   # advisor mode
+vulca evaluate painting.jpg -t chinese_xieyi                    # strict
+vulca evaluate painting.jpg -t chinese_xieyi --mode reference   # advisor
 vulca evaluate painting.jpg -t xieyi,japanese --mode fusion     # cross-cultural
-vulca evaluate painting.jpg --sparse-eval                       # only relevant dims
+vulca evaluate painting.jpg --sparse-eval                       # relevant dims only
 
 vulca create "Misty mountains" -t chinese_xieyi --provider gemini -o art.png
-vulca create "Tea packaging" --provider gemini --residuals       # agent attention weights
+vulca create "Tea packaging" --provider gemini --residuals      # agent attention
+vulca create "Zen garden" --provider gemini --hitl              # pause for review
 
-vulca studio "Zen garden" --provider gemini                      # interactive
-vulca studio "Zen garden" --provider gemini --auto               # non-interactive
+vulca studio "Zen garden" --provider gemini                     # interactive
+vulca studio "Zen garden" --provider gemini --auto              # non-interactive
 
-vulca layers analyze artwork.png                                 # VLM semantic analysis
-vulca layers split artwork.png -o ./layers --mode regenerate     # 3 modes
-vulca layers redraw ./layers --layer sky -i "add sunset"         # img2img
-vulca layers add ./layers --name glow --content-type effect      # 7 editing ops
-vulca layers composite ./layers -o final.png                     # blend modes
+vulca layers analyze artwork.png
+vulca layers split artwork.png -o ./layers --mode extract       # or regenerate / sam
+vulca layers redraw ./layers --layer sky -i "add sunset"
+vulca layers add ./layers --name glow --content-type effect
+vulca layers toggle ./layers --layer mist --visible false
+vulca layers lock ./layers --layer background
+vulca layers merge ./layers --layers fg,mid --name merged
+vulca layers composite ./layers -o final.png
+vulca layers export ./layers -o ./assets.psd
+vulca layers evaluate ./layers -t chinese_xieyi
 
-vulca inpaint artwork.png --region "sky" --instruction "add dramatic clouds"
+vulca inpaint artwork.png --region "sky" --instruction "dramatic clouds"
 vulca tools run brushstroke_analyze --image art.png -t chinese_xieyi
-vulca evolution chinese_xieyi                                    # evolved weights
-vulca sessions stats                                             # 1100+ sessions
-vulca resume <session-id>                                        # resume checkpoint
+vulca evolution chinese_xieyi
+vulca sessions stats
+vulca resume <session-id>
 ```
+
+</details>
 
 ---
 
@@ -616,11 +467,7 @@ vulca resume <session-id>                                        # resume checkp
 
 `chinese_xieyi` `chinese_gongbi` `japanese_traditional` `western_academic` `islamic_geometric` `watercolor` `african_traditional` `south_asian` `contemporary_art` `photography` `brand_design` `ui_ux_design` + `default`
 
-Custom traditions via YAML:
-
-```bash
-vulca evaluate painting.jpg --tradition ./my_style.yaml
-```
+Custom traditions via YAML: `vulca evaluate painting.jpg --tradition ./my_style.yaml`
 
 ---
 
@@ -632,13 +479,9 @@ pip install vulca[mcp]      # + MCP server for Claude Code / Cursor
 pip install vulca[sam]      # + SAM2 pixel-precise layer extraction
 ```
 
-No API key required for mock mode. For real VLM scoring + image generation:
+No API key required for mock mode. For real generation + scoring: `export GOOGLE_API_KEY=your-key`
 
-```bash
-export GOOGLE_API_KEY=your-key
-```
-
-Gemini image generation supports **512 / 1K / 2K / 4K** output with automatic size and aspect ratio mapping.
+Gemini supports **512 / 1K / 2K / 4K** output with automatic size and aspect ratio mapping.
 
 ---
 
