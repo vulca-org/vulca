@@ -251,20 +251,34 @@ vulca layers composite ./layers/ -o preview-no-mist.png      # see the differenc
 
 ### Scenario 2: Element Extraction for Design (Designers)
 
-*Already shown above in [Layer-Driven Design Transfer](#create--one-command-multiple-styles)* — extract mountain layer → brand packaging. Additional design operations:
+*Like Figma's component extraction, but for cultural art* — pull out elements, transform into design assets, maintain cultural consistency.
+
+<p align="center">
+  <img src="assets/demo/v2/scenario2-design-flow.png" alt="Source artwork → extract mountain layer → brand packaging design" width="800">
+</p>
 
 ```bash
-# Add a new effect layer (e.g., golden glow overlay)
-vulca layers add ./layers/ --name "golden_glow" --z-index 6 --content-type effect
+# 1. Extract the mountain element from an ink wash painting
+vulca layers split artwork.png -o ./layers/ --mode extract
 
-# Merge foreground elements into a single design asset
+# 2. Use it as reference for brand packaging design
+vulca create "Premium tea packaging, mountain silhouette as watermark" \
+  -t brand_design --reference ./layers/distant_mountains.png
+# → Score: 0.92 | Cultural motif preserved in commercial context
+
+# 3. Or merge elements into a reusable design asset
 vulca layers merge ./layers/ --layers pavilion_and_pine_trees,calligraphy_and_seals \
   --name "hero_element"
 
-# Export as PNG directory (Photoshop-compatible structure)
+# 4. Add design layers (glow, overlay, etc.)
+vulca layers add ./layers/ --name "golden_glow" --z-index 6 --content-type effect
+
+# 5. Export as Photoshop-compatible structure
 vulca layers export ./layers/ -o ./design-assets.psd
 # → 00_background.png, 01_mountains.png, ... + manifest.json
 ```
+
+**Design workflow parallel**: Split → Extract element → Reference for new creation → Evaluate cultural consistency — like using Figma's "Detach Instance" to pull out a component, then placing it in a new frame with different styling.
 
 ### Scenario 3: Per-Layer Cultural Evaluation (Researchers)
 
