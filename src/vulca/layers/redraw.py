@@ -81,9 +81,12 @@ async def redraw_layer(
         reference_image_b64=ref_b64,
     )
 
-    # 5. Save output as RGBA PNG
+    # 5. Save output as RGBA PNG (match canvas size from manifest)
+    manifest_data = json.loads((Path(artwork_dir) / "manifest.json").read_text())
+    canvas_w = manifest_data.get("width", 1024)
+    canvas_h = manifest_data.get("height", 1024)
     out_path = Path(artwork_dir) / f"{layer_name}.png"
-    _save_as_rgba(result.image_b64, result.mime, out_path)
+    _save_as_rgba(result.image_b64, result.mime, out_path, width=canvas_w, height=canvas_h)
 
     # 6. Update target and return
     target.image_path = str(out_path)
@@ -162,9 +165,9 @@ async def redraw_merged(
         except Exception:
             pass
 
-    # 7. Save output as RGBA PNG
+    # 7. Save output as RGBA PNG (match canvas size)
     out_path = Path(artwork_dir) / f"{merged_name}.png"
-    _save_as_rgba(result.image_b64, result.mime, out_path)
+    _save_as_rgba(result.image_b64, result.mime, out_path, width=width, height=height)
 
     # 8. Create new LayerInfo with merged_name, min z_index, content_type="subject"
     min_z = min(lr.info.z_index for lr in selected)
@@ -206,19 +209,27 @@ async def redraw_merged(
 # Internal helpers
 # ---------------------------------------------------------------------------
 
-def _save_as_rgba(image_b64: str, mime: str, out_path: Path) -> None:
-    """Decode image_b64, convert to RGBA, save as PNG at out_path."""
+def _save_as_rgba(
+    image_b64: str, mime: str, out_path: Path,
+    *, width: int = 0, height: int = 0,
+) -> None:
+    """Decode image_b64, convert to RGBA, resize to canvas if needed, save as PNG."""
     from PIL import Image
     import io
 
     raw = base64.b64decode(image_b64)
 
     if mime and "svg" in mime:
-        # SVG from mock provider — create a small transparent placeholder PNG
-        img = Image.new("RGBA", (100, 100), (0, 0, 0, 0))
+        # SVG from mock provider — create transparent placeholder at target size
+        w = width or 100
+        h = height or 100
+        img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
     else:
         img = Image.open(io.BytesIO(raw))
 
     img = img.convert("RGBA")
+    # Ensure output matches canvas size (providers may return different sizes)
+    if width and height and img.size != (width, height):
+        img = img.resize((width, height), Image.LANCZOS)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     img.save(str(out_path), format="PNG")
