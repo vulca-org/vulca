@@ -1,7 +1,12 @@
 """Layer data types for VULCA layered artwork."""
 from __future__ import annotations
 
+import uuid
 from dataclasses import dataclass, field
+
+
+def _default_layer_id() -> str:
+    return "layer_" + uuid.uuid4().hex[:8]
 
 
 @dataclass
@@ -9,11 +14,16 @@ class LayerInfo:
     """Definition of a single semantic layer."""
     name: str
     description: str
-    bbox: dict  # {"x": int, "y": int, "w": int, "h": int} percentages
     z_index: int
-    blend_mode: str = "normal"  # "normal", "screen", "multiply"
-    bg_color: str = "white"     # generation background: "white", "black", "gray"
+    id: str = field(default_factory=_default_layer_id)
+    content_type: str = "background"   # background|subject|detail|effect|text
+    dominant_colors: list[str] = field(default_factory=list)  # hex strings
+    regeneration_prompt: str = ""
+    visible: bool = True
+    blend_mode: str = "normal"         # "normal", "screen", "multiply"
+    bg_color: str = "white"            # generation background: "white", "black", "gray"
     locked: bool = False
+    bbox: dict | None = None           # {"x": int, "y": int, "w": int, "h": int} — V1 compat only
 
 
 @dataclass
@@ -30,4 +40,6 @@ class LayeredArtwork:
     composite_path: str
     layers: list[LayerResult]
     manifest_path: str
-    brief: object | None = None  # Brief if from Studio
+    brief: object | None = None        # Brief if from Studio
+    source_image: str = ""             # V2: origin image path (img2img / decompose)
+    split_mode: str = ""               # V2: how layers were split ("vlm_semantic", "depth", etc.)
