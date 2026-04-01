@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import os
 import time
@@ -72,6 +73,13 @@ def _resolve_nodes(
     nodes: dict[str, PipelineNode] = {}
     for node_name in definition.nodes:
         canonical = _ALIASES.get(node_name, node_name)
+
+        # If node_specs provides a PipelineNode subclass directly, use it
+        spec_value = definition.node_specs.get(node_name)
+        if isinstance(spec_value, type) and issubclass(spec_value, PipelineNode):
+            nodes[node_name] = spec_value()
+            continue
+
         cls = _BUILTINS.get(canonical)
         if cls is not None:
             specs = definition.node_specs.get(node_name, {})
@@ -261,7 +269,10 @@ async def execute(
 
         round_t0 = time.monotonic()
 
-        for node_name in exec_order:
+        i = 0
+        while i < len(exec_order):
+            node_name = exec_order[i]
+
             # HITL: pause before this node if requested
             if interrupt_before and node_name in interrupt_before:
                 _emit(
@@ -303,6 +314,45 @@ async def execute(
                 )
 
             node = node_instances[node_name]
+
+            # --- Parallel batch: collect consecutive concurrent-safe nodes ---
+            if getattr(node, 'is_concurrent_safe', False):
+                batch = [node_name]
+                j = i + 1
+                while j < len(exec_order):
+                    next_node = node_instances[exec_order[j]]
+                    if not getattr(next_node, 'is_concurrent_safe', False):
+                        break
+                    if interrupt_before and exec_order[j] in interrupt_before:
+                        break
+                    batch.append(exec_order[j])
+                    j += 1
+
+                if len(batch) > 1:
+                    # Run all nodes in this batch concurrently
+                    async def _run_one(name: str, _nodes: dict = node_instances, _ctx: object = ctx) -> tuple:
+                        await hooks.emit(hooks.NODE_START, {
+                            "session_id": session_id,
+                            "node_name": name,
+                            "round_num": round_num,
+                        })
+                        out = await _nodes[name].run(_ctx)
+                        await hooks.emit(hooks.NODE_COMPLETE, {
+                            "session_id": session_id,
+                            "node_name": name,
+                            "round_num": round_num,
+                            "output_keys": list(out.keys()) if out else [],
+                        })
+                        return name, out
+
+                    results = await asyncio.gather(*[_run_one(n) for n in batch])
+                    for _name, _output in results:
+                        if _output:
+                            ctx.data.update(_output)
+                    i = j
+                    continue
+            # --- End parallel batch ---
+
             _emit(
                 PipelineEvent(
                     event_type=EventType.STAGE_STARTED,
@@ -419,6 +469,8 @@ async def execute(
                     )
                     status = RunStatus.FAILED
                     break
+
+            i += 1
 
         if status == RunStatus.FAILED:
             break
