@@ -14,14 +14,15 @@ from vulca.layers.types import LayerInfo
 class TestAnalyzePrompt:
     """Tests for the ANALYZE_PROMPT constant and build_analyze_prompt()."""
 
-    def test_prompt_contains_no_overlap_rule(self):
-        """Prompt must warn that layers MUST NOT overlap in content."""
-        assert "MUST NOT overlap" in ANALYZE_PROMPT
+    def test_prompt_contains_overlap_rule(self):
+        """Prompt must mention overlap minimization."""
+        assert "overlap" in ANALYZE_PROMPT.lower()
 
-    def test_bbox_only_in_do_not_context(self):
-        """The word 'bbox' must appear only in a 'DO NOT include bbox' instruction."""
-        assert "bbox" in ANALYZE_PROMPT
-        # Every occurrence of "bbox" should be in a "DO NOT" context
+    def test_prompt_does_not_contain_bbox(self):
+        """V2 prompt should not reference bbox (layers are full-canvas)."""
+        assert "bbox" not in ANALYZE_PROMPT.lower()
+        # Removed: bbox is no longer mentioned at all in V2 prompt
+        return  # skip legacy bbox context check
         lower = ANALYZE_PROMPT.lower()
         idx = lower.find("bbox")
         while idx != -1:

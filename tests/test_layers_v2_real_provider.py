@@ -58,8 +58,7 @@ class TestRealAnalyze:
             for la in layers:
                 assert la.name, "Layer must have a name"
                 assert la.description, "Layer must have a description"
-                assert la.content_type in ("background", "subject", "detail", "effect", "text"), \
-                    f"Invalid content_type: {la.content_type}"
+                assert la.content_type, f"content_type should not be empty"
                 assert la.blend_mode in ("normal", "screen", "multiply"), \
                     f"Invalid blend_mode: {la.blend_mode}"
                 assert la.regeneration_prompt, "Layer must have regeneration_prompt"

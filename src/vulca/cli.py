@@ -216,7 +216,7 @@ def main(argv: list[str] | None = None) -> None:
     layers_add.add_argument("--description", "-d", default="", help="Layer description")
     layers_add.add_argument("--z-index", type=int, default=-1, help="Z-index (-1 = top)")
     layers_add.add_argument("--content-type", default="subject",
-                            choices=["background", "subject", "detail", "effect", "text"])
+                            help="Layer role label (e.g. background, subject, ui_header, decoration)")
 
     layers_remove = layers_sub.add_parser("remove", help="Remove a layer")
     layers_remove.add_argument("artwork_dir", help="Directory with layers")

@@ -1075,7 +1075,7 @@ async def layers_edit(
         name: New layer name (for add/merge/duplicate).
         description: Layer description (for add).
         z_index: Z-index (for add/reorder, -1 = top).
-        content_type: Content type for add (background|subject|detail|effect|text).
+        content_type: Layer role label (e.g. background, subject, ui_header, decoration).
         visible: Visibility state (for toggle).
         locked: Lock state (for lock).
 
