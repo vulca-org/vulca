@@ -157,6 +157,7 @@ async def create_artwork(
     sketch_path: str = "",
     reference_path: str = "",
     ref_type: str = "full",
+    layered: bool = False,
 ) -> dict | str:
     """Create cultural artwork through the VULCA pipeline.
 
@@ -195,11 +196,17 @@ async def create_artwork(
         provider=provider,
         node_params=node_params,
         eval_mode=mode,
+        layered=layered,
     )
 
     interrupt_before = {"decide"} if hitl else None
 
-    output = await execute(DEFAULT, pipeline_input, interrupt_before=interrupt_before)
+    if layered:
+        from vulca.pipeline.templates import LAYERED
+        template = LAYERED
+    else:
+        template = DEFAULT
+    output = await execute(template, pipeline_input, interrupt_before=interrupt_before)
 
     # Store HITL sessions for resume_artwork
     if output.status == "waiting_human" or output.interrupted_at:
