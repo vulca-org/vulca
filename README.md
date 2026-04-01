@@ -6,7 +6,7 @@
 [![Tests](https://img.shields.io/badge/tests-1147%20passing-brightgreen.svg)]()
 [![MCP Tools](https://img.shields.io/badge/MCP_tools-21-blueviolet.svg)]()
 
-**AI-native cultural art creation organism.** Create, evaluate, and evolve artwork across 13 cultural traditions — L1-L5 scoring, self-evolving weights, full layer editing, and 5 algorithmic analysis tools. 21 MCP tools, all from one `pip install`.
+**AI-native creation intelligence.** Tell it what you want — VULCA plans the structure, generates each layer with cultural tradition knowledge, evaluates quality across L1-L5 dimensions, and outputs a structured artifact you can edit layer by layer. 13 traditions, self-evolving weights, 21 MCP tools, all from one `pip install`.
 
 <p align="center">
   <img src="assets/demo/v2/hero-xieyi.png" alt="Chinese Xieyi ink wash landscape — scored 92%" width="280">
@@ -17,9 +17,14 @@
 ```bash
 pip install vulca
 export GOOGLE_API_KEY=your-key
-vulca create "Misty mountains after rain, pine pavilion in clouds" -t chinese_xieyi -o artwork.png
-# → Score: 0.915 | Tradition: chinese_xieyi | 1 round | 43s
-# → Image: artwork.png
+
+# Flat creation (single image)
+vulca create "Misty mountains after rain" -t chinese_xieyi -o artwork.png
+# → Score: 0.915 | Tradition: chinese_xieyi | 1 round
+
+# Structured creation (layered artifact)
+vulca create "Misty mountains after rain" -t chinese_xieyi --layered
+# → 5 layers (宣纸底 → 远景 → 中景 → 近景 → 题款) | Score: 0.90 | Artifact V3
 ```
 
 <details>
@@ -37,40 +42,35 @@ vulca create "Misty mountains after rain, pine pavilion in clouds" -t chinese_xi
 
 ```mermaid
 graph LR
-    subgraph Pipeline["Creation Pipeline"]
-        S[Scout] --> G[Generate]
-        G --> E[Evaluate<br/>L1-L5]
+    subgraph Default["Default Pipeline"]
+        G[Generate] --> E[Evaluate<br/>L1-L5]
         E --> D{Decide}
         D -->|rerun| G
         D -->|accept| OUT[Output]
     end
 
+    subgraph Layered["LAYERED Pipeline (--layered)"]
+        PL[PlanLayers<br/>tradition knowledge] --> LG[LayerGenerate<br/>per-layer]
+        LG --> CO[Composite<br/>Artifact V3]
+        CO --> E2[Evaluate<br/>L1-L5]
+        E2 --> D2{Decide<br/>per-layer}
+        D2 -->|rerun weak layers| LG
+        D2 -->|accept| OUT2[Structured<br/>Artifact]
+    end
+
     subgraph Evolution["Self-Evolution Loop"]
-        OUT --> SE[Session Store<br/>1100+ sessions]
+        OUT --> SE[Session Store]
+        OUT2 --> SE
         SE --> LE[LocalEvolver]
         LE --> EW[Evolved Weights]
         EW --> G
-        EW --> E
-        EW --> D
+        EW --> LG
     end
 
     subgraph Tools["Algorithmic Tools (no API)"]
         T1[brushstroke] --> E
         T2[whitespace] --> E
         T3[composition] --> E
-        T4[color_gamut] --> E
-        T5[color_correct] --> E
-    end
-
-    subgraph LayersV2["Layers V2"]
-        AN[Analyze] --> SP{Split}
-        SP -->|regenerate| IG[Gemini + mask alpha]
-        SP -->|extract| CM[Color mask]
-        SP -->|sam| SAM[SAM2 pixel mask]
-        IG --> FC[Full-canvas RGBA]
-        CM --> FC
-        SAM --> FC
-        FC --> ED[Edit / Redraw / Composite]
     end
 ```
 
@@ -114,6 +114,32 @@ vulca create "Premium tea packaging, mountain silhouette as watermark" \
   <img src="assets/demo/v2/workflow-brand-output.png" alt="Brand design using mountain reference" width="220">
 </p>
 <p align="center"><em>Ink wash landscape → extract mountain layer (checkerboard = transparent) → tea packaging (92%)</em></p>
+
+### Structured Creation (`--layered`)
+
+**Born structured, not decomposed after.** VULCA plans the layer structure using tradition knowledge (xieyi: 底纸→远景→中景→近景→题款), generates each layer independently, composites, evaluates, and outputs a structured Artifact V3 — editable, exportable, agent-consumable.
+
+<p align="center">
+  <img src="assets/demo/v2/layered-showcase.png" alt="5 layers generated from intent — ink wash landscape, Score 90%" width="800">
+</p>
+<p align="center"><em>"水墨山水，雨后春山" → 5 layers generated independently, each in full-scene context → composite 90%</em></p>
+
+```bash
+vulca create "水墨山水，雨后春山" -t chinese_xieyi --layered
+# PlanLayersNode: VLM plans 5 layers per xieyi tradition order
+# LayerGenerateNode: generates each layer (full-scene + focus strategy)
+# CompositeNode: blends → writes Artifact V3
+# EvaluateNode: L1=90%, L2=80%, L3=90%, L4=100%, L5=95%
+# DecideNode: accept (per-layer selective rerun if needed)
+# → Output: artifact.json + 5 PNGs + composite.png
+```
+
+The same command works for any tradition — photography produces depth-based layers, gongbi produces 白描+渲染 layers:
+
+```bash
+vulca create "Mountain lake at golden hour" -t photography --layered
+# → 6 layers: sky, mountains, lake, dock, canoe, reflections (86%)
+```
 
 ---
 
@@ -236,32 +262,34 @@ vulca create "Cultural festival poster, modern typography overlay" \
 
 ### Scenario 2b: Parallax Hero Sections (Frontend Developers)
 
-*Any hero image → depth-based layer extraction → CSS parallax with independent scroll speeds.*
+*One command → 6 depth-based layers → CSS parallax with independent scroll speeds.*
 
 <p align="center">
-  <img src="assets/demo/v2/scenario2b-web-mockup.png" alt="Travel website with VULCA layer export → CSS parallax" width="800">
+  <img src="assets/demo/v2/layered-parallax-showcase.png" alt="6 photography layers generated by LAYERED pipeline — sky, mountains, lake, dock, canoe, reflections" width="800">
 </p>
+<p align="center"><em>vulca create --layered -t photography → 6 layers at different depths, each style-consistent</em></p>
 
 ```bash
-# Generate or use any hero image
-vulca create "Mountain lake at golden hour, wooden dock, canoe" -t photography -o hero.png
-# Split into depth layers (auto-detects scene semantics)
-vulca layers split hero.png -o ./parallax-layers/ --mode extract
-# → 4 layers: background_landscape, wooden_dock, canoe_and_person, reflections
-vulca layers export ./parallax-layers/ -o ./web-assets/
-# → Each layer: full-canvas RGBA with real transparency
+# Generate layered hero assets directly (no decomposition needed)
+vulca create "Mountain lake at golden hour, wooden dock, canoe" \
+  -t photography --layered
+# → 6 layers: sky, mountains, lake, dock, canoe, reflections | Score: 86%
+# → artifact.json + 6 PNGs + composite.png
+
+# Export with transparency for web use
+vulca layers export ./output/ -o ./web-assets/ --format rgba
 ```
 
 ```css
 /* Each exported layer = independent scroll-speed element */
-.parallax { perspective: 1px; overflow-x: hidden; overflow-y: auto; }
+.parallax  { perspective: 1px; overflow-x: hidden; overflow-y: auto; }
 .sky       { transform: translateZ(-3px) scale(4); }  /* slowest */
 .mountains { transform: translateZ(-2px) scale(3); }
 .lake      { transform: translateZ(-1px) scale(2); }
 .dock      { transform: translateZ(0);             }  /* normal scroll */
 ```
 
-VULCA auto-detects image type — the same `layers split` command works for artwork (returns art layers), photography (returns depth planes), or designs (returns visual elements). No Figma or Stitch needed for the asset layer — just a photo and one command.
+No Figma or Stitch needed for the visual assets — VULCA generates structured layers, agents (Gemini/Claude) generate the HTML. Each tool does what it's best at.
 
 ### Scenario 3: Per-Layer Cultural Evaluation (Researchers)
 
@@ -467,6 +495,7 @@ vulca evaluate painting.jpg --sparse-eval                       # relevant dims 
 vulca create "Misty mountains" -t chinese_xieyi --provider gemini -o art.png
 vulca create "Tea packaging" --provider gemini --residuals      # agent attention
 vulca create "Zen garden" --provider gemini --hitl              # pause for review
+vulca create "水墨山水" -t chinese_xieyi --layered              # structured layers
 
 vulca studio "Zen garden" --provider gemini                     # interactive
 vulca studio "Zen garden" --provider gemini --auto              # non-interactive
