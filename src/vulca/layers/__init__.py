@@ -6,6 +6,7 @@ from vulca.layers.composite import composite_layers
 from vulca.layers.blend import blend_normal, blend_screen, blend_multiply, blend_layers
 from vulca.layers.export import export_psd
 from vulca.layers.manifest import write_manifest as write_manifest_v2, load_manifest, MANIFEST_VERSION
+from vulca.layers.artifact import write_artifact_v3, load_artifact_v3, ARTIFACT_VERSION
 from vulca.layers.mask import build_color_mask, apply_mask_to_image
 from vulca.layers.prompt import build_analyze_prompt, build_regeneration_prompt, parse_v2_response
 from vulca.layers.redraw import redraw_layer, redraw_merged
@@ -28,6 +29,7 @@ __all__ = [
     "blend_normal", "blend_screen", "blend_multiply", "blend_layers",
     "export_psd",
     "write_manifest_v2", "load_manifest", "MANIFEST_VERSION",
+    "write_artifact_v3", "load_artifact_v3", "ARTIFACT_VERSION",
     "build_color_mask", "apply_mask_to_image",
     "build_analyze_prompt", "build_regeneration_prompt", "parse_v2_response",
     "redraw_layer", "redraw_merged",
