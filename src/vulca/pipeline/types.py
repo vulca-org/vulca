@@ -96,6 +96,7 @@ class PipelineInput:
     image_provider: Any = field(default=None, repr=False)
     residuals: bool = False       # P1: enable Agent Residuals
     sparse_eval: bool = False     # P3: enable dimension-sparse evaluation
+    layered: bool = False             # Use LAYERED template for structured creation
 
     def to_dict(self) -> dict[str, Any]:
         return {

@@ -70,9 +70,29 @@ CULTURAL_XIEYI = PipelineDefinition(
     node_specs={"decide": {"accept_threshold": 0.0}},
 )
 
+LAYERED = PipelineDefinition(
+    name="layered",
+    display_name="Layered Creation",
+    description=(
+        "Layer-by-layer structured generation with cultural layer order knowledge. "
+        "PlanLayers → LayerGenerate → Composite → Evaluate → Decide, "
+        "with per-layer selective rerun."
+    ),
+    entry_point="plan_layers",
+    nodes=("plan_layers", "layer_generate", "composite", "evaluate", "decide"),
+    edges=(
+        ("plan_layers", "layer_generate"),
+        ("layer_generate", "composite"),
+        ("composite", "evaluate"),
+        ("evaluate", "decide"),
+    ),
+    enable_loop=True,
+)
+
 TEMPLATES: dict[str, PipelineDefinition] = {
     "default": DEFAULT,
     "fast": FAST,
     "critique_only": CRITIQUE_ONLY,
     "cultural_xieyi": CULTURAL_XIEYI,
+    "layered": LAYERED,
 }

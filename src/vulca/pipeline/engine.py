@@ -45,11 +45,17 @@ def _resolve_nodes(
     composition_analyze, etc.).
     """
     from vulca.pipeline.nodes import DecideNode, EvaluateNode, GenerateNode
+    from vulca.pipeline.nodes.plan_layers import PlanLayersNode
+    from vulca.pipeline.nodes.layer_generate import LayerGenerateNode
+    from vulca.pipeline.nodes.composite_node import CompositeNode
 
     _BUILTINS: dict[str, type[PipelineNode]] = {
         "generate": GenerateNode,
         "evaluate": EvaluateNode,
         "decide": DecideNode,
+        "plan_layers": PlanLayersNode,
+        "layer_generate": LayerGenerateNode,
+        "composite": CompositeNode,
     }
 
     _ALIASES: dict[str, str] = {
@@ -165,6 +171,12 @@ async def execute(
         Complete execution result.
     """
     session_id = str(uuid.uuid4())[:8]
+
+    # Auto-select LAYERED template when layered=True
+    if getattr(pipeline_input, 'layered', False) and definition.name != "layered":
+        from vulca.pipeline.templates import LAYERED
+        definition = LAYERED
+
     t0 = time.monotonic()
     events: list[PipelineEvent] = []
     rounds: list[RoundSnapshot] = []
