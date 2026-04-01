@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from vulca.layers.types import LayerInfo
 
-ANALYZE_PROMPT = """Analyze this image and decompose it into 3-6 independent semantic layers.
+ANALYZE_PROMPT = """Analyze this image and decompose it into independent semantic layers (3-10 layers depending on complexity).
 
 Rules:
 - Layers MUST NOT overlap in content — each pixel belongs to exactly one layer
@@ -20,7 +20,7 @@ For each layer provide:
       "z_index": 0,
       "blend_mode": "normal|screen|multiply",
       "dominant_colors": ["#hex1", "#hex2"],
-      "content_type": "background|subject|detail|effect|text",
+      "content_type": "free-form label describing this layer's role (e.g. background, subject, effect, text, ui_navigation, ui_card, logo, headline — any descriptive label)",
       "regeneration_prompt": "Prompt to regenerate ONLY this layer's content as a complete painting, preserving the original style"
     }
   ]
@@ -34,7 +34,7 @@ Important:
 - Return ONLY a JSON object (no markdown fences, no explanation)"""
 
 _VALID_BLEND_MODES = {"normal", "screen", "multiply"}
-_VALID_CONTENT_TYPES = {"background", "subject", "detail", "effect", "text"}
+# content_type is free-form — VLM decides the label based on image content
 
 
 def build_analyze_prompt() -> str:
@@ -64,8 +64,7 @@ def parse_v2_response(raw: dict) -> list[LayerInfo]:
             blend_mode = "normal"
 
         content_type = item.get("content_type", "background")
-        if content_type not in _VALID_CONTENT_TYPES:
-            content_type = "background"
+        # Free-form: VLM can assign any descriptive label
 
         dominant_colors = item.get("dominant_colors", [])
         if not isinstance(dominant_colors, list):

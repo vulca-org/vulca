@@ -16,7 +16,7 @@ class LayerInfo:
     description: str
     z_index: int
     id: str = field(default_factory=_default_layer_id)
-    content_type: str = "background"   # background|subject|detail|effect|text
+    content_type: str = "background"   # free-form: VLM assigns label based on image content
     dominant_colors: list[str] = field(default_factory=list)  # hex strings
     regeneration_prompt: str = ""
     visible: bool = True

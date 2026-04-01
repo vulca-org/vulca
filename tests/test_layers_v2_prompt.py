@@ -158,7 +158,7 @@ class TestRegenerationPrompt:
         )
         prompt = build_regeneration_prompt(layer, width=512, height=768)
         assert "Ink wash mountains" in prompt
-        assert "transparent" in prompt.lower()
+        assert "white background" in prompt.lower() or "canvas" in prompt.lower()
         assert "512" in prompt
         assert "768" in prompt
 
@@ -207,7 +207,7 @@ class TestRegenerationPrompt:
         )
         prompt = build_regeneration_prompt(layer, width=1024, height=1024)
         assert "Misty forest" in prompt
-        assert "transparent" in prompt.lower()
+        assert "white background" in prompt.lower() or "canvas" in prompt.lower()
 
 
 class TestAnalyzeV2Integration:
