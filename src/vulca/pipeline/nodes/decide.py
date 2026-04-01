@@ -2,9 +2,54 @@
 
 from __future__ import annotations
 
+import logging
+import os
 from typing import Any
 
+from vulca.digestion.local_evolver import LocalEvolver
 from vulca.pipeline.node import NodeContext, PipelineNode
+
+logger = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# Evolution circuit breaker
+# ---------------------------------------------------------------------------
+
+_MAX_EVOLUTION_FAILURES = 3
+_evolution_failure_count = 0
+
+
+def _reset_circuit_breaker() -> None:
+    """Reset the circuit breaker failure counter (intended for testing)."""
+    global _evolution_failure_count
+    _evolution_failure_count = 0
+
+
+def _safe_load_evolved(tradition: str) -> dict | None:
+    """Load evolved context for *tradition*, with a circuit breaker.
+
+    After 3 consecutive failures the circuit opens and further calls return
+    ``None`` immediately without touching the file system.
+    """
+    global _evolution_failure_count
+
+    if _evolution_failure_count >= _MAX_EVOLUTION_FAILURES:
+        return None
+
+    try:
+        data_dir = os.environ.get("VULCA_EVOLVED_DATA_DIR", "")
+        evolver = LocalEvolver(data_dir=data_dir) if data_dir else LocalEvolver()
+        return evolver.load_evolved(tradition)
+    except Exception as exc:  # noqa: BLE001
+        _evolution_failure_count += 1
+        logger.warning(
+            "Evolution load failed (%d/%d): %s",
+            _evolution_failure_count,
+            _MAX_EVOLUTION_FAILURES,
+            exc,
+        )
+        return None
+
 
 _L_LABELS = {
     "L1": "Visual Perception",
@@ -47,40 +92,33 @@ class DecideNode(PipelineNode):
 
         # Evolution micro-adjustment (only if user didn't set explicit threshold)
         if not decide_params.get("accept_threshold"):
-            try:
-                import os
-                from vulca.digestion.local_evolver import LocalEvolver
-                data_dir = os.environ.get("VULCA_EVOLVED_DATA_DIR", "")
-                evolver = LocalEvolver(data_dir=data_dir) if data_dir else LocalEvolver()
-                evolved = evolver.load_evolved(ctx.tradition)
-                if evolved:
-                    session_count = evolved.get("session_count", 0)
-                    hist_avg = evolved.get("overall_avg", 0.0)
+            evolved = _safe_load_evolved(ctx.tradition)
+            if evolved:
+                session_count = evolved.get("session_count", 0)
+                hist_avg = evolved.get("overall_avg", 0.0)
 
-                    if session_count >= 5 and hist_avg > 0.5:
-                        # Base evolution adjustment
-                        evolution_adj = 0.05
+                if session_count >= 5 and hist_avg > 0.5:
+                    # Base evolution adjustment
+                    evolution_adj = 0.05
 
-                        # Mode-aware adjustment (iteration 4)
-                        strict_count = evolved.get("strict_count", session_count)
-                        reference_count = evolved.get("reference_count", 0)
-                        total = max(strict_count + reference_count, 1)
-                        strict_ratio = strict_count / total
-                        mode_adj = 0.05 * (strict_ratio - 0.5)  # [-0.025, +0.025]
+                    # Mode-aware adjustment (iteration 4)
+                    strict_count = evolved.get("strict_count", session_count)
+                    reference_count = evolved.get("reference_count", 0)
+                    total = max(strict_count + reference_count, 1)
+                    strict_ratio = strict_count / total
+                    mode_adj = 0.05 * (strict_ratio - 0.5)  # [-0.025, +0.025]
 
-                        # Total adjustment capped
-                        total_adj = max(-0.05, min(evolution_adj + mode_adj, 0.10))
-                        adjusted = min(threshold + total_adj, hist_avg * 0.95)
-                        # Only raise threshold, never lower it
-                        if adjusted > threshold:
-                            threshold = adjusted
-                    elif hist_avg > 0.5:
-                        # Few sessions: simple adjustment only, no mode awareness
-                        adjusted = min(threshold + 0.05, hist_avg * 0.95)
-                        if adjusted > threshold:
-                            threshold = adjusted
-            except Exception:
-                pass  # Evolution is advisory
+                    # Total adjustment capped
+                    total_adj = max(-0.05, min(evolution_adj + mode_adj, 0.10))
+                    adjusted = min(threshold + total_adj, hist_avg * 0.95)
+                    # Only raise threshold, never lower it
+                    if adjusted > threshold:
+                        threshold = adjusted
+                elif hist_avg > 0.5:
+                    # Few sessions: simple adjustment only, no mode awareness
+                    adjusted = min(threshold + 0.05, hist_avg * 0.95)
+                    if adjusted > threshold:
+                        threshold = adjusted
 
         # In reference mode, always accept — don't "correct" the artist
         if eval_mode == "reference":
