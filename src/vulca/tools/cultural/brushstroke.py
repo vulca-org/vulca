@@ -104,6 +104,8 @@ class BrushstrokeAnalyzer(VulcaTool):
     category = ToolCategory.CULTURAL_CHECK
     replaces: dict[str, list[str]] = {"evaluate": ["L2"]}
     max_seconds = 10
+    is_concurrent_safe = True
+    is_read_only = True
 
     Input = BrushstrokeInput
     Output = BrushstrokeOutput

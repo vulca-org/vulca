@@ -101,6 +101,8 @@ class ColorGamutChecker(VulcaTool):
     category = ToolCategory.CULTURAL_CHECK
     replaces: dict[str, list[str]] = {"evaluate": ["L3"]}
     max_seconds = 15
+    is_concurrent_safe = True
+    is_read_only = True
 
     Input = ColorGamutInput
     Output = ColorGamutOutput

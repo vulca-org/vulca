@@ -99,6 +99,8 @@ class WhitespaceAnalyzer(VulcaTool):
     category = ToolCategory.CULTURAL_CHECK
     replaces: dict[str, list[str]] = {"evaluate": ["L1"]}
     max_seconds = 10
+    is_concurrent_safe = True
+    is_read_only = True
 
     Input = WhitespaceInput
     Output = WhitespaceOutput

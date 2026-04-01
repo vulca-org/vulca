@@ -204,6 +204,47 @@ class TestVulcaTool:
         assert MinimalTool.max_seconds == 2.0
         assert MinimalTool.replaces == {"evaluate": ["L1"]}
 
+    def test_vulca_tool_has_concurrency_attributes(self):
+        """VulcaTool ABC has fail-closed defaults: is_concurrent_safe=False, is_read_only=True."""
+        assert hasattr(VulcaTool, "is_concurrent_safe"), "VulcaTool must have is_concurrent_safe ClassVar"
+        assert hasattr(VulcaTool, "is_read_only"), "VulcaTool must have is_read_only ClassVar"
+        assert VulcaTool.is_concurrent_safe is False, "Default is_concurrent_safe must be False (fail-closed)"
+        assert VulcaTool.is_read_only is True, "Default is_read_only must be True"
+
+    def test_analysis_tools_are_concurrent_safe(self):
+        """4 analysis tools are safe for concurrent use and read-only."""
+        import sys
+        import os
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
+
+        from vulca.tools.cultural.whitespace import WhitespaceAnalyzer
+        from vulca.tools.cultural.brushstroke import BrushstrokeAnalyzer
+        from vulca.tools.cultural.color_gamut import ColorGamutChecker
+        from vulca.tools.cultural.composition import CompositionAnalyzer
+
+        for tool_cls in (WhitespaceAnalyzer, BrushstrokeAnalyzer, ColorGamutChecker, CompositionAnalyzer):
+            assert tool_cls.is_concurrent_safe is True, (
+                f"{tool_cls.__name__}.is_concurrent_safe must be True (pure analysis, no side effects)"
+            )
+            assert tool_cls.is_read_only is True, (
+                f"{tool_cls.__name__}.is_read_only must be True (analysis only)"
+            )
+
+    def test_color_correct_is_not_concurrent_safe(self):
+        """ColorCorrect mutates pixel data: is_concurrent_safe=False, is_read_only=False."""
+        import sys
+        import os
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
+
+        from vulca.tools.filters.color_correct import ColorCorrect
+
+        assert ColorCorrect.is_concurrent_safe is False, (
+            "ColorCorrect.is_concurrent_safe must be False (fix mode mutates image data)"
+        )
+        assert ColorCorrect.is_read_only is False, (
+            "ColorCorrect.is_read_only must be False (fix mode writes corrected image)"
+        )
+
 
 # ---------------------------------------------------------------------------
 # Task 2: ImageData cross-platform type

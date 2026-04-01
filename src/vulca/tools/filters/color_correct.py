@@ -69,6 +69,8 @@ class ColorCorrect(VulcaTool):
     category = ToolCategory.FILTER
     replaces: dict = {}
     max_seconds = 10
+    is_concurrent_safe = False
+    is_read_only = False
 
     Input = ColorCorrectInput
     Output = ColorCorrectOutput

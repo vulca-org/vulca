@@ -146,6 +146,10 @@ class VulcaTool(abc.ABC):
     max_seconds: ClassVar[float]
     replaces: ClassVar[dict[str, list[str]]]
 
+    # Concurrency and safety attributes (fail-closed defaults)
+    is_concurrent_safe: ClassVar[bool] = False
+    is_read_only: ClassVar[bool] = True
+
     # --- Inner schema classes (must be overridden) ---
     class Input(ToolSchema):
         """Override in subclass."""
