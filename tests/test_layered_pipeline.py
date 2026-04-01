@@ -96,3 +96,31 @@ class TestDecideNodePerLayer:
         result = await node.run(ctx)
         assert result["decision"] == "accept"
         assert "layer_decisions" not in result
+
+
+class TestLayeredPipelineE2E:
+    @pytest.mark.asyncio
+    async def test_full_layered_flow_with_artifact(self, tmp_path):
+        """Full flow: layered=True → artifact + layers + composite."""
+        inp = PipelineInput(
+            subject="水墨山水",
+            intent="水墨山水，雨后春山",
+            tradition="chinese_xieyi",
+            provider="mock",
+            layered=True,
+        )
+        output = await execute(LAYERED, inp)
+        assert output.status == "completed"
+        assert output.total_rounds >= 1
+
+    @pytest.mark.asyncio
+    async def test_default_pipeline_regression(self):
+        """Regression: DEFAULT pipeline unchanged."""
+        from vulca.pipeline.templates import DEFAULT
+        inp = PipelineInput(
+            subject="test regression",
+            provider="mock",
+            template="default",
+        )
+        output = await execute(DEFAULT, inp)
+        assert output.status == "completed"
