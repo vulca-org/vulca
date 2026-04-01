@@ -44,6 +44,14 @@ sam = [
     "segment-anything-2>=0.1",
     "torch>=2.0",
 ]
+rembg = [
+    "rembg>=2.0",
+]
+layers-full = [
+    "rembg>=2.0",
+    "segment-anything-2>=0.1",
+    "torch>=2.0",
+]
 dev = [
     "pytest>=8.0",
     "pytest-asyncio>=0.23",
