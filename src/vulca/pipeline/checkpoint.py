@@ -32,7 +32,7 @@ class CheckpointStore:
 
         record: dict[str, Any] = {"round_num": round_num, "timestamp": int(time.time())}
 
-        image_b64 = ctx_data.pop("image_b64", None)
+        image_b64 = ctx_data.get("image_b64", None)
         if image_b64:
             img_filename = f"round{round_num}.png"
             img_path = session_dir / img_filename

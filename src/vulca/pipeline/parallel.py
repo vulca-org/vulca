@@ -14,7 +14,7 @@ Usage:
         ],
         provider="mock",
     )
-    best = max(results, key=lambda r: r.final_scores.get("weighted_total", 0))
+    best = rank_results(results)[0]
 """
 
 from __future__ import annotations
@@ -94,8 +94,12 @@ def rank_results(
     """Rank parallel results by score. Failed runs sorted to the end."""
 
     def _score(r: PipelineOutput) -> float:
-        if not r.final_scores:
-            return -1.0
-        return r.final_scores.get(key, 0.0)
+        # weighted_total is a direct attribute on PipelineOutput, not inside final_scores
+        wt = getattr(r, 'weighted_total', None)
+        if wt is not None:
+            return float(wt)
+        if r.final_scores:
+            return r.final_scores.get(key, 0.0)
+        return -1.0
 
     return sorted(results, key=_score, reverse=True)

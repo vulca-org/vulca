@@ -329,6 +329,11 @@ async def execute(
                     j += 1
 
                 if len(batch) > 1:
+                    # SAFETY: Parallel nodes share ctx.data. This is safe because:
+                    # 1. asyncio is single-threaded (no true concurrent writes)
+                    # 2. Parallel nodes must have non-overlapping output keys
+                    # 3. Only is_concurrent_safe=True nodes (read-only analyzers) run here
+                    # If a node reads another parallel node's output, results are undefined.
                     # Run all nodes in this batch concurrently
                     async def _run_one(name: str, _nodes: dict = node_instances, _ctx: object = ctx) -> tuple:
                         await hooks.emit(hooks.NODE_START, {
