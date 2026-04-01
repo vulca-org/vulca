@@ -1,4 +1,16 @@
-from vulca._vlm import _SYSTEM_PROMPT, _parse_vlm_response, _extract_scoring
+import asyncio
+from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
+
+from vulca._vlm import (
+    _DEFAULT_MAX_TOKENS,
+    _ESCALATED_MAX_TOKENS,
+    _SYSTEM_PROMPT,
+    _extract_scoring,
+    _parse_vlm_response,
+    score_image,
+)
 
 
 class TestVLMPromptStructure:
@@ -75,3 +87,110 @@ class TestExtractScoring:
         raw_json = '{"L1": 0.75, "L2": 0.65, "L3": 0.80}'
         result = _extract_scoring(raw_json)
         assert result == raw_json
+
+
+# ---------------------------------------------------------------------------
+# Minimal valid scoring JSON for mock responses
+# ---------------------------------------------------------------------------
+_VALID_SCORING_JSON = (
+    '{"L1": 0.8, "L1_rationale": "good", "L1_suggestion": "try", '
+    '"L1_deviation_type": "traditional", "L1_observations": "", "L1_reference_technique": "", '
+    '"L2": 0.7, "L2_rationale": "ok", "L2_suggestion": "try", '
+    '"L2_deviation_type": "traditional", "L2_observations": "", "L2_reference_technique": "", '
+    '"L3": 0.6, "L3_rationale": "fair", "L3_suggestion": "try", '
+    '"L3_deviation_type": "traditional", "L3_observations": "", "L3_reference_technique": "", '
+    '"L4": 0.9, "L4_rationale": "great", "L4_suggestion": "push", '
+    '"L4_deviation_type": "traditional", "L4_observations": "", "L4_reference_technique": "", '
+    '"L5": 0.75, "L5_rationale": "solid", "L5_suggestion": "explore", '
+    '"L5_deviation_type": "traditional", "L5_observations": "", "L5_reference_technique": ""}'
+)
+
+
+def _make_mock_response(finish_reason: str, content: str) -> MagicMock:
+    """Build a fake litellm response object."""
+    choice = MagicMock()
+    choice.finish_reason = finish_reason
+    choice.message.content = content
+    resp = MagicMock()
+    resp.choices = [choice]
+    return resp
+
+
+class TestScoreImageTokenEscalation:
+    """Verify adaptive token budget: escalate from _DEFAULT to _ESCALATED on truncation."""
+
+    def test_score_image_escalates_on_truncation(self):
+        """First call returns finish_reason='length'; second call should use escalated tokens."""
+        # Truncated response (finish_reason="length") — minimal parseable content
+        truncated_resp = _make_mock_response("length", "<scoring>" + _VALID_SCORING_JSON + "</scoring>")
+        # Full response on retry
+        full_resp = _make_mock_response("stop", "<scoring>" + _VALID_SCORING_JSON + "</scoring>")
+
+        mock_acompletion = AsyncMock(side_effect=[truncated_resp, full_resp])
+
+        with patch("litellm.acompletion", mock_acompletion):
+            result = asyncio.run(
+                score_image(
+                    img_b64="aGVsbG8=",  # base64("hello")
+                    mime="image/png",
+                    subject="test artwork",
+                    tradition="chinese_xieyi",
+                    api_key="test-key",
+                )
+            )
+
+        # Two calls must have been made
+        assert mock_acompletion.call_count == 2
+
+        call_args_list = mock_acompletion.call_args_list
+        first_max_tokens = call_args_list[0].kwargs["max_tokens"]
+        second_max_tokens = call_args_list[1].kwargs["max_tokens"]
+
+        assert first_max_tokens == _DEFAULT_MAX_TOKENS, (
+            f"First attempt must use _DEFAULT_MAX_TOKENS={_DEFAULT_MAX_TOKENS}, got {first_max_tokens}"
+        )
+        assert second_max_tokens == _ESCALATED_MAX_TOKENS, (
+            f"Escalated attempt must use _ESCALATED_MAX_TOKENS={_ESCALATED_MAX_TOKENS}, got {second_max_tokens}"
+        )
+        # Scores should still be parsed correctly from the full response
+        assert result.get("L1") == pytest.approx(0.8)
+
+    def test_score_image_no_escalation_on_stop(self):
+        """When finish_reason='stop', only one call is made at _DEFAULT_MAX_TOKENS."""
+        full_resp = _make_mock_response("stop", "<scoring>" + _VALID_SCORING_JSON + "</scoring>")
+        mock_acompletion = AsyncMock(return_value=full_resp)
+
+        with patch("litellm.acompletion", mock_acompletion):
+            result = asyncio.run(
+                score_image(
+                    img_b64="aGVsbG8=",
+                    mime="image/png",
+                    subject="test artwork",
+                    tradition="chinese_xieyi",
+                    api_key="test-key",
+                )
+            )
+
+        assert mock_acompletion.call_count == 1
+        used_tokens = mock_acompletion.call_args_list[0].kwargs["max_tokens"]
+        assert used_tokens == _DEFAULT_MAX_TOKENS
+        assert result.get("L1") == pytest.approx(0.8)
+
+    def test_score_image_no_double_escalation(self):
+        """Even if both responses are truncated, at most 2 total calls (1 retry)."""
+        truncated = _make_mock_response("length", "<scoring>" + _VALID_SCORING_JSON + "</scoring>")
+        mock_acompletion = AsyncMock(return_value=truncated)
+
+        with patch("litellm.acompletion", mock_acompletion):
+            asyncio.run(
+                score_image(
+                    img_b64="aGVsbG8=",
+                    mime="image/png",
+                    subject="test artwork",
+                    tradition="chinese_xieyi",
+                    api_key="test-key",
+                )
+            )
+
+        # _MAX_ESCALATION_ATTEMPTS=1 means at most 2 calls total
+        assert mock_acompletion.call_count == 2

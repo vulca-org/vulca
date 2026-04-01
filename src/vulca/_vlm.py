@@ -15,6 +15,11 @@ logger = logging.getLogger("vulca")
 # Local user data path -- preferred evolved context source
 _LOCAL_EVOLVED_PATH = Path.home() / ".vulca" / "data" / "evolved_context.json"
 
+# Token budget: start low, escalate on truncation
+_DEFAULT_MAX_TOKENS = 3072
+_ESCALATED_MAX_TOKENS = 8192
+_MAX_ESCALATION_ATTEMPTS = 1
+
 _SYSTEM_PROMPT = """\
 You are VULCA, a cultural-aware art evaluation system. Evaluate the given \
 artwork image across five dimensions (L1-L5), each scored from 0.0 to 1.0.
@@ -427,17 +432,36 @@ async def score_image(
         user_parts.append({"type": "text", "text": "Evaluate this artwork."})
 
     try:
-        resp = await litellm.acompletion(
-            model=os.environ.get("VULCA_VLM_MODEL", "gemini/gemini-2.5-flash"),
-            messages=[
-                {"role": "system", "content": system_msg},
-                {"role": "user", "content": user_parts},
-            ],
-            max_tokens=6144,
-            temperature=0.1,
-            api_key=api_key,
-            timeout=55,
-        )
+        messages = [
+            {"role": "system", "content": system_msg},
+            {"role": "user", "content": user_parts},
+        ]
+        model = os.environ.get("VULCA_VLM_MODEL", "gemini/gemini-2.5-flash")
+
+        # Adaptive token budget: start at _DEFAULT_MAX_TOKENS, escalate on truncation
+        max_tokens = _DEFAULT_MAX_TOKENS
+        resp = None
+        for attempt in range(_MAX_ESCALATION_ATTEMPTS + 1):
+            resp = await litellm.acompletion(
+                model=model,
+                messages=messages,
+                max_tokens=max_tokens,
+                temperature=0.1,
+                api_key=api_key,
+                timeout=55,
+            )
+            finish_reason = getattr(resp.choices[0], "finish_reason", "stop")
+            if finish_reason == "length" and attempt < _MAX_ESCALATION_ATTEMPTS:
+                logger.info(
+                    "VLM response truncated (finish_reason=length) at %d tokens; "
+                    "escalating to %d tokens",
+                    max_tokens,
+                    _ESCALATED_MAX_TOKENS,
+                )
+                max_tokens = _ESCALATED_MAX_TOKENS
+            else:
+                break
+
         text = resp.choices[0].message.content.strip()
         from vulca._parse import parse_llm_json
         # Extract only the <scoring> section (strips <observation> scratchpad)
