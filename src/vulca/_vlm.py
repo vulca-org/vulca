@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 from pathlib import Path
 
 import litellm
@@ -61,7 +62,18 @@ Based on your observations, score each dimension 0.0-1.0. For each provide:
 for this dimension (bilingual if applicable, e.g., "reserved white space (留白)").
 5. **deviation_type**: One of "traditional", "intentional_departure", or "experimental".
 
-Respond with ONLY a JSON object:
+Respond in two phases:
+
+**Phase 1 — Scratchpad** (free-form, not parsed):
+Write your working observations inside `<observation>` tags. Use this space to \
+think through what you see before committing to scores. Example:
+<observation>
+[Your free-form notes about brushwork, color, composition, cultural elements, etc.]
+</observation>
+
+**Phase 2 — Structured Scoring** (parsed by system):
+Write ONLY the JSON object inside `<scoring>` tags. Only this section is parsed.
+<scoring>
 {{
     "L1": <float>, "L1_observations": "<string>", "L1_rationale": "<string>", \
 "L1_suggestion": "<string>", "L1_reference_technique": "<string>", "L1_deviation_type": "<string>",
@@ -74,7 +86,22 @@ Respond with ONLY a JSON object:
     "L5": <float>, "L5_observations": "<string>", "L5_rationale": "<string>", \
 "L5_suggestion": "<string>", "L5_reference_technique": "<string>", "L5_deviation_type": "<string>"
 }}
+</scoring>
 """
+
+def _extract_scoring(text: str) -> str:
+    """Extract content inside <scoring>...</scoring> tags.
+
+    Implements the two-phase scratchpad protocol: the model writes free-form
+    observations in <observation> tags (discarded), then structured JSON in
+    <scoring> tags (parsed). Falls back to full text for backward compatibility
+    with responses that do not use the tag protocol.
+    """
+    m = re.search(r"<scoring>(.*?)</scoring>", text, re.DOTALL)
+    if m:
+        return m.group(1).strip()
+    return text
+
 
 def _build_extra_dimensions_prompt(extras: list[dict]) -> str:
     """Build prompt section for tradition-specific extra dimensions (E1-E3, max 3)."""
@@ -413,7 +440,9 @@ async def score_image(
         )
         text = resp.choices[0].message.content.strip()
         from vulca._parse import parse_llm_json
-        parsed_json = parse_llm_json(text)
+        # Extract only the <scoring> section (strips <observation> scratchpad)
+        scoring_text = _extract_scoring(text)
+        parsed_json = parse_llm_json(scoring_text)
 
         # Use _parse_vlm_response to extract and validate all fields (including extras)
         scores, rationales, suggestions, deviations, observations, ref_techniques = _parse_vlm_response(

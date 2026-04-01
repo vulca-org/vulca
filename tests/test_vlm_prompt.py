@@ -1,4 +1,4 @@
-from vulca._vlm import _SYSTEM_PROMPT, _parse_vlm_response
+from vulca._vlm import _SYSTEM_PROMPT, _parse_vlm_response, _extract_scoring
 
 
 class TestVLMPromptStructure:
@@ -50,3 +50,28 @@ class TestVLMResponseParsing:
         scores, rationales, suggestions, deviations, observations, ref_techniques = _parse_vlm_response(raw)
         assert observations == {"L1": "", "L2": "", "L3": "", "L4": "", "L5": ""}
         assert ref_techniques == {"L1": "", "L2": "", "L3": "", "L4": "", "L5": ""}
+
+
+class TestExtractScoring:
+    def test_extract_scoring_strips_observation(self):
+        """VLM response with both tags: only the <scoring> content is returned."""
+        response = (
+            "<observation>\n"
+            "The brushwork shows loose, expressive strokes typical of xieyi style.\n"
+            "Color temperature is cool with ink wash gradients.\n"
+            "</observation>\n"
+            "<scoring>\n"
+            '{\"L1\": 0.8, \"L2\": 0.7}\n'
+            "</scoring>"
+        )
+        result = _extract_scoring(response)
+        assert result == '{"L1": 0.8, "L2": 0.7}'
+        assert "<observation>" not in result
+        assert "<scoring>" not in result
+        assert "brushwork" not in result
+
+    def test_extract_scoring_fallback_no_tags(self):
+        """Raw JSON without tags is returned as-is (backward compatibility)."""
+        raw_json = '{"L1": 0.75, "L2": 0.65, "L3": 0.80}'
+        result = _extract_scoring(raw_json)
+        assert result == raw_json
