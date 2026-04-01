@@ -24,6 +24,12 @@ class LayerInfo:
     bg_color: str = "white"            # generation background: "white", "black", "gray"
     locked: bool = False
     bbox: dict | None = None           # {"x": int, "y": int, "w": int, "h": int} — V1 compat only
+    # V3 fields (Artifact V3 structured creation)
+    tradition_role: str = ""               # Cultural layer role e.g. "远景淡墨"
+    opacity: float = 1.0                   # Layer opacity 0.0-1.0
+    status: str = ""                       # "accepted" | "rerun" | "failed" | ""
+    weakness: str = ""                     # Actionable feedback from DecideNode
+    generation_round: int = 0              # Which round produced this layer
 
 
 @dataclass
