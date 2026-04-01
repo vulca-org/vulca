@@ -67,3 +67,29 @@ def export_psd(
     manifest_path = png_dir / "manifest.json"
     manifest_path.write_text(json.dumps(manifest, indent=2))
     return str(out)
+
+
+def export_with_alpha(
+    artwork_dir: str,
+    output_dir: str,
+    method: str = "auto",
+) -> list[str]:
+    """Export layers with transparency based on content_type."""
+    from vulca.layers.artifact import load_artifact_v3
+    from vulca.layers.alpha import apply_alpha_to_layer
+
+    artwork = load_artifact_v3(artwork_dir)
+    out = Path(output_dir)
+    out.mkdir(parents=True, exist_ok=True)
+
+    exported = []
+    for lr in sorted(artwork.layers, key=lambda l: l.info.z_index):
+        try:
+            img = Image.open(lr.image_path)
+            rgba = apply_alpha_to_layer(img, lr.info, method=method)
+            dest = out / f"{lr.info.z_index:02d}_{lr.info.name}.png"
+            rgba.save(str(dest))
+            exported.append(str(dest))
+        except Exception:
+            continue
+    return exported
