@@ -112,4 +112,26 @@ class DecideNode(PipelineNode):
             result["weakest_dimensions"] = weakest
             result["improvement_focus"] = "\n".join(focus_parts)
 
+        # Per-layer decisions for LAYERED pipeline
+        layer_results = ctx.get("layer_results")
+        if layer_results:
+            layer_decisions = {}
+            for lr in layer_results:
+                if not lr.image_path:
+                    # Failed layer → must rerun
+                    layer_decisions[lr.info.name] = "rerun"
+                elif decision == "accept":
+                    layer_decisions[lr.info.name] = "accept"
+                else:
+                    # Default: accept this layer
+                    layer_decisions[lr.info.name] = "accept"
+
+            # If overall decision is rerun but no specific layer targeted, rerun last non-bg layer
+            if decision == "rerun" and "rerun" not in layer_decisions.values():
+                candidates = [lr for lr in layer_results if lr.info.content_type != "background" and lr.image_path]
+                if candidates:
+                    layer_decisions[candidates[-1].info.name] = "rerun"
+
+            result["layer_decisions"] = layer_decisions
+
         return result
