@@ -24,7 +24,7 @@ vulca create "Misty mountains after rain" -t chinese_xieyi -o artwork.png
 
 # Structured creation (layered artifact)
 vulca create "Misty mountains after rain" -t chinese_xieyi --layered
-# → 5 layers (宣纸底 → 远景 → 中景 → 近景 → 题款) | Score: 0.90 | Artifact V3
+# → 4 layers (paper → mountains → pines → calligraphy) | Artifact V3
 ```
 
 <details>
@@ -117,28 +117,26 @@ vulca create "Premium tea packaging, mountain silhouette as watermark" \
 
 ### Structured Creation (`--layered`)
 
-**Born structured, not decomposed after.** VULCA plans the layer structure using tradition knowledge (xieyi: 底纸→远景→中景→近景→题款), generates each layer independently, composites, evaluates, and outputs a structured Artifact V3 — editable, exportable, agent-consumable.
+Tell VULCA what you want — it plans the layer structure from tradition knowledge, generates each layer independently on white background, composites them, and evaluates the result. Each layer contains only its own content.
 
 <p align="center">
-  <img src="assets/demo/v2/layered-showcase.png" alt="5 layers generated from intent — ink wash landscape, Score 90%" width="800">
+  <img src="assets/demo/v2/layered-showcase.png" alt="4 independent layers — paper base, mountains, pines+hut, calligraphy → composite" width="800">
 </p>
-<p align="center"><em>"水墨山水，雨后春山" → 5 layers generated independently, each in full-scene context → composite 90%</em></p>
 
 ```bash
-vulca create "水墨山水，雨后春山" -t chinese_xieyi --layered
-# PlanLayersNode: VLM plans 5 layers per xieyi tradition order
-# LayerGenerateNode: generates each layer (full-scene + focus strategy)
-# CompositeNode: blends → writes Artifact V3
-# EvaluateNode: L1=90%, L2=80%, L3=90%, L4=100%, L5=95%
-# DecideNode: accept (per-layer selective rerun if needed)
-# → Output: artifact.json + 5 PNGs + composite.png
+vulca create "水墨山水，雨后春山，松间茅屋" -t chinese_xieyi --layered
+# → 4 layers: paper_base, mountains, pines_hut, calligraphy | Score: 76%
+# → artifact.json + 4 PNGs + composite.png
+
+# Each layer = only its content on white background
+# White areas → transparent via export: vulca layers export ./output/ --format rgba
 ```
 
-The same command works for any tradition — photography produces depth-based layers, gongbi produces 白描+渲染 layers:
+Works for any tradition — photography produces depth layers, gongbi produces line art + wash layers:
 
 ```bash
 vulca create "Mountain lake at golden hour" -t photography --layered
-# → 6 layers: sky, mountains, lake, dock, canoe, reflections (86%)
+# → 6 layers: sky, mountains, lake, dock, canoe, reflections
 ```
 
 ---
