@@ -28,6 +28,13 @@ class TestVLMPromptStructure:
     def test_prompt_requires_reference_technique(self):
         assert "reference_technique" in _STATIC_SCORING_PREFIX
 
+    def test_static_prefix_has_length_anchors(self):
+        """Numeric length anchors reduce output tokens by ~1.2%."""
+        assert "30-50 words" in _STATIC_SCORING_PREFIX
+        assert "15-25 words" in _STATIC_SCORING_PREFIX
+        assert "5-15 words" in _STATIC_SCORING_PREFIX
+        assert "100-200 words" in _STATIC_SCORING_PREFIX
+
     def test_prompt_has_static_dynamic_separation(self):
         """Static prefix contains L1/L5 but no {tradition} placeholders;
         _build_dynamic_suffix returns a non-empty string."""

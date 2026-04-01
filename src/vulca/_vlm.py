@@ -76,6 +76,13 @@ Based on your observations, score each dimension 0.0-1.0. For each provide:
 for this dimension (bilingual if applicable, e.g., "reserved white space (留白)").
 5. **deviation_type**: One of "traditional", "intentional_departure", or "experimental".
 
+## Response Length Guidelines
+
+- Each dimension rationale: 30-50 words (be specific, not verbose)
+- Each suggestion: 15-25 words (actionable, not generic)
+- Each reference_technique: 5-15 words (name the technique precisely)
+- observation block: 100-200 words total
+
 Respond in two phases:
 
 **Phase 1 — Scratchpad** (free-form, not parsed):
