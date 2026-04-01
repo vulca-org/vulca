@@ -234,30 +234,30 @@ vulca create "Cultural festival poster, modern typography overlay" \
   -t brand_design --reference ./layers/poster_bg.png
 ```
 
-### Scenario 2b: Frontend Parallax (Web Developers)
+### Scenario 2b: UI Component Extraction (Frontend Developers)
 
-*Any hero image → extract semantic layers → CSS parallax with depth.*
+*Flat design screenshot → auto-decompose into individual UI components.*
 
 <p align="center">
-  <img src="assets/demo/v2/scenario2b-web-mockup.png" alt="Travel website with VULCA layer export for CSS parallax" width="800">
+  <img src="assets/demo/v2/scenario2b-ui-showcase.png" alt="UI design → 9 extracted components" width="800">
 </p>
 
 ```bash
-# Generate or use any hero image
-vulca create "Mountain lake at golden hour, wooden dock, canoe" -t photography -o hero.png
-# Split into depth layers
-vulca layers split hero.png -o ./layers/ --mode extract
-vulca layers export ./layers/ -o ./web-assets/
-# → 00_sky.png, 01_mountains.png, 02_lake.png, 03_dock.png (each with transparency)
+# Any UI design screenshot → extract components
+vulca layers split app-design.png -o ./ui-layers/ --mode extract
+# → 9 layers: background, phone_frame, status_bar, header, hero_banner,
+#   category_filters, featured_section, offers_section, bottom_nav
+
+# Export each component as independent PNG
+vulca layers export ./ui-layers/ -o ./components/
+# → 00_background.png, 01_phone_frame.png, ... (each with transparency)
+
+# Or extract specific elements for animation
+vulca layers redraw ./ui-layers/ --layer hero_banner \
+  -i "animate entrance: slide up with parallax effect"
 ```
 
-```css
-/* Each exported layer = independent scroll-speed element */
-.sky       { transform: translateZ(-3px) scale(4); }  /* slowest */
-.mountains { transform: translateZ(-2px) scale(3); }
-.lake      { transform: translateZ(-1px) scale(2); }
-.dock      { transform: translateZ(0);             }  /* normal scroll */
-```
+VULCA auto-detects image type — the same `layers split` command works for artwork (returns art layers), UI designs (returns UI components), or photography (returns depth planes). The agent decides what to do with the extracted layers.
 
 ### Scenario 3: Per-Layer Cultural Evaluation (Researchers)
 

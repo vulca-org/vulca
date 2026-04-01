@@ -5,11 +5,16 @@ from vulca.layers.types import LayerInfo
 
 ANALYZE_PROMPT = """Analyze this image and decompose it into independent semantic layers (3-10 layers depending on complexity).
 
+Adapt your decomposition to the image type:
+- Artwork/illustration: separate by visual depth and semantic meaning (background, subjects, effects, text)
+- UI/app design: separate by interface components (navigation, headers, cards, buttons, content sections)
+- Photography: separate by depth plane (foreground, subject, midground, background, sky)
+- Design/poster: separate by design elements (background, imagery, typography, decorative elements)
+
 Rules:
-- Layers MUST NOT overlap in content — each pixel belongs to exactly one layer
-- Background layer covers the full canvas
-- Foreground objects are separate from their background
-- Effects (mist, glow, shadows) are separate layers
+- Layers should minimize content overlap
+- Each layer should be independently meaningful
+- Order z_index from back (0) to front
 
 For each layer provide:
 {
@@ -20,18 +25,13 @@ For each layer provide:
       "z_index": 0,
       "blend_mode": "normal|screen|multiply",
       "dominant_colors": ["#hex1", "#hex2"],
-      "content_type": "free-form label describing this layer's role (e.g. background, subject, effect, text, ui_navigation, ui_card, logo, headline — any descriptive label)",
-      "regeneration_prompt": "Prompt to regenerate ONLY this layer's content as a complete painting, preserving the original style"
+      "content_type": "free-form label (e.g. background, subject, effect, ui_header, ui_card, typography, decoration — any descriptive label)",
+      "regeneration_prompt": "Prompt to regenerate ONLY this layer's content, preserving the original style"
     }
   ]
 }
 
-Important:
-- DO NOT include bbox — layers are full-canvas
-- Each layer's regeneration_prompt must describe ONLY what this layer contains
-- Background layer should describe the base texture/color without foreground objects
-- Subject layers should describe the object without background
-- Return ONLY a JSON object (no markdown fences, no explanation)"""
+Return ONLY a JSON object (no markdown fences, no explanation)."""
 
 _VALID_BLEND_MODES = {"normal", "screen", "multiply"}
 # content_type is free-form — VLM decides the label based on image content
