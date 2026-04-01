@@ -272,6 +272,12 @@ def main(argv: list[str] | None = None) -> None:
     tools_parser = sub.add_parser("tools", help="Run algorithmic analysis/processing tools")
     tools_parser.add_argument("tools_args", nargs=argparse.REMAINDER)
 
+    # dream command — periodic evolution consolidation
+    dream_p = sub.add_parser("dream", help="Run Dream-style evolution consolidation (Orient→Gather→Consolidate→Prune)")
+    dream_p.add_argument("--force", action="store_true", help="Bypass gate checks and run immediately")
+    dream_p.add_argument("--data-dir", default="", help="Path to VULCA data directory (default: ~/.vulca/data)")
+    dream_p.add_argument("--json", action="store_true", help="Output raw JSON")
+
     args = parser.parse_args(argv)
 
     if args.command in ("evaluate", "eval", "e"):
@@ -329,6 +335,8 @@ def main(argv: list[str] | None = None) -> None:
         tools_args = tools_p.parse_args(args.tools_args)
         output = run_tools_command(tools_args, reg)
         print(output)
+    elif args.command == "dream":
+        _cmd_dream(args)
     else:
         parser.print_help()
         sys.exit(1)
@@ -1496,6 +1504,59 @@ def _cmd_resume(args: argparse.Namespace) -> None:
     print(f"    Rounds: {result.total_rounds}")
     print(f"    Score: {result.weighted_total:.3f}")
     print(f"    Status: {result.status}")
+
+
+# ---------------------------------------------------------------------------
+# Dream command
+# ---------------------------------------------------------------------------
+
+def _cmd_dream(args: argparse.Namespace) -> None:
+    import json as json_mod
+    from vulca.digestion.dream import DreamConsolidator
+
+    dc = DreamConsolidator(data_dir=getattr(args, "data_dir", "") or "")
+    force = getattr(args, "force", False)
+    as_json = getattr(args, "json", False)
+
+    if not force and not dc.should_run():
+        msg = {
+            "status": "skipped",
+            "reason": "Gate checks not met (< 24h elapsed or < 10 new sessions since last consolidation). Use --force to override.",
+        }
+        if as_json:
+            print(json_mod.dumps(msg, indent=2))
+        else:
+            print("Dream consolidation skipped: gate checks not met.")
+            print("  - Less than 24 hours since last run, or")
+            print("  - Fewer than 10 new sessions accumulated.")
+            print("  Use --force to bypass gate checks.")
+        return
+
+    if not as_json:
+        print("Running Dream consolidation (Orient → Gather → Consolidate → Prune)...")
+
+    result = dc.run()
+
+    if as_json:
+        print(json_mod.dumps(result, indent=2))
+        return
+
+    status = result.get("status", "unknown")
+    if status == "completed":
+        print(f"\nDream consolidation completed.")
+        traditions = result.get("traditions_updated", [])
+        print(f"  Traditions updated : {len(traditions)}")
+        if traditions:
+            for t in traditions:
+                print(f"    - {t}")
+        print(f"  Sessions analyzed  : {result.get('sessions_analyzed', 0)}")
+        print(f"  Insights written   : {result.get('insights_written', 0)}")
+        print(f"  History entries pruned: {result.get('pruned_count', 0)}")
+    elif status == "failed":
+        print(f"Dream consolidation failed: {result.get('error', 'unknown error')}", file=sys.stderr)
+        sys.exit(1)
+    else:
+        print(f"Dream consolidation status: {status}")
 
 
 if __name__ == "__main__":
