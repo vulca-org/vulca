@@ -75,3 +75,20 @@ taboos:
 
 pipeline:
   variant: default
+
+tradition_layers:
+  - role: "熟宣底"
+    content_type: background
+    blend: normal
+  - role: "白描勾线"
+    content_type: line_art
+    blend: multiply
+  - role: "分染罩染"
+    content_type: color_wash
+    blend: normal
+  - role: "细节点染"
+    content_type: detail
+    blend: normal
+  - role: "题款印章"
+    content_type: text
+    blend: multiply

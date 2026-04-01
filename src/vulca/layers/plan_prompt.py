@@ -1,6 +1,10 @@
 """Prompt for planning layer structure from text intent (no image needed)."""
 from __future__ import annotations
 
+from pathlib import Path
+
+import yaml
+
 _TRADITION_LAYER_ORDERS: dict[str, list[dict[str, str]]] = {
     "chinese_xieyi": [
         {"role": "底纸/绢底", "content_type": "background", "blend": "normal"},
@@ -39,8 +43,30 @@ _DEFAULT_ORDER = [
 ]
 
 
+def _load_tradition_layers_from_yaml(tradition: str) -> list[dict[str, str]] | None:
+    """Try to load tradition_layers from the tradition's YAML file."""
+    yaml_dir = Path(__file__).parent.parent / "cultural" / "data" / "traditions"
+    yaml_path = yaml_dir / f"{tradition}.yaml"
+    if not yaml_path.exists():
+        return None
+    try:
+        data = yaml.safe_load(yaml_path.read_text(encoding="utf-8"))
+        layers = data.get("tradition_layers")
+        if layers and isinstance(layers, list):
+            return layers
+    except Exception:
+        pass
+    return None
+
+
 def get_tradition_layer_order(tradition: str) -> list[dict[str, str]]:
-    """Return the canonical layer order for a tradition."""
+    """Return the canonical layer order for a tradition.
+
+    Tries YAML file first, falls back to hardcoded dict.
+    """
+    yaml_layers = _load_tradition_layers_from_yaml(tradition)
+    if yaml_layers:
+        return yaml_layers
     return _TRADITION_LAYER_ORDERS.get(tradition, _DEFAULT_ORDER)
 
 

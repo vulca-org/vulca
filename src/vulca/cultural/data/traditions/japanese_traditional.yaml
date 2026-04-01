@@ -81,3 +81,17 @@ taboos:
 
 pipeline:
   variant: default
+
+tradition_layers:
+  - role: "背景地"
+    content_type: background
+    blend: normal
+  - role: "主線版"
+    content_type: line_art
+    blend: multiply
+  - role: "色版"
+    content_type: color_block
+    blend: normal
+  - role: "金箔装飾"
+    content_type: decoration
+    blend: screen

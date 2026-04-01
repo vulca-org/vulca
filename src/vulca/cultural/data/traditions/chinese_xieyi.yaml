@@ -84,3 +84,21 @@ pipeline:
   overrides:
     scout_focus_layers: [L3, L5]
     allow_local_rerun: false
+
+tradition_layers:
+  - role: "底纸/绢底"
+    content_type: background
+    blend: normal
+  - role: "远景淡墨"
+    content_type: atmosphere
+    blend: multiply
+    typical_opacity: 0.7
+  - role: "中景山石树木"
+    content_type: subject
+    blend: normal
+  - role: "近景人物建筑"
+    content_type: subject
+    blend: normal
+  - role: "题款印章"
+    content_type: text
+    blend: multiply

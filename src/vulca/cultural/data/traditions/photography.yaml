@@ -95,3 +95,20 @@ pipeline:
   overrides:
     scout_focus_layers: [L1, L2, L4]
     allow_local_rerun: false
+
+tradition_layers:
+  - role: "sky/background"
+    content_type: background
+    blend: normal
+  - role: "far distance"
+    content_type: atmosphere
+    blend: normal
+  - role: "mid-ground"
+    content_type: subject
+    blend: normal
+  - role: "foreground"
+    content_type: subject
+    blend: normal
+  - role: "effects (reflections/bokeh)"
+    content_type: effect
+    blend: screen

@@ -34,3 +34,25 @@ class TestGetTraditionLayerOrder:
     def test_unknown_tradition_returns_default(self):
         order = get_tradition_layer_order("nonexistent")
         assert len(order) >= 2
+
+
+class TestTraditionLayerOrderFromYAML:
+    def test_xieyi_loaded_from_yaml(self):
+        order = get_tradition_layer_order("chinese_xieyi")
+        assert len(order) >= 3
+        assert order[0]["role"] == "底纸/绢底"
+
+    def test_gongbi_loaded(self):
+        order = get_tradition_layer_order("chinese_gongbi")
+        assert len(order) >= 3
+        assert any("白描" in o["role"] for o in order)
+
+    def test_photography_loaded(self):
+        order = get_tradition_layer_order("photography")
+        assert len(order) >= 3
+        assert order[0]["content_type"] == "background"
+
+    def test_unknown_tradition_fallback(self):
+        order = get_tradition_layer_order("totally_unknown_tradition_xyz")
+        assert len(order) >= 2
+        assert order[0]["content_type"] == "background"

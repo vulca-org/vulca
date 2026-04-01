@@ -72,3 +72,17 @@ taboos:
 
 pipeline:
   variant: default
+
+tradition_layers:
+  - role: "background"
+    content_type: background
+    blend: normal
+  - role: "main subject"
+    content_type: subject
+    blend: normal
+  - role: "foreground/details"
+    content_type: detail
+    blend: normal
+  - role: "text/overlay"
+    content_type: text
+    blend: multiply
