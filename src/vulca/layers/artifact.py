@@ -23,11 +23,13 @@ def write_artifact_v3(
     cultural_context: dict | None = None,
     rounds: list[dict] | None = None,
     session_id: str = "",
+    layer_scores: dict[str, dict[str, float]] | None = None,
 ) -> str:
     """Write Artifact V3 JSON to output_dir/artifact.json."""
     out_dir = Path(output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
+    _layer_scores = layer_scores or {}
     layer_dicts = []
     for info in sorted(layers, key=lambda l: l.z_index):
         layer_dicts.append({
@@ -44,7 +46,7 @@ def write_artifact_v3(
             "file": f"{info.name}.png",
             "generation_prompt": info.regeneration_prompt,
             "dominant_colors": info.dominant_colors,
-            "scores": {},
+            "scores": _layer_scores.get(info.name, {}),
             "status": info.status,
             "weakness": info.weakness,
             "generation_round": info.generation_round,

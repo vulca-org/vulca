@@ -37,6 +37,27 @@ class CompositeNode(PipelineNode):
         with open(composite_path, "rb") as f:
             image_b64 = base64.b64encode(f.read()).decode()
 
+        # Build cultural context from pipeline data
+        cultural_context = ctx.get("cultural_context")
+        if not cultural_context:
+            tradition_order = ctx.get("tradition_layer_order", [])
+            cultural_context = {}
+            if tradition_order:
+                cultural_context["tradition_layer_order"] = tradition_order
+
+        # Build rounds history
+        rounds_history = ctx.get("rounds_history", [])
+        if not rounds_history:
+            rounds_history = [{
+                "round": ctx.round_num or 1,
+                "layers_generated": [r.info.name for r in layer_results if r.image_path],
+                "layers_kept": [],
+                "decision": "pending",
+            }]
+
+        # Collect per-layer scores
+        layer_scores = {r.info.name: r.scores for r in layer_results if r.scores}
+
         artifact_path = write_artifact_v3(
             layers=[r.info for r in layer_results],
             output_dir=output_dir,
@@ -44,7 +65,11 @@ class CompositeNode(PipelineNode):
             intent=ctx.intent or ctx.subject,
             tradition=ctx.tradition,
             composite_file="composite.png",
+            composite_scores=ctx.get("composite_scores"),
+            cultural_context=cultural_context,
+            rounds=rounds_history,
             session_id=ctx.get("session_id", ""),
+            layer_scores=layer_scores,
         )
 
         return {

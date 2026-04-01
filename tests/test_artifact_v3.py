@@ -115,3 +115,59 @@ class TestArtifactV3WriteLoad:
         assert len(loaded.layers) == 1
         assert loaded.layers[0].info.tradition_role == ""
         assert loaded.layers[0].info.opacity == 1.0
+
+
+class TestArtifactV3ContentFilling:
+    def test_cultural_context_populated(self, tmp_path):
+        layers = [
+            LayerInfo(name="bg", description="bg", z_index=0, content_type="background"),
+        ]
+        cultural = {
+            "tradition_layer_order": ["底纸", "远景"],
+            "weights": {"L1": 0.10, "L2": 0.20},
+            "weight_source": "evolved",
+        }
+        path = write_artifact_v3(
+            layers=layers, output_dir=str(tmp_path),
+            width=1024, height=1024,
+            intent="test", tradition="chinese_xieyi",
+            cultural_context=cultural,
+        )
+        data = json.loads(Path(path).read_text())
+        assert data["cultural_context"]["weights"]["L1"] == 0.10
+        assert data["cultural_context"]["weight_source"] == "evolved"
+
+    def test_rounds_populated(self, tmp_path):
+        layers = [
+            LayerInfo(name="bg", description="bg", z_index=0, content_type="background"),
+        ]
+        rounds = [
+            {"round": 1, "layers_generated": ["bg"], "composite_score": 0.75, "decision": "rerun"},
+            {"round": 2, "layers_generated": ["bg"], "composite_score": 0.90, "decision": "accept"},
+        ]
+        path = write_artifact_v3(
+            layers=layers, output_dir=str(tmp_path),
+            width=1024, height=1024,
+            intent="test", tradition="default",
+            rounds=rounds,
+        )
+        data = json.loads(Path(path).read_text())
+        assert len(data["rounds"]) == 2
+        assert data["rounds"][0]["decision"] == "rerun"
+        assert data["rounds"][1]["composite_score"] == 0.90
+
+    def test_per_layer_scores_from_layer_scores(self, tmp_path):
+        layers = [
+            LayerInfo(name="bg", description="bg", z_index=0, content_type="background"),
+            LayerInfo(name="fg", description="fg", z_index=1, content_type="subject"),
+        ]
+        layer_scores = {"bg": {"L1": 0.90}, "fg": {"L1": 0.75, "L2": 0.60}}
+        path = write_artifact_v3(
+            layers=layers, output_dir=str(tmp_path),
+            width=1024, height=1024,
+            intent="test", tradition="default",
+            layer_scores=layer_scores,
+        )
+        data = json.loads(Path(path).read_text())
+        assert data["layers"][0]["scores"]["L1"] == 0.90
+        assert data["layers"][1]["scores"]["L2"] == 0.60
