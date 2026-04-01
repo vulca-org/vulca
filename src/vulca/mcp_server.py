@@ -59,6 +59,32 @@ def _parse_weights_str(raw: str) -> dict[str, float]:
     return weights
 
 
+_TOOL_TIERS: dict[str, str] = {
+    "create_artwork": "core", "evaluate_artwork": "core",
+    "list_traditions": "core", "get_tradition_guide": "core",
+    "get_evolution_status": "core", "studio_create_brief": "core",
+    "resume_artwork": "standard", "inpaint_artwork": "standard",
+    "sync_data": "standard", "studio_generate_concepts": "standard",
+    "studio_select_concept": "standard", "studio_accept": "standard",
+    "studio_update_brief": "standard", "analyze_layers": "standard",
+    "layers_split": "standard", "layers_composite": "standard",
+    "layers_edit": "advanced", "layers_redraw": "advanced",
+    "layers_regenerate": "advanced", "layers_evaluate": "advanced",
+    "layers_export": "advanced",
+}
+
+_DESC_LIMITS: dict[str, int] = {"core": 300, "standard": 100, "advanced": 50}
+
+
+def _tier_description(tool_name: str, full_desc: str) -> str:
+    """Truncate tool description based on tier assignment."""
+    tier = _TOOL_TIERS.get(tool_name, "advanced")
+    limit = _DESC_LIMITS[tier]
+    if len(full_desc) <= limit:
+        return full_desc
+    return full_desc[:limit - 3] + "..."
+
+
 def _to_markdown(data: dict, title: str = "") -> str:
     """Convert a result dict to Style A markdown table format."""
     lines: list[str] = []
