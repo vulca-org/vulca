@@ -131,3 +131,52 @@ class TestLocalEvolver:
         assert result is not None
         assert "_meta" in result
         assert "last_evolved_at" in result["_meta"]
+
+
+def test_evolve_writes_tradition_insights(tmp_path):
+    """Evolution should write per-tradition insight files."""
+    import time
+
+    data_dir = tmp_path / "data"
+    data_dir.mkdir()
+    (data_dir / "evolved_context.json").write_text(json.dumps({"_meta": {"last_evolved_at": 0}}))
+
+    sessions_file = data_dir / "sessions.jsonl"
+    for i in range(8):
+        session = {
+            "session_id": f"s{i}", "tradition": "chinese_xieyi",
+            "timestamp": time.time(), "weighted_total": 0.7 + i * 0.01,
+            "scores": {"L1": 0.7, "L2": 0.6, "L3": 0.8, "L4": 0.7, "L5": 0.75},
+            "user_feedback": "accepted", "eval_mode": "strict",
+        }
+        with open(sessions_file, "a") as f:
+            f.write(json.dumps(session) + "\n")
+
+    evolver = LocalEvolver(data_dir=str(data_dir))
+    result = evolver.evolve()
+    assert result is not None
+
+    insights_path = data_dir / "evolved" / "chinese_xieyi" / "insights.json"
+    assert insights_path.exists()
+    insights = json.loads(insights_path.read_text())
+    assert insights["tradition"] == "chinese_xieyi"
+    assert "dimension_averages" in insights
+    assert "score_history" in insights
+    assert len(insights["score_history"]) == 8
+
+
+def test_load_tradition_insights(tmp_path):
+    from vulca.digestion.local_evolver import LocalEvolver
+
+    data_dir = tmp_path / "data"
+    (data_dir / "evolved" / "chinese_xieyi").mkdir(parents=True)
+    insights = {"tradition": "chinese_xieyi", "dimension_averages": {"L1": 0.7}}
+    (data_dir / "evolved" / "chinese_xieyi" / "insights.json").write_text(json.dumps(insights))
+
+    evolver = LocalEvolver(data_dir=str(data_dir))
+    result = evolver.load_tradition_insights("chinese_xieyi")
+    assert result is not None
+    assert result["dimension_averages"]["L1"] == 0.7
+
+    # Non-existent tradition
+    assert evolver.load_tradition_insights("nonexistent") is None

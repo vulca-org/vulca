@@ -1,4 +1,4 @@
-"""Local evolution -- reads JSONL sessions, writes evolved_context.json."""
+"""Local evolution -- reads JSONL sessions, writes evolved_context.json + per-tradition insights."""
 from __future__ import annotations
 
 import json
@@ -66,10 +66,11 @@ class LocalEvolver:
             reference_sessions = [s for s in tradition_sessions if s.get("eval_mode") == "reference"]
 
             # Compute dimension averages from ALL sessions (for backward compat)
+            # Support both "final_scores" (canonical) and "scores" (legacy/test format)
             dim_totals: dict[str, float] = defaultdict(float)
             dim_counts: dict[str, int] = defaultdict(int)
             for s in tradition_sessions:
-                scores = s.get("final_scores", {})
+                scores = s.get("final_scores") or s.get("scores", {})
                 for dim, score in scores.items():
                     if isinstance(score, (int, float)):
                         dim_totals[dim] += score
@@ -111,6 +112,29 @@ class LocalEvolver:
             all_scores = [v for v in dim_avgs.values()]
             overall_avg = round(sum(all_scores) / len(all_scores), 4) if all_scores else 0.0
 
+            # Deviation pattern counts per dimension
+            deviation_patterns: dict[str, dict[str, int]] = {}
+            for s in tradition_sessions:
+                for dim, dev_type in s.get("deviation_types", {}).items():
+                    if dim not in deviation_patterns:
+                        deviation_patterns[dim] = defaultdict(int)
+                    deviation_patterns[dim][dev_type] += 1
+            # Convert defaultdicts to plain dicts
+            deviation_patterns = {d: dict(counts) for d, counts in deviation_patterns.items()}
+
+            # Strict ratio
+            strict_ratio = round(len(strict_sessions) / max(len(tradition_sessions), 1), 3)
+
+            # Score history (all feedback sessions for this tradition)
+            score_history = [
+                {
+                    "session_id": s.get("session_id", ""),
+                    "weighted_total": s.get("weighted_total", 0.0),
+                    "timestamp": s.get("timestamp", 0.0),
+                }
+                for s in tradition_sessions
+            ]
+
             evolved["traditions"][tradition] = {
                 "session_count": len(tradition_sessions),
                 "strict_count": len(strict_sessions),
@@ -123,6 +147,20 @@ class LocalEvolver:
                 "overall_avg": overall_avg,
                 "weight_adjustments": {d: _ADJUSTMENT for d in weak_dims},
             }
+
+            # Write per-tradition insight file (topic layer)
+            self._write_tradition_insights(
+                tradition=tradition,
+                sessions=tradition_sessions,
+                evolved_data={
+                    "dimension_averages": {d: round(v, 3) for d, v in dim_avgs.items()},
+                    "weak_dimensions": weak_dims,
+                    "innovation_signals": innovation_signals,
+                    "strict_ratio": strict_ratio,
+                    "deviation_patterns": deviation_patterns,
+                    "score_history": score_history,
+                },
+            )
 
         # Aggregate total session count at root level
         evolved["total_sessions"] = sum(
@@ -139,6 +177,48 @@ class LocalEvolver:
         logger.debug("Local evolution written to %s", evolved_path)
 
         return evolved
+
+    def _write_tradition_insights(
+        self,
+        tradition: str,
+        sessions: list[dict],
+        evolved_data: dict,
+    ) -> None:
+        """Write per-tradition detailed insight file to the topic layer.
+
+        Creates ``{data_dir}/evolved/{tradition}/insights.json`` with rich
+        per-tradition data that is too verbose to keep in the index layer.
+        """
+        tradition_dir = self.data_dir / "evolved" / tradition
+        tradition_dir.mkdir(parents=True, exist_ok=True)
+        insights = {
+            "tradition": tradition,
+            "updated_at": time.time(),
+            "session_count": len(sessions),
+            "score_history": evolved_data.get("score_history", []),
+            "dimension_averages": evolved_data.get("dimension_averages", {}),
+            "deviation_patterns": evolved_data.get("deviation_patterns", {}),
+            "weak_dimensions": evolved_data.get("weak_dimensions", []),
+            "innovation_signals": evolved_data.get("innovation_signals", []),
+            "strict_ratio": evolved_data.get("strict_ratio", 0.0),
+        }
+        insights_path = tradition_dir / "insights.json"
+        insights_path.write_text(json.dumps(insights, indent=2, ensure_ascii=False))
+        logger.debug("Tradition insights written to %s", insights_path)
+
+    def load_tradition_insights(self, tradition: str) -> dict | None:
+        """Load per-tradition insights from the topic layer.
+
+        Returns parsed dict if ``{data_dir}/evolved/{tradition}/insights.json``
+        exists, otherwise returns ``None``.
+        """
+        insights_path = self.data_dir / "evolved" / tradition / "insights.json"
+        if not insights_path.exists():
+            return None
+        try:
+            return json.loads(insights_path.read_text())
+        except Exception:
+            return None
 
     def load_evolved(self, tradition: str) -> dict | None:
         """Load evolved data for a specific tradition (read-only, no evolution trigger)."""
@@ -157,7 +237,9 @@ class LocalEvolver:
         dim_totals: defaultdict[str, float] = defaultdict(float)
         dim_counts: defaultdict[str, int] = defaultdict(int)
         for s in sessions:
-            for dim, score in s.get("final_scores", {}).items():
+            # Support both "final_scores" (canonical) and "scores" (legacy/test format)
+            scores = s.get("final_scores") or s.get("scores", {})
+            for dim, score in scores.items():
                 if isinstance(score, (int, float)):
                     dim_totals[dim] += score
                     dim_counts[dim] += 1
