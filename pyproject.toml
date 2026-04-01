@@ -33,25 +33,63 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# Minimal: evaluate + create (no heavy deps)
+core = []
+
+# Layer system: split, composite, export
+layers = [
+    "Pillow>=10.0",
+    "cairosvg>=2.7",
+    "numpy>=1.24",
+]
+
+# Algorithmic tools: cv2-based analysis
+tools = [
+    "opencv-python-headless>=4.8",
+    "numpy>=1.24",
+    "Pillow>=10.0",
+]
+
+# SAM2 segmentation (optional, heavy)
+sam = [
+    "segment-anything-2>=0.1",
+    "torch>=2.0",
+    "numpy>=1.24",
+    "Pillow>=10.0",
+]
+
+# Background removal (optional)
+rembg = [
+    "rembg>=2.0",
+]
+
+# Scout: semantic search
 scout = [
     "sentence-transformers>=2.2.2",
     "faiss-cpu>=1.7.0",
 ]
+
+# MCP server
 mcp = [
     "fastmcp>=3.0",
 ]
-sam = [
-    "segment-anything-2>=0.1",
-    "torch>=2.0",
-]
-rembg = [
-    "rembg>=2.0",
-]
+
+# Full layer system with all optional extras
 layers-full = [
+    "Pillow>=10.0",
+    "cairosvg>=2.7",
+    "numpy>=1.24",
     "rembg>=2.0",
     "segment-anything-2>=0.1",
     "torch>=2.0",
 ]
+
+# Full installation (layers + tools, excluding heavy ML deps)
+all = [
+    "vulca[layers,tools,mcp,scout]",
+]
+
+# Development
 dev = [
     "pytest>=8.0",
     "pytest-asyncio>=0.23",

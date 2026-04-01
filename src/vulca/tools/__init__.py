@@ -12,14 +12,20 @@ SDK usage::
     tools  = list_tools()   # -> list of metadata dicts
 """
 
-from vulca.tools.protocol import (
-    ImageData,
-    ToolCategory,
-    ToolConfig,
-    ToolSchema,
-    VulcaTool,
-    VisualEvidence,
-)
+try:
+    from vulca.tools.protocol import (
+        ImageData,
+        ToolCategory,
+        ToolConfig,
+        ToolSchema,
+        VulcaTool,
+        VisualEvidence,
+    )
+except ImportError as _tools_import_err:
+    raise ImportError(
+        "vulca.tools requires optional dependencies: "
+        "pip install 'vulca[tools]'  # adds opencv-python-headless, numpy, Pillow"
+    ) from _tools_import_err
 
 __all__ = [
     "ImageData",
