@@ -95,6 +95,7 @@ def main(argv: list[str] | None = None) -> None:
     create_p.add_argument("--api-key", default="", help="VULCA API key (or set VULCA_API_KEY)")
     create_p.add_argument("--base-url", default="", help="VULCA API base URL")
     create_p.add_argument("--hitl", action="store_true", help="Enable human-in-the-loop (pause before decide)")
+    create_p.add_argument("--layered", action="store_true", help="Generate structured layers (Artifact V3)")
     create_p.add_argument("--weights", default="", help="Custom L1-L5 weights: 'L1=0.3,L2=0.2,...'")
     create_p.add_argument("--image-provider", default="", help="Image provider: mock|gemini|openai|comfyui")
     create_p.add_argument("--image-base-url", default="", help="Image provider base URL (for comfyui)")
@@ -583,6 +584,48 @@ def _cmd_create(args: argparse.Namespace) -> None:
 
     weights = _parse_weights(args.weights) if args.weights else None
 
+    if getattr(args, "layered", False):
+        import asyncio
+        from vulca.pipeline.engine import execute
+        from vulca.pipeline.templates import DEFAULT, LAYERED
+        from vulca.pipeline.types import PipelineInput
+
+        node_params: dict[str, dict] = {}
+        if weights:
+            node_params["evaluate"] = {"custom_weights": weights}
+
+        pipeline_input = PipelineInput(
+            subject=args.subject or args.intent,
+            intent=args.intent,
+            tradition=args.tradition or "default",
+            provider=args.provider,
+            node_params=node_params,
+            eval_mode=args.mode,
+            layered=True,
+        )
+        template = LAYERED
+        try:
+            loop = asyncio.new_event_loop()
+            output = loop.run_until_complete(execute(template, pipeline_input))
+            loop.close()
+        except Exception as e:
+            print(f"Error: {e}", file=sys.stderr)
+            sys.exit(1)
+
+        if args.json:
+            print(json_mod.dumps(output.to_dict(), indent=2, ensure_ascii=False))
+            return
+
+        print(f"\n  VULCA Layered Creation Result")
+        print(f"  {'=' * 40}")
+        print(f"  Session:   {output.session_id}")
+        print(f"  Status:    {output.status}")
+        print(f"  Tradition: {output.tradition}")
+        print(f"  Rounds:    {output.total_rounds}")
+        print(f"  Score:     {output.weighted_total:.0%}")
+        print()
+        return
+
     try:
         result = create(
             args.intent,
@@ -682,12 +725,19 @@ def _cmd_create_hitl(args: argparse.Namespace) -> None:
         provider=args.provider,
         node_params=node_params,
         eval_mode=args.mode,
+        layered=getattr(args, "layered", False),
     )
+
+    if getattr(args, "layered", False):
+        from vulca.pipeline.templates import LAYERED
+        template = LAYERED
+    else:
+        template = DEFAULT
 
     try:
         loop = asyncio.new_event_loop()
         output = loop.run_until_complete(
-            execute(DEFAULT, pipeline_input, interrupt_before={"decide"})
+            execute(template, pipeline_input, interrupt_before={"decide"})
         )
         loop.close()
     except Exception as e:
