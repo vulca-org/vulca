@@ -88,3 +88,123 @@ class CheckpointStore:
                     record["image_b64"] = base64.b64encode(img_path.read_bytes()).decode()
             rounds.append(record)
         return rounds
+
+
+def _default_base_dir() -> Path:
+    return (
+        Path(os.environ.get("VULCA_DATA_DIR", "~/.vulca/data")).expanduser()
+        / "checkpoints"
+    )
+
+
+def save_node_checkpoint(
+    session_id: str,
+    round_num: int,
+    node_name: str,
+    ctx_data: dict[str, Any],
+    base_dir: str = "",
+) -> Path:
+    """Save a ctx.data snapshot for a specific node/round.
+
+    image_b64 is stripped from the saved dict to avoid large blobs;
+    a placeholder string is stored instead.
+    """
+    base = Path(base_dir) if base_dir else _default_base_dir()
+    session_dir = base / session_id
+    session_dir.mkdir(parents=True, exist_ok=True)
+
+    # Compress: strip image_b64
+    compressed: dict[str, Any] = {}
+    for k, v in ctx_data.items():
+        if k == "image_b64":
+            compressed[k] = "[image_b64 stripped]"
+        else:
+            compressed[k] = v
+
+    filename = f"r{round_num}_{node_name}.json"
+    out_path = session_dir / filename
+    out_path.write_text(json.dumps(compressed, indent=2, default=str), encoding="utf-8")
+    return out_path
+
+
+def load_node_checkpoint(
+    session_id: str,
+    round_num: int | None = None,
+    node_name: str | None = None,
+    base_dir: str = "",
+) -> dict[str, Any] | None:
+    """Load a node checkpoint.
+
+    - If round_num and node_name are given: load that specific file.
+    - If only session_id is given: load the latest checkpoint
+      (highest round_num; if tied, last node alphabetically).
+    - Returns None if not found.
+    """
+    base = Path(base_dir) if base_dir else _default_base_dir()
+    session_dir = base / session_id
+
+    if not session_dir.exists():
+        return None
+
+    if round_num is not None and node_name is not None:
+        path = session_dir / f"r{round_num}_{node_name}.json"
+        if not path.exists():
+            return None
+        return json.loads(path.read_text(encoding="utf-8"))
+
+    # Find latest: parse all r{N}_{name}.json files
+    candidates: list[tuple[int, str, Path]] = []
+    for p in session_dir.glob("r*.json"):
+        # expected pattern: r{round_num}_{node_name}.json
+        stem = p.stem  # e.g. "r1_evaluate"
+        if not stem.startswith("r"):
+            continue
+        underscore_idx = stem.index("_") if "_" in stem else -1
+        if underscore_idx == -1:
+            continue
+        try:
+            rn = int(stem[1:underscore_idx])
+            nn = stem[underscore_idx + 1:]
+        except ValueError:
+            continue
+        candidates.append((rn, nn, p))
+
+    if not candidates:
+        return None
+
+    # Sort by (round_num desc, node_name desc) → first element is "latest"
+    candidates.sort(key=lambda x: (x[0], x[1]), reverse=True)
+    _, _, latest_path = candidates[0]
+    return json.loads(latest_path.read_text(encoding="utf-8"))
+
+
+def list_checkpoints(
+    session_id: str,
+    base_dir: str = "",
+) -> list[dict[str, Any]]:
+    """Return all saved node checkpoints for a session.
+
+    Each entry: {"round_num": int, "node_name": str, "path": str}
+    """
+    base = Path(base_dir) if base_dir else _default_base_dir()
+    session_dir = base / session_id
+
+    if not session_dir.exists():
+        return []
+
+    results: list[dict[str, Any]] = []
+    for p in sorted(session_dir.glob("r*.json")):
+        stem = p.stem
+        if not stem.startswith("r"):
+            continue
+        underscore_idx = stem.index("_") if "_" in stem else -1
+        if underscore_idx == -1:
+            continue
+        try:
+            rn = int(stem[1:underscore_idx])
+            nn = stem[underscore_idx + 1:]
+        except ValueError:
+            continue
+        results.append({"round_num": rn, "node_name": nn, "path": str(p)})
+
+    return results
