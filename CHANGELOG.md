@@ -1,5 +1,34 @@
 # Changelog
 
+## [0.10.0] - 2026-04-01
+
+### LAYERED Pipeline — Structured Creation
+- **LAYERED template**: PlanLayers -> LayerGenerate -> Composite -> Evaluate -> Decide with per-layer selective rerun
+- **PlanLayersNode**: VLM plans layer structure from text intent with tradition layer order knowledge (xieyi, gongbi, japanese, photography)
+- **LayerGenerateNode**: Per-layer "full-scene + focus" generation with style anchor + reference conditioning
+- **CompositeNode**: Blend layers + write Artifact V3 structured creation document
+- **DecideNode enhancement**: Per-layer accept/rerun decisions; only regenerate weak layers in subsequent rounds
+- **Artifact V3 format**: V2 superset with cultural_context, per-layer scores, creation history, export_hints
+- **Tradition layer orders**: Canonical layer sequences in 5 YAML files, loaded at runtime with Python fallback
+- **Entry points**: CLI `--layered`, MCP `layered=True`, SDK `layered=True`
+
+### Export-Time Alpha Processing
+- **`alpha.py`**: Chroma key + content_type strategy selection (background=opaque, text=chroma, subject=rembg, effect=sam2)
+- **`export_with_alpha()`**: Export layers with transparency based on content type
+- **Optional deps**: `pip install vulca[rembg]` for ML background removal, `vulca[layers-full]` for rembg + SAM2
+
+### Fixes
+- **CompositeNode**: Use tempdir instead of hardcoded `/tmp/vulca_composite/`
+- **LayerGenerateNode**: Fix provider integration (`get_image_provider` + `ImageResult` handling)
+- **PlanLayersNode**: Use `gemini-2.5-flash` (not deprecated `gemini-2.0-flash`)
+- **README Scenario 2b**: Replace "UI Component Extraction" with "Parallax Hero Sections"
+
+## [0.9.2] - 2026-03-30
+
+### Release Automation + Dead Code Cleanup
+- **`scripts/release.sh`**: One-command release (version bump + subtree push x3 + PyPI + GitHub releases x4)
+- **Dead code audit**: Removed unused imports, stale references across 12 files
+
 ## [0.9.1] - 2026-03-30
 
 ### Tool Protocol — Hybrid Pipeline with Algorithmic Nodes
