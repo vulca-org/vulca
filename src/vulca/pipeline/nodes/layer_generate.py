@@ -93,17 +93,35 @@ class LayerGenerateNode(PipelineNode):
         return LayerResult(info=info, image_path=out_path)
 
     def _build_prompt(self, info: LayerInfo, ctx: NodeContext) -> str:
-        intent = ctx.intent or ctx.subject
+        """Build prompt using proven split_regenerate strategy:
+        ONLY this layer's content, white background, exclude other layers.
+        """
         base = info.regeneration_prompt or info.description
-        prompt = (
-            f"Complete scene: {intent}. "
-            f"Focus on rendering the {info.name} ({base}) with exceptional detail. "
-            f"Other elements may be simplified or absent."
-        )
+        tradition = ctx.tradition or "default"
+
+        # Get other layer names to explicitly exclude
+        all_layers: list[LayerInfo] = ctx.get("planned_layers", [])
+        other_names = [l.name for l in all_layers if l.name != info.name]
+
+        parts = [
+            base,
+            "Paint ONLY this layer's content on a plain white background.",
+            "Do NOT draw checkerboard patterns or transparency grids.",
+            f"Canvas size: 1024x1024. Flat 2D, no perspective, no rotation.",
+        ]
+
+        if tradition and tradition != "default":
+            parts.append(f"Cultural tradition: {tradition}.")
+
+        if other_names:
+            names_str = ", ".join(other_names)
+            parts.append(f"DO NOT include any elements from these other layers: {names_str}.")
+
         weakness = info.weakness or ctx.get("improvement_focus", "")
         if weakness:
-            prompt += f" Improvement focus: {weakness}"
-        return prompt
+            parts.append(f"Improvement focus: {weakness}")
+
+        return " ".join(parts)
 
     def _mock_generate(self, info: LayerInfo, output_dir: str, ctx: NodeContext) -> LayerResult:
         colors = {
