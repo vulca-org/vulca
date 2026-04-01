@@ -16,6 +16,7 @@ from vulca.layers.ops import (
     lock_layer, merge_layers, duplicate_layer,
 )
 from vulca.layers.sam import SAM_AVAILABLE
+from vulca.layers.plan_prompt import build_plan_prompt, get_tradition_layer_order
 
 # V1 compat re-exports
 from vulca.layers.manifest import load_manifest as load_artwork
@@ -38,4 +39,5 @@ __all__ = [
     "lock_layer", "merge_layers", "duplicate_layer",
     "SAM_AVAILABLE",
     "load_artwork",
+    "build_plan_prompt", "get_tradition_layer_order",
 ]
