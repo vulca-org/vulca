@@ -18,7 +18,8 @@ class CompositeNode(PipelineNode):
 
     async def run(self, ctx: NodeContext) -> dict[str, Any]:
         layer_results: list[LayerResult] = ctx.get("layer_results", [])
-        output_dir = ctx.get("output_dir", "/tmp/vulca_composite")
+        import tempfile
+        output_dir = ctx.get("output_dir", tempfile.mkdtemp(prefix="vulca_composite_"))
         Path(output_dir).mkdir(parents=True, exist_ok=True)
 
         size = ctx.get("size", "1024x1024")
