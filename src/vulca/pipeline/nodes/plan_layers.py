@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import re
 from typing import Any
 
@@ -71,7 +72,7 @@ class PlanLayersNode(PipelineNode):
             try:
                 import litellm
                 response = await litellm.acompletion(
-                    model="gemini/gemini-2.0-flash",
+                    model=os.environ.get("VULCA_VLM_MODEL", "gemini/gemini-2.5-flash"),
                     messages=[{"role": "user", "content": prompt}],
                     api_key=ctx.api_key or None,
                 )

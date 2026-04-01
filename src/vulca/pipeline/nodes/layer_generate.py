@@ -72,14 +72,17 @@ class LayerGenerateNode(PipelineNode):
         if ctx.provider == "mock":
             return self._mock_generate(info, output_dir, ctx)
 
-        from vulca.providers import get_provider
-        provider = ctx.image_provider or get_provider(ctx.provider, api_key=ctx.api_key)
+        from vulca.providers import get_image_provider
+        provider_instance = ctx.image_provider or get_image_provider(
+            ctx.provider, api_key=ctx.api_key
+        )
 
         kwargs: dict[str, Any] = {"prompt": prompt}
         if style_ref:
-            kwargs["reference_image"] = style_ref
+            kwargs["reference_image_b64"] = style_ref
 
-        img_b64 = await provider.generate(**kwargs)
+        result = await provider_instance.generate(**kwargs)
+        img_b64 = result.image_b64 if hasattr(result, 'image_b64') else result
 
         out_path = str(Path(output_dir) / f"{info.name}.png")
         img_data = base64.b64decode(img_b64)
