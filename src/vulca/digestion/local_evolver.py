@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import logging
+import time
 from collections import defaultdict
 from pathlib import Path
 
@@ -11,6 +12,7 @@ logger = logging.getLogger("vulca.digestion")
 _DEFAULT_DATA_DIR = Path.home() / ".vulca" / "data"
 _MIN_SESSIONS = 5
 _MIN_FEEDBACK = 3
+_MIN_NEW_SESSIONS = 3
 _ADJUSTMENT = 0.05
 
 
@@ -24,6 +26,20 @@ class LocalEvolver:
         """Run evolution on local sessions. Returns evolved context or None if insufficient data."""
         sessions = self._load_sessions()
         if not sessions:
+            return None
+
+        # Session count gate: skip if fewer than _MIN_NEW_SESSIONS sessions since last evolution.
+        # If never evolved before (last_evolved_at == 0.0), treat all sessions as new.
+        last_evolved_at = self._load_last_evolved_at()
+        if last_evolved_at == 0.0:
+            new_sessions = sessions
+        else:
+            new_sessions = [s for s in sessions if s.get("timestamp", 0) > last_evolved_at]
+        if len(new_sessions) < _MIN_NEW_SESSIONS:
+            logger.debug(
+                "Skipping evolution: only %d new sessions since last run (need %d)",
+                len(new_sessions), _MIN_NEW_SESSIONS,
+            )
             return None
 
         # Filter sessions with real feedback
@@ -113,6 +129,9 @@ class LocalEvolver:
             t.get("session_count", 0) for t in evolved["traditions"].values()
         )
 
+        # Record evolution timestamp in _meta
+        evolved["_meta"] = {"last_evolved_at": time.time()}
+
         # Write to file
         evolved_path = self.data_dir / "evolved_context.json"
         evolved_path.parent.mkdir(parents=True, exist_ok=True)
@@ -145,6 +164,17 @@ class LocalEvolver:
         dim_avgs = {d: dim_totals[d] / dim_counts[d] for d in dim_totals if dim_counts[d] > 0}
         sorted_dims = sorted(dim_avgs.items(), key=lambda x: x[1])
         return [d for d, _ in sorted_dims[:2]]
+
+    def _load_last_evolved_at(self) -> float:
+        """Return the timestamp of the last successful evolution, or 0.0 if never run."""
+        evolved_path = self.data_dir / "evolved_context.json"
+        if not evolved_path.exists():
+            return 0.0
+        try:
+            ctx = json.loads(evolved_path.read_text())
+            return float(ctx.get("_meta", {}).get("last_evolved_at", 0.0))
+        except Exception:
+            return 0.0
 
     def _load_sessions(self) -> list[dict]:
         """Load sessions from local JSONL."""
