@@ -9,6 +9,7 @@ import uuid
 from typing import Any, Callable
 
 from vulca.pipeline.node import NodeContext, PipelineNode
+from vulca import hooks as hooks
 try:
     from vulca.pipeline.residuals import AgentResiduals
 except ImportError:
@@ -225,6 +226,15 @@ async def execute(
         image_provider=pipeline_input.image_provider,
     )
 
+    await hooks.emit(hooks.PIPELINE_START, {
+        "session_id": session_id,
+        "pipeline_name": definition.name,
+        "subject": pipeline_input.subject,
+        "tradition": pipeline_input.tradition,
+        "provider": pipeline_input.provider,
+        "max_rounds": pipeline_input.max_rounds,
+    })
+
     # Inject node_params so individual nodes can read them
     if pipeline_input.node_params:
         ctx.set("node_params", pipeline_input.node_params)
@@ -314,6 +324,12 @@ async def execute(
                     ctx.data["residual_context"] = _residuals.aggregate(_weights, _history)
                     ctx.data["residual_weights"] = _asdict(_weights)
 
+            await hooks.emit(hooks.NODE_START, {
+                "session_id": session_id,
+                "node_name": node_name,
+                "round_num": round_num,
+            })
+
             try:
                 output = await node.run(ctx)
             except Exception as exc:
@@ -327,12 +343,35 @@ async def execute(
                         timestamp_ms=int((time.monotonic() - t0) * 1000),
                     )
                 )
+                await hooks.emit(hooks.PIPELINE_ERROR, {
+                    "session_id": session_id,
+                    "node_name": node_name,
+                    "round_num": round_num,
+                    "error": str(exc),
+                })
                 status = RunStatus.FAILED
                 break
 
             # Merge node output into context
             if output:
                 ctx.data.update(output)
+
+            await hooks.emit(hooks.NODE_COMPLETE, {
+                "session_id": session_id,
+                "node_name": node_name,
+                "round_num": round_num,
+                "output_keys": list(output.keys()) if output else [],
+            })
+
+            # Emit EVALUATE_SCORED when an evaluate/critic node produces scores
+            if node_name in ("evaluate", "critic") and output and "scores" in output:
+                await hooks.emit(hooks.EVALUATE_SCORED, {
+                    "session_id": session_id,
+                    "round_num": round_num,
+                    "tradition": ctx.tradition,
+                    "scores": dict(output["scores"]),
+                    "weighted_total": output.get("weighted_total", 0.0),
+                })
 
             # Record node snapshot for Agent Residuals
             if _residuals is not None:
@@ -481,6 +520,19 @@ async def execute(
         summary=summary,
         residual_context=ctx.data.get("residual_context"),
     )
+
+    # Emit PIPELINE_COMPLETE hook (non-fatal, before on_complete callback)
+    if status != RunStatus.FAILED:
+        await hooks.emit(hooks.PIPELINE_COMPLETE, {
+            "session_id": session_id,
+            "pipeline_name": definition.name,
+            "status": status.value,
+            "total_rounds": len(rounds),
+            "total_latency_ms": total_ms,
+            "total_cost_usd": ctx.cost_usd,
+            "best_candidate_id": ctx.get("candidate_id", ""),
+            "weighted_total": ctx.get("weighted_total", 0.0),
+        })
 
     # Fire on_complete hook (non-fatal)
     if on_complete and status != RunStatus.FAILED:
