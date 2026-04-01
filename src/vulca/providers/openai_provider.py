@@ -4,6 +4,7 @@ from __future__ import annotations
 import os
 
 from vulca.providers.base import ImageProvider, ImageResult
+from vulca.providers.retry import with_retry
 
 
 class OpenAIImageProvider:
@@ -41,24 +42,46 @@ class OpenAIImageProvider:
         dalle3_sizes = {(1024, 1024), (1024, 1792), (1792, 1024)}
         size = f"{width}x{height}" if (width, height) in dalle3_sizes else "1024x1024"
 
-        async with httpx.AsyncClient(timeout=120) as client:
-            resp = await client.post(
-                "https://api.openai.com/v1/images/generations",
-                headers={"Authorization": f"Bearer {self.api_key}"},
-                json={
-                    "model": self.model,
-                    "prompt": full_prompt,
-                    "n": 1,
-                    "size": size,
-                    "response_format": "b64_json",
-                },
-            )
-            resp.raise_for_status()
-            data = resp.json()
+        def _is_retryable(exc: Exception) -> bool:
+            # httpx.HTTPStatusError carries a response with status_code
+            response = getattr(exc, "response", None)
+            if response is not None:
+                status = getattr(response, "status_code", None)
+                if status in (429, 500, 503):
+                    return True
+                return False
+            # Network-level errors (timeout, connect) are retryable
+            if isinstance(exc, (httpx.TimeoutException, httpx.ConnectError)):
+                return True
+            return False
 
-        img_b64 = data["data"][0]["b64_json"]
-        return ImageResult(
-            image_b64=img_b64,
-            mime="image/png",
-            metadata={"model": self.model, "revised_prompt": data["data"][0].get("revised_prompt", "")},
+        async def _call() -> ImageResult:
+            async with httpx.AsyncClient(timeout=120) as client:
+                resp = await client.post(
+                    "https://api.openai.com/v1/images/generations",
+                    headers={"Authorization": f"Bearer {self.api_key}"},
+                    json={
+                        "model": self.model,
+                        "prompt": full_prompt,
+                        "n": 1,
+                        "size": size,
+                        "response_format": "b64_json",
+                    },
+                )
+                resp.raise_for_status()
+                data = resp.json()
+
+            img_b64 = data["data"][0]["b64_json"]
+            return ImageResult(
+                image_b64=img_b64,
+                mime="image/png",
+                metadata={"model": self.model, "revised_prompt": data["data"][0].get("revised_prompt", "")},
+            )
+
+        return await with_retry(
+            _call,
+            max_retries=3,
+            base_delay_ms=500,
+            max_delay_ms=16_000,
+            retryable_check=_is_retryable,
         )

@@ -6,6 +6,7 @@ import os
 import re
 
 from vulca.providers.base import L1L5Scores, VLMProvider
+from vulca.providers.retry import with_retry
 
 
 class LiteLLMVLMProvider:
@@ -40,9 +41,29 @@ class LiteLLMVLMProvider:
         if self.api_key:
             call_kwargs["api_key"] = self.api_key
 
-        response = await litellm.acompletion(**call_kwargs)
-        text = response.choices[0].message.content or ""
-        return self._parse_response(text)
+        def _is_retryable(exc: Exception) -> bool:
+            # litellm surfaces HTTP status via status_code attribute or message
+            status = getattr(exc, "status_code", None)
+            if status in (429, 500, 503):
+                return True
+            # Timeout and connection errors are retryable
+            exc_name = type(exc).__name__
+            if "Timeout" in exc_name or "RateLimit" in exc_name or "ServiceUnavailable" in exc_name:
+                return True
+            return False
+
+        async def _call() -> L1L5Scores:
+            response = await litellm.acompletion(**call_kwargs)
+            text = response.choices[0].message.content or ""
+            return self._parse_response(text)
+
+        return await with_retry(
+            _call,
+            max_retries=3,
+            base_delay_ms=500,
+            max_delay_ms=16_000,
+            retryable_check=_is_retryable,
+        )
 
     def _default_prompt(self, tradition: str, subject: str) -> str:
         parts = ["Score this image on five dimensions (0.0-1.0). Return JSON with keys L1-L5 and L1_rationale through L5_rationale."]

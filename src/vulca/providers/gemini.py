@@ -10,6 +10,7 @@ import math
 import os
 
 from vulca.providers.base import ImageProvider, ImageResult
+from vulca.providers.retry import with_retry
 
 # Gemini API uses named size tiers, not arbitrary pixel dimensions.
 # Map pixel dimensions to the closest imageSize tier.
@@ -119,18 +120,36 @@ class GeminiImageProvider:
             ),
         )
 
-        try:
-            response = await asyncio.wait_for(
-                asyncio.to_thread(
-                    client.models.generate_content,
-                    model=self.model,
-                    contents=contents,
-                    config=config,
-                ),
-                timeout=self.timeout,
-            )
-        except asyncio.TimeoutError:
-            raise TimeoutError(f"Gemini image generation timed out after {self.timeout}s")
+        def _is_retryable(exc: Exception) -> bool:
+            if isinstance(exc, asyncio.TimeoutError):
+                return True
+            # Retry on rate-limit (429), server error (500), or unavailable (503)
+            status = getattr(exc, "status_code", None) or getattr(exc, "code", None)
+            if status in (429, 500, 503):
+                return True
+            return False
+
+        async def _call() -> object:
+            try:
+                return await asyncio.wait_for(
+                    asyncio.to_thread(
+                        client.models.generate_content,
+                        model=self.model,
+                        contents=contents,
+                        config=config,
+                    ),
+                    timeout=self.timeout,
+                )
+            except asyncio.TimeoutError:
+                raise TimeoutError(f"Gemini image generation timed out after {self.timeout}s")
+
+        response = await with_retry(
+            _call,
+            max_retries=3,
+            base_delay_ms=500,
+            max_delay_ms=16_000,
+            retryable_check=_is_retryable,
+        )
 
         if response.candidates:
             for part in response.candidates[0].content.parts:
