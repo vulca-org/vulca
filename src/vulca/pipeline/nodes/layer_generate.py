@@ -1,11 +1,16 @@
 """LayerGenerateNode — per-layer generation with style consistency."""
 from __future__ import annotations
 
+import asyncio
 import base64
 import io
+import logging
+import os
 import tempfile
 from pathlib import Path
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 from PIL import Image
 
@@ -47,22 +52,40 @@ class LayerGenerateNode(PipelineNode):
     async def _generate_layers(
         self, layers: list[LayerInfo], ctx: NodeContext
     ) -> list[LayerResult]:
-        results = []
-        output_dir = ctx.get("output_dir", tempfile.mkdtemp(prefix="vulca_layered_"))
+        if not layers:
+            return []
+
+        output_dir = ctx.get("output_dir") or tempfile.mkdtemp(prefix="vulca_layered_")
         Path(output_dir).mkdir(parents=True, exist_ok=True)
+        style_ref = ctx.get("composite_b64") or ctx.get("image_b64") or ""
 
-        style_ref = ctx.get("composite_b64") or ctx.get("image_b64")
+        # Phase 1: Generate first layer (provides style reference for others)
+        first = layers[0]
+        first_result = await self._generate_single(first, ctx, output_dir, style_ref or None)
+        if first_result.image_path and not style_ref:
+            style_ref = _path_to_b64(first_result.image_path)
 
-        for info in layers:
-            try:
-                result = await self._generate_single(info, ctx, output_dir, style_ref)
-                results.append(result)
-                if style_ref is None and result.image_path:
-                    style_ref = _path_to_b64(result.image_path)
-            except Exception:
-                info.status = "failed"
-                results.append(LayerResult(info=info, image_path=""))
-        return results
+        if len(layers) <= 1:
+            return [first_result]
+
+        # Phase 2: Generate remaining layers in parallel with rate limiting
+        remaining = layers[1:]
+        max_concurrent = int(os.environ.get("VULCA_MAX_LAYER_CONCURRENCY", "3"))
+        sem = asyncio.Semaphore(max_concurrent)
+
+        async def _gen_with_limit(info: LayerInfo) -> LayerResult:
+            async with sem:
+                try:
+                    return await self._generate_single(info, ctx, output_dir, style_ref or None)
+                except Exception as e:
+                    logger.warning("Layer %s failed: %s", info.name, e)
+                    info.status = "failed"
+                    return LayerResult(info=info, image_path="")
+
+        parallel_results = await asyncio.gather(*[_gen_with_limit(info) for info in remaining])
+
+        all_results = [first_result] + list(parallel_results)
+        return sorted(all_results, key=lambda r: r.info.z_index)
 
     async def _generate_single(
         self, info: LayerInfo, ctx: NodeContext, output_dir: str, style_ref: str | None,
