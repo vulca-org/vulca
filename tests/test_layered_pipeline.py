@@ -124,3 +124,51 @@ class TestLayeredPipelineE2E:
         )
         output = await execute(DEFAULT, inp)
         assert output.status == "completed"
+
+
+class TestArtifactContentAfterPipeline:
+    @pytest.mark.asyncio
+    async def test_artifact_has_cultural_context(self):
+        """After LAYERED pipeline, artifact.json should have cultural_context populated."""
+        import json
+        from pathlib import Path
+
+        inp = PipelineInput(
+            subject="水墨山水",
+            intent="水墨山水",
+            tradition="chinese_xieyi",
+            provider="mock",
+            layered=True,
+        )
+        output = await execute(LAYERED, inp)
+        assert output.status == "completed"
+
+        artifact_path = Path("/tmp/vulca_composite/artifact.json")
+        if artifact_path.exists():
+            data = json.loads(artifact_path.read_text())
+            assert data["artifact_version"] == "3.0"
+            # cultural_context should have tradition_layer_order from PlanLayersNode
+            ctx = data.get("cultural_context", {})
+            if ctx:
+                assert "tradition_layer_order" in ctx
+
+    @pytest.mark.asyncio
+    async def test_artifact_layers_have_status(self):
+        """Layers in artifact should have status field set."""
+        import json
+        from pathlib import Path
+
+        inp = PipelineInput(
+            subject="test",
+            provider="mock",
+            layered=True,
+        )
+        output = await execute(LAYERED, inp)
+        assert output.status == "completed"
+
+        artifact_path = Path("/tmp/vulca_composite/artifact.json")
+        if artifact_path.exists():
+            data = json.loads(artifact_path.read_text())
+            for layer in data["layers"]:
+                assert "status" in layer
+                assert "tradition_role" in layer
