@@ -6,7 +6,9 @@ import pytest
 from vulca._vlm import (
     _DEFAULT_MAX_TOKENS,
     _ESCALATED_MAX_TOKENS,
+    _STATIC_SCORING_PREFIX,
     _SYSTEM_PROMPT,
+    _build_dynamic_suffix,
     _extract_scoring,
     _parse_vlm_response,
     score_image,
@@ -15,16 +17,32 @@ from vulca._vlm import (
 
 class TestVLMPromptStructure:
     def test_prompt_has_observe_phase(self):
-        assert "OBSERVE" in _SYSTEM_PROMPT or "observe" in _SYSTEM_PROMPT.lower()
+        assert "OBSERVE" in _STATIC_SCORING_PREFIX or "observe" in _STATIC_SCORING_PREFIX.lower()
 
     def test_prompt_has_evaluate_phase(self):
-        assert "EVALUATE" in _SYSTEM_PROMPT or "evaluate" in _SYSTEM_PROMPT.lower()
+        assert "EVALUATE" in _STATIC_SCORING_PREFIX or "evaluate" in _STATIC_SCORING_PREFIX.lower()
 
     def test_prompt_requires_observations(self):
-        assert "observations" in _SYSTEM_PROMPT.lower()
+        assert "observations" in _STATIC_SCORING_PREFIX.lower()
 
     def test_prompt_requires_reference_technique(self):
-        assert "reference_technique" in _SYSTEM_PROMPT
+        assert "reference_technique" in _STATIC_SCORING_PREFIX
+
+    def test_prompt_has_static_dynamic_separation(self):
+        """Static prefix contains L1/L5 but no {tradition} placeholders;
+        _build_dynamic_suffix returns a non-empty string."""
+        # Static prefix must describe L1 and L5
+        assert "L1" in _STATIC_SCORING_PREFIX
+        assert "L5" in _STATIC_SCORING_PREFIX
+        # Static prefix must NOT have format placeholders for tradition
+        assert "{tradition}" not in _STATIC_SCORING_PREFIX
+        assert "{tradition_guidance}" not in _STATIC_SCORING_PREFIX
+        # Dynamic suffix must be a non-empty string for a known tradition
+        suffix = _build_dynamic_suffix("chinese_xieyi")
+        assert isinstance(suffix, str)
+        assert len(suffix) > 0
+        # Backward-compat alias still points to the same text
+        assert _SYSTEM_PROMPT is _STATIC_SCORING_PREFIX
 
 
 class TestVLMResponseParsing:

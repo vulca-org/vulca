@@ -20,7 +20,20 @@ _DEFAULT_MAX_TOKENS = 3072
 _ESCALATED_MAX_TOKENS = 8192
 _MAX_ESCALATION_ATTEMPTS = 1
 
-_SYSTEM_PROMPT = """\
+# ---------------------------------------------------------------------------
+# Prompt cache partitioning
+# ---------------------------------------------------------------------------
+# _STATIC_SCORING_PREFIX contains the invariant L1-L5 framework definition and
+# scoring protocol.  It has NO {tradition} or {tradition_guidance} placeholders,
+# so it can be placed in a shared prompt-cache prefix (e.g. Gemini context
+# caching, Anthropic prompt caching) and reused across calls without
+# re-tokenisation.
+#
+# _build_dynamic_suffix() assembles the tradition-specific part at call time.
+# score_image() joins the two parts with a double newline.
+# ---------------------------------------------------------------------------
+
+_STATIC_SCORING_PREFIX = """\
 You are VULCA, a cultural-aware art evaluation system. Evaluate the given \
 artwork image across five dimensions (L1-L5), each scored from 0.0 to 1.0.
 
@@ -36,10 +49,6 @@ tradition-specific motifs/elements/terminology, adherence to canonical conventio
 violations, cultural sensitivity, appropriate contextual framing.
 - **L5 (Philosophical Aesthetics)**: Artistic depth, emotional resonance, \
 spiritual qualities, aesthetic harmony, and philosophical alignment with the tradition.
-
-## Cultural Tradition: {tradition}
-
-{tradition_guidance}
 
 ## Instructions
 
@@ -79,7 +88,7 @@ think through what you see before committing to scores. Example:
 **Phase 2 — Structured Scoring** (parsed by system):
 Write ONLY the JSON object inside `<scoring>` tags. Only this section is parsed.
 <scoring>
-{{
+{
     "L1": <float>, "L1_observations": "<string>", "L1_rationale": "<string>", \
 "L1_suggestion": "<string>", "L1_reference_technique": "<string>", "L1_deviation_type": "<string>",
     "L2": <float>, "L2_observations": "<string>", "L2_rationale": "<string>", \
@@ -90,9 +99,69 @@ Write ONLY the JSON object inside `<scoring>` tags. Only this section is parsed.
 "L4_suggestion": "<string>", "L4_reference_technique": "<string>", "L4_deviation_type": "<string>",
     "L5": <float>, "L5_observations": "<string>", "L5_rationale": "<string>", \
 "L5_suggestion": "<string>", "L5_reference_technique": "<string>", "L5_deviation_type": "<string>"
-}}
+}
 </scoring>
 """
+
+# Backward-compatibility alias — kept so external code referencing _SYSTEM_PROMPT
+# continues to import without error.  New code should use _STATIC_SCORING_PREFIX
+# and _build_dynamic_suffix() directly.
+_SYSTEM_PROMPT = _STATIC_SCORING_PREFIX
+
+
+def _build_dynamic_suffix(
+    tradition: str,
+    evolved_ctx: dict | None = None,
+    engram_fragments: list | None = None,
+    active_dimensions: list[str] | None = None,
+) -> str:
+    """Build the tradition-specific portion of the VLM system prompt.
+
+    This is the *dynamic* counterpart to ``_STATIC_SCORING_PREFIX``.  It must
+    be called at evaluation time (not at module import) because it depends on
+    the requested tradition and the runtime evolved-context state.
+
+    Parameters
+    ----------
+    tradition:
+        Tradition key (e.g. ``"chinese_xieyi"``).
+    evolved_ctx:
+        Pre-loaded evolved context dict, or ``None`` to skip evolution guidance.
+        Pass the result of ``_load_evolved_context()`` here when available.
+    engram_fragments:
+        Optional ``CulturalFragment`` list from ``CulturalEngram`` retrieval.
+    active_dimensions:
+        Optional list of active L-dimension keys (e.g. ``["L1", "L3", "L5"]``).
+    """
+    parts: list[str] = []
+
+    # 1. Tradition header + terminology/taboos/engram
+    tradition_label = tradition.replace("_", " ").title()
+    parts.append(f"## Cultural Tradition: {tradition_label}")
+    tradition_guidance = _build_tradition_guidance(
+        tradition,
+        engram_fragments=engram_fragments,
+        active_dimensions=active_dimensions,
+    )
+    if tradition_guidance:
+        parts.append(tradition_guidance)
+
+    # 2. Evolution weights / few-shot (if caller provided evolved_ctx explicitly)
+    # Note: _build_tradition_guidance already injects evolved guidance internally
+    # when it loads evolved context itself; the explicit path here is kept for
+    # callers that pre-load and pass evolved_ctx to avoid a double disk read.
+    if evolved_ctx is not None:
+        inject_parts: list[str] = []
+        _inject_evolved_guidance(inject_parts, tradition, evolved_ctx)
+        parts.extend(inject_parts)
+
+    # 3. Tradition-specific extra dimensions (E1-E3)
+    extra_dims = _load_extra_dimensions(tradition)
+    extra_prompt = _build_extra_dimensions_prompt(extra_dims)
+    if extra_prompt:
+        parts.append(extra_prompt)
+
+    return "\n".join(p for p in parts if p)
 
 def _extract_scoring(text: str) -> str:
     """Extract content inside <scoring>...</scoring> tags.
@@ -404,24 +473,19 @@ async def score_image(
     active_dimensions:
         Optional list of active L-dimension keys for focus hint in prompt.
     """
-    tradition_guidance = _build_tradition_guidance(
+    # Load tradition-specific extra dimensions (needed for extra_keys below)
+    extra_dims = _load_extra_dimensions(tradition)
+    extra_keys = [e["key"] for e in extra_dims[:3]]
+
+    # Build system prompt from static prefix + dynamic tradition suffix.
+    # _build_dynamic_suffix already calls _build_tradition_guidance and
+    # _build_extra_dimensions_prompt internally, so we don't call them separately.
+    dynamic_suffix = _build_dynamic_suffix(
         tradition,
         engram_fragments=engram_fragments,
         active_dimensions=active_dimensions,
     )
-
-    # Load tradition-specific extra dimensions and build prompt extension
-    extra_dims = _load_extra_dimensions(tradition)
-    extra_prompt = _build_extra_dimensions_prompt(extra_dims)
-    extra_keys = [e["key"] for e in extra_dims[:3]]
-
-    system_msg = _SYSTEM_PROMPT.format(
-        tradition=tradition.replace("_", " ").title(),
-        tradition_guidance=tradition_guidance,
-    )
-    # Append extra dimensions prompt if any
-    if extra_prompt:
-        system_msg = system_msg + "\n" + extra_prompt
+    system_msg = _STATIC_SCORING_PREFIX + "\n\n" + dynamic_suffix
 
     user_parts = [
         {"type": "image_url", "image_url": {"url": f"data:{mime};base64,{img_b64}"}},
