@@ -101,6 +101,7 @@ class WhitespaceAnalyzer(VulcaTool):
     max_seconds = 10
     is_concurrent_safe = True
     is_read_only = True
+    search_hint = "negative space empty area blank ratio"
 
     Input = WhitespaceInput
     Output = WhitespaceOutput

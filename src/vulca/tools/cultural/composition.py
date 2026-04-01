@@ -105,6 +105,7 @@ class CompositionAnalyzer(VulcaTool):
     max_seconds = 10
     is_concurrent_safe = True
     is_read_only = True
+    search_hint = "composition balance rule thirds visual weight"
 
     Input = CompositionInput
     Output = CompositionOutput

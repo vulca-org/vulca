@@ -106,6 +106,7 @@ class BrushstrokeAnalyzer(VulcaTool):
     max_seconds = 10
     is_concurrent_safe = True
     is_read_only = True
+    search_hint = "brush stroke texture ink pressure"
 
     Input = BrushstrokeInput
     Output = BrushstrokeOutput

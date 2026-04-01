@@ -71,6 +71,8 @@ class ColorCorrect(VulcaTool):
     max_seconds = 10
     is_concurrent_safe = False
     is_read_only = False
+    is_destructive = True
+    search_hint = "color correction white balance channel"
 
     Input = ColorCorrectInput
     Output = ColorCorrectOutput

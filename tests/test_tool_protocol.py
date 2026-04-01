@@ -360,3 +360,41 @@ class TestImageData:
         assert int(arr[0, 0, 0]) == 55
         assert int(arr[0, 0, 1]) == 66
         assert int(arr[0, 0, 2]) == 77
+
+
+# ---------------------------------------------------------------------------
+# Phase C Task 2: Extended VulcaTool protocol attributes
+# ---------------------------------------------------------------------------
+
+
+def test_vulca_tool_has_extended_attributes():
+    from vulca.tools.protocol import VulcaTool
+    assert VulcaTool.is_destructive is False
+    assert VulcaTool.max_result_size == 50_000
+    assert VulcaTool.search_hint == ""
+    assert VulcaTool.should_defer is False
+
+
+def test_check_permissions_default():
+    from vulca.tools import ToolRegistry
+    registry = ToolRegistry()
+    registry.discover()
+    tool = registry.get("whitespace_analyze")
+    assert tool.check_permissions(None) == "passthrough"
+
+
+def test_color_correct_is_destructive():
+    from vulca.tools import ToolRegistry
+    registry = ToolRegistry()
+    registry.discover()
+    tool = registry.get("color_correct")
+    assert tool.is_destructive is True
+
+
+def test_tools_have_search_hints():
+    from vulca.tools import ToolRegistry
+    registry = ToolRegistry()
+    registry.discover()
+    for name in ["whitespace_analyze", "brushstroke_analyze", "color_gamut_check", "composition_analyze", "color_correct"]:
+        tool = registry.get(name)
+        assert tool.search_hint != "", f"{name} should have a search_hint"

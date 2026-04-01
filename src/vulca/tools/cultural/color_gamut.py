@@ -103,6 +103,7 @@ class ColorGamutChecker(VulcaTool):
     max_seconds = 15
     is_concurrent_safe = True
     is_read_only = True
+    search_hint = "saturation color palette gamut compliance"
 
     Input = ColorGamutInput
     Output = ColorGamutOutput

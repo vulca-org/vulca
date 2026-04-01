@@ -149,6 +149,10 @@ class VulcaTool(abc.ABC):
     # Concurrency and safety attributes (fail-closed defaults)
     is_concurrent_safe: ClassVar[bool] = False
     is_read_only: ClassVar[bool] = True
+    is_destructive: ClassVar[bool] = False         # color_correct fix mode is destructive
+    max_result_size: ClassVar[int] = 50_000        # chars, for MCP result truncation
+    search_hint: ClassVar[str] = ""                # keywords for MCP tool discovery
+    should_defer: ClassVar[bool] = False           # MCP lazy loading hint
 
     # --- Inner schema classes (must be overridden) ---
     class Input(ToolSchema):
@@ -168,6 +172,10 @@ class VulcaTool(abc.ABC):
         Returns:
             Validated instance of this tool's Output schema.
         """
+
+    def check_permissions(self, input_data: "VulcaTool.Input", config: ToolConfig | None = None) -> str:
+        """Return 'allow', 'deny', 'ask', or 'passthrough'. Default: passthrough."""
+        return "passthrough"
 
     def safe_execute(
         self, input_data: "VulcaTool.Input", config: ToolConfig | None = None
