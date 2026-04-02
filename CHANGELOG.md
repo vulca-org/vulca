@@ -3,7 +3,7 @@
 ## [0.10.0] - 2026-04-01
 
 ### LAYERED Pipeline — Structured Creation
-- **LAYERED template**: PlanLayers -> LayerGenerate -> Composite -> Evaluate -> Decide with per-layer selective rerun
+- **LAYERED template**: PlanLayers -> LayerGenerate (2-node). Agent orchestrates composition, evaluation, and iteration via MCP tools (layers_composite, evaluate_artwork, layers_redraw)
 - **PlanLayersNode**: VLM plans layer structure from text intent with tradition layer order knowledge (xieyi, gongbi, japanese, photography)
 - **LayerGenerateNode**: Per-layer "full-scene + focus" generation with style anchor + reference conditioning
 - **CompositeNode**: Blend layers + write Artifact V3 structured creation document

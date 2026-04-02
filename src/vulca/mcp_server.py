@@ -231,7 +231,12 @@ async def create_artwork(
         layered=layered,
     )
 
-    interrupt_before = {"decide"} if hitl else None
+    if hitl and layered:
+        import logging
+        logging.getLogger("vulca.mcp").warning(
+            "hitl=True ignored with layered=True — agent orchestrates iteration via MCP tools"
+        )
+    interrupt_before = {"decide"} if (hitl and not layered) else None
 
     if layered:
         from vulca.pipeline.templates import LAYERED

@@ -51,11 +51,10 @@ graph LR
 
     subgraph Layered["LAYERED Pipeline (--layered)"]
         PL[PlanLayers<br/>tradition knowledge] --> LG[LayerGenerate<br/>per-layer]
-        LG --> CO[Composite<br/>Artifact V3]
-        CO --> E2[Evaluate<br/>L1-L5]
-        E2 --> D2{Decide<br/>per-layer}
-        D2 -->|rerun weak layers| LG
-        D2 -->|accept| OUT2[Structured<br/>Artifact]
+        LG --> ART[Structured<br/>Artifact]
+        ART -.->|agent calls| COMP[layers_composite]
+        ART -.->|agent calls| RD[layers_redraw]
+        ART -.->|agent calls| EV[evaluate_artwork]
     end
 
     subgraph Evolution["Self-Evolution Loop"]
