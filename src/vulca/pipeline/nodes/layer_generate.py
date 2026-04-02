@@ -100,7 +100,7 @@ class LayerGenerateNode(PipelineNode):
             ctx.provider, api_key=ctx.api_key
         )
 
-        kwargs: dict[str, Any] = {"prompt": prompt}
+        kwargs: dict[str, Any] = {"prompt": prompt, "raw_prompt": True}
         if style_ref:
             kwargs["reference_image_b64"] = style_ref
 
@@ -116,30 +116,28 @@ class LayerGenerateNode(PipelineNode):
         return LayerResult(info=info, image_path=out_path)
 
     def _build_prompt(self, info: LayerInfo, ctx: NodeContext) -> str:
-        """Build prompt using proven split_regenerate strategy:
-        ONLY this layer's content, white background, exclude other layers.
+        """Build prompt for isolated layer generation.
+
+        Uses "Digital design asset" framing instead of "Generate artwork" —
+        this prevents Gemini from adding paper textures, scroll mountings,
+        and environmental context that break layer compositing.
         """
         base = info.regeneration_prompt or info.description
-        tradition = ctx.tradition or "default"
 
         # Get other layer names to explicitly exclude
         all_layers: list[LayerInfo] = ctx.get("planned_layers", [])
         other_names = [l.name for l in all_layers if l.name != info.name]
 
         parts = [
-            base,
-            "Paint ONLY this layer's content on a pure white (#FFFFFF) background.",
-            "The background must be exactly #FFFFFF pure white — no paper texture, no off-white, no cream color.",
-            "Do NOT draw checkerboard patterns, transparency grids, borders, or frames.",
-            f"Canvas size: 1024x1024. Flat 2D, no perspective, no rotation.",
+            f"Digital design asset for layer compositing. {base}",
+            "Isolated element on pure white (#FFFFFF) background.",
+            "No environment, no paper texture, no borders, no frames, no scroll.",
+            "Flat 2D, 1024x1024.",
         ]
-
-        if tradition and tradition != "default":
-            parts.append(f"Cultural tradition: {tradition}.")
 
         if other_names:
             names_str = ", ".join(other_names)
-            parts.append(f"DO NOT include any elements from these other layers: {names_str}.")
+            parts.append(f"DO NOT include elements from: {names_str}.")
 
         weakness = info.weakness or ctx.get("improvement_focus", "")
         if weakness:

@@ -102,7 +102,13 @@ class GeminiImageProvider:
         image_size = kwargs.pop("image_size", None) or _pixels_to_image_size(long_edge)
         aspect_ratio = kwargs.pop("aspect_ratio", None) or _dims_to_aspect_ratio(width, height)
 
-        full_prompt = self._build_prompt(prompt, tradition, subject, aspect_ratio, kwargs)
+        # Skip prompt wrapping when caller provides a complete prompt
+        # (e.g., LayerGenerateNode's "Digital design asset..." prompt)
+        raw = kwargs.pop("raw_prompt", False)
+        if raw:
+            full_prompt = prompt
+        else:
+            full_prompt = self._build_prompt(prompt, tradition, subject, aspect_ratio, kwargs)
 
         contents: list = []
         if reference_image_b64:
