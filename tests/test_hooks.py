@@ -197,3 +197,36 @@ class TestEventConstants:
             hooks.EVOLUTION_TRIGGERED,
         ]
         assert len(constants) == len(set(constants))
+
+
+# ── Thread safety ──────────────────────────────────────────────────
+
+class TestThreadSafety:
+    def test_concurrent_registration_no_corruption(self):
+        """on() from multiple threads must not corrupt the handler list."""
+        import threading
+
+        errors = []
+        barrier = threading.Barrier(10)
+
+        def register_handler(idx):
+            try:
+                barrier.wait(timeout=5)
+                hooks.on(hooks.PIPELINE_START, lambda p, i=idx: i)
+            except Exception as e:
+                errors.append(e)
+
+        threads = [threading.Thread(target=register_handler, args=(i,)) for i in range(10)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join(timeout=10)
+
+        assert not errors, f"Thread errors: {errors}"
+        assert len(hooks._handlers[hooks.PIPELINE_START]) == 10
+
+    def test_has_lock_attribute(self):
+        """hooks module must expose a _lock for thread safety."""
+        assert hasattr(hooks, "_lock"), (
+            "hooks module must have a threading.Lock for thread-safe mutations"
+        )

@@ -94,6 +94,45 @@ def test_run_records_completion(tmp_path):
     assert meta["last_run"] > 0
 
 
+def test_lock_is_atomic_exclusive(tmp_path):
+    """Lock acquisition must be atomic — if a lock file already exists (non-stale),
+    run() should fail gracefully without clobbering it."""
+    from vulca.digestion.dream import DreamConsolidator, _LOCK_FILE
+    data_dir = tmp_path / "data"
+    data_dir.mkdir()
+    _write_sessions(data_dir, 12)
+
+    # Pre-create a fresh lock file (simulating concurrent run)
+    lock_path = data_dir / _LOCK_FILE
+    lock_path.write_text("concurrent_run")
+
+    dc = DreamConsolidator(data_dir=str(data_dir))
+    result = dc.run()
+
+    # Should detect existing lock and refuse to run
+    assert result["status"] == "skipped_locked", (
+        f"Expected 'skipped_locked' but got {result['status']}. "
+        "run() must check for existing lock before acquiring."
+    )
+    # Lock file should still contain the original content (not overwritten)
+    assert lock_path.read_text() == "concurrent_run"
+
+
+def test_lock_cleaned_on_success(tmp_path):
+    """Lock file must be cleaned up after successful run."""
+    from vulca.digestion.dream import DreamConsolidator, _LOCK_FILE
+    data_dir = tmp_path / "data"
+    data_dir.mkdir()
+    _write_sessions(data_dir, 12)
+
+    dc = DreamConsolidator(data_dir=str(data_dir))
+    result = dc.run()
+    assert result["status"] == "completed"
+
+    lock_path = data_dir / _LOCK_FILE
+    assert not lock_path.exists(), "Lock file should be cleaned up after successful run"
+
+
 def test_deviation_filter_innovation_signals(tmp_path):
     from vulca.digestion.dream import DreamConsolidator
     data_dir = tmp_path / "data"

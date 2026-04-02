@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import threading
 from collections import defaultdict
 from typing import Any, Callable
 
@@ -43,6 +44,7 @@ EVOLUTION_TRIGGERED = "evolution_triggered"
 # ── Internal state ───────────────────────────────────────────────────
 
 _handlers: dict[str, list[Callable]] = defaultdict(list)
+_lock = threading.Lock()
 
 
 # ── Public API ───────────────────────────────────────────────────────
@@ -59,12 +61,14 @@ def on(event: str, handler: Callable | None = None):
     """
     if handler is not None:
         # Direct call: hooks.on(event, fn)
-        _handlers[event].append(handler)
+        with _lock:
+            _handlers[event].append(handler)
         return handler
 
     # Decorator: @hooks.on(event)
     def decorator(fn: Callable) -> Callable:
-        _handlers[event].append(fn)
+        with _lock:
+            _handlers[event].append(fn)
         return fn
 
     return decorator
@@ -72,10 +76,11 @@ def on(event: str, handler: Callable | None = None):
 
 def off(event: str, handler: Callable) -> None:
     """Remove a previously registered handler for an event."""
-    try:
-        _handlers[event].remove(handler)
-    except ValueError:
-        pass
+    with _lock:
+        try:
+            _handlers[event].remove(handler)
+        except ValueError:
+            pass
 
 
 async def emit(event: str, payload: dict[str, Any] | None = None) -> None:
@@ -88,7 +93,9 @@ async def emit(event: str, payload: dict[str, Any] | None = None) -> None:
     if payload is None:
         payload = {}
 
-    for handler in list(_handlers[event]):
+    with _lock:
+        handlers_snapshot = list(_handlers[event])
+    for handler in handlers_snapshot:
         try:
             result = handler(payload)
             if asyncio.iscoroutine(result):
@@ -104,4 +111,5 @@ async def emit(event: str, payload: dict[str, Any] | None = None) -> None:
 
 def clear() -> None:
     """Remove all registered handlers for all events."""
-    _handlers.clear()
+    with _lock:
+        _handlers.clear()

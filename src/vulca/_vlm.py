@@ -171,17 +171,32 @@ def _build_dynamic_suffix(
     return "\n".join(p for p in parts if p)
 
 def _extract_scoring(text: str) -> str:
-    """Extract content inside <scoring>...</scoring> tags.
+    """Extract content inside the **last** <scoring>...</scoring> block.
 
     Implements the two-phase scratchpad protocol: the model writes free-form
     observations in <observation> tags (discarded), then structured JSON in
     <scoring> tags (parsed). Falls back to full text for backward compatibility
     with responses that do not use the tag protocol.
+
+    Uses rfind for the last ``</scoring>`` to avoid mis-matching when earlier
+    text (e.g. observation or JSON values) accidentally contains ``<scoring>``.
     """
-    m = re.search(r"<scoring>(.*?)</scoring>", text, re.DOTALL)
-    if m:
-        return m.group(1).strip()
-    return text
+    close_tag = "</scoring>"
+    close_idx = text.rfind(close_tag)
+    if close_idx == -1:
+        return text
+    prefix = text[:close_idx]
+    open_tag = "<scoring>"
+    # Search backwards for the <scoring> that yields content starting with '{'
+    search_end = len(prefix)
+    while True:
+        open_idx = prefix.rfind(open_tag, 0, search_end)
+        if open_idx == -1:
+            return text
+        candidate = prefix[open_idx + len(open_tag):].strip()
+        if candidate.startswith("{"):
+            return candidate
+        search_end = open_idx
 
 
 def _build_extra_dimensions_prompt(extras: list[dict]) -> str:

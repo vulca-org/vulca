@@ -39,7 +39,9 @@ def _safe_load_evolved(tradition: str) -> dict | None:
     try:
         data_dir = os.environ.get("VULCA_EVOLVED_DATA_DIR", "")
         evolver = LocalEvolver(data_dir=data_dir) if data_dir else LocalEvolver()
-        return evolver.load_evolved(tradition)
+        result = evolver.load_evolved(tradition)
+        _evolution_failure_count = 0  # Reset on success
+        return result
     except Exception as exc:  # noqa: BLE001
         _evolution_failure_count += 1
         logger.warning(

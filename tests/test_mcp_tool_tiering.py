@@ -28,3 +28,36 @@ def test_unknown_tool_defaults_to_advanced():
     long_desc = "x" * 500
     result = _tier_description("unknown_tool", long_desc)
     assert len(result) <= 50
+
+
+def test_tier_description_applied_to_adapter_registration():
+    """Tool descriptions in MCP adapter must be truncated per tier limits."""
+    from vulca.tools.adapters.mcp import generate_mcp_schema
+    from vulca.mcp_server import _DESC_LIMITS
+
+    # Create a fake tool class with a very long description
+    from vulca.tools.protocol import VulcaTool
+
+    class FakeTool(VulcaTool):
+        name = "layers_regenerate"  # This is an "advanced" tier tool
+        display_name = "Fake"
+        description = "x" * 500  # Very long description
+        category = "cultural"
+        max_seconds = 30.0
+        replaces = {}
+
+        class Input:
+            pass
+
+        class Output:
+            pass
+
+        def execute(self, input_data, config=None):
+            pass
+
+    schema = generate_mcp_schema(FakeTool)
+    desc = schema["description"]
+    # After tiering, advanced tool description should be truncated to 50 chars
+    assert len(desc) <= 50, (
+        f"Advanced-tier tool description should be ≤50 chars but got {len(desc)}: {desc!r}"
+    )

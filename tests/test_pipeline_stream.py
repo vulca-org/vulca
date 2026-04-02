@@ -144,3 +144,37 @@ def test_execute_stream_importable_from_pipeline():
     """execute_stream must be importable from the vulca.pipeline package."""
     from vulca.pipeline import execute_stream as es  # noqa: F401
     assert callable(es)
+
+
+# ── Buffered behavior documentation ───────────────────────────────────────
+
+@pytest.mark.asyncio
+async def test_execute_stream_is_buffered():
+    """execute_stream() is currently a BUFFERED wrapper — all events arrive
+    after the pipeline finishes, not during execution.
+
+    This test documents that behavior. When true streaming is implemented,
+    this test should be updated to verify real-time delivery.
+    """
+    import time
+
+    inp = PipelineInput(subject="buffered check", tradition="default", provider="mock")
+    first_event_time = None
+    last_event_time = None
+    event_count = 0
+
+    async for event in execute_stream(FAST, inp):
+        now = time.monotonic()
+        if first_event_time is None:
+            first_event_time = now
+        last_event_time = now
+        event_count += 1
+
+    assert event_count > 1, "Should have multiple events"
+    # All events arrive in a burst (buffered) — time gap between
+    # first and last yield is negligible (< 0.1s for mock provider)
+    gap = last_event_time - first_event_time
+    assert gap < 0.1, (
+        f"Events arrived over {gap:.2f}s — expected burst delivery (buffered). "
+        "If this fails after implementing true streaming, update this test."
+    )

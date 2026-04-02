@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import time
 from collections import defaultdict
 from pathlib import Path
@@ -55,12 +56,38 @@ class DreamConsolidator:
 
         return True
 
+    def _acquire_lock(self) -> bool:
+        """Atomically acquire the lock file using O_CREAT|O_EXCL.
+
+        Returns True if lock acquired, False if another process holds it.
+        Stale locks (>1h) are broken and re-acquired.
+        """
+        lock_path = self._data_dir / _LOCK_FILE
+        try:
+            fd = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+            os.write(fd, str(int(time.time())).encode())
+            os.close(fd)
+            return True
+        except FileExistsError:
+            # Check staleness
+            try:
+                lock_age = time.time() - lock_path.stat().st_mtime
+                if lock_age >= 3600:
+                    lock_path.unlink(missing_ok=True)
+                    return self._acquire_lock()
+            except OSError:
+                pass
+            return False
+
     def run(self) -> dict:
         """Execute four-phase consolidation. Returns summary of changes."""
         self._data_dir.mkdir(parents=True, exist_ok=True)
         lock_path = self._data_dir / _LOCK_FILE
+
+        if not self._acquire_lock():
+            return {"status": "skipped_locked"}
+
         try:
-            lock_path.write_text(str(int(time.time())))
 
             # Phase 1: Orient
             orientation = self._phase_orient()

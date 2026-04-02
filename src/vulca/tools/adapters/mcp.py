@@ -66,9 +66,16 @@ def generate_mcp_schema(tool_cls: "Type[VulcaTool]") -> dict[str, Any]:
         },
     }
 
+    # Apply tier-based description truncation
+    try:
+        from vulca.mcp_server import _tier_description
+        desc = _tier_description(tool_cls.name, tool_cls.description)
+    except ImportError:
+        desc = tool_cls.description
+
     return {
         "name": f"tool_{tool_cls.name}",
-        "description": tool_cls.description,
+        "description": desc,
         "parameters": parameters,
     }
 
@@ -159,7 +166,11 @@ def _register_single_tool(
     """Register a single tool on the MCP server as an async function."""
     tool_name = tool.name
     mcp_tool_name = f"tool_{tool_name}"
-    description = tool.description
+    try:
+        from vulca.mcp_server import _tier_description
+        description = _tier_description(tool_name, tool.description)
+    except ImportError:
+        description = tool.description
 
     # Build the async handler.  We capture tool_name by closure.
     async def _handler(

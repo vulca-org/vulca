@@ -113,6 +113,23 @@ class TestExtractScoring:
         result = _extract_scoring(raw_json)
         assert result == raw_json
 
+    def test_extract_scoring_uses_last_scoring_tag(self):
+        """If JSON values contain '<scoring>' text, extraction must use the LAST
+        closing tag to get the complete JSON block."""
+        response = (
+            "<observation>\nSome analysis about <scoring> technique.\n</observation>\n"
+            "<scoring>\n"
+            '{"L1": 0.8, "L1_suggestion": "use <scoring> technique for better results", '
+            '"L2": 0.7}\n'
+            "</scoring>"
+        )
+        result = _extract_scoring(response)
+        import json
+        parsed = json.loads(result)
+        assert parsed["L1"] == 0.8
+        assert parsed["L2"] == 0.7
+        assert "<scoring>" in parsed["L1_suggestion"]  # The text is preserved
+
 
 # ---------------------------------------------------------------------------
 # Minimal valid scoring JSON for mock responses

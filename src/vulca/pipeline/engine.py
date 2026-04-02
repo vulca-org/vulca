@@ -329,19 +329,17 @@ async def execute(
                     j += 1
 
                 if len(batch) > 1:
-                    # SAFETY: Parallel nodes share ctx.data. This is safe because:
-                    # 1. asyncio is single-threaded (no true concurrent writes)
-                    # 2. Parallel nodes must have non-overlapping output keys
-                    # 3. Only is_concurrent_safe=True nodes (read-only analyzers) run here
-                    # If a node reads another parallel node's output, results are undefined.
-                    # Run all nodes in this batch concurrently
+                    # Each parallel node gets a shallow copy of ctx so that
+                    # mid-execution writes to ctx.data are isolated.  Outputs
+                    # are merged back into the live ctx after all nodes finish.
                     async def _run_one(name: str, _nodes: dict = node_instances, _ctx: object = ctx) -> tuple:
+                        isolated_ctx = _ctx.shallow_copy()
                         await hooks.emit(hooks.NODE_START, {
                             "session_id": session_id,
                             "node_name": name,
                             "round_num": round_num,
                         })
-                        out = await _nodes[name].run(_ctx)
+                        out = await _nodes[name].run(isolated_ctx)
                         await hooks.emit(hooks.NODE_COMPLETE, {
                             "session_id": session_id,
                             "node_name": name,
@@ -612,15 +610,15 @@ async def execute_stream(
 ) -> AsyncGenerator[PipelineEvent, None]:
     """Streaming pipeline execution — yields PipelineEvent objects.
 
-    This is a buffered streaming wrapper around :func:`execute`.  All events
-    emitted during execution are collected and yielded in order, followed by a
-    final ``PIPELINE_COMPLETED`` event whose ``payload`` contains the full
-    :class:`PipelineOutput` dict.
+    .. warning:: **Buffered, not truly streaming.**
+       This is currently a buffered wrapper around :func:`execute`.  All events
+       are collected during execution and yielded in a batch *after* the pipeline
+       finishes.  For real-time event delivery during execution, use the
+       ``event_callback`` parameter of :func:`execute` instead.
 
-    The API is forward-compatible with a true async streaming implementation
-    (where events are yielded *as they happen*).  Callers should not rely on
-    events appearing before the pipeline finishes — use the ``event_callback``
-    parameter of :func:`execute` if you need real-time delivery.
+    The API signature is forward-compatible with a true async streaming
+    implementation (where events would be yielded *as they happen*).
+    Callers should not rely on events appearing before the pipeline finishes.
 
     Parameters
     ----------

@@ -33,6 +33,19 @@ class NodeContext:
     def get(self, key: str, default: Any = None) -> Any:
         return self.data.get(key, default)
 
+    def shallow_copy(self) -> "NodeContext":
+        """Return a copy with an independent ``data`` dict.
+
+        Scalar fields (subject, tradition, etc.) are shared.  The ``data``
+        dict is shallow-copied so that parallel nodes cannot see each
+        other's writes.
+        """
+        import copy as _copy
+
+        new = _copy.copy(self)  # shallow copy of the dataclass
+        new.data = dict(self.data)  # independent data dict
+        return new
+
 
 class PipelineNode(ABC):
     """Abstract base class for pipeline nodes.
