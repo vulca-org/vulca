@@ -7,6 +7,28 @@ from PIL import Image
 from vulca.layers.types import LayerResult
 
 
+def _white_to_alpha(img: Image.Image) -> Image.Image:
+    """Convert white background to transparency using luminance.
+
+    Principle: the LAYERED pipeline prompt asks Gemini to generate
+    "isolated element on pure white (#FFFFFF) background". So white
+    pixels are definitionally "not content". This is the algebraic
+    inverse of the generation step, not a threshold hack.
+
+    Alpha = 255 - luminance, stretched so ~220+ maps to 0 (transparent)
+    and darker values map to 255 (opaque). Equivalent to Photoshop's
+    "Blend If" approach.
+    """
+    arr = np.array(img, dtype=np.float32)
+    rgb = arr[..., :3]
+    luminance = rgb.mean(axis=-1)  # 0=black, 255=white
+    # Stretch: anything brighter than ~215 → transparent
+    alpha = (255.0 - luminance) * (255.0 / 40.0)
+    alpha = np.clip(alpha, 0, 255)
+    arr[..., 3] = alpha
+    return Image.fromarray(arr.astype(np.uint8), "RGBA")
+
+
 def blend_normal(bottom: Image.Image, top: Image.Image) -> Image.Image:
     """Normal blend: alpha composite top over bottom."""
     bottom = bottom.convert("RGBA")
@@ -97,10 +119,17 @@ def blend_layers(
         if layer_img.size != (width, height):
             layer_img = layer_img.resize((width, height), Image.LANCZOS)
 
-        # No hardcoded alpha hacks here — layers should arrive with
-        # proper transparency from the generation/export step.
-        # If layers are opaque RGB (from LAYERED pipeline), use multiply
-        # blend mode in the manifest to let white areas pass through.
+        # For normal-blended non-background layers that are fully opaque
+        # (RGB from LAYERED pipeline with white background), convert white
+        # to alpha. This is the algebraic inverse of the generation contract:
+        # we asked Gemini to put content on white, so we remove the white.
+        # Multiply/screen layers don't need this — white is identity for multiply.
+        if (layer.info.blend_mode == "normal"
+                and layer.info.content_type != "background"
+                and layer.info.z_index > 0):
+            arr = np.array(layer_img)
+            if arr[:, :, 3].min() > 250:  # fully opaque = was RGB
+                layer_img = _white_to_alpha(layer_img)
 
         blend_fn = _BLEND_FNS.get(layer.info.blend_mode, blend_normal)
         canvas = blend_fn(canvas, layer_img)

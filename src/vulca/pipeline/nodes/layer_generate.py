@@ -128,9 +128,17 @@ class LayerGenerateNode(PipelineNode):
         all_layers: list[LayerInfo] = ctx.get("planned_layers", [])
         other_names = [l.name for l in all_layers if l.name != info.name]
 
+        # Select background color based on blend mode:
+        # - white for normal/multiply (white is identity for multiply)
+        # - black for screen (black is identity for screen)
+        if info.blend_mode == "screen":
+            bg_instruction = "Isolated element on pure black (#000000) background."
+        else:
+            bg_instruction = "Isolated element on pure white (#FFFFFF) background."
+
         parts = [
             f"Digital design asset for layer compositing. {base}",
-            "Isolated element on pure white (#FFFFFF) background.",
+            bg_instruction,
             "No environment, no paper texture, no borders, no frames, no scroll.",
             "Flat 2D, 1024x1024.",
         ]
