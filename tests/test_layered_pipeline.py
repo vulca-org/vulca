@@ -11,10 +11,10 @@ class TestLayeredTemplate:
         assert "layered" in TEMPLATES
         assert LAYERED.name == "layered"
         assert LAYERED.entry_point == "plan_layers"
-        assert LAYERED.enable_loop is True
-        assert "plan_layers" in LAYERED.nodes
-        assert "layer_generate" in LAYERED.nodes
-        assert "composite" in LAYERED.nodes
+        assert LAYERED.enable_loop is False
+        assert LAYERED.nodes == ("plan_layers", "layer_generate")
+        assert "composite" not in LAYERED.nodes
+        assert "evaluate" not in LAYERED.nodes
 
     @pytest.mark.asyncio
     async def test_layered_pipeline_mock_e2e(self):
@@ -28,8 +28,9 @@ class TestLayeredTemplate:
         )
         output = await execute(LAYERED, inp)
         assert output.status == "completed"
-        assert output.weighted_total >= 0
-        assert output.total_rounds >= 1
+        # simplified pipeline: no evaluate/decide nodes, so weighted_total == 0
+        assert output.weighted_total == 0.0
+        assert output.total_rounds == 1
 
     @pytest.mark.asyncio
     async def test_default_pipeline_still_works(self):

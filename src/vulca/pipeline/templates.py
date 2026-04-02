@@ -74,19 +74,16 @@ LAYERED = PipelineDefinition(
     name="layered",
     display_name="Layered Creation",
     description=(
-        "Layer-by-layer structured generation with cultural layer order knowledge. "
-        "PlanLayers → LayerGenerate → Composite → Evaluate → Decide, "
-        "with per-layer selective rerun."
+        "Generate independent layers with cultural tradition knowledge. "
+        "PlanLayers → LayerGenerate. Agent orchestrates composition, "
+        "evaluation, and iteration using MCP tools."
     ),
     entry_point="plan_layers",
-    nodes=("plan_layers", "layer_generate", "composite", "evaluate", "decide"),
+    nodes=("plan_layers", "layer_generate"),
     edges=(
         ("plan_layers", "layer_generate"),
-        ("layer_generate", "composite"),
-        ("composite", "evaluate"),
-        ("evaluate", "decide"),
     ),
-    enable_loop=True,
+    enable_loop=False,
 )
 
 TEMPLATES: dict[str, PipelineDefinition] = {
