@@ -103,17 +103,22 @@ def blend_layers(
         if layer.info.content_type != "background":
             arr = np.array(layer_img)
             if arr[:, :, 3].min() > 250:  # fully opaque = was RGB source
-                # LAYERED pipeline generates each layer on white/off-white bg.
-                # Detect "light background" pixels (>230 in all channels) and
-                # make them transparent. Content pixels (<230 in any channel)
-                # are preserved.
-                light_bg = (arr[:, :, 0] > 215) & (arr[:, :, 1] > 215) & (arr[:, :, 2] > 215)
-                light_ratio = light_bg.sum() / light_bg.size
-                # Only apply if layer has significant light area (>10%)
-                # This preserves layers that are entirely dark content
-                if light_ratio > 0.10:
-                    arr[:, :, 3][light_bg] = 0
-                    layer_img = Image.fromarray(arr, "RGBA")
+                # Atmosphere/effect layers (faint ink, mist) use multiply blend
+                # with NO alpha processing — white areas naturally become
+                # transparent through multiplication (white × base = base).
+                if layer.info.content_type in ("atmosphere", "effect"):
+                    pass  # Keep fully opaque; multiply handles transparency
+                else:
+                    # Subject/text layers: make light background transparent
+                    light_bg = (
+                        (arr[:, :, 0] > 215)
+                        & (arr[:, :, 1] > 215)
+                        & (arr[:, :, 2] > 215)
+                    )
+                    light_ratio = light_bg.sum() / light_bg.size
+                    if light_ratio > 0.10:
+                        arr[:, :, 3][light_bg] = 0
+                        layer_img = Image.fromarray(arr, "RGBA")
 
         blend_fn = _BLEND_FNS.get(layer.info.blend_mode, blend_normal)
         canvas = blend_fn(canvas, layer_img)
