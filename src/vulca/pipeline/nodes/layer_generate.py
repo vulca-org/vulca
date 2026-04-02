@@ -128,8 +128,9 @@ class LayerGenerateNode(PipelineNode):
 
         parts = [
             base,
-            "Paint ONLY this layer's content on a plain white background.",
-            "Do NOT draw checkerboard patterns or transparency grids.",
+            "Paint ONLY this layer's content on a pure white (#FFFFFF) background.",
+            "The background must be exactly #FFFFFF pure white — no paper texture, no off-white, no cream color.",
+            "Do NOT draw checkerboard patterns, transparency grids, borders, or frames.",
             f"Canvas size: 1024x1024. Flat 2D, no perspective, no rotation.",
         ]
 

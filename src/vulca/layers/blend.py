@@ -97,28 +97,10 @@ def blend_layers(
         if layer_img.size != (width, height):
             layer_img = layer_img.resize((width, height), Image.LANCZOS)
 
-        # For non-background layers with fully opaque alpha (RGB source),
-        # convert near-white pixels to transparent so layers composite correctly.
-        # This handles LAYERED pipeline output where each layer has white bg.
-        if layer.info.content_type != "background":
-            arr = np.array(layer_img)
-            if arr[:, :, 3].min() > 250:  # fully opaque = was RGB source
-                # Atmosphere/effect layers (faint ink, mist) use multiply blend
-                # with NO alpha processing — white areas naturally become
-                # transparent through multiplication (white × base = base).
-                if layer.info.content_type in ("atmosphere", "effect"):
-                    pass  # Keep fully opaque; multiply handles transparency
-                else:
-                    # Subject/text layers: make light background transparent
-                    light_bg = (
-                        (arr[:, :, 0] > 215)
-                        & (arr[:, :, 1] > 215)
-                        & (arr[:, :, 2] > 215)
-                    )
-                    light_ratio = light_bg.sum() / light_bg.size
-                    if light_ratio > 0.10:
-                        arr[:, :, 3][light_bg] = 0
-                        layer_img = Image.fromarray(arr, "RGBA")
+        # No hardcoded alpha hacks here — layers should arrive with
+        # proper transparency from the generation/export step.
+        # If layers are opaque RGB (from LAYERED pipeline), use multiply
+        # blend mode in the manifest to let white areas pass through.
 
         blend_fn = _BLEND_FNS.get(layer.info.blend_mode, blend_normal)
         canvas = blend_fn(canvas, layer_img)
