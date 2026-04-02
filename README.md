@@ -24,7 +24,7 @@ vulca create "Misty mountains after rain" -t chinese_xieyi -o artwork.png
 
 # Structured creation (layered artifact)
 vulca create "Misty mountains after rain" -t chinese_xieyi --layered
-# → 4 layers (paper → mountains → pines → calligraphy) | Artifact V3
+# → 5 layers (paper → distant mountains → pines → hut+figure → calligraphy)
 ```
 
 <details>
@@ -116,19 +116,16 @@ vulca create "Premium tea packaging, mountain silhouette as watermark" \
 
 ### Structured Creation (`--layered`)
 
-Tell VULCA what you want — it plans the layer structure from tradition knowledge, generates each layer independently on white background, composites them, and evaluates the result. Each layer contains only its own content.
+Tell VULCA what you want — it plans the layer structure from tradition knowledge and generates each layer independently. The agent (Claude Code / Cursor) orchestrates composition with your feedback.
 
 <p align="center">
-  <img src="assets/demo/v2/layered-showcase.png" alt="4 independent layers — paper base, mountains, pines+hut, calligraphy → composite" width="800">
+  <img src="assets/demo/v2/layered-showcase.png" alt="5 independent layers — paper, distant mountains, mid-ground pines, hut+figure, calligraphy → composite" width="800">
 </p>
 
 ```bash
 vulca create "水墨山水，雨后春山，松间茅屋" -t chinese_xieyi --layered
-# → 4 layers: paper_base, mountains, pines_hut, calligraphy | Score: 76%
-# → artifact.json + 4 PNGs + composite.png
-
-# Each layer = only its content on white background
-# White areas → transparent via export: vulca layers export ./output/ --format rgba
+# → 5 layers: paper, distant_mountains, mountains_pines, hut_figure, calligraphy
+# → Agent reviews layers → composite → user feedback → iterate
 ```
 
 Works for any tradition — photography produces depth layers, gongbi produces line art + wash layers:
