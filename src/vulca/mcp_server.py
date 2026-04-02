@@ -187,6 +187,10 @@ async def create_artwork(
 ) -> dict | str:
     """Create cultural artwork through the VULCA pipeline.
 
+    When layered=True: generates independent layers (plan + generate only).
+    The agent should review each layer visually, then use layers_composite
+    and layers_redraw to compose the final artwork with user participation.
+
     Args:
         intent: Natural language description of what to create.
         tradition: Cultural tradition (e.g. chinese_xieyi, western_academic).
@@ -200,6 +204,8 @@ async def create_artwork(
         sketch_path: Path or base64 of a sketch image to guide generation.
         reference_path: Path or base64 of a reference image for style/composition guidance.
         ref_type: Reference type — "style", "composition", or "full" (default).
+        layered: Generate structured layers instead of flat image.
+            Returns artifact.json + per-layer PNGs. Agent orchestrates composition.
 
     Returns:
         Summary: session_id, status, tradition, weighted_total, best_image_url, best_candidate_id.
@@ -1040,7 +1046,13 @@ async def layers_redraw(
     provider: str = "gemini",
     tradition: str = "default",
 ) -> dict:
-    """Redraw layer(s) via img2img.
+    """Redraw layer(s) via img2img with specific instructions.
+
+    Be specific about position, scale, and style in the instruction:
+    - Position: "upper 30% of canvas", "right third", "centered"
+    - Scale: "smaller, covering 20% of canvas", "larger with more detail"
+    - Style: "lighter ink wash", "bold strokes", "flat color block"
+    - Content: "only mountains, nothing else", "add a boat on the river"
 
     Args:
         artwork_dir: Directory with layer PNGs + manifest.
@@ -1256,6 +1268,9 @@ async def sync_data(push_only: bool = False, pull_only: bool = False) -> dict:
 @mcp.tool()
 async def layers_composite(artwork_dir: str, output_path: str = "") -> dict:
     """Composite layers from an artwork directory into a single flat image.
+
+    After compositing, review the result visually. If composition needs adjustment,
+    use layers_redraw to modify individual layers, then re-composite.
 
     Args:
         artwork_dir: Directory containing layer PNGs and manifest.json.
