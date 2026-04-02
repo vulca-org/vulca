@@ -102,18 +102,18 @@ def blend_layers(
         # This handles LAYERED pipeline output where each layer has white bg.
         if layer.info.content_type != "background":
             arr = np.array(layer_img)
-            if arr[:, :, 3].min() > 250:  # fully opaque = was RGB
-                # Check if layer has actual pure-white regions to make transparent.
-                # Layers with faint content (e.g. distant mountains in light ink)
-                # may have NO pure-white pixels — skip alpha processing for those.
-                pure_white = (arr[:, :, 0] > 252) & (arr[:, :, 1] > 252) & (arr[:, :, 2] > 252)
-                white_ratio = pure_white.sum() / pure_white.size
-                if white_ratio > 0.05:  # At least 5% pure-white = has background to remove
-                    white = (arr[:, :, 0] > 240) & (arr[:, :, 1] > 240) & (arr[:, :, 2] > 240)
-                    arr[:, :, 3][white] = 0
+            if arr[:, :, 3].min() > 250:  # fully opaque = was RGB source
+                # LAYERED pipeline generates each layer on white/off-white bg.
+                # Detect "light background" pixels (>230 in all channels) and
+                # make them transparent. Content pixels (<230 in any channel)
+                # are preserved.
+                light_bg = (arr[:, :, 0] > 215) & (arr[:, :, 1] > 215) & (arr[:, :, 2] > 215)
+                light_ratio = light_bg.sum() / light_bg.size
+                # Only apply if layer has significant light area (>10%)
+                # This preserves layers that are entirely dark content
+                if light_ratio > 0.10:
+                    arr[:, :, 3][light_bg] = 0
                     layer_img = Image.fromarray(arr, "RGBA")
-                # else: layer is entirely faint content (like distant mountains)
-                # — keep fully opaque, blend will show through via multiply/normal
 
         blend_fn = _BLEND_FNS.get(layer.info.blend_mode, blend_normal)
         canvas = blend_fn(canvas, layer_img)
