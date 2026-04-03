@@ -77,12 +77,20 @@ tradition_layers:
   - role: "background"
     content_type: background
     blend: normal
+    position: "full canvas"
+    coverage: "100%"
   - role: "main subject"
     content_type: subject
     blend: normal
+    position: "center of canvas"
+    coverage: "30-50%"
   - role: "foreground/details"
     content_type: detail
     blend: normal
+    position: "lower portion"
+    coverage: "10-20%"
   - role: "text/overlay"
     content_type: text
     blend: multiply
+    position: "corner"
+    coverage: "5-10%"

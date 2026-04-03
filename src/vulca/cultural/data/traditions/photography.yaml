@@ -100,15 +100,25 @@ tradition_layers:
   - role: "sky/background"
     content_type: background
     blend: normal
+    position: "full canvas, emphasis on upper portion"
+    coverage: "100%"
   - role: "far distance"
     content_type: atmosphere
     blend: normal
+    position: "upper-middle horizon area"
+    coverage: "20-30%"
   - role: "mid-ground"
     content_type: subject
     blend: normal
+    position: "center of canvas"
+    coverage: "30-40%"
   - role: "foreground"
     content_type: subject
     blend: normal
+    position: "lower 30% of canvas"
+    coverage: "20-30%"
   - role: "effects (reflections/bokeh)"
     content_type: effect
     blend: screen
+    position: "overlay, matching subject positions"
+    coverage: "10-20%"

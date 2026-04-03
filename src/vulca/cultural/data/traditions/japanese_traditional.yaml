@@ -86,12 +86,20 @@ tradition_layers:
   - role: "背景地"
     content_type: background
     blend: normal
+    position: "full canvas"
+    coverage: "100%"
   - role: "主線版"
     content_type: line_art
     blend: multiply
+    position: "full canvas, defines all shapes"
+    coverage: "50-70%"
   - role: "色版"
     content_type: color_block
     blend: normal
+    position: "within line art outlines"
+    coverage: "40-60%"
   - role: "金箔装飾"
     content_type: decoration
     blend: screen
+    position: "accent areas"
+    coverage: "5-15%"

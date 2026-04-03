@@ -56,3 +56,21 @@ class TestTraditionLayerOrderFromYAML:
         order = get_tradition_layer_order("totally_unknown_tradition_xyz")
         assert len(order) >= 2
         assert order[0]["content_type"] == "background"
+
+
+class TestPositionConstraints:
+    def test_xieyi_layers_have_position(self):
+        order = get_tradition_layer_order("chinese_xieyi")
+        for o in order:
+            if o["content_type"] != "background":
+                assert "position" in o, f"{o['role']} missing position"
+                assert "coverage" in o, f"{o['role']} missing coverage"
+
+    def test_plan_prompt_includes_position_field(self):
+        prompt = build_plan_prompt("test", "chinese_xieyi")
+        assert "position" in prompt
+        assert "coverage" in prompt
+
+    def test_plan_prompt_position_rule(self):
+        prompt = build_plan_prompt("test", "chinese_xieyi")
+        assert "position" in prompt.lower() and "canvas" in prompt.lower()
