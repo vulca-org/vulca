@@ -62,3 +62,44 @@ class TestLayerGenerateNode:
         result = await node.run(ctx)
         z_indices = [r.info.z_index for r in result["layer_results"]]
         assert z_indices == sorted(z_indices)
+
+
+class TestPromptPositionInjection:
+    def test_prompt_includes_position_fallback_for_text(self):
+        node = LayerGenerateNode()
+        info = LayerInfo(name="calligraphy", description="Calligraphy text", z_index=4, content_type="text")
+        ctx = NodeContext(intent="test", tradition="chinese_xieyi", provider="mock")
+        ctx.set("planned_layers", [info])
+        prompt = node._build_prompt(info, ctx)
+        assert "corner" in prompt.lower() or "5-10%" in prompt or "small" in prompt.lower()
+
+    def test_prompt_includes_position_fallback_for_atmosphere(self):
+        node = LayerGenerateNode()
+        info = LayerInfo(name="mountains", description="Distant mountains", z_index=1, content_type="atmosphere")
+        ctx = NodeContext(intent="test", tradition="chinese_xieyi", provider="mock")
+        ctx.set("planned_layers", [info])
+        prompt = node._build_prompt(info, ctx)
+        assert "upper" in prompt.lower() or "15-25%" in prompt
+
+    def test_no_position_fallback_for_background(self):
+        node = LayerGenerateNode()
+        info = LayerInfo(name="paper", description="Paper", z_index=0, content_type="background")
+        ctx = NodeContext(intent="test", tradition="chinese_xieyi", provider="mock")
+        ctx.set("planned_layers", [info])
+        prompt = node._build_prompt(info, ctx)
+        assert "corner" not in prompt.lower()
+
+    def test_no_fallback_when_prompt_has_position(self):
+        node = LayerGenerateNode()
+        info = LayerInfo(
+            name="trees",
+            description="Trees in the lower 20% of canvas",
+            z_index=2,
+            content_type="subject",
+            regeneration_prompt="Pine trees in the lower 20% of canvas, covering about 15%",
+        )
+        ctx = NodeContext(intent="test", tradition="chinese_xieyi", provider="mock")
+        ctx.set("planned_layers", [info])
+        prompt = node._build_prompt(info, ctx)
+        # Should NOT have default position since regeneration_prompt already has position
+        assert prompt.count("Position:") == 0

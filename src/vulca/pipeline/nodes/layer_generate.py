@@ -143,6 +143,24 @@ class LayerGenerateNode(PipelineNode):
             "Flat 2D, 1024x1024.",
         ]
 
+        # Inject position/size constraint if not already in regeneration_prompt
+        _POSITION_DEFAULTS = {
+            "atmosphere": "Position: upper portion of canvas, covering 15-25%.",
+            "effect": "Position: overlay effect, covering 10-20%.",
+            "subject": "Position: center or lower portion of canvas, covering 20-35%.",
+            "text": "Position: small, in a corner of canvas, covering at most 5-10%.",
+            "detail": "Position: focal area only, covering 5-15%.",
+            "line_art": "Position: full canvas outline.",
+            "decoration": "Position: accent areas, covering 5-15%.",
+        }
+        has_position = any(kw in base.lower() for kw in [
+            "position", "upper", "lower", "corner", "center", "covering", "% of canvas",
+        ])
+        if not has_position and info.content_type != "background":
+            pos = _POSITION_DEFAULTS.get(info.content_type, "")
+            if pos:
+                parts.append(pos)
+
         if other_names:
             names_str = ", ".join(other_names)
             parts.append(f"DO NOT include elements from: {names_str}.")
