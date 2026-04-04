@@ -418,3 +418,47 @@ class TestFewShotPipeline:
         assert "fs-006" not in example_ids, (
             "Session without explicit accept should not appear in few_shot_examples"
         )
+
+
+class TestModePromptDifferentiation:
+    """Mode-specific VLM prompt framing — strict vs reference vs fusion produce different prompts."""
+
+    def test_strict_prompt_contains_conformance_framing(self) -> None:
+        """_build_dynamic_suffix with mode='strict' contains conformance/judge language."""
+        from vulca._vlm import _build_dynamic_suffix
+
+        result = _build_dynamic_suffix("chinese_xieyi", mode="strict")
+        result_lower = result.lower()
+        assert "conformance" in result_lower or "judge" in result_lower, (
+            "Strict mode prompt must contain 'conformance' or 'judge'"
+        )
+
+    def test_reference_prompt_contains_mentor_framing(self) -> None:
+        """_build_dynamic_suffix with mode='reference' contains mentor/advisor language."""
+        from vulca._vlm import _build_dynamic_suffix
+
+        result = _build_dynamic_suffix("chinese_xieyi", mode="reference")
+        result_lower = result.lower()
+        assert "mentor" in result_lower or "advisor" in result_lower, (
+            "Reference mode prompt must contain 'mentor' or 'advisor'"
+        )
+
+    def test_strict_and_reference_prompts_differ(self) -> None:
+        """Strict and reference mode prompts are not equal."""
+        from vulca._vlm import _build_dynamic_suffix
+
+        strict = _build_dynamic_suffix("chinese_xieyi", mode="strict")
+        reference = _build_dynamic_suffix("chinese_xieyi", mode="reference")
+        assert strict != reference, (
+            "Strict and reference mode prompts must differ"
+        )
+
+    def test_default_mode_is_strict(self) -> None:
+        """Calling without mode produces the same result as mode='strict'."""
+        from vulca._vlm import _build_dynamic_suffix
+
+        default = _build_dynamic_suffix("chinese_xieyi")
+        explicit_strict = _build_dynamic_suffix("chinese_xieyi", mode="strict")
+        assert default == explicit_strict, (
+            "Default mode must produce the same prompt as explicit mode='strict'"
+        )

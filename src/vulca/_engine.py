@@ -83,6 +83,7 @@ class Engine:
                 subject=subject or intent,
                 tradition=resolved_tradition,
                 api_key=self.api_key,
+                mode=mode,
             )
 
         # Step 5: Compute weighted total + extract suggestions/deviations/observations

@@ -251,6 +251,8 @@ class EvaluateNode(PipelineNode):
 
         active_dims = list(dimension_activation.active.keys()) if dimension_activation else None
 
+        eval_mode = ctx.get("eval_mode", "strict")
+
         data = await score_image(
             img_b64=img_b64,
             mime=img_mime,
@@ -259,6 +261,7 @@ class EvaluateNode(PipelineNode):
             api_key=ctx.api_key,
             engram_fragments=engram_fragments,
             active_dimensions=active_dims,
+            mode=eval_mode,
         )
 
         # If VLM failed (quota/network error), fall back to mock scores

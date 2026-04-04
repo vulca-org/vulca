@@ -115,12 +115,46 @@ Write ONLY the JSON object inside `<scoring>` tags. Only this section is parsed.
 # and _build_dynamic_suffix() directly.
 _SYSTEM_PROMPT = _STATIC_SCORING_PREFIX
 
+# ---------------------------------------------------------------------------
+# Mode-specific evaluation framing
+# ---------------------------------------------------------------------------
+# These constants are prepended to the dynamic suffix by _build_dynamic_suffix()
+# based on the evaluation mode.  They instruct the VLM to adopt a different
+# persona and scoring philosophy while keeping the L1-L5 framework intact.
+# ---------------------------------------------------------------------------
+
+_STRICT_FRAMING = """
+### Evaluation Mode: STRICT (Conformance Judge)
+You are evaluating as a conformance judge. Score how closely the artwork adheres to
+the canonical standards of this tradition. Penalize deviations from tradition unless
+they demonstrate exceptional mastery. Lower scores for non-conforming elements.
+Focus on: technical accuracy, canonical motifs, traditional materials, orthodox composition.
+"""
+
+_REFERENCE_FRAMING = """
+### Evaluation Mode: REFERENCE (Cultural Mentor)
+You are evaluating as a cultural mentor and advisor. Acknowledge intentional departures
+from tradition as creative choices, not failures. Focus on growth potential and how the
+artist can deepen engagement with the tradition. Suggest specific techniques and concepts
+for improvement. Score the work's artistic merit within the tradition's value system,
+not strict conformance.
+"""
+
+_FUSION_FRAMING = """
+### Evaluation Mode: FUSION (Cross-Cultural Comparison)
+You are comparing this artwork against multiple cultural traditions simultaneously.
+For each tradition, evaluate independently using that tradition's own standards.
+Do not let one tradition's standards bias the evaluation under another tradition.
+"""
+
 
 def _build_dynamic_suffix(
     tradition: str,
     evolved_ctx: dict | None = None,
     engram_fragments: list | None = None,
     active_dimensions: list[str] | None = None,
+    *,
+    mode: str = "strict",
 ) -> str:
     """Build the tradition-specific portion of the VLM system prompt.
 
@@ -139,8 +173,20 @@ def _build_dynamic_suffix(
         Optional ``CulturalFragment`` list from ``CulturalEngram`` retrieval.
     active_dimensions:
         Optional list of active L-dimension keys (e.g. ``["L1", "L3", "L5"]``).
+    mode:
+        Evaluation mode — ``"strict"`` (conformance judge), ``"reference"``
+        (cultural mentor), or ``"fusion"`` (cross-cultural comparison).
+        Defaults to ``"strict"`` for backward compatibility.
     """
     parts: list[str] = []
+
+    # 0. Mode-specific evaluation framing (prepended before tradition guidance)
+    if mode == "reference":
+        parts.append(_REFERENCE_FRAMING)
+    elif mode == "fusion":
+        parts.append(_FUSION_FRAMING)
+    else:
+        parts.append(_STRICT_FRAMING)
 
     # 1. Tradition header + terminology/taboos/engram
     tradition_label = tradition.replace("_", " ").title()
@@ -483,6 +529,7 @@ async def score_image(
     *,
     engram_fragments: list | None = None,
     active_dimensions: list[str] | None = None,
+    mode: str = "strict",
 ) -> dict:
     """Call Gemini Vision to score an image on L1-L5.
 
@@ -494,6 +541,9 @@ async def score_image(
         Optional CulturalFragment list from CulturalEngram retrieval.
     active_dimensions:
         Optional list of active L-dimension keys for focus hint in prompt.
+    mode:
+        Evaluation mode — ``"strict"``, ``"reference"``, or ``"fusion"``.
+        Controls the VLM persona and scoring philosophy.
     """
     # Load tradition-specific extra dimensions (needed for extra_keys below)
     extra_dims = _load_extra_dimensions(tradition)
@@ -506,6 +556,7 @@ async def score_image(
         tradition,
         engram_fragments=engram_fragments,
         active_dimensions=active_dimensions,
+        mode=mode,
     )
     system_msg = _STATIC_SCORING_PREFIX + "\n\n" + dynamic_suffix
 
