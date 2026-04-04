@@ -103,3 +103,31 @@ class TestPromptPositionInjection:
         prompt = node._build_prompt(info, ctx)
         # Should NOT have default position since regeneration_prompt already has position
         assert prompt.count("Position:") == 0
+
+
+class TestBackgroundPromptSafety:
+    def test_background_prompt_is_texture_only(self):
+        """Background prompt must override VLM plan and force texture-only."""
+        node = LayerGenerateNode()
+        info = LayerInfo(
+            name="paper", description="Rice paper base", z_index=0,
+            content_type="background",
+            regeneration_prompt="Rice paper with distant mountain silhouettes and a small hut",
+        )
+        ctx = NodeContext(intent="水墨山水", tradition="chinese_xieyi", provider="mock")
+        ctx.set("planned_layers", [info])
+        prompt = node._build_prompt(info, ctx)
+        # VLM contamination ("silhouettes", "small hut") must NOT appear
+        assert "silhouettes" not in prompt.lower()
+        assert "small hut" not in prompt.lower()
+        # Must contain texture keywords
+        assert "texture" in prompt.lower()
+
+    def test_background_prompt_no_scene_exclusion(self):
+        """Background prompt should say 'no mountains, no trees' etc."""
+        node = LayerGenerateNode()
+        info = LayerInfo(name="bg", description="bg", z_index=0, content_type="background")
+        ctx = NodeContext(intent="test", tradition="chinese_xieyi", provider="mock")
+        ctx.set("planned_layers", [info])
+        prompt = node._build_prompt(info, ctx)
+        assert "no mountains" in prompt.lower() or "no scene" in prompt.lower()

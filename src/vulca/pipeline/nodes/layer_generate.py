@@ -118,19 +118,35 @@ class LayerGenerateNode(PipelineNode):
     def _build_prompt(self, info: LayerInfo, ctx: NodeContext) -> str:
         """Build prompt for isolated layer generation.
 
-        Uses "Digital design asset" framing instead of "Generate artwork" —
-        this prevents Gemini from adding paper textures, scroll mountings,
-        and environmental context that break layer compositing.
+        Background layers get a texture-only prompt (no scene content).
+        Non-background layers get "Digital design asset" framing.
         """
-        base = info.regeneration_prompt or info.description
-
         # Get other layer names to explicitly exclude
         all_layers: list[LayerInfo] = ctx.get("planned_layers", [])
         other_names = [l.name for l in all_layers if l.name != info.name]
 
-        # Select background color based on blend mode:
-        # - white for normal/multiply (white is identity for multiply)
-        # - black for screen (black is identity for screen)
+        # Background layer: texture only, override any VLM-planned scene content
+        if info.content_type == "background":
+            tradition = ctx.tradition or "default"
+            _MEDIUM = {
+                "chinese_xieyi": "warm-toned aged xuan rice paper with subtle fiber texture",
+                "chinese_gongbi": "smooth sized silk with fine weave texture",
+                "japanese_traditional": "traditional washi paper texture",
+                "watercolor": "cold-pressed watercolor paper with visible grain",
+                "photography": "neutral matte surface",
+            }
+            medium = _MEDIUM.get(tradition, "plain paper texture")
+            parts = [
+                f"Digital design asset for layer compositing. ONLY the base medium texture: {medium}.",
+                "Do NOT include ANY scene elements: no mountains, no trees, no buildings, no water, no figures, no landscape.",
+                "Pure texture filling the entire canvas.",
+                "Flat 2D, 1024x1024.",
+            ]
+            return " ".join(parts)
+
+        base = info.regeneration_prompt or info.description
+
+        # Select background color based on blend mode
         if info.blend_mode == "screen":
             bg_instruction = "Isolated element on pure black (#000000) background."
         else:
