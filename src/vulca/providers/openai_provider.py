@@ -10,7 +10,7 @@ from vulca.providers.retry import with_retry
 class OpenAIImageProvider:
     """Image generation via OpenAI DALL-E 3 API."""
 
-    def __init__(self, api_key: str = "", model: str = "dall-e-3"):
+    def __init__(self, api_key: str = "", model: str = "gpt-image-1"):
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY", "")
         self.model = model
 
@@ -24,6 +24,7 @@ class OpenAIImageProvider:
         negative_prompt: str = "",
         width: int = 1024,
         height: int = 1024,
+        background: str = "auto",
         **kwargs,
     ) -> ImageResult:
         if not self.api_key:
@@ -55,23 +56,29 @@ class OpenAIImageProvider:
                 return True
             return False
 
+        payload = {
+            "model": self.model,
+            "prompt": full_prompt,
+            "n": 1,
+            "size": size,
+        }
+        if self.model.startswith("gpt-image"):
+            payload["background"] = background
+            payload["output_format"] = "png"
+        else:
+            payload["response_format"] = "b64_json"
+
         async def _call() -> ImageResult:
             async with httpx.AsyncClient(timeout=120) as client:
                 resp = await client.post(
                     "https://api.openai.com/v1/images/generations",
                     headers={"Authorization": f"Bearer {self.api_key}"},
-                    json={
-                        "model": self.model,
-                        "prompt": full_prompt,
-                        "n": 1,
-                        "size": size,
-                        "response_format": "b64_json",
-                    },
+                    json=payload,
                 )
                 resp.raise_for_status()
                 data = resp.json()
 
-            img_b64 = data["data"][0]["b64_json"]
+            img_b64 = data["data"][0].get("b64_json") or data["data"][0].get("b64", "")
             return ImageResult(
                 image_b64=img_b64,
                 mime="image/png",
