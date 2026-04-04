@@ -73,7 +73,7 @@ graph LR
     end
 ```
 
-**4 entry points, 1 engine**: CLI, Python SDK, MCP (21 tools), ComfyUI (11 nodes) — all share `vulca.pipeline.execute()`.
+**4 entry points, 1 engine**: CLI, Python SDK, MCP (21 tools), ComfyUI (11 nodes) — all share `vulca.pipeline.execute()`. Agent skills (Claude Code / Cursor) orchestrate layered creation via MCP tools.
 
 ---
 
@@ -197,7 +197,10 @@ $ vulca evaluate artwork.png -t chinese_xieyi,japanese_traditional,western_acade
 
 ## Layers V2
 
-Every layer is **full-canvas RGBA** with real transparency. Proper blend modes (normal/screen/multiply). 14 CLI subcommands.
+Two layer workflows: **Decompose** an existing image (`layers split`) or **Generate** structured layers (`create --layered`). Both produce full-canvas layers with proper blend modes (normal/screen/multiply). 14 CLI subcommands.
+
+- **Decompose** (`layers split`): Extracts layers from an existing image via color masking, Gemini regeneration, or SAM2 segmentation → RGBA with real transparency
+- **Generate** (`create --layered`): Plans and generates each layer independently → RGB on white background, `ensure_alpha` converts to RGBA during composite
 
 <details>
 <summary>See layer decomposition in action (GIF)</summary>
@@ -216,7 +219,7 @@ Every layer is **full-canvas RGBA** with real transparency. Proper blend modes (
   →
   <img src="assets/demo/v2/display-composite.png" alt="Composite" width="160">
 </p>
-<p align="center"><em>Checkerboard = transparent areas. Calligraphy layer is only 3% opaque — just the text and seals.</em></p>
+<p align="center"><em>Decompose path: checkerboard = transparent areas. Calligraphy layer is only 3% opaque — just the text and seals.</em></p>
 
 ### Scenario 1: Non-Destructive Editing (Artists)
 
@@ -267,8 +270,8 @@ vulca create "Cultural festival poster, modern typography overlay" \
 # Generate layered hero assets directly (no decomposition needed)
 vulca create "Mountain lake at golden hour, wooden dock, canoe" \
   -t photography --layered
-# → 6 layers: sky, mountains, lake, dock, canoe, reflections | Score: 86%
-# → artifact.json + 6 PNGs + composite.png
+# → 6 layers: sky, mountains, lake, dock, canoe, reflections
+# → Agent composites and adjusts via layers_composite + layers_redraw
 
 # Export with transparency for web use
 vulca layers export ./output/ -o ./web-assets/ --format rgba
@@ -314,7 +317,7 @@ $ vulca layers evaluate ./layers/ -t chinese_xieyi
 | **regenerate** | Gemini redraws each layer (hybrid: Gemini content + extract alpha mask) | ~$0.05/layer |
 | **sam** | SAM2 pixel-precise segmentation (`pip install vulca[sam]`) | Free (local) |
 
-*Hybrid regenerate*: Gemini can't generate real transparency, so regenerate mode combines Gemini's high-quality content with extract's color mask for the alpha channel. Result: Gemini quality + real transparency.
+*Alpha handling*: Image generators output RGB (no transparency). VULCA's `ensure_alpha` converts white backgrounds to transparency using chroma key (built-in) or ML background removal (`pip install vulca[rembg]`). This applies to both `regenerate` mode and `--layered` generation.
 
 **7 editing operations:**
 
@@ -409,7 +412,7 @@ vulca brief ./project -i "Cyberpunk shanshui" -m "epic-futuristic"  # step by st
 
 ## Self-Evolution
 
-The system learns from every session. After 1100+ sessions:
+The system learns from every session. After 1600+ sessions:
 
 ```
 $ vulca evolution chinese_xieyi
@@ -425,14 +428,10 @@ $ vulca evolution chinese_xieyi
 
 ```mermaid
 graph LR
-    C[Create/Evaluate] -->|scores| S[Session Store]
+    C[Create / Evaluate] -->|scores| S[Session Store]
     S -->|every 5 min| LE[LocalEvolver]
     LE -->|per tradition| EW[Evolved Weights]
-    EW -->|read| G[GenerateNode]
-    EW -->|read| E[EvaluateNode]
-    EW -->|read| D[DecideNode]
-    G --> C
-    E --> C
+    EW -->|inject| C
 ```
 
 Evolution is automatic — every session contributes. `strict` mode strengthens tradition conformance, `reference` mode tracks exploration trends, `intentional_departure` deviations are not penalized.
@@ -470,6 +469,11 @@ print(result.score, result.suggestions, result.L3)
 result = vulca.create("Tea packaging", provider="gemini", tradition="brand_design")
 print(result.weighted_total, result.best_image_b64[:20])
 
+# Structured creation — agent orchestrates composition
+result = vulca.create("水墨山水", provider="gemini", tradition="chinese_xieyi", layered=True)
+# → result contains layer files; use layers_composite + layers_redraw via MCP
+
+# Decompose existing image
 from vulca.layers import analyze_layers, split_extract, composite_layers
 import asyncio
 layers = asyncio.run(analyze_layers("artwork.png"))
@@ -527,9 +531,11 @@ Custom traditions via YAML: `vulca evaluate painting.jpg --tradition ./my_style.
 ## Install
 
 ```bash
-pip install vulca           # core SDK + CLI
-pip install vulca[mcp]      # + MCP server for Claude Code / Cursor
-pip install vulca[sam]      # + SAM2 pixel-precise layer extraction
+pip install vulca              # core SDK + CLI
+pip install vulca[mcp]         # + MCP server for Claude Code / Cursor
+pip install vulca[rembg]       # + ML background removal for layer alpha
+pip install vulca[sam]         # + SAM2 pixel-precise layer extraction
+pip install vulca[layers-full] # + rembg + SAM2
 ```
 
 No API key required for mock mode. For real generation + scoring: `export GOOGLE_API_KEY=your-key`
