@@ -3,7 +3,7 @@
 [![PyPI version](https://img.shields.io/pypi/v/vulca.svg)](https://pypi.org/project/vulca/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://pypi.org/project/vulca/)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-green.svg)](https://github.com/vulca-org/vulca/blob/main/LICENSE)
-[![Tests](https://img.shields.io/badge/tests-1147%20passing-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-1287%20passing-brightgreen.svg)]()
 [![MCP Tools](https://img.shields.io/badge/MCP_tools-21-blueviolet.svg)]()
 
 **AI-native creation intelligence.** Tell it what you want — VULCA plans the structure, generates each layer with cultural tradition knowledge, evaluates quality across L1-L5 dimensions, and outputs a structured artifact you can edit layer by layer. 13 traditions, self-evolving weights, 21 MCP tools, all from one `pip install`.

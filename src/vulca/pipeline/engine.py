@@ -57,6 +57,8 @@ def _resolve_nodes(
         "decide": DecideNode,
         "plan_layers": PlanLayersNode,
         "layer_generate": LayerGenerateNode,
+        # CompositeNode: not used by any built-in template.
+        # Kept for MCP layers_composite tool and custom pipeline construction.
         "composite": CompositeNode,
     }
 

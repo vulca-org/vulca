@@ -17,6 +17,7 @@ from vulca.layers.ops import (
 )
 from vulca.layers.sam import SAM_AVAILABLE
 from vulca.layers.plan_prompt import build_plan_prompt, get_tradition_layer_order
+from vulca.layers.alpha import ensure_alpha
 
 # V1 compat re-exports
 from vulca.layers.manifest import load_manifest as load_artwork
@@ -40,4 +41,5 @@ __all__ = [
     "SAM_AVAILABLE",
     "load_artwork",
     "build_plan_prompt", "get_tradition_layer_order",
+    "ensure_alpha",
 ]

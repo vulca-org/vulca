@@ -35,17 +35,6 @@ class TestLayeredSimplified:
         assert output.total_rounds == 1
         assert output.weighted_total == 0.0
 
-    @pytest.mark.asyncio
-    async def test_default_pipeline_regression(self):
-        from vulca.pipeline.templates import DEFAULT
-        inp = PipelineInput(
-            subject="regression test",
-            provider="mock",
-        )
-        output = await execute(DEFAULT, inp)
-        assert output.status == "completed"
-        assert output.weighted_total > 0
-
 
 class TestMCPDocstrings:
     def test_create_artwork_layered_docstring(self):

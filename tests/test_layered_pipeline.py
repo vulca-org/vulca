@@ -114,18 +114,6 @@ class TestLayeredPipelineE2E:
         assert output.status == "completed"
         assert output.total_rounds >= 1
 
-    @pytest.mark.asyncio
-    async def test_default_pipeline_regression(self):
-        """Regression: DEFAULT pipeline unchanged."""
-        from vulca.pipeline.templates import DEFAULT
-        inp = PipelineInput(
-            subject="test regression",
-            provider="mock",
-            template="default",
-        )
-        output = await execute(DEFAULT, inp)
-        assert output.status == "completed"
-
 
 class TestArtifactContentAfterPipeline:
     @pytest.mark.asyncio

@@ -1304,6 +1304,20 @@ async def layers_composite(artwork_dir: str, output_path: str = "") -> dict:
             pass
 
     _composite(artwork.layers, width=width, height=height, output_path=out)
+
+    # Also write artifact.json for the LAYERED pipeline
+    try:
+        from vulca.layers.artifact import write_artifact_v3
+        art_dir = Path(artwork_dir)
+        write_artifact_v3(
+            layers=[lr.info for lr in artwork.layers],
+            output_dir=str(art_dir),
+            width=width, height=height,
+            composite_file=Path(out).name,
+        )
+    except Exception:
+        pass  # Artifact writing is optional
+
     return {"composite_path": out}
 
 

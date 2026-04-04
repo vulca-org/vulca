@@ -23,6 +23,12 @@
 - **PlanLayersNode**: Use `gemini-2.5-flash` (not deprecated `gemini-2.0-flash`)
 - **README Scenario 2b**: Replace "UI Component Extraction" with "Parallax Hero Sections"
 
+### Architecture Simplification (post-0.10.0)
+- **LAYERED template simplified**: 5 nodes → 2 nodes (PlanLayers → LayerGenerate). Agent orchestrates composition via MCP tools (layers_composite, evaluate_artwork, layers_redraw)
+- **Alpha extraction separated from blend**: blend.py is pure math, alpha.py handles ML-based extraction via ensure_alpha()
+- **Background layer safety**: _build_prompt overrides VLM-planned content for background layers, forcing texture-only generation
+- **OpenAI gpt-image-1**: Native transparency support with background:"transparent"
+
 ## [0.9.2] - 2026-03-30
 
 ### Release Automation + Dead Code Cleanup
