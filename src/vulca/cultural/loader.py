@@ -34,6 +34,10 @@ _DIM_TO_L: dict[str, str] = {v: k for k, v in _L_TO_DIM.items()}
 # Default traditions directory (bundled with package)
 _BUNDLED_DIR = Path(__file__).resolve().parent / "data" / "traditions"
 
+# Canonical directory for evolved_context.json.
+# Override via VULCA_DATA_DIR env, or monkeypatch _EVOLVED_CONTEXT_DIR for tests.
+_EVOLVED_CONTEXT_DIR: Path | None = None
+
 # Default fallback weights
 _DEFAULT_WEIGHTS: dict[str, float] = {
     "L1": 0.15, "L2": 0.20, "L3": 0.25, "L4": 0.20, "L5": 0.20,
@@ -318,47 +322,60 @@ def get_known_traditions() -> list[str]:
     return list(TRADITIONS)
 
 
+def _get_evolved_context_dir() -> Path:
+    """Resolve the canonical directory for evolved_context.json.
+
+    Priority:
+    1. Module-level ``_EVOLVED_CONTEXT_DIR`` (set via monkeypatch in tests)
+    2. ``VULCA_DATA_DIR`` environment variable
+    3. ``~/.vulca/data`` (default)
+    """
+    if _EVOLVED_CONTEXT_DIR is not None:
+        return _EVOLVED_CONTEXT_DIR
+    env_dir = os.environ.get("VULCA_DATA_DIR")
+    if env_dir:
+        return Path(env_dir)
+    return Path.home() / ".vulca" / "data"
+
+
 def _load_evolved_weights(tradition: str) -> dict[str, float] | None:
     """Try to load evolved weights from evolved_context.json.
 
     Returns L1-L5 keyed dict, or None if unavailable.
     The evolution system stores weights with full dimension names
-    (visual_perception, etc.) — convert to L1-L5 format.
+    (visual_perception, etc.) -- convert to L1-L5 format.
+
+    Reads from a single canonical path:
+    ``_get_evolved_context_dir() / "evolved_context.json"``
+    which can be overridden via VULCA_DATA_DIR env or VULCA_EVOLVED_CONTEXT env.
     """
     try:
         import json
-        # Check multiple possible locations for evolved_context.json
-        # Two possible layouts:
-        # 1. Monorepo: .../vulca/src/vulca/cultural/loader.py → .parent^5 = repo root
-        # 2. Backend copy: .../wenxin-backend/vulca/cultural/loader.py → .parent^3 = wenxin-backend/
-        loader_path = Path(__file__).resolve()
-        candidates = [
-            # Backend copy layout (production)
-            loader_path.parent.parent.parent / "app" / "prototype" / "data" / "evolved_context.json",
-            # Monorepo layout (development)
-            loader_path.parent.parent.parent.parent.parent / "wenxin-backend" / "app" / "prototype" / "data" / "evolved_context.json",
-        ]
-        # Also check env override
-        env_path = os.environ.get("VULCA_EVOLVED_CONTEXT")
-        if env_path:
-            candidates.insert(0, Path(env_path))
 
-        for path in candidates:
-            if path.is_file():
-                with open(path, "r", encoding="utf-8") as f:
-                    ctx = json.load(f)
-                tw = ctx.get("tradition_weights", {}).get(tradition)
-                if not tw:
-                    return None
-                # Convert full names → L1-L5
-                result: dict[str, float] = {}
-                for full_name, val in tw.items():
-                    l_key = _DIM_TO_L.get(full_name)
-                    if l_key:
-                        result[l_key] = float(val)
-                if len(result) == 5:
-                    return result
-                return None
+        # Single canonical path (+ optional explicit override)
+        env_explicit = os.environ.get("VULCA_EVOLVED_CONTEXT")
+        if env_explicit:
+            path = Path(env_explicit)
+        else:
+            path = _get_evolved_context_dir() / "evolved_context.json"
+
+        if not path.is_file():
+            return None
+
+        with open(path, "r", encoding="utf-8") as f:
+            ctx = json.load(f)
+        tw = ctx.get("tradition_weights", {}).get(tradition)
+        if not tw:
+            return None
+        # Convert full names -> L1-L5
+        result: dict[str, float] = {}
+        for full_name, val in tw.items():
+            l_key = _DIM_TO_L.get(full_name)
+            if l_key:
+                result[l_key] = float(val)
+        if len(result) == 5:
+            return result
+        return None
     except Exception:
         logger.debug("Failed to load evolved weights for %s", tradition)
         return None
@@ -407,23 +424,19 @@ def get_tradition_guide(tradition: str) -> dict | None:
 
     evolved = _load_evolved_weights(tradition)
 
-    # Count sessions from evolved context
+    # Count sessions from evolved context (unified path)
     sessions_count = 0
     try:
         import json as _json
-        loader_path = Path(__file__).resolve()
-        candidates = [
-            loader_path.parent.parent.parent.parent.parent / "wenxin-backend" / "app" / "prototype" / "data" / "evolved_context.json",
-        ]
-        env_path = os.environ.get("VULCA_EVOLVED_CONTEXT")
-        if env_path:
-            candidates.insert(0, Path(env_path))
-        for path in candidates:
-            if path.is_file():
-                with open(path, "r", encoding="utf-8") as f:
-                    ctx = _json.load(f)
-                sessions_count = ctx.get("total_sessions", 0)
-                break
+        env_explicit = os.environ.get("VULCA_EVOLVED_CONTEXT")
+        if env_explicit:
+            ctx_path = Path(env_explicit)
+        else:
+            ctx_path = _get_evolved_context_dir() / "evolved_context.json"
+        if ctx_path.is_file():
+            with open(ctx_path, "r", encoding="utf-8") as f:
+                ctx = _json.load(f)
+            sessions_count = ctx.get("total_sessions", 0)
     except Exception:
         logger.debug("Failed to load sessions count for tradition guide")
 
