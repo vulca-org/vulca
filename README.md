@@ -6,49 +6,57 @@
 [![Tests](https://img.shields.io/badge/tests-1287%20passing-brightgreen.svg)]()
 [![MCP Tools](https://img.shields.io/badge/MCP_tools-21-blueviolet.svg)]()
 
-**AI-native creation intelligence.** Tell it what you want — VULCA plans the structure, generates each layer with cultural tradition knowledge, evaluates quality across L1-L5 dimensions, and outputs a structured artifact you can edit layer by layer. 13 traditions, self-evolving weights, 21 MCP tools, all from one `pip install`.
+**AI-native creation intelligence.** Create, decompose, evaluate, and edit visual art across 13 cultural traditions. L1-L5 scoring, structured layer generation, self-evolving weights. 21 MCP tools, all from one `pip install`.
 
-### Qi Baishi's Shrimp — Decomposed into 4 independent layers
+### Generate — Chinese, Western, Commercial
 
 <p align="center">
-  <img src="assets/demo/v2/masters/qi_baishi_shrimp.jpg" alt="Original — Qi Baishi ink shrimp" height="300">
+  <img src="assets/demo/v2/hero-xieyi.png" alt="Chinese Xieyi ink wash landscape" width="260">
+  <img src="assets/demo/v2/masters/western_oil_painting.png" alt="Western academic oil painting — 89%" width="260">
+  <img src="assets/demo/v2/masters/brand_tea_packaging.png" alt="Brand design tea packaging — 93%" width="260">
+</p>
+
+### Decompose — Master Artworks into Independent Layers
+
+<p align="center">
+  <img src="assets/demo/v2/masters/qi_baishi_shrimp.jpg" alt="Qi Baishi shrimp" height="250">
   →
-  <img src="assets/demo/v2/masters/qi_baishi_layers/ink_shrimp.png" alt="Shrimp layer" height="300">
-  <img src="assets/demo/v2/masters/qi_baishi_layers/ink_calligraphy.png" alt="Calligraphy layer" height="300">
-  <img src="assets/demo/v2/masters/qi_baishi_layers/red_seals.png" alt="Seals layer" height="300">
+  <img src="assets/demo/v2/masters/qi_baishi_layers/ink_shrimp.png" alt="Shrimp layer" height="250">
+  <img src="assets/demo/v2/masters/qi_baishi_layers/ink_calligraphy.png" alt="Calligraphy layer" height="250">
 </p>
-
-### Mona Lisa — Background replaced with Starry Night
+<p align="center"><em>Qi Baishi's Shrimp → 4 layers (paper / shrimp / calligraphy / seals)</em></p>
 
 <p align="center">
-  <img src="assets/demo/v2/masters/mona_lisa.jpg" alt="Original Mona Lisa" height="280">
+  <img src="assets/demo/v2/masters/mona_lisa.jpg" alt="Mona Lisa" height="220">
   →
-  <img src="assets/demo/v2/masters/mona_lisa_layers/mona_lisa_face_and_hair.png" alt="Face layer" height="280">
-  +
-  <img src="assets/demo/v2/masters/mona_lisa_layers/starry_night_remix.png" alt="Starry Night background remix" height="280">
+  <img src="assets/demo/v2/masters/mona_lisa_layers/mona_lisa_face_and_hair.png" alt="Face layer" height="220">
+  <img src="assets/demo/v2/masters/mona_lisa_layers/mona_lisa_body_and_dress.png" alt="Body layer" height="220">
+  <img src="assets/demo/v2/masters/mona_lisa_layers/craquelure_texture_overlay.png" alt="Craquelure texture" height="220">
 </p>
+<p align="center"><em>Mona Lisa → 4 layers (landscape / body / face / craquelure texture)</em></p>
 
-### Cross-Tradition — Qi Baishi's Shrimp × Hokusai's Waves
+### Evaluate — Mona Lisa scores 100% on Western Academic tradition
 
-<p align="center">
-  <img src="assets/demo/v2/masters/qi_baishi_ukiyoe_remix.png" alt="Qi Baishi shrimp on ukiyo-e wave background" height="400">
-</p>
-<p align="center"><em>Chinese ink shrimp swimming in Japanese ukiyo-e waves — cultural fusion via layer editing</em></p>
+```
+$ vulca evaluate mona_lisa.jpg -t western_academic
+
+  Score:     100%   Tradition: western_academic   Risk: low
+
+    L1 Visual Perception         ████████████████████ 100%  ✓
+    L2 Technical Execution       ████████████████████ 100%  ✓
+    L3 Cultural Context          ████████████████████ 100%  ✓
+    L4 Critical Interpretation   ████████████████████ 100%  ✓
+    L5 Philosophical Aesthetics  ████████████████████ 100%  ✓
+```
 
 ```bash
 pip install vulca
 export GOOGLE_API_KEY=your-key
 
-# Decompose a master artwork into layers
-vulca layers split qi_baishi_shrimp.jpg -o ./layers/ --mode regenerate -t chinese_xieyi
-# → 4 layers: paper, shrimp, calligraphy, seals
-
-# Replace the background with a different tradition
-vulca layers redraw ./layers/ --layer background \
-  -i "Japanese ukiyo-e wave pattern" -t japanese_traditional
-
-# Evaluate across traditions
-vulca evaluate composite.png -t chinese_xieyi,japanese_traditional --mode fusion
+vulca create "Misty mountains after rain" -t chinese_xieyi -o artwork.png     # generate
+vulca create "水墨山水" -t chinese_xieyi --layered                             # structured layers
+vulca layers split mona_lisa.jpg -o ./layers/ --mode regenerate                # decompose
+vulca evaluate artwork.png -t chinese_xieyi                                    # L1-L5 scoring
 ```
 
 > Based on peer-reviewed research: [VULCA Framework](https://aclanthology.org/2025.findings-emnlp/) (EMNLP 2025 Findings) and [VULCA-Bench](https://arxiv.org/abs/2601.07986) (7,410 samples, 9 traditions).
