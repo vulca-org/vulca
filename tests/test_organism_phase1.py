@@ -252,3 +252,169 @@ class TestRealFeedback:
         s2 = next(s for s in sessions if s["session_id"] == "s2")
         assert s1["user_feedback"] == "accepted"
         assert s2["user_feedback"] == "completed"  # unchanged, no explicit feedback
+
+
+class TestFewShotPipeline:
+    """Few-shot examples are extracted during evolve() and written to evolved_context.json."""
+
+    @staticmethod
+    def _seed_sessions(tmp_path: Path, *, extra_sessions: list[dict] | None = None) -> Path:
+        """Seed a data_dir with enough sessions + feedback to trigger evolution.
+
+        Returns the data_dir path.  By default, creates 6 sessions in 'chinese_xieyi'
+        tradition: 4 accepted (high score), 1 rejected, 1 completed-only (neutral).
+        """
+        from vulca.storage.unified import UnifiedSessionStore
+
+        data_dir = tmp_path / "data"
+        store = UnifiedSessionStore(data_dir=data_dir)
+
+        base_sessions = [
+            {
+                "session_id": "fs-001",
+                "tradition": "chinese_xieyi",
+                "subject": "Misty mountain landscape",
+                "final_scores": {"L1": 0.90, "L2": 0.85, "L3": 0.80, "L4": 0.75, "L5": 0.70},
+                "weighted_total": 0.80,
+                "user_feedback": "completed",
+                "eval_mode": "strict",
+                "timestamp": 100.0,
+            },
+            {
+                "session_id": "fs-002",
+                "tradition": "chinese_xieyi",
+                "subject": "Bamboo grove at dawn",
+                "final_scores": {"L1": 0.95, "L2": 0.90, "L3": 0.85, "L4": 0.80, "L5": 0.78},
+                "weighted_total": 0.86,
+                "user_feedback": "completed",
+                "eval_mode": "strict",
+                "timestamp": 101.0,
+            },
+            {
+                "session_id": "fs-003",
+                "tradition": "chinese_xieyi",
+                "subject": "Failed ink wash",
+                "final_scores": {"L1": 0.30, "L2": 0.25, "L3": 0.20, "L4": 0.15, "L5": 0.10},
+                "weighted_total": 0.20,
+                "user_feedback": "completed",
+                "eval_mode": "strict",
+                "timestamp": 102.0,
+            },
+            {
+                "session_id": "fs-004",
+                "tradition": "chinese_xieyi",
+                "subject": "Plum blossom winter",
+                "final_scores": {"L1": 0.88, "L2": 0.82, "L3": 0.79, "L4": 0.76, "L5": 0.73},
+                "weighted_total": 0.79,
+                "user_feedback": "completed",
+                "eval_mode": "strict",
+                "timestamp": 103.0,
+            },
+            {
+                "session_id": "fs-005",
+                "tradition": "chinese_xieyi",
+                "subject": "Lotus pond serenity",
+                "final_scores": {"L1": 0.92, "L2": 0.87, "L3": 0.83, "L4": 0.79, "L5": 0.76},
+                "weighted_total": 0.83,
+                "user_feedback": "completed",
+                "eval_mode": "strict",
+                "timestamp": 104.0,
+            },
+            {
+                "session_id": "fs-006",
+                "tradition": "chinese_xieyi",
+                "subject": "Crane in reeds",
+                "final_scores": {"L1": 0.50, "L2": 0.45, "L3": 0.40, "L4": 0.35, "L5": 0.30},
+                "weighted_total": 0.40,
+                "user_feedback": "completed",
+                "eval_mode": "strict",
+                "timestamp": 105.0,
+            },
+        ]
+
+        for s in base_sessions:
+            store.append(s)
+
+        if extra_sessions:
+            for s in extra_sessions:
+                store.append(s)
+
+        # Record explicit feedback: accept high-scorers, reject one
+        store.record_feedback("fs-001", "accepted")
+        store.record_feedback("fs-002", "accepted")
+        store.record_feedback("fs-003", "rejected")
+        store.record_feedback("fs-004", "accepted")
+        store.record_feedback("fs-005", "accepted")
+        # fs-006 has no explicit feedback (neutral)
+
+        return data_dir
+
+    def test_few_shot_written_on_evolve(self, tmp_path: Path) -> None:
+        """After evolve(), evolved_context.json has few_shot_examples with high-scoring accepted sessions."""
+        from vulca.digestion.local_evolver import LocalEvolver
+
+        data_dir = self._seed_sessions(tmp_path)
+        evolver = LocalEvolver(data_dir=str(data_dir))
+        result = evolver.evolve()
+
+        assert result is not None, "evolve() should return data with sufficient sessions"
+        assert "few_shot_examples" in result, "evolved data must contain few_shot_examples"
+
+        examples = result["few_shot_examples"]
+        assert isinstance(examples, list)
+        assert len(examples) > 0, "Should have at least one few-shot example"
+
+        # All examples should be from accepted sessions with weighted_total >= 0.75
+        example_ids = {ex["session_id"] for ex in examples}
+        assert "fs-001" in example_ids  # accepted, 0.80 >= 0.75
+        assert "fs-002" in example_ids  # accepted, 0.86 >= 0.75
+        assert "fs-004" in example_ids  # accepted, 0.79 >= 0.75
+        assert "fs-005" in example_ids  # accepted, 0.83 >= 0.75
+
+        # Verify each example has the required fields
+        for ex in examples:
+            assert "session_id" in ex
+            assert "tradition" in ex
+            assert "subject" in ex
+            assert "score" in ex
+            assert "key_strengths" in ex
+            # Score should be rounded to 3 decimals
+            score_str = str(ex["score"])
+            if "." in score_str:
+                assert len(score_str.split(".")[1]) <= 3
+            # key_strengths should be top 2 dimensions
+            assert isinstance(ex["key_strengths"], list)
+            assert len(ex["key_strengths"]) == 2
+
+        # Verify persisted to disk
+        evolved_path = data_dir / "evolved_context.json"
+        assert evolved_path.exists()
+        disk_data = json.loads(evolved_path.read_text())
+        assert "few_shot_examples" in disk_data
+        assert len(disk_data["few_shot_examples"]) == len(examples)
+
+        # Examples should be sorted by score descending within tradition
+        xieyi_examples = [ex for ex in examples if ex["tradition"] == "chinese_xieyi"]
+        scores = [ex["score"] for ex in xieyi_examples]
+        assert scores == sorted(scores, reverse=True), "Examples should be sorted by score descending"
+
+    def test_few_shot_excludes_rejected(self, tmp_path: Path) -> None:
+        """Rejected sessions never appear in few_shot_examples."""
+        from vulca.digestion.local_evolver import LocalEvolver
+
+        data_dir = self._seed_sessions(tmp_path)
+        evolver = LocalEvolver(data_dir=str(data_dir))
+        result = evolver.evolve()
+
+        assert result is not None
+        examples = result.get("few_shot_examples", [])
+        example_ids = {ex["session_id"] for ex in examples}
+
+        # fs-003 was rejected -- must NOT appear
+        assert "fs-003" not in example_ids, "Rejected session must not appear in few_shot_examples"
+
+        # fs-006 has no explicit feedback (neutral) -- should also not appear
+        # (only explicitly accepted sessions qualify)
+        assert "fs-006" not in example_ids, (
+            "Session without explicit accept should not appear in few_shot_examples"
+        )

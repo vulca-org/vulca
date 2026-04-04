@@ -170,6 +170,9 @@ class LocalEvolver:
         # Record evolution timestamp in _meta
         evolved["_meta"] = {"last_evolved_at": time.time()}
 
+        # Extract few-shot examples from high-scoring accepted sessions
+        evolved["few_shot_examples"] = self._extract_few_shot_examples()
+
         # Write to file
         evolved_path = self.data_dir / "evolved_context.json"
         evolved_path.parent.mkdir(parents=True, exist_ok=True)
@@ -246,6 +249,65 @@ class LocalEvolver:
         dim_avgs = {d: dim_totals[d] / dim_counts[d] for d in dim_totals if dim_counts[d] > 0}
         sorted_dims = sorted(dim_avgs.items(), key=lambda x: x[1])
         return [d for d, _ in sorted_dims[:2]]
+
+    def _extract_few_shot_examples(self) -> list[dict]:
+        """Extract high-scoring accepted sessions as few-shot examples.
+
+        Rules:
+        - Only sessions with explicit "accepted" feedback signal qualify.
+        - Rejected sessions are excluded.
+        - weighted_total must be >= 0.75.
+        - At most 5 examples per tradition, 15 total.
+        - Sorted by score descending within each tradition.
+        """
+        from vulca.storage.unified import UnifiedSessionStore
+
+        store = UnifiedSessionStore(data_dir=self.data_dir)
+        sessions = store.load_all()
+        feedback_map = {f["session_id"]: f["signal"] for f in store.load_feedback()}
+
+        candidates: list[dict] = []
+        for s in sessions:
+            sid = s.get("session_id", "")
+            signal = feedback_map.get(sid, "")
+
+            # Skip if rejected or not explicitly accepted
+            if signal == "rejected" or signal != "accepted":
+                continue
+
+            wt = s.get("weighted_total", 0.0)
+            if not isinstance(wt, (int, float)) or wt < 0.75:
+                continue
+
+            # Extract top 2 dimensions by score
+            scores = s.get("final_scores") or s.get("scores", {})
+            sorted_dims = sorted(
+                ((d, v) for d, v in scores.items() if isinstance(v, (int, float))),
+                key=lambda x: x[1],
+                reverse=True,
+            )
+            key_strengths = [d for d, _ in sorted_dims[:2]]
+
+            candidates.append({
+                "session_id": sid,
+                "tradition": s.get("tradition", "default"),
+                "subject": s.get("subject", ""),
+                "score": round(wt, 3),
+                "key_strengths": key_strengths,
+            })
+
+        # Group by tradition, keep at most 5 per tradition, sorted by score desc
+        by_tradition: dict[str, list[dict]] = defaultdict(list)
+        for c in candidates:
+            by_tradition[c["tradition"]].append(c)
+
+        result: list[dict] = []
+        for tradition in sorted(by_tradition):
+            group = sorted(by_tradition[tradition], key=lambda x: x["score"], reverse=True)
+            result.extend(group[:5])
+
+        # Global cap: 15 total (already sorted by tradition then score)
+        return result[:15]
 
     def _load_last_evolved_at(self) -> float:
         """Return the timestamp of the last successful evolution, or 0.0 if never run."""
