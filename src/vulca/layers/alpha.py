@@ -1,10 +1,17 @@
-"""Export-time alpha processing — chroma key + strategy selection."""
+"""Alpha extraction for layer compositing — ML-based, not threshold-based."""
 from __future__ import annotations
 
 import numpy as np
 from PIL import Image
 
 from vulca.layers.types import LayerInfo
+
+_BG_COLORS = {
+    "white": (255, 255, 255),
+    "black": (0, 0, 0),
+    "gray": (128, 128, 128),
+    "green": (0, 255, 0),
+}
 
 
 def select_alpha_strategy(info: LayerInfo) -> str:
@@ -22,10 +29,13 @@ def select_alpha_strategy(info: LayerInfo) -> str:
 
 def chroma_key(
     image: Image.Image,
-    key_color: tuple[int, int, int] = (0, 255, 0),
+    key_color: tuple[int, int, int] = (255, 255, 255),
     tolerance: int = 30,
 ) -> Image.Image:
-    """Remove solid-color background via chroma key."""
+    """Remove solid-color background via chroma key.
+
+    Default key_color is white (for LAYERED pipeline layers).
+    """
     rgb = np.array(image.convert("RGB"), dtype=np.float32)
     target = np.array(key_color, dtype=np.float32)
 
@@ -50,12 +60,34 @@ def apply_alpha_to_layer(
     if method == "opaque":
         return image.convert("RGBA")
 
+    key = _BG_COLORS.get(info.bg_color, (255, 255, 255))
+
     if method == "chroma_or_threshold":
-        return chroma_key(image)
+        return chroma_key(image, key_color=key)
 
     try:
         from rembg import remove
         rgba = remove(image)
         return rgba if rgba.mode == "RGBA" else rgba.convert("RGBA")
-    except ImportError:
-        return chroma_key(image)
+    except (ImportError, SystemExit, Exception):
+        return chroma_key(image, key_color=key)
+
+
+def ensure_alpha(image: Image.Image, info: LayerInfo) -> Image.Image:
+    """Ensure a layer has correct alpha for compositing.
+
+    Bridge between generation (RGB output) and blend (needs RGBA).
+    - Background layers → fully opaque
+    - Already has alpha → skip
+    - Fully opaque RGB → ML-based alpha extraction
+    """
+    rgba = image.convert("RGBA")
+
+    if info.content_type == "background":
+        return rgba
+
+    arr = np.array(rgba)
+    if arr[:, :, 3].min() < 250:
+        return rgba
+
+    return apply_alpha_to_layer(image, info)
