@@ -168,3 +168,87 @@ class TestUnifiedSessionStore:
         assert "wenxin-backend" not in source, (
             "get_tradition_guide still references wenxin-backend paths"
         )
+
+
+class TestRealFeedback:
+    """Real feedback signals — pipeline completion is neutral, explicit feedback is recorded."""
+
+    def test_pipeline_completion_is_neutral(self, tmp_path: Path) -> None:
+        """hooks.py default_on_complete writes user_feedback='completed', not 'accepted'."""
+        import asyncio
+        from unittest.mock import patch, MagicMock
+
+        from vulca.pipeline.types import PipelineOutput
+
+        output = PipelineOutput(
+            session_id="neutral-001",
+            tradition="chinese_xieyi",
+            best_image_url="test.png",
+            final_scores={"L1": 0.8, "L2": 0.7, "L3": 0.6, "L4": 0.5, "L5": 0.4},
+            weighted_total=0.6,
+        )
+
+        captured: list[dict] = []
+
+        class FakeBackend:
+            def append(self, data: dict) -> None:
+                captured.append(data)
+
+        fake_module = MagicMock()
+        fake_module.JsonlSessionBackend = FakeBackend
+
+        with patch.dict("sys.modules", {"vulca.storage.jsonl": fake_module}):
+            from vulca.pipeline.hooks import default_on_complete
+
+            asyncio.run(default_on_complete(output))
+
+        assert len(captured) == 1
+        assert captured[0]["user_feedback"] == "completed"
+
+    def test_explicit_accept_writes_accepted(self, tmp_path: Path) -> None:
+        """UnifiedSessionStore.record_feedback stores 'accepted' signal."""
+        from vulca.storage.unified import UnifiedSessionStore
+
+        store = UnifiedSessionStore(data_dir=tmp_path / "data")
+        store.record_feedback("s1", "accepted")
+
+        entries = store.load_feedback()
+        assert len(entries) == 1
+        assert entries[0]["session_id"] == "s1"
+        assert entries[0]["signal"] == "accepted"
+        assert "timestamp" in entries[0]
+
+    def test_explicit_reject_writes_rejected(self, tmp_path: Path) -> None:
+        """UnifiedSessionStore.record_feedback stores 'rejected' signal."""
+        from vulca.storage.unified import UnifiedSessionStore
+
+        store = UnifiedSessionStore(data_dir=tmp_path / "data")
+        store.record_feedback("s2", "rejected")
+
+        entries = store.load_feedback()
+        assert len(entries) == 1
+        assert entries[0]["session_id"] == "s2"
+        assert entries[0]["signal"] == "rejected"
+
+    def test_evolver_merges_feedback_signals(self, tmp_path: Path) -> None:
+        """LocalEvolver._load_sessions merges feedback from UnifiedSessionStore."""
+        from vulca.digestion.local_evolver import LocalEvolver
+        from vulca.storage.unified import UnifiedSessionStore
+
+        data_dir = tmp_path / "data"
+        store = UnifiedSessionStore(data_dir=data_dir)
+
+        # Write sessions without explicit feedback
+        store.append({"session_id": "s1", "tradition": "chinese_xieyi", "user_feedback": "completed"})
+        store.append({"session_id": "s2", "tradition": "chinese_xieyi", "user_feedback": "completed"})
+
+        # Record explicit feedback for s1
+        store.record_feedback("s1", "accepted")
+
+        evolver = LocalEvolver(data_dir=str(data_dir))
+        sessions = evolver._load_sessions()
+
+        s1 = next(s for s in sessions if s["session_id"] == "s1")
+        s2 = next(s for s in sessions if s["session_id"] == "s2")
+        assert s1["user_feedback"] == "accepted"
+        assert s2["user_feedback"] == "completed"  # unchanged, no explicit feedback

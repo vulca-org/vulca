@@ -259,16 +259,13 @@ class LocalEvolver:
             return 0.0
 
     def _load_sessions(self) -> list[dict]:
-        """Load sessions from local JSONL."""
-        sessions_file = self.data_dir / "sessions.jsonl"
-        if not sessions_file.exists():
-            return []
-        sessions = []
-        for line in sessions_file.read_text().splitlines():
-            line = line.strip()
-            if line:
-                try:
-                    sessions.append(json.loads(line))
-                except json.JSONDecodeError:
-                    continue
+        """Load sessions from UnifiedSessionStore and merge explicit feedback signals."""
+        from vulca.storage.unified import UnifiedSessionStore
+
+        store = UnifiedSessionStore(data_dir=self.data_dir)
+        sessions = store.load_all()
+        feedback_map = {f["session_id"]: f["signal"] for f in store.load_feedback()}
+        for s in sessions:
+            if s.get("session_id") in feedback_map:
+                s["user_feedback"] = feedback_map[s["session_id"]]
         return sessions

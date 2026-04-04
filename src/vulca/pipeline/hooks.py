@@ -25,9 +25,9 @@ async def default_on_complete(output: PipelineOutput) -> None:
 
         backend = JsonlSessionBackend()
         data = output.to_dict()
-        # Pipeline-completed sessions count as accepted for evolution
+        # Pipeline-completed sessions are neutral — explicit feedback required for evolution
         if "user_feedback" not in data:
-            data["user_feedback"] = "accepted"
+            data["user_feedback"] = "completed"
         backend.append(data)
     except Exception as exc:
         logger.debug("JSONL session storage failed (non-fatal): %s", exc)

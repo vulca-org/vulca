@@ -100,6 +100,33 @@ class UnifiedSessionStore:
         """Read sessions filtered by tradition name."""
         return [r for r in self.load_all() if r.get("tradition") == tradition]
 
+    # ── Feedback ──
+
+    def record_feedback(self, session_id: str, signal: str) -> None:
+        """Record explicit user feedback (accepted/rejected) for a session."""
+        feedback_path = self._data_dir / "feedback.jsonl"
+        entry = {"session_id": session_id, "signal": signal, "timestamp": __import__("time").time()}
+        with self._lock:
+            with feedback_path.open("a", encoding="utf-8") as f:
+                f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+
+    def load_feedback(self) -> list[dict[str, Any]]:
+        """Load all explicit feedback entries."""
+        feedback_path = self._data_dir / "feedback.jsonl"
+        if not feedback_path.exists():
+            return []
+        entries: list[dict[str, Any]] = []
+        with self._lock:
+            with feedback_path.open("r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line:
+                        try:
+                            entries.append(json.loads(line))
+                        except json.JSONDecodeError:
+                            continue
+        return entries
+
     def load_since(self, timestamp: str) -> list[dict[str, Any]]:
         """Read sessions with timestamp >= the given ISO timestamp string.
 
