@@ -42,7 +42,7 @@ class TestEvaluateImport:
         sig = inspect.signature(aevaluate)
         params = list(sig.parameters.keys())
         assert "image" in params
-        assert "include_evidence" in params
+        assert "include_evidence" not in params
 
 
 class TestEvaluateWithMock:

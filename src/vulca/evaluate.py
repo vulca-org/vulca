@@ -16,7 +16,6 @@ async def aevaluate(
     tradition: str = "",
     subject: str = "",
     skills: list[str] | None = None,
-    include_evidence: bool = False,
     api_key: str = "",
     mock: bool = False,
     mode: str = "strict",
@@ -41,8 +40,6 @@ async def aevaluate(
         Optional subject/title of the artwork.
     skills:
         Extra skills to run: ``["brand", "audience", "trend"]``.
-    include_evidence:
-        Whether to gather cultural evidence before scoring.
     api_key:
         Google API key. If empty, reads from ``GOOGLE_API_KEY`` env var.
     mock:
@@ -52,6 +49,14 @@ async def aevaluate(
         - ``"strict"`` (default): Judge mode — scores reflect conformance.
         - ``"reference"``: Advisor mode — scores show alignment without judgment.
         - ``"fusion"``: Multi-tradition comparison (pass comma-separated traditions).
+    sparse:
+        When True, adds ``sparse_activation`` metadata to the result indicating
+        which L1-L5 dimensions were most relevant to the given intent/subject.
+        Note: the public SDK always scores all 5 dimensions for consistency —
+        ``sparse=True`` does NOT skip any dimensions (that optimisation only
+        applies in pipeline mode via ``EvaluateNode``). The ``sparse_activation``
+        field tells callers which dimensions were most salient so they can
+        focus their review accordingly.
 
     Returns
     -------
@@ -68,7 +73,6 @@ async def aevaluate(
         tradition=tradition,
         subject=subject,
         skills=skills or [],
-        include_evidence=include_evidence,
         mode=mode,
     )
     result.latency_ms = int((time.monotonic() - t0) * 1000)
@@ -93,7 +97,6 @@ def evaluate(
     tradition: str = "",
     subject: str = "",
     skills: list[str] | None = None,
-    include_evidence: bool = False,
     api_key: str = "",
     mock: bool = False,
     mode: str = "strict",
@@ -114,7 +117,6 @@ def evaluate(
         tradition=tradition,
         subject=subject,
         skills=skills,
-        include_evidence=include_evidence,
         api_key=api_key,
         mock=mock,
         mode=mode,

@@ -62,3 +62,27 @@ class TestSketchParameterRemoved:
         assert "sketch_b64" not in source, (
             "GenerateNode should have no reference to sketch_b64"
         )
+
+
+class TestCleanDeadParameters:
+    """Task 3: Remove include_evidence, document sparse behavior."""
+
+    def test_include_evidence_not_in_evaluate_signature(self):
+        """include_evidence should not be in evaluate() signature."""
+        import inspect
+        from vulca import evaluate
+        sig = inspect.signature(evaluate)
+        assert "include_evidence" not in sig.parameters
+
+    def test_include_evidence_not_in_aevaluate_signature(self):
+        """include_evidence should not be in aevaluate() signature."""
+        import inspect
+        from vulca import aevaluate
+        sig = inspect.signature(aevaluate)
+        assert "include_evidence" not in sig.parameters
+
+    def test_sparse_documented_in_aevaluate(self):
+        """aevaluate docstring should explain sparse behavior."""
+        from vulca.evaluate import aevaluate
+        assert aevaluate.__doc__ is not None
+        assert "sparse" in aevaluate.__doc__.lower()
