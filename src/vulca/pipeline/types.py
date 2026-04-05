@@ -131,6 +131,9 @@ class PipelineOutput:
     interrupted_at: str = ""
     summary: str = ""
     residual_context: dict[str, Any] | None = None
+    # Preserved for HITL resume — original user inputs
+    original_intent: str = ""
+    original_provider: str = ""
 
     def to_dict(self) -> dict[str, Any]:
         return {

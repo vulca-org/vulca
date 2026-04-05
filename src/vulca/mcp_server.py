@@ -571,13 +571,13 @@ async def resume_artwork(
         if locked_dimensions:
             locked_dims = [d.strip().upper() for d in locked_dimensions.split(",") if d.strip()]
 
-        # Get original pipeline input info from pending output
+        # Get original pipeline input info preserved from first run
         original_tradition = getattr(pending, "tradition", "default")
-        original_provider = "mock"  # Safe default for refine
+        original_provider = getattr(pending, "original_provider", "") or "mock"
+        original_intent = getattr(pending, "original_intent", "") or getattr(pending, "summary", "artwork")
 
         # Build refined intent with feedback injected
-        original_subject = getattr(pending, "summary", "artwork")
-        refined_intent = original_subject
+        refined_intent = original_intent
         if feedback:
             refined_intent = f"{original_subject}\n\nRefinement feedback: {feedback}"
 

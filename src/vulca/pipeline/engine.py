@@ -314,6 +314,8 @@ async def execute(
                     total_cost_usd=ctx.cost_usd,
                     interrupted_at=node_name,
                     summary=f"Pipeline paused before '{node_name}' for human review.",
+                    original_intent=pipeline_input.intent or pipeline_input.subject,
+                    original_provider=pipeline_input.provider,
                 )
 
             node = node_instances[node_name]
@@ -577,6 +579,8 @@ async def execute(
         total_cost_usd=ctx.cost_usd,
         summary=summary,
         residual_context=ctx.data.get("residual_context"),
+        original_intent=pipeline_input.intent or pipeline_input.subject,
+        original_provider=pipeline_input.provider,
     )
 
     # Emit PIPELINE_COMPLETE hook (non-fatal, before on_complete callback)
