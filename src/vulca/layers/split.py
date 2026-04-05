@@ -56,10 +56,17 @@ def split_extract(
     out_dir = Path(output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
+    import numpy as np
+    assigned = np.zeros((h, w), dtype=bool)
     results: list[LayerResult] = []
     for info in sorted(layers, key=lambda l: l.z_index):
-        mask = build_color_mask(img, info, tolerance=tolerance)
+        mask = build_color_mask(img, info, tolerance=tolerance, assigned=assigned)
         layer_img = apply_mask_to_image(img, mask)
+
+        # Update exclusive ownership: pixels claimed by this layer cannot be
+        # claimed by subsequent layers (same pattern as SAM mode).
+        mask_arr = np.array(mask)
+        assigned |= (mask_arr > 127)
 
         out_path = out_dir / f"{info.name}.png"
         layer_img.save(str(out_path))

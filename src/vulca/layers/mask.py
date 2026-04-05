@@ -23,6 +23,7 @@ def build_color_mask(
     info: LayerInfo,
     *,
     tolerance: int = 30,
+    assigned: np.ndarray | None = None,
 ) -> Image.Image:
     """Build a grayscale mask (L mode) for a layer based on dominant_colors and content_type.
 
@@ -32,6 +33,9 @@ def build_color_mask(
         image: Source PIL image (any mode).
         info: LayerInfo with dominant_colors (hex strings) and content_type.
         tolerance: Distance tolerance in RGB space (default 30).
+        assigned: Optional boolean array (H x W) of already-claimed pixels.
+            Pixels set to True are zeroed out in the output mask, ensuring
+            exclusive ownership (matches SAM mode's existing pattern).
 
     Returns:
         PIL Image in mode "L" (uint8, 0-255).
@@ -61,6 +65,10 @@ def build_color_mask(
         # Low saturation = likely an effect (mist, glow, overlay)
         low_sat_match = np.clip(1.0 - saturation / 80.0, 0.0, 1.0)
         color_match = np.maximum(color_match, low_sat_match)
+
+    # Exclude already-assigned pixels (exclusive ownership)
+    if assigned is not None:
+        color_match[assigned] = 0.0
 
     # Convert 0-1 float mask to 0-255 uint8
     mask_array = (color_match * 255).astype(np.uint8)
