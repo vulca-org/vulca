@@ -22,6 +22,51 @@ except ImportError:
     pass
 
 
+def _compute_layer_point(
+    image: Image.Image,
+    info: LayerInfo,
+) -> tuple[int, int]:
+    """Compute the best SAM point prompt for a layer.
+
+    Uses color centroid: find all pixels close to dominant_colors,
+    compute their centroid. Falls back to image center if no colors
+    or no matching pixels.
+
+    Args:
+        image: Source PIL image.
+        info: LayerInfo with dominant_colors (hex strings).
+
+    Returns:
+        (cx, cy) integer pixel coordinate for the SAM point prompt.
+    """
+    w, h = image.size
+    center = (w // 2, h // 2)
+
+    if not info.dominant_colors:
+        return center
+
+    from vulca.layers.mask import _hex_to_rgb
+
+    rgb = np.array(image.convert("RGB"), dtype=np.float32)
+    mask = np.zeros((h, w), dtype=bool)
+
+    for hex_c in info.dominant_colors:
+        try:
+            target = np.array(_hex_to_rgb(hex_c), dtype=np.float32)
+        except (ValueError, IndexError):
+            continue
+        dist = np.sqrt(np.sum((rgb - target) ** 2, axis=2))
+        mask |= (dist < 60)  # Generous threshold for point finding
+
+    if not np.any(mask):
+        return center
+
+    ys, xs = np.where(mask)
+    cx = int(np.mean(xs))
+    cy = int(np.mean(ys))
+    return (cx, cy)
+
+
 def sam_split(
     image_path: str,
     layers: list[LayerInfo],
@@ -77,8 +122,8 @@ def sam_split(
             # Background gets everything not yet assigned
             mask_bool = ~assigned
         else:
-            # Use center of image as a default point prompt
-            cx, cy = w // 2, h // 2
+            # Use layer-specific point from color centroid
+            cx, cy = _compute_layer_point(img, info)
             point_coords = np.array([[cx, cy]], dtype=np.float32)
             point_labels = np.array([1], dtype=np.int32)
 

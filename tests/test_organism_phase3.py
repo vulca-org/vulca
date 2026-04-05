@@ -193,3 +193,44 @@ class TestVLMMaskShared:
         from vulca.layers.split import split_regenerate
         source = inspect.getsource(split_regenerate)
         assert "vlm_mask" in source, "split_regenerate should use vlm_mask module"
+
+
+class TestSAMPointPrompts:
+    """Task 4: SAM uses layer-specific point prompts, not image center."""
+
+    def test_point_from_color_centroid(self):
+        """Point prompt should be at the centroid of the layer's dominant color region."""
+        from vulca.layers.sam import _compute_layer_point
+
+        img = _make_test_image(200, 200)  # top=red, bottom=blue
+        layer_red = _make_layer("red", 0, ["#FF0000"])
+        layer_blue = _make_layer("blue", 1, ["#0000FF"])
+
+        px_red, py_red = _compute_layer_point(img, layer_red)
+        px_blue, py_blue = _compute_layer_point(img, layer_blue)
+
+        # Red centroid should be in top half
+        assert py_red < 100, f"Red point y={py_red} should be < 100"
+        # Blue centroid should be in bottom half
+        assert py_blue >= 100, f"Blue point y={py_blue} should be >= 100"
+
+    def test_fallback_to_center(self):
+        """If no dominant_colors, fall back to image center."""
+        from vulca.layers.sam import _compute_layer_point
+
+        img = _make_test_image(200, 200)
+        layer_no_colors = _make_layer("unknown", 0, [])
+
+        px, py = _compute_layer_point(img, layer_no_colors)
+        assert px == 100  # w // 2
+        assert py == 100  # h // 2
+
+    def test_point_x_centered_for_full_width_region(self):
+        """For a color region spanning full width, x should be near center."""
+        from vulca.layers.sam import _compute_layer_point
+
+        img = _make_test_image(200, 200)  # red spans full width of top half
+        layer_red = _make_layer("red", 0, ["#FF0000"])
+        px, py = _compute_layer_point(img, layer_red)
+        # x should be near center (full width)
+        assert 80 <= px <= 120, f"x={px} should be near center for full-width region"
