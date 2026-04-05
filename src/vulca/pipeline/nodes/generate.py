@@ -153,7 +153,7 @@ class GenerateNode(PipelineNode):
             err = str(exc).lower()
             recoverable = any(
                 k in err
-                for k in ("429", "quota", "rate", "503", "unavailable", "timeout")
+                for k in ("429", "quota", "rate", "503", "unavailable", "timeout", "no image data")
             )
             if recoverable:
                 logger.warning(

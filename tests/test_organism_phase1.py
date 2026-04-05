@@ -190,17 +190,21 @@ class TestRealFeedback:
 
         captured: list[dict] = []
 
-        class FakeBackend:
+        class FakeStore:
+            def __init__(self, **kwargs: Any) -> None:
+                pass
             def append(self, data: dict) -> None:
                 captured.append(data)
 
         fake_module = MagicMock()
-        fake_module.JsonlSessionBackend = FakeBackend
+        fake_module.UnifiedSessionStore = FakeStore
 
-        with patch.dict("sys.modules", {"vulca.storage.jsonl": fake_module}):
-            from vulca.pipeline.hooks import default_on_complete
-
-            asyncio.run(default_on_complete(output))
+        with patch.dict("sys.modules", {"vulca.storage.unified": fake_module}):
+            # Force reimport to pick up the patched module
+            import importlib
+            import vulca.pipeline.hooks as hooks_mod
+            importlib.reload(hooks_mod)
+            asyncio.run(hooks_mod.default_on_complete(output))
 
         assert len(captured) == 1
         assert captured[0]["user_feedback"] == "completed"

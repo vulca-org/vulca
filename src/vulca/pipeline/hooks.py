@@ -19,18 +19,18 @@ async def default_on_complete(output: PipelineOutput) -> None:
     This is the default hook for SDK/CLI/MCP headless usage.
     Web App routes use their own on_complete with richer SessionDigest.
     """
-    # 1. Persist to local JSONL
+    # 1. Persist to unified session store
     try:
-        from vulca.storage.jsonl import JsonlSessionBackend
+        from vulca.storage.unified import UnifiedSessionStore
 
-        backend = JsonlSessionBackend()
+        store = UnifiedSessionStore()
         data = output.to_dict()
         # Pipeline-completed sessions are neutral — explicit feedback required for evolution
         if "user_feedback" not in data:
             data["user_feedback"] = "completed"
-        backend.append(data)
+        store.append(data)
     except Exception as exc:
-        logger.debug("JSONL session storage failed (non-fatal): %s", exc)
+        logger.debug("Session storage failed (non-fatal): %s", exc)
 
     # 2. Throttled evolution
     await _maybe_evolve(output.session_id)

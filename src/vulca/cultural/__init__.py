@@ -10,6 +10,8 @@ Each tradition assigns different importance to the five evaluation levels:
 
 from __future__ import annotations
 
+import logging
+
 # Hardcoded fallback weights (used when YAML loader unavailable)
 TRADITION_WEIGHTS: dict[str, dict[str, float]] = {
     "default": {"L1": 0.15, "L2": 0.20, "L3": 0.25, "L4": 0.20, "L5": 0.20},

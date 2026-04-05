@@ -66,21 +66,23 @@ class EvaluateNode(PipelineNode):
                 "method": dimension_activation.method,
             })
 
+        weights = self._get_weights(ctx)
+
         if not img_b64:
             logger.warning("EvaluateNode: no image_b64 in context, using mock scores")
             result = self._mock_scores(ctx, dimension_activation=dimension_activation)
-            return self._merge_algo_scores(result, algo_scores, algo_covered_dims)
+            return self._merge_algo_scores(result, algo_scores, algo_covered_dims, weights)
 
         if ctx.provider == "mock" or not ctx.api_key:
             result = self._mock_scores(ctx, dimension_activation=dimension_activation)
-            return self._merge_algo_scores(result, algo_scores, algo_covered_dims)
+            return self._merge_algo_scores(result, algo_scores, algo_covered_dims, weights)
 
         result = await self._vlm_scores(
             ctx, img_b64, img_mime,
             dimension_activation=dimension_activation,
             engram_fragments=engram_fragments,
         )
-        return self._merge_algo_scores(result, algo_scores, algo_covered_dims)
+        return self._merge_algo_scores(result, algo_scores, algo_covered_dims, weights)
 
     @staticmethod
     def _detect_algo_coverage(
@@ -133,6 +135,7 @@ class EvaluateNode(PipelineNode):
         result: dict[str, Any],
         algo_scores: dict[str, float],
         algo_covered_dims: list[str],
+        weights: dict[str, float] | None = None,
     ) -> dict[str, Any]:
         """Merge algo-derived scores into *result* and recompute weighted_total.
 
@@ -168,8 +171,9 @@ class EvaluateNode(PipelineNode):
         # But we can use the stored weighted_total as baseline and adjust.
         # Better: recompute from scratch using uniform 0.2 (5 dimensions).
         # This is acceptable since weights are applied in _mock_scores too.
-        # To avoid re-importing cultural here, do simple sum with 0.2.
-        weighted_total = sum(scores.get(f"L{i}", 0.0) * 0.2 for i in range(1, 6))
+        # Use tradition-specific weights if provided, uniform 0.2 as fallback
+        w = weights or {}
+        weighted_total = sum(scores.get(f"L{i}", 0.0) * w.get(f"L{i}", 0.2) for i in range(1, 6))
 
         result = dict(result)
         result["scores"] = scores

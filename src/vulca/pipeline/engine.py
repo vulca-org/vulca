@@ -235,6 +235,7 @@ async def execute(
         emit_progress=_emit_progress,
         image_provider=pipeline_input.image_provider,
     )
+    ctx.set("session_id", session_id)
 
     await hooks.emit(hooks.PIPELINE_START, {
         "session_id": session_id,
