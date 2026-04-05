@@ -82,10 +82,10 @@ class TraditionConfig:
     def __post_init__(self) -> None:
         self._L_TO_DIM = {
             "L1": "visual_perception",
-            "L2": "technical_execution",
+            "L2": "technical_analysis",
             "L3": "cultural_context",
             "L4": "critical_interpretation",
-            "L5": "philosophical_aesthetics",
+            "L5": "philosophical_aesthetic",
         }
 
     @property

@@ -50,6 +50,9 @@ class UnifiedSessionStore:
                 self._data_dir = Path.home() / ".vulca" / "data"
         self._data_dir.mkdir(parents=True, exist_ok=True)
         self._sessions_path = self._data_dir / "sessions.jsonl"
+        # NOTE: threading.Lock protects concurrent access within the same process only.
+        # Multiple processes (CLI, MCP server) writing simultaneously rely on OS-level
+        # append atomicity for single JSONL lines. Malformed lines are skipped on read.
         self._lock = threading.Lock()
 
     # ── Properties ──

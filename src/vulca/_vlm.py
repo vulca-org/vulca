@@ -146,10 +146,12 @@ not strict conformance.
 """
 
 _FUSION_FRAMING = """
-### Evaluation Mode: FUSION (Cross-Cultural Comparison)
-You are comparing this artwork against multiple cultural traditions simultaneously.
-For each tradition, evaluate independently using that tradition's own standards.
-Do not let one tradition's standards bias the evaluation under another tradition.
+### Evaluation Mode: FUSION (Cross-Cultural Perspective)
+You are evaluating this artwork with cross-cultural awareness. Identify the primary
+cultural tradition present and score against that tradition's standards. Where the work
+draws from multiple traditions, note this in rationales and weight your observations
+accordingly. Do not let one tradition's canonical rules penalize legitimate cross-cultural
+fusion. Output a single set of L1-L5 scores reflecting the overall cross-cultural merit.
 """
 
 
