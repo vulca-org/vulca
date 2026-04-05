@@ -3,7 +3,7 @@
 [![PyPI](https://img.shields.io/pypi/v/vulca.svg)](https://pypi.org/project/vulca/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://pypi.org/project/vulca/)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-green.svg)](https://github.com/vulca-org/vulca/blob/main/LICENSE)
-[![Tests](https://img.shields.io/badge/tests-1285%20passing-brightgreen.svg)](https://github.com/vulca-org/vulca)
+[![Tests](https://img.shields.io/badge/tests-1322%20passing-brightgreen.svg)](https://github.com/vulca-org/vulca)
 [![MCP Tools](https://img.shields.io/badge/MCP_tools-21-blueviolet.svg)](https://github.com/vulca-org/vulca-plugin)
 
 **AI-native creation intelligence for cultural art.** Generate, evaluate, decompose, and evolve visual art across 13 cultural traditions. L1-L5 multi-dimensional scoring, structured layer generation, self-evolving weights — all from one `pip install`.
@@ -682,7 +682,7 @@ claude plugin install vulca-org/vulca-plugin    # 21 tools + 10 skills
 
 ```bash
 git clone https://github.com/vulca-org/comfyui-vulca  # in custom_nodes/
-pip install vulca>=0.10.0
+pip install vulca>=0.11.0
 ```
 
 11 nodes: Brief, Concept, Generate, Evaluate, Update, Inpaint, Layers Analyze/Composite/Export, Evolution, Traditions.
