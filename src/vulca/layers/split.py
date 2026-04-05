@@ -181,7 +181,7 @@ async def split_regenerate(
                 gen_img = apply_vlm_mask(gen_img, vlm_mask_img)
             elif info.dominant_colors:
                 # Fallback to color mask if VLM mask fails
-                mask = build_color_mask(img, info, tolerance=30)
+                mask = build_color_mask(gen_img, info, tolerance=30)
                 r, g, b, _ = gen_img.split()
                 gen_img = Image.merge("RGBA", (r, g, b, mask))
 

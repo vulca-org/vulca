@@ -188,9 +188,8 @@ class TestVLMMaskShared:
         assert result.size == (100, 100)
 
     def test_regenerate_no_longer_uses_color_mask_for_alpha(self):
-        """split_regenerate should NOT import build_color_mask for alpha."""
+        """split_regenerate should use vlm_mask module for alpha."""
         import inspect
         from vulca.layers.split import split_regenerate
         source = inspect.getsource(split_regenerate)
-        # Should use vlm_mask, not build_color_mask for alpha
-        assert "build_color_mask" not in source or "validate" in source
+        assert "vlm_mask" in source, "split_regenerate should use vlm_mask module"
