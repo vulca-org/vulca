@@ -57,9 +57,12 @@ def split_extract(
     out_dir = Path(output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    # Validate VLM-guessed colors against actual pixels (including empty lists).
+    # Validate VLM-guessed colors against actual pixels.
+    # Only validate non-empty lists: empty dominant_colors means the VLM could not
+    # identify this layer's colors, so the layer should produce a transparent mask.
     for info in layers:
-        info.dominant_colors = validate_dominant_colors(img, info.dominant_colors)
+        if info.dominant_colors:
+            info.dominant_colors = validate_dominant_colors(img, info.dominant_colors)
 
     assigned = np.zeros((h, w), dtype=bool)
 
@@ -130,7 +133,8 @@ async def split_regenerate(
 
     # Validate VLM-guessed colors against actual pixels (same as extract mode).
     for info in layers:
-        info.dominant_colors = validate_dominant_colors(img, info.dominant_colors)
+        if info.dominant_colors:
+            info.dominant_colors = validate_dominant_colors(img, info.dominant_colors)
 
     results: list[LayerResult] = []
     sorted_layers = sorted(layers, key=lambda l: l.z_index)
