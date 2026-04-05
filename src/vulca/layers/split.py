@@ -16,6 +16,7 @@ import base64
 import json
 from pathlib import Path
 
+import numpy as np
 from PIL import Image
 
 from vulca.layers.types import LayerInfo, LayerResult
@@ -56,24 +57,29 @@ def split_extract(
     out_dir = Path(output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    import numpy as np
     assigned = np.zeros((h, w), dtype=bool)
-    results: list[LayerResult] = []
-    for info in sorted(layers, key=lambda l: l.z_index):
-        mask = build_color_mask(img, info, tolerance=tolerance, assigned=assigned)
-        layer_img = apply_mask_to_image(img, mask)
 
-        # Update exclusive ownership: pixels claimed by this layer cannot be
-        # claimed by subsequent layers (same pattern as SAM mode).
+    # Phase 1: Assign pixels foreground-first (high z_index = priority).
+    # This matches SAM mode semantics: foreground layers have exclusive claim
+    # over pixels before background layers are processed.
+    layer_masks: dict[str, Image.Image] = {}
+    for info in sorted(layers, key=lambda l: l.z_index, reverse=True):
+        mask = build_color_mask(img, info, tolerance=tolerance, assigned=assigned)
         mask_arr = np.array(mask)
         assigned |= (mask_arr > 127)
+        layer_masks[info.name] = mask
 
+    # Phase 2: Save layers in z_index ascending order (bottom to top).
+    results: list[LayerResult] = []
+    for info in sorted(layers, key=lambda l: l.z_index):
+        mask = layer_masks[info.name]
+        layer_img = apply_mask_to_image(img, mask)
         out_path = out_dir / f"{info.name}.png"
         layer_img.save(str(out_path))
         results.append(LayerResult(info=info, image_path=str(out_path)))
 
     _write_manifest_v2(layers, output_dir=output_dir, width=w, height=h, split_mode="extract")
-    return results
+    return sorted(results, key=lambda r: r.info.z_index)
 
 
 # ---------------------------------------------------------------------------

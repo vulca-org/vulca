@@ -96,14 +96,17 @@ class TestExclusivePixelAssignment:
             ]
             results = split_extract(str(img_path), layers, output_dir=td)
 
-            # Load both layer images and check alpha overlap
-            r_img = Image.open(results[0].image_path).split()[3]  # Alpha channel
-            b_img = Image.open(results[1].image_path).split()[3]
-            r_arr = np.array(r_img)
-            b_arr = np.array(b_img)
+            # Load both layer images by name and check alpha overlap
+            by_name = {r.info.name: r for r in results}
+            r_arr = np.array(Image.open(by_name["red_region"].image_path).split()[3])
+            b_arr = np.array(Image.open(by_name["blue_region"].image_path).split()[3])
 
             overlap = (r_arr > 127) & (b_arr > 127)
             assert np.sum(overlap) == 0, f"{np.sum(overlap)} pixels overlap between layers"
+
+            # Semantic: each layer should have actual opaque pixels
+            assert np.sum(r_arr > 127) > 0, "red layer should have opaque pixels"
+            assert np.sum(b_arr > 127) > 0, "blue layer should have opaque pixels"
 
     def test_backward_compat_no_assigned(self):
         """build_color_mask without assigned param still works (backward compat)."""
