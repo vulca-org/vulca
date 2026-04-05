@@ -48,7 +48,13 @@ async def generate_vlm_mask(
         )
         mask_b64 = result.image_b64 if hasattr(result, "image_b64") else result
         mask_img = Image.open(io.BytesIO(base64.b64decode(mask_b64)))
-        return mask_img.convert("L")
+        mask_l = mask_img.convert("L")
+        # Reject degenerate masks (all same value = no useful segmentation)
+        mask_arr = np.array(mask_l)
+        if mask_arr.std() < 10:
+            logger.warning("VLM mask degenerate (std=%.1f), rejecting", mask_arr.std())
+            return None
+        return mask_l
     except Exception as exc:
         logger.warning("VLM mask generation failed: %s", exc)
         return None

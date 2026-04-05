@@ -62,8 +62,13 @@ def _compute_layer_point(
         return center
 
     ys, xs = np.where(mask)
-    cx = int(np.mean(xs))
-    cy = int(np.mean(ys))
+    mean_x, mean_y = np.mean(xs), np.mean(ys)
+    # Use medoid (closest actual pixel to centroid) instead of centroid,
+    # because centroid of non-convex shapes (rings, C-curves) can fall
+    # outside the shape, producing a bad SAM point prompt.
+    dists = (xs - mean_x) ** 2 + (ys - mean_y) ** 2
+    best = int(np.argmin(dists))
+    cx, cy = int(xs[best]), int(ys[best])
     return (cx, cy)
 
 
