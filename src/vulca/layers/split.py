@@ -20,7 +20,7 @@ import numpy as np
 from PIL import Image
 
 from vulca.layers.types import LayerInfo, LayerResult
-from vulca.layers.mask import build_color_mask, apply_mask_to_image
+from vulca.layers.mask import build_color_mask, apply_mask_to_image, validate_dominant_colors
 from vulca.layers.manifest import write_manifest as _write_manifest_v2
 from vulca.layers.prompt import build_regeneration_prompt
 
@@ -56,6 +56,11 @@ def split_extract(
 
     out_dir = Path(output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
+
+    # Validate VLM-guessed colors against actual pixels before masking.
+    for info in layers:
+        if info.dominant_colors:
+            info.dominant_colors = validate_dominant_colors(img, info.dominant_colors)
 
     assigned = np.zeros((h, w), dtype=bool)
 

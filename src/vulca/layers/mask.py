@@ -75,6 +75,74 @@ def build_color_mask(
     return Image.fromarray(mask_array, mode="L")
 
 
+def validate_dominant_colors(
+    image: Image.Image,
+    claimed_colors: list[str],
+    *,
+    max_distance: float = 80.0,
+    n_samples: int = 1000,
+) -> list[str]:
+    """Validate VLM-guessed dominant colors against actual image pixels.
+
+    For each claimed color, check if it exists within max_distance of any
+    sampled pixel. If not, replace it with the closest sampled cluster center.
+
+    Args:
+        image: Source image.
+        claimed_colors: Hex color strings from VLM analysis.
+        max_distance: Max Euclidean RGB distance to consider "matching".
+        n_samples: Number of random pixels to sample for k-means.
+
+    Returns:
+        Validated list of hex colors — same length, bad colors replaced.
+        If claimed_colors is empty, returns top 3 cluster centers from sampling.
+    """
+    rgb = np.array(image.convert("RGB"), dtype=np.float32)
+    flat = rgb.reshape(-1, 3)
+
+    # Sample random pixels
+    n = min(n_samples, len(flat))
+    indices = np.random.default_rng(42).choice(len(flat), size=n, replace=False)
+    samples = flat[indices]
+
+    # Find cluster centers via simple k-means (k = min(8, len(samples)))
+    try:
+        from sklearn.cluster import KMeans
+        k = min(8, n)
+        km = KMeans(n_clusters=k, n_init=1, random_state=42).fit(samples)
+        centers = km.cluster_centers_
+    except ImportError:
+        # Fallback: use sampled pixels directly
+        centers = samples[:8]
+
+    if not claimed_colors:
+        # No colors claimed — return top 3 cluster centers
+        return [f"#{int(c[0]):02x}{int(c[1]):02x}{int(c[2]):02x}" for c in centers[:3]]
+
+    validated: list[str] = []
+    for hex_c in claimed_colors:
+        try:
+            target = np.array(_hex_to_rgb(hex_c), dtype=np.float32)
+        except (ValueError, IndexError):
+            validated.append(hex_c)
+            continue
+
+        # Check distance to nearest sampled pixel
+        dists = np.sqrt(np.sum((samples - target) ** 2, axis=1))
+        min_dist = float(np.min(dists))
+
+        if min_dist <= max_distance:
+            validated.append(hex_c)
+        else:
+            # Replace with closest cluster center
+            center_dists = np.sqrt(np.sum((centers - target) ** 2, axis=1))
+            nearest = centers[int(np.argmin(center_dists))]
+            replacement = f"#{int(nearest[0]):02x}{int(nearest[1]):02x}{int(nearest[2]):02x}"
+            validated.append(replacement)
+
+    return validated
+
+
 def apply_mask_to_image(image: Image.Image, mask: Image.Image) -> Image.Image:
     """Apply grayscale mask to image, producing full-canvas RGBA.
 

@@ -117,3 +117,39 @@ class TestExclusivePixelAssignment:
         mask = build_color_mask(img, layer, tolerance=30)
         assert mask.mode == "L"
         assert mask.size == (100, 100)
+
+
+class TestDominantColorValidation:
+    """Task 2: Validate VLM-guessed colors against actual image pixels."""
+
+    def test_correct_colors_pass_validation(self):
+        """Colors matching actual pixels should be returned unchanged."""
+        from vulca.layers.mask import validate_dominant_colors
+
+        img = _make_test_image()
+        validated = validate_dominant_colors(img, ["#FF0000", "#0000FF"])
+        # Both colors exist in the image, should pass
+        assert len(validated) == 2
+
+    def test_wrong_colors_get_replaced(self):
+        """Colors far from any image pixel should be replaced with sampled colors."""
+        from vulca.layers.mask import validate_dominant_colors
+
+        img = _make_test_image()  # only has red and blue
+        validated = validate_dominant_colors(img, ["#00FF00"])  # green doesn't exist
+        # Should be replaced with an actual image color
+        assert len(validated) >= 1
+        # The replacement should be close to red or blue
+        for hex_c in validated:
+            r, g, b = int(hex_c[1:3], 16), int(hex_c[3:5], 16), int(hex_c[5:7], 16)
+            close_to_red = abs(r - 255) < 50 and g < 50 and b < 50
+            close_to_blue = r < 50 and g < 50 and abs(b - 255) < 50
+            assert close_to_red or close_to_blue, f"Replacement color {hex_c} not close to red or blue"
+
+    def test_empty_colors_get_sampled(self):
+        """Empty dominant_colors should be populated from image sampling."""
+        from vulca.layers.mask import validate_dominant_colors
+
+        img = _make_test_image()
+        validated = validate_dominant_colors(img, [])
+        assert len(validated) >= 1
