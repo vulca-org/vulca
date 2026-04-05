@@ -24,7 +24,6 @@ async def acreate(
     eval_mode: str = "strict",
     residuals: bool = False,
     sparse_eval: bool = False,
-    sketch: str = "",
     reference: str = "",
     ref_type: str = "full",
     colors: str = "",
@@ -55,6 +54,9 @@ async def acreate(
         Enable human-in-the-loop. Pipeline pauses before 'decide' node.
     weights:
         Custom L1-L5 weights, e.g. {"L1": 0.3, "L2": 0.2, ...}.
+    reference:
+        Reference image path or base64. Also serves as sketch input --
+        providers treat both identically as ``reference_image_b64``.
 
     Returns
     -------
@@ -79,7 +81,6 @@ async def acreate(
             eval_mode=eval_mode,
             residuals=residuals,
             sparse_eval=sparse_eval,
-            sketch=sketch,
             reference=reference,
             ref_type=ref_type,
             colors=colors,
@@ -106,7 +107,6 @@ async def _create_local(
     eval_mode: str = "strict",
     residuals: bool = False,
     sparse_eval: bool = False,
-    sketch: str = "",
     reference: str = "",
     ref_type: str = "full",
     colors: str = "",
@@ -123,13 +123,11 @@ async def _create_local(
     if weights:
         node_params["evaluate"] = {"custom_weights": weights}
 
-    # Inject reference/sketch/colors into generate node params
+    # Inject reference/colors into generate node params
     gen_params: dict[str, Any] = {}
     if reference:
         gen_params["reference_image_b64"] = resolve_image_input(reference)
         gen_params["reference_type"] = ref_type
-    if sketch:
-        gen_params["sketch_b64"] = resolve_image_input(sketch)
     if colors:
         gen_params["color_palette"] = colors
     if gen_params:
@@ -267,7 +265,6 @@ def create(
     eval_mode: str = "strict",
     residuals: bool = False,
     sparse_eval: bool = False,
-    sketch: str = "",
     reference: str = "",
     ref_type: str = "full",
     colors: str = "",
@@ -295,7 +292,6 @@ def create(
         eval_mode=eval_mode,
         residuals=residuals,
         sparse_eval=sparse_eval,
-        sketch=sketch,
         reference=reference,
         ref_type=ref_type,
         colors=colors,

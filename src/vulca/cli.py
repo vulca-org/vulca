@@ -101,8 +101,7 @@ def main(argv: list[str] | None = None) -> None:
     create_p.add_argument("--image-base-url", default="", help="Image provider base URL (for comfyui)")
     create_p.add_argument("--residuals", action="store_true", help="Enable Agent Residuals (selective node aggregation)")
     create_p.add_argument("--sparse-eval", action="store_true", help="Enable sparse evaluation (score only relevant dimensions)")
-    create_p.add_argument("--sketch", default="", help="Sketch image path or base64")
-    create_p.add_argument("--reference", default="", help="Reference image path or base64")
+    create_p.add_argument("--reference", default="", help="Reference image path or base64 (also serves as sketch input)")
     create_p.add_argument("--ref-type", default="full", choices=["style", "composition", "full"],
                           help="Reference type: style, composition, or full")
     create_p.add_argument("--colors", default="", help="Hex color palette (comma-separated, e.g. '#C87F4A,#5F8A50')")
@@ -646,7 +645,6 @@ def _cmd_create(args: argparse.Namespace) -> None:
             eval_mode=args.mode,
             residuals=getattr(args, "residuals", False),
             sparse_eval=getattr(args, "sparse_eval", False),
-            sketch=getattr(args, "sketch", "") or "",
             reference=getattr(args, "reference", "") or "",
             ref_type=getattr(args, "ref_type", "full") or "full",
             colors=getattr(args, "colors", "") or "",
