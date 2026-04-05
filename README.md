@@ -619,7 +619,7 @@ vulca layers duplicate dir --layer name
 vulca layers composite dir -o output.png
 vulca layers export dir -o output.psd
 vulca layers evaluate dir -t tradition
-vulca layers regenerate dir -o output.png
+vulca layers regenerate dir --provider gemini
 
 # Inpainting
 vulca inpaint image.png --region "description or x,y,w,h"
