@@ -395,7 +395,7 @@ async def execute(
                         event_type=EventType.PIPELINE_FAILED,
                         stage=node_name,
                         round_num=round_num,
-                        payload={"error": str(exc)},
+                        payload={"error": str(exc), "session_id": session_id},
                         timestamp_ms=int((time.monotonic() - t0) * 1000),
                     )
                 )
@@ -469,7 +469,7 @@ async def execute(
                             event_type=EventType.PIPELINE_FAILED,
                             stage=node_name,
                             round_num=round_num,
-                            payload={"error": "Cost gate exceeded", "cost_usd": ctx.cost_usd},
+                            payload={"error": "Cost gate exceeded", "cost_usd": ctx.cost_usd, "session_id": session_id},
                             timestamp_ms=int((time.monotonic() - t0) * 1000),
                         )
                     )

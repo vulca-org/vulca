@@ -376,7 +376,7 @@ def _cmd_evaluate(args: argparse.Namespace) -> None:
             mode=mode,
             sparse=sparse,
         )
-    except ValueError as e:
+    except (ValueError, FileNotFoundError, OSError) as e:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
 
@@ -583,6 +583,12 @@ def _cmd_create(args: argparse.Namespace) -> None:
     import json as json_mod
     import os
     from vulca import create
+
+    # Warn if tradition doesn't exist
+    if args.tradition:
+        from vulca.cultural.loader import get_tradition
+        if get_tradition(args.tradition) is None:
+            print(f"Warning: tradition '{args.tradition}' not found, using default weights", file=sys.stderr)
 
     if args.image_provider:
         os.environ["VULCA_IMAGE_PROVIDER"] = args.image_provider
