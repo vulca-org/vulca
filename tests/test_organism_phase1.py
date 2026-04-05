@@ -462,3 +462,38 @@ class TestModePromptDifferentiation:
         assert default == explicit_strict, (
             "Default mode must produce the same prompt as explicit mode='strict'"
         )
+
+
+class TestRiskFlags:
+    def test_risk_flags_in_prompt(self):
+        from vulca._vlm import _STATIC_SCORING_PREFIX
+        assert "risk_flags" in _STATIC_SCORING_PREFIX
+
+    def test_risk_flags_parsed_from_response(self):
+        from vulca._vlm import _parse_vlm_response
+        raw = {
+            "L1": 0.8, "L2": 0.7, "L3": 0.9, "L4": 0.8, "L5": 0.85,
+            "L1_rationale": "good", "L2_rationale": "ok", "L3_rationale": "excellent",
+            "L4_rationale": "fine", "L5_rationale": "deep",
+            "risk_flags": ["cultural_appropriation", "anachronistic_elements"],
+        }
+        result = _parse_vlm_response(raw)
+        assert "risk_flags" in result
+        assert len(result["risk_flags"]) == 2
+
+    def test_risk_flags_defaults_empty_list(self):
+        from vulca._vlm import _parse_vlm_response
+        raw = {"L1": 0.8, "L2": 0.7, "L3": 0.9, "L4": 0.8, "L5": 0.85,
+               "L1_rationale": "a", "L2_rationale": "b", "L3_rationale": "c",
+               "L4_rationale": "d", "L5_rationale": "e"}
+        result = _parse_vlm_response(raw)
+        assert result.get("risk_flags") == []
+
+    def test_risk_flags_invalid_type_becomes_empty(self):
+        from vulca._vlm import _parse_vlm_response
+        raw = {"L1": 0.8, "L2": 0.7, "L3": 0.9, "L4": 0.8, "L5": 0.85,
+               "L1_rationale": "a", "L2_rationale": "b", "L3_rationale": "c",
+               "L4_rationale": "d", "L5_rationale": "e",
+               "risk_flags": "not_a_list"}
+        result = _parse_vlm_response(raw)
+        assert result.get("risk_flags") == []

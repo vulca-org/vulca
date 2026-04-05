@@ -105,9 +105,14 @@ Write ONLY the JSON object inside `<scoring>` tags. Only this section is parsed.
     "L4": <float>, "L4_observations": "<string>", "L4_rationale": "<string>", \
 "L4_suggestion": "<string>", "L4_reference_technique": "<string>", "L4_deviation_type": "<string>",
     "L5": <float>, "L5_observations": "<string>", "L5_rationale": "<string>", \
-"L5_suggestion": "<string>", "L5_reference_technique": "<string>", "L5_deviation_type": "<string>"
+"L5_suggestion": "<string>", "L5_reference_technique": "<string>", "L5_deviation_type": "<string>",
+    "risk_flags": []
 }
 </scoring>
+
+Note: `risk_flags` is a list of cultural sensitivity concerns, e.g. \
+["cultural_appropriation", "anachronistic_elements", "sacred_symbol_misuse", \
+"stereotypical_representation"]. Use an empty list if there are no concerns.
 """
 
 # Backward-compatibility alias — kept so external code referencing _SYSTEM_PROMPT
@@ -268,8 +273,17 @@ def _parse_vlm_response(
     raw: dict,
     *,
     extra_keys: list[str] | None = None,
-) -> tuple[dict[str, float], dict[str, str], dict[str, str], dict[str, str], dict[str, str], dict[str, str]]:
-    """Parse VLM JSON response into (scores, rationales, suggestions, deviations, observations, ref_techniques)."""
+) -> dict:
+    """Parse VLM JSON response into a structured dict.
+
+    Returns a dict with keys:
+        scores, rationales, suggestions, deviations, observations,
+        ref_techniques (each a dict keyed by dimension), and risk_flags (list).
+
+    For backward compatibility the return value also supports 6-tuple unpacking
+    via __iter__: (scores, rationales, suggestions, deviations, observations,
+    ref_techniques).  New code should access fields by key.
+    """
     scores: dict[str, float] = {}
     rationales: dict[str, str] = {}
     suggestions: dict[str, str] = {}
@@ -299,7 +313,59 @@ def _parse_vlm_response(
         observations[key] = str(raw.get(f"{key}_observations", ""))
         ref_techniques[key] = str(raw.get(f"{key}_reference_technique", ""))
 
-    return scores, rationales, suggestions, deviations, observations, ref_techniques
+    # Parse risk_flags — list of cultural sensitivity concern strings
+    risk_flags = raw.get("risk_flags", [])
+    if not isinstance(risk_flags, list):
+        risk_flags = []
+
+    return _VLMParseResult(
+        scores=scores,
+        rationales=rationales,
+        suggestions=suggestions,
+        deviations=deviations,
+        observations=observations,
+        ref_techniques=ref_techniques,
+        risk_flags=risk_flags,
+    )
+
+
+class _VLMParseResult(dict):
+    """Dict subclass returned by _parse_vlm_response.
+
+    Supports both dict-style access (result["risk_flags"]) and 6-tuple
+    unpacking for backward compatibility with existing callers:
+        scores, rationales, suggestions, deviations, observations, ref_techniques = _parse_vlm_response(raw)
+    """
+
+    def __init__(
+        self,
+        *,
+        scores: dict,
+        rationales: dict,
+        suggestions: dict,
+        deviations: dict,
+        observations: dict,
+        ref_techniques: dict,
+        risk_flags: list,
+    ) -> None:
+        super().__init__(
+            scores=scores,
+            rationales=rationales,
+            suggestions=suggestions,
+            deviations=deviations,
+            observations=observations,
+            ref_techniques=ref_techniques,
+            risk_flags=risk_flags,
+        )
+
+    def __iter__(self):  # type: ignore[override]
+        """Yield the 6-tuple fields in order for backward-compat unpacking."""
+        yield self["scores"]
+        yield self["rationales"]
+        yield self["suggestions"]
+        yield self["deviations"]
+        yield self["observations"]
+        yield self["ref_techniques"]
 
 
 _TRADITION_GUIDANCE: dict[str, str] = {
@@ -606,9 +672,13 @@ async def score_image(
         parsed_json = parse_llm_json(scoring_text)
 
         # Use _parse_vlm_response to extract and validate all fields (including extras)
-        scores, rationales, suggestions, deviations, observations, ref_techniques = _parse_vlm_response(
-            parsed_json, extra_keys=extra_keys
-        )
+        parsed = _parse_vlm_response(parsed_json, extra_keys=extra_keys)
+        scores = parsed["scores"]
+        rationales = parsed["rationales"]
+        suggestions = parsed["suggestions"]
+        deviations = parsed["deviations"]
+        observations = parsed["observations"]
+        ref_techniques = parsed["ref_techniques"]
 
         # Rebuild flat dict (backward-compatible with callers expecting flat dict)
         data: dict = {}
@@ -620,6 +690,8 @@ async def score_image(
             data[f"{level}_deviation_type"] = deviations.get(level, "traditional")
             data[f"{level}_observations"] = observations.get(level, "")
             data[f"{level}_reference_technique"] = ref_techniques.get(level, "")
+        # Include risk_flags so _engine.py can read it from the flat dict
+        data["risk_flags"] = parsed["risk_flags"]
         # Store extra_keys and names in data so _engine.py can split core vs extra
         data["_extra_keys"] = extra_keys
         data["_extra_names"] = {e["key"]: e["name"] for e in extra_dims[:3]}
