@@ -71,12 +71,12 @@ def split_extract(
         mask = build_color_mask(img, info, tolerance=tolerance, assigned=assigned)
         mask_arr = np.array(mask)
         assigned |= (mask_arr > 127)
-        layer_masks[info.name] = mask
+        layer_masks[info.id] = mask
 
     # Phase 2: Save layers in z_index ascending order (bottom to top).
     results: list[LayerResult] = []
     for info in sorted(layers, key=lambda l: l.z_index):
-        mask = layer_masks[info.name]
+        mask = layer_masks[info.id]
         layer_img = apply_mask_to_image(img, mask)
         out_path = out_dir / f"{info.name}.png"
         layer_img.save(str(out_path))
