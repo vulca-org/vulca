@@ -74,14 +74,14 @@ LAYERED = PipelineDefinition(
     name="layered",
     display_name="Layered Creation",
     description=(
-        "Generate independent layers with cultural tradition knowledge. "
-        "PlanLayers → LayerGenerate. Agent orchestrates composition, "
-        "evaluation, and iteration using MCP tools."
+        "Generate independent layers with cultural tradition knowledge, "
+        "then auto-composite. PlanLayers → LayerGenerate → Composite."
     ),
     entry_point="plan_layers",
-    nodes=("plan_layers", "layer_generate"),
+    nodes=("plan_layers", "layer_generate", "composite"),
     edges=(
         ("plan_layers", "layer_generate"),
+        ("layer_generate", "composite"),
     ),
     enable_loop=False,
 )

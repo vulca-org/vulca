@@ -12,8 +12,8 @@ class TestLayeredTemplate:
         assert LAYERED.name == "layered"
         assert LAYERED.entry_point == "plan_layers"
         assert LAYERED.enable_loop is False
-        assert LAYERED.nodes == ("plan_layers", "layer_generate")
-        assert "composite" not in LAYERED.nodes
+        assert LAYERED.nodes == ("plan_layers", "layer_generate", "composite")
+        assert "composite" in LAYERED.nodes
         assert "evaluate" not in LAYERED.nodes
 
     @pytest.mark.asyncio

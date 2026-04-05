@@ -1,4 +1,4 @@
-"""Tests for simplified LAYERED pipeline — 2 nodes, agent orchestrates composition."""
+"""Tests for LAYERED pipeline — 3 nodes: plan_layers → layer_generate → composite."""
 import pytest
 
 from vulca.pipeline import execute
@@ -7,14 +7,14 @@ from vulca.pipeline.types import PipelineInput
 
 
 class TestLayeredSimplified:
-    def test_layered_has_two_nodes(self):
-        assert LAYERED.nodes == ("plan_layers", "layer_generate")
+    def test_layered_has_three_nodes(self):
+        assert LAYERED.nodes == ("plan_layers", "layer_generate", "composite")
 
     def test_layered_no_loop(self):
         assert LAYERED.enable_loop is False
 
-    def test_layered_no_composite_node(self):
-        assert "composite" not in LAYERED.nodes
+    def test_layered_has_composite_but_no_evaluate(self):
+        assert "composite" in LAYERED.nodes
         assert "evaluate" not in LAYERED.nodes
         assert "decide" not in LAYERED.nodes
 
@@ -22,7 +22,7 @@ class TestLayeredSimplified:
         assert LAYERED.entry_point == "plan_layers"
 
     @pytest.mark.asyncio
-    async def test_layered_returns_layers_no_composite(self):
+    async def test_layered_returns_completed(self):
         inp = PipelineInput(
             subject="test",
             intent="test layered",
