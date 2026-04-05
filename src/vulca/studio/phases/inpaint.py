@@ -172,11 +172,13 @@ class InpaintPhase:
         original = Image.open(original_path).convert("RGBA")
         variant = Image.open(repaint_path).convert("RGBA")
 
-        x = int(variant.width * bbox["x"] / 100)
-        y = int(variant.height * bbox["y"] / 100)
-        w = int(variant.width * bbox["w"] / 100)
-        h = int(variant.height * bbox["h"] / 100)
-        region = variant.crop((x, y, x + w, y + h))
+        # bbox percentages are relative to original image, not the variant
+        x = int(original.width * bbox["x"] / 100)
+        y = int(original.height * bbox["y"] / 100)
+        w = int(original.width * bbox["w"] / 100)
+        h = int(original.height * bbox["h"] / 100)
+        # Resize variant to match the target crop dimensions
+        region = variant.resize((w, h), Image.LANCZOS)
 
         # Build feathered mask: solid center, gradient edges
         mask = Image.new("L", (w, h), 255)

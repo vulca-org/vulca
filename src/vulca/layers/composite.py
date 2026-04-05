@@ -1,6 +1,8 @@
 """Composite layers into a single flat image with proper blend modes (V2)."""
 from __future__ import annotations
 
+from pathlib import Path
+
 from PIL import Image
 
 from vulca.layers.types import LayerResult
@@ -39,6 +41,9 @@ def composite_layers(
         processed.append(lr)
 
     canvas = blend_layers(processed, width=width, height=height)
-    if output_path:
-        canvas.save(output_path)
+    if not output_path:
+        # Default: write next to first layer file
+        first = layers[0].image_path if layers else "composite.png"
+        output_path = str(Path(first).parent / "composite.png")
+    canvas.save(output_path)
     return output_path

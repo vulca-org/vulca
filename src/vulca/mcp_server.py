@@ -692,26 +692,14 @@ async def get_evolution_status(
     else:
         insight = "No evolution detected — using original YAML weights."
 
-    # Try to get sessions count from evolved context
+    # Get sessions count from unified store
     sessions_count = 0
     try:
-        import json, os
-        from pathlib import Path
-        loader_path = Path(__file__).resolve()
-        candidates = [
-            loader_path.parent.parent.parent.parent / "wenxin-backend" / "app" / "prototype" / "data" / "evolved_context.json",
-        ]
-        env_path = os.environ.get("VULCA_EVOLVED_CONTEXT")
-        if env_path:
-            candidates.insert(0, Path(env_path))
-        for p in candidates:
-            if p.is_file():
-                with open(p, "r", encoding="utf-8") as f:
-                    ctx = json.load(f)
-                sessions_count = ctx.get("total_sessions", 0)
-                break
+        from vulca.storage.unified import UnifiedSessionStore
+        store = UnifiedSessionStore()
+        sessions_count = len(store.load_by_tradition(tradition))
     except Exception:
-        logging.getLogger("vulca").debug("Failed to load evolved context for evolution status")
+        logging.getLogger("vulca").debug("Failed to load session count for evolution status")
 
     result: dict = {
         "tradition": tradition,
@@ -940,6 +928,9 @@ async def inpaint_artwork(
         select: Variant to select (1-based).
     """
     from vulca.inpaint import ainpaint
+
+    if select < 1:
+        return {"error": "select must be >= 1 (1-based index)"}
 
     result = await ainpaint(
         image_path,

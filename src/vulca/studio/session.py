@@ -65,7 +65,14 @@ class StudioSession:
         """Accept the artwork and trigger digestion.
 
         Digestion is fire-and-forget — failure does not block accept.
+        Requires at least GENERATE state to have been reached.
         """
+        min_state = SessionState.GENERATE
+        if _STATE_ORDER.index(self.state) < _STATE_ORDER.index(min_state):
+            raise ValueError(
+                f"Cannot accept: session is in '{self.state.value}' state. "
+                f"Must reach '{min_state.value}' first."
+            )
         if self.state != SessionState.DONE:
             self.state = SessionState.DONE
 
