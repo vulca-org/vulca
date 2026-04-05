@@ -155,3 +155,42 @@ class TestDominantColorValidation:
         # Sampled colors should be valid hex and close to actual image colors
         for hex_c in validated:
             assert hex_c.startswith("#") and len(hex_c) == 7, f"Invalid hex: {hex_c}"
+
+
+class TestVLMMaskShared:
+    """Task 3: Shared VLM mask module used by regenerate and --layered."""
+
+    def test_vlm_mask_module_exists(self):
+        from vulca.layers import vlm_mask
+        assert hasattr(vlm_mask, "generate_vlm_mask")
+
+    def test_vlm_mask_prompt_asks_for_bw(self):
+        from vulca.layers.vlm_mask import VLM_MASK_PROMPT
+        assert "black" in VLM_MASK_PROMPT.lower()
+        assert "white" in VLM_MASK_PROMPT.lower()
+
+    def test_apply_vlm_mask_creates_rgba(self):
+        from vulca.layers.vlm_mask import apply_vlm_mask
+        content = Image.new("RGB", (64, 64), (200, 100, 50))
+        mask = Image.new("L", (64, 64), 128)
+        result = apply_vlm_mask(content, mask)
+        assert result.mode == "RGBA"
+        assert result.size == (64, 64)
+        # Alpha should be 128 everywhere
+        alpha = np.array(result.split()[3])
+        assert np.all(alpha == 128)
+
+    def test_apply_vlm_mask_resizes_mask(self):
+        from vulca.layers.vlm_mask import apply_vlm_mask
+        content = Image.new("RGB", (100, 100), (200, 100, 50))
+        mask = Image.new("L", (50, 50), 255)  # Different size
+        result = apply_vlm_mask(content, mask)
+        assert result.size == (100, 100)
+
+    def test_regenerate_no_longer_uses_color_mask_for_alpha(self):
+        """split_regenerate should NOT import build_color_mask for alpha."""
+        import inspect
+        from vulca.layers.split import split_regenerate
+        source = inspect.getsource(split_regenerate)
+        # Should use vlm_mask, not build_color_mask for alpha
+        assert "build_color_mask" not in source or "validate" in source

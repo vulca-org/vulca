@@ -128,6 +128,10 @@ async def split_regenerate(
     out_dir = Path(output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
+    # Validate VLM-guessed colors against actual pixels (same as extract mode).
+    for info in layers:
+        info.dominant_colors = validate_dominant_colors(img, info.dominant_colors)
+
     results: list[LayerResult] = []
     sorted_layers = sorted(layers, key=lambda l: l.z_index)
 
@@ -164,13 +168,22 @@ async def split_regenerate(
         if gen_img.size != (w, h):
             gen_img = gen_img.resize((w, h), Image.LANCZOS)
 
-        # Hybrid: apply color mask from ORIGINAL image to get real transparency.
-        # Gemini can't generate true alpha — we use extract's mask for alpha channel
-        # combined with Gemini's high-quality RGB content.
-        if info.dominant_colors:
-            mask = build_color_mask(img, info, tolerance=30)
-            r, g, b, _ = gen_img.split()
-            gen_img = Image.merge("RGBA", (r, g, b, mask))
+        # Two-pass VLM mask: ask the same VLM to generate a BW alpha mask.
+        # This replaces the broken hybrid approach (color mask from original
+        # image applied to generated RGB, causing alpha/content mismatch).
+        if info.content_type != "background":
+            from vulca.layers.vlm_mask import generate_vlm_mask, apply_vlm_mask
+            buf = io.BytesIO()
+            gen_img.convert("RGB").save(buf, format="PNG")
+            gen_b64 = base64.b64encode(buf.getvalue()).decode()
+            vlm_mask_img = await generate_vlm_mask(gen_b64, provider_name=provider, api_key=api_key)
+            if vlm_mask_img is not None:
+                gen_img = apply_vlm_mask(gen_img, vlm_mask_img)
+            elif info.dominant_colors:
+                # Fallback to color mask if VLM mask fails
+                mask = build_color_mask(img, info, tolerance=30)
+                r, g, b, _ = gen_img.split()
+                gen_img = Image.merge("RGBA", (r, g, b, mask))
 
         out_path = out_dir / f"{info.name}.png"
         gen_img.save(str(out_path))
