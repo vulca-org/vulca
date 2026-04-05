@@ -234,3 +234,76 @@ class TestSAMPointPrompts:
         px, py = _compute_layer_point(img, layer_red)
         # x should be near center (full width)
         assert 80 <= px <= 120, f"x={px} should be near center for full-width region"
+
+
+class TestRoundTripIntegrity:
+    """Integration: composite(split_extract(img)) ≈ img."""
+
+    def test_extract_composite_roundtrip(self):
+        """Splitting then compositing should approximately recover the original."""
+        from vulca.layers.split import split_extract
+        from vulca.layers.composite import composite_layers
+
+        img = _make_test_image(200, 200)
+        with tempfile.TemporaryDirectory() as td:
+            img_path = Path(td) / "test.png"
+            img.save(str(img_path))
+
+            layers = [
+                _make_layer("red_region", 0, ["#FF0000"]),
+                _make_layer("blue_region", 1, ["#0000FF"]),
+            ]
+            results = split_extract(str(img_path), layers, output_dir=td)
+
+            # composite_layers takes list[LayerResult] and writes to a file
+            composite_path = composite_layers(results, width=200, height=200)
+            composite = Image.open(composite_path)
+
+            # Compare with original (use RGB for comparison)
+            orig_arr = np.array(img.convert("RGB"))
+            comp_arr = np.array(composite.convert("RGB"))
+
+            # Allow tolerance: masking may lose some edge pixels
+            diff = np.abs(orig_arr.astype(float) - comp_arr.astype(float))
+            mean_diff = diff.mean()
+            assert mean_diff < 30, f"Round-trip mean diff {mean_diff:.1f} too large"
+
+    def test_roundtrip_preserves_layer_count(self):
+        """split_extract should produce exactly as many results as layers requested."""
+        from vulca.layers.split import split_extract
+
+        img = _make_test_image(200, 200)
+        with tempfile.TemporaryDirectory() as td:
+            img_path = Path(td) / "test.png"
+            img.save(str(img_path))
+
+            layers = [
+                _make_layer("red_region", 0, ["#FF0000"]),
+                _make_layer("blue_region", 1, ["#0000FF"]),
+            ]
+            results = split_extract(str(img_path), layers, output_dir=td)
+            assert len(results) == 2, f"Expected 2 layers, got {len(results)}"
+
+    def test_roundtrip_layers_are_full_canvas_rgba(self):
+        """Each split layer must be full-canvas RGBA (not a crop)."""
+        from vulca.layers.split import split_extract
+
+        img = _make_test_image(200, 200)
+        with tempfile.TemporaryDirectory() as td:
+            img_path = Path(td) / "test.png"
+            img.save(str(img_path))
+
+            layers = [
+                _make_layer("red_region", 0, ["#FF0000"]),
+                _make_layer("blue_region", 1, ["#0000FF"]),
+            ]
+            results = split_extract(str(img_path), layers, output_dir=td)
+
+            for r in results:
+                layer_img = Image.open(r.image_path)
+                assert layer_img.mode == "RGBA", (
+                    f"Layer {r.info.name} mode is {layer_img.mode}, expected RGBA"
+                )
+                assert layer_img.size == (200, 200), (
+                    f"Layer {r.info.name} size is {layer_img.size}, expected (200, 200)"
+                )

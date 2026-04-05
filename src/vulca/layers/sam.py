@@ -45,14 +45,14 @@ def _compute_layer_point(
     if not info.dominant_colors:
         return center
 
-    from vulca.layers.mask import _hex_to_rgb
+    from vulca.layers.mask import hex_to_rgb
 
     rgb = np.array(image.convert("RGB"), dtype=np.float32)
     mask = np.zeros((h, w), dtype=bool)
 
     for hex_c in info.dominant_colors:
         try:
-            target = np.array(_hex_to_rgb(hex_c), dtype=np.float32)
+            target = np.array(hex_to_rgb(hex_c), dtype=np.float32)
         except (ValueError, IndexError):
             continue
         dist = np.sqrt(np.sum((rgb - target) ** 2, axis=2))

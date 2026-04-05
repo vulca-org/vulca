@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 from PIL import Image
 
-from vulca.layers.mask import _hex_to_rgb, apply_mask_to_image, build_color_mask
+from vulca.layers.mask import hex_to_rgb, apply_mask_to_image, build_color_mask
 from vulca.layers.types import LayerInfo
 
 
@@ -198,23 +198,23 @@ class TestApplyMask:
 class TestHexToRgb:
 
     def test_rrggbb_format(self):
-        assert _hex_to_rgb("#FF0000") == (255, 0, 0)
-        assert _hex_to_rgb("#00FF00") == (0, 255, 0)
-        assert _hex_to_rgb("#0000FF") == (0, 0, 255)
-        assert _hex_to_rgb("#FFFFFF") == (255, 255, 255)
-        assert _hex_to_rgb("#000000") == (0, 0, 0)
+        assert hex_to_rgb("#FF0000") == (255, 0, 0)
+        assert hex_to_rgb("#00FF00") == (0, 255, 0)
+        assert hex_to_rgb("#0000FF") == (0, 0, 255)
+        assert hex_to_rgb("#FFFFFF") == (255, 255, 255)
+        assert hex_to_rgb("#000000") == (0, 0, 0)
 
     def test_rgb_shorthand_format(self):
         # "#RGB" -> "#RRGGBB"
-        assert _hex_to_rgb("#F00") == (255, 0, 0)
-        assert _hex_to_rgb("#0F0") == (0, 255, 0)
-        assert _hex_to_rgb("#00F") == (0, 0, 255)
-        assert _hex_to_rgb("#FFF") == (255, 255, 255)
+        assert hex_to_rgb("#F00") == (255, 0, 0)
+        assert hex_to_rgb("#0F0") == (0, 255, 0)
+        assert hex_to_rgb("#00F") == (0, 0, 255)
+        assert hex_to_rgb("#FFF") == (255, 255, 255)
 
     def test_no_hash_prefix(self):
         # Should work with or without '#'
-        assert _hex_to_rgb("FF0000") == (255, 0, 0)
+        assert hex_to_rgb("FF0000") == (255, 0, 0)
 
     def test_lowercase_hex(self):
-        assert _hex_to_rgb("#ff0000") == (255, 0, 0)
-        assert _hex_to_rgb("#dc1e1e") == (220, 30, 30)
+        assert hex_to_rgb("#ff0000") == (255, 0, 0)
+        assert hex_to_rgb("#dc1e1e") == (220, 30, 30)

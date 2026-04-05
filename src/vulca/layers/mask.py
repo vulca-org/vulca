@@ -7,7 +7,7 @@ from PIL import Image
 from vulca.layers.types import LayerInfo
 
 
-def _hex_to_rgb(hex_color: str) -> tuple[int, int, int]:
+def hex_to_rgb(hex_color: str) -> tuple[int, int, int]:
     """Convert '#RRGGBB' or '#RGB' to (R, G, B)."""
     h = hex_color.lstrip("#")
     if len(h) == 3:
@@ -49,7 +49,7 @@ def build_color_mask(
 
     for hex_color in info.dominant_colors:
         try:
-            target = np.array(_hex_to_rgb(hex_color), dtype=np.float32)  # shape (3,)
+            target = np.array(hex_to_rgb(hex_color), dtype=np.float32)  # shape (3,)
         except (ValueError, IndexError):
             continue
         # Euclidean distance per pixel
@@ -122,7 +122,7 @@ def validate_dominant_colors(
     validated: list[str] = []
     for hex_c in claimed_colors:
         try:
-            target = np.array(_hex_to_rgb(hex_c), dtype=np.float32)
+            target = np.array(hex_to_rgb(hex_c), dtype=np.float32)
         except (ValueError, IndexError):
             validated.append(hex_c)
             continue
