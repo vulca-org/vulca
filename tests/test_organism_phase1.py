@@ -464,6 +464,126 @@ class TestModePromptDifferentiation:
         )
 
 
+class TestEvolutionRoundTrip:
+    """Critical: evolve() output must be readable by loader and _vlm.py."""
+
+    def test_evolve_weights_readable_by_loader(self, tmp_path: Path) -> None:
+        """The most critical test: evolved_context.json round-trips correctly."""
+        from vulca.digestion.local_evolver import LocalEvolver
+        from vulca.storage.unified import UnifiedSessionStore
+        import vulca.cultural.loader as loader
+
+        data_dir = tmp_path / "data"
+        store = UnifiedSessionStore(data_dir=data_dir)
+
+        sessions = [
+            {
+                "session_id": f"s{i}",
+                "tradition": "chinese_xieyi",
+                "final_scores": {"L1": 0.85, "L2": 0.80, "L3": 0.90, "L4": 0.82, "L5": 0.88},
+                "weighted_total": 0.85,
+                "user_feedback": "completed",
+                "eval_mode": "strict",
+                "subject": f"landscape {i}",
+            }
+            for i in range(6)
+        ]
+        for s in sessions:
+            store.append(s)
+        for i in range(4):
+            store.record_feedback(f"s{i}", "accepted")
+
+        evolver = LocalEvolver(data_dir=str(data_dir))
+        result = evolver.evolve()
+        assert result is not None, "evolve() should return data"
+
+        # THE CRITICAL CHECK: loader can read back what evolver wrote
+        old_dir = loader._EVOLVED_CONTEXT_DIR
+        try:
+            loader._EVOLVED_CONTEXT_DIR = data_dir
+            weights = loader._load_evolved_weights("chinese_xieyi")
+            assert weights is not None, "evolved weights must be readable by loader"
+            assert len(weights) == 5, f"expected 5 dimensions, got {len(weights)}"
+            # Loader returns L1-L5 keyed dict
+            for lk in ("L1", "L2", "L3", "L4", "L5"):
+                assert lk in weights, f"missing {lk} in loader output"
+        finally:
+            loader._EVOLVED_CONTEXT_DIR = old_dir
+
+    def test_tradition_weights_key_exists_in_evolved(self, tmp_path: Path) -> None:
+        """evolved_context.json must contain 'tradition_weights' key."""
+        from vulca.digestion.local_evolver import LocalEvolver
+        from vulca.storage.unified import UnifiedSessionStore
+
+        data_dir = tmp_path / "data"
+        store = UnifiedSessionStore(data_dir=data_dir)
+
+        for i in range(6):
+            store.append({
+                "session_id": f"s{i}",
+                "tradition": "chinese_xieyi",
+                "final_scores": {"L1": 0.85, "L2": 0.80, "L3": 0.90, "L4": 0.82, "L5": 0.88},
+                "weighted_total": 0.85,
+                "user_feedback": "completed",
+                "eval_mode": "strict",
+                "subject": f"landscape {i}",
+            })
+        for i in range(4):
+            store.record_feedback(f"s{i}", "accepted")
+
+        evolver = LocalEvolver(data_dir=str(data_dir))
+        result = evolver.evolve()
+        assert result is not None
+
+        assert "tradition_weights" in result, (
+            "evolved dict must contain 'tradition_weights' for _vlm.py and loader.py"
+        )
+        tw = result["tradition_weights"]
+        assert "chinese_xieyi" in tw
+        xieyi = tw["chinese_xieyi"]
+        # Must use full dimension names as keys
+        expected_keys = {
+            "visual_perception", "technical_analysis",
+            "cultural_context", "critical_interpretation",
+            "philosophical_aesthetic",
+        }
+        assert set(xieyi.keys()) == expected_keys, (
+            f"tradition_weights must use full dimension names, got {set(xieyi.keys())}"
+        )
+
+    def test_tradition_weights_persisted_to_disk(self, tmp_path: Path) -> None:
+        """tradition_weights must be written to disk, not just in-memory."""
+        from vulca.digestion.local_evolver import LocalEvolver
+        from vulca.storage.unified import UnifiedSessionStore
+
+        data_dir = tmp_path / "data"
+        store = UnifiedSessionStore(data_dir=data_dir)
+
+        for i in range(6):
+            store.append({
+                "session_id": f"s{i}",
+                "tradition": "chinese_xieyi",
+                "final_scores": {"L1": 0.85, "L2": 0.80, "L3": 0.90, "L4": 0.82, "L5": 0.88},
+                "weighted_total": 0.85,
+                "user_feedback": "completed",
+                "eval_mode": "strict",
+                "subject": f"landscape {i}",
+            })
+        for i in range(4):
+            store.record_feedback(f"s{i}", "accepted")
+
+        evolver = LocalEvolver(data_dir=str(data_dir))
+        evolver.evolve()
+
+        # Read from disk directly
+        evolved_path = data_dir / "evolved_context.json"
+        assert evolved_path.exists()
+        disk_data = json.loads(evolved_path.read_text())
+        assert "tradition_weights" in disk_data, (
+            "tradition_weights must be persisted to disk"
+        )
+
+
 class TestRiskFlags:
     def test_risk_flags_in_prompt(self):
         from vulca._vlm import _STATIC_SCORING_PREFIX

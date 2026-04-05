@@ -162,6 +162,23 @@ class LocalEvolver:
                 },
             )
 
+        # Build tradition_weights in the format expected by _vlm.py and loader.py
+        _L_TO_FULL = {
+            "L1": "visual_perception",
+            "L2": "technical_analysis",
+            "L3": "cultural_context",
+            "L4": "critical_interpretation",
+            "L5": "philosophical_aesthetic",
+        }
+        tradition_weights: dict[str, dict[str, float]] = {}
+        for trad, data in evolved.get("traditions", {}).items():
+            avgs = data.get("dimension_averages", {})
+            if avgs:
+                tradition_weights[trad] = {
+                    _L_TO_FULL.get(k, k): v for k, v in avgs.items()
+                }
+        evolved["tradition_weights"] = tradition_weights
+
         # Aggregate total session count at root level
         evolved["total_sessions"] = sum(
             t.get("session_count", 0) for t in evolved["traditions"].values()
@@ -271,8 +288,8 @@ class LocalEvolver:
             sid = s.get("session_id", "")
             signal = feedback_map.get(sid, "")
 
-            # Skip if rejected or not explicitly accepted
-            if signal == "rejected" or signal != "accepted":
+            # Skip if not explicitly accepted
+            if signal != "accepted":
                 continue
 
             wt = s.get("weighted_total", 0.0)
