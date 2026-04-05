@@ -128,8 +128,7 @@ class TestDominantColorValidation:
 
         img = _make_test_image()
         validated = validate_dominant_colors(img, ["#FF0000", "#0000FF"])
-        # Both colors exist in the image, should pass
-        assert len(validated) == 2
+        assert validated == ["#FF0000", "#0000FF"], f"Expected unchanged, got {validated}"
 
     def test_wrong_colors_get_replaced(self):
         """Colors far from any image pixel should be replaced with sampled colors."""
@@ -137,8 +136,8 @@ class TestDominantColorValidation:
 
         img = _make_test_image()  # only has red and blue
         validated = validate_dominant_colors(img, ["#00FF00"])  # green doesn't exist
-        # Should be replaced with an actual image color
-        assert len(validated) >= 1
+        # Should be replaced with an actual image color (same length as input)
+        assert len(validated) == 1  # Same length as input (contract: same length, bad colors replaced)
         # The replacement should be close to red or blue
         for hex_c in validated:
             r, g, b = int(hex_c[1:3], 16), int(hex_c[3:5], 16), int(hex_c[5:7], 16)
@@ -153,3 +152,6 @@ class TestDominantColorValidation:
         img = _make_test_image()
         validated = validate_dominant_colors(img, [])
         assert len(validated) >= 1
+        # Sampled colors should be valid hex and close to actual image colors
+        for hex_c in validated:
+            assert hex_c.startswith("#") and len(hex_c) == 7, f"Invalid hex: {hex_c}"

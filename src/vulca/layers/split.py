@@ -57,10 +57,9 @@ def split_extract(
     out_dir = Path(output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    # Validate VLM-guessed colors against actual pixels before masking.
+    # Validate VLM-guessed colors against actual pixels (including empty lists).
     for info in layers:
-        if info.dominant_colors:
-            info.dominant_colors = validate_dominant_colors(img, info.dominant_colors)
+        info.dominant_colors = validate_dominant_colors(img, info.dominant_colors)
 
     assigned = np.zeros((h, w), dtype=bool)
 
