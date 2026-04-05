@@ -579,7 +579,7 @@ async def resume_artwork(
         # Build refined intent with feedback injected
         refined_intent = original_intent
         if feedback:
-            refined_intent = f"{original_subject}\n\nRefinement feedback: {feedback}"
+            refined_intent = f"{original_intent}\n\nRefinement feedback: {feedback}"
 
         from vulca.pipeline.engine import execute
         from vulca.pipeline.templates import DEFAULT

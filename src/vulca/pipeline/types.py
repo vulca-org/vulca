@@ -152,6 +152,8 @@ class PipelineOutput:
             "recommendations": self.recommendations,
             "interrupted_at": self.interrupted_at,
             "summary": self.summary,
+            "original_intent": self.original_intent,
+            "original_provider": self.original_provider,
         }
 
 
