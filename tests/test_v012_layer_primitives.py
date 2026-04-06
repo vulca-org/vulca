@@ -137,3 +137,84 @@ class TestOpacityBlend:
             result = blend_layers(layers, width=50, height=50)
             px = result.getpixel((25, 25))
             assert px[1] == 255 and px[0] == 0, f"Zero opacity should show bg green, got {px}"
+
+
+class TestSpatialTransform:
+    """Task 3: Spatial transform engine."""
+
+    def test_compute_content_bbox(self):
+        from vulca.layers.transform import compute_content_bbox
+
+        img = Image.new("RGBA", (100, 100), (0, 0, 0, 0))
+        for y in range(30, 70):
+            for x in range(20, 80):
+                img.putpixel((x, y), (255, 0, 0, 255))
+
+        bbox = compute_content_bbox(img)
+        assert bbox is not None
+        assert bbox["x"] == 20
+        assert bbox["y"] == 30
+        assert bbox["w"] == 60
+        assert bbox["h"] == 40
+
+    def test_compute_content_bbox_empty_image(self):
+        from vulca.layers.transform import compute_content_bbox
+
+        img = Image.new("RGBA", (100, 100), (0, 0, 0, 0))
+        assert compute_content_bbox(img) is None
+
+    def test_apply_transform_identity(self):
+        """Default transform (full canvas) should not change the image."""
+        from vulca.layers.transform import apply_spatial_transform
+
+        img = Image.new("RGBA", (100, 100), (255, 0, 0, 128))
+        info = _make_layer("test", 0)
+        result = apply_spatial_transform(img, info, canvas_width=100, canvas_height=100)
+        assert result.size == (100, 100)
+        assert result.getpixel((50, 50)) == (255, 0, 0, 128)
+
+    def test_apply_transform_half_size_centered(self):
+        """50% size layer positioned at 25%, 25% should occupy center."""
+        from vulca.layers.transform import apply_spatial_transform
+
+        img = Image.new("RGBA", (100, 100), (255, 0, 0, 255))
+        info = _make_layer("test", 0, x=25.0, y=25.0, width=50.0, height=50.0)
+        result = apply_spatial_transform(img, info, canvas_width=200, canvas_height=200)
+        assert result.size == (200, 200)
+        px_center = result.getpixel((100, 100))
+        assert px_center[0] == 255 and px_center[3] == 255
+        px_corner = result.getpixel((10, 10))
+        assert px_corner[3] == 0
+
+    def test_needs_transform_false_for_defaults(self):
+        from vulca.layers.transform import needs_transform
+
+        info = _make_layer("test", 0)
+        assert needs_transform(info) is False
+
+    def test_needs_transform_true_for_moved(self):
+        from vulca.layers.transform import needs_transform
+
+        info = _make_layer("test", 0, x=10.0)
+        assert needs_transform(info) is True
+
+    def test_blend_layers_applies_transform(self):
+        """blend_layers should apply spatial transform when layer has non-default position."""
+        from vulca.layers.blend import blend_layers
+
+        with tempfile.TemporaryDirectory() as td:
+            bg = Image.new("RGBA", (100, 100), (0, 255, 0, 255))
+            fg = Image.new("RGBA", (100, 100), (255, 0, 0, 255))
+            bg_path = str(Path(td) / "bg.png"); bg.save(bg_path)
+            fg_path = str(Path(td) / "fg.png"); fg.save(fg_path)
+
+            layers = [
+                LayerResult(info=_make_layer("bg", 0), image_path=bg_path),
+                LayerResult(info=_make_layer("fg", 1, x=0.0, y=0.0, width=50.0, height=50.0),
+                           image_path=fg_path),
+            ]
+            result = blend_layers(layers, width=100, height=100)
+            px_tl = result.getpixel((10, 10))
+            assert px_tl[0] == 255 and px_tl[1] == 0, f"Top-left should be red, got {px_tl}"
+            px_br = result.getpixel((75, 75))
+            assert px_br[1] == 255 and px_br[0] == 0, f"Bottom-right should be green, got {px_br}"

@@ -5,6 +5,7 @@ import numpy as np
 from PIL import Image
 
 from vulca.layers.types import LayerResult
+from vulca.layers.transform import needs_transform, apply_spatial_transform
 
 
 def blend_normal(bottom: Image.Image, top: Image.Image) -> Image.Image:
@@ -94,7 +95,12 @@ def blend_layers(
         except Exception:
             continue
 
-        if layer_img.size != (width, height):
+        # Apply spatial transform OR simple resize
+        if needs_transform(layer.info):
+            layer_img = apply_spatial_transform(
+                layer_img, layer.info, canvas_width=width, canvas_height=height,
+            )
+        elif layer_img.size != (width, height):
             layer_img = layer_img.resize((width, height), Image.LANCZOS)
 
         # Apply layer opacity (v0.12)

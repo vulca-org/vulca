@@ -17,6 +17,7 @@ from vulca.layers.ops import (
 )
 from vulca.layers.sam import SAM_AVAILABLE
 from vulca.layers.vlm_mask import generate_vlm_mask, apply_vlm_mask, VLM_MASK_PROMPT
+from vulca.layers.transform import apply_spatial_transform, compute_content_bbox, needs_transform
 from vulca.layers.plan_prompt import build_plan_prompt, get_tradition_layer_order
 from vulca.layers.alpha import ensure_alpha
 
@@ -44,4 +45,5 @@ __all__ = [
     "load_artwork",
     "build_plan_prompt", "get_tradition_layer_order",
     "ensure_alpha",
+    "apply_spatial_transform", "compute_content_bbox", "needs_transform",
 ]
