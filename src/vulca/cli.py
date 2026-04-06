@@ -174,8 +174,8 @@ def main(argv: list[str] | None = None) -> None:
     layers_split.add_argument("image", help="Path to image")
     layers_split.add_argument("--output", "-o", default="", help="Output directory")
     layers_split.add_argument("--mode", "-m", default="regenerate",
-                              choices=["regenerate", "extract", "sam"],
-                              help="Split mode: regenerate | extract | sam (needs vulca[sam])")
+                              choices=["regenerate", "extract", "sam", "vlm"],
+                              help="Split mode: regenerate | extract | sam (needs vulca[sam]) | vlm (needs API key)")
     layers_split.add_argument("--provider", "-p", default="gemini", help="Image provider (regenerate mode)")
     layers_split.add_argument("--tradition", "-t", default="default", help="Cultural tradition")
 
@@ -1247,6 +1247,12 @@ def _cmd_layers(args: argparse.Namespace) -> None:
         elif args.mode == "sam":
             from vulca.layers.sam import sam_split
             results = sam_split(args.image, layers, output_dir=out_dir)
+        elif args.mode == "vlm":
+            from vulca.layers.split import split_vlm
+            results = loop.run_until_complete(
+                split_vlm(args.image, layers, output_dir=out_dir,
+                          provider=args.provider)
+            )
         else:
             from vulca.layers.split import split_regenerate
             results = loop.run_until_complete(

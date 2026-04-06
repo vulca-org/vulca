@@ -402,3 +402,46 @@ class TestSplitVlm:
 
         z_indices = [r.info.z_index for r in results]
         assert z_indices == sorted(z_indices), "Results must be sorted by z_index ascending"
+
+
+# ---------------------------------------------------------------------------
+# Task 3: Export split_vlm from vulca.layers
+# ---------------------------------------------------------------------------
+
+class TestSplitVlmExport:
+    """split_vlm is importable from vulca.layers."""
+
+    def test_import_from_layers_package(self):
+        from vulca.layers import split_vlm
+        assert callable(split_vlm)
+
+
+# ---------------------------------------------------------------------------
+# Task 4: CLI --mode vlm wiring
+# ---------------------------------------------------------------------------
+
+class TestSplitVlmCLI:
+    """CLI --mode vlm is wired up."""
+
+    def test_vlm_mode_in_cli_choices(self):
+        import subprocess, sys
+        result = subprocess.run(
+            [sys.executable, "-m", "vulca", "layers", "split", "--help"],
+            capture_output=True, text=True,
+        )
+        # argparse prints the choices in the help text
+        assert "vlm" in result.stdout, (
+            f"Expected 'vlm' in 'layers split --help' output, got:\n{result.stdout}"
+        )
+
+
+# ---------------------------------------------------------------------------
+# Task 5: MCP layers_split supports mode='vlm'
+# ---------------------------------------------------------------------------
+
+class TestSplitVlmMCP:
+    """MCP layers_split supports mode='vlm'."""
+
+    def test_mcp_docstring_mentions_vlm(self):
+        from vulca.mcp_server import layers_split
+        assert "vlm" in layers_split.__doc__

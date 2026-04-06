@@ -992,7 +992,7 @@ async def layers_split(
     Args:
         image_path: Path to the image file.
         output_dir: Output directory (default: image parent/layers).
-        mode: Split mode — "regenerate" (img2img, default) or "extract" (color-range, no API).
+        mode: Split mode — "regenerate" (img2img, default), "extract" (color-range, no API), or "vlm" (VLM semantic masks).
         provider: Image provider for regenerate mode.
         tradition: Cultural tradition for styling.
 
@@ -1008,6 +1008,12 @@ async def layers_split(
 
     if mode == "extract":
         results = split_extract(image_path, layers, output_dir=out)
+    elif mode == "vlm":
+        from vulca.layers.split import split_vlm
+        results = await split_vlm(
+            image_path, layers, output_dir=out,
+            provider=provider,
+        )
     else:
         results = await split_regenerate(
             image_path, layers, output_dir=out,
