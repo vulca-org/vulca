@@ -58,6 +58,14 @@ sam = [
     "Pillow>=10.0",
 ]
 
+# SAM3 text-prompted segmentation (optional, heavy, GPU-only)
+sam3 = [
+    "transformers>=4.50",
+    "torch>=2.0",
+    "numpy>=1.24",
+    "Pillow>=10.0",
+]
+
 # Background removal (optional)
 rembg = [
     "rembg>=2.0",
@@ -81,6 +89,7 @@ layers-full = [
     "numpy>=1.24",
     "rembg>=2.0",
     "segment-anything-2>=0.1",
+    "transformers>=4.50",
     "torch>=2.0",
 ]
 
