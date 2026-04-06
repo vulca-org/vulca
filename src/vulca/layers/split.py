@@ -1,14 +1,15 @@
 """Split a flat image into alpha-channel layers.
 
-Supports two modes:
-  - split_extract  : color-range masking → full-canvas RGBA layers
+Supports three modes:
+  - split_extract   : color-range masking → full-canvas RGBA layers
   - split_regenerate: img2img per layer → full-canvas RGBA layers (async)
+  - split_vlm       : VLM per-layer BW semantic masks → full-canvas RGBA layers (async)
 
 V1 compat functions (crop_layer, chromakey_white, chromakey_black,
 write_manifest) are kept at the bottom for backward compatibility with
 test_layers.py and any other callers that import write_manifest from here.
 The V1 write_manifest writes version=1 JSON with bbox/bg_color fields.
-For V2, split_extract/split_regenerate use manifest.write_manifest internally.
+For V2, split_extract/split_regenerate/split_vlm use manifest.write_manifest internally.
 """
 from __future__ import annotations
 
@@ -226,7 +227,6 @@ async def split_vlm(
         List of LayerResult sorted by z_index ascending.
     """
     from vulca.providers import get_image_provider
-    import io as _io  # noqa: F401 (used in helper)
 
     img = Image.open(image_path)
     w, h = img.size
@@ -253,7 +253,7 @@ async def split_vlm(
         )
 
         mask_l = await _vlm_mask_for_layer(
-            ref_b64, prompt, img_provider, info, img, w, h,
+            ref_b64, prompt, img_provider, info, img, w, h, assigned,
         )
         mask_arr = np.array(mask_l)
         mask_bool = mask_arr > 127
@@ -291,6 +291,7 @@ async def _vlm_mask_for_layer(
     img: Image.Image,
     w: int,
     h: int,
+    assigned: np.ndarray | None = None,
 ) -> Image.Image:
     """Generate a VLM mask for one layer, with fallback to color mask.
 
@@ -325,7 +326,7 @@ async def _vlm_mask_for_layer(
                 "VLM mask degenerate for layer %s (std=%.1f), fallback to color mask",
                 info.name, mask_arr.std(),
             )
-            return build_color_mask(img, info, tolerance=30)
+            return build_color_mask(img, info, tolerance=30, assigned=assigned)
         return mask_l
     except Exception:
         logging.getLogger("vulca").warning(
