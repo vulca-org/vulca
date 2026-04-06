@@ -247,6 +247,15 @@ def main(argv: list[str] | None = None) -> None:
     layers_dup.add_argument("--layer", "-l", required=True, help="Source layer name")
     layers_dup.add_argument("--name", "-n", default="", help="New layer name")
 
+    layers_transform = layers_sub.add_parser("transform", help="Move/scale/rotate/opacity a layer")
+    layers_transform.add_argument("artwork_dir", help="Directory with layers")
+    layers_transform.add_argument("--layer", "-l", required=True, help="Layer name")
+    layers_transform.add_argument("--dx", type=float, default=0.0, help="Move X by percentage (relative)")
+    layers_transform.add_argument("--dy", type=float, default=0.0, help="Move Y by percentage (relative)")
+    layers_transform.add_argument("--scale", type=float, default=1.0, help="Scale factor (1.0=no change)")
+    layers_transform.add_argument("--rotate", type=float, default=0.0, help="Rotate degrees (clockwise)")
+    layers_transform.add_argument("--opacity", type=float, default=-1.0, help="Set opacity (0-1, -1=unchanged)")
+
     # sessions command group
     sessions_p = sub.add_parser("sessions", help="Session data analytics")
     sessions_sub = sessions_p.add_subparsers(dest="sessions_command")
@@ -1404,6 +1413,21 @@ def _cmd_layers(args: argparse.Namespace) -> None:
         result = duplicate_layer(artwork, artwork_dir=args.artwork_dir,
                                 layer_name=args.layer, new_name=args.name)
         print(f"  Duplicated: {args.layer} -> {result.info.name}")
+
+    elif args.layers_command == "transform":
+        from vulca.layers.manifest import load_manifest
+        from vulca.layers.ops import transform_layer
+        artwork = load_manifest(args.artwork_dir)
+        set_opacity = args.opacity if args.opacity >= 0 else None
+        transform_layer(artwork, artwork_dir=args.artwork_dir,
+                        layer_name=args.layer, dx=args.dx, dy=args.dy,
+                        scale=args.scale, rotate=args.rotate,
+                        set_opacity=set_opacity)
+        layer = next(lr for lr in artwork.layers if lr.info.name == args.layer)
+        print(f"  Transformed: {args.layer}")
+        print(f"    x={layer.info.x:.1f}% y={layer.info.y:.1f}% "
+              f"w={layer.info.width:.1f}% h={layer.info.height:.1f}% "
+              f"rot={layer.info.rotation:.1f}° opacity={layer.info.opacity:.2f}")
 
     else:
         print(f"Unknown layers command: {args.layers_command}", file=sys.stderr)
