@@ -97,8 +97,11 @@ def blend_layers(
         if layer_img.size != (width, height):
             layer_img = layer_img.resize((width, height), Image.LANCZOS)
 
-        # Layers must arrive with correct alpha.
-        # Alpha extraction is handled by composite.py before calling blend_layers.
+        # Apply layer opacity (v0.12)
+        if layer.info.opacity < 1.0:
+            alpha = layer_img.split()[3]
+            alpha = alpha.point(lambda a: int(a * layer.info.opacity))
+            layer_img.putalpha(alpha)
 
         blend_fn = _BLEND_FNS.get(layer.info.blend_mode, blend_normal)
         canvas = blend_fn(canvas, layer_img)

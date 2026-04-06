@@ -81,3 +81,59 @@ class TestSpatialFields:
             assert loaded.x == 0.0
             assert loaded.width == 100.0
             assert loaded.opacity == 1.0
+
+
+class TestOpacityBlend:
+    """Task 2: opacity field actually affects compositing."""
+
+    def test_full_opacity_unchanged(self):
+        from vulca.layers.blend import blend_layers
+
+        with tempfile.TemporaryDirectory() as td:
+            bg = Image.new("RGBA", (50, 50), (255, 255, 255, 255))
+            fg = Image.new("RGBA", (50, 50), (255, 0, 0, 255))
+            bg_path = str(Path(td) / "bg.png"); bg.save(bg_path)
+            fg_path = str(Path(td) / "fg.png"); fg.save(fg_path)
+
+            layers = [
+                LayerResult(info=_make_layer("bg", 0, opacity=1.0), image_path=bg_path),
+                LayerResult(info=_make_layer("fg", 1, opacity=1.0), image_path=fg_path),
+            ]
+            result = blend_layers(layers, width=50, height=50)
+            px = result.getpixel((25, 25))
+            assert px[0] == 255 and px[1] == 0 and px[2] == 0, f"Full opacity should be red, got {px}"
+
+    def test_half_opacity_blends(self):
+        from vulca.layers.blend import blend_layers
+
+        with tempfile.TemporaryDirectory() as td:
+            bg = Image.new("RGBA", (50, 50), (255, 255, 255, 255))
+            fg = Image.new("RGBA", (50, 50), (255, 0, 0, 255))
+            bg_path = str(Path(td) / "bg.png"); bg.save(bg_path)
+            fg_path = str(Path(td) / "fg.png"); fg.save(fg_path)
+
+            layers = [
+                LayerResult(info=_make_layer("bg", 0, opacity=1.0), image_path=bg_path),
+                LayerResult(info=_make_layer("fg", 1, opacity=0.5), image_path=fg_path),
+            ]
+            result = blend_layers(layers, width=50, height=50)
+            px = result.getpixel((25, 25))
+            # 50% red over white = ~(255, 128, 128)
+            assert 100 < px[1] < 160, f"Half opacity should blend, got G={px[1]}"
+
+    def test_zero_opacity_invisible(self):
+        from vulca.layers.blend import blend_layers
+
+        with tempfile.TemporaryDirectory() as td:
+            bg = Image.new("RGBA", (50, 50), (0, 255, 0, 255))
+            fg = Image.new("RGBA", (50, 50), (255, 0, 0, 255))
+            bg_path = str(Path(td) / "bg.png"); bg.save(bg_path)
+            fg_path = str(Path(td) / "fg.png"); fg.save(fg_path)
+
+            layers = [
+                LayerResult(info=_make_layer("bg", 0, opacity=1.0), image_path=bg_path),
+                LayerResult(info=_make_layer("fg", 1, opacity=0.0), image_path=fg_path),
+            ]
+            result = blend_layers(layers, width=50, height=50)
+            px = result.getpixel((25, 25))
+            assert px[1] == 255 and px[0] == 0, f"Zero opacity should show bg green, got {px}"
