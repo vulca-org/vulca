@@ -16,6 +16,7 @@ from vulca.layers.ops import (
     lock_layer, merge_layers, duplicate_layer, transform_layer,
 )
 from vulca.layers.sam import SAM_AVAILABLE
+from vulca.layers.sam3 import SAM3_AVAILABLE, sam3_split
 from vulca.layers.vlm_mask import generate_vlm_mask, apply_vlm_mask, VLM_MASK_PROMPT
 from vulca.layers.transform import apply_spatial_transform, compute_content_bbox, needs_transform
 from vulca.layers.plan_prompt import build_plan_prompt, get_tradition_layer_order
@@ -43,6 +44,7 @@ __all__ = [
     "add_layer", "remove_layer", "reorder_layer", "toggle_visibility",
     "lock_layer", "merge_layers", "duplicate_layer", "transform_layer",
     "SAM_AVAILABLE",
+    "SAM3_AVAILABLE", "sam3_split",
     "generate_vlm_mask", "apply_vlm_mask", "VLM_MASK_PROMPT",
     "load_artwork",
     "build_plan_prompt", "get_tradition_layer_order",

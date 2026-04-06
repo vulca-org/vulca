@@ -302,3 +302,35 @@ def test_no_model_call_for_background(tmp_path):
 def test_sam3_available_is_bool():
     """SAM3_AVAILABLE must be a boolean (not truthy/falsy accident)."""
     assert isinstance(sam3_module.SAM3_AVAILABLE, bool)
+
+
+class TestSam3Export:
+    """sam3_split is importable from vulca.layers."""
+
+    def test_import_from_layers_package(self):
+        from vulca.layers import sam3_split
+        assert callable(sam3_split)
+
+    def test_sam3_available_exported(self):
+        from vulca.layers import SAM3_AVAILABLE
+        assert isinstance(SAM3_AVAILABLE, bool)
+
+
+class TestSam3CLI:
+    """CLI --mode sam3 is wired up."""
+
+    def test_sam3_mode_in_cli_help(self):
+        import subprocess, sys
+        result = subprocess.run(
+            [sys.executable, "-m", "vulca", "layers", "split", "--help"],
+            capture_output=True, text=True, timeout=30,
+        )
+        assert "sam3" in result.stdout, f"'sam3' not in CLI help:\n{result.stdout}"
+
+
+class TestSam3MCP:
+    """MCP layers_split supports mode='sam3'."""
+
+    def test_mcp_docstring_mentions_sam3(self):
+        from vulca.mcp_server import layers_split
+        assert "sam3" in layers_split.__doc__

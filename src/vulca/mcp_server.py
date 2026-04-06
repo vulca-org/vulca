@@ -992,7 +992,7 @@ async def layers_split(
     Args:
         image_path: Path to the image file.
         output_dir: Output directory (default: image parent/layers).
-        mode: Split mode — "regenerate" (img2img, default), "extract" (color-range, no API), or "vlm" (VLM semantic masks).
+        mode: Split mode — "regenerate" (img2img), "extract" (color-range), "vlm" (VLM masks), or "sam3" (SAM3 text-prompted, GPU).
         provider: Image provider for regenerate mode.
         tradition: Cultural tradition for styling.
 
@@ -1013,6 +1013,11 @@ async def layers_split(
         results = await split_vlm(
             image_path, layers, output_dir=out,
             provider=provider,
+        )
+    elif mode == "sam3":
+        from vulca.layers.sam3 import sam3_split
+        results = sam3_split(
+            image_path, layers, output_dir=out,
         )
     else:
         results = await split_regenerate(
