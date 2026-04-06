@@ -198,6 +198,144 @@ async def split_regenerate(
 
 
 # ---------------------------------------------------------------------------
+# V2 API — VLM mode (async, per-layer BW masks from VLM)
+# ---------------------------------------------------------------------------
+
+async def split_vlm(
+    image_path: str,
+    layers: list[LayerInfo],
+    *,
+    output_dir: str,
+    provider: str = "gemini",
+    api_key: str = "",
+) -> list[LayerResult]:
+    """VLM semantic split: per-layer BW masks from VLM.
+
+    For each non-background layer, asks VLM to generate a black/white
+    segmentation mask. Background layer gets ~assigned (everything unclaimed).
+    Original image pixels preserved, only alpha changes.
+
+    Args:
+        image_path: Path to the source image.
+        layers: LayerInfo list describing the semantic layers.
+        output_dir: Directory to write layer PNGs and manifest.json.
+        provider: Provider name — "gemini", "mock", "openai", etc.
+        api_key: API key forwarded to the provider (empty = env-var fallback).
+
+    Returns:
+        List of LayerResult sorted by z_index ascending.
+    """
+    from vulca.providers import get_image_provider
+    import io as _io  # noqa: F401 (used in helper)
+
+    img = Image.open(image_path)
+    w, h = img.size
+
+    out_dir = Path(output_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    ref_b64 = base64.b64encode(Path(image_path).read_bytes()).decode()
+    img_provider = get_image_provider(provider, api_key=api_key)
+
+    assigned = np.zeros((h, w), dtype=bool)
+
+    # Phase 1: Generate VLM masks foreground-first (high z_index = priority).
+    layer_masks: dict[str, Image.Image] = {}
+    for info in sorted(layers, key=lambda l: l.z_index, reverse=True):
+        if info.content_type == "background":
+            continue
+
+        prompt = (
+            f"Create a black and white segmentation mask for this image.\n"
+            f"White (#FFFFFF) = ONLY the region matching: {info.description}\n"
+            f"Black (#000000) = everything else.\n"
+            f"Sharp precise edges. No gray gradients except at content boundaries."
+        )
+
+        mask_l = await _vlm_mask_for_layer(
+            ref_b64, prompt, img_provider, info, img, w, h,
+        )
+        mask_arr = np.array(mask_l)
+        mask_bool = mask_arr > 127
+        exclusive = mask_bool & ~assigned
+        assigned |= exclusive
+        exclusive_mask = Image.fromarray((exclusive * 255).astype(np.uint8), mode="L")
+        layer_masks[info.id] = exclusive_mask
+
+    # Phase 2: Background gets everything unclaimed.
+    for info in layers:
+        if info.content_type == "background":
+            bg_mask = Image.fromarray(((~assigned) * 255).astype(np.uint8), mode="L")
+            layer_masks[info.id] = bg_mask
+
+    # Phase 3: Apply masks and save (z_index ascending).
+    results: list[LayerResult] = []
+    for info in sorted(layers, key=lambda l: l.z_index):
+        mask = layer_masks.get(info.id)
+        if mask is None:
+            mask = Image.new("L", (w, h), 0)
+        layer_img = apply_mask_to_image(img, mask)
+        out_path = out_dir / f"{info.name}.png"
+        layer_img.save(str(out_path))
+        results.append(LayerResult(info=info, image_path=str(out_path)))
+
+    _write_manifest_v2(layers, output_dir=output_dir, width=w, height=h, split_mode="vlm")
+    return sorted(results, key=lambda r: r.info.z_index)
+
+
+async def _vlm_mask_for_layer(
+    ref_b64: str,
+    prompt: str,
+    provider,
+    info: LayerInfo,
+    img: Image.Image,
+    w: int,
+    h: int,
+) -> Image.Image:
+    """Generate a VLM mask for one layer, with fallback to color mask.
+
+    Args:
+        ref_b64: Base64-encoded reference image.
+        prompt: Per-layer segmentation prompt.
+        provider: Image provider instance with .generate() async method.
+        info: LayerInfo for the layer being masked.
+        img: Original PIL Image (used for color-mask fallback).
+        w: Image width.
+        h: Image height.
+
+    Returns:
+        Grayscale PIL Image (mode "L") — never None.
+    """
+    import io as _io
+    import logging
+    try:
+        result = await provider.generate(
+            prompt,
+            reference_image_b64=ref_b64,
+            raw_prompt=True,
+        )
+        mask_b64 = result.image_b64 if hasattr(result, "image_b64") else result
+        mask_img = Image.open(_io.BytesIO(base64.b64decode(mask_b64)))
+        mask_l = mask_img.convert("L")
+        if mask_l.size != (w, h):
+            mask_l = mask_l.resize((w, h), Image.LANCZOS)
+        mask_arr = np.array(mask_l)
+        if mask_arr.std() < 10:
+            logging.getLogger("vulca").warning(
+                "VLM mask degenerate for layer %s (std=%.1f), fallback to color mask",
+                info.name, mask_arr.std(),
+            )
+            return build_color_mask(img, info, tolerance=30)
+        return mask_l
+    except Exception:
+        logging.getLogger("vulca").warning(
+            "VLM mask failed for layer %s, fallback to color mask", info.name,
+            exc_info=True,
+        )
+        return build_color_mask(img, info, tolerance=30)
+
+
+# ---------------------------------------------------------------------------
 # V1 compat — kept for backward compatibility (test_layers.py)
 # ---------------------------------------------------------------------------
 
