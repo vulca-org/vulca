@@ -3,7 +3,7 @@ from vulca.layers.types import LayerInfo, LayerResult, LayeredArtwork
 from vulca.layers.analyze import analyze_layers, parse_layer_response
 from vulca.layers.split import split_extract, split_regenerate, crop_layer, chromakey_white, chromakey_black
 from vulca.layers.composite import composite_layers
-from vulca.layers.blend import blend_normal, blend_screen, blend_multiply, blend_layers
+from vulca.layers.blend import blend_normal, blend_screen, blend_multiply, blend_overlay, blend_soft_light, blend_darken, blend_lighten, blend_color_dodge, blend_color_burn, blend_layers
 from vulca.layers.export import export_psd
 from vulca.layers.manifest import write_manifest as write_manifest_v2, load_manifest, MANIFEST_VERSION
 from vulca.layers.artifact import write_artifact_v3, load_artifact_v3, ARTIFACT_VERSION
@@ -30,7 +30,9 @@ __all__ = [
     "split_extract", "split_regenerate",
     "crop_layer", "chromakey_white", "chromakey_black",
     "composite_layers",
-    "blend_normal", "blend_screen", "blend_multiply", "blend_layers",
+    "blend_normal", "blend_screen", "blend_multiply",
+    "blend_overlay", "blend_soft_light", "blend_darken", "blend_lighten",
+    "blend_color_dodge", "blend_color_burn", "blend_layers",
     "export_psd",
     "write_manifest_v2", "load_manifest", "MANIFEST_VERSION",
     "write_artifact_v3", "load_artifact_v3", "ARTIFACT_VERSION",

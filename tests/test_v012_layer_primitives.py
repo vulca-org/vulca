@@ -218,3 +218,57 @@ class TestSpatialTransform:
             assert px_tl[0] == 255 and px_tl[1] == 0, f"Top-left should be red, got {px_tl}"
             px_br = result.getpixel((75, 75))
             assert px_br[1] == 255 and px_br[0] == 0, f"Bottom-right should be green, got {px_br}"
+
+
+class TestBlendModes:
+    """Task 4: Additional blend modes."""
+
+    def _blend_pair(self, mode, bot_color=(100, 100, 100, 255), top_color=(200, 200, 200, 255)):
+        from vulca.layers.blend import blend_layers
+        with tempfile.TemporaryDirectory() as td:
+            bg = Image.new("RGBA", (10, 10), bot_color)
+            fg = Image.new("RGBA", (10, 10), top_color)
+            bg_path = str(Path(td) / "bg.png"); bg.save(bg_path)
+            fg_path = str(Path(td) / "fg.png"); fg.save(fg_path)
+            layers = [
+                LayerResult(info=_make_layer("bg", 0), image_path=bg_path),
+                LayerResult(info=_make_layer("fg", 1, blend_mode=mode), image_path=fg_path),
+            ]
+            result = blend_layers(layers, width=10, height=10)
+            return result.getpixel((5, 5))
+
+    def test_overlay_exists(self):
+        px = self._blend_pair("overlay")
+        assert px[3] == 255
+
+    def test_overlay_math(self):
+        px = self._blend_pair("overlay", (100, 100, 100, 255), (200, 200, 200, 255))
+        assert 150 < px[0] < 165, f"Overlay expected ~157, got {px[0]}"
+
+    def test_soft_light_exists(self):
+        px = self._blend_pair("soft_light")
+        assert px[3] == 255
+
+    def test_darken_takes_minimum(self):
+        px = self._blend_pair("darken", (100, 200, 150, 255), (200, 50, 100, 255))
+        assert px[0] == 100
+        assert px[1] == 50
+        assert px[2] == 100
+
+    def test_lighten_takes_maximum(self):
+        px = self._blend_pair("lighten", (100, 200, 150, 255), (200, 50, 250, 255))
+        assert px[0] == 200
+        assert px[1] == 200
+        assert px[2] == 250
+
+    def test_color_dodge_exists(self):
+        px = self._blend_pair("color_dodge")
+        assert px[3] == 255
+
+    def test_color_burn_exists(self):
+        px = self._blend_pair("color_burn")
+        assert px[3] == 255
+
+    def test_unknown_mode_falls_back_to_normal(self):
+        px = self._blend_pair("nonexistent_mode", (0, 255, 0, 255), (255, 0, 0, 255))
+        assert px[0] == 255 and px[1] == 0

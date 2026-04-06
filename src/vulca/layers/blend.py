@@ -71,6 +71,100 @@ def blend_multiply(bottom: Image.Image, top: Image.Image) -> Image.Image:
     return Image.fromarray(out, "RGBA")
 
 
+def blend_overlay(bottom: Image.Image, top: Image.Image) -> Image.Image:
+    """Overlay blend: combines multiply and screen based on base value."""
+    bottom = bottom.convert("RGBA")
+    top = top.convert("RGBA")
+    bot = np.array(bottom, dtype=np.float32) / 255.0
+    top_arr = np.array(top, dtype=np.float32) / 255.0
+    bot_rgb, top_rgb = bot[..., :3], top_arr[..., :3]
+    bot_alpha, top_alpha = bot[..., 3:4], top_arr[..., 3:4]
+    low = 2.0 * bot_rgb * top_rgb
+    high = 1.0 - 2.0 * (1.0 - bot_rgb) * (1.0 - top_rgb)
+    overlaid = np.where(bot_rgb < 0.5, low, high)
+    out_rgb = bot_rgb * (1.0 - top_alpha) + overlaid * top_alpha
+    out_alpha = bot_alpha + top_alpha * (1.0 - bot_alpha)
+    out = np.clip(np.concatenate([out_rgb, out_alpha], axis=-1) * 255.0, 0, 255).astype(np.uint8)
+    return Image.fromarray(out, "RGBA")
+
+
+def blend_soft_light(bottom: Image.Image, top: Image.Image) -> Image.Image:
+    """Soft light blend: gentle contrast adjustment (Pegtop formula)."""
+    bottom = bottom.convert("RGBA")
+    top = top.convert("RGBA")
+    bot = np.array(bottom, dtype=np.float32) / 255.0
+    top_arr = np.array(top, dtype=np.float32) / 255.0
+    bot_rgb, top_rgb = bot[..., :3], top_arr[..., :3]
+    bot_alpha, top_alpha = bot[..., 3:4], top_arr[..., 3:4]
+    soft = (1.0 - 2.0 * top_rgb) * bot_rgb * bot_rgb + 2.0 * top_rgb * bot_rgb
+    out_rgb = bot_rgb * (1.0 - top_alpha) + soft * top_alpha
+    out_alpha = bot_alpha + top_alpha * (1.0 - bot_alpha)
+    out = np.clip(np.concatenate([out_rgb, out_alpha], axis=-1) * 255.0, 0, 255).astype(np.uint8)
+    return Image.fromarray(out, "RGBA")
+
+
+def blend_darken(bottom: Image.Image, top: Image.Image) -> Image.Image:
+    """Darken blend: takes minimum of each channel."""
+    bottom = bottom.convert("RGBA")
+    top = top.convert("RGBA")
+    bot = np.array(bottom, dtype=np.float32) / 255.0
+    top_arr = np.array(top, dtype=np.float32) / 255.0
+    bot_rgb, top_rgb = bot[..., :3], top_arr[..., :3]
+    bot_alpha, top_alpha = bot[..., 3:4], top_arr[..., 3:4]
+    darkened = np.minimum(bot_rgb, top_rgb)
+    out_rgb = bot_rgb * (1.0 - top_alpha) + darkened * top_alpha
+    out_alpha = bot_alpha + top_alpha * (1.0 - bot_alpha)
+    out = np.clip(np.concatenate([out_rgb, out_alpha], axis=-1) * 255.0, 0, 255).astype(np.uint8)
+    return Image.fromarray(out, "RGBA")
+
+
+def blend_lighten(bottom: Image.Image, top: Image.Image) -> Image.Image:
+    """Lighten blend: takes maximum of each channel."""
+    bottom = bottom.convert("RGBA")
+    top = top.convert("RGBA")
+    bot = np.array(bottom, dtype=np.float32) / 255.0
+    top_arr = np.array(top, dtype=np.float32) / 255.0
+    bot_rgb, top_rgb = bot[..., :3], top_arr[..., :3]
+    bot_alpha, top_alpha = bot[..., 3:4], top_arr[..., 3:4]
+    lightened = np.maximum(bot_rgb, top_rgb)
+    out_rgb = bot_rgb * (1.0 - top_alpha) + lightened * top_alpha
+    out_alpha = bot_alpha + top_alpha * (1.0 - bot_alpha)
+    out = np.clip(np.concatenate([out_rgb, out_alpha], axis=-1) * 255.0, 0, 255).astype(np.uint8)
+    return Image.fromarray(out, "RGBA")
+
+
+def blend_color_dodge(bottom: Image.Image, top: Image.Image) -> Image.Image:
+    """Color dodge: brightens base by dividing by inverse of blend."""
+    bottom = bottom.convert("RGBA")
+    top = top.convert("RGBA")
+    bot = np.array(bottom, dtype=np.float32) / 255.0
+    top_arr = np.array(top, dtype=np.float32) / 255.0
+    bot_rgb, top_rgb = bot[..., :3], top_arr[..., :3]
+    bot_alpha, top_alpha = bot[..., 3:4], top_arr[..., 3:4]
+    denom = np.maximum(1.0 - top_rgb, 1e-6)
+    dodged = np.minimum(bot_rgb / denom, 1.0)
+    out_rgb = bot_rgb * (1.0 - top_alpha) + dodged * top_alpha
+    out_alpha = bot_alpha + top_alpha * (1.0 - bot_alpha)
+    out = np.clip(np.concatenate([out_rgb, out_alpha], axis=-1) * 255.0, 0, 255).astype(np.uint8)
+    return Image.fromarray(out, "RGBA")
+
+
+def blend_color_burn(bottom: Image.Image, top: Image.Image) -> Image.Image:
+    """Color burn: darkens base by dividing inverse by blend."""
+    bottom = bottom.convert("RGBA")
+    top = top.convert("RGBA")
+    bot = np.array(bottom, dtype=np.float32) / 255.0
+    top_arr = np.array(top, dtype=np.float32) / 255.0
+    bot_rgb, top_rgb = bot[..., :3], top_arr[..., :3]
+    bot_alpha, top_alpha = bot[..., 3:4], top_arr[..., 3:4]
+    denom = np.maximum(top_rgb, 1e-6)
+    burned = np.maximum(1.0 - (1.0 - bot_rgb) / denom, 0.0)
+    out_rgb = bot_rgb * (1.0 - top_alpha) + burned * top_alpha
+    out_alpha = bot_alpha + top_alpha * (1.0 - bot_alpha)
+    out = np.clip(np.concatenate([out_rgb, out_alpha], axis=-1) * 255.0, 0, 255).astype(np.uint8)
+    return Image.fromarray(out, "RGBA")
+
+
 def blend_layers(
     layers: list[LayerResult],
     *,
@@ -84,6 +178,12 @@ def blend_layers(
         "normal": blend_normal,
         "screen": blend_screen,
         "multiply": blend_multiply,
+        "overlay": blend_overlay,
+        "soft_light": blend_soft_light,
+        "darken": blend_darken,
+        "lighten": blend_lighten,
+        "color_dodge": blend_color_dodge,
+        "color_burn": blend_color_burn,
     }
 
     sorted_layers = sorted(layers, key=lambda l: l.info.z_index)
