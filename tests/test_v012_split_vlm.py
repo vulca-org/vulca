@@ -107,7 +107,7 @@ class TestGenerateVlmMaskCustomPrompt:
         custom_prompt = "Custom segmentation: white = sky, black = ground"
 
         with patch("vulca.providers.get_image_provider", return_value=mock_provider):
-            result = asyncio.get_event_loop().run_until_complete(
+            result = asyncio.run(
                 generate_vlm_mask(content_b64, prompt=custom_prompt)
             )
 
@@ -130,7 +130,7 @@ class TestGenerateVlmMaskCustomPrompt:
         content_b64 = _image_to_b64(content_img)
 
         with patch("vulca.providers.get_image_provider", return_value=mock_provider):
-            asyncio.get_event_loop().run_until_complete(
+            asyncio.run(
                 generate_vlm_mask(content_b64)
             )
 
@@ -151,7 +151,7 @@ class TestGenerateVlmMaskCustomPrompt:
         content_b64 = _image_to_b64(content_img)
 
         with patch("vulca.providers.get_image_provider", return_value=mock_provider):
-            asyncio.get_event_loop().run_until_complete(
+            asyncio.run(
                 generate_vlm_mask(content_b64, prompt="")
             )
 
@@ -171,7 +171,7 @@ class TestGenerateVlmMaskCustomPrompt:
         content_b64 = _image_to_b64(_make_test_image())
 
         with patch("vulca.providers.get_image_provider", return_value=mock_provider):
-            result = asyncio.get_event_loop().run_until_complete(
+            result = asyncio.run(
                 generate_vlm_mask(content_b64, prompt="white = foreground object")
             )
 
@@ -202,7 +202,7 @@ class TestSplitVlm:
             img.save(img_path)
 
             with patch("vulca.providers.get_image_provider", return_value=mock_provider):
-                results = asyncio.get_event_loop().run_until_complete(
+                results = asyncio.run(
                     split_vlm(img_path, [fg, bg], output_dir=td)
                 )
 
@@ -229,7 +229,7 @@ class TestSplitVlm:
             img.save(img_path)
 
             with patch("vulca.providers.get_image_provider", return_value=mock_provider):
-                results = asyncio.get_event_loop().run_until_complete(
+                results = asyncio.run(
                     split_vlm(img_path, [fg, bg], output_dir=td)
                 )
 
@@ -264,7 +264,7 @@ class TestSplitVlm:
             img.save(img_path)
 
             with patch("vulca.providers.get_image_provider", return_value=mock_provider):
-                results = asyncio.get_event_loop().run_until_complete(
+                results = asyncio.run(
                     split_vlm(img_path, [fg, bg], output_dir=td)
                 )
 
@@ -302,7 +302,7 @@ class TestSplitVlm:
 
             # Should NOT raise even when VLM mask is degenerate
             with patch("vulca.providers.get_image_provider", return_value=mock_provider):
-                results = asyncio.get_event_loop().run_until_complete(
+                results = asyncio.run(
                     split_vlm(img_path, [fg, bg], output_dir=td)
                 )
 
@@ -328,7 +328,7 @@ class TestSplitVlm:
             img.save(img_path)
 
             with patch("vulca.providers.get_image_provider", return_value=mock_provider):
-                asyncio.get_event_loop().run_until_complete(
+                asyncio.run(
                     split_vlm(img_path, [fg, bg], output_dir=td)
                 )
 
@@ -357,7 +357,7 @@ class TestSplitVlm:
             img.save(img_path)
 
             with patch("vulca.providers.get_image_provider", return_value=mock_provider):
-                asyncio.get_event_loop().run_until_complete(
+                asyncio.run(
                     split_vlm(img_path, [fg, bg], output_dir=td)
                 )
 
@@ -396,7 +396,7 @@ class TestSplitVlm:
             img.save(img_path)
 
             with patch("vulca.providers.get_image_provider", return_value=mock_provider):
-                results = asyncio.get_event_loop().run_until_complete(
+                results = asyncio.run(
                     split_vlm(img_path, [layer_a, layer_b, bg], output_dir=td)
                 )
 
