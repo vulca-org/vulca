@@ -344,3 +344,28 @@ class TestTransformLayerOp:
             reloaded = load_manifest(td)
             assert reloaded.layers[0].info.x == 15.0
             assert reloaded.layers[0].info.opacity == 0.8
+
+
+class TestDuplicateSpatialGuard:
+    """Guard: duplicate_layer must copy v0.12 spatial fields."""
+
+    def test_duplicate_preserves_spatial_fields(self):
+        from vulca.layers.ops import duplicate_layer
+        from vulca.layers.manifest import write_manifest, load_manifest
+
+        with tempfile.TemporaryDirectory() as td:
+            img = Image.new("RGBA", (100, 100), (255, 0, 0, 255))
+            img.save(str(Path(td) / "src.png"))
+            info = _make_layer("src", 0, x=25.0, y=30.0, width=50.0, height=60.0,
+                               rotation=45.0, opacity=0.7)
+            write_manifest([info], output_dir=td, width=100, height=100)
+            artwork = load_manifest(td)
+
+            result = duplicate_layer(artwork, artwork_dir=td, layer_name="src", new_name="src_copy")
+
+            assert result.info.x == 25.0
+            assert result.info.y == 30.0
+            assert result.info.width == 50.0
+            assert result.info.height == 60.0
+            assert result.info.rotation == 45.0
+            assert result.info.opacity == 0.7
