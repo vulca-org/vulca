@@ -24,6 +24,13 @@ class LayerInfo:
     bg_color: str = "white"            # generation background: "white", "black", "gray"
     locked: bool = False
     bbox: dict | None = None           # {"x": int, "y": int, "w": int, "h": int} — V1 compat only
+    # Spatial transform (v0.12 — percentage-based, resolution-independent)
+    x: float = 0.0                     # Canvas position X (0-100%)
+    y: float = 0.0                     # Canvas position Y (0-100%)
+    width: float = 100.0               # Layer width (0-100% of canvas)
+    height: float = 100.0              # Layer height (0-100% of canvas)
+    rotation: float = 0.0              # Rotation in degrees (clockwise)
+    content_bbox: dict | None = None   # Auto-computed: {"x": px, "y": px, "w": px, "h": px}
     # V3 fields (Artifact V3 structured creation)
     tradition_role: str = ""               # Cultural layer role e.g. "远景淡墨"
     opacity: float = 1.0                   # Layer opacity 0.0-1.0

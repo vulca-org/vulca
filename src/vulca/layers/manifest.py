@@ -47,6 +47,13 @@ def write_manifest(
                 "file": f"{info.name}.png",
                 "dominant_colors": info.dominant_colors,
                 "regeneration_prompt": info.regeneration_prompt,
+                "opacity": info.opacity,
+                "x": info.x,
+                "y": info.y,
+                "width": info.width,
+                "height": info.height,
+                "rotation": info.rotation,
+                "content_bbox": info.content_bbox,
             }
             for info in sorted(layers, key=lambda l: l.z_index)
         ],
@@ -82,6 +89,13 @@ def load_manifest(artwork_dir: str) -> LayeredArtwork:
                 visible=item.get("visible", True),
                 blend_mode=item.get("blend_mode", "normal"),
                 locked=item.get("locked", False),
+                opacity=item.get("opacity", 1.0),
+                x=item.get("x", 0.0),
+                y=item.get("y", 0.0),
+                width=item.get("width", 100.0),
+                height=item.get("height", 100.0),
+                rotation=item.get("rotation", 0.0),
+                content_bbox=item.get("content_bbox"),
             )
         else:
             # V1: migrate — generate id, default content_type, preserve bbox
