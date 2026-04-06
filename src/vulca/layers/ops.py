@@ -294,6 +294,7 @@ def transform_layer(
     layer.info.width = max(1.0, layer.info.width)
     layer.info.height = max(1.0, layer.info.height)
     layer.info.opacity = max(0.0, min(1.0, layer.info.opacity))
+    layer.info.rotation = layer.info.rotation % 360.0
 
     _save_artwork(artwork, artwork_dir)
 
@@ -319,7 +320,7 @@ def duplicate_layer(
     dst_path = Path(artwork_dir) / f"{new_name}.png"
     shutil.copy2(str(src_path), str(dst_path))
 
-    # Create new LayerInfo with incremented z_index
+    # Create new LayerInfo with incremented z_index (copy all properties)
     new_info = LayerInfo(
         name=new_name,
         description=source.info.description,
@@ -330,6 +331,12 @@ def duplicate_layer(
         locked=source.info.locked,
         dominant_colors=list(source.info.dominant_colors),
         regeneration_prompt=source.info.regeneration_prompt,
+        x=source.info.x,
+        y=source.info.y,
+        width=source.info.width,
+        height=source.info.height,
+        rotation=source.info.rotation,
+        opacity=source.info.opacity,
     )
     new_result = LayerResult(info=new_info, image_path=str(dst_path))
     artwork.layers.append(new_result)

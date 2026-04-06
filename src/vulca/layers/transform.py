@@ -55,6 +55,7 @@ def apply_spatial_transform(
     img = img.resize((target_w, target_h), Image.LANCZOS)
 
     # 2. Rotate (expand=True to avoid clipping)
+    pre_rotate_w, pre_rotate_h = img.size
     if info.rotation != 0.0:
         img = img.rotate(
             -info.rotation,
@@ -63,10 +64,12 @@ def apply_spatial_transform(
             fillcolor=(0, 0, 0, 0),
         )
 
-    # 3. Position on full canvas
+    # 3. Position on full canvas — compensate for rotation expansion
     canvas = Image.new("RGBA", (canvas_width, canvas_height), (0, 0, 0, 0))
-    paste_x = int(canvas_width * info.x / 100.0)
-    paste_y = int(canvas_height * info.y / 100.0)
+    offset_x = (img.width - pre_rotate_w) // 2
+    offset_y = (img.height - pre_rotate_h) // 2
+    paste_x = int(canvas_width * info.x / 100.0) - offset_x
+    paste_y = int(canvas_height * info.y / 100.0) - offset_y
     canvas.paste(img, (paste_x, paste_y), img)
 
     return canvas
