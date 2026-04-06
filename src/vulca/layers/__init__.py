@@ -13,7 +13,7 @@ from vulca.layers.redraw import redraw_layer, redraw_merged
 from vulca.layers.regenerate import build_regenerate_prompt, regenerate_from_composite
 from vulca.layers.ops import (
     add_layer, remove_layer, reorder_layer, toggle_visibility,
-    lock_layer, merge_layers, duplicate_layer,
+    lock_layer, merge_layers, duplicate_layer, transform_layer,
 )
 from vulca.layers.sam import SAM_AVAILABLE
 from vulca.layers.vlm_mask import generate_vlm_mask, apply_vlm_mask, VLM_MASK_PROMPT
@@ -41,7 +41,7 @@ __all__ = [
     "redraw_layer", "redraw_merged",
     "build_regenerate_prompt", "regenerate_from_composite",
     "add_layer", "remove_layer", "reorder_layer", "toggle_visibility",
-    "lock_layer", "merge_layers", "duplicate_layer",
+    "lock_layer", "merge_layers", "duplicate_layer", "transform_layer",
     "SAM_AVAILABLE",
     "generate_vlm_mask", "apply_vlm_mask", "VLM_MASK_PROMPT",
     "load_artwork",

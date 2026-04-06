@@ -1168,6 +1168,53 @@ async def layers_edit(
 
 
 @mcp.tool()
+async def layers_transform(
+    artwork_dir: str,
+    layer: str,
+    dx: float = 0.0,
+    dy: float = 0.0,
+    scale: float = 1.0,
+    rotate: float = 0.0,
+    opacity: float = -1.0,
+) -> dict:
+    """Transform a layer — move, scale, rotate, change opacity.
+
+    Args:
+        artwork_dir: Directory with layer PNGs + manifest.
+        layer: Layer name to transform.
+        dx: Move X by this percentage (relative, e.g. 10 = move right 10%).
+        dy: Move Y by this percentage (relative, e.g. -5 = move up 5%).
+        scale: Scale factor (1.0 = no change, 0.5 = half size, 2.0 = double).
+        rotate: Rotate by degrees (relative, clockwise).
+        opacity: Set opacity (0.0-1.0). Use -1 to keep current value.
+
+    Returns:
+        Updated layer spatial info.
+    """
+    from vulca.layers.manifest import load_manifest
+    from vulca.layers.ops import transform_layer
+
+    artwork = load_manifest(artwork_dir)
+    set_opacity = opacity if opacity >= 0 else None
+    transform_layer(
+        artwork, artwork_dir=artwork_dir, layer_name=layer,
+        dx=dx, dy=dy, scale=scale, rotate=rotate, set_opacity=set_opacity,
+    )
+
+    layer_result = next(lr for lr in artwork.layers if lr.info.name == layer)
+    return {
+        "status": "ok",
+        "layer": layer,
+        "x": layer_result.info.x,
+        "y": layer_result.info.y,
+        "width": layer_result.info.width,
+        "height": layer_result.info.height,
+        "rotation": layer_result.info.rotation,
+        "opacity": layer_result.info.opacity,
+    }
+
+
+@mcp.tool()
 async def sync_data(push_only: bool = False, pull_only: bool = False) -> dict:
     """Sync local session data with cloud. Requires VULCA_API_URL env var.
 

@@ -272,3 +272,75 @@ class TestBlendModes:
     def test_unknown_mode_falls_back_to_normal(self):
         px = self._blend_pair("nonexistent_mode", (0, 255, 0, 255), (255, 0, 0, 255))
         assert px[0] == 255 and px[1] == 0
+
+
+class TestTransformLayerOp:
+    """Task 5: transform_layer operation."""
+
+    def _setup_artwork(self, td):
+        from vulca.layers.manifest import write_manifest, load_manifest
+        img = Image.new("RGBA", (100, 100), (255, 0, 0, 255))
+        img.save(str(Path(td) / "test_layer.png"))
+        info = _make_layer("test_layer", 0)
+        write_manifest([info], output_dir=td, width=100, height=100)
+        return load_manifest(td)
+
+    def test_transform_moves(self):
+        from vulca.layers.ops import transform_layer
+        with tempfile.TemporaryDirectory() as td:
+            artwork = self._setup_artwork(td)
+            transform_layer(artwork, artwork_dir=td, layer_name="test_layer", dx=10.0, dy=20.0)
+            assert artwork.layers[0].info.x == 10.0
+            assert artwork.layers[0].info.y == 20.0
+
+    def test_transform_scales(self):
+        from vulca.layers.ops import transform_layer
+        with tempfile.TemporaryDirectory() as td:
+            artwork = self._setup_artwork(td)
+            transform_layer(artwork, artwork_dir=td, layer_name="test_layer", scale=0.5)
+            assert artwork.layers[0].info.width == 50.0
+            assert artwork.layers[0].info.height == 50.0
+
+    def test_transform_rotates(self):
+        from vulca.layers.ops import transform_layer
+        with tempfile.TemporaryDirectory() as td:
+            artwork = self._setup_artwork(td)
+            transform_layer(artwork, artwork_dir=td, layer_name="test_layer", rotate=45.0)
+            assert artwork.layers[0].info.rotation == 45.0
+
+    def test_transform_set_opacity(self):
+        from vulca.layers.ops import transform_layer
+        with tempfile.TemporaryDirectory() as td:
+            artwork = self._setup_artwork(td)
+            transform_layer(artwork, artwork_dir=td, layer_name="test_layer", set_opacity=0.5)
+            assert artwork.layers[0].info.opacity == 0.5
+
+    def test_transform_locked_raises(self):
+        from vulca.layers.ops import transform_layer
+        from vulca.layers.manifest import write_manifest, load_manifest
+        with tempfile.TemporaryDirectory() as td:
+            img = Image.new("RGBA", (100, 100), (0, 0, 0, 0))
+            img.save(str(Path(td) / "locked.png"))
+            info = _make_layer("locked", 0, locked=True)
+            write_manifest([info], output_dir=td, width=100, height=100)
+            artwork = load_manifest(td)
+            with pytest.raises(ValueError, match="locked"):
+                transform_layer(artwork, artwork_dir=td, layer_name="locked", dx=10.0)
+
+    def test_transform_not_found_raises(self):
+        from vulca.layers.ops import transform_layer
+        with tempfile.TemporaryDirectory() as td:
+            artwork = self._setup_artwork(td)
+            with pytest.raises(ValueError, match="not found"):
+                transform_layer(artwork, artwork_dir=td, layer_name="nonexistent", dx=10.0)
+
+    def test_transform_persists_to_manifest(self):
+        from vulca.layers.ops import transform_layer
+        from vulca.layers.manifest import load_manifest
+        with tempfile.TemporaryDirectory() as td:
+            artwork = self._setup_artwork(td)
+            transform_layer(artwork, artwork_dir=td, layer_name="test_layer", dx=15.0, set_opacity=0.8)
+            # Reload from disk to verify persistence
+            reloaded = load_manifest(td)
+            assert reloaded.layers[0].info.x == 15.0
+            assert reloaded.layers[0].info.opacity == 0.8

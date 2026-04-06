@@ -241,6 +241,63 @@ def merge_layers(
     return merged_result
 
 
+def transform_layer(
+    artwork: LayeredArtwork,
+    *,
+    artwork_dir: str,
+    layer_name: str,
+    dx: float = 0.0,
+    dy: float = 0.0,
+    scale: float = 1.0,
+    rotate: float = 0.0,
+    set_x: float | None = None,
+    set_y: float | None = None,
+    set_width: float | None = None,
+    set_height: float | None = None,
+    set_opacity: float | None = None,
+) -> None:
+    """Transform a layer's spatial properties.
+
+    dx/dy are relative offsets (added to current x/y).
+    scale multiplies current width/height.
+    rotate adds to current rotation.
+    set_* values override absolutely.
+
+    Raise ValueError("locked") if layer is locked.
+    Raise ValueError("not found") if layer doesn't exist.
+    """
+    layer = _find_layer(artwork, layer_name)
+
+    if layer.info.locked:
+        raise ValueError("locked")
+
+    # Relative adjustments
+    layer.info.x += dx
+    layer.info.y += dy
+    layer.info.width *= scale
+    layer.info.height *= scale
+    layer.info.rotation += rotate
+
+    # Absolute overrides
+    if set_x is not None:
+        layer.info.x = set_x
+    if set_y is not None:
+        layer.info.y = set_y
+    if set_width is not None:
+        layer.info.width = set_width
+    if set_height is not None:
+        layer.info.height = set_height
+    if set_opacity is not None:
+        layer.info.opacity = set_opacity
+
+    # Clamp values
+    layer.info.width = max(1.0, layer.info.width)
+    layer.info.height = max(1.0, layer.info.height)
+    layer.info.opacity = max(0.0, min(1.0, layer.info.opacity))
+
+    _save_artwork(artwork, artwork_dir)
+
+
 def duplicate_layer(
     artwork: LayeredArtwork,
     *,
