@@ -26,6 +26,7 @@ async def generate_vlm_mask(
     content_b64: str,
     provider_name: str = "gemini",
     api_key: str = "",
+    prompt: str = "",
 ) -> Image.Image | None:
     """Ask VLM to generate a BW alpha mask for the given content image.
 
@@ -33,6 +34,8 @@ async def generate_vlm_mask(
         content_b64: Base64-encoded content image (PNG bytes).
         provider_name: Image provider to use.
         api_key: API key (empty = env fallback).
+        prompt: Custom prompt to override the default VLM_MASK_PROMPT.
+            If empty, uses the default prompt.
 
     Returns:
         Grayscale PIL Image (mode "L") or None on failure.
@@ -42,7 +45,7 @@ async def generate_vlm_mask(
     try:
         provider = get_image_provider(provider_name, api_key=api_key)
         result = await provider.generate(
-            VLM_MASK_PROMPT,
+            prompt or VLM_MASK_PROMPT,
             reference_image_b64=content_b64,
             raw_prompt=True,
         )
