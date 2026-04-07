@@ -112,10 +112,19 @@ class GeminiImageProvider:
 
         contents: list = []
         if reference_image_b64:
-            contents.append(types.Part.from_bytes(
-                data=base64.b64decode(reference_image_b64),
-                mime_type="image/png",
-            ))
+            ref_bytes = base64.b64decode(reference_image_b64)
+            # Detect mime type from magic bytes — wrong type makes Gemini hang.
+            if ref_bytes[:3] == b"\xff\xd8\xff":
+                ref_mime = "image/jpeg"
+            elif ref_bytes[:8] == b"\x89PNG\r\n\x1a\n":
+                ref_mime = "image/png"
+            elif ref_bytes[:6] in (b"GIF87a", b"GIF89a"):
+                ref_mime = "image/gif"
+            elif ref_bytes[:4] == b"RIFF" and ref_bytes[8:12] == b"WEBP":
+                ref_mime = "image/webp"
+            else:
+                ref_mime = "image/png"  # safe fallback
+            contents.append(types.Part.from_bytes(data=ref_bytes, mime_type=ref_mime))
         contents.append(full_prompt)
 
         config = types.GenerateContentConfig(
