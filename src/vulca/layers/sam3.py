@@ -96,22 +96,28 @@ def sam3_split(
             outputs, threshold=threshold,
         )
 
-        if seg_results and seg_results[0]["masks"]:
-            scores = seg_results[0]["scores"]
-            masks = seg_results[0]["masks"]
-            if hasattr(scores[0], "item"):
-                score_vals = [s.item() for s in scores]
+        # SAM3 PCS returns multiple instance masks per concept (e.g. multiple
+        # mountains). Combine all instances via OR to get full concept coverage.
+        # masks tensor shape: [N, mask_h, mask_w]; scores tensor shape: [N]
+        masks_t = seg_results[0].get("masks") if seg_results else None
+        if masks_t is not None and len(masks_t) > 0:
+            # Move to CPU + convert to numpy boolean array
+            if hasattr(masks_t, "cpu"):
+                masks_arr = masks_t.cpu().numpy()
             else:
-                score_vals = list(scores)
-            best_idx = int(np.argmax(score_vals))
-            mask_np = np.array(masks[best_idx], dtype=bool)
+                masks_arr = np.asarray(masks_t)
+            # Union all instances → single concept mask
+            concept_mask = np.any(masks_arr > 0.5, axis=0)
 
-            if mask_np.shape != (h, w):
-                mask_pil = Image.fromarray(mask_np.astype(np.uint8) * 255, mode="L")
+            # Resize from model resolution to original image size if needed
+            if concept_mask.shape != (h, w):
+                mask_pil = Image.fromarray(
+                    concept_mask.astype(np.uint8) * 255, mode="L"
+                )
                 mask_pil = mask_pil.resize((w, h), Image.NEAREST)
-                mask_np = np.array(mask_pil) > 127
+                concept_mask = np.array(mask_pil) > 127
 
-            mask_np = mask_np & ~assigned
+            mask_np = concept_mask & ~assigned
         else:
             logger.warning("SAM3 found no mask for layer %s", info.name)
             mask_np = np.zeros((h, w), dtype=bool)
