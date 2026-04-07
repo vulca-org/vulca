@@ -1,5 +1,89 @@
 # Changelog
 
+## [0.12.0] - 2026-04-07
+
+### Layer Primitives — Spatial + Opacity + Blend Modes
+- **LayerInfo spatial fields**: `x`, `y`, `width`, `height`, `rotation` (percentage-based, resolution-independent), `content_bbox` (auto-computed pixel coords)
+- **`opacity` field now affects compositing**: 0.0–1.0 alpha multiplier applied during blend
+- **Spatial transform engine** (`transform.py`): apply rotation + spatial coords to layer images, with content_bbox tracking
+- **`transform_layer` operation**: programmatic layer transform via SDK
+- **MCP `layers_transform` tool**: agent-driven spatial manipulation
+- **CLI `vulca layers transform`** subcommand
+- **6 new blend modes**: `overlay`, `soft_light`, `darken`, `lighten`, `color_dodge`, `color_burn` (joined existing `normal`, `screen`, `multiply`)
+
+### New Split Modes — Two Pixel-Precise Methods
+- **`split_vlm`** (Gemini-based semantic split):
+  - Per-layer BW mask generation via Gemini image model
+  - Custom `prompt` parameter on `generate_vlm_mask`
+  - Foreground-first exclusive pixel assignment + background fallback (`~assigned`)
+  - Degenerate mask detection (std<10) → fallback to color mask
+  - **Validated end-to-end**: composite roundtrip diff = 0.00 on hero-shanshui.jpg
+  - Best for: stylized art (ink wash, post-impressionist), recognizable objects with details (trees, characters)
+- **`split_sam3`** (SAM3 text-prompted segmentation):
+  - Uses `transformers.Sam3Processor` + `Sam3Model` (`facebook/sam3`)
+  - Direct text prompts from `info.description` — no point-prompt heuristics
+  - Pixel-precise multi-instance OR combination for full concept coverage
+  - Resize handling (model resolution → original image size)
+  - **Validated end-to-end**: composite roundtrip diff = 0.00 on synthetic + shanshui
+  - Best for: large structural elements with clear boundaries (mountains, terrain, well-defined subjects)
+  - Requires `pip install vulca[sam3]` (transformers ≥ 4.50, torch ≥ 2.0) + CUDA GPU
+
+### CLI / MCP / SDK Wiring
+- **CLI**: `vulca layers split --mode {regenerate,extract,sam,vlm,sam3}` (5 modes)
+- **MCP**: `layers_split(image_path, mode="vlm"|"sam3", ...)` routes to new modes
+- **SDK**: `from vulca.layers import split_vlm, sam3_split, SAM3_AVAILABLE`
+
+### Fixes
+- **`gemini.py` mime type detection**: Hardcoded `image/png` caused Gemini to hang on JPEG inputs (90s timeout). Now detects format from magic bytes (JPEG, PNG, GIF, WebP). **Affects all callers of `GeminiImageProvider` with reference images, not just split_vlm**.
+- **SAM3 tensor handling**: Fixed `Boolean value of Tensor with no values is ambiguous` error. SAM3 PCS returns `Tensor[N, mask_h, mask_w]`; combine all instances above threshold via OR for full concept coverage.
+- **SAM3 resolution handling**: Resize model output (e.g., 288×288) to original image size via PIL NEAREST.
+- **`split_vlm` review fixes**: docstring update, dead `io as _io` import removal, `assigned` array passthrough to `build_color_mask` fallback for consistency.
+- **Test fixtures**: Replace deprecated `asyncio.get_event_loop().run_until_complete()` with `asyncio.run()` to prevent `RuntimeError` in full test suite execution.
+
+### Tests
+- **+26 new tests**: `test_v012_split_vlm.py` (14 tests) + `test_v012_split_sam3.py` (12 tests)
+- All tests are mock-based (no GPU/API key needed for CI)
+- Real-provider validation completed on RTX 2070 + Gemini API: composite roundtrip diff = 0.00
+
+### Optional Dependencies
+```toml
+sam3 = ["transformers>=4.50", "torch>=2.0", "numpy>=1.24", "Pillow>=10.0"]
+```
+
+### Coverage Strategy (3-mode complementarity)
+| Concept type | Recommended mode | Reason |
+|---|---|---|
+| Mountains, terrain, large structures | `sam3` | Pixel-precise, recognizes structural shapes |
+| Trees, characters, detailed objects | `vlm` | Semantic understanding, captures fine details |
+| Geometric shapes, clear boundaries | `sam3` | Sharp edges |
+| Stylized art, abstract brushstrokes | `vlm` | Contextual understanding |
+| No GPU + no API key | `extract` | Zero-dep fallback |
+
+These modes are **complementary, not replacements** — use them together via AI Agent orchestration through MCP/CLI.
+
+---
+
+## [0.11.0] - 2026-04-04
+
+### Layer Semantics — Phase 3 Integrity Fixes
+- **VLM mask shared module**: Extracted `vlm_mask.py` for two-pass mask generation (used by regenerate mode + LAYERED pipeline)
+- **VLM mask fallback**: Use generated image as input (not source) when initial mask fails
+- **Public `hex_to_rgb` API**: Color utility now exported
+- **Round-trip integrity tests**: `composite(split(img)) ≈ img` validation
+- **Empty `dominant_colors` guard**: Preserve transparent layers when VLM cannot identify colors
+- **`info.id` as layer_masks key**: Prevent name collision when multiple layers share names
+- **SAM medoid point**: Closest pixel to color centroid (not centroid itself, which can fall outside non-convex shapes)
+- **VLM mask degenerate rejection**: Reject masks with `std<10` (no useful segmentation signal)
+- **SAM point prompts from color centroid**: Compute layer point from `dominant_colors` instead of using image center
+- **Deduplication**: Cleaner separation between mask generation and application
+
+### Cleanup
+- **Dead code removal**: 76 orphaned files + v0.2.0 vulca copy
+- **Broken imports**: Fixed all references to deleted modules
+- **6 unreachable prototype subdirs deleted**
+
+---
+
 ## [0.10.0] - 2026-04-01
 
 ### LAYERED Pipeline — Structured Creation
