@@ -42,6 +42,7 @@ class LayerFailure:
     role: str
     reason: str
     attempts: int = 1
+    validation: ValidationReport | None = None
 
 
 @dataclass
@@ -212,6 +213,7 @@ async def layered_generate(
             role=o.info.tradition_role or o.info.name,
             reason=("validation_failed" if o.validation else "generation_failed"),
             attempts=o.attempts,
+            validation=o.validation,
         )
         for o in outcomes if not o.ok
     ]

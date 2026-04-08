@@ -66,3 +66,15 @@ def test_layered_partial_failure_marks_manifest(tmp_path, monkeypatch):
     assert len(manifest.get("layers", [])) > 0
     # At least one provider call happened (we didn't just hit cache)
     assert provider.calls > 0
+
+    # P0 #2: failed layers carry status=="failed" + reason in manifest extras,
+    # so retry --all-failed can find them.
+    failed_entries = [l for l in manifest["layers"] if l.get("status") == "failed"]
+    assert len(failed_entries) > 0, "expected at least one failed layer in manifest"
+    for entry in failed_entries:
+        assert entry.get("source") == "a"
+        assert entry.get("reason") in ("validation_failed", "generation_failed")
+
+    from vulca.layers.retry import pick_targets
+    targets = pick_targets(manifest, Path(tmp_path), all_failed=True)
+    assert len(targets) == len(failed_entries)

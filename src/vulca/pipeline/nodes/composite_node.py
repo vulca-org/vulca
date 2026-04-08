@@ -85,28 +85,48 @@ class CompositeNode(PipelineNode):
         except Exception:
             layerability = ""
 
+        def _validation_dict(v):
+            warn_dicts = [
+                {"kind": w.kind, "message": w.message, "detail": w.detail}
+                for w in v.warnings
+            ]
+            return {
+                "ok": v.ok,
+                "warnings": warn_dicts,
+                "coverage_actual": v.coverage_actual,
+                "position_iou": v.position_iou,
+            }, warn_dicts
+
         warnings: list[str] = []
         layer_extras: dict[str, dict] = {}
         if layered_result is not None:
             for o in layered_result.layers:
-                extra = {
+                extra: dict = {
                     "source": "a",
+                    "status": "ok",
                     "cache_hit": bool(o.cache_hit),
                     "attempts": o.attempts,
                 }
                 if o.validation is not None:
-                    warn_dicts = [
-                        {"kind": w.kind, "message": w.message, "detail": w.detail}
-                        for w in o.validation.warnings
-                    ]
-                    extra["validation"] = {
-                        "ok": o.validation.ok,
-                        "warnings": warn_dicts,
-                        "coverage_actual": o.validation.coverage_actual,
-                        "position_iou": o.validation.position_iou,
-                    }
+                    vd, warn_dicts = _validation_dict(o.validation)
+                    extra["validation"] = vd
                     warnings.extend(w["message"] for w in warn_dicts)
                 layer_extras[o.info.id] = extra
+
+            # P0 #2: also write extras for failed layers so retry can find them
+            # and so the manifest records the validation report that explains why.
+            for f in layered_result.failed:
+                extra = {
+                    "source": "a",
+                    "status": "failed",
+                    "reason": f.reason,
+                    "attempts": f.attempts,
+                }
+                if f.validation is not None:
+                    vd, warn_dicts = _validation_dict(f.validation)
+                    extra["validation"] = vd
+                    warnings.extend(w["message"] for w in warn_dicts)
+                layer_extras[f.layer_id] = extra
 
         write_manifest(
             [r.info for r in layer_results],
