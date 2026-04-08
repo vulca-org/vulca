@@ -138,6 +138,38 @@ def test_cancelled_error_in_provider_propagates(tmp_path: Path):
     assert prov.calls == 1
 
 
+def test_post_provider_keying_keyerror_propagates_through_layered_generate(tmp_path: Path):
+    """Post-provider bugs (e.g. keying.extract_alpha raising KeyError) must
+    propagate out of layered_generate rather than be silently relabeled as
+    a generic generation_failed LayerFailure."""
+    from vulca.layers.keying import CanvasSpec as _CanvasSpec
+    from vulca.layers.layered_generate import layered_generate
+
+    class _BrokenKeying:
+        cache_version = 1
+
+        def extract_alpha(self, rgb, canvas):
+            raise KeyError("broken keying")
+
+    prov = _FakeProvider([_png_bytes(), _png_bytes(), _png_bytes()])
+    with patch(
+        "vulca.layers.layered_generate.get_keying_strategy",
+        return_value=_BrokenKeying(),
+    ), patch("vulca.layers.layered_generate.asyncio.sleep", new=AsyncMock()):
+        with pytest.raises(KeyError, match="broken keying"):
+            asyncio.run(layered_generate(
+                plan=[_layer()],
+                tradition_anchor=_anchor(),
+                canvas=_CanvasSpec.from_hex("#ffffff"),
+                key_strategy_name="luminance",
+                provider=prov,
+                output_dir=str(tmp_path),
+                parallelism=1,
+                cache_enabled=False,
+                width=32, height=32,
+            ))
+
+
 def test_full_jitter_backoff(tmp_path: Path):
     """Backoff: random.uniform(0, 0.5 * 2**attempt). attempt=0 -> [0, 0.5);
     attempt=1 -> [0, 1.0). Two retries -> two sleeps with bounds 0.5 then 1.0."""

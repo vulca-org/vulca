@@ -180,9 +180,15 @@ async def generate_one_layer(
         Path(output_dir).mkdir(parents=True, exist_ok=True)
         rgba_img.save(out_path)
         if cache is not None:
-            buf = io.BytesIO()
-            rgba_img.save(buf, format="PNG")
-            cache.put(cache_key, buf.getvalue())
+            try:
+                buf = io.BytesIO()
+                rgba_img.save(buf, format="PNG")
+                cache.put(cache_key, buf.getvalue())
+            except Exception as exc:
+                logger.warning(
+                    "cache.put failed for layer %s (best-effort): %s",
+                    layer.name, exc,
+                )
 
     rgba = np.array(Image.open(out_path))
     alpha_only = rgba[:, :, 3].astype(np.float32) / 255.0
@@ -241,11 +247,13 @@ async def layered_generate(
                     width=width,
                     height=height,
                 )
-            except AssertionError:
-                # Programmer/internal bug — surface loudly. Do not collapse.
+            except (AssertionError, TypeError, KeyError, AttributeError, ValueError):
+                # Programmer/data bug — propagate. These are not transient
+                # provider failures and must not be silently relabeled as
+                # generation_failed.
                 raise
             except Exception:
-                logger.exception("unexpected failure for layer %s", layer.name)
+                logger.exception("unexpected post-provider failure for layer %s", layer.name)
                 return LayerOutcome(ok=False, info=layer, rgba_path="", attempts=1)
 
     outcomes = await asyncio.gather(*(_run(l) for l in plan))
