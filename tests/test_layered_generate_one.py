@@ -75,6 +75,28 @@ def test_generate_one_layer_produces_rgba(tmp_path):
     assert a[0, 0] < 30
 
 
+def test_cache_key_differs_across_dimensions(tmp_path):
+    """P0.1 #1: passing different width/height to generate_one_layer must
+    produce different cache slots, so dimension changes don't collide."""
+    provider = _FakeProvider()
+    cache = LayerCache(tmp_path, enabled=True)
+    kw = dict(
+        layer=_layer(), anchor=_anchor(),
+        canvas=CanvasSpec.from_hex("#ffffff"),
+        keying=LuminanceKeying(), provider=provider, sibling_roles=[],
+        output_dir=str(tmp_path), position="center", coverage="20-30%",
+        cache=cache,
+    )
+    asyncio.run(generate_one_layer(**kw, width=1024, height=1024))
+    calls_after_first = provider.calls
+    # Same call with different dimensions — must MISS the cache and hit provider.
+    asyncio.run(generate_one_layer(**kw, width=512, height=512))
+    assert provider.calls == calls_after_first + 1
+    # Then re-running with the original dimensions must HIT the cache.
+    asyncio.run(generate_one_layer(**kw, width=1024, height=1024))
+    assert provider.calls == calls_after_first + 1
+
+
 def test_cache_hit_skips_provider(tmp_path):
     provider = _FakeProvider()
     cache = LayerCache(tmp_path, enabled=True)
