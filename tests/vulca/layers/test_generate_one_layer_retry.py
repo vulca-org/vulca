@@ -133,7 +133,7 @@ def test_cancelled_error_in_provider_propagates(tmp_path: Path):
     """asyncio.CancelledError is control flow — must NOT be retried."""
     prov = _FakeProvider([asyncio.CancelledError(), _png_bytes()])
     with patch("vulca.layers.layered_generate.asyncio.sleep", new=AsyncMock()):
-        with pytest.raises((asyncio.CancelledError, BaseException)):
+        with pytest.raises(asyncio.CancelledError):
             asyncio.run(generate_one_layer(**_kwargs(prov, tmp_path)))
     assert prov.calls == 1
 

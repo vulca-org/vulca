@@ -14,8 +14,8 @@ def test_outcome_ok():
 
 
 def test_failure_carries_reason():
-    f = LayerFailure(layer_id="layer_x", role="远景淡墨", reason="provider_timeout", attempts=3)
-    assert f.reason == "provider_timeout" and f.attempts == 3
+    f = LayerFailure(layer_id="layer_x", role="远景淡墨", reason="generation_failed", attempts=3)
+    assert f.reason == "generation_failed" and f.attempts == 3
 
 
 def test_layered_result_is_complete():
@@ -35,7 +35,7 @@ def test_layered_result_partial_usable():
             LayerOutcome(ok=True, info=_info("bg", content_type="background", role="bg"), rgba_path="/bg.png"),
             LayerOutcome(ok=True, info=_info("subj", content_type="subject", role="m"), rgba_path="/s.png"),
         ],
-        failed=[LayerFailure(layer_id="x", role="题款", reason="r", attempts=1)],
+        failed=[LayerFailure(layer_id="x", role="题款", reason="generation_failed", attempts=1)],
     )
     assert not res.is_complete
     assert res.is_usable
@@ -44,6 +44,6 @@ def test_layered_result_partial_usable():
 def test_layered_result_unusable_no_subject():
     res = LayeredResult(
         layers=[LayerOutcome(ok=True, info=_info("bg", content_type="background", role="bg"), rgba_path="/bg.png")],
-        failed=[LayerFailure("x", "subj", "r", 1)],
+        failed=[LayerFailure("x", "subj", "generation_failed", 1)],
     )
     assert not res.is_usable
