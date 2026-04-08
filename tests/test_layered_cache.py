@@ -48,6 +48,40 @@ def test_cache_key_changes_on_provider():
     assert a != b
 
 
+def _base_kwargs():
+    return dict(
+        provider_id="g", model_id="m", prompt="x",
+        canvas_color="#fff", canvas_tolerance=0.05, seed=0, schema_version="0.13",
+    )
+
+
+def test_cache_key_changes_on_key_strategy():
+    a = build_cache_key(**_base_kwargs(), key_strategy="LuminanceKeying")
+    b = build_cache_key(**_base_kwargs(), key_strategy="ChromaKeying")
+    assert a != b
+
+
+def test_cache_key_changes_on_canvas_invert():
+    a = build_cache_key(**_base_kwargs(), canvas_invert=False)
+    b = build_cache_key(**_base_kwargs(), canvas_invert=True)
+    assert a != b
+
+
+def test_cache_key_changes_on_dimensions():
+    a = build_cache_key(**_base_kwargs(), width=1024, height=1024)
+    b = build_cache_key(**_base_kwargs(), width=512, height=512)
+    assert a != b
+
+
+def test_cache_key_defaults_are_backward_compatible():
+    """Omitting new kwargs must not change pre-existing keys (default values
+    hash to a fixed string that tests from v0.13.0 baseline still match)."""
+    a = build_cache_key(**_base_kwargs())
+    b = build_cache_key(**_base_kwargs(), key_strategy="", canvas_invert=False,
+                        width=0, height=0)
+    assert a == b
+
+
 def test_cache_roundtrip(tmp_path):
     cache = LayerCache(tmp_path / "art")
     key = "k1"
