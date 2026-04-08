@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.13.1] - 2026-04-08
+
+### Fixes (codex review nice-to-haves from v0.13.0)
+- **ChromaKeying linear RGB**: distance is now computed in linear RGB (sRGB gamma-decoded) instead of on raw sRGB bytes. Subject separation on colored canvases is now perceptually consistent with the docstring.
+- **`_box_blur` vectorization**: replaced the Python per-pixel integral-image loop with full-frame numpy slicing. 512×512 box blur now runs in single-digit ms instead of seconds.
+- **`_despill` gating**: no longer erodes alpha on solid interior. Only pixels in the soft-edge band (0.02 < alpha < 0.98) that are close to the background color get attenuated (up to 50% by default).
+
+### Test coverage
+- `test_chroma_operates_in_linear_rgb_not_srgb` pins the gamma-decode behavior.
+- `test_box_blur_matches_reference_and_is_fast` checks output against a naive per-pixel reference AND enforces a 0.5s budget on 512×512.
+- `test_despill_preserves_solid_interior` asserts solid opaque interior stays at alpha >= 0.999 and the edge band still attenuates.
+
 ## [0.13.0] - 2026-04-08
 
 ### Layered Generation — A-path (generation-time alpha)
