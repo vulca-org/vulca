@@ -141,6 +141,18 @@ class LayerGenerateNode(PipelineNode):
             ctx.provider, api_key=ctx.api_key
         )
 
+        # P0.1 #1: canvas size is part of the cache key contract so different
+        # target dimensions don't collide. Pull from ctx ("1024x1024" default).
+        size_str = ctx.get("size", "1024x1024") or "1024x1024"
+        try:
+            if "x" in size_str:
+                _w, _h = size_str.split("x", 1)
+                canvas_w, canvas_h = int(_w), int(_h)
+            else:
+                canvas_w = canvas_h = int(size_str)
+        except Exception:
+            canvas_w = canvas_h = 1024
+
         result = await lg_mod.layered_generate(
             plan=layers,
             tradition_anchor=anchor,
@@ -152,6 +164,8 @@ class LayerGenerateNode(PipelineNode):
             coverages=coverages,
             parallelism=int(os.environ.get("VULCA_LAYERED_PARALLELISM", "4")),
             cache_enabled=cache_enabled,
+            width=canvas_w,
+            height=canvas_h,
         )
 
         out: list[LayerResult] = []

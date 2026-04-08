@@ -103,6 +103,8 @@ async def generate_one_layer(
     position: str = "",
     coverage: str = "",
     cache: LayerCache | None = None,
+    width: int = 0,
+    height: int = 0,
 ) -> LayerOutcome:
     prompt = build_anchored_layer_prompt(
         layer, anchor=anchor, sibling_roles=sibling_roles,
@@ -118,6 +120,8 @@ async def generate_one_layer(
         schema_version=SCHEMA_VERSION,
         key_strategy=keying.__class__.__name__,
         canvas_invert=bool(getattr(canvas, "invert", False)),
+        width=int(width),
+        height=int(height),
     )
 
     out_path = str(Path(output_dir) / f"{layer.name}.png")
@@ -175,6 +179,8 @@ async def layered_generate(
     coverages: dict[str, str] | None = None,
     parallelism: int = 4,
     cache_enabled: bool = True,
+    width: int = 0,
+    height: int = 0,
 ) -> LayeredResult:
     """Concurrently generate every layer in the plan, key, validate, and assemble."""
     keying = get_keying_strategy(key_strategy_name)
@@ -199,6 +205,8 @@ async def layered_generate(
                     position=positions.get(layer.name, ""),
                     coverage=coverages.get(layer.name, ""),
                     cache=cache,
+                    width=width,
+                    height=height,
                 )
             except Exception:
                 logger.exception("unexpected failure for layer %s", layer.name)
