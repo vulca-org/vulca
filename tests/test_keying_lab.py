@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 from vulca.layers.keying._lab import srgb_to_lab
 
 def test_pure_white_maps_to_L100():
@@ -31,3 +32,18 @@ def test_shape_preserved():
     out = srgb_to_lab(rgb)
     assert out.shape == (4, 5, 3)
     assert out.dtype == np.float32
+
+def test_pure_red_reference_values():
+    # Reference values from colour-science / skimage srgb2lab([255,0,0])
+    lab = srgb_to_lab(np.array([[[255, 0, 0]]], dtype=np.uint8))[0, 0]
+    assert np.allclose(lab, [53.24, 80.09, 67.20], atol=0.5)
+
+def test_wrong_dtype_raises():
+    rgb = np.zeros((2, 2, 3), dtype=np.float32)
+    with pytest.raises(ValueError, match="uint8"):
+        srgb_to_lab(rgb)
+
+def test_wrong_shape_raises():
+    rgb = np.zeros((2, 2, 4), dtype=np.uint8)
+    with pytest.raises(ValueError, match="H×W×3|3"):
+        srgb_to_lab(rgb)
