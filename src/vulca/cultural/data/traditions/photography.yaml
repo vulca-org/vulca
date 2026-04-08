@@ -122,3 +122,10 @@ tradition_layers:
     blend: screen
     position: "overlay, matching subject positions"
     coverage: "10-20%"
+
+# Layered generation configuration (v0.13)
+layerability: discouraged
+canvas_color: null
+canvas_description: ""
+key_strategy: null
+style_keywords: ""

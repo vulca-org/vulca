@@ -47,3 +47,43 @@ def test_tradition_without_layerability_fields_uses_defaults():
     assert t.canvas_description == ""              # default
     assert t.key_strategy == "luminance"           # default
     assert t.style_keywords == ""                  # default
+
+
+import pytest
+
+
+@pytest.mark.parametrize("name,expected_layerability", [
+    ("chinese_xieyi", "native"),
+    ("chinese_gongbi", "native"),
+    ("japanese_traditional", "native"),
+    ("watercolor", "native"),
+    ("islamic_geometric", "native"),
+    ("brand_design", "native"),
+    ("ui_ux_design", "native"),
+    ("contemporary_art", "split"),
+    ("south_asian", "native"),
+    ("african_traditional", "split"),
+    ("photography", "discouraged"),
+    ("western_academic", "discouraged"),
+])
+def test_all_traditions_have_layerability(name, expected_layerability):
+    from vulca.cultural.loader import get_tradition, reload_traditions
+    reload_traditions()
+    t = get_tradition(name)
+    assert t is not None, f"tradition {name} missing"
+    assert t.layerability == expected_layerability, (
+        f"{name}: expected {expected_layerability}, got {t.layerability}"
+    )
+
+
+def test_discouraged_traditions_canvas_defaults_fallback():
+    """Discouraged traditions write null for canvas_color/key_strategy;
+    loader should fall back to defaults because B-path doesn't use them anyway."""
+    from vulca.cultural.loader import get_tradition, reload_traditions
+    reload_traditions()
+    for name in ("photography", "western_academic"):
+        t = get_tradition(name)
+        assert t is not None
+        assert t.canvas_color == "#ffffff"          # null → default
+        assert t.key_strategy == "luminance"        # null → default
+        assert t.layerability == "discouraged"       # explicit

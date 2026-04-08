@@ -102,3 +102,10 @@ tradition_layers:
     blend: multiply
     position: "corner"
     coverage: "5-10%"
+
+# Layered generation configuration (v0.13)
+layerability: native
+canvas_color: "#f5e6c8"
+canvas_description: "cooked silk (熟绢) with subtle warm tone, smooth surface, no border"
+key_strategy: delta_e
+style_keywords: "工笔, 白描勾线, 分染罩染, 细致写实, gongbi style, fine outline, refined color wash, mineral pigment"
