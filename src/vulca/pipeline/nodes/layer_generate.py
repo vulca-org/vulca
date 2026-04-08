@@ -55,6 +55,20 @@ class LayerGenerateNode(PipelineNode):
         if not layers:
             return []
 
+        from vulca.cultural.loader import get_tradition
+        try:
+            trad = get_tradition(ctx.tradition or "default")
+        except Exception:
+            trad = None
+        layerability = getattr(trad, "layerability", "split") if trad else "split"
+
+        if layerability == "native":
+            return await self._generate_layers_native(layers, ctx, trad)
+        return await self._generate_layers_legacy(layers, ctx)
+
+    async def _generate_layers_legacy(
+        self, layers: list[LayerInfo], ctx: NodeContext
+    ) -> list[LayerResult]:
         output_dir = ctx.get("output_dir") or tempfile.mkdtemp(prefix="vulca_layered_")
         Path(output_dir).mkdir(parents=True, exist_ok=True)
         style_ref = ctx.get("composite_b64") or ctx.get("image_b64") or ""
@@ -86,6 +100,67 @@ class LayerGenerateNode(PipelineNode):
 
         all_results = [first_result] + list(parallel_results)
         return sorted(all_results, key=lambda r: r.info.z_index)
+
+    async def _generate_layers_native(
+        self, layers: list[LayerInfo], ctx: NodeContext, trad
+    ) -> list[LayerResult]:
+        from vulca.layers import layered_generate as lg_mod
+        from vulca.layers.layered_prompt import TraditionAnchor
+        from vulca.layers.keying import CanvasSpec
+
+        output_dir = ctx.get("output_dir") or tempfile.mkdtemp(prefix="vulca_layered_")
+        Path(output_dir).mkdir(parents=True, exist_ok=True)
+
+        canvas_hex = getattr(trad, "canvas_color", "#ffffff") or "#ffffff"
+        anchor = TraditionAnchor(
+            canvas_color_hex=canvas_hex,
+            canvas_description=getattr(trad, "canvas_description", "") or "white canvas",
+            style_keywords=getattr(trad, "style_keywords", "") or "",
+        )
+        canvas = CanvasSpec.from_hex(canvas_hex)
+        key_strategy_name = getattr(trad, "key_strategy", "luminance") or "luminance"
+
+        positions: dict[str, str] = {l.name: getattr(l, "_position", "") for l in layers}
+        coverages: dict[str, str] = {l.name: getattr(l, "_coverage", "") for l in layers}
+
+        cache_enabled = not bool(getattr(ctx, "no_cache", False))
+
+        from vulca.providers import get_image_provider
+        provider_instance = ctx.image_provider or get_image_provider(
+            ctx.provider, api_key=ctx.api_key
+        )
+
+        result = await lg_mod.layered_generate(
+            plan=layers,
+            tradition_anchor=anchor,
+            canvas=canvas,
+            key_strategy_name=key_strategy_name,
+            provider=provider_instance,
+            output_dir=output_dir,
+            positions=positions,
+            coverages=coverages,
+            parallelism=int(os.environ.get("VULCA_LAYERED_PARALLELISM", "4")),
+            cache_enabled=cache_enabled,
+        )
+
+        out: list[LayerResult] = []
+        for o in result.layers:
+            o.info.status = "accepted"
+            o.info.generation_round = ctx.round_num or 1
+            out.append(LayerResult(info=o.info, image_path=o.rgba_path))
+        for f in result.failed:
+            for l in layers:
+                if l.id == f.layer_id:
+                    l.status = "failed"
+                    l.weakness = f.reason
+                    out.append(LayerResult(info=l, image_path=""))
+                    break
+
+        try:
+            ctx.set("layered_result", result)
+        except Exception:
+            pass
+        return sorted(out, key=lambda r: r.info.z_index)
 
     async def _generate_single(
         self, info: LayerInfo, ctx: NodeContext, output_dir: str, style_ref: str | None,
