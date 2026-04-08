@@ -28,3 +28,30 @@ class CanvasSpec:
 class KeyingStrategy(Protocol):
     """Returns a float32 alpha map in [0, 1] given an RGB image and canvas."""
     def extract_alpha(self, rgb: np.ndarray, canvas: CanvasSpec) -> np.ndarray: ...
+
+
+def get_keying_strategy(spec: str | None) -> KeyingStrategy:
+    """Resolve a keying strategy by name or 'module.path:callable'."""
+    if not spec:
+        from vulca.layers.keying.luminance import LuminanceKeying
+        return LuminanceKeying()
+
+    if ":" in spec:
+        # Tier 2 escape hatch
+        module_path, fn_name = spec.split(":", 1)
+        import importlib
+        mod = importlib.import_module(module_path)
+        fn = getattr(mod, fn_name)
+        return fn()
+
+    name = spec.lower().strip()
+    if name == "luminance":
+        from vulca.layers.keying.luminance import LuminanceKeying
+        return LuminanceKeying()
+    if name == "chroma":
+        from vulca.layers.keying.chroma import ChromaKeying
+        return ChromaKeying()
+    if name in ("delta_e", "deltae"):
+        from vulca.layers.keying.chroma import DeltaEKeying
+        return DeltaEKeying()
+    raise ValueError(f"unknown keying strategy: {spec!r}")
