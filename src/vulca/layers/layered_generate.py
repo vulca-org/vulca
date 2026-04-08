@@ -115,6 +115,8 @@ async def generate_one_layer(
         canvas_color="#%02x%02x%02x" % canvas.color,
         canvas_tolerance=canvas.tolerance,
         schema_version=SCHEMA_VERSION,
+        key_strategy=keying.__class__.__name__,
+        canvas_invert=bool(getattr(canvas, "invert", False)),
     )
 
     out_path = str(Path(output_dir) / f"{layer.name}.png")
