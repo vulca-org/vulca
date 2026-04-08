@@ -250,6 +250,14 @@ def main(argv: list[str] | None = None) -> None:
     layers_dup.add_argument("--layer", "-l", required=True, help="Source layer name")
     layers_dup.add_argument("--name", "-n", default="", help="New layer name")
 
+    layers_retry = layers_sub.add_parser("retry", help="Retry failed layers in a layered artifact")
+    layers_retry.add_argument("artifact_dir", help="Path to the artifact directory")
+    layers_retry.add_argument("--layer", default="", help="Retry only this layer name")
+    layers_retry.add_argument("--all-failed", action="store_true", help="Retry every failed layer")
+    layers_retry.add_argument("--tradition", "-t", default="chinese_xieyi",
+                              help="Tradition to re-derive anchor/canvas/keying from")
+    layers_retry.add_argument("--provider", default="", help="Image provider override")
+
     layers_transform = layers_sub.add_parser("transform", help="Move/scale/rotate/opacity a layer")
     layers_transform.add_argument("artwork_dir", help="Directory with layers")
     layers_transform.add_argument("--layer", "-l", required=True, help="Layer name")
@@ -1443,6 +1451,27 @@ def _cmd_layers(args: argparse.Namespace) -> None:
         print(f"    x={layer.info.x:.1f}% y={layer.info.y:.1f}% "
               f"w={layer.info.width:.1f}% h={layer.info.height:.1f}% "
               f"rot={layer.info.rotation:.1f}° opacity={layer.info.opacity:.2f}")
+
+    elif args.layers_command == "retry":
+        from vulca.layers.retry import retry_layers
+        from vulca.providers import get_image_provider
+        provider_instance = get_image_provider(args.provider or "mock", api_key="")
+        layer_names = [args.layer] if args.layer else None
+        loop = asyncio.new_event_loop()
+        result = loop.run_until_complete(retry_layers(
+            args.artifact_dir,
+            tradition_name=args.tradition,
+            layer_names=layer_names,
+            all_failed=bool(args.all_failed),
+            provider=provider_instance,
+        ))
+        loop.close()
+        print(f"  Retried: {len(result.layers)} ok, {len(result.failed)} failed")
+        for o in result.layers:
+            print(f"    [{o.info.z_index}] {o.info.name} -> {o.rgba_path}"
+                  f"{' (cached)' if o.cache_hit else ''}")
+        for f in result.failed:
+            print(f"    [x] {f.role}: {f.reason}", file=sys.stderr)
 
     else:
         print(f"Unknown layers command: {args.layers_command}", file=sys.stderr)
