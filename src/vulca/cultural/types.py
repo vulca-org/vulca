@@ -76,6 +76,13 @@ class TraditionConfig:
     examples: list[dict[str, str]] = field(default_factory=list)
     extra_dimensions: list[dict] = field(default_factory=list)
 
+    # Layered generation config (v0.13)
+    layerability: str = "split"
+    canvas_color: str = "#ffffff"
+    canvas_description: str = ""
+    key_strategy: str = "luminance"
+    style_keywords: str = ""
+
     # Dimension name mapping: L-code -> snake_case
     _L_TO_DIM: dict[str, str] = field(default_factory=dict, repr=False, init=False)
 
