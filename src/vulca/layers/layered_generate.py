@@ -5,6 +5,7 @@ Decoupled from the pipeline so it can be called from CLI, MCP, SDK, or tests.
 """
 from __future__ import annotations
 
+import asyncio
 import base64
 import io
 import logging
@@ -14,7 +15,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-from vulca.layers.keying import CanvasSpec, KeyingStrategy
+from vulca.layers.keying import CanvasSpec, KeyingStrategy, get_keying_strategy
 from vulca.layers.layered_cache import LayerCache, build_cache_key
 from vulca.layers.layered_prompt import TraditionAnchor, build_anchored_layer_prompt
 from vulca.layers.types import LayerInfo
@@ -157,3 +158,59 @@ async def generate_one_layer(
         ok=True, info=layer, rgba_path=out_path,
         attempts=1, validation=report, cache_hit=cache_hit,
     )
+
+
+async def layered_generate(
+    *,
+    plan: list[LayerInfo],
+    tradition_anchor: TraditionAnchor,
+    canvas: CanvasSpec,
+    key_strategy_name: str,
+    provider,
+    output_dir: str,
+    positions: dict[str, str] | None = None,
+    coverages: dict[str, str] | None = None,
+    parallelism: int = 4,
+    cache_enabled: bool = True,
+) -> LayeredResult:
+    """Concurrently generate every layer in the plan, key, validate, and assemble."""
+    keying = get_keying_strategy(key_strategy_name)
+    cache = LayerCache(output_dir, enabled=cache_enabled)
+    sem = asyncio.Semaphore(parallelism)
+
+    sibling_roles = [l.tradition_role or l.name for l in plan]
+    positions = positions or {}
+    coverages = coverages or {}
+
+    async def _run(layer: LayerInfo) -> LayerOutcome:
+        async with sem:
+            try:
+                return await generate_one_layer(
+                    layer=layer,
+                    anchor=tradition_anchor,
+                    canvas=canvas,
+                    keying=keying,
+                    provider=provider,
+                    sibling_roles=sibling_roles,
+                    output_dir=output_dir,
+                    position=positions.get(layer.name, ""),
+                    coverage=coverages.get(layer.name, ""),
+                    cache=cache,
+                )
+            except Exception:
+                logger.exception("unexpected failure for layer %s", layer.name)
+                return LayerOutcome(ok=False, info=layer, rgba_path="", attempts=1)
+
+    outcomes = await asyncio.gather(*(_run(l) for l in plan))
+
+    layers_ok = [o for o in outcomes if o.ok]
+    layers_failed = [
+        LayerFailure(
+            layer_id=o.info.id,
+            role=o.info.tradition_role or o.info.name,
+            reason=("validation_failed" if o.validation else "generation_failed"),
+            attempts=o.attempts,
+        )
+        for o in outcomes if not o.ok
+    ]
+    return LayeredResult(layers=layers_ok, failed=layers_failed)
