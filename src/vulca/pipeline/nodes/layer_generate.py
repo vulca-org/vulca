@@ -160,6 +160,14 @@ class LayerGenerateNode(PipelineNode):
             ctx.set("layered_result", result)
         except Exception:
             pass
+
+        # P0 #4: --strict mode — any failed layer fails the whole run.
+        if ctx.get("strict", False) and result.failed:
+            names = ", ".join(f.role for f in result.failed)
+            raise RuntimeError(
+                f"strict mode: {len(result.failed)} layer(s) failed ({names})"
+            )
+
         return sorted(out, key=lambda r: r.info.z_index)
 
     async def _generate_single(
