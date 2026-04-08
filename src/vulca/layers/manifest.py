@@ -13,6 +13,21 @@ from vulca.layers.types import LayerInfo, LayerResult, LayeredArtwork
 
 MANIFEST_VERSION = 3
 
+# v0.13.2 P2 T11: whitelist the keys runtime code is allowed to stash in
+# layer_extras. Anything outside this set — including any name that would
+# shadow a core LayerInfo field like 'id'/'name'/'z_index' — raises at
+# write_manifest time rather than silently clobbering the explicit field.
+ALLOWED_LAYER_EXTRAS_KEYS: frozenset[str] = frozenset({
+    "source",       # "a" | "legacy"
+    "status",       # "ok" | "failed"
+    "cache_hit",
+    "attempts",
+    "canvas_color",
+    "key_strategy",
+    "reason",       # LayerFailure.reason
+    "validation",   # ValidationReport dict
+})
+
 
 def write_manifest(
     layers: list[LayerInfo],
@@ -34,6 +49,17 @@ def write_manifest(
     out_dir.mkdir(parents=True, exist_ok=True)
 
     extras = layer_extras or {}
+    for lid, extra_dict in extras.items():
+        if not isinstance(extra_dict, dict):
+            raise ValueError(
+                f"layer_extras[{lid!r}] must be a dict, got {type(extra_dict).__name__}"
+            )
+        for k in extra_dict:
+            if k not in ALLOWED_LAYER_EXTRAS_KEYS:
+                raise ValueError(
+                    f"unknown layer_extras key {k!r} for layer {lid!r}; "
+                    f"allowed keys: {sorted(ALLOWED_LAYER_EXTRAS_KEYS)}"
+                )
 
     manifest = {
         "version": MANIFEST_VERSION,
