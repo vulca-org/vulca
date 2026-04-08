@@ -64,8 +64,10 @@ def _alpha_bbox_iou(alpha: np.ndarray, region: dict[str, float], threshold: floa
 
     rows = mask.any(axis=1)
     cols = mask.any(axis=0)
-    y0, y1 = int(np.argmax(rows)), int(len(rows) - np.argmax(rows[::-1]))
-    x0, x1 = int(np.argmax(cols)), int(len(cols) - np.argmax(cols[::-1]))
+    row_idx = np.where(rows)[0]
+    col_idx = np.where(cols)[0]
+    y0, y1 = int(row_idx[0]), int(row_idx[-1]) + 1
+    x0, x1 = int(col_idx[0]), int(col_idx[-1]) + 1
 
     rt, rb = int(region["top"] * h), int(region["bottom"] * h)
     rl, rr = int(region["left"] * w), int(region["right"] * w)

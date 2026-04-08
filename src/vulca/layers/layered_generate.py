@@ -1,7 +1,9 @@
 """A-path layered generation library.
 
 Pure orchestration: plan → concurrent provider calls → keying → validate.
-Decoupled from the pipeline so it can be called from CLI, MCP, SDK, or tests.
+Callable from CLI, MCP, SDK, or tests. Providers must implement the
+``raw_prompt=True`` contract on their ``generate(...)`` method (the
+``raw_rgba`` capability flag — see ``vulca.providers.base.ImageProvider``).
 """
 from __future__ import annotations
 

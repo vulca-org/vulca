@@ -46,7 +46,7 @@ def build_anchored_layer_prompt(
         "with absolutely no other elements, textures, shading, or borders on the background.",
         "",
         "[CONTENT ANCHOR — exclusivity]",
-        f"This image ONLY contains the element specified in USER INTENT.",
+        "This image ONLY contains the element specified in USER INTENT.",
         f"Do NOT include any of: {others_text}.",
         "",
         "[SPATIAL ANCHOR]",
