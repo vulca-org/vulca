@@ -81,6 +81,10 @@ def parse_v2_response(raw: dict) -> list[LayerInfo]:
             dominant_colors=dominant_colors,
             regeneration_prompt=regeneration_prompt,
         )
+        # Spatial metadata for the v0.13 anchored layer prompt builder.
+        # Stored as private attrs to avoid polluting the dataclass schema.
+        layer._position = item.get("position", "") or ""
+        layer._coverage = item.get("coverage", "") or ""
         results.append(layer)
 
     results.sort(key=lambda li: li.z_index)
