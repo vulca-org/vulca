@@ -19,3 +19,19 @@ def test_unknown_attribute_raises_valueerror():
 def test_known_name_still_works():
     from vulca.layers.keying.luminance import LuminanceKeying
     assert isinstance(get_keying_strategy("luminance"), LuminanceKeying)
+
+
+def test_inner_importerror_propagates(tmp_path, monkeypatch):
+    """A valid tier-2 module whose own body raises ImportError from an
+    internal dependency must NOT be misclassified as 'unknown strategy'.
+    The original ImportError should propagate unchanged."""
+    mod_path = tmp_path / "broken_keying_module.py"
+    mod_path.write_text('raise ImportError("inner")\n')
+    monkeypatch.syspath_prepend(str(tmp_path))
+
+    # Ensure a stale cached import doesn't mask the failure.
+    import sys
+    sys.modules.pop("broken_keying_module", None)
+
+    with pytest.raises(ImportError, match="inner"):
+        get_keying_strategy("broken_keying_module:Foo")

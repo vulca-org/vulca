@@ -42,11 +42,17 @@ def get_keying_strategy(spec: str | None) -> KeyingStrategy:
         import importlib
         try:
             mod = importlib.import_module(module_path)
-            fn = getattr(mod, fn_name)
-        except (ImportError, AttributeError) as exc:
+        except ModuleNotFoundError as exc:
             raise ValueError(
                 f"unknown keying strategy: {spec!r} "
-                f"(tier-2 loader failed: {type(exc).__name__}: {exc})"
+                f"(module not found: {exc})"
+            ) from exc
+        try:
+            fn = getattr(mod, fn_name)
+        except AttributeError as exc:
+            raise ValueError(
+                f"unknown keying strategy: {spec!r} "
+                f"(attribute {fn_name!r} not found in {module_path})"
             ) from exc
         return fn()
 
