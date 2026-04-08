@@ -98,31 +98,63 @@ async def retry_layers(
         cache_enabled=True,
     )
 
-    # Rewrite manifest with refreshed partial flag and layer_extras for retried layers.
-    layer_extras: dict[str, dict] = {}
-    for o in result.layers:
-        extra = {"source": "a", "cache_hit": bool(o.cache_hit), "attempts": o.attempts}
-        if o.validation is not None:
-            extra["validation"] = {
-                "ok": o.validation.ok,
-                "warnings": [
-                    {"kind": w.kind, "message": w.message, "detail": w.detail}
-                    for w in o.validation.warnings
-                ],
-                "coverage_actual": o.validation.coverage_actual,
-                "position_iou": o.validation.position_iou,
-            }
-        layer_extras[o.info.id] = extra
+    # P0 #3: recompute manifest health from the FULL merged artifact state,
+    # not just the retried subset, so retrying one layer can't falsely mark
+    # the whole artifact healthy.
 
-    # Preserve any extras previously written for layers we didn't touch.
-    existing_extras: dict[str, dict] = {}
+    def _validation_to_dict(v) -> dict:
+        return {
+            "ok": v.ok,
+            "warnings": [
+                {"kind": w.kind, "message": w.message, "detail": w.detail}
+                for w in v.warnings
+            ],
+            "coverage_actual": v.coverage_actual,
+            "position_iou": v.position_iou,
+        }
+
+    # Start from existing extras so untouched layers keep their source/status.
+    _PASSTHROUGH_KEYS = (
+        "source", "status", "reason", "cache_hit", "attempts", "validation",
+        "canvas_color", "key_strategy",
+    )
+    merged_extras: dict[str, dict] = {}
     for e in manifest.get("layers", []):
-        extra = {k: v for k, v in e.items()
-                 if k in ("source", "cache_hit", "attempts", "validation",
-                          "canvas_color", "key_strategy")}
-        if extra:
-            existing_extras[e.get("id", "")] = extra
-    merged_extras = {**existing_extras, **layer_extras}
+        carried = {k: v for k, v in e.items() if k in _PASSTHROUGH_KEYS}
+        if carried:
+            merged_extras[e.get("id", "")] = carried
+
+    # Overlay retried outcomes — successes become status=ok, failures status=failed.
+    for o in result.layers:
+        extra: dict = {
+            "source": "a", "status": "ok",
+            "cache_hit": bool(o.cache_hit), "attempts": o.attempts,
+        }
+        if o.validation is not None:
+            extra["validation"] = _validation_to_dict(o.validation)
+        merged_extras[o.info.id] = extra
+    for f in result.failed:
+        extra = {
+            "source": "a", "status": "failed",
+            "reason": f.reason, "attempts": f.attempts,
+        }
+        if f.validation is not None:
+            extra["validation"] = _validation_to_dict(f.validation)
+        merged_extras[f.layer_id] = extra
+
+    # Health derived from the merged state.
+    any_failed = any(
+        merged_extras.get(info.id, {}).get("status") == "failed"
+        or not (adir / f"{info.name}.png").exists()
+        for info in (r.info for r in artwork.layers)
+    )
+    merged_warnings: list[str] = []
+    for extra in merged_extras.values():
+        vd = extra.get("validation") or {}
+        for w in vd.get("warnings", []) or []:
+            msg = w.get("message") if isinstance(w, dict) else None
+            if msg:
+                merged_warnings.append(msg)
 
     write_manifest(
         [r.info for r in artwork.layers],
@@ -133,8 +165,8 @@ async def retry_layers(
         split_mode=manifest.get("split_mode", ""),
         generation_path=manifest.get("generation_path", "a"),
         layerability=manifest.get("layerability", ""),
-        partial=not result.is_complete,
-        warnings=[],
+        partial=any_failed,
+        warnings=merged_warnings,
         layer_extras=merged_extras,
     )
     return result
