@@ -27,6 +27,7 @@ def write_manifest(
     partial: bool = False,
     warnings: list | None = None,
     layer_extras: dict[str, dict] | None = None,
+    tradition: str = "",
 ) -> str:
     """Write manifest V3 JSON to output_dir/manifest.json. Returns path."""
     out_dir = Path(output_dir)
@@ -42,6 +43,7 @@ def write_manifest(
         "split_mode": split_mode,
         "generation_path": generation_path,
         "layerability": layerability,
+        "tradition": tradition,
         "partial": partial,
         "warnings": warnings or [],
         "created_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),

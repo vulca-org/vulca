@@ -79,6 +79,18 @@ def test_manifest_round_trips_position_and_coverage(tmp_path):
     assert loaded.coverage == "15-25%"
 
 
+def test_manifest_persists_tradition(tmp_path):
+    """P0.1: tradition must be recorded at the manifest top level so
+    `layers retry` can re-derive anchor/canvas/keying without relying
+    on an operator-supplied (and mis-defaulted) --tradition flag."""
+    p = write_manifest(
+        _layers(), output_dir=str(tmp_path), width=1024, height=1024,
+        tradition="islamic_geometric",
+    )
+    data = json.loads(Path(p).read_text())
+    assert data["tradition"] == "islamic_geometric"
+
+
 def test_manifest_layer_extras_propagated(tmp_path):
     layers = _layers()
     extras = {layers[0].id: {"source": "a", "cache_hit": True, "attempts": 1,

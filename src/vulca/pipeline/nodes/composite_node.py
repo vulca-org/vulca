@@ -152,6 +152,9 @@ class CompositeNode(PipelineNode):
             partial=(not layered_result.is_complete) if layered_result is not None else bool(failed),
             warnings=warnings,
             layer_extras=layer_extras,
+            # P0.1: persist tradition so `layers retry` can recover the
+            # correct anchor/canvas/keying without operator guesswork.
+            tradition=ctx.tradition or "",
         )
 
         return {
