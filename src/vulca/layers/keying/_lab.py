@@ -10,9 +10,15 @@ import numpy as np
 _XN, _YN, _ZN = 0.95047, 1.0, 1.08883
 
 
-def _srgb_to_linear(c: np.ndarray) -> np.ndarray:
+def srgb_to_linear(c: np.ndarray) -> np.ndarray:
+    """sRGB → linear RGB. Accepts float in [0,1]. Public helper so other
+    keying strategies can linearize before computing distances."""
     out = np.where(c <= 0.04045, c / 12.92, ((c + 0.055) / 1.055) ** 2.4)
     return out
+
+
+# Backwards-compatible private alias.
+_srgb_to_linear = srgb_to_linear
 
 
 def _xyz_to_lab_f(t: np.ndarray) -> np.ndarray:

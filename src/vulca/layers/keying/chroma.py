@@ -1,6 +1,8 @@
 """Tier 1 strategies for colored content on colored canvases.
 
-ChromaKeying: Euclidean distance in linear RGB. Fast, OK for high-contrast.
+ChromaKeying: Euclidean distance in LINEAR RGB. Gamma-decode before
+              computing distance so the smoothstep behaves perceptually
+              in low luminance the way the docstring promises.
 DeltaEKeying: Perceptual ΔE76 in CIE LAB. ~3× slower, used for low-contrast
               cases (e.g. gongbi color washes on cooked silk).
 """
@@ -9,7 +11,10 @@ from __future__ import annotations
 import numpy as np
 
 from vulca.layers.keying import CanvasSpec
-from vulca.layers.keying._lab import srgb_to_lab
+from vulca.layers.keying._lab import srgb_to_lab, srgb_to_linear
+
+# Maximum possible distance in the linear [0,1]^3 cube: sqrt(3).
+_MAX_LINEAR_DIST = float(np.sqrt(3.0))
 
 
 def _smoothstep(lo: float, hi: float, x: np.ndarray) -> np.ndarray:
@@ -19,10 +24,15 @@ def _smoothstep(lo: float, hi: float, x: np.ndarray) -> np.ndarray:
 
 class ChromaKeying:
     def extract_alpha(self, rgb: np.ndarray, canvas: CanvasSpec) -> np.ndarray:
-        diff = rgb.astype(np.float32) - np.array(canvas.color, dtype=np.float32)
-        dist = np.sqrt(np.sum(diff * diff, axis=-1))      # 0..~441
-        lo = canvas.tolerance * 441.0
-        hi = 441.0 * 0.5
+        # Linearize pixels AND canvas color before computing distance.
+        rgb_lin = srgb_to_linear(rgb.astype(np.float32) / 255.0)
+        canvas_lin = srgb_to_linear(
+            np.array(canvas.color, dtype=np.float32) / 255.0
+        )
+        diff = rgb_lin - canvas_lin
+        dist = np.sqrt(np.sum(diff * diff, axis=-1))  # 0..sqrt(3)
+        lo = canvas.tolerance * _MAX_LINEAR_DIST
+        hi = _MAX_LINEAR_DIST * 0.5
         alpha = _smoothstep(lo, hi, dist)
         if canvas.invert:
             alpha = 1.0 - alpha
