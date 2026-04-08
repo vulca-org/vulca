@@ -9,6 +9,7 @@ import asyncio
 import base64
 import io
 import logging
+import random
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -24,6 +25,8 @@ from vulca.layers.validate import ValidationReport, validate_layer_alpha
 logger = logging.getLogger("vulca.layers.layered_generate")
 
 SCHEMA_VERSION = "0.13"
+
+_RETRY_BUDGET = 2  # additional attempts after the first; 3 total.
 
 
 @dataclass
@@ -127,6 +130,7 @@ async def generate_one_layer(
 
     out_path = str(Path(output_dir) / f"{layer.name}.png")
     cache_hit = False
+    attempts = 1  # default: cache hit reports 1 (one layer operation completed)
 
     if cache is not None:
         cached = cache.get(cache_key)
@@ -136,11 +140,35 @@ async def generate_one_layer(
             cache_hit = True
 
     if not cache_hit:
-        try:
-            rgb_bytes = await _call_provider(provider, prompt)
-        except Exception as exc:
-            logger.warning("provider failed for layer %s: %s", layer.name, exc)
-            return LayerOutcome(ok=False, info=layer, rgba_path="", attempts=1)
+        # In-process retry budget for provider (generation_failed) only.
+        # Validation failures are deterministic and never retried (handled below).
+        # Programmer bugs (AssertionError/TypeError) and control flow
+        # (CancelledError) propagate — they are not "transient provider failures."
+        rgb_bytes: bytes | None = None
+        last_exc: Exception | None = None
+        for attempt in range(_RETRY_BUDGET + 1):
+            attempts = attempt + 1
+            try:
+                rgb_bytes = await _call_provider(provider, prompt)
+                last_exc = None
+                break
+            except (AssertionError, TypeError, asyncio.CancelledError):
+                # Not a transient provider failure — surface immediately.
+                raise
+            except Exception as exc:
+                last_exc = exc
+                logger.warning(
+                    "provider failed for layer %s (attempt %d/%d): %s",
+                    layer.name, attempts, _RETRY_BUDGET + 1, exc,
+                )
+                if attempt < _RETRY_BUDGET:
+                    delay = random.uniform(0, 0.5 * (2 ** attempt))
+                    await asyncio.sleep(delay)
+        if last_exc is not None:
+            return LayerOutcome(
+                ok=False, info=layer, rgba_path="", attempts=attempts,
+            )
+        assert rgb_bytes is not None  # type narrowing for the next block
 
         rgb = np.array(Image.open(io.BytesIO(rgb_bytes)).convert("RGB"))
         alpha = keying.extract_alpha(rgb, canvas)
@@ -158,13 +186,13 @@ async def generate_one_layer(
 
     if not report.ok:
         return LayerOutcome(
-            ok=False, info=layer, rgba_path="", attempts=1,
+            ok=False, info=layer, rgba_path="", attempts=attempts,
             validation=report, cache_hit=cache_hit,
         )
 
     return LayerOutcome(
         ok=True, info=layer, rgba_path=out_path,
-        attempts=1, validation=report, cache_hit=cache_hit,
+        attempts=attempts, validation=report, cache_hit=cache_hit,
     )
 
 
