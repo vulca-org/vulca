@@ -138,6 +138,10 @@ class PipelineOutput:
     # Preserved for HITL resume — original user inputs
     original_intent: str = ""
     original_provider: str = ""
+    # v0.13 P0.1 #4: LAYERED non-strict runs surface a partial flag here so
+    # callers don't have to re-read manifest.json to know the artifact is
+    # partially degraded.
+    layered_partial: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -158,6 +162,7 @@ class PipelineOutput:
             "summary": self.summary,
             "original_intent": self.original_intent,
             "original_provider": self.original_provider,
+            "layered_partial": self.layered_partial,
         }
 
 
