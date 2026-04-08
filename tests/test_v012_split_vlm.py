@@ -339,7 +339,7 @@ class TestSplitVlm:
         assert manifest.get("split_mode") == "vlm", (
             f"Expected split_mode='vlm', got {manifest.get('split_mode')!r}"
         )
-        assert manifest.get("version") == 2
+        assert manifest.get("version") == 3
 
     def test_no_api_call_for_background(self):
         """Background layer does NOT trigger a VLM API call."""

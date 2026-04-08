@@ -130,7 +130,7 @@ class TestFullWorkflowExtract:
 
             # L2: Manifest written correctly
             manifest = json.loads((Path(td) / "manifest.json").read_text())
-            assert manifest["version"] == 2
+            assert manifest["version"] == 3
             assert manifest["split_mode"] == "extract"
             assert len(manifest["layers"]) == 2
 
@@ -223,7 +223,7 @@ class TestFullWorkflowRegenerate:
                 assert img.size == (100, 100)
 
             manifest = json.loads((Path(td) / "manifest.json").read_text())
-            assert manifest["version"] == 2
+            assert manifest["version"] == 3
             assert manifest["split_mode"] == "regenerate"
 
 
@@ -477,7 +477,7 @@ class TestManifestMigration:
 
             # Manifest is now V2
             manifest = json.loads((Path(td) / "manifest.json").read_text())
-            assert manifest["version"] == 2
+            assert manifest["version"] == 3
 
 
 # ===========================================================================
