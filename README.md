@@ -64,6 +64,29 @@ vulca create "水墨山水，雨后春山" -t chinese_xieyi --layered    # struc
 vulca create "Tea packaging" -t brand_design --provider gemini   # single image
 ```
 
+### Layered creation — generation-time alpha for cultural art
+
+```bash
+vulca create "远山薄雾" -t chinese_xieyi --layered -o art/
+```
+
+VULCA generates each layer (远山, 中景, 题款 …) independently on the canonical
+canvas of the tradition (生宣纸 for xieyi). Per-layer alpha is extracted by
+tradition-specific keying (luminance for ink wash, chroma for color works),
+so flying-white and ink gradients become true soft alpha — no halos, no hard
+edges. Layers can be re-rendered individually:
+
+```bash
+vulca layers retry art/ --layer 远山          # retry one layer
+vulca layers retry art/ --all-failed          # retry every failed layer
+vulca layers cache clear art/                 # drop the sidecar cache
+```
+
+Cost: N provider calls per artwork (one per layer). Iterative editing hits
+the per-artifact cache, so changing one layer is one provider call.
+Partial failures are non-blocking — the manifest records `partial: true`
+and the healthy layers remain usable.
+
 ### Evaluate — L1-L5 cultural scoring, three modes
 
 ```
