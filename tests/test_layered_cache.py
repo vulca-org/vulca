@@ -61,6 +61,17 @@ def test_cache_key_changes_on_key_strategy():
     assert a != b
 
 
+def test_cache_key_changes_on_strategy_version():
+    """P0.4: algorithm-only fixes (same class name, bumped version) must bust
+    the cache. Without this, upgrading users silently reuse stale PNGs when
+    e.g. ChromaKeying's distance math changes but the class name does not."""
+    a = build_cache_key(**_base_kwargs(), key_strategy="ChromaKeying",
+                        key_strategy_version=1)
+    b = build_cache_key(**_base_kwargs(), key_strategy="ChromaKeying",
+                        key_strategy_version=2)
+    assert a != b
+
+
 def test_cache_key_changes_on_canvas_invert():
     a = build_cache_key(**_base_kwargs(), canvas_invert=False)
     b = build_cache_key(**_base_kwargs(), canvas_invert=True)

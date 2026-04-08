@@ -23,6 +23,11 @@ def _smoothstep(lo: float, hi: float, x: np.ndarray) -> np.ndarray:
 
 
 class ChromaKeying:
+    # Bumped to 2 in v0.13.1: distance math moved from gamma sRGB to linear RGB
+    # (commit b7a4472). Any cached PNG keyed with version 1 is incorrect for
+    # colored-on-colored traditions and must be regenerated on upgrade.
+    cache_version: int = 2
+
     def extract_alpha(self, rgb: np.ndarray, canvas: CanvasSpec) -> np.ndarray:
         # Linearize pixels AND canvas color before computing distance.
         rgb_lin = srgb_to_linear(rgb.astype(np.float32) / 255.0)
@@ -40,6 +45,8 @@ class ChromaKeying:
 
 
 class DeltaEKeying:
+    cache_version: int = 1
+
     def extract_alpha(self, rgb: np.ndarray, canvas: CanvasSpec) -> np.ndarray:
         lab = srgb_to_lab(rgb)
         canvas_arr = np.array(canvas.color, dtype=np.uint8).reshape(1, 1, 3)
