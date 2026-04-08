@@ -209,6 +209,9 @@ async def layered_generate(
                     width=width,
                     height=height,
                 )
+            except AssertionError:
+                # Programmer/internal bug — surface loudly. Do not collapse.
+                raise
             except Exception:
                 logger.exception("unexpected failure for layer %s", layer.name)
                 return LayerOutcome(ok=False, info=layer, rgba_path="", attempts=1)
