@@ -1487,18 +1487,23 @@ def _cmd_layers(args: argparse.Namespace) -> None:
             sys.exit(1)
 
     elif args.layers_command == "retry":
-        from vulca.layers.retry import retry_layers
+        from vulca.layers.retry import retry_layers, UnknownLayerError
         from vulca.providers import get_image_provider
         provider_instance = get_image_provider(args.provider or "mock", api_key="")
         layer_names = [args.layer] if args.layer else None
         loop = asyncio.new_event_loop()
-        result = loop.run_until_complete(retry_layers(
-            args.artifact_dir,
-            tradition_name=args.tradition,
-            layer_names=layer_names,
-            all_failed=bool(args.all_failed),
-            provider=provider_instance,
-        ))
+        try:
+            result = loop.run_until_complete(retry_layers(
+                args.artifact_dir,
+                tradition_name=args.tradition,
+                layer_names=layer_names,
+                all_failed=bool(args.all_failed),
+                provider=provider_instance,
+            ))
+        except UnknownLayerError as exc:
+            print(f"  Error: {exc}", file=sys.stderr)
+            loop.close()
+            sys.exit(2)
         loop.close()
         print(f"  Retried: {len(result.layers)} ok, {len(result.failed)} failed")
         for o in result.layers:

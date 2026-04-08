@@ -1526,7 +1526,7 @@ async def vulca_layers_retry(
         tradition: Tradition to re-derive anchor/canvas/keying from.
         provider: Image provider override.
     """
-    from vulca.layers.retry import retry_layers
+    from vulca.layers.retry import retry_layers, UnknownLayerError
     from vulca.providers import get_image_provider
 
     if not artifact_dir:
@@ -1546,6 +1546,8 @@ async def vulca_layers_retry(
                         "cache_hit": o.cache_hit} for o in result.layers],
             "failed": [{"role": f.role, "reason": f.reason} for f in result.failed],
         }
+    except UnknownLayerError as e:
+        return {"error": str(e), "unknown": e.unknown, "available": e.available}
     except FileNotFoundError as e:
         return {"error": str(e)}
     except Exception as e:

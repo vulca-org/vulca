@@ -39,13 +39,36 @@ def pick_targets(
     layer_names: Iterable[str] | None = None,
     all_failed: bool = False,
 ) -> list[dict]:
+    """Pick retry targets from a manifest.
+
+    Raises `UnknownLayerError` when `layer_names` contains a name that
+    doesn't exist in the manifest, so operators see an explicit error
+    instead of a silent "0 ok, 0 failed" no-op.
+    """
     entries = manifest.get("layers", [])
     if layer_names:
-        wanted = set(layer_names)
-        return [e for e in entries if e.get("name") in wanted]
+        wanted = list(layer_names)
+        available = {e.get("name") for e in entries}
+        unknown = [n for n in wanted if n not in available]
+        if unknown:
+            raise UnknownLayerError(unknown, sorted(available))
+        wanted_set = set(wanted)
+        return [e for e in entries if e.get("name") in wanted_set]
     if all_failed:
         return [e for e in entries if _is_failed(e, artifact_dir)]
     return []
+
+
+class UnknownLayerError(ValueError):
+    """Raised by pick_targets when a requested layer name doesn't exist."""
+
+    def __init__(self, unknown: list[str], available: list[str]):
+        self.unknown = unknown
+        self.available = available
+        super().__init__(
+            f"Unknown layer name(s): {', '.join(unknown)}. "
+            f"Available: {', '.join(available)}"
+        )
 
 
 async def retry_layers(
