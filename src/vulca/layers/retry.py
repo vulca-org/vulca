@@ -185,8 +185,15 @@ async def retry_layers(
         "source", "status", "reason", "cache_hit", "attempts", "validation",
         "canvas_color", "key_strategy",
     )
+    # v0.13.2 P2 review nit: don't carry extras for retried targets. Their
+    # prior status/validation gets replaced by the retried outcome below;
+    # carrying the old `validation` dict would re-inject stale warnings via
+    # the merged_warnings rebuild even when the layer comes back clean.
+    targeted_ids = {info.id for info in plan}
     merged_extras: dict[str, dict] = {}
     for e in manifest.get("layers", []):
+        if e.get("id", "") in targeted_ids:
+            continue
         carried = {k: v for k, v in e.items() if k in _PASSTHROUGH_KEYS}
         if carried:
             merged_extras[e.get("id", "")] = carried
@@ -224,7 +231,23 @@ async def retry_layers(
     # v0.13.2 P2 T12: preserve non-validation warnings from the prior manifest
     # (e.g. tradition-layerability discouraged). Validation warnings get
     # re-derived from merged_extras below.
-    merged_warnings: list[str] = list(manifest.get("warnings", []) or [])
+    #
+    # v0.13.2 P2 review nit: also DROP prior validation-warning strings from
+    # the seed, so a retried-clean layer's stale validation warning doesn't
+    # linger in the top-level list. We collect the set of prior validation
+    # messages from the prior manifest's per-layer `validation.warnings`
+    # entries and filter them out of the seed.
+    prior_validation_msgs: set[str] = set()
+    for layer_dict in manifest.get("layers", []) or []:
+        vd = layer_dict.get("validation") or {}
+        for w in vd.get("warnings", []) or []:
+            msg = w.get("message") if isinstance(w, dict) else None
+            if msg:
+                prior_validation_msgs.add(msg)
+    merged_warnings: list[str] = [
+        w for w in (manifest.get("warnings", []) or [])
+        if w not in prior_validation_msgs
+    ]
     for extra in merged_extras.values():
         vd = extra.get("validation") or {}
         for w in vd.get("warnings", []) or []:
