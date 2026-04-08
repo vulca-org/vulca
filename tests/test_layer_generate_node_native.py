@@ -39,6 +39,32 @@ def _ctx(tradition, output_dir):
     return ctx
 
 
+def test_native_dispatch_passes_ctx_size_into_cache_key(tmp_path, monkeypatch):
+    """P0.1 #1 integration: LayerGenerateNode must read ctx['size'] and thread
+    width/height into build_cache_key via layered_generate."""
+    captured: list[dict] = []
+    from vulca.layers import layered_cache as cache_mod
+    real_build = cache_mod.build_cache_key
+
+    def spy(**kw):
+        captured.append(kw)
+        return real_build(**kw)
+
+    monkeypatch.setattr(cache_mod, "build_cache_key", spy)
+    # generate_one_layer imported the symbol at module load — patch there too.
+    from vulca.layers import layered_generate as lg_mod
+    monkeypatch.setattr(lg_mod, "build_cache_key", spy)
+
+    ctx = _ctx("chinese_xieyi", tmp_path)
+    ctx.set("size", "768x512")
+    asyncio.run(LayerGenerateNode().run(ctx))
+
+    assert captured, "build_cache_key was not called"
+    assert all(c.get("width") == 768 and c.get("height") == 512 for c in captured), (
+        f"expected every call to use width=768 height=512, got {captured}"
+    )
+
+
 def test_native_tradition_routes_through_library(tmp_path, monkeypatch):
     """When tradition has layerability=native, the node uses layered_generate."""
     called = {"used_library": False}

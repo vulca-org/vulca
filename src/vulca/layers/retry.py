@@ -148,10 +148,15 @@ async def retry_layers(
             merged_extras[e.get("id", "")] = carried
 
     # Overlay retried outcomes — successes become status=ok, failures status=failed.
+    # Keep canvas_color / key_strategy attached to retried entries too, matching
+    # the A-path extras contract from composite_node.
+    _canvas_color = canvas_hex
+    _key_strategy = key_strategy_name
     for o in result.layers:
         extra: dict = {
             "source": "a", "status": "ok",
             "cache_hit": bool(o.cache_hit), "attempts": o.attempts,
+            "canvas_color": _canvas_color, "key_strategy": _key_strategy,
         }
         if o.validation is not None:
             extra["validation"] = _validation_to_dict(o.validation)
@@ -160,6 +165,7 @@ async def retry_layers(
         extra = {
             "source": "a", "status": "failed",
             "reason": f.reason, "attempts": f.attempts,
+            "canvas_color": _canvas_color, "key_strategy": _key_strategy,
         }
         if f.validation is not None:
             extra["validation"] = _validation_to_dict(f.validation)
