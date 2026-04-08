@@ -1514,7 +1514,7 @@ async def vulca_layers_retry(
     artifact_dir: str,
     layer: str = "",
     all_failed: bool = False,
-    tradition: str = "chinese_xieyi",
+    tradition: str = "",
     provider: str = "mock",
 ) -> dict:
     """Retry failed layers in a layered artifact directory.
@@ -1523,7 +1523,9 @@ async def vulca_layers_retry(
         artifact_dir: Path to the artifact directory (containing manifest.json).
         layer: Retry only this layer name.
         all_failed: Retry every layer whose file is missing or validation failed.
-        tradition: Tradition to re-derive anchor/canvas/keying from.
+        tradition: Tradition to re-derive anchor/canvas/keying from. If empty,
+            reads from manifest.json[tradition] (recommended). A value that
+            disagrees with the manifest causes an error.
         provider: Image provider override.
     """
     from vulca.layers.retry import retry_layers, UnknownLayerError
@@ -1535,7 +1537,7 @@ async def vulca_layers_retry(
         provider_instance = get_image_provider(provider, api_key="")
         result = await retry_layers(
             artifact_dir,
-            tradition_name=tradition,
+            tradition_name=(tradition or None),
             layer_names=[layer] if layer else None,
             all_failed=all_failed,
             provider=provider_instance,

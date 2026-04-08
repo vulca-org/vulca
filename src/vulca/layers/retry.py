@@ -74,7 +74,7 @@ class UnknownLayerError(ValueError):
 async def retry_layers(
     artifact_dir: str,
     *,
-    tradition_name: str,
+    tradition_name: str | None = None,
     layer_names: Iterable[str] | None = None,
     all_failed: bool = False,
     provider,
@@ -82,9 +82,17 @@ async def retry_layers(
 ) -> LayeredResult:
     """Re-run `layered_generate` on a subset of the artifact's layers.
 
-    The tradition anchor / canvas / keying strategy are re-derived from
-    `tradition_name` via `vulca.cultural.loader.get_tradition`, matching the
-    original LayerGenerateNode native path.
+    The tradition anchor / canvas / keying strategy are re-derived via
+    `vulca.cultural.loader.get_tradition`, matching the original
+    LayerGenerateNode native path.
+
+    P0.1: `tradition_name` is optional. The canonical value lives in
+    `manifest.json["tradition"]` (persisted by CompositeNode on the
+    initial run). If the caller passes `None` we read it from the
+    manifest. If the caller passes an explicit value AND the manifest
+    disagrees, we raise `ValueError` rather than silently overriding —
+    mis-applying one tradition's prompt/keying to another tradition's
+    artifact was the P0.1 foot-gun Codex flagged.
     """
     adir = Path(artifact_dir)
     manifest_path = adir / "manifest.json"
@@ -99,8 +107,27 @@ async def retry_layers(
     info_by_name: dict[str, LayerInfo] = {r.info.name: r.info for r in artwork.layers}
     plan = [info_by_name[e["name"]] for e in targets if e.get("name") in info_by_name]
 
+    manifest_tradition = (manifest.get("tradition") or "").strip()
+    caller_tradition = (tradition_name or "").strip() or None
+
+    if caller_tradition and manifest_tradition and caller_tradition != manifest_tradition:
+        raise ValueError(
+            f"tradition mismatch: manifest records {manifest_tradition!r} but "
+            f"caller passed {caller_tradition!r}. Refusing to re-run with the "
+            f"wrong prompt/keying stack. Pass --tradition {manifest_tradition} "
+            f"or omit it to use the manifest value."
+        )
+
+    resolved_tradition = caller_tradition or manifest_tradition
+    if not resolved_tradition:
+        raise ValueError(
+            "tradition not recorded in manifest and no tradition_name supplied. "
+            "Pass --tradition explicitly to avoid silently regenerating layers "
+            "with the wrong prompt/keying stack."
+        )
+
     from vulca.cultural.loader import get_tradition
-    trad = get_tradition(tradition_name)
+    trad = get_tradition(resolved_tradition)
     canvas_hex = getattr(trad, "canvas_color", "#ffffff") or "#ffffff"
     anchor = TraditionAnchor(
         canvas_color_hex=canvas_hex,
@@ -214,5 +241,6 @@ async def retry_layers(
         partial=any_failed,
         warnings=merged_warnings,
         layer_extras=merged_extras,
+        tradition=resolved_tradition,
     )
     return result

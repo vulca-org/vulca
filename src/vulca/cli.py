@@ -259,8 +259,12 @@ def main(argv: list[str] | None = None) -> None:
     layers_retry.add_argument("artifact_dir", help="Path to the artifact directory")
     layers_retry.add_argument("--layer", default="", help="Retry only this layer name")
     layers_retry.add_argument("--all-failed", action="store_true", help="Retry every failed layer")
-    layers_retry.add_argument("--tradition", "-t", default="chinese_xieyi",
-                              help="Tradition to re-derive anchor/canvas/keying from")
+    layers_retry.add_argument(
+        "--tradition", "-t", default="",
+        help=("Tradition to re-derive anchor/canvas/keying from. "
+              "If omitted, reads from manifest.json[tradition] (recommended). "
+              "Passing a value that disagrees with the manifest will error."),
+    )
     layers_retry.add_argument("--provider", default="", help="Image provider override")
 
     layers_transform = layers_sub.add_parser("transform", help="Move/scale/rotate/opacity a layer")
@@ -1495,12 +1499,18 @@ def _cmd_layers(args: argparse.Namespace) -> None:
         try:
             result = loop.run_until_complete(retry_layers(
                 args.artifact_dir,
-                tradition_name=args.tradition,
+                tradition_name=(args.tradition or None),
                 layer_names=layer_names,
                 all_failed=bool(args.all_failed),
                 provider=provider_instance,
             ))
         except UnknownLayerError as exc:
+            print(f"  Error: {exc}", file=sys.stderr)
+            loop.close()
+            sys.exit(2)
+        except ValueError as exc:
+            # P0.1: tradition mismatch or missing — surface as a clean
+            # operator error, not a stack trace.
             print(f"  Error: {exc}", file=sys.stderr)
             loop.close()
             sys.exit(2)
