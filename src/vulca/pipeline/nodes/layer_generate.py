@@ -62,9 +62,20 @@ class LayerGenerateNode(PipelineNode):
             trad = None
         layerability = getattr(trad, "layerability", "split") if trad else "split"
 
-        if layerability == "native":
+        if layerability == "native" and self._provider_supports_native(ctx):
             return await self._generate_layers_native(layers, ctx, trad)
         return await self._generate_layers_legacy(layers, ctx)
+
+    @staticmethod
+    def _provider_supports_native(ctx: NodeContext) -> bool:
+        """P0 #5: native A-path requires a provider that returns real PNG
+        bytes. The built-in mock provider returns SVG, which crashes the
+        PIL decode inside generate_one_layer — so native dispatch falls
+        back to the legacy VLM-mask path for it. Any injected
+        image_provider is trusted (tests use fake PNG providers)."""
+        if ctx.image_provider is not None:
+            return True
+        return ctx.provider != "mock"
 
     async def _generate_layers_legacy(
         self, layers: list[LayerInfo], ctx: NodeContext
