@@ -9,6 +9,7 @@ from vulca.pipeline.node import PipelineNode, NodeContext
 from vulca.layers.types import LayerResult
 from vulca.layers.composite import composite_layers
 from vulca.layers.artifact import write_artifact_v3
+from vulca.layers.manifest import write_manifest
 
 
 class CompositeNode(PipelineNode):
@@ -71,6 +72,51 @@ class CompositeNode(PipelineNode):
             rounds=rounds_history,
             session_id=ctx.get("session_id", ""),
             layer_scores=layer_scores,
+        )
+
+        # v0.13: write manifest.json with layered metadata.
+        # generation_path is "a" (native library) when layered_result is present,
+        # otherwise "b" (legacy VLM-mask split path).
+        layered_result = ctx.get("layered_result")
+        try:
+            from vulca.cultural.loader import get_tradition
+            trad = get_tradition(ctx.tradition or "default")
+            layerability = getattr(trad, "layerability", "") or ""
+        except Exception:
+            layerability = ""
+
+        warnings: list[str] = []
+        layer_extras: dict[str, dict] = {}
+        if layered_result is not None:
+            for o in layered_result.layers:
+                extra = {
+                    "source": "a",
+                    "cache_hit": bool(o.cache_hit),
+                    "attempts": o.attempts,
+                }
+                if o.validation is not None:
+                    warn_dicts = [
+                        {"kind": w.kind, "message": w.message, "detail": w.detail}
+                        for w in o.validation.warnings
+                    ]
+                    extra["validation"] = {
+                        "ok": o.validation.ok,
+                        "warnings": warn_dicts,
+                        "coverage_actual": o.validation.coverage_actual,
+                        "position_iou": o.validation.position_iou,
+                    }
+                    warnings.extend(w["message"] for w in warn_dicts)
+                layer_extras[o.info.id] = extra
+
+        write_manifest(
+            [r.info for r in layer_results],
+            output_dir=output_dir,
+            width=w, height=h,
+            generation_path=("a" if layered_result is not None else "b"),
+            layerability=layerability,
+            partial=(not layered_result.is_complete) if layered_result is not None else bool(failed),
+            warnings=warnings,
+            layer_extras=layer_extras,
         )
 
         return {
