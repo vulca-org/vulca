@@ -89,6 +89,26 @@ def test_retry_preserves_partial_when_other_layers_still_failed(tmp_path, monkey
     )
 
 
+def test_retry_unknown_layer_name_hard_fails():
+    """P0.1 #2: requesting a layer name that doesn't exist must raise
+    UnknownLayerError rather than silently returning zero targets."""
+    from pathlib import Path as _P
+
+    from vulca.layers.retry import UnknownLayerError, pick_targets
+    manifest = {"layers": [
+        {"id": "a", "name": "bg", "file": "bg.png"},
+        {"id": "b", "name": "far", "file": "far.png"},
+    ]}
+    try:
+        pick_targets(manifest, _P("/nonexistent"), layer_names=["nope"])
+    except UnknownLayerError as exc:
+        assert "nope" in str(exc)
+        assert exc.unknown == ["nope"]
+        assert set(exc.available) == {"bg", "far"}
+    else:
+        raise AssertionError("expected UnknownLayerError")
+
+
 def test_retry_helper_picks_targets(tmp_path):
     """pick_targets() returns files that are missing on disk when all_failed=True."""
     from vulca.layers.retry import pick_targets
