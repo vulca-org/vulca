@@ -110,6 +110,19 @@ async def retry_layers(
     canvas = CanvasSpec.from_hex(canvas_hex)
     key_strategy_name = getattr(trad, "key_strategy", "luminance") or "luminance"
 
+    # P0.2: thread position/coverage back from LayerInfo (now first-class
+    # fields that round-trip through manifest.json). Without this, retry
+    # falls back to layered_prompt's weaker default spatial block and
+    # computes a different cache key than the original run.
+    positions = {info.name: info.position for info in plan if info.position}
+    coverages = {info.name: info.coverage for info in plan if info.coverage}
+
+    # P0.3: read canvas dimensions from manifest so non-default-size
+    # artifacts don't retry at 0×0 (which breaks cache keying AND
+    # produces wrong output dimensions).
+    manifest_width = int(manifest.get("width", 1024) or 1024)
+    manifest_height = int(manifest.get("height", 1024) or 1024)
+
     result = await layered_generate(
         plan=plan,
         tradition_anchor=anchor,
@@ -117,8 +130,12 @@ async def retry_layers(
         key_strategy_name=key_strategy_name,
         provider=provider,
         output_dir=str(adir),
+        positions=positions,
+        coverages=coverages,
         parallelism=parallelism,
         cache_enabled=True,
+        width=manifest_width,
+        height=manifest_height,
     )
 
     # P0 #3: recompute manifest health from the FULL merged artifact state,

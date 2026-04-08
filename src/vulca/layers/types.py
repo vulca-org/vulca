@@ -37,6 +37,14 @@ class LayerInfo:
     status: str = ""                       # "accepted" | "rerun" | "failed" | ""
     weakness: str = ""                     # Actionable feedback from DecideNode
     generation_round: int = 0              # Which round produced this layer
+    # v0.13.1 P0.2 — free-form spatial anchor text emitted by the VLM planner
+    # and consumed by build_anchored_layer_prompt. Distinct from the numeric
+    # x/y/width/height transform above: these are natural-language phrases
+    # like "upper portion" / "20-30%" that the prompt builder embeds verbatim.
+    # Must round-trip through manifest.json so `layers retry` reconstructs
+    # the same prompt (and therefore the same cache key) as the original run.
+    position: str = ""
+    coverage: str = ""
 
 
 @dataclass

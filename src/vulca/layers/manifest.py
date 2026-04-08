@@ -66,6 +66,9 @@ def write_manifest(
                 "height": info.height,
                 "rotation": info.rotation,
                 "content_bbox": info.content_bbox,
+                # v0.13.1 P0.2 — spatial anchor round-trip for retry.
+                "position": info.position,
+                "coverage": info.coverage,
             }
             for info in sorted(layers, key=lambda l: l.z_index)
         ],
@@ -108,6 +111,8 @@ def load_manifest(artwork_dir: str) -> LayeredArtwork:
                 height=item.get("height", 100.0),
                 rotation=item.get("rotation", 0.0),
                 content_bbox=item.get("content_bbox"),
+                position=item.get("position", "") or "",
+                coverage=item.get("coverage", "") or "",
             )
         else:
             # V1: migrate — generate id, default content_type, preserve bbox

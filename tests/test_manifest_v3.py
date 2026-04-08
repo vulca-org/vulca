@@ -44,6 +44,41 @@ def test_manifest_v2_still_loads(tmp_path):
     assert len(artwork.layers) == 1
 
 
+def test_layer_info_has_position_and_coverage_fields():
+    """P0.2: position/coverage must be first-class dataclass fields on
+    LayerInfo, not dunder-private attrs set via setattr. The VLM planner
+    emits them and the anchored prompt builder + cache key both depend
+    on them — if retry can't round-trip them through the manifest, it
+    silently regenerates layers with the weaker default spatial block
+    and gets a different cache key from the original run."""
+    l = LayerInfo(name="x", description="", z_index=0,
+                  position="upper third", coverage="20-30%")
+    assert l.position == "upper third"
+    assert l.coverage == "20-30%"
+
+
+def test_manifest_round_trips_position_and_coverage(tmp_path):
+    """P0.2: manifest must persist + reload position/coverage per layer
+    so `layers retry` can reconstruct the original spatial anchoring."""
+    layers = [LayerInfo(
+        name="mist", description="distant mist", z_index=0,
+        content_type="atmosphere", position="upper portion",
+        coverage="15-25%",
+    )]
+    p = write_manifest(
+        layers, output_dir=str(tmp_path), width=768, height=1024,
+        generation_path="a", layerability="native",
+    )
+    data = json.loads(Path(p).read_text())
+    assert data["layers"][0]["position"] == "upper portion"
+    assert data["layers"][0]["coverage"] == "15-25%"
+
+    artwork = load_manifest(str(tmp_path))
+    loaded = artwork.layers[0].info
+    assert loaded.position == "upper portion"
+    assert loaded.coverage == "15-25%"
+
+
 def test_manifest_layer_extras_propagated(tmp_path):
     layers = _layers()
     extras = {layers[0].id: {"source": "a", "cache_hit": True, "attempts": 1,
