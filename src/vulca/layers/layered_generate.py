@@ -12,6 +12,7 @@ import logging
 import random
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Literal
 
 import numpy as np
 from PIL import Image
@@ -39,11 +40,14 @@ class LayerOutcome:
     validation: ValidationReport | None = None
 
 
+LayerFailureReason = Literal["generation_failed", "validation_failed"]
+
+
 @dataclass
 class LayerFailure:
     layer_id: str
     role: str
-    reason: str
+    reason: LayerFailureReason
     attempts: int = 1
     validation: ValidationReport | None = None
 
