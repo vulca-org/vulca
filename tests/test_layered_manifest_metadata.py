@@ -60,3 +60,6 @@ def test_layered_manifest_records_native_metadata(tmp_path):
     assert far.get("source") == "a"
     assert "attempts" in far
     assert "validation" in far
+    # P0.1 #3: A-path extras always record canvas_color and key_strategy.
+    assert far.get("canvas_color") == "#ffffff"
+    assert far.get("key_strategy") == "luminance"

@@ -99,6 +99,17 @@ class CompositeNode(PipelineNode):
 
         warnings: list[str] = []
         layer_extras: dict[str, dict] = {}
+        # P0.1 #3: always record canvas_color + key_strategy on A-path extras.
+        trad_canvas_color = ""
+        trad_key_strategy = ""
+        if layered_result is not None:
+            try:
+                from vulca.cultural.loader import get_tradition as _gt
+                _t = _gt(ctx.tradition or "default")
+                trad_canvas_color = getattr(_t, "canvas_color", "") or ""
+                trad_key_strategy = getattr(_t, "key_strategy", "") or ""
+            except Exception:
+                pass
         if layered_result is not None:
             for o in layered_result.layers:
                 extra: dict = {
@@ -106,6 +117,8 @@ class CompositeNode(PipelineNode):
                     "status": "ok",
                     "cache_hit": bool(o.cache_hit),
                     "attempts": o.attempts,
+                    "canvas_color": trad_canvas_color,
+                    "key_strategy": trad_key_strategy,
                 }
                 if o.validation is not None:
                     vd, warn_dicts = _validation_dict(o.validation)
@@ -121,6 +134,8 @@ class CompositeNode(PipelineNode):
                     "status": "failed",
                     "reason": f.reason,
                     "attempts": f.attempts,
+                    "canvas_color": trad_canvas_color,
+                    "key_strategy": trad_key_strategy,
                 }
                 if f.validation is not None:
                     vd, warn_dicts = _validation_dict(f.validation)
