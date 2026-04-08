@@ -6,10 +6,13 @@ no LRU, no eviction. Deletes when the artifact directory is deleted.
 from __future__ import annotations
 
 import hashlib
+import logging
 import os
 import tempfile
 from pathlib import Path
 from typing import Optional
+
+logger = logging.getLogger("vulca.layers.layered_cache")
 
 
 def build_cache_key(
@@ -94,7 +97,8 @@ class LayerCache:
         try:
             import json
             return json.loads(p.read_text())
-        except Exception:
+        except Exception as exc:
+            logger.debug("get_report failed for %s: %s", key, exc)
             return None
 
     def put_report(self, key: str, report: dict) -> None:
@@ -102,7 +106,7 @@ class LayerCache:
         if p is None:
             return
         import json
-        data = json.dumps(report).encode("utf-8")
+        data = json.dumps(report, default=str).encode("utf-8")
         fd, tmp_path = tempfile.mkstemp(
             prefix=f".{key}.", suffix=".report.json.tmp", dir=str(self.dir)
         )

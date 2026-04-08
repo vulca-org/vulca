@@ -49,7 +49,10 @@ def _anchor() -> TraditionAnchor:
 
 def _ok_report_dict() -> dict:
     # Matches dataclasses.asdict(ValidationReport(ok=True))
-    return {"ok": True, "warnings": [], "coverage_actual": 0.5, "position_iou": 0.8}
+    return {
+        "ok": True, "warnings": [], "coverage_actual": 0.5, "position_iou": 0.8,
+        "schema_version": 1,
+    }
 
 
 def _kwargs(prov, tmp_path: Path, cache: LayerCache) -> dict:
@@ -99,6 +102,7 @@ def test_cache_hit_with_sidecar_preserves_warnings(tmp_path: Path):
         ],
         "coverage_actual": 0.1,
         "position_iou": 0.2,
+        "schema_version": 1,
     })
 
     prov = MagicMock()
@@ -165,3 +169,80 @@ def test_fresh_generate_writes_sidecar(tmp_path: Path):
     assert outcome.ok is True
     assert outcome.cache_hit is False
     assert cache.get_report(fixed_key) is not None
+
+
+def test_fresh_generate_cache_put_failure_skips_sidecar(tmp_path: Path):
+    """G4 review fix 1: orphan sidecar guard.
+
+    If cache.put raises (best-effort), cache.put_report must NOT run —
+    otherwise we'd leave a .report.json with no corresponding PNG body,
+    violating the invariant "sidecar presence implies cache body presence".
+    """
+    cache = LayerCache(tmp_path)
+
+    class _R:
+        def __init__(self, b):
+            self.image_b64 = base64.b64encode(b).decode()
+
+    class _Prov:
+        id = "fake"
+        model = "v1"
+        async def generate(self, *, prompt, raw_prompt=False, **kwargs):
+            return _R(_png_rgb_bytes())
+
+    fixed_key = "orphanguard"
+    fake_report = ValidationReport(ok=True)
+
+    put_report_calls: list = []
+    real_put_report = cache.put_report
+
+    def tracking_put_report(key, report):
+        put_report_calls.append(key)
+        real_put_report(key, report)
+
+    cache.put_report = tracking_put_report  # type: ignore[method-assign]
+
+    def boom_put(key, data):
+        raise RuntimeError("disk full")
+
+    cache.put = boom_put  # type: ignore[method-assign]
+
+    with patch("vulca.layers.layered_generate.build_cache_key", return_value=fixed_key), \
+         patch("vulca.layers.layered_generate.validate_layer_alpha", return_value=fake_report):
+        outcome = asyncio.run(generate_one_layer(**_kwargs(_Prov(), tmp_path, cache)))
+
+    assert outcome.ok is True
+    # Invariant: no sidecar write when body write failed.
+    assert put_report_calls == []
+    sidecar = tmp_path / ".layered_cache" / f"{fixed_key}.report.json"
+    assert not sidecar.exists()
+
+
+def test_cache_hit_with_stale_schema_version_revalidates(tmp_path: Path):
+    """G4 review fix 2: sidecar schema_version mismatch forces re-validate."""
+    cache = LayerCache(tmp_path)
+    fixed_key = "stalever"
+    cache.put(fixed_key, _png_rgba_bytes())
+    # Sidecar from a hypothetical future/older schema version.
+    cache.put_report(fixed_key, {
+        "ok": True, "warnings": [], "coverage_actual": 0.5,
+        "position_iou": 0.8, "schema_version": 999,
+    })
+
+    prov = MagicMock()
+    prov.generate = AsyncMock(side_effect=AssertionError("provider must NOT be called"))
+    prov.id = "fake"
+    prov.model = "v1"
+
+    fake_report = ValidationReport(ok=True)
+    with patch("vulca.layers.layered_generate.build_cache_key", return_value=fixed_key), \
+         patch("vulca.layers.layered_generate.validate_layer_alpha", return_value=fake_report) as mock_validate:
+        outcome = asyncio.run(generate_one_layer(**_kwargs(prov, tmp_path, cache)))
+
+    # Stale sidecar -> re-validate (fall-through like missing sidecar).
+    mock_validate.assert_called_once()
+    assert outcome.ok is True
+    # Sidecar rewritten with current schema_version.
+    loaded = cache.get_report(fixed_key)
+    assert loaded is not None
+    assert loaded.get("schema_version") == 1

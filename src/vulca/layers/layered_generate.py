@@ -87,14 +87,25 @@ async def _call_provider(provider, prompt: str) -> bytes:
     return base64.b64decode(b64)
 
 
+_REPORT_SCHEMA_VERSION = 1
+
+
 def _report_to_dict(report: ValidationReport) -> dict:
     """Serialize ValidationReport to a JSON-friendly dict for sidecar storage."""
     import dataclasses
-    return dataclasses.asdict(report)
+    d = dataclasses.asdict(report)
+    d["schema_version"] = _REPORT_SCHEMA_VERSION
+    return d
 
 
-def _report_from_dict(d: dict) -> ValidationReport:
-    """Reconstruct a ValidationReport from a sidecar dict."""
+def _report_from_dict(d: dict) -> ValidationReport | None:
+    """Reconstruct a ValidationReport from a sidecar dict.
+
+    Returns None if the sidecar schema version doesn't match — forces
+    re-validation so stale/legacy sidecars don't leak bogus reports.
+    """
+    if d.get("schema_version") != _REPORT_SCHEMA_VERSION:
+        return None
     warnings_raw = d.get("warnings") or []
     warnings = [
         ValidationWarning(
@@ -204,30 +215,44 @@ async def generate_one_layer(
         rgba_img = _apply_alpha(rgb_bytes, alpha)
         Path(output_dir).mkdir(parents=True, exist_ok=True)
         rgba_img.save(out_path)
+        cache_put_ok = cache is None
         if cache is not None:
             try:
                 # v0.13.2 P2 T10: reuse disk bytes — rgba_img.save(out_path)
                 # already wrote the PNG above. Avoid PIL re-encoding.
                 cache.put(cache_key, Path(out_path).read_bytes())
+                cache_put_ok = True
             except Exception as exc:
                 logger.warning(
                     "cache.put failed for layer %s (best-effort): %s",
                     layer.name, exc,
                 )
+    else:
+        cache_put_ok = True  # cache hit → body already exists on disk.
 
     cached_report_dict: dict | None = None
     if cache_hit and cache is not None:
         cached_report_dict = cache.get_report(cache_key)
 
+    report: ValidationReport | None = None
     if cached_report_dict is not None:
-        # Cache hit with sidecar — reuse persisted report; skip re-validation.
+        # Cache hit with sidecar — reuse persisted report; skip re-validation
+        # unless the sidecar schema version is stale (returns None).
         report = _report_from_dict(cached_report_dict)
-    else:
+
+    if report is None:
+        if cache_hit and cached_report_dict is None:
+            logger.debug(
+                "cache sidecar missing for %s, migrating", cache_key,
+            )
         rgba = np.array(Image.open(out_path))
         alpha_only = rgba[:, :, 3].astype(np.float32) / 255.0
         report = validate_layer_alpha(alpha_only, position=position, coverage=coverage)
         # Write sidecar — fresh generation OR legacy cache entry auto-migration.
-        if cache is not None:
+        # Invariant: sidecar presence implies cache body presence. Skip the
+        # sidecar write if the fresh-path cache.put failed (else we'd leave
+        # an orphan .report.json pointing at a missing PNG).
+        if cache is not None and cache_put_ok:
             try:
                 cache.put_report(cache_key, _report_to_dict(report))
             except Exception as exc:
