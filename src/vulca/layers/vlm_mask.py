@@ -77,5 +77,12 @@ def apply_vlm_mask(content: Image.Image, mask: Image.Image) -> Image.Image:
     # Resize mask to match content if needed
     if mask.size != rgba.size:
         mask = mask.resize(rgba.size, Image.LANCZOS)
+    # B-path softening: feather + (optional) guided filter + despill so the
+    # alpha channel has anti-aliased edges instead of binary 0/255 stair-steps.
+    from vulca.layers.matting import soften_mask
+    mask_arr = np.array(mask).astype(np.float32) / 255.0
+    rgb_arr = np.array(rgba.convert("RGB"))
+    soft = soften_mask(mask_arr, rgb_arr, feather_px=2, guided=True, despill=True)
+    soft_img = Image.fromarray((soft * 255).astype(np.uint8), mode="L")
     r, g, b, _ = rgba.split()
-    return Image.merge("RGBA", (r, g, b, mask))
+    return Image.merge("RGBA", (r, g, b, soft_img))
