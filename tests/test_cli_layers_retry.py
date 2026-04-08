@@ -89,6 +89,80 @@ def test_retry_preserves_partial_when_other_layers_still_failed(tmp_path, monkey
     )
 
 
+def test_cli_retry_unknown_layer_exits_with_error(tmp_path):
+    """CLI end-to-end: bad --layer name must exit non-zero and mention the name."""
+    import json as _json
+    manifest = {
+        "version": 3, "width": 256, "height": 256, "source_image": "",
+        "split_mode": "", "generation_path": "a", "layerability": "native",
+        "partial": False, "warnings": [], "created_at": "2026-04-08T00:00:00Z",
+        "layers": [
+            {"id": "layer_a", "name": "bg", "description": "", "z_index": 0,
+             "blend_mode": "normal", "content_type": "background",
+             "visible": True, "locked": False, "file": "bg.png",
+             "dominant_colors": [], "regeneration_prompt": "", "opacity": 1.0,
+             "x": 0, "y": 0, "width": 100, "height": 100, "rotation": 0,
+             "content_bbox": None, "status": "ok", "source": "a"},
+        ],
+    }
+    (tmp_path / "manifest.json").write_text(_json.dumps(manifest))
+    (tmp_path / "bg.png").write_bytes(b"PNG")
+
+    out = _run("layers", "retry", str(tmp_path), "--layer", "nope",
+               "--tradition", "chinese_xieyi")
+    assert out.returncode != 0
+    assert "nope" in (out.stderr + out.stdout)
+
+
+def test_retry_preserves_canvas_color_and_key_strategy(tmp_path, monkeypatch):
+    """Retrying a layer must keep canvas_color/key_strategy in the overlay."""
+    import asyncio
+    import base64
+    import io
+    import json as _json
+    from pathlib import Path
+
+    from PIL import Image
+
+    import vulca.providers as providers_mod
+    from vulca.layers.retry import retry_layers
+    from vulca.pipeline.engine import execute
+    from vulca.pipeline.templates import LAYERED
+    from vulca.pipeline.types import PipelineInput
+
+    class _OK:
+        id = "ok"
+        model = "ok-1"
+
+        async def generate(self, *, prompt, raw_prompt=False, **kw):
+            img = Image.new("RGB", (32, 32), (255, 255, 255))
+            for y in range(8, 24):
+                for x in range(8, 24):
+                    img.putpixel((x, y), (40, 40, 40))
+            buf = io.BytesIO()
+            img.save(buf, format="PNG")
+            return type("R", (), {"image_b64": base64.b64encode(buf.getvalue()).decode()})()
+
+    monkeypatch.setattr(providers_mod, "get_image_provider", lambda *a, **k: _OK())
+    inp = PipelineInput(subject="远山薄雾", intent="远山薄雾",
+                        tradition="chinese_xieyi", provider="ok",
+                        layered=True, output_dir=str(tmp_path))
+    asyncio.run(execute(LAYERED, inp))
+
+    manifest = _json.loads((tmp_path / "manifest.json").read_text())
+    target_name = manifest["layers"][1]["name"]
+
+    asyncio.run(retry_layers(
+        str(tmp_path), tradition_name="chinese_xieyi",
+        layer_names=[target_name], provider=_OK(),
+    ))
+
+    manifest2 = _json.loads((tmp_path / "manifest.json").read_text())
+    retried = next(l for l in manifest2["layers"] if l["name"] == target_name)
+    assert retried.get("canvas_color") == "#ffffff"
+    assert retried.get("key_strategy") == "luminance"
+
+
 def test_retry_unknown_layer_name_hard_fails():
     """P0.1 #2: requesting a layer name that doesn't exist must raise
     UnknownLayerError rather than silently returning zero targets."""
