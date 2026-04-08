@@ -43,3 +43,35 @@ def test_future_mock_v2_with_empty_capabilities_also_blocked():
     """The point: routing decides by capabilities, not string match on 'mock'."""
     ctx = _ctx("mock_v2", image_provider=_FakeNonRawProvider())
     assert LayerGenerateNode._provider_supports_native(ctx) is False
+
+
+def test_generate_single_routes_mock_v2_to_mock_generate(tmp_path):
+    """v0.13.2 P2 codex G3: _generate_single's legacy fallback must also
+    route non-raw_rgba providers (e.g. a future 'mock_v2') to _mock_generate,
+    not try to call an undefined provider path. Previously this branch was
+    gated on the literal string 'mock'."""
+    import asyncio
+    from vulca.layers.types import LayerInfo
+
+    node = LayerGenerateNode()
+    calls: list[str] = []
+
+    def _fake_mock_generate(info, output_dir, ctx):
+        calls.append(info.name)
+        return "sentinel"
+
+    node._mock_generate = _fake_mock_generate  # type: ignore[method-assign]
+    node._build_prompt = lambda info, ctx: "prompt"  # type: ignore[method-assign]
+
+    info = LayerInfo(name="bg", description="bg desc", z_index=0)
+    ctx = SimpleNamespace(
+        provider="mock_v2",
+        image_provider=_FakeNonRawProvider(),
+        api_key=None,
+        round_num=1,
+    )
+    result = asyncio.get_event_loop().run_until_complete(
+        node._generate_single(info, ctx, str(tmp_path), None)
+    )
+    assert result == "sentinel"
+    assert calls == ["bg"]

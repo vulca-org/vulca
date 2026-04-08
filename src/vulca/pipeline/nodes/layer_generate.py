@@ -232,7 +232,12 @@ class LayerGenerateNode(PipelineNode):
     ) -> LayerResult:
         prompt = self._build_prompt(info, ctx)
 
-        if ctx.provider == "mock":
+        # v0.13.2 P2 review (codex G3): mirror _provider_supports_native's
+        # capability check here. Providers lacking 'raw_rgba' can't round-trip
+        # real PNG bytes through PIL, so fall back to the synthetic mock
+        # generator. This keeps any future mock_v2 / user-registered stub
+        # routed consistently with the default 'mock'.
+        if not self._provider_supports_native(ctx):
             return self._mock_generate(info, output_dir, ctx)
 
         from vulca.providers import get_image_provider
