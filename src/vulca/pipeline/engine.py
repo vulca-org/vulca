@@ -572,6 +572,12 @@ async def execute(
         f"Weighted total: {ctx.get('weighted_total', 0.0):.3f}"
     )
 
+    # P0.1 #4: surface partial LAYERED runs on the output so callers don't
+    # have to re-read manifest.json. `layered_result` is set by
+    # LayerGenerateNode._generate_layers_native.
+    _lr = ctx.get("layered_result")
+    _layered_partial = bool(_lr is not None and not _lr.is_complete)
+
     output = PipelineOutput(
         session_id=session_id,
         status=status.value,
@@ -589,6 +595,7 @@ async def execute(
         residual_context=ctx.data.get("residual_context"),
         original_intent=pipeline_input.intent or pipeline_input.subject,
         original_provider=pipeline_input.provider,
+        layered_partial=_layered_partial,
     )
 
     # Emit PIPELINE_COMPLETE hook (non-fatal, before on_complete callback)

@@ -56,7 +56,10 @@ def test_layered_partial_failure_marks_manifest(tmp_path, monkeypatch):
         layered=True,
         output_dir=str(tmp_path),
     )
-    asyncio.run(execute(LAYERED, inp))
+    output = asyncio.run(execute(LAYERED, inp))
+    # P0.1 #4: PipelineOutput exposes the partial flag directly.
+    assert output.layered_partial is True
+    assert output.to_dict()["layered_partial"] is True
 
     manifest = json.loads((Path(tmp_path) / "manifest.json").read_text())
     assert manifest["version"] == 3
