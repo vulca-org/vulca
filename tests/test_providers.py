@@ -32,6 +32,8 @@ class TestL1L5Scores:
 class TestProtocolCompliance:
     def test_image_provider_protocol(self):
         class Custom:
+            capabilities = frozenset({"raw_rgba"})
+
             async def generate(self, prompt, **kwargs):
                 return ImageResult(image_b64="test")
         assert isinstance(Custom(), ImageProvider)

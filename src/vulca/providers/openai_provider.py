@@ -10,6 +10,8 @@ from vulca.providers.retry import with_retry
 class OpenAIImageProvider:
     """Image generation via OpenAI DALL-E 3 API."""
 
+    capabilities: frozenset[str] = frozenset({"raw_rgba"})
+
     def __init__(self, api_key: str = "", model: str = "gpt-image-1"):
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY", "")
         self.model = model

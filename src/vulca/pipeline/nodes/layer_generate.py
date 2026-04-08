@@ -18,6 +18,22 @@ from vulca.pipeline.node import PipelineNode, NodeContext
 from vulca.layers.types import LayerInfo, LayerResult
 
 
+def _lookup_provider_class(name: str):
+    """Resolve a provider name to its class for capability inspection.
+
+    Reuses the central registry in vulca.providers so new providers
+    registered there are automatically picked up.
+    """
+    if not name:
+        return None
+    try:
+        from vulca.providers import _IMAGE_PROVIDERS, _lazy_load_providers
+        _lazy_load_providers()
+        return _IMAGE_PROVIDERS.get(name)
+    except Exception:
+        return None
+
+
 class LayerGenerateNode(PipelineNode):
     """Generate each layer as a full-scene image focused on that layer's content."""
 
@@ -68,14 +84,23 @@ class LayerGenerateNode(PipelineNode):
 
     @staticmethod
     def _provider_supports_native(ctx: NodeContext) -> bool:
-        """P0 #5: native A-path requires a provider that returns real PNG
-        bytes. The built-in mock provider returns SVG, which crashes the
-        PIL decode inside generate_one_layer — so native dispatch falls
-        back to the legacy VLM-mask path for it. Any injected
-        image_provider is trusted (tests use fake PNG providers)."""
+        """v0.13.2 P2: decide via provider.capabilities, not string match.
+
+        'raw_rgba' capability = provider returns real PNG bytes that PIL
+        can decode. Injected providers must declare it explicitly
+        (frozenset({'raw_rgba'})) on the class OR instance. Default
+        registry path resolves the provider name to its class and
+        inspects capabilities there. This blocks any future mock_v2 /
+        mock_png variants that would slip past a literal 'mock' check.
+        """
         if ctx.image_provider is not None:
-            return True
-        return ctx.provider != "mock"
+            caps = getattr(ctx.image_provider, "capabilities", frozenset())
+            return "raw_rgba" in caps
+        provider_cls = _lookup_provider_class(ctx.provider)
+        if provider_cls is None:
+            return False
+        caps = getattr(provider_cls, "capabilities", frozenset())
+        return "raw_rgba" in caps
 
     async def _generate_layers_legacy(
         self, layers: list[LayerInfo], ctx: NodeContext

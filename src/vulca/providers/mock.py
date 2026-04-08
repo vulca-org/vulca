@@ -21,6 +21,9 @@ _TRADITION_COLORS: dict[str, str] = {
 class MockImageProvider:
     """Generates deterministic SVG placeholder images."""
 
+    # Returns SVG, not PNG — cannot be consumed by PIL downstream.
+    capabilities: frozenset[str] = frozenset()
+
     def __init__(self, **kwargs):
         pass  # Accept and ignore any kwargs for registry compatibility
 

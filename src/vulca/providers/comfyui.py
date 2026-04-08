@@ -11,6 +11,8 @@ from vulca.providers.base import ImageProvider, ImageResult
 class ComfyUIImageProvider:
     """Image generation via ComfyUI REST API (local deployment)."""
 
+    capabilities: frozenset[str] = frozenset({"raw_rgba"})
+
     def __init__(self, base_url: str = "", **kwargs):
         self.base_url = (
             base_url

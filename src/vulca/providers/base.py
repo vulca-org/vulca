@@ -27,6 +27,12 @@ class L1L5Scores:
 @runtime_checkable
 class ImageProvider(Protocol):
     """Protocol for image generation backends."""
+
+    # Capability flags. "raw_rgba" = generate() returns raw PNG bytes
+    # consumable by PIL (not SVG, not vector). Future capabilities:
+    # "streaming", "batch", "reference_image", etc.
+    capabilities: frozenset[str]
+
     async def generate(
         self,
         prompt: str,
