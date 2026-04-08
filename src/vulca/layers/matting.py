@@ -46,11 +46,39 @@ def _try_guided_filter(mask: np.ndarray, rgb: np.ndarray, radius: int) -> np.nda
     return ximgproc.guidedFilter(guide=guide, src=src, radius=radius, eps=1e-3)
 
 
-def _despill(rgba_alpha: np.ndarray, rgb: np.ndarray, bg_color=(255, 255, 255)) -> np.ndarray:
-    """Reduce background color contamination at edges (cheap heuristic)."""
+def _despill(
+    alpha: np.ndarray,
+    rgb: np.ndarray,
+    bg_color=(255, 255, 255),
+    *,
+    edge_band: tuple[float, float] = (0.02, 0.98),
+    strength: float = 0.5,
+) -> np.ndarray:
+    """Attenuate alpha on background-colored edge pixels.
+
+    Previous v0.13 implementation multiplied EVERY pixel's alpha by a
+    factor derived from its distance to bg, which eroded legitimate
+    light edges on solid interior. The new version is gated:
+
+    1. Only pixels in the soft-edge band (edge_band[0] < alpha < edge_band[1])
+       are touched — solid interior and fully-transparent background pass
+       through unchanged.
+    2. Within the edge band, pixels close to the background color lose
+       alpha proportional to their similarity to bg. Pure subject-colored
+       edge pixels keep their alpha.
+
+    This is still a heuristic (true despill would operate on RGB spill
+    components), but it no longer dims legitimate highlights.
+    """
     bg = np.array(bg_color, dtype=np.float32)
-    diff = np.linalg.norm(rgb.astype(np.float32) - bg, axis=-1) / 441.0
-    return np.clip(rgba_alpha * (0.5 + 0.5 * diff), 0.0, 1.0)
+    max_dist = float(np.sqrt(3.0) * 255.0)  # sRGB cube diagonal
+    dist = np.linalg.norm(rgb.astype(np.float32) - bg, axis=-1)
+    similarity = np.clip(1.0 - dist / max_dist, 0.0, 1.0)  # 1 = identical to bg
+
+    in_band = (alpha > edge_band[0]) & (alpha < edge_band[1])
+    penalty = similarity * float(strength)  # up to `strength` alpha loss
+    out = np.where(in_band, alpha * (1.0 - penalty), alpha)
+    return np.clip(out, 0.0, 1.0).astype(np.float32)
 
 
 def soften_mask(

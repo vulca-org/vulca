@@ -35,6 +35,34 @@ def test_soften_blurs_hard_edges():
     assert intermediates > 0
 
 
+def test_despill_preserves_solid_interior():
+    """v0.13.1 NTH #3: _despill must NOT erode alpha on solid interior pixels.
+
+    Old heuristic multiplied every pixel by (0.5 + 0.5 * distance_to_bg),
+    so even subject-colored (e.g. dark ink) fully-opaque pixels took a
+    hit. New version only touches the soft-edge band.
+    """
+    from vulca.layers.matting import _despill
+
+    # Solid interior: alpha=1 everywhere, rgb is subject color (far from white).
+    alpha = np.ones((16, 16), dtype=np.float32)
+    rgb = np.full((16, 16, 3), (40, 40, 40), dtype=np.uint8)
+    out = _despill(alpha, rgb)
+    assert (out >= 0.999).all(), f"solid interior must stay opaque, got min {out.min()}"
+
+    # Fully transparent background pixels also untouched.
+    alpha2 = np.zeros((16, 16), dtype=np.float32)
+    rgb2 = np.full((16, 16, 3), (255, 255, 255), dtype=np.uint8)
+    out2 = _despill(alpha2, rgb2)
+    assert (out2 <= 0.001).all()
+
+    # Soft-edge bg-colored pixels DO get attenuated.
+    alpha3 = np.full((16, 16), 0.5, dtype=np.float32)
+    rgb3 = np.full((16, 16, 3), (250, 250, 250), dtype=np.uint8)  # near white
+    out3 = _despill(alpha3, rgb3)
+    assert out3.mean() < 0.4, f"bg-colored edge pixels should lose alpha, got {out3.mean()}"
+
+
 def test_box_blur_matches_reference_and_is_fast():
     """v0.13.1 NTH #2: _box_blur must still match the naive reference output
     (within float tolerance) AND run in well under a second on 512x512.
