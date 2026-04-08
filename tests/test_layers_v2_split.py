@@ -134,7 +134,7 @@ class TestSplitExtract:
 
             manifest = json.loads(manifest_path.read_text())
             # V2 manifest
-            assert manifest.get("version") == 2
+            assert manifest.get("version") == 3
             assert manifest.get("width") == 100
             assert manifest.get("height") == 100
             assert len(manifest.get("layers", [])) == 1
@@ -252,4 +252,4 @@ class TestSplitRegenerate:
 
             manifest = json.loads(manifest_path.read_text())
             assert manifest.get("split_mode") == "regenerate"
-            assert manifest.get("version") == 2
+            assert manifest.get("version") == 3

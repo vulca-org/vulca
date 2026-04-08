@@ -11,7 +11,7 @@ from pathlib import Path
 
 from vulca.layers.types import LayerInfo, LayerResult, LayeredArtwork
 
-MANIFEST_VERSION = 2
+MANIFEST_VERSION = 3
 
 
 def write_manifest(
@@ -22,10 +22,17 @@ def write_manifest(
     height: int,
     source_image: str = "",
     split_mode: str = "",
+    generation_path: str = "",
+    layerability: str = "",
+    partial: bool = False,
+    warnings: list | None = None,
+    layer_extras: dict[str, dict] | None = None,
 ) -> str:
-    """Write manifest V2 JSON to output_dir/manifest.json. Returns path."""
+    """Write manifest V3 JSON to output_dir/manifest.json. Returns path."""
     out_dir = Path(output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
+
+    extras = layer_extras or {}
 
     manifest = {
         "version": MANIFEST_VERSION,
@@ -33,9 +40,14 @@ def write_manifest(
         "height": height,
         "source_image": source_image,
         "split_mode": split_mode,
+        "generation_path": generation_path,
+        "layerability": layerability,
+        "partial": partial,
+        "warnings": warnings or [],
         "created_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "layers": [
             {
+                **(extras.get(info.id, {})),
                 "id": info.id,
                 "name": info.name,
                 "description": info.description,
