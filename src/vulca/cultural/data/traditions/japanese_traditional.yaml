@@ -103,3 +103,10 @@ tradition_layers:
     blend: screen
     position: "accent areas"
     coverage: "5-15%"
+
+# Layered generation configuration (v0.13)
+layerability: native
+canvas_color: "#f5ecd8"
+canvas_description: "washi paper with slight warm tone, flat surface, no border"
+key_strategy: delta_e
+style_keywords: "浮世绘, 版画, 平涂色块, 主線版, ukiyo-e, woodblock print style, flat color blocks, bold line art"

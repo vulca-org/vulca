@@ -81,3 +81,10 @@ taboos:
 
 pipeline:
   variant: default
+
+# Layered generation configuration (v0.13)
+layerability: native
+canvas_color: "#f5e6c8"
+canvas_description: "warm beige paper canvas, flat surface, no border"
+key_strategy: delta_e
+style_keywords: "Indian miniature style, refined detail, mineral pigments, flat perspective, ornate borders"

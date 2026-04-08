@@ -81,3 +81,10 @@ taboos:
 
 pipeline:
   variant: default
+
+# Layered generation configuration (v0.13)
+layerability: native
+canvas_color: "#ffffff"
+canvas_description: "cold-press white watercolor paper, visible grain texture, no border"
+key_strategy: luminance
+style_keywords: "watercolor wash, transparent pigments, soft edges, paper grain, wet-on-wet, loose brushwork"

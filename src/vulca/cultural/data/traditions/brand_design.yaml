@@ -95,3 +95,10 @@ pipeline:
   overrides:
     scout_focus_layers: [L1, L2, L3]
     allow_local_rerun: false
+
+# Layered generation configuration (v0.13)
+layerability: native
+canvas_color: "#ffffff"
+canvas_description: "flat white digital canvas, no texture, no border"
+key_strategy: luminance
+style_keywords: "clean vector style, brand design, flat illustration, minimal, digital asset"

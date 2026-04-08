@@ -81,3 +81,10 @@ taboos:
 
 pipeline:
   variant: default
+
+# Layered generation configuration (v0.13)
+layerability: native
+canvas_color: "#ffffff"
+canvas_description: "flat white background, no texture, no border"
+key_strategy: luminance
+style_keywords: "Islamic geometric pattern, intricate symmetry, arabesque ornament, flat 2D, no shading"

@@ -81,3 +81,10 @@ taboos:
 
 pipeline:
   variant: default
+
+# Layered generation configuration (v0.13)
+layerability: split
+canvas_color: "#ffffff"
+canvas_description: "white canvas"
+key_strategy: luminance
+style_keywords: "African traditional art, earthy pigments, symbolic motifs (best-effort layering)"
