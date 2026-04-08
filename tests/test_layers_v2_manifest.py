@@ -34,7 +34,7 @@ class TestWriteManifestV2:
             split_mode="regenerate",
         )
         data = json.loads(Path(path).read_text())
-        assert data["version"] == 2
+        assert data["version"] == 3
         assert data["width"] == 1024
         assert data["source_image"] == "original.png"
         assert data["split_mode"] == "regenerate"
@@ -309,4 +309,4 @@ class TestMissingManifest:
 
 class TestManifestVersionConstant:
     def test_manifest_version_is_2(self):
-        assert MANIFEST_VERSION == 2
+        assert MANIFEST_VERSION == 3

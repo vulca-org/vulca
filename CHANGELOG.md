@@ -1,5 +1,43 @@
 # Changelog
 
+## [0.13.0] - 2026-04-08
+
+### Layered Generation — A-path (generation-time alpha)
+- **New keying subsystem** (`vulca.layers.keying`): hand-rolled sRGB→LAB, `CanvasSpec` + `KeyingStrategy` protocol, tier-0 luminance keying (the WOW unlock for ink wash), tier-1 chroma + Delta-E keying, strategy registry.
+- **Validation** (`vulca.layers.validate`): coverage / position-IoU / emptiness checks with structured warnings.
+- **Tradition config +5 fields**: `layerability`, `canvas_color`, `canvas_description`, `style_keywords`, `key_strategy` rolled out to all 13 traditions. `chinese_xieyi` is the hero case.
+- **Anchored layered prompt builder** with canvas / content-exclusivity / spatial / style anchors.
+- **Layered generation library** (`vulca.layers.layered_generate`): `generate_one_layer` + concurrent `layered_generate` with semaphore-bounded orchestration and partial-failure non-blocking semantics.
+- **Per-artifact sidecar cache** (`.layered_cache/`) keyed on provider + model + prompt + canvas + schema version.
+- **Pipeline dispatch**: `LayerGenerateNode` routes native traditions through the new library (A-path). Split / discouraged traditions keep the v0.12 VLM-mask path.
+- **Spatial metadata passthrough**: `plan_layers` forwards VLM `position`/`coverage` onto `LayerInfo` for the anchored prompt.
+
+### B-path matting
+- `soften_mask` with feather + optional `cv2.ximgproc.guidedFilter` + despill (pure-numpy fallback).
+- `apply_vlm_mask` now softens the alpha channel on save for B-path edge quality.
+
+### Manifest v3
+- New top-level fields: `generation_path` (a / b), `layerability`, `partial`, `warnings`, plus per-layer extras (`source`, `cache_hit`, `attempts`, `validation`).
+- `CompositeNode` writes `manifest.json` alongside `artifact.json` for every LAYERED run.
+
+### CLI
+- `vulca create --layered` gains `--no-cache`, `--strict`, `--max-layers` and a proper output directory.
+- `vulca layers retry <dir> [--layer NAME | --all-failed]` — re-run failed layers through `layered_generate` with cache reuse.
+- `vulca layers cache clear <dir>` — drop the sidecar cache.
+- `discouraged` tradition warning on `--layered` (stderr or interactive y/N prompt).
+
+### MCP
+- New tools: `vulca_layered_create`, `vulca_layers_retry`.
+
+### Tests
+- Unit tests for every keying tier, validation, anchored prompt, cache, `generate_one_layer`, orchestration, manifest v3.
+- E2E tests: A-path on chinese_xieyi (mock) and partial-failure on a flaky provider.
+- Gated golden test (`--run-real-provider`) comparing 16-bin alpha histograms against a baseline JSON.
+
+### Notes
+- Defense 3 (reference image conditioning) is interface-only in v0.13; full implementation deferred to v0.14 per spec.
+- No separate in-process counter module — telemetry lives in the manifest via `cache_hit` / `attempts` / `validation` per-layer extras.
+
 ## [0.12.0] - 2026-04-07
 
 ### Layer Primitives — Spatial + Opacity + Blend Modes
