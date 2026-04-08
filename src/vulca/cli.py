@@ -250,6 +250,11 @@ def main(argv: list[str] | None = None) -> None:
     layers_dup.add_argument("--layer", "-l", required=True, help="Source layer name")
     layers_dup.add_argument("--name", "-n", default="", help="New layer name")
 
+    layers_cache = layers_sub.add_parser("cache", help="Layered cache management")
+    layers_cache_sub = layers_cache.add_subparsers(dest="cache_cmd")
+    layers_cache_clear = layers_cache_sub.add_parser("clear", help="Delete .layered_cache/")
+    layers_cache_clear.add_argument("artifact_dir", help="Path to the artifact directory")
+
     layers_retry = layers_sub.add_parser("retry", help="Retry failed layers in a layered artifact")
     layers_retry.add_argument("artifact_dir", help="Path to the artifact directory")
     layers_retry.add_argument("--layer", default="", help="Retry only this layer name")
@@ -622,6 +627,25 @@ def _cmd_create(args: argparse.Namespace) -> None:
         from vulca.pipeline.engine import execute
         from vulca.pipeline.templates import DEFAULT, LAYERED
         from vulca.pipeline.types import PipelineInput
+
+        # v0.13: discouraged tradition warning
+        try:
+            from vulca.cultural.loader import get_tradition
+            _trad = get_tradition(args.tradition or "default")
+            _layerability = getattr(_trad, "layerability", "split") if _trad else "split"
+        except Exception:
+            _layerability = "split"
+        if _layerability == "discouraged":
+            _msg = (f"Tradition '{args.tradition or 'default'}' does not support "
+                    "high-quality layering.\n"
+                    "  Result is best-effort and intended for analysis only.")
+            if sys.stdin.isatty():
+                print(f"\u26a0 {_msg}\n  Continue? [y/N] ", end="")
+                if input().strip().lower() != "y":
+                    print("Aborted.")
+                    return
+            else:
+                print(f"\u26a0 {_msg}", file=sys.stderr)
 
         node_params: dict[str, dict] = {}
         if weights:
@@ -1451,6 +1475,16 @@ def _cmd_layers(args: argparse.Namespace) -> None:
         print(f"    x={layer.info.x:.1f}% y={layer.info.y:.1f}% "
               f"w={layer.info.width:.1f}% h={layer.info.height:.1f}% "
               f"rot={layer.info.rotation:.1f}° opacity={layer.info.opacity:.2f}")
+
+    elif args.layers_command == "cache":
+        import shutil
+        if args.cache_cmd == "clear":
+            cache_dir = Path(args.artifact_dir) / ".layered_cache"
+            shutil.rmtree(cache_dir, ignore_errors=True)
+            print(f"  Cleared: {cache_dir}")
+        else:
+            print(f"Unknown cache command: {args.cache_cmd}", file=sys.stderr)
+            sys.exit(1)
 
     elif args.layers_command == "retry":
         from vulca.layers.retry import retry_layers
