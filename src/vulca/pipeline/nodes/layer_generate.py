@@ -123,7 +123,7 @@ class LayerGenerateNode(PipelineNode):
         positions: dict[str, str] = {l.name: getattr(l, "_position", "") for l in layers}
         coverages: dict[str, str] = {l.name: getattr(l, "_coverage", "") for l in layers}
 
-        cache_enabled = not bool(getattr(ctx, "no_cache", False))
+        cache_enabled = not bool(ctx.get("no_cache", False))
 
         from vulca.providers import get_image_provider
         provider_instance = ctx.image_provider or get_image_provider(

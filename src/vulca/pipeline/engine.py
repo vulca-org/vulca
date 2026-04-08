@@ -253,6 +253,11 @@ async def execute(
     # Inject eval_mode so DecideNode can adapt behavior
     ctx.set("eval_mode", pipeline_input.eval_mode)
 
+    # v0.13 layered flags — read by LayerGenerateNode / plan_layers
+    ctx.set("no_cache", getattr(pipeline_input, "no_cache", False))
+    ctx.set("strict", getattr(pipeline_input, "strict", False))
+    ctx.set("max_layers", getattr(pipeline_input, "max_layers", 8))
+
     # Inject sparse_eval flag so EvaluateNode can run BriefIndexer + CulturalEngram
     if pipeline_input.sparse_eval:
         ctx.set("sparse_eval", True)
