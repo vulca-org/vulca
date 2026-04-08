@@ -2768,3 +2768,12 @@ git commit -m "release: v0.13.0 — Layered Generation A-path"
 | README + release | 28, 29 |
 
 All acceptance criteria from the spec map to tasks. Defense 3 and the in-process counter module are explicitly deferred — both noted in the spec as v0.13 non-goals.
+
+## v0.13.2 retry budget update
+
+> **v0.13.2 update:** in-process retry budget=2 for `generation_failed`
+> landed in commit `c22eaf9` (3 total attempts, full-jitter backoff).
+> `validation_failed` is deterministic and not retried.
+> `AssertionError`, `TypeError`, and `asyncio.CancelledError` propagate.
+> External `vulca layers retry` CLI remains the operator-driven path
+> for full manifest-level re-generation.
