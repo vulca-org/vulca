@@ -159,6 +159,11 @@ def reload_traditions() -> int:
                 pipeline=pipeline,
                 examples=data.get("examples", []),
                 extra_dimensions=data.get("extra_dimensions", []),
+                layerability=data.get("layerability", "split"),
+                canvas_color=data.get("canvas_color") or "#ffffff",
+                canvas_description=data.get("canvas_description") or "",
+                key_strategy=data.get("key_strategy") or "luminance",
+                style_keywords=data.get("style_keywords") or "",
             )
             new_traditions[name] = tc
             count += 1
@@ -286,6 +291,11 @@ def _load_single_yaml(path: Path) -> TraditionConfig | None:
             pipeline=pipeline,
             examples=data.get("examples", []),
             extra_dimensions=data.get("extra_dimensions", []),
+            layerability=data.get("layerability", "split"),
+            canvas_color=data.get("canvas_color") or "#ffffff",
+            canvas_description=data.get("canvas_description") or "",
+            key_strategy=data.get("key_strategy") or "luminance",
+            style_keywords=data.get("style_keywords") or "",
         )
     except Exception as exc:
         logger.warning("Failed to load custom tradition %s: %s", path, exc)
