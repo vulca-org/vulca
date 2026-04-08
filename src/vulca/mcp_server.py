@@ -1475,5 +1475,82 @@ async def layers_regenerate(
     return {"regenerated_path": out}
 
 
+@mcp.tool()
+async def vulca_layered_create(
+    intent: str,
+    tradition: str = "default",
+    provider: str = "gemini",
+    output_dir: str = "",
+    no_cache: bool = False,
+    strict: bool = False,
+    max_layers: int = 8,
+) -> dict:
+    """Generate a layered artwork using the v0.13 A-path layered pipeline.
+
+    Args:
+        intent: Natural-language creation intent (e.g. "远山薄雾").
+        tradition: Cultural tradition (e.g. chinese_xieyi).
+        provider: Image provider (gemini | mock | openai).
+        output_dir: Directory to write composite.png / manifest.json / layer pngs.
+        no_cache: Disable sidecar cache (force regeneration).
+        strict: Fail the run if any layer fails.
+        max_layers: Cap on planned layer count.
+    """
+    from vulca.pipeline.engine import execute
+    from vulca.pipeline.templates import LAYERED
+    from vulca.pipeline.types import PipelineInput
+
+    inp = PipelineInput(
+        subject=intent, intent=intent, tradition=tradition, provider=provider,
+        layered=True, no_cache=no_cache, strict=strict, max_layers=max_layers,
+        output_dir=output_dir or "",
+    )
+    output = await execute(LAYERED, inp)
+    return output.to_dict()
+
+
+@mcp.tool()
+async def vulca_layers_retry(
+    artifact_dir: str,
+    layer: str = "",
+    all_failed: bool = False,
+    tradition: str = "chinese_xieyi",
+    provider: str = "mock",
+) -> dict:
+    """Retry failed layers in a layered artifact directory.
+
+    Args:
+        artifact_dir: Path to the artifact directory (containing manifest.json).
+        layer: Retry only this layer name.
+        all_failed: Retry every layer whose file is missing or validation failed.
+        tradition: Tradition to re-derive anchor/canvas/keying from.
+        provider: Image provider override.
+    """
+    from vulca.layers.retry import retry_layers
+    from vulca.providers import get_image_provider
+
+    if not artifact_dir:
+        return {"error": "artifact_dir required"}
+    try:
+        provider_instance = get_image_provider(provider, api_key="")
+        result = await retry_layers(
+            artifact_dir,
+            tradition_name=tradition,
+            layer_names=[layer] if layer else None,
+            all_failed=all_failed,
+            provider=provider_instance,
+        )
+        return {
+            "ok": result.is_complete,
+            "layers": [{"name": o.info.name, "path": o.rgba_path,
+                        "cache_hit": o.cache_hit} for o in result.layers],
+            "failed": [{"role": f.role, "reason": f.reason} for f in result.failed],
+        }
+    except FileNotFoundError as e:
+        return {"error": str(e)}
+    except Exception as e:
+        return {"error": f"{type(e).__name__}: {e}"}
+
+
 if __name__ == "__main__":
     mcp.run()
