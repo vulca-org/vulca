@@ -6,6 +6,8 @@ no LRU, no eviction. Deletes when the artifact directory is deleted.
 from __future__ import annotations
 
 import hashlib
+import os
+import tempfile
 from pathlib import Path
 from typing import Optional
 
@@ -64,4 +66,18 @@ class LayerCache:
     def put(self, key: str, data: bytes) -> None:
         if not self.enabled or self.dir is None:
             return
-        (self.dir / f"{key}.png").write_bytes(data)
+        final = self.dir / f"{key}.png"
+        # Atomic write: tempfile in same dir → os.replace for POSIX atomicity.
+        fd, tmp_path = tempfile.mkstemp(
+            prefix=f".{key}.", suffix=".png.tmp", dir=str(self.dir)
+        )
+        try:
+            with os.fdopen(fd, "wb") as f:
+                f.write(data)
+            os.replace(tmp_path, final)
+        except BaseException:
+            try:
+                os.unlink(tmp_path)
+            except FileNotFoundError:
+                pass
+            raise
