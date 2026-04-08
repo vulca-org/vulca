@@ -35,6 +35,35 @@ def test_soften_blurs_hard_edges():
     assert intermediates > 0
 
 
+def test_box_blur_matches_reference_and_is_fast():
+    """v0.13.1 NTH #2: _box_blur must still match the naive reference output
+    (within float tolerance) AND run in well under a second on 512x512.
+    """
+    import time
+
+    from vulca.layers.matting import _box_blur
+
+    rng = np.random.default_rng(0)
+    arr = rng.random((512, 512)).astype(np.float32)
+
+    t0 = time.monotonic()
+    out = _box_blur(arr, radius=3)
+    elapsed = time.monotonic() - t0
+    assert elapsed < 0.5, f"_box_blur took {elapsed:.3f}s on 512x512, expected < 0.5s"
+    assert out.shape == arr.shape
+    assert out.dtype == np.float32
+
+    # Compare against a simple reference on a tiny patch.
+    small = rng.random((9, 9)).astype(np.float32)
+    got = _box_blur(small, radius=1)
+    expected = np.zeros_like(small)
+    pad = np.pad(small, 1, mode="edge")
+    for y in range(9):
+        for x in range(9):
+            expected[y, x] = pad[y:y + 3, x:x + 3].mean()
+    assert np.allclose(got, expected, atol=1e-5)
+
+
 def test_soften_disabled_returns_close_to_input():
     mask = _binary_disc()
     rgb = _rgb_for_disc()

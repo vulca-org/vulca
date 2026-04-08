@@ -9,22 +9,30 @@ import numpy as np
 
 
 def _box_blur(arr: np.ndarray, radius: int) -> np.ndarray:
+    """Vectorized box blur via separable cumulative-sum slicing.
+
+    O(HW) numpy ops, no Python per-pixel loop. For a box of size k = 2r+1
+    the sum over any window is just the difference between two integral
+    values at shifted offsets — numpy slicing handles the whole frame at
+    once.
+    """
     if radius <= 0:
         return arr.astype(np.float32)
-    k = radius * 2 + 1
-    pad = np.pad(arr.astype(np.float32), radius, mode="edge")
-    # Integral image with a zero row/col on top/left for inclusive sums.
+    r = int(radius)
+    k = r * 2 + 1
+    pad = np.pad(arr.astype(np.float32), r, mode="edge")
+    # Integral image with a zero row/col on top/left so every window sum
+    # is s[y+k, x+k] - s[y, x+k] - s[y+k, x] + s[y, x].
     s = np.zeros((pad.shape[0] + 1, pad.shape[1] + 1), dtype=np.float32)
     s[1:, 1:] = pad.cumsum(axis=0).cumsum(axis=1)
     H, W = arr.shape
-    out = np.zeros_like(arr, dtype=np.float32)
-    for y in range(H):
-        for x in range(W):
-            y0, y1 = y, y + k
-            x0, x1 = x, x + k
-            total = s[y1, x1] - s[y0, x1] - s[y1, x0] + s[y0, x0]
-            out[y, x] = total / (k * k)
-    return out
+    total = (
+        s[k:k + H, k:k + W]
+        - s[0:H,   k:k + W]
+        - s[k:k + H, 0:W]
+        + s[0:H,   0:W]
+    )
+    return total / (k * k)
 
 
 def _try_guided_filter(mask: np.ndarray, rgb: np.ndarray, radius: int) -> np.ndarray | None:
