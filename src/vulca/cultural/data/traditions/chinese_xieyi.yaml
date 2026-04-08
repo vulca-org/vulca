@@ -112,3 +112,10 @@ tradition_layers:
     blend: multiply
     position: "upper-left or lower-right corner"
     coverage: "5-10%"
+
+# Layered generation configuration (v0.13)
+layerability: native
+canvas_color: "#ffffff"
+canvas_description: "pure white rice paper (生宣纸), no texture, no border"
+key_strategy: luminance
+style_keywords: "水墨写意, 淡墨为主, 飞白笔触, 大量留白, 宣纸质感, 不画任何彩色, ink wash, monochrome, traditional Chinese painting"
