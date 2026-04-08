@@ -221,12 +221,15 @@ async def retry_layers(
         or not (adir / f"{info.name}.png").exists()
         for info in (r.info for r in artwork.layers)
     )
-    merged_warnings: list[str] = []
+    # v0.13.2 P2 T12: preserve non-validation warnings from the prior manifest
+    # (e.g. tradition-layerability discouraged). Validation warnings get
+    # re-derived from merged_extras below.
+    merged_warnings: list[str] = list(manifest.get("warnings", []) or [])
     for extra in merged_extras.values():
         vd = extra.get("validation") or {}
         for w in vd.get("warnings", []) or []:
             msg = w.get("message") if isinstance(w, dict) else None
-            if msg:
+            if msg and msg not in merged_warnings:
                 merged_warnings.append(msg)
 
     write_manifest(
