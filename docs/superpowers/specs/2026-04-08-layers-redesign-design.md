@@ -97,7 +97,9 @@ The CLI / MCP / SDK all call one high-level entrypoint `vulca.layers.layered_cre
 | File | New / Old | Role |
 |---|---|---|
 | `layers/plan_prompt.py` | unchanged | A & B shared upstream |
-| `layers/layered_generate.py` | **new** | A-path: concurrent provider calls + prompt anchoring |
+| `layers/layered_generate.py` | **new** | A-path library: concurrent provider calls, cache, dispatch into keying/validate. Pure function, no pipeline coupling. |
+| `layers/layered_prompt.py` | **new** | `build_anchored_layer_prompt` with 4 anchor blocks |
+| `pipeline/nodes/layer_generate.py` | **modified** | `LayerGenerateNode` becomes a thin adapter that calls `layered_generate`. Existing `_apply_mask` (VLM-mask-post-hoc) and `_build_prompt` are removed; their replacements live in the new library files. |
 | `layers/keying/__init__.py` | **new** | strategy dispatch |
 | `layers/keying/luminance.py` | **new** | Tier 0 default |
 | `layers/keying/chroma.py` | **new** | Tier 1 |
@@ -484,7 +486,7 @@ vulca layers split user_photo.jpg
 vulca layers cache clear <artifact_id>
 ```
 
-**Total new flags: 4** — `--layered`, `--no-cache`, `--strict`, `--max-layers`.
+**Total new flags: 3** (`--no-cache`, `--strict`, `--max-layers`) plus **1 augmented** (`--layered` already exists in v0.12 at `cli.py:98`; behavior upgraded to dispatch through the new A-path when `tradition.layerability == "native"`).
 **Total new subcommands: 2** — `layers retry`, `layers cache`.
 
 **Power-user controls via env vars** (no flags):
@@ -619,5 +621,5 @@ layers.stats.dispatch_path_total{path=a|b|b_warn}
 4. `vulca create -t photography --layered` prints the discouraged warning, runs B-path, exit 0, manifest labeled `discouraged`.
 5. Single-layer retry correctly re-runs only failed layers; other layers come from cache.
 6. Partial-failure default behavior: 4-of-5 success exits 0 with stderr warning and `partial=true` manifest.
-7. New CLI flags total exactly 4: `--layered`, `--no-cache`, `--strict`, `--max-layers`. New subcommands: `layers retry`, `layers cache`.
+7. New CLI flags total exactly 3: `--no-cache`, `--strict`, `--max-layers` (`--layered` already exists, behavior augmented). New subcommands: `layers retry`, `layers cache`.
 8. Mock provider completes the full A-path locally with zero network calls.
