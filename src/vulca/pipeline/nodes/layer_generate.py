@@ -131,8 +131,15 @@ class LayerGenerateNode(PipelineNode):
         canvas = CanvasSpec.from_hex(canvas_hex)
         key_strategy_name = getattr(trad, "key_strategy", "luminance") or "luminance"
 
-        positions: dict[str, str] = {l.name: getattr(l, "_position", "") for l in layers}
-        coverages: dict[str, str] = {l.name: getattr(l, "_coverage", "") for l in layers}
+        # P0.2: position/coverage are first-class LayerInfo fields now.
+        # (Keep a getattr fallback for any caller that still constructs
+        # LayerInfo via the old _position/_coverage dunder path.)
+        positions: dict[str, str] = {
+            l.name: l.position or getattr(l, "_position", "") for l in layers
+        }
+        coverages: dict[str, str] = {
+            l.name: l.coverage or getattr(l, "_coverage", "") for l in layers
+        }
 
         cache_enabled = not bool(ctx.get("no_cache", False))
 
