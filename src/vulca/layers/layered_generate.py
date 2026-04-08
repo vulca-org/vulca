@@ -83,10 +83,10 @@ async def _call_provider(provider, prompt: str) -> bytes:
 def _apply_alpha(rgb_bytes: bytes, alpha: np.ndarray) -> Image.Image:
     img = Image.open(io.BytesIO(rgb_bytes)).convert("RGB")
     rgb = np.array(img)
-    if rgb.shape[:2] != alpha.shape:
-        a_img = Image.fromarray((alpha * 255).astype(np.uint8))
-        a_img = a_img.resize((rgb.shape[1], rgb.shape[0]), Image.BILINEAR)
-        alpha = np.array(a_img).astype(np.float32) / 255.0
+    assert rgb.shape[:2] == alpha.shape, (
+        f"alpha shape {alpha.shape} does not match rgb shape {rgb.shape[:2]}; "
+        "keying ran on a different-sized image than the provider returned"
+    )
     rgba = np.dstack([rgb, (alpha * 255).astype(np.uint8)])
     return Image.fromarray(rgba, mode="RGBA")
 
