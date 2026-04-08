@@ -206,9 +206,9 @@ async def generate_one_layer(
         rgba_img.save(out_path)
         if cache is not None:
             try:
-                buf = io.BytesIO()
-                rgba_img.save(buf, format="PNG")
-                cache.put(cache_key, buf.getvalue())
+                # v0.13.2 P2 T10: reuse disk bytes — rgba_img.save(out_path)
+                # already wrote the PNG above. Avoid PIL re-encoding.
+                cache.put(cache_key, Path(out_path).read_bytes())
             except Exception as exc:
                 logger.warning(
                     "cache.put failed for layer %s (best-effort): %s",
