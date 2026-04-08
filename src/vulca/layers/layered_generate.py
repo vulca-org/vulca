@@ -21,7 +21,7 @@ from vulca.layers.keying import CanvasSpec, KeyingStrategy, get_keying_strategy
 from vulca.layers.layered_cache import LayerCache, build_cache_key
 from vulca.layers.layered_prompt import TraditionAnchor, build_anchored_layer_prompt
 from vulca.layers.types import LayerInfo
-from vulca.layers.validate import ValidationReport, validate_layer_alpha
+from vulca.layers.validate import ValidationReport, ValidationWarning, validate_layer_alpha
 
 logger = logging.getLogger("vulca.layers.layered_generate")
 
@@ -85,6 +85,31 @@ async def _call_provider(provider, prompt: str) -> bytes:
     result = await provider.generate(prompt=prompt, raw_prompt=True)
     b64 = result.image_b64 if hasattr(result, "image_b64") else result
     return base64.b64decode(b64)
+
+
+def _report_to_dict(report: ValidationReport) -> dict:
+    """Serialize ValidationReport to a JSON-friendly dict for sidecar storage."""
+    import dataclasses
+    return dataclasses.asdict(report)
+
+
+def _report_from_dict(d: dict) -> ValidationReport:
+    """Reconstruct a ValidationReport from a sidecar dict."""
+    warnings_raw = d.get("warnings") or []
+    warnings = [
+        ValidationWarning(
+            kind=w.get("kind", ""),
+            message=w.get("message", ""),
+            detail=dict(w.get("detail") or {}),
+        )
+        for w in warnings_raw
+    ]
+    return ValidationReport(
+        ok=bool(d.get("ok", True)),
+        warnings=warnings,
+        coverage_actual=float(d.get("coverage_actual", 0.0)),
+        position_iou=float(d.get("position_iou", 0.0)),
+    )
 
 
 def _apply_alpha(rgb_bytes: bytes, alpha: np.ndarray) -> Image.Image:
@@ -190,9 +215,26 @@ async def generate_one_layer(
                     layer.name, exc,
                 )
 
-    rgba = np.array(Image.open(out_path))
-    alpha_only = rgba[:, :, 3].astype(np.float32) / 255.0
-    report = validate_layer_alpha(alpha_only, position=position, coverage=coverage)
+    cached_report_dict: dict | None = None
+    if cache_hit and cache is not None:
+        cached_report_dict = cache.get_report(cache_key)
+
+    if cached_report_dict is not None:
+        # Cache hit with sidecar — reuse persisted report; skip re-validation.
+        report = _report_from_dict(cached_report_dict)
+    else:
+        rgba = np.array(Image.open(out_path))
+        alpha_only = rgba[:, :, 3].astype(np.float32) / 255.0
+        report = validate_layer_alpha(alpha_only, position=position, coverage=coverage)
+        # Write sidecar — fresh generation OR legacy cache entry auto-migration.
+        if cache is not None:
+            try:
+                cache.put_report(cache_key, _report_to_dict(report))
+            except Exception as exc:
+                logger.warning(
+                    "cache.put_report failed for layer %s (best-effort): %s",
+                    layer.name, exc,
+                )
 
     if not report.ok:
         return LayerOutcome(
