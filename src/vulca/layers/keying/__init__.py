@@ -37,11 +37,17 @@ def get_keying_strategy(spec: str | None) -> KeyingStrategy:
         return LuminanceKeying()
 
     if ":" in spec:
-        # Tier 2 escape hatch
+        # Tier 2 escape hatch: "module.path:callable"
         module_path, fn_name = spec.split(":", 1)
         import importlib
-        mod = importlib.import_module(module_path)
-        fn = getattr(mod, fn_name)
+        try:
+            mod = importlib.import_module(module_path)
+            fn = getattr(mod, fn_name)
+        except (ImportError, AttributeError) as exc:
+            raise ValueError(
+                f"unknown keying strategy: {spec!r} "
+                f"(tier-2 loader failed: {type(exc).__name__}: {exc})"
+            ) from exc
         return fn()
 
     name = spec.lower().strip()
