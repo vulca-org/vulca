@@ -81,3 +81,38 @@ class LayerCache:
             except FileNotFoundError:
                 pass
             raise
+
+    def _report_path(self, key: str) -> Path | None:
+        if not self.enabled or self.dir is None:
+            return None
+        return self.dir / f"{key}.report.json"
+
+    def get_report(self, key: str) -> dict | None:
+        p = self._report_path(key)
+        if p is None or not p.exists():
+            return None
+        try:
+            import json
+            return json.loads(p.read_text())
+        except Exception:
+            return None
+
+    def put_report(self, key: str, report: dict) -> None:
+        p = self._report_path(key)
+        if p is None:
+            return
+        import json
+        data = json.dumps(report).encode("utf-8")
+        fd, tmp_path = tempfile.mkstemp(
+            prefix=f".{key}.", suffix=".report.json.tmp", dir=str(self.dir)
+        )
+        try:
+            with os.fdopen(fd, "wb") as f:
+                f.write(data)
+            os.replace(tmp_path, p)
+        except BaseException:
+            try:
+                os.unlink(tmp_path)
+            except FileNotFoundError:
+                pass
+            raise
