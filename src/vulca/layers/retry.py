@@ -20,6 +20,9 @@ from vulca.layers.types import LayerInfo
 
 
 def _is_failed(layer_entry: dict, artifact_dir: Path) -> bool:
+    # Explicit status wins (v0.13 post-P0#2).
+    if layer_entry.get("status") == "failed":
+        return True
     file_path = artifact_dir / layer_entry.get("file", f"{layer_entry.get('name', '')}.png")
     if not file_path.exists():
         return True
