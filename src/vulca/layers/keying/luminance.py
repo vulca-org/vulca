@@ -18,6 +18,8 @@ def _luma(rgb: np.ndarray) -> np.ndarray:
 
 
 class LuminanceKeying:
+    cache_version: int = 1
+
     def extract_alpha(self, rgb: np.ndarray, canvas: CanvasSpec) -> np.ndarray:
         if rgb.dtype != np.uint8 or rgb.ndim != 3 or rgb.shape[-1] != 3:
             raise ValueError(f"expected H×W×3 uint8, got {rgb.shape} {rgb.dtype}")

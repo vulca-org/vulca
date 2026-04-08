@@ -119,6 +119,7 @@ async def generate_one_layer(
         canvas_tolerance=canvas.tolerance,
         schema_version=SCHEMA_VERSION,
         key_strategy=keying.__class__.__name__,
+        key_strategy_version=int(getattr(keying, "cache_version", 1)),
         canvas_invert=bool(getattr(canvas, "invert", False)),
         width=int(width),
         height=int(height),
