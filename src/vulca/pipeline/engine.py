@@ -257,6 +257,9 @@ async def execute(
     ctx.set("no_cache", getattr(pipeline_input, "no_cache", False))
     ctx.set("strict", getattr(pipeline_input, "strict", False))
     ctx.set("max_layers", getattr(pipeline_input, "max_layers", 8))
+    _out_dir = getattr(pipeline_input, "output_dir", "") or ""
+    if _out_dir:
+        ctx.set("output_dir", _out_dir)
 
     # Inject sparse_eval flag so EvaluateNode can run BriefIndexer + CulturalEngram
     if pipeline_input.sparse_eval:

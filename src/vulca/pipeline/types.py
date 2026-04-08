@@ -100,6 +100,7 @@ class PipelineInput:
     no_cache: bool = False            # v0.13: disable layered sidecar cache
     strict: bool = False              # v0.13: any failed layer fails the run
     max_layers: int = 8               # v0.13: cap planned layer count
+    output_dir: str = ""              # v0.13: write composite+manifest here (LAYERED)
 
     def to_dict(self) -> dict[str, Any]:
         return {
