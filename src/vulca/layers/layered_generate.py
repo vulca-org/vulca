@@ -89,6 +89,37 @@ async def _call_provider(provider, prompt: str) -> bytes:
     return base64.b64decode(b64)
 
 
+async def _call_provider_with_retry(
+    provider, prompt: str, layer_name: str,
+) -> tuple[bytes, int]:
+    """Call provider with retry budget; return (rgb_bytes, attempts).
+
+    On exhausted budget, raises the last captured exception.
+    AssertionError/TypeError/CancelledError propagate immediately — they
+    are programmer bugs or control flow, not transient provider failures.
+    """
+    rgb_bytes: bytes | None = None
+    last_exc: Exception | None = None
+    for attempt in range(_RETRY_BUDGET + 1):
+        attempts = attempt + 1
+        try:
+            rgb_bytes = await _call_provider(provider, prompt)
+            return rgb_bytes, attempts
+        except (AssertionError, TypeError, asyncio.CancelledError):
+            raise
+        except Exception as exc:
+            last_exc = exc
+            logger.warning(
+                "provider failed for layer %s (attempt %d/%d): %s",
+                layer_name, attempts, _RETRY_BUDGET + 1, exc,
+            )
+            if attempt < _RETRY_BUDGET:
+                delay = random.uniform(0, 0.5 * (2 ** attempt))
+                await asyncio.sleep(delay)
+    assert last_exc is not None  # type narrowing
+    raise last_exc
+
+
 _REPORT_SCHEMA_VERSION = 1
 
 
@@ -182,35 +213,17 @@ async def generate_one_layer(
             cache_hit = True
 
     if not cache_hit:
-        # In-process retry budget for provider (generation_failed) only.
-        # Validation failures are deterministic and never retried (handled below).
-        # Programmer bugs (AssertionError/TypeError) and control flow
-        # (CancelledError) propagate — they are not "transient provider failures."
-        rgb_bytes: bytes | None = None
-        last_exc: Exception | None = None
-        for attempt in range(_RETRY_BUDGET + 1):
-            attempts = attempt + 1
-            try:
-                rgb_bytes = await _call_provider(provider, prompt)
-                last_exc = None
-                break
-            except (AssertionError, TypeError, asyncio.CancelledError):
-                # Not a transient provider failure — surface immediately.
-                raise
-            except Exception as exc:
-                last_exc = exc
-                logger.warning(
-                    "provider failed for layer %s (attempt %d/%d): %s",
-                    layer.name, attempts, _RETRY_BUDGET + 1, exc,
-                )
-                if attempt < _RETRY_BUDGET:
-                    delay = random.uniform(0, 0.5 * (2 ** attempt))
-                    await asyncio.sleep(delay)
-        if last_exc is not None:
+        attempts = _RETRY_BUDGET + 1  # default for exhausted-budget path
+        try:
+            rgb_bytes, attempts = await _call_provider_with_retry(
+                provider, prompt, layer.name,
+            )
+        except (AssertionError, TypeError, asyncio.CancelledError):
+            raise
+        except Exception:
             return LayerOutcome(
                 ok=False, info=layer, rgba_path="", attempts=attempts,
             )
-        assert rgb_bytes is not None  # type narrowing for the next block
 
         rgb = np.array(Image.open(io.BytesIO(rgb_bytes)).convert("RGB"))
         alpha = keying.extract_alpha(rgb, canvas)
