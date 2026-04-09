@@ -163,11 +163,13 @@ class TestCompositeV2:
 
         assert returned == out_path, f"Expected output_path returned, got {returned!r}"
 
-    def test_empty_output_path_returns_empty_string(self):
-        """When output_path is empty, returns empty string and does not crash."""
+    def test_empty_output_path_uses_default(self):
+        """When output_path is empty, composite_layers generates a default
+        path next to the first layer and returns it."""
         size = (4, 4)
         layers = [
             _make_layer((128, 128, 128, 255), z_index=0, size=size),
         ]
         returned = composite_layers(layers, width=size[0], height=size[1])
-        assert returned == "", f"Expected empty string, got {returned!r}"
+        assert returned.endswith("composite.png"), f"Expected default path, got {returned!r}"
+        assert os.path.exists(returned)

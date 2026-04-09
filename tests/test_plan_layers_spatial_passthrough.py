@@ -11,8 +11,8 @@ def test_position_and_coverage_pass_through():
     layers = parse_v2_response(raw)
     assert len(layers) == 1
     li = layers[0]
-    assert getattr(li, "_position", None) == "upper 30%"
-    assert getattr(li, "_coverage", None) == "20-30%"
+    assert li.position == "upper 30%"
+    assert li.coverage == "20-30%"
 
 
 def test_missing_spatial_fields_default_to_empty():
@@ -21,5 +21,5 @@ def test_missing_spatial_fields_default_to_empty():
          "content_type": "background"},
     ]}
     layers = parse_v2_response(raw)
-    assert getattr(layers[0], "_position", None) == ""
-    assert getattr(layers[0], "_coverage", None) == ""
+    assert layers[0].position == ""
+    assert layers[0].coverage == ""

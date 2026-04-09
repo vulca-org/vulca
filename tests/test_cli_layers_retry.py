@@ -38,6 +38,7 @@ def test_retry_preserves_partial_when_other_layers_still_failed(tmp_path, monkey
     class _FlakyPNG:
         id = "flaky"
         model = "flaky-1"
+        capabilities = frozenset({"raw_rgba"})
 
         def __init__(self, fail_token):
             self.fail_token = fail_token
@@ -52,6 +53,14 @@ def test_retry_preserves_partial_when_other_layers_still_failed(tmp_path, monkey
             buf = io.BytesIO()
             img.save(buf, format="PNG")
             return type("R", (), {"image_b64": base64.b64encode(buf.getvalue()).decode()})()
+
+    # Avoid real litellm calls — use the built-in mock plan instead.
+    from vulca.pipeline.nodes.plan_layers import PlanLayersNode
+    import vulca.pipeline.nodes.layer_generate as lg_mod
+    async def _mock_plan_from_intent(self, ctx):
+        return self._mock_plan(ctx.tradition)
+    monkeypatch.setattr(PlanLayersNode, "_plan_from_intent", _mock_plan_from_intent)
+    monkeypatch.setattr(lg_mod, "_lookup_provider_class", lambda name: _FlakyPNG)
 
     # Initial run: fail every non-bg layer by matching "USER INTENT".
     flaky_all = _FlakyPNG("USER INTENT")
@@ -133,6 +142,7 @@ def test_retry_preserves_canvas_color_and_key_strategy(tmp_path, monkeypatch):
     class _OK:
         id = "ok"
         model = "ok-1"
+        capabilities = frozenset({"raw_rgba"})
 
         async def generate(self, *, prompt, raw_prompt=False, **kw):
             img = Image.new("RGB", (32, 32), (255, 255, 255))

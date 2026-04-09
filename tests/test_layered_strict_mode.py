@@ -15,6 +15,7 @@ from vulca.pipeline.types import PipelineInput, RunStatus
 class _FlakyPNG:
     id = "flaky"
     model = "flaky-1"
+    capabilities = frozenset({"raw_rgba"})
 
     def __init__(self, fail_token: str):
         self.fail_token = fail_token
@@ -34,8 +35,14 @@ class _FlakyPNG:
 def _run(tmp_path, *, strict, fail_all=True, monkeypatch):
     provider = _FlakyPNG("USER INTENT" if fail_all else "")
     import vulca.providers as providers_mod
+    import vulca.pipeline.nodes.layer_generate as lg_mod
+    from vulca.pipeline.nodes.plan_layers import PlanLayersNode
     monkeypatch.setattr(providers_mod, "get_image_provider",
                         lambda *a, **k: provider)
+    monkeypatch.setattr(lg_mod, "_lookup_provider_class", lambda name: _FlakyPNG)
+    async def _mock_plan_from_intent(self, ctx):
+        return self._mock_plan(ctx.tradition)
+    monkeypatch.setattr(PlanLayersNode, "_plan_from_intent", _mock_plan_from_intent)
 
     inp = PipelineInput(
         subject="远山薄雾", intent="远山薄雾",

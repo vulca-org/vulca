@@ -22,6 +22,7 @@ class _FlakyPNGProvider:
 
     id = "flaky"
     model = "flaky-1"
+    capabilities = frozenset({"raw_rgba"})
 
     def __init__(self, fail_token: str):
         self.fail_token = fail_token
@@ -45,8 +46,14 @@ def test_layered_partial_failure_marks_manifest(tmp_path, monkeypatch):
 
     # Intercept get_image_provider so native path uses our flaky instance.
     import vulca.providers as providers_mod
+    import vulca.pipeline.nodes.layer_generate as lg_mod
+    from vulca.pipeline.nodes.plan_layers import PlanLayersNode
     monkeypatch.setattr(providers_mod, "get_image_provider",
                         lambda *a, **kw: provider)
+    monkeypatch.setattr(lg_mod, "_lookup_provider_class", lambda name: _FlakyPNGProvider)
+    async def _mock_plan_from_intent(self, ctx):
+        return self._mock_plan(ctx.tradition)
+    monkeypatch.setattr(PlanLayersNode, "_plan_from_intent", _mock_plan_from_intent)
 
     inp = PipelineInput(
         subject="远山薄雾",

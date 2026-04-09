@@ -23,6 +23,7 @@ from vulca.pipeline.types import PipelineInput
 class _FakePNG:
     id = "fake"
     model = "fake-1"
+    capabilities = frozenset({"raw_rgba"})
 
     async def generate(self, *, prompt, raw_prompt=False, reference_image_b64=None, **kw):
         img = Image.new("RGB", (32, 32), (255, 255, 255))
@@ -36,8 +37,16 @@ class _FakePNG:
 
 def test_xieyi_layered_e2e_mock(tmp_path, monkeypatch):
     import vulca.providers as providers_mod
+    import vulca.pipeline.nodes.layer_generate as lg_mod
+    from vulca.pipeline.nodes.plan_layers import PlanLayersNode
     monkeypatch.setattr(providers_mod, "get_image_provider",
                         lambda *a, **k: _FakePNG())
+    # Let _provider_supports_native find raw_rgba via the class lookup.
+    monkeypatch.setattr(lg_mod, "_lookup_provider_class", lambda name: _FakePNG)
+    # Avoid real litellm calls — use the built-in mock plan instead.
+    async def _mock_plan_from_intent(self, ctx):
+        return self._mock_plan(ctx.tradition)
+    monkeypatch.setattr(PlanLayersNode, "_plan_from_intent", _mock_plan_from_intent)
 
     inp = PipelineInput(
         subject="远山薄雾",

@@ -15,6 +15,7 @@ from vulca.pipeline.nodes.layer_generate import LayerGenerateNode
 class _FakePNGProvider:
     id = "fake"
     model = "fake-1"
+    capabilities = frozenset({"raw_rgba"})
 
     async def generate(self, *, prompt, raw_prompt=False, reference_image_b64=None, **kw):
         img = Image.new("RGB", (32, 32), (255, 255, 255))
