@@ -156,6 +156,54 @@ def _report_from_dict(d: dict) -> ValidationReport | None:
     )
 
 
+def _obtain_validation_report(
+    *,
+    cache_hit: bool,
+    cache: LayerCache | None,
+    cache_key: str,
+    out_path: str,
+    position: str,
+    coverage: str,
+    cache_put_ok: bool,
+) -> ValidationReport:
+    """Obtain a ValidationReport: from sidecar cache or fresh validation.
+
+    Three branches:
+    1. Cache hit with valid sidecar -> reuse persisted report.
+    2. Cache hit, sidecar missing/stale -> re-validate, write fresh sidecar.
+    3. Fresh generation -> validate from disk, write sidecar.
+
+    Orphan-sidecar guard (v0.13.2 G4): put_report only called when
+    cache_put_ok is True (cache body is known to exist on disk).
+    """
+    cached_report_dict: dict | None = None
+    if cache_hit and cache is not None:
+        cached_report_dict = cache.get_report(cache_key)
+
+    report: ValidationReport | None = None
+    if cached_report_dict is not None:
+        report = _report_from_dict(cached_report_dict)
+
+    if report is None:
+        if cache_hit and cached_report_dict is None:
+            logger.debug(
+                "cache sidecar missing for %s, migrating", cache_key,
+            )
+        rgba = np.array(Image.open(out_path))
+        alpha_only = rgba[:, :, 3].astype(np.float32) / 255.0
+        report = validate_layer_alpha(alpha_only, position=position, coverage=coverage)
+        if cache is not None and cache_put_ok:
+            try:
+                cache.put_report(cache_key, _report_to_dict(report))
+            except Exception as exc:
+                logger.warning(
+                    "cache.put_report failed for %s (best-effort): %s",
+                    cache_key, exc,
+                )
+
+    return report
+
+
 def _apply_alpha(rgb_bytes: bytes, alpha: np.ndarray) -> Image.Image:
     img = Image.open(io.BytesIO(rgb_bytes)).convert("RGB")
     rgb = np.array(img)
@@ -245,36 +293,11 @@ async def generate_one_layer(
     else:
         cache_put_ok = True  # cache hit → body already exists on disk.
 
-    cached_report_dict: dict | None = None
-    if cache_hit and cache is not None:
-        cached_report_dict = cache.get_report(cache_key)
-
-    report: ValidationReport | None = None
-    if cached_report_dict is not None:
-        # Cache hit with sidecar — reuse persisted report; skip re-validation
-        # unless the sidecar schema version is stale (returns None).
-        report = _report_from_dict(cached_report_dict)
-
-    if report is None:
-        if cache_hit and cached_report_dict is None:
-            logger.debug(
-                "cache sidecar missing for %s, migrating", cache_key,
-            )
-        rgba = np.array(Image.open(out_path))
-        alpha_only = rgba[:, :, 3].astype(np.float32) / 255.0
-        report = validate_layer_alpha(alpha_only, position=position, coverage=coverage)
-        # Write sidecar — fresh generation OR legacy cache entry auto-migration.
-        # Invariant: sidecar presence implies cache body presence. Skip the
-        # sidecar write if the fresh-path cache.put failed (else we'd leave
-        # an orphan .report.json pointing at a missing PNG).
-        if cache is not None and cache_put_ok:
-            try:
-                cache.put_report(cache_key, _report_to_dict(report))
-            except Exception as exc:
-                logger.warning(
-                    "cache.put_report failed for layer %s (best-effort): %s",
-                    layer.name, exc,
-                )
+    report = _obtain_validation_report(
+        cache_hit=cache_hit, cache=cache, cache_key=cache_key,
+        out_path=out_path, position=position, coverage=coverage,
+        cache_put_ok=cache_put_ok,
+    )
 
     if not report.ok:
         return LayerOutcome(
