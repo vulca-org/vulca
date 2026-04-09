@@ -6,6 +6,7 @@ import logging
 from typing import Any
 
 from vulca.pipeline.node import NodeContext, PipelineNode
+from vulca.providers.capabilities import VLM_SCORING, provider_capabilities
 
 logger = logging.getLogger("vulca")
 
@@ -73,7 +74,7 @@ class EvaluateNode(PipelineNode):
             result = self._mock_scores(ctx, dimension_activation=dimension_activation)
             return self._merge_algo_scores(result, algo_scores, algo_covered_dims, weights)
 
-        if ctx.provider == "mock" or not ctx.api_key:
+        if VLM_SCORING not in provider_capabilities(ctx.provider) or not ctx.api_key:
             result = self._mock_scores(ctx, dimension_activation=dimension_activation)
             return self._merge_algo_scores(result, algo_scores, algo_covered_dims, weights)
 

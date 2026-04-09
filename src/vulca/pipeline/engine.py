@@ -10,6 +10,7 @@ import uuid
 from typing import Any, AsyncGenerator, Callable
 
 from vulca.pipeline.node import NodeContext, PipelineNode
+from vulca.providers.capabilities import COST_TRACKED, provider_capabilities
 from vulca import hooks as hooks
 try:
     from vulca.pipeline.residuals import AgentResiduals
@@ -465,7 +466,7 @@ async def execute(
             )
 
             # Cost gate: check after generate nodes
-            if node_name in ("generate", "draft") and ctx.provider != "mock":
+            if node_name in ("generate", "draft") and COST_TRACKED in provider_capabilities(ctx.provider):
                 cost_per = _COST_PER_IMAGE.get(ctx.provider, 0.067)
                 ctx.cost_usd += cost_per
                 if ctx.cost_usd > ctx.max_cost_usd:

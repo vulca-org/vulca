@@ -8,6 +8,7 @@ import re
 from typing import Any
 
 from vulca.pipeline.node import PipelineNode, NodeContext
+from vulca.providers.capabilities import LLM_TEXT, provider_capabilities
 from vulca.layers.types import LayerInfo
 from vulca.layers.plan_prompt import build_plan_prompt, get_tradition_layer_order
 from vulca.layers.prompt import parse_v2_response
@@ -65,7 +66,7 @@ class PlanLayersNode(PipelineNode):
         intent = ctx.intent or ctx.subject
         prompt = build_plan_prompt(intent, ctx.tradition)
 
-        if ctx.provider == "mock":
+        if LLM_TEXT not in provider_capabilities(ctx.provider):
             return self._mock_plan(ctx.tradition)
 
         for attempt in range(3):

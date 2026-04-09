@@ -69,6 +69,11 @@ class GenerateNode(PipelineNode):
     async def run(self, ctx: NodeContext) -> dict[str, Any]:
         provider = ctx.provider or "mock"
 
+        # Intentional literal: "mock" here means "no registered image provider
+        # AND no injected instance" — the short-circuit to canned mock output.
+        # Registered mock_v2 / user-defined providers are routed through the
+        # ImageProviderRegistry via _provider_generate and never hit this branch,
+        # so a capability lookup here would be functionally redundant.
         if provider == "mock" and ctx.image_provider is None:
             return self._mock_generate(ctx)
 

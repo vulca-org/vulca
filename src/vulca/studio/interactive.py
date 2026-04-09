@@ -14,6 +14,7 @@ from vulca.studio.phases.generate import GeneratePhase
 from vulca.studio.phases.evaluate import EvaluatePhase
 from vulca.studio.nl_update import parse_nl_update, parse_nl_update_llm, apply_update
 from vulca.digestion.preloader import preload_intelligence
+from vulca.providers.capabilities import VLM_SCORING, provider_capabilities
 
 logger = logging.getLogger("vulca.studio")
 
@@ -238,7 +239,9 @@ async def _run_studio_async(
         _print("\n[Evaluate] L1-L5 (based on your Brief):")
         eval_phase = EvaluatePhase()
         scores = await eval_phase.evaluate(
-            session.brief, image_path=result_path, mock=(provider == "mock"), api_key=api_key
+            session.brief, image_path=result_path,
+            mock=VLM_SCORING not in provider_capabilities(provider),
+            api_key=api_key,
         )
 
         for dim in ("L1", "L2", "L3", "L4", "L5"):
