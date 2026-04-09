@@ -70,7 +70,7 @@ def test_generate_single_routes_mock_v2_to_mock_generate(tmp_path):
         api_key=None,
         round_num=1,
     )
-    result = asyncio.get_event_loop().run_until_complete(
+    result = asyncio.run(
         node._generate_single(info, ctx, str(tmp_path), None)
     )
     assert result == "sentinel"

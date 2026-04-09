@@ -1,13 +1,15 @@
 """Tests for v0.12.0 — split_sam3 (SAM3 text-prompted segmentation)."""
 from __future__ import annotations
 
+import pytest
+pytest.importorskip("torch", reason="torch is an optional dependency for SAM3 segmentation")
+
 import json
 import tempfile
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import numpy as np
-import pytest
 from PIL import Image
 
 from vulca.layers.types import LayerInfo

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import asyncio
 import base64
+import importlib.util
 import io
 import json
 import tempfile
@@ -439,6 +440,10 @@ class TestSplitVlmCLI:
 # Task 5: MCP layers_split supports mode='vlm'
 # ---------------------------------------------------------------------------
 
+@pytest.mark.skipif(
+    not importlib.util.find_spec("fastmcp"),
+    reason="fastmcp is an optional dependency (pip install vulca[mcp])",
+)
 class TestSplitVlmMCP:
     """MCP layers_split supports mode='vlm'."""
 

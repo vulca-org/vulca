@@ -5,6 +5,9 @@ Task 2: ColorGamutChecker — tradition-specific color gamut checking.
 
 from __future__ import annotations
 
+import pytest
+pytest.importorskip("cv2", reason="cv2 is an optional dependency (pip install vulca[tools])")
+
 import io
 import os
 import sys

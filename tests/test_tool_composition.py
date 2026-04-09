@@ -5,6 +5,9 @@ Task 1 (Phase 2): CompositionAnalyzer — deterministic composition analysis.
 
 from __future__ import annotations
 
+import pytest
+pytest.importorskip("cv2", reason="cv2 is an optional dependency (pip install vulca[tools])")
+
 import io
 import os
 import sys

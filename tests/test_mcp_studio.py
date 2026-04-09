@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import pytest
+pytest.importorskip("fastmcp", reason="fastmcp is an optional dependency (pip install vulca[mcp])")
 
 
 @pytest.fixture
