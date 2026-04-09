@@ -102,6 +102,7 @@ all = [
 dev = [
     "pytest>=8.0",
     "pytest-asyncio>=0.23",
+    "mypy>=1.20",
 ]
 
 [project.urls]
@@ -123,3 +124,55 @@ artifacts = ["src/vulca/cultural/data/**"]
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
+warn_return_any = false
+warn_unused_configs = true
+
+# Modules with pre-existing type errors. New files are checked by default.
+# Remove entries as you fix their errors to tighten coverage incrementally.
+[[tool.mypy.overrides]]
+module = [
+    "vulca._engine",
+    "vulca._vlm",
+    "vulca.cli",
+    "vulca.cultural.loader",
+    "vulca.digestion.dream",
+    "vulca.digestion.evolver",
+    "vulca.digestion.preloader",
+    "vulca.digestion.signals",
+    "vulca.digestion.trajectory",
+    "vulca.layers.blend",
+    "vulca.layers.composite",
+    "vulca.layers.export",
+    "vulca.layers.matting",
+    "vulca.layers.plan_prompt",
+    "vulca.layers.redraw",
+    "vulca.layers.sam3",
+    "vulca.layers.split",
+    "vulca.layers.transform",
+    "vulca.layers.vlm_mask",
+    "vulca.mcp_server",
+    "vulca.pipeline.engine",
+    "vulca.pipeline.nodes.evaluate",
+    "vulca.pipeline.nodes.layer_generate",
+    "vulca.pipeline.residuals",
+    "vulca.providers.gemini",
+    "vulca.stats",
+    "vulca.studio.brief",
+    "vulca.studio.phases.inpaint",
+    "vulca.studio.phases.intent",
+    "vulca.studio.session",
+    "vulca.tools.adapters.cli",
+    "vulca.tools.adapters.mcp",
+    "vulca.tools.adapters.pipeline",
+    "vulca.tools.adapters.sdk",
+    "vulca.tools.cultural.brushstroke",
+    "vulca.tools.cultural.color_gamut",
+    "vulca.tools.cultural.composition",
+    "vulca.tools.cultural.whitespace",
+    "vulca.tools.filters.color_correct",
+]
+ignore_errors = true
