@@ -28,10 +28,11 @@ class L1L5Scores:
 class ImageProvider(Protocol):
     """Protocol for image generation backends."""
 
-    # Capability flags. "raw_rgba" = generate() returns raw PNG bytes
-    # consumable by PIL (not SVG, not vector). Future capabilities:
-    # "streaming", "batch", "reference_image", etc.
-    capabilities: frozenset[str]
+    # Image-runtime capability flags. Scoped to image generation details
+    # (e.g. "raw_rgba", future "streaming", "batch", "reference_image").
+    # For coarse provider-kind questions (vlm_scoring, llm_text, cost_tracked)
+    # use vulca.providers.capabilities.provider_capabilities() instead.
+    capabilities: frozenset[str] = frozenset()
 
     async def generate(
         self,

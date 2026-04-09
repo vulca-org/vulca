@@ -26,3 +26,11 @@ def test_comfyui_declares_raw_rgba():
 def test_capabilities_are_frozensets():
     for cls in (MockImageProvider, GeminiImageProvider, OpenAIImageProvider, ComfyUIImageProvider):
         assert isinstance(cls.capabilities, frozenset), cls
+
+
+def test_protocol_capabilities_has_default():
+    """ImageProvider.capabilities should have a default frozenset()
+    so providers that omit it still satisfy the Protocol."""
+    from vulca.providers.base import ImageProvider
+    assert hasattr(ImageProvider, "capabilities")
+    assert ImageProvider.capabilities == frozenset()
