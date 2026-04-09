@@ -117,6 +117,9 @@ async def _call_provider_with_retry(
                 delay = random.uniform(0, 0.5 * (2 ** attempt))
                 await asyncio.sleep(delay)
     assert last_exc is not None  # type narrowing
+    # Attach attempts count so callers can report it without duplicating
+    # the retry budget arithmetic (see generate_one_layer).
+    last_exc.attempts = _RETRY_BUDGET + 1  # type: ignore[attr-defined]
     raise last_exc
 
 
@@ -261,16 +264,22 @@ async def generate_one_layer(
             cache_hit = True
 
     if not cache_hit:
-        attempts = _RETRY_BUDGET + 1  # default for exhausted-budget path
         try:
             rgb_bytes, attempts = await _call_provider_with_retry(
                 provider, prompt, layer.name,
             )
         except (AssertionError, TypeError, asyncio.CancelledError):
+            # AssertionError/TypeError are Exception subclasses — without
+            # this clause they'd fall into the bare `except Exception` below
+            # and be silently converted to a failed LayerOutcome.
+            # CancelledError is BaseException (Python 3.9+) so it wouldn't
+            # be caught below, but we list it explicitly for clarity and
+            # forward-compat with older Pythons.
             raise
-        except Exception:
+        except Exception as exc:
             return LayerOutcome(
-                ok=False, info=layer, rgba_path="", attempts=attempts,
+                ok=False, info=layer, rgba_path="",
+                attempts=getattr(exc, "attempts", 1),
             )
 
         rgb = np.array(Image.open(io.BytesIO(rgb_bytes)).convert("RGB"))
