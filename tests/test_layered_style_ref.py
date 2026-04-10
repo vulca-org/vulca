@@ -9,7 +9,9 @@ from PIL import Image
 from vulca.layers.keying import CanvasSpec
 from vulca.layers.keying.luminance import LuminanceKeying
 from vulca.layers.layered_cache import LayerCache
-from vulca.layers.layered_generate import LayerOutcome, generate_one_layer, layered_generate
+from vulca.layers.layered_generate import (
+    LayerOutcome, generate_one_layer, layered_generate, _RETRY_BUDGET,
+)
 from vulca.layers.layered_prompt import TraditionAnchor
 from vulca.layers.types import LayerInfo
 
@@ -246,8 +248,10 @@ def test_user_reference_chains_through_first_layer(tmp_path):
 def test_first_layer_failure_degrades_gracefully(tmp_path):
     """plan[0] fails → remaining layers generate without reference (style_ref = "")."""
 
+    total_attempts = _RETRY_BUDGET + 1  # retries + initial attempt
+
     class _FailFirstProvider:
-        """Fails the first call, succeeds on subsequent calls."""
+        """Fails enough calls to exhaust retry budget, succeeds after."""
         id = "fake"
         model = "fake-1"
 
@@ -258,7 +262,7 @@ def test_first_layer_failure_degrades_gracefully(tmp_path):
         async def generate(self, *, prompt, raw_prompt=False, **kw):
             self.calls.append({"prompt": prompt, "raw_prompt": raw_prompt, **kw})
             self._call_count += 1
-            if self._call_count <= 3:  # 3 retries for the first layer
+            if self._call_count <= total_attempts:
                 raise RuntimeError("simulated first-layer failure")
             png_bytes = _make_rgb_png()
             return type("R", (), {"image_b64": base64.b64encode(png_bytes).decode()})()
@@ -267,7 +271,7 @@ def test_first_layer_failure_degrades_gracefully(tmp_path):
     res = asyncio.run(layered_generate(**_gen_args(tmp_path, provider)))
     assert len(res.failed) >= 1
     assert any(f.role == "纸" for f in res.failed)
-    for call in provider.calls[3:]:  # calls after the first layer's retries
+    for call in provider.calls[total_attempts:]:  # calls after first layer's retries
         ref = call.get("reference_image_b64", "")
         assert ref == "", "Expected no reference after first layer failure"
 
@@ -307,6 +311,17 @@ def test_style_ref_uses_raw_rgb_not_keyed_rgba(tmp_path):
     assert ref_img.mode == "RGB", f"Expected RGB style_ref, got {ref_img.mode}"
 
 
+def _fake_trad():
+    """Minimal tradition object for native path tests."""
+    return type("T", (), {
+        "layerability": "native",
+        "canvas_color": "#ffffff",
+        "canvas_description": "white",
+        "style_keywords": "",
+        "key_strategy": "luminance",
+    })()
+
+
 def test_generate_layers_native_passes_reference(tmp_path, monkeypatch):
     """_generate_layers_native resolves and passes reference_image_b64 to layered_generate."""
     import vulca.layers.layered_generate as lg_mod
@@ -343,19 +358,7 @@ def test_generate_layers_native_passes_reference(tmp_path, monkeypatch):
             self._data[key] = value
 
     node = LayerGenerateNode()
-
-    monkeypatch.setattr(
-        "vulca.cultural.loader.get_tradition",
-        lambda name: type("T", (), {
-            "layerability": "native",
-            "canvas_color": "#ffffff",
-            "canvas_description": "white",
-            "style_keywords": "",
-            "key_strategy": "luminance",
-        })(),
-    )
-
-    asyncio.run(node._generate_layers_native(_plan_3(), FakeCtx(), None))
+    asyncio.run(node._generate_layers_native(_plan_3(), FakeCtx(), _fake_trad()))
     assert captured_kwargs.get("reference_image_b64") == user_ref
 
 
@@ -397,19 +400,7 @@ def test_generate_layers_native_context_priority(tmp_path, monkeypatch):
             self._data[key] = value
 
     node = LayerGenerateNode()
-
-    monkeypatch.setattr(
-        "vulca.cultural.loader.get_tradition",
-        lambda name: type("T", (), {
-            "layerability": "native",
-            "canvas_color": "#ffffff",
-            "canvas_description": "white",
-            "style_keywords": "",
-            "key_strategy": "luminance",
-        })(),
-    )
-
-    asyncio.run(node._generate_layers_native(_plan_3(), FakeCtx(), None))
+    asyncio.run(node._generate_layers_native(_plan_3(), FakeCtx(), _fake_trad()))
     assert captured_kwargs.get("reference_image_b64") == top_level_ref
 
 

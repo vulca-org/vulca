@@ -212,9 +212,8 @@ def _obtain_validation_report(
     return report
 
 
-def _apply_alpha(rgb_bytes: bytes, alpha: np.ndarray) -> Image.Image:
-    img = Image.open(io.BytesIO(rgb_bytes)).convert("RGB")
-    rgb = np.array(img)
+def _apply_alpha(rgb: np.ndarray, alpha: np.ndarray) -> Image.Image:
+    """Combine an RGB numpy array with an alpha mask into an RGBA PIL image."""
     assert rgb.shape[:2] == alpha.shape, (
         f"alpha shape {alpha.shape} does not match rgb shape {rgb.shape[:2]}; "
         "keying ran on a different-sized image than the provider returned"
@@ -298,7 +297,7 @@ async def generate_one_layer(
 
         rgb = np.array(_pil_rgb)
         alpha = keying.extract_alpha(rgb, canvas)
-        rgba_img = _apply_alpha(rgb_bytes, alpha)
+        rgba_img = _apply_alpha(rgb, alpha)
         Path(output_dir).mkdir(parents=True, exist_ok=True)
         rgba_img.save(out_path)
         cache_put_ok = cache is None
@@ -326,7 +325,6 @@ async def generate_one_layer(
         return LayerOutcome(
             ok=False, info=layer, rgba_path="", attempts=attempts,
             validation=report, cache_hit=cache_hit,
-            raw_rgb_bytes=raw_rgb,
         )
 
     return LayerOutcome(
@@ -353,6 +351,9 @@ async def layered_generate(
     reference_image_b64: str = "",
 ) -> LayeredResult:
     """Generate layers with style-ref anchoring: first layer serial, rest parallel."""
+    if not plan:
+        return LayeredResult()
+
     keying = get_keying_strategy(key_strategy_name)
     cache = LayerCache(output_dir, enabled=cache_enabled)
     sem = asyncio.Semaphore(parallelism)
@@ -372,9 +373,6 @@ async def layered_generate(
         width=width,
         height=height,
     )
-
-    if not plan:
-        return LayeredResult()
 
     # --- Phase 1: Generate first layer serially (style anchor) ---
     first = plan[0]

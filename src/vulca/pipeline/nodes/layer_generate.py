@@ -107,13 +107,32 @@ class LayerGenerateNode(PipelineNode):
     ) -> list[LayerResult]:
         output_dir = ctx.get("output_dir") or tempfile.mkdtemp(prefix="vulca_layered_")
         Path(output_dir).mkdir(parents=True, exist_ok=True)
-        style_ref = ctx.get("composite_b64") or ctx.get("image_b64") or ""
+
+        # v0.14: unified reference resolution — same chain as native path.
+        style_ref = (
+            ctx.get("reference_image_b64")
+            or ctx.get("composite_b64")
+            or ctx.get("image_b64")
+            or ""
+        )
+        if not style_ref:
+            node_params = ctx.get("node_params") or {}
+            gen_params = node_params.get("generate") or {}
+            style_ref = gen_params.get("reference_image_b64", "")
 
         # Phase 1: Generate first layer (provides style reference for others)
         first = layers[0]
         first_result = await self._generate_single(first, ctx, output_dir, style_ref or None)
         if first_result.image_path and not style_ref:
-            style_ref = _path_to_b64(first_result.image_path)
+            # Derive style_ref from first layer output, normalized to RGB.
+            # The saved file may be RGBA (after _apply_mask for non-bg layers).
+            try:
+                _img = Image.open(first_result.image_path).convert("RGB")
+                _buf = io.BytesIO()
+                _img.save(_buf, format="PNG")
+                style_ref = base64.b64encode(_buf.getvalue()).decode()
+            except Exception as exc:
+                logger.warning("failed to derive style_ref from %s: %s", first_result.image_path, exc)
 
         if len(layers) <= 1:
             return [first_result]
