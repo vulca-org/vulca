@@ -35,7 +35,7 @@ curl http://127.0.0.1:8188/system_stats
 ```bash
 brew install ollama
 ollama serve &             # Start Ollama server (runs in background)
-ollama pull gemma3:12b     # ~8GB, includes vision encoder
+ollama pull gemma4          # ~9.6GB, multimodal vision, 128K context
 
 # Verify
 curl http://localhost:11434/api/tags
@@ -45,7 +45,7 @@ curl http://localhost:11434/api/tags
 
 ```bash
 export VULCA_IMAGE_BASE_URL=http://localhost:8188
-export VULCA_VLM_MODEL=ollama_chat/gemma3:12b
+export VULCA_VLM_MODEL=ollama_chat/gemma4
 export OLLAMA_API_BASE=http://localhost:11434
 ```
 

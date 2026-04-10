@@ -16,7 +16,7 @@ def test_resolve_api_key_returns_local_for_ollama():
     inp = PipelineInput(subject="test", provider="comfyui")
     env = {k: v for k, v in os.environ.items()
            if k not in {"GEMINI_API_KEY", "GOOGLE_API_KEY"}}
-    env["VULCA_VLM_MODEL"] = "ollama_chat/gemma3:12b"
+    env["VULCA_VLM_MODEL"] = "ollama_chat/gemma4"
     with patch.dict(os.environ, env, clear=True):
         result = _resolve_api_key(inp)
         assert result == "local"
@@ -26,7 +26,7 @@ def test_engine_init_no_raise_for_ollama():
     """Engine() does not raise ValueError when VULCA_VLM_MODEL is ollama-based."""
     env = {k: v for k, v in os.environ.items()
            if k not in {"GEMINI_API_KEY", "GOOGLE_API_KEY"}}
-    env["VULCA_VLM_MODEL"] = "ollama_chat/gemma3:12b"
+    env["VULCA_VLM_MODEL"] = "ollama_chat/gemma4"
     with patch.dict(os.environ, env, clear=True):
         # Reset singleton
         import vulca._engine as eng_mod
@@ -42,7 +42,7 @@ def test_resolve_api_key_explicit_key_takes_precedence():
     from vulca.pipeline.types import PipelineInput
 
     inp = PipelineInput(subject="test", provider="comfyui", api_key="my-explicit-key")
-    with patch.dict(os.environ, {"VULCA_VLM_MODEL": "ollama_chat/gemma3:12b"}, clear=False):
+    with patch.dict(os.environ, {"VULCA_VLM_MODEL": "ollama_chat/gemma4"}, clear=False):
         result = _resolve_api_key(inp)
         assert result == "my-explicit-key"
 
@@ -78,7 +78,7 @@ async def test_score_image_passes_api_base_for_ollama():
     mock_response.choices[0].finish_reason = "stop"
 
     with patch.dict(os.environ, {
-        "VULCA_VLM_MODEL": "ollama_chat/gemma3:12b",
+        "VULCA_VLM_MODEL": "ollama_chat/gemma4",
         "OLLAMA_API_BASE": "http://localhost:11434",
     }):
         with patch("litellm.acompletion", new_callable=AsyncMock, return_value=mock_response) as mock_call:
@@ -145,7 +145,7 @@ async def test_score_image_api_base_default_fallback():
     mock_response.choices[0].finish_reason = "stop"
 
     env = {k: v for k, v in os.environ.items() if k != "OLLAMA_API_BASE"}
-    env["VULCA_VLM_MODEL"] = "ollama_chat/gemma3:12b"
+    env["VULCA_VLM_MODEL"] = "ollama_chat/gemma4"
     with patch.dict(os.environ, env, clear=True):
         with patch("litellm.acompletion", new_callable=AsyncMock, return_value=mock_response) as mock_call:
             from vulca._vlm import score_image
