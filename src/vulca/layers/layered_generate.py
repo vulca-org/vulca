@@ -27,7 +27,7 @@ from vulca.layers.validate import ValidationReport, ValidationWarning, validate_
 
 logger = logging.getLogger("vulca.layers.layered_generate")
 
-SCHEMA_VERSION = "0.13"
+SCHEMA_VERSION = "0.14"
 
 _RETRY_BUDGET = 2  # additional attempts after the first; 3 total.
 
