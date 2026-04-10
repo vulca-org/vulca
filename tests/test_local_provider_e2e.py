@@ -126,3 +126,146 @@ async def test_score_image_no_api_base_for_gemini():
 
             call_kwargs = mock_call.call_args[1]
             assert "api_base" not in call_kwargs
+
+
+import asyncio
+import base64
+import io
+
+# ---------------------------------------------------------------------------
+# Live integration tests — require running ComfyUI + Ollama
+# ---------------------------------------------------------------------------
+
+
+def _decode_and_validate_png(image_b64: str) -> bytes:
+    """Decode base64, assert valid PNG with dimensions > 0 and size > 10KB."""
+    raw = base64.b64decode(image_b64)
+    assert raw[:8] == b'\x89PNG\r\n\x1a\n', "Not a valid PNG"
+    assert len(raw) > 10_000, f"Image too small: {len(raw)} bytes"
+    # Validate dimensions > 0
+    from PIL import Image
+    img = Image.open(io.BytesIO(raw))
+    assert img.width > 0 and img.height > 0, f"Invalid dimensions: {img.size}"
+    return raw
+
+
+def _require_local_env():
+    """Skip test if local provider env vars are not set."""
+    model = os.environ.get("VULCA_VLM_MODEL", "")
+    if not model.startswith("ollama"):
+        pytest.skip("VULCA_VLM_MODEL not set to ollama — set env vars per docs/local-provider-setup.md")
+
+
+@pytest.mark.local_provider
+@pytest.mark.asyncio
+async def test_comfyui_single_create_xieyi():
+    """ComfyUI generates a chinese_xieyi image — valid PNG, >10KB."""
+    _require_local_env()
+    from vulca.providers import get_image_provider
+
+    provider = get_image_provider("comfyui")
+    result = await provider.generate(
+        "水墨山水，雨后春山，松间茅屋",
+        tradition="chinese_xieyi",
+        width=1024,
+        height=1024,
+    )
+    assert result.image_b64
+    _decode_and_validate_png(result.image_b64)
+
+
+@pytest.mark.local_provider
+@pytest.mark.asyncio
+async def test_comfyui_single_create_western():
+    """ComfyUI generates a western_academic image — valid PNG, >10KB."""
+    _require_local_env()
+    from vulca.providers import get_image_provider
+
+    provider = get_image_provider("comfyui")
+    result = await provider.generate(
+        "Impressionist garden at golden hour, oil on canvas",
+        tradition="western_academic",
+        width=1024,
+        height=1024,
+    )
+    assert result.image_b64
+    _decode_and_validate_png(result.image_b64)
+
+
+@pytest.mark.local_provider
+@pytest.mark.asyncio
+async def test_ollama_vlm_score():
+    """Ollama scores an image via score_image() — returns valid L1-L5."""
+    _require_local_env()
+    from vulca._vlm import score_image
+    from PIL import Image
+
+    img = Image.new("RGB", (64, 64), color=(180, 60, 40))
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    img_b64 = base64.b64encode(buf.getvalue()).decode()
+
+    result = await score_image(
+        img_b64, "image/png", "test artwork", "default", "local"
+    )
+    assert "error" not in result, f"VLM scoring failed: {result.get('error')}"
+    for level in ("L1", "L2", "L3", "L4", "L5"):
+        score = result[level]
+        assert 0.0 <= score <= 1.0, f"{level} score out of range: {score}"
+    rationales = [result.get(f"L{i}_rationale", "") for i in range(1, 6)]
+    assert any(r for r in rationales), "All rationales are empty"
+
+
+@pytest.mark.local_provider
+@pytest.mark.asyncio
+async def test_local_e2e_create_then_evaluate():
+    """Full chain: ComfyUI create → Ollama evaluate → valid scores."""
+    _require_local_env()
+    from vulca.providers import get_image_provider
+    from vulca._vlm import score_image
+
+    provider = get_image_provider("comfyui")
+    gen_result = await provider.generate(
+        "水墨山水，雨后春山",
+        tradition="chinese_xieyi",
+        width=1024,
+        height=1024,
+    )
+    assert gen_result.image_b64
+    _decode_and_validate_png(gen_result.image_b64)
+
+    eval_result = await score_image(
+        gen_result.image_b64, "image/png",
+        "ink wash landscape", "chinese_xieyi", "local",
+    )
+    assert "error" not in eval_result, f"VLM scoring failed: {eval_result.get('error')}"
+    for level in ("L1", "L2", "L3", "L4", "L5"):
+        score = eval_result[level]
+        assert 0.0 <= score <= 1.0, f"{level} score out of range: {score}"
+
+
+@pytest.mark.local_provider
+@pytest.mark.asyncio
+async def test_local_pipeline_execute_e2e():
+    """Full pipeline execute(): ComfyUI + Ollama through pipeline.engine.execute()."""
+    _require_local_env()
+    from vulca.pipeline.engine import execute
+    from vulca.pipeline.templates import DEFAULT
+    from vulca.pipeline.types import PipelineInput
+
+    inp = PipelineInput(
+        subject="水墨山水，雨后春山",
+        provider="comfyui",
+        tradition="chinese_xieyi",
+        max_rounds=1,
+    )
+    output = await execute(DEFAULT, inp, checkpoint=False)
+
+    assert output.status == "complete", f"Pipeline status: {output.status}"
+    if output.rounds:
+        last = output.rounds[-1]
+        scores = last.get("scores", {})
+        if scores:
+            for level in ("L1", "L2", "L3", "L4", "L5"):
+                if level in scores:
+                    assert 0.0 <= scores[level] <= 1.0
