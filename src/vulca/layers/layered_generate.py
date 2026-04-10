@@ -237,6 +237,7 @@ async def generate_one_layer(
     cache: LayerCache | None = None,
     width: int = 0,
     height: int = 0,
+    reference_image_b64: str = "",
 ) -> LayerOutcome:
     prompt = build_anchored_layer_prompt(
         layer, anchor=anchor, sibling_roles=sibling_roles,
@@ -260,6 +261,7 @@ async def generate_one_layer(
     out_path = str(Path(output_dir) / f"{layer.name}.png")
     cache_hit = False
     attempts = 1  # default: cache hit reports 1 (one layer operation completed)
+    raw_rgb: bytes | None = None
 
     if cache is not None:
         cached = cache.get(cache_key)
@@ -272,6 +274,7 @@ async def generate_one_layer(
         try:
             rgb_bytes, attempts = await _call_provider_with_retry(
                 provider, prompt, layer.name,
+                reference_image_b64=reference_image_b64,
             )
         except (AssertionError, TypeError, asyncio.CancelledError):
             # AssertionError/TypeError are Exception subclasses — without
@@ -287,6 +290,7 @@ async def generate_one_layer(
                 attempts=getattr(exc, "attempts", 1),
             )
 
+        raw_rgb = rgb_bytes
         rgb = np.array(Image.open(io.BytesIO(rgb_bytes)).convert("RGB"))
         alpha = keying.extract_alpha(rgb, canvas)
         rgba_img = _apply_alpha(rgb_bytes, alpha)
@@ -317,11 +321,13 @@ async def generate_one_layer(
         return LayerOutcome(
             ok=False, info=layer, rgba_path="", attempts=attempts,
             validation=report, cache_hit=cache_hit,
+            raw_rgb_bytes=raw_rgb,
         )
 
     return LayerOutcome(
         ok=True, info=layer, rgba_path=out_path,
         attempts=attempts, validation=report, cache_hit=cache_hit,
+        raw_rgb_bytes=raw_rgb,
     )
 
 

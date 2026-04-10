@@ -132,3 +132,41 @@ def test_raw_rgb_bytes_populated_on_fresh_generation(tmp_path):
     # Verify it's valid PNG
     img = Image.open(io.BytesIO(out.raw_rgb_bytes))
     assert img.size[0] > 0
+
+
+def test_generate_one_layer_passes_reference(tmp_path):
+    """generate_one_layer passes reference_image_b64 through to provider."""
+    provider = _RecordingProvider()
+    ref = base64.b64encode(_make_rgb_png()).decode()
+    out = asyncio.run(generate_one_layer(
+        layer=LayerInfo(name="test", description="test", z_index=0,
+                        content_type="subject", tradition_role="test"),
+        anchor=_anchor(),
+        canvas=CanvasSpec.from_hex("#ffffff"),
+        keying=LuminanceKeying(),
+        provider=provider,
+        sibling_roles=[],
+        output_dir=str(tmp_path),
+        reference_image_b64=ref,
+    ))
+    assert out.ok
+    assert provider.calls[0].get("reference_image_b64") == ref
+
+
+def test_raw_rgb_bytes_none_on_cache_hit(tmp_path):
+    """raw_rgb_bytes is None on cache hit (cache stores keyed RGBA only)."""
+    provider = _RecordingProvider()
+    cache = LayerCache(tmp_path, enabled=True)
+    layer = LayerInfo(name="test", description="test", z_index=0,
+                      content_type="subject", tradition_role="test")
+    kw = dict(
+        layer=layer, anchor=_anchor(), canvas=CanvasSpec.from_hex("#ffffff"),
+        keying=LuminanceKeying(), provider=provider, sibling_roles=[],
+        output_dir=str(tmp_path), cache=cache,
+    )
+    out1 = asyncio.run(generate_one_layer(**kw))
+    assert out1.raw_rgb_bytes is not None
+
+    out2 = asyncio.run(generate_one_layer(**kw))
+    assert out2.cache_hit
+    assert out2.raw_rgb_bytes is None
