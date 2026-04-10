@@ -128,6 +128,40 @@ async def test_score_image_no_api_base_for_gemini():
             assert "api_base" not in call_kwargs
 
 
+@pytest.mark.asyncio
+async def test_score_image_api_base_default_fallback():
+    """score_image() uses default localhost:11434 when OLLAMA_API_BASE is not set."""
+    from unittest.mock import AsyncMock, MagicMock
+
+    mock_response = MagicMock()
+    mock_response.choices = [MagicMock()]
+    mock_response.choices[0].message.content = """
+<scoring>
+{"L1": 0.7, "L2": 0.6, "L3": 0.8, "L4": 0.5, "L5": 0.6,
+ "L1_rationale": "test", "L2_rationale": "", "L3_rationale": "",
+ "L4_rationale": "", "L5_rationale": ""}
+</scoring>
+"""
+    mock_response.choices[0].finish_reason = "stop"
+
+    env = {k: v for k, v in os.environ.items() if k != "OLLAMA_API_BASE"}
+    env["VULCA_VLM_MODEL"] = "ollama_chat/gemma3:12b"
+    with patch.dict(os.environ, env, clear=True):
+        with patch("litellm.acompletion", new_callable=AsyncMock, return_value=mock_response) as mock_call:
+            from vulca._vlm import score_image
+            import base64
+            pixel = base64.b64encode(
+                b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01'
+                b'\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00'
+                b'\x00\x00\x0cIDATx\x9cc\xf8\x0f\x00\x00\x01\x01\x00'
+                b'\x05\x18\xd8N\x00\x00\x00\x00IEND\xaeB`\x82'
+            ).decode()
+            await score_image(pixel, "image/png", "test", "default", "local")
+
+            call_kwargs = mock_call.call_args[1]
+            assert call_kwargs.get("api_base") == "http://localhost:11434"
+
+
 import asyncio
 import base64
 import io
@@ -264,7 +298,7 @@ async def test_local_pipeline_execute_e2e():
     assert output.status == "complete", f"Pipeline status: {output.status}"
     if output.rounds:
         last = output.rounds[-1]
-        scores = last.get("scores", {})
+        scores = last.dimension_scores
         if scores:
             for level in ("L1", "L2", "L3", "L4", "L5"):
                 if level in scores:

@@ -34,7 +34,8 @@ curl http://127.0.0.1:8188/system_stats
 
 ```bash
 brew install ollama
-ollama pull gemma3:12b    # ~8GB, includes vision encoder
+ollama serve &             # Start Ollama server (runs in background)
+ollama pull gemma3:12b     # ~8GB, includes vision encoder
 
 # Verify
 curl http://localhost:11434/api/tags
