@@ -401,10 +401,16 @@ async def layered_generate(
     if first_outcome.ok and first_outcome.raw_rgb_bytes:
         style_ref = base64.b64encode(first_outcome.raw_rgb_bytes).decode()
     elif first_outcome.ok and first_outcome.rgba_path:
-        _img = Image.open(first_outcome.rgba_path).convert("RGB")
-        _buf = io.BytesIO()
-        _img.save(_buf, format="PNG")
-        style_ref = base64.b64encode(_buf.getvalue()).decode()
+        try:
+            _img = Image.open(first_outcome.rgba_path).convert("RGB")
+            _buf = io.BytesIO()
+            _img.save(_buf, format="PNG")
+            style_ref = base64.b64encode(_buf.getvalue()).decode()
+        except Exception as exc:
+            logger.warning(
+                "failed to derive style_ref from cached first layer %s: %s",
+                first_outcome.rgba_path, exc,
+            )
 
     # --- Phase 2: Generate remaining layers in parallel with style_ref ---
     remaining = plan[1:]
