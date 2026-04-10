@@ -387,9 +387,16 @@ async def layered_generate(
     # Derive style_ref from first layer's RAW output (before keying).
     # Using keyed RGBA would pass a partially-transparent image as style
     # reference, degrading provider output quality (P1 review finding).
+    # Fallback: on cache hit raw_rgb_bytes is None — read cached RGBA,
+    # strip alpha, re-encode as RGB. Slightly lossy but RGB data intact.
     style_ref = ""
     if first_outcome.ok and first_outcome.raw_rgb_bytes:
         style_ref = base64.b64encode(first_outcome.raw_rgb_bytes).decode()
+    elif first_outcome.ok and first_outcome.rgba_path:
+        _img = Image.open(first_outcome.rgba_path).convert("RGB")
+        _buf = io.BytesIO()
+        _img.save(_buf, format="PNG")
+        style_ref = base64.b64encode(_buf.getvalue()).decode()
 
     # --- Phase 2: Generate remaining layers in parallel with style_ref ---
     remaining = plan[1:]

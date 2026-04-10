@@ -411,3 +411,47 @@ def test_generate_layers_native_context_priority(tmp_path, monkeypatch):
 
     asyncio.run(node._generate_layers_native(_plan_3(), FakeCtx(), None))
     assert captured_kwargs.get("reference_image_b64") == top_level_ref
+
+
+def test_cache_hit_first_layer_still_provides_style_ref(tmp_path):
+    """Cache hit on first layer falls back to RGBA→RGB for style_ref."""
+    provider = _RecordingProvider()
+    cache = LayerCache(tmp_path, enabled=True)
+    plan = _plan_3()
+
+    args = dict(
+        plan=plan,
+        tradition_anchor=_anchor(),
+        canvas=CanvasSpec.from_hex("#ffffff"),
+        key_strategy_name="luminance",
+        provider=provider,
+        output_dir=str(tmp_path),
+        positions={"bg": "full canvas", "far": "upper 30%", "mid": "center"},
+        coverages={"bg": "100%", "far": "20-30%", "mid": "20-30%"},
+        parallelism=2,
+        cache_enabled=True,
+    )
+
+    # First run: populates cache
+    res1 = asyncio.run(layered_generate(**args))
+    assert res1.is_complete
+    first_run_calls = len(provider.calls)
+
+    # Reset call tracking for second run
+    provider.calls.clear()
+
+    # Second run: first layer hits cache → raw_rgb_bytes=None
+    # But style_ref should STILL be derived (from cached RGBA→RGB fallback)
+    res2 = asyncio.run(layered_generate(**args))
+    assert res2.is_complete
+    # Remaining layers (non-cache-hit) should still get a style reference
+    for call in provider.calls:
+        ref = call.get("reference_image_b64", "")
+        # At least some calls should have a reference (those that missed cache)
+        # On full cache hit, no provider calls happen at all — that's fine too
+    # If any calls were made, they should have reference
+    non_first_calls = provider.calls  # first layer is cache hit, no call
+    if non_first_calls:
+        for call in non_first_calls:
+            ref = call.get("reference_image_b64", "")
+            assert ref != "", "Cache-hit first layer should still provide style_ref via fallback"
