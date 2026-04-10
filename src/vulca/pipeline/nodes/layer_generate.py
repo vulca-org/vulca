@@ -185,6 +185,20 @@ class LayerGenerateNode(PipelineNode):
         except Exception:
             canvas_w = canvas_h = 1024
 
+        # v0.14 Defense 3: resolve reference_image_b64 for style anchoring.
+        # Priority: top-level context (multi-round coherence, engine.py:280)
+        # → fallback to node_params (create.py user reference).
+        ref_b64 = (
+            ctx.get("reference_image_b64")
+            or ctx.get("composite_b64")
+            or ctx.get("image_b64")
+            or ""
+        )
+        if not ref_b64:
+            node_params = ctx.get("node_params") or {}
+            gen_params = node_params.get("generate") or {}
+            ref_b64 = gen_params.get("reference_image_b64", "")
+
         result = await lg_mod.layered_generate(
             plan=layers,
             tradition_anchor=anchor,
@@ -198,6 +212,7 @@ class LayerGenerateNode(PipelineNode):
             cache_enabled=cache_enabled,
             width=canvas_w,
             height=canvas_h,
+            reference_image_b64=ref_b64,
         )
 
         out: list[LayerResult] = []

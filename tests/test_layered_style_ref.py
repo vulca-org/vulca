@@ -305,3 +305,109 @@ def test_style_ref_uses_raw_rgb_not_keyed_rgba(tmp_path):
     ref_bytes = base64.b64decode(ref_b64)
     ref_img = Image.open(io.BytesIO(ref_bytes))
     assert ref_img.mode == "RGB", f"Expected RGB style_ref, got {ref_img.mode}"
+
+
+def test_generate_layers_native_passes_reference(tmp_path, monkeypatch):
+    """_generate_layers_native resolves and passes reference_image_b64 to layered_generate."""
+    import vulca.layers.layered_generate as lg_mod
+    from vulca.pipeline.nodes.layer_generate import LayerGenerateNode
+
+    captured_kwargs = {}
+
+    async def _capture_lg(**kwargs):
+        captured_kwargs.update(kwargs)
+        return lg_mod.LayeredResult()
+
+    monkeypatch.setattr(lg_mod, "layered_generate", _capture_lg)
+
+    user_ref = base64.b64encode(_make_rgb_png()).decode()
+
+    class FakeCtx:
+        tradition = "default"
+        provider = "mock"
+        api_key = ""
+        round_num = 1
+        image_provider = _RecordingProvider()
+
+        def __init__(self):
+            self._data = {
+                "output_dir": str(tmp_path),
+                "size": "32x32",
+                "node_params": {"generate": {"reference_image_b64": user_ref}},
+            }
+
+        def get(self, key, default=None):
+            return self._data.get(key, default)
+
+        def set(self, key, value):
+            self._data[key] = value
+
+    node = LayerGenerateNode()
+
+    monkeypatch.setattr(
+        "vulca.cultural.loader.get_tradition",
+        lambda name: type("T", (), {
+            "layerability": "native",
+            "canvas_color": "#ffffff",
+            "canvas_description": "white",
+            "style_keywords": "",
+            "key_strategy": "luminance",
+        })(),
+    )
+
+    asyncio.run(node._generate_layers_native(_plan_3(), FakeCtx(), None))
+    assert captured_kwargs.get("reference_image_b64") == user_ref
+
+
+def test_generate_layers_native_context_priority(tmp_path, monkeypatch):
+    """Top-level reference_image_b64 takes priority over node_params fallback."""
+    import vulca.layers.layered_generate as lg_mod
+    from vulca.pipeline.nodes.layer_generate import LayerGenerateNode
+
+    captured_kwargs = {}
+
+    async def _capture_lg(**kwargs):
+        captured_kwargs.update(kwargs)
+        return lg_mod.LayeredResult()
+
+    monkeypatch.setattr(lg_mod, "layered_generate", _capture_lg)
+
+    top_level_ref = "TOP_LEVEL_REF"
+    node_params_ref = "NODE_PARAMS_REF"
+
+    class FakeCtx:
+        tradition = "default"
+        provider = "mock"
+        api_key = ""
+        round_num = 1
+        image_provider = _RecordingProvider()
+
+        def __init__(self):
+            self._data = {
+                "output_dir": str(tmp_path),
+                "size": "32x32",
+                "reference_image_b64": top_level_ref,
+                "node_params": {"generate": {"reference_image_b64": node_params_ref}},
+            }
+
+        def get(self, key, default=None):
+            return self._data.get(key, default)
+
+        def set(self, key, value):
+            self._data[key] = value
+
+    node = LayerGenerateNode()
+
+    monkeypatch.setattr(
+        "vulca.cultural.loader.get_tradition",
+        lambda name: type("T", (), {
+            "layerability": "native",
+            "canvas_color": "#ffffff",
+            "canvas_description": "white",
+            "style_keywords": "",
+            "key_strategy": "luminance",
+        })(),
+    )
+
+    asyncio.run(node._generate_layers_native(_plan_3(), FakeCtx(), None))
+    assert captured_kwargs.get("reference_image_b64") == top_level_ref
