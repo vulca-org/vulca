@@ -1,5 +1,66 @@
 # Changelog
 
+## [0.14.0] - 2026-04-09
+
+### Defense 3 — A-path Reference Image Fidelity
+- **Serial-first orchestration:** First layer generates serially (with optional user reference image), its raw RGB output becomes `style_ref` for remaining parallel layers. Cross-layer style consistency without requiring a user-provided reference.
+- **Style anchoring:** Remaining layers receive the first layer's output as `reference_image_b64` via `asyncio.gather`, ensuring visual coherence across the composition.
+- **Graceful degradation:** If first layer fails, remaining layers proceed without reference (same as v0.13 behavior). Corrupt cached files logged and skipped.
+- **Cache-hit fallback:** When first layer is a cache hit (`raw_rgb_bytes=None`), reads cached RGBA, converts to RGB, and uses that as `style_ref`.
+- **Pipeline integration:** `_generate_layers_native` resolves reference from context with priority chain (top-level `reference_image_b64` > `composite_b64` > `image_b64` > `node_params`). Legacy B-path unified with same resolution chain.
+- **`LayerOutcome.raw_rgb_bytes`:** New field preserves pre-keyed RGB bytes on fresh generation for accurate style reference derivation.
+- **SCHEMA_VERSION "0.14":** Layer cache from v0.13 is invalidated on first run.
+
+### Infra
+- **mypy advisory config:** 96/135 modules checked, 39 overridden. `pyproject.toml` `[tool.mypy]`.
+- **Test baseline cleanup:** 18 pre-existing failures repaired (importorskip guards, flaky event-loop fix, stale release test removed).
+- **Retry exception map:** `docs/retry-exception-map.md` documents the two-layer retry architecture and worst-case 12-call amplification.
+
+### Code quality
+- `_apply_alpha` accepts numpy array directly (eliminates redundant PIL decode cycle).
+- Empty plan guard before resource allocation.
+- Pillow 13 deprecation fix (`mode=` parameter removed from `Image.fromarray`).
+
+### Tests
+- 18 new tests in `test_layered_style_ref.py` covering serial ordering, style_ref passthrough, user reference chaining, graceful degradation, single-layer plans, cache-hit fallback, empty plans, RGB normalization.
+
+## [0.13.3] - 2026-04-09
+
+### Cleanup Sweep
+- **`_call_provider_with_retry`:** Extracted from `generate_one_layer` as standalone function with retry budget, jitter backoff, and exception classification.
+- **`_obtain_validation_report`:** Extracted validation/sidecar logic into standalone function with three-branch flow (sidecar hit, sidecar miss, fresh validation).
+- **`provider_capabilities()` lookup:** New function in `vulca.providers` for coarse capability inspection without instantiating providers.
+- **`ImageProvider.capabilities`** defaults to `frozenset()` on the Protocol.
+- **Mock literal elimination:** All `"mock"` string comparisons in pipeline replaced with `"raw_rgba" in capabilities` checks.
+- **ValidationReport sidecar round-trip test:** Contract test for serialize/deserialize cycle.
+
+## [0.13.2] - 2026-04-08
+
+### A-path Hardening (P2 Cleanup)
+
+#### Correctness
+- `_apply_alpha` asserts shape match between RGB and alpha (no silent resize).
+- `LayerCache.put` atomic via `tempfile + os.replace` (no partial writes on crash).
+- Tier-2 keying loader wraps `ModuleNotFoundError`/`AttributeError` → `ValueError`.
+- `AssertionError`/`TypeError` propagate out of `layered_generate` orchestration (not silently converted to `generation_failed`).
+
+#### Performance
+- **Validation sidecar cache:** `<key>.report.json` stored alongside keyed PNGs. Cache hits skip `validate_layer_alpha` entirely.
+- **Cache write reuse:** `cache.put` reads disk bytes from `rgba_img.save(out_path)` instead of re-encoding through PIL.
+
+#### Retry
+- In-process retry budget=2 (3 total attempts) with full-jitter backoff `random.uniform(0, 0.5 * 2**attempt)`.
+- `AssertionError`/`TypeError`/`asyncio.CancelledError` propagate immediately (not retried).
+- `LayerFailure.reason` is now `Literal["generation_failed", "validation_failed"]`.
+
+#### Provider capabilities
+- `ImageProvider.capabilities: frozenset[str]` — real providers declare `{'raw_rgba'}`, mock declares `frozenset()`.
+- `_provider_supports_native` queries capabilities (no `"mock"` string match).
+
+#### Manifest & retry polish
+- `layer_extras` whitelist (8 keys, raises on unknown).
+- `retry_layers` preserves non-validation manifest warnings and drops stale validation warnings for retried layers.
+
 ## [0.13.1] - 2026-04-08
 
 ### Fixes (codex review nice-to-haves from v0.13.0)

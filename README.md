@@ -3,7 +3,7 @@
 [![PyPI](https://img.shields.io/pypi/v/vulca.svg)](https://pypi.org/project/vulca/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://pypi.org/project/vulca/)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-green.svg)](https://github.com/vulca-org/vulca/blob/main/LICENSE)
-[![Tests](https://img.shields.io/badge/tests-1322%20passing-brightgreen.svg)](https://github.com/vulca-org/vulca)
+[![Tests](https://img.shields.io/badge/tests-1252%20passing-brightgreen.svg)](https://github.com/vulca-org/vulca)
 [![MCP Tools](https://img.shields.io/badge/MCP_tools-21-blueviolet.svg)](https://github.com/vulca-org/vulca-plugin)
 
 **AI-native creation intelligence for cultural art.** Generate, evaluate, decompose, and evolve visual art across 13 cultural traditions. L1-L5 multi-dimensional scoring, structured layer generation, self-evolving weights — all from one `pip install`.
@@ -70,11 +70,15 @@ vulca create "Tea packaging" -t brand_design --provider gemini   # single image
 vulca create "远山薄雾" -t chinese_xieyi --layered -o art/
 ```
 
-VULCA generates each layer (远山, 中景, 题款 …) independently on the canonical
-canvas of the tradition (生宣纸 for xieyi). Per-layer alpha is extracted by
-tradition-specific keying (luminance for ink wash, chroma for color works),
-so flying-white and ink gradients become true soft alpha — no halos, no hard
-edges. Layers can be re-rendered individually:
+VULCA generates each layer (远山, 中景, 题款 …) on the canonical canvas of the
+tradition (生宣纸 for xieyi). The first layer generates serially as a **style
+anchor** — its raw RGB output becomes the visual reference for all subsequent
+layers, which generate in parallel. This ensures cross-layer style consistency
+without requiring a user-provided reference image (Defense 3, v0.14).
+
+Per-layer alpha is extracted by tradition-specific keying (luminance for ink
+wash, chroma for color works), so flying-white and ink gradients become true
+soft alpha — no halos, no hard edges. Layers can be re-rendered individually:
 
 ```bash
 vulca layers retry art/ --layer 远山          # retry one layer
@@ -82,10 +86,12 @@ vulca layers retry art/ --all-failed          # retry every failed layer
 vulca layers cache clear art/                 # drop the sidecar cache
 ```
 
-Cost: N provider calls per artwork (one per layer). Iterative editing hits
+Cost: 1 serial + (N-1) parallel provider calls per artwork. The first layer is
+the style anchor; remaining layers generate concurrently. Iterative editing hits
 the per-artifact cache, so changing one layer is one provider call.
 Partial failures are non-blocking — the manifest records `partial: true`
-and the healthy layers remain usable.
+and the healthy layers remain usable. If the first layer fails, remaining layers
+degrade gracefully to no-reference mode (same as v0.13).
 
 ### Evaluate — L1-L5 cultural scoring, three modes
 
@@ -167,7 +173,7 @@ vulca create "Zen garden at dawn" -t japanese_traditional --provider gemini --hi
 
 ### Structured Creation (`--layered`)
 
-VULCA plans the layer structure from tradition knowledge, then generates each layer independently:
+VULCA plans the layer structure from tradition knowledge. The first layer generates as a style anchor, then remaining layers generate in parallel using it as a visual reference:
 
 ```bash
 vulca create "水墨山水，松间茅屋" -t chinese_xieyi --layered
