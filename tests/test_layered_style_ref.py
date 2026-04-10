@@ -170,3 +170,138 @@ def test_raw_rgb_bytes_none_on_cache_hit(tmp_path):
     out2 = asyncio.run(generate_one_layer(**kw))
     assert out2.cache_hit
     assert out2.raw_rgb_bytes is None
+
+
+def test_first_layer_serial_then_parallel(tmp_path):
+    """plan[0] generates before plan[1:]; plan[1:] runs in parallel."""
+    call_order = []
+
+    # Match on USER INTENT content (description/regeneration_prompt) which
+    # is unique per layer, unlike tradition_role which leaks into sibling
+    # negative lists.
+    class _OrderProvider:
+        id = "fake"
+        model = "fake-1"
+
+        async def generate(self, *, prompt, raw_prompt=False, **kw):
+            for tag in ["[USER INTENT]\npaper", "[USER INTENT]\ndistant mountains",
+                        "[USER INTENT]\nmid scenery"]:
+                if tag in prompt:
+                    call_order.append(tag.split("\n")[1])
+                    break
+            else:
+                call_order.append("unknown")
+            png_bytes = _make_rgb_png()
+            return type("R", (), {"image_b64": base64.b64encode(png_bytes).decode()})()
+
+    provider = _OrderProvider()
+    res = asyncio.run(layered_generate(**_gen_args(tmp_path, provider)))
+    assert call_order[0] == "paper", f"Expected first call to be bg (paper), got {call_order}"
+    assert res.is_complete
+    assert len(res.layers) == 3
+
+
+def test_style_ref_passed_to_remaining_layers(tmp_path):
+    """After plan[0] completes, remaining layers receive its output as reference_image_b64."""
+    provider = _RecordingProvider()
+    res = asyncio.run(layered_generate(**_gen_args(tmp_path, provider)))
+    assert res.is_complete
+    first_call = provider.calls[0]
+    assert first_call.get("reference_image_b64", "") == ""
+    for call in provider.calls[1:]:
+        ref = call.get("reference_image_b64", "")
+        assert ref != "", f"Expected reference for subsequent layer, got empty"
+        decoded = base64.b64decode(ref)
+        img = Image.open(io.BytesIO(decoded))
+        assert img.size[0] > 0
+
+
+def test_user_reference_passed_to_first_layer(tmp_path):
+    """When user provides reference, plan[0] receives it as reference_image_b64."""
+    provider = _RecordingProvider()
+    user_ref = base64.b64encode(_make_rgb_png(color=(200, 100, 50))).decode()
+    res = asyncio.run(layered_generate(
+        **_gen_args(tmp_path, provider, reference_image_b64=user_ref)
+    ))
+    assert res.is_complete
+    first_call = provider.calls[0]
+    assert first_call.get("reference_image_b64") == user_ref
+
+
+def test_user_reference_chains_through_first_layer(tmp_path):
+    """User ref → plan[0] → plan[0] output → plan[1:] reference (full chain)."""
+    provider = _RecordingProvider()
+    user_ref = base64.b64encode(_make_rgb_png(color=(200, 100, 50))).decode()
+    res = asyncio.run(layered_generate(
+        **_gen_args(tmp_path, provider, reference_image_b64=user_ref)
+    ))
+    assert res.is_complete
+    assert provider.calls[0].get("reference_image_b64") == user_ref
+    for call in provider.calls[1:]:
+        ref = call.get("reference_image_b64", "")
+        assert ref != ""
+        assert ref != user_ref  # style_ref is first layer's output, not user's original
+
+
+def test_first_layer_failure_degrades_gracefully(tmp_path):
+    """plan[0] fails → remaining layers generate without reference (style_ref = "")."""
+
+    class _FailFirstProvider:
+        """Fails the first call, succeeds on subsequent calls."""
+        id = "fake"
+        model = "fake-1"
+
+        def __init__(self):
+            self.calls: list[dict] = []
+            self._call_count = 0
+
+        async def generate(self, *, prompt, raw_prompt=False, **kw):
+            self.calls.append({"prompt": prompt, "raw_prompt": raw_prompt, **kw})
+            self._call_count += 1
+            if self._call_count <= 3:  # 3 retries for the first layer
+                raise RuntimeError("simulated first-layer failure")
+            png_bytes = _make_rgb_png()
+            return type("R", (), {"image_b64": base64.b64encode(png_bytes).decode()})()
+
+    provider = _FailFirstProvider()
+    res = asyncio.run(layered_generate(**_gen_args(tmp_path, provider)))
+    assert len(res.failed) >= 1
+    assert any(f.role == "纸" for f in res.failed)
+    for call in provider.calls[3:]:  # calls after the first layer's retries
+        ref = call.get("reference_image_b64", "")
+        assert ref == "", "Expected no reference after first layer failure"
+
+
+def test_no_user_reference_still_derives_style_ref(tmp_path):
+    """No user ref → first layer generates without reference, its output becomes style_ref."""
+    provider = _RecordingProvider()
+    res = asyncio.run(layered_generate(**_gen_args(tmp_path, provider)))
+    assert res.is_complete
+    assert provider.calls[0].get("reference_image_b64", "") == ""
+    for call in provider.calls[1:]:
+        assert call.get("reference_image_b64", "") != ""
+
+
+def test_single_layer_plan_no_gather(tmp_path):
+    """Single-layer plan generates directly, no style_ref derivation needed."""
+    provider = _RecordingProvider()
+    single = [LayerInfo(name="bg", description="paper", z_index=0,
+                        content_type="background", tradition_role="纸")]
+    res = asyncio.run(layered_generate(
+        **_gen_args(tmp_path, provider, plan=single)
+    ))
+    assert res.is_complete
+    assert len(res.layers) == 1
+    assert len(provider.calls) == 1
+
+
+def test_style_ref_uses_raw_rgb_not_keyed_rgba(tmp_path):
+    """style_ref is derived from raw RGB bytes, not the keyed RGBA output."""
+    provider = _RecordingProvider()
+    res = asyncio.run(layered_generate(**_gen_args(tmp_path, provider)))
+    assert res.is_complete
+    ref_b64 = provider.calls[1].get("reference_image_b64", "")
+    assert ref_b64 != ""
+    ref_bytes = base64.b64decode(ref_b64)
+    ref_img = Image.open(io.BytesIO(ref_bytes))
+    assert ref_img.mode == "RGB", f"Expected RGB style_ref, got {ref_img.mode}"

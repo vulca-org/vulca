@@ -345,8 +345,9 @@ async def layered_generate(
     cache_enabled: bool = True,
     width: int = 0,
     height: int = 0,
+    reference_image_b64: str = "",
 ) -> LayeredResult:
-    """Concurrently generate every layer in the plan, key, validate, and assemble."""
+    """Generate layers with style-ref anchoring: first layer serial, rest parallel."""
     keying = get_keying_strategy(key_strategy_name)
     cache = LayerCache(output_dir, enabled=cache_enabled)
     sem = asyncio.Semaphore(parallelism)
@@ -355,33 +356,66 @@ async def layered_generate(
     positions = positions or {}
     coverages = coverages or {}
 
+    common_kw = dict(
+        anchor=tradition_anchor,
+        canvas=canvas,
+        keying=keying,
+        provider=provider,
+        sibling_roles=sibling_roles,
+        output_dir=output_dir,
+        cache=cache,
+        width=width,
+        height=height,
+    )
+
+    # --- Phase 1: Generate first layer serially (style anchor) ---
+    first = plan[0]
+    try:
+        first_outcome = await generate_one_layer(
+            layer=first,
+            position=positions.get(first.name, ""),
+            coverage=coverages.get(first.name, ""),
+            reference_image_b64=reference_image_b64,
+            **common_kw,
+        )
+    except (AssertionError, TypeError, KeyError, AttributeError, ValueError):
+        raise
+    except Exception:
+        logger.exception("unexpected post-provider failure for layer %s", first.name)
+        first_outcome = LayerOutcome(ok=False, info=first, rgba_path="", attempts=1)
+
+    # Derive style_ref from first layer's RAW output (before keying).
+    # Using keyed RGBA would pass a partially-transparent image as style
+    # reference, degrading provider output quality (P1 review finding).
+    style_ref = ""
+    if first_outcome.ok and first_outcome.raw_rgb_bytes:
+        style_ref = base64.b64encode(first_outcome.raw_rgb_bytes).decode()
+
+    # --- Phase 2: Generate remaining layers in parallel with style_ref ---
+    remaining = plan[1:]
+
     async def _run(layer: LayerInfo) -> LayerOutcome:
         async with sem:
             try:
                 return await generate_one_layer(
                     layer=layer,
-                    anchor=tradition_anchor,
-                    canvas=canvas,
-                    keying=keying,
-                    provider=provider,
-                    sibling_roles=sibling_roles,
-                    output_dir=output_dir,
                     position=positions.get(layer.name, ""),
                     coverage=coverages.get(layer.name, ""),
-                    cache=cache,
-                    width=width,
-                    height=height,
+                    reference_image_b64=style_ref,
+                    **common_kw,
                 )
             except (AssertionError, TypeError, KeyError, AttributeError, ValueError):
-                # Programmer/data bug — propagate. These are not transient
-                # provider failures and must not be silently relabeled as
-                # generation_failed.
                 raise
             except Exception:
                 logger.exception("unexpected post-provider failure for layer %s", layer.name)
                 return LayerOutcome(ok=False, info=layer, rgba_path="", attempts=1)
 
-    outcomes = await asyncio.gather(*(_run(l) for l in plan))
+    if remaining:
+        rest_outcomes = list(await asyncio.gather(*(_run(l) for l in remaining)))
+    else:
+        rest_outcomes = []
+
+    outcomes = [first_outcome] + rest_outcomes
 
     layers_ok = [o for o in outcomes if o.ok]
     layers_failed = [
