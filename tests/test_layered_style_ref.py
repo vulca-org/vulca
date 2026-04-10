@@ -96,6 +96,21 @@ def test_call_provider_no_reference():
     assert provider.calls[0].get("reference_image_b64", "") == ""
 
 
+def test_call_provider_with_retry_passes_reference():
+    """reference_image_b64 flows through retry helper to _call_provider."""
+    from vulca.layers.layered_generate import _call_provider_with_retry
+
+    provider = _RecordingProvider()
+    ref = base64.b64encode(b"fake-ref").decode()
+    rgb_bytes, attempts = asyncio.run(
+        _call_provider_with_retry(provider, "test prompt", "test_layer",
+                                  reference_image_b64=ref)
+    )
+    assert attempts == 1
+    assert len(rgb_bytes) > 0
+    assert provider.calls[0].get("reference_image_b64") == ref
+
+
 def test_raw_rgb_bytes_populated_on_fresh_generation(tmp_path):
     """LayerOutcome.raw_rgb_bytes is populated on fresh generation (not cache hit)."""
     provider = _RecordingProvider()

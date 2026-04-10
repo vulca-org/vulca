@@ -95,6 +95,7 @@ async def _call_provider(provider, prompt: str, reference_image_b64: str = "") -
 
 async def _call_provider_with_retry(
     provider, prompt: str, layer_name: str,
+    reference_image_b64: str = "",
 ) -> tuple[bytes, int]:
     """Call provider with retry budget; return (rgb_bytes, attempts).
 
@@ -107,7 +108,7 @@ async def _call_provider_with_retry(
     for attempt in range(_RETRY_BUDGET + 1):
         attempts = attempt + 1
         try:
-            rgb_bytes = await _call_provider(provider, prompt)
+            rgb_bytes = await _call_provider(provider, prompt, reference_image_b64)
             return rgb_bytes, attempts
         except (AssertionError, TypeError, asyncio.CancelledError):
             raise
