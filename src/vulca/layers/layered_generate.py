@@ -40,6 +40,7 @@ class LayerOutcome:
     cache_hit: bool = False
     attempts: int = 1
     validation: ValidationReport | None = None
+    raw_rgb_bytes: bytes | None = None
 
 
 LayerFailureReason = Literal["generation_failed", "validation_failed"]
