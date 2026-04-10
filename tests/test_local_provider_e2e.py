@@ -295,7 +295,7 @@ async def test_local_pipeline_execute_e2e():
     )
     output = await execute(DEFAULT, inp, checkpoint=False)
 
-    assert output.status == "complete", f"Pipeline status: {output.status}"
+    assert output.status == "completed", f"Pipeline status: {output.status}"
     if output.rounds:
         last = output.rounds[-1]
         scores = last.dimension_scores

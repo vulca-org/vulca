@@ -652,13 +652,15 @@ async def score_image(
         max_tokens = _DEFAULT_MAX_TOKENS
         resp = None
         for attempt in range(_MAX_ESCALATION_ATTEMPTS + 1):
+            # Local models (Ollama) need longer timeout for first load
+            timeout = 300 if model.startswith("ollama") else 55
             call_kwargs = dict(
                 model=model,
                 messages=messages,
                 max_tokens=max_tokens,
                 temperature=0.1,
                 api_key=api_key,
-                timeout=55,
+                timeout=timeout,
             )
             if api_base:
                 call_kwargs["api_base"] = api_base
