@@ -443,9 +443,10 @@ def test_parse_llm_json_embedded_object():
 
 def test_engine_requires_api_key():
     import os
-    # Temporarily remove API key
+    # Temporarily remove API key and local VLM model
     orig = os.environ.pop("GOOGLE_API_KEY", None)
     orig2 = os.environ.pop("GEMINI_API_KEY", None)
+    orig3 = os.environ.pop("VULCA_VLM_MODEL", None)
 
     from vulca._engine import Engine
     import vulca._engine as _eng
@@ -459,6 +460,8 @@ def test_engine_requires_api_key():
         os.environ["GOOGLE_API_KEY"] = orig
     if orig2:
         os.environ["GEMINI_API_KEY"] = orig2
+    if orig3:
+        os.environ["VULCA_VLM_MODEL"] = orig3
 
 
 def test_engine_singleton():

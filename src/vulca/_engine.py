@@ -29,15 +29,24 @@ class Engine:
         self.mock = mock
         self.api_key = api_key or os.environ.get("GOOGLE_API_KEY", "") or os.environ.get("GEMINI_API_KEY", "")
         if not self.api_key and not self.mock:
-            raise ValueError(
-                "No API key found. Set GOOGLE_API_KEY environment variable, "
-                "pass api_key='...' to vulca.evaluate(), or use mock=True."
-            )
+            # Allow keyless operation when VLM is a local provider (e.g. Ollama)
+            vlm_model = os.environ.get("VULCA_VLM_MODEL", "")
+            if vlm_model.startswith("ollama"):
+                self.api_key = "local"
+            else:
+                raise ValueError(
+                    "No API key found. Set GOOGLE_API_KEY environment variable, "
+                    "pass api_key='...' to vulca.evaluate(), or use mock=True."
+                )
 
     @classmethod
     def get_instance(cls, api_key: str = "", mock: bool = False) -> Engine:
         global _instance
         key = api_key or os.environ.get("GOOGLE_API_KEY", "") or os.environ.get("GEMINI_API_KEY", "")
+        if not key and not mock:
+            vlm_model = os.environ.get("VULCA_VLM_MODEL", "")
+            if vlm_model.startswith("ollama"):
+                key = "local"
         if _instance is None or (api_key and _instance.api_key != key) or (mock != (_instance.mock if _instance else False)):
             _instance = cls(api_key=key, mock=mock)
         return _instance
