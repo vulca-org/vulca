@@ -141,13 +141,22 @@ def _topo_order(definition: PipelineDefinition) -> list[str]:
     return order
 
 
+def _is_local_vlm() -> bool:
+    """Check if the configured VLM model is a local provider (e.g. Ollama)."""
+    model = os.environ.get("VULCA_VLM_MODEL", "")
+    return model.startswith("ollama")
+
+
 def _resolve_api_key(pipeline_input: PipelineInput) -> str:
     """Resolve API key from input, then environment."""
-    return (
+    key = (
         pipeline_input.api_key
         or os.environ.get("GEMINI_API_KEY", "")
         or os.environ.get("GOOGLE_API_KEY", "")
     )
+    if not key and _is_local_vlm():
+        return "local"
+    return key
 
 
 async def execute(
