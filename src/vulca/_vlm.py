@@ -643,11 +643,16 @@ async def score_image(
         ]
         model = os.environ.get("VULCA_VLM_MODEL", "gemini/gemini-2.5-flash")
 
+        # Resolve api_base for local providers (e.g. Ollama)
+        api_base = None
+        if model.startswith("ollama"):
+            api_base = os.environ.get("OLLAMA_API_BASE", "http://localhost:11434")
+
         # Adaptive token budget: start at _DEFAULT_MAX_TOKENS, escalate on truncation
         max_tokens = _DEFAULT_MAX_TOKENS
         resp = None
         for attempt in range(_MAX_ESCALATION_ATTEMPTS + 1):
-            resp = await litellm.acompletion(
+            call_kwargs = dict(
                 model=model,
                 messages=messages,
                 max_tokens=max_tokens,
@@ -655,6 +660,9 @@ async def score_image(
                 api_key=api_key,
                 timeout=55,
             )
+            if api_base:
+                call_kwargs["api_base"] = api_base
+            resp = await litellm.acompletion(**call_kwargs)
             finish_reason = getattr(resp.choices[0], "finish_reason", "stop")
             if finish_reason == "length" and attempt < _MAX_ESCALATION_ATTEMPTS:
                 logger.info(

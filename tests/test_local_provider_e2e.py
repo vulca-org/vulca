@@ -59,3 +59,70 @@ def test_resolve_api_key_non_ollama_returns_empty():
     with patch.dict(os.environ, env, clear=True):
         result = _resolve_api_key(inp)
         assert result == ""
+
+
+@pytest.mark.asyncio
+async def test_score_image_passes_api_base_for_ollama():
+    """score_image() passes api_base to litellm when model is ollama-based."""
+    from unittest.mock import AsyncMock, MagicMock
+
+    mock_response = MagicMock()
+    mock_response.choices = [MagicMock()]
+    mock_response.choices[0].message.content = """
+<scoring>
+{"L1": 0.7, "L2": 0.6, "L3": 0.8, "L4": 0.5, "L5": 0.6,
+ "L1_rationale": "test", "L2_rationale": "", "L3_rationale": "",
+ "L4_rationale": "", "L5_rationale": ""}
+</scoring>
+"""
+    mock_response.choices[0].finish_reason = "stop"
+
+    with patch.dict(os.environ, {
+        "VULCA_VLM_MODEL": "ollama_chat/gemma3:12b",
+        "OLLAMA_API_BASE": "http://localhost:11434",
+    }):
+        with patch("litellm.acompletion", new_callable=AsyncMock, return_value=mock_response) as mock_call:
+            from vulca._vlm import score_image
+            import base64
+            pixel = base64.b64encode(
+                b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01'
+                b'\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00'
+                b'\x00\x00\x0cIDATx\x9cc\xf8\x0f\x00\x00\x01\x01\x00'
+                b'\x05\x18\xd8N\x00\x00\x00\x00IEND\xaeB`\x82'
+            ).decode()
+            await score_image(pixel, "image/png", "test", "default", "local")
+
+            call_kwargs = mock_call.call_args[1]
+            assert call_kwargs.get("api_base") == "http://localhost:11434"
+
+
+@pytest.mark.asyncio
+async def test_score_image_no_api_base_for_gemini():
+    """score_image() does NOT pass api_base for non-Ollama models."""
+    from unittest.mock import AsyncMock, MagicMock
+
+    mock_response = MagicMock()
+    mock_response.choices = [MagicMock()]
+    mock_response.choices[0].message.content = """
+<scoring>
+{"L1": 0.7, "L2": 0.6, "L3": 0.8, "L4": 0.5, "L5": 0.6,
+ "L1_rationale": "test", "L2_rationale": "", "L3_rationale": "",
+ "L4_rationale": "", "L5_rationale": ""}
+</scoring>
+"""
+    mock_response.choices[0].finish_reason = "stop"
+
+    with patch.dict(os.environ, {"VULCA_VLM_MODEL": "gemini/gemini-2.5-flash"}):
+        with patch("litellm.acompletion", new_callable=AsyncMock, return_value=mock_response) as mock_call:
+            from vulca._vlm import score_image
+            import base64
+            pixel = base64.b64encode(
+                b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01'
+                b'\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00'
+                b'\x00\x00\x0cIDATx\x9cc\xf8\x0f\x00\x00\x01\x01\x00'
+                b'\x05\x18\xd8N\x00\x00\x00\x00IEND\xaeB`\x82'
+            ).decode()
+            await score_image(pixel, "image/png", "test", "default", "fake-key")
+
+            call_kwargs = mock_call.call_args[1]
+            assert "api_base" not in call_kwargs
