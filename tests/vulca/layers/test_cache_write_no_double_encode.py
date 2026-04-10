@@ -52,9 +52,10 @@ def _anchor() -> TraditionAnchor:
     )
 
 
-def test_fresh_generate_calls_pil_save_once(tmp_path: Path):
-    """Fresh generation must save PNG exactly once. Cache write should
-    re-read disk bytes instead of re-encoding via PIL."""
+def test_fresh_generate_pil_save_count(tmp_path: Path):
+    """Fresh generation: 2 PIL saves — one for raw_rgb normalization (BytesIO,
+    v0.14 style_ref), one for the keyed RGBA to disk. Cache write re-reads
+    disk bytes instead of a third PIL encode."""
     cache = LayerCache(tmp_path)
     # Pre-compute provider bytes outside the patch so the provider's own
     # PIL encode isn't counted.
@@ -78,7 +79,9 @@ def test_fresh_generate_calls_pil_save_once(tmp_path: Path):
             width=32, height=32,
         ))
 
-    assert len(save_calls) == 1, f"expected 1 save call, got {len(save_calls)}"
+    # 1: raw_rgb normalization to BytesIO (v0.14 style_ref)
+    # 2: keyed RGBA to disk
+    assert len(save_calls) == 2, f"expected 2 save calls, got {len(save_calls)}"
 
 
 def test_cache_round_trip_byte_equivalent(tmp_path: Path):
