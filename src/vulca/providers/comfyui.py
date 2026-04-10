@@ -4,6 +4,7 @@ from __future__ import annotations
 import asyncio
 import base64
 import os
+import secrets
 
 from vulca.providers.base import ImageProvider, ImageResult
 
@@ -40,7 +41,7 @@ class ComfyUIImageProvider:
         workflow = {
             "prompt": {
                 "3": {"class_type": "KSampler", "inputs": {
-                    "seed": 42, "steps": 20, "cfg": 7.0, "sampler_name": "euler",
+                    "seed": secrets.randbelow(2**63), "steps": 20, "cfg": 7.0, "sampler_name": "euler",
                     "scheduler": "normal", "denoise": 1.0,
                     "model": ["4", 0], "positive": ["6", 0],
                     "negative": ["7", 0], "latent_image": ["5", 0]}},
