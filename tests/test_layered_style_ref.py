@@ -414,13 +414,14 @@ def test_generate_layers_native_context_priority(tmp_path, monkeypatch):
 
 
 def test_cache_hit_first_layer_still_provides_style_ref(tmp_path):
-    """Cache hit on first layer falls back to RGBA→RGB for style_ref."""
-    provider = _RecordingProvider()
-    cache = LayerCache(tmp_path, enabled=True)
-    plan = _plan_3()
+    """Cache hit on first layer falls back to RGBA→RGB for style_ref.
 
-    args = dict(
-        plan=plan,
+    Partial-cache scenario: run full plan to warm all caches, then re-run
+    with altered remaining-layer descriptions so they miss cache while the
+    first layer still hits.
+    """
+    provider = _RecordingProvider()
+    common = dict(
         tradition_anchor=_anchor(),
         canvas=CanvasSpec.from_hex("#ffffff"),
         key_strategy_name="luminance",
@@ -432,26 +433,37 @@ def test_cache_hit_first_layer_still_provides_style_ref(tmp_path):
         cache_enabled=True,
     )
 
-    # First run: populates cache
-    res1 = asyncio.run(layered_generate(**args))
-    assert res1.is_complete
-    first_run_calls = len(provider.calls)
-
-    # Reset call tracking for second run
+    # Step 1: warm cache for all 3 layers with original plan
+    asyncio.run(layered_generate(plan=_plan_3(), **common))
     provider.calls.clear()
 
-    # Second run: first layer hits cache → raw_rgb_bytes=None
-    # But style_ref should STILL be derived (from cached RGBA→RGB fallback)
-    res2 = asyncio.run(layered_generate(**args))
-    assert res2.is_complete
-    # Remaining layers (non-cache-hit) should still get a style reference
+    # Step 2: re-run with altered remaining layers (cache miss) but same first layer (cache hit)
+    plan2 = _plan_3()
+    plan2[1].regeneration_prompt = "distant mountains v2"  # changes prompt → cache miss
+    plan2[2].regeneration_prompt = "mid scenery v2"
+    res = asyncio.run(layered_generate(plan=plan2, **common))
+    assert res.is_complete
+    # First layer = cache hit (no provider call). Remaining 2 = cache miss.
+    assert len(provider.calls) == 2, f"Expected 2 provider calls, got {len(provider.calls)}"
     for call in provider.calls:
         ref = call.get("reference_image_b64", "")
-        # At least some calls should have a reference (those that missed cache)
-        # On full cache hit, no provider calls happen at all — that's fine too
-    # If any calls were made, they should have reference
-    non_first_calls = provider.calls  # first layer is cache hit, no call
-    if non_first_calls:
-        for call in non_first_calls:
-            ref = call.get("reference_image_b64", "")
-            assert ref != "", "Cache-hit first layer should still provide style_ref via fallback"
+        assert ref != "", "Cache-hit first layer should still provide style_ref via RGBA→RGB fallback"
+        ref_img = Image.open(io.BytesIO(base64.b64decode(ref)))
+        assert ref_img.mode == "RGB", f"Fallback style_ref should be RGB, got {ref_img.mode}"
+
+
+def test_empty_plan_returns_empty_result(tmp_path):
+    """Empty plan returns empty LayeredResult without crashing."""
+    provider = _RecordingProvider()
+    res = asyncio.run(layered_generate(
+        plan=[],
+        tradition_anchor=_anchor(),
+        canvas=CanvasSpec.from_hex("#ffffff"),
+        key_strategy_name="luminance",
+        provider=provider,
+        output_dir=str(tmp_path),
+        parallelism=2,
+    ))
+    assert res.is_complete  # no failures
+    assert len(res.layers) == 0
+    assert len(provider.calls) == 0

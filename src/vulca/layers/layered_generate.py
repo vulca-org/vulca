@@ -220,7 +220,7 @@ def _apply_alpha(rgb_bytes: bytes, alpha: np.ndarray) -> Image.Image:
         "keying ran on a different-sized image than the provider returned"
     )
     rgba = np.dstack([rgb, (alpha * 255).astype(np.uint8)])
-    return Image.fromarray(rgba, mode="RGBA")
+    return Image.fromarray(rgba)
 
 
 async def generate_one_layer(
@@ -290,8 +290,13 @@ async def generate_one_layer(
                 attempts=getattr(exc, "attempts", 1),
             )
 
-        raw_rgb = rgb_bytes
-        rgb = np.array(Image.open(io.BytesIO(rgb_bytes)).convert("RGB"))
+        # Normalize to RGB PNG for style_ref (provider may return RGBA).
+        _pil_rgb = Image.open(io.BytesIO(rgb_bytes)).convert("RGB")
+        _rgb_buf = io.BytesIO()
+        _pil_rgb.save(_rgb_buf, format="PNG")
+        raw_rgb = _rgb_buf.getvalue()
+
+        rgb = np.array(_pil_rgb)
         alpha = keying.extract_alpha(rgb, canvas)
         rgba_img = _apply_alpha(rgb_bytes, alpha)
         Path(output_dir).mkdir(parents=True, exist_ok=True)
@@ -367,6 +372,9 @@ async def layered_generate(
         width=width,
         height=height,
     )
+
+    if not plan:
+        return LayeredResult()
 
     # --- Phase 1: Generate first layer serially (style anchor) ---
     first = plan[0]
