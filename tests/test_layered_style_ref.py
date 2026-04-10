@@ -75,6 +75,27 @@ def _gen_args(tmp_path, provider, plan=None, reference_image_b64=""):
     )
 
 
+def test_call_provider_passes_reference():
+    """_call_provider passes reference_image_b64 through to provider.generate."""
+    from vulca.layers.layered_generate import _call_provider
+
+    provider = _RecordingProvider()
+    ref = base64.b64encode(b"fake-ref").decode()
+    asyncio.run(_call_provider(provider, "test prompt", reference_image_b64=ref))
+    assert len(provider.calls) == 1
+    assert provider.calls[0].get("reference_image_b64") == ref
+
+
+def test_call_provider_no_reference():
+    """_call_provider with empty reference still works (backward compat)."""
+    from vulca.layers.layered_generate import _call_provider
+
+    provider = _RecordingProvider()
+    asyncio.run(_call_provider(provider, "test prompt"))
+    assert len(provider.calls) == 1
+    assert provider.calls[0].get("reference_image_b64", "") == ""
+
+
 def test_raw_rgb_bytes_populated_on_fresh_generation(tmp_path):
     """LayerOutcome.raw_rgb_bytes is populated on fresh generation (not cache hit)."""
     provider = _RecordingProvider()

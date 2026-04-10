@@ -83,9 +83,12 @@ def _provider_model_of(provider) -> str:
     return getattr(provider, "model", None) or "unknown"
 
 
-async def _call_provider(provider, prompt: str) -> bytes:
+async def _call_provider(provider, prompt: str, reference_image_b64: str = "") -> bytes:
     """Call provider and return raw image bytes (PNG)."""
-    result = await provider.generate(prompt=prompt, raw_prompt=True)
+    kwargs: dict = {"prompt": prompt, "raw_prompt": True}
+    if reference_image_b64:
+        kwargs["reference_image_b64"] = reference_image_b64
+    result = await provider.generate(**kwargs)
     b64 = result.image_b64 if hasattr(result, "image_b64") else result
     return base64.b64decode(b64)
 
