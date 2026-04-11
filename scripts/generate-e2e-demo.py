@@ -161,11 +161,13 @@ async def run_phase1_gallery(
     width: int,
     height: int,
     traditions: set[str] | None = None,
+    gallery_dir: Path | None = None,
 ) -> dict:
     """Generate one image per tradition, save to ``gallery/{tradition}.png``."""
     from vulca.providers import get_image_provider
 
-    GALLERY_DIR.mkdir(parents=True, exist_ok=True)
+    target_dir = gallery_dir if gallery_dir is not None else GALLERY_DIR
+    target_dir.mkdir(parents=True, exist_ok=True)
     provider = get_image_provider(provider_name)
 
     entries: list[dict] = []
@@ -178,7 +180,7 @@ async def run_phase1_gallery(
     for idx, entry in enumerate(selected_entries, start=1):
         tradition = entry["tradition"]
         prompt = entry["prompt"]
-        out_path = GALLERY_DIR / f"{tradition}.png"
+        out_path = target_dir / f"{tradition}.png"
         t0 = time.time()
         status = "ok"
         error: str | None = None
@@ -498,6 +500,15 @@ async def main_async(args: argparse.Namespace) -> int:
     phase_reports: list[dict] = []
     overall_status = "ok"
 
+    # Scope Phase 1 output and report path to --gallery-subdir when set.
+    # Phase 3 and Phase 8 still use the default GALLERY_DIR / REPORT_PATH.
+    if args.gallery_subdir:
+        scoped_gallery_dir = DEMO_ROOT / args.gallery_subdir
+        scoped_report_path = DEMO_ROOT / f"e2e-report-{args.gallery_subdir}.json"
+    else:
+        scoped_gallery_dir = None  # run_phase1_gallery falls back to GALLERY_DIR
+        scoped_report_path = REPORT_PATH
+
     for phase in phases:
         if phase == 1:
             try:
@@ -506,6 +517,7 @@ async def main_async(args: argparse.Namespace) -> int:
                     width=args.width,
                     height=args.height,
                     traditions=args.traditions_set,
+                    gallery_dir=scoped_gallery_dir,
                 )
             except Exception as exc:
                 traceback.print_exc()
@@ -555,10 +567,12 @@ async def main_async(args: argparse.Namespace) -> int:
 
     # Merge with any existing report so re-running one phase preserves the
     # others' results.  Newer entries replace older ones for the same phase.
+    # When --gallery-subdir is set, merges are scoped to that subdir's own
+    # report file — the default e2e-report.json is never touched.
     merged: dict[int, dict] = {}
-    if REPORT_PATH.exists():
+    if scoped_report_path.exists():
         try:
-            prior = json.loads(REPORT_PATH.read_text())
+            prior = json.loads(scoped_report_path.read_text())
             for entry in prior.get("phases", []):
                 if isinstance(entry, dict) and "phase" in entry:
                     merged[int(entry["phase"])] = entry
@@ -576,9 +590,9 @@ async def main_async(args: argparse.Namespace) -> int:
         "overall_status": aggregate_status,
         "phases": final_phases,
     }
-    REPORT_PATH.write_text(json.dumps(report, indent=2, ensure_ascii=False))
+    scoped_report_path.write_text(json.dumps(report, indent=2, ensure_ascii=False))
     print()
-    print(f"Report: {REPORT_PATH.relative_to(REPO_ROOT)}")
+    print(f"Report: {scoped_report_path.relative_to(REPO_ROOT)}")
     print(f"Overall: {overall_status}")
     return 0 if overall_status == "ok" else 1
 
@@ -620,6 +634,16 @@ def main() -> int:
         help="Comma-separated list of tradition names to regenerate in "
              "Phase 1 (e.g. 'chinese_gongbi,chinese_xieyi'). When unset, "
              "all 13 traditions run. Unknown names fail fast at startup.",
+    )
+    parser.add_argument(
+        "--gallery-subdir",
+        default=None,
+        help="Subdirectory under assets/demo/v3/ to write Phase 1 gallery "
+             "images into (e.g. 'gallery-promptfix'). When set, the Phase "
+             "1 report is scoped to e2e-report-<subdir>.json instead of "
+             "merging into the default e2e-report.json. Phase 3 and Phase "
+             "8 continue reading from the default gallery/ — this flag "
+             "only affects Phase 1 output isolation.",
     )
     args = parser.parse_args()
     _validate_experimental_overrides()
