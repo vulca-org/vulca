@@ -1,0 +1,11 @@
+{
+  "tool": "brushstroke_analyze",
+  "input_image": "assets/demo/v3/gallery/chinese_xieyi.png",
+  "tradition": "chinese_xieyi",
+  "texture_energy": 0.320974721614704,
+  "uniformity": 0.0,
+  "dominant_direction": null,
+  "edge_density": 0.09984683990478516,
+  "cultural_verdict": "Brushstroke energy (0.32) aligns with chinese_xieyi's expressive style. Visible, dynamic strokes are consistent with tradition expectations.",
+  "confidence": 0.656462082422056
+}

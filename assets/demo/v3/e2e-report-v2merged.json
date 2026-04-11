@@ -1,0 +1,445 @@
+{
+  "generated_at": "2026-04-11T12:13:41.466374+00:00",
+  "overall_status": "ok",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "gallery",
+      "provider": "comfyui",
+      "traditions_total": 13,
+      "traditions_ok": 13,
+      "traditions_failed": 0,
+      "elapsed_s": 1566.33,
+      "entries": [
+        {
+          "tradition": "chinese_xieyi",
+          "prompt": "水墨山水，雨后春山，松间茅屋",
+          "status": "ok",
+          "path": "assets/demo/v3/gallery/chinese_xieyi.png",
+          "width": 1024,
+          "height": 1024,
+          "size_bytes": 1928964,
+          "elapsed_s": 105.09,
+          "error": null
+        },
+        {
+          "tradition": "chinese_gongbi",
+          "prompt": "工笔牡丹，细腻勾线，三矾九染",
+          "status": "ok",
+          "path": "assets/demo/v3/gallery/chinese_gongbi.png",
+          "width": 1024,
+          "height": 1024,
+          "size_bytes": 1800338,
+          "elapsed_s": 105.07,
+          "error": null
+        },
+        {
+          "tradition": "japanese_traditional",
+          "prompt": "京都金閣寺の雪景色、墨絵風",
+          "status": "ok",
+          "path": "assets/demo/v3/gallery/japanese_traditional.png",
+          "width": 1024,
+          "height": 1024,
+          "size_bytes": 1865311,
+          "elapsed_s": 110.12,
+          "error": null
+        },
+        {
+          "tradition": "western_academic",
+          "prompt": "Impressionist garden at golden hour, oil on canvas",
+          "status": "ok",
+          "path": "assets/demo/v3/gallery/western_academic.png",
+          "width": 1024,
+          "height": 1024,
+          "size_bytes": 1731859,
+          "elapsed_s": 110.1,
+          "error": null
+        },
+        {
+          "tradition": "watercolor",
+          "prompt": "English countryside cottage, loose wet-on-wet watercolor",
+          "status": "ok",
+          "path": "assets/demo/v3/gallery/watercolor.png",
+          "width": 1024,
+          "height": 1024,
+          "size_bytes": 1764669,
+          "elapsed_s": 120.1,
+          "error": null
+        },
+        {
+          "tradition": "islamic_geometric",
+          "prompt": "Alhambra-inspired geometric pattern, turquoise and gold",
+          "status": "ok",
+          "path": "assets/demo/v3/gallery/islamic_geometric.png",
+          "width": 1024,
+          "height": 1024,
+          "size_bytes": 2020030,
+          "elapsed_s": 120.11,
+          "error": null
+        },
+        {
+          "tradition": "african_traditional",
+          "prompt": "Ndebele mural pattern, bold primary colors",
+          "status": "ok",
+          "path": "assets/demo/v3/gallery/african_traditional.png",
+          "width": 1024,
+          "height": 1024,
+          "size_bytes": 1689612,
+          "elapsed_s": 125.12,
+          "error": null
+        },
+        {
+          "tradition": "south_asian",
+          "prompt": "Mughal miniature, garden scene with lotus pond",
+          "status": "ok",
+          "path": "assets/demo/v3/gallery/south_asian.png",
+          "width": 1024,
+          "height": 1024,
+          "size_bytes": 1761094,
+          "elapsed_s": 130.12,
+          "error": null
+        },
+        {
+          "tradition": "brand_design",
+          "prompt": "Premium tea packaging, mountain watermark, Eastern aesthetics",
+          "status": "ok",
+          "path": "assets/demo/v3/gallery/brand_design.png",
+          "width": 1024,
+          "height": 1024,
+          "size_bytes": 1396302,
+          "elapsed_s": 125.12,
+          "error": null
+        },
+        {
+          "tradition": "photography",
+          "prompt": "Misty mountain landscape at dawn, cinematic",
+          "status": "ok",
+          "path": "assets/demo/v3/gallery/photography.png",
+          "width": 1024,
+          "height": 1024,
+          "size_bytes": 1193492,
+          "elapsed_s": 125.07,
+          "error": null
+        },
+        {
+          "tradition": "contemporary_art",
+          "prompt": "Abstract expressionist canvas with bold gestural strokes",
+          "status": "ok",
+          "path": "assets/demo/v3/gallery/contemporary_art.png",
+          "width": 1024,
+          "height": 1024,
+          "size_bytes": 2119939,
+          "elapsed_s": 130.12,
+          "error": null
+        },
+        {
+          "tradition": "ui_ux_design",
+          "prompt": "Clean dashboard UI mockup with card layout and soft shadows",
+          "status": "ok",
+          "path": "assets/demo/v3/gallery/ui_ux_design.png",
+          "width": 1024,
+          "height": 1024,
+          "size_bytes": 957131,
+          "elapsed_s": 130.1,
+          "error": null
+        },
+        {
+          "tradition": "default",
+          "prompt": "Serene landscape with mountains and water",
+          "status": "ok",
+          "path": "assets/demo/v3/gallery/default.png",
+          "width": 1024,
+          "height": 1024,
+          "size_bytes": 1227331,
+          "elapsed_s": 130.1,
+          "error": null
+        }
+      ],
+      "status": "ok"
+    },
+    {
+      "phase": 3,
+      "name": "evaluate",
+      "provider": "ollama-gemma4",
+      "mode": "strict",
+      "images_total": 13,
+      "images_ok": 13,
+      "images_failed": 0,
+      "parse_success_rate": 1.0,
+      "elapsed_s": 3613.21,
+      "mean_elapsed_per_call_s": 277.9,
+      "per_dim_mean_score": {
+        "L1": 0.9,
+        "L2": 0.8,
+        "L3": 0.874,
+        "L4": 0.931,
+        "L5": 0.928
+      },
+      "entries": [
+        {
+          "tradition": "african_traditional",
+          "subject": "Ndebele mural pattern, bold primary colors",
+          "image": "assets/demo/v3/gallery/african_traditional.png",
+          "status": "ok",
+          "elapsed_s": 64.85,
+          "scores": {
+            "L1": 0.95,
+            "L2": 0.9,
+            "L3": 0.98,
+            "L4": 0.95,
+            "L5": 0.92
+          },
+          "risk_flags": [],
+          "error": null,
+          "result_path": "assets/demo/v3/eval/african_traditional_scores.json"
+        },
+        {
+          "tradition": "brand_design",
+          "subject": "Premium tea packaging, mountain watermark, Eastern aesthetics",
+          "image": "assets/demo/v3/gallery/brand_design.png",
+          "status": "ok",
+          "elapsed_s": 86.12,
+          "scores": {
+            "L1": 0.95,
+            "L2": 0.95,
+            "L3": 0.98,
+            "L4": 0.95,
+            "L5": 0.98
+          },
+          "risk_flags": [],
+          "error": null,
+          "result_path": "assets/demo/v3/eval/brand_design_scores.json"
+        },
+        {
+          "tradition": "chinese_gongbi",
+          "subject": "工笔牡丹，细腻勾线，三矾九染",
+          "image": "assets/demo/v3/gallery/chinese_gongbi.png",
+          "status": "ok",
+          "elapsed_s": 2246.69,
+          "scores": {
+            "L1": 0.85,
+            "L2": 0.65,
+            "L3": 0.8,
+            "L4": 0.9,
+            "L5": 0.9
+          },
+          "risk_flags": [],
+          "error": null,
+          "result_path": "assets/demo/v3/eval/chinese_gongbi_scores.json"
+        },
+        {
+          "tradition": "chinese_xieyi",
+          "subject": "水墨山水，雨后春山，松间茅屋",
+          "image": "assets/demo/v3/gallery/chinese_xieyi.png",
+          "status": "ok",
+          "elapsed_s": 486.28,
+          "scores": {
+            "L1": 0.9,
+            "L2": 0.85,
+            "L3": 0.95,
+            "L4": 1.0,
+            "L5": 0.9
+          },
+          "risk_flags": [],
+          "error": null,
+          "result_path": "assets/demo/v3/eval/chinese_xieyi_scores.json"
+        },
+        {
+          "tradition": "contemporary_art",
+          "subject": "Abstract expressionist canvas with bold gestural strokes",
+          "image": "assets/demo/v3/gallery/contemporary_art.png",
+          "status": "ok",
+          "elapsed_s": 80.13,
+          "scores": {
+            "L1": 0.9,
+            "L2": 0.75,
+            "L3": 0.85,
+            "L4": 0.9,
+            "L5": 0.95
+          },
+          "risk_flags": [],
+          "error": null,
+          "result_path": "assets/demo/v3/eval/contemporary_art_scores.json"
+        },
+        {
+          "tradition": "default",
+          "subject": "Serene landscape with mountains and water",
+          "image": "assets/demo/v3/gallery/default.png",
+          "status": "ok",
+          "elapsed_s": 71.42,
+          "scores": {
+            "L1": 0.9,
+            "L2": 0.85,
+            "L3": 0.9,
+            "L4": 1.0,
+            "L5": 0.95
+          },
+          "risk_flags": [],
+          "error": null,
+          "result_path": "assets/demo/v3/eval/default_scores.json"
+        },
+        {
+          "tradition": "islamic_geometric",
+          "subject": "Alhambra-inspired geometric pattern, turquoise and gold",
+          "image": "assets/demo/v3/gallery/islamic_geometric.png",
+          "status": "ok",
+          "elapsed_s": 69.09,
+          "scores": {
+            "L1": 0.9,
+            "L2": 0.7,
+            "L3": 0.6,
+            "L4": 0.9,
+            "L5": 0.95
+          },
+          "risk_flags": [],
+          "error": null,
+          "result_path": "assets/demo/v3/eval/islamic_geometric_scores.json"
+        },
+        {
+          "tradition": "japanese_traditional",
+          "subject": "京都金閣寺の雪景色、墨絵風",
+          "image": "assets/demo/v3/gallery/japanese_traditional.png",
+          "status": "ok",
+          "elapsed_s": 77.74,
+          "scores": {
+            "L1": 0.9,
+            "L2": 0.7,
+            "L3": 0.8,
+            "L4": 0.9,
+            "L5": 0.95
+          },
+          "risk_flags": [],
+          "error": null,
+          "result_path": "assets/demo/v3/eval/japanese_traditional_scores.json"
+        },
+        {
+          "tradition": "photography",
+          "subject": "Misty mountain landscape at dawn, cinematic",
+          "image": "assets/demo/v3/gallery/photography.png",
+          "status": "ok",
+          "elapsed_s": 103.34,
+          "scores": {
+            "L1": 0.9,
+            "L2": 0.85,
+            "L3": 0.9,
+            "L4": 0.95,
+            "L5": 0.95
+          },
+          "risk_flags": [],
+          "error": null,
+          "result_path": "assets/demo/v3/eval/photography_scores.json"
+        },
+        {
+          "tradition": "south_asian",
+          "subject": "Mughal miniature, garden scene with lotus pond",
+          "image": "assets/demo/v3/gallery/south_asian.png",
+          "status": "ok",
+          "elapsed_s": 79.38,
+          "scores": {
+            "L1": 0.85,
+            "L2": 0.75,
+            "L3": 0.9,
+            "L4": 0.95,
+            "L5": 0.92
+          },
+          "risk_flags": [],
+          "error": null,
+          "result_path": "assets/demo/v3/eval/south_asian_scores.json"
+        },
+        {
+          "tradition": "ui_ux_design",
+          "subject": "Clean dashboard UI mockup with card layout and soft shadows",
+          "image": "assets/demo/v3/gallery/ui_ux_design.png",
+          "status": "ok",
+          "elapsed_s": 92.82,
+          "scores": {
+            "L1": 0.9,
+            "L2": 0.9,
+            "L3": 0.95,
+            "L4": 0.9,
+            "L5": 0.85
+          },
+          "risk_flags": [],
+          "error": null,
+          "result_path": "assets/demo/v3/eval/ui_ux_design_scores.json"
+        },
+        {
+          "tradition": "watercolor",
+          "subject": "English countryside cottage, loose wet-on-wet watercolor",
+          "image": "assets/demo/v3/gallery/watercolor.png",
+          "status": "ok",
+          "elapsed_s": 88.28,
+          "scores": {
+            "L1": 0.9,
+            "L2": 0.85,
+            "L3": 0.95,
+            "L4": 0.9,
+            "L5": 0.9
+          },
+          "risk_flags": [],
+          "error": null,
+          "result_path": "assets/demo/v3/eval/watercolor_scores.json"
+        },
+        {
+          "tradition": "western_academic",
+          "subject": "Impressionist garden at golden hour, oil on canvas",
+          "image": "assets/demo/v3/gallery/western_academic.png",
+          "status": "ok",
+          "elapsed_s": 73.98,
+          "scores": {
+            "L1": 0.9,
+            "L2": 0.7,
+            "L3": 0.8,
+            "L4": 0.9,
+            "L5": 0.95
+          },
+          "risk_flags": [],
+          "error": null,
+          "result_path": "assets/demo/v3/eval/western_academic_scores.json"
+        }
+      ],
+      "status": "ok"
+    },
+    {
+      "phase": 8,
+      "name": "tools",
+      "provider": "local-cv2",
+      "input_image": "assets/demo/v3/gallery/chinese_xieyi.png",
+      "tradition": "chinese_xieyi",
+      "outputs": [
+        "assets/demo/v3/tools/brushstroke.json",
+        "assets/demo/v3/tools/composition.json"
+      ],
+      "brushstroke": {
+        "tool": "brushstroke_analyze",
+        "input_image": "assets/demo/v3/gallery/chinese_xieyi.png",
+        "tradition": "chinese_xieyi",
+        "texture_energy": 0.320974721614704,
+        "uniformity": 0.0,
+        "dominant_direction": null,
+        "edge_density": 0.09984683990478516,
+        "cultural_verdict": "Brushstroke energy (0.32) aligns with chinese_xieyi's expressive style. Visible, dynamic strokes are consistent with tradition expectations.",
+        "confidence": 0.656462082422056
+      },
+      "composition": {
+        "tool": "composition_analyze",
+        "input_image": "assets/demo/v3/gallery/chinese_xieyi.png",
+        "tradition": "chinese_xieyi",
+        "center_weight": 0.10210415737701259,
+        "thirds_alignment": 0.7195554590263826,
+        "visual_center": {
+          "x": 0.5167851811828776,
+          "y": 0.5368201781114338
+        },
+        "balance": "right_heavy",
+        "detected_rules": [
+          "rule_of_thirds",
+          "asymmetric_balance"
+        ],
+        "cultural_verdict": "The rule-of-thirds alignment, right_heavy asymmetry aligns well with chinese_xieyi's preference for asymmetric, dynamic arrangements. Thirds alignment: 0.72; balance: right_heavy.",
+        "confidence": 0.75
+      },
+      "status": "ok"
+    }
+  ]
+}

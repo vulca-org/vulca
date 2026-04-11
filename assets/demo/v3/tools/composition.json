@@ -1,0 +1,18 @@
+{
+  "tool": "composition_analyze",
+  "input_image": "assets/demo/v3/gallery/chinese_xieyi.png",
+  "tradition": "chinese_xieyi",
+  "center_weight": 0.10210415737701259,
+  "thirds_alignment": 0.7195554590263826,
+  "visual_center": {
+    "x": 0.5167851811828776,
+    "y": 0.5368201781114338
+  },
+  "balance": "right_heavy",
+  "detected_rules": [
+    "rule_of_thirds",
+    "asymmetric_balance"
+  ],
+  "cultural_verdict": "The rule-of-thirds alignment, right_heavy asymmetry aligns well with chinese_xieyi's preference for asymmetric, dynamic arrangements. Thirds alignment: 0.72; balance: right_heavy.",
+  "confidence": 0.75
+}
