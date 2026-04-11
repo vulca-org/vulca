@@ -438,6 +438,103 @@ def test_parse_llm_json_embedded_object():
     assert result == {"score": 0.5}
 
 
+def test_parse_llm_json_gemma_hybrid_split_with_bare_trailing_key():
+    """Gemma 4 alternate drift mode: wraps 5 L-dimensions in individual {}
+    blocks but leaves the final risk_flags key bare, and wraps the whole
+    thing in one outer {}. Captured live from Phase 3 v2 contemporary_art
+    run 2026-04-11 — the pure-split parser fix did not handle this.
+
+    Example structural shape (with content abbreviated):
+        {
+            "L1": 0.9, "L1_observations": "..."
+        },
+        {
+            "L2": 0.85
+        },
+        ...
+        {
+            "L5": 0.95
+        },
+            "risk_flags": []
+        }
+    """
+    from vulca._parse import parse_llm_json
+
+    text = """{
+    "L1": 0.9,
+    "L1_observations": "dense"
+},
+{
+    "L2": 0.85,
+    "L2_rationale": "good"
+},
+{
+    "L3": 0.75
+},
+{
+    "L4": 0.9
+},
+{
+    "L5": 0.95
+},
+    "risk_flags": []
+}"""
+    result = parse_llm_json(text)
+    assert result["L1"] == 0.9
+    assert result["L1_observations"] == "dense"
+    assert result["L2"] == 0.85
+    assert result["L2_rationale"] == "good"
+    assert result["L3"] == 0.75
+    assert result["L4"] == 0.9
+    assert result["L5"] == 0.95
+    assert result["risk_flags"] == []
+
+
+def test_parse_llm_json_gemma_split_dimension_objects():
+    """Some local models (Gemma 4) emit each dimension as a SEPARATE JSON object
+    separated by commas, instead of one merged object. Parser must merge them.
+
+    Verified against real Gemma 4 output captured 2026-04-11 from
+    score_image() runs against the Phase 1 gallery — caused ~54% parse failure
+    rate before the merge fallback was added.
+    """
+    from vulca._parse import parse_llm_json
+
+    text = """{
+    "L1": 0.9,
+    "L1_observations": "comp",
+    "L1_rationale": "ok",
+    "L1_deviation_type": "intentional_departure"
+},
+{
+    "L2": 0.85,
+    "L2_observations": "tech",
+    "L2_rationale": "good"
+},
+{
+    "L3": 0.75
+},
+{
+    "L4": 0.9
+},
+{
+    "L5": 0.95
+},
+{
+    "risk_flags": []
+}"""
+    result = parse_llm_json(text)
+    assert result["L1"] == 0.9
+    assert result["L2"] == 0.85
+    assert result["L3"] == 0.75
+    assert result["L4"] == 0.9
+    assert result["L5"] == 0.95
+    assert result["L1_observations"] == "comp"
+    assert result["L1_deviation_type"] == "intentional_departure"
+    assert result["L2_rationale"] == "good"
+    assert result["risk_flags"] == []
+
+
 # -- Engine Tests ----------------------------------------------------------
 
 

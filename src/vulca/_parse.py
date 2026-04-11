@@ -51,4 +51,44 @@ def parse_llm_json(text: str) -> dict:
         except json.JSONDecodeError:
             pass
 
+    # Last resort 2: some local models (Gemma-class) emit each dimension in
+    # its own {...} block, separated by commas, either entirely:
+    #     { "L1": 0.9, ... }, { "L2": 0.8, ... }, { "risk_flags": [] }
+    # or in a hybrid shape where the outer {} wraps 5 pseudo-objects plus a
+    # bare trailing key:
+    #     { { "L1": 0.9, ... }, { "L2": 0.8, ... }, ..., "risk_flags": [] }
+    # Collapsing `},{` → `,` turns both forms into a single flat object that
+    # ``json.loads`` will accept.
+    try:
+        flat = text.strip()
+        # 1. Collapse `},{` boundaries between pseudo-objects.
+        flat = re.sub(r"\}\s*,\s*\{", ",", flat)
+        # 2. Collapse `},"key":` (dimension object immediately followed by a
+        #    bare trailing key like risk_flags) into `,"key":`.
+        flat = re.sub(r'\}\s*,\s*(")', r",\1", flat)
+        # 3. Drop stray trailing commas that would otherwise sink the parse.
+        flat = re.sub(r",\s*([}\]])", r"\1", flat)
+        # 4. Restore outer braces if the collapse ate them entirely.
+        if not flat.startswith("{"):
+            flat = "{" + flat
+        if not flat.rstrip().endswith("}"):
+            flat = flat.rstrip() + "}"
+        return json.loads(flat)
+    except json.JSONDecodeError:
+        pass
+
+    # Last resort 3: fall back to array wrap + merge, in case the collapse
+    # above misfired on a genuinely-array-shaped payload.
+    try:
+        array_text = "[" + text.strip() + "]"
+        array_text = re.sub(r",\s*([}\]])", r"\1", array_text)
+        items = json.loads(array_text)
+        if isinstance(items, list) and items and all(isinstance(x, dict) for x in items):
+            merged: dict = {}
+            for x in items:
+                merged.update(x)
+            return merged
+    except json.JSONDecodeError:
+        pass
+
     raise ValueError(f"Could not parse JSON from LLM output: {text[:200]}...")
