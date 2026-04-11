@@ -48,20 +48,25 @@ REPORT_PATH = DEMO_ROOT / "e2e-report.json"
 # present in src/vulca/cultural/data/traditions/. Prompts match the E2E spec
 # where they overlap and are invented for the traditions the spec did not
 # cover (contemporary_art, ui_ux_design).
-TRADITION_PROMPTS: list[tuple[str, str]] = [
-    ("chinese_xieyi", "水墨山水，雨后春山，松间茅屋"),
-    ("chinese_gongbi", "工笔牡丹，细腻勾线，三矾九染"),
-    ("japanese_traditional", "京都金閣寺の雪景色、墨絵風"),
-    ("western_academic", "Impressionist garden at golden hour, oil on canvas"),
-    ("watercolor", "English countryside cottage, loose wet-on-wet watercolor"),
-    ("islamic_geometric", "Alhambra-inspired geometric pattern, turquoise and gold"),
-    ("african_traditional", "Ndebele mural pattern, bold primary colors"),
-    ("south_asian", "Mughal miniature, garden scene with lotus pond"),
-    ("brand_design", "Premium tea packaging, mountain watermark, Eastern aesthetics"),
-    ("photography", "Misty mountain landscape at dawn, cinematic"),
-    ("contemporary_art", "Abstract expressionist canvas with bold gestural strokes"),
-    ("ui_ux_design", "Clean dashboard UI mockup with card layout and soft shadows"),
-    ("default", "Serene landscape with mountains and water"),
+#
+# Each entry carries a positive ``prompt`` and an optional ``negative`` prompt
+# (default empty). The experimental-override path (see
+# EXPERIMENTAL_PROMPT_OVERRIDES below) can substitute either per tradition
+# without mutating this list.
+TRADITION_PROMPTS: list[dict] = [
+    {"tradition": "chinese_xieyi",        "prompt": "水墨山水，雨后春山，松间茅屋",                                                "negative": ""},
+    {"tradition": "chinese_gongbi",       "prompt": "工笔牡丹，细腻勾线，三矾九染",                                                "negative": ""},
+    {"tradition": "japanese_traditional", "prompt": "京都金閣寺の雪景色、墨絵風",                                                  "negative": ""},
+    {"tradition": "western_academic",     "prompt": "Impressionist garden at golden hour, oil on canvas",                        "negative": ""},
+    {"tradition": "watercolor",           "prompt": "English countryside cottage, loose wet-on-wet watercolor",                  "negative": ""},
+    {"tradition": "islamic_geometric",    "prompt": "Alhambra-inspired geometric pattern, turquoise and gold",                   "negative": ""},
+    {"tradition": "african_traditional",  "prompt": "Ndebele mural pattern, bold primary colors",                                "negative": ""},
+    {"tradition": "south_asian",          "prompt": "Mughal miniature, garden scene with lotus pond",                            "negative": ""},
+    {"tradition": "brand_design",         "prompt": "Premium tea packaging, mountain watermark, Eastern aesthetics",             "negative": ""},
+    {"tradition": "photography",          "prompt": "Misty mountain landscape at dawn, cinematic",                               "negative": ""},
+    {"tradition": "contemporary_art",     "prompt": "Abstract expressionist canvas with bold gestural strokes",                  "negative": ""},
+    {"tradition": "ui_ux_design",         "prompt": "Clean dashboard UI mockup with card layout and soft shadows",               "negative": ""},
+    {"tradition": "default",              "prompt": "Serene landscape with mountains and water",                                 "negative": ""},
 ]
 
 
@@ -85,7 +90,9 @@ async def run_phase1_gallery(provider_name: str, *, width: int, height: int) -> 
 
     entries: list[dict] = []
     total_start = time.time()
-    for idx, (tradition, prompt) in enumerate(TRADITION_PROMPTS, start=1):
+    for idx, entry in enumerate(TRADITION_PROMPTS, start=1):
+        tradition = entry["tradition"]
+        prompt = entry["prompt"]
         out_path = GALLERY_DIR / f"{tradition}.png"
         t0 = time.time()
         status = "ok"
@@ -290,7 +297,7 @@ async def run_phase3_evaluate(*, mode: str = "strict") -> dict:
             "Phase 3 needs Phase 1 gallery output. Run --phases 1 first."
         )
 
-    prompt_by_tradition = dict(TRADITION_PROMPTS)
+    prompt_by_tradition = {e["tradition"]: e["prompt"] for e in TRADITION_PROMPTS}
     gallery_images = sorted(GALLERY_DIR.glob("*.png"))
 
     entries: list[dict] = []
