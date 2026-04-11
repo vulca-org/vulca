@@ -70,6 +70,80 @@ TRADITION_PROMPTS: list[dict] = [
 ]
 
 
+# ---------------------------------------------------------------------------
+# Experimental prompt overrides — see
+# docs/superpowers/specs/2026-04-11-prompt-engineering-experiment-design.md
+#
+# Applied only when --traditions is passed AND the listed tradition is a
+# key in this map. Each override replaces the positive prompt, sets a
+# negative, and may suppress the provider's auto-appended
+# `, {tradition} style` suffix by causing the runner to pass tradition=""
+# to provider.generate(). The baseline TRADITION_PROMPTS list is not
+# mutated; invocations without --traditions behave exactly as today.
+# ---------------------------------------------------------------------------
+EXPERIMENTAL_PROMPT_OVERRIDES: dict[str, dict] = {
+    "chinese_gongbi": {
+        "prompt": (
+            "(single large peony flower:1.4), close-up centered botanical "
+            "portrait, Chinese gongbi meticulous brush painting, fine ink "
+            "outlines, mineral pigments, peony blossom with green leaves, "
+            "blank silk background, Chinese court flower-and-bird painting, "
+            "museum quality botanical study"
+        ),
+        "negative": (
+            "landscape, scenery, mountain, mountains, distant mountains, "
+            "temple, pagoda, building, architecture, pine tree, river, lake, "
+            "clouds, misty background, cottage, loose brushstrokes, xieyi, "
+            "abstract, photography, impressionist"
+        ),
+        "suppress_tradition_suffix": True,
+    },
+    "chinese_xieyi": {
+        "prompt": (
+            "traditional Chinese xieyi freehand ink painting, misty mountains "
+            "after spring rain, pine trees by a thatched cottage, sumi-e style, "
+            "monochrome ink on rice paper, expressive loose brushwork, "
+            "abundant reserved white space"
+        ),
+        "negative": (
+            "photorealistic, saturated colors, western oil painting, gongbi, "
+            "tight line work, peony, botanical portrait"
+        ),
+        "suppress_tradition_suffix": True,
+    },
+    "japanese_traditional": {
+        "prompt": (
+            "(Kinkaku-ji Golden Pavilion:1.3), Kyoto, winter snow, "
+            "sumi-e monochrome ink painting, traditional Japanese ink wash "
+            "suiboku-ga, minimal brushwork, atmospheric, gold temple "
+            "reflecting on pond"
+        ),
+        "negative": (
+            "saturated color, ukiyo-e print, anime, photography, western "
+            "painting, cherry blossoms, red bridge, generic pagoda, "
+            "snow on trees"
+        ),
+        "suppress_tradition_suffix": True,
+    },
+}
+
+
+def _validate_experimental_overrides() -> None:
+    """Fail fast if any EXPERIMENTAL_PROMPT_OVERRIDES key is unknown.
+
+    Guards against silent drift between the override map and
+    TRADITION_PROMPTS (e.g., a tradition renamed or removed without the
+    override being updated).
+    """
+    valid = {e["tradition"] for e in TRADITION_PROMPTS}
+    invalid = [k for k in EXPERIMENTAL_PROMPT_OVERRIDES if k not in valid]
+    if invalid:
+        raise SystemExit(
+            f"EXPERIMENTAL_PROMPT_OVERRIDES contains unknown traditions: "
+            f"{invalid}. Valid names: {sorted(valid)}"
+        )
+
+
 def _validate_png_bytes(raw: bytes) -> tuple[int, int]:
     """Raise AssertionError unless ``raw`` is a valid PNG >10KB with w,h>0."""
     from PIL import Image
@@ -529,6 +603,7 @@ def main() -> int:
         help="VLM evaluation mode for Phase 3. Default: strict",
     )
     args = parser.parse_args()
+    _validate_experimental_overrides()
     return asyncio.run(main_async(args))
 
 
