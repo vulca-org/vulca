@@ -190,7 +190,22 @@ async def run_phase1_gallery(
 
     for idx, (entry, seed_idx, seed_count) in enumerate(work, start=1):
         tradition = entry["tradition"]
-        prompt = entry["prompt"]
+        # Resolve override per-tradition. Mixed invocations (some with
+        # override, some without) work correctly: each tradition is looked
+        # up independently.
+        override = EXPERIMENTAL_PROMPT_OVERRIDES.get(tradition)
+        if override is not None:
+            resolved_prompt = override["prompt"]
+            resolved_negative = override["negative"]
+            suppress_suffix = bool(override.get("suppress_tradition_suffix", False))
+        else:
+            resolved_prompt = entry["prompt"]
+            resolved_negative = entry.get("negative", "")
+            suppress_suffix = False
+        # When suppressing the auto-suffix, pass tradition="" to the provider.
+        # The file name still uses the real tradition key from the loop.
+        tradition_arg = "" if suppress_suffix else tradition
+
         if seed_count == 1:
             filename = f"{tradition}.png"
         else:
@@ -203,17 +218,19 @@ async def run_phase1_gallery(
         size_bytes = 0
         try:
             label = f"{tradition}" if seed_count == 1 else f"{tradition}#seed{seed_idx}"
+            override_tag = " [override]" if override is not None else ""
             print(
-                f"[{idx:>2}/{len(work)}] {label} "
-                f"via {provider_name}: {prompt}",
+                f"[{idx:>2}/{len(work)}] {label}{override_tag} "
+                f"via {provider_name}: {resolved_prompt[:80]}"
+                f"{'...' if len(resolved_prompt) > 80 else ''}",
                 flush=True,
             )
             result = await provider.generate(
-                prompt,
-                tradition=tradition,
+                resolved_prompt,
+                tradition=tradition_arg,
                 width=width,
                 height=height,
-                negative_prompt=entry.get("negative", ""),
+                negative_prompt=resolved_negative,
             )
             assert result.image_b64, "provider returned empty image_b64"
             raw = base64.b64decode(result.image_b64)
@@ -227,7 +244,10 @@ async def run_phase1_gallery(
         elapsed = time.time() - t0
         entry_report = {
             "tradition": tradition,
-            "prompt": prompt,
+            "prompt": resolved_prompt,
+            "negative": resolved_negative,
+            "override_applied": override is not None,
+            "tradition_suffix_suppressed": suppress_suffix,
             "status": status,
             "path": str(out_path.relative_to(REPO_ROOT)) if status == "ok" else None,
             "width": dims[0] if dims else None,
