@@ -1,0 +1,95 @@
+{
+  "generated_at": "2026-04-11T22:56:12.027376+00:00",
+  "overall_status": "ok",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "gallery",
+      "provider": "comfyui",
+      "traditions_total": 3,
+      "images_total": 5,
+      "images_ok": 5,
+      "images_failed": 0,
+      "elapsed_s": 565.94,
+      "entries": [
+        {
+          "tradition": "chinese_xieyi",
+          "prompt": "traditional Chinese xieyi freehand ink painting, misty mountains after spring rain, pine trees by a thatched cottage, sumi-e style, monochrome ink on rice paper, expressive loose brushwork, abundant reserved white space",
+          "negative": "photorealistic, saturated colors, western oil painting, gongbi, tight line work, peony, botanical portrait",
+          "override_applied": true,
+          "tradition_suffix_suppressed": true,
+          "status": "ok",
+          "path": "assets/demo/v3/gallery-promptfix/chinese_xieyi.png",
+          "width": 1024,
+          "height": 1024,
+          "size_bytes": 1726381,
+          "elapsed_s": 110.38,
+          "error": null
+        },
+        {
+          "tradition": "chinese_gongbi",
+          "prompt": "(single large peony flower:1.4), close-up centered botanical portrait, Chinese gongbi meticulous brush painting, fine ink outlines, mineral pigments, peony blossom with green leaves, blank silk background, Chinese court flower-and-bird painting, museum quality botanical study",
+          "negative": "landscape, scenery, mountain, mountains, distant mountains, temple, pagoda, building, architecture, pine tree, river, lake, clouds, misty background, cottage, loose brushstrokes, xieyi, abstract, photography, impressionist",
+          "override_applied": true,
+          "tradition_suffix_suppressed": true,
+          "status": "ok",
+          "path": "assets/demo/v3/gallery-promptfix/chinese_gongbi_seed1.png",
+          "width": 1024,
+          "height": 1024,
+          "size_bytes": 1984567,
+          "elapsed_s": 110.1,
+          "error": null,
+          "seed_index": 1,
+          "seed_count": 3
+        },
+        {
+          "tradition": "chinese_gongbi",
+          "prompt": "(single large peony flower:1.4), close-up centered botanical portrait, Chinese gongbi meticulous brush painting, fine ink outlines, mineral pigments, peony blossom with green leaves, blank silk background, Chinese court flower-and-bird painting, museum quality botanical study",
+          "negative": "landscape, scenery, mountain, mountains, distant mountains, temple, pagoda, building, architecture, pine tree, river, lake, clouds, misty background, cottage, loose brushstrokes, xieyi, abstract, photography, impressionist",
+          "override_applied": true,
+          "tradition_suffix_suppressed": true,
+          "status": "ok",
+          "path": "assets/demo/v3/gallery-promptfix/chinese_gongbi_seed2.png",
+          "width": 1024,
+          "height": 1024,
+          "size_bytes": 1985501,
+          "elapsed_s": 110.24,
+          "error": null,
+          "seed_index": 2,
+          "seed_count": 3
+        },
+        {
+          "tradition": "chinese_gongbi",
+          "prompt": "(single large peony flower:1.4), close-up centered botanical portrait, Chinese gongbi meticulous brush painting, fine ink outlines, mineral pigments, peony blossom with green leaves, blank silk background, Chinese court flower-and-bird painting, museum quality botanical study",
+          "negative": "landscape, scenery, mountain, mountains, distant mountains, temple, pagoda, building, architecture, pine tree, river, lake, clouds, misty background, cottage, loose brushstrokes, xieyi, abstract, photography, impressionist",
+          "override_applied": true,
+          "tradition_suffix_suppressed": true,
+          "status": "ok",
+          "path": "assets/demo/v3/gallery-promptfix/chinese_gongbi_seed3.png",
+          "width": 1024,
+          "height": 1024,
+          "size_bytes": 1826708,
+          "elapsed_s": 110.09,
+          "error": null,
+          "seed_index": 3,
+          "seed_count": 3
+        },
+        {
+          "tradition": "japanese_traditional",
+          "prompt": "(Kinkaku-ji Golden Pavilion:1.3), Kyoto, winter snow, sumi-e monochrome ink painting, traditional Japanese ink wash suiboku-ga, minimal brushwork, atmospheric, gold temple reflecting on pond",
+          "negative": "saturated color, ukiyo-e print, anime, photography, western painting, cherry blossoms, red bridge, generic pagoda, snow on trees",
+          "override_applied": true,
+          "tradition_suffix_suppressed": true,
+          "status": "ok",
+          "path": "assets/demo/v3/gallery-promptfix/japanese_traditional.png",
+          "width": 1024,
+          "height": 1024,
+          "size_bytes": 1695370,
+          "elapsed_s": 125.12,
+          "error": null
+        }
+      ],
+      "status": "ok"
+    }
+  ]
+}
