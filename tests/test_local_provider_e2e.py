@@ -129,6 +129,76 @@ async def test_score_image_no_api_base_for_gemini():
 
 
 @pytest.mark.asyncio
+async def test_score_image_ollama_starts_at_escalated_max_tokens():
+    """Ollama models start directly at _LOCAL_DEFAULT_MAX_TOKENS (8192) to avoid
+    the wasted first attempt at the 3072 cloud default, which Gemma-class models
+    consistently overflow."""
+    from unittest.mock import AsyncMock, MagicMock
+
+    mock_response = MagicMock()
+    mock_response.choices = [MagicMock()]
+    mock_response.choices[0].message.content = """
+<scoring>
+{"L1": 0.7, "L2": 0.6, "L3": 0.8, "L4": 0.5, "L5": 0.6,
+ "L1_rationale": "test", "L2_rationale": "", "L3_rationale": "",
+ "L4_rationale": "", "L5_rationale": ""}
+</scoring>
+"""
+    mock_response.choices[0].finish_reason = "stop"
+
+    with patch.dict(os.environ, {
+        "VULCA_VLM_MODEL": "ollama_chat/gemma4",
+        "OLLAMA_API_BASE": "http://localhost:11434",
+    }):
+        with patch("litellm.acompletion", new_callable=AsyncMock, return_value=mock_response) as mock_call:
+            from vulca._vlm import _LOCAL_DEFAULT_MAX_TOKENS, score_image
+            import base64
+            pixel = base64.b64encode(
+                b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01'
+                b'\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00'
+                b'\x00\x00\x0cIDATx\x9cc\xf8\x0f\x00\x00\x01\x01\x00'
+                b'\x05\x18\xd8N\x00\x00\x00\x00IEND\xaeB`\x82'
+            ).decode()
+            await score_image(pixel, "image/png", "test", "default", "local")
+
+            call_kwargs = mock_call.call_args[1]
+            assert call_kwargs.get("max_tokens") == _LOCAL_DEFAULT_MAX_TOKENS
+            assert _LOCAL_DEFAULT_MAX_TOKENS >= 8192
+
+
+@pytest.mark.asyncio
+async def test_score_image_cloud_starts_at_default_max_tokens():
+    """Cloud (non-Ollama) models retain the cost-conscious 3072 starting budget."""
+    from unittest.mock import AsyncMock, MagicMock
+
+    mock_response = MagicMock()
+    mock_response.choices = [MagicMock()]
+    mock_response.choices[0].message.content = """
+<scoring>
+{"L1": 0.7, "L2": 0.6, "L3": 0.8, "L4": 0.5, "L5": 0.6,
+ "L1_rationale": "test", "L2_rationale": "", "L3_rationale": "",
+ "L4_rationale": "", "L5_rationale": ""}
+</scoring>
+"""
+    mock_response.choices[0].finish_reason = "stop"
+
+    with patch.dict(os.environ, {"VULCA_VLM_MODEL": "gemini/gemini-2.5-flash"}):
+        with patch("litellm.acompletion", new_callable=AsyncMock, return_value=mock_response) as mock_call:
+            from vulca._vlm import _DEFAULT_MAX_TOKENS, score_image
+            import base64
+            pixel = base64.b64encode(
+                b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01'
+                b'\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00'
+                b'\x00\x00\x0cIDATx\x9cc\xf8\x0f\x00\x00\x01\x01\x00'
+                b'\x05\x18\xd8N\x00\x00\x00\x00IEND\xaeB`\x82'
+            ).decode()
+            await score_image(pixel, "image/png", "test", "default", "fake-key")
+
+            call_kwargs = mock_call.call_args[1]
+            assert call_kwargs.get("max_tokens") == _DEFAULT_MAX_TOKENS
+
+
+@pytest.mark.asyncio
 async def test_score_image_api_base_default_fallback():
     """score_image() uses default localhost:11434 when OLLAMA_API_BASE is not set."""
     from unittest.mock import AsyncMock, MagicMock

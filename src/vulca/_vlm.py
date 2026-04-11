@@ -20,6 +20,13 @@ _DEFAULT_MAX_TOKENS = 3072
 _ESCALATED_MAX_TOKENS = 8192
 _MAX_ESCALATION_ATTEMPTS = 1
 
+# Local (Ollama) models consistently emit >3072 tokens for the L1-L5 JSON
+# schema — verbose local models like Gemma 4 regularly overflow the cloud
+# default.  Tokens are free locally, so start at the escalated budget to
+# avoid a wasted first attempt.  The escalation loop still protects against
+# even-longer outputs.
+_LOCAL_DEFAULT_MAX_TOKENS = 8192
+
 # ---------------------------------------------------------------------------
 # Prompt cache partitioning
 # ---------------------------------------------------------------------------
@@ -645,11 +652,14 @@ async def score_image(
 
         # Resolve api_base for local providers (e.g. Ollama)
         api_base = None
-        if model.startswith("ollama"):
+        is_local = model.startswith("ollama")
+        if is_local:
             api_base = os.environ.get("OLLAMA_API_BASE", "http://localhost:11434")
 
-        # Adaptive token budget: start at _DEFAULT_MAX_TOKENS, escalate on truncation
-        max_tokens = _DEFAULT_MAX_TOKENS
+        # Adaptive token budget: cloud models start small (cost-conscious),
+        # local models start at the escalated budget since tokens are free
+        # and Gemma-class models regularly exceed 3072.
+        max_tokens = _LOCAL_DEFAULT_MAX_TOKENS if is_local else _DEFAULT_MAX_TOKENS
         resp = None
         for attempt in range(_MAX_ESCALATION_ATTEMPTS + 1):
             # Local models (Ollama) need longer timeout for first load
@@ -681,6 +691,32 @@ async def score_image(
         from vulca._parse import parse_llm_json
         # Extract only the <scoring> section (strips <observation> scratchpad)
         scoring_text = _extract_scoring(text)
+
+        # Optional debug dump: when VULCA_VLM_DEBUG_DUMP=<dir> is set, write
+        # the full raw text + extracted scoring + finish_reason to a file so
+        # parse failures can be diagnosed offline. The dump is purely
+        # diagnostic and never affects normal control flow.
+        _dump_dir = os.environ.get("VULCA_VLM_DEBUG_DUMP")
+        if _dump_dir:
+            try:
+                import time as _t
+                Path(_dump_dir).mkdir(parents=True, exist_ok=True)
+                stamp = f"{int(_t.time() * 1000)}"
+                _finish = getattr(resp.choices[0], "finish_reason", "?")
+                _usage = getattr(resp, "usage", None)
+                Path(_dump_dir, f"{stamp}.raw.txt").write_text(
+                    f"### finish_reason={_finish}\n"
+                    f"### usage={_usage}\n"
+                    f"### max_tokens_used={max_tokens}\n"
+                    f"### raw_text_len={len(text)}\n"
+                    f"### scoring_text_len={len(scoring_text)}\n"
+                    f"=== RAW TEXT ===\n{text}\n"
+                    f"=== EXTRACTED <scoring> ===\n{scoring_text}\n",
+                    encoding="utf-8",
+                )
+            except Exception as _dump_exc:
+                logger.debug("VLM debug dump failed: %s", _dump_exc)
+
         parsed_json = parse_llm_json(scoring_text)
 
         # Use _parse_vlm_response to extract and validate all fields (including extras)
