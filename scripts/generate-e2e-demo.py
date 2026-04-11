@@ -110,6 +110,7 @@ async def run_phase1_gallery(provider_name: str, *, width: int, height: int) -> 
                 tradition=tradition,
                 width=width,
                 height=height,
+                negative_prompt=entry.get("negative", ""),
             )
             assert result.image_b64, "provider returned empty image_b64"
             raw = base64.b64decode(result.image_b64)
