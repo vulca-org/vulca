@@ -155,7 +155,13 @@ def _validate_png_bytes(raw: bytes) -> tuple[int, int]:
     return img.width, img.height
 
 
-async def run_phase1_gallery(provider_name: str, *, width: int, height: int) -> dict:
+async def run_phase1_gallery(
+    provider_name: str,
+    *,
+    width: int,
+    height: int,
+    traditions: set[str] | None = None,
+) -> dict:
     """Generate one image per tradition, save to ``gallery/{tradition}.png``."""
     from vulca.providers import get_image_provider
 
@@ -164,7 +170,12 @@ async def run_phase1_gallery(provider_name: str, *, width: int, height: int) -> 
 
     entries: list[dict] = []
     total_start = time.time()
-    for idx, entry in enumerate(TRADITION_PROMPTS, start=1):
+    selected_entries = (
+        [e for e in TRADITION_PROMPTS if e["tradition"] in traditions]
+        if traditions is not None
+        else list(TRADITION_PROMPTS)
+    )
+    for idx, entry in enumerate(selected_entries, start=1):
         tradition = entry["tradition"]
         prompt = entry["prompt"]
         out_path = GALLERY_DIR / f"{tradition}.png"
@@ -175,7 +186,7 @@ async def run_phase1_gallery(provider_name: str, *, width: int, height: int) -> 
         size_bytes = 0
         try:
             print(
-                f"[{idx:>2}/{len(TRADITION_PROMPTS)}] {tradition} "
+                f"[{idx:>2}/{len(selected_entries)}] {tradition} "
                 f"via {provider_name}: {prompt}",
                 flush=True,
             )
@@ -221,12 +232,12 @@ async def run_phase1_gallery(provider_name: str, *, width: int, height: int) -> 
         "phase": 1,
         "name": "gallery",
         "provider": provider_name,
-        "traditions_total": len(TRADITION_PROMPTS),
+        "traditions_total": len(selected_entries),
         "traditions_ok": ok_count,
-        "traditions_failed": len(TRADITION_PROMPTS) - ok_count,
+        "traditions_failed": len(selected_entries) - ok_count,
         "elapsed_s": round(total_elapsed, 2),
         "entries": entries,
-        "status": "ok" if ok_count == len(TRADITION_PROMPTS) else "partial",
+        "status": "ok" if ok_count == len(selected_entries) else "partial",
     }
 
 
@@ -494,6 +505,7 @@ async def main_async(args: argparse.Namespace) -> int:
                     args.provider,
                     width=args.width,
                     height=args.height,
+                    traditions=args.traditions_set,
                 )
             except Exception as exc:
                 traceback.print_exc()
@@ -602,8 +614,30 @@ def main() -> int:
         choices=("strict", "reference", "fusion"),
         help="VLM evaluation mode for Phase 3. Default: strict",
     )
+    parser.add_argument(
+        "--traditions",
+        default=None,
+        help="Comma-separated list of tradition names to regenerate in "
+             "Phase 1 (e.g. 'chinese_gongbi,chinese_xieyi'). When unset, "
+             "all 13 traditions run. Unknown names fail fast at startup.",
+    )
     args = parser.parse_args()
     _validate_experimental_overrides()
+
+    # Parse and validate --traditions into a set (or None for "all 13")
+    if args.traditions:
+        requested = [t.strip() for t in args.traditions.split(",") if t.strip()]
+        valid = {e["tradition"] for e in TRADITION_PROMPTS}
+        unknown = [t for t in requested if t not in valid]
+        if unknown:
+            raise SystemExit(
+                f"--traditions contains unknown names: {unknown}. "
+                f"Valid: {sorted(valid)}"
+            )
+        args.traditions_set = set(requested)
+    else:
+        args.traditions_set = None
+
     return asyncio.run(main_async(args))
 
 
