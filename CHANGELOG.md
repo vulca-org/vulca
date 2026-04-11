@@ -1,5 +1,38 @@
 # Changelog
 
+## [0.14.1] - 2026-04-12
+
+### Local provider pipeline robustness
+
+- **Gemma 4 JSON parse fallbacks** (`_parse.py`): `parse_llm_json` now handles two Gemma-class drift modes observed in live Phase 3 eval runs — (a) each L-dimension wrapped in its own `{...}` block separated by commas, and (b) a hybrid shape wrapping 5 pseudo-objects plus a bare trailing `risk_flags` key. Both collapse to a flat object via regex pre-pass; array-merge as a second safety net. Captured ~54% parse-failure rate → 0% on the same gallery.
+- **Ollama max_tokens starts at 8192** (`_vlm.py`): Local Ollama models (especially Gemma 4) consistently overflow the cloud-conservative 3072 default on the L1-L5 scoring schema. New `_LOCAL_DEFAULT_MAX_TOKENS=8192` skips the wasted first attempt for local models; cloud models keep the 3072 default + escalation loop.
+- **`VULCA_VLM_DEBUG_DUMP` env var** (`_vlm.py`): optional directory path for offline diagnosis of VLM parse failures — dumps raw text + extracted `<scoring>` + `finish_reason` + usage + `max_tokens_used` per call. Pure diagnostic, never affects control flow.
+- **KSampler seed randomization** (`providers/comfyui.py`): each `generate()` call now draws its own `secrets.randbelow(2**63)` seed instead of reusing a fixed one, preventing ComfyUI's prompt cache from deduplicating intentional re-runs of the same prompt.
+
+### Release infrastructure
+
+- **Sdist size fix** (`pyproject.toml`): `[tool.hatch.build.targets.sdist]` now excludes `/assets`, `/docs`, `/tests`, `/scripts`, and CI/cache dirs from the source distribution. Prior sdist was 218 MB (blowing past the PyPI 100 MB limit) because hatch was including the full `assets/demo/v2/` master layer PNGs and GIFs. New sdist is ~270 KB. Wheel is unchanged (330 KB, src/vulca/ only).
+
+### E2E runner experimental scaffolding
+
+Dev-only enhancements to `scripts/generate-e2e-demo.py` (not shipped in the wheel). Produced by the prompt engineering experiment documented in `docs/superpowers/specs/2026-04-11-prompt-engineering-experiment-design.md`:
+
+- `TRADITION_PROMPTS` evolved from `list[tuple]` to `list[dict]` with optional `negative` field.
+- `negative_prompt` plumbed through `run_phase1_gallery` to the ComfyUI provider.
+- `EXPERIMENTAL_PROMPT_OVERRIDES` map + `_validate_experimental_overrides()` startup validator.
+- Three composable CLI flags: `--traditions <csv>` (filter to subset, fail-fast on unknown), `--gallery-subdir <name>` (scope Phase 1 output + report to an isolated subdir, baseline untouched), `--seeds-per-tradition <name>:<count>,...` (multi-seed with `_seedN` filename suffix).
+- Per-work-item override resolution inside the gallery loop, including `suppress_tradition_suffix` handling to bypass the provider's auto-appended `, {tradition} style` suffix when running experimental overrides.
+
+### Experiment artifacts (committed but not shipped in the wheel)
+
+- `assets/demo/v3/gallery-promptfix/` — 5 PNGs from Stage 1 of the prompt engineering experiment (3 gongbi seeds + xieyi + japanese_traditional) validating that English-first prompts + negative prompts + suppressed auto-suffix rescue SDXL subject fidelity for `chinese_gongbi: 工笔牡丹` (which baseline rendered as yet another mountain landscape).
+- `assets/demo/v3/e2e-report-gallery-promptfix.json` — scoped run report with full rubric metadata.
+- `assets/demo/v3/gemini-vlm-rescore.json` — Gemini 2.5 Flash second-opinion rescore of all 8 images (3 baselines + 5 experimental) on the same 4-criterion rubric, corroborating the experiment outcome.
+
+### Investigation / memory
+
+- Gemini API billing diagnosis: confirmed the current shared API key is on free tier, which has `limit: 0` for ALL image generation models (`gemini-2.5-flash-image`, `gemini-3-pro-image-preview`, `gemini-3.1-flash-image-preview`, Imagen 4 family). Text and VLM vision work normally. Recorded in `memory/project_gemini_api_billing.md` for future diagnosis.
+
 ## [0.14.0] - 2026-04-09
 
 ### Defense 3 — A-path Reference Image Fidelity

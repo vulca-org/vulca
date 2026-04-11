@@ -121,6 +121,24 @@ packages = ["src/vulca"]
 [tool.hatch.build]
 artifacts = ["src/vulca/cultural/data/**"]
 
+[tool.hatch.build.targets.sdist]
+# Exclude large demo/artifact directories from the source distribution.
+# The wheel already ships only src/vulca/, so these assets are dev-only
+# and bloating the sdist to ~200+ MB would cause PyPI upload failures.
+exclude = [
+    "/assets",
+    "/docs",
+    "/tests",
+    "/scripts",
+    "/.github",
+    "/comfyui",
+    "/.pytest_cache",
+    "/.mypy_cache",
+    "/.ruff_cache",
+    "/dist",
+    "/build",
+]
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
