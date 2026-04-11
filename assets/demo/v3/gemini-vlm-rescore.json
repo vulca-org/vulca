@@ -1,0 +1,137 @@
+{
+  "generated_at": "2026-04-11T23:35:14Z",
+  "scorer_model": "gemini-2.5-flash",
+  "scorer_description": "Gemini 2.5 Flash VLM rescore of Stage 1 prompt engineering experiment + baselines",
+  "total_items": 8,
+  "total_elapsed_s": 46.39,
+  "items": [
+    {
+      "kind": "baseline",
+      "tradition": "chinese_gongbi",
+      "seed": null,
+      "path": "assets/demo/v3/gallery/chinese_gongbi.png",
+      "elapsed_s": 7.33,
+      "scores": {
+        "subject_present": 0,
+        "subject_dominant": 0,
+        "no_wrong_genre": 0,
+        "style_match": 0,
+        "notes": "The image displays a traditional Chinese landscape with mountains and temples, entirely devoid of the requested close-up peony flower in gongbi style."
+      },
+      "total": 0,
+      "passed": false
+    },
+    {
+      "kind": "baseline",
+      "tradition": "chinese_xieyi",
+      "seed": null,
+      "path": "assets/demo/v3/gallery/chinese_xieyi.png",
+      "elapsed_s": 6.86,
+      "scores": {
+        "subject_present": 1,
+        "subject_dominant": 1,
+        "no_wrong_genre": 1,
+        "style_match": 1,
+        "notes": "The image perfectly fulfills all aspects of the request, presenting a quintessential misty Chinese mountain landscape with pine trees in the xieyi ink wash style, complete with appropriate brushwork, palette, and composition."
+      },
+      "total": 4,
+      "passed": true
+    },
+    {
+      "kind": "baseline",
+      "tradition": "japanese_traditional",
+      "seed": null,
+      "path": "assets/demo/v3/gallery/japanese_traditional.png",
+      "elapsed_s": 9.41,
+      "scores": {
+        "subject_present": 0,
+        "subject_dominant": 0,
+        "no_wrong_genre": 1,
+        "style_match": 0,
+        "notes": "The image features a Japanese temple in snow, but it is not Kinkaku-ji and the style is a colorful digital illustration, not sumi-e monochrome ink wash."
+      },
+      "total": 1,
+      "passed": false
+    },
+    {
+      "kind": "experimental",
+      "tradition": "chinese_gongbi",
+      "seed": 1,
+      "path": "assets/demo/v3/gallery-promptfix/chinese_gongbi_seed1.png",
+      "elapsed_s": 7.42,
+      "scores": {
+        "subject_present": 1,
+        "subject_dominant": 1,
+        "no_wrong_genre": 1,
+        "style_match": 1,
+        "notes": "The image clearly depicts close-up peony flowers with meticulous fine-line brushwork and a suitable color palette, aligning well with the requested gongbi style, despite featuring multiple flowers rather than a strictly single one."
+      },
+      "total": 4,
+      "passed": true
+    },
+    {
+      "kind": "experimental",
+      "tradition": "chinese_gongbi",
+      "seed": 2,
+      "path": "assets/demo/v3/gallery-promptfix/chinese_gongbi_seed2.png",
+      "elapsed_s": 7.72,
+      "scores": {
+        "subject_present": 1,
+        "subject_dominant": 0,
+        "no_wrong_genre": 1,
+        "style_match": 1,
+        "notes": "The image contains multiple peonies rendered in a style consistent with gongbi, but it presents a repeating pattern rather than a single dominant close-up flower."
+      },
+      "total": 3,
+      "passed": true
+    },
+    {
+      "kind": "experimental",
+      "tradition": "chinese_gongbi",
+      "seed": 3,
+      "path": "assets/demo/v3/gallery-promptfix/chinese_gongbi_seed3.png",
+      "elapsed_s": 5.01,
+      "scores": {
+        "subject_present": 1,
+        "subject_dominant": 1,
+        "no_wrong_genre": 1,
+        "style_match": 1,
+        "notes": "The image perfectly matches the request, featuring a dominant peony in a highly accurate gongbi style, with no extraneous genre elements."
+      },
+      "total": 4,
+      "passed": true
+    },
+    {
+      "kind": "experimental",
+      "tradition": "chinese_xieyi",
+      "seed": null,
+      "path": "assets/demo/v3/gallery-promptfix/chinese_xieyi.png",
+      "elapsed_s": 8.71,
+      "scores": {
+        "subject_present": 1,
+        "subject_dominant": 1,
+        "no_wrong_genre": 1,
+        "style_match": 1,
+        "notes": "The image clearly depicts a misty Chinese mountain landscape with pine trees, executed convincingly in the traditional xieyi ink wash style with appropriate brushwork, palette, and composition."
+      },
+      "total": 4,
+      "passed": true
+    },
+    {
+      "kind": "experimental",
+      "tradition": "japanese_traditional",
+      "seed": null,
+      "path": "assets/demo/v3/gallery-promptfix/japanese_traditional.png",
+      "elapsed_s": 8.85,
+      "scores": {
+        "subject_present": 1,
+        "subject_dominant": 1,
+        "no_wrong_genre": 0,
+        "style_match": 0,
+        "notes": "The image features the Golden Pavilion prominently with elements of ink wash, but the distinct gold color on the subject contradicts the requested 'monochrome' aspect of sumi-e ink wash."
+      },
+      "total": 2,
+      "passed": false
+    }
+  ]
+}
