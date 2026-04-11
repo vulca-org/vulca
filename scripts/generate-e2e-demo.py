@@ -162,6 +162,7 @@ async def run_phase1_gallery(
     height: int,
     traditions: set[str] | None = None,
     gallery_dir: Path | None = None,
+    seeds_map: dict[str, int] | None = None,
 ) -> dict:
     """Generate one image per tradition, save to ``gallery/{tradition}.png``."""
     from vulca.providers import get_image_provider
@@ -177,18 +178,33 @@ async def run_phase1_gallery(
         if traditions is not None
         else list(TRADITION_PROMPTS)
     )
-    for idx, entry in enumerate(selected_entries, start=1):
+    seeds_map = seeds_map or {}
+
+    # Flatten (entry, seed_idx, seed_count) so the progress counter and
+    # entry list are per-image, not per-tradition.
+    work: list[tuple[dict, int, int]] = []
+    for entry in selected_entries:
+        count = seeds_map.get(entry["tradition"], 1)
+        for seed_idx in range(1, count + 1):
+            work.append((entry, seed_idx, count))
+
+    for idx, (entry, seed_idx, seed_count) in enumerate(work, start=1):
         tradition = entry["tradition"]
         prompt = entry["prompt"]
-        out_path = target_dir / f"{tradition}.png"
+        if seed_count == 1:
+            filename = f"{tradition}.png"
+        else:
+            filename = f"{tradition}_seed{seed_idx}.png"
+        out_path = target_dir / filename
         t0 = time.time()
         status = "ok"
         error: str | None = None
         dims: tuple[int, int] | None = None
         size_bytes = 0
         try:
+            label = f"{tradition}" if seed_count == 1 else f"{tradition}#seed{seed_idx}"
             print(
-                f"[{idx:>2}/{len(selected_entries)}] {tradition} "
+                f"[{idx:>2}/{len(work)}] {label} "
                 f"via {provider_name}: {prompt}",
                 flush=True,
             )
@@ -209,19 +225,21 @@ async def run_phase1_gallery(
             error = f"{type(exc).__name__}: {exc}"
             traceback.print_exc()
         elapsed = time.time() - t0
-        entries.append(
-            {
-                "tradition": tradition,
-                "prompt": prompt,
-                "status": status,
-                "path": str(out_path.relative_to(REPO_ROOT)) if status == "ok" else None,
-                "width": dims[0] if dims else None,
-                "height": dims[1] if dims else None,
-                "size_bytes": size_bytes if status == "ok" else None,
-                "elapsed_s": round(elapsed, 2),
-                "error": error,
-            }
-        )
+        entry_report = {
+            "tradition": tradition,
+            "prompt": prompt,
+            "status": status,
+            "path": str(out_path.relative_to(REPO_ROOT)) if status == "ok" else None,
+            "width": dims[0] if dims else None,
+            "height": dims[1] if dims else None,
+            "size_bytes": size_bytes if status == "ok" else None,
+            "elapsed_s": round(elapsed, 2),
+            "error": error,
+        }
+        if seed_count > 1:
+            entry_report["seed_index"] = seed_idx
+            entry_report["seed_count"] = seed_count
+        entries.append(entry_report)
         print(
             f"      → {status} in {elapsed:.1f}s"
             + (f" ({dims[0]}x{dims[1]}, {size_bytes // 1024} KB)" if dims else "")
@@ -235,11 +253,12 @@ async def run_phase1_gallery(
         "name": "gallery",
         "provider": provider_name,
         "traditions_total": len(selected_entries),
-        "traditions_ok": ok_count,
-        "traditions_failed": len(selected_entries) - ok_count,
+        "images_total": len(work),
+        "images_ok": ok_count,
+        "images_failed": len(work) - ok_count,
         "elapsed_s": round(total_elapsed, 2),
         "entries": entries,
-        "status": "ok" if ok_count == len(selected_entries) else "partial",
+        "status": "ok" if ok_count == len(work) else "partial",
     }
 
 
@@ -518,6 +537,7 @@ async def main_async(args: argparse.Namespace) -> int:
                     height=args.height,
                     traditions=args.traditions_set,
                     gallery_dir=scoped_gallery_dir,
+                    seeds_map=args.seeds_map,
                 )
             except Exception as exc:
                 traceback.print_exc()
@@ -645,6 +665,17 @@ def main() -> int:
              "8 continue reading from the default gallery/ — this flag "
              "only affects Phase 1 output isolation.",
     )
+    parser.add_argument(
+        "--seeds-per-tradition",
+        default=None,
+        help="Comma-separated 'tradition:count' pairs (e.g. "
+             "'chinese_gongbi:3,japanese_traditional:2'). For each listed "
+             "tradition, generate 'count' images with independent random "
+             "seeds. Traditions not listed default to 1 image. When "
+             "unset, all traditions produce 1 image (existing behavior). "
+             "Files with count>1 are named {tradition}_seed{N}.png; "
+             "count==1 uses the flat {tradition}.png name.",
+    )
     args = parser.parse_args()
     _validate_experimental_overrides()
 
@@ -661,6 +692,41 @@ def main() -> int:
         args.traditions_set = set(requested)
     else:
         args.traditions_set = None
+
+    # Parse --seeds-per-tradition into {tradition: int}. Missing traditions
+    # default to 1 seed at lookup time.
+    args.seeds_map = {}
+    if args.seeds_per_tradition:
+        valid = {e["tradition"] for e in TRADITION_PROMPTS}
+        for pair in args.seeds_per_tradition.split(","):
+            pair = pair.strip()
+            if not pair:
+                continue
+            if ":" not in pair:
+                raise SystemExit(
+                    f"--seeds-per-tradition entry {pair!r} must be "
+                    f"'tradition:count' (e.g. 'chinese_gongbi:3')"
+                )
+            name, _, count_s = pair.partition(":")
+            name = name.strip()
+            if name not in valid:
+                raise SystemExit(
+                    f"--seeds-per-tradition unknown tradition {name!r}. "
+                    f"Valid: {sorted(valid)}"
+                )
+            try:
+                count = int(count_s.strip())
+            except ValueError:
+                raise SystemExit(
+                    f"--seeds-per-tradition count for {name!r} "
+                    f"must be an integer, got {count_s!r}"
+                )
+            if count < 1:
+                raise SystemExit(
+                    f"--seeds-per-tradition count for {name!r} "
+                    f"must be >= 1, got {count}"
+                )
+            args.seeds_map[name] = count
 
     return asyncio.run(main_async(args))
 
