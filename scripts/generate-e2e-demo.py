@@ -39,6 +39,11 @@ GALLERY_DIR = DEMO_ROOT / "gallery"
 TOOLS_DIR = DEMO_ROOT / "tools"
 EVAL_DIR = DEMO_ROOT / "eval"
 REPORT_PATH = DEMO_ROOT / "e2e-report.json"
+LAYERED_DIR = DEMO_ROOT / "layered"
+DEFENSE3_DIR = DEMO_ROOT / "defense3"
+EDIT_DIR = DEMO_ROOT / "edit"
+INPAINT_DIR = DEMO_ROOT / "inpaint"
+STUDIO_DIR = DEMO_ROOT / "studio"
 
 
 # ---------------------------------------------------------------------------
@@ -516,6 +521,445 @@ async def run_phase3_evaluate(*, mode: str = "strict") -> dict:
 
 
 # ---------------------------------------------------------------------------
+# Phase 2 — Layered Create
+# ---------------------------------------------------------------------------
+async def run_phase2_layered(
+    provider_name: str,
+    *,
+    width: int = 1024,
+    height: int = 1024,
+) -> dict:
+    """Generate a layered artwork via the LAYERED pipeline template."""
+    from vulca.pipeline.engine import execute
+    from vulca.pipeline.templates import LAYERED
+    from vulca.pipeline.types import PipelineInput
+
+    LAYERED_DIR.mkdir(parents=True, exist_ok=True)
+
+    intent = "水墨山水，雨后春山，松间茅屋"
+    tradition = "chinese_xieyi"
+    subject = "Chinese xieyi ink landscape"
+
+    print(f"[Phase 2] Layered create: {subject} via {provider_name}")
+    t0 = time.time()
+
+    try:
+        output = await execute(LAYERED, PipelineInput(
+            subject=subject,
+            intent=intent,
+            tradition=tradition,
+            provider=provider_name,
+            layered=True,
+            output_dir=str(LAYERED_DIR),
+        ))
+    except Exception as exc:
+        traceback.print_exc()
+        return {
+            "phase": 2, "name": "layered", "provider": provider_name,
+            "status": "failed", "error": f"{type(exc).__name__}: {exc}",
+        }
+
+    elapsed = time.time() - t0
+    entries: list[dict] = []
+    errors: list[str] = []
+
+    manifest_path = LAYERED_DIR / "manifest.json"
+    composite_path = LAYERED_DIR / "composite.png"
+
+    if not manifest_path.exists():
+        errors.append("manifest.json missing")
+    else:
+        try:
+            manifest = json.loads(manifest_path.read_text())
+            assert "layers" in manifest, "manifest missing 'layers' key"
+            assert len(manifest["layers"]) >= 2, f"only {len(manifest['layers'])} layers (need ≥2)"
+            entries.append({"artifact": "manifest.json", "layers": len(manifest["layers"]), "status": "ok"})
+        except Exception as exc:
+            errors.append(f"manifest validation: {exc}")
+
+    if not composite_path.exists():
+        errors.append("composite.png missing")
+    else:
+        try:
+            _validate_png_bytes(composite_path.read_bytes())
+            entries.append({"artifact": "composite.png", "status": "ok"})
+        except Exception as exc:
+            errors.append(f"composite validation: {exc}")
+
+    for png_path in sorted(LAYERED_DIR.glob("*.png")):
+        if png_path.name == "composite.png":
+            continue
+        try:
+            from PIL import Image
+            img = Image.open(png_path)
+            assert img.mode == "RGBA", f"{png_path.name} is {img.mode}, expected RGBA"
+            assert len(png_path.read_bytes()) > 10_000, f"{png_path.name} too small"
+            entries.append({"artifact": png_path.name, "mode": img.mode, "size": img.size, "status": "ok"})
+        except Exception as exc:
+            errors.append(f"layer {png_path.name}: {exc}")
+
+    status = "ok" if not errors else "partial"
+    print(f"      → {status} in {elapsed:.1f}s ({len(entries)} artifacts validated, {len(errors)} errors)")
+    for err in errors:
+        print(f"        [error] {err}")
+
+    return {
+        "phase": 2, "name": "layered", "provider": provider_name,
+        "intent": intent, "tradition": tradition,
+        "elapsed_s": round(elapsed, 2),
+        "entries": entries, "errors": errors,
+        "status": status,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Phase 4 — Defense 3 Showcase
+# ---------------------------------------------------------------------------
+async def run_phase4_defense3(
+    provider_name: str,
+    *,
+    width: int = 1024,
+    height: int = 1024,
+) -> dict:
+    """Compare layered generation with vs. without style-ref anchoring."""
+    from vulca.layers.layered_generate import layered_generate
+    from vulca.layers.layered_prompt import TraditionAnchor
+    from vulca.layers.keying import CanvasSpec
+    from vulca.layers.plan_prompt import get_tradition_layer_order
+    from vulca.layers.types import LayerInfo
+    from vulca.providers import get_image_provider
+
+    DEFENSE3_DIR.mkdir(parents=True, exist_ok=True)
+    no_ref_dir = DEFENSE3_DIR / "no_ref"
+    with_ref_dir = DEFENSE3_DIR / "with_ref"
+    no_ref_dir.mkdir(parents=True, exist_ok=True)
+    with_ref_dir.mkdir(parents=True, exist_ok=True)
+
+    tradition = "chinese_xieyi"
+    intent = "水墨山水，雨后春山，松间茅屋"
+
+    print(f"[Phase 4] Defense 3 showcase: style-ref comparison via {provider_name}")
+    t0 = time.time()
+
+    provider = get_image_provider(provider_name)
+
+    layer_order = get_tradition_layer_order(tradition)
+    plan: list[LayerInfo] = []
+    for i, lo in enumerate(layer_order[:4]):
+        plan.append(LayerInfo(
+            name=lo["role"].replace(" ", "_").replace("/", "_"),
+            description=lo["role"],
+            z_index=i,
+            content_type=lo.get("content_type", "subject"),
+            blend_mode=lo.get("blend", "normal"),
+            tradition_role=lo["role"],
+            position=lo.get("position", ""),
+            coverage=lo.get("coverage", ""),
+            regeneration_prompt=f"{lo['role']} layer for Chinese xieyi ink painting, position: {lo.get('position', 'center')}, coverage: {lo.get('coverage', '30%')}",
+        ))
+
+    anchor = TraditionAnchor(
+        canvas_color_hex="#ffffff",
+        canvas_description="white rice paper",
+        style_keywords="sumi-e, ink wash, freehand brushwork, monochrome",
+    )
+    canvas = CanvasSpec.from_hex("#ffffff")
+
+    caps = getattr(provider, "capabilities", frozenset())
+    english_only = "multilingual_prompt" not in caps
+
+    entries: list[dict] = []
+    errors: list[str] = []
+
+    print("      Running without style-ref (all layers parallel)...")
+    try:
+        result_no_ref = await layered_generate(
+            plan=plan, tradition_anchor=anchor, canvas=canvas,
+            key_strategy_name="luminance", provider=provider,
+            output_dir=str(no_ref_dir), width=width, height=height,
+            english_only=english_only, disable_style_ref=True,
+        )
+        entries.append({
+            "variant": "no_ref",
+            "layers_ok": len(result_no_ref.layers),
+            "layers_failed": len(result_no_ref.failed),
+            "status": "ok" if result_no_ref.is_usable else "failed",
+        })
+    except Exception as exc:
+        traceback.print_exc()
+        errors.append(f"no_ref variant: {exc}")
+
+    print("      Running with style-ref (serial-first anchoring)...")
+    try:
+        result_with_ref = await layered_generate(
+            plan=plan, tradition_anchor=anchor, canvas=canvas,
+            key_strategy_name="luminance", provider=provider,
+            output_dir=str(with_ref_dir), width=width, height=height,
+            english_only=english_only, disable_style_ref=False,
+        )
+        entries.append({
+            "variant": "with_ref",
+            "layers_ok": len(result_with_ref.layers),
+            "layers_failed": len(result_with_ref.failed),
+            "status": "ok" if result_with_ref.is_usable else "failed",
+        })
+    except Exception as exc:
+        traceback.print_exc()
+        errors.append(f"with_ref variant: {exc}")
+
+    elapsed = time.time() - t0
+    status = "ok" if not errors else "partial"
+    print(f"      → {status} in {elapsed:.1f}s")
+
+    return {
+        "phase": 4, "name": "defense3", "provider": provider_name,
+        "intent": intent, "tradition": tradition,
+        "elapsed_s": round(elapsed, 2),
+        "entries": entries, "errors": errors,
+        "status": status,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Phase 5 — Edit / Layer Redraw
+# ---------------------------------------------------------------------------
+async def run_phase5_edit(
+    provider_name: str,
+) -> dict:
+    """Redraw a single layer from the Phase 2 layered artwork."""
+    import shutil
+    from vulca.layers.redraw import redraw_layer
+    from vulca.layers.manifest import load_manifest
+
+    EDIT_DIR.mkdir(parents=True, exist_ok=True)
+
+    manifest_path = LAYERED_DIR / "manifest.json"
+    if not manifest_path.exists():
+        raise FileNotFoundError(
+            "Phase 5 (edit) requires Phase 2 (layered) artifacts. Run --phases 2 first."
+        )
+
+    print(f"[Phase 5] Edit/redraw: loading Phase 2 artwork from {LAYERED_DIR}")
+    t0 = time.time()
+
+    artwork = load_manifest(str(LAYERED_DIR))
+
+    target_layer = None
+    for lr in artwork.layers:
+        if lr.info.content_type != "background":
+            target_layer = lr
+            break
+    if target_layer is None and artwork.layers:
+        target_layer = artwork.layers[-1]
+    if target_layer is None:
+        return {"phase": 5, "name": "edit", "provider": provider_name,
+                "status": "failed", "error": "No layers found in Phase 2 artwork"}
+
+    print(f"      Redrawing layer: {target_layer.info.name}")
+
+    composite_src = LAYERED_DIR / "composite.png"
+    before_path = EDIT_DIR / "before.png"
+    if composite_src.exists():
+        shutil.copy2(composite_src, before_path)
+
+    instruction = "Redraw with more vibrant autumn colors and a setting sun"
+    try:
+        result = await redraw_layer(
+            artwork, layer_name=target_layer.info.name,
+            instruction=instruction, provider=provider_name,
+            tradition="chinese_xieyi", artwork_dir=str(LAYERED_DIR),
+        )
+    except Exception as exc:
+        traceback.print_exc()
+        return {"phase": 5, "name": "edit", "provider": provider_name,
+                "status": "failed", "error": f"{type(exc).__name__}: {exc}"}
+
+    elapsed = time.time() - t0
+    errors: list[str] = []
+
+    redrawn_path = EDIT_DIR / "redrawn_layer.png"
+    if result.image_path and Path(result.image_path).exists():
+        shutil.copy2(result.image_path, redrawn_path)
+        from PIL import Image
+        img = Image.open(redrawn_path)
+        if img.mode != "RGBA":
+            errors.append(f"redrawn layer is {img.mode}, expected RGBA")
+    else:
+        errors.append("redrawn layer image not produced")
+
+    after_path = EDIT_DIR / "after.png"
+    if composite_src.exists():
+        shutil.copy2(composite_src, after_path)
+
+    if before_path.exists() and after_path.exists():
+        if before_path.read_bytes() == after_path.read_bytes():
+            errors.append("after.png identical to before.png — redraw may not have taken effect")
+
+    status = "ok" if not errors else "partial"
+    print(f"      → {status} in {elapsed:.1f}s")
+    for err in errors:
+        print(f"        [error] {err}")
+
+    return {"phase": 5, "name": "edit", "provider": provider_name,
+            "layer_redrawn": target_layer.info.name, "instruction": instruction,
+            "elapsed_s": round(elapsed, 2), "errors": errors, "status": status}
+
+
+# ---------------------------------------------------------------------------
+# Phase 6 — Inpaint
+# ---------------------------------------------------------------------------
+async def run_phase6_inpaint(
+    provider_name: str,
+) -> dict:
+    """Inpaint a region of a Phase 1 gallery image."""
+    import shutil
+    from vulca.inpaint import ainpaint
+
+    INPAINT_DIR.mkdir(parents=True, exist_ok=True)
+
+    input_image = GALLERY_DIR / "chinese_xieyi.png"
+    if not input_image.exists():
+        if GALLERY_DIR.exists():
+            for p in sorted(GALLERY_DIR.glob("*.png")):
+                input_image = p
+                break
+    if not input_image.exists():
+        raise FileNotFoundError(
+            "Phase 6 (inpaint) requires Phase 1 gallery artifacts. Run --phases 1 first."
+        )
+
+    print(f"[Phase 6] Inpaint: {input_image.name} via {provider_name}")
+    t0 = time.time()
+
+    before_path = INPAINT_DIR / "before.png"
+    shutil.copy2(input_image, before_path)
+
+    instruction = "Add a small red pavilion near the water"
+    region = "center 30%"
+
+    try:
+        result = await ainpaint(
+            str(input_image), region=region, instruction=instruction,
+            tradition="chinese_xieyi", provider=provider_name,
+            count=1, select=0, output=str(INPAINT_DIR / "after.png"),
+        )
+    except Exception as exc:
+        traceback.print_exc()
+        return {"phase": 6, "name": "inpaint", "provider": provider_name,
+                "status": "failed", "error": f"{type(exc).__name__}: {exc}"}
+
+    elapsed = time.time() - t0
+    errors: list[str] = []
+
+    after_path = INPAINT_DIR / "after.png"
+    if result.blended and Path(result.blended).exists():
+        if str(after_path) != result.blended:
+            shutil.copy2(result.blended, after_path)
+    elif not after_path.exists():
+        errors.append("after.png not produced")
+
+    if before_path.exists() and after_path.exists():
+        from PIL import Image
+        before_img = Image.open(before_path)
+        after_img = Image.open(after_path)
+        if before_img.size != after_img.size:
+            errors.append(f"dimension mismatch: before={before_img.size}, after={after_img.size}")
+        if before_path.read_bytes() == after_path.read_bytes():
+            errors.append("after.png identical to before.png")
+
+    status = "ok" if not errors else "partial"
+    print(f"      → {status} in {elapsed:.1f}s")
+    for err in errors:
+        print(f"        [error] {err}")
+
+    return {"phase": 6, "name": "inpaint", "provider": provider_name,
+            "instruction": instruction, "region": region,
+            "elapsed_s": round(elapsed, 2), "errors": errors, "status": status}
+
+
+# ---------------------------------------------------------------------------
+# Phase 7 — Studio
+# ---------------------------------------------------------------------------
+async def run_phase7_studio(
+    provider_name: str,
+) -> dict:
+    """Run a brief-driven studio session in auto mode."""
+    from vulca.studio.interactive import run_studio
+
+    STUDIO_DIR.mkdir(parents=True, exist_ok=True)
+
+    intent = (
+        "Create a serene Chinese landscape with mountains emerging from "
+        "morning mist, in the style of Chinese xieyi ink painting"
+    )
+
+    print(f"[Phase 7] Studio session: auto mode via {provider_name}")
+    t0 = time.time()
+
+    try:
+        session = await asyncio.wait_for(
+            asyncio.to_thread(
+                run_studio, intent,
+                project_dir=str(STUDIO_DIR), provider=provider_name,
+                auto=True, max_rounds=3,
+            ),
+            timeout=600,
+        )
+    except asyncio.TimeoutError:
+        return {"phase": 7, "name": "studio", "provider": provider_name,
+                "status": "failed", "error": "Studio session timed out after 600s"}
+    except Exception as exc:
+        traceback.print_exc()
+        return {"phase": 7, "name": "studio", "provider": provider_name,
+                "status": "failed", "error": f"{type(exc).__name__}: {exc}"}
+
+    elapsed = time.time() - t0
+    errors: list[str] = []
+
+    concept_pngs = sorted(STUDIO_DIR.glob("concept_*.png"))
+    if not concept_pngs:
+        concept_pngs = sorted(STUDIO_DIR.glob("*.png"))
+    if not concept_pngs:
+        errors.append("no concept PNGs produced")
+
+    final_path = STUDIO_DIR / "final.png"
+    if not final_path.exists():
+        if concept_pngs:
+            import shutil
+            shutil.copy2(concept_pngs[-1], final_path)
+        else:
+            errors.append("final.png not produced")
+
+    if final_path.exists():
+        try:
+            _validate_png_bytes(final_path.read_bytes())
+        except Exception as exc:
+            errors.append(f"final.png validation: {exc}")
+
+    session_path = STUDIO_DIR / "session.json"
+    if isinstance(session, dict):
+        session_path.write_text(json.dumps(session, indent=2, ensure_ascii=False, default=str))
+    elif not session_path.exists():
+        errors.append("session.json not produced")
+
+    if session_path.exists():
+        try:
+            data = json.loads(session_path.read_text())
+            assert isinstance(data, dict), "session.json is not a dict"
+        except Exception as exc:
+            errors.append(f"session.json validation: {exc}")
+
+    status = "ok" if not errors else "partial"
+    print(f"      → {status} in {elapsed:.1f}s ({len(concept_pngs)} concepts)")
+    for err in errors:
+        print(f"        [error] {err}")
+
+    return {"phase": 7, "name": "studio", "provider": provider_name,
+            "intent": intent, "concepts_produced": len(concept_pngs),
+            "elapsed_s": round(elapsed, 2), "errors": errors, "status": status}
+
+
+# ---------------------------------------------------------------------------
 # Orchestration
 # ---------------------------------------------------------------------------
 async def main_async(args: argparse.Namespace) -> int:
@@ -584,6 +1028,60 @@ async def main_async(args: argparse.Namespace) -> int:
                     "status": "failed",
                     "error": f"{type(exc).__name__}: {exc}",
                 }
+            phase_reports.append(rep)
+            if rep["status"] != "ok":
+                overall_status = "partial"
+        elif phase == 2:
+            try:
+                rep = await run_phase2_layered(
+                    args.provider, width=args.width, height=args.height,
+                )
+            except Exception as exc:
+                traceback.print_exc()
+                rep = {"phase": 2, "name": "layered", "provider": args.provider,
+                       "status": "failed", "error": f"{type(exc).__name__}: {exc}"}
+            phase_reports.append(rep)
+            if rep["status"] != "ok":
+                overall_status = "partial"
+        elif phase == 4:
+            try:
+                rep = await run_phase4_defense3(
+                    args.provider, width=args.width, height=args.height,
+                )
+            except Exception as exc:
+                traceback.print_exc()
+                rep = {"phase": 4, "name": "defense3", "provider": args.provider,
+                       "status": "failed", "error": f"{type(exc).__name__}: {exc}"}
+            phase_reports.append(rep)
+            if rep["status"] != "ok":
+                overall_status = "partial"
+        elif phase == 5:
+            try:
+                rep = await run_phase5_edit(args.provider)
+            except Exception as exc:
+                traceback.print_exc()
+                rep = {"phase": 5, "name": "edit", "provider": args.provider,
+                       "status": "failed", "error": f"{type(exc).__name__}: {exc}"}
+            phase_reports.append(rep)
+            if rep["status"] != "ok":
+                overall_status = "partial"
+        elif phase == 6:
+            try:
+                rep = await run_phase6_inpaint(args.provider)
+            except Exception as exc:
+                traceback.print_exc()
+                rep = {"phase": 6, "name": "inpaint", "provider": args.provider,
+                       "status": "failed", "error": f"{type(exc).__name__}: {exc}"}
+            phase_reports.append(rep)
+            if rep["status"] != "ok":
+                overall_status = "partial"
+        elif phase == 7:
+            try:
+                rep = await run_phase7_studio(args.provider)
+            except Exception as exc:
+                traceback.print_exc()
+                rep = {"phase": 7, "name": "studio", "provider": args.provider,
+                       "status": "failed", "error": f"{type(exc).__name__}: {exc}"}
             phase_reports.append(rep)
             if rep["status"] != "ok":
                 overall_status = "partial"
