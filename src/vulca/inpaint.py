@@ -13,6 +13,7 @@ async def ainpaint(
     region: str,
     instruction: str,
     tradition: str = "default",
+    provider: str = "gemini",
     count: int = 4,
     select: int | None = None,
     output: str = "",
@@ -26,6 +27,7 @@ async def ainpaint(
         region: NL description ("fix the sky") or coordinates ("0,0,100,35").
         instruction: What to change in the region.
         tradition: Cultural tradition for style consistency.
+        provider: Image generation provider (e.g. "gemini", "openai").
         count: Number of repaint variants to generate.
         select: Auto-select variant index (0-based). None = return all.
         output: Output path for blended image.
@@ -74,6 +76,7 @@ async def ainpaint(
             crop_path,
             instruction=instruction,
             tradition=tradition,
+            provider=provider,
             count=count,
             output_dir=crop_dir,
             api_key=api_key,
@@ -124,6 +127,7 @@ def inpaint(
     region: str,
     instruction: str,
     tradition: str = "default",
+    provider: str = "gemini",
     count: int = 4,
     select: int | None = None,
     output: str = "",
@@ -137,6 +141,7 @@ def inpaint(
         region: NL description ("fix the sky") or coordinates ("0,0,100,35").
         instruction: What to change in the region.
         tradition: Cultural tradition for style consistency.
+        provider: Image generation provider (e.g. "gemini", "openai").
         count: Number of repaint variants to generate.
         select: Auto-select variant index (0-based). None = return all.
         output: Output path for blended image.
@@ -151,6 +156,7 @@ def inpaint(
                 region=region,
                 instruction=instruction,
                 tradition=tradition,
+                provider=provider,
                 count=count,
                 select=select,
                 output=output,

@@ -118,6 +118,7 @@ class InpaintPhase:
         *,
         instruction: str,
         tradition: str = "default",
+        provider: str = "gemini",
         count: int = 4,
         output_dir: str = "",
         api_key: str = "",
@@ -134,14 +135,14 @@ class InpaintPhase:
         except Exception:
             pass
 
-        provider = get_image_provider("gemini", api_key=api_key or os.environ.get("GOOGLE_API_KEY", ""))
+        provider_inst = get_image_provider(provider, api_key=api_key or os.environ.get("GOOGLE_API_KEY", ""))
         out_dir = Path(output_dir) if output_dir else Path(original_path).parent
         out_dir.mkdir(parents=True, exist_ok=True)
 
         paths: list[str] = []
         for i in range(count):
             try:
-                result = await provider.generate(
+                result = await provider_inst.generate(
                     f"{prompt}\n\nVariant {i+1} of {count}.",
                     reference_image_b64=ref_b64,
                 )
