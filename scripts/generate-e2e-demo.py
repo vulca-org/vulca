@@ -402,7 +402,7 @@ async def run_phase3_evaluate(*, mode: str = "strict") -> dict:
         vulca_logger.addHandler(handler)
     vulca_logger.setLevel(logging.INFO)
 
-    from vulca._vlm import score_image
+    from vulca import aevaluate
 
     EVAL_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -430,16 +430,14 @@ async def run_phase3_evaluate(*, mode: str = "strict") -> dict:
         t0 = time.time()
         result: dict
         try:
-            raw_bytes = image_path.read_bytes()
-            img_b64 = base64.b64encode(raw_bytes).decode()
-            result = await score_image(
-                img_b64,
-                "image/png",
-                subject,
-                tradition,
-                "local",
+            eval_result = await aevaluate(
+                image_path,
+                subject=subject,
+                tradition=tradition,
                 mode=mode,
             )
+            result = {f"L{i}": eval_result.dimensions.get(f"L{i}", 0.0) for i in range(1, 6)}
+            result["risk_flags"] = eval_result.risk_flags
         except Exception as exc:
             traceback.print_exc()
             result = {"error": f"{type(exc).__name__}: {exc}"}
