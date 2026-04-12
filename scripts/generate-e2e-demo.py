@@ -643,19 +643,29 @@ async def run_phase4_defense3(
 
     provider = get_image_provider(provider_name)
 
+    # Map CJK role names to English descriptions for CLIP-safe prompts
+    _ROLE_EN = {
+        "底纸/绢底": "base paper texture",
+        "远景淡墨": "distant misty mountains in light ink",
+        "中景山石树木": "mid-ground rocks and pine trees",
+        "近景人物建筑": "foreground thatched cottage",
+        "题款印章": "calligraphy inscription and seal",
+    }
     layer_order = get_tradition_layer_order(tradition)
     plan: list[LayerInfo] = []
     for i, lo in enumerate(layer_order[:4]):
+        role = lo["role"]
+        role_en = _ROLE_EN.get(role, role)
         plan.append(LayerInfo(
-            name=lo["role"].replace(" ", "_").replace("/", "_"),
-            description=lo["role"],
+            name=role.replace(" ", "_").replace("/", "_"),
+            description=role_en,
             z_index=i,
             content_type=lo.get("content_type", "subject"),
             blend_mode=lo.get("blend", "normal"),
-            tradition_role=lo["role"],
+            tradition_role=role,
             position=lo.get("position", ""),
             coverage=lo.get("coverage", ""),
-            regeneration_prompt=f"{lo['role']} layer for Chinese xieyi ink painting, position: {lo.get('position', 'center')}, coverage: {lo.get('coverage', '30%')}",
+            regeneration_prompt=f"{role_en}, Chinese xieyi ink painting, position: {lo.get('position', 'center')}, coverage: {lo.get('coverage', '30%')}",
         ))
 
     anchor = TraditionAnchor(
@@ -671,41 +681,45 @@ async def run_phase4_defense3(
     entries: list[dict] = []
     errors: list[str] = []
 
-    print("      Running without style-ref (all layers parallel)...")
-    try:
-        result_no_ref = await layered_generate(
-            plan=plan, tradition_anchor=anchor, canvas=canvas,
-            key_strategy_name="luminance", provider=provider,
-            output_dir=str(no_ref_dir), width=width, height=height,
-            english_only=english_only, disable_style_ref=True,
-        )
-        entries.append({
-            "variant": "no_ref",
-            "layers_ok": len(result_no_ref.layers),
-            "layers_failed": len(result_no_ref.failed),
-            "status": "ok" if result_no_ref.is_usable else "failed",
-        })
-    except Exception as exc:
-        traceback.print_exc()
-        errors.append(f"no_ref variant: {exc}")
+    from vulca.layers.composite import composite_layers
 
-    print("      Running with style-ref (serial-first anchoring)...")
-    try:
-        result_with_ref = await layered_generate(
-            plan=plan, tradition_anchor=anchor, canvas=canvas,
-            key_strategy_name="luminance", provider=provider,
-            output_dir=str(with_ref_dir), width=width, height=height,
-            english_only=english_only, disable_style_ref=False,
-        )
-        entries.append({
-            "variant": "with_ref",
-            "layers_ok": len(result_with_ref.layers),
-            "layers_failed": len(result_with_ref.failed),
-            "status": "ok" if result_with_ref.is_usable else "failed",
-        })
-    except Exception as exc:
-        traceback.print_exc()
-        errors.append(f"with_ref variant: {exc}")
+    for label, out_dir, disable_ref in [
+        ("without style-ref (all layers parallel)", no_ref_dir, True),
+        ("with style-ref (serial-first anchoring)", with_ref_dir, False),
+    ]:
+        variant_key = "no_ref" if disable_ref else "with_ref"
+        print(f"      Running {label}...")
+        try:
+            result = await layered_generate(
+                plan=plan, tradition_anchor=anchor, canvas=canvas,
+                key_strategy_name="luminance", provider=provider,
+                output_dir=str(out_dir), width=width, height=height,
+                english_only=english_only, disable_style_ref=disable_ref,
+            )
+            # Generate composite for this variant
+            if result.is_usable:
+                from vulca.layers.types import LayerResult as LR
+                comp_layers = [
+                    LR(info=o.info, image_path=o.rgba_path)
+                    for o in result.layers if o.ok and o.rgba_path
+                ]
+                if comp_layers:
+                    composite_layers(
+                        comp_layers, width=width, height=height,
+                        output_path=str(out_dir / "composite.png"),
+                    )
+            variant_ok = result.is_usable
+            entries.append({
+                "variant": variant_key,
+                "layers_ok": len(result.layers),
+                "layers_failed": len(result.failed),
+                "status": "ok" if variant_ok else "failed",
+            })
+            if not variant_ok:
+                errors.append(f"{variant_key}: not usable ({len(result.failed)} layers failed)")
+        except Exception as exc:
+            traceback.print_exc()
+            errors.append(f"{variant_key} variant: {exc}")
 
     elapsed = time.time() - t0
     status = "ok" if not errors else "partial"
