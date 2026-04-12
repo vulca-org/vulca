@@ -921,7 +921,7 @@ async def run_phase7_studio(
                 project_dir=str(STUDIO_DIR), provider=provider_name,
                 auto=True, max_rounds=3,
             ),
-            timeout=600,
+            timeout=900,  # 15-min safety net (studio can take 10+ min on MPS)
         )
     except asyncio.TimeoutError:
         return {"phase": 7, "name": "studio", "provider": provider_name,
