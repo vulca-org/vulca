@@ -1,251 +1,410 @@
-# README v0.15.0 Major Revision
+# README v0.15.0 Major Revision + Visual Asset Pipeline
 
 **Date:** 2026-04-12
-**Status:** Approved
-**Type:** Documentation (README.md rewrite)
+**Status:** Approved (revised after codex + superpowers visual asset audit)
+**Type:** Bug fix + Asset production + Documentation
 
 ## Background
 
-The README (758 lines) was last substantially updated around v0.12. Since then:
-- v0.13.x: Layer validation, keying, caching, retry architecture
-- v0.14.0: Defense 3 — serial-first style-ref anchoring
-- v0.14.1: Gemma 4 JSON parse fallbacks, sdist fix, prompt engineering
-- v0.15.0: E2E phases 2-7 full wiring, CJK-aware prompts, provider-agnostic inpaint
+The README (758 lines) was last substantially updated around v0.12. The E2E phases 2-7 wiring (v0.15.0) validated all 8 phases on the local stack — but a post-hoc visual audit of v3 artifacts revealed **3 bugs** that produce broken display assets:
 
-The README still leads with `export GOOGLE_API_KEY`, references only `assets/demo/v2/` images, and doesn't mention the local stack (ComfyUI + Ollama) that now runs all 8 E2E phases.
+1. **"Anchor" hallucination** — SDXL interprets `[CANVAS ANCHOR]` / `[STYLE ANCHOR]` section headers in `build_anchored_layer_prompt()` as content instructions, painting literal ship anchors on layers.
+2. **Background layer keying** — `generate_one_layer()` runs luminance keying on `content_type="background"` layers, making white rice paper transparent. The composite then has holes.
+3. **Provider noise** — ComfyUI intermittently returns corrupted pixel data (defense3 8/8 layers are noise, studio all outputs are noise). Likely caused by reading incomplete responses after timeouts.
+
+These must be fixed before producing README-quality visual assets.
 
 ## Goals
 
-1. **Reorient the narrative from "cloud API required" to "local-first, cloud optional"** — the Install section should make ComfyUI + Ollama the default path, Gemini the alternative.
-2. **Showcase v0.14-v0.15 capabilities** — Defense 3 style-ref, CJK-aware multilingual prompts, provider-agnostic inpaint, E2E 8/8 local validation.
-3. **Tighten the structure from ~15 fuzzy sections to 12 clean sections** — eliminate duplication between overview and deep-dive sections.
-4. **Mix v2 and v3 image assets** — keep v2's polished demos/GIFs/master paintings, add v3 hero images from real E2E runs in hero area and a validation showcase.
-5. **Keep total length under 800 lines** — push detailed setup guides to `docs/`, not README.
+1. **Fix 3 generation bugs** that produce broken v3 assets.
+2. **Regenerate Phases 2, 4, 5, 7** to produce clean display-quality artifacts.
+3. **Build `scripts/make-readme-assets.py`** to produce 7 composite display images from v3 artifacts.
+4. **Rewrite README** with 12-section local-first structure, mixing v2 polished demos + v3 real local-stack outputs.
+5. **Keep README under 800 lines.**
 
 ## Non-Goals
 
-- Not creating new demo images, GIFs, or visual assets (use what exists in v2 + v3).
-- Not rewriting CLI help text or SDK docstrings.
-- Not updating the MCP plugin README (separate repo).
-- Not adding automated README verification (the `scripts/verify-readme.py` already exists).
+- Not creating new GIFs or animated demos (keep v2 GIFs).
+- Not rewriting CLI help text, SDK docstrings, or MCP plugin README.
+- Not fixing Gemini billing (still blocked).
+- Not adding CI for README verification.
 
-## Architecture
+---
 
-### 12-Section Structure
+## Part 1: Bug Fixes (3 fixes, prerequisite for everything else)
 
-```
-1.  Hero (visual hook + one-line positioning)
-2.  Install + Quick Start (merged: two paths + first command)
-3.  What You Can Do (6-capability index, 2-3 lines each)
-4.  Create (layered + style-ref + CJK-aware callout)
-5.  Evaluate (three modes)
-6.  Edit + Inpaint (merged, two subheadings with visual demos)
-7.  Decompose (v2 master paintings preserved)
-8.  Studio (Brief-driven)
-9.  Tools (algorithmic analysis)
-10. Architecture (updated diagram + provider matrix + self-evolution collapsed)
-11. 13 Traditions
-12. Entry Points + Research + Citation
-```
+### Fix A: Remove "ANCHOR" from prompt section headers
 
-### Section Details
+**File:** `src/vulca/layers/layered_prompt.py`
 
-#### 1. Hero
+**Problem:** The per-layer prompt sent to SDXL/CLIP contains section headers like `[CANVAS ANCHOR]`, `[CONTENT ANCHOR — exclusivity]`, `[SPATIAL ANCHOR]`, `[STYLE ANCHOR]`. SDXL's CLIP encoder interprets "ANCHOR" as a content token and generates literal ship anchors. Confirmed in v3/layered — `base_rice_paper_texture.png` and `calligraphy_and_seal.png` both contain painted anchors.
 
-**Keep:** Badge row, one-line description, 3-image showcase, CLI evaluation demo.
+**Fix:** Rename the section headers:
+- `[CANVAS ANCHOR]` → `[CANVAS]`
+- `[CONTENT ANCHOR — exclusivity]` → `[CONTENT — exclusivity]`
+- `[SPATIAL ANCHOR]` → `[SPATIAL]`
+- `[STYLE ANCHOR]` → `[STYLE]`
 
-**Change:**
-- Replace one or more hero images with v3 E2E gallery outputs if they're visually competitive. Candidates: `assets/demo/v3/gallery/chinese_xieyi.png`, `assets/demo/v3/gallery/japanese_traditional.png`. If v3 images are not display-quality (raw SDXL 1024x1024), keep v2 images.
-- Update the one-line description to mention "local-first" or "zero-cost local stack".
-- Add version badge or link to CHANGELOG.
+The docstring and function name `build_anchored_layer_prompt` stay (they describe the strategy, not the prompt content). Only the literal text injected into the prompt changes.
 
-#### 2. Install + Quick Start (merged)
+**Lines affected:** ~74-89 in the current file (the `blocks = [...]` list).
 
-**Structure:**
-```markdown
-## Install
+### Fix B: Skip keying for background layers
 
-pip install vulca
+**File:** `src/vulca/layers/layered_generate.py`
 
-### Local (free, no API key)
-[3 lines: ComfyUI + Ollama env vars, link to docs/local-provider-setup.md]
-vulca create "Misty mountains" -t chinese_xieyi --provider comfyui -o art.png
+**Problem:** `generate_one_layer()` runs `keying.extract_alpha(rgb, canvas)` on ALL layers, including `content_type="background"`. For a white rice paper background on a white canvas, luminance keying makes the entire layer transparent (alpha ≈ 0). The composite then shows through to nothing.
 
-### Cloud (Gemini)
-export GOOGLE_API_KEY=your-key
-vulca create "Misty mountains" -t chinese_xieyi -o art.png
-
-### No GPU? Try mock mode
-vulca create "Misty mountains" -t chinese_xieyi --provider mock -o art.png
+**Fix:** Around line 300 (after raw image is received, before keying), add:
+```python
+if layer.content_type == "background":
+    alpha = np.ones(rgb.shape[:2], dtype=np.float32)
+else:
+    alpha = keying.extract_alpha(rgb, canvas)
 ```
 
-**Key decisions:**
-- Local path first, cloud second, mock as fallback.
-- Do NOT claim "30 seconds" — be honest: mock is instant, Gemini ~10s, local SDXL ~2 min.
-- Local Stack deep setup (ComfyUI installation, model downloads, Ollama model pull) stays in `docs/local-provider-setup.md`. README gets a one-line link.
-- Optional extras (`pip install vulca[mcp]`, etc.) stay in `<details>` block as-is.
+This ensures background layers are always fully opaque, matching the intent of `ensure_alpha()` in `composite.py` (which has a background check at line 86 but can't fix already-keyed images).
 
-#### 3. What You Can Do
+### Fix C: Validate provider response before saving
 
-**6 capabilities, each 2-3 lines + one CLI example. No images. No duplication with sections below.**
+**File:** `src/vulca/providers/comfyui.py`
 
-1. **Generate** — 13 traditions, structured layers, local or cloud
-2. **Evaluate** — L1-L5 scoring, three modes (strict/reference/fusion)
-3. **Edit** — layer redraw + region inpaint, provider-agnostic
-4. **Decompose** — split any image into transparent layers
-5. **Studio** — brief-driven multi-round creative sessions
-6. **Analyze** — 5 algorithmic tools, zero API cost
+**Problem:** When ComfyUI generation times out or returns an error, the provider may read incomplete/corrupted image data from the `/view` endpoint. This data gets base64-encoded and returned as `ImageResult.image_b64`, which downstream code saves as a PNG. The result is noise images.
 
-Each links to its deep-dive section via anchor.
-
-#### 4. Create
-
-**Keep:** Structured creation (`--layered`), tradition examples, layer-driven design transfer.
-
-**Add:**
-- Defense 3 style-ref anchoring explanation (currently in "What You Can Do" layered section, move here as the authoritative location).
-- CJK-aware prompt callout: "VULCA automatically translates CJK prompts to English for CLIP-based providers (ComfyUI/SDXL) while preserving CJK natively for multilingual providers (Gemini)."
-- Provider choice: `--provider comfyui` vs `--provider gemini`.
-
-**Remove:** Duplicate layered explanation from "What You Can Do" section.
-
-#### 5. Evaluate
-
-**Keep as-is.** The three-mode showcase (strict/reference/fusion) with CLI output examples is well-written and current. No changes needed beyond minor version references.
-
-#### 6. Edit + Inpaint (merged)
-
-**Two subheadings:**
-
-```markdown
-## Edit + Inpaint
-
-### Layer-Based Editing
-[v2 sky comparison image]
-[Scenario 1 code: split → lock → redraw → composite]
-Note: Now provider-agnostic (v0.15) — works with ComfyUI, Gemini, or any provider.
-
-### Region-Based Inpainting
-[v2 inpaint before/after image]
-[Inpaint CLI code]
-Note: Provider parameter added in v0.15 — no longer Gemini-only.
-
-<details>
-<summary>More editing workflows</summary>
-[Scenario 2: poster design]
-[Scenario 3: parallax — consider cutting if over 800 lines]
-</details>
+**Fix:** After receiving image bytes from ComfyUI's `/view` endpoint (around line 82), validate before returning:
+```python
+img_resp = await client.get(...)
+raw_bytes = img_resp.content
+# Validate PNG signature and minimum size
+if len(raw_bytes) < 1000 or raw_bytes[:4] != b'\x89PNG':
+    raise ValueError(f"ComfyUI returned invalid image data ({len(raw_bytes)} bytes)")
+img_b64 = base64.b64encode(raw_bytes).decode()
 ```
 
-**Key change:** Both now highlight provider-agnostic as a v0.15 feature.
+This won't prevent timeouts, but it ensures corrupted data raises an error instead of silently producing noise images that pass through the pipeline.
 
-#### 7. Decompose
+---
 
-**Keep as-is.** The Qi Baishi and Mona Lisa decomposition demos with v2 images are the README's strongest visual content. No changes.
+## Part 2: Regenerate E2E Phases
 
-#### 8. Studio
+After fixing the 3 bugs, regenerate the affected phases:
 
-**Keep as-is.** The concept grid → final output showcase is effective. Minor: add `--provider comfyui` example alongside existing `--provider gemini`.
+```bash
+# Clear old artifacts
+rm -rf assets/demo/v3/layered assets/demo/v3/defense3 assets/demo/v3/edit assets/demo/v3/studio
 
-#### 9. Tools
+# Phase 2: Layered (fix A + B produce clean layers + composite)
+PYTHONPATH=./src VULCA_VLM_MODEL=ollama_chat/gemma4 OLLAMA_API_BASE=http://localhost:11434 \
+  python3.11 scripts/generate-e2e-demo.py --phases 2 --provider comfyui
 
-**Keep as-is.** 5 tools with CLI output examples. No changes needed.
+# Phase 5: Edit (depends on Phase 2 artifacts)
+PYTHONPATH=./src VULCA_VLM_MODEL=ollama_chat/gemma4 OLLAMA_API_BASE=http://localhost:11434 \
+  python3.11 scripts/generate-e2e-demo.py --phases 5 --provider comfyui
 
-#### 10. Architecture
+# Phase 4: Defense 3 (fix C prevents noise layers)
+PYTHONPATH=./src VULCA_VLM_MODEL=ollama_chat/gemma4 OLLAMA_API_BASE=http://localhost:11434 \
+  python3.11 scripts/generate-e2e-demo.py --phases 4 --provider comfyui
 
-**Update the ASCII diagram** to reflect:
-- Provider capability system (`multilingual_prompt`, `raw_rgba`, `raw_prompt`)
-- Local VLM path (Ollama + Gemma 4) alongside cloud VLM
-- Self-Evolution section collapsed inside Architecture (move from standalone section)
-- E2E validation status: "8/8 phases validated on local stack (ComfyUI + Ollama, Apple Silicon MPS)"
-
-**Add provider capability matrix:**
-```
-| Provider | Generate | Inpaint | Layered | Multilingual |
-|----------|----------|---------|---------|-------------|
-| ComfyUI  | ✓        | ✓ (v0.15) | ✓    | English-only |
-| Gemini   | ✓        | ✓       | ✓       | CJK native  |
-| OpenAI   | ✓        | —       | —       | English-only |
-| Mock     | ✓        | ✓       | ✓       | —           |
+# Phase 7: Studio (fix C prevents noise outputs)
+PYTHONPATH=./src VULCA_VLM_MODEL=ollama_chat/gemma4 OLLAMA_API_BASE=http://localhost:11434 \
+  python3.11 scripts/generate-e2e-demo.py --phases 7 --provider comfyui
 ```
 
-**Self-Evolution** becomes a `<details>` block inside Architecture, not a top-level section.
+**Expected outputs after regeneration:**
+- `layered/`: 5 RGBA layers (no anchors) + clean composite + manifest.json
+- `defense3/no_ref/`: 4 clean layers + composite (all parallel, no style-ref)
+- `defense3/with_ref/`: 4 clean layers + composite (serial-first + style-ref)
+- `edit/`: before.png (clean composite), after.png (redrawn layer composited), redrawn_layer.png
+- `studio/concepts/`: 4 concept PNGs, `studio/output/`: 3 round PNGs, `studio/final.png`
 
-#### 11. 13 Traditions
+**Verification:** Visually inspect each output. If any are still noise, investigate ComfyUI's response for that specific run (check `/tmp/comfyui.log`).
 
-**Keep as-is.** Image row + tradition list + custom YAML example. No changes needed.
+---
 
-#### 12. Entry Points + Research + Citation
+## Part 3: Visual Asset Production Script
 
-**Merge** the current "Four Entry Points" and "Research" sections into one closing section.
+### Script: `scripts/make-readme-assets.py`
 
-**Structure:**
+Produces 7 display-quality composite images from v3 artifacts. All output to `assets/demo/v3/readme/`.
+
+#### Asset 1: Hero Gallery Strip
+
+**Shows:** "13 traditions, all generated locally" — breadth of capability at a glance.
+
+**Source files:**
+- `assets/demo/v3/gallery/chinese_xieyi.png`
+- `assets/demo/v3/gallery/japanese_traditional.png`
+- `assets/demo/v3/gallery/watercolor.png`
+- `assets/demo/v3/gallery/islamic_geometric.png`
+- `assets/demo/v3/gallery/african_traditional.png`
+
+**Production logic:**
+1. Load 5 images, resize each to 200x200 with LANCZOS
+2. Create white canvas 1040x200
+3. Paste side by side with 8px gaps
+4. No labels (caption in README handles this)
+
+**Output:** `assets/demo/v3/readme/gallery_strip.png` (1040x200)
+**README location:** Section 3 (What You Can Do) or Section 11 (13 Traditions)
+
+#### Asset 2: Layered Exploded View
+
+**Shows:** "How structured layered generation works" — the core v0.14+ feature.
+
+**Logical flow:** Paper → Mist → Mountains → Cottage → Calligraphy → Composite
+
+**Source files:** `assets/demo/v3/layered/*.png` (5 layers + composite, post-regeneration)
+
+**Production logic:**
+1. Load 5 layer PNGs + composite, resize each to 160x160
+2. Create dark gray canvas (#2d2d2d) 1200x250
+3. For each layer: paste on checkerboard background (shows transparency), add layer name label below in white text
+4. Between each pair: draw right arrow (→) in white
+5. After last layer: draw equals sign (=) + paste composite
+
+**Output:** `assets/demo/v3/readme/layered_exploded.png` (1200x250)
+**README location:** Section 4 (Create — Layered creation subsection)
+
+#### Asset 3: Defense 3 Style-Ref Comparison
+
+**Shows:** "Style-ref anchoring produces visually consistent layers" — the Defense 3 feature.
+
+**Logical flow:** Left panel (no style-ref, inconsistent) vs Right panel (with style-ref, consistent)
+
+**Source files:**
+- `assets/demo/v3/defense3/no_ref/composite.png`
+- `assets/demo/v3/defense3/with_ref/composite.png`
+
+**Production logic:**
+1. Load both composites, resize to 400x400
+2. Create white canvas 880x480
+3. Paste no_ref left, with_ref right, 40px gap
+4. Add labels: "Without style-ref" / "With style-ref (v0.14)" above each
+5. Optional: add red border around no_ref, green around with_ref
+
+**Output:** `assets/demo/v3/readme/defense3_comparison.png` (880x480)
+**README location:** Section 4 (Create — Style-ref anchoring subsection)
+
+#### Asset 4: Edit Before/After
+
+**Shows:** "Non-destructive single-layer redraw" — edit capability.
+
+**Source files:**
+- `assets/demo/v3/edit/before.png` (composite before redraw)
+- `assets/demo/v3/edit/after.png` (composite after redraw)
+
+**Production logic:**
+1. Load both, resize to 400x400
+2. Create white canvas 880x480
+3. Paste before left, after right, arrow between
+4. Labels: "Before" / "After (layer redrawn with autumn colors)"
+
+**Output:** `assets/demo/v3/readme/edit_comparison.png` (880x480)
+**README location:** Section 6 (Edit + Inpaint — Layer-based editing)
+
+#### Asset 5: Inpaint Before/After
+
+**Shows:** "Region-based inpainting, locally" — inpaint capability.
+
+**Source files:**
+- `assets/demo/v3/inpaint/before.png`
+- `assets/demo/v3/inpaint/after.png`
+
+**Production logic:** Same as Asset 4 layout.
+Labels: "Original" / "After (pavilion inpainted, center 30%)"
+
+**Output:** `assets/demo/v3/readme/inpaint_comparison.png` (880x480)
+**README location:** Section 6 (Edit + Inpaint — Region-based inpainting)
+
+#### Asset 6: Studio Concept Grid
+
+**Shows:** "Brief-driven multi-round creative session" — studio workflow.
+
+**Source files:**
+- `assets/demo/v3/studio/concepts/c1.png` through `c4.png`
+- `assets/demo/v3/studio/output/r3.png` (final round output, or `final.png`)
+
+**Production logic:**
+1. Load 4 concepts, resize to 200x200 each
+2. Load final output, resize to 200x200
+3. Create white canvas 1100x250
+4. Paste c1-c4 in a row, then arrow (→), then final
+5. Labels: "Concept 1-4" / "Final"
+
+**Output:** `assets/demo/v3/readme/studio_grid.png` (1100x250)
+**README location:** Section 8 (Studio)
+
+#### Asset 7: 13 Traditions Full Grid
+
+**Shows:** Complete tradition coverage — all 13 in one image.
+
+**Source files:** All 13 `assets/demo/v3/gallery/*.png`
+
+**Production logic:**
+1. Load all 13, resize to 180x180
+2. Create white canvas 980x600 (5 cols × 3 rows, last row has 3)
+3. Paste in grid, add tradition name label below each
+4. Font: small, gray (#666)
+
+**Output:** `assets/demo/v3/readme/tradition_grid.png` (980x600)
+**README location:** Section 11 (13 Traditions) inside `<details>` block
+
+### Script CLI
+
+```bash
+python scripts/make-readme-assets.py                    # build all 7
+python scripts/make-readme-assets.py --only gallery,inpaint  # build subset
+python scripts/make-readme-assets.py --check            # verify inputs exist
 ```
-## Integration & Research
 
-### CLI / SDK / MCP / ComfyUI
-[Keep existing 4 subsections, but move full CLI reference to docs/ and link]
+---
 
-### Research
-[Keep paper table + citation blocks]
+## Part 4: README Structure (12 sections)
+
+### Section-by-Section Image Map
+
+| # | Section | Images | Source | Feature Demonstrated |
+|---|---------|--------|--------|---------------------|
+| 1 | Hero | 3 gallery images inline | v3/gallery (xieyi, japanese, brand) | "Three traditions, generated locally" |
+| 2 | Install + Quick Start | None | — | Code blocks only |
+| 3 | What You Can Do | gallery_strip.png (optional) | Asset 1 | Breadth of 13 traditions |
+| 4 | Create | layered_exploded.png + defense3_comparison.png | Assets 2+3 | Layered generation + style-ref anchoring |
+| 5 | Evaluate | None | — | CLI output blocks (keep v2 style) |
+| 6 | Edit + Inpaint | edit_comparison.png + inpaint_comparison.png | Assets 4+5 | Non-destructive edit + region inpaint |
+| 7 | Decompose | Qi Baishi + Mona Lisa decomposition | v2 masters (keep) | Layer extraction from existing art |
+| 8 | Studio | studio_grid.png OR v2 studio images | Asset 6 or v2 fallback | Brief-driven workflow |
+| 9 | Tools | tools-viz.png | v2 (keep) | Algorithmic analysis |
+| 10 | Architecture | ASCII diagram (text) + provider matrix (table) | Updated text | System overview |
+| 11 | 13 Traditions | 5 inline + tradition_grid.png in details | v3/gallery + Asset 7 | Full tradition coverage |
+| 12 | Entry Points + Research | None | — | Integration + academic |
+
+### Visual Storytelling Flow
+
+Each image answers a progressive question:
+
+```
+"What does it produce?"      → Hero (3 traditions, locally generated)
+"How many styles?"           → Gallery strip (5 more traditions)
+"How does it work inside?"   → Layered exploded view (5 layers → composite)
+"Does style-ref matter?"     → Defense 3 comparison (with vs without)
+"Can I edit surgically?"     → Edit before/after (one layer redrawn)
+"Can I fix regions?"         → Inpaint before/after (pavilion added)
+"Can it analyze existing?"   → Qi Baishi decomposition (v2, free/local)
+"What about full sessions?"  → Studio concept grid (4 concepts → final)
+"All 13 traditions?"         → Full grid (comprehensive coverage)
 ```
 
-**Trim:** Full CLI reference (`<details>` block, 50 lines) → link to a dedicated docs page or keep collapsed.
+### Key Narrative Changes
 
-### Image Asset Decisions
+**Install section:**
+- Local path first: `--provider comfyui` (free, no API key)
+- Cloud path second: `export GOOGLE_API_KEY` (Gemini)
+- Mock fallback: `--provider mock` (no GPU needed)
+- Honest timing: "~2 min on Apple Silicon MPS" for local, "~10s" for Gemini
 
-| Location | Current | New |
-|----------|---------|-----|
-| Hero 3-image row | v2 (xieyi, western, brand) | Try v3 `gallery/chinese_xieyi.png` for first slot; keep v2 for others if v3 isn't display-quality |
-| CLI eval demo | v2 output | Keep (not a real screenshot) |
-| Layer decomposition | v2 masters (Qi Baishi, Mona Lisa) | Keep v2 |
-| Sky redraw comparison | v2 scenario1-comparison | Keep v2 |
-| Inpaint before/after | v2 hero-xieyi → inpaint-after | Keep v2 |
-| Studio concepts | v2 studio-c1..c4 | Keep v2 |
-| GIFs | v2 vhs-create, vhs-layers, vhs-tools, vhs-studio | Keep v2 |
-| Poster workflow | v2 scenario2-poster | Keep v2 |
-| Tools viz | v2 tools-viz | Keep v2 |
+**Create section:**
+- CJK-aware callout: "VULCA automatically strips CJK from prompts for CLIP-based providers while preserving CJK natively for multilingual providers"
+- Style-ref anchoring: first layer serial → style reference → rest parallel
+- Provider choice shown in every example
 
-**Mark all v2 images with `<!-- v2-asset -->` HTML comments** for future replacement tracking.
+**Architecture section:**
+- Provider capability matrix (generate/inpaint/layered/multilingual)
+- Local VLM path (Ollama + Gemma 4) alongside cloud
+- Self-Evolution collapsed in `<details>`
+- E2E validation: "8/8 phases validated on local stack"
+
+### v2 Assets Retained
+
+| Asset | Section | Why Keep |
+|-------|---------|---------|
+| v2 GIFs (create, layers, tools, studio) | Various `<details>` | Polished workflow demos, no v3 equivalent |
+| v2 Qi Baishi + Mona Lisa decomposition | Decompose | Iconic master paintings, extraction is free/local |
+| v2 scenario1-comparison.png | Edit (fallback) | Clean sky-redraw comparison if v3 edit is weak |
+| v2 scenario2-poster.png | Edit `<details>` | Design transfer workflow |
+| v2 tools-viz.png | Tools | Brushstroke/composition visualization |
+
+All v2 references get `<!-- v2-asset -->` HTML comments for future tracking.
 
 ### Badges
 
-Update the badge row:
-- PyPI version: keep (dynamic)
+- PyPI version: keep (dynamic via shields.io)
 - Python version: keep
 - License: keep
-- Tests: remove hardcoded count or link to CI
-- MCP tools: update count if changed
+- Tests: remove hardcoded "1252" — either link to CI or remove
+- MCP tools: verify count, update if changed
 
-### TOC
-
-Add a table of contents after the hero section (GitHub auto-generates one, but an explicit one above the fold helps scanners).
+---
 
 ## Success Criteria
 
-1. README is under 800 lines.
-2. First runnable command is within 15 lines of "## Install".
-3. Local path (ComfyUI) appears before cloud path (Gemini) in Install.
-4. No duplicate content between "What You Can Do" and deep-dive sections.
-5. All v2 image references have `<!-- v2-asset -->` comments.
-6. Provider capability matrix present in Architecture.
-7. Self-Evolution is inside Architecture, not standalone.
-8. CJK-aware prompt feature mentioned in Create section.
-9. Edit + Inpaint merged with provider-agnostic callout.
-10. `docs/local-provider-setup.md` linked, not duplicated.
+### Bug fixes
+1. No "ANCHOR" text in generated prompt (grep `build_anchored_layer_prompt` output)
+2. Background layers have alpha ≈ 1.0 (not keyed transparent)
+3. ComfyUI provider rejects <1KB responses
+
+### Regeneration
+4. `assets/demo/v3/layered/composite.png` — clean Chinese ink wash landscape, no anchors
+5. `assets/demo/v3/defense3/*/composite.png` — non-noise composites showing style difference
+6. `assets/demo/v3/edit/after.png` — visible color change from before
+7. `assets/demo/v3/studio/final.png` — non-noise final artwork
+
+### Asset production
+8. All 7 assets in `assets/demo/v3/readme/` exist and are display-quality
+9. `scripts/make-readme-assets.py` runs without errors
+
+### README
+10. Under 800 lines
+11. Local path before cloud path in Install
+12. No duplicate content between overview and deep-dive
+13. Provider capability matrix in Architecture
+14. All image links resolve (no broken references)
+
+---
 
 ## Files Changed
 
-- `README.md` — full rewrite (~800 lines, down from 758 but restructured)
-- No other files changed. Image assets are referenced, not created.
+### Bug fixes (~15 lines)
+- `src/vulca/layers/layered_prompt.py` — remove "ANCHOR" from section headers
+- `src/vulca/layers/layered_generate.py` — skip keying for background layers
+- `src/vulca/providers/comfyui.py` — validate PNG response before returning
 
-## Risk
+### New script (~150 lines)
+- `scripts/make-readme-assets.py` — produces 7 display images
 
-**Risk: v3 hero image not display-quality.**
-Mitigated: inspect first, fall back to v2 if raw SDXL output isn't competitive. The spec explicitly allows keeping v2.
+### Generated assets (not hand-written)
+- `assets/demo/v3/readme/*.png` — 7 composite display images
+- `assets/demo/v3/layered/` — regenerated layers + composite
+- `assets/demo/v3/defense3/` — regenerated defense3 variants
+- `assets/demo/v3/edit/` — regenerated edit comparison
+- `assets/demo/v3/studio/` — regenerated studio session
 
-**Risk: exceeds 800 lines.**
-Mitigated: push CLI reference and local stack setup guide to docs/. Use `<details>` aggressively for secondary content.
+### Documentation
+- `README.md` — full rewrite (~800 lines)
 
-**Risk: broken image links after restructure.**
-Mitigated: do not rename or move any image files. Only change README references.
+---
+
+## Risk & Mitigation
+
+**Risk: Regenerated phases still produce noise.**
+Mitigated: Fix C (PNG validation) ensures corrupted data raises an error rather than silently saving noise. If ComfyUI is fundamentally unstable, fall back to v2 assets for those sections.
+
+**Risk: Regenerated layered composite has new artifacts.**
+Mitigated: Visual inspection after each regeneration. If quality is poor, use v2 `layered-showcase.png` and individual v2 layer images.
+
+**Risk: README exceeds 800 lines.**
+Mitigated: Full CLI reference moved to docs. `<details>` blocks for secondary content. Scenarios 3-4 cut if needed.
+
+**Risk: Studio still times out or produces 0% scores.**
+Mitigated: VLM timeout issue is pre-existing (Ollama). Studio runs functionally (generates images, iterates, accepts). Use v2 studio images as fallback if v3 quality is poor.
+
+## Estimated Effort
+
+| Phase | Time |
+|-------|------|
+| Bug fixes (3) | ~30 min |
+| Regenerate phases 2/4/5/7 | ~45 min wall time (mostly waiting for ComfyUI) |
+| Visual inspection + re-runs if needed | ~15 min |
+| `make-readme-assets.py` script | ~30 min |
+| README rewrite | ~2 hours |
+| Review + polish | ~30 min |
+| **Total** | ~4 hours |
