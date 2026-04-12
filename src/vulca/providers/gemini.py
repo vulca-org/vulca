@@ -60,7 +60,7 @@ class GeminiImageProvider:
     Width/height params are mapped to the closest Gemini tier + ratio.
     """
 
-    capabilities: frozenset[str] = frozenset({"raw_rgba"})
+    capabilities: frozenset[str] = frozenset({"raw_rgba", "multilingual_prompt"})
 
     def __init__(
         self,
