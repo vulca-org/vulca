@@ -54,15 +54,20 @@ def build_anchored_layer_prompt(
     canvas_description = anchor.canvas_description
     style_keywords = anchor.style_keywords
     effective_siblings = list(sibling_roles)
+    own_role = layer.tradition_role or layer.name
 
     if english_only:
         canvas_description = _strip_cjk_parenthetical(canvas_description)
         style_keywords = ", ".join(
-            kw.strip() for kw in style_keywords.split(",") if _is_ascii_latin(kw.strip())
-        )
-        effective_siblings = [s for s in (_strip_cjk_chars(r) for r in sibling_roles) if s]
+            kw.strip() for kw in style_keywords.split(",")
+            if kw.strip() and _is_ascii_latin(kw.strip())
+        ) or style_keywords  # fallback to original if all keywords are CJK
+        effective_siblings = [
+            _strip_cjk_parenthetical(r) for r in sibling_roles
+            if _strip_cjk_parenthetical(r)
+        ]
+        own_role = _strip_cjk_parenthetical(own_role)
 
-    own_role = layer.tradition_role or layer.name
     others = [r for r in effective_siblings if r and r != own_role]
     others_text = ", ".join(others) if others else "(none)"
 
@@ -70,6 +75,8 @@ def build_anchored_layer_prompt(
     cov = coverage or "as the user intent specifies"
 
     user_intent = layer.regeneration_prompt or layer.description or own_role
+    if english_only and not _is_ascii_latin(user_intent):
+        user_intent = _strip_cjk_parenthetical(user_intent)
 
     blocks = [
         "[CANVAS ANCHOR]",
