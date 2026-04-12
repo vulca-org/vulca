@@ -379,67 +379,87 @@ async def layered_generate(
         english_only=english_only,
     )
 
-    # --- Phase 1: Generate first layer serially (style anchor) ---
-    first = plan[0]
-    try:
-        first_outcome = await generate_one_layer(
-            layer=first,
-            position=positions.get(first.name, ""),
-            coverage=coverages.get(first.name, ""),
-            reference_image_b64=reference_image_b64,
-            **common_kw,
-        )
-    except (AssertionError, TypeError, KeyError, AttributeError, ValueError):
-        raise
-    except Exception:
-        logger.exception("unexpected post-provider failure for layer %s", first.name)
-        first_outcome = LayerOutcome(ok=False, info=first, rgba_path="", attempts=1)
+    if disable_style_ref:
+        # All layers in parallel, no cross-layer style reference.
+        async def _run_no_ref(layer: LayerInfo) -> LayerOutcome:
+            async with sem:
+                try:
+                    return await generate_one_layer(
+                        layer=layer,
+                        position=positions.get(layer.name, ""),
+                        coverage=coverages.get(layer.name, ""),
+                        reference_image_b64=reference_image_b64,
+                        **common_kw,
+                    )
+                except (AssertionError, TypeError, KeyError, AttributeError, ValueError):
+                    raise
+                except Exception:
+                    logger.exception("unexpected failure for layer %s", layer.name)
+                    return LayerOutcome(ok=False, info=layer, rgba_path="", attempts=1)
 
-    # Derive style_ref from first layer's RAW output (before keying).
-    # Using keyed RGBA would pass a partially-transparent image as style
-    # reference, degrading provider output quality (P1 review finding).
-    # Fallback: on cache hit raw_rgb_bytes is None — read cached RGBA,
-    # strip alpha, re-encode as RGB. Slightly lossy but RGB data intact.
-    style_ref = ""
-    if first_outcome.ok and first_outcome.raw_rgb_bytes:
-        style_ref = base64.b64encode(first_outcome.raw_rgb_bytes).decode()
-    elif first_outcome.ok and first_outcome.rgba_path:
-        try:
-            _img = Image.open(first_outcome.rgba_path).convert("RGB")
-            _buf = io.BytesIO()
-            _img.save(_buf, format="PNG")
-            style_ref = base64.b64encode(_buf.getvalue()).decode()
-        except Exception as exc:
-            logger.warning(
-                "failed to derive style_ref from cached first layer %s: %s",
-                first_outcome.rgba_path, exc,
-            )
-
-    # --- Phase 2: Generate remaining layers in parallel with style_ref ---
-    remaining = plan[1:]
-
-    async def _run(layer: LayerInfo) -> LayerOutcome:
-        async with sem:
-            try:
-                return await generate_one_layer(
-                    layer=layer,
-                    position=positions.get(layer.name, ""),
-                    coverage=coverages.get(layer.name, ""),
-                    reference_image_b64=style_ref,
-                    **common_kw,
-                )
-            except (AssertionError, TypeError, KeyError, AttributeError, ValueError):
-                raise
-            except Exception:
-                logger.exception("unexpected post-provider failure for layer %s", layer.name)
-                return LayerOutcome(ok=False, info=layer, rgba_path="", attempts=1)
-
-    if remaining:
-        rest_outcomes = list(await asyncio.gather(*(_run(l) for l in remaining)))
+        outcomes = list(await asyncio.gather(*(_run_no_ref(l) for l in plan)))
     else:
-        rest_outcomes = []
+        # --- Phase 1: Generate first layer serially (style anchor) ---
+        first = plan[0]
+        try:
+            first_outcome = await generate_one_layer(
+                layer=first,
+                position=positions.get(first.name, ""),
+                coverage=coverages.get(first.name, ""),
+                reference_image_b64=reference_image_b64,
+                **common_kw,
+            )
+        except (AssertionError, TypeError, KeyError, AttributeError, ValueError):
+            raise
+        except Exception:
+            logger.exception("unexpected post-provider failure for layer %s", first.name)
+            first_outcome = LayerOutcome(ok=False, info=first, rgba_path="", attempts=1)
 
-    outcomes = [first_outcome] + rest_outcomes
+        # Derive style_ref from first layer's RAW output (before keying).
+        # Using keyed RGBA would pass a partially-transparent image as style
+        # reference, degrading provider output quality (P1 review finding).
+        # Fallback: on cache hit raw_rgb_bytes is None — read cached RGBA,
+        # strip alpha, re-encode as RGB. Slightly lossy but RGB data intact.
+        style_ref = ""
+        if first_outcome.ok and first_outcome.raw_rgb_bytes:
+            style_ref = base64.b64encode(first_outcome.raw_rgb_bytes).decode()
+        elif first_outcome.ok and first_outcome.rgba_path:
+            try:
+                _img = Image.open(first_outcome.rgba_path).convert("RGB")
+                _buf = io.BytesIO()
+                _img.save(_buf, format="PNG")
+                style_ref = base64.b64encode(_buf.getvalue()).decode()
+            except Exception as exc:
+                logger.warning(
+                    "failed to derive style_ref from cached first layer %s: %s",
+                    first_outcome.rgba_path, exc,
+                )
+
+        # --- Phase 2: Generate remaining layers in parallel with style_ref ---
+        remaining = plan[1:]
+
+        async def _run(layer: LayerInfo) -> LayerOutcome:
+            async with sem:
+                try:
+                    return await generate_one_layer(
+                        layer=layer,
+                        position=positions.get(layer.name, ""),
+                        coverage=coverages.get(layer.name, ""),
+                        reference_image_b64=style_ref,
+                        **common_kw,
+                    )
+                except (AssertionError, TypeError, KeyError, AttributeError, ValueError):
+                    raise
+                except Exception:
+                    logger.exception("unexpected post-provider failure for layer %s", layer.name)
+                    return LayerOutcome(ok=False, info=layer, rgba_path="", attempts=1)
+
+        if remaining:
+            rest_outcomes = list(await asyncio.gather(*(_run(l) for l in remaining)))
+        else:
+            rest_outcomes = []
+
+        outcomes = [first_outcome] + rest_outcomes
 
     layers_ok = [o for o in outcomes if o.ok]
     layers_failed = [
