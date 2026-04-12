@@ -228,7 +228,9 @@ from vulca.layers.redraw import redraw_layer
 from vulca.layers.types import LayeredArtwork
 
 # Load the Phase 2 artifact into a LayeredArtwork object
-artwork = LayeredArtwork.load(str(layered_dir))  # or construct from manifest.json
+# Note: LayeredArtwork has no .load() classmethod — use load_manifest()
+from vulca.layers.manifest import load_manifest
+artwork = load_manifest(str(layered_dir))  # loads manifest.json → LayeredArtwork
 target_layer = next(
     l for l in artwork.layers if l.info.content_type != "background"
 )
@@ -338,8 +340,8 @@ session = await asyncio.wait_for(
 When multiple phases are requested via `--phases`, the runner executes them in dependency order:
 
 ```
-Phase 2 (layered) ← must run before Phase 4 and Phase 5
-Phase 4 (defense3) ← uses its own layer plan, but benefits from Phase 2's plan as reference
+Phase 2 (layered) ← must run before Phase 5
+Phase 4 (defense3) ← fully independent (generates its own layer plan via PlanLayersNode)
 Phase 5 (edit) ← REQUIRES Phase 2's layered artifact
 Phase 6 (inpaint) ← requires Phase 1's gallery (already exists)
 Phase 7 (studio) ← fully independent
