@@ -49,14 +49,55 @@ REPORT_PATH = DEMO_ROOT / "e2e-report.json"
 # where they overlap and are invented for the traditions the spec did not
 # cover (contemporary_art, ui_ux_design).
 #
-# Each entry carries a positive ``prompt`` and an optional ``negative`` prompt
-# (default empty). The experimental-override path (see
-# EXPERIMENTAL_PROMPT_OVERRIDES below) can substitute either per tradition
-# without mutating this list.
+# Each entry carries a positive ``prompt``, an optional ``negative`` prompt,
+# and an optional ``suppress_tradition_suffix`` flag. When the flag is True,
+# the runner passes tradition="" to provider.generate() so the provider's
+# auto-appended ", {tradition} style" suffix does not compete with the prompt.
+#
+# The CJK entries (xieyi, gongbi, japanese) use English-first prompts with
+# token weighting and explicit negatives — validated by the prompt engineering
+# experiment (2026-04-11, spec: docs/superpowers/specs/2026-04-11-...).
 TRADITION_PROMPTS: list[dict] = [
-    {"tradition": "chinese_xieyi",        "prompt": "水墨山水，雨后春山，松间茅屋",                                                "negative": ""},
-    {"tradition": "chinese_gongbi",       "prompt": "工笔牡丹，细腻勾线，三矾九染",                                                "negative": ""},
-    {"tradition": "japanese_traditional", "prompt": "京都金閣寺の雪景色、墨絵風",                                                  "negative": ""},
+    {"tradition": "chinese_xieyi",
+     "prompt": (
+         "traditional Chinese xieyi freehand ink painting, misty mountains "
+         "after spring rain, pine trees by a thatched cottage, sumi-e style, "
+         "monochrome ink on rice paper, expressive loose brushwork, "
+         "abundant reserved white space"
+     ),
+     "negative": (
+         "photorealistic, saturated colors, western oil painting, gongbi, "
+         "tight line work, peony, botanical portrait"
+     ),
+     "suppress_tradition_suffix": True},
+    {"tradition": "chinese_gongbi",
+     "prompt": (
+         "(single large peony flower:1.4), close-up centered botanical "
+         "portrait, Chinese gongbi meticulous brush painting, fine ink "
+         "outlines, mineral pigments, peony blossom with green leaves, "
+         "blank silk background, Chinese court flower-and-bird painting, "
+         "museum quality botanical study"
+     ),
+     "negative": (
+         "landscape, scenery, mountain, mountains, distant mountains, "
+         "temple, pagoda, building, architecture, pine tree, river, lake, "
+         "clouds, misty background, cottage, loose brushstrokes, xieyi, "
+         "abstract, photography, impressionist"
+     ),
+     "suppress_tradition_suffix": True},
+    {"tradition": "japanese_traditional",
+     "prompt": (
+         "(Kinkaku-ji Golden Pavilion:1.3), Kyoto, winter snow, "
+         "sumi-e monochrome ink painting, traditional Japanese ink wash "
+         "suiboku-ga, minimal brushwork, atmospheric, gold temple "
+         "reflecting on pond"
+     ),
+     "negative": (
+         "saturated color, ukiyo-e print, anime, photography, western "
+         "painting, cherry blossoms, red bridge, generic pagoda, "
+         "snow on trees"
+     ),
+     "suppress_tradition_suffix": True},
     {"tradition": "western_academic",     "prompt": "Impressionist garden at golden hour, oil on canvas",                        "negative": ""},
     {"tradition": "watercolor",           "prompt": "English countryside cottage, loose wet-on-wet watercolor",                  "negative": ""},
     {"tradition": "islamic_geometric",    "prompt": "Alhambra-inspired geometric pattern, turquoise and gold",                   "negative": ""},
@@ -71,70 +112,16 @@ TRADITION_PROMPTS: list[dict] = [
 
 
 # ---------------------------------------------------------------------------
-# Experimental prompt overrides — see
-# docs/superpowers/specs/2026-04-11-prompt-engineering-experiment-design.md
-#
-# Applied only when --traditions is passed AND the listed tradition is a
-# key in this map. Each override replaces the positive prompt, sets a
-# negative, and may suppress the provider's auto-appended
-# `, {tradition} style` suffix by causing the runner to pass tradition=""
-# to provider.generate(). The baseline TRADITION_PROMPTS list is not
-# mutated; invocations without --traditions behave exactly as today.
+# Prompt overrides — per-tradition prompt/negative substitution for
+# future experiments. Empty by default: the canonical prompts now live
+# directly in TRADITION_PROMPTS above (backported from the 2026-04-11
+# prompt engineering experiment). Kept as scaffolding for future A/B tests.
 # ---------------------------------------------------------------------------
-EXPERIMENTAL_PROMPT_OVERRIDES: dict[str, dict] = {
-    "chinese_gongbi": {
-        "prompt": (
-            "(single large peony flower:1.4), close-up centered botanical "
-            "portrait, Chinese gongbi meticulous brush painting, fine ink "
-            "outlines, mineral pigments, peony blossom with green leaves, "
-            "blank silk background, Chinese court flower-and-bird painting, "
-            "museum quality botanical study"
-        ),
-        "negative": (
-            "landscape, scenery, mountain, mountains, distant mountains, "
-            "temple, pagoda, building, architecture, pine tree, river, lake, "
-            "clouds, misty background, cottage, loose brushstrokes, xieyi, "
-            "abstract, photography, impressionist"
-        ),
-        "suppress_tradition_suffix": True,
-    },
-    "chinese_xieyi": {
-        "prompt": (
-            "traditional Chinese xieyi freehand ink painting, misty mountains "
-            "after spring rain, pine trees by a thatched cottage, sumi-e style, "
-            "monochrome ink on rice paper, expressive loose brushwork, "
-            "abundant reserved white space"
-        ),
-        "negative": (
-            "photorealistic, saturated colors, western oil painting, gongbi, "
-            "tight line work, peony, botanical portrait"
-        ),
-        "suppress_tradition_suffix": True,
-    },
-    "japanese_traditional": {
-        "prompt": (
-            "(Kinkaku-ji Golden Pavilion:1.3), Kyoto, winter snow, "
-            "sumi-e monochrome ink painting, traditional Japanese ink wash "
-            "suiboku-ga, minimal brushwork, atmospheric, gold temple "
-            "reflecting on pond"
-        ),
-        "negative": (
-            "saturated color, ukiyo-e print, anime, photography, western "
-            "painting, cherry blossoms, red bridge, generic pagoda, "
-            "snow on trees"
-        ),
-        "suppress_tradition_suffix": True,
-    },
-}
+EXPERIMENTAL_PROMPT_OVERRIDES: dict[str, dict] = {}
 
 
 def _validate_experimental_overrides() -> None:
-    """Fail fast if any EXPERIMENTAL_PROMPT_OVERRIDES key is unknown.
-
-    Guards against silent drift between the override map and
-    TRADITION_PROMPTS (e.g., a tradition renamed or removed without the
-    override being updated).
-    """
+    """Fail fast if any EXPERIMENTAL_PROMPT_OVERRIDES key is unknown."""
     valid = {e["tradition"] for e in TRADITION_PROMPTS}
     invalid = [k for k in EXPERIMENTAL_PROMPT_OVERRIDES if k not in valid]
     if invalid:
@@ -201,7 +188,7 @@ async def run_phase1_gallery(
         else:
             resolved_prompt = entry["prompt"]
             resolved_negative = entry.get("negative", "")
-            suppress_suffix = False
+            suppress_suffix = bool(entry.get("suppress_tradition_suffix", False))
         # When suppressing the auto-suffix, pass tradition="" to the provider.
         # The file name still uses the real tradition key from the loop.
         tradition_arg = "" if suppress_suffix else tradition
