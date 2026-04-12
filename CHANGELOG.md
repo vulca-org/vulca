@@ -1,5 +1,31 @@
 # Changelog
 
+## [0.15.0] - 2026-04-12
+
+### E2E Phases 2-7 Full Wiring
+
+All 8 E2E demo phases now run end-to-end on the local stack (ComfyUI + Ollama/Gemma 4, Apple Silicon MPS). Previously only phases 1, 3, 8 were wired.
+
+**5 new runner phases** (`scripts/generate-e2e-demo.py`):
+- **Phase 2 — Layered Create:** Generates multi-layer artwork via the `LAYERED` pipeline template. Validates manifest, composite, per-layer RGBA PNGs.
+- **Phase 4 — Defense 3 Showcase:** Side-by-side comparison of layered generation with vs. without serial-first style-ref anchoring (`disable_style_ref` toggle). Both variants produce composites.
+- **Phase 5 — Edit / Layer Redraw:** Loads Phase 2 artifact via `load_manifest()`, redraws a non-background layer, recomposites with `composite_layers()`.
+- **Phase 6 — Inpaint:** Region-based inpainting on a Phase 1 gallery image, now provider-agnostic (was Gemini-only).
+- **Phase 7 — Studio:** Brief-driven auto-mode session via `asyncio.to_thread(run_studio, ...)` with 900s timeout for MPS.
+
+### Core library fixes
+
+- **CJK-aware `build_anchored_layer_prompt()`** (`layers/layered_prompt.py`): New `english_only: bool` parameter strips CJK characters from canvas descriptions, style keywords, sibling roles, own role, and user intent before sending to CLIP-based providers. Three helpers: `_strip_cjk_parenthetical`, `_is_ascii_latin`, `_strip_cjk_chars`.
+- **Provider capability: `multilingual_prompt`** (`providers/gemini.py`): Gemini declares CJK-native prompt support; ComfyUI omits it → triggers `english_only=True` automatically via `LayerGenerateNode`.
+- **VLM English output instruction** (`layers/plan_prompt.py`): `PlanLayersNode` now instructs the VLM to produce all `regeneration_prompt` values in English, regardless of user input language.
+- **ComfyUI `raw_prompt` support** (`providers/comfyui.py`): `raw_prompt=True` kwarg skips the auto-appended tradition suffix, matching Gemini's existing mechanism.
+- **`disable_style_ref` toggle** (`layers/layered_generate.py`): When `True`, all layers generate in parallel without cross-layer style reference (bypasses serial-first split entirely). Used by Phase 4.
+- **`ainpaint` provider parameter** (`inpaint.py`, `studio/phases/inpaint.py`): Removed hardcoded `"gemini"` provider. New `provider: str = "gemini"` parameter threaded through to `InpaintPhase.repaint()`.
+
+### Phase 3 public API migration
+
+- `run_phase3_evaluate` now uses the public `vulca.aevaluate()` instead of the private `vulca._vlm.score_image()`. Zero remaining references to the private API in the runner.
+
 ## [0.14.1] - 2026-04-12
 
 ### Local provider pipeline robustness
