@@ -37,6 +37,13 @@ def _strip_cjk_chars(text: str) -> str:
     return _CJK_RE.sub("", text).strip()
 
 
+@dataclass(frozen=True)
+class LayerPromptResult:
+    """Prompt + negative prompt pair for a layer."""
+    prompt: str
+    negative_prompt: str
+
+
 def build_anchored_layer_prompt(
     layer: LayerInfo,
     *,
@@ -45,11 +52,16 @@ def build_anchored_layer_prompt(
     position: str = "",
     coverage: str = "",
     english_only: bool = False,
-) -> str:
+) -> str | LayerPromptResult:
     """Build a fully anchored prompt for one layer of a layered artwork.
 
     sibling_roles is the full list of layer roles in the plan (this layer's
     role is filtered out automatically when building the negative list).
+
+    When english_only=True, returns a LayerPromptResult with a flat
+    CLIP-friendly prompt (<70 tokens) and a separate negative_prompt.
+    When english_only=False (Gemini), returns the structured multi-section
+    string as before.
     """
     canvas_description = anchor.canvas_description
     style_keywords = anchor.style_keywords
@@ -61,22 +73,33 @@ def build_anchored_layer_prompt(
         style_keywords = ", ".join(
             kw.strip() for kw in style_keywords.split(",")
             if kw.strip() and _is_ascii_latin(kw.strip())
-        ) or "traditional brushwork"  # fallback if all keywords are CJK
+        ) or "traditional brushwork"
         effective_siblings = [
             s for s in (_strip_cjk_chars(r) for r in sibling_roles) if s
         ]
         own_role = _strip_cjk_chars(own_role)
 
     others = [r for r in effective_siblings if r and r != own_role]
-    others_text = ", ".join(others) if others else "(none)"
-
-    pos = position or "wherever the user intent specifies"
-    cov = coverage or "as the user intent specifies"
 
     user_intent = layer.regeneration_prompt or layer.description or own_role
     if english_only and not _is_ascii_latin(user_intent):
         stripped = _strip_cjk_chars(user_intent)
         user_intent = stripped if stripped else own_role
+
+    # CLIP-friendly flat prompt for SDXL/ComfyUI (<70 tokens, subject-first)
+    if english_only:
+        parts = [user_intent, style_keywords, f"on {canvas_description}"]
+        pos = position or ""
+        if pos:
+            parts.append(pos)
+        prompt = ", ".join(p for p in parts if p)
+        negative = ", ".join(others) if others else ""
+        return LayerPromptResult(prompt=prompt, negative_prompt=negative)
+
+    # Structured multi-section prompt for Gemini (LLM-based encoder)
+    others_text = ", ".join(others) if others else "(none)"
+    pos = position or "wherever the user intent specifies"
+    cov = coverage or "as the user intent specifies"
 
     blocks = [
         "[CANVAS]",
