@@ -119,6 +119,7 @@ Rules:
 - CRITICAL: Each layer's regeneration_prompt MUST include specific position and size constraints (e.g. "in the upper 30% of canvas", "covering about 20% of canvas area")
 - CRITICAL: The background layer (content_type: background) must describe ONLY the base medium texture (paper, silk, canvas). Do NOT include ANY scene elements (mountains, water, trees, buildings, figures) in the background layer. Scene elements belong in atmosphere/subject layers.
 - Respect the tradition's whitespace conventions (e.g. xieyi: 30-55% blank space)
+- IMPORTANT: All "regeneration_prompt" values MUST be in English, regardless of the user's input language. Translate if necessary.
 
 Return a JSON object with this exact structure:
 {{
