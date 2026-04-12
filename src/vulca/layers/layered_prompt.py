@@ -61,7 +61,7 @@ def build_anchored_layer_prompt(
         style_keywords = ", ".join(
             kw.strip() for kw in style_keywords.split(",")
             if kw.strip() and _is_ascii_latin(kw.strip())
-        ) or style_keywords  # fallback to original if all keywords are CJK
+        ) or "traditional brushwork"  # fallback if all keywords are CJK
         effective_siblings = [
             s for s in (_strip_cjk_chars(r) for r in sibling_roles) if s
         ]
@@ -75,7 +75,8 @@ def build_anchored_layer_prompt(
 
     user_intent = layer.regeneration_prompt or layer.description or own_role
     if english_only and not _is_ascii_latin(user_intent):
-        user_intent = _strip_cjk_parenthetical(user_intent)
+        stripped = _strip_cjk_chars(user_intent)
+        user_intent = stripped if stripped else own_role
 
     blocks = [
         "[CANVAS ANCHOR]",

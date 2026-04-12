@@ -925,7 +925,7 @@ async def run_phase7_studio(
         )
     except asyncio.TimeoutError:
         return {"phase": 7, "name": "studio", "provider": provider_name,
-                "status": "failed", "error": "Studio session timed out after 600s"}
+                "status": "failed", "error": "Studio session timed out after 900s"}
     except Exception as exc:
         traceback.print_exc()
         return {"phase": 7, "name": "studio", "provider": provider_name,
