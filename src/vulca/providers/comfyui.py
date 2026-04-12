@@ -80,7 +80,14 @@ class ComfyUIImageProvider:
                                             "subfolder": img.get("subfolder", ""),
                                             "type": img.get("type", "output")},
                                 )
-                                img_b64 = base64.b64encode(img_resp.content).decode()
+                                raw_bytes = img_resp.content
+                                if len(raw_bytes) < 1000 or raw_bytes[:4] != b'\x89PNG':
+                                    raise ValueError(
+                                        f"ComfyUI returned invalid image "
+                                        f"({len(raw_bytes)} bytes, "
+                                        f"header={raw_bytes[:4]!r})"
+                                    )
+                                img_b64 = base64.b64encode(raw_bytes).decode()
                                 return ImageResult(image_b64=img_b64, mime="image/png",
                                                    metadata={"prompt_id": prompt_id})
                 await asyncio.sleep(5)
