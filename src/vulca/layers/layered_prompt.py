@@ -5,6 +5,7 @@ canvas, content (with negative list), spatial, style. Pure function.
 """
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 
 from vulca.layers.types import LayerInfo
@@ -17,6 +18,25 @@ class TraditionAnchor:
     style_keywords: str
 
 
+_CJK_RE = re.compile(r"[\u4e00-\u9fff\u3040-\u30ff\uac00-\ud7af]")
+_CJK_PAREN_RE = re.compile(r"\s*\([^)]*[\u4e00-\u9fff\u3040-\u30ff\uac00-\ud7af][^)]*\)")
+
+
+def _strip_cjk_parenthetical(text: str) -> str:
+    """Strip CJK parenthetical annotations, e.g. 'cooked silk (熟绢)' → 'cooked silk'."""
+    return _CJK_PAREN_RE.sub("", text).strip()
+
+
+def _is_ascii_latin(text: str) -> bool:
+    """Return True if text contains no CJK characters."""
+    return not bool(_CJK_RE.search(text))
+
+
+def _strip_cjk_chars(text: str) -> str:
+    """Remove CJK characters from text, keeping ASCII/Latin portions."""
+    return _CJK_RE.sub("", text).strip()
+
+
 def build_anchored_layer_prompt(
     layer: LayerInfo,
     *,
@@ -24,14 +44,26 @@ def build_anchored_layer_prompt(
     sibling_roles: list[str],
     position: str = "",
     coverage: str = "",
+    english_only: bool = False,
 ) -> str:
     """Build a fully anchored prompt for one layer of a layered artwork.
 
     sibling_roles is the full list of layer roles in the plan (this layer's
     role is filtered out automatically when building the negative list).
     """
+    canvas_description = anchor.canvas_description
+    style_keywords = anchor.style_keywords
+    effective_siblings = list(sibling_roles)
+
+    if english_only:
+        canvas_description = _strip_cjk_parenthetical(canvas_description)
+        style_keywords = ", ".join(
+            kw.strip() for kw in style_keywords.split(",") if _is_ascii_latin(kw.strip())
+        )
+        effective_siblings = [s for s in (_strip_cjk_chars(r) for r in sibling_roles) if s]
+
     own_role = layer.tradition_role or layer.name
-    others = [r for r in sibling_roles if r and r != own_role]
+    others = [r for r in effective_siblings if r and r != own_role]
     others_text = ", ".join(others) if others else "(none)"
 
     pos = position or "wherever the user intent specifies"
@@ -41,7 +73,7 @@ def build_anchored_layer_prompt(
 
     blocks = [
         "[CANVAS ANCHOR]",
-        f"The image MUST be drawn on {anchor.canvas_description}.",
+        f"The image MUST be drawn on {canvas_description}.",
         f"The background MUST be the pure canvas color {anchor.canvas_color_hex},",
         "with absolutely no other elements, textures, shading, or borders on the background.",
         "",
@@ -54,7 +86,7 @@ def build_anchored_layer_prompt(
         "Do NOT extend beyond this region.",
         "",
         "[STYLE ANCHOR]",
-        anchor.style_keywords,
+        style_keywords,
         "",
         "[USER INTENT]",
         user_intent,
