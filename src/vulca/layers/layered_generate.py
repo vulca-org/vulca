@@ -298,7 +298,10 @@ async def generate_one_layer(
         raw_rgb = _rgb_buf.getvalue()
 
         rgb = np.array(_pil_rgb)
-        alpha = keying.extract_alpha(rgb, canvas)
+        if layer.content_type == "background":
+            alpha = np.ones(rgb.shape[:2], dtype=np.float32)
+        else:
+            alpha = keying.extract_alpha(rgb, canvas)
         rgba_img = _apply_alpha(rgb, alpha)
         Path(output_dir).mkdir(parents=True, exist_ok=True)
         rgba_img.save(out_path)
