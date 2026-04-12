@@ -63,10 +63,9 @@ def build_anchored_layer_prompt(
             if kw.strip() and _is_ascii_latin(kw.strip())
         ) or style_keywords  # fallback to original if all keywords are CJK
         effective_siblings = [
-            _strip_cjk_parenthetical(r) for r in sibling_roles
-            if _strip_cjk_parenthetical(r)
+            s for s in (_strip_cjk_chars(r) for r in sibling_roles) if s
         ]
-        own_role = _strip_cjk_parenthetical(own_role)
+        own_role = _strip_cjk_chars(own_role)
 
     others = [r for r in effective_siblings if r and r != own_role]
     others_text = ", ".join(others) if others else "(none)"

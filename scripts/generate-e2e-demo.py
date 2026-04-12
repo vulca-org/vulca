@@ -787,9 +787,27 @@ async def run_phase5_edit(
     else:
         errors.append("redrawn layer image not produced")
 
+    # Recomposite with the redrawn layer swapped in
     after_path = EDIT_DIR / "after.png"
-    if composite_src.exists():
-        shutil.copy2(composite_src, after_path)
+    try:
+        from vulca.layers.composite import composite_layers
+
+        # Build updated layer list: swap the redrawn layer into the artwork
+        updated_layers = []
+        for lr in artwork.layers:
+            if lr.info.name == target_layer.info.name and result.image_path:
+                from vulca.layers.types import LayerResult as LR
+                updated_layers.append(LR(
+                    info=lr.info, image_path=result.image_path, scores=lr.scores,
+                ))
+            else:
+                updated_layers.append(lr)
+        composite_layers(updated_layers, output_path=str(after_path))
+    except Exception as exc:
+        # Fallback: copy original composite if recomposite fails
+        if composite_src.exists():
+            shutil.copy2(composite_src, after_path)
+        errors.append(f"recomposite failed: {exc}")
 
     if before_path.exists() and after_path.exists():
         if before_path.read_bytes() == after_path.read_bytes():
