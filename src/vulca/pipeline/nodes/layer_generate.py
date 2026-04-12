@@ -218,6 +218,9 @@ class LayerGenerateNode(PipelineNode):
             gen_params = node_params.get("generate") or {}
             ref_b64 = gen_params.get("reference_image_b64", "")
 
+        caps = getattr(provider_instance, "capabilities", frozenset())
+        english_only = "multilingual_prompt" not in caps
+
         result = await lg_mod.layered_generate(
             plan=layers,
             tradition_anchor=anchor,
@@ -232,6 +235,7 @@ class LayerGenerateNode(PipelineNode):
             width=canvas_w,
             height=canvas_h,
             reference_image_b64=ref_b64,
+            english_only=english_only,
         )
 
         out: list[LayerResult] = []

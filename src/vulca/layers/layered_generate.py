@@ -237,10 +237,12 @@ async def generate_one_layer(
     width: int = 0,
     height: int = 0,
     reference_image_b64: str = "",
+    english_only: bool = False,
 ) -> LayerOutcome:
     prompt = build_anchored_layer_prompt(
         layer, anchor=anchor, sibling_roles=sibling_roles,
         position=position, coverage=coverage,
+        english_only=english_only,
     )
 
     cache_key = build_cache_key(
@@ -349,6 +351,8 @@ async def layered_generate(
     width: int = 0,
     height: int = 0,
     reference_image_b64: str = "",
+    english_only: bool = False,
+    disable_style_ref: bool = False,
 ) -> LayeredResult:
     """Generate layers with style-ref anchoring: first layer serial, rest parallel."""
     if not plan:
@@ -372,6 +376,7 @@ async def layered_generate(
         cache=cache,
         width=width,
         height=height,
+        english_only=english_only,
     )
 
     # --- Phase 1: Generate first layer serially (style anchor) ---
