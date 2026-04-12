@@ -934,19 +934,28 @@ async def run_phase7_studio(
     elapsed = time.time() - t0
     errors: list[str] = []
 
-    concept_pngs = sorted(STUDIO_DIR.glob("concept_*.png"))
+    # Studio writes to subdirectories: concepts/, output/, refs/
+    concepts_dir = STUDIO_DIR / "concepts"
+    output_dir = STUDIO_DIR / "output"
+
+    concept_pngs = sorted(concepts_dir.glob("*.png")) if concepts_dir.exists() else []
     if not concept_pngs:
+        # Fallback: check root dir
         concept_pngs = sorted(STUDIO_DIR.glob("*.png"))
     if not concept_pngs:
         errors.append("no concept PNGs produced")
 
+    # Final output is the last round's render
+    output_pngs = sorted(output_dir.glob("*.png")) if output_dir.exists() else []
     final_path = STUDIO_DIR / "final.png"
-    if not final_path.exists():
-        if concept_pngs:
-            import shutil
-            shutil.copy2(concept_pngs[-1], final_path)
-        else:
-            errors.append("final.png not produced")
+    if output_pngs:
+        import shutil
+        shutil.copy2(output_pngs[-1], final_path)
+    elif concept_pngs:
+        import shutil
+        shutil.copy2(concept_pngs[-1], final_path)
+    else:
+        errors.append("final.png not produced")
 
     if final_path.exists():
         try:
@@ -954,10 +963,20 @@ async def run_phase7_studio(
         except Exception as exc:
             errors.append(f"final.png validation: {exc}")
 
+    # Session log: studio writes session.yaml or session.json
     session_path = STUDIO_DIR / "session.json"
+    session_yaml = STUDIO_DIR / "session.yaml"
     if isinstance(session, dict):
         session_path.write_text(json.dumps(session, indent=2, ensure_ascii=False, default=str))
-    elif not session_path.exists():
+    elif session_yaml.exists() and not session_path.exists():
+        # Convert YAML session to JSON for report consistency
+        try:
+            import yaml
+            data = yaml.safe_load(session_yaml.read_text())
+            session_path.write_text(json.dumps(data, indent=2, ensure_ascii=False, default=str))
+        except Exception:
+            pass
+    if not session_path.exists():
         errors.append("session.json not produced")
 
     if session_path.exists():
