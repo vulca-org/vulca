@@ -35,8 +35,9 @@ class ComfyUIImageProvider:
         import httpx
 
         full_prompt = prompt
-        if tradition and tradition != "default":
-            full_prompt = f"{prompt}, {tradition.replace('_', ' ')} style"
+        if not kwargs.get("raw_prompt", False):
+            if tradition and tradition != "default":
+                full_prompt = f"{prompt}, {tradition.replace('_', ' ')} style"
 
         workflow = {
             "prompt": {
