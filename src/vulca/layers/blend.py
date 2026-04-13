@@ -172,7 +172,11 @@ def blend_layers(
     height: int = 1024,
 ) -> Image.Image:
     """Composite layers with proper blend modes, sorted by z_index. Skips invisible layers."""
+    # Canvas starts as transparent white — identity for multiply (most common
+    # non-normal blend). First visible layer forced to normal composite to avoid
+    # white-out from screen/lighten/overlay on a white base.
     canvas = Image.new("RGBA", (width, height), (255, 255, 255, 0))
+    _first_visible = True
 
     _BLEND_FNS = {
         "normal": blend_normal,
@@ -209,7 +213,13 @@ def blend_layers(
             alpha = alpha.point(lambda a: int(a * layer.info.opacity))
             layer_img.putalpha(alpha)
 
-        blend_fn = _BLEND_FNS.get(layer.info.blend_mode, blend_normal)
-        canvas = blend_fn(canvas, layer_img)
+        if _first_visible:
+            # Force normal composite for first layer — avoids white-out from
+            # screen/lighten/overlay on the transparent white canvas.
+            canvas = blend_normal(canvas, layer_img)
+            _first_visible = False
+        else:
+            blend_fn = _BLEND_FNS.get(layer.info.blend_mode, blend_normal)
+            canvas = blend_fn(canvas, layer_img)
 
     return canvas

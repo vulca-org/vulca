@@ -6,6 +6,16 @@ from PIL import Image
 
 from vulca.layers.types import LayerInfo
 
+# --- Extract mode tuning constants ---
+# Minimum color-distance tolerance for subject/detail layers (complex gradients).
+_SUBJECT_MIN_TOLERANCE = 50
+# Global confidence threshold below which saturation fallback activates.
+_COLOR_MATCH_FALLBACK_THRESHOLD = 0.3
+# Maximum confidence for saturation-derived matches (weaker signal than color).
+_SATURATION_CONFIDENCE_CAP = 0.6
+# Saturation normalization divisor: S values 0-150 map to 0-1, 150-255 clamp to 1.
+_SATURATION_NORM_DIVISOR = 150.0
+
 
 def hex_to_rgb(hex_color: str) -> tuple[int, int, int]:
     """Convert '#RRGGBB' or '#RGB' to (R, G, B)."""
@@ -51,7 +61,7 @@ def build_color_mask(
     # because they often contain gradients and mixed-color regions.
     effective_tolerance = tolerance
     if info.content_type in ("subject", "detail", "line_art", "color_wash"):
-        effective_tolerance = max(tolerance, 50)
+        effective_tolerance = max(tolerance, _SUBJECT_MIN_TOLERANCE)
 
     for hex_color in info.dominant_colors:
         try:
@@ -65,11 +75,14 @@ def build_color_mask(
         color_match = np.maximum(color_match, match)
 
     # Saturation-based fallback for subject layers when color matching fails
-    if info.content_type in ("subject", "atmosphere") and color_match.max() < 0.3:
-        hsv = np.array(image.convert("RGB").convert("HSV"), dtype=np.float32)
-        saturation = hsv[:, :, 1]
-        sat_match = np.clip(saturation / 150.0, 0.0, 1.0)
-        color_match = np.maximum(color_match, sat_match * 0.6)
+    # Saturation-based fallback when color matching fails entirely.
+    # Catches gradient regions that don't match any dominant color.
+    if info.content_type in ("subject", "atmosphere") and color_match.max() < _COLOR_MATCH_FALLBACK_THRESHOLD:
+        rgb_pil = image.convert("RGB")
+        hsv = np.array(rgb_pil.convert("HSV"), dtype=np.float32)
+        saturation = hsv[:, :, 1]  # PIL HSV: S in [0, 255]
+        sat_match = np.clip(saturation / _SATURATION_NORM_DIVISOR, 0.0, 1.0)
+        color_match = np.maximum(color_match, sat_match * _SATURATION_CONFIDENCE_CAP)
 
     if info.content_type == "effect":
         # Convert to HSV to get saturation channel

@@ -25,9 +25,14 @@ class ComfyUIImageProvider:
         import io
         image_bytes = base64.b64decode(image_b64)
         files = {"image": (filename, io.BytesIO(image_bytes), "image/png")}
-        resp = await client.post(f"{self.base_url}/upload/image", files=files)
+        resp = await client.post(
+            f"{self.base_url}/upload/image", files=files, timeout=30,
+        )
         resp.raise_for_status()
-        return resp.json().get("name", filename)
+        try:
+            return resp.json().get("name", filename)
+        except (ValueError, KeyError):
+            return filename
 
     async def generate(
         self,
