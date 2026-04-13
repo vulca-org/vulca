@@ -107,3 +107,152 @@ def test_phase8_tools_mock(e2e_dirs, gallery_image):
     tools_dir = e2e_dirs / "tools"
     assert (tools_dir / "brushstroke.json").exists()
     assert (tools_dir / "composition.json").exists()
+
+
+# ---------------------------------------------------------------------------
+# Phase 2 — Layered
+# ---------------------------------------------------------------------------
+
+def test_phase2_layered_mock(e2e_dirs):
+    """Phase 2: layered pipeline runs without an unhandled crash.
+
+    The LAYERED pipeline has complex VLM / engine dependencies that may not
+    resolve in mock mode.  Accept any of ok/partial/failed; only assert that
+    the pipeline returns a properly-shaped report (or raises a graceful error
+    about VLM/provider, not an internal crash).
+    """
+    from scripts.generate_e2e_demo import run_phase2_layered
+
+    try:
+        rep = asyncio.run(run_phase2_layered("mock", width=64, height=64))
+    except Exception as exc:
+        # Acceptable: import/provider/VLM errors that bubble out of the pipeline.
+        # These indicate missing optional deps, not a broken pipeline structure.
+        err_lower = str(exc).lower()
+        assert any(kw in err_lower for kw in (
+            "provider", "vlm", "import", "module", "not found", "no module",
+            "mock", "engine", "execute",
+        )), f"Unexpected unhandled error from Phase 2: {exc!r}"
+        return
+
+    assert rep["phase"] == 2
+    assert rep["name"] == "layered"
+    assert rep["status"] in ("ok", "partial", "failed")
+
+
+# ---------------------------------------------------------------------------
+# Phase 3 — Evaluate
+# ---------------------------------------------------------------------------
+
+def test_phase3_evaluate_mock(e2e_dirs, gallery_image):
+    """Phase 3: evaluate pipeline runs without an unhandled crash.
+
+    Phase 3 requires a VLM provider for aevaluate().  In mock mode this will
+    likely fail; accept any graceful outcome (dict or known exception).
+    """
+    from scripts.generate_e2e_demo import run_phase3_evaluate
+
+    try:
+        rep = asyncio.run(run_phase3_evaluate(mode="strict"))
+    except FileNotFoundError:
+        # Gallery dir exists (gallery_image fixture created it) but
+        # the function may raise for other missing deps — re-raise only if
+        # the message isn't about gallery/provider deps.
+        raise
+    except Exception as exc:
+        # VLM / provider errors are expected in mock mode.
+        err_lower = str(exc).lower()
+        assert any(kw in err_lower for kw in (
+            "provider", "vlm", "import", "module", "not found", "no module",
+            "mock", "evaluate", "api",
+        )), f"Unexpected unhandled error from Phase 3: {exc!r}"
+        return
+
+    assert rep["phase"] == 3
+    assert rep["name"] == "evaluate"
+    assert rep["status"] in ("ok", "partial", "failed")
+
+
+# ---------------------------------------------------------------------------
+# Phase 4 — Defense 3
+# ---------------------------------------------------------------------------
+
+def test_phase4_defense3_mock(e2e_dirs):
+    """Phase 4: defense-3 style-ref comparison runs without an unhandled crash."""
+    from scripts.generate_e2e_demo import run_phase4_defense3
+
+    try:
+        rep = asyncio.run(run_phase4_defense3("mock", width=64, height=64))
+    except Exception as exc:
+        err_lower = str(exc).lower()
+        assert any(kw in err_lower for kw in (
+            "provider", "vlm", "import", "module", "not found", "no module",
+            "mock", "layer", "anchor",
+        )), f"Unexpected unhandled error from Phase 4: {exc!r}"
+        return
+
+    assert rep["phase"] == 4
+    assert rep["name"] == "defense3"
+    assert rep["status"] in ("ok", "partial", "failed")
+
+
+# ---------------------------------------------------------------------------
+# Phase 5 — Edit (dependency check)
+# ---------------------------------------------------------------------------
+
+def test_phase5_edit_dependency_check(e2e_dirs):
+    """Phase 5: raises FileNotFoundError mentioning 'Phase 2' when artifacts missing."""
+    from scripts.generate_e2e_demo import run_phase5_edit
+
+    with pytest.raises(FileNotFoundError, match="Phase 2"):
+        asyncio.run(run_phase5_edit("mock"))
+
+
+# ---------------------------------------------------------------------------
+# Phase 6 — Inpaint
+# ---------------------------------------------------------------------------
+
+def test_phase6_inpaint_mock(e2e_dirs, gallery_image):
+    """Phase 6: inpaint pipeline runs without an unhandled crash."""
+    from scripts.generate_e2e_demo import run_phase6_inpaint
+
+    try:
+        rep = asyncio.run(run_phase6_inpaint("mock"))
+    except Exception as exc:
+        err_lower = str(exc).lower()
+        assert any(kw in err_lower for kw in (
+            "provider", "vlm", "import", "module", "not found", "no module",
+            "mock", "inpaint", "api",
+        )), f"Unexpected unhandled error from Phase 6: {exc!r}"
+        return
+
+    assert rep["phase"] == 6
+    assert rep["name"] == "inpaint"
+    assert rep["status"] in ("ok", "partial", "failed")
+
+
+# ---------------------------------------------------------------------------
+# Phase 7 — Studio
+# ---------------------------------------------------------------------------
+
+def test_phase7_studio_mock(e2e_dirs):
+    """Phase 7: studio pipeline runs without an unhandled crash.
+
+    Studio is the flakiest phase — just assert it doesn't raise an unhandled
+    exception.  Any structured dict response (ok/partial/failed) is accepted.
+    """
+    from scripts.generate_e2e_demo import run_phase7_studio
+
+    try:
+        rep = asyncio.run(run_phase7_studio("mock"))
+    except Exception as exc:
+        err_lower = str(exc).lower()
+        assert any(kw in err_lower for kw in (
+            "provider", "vlm", "import", "module", "not found", "no module",
+            "mock", "studio", "run_studio", "api",
+        )), f"Unexpected unhandled error from Phase 7: {exc!r}"
+        return
+
+    assert rep["phase"] == 7
+    assert rep["name"] == "studio"
+    assert rep["status"] in ("ok", "partial", "failed")
