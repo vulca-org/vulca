@@ -38,6 +38,7 @@ def e2e_dirs(tmp_path, monkeypatch):
     """Patch E2E output directories to use tmp_path and relax PNG size check."""
     from scripts import generate_e2e_demo as mod
 
+    monkeypatch.setattr(mod, "REPO_ROOT", tmp_path)
     monkeypatch.setattr(mod, "DEMO_ROOT", tmp_path)
     monkeypatch.setattr(mod, "GALLERY_DIR", tmp_path / "gallery")
     monkeypatch.setattr(mod, "TOOLS_DIR", tmp_path / "tools")
