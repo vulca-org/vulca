@@ -172,7 +172,7 @@ def blend_layers(
     height: int = 1024,
 ) -> Image.Image:
     """Composite layers with proper blend modes, sorted by z_index. Skips invisible layers."""
-    canvas = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    canvas = Image.new("RGBA", (width, height), (255, 255, 255, 0))
 
     _BLEND_FNS = {
         "normal": blend_normal,
