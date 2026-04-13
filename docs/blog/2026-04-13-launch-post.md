@@ -3,20 +3,20 @@ title: "I Built a Free Local AI Art Pipeline on My Mac — Here's What Broke"
 published: false
 tags: python, machinelearning, opensource, ai
 series: vulca
-cover_image: 
+cover_image: https://raw.githubusercontent.com/vulca-org/vulca/master/assets/demo/v3/readme/tradition_grid.png
 ---
 
 What if you could run a complete AI art creation pipeline — 13 cultural traditions, 5-dimension scoring, structured layer generation — entirely on your MacBook, for free?
 
 No cloud API key. No GPU server. Just `pip install vulca`.
 
-![Chinese Xieyi ink wash landscape](../../assets/demo/v3/gallery/chinese_xieyi.png)
-![Japanese traditional snow temple](../../assets/demo/v3/gallery/japanese_traditional.png)
-![Brand design tea packaging](../../assets/demo/v3/gallery/brand_design.png)
+![Chinese Xieyi ink wash landscape](https://raw.githubusercontent.com/vulca-org/vulca/master/assets/demo/v3/gallery/chinese_xieyi.png)
+![Japanese traditional snow temple](https://raw.githubusercontent.com/vulca-org/vulca/master/assets/demo/v3/gallery/japanese_traditional.png)
+![Brand design tea packaging](https://raw.githubusercontent.com/vulca-org/vulca/master/assets/demo/v3/gallery/brand_design.png)
 
 *Three traditions, one SDK — generated locally via ComfyUI/SDXL on Apple Silicon, zero cloud API cost.*
 
-These images were generated on an M5 MacBook running ComfyUI locally. No Midjourney subscription. No Replicate credits. No DALL-E API calls. The evaluation scores below come from a VLM (Gemma 4 via Ollama) running on the same machine:
+These images were generated on an Apple Silicon Mac running ComfyUI locally. No Midjourney subscription. No Replicate credits. No DALL-E API calls. The evaluation scores below come from a VLM (Gemma 4 via Ollama) running on the same machine:
 
 ```
 $ vulca evaluate art.png -t chinese_xieyi --mode reference
@@ -190,7 +190,7 @@ The 13 supported traditions are: `chinese_xieyi`, `chinese_gongbi`, `japanese_tr
 
 ### Three Evaluation Modes
 
-- **Strict** (judge): Binary cultural scoring. Does the art conform to the tradition?
+- **Strict** (judge): Conformance scoring. How well does the art meet the tradition's standards?
 - **Reference** (mentor): Cultural guidance with professional terminology. Not a judge, a mentor.
 - **Fusion**: Multi-tradition comparison. Pass comma-separated traditions and get cross-cultural analysis.
 
@@ -240,7 +240,7 @@ The pipeline works like this:
 4. **Luminance keying** — non-background layers are keyed to remove canvas color, producing clean alpha
 5. **Alpha composite** — layers are composited in order to produce the final artwork
 
-![Layered exploded view](../../assets/demo/v3/readme/layered_exploded.png)
+![Layered exploded view](https://raw.githubusercontent.com/vulca-org/vulca/master/assets/demo/v3/readme/layered_exploded.png)
 *Layer decomposition: paper, distant mountains, forest, calligraphy, composite*
 
 ### Serial-First Style Anchoring
@@ -425,7 +425,7 @@ cd ~/dev/ComfyUI
 ./venv/bin/python main.py --listen 0.0.0.0 --port 8188
 ```
 
-Pin `torch==2.9.0`. That is the entire fix. We wrote a [complete Apple Silicon MPS + ComfyUI/SDXL Compatibility Guide](../../docs/apple-silicon-mps-comfyui-guide.md) that covers diagnosis, workarounds (CPU VAE, force-fp32), environment variables, and verification steps.
+Pin `torch==2.9.0`. That is the entire fix. We wrote a [complete Apple Silicon MPS + ComfyUI/SDXL Compatibility Guide](https://github.com/vulca-org/vulca/blob/master/docs/apple-silicon-mps-comfyui-guide.md) that covers diagnosis, workarounds (CPU VAE, force-fp32), environment variables, and verification steps.
 
 The guide is at [`docs/apple-silicon-mps-comfyui-guide.md`](https://github.com/vulca-org/vulca/blob/master/docs/apple-silicon-mps-comfyui-guide.md) in the repo.
 
@@ -435,7 +435,7 @@ The guide is at [`docs/apple-silicon-mps-comfyui-guide.md`](https://github.com/v
 
 Once you have layers, you can edit them individually without regenerating the entire artwork.
 
-![Inpaint comparison](../../assets/demo/v3/readme/inpaint_comparison.png)
+![Inpaint comparison](https://raw.githubusercontent.com/vulca-org/vulca/master/assets/demo/v3/readme/inpaint_comparison.png)
 
 ```bash
 # Redraw a specific layer with a new instruction
@@ -556,7 +556,7 @@ It is built on peer-reviewed research (EMNLP 2025 Findings), tested against 7,41
 
 [![PyPI](https://img.shields.io/pypi/v/vulca.svg)](https://pypi.org/project/vulca/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://pypi.org/project/vulca/)
-[![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-green.svg)](https://github.com/vulca-org/vulca/blob/main/LICENSE)
+[![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-green.svg)](https://github.com/vulca-org/vulca/blob/master/LICENSE)
 
 If this resonates, [star us on GitHub](https://github.com/vulca-org/vulca). Try it, break it, tell us what failed — [issues welcome](https://github.com/vulca-org/vulca/issues).
 
@@ -570,5 +570,5 @@ If you use VULCA in research, please cite:
 }
 ```
 
-![Tradition grid](../../assets/demo/v3/readme/tradition_grid.png)
+![Tradition grid](https://raw.githubusercontent.com/vulca-org/vulca/master/assets/demo/v3/readme/tradition_grid.png)
 *13 traditions. One SDK. Your machine.*

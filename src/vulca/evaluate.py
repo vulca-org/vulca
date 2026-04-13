@@ -34,8 +34,9 @@ async def aevaluate(
         Cultural tradition to use. If empty, auto-detected from intent.
         One of: default, chinese_xieyi, chinese_gongbi, western_academic,
         islamic_geometric, japanese_traditional, watercolor,
-        african_traditional, south_asian.  Also accepts a file path to
-        a custom YAML tradition file.
+        african_traditional, south_asian, brand_design, photography,
+        contemporary_art, ui_ux_design.  Also accepts a file path to a
+        custom YAML tradition file.
     subject:
         Optional subject/title of the artwork.
     skills:
