@@ -19,10 +19,9 @@ _TRADITION_COLORS: dict[str, str] = {
 
 
 class MockImageProvider:
-    """Generates deterministic SVG placeholder images."""
+    """Generates deterministic solid-color PNG placeholder images."""
 
-    # Returns SVG, not PNG — cannot be consumed by PIL downstream.
-    capabilities: frozenset[str] = frozenset()
+    capabilities: frozenset[str] = frozenset({"raw_rgba"})
 
     def __init__(self, **kwargs):
         pass  # Accept and ignore any kwargs for registry compatibility
@@ -39,27 +38,26 @@ class MockImageProvider:
         height: int = 512,
         **kwargs,
     ) -> ImageResult:
-        cid = hashlib.md5(f"{prompt}{tradition}".encode()).hexdigest()[:12]
-        bg = _TRADITION_COLORS.get(tradition, "#5F8A50")
-        tradition_display = tradition.replace("_", " ").title() if tradition else "Default"
-        subject_display = (subject or prompt)[:50]
-        for old, new in [("&", "&amp;"), ("<", "&lt;"), (">", "&gt;"), ('"', "&quot;")]:
-            subject_display = subject_display.replace(old, new)
-            tradition_display = tradition_display.replace(old, new)
+        import io
+        from PIL import Image
 
-        svg = (
-            f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}">'
-            f'<rect width="{width}" height="{height}" fill="{bg}" rx="24"/>'
-            f'<text x="50%" y="40%" text-anchor="middle" fill="white" font-size="18" font-family="Inter, sans-serif">{tradition_display}</text>'
-            f'<text x="50%" y="55%" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="14" font-family="Inter, sans-serif">{subject_display}</text>'
-            f'<text x="50%" y="85%" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="10" font-family="monospace">mock://{cid}</text>'
-            f'</svg>'
-        )
-        img_b64 = base64.b64encode(svg.encode()).decode()
+        cid = hashlib.md5(f"{prompt}{tradition}".encode()).hexdigest()[:12]
+
+        # Deterministic color from tradition
+        hex_color = _TRADITION_COLORS.get(tradition, "#5F8A50")
+        r = int(hex_color[1:3], 16)
+        g = int(hex_color[3:5], 16)
+        b = int(hex_color[5:7], 16)
+
+        img = Image.new("RGBA", (width, height), (r, g, b, 255))
+        buf = io.BytesIO()
+        img.save(buf, format="PNG")
+        img_b64 = base64.b64encode(buf.getvalue()).decode()
+
         return ImageResult(
             image_b64=img_b64,
-            mime="image/svg+xml",
-            metadata={"candidate_id": cid, "image_url": f"mock://{cid}.svg"},
+            mime="image/png",
+            metadata={"candidate_id": cid, "image_url": f"mock://{cid}.png"},
         )
 
 
