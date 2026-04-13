@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.15.1] - 2026-04-13
+
+### README major revision — local-first narrative
+
+- **12-section restructure** — tightened from ~15 fuzzy sections to 12 clean sections (694 lines, down from 758). Local stack (ComfyUI + Ollama) presented as default path, Gemini as alternative.
+- **v3 gallery images** — hero area and traditions section now use real E2E-generated images (SDXL on Apple Silicon MPS) instead of v2 placeholder assets.
+- **Edit + Inpaint merged** into one section with provider-agnostic callout (v0.15 feature).
+- **Self-Evolution** collapsed into Architecture section's `<details>` block.
+- **Provider capability matrix** added to Architecture (generate/inpaint/layered/multilingual per provider).
+- **`make-readme-assets.py`** — new script produces 5 display-quality composite images from v3 artifacts.
+
+### SDXL generation fixes (4 bugs)
+
+- **CLIP-aware prompt compression** (`layers/layered_prompt.py`): `build_anchored_layer_prompt()` now returns a flat subject-first prompt (<70 tokens) with separate `negative_prompt` for CLIP-based providers (ComfyUI/SDXL). Structured multi-section format preserved for Gemini. Root cause: SDXL CLIP's 77-token limit caused garbage embeddings from 120+ token structured prompts.
+- **ANCHOR hallucination fix** (`layers/layered_prompt.py`): Prompt section headers renamed from `[CANVAS ANCHOR]`/`[STYLE ANCHOR]` to `[CANVAS]`/`[STYLE]`. SDXL was painting literal ship anchors.
+- **Background keying guard** (`layers/layered_generate.py`): `generate_one_layer()` now skips luminance keying for `content_type="background"` layers, preventing white canvas from becoming transparent.
+- **ComfyUI PNG validation** (`providers/comfyui.py`): Rejects responses under 1KB or without PNG magic bytes.
+
+### Apple Silicon MPS compatibility guide
+
+- **New document:** `docs/apple-silicon-mps-comfyui-guide.md` — comprehensive guide for running SDXL on Apple Silicon via ComfyUI. Documents 3 PyTorch MPS backend regressions (SDPA non-contiguous tensors, Conv2d chunk correctness, Metal kernel migrations) that cause black/noise images on PyTorch 2.10-2.11. Solution: pin `torch==2.9.0`.
+
 ## [0.15.0] - 2026-04-12
 
 ### E2E Phases 2-7 Full Wiring
