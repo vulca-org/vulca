@@ -3,17 +3,16 @@
 [![PyPI](https://img.shields.io/pypi/v/vulca.svg)](https://pypi.org/project/vulca/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://pypi.org/project/vulca/)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-green.svg)](https://github.com/vulca-org/vulca/blob/main/LICENSE)
-[![Tests](https://img.shields.io/badge/tests-1252%20passing-brightgreen.svg)](https://github.com/vulca-org/vulca)
 [![MCP Tools](https://img.shields.io/badge/MCP_tools-21-blueviolet.svg)](https://github.com/vulca-org/vulca-plugin)
 
-**AI-native creation intelligence for cultural art.** Generate, evaluate, decompose, and evolve visual art across 13 cultural traditions. L1-L5 multi-dimensional scoring, structured layer generation, self-evolving weights — all from one `pip install`.
+**AI-native cultural art creation SDK. Generate, evaluate, decompose, and evolve visual art across 13 cultural traditions — runs locally (ComfyUI + Ollama) or in the cloud (Gemini). L1-L5 scoring, structured layer generation, self-evolving weights.**
 
 <p align="center">
-  <img src="assets/demo/v2/hero-xieyi.png" alt="Chinese Xieyi ink wash landscape" width="260">
-  <img src="assets/demo/v2/masters/western_oil_painting.png" alt="Western academic oil painting" width="260">
-  <img src="assets/demo/v2/hero-brand.png" alt="Brand design tea packaging" width="260">
+  <img src="assets/demo/v3/gallery/chinese_xieyi.png" alt="Chinese Xieyi ink wash landscape" width="260">
+  <img src="assets/demo/v3/gallery/japanese_traditional.png" alt="Japanese traditional snow temple" width="260">
+  <img src="assets/demo/v3/gallery/brand_design.png" alt="Brand design tea packaging" width="260">
 </p>
-<p align="center"><em>Three traditions, one toolkit — Chinese ink wash / Western academic / Commercial brand design</em></p>
+<p align="center"><em>Three traditions, one SDK — generated locally via ComfyUI/SDXL, zero cloud API cost</em></p>
 
 ```
 $ vulca evaluate mona_lisa.jpg -t western_academic
@@ -34,12 +33,33 @@ $ vulca evaluate mona_lisa.jpg -t western_academic
 ## Install
 
 ```bash
-pip install vulca                  # core SDK + CLI
-export GOOGLE_API_KEY=your-key     # for Gemini generation + scoring
+pip install vulca
+```
+
+### Local stack (free, no API key)
+
+Set up [ComfyUI](https://github.com/comfyanonymous/ComfyUI) + [Ollama](https://ollama.ai) for zero-cost local generation:
+
+```bash
+export VULCA_IMAGE_BASE_URL=http://localhost:8188   # ComfyUI
+export VULCA_VLM_MODEL=ollama_chat/gemma4            # Ollama VLM
+vulca create "Misty mountains after spring rain" -t chinese_xieyi --provider comfyui -o art.png
+```
+
+> See [Local Provider Setup](docs/local-provider-setup.md) for full ComfyUI + Ollama installation guide.
+
+### Cloud (Gemini)
+
+```bash
+export GOOGLE_API_KEY=your-key
 vulca create "Misty mountains" -t chinese_xieyi -o art.png
 ```
 
-No API key? `vulca create "..." --provider mock` runs the full pipeline locally.
+### No GPU? Try mock mode
+
+```bash
+vulca create "Misty mountains" -t chinese_xieyi --provider mock -o art.png
+```
 
 <details>
 <summary>Optional extras</summary>
@@ -57,101 +77,35 @@ pip install vulca[all]             # everything
 
 ## What You Can Do
 
-### Generate — 13 cultural traditions, structured layers
-
+### [Generate](#create) — 13 cultural traditions, structured layers
 ```bash
-vulca create "水墨山水，雨后春山" -t chinese_xieyi --layered    # structured layers
-vulca create "Tea packaging" -t brand_design --provider gemini   # single image
+vulca create "水墨山水" -t chinese_xieyi --layered --provider comfyui
 ```
 
-### Layered creation — generation-time alpha for cultural art
-
+### [Evaluate](#evaluate--three-modes) — L1-L5 cultural scoring, three modes
 ```bash
-vulca create "远山薄雾" -t chinese_xieyi --layered -o art/
+vulca evaluate artwork.png -t chinese_xieyi --mode reference
 ```
 
-VULCA generates each layer (远山, 中景, 题款 …) on the canonical canvas of the
-tradition (生宣纸 for xieyi). The first layer generates serially as a **style
-anchor** — its raw RGB output becomes the visual reference for all subsequent
-layers, which generate in parallel. This ensures cross-layer style consistency
-without requiring a user-provided reference image (Defense 3, v0.14).
-
-Per-layer alpha is extracted by tradition-specific keying (luminance for ink
-wash, chroma for color works), so flying-white and ink gradients become true
-soft alpha — no halos, no hard edges. Layers can be re-rendered individually:
-
-```bash
-vulca layers retry art/ --layer 远山          # retry one layer
-vulca layers retry art/ --all-failed          # retry every failed layer
-vulca layers cache clear art/                 # drop the sidecar cache
-```
-
-Cost: 1 serial + (N-1) parallel provider calls per artwork. The first layer is
-the style anchor; remaining layers generate concurrently. Iterative editing hits
-the per-artifact cache, so changing one layer is one provider call.
-Partial failures are non-blocking — the manifest records `partial: true`
-and the healthy layers remain usable. If the first layer fails, remaining layers
-degrade gracefully to no-reference mode (same as v0.13).
-
-### Evaluate — L1-L5 cultural scoring, three modes
-
-```
-$ vulca evaluate artwork.png -t chinese_xieyi --mode reference
-
-  L2 Technical Execution  85%  (traditional)
-     To push further: exploring texture strokes — axe-cut (斧劈皴)
-     for sharper rocks, rain-drop (雨点皴) for rounded forms.
-
-  L3 Cultural Context  95%  (traditional)
-     To push further: adding a poem (题画诗) for poetry-calligraphy-
-     painting-seal (诗书画印) harmony.
-```
-
-### Decompose — split any image into transparent layers
-
-<p align="center">
-  <img src="assets/demo/v2/masters/qi_baishi_shrimp.jpg" alt="Qi Baishi shrimp" height="200">
-  →
-  <img src="assets/demo/v2/masters/qi_baishi_layers/ink_shrimp.png" alt="Shrimp layer" height="200">
-  <img src="assets/demo/v2/masters/qi_baishi_layers/ink_calligraphy.png" alt="Calligraphy layer" height="200">
-  <img src="assets/demo/v2/masters/qi_baishi_layers/red_seals.png" alt="Seals layer" height="200">
-</p>
-<p align="center"><em>Qi Baishi's Shrimp → 3 layers (shrimp / calligraphy / seals)</em></p>
-
-```bash
-vulca layers split qi_baishi.jpg -o ./layers/ --mode regenerate
-```
-
-### Edit — redraw layers, inpaint regions, composite
-
-<p align="center">
-  <img src="assets/demo/v2/scenario1-comparison.png" alt="Before: ink wash, After: golden sunset sky — mountains untouched" width="700">
-</p>
-<p align="center"><em>Only the sky was redrawn — mountains, pavilion, and calligraphy are pixel-identical</em></p>
-
+### [Edit](#layer-editing-workflows) — layer redraw + region inpaint
 ```bash
 vulca layers redraw ./layers/ --layer sky -i "warm golden sunset"
+vulca inpaint art.png --region "the sky" --instruction "stormy clouds"
 ```
 
-### Analyze — 5 algorithmic tools, zero API cost
+### [Decompose](#decompose) — split any image into transparent layers
+```bash
+vulca layers split painting.jpg -o ./layers/ --mode extract
+```
 
+### [Studio](#studio--brief-driven-creative-session) — brief-driven creative sessions
+```bash
+vulca studio "Cyberpunk ink wash" --provider comfyui --auto
+```
+
+### [Analyze](#tools--algorithmic-analysis-no-api) — 5 algorithmic tools, zero API cost
 ```bash
 vulca tools run brushstroke_analyze --image art.png -t chinese_xieyi
-# Energy: 0.87 — aligns with xieyi's expressive style. Confidence: 0.90
-```
-
-### Evolve — weights self-improve from every session
-
-```
-$ vulca evolution chinese_xieyi
-
-  Dim     Original    Evolved     Change
-  L1        10.0%     10.0% +    0.0%
-  L2        15.0%     20.0% +    5.0%    ← Technical Execution strengthened
-  L3        25.0%     35.0% +   10.0%    ← Cultural Context most evolved
-  L4        20.0%     15.0%    -5.0%
-  L5        30.0%     20.0%   -10.0%
-  Sessions: 71
 ```
 
 ---
