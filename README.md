@@ -87,7 +87,7 @@ vulca create "水墨山水" -t chinese_xieyi --layered --provider comfyui
 vulca evaluate artwork.png -t chinese_xieyi --mode reference
 ```
 
-### [Edit](#layer-editing-workflows) — layer redraw + region inpaint
+### [Edit](#edit--inpaint) — layer redraw + region inpaint
 ```bash
 vulca layers redraw ./layers/ --layer sky -i "warm golden sunset"
 vulca inpaint art.png --region "the sky" --instruction "stormy clouds"
@@ -656,7 +656,7 @@ pip install vulca>=0.11.0
 
 ---
 
-## Research
+### Research
 
 VULCA builds on peer-reviewed research on culturally-aware visual understanding:
 
@@ -667,7 +667,7 @@ VULCA builds on peer-reviewed research on culturally-aware visual understanding:
 | **Fire Imagery** | WiNLP 2025 | Cultural symbol reasoning |
 | [**Art Critique**](https://arxiv.org/abs/2601.07984) | arXiv | Cross-cultural critique evaluation |
 
-## Citation
+### Citation
 
 ```bibtex
 @inproceedings{yu2025vulca,
@@ -685,7 +685,7 @@ VULCA builds on peer-reviewed research on culturally-aware visual understanding:
 }
 ```
 
-## License
+### License
 
 Apache 2.0
 
