@@ -414,7 +414,7 @@ The VAE decoder is uniquely vulnerable:
 | 2.8.0 | Broken | SDPA non-contiguous bug introduced |
 | **2.9.0** | **Working** | **Sweet spot**: pre-Metal migration, SDPA bug masked by ComfyUI's attention slicing |
 | 2.10.0 | Broken | Black images on M3 Ultra |
-| 2.11.0 | Broken | Black/noise on M5 |
+| 2.11.0 | Broken | Black/noise on Apple Silicon |
 
 ### The Fix
 
