@@ -43,17 +43,17 @@ Introduced in PyTorch 2.8.0. MPS SDPA kernels produce wildly incorrect results w
 
 Error magnitude: **~34.0** vs normal **~0.000006**.
 
-### Bug 2: Conv2d Chunk Correctness Bug
+### Bug 2: Conv2d Chunk Correctness Bug (batch > 1 only)
 
 **PyTorch Issue:** [pytorch/pytorch#169342](https://github.com/pytorch/pytorch/issues/169342)
 
-Affects PyTorch 2.9.0+. The `chunk() -> conv()` pattern produces correct results only for the first batch element. SDXL's VAE decoder uses this pattern extensively, causing partially correct latents that decode to noise or black.
+Affects PyTorch 2.9.0+. The `chunk() → conv()` pattern produces correct results only for the **first batch element**. This bug only triggers at batch size > 1 — single-image generation (batch=1) is unaffected, which is why 2.9.0 still works for typical SDXL workflows. Listed here because multi-image batch workflows will hit it.
 
-### Bug 3: Native Metal Kernel Migration Regressions
+### Bug 3: Suspected Metal Kernel Migration Regressions
 
 **PyTorch Issue:** [pytorch/pytorch#155797](https://github.com/pytorch/pytorch/issues/155797)
 
-PyTorch 2.10-2.11 migrated operators from MPSGraph to native Metal shaders, introducing multiple silent correctness regressions.
+PyTorch 2.10-2.11 likely introduced additional MPS regressions during internal operator migrations. Issue #155797 reports performance regression and visual artifacts with Flux on nightly builds from this period.
 
 **ComfyUI Issue:** [Comfy-Org/ComfyUI#10681](https://github.com/Comfy-Org/ComfyUI/issues/10681) — identical symptoms reported on M3 Ultra.
 
@@ -79,7 +79,7 @@ The bugs are correctness issues in Metal kernel stride handling, not precision i
 | 2.6.x | ⚠️ Partial | Some SDPA issues, `--force-fp32` can help |
 | 2.7.x | ⚠️ Partial | Similar to 2.6 |
 | 2.8.0 | ❌ Broken | SDPA non-contiguous bug introduced ([#163597](https://github.com/pytorch/pytorch/issues/163597)) |
-| **2.9.0** | **✅ Working** | **Sweet spot**: pre-Metal migration, SDPA bug masked by ComfyUI attention slicing |
+| **2.9.0** | **✅ Working** | **Sweet spot**: pre-Metal migration, SDPA bug masked by ComfyUI's default attention slicing. Custom workflows using native SDPA may still fail. |
 | 2.9.1 | ✅ Likely safe | Patch release |
 | 2.10.0 | ❌ Broken | Black images confirmed on M3 Ultra ([#10681](https://github.com/Comfy-Org/ComfyUI/issues/10681)) |
 | 2.11.0 | ❌ Broken | Black/noise confirmed on M5 (this document) |
@@ -113,24 +113,22 @@ If pinning torch is not possible, these partial mitigations may help.
 ### Force VAE to CPU
 
 ```bash
-# Bypasses MPS for decode only
-./venv/bin/python main.py --vae-cpu
-# or
-./venv/bin/python main.py --fp32-vae
+# Moves VAE decode to CPU, bypasses all MPS bugs for the decode step
+./venv/bin/python main.py --cpu-vae
 ```
 
-### Disable MPS SDPA Fast Path
+### Force float32 VAE (keeps on GPU)
 
-```python
-import torch
-torch.backends.mps.enable_sdpa = False
+```bash
+# Forces VAE to float32 precision on MPS — helps with NaN issues but NOT with correctness bugs
+./venv/bin/python main.py --force-fp32
 ```
 
 ### Environment Variables
 
 ```bash
-export PYTORCH_ENABLE_MPS_FALLBACK=1
-export PYTORCH_MPS_HIGH_WATERMARK_RATIO=0.0
+export PYTORCH_ENABLE_MPS_FALLBACK=1       # CPU fallback for unsupported MPS ops
+export PYTORCH_MPS_HIGH_WATERMARK_RATIO=0.0  # Disables MPS memory limit (caution: may cause instability on 16GB machines)
 ```
 
 ### Use fp16-fix VAE
@@ -140,6 +138,8 @@ Replace the default SDXL VAE with [`madebyollin/sdxl-vae-fp16-fix`](https://hugg
 ---
 
 ## 7. How We Diagnosed This
+
+**Quick diagnostic:** If your output PNG is ~4 KB → black image (VAE all-zeros). If ~2 MB but looks like static → noise (corrupted latents). Both indicate MPS regression.
 
 1. v3 gallery images (April 11) generated perfectly with simple prompts
 2. Phase 2 layered pipeline (April 12) produced noise — initially attributed to CLIP token limit
@@ -156,9 +156,9 @@ Replace the default SDXL VAE with [`madebyollin/sdxl-vae-fp16-fix`](https://hugg
 
 During this investigation we also fixed three VULCA bugs that compound with MPS issues:
 
-- **ANCHOR hallucination** — Prompt section headers `[CANVAS ANCHOR]` caused SDXL to paint literal ship anchors. Renamed to `[CANVAS]`. ([74f9952](../../commit/74f9952))
-- **CLIP token overflow** — Structured prompts (120+ tokens) exceed SDXL CLIP's 77-token limit. Added CLIP-aware flat prompt mode for ComfyUI. ([74f9952](../../commit/74f9952))
-- **Background keying** — Luminance keying on background layers made white paper transparent. Added `content_type` guard. ([42e0e3d](../../commit/42e0e3d))
+- **ANCHOR hallucination** — Prompt section headers `[CANVAS ANCHOR]` caused SDXL to paint literal ship anchors. Renamed to `[CANVAS]`. ([`b168178`](https://github.com/vulca-org/vulca/commit/b168178))
+- **CLIP token overflow** — Structured prompts (120+ tokens) exceed SDXL CLIP's 77-token limit. Added CLIP-aware flat prompt mode for ComfyUI. ([`74f9952`](https://github.com/vulca-org/vulca/commit/74f9952))
+- **Background keying** — Luminance keying on background layers made white paper transparent. Added `content_type` guard. ([`42e0e3d`](https://github.com/vulca-org/vulca/commit/42e0e3d))
 
 ---
 
@@ -169,7 +169,6 @@ During this investigation we also fixed three VULCA bugs that compound with MPS 
 - [pytorch/pytorch#155797](https://github.com/pytorch/pytorch/issues/155797) — Metal kernel migration visual bugs
 - [pytorch/pytorch#141471](https://github.com/pytorch/pytorch/issues/141471) — MPS noise regression after 2.4.1
 - [pytorch/pytorch#139389](https://github.com/pytorch/pytorch/issues/139389) — MPS memory/speed regression
-- [pytorch/pytorch#142836](https://github.com/pytorch/pytorch/issues/142836) — Conv2d silent correctness bug
 - [Comfy-Org/ComfyUI#10681](https://github.com/Comfy-Org/ComfyUI/issues/10681) — Black images M3 Ultra + PyTorch 2.10
 - [Comfy-Org/ComfyUI#6254](https://github.com/Comfy-Org/ComfyUI/issues/6254) — VAEDecode BFloat16 MPS
 - [Civitai: Fixing Black Images on Mac MPS](https://civitai.com/articles/11106/fixing-black-images-in-comfyui-on-mac-m1m2-pytorch-260-and-mps)
