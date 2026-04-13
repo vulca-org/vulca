@@ -20,6 +20,15 @@ class ComfyUIImageProvider:
             or os.environ.get("VULCA_IMAGE_BASE_URL", "http://localhost:8188")
         )
 
+    async def _upload_image(self, client, image_b64: str, filename: str) -> str:
+        """Upload a base64 image to ComfyUI's input directory. Returns filename."""
+        import io
+        image_bytes = base64.b64decode(image_b64)
+        files = {"image": (filename, io.BytesIO(image_bytes), "image/png")}
+        resp = await client.post(f"{self.base_url}/upload/image", files=files)
+        resp.raise_for_status()
+        return resp.json().get("name", filename)
+
     async def generate(
         self,
         prompt: str,
@@ -39,17 +48,22 @@ class ComfyUIImageProvider:
             if tradition and tradition != "default":
                 full_prompt = f"{prompt}, {tradition.replace('_', ' ')} style"
 
-        workflow = {
-            "prompt": {
-                "3": {"class_type": "KSampler", "inputs": {
-                    "seed": secrets.randbelow(2**63), "steps": 20, "cfg": 7.0, "sampler_name": "euler",
-                    "scheduler": "normal", "denoise": 1.0,
-                    "model": ["4", 0], "positive": ["6", 0],
-                    "negative": ["7", 0], "latent_image": ["5", 0]}},
+        use_img2img = bool(reference_image_b64)
+        denoise = kwargs.get("denoise", 0.75 if use_img2img else 1.0)
+
+        async with httpx.AsyncClient(timeout=300) as client:
+            # Upload reference image if doing img2img
+            ref_filename = ""
+            if use_img2img:
+                ref_filename = await self._upload_image(
+                    client, reference_image_b64,
+                    f"vulca_ref_{secrets.randbelow(2**32)}.png",
+                )
+
+            # Build workflow: txt2img or img2img
+            nodes: dict = {
                 "4": {"class_type": "CheckpointLoaderSimple",
                       "inputs": {"ckpt_name": kwargs.get("checkpoint", "sd_xl_base_1.0.safetensors")}},
-                "5": {"class_type": "EmptyLatentImage",
-                      "inputs": {"width": width, "height": height, "batch_size": 1}},
                 "6": {"class_type": "CLIPTextEncode",
                       "inputs": {"text": full_prompt, "clip": ["4", 1]}},
                 "7": {"class_type": "CLIPTextEncode",
@@ -59,9 +73,32 @@ class ComfyUIImageProvider:
                 "9": {"class_type": "SaveImage",
                       "inputs": {"filename_prefix": "vulca", "images": ["8", 0]}},
             }
-        }
 
-        async with httpx.AsyncClient(timeout=300) as client:
+            if use_img2img:
+                # img2img: LoadImage → VAEEncode → KSampler (denoise < 1.0)
+                nodes["10"] = {"class_type": "LoadImage",
+                               "inputs": {"image": ref_filename}}
+                nodes["11"] = {"class_type": "VAEEncode",
+                               "inputs": {"pixels": ["10", 0], "vae": ["4", 2]}}
+                nodes["3"] = {"class_type": "KSampler", "inputs": {
+                    "seed": secrets.randbelow(2**63), "steps": 20, "cfg": 7.0,
+                    "sampler_name": "euler", "scheduler": "normal",
+                    "denoise": denoise,
+                    "model": ["4", 0], "positive": ["6", 0],
+                    "negative": ["7", 0], "latent_image": ["11", 0]}}
+            else:
+                # txt2img: EmptyLatentImage → KSampler (denoise = 1.0)
+                nodes["5"] = {"class_type": "EmptyLatentImage",
+                              "inputs": {"width": width, "height": height, "batch_size": 1}}
+                nodes["3"] = {"class_type": "KSampler", "inputs": {
+                    "seed": secrets.randbelow(2**63), "steps": 20, "cfg": 7.0,
+                    "sampler_name": "euler", "scheduler": "normal",
+                    "denoise": denoise,
+                    "model": ["4", 0], "positive": ["6", 0],
+                    "negative": ["7", 0], "latent_image": ["5", 0]}}
+
+            workflow = {"prompt": nodes}
+
             resp = await client.post(f"{self.base_url}/prompt", json=workflow)
             resp.raise_for_status()
             prompt_id = resp.json()["prompt_id"]
