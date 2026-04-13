@@ -47,6 +47,12 @@ def build_color_mask(
     # Start with all-zero match array
     color_match = np.zeros((h, w), dtype=np.float32)
 
+    # Adaptive tolerance: subject/detail layers need more permissive matching
+    # because they often contain gradients and mixed-color regions.
+    effective_tolerance = tolerance
+    if info.content_type in ("subject", "detail", "line_art", "color_wash"):
+        effective_tolerance = max(tolerance, 50)
+
     for hex_color in info.dominant_colors:
         try:
             target = np.array(hex_to_rgb(hex_color), dtype=np.float32)  # shape (3,)
@@ -55,8 +61,15 @@ def build_color_mask(
         # Euclidean distance per pixel
         diff = rgb - target  # H x W x 3
         dist = np.sqrt(np.sum(diff ** 2, axis=2))  # H x W
-        match = np.clip(1.0 - dist / (tolerance * 3), 0.0, 1.0)
+        match = np.clip(1.0 - dist / (effective_tolerance * 3), 0.0, 1.0)
         color_match = np.maximum(color_match, match)
+
+    # Saturation-based fallback for subject layers when color matching fails
+    if info.content_type in ("subject", "atmosphere") and color_match.max() < 0.3:
+        hsv = np.array(image.convert("RGB").convert("HSV"), dtype=np.float32)
+        saturation = hsv[:, :, 1]
+        sat_match = np.clip(saturation / 150.0, 0.0, 1.0)
+        color_match = np.maximum(color_match, sat_match * 0.6)
 
     if info.content_type == "effect":
         # Convert to HSV to get saturation channel
