@@ -33,7 +33,6 @@ A showcase series where VULCA evaluates 9 iconic world masterworks (photographs 
 |---|-------|--------|------|---------------|------------------|
 | 1 | Earthrise | William Anders / NASA | 1968 | NASA official (AS08-14-2383) | photography |
 | 2 | Migrant Mother | Dorothea Lange | 1936 | Library of Congress (LC-DIG-ppmsca-12883) | photography |
-| 3 | The Blue Marble | NASA / Apollo 17 | 1972 | NASA Science (AS17-148-22727) | photography |
 
 ### Western Paintings (3)
 
@@ -41,7 +40,7 @@ A showcase series where VULCA evaluates 9 iconic world masterworks (photographs 
 |---|-------|--------|------|---------------|------------------|
 | 4 | The Starry Night | Vincent van Gogh | 1889 | Rawpixel CC0 (8000x6415) | western_academic |
 | 5 | Girl with a Pearl Earring | Johannes Vermeer | c.1665 | Rawpixel CC0 (5068x6000) | western_academic |
-| 6 | Water Lilies | Claude Monet | 1919 | Rawpixel CC0 / Met Open Access | watercolor |
+| 6 | Water Lilies | Claude Monet | 1919 | Rawpixel CC0 / Met Open Access | western_academic |
 
 ### Non-Western Masterworks (3)
 
@@ -347,7 +346,7 @@ Full results for all 9 works with complete JSON outputs, hosted as a permanent s
 
 | File | Purpose |
 |------|---------|
-| `scripts/download-showcase-images.py` | Download + resize 9 public domain images |
+| `scripts/download-showcase-images.py` | Download + resize 8 public domain images |
 | `scripts/run-showcase-evaluation.py` | Run all evaluations + save JSON results |
 | `scripts/make-showcase-assets.py` | Produce display images (score cards, heatmaps, comparisons) |
 | `assets/showcase/originals/` | 9 source images |
@@ -360,10 +359,27 @@ Full results for all 9 works with complete JSON outputs, hosted as a permanent s
 
 | Task | Time |
 |------|------|
-| Download + resize 9 images | 30 min |
-| Run all evaluations (9 × ~4 traditions) | 1-2 hours (VLM bound) |
-| Generate 2-3 cultural translations | 30 min (ComfyUI bound) |
+| Download + resize 8 images | 30 min |
+| Install cv2: `pip install opencv-python-headless` | 5 min |
+| Run all evaluations (8 × ~3 traditions) | 1-2 hours (VLM bound) |
+| Review results, re-run if needed | 1 hour |
+| Generate 2-3 cultural translations (Act 3, if quality passes) | 30 min (ComfyUI bound) |
 | Produce display assets | 1 hour |
 | Write dev.to article | 2 hours |
-| Write Twitter thread | 30 min |
-| **Total** | **~6 hours** |
+| Write Twitter thread (8 posts, max 1 CTA post) | 30 min |
+| **Total** | **~8-10 hours** |
+
+---
+
+## Review Fixes Applied (codex + superpowers 2026-04-13)
+
+1. **Dropped Blue Marble** — too similar to Earthrise. Now 8 images, not 9.
+2. **Water Lilies** — tradition changed from `watercolor` to `western_academic` (Monet used oil on canvas).
+3. **Fusion mode** — documented that it's actually N independent reference evaluations, not a single fusion prompt. Outcome is the same (comparison table) but mechanics are honest.
+4. **No fabricated scores** — spec no longer commits to specific percentages. Directional expectations only.
+5. **Act 3 fallback** — if SDXL cultural translation quality is poor, expand Act 2 instead of shipping bad images.
+6. **Padmapani / south_asian** — noted that VULCA's south_asian tradition guidance focuses on Mughal miniatures, which postdates Ajanta by ~1000 years. Writeup will acknowledge this gap.
+7. **Image resizing** — changed from "1024x1024" to "fit within 1024px preserving aspect ratio" to avoid destroying Qingming scroll.
+8. **Twitter thread** — compressed from 10 to 8 posts, max 1 CTA post at end.
+9. **Time estimate** — revised from ~6h to ~8-10h with buffer for score review and iteration.
+10. **cv2 prerequisite** — added `pip install opencv-python-headless` to setup steps.
