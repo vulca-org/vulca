@@ -68,24 +68,38 @@ async def analyze_layers(image_path: str, *, api_key: str = "") -> list[LayerInf
     model = os.environ.get("VULCA_VLM_MODEL", "gemini/gemini-2.5-flash")
     prompt = build_analyze_prompt()
 
+    # Ollama needs a longer timeout (first-load cold start); cloud models use 55s.
+    # Don't leak GOOGLE_API_KEY into LiteLLM's Ollama path; Ollama uses api_base.
+    is_local = model.startswith("ollama")
+    vlm_timeout = 300 if is_local else 55
+    resolved_key = "" if is_local else (api_key or os.environ.get("GOOGLE_API_KEY", ""))
+
     last_err: Exception = ValueError("No attempts made")
     for attempt in range(_MAX_RETRIES + 1):
         try:
-            resp = await litellm.acompletion(
-                model=model,
-                messages=[
+            call_kwargs: dict = {
+                "model": model,
+                "messages": [
                     {"role": "system", "content": prompt},
                     {"role": "user", "content": [
                         {"type": "image_url", "image_url": {"url": f"data:{mime};base64,{img_b64}"}},
                         {"type": "text", "text": "Identify the semantic layers of this artwork."},
                     ]},
                 ],
-                max_tokens=4096,
-                temperature=0.1,
-                api_key=api_key or os.environ.get("GOOGLE_API_KEY", ""),
-                timeout=30,
-            )
-            text = resp.choices[0].message.content.strip()
+                "max_tokens": 4096,
+                "temperature": 0.1,
+                "api_key": resolved_key,
+                "timeout": vlm_timeout,
+            }
+            if is_local:
+                call_kwargs["api_base"] = os.environ.get(
+                    "OLLAMA_API_BASE", "http://localhost:11434"
+                )
+            resp = await litellm.acompletion(**call_kwargs)
+            content = resp.choices[0].message.content
+            if not content:
+                raise ValueError("VLM returned empty content")
+            text = content.strip()
             raw = _extract_json(text)
             return parse_layer_response(raw)
         except Exception as e:

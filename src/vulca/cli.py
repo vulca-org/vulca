@@ -164,6 +164,11 @@ def main(argv: list[str] | None = None) -> None:
     inpaint_p.add_argument("--count", "-n", type=int, default=4, help="Number of variants")
     inpaint_p.add_argument("--select", "-s", type=int, default=None, help="Auto-select variant (1-based)")
     inpaint_p.add_argument("--output", "-o", default="", help="Output path")
+    inpaint_p.add_argument(
+        "--provider", "-p", default="gemini",
+        choices=("gemini", "openai", "comfyui"),
+        help="Image provider",
+    )
     inpaint_p.add_argument("--mock", action="store_true", help="Use mock mode")
 
     # layers command group
@@ -1237,12 +1242,19 @@ def _cmd_sync(args: argparse.Namespace) -> None:
 def _cmd_inpaint(args: argparse.Namespace) -> None:
     from vulca.inpaint import inpaint as do_inpaint
 
-    select_idx = (args.select - 1) if args.select else 0
+    if args.select is None:
+        select_idx = 0
+    elif args.select < 1:
+        print("Error: --select must be >= 1 (1-based index)", file=sys.stderr)
+        sys.exit(1)
+    else:
+        select_idx = args.select - 1
     result = do_inpaint(
         args.image,
         region=args.region,
         instruction=args.instruction,
         tradition=args.tradition,
+        provider=args.provider,
         count=args.count,
         select=select_idx,
         output=args.output,

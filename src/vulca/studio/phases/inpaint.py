@@ -124,35 +124,48 @@ class InpaintPhase:
         api_key: str = "",
     ) -> list[str]:
         """Generate repaint variants for the cropped region."""
-        import os
         from vulca.providers import get_image_provider
 
         prompt = self.build_repaint_prompt(instruction=instruction, tradition=tradition)
 
-        ref_b64 = ""
+        # Use the CROP as the img2img reference, not the full canvas — we want
+        # providers to regenerate only the bbox-sized region. The blend step
+        # later pastes the variant back into the original.
         try:
-            ref_b64 = base64.b64encode(Path(original_path).read_bytes()).decode()
-        except Exception:
-            pass
+            ref_b64 = base64.b64encode(Path(crop_path).read_bytes()).decode()
+        except OSError as exc:
+            raise RuntimeError(
+                f"Cannot read crop reference at {crop_path!r}: {exc}"
+            ) from exc
 
-        provider_inst = get_image_provider(provider, api_key=api_key or os.environ.get("GOOGLE_API_KEY", ""))
+        # Pass api_key only when the caller supplied one; otherwise let each
+        # provider resolve its own env var (OPENAI_API_KEY, GOOGLE_API_KEY, …).
+        provider_kwargs = {"api_key": api_key} if api_key else {}
+        provider_inst = get_image_provider(provider, **provider_kwargs)
         out_dir = Path(output_dir) if output_dir else Path(original_path).parent
         out_dir.mkdir(parents=True, exist_ok=True)
 
         paths: list[str] = []
+        errors: list[str] = []
         for i in range(count):
             try:
                 result = await provider_inst.generate(
                     f"{prompt}\n\nVariant {i+1} of {count}.",
                     reference_image_b64=ref_b64,
+                    raw_prompt=True,
                 )
                 ext = "png" if "png" in result.mime else "jpg"
                 filepath = out_dir / f"repaint_v{i+1}.{ext}"
                 filepath.write_bytes(base64.b64decode(result.image_b64))
                 paths.append(str(filepath))
             except Exception as exc:
-                logger.debug("Repaint variant %d failed: %s", i + 1, exc)
+                errors.append(f"variant {i+1}: {exc}")
+                logger.warning("Repaint variant %d failed: %s", i + 1, exc)
 
+        if not paths:
+            raise RuntimeError(
+                f"All {count} repaint variants failed: " + "; ".join(errors)
+            )
         return paths
 
     async def blend(
