@@ -33,3 +33,23 @@ def test_add_layer_semantic_path_defaults_empty(tmp_path):
         name="sky", description="sky",
     )
     assert result.info.semantic_path == ""
+
+
+def test_parse_v2_response_preserves_semantic_path():
+    from vulca.layers.prompt import parse_v2_response
+    raw = {
+        "layers": [
+            {"name": "eyes", "description": "eye detail", "z_index": 50,
+             "content_type": "subject", "semantic_path": "subject.face.eyes"},
+        ],
+    }
+    infos = parse_v2_response(raw)
+    assert infos[0].semantic_path == "subject.face.eyes"
+
+
+def test_parse_v2_response_defaults_semantic_path_empty():
+    from vulca.layers.prompt import parse_v2_response
+    raw = {"layers": [{"name": "sky", "description": "", "z_index": 0,
+                       "content_type": "background"}]}
+    infos = parse_v2_response(raw)
+    assert infos[0].semantic_path == ""
