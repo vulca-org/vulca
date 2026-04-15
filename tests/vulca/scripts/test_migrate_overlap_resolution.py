@@ -135,3 +135,36 @@ def test_resolve_raises_on_shape_mismatch():
     ]
     with pytest.raises(ValueError, match="shape"):
         resolve_masks_zindex(layers)
+
+
+def test_resolve_raises_on_holes_without_background():
+    """If no is_background layer is present AND union doesn't cover canvas,
+    resolve must raise rather than silently leave holes for validator to find."""
+    h, w = 4, 4
+    a = _mask(h, w, y1=0, y2=2)
+    b = _mask(h, w, y1=2, y2=3)
+    layers = [
+        {"name": "a", "z": 10, "content_type": "subject", "mask": a},
+        {"name": "b", "z": 20, "content_type": "foreground", "mask": b},
+    ]
+    with pytest.raises(ValueError, match="background|catch-all|holes"):
+        resolve_masks_zindex(layers)
+
+
+def test_resolve_full_coverage_without_background_is_ok():
+    """If layers happen to cover the full canvas without an is_background
+    layer, that's fine — no holes to fill."""
+    h, w = 4, 4
+    a = _mask(h, w, y1=0, y2=2)
+    b = _mask(h, w, y1=2, y2=4)
+    layers = [
+        {"name": "a", "z": 10, "content_type": "subject", "mask": a},
+        {"name": "b", "z": 20, "content_type": "foreground", "mask": b},
+    ]
+    out = resolve_masks_zindex(layers)
+    assert (out["a"] | out["b"]).all()
+
+
+def test_z_index_for_empty_name_raises():
+    with pytest.raises(ValueError, match="empty|name"):
+        _z_index_for("")
