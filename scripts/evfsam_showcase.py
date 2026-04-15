@@ -40,6 +40,22 @@ PROMPTS = REPO / "assets" / "showcase" / "experiments" / "evfsam_prompts.json"
 INFERENCE_SIZE = 1024
 
 
+def parse_prompt_entry(entry) -> tuple[str, str, str]:
+    """Parse a prompt config entry into (name, prompt, semantic_path).
+
+    Accepts 2-tuple/list (name, prompt) for legacy compat — semantic_path
+    defaults to `name` so downstream `_z_index_for(name)` exact-name lookup
+    still works. Accepts 3-tuple/list (name, prompt, semantic_path) for
+    the multi-layer schema. Raises ValueError on anything shorter.
+    """
+    if len(entry) < 2:
+        raise ValueError(f"prompt entry too short: {entry!r}")
+    name = entry[0]
+    prompt = entry[1]
+    semantic_path = entry[2] if len(entry) >= 3 else name
+    return name, prompt, semantic_path
+
+
 def resize_for_inference(image_np: np.ndarray, max_side: int = INFERENCE_SIZE) -> tuple[np.ndarray, float]:
     h, w = image_np.shape[:2]
     scale = max_side / max(h, w) if max(h, w) > max_side else 1.0
@@ -51,11 +67,11 @@ def resize_for_inference(image_np: np.ndarray, max_side: int = INFERENCE_SIZE) -
 
 
 def process_image(
-    model, tokenizer, device, img_path: Path, prompts: list[tuple[str, str]],
-    out_dir: Path, force: bool = False,
+    model, tokenizer, device, img_path: Path, prompts: list,
+    out_dir: Path, force: bool = False, show_semantic_path: bool = False,
 ) -> dict:
     stem = img_path.stem
-    expected = [out_dir / f"{name}.png" for name, _ in prompts]
+    expected = [out_dir / f"{parse_prompt_entry(e)[0]}.png" for e in prompts]
     if not force and all(p.exists() for p in expected):
         print(f"  SKIP (already done)")
         return {"skipped": True}
@@ -80,7 +96,8 @@ def process_image(
     layer_masks: dict[str, np.ndarray] = {}
     stats = {"layers": {}}
 
-    for name, prompt in prompts:
+    for entry in prompts:
+        name, prompt, semantic_path = parse_prompt_entry(entry)
         t0 = time.time()
         input_ids = tokenizer(prompt, return_tensors="pt")["input_ids"].to(device=device)
         with torch.no_grad():
@@ -111,7 +128,10 @@ def process_image(
         pct = layer_masks[name].sum() / (full_h * full_w) * 100
         elapsed = time.time() - t0
         stats["layers"][name] = {"coverage_pct": round(pct, 1), "inference_s": round(elapsed, 1)}
-        print(f"  [{name}] {pct:.1f}% coverage, {elapsed:.1f}s")
+        if show_semantic_path:
+            print(f"  [{name}] ({semantic_path}) {pct:.1f}% coverage, {elapsed:.1f}s")
+        else:
+            print(f"  [{name}] {pct:.1f}% coverage, {elapsed:.1f}s")
 
     # Free MPS cache between images
     if device == "mps":
@@ -124,6 +144,11 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--force", action="store_true", help="Overwrite existing outputs")
     parser.add_argument("--images", default="", help="Comma-separated image stems (default: all)")
+    parser.add_argument(
+        "--semantic-path",
+        action="store_true",
+        help="Emit semantic_path in log output (default: off for backward compat)",
+    )
     args = parser.parse_args()
 
     prompts_cfg: dict = json.loads(PROMPTS.read_text())
@@ -146,8 +171,14 @@ def main():
             continue
         print(f"[{stem}]")
         out_dir = OUT_ROOT / stem
+        # Site B: keep emitting 2-tuples for legacy callers; parse_prompt_entry
+        # in process_image tolerates both. Task 10's migrate script does its
+        # own parsing on the same JSON.
         prompts = [(n, p) for n, p in prompts_cfg[stem]]
-        all_stats[stem] = process_image(model, tokenizer, device, img_path, prompts, out_dir, args.force)
+        all_stats[stem] = process_image(
+            model, tokenizer, device, img_path, prompts, out_dir,
+            args.force, show_semantic_path=args.semantic_path,
+        )
 
     total = time.time() - total_start
     print(f"\nDone in {total:.1f}s")
