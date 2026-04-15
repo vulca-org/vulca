@@ -63,6 +63,7 @@ def add_layer(
     z_index: int = -1,
     content_type: str = "subject",
     blend_mode: str = "normal",
+    semantic_path: str = "",
 ) -> LayerResult:
     """Add new transparent layer.
 
@@ -94,6 +95,7 @@ def add_layer(
         z_index=z_index,
         content_type=content_type,
         blend_mode=blend_mode,
+        semantic_path=semantic_path,
     )
     result = LayerResult(info=info, image_path=str(png_path))
 

@@ -225,6 +225,11 @@ def main(argv: list[str] | None = None) -> None:
     layers_add.add_argument("--z-index", type=int, default=-1, help="Z-index (-1 = top)")
     layers_add.add_argument("--content-type", default="subject",
                             help="Layer role label (e.g. background, subject, ui_header, decoration)")
+    layers_add.add_argument(
+        "--semantic-path",
+        default="",
+        help="Hierarchical dot-notation label, e.g. 'subject.face.eyes' or 'person[0].hair'",
+    )
 
     layers_remove = layers_sub.add_parser("remove", help="Remove a layer")
     layers_remove.add_argument("artwork_dir", help="Directory with layers")
@@ -1424,7 +1429,8 @@ def _cmd_layers(args: argparse.Namespace) -> None:
         artwork = load_manifest(args.artwork_dir)
         result = add_layer(artwork, artwork_dir=args.artwork_dir, name=args.name,
                           description=args.description, z_index=args.z_index,
-                          content_type=args.content_type)
+                          content_type=args.content_type,
+                          semantic_path=args.semantic_path)
         print(f"  Added: [{result.info.z_index}] {result.info.name} -> {result.image_path}")
 
     elif args.layers_command == "remove":

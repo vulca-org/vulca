@@ -1,11 +1,17 @@
+import os
 import subprocess
 import sys
+from pathlib import Path
 
 
 def _cli(*args) -> subprocess.CompletedProcess:
+    repo_root = Path(__file__).resolve().parents[3]
+    env = os.environ.copy()
+    src = str(repo_root / "src")
+    env["PYTHONPATH"] = src + os.pathsep + env.get("PYTHONPATH", "")
     return subprocess.run(
         [sys.executable, "-m", "vulca", *args],
-        capture_output=True, text=True,
+        capture_output=True, text=True, env=env,
     )
 
 
