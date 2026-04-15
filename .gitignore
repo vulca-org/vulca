@@ -32,3 +32,9 @@ env/
 /vulca-*.jpg
 
 .worktrees/
+
+# Phase 0 Task 7 — ignore large model weights and generated showcase/demo assets
+FastSAM-s.pt
+*.pt
+.playwright-mcp/
+assets/showcase/
