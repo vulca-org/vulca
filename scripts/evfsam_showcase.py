@@ -145,9 +145,11 @@ def main():
     parser.add_argument("--force", action="store_true", help="Overwrite existing outputs")
     parser.add_argument("--images", default="", help="Comma-separated image stems (default: all)")
     parser.add_argument(
-        "--semantic-path",
+        "--show-semantic-path",
         action="store_true",
-        help="Emit semantic_path in log output (default: off for backward compat)",
+        help="Log semantic_path per layer (default: off for backward compat). "
+             "Note: this is a display toggle, not a value flag. "
+             "src/vulca/cli.py's `--semantic-path <value>` is a different flag.",
     )
     args = parser.parse_args()
 
@@ -171,13 +173,14 @@ def main():
             continue
         print(f"[{stem}]")
         out_dir = OUT_ROOT / stem
-        # Site B: keep emitting 2-tuples for legacy callers; parse_prompt_entry
-        # in process_image tolerates both. Task 10's migrate script does its
-        # own parsing on the same JSON.
-        prompts = [(n, p) for n, p in prompts_cfg[stem]]
+        # Site B: normalize to 3-tuples via parse_prompt_entry so mixed
+        # 2-tuple / 3-tuple JSON entries both flow through cleanly. Codex
+        # review caught that the old `[(n, p) for n, p in ...]` form raised
+        # "too many values to unpack" on any 3-tuple entry.
+        prompts = [tuple(parse_prompt_entry(e)) for e in prompts_cfg[stem]]
         all_stats[stem] = process_image(
             model, tokenizer, device, img_path, prompts, out_dir,
-            args.force, show_semantic_path=args.semantic_path,
+            args.force, show_semantic_path=args.show_semantic_path,
         )
 
     total = time.time() - total_start
