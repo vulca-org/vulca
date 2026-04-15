@@ -9,6 +9,7 @@ from typing import Any
 
 from vulca.pipeline.node import PipelineNode, NodeContext
 from vulca.providers.capabilities import LLM_TEXT, provider_capabilities
+from vulca.layers.coarse_bucket import is_background
 from vulca.layers.types import LayerInfo
 from vulca.layers.plan_prompt import build_plan_prompt, get_tradition_layer_order
 from vulca.layers.prompt import parse_v2_response
@@ -112,7 +113,7 @@ class PlanLayersNode(PipelineNode):
         self, layers: list[LayerInfo], tradition: str, max_layers: int = _DEFAULT_MAX_LAYERS
     ) -> list[LayerInfo]:
         if len(layers) < _MIN_LAYERS:
-            if not any(l.content_type == "background" for l in layers):
+            if not any(is_background(l.content_type) for l in layers):
                 layers.insert(0, LayerInfo(
                     name="background", description="Background layer",
                     z_index=0, content_type="background",

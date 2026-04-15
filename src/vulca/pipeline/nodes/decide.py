@@ -7,6 +7,7 @@ import os
 from typing import Any
 
 from vulca.digestion.local_evolver import LocalEvolver
+from vulca.layers.coarse_bucket import is_background
 from vulca.pipeline.node import NodeContext, PipelineNode
 
 logger = logging.getLogger(__name__)
@@ -168,7 +169,7 @@ class DecideNode(PipelineNode):
 
             # If overall decision is rerun but no specific layer targeted, rerun last non-bg layer
             if decision == "rerun" and "rerun" not in layer_decisions.values():
-                candidates = [lr for lr in layer_results if lr.info.content_type != "background" and lr.image_path]
+                candidates = [lr for lr in layer_results if not is_background(lr.info.content_type) and lr.image_path]
                 if candidates:
                     layer_decisions[candidates[-1].info.name] = "rerun"
 

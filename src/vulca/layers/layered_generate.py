@@ -19,6 +19,7 @@ from typing import Literal
 import numpy as np
 from PIL import Image
 
+from vulca.layers.coarse_bucket import coarse_bucket_of, is_background
 from vulca.layers.keying import CanvasSpec, KeyingStrategy, get_keying_strategy
 from vulca.layers.layered_cache import LayerCache, build_cache_key
 from vulca.layers.layered_prompt import TraditionAnchor, build_anchored_layer_prompt
@@ -69,7 +70,7 @@ class LayeredResult:
         if not self.layers:
             return False
         has_subject = any(
-            l.info.content_type in ("subject", "line_art", "color_block", "color_wash", "detail")
+            coarse_bucket_of(l.info.content_type) in ("subject", "line_art", "color_block", "color_wash", "detail")
             for l in self.layers
         )
         return has_subject
@@ -316,7 +317,7 @@ async def generate_one_layer(
         raw_rgb = _rgb_buf.getvalue()
 
         rgb = np.array(_pil_rgb)
-        if layer.content_type == "background":
+        if is_background(layer.content_type):
             alpha = np.ones(rgb.shape[:2], dtype=np.float32)
         else:
             alpha = keying.extract_alpha(rgb, canvas)

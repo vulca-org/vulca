@@ -4,6 +4,7 @@ from __future__ import annotations
 import numpy as np
 from PIL import Image
 
+from vulca.layers.coarse_bucket import is_background
 from vulca.layers.types import LayerInfo
 
 _BG_COLORS = {
@@ -17,7 +18,7 @@ _BG_COLORS = {
 def select_alpha_strategy(info: LayerInfo) -> str:
     """Select optimal alpha strategy based on layer content_type."""
     ct = info.content_type.lower()
-    if ct == "background":
+    if is_background(ct):
         return "opaque"
     elif ct in ("text", "line_art", "calligraphy", "seal"):
         return "chroma_or_threshold"
@@ -83,7 +84,7 @@ def ensure_alpha(image: Image.Image, info: LayerInfo) -> Image.Image:
     """
     rgba = image.convert("RGBA")
 
-    if info.content_type == "background":
+    if is_background(info.content_type):
         return rgba
 
     arr = np.array(rgba)

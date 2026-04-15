@@ -9,6 +9,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
+from vulca.layers.coarse_bucket import is_background
 from vulca.layers.types import LayerInfo, LayerResult
 from vulca.layers.manifest import write_manifest
 from vulca.layers.mask import apply_mask_to_image
@@ -123,7 +124,7 @@ def sam_split(
     layer_masks: dict[str, np.ndarray] = {}
 
     for info in sorted_layers_desc:
-        if info.content_type == "background":
+        if is_background(info.content_type):
             # Background gets everything not yet assigned
             mask_bool = ~assigned
         else:

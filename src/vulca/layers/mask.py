@@ -4,6 +4,7 @@ from __future__ import annotations
 import numpy as np
 from PIL import Image
 
+from vulca.layers.coarse_bucket import coarse_bucket_of
 from vulca.layers.types import LayerInfo
 
 # --- Extract mode tuning constants ---
@@ -60,7 +61,7 @@ def build_color_mask(
     # Adaptive tolerance: subject/detail layers need more permissive matching
     # because they often contain gradients and mixed-color regions.
     effective_tolerance = tolerance
-    if info.content_type in ("subject", "detail", "line_art", "color_wash"):
+    if coarse_bucket_of(info.content_type) in ("subject", "detail", "line_art", "color_wash"):
         effective_tolerance = max(tolerance, _SUBJECT_MIN_TOLERANCE)
 
     for hex_color in info.dominant_colors:
@@ -77,7 +78,7 @@ def build_color_mask(
     # Saturation-based fallback for subject layers when color matching fails
     # Saturation-based fallback when color matching fails entirely.
     # Catches gradient regions that don't match any dominant color.
-    if info.content_type in ("subject", "atmosphere") and color_match.max() < _COLOR_MATCH_FALLBACK_THRESHOLD:
+    if coarse_bucket_of(info.content_type) in ("subject", "atmosphere") and color_match.max() < _COLOR_MATCH_FALLBACK_THRESHOLD:
         rgb_pil = image.convert("RGB")
         hsv = np.array(rgb_pil.convert("HSV"), dtype=np.float32)
         saturation = hsv[:, :, 1]  # PIL HSV: S in [0, 255]

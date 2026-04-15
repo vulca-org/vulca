@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 from PIL import Image
 
 from vulca.pipeline.node import PipelineNode, NodeContext
+from vulca.layers.coarse_bucket import is_background
 from vulca.layers.types import LayerInfo, LayerResult
 
 
@@ -296,7 +297,7 @@ class LayerGenerateNode(PipelineNode):
         content_img = Image.open(io.BytesIO(img_data))
 
         # Step 2: Generate mask (skip for background — it's fully opaque)
-        if info.content_type != "background":
+        if not is_background(info.content_type):
             content_img = await self._apply_mask(
                 content_img, content_b64, provider_instance, info,
             )
@@ -345,7 +346,7 @@ class LayerGenerateNode(PipelineNode):
         other_names = [l.name for l in all_layers if l.name != info.name]
 
         # Background layer: texture only, override any VLM-planned scene content
-        if info.content_type == "background":
+        if is_background(info.content_type):
             tradition = ctx.tradition or "default"
             _MEDIUM = {
                 "chinese_xieyi": "warm-toned aged xuan rice paper with subtle fiber texture",
@@ -391,7 +392,7 @@ class LayerGenerateNode(PipelineNode):
         has_position = any(kw in base.lower() for kw in [
             "position", "upper", "lower", "corner", "center", "covering", "% of canvas",
         ])
-        if not has_position and info.content_type != "background":
+        if not has_position and not is_background(info.content_type):
             pos = _POSITION_DEFAULTS.get(info.content_type, "")
             if pos:
                 parts.append(pos)
