@@ -98,7 +98,7 @@ def main(argv: list[str] | None = None) -> None:
     create_p.add_argument("--layered", action="store_true", help="Generate structured layers (Artifact V3)")
     create_p.add_argument("--no-cache", action="store_true", help="Disable layered cache (forces re-generation)")
     create_p.add_argument("--strict", action="store_true", help="Layered mode: any failed layer fails the run")
-    create_p.add_argument("--max-layers", type=int, default=8, help="Cap the number of layers (default 8)")
+    create_p.add_argument("--max-layers", type=int, default=8, help="Cap the number of layers (default 8, range 1..20)")
     create_p.add_argument("--weights", default="", help="Custom L1-L5 weights: 'L1=0.3,L2=0.2,...'")
     create_p.add_argument("--image-provider", default="", help="Image provider: mock|gemini|openai|comfyui")
     create_p.add_argument("--image-base-url", default="", help="Image provider base URL (for comfyui)")
