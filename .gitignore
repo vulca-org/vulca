@@ -30,3 +30,5 @@ env/
 # Vulca pipeline outputs dropped at repo root
 /vulca-*.png
 /vulca-*.jpg
+
+.worktrees/
