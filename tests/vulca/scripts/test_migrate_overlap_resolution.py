@@ -168,3 +168,46 @@ def test_resolve_full_coverage_without_background_is_ok():
 def test_z_index_for_empty_name_raises():
     with pytest.raises(ValueError, match="empty|name"):
         _z_index_for("")
+
+
+def test_make_manifest_passes_semantic_path_through(tmp_path):
+    """3-tuple entries emit semantic_path into per-layer dict."""
+    from PIL import Image
+    import migrate_evfsam_to_layers as m
+
+    prompts = [
+        ("background", "the sky", "background.sky"),
+        ("subject", "the person", "subject.body"),
+    ]
+    orig_orig = m.ORIG
+    m.ORIG = tmp_path
+    try:
+        Image.new("RGB", (100, 100), "red").save(tmp_path / "test.jpg", "JPEG")
+        manifest = m.make_manifest("test", prompts)
+        paths = {l["name"]: l.get("semantic_path") for l in manifest["layers"]}
+        assert paths["background"] == "background.sky"
+        assert paths["subject"] == "subject.body"
+    finally:
+        m.ORIG = orig_orig
+
+
+def test_make_manifest_defaults_semantic_path_to_name_for_2tuple(tmp_path):
+    """2-tuple legacy entries: semantic_path defaults to layer_name
+    (NOT empty string — matches Task 9 parse_prompt_entry policy)."""
+    from PIL import Image
+    import migrate_evfsam_to_layers as m
+
+    prompts = [
+        ("background", "the sky"),
+        ("subject", "the person"),
+    ]
+    orig_orig = m.ORIG
+    m.ORIG = tmp_path
+    try:
+        Image.new("RGB", (100, 100), "red").save(tmp_path / "test.jpg", "JPEG")
+        manifest = m.make_manifest("test", prompts)
+        paths = {l["name"]: l.get("semantic_path") for l in manifest["layers"]}
+        assert paths["background"] == "background"
+        assert paths["subject"] == "subject"
+    finally:
+        m.ORIG = orig_orig
