@@ -64,7 +64,7 @@ def compute_x_offsets(width: int, tile_size: int, overlap: int) -> list[int]:
 
 def tile_infer(model, tokenizer, device, img_path: Path, prompts: list[tuple[str, str]],
                out_dir: Path, tile_size: int = 1024, overlap: int = 128):
-    image_np = imread_rgb(img_path)
+    image_np, _ = imread_rgb(img_path, max_dim=4096)
     h, w = image_np.shape[:2]
     print(f"  Source: {w}x{h}, tile={tile_size}, overlap={overlap}")
 

@@ -11,7 +11,6 @@ import sys
 import time
 from pathlib import Path
 
-import cv2
 import numpy as np
 import torch
 import torch.nn.functional as F
@@ -70,12 +69,22 @@ def load_evfsam(device: str, model_id: str = "YxZhang/evf-sam"):
     return tokenizer, model
 
 
-def imread_rgb(path: Path) -> np.ndarray:
-    """Read BGR image, convert to RGB. Raises if file is missing or unreadable."""
-    arr = cv2.imread(str(path))
-    if arr is None:
-        raise FileNotFoundError(f"Cannot read image: {path}")
-    return cv2.cvtColor(arr, cv2.COLOR_BGR2RGB)
+def imread_rgb(path: Path, *, max_dim: int = 4096) -> tuple[np.ndarray, float]:
+    """Read BGR image, convert to RGB, resize if longer side exceeds max_dim.
+
+    Delegates to vulca.layers.image_loader.imread_safe so all scripts share
+    the same pre-resize policy. Returns (rgb_ndarray, scale_factor).
+
+    Raises FileNotFoundError if the file is missing, ValueError if cv2
+    cannot decode it (corrupt / unsupported format).
+    """
+    try:
+        from vulca.layers.image_loader import imread_safe
+    except ImportError:
+        import sys as _sys
+        _sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
+        from vulca.layers.image_loader import imread_safe
+    return imread_safe(path, max_dim=max_dim)
 
 
 def compose_red_bg(rgba_arr: np.ndarray) -> np.ndarray:

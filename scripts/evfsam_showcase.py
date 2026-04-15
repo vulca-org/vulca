@@ -63,7 +63,7 @@ def process_image(
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # Load + optionally downsize for inference
-    image_full = imread_rgb(img_path)
+    image_full, _ = imread_rgb(img_path, max_dim=4096)
     full_h, full_w = image_full.shape[:2]
     image_infer, scale = resize_for_inference(image_full)
     ih, iw = image_infer.shape[:2]
