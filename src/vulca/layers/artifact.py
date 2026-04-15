@@ -50,6 +50,8 @@ def write_artifact_v3(
             "status": info.status,
             "weakness": info.weakness,
             "generation_round": info.generation_round,
+            # v0.16 multi-layer — dot-notation hierarchical path.
+            "semantic_path": info.semantic_path,
         })
 
     artifact = {
@@ -116,6 +118,7 @@ def load_artifact_v3(artwork_dir: str) -> LayeredArtwork:
             status=ld.get("status", ""),
             weakness=ld.get("weakness", ""),
             generation_round=ld.get("generation_round", 0),
+            semantic_path=ld.get("semantic_path", ""),
         )
         image_path = str(art_dir / ld.get("file", f"{info.name}.png"))
         scores = ld.get("scores", {})
