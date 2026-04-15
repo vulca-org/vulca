@@ -85,7 +85,7 @@ def build_color_mask(
         sat_match = np.clip(saturation / _SATURATION_NORM_DIVISOR, 0.0, 1.0)
         color_match = np.maximum(color_match, sat_match * _SATURATION_CONFIDENCE_CAP)
 
-    if info.content_type == "effect":
+    if coarse_bucket_of(info.content_type) == "effect":
         # Convert to HSV to get saturation channel
         hsv = np.array(image.convert("RGB").convert("HSV"), dtype=np.float32)
         saturation = hsv[:, :, 1]  # S channel, 0-255

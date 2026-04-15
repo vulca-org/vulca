@@ -27,3 +27,13 @@ def test_is_background_rejects_person_indexed():
     info = LayerInfo(name="face", description="", z_index=30,
                      content_type="person[0].face")
     assert is_background(info.content_type) is False
+
+
+def test_effect_bucket_covers_dotted_effect_paths():
+    """mask.py routes `effect` content_type into the saturation-channel
+    mask branch. Dotted paths like `effect.glow` or `effect.mist` must
+    hit the same branch — i.e. their coarse bucket must be `effect`."""
+    from vulca.layers.coarse_bucket import coarse_bucket_of
+    assert coarse_bucket_of("effect") == "effect"
+    assert coarse_bucket_of("effect.glow") == "effect"
+    assert coarse_bucket_of("effect.mist") == "effect"
