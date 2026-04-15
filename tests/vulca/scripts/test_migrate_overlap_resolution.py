@@ -180,7 +180,9 @@ def test_make_manifest_passes_semantic_path_through(tmp_path):
         ("subject", "the person", "subject.body"),
     ]
     orig_orig = m.ORIG
+    orig_repo = m.REPO
     m.ORIG = tmp_path
+    m.REPO = tmp_path
     try:
         Image.new("RGB", (100, 100), "red").save(tmp_path / "test.jpg", "JPEG")
         manifest = m.make_manifest("test", prompts)
@@ -189,6 +191,7 @@ def test_make_manifest_passes_semantic_path_through(tmp_path):
         assert paths["subject"] == "subject.body"
     finally:
         m.ORIG = orig_orig
+        m.REPO = orig_repo
 
 
 def test_make_manifest_defaults_semantic_path_to_name_for_2tuple(tmp_path):
@@ -202,7 +205,9 @@ def test_make_manifest_defaults_semantic_path_to_name_for_2tuple(tmp_path):
         ("subject", "the person"),
     ]
     orig_orig = m.ORIG
+    orig_repo = m.REPO
     m.ORIG = tmp_path
+    m.REPO = tmp_path
     try:
         Image.new("RGB", (100, 100), "red").save(tmp_path / "test.jpg", "JPEG")
         manifest = m.make_manifest("test", prompts)
@@ -211,3 +216,4 @@ def test_make_manifest_defaults_semantic_path_to_name_for_2tuple(tmp_path):
         assert paths["subject"] == "subject"
     finally:
         m.ORIG = orig_orig
+        m.REPO = orig_repo

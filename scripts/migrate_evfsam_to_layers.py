@@ -119,13 +119,20 @@ def resolve_masks_zindex(layers: list[dict]) -> dict[str, np.ndarray]:
     return out
 
 
-def make_manifest(stem: str, prompts: list[tuple[str, str]]) -> dict:
+def make_manifest(stem: str, prompts: list) -> dict:
     orig_path = ORIG / f"{stem}.jpg"
     im = Image.open(orig_path)
     w, h = im.size
 
     layers = []
-    for layer_name, prompt in prompts:
+    for entry in prompts:
+        if len(entry) < 2:
+            continue
+        layer_name = entry[0]
+        prompt = entry[1]
+        # 2-tuple fallback: semantic_path defaults to layer_name (matches
+        # Task 9 parse_prompt_entry policy — DO NOT let these drift).
+        semantic_path = entry[2] if len(entry) >= 3 else layer_name
         layer_id = "layer_" + hashlib.md5(f"{stem}-{layer_name}".encode()).hexdigest()[:8]
         layers.append({
             "id": layer_id,
@@ -134,6 +141,7 @@ def make_manifest(stem: str, prompts: list[tuple[str, str]]) -> dict:
             "z_index": _z_index_for(layer_name),
             "blend_mode": "normal",
             "content_type": layer_name,
+            "semantic_path": semantic_path,
             "visible": True,
             "locked": False,
             "file": f"{layer_name}.png",
@@ -169,16 +177,24 @@ def main():
     migrated = []
     skipped = []
 
-    for stem, prompts in prompts_cfg.items():
-        if not prompts:
+    for stem in prompts_cfg:
+        prompts_raw = prompts_cfg[stem]
+        if not prompts_raw:
             print(f"SKIP {stem}: empty prompt list")
             skipped.append(stem)
             continue
+        prompts = []
+        for entry in prompts_raw:
+            if len(entry) < 2:
+                continue
+            name, prompt = entry[0], entry[1]
+            semantic_path = entry[2] if len(entry) >= 3 else name
+            prompts.append((name, prompt, semantic_path))
         src = EXP / stem
         dst = LAYERS / stem
 
         # Only migrate if EVF-SAM output exists
-        expected = [src / f"{name}.png" for name, _ in prompts]
+        expected = [src / f"{name}.png" for name, *_ in prompts]
         if not all(p.exists() for p in expected):
             print(f"SKIP {stem}: missing EVF-SAM layers")
             skipped.append(stem)
@@ -202,7 +218,7 @@ def main():
 
         orig_img = Image.open(ORIG / f"{stem}.jpg")
         layer_info: list[dict] = []
-        for name, _ in prompts:
+        for name, *_ in prompts:
             im = np.array(Image.open(src / f"{name}.png"))
             layer_info.append({
                 "name": name,
@@ -213,12 +229,12 @@ def main():
 
         resolved = resolve_masks_zindex(layer_info)
         report = validate_decomposition(
-            [(resolved[n] * 255).astype(np.uint8) for n, _ in prompts],
+            [(resolved[n] * 255).astype(np.uint8) for n, *_ in prompts],
             strict=True,
         )
         print(f"  coverage={report.coverage:.4f} overlap={report.overlap:.4f}")
 
-        for name, _ in prompts:
+        for name, *_ in prompts:
             mask_u8 = (resolved[name] * 255).astype(np.uint8)
             mask_pil = Image.fromarray(mask_u8, mode="L")
             layer = apply_mask_to_image(orig_img, mask_pil)
