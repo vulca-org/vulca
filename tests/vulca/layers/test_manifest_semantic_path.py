@@ -22,3 +22,17 @@ def test_semantic_path_preserves_existing_fields():
     assert info.name == "bg"
     assert info.z_index == 5
     assert info.content_type == "background"
+
+
+def test_semantic_path_orthogonal_to_content_type():
+    """content_type (coarse bucket) and semantic_path (free-form hierarchy)
+    are independent fields — setting one must not shadow the other."""
+    info = LayerInfo(
+        name="eyes",
+        description="",
+        z_index=2,
+        content_type="subject",
+        semantic_path="subject.face.eyes",
+    )
+    assert info.content_type == "subject"
+    assert info.semantic_path == "subject.face.eyes"
