@@ -97,6 +97,8 @@ def write_manifest(
                 # v0.13.1 P0.2 — spatial anchor round-trip for retry.
                 "position": info.position,
                 "coverage": info.coverage,
+                # v0.16 multi-layer — dot-notation hierarchical path.
+                "semantic_path": info.semantic_path,
             }
             for info in sorted(layers, key=lambda l: l.z_index)
         ],
@@ -141,9 +143,12 @@ def load_manifest(artwork_dir: str) -> LayeredArtwork:
                 content_bbox=item.get("content_bbox"),
                 position=item.get("position", "") or "",
                 coverage=item.get("coverage", "") or "",
+                semantic_path=item.get("semantic_path", ""),
             )
         else:
-            # V1: migrate — generate id, default content_type, preserve bbox
+            # V1: migrate — generate id, default content_type, preserve bbox.
+            # semantic_path defaults to "" (multi-layer schema didn't exist in
+            # V1; legacy content_type remains authoritative).
             name = item.get("name", f"layer_{index:03d}")
             generated_id = f"layer_{name}_{index:03d}"
             info = LayerInfo(
