@@ -55,6 +55,17 @@ def validate_decomposition(
     if not masks:
         raise ValueError("masks list is empty")
 
+    for i, m in enumerate(masks):
+        if m.ndim != 2:
+            raise ValueError(
+                f"masks[{i}] must be a 2D (H, W) array; got ndim={m.ndim}, shape={m.shape}"
+            )
+        if m.dtype != bool and m.dtype != np.uint8:
+            raise ValueError(
+                f"masks[{i}] must have dtype bool or uint8; got {m.dtype}. "
+                f"Float masks (e.g. SAM 0-1 probabilities) must be thresholded first."
+            )
+
     first_shape = masks[0].shape
     for i, m in enumerate(masks[1:], start=1):
         if m.shape != first_shape:

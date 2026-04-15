@@ -30,7 +30,8 @@ def imread_safe(
     Returns (rgb_ndarray, scale) where scale is the factor applied
     (1.0 if no resize).
 
-    Raises FileNotFoundError if the file doesn't exist or can't be read.
+    Raises FileNotFoundError if the file is missing, ValueError if the
+    file exists but cv2 cannot decode it (unsupported format / corrupt).
     """
     p = Path(path)
     if not p.exists():
@@ -38,7 +39,7 @@ def imread_safe(
 
     bgr = cv2.imread(str(p))
     if bgr is None:
-        raise FileNotFoundError(f"cv2 could not decode image: {p}")
+        raise ValueError(f"cv2 could not decode image (unsupported or corrupt): {p}")
 
     h, w = bgr.shape[:2]
     longest = max(h, w)
