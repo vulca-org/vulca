@@ -13,7 +13,13 @@ import shutil
 from datetime import datetime, timezone
 from pathlib import Path
 
+import numpy as np
 from PIL import Image
+
+# sys.path bootstrap so `python scripts/migrate_...` and `pytest` both work.
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
+from vulca.layers.coarse_bucket import coarse_bucket_of, is_background  # noqa: E402
 
 REPO = Path(__file__).resolve().parent.parent
 EXP = REPO / "assets" / "showcase" / "experiments" / "evfsam_all"
@@ -25,8 +31,71 @@ Z_INDEX = {"background": 0, "subject": 1, "foreground": 2}
 
 
 def _z_index_for(layer_name: str) -> int:
-    """Lookup z_index; default to 99 for unknown layer types."""
-    return Z_INDEX.get(layer_name, 99)
+    """Lookup z_index; exact-name first, coarse-bucket fallback, then 99.
+
+    Multi-layer schema emits dotted names like `subject.face.eyes` that
+    wouldn't match the exact Z_INDEX keys; fall back to the coarse bucket
+    via `coarse_bucket_of` so dotted names still get the right layer order.
+    """
+    if layer_name in Z_INDEX:
+        return Z_INDEX[layer_name]
+    bucket = coarse_bucket_of(layer_name)
+    if bucket in Z_INDEX:
+        return Z_INDEX[bucket]
+    return 99
+
+
+def resolve_masks_zindex(layers: list[dict]) -> dict[str, np.ndarray]:
+    """Resolve overlaps between layer masks by z-index.
+
+    Higher z_index wins: each layer's mask is cleared of all pixels claimed
+    by any higher-z layer. After overlap resolution, any unclaimed pixels
+    are filled into the is_background layer (if one exists).
+
+    Args:
+        layers: list of dicts with REQUIRED keys ``name`` (str), ``z`` (int),
+            ``content_type`` (str), ``mask`` (HxW bool ndarray). Extra keys
+            are ignored.
+
+    Returns:
+        dict name -> bool mask. Together, these cover 100% of the canvas
+        with no overlap iff a catch-all background layer is present.
+
+    Tiebreaker:
+        When two layers share the same ``z``, the one appearing **earlier
+        in the input list** wins contested pixels (stable sort).
+
+    Raises:
+        ValueError: on empty input or mismatched mask shapes.
+    """
+    if not layers:
+        raise ValueError("layers list is empty")
+
+    first_shape = layers[0]["mask"].shape
+    for i, l in enumerate(layers):
+        if l["mask"].shape != first_shape:
+            raise ValueError(
+                f"layer {i} ({l['name']!r}) mask shape "
+                f"{l['mask'].shape} != first shape {first_shape}"
+            )
+
+    # Sort by z DESCENDING. Stable sort preserves input order on ties.
+    ordered = sorted(layers, key=lambda l: -l["z"])
+    out: dict[str, np.ndarray] = {}
+    claimed = np.zeros(first_shape, dtype=bool)
+    for layer in ordered:
+        mask = layer["mask"] & ~claimed
+        out[layer["name"]] = mask
+        claimed |= mask
+
+    # Fill unclaimed pixels into the lowest-z catch-all background layer.
+    bg_candidates = [l for l in layers if is_background(l["content_type"])]
+    if bg_candidates:
+        bg_layer = min(bg_candidates, key=lambda l: l["z"])
+        unclaimed = ~claimed
+        out[bg_layer["name"]] = out[bg_layer["name"]] | unclaimed
+
+    return out
 
 
 def make_manifest(stem: str, prompts: list[tuple[str, str]]) -> dict:
@@ -105,41 +174,31 @@ def main():
         dst.mkdir(parents=True, exist_ok=True)
 
         # EVF-SAM generates each layer mask independently — no guarantee of
-        # full coverage or mutual exclusivity. To get a proper composite:
-        # 1) Resolve overlaps (foreground wins over subject wins over background)
-        # 2) Fill unclaimed pixels into the background layer (catch-all)
-        import numpy as np
-        from PIL import Image
+        # full coverage or mutual exclusivity. Resolve via z-index (higher
+        # wins) then fill unclaimed pixels into the catch-all background.
+        from vulca.layers.decomp_validator import validate_decomposition
         from vulca.layers.mask import apply_mask_to_image
 
-        # Load alpha masks
         orig_img = Image.open(ORIG / f"{stem}.jpg")
-        masks: dict[str, np.ndarray] = {}
+        layer_info: list[dict] = []
         for name, _ in prompts:
             im = np.array(Image.open(src / f"{name}.png"))
-            masks[name] = im[:, :, 3] > 10
+            layer_info.append({
+                "name": name,
+                "z": _z_index_for(name),
+                "content_type": name,
+                "mask": im[:, :, 3] > 10,
+            })
 
-        # Resolve layer priority: foreground > subject > background
-        # (higher z_index claims pixels first)
-        if "foreground" in masks:
-            if "subject" in masks:
-                masks["subject"] &= ~masks["foreground"]
-            if "background" in masks:
-                masks["background"] &= ~masks["foreground"]
-        if "subject" in masks and "background" in masks:
-            masks["background"] &= ~masks["subject"]
+        resolved = resolve_masks_zindex(layer_info)
+        report = validate_decomposition(
+            [(resolved[n] * 255).astype(np.uint8) for n, _ in prompts],
+            strict=True,
+        )
+        print(f"  coverage={report.coverage:.4f} overlap={report.overlap:.4f}")
 
-        # Fill unclaimed pixels into background (catch-all)
-        if "background" in masks:
-            h, w = masks["background"].shape
-            claimed = np.zeros((h, w), dtype=bool)
-            for m in masks.values():
-                claimed |= m
-            masks["background"] |= ~claimed
-
-        # Save resolved masks
         for name, _ in prompts:
-            mask_u8 = (masks[name] * 255).astype(np.uint8)
+            mask_u8 = (resolved[name] * 255).astype(np.uint8)
             mask_pil = Image.fromarray(mask_u8, mode="L")
             layer = apply_mask_to_image(orig_img, mask_pil)
             layer.save(str(dst / f"{name}.png"))
