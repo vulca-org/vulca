@@ -58,3 +58,19 @@ def test_validator_tolerates_small_coverage_epsilon():
     a[0, 0] = False
     report = validate_decomposition([_binary(a)], strict=True, epsilon=1e-3)
     assert report.coverage < 1.0
+
+
+def test_validator_rejects_3d_mask():
+    """3D masks include a channel axis and would silently miscount
+    coverage. Reject them at the input contract."""
+    m = np.zeros((4, 4, 3), dtype=np.uint8)
+    with pytest.raises(ValueError, match="ndim|2D|shape"):
+        validate_decomposition([m])
+
+
+def test_validator_rejects_float_mask():
+    """Float masks would be silently compared via >127, collapsing the
+    common 0-1 SAM-style probability range to all-zero. Reject them."""
+    m = np.ones((4, 4), dtype=np.float32)
+    with pytest.raises(ValueError, match="dtype|uint8|bool"):
+        validate_decomposition([m])
