@@ -16,10 +16,15 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-# sys.path bootstrap so `python scripts/migrate_...` and `pytest` both work.
-import sys
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
-from vulca.layers.coarse_bucket import coarse_bucket_of, is_background  # noqa: E402
+# Prefer an installed `vulca` (pip install -e .), fall back to the sibling
+# src/ tree so running `python scripts/migrate_...` directly still works
+# for contributors who haven't editable-installed the package yet.
+try:
+    from vulca.layers.coarse_bucket import coarse_bucket_of, is_background
+except ImportError:
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
+    from vulca.layers.coarse_bucket import coarse_bucket_of, is_background  # noqa: E402
 
 REPO = Path(__file__).resolve().parent.parent
 EXP = REPO / "assets" / "showcase" / "experiments" / "evfsam_all"
@@ -36,7 +41,13 @@ def _z_index_for(layer_name: str) -> int:
     Multi-layer schema emits dotted names like `subject.face.eyes` that
     wouldn't match the exact Z_INDEX keys; fall back to the coarse bucket
     via `coarse_bucket_of` so dotted names still get the right layer order.
+
+    Raises ValueError on empty layer_name — empty is never a legitimate
+    input and would silently collapse to Z_INDEX["background"]=0 via the
+    coarse bucket path.
     """
+    if not layer_name:
+        raise ValueError("layer_name must be a non-empty string")
     if layer_name in Z_INDEX:
         return Z_INDEX[layer_name]
     bucket = coarse_bucket_of(layer_name)
@@ -89,11 +100,21 @@ def resolve_masks_zindex(layers: list[dict]) -> dict[str, np.ndarray]:
         claimed |= mask
 
     # Fill unclaimed pixels into the lowest-z catch-all background layer.
+    # If no background is present but the layers already cover the canvas,
+    # that's fine — nothing to fill. If there ARE unclaimed pixels AND
+    # no catch-all, fail fast so the caller knows to add a background
+    # layer rather than silently producing a composite with holes.
+    unclaimed = ~claimed
     bg_candidates = [l for l in layers if is_background(l["content_type"])]
     if bg_candidates:
         bg_layer = min(bg_candidates, key=lambda l: l["z"])
-        unclaimed = ~claimed
         out[bg_layer["name"]] = out[bg_layer["name"]] | unclaimed
+    elif unclaimed.any():
+        raise ValueError(
+            f"{int(unclaimed.sum())} unclaimed pixels remain and no "
+            f"is_background layer is available as catch-all. Add a "
+            f"background layer to layers[]."
+        )
 
     return out
 
