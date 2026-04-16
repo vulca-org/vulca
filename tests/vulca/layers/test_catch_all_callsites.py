@@ -13,20 +13,26 @@ from vulca.layers.types import LayerInfo
 
 def test_is_background_matches_dotted_content_type():
     info = LayerInfo(name="bg", description="", z_index=0,
-                     content_type="background.catch_all")
+                     content_type="background",
+                     semantic_path="background.catch_all")
     assert is_background(info.content_type) is True
+    assert is_background(info.semantic_path) is True
 
 
 def test_is_background_rejects_subject_face_eyes():
     info = LayerInfo(name="eyes", description="", z_index=45,
-                     content_type="subject.face.eyes")
+                     content_type="subject",
+                     semantic_path="subject.face.eyes")
     assert is_background(info.content_type) is False
+    assert is_background(info.semantic_path) is False
 
 
 def test_is_background_rejects_person_indexed():
     info = LayerInfo(name="face", description="", z_index=30,
-                     content_type="person[0].face")
+                     content_type="subject",
+                     semantic_path="person[0].face")
     assert is_background(info.content_type) is False
+    assert is_background(info.semantic_path) is False
 
 
 def test_effect_bucket_covers_dotted_effect_paths():
