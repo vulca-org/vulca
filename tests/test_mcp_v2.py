@@ -1,4 +1,4 @@
-"""Tests for VULCA MCP Server v2 — 6 tools with view/format params."""
+"""Tests for VULCA MCP Server v2 — agent-native tools returning full JSON."""
 import asyncio
 import pytest
 
@@ -8,27 +8,19 @@ def run(coro):
 
 
 class TestCreateArtwork:
-    def test_summary_json(self):
+    def test_returns_all_fields(self):
         from vulca.mcp_server import create_artwork
         r = run(create_artwork("test", provider="mock"))
         assert "session_id" in r
         assert "best_image_url" in r
         assert "weighted_total" in r
-        assert "rationales" not in r
-
-    def test_detailed_json(self):
-        from vulca.mcp_server import create_artwork
-        r = run(create_artwork("test", provider="mock", view="detailed"))
+        # All fields always present (no summary/detailed distinction)
         assert "rationales" in r
         assert "rounds" in r
         assert "scores" in r
-        assert "best_image_url" in r
-
-    def test_markdown_format(self):
-        from vulca.mcp_server import create_artwork
-        r = run(create_artwork("test", provider="mock", view="detailed", format="markdown"))
-        assert isinstance(r, str)
-        assert "VULCA Creation" in r or "Weighted Total" in r
+        assert "cost_usd" in r
+        assert "recommendations" in r
+        assert "risk_flags" in r
 
     def test_hitl_returns_session(self):
         from vulca.mcp_server import create_artwork
@@ -38,17 +30,16 @@ class TestCreateArtwork:
 
 
 class TestEvaluateArtwork:
-    def test_summary_json(self):
+    def test_returns_all_fields(self):
         from vulca.mcp_server import evaluate_artwork
         r = run(evaluate_artwork("/dev/null", mock=True))
         assert "score" in r
         assert "tradition" in r
-
-    def test_detailed_json(self):
-        from vulca.mcp_server import evaluate_artwork
-        r = run(evaluate_artwork("/dev/null", mock=True, view="detailed"))
+        # All fields always present
         assert "rationales" in r
         assert "recommendations" in r
+        assert "risk_flags" in r
+        assert "risk_level" in r
 
 
 class TestListTraditions:
@@ -59,12 +50,8 @@ class TestListTraditions:
         assert "chinese_xieyi" in r["traditions"]
         xieyi = r["traditions"]["chinese_xieyi"]
         assert "emphasis" in xieyi
-
-    def test_markdown_format(self):
-        from vulca.mcp_server import list_traditions
-        r = run(list_traditions(format="markdown"))
-        assert isinstance(r, str)
-        assert "chinese_xieyi" in r
+        # Always includes detailed fields
+        assert "terminology_count" in xieyi
 
 
 class TestGetTraditionGuide:
@@ -72,12 +59,11 @@ class TestGetTraditionGuide:
         from vulca.mcp_server import get_tradition_guide
         r = run(get_tradition_guide("chinese_xieyi"))
         assert r["tradition"] == "chinese_xieyi"
-        assert "terminology" in r or "weights" in r  # summary may omit terminology
         assert "weights" in r
 
-    def test_detailed_returns_terminology(self):
+    def test_returns_full_terminology(self):
         from vulca.mcp_server import get_tradition_guide
-        r = run(get_tradition_guide("chinese_xieyi", view="detailed"))
+        r = run(get_tradition_guide("chinese_xieyi"))
         assert "terminology" in r
         assert "taboos" in r
         assert "weights" in r
@@ -86,12 +72,6 @@ class TestGetTraditionGuide:
         from vulca.mcp_server import get_tradition_guide
         r = run(get_tradition_guide("nonexistent"))
         assert "error" in r
-
-    def test_markdown_format(self):
-        from vulca.mcp_server import get_tradition_guide
-        r = run(get_tradition_guide("chinese_xieyi", format="markdown"))
-        assert isinstance(r, str)
-        assert "Cultural Guide" in r
 
 
 class TestGetEvolutionStatus:
@@ -109,12 +89,6 @@ class TestGetEvolutionStatus:
         assert "changes" in r
         assert "insight" in r
         assert "has_evolution" in r
-
-    def test_markdown_format(self):
-        from vulca.mcp_server import get_evolution_status
-        r = run(get_evolution_status("chinese_xieyi", format="markdown"))
-        assert isinstance(r, str)
-        assert "Evolution Status" in r
 
 
 class TestResumeArtwork:
