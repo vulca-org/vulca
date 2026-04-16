@@ -1,0 +1,60 @@
+{
+  "slug": "the-scream",
+  "layers": [
+    [
+      "background",
+      "all pixels not covered by any other defined layer",
+      "background"
+    ],
+    [
+      "sky_red_stripes",
+      "the horizontal band of red and orange stripes across the upper portion of the image",
+      "sky/stripes"
+    ],
+    [
+      "sky_blue_stripes",
+      "the horizontal band of blue and darker colored stripes below the red stripes",
+      "sky/stripes"
+    ],
+    [
+      "distant_horizon_water",
+      "the horizontal band of lighter blue and white tones suggesting water or a distant horizon line",
+      "landscape/horizon"
+    ],
+    [
+      "foreground_figure_head",
+      "the pale, round shape representing the head of the central figure",
+      "person[0]/head"
+    ],
+    [
+      "foreground_figure_skin",
+      "the visible skin area of the central figure's face, including the forehead and cheeks",
+      "person[0]/skin"
+    ],
+    [
+      "foreground_figure_hair",
+      "the dark, indistinct mass surrounding the head of the central figure",
+      "person[0]/hair"
+    ],
+    [
+      "foreground_figure_body",
+      "the dark, draped shape representing the torso and clothing of the central figure",
+      "person[0]/body"
+    ],
+    [
+      "left_pillar_structure",
+      "the vertical, dark, pillar-like structures visible on the left side of the composition",
+      "structure/pillars"
+    ],
+    [
+      "ground_sloping_left",
+      "the diagonal, striped area sloping down and to the left from the central figure",
+      "ground/slope"
+    ],
+    [
+      "ground_sloping_right",
+      "the diagonal, striped area sloping down and to the right from the central figure",
+      "ground/slope"
+    ]
+  ]
+}

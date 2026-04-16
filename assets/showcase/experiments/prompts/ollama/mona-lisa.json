@@ -1,0 +1,65 @@
+{
+  "slug": "mona-lisa",
+  "layers": [
+    [
+      "background",
+      "The sky and distant landscape elements not belonging to the main figure or foreground objects.",
+      "background"
+    ],
+    [
+      "person",
+      "The entire visible figure of the woman, including hair, skin, and clothing.",
+      "person"
+    ],
+    [
+      "hair",
+      "The dark brown hair cascading over the shoulders and framing the face.",
+      "person.hair"
+    ],
+    [
+      "skin",
+      "The visible skin areas of the face, neck, and hands.",
+      "person.skin"
+    ],
+    [
+      "face",
+      "The entire facial structure, including forehead, cheeks, nose, and chin.",
+      "person.face"
+    ],
+    [
+      "eyes",
+      "The visible irises and surrounding eye area.",
+      "person.face.eyes"
+    ],
+    [
+      "nose",
+      "The structure of the nose, including the bridge and tip.",
+      "person.face.nose"
+    ],
+    [
+      "lips",
+      "The visible mouth area, including the upper and lower lips.",
+      "person.face.lips"
+    ],
+    [
+      "clothing",
+      "The dark, draped garment covering the torso and arms.",
+      "person.clothing"
+    ],
+    [
+      "forearm_left",
+      "The visible left forearm resting on the surface.",
+      "person.clothing.forearm_left"
+    ],
+    [
+      "hand_left",
+      "The visible left hand resting on the surface.",
+      "person.clothing.hand_left"
+    ],
+    [
+      "surface",
+      "The dark, horizontal surface upon which the arms are resting.",
+      "foreground_object.surface"
+    ]
+  ]
+}

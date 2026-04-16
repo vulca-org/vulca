@@ -1,0 +1,80 @@
+{
+  "slug": "nighthawks",
+  "layers": [
+    [
+      "background",
+      "The area surrounding the main subjects, including the street, sky, and unclassified building elements.",
+      "background"
+    ],
+    [
+      "building_facade",
+      "The brick and windowed structure forming the background building to the left.",
+      "architecture.building_facade"
+    ],
+    [
+      "storefront_awning",
+      "The dark, horizontal awning structure above the main service window.",
+      "architecture.storefront_awning"
+    ],
+    [
+      "service_window_frame",
+      "The visible vertical and horizontal framing elements of the service window.",
+      "architecture.service_window_frame"
+    ],
+    [
+      "service_window_interior",
+      "The dark, recessed area visible through the main service window.",
+      "architecture.service_window_interior"
+    ],
+    [
+      "counter_surface",
+      "The polished wooden counter extending across the front of the service window.",
+      "furniture.counter_surface"
+    ],
+    [
+      "person_1_man",
+      "The man seated on the left side of the counter, wearing a suit and hat.",
+      "person[0].man"
+    ],
+    [
+      "person_2_woman",
+      "The woman seated next to the first man, wearing a light-colored dress.",
+      "person[1].woman"
+    ],
+    [
+      "person_3_man",
+      "The man seated on the right side of the counter, wearing a light suit.",
+      "person[2].man"
+    ],
+    [
+      "chair_person_1",
+      "The chair occupied by the first man.",
+      "furniture.chair[0]"
+    ],
+    [
+      "chair_person_2",
+      "The chair occupied by the woman.",
+      "furniture.chair[1]"
+    ],
+    [
+      "chair_person_3",
+      "The chair occupied by the third man.",
+      "furniture.chair[2]"
+    ],
+    [
+      "signage_text",
+      "The visible text 'PHILLIES' painted on the awning.",
+      "text_signage.store_name"
+    ],
+    [
+      "object_container_left",
+      "The small, dark object or container near the first man.",
+      "object.container[0]"
+    ],
+    [
+      "object_container_right",
+      "The small, dark object or container near the third man.",
+      "object.container[1]"
+    ]
+  ]
+}
