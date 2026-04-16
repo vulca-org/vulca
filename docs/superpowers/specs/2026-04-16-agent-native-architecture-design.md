@@ -58,7 +58,7 @@ If a tool contains a loop, a threshold check, or a VLM call that makes a creativ
 |------|-------------|---------|
 | `sync_data` | Cloud sync. | Keep |
 
-## Deletions (9 tools removed)
+## Deletions (11 tools removed)
 
 | Tool | Reason |
 |------|--------|
