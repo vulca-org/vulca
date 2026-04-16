@@ -27,6 +27,12 @@ OUT_DIR = REPO / "assets" / "showcase" / "layers"  # overwrite in-place
 # Face-parsing parts that replace "head_and_face" EVF-SAM layer
 FACE_PARTS = {"skin", "eyes", "eyebrows", "nose", "lips", "hair", "neck", "ears"}
 
+# Minimum pixel count for a face part to be its own layer.
+# Below this, pixels are merged into the "skin" layer (parent).
+# Key parts (eyes, nose, lips) are NEVER merged regardless of size.
+MIN_PART_PIXELS = 500
+NEVER_MERGE = {"eyes", "nose", "lips", "skin", "hair"}
+
 # semantic_path for face parts
 FACE_SP = {
     "skin": "subject.head.face",
@@ -95,6 +101,7 @@ def merge_image(slug: str, force: bool = False) -> None:
 
     face_layers = []
     face_claimed = np.zeros((H, W), dtype=bool)
+    skin_extra = np.zeros((H, W), dtype=bool)  # tiny parts merged into skin
 
     # Sort by z descending so higher-z parts claim first
     fp_parts = []
@@ -106,20 +113,35 @@ def merge_image(slug: str, force: bool = False) -> None:
 
     fp_parts.sort(key=lambda x: -FACE_Z.get(x[0], 50))
 
+    # First pass: collect all constrained masks and decide what's too small
+    part_masks: dict[str, np.ndarray] = {}
     for name, png in fp_parts:
         fp_rgba = np.array(Image.open(png))
         fp_mask = fp_rgba[:, :, 3] > 10
-
-        # Constrain to head region from EVF-SAM
         constrained = fp_mask & head_mask & ~face_claimed
-        if constrained.sum() < 50:
-            print(f"  SKIP face part {name}: <50 pixels after constraining to head region")
+        if constrained.sum() < 10:
             continue
-
         face_claimed |= constrained
+        part_masks[name] = constrained
 
-        # Save constrained layer
-        mask_u8 = (constrained * 255).astype(np.uint8)
+    # Second pass: merge tiny NON-KEY parts into skin
+    for name, mask in list(part_masks.items()):
+        if name in NEVER_MERGE:
+            continue
+        if mask.sum() < MIN_PART_PIXELS:
+            print(f"  MERGE {name} ({mask.sum()} px) -> skin (below {MIN_PART_PIXELS} threshold)")
+            skin_extra |= mask
+            del part_masks[name]
+
+    # Add merged pixels to skin
+    if "skin" in part_masks:
+        part_masks["skin"] = part_masks["skin"] | skin_extra
+    elif skin_extra.any():
+        part_masks["skin"] = skin_extra
+
+    # Save surviving parts
+    for name, mask in part_masks.items():
+        mask_u8 = (mask * 255).astype(np.uint8)
         layer_rgba = np.dstack([orig_np, mask_u8])
         out_path = OUT_DIR / slug / f"{name}.png"
         Image.fromarray(layer_rgba).save(str(out_path))

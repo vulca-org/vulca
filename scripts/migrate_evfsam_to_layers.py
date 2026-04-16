@@ -43,6 +43,7 @@ _SP_Z_MAP = [
     ("subject.head.face.", 70),   # eyes/nose/lips beat face_skin
     ("subject.head.face",  65),   # face_skin
     ("subject.head.",      60),   # hair, veil
+    ("subject.body.hands", 58),  # hands in front of clothing
     ("subject.body.",      55),
     ("subject.person[",    50),   # per-person layers
     ("subject.",           45),

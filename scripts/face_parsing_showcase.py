@@ -72,16 +72,34 @@ def segment(model, processor, image: Image.Image, device: str = "mps") -> np.nda
 
 
 def find_face_bbox(
-    seg_map: np.ndarray, padding: float = 0.2,
+    seg_map: np.ndarray, padding: float = 0.3,
 ) -> tuple[int, int, int, int] | None:
-    """Find bounding box of face region with padding. Returns (x1, y1, x2, y2) or None."""
-    face_mask = np.isin(seg_map, list(FACE_CLASSES))
-    if face_mask.sum() < 100:
+    """Find bounding box of face region with padding. Returns (x1, y1, x2, y2) or None.
+
+    Uses nose+eyes as anchor (these are ONLY on the face), then expands.
+    This avoids skin-on-hands or neck dragging the bbox down.
+    """
+    # Anchor on nose + eyes (classes 2, 4, 5) — never on hands/neck
+    anchor_mask = np.isin(seg_map, [2, 4, 5])  # nose, l_eye, r_eye
+    if anchor_mask.sum() < 20:
+        # Fallback to all face classes
+        anchor_mask = np.isin(seg_map, list(FACE_CLASSES))
+    if anchor_mask.sum() < 100:
         return None
-    ys, xs = np.where(face_mask)
+    ys, xs = np.where(anchor_mask)
+    cy, cx = int(ys.mean()), int(xs.mean())  # center of anchor
     y1, y2 = int(ys.min()), int(ys.max())
     x1, x2 = int(xs.min()), int(xs.max())
-    h, w = y2 - y1, x2 - x1
+    anchor_h, anchor_w = y2 - y1, x2 - x1
+
+    # Anchor (nose/eyes) is small — expand to full face estimate.
+    # A face is roughly 3-4x the nose-to-eyes span in each direction.
+    face_size = max(anchor_h, anchor_w, 50) * 4
+    x1 = cx - face_size // 2
+    x2 = cx + face_size // 2
+    y1 = cy - face_size // 2
+    y2 = cy + face_size // 2
+    h, w = face_size, face_size
     pad_h, pad_w = int(h * padding), int(w * padding)
     H, W = seg_map.shape
     return (

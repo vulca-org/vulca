@@ -12,38 +12,44 @@
     {
       "name": "eyebrows",
       "file": "eyebrows.png",
-      "pixels": 352,
-      "fraction": 0.0003
+      "pixels": 468,
+      "fraction": 0.0004
     },
     {
       "name": "eyes",
       "file": "eyes.png",
-      "pixels": 189,
-      "fraction": 0.0002
+      "pixels": 569,
+      "fraction": 0.0005
     },
     {
       "name": "hair",
       "file": "hair.png",
-      "pixels": 120600,
-      "fraction": 0.1098
+      "pixels": 70132,
+      "fraction": 0.0639
+    },
+    {
+      "name": "lips",
+      "file": "lips.png",
+      "pixels": 460,
+      "fraction": 0.0004
     },
     {
       "name": "neck",
       "file": "neck.png",
-      "pixels": 853,
-      "fraction": 0.0008
+      "pixels": 16531,
+      "fraction": 0.0151
     },
     {
       "name": "nose",
       "file": "nose.png",
-      "pixels": 3081,
-      "fraction": 0.0028
+      "pixels": 3161,
+      "fraction": 0.0029
     },
     {
       "name": "skin",
       "file": "skin.png",
-      "pixels": 59018,
-      "fraction": 0.0537
+      "pixels": 44936,
+      "fraction": 0.0409
     }
   ]
 }
