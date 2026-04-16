@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "vulca"
-version = "0.16.0"
+version = "0.16.1"
 description = "AI-native cultural art creation organism. Multi-round img2img iteration, two-phase VLM evaluation (OBSERVE+EVALUATE), Brief-driven Studio with sketch/reference upload, local evolution flywheel, commercial extra dimensions, and 13 cultural traditions."
 readme = "README.md"
 license = "Apache-2.0"
@@ -30,6 +30,8 @@ dependencies = [
     "litellm>=1.0.0",
     "httpx>=0.25.0",
     "pyyaml>=6.0",
+    "numpy>=1.24",
+    "Pillow>=10.0",
 ]
 
 [project.optional-dependencies]
