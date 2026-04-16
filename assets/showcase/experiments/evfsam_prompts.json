@@ -155,7 +155,7 @@
     [
       "face_skin",
       "visible flesh-toned skin regions of the woman's face, including forehead, cheeks, chin, and jaw but excluding eyes, nose, lips, hair, and veil",
-      "subject.head.face.skin"
+      "subject.head.face"
     ],
     [
       "eyes",

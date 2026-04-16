@@ -34,26 +34,49 @@ PROMPTS = REPO / "assets" / "showcase" / "experiments" / "evfsam_prompts.json"
 
 Z_INDEX = {"background": 0, "subject": 1, "foreground": 2}
 
+# Semantic-path prefix → z-index.  More specific (deeper) paths should
+# have HIGHER z so they win contested pixels over broader regions.
+_SP_Z_MAP = [
+    # Prefix match, z-index.  Checked in order; first match wins.
+    ("foreground.", 80),
+    ("foreground",  80),
+    ("subject.head.face.", 70),   # eyes/nose/lips beat face_skin
+    ("subject.head.face",  65),   # face_skin
+    ("subject.head.",      60),   # hair, veil
+    ("subject.body.",      55),
+    ("subject.person[",    50),   # per-person layers
+    ("subject.",           45),
+    ("subject",            40),
+    ("architecture.",      35),
+    ("background.",        10),   # background sub-layers (sky, water)
+    ("background",          0),
+]
 
-def _z_index_for(layer_name: str) -> int:
-    """Lookup z_index; exact-name first, coarse-bucket fallback, then 99.
 
-    Multi-layer schema emits dotted names like `subject.face.eyes` that
-    wouldn't match the exact Z_INDEX keys; fall back to the coarse bucket
-    via `coarse_bucket_of` so dotted names still get the right layer order.
+def _z_index_for(layer_name: str, semantic_path: str | None = None) -> int:
+    """Derive z_index from semantic_path (preferred) or layer_name.
 
-    Raises ValueError on empty layer_name — empty is never a legitimate
-    input and would silently collapse to Z_INDEX["background"]=0 via the
-    coarse bucket path.
+    Uses _SP_Z_MAP prefix matching on semantic_path for multi-layer schemas.
+    Falls back to exact Z_INDEX lookup and coarse_bucket for legacy 3-layer.
+
+    Higher z = wins contested pixels in overlap resolution.
     """
     if not layer_name:
         raise ValueError("layer_name must be a non-empty string")
+
+    # Try semantic_path first (multi-layer schema)
+    sp = semantic_path or layer_name
+    for prefix, z in _SP_Z_MAP:
+        if sp.startswith(prefix):
+            return z
+
+    # Legacy exact-name lookup
     if layer_name in Z_INDEX:
         return Z_INDEX[layer_name]
     bucket = coarse_bucket_of(layer_name)
     if bucket in Z_INDEX:
         return Z_INDEX[bucket]
-    return 99
+    return 50  # unknown → mid-range, not 99
 
 
 def resolve_masks_zindex(layers: list[dict]) -> dict[str, np.ndarray]:
@@ -138,7 +161,7 @@ def make_manifest(stem: str, prompts: list) -> dict:
             "id": layer_id,
             "name": layer_name,
             "description": prompt,
-            "z_index": _z_index_for(layer_name),
+            "z_index": _z_index_for(layer_name, semantic_path),
             "blend_mode": "normal",
             "content_type": layer_name,
             "semantic_path": semantic_path,
@@ -218,11 +241,11 @@ def main():
 
         orig_img = Image.open(ORIG / f"{stem}.jpg")
         layer_info: list[dict] = []
-        for name, *_ in prompts:
+        for name, prompt, semantic_path in prompts:
             im = np.array(Image.open(src / f"{name}.png"))
             layer_info.append({
                 "name": name,
-                "z": _z_index_for(name),
+                "z": _z_index_for(name, semantic_path),
                 "content_type": name,
                 "mask": im[:, :, 3] > 10,
             })
