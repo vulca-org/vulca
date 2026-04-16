@@ -1,0 +1,19 @@
+{
+  "slug": "nighthawks",
+  "layers": [
+    ["background_buildings", "the dark brick buildings and empty storefronts across the street behind the diner", "background.buildings"],
+    ["night_sky", "the dark empty upper area representing the night sky and building upper floors", "background.sky"],
+    ["street", "the empty dark sidewalk and street surface in front of the diner", "background.street"],
+    ["diner_exterior", "the curved glass window wall and green metal frame of the diner exterior", "subject.diner.exterior"],
+    ["diner_interior_wall", "the back wall inside the diner with the coffee urns and equipment", "subject.diner.interior"],
+    ["counter", "the long smooth wooden countertop running across the diner", "subject.diner.counter"],
+    ["man_in_hat_left", "the man and woman sitting together on the left side of the counter", "subject.person[0]"],
+    ["woman_red_dress", "the woman in red with auburn hair sitting next to the man on the left", "subject.person[1]"],
+    ["man_alone", "the solitary man with his back to the viewer sitting on the right side of the counter", "subject.person[2]"],
+    ["bartender", "the white-uniformed bartender bending forward behind the counter", "subject.person[3]"],
+    ["stools", "the round stools along the counter inside the diner", "foreground.stools"],
+    ["glasses_cups", "the coffee cups glasses and napkin holder items on the counter", "foreground.objects"],
+    ["cash_register", "the metal triangular object near the counter edge", "foreground.register"],
+    ["ceiling_light", "the bright fluorescent light fixtures on the diner ceiling", "subject.diner.lights"]
+  ]
+}

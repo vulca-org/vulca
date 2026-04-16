@@ -1,0 +1,19 @@
+{
+  "slug": "mona-lisa",
+  "layers": [
+    ["background", "the dark smoky landscape behind the figure with winding roads and rocky formations"],
+    ["sky", "the hazy blue-green sky at the top of the painting above the horizon", "background.sky"],
+    ["distant_landscape_left", "the winding road and rocky terrain on the left side behind the figure", "background.landscape_left"],
+    ["distant_landscape_right", "the river valley and bridge on the right side behind the figure", "background.landscape_right"],
+    ["hair", "the long dark brown wavy hair parted in the center falling over both shoulders", "subject.head.hair"],
+    ["face_skin", "the smooth pale skin of the face including forehead cheeks and chin", "subject.head.face_skin"],
+    ["eyes", "the two dark eyes with subtle lids looking slightly left", "subject.head.face.eyes"],
+    ["nose", "the straight nose with soft shadow on the left side", "subject.head.face.nose"],
+    ["lips", "the closed lips with a faint upward curve at the corners", "subject.head.face.lips"],
+    ["neck_chest", "the bare neck and upper chest area below the chin", "subject.body.neck"],
+    ["hands", "the two hands resting one over the other on the arm of the chair", "subject.body.hands"],
+    ["clothing", "the dark greenish-brown dress with gathered folds across the torso", "subject.body.clothing"],
+    ["veil", "the thin translucent dark veil draped over the hair and shoulders", "subject.head.veil"],
+    ["chair_parapet", "the stone ledge and wooden chair armrest at the bottom edge", "foreground.chair"]
+  ]
+}

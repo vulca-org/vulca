@@ -1,0 +1,15 @@
+{
+  "slug": "the-scream",
+  "layers": [
+    ["sky", "the swirling orange and red sky with wavy horizontal bands", "background.sky"],
+    ["fjord_water", "the dark blue water of the fjord below the sky on the right", "background.water"],
+    ["distant_landscape", "the green and blue hilly landscape at the horizon", "background.hills"],
+    ["bridge_railing", "the diagonal brown wooden railing running from lower left toward upper right", "subject.bridge.railing"],
+    ["bridge_deck", "the brown wooden planked surface of the bridge or boardwalk", "subject.bridge.deck"],
+    ["screaming_figure_body", "the dark flowing robe and elongated body of the central figure", "subject.figure.body"],
+    ["screaming_figure_head", "the bald oval head with open mouth and wide eyes of the central figure", "subject.figure.head"],
+    ["screaming_figure_hands", "the two hands pressed against the sides of the head", "subject.figure.hands"],
+    ["background_figures", "the two dark silhouetted figures walking away in the upper left", "background.figures"],
+    ["boats", "the small dark boats visible on the water below", "background.boats"]
+  ]
+}
