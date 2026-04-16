@@ -18,6 +18,3 @@ class TestMCPParity:
         content = open('src/vulca/mcp_server.py').read()
         assert 'def layers_evaluate' in content or 'def evaluate_layers' in content
 
-    def test_mcp_has_layers_regenerate(self):
-        content = open('src/vulca/mcp_server.py').read()
-        assert 'def layers_regenerate' in content or 'def regenerate_layers' in content

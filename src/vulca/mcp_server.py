@@ -23,19 +23,6 @@ try:
 except ImportError:
     pass
 
-# Module-level store for HITL sessions pending human action.
-# Maps session_id -> PipelineOutput (or similar dict)
-_pending_sessions: dict[str, object] = {}
-
-# Dimension display names
-_DIM_NAMES: dict[str, str] = {
-    "L1": "Visual Perception",
-    "L2": "Technical Execution",
-    "L3": "Cultural Context",
-    "L4": "Critical Interpretation",
-    "L5": "Philosophical Aesthetics",
-}
-
 
 def _parse_weights_str(raw: str) -> dict[str, float]:
     """Parse "L1=0.3,L2=0.2,..." into a weights dict.
@@ -62,14 +49,13 @@ def _parse_weights_str(raw: str) -> dict[str, float]:
 _TOOL_TIERS: dict[str, str] = {
     "create_artwork": "core", "evaluate_artwork": "core",
     "list_traditions": "core", "get_tradition_guide": "core",
-    "get_evolution_status": "core", "studio_create_brief": "core",
-    "resume_artwork": "standard", "inpaint_artwork": "standard",
+    "studio_create_brief": "core",
+    "inpaint_artwork": "standard",
     "sync_data": "standard", "studio_generate_concepts": "standard",
-    "studio_select_concept": "standard", "studio_accept": "standard",
-    "studio_update_brief": "standard", "analyze_layers": "standard",
+    "studio_accept": "standard",
     "layers_split": "standard", "layers_composite": "standard",
     "layers_edit": "advanced", "layers_redraw": "advanced",
-    "layers_regenerate": "advanced", "layers_evaluate": "advanced",
+    "layers_evaluate": "advanced",
     "layers_export": "advanced",
 }
 
@@ -155,10 +141,6 @@ async def create_artwork(
     else:
         template = DEFAULT
     output = await execute(template, pipeline_input, interrupt_before=interrupt_before)
-
-    # Store HITL sessions for resume_artwork
-    if output.status == "waiting_human" or output.interrupted_at:
-        _pending_sessions[output.session_id] = output
 
     # Build rationales from events if available (mock may not populate them)
     rationales: dict[str, str] = {}
@@ -304,189 +286,7 @@ async def get_tradition_guide(
     return dict(guide)
 
 
-@mcp.tool()
-async def resume_artwork(
-    session_id: str,
-    action: str,
-    feedback: str = "",
-    locked_dimensions: str = "",
-) -> dict:
-    """Resume a HITL-paused artwork session.
 
-    Args:
-        session_id: Session ID from a create_artwork call with hitl=True.
-        action: One of "accept", "refine", or "reject".
-        feedback: Optional feedback text (used for "refine" to guide rerun).
-        locked_dimensions: Comma-separated locked dims for "refine" (e.g. "L3,L5").
-
-    Returns:
-        Status of the resumed run. "refine" creates a new pipeline run.
-        Returns {"error": "..."} for invalid session IDs.
-    """
-    if session_id not in _pending_sessions:
-        return {"error": f"Session not found: {session_id!r}. Only waiting_human sessions can be resumed."}
-
-    pending = _pending_sessions[session_id]
-
-    if action == "reject":
-        del _pending_sessions[session_id]
-        return {
-            "session_id": session_id,
-            "status": "rejected",
-            "message": "Session rejected. No further action taken.",
-        }
-
-    if action == "accept":
-        del _pending_sessions[session_id]
-        if hasattr(pending, "final_scores"):
-            return {
-                "session_id": session_id,
-                "status": "completed",
-                "tradition": getattr(pending, "tradition", ""),
-                "weighted_total": getattr(pending, "weighted_total", 0.0),
-                "best_image_url": getattr(pending, "best_image_url", ""),
-                "best_candidate_id": getattr(pending, "best_candidate_id", ""),
-                "scores": getattr(pending, "final_scores", {}),
-                "recommendations": getattr(pending, "recommendations", []),
-                "message": "Session accepted.",
-            }
-        return {
-            "session_id": session_id,
-            "status": "accepted",
-            "message": "Session accepted.",
-        }
-
-    if action == "refine":
-        # Parse locked dimensions
-        locked_dims: list[str] = []
-        if locked_dimensions:
-            locked_dims = [d.strip().upper() for d in locked_dimensions.split(",") if d.strip()]
-
-        # Get original pipeline input info preserved from first run
-        original_tradition = getattr(pending, "tradition", "default")
-        original_provider = getattr(pending, "original_provider", "") or "mock"
-        original_intent = getattr(pending, "original_intent", "") or getattr(pending, "summary", "artwork")
-
-        # Build refined intent with feedback injected
-        refined_intent = original_intent
-        if feedback:
-            refined_intent = f"{original_intent}\n\nRefinement feedback: {feedback}"
-
-        from vulca.pipeline.engine import execute
-        from vulca.pipeline.templates import DEFAULT
-        from vulca.pipeline.types import PipelineInput
-
-        node_params: dict[str, dict] = {}
-        if locked_dims:
-            node_params["evaluate"] = {"locked_dimensions": locked_dims}
-
-        pipeline_input = PipelineInput(
-            subject=refined_intent,
-            intent=refined_intent,
-            tradition=original_tradition,
-            provider=original_provider,
-            node_params=node_params,
-        )
-
-        new_output = await execute(DEFAULT, pipeline_input)
-
-        # Remove old pending session
-        del _pending_sessions[session_id]
-
-        return {
-            "session_id": new_output.session_id,
-            "original_session_id": session_id,
-            "status": new_output.status,
-            "tradition": new_output.tradition,
-            "weighted_total": new_output.weighted_total,
-            "best_image_url": new_output.best_image_url,
-            "scores": new_output.final_scores,
-            "total_rounds": new_output.total_rounds,
-            "cost_usd": new_output.total_cost_usd,
-            "message": "Refinement run created.",
-        }
-
-    # Unknown action
-    return {"error": f"Unknown action: {action!r}. Use 'accept', 'refine', or 'reject'."}
-
-
-@mcp.tool()
-async def get_evolution_status(
-    tradition: str = "chinese_xieyi",
-) -> dict:
-    """Get evolution status and weight changes for a tradition.
-
-    Args:
-        tradition: Cultural tradition name (default: chinese_xieyi).
-
-    Returns:
-        tradition, sessions_count, original_weights, evolved_weights, changes, insight,
-        display_name, pipeline_variant.
-    """
-    from vulca.cultural.loader import (
-        _load_evolved_weights,
-        get_tradition,
-        _DEFAULT_WEIGHTS,
-    )
-
-    # Get original YAML weights
-    tc = get_tradition(tradition)
-    original_weights: dict[str, float]
-    if tc:
-        original_weights = dict(tc.weights_l)
-    else:
-        original_weights = dict(_DEFAULT_WEIGHTS)
-
-    # Get evolved weights
-    evolved_weights = _load_evolved_weights(tradition)
-
-    # Calculate changes
-    changes: dict[str, float] = {}
-    if evolved_weights:
-        for dim in ("L1", "L2", "L3", "L4", "L5"):
-            orig = original_weights.get(dim, 0.0)
-            evolved = evolved_weights.get(dim, orig)
-            delta = evolved - orig
-            if abs(delta) > 0.001:
-                changes[dim] = round(delta, 4)
-
-    # Insight text
-    insight = ""
-    if changes:
-        most_changed = max(changes, key=lambda k: abs(changes[k]))
-        delta = changes[most_changed]
-        direction = "increased" if delta > 0 else "decreased"
-        insight = (
-            f"{_DIM_NAMES.get(most_changed, most_changed)} ({most_changed}) {direction} "
-            f"by {abs(delta):.3f} — indicating evolved aesthetic preference."
-        )
-    else:
-        insight = "No evolution detected — using original YAML weights."
-
-    # Get sessions count from unified store
-    sessions_count = 0
-    try:
-        from vulca.storage.unified import UnifiedSessionStore
-        store = UnifiedSessionStore()
-        sessions_count = len(store.load_by_tradition(tradition))
-    except Exception:
-        logging.getLogger("vulca").debug("Failed to load session count for evolution status")
-
-    result: dict = {
-        "tradition": tradition,
-        "sessions_count": sessions_count,
-        "original_weights": original_weights,
-        "evolved_weights": evolved_weights,
-        "has_evolution": evolved_weights is not None,
-        "changes": changes,
-        "insight": insight,
-    }
-
-    if tc:
-        result["display_name"] = tc.display_name.get("en", tradition)
-        result["pipeline_variant"] = tc.pipeline.variant
-
-    return result
 
 
 # ── Studio Tools ────────────────────────────────────────────────────
@@ -516,26 +316,6 @@ async def _studio_create_brief_impl(
     }
 
 
-async def _studio_update_brief_impl(
-    project_dir: str, instruction: str,
-) -> dict:
-    """Implementation for studio_update_brief."""
-    from pathlib import Path
-    from vulca.studio.brief import Brief
-    from vulca.studio.nl_update import parse_nl_update, apply_update
-
-    b = Brief.load(Path(project_dir))
-    result = parse_nl_update(instruction, b)
-    apply_update(b, result)
-    b.save(Path(project_dir))
-
-    return {
-        "rollback_to": result.rollback_to.value,
-        "field_updates": {k: str(v) for k, v in result.field_updates.items()},
-        "explanation": result.explanation,
-    }
-
-
 async def _studio_generate_concepts_impl(
     project_dir: str, count: int = 4, provider: str = "mock",
 ) -> dict:
@@ -550,35 +330,6 @@ async def _studio_generate_concepts_impl(
     b.save(Path(project_dir))
 
     return {"concepts": paths, "count": len(paths)}
-
-
-async def _studio_select_concept_impl(
-    project_dir: str, concept_id: str, notes: str = "",
-) -> dict:
-    """Implementation for studio_select_concept."""
-    from pathlib import Path
-    from vulca.studio.brief import Brief
-    from vulca.studio.phases.concept import ConceptPhase
-
-    b = Brief.load(Path(project_dir))
-
-    # Find concept by matching concept_id against filenames or full paths
-    matched_index = None
-    for i, candidate in enumerate(b.concept_candidates):
-        candidate_name = Path(candidate).stem  # e.g. "c1" from "/path/c1.png"
-        if concept_id == candidate_name or concept_id == candidate or concept_id == Path(candidate).name:
-            matched_index = i
-            break
-
-    if matched_index is None:
-        available = [Path(c).stem for c in b.concept_candidates]
-        return {"error": f"Concept {concept_id!r} not found. Available: {available}"}
-
-    phase = ConceptPhase()
-    phase.select(b, index=matched_index, notes=notes)
-    b.save(Path(project_dir))
-
-    return {"selected": b.selected_concept, "notes": b.concept_notes}
 
 
 # Register MCP tools
@@ -599,20 +350,6 @@ async def studio_create_brief(
 
 
 @mcp.tool()
-async def studio_update_brief(
-    project_dir: str,
-    instruction: str,
-) -> dict:
-    """Update a Brief with natural language instruction.
-
-    Args:
-        project_dir: Path to project directory containing brief.yaml
-        instruction: Natural language update (e.g., "把山改成更高更陡的")
-    """
-    return await _studio_update_brief_impl(project_dir, instruction)
-
-
-@mcp.tool()
 async def studio_generate_concepts(
     project_dir: str,
     count: int = 4,
@@ -626,22 +363,6 @@ async def studio_generate_concepts(
         provider: Image provider (mock, gemini, openai)
     """
     return await _studio_generate_concepts_impl(project_dir, count, provider)
-
-
-@mcp.tool()
-async def studio_select_concept(
-    project_dir: str,
-    concept_id: str,
-    notes: str = "",
-) -> dict:
-    """Select a concept by name and optionally add refinement notes.
-
-    Args:
-        project_dir: Path to project with brief.yaml
-        concept_id: Concept name to select (e.g. "c1", "c2", or full filename "c1.png")
-        notes: Optional refinement notes (e.g., "mountain taller")
-    """
-    return await _studio_select_concept_impl(project_dir, concept_id, notes)
 
 
 async def _studio_accept_impl(project_dir: str) -> dict:
@@ -697,34 +418,6 @@ async def inpaint_artwork(
         "latency_ms": result.latency_ms,
     }
 
-
-@mcp.tool()
-async def analyze_layers(image_path: str) -> dict:
-    """Analyze an image and identify its semantic layers (V2).
-
-    Args:
-        image_path: Path to the image file.
-
-    Returns:
-        Layer structure with name, description, z_index, blend_mode, content_type,
-        dominant_colors, regeneration_prompt per layer.
-    """
-    from vulca.layers.analyze import analyze_layers as _analyze
-    layers = await _analyze(image_path)
-    return {
-        "layers": [
-            {
-                "name": la.name,
-                "description": la.description,
-                "z_index": la.z_index,
-                "blend_mode": la.blend_mode,
-                "content_type": la.content_type,
-                "dominant_colors": la.dominant_colors,
-                "regeneration_prompt": la.regeneration_prompt,
-            }
-            for la in layers
-        ]
-    }
 
 
 @mcp.tool()
@@ -1203,113 +896,7 @@ async def layers_evaluate(
     return {"layers": results}
 
 
-@mcp.tool()
-async def layers_regenerate(
-    artwork_dir: str,
-    tradition: str = "default",
-    provider: str = "gemini",
-) -> dict:
-    """Regenerate a unified image from composite, solving cross-layer consistency.
 
-    Args:
-        artwork_dir: Directory containing composite image and manifest.json.
-        tradition: Cultural tradition for style guidance.
-        provider: Image generation provider (gemini | mock | openai).
-
-    Returns:
-        regenerated_path: Absolute path to the regenerated image.
-    """
-    from vulca.layers.edit import load_artwork
-    from vulca.layers.regenerate import regenerate_from_composite
-
-    artwork = load_artwork(artwork_dir)
-    out = await regenerate_from_composite(
-        artwork.composite_path,
-        tradition=tradition,
-        provider=provider,
-    )
-    return {"regenerated_path": out}
-
-
-@mcp.tool()
-async def vulca_layered_create(
-    intent: str,
-    tradition: str = "default",
-    provider: str = "gemini",
-    output_dir: str = "",
-    no_cache: bool = False,
-    strict: bool = False,
-    max_layers: int = 8,
-) -> dict:
-    """Generate a layered artwork using the v0.13 A-path layered pipeline.
-
-    Args:
-        intent: Natural-language creation intent (e.g. "远山薄雾").
-        tradition: Cultural tradition (e.g. chinese_xieyi).
-        provider: Image provider (gemini | mock | openai).
-        output_dir: Directory to write composite.png / manifest.json / layer pngs.
-        no_cache: Disable sidecar cache (force regeneration).
-        strict: Fail the run if any layer fails.
-        max_layers: Cap on planned layer count.
-    """
-    from vulca.pipeline.engine import execute
-    from vulca.pipeline.templates import LAYERED
-    from vulca.pipeline.types import PipelineInput
-
-    inp = PipelineInput(
-        subject=intent, intent=intent, tradition=tradition, provider=provider,
-        layered=True, no_cache=no_cache, strict=strict, max_layers=max_layers,
-        output_dir=output_dir or "",
-    )
-    output = await execute(LAYERED, inp)
-    return output.to_dict()
-
-
-@mcp.tool()
-async def vulca_layers_retry(
-    artifact_dir: str,
-    layer: str = "",
-    all_failed: bool = False,
-    tradition: str = "",
-    provider: str = "mock",
-) -> dict:
-    """Retry failed layers in a layered artifact directory.
-
-    Args:
-        artifact_dir: Path to the artifact directory (containing manifest.json).
-        layer: Retry only this layer name.
-        all_failed: Retry every layer whose file is missing or validation failed.
-        tradition: Tradition to re-derive anchor/canvas/keying from. If empty,
-            reads from manifest.json[tradition] (recommended). A value that
-            disagrees with the manifest causes an error.
-        provider: Image provider override.
-    """
-    from vulca.layers.retry import retry_layers, UnknownLayerError
-    from vulca.providers import get_image_provider
-
-    if not artifact_dir:
-        return {"error": "artifact_dir required"}
-    try:
-        provider_instance = get_image_provider(provider, api_key="")
-        result = await retry_layers(
-            artifact_dir,
-            tradition_name=(tradition or None),
-            layer_names=[layer] if layer else None,
-            all_failed=all_failed,
-            provider=provider_instance,
-        )
-        return {
-            "ok": result.is_complete,
-            "layers": [{"name": o.info.name, "path": o.rgba_path,
-                        "cache_hit": o.cache_hit} for o in result.layers],
-            "failed": [{"role": f.role, "reason": f.reason} for f in result.failed],
-        }
-    except UnknownLayerError as e:
-        return {"error": str(e), "unknown": e.unknown, "available": e.available}
-    except FileNotFoundError as e:
-        return {"error": str(e)}
-    except Exception as e:
-        return {"error": f"{type(e).__name__}: {e}"}
 
 
 if __name__ == "__main__":

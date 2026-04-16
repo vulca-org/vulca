@@ -2,8 +2,8 @@ def test_tool_tiers_defined():
     from vulca.mcp_server import _TOOL_TIERS, _DESC_LIMITS
     assert "create_artwork" in _TOOL_TIERS
     assert _TOOL_TIERS["create_artwork"] == "core"
-    assert "layers_regenerate" in _TOOL_TIERS
-    assert _TOOL_TIERS["layers_regenerate"] == "advanced"
+    assert "layers_evaluate" in _TOOL_TIERS
+    assert _TOOL_TIERS["layers_evaluate"] == "advanced"
     assert all(t in ("core", "standard", "advanced") for t in _TOOL_TIERS.values())
     assert _DESC_LIMITS["core"] > _DESC_LIMITS["advanced"]
 
@@ -15,7 +15,7 @@ def test_tier_description_truncates():
     assert len(result_core) <= 300
     assert result_core.endswith("...")
 
-    result_adv = _tier_description("layers_regenerate", long_desc)
+    result_adv = _tier_description("layers_evaluate", long_desc)
     assert len(result_adv) <= 50
     assert result_adv.endswith("...")
 
@@ -39,7 +39,7 @@ def test_tier_description_applied_to_adapter_registration():
     from vulca.tools.protocol import VulcaTool
 
     class FakeTool(VulcaTool):
-        name = "layers_regenerate"  # This is an "advanced" tier tool
+        name = "layers_evaluate"  # This is an "advanced" tier tool
         display_name = "Fake"
         description = "x" * 500  # Very long description
         category = "cultural"
