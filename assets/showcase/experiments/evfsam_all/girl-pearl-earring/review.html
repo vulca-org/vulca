@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>EVF-SAM 8-Layer Experiment — Girl with a Pearl Earring</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #111; color: #eee; font-family: -apple-system, sans-serif; padding: 20px; }
+h1 { text-align: center; margin-bottom: 8px; font-size: 1.4em; }
+.subtitle { text-align: center; color: #888; margin-bottom: 24px; font-size: 0.9em; }
+.grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; max-width: 1400px; margin: 0 auto; }
+.card { background: #1a1a1a; border-radius: 8px; overflow: hidden; border: 1px solid #333; }
+.card.pass { border-color: #2a5; }
+.card.fail { border-color: #d44; }
+.card.ok { border-color: #da3; }
+.card img { width: 100%; display: block; }
+.label { padding: 8px 12px; font-size: 0.85em; }
+.label .name { font-weight: 700; }
+.label .coverage { color: #888; float: right; }
+.verdict { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75em; font-weight: 700; margin-left: 6px; }
+.verdict.pass { background: #1a3a1a; color: #4d8; }
+.verdict.fail { background: #3a1a1a; color: #f66; }
+.verdict.ok { background: #3a3a1a; color: #da3; }
+.original { grid-column: 1 / -1; text-align: center; margin-bottom: 12px; }
+.original img { max-height: 300px; border-radius: 8px; border: 2px solid #555; }
+.summary { max-width: 1400px; margin: 24px auto; background: #1a1a1a; border-radius: 8px; padding: 16px 20px; border: 1px solid #333; line-height: 1.6; }
+.summary h2 { font-size: 1.1em; margin-bottom: 8px; }
+.summary li { margin-left: 20px; margin-bottom: 4px; }
+</style>
+</head>
+<body>
+<h1>EVF-SAM 8-Layer Experiment</h1>
+<p class="subtitle">Girl with a Pearl Earring — Vermeer · 1920×2274 · inference at 864×1024 (scale 0.45)</p>
+
+<div class="original">
+  <img src="../../originals/girl-pearl-earring.jpg" alt="original">
+</div>
+
+<div class="grid">
+  <div class="card pass">
+    <img src="background_on_red.png" alt="background">
+    <div class="label">
+      <span class="name">background</span><span class="verdict pass">PASS</span>
+      <span class="coverage">53.7%</span>
+    </div>
+  </div>
+
+  <div class="card pass">
+    <img src="face_skin_on_red.png" alt="face_skin">
+    <div class="label">
+      <span class="name">face_skin</span><span class="verdict pass">PASS</span>
+      <span class="coverage">16.1%</span>
+    </div>
+  </div>
+
+  <div class="card fail">
+    <img src="eyes_on_red.png" alt="eyes">
+    <div class="label">
+      <span class="name">eyes</span><span class="verdict fail">FAIL</span>
+      <span class="coverage">7.6% (whole face)</span>
+    </div>
+  </div>
+
+  <div class="card fail">
+    <img src="lips_on_red.png" alt="lips">
+    <div class="label">
+      <span class="name">lips</span><span class="verdict fail">FAIL</span>
+      <span class="coverage">8.9% (whole face+neck)</span>
+    </div>
+  </div>
+
+  <div class="card fail">
+    <img src="nose_on_red.png" alt="nose">
+    <div class="label">
+      <span class="name">nose</span><span class="verdict fail">FAIL</span>
+      <span class="coverage">14.5% (likely whole face)</span>
+    </div>
+  </div>
+
+  <div class="card pass">
+    <img src="earring_on_red.png" alt="earring">
+    <div class="label">
+      <span class="name">earring</span><span class="verdict pass">PASS</span>
+      <span class="coverage">1.0%</span>
+    </div>
+  </div>
+
+  <div class="card ok">
+    <img src="headscarf_on_red.png" alt="headscarf">
+    <div class="label">
+      <span class="name">headscarf</span><span class="verdict ok">OK</span>
+      <span class="coverage">18.9% (noisy edges)</span>
+    </div>
+  </div>
+
+  <div class="card pass">
+    <img src="clothing_on_red.png" alt="clothing">
+    <div class="label">
+      <span class="name">clothing</span><span class="verdict pass">PASS</span>
+      <span class="coverage">16.2%</span>
+    </div>
+  </div>
+</div>
+
+<div class="summary">
+  <h2>Findings</h2>
+  <ul>
+    <li><strong>Object-level segmentation works well:</strong> background, face_skin, earring, clothing, headscarf all produce meaningful masks</li>
+    <li><strong>Face-part segmentation fails:</strong> "eyes", "lips", "nose" all return the entire face — EVF-SAM cannot distinguish sub-face parts on painterly textures</li>
+    <li><strong>Practical layer ceiling: 5-6 layers</strong> (background, face/skin, headscarf, earring, clothing + maybe 1-2 more object-level splits)</li>
+    <li><strong>12-20 layer face-part decomposition is NOT feasible</strong> with current EVF-SAM (referring segmentation treats face parts as "the person")</li>
+    <li><strong>Headscarf mask quality:</strong> mostly correct but has horizontal stripe noise where face bleeds through — needs morphological cleanup or better prompt</li>
+  </ul>
+  <h2 style="margin-top: 12px;">Implications for Phase 1</h2>
+  <ul>
+    <li>Target <strong>5-6 layers</strong>, not 12-20</li>
+    <li><code>semantic_path</code> is unnecessary at this granularity — keep as optional metadata only</li>
+    <li>VLM auto-planning should output object-level splits, not face-part splits</li>
+    <li>Prompt engineering may improve headscarf-type edge cases (more specific spatial language)</li>
+  </ul>
+</div>
+
+</body>
+</html>

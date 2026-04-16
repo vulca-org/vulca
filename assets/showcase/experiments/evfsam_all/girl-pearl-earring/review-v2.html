@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>EVF-SAM 8-Layer v2 — Spatial-Anchored Prompts</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #111; color: #eee; font-family: -apple-system, sans-serif; padding: 20px; }
+h1 { text-align: center; margin-bottom: 4px; font-size: 1.3em; }
+.subtitle { text-align: center; color: #888; margin-bottom: 20px; font-size: 0.85em; }
+
+.comparison { max-width: 1400px; margin: 0 auto 24px; }
+.comparison h2 { font-size: 1em; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 6px; }
+
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.row .card { background: #1a1a1a; border-radius: 8px; overflow: hidden; border: 1px solid #333; }
+.card.pass { border-color: #2a5; }
+.card.fail { border-color: #d44; }
+.card.ok { border-color: #da3; }
+.card img { width: 100%; display: block; }
+.label { padding: 6px 10px; font-size: 0.8em; display: flex; justify-content: space-between; align-items: center; }
+.label .name { font-weight: 700; }
+.verdict { padding: 2px 6px; border-radius: 3px; font-size: 0.7em; font-weight: 700; }
+.verdict.pass { background: #1a3a1a; color: #4d8; }
+.verdict.fail { background: #3a1a1a; color: #f66; }
+.verdict.ok { background: #3a3a1a; color: #da3; }
+
+.original-row { text-align: center; margin-bottom: 20px; }
+.original-row img { max-height: 250px; border-radius: 8px; border: 2px solid #555; }
+
+.section { max-width: 1400px; margin: 0 auto 20px; }
+.grid5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+
+.summary { max-width: 1400px; margin: 24px auto; background: #1a1a1a; border-radius: 8px; padding: 14px 18px; border: 1px solid #333; line-height: 1.6; font-size: 0.9em; }
+.summary h2 { font-size: 1em; margin-bottom: 6px; }
+.summary li { margin-left: 20px; margin-bottom: 4px; }
+.tag { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 0.7em; font-weight: 700; }
+.tag.good { background: #1a3a1a; color: #4d8; }
+.tag.bad { background: #3a1a1a; color: #f66; }
+.prompt { color: #888; font-size: 0.75em; font-style: italic; display: block; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+</style>
+</head>
+<body>
+
+<h1>EVF-SAM 8-Layer — Prompt Optimization A/B</h1>
+<p class="subtitle">Girl with a Pearl Earring · 1920×2274 · inference at 864×1024</p>
+
+<div class="original-row">
+  <img src="../../originals/girl-pearl-earring.jpg" alt="original">
+</div>
+
+<!-- Object-level layers: these WORK -->
+<div class="section">
+  <h2 style="color: #4d8; margin-bottom: 10px;">✓ Object-Level Layers — Work Well (both rounds identical)</h2>
+  <div class="grid5">
+    <div class="card pass">
+      <img src="background_on_red.png">
+      <div class="label"><span class="name">background</span><span class="verdict pass">53.7%</span></div>
+    </div>
+    <div class="card pass">
+      <img src="face_skin_on_red.png">
+      <div class="label"><span class="name">face_skin</span><span class="verdict pass">16.1%</span></div>
+    </div>
+    <div class="card pass">
+      <img src="earring_on_red.png">
+      <div class="label"><span class="name">earring</span><span class="verdict pass">1.0%</span></div>
+    </div>
+    <div class="card ok">
+      <img src="headscarf_on_red.png">
+      <div class="label"><span class="name">headscarf</span><span class="verdict ok">18.9%</span></div>
+    </div>
+    <div class="card pass">
+      <img src="clothing_on_red.png">
+      <div class="label"><span class="name">clothing</span><span class="verdict pass">16.2%</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Face parts: FAIL -->
+<div class="section">
+  <h2 style="color: #f66; margin-bottom: 10px;">✗ Face-Part Layers — Both Rounds Fail</h2>
+  <p style="color: #888; font-size: 0.8em; margin-bottom: 10px;">
+    Round 1: generic prompts · Round 2: spatial-anchored prompts with "only" suffix
+  </p>
+  <div class="grid3">
+    <!-- EYES -->
+    <div>
+      <div class="card fail" style="margin-bottom: 4px;">
+        <img src="eyes_on_red.png">
+        <div class="label">
+          <span class="name">eyes <span class="tag bad">v2</span></span>
+          <span class="verdict fail">9.8% → still whole face</span>
+        </div>
+        <span class="prompt" style="padding: 0 10px 6px;">"the two small dark circular eyes in the upper center of the face only"</span>
+      </div>
+    </div>
+
+    <!-- LIPS -->
+    <div>
+      <div class="card fail" style="margin-bottom: 4px;">
+        <img src="lips_on_red.png">
+        <div class="label">
+          <span class="name">lips <span class="tag bad">v2</span></span>
+          <span class="verdict fail">3.3% → lower half face</span>
+        </div>
+        <span class="prompt" style="padding: 0 10px 6px;">"the small red parted lips and mouth at the bottom center of the face below the nose only"</span>
+      </div>
+    </div>
+
+    <!-- NOSE -->
+    <div>
+      <div class="card fail" style="margin-bottom: 4px;">
+        <img src="nose_on_red.png">
+        <div class="label">
+          <span class="name">nose <span class="tag bad">v2</span></span>
+          <span class="verdict fail">8.2% → still whole face</span>
+        </div>
+        <span class="prompt" style="padding: 0 10px 6px;">"the small triangular nose bridge and nostrils between the eyes and lips only"</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="summary">
+  <h2>Verdict</h2>
+  <ul>
+    <li><span class="tag good">CONFIRMED</span> <strong>Object-level segmentation</strong> (background, face, earring, headscarf, clothing) → reliable at <strong>5-6 layers</strong></li>
+    <li><span class="tag bad">CONFIRMED</span> <strong>Face-part segmentation</strong> (eyes, lips, nose) → <strong>EVF-SAM model limit</strong>, not a prompt problem. Spatial anchors slightly shift the mask but never isolate the target part</li>
+  </ul>
+
+  <h2 style="margin-top: 12px;">Coverage Comparison</h2>
+  <table style="width: 100%; font-size: 0.85em; margin-top: 6px;">
+    <tr style="color: #888;"><th style="text-align:left;">Layer</th><th>Round 1</th><th>Round 2 (spatial)</th><th>Change</th><th>Actual target</th></tr>
+    <tr><td>eyes</td><td>7.6%</td><td>9.8%</td><td style="color:#f66;">+2.2% (worse)</td><td>&lt;2%</td></tr>
+    <tr><td>lips</td><td>8.9%</td><td>3.3%</td><td style="color:#da3;">-5.6% (smaller)</td><td>&lt;1%</td></tr>
+    <tr><td>nose</td><td>14.5%</td><td>8.2%</td><td style="color:#da3;">-6.3% (smaller)</td><td>&lt;2%</td></tr>
+  </table>
+  <p style="color: #666; font-size: 0.8em; margin-top: 8px;">Even with significant coverage reduction for lips/nose, the masks visually show face regions, not isolated parts.</p>
+
+  <h2 style="margin-top: 12px;">Next Steps</h2>
+  <ul>
+    <li><strong>Option B:</strong> Two-stage — EVF-SAM cuts face, then a face-parsing model (BiSeNet/FaRL) subdivides into parts. 1-2 days.</li>
+    <li><strong>Option C:</strong> Accept 5-6 object-level layers. "Isolate the pearl earring and restyle it" is already a compelling showcase. 0 cost.</li>
+  </ul>
+</div>
+
+</body>
+</html>
