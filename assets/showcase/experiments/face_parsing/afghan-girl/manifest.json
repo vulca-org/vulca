@@ -1,0 +1,61 @@
+{
+  "slug": "afghan-girl",
+  "source": "assets/showcase/originals/afghan-girl.jpg",
+  "strategy": "crop-refine",
+  "image_size": [
+    254,
+    400
+  ],
+  "is_portrait": true,
+  "skin_fraction": 0.1045,
+  "layers": [
+    {
+      "name": "cloth",
+      "file": "cloth.png",
+      "pixels": 48112,
+      "fraction": 0.4735
+    },
+    {
+      "name": "eyebrows",
+      "file": "eyebrows.png",
+      "pixels": 151,
+      "fraction": 0.0015
+    },
+    {
+      "name": "eyes",
+      "file": "eyes.png",
+      "pixels": 400,
+      "fraction": 0.0039
+    },
+    {
+      "name": "hair",
+      "file": "hair.png",
+      "pixels": 10292,
+      "fraction": 0.1013
+    },
+    {
+      "name": "hat",
+      "file": "hat.png",
+      "pixels": 1714,
+      "fraction": 0.0169
+    },
+    {
+      "name": "lips",
+      "file": "lips.png",
+      "pixels": 520,
+      "fraction": 0.0051
+    },
+    {
+      "name": "nose",
+      "file": "nose.png",
+      "pixels": 1054,
+      "fraction": 0.0104
+    },
+    {
+      "name": "skin",
+      "file": "skin.png",
+      "pixels": 10622,
+      "fraction": 0.1045
+    }
+  ]
+}

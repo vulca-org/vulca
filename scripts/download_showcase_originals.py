@@ -30,6 +30,16 @@ URLS = {
     "tank-man": "https://upload.wikimedia.org/wikipedia/en/d/d8/Tianasquare.jpg",
     "lunch-atop-skyscraper": "https://upload.wikimedia.org/wikipedia/en/6/69/Lunch_atop_a_Skyscraper_-_Charles_Clyde_Ebbets.jpg",
     "raising-flag-iwo-jima": "https://upload.wikimedia.org/wikipedia/en/a/a1/WW2_Iwo_Jima_flag_raising.jpg",
+    # Trump official White House portrait (US government work, public domain)
+    "trump-portrait": "https://upload.wikimedia.org/wikipedia/commons/5/56/Donald_Trump_official_portrait.jpg",
+    # Iconic photojournalism (Wikipedia EN fair use — may 404, will retry)
+    "trump-mugshot": "https://upload.wikimedia.org/wikipedia/en/c/c5/Donald_Trump_mug_shot.jpg",
+    "napalm-girl": "https://upload.wikimedia.org/wikipedia/en/b/ba/The_Terror_of_War.jpg",
+    "saigon-execution": "https://upload.wikimedia.org/wikipedia/commons/8/8c/Saigon_Execution.jpg",
+    "vj-day-kiss": "https://upload.wikimedia.org/wikipedia/en/9/95/Legendary_kiss_V%E2%80%93J_day_in_Times_Square_Alfred_Eisenstaedt.jpg",
+    "vulture-and-girl": "https://upload.wikimedia.org/wikipedia/en/b/b8/Kevin-Carter-Child-Vulture-Sudan.jpg",
+    # Trump Butler PA assassination attempt (Evan Vucci AP, 2024 Pulitzer)
+    "trump-shooting": "https://upload.wikimedia.org/wikipedia/en/8/88/Shooting_of_Donald_Trump.webp",
 }
 
 MAX_LONG_SIDE = 1280
@@ -38,6 +48,7 @@ DEST = Path(__file__).resolve().parent.parent / "assets" / "showcase" / "origina
 
 def _resize_if_needed(data: bytes) -> bytes:
     """Resize to MAX_LONG_SIDE if larger, return JPEG bytes."""
+    Image.MAX_IMAGE_PIXELS = None  # some originals are huge (Birth of Venus)
     img = Image.open(io.BytesIO(data))
     img = img.convert("RGB")
     w, h = img.size

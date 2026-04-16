@@ -1,0 +1,67 @@
+{
+  "slug": "trump-portrait",
+  "source": "assets/showcase/originals/trump-portrait.jpg",
+  "strategy": "crop-refine",
+  "image_size": [
+    1010,
+    1280
+  ],
+  "is_portrait": true,
+  "skin_fraction": 0.0807,
+  "layers": [
+    {
+      "name": "cloth",
+      "file": "cloth.png",
+      "pixels": 131541,
+      "fraction": 0.1017
+    },
+    {
+      "name": "ears",
+      "file": "ears.png",
+      "pixels": 5574,
+      "fraction": 0.0043
+    },
+    {
+      "name": "eyebrows",
+      "file": "eyebrows.png",
+      "pixels": 3631,
+      "fraction": 0.0028
+    },
+    {
+      "name": "eyes",
+      "file": "eyes.png",
+      "pixels": 205,
+      "fraction": 0.0002
+    },
+    {
+      "name": "hair",
+      "file": "hair.png",
+      "pixels": 91218,
+      "fraction": 0.0706
+    },
+    {
+      "name": "lips",
+      "file": "lips.png",
+      "pixels": 5698,
+      "fraction": 0.0044
+    },
+    {
+      "name": "neck",
+      "file": "neck.png",
+      "pixels": 6500,
+      "fraction": 0.005
+    },
+    {
+      "name": "nose",
+      "file": "nose.png",
+      "pixels": 8168,
+      "fraction": 0.0063
+    },
+    {
+      "name": "skin",
+      "file": "skin.png",
+      "pixels": 101660,
+      "fraction": 0.0786
+    }
+  ]
+}

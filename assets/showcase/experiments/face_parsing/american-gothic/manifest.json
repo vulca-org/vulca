@@ -1,0 +1,67 @@
+{
+  "slug": "american-gothic",
+  "source": "assets/showcase/originals/american-gothic.jpg",
+  "strategy": "crop-refine",
+  "image_size": [
+    1060,
+    1280
+  ],
+  "is_portrait": true,
+  "skin_fraction": 0.0698,
+  "layers": [
+    {
+      "name": "cloth",
+      "file": "cloth.png",
+      "pixels": 708970,
+      "fraction": 0.5225
+    },
+    {
+      "name": "ears",
+      "file": "ears.png",
+      "pixels": 1311,
+      "fraction": 0.001
+    },
+    {
+      "name": "eye_g",
+      "file": "eye_g.png",
+      "pixels": 17782,
+      "fraction": 0.0131
+    },
+    {
+      "name": "hair",
+      "file": "hair.png",
+      "pixels": 1239,
+      "fraction": 0.0009
+    },
+    {
+      "name": "hat",
+      "file": "hat.png",
+      "pixels": 7750,
+      "fraction": 0.0057
+    },
+    {
+      "name": "lips",
+      "file": "lips.png",
+      "pixels": 124,
+      "fraction": 0.0001
+    },
+    {
+      "name": "neck",
+      "file": "neck.png",
+      "pixels": 14083,
+      "fraction": 0.0104
+    },
+    {
+      "name": "nose",
+      "file": "nose.png",
+      "pixels": 3025,
+      "fraction": 0.0022
+    },
+    {
+      "name": "skin",
+      "file": "skin.png",
+      "pixels": 94727,
+      "fraction": 0.0698
+    }
+  ]
+}

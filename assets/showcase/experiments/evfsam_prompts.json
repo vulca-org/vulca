@@ -204,5 +204,326 @@
       "the small dark boats visible on the water below",
       "background.boats"
     ]
+  ],
+  "creation-of-adam": [
+    [
+      "background",
+      "the flat pale cream sky and cloudy atmosphere of the ceiling fresco background",
+      "background"
+    ],
+    [
+      "adam",
+      "the reclining nude male figure of Adam on the left reaching his hand out",
+      "subject.person[0]"
+    ],
+    [
+      "god_and_angels",
+      "the elderly bearded figure of God with white beard wearing a pale robe on the right surrounded by multiple nude angel figures including one young woman under his arm",
+      "subject.person[1]"
+    ],
+    [
+      "red_cloak",
+      "the large billowing dark red cloak or mantle that surrounds God and the angels on the right",
+      "subject.drapery"
+    ],
+    [
+      "green_ground",
+      "the green mossy ground and earth beneath Adam on the lower left",
+      "foreground.ground"
+    ]
+  ],
+  "birth-of-venus": [
+    [
+      "background",
+      "the pale blue green sea and sky behind the central figure",
+      "background"
+    ],
+    [
+      "venus",
+      "the standing nude female figure of Venus with long flowing orange hair in the center",
+      "subject.person[0]"
+    ],
+    [
+      "wind_figures",
+      "the two flying embracing figures of wind gods blowing on the left side of the painting",
+      "subject.person[1]"
+    ],
+    [
+      "flora",
+      "the standing female figure on the right in a floral dress holding a pink cloak",
+      "subject.person[2]"
+    ],
+    [
+      "shell",
+      "the large scalloped golden seashell on which Venus stands",
+      "subject.shell"
+    ],
+    [
+      "trees",
+      "the dark green trees on the right side of the composition",
+      "background.trees"
+    ]
+  ],
+  "the-kiss": [
+    [
+      "background",
+      "the glittering gold leaf background with small fleck patterns around the figures",
+      "background"
+    ],
+    [
+      "figures",
+      "the two entwined figures embracing wrapped in a single golden decorated robe the man standing with dark hair and the woman kneeling with her face receiving a kiss",
+      "subject.figures"
+    ],
+    [
+      "flower_meadow",
+      "the multicolored wildflower meadow of blue red purple and yellow blossoms at the bottom on which the woman kneels",
+      "foreground.meadow"
+    ]
+  ],
+  "american-gothic": [
+    [
+      "background",
+      "the white wooden farmhouse with gothic window and the trees and sky behind the two figures",
+      "background"
+    ],
+    [
+      "woman",
+      "the woman on the left with blonde hair pulled back wearing a dark dress with cameo brooch",
+      "subject.person[0]"
+    ],
+    [
+      "man",
+      "the older bald man on the right wearing round glasses and dark jacket over white shirt holding a pitchfork",
+      "subject.person[1]"
+    ],
+    [
+      "pitchfork",
+      "the upright metal three-tined pitchfork held by the man",
+      "foreground.pitchfork"
+    ]
+  ],
+  "persistence-of-memory": [
+    [
+      "background",
+      "the light blue sky and golden horizon at the top of the painting",
+      "background"
+    ],
+    [
+      "cliffs",
+      "the distant golden cliffs and rocky formations in the middle distance",
+      "background.cliffs"
+    ],
+    [
+      "ground",
+      "the flat dark brown ground and beach surface in the foreground",
+      "foreground.ground"
+    ],
+    [
+      "dark_platform",
+      "the large rectangular dark platform or table on the left where one clock hangs",
+      "foreground.platform"
+    ],
+    [
+      "melting_clocks",
+      "the three soft melting pocket watches draped over the tree branch platform and biomorphic form",
+      "subject.clocks"
+    ],
+    [
+      "biomorphic_form",
+      "the strange soft organic shape with eyelashes and nose in the center of the painting",
+      "subject.form"
+    ],
+    [
+      "tree",
+      "the bare dead tree branch on the left platform from which one clock hangs",
+      "foreground.tree"
+    ]
+  ],
+  "trump-portrait": [
+    [
+      "background",
+      "the American flag on the left and the ornate gold picture frame and white patterned wallpaper behind the figure",
+      "background"
+    ],
+    [
+      "head_and_face",
+      "the entire head face and blond hair of Donald Trump",
+      "subject.head"
+    ],
+    [
+      "suit",
+      "the dark navy blue suit jacket covering the torso and shoulders",
+      "subject.body.clothing"
+    ],
+    [
+      "tie_and_shirt",
+      "the blue patterned necktie and white collared dress shirt",
+      "subject.body.tie"
+    ],
+    [
+      "flag_pin",
+      "the small American flag lapel pin on the suit jacket",
+      "foreground.pin"
+    ]
+  ],
+  "trump-mugshot": [
+    [
+      "background",
+      "the gray concrete wall of the jail booking room with visible sheriff star insignia on the left",
+      "background"
+    ],
+    [
+      "head_and_face",
+      "the entire head face and blond hair of Donald Trump looking at the camera with furrowed brow",
+      "subject.head"
+    ],
+    [
+      "suit",
+      "the dark suit jacket covering the shoulders and upper torso",
+      "subject.body.clothing"
+    ],
+    [
+      "tie_and_shirt",
+      "the red necktie and white collared dress shirt visible at the neck",
+      "subject.body.tie"
+    ]
+  ],
+  "trump-shooting": [
+    [
+      "background",
+      "the clear blue sky and the large American flag fluttering in the upper part of the image",
+      "background"
+    ],
+    [
+      "trump",
+      "the central figure of Donald Trump with his fist raised and blood on his ear surrounded by people",
+      "subject.person[0]"
+    ],
+    [
+      "secret_service",
+      "the Secret Service agents in dark suits surrounding and protecting Trump from multiple sides",
+      "subject.person[1]"
+    ],
+    [
+      "stage_railing",
+      "the red white and blue striped stage railing at the bottom of the image",
+      "foreground.stage"
+    ]
+  ],
+  "napalm-girl": [
+    [
+      "background",
+      "the pale gray sky filled with billowing dark smoke from napalm explosion in the distance",
+      "background"
+    ],
+    [
+      "road",
+      "the empty asphalt road stretching into the distance where the figures are running",
+      "background.road"
+    ],
+    [
+      "children",
+      "the multiple screaming vietnamese children running toward the camera including the central nude girl with arms outstretched",
+      "subject.person[0]"
+    ],
+    [
+      "soldiers",
+      "the armed soldiers with helmets walking behind the children on the road",
+      "subject.person[1]"
+    ]
+  ],
+  "saigon-execution": [
+    [
+      "background",
+      "the saigon city street buildings and pale sky visible in the upper portion of the frame",
+      "background"
+    ],
+    [
+      "street",
+      "the flat gray asphalt street surface with blood puddles at the bottom",
+      "background.street"
+    ],
+    [
+      "executioner",
+      "the man in the plaid shirt and vest on the left pointing a pistol at the prisoner arm outstretched",
+      "subject.person[0]"
+    ],
+    [
+      "victim",
+      "the prisoner on the right with grimacing face wearing a checkered shirt hands bound behind back",
+      "subject.person[1]"
+    ],
+    [
+      "soldier",
+      "the helmeted soldier in the far left background",
+      "subject.person[2]"
+    ]
+  ],
+  "vj-day-kiss": [
+    [
+      "background",
+      "the busy Times Square street with buildings signs and crowds of people behind the central couple",
+      "background"
+    ],
+    [
+      "sailor",
+      "the sailor in dark navy uniform dipping and kissing a woman in his arms",
+      "subject.person[0]"
+    ],
+    [
+      "nurse",
+      "the white uniformed nurse being kissed and held by the sailor her legs bent",
+      "subject.person[1]"
+    ],
+    [
+      "street_crowd",
+      "the other pedestrians walking on the street around the kissing couple",
+      "subject.person[2]"
+    ]
+  ],
+  "vulture-and-girl": [
+    [
+      "background",
+      "the dry brown savanna grass bushes and trees in the distance behind the figures",
+      "background"
+    ],
+    [
+      "ground",
+      "the sparse dry earth and vegetation of the sudanese ground around the child",
+      "foreground.ground"
+    ],
+    [
+      "child",
+      "the emaciated sudanese child kneeling and collapsed with head down on the ground",
+      "subject.person[0]"
+    ],
+    [
+      "vulture",
+      "the large dark vulture bird standing behind the child watching",
+      "subject.bird"
+    ]
+  ],
+  "afghan-girl": [
+    [
+      "background",
+      "the green and yellow cracked painted wall behind the girl",
+      "background"
+    ],
+    [
+      "head_and_face",
+      "the entire head face and hair of the young girl including the dark hair showing",
+      "subject.head"
+    ],
+    [
+      "headscarf",
+      "the red and brown patterned fabric headscarf wrapped around the girl head and shoulders",
+      "subject.head.scarf"
+    ],
+    [
+      "clothing",
+      "the green garment visible at the lower part of the image",
+      "subject.body.clothing"
+    ]
   ]
 }

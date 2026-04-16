@@ -1,0 +1,55 @@
+{
+  "slug": "trump-mugshot",
+  "source": "assets/showcase/originals/trump-mugshot.jpg",
+  "strategy": "crop-refine",
+  "image_size": [
+    316,
+    316
+  ],
+  "is_portrait": true,
+  "skin_fraction": 0.0994,
+  "layers": [
+    {
+      "name": "cloth",
+      "file": "cloth.png",
+      "pixels": 26324,
+      "fraction": 0.2636
+    },
+    {
+      "name": "ears",
+      "file": "ears.png",
+      "pixels": 736,
+      "fraction": 0.0074
+    },
+    {
+      "name": "eyes",
+      "file": "eyes.png",
+      "pixels": 206,
+      "fraction": 0.0021
+    },
+    {
+      "name": "hair",
+      "file": "hair.png",
+      "pixels": 15813,
+      "fraction": 0.1584
+    },
+    {
+      "name": "lips",
+      "file": "lips.png",
+      "pixels": 358,
+      "fraction": 0.0036
+    },
+    {
+      "name": "nose",
+      "file": "nose.png",
+      "pixels": 1112,
+      "fraction": 0.0111
+    },
+    {
+      "name": "skin",
+      "file": "skin.png",
+      "pixels": 9927,
+      "fraction": 0.0994
+    }
+  ]
+}

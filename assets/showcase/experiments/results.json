@@ -1,0 +1,37 @@
+{
+  "baseline": {
+    "total_opaque": 793343,
+    "earth_leak": 1241,
+    "leak_pct": 0.16
+  },
+  "A_bbox": {
+    "total_opaque": 791489,
+    "earth_leak": 0,
+    "leak_pct": 0.0
+  },
+  "B_spatial_weight": {
+    "total_opaque": 658063,
+    "earth_leak": 0,
+    "leak_pct": 0.0
+  },
+  "C_post_mask": {
+    "total_opaque": 48678,
+    "earth_leak": 989,
+    "leak_pct": 2.03
+  },
+  "D_priority": {
+    "total_opaque": 48678,
+    "earth_leak": 989,
+    "leak_pct": 2.03
+  },
+  "E_connected": {
+    "total_opaque": 685972,
+    "earth_leak": 0,
+    "leak_pct": 0.0
+  },
+  "F_combined": {
+    "total_opaque": 532644,
+    "earth_leak": 0,
+    "leak_pct": 0.0
+  }
+}
