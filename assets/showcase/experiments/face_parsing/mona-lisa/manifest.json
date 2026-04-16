@@ -1,0 +1,49 @@
+{
+  "slug": "mona-lisa",
+  "source": "assets/showcase/originals/mona-lisa.jpg",
+  "strategy": "crop-refine",
+  "image_size": [
+    858,
+    1280
+  ],
+  "is_portrait": true,
+  "skin_fraction": 0.0877,
+  "layers": [
+    {
+      "name": "eyebrows",
+      "file": "eyebrows.png",
+      "pixels": 352,
+      "fraction": 0.0003
+    },
+    {
+      "name": "eyes",
+      "file": "eyes.png",
+      "pixels": 189,
+      "fraction": 0.0002
+    },
+    {
+      "name": "hair",
+      "file": "hair.png",
+      "pixels": 120600,
+      "fraction": 0.1098
+    },
+    {
+      "name": "neck",
+      "file": "neck.png",
+      "pixels": 853,
+      "fraction": 0.0008
+    },
+    {
+      "name": "nose",
+      "file": "nose.png",
+      "pixels": 3081,
+      "fraction": 0.0028
+    },
+    {
+      "name": "skin",
+      "file": "skin.png",
+      "pixels": 59018,
+      "fraction": 0.0537
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "slug": "girl-pearl-earring",
+  "source": "assets/showcase/originals/girl-pearl-earring.jpg",
+  "strategy": "crop-refine",
+  "image_size": [
+    1920,
+    2274
+  ],
+  "is_portrait": true,
+  "skin_fraction": 0.0685,
+  "layers": [
+    {
+      "name": "cloth",
+      "file": "cloth.png",
+      "pixels": 288173,
+      "fraction": 0.066
+    },
+    {
+      "name": "eyes",
+      "file": "eyes.png",
+      "pixels": 5540,
+      "fraction": 0.0013
+    },
+    {
+      "name": "hat",
+      "file": "hat.png",
+      "pixels": 799886,
+      "fraction": 0.1832
+    },
+    {
+      "name": "lips",
+      "file": "lips.png",
+      "pixels": 11951,
+      "fraction": 0.0027
+    },
+    {
+      "name": "neck",
+      "file": "neck.png",
+      "pixels": 20470,
+      "fraction": 0.0047
+    },
+    {
+      "name": "nose",
+      "file": "nose.png",
+      "pixels": 23993,
+      "fraction": 0.0055
+    },
+    {
+      "name": "skin",
+      "file": "skin.png",
+      "pixels": 265787,
+      "fraction": 0.0609
+    }
+  ]
+}
