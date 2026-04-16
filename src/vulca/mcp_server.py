@@ -1113,6 +1113,7 @@ async def layers_edit(
     description: str = "",
     z_index: int = -1,
     content_type: str = "subject",
+    semantic_path: str = "",
     visible: bool = True,
     locked: bool = True,
 ) -> dict:
@@ -1127,6 +1128,7 @@ async def layers_edit(
         description: Layer description (for add).
         z_index: Z-index (for add/reorder, -1 = top).
         content_type: Layer role label (e.g. background, subject, ui_header, decoration).
+        semantic_path: Hierarchical dot-notation label (e.g. 'subject.face.eyes'), "" if none.
         visible: Visibility state (for toggle).
         locked: Lock state (for lock).
 
@@ -1144,8 +1146,14 @@ async def layers_edit(
     if operation == "add":
         result = add_layer(artwork, artwork_dir=artwork_dir, name=name,
                           description=description, z_index=z_index,
-                          content_type=content_type)
-        return {"operation": "add", "name": result.info.name, "z_index": result.info.z_index}
+                          content_type=content_type,
+                          semantic_path=semantic_path)
+        return {
+            "operation": "add",
+            "name": result.info.name,
+            "z_index": result.info.z_index,
+            "semantic_path": result.info.semantic_path,
+        }
 
     elif operation == "remove":
         remove_layer(artwork, artwork_dir=artwork_dir, layer_name=layer)

@@ -98,7 +98,7 @@ def main(argv: list[str] | None = None) -> None:
     create_p.add_argument("--layered", action="store_true", help="Generate structured layers (Artifact V3)")
     create_p.add_argument("--no-cache", action="store_true", help="Disable layered cache (forces re-generation)")
     create_p.add_argument("--strict", action="store_true", help="Layered mode: any failed layer fails the run")
-    create_p.add_argument("--max-layers", type=int, default=8, help="Cap the number of layers (default 8)")
+    create_p.add_argument("--max-layers", type=int, default=8, help="Cap the number of layers (default 8, range 1..20)")
     create_p.add_argument("--weights", default="", help="Custom L1-L5 weights: 'L1=0.3,L2=0.2,...'")
     create_p.add_argument("--image-provider", default="", help="Image provider: mock|gemini|openai|comfyui")
     create_p.add_argument("--image-base-url", default="", help="Image provider base URL (for comfyui)")
@@ -225,6 +225,11 @@ def main(argv: list[str] | None = None) -> None:
     layers_add.add_argument("--z-index", type=int, default=-1, help="Z-index (-1 = top)")
     layers_add.add_argument("--content-type", default="subject",
                             help="Layer role label (e.g. background, subject, ui_header, decoration)")
+    layers_add.add_argument(
+        "--semantic-path",
+        default="",
+        help="Hierarchical dot-notation label, e.g. 'subject.face.eyes' or 'person[0].hair'",
+    )
 
     layers_remove = layers_sub.add_parser("remove", help="Remove a layer")
     layers_remove.add_argument("artwork_dir", help="Directory with layers")
@@ -1424,7 +1429,8 @@ def _cmd_layers(args: argparse.Namespace) -> None:
         artwork = load_manifest(args.artwork_dir)
         result = add_layer(artwork, artwork_dir=args.artwork_dir, name=args.name,
                           description=args.description, z_index=args.z_index,
-                          content_type=args.content_type)
+                          content_type=args.content_type,
+                          semantic_path=args.semantic_path)
         print(f"  Added: [{result.info.z_index}] {result.info.name} -> {result.image_path}")
 
     elif args.layers_command == "remove":

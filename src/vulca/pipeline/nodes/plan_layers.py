@@ -9,13 +9,14 @@ from typing import Any
 
 from vulca.pipeline.node import PipelineNode, NodeContext
 from vulca.providers.capabilities import LLM_TEXT, provider_capabilities
+from vulca.layers.coarse_bucket import is_background
 from vulca.layers.types import LayerInfo
 from vulca.layers.plan_prompt import build_plan_prompt, get_tradition_layer_order
 from vulca.layers.prompt import parse_v2_response
 
 logger = logging.getLogger("vulca.layers")
 
-_MAX_LAYERS = 10
+_DEFAULT_MAX_LAYERS = 10  # legacy cap when ctx.max_layers is unset
 _MIN_LAYERS = 2
 
 
@@ -52,7 +53,8 @@ class PlanLayersNode(PipelineNode):
         else:
             layers = await self._plan_from_intent(ctx)
 
-        layers = self._validate(layers, ctx.tradition)
+        max_layers = int(ctx.get("max_layers", _DEFAULT_MAX_LAYERS))
+        layers = self._validate(layers, ctx.tradition, max_layers)
 
         return {
             "planned_layers": layers,
@@ -107,9 +109,11 @@ class PlanLayersNode(PipelineNode):
     def _fallback_layers(self, tradition: str) -> list[LayerInfo]:
         return self._mock_plan(tradition)
 
-    def _validate(self, layers: list[LayerInfo], tradition: str) -> list[LayerInfo]:
+    def _validate(
+        self, layers: list[LayerInfo], tradition: str, max_layers: int = _DEFAULT_MAX_LAYERS
+    ) -> list[LayerInfo]:
         if len(layers) < _MIN_LAYERS:
-            if not any(l.content_type == "background" for l in layers):
+            if not any(is_background(l.content_type) for l in layers):
                 layers.insert(0, LayerInfo(
                     name="background", description="Background layer",
                     z_index=0, content_type="background",
@@ -122,8 +126,8 @@ class PlanLayersNode(PipelineNode):
                     content_type="subject",
                 ))
 
-        if len(layers) > _MAX_LAYERS:
-            layers = sorted(layers, key=lambda l: l.z_index)[:_MAX_LAYERS]
+        if len(layers) > max_layers:
+            layers = sorted(layers, key=lambda l: l.z_index)[:max_layers]
 
         for i, layer in enumerate(sorted(layers, key=lambda l: l.z_index)):
             layer.z_index = i

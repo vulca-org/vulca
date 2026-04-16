@@ -20,6 +20,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
+from vulca.layers.coarse_bucket import is_background
 from vulca.layers.types import LayerInfo, LayerResult
 from vulca.layers.mask import build_color_mask, apply_mask_to_image, validate_dominant_colors
 from vulca.layers.manifest import write_manifest as _write_manifest_v2
@@ -176,7 +177,7 @@ async def split_regenerate(
         # Two-pass VLM mask: ask the same VLM to generate a BW alpha mask.
         # This replaces the broken hybrid approach (color mask from original
         # image applied to generated RGB, causing alpha/content mismatch).
-        if info.content_type != "background":
+        if not is_background(info.content_type):
             from vulca.layers.vlm_mask import generate_vlm_mask, apply_vlm_mask
             buf = io.BytesIO()
             gen_img.convert("RGB").save(buf, format="PNG")
@@ -242,7 +243,7 @@ async def split_vlm(
     # Phase 1: Generate VLM masks foreground-first (high z_index = priority).
     layer_masks: dict[str, Image.Image] = {}
     for info in sorted(layers, key=lambda l: l.z_index, reverse=True):
-        if info.content_type == "background":
+        if is_background(info.content_type):
             continue
 
         prompt = (
@@ -264,7 +265,7 @@ async def split_vlm(
 
     # Phase 2: Background gets everything unclaimed.
     for info in layers:
-        if info.content_type == "background":
+        if is_background(info.content_type):
             bg_mask = Image.fromarray(((~assigned) * 255).astype(np.uint8), mode="L")
             layer_masks[info.id] = bg_mask
 

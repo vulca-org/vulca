@@ -45,6 +45,11 @@ class LayerInfo:
     # the same prompt (and therefore the same cache key) as the original run.
     position: str = ""
     coverage: str = ""
+    # v0.16 multi-layer: dot-notation hierarchical path (e.g. "subject.face.eyes",
+    # "person[0].hair"). Free-form, not enum. Empty string for legacy 3-layer manifests.
+    # The coarse `content_type` field above remains authoritative for catch-all/branch
+    # logic; `semantic_path` is for rendering, UI grouping, and prompt provenance.
+    semantic_path: str = ""
 
 
 @dataclass

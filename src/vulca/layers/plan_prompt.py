@@ -111,7 +111,7 @@ Tradition-specific layer order (use as guidance, adapt to the specific intent):
 {order_text}
 
 Rules:
-- Plan 3-8 layers depending on scene complexity
+- Plan 3-20 layers depending on scene complexity (use 12-20 for detail-heavy scenes)
 - Each layer should be independently meaningful
 - Order z_index from back (0) to front
 - Assign blend_mode based on tradition conventions
@@ -131,6 +131,7 @@ Return a JSON object with this exact structure:
       "blend_mode": "normal|screen|multiply",
       "dominant_colors": ["#hex1", "#hex2"],
       "content_type": "free-form label",
+      "semantic_path": "optional dot-notation hierarchical label, e.g. 'subject.face.eyes' or 'person[0].hair' (empty string if not hierarchical)",
       "position": "where on canvas (e.g. 'upper 30%', 'lower-left corner', 'center')",
       "coverage": "approximate % of canvas area this element should cover",
       "regeneration_prompt": "MUST include position and size: e.g. 'Mountains in upper 30% of canvas, covering about 25%. Light ink wash...'"

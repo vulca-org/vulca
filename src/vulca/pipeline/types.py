@@ -6,6 +6,10 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
+# Phase 0 multi-layer foundation: ceiling lifted from 8 → 20 to support
+# hierarchical semantic decomposition (face parts, per-person layers).
+MAX_LAYERS = 20
+
 
 class RunStatus(str, Enum):
     """Pipeline execution status."""
@@ -99,8 +103,14 @@ class PipelineInput:
     layered: bool = False             # Use LAYERED template for structured creation
     no_cache: bool = False            # v0.13: disable layered sidecar cache
     strict: bool = False              # v0.13: any failed layer fails the run
-    max_layers: int = 8               # v0.13: cap planned layer count
+    max_layers: int = 8               # v0.13: cap planned layer count (1..MAX_LAYERS)
     output_dir: str = ""              # v0.13: write composite+manifest here (LAYERED)
+
+    def __post_init__(self) -> None:
+        if not 1 <= self.max_layers <= MAX_LAYERS:
+            raise ValueError(
+                f"max_layers must be in 1..{MAX_LAYERS}, got {self.max_layers}"
+            )
 
     def to_dict(self) -> dict[str, Any]:
         return {

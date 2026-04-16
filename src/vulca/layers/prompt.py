@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from vulca.layers.types import LayerInfo
 
-ANALYZE_PROMPT = """Analyze this image and decompose it into independent semantic layers (3-10 layers depending on complexity).
+ANALYZE_PROMPT = """Analyze this image and decompose it into independent semantic layers (3-20 layers depending on complexity; detail-heavy portraits or group scenes may use 12-20).
 
 Adapt your decomposition to the image type:
 - Artwork/illustration: separate by visual depth and semantic meaning (background, subjects, effects, text)
@@ -26,6 +26,7 @@ For each layer provide:
       "blend_mode": "normal|screen|multiply",
       "dominant_colors": ["#hex1", "#hex2"],
       "content_type": "free-form label (e.g. background, subject, effect, ui_header, ui_card, typography, decoration — any descriptive label)",
+      "semantic_path": "optional dot-notation hierarchical label, e.g. 'subject.face.eyes' or 'person[0].hair' (empty string if not hierarchical)",
       "regeneration_prompt": "Prompt to regenerate ONLY this layer's content, preserving the original style"
     }
   ]
@@ -82,6 +83,7 @@ def parse_v2_response(raw: dict) -> list[LayerInfo]:
             regeneration_prompt=regeneration_prompt,
             position=item.get("position", "") or "",
             coverage=item.get("coverage", "") or "",
+            semantic_path=item.get("semantic_path", "") or "",
         )
         results.append(layer)
 

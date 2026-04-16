@@ -14,6 +14,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
+from vulca.layers.coarse_bucket import is_background
 from vulca.layers.types import LayerInfo, LayerResult
 from vulca.layers.manifest import write_manifest
 from vulca.layers.mask import apply_mask_to_image
@@ -85,7 +86,7 @@ def sam3_split(
     # Phase 1: Generate masks foreground-first (high z_index = priority).
     layer_masks: dict[str, np.ndarray] = {}
     for info in sorted(layers, key=lambda l: l.z_index, reverse=True):
-        if info.content_type == "background":
+        if is_background(info.content_type):
             continue
 
         inputs = processor(images=img, text=info.description, return_tensors="pt").to(device)
@@ -127,7 +128,7 @@ def sam3_split(
 
     # Phase 2: Background gets everything unclaimed.
     for info in layers:
-        if info.content_type == "background":
+        if is_background(info.content_type):
             layer_masks[info.id] = ~assigned
 
     # Phase 3: Apply masks and save (z_index ascending).
