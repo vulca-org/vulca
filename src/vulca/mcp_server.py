@@ -49,6 +49,7 @@ def _parse_weights_str(raw: str) -> dict[str, float]:
 _TOOL_TIERS: dict[str, str] = {
     "create_artwork": "core", "evaluate_artwork": "core",
     "list_traditions": "core", "get_tradition_guide": "core",
+    "search_traditions": "core",
     "brief_parse": "core",
     "inpaint_artwork": "standard",
     "sync_data": "standard", "generate_concepts": "standard",
@@ -256,15 +257,112 @@ async def get_tradition_guide(
         Returns {"error": "..."} for unknown traditions.
     """
     from vulca.cultural.loader import get_tradition_guide as _get_guide
+    from vulca.layers.plan_prompt import get_tradition_layer_order
 
     guide = _get_guide(tradition)
     if guide is None:
         return {"error": f"Unknown tradition: {tradition!r}. Use list_traditions() to see available traditions."}
 
-    return dict(guide)
+    result = dict(guide)
+    result["tradition_layers"] = get_tradition_layer_order(tradition)
+    return result
 
 
 
+
+
+@mcp.tool()
+async def search_traditions(
+    tags: list[str],
+    limit: int = 5,
+) -> dict:
+    """Search across all cultural traditions by keyword tags.
+
+    Searches tradition names, display names, terminology (terms, aliases, translations),
+    taboo trigger patterns, and style keywords. Use to discover which traditions are
+    relevant before calling get_tradition_guide.
+
+    Args:
+        tags: Keywords to search (e.g. ["ink wash", "留白", "negative space"]).
+        limit: Max matching terms per tradition. Default 5.
+
+    Returns:
+        matches: List of {tradition, display_name, matched_terms[], relevance_score}.
+        query_tags: Echo of input tags.
+    """
+    from vulca.cultural.loader import get_all_traditions
+
+    all_traditions = get_all_traditions()
+    matches: list[dict] = []
+
+    for name, tc in all_traditions.items():
+        matched_terms: list[str] = []
+
+        # Build searchable corpus for this tradition
+        searchable: list[tuple[str, str]] = []
+
+        # Tradition name and display names
+        searchable.append((name, name))
+        for lang_key in ("en", "zh", "ja"):
+            dn = tc.display_name.get(lang_key, "")
+            if dn:
+                searchable.append((dn, f"display_name.{lang_key}"))
+
+        # Terminology
+        for t in tc.terminology:
+            if t.term:
+                searchable.append((t.term, t.term))
+            if t.term_zh:
+                searchable.append((t.term_zh, t.term_zh))
+            for alias in t.aliases:
+                searchable.append((alias, alias))
+            if t.category:
+                searchable.append((t.category, t.category))
+            if isinstance(t.definition, dict):
+                for dval in t.definition.values():
+                    if dval:
+                        searchable.append((dval, t.term or dval))
+            elif isinstance(t.definition, str) and t.definition:
+                searchable.append((t.definition, t.term or t.definition))
+
+        # Taboos
+        for tb in tc.taboos:
+            if tb.rule:
+                searchable.append((tb.rule, tb.rule))
+            for pat in tb.trigger_patterns:
+                searchable.append((pat, pat))
+
+        # Style keywords
+        if tc.style_keywords:
+            searchable.append((tc.style_keywords, tc.style_keywords))
+
+        # Match tags against corpus
+        tags_matched = 0
+        for tag in tags:
+            tag_lower = tag.lower()
+            found = False
+            for text, label in searchable:
+                if tag_lower in text.lower():
+                    if label not in matched_terms and len(matched_terms) < limit:
+                        matched_terms.append(label)
+                    found = True
+                    break
+            if found:
+                tags_matched += 1
+
+        if tags_matched > 0:
+            display = tc.display_name.get("en", name.replace("_", " ").title())
+            matches.append({
+                "tradition": name,
+                "display_name": display,
+                "matched_terms": matched_terms,
+                "relevance_score": round(tags_matched / len(tags), 4) if tags else 0.0,
+            })
+
+    # Sort by relevance descending
+    matches.sort(key=lambda m: m["relevance_score"], reverse=True)
+
+    return {"matches": matches, "query_tags": tags}
 
 
 # ── Stateless Brief / Concept / Archive Tools ──────────────────────

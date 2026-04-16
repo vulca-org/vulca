@@ -94,7 +94,18 @@ def get_tradition_layer_order(tradition: str) -> list[dict[str, str]]:
 
 
 def build_plan_prompt(intent: str, tradition: str = "default") -> str:
-    """Build a VLM prompt to plan layer structure from text intent."""
+    """Build a VLM prompt to plan layer structure from text intent.
+
+    .. deprecated::
+        Use ``get_tradition_layer_order()`` via MCP ``get_tradition_guide`` instead.
+    """
+    import warnings
+    warnings.warn(
+        "build_plan_prompt is deprecated; use get_tradition_layer_order() "
+        "via MCP get_tradition_guide instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     order = get_tradition_layer_order(tradition)
     order_text = "\n".join(
         f"  {i}. {o['role']} (content_type: {o['content_type']}, blend: {o['blend']}, "
