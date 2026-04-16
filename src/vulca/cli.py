@@ -102,7 +102,6 @@ def main(argv: list[str] | None = None) -> None:
     create_p.add_argument("--weights", default="", help="Custom L1-L5 weights: 'L1=0.3,L2=0.2,...'")
     create_p.add_argument("--image-provider", default="", help="Image provider: mock|gemini|openai|comfyui")
     create_p.add_argument("--image-base-url", default="", help="Image provider base URL (for comfyui)")
-    create_p.add_argument("--residuals", action="store_true", help="Enable Agent Residuals (selective node aggregation)")
     create_p.add_argument("--sparse-eval", action="store_true", help="Enable sparse evaluation (score only relevant dimensions)")
     create_p.add_argument("--reference", default="", help="Reference image path or base64 (also serves as sketch input)")
     create_p.add_argument("--ref-type", default="full", choices=["style", "composition", "full"],
@@ -710,7 +709,6 @@ def _cmd_create(args: argparse.Namespace) -> None:
             base_url=args.base_url,
             weights=weights,
             eval_mode=args.mode,
-            residuals=getattr(args, "residuals", False),
             sparse_eval=getattr(args, "sparse_eval", False),
             reference=getattr(args, "reference", "") or "",
             ref_type=getattr(args, "ref_type", "full") or "full",
@@ -764,14 +762,6 @@ def _cmd_create(args: argparse.Namespace) -> None:
         print(f"\n  Recommendations:")
         for r in result.recommendations:
             print(f"    - {r}")
-
-    if result.residuals:
-        print(f"\n  Residual Analysis:")
-        weights = result.residuals.get("attention_weights", {})
-        dominant = result.residuals.get("dominant_node", "")
-        for node, w in sorted(weights.items(), key=lambda x: -x[1]):
-            marker = " <-" if node == dominant else ""
-            print(f"    {node:<15s} {w:.1%}{marker}")
 
     print(f"\n  Latency: {result.latency_ms}ms | Cost: ${result.cost_usd:.4f}")
     print()

@@ -22,7 +22,6 @@ async def acreate(
     hitl: bool = False,
     weights: dict[str, float] | None = None,
     eval_mode: str = "strict",
-    residuals: bool = False,
     sparse_eval: bool = False,
     reference: str = "",
     ref_type: str = "full",
@@ -79,7 +78,6 @@ async def acreate(
             hitl=hitl,
             weights=weights,
             eval_mode=eval_mode,
-            residuals=residuals,
             sparse_eval=sparse_eval,
             reference=reference,
             ref_type=ref_type,
@@ -105,7 +103,6 @@ async def _create_local(
     hitl: bool = False,
     weights: dict[str, float] | None = None,
     eval_mode: str = "strict",
-    residuals: bool = False,
     sparse_eval: bool = False,
     reference: str = "",
     ref_type: str = "full",
@@ -141,7 +138,6 @@ async def _create_local(
         node_params=node_params,
         image_provider=image_provider,
         eval_mode=eval_mode,
-        residuals=residuals,
         sparse_eval=sparse_eval,
     )
 
@@ -191,7 +187,6 @@ async def _create_local(
         eval_mode=eval_mode,
         latency_ms=output.total_latency_ms,
         cost_usd=output.total_cost_usd,
-        residuals=output.residual_context,
         raw=output.to_dict(),
     )
 
@@ -263,7 +258,6 @@ def create(
     hitl: bool = False,
     weights: dict[str, float] | None = None,
     eval_mode: str = "strict",
-    residuals: bool = False,
     sparse_eval: bool = False,
     reference: str = "",
     ref_type: str = "full",
@@ -290,7 +284,6 @@ def create(
         hitl=hitl,
         weights=weights,
         eval_mode=eval_mode,
-        residuals=residuals,
         sparse_eval=sparse_eval,
         reference=reference,
         ref_type=ref_type,

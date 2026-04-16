@@ -1,4 +1,4 @@
-"""Tests for CLI --residuals and --sparse-eval flags."""
+"""Tests for CLI --sparse-eval flag."""
 import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
@@ -7,24 +7,11 @@ from vulca.cli import main
 
 
 class TestCLISelectiveFlags:
-    """CLI accepts --residuals and --sparse-eval flags."""
-
-    def test_create_accepts_residuals_flag(self, capsys):
-        """vulca create --residuals should complete without argparse error."""
-        main(["create", "test intent", "--provider", "mock", "--residuals"])
-        captured = capsys.readouterr()
-        assert "VULCA Creation Result" in captured.out
+    """CLI accepts --sparse-eval flag."""
 
     def test_create_accepts_sparse_eval_flag(self, capsys):
         """vulca create --sparse-eval should complete without argparse error."""
         main(["create", "test intent", "--provider", "mock", "--sparse-eval"])
-        captured = capsys.readouterr()
-        assert "VULCA Creation Result" in captured.out
-
-    def test_create_accepts_both_flags(self, capsys):
-        """vulca create --residuals --sparse-eval should complete."""
-        main(["create", "test intent", "--provider", "mock",
-              "--residuals", "--sparse-eval"])
         captured = capsys.readouterr()
         assert "VULCA Creation Result" in captured.out
 

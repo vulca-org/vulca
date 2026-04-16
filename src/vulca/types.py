@@ -180,8 +180,6 @@ class CreateResult:
     cost_usd: float = 0.0
     """Estimated API cost in USD."""
 
-    residuals: dict | None = None
-    """Residual context from AgentResiduals (attention weights, dominant node)."""
 
     raw: dict = field(default_factory=dict)
     """Raw response data."""

@@ -12,10 +12,6 @@ from typing import Any, AsyncGenerator, Callable
 from vulca.pipeline.node import NodeContext, PipelineNode
 from vulca.providers.capabilities import COST_TRACKED, provider_capabilities
 from vulca import hooks as hooks
-try:
-    from vulca.pipeline.residuals import AgentResiduals
-except ImportError:
-    AgentResiduals = None  # type: ignore[assignment,misc]
 from vulca.pipeline.types import (
     EventType,
     PipelineDefinition,
@@ -275,9 +271,6 @@ async def execute(
     if pipeline_input.sparse_eval:
         ctx.set("sparse_eval", True)
 
-    # Agent Residuals setup (AttnRes-inspired)
-    _residuals = AgentResiduals() if (AgentResiduals is not None and pipeline_input.residuals) else None
-
     status = RunStatus.RUNNING
     final_decision = "stop"
 
@@ -388,18 +381,6 @@ async def execute(
                 )
             )
 
-            # Inject residual context before decide node
-            if _residuals is not None and node_name in ("decide", "queen"):
-                _history = _residuals.get_history()
-                if _history:
-                    _weights = _residuals.compute_weights(
-                        pipeline_input.subject + " " + pipeline_input.intent,
-                        _history,
-                    )
-                    from dataclasses import asdict as _asdict
-                    ctx.data["residual_context"] = _residuals.aggregate(_weights, _history)
-                    ctx.data["residual_weights"] = _asdict(_weights)
-
             await hooks.emit(hooks.NODE_START, {
                 "session_id": session_id,
                 "node_name": node_name,
@@ -448,10 +429,6 @@ async def execute(
                     "scores": dict(output["scores"]),
                     "weighted_total": output.get("weighted_total", 0.0),
                 })
-
-            # Record node snapshot for Agent Residuals
-            if _residuals is not None:
-                _residuals.record(node_name, round_num, output)
 
             # Include node output in stage_completed payload
             # WU-1: Inject candidates array for generate/draft nodes
@@ -602,7 +579,6 @@ async def execute(
         total_latency_ms=total_ms,
         total_cost_usd=ctx.cost_usd,
         summary=summary,
-        residual_context=ctx.data.get("residual_context"),
         original_intent=pipeline_input.intent or pipeline_input.subject,
         original_provider=pipeline_input.provider,
         layered_partial=_layered_partial,
