@@ -49,10 +49,10 @@ def _parse_weights_str(raw: str) -> dict[str, float]:
 _TOOL_TIERS: dict[str, str] = {
     "create_artwork": "core", "evaluate_artwork": "core",
     "list_traditions": "core", "get_tradition_guide": "core",
-    "studio_create_brief": "core",
+    "brief_parse": "core",
     "inpaint_artwork": "standard",
-    "sync_data": "standard", "studio_generate_concepts": "standard",
-    "studio_accept": "standard",
+    "sync_data": "standard", "generate_concepts": "standard",
+    "archive_session": "standard",
     "layers_split": "standard", "layers_composite": "standard",
     "layers_edit": "advanced", "layers_redraw": "advanced",
     "layers_evaluate": "advanced",
@@ -79,99 +79,74 @@ async def create_artwork(
     intent: str,
     tradition: str = "default",
     provider: str = "mock",
-    hitl: bool = False,
     weights: str = "",
-    mode: str = "strict",
     reference_path: str = "",
     ref_type: str = "full",
-    layered: bool = False,
 ) -> dict:
-    """Create cultural artwork through the VULCA pipeline.
+    """Generate + evaluate artwork in a single pass. No rerun loop.
 
-    When layered=True: generates independent layers (plan + generate only).
-    The agent should review each layer visually, then use layers_composite
-    and layers_redraw to compose the final artwork with user participation.
+    Returns the image, scores, and recommendations. The agent decides whether
+    to retry by calling generate_image again — Vulca never auto-retries.
 
     Args:
         intent: Natural language description of what to create.
         tradition: Cultural tradition (e.g. chinese_xieyi, western_academic).
             Also accepts a file path to a custom YAML tradition.
         provider: Image generation provider (mock | gemini | nb2 | openai | comfyui).
-        hitl: Enable human-in-the-loop (pipeline pauses before decide node).
         weights: Custom L1-L5 weights as string "L1=0.3,L2=0.2,...".
-        mode: Evaluation mode — "strict" (judge, default), "reference" (advisor, no forced reruns).
         reference_path: Path or base64 of a reference image for style/composition guidance.
-            Also serves as sketch input -- providers treat both identically.
         ref_type: Reference type — "style", "composition", or "full" (default).
-        layered: Generate structured layers instead of flat image.
-            Returns artifact.json + per-layer PNGs. Agent orchestrates composition.
 
     Returns:
-        Full result: session_id, status, tradition, weighted_total, best_image_url,
-        best_candidate_id, scores, rationales, rounds, cost_usd, summary, risk_flags,
-        recommendations.
+        image_path, scores, rationales, recommendations, cost_usd, tradition, weighted_total.
     """
-    from vulca.pipeline.engine import execute
-    from vulca.pipeline.templates import DEFAULT
-    from vulca.pipeline.types import PipelineInput
-
-    parsed_weights = _parse_weights_str(weights)
-
-    node_params: dict[str, dict] = {}
-    if parsed_weights:
-        node_params["evaluate"] = {"custom_weights": parsed_weights}
-
-    pipeline_input = PipelineInput(
-        subject=intent,
-        intent=intent,
-        tradition=tradition,
+    # 1. Generate
+    gen_result = await generate_image(
+        prompt=intent,
         provider=provider,
-        node_params=node_params,
-        eval_mode=mode,
-        layered=layered,
+        tradition=tradition,
+        reference_path=reference_path,
+    )
+    if "error" in gen_result:
+        return gen_result
+
+    image_path = gen_result["image_path"]
+
+    # 2. Evaluate
+    use_mock = provider == "mock"
+    eval_result = await evaluate_artwork(
+        image_path=image_path,
+        tradition=tradition,
+        intent=intent,
+        mock=use_mock,
     )
 
-    if hitl and layered:
-        import logging
-        logging.getLogger("vulca.mcp").warning(
-            "hitl=True ignored with layered=True — agent orchestrates iteration via MCP tools"
-        )
-    interrupt_before = {"decide"} if (hitl and not layered) else None
+    # Apply custom weights if provided
+    parsed_weights = _parse_weights_str(weights)
+    weighted_total = eval_result.get("score", 0.0)
+    if parsed_weights and eval_result.get("dimensions"):
+        total = 0.0
+        w_sum = sum(parsed_weights.values())
+        if w_sum > 0:
+            for dim_key, w in parsed_weights.items():
+                dim_score = eval_result["dimensions"].get(dim_key, {})
+                if isinstance(dim_score, dict):
+                    total += dim_score.get("score", 0.0) * w
+                else:
+                    total += float(dim_score) * w
+            weighted_total = round(total / w_sum, 4)
 
-    if layered:
-        from vulca.pipeline.templates import LAYERED
-        template = LAYERED
-    else:
-        template = DEFAULT
-    output = await execute(template, pipeline_input, interrupt_before=interrupt_before)
-
-    # Build rationales from events if available (mock may not populate them)
-    rationales: dict[str, str] = {}
-    for event in output.events:
-        if event.event_type.value == "stage_completed" and event.stage == "evaluate":
-            raw_rationales = event.payload.get("rationales", {})
-            if raw_rationales:
-                rationales = raw_rationales
-                break
-
-    result: dict = {
-        "session_id": output.session_id,
-        "status": output.status,
-        "tradition": output.tradition,
-        "weighted_total": output.weighted_total,
-        "best_image_url": output.best_image_url,
-        "best_candidate_id": output.best_candidate_id,
-        "interrupted_at": output.interrupted_at,
-        "scores": output.final_scores,
-        "rationales": rationales,
-        "rounds": [r.to_dict() for r in output.rounds],
-        "total_rounds": output.total_rounds,
-        "cost_usd": output.total_cost_usd,
-        "summary": output.summary,
-        "risk_flags": output.risk_flags,
-        "recommendations": output.recommendations,
+    return {
+        "image_path": image_path,
+        "tradition": eval_result.get("tradition", tradition),
+        "weighted_total": weighted_total,
+        "scores": eval_result.get("dimensions", {}),
+        "rationales": eval_result.get("rationales", {}),
+        "recommendations": eval_result.get("recommendations", []),
+        "risk_flags": eval_result.get("risk_flags", []),
+        "summary": eval_result.get("summary", ""),
+        "cost_usd": gen_result.get("cost_usd", 0.0) + eval_result.get("cost_usd", 0.0),
     }
-    return result
 
 
 @mcp.tool()
@@ -292,14 +267,25 @@ async def get_tradition_guide(
 
 
 
-# ── Studio Tools ────────────────────────────────────────────────────
+# ── Stateless Brief / Concept / Archive Tools ──────────────────────
 
 
-async def _studio_create_brief_impl(
-    intent: str, mood: str = "", project_dir: str = "",
+@mcp.tool()
+async def brief_parse(
+    intent: str,
+    mood: str = "",
 ) -> dict:
-    """Implementation for studio_create_brief."""
-    from pathlib import Path
+    """Parse a creative intent into a structured brief — tradition, style mix, keywords.
+
+    Stateless: returns the brief as JSON. Agent stores it in conversation context.
+
+    Args:
+        intent: Natural language creative vision.
+        mood: Emotional target (e.g. "serene", "epic", "mystical").
+
+    Returns:
+        intent, mood, tradition, style_mix, keywords, composition, palette.
+    """
     from vulca.studio.brief import Brief
     from vulca.studio.phases.intent import IntentPhase
 
@@ -307,86 +293,117 @@ async def _studio_create_brief_impl(
     phase = IntentPhase()
     phase.parse_intent(b)
 
-    if project_dir:
-        b.save(Path(project_dir))
+    # Determine primary tradition from style_mix
+    tradition = "default"
+    if b.style_mix:
+        best = max(b.style_mix, key=lambda s: s.weight)
+        tradition = best.tradition or best.tag or "default"
 
     return {
-        "session_id": b.session_id,
         "intent": b.intent,
         "mood": b.mood,
-        "style_mix": [{"tradition": s.tradition, "tag": s.tag, "weight": s.weight} for s in b.style_mix],
-        "project_dir": project_dir,
+        "tradition": tradition,
+        "style_mix": [
+            {"tradition": s.tradition, "tag": s.tag, "weight": s.weight}
+            for s in b.style_mix
+        ],
+        "keywords": [e.name for e in b.elements],
+        "composition": {
+            "layout": b.composition.layout,
+            "focal_point": b.composition.focal_point,
+            "aspect_ratio": b.composition.aspect_ratio,
+            "negative_space": b.composition.negative_space,
+        },
+        "palette": {
+            "primary": b.palette.primary,
+            "accent": b.palette.accent,
+            "mood": b.palette.mood,
+        },
     }
 
 
-async def _studio_generate_concepts_impl(
-    project_dir: str, count: int = 4, provider: str = "mock",
-) -> dict:
-    """Implementation for studio_generate_concepts."""
-    from pathlib import Path
-    from vulca.studio.brief import Brief
-    from vulca.studio.phases.concept import ConceptPhase
-
-    b = Brief.load(Path(project_dir))
-    phase = ConceptPhase()
-    paths = await phase.generate_concepts(b, count=count, provider=provider, project_dir=project_dir)
-    b.save(Path(project_dir))
-
-    return {"concepts": paths, "count": len(paths)}
-
-
-# Register MCP tools
 @mcp.tool()
-async def studio_create_brief(
+async def generate_concepts(
+    prompt: str,
+    count: int = 3,
+    provider: str = "gemini",
+) -> dict:
+    """Generate multiple concept variation images from a prompt.
+
+    Use to explore visual directions. Agent picks the best concept by calling view_image.
+
+    Args:
+        prompt: Creative prompt.
+        count: Number of concepts to generate (1-6).
+        provider: Image generation provider.
+
+    Returns:
+        concepts: List of {image_path, cost_usd, latency_ms}.
+        total_cost_usd: Sum of all generation costs.
+    """
+    count = max(1, min(6, count))
+    concepts: list[dict] = []
+    total_cost = 0.0
+
+    for _ in range(count):
+        r = await generate_image(prompt=prompt, provider=provider)
+        if "error" in r:
+            concepts.append(r)
+        else:
+            concepts.append({
+                "image_path": r["image_path"],
+                "cost_usd": r.get("cost_usd", 0.0),
+                "latency_ms": r.get("latency_ms", 0),
+            })
+            total_cost += r.get("cost_usd", 0.0)
+
+    return {"concepts": concepts, "total_cost_usd": total_cost}
+
+
+@mcp.tool()
+async def archive_session(
     intent: str,
-    mood: str = "",
-    project_dir: str = "",
+    tradition: str = "default",
+    image_path: str = "",
+    feedback: str = "",
 ) -> dict:
-    """Create a new Studio creative brief.
+    """Archive a completed artwork for tradition evolution and learning.
+
+    Call after the agent is satisfied with the final result.
 
     Args:
-        intent: Creative vision description (e.g., "赛博朋克水墨山水")
-        mood: Emotional target (e.g., "epic-solitary", "serene", "mystical")
-        project_dir: Directory to save brief (optional)
+        intent: Original creative intent.
+        tradition: Cultural tradition used.
+        image_path: Path to the final image.
+        feedback: Agent's assessment of the result.
+
+    Returns:
+        archived: Whether archival succeeded.
+        session_id: Archive session identifier.
     """
-    return await _studio_create_brief_impl(intent, mood, project_dir)
+    import uuid
 
+    session_id = uuid.uuid4().hex[:8]
+    archived = False
 
-@mcp.tool()
-async def studio_generate_concepts(
-    project_dir: str,
-    count: int = 4,
-    provider: str = "mock",
-) -> dict:
-    """Generate concept design images from a Brief.
+    try:
+        from vulca.studio.brief import Brief
+        from vulca.digestion.store import StudioStore
+        from vulca.digestion.signals import extract_signals
 
-    Args:
-        project_dir: Path to project with brief.yaml
-        count: Number of concepts (default 4)
-        provider: Image provider (mock, gemini, openai)
-    """
-    return await _studio_generate_concepts_impl(project_dir, count, provider)
+        b = Brief.new(intent)
+        b.session_id = session_id
+        store = StudioStore()
+        store.save_session(b, user_feedback=feedback or "accepted")
+        extract_signals(b, user_feedback=feedback or "accepted")
+        archived = True
+    except Exception as exc:
+        logging.getLogger("vulca.mcp").warning("Archive failed (non-fatal): %s", exc)
 
-
-async def _studio_accept_impl(project_dir: str) -> dict:
-    """Implementation for studio_accept."""
-    from vulca.studio.session import StudioSession
-    session = StudioSession.load(project_dir)
-    return await session.accept(data_dir=project_dir)
-
-
-@mcp.tool()
-async def studio_accept(
-    project_dir: str,
-) -> dict:
-    """Accept the current artwork and finalize the Studio session.
-
-    Saves session data and triggers digestion (signal extraction).
-
-    Args:
-        project_dir: Path to project with brief.yaml and session.yaml
-    """
-    return await _studio_accept_impl(project_dir)
+    return {
+        "archived": archived,
+        "session_id": session_id,
+    }
 
 
 @mcp.tool()

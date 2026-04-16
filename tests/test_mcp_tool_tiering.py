@@ -2,6 +2,8 @@ def test_tool_tiers_defined():
     from vulca.mcp_server import _TOOL_TIERS, _DESC_LIMITS
     assert "create_artwork" in _TOOL_TIERS
     assert _TOOL_TIERS["create_artwork"] == "core"
+    assert "brief_parse" in _TOOL_TIERS
+    assert _TOOL_TIERS["brief_parse"] == "core"
     assert "layers_evaluate" in _TOOL_TIERS
     assert _TOOL_TIERS["layers_evaluate"] == "advanced"
     assert all(t in ("core", "standard", "advanced") for t in _TOOL_TIERS.values())

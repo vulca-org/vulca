@@ -37,11 +37,11 @@ class TestLayeredSimplified:
 
 
 class TestMCPDocstrings:
-    def test_create_artwork_layered_docstring(self):
+    def test_create_artwork_single_pass_docstring(self):
         from vulca.mcp_server import create_artwork
         doc = create_artwork.__doc__ or ""
-        assert "layer" in doc.lower()
-        assert "agent" in doc.lower() or "review" in doc.lower()
+        assert "single pass" in doc.lower() or "generate" in doc.lower()
+        assert "agent" in doc.lower() or "retry" in doc.lower()
 
     def test_layers_composite_docstring(self):
         from vulca.mcp_server import layers_composite

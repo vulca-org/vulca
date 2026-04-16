@@ -11,22 +11,14 @@ class TestCreateArtwork:
     def test_returns_all_fields(self):
         from vulca.mcp_server import create_artwork
         r = run(create_artwork("test", provider="mock"))
-        assert "session_id" in r
-        assert "best_image_url" in r
+        assert "image_path" in r
         assert "weighted_total" in r
         # All fields always present (no summary/detailed distinction)
         assert "rationales" in r
-        assert "rounds" in r
         assert "scores" in r
         assert "cost_usd" in r
         assert "recommendations" in r
         assert "risk_flags" in r
-
-    def test_hitl_returns_session(self):
-        from vulca.mcp_server import create_artwork
-        r = run(create_artwork("test", provider="mock", hitl=True))
-        assert r["status"] == "waiting_human"
-        assert r["session_id"]
 
 
 class TestEvaluateArtwork:

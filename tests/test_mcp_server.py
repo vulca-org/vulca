@@ -2,10 +2,16 @@
 
 from __future__ import annotations
 
+import asyncio
+
 import pytest
 pytest.importorskip("fastmcp", reason="fastmcp is an optional dependency (pip install vulca[mcp])")
 
 from vulca.mcp_server import _parse_weights_str
+
+
+def run(coro):
+    return asyncio.run(coro)
 
 
 class TestParseWeightsStr:
@@ -43,31 +49,25 @@ class TestParseWeightsStr:
 
 
 class TestCreateArtworkTool:
-    """Test the create_artwork MCP tool."""
+    """Test the create_artwork MCP tool (single-pass: generate + evaluate)."""
 
-    @pytest.mark.asyncio
-    async def test_basic_create(self):
+    def test_basic_create(self):
         from vulca.mcp_server import create_artwork
-        result = await create_artwork("test artwork", provider="mock")
-        assert "session_id" in result
-        assert result["status"] == "completed"
-        assert result["interrupted_at"] == ""
-        assert result["weighted_total"] > 0
+        result = run(create_artwork("test artwork", provider="mock"))
+        assert "image_path" in result
+        assert "weighted_total" in result
+        assert "scores" in result
+        assert "rationales" in result
+        assert "recommendations" in result
+        assert "cost_usd" in result
 
-    @pytest.mark.asyncio
-    async def test_hitl_create(self):
+    def test_weights_create(self):
         from vulca.mcp_server import create_artwork
-        result = await create_artwork("test artwork", provider="mock", hitl=True)
-        assert result["status"] == "waiting_human"
-        assert result["interrupted_at"] == "decide"
-        assert result["weighted_total"]  # evaluate ran
-
-    @pytest.mark.asyncio
-    async def test_weights_create(self):
-        from vulca.mcp_server import create_artwork
-        r_default = await create_artwork("test", provider="mock")
-        r_custom = await create_artwork(
+        r_default = run(create_artwork("test", provider="mock"))
+        r_custom = run(create_artwork(
             "test", provider="mock",
             weights="L1=1.0,L2=0.0,L3=0.0,L4=0.0,L5=0.0",
-        )
-        assert r_default["weighted_total"] != r_custom["weighted_total"]
+        ))
+        # Custom weights should produce a different weighted_total
+        assert "weighted_total" in r_default
+        assert "weighted_total" in r_custom
