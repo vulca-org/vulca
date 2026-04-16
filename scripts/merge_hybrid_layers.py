@@ -25,7 +25,7 @@ ORIG_DIR = REPO / "assets" / "showcase" / "originals"
 OUT_DIR = REPO / "assets" / "showcase" / "layers"  # overwrite in-place
 
 # Face-parsing parts that replace "head_and_face" EVF-SAM layer
-FACE_PARTS = {"skin", "eyes", "eyebrows", "nose", "lips", "hair", "neck", "ears"}
+FACE_PARTS = {"skin", "eyes", "eyebrows", "nose", "lips", "hair", "neck", "ears", "hat", "cloth"}
 
 # Minimum pixel count for a face part to be its own layer.
 # Below this, pixels are merged into the "skin" layer (parent).
@@ -43,11 +43,15 @@ FACE_SP = {
     "hair": "subject.head.hair",
     "neck": "subject.body.neck",
     "ears": "subject.head.ears",
+    "hat": "subject.head.hat",
+    "cloth": "subject.body.clothing",
 }
 
 # z-index for face parts (higher = wins overlap)
 FACE_Z = {
     "hair": 58,
+    "hat": 57,
+    "cloth": 53,
     "neck": 52,
     "skin": 60,
     "ears": 62,

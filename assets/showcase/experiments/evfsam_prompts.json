@@ -44,35 +44,23 @@
   "girl-pearl-earring": [
     [
       "background",
-      "the plain dark solid black background area around the head"
+      "the plain dark solid black background area around the figure",
+      "background"
     ],
     [
-      "face_skin",
-      "the smooth skin of the face including cheeks forehead chin and neck"
-    ],
-    [
-      "eyes",
-      "the two small dark circular eyes with white highlights in the upper center of the face only"
-    ],
-    [
-      "lips",
-      "the small red parted lips and mouth at the bottom center of the face below the nose only"
-    ],
-    [
-      "nose",
-      "the small triangular nose bridge and nostrils between the eyes and lips only"
+      "head_and_face",
+      "the entire head and face of the girl including skin hair headscarf forehead cheeks chin eyes nose and mouth",
+      "subject.head"
     ],
     [
       "earring",
-      "the large white teardrop shaped pearl earring hanging below the ear"
-    ],
-    [
-      "headscarf",
-      "the bright blue and yellow fabric headscarf wrapped around the head"
+      "the large white teardrop shaped pearl earring hanging below the ear",
+      "foreground.jewelry"
     ],
     [
       "clothing",
-      "the brown and yellow clothing collar and garment visible below the neck"
+      "the brown and yellow clothing collar and garment visible below the neck",
+      "subject.body.clothing"
     ]
   ],
   "water-lilies": [
@@ -161,73 +149,28 @@
   "nighthawks": [
     [
       "background",
-      "dark empty nighttime street surrounding the diner, including black and green exterior pavement and unlit open space",
-      "background.street"
+      "the dark empty street buildings and night sky outside the diner",
+      "background"
     ],
     [
-      "brick_facades",
-      "upper-story brick building facades above and behind the diner, including flat reddish-brown wall planes",
-      "background.buildings.brick_facades"
+      "diner_glass",
+      "the large curved plate-glass window and green metal frame of the diner",
+      "subject.diner.exterior"
     ],
     [
-      "dark_windows",
-      "dark rectangular upper-story windows set into the brick facades",
-      "background.buildings.dark_windows"
+      "diner_interior",
+      "the bright interior of the diner including back wall counter ceiling lights and equipment",
+      "subject.diner.interior"
     ],
     [
-      "triangular_sidewalk",
-      "light triangular sidewalk or pavement area outside the diner at the lower left and front edge",
-      "foreground.sidewalk.triangular_area"
+      "people",
+      "all four human figures inside the diner including the couple on the left the lone man on the right and the server behind the counter",
+      "subject.people"
     ],
     [
-      "diner_window_exterior",
-      "large curved plate-glass diner window and exterior frame enclosing the illuminated diner interior",
-      "architecture.diner.curved_window"
-    ],
-    [
-      "interior_back_wall",
-      "warm yellow diner back wall behind the counter, including shelves and coffee equipment silhouettes",
-      "architecture.diner.interior.back_wall"
-    ],
-    [
-      "curved_counter",
-      "long pale curved counter surface wrapping around the seated customers inside the diner",
-      "architecture.diner.counter"
-    ],
-    [
-      "person_0_back_man",
-      "man in a dark suit and dark fedora seated at the counter with his back facing the viewer",
-      "subject.person[0].body"
-    ],
-    [
-      "person_1_red_dress_woman",
-      "woman seated beside person 0, wearing a bright red dress and showing red-orange hair and pale skin",
-      "subject.person[1].body"
-    ],
-    [
-      "person_2_facing_man",
-      "man in a dark suit and dark hat seated at the counter facing toward the viewer in profile or three-quarter view",
-      "subject.person[2].body"
-    ],
-    [
-      "person_3_white_server",
-      "server or attendant in white clothing and white cap standing behind the counter",
-      "subject.person[3].body"
-    ],
-    [
-      "bar_stools",
-      "round red-brown diner stools with thin dark bases positioned along the counter",
-      "foreground.furniture.bar_stools"
-    ],
-    [
-      "counter_objects",
-      "small objects on the counter, including cups, napkin holder, salt shakers, and condiment containers",
-      "foreground.objects.counter_items"
-    ],
-    [
-      "ceiling_lights",
-      "warm yellow ceiling light fixtures and bright illuminated bands across the diner ceiling",
-      "architecture.diner.lighting.ceiling_fixtures"
+      "foreground_objects",
+      "the sidewalk stools cups and small objects on the counter in front of the diner",
+      "foreground.objects"
     ],
     [
       "cash_register_area",
@@ -238,43 +181,18 @@
   "the-scream": [
     [
       "background",
-      "the swirling orange and red sky with wavy horizontal bands",
+      "the swirling orange and red sky and the dark blue fjord water and distant hills",
       "background"
     ],
     [
-      "fjord_water",
-      "the dark blue water of the fjord below the sky on the right",
-      "background.water"
+      "bridge",
+      "the diagonal brown wooden bridge or boardwalk including railings and deck planks",
+      "subject.bridge"
     ],
     [
-      "distant_landscape",
-      "the green and blue hilly landscape at the horizon",
-      "background.hills"
-    ],
-    [
-      "bridge_railing",
-      "the diagonal brown wooden railing running from lower left toward upper right",
-      "subject.bridge.railing"
-    ],
-    [
-      "bridge_deck",
-      "the brown wooden planked surface of the bridge or boardwalk",
-      "subject.bridge.deck"
-    ],
-    [
-      "screaming_figure_body",
-      "the dark flowing robe and elongated body of the central figure",
-      "subject.figure.body"
-    ],
-    [
-      "screaming_figure_head",
-      "the bald oval head with open mouth and wide eyes of the central figure",
-      "subject.figure.head"
-    ],
-    [
-      "screaming_figure_hands",
-      "the two hands pressed against the sides of the head",
-      "subject.figure.hands"
+      "screaming_figure",
+      "the entire central screaming figure including the bald head open mouth dark robe body and hands pressed to the sides of the head",
+      "subject.figure"
     ],
     [
       "background_figures",

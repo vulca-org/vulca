@@ -1,41 +1,69 @@
 {
+  "girl-pearl-earring": {
+    "layers": {
+      "background": {
+        "coverage_pct": 54.0,
+        "inference_s": 3.7
+      },
+      "head_and_face": {
+        "coverage_pct": 44.6,
+        "inference_s": 3.5
+      },
+      "earring": {
+        "coverage_pct": 1.0,
+        "inference_s": 3.4
+      },
+      "clothing": {
+        "coverage_pct": 16.2,
+        "inference_s": 3.4
+      }
+    }
+  },
+  "nighthawks": {
+    "layers": {
+      "background": {
+        "coverage_pct": 22.0,
+        "inference_s": 3.2
+      },
+      "diner_glass": {
+        "coverage_pct": 55.2,
+        "inference_s": 3.1
+      },
+      "diner_interior": {
+        "coverage_pct": 29.4,
+        "inference_s": 3.1
+      },
+      "people": {
+        "coverage_pct": 1.7,
+        "inference_s": 3.2
+      },
+      "foreground_objects": {
+        "coverage_pct": 8.0,
+        "inference_s": 3.1
+      },
+      "cash_register_area": {
+        "coverage_pct": 5.7,
+        "inference_s": 3.1
+      }
+    }
+  },
   "the-scream": {
     "layers": {
       "background": {
-        "coverage_pct": 35.6,
+        "coverage_pct": 45.0,
         "inference_s": 3.3
       },
-      "fjord_water": {
-        "coverage_pct": 16.5,
-        "inference_s": 3.2
+      "bridge": {
+        "coverage_pct": 12.3,
+        "inference_s": 3.1
       },
-      "distant_landscape": {
-        "coverage_pct": 29.0,
-        "inference_s": 3.2
-      },
-      "bridge_railing": {
-        "coverage_pct": 5.3,
-        "inference_s": 3.2
-      },
-      "bridge_deck": {
-        "coverage_pct": 12.9,
-        "inference_s": 3.2
-      },
-      "screaming_figure_body": {
-        "coverage_pct": 8.7,
-        "inference_s": 3.2
-      },
-      "screaming_figure_head": {
-        "coverage_pct": 3.1,
-        "inference_s": 3.2
-      },
-      "screaming_figure_hands": {
-        "coverage_pct": 8.6,
+      "screaming_figure": {
+        "coverage_pct": 8.9,
         "inference_s": 3.2
       },
       "background_figures": {
         "coverage_pct": 0.8,
-        "inference_s": 3.2
+        "inference_s": 3.1
       },
       "boats": {
         "coverage_pct": 13.3,

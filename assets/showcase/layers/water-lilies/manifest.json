@@ -9,7 +9,7 @@
   "tradition": "",
   "partial": false,
   "warnings": [],
-  "created_at": "2026-04-16T14:01:06Z",
+  "created_at": "2026-04-16T18:44:45Z",
   "layers": [
     {
       "id": "layer_c0880557",
@@ -38,7 +38,7 @@
       "id": "layer_2f2fefdf",
       "name": "subject",
       "description": "the white and pink water lily blossoms",
-      "z_index": 1,
+      "z_index": 40,
       "blend_mode": "normal",
       "content_type": "subject",
       "semantic_path": "subject",
@@ -61,7 +61,7 @@
       "id": "layer_591c7cbe",
       "name": "foreground",
       "description": "the round green lily pads floating on the water",
-      "z_index": 2,
+      "z_index": 80,
       "blend_mode": "normal",
       "content_type": "foreground",
       "semantic_path": "foreground",

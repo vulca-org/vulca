@@ -9,7 +9,7 @@
   "tradition": "",
   "partial": false,
   "warnings": [],
-  "created_at": "2026-04-16T14:01:03Z",
+  "created_at": "2026-04-16T18:44:43Z",
   "layers": [
     {
       "id": "layer_a6c75442",
@@ -38,7 +38,7 @@
       "id": "layer_09cfe465",
       "name": "subject",
       "description": "the central seated woman with face and hands visible",
-      "z_index": 1,
+      "z_index": 40,
       "blend_mode": "normal",
       "content_type": "subject",
       "semantic_path": "subject",
@@ -61,7 +61,7 @@
       "id": "layer_c854e9d2",
       "name": "foreground",
       "description": "the two children leaning against the woman on both sides",
-      "z_index": 2,
+      "z_index": 80,
       "blend_mode": "normal",
       "content_type": "foreground",
       "semantic_path": "foreground",

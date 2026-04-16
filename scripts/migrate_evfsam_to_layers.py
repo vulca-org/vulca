@@ -45,6 +45,8 @@ _SP_Z_MAP = [
     ("subject.head.",      60),   # hair, veil
     ("subject.body.hands", 58),  # hands in front of clothing
     ("subject.body.",      55),
+    ("subject.diner.interior", 40),  # interior behind glass
+    ("subject.diner.exterior", 38),  # glass in front of interior
     ("subject.person[",    50),   # per-person layers
     ("subject.",           45),
     ("subject",            40),

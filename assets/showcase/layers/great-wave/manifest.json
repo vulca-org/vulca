@@ -9,7 +9,7 @@
   "tradition": "",
   "partial": false,
   "warnings": [],
-  "created_at": "2026-04-16T14:01:06Z",
+  "created_at": "2026-04-16T18:44:45Z",
   "layers": [
     {
       "id": "layer_4884f9b7",
@@ -38,7 +38,7 @@
       "id": "layer_85f9828b",
       "name": "subject",
       "description": "the large blue curling wave with claw-like white foam tips",
-      "z_index": 1,
+      "z_index": 40,
       "blend_mode": "normal",
       "content_type": "subject",
       "semantic_path": "subject",
@@ -61,7 +61,7 @@
       "id": "layer_120073db",
       "name": "foreground",
       "description": "the smaller dark blue waves and water surface at the bottom",
-      "z_index": 2,
+      "z_index": 80,
       "blend_mode": "normal",
       "content_type": "foreground",
       "semantic_path": "foreground",

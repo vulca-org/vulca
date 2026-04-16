@@ -9,7 +9,7 @@
   "tradition": "",
   "partial": false,
   "warnings": [],
-  "created_at": "2026-04-16T14:00:50Z",
+  "created_at": "2026-04-16T18:44:31Z",
   "layers": [
     {
       "id": "layer_70284d33",
@@ -38,7 +38,7 @@
       "id": "layer_f9414af9",
       "name": "subject",
       "description": "the blue and white round Earth near the upper center",
-      "z_index": 1,
+      "z_index": 40,
       "blend_mode": "normal",
       "content_type": "subject",
       "semantic_path": "subject",
@@ -61,7 +61,7 @@
       "id": "layer_5c2201d2",
       "name": "foreground",
       "description": "the gray cratered lunar surface across the bottom",
-      "z_index": 2,
+      "z_index": 80,
       "blend_mode": "normal",
       "content_type": "foreground",
       "semantic_path": "foreground",

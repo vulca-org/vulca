@@ -9,7 +9,7 @@
   "tradition": "",
   "partial": false,
   "warnings": [],
-  "created_at": "2026-04-16T14:01:08Z",
+  "created_at": "2026-04-16T18:44:47Z",
   "layers": [
     {
       "id": "layer_02a9167e",
@@ -38,7 +38,7 @@
       "id": "layer_d59c7124",
       "name": "subject",
       "description": "the large central human figure with tilted head and bare torso",
-      "z_index": 1,
+      "z_index": 40,
       "blend_mode": "normal",
       "content_type": "subject",
       "semantic_path": "subject",
@@ -61,7 +61,7 @@
       "id": "layer_97e0430f",
       "name": "foreground",
       "description": "the bright jewelry and flower ornament near the upper body",
-      "z_index": 2,
+      "z_index": 80,
       "blend_mode": "normal",
       "content_type": "foreground",
       "semantic_path": "foreground",

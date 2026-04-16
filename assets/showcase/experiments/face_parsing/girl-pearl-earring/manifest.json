@@ -12,44 +12,44 @@
     {
       "name": "cloth",
       "file": "cloth.png",
-      "pixels": 288173,
-      "fraction": 0.066
+      "pixels": 294062,
+      "fraction": 0.0674
     },
     {
       "name": "eyes",
       "file": "eyes.png",
-      "pixels": 5540,
-      "fraction": 0.0013
+      "pixels": 6476,
+      "fraction": 0.0015
     },
     {
       "name": "hat",
       "file": "hat.png",
-      "pixels": 799886,
-      "fraction": 0.1832
+      "pixels": 749717,
+      "fraction": 0.1717
     },
     {
       "name": "lips",
       "file": "lips.png",
-      "pixels": 11951,
-      "fraction": 0.0027
+      "pixels": 13442,
+      "fraction": 0.0031
     },
     {
       "name": "neck",
       "file": "neck.png",
-      "pixels": 20470,
-      "fraction": 0.0047
+      "pixels": 25390,
+      "fraction": 0.0058
     },
     {
       "name": "nose",
       "file": "nose.png",
-      "pixels": 23993,
-      "fraction": 0.0055
+      "pixels": 25922,
+      "fraction": 0.0059
     },
     {
       "name": "skin",
       "file": "skin.png",
-      "pixels": 265787,
-      "fraction": 0.0609
+      "pixels": 282746,
+      "fraction": 0.0648
     }
   ]
 }
