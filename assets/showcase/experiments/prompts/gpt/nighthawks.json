@@ -1,0 +1,80 @@
+{
+  "slug": "nighthawks",
+  "layers": [
+    [
+      "background",
+      "dark empty nighttime street surrounding the diner, including black and green exterior pavement and unlit open space",
+      "background.street"
+    ],
+    [
+      "brick_facades",
+      "upper-story brick building facades above and behind the diner, including flat reddish-brown wall planes",
+      "background.buildings.brick_facades"
+    ],
+    [
+      "dark_windows",
+      "dark rectangular upper-story windows set into the brick facades",
+      "background.buildings.dark_windows"
+    ],
+    [
+      "triangular_sidewalk",
+      "light triangular sidewalk or pavement area outside the diner at the lower left and front edge",
+      "foreground.sidewalk.triangular_area"
+    ],
+    [
+      "diner_window_exterior",
+      "large curved plate-glass diner window and exterior frame enclosing the illuminated diner interior",
+      "architecture.diner.curved_window"
+    ],
+    [
+      "interior_back_wall",
+      "warm yellow diner back wall behind the counter, including shelves and coffee equipment silhouettes",
+      "architecture.diner.interior.back_wall"
+    ],
+    [
+      "curved_counter",
+      "long pale curved counter surface wrapping around the seated customers inside the diner",
+      "architecture.diner.counter"
+    ],
+    [
+      "person_0_back_man",
+      "man in a dark suit and dark fedora seated at the counter with his back facing the viewer",
+      "subject.person[0].body"
+    ],
+    [
+      "person_1_red_dress_woman",
+      "woman seated beside person 0, wearing a bright red dress and showing red-orange hair and pale skin",
+      "subject.person[1].body"
+    ],
+    [
+      "person_2_facing_man",
+      "man in a dark suit and dark hat seated at the counter facing toward the viewer in profile or three-quarter view",
+      "subject.person[2].body"
+    ],
+    [
+      "person_3_white_server",
+      "server or attendant in white clothing and white cap standing behind the counter",
+      "subject.person[3].body"
+    ],
+    [
+      "bar_stools",
+      "round red-brown diner stools with thin dark bases positioned along the counter",
+      "foreground.furniture.bar_stools"
+    ],
+    [
+      "counter_objects",
+      "small objects on the counter, including cups, napkin holder, salt shakers, and condiment containers",
+      "foreground.objects.counter_items"
+    ],
+    [
+      "ceiling_lights",
+      "warm yellow ceiling light fixtures and bright illuminated bands across the diner ceiling",
+      "architecture.diner.lighting.ceiling_fixtures"
+    ],
+    [
+      "cash_register_area",
+      "cash register and service area forms near the right side behind the counter",
+      "architecture.diner.service.cash_register_area"
+    ]
+  ]
+}

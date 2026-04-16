@@ -1,0 +1,75 @@
+{
+  "slug": "mona-lisa",
+  "layers": [
+    [
+      "background",
+      "soft distant sfumato landscape behind the seated woman, including hazy mountains, muted earth tones, and atmospheric depth",
+      "background.landscape"
+    ],
+    [
+      "left_winding_road",
+      "pale winding road or path visible in the left background landscape",
+      "background.landscape.left_winding_road"
+    ],
+    [
+      "right_river_lake",
+      "blue-green river or lake shapes visible in the right background landscape",
+      "background.water.right_river_lake"
+    ],
+    [
+      "stone_parapet",
+      "horizontal stone parapet or balustrade edge across the lower foreground behind and below the sitter",
+      "foreground.architecture.stone_parapet"
+    ],
+    [
+      "face_skin",
+      "visible flesh-toned skin regions of the woman's face, including forehead, cheeks, chin, and jaw but excluding eyes, nose, lips, hair, and veil",
+      "subject.head.face.skin"
+    ],
+    [
+      "eyes",
+      "both visible eyes of the woman, including eyelids, irises, pupils, and surrounding dark eye contours",
+      "subject.head.face.eyes"
+    ],
+    [
+      "nose",
+      "central nose region of the woman's face, including bridge, nostrils, and nose shading",
+      "subject.head.face.nose"
+    ],
+    [
+      "lips",
+      "closed mouth and lip shapes of the woman, including upper lip, lower lip, and mouth line",
+      "subject.head.face.lips"
+    ],
+    [
+      "dark_wavy_hair",
+      "dark brown to black wavy hair falling along both sides of the woman's face and shoulders",
+      "subject.head.hair"
+    ],
+    [
+      "translucent_veil",
+      "thin transparent veil draped over the top and sides of the woman's hair, visible as faint dark gauze edges",
+      "subject.head.veil"
+    ],
+    [
+      "dress",
+      "dark greenish-black garment covering the woman's torso, sleeves, and shoulders",
+      "subject.body.clothing.dress"
+    ],
+    [
+      "gold_embroidery",
+      "small gold embroidered trim and decorative stitch details on the neckline and bodice of the dress",
+      "subject.body.clothing.gold_embroidery"
+    ],
+    [
+      "folded_hands",
+      "the woman's two folded hands and visible wrist skin resting across the lower front of the body",
+      "subject.body.hands"
+    ],
+    [
+      "chair_arm",
+      "dark chair arm or support beneath the woman's folded hands at the lower right foreground",
+      "foreground.furniture.chair_arm"
+    ]
+  ]
+}

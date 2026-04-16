@@ -1,0 +1,55 @@
+{
+  "slug": "the-scream",
+  "layers": [
+    [
+      "background",
+      "orange-red swirling sky filling the upper background, with broad wavy bands of red, orange, yellow, and pale tones",
+      "background.sky"
+    ],
+    [
+      "fjord_water",
+      "dark blue fjord water below the sky and beside the bridge, including curved blue and black water bands",
+      "background.water.fjord"
+    ],
+    [
+      "distant_hills",
+      "dark distant hills or landmass shapes separating the sky from the fjord water",
+      "background.land.distant_hills"
+    ],
+    [
+      "bridge_railing",
+      "brown wooden bridge railings with strong diagonal lines running from the lower foreground toward the upper left distance",
+      "foreground.bridge.railing"
+    ],
+    [
+      "bridge_deck",
+      "brown and orange bridge deck or walkway surface beneath the figures, bounded by the railings",
+      "foreground.bridge.deck"
+    ],
+    [
+      "main_head",
+      "pale skull-like head of the main foreground figure, including oval face, hollow eyes, nose area, and open mouth",
+      "subject.person[0].head.face"
+    ],
+    [
+      "main_body",
+      "dark elongated black and blue body and clothing of the main foreground figure below the head",
+      "subject.person[0].body"
+    ],
+    [
+      "main_hands",
+      "two pale hands of the main figure raised to the sides of the face",
+      "subject.person[0].hands"
+    ],
+    [
+      "distant_figures",
+      "two small dark silhouetted human figures walking away on the bridge in the upper left distance",
+      "subject.person[1].body"
+    ],
+    [
+      "small_boats",
+      "small boat shapes on the fjord water, appearing as tiny light and dark marks",
+      "background.water.boats"
+    ]
+  ]
+}
