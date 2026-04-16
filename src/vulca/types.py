@@ -83,9 +83,6 @@ class EvalResult:
     cost_usd: float = 0.0
     """Estimated API cost in USD."""
 
-    sparse_activation: dict | None = None
-    """Sparse eval dimension activation: {active: {L1: 0.8, ...}, skipped: {L4: "no_signal"}}."""
-
     raw: dict = field(default_factory=dict)
     """Raw response data for advanced usage."""
 

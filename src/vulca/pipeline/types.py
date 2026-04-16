@@ -98,7 +98,6 @@ class PipelineInput:
     """Evaluation mode: strict|reference|fusion."""
     # Custom ImageProvider instance (not serialized; overrides provider lookup)
     image_provider: Any = field(default=None, repr=False)
-    sparse_eval: bool = False     # P3: enable dimension-sparse evaluation
     layered: bool = False             # Use LAYERED template for structured creation
     no_cache: bool = False            # v0.13: disable layered sidecar cache
     strict: bool = False              # v0.13: any failed layer fails the run

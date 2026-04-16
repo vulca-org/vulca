@@ -22,7 +22,6 @@ async def acreate(
     hitl: bool = False,
     weights: dict[str, float] | None = None,
     eval_mode: str = "strict",
-    sparse_eval: bool = False,
     reference: str = "",
     ref_type: str = "full",
     colors: str = "",
@@ -78,7 +77,6 @@ async def acreate(
             hitl=hitl,
             weights=weights,
             eval_mode=eval_mode,
-            sparse_eval=sparse_eval,
             reference=reference,
             ref_type=ref_type,
             colors=colors,
@@ -103,7 +101,6 @@ async def _create_local(
     hitl: bool = False,
     weights: dict[str, float] | None = None,
     eval_mode: str = "strict",
-    sparse_eval: bool = False,
     reference: str = "",
     ref_type: str = "full",
     colors: str = "",
@@ -138,7 +135,6 @@ async def _create_local(
         node_params=node_params,
         image_provider=image_provider,
         eval_mode=eval_mode,
-        sparse_eval=sparse_eval,
     )
 
     # HITL: interrupt before decide node; skip on_complete (pipeline incomplete)
@@ -258,7 +254,6 @@ def create(
     hitl: bool = False,
     weights: dict[str, float] | None = None,
     eval_mode: str = "strict",
-    sparse_eval: bool = False,
     reference: str = "",
     ref_type: str = "full",
     colors: str = "",
@@ -284,7 +279,6 @@ def create(
         hitl=hitl,
         weights=weights,
         eval_mode=eval_mode,
-        sparse_eval=sparse_eval,
         reference=reference,
         ref_type=ref_type,
         colors=colors,

@@ -267,10 +267,6 @@ async def execute(
     if _out_dir:
         ctx.set("output_dir", _out_dir)
 
-    # Inject sparse_eval flag so EvaluateNode can run BriefIndexer + CulturalEngram
-    if pipeline_input.sparse_eval:
-        ctx.set("sparse_eval", True)
-
     status = RunStatus.RUNNING
     final_decision = "stop"
 

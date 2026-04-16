@@ -451,33 +451,3 @@ class TestExportEdgeCases:
             assert (Path(out_dir) / "manifest.json").exists()
 
 
-# ===========================================================================
-# 10. Sparse eval edge cases
-# ===========================================================================
-
-class TestSparseEvalEdgeCases:
-    """Sparse evaluation edge cases."""
-
-    def test_sparse_with_empty_intent(self):
-        """Sparse eval with no intent should still return activation (padded dims)."""
-        from vulca import evaluate
-        result = evaluate("dummy", mock=True, sparse=True, tradition="default")
-        assert result.sparse_activation is not None
-        active = result.sparse_activation.get("active", {})
-        assert len(active) >= 3  # BriefIndexer pads to min_dimensions=3
-
-    def test_sparse_with_cultural_keywords(self):
-        """Intent with cultural keywords should activate L3."""
-        from vulca import evaluate
-        result = evaluate("dummy", mock=True, sparse=True,
-                         intent="文化传统符号表达", tradition="chinese_xieyi")
-        assert result.sparse_activation is not None
-        active = result.sparse_activation["active"]
-        assert "L3" in active
-        assert active["L3"] >= 0.9  # forced for tradition
-
-    def test_non_sparse_has_no_activation(self):
-        """Non-sparse eval should have sparse_activation=None."""
-        from vulca import evaluate
-        result = evaluate("dummy", mock=True, sparse=False)
-        assert result.sparse_activation is None

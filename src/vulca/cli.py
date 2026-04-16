@@ -80,7 +80,6 @@ def main(argv: list[str] | None = None) -> None:
     eval_p.add_argument("--mock", action="store_true", help="Use mock scoring (no API key required)")
     eval_p.add_argument("--vlm-model", default="", help="VLM model (LiteLLM format, e.g. ollama/llava)")
     eval_p.add_argument("--vlm-base-url", default="", help="VLM base URL (for local models)")
-    eval_p.add_argument("--sparse-eval", action="store_true", help="Enable sparse evaluation (score only relevant dimensions)")
     eval_p.add_argument("--reference", default="", help="Reference image path or base64 for comparison")
 
     # create command
@@ -102,7 +101,6 @@ def main(argv: list[str] | None = None) -> None:
     create_p.add_argument("--weights", default="", help="Custom L1-L5 weights: 'L1=0.3,L2=0.2,...'")
     create_p.add_argument("--image-provider", default="", help="Image provider: mock|gemini|openai|comfyui")
     create_p.add_argument("--image-base-url", default="", help="Image provider base URL (for comfyui)")
-    create_p.add_argument("--sparse-eval", action="store_true", help="Enable sparse evaluation (score only relevant dimensions)")
     create_p.add_argument("--reference", default="", help="Reference image path or base64 (also serves as sketch input)")
     create_p.add_argument("--ref-type", default="full", choices=["style", "composition", "full"],
                           help="Reference type: style, composition, or full")
@@ -401,7 +399,6 @@ def _cmd_evaluate(args: argparse.Namespace) -> None:
         _cmd_evaluate_fusion(args, skills)
         return
 
-    sparse = getattr(args, "sparse_eval", False)
     try:
         result = evaluate(
             args.image,
@@ -412,7 +409,6 @@ def _cmd_evaluate(args: argparse.Namespace) -> None:
             api_key=args.api_key,
             mock=args.mock,
             mode=mode,
-            sparse=sparse,
         )
     except (ValueError, FileNotFoundError, OSError) as e:
         print(f"Error: {e}", file=sys.stderr)
@@ -428,14 +424,6 @@ def _cmd_evaluate(args: argparse.Namespace) -> None:
     else:
         _print_strict_result(result)
 
-    if result.sparse_activation:
-        active = result.sparse_activation.get("active", {})
-        skipped = result.sparse_activation.get("skipped", {})
-        print(f"  Sparse: {len(active)}/5 dims active")
-        for dim, conf in active.items():
-            print(f"    {dim}: active ({conf:.0%} confidence)")
-        for dim, reason in skipped.items():
-            print(f"    {dim}: skipped ({reason})")
 
 
 def _print_strict_result(result) -> None:
@@ -709,7 +697,6 @@ def _cmd_create(args: argparse.Namespace) -> None:
             base_url=args.base_url,
             weights=weights,
             eval_mode=args.mode,
-            sparse_eval=getattr(args, "sparse_eval", False),
             reference=getattr(args, "reference", "") or "",
             ref_type=getattr(args, "ref_type", "full") or "full",
             colors=getattr(args, "colors", "") or "",

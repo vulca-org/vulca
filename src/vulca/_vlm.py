@@ -165,8 +165,6 @@ fusion. Output a single set of L1-L5 scores reflecting the overall cross-cultura
 def _build_dynamic_suffix(
     tradition: str,
     evolved_ctx: dict | None = None,
-    engram_fragments: list | None = None,
-    active_dimensions: list[str] | None = None,
     *,
     mode: str = "strict",
 ) -> str:
@@ -183,10 +181,6 @@ def _build_dynamic_suffix(
     evolved_ctx:
         Pre-loaded evolved context dict, or ``None`` to skip evolution guidance.
         Pass the result of ``_load_evolved_context()`` here when available.
-    engram_fragments:
-        Optional ``CulturalFragment`` list from ``CulturalEngram`` retrieval.
-    active_dimensions:
-        Optional list of active L-dimension keys (e.g. ``["L1", "L3", "L5"]``).
     mode:
         Evaluation mode — ``"strict"`` (conformance judge), ``"reference"``
         (cultural mentor), or ``"fusion"`` (cross-cultural comparison).
@@ -205,11 +199,7 @@ def _build_dynamic_suffix(
     # 1. Tradition header + terminology/taboos/engram
     tradition_label = tradition.replace("_", " ").title()
     parts.append(f"## Cultural Tradition: {tradition_label}")
-    tradition_guidance = _build_tradition_guidance(
-        tradition,
-        engram_fragments=engram_fragments,
-        active_dimensions=active_dimensions,
-    )
+    tradition_guidance = _build_tradition_guidance(tradition)
     if tradition_guidance:
         parts.append(tradition_guidance)
 
@@ -435,24 +425,13 @@ def _load_evolved_context() -> dict | None:
     return None
 
 
-def _build_tradition_guidance(
-    tradition: str,
-    *,
-    engram_fragments: list | None = None,
-    active_dimensions: list[str] | None = None,
-) -> str:
+def _build_tradition_guidance(tradition: str) -> str:
     """Build rich tradition guidance from YAML data, evolved context, and few-shot examples.
 
     Parameters
     ----------
     tradition:
         Tradition key (e.g. "chinese_xieyi").
-    engram_fragments:
-        Optional list of CulturalFragment objects retrieved from CulturalEngram.
-        When provided, their content is injected into the prompt as "Cultural Memory".
-    active_dimensions:
-        Optional list of active L-dimension keys (e.g. ["L1", "L3", "L5"]).
-        When provided, a focus hint is appended so the VLM prioritises these dims.
     """
     base = _TRADITION_GUIDANCE.get(tradition, _TRADITION_GUIDANCE["default"])
 
@@ -460,35 +439,23 @@ def _build_tradition_guidance(
         from vulca.cultural.loader import get_tradition
         tc = get_tradition(tradition)
         if tc is None:
-            parts = [base]
-            _append_sparse_guidance(parts, engram_fragments, active_dimensions)
-            return "\n".join(parts)
+            return base
 
         parts = [base]
 
-        if engram_fragments:
-            # Engram mode: use selected fragments INSTEAD of full terminology/taboos
-            # This is the key optimization — selective retrieval replaces full dump
-            _append_sparse_guidance(parts, engram_fragments, active_dimensions)
-        else:
-            # Full mode: inject all terminology + taboos (original behavior)
-            if tc.terminology:
-                terms_text = "\n".join(
-                    f"  - **{t.term}** ({t.term_zh}): {t.definition if isinstance(t.definition, str) else t.definition.get('en', '')}"
-                    for t in tc.terminology[:8]
-                )
-                parts.append(f"\n### Key Cultural Terminology\n{terms_text}")
+        if tc.terminology:
+            terms_text = "\n".join(
+                f"  - **{t.term}** ({t.term_zh}): {t.definition if isinstance(t.definition, str) else t.definition.get('en', '')}"
+                for t in tc.terminology[:8]
+            )
+            parts.append(f"\n### Key Cultural Terminology\n{terms_text}")
 
-            if tc.taboos:
-                taboos_text = "\n".join(
-                    f"  - ⚠️ {t.rule}" + (f" — {t.explanation}" if t.explanation else "")
-                    for t in tc.taboos
-                )
-                parts.append(f"\n### Evaluation Taboos (MUST respect)\n{taboos_text}")
-
-            # Active dimension focus without engram (sparse eval only)
-            if active_dimensions:
-                _append_sparse_guidance(parts, None, active_dimensions)
+        if tc.taboos:
+            taboos_text = "\n".join(
+                f"  - ⚠️ {t.rule}" + (f" — {t.explanation}" if t.explanation else "")
+                for t in tc.taboos
+            )
+            parts.append(f"\n### Evaluation Taboos (MUST respect)\n{taboos_text}")
 
         # Inject evolved weight guidance + few-shot examples (always, if available)
         evolved = _load_evolved_context()
@@ -499,33 +466,6 @@ def _build_tradition_guidance(
     except Exception:
         logger.debug("Tradition guidance fallback for %s", tradition)
         return base
-
-
-def _append_sparse_guidance(
-    parts: list[str],
-    engram_fragments: list | None,
-    active_dimensions: list[str] | None,
-) -> None:
-    """Append engram fragments and active-dimension focus hint to prompt parts."""
-    # Engram fragments (selective cultural knowledge)
-    if engram_fragments:
-        frag_lines = []
-        for frag in engram_fragments:
-            frag_lines.append(f"- [{frag.category}] {frag.content}")
-        if frag_lines:
-            parts.append("\n### Cultural Memory (Selected)\n" + "\n".join(frag_lines))
-
-    # Active dimension focus hint
-    if active_dimensions:
-        dim_names = {
-            "L1": "Visual Perception", "L2": "Technical Execution",
-            "L3": "Cultural Context", "L4": "Critical Interpretation",
-            "L5": "Philosophical Aesthetics",
-        }
-        focus_list = ", ".join(
-            f"{d} ({dim_names.get(d, d)})" for d in active_dimensions
-        )
-        parts.append(f"\n### Evaluation Focus\nPrioritize these dimensions: {focus_list}")
 
 
 _L_LABELS = {
@@ -602,8 +542,6 @@ async def score_image(
     tradition: str,
     api_key: str,
     *,
-    engram_fragments: list | None = None,
-    active_dimensions: list[str] | None = None,
     mode: str = "strict",
 ) -> dict:
     """Call Gemini Vision to score an image on L1-L5.
@@ -612,10 +550,6 @@ async def score_image(
 
     Parameters
     ----------
-    engram_fragments:
-        Optional CulturalFragment list from CulturalEngram retrieval.
-    active_dimensions:
-        Optional list of active L-dimension keys for focus hint in prompt.
     mode:
         Evaluation mode — ``"strict"``, ``"reference"``, or ``"fusion"``.
         Controls the VLM persona and scoring philosophy.
@@ -629,8 +563,6 @@ async def score_image(
     # _build_extra_dimensions_prompt internally, so we don't call them separately.
     dynamic_suffix = _build_dynamic_suffix(
         tradition,
-        engram_fragments=engram_fragments,
-        active_dimensions=active_dimensions,
         mode=mode,
     )
     system_msg = _STATIC_SCORING_PREFIX + "\n\n" + dynamic_suffix

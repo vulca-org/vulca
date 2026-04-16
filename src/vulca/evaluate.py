@@ -19,7 +19,6 @@ async def aevaluate(
     api_key: str = "",
     mock: bool = False,
     mode: str = "strict",
-    sparse: bool = False,
 ) -> EvalResult:
     """Evaluate an artwork image asynchronously.
 
@@ -50,14 +49,6 @@ async def aevaluate(
         - ``"strict"`` (default): Judge mode — scores reflect conformance.
         - ``"reference"``: Advisor mode — scores show alignment without judgment.
         - ``"fusion"``: Multi-tradition comparison (pass comma-separated traditions).
-    sparse:
-        When True, adds ``sparse_activation`` metadata to the result indicating
-        which L1-L5 dimensions were most relevant to the given intent/subject.
-        Note: the public SDK always scores all 5 dimensions for consistency —
-        ``sparse=True`` does NOT skip any dimensions (that optimisation only
-        applies in pipeline mode via ``EvaluateNode``). The ``sparse_activation``
-        field tells callers which dimensions were most salient so they can
-        focus their review accordingly.
 
     Returns
     -------
@@ -78,16 +69,6 @@ async def aevaluate(
     )
     result.latency_ms = int((time.monotonic() - t0) * 1000)
 
-    if sparse:
-        from vulca.scoring.sparse import BriefIndexer
-        indexer = BriefIndexer()
-        activation = indexer.index(intent or subject or "", tradition=tradition)
-        result.sparse_activation = {
-            "active": activation.active,
-            "skipped": activation.skipped,
-            "method": activation.method,
-        }
-
     return result
 
 
@@ -101,7 +82,6 @@ def evaluate(
     api_key: str = "",
     mock: bool = False,
     mode: str = "strict",
-    sparse: bool = False,
 ) -> EvalResult:
     """Evaluate an artwork image (synchronous wrapper).
 
@@ -121,7 +101,6 @@ def evaluate(
         api_key=api_key,
         mock=mock,
         mode=mode,
-        sparse=sparse,
     )
 
     if loop and loop.is_running():
