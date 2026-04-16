@@ -57,6 +57,9 @@ _TOOL_TIERS: dict[str, str] = {
     "layers_edit": "advanced", "layers_redraw": "advanced",
     "layers_evaluate": "advanced",
     "layers_export": "advanced",
+    "generate_image": "core",
+    "view_image": "core",
+    "layers_list": "standard",
 }
 
 _DESC_LIMITS: dict[str, int] = {"core": 300, "standard": 100, "advanced": 50}
@@ -896,6 +899,196 @@ async def layers_evaluate(
     return {"layers": results}
 
 
+# ── Agent-Native Atomic Tools ─────────────────────────────────────
+
+
+@mcp.tool()
+async def generate_image(
+    prompt: str,
+    provider: str = "gemini",
+    tradition: str = "default",
+    reference_path: str = "",
+    output_dir: str = "",
+) -> dict:
+    """Generate a single image from a text prompt — no evaluation, no loop.
+
+    Use after get_tradition_guide for cultural context. Then use view_image to inspect
+    and evaluate_artwork to score the result.
+
+    Args:
+        prompt: Text description of the image to generate.
+        provider: Image generation provider (gemini | openai | comfyui | mock).
+        tradition: Cultural tradition for prompt enrichment.
+        reference_path: Optional reference/sketch image path.
+        output_dir: Directory to save the generated image.
+
+    Returns:
+        image_path: Path to the generated PNG.
+        cost_usd: Generation cost.
+        latency_ms: Generation time in milliseconds.
+        provider: Provider used.
+    """
+    import base64
+    import time
+    import uuid
+    from pathlib import Path
+
+    from vulca.providers import get_image_provider
+
+    t0 = time.monotonic()
+
+    prov = get_image_provider(provider)
+
+    ref_b64 = ""
+    if reference_path:
+        ref_file = Path(reference_path)
+        if not ref_file.exists():
+            return {"error": f"Reference image not found: {reference_path}"}
+        ref_b64 = base64.b64encode(ref_file.read_bytes()).decode()
+
+    result = await prov.generate(
+        prompt,
+        tradition=tradition,
+        subject=prompt,
+        reference_image_b64=ref_b64,
+    )
+
+    elapsed_ms = round((time.monotonic() - t0) * 1000)
+
+    # Save to disk
+    out = Path(output_dir) if output_dir else Path.cwd()
+    out.mkdir(parents=True, exist_ok=True)
+    filename = f"gen_{uuid.uuid4().hex[:8]}.png"
+    image_path = out / filename
+    image_path.write_bytes(base64.b64decode(result.image_b64))
+
+    cost = 0.0
+    if result.metadata:
+        cost = result.metadata.get("cost_usd", 0.0)
+
+    return {
+        "image_path": str(image_path),
+        "cost_usd": cost,
+        "latency_ms": elapsed_ms,
+        "provider": provider,
+    }
+
+
+@mcp.tool()
+async def view_image(
+    image_path: str,
+    max_dimension: int = 1024,
+) -> dict:
+    """View an image — returns base64-encoded thumbnail for agent inspection.
+
+    Use after generate_image or layers_composite to visually inspect results.
+
+    Args:
+        image_path: Path to the image file.
+        max_dimension: Maximum width/height in pixels. Default 1024.
+
+    Returns:
+        image_base64: Base64-encoded PNG.
+        width: Thumbnail width.
+        height: Thumbnail height.
+        original_width: Original width.
+        original_height: Original height.
+        file_size_bytes: File size.
+    """
+    import base64
+    import io
+    from pathlib import Path
+
+    from PIL import Image
+
+    p = Path(image_path)
+    if not p.exists():
+        return {"error": f"Image not found: {image_path}"}
+
+    file_size = p.stat().st_size
+
+    img = Image.open(p)
+    original_width, original_height = img.size
+
+    img.thumbnail((max_dimension, max_dimension), Image.LANCZOS)
+    thumb_w, thumb_h = img.size
+
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    b64 = base64.b64encode(buf.getvalue()).decode()
+
+    return {
+        "image_base64": b64,
+        "width": thumb_w,
+        "height": thumb_h,
+        "original_width": original_width,
+        "original_height": original_height,
+        "file_size_bytes": file_size,
+    }
+
+
+@mcp.tool()
+async def layers_list(artwork_dir: str) -> dict:
+    """List all layers in an artwork directory with metadata.
+
+    Returns structured inventory: name, z_index, content_type, visibility,
+    blend_mode, and whether each layer's PNG file exists.
+
+    Args:
+        artwork_dir: Path to artwork directory with manifest.json.
+
+    Returns:
+        layers: List of layer metadata dicts.
+        layer_count: Total layers.
+        visible_count: Visible layers.
+        has_composite: Whether composite.png exists.
+    """
+    import json as json_mod
+    from pathlib import Path
+
+    d = Path(artwork_dir)
+    manifest_path = d / "manifest.json"
+
+    if not manifest_path.exists():
+        return {"error": f"No manifest.json in {artwork_dir}"}
+
+    try:
+        manifest = json_mod.loads(manifest_path.read_text())
+    except Exception as exc:
+        return {"error": f"Failed to read manifest: {exc}"}
+
+    layers_out = []
+    visible_count = 0
+    for item in manifest.get("layers", []):
+        name = item.get("name", "")
+        visible = item.get("visible", True)
+        png_file = item.get("file", f"{name}.png")
+        png_exists = (d / png_file).exists()
+
+        if visible:
+            visible_count += 1
+
+        layers_out.append({
+            "name": name,
+            "z_index": item.get("z_index", 0),
+            "content_type": item.get("content_type", ""),
+            "visible": visible,
+            "blend_mode": item.get("blend_mode", "normal"),
+            "locked": item.get("locked", False),
+            "opacity": item.get("opacity", 1.0),
+            "semantic_path": item.get("semantic_path", ""),
+            "file": png_file,
+            "file_exists": png_exists,
+        })
+
+    has_composite = (d / "composite.png").exists()
+
+    return {
+        "layers": layers_out,
+        "layer_count": len(layers_out),
+        "visible_count": visible_count,
+        "has_composite": has_composite,
+    }
 
 
 
