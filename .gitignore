@@ -37,4 +37,5 @@ env/
 FastSAM-s.pt
 *.pt
 .playwright-mcp/
-assets/showcase/
+assets/showcase/*
+!assets/showcase/originals/
