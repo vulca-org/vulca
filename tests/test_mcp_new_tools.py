@@ -78,8 +78,9 @@ class TestGenerateImage:
     def test_unknown_provider_returns_error(self, tmp_path):
         from vulca.mcp_server import generate_image
 
-        with pytest.raises(ValueError, match="Unknown image provider"):
-            run(generate_image("test", provider="nonexistent", output_dir=str(tmp_path)))
+        r = run(generate_image("test", provider="nonexistent", output_dir=str(tmp_path)))
+        assert "error" in r
+        assert "Generation failed" in r["error"]
 
 
 # ── view_image ────────────────────────────────────────────────────

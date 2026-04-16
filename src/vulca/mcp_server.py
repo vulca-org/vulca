@@ -1,6 +1,6 @@
 """VULCA MCP Server — agent-native surface for cultural art creation, evaluation, and layer editing.
 
-20 tools organized into three workflow stages:
+20 tools organized into five workflow stages:
   1. Discovery:    list_traditions, search_traditions, get_tradition_guide, brief_parse
   2. Generation:   generate_image, create_artwork, generate_concepts, inpaint_artwork
   3. Evaluation:   evaluate_artwork, view_image
@@ -69,6 +69,7 @@ _TOOL_TIERS: dict[str, str] = {
     "layers_edit": "advanced", "layers_redraw": "advanced",
     "layers_evaluate": "advanced",
     "layers_export": "advanced",
+    "layers_transform": "advanced",
     "generate_image": "core",
     "view_image": "core",
     "layers_list": "standard",
@@ -125,12 +126,15 @@ async def create_artwork(
 
     # 2. Evaluate
     use_mock = provider == "mock"
-    eval_result = await evaluate_artwork(
-        image_path=image_path,
-        tradition=tradition,
-        intent=intent,
-        mock=use_mock,
-    )
+    try:
+        eval_result = await evaluate_artwork(
+            image_path=image_path,
+            tradition=tradition,
+            intent=intent,
+            mock=use_mock,
+        )
+    except Exception as exc:
+        return {**gen_result, "evaluation_error": str(exc)}
 
     # Apply custom weights if provided
     parsed_weights = _parse_weights_str(weights)
@@ -405,37 +409,40 @@ async def brief_parse(
     from vulca.studio.brief import Brief
     from vulca.studio.phases.intent import IntentPhase
 
-    b = Brief.new(intent, mood=mood)
-    phase = IntentPhase()
-    phase.parse_intent(b)
+    try:
+        b = Brief.new(intent, mood=mood)
+        phase = IntentPhase()
+        phase.parse_intent(b)
 
-    # Determine primary tradition from style_mix
-    tradition = "default"
-    if b.style_mix:
-        best = max(b.style_mix, key=lambda s: s.weight)
-        tradition = best.tradition or best.tag or "default"
+        # Determine primary tradition from style_mix
+        tradition = "default"
+        if b.style_mix:
+            best = max(b.style_mix, key=lambda s: s.weight)
+            tradition = best.tradition or best.tag or "default"
 
-    return {
-        "intent": b.intent,
-        "mood": b.mood,
-        "tradition": tradition,
-        "style_mix": [
-            {"tradition": s.tradition, "tag": s.tag, "weight": s.weight}
-            for s in b.style_mix
-        ],
-        "keywords": [e.name for e in b.elements],
-        "composition": {
-            "layout": b.composition.layout,
-            "focal_point": b.composition.focal_point,
-            "aspect_ratio": b.composition.aspect_ratio,
-            "negative_space": b.composition.negative_space,
-        },
-        "palette": {
-            "primary": b.palette.primary,
-            "accent": b.palette.accent,
-            "mood": b.palette.mood,
-        },
-    }
+        return {
+            "intent": b.intent,
+            "mood": b.mood,
+            "tradition": tradition,
+            "style_mix": [
+                {"tradition": s.tradition, "tag": s.tag, "weight": s.weight}
+                for s in b.style_mix
+            ],
+            "keywords": [e.name for e in b.elements],
+            "composition": {
+                "layout": b.composition.layout,
+                "focal_point": b.composition.focal_point,
+                "aspect_ratio": b.composition.aspect_ratio,
+                "negative_space": b.composition.negative_space,
+            },
+            "palette": {
+                "primary": b.palette.primary,
+                "accent": b.palette.accent,
+                "mood": b.palette.mood,
+            },
+        }
+    except Exception as exc:
+        return {"error": str(exc)}
 
 
 @mcp.tool()
@@ -444,7 +451,7 @@ async def generate_concepts(
     count: int = 3,
     provider: str = "gemini",
 ) -> dict:
-    """Generate multiple concept variation images from a prompt — explore visual directions in parallel.
+    """Generate multiple concept variation images from a prompt — explore visual directions sequentially.
 
     Use when the brief is ambiguous and you need options before committing. Call view_image
     on each result, then evaluate_artwork to pick the strongest concept.
@@ -545,20 +552,23 @@ async def inpaint_artwork(
     """
     from vulca.inpaint import ainpaint
 
-    result = await ainpaint(
-        image_path,
-        region=region,
-        instruction=instruction,
-        tradition=tradition,
-        count=1,
-        select=0,
-    )
-    return {
-        "image_path": result.blended,
-        "bbox": result.bbox,
-        "cost_usd": result.cost_usd,
-        "latency_ms": result.latency_ms,
-    }
+    try:
+        result = await ainpaint(
+            image_path,
+            region=region,
+            instruction=instruction,
+            tradition=tradition,
+            count=1,
+            select=0,
+        )
+        return {
+            "image_path": result.blended,
+            "bbox": result.bbox,
+            "cost_usd": result.cost_usd,
+            "latency_ms": result.latency_ms,
+        }
+    except Exception as exc:
+        return {"error": str(exc)}
 
 
 
@@ -662,7 +672,9 @@ async def layers_redraw(
     artwork = load_manifest(artwork_dir)
 
     if layers and merge:
-        layer_names = [n.strip() for n in layers.split(",")]
+        layer_names = [n.strip() for n in layers.split(",") if n.strip()]
+        if not layer_names:
+            return {"error": "No layer names provided"}
         result = await redraw_merged(
             artwork, layer_names=layer_names,
             instruction=instruction, merged_name=merged_name,
@@ -757,7 +769,9 @@ async def layers_edit(
         return {"operation": "lock", "layer": layer, "locked": locked}
 
     elif operation == "merge":
-        layer_names = [n.strip() for n in layers.split(",")]
+        layer_names = [n.strip() for n in layers.split(",") if n.strip()]
+        if not layer_names:
+            return {"error": "No layer names provided"}
         result = merge_layers(artwork, artwork_dir=artwork_dir,
                              layer_names=layer_names, merged_name=name or "merged")
         return {"operation": "merge", "merged": result.info.name, "source": layer_names}
@@ -808,7 +822,9 @@ async def layers_transform(
         dx=dx, dy=dy, scale=scale, rotate=rotate, set_opacity=set_opacity,
     )
 
-    layer_result = next(lr for lr in artwork.layers if lr.info.name == layer)
+    layer_result = next((lr for lr in artwork.layers if lr.info.name == layer), None)
+    if layer_result is None:
+        return {"error": f"Layer '{layer}' not found after transform"}
     return {
         "status": "ok",
         "layer": layer,
@@ -971,7 +987,7 @@ async def layers_composite(artwork_dir: str, output_path: str = "") -> dict:
 @mcp.tool()
 async def layers_export(
     artwork_dir: str,
-    format: str = "png",
+    export_format: str = "png",
     output_path: str = "",
 ) -> dict:
     """Export the artwork as a PNG composite or PSD file — for delivery or external editing.
@@ -981,7 +997,7 @@ async def layers_export(
 
     Args:
         artwork_dir: Directory containing layer PNGs and manifest.json.
-        format: "png" (flat composite, default) or "psd" (layered Photoshop file).
+        export_format: "png" (flat composite, default) or "psd" (layered Photoshop file).
         output_path: Output path (default: <artwork_dir>/composite.png or layers.psd).
 
     Returns:
@@ -1006,7 +1022,7 @@ async def layers_export(
         except Exception:
             pass
 
-    if format == "psd":
+    if export_format == "psd":
         out = output_path or str(Path(artwork_dir) / "layers.psd")
         export_psd(artwork.layers, width=width, height=height, output_path=out)
     else:
@@ -1079,49 +1095,53 @@ async def generate_image(
         image_path, cost_usd, latency_ms, provider.
     """
     import base64
+    import tempfile
     import time
     import uuid
     from pathlib import Path
 
     from vulca.providers import get_image_provider
 
-    t0 = time.monotonic()
+    try:
+        t0 = time.monotonic()
 
-    prov = get_image_provider(provider)
+        prov = get_image_provider(provider)
 
-    ref_b64 = ""
-    if reference_path:
-        ref_file = Path(reference_path)
-        if not ref_file.exists():
-            return {"error": f"Reference image not found: {reference_path}"}
-        ref_b64 = base64.b64encode(ref_file.read_bytes()).decode()
+        ref_b64 = ""
+        if reference_path:
+            ref_file = Path(reference_path)
+            if not ref_file.exists():
+                return {"error": f"Reference image not found: {reference_path}"}
+            ref_b64 = base64.b64encode(ref_file.read_bytes()).decode()
 
-    result = await prov.generate(
-        prompt,
-        tradition=tradition,
-        subject=prompt,
-        reference_image_b64=ref_b64,
-    )
+        result = await prov.generate(
+            prompt,
+            tradition=tradition,
+            subject=prompt,
+            reference_image_b64=ref_b64,
+        )
 
-    elapsed_ms = round((time.monotonic() - t0) * 1000)
+        elapsed_ms = round((time.monotonic() - t0) * 1000)
 
-    # Save to disk
-    out = Path(output_dir) if output_dir else Path.cwd()
-    out.mkdir(parents=True, exist_ok=True)
-    filename = f"gen_{uuid.uuid4().hex[:8]}.png"
-    image_path = out / filename
-    image_path.write_bytes(base64.b64decode(result.image_b64))
+        # Save to disk
+        out = Path(output_dir) if output_dir else Path(tempfile.mkdtemp(prefix="vulca_gen_"))
+        out.mkdir(parents=True, exist_ok=True)
+        filename = f"gen_{uuid.uuid4().hex[:8]}.png"
+        image_path = out / filename
+        image_path.write_bytes(base64.b64decode(result.image_b64))
 
-    cost = 0.0
-    if result.metadata:
-        cost = result.metadata.get("cost_usd", 0.0)
+        cost = 0.0
+        if result.metadata:
+            cost = result.metadata.get("cost_usd", 0.0)
 
-    return {
-        "image_path": str(image_path),
-        "cost_usd": cost,
-        "latency_ms": elapsed_ms,
-        "provider": provider,
-    }
+        return {
+            "image_path": str(image_path),
+            "cost_usd": cost,
+            "latency_ms": elapsed_ms,
+            "provider": provider,
+        }
+    except Exception as exc:
+        return {"error": f"Generation failed: {exc}"}
 
 
 @mcp.tool()
@@ -1153,15 +1173,18 @@ async def view_image(
 
     file_size = p.stat().st_size
 
-    img = Image.open(p)
-    original_width, original_height = img.size
+    try:
+        img = Image.open(p)
+        original_width, original_height = img.size
 
-    img.thumbnail((max_dimension, max_dimension), Image.LANCZOS)
-    thumb_w, thumb_h = img.size
+        img.thumbnail((max_dimension, max_dimension), Image.LANCZOS)
+        thumb_w, thumb_h = img.size
 
-    buf = io.BytesIO()
-    img.save(buf, format="PNG")
-    b64 = base64.b64encode(buf.getvalue()).decode()
+        buf = io.BytesIO()
+        img.save(buf, format="PNG")
+        b64 = base64.b64encode(buf.getvalue()).decode()
+    except Exception as exc:
+        return {"error": f"Cannot read image: {exc}"}
 
     return {
         "image_base64": b64,
