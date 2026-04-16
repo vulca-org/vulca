@@ -1,9 +1,8 @@
 """VULCA pipeline subsystem -- slim execution engine with node protocol."""
 
-from vulca.pipeline.engine import execute, execute_stream
+from vulca.pipeline.engine import execute
 from vulca.pipeline.hooks import default_on_complete
 from vulca.pipeline.node import NodeContext, PipelineNode
-from vulca.pipeline.parallel import explore_parallel, rank_results
 from vulca.pipeline.templates import CRITIQUE_ONLY, DEFAULT, FAST, TEMPLATES
 from vulca.pipeline.types import (
     PipelineDefinition,
@@ -16,12 +15,9 @@ from vulca.pipeline.types import (
 
 __all__ = [
     "execute",
-    "execute_stream",
     "default_on_complete",
     "NodeContext",
     "PipelineNode",
-    "explore_parallel",
-    "rank_results",
     "DEFAULT",
     "FAST",
     "CRITIQUE_ONLY",

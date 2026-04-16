@@ -7,7 +7,7 @@ import logging
 import os
 import time
 import uuid
-from typing import Any, AsyncGenerator, Callable
+from typing import Any, Callable
 
 from vulca.pipeline.node import NodeContext, PipelineNode
 from vulca.providers.capabilities import COST_TRACKED, provider_capabilities
@@ -603,73 +603,3 @@ async def execute(
             logger.warning("on_complete hook failed: %s", exc)
 
     return output
-
-
-async def execute_stream(
-    definition: PipelineDefinition,
-    pipeline_input: PipelineInput,
-    *,
-    interrupt_before: set[str] | None = None,
-    checkpoint: bool = True,
-) -> AsyncGenerator[PipelineEvent, None]:
-    """Streaming pipeline execution — yields PipelineEvent objects.
-
-    .. warning:: **Buffered, not truly streaming.**
-       This is currently a buffered wrapper around :func:`execute`.  All events
-       are collected during execution and yielded in a batch *after* the pipeline
-       finishes.  For real-time event delivery during execution, use the
-       ``event_callback`` parameter of :func:`execute` instead.
-
-    The API signature is forward-compatible with a true async streaming
-    implementation (where events would be yielded *as they happen*).
-    Callers should not rely on events appearing before the pipeline finishes.
-
-    Parameters
-    ----------
-    definition:
-        The pipeline topology (nodes, edges, conditional edges).
-    pipeline_input:
-        Input parameters (subject, provider, max_rounds, etc.).
-    interrupt_before:
-        Set of node names to pause before executing (HITL).
-    checkpoint:
-        Whether to save per-round checkpoints (default True).
-
-    Yields
-    ------
-    PipelineEvent
-        Events emitted during execution, in emission order, followed by a
-        final ``PIPELINE_COMPLETED`` event with the full output as payload.
-    """
-    collected: list[PipelineEvent] = []
-
-    def _collect(event: PipelineEvent) -> None:
-        collected.append(event)
-
-    output = await execute(
-        definition,
-        pipeline_input,
-        event_callback=_collect,
-        interrupt_before=interrupt_before,
-        checkpoint=checkpoint,
-    )
-
-    # Yield all events that were emitted during execution
-    for event in collected:
-        yield event
-
-    # Ensure there is always a terminal PIPELINE_COMPLETED event with the full
-    # PipelineOutput as payload.  execute() already emits one via _emit(), so
-    # we only add a second one when the existing terminal event did not include
-    # the full output dict (e.g. interrupted / failed paths).
-    last_type = collected[-1].event_type if collected else None
-    if last_type != EventType.PIPELINE_COMPLETED or "session_id" not in (
-        collected[-1].payload if collected else {}
-    ):
-        yield PipelineEvent(
-            event_type=EventType.PIPELINE_COMPLETED,
-            stage="pipeline",
-            round_num=output.total_rounds if output else 0,
-            payload=output.to_dict() if output else {"status": "failed"},
-            timestamp_ms=output.total_latency_ms if output else 0,
-        )

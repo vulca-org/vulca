@@ -1,8 +1,8 @@
-"""VULCA scoring subsystem -- VLM critic, rules engine, model routing.
+"""VULCA scoring subsystem -- VLM critic, rules engine.
 
 Public API::
 
-    from vulca.scoring import CriticConfig, CritiqueOutput, ModelRouter
+    from vulca.scoring import CriticConfig, CritiqueOutput
     from vulca.scoring.vlm import score_image
 """
 
@@ -14,7 +14,6 @@ from vulca.scoring.types import (
     LayerState,
     DIMENSIONS,
 )
-from vulca.scoring.model_router import ModelRouter, ModelSpec
 
 __all__ = [
     "CriticConfig",
@@ -23,6 +22,4 @@ __all__ = [
     "DIMENSIONS",
     "LayerID",
     "LayerState",
-    "ModelRouter",
-    "ModelSpec",
 ]

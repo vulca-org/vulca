@@ -8,14 +8,20 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 from typing import ClassVar
 
 import litellm
 
-from vulca.scoring.model_router import MODELS
 from vulca.intent.types import IntentResult
 
 logger = logging.getLogger(__name__)
+
+_INTENT_MODEL = "gemini/gemini-2.5-pro"
+
+
+def _google_api_key() -> str:
+    return os.environ.get("GOOGLE_API_KEY") or os.environ.get("GEMINI_API_KEY") or ""
 
 __all__ = ["IntentAgent"]
 
@@ -67,21 +73,13 @@ class IntentAgent:
                 traditions=", ".join(traditions),
             )
 
-            spec = MODELS.get("gemini_direct")
-            if spec is None:
-                logger.warning("IntentAgent: gemini_direct model not configured")
-                return self._fallback(intent)
-
             extra: dict = {}
-            api_base = spec.get_api_base()
-            api_key = spec.get_api_key()
-            if api_base:
-                extra["api_base"] = api_base
+            api_key = _google_api_key()
             if api_key:
                 extra["api_key"] = api_key
 
             response = await litellm.acompletion(
-                model=spec.litellm_id,
+                model=_INTENT_MODEL,
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": intent},
