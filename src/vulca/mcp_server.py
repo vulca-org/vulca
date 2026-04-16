@@ -1,4 +1,15 @@
-"""VULCA MCP Server v2 -- agent-native tools returning full structured JSON.
+"""VULCA MCP Server — agent-native surface for cultural art creation, evaluation, and layer editing.
+
+20 tools organized into three workflow stages:
+  1. Discovery:    list_traditions, search_traditions, get_tradition_guide, brief_parse
+  2. Generation:   generate_image, create_artwork, generate_concepts, inpaint_artwork
+  3. Evaluation:   evaluate_artwork, view_image
+  4. Layer editing: layers_split, layers_list, layers_edit, layers_transform,
+                    layers_redraw, layers_composite, layers_export, layers_evaluate
+  5. Session:      archive_session, sync_data
+
+Typical agent loop: brief_parse → get_tradition_guide → generate_image → view_image
+  → evaluate_artwork → (layers_split → layers_edit/redraw → layers_composite) → archive_session
 
 Usage:
     vulca-mcp                   # stdio transport (default)
@@ -84,17 +95,16 @@ async def create_artwork(
     reference_path: str = "",
     ref_type: str = "full",
 ) -> dict:
-    """Generate + evaluate artwork in a single pass. No rerun loop.
+    """Generate and evaluate an image in one call — convenience wrapper over generate_image + evaluate_artwork.
 
-    Returns the image, scores, and recommendations. The agent decides whether
-    to retry by calling generate_image again — Vulca never auto-retries.
+    Returns image + L1-L5 scores in a single round-trip. For fine-grained control
+    (retry loop, custom prompts, separate scoring), use generate_image and evaluate_artwork separately.
 
     Args:
         intent: Natural language description of what to create.
-        tradition: Cultural tradition (e.g. chinese_xieyi, western_academic).
-            Also accepts a file path to a custom YAML tradition.
+        tradition: Cultural tradition (e.g. chinese_xieyi, western_academic) or path to custom YAML.
         provider: Image generation provider (mock | gemini | nb2 | openai | comfyui).
-        weights: Custom L1-L5 weights as string "L1=0.3,L2=0.2,...".
+        weights: Custom L1-L5 weights as "L1=0.3,L2=0.2,...".
         reference_path: Path or base64 of a reference image for style/composition guidance.
         ref_type: Reference type — "style", "composition", or "full" (default).
 
@@ -158,18 +168,20 @@ async def evaluate_artwork(
     mock: bool = False,
     mode: str = "strict",
 ) -> dict:
-    """Evaluate artwork on L1-L5 cultural dimensions.
+    """Score an image on L1-L5 cultural dimensions — returns scores, rationales, recommendations.
+
+    Use after generate_image or layers_composite to decide: accept, retry, or edit layers.
+    Combine with view_image to correlate visual inspection with numeric scores.
 
     Args:
         image_path: Path to the image file.
-        tradition: Cultural tradition (auto-detected if empty).
-            Also accepts a file path to a custom YAML tradition.
-        intent: Optional evaluation intent.
+        tradition: Cultural tradition (auto-detected if empty) or path to custom YAML.
+        intent: Optional description of what the artwork should express.
         mock: Use mock scoring (no API key required). Useful for testing.
-        mode: Evaluation mode — "strict" (judge), "reference" (advisor, no judgment).
+        mode: "strict" (judge) or "reference" (advisor, no judgment).
 
     Returns:
-        Full result: score, tradition, dimensions, suggestions, summary, cost_usd,
+        score, tradition, dimensions, suggestions, summary, cost_usd,
         rationales, recommendations, deviation_types, risk_flags, risk_level.
     """
     from vulca import aevaluate
@@ -197,11 +209,14 @@ async def evaluate_artwork(
 
 @mcp.tool()
 async def list_traditions() -> dict:
-    """List available cultural traditions with their L1-L5 weights and emphasis.
+    """List all available cultural traditions with L1-L5 weights and emphasis — first step in tradition discovery.
+
+    Use at the start of a workflow to pick the right tradition, or before search_traditions
+    when you want a full overview. Follow with get_tradition_guide for deep context.
 
     Returns:
-        Dictionary mapping tradition names to weight vectors, emphasis, description,
-        terminology_count, taboos_count, pipeline_variant.
+        traditions: Dict mapping name → weights, emphasis, description, terminology_count,
+        taboos_count, pipeline_variant. count: total number of traditions.
     """
     from vulca.cultural.loader import get_all_traditions, get_known_traditions
 
@@ -247,13 +262,16 @@ async def list_traditions() -> dict:
 async def get_tradition_guide(
     tradition: str,
 ) -> dict:
-    """Get full cultural context guide for a tradition.
+    """Get full cultural context for a tradition — terminology, taboos, weights, layer order.
+
+    Use after list_traditions or search_traditions to load context before generate_image.
+    The returned tradition_layers list tells you the recommended layer stack for this tradition.
 
     Args:
-        tradition: Tradition name (e.g. chinese_xieyi).
+        tradition: Tradition name (e.g. chinese_xieyi). Use list_traditions for valid names.
 
     Returns:
-        Full cultural context: weights, evolved_weights, emphasis, terminology, taboos.
+        weights, evolved_weights, emphasis, terminology, taboos, tradition_layers.
         Returns {"error": "..."} for unknown traditions.
     """
     from vulca.cultural.loader import get_tradition_guide as _get_guide
@@ -276,18 +294,17 @@ async def search_traditions(
     tags: list[str],
     limit: int = 5,
 ) -> dict:
-    """Search across all cultural traditions by keyword tags.
+    """Search across all cultural traditions by keyword tags — discover relevant traditions.
 
-    Searches tradition names, display names, terminology (terms, aliases, translations),
-    taboo trigger patterns, and style keywords. Use to discover which traditions are
-    relevant before calling get_tradition_guide.
+    Use before get_tradition_guide when you don't know which tradition fits the intent.
+    Searches names, display names, terminology, taboos, and style keywords (bilingual).
 
     Args:
         tags: Keywords to search (e.g. ["ink wash", "留白", "negative space"]).
-        limit: Max matching terms per tradition. Default 5.
+        limit: Max matched terms to return per tradition. Default 5.
 
     Returns:
-        matches: List of {tradition, display_name, matched_terms[], relevance_score}.
+        matches: List of {tradition, display_name, matched_terms, relevance_score}, sorted by relevance.
         query_tags: Echo of input tags.
     """
     from vulca.cultural.loader import get_all_traditions
@@ -373,9 +390,10 @@ async def brief_parse(
     intent: str,
     mood: str = "",
 ) -> dict:
-    """Parse a creative intent into a structured brief — tradition, style mix, keywords.
+    """Parse a creative intent into a structured brief — tradition, style mix, composition, palette.
 
-    Stateless: returns the brief as JSON. Agent stores it in conversation context.
+    Use at the start of a workflow to translate natural language vision into a structured plan.
+    The returned tradition and keywords feed directly into generate_image and get_tradition_guide.
 
     Args:
         intent: Natural language creative vision.
@@ -426,9 +444,10 @@ async def generate_concepts(
     count: int = 3,
     provider: str = "gemini",
 ) -> dict:
-    """Generate multiple concept variation images from a prompt.
+    """Generate multiple concept variation images from a prompt — explore visual directions in parallel.
 
-    Use to explore visual directions. Agent picks the best concept by calling view_image.
+    Use when the brief is ambiguous and you need options before committing. Call view_image
+    on each result, then evaluate_artwork to pick the strongest concept.
 
     Args:
         prompt: Creative prompt.
@@ -436,8 +455,7 @@ async def generate_concepts(
         provider: Image generation provider.
 
     Returns:
-        concepts: List of {image_path, cost_usd, latency_ms}.
-        total_cost_usd: Sum of all generation costs.
+        concepts: List of {image_path, cost_usd, latency_ms}. total_cost_usd: sum of all costs.
     """
     count = max(1, min(6, count))
     concepts: list[dict] = []
@@ -465,19 +483,19 @@ async def archive_session(
     image_path: str = "",
     feedback: str = "",
 ) -> dict:
-    """Archive a completed artwork for tradition evolution and learning.
+    """Archive a completed artwork session for tradition learning and evolution feedback.
 
-    Call after the agent is satisfied with the final result.
+    Call after the agent is satisfied with the final result — last step in the workflow.
+    Feeds session data into tradition evolution; non-fatal if archive store is unavailable.
 
     Args:
         intent: Original creative intent.
         tradition: Cultural tradition used.
         image_path: Path to the final image.
-        feedback: Agent's assessment of the result.
+        feedback: Agent's assessment (e.g. "accepted", "rejected: too dark").
 
     Returns:
-        archived: Whether archival succeeded.
-        session_id: Archive session identifier.
+        archived: Whether archival succeeded. session_id: Archive session identifier.
     """
     import uuid
 
@@ -511,13 +529,19 @@ async def inpaint_artwork(
     instruction: str,
     tradition: str = "default",
 ) -> dict:
-    """Repaint a region of an artwork. Returns a single result per call.
+    """Repaint a specific region of an image — targeted fix without re-generating the whole artwork.
+
+    Use after evaluate_artwork identifies a problem area, or after view_image reveals a regional flaw.
+    For whole-image changes, use generate_image instead.
 
     Args:
         image_path: Path to the image file.
-        region: NL description ("fix the sky") or coordinates ("0,0,100,35").
-        instruction: What to change in the region.
+        region: Natural language ("fix the sky") or pixel coordinates ("0,0,100,35").
+        instruction: What to paint in the region.
         tradition: Cultural tradition for style consistency.
+
+    Returns:
+        image_path: Path to the blended result. bbox: Painted region. cost_usd, latency_ms.
     """
     from vulca.inpaint import ainpaint
 
@@ -546,17 +570,20 @@ async def layers_split(
     provider: str = "gemini",
     tradition: str = "default",
 ) -> dict:
-    """Split an image into full-canvas RGBA layers.
+    """Decompose an image into full-canvas RGBA layers via segmentation or regeneration.
+
+    Use to break a reference or generated image into editable layers. Follow with layers_list
+    to inspect the stack, then layers_edit/layers_redraw for targeted modifications.
 
     Args:
         image_path: Path to the image file.
         output_dir: Output directory (default: image parent/layers).
-        mode: Split mode — "regenerate" (img2img), "extract" (color-range), "vlm" (VLM masks), or "sam3" (SAM3 text-prompted, GPU).
-        provider: Image provider for regenerate mode.
+        mode: "regenerate" (img2img, default), "extract" (color-range), "vlm" (VLM masks), "sam3" (SAM3, GPU).
+        provider: Image provider for regenerate/vlm modes.
         tradition: Cultural tradition for styling.
 
     Returns:
-        layers list, manifest_path, split_mode.
+        layers: List of {name, file, z_index, content_type, blend_mode}. manifest_path, split_mode.
     """
     from vulca.layers.analyze import analyze_layers as _analyze
     from vulca.layers.split import split_extract, split_regenerate
@@ -611,26 +638,23 @@ async def layers_redraw(
     provider: str = "gemini",
     tradition: str = "default",
 ) -> dict:
-    """Redraw layer(s) via img2img with specific instructions.
+    """Redraw a layer via img2img with explicit content/style instructions — targeted layer regeneration.
 
-    Be specific about position, scale, and style in the instruction:
-    - Position: "upper 30% of canvas", "right third", "centered"
-    - Scale: "smaller, covering 20% of canvas", "larger with more detail"
-    - Style: "lighter ink wash", "bold strokes", "flat color block"
-    - Content: "only mountains, nothing else", "add a boat on the river"
+    Use after layers_list identifies a weak layer, or after evaluate_artwork flags a specific issue.
+    Be specific about position ("upper 30%"), scale ("covering 20%"), and style ("lighter ink wash").
 
     Args:
         artwork_dir: Directory with layer PNGs + manifest.
-        layer: Single layer name to redraw.
-        layers: Comma-separated layer names to merge+redraw.
-        instruction: What to change.
-        merge: If true, merge selected layers before redraw.
-        merged_name: Name for merged output layer.
+        layer: Single layer name to redraw (mutually exclusive with layers+merge).
+        layers: Comma-separated layer names to merge then redraw together.
+        instruction: What to change (content, position, scale, style).
+        merge: If true, merge the listed layers before redrawing.
+        merged_name: Name for the merged output layer.
         provider: Image provider.
         tradition: Cultural tradition.
 
     Returns:
-        Redrawn layer info with file path.
+        name, file, z_index, content_type of the redrawn layer.
     """
     from vulca.layers.manifest import load_manifest
     from vulca.layers.redraw import redraw_layer, redraw_merged
@@ -676,7 +700,10 @@ async def layers_edit(
     visible: bool = True,
     locked: bool = True,
 ) -> dict:
-    """Edit layers — add, remove, reorder, toggle, lock, merge, duplicate.
+    """Structural layer operations — add, remove, reorder, toggle visibility, lock, merge, duplicate.
+
+    Use after layers_list to reorganize the layer stack. Does not modify pixel data;
+    for pixel changes use layers_redraw. Follow with layers_composite to see the result.
 
     Args:
         artwork_dir: Directory with layer PNGs + manifest.
@@ -685,11 +712,10 @@ async def layers_edit(
         layers: Comma-separated layer names (for merge).
         name: New layer name (for add/merge/duplicate).
         description: Layer description (for add).
-        z_index: Z-index (for add/reorder, -1 = top).
-        content_type: Layer role label (e.g. background, subject, ui_header, decoration).
-        semantic_path: Hierarchical dot-notation label (e.g. 'subject.face.eyes'), "" if none.
-        visible: Visibility state (for toggle).
-        locked: Lock state (for lock).
+        z_index: Z-index position (for add/reorder; -1 = top).
+        content_type: Layer role label (e.g. background, subject, decoration).
+        semantic_path: Dot-notation label (e.g. "subject.face.eyes"); "" if none.
+        visible: Visibility state (for toggle). locked: Lock state (for lock).
 
     Returns:
         Operation result with updated layer info.
@@ -755,19 +781,22 @@ async def layers_transform(
     rotate: float = 0.0,
     opacity: float = -1.0,
 ) -> dict:
-    """Transform a layer — move, scale, rotate, change opacity.
+    """Move, scale, rotate, or change opacity of a layer — non-destructive spatial adjustment.
+
+    Use after layers_list when a layer's position or size needs correcting without redrawing.
+    All transforms are relative to the current state. Follow with layers_composite to preview.
 
     Args:
         artwork_dir: Directory with layer PNGs + manifest.
         layer: Layer name to transform.
-        dx: Move X by this percentage (relative, e.g. 10 = move right 10%).
-        dy: Move Y by this percentage (relative, e.g. -5 = move up 5%).
-        scale: Scale factor (1.0 = no change, 0.5 = half size, 2.0 = double).
-        rotate: Rotate by degrees (relative, clockwise).
-        opacity: Set opacity (0.0-1.0). Use -1 to keep current value.
+        dx: Move X by percentage (positive = right, e.g. 10 = move right 10%).
+        dy: Move Y by percentage (positive = down, e.g. -5 = move up 5%).
+        scale: Scale factor (1.0 = no change, 0.5 = half, 2.0 = double).
+        rotate: Degrees to rotate clockwise (relative).
+        opacity: Set opacity 0.0-1.0; use -1 to keep current value.
 
     Returns:
-        Updated layer spatial info.
+        status, layer, x, y, width, height, rotation, opacity.
     """
     from vulca.layers.manifest import load_manifest
     from vulca.layers.ops import transform_layer
@@ -794,14 +823,17 @@ async def layers_transform(
 
 @mcp.tool()
 async def sync_data(push_only: bool = False, pull_only: bool = False) -> dict:
-    """Sync local session data with cloud. Requires VULCA_API_URL env var.
+    """Sync local session data to cloud and pull evolved tradition weights — requires VULCA_API_URL.
+
+    Call after archive_session to upload feedback signals and refresh tradition weights.
+    Returns error if VULCA_API_URL is not set; non-destructive read-only operations always safe.
 
     Args:
         push_only: Only push local sessions, skip pulling evolved weights.
         pull_only: Only pull evolved weights, skip pushing sessions.
 
     Returns:
-        pushed_count, pulled_evolved (bool), api_url, error (if any).
+        pushed_count, pulled_evolved (bool), api_url. error key present on failure.
     """
     import json as json_mod
     import os
@@ -887,17 +919,17 @@ async def sync_data(push_only: bool = False, pull_only: bool = False) -> dict:
 
 @mcp.tool()
 async def layers_composite(artwork_dir: str, output_path: str = "") -> dict:
-    """Composite layers from an artwork directory into a single flat image.
+    """Flatten all visible layers into a single composite image — final step in the layer editing loop.
 
-    After compositing, review the result visually. If composition needs adjustment,
-    use layers_redraw to modify individual layers, then re-composite.
+    Use after layers_edit or layers_redraw to preview the full result. Then call view_image
+    to inspect and evaluate_artwork to score. Re-composite any time the stack changes.
 
     Args:
         artwork_dir: Directory containing layer PNGs and manifest.json.
         output_path: Output file path (default: <artwork_dir>/composite.png).
 
     Returns:
-        composite_path: Absolute path to the composited image.
+        composite_path: Absolute path to the composited PNG.
     """
     import json as json_mod
     from pathlib import Path
@@ -942,15 +974,18 @@ async def layers_export(
     format: str = "png",
     output_path: str = "",
 ) -> dict:
-    """Export layers as PNG directory or PSD file.
+    """Export the artwork as a PNG composite or PSD file — for delivery or external editing.
+
+    Use at the end of a workflow after layers_composite confirms the result looks correct.
+    PSD format preserves individual layers for editing in Photoshop or Affinity Photo.
 
     Args:
         artwork_dir: Directory containing layer PNGs and manifest.json.
-        format: Export format — "png" (default, PNG directory) or "psd".
-        output_path: Output path (default: <artwork_dir>/export.<format>).
+        format: "png" (flat composite, default) or "psd" (layered Photoshop file).
+        output_path: Output path (default: <artwork_dir>/composite.png or layers.psd).
 
     Returns:
-        export_path: Absolute path to exported file or directory.
+        export_path: Absolute path to the exported file.
     """
     import json as json_mod
     from pathlib import Path
@@ -986,14 +1021,17 @@ async def layers_evaluate(
     artwork_dir: str,
     tradition: str = "default",
 ) -> dict:
-    """Evaluate each layer independently with L1-L5 scoring.
+    """Score each layer independently on L1-L5 dimensions — identify which layers need redrawing.
+
+    Use after layers_split to audit individual layers before compositing.
+    Cheaper than re-evaluating the composite after every edit; pinpoints weak layers directly.
 
     Args:
         artwork_dir: Directory containing layer PNGs and manifest.json.
         tradition: Cultural tradition for evaluation (default: auto-detect).
 
     Returns:
-        layers: Dict mapping layer name to score and dimensions.
+        layers: Dict mapping layer name → {score, dimensions}. Error key per layer on failure.
     """
     from vulca.layers.edit import load_artwork
     from vulca import aevaluate
@@ -1027,8 +1065,8 @@ async def generate_image(
 ) -> dict:
     """Generate a single image from a text prompt — no evaluation, no loop.
 
-    Use after get_tradition_guide for cultural context. Then use view_image to inspect
-    and evaluate_artwork to score the result.
+    Use after get_tradition_guide for cultural context. Then call view_image to inspect
+    and evaluate_artwork to score. For generate+evaluate in one call, use create_artwork.
 
     Args:
         prompt: Text description of the image to generate.
@@ -1038,10 +1076,7 @@ async def generate_image(
         output_dir: Directory to save the generated image.
 
     Returns:
-        image_path: Path to the generated PNG.
-        cost_usd: Generation cost.
-        latency_ms: Generation time in milliseconds.
-        provider: Provider used.
+        image_path, cost_usd, latency_ms, provider.
     """
     import base64
     import time
@@ -1094,21 +1129,17 @@ async def view_image(
     image_path: str,
     max_dimension: int = 1024,
 ) -> dict:
-    """View an image — returns base64-encoded thumbnail for agent inspection.
+    """View an image — returns base64 thumbnail for agent visual inspection.
 
-    Use after generate_image or layers_composite to visually inspect results.
+    Use after generate_image or layers_composite to inspect results before deciding next steps.
+    Essential for correlating visual quality with evaluate_artwork scores.
 
     Args:
         image_path: Path to the image file.
-        max_dimension: Maximum width/height in pixels. Default 1024.
+        max_dimension: Max width/height in pixels for the thumbnail. Default 1024.
 
     Returns:
-        image_base64: Base64-encoded PNG.
-        width: Thumbnail width.
-        height: Thumbnail height.
-        original_width: Original width.
-        original_height: Original height.
-        file_size_bytes: File size.
+        image_base64, width, height, original_width, original_height, file_size_bytes.
     """
     import base64
     import io
@@ -1144,19 +1175,17 @@ async def view_image(
 
 @mcp.tool()
 async def layers_list(artwork_dir: str) -> dict:
-    """List all layers in an artwork directory with metadata.
+    """Inspect the layer stack in an artwork directory — name, z_index, visibility, file status.
 
-    Returns structured inventory: name, z_index, content_type, visibility,
-    blend_mode, and whether each layer's PNG file exists.
+    Use after layers_split to understand what was generated, or before layers_edit/layers_redraw
+    to identify which layer to target. Always call this before making structural changes.
 
     Args:
         artwork_dir: Path to artwork directory with manifest.json.
 
     Returns:
-        layers: List of layer metadata dicts.
-        layer_count: Total layers.
-        visible_count: Visible layers.
-        has_composite: Whether composite.png exists.
+        layers: List of {name, z_index, content_type, visible, blend_mode, locked, opacity,
+        semantic_path, file, file_exists}. layer_count, visible_count, has_composite.
     """
     import json as json_mod
     from pathlib import Path
