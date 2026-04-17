@@ -1,9 +1,80 @@
 {
-  "version": 3,
+  "version": 4,
   "width": 1280,
   "height": 1230,
   "source_image": "assets/showcase/originals/water-lilies.jpg",
   "split_mode": "claude_orchestrated",
+  "status": "ok",
+  "detection_report": {
+    "requested": 3,
+    "domain": "impressionist_painting",
+    "person_chain": [
+      "dino"
+    ],
+    "per_entity": [
+      {
+        "id": 0,
+        "name": "water",
+        "label": "blue purple water surface with sky reflections",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "blue purple water surface",
+        "bbox": [
+          6,
+          11,
+          1272,
+          1218
+        ],
+        "det_score": 0.23278948664665222,
+        "sam_score": 0.9968000650405884,
+        "pct": 99.3
+      },
+      {
+        "id": 1,
+        "name": "lily_blossoms",
+        "label": "white and pink water lily flowers",
+        "semantic_path": "subject.flowers",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "lily flowers",
+        "bbox": [
+          504,
+          951,
+          558,
+          1011
+        ],
+        "det_score": 0.2904152274131775,
+        "sam_score": 0.9367676973342896,
+        "pct": 0.12
+      },
+      {
+        "id": 2,
+        "name": "lily_pads",
+        "label": "round green lily pads floating on water",
+        "semantic_path": "foreground.pads",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "round",
+        "bbox": [
+          7,
+          699,
+          1258,
+          1207
+        ],
+        "det_score": 0.26264679431915283,
+        "sam_score": 0.9527932405471802,
+        "pct": 30.56
+      }
+    ],
+    "detected": 3,
+    "missed": 0,
+    "success_rate": 1.0,
+    "status": "ok"
+  },
   "plan": {
     "domain": "impressionist_painting",
     "notes": "Monet pond scene. No humans. Water + flowers + lily pads.",
@@ -32,7 +103,7 @@
     "slug": "water-lilies",
     "device": "mps"
   },
-  "created_at": "2026-04-17T09:52:06Z",
+  "created_at": "2026-04-17T10:19:09Z",
   "layers": [
     {
       "id": "layer_6f157694",

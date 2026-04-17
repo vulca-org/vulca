@@ -1,9 +1,268 @@
 {
-  "version": 3,
+  "version": 4,
   "width": 1280,
   "height": 759,
   "source_image": "assets/showcase/originals/napalm-girl.jpg",
   "split_mode": "claude_orchestrated",
+  "status": "ok",
+  "detection_report": {
+    "requested": 10,
+    "domain": "historical_bw_photo",
+    "person_chain": [
+      "yolo",
+      "dino"
+    ],
+    "per_entity": [
+      {
+        "id": 1,
+        "name": "boy_screaming_left",
+        "label": "boy in white shirt screaming on the left",
+        "semantic_path": "subject.person[0]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 10,
+            "conf_range": "0.23-0.97"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          2,
+          168,
+          375,
+          758
+        ],
+        "det_score": 0.9656640887260437,
+        "sam_score": 1.0008924007415771,
+        "pct": 11.21
+      },
+      {
+        "id": 2,
+        "name": "small_boy_behind",
+        "label": "small child behind the left boy",
+        "semantic_path": "subject.person[1]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 10,
+            "conf_range": "0.23-0.97"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          335,
+          239,
+          449,
+          464
+        ],
+        "det_score": 0.9226261973381042,
+        "sam_score": 0.9806263446807861,
+        "pct": 1.1
+      },
+      {
+        "id": 3,
+        "name": "soldier_center",
+        "label": "soldier with helmet in background center",
+        "semantic_path": "subject.person[2]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 10,
+            "conf_range": "0.23-0.97"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          626,
+          93,
+          748,
+          308
+        ],
+        "det_score": 0.8694134950637817,
+        "sam_score": 0.9554049968719482,
+        "pct": 1.16
+      },
+      {
+        "id": 4,
+        "name": "girl_center_nude",
+        "label": "central nude running girl with outstretched arms",
+        "semantic_path": "subject.person[3]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 10,
+            "conf_range": "0.23-0.97"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          502,
+          202,
+          881,
+          725
+        ],
+        "det_score": 0.9557130932807922,
+        "sam_score": 0.9835044145584106,
+        "pct": 4.39
+      },
+      {
+        "id": 5,
+        "name": "boy_dirty_clothes",
+        "label": "boy in dirty clothes running right of center",
+        "semantic_path": "subject.person[4]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 10,
+            "conf_range": "0.23-0.97"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          928,
+          125,
+          1013,
+          361
+        ],
+        "det_score": 0.9103720784187317,
+        "sam_score": 0.9804486036300659,
+        "pct": 0.97
+      },
+      {
+        "id": 6,
+        "name": "soldier_middle_right",
+        "label": "soldier with helmet in middle right",
+        "semantic_path": "subject.person[5]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 10,
+            "conf_range": "0.23-0.97"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          935,
+          247,
+          1100,
+          582
+        ],
+        "det_score": 0.9413026571273804,
+        "sam_score": 0.9779517650604248,
+        "pct": 2.21
+      },
+      {
+        "id": 7,
+        "name": "girl_white_shirt",
+        "label": "girl in white shirt walking on the right",
+        "semantic_path": "subject.person[6]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 10,
+            "conf_range": "0.23-0.97"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          1009,
+          175,
+          1026,
+          221
+        ],
+        "det_score": 0.2296706885099411,
+        "sam_score": 0.9188290238380432,
+        "pct": 0.07
+      },
+      {
+        "id": 8,
+        "name": "soldier_far_right_1",
+        "label": "soldier with helmet far right",
+        "semantic_path": "subject.person[7]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 10,
+            "conf_range": "0.23-0.97"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          1091,
+          125,
+          1168,
+          332
+        ],
+        "det_score": 0.8940373659133911,
+        "sam_score": 0.9610390663146973,
+        "pct": 0.74
+      },
+      {
+        "id": 9,
+        "name": "soldier_far_right_2",
+        "label": "soldier with helmet rightmost edge",
+        "semantic_path": "subject.person[8]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 10,
+            "conf_range": "0.23-0.97"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          1079,
+          181,
+          1251,
+          612
+        ],
+        "det_score": 0.9230039715766907,
+        "sam_score": 0.9783965349197388,
+        "pct": 3.12
+      },
+      {
+        "id": 0,
+        "name": "background",
+        "label": "dirt road with smoke in the distance",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "dirt road",
+        "bbox": [
+          4,
+          194,
+          1276,
+          755
+        ],
+        "det_score": 0.5530914068222046,
+        "sam_score": 0.9894295334815979,
+        "pct": 37.97
+      }
+    ],
+    "detected": 10,
+    "missed": 0,
+    "success_rate": 1.0,
+    "status": "ok"
+  },
   "plan": {
     "slug": "napalm-girl",
     "domain": "historical_bw_photo",
@@ -83,7 +342,7 @@
       }
     ]
   },
-  "created_at": "2026-04-17T09:41:56Z",
+  "created_at": "2026-04-17T10:16:07Z",
   "layers": [
     {
       "id": "layer_8ac74746",

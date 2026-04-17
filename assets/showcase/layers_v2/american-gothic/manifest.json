@@ -1,9 +1,112 @@
 {
-  "version": 3,
+  "version": 4,
   "width": 1060,
   "height": 1280,
   "source_image": "assets/showcase/originals/american-gothic.jpg",
   "split_mode": "claude_orchestrated",
+  "status": "ok",
+  "detection_report": {
+    "requested": 4,
+    "domain": "american_regionalist_painting",
+    "person_chain": [
+      "yolo",
+      "dino"
+    ],
+    "per_entity": [
+      {
+        "id": 1,
+        "name": "woman",
+        "label": "blonde woman in dark dress on left",
+        "semantic_path": "subject.person[0]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 2,
+            "conf_range": "0.92-0.95"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          0,
+          255,
+          419,
+          1277
+        ],
+        "det_score": 0.9225975275039673,
+        "sam_score": 1.0001211166381836,
+        "pct": 21.28
+      },
+      {
+        "id": 2,
+        "name": "man",
+        "label": "bald elderly man with glasses and overalls",
+        "semantic_path": "subject.person[1]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 2,
+            "conf_range": "0.92-0.95"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          315,
+          118,
+          1056,
+          1272
+        ],
+        "det_score": 0.9504542946815491,
+        "sam_score": 1.0000427961349487,
+        "pct": 41.13
+      },
+      {
+        "id": 0,
+        "name": "farmhouse",
+        "label": "white wooden farmhouse with gothic window",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "white wooden farmhouse",
+        "bbox": [
+          3,
+          37,
+          888,
+          746
+        ],
+        "det_score": 0.5379990935325623,
+        "sam_score": 0.9760092496871948,
+        "pct": 14.91
+      },
+      {
+        "id": 3,
+        "name": "pitchfork",
+        "label": "metal pitchfork with three tines",
+        "semantic_path": "foreground.tool",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "metal pitchfork",
+        "bbox": [
+          440,
+          533,
+          694,
+          1174
+        ],
+        "det_score": 0.8380750417709351,
+        "sam_score": 0.9387246370315552,
+        "pct": 1.66
+      }
+    ],
+    "detected": 4,
+    "missed": 0,
+    "success_rate": 1.0,
+    "status": "ok"
+  },
   "plan": {
     "domain": "american_regionalist_painting",
     "notes": "Grant Wood 1930. Man + woman + farmhouse + pitchfork.",
@@ -40,7 +143,7 @@
     "slug": "american-gothic",
     "device": "mps"
   },
-  "created_at": "2026-04-17T09:53:44Z",
+  "created_at": "2026-04-17T10:20:47Z",
   "layers": [
     {
       "id": "layer_b19ebd7e",

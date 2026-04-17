@@ -1,9 +1,87 @@
 {
-  "version": 3,
+  "version": 4,
   "width": 1010,
   "height": 1280,
   "source_image": "assets/showcase/originals/trump-portrait.jpg",
   "split_mode": "claude_orchestrated",
+  "status": "ok",
+  "detection_report": {
+    "requested": 3,
+    "domain": "official_portrait_photo",
+    "person_chain": [
+      "yolo",
+      "dino"
+    ],
+    "per_entity": [
+      {
+        "id": 1,
+        "name": "trump",
+        "label": "man in dark suit with blond hair",
+        "semantic_path": "subject.person[0]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 1,
+            "conf_range": "0.97-0.97"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          0,
+          152,
+          1010,
+          1277
+        ],
+        "det_score": 0.9706267714500427,
+        "sam_score": 1.0137615203857422,
+        "pct": 57.35
+      },
+      {
+        "id": 0,
+        "name": "background",
+        "label": "american flag and patterned wallpaper",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "american flag",
+        "bbox": [
+          4,
+          4,
+          1003,
+          1272
+        ],
+        "det_score": 0.3465200364589691,
+        "sam_score": 0.9882313013076782,
+        "pct": 57.31
+      },
+      {
+        "id": 2,
+        "name": "flag_pin",
+        "label": "small american flag lapel pin",
+        "semantic_path": "foreground.pin",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "small american flag lapel pin",
+        "bbox": [
+          679,
+          872,
+          729,
+          928
+        ],
+        "det_score": 0.39829686284065247,
+        "sam_score": 0.9689604043960571,
+        "pct": 0.1
+      }
+    ],
+    "detected": 3,
+    "missed": 0,
+    "success_rate": 1.0,
+    "status": "ok"
+  },
   "plan": {
     "domain": "official_portrait_photo",
     "notes": "Trump White House official portrait 2017.",
@@ -34,7 +112,7 @@
     "slug": "trump-portrait",
     "device": "mps"
   },
-  "created_at": "2026-04-17T09:55:02Z",
+  "created_at": "2026-04-17T10:22:01Z",
   "layers": [
     {
       "id": "layer_41b57a89",

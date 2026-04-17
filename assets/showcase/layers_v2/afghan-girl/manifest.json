@@ -1,9 +1,68 @@
 {
-  "version": 3,
+  "version": 4,
   "width": 254,
   "height": 400,
   "source_image": "assets/showcase/originals/afghan-girl.jpg",
   "split_mode": "claude_orchestrated",
+  "status": "ok",
+  "detection_report": {
+    "requested": 2,
+    "domain": "portrait_photograph",
+    "person_chain": [
+      "yolo",
+      "dino"
+    ],
+    "per_entity": [
+      {
+        "id": 1,
+        "name": "girl",
+        "label": "young girl with red headscarf",
+        "semantic_path": "subject.person[0]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 1,
+            "conf_range": "0.89-0.89"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          0,
+          37,
+          254,
+          397
+        ],
+        "det_score": 0.8888350129127502,
+        "sam_score": 0.9984769821166992,
+        "pct": 71.02
+      },
+      {
+        "id": 0,
+        "name": "green_wall",
+        "label": "green cracked painted wall",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "green cracked painted wall",
+        "bbox": [
+          0,
+          0,
+          254,
+          399
+        ],
+        "det_score": 0.7656592726707458,
+        "sam_score": 0.9575803279876709,
+        "pct": 71.12
+      }
+    ],
+    "detected": 2,
+    "missed": 0,
+    "success_rate": 1.0,
+    "status": "ok"
+  },
   "plan": {
     "domain": "portrait_photograph",
     "notes": "Steve McCurry 1984. Single portrait with red headscarf.",
@@ -27,7 +86,7 @@
     "slug": "afghan-girl",
     "device": "mps"
   },
-  "created_at": "2026-04-17T09:54:07Z",
+  "created_at": "2026-04-17T10:21:11Z",
   "layers": [
     {
       "id": "layer_338a1afe",

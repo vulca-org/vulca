@@ -1,9 +1,86 @@
 {
-  "version": 3,
+  "version": 4,
   "width": 858,
   "height": 1280,
   "source_image": "assets/showcase/originals/mona-lisa.jpg",
   "split_mode": "claude_orchestrated",
+  "status": "ok",
+  "detection_report": {
+    "requested": 3,
+    "domain": "renaissance_painting",
+    "person_chain": [
+      "dino"
+    ],
+    "per_entity": [
+      {
+        "id": 1,
+        "name": "mona_lisa",
+        "label": "seated woman in dark dress",
+        "semantic_path": "subject.person[0]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "dino",
+            "count": 2,
+            "conf_range": "0.64-0.78"
+          }
+        ],
+        "status": "detected",
+        "detector": "dino",
+        "bbox": [
+          302,
+          178,
+          505,
+          466
+        ],
+        "det_score": 0.7764641642570496,
+        "sam_score": 0.987768292427063,
+        "pct": 4.49
+      },
+      {
+        "id": 0,
+        "name": "background",
+        "label": "distant landscape with mountains and winding road",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "distant landscape",
+        "bbox": [
+          4,
+          195,
+          851,
+          752
+        ],
+        "det_score": 0.34311333298683167,
+        "sam_score": 0.8113933801651001,
+        "pct": 16.26
+      },
+      {
+        "id": 2,
+        "name": "chair_parapet",
+        "label": "wooden chair armrest and stone parapet ledge",
+        "semantic_path": "foreground.furniture",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "wooden chair armrest parapet ledge",
+        "bbox": [
+          5,
+          591,
+          852,
+          1271
+        ],
+        "det_score": 0.42197999358177185,
+        "sam_score": 0.9712190628051758,
+        "pct": 37.45
+      }
+    ],
+    "detected": 3,
+    "missed": 0,
+    "success_rate": 1.0,
+    "status": "ok"
+  },
   "plan": {
     "slug": "mona-lisa",
     "domain": "renaissance_painting",
@@ -35,7 +112,7 @@
       }
     ]
   },
-  "created_at": "2026-04-17T09:41:40Z",
+  "created_at": "2026-04-17T10:15:52Z",
   "layers": [
     {
       "id": "layer_b42536b9",
@@ -50,13 +127,13 @@
       "locked": false,
       "file": "mona_lisa.png",
       "bbox": [
-        9,
-        119,
-        841,
-        1264
+        302,
+        178,
+        505,
+        466
       ],
-      "det_score": 0.9357903599739075,
-      "sam_score": 0.983473539352417,
+      "det_score": 0.7764641642570496,
+      "sam_score": 0.987768292427063,
       "regeneration_prompt": "seated woman in dark dress",
       "opacity": 1.0,
       "x": 0.0,
@@ -79,12 +156,12 @@
       "locked": false,
       "file": "mona_lisa__skin.png",
       "bbox": [
-        9,
-        119,
-        841,
-        1264
+        302,
+        178,
+        505,
+        466
       ],
-      "det_score": 0.9357903599739075,
+      "det_score": 0.7764641642570496,
       "sam_score": 0.95,
       "regeneration_prompt": "mona_lisa skin",
       "opacity": 1.0,
@@ -108,101 +185,14 @@
       "locked": false,
       "file": "mona_lisa__nose.png",
       "bbox": [
-        9,
-        119,
-        841,
-        1264
+        302,
+        178,
+        505,
+        466
       ],
-      "det_score": 0.9357903599739075,
+      "det_score": 0.7764641642570496,
       "sam_score": 0.95,
       "regeneration_prompt": "mona_lisa nose",
-      "opacity": 1.0,
-      "x": 0.0,
-      "y": 0.0,
-      "width": 100.0,
-      "height": 100.0,
-      "rotation": 0.0,
-      "content_bbox": null
-    },
-    {
-      "id": "layer_2cdc07e0",
-      "name": "mona_lisa__eyebrows",
-      "label": "mona_lisa eyebrows",
-      "description": "mona_lisa eyebrows",
-      "z_index": 58,
-      "blend_mode": "normal",
-      "content_type": "mona_lisa__eyebrows",
-      "semantic_path": "subject.person[0].eyebrows",
-      "visible": true,
-      "locked": false,
-      "file": "mona_lisa__eyebrows.png",
-      "bbox": [
-        9,
-        119,
-        841,
-        1264
-      ],
-      "det_score": 0.9357903599739075,
-      "sam_score": 0.95,
-      "regeneration_prompt": "mona_lisa eyebrows",
-      "opacity": 1.0,
-      "x": 0.0,
-      "y": 0.0,
-      "width": 100.0,
-      "height": 100.0,
-      "rotation": 0.0,
-      "content_bbox": null
-    },
-    {
-      "id": "layer_de667e02",
-      "name": "mona_lisa__hair",
-      "label": "mona_lisa hair",
-      "description": "mona_lisa hair",
-      "z_index": 54,
-      "blend_mode": "normal",
-      "content_type": "mona_lisa__hair",
-      "semantic_path": "subject.person[0].hair",
-      "visible": true,
-      "locked": false,
-      "file": "mona_lisa__hair.png",
-      "bbox": [
-        9,
-        119,
-        841,
-        1264
-      ],
-      "det_score": 0.9357903599739075,
-      "sam_score": 0.95,
-      "regeneration_prompt": "mona_lisa hair",
-      "opacity": 1.0,
-      "x": 0.0,
-      "y": 0.0,
-      "width": 100.0,
-      "height": 100.0,
-      "rotation": 0.0,
-      "content_bbox": null
-    },
-    {
-      "id": "layer_4fa1c283",
-      "name": "mona_lisa__neck",
-      "label": "mona_lisa neck",
-      "description": "mona_lisa neck",
-      "z_index": 48,
-      "blend_mode": "normal",
-      "content_type": "mona_lisa__neck",
-      "semantic_path": "subject.person[0].neck",
-      "visible": true,
-      "locked": false,
-      "file": "mona_lisa__neck.png",
-      "bbox": [
-        9,
-        119,
-        841,
-        1264
-      ],
-      "det_score": 0.9357903599739075,
-      "sam_score": 0.95,
-      "regeneration_prompt": "mona_lisa neck",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,
@@ -224,14 +214,43 @@
       "locked": false,
       "file": "mona_lisa__eyes.png",
       "bbox": [
-        9,
-        119,
-        841,
-        1264
+        302,
+        178,
+        505,
+        466
       ],
-      "det_score": 0.9357903599739075,
+      "det_score": 0.7764641642570496,
       "sam_score": 0.95,
       "regeneration_prompt": "mona_lisa eyes",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_2cdc07e0",
+      "name": "mona_lisa__eyebrows",
+      "label": "mona_lisa eyebrows",
+      "description": "mona_lisa eyebrows",
+      "z_index": 58,
+      "blend_mode": "normal",
+      "content_type": "mona_lisa__eyebrows",
+      "semantic_path": "subject.person[0].eyebrows",
+      "visible": true,
+      "locked": false,
+      "file": "mona_lisa__eyebrows.png",
+      "bbox": [
+        302,
+        178,
+        505,
+        466
+      ],
+      "det_score": 0.7764641642570496,
+      "sam_score": 0.95,
+      "regeneration_prompt": "mona_lisa eyebrows",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,
@@ -253,14 +272,43 @@
       "locked": false,
       "file": "mona_lisa__lips.png",
       "bbox": [
-        9,
-        119,
-        841,
-        1264
+        302,
+        178,
+        505,
+        466
       ],
-      "det_score": 0.9357903599739075,
+      "det_score": 0.7764641642570496,
       "sam_score": 0.95,
       "regeneration_prompt": "mona_lisa lips",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_de667e02",
+      "name": "mona_lisa__hair",
+      "label": "mona_lisa hair",
+      "description": "mona_lisa hair",
+      "z_index": 54,
+      "blend_mode": "normal",
+      "content_type": "mona_lisa__hair",
+      "semantic_path": "subject.person[0].hair",
+      "visible": true,
+      "locked": false,
+      "file": "mona_lisa__hair.png",
+      "bbox": [
+        302,
+        178,
+        505,
+        466
+      ],
+      "det_score": 0.7764641642570496,
+      "sam_score": 0.95,
+      "regeneration_prompt": "mona_lisa hair",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,

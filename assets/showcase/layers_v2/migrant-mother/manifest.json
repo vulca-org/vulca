@@ -1,9 +1,118 @@
 {
-  "version": 3,
+  "version": 4,
   "width": 6205,
   "height": 8066,
   "source_image": "assets/showcase/originals/migrant-mother.jpg",
   "split_mode": "claude_orchestrated",
+  "status": "ok",
+  "detection_report": {
+    "requested": 4,
+    "domain": "historical_bw_photo",
+    "person_chain": [
+      "yolo",
+      "dino"
+    ],
+    "per_entity": [
+      {
+        "id": 2,
+        "name": "child_left",
+        "label": "child on left",
+        "semantic_path": "subject.person[1]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 5,
+            "conf_range": "0.22-0.91"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          0,
+          2182,
+          2173,
+          8031
+        ],
+        "det_score": 0.9064866900444031,
+        "sam_score": 0.9885737895965576,
+        "pct": 15.24
+      },
+      {
+        "id": 1,
+        "name": "mother",
+        "label": "woman seated",
+        "semantic_path": "subject.person[0]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 5,
+            "conf_range": "0.22-0.91"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          1048,
+          544,
+          5630,
+          7996
+        ],
+        "det_score": 0.8670979142189026,
+        "sam_score": 0.9721757173538208,
+        "pct": 41.44
+      },
+      {
+        "id": 3,
+        "name": "child_right",
+        "label": "child on right",
+        "semantic_path": "subject.person[2]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 5,
+            "conf_range": "0.22-0.91"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          916,
+          1079,
+          6196,
+          8053
+        ],
+        "det_score": 0.30152028799057007,
+        "sam_score": 0.6924269795417786,
+        "pct": 31.83
+      },
+      {
+        "id": 0,
+        "name": "background",
+        "label": "dark fabric background",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "dark fabric background",
+        "bbox": [
+          22,
+          24,
+          6178,
+          7964
+        ],
+        "det_score": 0.3855920732021332,
+        "sam_score": 0.8425185680389404,
+        "pct": 49.41
+      }
+    ],
+    "detected": 4,
+    "missed": 0,
+    "success_rate": 1.0,
+    "status": "ok"
+  },
   "plan": {
     "domain": "historical_bw_photo",
     "notes": "Dorothea Lange 1936. Mother + 2 children, seated in cloth.",
@@ -41,7 +150,7 @@
     "slug": "migrant-mother",
     "device": "mps"
   },
-  "created_at": "2026-04-17T09:51:28Z",
+  "created_at": "2026-04-17T10:18:33Z",
   "layers": [
     {
       "id": "layer_11af0bdf",

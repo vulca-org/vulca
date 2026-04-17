@@ -1,9 +1,87 @@
 {
-  "version": 3,
+  "version": 4,
   "width": 1920,
   "height": 2274,
   "source_image": "assets/showcase/originals/girl-pearl-earring.jpg",
   "split_mode": "claude_orchestrated",
+  "status": "ok",
+  "detection_report": {
+    "requested": 3,
+    "domain": "baroque_painting",
+    "person_chain": [
+      "yolo",
+      "dino"
+    ],
+    "per_entity": [
+      {
+        "id": 1,
+        "name": "girl",
+        "label": "young woman with blue headscarf",
+        "semantic_path": "subject.person[0]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 2,
+            "conf_range": "0.29-0.80"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          564,
+          281,
+          1755,
+          2266
+        ],
+        "det_score": 0.8009430170059204,
+        "sam_score": 1.0020875930786133,
+        "pct": 42.93
+      },
+      {
+        "id": 0,
+        "name": "dark_bg",
+        "label": "plain dark black background",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "plain dark black background",
+        "bbox": [
+          7,
+          9,
+          1910,
+          2262
+        ],
+        "det_score": 0.7201167941093445,
+        "sam_score": 0.9948422908782959,
+        "pct": 58.99
+      },
+      {
+        "id": 2,
+        "name": "pearl_earring",
+        "label": "white teardrop pearl earring",
+        "semantic_path": "foreground.jewelry",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "white teardrop pearl earring",
+        "bbox": [
+          1154,
+          1193,
+          1200,
+          1257
+        ],
+        "det_score": 0.4807837903499603,
+        "sam_score": 0.9032914042472839,
+        "pct": 0.04
+      }
+    ],
+    "detected": 3,
+    "missed": 0,
+    "success_rate": 1.0,
+    "status": "ok"
+  },
   "plan": {
     "domain": "baroque_painting",
     "notes": "Vermeer 1665. Single portrait with distinctive blue-yellow headscarf and pearl earring.",
@@ -34,7 +112,7 @@
     "slug": "girl-pearl-earring",
     "device": "mps"
   },
-  "created_at": "2026-04-17T09:51:56Z",
+  "created_at": "2026-04-17T10:18:59Z",
   "layers": [
     {
       "id": "layer_5002a259",

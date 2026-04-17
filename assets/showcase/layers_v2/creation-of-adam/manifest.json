@@ -1,9 +1,131 @@
 {
-  "version": 3,
+  "version": 4,
   "width": 1280,
   "height": 580,
   "source_image": "assets/showcase/originals/creation-of-adam.jpg",
   "split_mode": "claude_orchestrated",
+  "status": "ok",
+  "detection_report": {
+    "requested": 5,
+    "domain": "renaissance_fresco",
+    "person_chain": [
+      "yolo",
+      "dino"
+    ],
+    "per_entity": [
+      {
+        "id": 3,
+        "name": "adam",
+        "label": "reclining nude man on the left",
+        "semantic_path": "subject.person[0]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 4,
+            "conf_range": "0.25-0.93"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          4,
+          177,
+          545,
+          573
+        ],
+        "det_score": 0.9279413223266602,
+        "sam_score": 0.978245735168457,
+        "pct": 12.39
+      },
+      {
+        "id": 4,
+        "name": "god_angels_cluster",
+        "label": "cluster of figures on the right",
+        "semantic_path": "subject.person[1]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 4,
+            "conf_range": "0.25-0.93"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          496,
+          97,
+          1274,
+          378
+        ],
+        "det_score": 0.8104038834571838,
+        "sam_score": 0.9753981828689575,
+        "pct": 9.36
+      },
+      {
+        "id": 0,
+        "name": "sky",
+        "label": "pale cream sky and cloudy atmosphere",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "pale cream sky",
+        "bbox": [
+          6,
+          5,
+          1272,
+          572
+        ],
+        "det_score": 0.3711249530315399,
+        "sam_score": 0.9226469993591309,
+        "pct": 42.85
+      },
+      {
+        "id": 1,
+        "name": "green_ground",
+        "label": "green mossy ground and earth",
+        "semantic_path": "background.ground",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "green mossy ground",
+        "bbox": [
+          13,
+          311,
+          674,
+          575
+        ],
+        "det_score": 0.3170853853225708,
+        "sam_score": 0.9843159914016724,
+        "pct": 8.82
+      },
+      {
+        "id": 2,
+        "name": "red_cloak",
+        "label": "large billowing dark red cloak or mantle",
+        "semantic_path": "subject.drapery",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "large billowing dark red cloak",
+        "bbox": [
+          611,
+          12,
+          1275,
+          448
+        ],
+        "det_score": 0.6246343851089478,
+        "sam_score": 0.9371112585067749,
+        "pct": 9.11
+      }
+    ],
+    "detected": 5,
+    "missed": 0,
+    "success_rate": 1.0,
+    "status": "ok"
+  },
   "plan": {
     "slug": "creation-of-adam",
     "domain": "renaissance_fresco",
@@ -48,7 +170,7 @@
       }
     ]
   },
-  "created_at": "2026-04-17T09:42:08Z",
+  "created_at": "2026-04-17T10:16:21Z",
   "layers": [
     {
       "id": "layer_6c3b58c4",

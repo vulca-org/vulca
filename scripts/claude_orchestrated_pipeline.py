@@ -34,6 +34,44 @@ ORIG_DIR = REPO / "assets" / "showcase" / "originals"
 SAM_CKPT = "/tmp/sam_vit_l.pth"
 
 
+# ── Domain routing: which detector chain to use per image domain ──
+# "person_chain" is the ORDERED fallback list for person entities.
+# Empty chain = image has no people (space/landscape/abstract).
+DOMAIN_PROFILES = {
+    # ── Photography: YOLO works great, DINO as fallback ──
+    "space_photograph":        {"person_chain": [],                "object_thresh": 0.20},
+    "portrait_photograph":     {"person_chain": ["yolo", "dino"],  "object_thresh": 0.20},
+    "historical_bw_photo":     {"person_chain": ["yolo", "dino"],  "object_thresh": 0.20},
+    "news_photograph_2024":    {"person_chain": ["yolo", "dino"],  "object_thresh": 0.20},
+    "photojournalism_1993":    {"person_chain": ["yolo", "dino"],  "object_thresh": 0.15},
+    "booking_photograph":      {"person_chain": ["yolo", "dino"],  "object_thresh": 0.20},
+    "official_portrait_photo": {"person_chain": ["yolo", "dino"],  "object_thresh": 0.20},
+
+    # ── Paintings: YOLO fails (cross-depiction gap), DINO primary ──
+    "renaissance_painting":         {"person_chain": ["dino"],         "object_thresh": 0.15},
+    "baroque_painting":             {"person_chain": ["yolo", "dino"], "object_thresh": 0.15},
+    "renaissance_fresco":           {"person_chain": ["yolo", "dino"], "object_thresh": 0.15},
+    "expressionist_painting":       {"person_chain": ["dino"],         "object_thresh": 0.15},
+    "post_impressionist_painting":  {"person_chain": ["dino"],         "object_thresh": 0.15},
+    "impressionist_painting":       {"person_chain": ["dino"],         "object_thresh": 0.15},
+    "surrealist_painting":          {"person_chain": ["dino"],         "object_thresh": 0.15},
+    "art_nouveau_painting":         {"person_chain": ["dino"],         "object_thresh": 0.15},
+    "american_realism_painting":    {"person_chain": ["yolo", "dino"], "object_thresh": 0.20},
+    "american_regionalist_painting":{"person_chain": ["yolo", "dino"], "object_thresh": 0.20},
+    "japanese_woodblock":           {"person_chain": ["dino"],         "object_thresh": 0.15},
+    "chinese_gongbi_scroll":        {"person_chain": ["dino"],         "object_thresh": 0.12, "tile": True},
+    "south_asian_fresco":           {"person_chain": ["yolo", "dino"], "object_thresh": 0.15},
+}
+
+DEFAULT_PROFILE = {"person_chain": ["yolo", "dino"], "object_thresh": 0.20}
+
+# Person-like prompts for DINO fallback on art domains
+DINO_PERSON_PROMPTS = "person . human figure . face . body ."
+
+# Minimum fraction of plan entities that must be detected to mark status="ok"
+SUCCESS_RATE_THRESHOLD = 0.70
+
+
 def load_grounding_dino(device="mps"):
     from transformers import AutoProcessor, AutoModelForZeroShotObjectDetection
     proc = AutoProcessor.from_pretrained("IDEA-Research/grounding-dino-tiny")
@@ -183,9 +221,84 @@ def detect_persons_yolo(yolo_model, img_path, min_conf=0.25):
     for b in r.boxes:
         xyxy = b.xyxy[0].cpu().numpy().astype(int).tolist()
         persons.append((xyxy, float(b.conf[0])))
-    # Sort by left-to-right (x center) for consistent naming
     persons.sort(key=lambda p: (p[0][0] + p[0][2]) / 2)
     return persons
+
+
+def detect_persons_dino(dino_proc, dino_model, device, img_pil, threshold=0.20):
+    """Fallback person detector via Grounding DINO.
+    Returns list of (bbox, conf) sorted by x-center, like YOLO output.
+    Used when YOLO fails on stylized artwork (screaming figures, gold-wrapped
+    couples, Renaissance nudes — all outside COCO's 'person' manifold).
+    """
+    inputs = dino_proc(images=img_pil, text=DINO_PERSON_PROMPTS,
+                       return_tensors="pt").to(device)
+    with torch.no_grad():
+        outputs = dino_model(**inputs)
+    results = dino_proc.post_process_grounded_object_detection(
+        outputs, inputs.input_ids,
+        threshold=threshold, text_threshold=threshold,
+        target_sizes=[img_pil.size[::-1]]
+    )[0]
+    persons = []
+    for i in range(len(results["boxes"])):
+        bbox = results["boxes"][i].cpu().numpy().astype(int).tolist()
+        conf = float(results["scores"][i])
+        persons.append((bbox, conf))
+    # Dedupe: if any two bboxes have IoU > 0.5, keep higher score
+    persons.sort(key=lambda p: -p[1])
+    deduped = []
+    for bbox, conf in persons:
+        is_dup = False
+        for kept_bbox, _ in deduped:
+            if _iou(bbox, kept_bbox) > 0.5:
+                is_dup = True
+                break
+        if not is_dup:
+            deduped.append((bbox, conf))
+    deduped.sort(key=lambda p: (p[0][0] + p[0][2]) / 2)
+    return deduped
+
+
+def _iou(a, b):
+    ax1, ay1, ax2, ay2 = a
+    bx1, by1, bx2, by2 = b
+    ix1, iy1 = max(ax1, bx1), max(ay1, by1)
+    ix2, iy2 = min(ax2, bx2), min(ay2, by2)
+    iw, ih = max(0, ix2 - ix1), max(0, iy2 - iy1)
+    inter = iw * ih
+    if inter == 0:
+        return 0.0
+    area_a = (ax2 - ax1) * (ay2 - ay1)
+    area_b = (bx2 - bx1) * (by2 - by1)
+    return inter / (area_a + area_b - inter)
+
+
+def detect_persons_with_chain(chain, yolo_model, dino_proc, dino_model, device,
+                               img_pil, img_path, yolo_conf=0.20, dino_conf=0.20):
+    """Try detector chain (e.g., ['yolo', 'dino']) until persons found.
+
+    Returns: (persons, detector_used, attempts)
+      - persons: list of (bbox, conf)
+      - detector_used: str name of successful detector, or None
+      - attempts: list of (name, count, conf_range) for reporting
+    """
+    attempts = []
+    for detector_name in chain:
+        if detector_name == "yolo":
+            persons = detect_persons_yolo(yolo_model, img_path, min_conf=yolo_conf)
+        elif detector_name == "dino":
+            persons = detect_persons_dino(dino_proc, dino_model, device, img_pil,
+                                           threshold=dino_conf)
+        else:
+            attempts.append((detector_name, 0, "unknown detector"))
+            continue
+        conf_range = f"{min(p[1] for p in persons):.2f}-{max(p[1] for p in persons):.2f}" \
+            if persons else "none"
+        attempts.append((detector_name, len(persons), conf_range))
+        if persons:
+            return persons, detector_name, attempts
+    return [], None, attempts
 
 
 def load_sam(device="mps"):
@@ -330,56 +443,100 @@ def process(slug: str, force: bool = False):
     device = plan.get("device", "mps")
     print(f"\n[{slug}] {W}x{H} · {len(plan['entities'])} entities · plan={plan.get('domain','?')}")
 
-    # Partition entities: persons (→YOLO) vs objects (→Grounding DINO)
+    # ── Domain profile: routes person detection + sets thresholds ──
+    domain = plan.get("domain", "")
+    profile = DOMAIN_PROFILES.get(domain, DEFAULT_PROFILE)
+    person_chain = profile["person_chain"]
+    object_thresh = profile["object_thresh"]
+    print(f"  domain={domain} chain={person_chain} obj_thresh={object_thresh}")
+
+    # Partition entities: persons (need chain) vs objects (→DINO)
     person_entities = [(i, e) for i, e in enumerate(plan["entities"])
-                       if e.get("detector") == "yolo" or "person[" in e.get("semantic_path", "")]
+                       if e.get("detector") == "yolo"
+                       or "person[" in e.get("semantic_path", "")]
     object_entities = [(i, e) for i, e in enumerate(plan["entities"])
                        if (i, e) not in person_entities]
+
+    # detection_report: every entity gets a record regardless of outcome
+    detection_report = {
+        "requested": len(plan["entities"]),
+        "domain": domain,
+        "person_chain": person_chain,
+        "per_entity": [],  # populated below
+    }
 
     t0 = time.time()
     sam_pred = load_sam(device)
     sam_pred.set_image(img_np)
     print(f"  SAM loaded: {time.time()-t0:.1f}s")
 
-    # ── Person detection via YOLO26 (precise bboxes, left-to-right order) ──
+    # Pre-load both detectors if needed (cost once, share across person+object)
+    yolo = None
+    dino_proc, dino_model = None, None
+    if person_entities and person_chain:
+        if "yolo" in person_chain:
+            yolo = load_yolo()
+        if "dino" in person_chain or object_entities:
+            dino_proc, dino_model = load_grounding_dino(device)
+    elif object_entities:
+        dino_proc, dino_model = load_grounding_dino(device)
+
+    # ── Person detection via fallback chain ──
     yolo_persons = []
-    if person_entities:
+    person_detector_used = None
+    person_attempts = []
+    if person_entities and person_chain:
         t0 = time.time()
-        yolo = load_yolo()
-        yolo_persons = detect_persons_yolo(yolo, str(img_path), min_conf=0.20)
-        print(f"  YOLO26 persons: {len(yolo_persons)} detected in {time.time()-t0:.1f}s")
+        yolo_persons, person_detector_used, person_attempts = detect_persons_with_chain(
+            person_chain, yolo, dino_proc, dino_model, device,
+            img_pil, str(img_path),
+            yolo_conf=0.20, dino_conf=0.20,
+        )
+        attempts_str = ", ".join(f"{n}:{c}" for n, c, _ in person_attempts)
+        print(f"  PersonChain [{attempts_str}] → used={person_detector_used} "
+              f"got {len(yolo_persons)} persons in {time.time()-t0:.1f}s")
 
     # ── Object detection via Grounding DINO (joint pass) ──
     dino_assigned = {}
-    if object_entities:
+    if object_entities and dino_proc is not None:
         t0 = time.time()
-        dino_proc, dino_model = load_grounding_dino(device)
         object_labels = [e["label"] for _, e in object_entities]
-        low_thresh = min((e.get("threshold", plan.get("threshold_hint", 0.25))
-                          for _, e in object_entities), default=0.15)
+        low_thresh = min((e.get("threshold", object_thresh)
+                          for _, e in object_entities), default=object_thresh)
         dino_assigned = detect_all_bboxes(dino_proc, dino_model, device, img_pil,
                                            object_labels, threshold=low_thresh)
         print(f"  DINO objects: {len(dino_assigned)}/{len(object_labels)} in {time.time()-t0:.1f}s")
 
     layers_raw = []
 
-    # Person layers: match YOLO detections to plan's person entities by left-to-right order
+    # Person layers: match detections to plan's person entities by left-to-right order
     person_ents_sorted = sorted(person_entities, key=lambda x: x[1].get("order", x[0]))
     for rank, (i, entity) in enumerate(person_ents_sorted):
         semantic_path = entity.get("semantic_path", f"subject.person[{i}]")
         label = entity["label"]
+        record = {"id": i, "name": entity.get("name", label.replace(" ", "_")),
+                  "label": label, "semantic_path": semantic_path,
+                  "kind": "person",
+                  "attempts": [{"detector": n, "count": c, "conf_range": r}
+                               for n, c, r in person_attempts]}
         if rank >= len(yolo_persons):
-            print(f"  [{i}] {label[:40]:40s} NO YOLO DETECTION (only {len(yolo_persons)} persons found)")
+            print(f"  [{i}] {label[:40]:40s} MISSED (chain: {[n for n,_,_ in person_attempts]})")
+            record.update({"status": "missed", "reason": "no_detection_after_chain"})
+            detection_report["per_entity"].append(record)
             continue
-        bbox, yolo_conf = yolo_persons[rank]
+        bbox, det_conf = yolo_persons[rank]
         mask, sam_score = segment_bbox(sam_pred, bbox)
         pct = mask.sum() / (H * W) * 100
-        print(f"  [P{i}] {label[:30]:30s} yolo[{rank}] bbox={bbox} yolo={yolo_conf:.2f} sam={sam_score:.2f} pct={pct:.1f}%")
+        print(f"  [P{i}] {label[:30]:30s} {person_detector_used}[{rank}] bbox={bbox} "
+              f"det={det_conf:.2f} sam={sam_score:.2f} pct={pct:.1f}%")
+        record.update({"status": "detected", "detector": person_detector_used,
+                       "bbox": bbox, "det_score": det_conf, "sam_score": sam_score,
+                       "pct": round(pct, 2)})
+        detection_report["per_entity"].append(record)
         layers_raw.append({
-            "id": i, "label": label,
-            "name": entity.get("name", label.replace(" ", "_")),
+            "id": i, "label": label, "name": record["name"],
             "semantic_path": semantic_path, "bbox": bbox,
-            "det_score": yolo_conf, "sam_score": sam_score,
+            "det_score": det_conf, "sam_score": sam_score,
             "z": _z_index_for(semantic_path), "mask": mask,
         })
 
@@ -423,16 +580,25 @@ def process(slug: str, force: bool = False):
     for i, entity in object_entities:
         label = entity["label"]
         semantic_path = entity.get("semantic_path", f"subject.entity[{i}]")
+        record = {"id": i, "name": entity.get("name", label.replace(" ", "_")),
+                  "label": label, "semantic_path": semantic_path, "kind": "object"}
         if label not in dino_assigned:
-            print(f"  [O{i}] {label[:40]:40s} NOT DETECTED")
+            print(f"  [O{i}] {label[:40]:40s} MISSED (dino)")
+            record.update({"status": "missed", "reason": "dino_not_matched"})
+            detection_report["per_entity"].append(record)
             continue
         bbox, score, phrase = dino_assigned[label]
         mask, sam_score = segment_bbox(sam_pred, bbox)
         pct = mask.sum() / (H * W) * 100
-        print(f"  [O{i}] {label[:30]:30s} → '{phrase[:20]}' bbox={bbox} det={score:.2f} sam={sam_score:.2f} pct={pct:.1f}%")
+        print(f"  [O{i}] {label[:30]:30s} → '{phrase[:20]}' bbox={bbox} "
+              f"det={score:.2f} sam={sam_score:.2f} pct={pct:.1f}%")
+        record.update({"status": "detected", "detector": "dino",
+                       "matched_phrase": phrase, "bbox": bbox,
+                       "det_score": score, "sam_score": sam_score,
+                       "pct": round(pct, 2)})
+        detection_report["per_entity"].append(record)
         layers_raw.append({
-            "id": i, "label": label,
-            "name": entity.get("name", label.replace(" ", "_")),
+            "id": i, "label": label, "name": record["name"],
             "semantic_path": semantic_path, "bbox": bbox,
             "det_score": score, "sam_score": sam_score,
             "z": _z_index_for(semantic_path), "mask": mask,
@@ -478,26 +644,59 @@ def process(slug: str, force: bool = False):
             "rotation": 0.0, "content_bbox": None,
         })
 
+    # Finalize detection report: success rate + overall status
+    detected_count = sum(1 for e in detection_report["per_entity"] if e.get("status") == "detected")
+    missed_count = sum(1 for e in detection_report["per_entity"] if e.get("status") == "missed")
+    detection_report["detected"] = detected_count
+    detection_report["missed"] = missed_count
+    success_rate = detected_count / max(detection_report["requested"], 1)
+    detection_report["success_rate"] = round(success_rate, 3)
+    status = "ok" if success_rate >= SUCCESS_RATE_THRESHOLD else "partial"
+    detection_report["status"] = status
+
     manifest = {
-        "version": 3,
+        "version": 4,
         "width": W, "height": H,
         "source_image": str(img_path.relative_to(REPO)),
         "split_mode": "claude_orchestrated",
+        "status": status,
+        "detection_report": detection_report,
         "plan": plan,
         "created_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "layers": manifest_layers,
     }
     (out_subdir / "manifest.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False))
-    print(f"OK {slug}: {len(manifest_layers)} layers → {out_subdir}")
+
+    marker = "✓" if status == "ok" else "⚠"
+    print(f"{marker} {slug}: {status.upper()} "
+          f"[{detected_count}/{detection_report['requested']} detected] "
+          f"→ {len(manifest_layers)} layers ({out_subdir})")
+    if missed_count > 0:
+        missed_names = [e["name"] for e in detection_report["per_entity"] if e.get("status") == "missed"]
+        print(f"   Missed: {missed_names}")
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("slugs", nargs="+")
     parser.add_argument("--force", action="store_true")
+    parser.add_argument("--strict", action="store_true",
+                        help="Exit non-zero if any slug has status=partial")
     args = parser.parse_args()
+    partial_slugs = []
     for slug in args.slugs:
         process(slug, force=args.force)
+        # Check status from freshly-written manifest
+        mf = OUT_DIR / slug / "manifest.json"
+        if mf.exists():
+            m = json.loads(mf.read_text())
+            if m.get("status") == "partial":
+                partial_slugs.append(slug)
+
+    if partial_slugs:
+        print(f"\n⚠  {len(partial_slugs)} slug(s) with status=partial: {partial_slugs}")
+        if args.strict:
+            sys.exit(2)
 
 
 if __name__ == "__main__":

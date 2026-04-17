@@ -1,9 +1,60 @@
 {
-  "version": 3,
+  "version": 4,
   "width": 2560,
   "height": 120,
   "source_image": "assets/showcase/originals/qingming-bridge.jpg",
   "split_mode": "claude_orchestrated",
+  "status": "partial",
+  "detection_report": {
+    "requested": 3,
+    "domain": "chinese_gongbi_scroll",
+    "person_chain": [
+      "dino"
+    ],
+    "per_entity": [
+      {
+        "id": 0,
+        "name": "buildings_trees",
+        "label": "rows of buildings and trees behind river",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "missed",
+        "reason": "dino_not_matched"
+      },
+      {
+        "id": 1,
+        "name": "bridge",
+        "label": "arched wooden bridge",
+        "semantic_path": "subject.bridge",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "wooden bridge",
+        "bbox": [
+          -2,
+          45,
+          2557,
+          79
+        ],
+        "det_score": 0.1679186224937439,
+        "sam_score": 0.9623823165893555,
+        "pct": 96.1
+      },
+      {
+        "id": 2,
+        "name": "water_boats",
+        "label": "river and boats below bridge",
+        "semantic_path": "foreground.water",
+        "kind": "object",
+        "status": "missed",
+        "reason": "dino_not_matched"
+      }
+    ],
+    "detected": 1,
+    "missed": 2,
+    "success_rate": 0.333,
+    "status": "partial"
+  },
   "plan": {
     "domain": "chinese_gongbi_scroll",
     "notes": "Zhang Zeduan c.1100s. Scroll scene with bridge, boats, people. Very horizontal.",
@@ -32,7 +83,7 @@
     "slug": "qingming-bridge",
     "device": "mps"
   },
-  "created_at": "2026-04-17T09:52:27Z",
+  "created_at": "2026-04-17T10:19:28Z",
   "layers": [
     {
       "id": "layer_28f3d0b5",

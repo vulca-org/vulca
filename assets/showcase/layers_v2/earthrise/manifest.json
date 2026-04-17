@@ -1,9 +1,78 @@
 {
-  "version": 3,
+  "version": 4,
   "width": 2400,
   "height": 2400,
   "source_image": "assets/showcase/originals/earthrise.jpg",
   "split_mode": "claude_orchestrated",
+  "status": "ok",
+  "detection_report": {
+    "requested": 3,
+    "domain": "space_photograph",
+    "person_chain": [],
+    "per_entity": [
+      {
+        "id": 0,
+        "name": "space",
+        "label": "black empty space",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "black empty space",
+        "bbox": [
+          11,
+          15,
+          2389,
+          2031
+        ],
+        "det_score": 0.6574133634567261,
+        "sam_score": 1.0058715343475342,
+        "pct": 98.18
+      },
+      {
+        "id": 1,
+        "name": "earth",
+        "label": "planet Earth",
+        "semantic_path": "subject.planet",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "planet earth",
+        "bbox": [
+          1174,
+          1091,
+          1550,
+          1380
+        ],
+        "det_score": 0.75457763671875,
+        "sam_score": 1.0056633949279785,
+        "pct": 1.24
+      },
+      {
+        "id": 2,
+        "name": "lunar_surface",
+        "label": "gray cratered lunar surface",
+        "semantic_path": "foreground.ground",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "gray cratered lunar surface",
+        "bbox": [
+          11,
+          1762,
+          2384,
+          2386
+        ],
+        "det_score": 0.5350669622421265,
+        "sam_score": 1.0121705532073975,
+        "pct": 20.59
+      }
+    ],
+    "detected": 3,
+    "missed": 0,
+    "success_rate": 1.0,
+    "status": "ok"
+  },
   "plan": {
     "domain": "space_photograph",
     "notes": "Apollo 8, 1968. No humans, just Earth over lunar surface.",
@@ -32,7 +101,7 @@
     "slug": "earthrise",
     "device": "mps"
   },
-  "created_at": "2026-04-17T09:49:25Z",
+  "created_at": "2026-04-17T10:16:30Z",
   "layers": [
     {
       "id": "layer_25f41242",

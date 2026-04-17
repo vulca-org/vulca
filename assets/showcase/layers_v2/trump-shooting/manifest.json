@@ -1,9 +1,162 @@
 {
-  "version": 3,
+  "version": 4,
   "width": 387,
   "height": 258,
   "source_image": "assets/showcase/originals/trump-shooting.jpg",
   "split_mode": "claude_orchestrated",
+  "status": "ok",
+  "detection_report": {
+    "requested": 6,
+    "domain": "news_photograph_2024",
+    "person_chain": [
+      "yolo",
+      "dino"
+    ],
+    "per_entity": [
+      {
+        "id": 2,
+        "name": "agent_left",
+        "label": "secret service agent in dark suit on left",
+        "semantic_path": "subject.person[1]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 6,
+            "conf_range": "0.44-0.91"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          64,
+          113,
+          110,
+          170
+        ],
+        "det_score": 0.6813874840736389,
+        "sam_score": 0.9662108421325684,
+        "pct": 1.02
+      },
+      {
+        "id": 1,
+        "name": "trump",
+        "label": "man with raised fist and blood on ear",
+        "semantic_path": "subject.person[0]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 6,
+            "conf_range": "0.44-0.91"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          50,
+          98,
+          213,
+          254
+        ],
+        "det_score": 0.8352227210998535,
+        "sam_score": 0.9456644058227539,
+        "pct": 10.28
+      },
+      {
+        "id": 3,
+        "name": "agent_right",
+        "label": "secret service agent in dark suit on right",
+        "semantic_path": "subject.person[2]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 6,
+            "conf_range": "0.44-0.91"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          128,
+          22,
+          207,
+          173
+        ],
+        "det_score": 0.44432035088539124,
+        "sam_score": 0.9315383434295654,
+        "pct": 3.7
+      },
+      {
+        "id": 4,
+        "name": "agent_bottom",
+        "label": "bent over agent in lower right",
+        "semantic_path": "subject.person[3]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 6,
+            "conf_range": "0.44-0.91"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          128,
+          22,
+          212,
+          255
+        ],
+        "det_score": 0.4584771692752838,
+        "sam_score": 0.9477543830871582,
+        "pct": 7.06
+      },
+      {
+        "id": 0,
+        "name": "sky_flag",
+        "label": "blue sky with american flag",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "blue sky",
+        "bbox": [
+          0,
+          0,
+          385,
+          253
+        ],
+        "det_score": 0.442900687456131,
+        "sam_score": 0.9793294668197632,
+        "pct": 48.27
+      },
+      {
+        "id": 5,
+        "name": "stage_railing",
+        "label": "red white blue striped stage railing",
+        "semantic_path": "foreground.stage",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "red white blue striped stage railing",
+        "bbox": [
+          0,
+          202,
+          350,
+          256
+        ],
+        "det_score": 0.466113418340683,
+        "sam_score": 0.9841580390930176,
+        "pct": 8.62
+      }
+    ],
+    "detected": 6,
+    "missed": 0,
+    "success_rate": 1.0,
+    "status": "ok"
+  },
   "plan": {
     "domain": "news_photograph_2024",
     "notes": "Evan Vucci. Trump with raised fist + secret service agents + flag + stage.",
@@ -54,7 +207,7 @@
     "slug": "trump-shooting",
     "device": "mps"
   },
-  "created_at": "2026-04-17T09:55:27Z",
+  "created_at": "2026-04-17T10:22:28Z",
   "layers": [
     {
       "id": "layer_9bc41fe1",

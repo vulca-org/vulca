@@ -1,9 +1,155 @@
 {
-  "version": 3,
+  "version": 4,
   "width": 1280,
   "height": 803,
   "source_image": "assets/showcase/originals/birth-of-venus.jpg",
   "split_mode": "claude_orchestrated",
+  "status": "ok",
+  "detection_report": {
+    "requested": 6,
+    "domain": "renaissance_painting",
+    "person_chain": [
+      "dino"
+    ],
+    "per_entity": [
+      {
+        "id": 3,
+        "name": "wind_figures",
+        "label": "two flying embracing figures on left",
+        "semantic_path": "subject.person[0]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "dino",
+            "count": 7,
+            "conf_range": "0.43-0.56"
+          }
+        ],
+        "status": "detected",
+        "detector": "dino",
+        "bbox": [
+          10,
+          34,
+          497,
+          596
+        ],
+        "det_score": 0.5149659514427185,
+        "sam_score": 0.9759336709976196,
+        "pct": 11.54
+      },
+      {
+        "id": 4,
+        "name": "venus",
+        "label": "standing nude woman with long hair",
+        "semantic_path": "subject.person[1]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "dino",
+            "count": 7,
+            "conf_range": "0.43-0.56"
+          }
+        ],
+        "status": "detected",
+        "detector": "dino",
+        "bbox": [
+          382,
+          84,
+          443,
+          156
+        ],
+        "det_score": 0.48420703411102295,
+        "sam_score": 0.9709441661834717,
+        "pct": 0.36
+      },
+      {
+        "id": 5,
+        "name": "flora",
+        "label": "woman in floral dress holding cloak",
+        "semantic_path": "subject.person[2]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "dino",
+            "count": 7,
+            "conf_range": "0.43-0.56"
+          }
+        ],
+        "status": "detected",
+        "detector": "dino",
+        "bbox": [
+          428,
+          97,
+          481,
+          174
+        ],
+        "det_score": 0.4339551329612732,
+        "sam_score": 0.8955033421516418,
+        "pct": 0.27
+      },
+      {
+        "id": 0,
+        "name": "sea_sky",
+        "label": "pale blue green sea and sky",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "green sea",
+        "bbox": [
+          5,
+          4,
+          1272,
+          792
+        ],
+        "det_score": 0.31663310527801514,
+        "sam_score": 0.9239308834075928,
+        "pct": 66.11
+      },
+      {
+        "id": 1,
+        "name": "shell",
+        "label": "large scalloped golden seashell",
+        "semantic_path": "subject.shell",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "large scalloped golden seashell",
+        "bbox": [
+          310,
+          491,
+          857,
+          730
+        ],
+        "det_score": 0.48293378949165344,
+        "sam_score": 0.993559718132019,
+        "pct": 7.89
+      },
+      {
+        "id": 2,
+        "name": "trees",
+        "label": "dark green trees on the right",
+        "semantic_path": "background.trees",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "dark green trees",
+        "bbox": [
+          706,
+          2,
+          1276,
+          359
+        ],
+        "det_score": 0.29984432458877563,
+        "sam_score": 0.9260499477386475,
+        "pct": 7.5
+      }
+    ],
+    "detected": 6,
+    "missed": 0,
+    "success_rate": 1.0,
+    "status": "ok"
+  },
   "plan": {
     "domain": "renaissance_painting",
     "notes": "Botticelli c.1485. Venus + 2 wind gods + flora figure on right + shell + trees.",
@@ -53,8 +199,182 @@
     "slug": "birth-of-venus",
     "device": "mps"
   },
-  "created_at": "2026-04-17T09:53:18Z",
+  "created_at": "2026-04-17T10:20:22Z",
   "layers": [
+    {
+      "id": "layer_82afe341",
+      "name": "wind_figures",
+      "label": "two flying embracing figures on left",
+      "description": "two flying embracing figures on left",
+      "z_index": 50,
+      "blend_mode": "normal",
+      "content_type": "wind_figures",
+      "semantic_path": "subject.person[0]",
+      "visible": true,
+      "locked": false,
+      "file": "wind_figures.png",
+      "bbox": [
+        10,
+        34,
+        497,
+        596
+      ],
+      "det_score": 0.5149659514427185,
+      "sam_score": 0.9759336709976196,
+      "regeneration_prompt": "two flying embracing figures on left",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_b6ae7053",
+      "name": "venus",
+      "label": "standing nude woman with long hair",
+      "description": "standing nude woman with long hair",
+      "z_index": 50,
+      "blend_mode": "normal",
+      "content_type": "venus",
+      "semantic_path": "subject.person[1]",
+      "visible": true,
+      "locked": false,
+      "file": "venus.png",
+      "bbox": [
+        382,
+        84,
+        443,
+        156
+      ],
+      "det_score": 0.48420703411102295,
+      "sam_score": 0.9709441661834717,
+      "regeneration_prompt": "standing nude woman with long hair",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_d72cd1ae",
+      "name": "flora",
+      "label": "woman in floral dress holding cloak",
+      "description": "woman in floral dress holding cloak",
+      "z_index": 50,
+      "blend_mode": "normal",
+      "content_type": "flora",
+      "semantic_path": "subject.person[2]",
+      "visible": true,
+      "locked": false,
+      "file": "flora.png",
+      "bbox": [
+        428,
+        97,
+        481,
+        174
+      ],
+      "det_score": 0.4339551329612732,
+      "sam_score": 0.8955033421516418,
+      "regeneration_prompt": "woman in floral dress holding cloak",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_208110d2",
+      "name": "wind_figures__skin",
+      "label": "wind_figures skin",
+      "description": "wind_figures skin",
+      "z_index": 52,
+      "blend_mode": "normal",
+      "content_type": "wind_figures__skin",
+      "semantic_path": "subject.person[0].skin",
+      "visible": true,
+      "locked": false,
+      "file": "wind_figures__skin.png",
+      "bbox": [
+        10,
+        34,
+        497,
+        596
+      ],
+      "det_score": 0.5149659514427185,
+      "sam_score": 0.95,
+      "regeneration_prompt": "wind_figures skin",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_45de894b",
+      "name": "wind_figures__hair",
+      "label": "wind_figures hair",
+      "description": "wind_figures hair",
+      "z_index": 54,
+      "blend_mode": "normal",
+      "content_type": "wind_figures__hair",
+      "semantic_path": "subject.person[0].hair",
+      "visible": true,
+      "locked": false,
+      "file": "wind_figures__hair.png",
+      "bbox": [
+        10,
+        34,
+        497,
+        596
+      ],
+      "det_score": 0.5149659514427185,
+      "sam_score": 0.95,
+      "regeneration_prompt": "wind_figures hair",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_e017ffce",
+      "name": "wind_figures__hat",
+      "label": "wind_figures hat",
+      "description": "wind_figures hat",
+      "z_index": 53,
+      "blend_mode": "normal",
+      "content_type": "wind_figures__hat",
+      "semantic_path": "subject.person[0].hat",
+      "visible": true,
+      "locked": false,
+      "file": "wind_figures__hat.png",
+      "bbox": [
+        10,
+        34,
+        497,
+        596
+      ],
+      "det_score": 0.5149659514427185,
+      "sam_score": 0.95,
+      "regeneration_prompt": "wind_figures hat",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
     {
       "id": "layer_90e9bb97",
       "name": "sea_sky",

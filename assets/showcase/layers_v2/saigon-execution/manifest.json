@@ -1,9 +1,118 @@
 {
-  "version": 3,
+  "version": 4,
   "width": 1280,
   "height": 922,
   "source_image": "assets/showcase/originals/saigon-execution.jpg",
   "split_mode": "claude_orchestrated",
+  "status": "ok",
+  "detection_report": {
+    "requested": 4,
+    "domain": "historical_bw_photo",
+    "person_chain": [
+      "yolo",
+      "dino"
+    ],
+    "per_entity": [
+      {
+        "id": 1,
+        "name": "soldier_left",
+        "label": "helmeted soldier on left",
+        "semantic_path": "subject.person[0]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 4,
+            "conf_range": "0.38-0.96"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          0,
+          341,
+          189,
+          915
+        ],
+        "det_score": 0.7975810170173645,
+        "sam_score": 0.9557254314422607,
+        "pct": 5.9
+      },
+      {
+        "id": 2,
+        "name": "executioner",
+        "label": "man in plaid shirt holding pistol",
+        "semantic_path": "subject.person[1]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 4,
+            "conf_range": "0.38-0.96"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          197,
+          394,
+          246,
+          474
+        ],
+        "det_score": 0.3795929551124573,
+        "sam_score": 0.9409880638122559,
+        "pct": 0.22
+      },
+      {
+        "id": 3,
+        "name": "victim",
+        "label": "prisoner in checkered shirt",
+        "semantic_path": "subject.person[2]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 4,
+            "conf_range": "0.38-0.96"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          101,
+          267,
+          868,
+          915
+        ],
+        "det_score": 0.959904134273529,
+        "sam_score": 0.9920791387557983,
+        "pct": 17.47
+      },
+      {
+        "id": 0,
+        "name": "street_buildings",
+        "label": "Saigon street with buildings",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "buildings",
+        "bbox": [
+          503,
+          3,
+          1277,
+          502
+        ],
+        "det_score": 0.3824838697910309,
+        "sam_score": 0.9721368551254272,
+        "pct": 19.22
+      }
+    ],
+    "detected": 4,
+    "missed": 0,
+    "success_rate": 1.0,
+    "status": "ok"
+  },
   "plan": {
     "domain": "historical_bw_photo",
     "notes": "Eddie Adams 1968. Executioner + victim + soldier + street.",
@@ -41,7 +150,7 @@
     "slug": "saigon-execution",
     "device": "mps"
   },
-  "created_at": "2026-04-17T09:54:21Z",
+  "created_at": "2026-04-17T10:21:25Z",
   "layers": [
     {
       "id": "layer_1bb3421d",

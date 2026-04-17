@@ -1,9 +1,93 @@
 {
-  "version": 3,
+  "version": 4,
   "width": 265,
   "height": 396,
   "source_image": "assets/showcase/originals/vj-day-kiss.jpg",
   "split_mode": "claude_orchestrated",
+  "status": "ok",
+  "detection_report": {
+    "requested": 3,
+    "domain": "historical_bw_photo",
+    "person_chain": [
+      "yolo",
+      "dino"
+    ],
+    "per_entity": [
+      {
+        "id": 1,
+        "name": "sailor",
+        "label": "sailor in dark navy uniform",
+        "semantic_path": "subject.person[0]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 9,
+            "conf_range": "0.21-0.92"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          0,
+          101,
+          31,
+          227
+        ],
+        "det_score": 0.8975859880447388,
+        "sam_score": 0.9843753576278687,
+        "pct": 2.65
+      },
+      {
+        "id": 2,
+        "name": "nurse",
+        "label": "nurse in white uniform being kissed",
+        "semantic_path": "subject.person[1]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 9,
+            "conf_range": "0.21-0.92"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          27,
+          114,
+          41,
+          155
+        ],
+        "det_score": 0.5460287928581238,
+        "sam_score": 0.9404685497283936,
+        "pct": 0.32
+      },
+      {
+        "id": 0,
+        "name": "street_crowd",
+        "label": "busy Times Square street with pedestrians",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "pedestrians",
+        "bbox": [
+          61,
+          92,
+          198,
+          358
+        ],
+        "det_score": 0.45421549677848816,
+        "sam_score": 0.9526113271713257,
+        "pct": 12.86
+      }
+    ],
+    "detected": 3,
+    "missed": 0,
+    "success_rate": 1.0,
+    "status": "ok"
+  },
   "plan": {
     "domain": "historical_bw_photo",
     "notes": "Eisenstaedt 1945. Sailor kissing nurse in Times Square crowd.",
@@ -34,7 +118,7 @@
     "slug": "vj-day-kiss",
     "device": "mps"
   },
-  "created_at": "2026-04-17T09:54:34Z",
+  "created_at": "2026-04-17T10:21:39Z",
   "layers": [
     {
       "id": "layer_be1719f0",

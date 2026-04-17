@@ -1,9 +1,99 @@
 {
-  "version": 3,
+  "version": 4,
   "width": 1280,
   "height": 860,
   "source_image": "assets/showcase/originals/great-wave.jpg",
   "split_mode": "claude_orchestrated",
+  "status": "ok",
+  "detection_report": {
+    "requested": 4,
+    "domain": "japanese_woodblock",
+    "person_chain": [
+      "dino"
+    ],
+    "per_entity": [
+      {
+        "id": 0,
+        "name": "sky",
+        "label": "pale yellow and gray sky",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "pale yellow gray sky",
+        "bbox": [
+          4,
+          4,
+          1274,
+          608
+        ],
+        "det_score": 0.4314032196998596,
+        "sam_score": 0.9801660776138306,
+        "pct": 42.59
+      },
+      {
+        "id": 1,
+        "name": "mount_fuji",
+        "label": "small white snowy mountain in the distance",
+        "semantic_path": "background.mountain",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "small white snowy mountain",
+        "bbox": [
+          740,
+          547,
+          893,
+          629
+        ],
+        "det_score": 0.7264909744262695,
+        "sam_score": 0.9807389974594116,
+        "pct": 0.49
+      },
+      {
+        "id": 2,
+        "name": "great_wave",
+        "label": "large blue curling wave with white foam",
+        "semantic_path": "subject.wave",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "large blue curling wave",
+        "bbox": [
+          17,
+          71,
+          756,
+          639
+        ],
+        "det_score": 0.48034727573394775,
+        "sam_score": 0.9861108064651489,
+        "pct": 22.19
+      },
+      {
+        "id": 3,
+        "name": "boats",
+        "label": "small wooden boats with rowers",
+        "semantic_path": "subject.boat",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "small wooden boats",
+        "bbox": [
+          509,
+          638,
+          1045,
+          840
+        ],
+        "det_score": 0.4274096190929413,
+        "sam_score": 0.9654699563980103,
+        "pct": 3.44
+      }
+    ],
+    "detected": 4,
+    "missed": 0,
+    "success_rate": 1.0,
+    "status": "ok"
+  },
   "plan": {
     "domain": "japanese_woodblock",
     "notes": "Hokusai c.1831. Large wave + Mt Fuji + small boats.",
@@ -39,7 +129,7 @@
     "slug": "great-wave",
     "device": "mps"
   },
-  "created_at": "2026-04-17T09:52:17Z",
+  "created_at": "2026-04-17T10:19:19Z",
   "layers": [
     {
       "id": "layer_af8ed028",

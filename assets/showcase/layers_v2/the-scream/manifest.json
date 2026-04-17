@@ -1,9 +1,111 @@
 {
-  "version": 3,
+  "version": 4,
   "width": 1031,
   "height": 1280,
   "source_image": "assets/showcase/originals/the-scream.jpg",
   "split_mode": "claude_orchestrated",
+  "status": "ok",
+  "detection_report": {
+    "requested": 4,
+    "domain": "expressionist_painting",
+    "person_chain": [
+      "dino"
+    ],
+    "per_entity": [
+      {
+        "id": 3,
+        "name": "background_figures",
+        "label": "two dark silhouetted figures",
+        "semantic_path": "subject.person[1]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "dino",
+            "count": 4,
+            "conf_range": "0.33-0.62"
+          }
+        ],
+        "status": "detected",
+        "detector": "dino",
+        "bbox": [
+          12,
+          443,
+          67,
+          682
+        ],
+        "det_score": 0.3347732126712799,
+        "sam_score": 0.9263505935668945,
+        "pct": 0.47
+      },
+      {
+        "id": 2,
+        "name": "screaming_figure",
+        "label": "central figure with hands on head",
+        "semantic_path": "subject.person[0]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "dino",
+            "count": 4,
+            "conf_range": "0.33-0.62"
+          }
+        ],
+        "status": "detected",
+        "detector": "dino",
+        "bbox": [
+          66,
+          444,
+          129,
+          687
+        ],
+        "det_score": 0.3952474296092987,
+        "sam_score": 0.9709288477897644,
+        "pct": 0.69
+      },
+      {
+        "id": 0,
+        "name": "sky_water",
+        "label": "orange swirling sky with fjord water and distant hills",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "swirling sky",
+        "bbox": [
+          3,
+          6,
+          974,
+          393
+        ],
+        "det_score": 0.409469872713089,
+        "sam_score": 0.9917501211166382,
+        "pct": 25.69
+      },
+      {
+        "id": 1,
+        "name": "bridge",
+        "label": "brown wooden bridge with railing",
+        "semantic_path": "subject.bridge",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "brown wooden bridge",
+        "bbox": [
+          12,
+          448,
+          977,
+          1274
+        ],
+        "det_score": 0.4304176867008209,
+        "sam_score": 0.9243648052215576,
+        "pct": 38.29
+      }
+    ],
+    "detected": 4,
+    "missed": 0,
+    "success_rate": 1.0,
+    "status": "ok"
+  },
   "plan": {
     "domain": "expressionist_painting",
     "notes": "Munch 1893. Single central screaming figure + 2 background figures + bridge + fjord.",
@@ -40,8 +142,66 @@
     "slug": "the-scream",
     "device": "mps"
   },
-  "created_at": "2026-04-17T09:53:08Z",
+  "created_at": "2026-04-17T10:20:08Z",
   "layers": [
+    {
+      "id": "layer_0dc964d8",
+      "name": "background_figures",
+      "label": "two dark silhouetted figures",
+      "description": "two dark silhouetted figures",
+      "z_index": 50,
+      "blend_mode": "normal",
+      "content_type": "background_figures",
+      "semantic_path": "subject.person[1]",
+      "visible": true,
+      "locked": false,
+      "file": "background_figures.png",
+      "bbox": [
+        12,
+        443,
+        67,
+        682
+      ],
+      "det_score": 0.3347732126712799,
+      "sam_score": 0.9263505935668945,
+      "regeneration_prompt": "two dark silhouetted figures",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_cd5e9b23",
+      "name": "screaming_figure",
+      "label": "central figure with hands on head",
+      "description": "central figure with hands on head",
+      "z_index": 50,
+      "blend_mode": "normal",
+      "content_type": "screaming_figure",
+      "semantic_path": "subject.person[0]",
+      "visible": true,
+      "locked": false,
+      "file": "screaming_figure.png",
+      "bbox": [
+        66,
+        444,
+        129,
+        687
+      ],
+      "det_score": 0.3952474296092987,
+      "sam_score": 0.9709288477897644,
+      "regeneration_prompt": "central figure with hands on head",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
     {
       "id": "layer_dacea39a",
       "name": "sky_water",

@@ -1,9 +1,68 @@
 {
-  "version": 3,
+  "version": 4,
   "width": 316,
   "height": 316,
   "source_image": "assets/showcase/originals/trump-mugshot.jpg",
   "split_mode": "claude_orchestrated",
+  "status": "ok",
+  "detection_report": {
+    "requested": 2,
+    "domain": "booking_photograph",
+    "person_chain": [
+      "yolo",
+      "dino"
+    ],
+    "per_entity": [
+      {
+        "id": 1,
+        "name": "trump",
+        "label": "man in dark suit with blond hair",
+        "semantic_path": "subject.person[0]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 1,
+            "conf_range": "0.98-0.98"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          0,
+          46,
+          315,
+          315
+        ],
+        "det_score": 0.9752764105796814,
+        "sam_score": 1.018358826637268,
+        "pct": 52.91
+      },
+      {
+        "id": 0,
+        "name": "wall",
+        "label": "gray concrete jail wall",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "gray concrete jail wall",
+        "bbox": [
+          0,
+          0,
+          316,
+          316
+        ],
+        "det_score": 0.4896050989627838,
+        "sam_score": 0.9592204093933105,
+        "pct": 83.18
+      }
+    ],
+    "detected": 2,
+    "missed": 0,
+    "success_rate": 1.0,
+    "status": "ok"
+  },
   "plan": {
     "domain": "booking_photograph",
     "notes": "Fulton County jail 2023 booking photo.",
@@ -27,7 +86,7 @@
     "slug": "trump-mugshot",
     "device": "mps"
   },
-  "created_at": "2026-04-17T09:55:14Z",
+  "created_at": "2026-04-17T10:22:14Z",
   "layers": [
     {
       "id": "layer_e3249219",

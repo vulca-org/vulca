@@ -1,9 +1,92 @@
 {
-  "version": 3,
+  "version": 4,
   "width": 360,
   "height": 230,
   "source_image": "assets/showcase/originals/vulture-and-girl.jpg",
   "split_mode": "claude_orchestrated",
+  "status": "ok",
+  "detection_report": {
+    "requested": 3,
+    "domain": "photojournalism_1993",
+    "person_chain": [
+      "yolo",
+      "dino"
+    ],
+    "per_entity": [
+      {
+        "id": 1,
+        "name": "child",
+        "label": "emaciated starving child kneeling on ground",
+        "semantic_path": "subject.person[0]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 0,
+            "conf_range": "none"
+          },
+          {
+            "detector": "dino",
+            "count": 5,
+            "conf_range": "0.20-0.47"
+          }
+        ],
+        "status": "detected",
+        "detector": "dino",
+        "bbox": [
+          87,
+          66,
+          132,
+          117
+        ],
+        "det_score": 0.46752414107322693,
+        "sam_score": 0.9853367805480957,
+        "pct": 1.56
+      },
+      {
+        "id": 0,
+        "name": "background",
+        "label": "dry brown savanna with trees in distance",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "dry brown savanna",
+        "bbox": [
+          1,
+          27,
+          357,
+          226
+        ],
+        "det_score": 0.3145849406719208,
+        "sam_score": 0.982765793800354,
+        "pct": 69.56
+      },
+      {
+        "id": 2,
+        "name": "vulture",
+        "label": "dark vulture bird",
+        "semantic_path": "subject.bird",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "dark vulture bird",
+        "bbox": [
+          86,
+          65,
+          133,
+          118
+        ],
+        "det_score": 0.8348785042762756,
+        "sam_score": 0.9843913316726685,
+        "pct": 1.56
+      }
+    ],
+    "detected": 3,
+    "missed": 0,
+    "success_rate": 1.0,
+    "status": "ok"
+  },
   "plan": {
     "domain": "photojournalism_1993",
     "notes": "Kevin Carter. Starving child + vulture + sparse ground.",
@@ -33,8 +116,37 @@
     "slug": "vulture-and-girl",
     "device": "mps"
   },
-  "created_at": "2026-04-17T09:54:47Z",
+  "created_at": "2026-04-17T10:21:49Z",
   "layers": [
+    {
+      "id": "layer_c2a716ac",
+      "name": "child",
+      "label": "emaciated starving child kneeling on ground",
+      "description": "emaciated starving child kneeling on ground",
+      "z_index": 50,
+      "blend_mode": "normal",
+      "content_type": "child",
+      "semantic_path": "subject.person[0]",
+      "visible": true,
+      "locked": false,
+      "file": "child.png",
+      "bbox": [
+        87,
+        66,
+        132,
+        117
+      ],
+      "det_score": 0.46752414107322693,
+      "sam_score": 0.9853367805480957,
+      "regeneration_prompt": "emaciated starving child kneeling on ground",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
     {
       "id": "layer_f7a5bc6d",
       "name": "background",

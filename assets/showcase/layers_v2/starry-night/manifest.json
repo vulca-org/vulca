@@ -1,9 +1,80 @@
 {
-  "version": 3,
+  "version": 4,
   "width": 1280,
   "height": 1014,
   "source_image": "assets/showcase/originals/starry-night.jpg",
   "split_mode": "claude_orchestrated",
+  "status": "ok",
+  "detection_report": {
+    "requested": 3,
+    "domain": "post_impressionist_painting",
+    "person_chain": [
+      "dino"
+    ],
+    "per_entity": [
+      {
+        "id": 0,
+        "name": "sky",
+        "label": "swirling blue sky with yellow stars and moon",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "blue sky",
+        "bbox": [
+          10,
+          5,
+          1268,
+          632
+        ],
+        "det_score": 0.37630578875541687,
+        "sam_score": 0.942633867263794,
+        "pct": 53.91
+      },
+      {
+        "id": 1,
+        "name": "cypress_tree",
+        "label": "tall dark cypress tree on the left",
+        "semantic_path": "subject.tree",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "tall dark cypress tree",
+        "bbox": [
+          148,
+          49,
+          595,
+          1008
+        ],
+        "det_score": 0.7060468196868896,
+        "sam_score": 0.995383620262146,
+        "pct": 12.35
+      },
+      {
+        "id": 2,
+        "name": "village",
+        "label": "small village with church steeple and rolling hills",
+        "semantic_path": "foreground.village",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "small village",
+        "bbox": [
+          7,
+          7,
+          1270,
+          1005
+        ],
+        "det_score": 0.46713507175445557,
+        "sam_score": 0.9924510717391968,
+        "pct": 97.61
+      }
+    ],
+    "detected": 3,
+    "missed": 0,
+    "success_rate": 1.0,
+    "status": "ok"
+  },
   "plan": {
     "domain": "post_impressionist_painting",
     "notes": "Van Gogh 1889. Swirling sky, cypress tree, village.",
@@ -32,7 +103,7 @@
     "slug": "starry-night",
     "device": "mps"
   },
-  "created_at": "2026-04-17T09:51:40Z",
+  "created_at": "2026-04-17T10:18:44Z",
   "layers": [
     {
       "id": "layer_b4168030",

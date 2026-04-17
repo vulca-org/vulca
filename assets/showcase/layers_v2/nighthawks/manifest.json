@@ -1,9 +1,181 @@
 {
-  "version": 3,
+  "version": 4,
   "width": 1280,
   "height": 698,
   "source_image": "assets/showcase/originals/nighthawks.jpg",
   "split_mode": "claude_orchestrated",
+  "status": "ok",
+  "detection_report": {
+    "requested": 7,
+    "domain": "american_realism_painting",
+    "person_chain": [
+      "yolo",
+      "dino"
+    ],
+    "per_entity": [
+      {
+        "id": 3,
+        "name": "person_left_couple_1",
+        "label": "man in hat next to woman",
+        "semantic_path": "subject.person[0]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 4,
+            "conf_range": "0.86-0.91"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          653,
+          345,
+          747,
+          496
+        ],
+        "det_score": 0.870419442653656,
+        "sam_score": 0.9776749610900879,
+        "pct": 0.92
+      },
+      {
+        "id": 4,
+        "name": "person_left_couple_2",
+        "label": "woman in red dress",
+        "semantic_path": "subject.person[1]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 4,
+            "conf_range": "0.86-0.91"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          848,
+          338,
+          941,
+          432
+        ],
+        "det_score": 0.8686303496360779,
+        "sam_score": 0.9653644561767578,
+        "pct": 0.52
+      },
+      {
+        "id": 5,
+        "name": "person_server",
+        "label": "white-uniformed server behind counter",
+        "semantic_path": "subject.person[2]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 4,
+            "conf_range": "0.86-0.91"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          931,
+          341,
+          988,
+          429
+        ],
+        "det_score": 0.86402428150177,
+        "sam_score": 0.9757622480392456,
+        "pct": 0.4
+      },
+      {
+        "id": 6,
+        "name": "person_solitary",
+        "label": "man seated alone with back to viewer",
+        "semantic_path": "subject.person[3]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 4,
+            "conf_range": "0.86-0.91"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          1019,
+          367,
+          1123,
+          460
+        ],
+        "det_score": 0.9146500825881958,
+        "sam_score": 0.9856239557266235,
+        "pct": 0.56
+      },
+      {
+        "id": 0,
+        "name": "street_buildings",
+        "label": "dark empty street with brick buildings",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "dark empty street",
+        "bbox": [
+          4,
+          450,
+          1274,
+          692
+        ],
+        "det_score": 0.3084564507007599,
+        "sam_score": 0.9840174913406372,
+        "pct": 18.23
+      },
+      {
+        "id": 1,
+        "name": "diner_glass",
+        "label": "large curved plate-glass window with green frame",
+        "semantic_path": "subject.diner.glass",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "large curved plate - glass window",
+        "bbox": [
+          483,
+          185,
+          988,
+          480
+        ],
+        "det_score": 0.32271453738212585,
+        "sam_score": 0.9840675592422485,
+        "pct": 10.65
+      },
+      {
+        "id": 2,
+        "name": "diner_interior",
+        "label": "diner interior with counter and back wall",
+        "semantic_path": "subject.diner.interior",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "diner interior",
+        "bbox": [
+          6,
+          5,
+          1272,
+          690
+        ],
+        "det_score": 0.5694417953491211,
+        "sam_score": 0.9782673120498657,
+        "pct": 80.43
+      }
+    ],
+    "detected": 7,
+    "missed": 0,
+    "success_rate": 1.0,
+    "status": "ok"
+  },
   "plan": {
     "domain": "american_realism_painting",
     "notes": "Hopper 1942. Late-night diner with 4 figures. Glass, counter, buildings.",
@@ -60,7 +232,7 @@
     "slug": "nighthawks",
     "device": "mps"
   },
-  "created_at": "2026-04-17T09:52:57Z",
+  "created_at": "2026-04-17T10:19:57Z",
   "layers": [
     {
       "id": "layer_58f00fe3",
