@@ -13,7 +13,9 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 DEFAULT_PLAN_VERSION = 1
-DETECTOR_VALUES = {"yolo", "dino", "auto"}
+# Note: "sam_bbox" added in plan_version 1 (same version, extra value allowed).
+# Old plans without this value still validate. "auto" remains the default.
+DETECTOR_VALUES = {"yolo", "dino", "auto", "sam_bbox"}
 DEVICE_VALUES = {"cpu", "mps", "cuda"}
 
 
@@ -39,10 +41,18 @@ class PlanEntity(BaseModel):
     name: str = Field(..., description="Short identifier used as filename stem")
     label: str = Field(..., description="Natural-language description for detectors")
     semantic_path: str = Field("", description="Dot-notation path e.g. subject.person[0]")
-    detector: Literal["yolo", "dino", "auto"] = "auto"
+    detector: Literal["yolo", "dino", "auto", "sam_bbox"] = "auto"
     order: int | None = Field(None, description="Left-to-right rank for person matching")
     threshold: float | None = Field(None, ge=0.0, le=1.0,
                                      description="Override detection threshold")
+    # A+B: spatial hint for stylized/silhouette content where detectors fail.
+    # Normalized [x1, y1, x2, y2] in [0, 1]. If detector="sam_bbox", used as
+    # direct SAM bbox (skips YOLO/DINO). Else: fallback after detector chain.
+    bbox_hint_pct: list[float] | None = Field(
+        None,
+        description="Rough spatial hint [x1_pct, y1_pct, x2_pct, y2_pct] in [0,1]. "
+                    "Used as SAM bbox when detector='sam_bbox' or as fallback."
+    )
 
     @field_validator("name", mode="before")
     @classmethod
@@ -63,6 +73,37 @@ class PlanEntity(BaseModel):
         if v and not re.match(r"^[A-Za-z0-9._\[\]-]+$", v):
             raise ValueError(f"semantic_path {v!r} has invalid characters")
         return v
+
+    @field_validator("bbox_hint_pct")
+    @classmethod
+    def _check_bbox_hint(cls, v):
+        if v is None:
+            return v
+        if not isinstance(v, list) or len(v) != 4:
+            raise ValueError("bbox_hint_pct must be a 4-element list [x1, y1, x2, y2]")
+        x1, y1, x2, y2 = v
+        for name, val in (("x1", x1), ("y1", y1), ("x2", x2), ("y2", y2)):
+            if not isinstance(val, (int, float)):
+                raise ValueError(f"bbox_hint_pct.{name} must be numeric, got {type(val).__name__}")
+            if not (0.0 <= float(val) <= 1.0):
+                raise ValueError(f"bbox_hint_pct.{name}={val} must be in [0.0, 1.0]")
+        if x1 >= x2 or y1 >= y2:
+            raise ValueError(
+                f"bbox_hint_pct invalid: x1={x1} must be < x2={x2}, y1={y1} must be < y2={y2}"
+            )
+        if (x2 - x1) * (y2 - y1) < 0.001:  # < 0.1% of image area
+            raise ValueError(
+                f"bbox_hint_pct area {(x2-x1)*(y2-y1):.4f} is too small (<0.1% of image)"
+            )
+        return [float(x) for x in v]
+
+    @model_validator(mode="after")
+    def _sam_bbox_requires_hint(self):
+        if self.detector == "sam_bbox" and self.bbox_hint_pct is None:
+            raise ValueError(
+                f"entity {self.name!r}: detector='sam_bbox' requires bbox_hint_pct"
+            )
+        return self
 
 
 class Plan(BaseModel):

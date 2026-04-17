@@ -4,52 +4,12 @@
   "height": 1280,
   "source_image": "assets/showcase/originals/artemis-ii-crew-poster.jpg",
   "split_mode": "claude_orchestrated",
-  "status": "partial",
+  "status": "ok",
   "detection_report": {
     "requested": 7,
     "domain": "space_photograph",
     "person_chain": [],
     "per_entity": [
-      {
-        "id": 2,
-        "name": "astronaut_0",
-        "label": "astronaut helmet in profile",
-        "semantic_path": "subject.person[0]",
-        "kind": "person",
-        "attempts": [],
-        "status": "missed",
-        "reason": "no_detection_after_chain"
-      },
-      {
-        "id": 3,
-        "name": "astronaut_1",
-        "label": "astronaut helmet in profile",
-        "semantic_path": "subject.person[1]",
-        "kind": "person",
-        "attempts": [],
-        "status": "missed",
-        "reason": "no_detection_after_chain"
-      },
-      {
-        "id": 4,
-        "name": "astronaut_2",
-        "label": "astronaut helmet in profile",
-        "semantic_path": "subject.person[2]",
-        "kind": "person",
-        "attempts": [],
-        "status": "missed",
-        "reason": "no_detection_after_chain"
-      },
-      {
-        "id": 5,
-        "name": "astronaut_3",
-        "label": "astronaut helmet in profile",
-        "semantic_path": "subject.person[3]",
-        "kind": "person",
-        "attempts": [],
-        "status": "missed",
-        "reason": "no_detection_after_chain"
-      },
       {
         "id": 0,
         "name": "black_bg",
@@ -60,58 +20,134 @@
         "detector": "dino",
         "matched_phrase": "black space background",
         "bbox": [
+          3,
           4,
-          5,
-          822,
-          1269
+          824,
+          1271
         ],
-        "det_score": 0.3362245559692383,
-        "sam_score": 0.9523769617080688,
-        "pct": 63.63
+        "det_score": 0.5649166703224182,
+        "sam_score": 0.952224850654602,
+        "pct": 63.62
       },
       {
         "id": 1,
         "name": "moon",
-        "label": "large gray cratered Moon in upper left",
+        "label": "large gray cratered Moon upper left",
         "semantic_path": "background.moon",
-        "kind": "object",
+        "kind": "hinted",
         "status": "detected",
-        "detector": "dino",
-        "matched_phrase": "large gray cratered moon",
+        "detector": "sam_bbox",
+        "source": "bbox_hint",
         "bbox": [
-          86,
-          4,
-          656,
-          449
+          41,
+          25,
+          579,
+          512
         ],
-        "det_score": 0.614429771900177,
-        "sam_score": 0.997997522354126,
-        "pct": 18.67
+        "det_score": 1.0,
+        "sam_score": 0.9578080177307129,
+        "pct": 17.28
+      },
+      {
+        "id": 2,
+        "name": "astronaut_0",
+        "label": "leftmost astronaut helmet",
+        "semantic_path": "subject.person[0]",
+        "kind": "hinted",
+        "status": "detected",
+        "detector": "sam_bbox",
+        "source": "bbox_hint",
+        "bbox": [
+          41,
+          537,
+          248,
+          921
+        ],
+        "det_score": 1.0,
+        "sam_score": 0.9405136108398438,
+        "pct": 3.49
+      },
+      {
+        "id": 3,
+        "name": "astronaut_1",
+        "label": "second astronaut helmet",
+        "semantic_path": "subject.person[1]",
+        "kind": "hinted",
+        "status": "detected",
+        "detector": "sam_bbox",
+        "source": "bbox_hint",
+        "bbox": [
+          207,
+          537,
+          430,
+          960
+        ],
+        "det_score": 1.0,
+        "sam_score": 0.9264649152755737,
+        "pct": 3.41
+      },
+      {
+        "id": 4,
+        "name": "astronaut_2",
+        "label": "third astronaut helmet",
+        "semantic_path": "subject.person[2]",
+        "kind": "hinted",
+        "status": "detected",
+        "detector": "sam_bbox",
+        "source": "bbox_hint",
+        "bbox": [
+          397,
+          537,
+          621,
+          960
+        ],
+        "det_score": 1.0,
+        "sam_score": 0.7239549160003662,
+        "pct": 2.79
+      },
+      {
+        "id": 5,
+        "name": "astronaut_3",
+        "label": "rightmost astronaut helmet",
+        "semantic_path": "subject.person[3]",
+        "kind": "hinted",
+        "status": "detected",
+        "detector": "sam_bbox",
+        "source": "bbox_hint",
+        "bbox": [
+          579,
+          537,
+          811,
+          998
+        ],
+        "det_score": 1.0,
+        "sam_score": 0.8234383463859558,
+        "pct": 3.95
       },
       {
         "id": 6,
         "name": "artemis_ii_text",
-        "label": "ARTEMIS II bold text and mission details",
+        "label": "ARTEMIS II text block",
         "semantic_path": "foreground.text",
-        "kind": "object",
+        "kind": "hinted",
         "status": "detected",
-        "detector": "dino",
-        "matched_phrase": "artemis ii bold text",
+        "detector": "sam_bbox",
+        "source": "bbox_hint",
         "bbox": [
-          46,
-          957,
-          779,
-          1137
+          41,
+          1024,
+          786,
+          1254
         ],
-        "det_score": 0.33718520402908325,
-        "sam_score": 0.9451521635055542,
-        "pct": 11.45
+        "det_score": 1.0,
+        "sam_score": 0.9789868593215942,
+        "pct": 19.01
       }
     ],
-    "detected": 3,
-    "missed": 4,
-    "success_rate": 0.429,
-    "status": "partial"
+    "detected": 7,
+    "missed": 0,
+    "success_rate": 1.0,
+    "status": "ok"
   },
   "plan": {
     "domain": "space_photograph",
@@ -126,50 +162,81 @@
       },
       {
         "name": "moon",
-        "label": "large gray cratered Moon in upper left",
+        "label": "large gray cratered Moon upper left",
         "semantic_path": "background.moon",
-        "detector": "dino"
+        "detector": "sam_bbox",
+        "bbox_hint_pct": [
+          0.05,
+          0.02,
+          0.7,
+          0.4
+        ]
       },
       {
         "name": "astronaut_0",
-        "label": "astronaut helmet in profile",
+        "label": "leftmost astronaut helmet",
         "semantic_path": "subject.person[0]",
-        "detector": "yolo",
-        "order": 0
+        "detector": "sam_bbox",
+        "bbox_hint_pct": [
+          0.05,
+          0.42,
+          0.3,
+          0.72
+        ]
       },
       {
         "name": "astronaut_1",
-        "label": "astronaut helmet in profile",
+        "label": "second astronaut helmet",
         "semantic_path": "subject.person[1]",
-        "detector": "yolo",
-        "order": 1
+        "detector": "sam_bbox",
+        "bbox_hint_pct": [
+          0.25,
+          0.42,
+          0.52,
+          0.75
+        ]
       },
       {
         "name": "astronaut_2",
-        "label": "astronaut helmet in profile",
+        "label": "third astronaut helmet",
         "semantic_path": "subject.person[2]",
-        "detector": "yolo",
-        "order": 2
+        "detector": "sam_bbox",
+        "bbox_hint_pct": [
+          0.48,
+          0.42,
+          0.75,
+          0.75
+        ]
       },
       {
         "name": "astronaut_3",
-        "label": "astronaut helmet in profile",
+        "label": "rightmost astronaut helmet",
         "semantic_path": "subject.person[3]",
-        "detector": "yolo",
-        "order": 3
+        "detector": "sam_bbox",
+        "bbox_hint_pct": [
+          0.7,
+          0.42,
+          0.98,
+          0.78
+        ]
       },
       {
         "name": "artemis_ii_text",
-        "label": "ARTEMIS II bold text and mission details",
+        "label": "ARTEMIS II text block",
         "semantic_path": "foreground.text",
-        "detector": "dino",
-        "threshold": 0.1
+        "detector": "sam_bbox",
+        "bbox_hint_pct": [
+          0.05,
+          0.8,
+          0.95,
+          0.98
+        ]
       }
     ],
     "slug": "artemis-ii-crew-poster",
     "device": "mps"
   },
-  "created_at": "2026-04-17T12:39:14Z",
+  "created_at": "2026-04-17T12:55:07Z",
   "layers": [
     {
       "id": "layer_21a09023",
@@ -184,13 +251,13 @@
       "locked": false,
       "file": "black_bg.png",
       "bbox": [
+        3,
         4,
-        5,
-        822,
-        1269
+        824,
+        1271
       ],
-      "det_score": 0.3362245559692383,
-      "sam_score": 0.9523769617080688,
+      "det_score": 0.5649166703224182,
+      "sam_score": 0.952224850654602,
       "regeneration_prompt": "black space background",
       "opacity": 1.0,
       "x": 0.0,
@@ -203,8 +270,8 @@
     {
       "id": "layer_b6244376",
       "name": "moon",
-      "label": "large gray cratered Moon in upper left",
-      "description": "large gray cratered Moon in upper left",
+      "label": "large gray cratered Moon upper left",
+      "description": "large gray cratered Moon upper left",
       "z_index": 10,
       "blend_mode": "normal",
       "content_type": "moon",
@@ -213,14 +280,130 @@
       "locked": false,
       "file": "moon.png",
       "bbox": [
-        86,
-        4,
-        656,
-        449
+        41,
+        25,
+        579,
+        512
       ],
-      "det_score": 0.614429771900177,
-      "sam_score": 0.997997522354126,
-      "regeneration_prompt": "large gray cratered Moon in upper left",
+      "det_score": 1.0,
+      "sam_score": 0.9578080177307129,
+      "regeneration_prompt": "large gray cratered Moon upper left",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_56f4fcf5",
+      "name": "astronaut_0",
+      "label": "leftmost astronaut helmet",
+      "description": "leftmost astronaut helmet",
+      "z_index": 50,
+      "blend_mode": "normal",
+      "content_type": "astronaut_0",
+      "semantic_path": "subject.person[0]",
+      "visible": true,
+      "locked": false,
+      "file": "astronaut_0.png",
+      "bbox": [
+        41,
+        537,
+        248,
+        921
+      ],
+      "det_score": 1.0,
+      "sam_score": 0.9405136108398438,
+      "regeneration_prompt": "leftmost astronaut helmet",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_046a0f04",
+      "name": "astronaut_1",
+      "label": "second astronaut helmet",
+      "description": "second astronaut helmet",
+      "z_index": 50,
+      "blend_mode": "normal",
+      "content_type": "astronaut_1",
+      "semantic_path": "subject.person[1]",
+      "visible": true,
+      "locked": false,
+      "file": "astronaut_1.png",
+      "bbox": [
+        207,
+        537,
+        430,
+        960
+      ],
+      "det_score": 1.0,
+      "sam_score": 0.9264649152755737,
+      "regeneration_prompt": "second astronaut helmet",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_d33027a0",
+      "name": "astronaut_2",
+      "label": "third astronaut helmet",
+      "description": "third astronaut helmet",
+      "z_index": 50,
+      "blend_mode": "normal",
+      "content_type": "astronaut_2",
+      "semantic_path": "subject.person[2]",
+      "visible": true,
+      "locked": false,
+      "file": "astronaut_2.png",
+      "bbox": [
+        397,
+        537,
+        621,
+        960
+      ],
+      "det_score": 1.0,
+      "sam_score": 0.7239549160003662,
+      "regeneration_prompt": "third astronaut helmet",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_ad42d7fd",
+      "name": "astronaut_3",
+      "label": "rightmost astronaut helmet",
+      "description": "rightmost astronaut helmet",
+      "z_index": 50,
+      "blend_mode": "normal",
+      "content_type": "astronaut_3",
+      "semantic_path": "subject.person[3]",
+      "visible": true,
+      "locked": false,
+      "file": "astronaut_3.png",
+      "bbox": [
+        579,
+        537,
+        811,
+        998
+      ],
+      "det_score": 1.0,
+      "sam_score": 0.8234383463859558,
+      "regeneration_prompt": "rightmost astronaut helmet",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,
@@ -232,8 +415,8 @@
     {
       "id": "layer_3ab209cf",
       "name": "artemis_ii_text",
-      "label": "ARTEMIS II bold text and mission details",
-      "description": "ARTEMIS II bold text and mission details",
+      "label": "ARTEMIS II text block",
+      "description": "ARTEMIS II text block",
       "z_index": 80,
       "blend_mode": "normal",
       "content_type": "artemis_ii_text",
@@ -242,14 +425,14 @@
       "locked": false,
       "file": "artemis_ii_text.png",
       "bbox": [
-        46,
-        957,
-        779,
-        1137
+        41,
+        1024,
+        786,
+        1254
       ],
-      "det_score": 0.33718520402908325,
-      "sam_score": 0.9451521635055542,
-      "regeneration_prompt": "ARTEMIS II bold text and mission details",
+      "det_score": 1.0,
+      "sam_score": 0.9789868593215942,
+      "regeneration_prompt": "ARTEMIS II text block",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,

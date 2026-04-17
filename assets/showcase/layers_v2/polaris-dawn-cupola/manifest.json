@@ -4,65 +4,74 @@
   "height": 853,
   "source_image": "assets/showcase/originals/polaris-dawn-cupola.jpg",
   "split_mode": "claude_orchestrated",
-  "status": "partial",
+  "status": "ok",
   "detection_report": {
     "requested": 3,
     "domain": "space_photograph",
     "person_chain": [],
     "per_entity": [
       {
-        "id": 2,
-        "name": "astronaut",
-        "label": "astronaut silhouette looking up at window",
-        "semantic_path": "subject.person[0]",
-        "kind": "person",
-        "attempts": [],
-        "status": "missed",
-        "reason": "no_detection_after_chain"
-      },
-      {
         "id": 0,
-        "name": "oval_window",
-        "label": "oval Dragon cupola window with blue Earth clouds",
-        "semantic_path": "background.window",
-        "kind": "object",
-        "status": "detected",
-        "detector": "dino",
-        "matched_phrase": "oval dragon cupola window",
-        "bbox": [
-          100,
-          57,
-          1100,
-          694
-        ],
-        "det_score": 0.4563656151294708,
-        "sam_score": 0.9815182685852051,
-        "pct": 34.55
-      },
-      {
-        "id": 1,
         "name": "interior",
         "label": "dark spacecraft interior",
-        "semantic_path": "background.interior",
+        "semantic_path": "background",
         "kind": "object",
         "status": "detected",
         "detector": "dino",
         "matched_phrase": "dark spacecraft interior",
         "bbox": [
-          8,
-          11,
-          1268,
-          846
+          4,
+          4,
+          1274,
+          849
         ],
-        "det_score": 0.5613589286804199,
-        "sam_score": 0.957709789276123,
-        "pct": 39.75
+        "det_score": 0.707192599773407,
+        "sam_score": 0.9570945501327515,
+        "pct": 39.98
+      },
+      {
+        "id": 1,
+        "name": "window",
+        "label": "oval window with Earth clouds",
+        "semantic_path": "subject.window",
+        "kind": "hinted",
+        "status": "detected",
+        "detector": "sam_bbox",
+        "source": "bbox_hint",
+        "bbox": [
+          64,
+          17,
+          1024,
+          725
+        ],
+        "det_score": 1.0,
+        "sam_score": 0.9811331033706665,
+        "pct": 36.48
+      },
+      {
+        "id": 2,
+        "name": "astronaut_silhouette",
+        "label": "astronaut silhouette",
+        "semantic_path": "subject.person[0]",
+        "kind": "hinted",
+        "status": "detected",
+        "detector": "sam_bbox",
+        "source": "bbox_hint",
+        "bbox": [
+          512,
+          127,
+          1254,
+          852
+        ],
+        "det_score": 1.0,
+        "sam_score": 1.0031262636184692,
+        "pct": 32.43
       }
     ],
-    "detected": 2,
-    "missed": 1,
-    "success_rate": 0.667,
-    "status": "partial"
+    "detected": 3,
+    "missed": 0,
+    "success_rate": 1.0,
+    "status": "ok"
   },
   "plan": {
     "domain": "space_photograph",
@@ -70,51 +79,62 @@
     "expand_face_parts": true,
     "entities": [
       {
-        "name": "oval_window",
-        "label": "oval Dragon cupola window with blue Earth clouds",
-        "semantic_path": "background.window",
-        "detector": "dino"
-      },
-      {
         "name": "interior",
         "label": "dark spacecraft interior",
-        "semantic_path": "background.interior",
+        "semantic_path": "background",
         "detector": "dino"
       },
       {
-        "name": "astronaut",
-        "label": "astronaut silhouette looking up at window",
+        "name": "window",
+        "label": "oval window with Earth clouds",
+        "semantic_path": "subject.window",
+        "detector": "sam_bbox",
+        "bbox_hint_pct": [
+          0.05,
+          0.02,
+          0.8,
+          0.85
+        ]
+      },
+      {
+        "name": "astronaut_silhouette",
+        "label": "astronaut silhouette",
         "semantic_path": "subject.person[0]",
-        "detector": "yolo",
-        "order": 0
+        "detector": "sam_bbox",
+        "bbox_hint_pct": [
+          0.4,
+          0.15,
+          0.98,
+          1.0
+        ]
       }
     ],
     "slug": "polaris-dawn-cupola",
     "device": "mps"
   },
-  "created_at": "2026-04-17T12:39:01Z",
+  "created_at": "2026-04-17T12:55:11Z",
   "layers": [
     {
-      "id": "layer_29ee8a5b",
-      "name": "oval_window",
-      "label": "oval Dragon cupola window with blue Earth clouds",
-      "description": "oval Dragon cupola window with blue Earth clouds",
-      "z_index": 10,
+      "id": "layer_a9782708",
+      "name": "interior",
+      "label": "dark spacecraft interior",
+      "description": "dark spacecraft interior",
+      "z_index": 0,
       "blend_mode": "normal",
-      "content_type": "oval_window",
-      "semantic_path": "background.window",
+      "content_type": "interior",
+      "semantic_path": "background",
       "visible": true,
       "locked": false,
-      "file": "oval_window.png",
+      "file": "interior.png",
       "bbox": [
-        100,
-        57,
-        1100,
-        694
+        4,
+        4,
+        1274,
+        849
       ],
-      "det_score": 0.4563656151294708,
-      "sam_score": 0.9815182685852051,
-      "regeneration_prompt": "oval Dragon cupola window with blue Earth clouds",
+      "det_score": 0.707192599773407,
+      "sam_score": 0.9570945501327515,
+      "regeneration_prompt": "dark spacecraft interior",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,
@@ -124,26 +144,55 @@
       "content_bbox": null
     },
     {
-      "id": "layer_a9782708",
-      "name": "interior",
-      "label": "dark spacecraft interior",
-      "description": "dark spacecraft interior",
-      "z_index": 10,
+      "id": "layer_9a130f38",
+      "name": "window",
+      "label": "oval window with Earth clouds",
+      "description": "oval window with Earth clouds",
+      "z_index": 45,
       "blend_mode": "normal",
-      "content_type": "interior",
-      "semantic_path": "background.interior",
+      "content_type": "window",
+      "semantic_path": "subject.window",
       "visible": true,
       "locked": false,
-      "file": "interior.png",
+      "file": "window.png",
       "bbox": [
-        8,
-        11,
-        1268,
-        846
+        64,
+        17,
+        1024,
+        725
       ],
-      "det_score": 0.5613589286804199,
-      "sam_score": 0.957709789276123,
-      "regeneration_prompt": "dark spacecraft interior",
+      "det_score": 1.0,
+      "sam_score": 0.9811331033706665,
+      "regeneration_prompt": "oval window with Earth clouds",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_edacf334",
+      "name": "astronaut_silhouette",
+      "label": "astronaut silhouette",
+      "description": "astronaut silhouette",
+      "z_index": 50,
+      "blend_mode": "normal",
+      "content_type": "astronaut_silhouette",
+      "semantic_path": "subject.person[0]",
+      "visible": true,
+      "locked": false,
+      "file": "astronaut_silhouette.png",
+      "bbox": [
+        512,
+        127,
+        1254,
+        852
+      ],
+      "det_score": 1.0,
+      "sam_score": 1.0031262636184692,
+      "regeneration_prompt": "astronaut silhouette",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,

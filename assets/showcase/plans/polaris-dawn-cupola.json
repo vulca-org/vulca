@@ -4,23 +4,34 @@
   "expand_face_parts": true,
   "entities": [
     {
-      "name": "oval_window",
-      "label": "oval Dragon cupola window with blue Earth clouds",
-      "semantic_path": "background.window",
-      "detector": "dino"
-    },
-    {
       "name": "interior",
       "label": "dark spacecraft interior",
-      "semantic_path": "background.interior",
+      "semantic_path": "background",
       "detector": "dino"
     },
     {
-      "name": "astronaut",
-      "label": "astronaut silhouette looking up at window",
+      "name": "window",
+      "label": "oval window with Earth clouds",
+      "semantic_path": "subject.window",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.05,
+        0.02,
+        0.8,
+        0.85
+      ]
+    },
+    {
+      "name": "astronaut_silhouette",
+      "label": "astronaut silhouette",
       "semantic_path": "subject.person[0]",
-      "detector": "yolo",
-      "order": 0
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.4,
+        0.15,
+        0.98,
+        1.0
+      ]
     }
   ],
   "slug": "polaris-dawn-cupola",

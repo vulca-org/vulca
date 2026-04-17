@@ -113,6 +113,51 @@ class TestPlan:
                 pytest.fail(f"{pf.name} failed schema validation: {e}")
 
 
+class TestBboxHint:
+    def test_none_default(self):
+        e = PlanEntity(name="a", label="b")
+        assert e.bbox_hint_pct is None
+
+    def test_valid_hint(self):
+        e = PlanEntity(name="a", label="b", bbox_hint_pct=[0.1, 0.2, 0.5, 0.9])
+        assert e.bbox_hint_pct == [0.1, 0.2, 0.5, 0.9]
+
+    def test_wrong_length(self):
+        with pytest.raises(ValueError, match="4-element"):
+            PlanEntity(name="a", label="b", bbox_hint_pct=[0.1, 0.2, 0.5])
+
+    def test_out_of_range(self):
+        with pytest.raises(ValueError, match=r"\[0\.0, 1\.0\]"):
+            PlanEntity(name="a", label="b", bbox_hint_pct=[0.1, 0.2, 1.5, 0.9])
+        with pytest.raises(ValueError, match=r"\[0\.0, 1\.0\]"):
+            PlanEntity(name="a", label="b", bbox_hint_pct=[-0.1, 0.2, 0.5, 0.9])
+
+    def test_ordering(self):
+        with pytest.raises(ValueError, match="must be <"):
+            PlanEntity(name="a", label="b", bbox_hint_pct=[0.5, 0.2, 0.1, 0.9])
+
+    def test_tiny_area_rejected(self):
+        # 0.001 x 0.001 = 1e-6 area, way below 0.001 threshold
+        with pytest.raises(ValueError, match="too small"):
+            PlanEntity(name="a", label="b", bbox_hint_pct=[0.5, 0.5, 0.5001, 0.5001])
+
+    def test_sam_bbox_requires_hint(self):
+        with pytest.raises(ValueError, match="requires bbox_hint_pct"):
+            PlanEntity(name="a", label="b", detector="sam_bbox")
+
+    def test_sam_bbox_with_hint_ok(self):
+        e = PlanEntity(name="a", label="b", detector="sam_bbox",
+                       bbox_hint_pct=[0.1, 0.1, 0.9, 0.9])
+        assert e.detector == "sam_bbox"
+
+    def test_hint_without_sam_bbox_ok(self):
+        # Hint alone is fine — it's fallback for other detectors
+        e = PlanEntity(name="a", label="b", detector="yolo",
+                       bbox_hint_pct=[0.1, 0.1, 0.9, 0.9])
+        assert e.detector == "yolo"
+        assert e.bbox_hint_pct is not None
+
+
 class TestPlanSerialization:
     def test_round_trip(self):
         p = Plan(

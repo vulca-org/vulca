@@ -108,6 +108,26 @@ class TestTileImage:
         assert len(tiles) == 1
 
 
+class TestHintToBboxPx:
+    def test_full_image(self, pipeline_module):
+        bbox = pipeline_module.hint_to_bbox_px([0.0, 0.0, 1.0, 1.0], 1000, 600)
+        assert bbox == [0, 0, 999, 599]  # clamped inclusive
+
+    def test_center_half(self, pipeline_module):
+        bbox = pipeline_module.hint_to_bbox_px([0.25, 0.25, 0.75, 0.75], 800, 400)
+        assert bbox == [200, 100, 600, 300]
+
+    def test_rounding_down(self, pipeline_module):
+        # pct * W might produce float > W-1; clamp takes effect
+        bbox = pipeline_module.hint_to_bbox_px([0.0, 0.0, 0.999, 0.999], 100, 100)
+        assert bbox == [0, 0, 99, 99]
+
+    def test_out_of_range_defensive_clamp(self, pipeline_module):
+        # Schema rejects values outside [0,1], but runtime should clamp anyway
+        bbox = pipeline_module.hint_to_bbox_px([-0.5, 0.0, 1.5, 1.0], 100, 100)
+        assert bbox == [0, 0, 99, 99]
+
+
 class TestZIndexFromSemanticPath:
     def test_background(self, pipeline_module):
         assert pipeline_module._z_index_for("background") == 0

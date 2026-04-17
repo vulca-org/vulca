@@ -11,44 +11,75 @@
     },
     {
       "name": "moon",
-      "label": "large gray cratered Moon in upper left",
+      "label": "large gray cratered Moon upper left",
       "semantic_path": "background.moon",
-      "detector": "dino"
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.05,
+        0.02,
+        0.7,
+        0.4
+      ]
     },
     {
       "name": "astronaut_0",
-      "label": "astronaut helmet in profile",
+      "label": "leftmost astronaut helmet",
       "semantic_path": "subject.person[0]",
-      "detector": "yolo",
-      "order": 0
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.05,
+        0.42,
+        0.3,
+        0.72
+      ]
     },
     {
       "name": "astronaut_1",
-      "label": "astronaut helmet in profile",
+      "label": "second astronaut helmet",
       "semantic_path": "subject.person[1]",
-      "detector": "yolo",
-      "order": 1
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.25,
+        0.42,
+        0.52,
+        0.75
+      ]
     },
     {
       "name": "astronaut_2",
-      "label": "astronaut helmet in profile",
+      "label": "third astronaut helmet",
       "semantic_path": "subject.person[2]",
-      "detector": "yolo",
-      "order": 2
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.48,
+        0.42,
+        0.75,
+        0.75
+      ]
     },
     {
       "name": "astronaut_3",
-      "label": "astronaut helmet in profile",
+      "label": "rightmost astronaut helmet",
       "semantic_path": "subject.person[3]",
-      "detector": "yolo",
-      "order": 3
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.7,
+        0.42,
+        0.98,
+        0.78
+      ]
     },
     {
       "name": "artemis_ii_text",
-      "label": "ARTEMIS II bold text and mission details",
+      "label": "ARTEMIS II text block",
       "semantic_path": "foreground.text",
-      "detector": "dino",
-      "threshold": 0.1
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.05,
+        0.8,
+        0.95,
+        0.98
+      ]
     }
   ],
   "slug": "artemis-ii-crew-poster",

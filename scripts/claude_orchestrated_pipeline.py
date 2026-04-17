@@ -530,6 +530,21 @@ def segment_bbox(sam_pred, bbox, multimask=True):
     return masks[best_idx], float(scores[best_idx])
 
 
+def hint_to_bbox_px(hint_pct, W: int, H: int) -> list[int]:
+    """Convert normalized bbox hint [x1,y1,x2,y2] in [0,1] to pixel xyxy.
+
+    Clamps to image bounds defensively; the schema validator already rejects
+    out-of-range values but user-provided plans can't be trusted at runtime.
+    """
+    x1, y1, x2, y2 = hint_pct
+    return [
+        max(0, min(W - 1, int(x1 * W))),
+        max(0, min(H - 1, int(y1 * H))),
+        max(0, min(W - 1, int(x2 * W))),
+        max(0, min(H - 1, int(y2 * H))),
+    ]
+
+
 def _z_index_for(semantic_path: str) -> int:
     """Derive z from semantic_path prefix (higher = foreground)."""
     rules = [
@@ -653,11 +668,17 @@ def process(slug: str, force: bool = False):
     print(f"  domain={domain} chain={person_chain} obj_thresh={object_thresh}")
 
     # Partition entities: persons (need chain) vs objects (→DINO)
+    # Pattern B: entities with detector="sam_bbox" skip YOLO/DINO entirely
+    # and go straight to SAM using bbox_hint_pct. Short-circuit partition.
+    hint_entities = [(i, e) for i, e in enumerate(plan["entities"])
+                     if e.get("detector") == "sam_bbox"]
     person_entities = [(i, e) for i, e in enumerate(plan["entities"])
-                       if e.get("detector") == "yolo"
-                       or "person[" in e.get("semantic_path", "")]
+                       if (i, e) not in hint_entities and (
+                           e.get("detector") == "yolo"
+                           or "person[" in e.get("semantic_path", ""))]
     object_entities = [(i, e) for i, e in enumerate(plan["entities"])
-                       if (i, e) not in person_entities]
+                       if (i, e) not in person_entities
+                       and (i, e) not in hint_entities]
 
     # detection_report: every entity gets a record regardless of outcome
     detection_report = {
@@ -755,7 +776,11 @@ def process(slug: str, force: bool = False):
         })
 
     # ── Stage 4: Face-parsing per person (eyes, nose, lips, brows, skin, hair, ears, hat) ──
-    expand_faces = plan.get("expand_face_parts", True) and len(yolo_persons) > 0
+    # Gate includes hinted persons: any layer with "person[" in semantic_path.
+    has_any_person = len(yolo_persons) > 0 or any(
+        "person[" in l.get("semantic_path", "") for l in layers_raw
+    )
+    expand_faces = plan.get("expand_face_parts", True) and has_any_person
     if expand_faces:
         t0 = time.time()
         face_proc, face_model = load_face_parser(device)
@@ -880,6 +905,37 @@ def process(slug: str, force: bool = False):
             "id": i, "label": label, "name": record["name"],
             "semantic_path": semantic_path, "bbox": bbox,
             "det_score": score, "sam_score": sam_score,
+            "z": _z_index_for(semantic_path), "mask": mask,
+        })
+
+    # ── Pattern A+B: sam_bbox entities — skip detection, hint → SAM ──
+    for i, entity in hint_entities:
+        label = entity["label"]
+        semantic_path = entity.get("semantic_path", f"subject.entity[{i}]")
+        hint_pct = entity.get("bbox_hint_pct")
+        record = {"id": i, "name": entity.get("name", label.replace(" ", "_")),
+                  "label": label, "semantic_path": semantic_path,
+                  "kind": "hinted"}
+        if hint_pct is None:
+            print(f"  [H{i}] {label[:40]:40s} ERROR: sam_bbox needs bbox_hint_pct")
+            record.update({"status": "missed", "reason": "missing_hint"})
+            detection_report["per_entity"].append(record)
+            continue
+        bbox = hint_to_bbox_px(hint_pct, W, H)
+        mask, sam_score = segment_bbox(sam_pred, bbox)
+        pct = mask.sum() / (H * W) * 100
+        print(f"  [H{i}] {label[:30]:30s} hint bbox={bbox} sam={sam_score:.2f} pct={pct:.1f}%")
+        record.update({"status": "detected", "detector": "sam_bbox",
+                       "source": "bbox_hint", "bbox": bbox,
+                       "det_score": 1.0,  # synthetic — hint is authoritative
+                       "sam_score": sam_score,
+                       "pct": round(pct, 2)})
+        detection_report["per_entity"].append(record)
+        layers_raw.append({
+            "id": i, "label": label,
+            "name": entity.get("name", label.replace(" ", "_")),
+            "semantic_path": semantic_path, "bbox": bbox,
+            "det_score": 1.0, "sam_score": sam_score,
             "z": _z_index_for(semantic_path), "mask": mask,
         })
 
