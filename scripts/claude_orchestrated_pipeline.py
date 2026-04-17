@@ -569,19 +569,70 @@ def resolve_overlaps(layers_raw):
     return layers_raw
 
 
+def _load_image_safely(img_path: Path, max_pixels: int = 100_000_000):
+    """Load image with production-grade safety checks.
+
+    Guards against:
+    - Decompression bombs (PIL default: 178M pixels, we cap at 100M)
+    - Wrong format / corruption
+    - EXIF orientation (auto-rotate to visible orientation)
+
+    Raises ValueError with a structured reason on failure.
+    """
+    try:
+        with Image.open(img_path) as probe:
+            probe_w, probe_h = probe.size
+            if probe_w * probe_h > max_pixels:
+                raise ValueError(
+                    f"image too large: {probe_w}x{probe_h}={probe_w*probe_h:,} "
+                    f"pixels exceeds {max_pixels:,} safety cap"
+                )
+            probe.verify()  # catches truncated files
+    except Image.DecompressionBombError:
+        raise ValueError(f"decompression bomb refused: {img_path}")
+    except Image.UnidentifiedImageError:
+        raise ValueError(f"unidentified image format: {img_path}")
+
+    # Re-open for actual decode (verify() invalidates the image)
+    img_pil = Image.open(img_path)
+    # Apply EXIF orientation so we process what humans see
+    try:
+        from PIL import ImageOps
+        img_pil = ImageOps.exif_transpose(img_pil)
+    except Exception:
+        pass
+    img_pil = img_pil.convert("RGB")
+    return img_pil
+
+
 def process(slug: str, force: bool = False):
     plan_path = PLANS_DIR / f"{slug}.json"
     if not plan_path.exists():
-        print(f"FAIL: no plan at {plan_path}")
-        return
-    plan = json.loads(plan_path.read_text())
+        print(f"FAIL {slug}: no plan at {plan_path}")
+        return {"status": "error", "reason": "missing_plan"}
+
+    try:
+        plan = json.loads(plan_path.read_text())
+    except json.JSONDecodeError as e:
+        print(f"FAIL {slug}: invalid plan JSON: {e}")
+        return {"status": "error", "reason": "invalid_plan_json", "detail": str(e)}
+
+    # Schema minimum: must have 'entities' list
+    if "entities" not in plan or not isinstance(plan["entities"], list):
+        print(f"FAIL {slug}: plan missing 'entities' list")
+        return {"status": "error", "reason": "plan_schema"}
 
     img_path = ORIG_DIR / f"{slug}.jpg"
     if not img_path.exists():
-        print(f"FAIL: no image at {img_path}")
-        return
+        print(f"FAIL {slug}: no image at {img_path}")
+        return {"status": "error", "reason": "missing_image"}
 
-    img_pil = Image.open(img_path).convert("RGB")
+    try:
+        img_pil = _load_image_safely(img_path)
+    except ValueError as e:
+        print(f"FAIL {slug}: {e}")
+        return {"status": "error", "reason": "image_load", "detail": str(e)}
+
     W, H = img_pil.size
     img_np = np.array(img_pil)
 
