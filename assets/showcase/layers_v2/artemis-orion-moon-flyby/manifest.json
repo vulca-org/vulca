@@ -1,0 +1,247 @@
+{
+  "version": 4,
+  "width": 1280,
+  "height": 960,
+  "source_image": "assets/showcase/originals/artemis-orion-moon-flyby.jpg",
+  "split_mode": "claude_orchestrated",
+  "status": "ok",
+  "detection_report": {
+    "requested": 4,
+    "domain": "space_photograph",
+    "person_chain": [],
+    "per_entity": [
+      {
+        "id": 0,
+        "name": "space",
+        "label": "black empty space",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "black empty space",
+        "bbox": [
+          293,
+          4,
+          1274,
+          953
+        ],
+        "det_score": 0.37217798829078674,
+        "sam_score": 0.9247132539749146,
+        "pct": 33.08
+      },
+      {
+        "id": 1,
+        "name": "moon_surface",
+        "label": "gray cratered Moon surface",
+        "semantic_path": "subject.moon",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "gray cratered moon surface",
+        "bbox": [
+          279,
+          374,
+          1105,
+          955
+        ],
+        "det_score": 0.5960767269134521,
+        "sam_score": 1.009921908378601,
+        "pct": 29.81
+      },
+      {
+        "id": 2,
+        "name": "orion_body",
+        "label": "white Orion spacecraft module",
+        "semantic_path": "subject.spacecraft.body",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "white orion spacecraft module",
+        "bbox": [
+          2,
+          5,
+          442,
+          906
+        ],
+        "det_score": 0.6069673299789429,
+        "sam_score": 0.9969915151596069,
+        "pct": 24.31
+      },
+      {
+        "id": 3,
+        "name": "solar_array",
+        "label": "dark solar panel array",
+        "semantic_path": "subject.spacecraft.solar",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "dark solar panel array",
+        "bbox": [
+          403,
+          1,
+          1036,
+          333
+        ],
+        "det_score": 0.639151394367218,
+        "sam_score": 0.9946073293685913,
+        "pct": 8.34
+      }
+    ],
+    "detected": 4,
+    "missed": 0,
+    "success_rate": 1.0,
+    "status": "ok"
+  },
+  "plan": {
+    "domain": "space_photograph",
+    "threshold_hint": 0.18,
+    "expand_face_parts": false,
+    "entities": [
+      {
+        "name": "space",
+        "label": "black empty space",
+        "semantic_path": "background",
+        "detector": "dino"
+      },
+      {
+        "name": "moon_surface",
+        "label": "gray cratered Moon surface",
+        "semantic_path": "subject.moon",
+        "detector": "dino"
+      },
+      {
+        "name": "orion_body",
+        "label": "white Orion spacecraft module",
+        "semantic_path": "subject.spacecraft.body",
+        "detector": "dino"
+      },
+      {
+        "name": "solar_array",
+        "label": "dark solar panel array",
+        "semantic_path": "subject.spacecraft.solar",
+        "detector": "dino"
+      }
+    ],
+    "slug": "artemis-orion-moon-flyby",
+    "device": "mps"
+  },
+  "created_at": "2026-04-17T12:10:56Z",
+  "layers": [
+    {
+      "id": "layer_64c20ff2",
+      "name": "space",
+      "label": "black empty space",
+      "description": "black empty space",
+      "z_index": 0,
+      "blend_mode": "normal",
+      "content_type": "space",
+      "semantic_path": "background",
+      "visible": true,
+      "locked": false,
+      "file": "space.png",
+      "bbox": [
+        293,
+        4,
+        1274,
+        953
+      ],
+      "det_score": 0.37217798829078674,
+      "sam_score": 0.9247132539749146,
+      "regeneration_prompt": "black empty space",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_f914a321",
+      "name": "moon_surface",
+      "label": "gray cratered Moon surface",
+      "description": "gray cratered Moon surface",
+      "z_index": 45,
+      "blend_mode": "normal",
+      "content_type": "moon_surface",
+      "semantic_path": "subject.moon",
+      "visible": true,
+      "locked": false,
+      "file": "moon_surface.png",
+      "bbox": [
+        279,
+        374,
+        1105,
+        955
+      ],
+      "det_score": 0.5960767269134521,
+      "sam_score": 1.009921908378601,
+      "regeneration_prompt": "gray cratered Moon surface",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_496e31ee",
+      "name": "orion_body",
+      "label": "white Orion spacecraft module",
+      "description": "white Orion spacecraft module",
+      "z_index": 45,
+      "blend_mode": "normal",
+      "content_type": "orion_body",
+      "semantic_path": "subject.spacecraft.body",
+      "visible": true,
+      "locked": false,
+      "file": "orion_body.png",
+      "bbox": [
+        2,
+        5,
+        442,
+        906
+      ],
+      "det_score": 0.6069673299789429,
+      "sam_score": 0.9969915151596069,
+      "regeneration_prompt": "white Orion spacecraft module",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_4d21c071",
+      "name": "solar_array",
+      "label": "dark solar panel array",
+      "description": "dark solar panel array",
+      "z_index": 45,
+      "blend_mode": "normal",
+      "content_type": "solar_array",
+      "semantic_path": "subject.spacecraft.solar",
+      "visible": true,
+      "locked": false,
+      "file": "solar_array.png",
+      "bbox": [
+        403,
+        1,
+        1036,
+        333
+      ],
+      "det_score": 0.639151394367218,
+      "sam_score": 0.9946073293685913,
+      "regeneration_prompt": "dark solar panel array",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    }
+  ]
+}

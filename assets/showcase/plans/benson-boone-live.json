@@ -1,0 +1,22 @@
+{
+  "domain": "portrait_photograph",
+  "threshold_hint": 0.2,
+  "expand_face_parts": true,
+  "entities": [
+    {
+      "name": "stage_bg",
+      "label": "dark concert stage background",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "singer",
+      "label": "man in red sleeveless outfit singing with raised arm",
+      "semantic_path": "subject.person[0]",
+      "detector": "yolo",
+      "order": 0
+    }
+  ],
+  "slug": "benson-boone-live",
+  "device": "mps"
+}

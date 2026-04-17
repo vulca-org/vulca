@@ -1,0 +1,29 @@
+{
+  "domain": "space_photograph",
+  "threshold_hint": 0.2,
+  "expand_face_parts": false,
+  "entities": [
+    {
+      "name": "earth_space",
+      "label": "Earth and space",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "astronaut_eva",
+      "label": "astronaut in white spacesuit tethered in space",
+      "semantic_path": "subject.person[0]",
+      "detector": "yolo",
+      "order": 0
+    },
+    {
+      "name": "tether",
+      "label": "gold umbilical tether cable",
+      "semantic_path": "foreground.cable",
+      "detector": "dino",
+      "threshold": 0.12
+    }
+  ],
+  "slug": "ed-white-gemini4-eva",
+  "device": "mps"
+}

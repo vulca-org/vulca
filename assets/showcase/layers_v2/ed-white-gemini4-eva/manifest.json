@@ -1,0 +1,157 @@
+{
+  "version": 4,
+  "width": 1280,
+  "height": 1263,
+  "source_image": "assets/showcase/originals/ed-white-gemini4-eva.jpg",
+  "split_mode": "claude_orchestrated",
+  "status": "partial",
+  "detection_report": {
+    "requested": 3,
+    "domain": "space_photograph",
+    "person_chain": [],
+    "per_entity": [
+      {
+        "id": 1,
+        "name": "astronaut_eva",
+        "label": "astronaut in white spacesuit tethered in space",
+        "semantic_path": "subject.person[0]",
+        "kind": "person",
+        "attempts": [],
+        "status": "missed",
+        "reason": "no_detection_after_chain"
+      },
+      {
+        "id": 0,
+        "name": "earth_space",
+        "label": "Earth and space",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "earth",
+        "bbox": [
+          12,
+          6,
+          1271,
+          1253
+        ],
+        "det_score": 0.5069567561149597,
+        "sam_score": 0.9765608310699463,
+        "pct": 57.52
+      },
+      {
+        "id": 2,
+        "name": "tether",
+        "label": "gold umbilical tether cable",
+        "semantic_path": "foreground.cable",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "gold umbilical tether cable",
+        "bbox": [
+          411,
+          724,
+          971,
+          996
+        ],
+        "det_score": 0.34221041202545166,
+        "sam_score": 0.8831541538238525,
+        "pct": 2.21
+      }
+    ],
+    "detected": 2,
+    "missed": 1,
+    "success_rate": 0.667,
+    "status": "partial"
+  },
+  "plan": {
+    "domain": "space_photograph",
+    "threshold_hint": 0.2,
+    "expand_face_parts": false,
+    "entities": [
+      {
+        "name": "earth_space",
+        "label": "Earth and space",
+        "semantic_path": "background",
+        "detector": "dino"
+      },
+      {
+        "name": "astronaut_eva",
+        "label": "astronaut in white spacesuit tethered in space",
+        "semantic_path": "subject.person[0]",
+        "detector": "yolo",
+        "order": 0
+      },
+      {
+        "name": "tether",
+        "label": "gold umbilical tether cable",
+        "semantic_path": "foreground.cable",
+        "detector": "dino",
+        "threshold": 0.12
+      }
+    ],
+    "slug": "ed-white-gemini4-eva",
+    "device": "mps"
+  },
+  "created_at": "2026-04-17T12:11:20Z",
+  "layers": [
+    {
+      "id": "layer_537cf537",
+      "name": "earth_space",
+      "label": "Earth and space",
+      "description": "Earth and space",
+      "z_index": 0,
+      "blend_mode": "normal",
+      "content_type": "earth_space",
+      "semantic_path": "background",
+      "visible": true,
+      "locked": false,
+      "file": "earth_space.png",
+      "bbox": [
+        12,
+        6,
+        1271,
+        1253
+      ],
+      "det_score": 0.5069567561149597,
+      "sam_score": 0.9765608310699463,
+      "regeneration_prompt": "Earth and space",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_9f9d5bf1",
+      "name": "tether",
+      "label": "gold umbilical tether cable",
+      "description": "gold umbilical tether cable",
+      "z_index": 80,
+      "blend_mode": "normal",
+      "content_type": "tether",
+      "semantic_path": "foreground.cable",
+      "visible": true,
+      "locked": false,
+      "file": "tether.png",
+      "bbox": [
+        411,
+        724,
+        971,
+        996
+      ],
+      "det_score": 0.34221041202545166,
+      "sam_score": 0.8831541538238525,
+      "regeneration_prompt": "gold umbilical tether cable",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    }
+  ]
+}

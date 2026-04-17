@@ -1,0 +1,149 @@
+{
+  "version": 4,
+  "width": 1280,
+  "height": 960,
+  "source_image": "assets/showcase/originals/benson-boone-live.jpg",
+  "split_mode": "claude_orchestrated",
+  "status": "ok",
+  "detection_report": {
+    "requested": 2,
+    "domain": "portrait_photograph",
+    "person_chain": [
+      "yolo",
+      "dino"
+    ],
+    "per_entity": [
+      {
+        "id": 1,
+        "name": "singer",
+        "label": "man in red sleeveless outfit singing with raised arm",
+        "semantic_path": "subject.person[0]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 3,
+            "conf_range": "0.40-0.97"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          0,
+          0,
+          103,
+          934
+        ],
+        "det_score": 0.3983045518398285,
+        "sam_score": 0.9932962656021118,
+        "pct": 2.76
+      },
+      {
+        "id": 0,
+        "name": "stage_bg",
+        "label": "dark concert stage background",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "dark concert stage background",
+        "bbox": [
+          4,
+          3,
+          1274,
+          951
+        ],
+        "det_score": 0.738422691822052,
+        "sam_score": 0.9923423528671265,
+        "pct": 75.73
+      }
+    ],
+    "detected": 2,
+    "missed": 0,
+    "success_rate": 1.0,
+    "status": "ok"
+  },
+  "plan": {
+    "domain": "portrait_photograph",
+    "threshold_hint": 0.2,
+    "expand_face_parts": true,
+    "entities": [
+      {
+        "name": "stage_bg",
+        "label": "dark concert stage background",
+        "semantic_path": "background",
+        "detector": "dino"
+      },
+      {
+        "name": "singer",
+        "label": "man in red sleeveless outfit singing with raised arm",
+        "semantic_path": "subject.person[0]",
+        "detector": "yolo",
+        "order": 0
+      }
+    ],
+    "slug": "benson-boone-live",
+    "device": "mps"
+  },
+  "created_at": "2026-04-17T12:10:59Z",
+  "layers": [
+    {
+      "id": "layer_26995f47",
+      "name": "singer",
+      "label": "man in red sleeveless outfit singing with raised arm",
+      "description": "man in red sleeveless outfit singing with raised arm",
+      "z_index": 50,
+      "blend_mode": "normal",
+      "content_type": "singer",
+      "semantic_path": "subject.person[0]",
+      "visible": true,
+      "locked": false,
+      "file": "singer.png",
+      "bbox": [
+        0,
+        0,
+        103,
+        934
+      ],
+      "det_score": 0.3983045518398285,
+      "sam_score": 0.9932962656021118,
+      "regeneration_prompt": "man in red sleeveless outfit singing with raised arm",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_9912ff40",
+      "name": "stage_bg",
+      "label": "dark concert stage background",
+      "description": "dark concert stage background",
+      "z_index": 0,
+      "blend_mode": "normal",
+      "content_type": "stage_bg",
+      "semantic_path": "background",
+      "visible": true,
+      "locked": false,
+      "file": "stage_bg.png",
+      "bbox": [
+        4,
+        3,
+        1274,
+        951
+      ],
+      "det_score": 0.738422691822052,
+      "sam_score": 0.9923423528671265,
+      "regeneration_prompt": "dark concert stage background",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    }
+  ]
+}

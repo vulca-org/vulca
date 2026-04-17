@@ -1,0 +1,33 @@
+{
+  "domain": "space_photograph",
+  "threshold_hint": 0.18,
+  "expand_face_parts": false,
+  "entities": [
+    {
+      "name": "space",
+      "label": "black empty space",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "orion_spacecraft",
+      "label": "white Orion spacecraft with solar panels",
+      "semantic_path": "subject.spacecraft",
+      "detector": "dino"
+    },
+    {
+      "name": "earth",
+      "label": "distant blue Earth crescent",
+      "semantic_path": "subject.earth",
+      "detector": "dino"
+    },
+    {
+      "name": "moon",
+      "label": "distant gray crescent Moon",
+      "semantic_path": "subject.moon",
+      "detector": "dino"
+    }
+  ],
+  "slug": "artemis-orion-earth-moon",
+  "device": "mps"
+}

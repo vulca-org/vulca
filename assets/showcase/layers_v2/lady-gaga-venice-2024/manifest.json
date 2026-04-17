@@ -1,0 +1,261 @@
+{
+  "version": 4,
+  "width": 853,
+  "height": 1280,
+  "source_image": "assets/showcase/originals/lady-gaga-venice-2024.jpg",
+  "split_mode": "claude_orchestrated",
+  "status": "ok",
+  "detection_report": {
+    "requested": 3,
+    "domain": "portrait_photograph",
+    "person_chain": [
+      "yolo",
+      "dino"
+    ],
+    "per_entity": [
+      {
+        "id": 1,
+        "name": "lady_gaga",
+        "label": "woman with ornate black headpiece and veil",
+        "semantic_path": "subject.person[0]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 7,
+            "conf_range": "0.21-0.73"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          0,
+          1,
+          258,
+          465
+        ],
+        "det_score": 0.514116644859314,
+        "sam_score": 0.936087965965271,
+        "pct": 7.0
+      },
+      {
+        "id": 0,
+        "name": "crowd_bg",
+        "label": "blurred crowd background",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "blurred crowd background",
+        "bbox": [
+          4,
+          3,
+          847,
+          468
+        ],
+        "det_score": 0.37759917974472046,
+        "sam_score": 0.9051272869110107,
+        "pct": 19.49
+      },
+      {
+        "id": 2,
+        "name": "headpiece",
+        "label": "large black lace headpiece with horns",
+        "semantic_path": "foreground.accessory",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "large black lace headpiece",
+        "bbox": [
+          4,
+          4,
+          849,
+          710
+        ],
+        "det_score": 0.6762034296989441,
+        "sam_score": 1.0012177228927612,
+        "pct": 28.51
+      }
+    ],
+    "detected": 3,
+    "missed": 0,
+    "success_rate": 1.0,
+    "status": "ok"
+  },
+  "plan": {
+    "domain": "portrait_photograph",
+    "threshold_hint": 0.2,
+    "expand_face_parts": true,
+    "entities": [
+      {
+        "name": "crowd_bg",
+        "label": "blurred crowd background",
+        "semantic_path": "background",
+        "detector": "dino"
+      },
+      {
+        "name": "lady_gaga",
+        "label": "woman with ornate black headpiece and veil",
+        "semantic_path": "subject.person[0]",
+        "detector": "yolo",
+        "order": 0
+      },
+      {
+        "name": "headpiece",
+        "label": "large black lace headpiece with horns",
+        "semantic_path": "foreground.accessory",
+        "detector": "dino"
+      }
+    ],
+    "slug": "lady-gaga-venice-2024",
+    "device": "mps"
+  },
+  "created_at": "2026-04-17T12:11:03Z",
+  "layers": [
+    {
+      "id": "layer_9aada7a7",
+      "name": "lady_gaga",
+      "label": "woman with ornate black headpiece and veil",
+      "description": "woman with ornate black headpiece and veil",
+      "z_index": 50,
+      "blend_mode": "normal",
+      "content_type": "lady_gaga",
+      "semantic_path": "subject.person[0]",
+      "visible": true,
+      "locked": false,
+      "file": "lady_gaga.png",
+      "bbox": [
+        0,
+        1,
+        258,
+        465
+      ],
+      "det_score": 0.514116644859314,
+      "sam_score": 0.936087965965271,
+      "regeneration_prompt": "woman with ornate black headpiece and veil",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_b1d09640",
+      "name": "lady_gaga__skin",
+      "label": "lady_gaga skin",
+      "description": "lady_gaga skin",
+      "z_index": 52,
+      "blend_mode": "normal",
+      "content_type": "lady_gaga__skin",
+      "semantic_path": "subject.person[0].skin",
+      "visible": true,
+      "locked": false,
+      "file": "lady_gaga__skin.png",
+      "bbox": [
+        0,
+        1,
+        258,
+        465
+      ],
+      "det_score": 0.514116644859314,
+      "sam_score": 0.95,
+      "regeneration_prompt": "lady_gaga skin",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_98e0951e",
+      "name": "lady_gaga__body",
+      "label": "lady_gaga body remainder",
+      "description": "lady_gaga body remainder",
+      "z_index": 51,
+      "blend_mode": "normal",
+      "content_type": "lady_gaga__body",
+      "semantic_path": "subject.person[0].body",
+      "visible": true,
+      "locked": false,
+      "file": "lady_gaga__body.png",
+      "bbox": [
+        0,
+        1,
+        258,
+        465
+      ],
+      "det_score": 0.514116644859314,
+      "sam_score": 0.95,
+      "regeneration_prompt": "lady_gaga body remainder",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_fe8a893a",
+      "name": "crowd_bg",
+      "label": "blurred crowd background",
+      "description": "blurred crowd background",
+      "z_index": 0,
+      "blend_mode": "normal",
+      "content_type": "crowd_bg",
+      "semantic_path": "background",
+      "visible": true,
+      "locked": false,
+      "file": "crowd_bg.png",
+      "bbox": [
+        4,
+        3,
+        847,
+        468
+      ],
+      "det_score": 0.37759917974472046,
+      "sam_score": 0.9051272869110107,
+      "regeneration_prompt": "blurred crowd background",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_d038a697",
+      "name": "headpiece",
+      "label": "large black lace headpiece with horns",
+      "description": "large black lace headpiece with horns",
+      "z_index": 80,
+      "blend_mode": "normal",
+      "content_type": "headpiece",
+      "semantic_path": "foreground.accessory",
+      "visible": true,
+      "locked": false,
+      "file": "headpiece.png",
+      "bbox": [
+        4,
+        4,
+        849,
+        710
+      ],
+      "det_score": 0.6762034296989441,
+      "sam_score": 1.0012177228927612,
+      "regeneration_prompt": "large black lace headpiece with horns",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    }
+  ]
+}

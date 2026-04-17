@@ -1,0 +1,257 @@
+{
+  "version": 4,
+  "width": 1280,
+  "height": 718,
+  "source_image": "assets/showcase/originals/coachella-stage-2007.jpg",
+  "split_mode": "claude_orchestrated",
+  "status": "ok",
+  "detection_report": {
+    "requested": 4,
+    "domain": "historical_bw_photo",
+    "person_chain": [
+      "yolo",
+      "dino"
+    ],
+    "per_entity": [
+      {
+        "id": 3,
+        "name": "people",
+        "label": "festival attendees in the foreground",
+        "semantic_path": "subject.person[0]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 15,
+            "conf_range": "0.37-0.88"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          237,
+          522,
+          271,
+          606
+        ],
+        "det_score": 0.7864537835121155,
+        "sam_score": 0.9456698894500732,
+        "pct": 0.18
+      },
+      {
+        "id": 0,
+        "name": "sky",
+        "label": "clear blue sky and distant mountains",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "clear blue sky",
+        "bbox": [
+          3,
+          3,
+          1276,
+          480
+        ],
+        "det_score": 0.37311962246894836,
+        "sam_score": 0.9800324440002441,
+        "pct": 38.81
+      },
+      {
+        "id": 1,
+        "name": "main_stage",
+        "label": "large black concert stage structure with scaffolding",
+        "semantic_path": "subject.stage",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "large black concert stage structure",
+        "bbox": [
+          190,
+          192,
+          998,
+          558
+        ],
+        "det_score": 0.697493314743042,
+        "sam_score": 0.9811000823974609,
+        "pct": 19.96
+      },
+      {
+        "id": 2,
+        "name": "grass",
+        "label": "green festival grass field",
+        "semantic_path": "foreground.ground",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "green festival grass field",
+        "bbox": [
+          4,
+          550,
+          1275,
+          714
+        ],
+        "det_score": 0.5621353983879089,
+        "sam_score": 0.9912883043289185,
+        "pct": 16.87
+      }
+    ],
+    "detected": 4,
+    "missed": 0,
+    "success_rate": 1.0,
+    "status": "ok"
+  },
+  "plan": {
+    "domain": "historical_bw_photo",
+    "threshold_hint": 0.18,
+    "expand_face_parts": false,
+    "entities": [
+      {
+        "name": "sky",
+        "label": "clear blue sky and distant mountains",
+        "semantic_path": "background",
+        "detector": "dino"
+      },
+      {
+        "name": "main_stage",
+        "label": "large black concert stage structure with scaffolding",
+        "semantic_path": "subject.stage",
+        "detector": "dino"
+      },
+      {
+        "name": "grass",
+        "label": "green festival grass field",
+        "semantic_path": "foreground.ground",
+        "detector": "dino"
+      },
+      {
+        "name": "people",
+        "label": "festival attendees in the foreground",
+        "semantic_path": "subject.person[0]",
+        "detector": "yolo",
+        "order": 0
+      }
+    ],
+    "slug": "coachella-stage-2007",
+    "device": "mps"
+  },
+  "created_at": "2026-04-17T12:11:10Z",
+  "layers": [
+    {
+      "id": "layer_1578bec6",
+      "name": "people",
+      "label": "festival attendees in the foreground",
+      "description": "festival attendees in the foreground",
+      "z_index": 50,
+      "blend_mode": "normal",
+      "content_type": "people",
+      "semantic_path": "subject.person[0]",
+      "visible": true,
+      "locked": false,
+      "file": "people.png",
+      "bbox": [
+        237,
+        522,
+        271,
+        606
+      ],
+      "det_score": 0.7864537835121155,
+      "sam_score": 0.9456698894500732,
+      "regeneration_prompt": "festival attendees in the foreground",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_6857fc95",
+      "name": "sky",
+      "label": "clear blue sky and distant mountains",
+      "description": "clear blue sky and distant mountains",
+      "z_index": 0,
+      "blend_mode": "normal",
+      "content_type": "sky",
+      "semantic_path": "background",
+      "visible": true,
+      "locked": false,
+      "file": "sky.png",
+      "bbox": [
+        3,
+        3,
+        1276,
+        480
+      ],
+      "det_score": 0.37311962246894836,
+      "sam_score": 0.9800324440002441,
+      "regeneration_prompt": "clear blue sky and distant mountains",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_c1a52204",
+      "name": "main_stage",
+      "label": "large black concert stage structure with scaffolding",
+      "description": "large black concert stage structure with scaffolding",
+      "z_index": 45,
+      "blend_mode": "normal",
+      "content_type": "main_stage",
+      "semantic_path": "subject.stage",
+      "visible": true,
+      "locked": false,
+      "file": "main_stage.png",
+      "bbox": [
+        190,
+        192,
+        998,
+        558
+      ],
+      "det_score": 0.697493314743042,
+      "sam_score": 0.9811000823974609,
+      "regeneration_prompt": "large black concert stage structure with scaffolding",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_13517d62",
+      "name": "grass",
+      "label": "green festival grass field",
+      "description": "green festival grass field",
+      "z_index": 80,
+      "blend_mode": "normal",
+      "content_type": "grass",
+      "semantic_path": "foreground.ground",
+      "visible": true,
+      "locked": false,
+      "file": "grass.png",
+      "bbox": [
+        4,
+        550,
+        1275,
+        714
+      ],
+      "det_score": 0.5621353983879089,
+      "sam_score": 0.9912883043289185,
+      "regeneration_prompt": "green festival grass field",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    }
+  ]
+}

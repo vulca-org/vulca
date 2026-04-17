@@ -1,0 +1,247 @@
+{
+  "version": 4,
+  "width": 1280,
+  "height": 960,
+  "source_image": "assets/showcase/originals/artemis-orion-earth-moon.jpg",
+  "split_mode": "claude_orchestrated",
+  "status": "ok",
+  "detection_report": {
+    "requested": 4,
+    "domain": "space_photograph",
+    "person_chain": [],
+    "per_entity": [
+      {
+        "id": 0,
+        "name": "space",
+        "label": "black empty space",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "black empty space",
+        "bbox": [
+          4,
+          4,
+          1273,
+          953
+        ],
+        "det_score": 0.46966421604156494,
+        "sam_score": 0.9807417392730713,
+        "pct": 85.22
+      },
+      {
+        "id": 1,
+        "name": "orion_spacecraft",
+        "label": "white Orion spacecraft with solar panels",
+        "semantic_path": "subject.spacecraft",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "white orion spacecraft",
+        "bbox": [
+          2,
+          17,
+          665,
+          857
+        ],
+        "det_score": 0.6622447371482849,
+        "sam_score": 1.0069369077682495,
+        "pct": 34.22
+      },
+      {
+        "id": 2,
+        "name": "earth",
+        "label": "distant blue Earth crescent",
+        "semantic_path": "subject.earth",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "distant blue earth crescent distant gray crescent moon",
+        "bbox": [
+          1078,
+          172,
+          1148,
+          253
+        ],
+        "det_score": 0.46032431721687317,
+        "sam_score": 0.9948393106460571,
+        "pct": 0.26
+      },
+      {
+        "id": 3,
+        "name": "moon",
+        "label": "distant gray crescent Moon",
+        "semantic_path": "subject.moon",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "distant blue crescent distant gray crescent moon",
+        "bbox": [
+          1063,
+          158,
+          1164,
+          267
+        ],
+        "det_score": 0.2792209982872009,
+        "sam_score": 0.9909389019012451,
+        "pct": 0.26
+      }
+    ],
+    "detected": 4,
+    "missed": 0,
+    "success_rate": 1.0,
+    "status": "ok"
+  },
+  "plan": {
+    "domain": "space_photograph",
+    "threshold_hint": 0.18,
+    "expand_face_parts": false,
+    "entities": [
+      {
+        "name": "space",
+        "label": "black empty space",
+        "semantic_path": "background",
+        "detector": "dino"
+      },
+      {
+        "name": "orion_spacecraft",
+        "label": "white Orion spacecraft with solar panels",
+        "semantic_path": "subject.spacecraft",
+        "detector": "dino"
+      },
+      {
+        "name": "earth",
+        "label": "distant blue Earth crescent",
+        "semantic_path": "subject.earth",
+        "detector": "dino"
+      },
+      {
+        "name": "moon",
+        "label": "distant gray crescent Moon",
+        "semantic_path": "subject.moon",
+        "detector": "dino"
+      }
+    ],
+    "slug": "artemis-orion-earth-moon",
+    "device": "mps"
+  },
+  "created_at": "2026-04-17T12:10:45Z",
+  "layers": [
+    {
+      "id": "layer_b13febc3",
+      "name": "space",
+      "label": "black empty space",
+      "description": "black empty space",
+      "z_index": 0,
+      "blend_mode": "normal",
+      "content_type": "space",
+      "semantic_path": "background",
+      "visible": true,
+      "locked": false,
+      "file": "space.png",
+      "bbox": [
+        4,
+        4,
+        1273,
+        953
+      ],
+      "det_score": 0.46966421604156494,
+      "sam_score": 0.9807417392730713,
+      "regeneration_prompt": "black empty space",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_2f9ff2d1",
+      "name": "orion_spacecraft",
+      "label": "white Orion spacecraft with solar panels",
+      "description": "white Orion spacecraft with solar panels",
+      "z_index": 45,
+      "blend_mode": "normal",
+      "content_type": "orion_spacecraft",
+      "semantic_path": "subject.spacecraft",
+      "visible": true,
+      "locked": false,
+      "file": "orion_spacecraft.png",
+      "bbox": [
+        2,
+        17,
+        665,
+        857
+      ],
+      "det_score": 0.6622447371482849,
+      "sam_score": 1.0069369077682495,
+      "regeneration_prompt": "white Orion spacecraft with solar panels",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_9c939337",
+      "name": "earth",
+      "label": "distant blue Earth crescent",
+      "description": "distant blue Earth crescent",
+      "z_index": 45,
+      "blend_mode": "normal",
+      "content_type": "earth",
+      "semantic_path": "subject.earth",
+      "visible": true,
+      "locked": false,
+      "file": "earth.png",
+      "bbox": [
+        1078,
+        172,
+        1148,
+        253
+      ],
+      "det_score": 0.46032431721687317,
+      "sam_score": 0.9948393106460571,
+      "regeneration_prompt": "distant blue Earth crescent",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_c0133021",
+      "name": "moon",
+      "label": "distant gray crescent Moon",
+      "description": "distant gray crescent Moon",
+      "z_index": 45,
+      "blend_mode": "normal",
+      "content_type": "moon",
+      "semantic_path": "subject.moon",
+      "visible": true,
+      "locked": false,
+      "file": "moon.png",
+      "bbox": [
+        1063,
+        158,
+        1164,
+        267
+      ],
+      "det_score": 0.2792209982872009,
+      "sam_score": 0.9909389019012451,
+      "regeneration_prompt": "distant gray crescent Moon",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    }
+  ]
+}

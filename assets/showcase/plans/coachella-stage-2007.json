@@ -1,0 +1,34 @@
+{
+  "domain": "historical_bw_photo",
+  "threshold_hint": 0.18,
+  "expand_face_parts": false,
+  "entities": [
+    {
+      "name": "sky",
+      "label": "clear blue sky and distant mountains",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "main_stage",
+      "label": "large black concert stage structure with scaffolding",
+      "semantic_path": "subject.stage",
+      "detector": "dino"
+    },
+    {
+      "name": "grass",
+      "label": "green festival grass field",
+      "semantic_path": "foreground.ground",
+      "detector": "dino"
+    },
+    {
+      "name": "people",
+      "label": "festival attendees in the foreground",
+      "semantic_path": "subject.person[0]",
+      "detector": "yolo",
+      "order": 0
+    }
+  ],
+  "slug": "coachella-stage-2007",
+  "device": "mps"
+}

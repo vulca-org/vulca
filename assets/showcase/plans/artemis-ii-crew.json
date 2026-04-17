@@ -1,0 +1,43 @@
+{
+  "domain": "portrait_photograph",
+  "threshold_hint": 0.2,
+  "expand_face_parts": true,
+  "entities": [
+    {
+      "name": "dark_bg",
+      "label": "dark blue background",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "astronaut_0",
+      "label": "astronaut in orange suit",
+      "semantic_path": "subject.person[0]",
+      "detector": "yolo",
+      "order": 0
+    },
+    {
+      "name": "astronaut_1",
+      "label": "astronaut in orange suit",
+      "semantic_path": "subject.person[1]",
+      "detector": "yolo",
+      "order": 1
+    },
+    {
+      "name": "astronaut_2",
+      "label": "astronaut in orange suit",
+      "semantic_path": "subject.person[2]",
+      "detector": "yolo",
+      "order": 2
+    },
+    {
+      "name": "astronaut_3",
+      "label": "astronaut in orange suit",
+      "semantic_path": "subject.person[3]",
+      "detector": "yolo",
+      "order": 3
+    }
+  ],
+  "slug": "artemis-ii-crew",
+  "device": "mps"
+}

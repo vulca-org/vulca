@@ -1,0 +1,22 @@
+{
+  "domain": "portrait_photograph",
+  "threshold_hint": 0.2,
+  "expand_face_parts": true,
+  "entities": [
+    {
+      "name": "bg",
+      "label": "plain photo studio background",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "sally_ride",
+      "label": "woman astronaut with curly dark hair in flight suit",
+      "semantic_path": "subject.person[0]",
+      "detector": "yolo",
+      "order": 0
+    }
+  ],
+  "slug": "sally-ride-portrait",
+  "device": "mps"
+}

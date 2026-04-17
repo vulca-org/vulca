@@ -1,0 +1,156 @@
+{
+  "version": 4,
+  "width": 1280,
+  "height": 1280,
+  "source_image": "assets/showcase/originals/bruce-mccandless-mmu.jpg",
+  "split_mode": "claude_orchestrated",
+  "status": "partial",
+  "detection_report": {
+    "requested": 3,
+    "domain": "space_photograph",
+    "person_chain": [],
+    "per_entity": [
+      {
+        "id": 2,
+        "name": "astronaut_mmu",
+        "label": "astronaut in white space suit with MMU jetpack",
+        "semantic_path": "subject.person[0]",
+        "kind": "person",
+        "attempts": [],
+        "status": "missed",
+        "reason": "no_detection_after_chain"
+      },
+      {
+        "id": 0,
+        "name": "space",
+        "label": "pure black empty space",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "pure black empty space",
+        "bbox": [
+          4,
+          8,
+          1274,
+          715
+        ],
+        "det_score": 0.5896821618080139,
+        "sam_score": 1.0050463676452637,
+        "pct": 43.55
+      },
+      {
+        "id": 1,
+        "name": "earth_below",
+        "label": "blue Earth surface below",
+        "semantic_path": "background.earth",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "blue earth surface",
+        "bbox": [
+          5,
+          700,
+          1273,
+          1271
+        ],
+        "det_score": 0.5559839010238647,
+        "sam_score": 1.021811842918396,
+        "pct": 44.34
+      }
+    ],
+    "detected": 2,
+    "missed": 1,
+    "success_rate": 0.667,
+    "status": "partial"
+  },
+  "plan": {
+    "domain": "space_photograph",
+    "threshold_hint": 0.2,
+    "expand_face_parts": false,
+    "entities": [
+      {
+        "name": "space",
+        "label": "pure black empty space",
+        "semantic_path": "background",
+        "detector": "dino"
+      },
+      {
+        "name": "earth_below",
+        "label": "blue Earth surface below",
+        "semantic_path": "background.earth",
+        "detector": "dino"
+      },
+      {
+        "name": "astronaut_mmu",
+        "label": "astronaut in white space suit with MMU jetpack",
+        "semantic_path": "subject.person[0]",
+        "detector": "yolo",
+        "order": 0
+      }
+    ],
+    "slug": "bruce-mccandless-mmu",
+    "device": "mps"
+  },
+  "created_at": "2026-04-17T12:11:17Z",
+  "layers": [
+    {
+      "id": "layer_5b01d0e0",
+      "name": "space",
+      "label": "pure black empty space",
+      "description": "pure black empty space",
+      "z_index": 0,
+      "blend_mode": "normal",
+      "content_type": "space",
+      "semantic_path": "background",
+      "visible": true,
+      "locked": false,
+      "file": "space.png",
+      "bbox": [
+        4,
+        8,
+        1274,
+        715
+      ],
+      "det_score": 0.5896821618080139,
+      "sam_score": 1.0050463676452637,
+      "regeneration_prompt": "pure black empty space",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_88a4a110",
+      "name": "earth_below",
+      "label": "blue Earth surface below",
+      "description": "blue Earth surface below",
+      "z_index": 10,
+      "blend_mode": "normal",
+      "content_type": "earth_below",
+      "semantic_path": "background.earth",
+      "visible": true,
+      "locked": false,
+      "file": "earth_below.png",
+      "bbox": [
+        5,
+        700,
+        1273,
+        1271
+      ],
+      "det_score": 0.5559839010238647,
+      "sam_score": 1.021811842918396,
+      "regeneration_prompt": "blue Earth surface below",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    }
+  ]
+}

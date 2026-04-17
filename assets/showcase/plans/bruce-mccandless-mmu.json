@@ -1,0 +1,28 @@
+{
+  "domain": "space_photograph",
+  "threshold_hint": 0.2,
+  "expand_face_parts": false,
+  "entities": [
+    {
+      "name": "space",
+      "label": "pure black empty space",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "earth_below",
+      "label": "blue Earth surface below",
+      "semantic_path": "background.earth",
+      "detector": "dino"
+    },
+    {
+      "name": "astronaut_mmu",
+      "label": "astronaut in white space suit with MMU jetpack",
+      "semantic_path": "subject.person[0]",
+      "detector": "yolo",
+      "order": 0
+    }
+  ],
+  "slug": "bruce-mccandless-mmu",
+  "device": "mps"
+}

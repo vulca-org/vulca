@@ -1,0 +1,29 @@
+{
+  "domain": "portrait_photograph",
+  "threshold_hint": 0.2,
+  "expand_face_parts": true,
+  "entities": [
+    {
+      "name": "studio",
+      "label": "studio background with american flag",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "christina_koch",
+      "label": "woman astronaut in white EMU space suit",
+      "semantic_path": "subject.person[0]",
+      "detector": "yolo",
+      "order": 0
+    },
+    {
+      "name": "emu_suit",
+      "label": "bulky white spacesuit with patches",
+      "semantic_path": "foreground.suit",
+      "detector": "dino",
+      "threshold": 0.15
+    }
+  ],
+  "slug": "christina-koch-portrait",
+  "device": "mps"
+}

@@ -1,0 +1,28 @@
+{
+  "domain": "portrait_photograph",
+  "threshold_hint": 0.2,
+  "expand_face_parts": true,
+  "entities": [
+    {
+      "name": "suit_bg",
+      "label": "plain studio background",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "buzz_aldrin",
+      "label": "astronaut in white Apollo spacesuit",
+      "semantic_path": "subject.person[0]",
+      "detector": "yolo",
+      "order": 0
+    },
+    {
+      "name": "helmet",
+      "label": "white astronaut helmet with clear visor",
+      "semantic_path": "foreground.helmet",
+      "detector": "dino"
+    }
+  ],
+  "slug": "buzz-aldrin-apollo11",
+  "device": "mps"
+}

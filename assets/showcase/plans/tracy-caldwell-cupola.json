@@ -1,0 +1,28 @@
+{
+  "domain": "space_photograph",
+  "threshold_hint": 0.2,
+  "expand_face_parts": true,
+  "entities": [
+    {
+      "name": "earth_view",
+      "label": "blue Earth seen through window",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "cupola_frame",
+      "label": "metallic circular window frame",
+      "semantic_path": "foreground.frame",
+      "detector": "dino"
+    },
+    {
+      "name": "astronaut",
+      "label": "woman astronaut in blue shirt at window",
+      "semantic_path": "subject.person[0]",
+      "detector": "yolo",
+      "order": 0
+    }
+  ],
+  "slug": "tracy-caldwell-cupola",
+  "device": "mps"
+}

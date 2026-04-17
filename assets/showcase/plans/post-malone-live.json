@@ -1,0 +1,22 @@
+{
+  "domain": "historical_bw_photo",
+  "threshold_hint": 0.2,
+  "expand_face_parts": true,
+  "entities": [
+    {
+      "name": "stage_bg",
+      "label": "dark dramatic stage lighting",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "singer",
+      "label": "man with long braided hair singing into microphone",
+      "semantic_path": "subject.person[0]",
+      "detector": "yolo",
+      "order": 0
+    }
+  ],
+  "slug": "post-malone-live",
+  "device": "mps"
+}
