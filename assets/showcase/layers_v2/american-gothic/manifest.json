@@ -143,7 +143,7 @@
     "slug": "american-gothic",
     "device": "mps"
   },
-  "created_at": "2026-04-17T11:12:36Z",
+  "created_at": "2026-04-17T11:39:26Z",
   "layers": [
     {
       "id": "layer_b19ebd7e",
@@ -465,6 +465,35 @@
       "content_bbox": null
     },
     {
+      "id": "layer_9b443d78",
+      "name": "woman__body",
+      "label": "woman body remainder",
+      "description": "woman body remainder",
+      "z_index": 51,
+      "blend_mode": "normal",
+      "content_type": "woman__body",
+      "semantic_path": "subject.person[0].body",
+      "visible": true,
+      "locked": false,
+      "file": "woman__body.png",
+      "bbox": [
+        0,
+        255,
+        419,
+        1277
+      ],
+      "det_score": 0.9225975275039673,
+      "sam_score": 0.95,
+      "regeneration_prompt": "woman body remainder",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
       "id": "layer_6d5d067b",
       "name": "man__skin",
       "label": "man skin",
@@ -746,6 +775,35 @@
       "det_score": 0.9504542946815491,
       "sam_score": 0.95,
       "regeneration_prompt": "man lips",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_d4b170b8",
+      "name": "man__body",
+      "label": "man body remainder",
+      "description": "man body remainder",
+      "z_index": 51,
+      "blend_mode": "normal",
+      "content_type": "man__body",
+      "semantic_path": "subject.person[1].body",
+      "visible": true,
+      "locked": false,
+      "file": "man__body.png",
+      "bbox": [
+        315,
+        118,
+        1056,
+        1272
+      ],
+      "det_score": 0.9504542946815491,
+      "sam_score": 0.95,
+      "regeneration_prompt": "man body remainder",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,

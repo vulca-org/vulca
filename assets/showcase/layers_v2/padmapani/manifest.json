@@ -86,7 +86,7 @@
     "slug": "padmapani",
     "device": "mps"
   },
-  "created_at": "2026-04-17T11:12:14Z",
+  "created_at": "2026-04-17T11:39:03Z",
   "layers": [
     {
       "id": "layer_f6af4221",
@@ -196,6 +196,35 @@
       "det_score": 0.5070887804031372,
       "sam_score": 0.95,
       "regeneration_prompt": "padmapani hat",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_ed83e358",
+      "name": "padmapani__body",
+      "label": "padmapani body remainder",
+      "description": "padmapani body remainder",
+      "z_index": 51,
+      "blend_mode": "normal",
+      "content_type": "padmapani__body",
+      "semantic_path": "subject.person[0].body",
+      "visible": true,
+      "locked": false,
+      "file": "padmapani__body.png",
+      "bbox": [
+        420,
+        755,
+        2014,
+        3214
+      ],
+      "det_score": 0.5070887804031372,
+      "sam_score": 0.95,
+      "regeneration_prompt": "padmapani body remainder",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,

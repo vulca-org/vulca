@@ -760,22 +760,43 @@ def process(slug: str, force: bool = False):
         t0 = time.time()
         face_proc, face_model = load_face_parser(device)
         face_layers_added = 0
+        # Total image area for dynamic threshold
+        img_area = W * H
         for person_layer in [l for l in layers_raw if "person[" in l["semantic_path"]]:
             parts = face_parse_person(face_proc, face_model, device, img_np, person_layer["bbox"])
             if not parts:
                 continue
-            # Constrain parts to person's mask (prevent bleeding into other persons)
             person_mask = person_layer["mask"]
+            # Dynamic threshold: larger persons get lower threshold; small persons
+            # (background figures) need bigger parts to be worth emitting as sub-layers.
+            # Pattern #2 fix: FACE_PART_MIN_PX scales with person size.
+            person_px = person_mask.sum()
+            person_frac = person_px / img_area
+            if person_frac < 0.02:       # tiny person (<2% of image)
+                min_part_px = max(FACE_PART_MIN_PX, 200)
+            elif person_frac < 0.05:     # small (<5%)
+                min_part_px = max(FACE_PART_MIN_PX, 100)
+            else:
+                min_part_px = FACE_PART_MIN_PX
+            # Collect constrained sub-part masks (union used below for remainder)
+            subparts_kept = []  # list of (part_name, mask)
+            union_subparts = np.zeros(person_mask.shape, dtype=bool)
             for part_name, part_mask in parts.items():
                 constrained = part_mask & person_mask
-                if constrained.sum() < FACE_PART_MIN_PX:
+                if constrained.sum() < min_part_px:
                     continue
-                parent_path = person_layer["semantic_path"]  # subject.person[N]
+                subparts_kept.append((part_name, constrained))
+                union_subparts |= constrained
+
+            # Add sub-part layers
+            for part_name, constrained in subparts_kept:
+                parent_path = person_layer["semantic_path"]
                 sub_sp = f"{parent_path}.{part_name}"
                 parent_name = person_layer["name"]
                 sub_name = f"{parent_name}__{part_name}"
-                # Face parts get z = parent z + offset based on part priority
-                part_z_boost = {"eyes": 12, "lips": 12, "nose": 10, "eyebrows": 8, "ears": 6, "hair": 4, "hat": 3, "neck": -2, "cloth": -4, "skin": 2}.get(part_name, 0)
+                part_z_boost = {"eyes": 12, "lips": 12, "nose": 10, "eyebrows": 8,
+                                "ears": 6, "hair": 4, "hat": 3, "neck": -2,
+                                "cloth": -4, "skin": 2}.get(part_name, 0)
                 layers_raw.append({
                     "id": 1000 + face_layers_added,
                     "label": f"{parent_name} {part_name}",
@@ -788,7 +809,31 @@ def process(slug: str, force: bool = False):
                     "mask": constrained,
                 })
                 face_layers_added += 1
-        print(f"  Face-parsing: +{face_layers_added} sub-parts in {time.time()-t0:.1f}s")
+
+            # Pattern #1 fix: add body_remainder = person_mask - union(sub-parts)
+            # so torso/clothing/etc below face region doesn't become a hollow shell.
+            if subparts_kept:
+                remainder = person_mask & ~union_subparts
+                if remainder.sum() > min_part_px:
+                    parent_name = person_layer["name"]
+                    layers_raw.append({
+                        "id": 1000 + face_layers_added,
+                        "label": f"{parent_name} body remainder",
+                        "name": f"{parent_name}__body",
+                        "semantic_path": f"{person_layer['semantic_path']}.body",
+                        "bbox": person_layer["bbox"],
+                        "det_score": person_layer["det_score"],
+                        "sam_score": 0.95,
+                        "z": person_layer["z"] + 1,  # just above parent
+                        "mask": remainder,
+                    })
+                    face_layers_added += 1
+        print(f"  Face-parsing: +{face_layers_added} sub-parts (incl body_remainder) in {time.time()-t0:.1f}s")
+
+    # Pattern #3 fix: union of all person masks for DINO-object subtraction
+    all_persons_mask = np.zeros((H, W), dtype=bool)
+    for pl in [l for l in layers_raw if "person[" in l["semantic_path"]]:
+        all_persons_mask |= pl["mask"]
 
     # Object layers: use DINO results
     for i, entity in object_entities:
@@ -803,6 +848,26 @@ def process(slug: str, force: bool = False):
             continue
         bbox, score, phrase = dino_assigned[label]
         mask, sam_score = segment_bbox(sam_pred, bbox)
+
+        # Pattern #3 fix: subtract person overlap ONLY in the "suspicious middle
+        # range" (30%-90%). Rationale:
+        #   - <30% overlap: probably no leak
+        #   - 30-90% overlap: partial leak (e.g. chair_parapet grabbed arms)
+        #   - >90% overlap: object is *contained* inside person by design
+        #     (jewelry, flag_pin, held object, vulture near child) — KEEP IT.
+        # Background layers (sky, ground, water) are exempt entirely.
+        if not semantic_path.startswith("background"):
+            overlap = (mask & all_persons_mask).sum()
+            obj_px = mask.sum()
+            if obj_px > 0:
+                ratio = overlap / obj_px
+                if 0.30 < ratio < 0.90:
+                    mask = mask & ~all_persons_mask
+                    print(f"    [leak-fix] {record['name']}: subtracted person overlap ({ratio*100:.0f}%)")
+                elif ratio >= 0.90:
+                    # Fully contained — accessory/held object. Keep as-is.
+                    pass
+
         pct = mask.sum() / (H * W) * 100
         print(f"  [O{i}] {label[:30]:30s} → '{phrase[:20]}' bbox={bbox} "
               f"det={score:.2f} sam={sam_score:.2f} pct={pct:.1f}%")

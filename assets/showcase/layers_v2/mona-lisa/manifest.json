@@ -112,7 +112,7 @@
       }
     ]
   },
-  "created_at": "2026-04-17T11:09:00Z",
+  "created_at": "2026-04-17T11:35:32Z",
   "layers": [
     {
       "id": "layer_b42536b9",
@@ -309,6 +309,35 @@
       "det_score": 0.7764641642570496,
       "sam_score": 0.95,
       "regeneration_prompt": "mona_lisa hair",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_1a9093f3",
+      "name": "mona_lisa__body",
+      "label": "mona_lisa body remainder",
+      "description": "mona_lisa body remainder",
+      "z_index": 51,
+      "blend_mode": "normal",
+      "content_type": "mona_lisa__body",
+      "semantic_path": "subject.person[0].body",
+      "visible": true,
+      "locked": false,
+      "file": "mona_lisa__body.png",
+      "bbox": [
+        302,
+        178,
+        505,
+        466
+      ],
+      "det_score": 0.7764641642570496,
+      "sam_score": 0.95,
+      "regeneration_prompt": "mona_lisa body remainder",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,

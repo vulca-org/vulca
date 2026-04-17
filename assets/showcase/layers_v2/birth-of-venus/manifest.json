@@ -199,7 +199,7 @@
     "slug": "birth-of-venus",
     "device": "mps"
   },
-  "created_at": "2026-04-17T11:12:27Z",
+  "created_at": "2026-04-17T11:39:16Z",
   "layers": [
     {
       "id": "layer_82afe341",
@@ -367,6 +367,35 @@
       "det_score": 0.5149659514427185,
       "sam_score": 0.95,
       "regeneration_prompt": "wind_figures hat",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_0370b5a7",
+      "name": "wind_figures__body",
+      "label": "wind_figures body remainder",
+      "description": "wind_figures body remainder",
+      "z_index": 51,
+      "blend_mode": "normal",
+      "content_type": "wind_figures__body",
+      "semantic_path": "subject.person[0].body",
+      "visible": true,
+      "locked": false,
+      "file": "wind_figures__body.png",
+      "bbox": [
+        10,
+        34,
+        497,
+        596
+      ],
+      "det_score": 0.5149659514427185,
+      "sam_score": 0.95,
+      "regeneration_prompt": "wind_figures body remainder",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,

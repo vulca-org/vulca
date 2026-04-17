@@ -170,7 +170,7 @@
       }
     ]
   },
-  "created_at": "2026-04-17T11:09:11Z",
+  "created_at": "2026-04-17T11:35:43Z",
   "layers": [
     {
       "id": "layer_6c3b58c4",
@@ -318,6 +318,35 @@
       "content_bbox": null
     },
     {
+      "id": "layer_246a0257",
+      "name": "adam__body",
+      "label": "adam body remainder",
+      "description": "adam body remainder",
+      "z_index": 51,
+      "blend_mode": "normal",
+      "content_type": "adam__body",
+      "semantic_path": "subject.person[0].body",
+      "visible": true,
+      "locked": false,
+      "file": "adam__body.png",
+      "bbox": [
+        4,
+        177,
+        545,
+        573
+      ],
+      "det_score": 0.9279413223266602,
+      "sam_score": 0.95,
+      "regeneration_prompt": "adam body remainder",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
       "id": "layer_c0758daf",
       "name": "god_angels_cluster__hair",
       "label": "god_angels_cluster hair",
@@ -367,6 +396,35 @@
       "det_score": 0.8104038834571838,
       "sam_score": 0.95,
       "regeneration_prompt": "god_angels_cluster hat",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_8428cfe7",
+      "name": "god_angels_cluster__body",
+      "label": "god_angels_cluster body remainder",
+      "description": "god_angels_cluster body remainder",
+      "z_index": 51,
+      "blend_mode": "normal",
+      "content_type": "god_angels_cluster__body",
+      "semantic_path": "subject.person[1].body",
+      "visible": true,
+      "locked": false,
+      "file": "god_angels_cluster__body.png",
+      "bbox": [
+        496,
+        97,
+        1274,
+        378
+      ],
+      "det_score": 0.8104038834571838,
+      "sam_score": 0.95,
+      "regeneration_prompt": "god_angels_cluster body remainder",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,

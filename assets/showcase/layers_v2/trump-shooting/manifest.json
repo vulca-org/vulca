@@ -207,7 +207,7 @@
     "slug": "trump-shooting",
     "device": "mps"
   },
-  "created_at": "2026-04-17T11:13:04Z",
+  "created_at": "2026-04-17T11:39:55Z",
   "layers": [
     {
       "id": "layer_9bc41fe1",
@@ -413,6 +413,35 @@
       "content_bbox": null
     },
     {
+      "id": "layer_fade4b35",
+      "name": "trump__body",
+      "label": "trump body remainder",
+      "description": "trump body remainder",
+      "z_index": 51,
+      "blend_mode": "normal",
+      "content_type": "trump__body",
+      "semantic_path": "subject.person[0].body",
+      "visible": true,
+      "locked": false,
+      "file": "trump__body.png",
+      "bbox": [
+        50,
+        98,
+        213,
+        254
+      ],
+      "det_score": 0.8352227210998535,
+      "sam_score": 0.95,
+      "regeneration_prompt": "trump body remainder",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
       "id": "layer_78d91ee4",
       "name": "agent_bottom__cloth",
       "label": "agent_bottom cloth",
@@ -433,6 +462,35 @@
       "det_score": 0.4584771692752838,
       "sam_score": 0.95,
       "regeneration_prompt": "agent_bottom cloth",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_18b883cf",
+      "name": "agent_bottom__body",
+      "label": "agent_bottom body remainder",
+      "description": "agent_bottom body remainder",
+      "z_index": 51,
+      "blend_mode": "normal",
+      "content_type": "agent_bottom__body",
+      "semantic_path": "subject.person[3].body",
+      "visible": true,
+      "locked": false,
+      "file": "agent_bottom__body.png",
+      "bbox": [
+        128,
+        22,
+        212,
+        255
+      ],
+      "det_score": 0.4584771692752838,
+      "sam_score": 0.95,
+      "regeneration_prompt": "agent_bottom body remainder",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,

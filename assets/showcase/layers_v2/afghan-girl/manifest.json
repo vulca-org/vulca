@@ -86,7 +86,7 @@
     "slug": "afghan-girl",
     "device": "mps"
   },
-  "created_at": "2026-04-17T11:12:42Z",
+  "created_at": "2026-04-17T11:39:32Z",
   "layers": [
     {
       "id": "layer_338a1afe",
@@ -341,6 +341,35 @@
       "det_score": 0.8888350129127502,
       "sam_score": 0.95,
       "regeneration_prompt": "girl cloth",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_0e12e44a",
+      "name": "girl__body",
+      "label": "girl body remainder",
+      "description": "girl body remainder",
+      "z_index": 51,
+      "blend_mode": "normal",
+      "content_type": "girl__body",
+      "semantic_path": "subject.person[0].body",
+      "visible": true,
+      "locked": false,
+      "file": "girl__body.png",
+      "bbox": [
+        0,
+        37,
+        254,
+        397
+      ],
+      "det_score": 0.8888350129127502,
+      "sam_score": 0.95,
+      "regeneration_prompt": "girl body remainder",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,
