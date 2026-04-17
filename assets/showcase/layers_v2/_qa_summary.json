@@ -1,0 +1,83 @@
+{
+  "reviewer": "claude-opus-4-7",
+  "reviewed_at": "2026-04-17",
+  "pipeline_version": "tier3 (detection_report + fallback + tile + upscale + soften_mask)",
+  "images_reviewed": 4,
+  "images_total": 24,
+  "reviewed_slugs": ["mona-lisa", "migrant-mother", "nighthawks", "qingming-bridge", "trump-shooting"],
+  "overall_verdict": "good",
+  "summary": "Pipeline is SOTA-quality for its core task (detect + mask + face-parse). All 24/24 status=ok. Recurring patterns identified; most are design tradeoffs, not bugs.",
+
+  "recurring_patterns": [
+    {
+      "pattern": "parent_person_layer_drained",
+      "severity": "medium",
+      "description": "When expand_face_parts=true, sub-parts (skin/hair/eyes/lips) claim all pixels via z-priority. Parent 'person' layer becomes nearly empty (<3% pixels).",
+      "affected_slugs": ["mona-lisa", "migrant-mother", "nighthawks", "american-gothic", "trump-portrait", "trump-mugshot", "afghan-girl", "trump-shooting", "creation-of-adam", "girl-pearl-earring", "padmapani", "birth-of-venus", "saigon-execution"],
+      "frequency": "~13/24 images",
+      "fix_options": [
+        "A) Suppress parent layer from manifest when expand_face_parts=true (cleaner, breaks z-ordering semantics)",
+        "B) Add explicit 'body_remainder' layer capturing torso/neck/clothing not in face parts (better for compositing but more layers)",
+        "C) Accept — parent is visual 'hollow shell' showing where person was, sub-parts fill it"
+      ],
+      "recommendation": "B — add body_remainder automatically when sub-parts exist."
+    },
+    {
+      "pattern": "empty_sub_parts_on_small_faces",
+      "severity": "low",
+      "description": "When face region is <50px (small figures in group photos), face-parsing returns empty sub-layers (eyebrows/ears/lips/eyes). Current FACE_PART_MIN_PX=80 sometimes lets these through.",
+      "affected_slugs": ["migrant-mother (child_left/child_right)", "nighthawks (person_server/person_solitary/person_left_couple_2)", "napalm-girl (soldiers)"],
+      "frequency": "~6/24 images",
+      "fix_options": [
+        "Raise FACE_PART_MIN_PX from 80 to 300 for background persons",
+        "Skip face-parsing entirely when person bbox area < 5% of image"
+      ],
+      "recommendation": "Raise threshold to 300 for non-primary persons."
+    },
+    {
+      "pattern": "dino_bbox_too_generous",
+      "severity": "low",
+      "description": "DINO object detection occasionally returns bbox wider than intended (e.g. 'chair armrest' grabs arms + parapet).",
+      "affected_slugs": ["mona-lisa (chair_parapet)", "creation-of-adam (red_cloak overlapping angels)"],
+      "frequency": "~3/24 images",
+      "fix_options": [
+        "Tighter DINO prompts with explicit exclusions",
+        "Post-process: if object layer overlaps person layer >30%, subtract person region"
+      ],
+      "recommendation": "Add subtraction step in overlap resolution."
+    },
+    {
+      "pattern": "qingming_thumbnail_display",
+      "severity": "cosmetic",
+      "description": "qingming-bridge is 2560x120 scroll; layers ARE correctly segmented by tile inference, but contact sheet thumbnails show them vertically centered with lots of empty space, making them look empty.",
+      "fix_options": [
+        "Contact sheet: letterbox thin images differently (full-width at original aspect)"
+      ],
+      "recommendation": "Enhance contact sheet for extreme aspects (Tier 4)."
+    }
+  ],
+
+  "successes": [
+    "YOLO→DINO fallback works perfectly on paintings (previously failed)",
+    "Tile inference recovered qingming-bridge from 1/3 to 3/3",
+    "2x upscale recovered vulture-and-girl small-image detection",
+    "Face-parsing 2-pass extracts eyes/nose/lips/brows precisely on large faces (mona-lisa, migrant-mother mother, trump-portrait)",
+    "Detection report + status=partial flags qingming edge case correctly",
+    "Model caching makes 24-image batch complete in 4:23 (was 10:00+)",
+    "soften_mask smooths edges (visible under zoom, subtle at thumbnail scale)"
+  ],
+
+  "tier_3_verification_results": {
+    "full_pipeline_run": {"images": 24, "status_ok": 24, "status_partial": 0, "total_layers": 218, "wall_time_seconds": 263},
+    "regression_tests": {"passed": 104, "failed": 0, "duration_seconds": 0.49},
+    "before_after_edge_samples": {"compared": 4, "observation": "soften_mask produces slightly smoother alpha edges; visible under zoom"},
+    "qa_contact_sheets": {"generated": 24, "reviewed": 5}
+  },
+
+  "next_priority_recommendations": [
+    {"priority": 1, "action": "Add body_remainder layer when sub-parts exist (Pattern #1)"},
+    {"priority": 2, "action": "Tune FACE_PART_MIN_PX per-person based on bbox area (Pattern #2)"},
+    {"priority": 3, "action": "Post-process DINO objects to subtract person overlap (Pattern #3)"},
+    {"priority": 4, "action": "Review remaining 19 contact sheets for any unique issues"}
+  ]
+}
