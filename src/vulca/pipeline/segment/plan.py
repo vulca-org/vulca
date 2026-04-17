@@ -122,6 +122,15 @@ class Plan(BaseModel):
     threshold_hint: float = Field(0.20, ge=0.0, le=1.0)
     expand_face_parts: bool = True
     soften_edges: bool = True
+    # Layer overlap resolution model.
+    # "hierarchical" (default, Phase 1.5+): parent layers keep pixels shared with
+    #   descendants (eyes don't carve woman); same-z siblings coexist; only strictly
+    #   higher-z non-descendants block. Matches Photoshop/Figma semantics and what
+    #   agent editors expect (`layers_edit` on woman = whole woman).
+    # "flat" (legacy): mutually-exclusive partition — highest-z owns each pixel.
+    #   Kept as escape hatch during Phase 1.5 rollout; deprecated once hierarchical
+    #   validates on all 42 showcase images.
+    layer_model: Literal["flat", "hierarchical"] = "hierarchical"
 
     # The actual work list
     entities: list[PlanEntity] = Field(..., min_length=1)
@@ -144,6 +153,18 @@ class Plan(BaseModel):
         if len(names) != len(set(names)):
             dups = [n for n in names if names.count(n) > 1]
             raise ValueError(f"duplicate entity names: {set(dups)}")
+        return self
+
+    @model_validator(mode="after")
+    def _unique_semantic_paths(self):
+        """Hierarchical layer model relies on semantic_path → parent mapping.
+        Duplicates would make parent_layer_id resolution ambiguous (first-wins
+        today, which could silently mis-link children). Empty paths are allowed
+        (catch-all entities)."""
+        paths = [e.semantic_path for e in self.entities if e.semantic_path]
+        if len(paths) != len(set(paths)):
+            dups = sorted({p for p in paths if paths.count(p) > 1})
+            raise ValueError(f"duplicate semantic_path across entities: {dups}")
         return self
 
     @classmethod

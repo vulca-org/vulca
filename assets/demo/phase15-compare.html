@@ -1,0 +1,1695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Phase 1.5 flat vs hierarchical — side-by-side</title>
+<style>
+  :root {
+    --bg: #0a0a0a; --panel: #161616; --border: #2a2a2a;
+    --ink: #e8e8e8; --muted: #8a8a8a;
+    --win: #4caf50; --loss: #f44336; --dead: #8a3a3a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, sans-serif;
+    margin: 0; padding: 24px 32px; line-height: 1.5;
+  }
+  h1 { margin: 0 0 6px 0; font-size: 24px; }
+  .intro-top { color: var(--muted); max-width: 900px; margin: 0 0 16px 0; }
+  .legend {
+    display: flex; gap: 20px; flex-wrap: wrap;
+    background: var(--panel); padding: 10px 14px; border-radius: 6px;
+    margin-bottom: 28px; font-size: 13px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; }
+  .chip { padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 600; }
+  .chip-win { background: rgba(76,175,80,0.2); color: var(--win); border: 1px solid var(--win); }
+  .chip-loss { background: rgba(244,67,54,0.2); color: var(--loss); border: 1px solid var(--loss); }
+  .chip-nc  { background: #2a2a2a; color: var(--muted); }
+
+  .slug {
+    border-top: 1px solid var(--border);
+    padding-top: 20px; margin-bottom: 40px;
+  }
+  .slug-header { display: flex; gap: 20px; margin-bottom: 12px; align-items: flex-start; }
+  .orig { max-width: 220px; max-height: 200px; border-radius: 4px; object-fit: contain; background: #000; }
+  .slug-info h2 { margin: 0 0 4px 0; font-size: 20px; }
+  .intro { color: var(--muted); margin: 0 0 8px 0; font-size: 13px; }
+  .stat-row { display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; color: var(--ink); }
+  .stat-row strong { color: var(--win); font-size: 15px; }
+  .zombies {
+    margin-top: 8px; padding: 6px 10px; background: #2a1a1a; border-left: 3px solid var(--loss);
+    border-radius: 3px; font-size: 12px;
+  }
+  .zombies code { background: #0a0a0a; padding: 1px 4px; border-radius: 2px; color: var(--win); }
+
+  table.compare {
+    border-collapse: collapse; width: 100%;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 12px;
+  }
+  table.compare th {
+    text-align: left; padding: 8px 10px;
+    background: var(--panel); color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    font-weight: 500; font-size: 11px; text-transform: uppercase;
+  }
+  table.compare td.meta {
+    vertical-align: top; padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    min-width: 220px; max-width: 260px;
+  }
+  table.compare td.cell {
+    vertical-align: top; padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    width: 220px;
+  }
+  tr.row-win { background: rgba(76,175,80,0.04); }
+  tr.row-loss { background: rgba(244,67,54,0.05); }
+  .lname { font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+  .sp { color: var(--muted); font-size: 10px; word-break: break-all; margin-bottom: 4px; }
+  .verdict {
+    font-size: 11px; display: inline-block;
+    padding: 1px 6px; border-radius: 3px;
+  }
+  .verdict-win  { background: rgba(76,175,80,0.15); color: var(--win); }
+  .verdict-loss { background: rgba(244,67,54,0.15); color: var(--loss); }
+  .verdict-nochange { background: #222; color: var(--muted); }
+  .checker {
+    background-color: #2a2a2a;
+    background-image:
+      linear-gradient(45deg, #1a1a1a 25%, transparent 25%),
+      linear-gradient(-45deg, #1a1a1a 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #1a1a1a 75%),
+      linear-gradient(-45deg, transparent 75%, #1a1a1a 75%);
+    background-size: 12px 12px;
+    background-position: 0 0, 0 6px, 6px -6px, -6px 0px;
+    aspect-ratio: 1; overflow: hidden; border-radius: 4px;
+  }
+  .checker img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .empty {
+    aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+    background: #0a0a0a; border: 1px dashed #333; color: var(--muted);
+    border-radius: 4px;
+  }
+  .area { margin-top: 4px; color: var(--muted); font-size: 10px; text-align: center; }
+</style>
+</head>
+<body>
+  <h1>flat vs hierarchical — Phase 1.5 pilot comparison · 5 images</h1>
+  <p class="intro-top">
+    Left column = <strong>flat</strong> (partition model, previously-shipped). Right = <strong>hierarchical</strong>
+    (Phase 1.5, descendants no longer carve parents). Layers are paired by <code>name</code>, sorted by z-index descending.
+    Rows shaded green = hierarchical gained meaningful area; red = lost (shouldn't happen, would be a regression).
+    Bigger headline: each slug lists how many layers were fully zeroed under flat but recovered under hierarchical.
+  </p>
+  <div class="legend">
+    <span class="legend-item"><span class="chip chip-win">+Δ</span>hierarchical restored pixels</span>
+    <span class="legend-item"><span class="chip chip-loss">−Δ</span>hierarchical removed pixels (unexpected)</span>
+    <span class="legend-item"><span class="chip chip-nc">—</span>identical</span>
+  </div>
+  
+    <section class="slug">
+      <div class="slug-header">
+        <img src="../showcase/originals/mona-lisa.jpg" class="orig" loading="lazy">
+        <div class="slug-info">
+          <h2>mona-lisa</h2>
+          <p class="intro">Renaissance — flat ate mona_lisa to 0%</p>
+          <div class="stat-row">
+            <span><strong>0</strong> layer(s) gained ≥5% area under hierarchical</span>
+            <span>1 fully-zeroed under flat</span>
+          </div>
+          <div class="zombies">🧟 revived from 0%: <code>mona_lisa</code> (4.5%)</div>
+        </div>
+      </div>
+      <table class="compare">
+        <thead>
+          <tr><th>layer</th><th>flat (old)</th><th>hierarchical (Phase 1.5)</th></tr>
+        </thead>
+        <tbody>
+          
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">chair_parapet</div>
+        <div class="sp">z=80 · foreground.furniture</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/mona-lisa/chair_parapet.png" loading="lazy"></div>
+        <div class="area">area 37.45%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/mona-lisa/chair_parapet.png" loading="lazy"></div>
+        <div class="area">area 37.45%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">mona_lisa__eyes</div>
+        <div class="sp">z=62 · subject.person[0].eyes</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/mona-lisa/mona_lisa__eyes.png" loading="lazy"></div>
+        <div class="area">area 0.04%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/mona-lisa/mona_lisa__eyes.png" loading="lazy"></div>
+        <div class="area">area 0.04%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">mona_lisa__lips</div>
+        <div class="sp">z=62 · subject.person[0].lips</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/mona-lisa/mona_lisa__lips.png" loading="lazy"></div>
+        <div class="area">area 0.03%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/mona-lisa/mona_lisa__lips.png" loading="lazy"></div>
+        <div class="area">area 0.03%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">mona_lisa__nose</div>
+        <div class="sp">z=60 · subject.person[0].nose</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/mona-lisa/mona_lisa__nose.png" loading="lazy"></div>
+        <div class="area">area 0.23%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/mona-lisa/mona_lisa__nose.png" loading="lazy"></div>
+        <div class="area">area 0.23%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">mona_lisa__eyebrows</div>
+        <div class="sp">z=58 · subject.person[0].eyebrows</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/mona-lisa/mona_lisa__eyebrows.png" loading="lazy"></div>
+        <div class="area">area 0.12%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/mona-lisa/mona_lisa__eyebrows.png" loading="lazy"></div>
+        <div class="area">area 0.12%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">mona_lisa__hair</div>
+        <div class="sp">z=54 · subject.person[0].hair</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/mona-lisa/mona_lisa__hair.png" loading="lazy"></div>
+        <div class="area">area 0.74%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/mona-lisa/mona_lisa__hair.png" loading="lazy"></div>
+        <div class="area">area 0.74%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">mona_lisa__skin</div>
+        <div class="sp">z=52 · subject.person[0].skin</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/mona-lisa/mona_lisa__skin.png" loading="lazy"></div>
+        <div class="area">area 3.24%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/mona-lisa/mona_lisa__skin.png" loading="lazy"></div>
+        <div class="area">area 3.24%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">mona_lisa__body</div>
+        <div class="sp">z=51 · subject.person[0].body</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/mona-lisa/mona_lisa__body.png" loading="lazy"></div>
+        <div class="area">area 0.09%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/mona-lisa/mona_lisa__body.png" loading="lazy"></div>
+        <div class="area">area 0.09%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-win">
+      <td class="meta">
+        <div class="lname">mona_lisa</div>
+        <div class="sp">z=50 · subject.person[0]</div>
+        <div class="verdict verdict-win">+4.5% ← hierarchical recovered pixels</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/mona-lisa/mona_lisa.png" loading="lazy"></div>
+        <div class="area">area 0.00%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/mona-lisa/mona_lisa.png" loading="lazy"></div>
+        <div class="area">area 4.49%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">background</div>
+        <div class="sp">z=0 · background</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/mona-lisa/background.png" loading="lazy"></div>
+        <div class="area">area 58.07%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/mona-lisa/background.png" loading="lazy"></div>
+        <div class="area">area 58.07%</div>
+      </td>
+    </tr>
+    
+        </tbody>
+      </table>
+    </section>
+    
+
+    <section class="slug">
+      <div class="slug-header">
+        <img src="../showcase/originals/napalm-girl.jpg" class="orig" loading="lazy">
+        <div class="slug-info">
+          <h2>napalm-girl</h2>
+          <p class="intro">Historical photo — 6 persons silently zeroed under flat</p>
+          <div class="stat-row">
+            <span><strong>1</strong> layer(s) gained ≥5% area under hierarchical</span>
+            <span>4 fully-zeroed under flat</span>
+          </div>
+          <div class="zombies">🧟 revived from 0%: <code>soldier_center</code> (1.1%), <code>girl_center_nude</code> (4.3%), <code>soldier_middle_right</code> (2.2%), <code>soldier_far_right_2</code> (3.1%)</div>
+        </div>
+      </div>
+      <table class="compare">
+        <thead>
+          <tr><th>layer</th><th>flat (old)</th><th>hierarchical (Phase 1.5)</th></tr>
+        </thead>
+        <tbody>
+          
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">boy_screaming_left__lips</div>
+        <div class="sp">z=62 · subject.person[0].lips</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/napalm-girl/boy_screaming_left__lips.png" loading="lazy"></div>
+        <div class="area">area 0.08%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/napalm-girl/boy_screaming_left__lips.png" loading="lazy"></div>
+        <div class="area">area 0.08%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">boy_screaming_left__nose</div>
+        <div class="sp">z=60 · subject.person[0].nose</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/napalm-girl/boy_screaming_left__nose.png" loading="lazy"></div>
+        <div class="area">area 0.05%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/napalm-girl/boy_screaming_left__nose.png" loading="lazy"></div>
+        <div class="area">area 0.05%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">boy_screaming_left__hair</div>
+        <div class="sp">z=54 · subject.person[0].hair</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/napalm-girl/boy_screaming_left__hair.png" loading="lazy"></div>
+        <div class="area">area 0.07%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/napalm-girl/boy_screaming_left__hair.png" loading="lazy"></div>
+        <div class="area">area 0.07%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">soldier_far_right_2__hair</div>
+        <div class="sp">z=54 · subject.person[8].hair</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/napalm-girl/soldier_far_right_2__hair.png" loading="lazy"></div>
+        <div class="area">area 0.05%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/napalm-girl/soldier_far_right_2__hair.png" loading="lazy"></div>
+        <div class="area">area 0.05%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">boy_screaming_left__hat</div>
+        <div class="sp">z=53 · subject.person[0].hat</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/napalm-girl/boy_screaming_left__hat.png" loading="lazy"></div>
+        <div class="area">area 0.59%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/napalm-girl/boy_screaming_left__hat.png" loading="lazy"></div>
+        <div class="area">area 0.59%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">soldier_center__hat</div>
+        <div class="sp">z=53 · subject.person[2].hat</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/napalm-girl/soldier_center__hat.png" loading="lazy"></div>
+        <div class="area">area 0.77%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/napalm-girl/soldier_center__hat.png" loading="lazy"></div>
+        <div class="area">area 0.77%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">boy_dirty_clothes__hat</div>
+        <div class="sp">z=53 · subject.person[4].hat</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/napalm-girl/boy_dirty_clothes__hat.png" loading="lazy"></div>
+        <div class="area">area 0.04%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/napalm-girl/boy_dirty_clothes__hat.png" loading="lazy"></div>
+        <div class="area">area 0.04%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">soldier_middle_right__hat</div>
+        <div class="sp">z=53 · subject.person[5].hat</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/napalm-girl/soldier_middle_right__hat.png" loading="lazy"></div>
+        <div class="area">area 0.81%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/napalm-girl/soldier_middle_right__hat.png" loading="lazy"></div>
+        <div class="area">area 0.81%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">soldier_far_right_2__hat</div>
+        <div class="sp">z=53 · subject.person[8].hat</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/napalm-girl/soldier_far_right_2__hat.png" loading="lazy"></div>
+        <div class="area">area 0.54%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/napalm-girl/soldier_far_right_2__hat.png" loading="lazy"></div>
+        <div class="area">area 0.54%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">boy_screaming_left__skin</div>
+        <div class="sp">z=52 · subject.person[0].skin</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/napalm-girl/boy_screaming_left__skin.png" loading="lazy"></div>
+        <div class="area">area 1.75%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/napalm-girl/boy_screaming_left__skin.png" loading="lazy"></div>
+        <div class="area">area 1.75%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">girl_center_nude__skin</div>
+        <div class="sp">z=52 · subject.person[3].skin</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/napalm-girl/girl_center_nude__skin.png" loading="lazy"></div>
+        <div class="area">area 0.14%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/napalm-girl/girl_center_nude__skin.png" loading="lazy"></div>
+        <div class="area">area 0.14%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">soldier_middle_right__skin</div>
+        <div class="sp">z=52 · subject.person[5].skin</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/napalm-girl/soldier_middle_right__skin.png" loading="lazy"></div>
+        <div class="area">area 0.02%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/napalm-girl/soldier_middle_right__skin.png" loading="lazy"></div>
+        <div class="area">area 0.02%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">soldier_far_right_2__skin</div>
+        <div class="sp">z=52 · subject.person[8].skin</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/napalm-girl/soldier_far_right_2__skin.png" loading="lazy"></div>
+        <div class="area">area 0.12%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/napalm-girl/soldier_far_right_2__skin.png" loading="lazy"></div>
+        <div class="area">area 0.12%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">boy_screaming_left__body</div>
+        <div class="sp">z=51 · subject.person[0].body</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/napalm-girl/boy_screaming_left__body.png" loading="lazy"></div>
+        <div class="area">area 4.84%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/napalm-girl/boy_screaming_left__body.png" loading="lazy"></div>
+        <div class="area">area 4.84%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">soldier_center__body</div>
+        <div class="sp">z=51 · subject.person[2].body</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/napalm-girl/soldier_center__body.png" loading="lazy"></div>
+        <div class="area">area 0.39%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/napalm-girl/soldier_center__body.png" loading="lazy"></div>
+        <div class="area">area 0.39%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">girl_center_nude__body</div>
+        <div class="sp">z=51 · subject.person[3].body</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/napalm-girl/girl_center_nude__body.png" loading="lazy"></div>
+        <div class="area">area 4.19%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/napalm-girl/girl_center_nude__body.png" loading="lazy"></div>
+        <div class="area">area 4.19%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">boy_dirty_clothes__body</div>
+        <div class="sp">z=51 · subject.person[4].body</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/napalm-girl/boy_dirty_clothes__body.png" loading="lazy"></div>
+        <div class="area">area 0.93%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/napalm-girl/boy_dirty_clothes__body.png" loading="lazy"></div>
+        <div class="area">area 0.93%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">soldier_middle_right__body</div>
+        <div class="sp">z=51 · subject.person[5].body</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/napalm-girl/soldier_middle_right__body.png" loading="lazy"></div>
+        <div class="area">area 1.38%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/napalm-girl/soldier_middle_right__body.png" loading="lazy"></div>
+        <div class="area">area 1.38%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">soldier_far_right_2__body</div>
+        <div class="sp">z=51 · subject.person[8].body</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/napalm-girl/soldier_far_right_2__body.png" loading="lazy"></div>
+        <div class="area">area 2.41%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/napalm-girl/soldier_far_right_2__body.png" loading="lazy"></div>
+        <div class="area">area 2.41%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-win">
+      <td class="meta">
+        <div class="lname">boy_screaming_left</div>
+        <div class="sp">z=50 · subject.person[0]</div>
+        <div class="verdict verdict-win">+7.4% ← hierarchical recovered pixels</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/napalm-girl/boy_screaming_left.png" loading="lazy"></div>
+        <div class="area">area 3.85%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/napalm-girl/boy_screaming_left.png" loading="lazy"></div>
+        <div class="area">area 11.21%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">small_boy_behind</div>
+        <div class="sp">z=50 · subject.person[1]</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/napalm-girl/small_boy_behind.png" loading="lazy"></div>
+        <div class="area">area 1.10%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/napalm-girl/small_boy_behind.png" loading="lazy"></div>
+        <div class="area">area 1.10%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-win">
+      <td class="meta">
+        <div class="lname">soldier_center</div>
+        <div class="sp">z=50 · subject.person[2]</div>
+        <div class="verdict verdict-win">+1.1% ← hierarchical recovered pixels</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/napalm-girl/soldier_center.png" loading="lazy"></div>
+        <div class="area">area 0.00%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/napalm-girl/soldier_center.png" loading="lazy"></div>
+        <div class="area">area 1.11%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-win">
+      <td class="meta">
+        <div class="lname">girl_center_nude</div>
+        <div class="sp">z=50 · subject.person[3]</div>
+        <div class="verdict verdict-win">+4.3% ← hierarchical recovered pixels</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/napalm-girl/girl_center_nude.png" loading="lazy"></div>
+        <div class="area">area 0.00%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/napalm-girl/girl_center_nude.png" loading="lazy"></div>
+        <div class="area">area 4.33%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">boy_dirty_clothes</div>
+        <div class="sp">z=50 · subject.person[4]</div>
+        <div class="verdict verdict-nochange">Δ +0.97%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/napalm-girl/boy_dirty_clothes.png" loading="lazy"></div>
+        <div class="area">area 0.00%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/napalm-girl/boy_dirty_clothes.png" loading="lazy"></div>
+        <div class="area">area 0.97%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-win">
+      <td class="meta">
+        <div class="lname">soldier_middle_right</div>
+        <div class="sp">z=50 · subject.person[5]</div>
+        <div class="verdict verdict-win">+2.2% ← hierarchical recovered pixels</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/napalm-girl/soldier_middle_right.png" loading="lazy"></div>
+        <div class="area">area 0.00%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/napalm-girl/soldier_middle_right.png" loading="lazy"></div>
+        <div class="area">area 2.21%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">girl_white_shirt</div>
+        <div class="sp">z=50 · subject.person[6]</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/napalm-girl/girl_white_shirt.png" loading="lazy"></div>
+        <div class="area">area 0.07%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/napalm-girl/girl_white_shirt.png" loading="lazy"></div>
+        <div class="area">area 0.07%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">soldier_far_right_1</div>
+        <div class="sp">z=50 · subject.person[7]</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/napalm-girl/soldier_far_right_1.png" loading="lazy"></div>
+        <div class="area">area 0.74%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/napalm-girl/soldier_far_right_1.png" loading="lazy"></div>
+        <div class="area">area 0.74%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-win">
+      <td class="meta">
+        <div class="lname">soldier_far_right_2</div>
+        <div class="sp">z=50 · subject.person[8]</div>
+        <div class="verdict verdict-win">+3.1% ← hierarchical recovered pixels</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/napalm-girl/soldier_far_right_2.png" loading="lazy"></div>
+        <div class="area">area 0.00%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/napalm-girl/soldier_far_right_2.png" loading="lazy"></div>
+        <div class="area">area 3.12%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">boy_screaming_left__eye_g</div>
+        <div class="sp">z=50 · subject.person[0].eye_g</div>
+        <div class="verdict verdict-nochange">Δ +0.12%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/napalm-girl/boy_screaming_left__eye_g.png" loading="lazy"></div>
+        <div class="area">area 0.00%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/napalm-girl/boy_screaming_left__eye_g.png" loading="lazy"></div>
+        <div class="area">area 0.12%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">boy_screaming_left__cloth</div>
+        <div class="sp">z=46 · subject.person[0].cloth</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/napalm-girl/boy_screaming_left__cloth.png" loading="lazy"></div>
+        <div class="area">area 0.00%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/napalm-girl/boy_screaming_left__cloth.png" loading="lazy"></div>
+        <div class="area">area 0.00%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">background</div>
+        <div class="sp">z=0 · background</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/napalm-girl/background.png" loading="lazy"></div>
+        <div class="area">area 75.09%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/napalm-girl/background.png" loading="lazy"></div>
+        <div class="area">area 75.09%</div>
+      </td>
+    </tr>
+    
+        </tbody>
+      </table>
+    </section>
+    
+
+    <section class="slug">
+      <div class="slug-header">
+        <img src="../showcase/originals/american-gothic.jpg" class="orig" loading="lazy">
+        <div class="slug-info">
+          <h2>american-gothic</h2>
+          <p class="intro">Regionalism — `woman` lost 70% of pixels under flat</p>
+          <div class="stat-row">
+            <span><strong>2</strong> layer(s) gained ≥5% area under hierarchical</span>
+            <span>1 fully-zeroed under flat</span>
+          </div>
+          <div class="zombies">🧟 revived from 0%: <code>man__eye_g</code> (1.3%)</div>
+        </div>
+      </div>
+      <table class="compare">
+        <thead>
+          <tr><th>layer</th><th>flat (old)</th><th>hierarchical (Phase 1.5)</th></tr>
+        </thead>
+        <tbody>
+          
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">pitchfork</div>
+        <div class="sp">z=80 · foreground.tool</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/american-gothic/pitchfork.png" loading="lazy"></div>
+        <div class="area">area 1.66%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/american-gothic/pitchfork.png" loading="lazy"></div>
+        <div class="area">area 1.66%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">woman__eyes</div>
+        <div class="sp">z=62 · subject.person[0].eyes</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/american-gothic/woman__eyes.png" loading="lazy"></div>
+        <div class="area">area 0.05%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/american-gothic/woman__eyes.png" loading="lazy"></div>
+        <div class="area">area 0.05%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">woman__lips</div>
+        <div class="sp">z=62 · subject.person[0].lips</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/american-gothic/woman__lips.png" loading="lazy"></div>
+        <div class="area">area 0.15%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/american-gothic/woman__lips.png" loading="lazy"></div>
+        <div class="area">area 0.15%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">man__eyes</div>
+        <div class="sp">z=62 · subject.person[1].eyes</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/american-gothic/man__eyes.png" loading="lazy"></div>
+        <div class="area">area 0.06%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/american-gothic/man__eyes.png" loading="lazy"></div>
+        <div class="area">area 0.06%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">man__lips</div>
+        <div class="sp">z=62 · subject.person[1].lips</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/american-gothic/man__lips.png" loading="lazy"></div>
+        <div class="area">area 0.07%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/american-gothic/man__lips.png" loading="lazy"></div>
+        <div class="area">area 0.07%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">woman__nose</div>
+        <div class="sp">z=60 · subject.person[0].nose</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/american-gothic/woman__nose.png" loading="lazy"></div>
+        <div class="area">area 0.20%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/american-gothic/woman__nose.png" loading="lazy"></div>
+        <div class="area">area 0.20%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">man__nose</div>
+        <div class="sp">z=60 · subject.person[1].nose</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/american-gothic/man__nose.png" loading="lazy"></div>
+        <div class="area">area 0.28%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/american-gothic/man__nose.png" loading="lazy"></div>
+        <div class="area">area 0.28%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">woman__eyebrows</div>
+        <div class="sp">z=58 · subject.person[0].eyebrows</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/american-gothic/woman__eyebrows.png" loading="lazy"></div>
+        <div class="area">area 0.04%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/american-gothic/woman__eyebrows.png" loading="lazy"></div>
+        <div class="area">area 0.04%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">man__eyebrows</div>
+        <div class="sp">z=58 · subject.person[1].eyebrows</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/american-gothic/man__eyebrows.png" loading="lazy"></div>
+        <div class="area">area 0.12%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/american-gothic/man__eyebrows.png" loading="lazy"></div>
+        <div class="area">area 0.12%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">woman__ears</div>
+        <div class="sp">z=56 · subject.person[0].ears</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/american-gothic/woman__ears.png" loading="lazy"></div>
+        <div class="area">area 0.04%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/american-gothic/woman__ears.png" loading="lazy"></div>
+        <div class="area">area 0.04%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">man__ears</div>
+        <div class="sp">z=56 · subject.person[1].ears</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/american-gothic/man__ears.png" loading="lazy"></div>
+        <div class="area">area 0.12%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/american-gothic/man__ears.png" loading="lazy"></div>
+        <div class="area">area 0.12%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">woman__hair</div>
+        <div class="sp">z=54 · subject.person[0].hair</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/american-gothic/woman__hair.png" loading="lazy"></div>
+        <div class="area">area 1.41%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/american-gothic/woman__hair.png" loading="lazy"></div>
+        <div class="area">area 1.41%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">man__hair</div>
+        <div class="sp">z=54 · subject.person[1].hair</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/american-gothic/man__hair.png" loading="lazy"></div>
+        <div class="area">area 0.04%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/american-gothic/man__hair.png" loading="lazy"></div>
+        <div class="area">area 0.04%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">woman__skin</div>
+        <div class="sp">z=52 · subject.person[0].skin</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/american-gothic/woman__skin.png" loading="lazy"></div>
+        <div class="area">area 2.80%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/american-gothic/woman__skin.png" loading="lazy"></div>
+        <div class="area">area 2.80%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">man__skin</div>
+        <div class="sp">z=52 · subject.person[1].skin</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/american-gothic/man__skin.png" loading="lazy"></div>
+        <div class="area">area 3.82%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/american-gothic/man__skin.png" loading="lazy"></div>
+        <div class="area">area 3.82%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">woman__body</div>
+        <div class="sp">z=51 · subject.person[0].body</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/american-gothic/woman__body.png" loading="lazy"></div>
+        <div class="area">area 10.07%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/american-gothic/woman__body.png" loading="lazy"></div>
+        <div class="area">area 10.07%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">man__body</div>
+        <div class="sp">z=51 · subject.person[1].body</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/american-gothic/man__body.png" loading="lazy"></div>
+        <div class="area">area 1.21%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/american-gothic/man__body.png" loading="lazy"></div>
+        <div class="area">area 1.21%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-win">
+      <td class="meta">
+        <div class="lname">woman</div>
+        <div class="sp">z=50 · subject.person[0]</div>
+        <div class="verdict verdict-win">+14.8% ← hierarchical recovered pixels</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/american-gothic/woman.png" loading="lazy"></div>
+        <div class="area">area 6.51%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/american-gothic/woman.png" loading="lazy"></div>
+        <div class="area">area 21.28%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-win">
+      <td class="meta">
+        <div class="lname">man</div>
+        <div class="sp">z=50 · subject.person[1]</div>
+        <div class="verdict verdict-win">+5.7% ← hierarchical recovered pixels</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/american-gothic/man.png" loading="lazy"></div>
+        <div class="area">area 34.98%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/american-gothic/man.png" loading="lazy"></div>
+        <div class="area">area 40.71%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-win">
+      <td class="meta">
+        <div class="lname">man__eye_g</div>
+        <div class="sp">z=50 · subject.person[1].eye_g</div>
+        <div class="verdict verdict-win">+1.3% ← hierarchical recovered pixels</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/american-gothic/man__eye_g.png" loading="lazy"></div>
+        <div class="area">area 0.00%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/american-gothic/man__eye_g.png" loading="lazy"></div>
+        <div class="area">area 1.29%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">woman__neck</div>
+        <div class="sp">z=48 · subject.person[0].neck</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/american-gothic/woman__neck.png" loading="lazy"></div>
+        <div class="area">area 0.00%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/american-gothic/woman__neck.png" loading="lazy"></div>
+        <div class="area">area 0.00%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">man__neck</div>
+        <div class="sp">z=48 · subject.person[1].neck</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/american-gothic/man__neck.png" loading="lazy"></div>
+        <div class="area">area 0.00%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/american-gothic/man__neck.png" loading="lazy"></div>
+        <div class="area">area 0.00%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">woman__cloth</div>
+        <div class="sp">z=46 · subject.person[0].cloth</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/american-gothic/woman__cloth.png" loading="lazy"></div>
+        <div class="area">area 0.00%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/american-gothic/woman__cloth.png" loading="lazy"></div>
+        <div class="area">area 0.00%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">man__cloth</div>
+        <div class="sp">z=46 · subject.person[1].cloth</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/american-gothic/man__cloth.png" loading="lazy"></div>
+        <div class="area">area 0.00%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/american-gothic/man__cloth.png" loading="lazy"></div>
+        <div class="area">area 0.00%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">farmhouse</div>
+        <div class="sp">z=0 · background</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/american-gothic/farmhouse.png" loading="lazy"></div>
+        <div class="area">area 36.36%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/american-gothic/farmhouse.png" loading="lazy"></div>
+        <div class="area">area 36.36%</div>
+      </td>
+    </tr>
+    
+        </tbody>
+      </table>
+    </section>
+    
+
+    <section class="slug">
+      <div class="slug-header">
+        <img src="../showcase/originals/nengbiye-mascot.png" class="orig" loading="lazy">
+        <div class="slug-info">
+          <h2>nengbiye-mascot</h2>
+          <p class="intro">Cartoon — only `glasses` eroded under flat (fg legit)</p>
+          <div class="stat-row">
+            <span><strong>1</strong> layer(s) gained ≥5% area under hierarchical</span>
+            <span>0 fully-zeroed under flat</span>
+          </div>
+          
+        </div>
+      </div>
+      <table class="compare">
+        <thead>
+          <tr><th>layer</th><th>flat (old)</th><th>hierarchical (Phase 1.5)</th></tr>
+        </thead>
+        <tbody>
+          
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">feet</div>
+        <div class="sp">z=80 · foreground.feet</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/nengbiye-mascot/feet.png" loading="lazy"></div>
+        <div class="area">area 4.25%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/nengbiye-mascot/feet.png" loading="lazy"></div>
+        <div class="area">area 4.25%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">sign</div>
+        <div class="sp">z=80 · foreground.sign</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/nengbiye-mascot/sign.png" loading="lazy"></div>
+        <div class="area">area 0.58%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/nengbiye-mascot/sign.png" loading="lazy"></div>
+        <div class="area">area 0.58%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">head_skin</div>
+        <div class="sp">z=65 · subject.head.face</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/nengbiye-mascot/head_skin.png" loading="lazy"></div>
+        <div class="area">area 3.80%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/nengbiye-mascot/head_skin.png" loading="lazy"></div>
+        <div class="area">area 3.80%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">hair</div>
+        <div class="sp">z=60 · subject.head.hair</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/nengbiye-mascot/hair.png" loading="lazy"></div>
+        <div class="area">area 4.87%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/nengbiye-mascot/hair.png" loading="lazy"></div>
+        <div class="area">area 4.87%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">beak</div>
+        <div class="sp">z=60 · subject.head.mouth</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/nengbiye-mascot/beak.png" loading="lazy"></div>
+        <div class="area">area 0.24%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/nengbiye-mascot/beak.png" loading="lazy"></div>
+        <div class="area">area 0.24%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">glasses</div>
+        <div class="sp">z=60 · subject.head.accessory</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/nengbiye-mascot/glasses.png" loading="lazy"></div>
+        <div class="area">area 0.71%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/nengbiye-mascot/glasses.png" loading="lazy"></div>
+        <div class="area">area 0.71%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">left_wing</div>
+        <div class="sp">z=50 · subject.person[0].left_arm</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/nengbiye-mascot/left_wing.png" loading="lazy"></div>
+        <div class="area">area 2.85%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/nengbiye-mascot/left_wing.png" loading="lazy"></div>
+        <div class="area">area 2.85%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">right_wing</div>
+        <div class="sp">z=50 · subject.person[0].right_arm</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/nengbiye-mascot/right_wing.png" loading="lazy"></div>
+        <div class="area">area 2.73%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/nengbiye-mascot/right_wing.png" loading="lazy"></div>
+        <div class="area">area 2.73%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">body</div>
+        <div class="sp">z=45 · subject.body</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/nengbiye-mascot/body.png" loading="lazy"></div>
+        <div class="area">area 3.61%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/nengbiye-mascot/body.png" loading="lazy"></div>
+        <div class="area">area 3.61%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">grass_patch</div>
+        <div class="sp">z=10 · background.ground</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/nengbiye-mascot/grass_patch.png" loading="lazy"></div>
+        <div class="area">area 11.83%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/nengbiye-mascot/grass_patch.png" loading="lazy"></div>
+        <div class="area">area 11.83%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-win">
+      <td class="meta">
+        <div class="lname">background_paper</div>
+        <div class="sp">z=0 · background</div>
+        <div class="verdict verdict-win">+11.8% ← hierarchical recovered pixels</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/nengbiye-mascot/background_paper.png" loading="lazy"></div>
+        <div class="area">area 64.52%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/nengbiye-mascot/background_paper.png" loading="lazy"></div>
+        <div class="area">area 76.36%</div>
+      </td>
+    </tr>
+    
+        </tbody>
+      </table>
+    </section>
+    
+
+    <section class="slug">
+      <div class="slug-header">
+        <img src="../showcase/originals/medical-waste-split.jpg" class="orig" loading="lazy">
+        <div class="slug-info">
+          <h2>medical-waste-split</h2>
+          <p class="intro">Composite — `right_grass` eroded under both (fg legit)</p>
+          <div class="stat-row">
+            <span><strong>0</strong> layer(s) gained ≥5% area under hierarchical</span>
+            <span>0 fully-zeroed under flat</span>
+          </div>
+          
+        </div>
+      </div>
+      <table class="compare">
+        <thead>
+          <tr><th>layer</th><th>flat (old)</th><th>hierarchical (Phase 1.5)</th></tr>
+        </thead>
+        <tbody>
+          
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">orange_bottle</div>
+        <div class="sp">z=80 · foreground.left.bottle[0]</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/medical-waste-split/orange_bottle.png" loading="lazy"></div>
+        <div class="area">area 5.64%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/medical-waste-split/orange_bottle.png" loading="lazy"></div>
+        <div class="area">area 5.64%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">inhaler</div>
+        <div class="sp">z=80 · foreground.left.device</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/medical-waste-split/inhaler.png" loading="lazy"></div>
+        <div class="area">area 1.09%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/medical-waste-split/inhaler.png" loading="lazy"></div>
+        <div class="area">area 1.09%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">yellow_marker</div>
+        <div class="sp">z=80 · foreground.left.misc[0]</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/medical-waste-split/yellow_marker.png" loading="lazy"></div>
+        <div class="area">area 0.69%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/medical-waste-split/yellow_marker.png" loading="lazy"></div>
+        <div class="area">area 0.69%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">pill_bottles_pile</div>
+        <div class="sp">z=80 · foreground.left.bottle[1]</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/medical-waste-split/pill_bottles_pile.png" loading="lazy"></div>
+        <div class="area">area 10.26%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/medical-waste-split/pill_bottles_pile.png" loading="lazy"></div>
+        <div class="area">area 10.26%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">white_jar</div>
+        <div class="sp">z=80 · foreground.left.bottle[2]</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/medical-waste-split/white_jar.png" loading="lazy"></div>
+        <div class="area">area 1.70%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/medical-waste-split/white_jar.png" loading="lazy"></div>
+        <div class="area">area 1.70%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">syringes_pile_right</div>
+        <div class="sp">z=80 · foreground.right.syringe[0]</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/medical-waste-split/syringes_pile_right.png" loading="lazy"></div>
+        <div class="area">area 5.79%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/medical-waste-split/syringes_pile_right.png" loading="lazy"></div>
+        <div class="area">area 5.79%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">orange_cap_syringe</div>
+        <div class="sp">z=80 · foreground.right.syringe[1]</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/medical-waste-split/orange_cap_syringe.png" loading="lazy"></div>
+        <div class="area">area 3.14%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/medical-waste-split/orange_cap_syringe.png" loading="lazy"></div>
+        <div class="area">area 3.14%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">left_floor</div>
+        <div class="sp">z=10 · background.left</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/medical-waste-split/left_floor.png" loading="lazy"></div>
+        <div class="area">area 67.67%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/medical-waste-split/left_floor.png" loading="lazy"></div>
+        <div class="area">area 67.67%</div>
+      </td>
+    </tr>
+    
+
+    <tr class="row-nochange">
+      <td class="meta">
+        <div class="lname">right_grass</div>
+        <div class="sp">z=10 · background.right</div>
+        <div class="verdict verdict-nochange">identical</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/flat/medical-waste-split/right_grass.png" loading="lazy"></div>
+        <div class="area">area 4.02%</div>
+      </td>
+      <td class="cell">
+        <div class="checker"><img src="../showcase/layers_v2_compare/hierarchical/medical-waste-split/right_grass.png" loading="lazy"></div>
+        <div class="area">area 4.02%</div>
+      </td>
+    </tr>
+    
+        </tbody>
+      </table>
+    </section>
+    
+  <p style="color:var(--muted);font-size:12px;margin-top:32px;border-top:1px solid var(--border);padding-top:14px">
+    Generated by <code>scripts/build_phase15_compare.py</code>. Snapshots in
+    <code>assets/showcase/layers_v2_compare/{flat,hierarchical}/</code>.
+    Production <code>layers_v2/</code> restored to hierarchical after snapshotting.
+  </p>
+</body>
+</html>

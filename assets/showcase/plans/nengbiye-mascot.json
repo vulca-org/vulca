@@ -1,0 +1,142 @@
+{
+  "slug": "nengbiye-mascot",
+  "domain": "cartoon_illustration",
+  "device": "mps",
+  "threshold_hint": 0.2,
+  "expand_face_parts": false,
+  "notes": "Watercolor cartoon penguin/bird with glasses holding wooden 能毕业 sign. Non-photographic -- sam_bbox hints for every entity.",
+  "entities": [
+    {
+      "name": "background_paper",
+      "label": "cream watercolor paper background",
+      "semantic_path": "background",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "grass_patch",
+      "label": "green grass ground under the bird",
+      "semantic_path": "background.ground",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.05,
+        0.78,
+        0.95,
+        1.0
+      ]
+    },
+    {
+      "name": "body",
+      "label": "white rounded cartoon bird body",
+      "semantic_path": "subject.body",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.36,
+        0.48,
+        0.7,
+        0.78
+      ]
+    },
+    {
+      "name": "left_wing",
+      "label": "gray left wing holding wooden sign",
+      "semantic_path": "subject.person[0].left_arm",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.15,
+        0.52,
+        0.48,
+        0.82
+      ]
+    },
+    {
+      "name": "right_wing",
+      "label": "gray right wing on the bird's right side",
+      "semantic_path": "subject.person[0].right_arm",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.6,
+        0.5,
+        0.88,
+        0.8
+      ]
+    },
+    {
+      "name": "feet",
+      "label": "pair of orange cartoon bird feet at bottom",
+      "semantic_path": "foreground.feet",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.32,
+        0.82,
+        0.72,
+        0.96
+      ]
+    },
+    {
+      "name": "head_skin",
+      "label": "white rounded bird head with closed smiling eyes",
+      "semantic_path": "subject.head.face",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.3,
+        0.3,
+        0.75,
+        0.58
+      ]
+    },
+    {
+      "name": "hair",
+      "label": "wild black messy hair tuft on top of the head",
+      "semantic_path": "subject.head.hair",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.32,
+        0.08,
+        0.72,
+        0.42
+      ]
+    },
+    {
+      "name": "beak",
+      "label": "small orange triangular beak",
+      "semantic_path": "subject.head.mouth",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.45,
+        0.42,
+        0.65,
+        0.56
+      ]
+    },
+    {
+      "name": "glasses",
+      "label": "round black-framed eyeglasses on the face",
+      "semantic_path": "subject.head.accessory",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.36,
+        0.38,
+        0.62,
+        0.5
+      ]
+    },
+    {
+      "name": "sign",
+      "label": "wooden brown sign with Chinese text 能毕业",
+      "semantic_path": "foreground.sign",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.24,
+        0.6,
+        0.48,
+        0.78
+      ]
+    }
+  ]
+}

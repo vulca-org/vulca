@@ -186,6 +186,178 @@ class TestSamBboxIntegration:
         assert mix["hinted_by_plan"] >= 1
         assert mix["detected_by_model"] == 0
 
+        # New observability fields (Fix #1 + #2)
+        assert "bbox_fill" in rec and 0.0 <= rec["bbox_fill"] <= 1.0
+        assert "inside_ratio" in rec and 0.0 <= rec["inside_ratio"] <= 1.0
+        assert "quality_flags" in rec
+        # Full-bbox fake mask → bbox_fill ≈ 1.0, inside_ratio = 1.0, no flags
+        assert rec["inside_ratio"] == 1.0
+        assert rec["quality_flags"] == []
+        # pct_before/after_resolve appear (erosion observability)
+        assert "pct_before_resolve" in rec
+        assert "pct_after_resolve" in rec
+        # area_pct propagated into manifest.layers[]
+        target_layer = [l for l in m["layers"] if l["name"] == "target"][0]
+        assert "area_pct" in target_layer and target_layer["area_pct"] > 0
+        assert target_layer["quality_status"] == "detected"
+
+    def test_quality_backstop_flags_low_fill(self, pipeline_module, tmp_path, monkeypatch):
+        """SAM returning a mask that fills <5% of bbox → status=suspect."""
+        import numpy as np
+        import json as _json
+        from PIL import Image
+
+        Image.new("RGB", (256, 256), "navy").save(str(tmp_path / "test.jpg"))
+        plan = {
+            "slug": "test",
+            "domain": "space_photograph",
+            "device": "mps",
+            "expand_face_parts": False,
+            "entities": [{
+                "name": "target", "label": "test target",
+                "semantic_path": "subject.target",
+                "detector": "sam_bbox",
+                "bbox_hint_pct": [0.1, 0.1, 0.9, 0.9],  # big bbox
+            }],
+        }
+
+        class TinyMaskSAM:
+            def set_image(self, img): pass
+            def predict(self, box=None, multimask_output=True):
+                # Return a 4x4 pixel mask centered — ~0.5% of 256x256,
+                # and ~0.03% of the big bbox → below both thresholds.
+                mask = np.zeros((256, 256), dtype=bool)
+                mask[126:130, 126:130] = True
+                return np.array([mask, mask, mask]), np.array([0.9, 0.9, 0.9]), None
+
+        monkeypatch.setattr(pipeline_module, "load_sam",
+                            lambda device="mps": TinyMaskSAM())
+        monkeypatch.setattr(pipeline_module, "load_grounding_dino",
+                            lambda device="mps": (None, None))
+        monkeypatch.setattr(pipeline_module, "load_yolo", lambda: None)
+
+        (tmp_path / "originals").mkdir(); (tmp_path / "plans").mkdir()
+        (tmp_path / "out").mkdir()
+        import shutil
+        shutil.copy(tmp_path / "test.jpg", tmp_path / "originals" / "test.jpg")
+        (tmp_path / "plans" / "test.json").write_text(_json.dumps(plan))
+        monkeypatch.setattr(pipeline_module, "ORIG_DIR", tmp_path / "originals")
+        monkeypatch.setattr(pipeline_module, "PLANS_DIR", tmp_path / "plans")
+        monkeypatch.setattr(pipeline_module, "OUT_DIR", tmp_path / "out")
+
+        pipeline_module.process("test", force=True)
+
+        m = _json.loads((tmp_path / "out" / "test" / "manifest.json").read_text())
+        # Low bbox_fill must trigger suspect, which must downgrade overall
+        # status to partial (success_rate logic includes suspect_count==0).
+        assert m["status"] == "partial", f"expected partial, got {m['status']}"
+        rec = [e for e in m["detection_report"]["per_entity"] if e["name"] == "target"][0]
+        assert rec["status"] == "suspect"
+        assert "low_bbox_fill" in rec["quality_flags"]
+
+
+class TestResolveOverlapsLayerModel:
+    """Phase 1.5: verify hierarchical (default) AND flat (escape hatch) both work.
+
+    Without this test, flipping the default means existing tests only exercise
+    the new hierarchical branch — the flat path could silently rot.
+    """
+
+    def test_hierarchical_parent_keeps_descendant_pixels(self, pipeline_module):
+        """Face-part (descendant) must NOT carve parent under hierarchical."""
+        import numpy as np
+        H = W = 100
+        parent_mask = np.zeros((H, W), dtype=bool); parent_mask[20:80, 20:80] = True
+        child_mask  = np.zeros((H, W), dtype=bool); child_mask[40:60, 40:60]  = True
+        layers = [
+            {"id": 1, "name": "parent", "semantic_path": "subject.head",
+             "z": 50, "mask": parent_mask},
+            {"id": 2, "name": "child", "semantic_path": "subject.head.eyes",
+             "z": 62, "mask": child_mask},
+        ]
+        pipeline_module.resolve_overlaps(layers, layer_model="hierarchical")
+        # Parent's resolved mask should still cover the full 60×60 region —
+        # descendant did NOT carve it out.
+        assert layers[0]["mask_resolved"].sum() == parent_mask.sum()
+        # Child keeps its own mask.
+        assert (layers[1]["mask_resolved"] == child_mask).all()
+        # Parent ∩ child ≠ 0 under hierarchical (overlap is intentional).
+        assert (layers[0]["mask_resolved"] & layers[1]["mask_resolved"]).sum() > 0
+
+    def test_flat_enforces_mutual_exclusion(self, pipeline_module):
+        """Same setup + layer_model='flat' → child carves parent (legacy)."""
+        import numpy as np
+        H = W = 100
+        parent_mask = np.zeros((H, W), dtype=bool); parent_mask[20:80, 20:80] = True
+        child_mask  = np.zeros((H, W), dtype=bool); child_mask[40:60, 40:60]  = True
+        layers = [
+            {"id": 1, "name": "parent", "semantic_path": "subject.head",
+             "z": 50, "mask": parent_mask.copy()},
+            {"id": 2, "name": "child", "semantic_path": "subject.head.eyes",
+             "z": 62, "mask": child_mask.copy()},
+        ]
+        pipeline_module.resolve_overlaps(layers, layer_model="flat")
+        # Under flat, child claimed 20×20 pixels first; parent loses them.
+        assert (layers[0]["mask_resolved"] & layers[1]["mask_resolved"]).sum() == 0
+        assert layers[0]["mask_resolved"].sum() == parent_mask.sum() - child_mask.sum()
+
+    def test_hierarchical_non_descendant_blocks(self, pipeline_module):
+        """Foreground-over-background still occludes under hierarchical."""
+        import numpy as np
+        H = W = 100
+        bg   = np.ones((H, W), dtype=bool)
+        fg   = np.zeros((H, W), dtype=bool); fg[40:60, 40:60] = True
+        layers = [
+            {"id": 1, "name": "bg", "semantic_path": "background",
+             "z": 0, "mask": bg.copy()},
+            {"id": 2, "name": "fg", "semantic_path": "foreground.obj",
+             "z": 80, "mask": fg.copy()},
+        ]
+        pipeline_module.resolve_overlaps(layers, layer_model="hierarchical")
+        # bg (non-descendant of fg, strictly lower z) → fg blocks bg
+        assert (layers[0]["mask_resolved"] & fg).sum() == 0
+        assert layers[1]["mask_resolved"].sum() == fg.sum()
+
+    def test_hierarchical_same_z_siblings_dont_block(self, pipeline_module):
+        """Two persons at z=50 → both keep raw SAM masks (no arbitrary wins)."""
+        import numpy as np
+        H = W = 100
+        # Two overlapping person masks at same z
+        a = np.zeros((H, W), dtype=bool); a[20:70, 20:70] = True
+        b = np.zeros((H, W), dtype=bool); b[50:90, 50:90] = True
+        layers = [
+            {"id": 1, "name": "person_a", "semantic_path": "subject.person[0]",
+             "z": 50, "mask": a.copy()},
+            {"id": 2, "name": "person_b", "semantic_path": "subject.person[1]",
+             "z": 50, "mask": b.copy()},
+        ]
+        pipeline_module.resolve_overlaps(layers, layer_model="hierarchical")
+        # Both keep their raw mask entirely (no same-z blocking).
+        assert layers[0]["mask_resolved"].sum() == a.sum()
+        assert layers[1]["mask_resolved"].sum() == b.sum()
+        # Intersection persists (overlap OK under hierarchical).
+        assert (layers[0]["mask_resolved"] & layers[1]["mask_resolved"]).sum() > 0
+
+
+class TestIsDescendant:
+    """Phase 1.5: boundary-safe prefix check (`person[10]` vs `person[1]`)."""
+
+    def test_strict_dotted_prefix(self, pipeline_module):
+        assert pipeline_module._is_descendant("subject.head.eyes", "subject.head")
+        assert pipeline_module._is_descendant("subject.head.face.skin", "subject.head")
+        assert not pipeline_module._is_descendant("subject.head", "subject.head")
+
+    def test_bracket_disambiguation(self, pipeline_module):
+        # person[10] should NOT be a descendant of person[1] (mandatory ".")
+        assert not pipeline_module._is_descendant("subject.person[10]", "subject.person[1]")
+        assert pipeline_module._is_descendant("subject.person[0].eyes", "subject.person[0]")
+
+    def test_empty_ancestor_rejected(self, pipeline_module):
+        assert not pipeline_module._is_descendant("subject.head", "")
+
+    def test_empty_sp_never_descends(self, pipeline_module):
+        assert not pipeline_module._is_descendant("", "subject.head")
+
 
 class TestHintToBboxPx:
     def test_full_image(self, pipeline_module):

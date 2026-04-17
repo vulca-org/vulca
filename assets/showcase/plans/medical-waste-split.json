@@ -1,0 +1,118 @@
+{
+  "slug": "medical-waste-split",
+  "domain": "split_composite_photo",
+  "device": "mps",
+  "threshold_hint": 0.2,
+  "expand_face_parts": false,
+  "notes": "Split composite: left half = drugs/pharma trash on gray floor; right half = used hypodermic syringes in dry grass. No people.",
+  "entities": [
+    {
+      "name": "left_floor",
+      "label": "plain gray concrete floor left half",
+      "semantic_path": "background.left",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.0,
+        0.0,
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "name": "right_grass",
+      "label": "dry yellow grass background right half",
+      "semantic_path": "background.right",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.5,
+        0.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "orange_bottle",
+      "label": "large orange prescription bottle upper left",
+      "semantic_path": "foreground.left.bottle[0]",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.0,
+        0.0,
+        0.23,
+        0.28
+      ]
+    },
+    {
+      "name": "inhaler",
+      "label": "blue and gray asthma inhaler top center-left",
+      "semantic_path": "foreground.left.device",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.22,
+        0.05,
+        0.44,
+        0.25
+      ]
+    },
+    {
+      "name": "yellow_marker",
+      "label": "yellow highlighter marker center-left",
+      "semantic_path": "foreground.left.misc[0]",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.16,
+        0.17,
+        0.36,
+        0.28
+      ]
+    },
+    {
+      "name": "pill_bottles_pile",
+      "label": "jumble of small colored pill bottles and vials center-left",
+      "semantic_path": "foreground.left.bottle[1]",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.0,
+        0.28,
+        0.5,
+        0.9
+      ]
+    },
+    {
+      "name": "white_jar",
+      "label": "white jar with label bottom-left",
+      "semantic_path": "foreground.left.bottle[2]",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.0,
+        0.78,
+        0.16,
+        1.0
+      ]
+    },
+    {
+      "name": "syringes_pile_right",
+      "label": "large pile of used blue-barrel hypodermic syringes on dry grass right half",
+      "semantic_path": "foreground.right.syringe[0]",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.55,
+        0.15,
+        1.0,
+        0.95
+      ]
+    },
+    {
+      "name": "orange_cap_syringe",
+      "label": "prominent orange-capped syringe in foreground center-right",
+      "semantic_path": "foreground.right.syringe[1]",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.42,
+        0.58,
+        0.72,
+        1.0
+      ]
+    }
+  ]
+}

@@ -3,14 +3,14 @@
   "domain": "historical_bw_photo",
   "notes": "YOLO26 for person detection (9 detected earlier), DINO for background only.",
   "device": "mps",
-  "threshold_hint": 0.20,
+  "threshold_hint": 0.2,
   "entities": [
     {
       "name": "background",
       "label": "dirt road with smoke in the distance",
       "semantic_path": "background",
       "detector": "dino",
-      "threshold": 0.20
+      "threshold": 0.2
     },
     {
       "name": "boy_screaming_left",

@@ -518,16 +518,28 @@ def detect_bbox(dino_proc, dino_model, device, img_pil, label, threshold=0.25):
 
 
 def segment_bbox(sam_pred, bbox, multimask=True):
-    """Run SAM with bbox prompt, return best mask by bbox-fill."""
+    """Run SAM with bbox prompt, return best mask + quality signals.
+
+    Returns: (mask, sam_score, bbox_fill, inside_ratio)
+    - bbox_fill: fraction of bbox pixels covered by mask (mask∩bbox / bbox)
+    - inside_ratio: fraction of mask pixels inside bbox (mask∩bbox / mask)
+
+    Low bbox_fill → mask too small for this bbox (likely wrong tiny object).
+    Low inside_ratio → mask extends far outside bbox (likely picked wrong
+    object whose centroid is elsewhere — classic sam_bbox failure mode).
+    """
     box = np.array(bbox)
     masks, scores, _ = sam_pred.predict(box=box, multimask_output=multimask)
     x1, y1, x2, y2 = bbox
-    bbox_area = (x2 - x1) * (y2 - y1)
+    bbox_area = max((x2 - x1) * (y2 - y1), 1)
     best_idx = max(
         range(len(masks)),
-        key=lambda i: masks[i][y1:y2, x1:x2].sum() / max(bbox_area, 1)
+        key=lambda i: masks[i][y1:y2, x1:x2].sum() / bbox_area
     )
-    return masks[best_idx], float(scores[best_idx])
+    mask = masks[best_idx]
+    inside_px = int(mask[y1:y2, x1:x2].sum())
+    total_px = max(int(mask.sum()), 1)
+    return mask, float(scores[best_idx]), inside_px / bbox_area, inside_px / total_px
 
 
 def hint_to_bbox_px(hint_pct, W: int, H: int) -> list[int]:
@@ -565,18 +577,74 @@ def _z_index_for(semantic_path: str) -> int:
     return 50
 
 
-def resolve_overlaps(layers_raw):
-    """Higher z wins contested pixels. Fill unclaimed into bg if present."""
+def _is_descendant(sp: str, ancestor: str) -> bool:
+    """Return True iff sp is nested strictly below ancestor via dotted path.
+
+    Uses semantic_path prefix with trailing '.' to avoid false matches
+    (e.g. `person[10]` is NOT descendant of `person[1]`).
+    """
+    return bool(ancestor) and sp.startswith(ancestor + ".")
+
+
+def resolve_overlaps(layers_raw, layer_model: str = "hierarchical"):
+    """Assign per-pixel ownership across layers.
+
+    Two models:
+    - "flat"         : highest-z wins pixel, mutually-exclusive partition.
+                       Preserved for migrate pipeline + legacy compat.
+    - "hierarchical" : strictly-higher-z NON-descendant layers block.
+                       Descendants (face parts, sub-entities) do NOT carve
+                       parents; same-z siblings do NOT block each other.
+                       Correct model for agent-native editing where a parent
+                       layer should contain the whole subject (woman keeps
+                       eyes/lips pixels; sub-layers are addressable overlays).
+
+    Background catch-all fill is unchanged: the lowest-z layer with z≤10
+    absorbs any unclaimed pixels.
+
+    Complexity: hierarchical path is O(n²) in layer count AND allocates one
+    H×W bool array per pair (numpy temp). At n≈30 layers × 4MB per 2048²
+    bool array this is fine. For crowd scenes (100+ layers) consider
+    pre-sorting by -z and maintaining a cumulative non-descendant blocker
+    to drop to O(n × avg_depth).
+    """
     if not layers_raw:
         raise ValueError("empty layers")
     H, W = layers_raw[0]["mask"].shape
-    ordered = sorted(layers_raw, key=lambda l: -l["z"])
-    claimed = np.zeros((H, W), dtype=bool)
-    for layer in ordered:
-        m = layer["mask"] & ~claimed
-        layer["mask_resolved"] = m
-        claimed |= m
-    # Fill unclaimed into first background-level layer
+
+    if layer_model == "flat":
+        ordered = sorted(layers_raw, key=lambda l: -l["z"])
+        claimed = np.zeros((H, W), dtype=bool)
+        for layer in ordered:
+            m = layer["mask"] & ~claimed
+            layer["mask_resolved"] = m
+            claimed |= m
+    else:
+        # Hierarchical: O(n²) but n typically < 80, dominated by model inference.
+        claimed_any = np.zeros((H, W), dtype=bool)
+        for layer in layers_raw:
+            sp = layer.get("semantic_path", "")
+            z = layer["z"]
+            blocker = np.zeros((H, W), dtype=bool)
+            for other in layers_raw:
+                if other is layer:
+                    continue
+                if other["z"] <= z:            # rule 2: same/lower z doesn't block
+                    continue
+                other_sp = other.get("semantic_path", "")
+                if _is_descendant(other_sp, sp):  # rule 1: descendants don't block ancestors
+                    continue
+                blocker |= other["mask"]
+            layer["mask_resolved"] = layer["mask"] & ~blocker
+            claimed_any |= layer["mask_resolved"]
+        # Background catch-all uses the hierarchical `claimed_any`.
+        bg_candidates = [l for l in layers_raw if l["z"] <= 10]
+        if bg_candidates:
+            bg = min(bg_candidates, key=lambda l: l["z"])
+            bg["mask_resolved"] = bg["mask_resolved"] | ~claimed_any
+        return layers_raw
+
+    # Legacy flat path: fill unclaimed into first background-level layer
     bg_candidates = [l for l in layers_raw if l["z"] <= 10]
     if bg_candidates:
         bg = min(bg_candidates, key=lambda l: l["z"])
@@ -637,9 +705,14 @@ def process(slug: str, force: bool = False):
         print(f"FAIL {slug}: plan missing 'entities' list")
         return {"status": "error", "reason": "plan_schema"}
 
-    img_path = ORIG_DIR / f"{slug}.jpg"
-    if not img_path.exists():
-        print(f"FAIL {slug}: no image at {img_path}")
+    img_path = None
+    for ext in (".jpg", ".jpeg", ".png", ".webp"):
+        candidate = ORIG_DIR / f"{slug}{ext}"
+        if candidate.exists():
+            img_path = candidate
+            break
+    if img_path is None:
+        print(f"FAIL {slug}: no image at {ORIG_DIR}/{slug}.{{jpg,jpeg,png,webp}}")
         return {"status": "error", "reason": "missing_image"}
 
     try:
@@ -663,6 +736,8 @@ def process(slug: str, force: bool = False):
     # ── Domain profile: routes person detection + sets thresholds ──
     domain = plan.get("domain", "")
     profile = DOMAIN_PROFILES.get(domain, DEFAULT_PROFILE)
+    if domain and domain not in DOMAIN_PROFILES:
+        print(f"  [warn] unknown domain {domain!r} — falling back to DEFAULT_PROFILE")
     person_chain = profile["person_chain"]
     object_thresh = profile["object_thresh"]
     print(f"  domain={domain} chain={person_chain} obj_thresh={object_thresh}")
@@ -762,13 +837,15 @@ def process(slug: str, force: bool = False):
             detection_report["per_entity"].append(record)
             continue
         bbox, det_conf = yolo_persons[rank]
-        mask, sam_score = segment_bbox(sam_pred, bbox)
+        mask, sam_score, bbox_fill, inside_ratio = segment_bbox(sam_pred, bbox)
         pct = mask.sum() / (H * W) * 100
         print(f"  [P{i}] {label[:30]:30s} {person_detector_used}[{rank}] bbox={bbox} "
               f"det={det_conf:.2f} sam={sam_score:.2f} pct={pct:.1f}%")
         record.update({"status": "detected", "detector": person_detector_used,
                        "bbox": bbox, "det_score": det_conf, "sam_score": sam_score,
-                       "pct": round(pct, 2)})
+                       "pct": round(pct, 2),
+                       "bbox_fill": round(bbox_fill, 3),
+                       "inside_ratio": round(inside_ratio, 3)})
         detection_report["per_entity"].append(record)
         layers_raw.append({
             "id": i, "label": label, "name": record["name"],
@@ -792,17 +869,35 @@ def process(slug: str, force: bool = False):
             detection_report["per_entity"].append(record)
             continue
         bbox = hint_to_bbox_px(hint_pct, W, H)
-        mask, sam_score = segment_bbox(sam_pred, bbox)
+        mask, sam_score, bbox_fill, inside_ratio = segment_bbox(sam_pred, bbox)
         pct = mask.sum() / (H * W) * 100
-        print(f"  [H{i}] {label[:30]:30s} hint bbox={bbox} sam={sam_score:.2f} pct={pct:.1f}%")
+        # Quality backstop: sam_bbox always returns SOMETHING, so gate on shape.
+        # bbox_fill < 0.05 → mask too sparse for hint (tiny object missed)
+        # inside_ratio < 0.50 → mask mostly outside hint (wrong object picked)
+        # pct < 0.05 → mask is trivially empty
+        quality_flags = []
+        if pct < 0.05:
+            quality_flags.append("empty_mask")
+        if bbox_fill < 0.05:
+            quality_flags.append("low_bbox_fill")
+        if inside_ratio < 0.50:
+            quality_flags.append("mask_outside_bbox")
+        status = "suspect" if quality_flags else "detected"
+        marker = "?" if quality_flags else " "
+        print(f"  [H{i}]{marker}{label[:30]:30s} hint bbox={bbox} sam={sam_score:.2f} "
+              f"pct={pct:.1f}% fill={bbox_fill:.2f} in={inside_ratio:.2f}"
+              + (f" flags={quality_flags}" if quality_flags else ""))
         record.update({
-            "status": "detected",
+            "status": status,
             "detector": "sam_bbox",
             "source": "bbox_hint",  # explicit: not detector-inferred
             "bbox": bbox,
             "det_score": None,  # null — hint is authoritative, no inferred confidence
             "sam_score": sam_score,
             "pct": round(pct, 2),
+            "bbox_fill": round(bbox_fill, 3),
+            "inside_ratio": round(inside_ratio, 3),
+            "quality_flags": quality_flags,
         })
         detection_report["per_entity"].append(record)
         layers_raw.append({
@@ -811,6 +906,7 @@ def process(slug: str, force: bool = False):
             "semantic_path": semantic_path, "bbox": bbox,
             "det_score": None, "sam_score": sam_score,
             "z": _z_index_for(semantic_path), "mask": mask,
+            "quality_status": status,
         })
 
     # ── Stage 4: Face-parsing per person (eyes, nose, lips, brows, skin, hair, ears, hat) ──
@@ -910,7 +1006,7 @@ def process(slug: str, force: bool = False):
             detection_report["per_entity"].append(record)
             continue
         bbox, score, phrase = dino_assigned[label]
-        mask, sam_score = segment_bbox(sam_pred, bbox)
+        mask, sam_score, bbox_fill, inside_ratio = segment_bbox(sam_pred, bbox)
 
         # Pattern #3 fix: subtract person overlap ONLY in the "suspicious middle
         # range" (30%-90%). Rationale:
@@ -937,7 +1033,9 @@ def process(slug: str, force: bool = False):
         record.update({"status": "detected", "detector": "dino",
                        "matched_phrase": phrase, "bbox": bbox,
                        "det_score": score, "sam_score": sam_score,
-                       "pct": round(pct, 2)})
+                       "pct": round(pct, 2),
+                       "bbox_fill": round(bbox_fill, 3),
+                       "inside_ratio": round(inside_ratio, 3)})
         detection_report["per_entity"].append(record)
         layers_raw.append({
             "id": i, "label": label, "name": record["name"],
@@ -958,8 +1056,47 @@ def process(slug: str, force: bool = False):
             "z": 0, "mask": np.ones((H0, W0), dtype=bool),
         })
 
-    # Overlap resolution
-    resolve_overlaps(layers_raw)
+    # Capture pre-resolve areas so we can measure overlap erosion (observability).
+    # Map by id for O(1) lookup when annotating per_entity records later.
+    H_full, W_full = layers_raw[0]["mask"].shape
+    total_px = H_full * W_full
+    pre_resolve_pct = {l["id"]: l["mask"].sum() / total_px * 100 for l in layers_raw}
+
+    # Overlap resolution — hierarchical is Phase-1.5 default; plans can opt into
+    # "flat" via layer_model="flat" as a temporary escape hatch.
+    layer_model = plan.get("layer_model", "hierarchical")
+    print(f"  resolve_overlaps: layer_model={layer_model}")
+    resolve_overlaps(layers_raw, layer_model=layer_model)
+
+    # Post-resolve areas + over-erosion detection (ratio < 0.5 → flagged).
+    # This catches same-z layers stealing pixels (e.g. body eating feet).
+    post_resolve_pct = {l["id"]: l["mask_resolved"].sum() / total_px * 100 for l in layers_raw}
+    id_to_layer = {l["id"]: l for l in layers_raw}
+    for rec in detection_report["per_entity"]:
+        if rec.get("status") == "missed":
+            continue
+        lid = rec.get("id")
+        if lid in pre_resolve_pct:
+            pre = pre_resolve_pct[lid]
+            post = post_resolve_pct.get(lid, 0.0)
+            rec["pct_before_resolve"] = round(pre, 2)
+            rec["pct_after_resolve"] = round(post, 2)
+            # Over-erosion is a DOWNSTREAM problem (same-z siblings stole
+            # pixels in resolve_overlaps), NOT a SAM quality failure — so
+            # we record it as a flag for downstream consumers + QA loops
+            # but do NOT downgrade status (which is SAM-quality-gated).
+            # See claude_orchestrated_pipeline notes: erosion vs. detection
+            # failures are categorically different and should not be mixed.
+            if pre > 0.1 and post / pre < 0.5:
+                flags = rec.setdefault("quality_flags", [])
+                if "over_eroded" not in flags:
+                    flags.append("over_eroded")
+                # Under hierarchical model (Phase 1.5), descendant-caused
+                # erosion is impossible by construction — so this fires only
+                # for true foreground-over-background occlusion by a strictly
+                # higher-z NON-descendant layer (e.g. pitchfork over farmer).
+                print(f"  [erosion] {rec.get('name','?')}: {pre:.1f}%→{post:.1f}% "
+                      f"({post/pre*100:.0f}% retained) — non-descendant higher-z occlusion")
 
     # Save per-layer RGBA + manifest (with soft-alpha edge refinement)
     try:
@@ -968,6 +1105,32 @@ def process(slug: str, force: bool = False):
     except ImportError:
         soften_mask = None
 
+    # Two-pass build: we need stable layer IDs first so that parent_layer_id
+    # can reference them. Otherwise we'd have a forward-reference chicken-and-egg
+    # since parents may appear after children in layers_raw (face-parts come
+    # after the person they refine).
+    def _layer_id(name: str) -> str:
+        return "layer_" + hashlib.md5(f"{slug}-{name}".encode()).hexdigest()[:8]
+
+    # Pass 1: assign IDs + build semantic_path → id lookup for parent resolution.
+    layer_ids = {id(l): _layer_id(l["name"]) for l in layers_raw}
+    sp_to_id: dict[str, str] = {}
+    for l in layers_raw:
+        sp = l.get("semantic_path", "")
+        if sp and sp not in sp_to_id:
+            sp_to_id[sp] = layer_ids[id(l)]
+
+    def _find_parent_id(sp: str) -> str | None:
+        """Longest existing ancestor semantic_path wins (deepest parent)."""
+        if not sp:
+            return None
+        best_sp = ""
+        for candidate_sp in sp_to_id:
+            if _is_descendant(sp, candidate_sp) and len(candidate_sp) > len(best_sp):
+                best_sp = candidate_sp
+        return sp_to_id.get(best_sp) if best_sp else None
+
+    # Pass 2: write PNGs + build manifest entries with parent_layer_id wired.
     manifest_layers = []
     for l in layers_raw:
         if soften_mask is not None and plan.get("soften_edges", True):
@@ -980,46 +1143,65 @@ def process(slug: str, force: bool = False):
         rgba = np.dstack([img_np, mask_u8])
         fname = f"{l['name']}.png"
         Image.fromarray(rgba).save(str(out_subdir / fname))
+        # area_pct is post-resolve (what consumers see on disk). Lets
+        # downstream tools (HTML viewer, VLM QA) reason about layer size
+        # without re-reading PNG alpha.
+        area_pct = round(l["mask_resolved"].sum() / total_px * 100, 2)
+        layer_sp = l.get("semantic_path", "")
         manifest_layers.append({
-            "id": "layer_" + hashlib.md5(f"{slug}-{l['name']}".encode()).hexdigest()[:8],
+            "id": layer_ids[id(l)],
             "name": l["name"],
             "label": l["label"],
             "description": l["label"],
             "z_index": l["z"],
             "blend_mode": "normal",
             "content_type": l["name"],
-            "semantic_path": l["semantic_path"],
+            "semantic_path": layer_sp,
+            "parent_layer_id": _find_parent_id(layer_sp),
             "visible": True, "locked": False,
             "file": fname,
             "bbox": l["bbox"],
             "det_score": l["det_score"],
             "sam_score": l["sam_score"],
+            "area_pct": area_pct,
+            "quality_status": l.get("quality_status", "detected"),
             "regeneration_prompt": l["label"],
             "opacity": 1.0,
             "x": 0.0, "y": 0.0, "width": 100.0, "height": 100.0,
             "rotation": 0.0, "content_bbox": None,
         })
 
-    # Finalize detection report: success rate + overall status
+    # Finalize detection report: success rate + overall status.
+    # "suspect" is a new 3rd status (Fix #1) — SAM returned a mask but quality
+    # backstop flagged it (low bbox_fill, mask mostly outside hint, or over-
+    # eroded). Suspects are still rendered but don't count toward success_rate,
+    # so hint-heavy failures naturally surface as status=partial.
     detected_count = sum(1 for e in detection_report["per_entity"] if e.get("status") == "detected")
-    missed_count = sum(1 for e in detection_report["per_entity"] if e.get("status") == "missed")
+    suspect_count  = sum(1 for e in detection_report["per_entity"] if e.get("status") == "suspect")
+    missed_count   = sum(1 for e in detection_report["per_entity"] if e.get("status") == "missed")
     hint_count = sum(
+        1 for e in detection_report["per_entity"]
+        if e.get("status") in ("detected", "suspect") and e.get("source") == "bbox_hint"
+    )
+    detector_detected = detected_count - sum(
         1 for e in detection_report["per_entity"]
         if e.get("status") == "detected" and e.get("source") == "bbox_hint"
     )
-    detector_detected = detected_count - hint_count
     detection_report["detected"] = detected_count
+    detection_report["suspect"] = suspect_count
     detection_report["missed"] = missed_count
     # authority_mix: transparently separate detector-found vs human-hinted.
     # Review (I3) — downstream consumers need this to compute detector recall.
     detection_report["authority_mix"] = {
         "detected_by_model": detector_detected,
         "hinted_by_plan": hint_count,
+        "suspect": suspect_count,
         "missed": missed_count,
     }
     success_rate = detected_count / max(detection_report["requested"], 1)
     detection_report["success_rate"] = round(success_rate, 3)
-    status = "ok" if success_rate >= SUCCESS_RATE_THRESHOLD else "partial"
+    # Any suspect → downgrade from ok to partial (quality gate, not just count).
+    status = "ok" if (success_rate >= SUCCESS_RATE_THRESHOLD and suspect_count == 0) else "partial"
     detection_report["status"] = status
     # Warning if >50% entities needed hints — plan may be mis-using sam_bbox
     if detection_report["requested"] > 2 and hint_count / detection_report["requested"] > 0.5:
@@ -1029,7 +1211,7 @@ def process(slug: str, force: bool = False):
         )
 
     manifest = {
-        "version": 4,
+        "version": 5,  # Phase 1.5: + parent_layer_id, + layer_model, hierarchical resolve
         "width": W, "height": H,
         "source_image": str(
             img_path.relative_to(REPO) if REPO in img_path.parents else img_path
@@ -1045,11 +1227,16 @@ def process(slug: str, force: bool = False):
 
     marker = "✓" if status == "ok" else "⚠"
     print(f"{marker} {slug}: {status.upper()} "
-          f"[{detected_count}/{detection_report['requested']} detected] "
+          f"[{detected_count}/{detection_report['requested']} detected, "
+          f"{suspect_count} suspect, {missed_count} missed] "
           f"→ {len(manifest_layers)} layers ({out_subdir})")
     if missed_count > 0:
         missed_names = [e["name"] for e in detection_report["per_entity"] if e.get("status") == "missed"]
         print(f"   Missed: {missed_names}")
+    if suspect_count > 0:
+        suspects = [(e["name"], e.get("quality_flags", []))
+                    for e in detection_report["per_entity"] if e.get("status") == "suspect"]
+        print(f"   Suspect: {suspects}")
 
 
 def main():

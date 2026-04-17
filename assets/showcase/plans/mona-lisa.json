@@ -11,7 +11,7 @@
       "label": "distant landscape with mountains and winding road",
       "semantic_path": "background",
       "detector": "dino",
-      "threshold": 0.20
+      "threshold": 0.2
     },
     {
       "name": "mona_lisa",
