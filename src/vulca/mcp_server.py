@@ -580,6 +580,7 @@ async def layers_split(
     provider: str = "gemini",
     tradition: str = "default",
     plan_path: str = "",
+    plan: str = "",
 ) -> dict:
     """Decompose an image into full-canvas RGBA layers via segmentation or regeneration.
 
@@ -604,47 +605,49 @@ async def layers_split(
     from pathlib import Path
 
     if mode == "orchestrated":
-        if not plan_path:
-            return {"error": "orchestrated mode requires plan_path (JSON with 'entities')"}
-        # Route to the claude-orchestrated pipeline
-        import sys, subprocess, json
-        repo_root = Path(__file__).resolve().parents[2]
-        script = repo_root / "scripts" / "claude_orchestrated_pipeline.py"
-        # Symlink inputs into expected locations (orig_dir, plans_dir)
-        img_p = Path(image_path)
-        plan_p = Path(plan_path)
-        slug = img_p.stem
-        orig_dir = repo_root / "assets" / "showcase" / "originals"
-        plans_dir = repo_root / "assets" / "showcase" / "plans"
-        out_base = repo_root / "assets" / "showcase" / "layers_v2"
-        orig_dir.mkdir(parents=True, exist_ok=True)
-        plans_dir.mkdir(parents=True, exist_ok=True)
-        # Copy image+plan into expected slots (avoid symlinks for portability)
-        import shutil
-        shutil.copy(str(img_p), str(orig_dir / f"{slug}.jpg"))
-        shutil.copy(str(plan_p), str(plans_dir / f"{slug}.json"))
-        result = subprocess.run(
-            [sys.executable, str(script), slug, "--force"],
-            cwd=str(repo_root), capture_output=True, text=True, timeout=600,
-        )
-        manifest_path = out_base / slug / "manifest.json"
-        if not manifest_path.exists():
-            return {"error": "pipeline failed",
-                    "stdout": result.stdout[-1000:], "stderr": result.stderr[-1000:]}
-        manifest = json.loads(manifest_path.read_text())
-        # Copy layers to requested output_dir if specified
-        target = Path(output_dir) if output_dir else out_base / slug
+        # In-process orchestration with typed plan validation.
+        # No subprocess, no polluting of assets/showcase.
+        from vulca.pipeline.segment import run as _run_pipeline, Plan
+        from pathlib import Path as _P
+
+        img_p = _P(image_path).resolve()
+        out = _P(output_dir) if output_dir else img_p.parent / "layers"
+
+        # Plan can come from inline JSON (plan_path starting with '{')
+        # or from a file path.
+        try:
+            if plan and plan_path:
+                return {"error": "pass either plan (inline JSON) or plan_path, not both"}
+            if plan:
+                import json as _json
+                plan_obj = Plan.model_validate(_json.loads(plan) if isinstance(plan, str) else plan)
+            elif plan_path:
+                plan_obj = Plan.from_file(plan_path)
+            else:
+                return {"error": "orchestrated mode requires 'plan' (inline JSON) or 'plan_path'"}
+        except Exception as e:
+            return {"error": f"plan validation failed: {e}"}
+
+        try:
+            result = _run_pipeline(plan_obj, img_p, out, force=True)
+        except Exception as e:
+            return {"error": f"pipeline error: {type(e).__name__}: {e}"}
+
         return {
             "split_mode": "orchestrated",
-            "manifest_path": str(manifest_path),
-            "status": manifest.get("status"),
-            "detection_report": manifest.get("detection_report"),
+            "status": result.status,
+            "manifest_path": str(result.manifest_path),
+            "output_dir": str(result.output_dir),
+            "reason": result.reason,
+            "detection_report": result.detection_report,
+            "stage_timings": result.stage_timings,
             "layers": [
-                {"name": l["name"], "file": str(target / l["file"]),
-                 "z_index": l["z_index"], "content_type": l.get("content_type", l["name"]),
+                {"name": l["name"], "file": str(result.output_dir / l["file"]),
+                 "z_index": l["z_index"],
+                 "content_type": l.get("content_type", l["name"]),
                  "semantic_path": l.get("semantic_path", ""),
                  "blend_mode": l.get("blend_mode", "normal")}
-                for l in manifest["layers"]
+                for l in result.layers
             ],
         }
 
