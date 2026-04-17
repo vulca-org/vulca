@@ -670,15 +670,17 @@ def process(slug: str, force: bool = False):
     # Partition entities: persons (need chain) vs objects (→DINO)
     # Pattern B: entities with detector="sam_bbox" skip YOLO/DINO entirely
     # and go straight to SAM using bbox_hint_pct. Short-circuit partition.
-    hint_entities = [(i, e) for i, e in enumerate(plan["entities"])
-                     if e.get("detector") == "sam_bbox"]
-    person_entities = [(i, e) for i, e in enumerate(plan["entities"])
-                       if (i, e) not in hint_entities and (
-                           e.get("detector") == "yolo"
-                           or "person[" in e.get("semantic_path", ""))]
-    object_entities = [(i, e) for i, e in enumerate(plan["entities"])
-                       if (i, e) not in person_entities
-                       and (i, e) not in hint_entities]
+    # Use index-sets (O(n) + unambiguous identity) instead of dict equality.
+    hint_ids = {i for i, e in enumerate(plan["entities"])
+                if e.get("detector") == "sam_bbox"}
+    person_ids = {i for i, e in enumerate(plan["entities"])
+                  if i not in hint_ids and (
+                      e.get("detector") == "yolo"
+                      or "person[" in e.get("semantic_path", ""))}
+    object_ids = set(range(len(plan["entities"]))) - hint_ids - person_ids
+    hint_entities = [(i, plan["entities"][i]) for i in sorted(hint_ids)]
+    person_entities = [(i, plan["entities"][i]) for i in sorted(person_ids)]
+    object_entities = [(i, plan["entities"][i]) for i in sorted(object_ids)]
 
     # detection_report: every entity gets a record regardless of outcome
     detection_report = {
@@ -775,8 +777,44 @@ def process(slug: str, force: bool = False):
             "z": _z_index_for(semantic_path), "mask": mask,
         })
 
+    # ── Stage 3b: sam_bbox hint entities — MUST run before face-parsing ──
+    # so hinted persons appear in layers_raw when face-parsing gate checks.
+    for i, entity in hint_entities:
+        label = entity["label"]
+        semantic_path = entity.get("semantic_path", f"subject.entity[{i}]")
+        hint_pct = entity.get("bbox_hint_pct")
+        record = {"id": i, "name": entity.get("name", label.replace(" ", "_")),
+                  "label": label, "semantic_path": semantic_path,
+                  "kind": "hinted"}
+        if hint_pct is None:
+            print(f"  [H{i}] {label[:40]:40s} ERROR: sam_bbox needs bbox_hint_pct")
+            record.update({"status": "missed", "reason": "missing_hint"})
+            detection_report["per_entity"].append(record)
+            continue
+        bbox = hint_to_bbox_px(hint_pct, W, H)
+        mask, sam_score = segment_bbox(sam_pred, bbox)
+        pct = mask.sum() / (H * W) * 100
+        print(f"  [H{i}] {label[:30]:30s} hint bbox={bbox} sam={sam_score:.2f} pct={pct:.1f}%")
+        record.update({
+            "status": "detected",
+            "detector": "sam_bbox",
+            "source": "bbox_hint",  # explicit: not detector-inferred
+            "bbox": bbox,
+            "det_score": None,  # null — hint is authoritative, no inferred confidence
+            "sam_score": sam_score,
+            "pct": round(pct, 2),
+        })
+        detection_report["per_entity"].append(record)
+        layers_raw.append({
+            "id": i, "label": label,
+            "name": entity.get("name", label.replace(" ", "_")),
+            "semantic_path": semantic_path, "bbox": bbox,
+            "det_score": None, "sam_score": sam_score,
+            "z": _z_index_for(semantic_path), "mask": mask,
+        })
+
     # ── Stage 4: Face-parsing per person (eyes, nose, lips, brows, skin, hair, ears, hat) ──
-    # Gate includes hinted persons: any layer with "person[" in semantic_path.
+    # Gate scans layers_raw AFTER hint stage so hinted persons get face-parsing too.
     has_any_person = len(yolo_persons) > 0 or any(
         "person[" in l.get("semantic_path", "") for l in layers_raw
     )
@@ -908,36 +946,7 @@ def process(slug: str, force: bool = False):
             "z": _z_index_for(semantic_path), "mask": mask,
         })
 
-    # ── Pattern A+B: sam_bbox entities — skip detection, hint → SAM ──
-    for i, entity in hint_entities:
-        label = entity["label"]
-        semantic_path = entity.get("semantic_path", f"subject.entity[{i}]")
-        hint_pct = entity.get("bbox_hint_pct")
-        record = {"id": i, "name": entity.get("name", label.replace(" ", "_")),
-                  "label": label, "semantic_path": semantic_path,
-                  "kind": "hinted"}
-        if hint_pct is None:
-            print(f"  [H{i}] {label[:40]:40s} ERROR: sam_bbox needs bbox_hint_pct")
-            record.update({"status": "missed", "reason": "missing_hint"})
-            detection_report["per_entity"].append(record)
-            continue
-        bbox = hint_to_bbox_px(hint_pct, W, H)
-        mask, sam_score = segment_bbox(sam_pred, bbox)
-        pct = mask.sum() / (H * W) * 100
-        print(f"  [H{i}] {label[:30]:30s} hint bbox={bbox} sam={sam_score:.2f} pct={pct:.1f}%")
-        record.update({"status": "detected", "detector": "sam_bbox",
-                       "source": "bbox_hint", "bbox": bbox,
-                       "det_score": 1.0,  # synthetic — hint is authoritative
-                       "sam_score": sam_score,
-                       "pct": round(pct, 2)})
-        detection_report["per_entity"].append(record)
-        layers_raw.append({
-            "id": i, "label": label,
-            "name": entity.get("name", label.replace(" ", "_")),
-            "semantic_path": semantic_path, "bbox": bbox,
-            "det_score": 1.0, "sam_score": sam_score,
-            "z": _z_index_for(semantic_path), "mask": mask,
-        })
+    # (hint_entities were processed earlier, before face-parsing — see Stage 3b.)
 
     # Add background catch-all if none detected
     if not any(l["z"] <= 10 for l in layers_raw):
@@ -994,17 +1003,37 @@ def process(slug: str, force: bool = False):
     # Finalize detection report: success rate + overall status
     detected_count = sum(1 for e in detection_report["per_entity"] if e.get("status") == "detected")
     missed_count = sum(1 for e in detection_report["per_entity"] if e.get("status") == "missed")
+    hint_count = sum(
+        1 for e in detection_report["per_entity"]
+        if e.get("status") == "detected" and e.get("source") == "bbox_hint"
+    )
+    detector_detected = detected_count - hint_count
     detection_report["detected"] = detected_count
     detection_report["missed"] = missed_count
+    # authority_mix: transparently separate detector-found vs human-hinted.
+    # Review (I3) — downstream consumers need this to compute detector recall.
+    detection_report["authority_mix"] = {
+        "detected_by_model": detector_detected,
+        "hinted_by_plan": hint_count,
+        "missed": missed_count,
+    }
     success_rate = detected_count / max(detection_report["requested"], 1)
     detection_report["success_rate"] = round(success_rate, 3)
     status = "ok" if success_rate >= SUCCESS_RATE_THRESHOLD else "partial"
     detection_report["status"] = status
+    # Warning if >50% entities needed hints — plan may be mis-using sam_bbox
+    if detection_report["requested"] > 2 and hint_count / detection_report["requested"] > 0.5:
+        detection_report["warning"] = (
+            f"hint-heavy plan ({hint_count}/{detection_report['requested']} entities "
+            f"via bbox_hint); consider whether detectors were misconfigured"
+        )
 
     manifest = {
         "version": 4,
         "width": W, "height": H,
-        "source_image": str(img_path.relative_to(REPO)),
+        "source_image": str(
+            img_path.relative_to(REPO) if REPO in img_path.parents else img_path
+        ),
         "split_mode": "claude_orchestrated",
         "status": status,
         "detection_report": detection_report,

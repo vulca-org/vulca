@@ -25,7 +25,7 @@
           384,
           849
         ],
-        "det_score": 1.0,
+        "det_score": null,
         "sam_score": 0.9824091196060181,
         "pct": 23.13
       },
@@ -44,7 +44,7 @@
           486,
           425
         ],
-        "det_score": 1.0,
+        "det_score": null,
         "sam_score": 0.9141302108764648,
         "pct": 9.05
       },
@@ -63,7 +63,7 @@
           768,
           849
         ],
-        "det_score": 1.0,
+        "det_score": null,
         "sam_score": 0.8429200649261475,
         "pct": 8.76
       },
@@ -82,15 +82,21 @@
           1279,
           637
         ],
-        "det_score": 1.0,
+        "det_score": null,
         "sam_score": 0.8748491406440735,
         "pct": 25.05
       }
     ],
     "detected": 4,
     "missed": 0,
+    "authority_mix": {
+      "detected_by_model": 0,
+      "hinted_by_plan": 4,
+      "missed": 0
+    },
     "success_rate": 1.0,
-    "status": "ok"
+    "status": "ok",
+    "warning": "hint-heavy plan (4/4 entities via bbox_hint); consider whether detectors were misconfigured"
   },
   "plan": {
     "domain": "space_photograph",
@@ -149,7 +155,7 @@
     "slug": "tracy-caldwell-cupola",
     "device": "mps"
   },
-  "created_at": "2026-04-17T12:59:11Z",
+  "created_at": "2026-04-17T13:10:13Z",
   "layers": [
     {
       "id": "layer_9de73e45",
@@ -169,7 +175,7 @@
         384,
         849
       ],
-      "det_score": 1.0,
+      "det_score": null,
       "sam_score": 0.9824091196060181,
       "regeneration_prompt": "ISS cupola interior metal structure",
       "opacity": 1.0,
@@ -198,7 +204,7 @@
         486,
         425
       ],
-      "det_score": 1.0,
+      "det_score": null,
       "sam_score": 0.9141302108764648,
       "regeneration_prompt": "Earth seen through left window",
       "opacity": 1.0,
@@ -227,7 +233,7 @@
         768,
         849
       ],
-      "det_score": 1.0,
+      "det_score": null,
       "sam_score": 0.8429200649261475,
       "regeneration_prompt": "Earth seen through bottom circular window",
       "opacity": 1.0,
@@ -256,9 +262,183 @@
         1279,
         637
       ],
-      "det_score": 1.0,
+      "det_score": null,
       "sam_score": 0.8748491406440735,
       "regeneration_prompt": "woman astronaut with curly hair looking through window",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_e01f1aa9",
+      "name": "astronaut__skin",
+      "label": "astronaut skin",
+      "description": "astronaut skin",
+      "z_index": 52,
+      "blend_mode": "normal",
+      "content_type": "astronaut__skin",
+      "semantic_path": "subject.person[0].skin",
+      "visible": true,
+      "locked": false,
+      "file": "astronaut__skin.png",
+      "bbox": [
+        486,
+        0,
+        1279,
+        637
+      ],
+      "det_score": null,
+      "sam_score": 0.95,
+      "regeneration_prompt": "astronaut skin",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_e34589f5",
+      "name": "astronaut__nose",
+      "label": "astronaut nose",
+      "description": "astronaut nose",
+      "z_index": 60,
+      "blend_mode": "normal",
+      "content_type": "astronaut__nose",
+      "semantic_path": "subject.person[0].nose",
+      "visible": true,
+      "locked": false,
+      "file": "astronaut__nose.png",
+      "bbox": [
+        486,
+        0,
+        1279,
+        637
+      ],
+      "det_score": null,
+      "sam_score": 0.95,
+      "regeneration_prompt": "astronaut nose",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_050e20e9",
+      "name": "astronaut__hair",
+      "label": "astronaut hair",
+      "description": "astronaut hair",
+      "z_index": 54,
+      "blend_mode": "normal",
+      "content_type": "astronaut__hair",
+      "semantic_path": "subject.person[0].hair",
+      "visible": true,
+      "locked": false,
+      "file": "astronaut__hair.png",
+      "bbox": [
+        486,
+        0,
+        1279,
+        637
+      ],
+      "det_score": null,
+      "sam_score": 0.95,
+      "regeneration_prompt": "astronaut hair",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_314228c6",
+      "name": "astronaut__cloth",
+      "label": "astronaut cloth",
+      "description": "astronaut cloth",
+      "z_index": 46,
+      "blend_mode": "normal",
+      "content_type": "astronaut__cloth",
+      "semantic_path": "subject.person[0].cloth",
+      "visible": true,
+      "locked": false,
+      "file": "astronaut__cloth.png",
+      "bbox": [
+        486,
+        0,
+        1279,
+        637
+      ],
+      "det_score": null,
+      "sam_score": 0.95,
+      "regeneration_prompt": "astronaut cloth",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_93de7a44",
+      "name": "astronaut__eyebrows",
+      "label": "astronaut eyebrows",
+      "description": "astronaut eyebrows",
+      "z_index": 58,
+      "blend_mode": "normal",
+      "content_type": "astronaut__eyebrows",
+      "semantic_path": "subject.person[0].eyebrows",
+      "visible": true,
+      "locked": false,
+      "file": "astronaut__eyebrows.png",
+      "bbox": [
+        486,
+        0,
+        1279,
+        637
+      ],
+      "det_score": null,
+      "sam_score": 0.95,
+      "regeneration_prompt": "astronaut eyebrows",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_aba00f94",
+      "name": "astronaut__body",
+      "label": "astronaut body remainder",
+      "description": "astronaut body remainder",
+      "z_index": 51,
+      "blend_mode": "normal",
+      "content_type": "astronaut__body",
+      "semantic_path": "subject.person[0].body",
+      "visible": true,
+      "locked": false,
+      "file": "astronaut__body.png",
+      "bbox": [
+        486,
+        0,
+        1279,
+        637
+      ],
+      "det_score": null,
+      "sam_score": 0.95,
+      "regeneration_prompt": "astronaut body remainder",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,

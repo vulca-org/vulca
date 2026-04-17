@@ -108,6 +108,85 @@ class TestTileImage:
         assert len(tiles) == 1
 
 
+class TestSamBboxIntegration:
+    """E2E test for sam_bbox detector path — mocks SAM to avoid model load."""
+
+    def test_hint_entity_flows_through_process(self, pipeline_module, tmp_path, monkeypatch):
+        """sam_bbox entity produces a layer with source='bbox_hint' in manifest."""
+        import numpy as np
+        from PIL import Image
+
+        # Tiny test image (256x256 solid color)
+        img_path = tmp_path / "test.jpg"
+        Image.new("RGB", (256, 256), "navy").save(str(img_path))
+
+        # Plan with one hint entity only (no detectors needed)
+        plan = {
+            "slug": "test",
+            "domain": "space_photograph",
+            "device": "mps",
+            "expand_face_parts": False,  # no face-parsing for hint-only plan
+            "entities": [
+                {
+                    "name": "target", "label": "test target",
+                    "semantic_path": "subject.target",
+                    "detector": "sam_bbox",
+                    "bbox_hint_pct": [0.25, 0.25, 0.75, 0.75],
+                }
+            ],
+        }
+
+        # Mock SAM: return a bool mask matching the bbox region
+        class FakeSAMPredictor:
+            def set_image(self, img): pass
+            def predict(self, box=None, multimask_output=True):
+                x1, y1, x2, y2 = box.tolist() if hasattr(box, "tolist") else box
+                mask = np.zeros((256, 256), dtype=bool)
+                mask[y1:y2, x1:x2] = True
+                return np.array([mask, mask, mask]), np.array([0.9, 0.9, 0.9]), None
+
+        # Mock loaders so no actual model download happens
+        monkeypatch.setattr(pipeline_module, "load_sam",
+                            lambda device="mps": FakeSAMPredictor())
+        monkeypatch.setattr(pipeline_module, "load_grounding_dino",
+                            lambda device="mps": (None, None))
+        monkeypatch.setattr(pipeline_module, "load_yolo", lambda: None)
+
+        # Redirect paths for test isolation
+        (tmp_path / "originals").mkdir()
+        (tmp_path / "plans").mkdir()
+        (tmp_path / "out").mkdir()
+        import shutil
+        shutil.copy(img_path, tmp_path / "originals" / "test.jpg")
+        import json as _json
+        (tmp_path / "plans" / "test.json").write_text(_json.dumps(plan))
+
+        monkeypatch.setattr(pipeline_module, "ORIG_DIR", tmp_path / "originals")
+        monkeypatch.setattr(pipeline_module, "PLANS_DIR", tmp_path / "plans")
+        monkeypatch.setattr(pipeline_module, "OUT_DIR", tmp_path / "out")
+
+        pipeline_module.process("test", force=True)
+
+        # Assert: manifest exists, layer produced with source="bbox_hint"
+        mf = tmp_path / "out" / "test" / "manifest.json"
+        assert mf.exists(), "manifest not written"
+        m = _json.loads(mf.read_text())
+        assert m["status"] == "ok"
+        dr = m["detection_report"]
+        target_records = [e for e in dr["per_entity"] if e["name"] == "target"]
+        assert len(target_records) == 1, "target entity missing from report"
+        rec = target_records[0]
+        assert rec["status"] == "detected"
+        assert rec["source"] == "bbox_hint"
+        assert rec["detector"] == "sam_bbox"
+        assert rec["det_score"] is None, "hint det_score should be None, not synthetic 1.0"
+
+        # authority_mix reports hint correctly
+        mix = dr["authority_mix"]
+        assert mix["hinted_by_plan"] >= 1
+        assert mix["detected_by_model"] == 0
+
+
 class TestHintToBboxPx:
     def test_full_image(self, pipeline_module):
         bbox = pipeline_module.hint_to_bbox_px([0.0, 0.0, 1.0, 1.0], 1000, 600)
