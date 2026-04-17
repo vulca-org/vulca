@@ -50,6 +50,19 @@ class LayerInfo:
     # The coarse `content_type` field above remains authoritative for catch-all/branch
     # logic; `semantic_path` is for rendering, UI grouping, and prompt provenance.
     semantic_path: str = ""
+    # Phase 1.5+ (manifest v5): hierarchical layer tree. Points to the layer
+    # whose `id` is the nearest ancestor via semantic_path, or None for root
+    # layers (background, residual, top-level subjects). Enables O(1) parent
+    # lookup for agent UIs / layer-tree rendering without semantic_path parsing.
+    parent_layer_id: str | None = None
+    # Phase 1.5+ quality observability:
+    #   detected | suspect | missed | residual
+    # `residual` is pipeline-synthesized (plan-uncovered pixels); others come
+    # from the SAM quality backstop (bbox_fill / inside_ratio gates).
+    quality_status: str = "detected"
+    # Post-resolve mask area as percentage of canvas. Lets consumers reason
+    # about coverage without re-reading the PNG alpha channel.
+    area_pct: float = 0.0
 
 
 @dataclass

@@ -99,6 +99,10 @@ def write_manifest(
                 "coverage": info.coverage,
                 # v0.16 multi-layer — dot-notation hierarchical path.
                 "semantic_path": info.semantic_path,
+                # Phase 1.5+: hierarchical parent pointer + quality signals.
+                "parent_layer_id": info.parent_layer_id,
+                "quality_status": info.quality_status,
+                "area_pct": info.area_pct,
             }
             for info in sorted(layers, key=lambda l: l.z_index)
         ],
@@ -144,6 +148,9 @@ def load_manifest(artwork_dir: str) -> LayeredArtwork:
                 position=item.get("position", "") or "",
                 coverage=item.get("coverage", "") or "",
                 semantic_path=item.get("semantic_path", ""),
+                parent_layer_id=item.get("parent_layer_id"),
+                quality_status=item.get("quality_status", "detected"),
+                area_pct=item.get("area_pct", 0.0),
             )
         else:
             # V1: migrate — generate id, default content_type, preserve bbox.

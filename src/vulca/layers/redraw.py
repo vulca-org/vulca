@@ -58,6 +58,15 @@ async def redraw_layer(
             break
     if target is None:
         raise ValueError(f"Layer {layer_name!r} not found in artwork (available: {[l.info.name for l in artwork.layers]})")
+    # Phase 1.7: respect locked layers (e.g. pipeline-synthesized `residual`
+    # layer from hierarchical overlap resolution). Agents should not be able
+    # to regenerate diagnostic/bookkeeping layers by accident.
+    if target.info.locked:
+        raise ValueError(
+            f"Layer {layer_name!r} is locked and cannot be redrawn "
+            f"(likely a pipeline-synthesized layer like 'residual'). "
+            f"Unlock it explicitly via layers_edit if you really mean to."
+        )
 
     # 2. Build prompt
     prompt = _build_redraw_prompt(
