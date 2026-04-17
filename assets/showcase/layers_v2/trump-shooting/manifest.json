@@ -121,16 +121,16 @@
         "kind": "object",
         "status": "detected",
         "detector": "dino",
-        "matched_phrase": "blue sky",
+        "matched_phrase": "flag",
         "bbox": [
-          0,
-          0,
-          385,
-          253
+          190,
+          14,
+          284,
+          136
         ],
-        "det_score": 0.442900687456131,
-        "sam_score": 0.9793294668197632,
-        "pct": 48.27
+        "det_score": 0.4180993437767029,
+        "sam_score": 0.9968940019607544,
+        "pct": 5.87
       },
       {
         "id": 5,
@@ -143,13 +143,13 @@
         "matched_phrase": "red white blue striped stage railing",
         "bbox": [
           0,
-          202,
-          350,
-          256
+          200,
+          386,
+          257
         ],
-        "det_score": 0.466113418340683,
-        "sam_score": 0.9841580390930176,
-        "pct": 8.62
+        "det_score": 0.3475376069545746,
+        "sam_score": 0.9739514589309692,
+        "pct": 8.91
       }
     ],
     "detected": 6,
@@ -207,7 +207,7 @@
     "slug": "trump-shooting",
     "device": "mps"
   },
-  "created_at": "2026-04-17T10:22:28Z",
+  "created_at": "2026-04-17T10:43:03Z",
   "layers": [
     {
       "id": "layer_9bc41fe1",
@@ -454,13 +454,13 @@
       "locked": false,
       "file": "sky_flag.png",
       "bbox": [
-        0,
-        0,
-        385,
-        253
+        190,
+        14,
+        284,
+        136
       ],
-      "det_score": 0.442900687456131,
-      "sam_score": 0.9793294668197632,
+      "det_score": 0.4180993437767029,
+      "sam_score": 0.9968940019607544,
       "regeneration_prompt": "blue sky with american flag",
       "opacity": 1.0,
       "x": 0.0,
@@ -484,12 +484,12 @@
       "file": "stage_railing.png",
       "bbox": [
         0,
-        202,
-        350,
-        256
+        200,
+        386,
+        257
       ],
-      "det_score": 0.466113418340683,
-      "sam_score": 0.9841580390930176,
+      "det_score": 0.3475376069545746,
+      "sam_score": 0.9739514589309692,
       "regeneration_prompt": "red white blue striped stage railing",
       "opacity": 1.0,
       "x": 0.0,

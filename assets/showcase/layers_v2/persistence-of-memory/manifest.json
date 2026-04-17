@@ -22,13 +22,13 @@
         "detector": "dino",
         "matched_phrase": "blue sky",
         "bbox": [
-          1,
+          0,
           0,
           367,
           85
         ],
-        "det_score": 0.3510838449001312,
-        "sam_score": 0.9973323345184326,
+        "det_score": 0.3837764859199524,
+        "sam_score": 0.997319221496582,
         "pct": 21.24
       },
       {
@@ -41,13 +41,13 @@
         "detector": "dino",
         "matched_phrase": "flat brown beach",
         "bbox": [
-          1,
+          0,
           80,
-          366,
-          269
+          367,
+          270
         ],
-        "det_score": 0.493050754070282,
-        "sam_score": 0.9861727952957153,
+        "det_score": 0.5055760145187378,
+        "sam_score": 0.9854210615158081,
         "pct": 42.03
       },
       {
@@ -61,12 +61,12 @@
         "matched_phrase": "rectangular dark platform",
         "bbox": [
           0,
-          122,
-          117,
-          269
+          121,
+          116,
+          270
         ],
-        "det_score": 0.572520911693573,
-        "sam_score": 0.9731903076171875,
+        "det_score": 0.44660669565200806,
+        "sam_score": 0.9733672142028809,
         "pct": 15.52
       },
       {
@@ -82,10 +82,10 @@
           40,
           139,
           111,
-          227
+          228
         ],
-        "det_score": 0.4610082805156708,
-        "sam_score": 0.9782618284225464,
+        "det_score": 0.447867751121521,
+        "sam_score": 0.9781566858291626,
         "pct": 2.9
       },
       {
@@ -99,13 +99,13 @@
         "matched_phrase": "soft melting pocket watches",
         "bbox": [
           135,
-          124,
-          315,
+          125,
+          316,
           234
         ],
-        "det_score": 0.40394461154937744,
-        "sam_score": 0.9777672290802002,
-        "pct": 7.21
+        "det_score": 0.38782092928886414,
+        "sam_score": 0.9778259992599487,
+        "pct": 7.19
       },
       {
         "id": 5,
@@ -117,13 +117,13 @@
         "detector": "dino",
         "matched_phrase": "bare dead tree branch",
         "bbox": [
-          4,
-          20,
+          6,
+          19,
           106,
           142
         ],
-        "det_score": 0.40541309118270874,
-        "sam_score": 0.9475480318069458,
+        "det_score": 0.372409462928772,
+        "sam_score": 0.9486649036407471,
         "pct": 1.97
       }
     ],
@@ -178,7 +178,7 @@
     "slug": "persistence-of-memory",
     "device": "mps"
   },
-  "created_at": "2026-04-17T10:20:59Z",
+  "created_at": "2026-04-17T10:41:33Z",
   "layers": [
     {
       "id": "layer_911b8d23",
@@ -193,13 +193,13 @@
       "locked": false,
       "file": "sky_cliffs.png",
       "bbox": [
-        1,
+        0,
         0,
         367,
         85
       ],
-      "det_score": 0.3510838449001312,
-      "sam_score": 0.9973323345184326,
+      "det_score": 0.3837764859199524,
+      "sam_score": 0.997319221496582,
       "regeneration_prompt": "blue sky and golden distant cliffs",
       "opacity": 1.0,
       "x": 0.0,
@@ -222,13 +222,13 @@
       "locked": false,
       "file": "ground.png",
       "bbox": [
-        1,
+        0,
         80,
-        366,
-        269
+        367,
+        270
       ],
-      "det_score": 0.493050754070282,
-      "sam_score": 0.9861727952957153,
+      "det_score": 0.5055760145187378,
+      "sam_score": 0.9854210615158081,
       "regeneration_prompt": "flat brown beach and ground",
       "opacity": 1.0,
       "x": 0.0,
@@ -252,12 +252,12 @@
       "file": "dark_platform.png",
       "bbox": [
         0,
-        122,
-        117,
-        269
+        121,
+        116,
+        270
       ],
-      "det_score": 0.572520911693573,
-      "sam_score": 0.9731903076171875,
+      "det_score": 0.44660669565200806,
+      "sam_score": 0.9733672142028809,
       "regeneration_prompt": "rectangular dark platform",
       "opacity": 1.0,
       "x": 0.0,
@@ -283,10 +283,10 @@
         40,
         139,
         111,
-        227
+        228
       ],
-      "det_score": 0.4610082805156708,
-      "sam_score": 0.9782618284225464,
+      "det_score": 0.447867751121521,
+      "sam_score": 0.9781566858291626,
       "regeneration_prompt": "soft organic shape with eyelashes in center",
       "opacity": 1.0,
       "x": 0.0,
@@ -310,12 +310,12 @@
       "file": "melting_clocks.png",
       "bbox": [
         135,
-        124,
-        315,
+        125,
+        316,
         234
       ],
-      "det_score": 0.40394461154937744,
-      "sam_score": 0.9777672290802002,
+      "det_score": 0.38782092928886414,
+      "sam_score": 0.9778259992599487,
       "regeneration_prompt": "soft melting pocket watches",
       "opacity": 1.0,
       "x": 0.0,
@@ -338,13 +338,13 @@
       "locked": false,
       "file": "tree.png",
       "bbox": [
-        4,
-        20,
+        6,
+        19,
         106,
         142
       ],
-      "det_score": 0.40541309118270874,
-      "sam_score": 0.9475480318069458,
+      "det_score": 0.372409462928772,
+      "sam_score": 0.9486649036407471,
       "regeneration_prompt": "bare dead tree branch",
       "opacity": 1.0,
       "x": 0.0,

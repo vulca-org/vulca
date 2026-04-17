@@ -4,7 +4,7 @@
   "height": 120,
   "source_image": "assets/showcase/originals/qingming-bridge.jpg",
   "split_mode": "claude_orchestrated",
-  "status": "partial",
+  "status": "ok",
   "detection_report": {
     "requested": 3,
     "domain": "chinese_gongbi_scroll",
@@ -18,8 +18,18 @@
         "label": "rows of buildings and trees behind river",
         "semantic_path": "background",
         "kind": "object",
-        "status": "missed",
-        "reason": "dino_not_matched"
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "rows",
+        "bbox": [
+          2212,
+          10,
+          2327,
+          63
+        ],
+        "det_score": 0.5862528085708618,
+        "sam_score": 0.8569910526275635,
+        "pct": 1.46
       },
       {
         "id": 1,
@@ -29,16 +39,16 @@
         "kind": "object",
         "status": "detected",
         "detector": "dino",
-        "matched_phrase": "wooden bridge",
+        "matched_phrase": "arched wooden bridge bridge",
         "bbox": [
-          -2,
-          45,
-          2557,
-          79
+          672,
+          66,
+          791,
+          117
         ],
-        "det_score": 0.1679186224937439,
-        "sam_score": 0.9623823165893555,
-        "pct": 96.1
+        "det_score": 0.4003312289714813,
+        "sam_score": 0.8948324918746948,
+        "pct": 1.47
       },
       {
         "id": 2,
@@ -46,14 +56,24 @@
         "label": "river and boats below bridge",
         "semantic_path": "foreground.water",
         "kind": "object",
-        "status": "missed",
-        "reason": "dino_not_matched"
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "boats",
+        "bbox": [
+          195,
+          86,
+          217,
+          102
+        ],
+        "det_score": 0.28480714559555054,
+        "sam_score": 0.7440404891967773,
+        "pct": 0.11
       }
     ],
-    "detected": 1,
-    "missed": 2,
-    "success_rate": 0.333,
-    "status": "partial"
+    "detected": 3,
+    "missed": 0,
+    "success_rate": 1.0,
+    "status": "ok"
   },
   "plan": {
     "domain": "chinese_gongbi_scroll",
@@ -83,8 +103,37 @@
     "slug": "qingming-bridge",
     "device": "mps"
   },
-  "created_at": "2026-04-17T10:19:28Z",
+  "created_at": "2026-04-17T10:40:00Z",
   "layers": [
+    {
+      "id": "layer_5810174d",
+      "name": "buildings_trees",
+      "label": "rows of buildings and trees behind river",
+      "description": "rows of buildings and trees behind river",
+      "z_index": 0,
+      "blend_mode": "normal",
+      "content_type": "buildings_trees",
+      "semantic_path": "background",
+      "visible": true,
+      "locked": false,
+      "file": "buildings_trees.png",
+      "bbox": [
+        2212,
+        10,
+        2327,
+        63
+      ],
+      "det_score": 0.5862528085708618,
+      "sam_score": 0.8569910526275635,
+      "regeneration_prompt": "rows of buildings and trees behind river",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
     {
       "id": "layer_28f3d0b5",
       "name": "bridge",
@@ -98,13 +147,13 @@
       "locked": false,
       "file": "bridge.png",
       "bbox": [
-        -2,
-        45,
-        2557,
-        79
+        672,
+        66,
+        791,
+        117
       ],
-      "det_score": 0.1679186224937439,
-      "sam_score": 0.9623823165893555,
+      "det_score": 0.4003312289714813,
+      "sam_score": 0.8948324918746948,
       "regeneration_prompt": "arched wooden bridge",
       "opacity": 1.0,
       "x": 0.0,
@@ -115,26 +164,26 @@
       "content_bbox": null
     },
     {
-      "id": "layer_e1a2f2d0",
-      "name": "background",
-      "label": "background",
-      "description": "background",
-      "z_index": 0,
+      "id": "layer_b24484ed",
+      "name": "water_boats",
+      "label": "river and boats below bridge",
+      "description": "river and boats below bridge",
+      "z_index": 80,
       "blend_mode": "normal",
-      "content_type": "background",
-      "semantic_path": "background",
+      "content_type": "water_boats",
+      "semantic_path": "foreground.water",
       "visible": true,
       "locked": false,
-      "file": "background.png",
+      "file": "water_boats.png",
       "bbox": [
-        0,
-        0,
-        2560,
-        120
+        195,
+        86,
+        217,
+        102
       ],
-      "det_score": 1.0,
-      "sam_score": 1.0,
-      "regeneration_prompt": "background",
+      "det_score": 0.28480714559555054,
+      "sam_score": 0.7440404891967773,
+      "regeneration_prompt": "river and boats below bridge",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,

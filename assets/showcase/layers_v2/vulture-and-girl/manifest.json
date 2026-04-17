@@ -27,8 +27,8 @@
           },
           {
             "detector": "dino",
-            "count": 5,
-            "conf_range": "0.20-0.47"
+            "count": 3,
+            "conf_range": "0.43-0.48"
           }
         ],
         "status": "detected",
@@ -39,7 +39,7 @@
           132,
           117
         ],
-        "det_score": 0.46752414107322693,
+        "det_score": 0.43062907457351685,
         "sam_score": 0.9853367805480957,
         "pct": 1.56
       },
@@ -53,14 +53,14 @@
         "detector": "dino",
         "matched_phrase": "dry brown savanna",
         "bbox": [
-          1,
-          27,
-          357,
-          226
+          0,
+          26,
+          360,
+          229
         ],
-        "det_score": 0.3145849406719208,
-        "sam_score": 0.982765793800354,
-        "pct": 69.56
+        "det_score": 0.32103970646858215,
+        "sam_score": 0.9824943542480469,
+        "pct": 69.67
       },
       {
         "id": 2,
@@ -73,13 +73,13 @@
         "matched_phrase": "dark vulture bird",
         "bbox": [
           86,
-          65,
-          133,
+          64,
+          134,
           118
         ],
-        "det_score": 0.8348785042762756,
-        "sam_score": 0.9843913316726685,
-        "pct": 1.56
+        "det_score": 0.8118597865104675,
+        "sam_score": 0.9836190938949585,
+        "pct": 1.57
       }
     ],
     "detected": 3,
@@ -116,7 +116,7 @@
     "slug": "vulture-and-girl",
     "device": "mps"
   },
-  "created_at": "2026-04-17T10:21:49Z",
+  "created_at": "2026-04-17T10:42:23Z",
   "layers": [
     {
       "id": "layer_c2a716ac",
@@ -136,7 +136,7 @@
         132,
         117
       ],
-      "det_score": 0.46752414107322693,
+      "det_score": 0.43062907457351685,
       "sam_score": 0.9853367805480957,
       "regeneration_prompt": "emaciated starving child kneeling on ground",
       "opacity": 1.0,
@@ -160,13 +160,13 @@
       "locked": false,
       "file": "background.png",
       "bbox": [
-        1,
-        27,
-        357,
-        226
+        0,
+        26,
+        360,
+        229
       ],
-      "det_score": 0.3145849406719208,
-      "sam_score": 0.982765793800354,
+      "det_score": 0.32103970646858215,
+      "sam_score": 0.9824943542480469,
       "regeneration_prompt": "dry brown savanna with trees in distance",
       "opacity": 1.0,
       "x": 0.0,
@@ -190,12 +190,12 @@
       "file": "vulture.png",
       "bbox": [
         86,
-        65,
-        133,
+        64,
+        134,
         118
       ],
-      "det_score": 0.8348785042762756,
-      "sam_score": 0.9843913316726685,
+      "det_score": 0.8118597865104675,
+      "sam_score": 0.9836190938949585,
       "regeneration_prompt": "dark vulture bird",
       "opacity": 1.0,
       "x": 0.0,

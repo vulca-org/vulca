@@ -278,18 +278,27 @@ def detect_persons_with_chain(chain, yolo_model, dino_proc, dino_model, device,
                                img_pil, img_path, yolo_conf=0.20, dino_conf=0.20):
     """Try detector chain (e.g., ['yolo', 'dino']) until persons found.
 
+    Auto-adapts to image shape: small images (<384px) get 2x upscale for DINO.
+    Extreme-aspect images skip person detection (usually landscapes without people).
+
     Returns: (persons, detector_used, attempts)
       - persons: list of (bbox, conf)
       - detector_used: str name of successful detector, or None
       - attempts: list of (name, count, conf_range) for reporting
     """
+    W, H = img_pil.size
+    use_upscale = needs_upscale(W, H)
     attempts = []
     for detector_name in chain:
         if detector_name == "yolo":
             persons = detect_persons_yolo(yolo_model, img_path, min_conf=yolo_conf)
         elif detector_name == "dino":
-            persons = detect_persons_dino(dino_proc, dino_model, device, img_pil,
-                                           threshold=dino_conf)
+            if use_upscale:
+                persons = detect_persons_upscaled(dino_proc, dino_model, device,
+                                                   img_pil, threshold=dino_conf)
+            else:
+                persons = detect_persons_dino(dino_proc, dino_model, device, img_pil,
+                                               threshold=dino_conf)
         else:
             attempts.append((detector_name, 0, "unknown detector"))
             continue
@@ -305,6 +314,134 @@ def load_sam(device="mps"):
     from segment_anything import sam_model_registry, SamPredictor
     sam = sam_model_registry["vit_l"](checkpoint=SAM_CKPT).to(device)
     return SamPredictor(sam)
+
+
+# ── Image adaptation: upscale tiny images + tile extreme-aspect images ──
+UPSCALE_MIN_SIDE = 384        # if min side < this, upscale 2x before detection
+TILE_ASPECT_RATIO = 3.0       # if max/min > this, use tile inference
+TILE_OVERLAP = 0.2            # 20% overlap between tiles
+
+
+def needs_upscale(W: int, H: int) -> bool:
+    return min(W, H) < UPSCALE_MIN_SIDE and max(W, H) < UPSCALE_MIN_SIDE * 3
+
+
+def needs_tile(W: int, H: int) -> bool:
+    return max(W, H) / max(min(W, H), 1) >= TILE_ASPECT_RATIO
+
+
+def tile_image(img_pil, tile_size=None, overlap=TILE_OVERLAP):
+    """Slice extreme-aspect image into overlapping square tiles.
+
+    For 2560x120 scroll: yields tiles of size 120x120 (or configured),
+    sliding along the long dimension with 20% overlap.
+
+    Yields: (tile_pil, (ox, oy, ow, oh)) — tile + offset/size in original coords.
+    """
+    from PIL import Image
+    W, H = img_pil.size
+    if tile_size is None:
+        tile_size = min(W, H)  # square tile sized to short side
+    tile_size = min(tile_size, max(W, H))
+    stride = int(tile_size * (1 - overlap))
+    if stride < 1:
+        stride = tile_size
+    if W >= H:
+        # horizontal scroll
+        x = 0
+        while x < W:
+            x_end = min(x + tile_size, W)
+            # shift last tile back to fit
+            if x_end == W:
+                x = max(0, W - tile_size)
+                x_end = W
+            tile = img_pil.crop((x, 0, x_end, H))
+            yield tile, (x, 0, x_end - x, H)
+            if x_end == W:
+                break
+            x += stride
+    else:
+        # vertical
+        y = 0
+        while y < H:
+            y_end = min(y + tile_size, H)
+            if y_end == H:
+                y = max(0, H - tile_size)
+                y_end = H
+            tile = img_pil.crop((0, y, W, y_end))
+            yield tile, (0, y, W, y_end - y)
+            if y_end == H:
+                break
+            y += stride
+
+
+def _nms_bboxes(detections, iou_threshold=0.5):
+    """Non-max suppression on (bbox, score, phrase) tuples.
+    Keeps higher-score detections; removes lower-score ones that overlap >threshold.
+    """
+    detections = sorted(detections, key=lambda d: -d[1])
+    kept = []
+    for d in detections:
+        bbox, score, phrase = d
+        is_dup = False
+        for k in kept:
+            if _iou(bbox, k[0]) > iou_threshold:
+                is_dup = True
+                break
+        if not is_dup:
+            kept.append(d)
+    return kept
+
+
+def detect_all_bboxes_tiled(dino_proc, dino_model, device, img_pil, labels, threshold=0.15):
+    """Tile-based detection for extreme-aspect images.
+
+    Run Grounding DINO on each tile, translate bboxes to full-image coords, NMS merge.
+    """
+    all_detections_per_label = {lbl: [] for lbl in labels}
+    tile_count = 0
+    for tile, (ox, oy, ow, oh) in tile_image(img_pil):
+        tile_count += 1
+        tile_assigned = detect_all_bboxes(dino_proc, dino_model, device, tile,
+                                           labels, threshold=threshold)
+        for lbl, (bbox, score, phrase) in tile_assigned.items():
+            # Translate bbox from tile coords to full-image coords
+            x1, y1, x2, y2 = bbox
+            full_bbox = [x1 + ox, y1 + oy, x2 + ox, y2 + oy]
+            all_detections_per_label[lbl].append((full_bbox, score, phrase))
+    print(f"    Tile inference: {tile_count} tiles processed")
+
+    # NMS per label, keep highest-score detection per label
+    assigned = {}
+    for lbl, dets in all_detections_per_label.items():
+        if not dets:
+            continue
+        kept = _nms_bboxes(dets, iou_threshold=0.5)
+        best = max(kept, key=lambda d: d[1])
+        assigned[lbl] = best
+    return assigned
+
+
+def detect_all_bboxes_upscaled(dino_proc, dino_model, device, img_pil, labels, threshold=0.15):
+    """Detection with 2x upscale for tiny images. Bboxes scaled back to original."""
+    W, H = img_pil.size
+    upscaled = img_pil.resize((W * 2, H * 2), Image.LANCZOS)
+    assigned = detect_all_bboxes(dino_proc, dino_model, device, upscaled,
+                                  labels, threshold=threshold)
+    # Scale bboxes back to original resolution
+    scaled = {}
+    for lbl, (bbox, score, phrase) in assigned.items():
+        x1, y1, x2, y2 = bbox
+        scaled[lbl] = ([x1 // 2, y1 // 2, x2 // 2, y2 // 2], score, phrase)
+    return scaled
+
+
+def detect_persons_upscaled(dino_proc, dino_model, device, img_pil, threshold=0.20):
+    """DINO person detection with 2x upscale for tiny images."""
+    W, H = img_pil.size
+    upscaled = img_pil.resize((W * 2, H * 2), Image.LANCZOS)
+    persons = detect_persons_dino(dino_proc, dino_model, device, upscaled, threshold)
+    return [([b[0] // 2, b[1] // 2, b[2] // 2, b[3] // 2], c) for b, c in persons]
 
 
 def detect_all_bboxes(dino_proc, dino_model, device, img_pil, labels, threshold=0.15):
@@ -503,8 +640,20 @@ def process(slug: str, force: bool = False):
         object_labels = [e["label"] for _, e in object_entities]
         low_thresh = min((e.get("threshold", object_thresh)
                           for _, e in object_entities), default=object_thresh)
-        dino_assigned = detect_all_bboxes(dino_proc, dino_model, device, img_pil,
-                                           object_labels, threshold=low_thresh)
+        # Adapt to image shape: tile extreme-aspect, upscale tiny
+        if needs_tile(W, H) or profile.get("tile", False):
+            print(f"    [adapt] tile inference (aspect {max(W,H)/min(W,H):.1f}:1)")
+            dino_assigned = detect_all_bboxes_tiled(dino_proc, dino_model, device,
+                                                     img_pil, object_labels,
+                                                     threshold=low_thresh)
+        elif needs_upscale(W, H):
+            print(f"    [adapt] 2x upscale inference ({W}x{H} → {W*2}x{H*2})")
+            dino_assigned = detect_all_bboxes_upscaled(dino_proc, dino_model, device,
+                                                        img_pil, object_labels,
+                                                        threshold=low_thresh)
+        else:
+            dino_assigned = detect_all_bboxes(dino_proc, dino_model, device, img_pil,
+                                               object_labels, threshold=low_thresh)
         print(f"  DINO objects: {len(dino_assigned)}/{len(object_labels)} in {time.time()-t0:.1f}s")
 
     layers_raw = []
