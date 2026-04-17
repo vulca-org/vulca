@@ -1,0 +1,28 @@
+{
+  "domain": "space_photograph",
+  "threshold_hint": 0.2,
+  "expand_face_parts": true,
+  "entities": [
+    {
+      "name": "oval_window",
+      "label": "oval Dragon cupola window with blue Earth clouds",
+      "semantic_path": "background.window",
+      "detector": "dino"
+    },
+    {
+      "name": "interior",
+      "label": "dark spacecraft interior",
+      "semantic_path": "background.interior",
+      "detector": "dino"
+    },
+    {
+      "name": "astronaut",
+      "label": "astronaut silhouette looking up at window",
+      "semantic_path": "subject.person[0]",
+      "detector": "yolo",
+      "order": 0
+    }
+  ],
+  "slug": "polaris-dawn-cupola",
+  "device": "mps"
+}

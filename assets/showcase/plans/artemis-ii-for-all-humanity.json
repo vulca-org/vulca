@@ -1,0 +1,35 @@
+{
+  "domain": "space_photograph",
+  "threshold_hint": 0.18,
+  "expand_face_parts": false,
+  "entities": [
+    {
+      "name": "black_bg",
+      "label": "pure black space background",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "motion_blur",
+      "label": "blue and white motion blur streaks",
+      "semantic_path": "background.motion",
+      "detector": "dino"
+    },
+    {
+      "name": "astronaut_orange",
+      "label": "astronaut in orange spacesuit mid-stride",
+      "semantic_path": "subject.person[0]",
+      "detector": "yolo",
+      "order": 0
+    },
+    {
+      "name": "text_logo",
+      "label": "ARTEMIS II FOR ALL HUMANITY text and NASA logo",
+      "semantic_path": "foreground.text",
+      "detector": "dino",
+      "threshold": 0.1
+    }
+  ],
+  "slug": "artemis-ii-for-all-humanity",
+  "device": "mps"
+}

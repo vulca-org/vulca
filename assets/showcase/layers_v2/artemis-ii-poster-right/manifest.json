@@ -1,0 +1,194 @@
+{
+  "version": 4,
+  "width": 828,
+  "height": 1280,
+  "source_image": "assets/showcase/originals/artemis-ii-poster-right.jpg",
+  "split_mode": "claude_orchestrated",
+  "status": "ok",
+  "detection_report": {
+    "requested": 3,
+    "domain": "space_photograph",
+    "person_chain": [],
+    "per_entity": [
+      {
+        "id": 0,
+        "name": "black_bg",
+        "label": "pure black background",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "pure black background",
+        "bbox": [
+          4,
+          5,
+          823,
+          1272
+        ],
+        "det_score": 0.5234282612800598,
+        "sam_score": 0.9596714973449707,
+        "pct": 92.96
+      },
+      {
+        "id": 1,
+        "name": "helmet",
+        "label": "astronaut helmet with reflective visor",
+        "semantic_path": "subject.helmet",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "astronaut helmet",
+        "bbox": [
+          8,
+          465,
+          682,
+          1191
+        ],
+        "det_score": 0.6809787750244141,
+        "sam_score": 0.9467120170593262,
+        "pct": 34.46
+      },
+      {
+        "id": 2,
+        "name": "moon_reflection",
+        "label": "moon surface reflected in visor",
+        "semantic_path": "foreground.reflection",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "moon surface",
+        "bbox": [
+          170,
+          560,
+          468,
+          809
+        ],
+        "det_score": 0.3122977614402771,
+        "sam_score": 0.9596866369247437,
+        "pct": 5.77
+      }
+    ],
+    "detected": 3,
+    "missed": 0,
+    "success_rate": 1.0,
+    "status": "ok"
+  },
+  "plan": {
+    "domain": "space_photograph",
+    "threshold_hint": 0.18,
+    "expand_face_parts": false,
+    "entities": [
+      {
+        "name": "black_bg",
+        "label": "pure black background",
+        "semantic_path": "background",
+        "detector": "dino"
+      },
+      {
+        "name": "helmet",
+        "label": "astronaut helmet with reflective visor",
+        "semantic_path": "subject.helmet",
+        "detector": "dino"
+      },
+      {
+        "name": "moon_reflection",
+        "label": "moon surface reflected in visor",
+        "semantic_path": "foreground.reflection",
+        "detector": "dino",
+        "threshold": 0.12
+      }
+    ],
+    "slug": "artemis-ii-poster-right",
+    "device": "mps"
+  },
+  "created_at": "2026-04-17T12:39:08Z",
+  "layers": [
+    {
+      "id": "layer_eaa36f28",
+      "name": "black_bg",
+      "label": "pure black background",
+      "description": "pure black background",
+      "z_index": 0,
+      "blend_mode": "normal",
+      "content_type": "black_bg",
+      "semantic_path": "background",
+      "visible": true,
+      "locked": false,
+      "file": "black_bg.png",
+      "bbox": [
+        4,
+        5,
+        823,
+        1272
+      ],
+      "det_score": 0.5234282612800598,
+      "sam_score": 0.9596714973449707,
+      "regeneration_prompt": "pure black background",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_74b52d4a",
+      "name": "helmet",
+      "label": "astronaut helmet with reflective visor",
+      "description": "astronaut helmet with reflective visor",
+      "z_index": 45,
+      "blend_mode": "normal",
+      "content_type": "helmet",
+      "semantic_path": "subject.helmet",
+      "visible": true,
+      "locked": false,
+      "file": "helmet.png",
+      "bbox": [
+        8,
+        465,
+        682,
+        1191
+      ],
+      "det_score": 0.6809787750244141,
+      "sam_score": 0.9467120170593262,
+      "regeneration_prompt": "astronaut helmet with reflective visor",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_79a7e3d7",
+      "name": "moon_reflection",
+      "label": "moon surface reflected in visor",
+      "description": "moon surface reflected in visor",
+      "z_index": 80,
+      "blend_mode": "normal",
+      "content_type": "moon_reflection",
+      "semantic_path": "foreground.reflection",
+      "visible": true,
+      "locked": false,
+      "file": "moon_reflection.png",
+      "bbox": [
+        170,
+        560,
+        468,
+        809
+      ],
+      "det_score": 0.3122977614402771,
+      "sam_score": 0.9596866369247437,
+      "regeneration_prompt": "moon surface reflected in visor",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    }
+  ]
+}

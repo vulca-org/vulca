@@ -1,0 +1,249 @@
+{
+  "version": 4,
+  "width": 828,
+  "height": 1280,
+  "source_image": "assets/showcase/originals/artemis-ii-poster-left.jpg",
+  "split_mode": "claude_orchestrated",
+  "status": "ok",
+  "detection_report": {
+    "requested": 4,
+    "domain": "space_photograph",
+    "person_chain": [],
+    "per_entity": [
+      {
+        "id": 0,
+        "name": "black_bg",
+        "label": "pure black background",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "pure black background",
+        "bbox": [
+          4,
+          5,
+          823,
+          1271
+        ],
+        "det_score": 0.4312494397163391,
+        "sam_score": 0.9645906686782837,
+        "pct": 92.56
+      },
+      {
+        "id": 1,
+        "name": "helmet",
+        "label": "astronaut helmet with reflective visor",
+        "semantic_path": "subject.helmet",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "astronaut helmet",
+        "bbox": [
+          144,
+          461,
+          822,
+          1232
+        ],
+        "det_score": 0.6757040023803711,
+        "sam_score": 0.9997061491012573,
+        "pct": 39.07
+      },
+      {
+        "id": 2,
+        "name": "moon_reflection",
+        "label": "moon surface reflected in visor",
+        "semantic_path": "foreground.reflection",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "visor moon surface",
+        "bbox": [
+          321,
+          551,
+          702,
+          974
+        ],
+        "det_score": 0.2516997158527374,
+        "sam_score": 0.9811168909072876,
+        "pct": 10.85
+      },
+      {
+        "id": 3,
+        "name": "nasa_logos",
+        "label": "NASA and Artemis logos in corner",
+        "semantic_path": "foreground.logo",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "nasa",
+        "bbox": [
+          69,
+          341,
+          435,
+          416
+        ],
+        "det_score": 0.4033415913581848,
+        "sam_score": 0.8565310835838318,
+        "pct": 1.39
+      }
+    ],
+    "detected": 4,
+    "missed": 0,
+    "success_rate": 1.0,
+    "status": "ok"
+  },
+  "plan": {
+    "domain": "space_photograph",
+    "threshold_hint": 0.18,
+    "expand_face_parts": false,
+    "entities": [
+      {
+        "name": "black_bg",
+        "label": "pure black background",
+        "semantic_path": "background",
+        "detector": "dino"
+      },
+      {
+        "name": "helmet",
+        "label": "astronaut helmet with reflective visor",
+        "semantic_path": "subject.helmet",
+        "detector": "dino"
+      },
+      {
+        "name": "moon_reflection",
+        "label": "moon surface reflected in visor",
+        "semantic_path": "foreground.reflection",
+        "detector": "dino",
+        "threshold": 0.12
+      },
+      {
+        "name": "nasa_logos",
+        "label": "NASA and Artemis logos in corner",
+        "semantic_path": "foreground.logo",
+        "detector": "dino",
+        "threshold": 0.1
+      }
+    ],
+    "slug": "artemis-ii-poster-left",
+    "device": "mps"
+  },
+  "created_at": "2026-04-17T12:39:05Z",
+  "layers": [
+    {
+      "id": "layer_ab109d92",
+      "name": "black_bg",
+      "label": "pure black background",
+      "description": "pure black background",
+      "z_index": 0,
+      "blend_mode": "normal",
+      "content_type": "black_bg",
+      "semantic_path": "background",
+      "visible": true,
+      "locked": false,
+      "file": "black_bg.png",
+      "bbox": [
+        4,
+        5,
+        823,
+        1271
+      ],
+      "det_score": 0.4312494397163391,
+      "sam_score": 0.9645906686782837,
+      "regeneration_prompt": "pure black background",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_6e2b73c3",
+      "name": "helmet",
+      "label": "astronaut helmet with reflective visor",
+      "description": "astronaut helmet with reflective visor",
+      "z_index": 45,
+      "blend_mode": "normal",
+      "content_type": "helmet",
+      "semantic_path": "subject.helmet",
+      "visible": true,
+      "locked": false,
+      "file": "helmet.png",
+      "bbox": [
+        144,
+        461,
+        822,
+        1232
+      ],
+      "det_score": 0.6757040023803711,
+      "sam_score": 0.9997061491012573,
+      "regeneration_prompt": "astronaut helmet with reflective visor",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_29a9f4ae",
+      "name": "moon_reflection",
+      "label": "moon surface reflected in visor",
+      "description": "moon surface reflected in visor",
+      "z_index": 80,
+      "blend_mode": "normal",
+      "content_type": "moon_reflection",
+      "semantic_path": "foreground.reflection",
+      "visible": true,
+      "locked": false,
+      "file": "moon_reflection.png",
+      "bbox": [
+        321,
+        551,
+        702,
+        974
+      ],
+      "det_score": 0.2516997158527374,
+      "sam_score": 0.9811168909072876,
+      "regeneration_prompt": "moon surface reflected in visor",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_6afa762a",
+      "name": "nasa_logos",
+      "label": "NASA and Artemis logos in corner",
+      "description": "NASA and Artemis logos in corner",
+      "z_index": 80,
+      "blend_mode": "normal",
+      "content_type": "nasa_logos",
+      "semantic_path": "foreground.logo",
+      "visible": true,
+      "locked": false,
+      "file": "nasa_logos.png",
+      "bbox": [
+        69,
+        341,
+        435,
+        416
+      ],
+      "det_score": 0.4033415913581848,
+      "sam_score": 0.8565310835838318,
+      "regeneration_prompt": "NASA and Artemis logos in corner",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    }
+  ]
+}

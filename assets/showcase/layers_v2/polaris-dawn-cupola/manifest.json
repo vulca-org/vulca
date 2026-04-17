@@ -1,0 +1,156 @@
+{
+  "version": 4,
+  "width": 1280,
+  "height": 853,
+  "source_image": "assets/showcase/originals/polaris-dawn-cupola.jpg",
+  "split_mode": "claude_orchestrated",
+  "status": "partial",
+  "detection_report": {
+    "requested": 3,
+    "domain": "space_photograph",
+    "person_chain": [],
+    "per_entity": [
+      {
+        "id": 2,
+        "name": "astronaut",
+        "label": "astronaut silhouette looking up at window",
+        "semantic_path": "subject.person[0]",
+        "kind": "person",
+        "attempts": [],
+        "status": "missed",
+        "reason": "no_detection_after_chain"
+      },
+      {
+        "id": 0,
+        "name": "oval_window",
+        "label": "oval Dragon cupola window with blue Earth clouds",
+        "semantic_path": "background.window",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "oval dragon cupola window",
+        "bbox": [
+          100,
+          57,
+          1100,
+          694
+        ],
+        "det_score": 0.4563656151294708,
+        "sam_score": 0.9815182685852051,
+        "pct": 34.55
+      },
+      {
+        "id": 1,
+        "name": "interior",
+        "label": "dark spacecraft interior",
+        "semantic_path": "background.interior",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "dark spacecraft interior",
+        "bbox": [
+          8,
+          11,
+          1268,
+          846
+        ],
+        "det_score": 0.5613589286804199,
+        "sam_score": 0.957709789276123,
+        "pct": 39.75
+      }
+    ],
+    "detected": 2,
+    "missed": 1,
+    "success_rate": 0.667,
+    "status": "partial"
+  },
+  "plan": {
+    "domain": "space_photograph",
+    "threshold_hint": 0.2,
+    "expand_face_parts": true,
+    "entities": [
+      {
+        "name": "oval_window",
+        "label": "oval Dragon cupola window with blue Earth clouds",
+        "semantic_path": "background.window",
+        "detector": "dino"
+      },
+      {
+        "name": "interior",
+        "label": "dark spacecraft interior",
+        "semantic_path": "background.interior",
+        "detector": "dino"
+      },
+      {
+        "name": "astronaut",
+        "label": "astronaut silhouette looking up at window",
+        "semantic_path": "subject.person[0]",
+        "detector": "yolo",
+        "order": 0
+      }
+    ],
+    "slug": "polaris-dawn-cupola",
+    "device": "mps"
+  },
+  "created_at": "2026-04-17T12:39:01Z",
+  "layers": [
+    {
+      "id": "layer_29ee8a5b",
+      "name": "oval_window",
+      "label": "oval Dragon cupola window with blue Earth clouds",
+      "description": "oval Dragon cupola window with blue Earth clouds",
+      "z_index": 10,
+      "blend_mode": "normal",
+      "content_type": "oval_window",
+      "semantic_path": "background.window",
+      "visible": true,
+      "locked": false,
+      "file": "oval_window.png",
+      "bbox": [
+        100,
+        57,
+        1100,
+        694
+      ],
+      "det_score": 0.4563656151294708,
+      "sam_score": 0.9815182685852051,
+      "regeneration_prompt": "oval Dragon cupola window with blue Earth clouds",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_a9782708",
+      "name": "interior",
+      "label": "dark spacecraft interior",
+      "description": "dark spacecraft interior",
+      "z_index": 10,
+      "blend_mode": "normal",
+      "content_type": "interior",
+      "semantic_path": "background.interior",
+      "visible": true,
+      "locked": false,
+      "file": "interior.png",
+      "bbox": [
+        8,
+        11,
+        1268,
+        846
+      ],
+      "det_score": 0.5613589286804199,
+      "sam_score": 0.957709789276123,
+      "regeneration_prompt": "dark spacecraft interior",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    }
+  ]
+}

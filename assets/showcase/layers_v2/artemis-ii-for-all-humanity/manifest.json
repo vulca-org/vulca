@@ -1,0 +1,211 @@
+{
+  "version": 4,
+  "width": 828,
+  "height": 1280,
+  "source_image": "assets/showcase/originals/artemis-ii-for-all-humanity.jpg",
+  "split_mode": "claude_orchestrated",
+  "status": "ok",
+  "detection_report": {
+    "requested": 4,
+    "domain": "space_photograph",
+    "person_chain": [],
+    "per_entity": [
+      {
+        "id": 2,
+        "name": "astronaut_orange",
+        "label": "astronaut in orange spacesuit mid-stride",
+        "semantic_path": "subject.person[0]",
+        "kind": "person",
+        "attempts": [],
+        "status": "missed",
+        "reason": "no_detection_after_chain"
+      },
+      {
+        "id": 0,
+        "name": "black_bg",
+        "label": "pure black space background",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "pure black space background blue",
+        "bbox": [
+          6,
+          6,
+          821,
+          1272
+        ],
+        "det_score": 0.3616882860660553,
+        "sam_score": 0.986479640007019,
+        "pct": 78.73
+      },
+      {
+        "id": 1,
+        "name": "motion_blur",
+        "label": "blue and white motion blur streaks",
+        "semantic_path": "background.motion",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "blue motion",
+        "bbox": [
+          11,
+          132,
+          623,
+          277
+        ],
+        "det_score": 0.18778157234191895,
+        "sam_score": 0.9877321720123291,
+        "pct": 7.08
+      },
+      {
+        "id": 3,
+        "name": "text_logo",
+        "label": "ARTEMIS II FOR ALL HUMANITY text and NASA logo",
+        "semantic_path": "foreground.text",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "artemis ii for all humanity text",
+        "bbox": [
+          47,
+          891,
+          409,
+          961
+        ],
+        "det_score": 0.3569507300853729,
+        "sam_score": 0.9352351427078247,
+        "pct": 1.45
+      }
+    ],
+    "detected": 3,
+    "missed": 1,
+    "success_rate": 0.75,
+    "status": "ok"
+  },
+  "plan": {
+    "domain": "space_photograph",
+    "threshold_hint": 0.18,
+    "expand_face_parts": false,
+    "entities": [
+      {
+        "name": "black_bg",
+        "label": "pure black space background",
+        "semantic_path": "background",
+        "detector": "dino"
+      },
+      {
+        "name": "motion_blur",
+        "label": "blue and white motion blur streaks",
+        "semantic_path": "background.motion",
+        "detector": "dino"
+      },
+      {
+        "name": "astronaut_orange",
+        "label": "astronaut in orange spacesuit mid-stride",
+        "semantic_path": "subject.person[0]",
+        "detector": "yolo",
+        "order": 0
+      },
+      {
+        "name": "text_logo",
+        "label": "ARTEMIS II FOR ALL HUMANITY text and NASA logo",
+        "semantic_path": "foreground.text",
+        "detector": "dino",
+        "threshold": 0.1
+      }
+    ],
+    "slug": "artemis-ii-for-all-humanity",
+    "device": "mps"
+  },
+  "created_at": "2026-04-17T12:39:11Z",
+  "layers": [
+    {
+      "id": "layer_083b8538",
+      "name": "black_bg",
+      "label": "pure black space background",
+      "description": "pure black space background",
+      "z_index": 0,
+      "blend_mode": "normal",
+      "content_type": "black_bg",
+      "semantic_path": "background",
+      "visible": true,
+      "locked": false,
+      "file": "black_bg.png",
+      "bbox": [
+        6,
+        6,
+        821,
+        1272
+      ],
+      "det_score": 0.3616882860660553,
+      "sam_score": 0.986479640007019,
+      "regeneration_prompt": "pure black space background",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_81fe3b9d",
+      "name": "motion_blur",
+      "label": "blue and white motion blur streaks",
+      "description": "blue and white motion blur streaks",
+      "z_index": 10,
+      "blend_mode": "normal",
+      "content_type": "motion_blur",
+      "semantic_path": "background.motion",
+      "visible": true,
+      "locked": false,
+      "file": "motion_blur.png",
+      "bbox": [
+        11,
+        132,
+        623,
+        277
+      ],
+      "det_score": 0.18778157234191895,
+      "sam_score": 0.9877321720123291,
+      "regeneration_prompt": "blue and white motion blur streaks",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_80df0d9a",
+      "name": "text_logo",
+      "label": "ARTEMIS II FOR ALL HUMANITY text and NASA logo",
+      "description": "ARTEMIS II FOR ALL HUMANITY text and NASA logo",
+      "z_index": 80,
+      "blend_mode": "normal",
+      "content_type": "text_logo",
+      "semantic_path": "foreground.text",
+      "visible": true,
+      "locked": false,
+      "file": "text_logo.png",
+      "bbox": [
+        47,
+        891,
+        409,
+        961
+      ],
+      "det_score": 0.3569507300853729,
+      "sam_score": 0.9352351427078247,
+      "regeneration_prompt": "ARTEMIS II FOR ALL HUMANITY text and NASA logo",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    }
+  ]
+}

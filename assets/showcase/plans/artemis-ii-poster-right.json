@@ -1,0 +1,28 @@
+{
+  "domain": "space_photograph",
+  "threshold_hint": 0.18,
+  "expand_face_parts": false,
+  "entities": [
+    {
+      "name": "black_bg",
+      "label": "pure black background",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "helmet",
+      "label": "astronaut helmet with reflective visor",
+      "semantic_path": "subject.helmet",
+      "detector": "dino"
+    },
+    {
+      "name": "moon_reflection",
+      "label": "moon surface reflected in visor",
+      "semantic_path": "foreground.reflection",
+      "detector": "dino",
+      "threshold": 0.12
+    }
+  ],
+  "slug": "artemis-ii-poster-right",
+  "device": "mps"
+}

@@ -1,0 +1,56 @@
+{
+  "domain": "space_photograph",
+  "threshold_hint": 0.2,
+  "expand_face_parts": true,
+  "entities": [
+    {
+      "name": "black_bg",
+      "label": "black space background",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "moon",
+      "label": "large gray cratered Moon in upper left",
+      "semantic_path": "background.moon",
+      "detector": "dino"
+    },
+    {
+      "name": "astronaut_0",
+      "label": "astronaut helmet in profile",
+      "semantic_path": "subject.person[0]",
+      "detector": "yolo",
+      "order": 0
+    },
+    {
+      "name": "astronaut_1",
+      "label": "astronaut helmet in profile",
+      "semantic_path": "subject.person[1]",
+      "detector": "yolo",
+      "order": 1
+    },
+    {
+      "name": "astronaut_2",
+      "label": "astronaut helmet in profile",
+      "semantic_path": "subject.person[2]",
+      "detector": "yolo",
+      "order": 2
+    },
+    {
+      "name": "astronaut_3",
+      "label": "astronaut helmet in profile",
+      "semantic_path": "subject.person[3]",
+      "detector": "yolo",
+      "order": 3
+    },
+    {
+      "name": "artemis_ii_text",
+      "label": "ARTEMIS II bold text and mission details",
+      "semantic_path": "foreground.text",
+      "detector": "dino",
+      "threshold": 0.1
+    }
+  ],
+  "slug": "artemis-ii-crew-poster",
+  "device": "mps"
+}

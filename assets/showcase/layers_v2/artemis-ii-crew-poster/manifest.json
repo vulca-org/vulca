@@ -1,0 +1,262 @@
+{
+  "version": 4,
+  "width": 828,
+  "height": 1280,
+  "source_image": "assets/showcase/originals/artemis-ii-crew-poster.jpg",
+  "split_mode": "claude_orchestrated",
+  "status": "partial",
+  "detection_report": {
+    "requested": 7,
+    "domain": "space_photograph",
+    "person_chain": [],
+    "per_entity": [
+      {
+        "id": 2,
+        "name": "astronaut_0",
+        "label": "astronaut helmet in profile",
+        "semantic_path": "subject.person[0]",
+        "kind": "person",
+        "attempts": [],
+        "status": "missed",
+        "reason": "no_detection_after_chain"
+      },
+      {
+        "id": 3,
+        "name": "astronaut_1",
+        "label": "astronaut helmet in profile",
+        "semantic_path": "subject.person[1]",
+        "kind": "person",
+        "attempts": [],
+        "status": "missed",
+        "reason": "no_detection_after_chain"
+      },
+      {
+        "id": 4,
+        "name": "astronaut_2",
+        "label": "astronaut helmet in profile",
+        "semantic_path": "subject.person[2]",
+        "kind": "person",
+        "attempts": [],
+        "status": "missed",
+        "reason": "no_detection_after_chain"
+      },
+      {
+        "id": 5,
+        "name": "astronaut_3",
+        "label": "astronaut helmet in profile",
+        "semantic_path": "subject.person[3]",
+        "kind": "person",
+        "attempts": [],
+        "status": "missed",
+        "reason": "no_detection_after_chain"
+      },
+      {
+        "id": 0,
+        "name": "black_bg",
+        "label": "black space background",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "black space background",
+        "bbox": [
+          4,
+          5,
+          822,
+          1269
+        ],
+        "det_score": 0.3362245559692383,
+        "sam_score": 0.9523769617080688,
+        "pct": 63.63
+      },
+      {
+        "id": 1,
+        "name": "moon",
+        "label": "large gray cratered Moon in upper left",
+        "semantic_path": "background.moon",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "large gray cratered moon",
+        "bbox": [
+          86,
+          4,
+          656,
+          449
+        ],
+        "det_score": 0.614429771900177,
+        "sam_score": 0.997997522354126,
+        "pct": 18.67
+      },
+      {
+        "id": 6,
+        "name": "artemis_ii_text",
+        "label": "ARTEMIS II bold text and mission details",
+        "semantic_path": "foreground.text",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "artemis ii bold text",
+        "bbox": [
+          46,
+          957,
+          779,
+          1137
+        ],
+        "det_score": 0.33718520402908325,
+        "sam_score": 0.9451521635055542,
+        "pct": 11.45
+      }
+    ],
+    "detected": 3,
+    "missed": 4,
+    "success_rate": 0.429,
+    "status": "partial"
+  },
+  "plan": {
+    "domain": "space_photograph",
+    "threshold_hint": 0.2,
+    "expand_face_parts": true,
+    "entities": [
+      {
+        "name": "black_bg",
+        "label": "black space background",
+        "semantic_path": "background",
+        "detector": "dino"
+      },
+      {
+        "name": "moon",
+        "label": "large gray cratered Moon in upper left",
+        "semantic_path": "background.moon",
+        "detector": "dino"
+      },
+      {
+        "name": "astronaut_0",
+        "label": "astronaut helmet in profile",
+        "semantic_path": "subject.person[0]",
+        "detector": "yolo",
+        "order": 0
+      },
+      {
+        "name": "astronaut_1",
+        "label": "astronaut helmet in profile",
+        "semantic_path": "subject.person[1]",
+        "detector": "yolo",
+        "order": 1
+      },
+      {
+        "name": "astronaut_2",
+        "label": "astronaut helmet in profile",
+        "semantic_path": "subject.person[2]",
+        "detector": "yolo",
+        "order": 2
+      },
+      {
+        "name": "astronaut_3",
+        "label": "astronaut helmet in profile",
+        "semantic_path": "subject.person[3]",
+        "detector": "yolo",
+        "order": 3
+      },
+      {
+        "name": "artemis_ii_text",
+        "label": "ARTEMIS II bold text and mission details",
+        "semantic_path": "foreground.text",
+        "detector": "dino",
+        "threshold": 0.1
+      }
+    ],
+    "slug": "artemis-ii-crew-poster",
+    "device": "mps"
+  },
+  "created_at": "2026-04-17T12:39:14Z",
+  "layers": [
+    {
+      "id": "layer_21a09023",
+      "name": "black_bg",
+      "label": "black space background",
+      "description": "black space background",
+      "z_index": 0,
+      "blend_mode": "normal",
+      "content_type": "black_bg",
+      "semantic_path": "background",
+      "visible": true,
+      "locked": false,
+      "file": "black_bg.png",
+      "bbox": [
+        4,
+        5,
+        822,
+        1269
+      ],
+      "det_score": 0.3362245559692383,
+      "sam_score": 0.9523769617080688,
+      "regeneration_prompt": "black space background",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_b6244376",
+      "name": "moon",
+      "label": "large gray cratered Moon in upper left",
+      "description": "large gray cratered Moon in upper left",
+      "z_index": 10,
+      "blend_mode": "normal",
+      "content_type": "moon",
+      "semantic_path": "background.moon",
+      "visible": true,
+      "locked": false,
+      "file": "moon.png",
+      "bbox": [
+        86,
+        4,
+        656,
+        449
+      ],
+      "det_score": 0.614429771900177,
+      "sam_score": 0.997997522354126,
+      "regeneration_prompt": "large gray cratered Moon in upper left",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_3ab209cf",
+      "name": "artemis_ii_text",
+      "label": "ARTEMIS II bold text and mission details",
+      "description": "ARTEMIS II bold text and mission details",
+      "z_index": 80,
+      "blend_mode": "normal",
+      "content_type": "artemis_ii_text",
+      "semantic_path": "foreground.text",
+      "visible": true,
+      "locked": false,
+      "file": "artemis_ii_text.png",
+      "bbox": [
+        46,
+        957,
+        779,
+        1137
+      ],
+      "det_score": 0.33718520402908325,
+      "sam_score": 0.9451521635055542,
+      "regeneration_prompt": "ARTEMIS II bold text and mission details",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    }
+  ]
+}
