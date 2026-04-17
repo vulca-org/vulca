@@ -7,20 +7,37 @@
       "name": "space",
       "label": "pure black empty space",
       "semantic_path": "background",
-      "detector": "dino"
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.0,
+        0.0,
+        1.0,
+        0.55
+      ]
     },
     {
       "name": "earth_below",
-      "label": "blue Earth surface below",
+      "label": "blue Earth surface",
       "semantic_path": "background.earth",
-      "detector": "dino"
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.0,
+        0.5,
+        1.0,
+        1.0
+      ]
     },
     {
       "name": "astronaut_mmu",
-      "label": "astronaut in white space suit with MMU jetpack",
+      "label": "astronaut in white MMU spacesuit",
       "semantic_path": "subject.person[0]",
-      "detector": "yolo",
-      "order": 0
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.28,
+        0.08,
+        0.8,
+        0.58
+      ]
     }
   ],
   "slug": "bruce-mccandless-mmu",

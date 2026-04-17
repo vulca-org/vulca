@@ -4,65 +4,93 @@
   "height": 850,
   "source_image": "assets/showcase/originals/tracy-caldwell-cupola.jpg",
   "split_mode": "claude_orchestrated",
-  "status": "partial",
+  "status": "ok",
   "detection_report": {
-    "requested": 3,
+    "requested": 4,
     "domain": "space_photograph",
     "person_chain": [],
     "per_entity": [
       {
-        "id": 2,
-        "name": "astronaut",
-        "label": "woman astronaut in blue shirt at window",
-        "semantic_path": "subject.person[0]",
-        "kind": "person",
-        "attempts": [],
-        "status": "missed",
-        "reason": "no_detection_after_chain"
-      },
-      {
         "id": 0,
-        "name": "earth_view",
-        "label": "blue Earth seen through window",
+        "name": "interior",
+        "label": "ISS cupola interior metal structure",
         "semantic_path": "background",
-        "kind": "object",
+        "kind": "hinted",
         "status": "detected",
-        "detector": "dino",
-        "matched_phrase": "blue earth",
+        "detector": "sam_bbox",
+        "source": "bbox_hint",
         "bbox": [
-          305,
-          613,
-          926,
-          845
+          0,
+          0,
+          384,
+          849
         ],
-        "det_score": 0.3755617141723633,
-        "sam_score": 1.0010048151016235,
-        "pct": 10.11
+        "det_score": 1.0,
+        "sam_score": 0.9824091196060181,
+        "pct": 23.13
       },
       {
         "id": 1,
-        "name": "cupola_frame",
-        "label": "metallic circular window frame",
-        "semantic_path": "foreground.frame",
-        "kind": "object",
+        "name": "earth_left_window",
+        "label": "Earth seen through left window",
+        "semantic_path": "background.earth_left",
+        "kind": "hinted",
         "status": "detected",
-        "detector": "dino",
-        "matched_phrase": "metallic circular window frame",
+        "detector": "sam_bbox",
+        "source": "bbox_hint",
         "bbox": [
-          289,
-          531,
-          1022,
-          845
+          25,
+          42,
+          486,
+          425
         ],
-        "det_score": 0.7301420569419861,
-        "sam_score": 0.9891055822372437,
-        "pct": 15.05
+        "det_score": 1.0,
+        "sam_score": 0.9141302108764648,
+        "pct": 9.05
+      },
+      {
+        "id": 2,
+        "name": "earth_bottom_window",
+        "label": "Earth seen through bottom circular window",
+        "semantic_path": "background.earth_bottom",
+        "kind": "hinted",
+        "status": "detected",
+        "detector": "sam_bbox",
+        "source": "bbox_hint",
+        "bbox": [
+          230,
+          408,
+          768,
+          849
+        ],
+        "det_score": 1.0,
+        "sam_score": 0.8429200649261475,
+        "pct": 8.76
+      },
+      {
+        "id": 3,
+        "name": "astronaut",
+        "label": "woman astronaut with curly hair looking through window",
+        "semantic_path": "subject.person[0]",
+        "kind": "hinted",
+        "status": "detected",
+        "detector": "sam_bbox",
+        "source": "bbox_hint",
+        "bbox": [
+          486,
+          0,
+          1279,
+          637
+        ],
+        "det_score": 1.0,
+        "sam_score": 0.8748491406440735,
+        "pct": 25.05
       }
     ],
-    "detected": 2,
-    "missed": 1,
-    "success_rate": 0.667,
-    "status": "partial"
+    "detected": 4,
+    "missed": 0,
+    "success_rate": 1.0,
+    "status": "ok"
   },
   "plan": {
     "domain": "space_photograph",
@@ -70,51 +98,80 @@
     "expand_face_parts": true,
     "entities": [
       {
-        "name": "earth_view",
-        "label": "blue Earth seen through window",
+        "name": "interior",
+        "label": "ISS cupola interior metal structure",
         "semantic_path": "background",
-        "detector": "dino"
+        "detector": "sam_bbox",
+        "bbox_hint_pct": [
+          0.0,
+          0.0,
+          0.3,
+          1.0
+        ]
       },
       {
-        "name": "cupola_frame",
-        "label": "metallic circular window frame",
-        "semantic_path": "foreground.frame",
-        "detector": "dino"
+        "name": "earth_left_window",
+        "label": "Earth seen through left window",
+        "semantic_path": "background.earth_left",
+        "detector": "sam_bbox",
+        "bbox_hint_pct": [
+          0.02,
+          0.05,
+          0.38,
+          0.5
+        ]
+      },
+      {
+        "name": "earth_bottom_window",
+        "label": "Earth seen through bottom circular window",
+        "semantic_path": "background.earth_bottom",
+        "detector": "sam_bbox",
+        "bbox_hint_pct": [
+          0.18,
+          0.48,
+          0.6,
+          1.0
+        ]
       },
       {
         "name": "astronaut",
-        "label": "woman astronaut in blue shirt at window",
+        "label": "woman astronaut with curly hair looking through window",
         "semantic_path": "subject.person[0]",
-        "detector": "yolo",
-        "order": 0
+        "detector": "sam_bbox",
+        "bbox_hint_pct": [
+          0.38,
+          0.0,
+          1.0,
+          0.75
+        ]
       }
     ],
     "slug": "tracy-caldwell-cupola",
     "device": "mps"
   },
-  "created_at": "2026-04-17T12:11:14Z",
+  "created_at": "2026-04-17T12:59:11Z",
   "layers": [
     {
-      "id": "layer_0aa77eea",
-      "name": "earth_view",
-      "label": "blue Earth seen through window",
-      "description": "blue Earth seen through window",
+      "id": "layer_9de73e45",
+      "name": "interior",
+      "label": "ISS cupola interior metal structure",
+      "description": "ISS cupola interior metal structure",
       "z_index": 0,
       "blend_mode": "normal",
-      "content_type": "earth_view",
+      "content_type": "interior",
       "semantic_path": "background",
       "visible": true,
       "locked": false,
-      "file": "earth_view.png",
+      "file": "interior.png",
       "bbox": [
-        305,
-        613,
-        926,
-        845
+        0,
+        0,
+        384,
+        849
       ],
-      "det_score": 0.3755617141723633,
-      "sam_score": 1.0010048151016235,
-      "regeneration_prompt": "blue Earth seen through window",
+      "det_score": 1.0,
+      "sam_score": 0.9824091196060181,
+      "regeneration_prompt": "ISS cupola interior metal structure",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,
@@ -124,26 +181,84 @@
       "content_bbox": null
     },
     {
-      "id": "layer_c220d37d",
-      "name": "cupola_frame",
-      "label": "metallic circular window frame",
-      "description": "metallic circular window frame",
-      "z_index": 80,
+      "id": "layer_65f52014",
+      "name": "earth_left_window",
+      "label": "Earth seen through left window",
+      "description": "Earth seen through left window",
+      "z_index": 10,
       "blend_mode": "normal",
-      "content_type": "cupola_frame",
-      "semantic_path": "foreground.frame",
+      "content_type": "earth_left_window",
+      "semantic_path": "background.earth_left",
       "visible": true,
       "locked": false,
-      "file": "cupola_frame.png",
+      "file": "earth_left_window.png",
       "bbox": [
-        289,
-        531,
-        1022,
-        845
+        25,
+        42,
+        486,
+        425
       ],
-      "det_score": 0.7301420569419861,
-      "sam_score": 0.9891055822372437,
-      "regeneration_prompt": "metallic circular window frame",
+      "det_score": 1.0,
+      "sam_score": 0.9141302108764648,
+      "regeneration_prompt": "Earth seen through left window",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_0705db32",
+      "name": "earth_bottom_window",
+      "label": "Earth seen through bottom circular window",
+      "description": "Earth seen through bottom circular window",
+      "z_index": 10,
+      "blend_mode": "normal",
+      "content_type": "earth_bottom_window",
+      "semantic_path": "background.earth_bottom",
+      "visible": true,
+      "locked": false,
+      "file": "earth_bottom_window.png",
+      "bbox": [
+        230,
+        408,
+        768,
+        849
+      ],
+      "det_score": 1.0,
+      "sam_score": 0.8429200649261475,
+      "regeneration_prompt": "Earth seen through bottom circular window",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_406011e9",
+      "name": "astronaut",
+      "label": "woman astronaut with curly hair looking through window",
+      "description": "woman astronaut with curly hair looking through window",
+      "z_index": 50,
+      "blend_mode": "normal",
+      "content_type": "astronaut",
+      "semantic_path": "subject.person[0]",
+      "visible": true,
+      "locked": false,
+      "file": "astronaut.png",
+      "bbox": [
+        486,
+        0,
+        1279,
+        637
+      ],
+      "det_score": 1.0,
+      "sam_score": 0.8748491406440735,
+      "regeneration_prompt": "woman astronaut with curly hair looking through window",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,

@@ -4,23 +4,52 @@
   "expand_face_parts": true,
   "entities": [
     {
-      "name": "earth_view",
-      "label": "blue Earth seen through window",
+      "name": "interior",
+      "label": "ISS cupola interior metal structure",
       "semantic_path": "background",
-      "detector": "dino"
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.0,
+        0.0,
+        0.3,
+        1.0
+      ]
     },
     {
-      "name": "cupola_frame",
-      "label": "metallic circular window frame",
-      "semantic_path": "foreground.frame",
-      "detector": "dino"
+      "name": "earth_left_window",
+      "label": "Earth seen through left window",
+      "semantic_path": "background.earth_left",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.02,
+        0.05,
+        0.38,
+        0.5
+      ]
+    },
+    {
+      "name": "earth_bottom_window",
+      "label": "Earth seen through bottom circular window",
+      "semantic_path": "background.earth_bottom",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.18,
+        0.48,
+        0.6,
+        1.0
+      ]
     },
     {
       "name": "astronaut",
-      "label": "woman astronaut in blue shirt at window",
+      "label": "woman astronaut with curly hair looking through window",
       "semantic_path": "subject.person[0]",
-      "detector": "yolo",
-      "order": 0
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.38,
+        0.0,
+        1.0,
+        0.75
+      ]
     }
   ],
   "slug": "tracy-caldwell-cupola",

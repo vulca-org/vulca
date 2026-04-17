@@ -4,65 +4,74 @@
   "height": 1280,
   "source_image": "assets/showcase/originals/bruce-mccandless-mmu.jpg",
   "split_mode": "claude_orchestrated",
-  "status": "partial",
+  "status": "ok",
   "detection_report": {
     "requested": 3,
     "domain": "space_photograph",
     "person_chain": [],
     "per_entity": [
       {
-        "id": 2,
-        "name": "astronaut_mmu",
-        "label": "astronaut in white space suit with MMU jetpack",
-        "semantic_path": "subject.person[0]",
-        "kind": "person",
-        "attempts": [],
-        "status": "missed",
-        "reason": "no_detection_after_chain"
-      },
-      {
         "id": 0,
         "name": "space",
         "label": "pure black empty space",
         "semantic_path": "background",
-        "kind": "object",
+        "kind": "hinted",
         "status": "detected",
-        "detector": "dino",
-        "matched_phrase": "pure black empty space",
+        "detector": "sam_bbox",
+        "source": "bbox_hint",
         "bbox": [
-          4,
-          8,
-          1274,
-          715
+          0,
+          0,
+          1279,
+          704
         ],
-        "det_score": 0.5896821618080139,
-        "sam_score": 1.0050463676452637,
-        "pct": 43.55
+        "det_score": 1.0,
+        "sam_score": 1.004239797592163,
+        "pct": 43.51
       },
       {
         "id": 1,
         "name": "earth_below",
-        "label": "blue Earth surface below",
+        "label": "blue Earth surface",
         "semantic_path": "background.earth",
-        "kind": "object",
+        "kind": "hinted",
         "status": "detected",
-        "detector": "dino",
-        "matched_phrase": "blue earth surface",
+        "detector": "sam_bbox",
+        "source": "bbox_hint",
         "bbox": [
-          5,
-          700,
-          1273,
-          1271
+          0,
+          640,
+          1279,
+          1279
         ],
-        "det_score": 0.5559839010238647,
-        "sam_score": 1.021811842918396,
-        "pct": 44.34
+        "det_score": 1.0,
+        "sam_score": 1.0193266868591309,
+        "pct": 44.39
+      },
+      {
+        "id": 2,
+        "name": "astronaut_mmu",
+        "label": "astronaut in white MMU spacesuit",
+        "semantic_path": "subject.person[0]",
+        "kind": "hinted",
+        "status": "detected",
+        "detector": "sam_bbox",
+        "source": "bbox_hint",
+        "bbox": [
+          358,
+          102,
+          1024,
+          742
+        ],
+        "det_score": 1.0,
+        "sam_score": 0.9728380441665649,
+        "pct": 10.43
       }
     ],
-    "detected": 2,
-    "missed": 1,
-    "success_rate": 0.667,
-    "status": "partial"
+    "detected": 3,
+    "missed": 0,
+    "success_rate": 1.0,
+    "status": "ok"
   },
   "plan": {
     "domain": "space_photograph",
@@ -73,26 +82,43 @@
         "name": "space",
         "label": "pure black empty space",
         "semantic_path": "background",
-        "detector": "dino"
+        "detector": "sam_bbox",
+        "bbox_hint_pct": [
+          0.0,
+          0.0,
+          1.0,
+          0.55
+        ]
       },
       {
         "name": "earth_below",
-        "label": "blue Earth surface below",
+        "label": "blue Earth surface",
         "semantic_path": "background.earth",
-        "detector": "dino"
+        "detector": "sam_bbox",
+        "bbox_hint_pct": [
+          0.0,
+          0.5,
+          1.0,
+          1.0
+        ]
       },
       {
         "name": "astronaut_mmu",
-        "label": "astronaut in white space suit with MMU jetpack",
+        "label": "astronaut in white MMU spacesuit",
         "semantic_path": "subject.person[0]",
-        "detector": "yolo",
-        "order": 0
+        "detector": "sam_bbox",
+        "bbox_hint_pct": [
+          0.28,
+          0.08,
+          0.8,
+          0.58
+        ]
       }
     ],
     "slug": "bruce-mccandless-mmu",
     "device": "mps"
   },
-  "created_at": "2026-04-17T12:11:17Z",
+  "created_at": "2026-04-17T12:59:07Z",
   "layers": [
     {
       "id": "layer_5b01d0e0",
@@ -107,13 +133,13 @@
       "locked": false,
       "file": "space.png",
       "bbox": [
-        4,
-        8,
-        1274,
-        715
+        0,
+        0,
+        1279,
+        704
       ],
-      "det_score": 0.5896821618080139,
-      "sam_score": 1.0050463676452637,
+      "det_score": 1.0,
+      "sam_score": 1.004239797592163,
       "regeneration_prompt": "pure black empty space",
       "opacity": 1.0,
       "x": 0.0,
@@ -126,8 +152,8 @@
     {
       "id": "layer_88a4a110",
       "name": "earth_below",
-      "label": "blue Earth surface below",
-      "description": "blue Earth surface below",
+      "label": "blue Earth surface",
+      "description": "blue Earth surface",
       "z_index": 10,
       "blend_mode": "normal",
       "content_type": "earth_below",
@@ -136,14 +162,43 @@
       "locked": false,
       "file": "earth_below.png",
       "bbox": [
-        5,
-        700,
-        1273,
-        1271
+        0,
+        640,
+        1279,
+        1279
       ],
-      "det_score": 0.5559839010238647,
-      "sam_score": 1.021811842918396,
-      "regeneration_prompt": "blue Earth surface below",
+      "det_score": 1.0,
+      "sam_score": 1.0193266868591309,
+      "regeneration_prompt": "blue Earth surface",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_aa159f16",
+      "name": "astronaut_mmu",
+      "label": "astronaut in white MMU spacesuit",
+      "description": "astronaut in white MMU spacesuit",
+      "z_index": 50,
+      "blend_mode": "normal",
+      "content_type": "astronaut_mmu",
+      "semantic_path": "subject.person[0]",
+      "visible": true,
+      "locked": false,
+      "file": "astronaut_mmu.png",
+      "bbox": [
+        358,
+        102,
+        1024,
+        742
+      ],
+      "det_score": 1.0,
+      "sam_score": 0.9728380441665649,
+      "regeneration_prompt": "astronaut in white MMU spacesuit",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,

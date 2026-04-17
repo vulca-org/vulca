@@ -4,24 +4,52 @@
   "expand_face_parts": false,
   "entities": [
     {
-      "name": "earth_space",
-      "label": "Earth and space",
+      "name": "space",
+      "label": "black space background",
       "semantic_path": "background",
-      "detector": "dino"
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.0,
+        0.0,
+        0.25,
+        1.0
+      ]
+    },
+    {
+      "name": "earth",
+      "label": "blue Earth surface",
+      "semantic_path": "background.earth",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.2,
+        0.0,
+        1.0,
+        1.0
+      ]
     },
     {
       "name": "astronaut_eva",
-      "label": "astronaut in white spacesuit tethered in space",
+      "label": "astronaut in white spacesuit floating",
       "semantic_path": "subject.person[0]",
-      "detector": "yolo",
-      "order": 0
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.12,
+        0.13,
+        0.88,
+        0.98
+      ]
     },
     {
       "name": "tether",
       "label": "gold umbilical tether cable",
       "semantic_path": "foreground.cable",
-      "detector": "dino",
-      "threshold": 0.12
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [
+        0.2,
+        0.0,
+        0.65,
+        0.3
+      ]
     }
   ],
   "slug": "ed-white-gemini4-eva",
