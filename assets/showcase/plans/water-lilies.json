@@ -1,0 +1,28 @@
+{
+  "domain": "impressionist_painting",
+  "notes": "Monet pond scene. No humans. Water + flowers + lily pads.",
+  "threshold_hint": 0.15,
+  "expand_face_parts": false,
+  "entities": [
+    {
+      "name": "water",
+      "label": "blue purple water surface with sky reflections",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "lily_blossoms",
+      "label": "white and pink water lily flowers",
+      "semantic_path": "subject.flowers",
+      "detector": "dino"
+    },
+    {
+      "name": "lily_pads",
+      "label": "round green lily pads floating on water",
+      "semantic_path": "foreground.pads",
+      "detector": "dino"
+    }
+  ],
+  "slug": "water-lilies",
+  "device": "mps"
+}

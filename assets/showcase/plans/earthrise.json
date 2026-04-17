@@ -1,0 +1,28 @@
+{
+  "domain": "space_photograph",
+  "notes": "Apollo 8, 1968. No humans, just Earth over lunar surface.",
+  "threshold_hint": 0.2,
+  "expand_face_parts": false,
+  "entities": [
+    {
+      "name": "space",
+      "label": "black empty space",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "earth",
+      "label": "planet Earth",
+      "semantic_path": "subject.planet",
+      "detector": "dino"
+    },
+    {
+      "name": "lunar_surface",
+      "label": "gray cratered lunar surface",
+      "semantic_path": "foreground.ground",
+      "detector": "dino"
+    }
+  ],
+  "slug": "earthrise",
+  "device": "mps"
+}

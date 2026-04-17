@@ -1,0 +1,28 @@
+{
+  "domain": "post_impressionist_painting",
+  "notes": "Van Gogh 1889. Swirling sky, cypress tree, village.",
+  "threshold_hint": 0.2,
+  "expand_face_parts": false,
+  "entities": [
+    {
+      "name": "sky",
+      "label": "swirling blue sky with yellow stars and moon",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "cypress_tree",
+      "label": "tall dark cypress tree on the left",
+      "semantic_path": "subject.tree",
+      "detector": "dino"
+    },
+    {
+      "name": "village",
+      "label": "small village with church steeple and rolling hills",
+      "semantic_path": "foreground.village",
+      "detector": "dino"
+    }
+  ],
+  "slug": "starry-night",
+  "device": "mps"
+}

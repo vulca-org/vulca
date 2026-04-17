@@ -1,0 +1,29 @@
+{
+  "domain": "photojournalism_1993",
+  "notes": "Kevin Carter. Starving child + vulture + sparse ground.",
+  "threshold_hint": 0.15,
+  "expand_face_parts": false,
+  "entities": [
+    {
+      "name": "background",
+      "label": "dry brown savanna with trees in distance",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "child",
+      "label": "emaciated starving child kneeling on ground",
+      "semantic_path": "subject.person[0]",
+      "detector": "yolo",
+      "order": 0
+    },
+    {
+      "name": "vulture",
+      "label": "dark vulture bird",
+      "semantic_path": "subject.bird",
+      "detector": "dino"
+    }
+  ],
+  "slug": "vulture-and-girl",
+  "device": "mps"
+}

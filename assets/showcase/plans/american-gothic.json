@@ -1,0 +1,36 @@
+{
+  "domain": "american_regionalist_painting",
+  "notes": "Grant Wood 1930. Man + woman + farmhouse + pitchfork.",
+  "threshold_hint": 0.2,
+  "expand_face_parts": true,
+  "entities": [
+    {
+      "name": "farmhouse",
+      "label": "white wooden farmhouse with gothic window",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "woman",
+      "label": "blonde woman in dark dress on left",
+      "semantic_path": "subject.person[0]",
+      "detector": "yolo",
+      "order": 0
+    },
+    {
+      "name": "man",
+      "label": "bald elderly man with glasses and overalls",
+      "semantic_path": "subject.person[1]",
+      "detector": "yolo",
+      "order": 1
+    },
+    {
+      "name": "pitchfork",
+      "label": "metal pitchfork with three tines",
+      "semantic_path": "foreground.tool",
+      "detector": "dino"
+    }
+  ],
+  "slug": "american-gothic",
+  "device": "mps"
+}

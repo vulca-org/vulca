@@ -1,0 +1,30 @@
+{
+  "domain": "official_portrait_photo",
+  "notes": "Trump White House official portrait 2017.",
+  "threshold_hint": 0.25,
+  "expand_face_parts": true,
+  "entities": [
+    {
+      "name": "background",
+      "label": "american flag and patterned wallpaper",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "trump",
+      "label": "man in dark suit with blond hair",
+      "semantic_path": "subject.person[0]",
+      "detector": "yolo",
+      "order": 0
+    },
+    {
+      "name": "flag_pin",
+      "label": "small american flag lapel pin",
+      "semantic_path": "foreground.pin",
+      "detector": "dino",
+      "threshold": 0.1
+    }
+  ],
+  "slug": "trump-portrait",
+  "device": "mps"
+}

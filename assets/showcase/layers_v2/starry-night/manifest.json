@@ -1,0 +1,125 @@
+{
+  "version": 3,
+  "width": 1280,
+  "height": 1014,
+  "source_image": "assets/showcase/originals/starry-night.jpg",
+  "split_mode": "claude_orchestrated",
+  "plan": {
+    "domain": "post_impressionist_painting",
+    "notes": "Van Gogh 1889. Swirling sky, cypress tree, village.",
+    "threshold_hint": 0.2,
+    "expand_face_parts": false,
+    "entities": [
+      {
+        "name": "sky",
+        "label": "swirling blue sky with yellow stars and moon",
+        "semantic_path": "background",
+        "detector": "dino"
+      },
+      {
+        "name": "cypress_tree",
+        "label": "tall dark cypress tree on the left",
+        "semantic_path": "subject.tree",
+        "detector": "dino"
+      },
+      {
+        "name": "village",
+        "label": "small village with church steeple and rolling hills",
+        "semantic_path": "foreground.village",
+        "detector": "dino"
+      }
+    ],
+    "slug": "starry-night",
+    "device": "mps"
+  },
+  "created_at": "2026-04-17T09:51:40Z",
+  "layers": [
+    {
+      "id": "layer_b4168030",
+      "name": "sky",
+      "label": "swirling blue sky with yellow stars and moon",
+      "description": "swirling blue sky with yellow stars and moon",
+      "z_index": 0,
+      "blend_mode": "normal",
+      "content_type": "sky",
+      "semantic_path": "background",
+      "visible": true,
+      "locked": false,
+      "file": "sky.png",
+      "bbox": [
+        10,
+        5,
+        1268,
+        632
+      ],
+      "det_score": 0.37630578875541687,
+      "sam_score": 0.942633867263794,
+      "regeneration_prompt": "swirling blue sky with yellow stars and moon",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_3128e3b5",
+      "name": "cypress_tree",
+      "label": "tall dark cypress tree on the left",
+      "description": "tall dark cypress tree on the left",
+      "z_index": 45,
+      "blend_mode": "normal",
+      "content_type": "cypress_tree",
+      "semantic_path": "subject.tree",
+      "visible": true,
+      "locked": false,
+      "file": "cypress_tree.png",
+      "bbox": [
+        148,
+        49,
+        595,
+        1008
+      ],
+      "det_score": 0.7060468196868896,
+      "sam_score": 0.995383620262146,
+      "regeneration_prompt": "tall dark cypress tree on the left",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_ba5f018a",
+      "name": "village",
+      "label": "small village with church steeple and rolling hills",
+      "description": "small village with church steeple and rolling hills",
+      "z_index": 80,
+      "blend_mode": "normal",
+      "content_type": "village",
+      "semantic_path": "foreground.village",
+      "visible": true,
+      "locked": false,
+      "file": "village.png",
+      "bbox": [
+        7,
+        7,
+        1270,
+        1005
+      ],
+      "det_score": 0.46713507175445557,
+      "sam_score": 0.9924510717391968,
+      "regeneration_prompt": "small village with church steeple and rolling hills",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    }
+  ]
+}

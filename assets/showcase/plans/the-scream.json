@@ -1,0 +1,36 @@
+{
+  "domain": "expressionist_painting",
+  "notes": "Munch 1893. Single central screaming figure + 2 background figures + bridge + fjord.",
+  "threshold_hint": 0.2,
+  "expand_face_parts": false,
+  "entities": [
+    {
+      "name": "sky_water",
+      "label": "orange swirling sky with fjord water and distant hills",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "bridge",
+      "label": "brown wooden bridge with railing",
+      "semantic_path": "subject.bridge",
+      "detector": "dino"
+    },
+    {
+      "name": "screaming_figure",
+      "label": "central figure with hands on head",
+      "semantic_path": "subject.person[0]",
+      "detector": "yolo",
+      "order": 1
+    },
+    {
+      "name": "background_figures",
+      "label": "two dark silhouetted figures",
+      "semantic_path": "subject.person[1]",
+      "detector": "yolo",
+      "order": 0
+    }
+  ],
+  "slug": "the-scream",
+  "device": "mps"
+}

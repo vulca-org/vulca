@@ -1,0 +1,97 @@
+{
+  "version": 3,
+  "width": 360,
+  "height": 230,
+  "source_image": "assets/showcase/originals/vulture-and-girl.jpg",
+  "split_mode": "claude_orchestrated",
+  "plan": {
+    "domain": "photojournalism_1993",
+    "notes": "Kevin Carter. Starving child + vulture + sparse ground.",
+    "threshold_hint": 0.15,
+    "expand_face_parts": false,
+    "entities": [
+      {
+        "name": "background",
+        "label": "dry brown savanna with trees in distance",
+        "semantic_path": "background",
+        "detector": "dino"
+      },
+      {
+        "name": "child",
+        "label": "emaciated starving child kneeling on ground",
+        "semantic_path": "subject.person[0]",
+        "detector": "yolo",
+        "order": 0
+      },
+      {
+        "name": "vulture",
+        "label": "dark vulture bird",
+        "semantic_path": "subject.bird",
+        "detector": "dino"
+      }
+    ],
+    "slug": "vulture-and-girl",
+    "device": "mps"
+  },
+  "created_at": "2026-04-17T09:54:47Z",
+  "layers": [
+    {
+      "id": "layer_f7a5bc6d",
+      "name": "background",
+      "label": "dry brown savanna with trees in distance",
+      "description": "dry brown savanna with trees in distance",
+      "z_index": 0,
+      "blend_mode": "normal",
+      "content_type": "background",
+      "semantic_path": "background",
+      "visible": true,
+      "locked": false,
+      "file": "background.png",
+      "bbox": [
+        1,
+        27,
+        357,
+        226
+      ],
+      "det_score": 0.3145849406719208,
+      "sam_score": 0.982765793800354,
+      "regeneration_prompt": "dry brown savanna with trees in distance",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_782e3dc7",
+      "name": "vulture",
+      "label": "dark vulture bird",
+      "description": "dark vulture bird",
+      "z_index": 45,
+      "blend_mode": "normal",
+      "content_type": "vulture",
+      "semantic_path": "subject.bird",
+      "visible": true,
+      "locked": false,
+      "file": "vulture.png",
+      "bbox": [
+        86,
+        65,
+        133,
+        118
+      ],
+      "det_score": 0.8348785042762756,
+      "sam_score": 0.9843913316726685,
+      "regeneration_prompt": "dark vulture bird",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    }
+  ]
+}

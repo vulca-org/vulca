@@ -1,0 +1,161 @@
+{
+  "version": 3,
+  "width": 1280,
+  "height": 860,
+  "source_image": "assets/showcase/originals/great-wave.jpg",
+  "split_mode": "claude_orchestrated",
+  "plan": {
+    "domain": "japanese_woodblock",
+    "notes": "Hokusai c.1831. Large wave + Mt Fuji + small boats.",
+    "threshold_hint": 0.15,
+    "expand_face_parts": false,
+    "entities": [
+      {
+        "name": "sky",
+        "label": "pale yellow and gray sky",
+        "semantic_path": "background",
+        "detector": "dino"
+      },
+      {
+        "name": "mount_fuji",
+        "label": "small white snowy mountain in the distance",
+        "semantic_path": "background.mountain",
+        "detector": "dino"
+      },
+      {
+        "name": "great_wave",
+        "label": "large blue curling wave with white foam",
+        "semantic_path": "subject.wave",
+        "detector": "dino"
+      },
+      {
+        "name": "boats",
+        "label": "small wooden boats with rowers",
+        "semantic_path": "subject.boat",
+        "detector": "dino",
+        "threshold": 0.12
+      }
+    ],
+    "slug": "great-wave",
+    "device": "mps"
+  },
+  "created_at": "2026-04-17T09:52:17Z",
+  "layers": [
+    {
+      "id": "layer_af8ed028",
+      "name": "sky",
+      "label": "pale yellow and gray sky",
+      "description": "pale yellow and gray sky",
+      "z_index": 0,
+      "blend_mode": "normal",
+      "content_type": "sky",
+      "semantic_path": "background",
+      "visible": true,
+      "locked": false,
+      "file": "sky.png",
+      "bbox": [
+        4,
+        4,
+        1274,
+        608
+      ],
+      "det_score": 0.4314032196998596,
+      "sam_score": 0.9801660776138306,
+      "regeneration_prompt": "pale yellow and gray sky",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_c72def78",
+      "name": "mount_fuji",
+      "label": "small white snowy mountain in the distance",
+      "description": "small white snowy mountain in the distance",
+      "z_index": 10,
+      "blend_mode": "normal",
+      "content_type": "mount_fuji",
+      "semantic_path": "background.mountain",
+      "visible": true,
+      "locked": false,
+      "file": "mount_fuji.png",
+      "bbox": [
+        740,
+        547,
+        893,
+        629
+      ],
+      "det_score": 0.7264909744262695,
+      "sam_score": 0.9807389974594116,
+      "regeneration_prompt": "small white snowy mountain in the distance",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_0db0e86c",
+      "name": "great_wave",
+      "label": "large blue curling wave with white foam",
+      "description": "large blue curling wave with white foam",
+      "z_index": 45,
+      "blend_mode": "normal",
+      "content_type": "great_wave",
+      "semantic_path": "subject.wave",
+      "visible": true,
+      "locked": false,
+      "file": "great_wave.png",
+      "bbox": [
+        17,
+        71,
+        756,
+        639
+      ],
+      "det_score": 0.48034727573394775,
+      "sam_score": 0.9861108064651489,
+      "regeneration_prompt": "large blue curling wave with white foam",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_288f2475",
+      "name": "boats",
+      "label": "small wooden boats with rowers",
+      "description": "small wooden boats with rowers",
+      "z_index": 45,
+      "blend_mode": "normal",
+      "content_type": "boats",
+      "semantic_path": "subject.boat",
+      "visible": true,
+      "locked": false,
+      "file": "boats.png",
+      "bbox": [
+        509,
+        638,
+        1045,
+        840
+      ],
+      "det_score": 0.4274096190929413,
+      "sam_score": 0.9654699563980103,
+      "regeneration_prompt": "small wooden boats with rowers",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    }
+  ]
+}

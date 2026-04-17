@@ -1,0 +1,146 @@
+{
+  "version": 3,
+  "width": 1280,
+  "height": 803,
+  "source_image": "assets/showcase/originals/birth-of-venus.jpg",
+  "split_mode": "claude_orchestrated",
+  "plan": {
+    "domain": "renaissance_painting",
+    "notes": "Botticelli c.1485. Venus + 2 wind gods + flora figure on right + shell + trees.",
+    "threshold_hint": 0.2,
+    "expand_face_parts": true,
+    "entities": [
+      {
+        "name": "sea_sky",
+        "label": "pale blue green sea and sky",
+        "semantic_path": "background",
+        "detector": "dino"
+      },
+      {
+        "name": "shell",
+        "label": "large scalloped golden seashell",
+        "semantic_path": "subject.shell",
+        "detector": "dino"
+      },
+      {
+        "name": "trees",
+        "label": "dark green trees on the right",
+        "semantic_path": "background.trees",
+        "detector": "dino"
+      },
+      {
+        "name": "wind_figures",
+        "label": "two flying embracing figures on left",
+        "semantic_path": "subject.person[0]",
+        "detector": "yolo",
+        "order": 0
+      },
+      {
+        "name": "venus",
+        "label": "standing nude woman with long hair",
+        "semantic_path": "subject.person[1]",
+        "detector": "yolo",
+        "order": 1
+      },
+      {
+        "name": "flora",
+        "label": "woman in floral dress holding cloak",
+        "semantic_path": "subject.person[2]",
+        "detector": "yolo",
+        "order": 2
+      }
+    ],
+    "slug": "birth-of-venus",
+    "device": "mps"
+  },
+  "created_at": "2026-04-17T09:53:18Z",
+  "layers": [
+    {
+      "id": "layer_90e9bb97",
+      "name": "sea_sky",
+      "label": "pale blue green sea and sky",
+      "description": "pale blue green sea and sky",
+      "z_index": 0,
+      "blend_mode": "normal",
+      "content_type": "sea_sky",
+      "semantic_path": "background",
+      "visible": true,
+      "locked": false,
+      "file": "sea_sky.png",
+      "bbox": [
+        5,
+        4,
+        1272,
+        792
+      ],
+      "det_score": 0.31663310527801514,
+      "sam_score": 0.9239308834075928,
+      "regeneration_prompt": "pale blue green sea and sky",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_7106d18c",
+      "name": "shell",
+      "label": "large scalloped golden seashell",
+      "description": "large scalloped golden seashell",
+      "z_index": 45,
+      "blend_mode": "normal",
+      "content_type": "shell",
+      "semantic_path": "subject.shell",
+      "visible": true,
+      "locked": false,
+      "file": "shell.png",
+      "bbox": [
+        310,
+        491,
+        857,
+        730
+      ],
+      "det_score": 0.48293378949165344,
+      "sam_score": 0.993559718132019,
+      "regeneration_prompt": "large scalloped golden seashell",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_a7810e4d",
+      "name": "trees",
+      "label": "dark green trees on the right",
+      "description": "dark green trees on the right",
+      "z_index": 10,
+      "blend_mode": "normal",
+      "content_type": "trees",
+      "semantic_path": "background.trees",
+      "visible": true,
+      "locked": false,
+      "file": "trees.png",
+      "bbox": [
+        706,
+        2,
+        1276,
+        359
+      ],
+      "det_score": 0.29984432458877563,
+      "sam_score": 0.9260499477386475,
+      "regeneration_prompt": "dark green trees on the right",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    }
+  ]
+}

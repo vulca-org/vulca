@@ -1,0 +1,23 @@
+{
+  "domain": "booking_photograph",
+  "notes": "Fulton County jail 2023 booking photo.",
+  "threshold_hint": 0.25,
+  "expand_face_parts": true,
+  "entities": [
+    {
+      "name": "wall",
+      "label": "gray concrete jail wall",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "trump",
+      "label": "man in dark suit with blond hair",
+      "semantic_path": "subject.person[0]",
+      "detector": "yolo",
+      "order": 0
+    }
+  ],
+  "slug": "trump-mugshot",
+  "device": "mps"
+}

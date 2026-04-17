@@ -1,0 +1,23 @@
+{
+  "domain": "south_asian_fresco",
+  "notes": "Ajanta Cave 1, 5th c. Large bodhisattva figure.",
+  "threshold_hint": 0.2,
+  "expand_face_parts": true,
+  "entities": [
+    {
+      "name": "wall",
+      "label": "dark painted cave wall",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "padmapani",
+      "label": "tall standing figure with ornate jewelry",
+      "semantic_path": "subject.person[0]",
+      "detector": "yolo",
+      "order": 0
+    }
+  ],
+  "slug": "padmapani",
+  "device": "mps"
+}

@@ -1,0 +1,23 @@
+{
+  "domain": "portrait_photograph",
+  "notes": "Steve McCurry 1984. Single portrait with red headscarf.",
+  "threshold_hint": 0.2,
+  "expand_face_parts": true,
+  "entities": [
+    {
+      "name": "green_wall",
+      "label": "green cracked painted wall",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "girl",
+      "label": "young girl with red headscarf",
+      "semantic_path": "subject.person[0]",
+      "detector": "yolo",
+      "order": 0
+    }
+  ],
+  "slug": "afghan-girl",
+  "device": "mps"
+}

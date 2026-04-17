@@ -1,0 +1,125 @@
+{
+  "version": 3,
+  "width": 2400,
+  "height": 2400,
+  "source_image": "assets/showcase/originals/earthrise.jpg",
+  "split_mode": "claude_orchestrated",
+  "plan": {
+    "domain": "space_photograph",
+    "notes": "Apollo 8, 1968. No humans, just Earth over lunar surface.",
+    "threshold_hint": 0.2,
+    "expand_face_parts": false,
+    "entities": [
+      {
+        "name": "space",
+        "label": "black empty space",
+        "semantic_path": "background",
+        "detector": "dino"
+      },
+      {
+        "name": "earth",
+        "label": "planet Earth",
+        "semantic_path": "subject.planet",
+        "detector": "dino"
+      },
+      {
+        "name": "lunar_surface",
+        "label": "gray cratered lunar surface",
+        "semantic_path": "foreground.ground",
+        "detector": "dino"
+      }
+    ],
+    "slug": "earthrise",
+    "device": "mps"
+  },
+  "created_at": "2026-04-17T09:49:25Z",
+  "layers": [
+    {
+      "id": "layer_25f41242",
+      "name": "space",
+      "label": "black empty space",
+      "description": "black empty space",
+      "z_index": 0,
+      "blend_mode": "normal",
+      "content_type": "space",
+      "semantic_path": "background",
+      "visible": true,
+      "locked": false,
+      "file": "space.png",
+      "bbox": [
+        11,
+        15,
+        2389,
+        2031
+      ],
+      "det_score": 0.6574133634567261,
+      "sam_score": 1.0058715343475342,
+      "regeneration_prompt": "black empty space",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_5092e1a8",
+      "name": "earth",
+      "label": "planet Earth",
+      "description": "planet Earth",
+      "z_index": 45,
+      "blend_mode": "normal",
+      "content_type": "earth",
+      "semantic_path": "subject.planet",
+      "visible": true,
+      "locked": false,
+      "file": "earth.png",
+      "bbox": [
+        1174,
+        1091,
+        1550,
+        1380
+      ],
+      "det_score": 0.75457763671875,
+      "sam_score": 1.0056633949279785,
+      "regeneration_prompt": "planet Earth",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_0b6e0542",
+      "name": "lunar_surface",
+      "label": "gray cratered lunar surface",
+      "description": "gray cratered lunar surface",
+      "z_index": 80,
+      "blend_mode": "normal",
+      "content_type": "lunar_surface",
+      "semantic_path": "foreground.ground",
+      "visible": true,
+      "locked": false,
+      "file": "lunar_surface.png",
+      "bbox": [
+        11,
+        1762,
+        2384,
+        2386
+      ],
+      "det_score": 0.5350669622421265,
+      "sam_score": 1.0121705532073975,
+      "regeneration_prompt": "gray cratered lunar surface",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    }
+  ]
+}

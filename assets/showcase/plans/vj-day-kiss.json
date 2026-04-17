@@ -1,0 +1,30 @@
+{
+  "domain": "historical_bw_photo",
+  "notes": "Eisenstaedt 1945. Sailor kissing nurse in Times Square crowd.",
+  "threshold_hint": 0.2,
+  "expand_face_parts": true,
+  "entities": [
+    {
+      "name": "street_crowd",
+      "label": "busy Times Square street with pedestrians",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "sailor",
+      "label": "sailor in dark navy uniform",
+      "semantic_path": "subject.person[0]",
+      "detector": "yolo",
+      "order": 0
+    },
+    {
+      "name": "nurse",
+      "label": "nurse in white uniform being kissed",
+      "semantic_path": "subject.person[1]",
+      "detector": "yolo",
+      "order": 1
+    }
+  ],
+  "slug": "vj-day-kiss",
+  "device": "mps"
+}

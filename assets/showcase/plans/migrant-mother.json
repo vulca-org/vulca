@@ -1,0 +1,37 @@
+{
+  "domain": "historical_bw_photo",
+  "notes": "Dorothea Lange 1936. Mother + 2 children, seated in cloth.",
+  "threshold_hint": 0.2,
+  "expand_face_parts": true,
+  "entities": [
+    {
+      "name": "background",
+      "label": "dark fabric background",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "mother",
+      "label": "woman seated",
+      "semantic_path": "subject.person[0]",
+      "detector": "yolo",
+      "order": 1
+    },
+    {
+      "name": "child_left",
+      "label": "child on left",
+      "semantic_path": "subject.person[1]",
+      "detector": "yolo",
+      "order": 0
+    },
+    {
+      "name": "child_right",
+      "label": "child on right",
+      "semantic_path": "subject.person[2]",
+      "detector": "yolo",
+      "order": 2
+    }
+  ],
+  "slug": "migrant-mother",
+  "device": "mps"
+}

@@ -1,0 +1,35 @@
+{
+  "domain": "japanese_woodblock",
+  "notes": "Hokusai c.1831. Large wave + Mt Fuji + small boats.",
+  "threshold_hint": 0.15,
+  "expand_face_parts": false,
+  "entities": [
+    {
+      "name": "sky",
+      "label": "pale yellow and gray sky",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "mount_fuji",
+      "label": "small white snowy mountain in the distance",
+      "semantic_path": "background.mountain",
+      "detector": "dino"
+    },
+    {
+      "name": "great_wave",
+      "label": "large blue curling wave with white foam",
+      "semantic_path": "subject.wave",
+      "detector": "dino"
+    },
+    {
+      "name": "boats",
+      "label": "small wooden boats with rowers",
+      "semantic_path": "subject.boat",
+      "detector": "dino",
+      "threshold": 0.12
+    }
+  ],
+  "slug": "great-wave",
+  "device": "mps"
+}

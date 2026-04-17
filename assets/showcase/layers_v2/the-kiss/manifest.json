@@ -1,0 +1,96 @@
+{
+  "version": 3,
+  "width": 1275,
+  "height": 1280,
+  "source_image": "assets/showcase/originals/the-kiss.jpg",
+  "split_mode": "claude_orchestrated",
+  "plan": {
+    "domain": "art_nouveau_painting",
+    "notes": "Klimt 1908. Two entwined figures, golden background, flower meadow.",
+    "threshold_hint": 0.15,
+    "expand_face_parts": false,
+    "entities": [
+      {
+        "name": "gold_bg",
+        "label": "glittering gold leaf background",
+        "semantic_path": "background",
+        "detector": "dino"
+      },
+      {
+        "name": "embracing_couple",
+        "label": "two entwined embracing figures in golden robe",
+        "semantic_path": "subject.person[0]",
+        "detector": "dino"
+      },
+      {
+        "name": "flower_meadow",
+        "label": "multicolored wildflower meadow at bottom",
+        "semantic_path": "foreground.meadow",
+        "detector": "dino"
+      }
+    ],
+    "slug": "the-kiss",
+    "device": "mps"
+  },
+  "created_at": "2026-04-17T09:53:28Z",
+  "layers": [
+    {
+      "id": "layer_d90783a2",
+      "name": "gold_bg",
+      "label": "glittering gold leaf background",
+      "description": "glittering gold leaf background",
+      "z_index": 0,
+      "blend_mode": "normal",
+      "content_type": "gold_bg",
+      "semantic_path": "background",
+      "visible": true,
+      "locked": false,
+      "file": "gold_bg.png",
+      "bbox": [
+        334,
+        12,
+        963,
+        1046
+      ],
+      "det_score": 0.44652092456817627,
+      "sam_score": 0.991046667098999,
+      "regeneration_prompt": "glittering gold leaf background",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_3654d966",
+      "name": "flower_meadow",
+      "label": "multicolored wildflower meadow at bottom",
+      "description": "multicolored wildflower meadow at bottom",
+      "z_index": 80,
+      "blend_mode": "normal",
+      "content_type": "flower_meadow",
+      "semantic_path": "foreground.meadow",
+      "visible": true,
+      "locked": false,
+      "file": "flower_meadow.png",
+      "bbox": [
+        3,
+        857,
+        1047,
+        1274
+      ],
+      "det_score": 0.682170569896698,
+      "sam_score": 0.9987832307815552,
+      "regeneration_prompt": "multicolored wildflower meadow at bottom",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    }
+  ]
+}

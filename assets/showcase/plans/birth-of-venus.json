@@ -1,0 +1,49 @@
+{
+  "domain": "renaissance_painting",
+  "notes": "Botticelli c.1485. Venus + 2 wind gods + flora figure on right + shell + trees.",
+  "threshold_hint": 0.2,
+  "expand_face_parts": true,
+  "entities": [
+    {
+      "name": "sea_sky",
+      "label": "pale blue green sea and sky",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "shell",
+      "label": "large scalloped golden seashell",
+      "semantic_path": "subject.shell",
+      "detector": "dino"
+    },
+    {
+      "name": "trees",
+      "label": "dark green trees on the right",
+      "semantic_path": "background.trees",
+      "detector": "dino"
+    },
+    {
+      "name": "wind_figures",
+      "label": "two flying embracing figures on left",
+      "semantic_path": "subject.person[0]",
+      "detector": "yolo",
+      "order": 0
+    },
+    {
+      "name": "venus",
+      "label": "standing nude woman with long hair",
+      "semantic_path": "subject.person[1]",
+      "detector": "yolo",
+      "order": 1
+    },
+    {
+      "name": "flora",
+      "label": "woman in floral dress holding cloak",
+      "semantic_path": "subject.person[2]",
+      "detector": "yolo",
+      "order": 2
+    }
+  ],
+  "slug": "birth-of-venus",
+  "device": "mps"
+}

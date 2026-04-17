@@ -1,0 +1,127 @@
+{
+  "version": 3,
+  "width": 265,
+  "height": 396,
+  "source_image": "assets/showcase/originals/vj-day-kiss.jpg",
+  "split_mode": "claude_orchestrated",
+  "plan": {
+    "domain": "historical_bw_photo",
+    "notes": "Eisenstaedt 1945. Sailor kissing nurse in Times Square crowd.",
+    "threshold_hint": 0.2,
+    "expand_face_parts": true,
+    "entities": [
+      {
+        "name": "street_crowd",
+        "label": "busy Times Square street with pedestrians",
+        "semantic_path": "background",
+        "detector": "dino"
+      },
+      {
+        "name": "sailor",
+        "label": "sailor in dark navy uniform",
+        "semantic_path": "subject.person[0]",
+        "detector": "yolo",
+        "order": 0
+      },
+      {
+        "name": "nurse",
+        "label": "nurse in white uniform being kissed",
+        "semantic_path": "subject.person[1]",
+        "detector": "yolo",
+        "order": 1
+      }
+    ],
+    "slug": "vj-day-kiss",
+    "device": "mps"
+  },
+  "created_at": "2026-04-17T09:54:34Z",
+  "layers": [
+    {
+      "id": "layer_be1719f0",
+      "name": "sailor",
+      "label": "sailor in dark navy uniform",
+      "description": "sailor in dark navy uniform",
+      "z_index": 50,
+      "blend_mode": "normal",
+      "content_type": "sailor",
+      "semantic_path": "subject.person[0]",
+      "visible": true,
+      "locked": false,
+      "file": "sailor.png",
+      "bbox": [
+        0,
+        101,
+        31,
+        227
+      ],
+      "det_score": 0.8975859880447388,
+      "sam_score": 0.9843753576278687,
+      "regeneration_prompt": "sailor in dark navy uniform",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_be582024",
+      "name": "nurse",
+      "label": "nurse in white uniform being kissed",
+      "description": "nurse in white uniform being kissed",
+      "z_index": 50,
+      "blend_mode": "normal",
+      "content_type": "nurse",
+      "semantic_path": "subject.person[1]",
+      "visible": true,
+      "locked": false,
+      "file": "nurse.png",
+      "bbox": [
+        27,
+        114,
+        41,
+        155
+      ],
+      "det_score": 0.5460287928581238,
+      "sam_score": 0.9404685497283936,
+      "regeneration_prompt": "nurse in white uniform being kissed",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_f6a2a555",
+      "name": "street_crowd",
+      "label": "busy Times Square street with pedestrians",
+      "description": "busy Times Square street with pedestrians",
+      "z_index": 0,
+      "blend_mode": "normal",
+      "content_type": "street_crowd",
+      "semantic_path": "background",
+      "visible": true,
+      "locked": false,
+      "file": "street_crowd.png",
+      "bbox": [
+        61,
+        92,
+        198,
+        358
+      ],
+      "det_score": 0.45421549677848816,
+      "sam_score": 0.9526113271713257,
+      "regeneration_prompt": "busy Times Square street with pedestrians",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    }
+  ]
+}

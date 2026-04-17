@@ -1,0 +1,37 @@
+{
+  "domain": "historical_bw_photo",
+  "notes": "Eddie Adams 1968. Executioner + victim + soldier + street.",
+  "threshold_hint": 0.2,
+  "expand_face_parts": true,
+  "entities": [
+    {
+      "name": "street_buildings",
+      "label": "Saigon street with buildings",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "soldier_left",
+      "label": "helmeted soldier on left",
+      "semantic_path": "subject.person[0]",
+      "detector": "yolo",
+      "order": 0
+    },
+    {
+      "name": "executioner",
+      "label": "man in plaid shirt holding pistol",
+      "semantic_path": "subject.person[1]",
+      "detector": "yolo",
+      "order": 1
+    },
+    {
+      "name": "victim",
+      "label": "prisoner in checkered shirt",
+      "semantic_path": "subject.person[2]",
+      "detector": "yolo",
+      "order": 2
+    }
+  ],
+  "slug": "saigon-execution",
+  "device": "mps"
+}

@@ -1,0 +1,230 @@
+{
+  "version": 3,
+  "width": 368,
+  "height": 271,
+  "source_image": "assets/showcase/originals/persistence-of-memory.jpg",
+  "split_mode": "claude_orchestrated",
+  "plan": {
+    "domain": "surrealist_painting",
+    "notes": "Dalí 1931. Melting clocks + landscape + biomorphic form. No humans.",
+    "threshold_hint": 0.15,
+    "expand_face_parts": false,
+    "entities": [
+      {
+        "name": "sky_cliffs",
+        "label": "blue sky and golden distant cliffs",
+        "semantic_path": "background",
+        "detector": "dino"
+      },
+      {
+        "name": "ground",
+        "label": "flat brown beach and ground",
+        "semantic_path": "background.ground",
+        "detector": "dino"
+      },
+      {
+        "name": "dark_platform",
+        "label": "rectangular dark platform",
+        "semantic_path": "foreground.platform",
+        "detector": "dino"
+      },
+      {
+        "name": "biomorphic_form",
+        "label": "soft organic shape with eyelashes in center",
+        "semantic_path": "subject.form",
+        "detector": "dino"
+      },
+      {
+        "name": "melting_clocks",
+        "label": "soft melting pocket watches",
+        "semantic_path": "subject.clocks",
+        "detector": "dino"
+      },
+      {
+        "name": "tree",
+        "label": "bare dead tree branch",
+        "semantic_path": "foreground.tree",
+        "detector": "dino"
+      }
+    ],
+    "slug": "persistence-of-memory",
+    "device": "mps"
+  },
+  "created_at": "2026-04-17T09:53:55Z",
+  "layers": [
+    {
+      "id": "layer_911b8d23",
+      "name": "sky_cliffs",
+      "label": "blue sky and golden distant cliffs",
+      "description": "blue sky and golden distant cliffs",
+      "z_index": 0,
+      "blend_mode": "normal",
+      "content_type": "sky_cliffs",
+      "semantic_path": "background",
+      "visible": true,
+      "locked": false,
+      "file": "sky_cliffs.png",
+      "bbox": [
+        1,
+        0,
+        367,
+        85
+      ],
+      "det_score": 0.3510838449001312,
+      "sam_score": 0.9973323345184326,
+      "regeneration_prompt": "blue sky and golden distant cliffs",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_10abb448",
+      "name": "ground",
+      "label": "flat brown beach and ground",
+      "description": "flat brown beach and ground",
+      "z_index": 10,
+      "blend_mode": "normal",
+      "content_type": "ground",
+      "semantic_path": "background.ground",
+      "visible": true,
+      "locked": false,
+      "file": "ground.png",
+      "bbox": [
+        1,
+        80,
+        366,
+        269
+      ],
+      "det_score": 0.493050754070282,
+      "sam_score": 0.9861727952957153,
+      "regeneration_prompt": "flat brown beach and ground",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_06d4ddc4",
+      "name": "dark_platform",
+      "label": "rectangular dark platform",
+      "description": "rectangular dark platform",
+      "z_index": 80,
+      "blend_mode": "normal",
+      "content_type": "dark_platform",
+      "semantic_path": "foreground.platform",
+      "visible": true,
+      "locked": false,
+      "file": "dark_platform.png",
+      "bbox": [
+        0,
+        122,
+        117,
+        269
+      ],
+      "det_score": 0.572520911693573,
+      "sam_score": 0.9731903076171875,
+      "regeneration_prompt": "rectangular dark platform",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_b94cb8dd",
+      "name": "biomorphic_form",
+      "label": "soft organic shape with eyelashes in center",
+      "description": "soft organic shape with eyelashes in center",
+      "z_index": 45,
+      "blend_mode": "normal",
+      "content_type": "biomorphic_form",
+      "semantic_path": "subject.form",
+      "visible": true,
+      "locked": false,
+      "file": "biomorphic_form.png",
+      "bbox": [
+        40,
+        139,
+        111,
+        227
+      ],
+      "det_score": 0.4610082805156708,
+      "sam_score": 0.9782618284225464,
+      "regeneration_prompt": "soft organic shape with eyelashes in center",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_45d5b334",
+      "name": "melting_clocks",
+      "label": "soft melting pocket watches",
+      "description": "soft melting pocket watches",
+      "z_index": 45,
+      "blend_mode": "normal",
+      "content_type": "melting_clocks",
+      "semantic_path": "subject.clocks",
+      "visible": true,
+      "locked": false,
+      "file": "melting_clocks.png",
+      "bbox": [
+        135,
+        124,
+        315,
+        234
+      ],
+      "det_score": 0.40394461154937744,
+      "sam_score": 0.9777672290802002,
+      "regeneration_prompt": "soft melting pocket watches",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_51cec172",
+      "name": "tree",
+      "label": "bare dead tree branch",
+      "description": "bare dead tree branch",
+      "z_index": 80,
+      "blend_mode": "normal",
+      "content_type": "tree",
+      "semantic_path": "foreground.tree",
+      "visible": true,
+      "locked": false,
+      "file": "tree.png",
+      "bbox": [
+        4,
+        20,
+        106,
+        142
+      ],
+      "det_score": 0.40541309118270874,
+      "sam_score": 0.9475480318069458,
+      "regeneration_prompt": "bare dead tree branch",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    }
+  ]
+}

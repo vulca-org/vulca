@@ -1,0 +1,28 @@
+{
+  "domain": "art_nouveau_painting",
+  "notes": "Klimt 1908. Two entwined figures, golden background, flower meadow.",
+  "threshold_hint": 0.15,
+  "expand_face_parts": false,
+  "entities": [
+    {
+      "name": "gold_bg",
+      "label": "glittering gold leaf background",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "embracing_couple",
+      "label": "two entwined embracing figures in golden robe",
+      "semantic_path": "subject.person[0]",
+      "detector": "dino"
+    },
+    {
+      "name": "flower_meadow",
+      "label": "multicolored wildflower meadow at bottom",
+      "semantic_path": "foreground.meadow",
+      "detector": "dino"
+    }
+  ],
+  "slug": "the-kiss",
+  "device": "mps"
+}

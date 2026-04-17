@@ -1,0 +1,28 @@
+{
+  "domain": "chinese_gongbi_scroll",
+  "notes": "Zhang Zeduan c.1100s. Scroll scene with bridge, boats, people. Very horizontal.",
+  "threshold_hint": 0.15,
+  "expand_face_parts": false,
+  "entities": [
+    {
+      "name": "buildings_trees",
+      "label": "rows of buildings and trees behind river",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "bridge",
+      "label": "arched wooden bridge",
+      "semantic_path": "subject.bridge",
+      "detector": "dino"
+    },
+    {
+      "name": "water_boats",
+      "label": "river and boats below bridge",
+      "semantic_path": "foreground.water",
+      "detector": "dino"
+    }
+  ],
+  "slug": "qingming-bridge",
+  "device": "mps"
+}

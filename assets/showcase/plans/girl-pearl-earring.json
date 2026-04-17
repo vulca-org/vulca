@@ -1,0 +1,30 @@
+{
+  "domain": "baroque_painting",
+  "notes": "Vermeer 1665. Single portrait with distinctive blue-yellow headscarf and pearl earring.",
+  "threshold_hint": 0.2,
+  "expand_face_parts": true,
+  "entities": [
+    {
+      "name": "dark_bg",
+      "label": "plain dark black background",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "girl",
+      "label": "young woman with blue headscarf",
+      "semantic_path": "subject.person[0]",
+      "detector": "yolo",
+      "order": 0
+    },
+    {
+      "name": "pearl_earring",
+      "label": "white teardrop pearl earring",
+      "semantic_path": "foreground.jewelry",
+      "detector": "dino",
+      "threshold": 0.15
+    }
+  ],
+  "slug": "girl-pearl-earring",
+  "device": "mps"
+}

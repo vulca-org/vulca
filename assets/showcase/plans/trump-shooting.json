@@ -1,0 +1,50 @@
+{
+  "domain": "news_photograph_2024",
+  "notes": "Evan Vucci. Trump with raised fist + secret service agents + flag + stage.",
+  "threshold_hint": 0.2,
+  "expand_face_parts": true,
+  "entities": [
+    {
+      "name": "sky_flag",
+      "label": "blue sky with american flag",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "trump",
+      "label": "man with raised fist and blood on ear",
+      "semantic_path": "subject.person[0]",
+      "detector": "yolo",
+      "order": 1
+    },
+    {
+      "name": "agent_left",
+      "label": "secret service agent in dark suit on left",
+      "semantic_path": "subject.person[1]",
+      "detector": "yolo",
+      "order": 0
+    },
+    {
+      "name": "agent_right",
+      "label": "secret service agent in dark suit on right",
+      "semantic_path": "subject.person[2]",
+      "detector": "yolo",
+      "order": 2
+    },
+    {
+      "name": "agent_bottom",
+      "label": "bent over agent in lower right",
+      "semantic_path": "subject.person[3]",
+      "detector": "yolo",
+      "order": 3
+    },
+    {
+      "name": "stage_railing",
+      "label": "red white blue striped stage railing",
+      "semantic_path": "foreground.stage",
+      "detector": "dino"
+    }
+  ],
+  "slug": "trump-shooting",
+  "device": "mps"
+}

@@ -1,0 +1,56 @@
+{
+  "domain": "american_realism_painting",
+  "notes": "Hopper 1942. Late-night diner with 4 figures. Glass, counter, buildings.",
+  "threshold_hint": 0.2,
+  "expand_face_parts": true,
+  "entities": [
+    {
+      "name": "street_buildings",
+      "label": "dark empty street with brick buildings",
+      "semantic_path": "background",
+      "detector": "dino"
+    },
+    {
+      "name": "diner_glass",
+      "label": "large curved plate-glass window with green frame",
+      "semantic_path": "subject.diner.glass",
+      "detector": "dino"
+    },
+    {
+      "name": "diner_interior",
+      "label": "diner interior with counter and back wall",
+      "semantic_path": "subject.diner.interior",
+      "detector": "dino"
+    },
+    {
+      "name": "person_left_couple_1",
+      "label": "man in hat next to woman",
+      "semantic_path": "subject.person[0]",
+      "detector": "yolo",
+      "order": 0
+    },
+    {
+      "name": "person_left_couple_2",
+      "label": "woman in red dress",
+      "semantic_path": "subject.person[1]",
+      "detector": "yolo",
+      "order": 1
+    },
+    {
+      "name": "person_server",
+      "label": "white-uniformed server behind counter",
+      "semantic_path": "subject.person[2]",
+      "detector": "yolo",
+      "order": 2
+    },
+    {
+      "name": "person_solitary",
+      "label": "man seated alone with back to viewer",
+      "semantic_path": "subject.person[3]",
+      "detector": "yolo",
+      "order": 3
+    }
+  ],
+  "slug": "nighthawks",
+  "device": "mps"
+}

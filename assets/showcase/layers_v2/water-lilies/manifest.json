@@ -1,0 +1,125 @@
+{
+  "version": 3,
+  "width": 1280,
+  "height": 1230,
+  "source_image": "assets/showcase/originals/water-lilies.jpg",
+  "split_mode": "claude_orchestrated",
+  "plan": {
+    "domain": "impressionist_painting",
+    "notes": "Monet pond scene. No humans. Water + flowers + lily pads.",
+    "threshold_hint": 0.15,
+    "expand_face_parts": false,
+    "entities": [
+      {
+        "name": "water",
+        "label": "blue purple water surface with sky reflections",
+        "semantic_path": "background",
+        "detector": "dino"
+      },
+      {
+        "name": "lily_blossoms",
+        "label": "white and pink water lily flowers",
+        "semantic_path": "subject.flowers",
+        "detector": "dino"
+      },
+      {
+        "name": "lily_pads",
+        "label": "round green lily pads floating on water",
+        "semantic_path": "foreground.pads",
+        "detector": "dino"
+      }
+    ],
+    "slug": "water-lilies",
+    "device": "mps"
+  },
+  "created_at": "2026-04-17T09:52:06Z",
+  "layers": [
+    {
+      "id": "layer_6f157694",
+      "name": "water",
+      "label": "blue purple water surface with sky reflections",
+      "description": "blue purple water surface with sky reflections",
+      "z_index": 0,
+      "blend_mode": "normal",
+      "content_type": "water",
+      "semantic_path": "background",
+      "visible": true,
+      "locked": false,
+      "file": "water.png",
+      "bbox": [
+        6,
+        11,
+        1272,
+        1218
+      ],
+      "det_score": 0.23278948664665222,
+      "sam_score": 0.9968000650405884,
+      "regeneration_prompt": "blue purple water surface with sky reflections",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_8901636a",
+      "name": "lily_blossoms",
+      "label": "white and pink water lily flowers",
+      "description": "white and pink water lily flowers",
+      "z_index": 45,
+      "blend_mode": "normal",
+      "content_type": "lily_blossoms",
+      "semantic_path": "subject.flowers",
+      "visible": true,
+      "locked": false,
+      "file": "lily_blossoms.png",
+      "bbox": [
+        504,
+        951,
+        558,
+        1011
+      ],
+      "det_score": 0.2904152274131775,
+      "sam_score": 0.9367676973342896,
+      "regeneration_prompt": "white and pink water lily flowers",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_cf0cc375",
+      "name": "lily_pads",
+      "label": "round green lily pads floating on water",
+      "description": "round green lily pads floating on water",
+      "z_index": 80,
+      "blend_mode": "normal",
+      "content_type": "lily_pads",
+      "semantic_path": "foreground.pads",
+      "visible": true,
+      "locked": false,
+      "file": "lily_pads.png",
+      "bbox": [
+        7,
+        699,
+        1258,
+        1207
+      ],
+      "det_score": 0.26264679431915283,
+      "sam_score": 0.9527932405471802,
+      "regeneration_prompt": "round green lily pads floating on water",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    }
+  ]
+}
