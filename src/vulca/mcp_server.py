@@ -579,6 +579,7 @@ async def layers_split(
     mode: str = "regenerate",
     provider: str = "gemini",
     tradition: str = "default",
+    plan_path: str = "",
 ) -> dict:
     """Decompose an image into full-canvas RGBA layers via segmentation or regeneration.
 
@@ -588,16 +589,67 @@ async def layers_split(
     Args:
         image_path: Path to the image file.
         output_dir: Output directory (default: image parent/layers).
-        mode: "regenerate" (img2img, default), "extract" (color-range), "vlm" (VLM masks), "sam3" (SAM3, GPU).
+        mode: "regenerate" (img2img), "extract" (color-range), "vlm" (VLM masks),
+              "sam3" (SAM3, GPU), "orchestrated" (YOLO26 + Grounding DINO + SAM +
+              SegFormer face-parsing; SOTA — requires plan_path).
         provider: Image provider for regenerate/vlm modes.
         tradition: Cultural tradition for styling.
+        plan_path: For mode="orchestrated": path to semantic plan JSON
+                   (see assets/showcase/plans/*.json for examples).
 
     Returns:
-        layers: List of {name, file, z_index, content_type, blend_mode}. manifest_path, split_mode.
+        layers, manifest_path, split_mode. For orchestrated: detection_report
+        with per-entity status and success_rate.
     """
+    from pathlib import Path
+
+    if mode == "orchestrated":
+        if not plan_path:
+            return {"error": "orchestrated mode requires plan_path (JSON with 'entities')"}
+        # Route to the claude-orchestrated pipeline
+        import sys, subprocess, json
+        repo_root = Path(__file__).resolve().parents[2]
+        script = repo_root / "scripts" / "claude_orchestrated_pipeline.py"
+        # Symlink inputs into expected locations (orig_dir, plans_dir)
+        img_p = Path(image_path)
+        plan_p = Path(plan_path)
+        slug = img_p.stem
+        orig_dir = repo_root / "assets" / "showcase" / "originals"
+        plans_dir = repo_root / "assets" / "showcase" / "plans"
+        out_base = repo_root / "assets" / "showcase" / "layers_v2"
+        orig_dir.mkdir(parents=True, exist_ok=True)
+        plans_dir.mkdir(parents=True, exist_ok=True)
+        # Copy image+plan into expected slots (avoid symlinks for portability)
+        import shutil
+        shutil.copy(str(img_p), str(orig_dir / f"{slug}.jpg"))
+        shutil.copy(str(plan_p), str(plans_dir / f"{slug}.json"))
+        result = subprocess.run(
+            [sys.executable, str(script), slug, "--force"],
+            cwd=str(repo_root), capture_output=True, text=True, timeout=600,
+        )
+        manifest_path = out_base / slug / "manifest.json"
+        if not manifest_path.exists():
+            return {"error": "pipeline failed",
+                    "stdout": result.stdout[-1000:], "stderr": result.stderr[-1000:]}
+        manifest = json.loads(manifest_path.read_text())
+        # Copy layers to requested output_dir if specified
+        target = Path(output_dir) if output_dir else out_base / slug
+        return {
+            "split_mode": "orchestrated",
+            "manifest_path": str(manifest_path),
+            "status": manifest.get("status"),
+            "detection_report": manifest.get("detection_report"),
+            "layers": [
+                {"name": l["name"], "file": str(target / l["file"]),
+                 "z_index": l["z_index"], "content_type": l.get("content_type", l["name"]),
+                 "semantic_path": l.get("semantic_path", ""),
+                 "blend_mode": l.get("blend_mode", "normal")}
+                for l in manifest["layers"]
+            ],
+        }
+
     from vulca.layers.analyze import analyze_layers as _analyze
     from vulca.layers.split import split_extract, split_regenerate
-    from pathlib import Path
 
     layers = await _analyze(image_path)
     out = output_dir or str(Path(image_path).parent / "layers")
