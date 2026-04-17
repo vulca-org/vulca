@@ -15,6 +15,7 @@ Writes: assets/showcase/layers_v2/<slug>/*.png + manifest.json
 from __future__ import annotations
 
 import argparse
+import functools
 import hashlib
 import json
 import os
@@ -72,6 +73,10 @@ DINO_PERSON_PROMPTS = "person . human figure . face . body ."
 SUCCESS_RATE_THRESHOLD = 0.70
 
 
+# ── Module-level model cache: loaders are expensive (~5-20s each) ──
+# All @lru_cache'd on device so repeated slug runs reuse the same instance.
+
+@functools.lru_cache(maxsize=2)
 def load_grounding_dino(device="mps"):
     from transformers import AutoProcessor, AutoModelForZeroShotObjectDetection
     proc = AutoProcessor.from_pretrained("IDEA-Research/grounding-dino-tiny")
@@ -81,6 +86,7 @@ def load_grounding_dino(device="mps"):
     return proc, model
 
 
+@functools.lru_cache(maxsize=1)
 def load_yolo():
     """YOLO26 for person detection — best person recall + precise bboxes."""
     from ultralytics import YOLO
@@ -104,6 +110,7 @@ FACE_MERGE_MAP = {
 FACE_PART_MIN_PX = 80  # below this, merge into skin
 
 
+@functools.lru_cache(maxsize=2)
 def load_face_parser(device="mps"):
     from transformers import SegformerForSemanticSegmentation, SegformerImageProcessor
     proc = SegformerImageProcessor.from_pretrained("jonathandinu/face-parsing")
@@ -310,10 +317,17 @@ def detect_persons_with_chain(chain, yolo_model, dino_proc, dino_model, device,
     return [], None, attempts
 
 
+@functools.lru_cache(maxsize=2)
+def _load_sam_model(device: str):
+    """Cache the heavy SAM weights; predictor itself is cheap to build."""
+    from segment_anything import sam_model_registry
+    return sam_model_registry["vit_l"](checkpoint=SAM_CKPT).to(device)
+
+
 def load_sam(device="mps"):
-    from segment_anything import sam_model_registry, SamPredictor
-    sam = sam_model_registry["vit_l"](checkpoint=SAM_CKPT).to(device)
-    return SamPredictor(sam)
+    """SAM ViT-L predictor — wraps cached model. Predictor state is image-specific."""
+    from segment_anything import SamPredictor
+    return SamPredictor(_load_sam_model(device))
 
 
 # ── Image adaptation: upscale tiny images + tile extreme-aspect images ──
@@ -766,10 +780,22 @@ def process(slug: str, force: bool = False):
     # Overlap resolution
     resolve_overlaps(layers_raw)
 
-    # Save per-layer RGBA + manifest
+    # Save per-layer RGBA + manifest (with soft-alpha edge refinement)
+    try:
+        sys.path.insert(0, str(REPO / "src"))
+        from vulca.layers.matting import soften_mask
+    except ImportError:
+        soften_mask = None
+
     manifest_layers = []
     for l in layers_raw:
-        mask_u8 = (l["mask_resolved"] * 255).astype(np.uint8)
+        if soften_mask is not None and plan.get("soften_edges", True):
+            # soft alpha: guided filter or feathered + despill → smoother edges
+            soft = soften_mask(l["mask_resolved"], img_np, feather_px=2,
+                                guided=True, despill=True)
+            mask_u8 = (soft * 255).astype(np.uint8)
+        else:
+            mask_u8 = (l["mask_resolved"] * 255).astype(np.uint8)
         rgba = np.dstack([img_np, mask_u8])
         fname = f"{l['name']}.png"
         Image.fromarray(rgba).save(str(out_subdir / fname))

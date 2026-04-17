@@ -1,0 +1,84 @@
+{
+  "slug": "mona-lisa",
+  "reviewer": "claude-opus-4-7",
+  "reviewed_at": "2026-04-17",
+  "overall": {
+    "quality": "good",
+    "summary": "Background and face sub-parts (eyes, nose, lips, eyebrows) are precise. Parent person layer is nearly empty because z-priority subtraction gave all pixels to sub-parts — this is design intent but counterintuitive. Chair_parapet bbox too wide, includes arms/hands that belong to person."
+  },
+  "layers": [
+    {
+      "name": "background",
+      "quality": "good",
+      "issue": null,
+      "fix": null
+    },
+    {
+      "name": "mona_lisa",
+      "quality": "empty",
+      "issue": "Parent person layer has <3% pixels after sub-parts (skin/hair/eyes/etc) claimed via z-priority. Visually shows only hair strands and arm fragments.",
+      "fix": "Either (a) suppress parent layer when expand_face_parts=true, or (b) add 'body_remainder' layer for torso/neck/clothing pixels not covered by face parts. Option (b) is more useful for compositing."
+    },
+    {
+      "name": "mona_lisa__skin",
+      "quality": "good",
+      "issue": null,
+      "fix": null
+    },
+    {
+      "name": "mona_lisa__hair",
+      "quality": "incomplete",
+      "issue": "Only top-of-head hair strand captured; missing long hair falling on shoulders",
+      "fix": "Face-parsing hair class misses shoulder-length hair below face bbox. Extend hair bbox vertically or fallback to DINO 'long dark hair falling on shoulders'."
+    },
+    {
+      "name": "mona_lisa__eyebrows",
+      "quality": "good",
+      "issue": null,
+      "fix": null
+    },
+    {
+      "name": "mona_lisa__nose",
+      "quality": "good",
+      "issue": null,
+      "fix": null
+    },
+    {
+      "name": "mona_lisa__eyes",
+      "quality": "good",
+      "issue": null,
+      "fix": null
+    },
+    {
+      "name": "mona_lisa__lips",
+      "quality": "good",
+      "issue": null,
+      "fix": null
+    },
+    {
+      "name": "chair_parapet",
+      "quality": "leak",
+      "issue": "Bbox too wide — captured the entire lower-body region including hands/arms instead of just chair armrest + parapet",
+      "fix": "Tighten bbox via a different DINO prompt like 'stone ledge only' excluding hands, or post-process: subtract person bbox area from chair_parapet mask"
+    }
+  ],
+  "missing_concepts": [
+    "dress/clothing (absorbed into parent 'mona_lisa' layer which is now empty)",
+    "veil (subtle translucent fabric, likely below detection threshold)",
+    "neck (partially in skin layer but not separately named)"
+  ],
+  "recommended_reruns": [
+    {
+      "entity": "mona_lisa",
+      "action": "Either drop the parent layer from manifest when expand_face_parts=true, OR add explicit 'clothing' and 'hands' sub-entities to the plan so body parts get their own layers."
+    },
+    {
+      "entity": "chair_parapet",
+      "action": "Split into separate 'chair_armrest' and 'stone_parapet_ledge' with tighter DINO prompts; add negative prompt ignoring human arms."
+    },
+    {
+      "entity": "hair",
+      "action": "Face-parsing misses below-chin hair. Supplement with DINO 'long dark brown hair falling below shoulders' as separate entity."
+    }
+  ]
+}
