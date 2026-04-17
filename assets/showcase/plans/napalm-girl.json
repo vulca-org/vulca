@@ -1,0 +1,79 @@
+{
+  "slug": "napalm-girl",
+  "domain": "historical_bw_photo",
+  "notes": "YOLO26 for person detection (9 detected earlier), DINO for background only.",
+  "device": "mps",
+  "threshold_hint": 0.20,
+  "entities": [
+    {
+      "name": "background",
+      "label": "dirt road with smoke in the distance",
+      "semantic_path": "background",
+      "detector": "dino",
+      "threshold": 0.20
+    },
+    {
+      "name": "boy_screaming_left",
+      "label": "boy in white shirt screaming on the left",
+      "semantic_path": "subject.person[0]",
+      "detector": "yolo",
+      "order": 0
+    },
+    {
+      "name": "small_boy_behind",
+      "label": "small child behind the left boy",
+      "semantic_path": "subject.person[1]",
+      "detector": "yolo",
+      "order": 1
+    },
+    {
+      "name": "soldier_center",
+      "label": "soldier with helmet in background center",
+      "semantic_path": "subject.person[2]",
+      "detector": "yolo",
+      "order": 2
+    },
+    {
+      "name": "girl_center_nude",
+      "label": "central nude running girl with outstretched arms",
+      "semantic_path": "subject.person[3]",
+      "detector": "yolo",
+      "order": 3
+    },
+    {
+      "name": "boy_dirty_clothes",
+      "label": "boy in dirty clothes running right of center",
+      "semantic_path": "subject.person[4]",
+      "detector": "yolo",
+      "order": 4
+    },
+    {
+      "name": "soldier_middle_right",
+      "label": "soldier with helmet in middle right",
+      "semantic_path": "subject.person[5]",
+      "detector": "yolo",
+      "order": 5
+    },
+    {
+      "name": "girl_white_shirt",
+      "label": "girl in white shirt walking on the right",
+      "semantic_path": "subject.person[6]",
+      "detector": "yolo",
+      "order": 6
+    },
+    {
+      "name": "soldier_far_right_1",
+      "label": "soldier with helmet far right",
+      "semantic_path": "subject.person[7]",
+      "detector": "yolo",
+      "order": 7
+    },
+    {
+      "name": "soldier_far_right_2",
+      "label": "soldier with helmet rightmost edge",
+      "semantic_path": "subject.person[8]",
+      "detector": "yolo",
+      "order": 8
+    }
+  ]
+}

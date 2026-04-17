@@ -1,0 +1,31 @@
+{
+  "slug": "mona-lisa",
+  "domain": "renaissance_painting",
+  "notes": "Single figure portrait — use YOLO for person detection, face-parsing auto-expands to eyes/nose/lips/brows/skin/hair.",
+  "device": "mps",
+  "threshold_hint": 0.25,
+  "expand_face_parts": true,
+  "entities": [
+    {
+      "name": "background",
+      "label": "distant landscape with mountains and winding road",
+      "semantic_path": "background",
+      "detector": "dino",
+      "threshold": 0.20
+    },
+    {
+      "name": "mona_lisa",
+      "label": "seated woman in dark dress",
+      "semantic_path": "subject.person[0]",
+      "detector": "yolo",
+      "order": 0
+    },
+    {
+      "name": "chair_parapet",
+      "label": "wooden chair armrest and stone parapet ledge",
+      "semantic_path": "foreground.furniture",
+      "detector": "dino",
+      "threshold": 0.15
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "slug": "creation-of-adam",
+  "domain": "renaissance_fresco",
+  "notes": "Multi-figure fresco. YOLO detects person clusters left-to-right. Face-parsing expands each detected person into face parts (may be limited by small face sizes).",
+  "device": "mps",
+  "threshold_hint": 0.25,
+  "expand_face_parts": true,
+  "entities": [
+    {
+      "name": "sky",
+      "label": "pale cream sky and cloudy atmosphere",
+      "semantic_path": "background",
+      "detector": "dino",
+      "threshold": 0.20
+    },
+    {
+      "name": "green_ground",
+      "label": "green mossy ground and earth",
+      "semantic_path": "background.ground",
+      "detector": "dino",
+      "threshold": 0.20
+    },
+    {
+      "name": "red_cloak",
+      "label": "large billowing dark red cloak or mantle",
+      "semantic_path": "subject.drapery",
+      "detector": "dino"
+    },
+    {
+      "name": "adam",
+      "label": "reclining nude man on the left",
+      "semantic_path": "subject.person[0]",
+      "detector": "yolo",
+      "order": 0
+    },
+    {
+      "name": "god_angels_cluster",
+      "label": "cluster of figures on the right",
+      "semantic_path": "subject.person[1]",
+      "detector": "yolo",
+      "order": 1
+    }
+  ]
+}
