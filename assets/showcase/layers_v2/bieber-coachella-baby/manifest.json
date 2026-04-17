@@ -1,0 +1,328 @@
+{
+  "version": 5,
+  "width": 608,
+  "height": 1080,
+  "source_image": "assets/showcase/originals/bieber-coachella-baby.png",
+  "split_mode": "claude_orchestrated",
+  "status": "ok",
+  "detection_report": {
+    "requested": 4,
+    "domain": "concert_photograph",
+    "person_chain": [
+      "yolo",
+      "dino"
+    ],
+    "per_entity": [
+      {
+        "id": 2,
+        "name": "bieber",
+        "label": "man in red hoodie singing into microphone",
+        "semantic_path": "subject.person[0]",
+        "kind": "person",
+        "attempts": [
+          {
+            "detector": "yolo",
+            "count": 2,
+            "conf_range": "0.68-0.85"
+          }
+        ],
+        "status": "detected",
+        "detector": "yolo",
+        "bbox": [
+          2,
+          318,
+          140,
+          653
+        ],
+        "det_score": 0.6804289221763611,
+        "sam_score": 0.9222065210342407,
+        "pct": 4.92,
+        "bbox_fill": 0.668,
+        "inside_ratio": 0.957,
+        "pct_before_resolve": 4.92,
+        "pct_after_resolve": 4.92
+      },
+      {
+        "id": 0,
+        "name": "dark_stage",
+        "label": "dark stage with purple and dim lighting",
+        "semantic_path": "background",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "dark stage",
+        "bbox": [
+          3,
+          4,
+          603,
+          699
+        ],
+        "det_score": 0.2855880558490753,
+        "sam_score": 0.9324727058410645,
+        "pct": 30.07,
+        "bbox_fill": 0.463,
+        "inside_ratio": 0.978,
+        "pct_before_resolve": 30.07,
+        "pct_after_resolve": 29.98
+      },
+      {
+        "id": 1,
+        "name": "projected_crowd",
+        "label": "dim scene of people in background behind the artist",
+        "semantic_path": "background.projection",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "dim scene",
+        "bbox": [
+          4,
+          281,
+          566,
+          648
+        ],
+        "det_score": 0.36143285036087036,
+        "sam_score": 0.8446807861328125,
+        "pct": 15.97,
+        "bbox_fill": 0.502,
+        "inside_ratio": 0.987,
+        "pct_before_resolve": 15.97,
+        "pct_after_resolve": 11.11
+      },
+      {
+        "id": 3,
+        "name": "microphone",
+        "label": "handheld microphone at mouth",
+        "semantic_path": "foreground.microphone",
+        "kind": "object",
+        "status": "detected",
+        "detector": "dino",
+        "matched_phrase": "handheld microphone",
+        "bbox": [
+          339,
+          549,
+          525,
+          652
+        ],
+        "det_score": 0.5792805552482605,
+        "sam_score": 0.9175729751586914,
+        "pct": 2.05,
+        "bbox_fill": 0.697,
+        "inside_ratio": 0.99,
+        "pct_before_resolve": 2.05,
+        "pct_after_resolve": 2.05
+      }
+    ],
+    "detected": 4,
+    "suspect": 0,
+    "missed": 0,
+    "authority_mix": {
+      "detected_by_model": 4,
+      "hinted_by_plan": 0,
+      "suspect": 0,
+      "missed": 0
+    },
+    "success_rate": 1.0,
+    "status": "ok"
+  },
+  "plan": {
+    "slug": "bieber-coachella-baby",
+    "domain": "concert_photograph",
+    "device": "mps",
+    "threshold_hint": 0.25,
+    "expand_face_parts": true,
+    "notes": "Justin Bieber at Coachella 2026, Baby MV segment — red/pink hoodie, dark setting with projected Baby music video scene visible behind showing club/party crowd. Vertical format.",
+    "entities": [
+      {
+        "name": "dark_stage",
+        "label": "dark stage with purple and dim lighting",
+        "semantic_path": "background",
+        "detector": "dino",
+        "threshold": 0.2
+      },
+      {
+        "name": "projected_crowd",
+        "label": "dim scene of people in background behind the artist",
+        "semantic_path": "background.projection",
+        "detector": "dino",
+        "threshold": 0.15
+      },
+      {
+        "name": "bieber",
+        "label": "man in red hoodie singing into microphone",
+        "semantic_path": "subject.person[0]",
+        "detector": "yolo",
+        "order": 0
+      },
+      {
+        "name": "microphone",
+        "label": "handheld microphone at mouth",
+        "semantic_path": "foreground.microphone",
+        "detector": "dino",
+        "threshold": 0.15
+      }
+    ]
+  },
+  "created_at": "2026-04-17T21:30:56Z",
+  "layers": [
+    {
+      "id": "layer_6178fd5c",
+      "name": "bieber",
+      "label": "man in red hoodie singing into microphone",
+      "description": "man in red hoodie singing into microphone",
+      "z_index": 50,
+      "blend_mode": "normal",
+      "content_type": "bieber",
+      "semantic_path": "subject.person[0]",
+      "parent_layer_id": null,
+      "visible": true,
+      "locked": false,
+      "file": "bieber.png",
+      "bbox": [
+        2,
+        318,
+        140,
+        653
+      ],
+      "det_score": 0.6804289221763611,
+      "sam_score": 0.9222065210342407,
+      "area_pct": 4.92,
+      "quality_status": "detected",
+      "regeneration_prompt": "man in red hoodie singing into microphone",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_549d6594",
+      "name": "dark_stage",
+      "label": "dark stage with purple and dim lighting",
+      "description": "dark stage with purple and dim lighting",
+      "z_index": 0,
+      "blend_mode": "normal",
+      "content_type": "dark_stage",
+      "semantic_path": "background",
+      "parent_layer_id": null,
+      "visible": true,
+      "locked": false,
+      "file": "dark_stage.png",
+      "bbox": [
+        3,
+        4,
+        603,
+        699
+      ],
+      "det_score": 0.2855880558490753,
+      "sam_score": 0.9324727058410645,
+      "area_pct": 29.98,
+      "quality_status": "detected",
+      "regeneration_prompt": "dark stage with purple and dim lighting",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_c51b757d",
+      "name": "projected_crowd",
+      "label": "dim scene of people in background behind the artist",
+      "description": "dim scene of people in background behind the artist",
+      "z_index": 10,
+      "blend_mode": "normal",
+      "content_type": "projected_crowd",
+      "semantic_path": "background.projection",
+      "parent_layer_id": "layer_549d6594",
+      "visible": true,
+      "locked": false,
+      "file": "projected_crowd.png",
+      "bbox": [
+        4,
+        281,
+        566,
+        648
+      ],
+      "det_score": 0.36143285036087036,
+      "sam_score": 0.8446807861328125,
+      "area_pct": 11.11,
+      "quality_status": "detected",
+      "regeneration_prompt": "dim scene of people in background behind the artist",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_b89b9c5b",
+      "name": "microphone",
+      "label": "handheld microphone at mouth",
+      "description": "handheld microphone at mouth",
+      "z_index": 80,
+      "blend_mode": "normal",
+      "content_type": "microphone",
+      "semantic_path": "foreground.microphone",
+      "parent_layer_id": null,
+      "visible": true,
+      "locked": false,
+      "file": "microphone.png",
+      "bbox": [
+        339,
+        549,
+        525,
+        652
+      ],
+      "det_score": 0.5792805552482605,
+      "sam_score": 0.9175729751586914,
+      "area_pct": 2.05,
+      "quality_status": "detected",
+      "regeneration_prompt": "handheld microphone at mouth",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_ac143fbd",
+      "name": "residual",
+      "label": "plan residual — pixels not covered by any named entity",
+      "description": "plan residual — pixels not covered by any named entity",
+      "z_index": 1,
+      "blend_mode": "normal",
+      "content_type": "residual",
+      "semantic_path": "residual",
+      "parent_layer_id": null,
+      "visible": true,
+      "locked": true,
+      "file": "residual.png",
+      "bbox": [
+        0,
+        0,
+        608,
+        1080
+      ],
+      "det_score": null,
+      "sam_score": null,
+      "area_pct": 56.09,
+      "quality_status": "residual",
+      "regeneration_prompt": "plan residual — pixels not covered by any named entity",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    }
+  ]
+}

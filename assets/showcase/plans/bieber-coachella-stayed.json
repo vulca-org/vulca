@@ -1,0 +1,31 @@
+{
+  "slug": "bieber-coachella-stayed",
+  "domain": "concert_photograph",
+  "device": "mps",
+  "threshold_hint": 0.25,
+  "expand_face_parts": true,
+  "notes": "Justin Bieber at Coachella 2026 — pink/maroon hoodie with hood up, mic at mouth, cyan/teal stage background. Vertical format (608x1080).",
+  "entities": [
+    {
+      "name": "teal_stage",
+      "label": "cyan teal gradient stage background",
+      "semantic_path": "background",
+      "detector": "dino",
+      "threshold": 0.2
+    },
+    {
+      "name": "bieber",
+      "label": "man in pink hoodie holding microphone",
+      "semantic_path": "subject.person[0]",
+      "detector": "yolo",
+      "order": 0
+    },
+    {
+      "name": "microphone",
+      "label": "handheld microphone at mouth",
+      "semantic_path": "foreground.microphone",
+      "detector": "dino",
+      "threshold": 0.15
+    }
+  ]
+}

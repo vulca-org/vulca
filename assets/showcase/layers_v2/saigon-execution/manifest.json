@@ -173,7 +173,7 @@
     "slug": "saigon-execution",
     "device": "mps"
   },
-  "created_at": "2026-04-17T16:21:14Z",
+  "created_at": "2026-04-17T21:35:36Z",
   "layers": [
     {
       "id": "layer_1bb3421d",
@@ -516,7 +516,7 @@
       ],
       "det_score": 0.959904134273529,
       "sam_score": 0.95,
-      "area_pct": 0.0,
+      "area_pct": 0.13,
       "quality_status": "detected",
       "regeneration_prompt": "victim neck",
       "opacity": 1.0,
@@ -548,7 +548,7 @@
       ],
       "det_score": 0.959904134273529,
       "sam_score": 0.95,
-      "area_pct": 0.0,
+      "area_pct": 0.27,
       "quality_status": "detected",
       "regeneration_prompt": "victim cloth",
       "opacity": 1.0,

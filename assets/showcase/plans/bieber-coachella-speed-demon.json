@@ -1,0 +1,31 @@
+{
+  "slug": "bieber-coachella-speed-demon",
+  "domain": "concert_photograph",
+  "device": "mps",
+  "threshold_hint": 0.25,
+  "expand_face_parts": true,
+  "notes": "Justin Bieber at Coachella 2026, SPEED DEMON performance — single person, red hoodie with hood up, stage with red/orange lighting. YOLO should detect 1 person; face-parsing auto-expands.",
+  "entities": [
+    {
+      "name": "red_stage",
+      "label": "dark red stage background with smoke and orange lighting",
+      "semantic_path": "background",
+      "detector": "dino",
+      "threshold": 0.2
+    },
+    {
+      "name": "bieber",
+      "label": "man in red hoodie holding microphone",
+      "semantic_path": "subject.person[0]",
+      "detector": "yolo",
+      "order": 0
+    },
+    {
+      "name": "microphone",
+      "label": "handheld microphone",
+      "semantic_path": "foreground.microphone",
+      "detector": "dino",
+      "threshold": 0.15
+    }
+  ]
+}

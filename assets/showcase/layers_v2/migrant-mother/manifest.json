@@ -182,7 +182,7 @@
     "slug": "migrant-mother",
     "device": "mps"
   },
-  "created_at": "2026-04-17T16:19:52Z",
+  "created_at": "2026-04-17T21:34:34Z",
   "layers": [
     {
       "id": "layer_11af0bdf",
@@ -429,7 +429,7 @@
       ],
       "det_score": 0.9064866900444031,
       "sam_score": 0.95,
-      "area_pct": 0.0,
+      "area_pct": 6.77,
       "quality_status": "detected",
       "regeneration_prompt": "child_left cloth",
       "opacity": 1.0,
@@ -685,7 +685,7 @@
       ],
       "det_score": 0.8670979142189026,
       "sam_score": 0.95,
-      "area_pct": 0.0,
+      "area_pct": 0.03,
       "quality_status": "detected",
       "regeneration_prompt": "mother neck",
       "opacity": 1.0,
@@ -717,7 +717,7 @@
       ],
       "det_score": 0.8670979142189026,
       "sam_score": 0.95,
-      "area_pct": 0.0,
+      "area_pct": 1.38,
       "quality_status": "detected",
       "regeneration_prompt": "mother cloth",
       "opacity": 1.0,

@@ -134,7 +134,7 @@
     "slug": "polaris-dawn-cupola",
     "device": "mps"
   },
-  "created_at": "2026-04-17T16:20:40Z",
+  "created_at": "2026-04-17T21:35:10Z",
   "layers": [
     {
       "id": "layer_9a130f38",
@@ -381,7 +381,7 @@
       ],
       "det_score": null,
       "sam_score": 0.95,
-      "area_pct": 0.0,
+      "area_pct": 2.67,
       "quality_status": "detected",
       "regeneration_prompt": "astronaut_silhouette neck",
       "opacity": 1.0,

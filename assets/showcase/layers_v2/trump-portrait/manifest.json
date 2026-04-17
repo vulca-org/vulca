@@ -134,7 +134,7 @@
     "slug": "trump-portrait",
     "device": "mps"
   },
-  "created_at": "2026-04-17T16:21:52Z",
+  "created_at": "2026-04-17T21:36:02Z",
   "layers": [
     {
       "id": "layer_41b57a89",
@@ -381,7 +381,7 @@
       ],
       "det_score": 0.9706267714500427,
       "sam_score": 0.95,
-      "area_pct": 0.0,
+      "area_pct": 0.29,
       "quality_status": "detected",
       "regeneration_prompt": "trump neck",
       "opacity": 1.0,
@@ -413,7 +413,7 @@
       ],
       "det_score": 0.9706267714500427,
       "sam_score": 0.95,
-      "area_pct": 0.0,
+      "area_pct": 39.8,
       "quality_status": "detected",
       "regeneration_prompt": "trump cloth",
       "opacity": 1.0,

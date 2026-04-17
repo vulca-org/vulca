@@ -132,7 +132,7 @@
     "slug": "buzz-aldrin-apollo11",
     "device": "mps"
   },
-  "created_at": "2026-04-17T16:16:28Z",
+  "created_at": "2026-04-17T21:31:15Z",
   "layers": [
     {
       "id": "layer_06abb81a",
@@ -443,7 +443,7 @@
       ],
       "det_score": 0.936000406742096,
       "sam_score": 0.95,
-      "area_pct": 0.0,
+      "area_pct": 3.65,
       "quality_status": "detected",
       "regeneration_prompt": "buzz_aldrin neck",
       "opacity": 1.0,
@@ -475,7 +475,7 @@
       ],
       "det_score": 0.936000406742096,
       "sam_score": 0.95,
-      "area_pct": 0.0,
+      "area_pct": 0.17,
       "quality_status": "detected",
       "regeneration_prompt": "buzz_aldrin cloth",
       "opacity": 1.0,

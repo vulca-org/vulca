@@ -411,6 +411,161 @@ class TestIsDescendant:
         assert not pipeline_module._is_descendant("", "subject.head")
 
 
+class TestIsAncestorOrDescendant:
+    """Phase 1.8: bidirectional ancestor/descendant check."""
+
+    def test_symmetric_true_both_directions(self, pipeline_module):
+        parent = "subject.person[0]"
+        child  = "subject.person[0].cloth"
+        assert pipeline_module._is_ancestor_or_descendant(parent, child)
+        assert pipeline_module._is_ancestor_or_descendant(child, parent)  # NEW: dual
+
+    def test_transitive_depths(self, pipeline_module):
+        gp    = "subject"
+        pa    = "subject.person[0]"
+        child = "subject.person[0].face.eyes"
+        assert pipeline_module._is_ancestor_or_descendant(gp, child)
+        assert pipeline_module._is_ancestor_or_descendant(child, gp)
+
+    def test_siblings_unrelated(self, pipeline_module):
+        a = "subject.person[0].cloth"
+        b = "subject.person[0].body"
+        assert not pipeline_module._is_ancestor_or_descendant(a, b)
+
+    def test_different_persons_unrelated(self, pipeline_module):
+        p0 = "subject.person[0].eyes"
+        p1 = "subject.person[1].eyes"
+        assert not pipeline_module._is_ancestor_or_descendant(p0, p1)
+
+    def test_empty_strings_never_related(self, pipeline_module):
+        assert not pipeline_module._is_ancestor_or_descendant("", "subject.head")
+        assert not pipeline_module._is_ancestor_or_descendant("subject.head", "")
+
+    def test_identical_not_related(self, pipeline_module):
+        # A layer is not its own ancestor/descendant
+        sp = "subject.person[0]"
+        assert not pipeline_module._is_ancestor_or_descendant(sp, sp)
+
+
+class TestPhase18AncestorNoLongerEatsDescendant:
+    """Phase 1.8 regression target: parent SAM mask no longer eats child face-parts.
+
+    Before fix: `bieber__cloth` (z=46, child of `bieber` z=50) had its entire
+    mask eaten because parent.z > child.z and one-way descendant rule didn't
+    skip the parent. This test locks that behavior in place.
+    """
+
+    def test_parent_does_not_eat_child_with_negative_z_boost(self, pipeline_module):
+        """Parent at z=50 must NOT carve a descendant at z=46."""
+        import numpy as np
+        H = W = 100
+        # Parent mask covers 30x30 (the whole person)
+        parent_mask = np.zeros((H, W), dtype=bool); parent_mask[20:50, 30:60] = True
+        # Child (cloth) mask is a sub-region of parent — entirely within parent
+        cloth_mask  = np.zeros((H, W), dtype=bool); cloth_mask[30:45, 35:55]  = True
+        layers = [
+            {"id": 1, "name": "person", "semantic_path": "subject.person[0]",
+             "z": 50, "mask": parent_mask},
+            {"id": 2, "name": "person__cloth", "semantic_path": "subject.person[0].cloth",
+             "z": 46, "mask": cloth_mask},
+        ]
+        pipeline_module.resolve_overlaps(layers, unclaimed_threshold_pct=100)  # disable residual
+        # Phase 1.8 invariant: descendant keeps its full mask even when
+        # ancestor has higher z and overlaps entirely.
+        cloth_resolved = layers[1]["mask_resolved"]
+        assert cloth_resolved.sum() == cloth_mask.sum(), (
+            f"cloth was eaten: before={cloth_mask.sum()}, "
+            f"after={cloth_resolved.sum()}. "
+            "Phase 1.8 regression: parent is blocking descendant."
+        )
+        # Parent also keeps its full mask (Phase 1.5 invariant)
+        assert layers[0]["mask_resolved"].sum() == parent_mask.sum()
+
+    def test_unrelated_higher_z_still_blocks(self, pipeline_module):
+        """Sanity: Phase 1.8 didn't accidentally break sibling/unrelated blocking."""
+        import numpy as np
+        H = W = 100
+        bg = np.ones((H, W), dtype=bool)
+        fg = np.zeros((H, W), dtype=bool); fg[40:60, 40:60] = True
+        layers = [
+            {"id": 1, "name": "bg", "semantic_path": "background",
+             "z": 0, "mask": bg.copy()},
+            {"id": 2, "name": "fg", "semantic_path": "foreground.obj",
+             "z": 80, "mask": fg.copy()},
+        ]
+        pipeline_module.resolve_overlaps(layers, unclaimed_threshold_pct=100)
+        # fg and bg are unrelated (neither is ancestor of the other) so
+        # fg still blocks bg.
+        assert (layers[0]["mask_resolved"] & fg).sum() == 0
+
+    def test_corpus_cloth_neck_bodies_nonzero(self):
+        """Phase 1.8 empirical regression: for every image in the showcase corpus
+        that emits a __cloth, __neck, or __body sub-layer, at least ONE such
+        layer must have area_pct > 0.5%.
+
+        This is the exact structural check that would have caught the Phase
+        1.5 bug. Before fix: 14/14 __cloth and __neck layers had area_pct=0.00.
+        After fix: expected ≥50% to have material area.
+
+        Skipped cleanly if the layers_v2 corpus isn't present.
+        """
+        import json
+        from pathlib import Path
+        root = Path(__file__).resolve().parents[3] / "assets" / "showcase" / "layers_v2"
+        if not root.exists():
+            pytest.skip("layers_v2 corpus not present")
+
+        violators = []
+        for slug_dir in root.iterdir():
+            if not slug_dir.is_dir():
+                continue
+            mf = slug_dir / "manifest.json"
+            if not mf.exists():
+                continue
+            try:
+                m = json.loads(mf.read_text())
+            except Exception:
+                continue
+            face_subs = [l for l in m.get("layers", [])
+                         if any(k in l.get("name", "")
+                                for k in ("__cloth", "__neck", "__body"))]
+            if not face_subs:
+                continue
+            if not any(l.get("area_pct", 0.0) > 0.5 for l in face_subs):
+                violators.append({
+                    "slug": slug_dir.name,
+                    "face_subs": [(l["name"], l.get("area_pct", 0))
+                                  for l in face_subs],
+                })
+        # Allow up to 2 violators (heavily occluded subjects — hood/hat/side view
+        # where face-parser genuinely can't find body/cloth). More than that
+        # suggests the Phase 1.5→1.8 bug regressed.
+        assert len(violators) <= 2, (
+            f"{len(violators)} images have ALL __cloth/__neck/__body at "
+            f"area_pct ≤ 0.5% — suggests Phase 1.8 regression. Violators: "
+            f"{violators[:5]}"
+        )
+
+    def test_parent_does_not_eat_neck_child(self, pipeline_module):
+        """Mirror of cloth test — `__neck` also has negative z-boost (-2).
+        Same bug class. Reviewer-requested regression guard.
+        """
+        import numpy as np
+        H = W = 100
+        parent_mask = np.zeros((H, W), dtype=bool); parent_mask[10:60, 20:70] = True
+        neck_mask   = np.zeros((H, W), dtype=bool); neck_mask[15:25, 30:50]   = True
+        layers = [
+            {"id": 1, "name": "person", "semantic_path": "subject.person[0]",
+             "z": 50, "mask": parent_mask},
+            {"id": 2, "name": "person__neck", "semantic_path": "subject.person[0].neck",
+             "z": 48, "mask": neck_mask},  # neck z-boost = -2
+        ]
+        pipeline_module.resolve_overlaps(layers, unclaimed_threshold_pct=100)
+        # neck must survive fully — parent is its ancestor, cannot block
+        assert layers[1]["mask_resolved"].sum() == neck_mask.sum()
+        assert layers[0]["mask_resolved"].sum() == parent_mask.sum()
+
+
 class TestHintToBboxPx:
     def test_full_image(self, pipeline_module):
         bbox = pipeline_module.hint_to_bbox_px([0.0, 0.0, 1.0, 1.0], 1000, 600)

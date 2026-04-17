@@ -103,7 +103,7 @@
     "slug": "post-malone-live",
     "device": "mps"
   },
-  "created_at": "2026-04-17T16:20:44Z",
+  "created_at": "2026-04-17T21:35:14Z",
   "layers": [
     {
       "id": "layer_5277da2a",
@@ -222,7 +222,7 @@
       ],
       "det_score": 0.9697896838188171,
       "sam_score": 0.95,
-      "area_pct": 0.0,
+      "area_pct": 22.01,
       "quality_status": "detected",
       "regeneration_prompt": "singer cloth",
       "opacity": 1.0,

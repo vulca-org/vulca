@@ -586,17 +586,40 @@ def _is_descendant(sp: str, ancestor: str) -> bool:
     return bool(ancestor) and sp.startswith(ancestor + ".")
 
 
+def _is_ancestor_or_descendant(sp_a: str, sp_b: str) -> bool:
+    """Return True iff sp_a and sp_b are in the same ancestor/descendant chain.
+
+    Phase 1.8: the hierarchical blocker rule must be BIDIRECTIONAL.
+    Phase 1.5 only implemented "descendants don't block ancestors",
+    but forgot the dual "ancestors don't block descendants".
+
+    Consequence before this fix: face-parse sub-layers with negative z-boost
+    (e.g. `cloth` z=46 under a parent person z=50) had their entire mask
+    eaten by the parent's SAM mask, because the parent is NOT a descendant
+    of the child (it's the ancestor), so the one-way rule didn't skip it.
+    Observed: `bieber__cloth` area_pct=0.00% in every Bieber Coachella
+    output; `__neck` would show the same bug when present.
+
+    Fix: treat any ancestor/descendant relationship (either direction) as
+    non-blocking. Unrelated layers (siblings, foreground/background) still
+    block normally via z-order.
+    """
+    return _is_descendant(sp_a, sp_b) or _is_descendant(sp_b, sp_a)
+
+
 def resolve_overlaps(layers_raw, unclaimed_threshold_pct: float = 2.0):
     """Assign per-pixel ownership across layers — hierarchical model.
 
-    Rules (Phase 1.5+):
-    - Strictly higher-z NON-descendant layers block a layer's pixels.
-    - Descendants (face parts, sub-entities) do NOT carve parents.
+    Rules (Phase 1.5 + Phase 1.8 correction):
+    - Strictly higher-z UNRELATED layers block a layer's pixels.
+    - Ancestor/descendant pairs (either direction) do NOT block each other.
     - Same-z siblings do NOT block each other (render order breaks ties).
 
     This is the correct model for agent-native editing: a parent layer
     contains the whole subject (woman keeps eyes/lips pixels); sub-layers
-    are addressable overlays, not carve-outs.
+    are addressable overlays, not carve-outs. Sub-layers with negative
+    z-boost (cloth, neck) also survive intact because the parent no longer
+    eats them.
 
     Phase 1.6: a synthetic `residual` layer is emitted at z=1 when the
     unclaimed coverage exceeds `unclaimed_threshold_pct`, with
@@ -625,7 +648,9 @@ def resolve_overlaps(layers_raw, unclaimed_threshold_pct: float = 2.0):
             if other["z"] <= z:            # rule 2: same/lower z doesn't block
                 continue
             other_sp = other.get("semantic_path", "")
-            if _is_descendant(other_sp, sp):  # rule 1: descendants don't block ancestors
+            # Phase 1.8: BOTH ancestor→descendant AND descendant→ancestor are skipped.
+            # Phase 1.5 only had _is_descendant(other_sp, sp) which was half-right.
+            if _is_ancestor_or_descendant(other_sp, sp):
                 continue
             blocker |= other["mask"]
         layer["mask_resolved"] = layer["mask"] & ~blocker

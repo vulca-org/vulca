@@ -177,7 +177,7 @@
     "slug": "tracy-caldwell-cupola",
     "device": "mps"
   },
-  "created_at": "2026-04-17T16:21:41Z",
+  "created_at": "2026-04-17T21:35:54Z",
   "layers": [
     {
       "id": "layer_9de73e45",
@@ -424,7 +424,7 @@
       ],
       "det_score": null,
       "sam_score": 0.95,
-      "area_pct": 0.0,
+      "area_pct": 8.07,
       "quality_status": "detected",
       "regeneration_prompt": "astronaut cloth",
       "opacity": 1.0,

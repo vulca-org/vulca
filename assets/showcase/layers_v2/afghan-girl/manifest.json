@@ -104,7 +104,7 @@
     "slug": "afghan-girl",
     "device": "mps"
   },
-  "created_at": "2026-04-17T16:15:39Z",
+  "created_at": "2026-04-17T21:30:15Z",
   "layers": [
     {
       "id": "layer_338a1afe",
@@ -383,7 +383,7 @@
       ],
       "det_score": 0.8888350129127502,
       "sam_score": 0.95,
-      "area_pct": 0.0,
+      "area_pct": 47.69,
       "quality_status": "detected",
       "regeneration_prompt": "girl cloth",
       "opacity": 1.0,
