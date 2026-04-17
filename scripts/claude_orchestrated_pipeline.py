@@ -586,69 +586,69 @@ def _is_descendant(sp: str, ancestor: str) -> bool:
     return bool(ancestor) and sp.startswith(ancestor + ".")
 
 
-def resolve_overlaps(layers_raw, layer_model: str = "hierarchical"):
-    """Assign per-pixel ownership across layers.
+def resolve_overlaps(layers_raw, unclaimed_threshold_pct: float = 2.0):
+    """Assign per-pixel ownership across layers — hierarchical model.
 
-    Two models:
-    - "flat"         : highest-z wins pixel, mutually-exclusive partition.
-                       Preserved for migrate pipeline + legacy compat.
-    - "hierarchical" : strictly-higher-z NON-descendant layers block.
-                       Descendants (face parts, sub-entities) do NOT carve
-                       parents; same-z siblings do NOT block each other.
-                       Correct model for agent-native editing where a parent
-                       layer should contain the whole subject (woman keeps
-                       eyes/lips pixels; sub-layers are addressable overlays).
+    Rules (Phase 1.5+):
+    - Strictly higher-z NON-descendant layers block a layer's pixels.
+    - Descendants (face parts, sub-entities) do NOT carve parents.
+    - Same-z siblings do NOT block each other (render order breaks ties).
 
-    Background catch-all fill is unchanged: the lowest-z layer with z≤10
-    absorbs any unclaimed pixels.
+    This is the correct model for agent-native editing: a parent layer
+    contains the whole subject (woman keeps eyes/lips pixels); sub-layers
+    are addressable overlays, not carve-outs.
 
-    Complexity: hierarchical path is O(n²) in layer count AND allocates one
-    H×W bool array per pair (numpy temp). At n≈30 layers × 4MB per 2048²
-    bool array this is fine. For crowd scenes (100+ layers) consider
-    pre-sorting by -z and maintaining a cumulative non-descendant blocker
-    to drop to O(n × avg_depth).
+    Phase 1.6: a synthetic `residual` layer is emitted at z=1 when the
+    unclaimed coverage exceeds `unclaimed_threshold_pct`, with
+    `locked=True, quality_status="residual"`. This replaces the legacy
+    "dump unclaimed into background" behavior that polluted bg with
+    un-segmented subject pixels. Composite still reconstructs the original
+    image pixel-perfectly (bg + residual + fg z-stack).
+
+    Complexity: O(n²) in layer count, allocates one H×W bool array per
+    pair. At n≈30 layers × 4MB per 2048² bool array this is fine. For
+    crowd scenes (100+ layers) consider pre-sorting by -z and maintaining
+    a cumulative non-descendant blocker to drop to O(n × avg_depth).
     """
     if not layers_raw:
         raise ValueError("empty layers")
     H, W = layers_raw[0]["mask"].shape
 
-    if layer_model == "flat":
-        ordered = sorted(layers_raw, key=lambda l: -l["z"])
-        claimed = np.zeros((H, W), dtype=bool)
-        for layer in ordered:
-            m = layer["mask"] & ~claimed
-            layer["mask_resolved"] = m
-            claimed |= m
-    else:
-        # Hierarchical: O(n²) but n typically < 80, dominated by model inference.
-        claimed_any = np.zeros((H, W), dtype=bool)
-        for layer in layers_raw:
-            sp = layer.get("semantic_path", "")
-            z = layer["z"]
-            blocker = np.zeros((H, W), dtype=bool)
-            for other in layers_raw:
-                if other is layer:
-                    continue
-                if other["z"] <= z:            # rule 2: same/lower z doesn't block
-                    continue
-                other_sp = other.get("semantic_path", "")
-                if _is_descendant(other_sp, sp):  # rule 1: descendants don't block ancestors
-                    continue
-                blocker |= other["mask"]
-            layer["mask_resolved"] = layer["mask"] & ~blocker
-            claimed_any |= layer["mask_resolved"]
-        # Background catch-all uses the hierarchical `claimed_any`.
-        bg_candidates = [l for l in layers_raw if l["z"] <= 10]
-        if bg_candidates:
-            bg = min(bg_candidates, key=lambda l: l["z"])
-            bg["mask_resolved"] = bg["mask_resolved"] | ~claimed_any
-        return layers_raw
+    claimed_any = np.zeros((H, W), dtype=bool)
+    for layer in layers_raw:
+        sp = layer.get("semantic_path", "")
+        z = layer["z"]
+        blocker = np.zeros((H, W), dtype=bool)
+        for other in layers_raw:
+            if other is layer:
+                continue
+            if other["z"] <= z:            # rule 2: same/lower z doesn't block
+                continue
+            other_sp = other.get("semantic_path", "")
+            if _is_descendant(other_sp, sp):  # rule 1: descendants don't block ancestors
+                continue
+            blocker |= other["mask"]
+        layer["mask_resolved"] = layer["mask"] & ~blocker
+        claimed_any |= layer["mask_resolved"]
 
-    # Legacy flat path: fill unclaimed into first background-level layer
-    bg_candidates = [l for l in layers_raw if l["z"] <= 10]
-    if bg_candidates:
-        bg = min(bg_candidates, key=lambda l: l["z"])
-        bg["mask_resolved"] = bg["mask_resolved"] | ~claimed
+    # Emit `residual` synthetic layer when unclaimed coverage is material.
+    unclaimed = ~claimed_any
+    unclaimed_pct = unclaimed.sum() / (H * W) * 100
+    if unclaimed_pct > unclaimed_threshold_pct:
+        print(f"  [residual] {unclaimed_pct:.1f}% unclaimed — emitting synthetic layer")
+        layers_raw.append({
+            "id": -1,
+            "name": "residual",
+            "label": "plan residual — pixels not covered by any named entity",
+            "semantic_path": "residual",
+            "bbox": [0, 0, W, H],
+            "det_score": None, "sam_score": None,
+            "z": 1,   # just above bg (z=0), below subject (z=50+)
+            "mask": unclaimed,
+            "mask_resolved": unclaimed,
+            "quality_status": "residual",
+            "locked": True,
+        })
     return layers_raw
 
 
@@ -1062,11 +1062,11 @@ def process(slug: str, force: bool = False):
     total_px = H_full * W_full
     pre_resolve_pct = {l["id"]: l["mask"].sum() / total_px * 100 for l in layers_raw}
 
-    # Overlap resolution — hierarchical is Phase-1.5 default; plans can opt into
-    # "flat" via layer_model="flat" as a temporary escape hatch.
-    layer_model = plan.get("layer_model", "hierarchical")
-    print(f"  resolve_overlaps: layer_model={layer_model}")
-    resolve_overlaps(layers_raw, layer_model=layer_model)
+    # Overlap resolution: hierarchical-only (Phase 1.6+). Residual synthetic
+    # layer emitted for plan-uncovered pixels above unclaimed_threshold_pct.
+    residual_threshold = plan.get("unclaimed_threshold_pct", 2.0)
+    print(f"  resolve_overlaps: residual_threshold={residual_threshold}%")
+    resolve_overlaps(layers_raw, unclaimed_threshold_pct=residual_threshold)
 
     # Post-resolve areas + over-erosion detection (ratio < 0.5 → flagged).
     # This catches same-z layers stealing pixels (e.g. body eating feet).
@@ -1158,7 +1158,8 @@ def process(slug: str, force: bool = False):
             "content_type": l["name"],
             "semantic_path": layer_sp,
             "parent_layer_id": _find_parent_id(layer_sp),
-            "visible": True, "locked": False,
+            "visible": True,
+            "locked": bool(l.get("locked", False)),
             "file": fname,
             "bbox": l["bbox"],
             "det_score": l["det_score"],

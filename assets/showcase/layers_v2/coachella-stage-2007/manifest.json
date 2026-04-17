@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "width": 1280,
   "height": 718,
   "source_image": "assets/showcase/originals/coachella-stage-2007.jpg",
@@ -36,7 +36,11 @@
         ],
         "det_score": 0.7864537835121155,
         "sam_score": 0.9456698894500732,
-        "pct": 0.18
+        "pct": 0.18,
+        "bbox_fill": 0.576,
+        "inside_ratio": 0.998,
+        "pct_before_resolve": 0.18,
+        "pct_after_resolve": 0.18
       },
       {
         "id": 0,
@@ -55,7 +59,11 @@
         ],
         "det_score": 0.37311962246894836,
         "sam_score": 0.9800324440002441,
-        "pct": 38.81
+        "pct": 38.81,
+        "bbox_fill": 0.583,
+        "inside_ratio": 0.992,
+        "pct_before_resolve": 38.81,
+        "pct_after_resolve": 38.81
       },
       {
         "id": 1,
@@ -74,7 +82,11 @@
         ],
         "det_score": 0.697493314743042,
         "sam_score": 0.9811000823974609,
-        "pct": 19.96
+        "pct": 19.96,
+        "bbox_fill": 0.62,
+        "inside_ratio": 1.0,
+        "pct_before_resolve": 19.96,
+        "pct_after_resolve": 19.96
       },
       {
         "id": 2,
@@ -93,11 +105,22 @@
         ],
         "det_score": 0.5621353983879089,
         "sam_score": 0.9912883043289185,
-        "pct": 16.87
+        "pct": 16.87,
+        "bbox_fill": 0.729,
+        "inside_ratio": 0.98,
+        "pct_before_resolve": 16.87,
+        "pct_after_resolve": 16.87
       }
     ],
     "detected": 4,
+    "suspect": 0,
     "missed": 0,
+    "authority_mix": {
+      "detected_by_model": 4,
+      "hinted_by_plan": 0,
+      "suspect": 0,
+      "missed": 0
+    },
     "success_rate": 1.0,
     "status": "ok"
   },
@@ -135,7 +158,7 @@
     "slug": "coachella-stage-2007",
     "device": "mps"
   },
-  "created_at": "2026-04-17T12:11:10Z",
+  "created_at": "2026-04-17T16:16:36Z",
   "layers": [
     {
       "id": "layer_1578bec6",
@@ -146,6 +169,7 @@
       "blend_mode": "normal",
       "content_type": "people",
       "semantic_path": "subject.person[0]",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "people.png",
@@ -157,6 +181,8 @@
       ],
       "det_score": 0.7864537835121155,
       "sam_score": 0.9456698894500732,
+      "area_pct": 0.18,
+      "quality_status": "detected",
       "regeneration_prompt": "festival attendees in the foreground",
       "opacity": 1.0,
       "x": 0.0,
@@ -175,6 +201,7 @@
       "blend_mode": "normal",
       "content_type": "sky",
       "semantic_path": "background",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "sky.png",
@@ -186,6 +213,8 @@
       ],
       "det_score": 0.37311962246894836,
       "sam_score": 0.9800324440002441,
+      "area_pct": 38.81,
+      "quality_status": "detected",
       "regeneration_prompt": "clear blue sky and distant mountains",
       "opacity": 1.0,
       "x": 0.0,
@@ -204,6 +233,7 @@
       "blend_mode": "normal",
       "content_type": "main_stage",
       "semantic_path": "subject.stage",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "main_stage.png",
@@ -215,6 +245,8 @@
       ],
       "det_score": 0.697493314743042,
       "sam_score": 0.9811000823974609,
+      "area_pct": 19.96,
+      "quality_status": "detected",
       "regeneration_prompt": "large black concert stage structure with scaffolding",
       "opacity": 1.0,
       "x": 0.0,
@@ -233,6 +265,7 @@
       "blend_mode": "normal",
       "content_type": "grass",
       "semantic_path": "foreground.ground",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "grass.png",
@@ -244,7 +277,41 @@
       ],
       "det_score": 0.5621353983879089,
       "sam_score": 0.9912883043289185,
+      "area_pct": 16.87,
+      "quality_status": "detected",
       "regeneration_prompt": "green festival grass field",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_06e7f268",
+      "name": "residual",
+      "label": "plan residual — pixels not covered by any named entity",
+      "description": "plan residual — pixels not covered by any named entity",
+      "z_index": 1,
+      "blend_mode": "normal",
+      "content_type": "residual",
+      "semantic_path": "residual",
+      "parent_layer_id": null,
+      "visible": true,
+      "locked": true,
+      "file": "residual.png",
+      "bbox": [
+        0,
+        0,
+        1280,
+        718
+      ],
+      "det_score": null,
+      "sam_score": null,
+      "area_pct": 24.18,
+      "quality_status": "residual",
+      "regeneration_prompt": "plan residual — pixels not covered by any named entity",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,

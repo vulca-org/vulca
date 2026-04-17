@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "width": 2400,
   "height": 2400,
   "source_image": "assets/showcase/originals/earthrise.jpg",
@@ -27,7 +27,11 @@
         ],
         "det_score": 0.6574133634567261,
         "sam_score": 1.0058715343475342,
-        "pct": 98.18
+        "pct": 98.18,
+        "bbox_fill": 0.979,
+        "inside_ratio": 0.83,
+        "pct_before_resolve": 98.18,
+        "pct_after_resolve": 77.83
       },
       {
         "id": 1,
@@ -46,7 +50,11 @@
         ],
         "det_score": 0.75457763671875,
         "sam_score": 1.0056633949279785,
-        "pct": 1.24
+        "pct": 1.24,
+        "bbox_fill": 0.655,
+        "inside_ratio": 1.0,
+        "pct_before_resolve": 1.24,
+        "pct_after_resolve": 1.24
       },
       {
         "id": 2,
@@ -65,11 +73,22 @@
         ],
         "det_score": 0.5350669622421265,
         "sam_score": 1.0121705532073975,
-        "pct": 20.59
+        "pct": 20.59,
+        "bbox_fill": 0.77,
+        "inside_ratio": 0.962,
+        "pct_before_resolve": 20.59,
+        "pct_after_resolve": 20.59
       }
     ],
     "detected": 3,
+    "suspect": 0,
     "missed": 0,
+    "authority_mix": {
+      "detected_by_model": 3,
+      "hinted_by_plan": 0,
+      "suspect": 0,
+      "missed": 0
+    },
     "success_rate": 1.0,
     "status": "ok"
   },
@@ -101,7 +120,7 @@
     "slug": "earthrise",
     "device": "mps"
   },
-  "created_at": "2026-04-17T11:35:47Z",
+  "created_at": "2026-04-17T16:16:44Z",
   "layers": [
     {
       "id": "layer_25f41242",
@@ -112,6 +131,7 @@
       "blend_mode": "normal",
       "content_type": "space",
       "semantic_path": "background",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "space.png",
@@ -123,6 +143,8 @@
       ],
       "det_score": 0.6574133634567261,
       "sam_score": 1.0058715343475342,
+      "area_pct": 77.83,
+      "quality_status": "detected",
       "regeneration_prompt": "black empty space",
       "opacity": 1.0,
       "x": 0.0,
@@ -141,6 +163,7 @@
       "blend_mode": "normal",
       "content_type": "earth",
       "semantic_path": "subject.planet",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "earth.png",
@@ -152,6 +175,8 @@
       ],
       "det_score": 0.75457763671875,
       "sam_score": 1.0056633949279785,
+      "area_pct": 1.24,
+      "quality_status": "detected",
       "regeneration_prompt": "planet Earth",
       "opacity": 1.0,
       "x": 0.0,
@@ -170,6 +195,7 @@
       "blend_mode": "normal",
       "content_type": "lunar_surface",
       "semantic_path": "foreground.ground",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "lunar_surface.png",
@@ -181,6 +207,8 @@
       ],
       "det_score": 0.5350669622421265,
       "sam_score": 1.0121705532073975,
+      "area_pct": 20.59,
+      "quality_status": "detected",
       "regeneration_prompt": "gray cratered lunar surface",
       "opacity": 1.0,
       "x": 0.0,

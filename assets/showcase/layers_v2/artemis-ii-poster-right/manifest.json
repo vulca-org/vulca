@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "width": 828,
   "height": 1280,
   "source_image": "assets/showcase/originals/artemis-ii-poster-right.jpg",
@@ -27,7 +27,11 @@
         ],
         "det_score": 0.5234282612800598,
         "sam_score": 0.9596714973449707,
-        "pct": 92.96
+        "pct": 92.96,
+        "bbox_fill": 0.94,
+        "inside_ratio": 0.99,
+        "pct_before_resolve": 92.96,
+        "pct_after_resolve": 58.53
       },
       {
         "id": 1,
@@ -46,7 +50,11 @@
         ],
         "det_score": 0.6809787750244141,
         "sam_score": 0.9467120170593262,
-        "pct": 34.46
+        "pct": 34.46,
+        "bbox_fill": 0.738,
+        "inside_ratio": 0.989,
+        "pct_before_resolve": 34.46,
+        "pct_after_resolve": 28.69
       },
       {
         "id": 2,
@@ -65,11 +73,22 @@
         ],
         "det_score": 0.3122977614402771,
         "sam_score": 0.9596866369247437,
-        "pct": 5.77
+        "pct": 5.77,
+        "bbox_fill": 0.752,
+        "inside_ratio": 0.912,
+        "pct_before_resolve": 5.77,
+        "pct_after_resolve": 5.77
       }
     ],
     "detected": 3,
+    "suspect": 0,
     "missed": 0,
+    "authority_mix": {
+      "detected_by_model": 3,
+      "hinted_by_plan": 0,
+      "suspect": 0,
+      "missed": 0
+    },
     "success_rate": 1.0,
     "status": "ok"
   },
@@ -101,7 +120,7 @@
     "slug": "artemis-ii-poster-right",
     "device": "mps"
   },
-  "created_at": "2026-04-17T12:39:08Z",
+  "created_at": "2026-04-17T16:16:07Z",
   "layers": [
     {
       "id": "layer_eaa36f28",
@@ -112,6 +131,7 @@
       "blend_mode": "normal",
       "content_type": "black_bg",
       "semantic_path": "background",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "black_bg.png",
@@ -123,6 +143,8 @@
       ],
       "det_score": 0.5234282612800598,
       "sam_score": 0.9596714973449707,
+      "area_pct": 58.53,
+      "quality_status": "detected",
       "regeneration_prompt": "pure black background",
       "opacity": 1.0,
       "x": 0.0,
@@ -141,6 +163,7 @@
       "blend_mode": "normal",
       "content_type": "helmet",
       "semantic_path": "subject.helmet",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "helmet.png",
@@ -152,6 +175,8 @@
       ],
       "det_score": 0.6809787750244141,
       "sam_score": 0.9467120170593262,
+      "area_pct": 28.69,
+      "quality_status": "detected",
       "regeneration_prompt": "astronaut helmet with reflective visor",
       "opacity": 1.0,
       "x": 0.0,
@@ -170,6 +195,7 @@
       "blend_mode": "normal",
       "content_type": "moon_reflection",
       "semantic_path": "foreground.reflection",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "moon_reflection.png",
@@ -181,7 +207,41 @@
       ],
       "det_score": 0.3122977614402771,
       "sam_score": 0.9596866369247437,
+      "area_pct": 5.77,
+      "quality_status": "detected",
       "regeneration_prompt": "moon surface reflected in visor",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_ba9d8308",
+      "name": "residual",
+      "label": "plan residual — pixels not covered by any named entity",
+      "description": "plan residual — pixels not covered by any named entity",
+      "z_index": 1,
+      "blend_mode": "normal",
+      "content_type": "residual",
+      "semantic_path": "residual",
+      "parent_layer_id": null,
+      "visible": true,
+      "locked": true,
+      "file": "residual.png",
+      "bbox": [
+        0,
+        0,
+        828,
+        1280
+      ],
+      "det_score": null,
+      "sam_score": null,
+      "area_pct": 7.02,
+      "quality_status": "residual",
+      "regeneration_prompt": "plan residual — pixels not covered by any named entity",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,

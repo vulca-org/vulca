@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "width": 1280,
   "height": 1230,
   "source_image": "assets/showcase/originals/water-lilies.jpg",
@@ -29,7 +29,11 @@
         ],
         "det_score": 0.23278948664665222,
         "sam_score": 0.9968000650405884,
-        "pct": 99.3
+        "pct": 99.3,
+        "bbox_fill": 1.0,
+        "inside_ratio": 0.977,
+        "pct_before_resolve": 99.3,
+        "pct_after_resolve": 68.64
       },
       {
         "id": 1,
@@ -48,7 +52,11 @@
         ],
         "det_score": 0.2904152274131775,
         "sam_score": 0.9367676973342896,
-        "pct": 0.12
+        "pct": 0.12,
+        "bbox_fill": 0.568,
+        "inside_ratio": 1.0,
+        "pct_before_resolve": 0.12,
+        "pct_after_resolve": 0.1
       },
       {
         "id": 2,
@@ -67,11 +75,22 @@
         ],
         "det_score": 0.26264679431915283,
         "sam_score": 0.9527932405471802,
-        "pct": 30.56
+        "pct": 30.56,
+        "bbox_fill": 0.728,
+        "inside_ratio": 0.962,
+        "pct_before_resolve": 30.56,
+        "pct_after_resolve": 30.56
       }
     ],
     "detected": 3,
+    "suspect": 0,
     "missed": 0,
+    "authority_mix": {
+      "detected_by_model": 3,
+      "hinted_by_plan": 0,
+      "suspect": 0,
+      "missed": 0
+    },
     "success_rate": 1.0,
     "status": "ok"
   },
@@ -103,7 +122,7 @@
     "slug": "water-lilies",
     "device": "mps"
   },
-  "created_at": "2026-04-17T11:38:35Z",
+  "created_at": "2026-04-17T16:22:12Z",
   "layers": [
     {
       "id": "layer_6f157694",
@@ -114,6 +133,7 @@
       "blend_mode": "normal",
       "content_type": "water",
       "semantic_path": "background",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "water.png",
@@ -125,6 +145,8 @@
       ],
       "det_score": 0.23278948664665222,
       "sam_score": 0.9968000650405884,
+      "area_pct": 68.64,
+      "quality_status": "detected",
       "regeneration_prompt": "blue purple water surface with sky reflections",
       "opacity": 1.0,
       "x": 0.0,
@@ -143,6 +165,7 @@
       "blend_mode": "normal",
       "content_type": "lily_blossoms",
       "semantic_path": "subject.flowers",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "lily_blossoms.png",
@@ -154,6 +177,8 @@
       ],
       "det_score": 0.2904152274131775,
       "sam_score": 0.9367676973342896,
+      "area_pct": 0.1,
+      "quality_status": "detected",
       "regeneration_prompt": "white and pink water lily flowers",
       "opacity": 1.0,
       "x": 0.0,
@@ -172,6 +197,7 @@
       "blend_mode": "normal",
       "content_type": "lily_pads",
       "semantic_path": "foreground.pads",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "lily_pads.png",
@@ -183,6 +209,8 @@
       ],
       "det_score": 0.26264679431915283,
       "sam_score": 0.9527932405471802,
+      "area_pct": 30.56,
+      "quality_status": "detected",
       "regeneration_prompt": "round green lily pads floating on water",
       "opacity": 1.0,
       "x": 0.0,

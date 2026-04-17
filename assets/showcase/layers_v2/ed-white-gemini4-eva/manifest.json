@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "width": 1280,
   "height": 1263,
   "source_image": "assets/showcase/originals/ed-white-gemini4-eva.jpg",
@@ -25,9 +25,14 @@
           320,
           1262
         ],
-        "det_score": 1.0,
+        "det_score": null,
         "sam_score": 0.9940086603164673,
-        "pct": 16.82
+        "pct": 16.82,
+        "bbox_fill": 0.604,
+        "inside_ratio": 0.897,
+        "quality_flags": [],
+        "pct_before_resolve": 16.82,
+        "pct_after_resolve": 16.82
       },
       {
         "id": 1,
@@ -44,9 +49,14 @@
           1279,
           1262
         ],
-        "det_score": 1.0,
+        "det_score": null,
         "sam_score": 0.9531873464584351,
-        "pct": 48.15
+        "pct": 48.15,
+        "bbox_fill": 0.602,
+        "inside_ratio": 0.998,
+        "quality_flags": [],
+        "pct_before_resolve": 48.15,
+        "pct_after_resolve": 24.1
       },
       {
         "id": 2,
@@ -63,9 +73,14 @@
           1126,
           1237
         ],
-        "det_score": 1.0,
+        "det_score": null,
         "sam_score": 0.7408357262611389,
-        "pct": 29.5
+        "pct": 29.5,
+        "bbox_fill": 0.421,
+        "inside_ratio": 0.921,
+        "quality_flags": [],
+        "pct_before_resolve": 29.5,
+        "pct_after_resolve": 28.53
       },
       {
         "id": 3,
@@ -82,15 +97,28 @@
           832,
           378
         ],
-        "det_score": 1.0,
+        "det_score": null,
         "sam_score": 0.8441042900085449,
-        "pct": 3.51
+        "pct": 3.51,
+        "bbox_fill": 0.26,
+        "inside_ratio": 1.0,
+        "quality_flags": [],
+        "pct_before_resolve": 3.51,
+        "pct_after_resolve": 3.51
       }
     ],
     "detected": 4,
+    "suspect": 0,
     "missed": 0,
+    "authority_mix": {
+      "detected_by_model": 0,
+      "hinted_by_plan": 4,
+      "suspect": 0,
+      "missed": 0
+    },
     "success_rate": 1.0,
-    "status": "ok"
+    "status": "ok",
+    "warning": "hint-heavy plan (4/4 entities via bbox_hint); consider whether detectors were misconfigured"
   },
   "plan": {
     "domain": "space_photograph",
@@ -149,7 +177,7 @@
     "slug": "ed-white-gemini4-eva",
     "device": "mps"
   },
-  "created_at": "2026-04-17T12:59:09Z",
+  "created_at": "2026-04-17T16:16:47Z",
   "layers": [
     {
       "id": "layer_65addcda",
@@ -160,6 +188,7 @@
       "blend_mode": "normal",
       "content_type": "space",
       "semantic_path": "background",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "space.png",
@@ -169,8 +198,10 @@
         320,
         1262
       ],
-      "det_score": 1.0,
+      "det_score": null,
       "sam_score": 0.9940086603164673,
+      "area_pct": 16.82,
+      "quality_status": "detected",
       "regeneration_prompt": "black space background",
       "opacity": 1.0,
       "x": 0.0,
@@ -189,6 +220,7 @@
       "blend_mode": "normal",
       "content_type": "earth",
       "semantic_path": "background.earth",
+      "parent_layer_id": "layer_65addcda",
       "visible": true,
       "locked": false,
       "file": "earth.png",
@@ -198,8 +230,10 @@
         1279,
         1262
       ],
-      "det_score": 1.0,
+      "det_score": null,
       "sam_score": 0.9531873464584351,
+      "area_pct": 24.1,
+      "quality_status": "detected",
       "regeneration_prompt": "blue Earth surface",
       "opacity": 1.0,
       "x": 0.0,
@@ -218,6 +252,7 @@
       "blend_mode": "normal",
       "content_type": "astronaut_eva",
       "semantic_path": "subject.person[0]",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "astronaut_eva.png",
@@ -227,8 +262,10 @@
         1126,
         1237
       ],
-      "det_score": 1.0,
+      "det_score": null,
       "sam_score": 0.7408357262611389,
+      "area_pct": 28.53,
+      "quality_status": "detected",
       "regeneration_prompt": "astronaut in white spacesuit floating",
       "opacity": 1.0,
       "x": 0.0,
@@ -247,6 +284,7 @@
       "blend_mode": "normal",
       "content_type": "tether",
       "semantic_path": "foreground.cable",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "tether.png",
@@ -256,9 +294,43 @@
         832,
         378
       ],
-      "det_score": 1.0,
+      "det_score": null,
       "sam_score": 0.8441042900085449,
+      "area_pct": 3.51,
+      "quality_status": "detected",
       "regeneration_prompt": "gold umbilical tether cable",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_4c68d134",
+      "name": "residual",
+      "label": "plan residual — pixels not covered by any named entity",
+      "description": "plan residual — pixels not covered by any named entity",
+      "z_index": 1,
+      "blend_mode": "normal",
+      "content_type": "residual",
+      "semantic_path": "residual",
+      "parent_layer_id": null,
+      "visible": true,
+      "locked": true,
+      "file": "residual.png",
+      "bbox": [
+        0,
+        0,
+        1280,
+        1263
+      ],
+      "det_score": null,
+      "sam_score": null,
+      "area_pct": 27.05,
+      "quality_status": "residual",
+      "regeneration_prompt": "plan residual — pixels not covered by any named entity",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,

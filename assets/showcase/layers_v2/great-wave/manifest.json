@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "width": 1280,
   "height": 860,
   "source_image": "assets/showcase/originals/great-wave.jpg",
@@ -29,7 +29,11 @@
         ],
         "det_score": 0.4314032196998596,
         "sam_score": 0.9801660776138306,
-        "pct": 42.59
+        "pct": 42.59,
+        "bbox_fill": 0.606,
+        "inside_ratio": 0.991,
+        "pct_before_resolve": 42.59,
+        "pct_after_resolve": 41.15
       },
       {
         "id": 1,
@@ -48,7 +52,11 @@
         ],
         "det_score": 0.7264909744262695,
         "sam_score": 0.9807389974594116,
-        "pct": 0.49
+        "pct": 0.49,
+        "bbox_fill": 0.431,
+        "inside_ratio": 1.0,
+        "pct_before_resolve": 0.49,
+        "pct_after_resolve": 0.49
       },
       {
         "id": 2,
@@ -67,7 +75,11 @@
         ],
         "det_score": 0.48034727573394775,
         "sam_score": 0.9861108064651489,
-        "pct": 22.19
+        "pct": 22.19,
+        "bbox_fill": 0.573,
+        "inside_ratio": 0.985,
+        "pct_before_resolve": 22.19,
+        "pct_after_resolve": 22.19
       },
       {
         "id": 3,
@@ -86,11 +98,22 @@
         ],
         "det_score": 0.4274096190929413,
         "sam_score": 0.9654699563980103,
-        "pct": 3.44
+        "pct": 3.44,
+        "bbox_fill": 0.34,
+        "inside_ratio": 0.972,
+        "pct_before_resolve": 3.44,
+        "pct_after_resolve": 3.44
       }
     ],
     "detected": 4,
+    "suspect": 0,
     "missed": 0,
+    "authority_mix": {
+      "detected_by_model": 4,
+      "hinted_by_plan": 0,
+      "suspect": 0,
+      "missed": 0
+    },
     "success_rate": 1.0,
     "status": "ok"
   },
@@ -129,7 +152,7 @@
     "slug": "great-wave",
     "device": "mps"
   },
-  "created_at": "2026-04-17T11:38:38Z",
+  "created_at": "2026-04-17T16:16:59Z",
   "layers": [
     {
       "id": "layer_af8ed028",
@@ -140,6 +163,7 @@
       "blend_mode": "normal",
       "content_type": "sky",
       "semantic_path": "background",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "sky.png",
@@ -151,6 +175,8 @@
       ],
       "det_score": 0.4314032196998596,
       "sam_score": 0.9801660776138306,
+      "area_pct": 41.15,
+      "quality_status": "detected",
       "regeneration_prompt": "pale yellow and gray sky",
       "opacity": 1.0,
       "x": 0.0,
@@ -169,6 +195,7 @@
       "blend_mode": "normal",
       "content_type": "mount_fuji",
       "semantic_path": "background.mountain",
+      "parent_layer_id": "layer_af8ed028",
       "visible": true,
       "locked": false,
       "file": "mount_fuji.png",
@@ -180,6 +207,8 @@
       ],
       "det_score": 0.7264909744262695,
       "sam_score": 0.9807389974594116,
+      "area_pct": 0.49,
+      "quality_status": "detected",
       "regeneration_prompt": "small white snowy mountain in the distance",
       "opacity": 1.0,
       "x": 0.0,
@@ -198,6 +227,7 @@
       "blend_mode": "normal",
       "content_type": "great_wave",
       "semantic_path": "subject.wave",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "great_wave.png",
@@ -209,6 +239,8 @@
       ],
       "det_score": 0.48034727573394775,
       "sam_score": 0.9861108064651489,
+      "area_pct": 22.19,
+      "quality_status": "detected",
       "regeneration_prompt": "large blue curling wave with white foam",
       "opacity": 1.0,
       "x": 0.0,
@@ -227,6 +259,7 @@
       "blend_mode": "normal",
       "content_type": "boats",
       "semantic_path": "subject.boat",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "boats.png",
@@ -238,7 +271,41 @@
       ],
       "det_score": 0.4274096190929413,
       "sam_score": 0.9654699563980103,
+      "area_pct": 3.44,
+      "quality_status": "detected",
       "regeneration_prompt": "small wooden boats with rowers",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_1d2c142c",
+      "name": "residual",
+      "label": "plan residual — pixels not covered by any named entity",
+      "description": "plan residual — pixels not covered by any named entity",
+      "z_index": 1,
+      "blend_mode": "normal",
+      "content_type": "residual",
+      "semantic_path": "residual",
+      "parent_layer_id": null,
+      "visible": true,
+      "locked": true,
+      "file": "residual.png",
+      "bbox": [
+        0,
+        0,
+        1280,
+        860
+      ],
+      "det_score": null,
+      "sam_score": null,
+      "area_pct": 32.73,
+      "quality_status": "residual",
+      "regeneration_prompt": "plan residual — pixels not covered by any named entity",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,

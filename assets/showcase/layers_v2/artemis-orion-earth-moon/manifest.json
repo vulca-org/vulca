@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "width": 1280,
   "height": 960,
   "source_image": "assets/showcase/originals/artemis-orion-earth-moon.jpg",
@@ -27,7 +27,11 @@
         ],
         "det_score": 0.46966421604156494,
         "sam_score": 0.9807417392730713,
-        "pct": 85.22
+        "pct": 85.22,
+        "bbox_fill": 0.862,
+        "inside_ratio": 0.991,
+        "pct_before_resolve": 85.22,
+        "pct_after_resolve": 56.31
       },
       {
         "id": 1,
@@ -46,7 +50,11 @@
         ],
         "det_score": 0.6622447371482849,
         "sam_score": 1.0069369077682495,
-        "pct": 34.22
+        "pct": 34.22,
+        "bbox_fill": 0.753,
+        "inside_ratio": 0.997,
+        "pct_before_resolve": 34.22,
+        "pct_after_resolve": 34.22
       },
       {
         "id": 2,
@@ -65,7 +73,11 @@
         ],
         "det_score": 0.46032431721687317,
         "sam_score": 0.9948393106460571,
-        "pct": 0.26
+        "pct": 0.26,
+        "bbox_fill": 0.563,
+        "inside_ratio": 1.0,
+        "pct_before_resolve": 0.26,
+        "pct_after_resolve": 0.26
       },
       {
         "id": 3,
@@ -84,11 +96,22 @@
         ],
         "det_score": 0.2792209982872009,
         "sam_score": 0.9909389019012451,
-        "pct": 0.26
+        "pct": 0.26,
+        "bbox_fill": 0.291,
+        "inside_ratio": 1.0,
+        "pct_before_resolve": 0.26,
+        "pct_after_resolve": 0.26
       }
     ],
     "detected": 4,
+    "suspect": 0,
     "missed": 0,
+    "authority_mix": {
+      "detected_by_model": 4,
+      "hinted_by_plan": 0,
+      "suspect": 0,
+      "missed": 0
+    },
     "success_rate": 1.0,
     "status": "ok"
   },
@@ -125,7 +148,7 @@
     "slug": "artemis-orion-earth-moon",
     "device": "mps"
   },
-  "created_at": "2026-04-17T12:10:45Z",
+  "created_at": "2026-04-17T16:16:10Z",
   "layers": [
     {
       "id": "layer_b13febc3",
@@ -136,6 +159,7 @@
       "blend_mode": "normal",
       "content_type": "space",
       "semantic_path": "background",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "space.png",
@@ -147,6 +171,8 @@
       ],
       "det_score": 0.46966421604156494,
       "sam_score": 0.9807417392730713,
+      "area_pct": 56.31,
+      "quality_status": "detected",
       "regeneration_prompt": "black empty space",
       "opacity": 1.0,
       "x": 0.0,
@@ -165,6 +191,7 @@
       "blend_mode": "normal",
       "content_type": "orion_spacecraft",
       "semantic_path": "subject.spacecraft",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "orion_spacecraft.png",
@@ -176,6 +203,8 @@
       ],
       "det_score": 0.6622447371482849,
       "sam_score": 1.0069369077682495,
+      "area_pct": 34.22,
+      "quality_status": "detected",
       "regeneration_prompt": "white Orion spacecraft with solar panels",
       "opacity": 1.0,
       "x": 0.0,
@@ -194,6 +223,7 @@
       "blend_mode": "normal",
       "content_type": "earth",
       "semantic_path": "subject.earth",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "earth.png",
@@ -205,6 +235,8 @@
       ],
       "det_score": 0.46032431721687317,
       "sam_score": 0.9948393106460571,
+      "area_pct": 0.26,
+      "quality_status": "detected",
       "regeneration_prompt": "distant blue Earth crescent",
       "opacity": 1.0,
       "x": 0.0,
@@ -223,6 +255,7 @@
       "blend_mode": "normal",
       "content_type": "moon",
       "semantic_path": "subject.moon",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "moon.png",
@@ -234,7 +267,41 @@
       ],
       "det_score": 0.2792209982872009,
       "sam_score": 0.9909389019012451,
+      "area_pct": 0.26,
+      "quality_status": "detected",
       "regeneration_prompt": "distant gray crescent Moon",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_1c027daa",
+      "name": "residual",
+      "label": "plan residual — pixels not covered by any named entity",
+      "description": "plan residual — pixels not covered by any named entity",
+      "z_index": 1,
+      "blend_mode": "normal",
+      "content_type": "residual",
+      "semantic_path": "residual",
+      "parent_layer_id": null,
+      "visible": true,
+      "locked": true,
+      "file": "residual.png",
+      "bbox": [
+        0,
+        0,
+        1280,
+        960
+      ],
+      "det_score": null,
+      "sam_score": null,
+      "area_pct": 9.21,
+      "quality_status": "residual",
+      "regeneration_prompt": "plan residual — pixels not covered by any named entity",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,

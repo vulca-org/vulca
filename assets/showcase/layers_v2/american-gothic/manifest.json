@@ -92,7 +92,7 @@
         "bbox_fill": 0.321,
         "inside_ratio": 0.994,
         "pct_before_resolve": 14.91,
-        "pct_after_resolve": 36.36
+        "pct_after_resolve": 14.91
       },
       {
         "id": 3,
@@ -166,7 +166,7 @@
     "slug": "american-gothic",
     "device": "mps"
   },
-  "created_at": "2026-04-17T15:28:41Z",
+  "created_at": "2026-04-17T16:15:45Z",
   "layers": [
     {
       "id": "layer_b19ebd7e",
@@ -925,7 +925,7 @@
       ],
       "det_score": 0.5379990935325623,
       "sam_score": 0.9760092496871948,
-      "area_pct": 36.36,
+      "area_pct": 14.91,
       "quality_status": "detected",
       "regeneration_prompt": "white wooden farmhouse with gothic window",
       "opacity": 1.0,
@@ -960,6 +960,38 @@
       "area_pct": 1.66,
       "quality_status": "detected",
       "regeneration_prompt": "metal pitchfork with three tines",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_90c3cbed",
+      "name": "residual",
+      "label": "plan residual — pixels not covered by any named entity",
+      "description": "plan residual — pixels not covered by any named entity",
+      "z_index": 1,
+      "blend_mode": "normal",
+      "content_type": "residual",
+      "semantic_path": "residual",
+      "parent_layer_id": null,
+      "visible": true,
+      "locked": true,
+      "file": "residual.png",
+      "bbox": [
+        0,
+        0,
+        1060,
+        1280
+      ],
+      "det_score": null,
+      "sam_score": null,
+      "area_pct": 21.45,
+      "quality_status": "residual",
+      "regeneration_prompt": "plan residual — pixels not covered by any named entity",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,

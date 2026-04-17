@@ -256,15 +256,16 @@ class TestSamBboxIntegration:
         assert "low_bbox_fill" in rec["quality_flags"]
 
 
-class TestResolveOverlapsLayerModel:
-    """Phase 1.5: verify hierarchical (default) AND flat (escape hatch) both work.
+class TestResolveOverlapsHierarchical:
+    """Phase 1.6+: resolve_overlaps is hierarchical-only.
 
-    Without this test, flipping the default means existing tests only exercise
-    the new hierarchical branch — the flat path could silently rot.
+    (Flat escape hatch removed in Phase 1.6 after 44-image rerun validation.
+    Legacy flat semantics still available by git-reverting past the Phase 1.6
+    commit or using `migrate_evfsam_to_layers.py`'s independent implementation.)
     """
 
-    def test_hierarchical_parent_keeps_descendant_pixels(self, pipeline_module):
-        """Face-part (descendant) must NOT carve parent under hierarchical."""
+    def test_parent_keeps_descendant_pixels(self, pipeline_module):
+        """Face-part (descendant) must NOT carve parent."""
         import numpy as np
         H = W = 100
         parent_mask = np.zeros((H, W), dtype=bool); parent_mask[20:80, 20:80] = True
@@ -275,34 +276,17 @@ class TestResolveOverlapsLayerModel:
             {"id": 2, "name": "child", "semantic_path": "subject.head.eyes",
              "z": 62, "mask": child_mask},
         ]
-        pipeline_module.resolve_overlaps(layers, layer_model="hierarchical")
+        pipeline_module.resolve_overlaps(layers)
         # Parent's resolved mask should still cover the full 60×60 region —
         # descendant did NOT carve it out.
         assert layers[0]["mask_resolved"].sum() == parent_mask.sum()
         # Child keeps its own mask.
         assert (layers[1]["mask_resolved"] == child_mask).all()
-        # Parent ∩ child ≠ 0 under hierarchical (overlap is intentional).
+        # Parent ∩ child ≠ 0 (overlap is intentional).
         assert (layers[0]["mask_resolved"] & layers[1]["mask_resolved"]).sum() > 0
 
-    def test_flat_enforces_mutual_exclusion(self, pipeline_module):
-        """Same setup + layer_model='flat' → child carves parent (legacy)."""
-        import numpy as np
-        H = W = 100
-        parent_mask = np.zeros((H, W), dtype=bool); parent_mask[20:80, 20:80] = True
-        child_mask  = np.zeros((H, W), dtype=bool); child_mask[40:60, 40:60]  = True
-        layers = [
-            {"id": 1, "name": "parent", "semantic_path": "subject.head",
-             "z": 50, "mask": parent_mask.copy()},
-            {"id": 2, "name": "child", "semantic_path": "subject.head.eyes",
-             "z": 62, "mask": child_mask.copy()},
-        ]
-        pipeline_module.resolve_overlaps(layers, layer_model="flat")
-        # Under flat, child claimed 20×20 pixels first; parent loses them.
-        assert (layers[0]["mask_resolved"] & layers[1]["mask_resolved"]).sum() == 0
-        assert layers[0]["mask_resolved"].sum() == parent_mask.sum() - child_mask.sum()
-
-    def test_hierarchical_non_descendant_blocks(self, pipeline_module):
-        """Foreground-over-background still occludes under hierarchical."""
+    def test_non_descendant_blocks(self, pipeline_module):
+        """Foreground-over-background still occludes."""
         import numpy as np
         H = W = 100
         bg   = np.ones((H, W), dtype=bool)
@@ -313,12 +297,12 @@ class TestResolveOverlapsLayerModel:
             {"id": 2, "name": "fg", "semantic_path": "foreground.obj",
              "z": 80, "mask": fg.copy()},
         ]
-        pipeline_module.resolve_overlaps(layers, layer_model="hierarchical")
+        pipeline_module.resolve_overlaps(layers)
         # bg (non-descendant of fg, strictly lower z) → fg blocks bg
         assert (layers[0]["mask_resolved"] & fg).sum() == 0
         assert layers[1]["mask_resolved"].sum() == fg.sum()
 
-    def test_hierarchical_same_z_siblings_dont_block(self, pipeline_module):
+    def test_same_z_siblings_dont_block(self, pipeline_module):
         """Two persons at z=50 → both keep raw SAM masks (no arbitrary wins)."""
         import numpy as np
         H = W = 100
@@ -331,12 +315,80 @@ class TestResolveOverlapsLayerModel:
             {"id": 2, "name": "person_b", "semantic_path": "subject.person[1]",
              "z": 50, "mask": b.copy()},
         ]
-        pipeline_module.resolve_overlaps(layers, layer_model="hierarchical")
+        pipeline_module.resolve_overlaps(layers)
         # Both keep their raw mask entirely (no same-z blocking).
         assert layers[0]["mask_resolved"].sum() == a.sum()
         assert layers[1]["mask_resolved"].sum() == b.sum()
         # Intersection persists (overlap OK under hierarchical).
         assert (layers[0]["mask_resolved"] & layers[1]["mask_resolved"]).sum() > 0
+
+
+class TestResidualLayer:
+    """Phase 1.6: resolve_overlaps emits a synthetic `residual` layer when
+    unclaimed pixels exceed unclaimed_threshold_pct.
+    """
+
+    def test_residual_emitted_when_coverage_low(self, pipeline_module):
+        """60% coverage + 2% threshold → residual layer present with ~40% area."""
+        import numpy as np
+        H = W = 100
+        # Two small layers covering ~40% of canvas, leaving ~60% unclaimed
+        bg = np.zeros((H, W), dtype=bool); bg[0:30, :] = True   # 30%
+        fg = np.zeros((H, W), dtype=bool); fg[60:70, 60:70] = True  # 1%
+        layers = [
+            {"id": 1, "name": "bg", "semantic_path": "background",
+             "z": 0, "mask": bg.copy()},
+            {"id": 2, "name": "fg", "semantic_path": "foreground.obj",
+             "z": 80, "mask": fg.copy()},
+        ]
+        pipeline_module.resolve_overlaps(layers, unclaimed_threshold_pct=2.0)
+        residual = [l for l in layers if l.get("name") == "residual"]
+        assert len(residual) == 1, "residual layer should be emitted"
+        r = residual[0]
+        assert r["quality_status"] == "residual"
+        assert r["locked"] is True
+        assert r["z"] == 1
+        # residual covers the 69% that bg+fg don't cover
+        assert r["mask_resolved"].sum() > 0.5 * H * W
+
+    def test_residual_skipped_when_coverage_near_complete(self, pipeline_module):
+        """99% coverage + 2% threshold → no residual (below threshold)."""
+        import numpy as np
+        H = W = 100
+        bg = np.ones((H, W), dtype=bool)   # 100% coverage
+        layers = [
+            {"id": 1, "name": "bg", "semantic_path": "background",
+             "z": 0, "mask": bg.copy()},
+        ]
+        pipeline_module.resolve_overlaps(layers, unclaimed_threshold_pct=2.0)
+        residuals = [l for l in layers if l.get("name") == "residual"]
+        assert len(residuals) == 0
+
+    def test_residual_plus_layers_cover_full_image(self, pipeline_module):
+        """Residual + all other resolved masks union = full canvas."""
+        import numpy as np
+        H = W = 100
+        bg = np.zeros((H, W), dtype=bool); bg[0:40, :]   = True  # 40%
+        fg = np.zeros((H, W), dtype=bool); fg[50:70, 50:70] = True  # 4%
+        layers = [
+            {"id": 1, "name": "bg", "semantic_path": "background",
+             "z": 0, "mask": bg.copy()},
+            {"id": 2, "name": "fg", "semantic_path": "foreground.obj",
+             "z": 80, "mask": fg.copy()},
+        ]
+        pipeline_module.resolve_overlaps(layers, unclaimed_threshold_pct=2.0)
+        union = np.zeros((H, W), dtype=bool)
+        for l in layers:
+            union |= l["mask_resolved"]
+        # Coverage should be 100% — residual fills remaining 56%
+        assert union.sum() == H * W, \
+            f"expected full coverage, got {union.sum()/(H*W)*100:.1f}%"
+
+    def test_residual_is_orphan(self, pipeline_module):
+        """Residual has no parent in semantic_path tree; is_descendant of nothing."""
+        assert not pipeline_module._is_descendant("residual", "background")
+        assert not pipeline_module._is_descendant("residual", "subject")
+        assert not pipeline_module._is_descendant("subject.person[0]", "residual")
 
 
 class TestIsDescendant:
@@ -447,9 +499,12 @@ def test_manifest_layer_count(slug, min_layers):
     m = manifest(slug)
     if m is None:
         pytest.skip(f"no manifest for {slug}")
-    actual = len(m["layers"])
+    # Exclude the synthetic `residual` layer from the count — it's a
+    # pipeline-emitted bucket for plan-uncovered pixels, not a plan output.
+    # Count only plan-requested + face-parse-derived layers.
+    actual = sum(1 for l in m["layers"] if l.get("semantic_path") != "residual")
     assert actual >= min_layers, \
-        f"{slug}: got {actual} layers, expected >= {min_layers} (regression)"
+        f"{slug}: got {actual} non-residual layers, expected >= {min_layers} (regression)"
 
 
 @pytest.mark.parametrize("slug", sorted(EXPECTED_MIN_LAYERS.keys()))

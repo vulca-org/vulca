@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "width": 828,
   "height": 1280,
   "source_image": "assets/showcase/originals/artemis-ii-for-all-humanity.jpg",
@@ -37,7 +37,11 @@
         ],
         "det_score": 0.3616882860660553,
         "sam_score": 0.986479640007019,
-        "pct": 78.73
+        "pct": 78.73,
+        "bbox_fill": 0.795,
+        "inside_ratio": 0.983,
+        "pct_before_resolve": 78.73,
+        "pct_after_resolve": 77.31
       },
       {
         "id": 1,
@@ -56,7 +60,11 @@
         ],
         "det_score": 0.18778157234191895,
         "sam_score": 0.9877321720123291,
-        "pct": 7.08
+        "pct": 7.08,
+        "bbox_fill": 0.831,
+        "inside_ratio": 0.983,
+        "pct_before_resolve": 7.08,
+        "pct_after_resolve": 7.08
       },
       {
         "id": 3,
@@ -75,11 +83,22 @@
         ],
         "det_score": 0.3569507300853729,
         "sam_score": 0.9352351427078247,
-        "pct": 1.45
+        "pct": 1.45,
+        "bbox_fill": 0.566,
+        "inside_ratio": 0.932,
+        "pct_before_resolve": 1.45,
+        "pct_after_resolve": 1.45
       }
     ],
     "detected": 3,
+    "suspect": 0,
     "missed": 1,
+    "authority_mix": {
+      "detected_by_model": 3,
+      "hinted_by_plan": 0,
+      "suspect": 0,
+      "missed": 1
+    },
     "success_rate": 0.75,
     "status": "ok"
   },
@@ -118,7 +137,7 @@
     "slug": "artemis-ii-for-all-humanity",
     "device": "mps"
   },
-  "created_at": "2026-04-17T12:39:11Z",
+  "created_at": "2026-04-17T16:16:00Z",
   "layers": [
     {
       "id": "layer_083b8538",
@@ -129,6 +148,7 @@
       "blend_mode": "normal",
       "content_type": "black_bg",
       "semantic_path": "background",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "black_bg.png",
@@ -140,6 +160,8 @@
       ],
       "det_score": 0.3616882860660553,
       "sam_score": 0.986479640007019,
+      "area_pct": 77.31,
+      "quality_status": "detected",
       "regeneration_prompt": "pure black space background",
       "opacity": 1.0,
       "x": 0.0,
@@ -158,6 +180,7 @@
       "blend_mode": "normal",
       "content_type": "motion_blur",
       "semantic_path": "background.motion",
+      "parent_layer_id": "layer_083b8538",
       "visible": true,
       "locked": false,
       "file": "motion_blur.png",
@@ -169,6 +192,8 @@
       ],
       "det_score": 0.18778157234191895,
       "sam_score": 0.9877321720123291,
+      "area_pct": 7.08,
+      "quality_status": "detected",
       "regeneration_prompt": "blue and white motion blur streaks",
       "opacity": 1.0,
       "x": 0.0,
@@ -187,6 +212,7 @@
       "blend_mode": "normal",
       "content_type": "text_logo",
       "semantic_path": "foreground.text",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "text_logo.png",
@@ -198,7 +224,41 @@
       ],
       "det_score": 0.3569507300853729,
       "sam_score": 0.9352351427078247,
+      "area_pct": 1.45,
+      "quality_status": "detected",
       "regeneration_prompt": "ARTEMIS II FOR ALL HUMANITY text and NASA logo",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_47e6ef42",
+      "name": "residual",
+      "label": "plan residual — pixels not covered by any named entity",
+      "description": "plan residual — pixels not covered by any named entity",
+      "z_index": 1,
+      "blend_mode": "normal",
+      "content_type": "residual",
+      "semantic_path": "residual",
+      "parent_layer_id": null,
+      "visible": true,
+      "locked": true,
+      "file": "residual.png",
+      "bbox": [
+        0,
+        0,
+        828,
+        1280
+      ],
+      "det_score": null,
+      "sam_score": null,
+      "area_pct": 20.54,
+      "quality_status": "residual",
+      "regeneration_prompt": "plan residual — pixels not covered by any named entity",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,

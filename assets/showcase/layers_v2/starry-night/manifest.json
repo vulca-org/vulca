@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "width": 1280,
   "height": 1014,
   "source_image": "assets/showcase/originals/starry-night.jpg",
@@ -29,7 +29,14 @@
         ],
         "det_score": 0.37630578875541687,
         "sam_score": 0.942633867263794,
-        "pct": 53.91
+        "pct": 53.91,
+        "bbox_fill": 0.883,
+        "inside_ratio": 0.995,
+        "pct_before_resolve": 53.91,
+        "pct_after_resolve": 0.04,
+        "quality_flags": [
+          "over_eroded"
+        ]
       },
       {
         "id": 1,
@@ -48,7 +55,14 @@
         ],
         "det_score": 0.7060468196868896,
         "sam_score": 0.995383620262146,
-        "pct": 12.35
+        "pct": 12.35,
+        "bbox_fill": 0.372,
+        "inside_ratio": 0.996,
+        "pct_before_resolve": 12.35,
+        "pct_after_resolve": 0.04,
+        "quality_flags": [
+          "over_eroded"
+        ]
       },
       {
         "id": 2,
@@ -67,11 +81,22 @@
         ],
         "det_score": 0.46713507175445557,
         "sam_score": 0.9924510717391968,
-        "pct": 97.61
+        "pct": 97.61,
+        "bbox_fill": 0.993,
+        "inside_ratio": 0.988,
+        "pct_before_resolve": 97.61,
+        "pct_after_resolve": 97.61
       }
     ],
     "detected": 3,
+    "suspect": 0,
     "missed": 0,
+    "authority_mix": {
+      "detected_by_model": 3,
+      "hinted_by_plan": 0,
+      "suspect": 0,
+      "missed": 0
+    },
     "success_rate": 1.0,
     "status": "ok"
   },
@@ -103,7 +128,7 @@
     "slug": "starry-night",
     "device": "mps"
   },
-  "created_at": "2026-04-17T11:38:24Z",
+  "created_at": "2026-04-17T16:21:25Z",
   "layers": [
     {
       "id": "layer_b4168030",
@@ -114,6 +139,7 @@
       "blend_mode": "normal",
       "content_type": "sky",
       "semantic_path": "background",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "sky.png",
@@ -125,6 +151,8 @@
       ],
       "det_score": 0.37630578875541687,
       "sam_score": 0.942633867263794,
+      "area_pct": 0.04,
+      "quality_status": "detected",
       "regeneration_prompt": "swirling blue sky with yellow stars and moon",
       "opacity": 1.0,
       "x": 0.0,
@@ -143,6 +171,7 @@
       "blend_mode": "normal",
       "content_type": "cypress_tree",
       "semantic_path": "subject.tree",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "cypress_tree.png",
@@ -154,6 +183,8 @@
       ],
       "det_score": 0.7060468196868896,
       "sam_score": 0.995383620262146,
+      "area_pct": 0.04,
+      "quality_status": "detected",
       "regeneration_prompt": "tall dark cypress tree on the left",
       "opacity": 1.0,
       "x": 0.0,
@@ -172,6 +203,7 @@
       "blend_mode": "normal",
       "content_type": "village",
       "semantic_path": "foreground.village",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "village.png",
@@ -183,7 +215,41 @@
       ],
       "det_score": 0.46713507175445557,
       "sam_score": 0.9924510717391968,
+      "area_pct": 97.61,
+      "quality_status": "detected",
       "regeneration_prompt": "small village with church steeple and rolling hills",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_0ad22bfd",
+      "name": "residual",
+      "label": "plan residual — pixels not covered by any named entity",
+      "description": "plan residual — pixels not covered by any named entity",
+      "z_index": 1,
+      "blend_mode": "normal",
+      "content_type": "residual",
+      "semantic_path": "residual",
+      "parent_layer_id": null,
+      "visible": true,
+      "locked": true,
+      "file": "residual.png",
+      "bbox": [
+        0,
+        0,
+        1280,
+        1014
+      ],
+      "det_score": null,
+      "sam_score": null,
+      "area_pct": 2.31,
+      "quality_status": "residual",
+      "regeneration_prompt": "plan residual — pixels not covered by any named entity",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,

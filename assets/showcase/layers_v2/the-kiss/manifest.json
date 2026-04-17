@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "width": 1275,
   "height": 1280,
   "source_image": "assets/showcase/originals/the-kiss.jpg",
@@ -35,7 +35,11 @@
         ],
         "det_score": 0.2103479653596878,
         "sam_score": 1.0069955587387085,
-        "pct": 52.36
+        "pct": 52.36,
+        "bbox_fill": 0.642,
+        "inside_ratio": 0.992,
+        "pct_before_resolve": 52.36,
+        "pct_after_resolve": 32.92
       },
       {
         "id": 0,
@@ -54,7 +58,14 @@
         ],
         "det_score": 0.44652092456817627,
         "sam_score": 0.991046667098999,
-        "pct": 31.45
+        "pct": 31.45,
+        "bbox_fill": 0.789,
+        "inside_ratio": 0.999,
+        "pct_before_resolve": 31.45,
+        "pct_after_resolve": 0.0,
+        "quality_flags": [
+          "over_eroded"
+        ]
       },
       {
         "id": 2,
@@ -73,11 +84,22 @@
         ],
         "det_score": 0.682170569896698,
         "sam_score": 0.9987832307815552,
-        "pct": 19.52
+        "pct": 19.52,
+        "bbox_fill": 0.717,
+        "inside_ratio": 0.98,
+        "pct_before_resolve": 19.52,
+        "pct_after_resolve": 19.52
       }
     ],
     "detected": 3,
+    "suspect": 0,
     "missed": 0,
+    "authority_mix": {
+      "detected_by_model": 3,
+      "hinted_by_plan": 0,
+      "suspect": 0,
+      "missed": 0
+    },
     "success_rate": 1.0,
     "status": "ok"
   },
@@ -109,7 +131,7 @@
     "slug": "the-kiss",
     "device": "mps"
   },
-  "created_at": "2026-04-17T11:39:20Z",
+  "created_at": "2026-04-17T16:21:31Z",
   "layers": [
     {
       "id": "layer_4fc942e1",
@@ -120,6 +142,7 @@
       "blend_mode": "normal",
       "content_type": "embracing_couple",
       "semantic_path": "subject.person[0]",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "embracing_couple.png",
@@ -131,6 +154,8 @@
       ],
       "det_score": 0.2103479653596878,
       "sam_score": 1.0069955587387085,
+      "area_pct": 32.92,
+      "quality_status": "detected",
       "regeneration_prompt": "two entwined embracing figures in golden robe",
       "opacity": 1.0,
       "x": 0.0,
@@ -149,6 +174,7 @@
       "blend_mode": "normal",
       "content_type": "gold_bg",
       "semantic_path": "background",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "gold_bg.png",
@@ -160,6 +186,8 @@
       ],
       "det_score": 0.44652092456817627,
       "sam_score": 0.991046667098999,
+      "area_pct": 0.0,
+      "quality_status": "detected",
       "regeneration_prompt": "glittering gold leaf background",
       "opacity": 1.0,
       "x": 0.0,
@@ -178,6 +206,7 @@
       "blend_mode": "normal",
       "content_type": "flower_meadow",
       "semantic_path": "foreground.meadow",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "flower_meadow.png",
@@ -189,7 +218,41 @@
       ],
       "det_score": 0.682170569896698,
       "sam_score": 0.9987832307815552,
+      "area_pct": 19.52,
+      "quality_status": "detected",
       "regeneration_prompt": "multicolored wildflower meadow at bottom",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_32d30193",
+      "name": "residual",
+      "label": "plan residual — pixels not covered by any named entity",
+      "description": "plan residual — pixels not covered by any named entity",
+      "z_index": 1,
+      "blend_mode": "normal",
+      "content_type": "residual",
+      "semantic_path": "residual",
+      "parent_layer_id": null,
+      "visible": true,
+      "locked": true,
+      "file": "residual.png",
+      "bbox": [
+        0,
+        0,
+        1275,
+        1280
+      ],
+      "det_score": null,
+      "sam_score": null,
+      "area_pct": 47.56,
+      "quality_status": "residual",
+      "regeneration_prompt": "plan residual — pixels not covered by any named entity",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,

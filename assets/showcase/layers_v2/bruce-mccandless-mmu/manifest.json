@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "width": 1280,
   "height": 1280,
   "source_image": "assets/showcase/originals/bruce-mccandless-mmu.jpg",
@@ -25,9 +25,14 @@
           1279,
           704
         ],
-        "det_score": 1.0,
+        "det_score": null,
         "sam_score": 1.004239797592163,
-        "pct": 43.51
+        "pct": 43.51,
+        "bbox_fill": 0.79,
+        "inside_ratio": 0.997,
+        "quality_flags": [],
+        "pct_before_resolve": 43.51,
+        "pct_after_resolve": 43.51
       },
       {
         "id": 1,
@@ -44,9 +49,14 @@
           1279,
           1279
         ],
-        "det_score": 1.0,
+        "det_score": null,
         "sam_score": 1.0193266868591309,
-        "pct": 44.39
+        "pct": 44.39,
+        "bbox_fill": 0.888,
+        "inside_ratio": 0.997,
+        "quality_flags": [],
+        "pct_before_resolve": 44.39,
+        "pct_after_resolve": 44.39
       },
       {
         "id": 2,
@@ -63,15 +73,28 @@
           1024,
           742
         ],
-        "det_score": 1.0,
+        "det_score": null,
         "sam_score": 0.9728380441665649,
-        "pct": 10.43
+        "pct": 10.43,
+        "bbox_fill": 0.397,
+        "inside_ratio": 0.99,
+        "quality_flags": [],
+        "pct_before_resolve": 10.43,
+        "pct_after_resolve": 10.43
       }
     ],
     "detected": 3,
+    "suspect": 0,
     "missed": 0,
+    "authority_mix": {
+      "detected_by_model": 0,
+      "hinted_by_plan": 3,
+      "suspect": 0,
+      "missed": 0
+    },
     "success_rate": 1.0,
-    "status": "ok"
+    "status": "ok",
+    "warning": "hint-heavy plan (3/3 entities via bbox_hint); consider whether detectors were misconfigured"
   },
   "plan": {
     "domain": "space_photograph",
@@ -118,7 +141,7 @@
     "slug": "bruce-mccandless-mmu",
     "device": "mps"
   },
-  "created_at": "2026-04-17T12:59:07Z",
+  "created_at": "2026-04-17T16:16:24Z",
   "layers": [
     {
       "id": "layer_5b01d0e0",
@@ -129,6 +152,7 @@
       "blend_mode": "normal",
       "content_type": "space",
       "semantic_path": "background",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "space.png",
@@ -138,8 +162,10 @@
         1279,
         704
       ],
-      "det_score": 1.0,
+      "det_score": null,
       "sam_score": 1.004239797592163,
+      "area_pct": 43.51,
+      "quality_status": "detected",
       "regeneration_prompt": "pure black empty space",
       "opacity": 1.0,
       "x": 0.0,
@@ -158,6 +184,7 @@
       "blend_mode": "normal",
       "content_type": "earth_below",
       "semantic_path": "background.earth",
+      "parent_layer_id": "layer_5b01d0e0",
       "visible": true,
       "locked": false,
       "file": "earth_below.png",
@@ -167,8 +194,10 @@
         1279,
         1279
       ],
-      "det_score": 1.0,
+      "det_score": null,
       "sam_score": 1.0193266868591309,
+      "area_pct": 44.39,
+      "quality_status": "detected",
       "regeneration_prompt": "blue Earth surface",
       "opacity": 1.0,
       "x": 0.0,
@@ -187,6 +216,7 @@
       "blend_mode": "normal",
       "content_type": "astronaut_mmu",
       "semantic_path": "subject.person[0]",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "astronaut_mmu.png",
@@ -196,8 +226,10 @@
         1024,
         742
       ],
-      "det_score": 1.0,
+      "det_score": null,
       "sam_score": 0.9728380441665649,
+      "area_pct": 10.43,
+      "quality_status": "detected",
       "regeneration_prompt": "astronaut in white MMU spacesuit",
       "opacity": 1.0,
       "x": 0.0,

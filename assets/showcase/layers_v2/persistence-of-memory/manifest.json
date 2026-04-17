@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "width": 368,
   "height": 271,
   "source_image": "assets/showcase/originals/persistence-of-memory.jpg",
@@ -29,7 +29,11 @@
         ],
         "det_score": 0.3837764859199524,
         "sam_score": 0.997319221496582,
-        "pct": 21.24
+        "pct": 21.24,
+        "bbox_fill": 0.678,
+        "inside_ratio": 0.998,
+        "pct_before_resolve": 21.24,
+        "pct_after_resolve": 21.24
       },
       {
         "id": 1,
@@ -48,7 +52,11 @@
         ],
         "det_score": 0.5055760145187378,
         "sam_score": 0.9854210615158081,
-        "pct": 42.03
+        "pct": 42.03,
+        "bbox_fill": 0.599,
+        "inside_ratio": 0.997,
+        "pct_before_resolve": 42.03,
+        "pct_after_resolve": 42.01
       },
       {
         "id": 2,
@@ -67,7 +75,11 @@
         ],
         "det_score": 0.44660669565200806,
         "sam_score": 0.9733672142028809,
-        "pct": 15.52
+        "pct": 15.52,
+        "bbox_fill": 0.895,
+        "inside_ratio": 1.0,
+        "pct_before_resolve": 15.52,
+        "pct_after_resolve": 15.52
       },
       {
         "id": 3,
@@ -86,7 +98,14 @@
         ],
         "det_score": 0.447867751121521,
         "sam_score": 0.9781566858291626,
-        "pct": 2.9
+        "pct": 2.9,
+        "bbox_fill": 0.456,
+        "inside_ratio": 0.996,
+        "pct_before_resolve": 2.9,
+        "pct_after_resolve": 0.0,
+        "quality_flags": [
+          "over_eroded"
+        ]
       },
       {
         "id": 4,
@@ -105,7 +124,11 @@
         ],
         "det_score": 0.38782092928886414,
         "sam_score": 0.9778259992599487,
-        "pct": 7.19
+        "pct": 7.19,
+        "bbox_fill": 0.363,
+        "inside_ratio": 1.0,
+        "pct_before_resolve": 7.19,
+        "pct_after_resolve": 7.19
       },
       {
         "id": 5,
@@ -124,11 +147,22 @@
         ],
         "det_score": 0.372409462928772,
         "sam_score": 0.9486649036407471,
-        "pct": 1.97
+        "pct": 1.97,
+        "bbox_fill": 0.157,
+        "inside_ratio": 0.98,
+        "pct_before_resolve": 1.97,
+        "pct_after_resolve": 1.97
       }
     ],
     "detected": 6,
+    "suspect": 0,
     "missed": 0,
+    "authority_mix": {
+      "detected_by_model": 6,
+      "hinted_by_plan": 0,
+      "suspect": 0,
+      "missed": 0
+    },
     "success_rate": 1.0,
     "status": "ok"
   },
@@ -178,7 +212,7 @@
     "slug": "persistence-of-memory",
     "device": "mps"
   },
-  "created_at": "2026-04-17T11:39:29Z",
+  "created_at": "2026-04-17T16:20:34Z",
   "layers": [
     {
       "id": "layer_911b8d23",
@@ -189,6 +223,7 @@
       "blend_mode": "normal",
       "content_type": "sky_cliffs",
       "semantic_path": "background",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "sky_cliffs.png",
@@ -200,6 +235,8 @@
       ],
       "det_score": 0.3837764859199524,
       "sam_score": 0.997319221496582,
+      "area_pct": 21.24,
+      "quality_status": "detected",
       "regeneration_prompt": "blue sky and golden distant cliffs",
       "opacity": 1.0,
       "x": 0.0,
@@ -218,6 +255,7 @@
       "blend_mode": "normal",
       "content_type": "ground",
       "semantic_path": "background.ground",
+      "parent_layer_id": "layer_911b8d23",
       "visible": true,
       "locked": false,
       "file": "ground.png",
@@ -229,6 +267,8 @@
       ],
       "det_score": 0.5055760145187378,
       "sam_score": 0.9854210615158081,
+      "area_pct": 42.01,
+      "quality_status": "detected",
       "regeneration_prompt": "flat brown beach and ground",
       "opacity": 1.0,
       "x": 0.0,
@@ -247,6 +287,7 @@
       "blend_mode": "normal",
       "content_type": "dark_platform",
       "semantic_path": "foreground.platform",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "dark_platform.png",
@@ -258,6 +299,8 @@
       ],
       "det_score": 0.44660669565200806,
       "sam_score": 0.9733672142028809,
+      "area_pct": 15.52,
+      "quality_status": "detected",
       "regeneration_prompt": "rectangular dark platform",
       "opacity": 1.0,
       "x": 0.0,
@@ -276,6 +319,7 @@
       "blend_mode": "normal",
       "content_type": "biomorphic_form",
       "semantic_path": "subject.form",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "biomorphic_form.png",
@@ -287,6 +331,8 @@
       ],
       "det_score": 0.447867751121521,
       "sam_score": 0.9781566858291626,
+      "area_pct": 0.0,
+      "quality_status": "detected",
       "regeneration_prompt": "soft organic shape with eyelashes in center",
       "opacity": 1.0,
       "x": 0.0,
@@ -305,6 +351,7 @@
       "blend_mode": "normal",
       "content_type": "melting_clocks",
       "semantic_path": "subject.clocks",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "melting_clocks.png",
@@ -316,6 +363,8 @@
       ],
       "det_score": 0.38782092928886414,
       "sam_score": 0.9778259992599487,
+      "area_pct": 7.19,
+      "quality_status": "detected",
       "regeneration_prompt": "soft melting pocket watches",
       "opacity": 1.0,
       "x": 0.0,
@@ -334,6 +383,7 @@
       "blend_mode": "normal",
       "content_type": "tree",
       "semantic_path": "foreground.tree",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "tree.png",
@@ -345,7 +395,41 @@
       ],
       "det_score": 0.372409462928772,
       "sam_score": 0.9486649036407471,
+      "area_pct": 1.97,
+      "quality_status": "detected",
       "regeneration_prompt": "bare dead tree branch",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_0ff740bc",
+      "name": "residual",
+      "label": "plan residual — pixels not covered by any named entity",
+      "description": "plan residual — pixels not covered by any named entity",
+      "z_index": 1,
+      "blend_mode": "normal",
+      "content_type": "residual",
+      "semantic_path": "residual",
+      "parent_layer_id": null,
+      "visible": true,
+      "locked": true,
+      "file": "residual.png",
+      "bbox": [
+        0,
+        0,
+        368,
+        271
+      ],
+      "det_score": null,
+      "sam_score": null,
+      "area_pct": 12.21,
+      "quality_status": "residual",
+      "regeneration_prompt": "plan residual — pixels not covered by any named entity",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,

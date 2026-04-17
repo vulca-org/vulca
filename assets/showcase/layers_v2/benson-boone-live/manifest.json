@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "width": 1280,
   "height": 960,
   "source_image": "assets/showcase/originals/benson-boone-live.jpg",
@@ -36,7 +36,11 @@
         ],
         "det_score": 0.3983045518398285,
         "sam_score": 0.9932962656021118,
-        "pct": 2.76
+        "pct": 2.76,
+        "bbox_fill": 0.352,
+        "inside_ratio": 1.0,
+        "pct_before_resolve": 2.76,
+        "pct_after_resolve": 2.76
       },
       {
         "id": 0,
@@ -55,11 +59,22 @@
         ],
         "det_score": 0.738422691822052,
         "sam_score": 0.9923423528671265,
-        "pct": 75.73
+        "pct": 75.73,
+        "bbox_fill": 0.766,
+        "inside_ratio": 0.992,
+        "pct_before_resolve": 75.73,
+        "pct_after_resolve": 75.56
       }
     ],
     "detected": 2,
+    "suspect": 0,
     "missed": 0,
+    "authority_mix": {
+      "detected_by_model": 2,
+      "hinted_by_plan": 0,
+      "suspect": 0,
+      "missed": 0
+    },
     "success_rate": 1.0,
     "status": "ok"
   },
@@ -85,7 +100,7 @@
     "slug": "benson-boone-live",
     "device": "mps"
   },
-  "created_at": "2026-04-17T12:10:59Z",
+  "created_at": "2026-04-17T16:16:16Z",
   "layers": [
     {
       "id": "layer_26995f47",
@@ -96,6 +111,7 @@
       "blend_mode": "normal",
       "content_type": "singer",
       "semantic_path": "subject.person[0]",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "singer.png",
@@ -107,6 +123,8 @@
       ],
       "det_score": 0.3983045518398285,
       "sam_score": 0.9932962656021118,
+      "area_pct": 2.76,
+      "quality_status": "detected",
       "regeneration_prompt": "man in red sleeveless outfit singing with raised arm",
       "opacity": 1.0,
       "x": 0.0,
@@ -125,6 +143,7 @@
       "blend_mode": "normal",
       "content_type": "stage_bg",
       "semantic_path": "background",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "stage_bg.png",
@@ -136,7 +155,41 @@
       ],
       "det_score": 0.738422691822052,
       "sam_score": 0.9923423528671265,
+      "area_pct": 75.56,
+      "quality_status": "detected",
       "regeneration_prompt": "dark concert stage background",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_00f6a232",
+      "name": "residual",
+      "label": "plan residual — pixels not covered by any named entity",
+      "description": "plan residual — pixels not covered by any named entity",
+      "z_index": 1,
+      "blend_mode": "normal",
+      "content_type": "residual",
+      "semantic_path": "residual",
+      "parent_layer_id": null,
+      "visible": true,
+      "locked": true,
+      "file": "residual.png",
+      "bbox": [
+        0,
+        0,
+        1280,
+        960
+      ],
+      "det_score": null,
+      "sam_score": null,
+      "area_pct": 21.68,
+      "quality_status": "residual",
+      "regeneration_prompt": "plan residual — pixels not covered by any named entity",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,

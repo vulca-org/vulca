@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "width": 2560,
   "height": 120,
   "source_image": "assets/showcase/originals/qingming-bridge.jpg",
@@ -29,7 +29,11 @@
         ],
         "det_score": 0.5862528085708618,
         "sam_score": 0.8569910526275635,
-        "pct": 1.46
+        "pct": 1.46,
+        "bbox_fill": 0.708,
+        "inside_ratio": 0.96,
+        "pct_before_resolve": 1.46,
+        "pct_after_resolve": 1.46
       },
       {
         "id": 1,
@@ -48,7 +52,11 @@
         ],
         "det_score": 0.4003312289714813,
         "sam_score": 0.8948324918746948,
-        "pct": 1.47
+        "pct": 1.47,
+        "bbox_fill": 0.703,
+        "inside_ratio": 0.947,
+        "pct_before_resolve": 1.47,
+        "pct_after_resolve": 1.47
       },
       {
         "id": 2,
@@ -67,11 +75,22 @@
         ],
         "det_score": 0.28480714559555054,
         "sam_score": 0.7440404891967773,
-        "pct": 0.11
+        "pct": 0.11,
+        "bbox_fill": 0.571,
+        "inside_ratio": 0.618,
+        "pct_before_resolve": 0.11,
+        "pct_after_resolve": 0.11
       }
     ],
     "detected": 3,
+    "suspect": 0,
     "missed": 0,
+    "authority_mix": {
+      "detected_by_model": 3,
+      "hinted_by_plan": 0,
+      "suspect": 0,
+      "missed": 0
+    },
     "success_rate": 1.0,
     "status": "ok"
   },
@@ -103,7 +122,7 @@
     "slug": "qingming-bridge",
     "device": "mps"
   },
-  "created_at": "2026-04-17T11:38:56Z",
+  "created_at": "2026-04-17T16:21:08Z",
   "layers": [
     {
       "id": "layer_5810174d",
@@ -114,6 +133,7 @@
       "blend_mode": "normal",
       "content_type": "buildings_trees",
       "semantic_path": "background",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "buildings_trees.png",
@@ -125,6 +145,8 @@
       ],
       "det_score": 0.5862528085708618,
       "sam_score": 0.8569910526275635,
+      "area_pct": 1.46,
+      "quality_status": "detected",
       "regeneration_prompt": "rows of buildings and trees behind river",
       "opacity": 1.0,
       "x": 0.0,
@@ -143,6 +165,7 @@
       "blend_mode": "normal",
       "content_type": "bridge",
       "semantic_path": "subject.bridge",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "bridge.png",
@@ -154,6 +177,8 @@
       ],
       "det_score": 0.4003312289714813,
       "sam_score": 0.8948324918746948,
+      "area_pct": 1.47,
+      "quality_status": "detected",
       "regeneration_prompt": "arched wooden bridge",
       "opacity": 1.0,
       "x": 0.0,
@@ -172,6 +197,7 @@
       "blend_mode": "normal",
       "content_type": "water_boats",
       "semantic_path": "foreground.water",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "water_boats.png",
@@ -183,7 +209,41 @@
       ],
       "det_score": 0.28480714559555054,
       "sam_score": 0.7440404891967773,
+      "area_pct": 0.11,
+      "quality_status": "detected",
       "regeneration_prompt": "river and boats below bridge",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_8b9a036a",
+      "name": "residual",
+      "label": "plan residual — pixels not covered by any named entity",
+      "description": "plan residual — pixels not covered by any named entity",
+      "z_index": 1,
+      "blend_mode": "normal",
+      "content_type": "residual",
+      "semantic_path": "residual",
+      "parent_layer_id": null,
+      "visible": true,
+      "locked": true,
+      "file": "residual.png",
+      "bbox": [
+        0,
+        0,
+        2560,
+        120
+      ],
+      "det_score": null,
+      "sam_score": null,
+      "area_pct": 96.96,
+      "quality_status": "residual",
+      "regeneration_prompt": "plan residual — pixels not covered by any named entity",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,

@@ -295,7 +295,7 @@
         "bbox_fill": 0.512,
         "inside_ratio": 0.99,
         "pct_before_resolve": 37.97,
-        "pct_after_resolve": 75.09
+        "pct_after_resolve": 37.97
       }
     ],
     "detected": 10,
@@ -389,7 +389,7 @@
       }
     ]
   },
-  "created_at": "2026-04-17T15:32:54Z",
+  "created_at": "2026-04-17T16:20:13Z",
   "layers": [
     {
       "id": "layer_8ac74746",
@@ -1372,9 +1372,41 @@
       ],
       "det_score": 0.5530914068222046,
       "sam_score": 0.9894295334815979,
-      "area_pct": 75.09,
+      "area_pct": 37.97,
       "quality_status": "detected",
       "regeneration_prompt": "dirt road with smoke in the distance",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_d0e9eab8",
+      "name": "residual",
+      "label": "plan residual — pixels not covered by any named entity",
+      "description": "plan residual — pixels not covered by any named entity",
+      "z_index": 1,
+      "blend_mode": "normal",
+      "content_type": "residual",
+      "semantic_path": "residual",
+      "parent_layer_id": null,
+      "visible": true,
+      "locked": true,
+      "file": "residual.png",
+      "bbox": [
+        0,
+        0,
+        1280,
+        759
+      ],
+      "det_score": null,
+      "sam_score": null,
+      "area_pct": 37.12,
+      "quality_status": "residual",
+      "regeneration_prompt": "plan residual — pixels not covered by any named entity",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,

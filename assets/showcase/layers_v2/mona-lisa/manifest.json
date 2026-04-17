@@ -62,7 +62,7 @@
         "bbox_fill": 0.377,
         "inside_ratio": 0.997,
         "pct_before_resolve": 16.26,
-        "pct_after_resolve": 58.07
+        "pct_after_resolve": 16.26
       },
       {
         "id": 2,
@@ -131,7 +131,7 @@
       }
     ]
   },
-  "created_at": "2026-04-17T15:32:46Z",
+  "created_at": "2026-04-17T16:20:04Z",
   "layers": [
     {
       "id": "layer_b42536b9",
@@ -410,7 +410,7 @@
       ],
       "det_score": 0.34311333298683167,
       "sam_score": 0.8113933801651001,
-      "area_pct": 58.07,
+      "area_pct": 16.26,
       "quality_status": "detected",
       "regeneration_prompt": "distant landscape with mountains and winding road",
       "opacity": 1.0,
@@ -445,6 +445,38 @@
       "area_pct": 37.45,
       "quality_status": "detected",
       "regeneration_prompt": "wooden chair armrest and stone parapet ledge",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_a53ce7fe",
+      "name": "residual",
+      "label": "plan residual — pixels not covered by any named entity",
+      "description": "plan residual — pixels not covered by any named entity",
+      "z_index": 1,
+      "blend_mode": "normal",
+      "content_type": "residual",
+      "semantic_path": "residual",
+      "parent_layer_id": null,
+      "visible": true,
+      "locked": true,
+      "file": "residual.png",
+      "bbox": [
+        0,
+        0,
+        858,
+        1280
+      ],
+      "det_score": null,
+      "sam_score": null,
+      "area_pct": 41.8,
+      "quality_status": "residual",
+      "regeneration_prompt": "plan residual — pixels not covered by any named entity",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,

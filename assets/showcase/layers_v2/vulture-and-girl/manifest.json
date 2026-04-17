@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "width": 360,
   "height": 230,
   "source_image": "assets/showcase/originals/vulture-and-girl.jpg",
@@ -41,7 +41,11 @@
         ],
         "det_score": 0.43062907457351685,
         "sam_score": 0.9853367805480957,
-        "pct": 1.56
+        "pct": 1.56,
+        "bbox_fill": 0.563,
+        "inside_ratio": 1.0,
+        "pct_before_resolve": 1.56,
+        "pct_after_resolve": 1.56
       },
       {
         "id": 0,
@@ -60,7 +64,11 @@
         ],
         "det_score": 0.32103970646858215,
         "sam_score": 0.9824943542480469,
-        "pct": 69.67
+        "pct": 69.67,
+        "bbox_fill": 0.789,
+        "inside_ratio": 1.0,
+        "pct_before_resolve": 69.67,
+        "pct_after_resolve": 69.67
       },
       {
         "id": 2,
@@ -79,11 +87,25 @@
         ],
         "det_score": 0.8118597865104675,
         "sam_score": 0.9836190938949585,
-        "pct": 1.57
+        "pct": 1.57,
+        "bbox_fill": 0.5,
+        "inside_ratio": 1.0,
+        "pct_before_resolve": 1.57,
+        "pct_after_resolve": 0.0,
+        "quality_flags": [
+          "over_eroded"
+        ]
       }
     ],
     "detected": 3,
+    "suspect": 0,
     "missed": 0,
+    "authority_mix": {
+      "detected_by_model": 3,
+      "hinted_by_plan": 0,
+      "suspect": 0,
+      "missed": 0
+    },
     "success_rate": 1.0,
     "status": "ok"
   },
@@ -116,7 +138,7 @@
     "slug": "vulture-and-girl",
     "device": "mps"
   },
-  "created_at": "2026-04-17T11:39:44Z",
+  "created_at": "2026-04-17T16:22:07Z",
   "layers": [
     {
       "id": "layer_c2a716ac",
@@ -127,6 +149,7 @@
       "blend_mode": "normal",
       "content_type": "child",
       "semantic_path": "subject.person[0]",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "child.png",
@@ -138,6 +161,8 @@
       ],
       "det_score": 0.43062907457351685,
       "sam_score": 0.9853367805480957,
+      "area_pct": 1.56,
+      "quality_status": "detected",
       "regeneration_prompt": "emaciated starving child kneeling on ground",
       "opacity": 1.0,
       "x": 0.0,
@@ -156,6 +181,7 @@
       "blend_mode": "normal",
       "content_type": "background",
       "semantic_path": "background",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "background.png",
@@ -167,6 +193,8 @@
       ],
       "det_score": 0.32103970646858215,
       "sam_score": 0.9824943542480469,
+      "area_pct": 69.67,
+      "quality_status": "detected",
       "regeneration_prompt": "dry brown savanna with trees in distance",
       "opacity": 1.0,
       "x": 0.0,
@@ -185,6 +213,7 @@
       "blend_mode": "normal",
       "content_type": "vulture",
       "semantic_path": "subject.bird",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "vulture.png",
@@ -196,7 +225,41 @@
       ],
       "det_score": 0.8118597865104675,
       "sam_score": 0.9836190938949585,
+      "area_pct": 0.0,
+      "quality_status": "detected",
       "regeneration_prompt": "dark vulture bird",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_342057cf",
+      "name": "residual",
+      "label": "plan residual — pixels not covered by any named entity",
+      "description": "plan residual — pixels not covered by any named entity",
+      "z_index": 1,
+      "blend_mode": "normal",
+      "content_type": "residual",
+      "semantic_path": "residual",
+      "parent_layer_id": null,
+      "visible": true,
+      "locked": true,
+      "file": "residual.png",
+      "bbox": [
+        0,
+        0,
+        360,
+        230
+      ],
+      "det_score": null,
+      "sam_score": null,
+      "area_pct": 28.76,
+      "quality_status": "residual",
+      "regeneration_prompt": "plan residual — pixels not covered by any named entity",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,

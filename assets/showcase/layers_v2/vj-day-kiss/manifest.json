@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "width": 265,
   "height": 396,
   "source_image": "assets/showcase/originals/vj-day-kiss.jpg",
@@ -36,7 +36,11 @@
         ],
         "det_score": 0.8975859880447388,
         "sam_score": 0.9843753576278687,
-        "pct": 2.65
+        "pct": 2.65,
+        "bbox_fill": 0.713,
+        "inside_ratio": 1.0,
+        "pct_before_resolve": 2.65,
+        "pct_after_resolve": 2.65
       },
       {
         "id": 2,
@@ -61,7 +65,11 @@
         ],
         "det_score": 0.5460287928581238,
         "sam_score": 0.9404685497283936,
-        "pct": 0.32
+        "pct": 0.32,
+        "bbox_fill": 0.594,
+        "inside_ratio": 1.0,
+        "pct_before_resolve": 0.32,
+        "pct_after_resolve": 0.32
       },
       {
         "id": 0,
@@ -80,11 +88,22 @@
         ],
         "det_score": 0.4525315463542938,
         "sam_score": 0.9700822830200195,
-        "pct": 1.83
+        "pct": 1.83,
+        "bbox_fill": 0.495,
+        "inside_ratio": 1.0,
+        "pct_before_resolve": 1.83,
+        "pct_after_resolve": 1.83
       }
     ],
     "detected": 3,
+    "suspect": 0,
     "missed": 0,
+    "authority_mix": {
+      "detected_by_model": 3,
+      "hinted_by_plan": 0,
+      "suspect": 0,
+      "missed": 0
+    },
     "success_rate": 1.0,
     "status": "ok"
   },
@@ -118,7 +137,7 @@
     "slug": "vj-day-kiss",
     "device": "mps"
   },
-  "created_at": "2026-04-17T11:39:40Z",
+  "created_at": "2026-04-17T16:22:01Z",
   "layers": [
     {
       "id": "layer_be1719f0",
@@ -129,6 +148,7 @@
       "blend_mode": "normal",
       "content_type": "sailor",
       "semantic_path": "subject.person[0]",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "sailor.png",
@@ -140,6 +160,8 @@
       ],
       "det_score": 0.8975859880447388,
       "sam_score": 0.9843753576278687,
+      "area_pct": 2.65,
+      "quality_status": "detected",
       "regeneration_prompt": "sailor in dark navy uniform",
       "opacity": 1.0,
       "x": 0.0,
@@ -158,6 +180,7 @@
       "blend_mode": "normal",
       "content_type": "nurse",
       "semantic_path": "subject.person[1]",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "nurse.png",
@@ -169,6 +192,8 @@
       ],
       "det_score": 0.5460287928581238,
       "sam_score": 0.9404685497283936,
+      "area_pct": 0.32,
+      "quality_status": "detected",
       "regeneration_prompt": "nurse in white uniform being kissed",
       "opacity": 1.0,
       "x": 0.0,
@@ -187,6 +212,7 @@
       "blend_mode": "normal",
       "content_type": "street_crowd",
       "semantic_path": "background",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "street_crowd.png",
@@ -198,7 +224,41 @@
       ],
       "det_score": 0.4525315463542938,
       "sam_score": 0.9700822830200195,
+      "area_pct": 1.83,
+      "quality_status": "detected",
       "regeneration_prompt": "busy Times Square street with pedestrians",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_d1d9545b",
+      "name": "residual",
+      "label": "plan residual — pixels not covered by any named entity",
+      "description": "plan residual — pixels not covered by any named entity",
+      "z_index": 1,
+      "blend_mode": "normal",
+      "content_type": "residual",
+      "semantic_path": "residual",
+      "parent_layer_id": null,
+      "visible": true,
+      "locked": true,
+      "file": "residual.png",
+      "bbox": [
+        0,
+        0,
+        265,
+        396
+      ],
+      "det_score": null,
+      "sam_score": null,
+      "area_pct": 95.19,
+      "quality_status": "residual",
+      "regeneration_prompt": "plan residual — pixels not covered by any named entity",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,

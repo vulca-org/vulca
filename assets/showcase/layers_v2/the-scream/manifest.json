@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "width": 1031,
   "height": 1280,
   "source_image": "assets/showcase/originals/the-scream.jpg",
@@ -35,7 +35,11 @@
         ],
         "det_score": 0.3347732126712799,
         "sam_score": 0.9263505935668945,
-        "pct": 0.47
+        "pct": 0.47,
+        "bbox_fill": 0.472,
+        "inside_ratio": 1.0,
+        "pct_before_resolve": 0.47,
+        "pct_after_resolve": 0.47
       },
       {
         "id": 2,
@@ -60,7 +64,11 @@
         ],
         "det_score": 0.3952474296092987,
         "sam_score": 0.9709288477897644,
-        "pct": 0.69
+        "pct": 0.69,
+        "bbox_fill": 0.592,
+        "inside_ratio": 1.0,
+        "pct_before_resolve": 0.69,
+        "pct_after_resolve": 0.69
       },
       {
         "id": 0,
@@ -79,7 +87,11 @@
         ],
         "det_score": 0.409469872713089,
         "sam_score": 0.9917501211166382,
-        "pct": 25.69
+        "pct": 25.69,
+        "bbox_fill": 0.887,
+        "inside_ratio": 0.983,
+        "pct_before_resolve": 25.69,
+        "pct_after_resolve": 25.69
       },
       {
         "id": 1,
@@ -98,11 +110,22 @@
         ],
         "det_score": 0.4304176867008209,
         "sam_score": 0.9243648052215576,
-        "pct": 38.29
+        "pct": 38.29,
+        "bbox_fill": 0.628,
+        "inside_ratio": 0.991,
+        "pct_before_resolve": 38.29,
+        "pct_after_resolve": 37.19
       }
     ],
     "detected": 4,
+    "suspect": 0,
     "missed": 0,
+    "authority_mix": {
+      "detected_by_model": 4,
+      "hinted_by_plan": 0,
+      "suspect": 0,
+      "missed": 0
+    },
     "success_rate": 1.0,
     "status": "ok"
   },
@@ -142,7 +165,7 @@
     "slug": "the-scream",
     "device": "mps"
   },
-  "created_at": "2026-04-17T11:39:11Z",
+  "created_at": "2026-04-17T16:21:37Z",
   "layers": [
     {
       "id": "layer_0dc964d8",
@@ -153,6 +176,7 @@
       "blend_mode": "normal",
       "content_type": "background_figures",
       "semantic_path": "subject.person[1]",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "background_figures.png",
@@ -164,6 +188,8 @@
       ],
       "det_score": 0.3347732126712799,
       "sam_score": 0.9263505935668945,
+      "area_pct": 0.47,
+      "quality_status": "detected",
       "regeneration_prompt": "two dark silhouetted figures",
       "opacity": 1.0,
       "x": 0.0,
@@ -182,6 +208,7 @@
       "blend_mode": "normal",
       "content_type": "screaming_figure",
       "semantic_path": "subject.person[0]",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "screaming_figure.png",
@@ -193,6 +220,8 @@
       ],
       "det_score": 0.3952474296092987,
       "sam_score": 0.9709288477897644,
+      "area_pct": 0.69,
+      "quality_status": "detected",
       "regeneration_prompt": "central figure with hands on head",
       "opacity": 1.0,
       "x": 0.0,
@@ -211,6 +240,7 @@
       "blend_mode": "normal",
       "content_type": "sky_water",
       "semantic_path": "background",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "sky_water.png",
@@ -222,6 +252,8 @@
       ],
       "det_score": 0.409469872713089,
       "sam_score": 0.9917501211166382,
+      "area_pct": 25.69,
+      "quality_status": "detected",
       "regeneration_prompt": "orange swirling sky with fjord water and distant hills",
       "opacity": 1.0,
       "x": 0.0,
@@ -240,6 +272,7 @@
       "blend_mode": "normal",
       "content_type": "bridge",
       "semantic_path": "subject.bridge",
+      "parent_layer_id": null,
       "visible": true,
       "locked": false,
       "file": "bridge.png",
@@ -251,7 +284,41 @@
       ],
       "det_score": 0.4304176867008209,
       "sam_score": 0.9243648052215576,
+      "area_pct": 37.19,
+      "quality_status": "detected",
       "regeneration_prompt": "brown wooden bridge with railing",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_e8570ced",
+      "name": "residual",
+      "label": "plan residual — pixels not covered by any named entity",
+      "description": "plan residual — pixels not covered by any named entity",
+      "z_index": 1,
+      "blend_mode": "normal",
+      "content_type": "residual",
+      "semantic_path": "residual",
+      "parent_layer_id": null,
+      "visible": true,
+      "locked": true,
+      "file": "residual.png",
+      "bbox": [
+        0,
+        0,
+        1031,
+        1280
+      ],
+      "det_score": null,
+      "sam_score": null,
+      "area_pct": 35.97,
+      "quality_status": "residual",
+      "regeneration_prompt": "plan residual — pixels not covered by any named entity",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,
