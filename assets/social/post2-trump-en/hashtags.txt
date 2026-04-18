@@ -1,0 +1,23 @@
+# English hashtag bank - Post #2 Trump - pick 8-12 per surface
+
+## Flagship (broad reach)
+#AI
+#MachineLearning
+#ComputerVision
+
+## Tech stack
+#SAM
+#SegFormer
+#YOLO
+#ClaudeCode
+#Anthropic
+
+## Genre / community
+#OpenSource
+#Python
+#ImageProcessing
+#IndieHackers
+
+## Topical
+#Trump
+#Butler2024
