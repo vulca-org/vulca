@@ -1,36 +1,54 @@
 {
+  "slug": "the-scream",
   "domain": "expressionist_painting",
-  "notes": "Munch 1893. Single central screaming figure + 2 background figures + bridge + fjord.",
+  "device": "mps",
   "threshold_hint": 0.2,
   "expand_face_parts": false,
+  "notes": "C1 iter2: first pass DINO put both persons in wrong place + 'distant shore' matched 94% of canvas. Fixed: sam_bbox hints for both figures, dropped runaway shore label.",
   "entities": [
     {
-      "name": "sky_water",
-      "label": "orange swirling sky with fjord water and distant hills",
-      "semantic_path": "background",
-      "detector": "dino"
+      "name": "sky",
+      "label": "orange red swirling sky with horizontal bands at top",
+      "semantic_path": "background.sky",
+      "detector": "dino",
+      "threshold": 0.2
     },
     {
-      "name": "bridge",
-      "label": "brown wooden bridge with railing",
-      "semantic_path": "subject.bridge",
-      "detector": "dino"
+      "name": "water",
+      "label": "dark blue swirling fjord water",
+      "semantic_path": "background.water",
+      "detector": "dino",
+      "threshold": 0.18
+    },
+    {
+      "name": "bridge_railing",
+      "label": "brown wooden bridge railing with vertical posts running diagonally",
+      "semantic_path": "foreground.bridge_railing",
+      "detector": "dino",
+      "threshold": 0.2
+    },
+    {
+      "name": "walkway",
+      "label": "brown wooden walkway ground of the bridge",
+      "semantic_path": "foreground.walkway",
+      "detector": "dino",
+      "threshold": 0.15
     },
     {
       "name": "screaming_figure",
-      "label": "central figure with hands on head",
-      "semantic_path": "subject.person[0]",
-      "detector": "yolo",
-      "order": 1
+      "label": "central figure with hands on elongated head",
+      "semantic_path": "foreground.person[0]",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [0.32, 0.38, 0.58, 0.95],
+      "order": 10
     },
     {
       "name": "background_figures",
-      "label": "two dark silhouetted figures",
+      "label": "two small dark silhouettes on the bridge",
       "semantic_path": "subject.person[1]",
-      "detector": "yolo",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [0.00, 0.33, 0.14, 0.52],
       "order": 0
     }
-  ],
-  "slug": "the-scream",
-  "device": "mps"
+  ]
 }

@@ -1,23 +1,38 @@
 {
+  "slug": "trump-mugshot",
   "domain": "booking_photograph",
-  "notes": "Fulton County jail 2023 booking photo.",
+  "device": "mps",
   "threshold_hint": 0.25,
   "expand_face_parts": true,
+  "notes": "C1 POC: agent-authored from 0. Fulton County jail 2023 booking photo. Gray wall + sheriff department seal upper-left + Trump in dark suit + red tie.",
   "entities": [
     {
       "name": "wall",
       "label": "gray concrete jail wall",
-      "semantic_path": "background",
-      "detector": "dino"
+      "semantic_path": "background.wall",
+      "detector": "dino",
+      "threshold": 0.2
+    },
+    {
+      "name": "sheriff_seal",
+      "label": "Fulton County sheriff department seal on the wall",
+      "semantic_path": "background.seal",
+      "detector": "dino",
+      "threshold": 0.15
     },
     {
       "name": "trump",
-      "label": "man in dark suit with blond hair",
+      "label": "man with blonde hair in dark navy suit frowning",
       "semantic_path": "subject.person[0]",
       "detector": "yolo",
       "order": 0
+    },
+    {
+      "name": "red_tie",
+      "label": "red necktie",
+      "semantic_path": "foreground.tie",
+      "detector": "dino",
+      "threshold": 0.2
     }
-  ],
-  "slug": "trump-mugshot",
-  "device": "mps"
+  ]
 }

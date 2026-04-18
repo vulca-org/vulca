@@ -1,36 +1,68 @@
 {
+  "slug": "american-gothic",
   "domain": "american_regionalist_painting",
-  "notes": "Grant Wood 1930. Man + woman + farmhouse + pitchfork.",
+  "device": "mps",
   "threshold_hint": 0.2,
   "expand_face_parts": true,
+  "notes": "C1 POC: agent-authored from 0. Farm couple foreground, Carpenter Gothic house behind, sky+trees+red barn+greenhouse on sides. Woman left, bald man with pitchfork right.",
   "entities": [
     {
+      "name": "sky",
+      "label": "pale cloudy sky at the top of the painting",
+      "semantic_path": "background.sky",
+      "detector": "dino",
+      "threshold": 0.18
+    },
+    {
+      "name": "trees",
+      "label": "green trees and shrubs behind the farmhouse",
+      "semantic_path": "background.trees",
+      "detector": "dino",
+      "threshold": 0.15
+    },
+    {
+      "name": "red_barn",
+      "label": "red wooden barn on the right side",
+      "semantic_path": "background.barn",
+      "detector": "dino",
+      "threshold": 0.15
+    },
+    {
+      "name": "greenhouse",
+      "label": "wooden greenhouse porch with potted plants on the left",
+      "semantic_path": "background.greenhouse",
+      "detector": "dino",
+      "threshold": 0.15
+    },
+    {
       "name": "farmhouse",
-      "label": "white wooden farmhouse with gothic window",
-      "semantic_path": "background",
-      "detector": "dino"
+      "label": "white Carpenter Gothic farmhouse with pointed arch window",
+      "semantic_path": "background.house",
+      "detector": "dino",
+      "threshold": 0.2
     },
     {
       "name": "woman",
-      "label": "blonde woman in dark dress on left",
+      "label": "stern blonde woman in dark brown dress with white collar on left",
       "semantic_path": "subject.person[0]",
-      "detector": "yolo",
+      "detector": "dino",
+      "threshold": 0.2,
       "order": 0
     },
     {
       "name": "man",
-      "label": "bald elderly man with glasses and overalls",
+      "label": "bald older man with round glasses in black jacket over striped overalls",
       "semantic_path": "subject.person[1]",
-      "detector": "yolo",
+      "detector": "dino",
+      "threshold": 0.2,
       "order": 1
     },
     {
       "name": "pitchfork",
-      "label": "metal pitchfork with three tines",
-      "semantic_path": "foreground.tool",
-      "detector": "dino"
+      "label": "wooden pitchfork with metal tines held vertically in foreground",
+      "semantic_path": "foreground.pitchfork",
+      "detector": "dino",
+      "threshold": 0.15
     }
-  ],
-  "slug": "american-gothic",
-  "device": "mps"
+  ]
 }

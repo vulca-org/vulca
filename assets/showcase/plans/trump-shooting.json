@@ -1,50 +1,79 @@
 {
+  "slug": "trump-shooting",
   "domain": "news_photograph_2024",
-  "notes": "Evan Vucci. Trump with raised fist + secret service agents + flag + stage.",
+  "device": "mps",
   "threshold_hint": 0.2,
   "expand_face_parts": true,
+  "notes": "Butler PA 2024 Evan Vucci. 4 persons + american flag + blue sky + striped stage. Previous YOLO-only pass had agent_bottom bbox overlap with Trump; switched to sam_bbox with explicit hints for all 4 figures.",
   "entities": [
     {
-      "name": "sky_flag",
-      "label": "blue sky with american flag",
-      "semantic_path": "background",
-      "detector": "dino"
+      "name": "sky",
+      "label": "clear blue sky at top",
+      "semantic_path": "background.sky",
+      "detector": "dino",
+      "threshold": 0.18
+    },
+    {
+      "name": "flag",
+      "label": "american flag with stars and red white stripes",
+      "semantic_path": "background.flag",
+      "detector": "dino",
+      "threshold": 0.2
     },
     {
       "name": "trump",
-      "label": "man with raised fist and blood on ear",
+      "label": "man with raised fist and blood on cheek shouting",
       "semantic_path": "subject.person[0]",
-      "detector": "yolo",
-      "order": 1
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [0.34, 0.08, 0.60, 0.72],
+      "order": 10
     },
     {
-      "name": "agent_left",
-      "label": "secret service agent in dark suit on left",
+      "name": "agent_left_head",
+      "label": "blonde hair and face of agent",
       "semantic_path": "subject.person[1]",
-      "detector": "yolo",
-      "order": 0
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [0.22, 0.38, 0.32, 0.52],
+      "order": 5
+    },
+    {
+      "name": "agent_left_body",
+      "label": "dark suit body of agent crouching",
+      "semantic_path": "subject.person[1].body",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [0.18, 0.50, 0.44, 0.88],
+      "order": 4
     },
     {
       "name": "agent_right",
-      "label": "secret service agent in dark suit on right",
+      "label": "secret service agent in dark suit on the right",
       "semantic_path": "subject.person[2]",
-      "detector": "yolo",
-      "order": 2
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [0.52, 0.20, 0.80, 0.88],
+      "order": 5
     },
     {
-      "name": "agent_bottom",
-      "label": "bent over agent in lower right",
+      "name": "agent_bottom_head",
+      "label": "back of agent head and ear",
       "semantic_path": "subject.person[3]",
-      "detector": "yolo",
-      "order": 3
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [0.76, 0.60, 0.99, 0.76],
+      "order": 5
+    },
+    {
+      "name": "agent_bottom_body",
+      "label": "dark suit crouched body of agent bottom right",
+      "semantic_path": "subject.person[3].body",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [0.72, 0.72, 1.00, 1.00],
+      "order": 4
     },
     {
       "name": "stage_railing",
-      "label": "red white blue striped stage railing",
+      "label": "red white blue striped stage banner at bottom",
       "semantic_path": "foreground.stage",
-      "detector": "dino"
+      "detector": "dino",
+      "threshold": 0.2
     }
-  ],
-  "slug": "trump-shooting",
-  "device": "mps"
+  ]
 }

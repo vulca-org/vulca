@@ -1,28 +1,45 @@
 {
+  "slug": "starry-night",
   "domain": "post_impressionist_painting",
-  "notes": "Van Gogh 1889. Swirling sky, cypress tree, village.",
+  "device": "mps",
   "threshold_hint": 0.2,
   "expand_face_parts": false,
+  "notes": "C1 POC: agent-authored from 0. Swirling sky with moon+stars, cypress flame-tree left, rolling hills background, village with church steeple lower-center.",
   "entities": [
     {
       "name": "sky",
       "label": "swirling blue sky with yellow stars and moon",
-      "semantic_path": "background",
-      "detector": "dino"
+      "semantic_path": "background.sky",
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [0.0, 0.0, 1.0, 0.60]
+    },
+    {
+      "name": "hills",
+      "label": "dark rolling hills at the horizon behind the village",
+      "semantic_path": "background.hills",
+      "detector": "dino",
+      "threshold": 0.15
     },
     {
       "name": "cypress_tree",
-      "label": "tall dark cypress tree on the left",
+      "label": "tall dark green cypress tree with flame like shape on the left",
       "semantic_path": "subject.tree",
-      "detector": "dino"
+      "detector": "dino",
+      "threshold": 0.2
     },
     {
       "name": "village",
-      "label": "small village with church steeple and rolling hills",
+      "label": "small village with houses and buildings in the lower center",
       "semantic_path": "foreground.village",
-      "detector": "dino"
+      "detector": "dino",
+      "threshold": 0.2
+    },
+    {
+      "name": "church_steeple",
+      "label": "tall blue church spire in the center of the village",
+      "semantic_path": "foreground.church_steeple",
+      "detector": "dino",
+      "threshold": 0.2
     }
-  ],
-  "slug": "starry-night",
-  "device": "mps"
+  ]
 }

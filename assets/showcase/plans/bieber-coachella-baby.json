@@ -4,28 +4,28 @@
   "device": "mps",
   "threshold_hint": 0.25,
   "expand_face_parts": true,
-  "notes": "Justin Bieber at Coachella 2026, Baby MV segment — red/pink hoodie, dark setting with projected Baby music video scene visible behind showing club/party crowd. Vertical format.",
+  "notes": "Justin Bieber at Coachella 2026, Baby MV segment — frontal view with shaved head, pink hoodie slipped off shoulders, mic at mouth. YOLO only gave 4.92% sparse subject; switched to sam_bbox with centered hint to capture full torso + frontal face.",
   "entities": [
     {
       "name": "dark_stage",
-      "label": "dark stage with purple and dim lighting",
+      "label": "dark stage background with dim purple lighting",
       "semantic_path": "background",
       "detector": "dino",
       "threshold": 0.2
     },
     {
       "name": "projected_crowd",
-      "label": "dim scene of people in background behind the artist",
+      "label": "projected crowd scene behind the performer",
       "semantic_path": "background.projection",
       "detector": "dino",
       "threshold": 0.15
     },
     {
       "name": "bieber",
-      "label": "man in red hoodie singing into microphone",
+      "label": "man with shaved head in pink hoodie singing frontal view",
       "semantic_path": "subject.person[0]",
-      "detector": "yolo",
-      "order": 0
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [0.10, 0.15, 0.90, 1.0]
     },
     {
       "name": "microphone",
