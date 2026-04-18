@@ -47,14 +47,14 @@
     },
     {
       "name": "astronaut_2",
-      "label": "third astronaut helmet",
+      "label": "third astronaut Christina Koch curly hair head and orange pressure suit in profile",
       "semantic_path": "subject.person[2]",
       "detector": "sam_bbox",
       "bbox_hint_pct": [
-        0.48,
-        0.42,
-        0.75,
-        0.75
+        0.46,
+        0.34,
+        0.74,
+        0.82
       ]
     },
     {

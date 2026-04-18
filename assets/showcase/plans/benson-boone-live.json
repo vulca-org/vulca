@@ -1,22 +1,24 @@
 {
+  "slug": "benson-boone-live",
   "domain": "portrait_photograph",
+  "device": "mps",
   "threshold_hint": 0.2,
   "expand_face_parts": true,
+  "notes": "Benson Boone concert shot, red sleeveless jumpsuit, arm raised. Phase 1.11: YOLO mis-detected left-edge blur as the singer; switched to sam_bbox with explicit hint.",
   "entities": [
     {
       "name": "stage_bg",
-      "label": "dark concert stage background",
+      "label": "dark concert stage background with purple red lighting",
       "semantic_path": "background",
-      "detector": "dino"
+      "detector": "dino",
+      "threshold": 0.15
     },
     {
       "name": "singer",
-      "label": "man in red sleeveless outfit singing with raised arm",
+      "label": "man in red sleeveless outfit with long curly hair singing with raised arm",
       "semantic_path": "subject.person[0]",
-      "detector": "yolo",
-      "order": 0
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [0.20, 0.00, 0.82, 1.0]
     }
-  ],
-  "slug": "benson-boone-live",
-  "device": "mps"
+  ]
 }

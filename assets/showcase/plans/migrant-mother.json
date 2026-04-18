@@ -1,37 +1,38 @@
 {
+  "slug": "migrant-mother",
   "domain": "historical_bw_photo",
-  "notes": "Dorothea Lange 1936. Mother + 2 children, seated in cloth.",
+  "device": "mps",
   "threshold_hint": 0.2,
   "expand_face_parts": true,
+  "notes": "Dorothea Lange 1936. Phase 1.11: YOLO bboxes over-broad (child_right covered 5/6 of image grabbing mother). Switched to sam_bbox with hand-placed tight hints for 3 figures.",
   "entities": [
     {
       "name": "background",
-      "label": "dark fabric background",
+      "label": "dark fabric tent background",
       "semantic_path": "background",
-      "detector": "dino"
+      "detector": "dino",
+      "threshold": 0.15
     },
     {
       "name": "mother",
-      "label": "woman seated",
+      "label": "seated woman in center with hand on chin, Florence Thompson",
       "semantic_path": "subject.person[0]",
-      "detector": "yolo",
-      "order": 1
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [0.15, 0.07, 0.68, 1.0]
     },
     {
       "name": "child_left",
-      "label": "child on left",
+      "label": "child on left side resting head on mother shoulder",
       "semantic_path": "subject.person[1]",
-      "detector": "yolo",
-      "order": 0
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [0.0, 0.20, 0.32, 0.70]
     },
     {
       "name": "child_right",
-      "label": "child on right",
+      "label": "child on right hiding face against mother shoulder",
       "semantic_path": "subject.person[2]",
-      "detector": "yolo",
-      "order": 2
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [0.58, 0.13, 0.98, 0.55]
     }
-  ],
-  "slug": "migrant-mother",
-  "device": "mps"
+  ]
 }
