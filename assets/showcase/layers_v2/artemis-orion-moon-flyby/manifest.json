@@ -119,9 +119,15 @@
     "status": "ok"
   },
   "plan": {
+    "plan_version": 1,
+    "slug": "artemis-orion-moon-flyby",
     "domain": "space_photograph",
+    "device": "mps",
+    "notes": "",
     "threshold_hint": 0.18,
     "expand_face_parts": false,
+    "soften_edges": true,
+    "unclaimed_threshold_pct": 2.0,
     "entities": [
       {
         "name": "space",
@@ -147,11 +153,9 @@
         "semantic_path": "subject.spacecraft.solar",
         "detector": "dino"
       }
-    ],
-    "slug": "artemis-orion-moon-flyby",
-    "device": "mps"
+    ]
   },
-  "created_at": "2026-04-17T21:30:50Z",
+  "created_at": "2026-04-18T09:51:12Z",
   "layers": [
     {
       "id": "layer_64c20ff2",

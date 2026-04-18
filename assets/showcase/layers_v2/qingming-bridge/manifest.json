@@ -95,10 +95,15 @@
     "status": "ok"
   },
   "plan": {
+    "plan_version": 1,
+    "slug": "qingming-bridge",
     "domain": "chinese_gongbi_scroll",
+    "device": "mps",
     "notes": "Zhang Zeduan c.1100s. Scroll scene with bridge, boats, people. Very horizontal.",
     "threshold_hint": 0.15,
     "expand_face_parts": false,
+    "soften_edges": true,
+    "unclaimed_threshold_pct": 2.0,
     "entities": [
       {
         "name": "buildings_trees",
@@ -118,11 +123,9 @@
         "semantic_path": "foreground.water",
         "detector": "dino"
       }
-    ],
-    "slug": "qingming-bridge",
-    "device": "mps"
+    ]
   },
-  "created_at": "2026-04-17T21:35:31Z",
+  "created_at": "2026-04-18T09:55:56Z",
   "layers": [
     {
       "id": "layer_5810174d",

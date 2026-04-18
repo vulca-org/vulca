@@ -79,9 +79,15 @@
     "status": "ok"
   },
   "plan": {
+    "plan_version": 1,
+    "slug": "benson-boone-live",
     "domain": "portrait_photograph",
+    "device": "mps",
+    "notes": "",
     "threshold_hint": 0.2,
     "expand_face_parts": true,
+    "soften_edges": true,
+    "unclaimed_threshold_pct": 2.0,
     "entities": [
       {
         "name": "stage_bg",
@@ -96,11 +102,9 @@
         "detector": "yolo",
         "order": 0
       }
-    ],
-    "slug": "benson-boone-live",
-    "device": "mps"
+    ]
   },
-  "created_at": "2026-04-17T21:30:53Z",
+  "created_at": "2026-04-18T09:51:16Z",
   "layers": [
     {
       "id": "layer_26995f47",
@@ -126,6 +130,70 @@
       "area_pct": 2.76,
       "quality_status": "detected",
       "regeneration_prompt": "man in red sleeveless outfit singing with raised arm",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_51fdd1b1",
+      "name": "singer__hair",
+      "label": "singer hair",
+      "description": "singer hair",
+      "z_index": 54,
+      "blend_mode": "normal",
+      "content_type": "singer__hair",
+      "semantic_path": "subject.person[0].hair",
+      "parent_layer_id": "layer_26995f47",
+      "visible": true,
+      "locked": false,
+      "file": "singer__hair.png",
+      "bbox": [
+        0,
+        0,
+        103,
+        934
+      ],
+      "det_score": 0.3983045518398285,
+      "sam_score": 0.95,
+      "area_pct": 0.01,
+      "quality_status": "detected",
+      "regeneration_prompt": "singer hair",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_356582b8",
+      "name": "singer__body",
+      "label": "singer body remainder",
+      "description": "singer body remainder",
+      "z_index": 51,
+      "blend_mode": "normal",
+      "content_type": "singer__body",
+      "semantic_path": "subject.person[0].body",
+      "parent_layer_id": "layer_26995f47",
+      "visible": true,
+      "locked": false,
+      "file": "singer__body.png",
+      "bbox": [
+        0,
+        0,
+        103,
+        934
+      ],
+      "det_score": 0.3983045518398285,
+      "sam_score": 0.95,
+      "area_pct": 2.75,
+      "quality_status": "detected",
+      "regeneration_prompt": "singer body remainder",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,

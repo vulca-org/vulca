@@ -103,9 +103,15 @@
     "status": "ok"
   },
   "plan": {
+    "plan_version": 1,
+    "slug": "artemis-ii-for-all-humanity",
     "domain": "space_photograph",
+    "device": "mps",
+    "notes": "",
     "threshold_hint": 0.18,
     "expand_face_parts": false,
+    "soften_edges": true,
+    "unclaimed_threshold_pct": 2.0,
     "entities": [
       {
         "name": "black_bg",
@@ -133,11 +139,9 @@
         "detector": "dino",
         "threshold": 0.1
       }
-    ],
-    "slug": "artemis-ii-for-all-humanity",
-    "device": "mps"
+    ]
   },
-  "created_at": "2026-04-17T21:30:37Z",
+  "created_at": "2026-04-18T09:50:59Z",
   "layers": [
     {
       "id": "layer_083b8538",

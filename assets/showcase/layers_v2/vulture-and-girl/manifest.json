@@ -110,10 +110,15 @@
     "status": "ok"
   },
   "plan": {
+    "plan_version": 1,
+    "slug": "vulture-and-girl",
     "domain": "photojournalism_1993",
+    "device": "mps",
     "notes": "Kevin Carter. Starving child + vulture + sparse ground.",
     "threshold_hint": 0.15,
     "expand_face_parts": false,
+    "soften_edges": true,
+    "unclaimed_threshold_pct": 2.0,
     "entities": [
       {
         "name": "background",
@@ -134,11 +139,9 @@
         "semantic_path": "subject.bird",
         "detector": "dino"
       }
-    ],
-    "slug": "vulture-and-girl",
-    "device": "mps"
+    ]
   },
-  "created_at": "2026-04-17T21:36:12Z",
+  "created_at": "2026-04-18T09:56:37Z",
   "layers": [
     {
       "id": "layer_c2a716ac",

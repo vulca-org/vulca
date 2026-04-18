@@ -164,6 +164,20 @@ class Plan(BaseModel):
             raise ValueError(f"duplicate semantic_path across entities: {dups}")
         return self
 
+    @model_validator(mode="after")
+    def _reserved_names_and_paths(self):
+        """Phase 1.9: `residual` is a pipeline-synthesized synthetic layer
+        (emitted at z=1 for plan-uncovered pixels). User plans must not
+        reuse this name or semantic_path — they would collide with the
+        synthetic layer's PNG filename and parent lookup."""
+        RESERVED = {"residual"}
+        for e in self.entities:
+            if e.name in RESERVED:
+                raise ValueError(f"entity name {e.name!r} is reserved for pipeline-synthesized layers")
+            if e.semantic_path in RESERVED:
+                raise ValueError(f"semantic_path {e.semantic_path!r} is reserved")
+        return self
+
     @classmethod
     def from_file(cls, path) -> "Plan":
         import json

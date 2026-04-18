@@ -82,10 +82,15 @@
     "status": "ok"
   },
   "plan": {
+    "plan_version": 1,
+    "slug": "afghan-girl",
     "domain": "portrait_photograph",
+    "device": "mps",
     "notes": "Steve McCurry 1984. Single portrait with red headscarf.",
     "threshold_hint": 0.2,
     "expand_face_parts": true,
+    "soften_edges": true,
+    "unclaimed_threshold_pct": 2.0,
     "entities": [
       {
         "name": "green_wall",
@@ -100,11 +105,9 @@
         "detector": "yolo",
         "order": 0
       }
-    ],
-    "slug": "afghan-girl",
-    "device": "mps"
+    ]
   },
-  "created_at": "2026-04-17T21:30:15Z",
+  "created_at": "2026-04-18T09:50:38Z",
   "layers": [
     {
       "id": "layer_338a1afe",
@@ -159,7 +162,7 @@
       ],
       "det_score": 0.8888350129127502,
       "sam_score": 0.95,
-      "area_pct": 10.32,
+      "area_pct": 10.21,
       "quality_status": "detected",
       "regeneration_prompt": "girl skin",
       "opacity": 1.0,
@@ -255,7 +258,7 @@
       ],
       "det_score": 0.8888350129127502,
       "sam_score": 0.95,
-      "area_pct": 0.27,
+      "area_pct": 0.28,
       "quality_status": "detected",
       "regeneration_prompt": "girl eyebrows",
       "opacity": 1.0,
@@ -287,7 +290,7 @@
       ],
       "det_score": 0.8888350129127502,
       "sam_score": 0.95,
-      "area_pct": 0.49,
+      "area_pct": 0.52,
       "quality_status": "detected",
       "regeneration_prompt": "girl lips",
       "opacity": 1.0,
@@ -319,7 +322,7 @@
       ],
       "det_score": 0.8888350129127502,
       "sam_score": 0.95,
-      "area_pct": 9.87,
+      "area_pct": 10.05,
       "quality_status": "detected",
       "regeneration_prompt": "girl hair",
       "opacity": 1.0,
@@ -351,7 +354,7 @@
       ],
       "det_score": 0.8888350129127502,
       "sam_score": 0.95,
-      "area_pct": 0.19,
+      "area_pct": 0.16,
       "quality_status": "detected",
       "regeneration_prompt": "girl hat",
       "opacity": 1.0,
@@ -383,7 +386,7 @@
       ],
       "det_score": 0.8888350129127502,
       "sam_score": 0.95,
-      "area_pct": 47.69,
+      "area_pct": 47.6,
       "quality_status": "detected",
       "regeneration_prompt": "girl cloth",
       "opacity": 1.0,
@@ -415,7 +418,7 @@
       ],
       "det_score": 0.8888350129127502,
       "sam_score": 0.95,
-      "area_pct": 0.75,
+      "area_pct": 0.74,
       "quality_status": "detected",
       "regeneration_prompt": "girl body remainder",
       "opacity": 1.0,

@@ -68,6 +68,9 @@
         "pct": 0.22,
         "bbox_fill": 0.643,
         "inside_ratio": 0.986,
+        "quality_flags": [
+          "face_parse_skipped"
+        ],
         "pct_before_resolve": 0.22,
         "pct_after_resolve": 0.22
       },
@@ -137,10 +140,15 @@
     "status": "ok"
   },
   "plan": {
+    "plan_version": 1,
+    "slug": "saigon-execution",
     "domain": "historical_bw_photo",
+    "device": "mps",
     "notes": "Eddie Adams 1968. Executioner + victim + soldier + street.",
     "threshold_hint": 0.2,
     "expand_face_parts": true,
+    "soften_edges": true,
+    "unclaimed_threshold_pct": 2.0,
     "entities": [
       {
         "name": "street_buildings",
@@ -169,11 +177,9 @@
         "detector": "yolo",
         "order": 2
       }
-    ],
-    "slug": "saigon-execution",
-    "device": "mps"
+    ]
   },
-  "created_at": "2026-04-17T21:35:36Z",
+  "created_at": "2026-04-18T09:56:01Z",
   "layers": [
     {
       "id": "layer_1bb3421d",
@@ -292,7 +298,7 @@
       ],
       "det_score": 0.7975810170173645,
       "sam_score": 0.95,
-      "area_pct": 4.37,
+      "area_pct": 4.5,
       "quality_status": "detected",
       "regeneration_prompt": "soldier_left hat",
       "opacity": 1.0,
@@ -356,7 +362,7 @@
       ],
       "det_score": 0.7975810170173645,
       "sam_score": 0.95,
-      "area_pct": 1.51,
+      "area_pct": 1.39,
       "quality_status": "detected",
       "regeneration_prompt": "soldier_left body remainder",
       "opacity": 1.0,

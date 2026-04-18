@@ -131,10 +131,15 @@
     "status": "ok"
   },
   "plan": {
+    "plan_version": 1,
+    "slug": "american-gothic",
     "domain": "american_regionalist_painting",
+    "device": "mps",
     "notes": "Grant Wood 1930. Man + woman + farmhouse + pitchfork.",
     "threshold_hint": 0.2,
     "expand_face_parts": true,
+    "soften_edges": true,
+    "unclaimed_threshold_pct": 2.0,
     "entities": [
       {
         "name": "farmhouse",
@@ -162,11 +167,9 @@
         "semantic_path": "foreground.tool",
         "detector": "dino"
       }
-    ],
-    "slug": "american-gothic",
-    "device": "mps"
+    ]
   },
-  "created_at": "2026-04-17T21:30:22Z",
+  "created_at": "2026-04-18T09:50:44Z",
   "layers": [
     {
       "id": "layer_b19ebd7e",
@@ -253,7 +256,7 @@
       ],
       "det_score": 0.9225975275039673,
       "sam_score": 0.95,
-      "area_pct": 2.8,
+      "area_pct": 2.79,
       "quality_status": "detected",
       "regeneration_prompt": "woman skin",
       "opacity": 1.0,
@@ -349,7 +352,7 @@
       ],
       "det_score": 0.9225975275039673,
       "sam_score": 0.95,
-      "area_pct": 0.04,
+      "area_pct": 0.03,
       "quality_status": "detected",
       "regeneration_prompt": "woman ears",
       "opacity": 1.0,
@@ -413,7 +416,7 @@
       ],
       "det_score": 0.9225975275039673,
       "sam_score": 0.95,
-      "area_pct": 1.41,
+      "area_pct": 1.42,
       "quality_status": "detected",
       "regeneration_prompt": "woman hair",
       "opacity": 1.0,
@@ -445,7 +448,7 @@
       ],
       "det_score": 0.9225975275039673,
       "sam_score": 0.95,
-      "area_pct": 0.85,
+      "area_pct": 0.86,
       "quality_status": "detected",
       "regeneration_prompt": "woman neck",
       "opacity": 1.0,
@@ -477,7 +480,7 @@
       ],
       "det_score": 0.9225975275039673,
       "sam_score": 0.95,
-      "area_pct": 5.65,
+      "area_pct": 5.62,
       "quality_status": "detected",
       "regeneration_prompt": "woman cloth",
       "opacity": 1.0,
@@ -541,7 +544,7 @@
       ],
       "det_score": 0.9225975275039673,
       "sam_score": 0.95,
-      "area_pct": 10.07,
+      "area_pct": 10.1,
       "quality_status": "detected",
       "regeneration_prompt": "woman body remainder",
       "opacity": 1.0,
@@ -861,7 +864,7 @@
       ],
       "det_score": 0.9504542946815491,
       "sam_score": 0.95,
-      "area_pct": 0.07,
+      "area_pct": 0.08,
       "quality_status": "detected",
       "regeneration_prompt": "man lips",
       "opacity": 1.0,

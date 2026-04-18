@@ -34,6 +34,12 @@ OUT_DIR = REPO / "assets" / "showcase" / "layers_v2"
 ORIG_DIR = REPO / "assets" / "showcase" / "originals"
 SAM_CKPT = "/tmp/sam_vit_l.pth"
 
+# Phase 1.9: single source of truth for orchestrated manifest version.
+# Distinct from `src/vulca/layers/manifest.py:MANIFEST_VERSION=3` which governs
+# the LAYERED generate path (different pipeline). Consumers (showcase viewer,
+# MCP tools) should import from here.
+ORCHESTRATED_MANIFEST_VERSION = 5
+
 
 # ── Domain routing: which detector chain to use per image domain ──
 # "person_chain" is the ORDERED fallback list for person entities.
@@ -137,21 +143,43 @@ def _run_face_parser(face_proc, face_model, device, crop_np):
 def _find_face_bbox_from_segmap(seg_map, padding=0.3):
     """Anchor on nose+eyes (classes 2,4,5) to find tight face bbox.
 
-    Returns (x1,y1,x2,y2) in seg_map coords, or None.
+    Phase 1.9: multi-tier fallback when pass-1 SegFormer doesn't confidently
+    emit nose/eyes (common on small/occluded/unusual faces — hoods, helmets,
+    side profiles, low-light). Returns (x1,y1,x2,y2) in seg_map coords, or None.
+
+    Tier 1: nose + eyes (classes 2,4,5) — tightest, highest signal
+    Tier 2: all fine face classes (1,2,4-7,11,12) — lips/brows help
+    Tier 3: skin (class 1) alone — works whenever head is visible at all;
+            catches 46 previously-skipped cases across the 47-image corpus
     """
+    # Tier 1: strict anchor
     anchor = np.isin(seg_map, [2, 4, 5])  # nose, l_eye, r_eye
-    if anchor.sum() < 20:
-        # Fallback: all face classes
-        anchor = np.isin(seg_map, [1, 2, 4, 5, 6, 7, 11, 12])
-    if anchor.sum() < 50:
-        return None
+    if anchor.sum() >= 8:        # Phase 1.9: 20 → 8 (catch small faces)
+        return _bbox_from_anchor(anchor, seg_map.shape)
+
+    # Tier 2: broader face classes
+    anchor = np.isin(seg_map, [1, 2, 4, 5, 6, 7, 11, 12])
+    if anchor.sum() >= 30:       # Phase 1.9: 50 → 30
+        return _bbox_from_anchor(anchor, seg_map.shape)
+
+    # Tier 3 (Phase 1.9 new): skin-only geometric fallback. If the head is
+    # visible at all, SegFormer reliably emits skin — use its centroid as
+    # face anchor. Minimum 500 px to avoid noise triggers.
+    skin = (seg_map == 1)
+    if skin.sum() >= 500:
+        return _bbox_from_anchor(skin, seg_map.shape)
+
+    return None
+
+
+def _bbox_from_anchor(anchor, shape):
+    """Expand from anchor centroid by 4x its extent to approximate face bbox."""
     ys, xs = np.where(anchor)
     cy, cx = int(ys.mean()), int(xs.mean())
-    # Expand from anchor center by 4x the anchor extent (face ~= 4x nose-eye span)
     anchor_h = ys.max() - ys.min()
     anchor_w = xs.max() - xs.min()
     face_size = max(anchor_h, anchor_w, 50) * 4
-    H, W = seg_map.shape
+    H, W = shape
     x1 = max(0, cx - face_size // 2)
     x2 = min(W, cx + face_size // 2)
     y1 = max(0, cy - face_size // 2)
@@ -162,15 +190,46 @@ def _find_face_bbox_from_segmap(seg_map, padding=0.3):
 def face_parse_person(face_proc, face_model, device, img_np, person_bbox, min_face_px=80):
     """Two-pass face-parsing: person crop -> face anchor -> tight face crop -> fine parts.
 
+    Phase 1.9: person crop is upscaled to 512px min side before pass 1.
+    SegFormer was trained on 512×512 inputs; crops smaller than that lose
+    face resolution inside the model's own resize. For a 150-px person
+    crop, the face (~50 px) becomes ~170 px after 3.4× upscale, enough to
+    trigger nose/eye detection that was previously silently lost.
+
     Returns dict part_name -> HxW bool mask in full image coords.
     """
+    from PIL import Image as _PILImage
     x1, y1, x2, y2 = person_bbox
     person_crop = img_np[y1:y2, x1:x2]
     if person_crop.shape[0] < min_face_px or person_crop.shape[1] < min_face_px:
         return {}
 
+    # Phase 1.9: upscale to give SegFormer enough pixels.
+    ch, cw = person_crop.shape[:2]
+    min_side = min(ch, cw)
+    upscale_factor = max(1.0, 512.0 / min_side)
+    if upscale_factor > 1.05:
+        new_w = int(cw * upscale_factor)
+        new_h = int(ch * upscale_factor)
+        pil = _PILImage.fromarray(person_crop).resize(
+            (new_w, new_h), _PILImage.LANCZOS
+        )
+        person_crop_seg_input = np.array(pil)
+    else:
+        person_crop_seg_input = person_crop
+
     # Pass 1: parse full person crop (coarse — finds skin/hair/hat + weak anchor)
-    seg_person = _run_face_parser(face_proc, face_model, device, person_crop)
+    seg_person_upscaled = _run_face_parser(
+        face_proc, face_model, device, person_crop_seg_input
+    )
+    # Resize seg back to original crop size for downstream coord math
+    if upscale_factor > 1.05:
+        seg_pil = _PILImage.fromarray(seg_person_upscaled.astype(np.uint8)).resize(
+            (cw, ch), _PILImage.NEAREST
+        )
+        seg_person = np.array(seg_pil)
+    else:
+        seg_person = seg_person_upscaled
 
     # Find tight face bbox within person crop
     face_bbox_in_crop = _find_face_bbox_from_segmap(seg_person)
@@ -199,7 +258,29 @@ def face_parse_person(face_proc, face_model, device, img_np, person_bbox, min_fa
         fx1, fy1, fx2, fy2 = face_bbox_in_crop
         face_crop = person_crop[fy1:fy2, fx1:fx2]
         if face_crop.shape[0] >= 40 and face_crop.shape[1] >= 40:
-            seg_face = _run_face_parser(face_proc, face_model, device, face_crop)
+            # Phase 1.9: upscale face crop to 512 min side for pass 2 too.
+            fh, fw = face_crop.shape[:2]
+            f_up = max(1.0, 512.0 / min(fh, fw))
+            if f_up > 1.05:
+                face_in = np.array(
+                    _PILImage.fromarray(face_crop).resize(
+                        (int(fw * f_up), int(fh * f_up)), _PILImage.LANCZOS
+                    )
+                )
+            else:
+                face_in = face_crop
+            seg_face_upscaled = _run_face_parser(
+                face_proc, face_model, device, face_in
+            )
+            # Downsample seg back to face_crop native size
+            if f_up > 1.05:
+                seg_face = np.array(
+                    _PILImage.fromarray(seg_face_upscaled.astype(np.uint8)).resize(
+                        (fw, fh), _PILImage.NEAREST
+                    )
+                )
+            else:
+                seg_face = seg_face_upscaled
             # Only accumulate FINE parts (eyes/nose/lips/brows) — fine pass is more accurate
             fine_classes = {4, 5, 2, 11, 12, 10, 6, 7}  # eyes, nose, lips, brows
             # Zero out non-fine classes to avoid polluting coarse results
@@ -547,14 +628,27 @@ def hint_to_bbox_px(hint_pct, W: int, H: int) -> list[int]:
 
     Clamps to image bounds defensively; the schema validator already rejects
     out-of-range values but user-provided plans can't be trusted at runtime.
+
+    Phase 1.9: guard against degenerate (zero-area) bbox from int() truncation
+    on high-decimal hints in small images. E.g. [0.998, 0.998, 0.999, 0.999]
+    on a 400px image → all coords = 399 → zero area. Widen by 1px if
+    degenerate so SAM receives a valid box.
     """
     x1, y1, x2, y2 = hint_pct
-    return [
-        max(0, min(W - 1, int(x1 * W))),
-        max(0, min(H - 1, int(y1 * H))),
-        max(0, min(W - 1, int(x2 * W))),
-        max(0, min(H - 1, int(y2 * H))),
-    ]
+    bx1 = max(0, min(W - 1, int(x1 * W)))
+    by1 = max(0, min(H - 1, int(y1 * H)))
+    bx2 = max(0, min(W - 1, int(x2 * W)))
+    by2 = max(0, min(H - 1, int(y2 * H)))
+    # Ensure non-degenerate area: at least 2x2 px.
+    if bx2 <= bx1:
+        bx2 = min(W - 1, bx1 + 1)
+        if bx2 == bx1 and bx1 > 0:
+            bx1 -= 1  # image too small at right edge; shrink left instead
+    if by2 <= by1:
+        by2 = min(H - 1, by1 + 1)
+        if by2 == by1 and by1 > 0:
+            by1 -= 1
+    return [bx1, by1, bx2, by2]
 
 
 def _z_index_for(semantic_path: str) -> int:
@@ -584,6 +678,15 @@ def _is_descendant(sp: str, ancestor: str) -> bool:
     (e.g. `person[10]` is NOT descendant of `person[1]`).
     """
     return bool(ancestor) and sp.startswith(ancestor + ".")
+
+
+def _is_person_path(sp: str) -> bool:
+    """Phase 1.9 unified person-detection: a semantic_path is a person if any
+    segment contains `person[` or `figure[` (latter for stylized art).
+    Drives both the partition AND the Stage 4 face-parsing gate so they
+    stay in sync.
+    """
+    return bool(sp) and ("person[" in sp or "figure[" in sp)
 
 
 def _is_ancestor_or_descendant(sp_a: str, sp_b: str) -> bool:
@@ -720,15 +823,25 @@ def process(slug: str, force: bool = False):
         return {"status": "error", "reason": "missing_plan"}
 
     try:
-        plan = json.loads(plan_path.read_text())
+        plan_raw = json.loads(plan_path.read_text())
     except json.JSONDecodeError as e:
         print(f"FAIL {slug}: invalid plan JSON: {e}")
         return {"status": "error", "reason": "invalid_plan_json", "detail": str(e)}
 
-    # Schema minimum: must have 'entities' list
-    if "entities" not in plan or not isinstance(plan["entities"], list):
-        print(f"FAIL {slug}: plan missing 'entities' list")
-        return {"status": "error", "reason": "plan_schema"}
+    # Phase 1.9: run full Pydantic validation on CLI path too. Previously
+    # only MCP path validated — CLI trusted raw JSON. A malicious/typo'd
+    # plan with unsafe `name` like "../etc/passwd" could be written to disk.
+    # Also catches typos in field names (extra="forbid") early.
+    # exclude_none=True so dict matches old raw-JSON behavior — code uses
+    # `.get(key, default)` patterns that would break if Pydantic-injected
+    # None values populated keys that were absent in the raw JSON.
+    try:
+        from vulca.pipeline.segment.plan import Plan
+        validated = Plan.model_validate(plan_raw)
+        plan = validated.model_dump(exclude_none=True)
+    except Exception as e:
+        print(f"FAIL {slug}: plan schema validation: {e}")
+        return {"status": "error", "reason": "plan_schema", "detail": str(e)[:500]}
 
     img_path = None
     for ext in (".jpg", ".jpeg", ".png", ".webp"):
@@ -776,7 +889,7 @@ def process(slug: str, force: bool = False):
     person_ids = {i for i, e in enumerate(plan["entities"])
                   if i not in hint_ids and (
                       e.get("detector") == "yolo"
-                      or "person[" in e.get("semantic_path", ""))}
+                      or _is_person_path(e.get("semantic_path", "")))}
     object_ids = set(range(len(plan["entities"]))) - hint_ids - person_ids
     hint_entities = [(i, plan["entities"][i]) for i in sorted(hint_ids)]
     person_entities = [(i, plan["entities"][i]) for i in sorted(person_ids)]
@@ -826,6 +939,18 @@ def process(slug: str, force: bool = False):
     if object_entities and dino_proc is not None:
         t0 = time.time()
         object_labels = [e["label"] for _, e in object_entities]
+        # Phase 1.9: warn on duplicate labels. `dino_assigned` is keyed by
+        # label text, so two entities with identical labels share one bbox
+        # (whichever scored higher) — silently collapsing one entity.
+        # Plan authors should give each entity a distinctive label.
+        label_counts = {}
+        for l in object_labels:
+            label_counts[l] = label_counts.get(l, 0) + 1
+        dup_labels = [l for l, c in label_counts.items() if c > 1]
+        if dup_labels:
+            print(f"  [warn] duplicate DINO labels will collapse: {dup_labels} — "
+                  "entities sharing a label will be assigned the same bbox; "
+                  "differentiate them in the plan")
         low_thresh = min((e.get("threshold", object_thresh)
                           for _, e in object_entities), default=object_thresh)
         # Adapt to image shape: tile extreme-aspect, upscale tiny
@@ -937,7 +1062,7 @@ def process(slug: str, force: bool = False):
     # ── Stage 4: Face-parsing per person (eyes, nose, lips, brows, skin, hair, ears, hat) ──
     # Gate scans layers_raw AFTER hint stage so hinted persons get face-parsing too.
     has_any_person = len(yolo_persons) > 0 or any(
-        "person[" in l.get("semantic_path", "") for l in layers_raw
+        _is_person_path(l.get("semantic_path", "")) for l in layers_raw
     )
     expand_faces = plan.get("expand_face_parts", True) and has_any_person
     if expand_faces:
@@ -946,9 +1071,22 @@ def process(slug: str, force: bool = False):
         face_layers_added = 0
         # Total image area for dynamic threshold
         img_area = W * H
-        for person_layer in [l for l in layers_raw if "person[" in l["semantic_path"]]:
+        # Phase 1.9: lookup per_entity records by id so we can flag skipped face-parsing
+        id_to_record = {r.get("id"): r for r in detection_report["per_entity"]}
+        for person_layer in [l for l in layers_raw if _is_person_path(l.get("semantic_path", ""))]:
             parts = face_parse_person(face_proc, face_model, device, img_np, person_layer["bbox"])
             if not parts:
+                # Phase 1.9: emit face_parse_skipped quality_flag so downstream
+                # can tell "face-parsing decided there's no face" apart from
+                # "no face was detected". Formerly silent.
+                pid = person_layer.get("id")
+                rec = id_to_record.get(pid)
+                if rec is not None:
+                    flags = rec.setdefault("quality_flags", [])
+                    if "face_parse_skipped" not in flags:
+                        flags.append("face_parse_skipped")
+                print(f"  [face-parse-skipped] {person_layer.get('name','?')}: "
+                      "no face parts detected (small/occluded/unusual face)")
                 continue
             person_mask = person_layer["mask"]
             # Dynamic threshold: larger persons get lower threshold; small persons
@@ -1014,9 +1152,15 @@ def process(slug: str, force: bool = False):
                     face_layers_added += 1
         print(f"  Face-parsing: +{face_layers_added} sub-parts (incl body_remainder) in {time.time()-t0:.1f}s")
 
-    # Pattern #3 fix: union of all person masks for DINO-object subtraction
+    # Pattern #3 fix: union of all person masks (RAW, pre-resolve) for DINO-object
+    # subtraction. Uses raw SAM mask intentionally — leak-fix's purpose is to
+    # clean DINO's misclassification onto person areas, and raw is MORE
+    # CONSERVATIVE than resolved (catches pixels even if later hidden by
+    # hats/accessories). Phase 1.9 reviewer (Superpowers I3) raised a theoretical
+    # concern about using resolved here, but structurally that's impossible
+    # (resolve_overlaps runs AFTER this loop), and raw is correct anyway.
     all_persons_mask = np.zeros((H, W), dtype=bool)
-    for pl in [l for l in layers_raw if "person[" in l["semantic_path"]]:
+    for pl in [l for l in layers_raw if _is_person_path(l.get("semantic_path", ""))]:
         all_persons_mask |= pl["mask"]
 
     # Object layers: use DINO results
@@ -1122,6 +1266,17 @@ def process(slug: str, force: bool = False):
                 # higher-z NON-descendant layer (e.g. pitchfork over farmer).
                 print(f"  [erosion] {rec.get('name','?')}: {pre:.1f}%→{post:.1f}% "
                       f"({post/pre*100:.0f}% retained) — non-descendant higher-z occlusion")
+            # Phase 1.9 symmetric observability: pair of `over_eroded`. Flag when
+            # a small layer suspiciously grew >3x post-resolve. Under hierarchical
+            # model this shouldn't happen normally (resolve only removes pixels)
+            # but signals something unexpected — e.g. face-part mask leaking
+            # into parent space, or a mask union bug.
+            if 0.01 < pre < 0.5 and post > pre * 3.0:
+                flags = rec.setdefault("quality_flags", [])
+                if "area_ballooned" not in flags:
+                    flags.append("area_ballooned")
+                print(f"  [balloon] {rec.get('name','?')}: {pre:.1f}%→{post:.1f}% "
+                      f"({post/pre:.1f}x) — unexpected growth post-resolve")
 
     # Save per-layer RGBA + manifest (with soft-alpha edge refinement)
     try:
@@ -1237,7 +1392,7 @@ def process(slug: str, force: bool = False):
         )
 
     manifest = {
-        "version": 5,  # Phase 1.5: + parent_layer_id, + layer_model, hierarchical resolve
+        "version": ORCHESTRATED_MANIFEST_VERSION,  # sourced from module constant above
         "width": W, "height": H,
         "source_image": str(
             img_path.relative_to(REPO) if REPO in img_path.parents else img_path
@@ -1249,7 +1404,12 @@ def process(slug: str, force: bool = False):
         "created_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "layers": manifest_layers,
     }
-    (out_subdir / "manifest.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False))
+    # Phase 1.9: atomic write (tmp + rename) — interrupted write would otherwise
+    # leave a corrupted manifest.json that downstream readers silently skip.
+    _mf_path = out_subdir / "manifest.json"
+    _mf_tmp = out_subdir / "manifest.json.tmp"
+    _mf_tmp.write_text(json.dumps(manifest, indent=2, ensure_ascii=False))
+    _mf_tmp.replace(_mf_path)  # POSIX-atomic rename on same filesystem
 
     marker = "✓" if status == "ok" else "⚠"
     print(f"{marker} {slug}: {status.upper()} "

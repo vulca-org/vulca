@@ -67,11 +67,12 @@
         "pct": 0.36,
         "bbox_fill": 0.757,
         "inside_ratio": 0.902,
-        "pct_before_resolve": 0.36,
-        "pct_after_resolve": 0.0,
         "quality_flags": [
+          "face_parse_skipped",
           "over_eroded"
-        ]
+        ],
+        "pct_before_resolve": 0.36,
+        "pct_after_resolve": 0.0
       },
       {
         "id": 5,
@@ -99,6 +100,9 @@
         "pct": 0.27,
         "bbox_fill": 0.686,
         "inside_ratio": 0.991,
+        "quality_flags": [
+          "face_parse_skipped"
+        ],
         "pct_before_resolve": 0.27,
         "pct_after_resolve": 0.24
       },
@@ -185,10 +189,15 @@
     "status": "ok"
   },
   "plan": {
+    "plan_version": 1,
+    "slug": "birth-of-venus",
     "domain": "renaissance_painting",
+    "device": "mps",
     "notes": "Botticelli c.1485. Venus + 2 wind gods + flora figure on right + shell + trees.",
     "threshold_hint": 0.2,
     "expand_face_parts": true,
+    "soften_edges": true,
+    "unclaimed_threshold_pct": 2.0,
     "entities": [
       {
         "name": "sea_sky",
@@ -229,11 +238,9 @@
         "detector": "yolo",
         "order": 2
       }
-    ],
-    "slug": "birth-of-venus",
-    "device": "mps"
+    ]
   },
-  "created_at": "2026-04-17T21:31:08Z",
+  "created_at": "2026-04-18T09:51:31Z",
   "layers": [
     {
       "id": "layer_82afe341",
@@ -384,7 +391,7 @@
       ],
       "det_score": 0.5149659514427185,
       "sam_score": 0.95,
-      "area_pct": 1.46,
+      "area_pct": 1.36,
       "quality_status": "detected",
       "regeneration_prompt": "wind_figures hair",
       "opacity": 1.0,
@@ -416,7 +423,7 @@
       ],
       "det_score": 0.5149659514427185,
       "sam_score": 0.95,
-      "area_pct": 1.35,
+      "area_pct": 1.47,
       "quality_status": "detected",
       "regeneration_prompt": "wind_figures hat",
       "opacity": 1.0,
@@ -448,7 +455,7 @@
       ],
       "det_score": 0.5149659514427185,
       "sam_score": 0.95,
-      "area_pct": 8.21,
+      "area_pct": 8.18,
       "quality_status": "detected",
       "regeneration_prompt": "wind_figures body remainder",
       "opacity": 1.0,

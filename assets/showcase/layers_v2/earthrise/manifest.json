@@ -93,10 +93,15 @@
     "status": "ok"
   },
   "plan": {
+    "plan_version": 1,
+    "slug": "earthrise",
     "domain": "space_photograph",
+    "device": "mps",
     "notes": "Apollo 8, 1968. No humans, just Earth over lunar surface.",
     "threshold_hint": 0.2,
     "expand_face_parts": false,
+    "soften_edges": true,
+    "unclaimed_threshold_pct": 2.0,
     "entities": [
       {
         "name": "space",
@@ -116,11 +121,9 @@
         "semantic_path": "foreground.ground",
         "detector": "dino"
       }
-    ],
-    "slug": "earthrise",
-    "device": "mps"
+    ]
   },
-  "created_at": "2026-04-17T21:31:30Z",
+  "created_at": "2026-04-18T09:51:52Z",
   "layers": [
     {
       "id": "layer_25f41242",

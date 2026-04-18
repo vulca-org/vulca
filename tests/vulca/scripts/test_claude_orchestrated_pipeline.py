@@ -546,6 +546,29 @@ class TestPhase18AncestorNoLongerEatsDescendant:
             f"{violators[:5]}"
         )
 
+    def test_phase19_hint_to_bbox_px_no_zero_area(self, pipeline_module):
+        """Phase 1.9 #8: high-decimal hints in small images must not produce
+        zero-area bboxes (caught downstream by SAM degenerate-box failure).
+        """
+        # Edge case: 0.998..0.999 on 400px image truncates to 399..399 = zero area
+        bbox = pipeline_module.hint_to_bbox_px([0.998, 0.998, 0.999, 0.999], 400, 400)
+        x1, y1, x2, y2 = bbox
+        assert x2 > x1, f"degenerate bbox x: {bbox}"
+        assert y2 > y1, f"degenerate bbox y: {bbox}"
+        # Sanity: full-image hint still works
+        full = pipeline_module.hint_to_bbox_px([0.0, 0.0, 1.0, 1.0], 1920, 1080)
+        assert full[2] > full[0] and full[3] > full[1]
+
+    def test_phase19_is_person_path_catches_figure(self, pipeline_module):
+        """Phase 1.9 #2: `figure[0]` semantic_path also routes to person chain
+        (used by stylized art entities)."""
+        assert pipeline_module._is_person_path("subject.person[0]")
+        assert pipeline_module._is_person_path("subject.figure[0]")
+        assert pipeline_module._is_person_path("subject.person[0].eyes")
+        assert not pipeline_module._is_person_path("subject.head")
+        assert not pipeline_module._is_person_path("background")
+        assert not pipeline_module._is_person_path("")
+
     def test_parent_does_not_eat_neck_child(self, pipeline_module):
         """Mirror of cloth test — `__neck` also has negative z-boost (-2).
         Same bug class. Reviewer-requested regression guard.

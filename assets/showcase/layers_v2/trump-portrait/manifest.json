@@ -105,10 +105,15 @@
     "status": "ok"
   },
   "plan": {
+    "plan_version": 1,
+    "slug": "trump-portrait",
     "domain": "official_portrait_photo",
+    "device": "mps",
     "notes": "Trump White House official portrait 2017.",
     "threshold_hint": 0.25,
     "expand_face_parts": true,
+    "soften_edges": true,
+    "unclaimed_threshold_pct": 2.0,
     "entities": [
       {
         "name": "background",
@@ -130,11 +135,9 @@
         "detector": "dino",
         "threshold": 0.1
       }
-    ],
-    "slug": "trump-portrait",
-    "device": "mps"
+    ]
   },
-  "created_at": "2026-04-17T21:36:02Z",
+  "created_at": "2026-04-18T09:56:27Z",
   "layers": [
     {
       "id": "layer_41b57a89",

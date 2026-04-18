@@ -167,10 +167,15 @@
     "status": "ok"
   },
   "plan": {
+    "plan_version": 1,
+    "slug": "persistence-of-memory",
     "domain": "surrealist_painting",
+    "device": "mps",
     "notes": "Dalí 1931. Melting clocks + landscape + biomorphic form. No humans.",
     "threshold_hint": 0.15,
     "expand_face_parts": false,
+    "soften_edges": true,
+    "unclaimed_threshold_pct": 2.0,
     "entities": [
       {
         "name": "sky_cliffs",
@@ -208,11 +213,9 @@
         "semantic_path": "foreground.tree",
         "detector": "dino"
       }
-    ],
-    "slug": "persistence-of-memory",
-    "device": "mps"
+    ]
   },
-  "created_at": "2026-04-17T21:35:06Z",
+  "created_at": "2026-04-18T09:55:32Z",
   "layers": [
     {
       "id": "layer_911b8d23",

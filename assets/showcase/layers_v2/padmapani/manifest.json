@@ -79,10 +79,15 @@
     "status": "ok"
   },
   "plan": {
+    "plan_version": 1,
+    "slug": "padmapani",
     "domain": "south_asian_fresco",
+    "device": "mps",
     "notes": "Ajanta Cave 1, 5th c. Large bodhisattva figure.",
     "threshold_hint": 0.2,
     "expand_face_parts": true,
+    "soften_edges": true,
+    "unclaimed_threshold_pct": 2.0,
     "entities": [
       {
         "name": "wall",
@@ -97,11 +102,9 @@
         "detector": "yolo",
         "order": 0
       }
-    ],
-    "slug": "padmapani",
-    "device": "mps"
+    ]
   },
-  "created_at": "2026-04-17T21:35:03Z",
+  "created_at": "2026-04-18T09:55:29Z",
   "layers": [
     {
       "id": "layer_f6af4221",

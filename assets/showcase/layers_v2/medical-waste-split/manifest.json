@@ -248,12 +248,15 @@
     "warning": "hint-heavy plan (9/9 entities via bbox_hint); consider whether detectors were misconfigured"
   },
   "plan": {
+    "plan_version": 1,
     "slug": "medical-waste-split",
     "domain": "split_composite_photo",
     "device": "mps",
+    "notes": "Split composite: left half = drugs/pharma trash on gray floor; right half = used hypodermic syringes in dry grass. No people.",
     "threshold_hint": 0.2,
     "expand_face_parts": false,
-    "notes": "Split composite: left half = drugs/pharma trash on gray floor; right half = used hypodermic syringes in dry grass. No people.",
+    "soften_edges": true,
+    "unclaimed_threshold_pct": 2.0,
     "entities": [
       {
         "name": "left_floor",
@@ -365,7 +368,7 @@
       }
     ]
   },
-  "created_at": "2026-04-17T21:31:50Z",
+  "created_at": "2026-04-18T09:52:12Z",
   "layers": [
     {
       "id": "layer_e4918efd",

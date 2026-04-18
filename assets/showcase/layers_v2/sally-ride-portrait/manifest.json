@@ -82,9 +82,15 @@
     "status": "ok"
   },
   "plan": {
+    "plan_version": 1,
+    "slug": "sally-ride-portrait",
     "domain": "portrait_photograph",
+    "device": "mps",
+    "notes": "",
     "threshold_hint": 0.2,
     "expand_face_parts": true,
+    "soften_edges": true,
+    "unclaimed_threshold_pct": 2.0,
     "entities": [
       {
         "name": "bg",
@@ -99,11 +105,9 @@
         "detector": "yolo",
         "order": 0
       }
-    ],
-    "slug": "sally-ride-portrait",
-    "device": "mps"
+    ]
   },
-  "created_at": "2026-04-17T21:35:40Z",
+  "created_at": "2026-04-18T09:56:05Z",
   "layers": [
     {
       "id": "layer_a97b1f2f",

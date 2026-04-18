@@ -39,6 +39,9 @@
         "pct": 2.65,
         "bbox_fill": 0.713,
         "inside_ratio": 1.0,
+        "quality_flags": [
+          "face_parse_skipped"
+        ],
         "pct_before_resolve": 2.65,
         "pct_after_resolve": 2.65
       },
@@ -68,6 +71,9 @@
         "pct": 0.32,
         "bbox_fill": 0.594,
         "inside_ratio": 1.0,
+        "quality_flags": [
+          "face_parse_skipped"
+        ],
         "pct_before_resolve": 0.32,
         "pct_after_resolve": 0.32
       },
@@ -108,10 +114,15 @@
     "status": "ok"
   },
   "plan": {
+    "plan_version": 1,
+    "slug": "vj-day-kiss",
     "domain": "historical_bw_photo",
+    "device": "mps",
     "notes": "Eisenstaedt 1945. Sailor kissing nurse in Times Square crowd.",
     "threshold_hint": 0.2,
     "expand_face_parts": true,
+    "soften_edges": true,
+    "unclaimed_threshold_pct": 2.0,
     "entities": [
       {
         "name": "street_crowd",
@@ -133,11 +144,9 @@
         "detector": "yolo",
         "order": 1
       }
-    ],
-    "slug": "vj-day-kiss",
-    "device": "mps"
+    ]
   },
-  "created_at": "2026-04-17T21:36:08Z",
+  "created_at": "2026-04-18T09:56:33Z",
   "layers": [
     {
       "id": "layer_be1719f0",

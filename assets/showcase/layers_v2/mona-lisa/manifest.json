@@ -101,12 +101,15 @@
     "status": "ok"
   },
   "plan": {
+    "plan_version": 1,
     "slug": "mona-lisa",
     "domain": "renaissance_painting",
-    "notes": "Single figure portrait — use YOLO for person detection, face-parsing auto-expands to eyes/nose/lips/brows/skin/hair.",
     "device": "mps",
+    "notes": "Single figure portrait — use YOLO for person detection, face-parsing auto-expands to eyes/nose/lips/brows/skin/hair.",
     "threshold_hint": 0.25,
     "expand_face_parts": true,
+    "soften_edges": true,
+    "unclaimed_threshold_pct": 2.0,
     "entities": [
       {
         "name": "background",
@@ -131,7 +134,7 @@
       }
     ]
   },
-  "created_at": "2026-04-17T21:34:40Z",
+  "created_at": "2026-04-18T09:55:03Z",
   "layers": [
     {
       "id": "layer_b42536b9",
@@ -186,7 +189,7 @@
       ],
       "det_score": 0.7764641642570496,
       "sam_score": 0.95,
-      "area_pct": 3.24,
+      "area_pct": 3.19,
       "quality_status": "detected",
       "regeneration_prompt": "mona_lisa skin",
       "opacity": 1.0,
@@ -218,7 +221,7 @@
       ],
       "det_score": 0.7764641642570496,
       "sam_score": 0.95,
-      "area_pct": 0.23,
+      "area_pct": 0.24,
       "quality_status": "detected",
       "regeneration_prompt": "mona_lisa nose",
       "opacity": 1.0,
@@ -282,7 +285,7 @@
       ],
       "det_score": 0.7764641642570496,
       "sam_score": 0.95,
-      "area_pct": 0.12,
+      "area_pct": 0.11,
       "quality_status": "detected",
       "regeneration_prompt": "mona_lisa eyebrows",
       "opacity": 1.0,
@@ -314,7 +317,7 @@
       ],
       "det_score": 0.7764641642570496,
       "sam_score": 0.95,
-      "area_pct": 0.03,
+      "area_pct": 0.04,
       "quality_status": "detected",
       "regeneration_prompt": "mona_lisa lips",
       "opacity": 1.0,
@@ -346,7 +349,7 @@
       ],
       "det_score": 0.7764641642570496,
       "sam_score": 0.95,
-      "area_pct": 0.74,
+      "area_pct": 0.77,
       "quality_status": "detected",
       "regeneration_prompt": "mona_lisa hair",
       "opacity": 1.0,
@@ -378,7 +381,7 @@
       ],
       "det_score": 0.7764641642570496,
       "sam_score": 0.95,
-      "area_pct": 0.09,
+      "area_pct": 0.1,
       "quality_status": "detected",
       "regeneration_prompt": "mona_lisa body remainder",
       "opacity": 1.0,

@@ -105,9 +105,15 @@
     "status": "ok"
   },
   "plan": {
+    "plan_version": 1,
+    "slug": "buzz-aldrin-apollo11",
     "domain": "portrait_photograph",
+    "device": "mps",
+    "notes": "",
     "threshold_hint": 0.2,
     "expand_face_parts": true,
+    "soften_edges": true,
+    "unclaimed_threshold_pct": 2.0,
     "entities": [
       {
         "name": "suit_bg",
@@ -128,11 +134,9 @@
         "semantic_path": "foreground.helmet",
         "detector": "dino"
       }
-    ],
-    "slug": "buzz-aldrin-apollo11",
-    "device": "mps"
+    ]
   },
-  "created_at": "2026-04-17T21:31:15Z",
+  "created_at": "2026-04-18T09:51:37Z",
   "layers": [
     {
       "id": "layer_06abb81a",

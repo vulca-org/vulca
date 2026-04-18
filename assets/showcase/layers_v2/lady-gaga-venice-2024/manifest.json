@@ -102,9 +102,15 @@
     "status": "ok"
   },
   "plan": {
+    "plan_version": 1,
+    "slug": "lady-gaga-venice-2024",
     "domain": "portrait_photograph",
+    "device": "mps",
+    "notes": "",
     "threshold_hint": 0.2,
     "expand_face_parts": true,
+    "soften_edges": true,
+    "unclaimed_threshold_pct": 2.0,
     "entities": [
       {
         "name": "crowd_bg",
@@ -125,11 +131,9 @@
         "semantic_path": "foreground.accessory",
         "detector": "dino"
       }
-    ],
-    "slug": "lady-gaga-venice-2024",
-    "device": "mps"
+    ]
   },
-  "created_at": "2026-04-17T21:31:48Z",
+  "created_at": "2026-04-18T09:52:09Z",
   "layers": [
     {
       "id": "layer_9aada7a7",
@@ -184,7 +188,7 @@
       ],
       "det_score": 0.514116644859314,
       "sam_score": 0.95,
-      "area_pct": 0.17,
+      "area_pct": 0.18,
       "quality_status": "detected",
       "regeneration_prompt": "lady_gaga skin",
       "opacity": 1.0,
@@ -216,7 +220,7 @@
       ],
       "det_score": 0.514116644859314,
       "sam_score": 0.95,
-      "area_pct": 6.84,
+      "area_pct": 6.82,
       "quality_status": "detected",
       "regeneration_prompt": "lady_gaga body remainder",
       "opacity": 1.0,

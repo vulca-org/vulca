@@ -116,9 +116,15 @@
     "status": "ok"
   },
   "plan": {
+    "plan_version": 1,
+    "slug": "artemis-orion-earth-moon",
     "domain": "space_photograph",
+    "device": "mps",
+    "notes": "",
     "threshold_hint": 0.18,
     "expand_face_parts": false,
+    "soften_edges": true,
+    "unclaimed_threshold_pct": 2.0,
     "entities": [
       {
         "name": "space",
@@ -144,11 +150,9 @@
         "semantic_path": "subject.moon",
         "detector": "dino"
       }
-    ],
-    "slug": "artemis-orion-earth-moon",
-    "device": "mps"
+    ]
   },
-  "created_at": "2026-04-17T21:30:47Z",
+  "created_at": "2026-04-18T09:51:09Z",
   "layers": [
     {
       "id": "layer_b13febc3",

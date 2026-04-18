@@ -77,6 +77,13 @@ class TestPlan:
                 {"name": "x", "label": "b"},
             ])
 
+    def test_phase19_reserved_residual_name(self):
+        """Phase 1.9 #7: `residual` is reserved for the synthetic layer."""
+        with pytest.raises(ValueError, match="reserved"):
+            Plan(entities=[{"name": "residual", "label": "x"}])
+        with pytest.raises(ValueError, match="reserved"):
+            Plan(entities=[{"name": "x", "label": "y", "semantic_path": "residual"}])
+
     def test_unknown_device_rejected(self):
         with pytest.raises(ValueError):
             Plan(entities=[{"name": "a", "label": "b"}], device="nvidia-wtf")

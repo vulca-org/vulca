@@ -95,10 +95,15 @@
     "status": "ok"
   },
   "plan": {
+    "plan_version": 1,
+    "slug": "water-lilies",
     "domain": "impressionist_painting",
+    "device": "mps",
     "notes": "Monet pond scene. No humans. Water + flowers + lily pads.",
     "threshold_hint": 0.15,
     "expand_face_parts": false,
+    "soften_edges": true,
+    "unclaimed_threshold_pct": 2.0,
     "entities": [
       {
         "name": "water",
@@ -118,11 +123,9 @@
         "semantic_path": "foreground.pads",
         "detector": "dino"
       }
-    ],
-    "slug": "water-lilies",
-    "device": "mps"
+    ]
   },
-  "created_at": "2026-04-17T21:36:15Z",
+  "created_at": "2026-04-18T09:56:40Z",
   "layers": [
     {
       "id": "layer_6f157694",

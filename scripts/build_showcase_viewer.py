@@ -21,7 +21,14 @@ from pathlib import Path
 from collections import Counter
 
 # Phase 2 compat guard: refuse or warn if we see an older/newer manifest shape.
-EXPECTED_MANIFEST_VERSION = 5
+# Phase 1.9: imported from canonical pipeline module so all three constants
+# (pipeline writer, orchestrator stamp, viewer) stay in sync automatically.
+try:
+    import sys as _sys
+    _sys.path.insert(0, str(REPO / "scripts"))
+    from claude_orchestrated_pipeline import ORCHESTRATED_MANIFEST_VERSION as EXPECTED_MANIFEST_VERSION
+except Exception:
+    EXPECTED_MANIFEST_VERSION = 5  # fallback only
 
 
 def esc(s) -> str:

@@ -82,9 +82,15 @@
     "status": "ok"
   },
   "plan": {
+    "plan_version": 1,
+    "slug": "post-malone-live",
     "domain": "historical_bw_photo",
+    "device": "mps",
+    "notes": "",
     "threshold_hint": 0.2,
     "expand_face_parts": true,
+    "soften_edges": true,
+    "unclaimed_threshold_pct": 2.0,
     "entities": [
       {
         "name": "stage_bg",
@@ -99,11 +105,9 @@
         "detector": "yolo",
         "order": 0
       }
-    ],
-    "slug": "post-malone-live",
-    "device": "mps"
+    ]
   },
-  "created_at": "2026-04-17T21:35:14Z",
+  "created_at": "2026-04-18T09:55:39Z",
   "layers": [
     {
       "id": "layer_5277da2a",

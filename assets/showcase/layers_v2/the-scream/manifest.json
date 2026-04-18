@@ -130,10 +130,15 @@
     "status": "ok"
   },
   "plan": {
+    "plan_version": 1,
+    "slug": "the-scream",
     "domain": "expressionist_painting",
+    "device": "mps",
     "notes": "Munch 1893. Single central screaming figure + 2 background figures + bridge + fjord.",
     "threshold_hint": 0.2,
     "expand_face_parts": false,
+    "soften_edges": true,
+    "unclaimed_threshold_pct": 2.0,
     "entities": [
       {
         "name": "sky_water",
@@ -161,11 +166,9 @@
         "detector": "yolo",
         "order": 0
       }
-    ],
-    "slug": "the-scream",
-    "device": "mps"
+    ]
   },
-  "created_at": "2026-04-17T21:35:51Z",
+  "created_at": "2026-04-18T09:56:16Z",
   "layers": [
     {
       "id": "layer_0dc964d8",

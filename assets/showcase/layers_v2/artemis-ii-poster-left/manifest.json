@@ -116,9 +116,15 @@
     "status": "ok"
   },
   "plan": {
+    "plan_version": 1,
+    "slug": "artemis-ii-poster-left",
     "domain": "space_photograph",
+    "device": "mps",
+    "notes": "",
     "threshold_hint": 0.18,
     "expand_face_parts": false,
+    "soften_edges": true,
+    "unclaimed_threshold_pct": 2.0,
     "entities": [
       {
         "name": "black_bg",
@@ -146,11 +152,9 @@
         "detector": "dino",
         "threshold": 0.1
       }
-    ],
-    "slug": "artemis-ii-poster-left",
-    "device": "mps"
+    ]
   },
-  "created_at": "2026-04-17T21:30:40Z",
+  "created_at": "2026-04-18T09:51:03Z",
   "layers": [
     {
       "id": "layer_ab109d92",

@@ -39,6 +39,9 @@
         "pct": 1.02,
         "bbox_fill": 0.388,
         "inside_ratio": 0.996,
+        "quality_flags": [
+          "face_parse_skipped"
+        ],
         "pct_before_resolve": 1.02,
         "pct_after_resolve": 1.02
       },
@@ -97,11 +100,12 @@
         "pct": 3.7,
         "bbox_fill": 0.309,
         "inside_ratio": 1.0,
-        "pct_before_resolve": 3.7,
-        "pct_after_resolve": 1.18,
         "quality_flags": [
+          "face_parse_skipped",
           "over_eroded"
-        ]
+        ],
+        "pct_before_resolve": 3.7,
+        "pct_after_resolve": 1.27
       },
       {
         "id": 4,
@@ -192,10 +196,15 @@
     "status": "ok"
   },
   "plan": {
+    "plan_version": 1,
+    "slug": "trump-shooting",
     "domain": "news_photograph_2024",
+    "device": "mps",
     "notes": "Evan Vucci. Trump with raised fist + secret service agents + flag + stage.",
     "threshold_hint": 0.2,
     "expand_face_parts": true,
+    "soften_edges": true,
+    "unclaimed_threshold_pct": 2.0,
     "entities": [
       {
         "name": "sky_flag",
@@ -237,11 +246,9 @@
         "semantic_path": "foreground.stage",
         "detector": "dino"
       }
-    ],
-    "slug": "trump-shooting",
-    "device": "mps"
+    ]
   },
-  "created_at": "2026-04-17T21:36:05Z",
+  "created_at": "2026-04-18T09:56:30Z",
   "layers": [
     {
       "id": "layer_9bc41fe1",
@@ -328,7 +335,7 @@
       ],
       "det_score": 0.44432035088539124,
       "sam_score": 0.9315383434295654,
-      "area_pct": 1.18,
+      "area_pct": 1.27,
       "quality_status": "detected",
       "regeneration_prompt": "secret service agent in dark suit on right",
       "opacity": 1.0,
@@ -392,7 +399,7 @@
       ],
       "det_score": 0.8352227210998535,
       "sam_score": 0.95,
-      "area_pct": 0.3,
+      "area_pct": 0.27,
       "quality_status": "detected",
       "regeneration_prompt": "trump skin",
       "opacity": 1.0,
@@ -424,7 +431,7 @@
       ],
       "det_score": 0.8352227210998535,
       "sam_score": 0.95,
-      "area_pct": 0.33,
+      "area_pct": 0.5,
       "quality_status": "detected",
       "regeneration_prompt": "trump hair",
       "opacity": 1.0,
@@ -456,7 +463,7 @@
       ],
       "det_score": 0.8352227210998535,
       "sam_score": 0.95,
-      "area_pct": 7.44,
+      "area_pct": 7.5,
       "quality_status": "detected",
       "regeneration_prompt": "trump cloth",
       "opacity": 1.0,
@@ -488,9 +495,41 @@
       ],
       "det_score": 0.8352227210998535,
       "sam_score": 0.95,
-      "area_pct": 1.19,
+      "area_pct": 0.99,
       "quality_status": "detected",
       "regeneration_prompt": "trump body remainder",
+      "opacity": 1.0,
+      "x": 0.0,
+      "y": 0.0,
+      "width": 100.0,
+      "height": 100.0,
+      "rotation": 0.0,
+      "content_bbox": null
+    },
+    {
+      "id": "layer_f94bb284",
+      "name": "agent_bottom__hair",
+      "label": "agent_bottom hair",
+      "description": "agent_bottom hair",
+      "z_index": 54,
+      "blend_mode": "normal",
+      "content_type": "agent_bottom__hair",
+      "semantic_path": "subject.person[3].hair",
+      "parent_layer_id": "layer_9dce8727",
+      "visible": true,
+      "locked": false,
+      "file": "agent_bottom__hair.png",
+      "bbox": [
+        128,
+        22,
+        212,
+        255
+      ],
+      "det_score": 0.4584771692752838,
+      "sam_score": 0.95,
+      "area_pct": 0.09,
+      "quality_status": "detected",
+      "regeneration_prompt": "agent_bottom hair",
       "opacity": 1.0,
       "x": 0.0,
       "y": 0.0,
@@ -520,7 +559,7 @@
       ],
       "det_score": 0.4584771692752838,
       "sam_score": 0.95,
-      "area_pct": 0.16,
+      "area_pct": 0.15,
       "quality_status": "detected",
       "regeneration_prompt": "agent_bottom cloth",
       "opacity": 1.0,
@@ -552,7 +591,7 @@
       ],
       "det_score": 0.4584771692752838,
       "sam_score": 0.95,
-      "area_pct": 5.7,
+      "area_pct": 5.54,
       "quality_status": "detected",
       "regeneration_prompt": "agent_bottom body remainder",
       "opacity": 1.0,

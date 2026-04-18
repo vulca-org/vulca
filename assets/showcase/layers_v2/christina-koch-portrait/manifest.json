@@ -108,9 +108,15 @@
     "status": "ok"
   },
   "plan": {
+    "plan_version": 1,
+    "slug": "christina-koch-portrait",
     "domain": "portrait_photograph",
+    "device": "mps",
+    "notes": "",
     "threshold_hint": 0.2,
     "expand_face_parts": true,
+    "soften_edges": true,
+    "unclaimed_threshold_pct": 2.0,
     "entities": [
       {
         "name": "studio",
@@ -132,11 +138,9 @@
         "detector": "dino",
         "threshold": 0.15
       }
-    ],
-    "slug": "christina-koch-portrait",
-    "device": "mps"
+    ]
   },
-  "created_at": "2026-04-17T21:31:19Z",
+  "created_at": "2026-04-18T09:51:41Z",
   "layers": [
     {
       "id": "layer_4eb2d545",

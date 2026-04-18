@@ -102,12 +102,15 @@
     "status": "ok"
   },
   "plan": {
+    "plan_version": 1,
     "slug": "bieber-coachella-stayed",
     "domain": "concert_photograph",
     "device": "mps",
+    "notes": "Justin Bieber at Coachella 2026 — pink/maroon hoodie with hood up, mic at mouth, cyan/teal stage background. Vertical format (608x1080).",
     "threshold_hint": 0.25,
     "expand_face_parts": true,
-    "notes": "Justin Bieber at Coachella 2026 — pink/maroon hoodie with hood up, mic at mouth, cyan/teal stage background. Vertical format (608x1080).",
+    "soften_edges": true,
+    "unclaimed_threshold_pct": 2.0,
     "entities": [
       {
         "name": "teal_stage",
@@ -132,7 +135,7 @@
       }
     ]
   },
-  "created_at": "2026-04-17T21:31:04Z",
+  "created_at": "2026-04-18T09:51:26Z",
   "layers": [
     {
       "id": "layer_22286891",
@@ -187,7 +190,7 @@
       ],
       "det_score": 0.9389515519142151,
       "sam_score": 0.95,
-      "area_pct": 0.37,
+      "area_pct": 0.4,
       "quality_status": "detected",
       "regeneration_prompt": "bieber skin",
       "opacity": 1.0,
@@ -219,7 +222,7 @@
       ],
       "det_score": 0.9389515519142151,
       "sam_score": 0.95,
-      "area_pct": 14.7,
+      "area_pct": 14.92,
       "quality_status": "detected",
       "regeneration_prompt": "bieber hat",
       "opacity": 1.0,
@@ -251,7 +254,7 @@
       ],
       "det_score": 0.9389515519142151,
       "sam_score": 0.95,
-      "area_pct": 12.73,
+      "area_pct": 12.96,
       "quality_status": "detected",
       "regeneration_prompt": "bieber cloth",
       "opacity": 1.0,
@@ -283,7 +286,7 @@
       ],
       "det_score": 0.9389515519142151,
       "sam_score": 0.95,
-      "area_pct": 7.3,
+      "area_pct": 6.82,
       "quality_status": "detected",
       "regeneration_prompt": "bieber body remainder",
       "opacity": 1.0,

@@ -146,10 +146,15 @@
     "status": "ok"
   },
   "plan": {
+    "plan_version": 1,
+    "slug": "migrant-mother",
     "domain": "historical_bw_photo",
+    "device": "mps",
     "notes": "Dorothea Lange 1936. Mother + 2 children, seated in cloth.",
     "threshold_hint": 0.2,
     "expand_face_parts": true,
+    "soften_edges": true,
+    "unclaimed_threshold_pct": 2.0,
     "entities": [
       {
         "name": "background",
@@ -178,11 +183,9 @@
         "detector": "yolo",
         "order": 2
       }
-    ],
-    "slug": "migrant-mother",
-    "device": "mps"
+    ]
   },
-  "created_at": "2026-04-17T21:34:34Z",
+  "created_at": "2026-04-18T09:54:55Z",
   "layers": [
     {
       "id": "layer_11af0bdf",

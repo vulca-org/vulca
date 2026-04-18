@@ -79,10 +79,15 @@
     "status": "ok"
   },
   "plan": {
+    "plan_version": 1,
+    "slug": "trump-mugshot",
     "domain": "booking_photograph",
+    "device": "mps",
     "notes": "Fulton County jail 2023 booking photo.",
     "threshold_hint": 0.25,
     "expand_face_parts": true,
+    "soften_edges": true,
+    "unclaimed_threshold_pct": 2.0,
     "entities": [
       {
         "name": "wall",
@@ -97,11 +102,9 @@
         "detector": "yolo",
         "order": 0
       }
-    ],
-    "slug": "trump-mugshot",
-    "device": "mps"
+    ]
   },
-  "created_at": "2026-04-17T21:35:57Z",
+  "created_at": "2026-04-18T09:56:22Z",
   "layers": [
     {
       "id": "layer_e3249219",
@@ -156,7 +159,7 @@
       ],
       "det_score": 0.9752764105796814,
       "sam_score": 0.95,
-      "area_pct": 10.28,
+      "area_pct": 10.26,
       "quality_status": "detected",
       "regeneration_prompt": "trump skin",
       "opacity": 1.0,
@@ -188,7 +191,7 @@
       ],
       "det_score": 0.9752764105796814,
       "sam_score": 0.95,
-      "area_pct": 1.12,
+      "area_pct": 1.13,
       "quality_status": "detected",
       "regeneration_prompt": "trump nose",
       "opacity": 1.0,
@@ -284,7 +287,7 @@
       ],
       "det_score": 0.9752764105796814,
       "sam_score": 0.95,
-      "area_pct": 0.32,
+      "area_pct": 0.34,
       "quality_status": "detected",
       "regeneration_prompt": "trump lips",
       "opacity": 1.0,
@@ -316,7 +319,7 @@
       ],
       "det_score": 0.9752764105796814,
       "sam_score": 0.95,
-      "area_pct": 14.42,
+      "area_pct": 14.41,
       "quality_status": "detected",
       "regeneration_prompt": "trump hair",
       "opacity": 1.0,
@@ -348,7 +351,7 @@
       ],
       "det_score": 0.9752764105796814,
       "sam_score": 0.95,
-      "area_pct": 25.53,
+      "area_pct": 25.55,
       "quality_status": "detected",
       "regeneration_prompt": "trump cloth",
       "opacity": 1.0,
@@ -380,7 +383,7 @@
       ],
       "det_score": 0.9752764105796814,
       "sam_score": 0.95,
-      "area_pct": 0.35,
+      "area_pct": 0.34,
       "quality_status": "detected",
       "regeneration_prompt": "trump body remainder",
       "opacity": 1.0,

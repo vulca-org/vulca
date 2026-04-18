@@ -39,6 +39,9 @@
         "pct": 4.92,
         "bbox_fill": 0.668,
         "inside_ratio": 0.957,
+        "quality_flags": [
+          "face_parse_skipped"
+        ],
         "pct_before_resolve": 4.92,
         "pct_after_resolve": 4.92
       },
@@ -125,12 +128,15 @@
     "status": "ok"
   },
   "plan": {
+    "plan_version": 1,
     "slug": "bieber-coachella-baby",
     "domain": "concert_photograph",
     "device": "mps",
+    "notes": "Justin Bieber at Coachella 2026, Baby MV segment — red/pink hoodie, dark setting with projected Baby music video scene visible behind showing club/party crowd. Vertical format.",
     "threshold_hint": 0.25,
     "expand_face_parts": true,
-    "notes": "Justin Bieber at Coachella 2026, Baby MV segment — red/pink hoodie, dark setting with projected Baby music video scene visible behind showing club/party crowd. Vertical format.",
+    "soften_edges": true,
+    "unclaimed_threshold_pct": 2.0,
     "entities": [
       {
         "name": "dark_stage",
@@ -162,7 +168,7 @@
       }
     ]
   },
-  "created_at": "2026-04-17T21:30:56Z",
+  "created_at": "2026-04-18T09:51:19Z",
   "layers": [
     {
       "id": "layer_6178fd5c",

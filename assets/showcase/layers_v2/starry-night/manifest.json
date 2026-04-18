@@ -101,10 +101,15 @@
     "status": "ok"
   },
   "plan": {
+    "plan_version": 1,
+    "slug": "starry-night",
     "domain": "post_impressionist_painting",
+    "device": "mps",
     "notes": "Van Gogh 1889. Swirling sky, cypress tree, village.",
     "threshold_hint": 0.2,
     "expand_face_parts": false,
+    "soften_edges": true,
+    "unclaimed_threshold_pct": 2.0,
     "entities": [
       {
         "name": "sky",
@@ -124,11 +129,9 @@
         "semantic_path": "foreground.village",
         "detector": "dino"
       }
-    ],
-    "slug": "starry-night",
-    "device": "mps"
+    ]
   },
-  "created_at": "2026-04-17T21:35:44Z",
+  "created_at": "2026-04-18T09:56:09Z",
   "layers": [
     {
       "id": "layer_b4168030",
