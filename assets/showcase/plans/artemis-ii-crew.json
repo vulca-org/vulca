@@ -1,43 +1,45 @@
 {
+  "slug": "artemis-ii-crew",
   "domain": "portrait_photograph",
+  "device": "mps",
   "threshold_hint": 0.2,
   "expand_face_parts": true,
+  "notes": "NASA Artemis II crew photo — 4 astronauts. Phase 1.11: YOLO over/under-detected so switched to sam_bbox with explicit 4 hints.",
   "entities": [
     {
       "name": "dark_bg",
-      "label": "dark blue background",
+      "label": "dark blue gradient background",
       "semantic_path": "background",
-      "detector": "dino"
+      "detector": "dino",
+      "threshold": 0.2
     },
     {
-      "name": "astronaut_0",
-      "label": "astronaut in orange suit",
+      "name": "christina_koch",
+      "label": "Christina Koch woman astronaut with curly hair in orange suit, left",
       "semantic_path": "subject.person[0]",
-      "detector": "yolo",
-      "order": 0
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [0.08, 0.16, 0.36, 0.80]
     },
     {
-      "name": "astronaut_1",
-      "label": "astronaut in orange suit",
+      "name": "victor_glover",
+      "label": "Victor Glover black astronaut in orange suit, center-back",
       "semantic_path": "subject.person[1]",
-      "detector": "yolo",
-      "order": 1
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [0.34, 0.10, 0.58, 0.38]
     },
     {
-      "name": "astronaut_2",
-      "label": "astronaut in orange suit",
+      "name": "reid_wiseman",
+      "label": "Reid Wiseman commander astronaut in orange suit, front seated",
       "semantic_path": "subject.person[2]",
-      "detector": "yolo",
-      "order": 2
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [0.28, 0.24, 0.64, 0.99]
     },
     {
-      "name": "astronaut_3",
-      "label": "astronaut in orange suit",
+      "name": "jeremy_hansen",
+      "label": "Jeremy Hansen astronaut in orange suit, right",
       "semantic_path": "subject.person[3]",
-      "detector": "yolo",
-      "order": 3
+      "detector": "sam_bbox",
+      "bbox_hint_pct": [0.60, 0.18, 0.96, 0.90]
     }
-  ],
-  "slug": "artemis-ii-crew",
-  "device": "mps"
+  ]
 }

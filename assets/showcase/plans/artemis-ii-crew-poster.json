@@ -59,14 +59,14 @@
     },
     {
       "name": "astronaut_3",
-      "label": "rightmost astronaut helmet",
+      "label": "rightmost astronaut head and orange pressure suit in profile",
       "semantic_path": "subject.person[3]",
       "detector": "sam_bbox",
       "bbox_hint_pct": [
-        0.7,
-        0.42,
-        0.98,
-        0.78
+        0.64,
+        0.34,
+        0.99,
+        0.82
       ]
     },
     {

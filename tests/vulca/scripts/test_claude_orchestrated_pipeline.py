@@ -546,6 +546,24 @@ class TestPhase18AncestorNoLongerEatsDescendant:
             f"{violators[:5]}"
         )
 
+    def test_phase111_face_parse_sibling_isolation_conceptual(self, pipeline_module):
+        """Phase 1.11 #A: conceptual verification that exclusive-mask logic
+        uses numpy set operations (not mutate original). Can't easily unit-
+        test full Stage 4 inline — verified empirically via migrant-mother
+        rerun where child_right__skin was filtered from 5.21% mother-face
+        contamination down to below threshold."""
+        import numpy as np
+        H = W = 100
+        mother = np.zeros((H, W), dtype=bool); mother[20:80, 30:70] = True
+        child_overflow = np.zeros((H, W), dtype=bool); child_overflow[10:90, 10:90] = True  # huge, overlaps mother
+        # exclusive mask = child - mother
+        exclusive = child_overflow & ~mother
+        assert exclusive.sum() < child_overflow.sum()
+        # Mother's pixels removed
+        assert (exclusive & mother).sum() == 0
+        # Child keeps its non-overlapping pixels
+        assert exclusive[15, 15]  # upper-left of child, outside mother's bbox
+
     def test_phase19_hint_to_bbox_px_no_zero_area(self, pipeline_module):
         """Phase 1.9 #8: high-decimal hints in small images must not produce
         zero-area bboxes (caught downstream by SAM degenerate-box failure).
@@ -641,7 +659,7 @@ EXPECTED_MIN_LAYERS = {
     "mona-lisa": 8,
     "napalm-girl": 20,
     "creation-of-adam": 8,
-    "migrant-mother": 20,
+    "migrant-mother": 18,  # Phase 1.11 #A: sibling-mask constraint filtered out cross-contaminated face-parts on the 2 children; 20 → 18 is the corrected baseline (removed mother-face leakage onto children's layers)
     "girl-pearl-earring": 9,
     "nighthawks": 10,
     "the-scream": 4,

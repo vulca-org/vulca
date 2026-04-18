@@ -1073,7 +1073,26 @@ def process(slug: str, force: bool = False):
         img_area = W * H
         # Phase 1.9: lookup per_entity records by id so we can flag skipped face-parsing
         id_to_record = {r.get("id"): r for r in detection_report["per_entity"]}
-        for person_layer in [l for l in layers_raw if _is_person_path(l.get("semantic_path", ""))]:
+        # Phase 1.11: precompute per-person "exclusive mask" (own mask minus
+        # all OTHER persons' raw masks). This prevents face-part cross-
+        # contamination when SAM returned over-broad masks for crowded scenes
+        # (e.g. migrant-mother child_right's mask included the mother's face).
+        # Persons here are all top-level `subject.person[N]` — face-parts are
+        # added later so not in this loop's scan set.
+        persons_top = [l for l in layers_raw if _is_person_path(l.get("semantic_path", ""))]
+        exclusive_masks = {}
+        for i, pl in enumerate(persons_top):
+            others_union = np.zeros_like(pl["mask"])
+            for j, other in enumerate(persons_top):
+                if i == j:
+                    continue
+                others_union |= other["mask"]
+            exclusive_masks[id(pl)] = pl["mask"] & ~others_union
+
+        for person_layer in persons_top:
+            # Pass the exclusive mask via a throwaway key so face_parse_person
+            # sees bbox + (later) uses person_mask from the layer itself. We
+            # instead constrain AFTER face_parse_person returns — cleaner.
             parts = face_parse_person(face_proc, face_model, device, img_np, person_layer["bbox"])
             if not parts:
                 # Phase 1.9: emit face_parse_skipped quality_flag so downstream
@@ -1088,7 +1107,11 @@ def process(slug: str, force: bool = False):
                 print(f"  [face-parse-skipped] {person_layer.get('name','?')}: "
                       "no face parts detected (small/occluded/unusual face)")
                 continue
-            person_mask = person_layer["mask"]
+            # Phase 1.11: use EXCLUSIVE mask (raw mask minus other persons) for
+            # face-part constraint. Prevents one person's face-parts from leaking
+            # into another's when SAM masks overlap (classic crowd scene bug
+            # fixed for migrant-mother child_right__skin showing mother).
+            person_mask = exclusive_masks.get(id(person_layer), person_layer["mask"])
             # Dynamic threshold: larger persons get lower threshold; small persons
             # (background figures) need bigger parts to be worth emitting as sub-layers.
             # Pattern #2 fix: FACE_PART_MIN_PX scales with person size.
@@ -1410,6 +1433,16 @@ def process(slug: str, force: bool = False):
     _mf_tmp = out_subdir / "manifest.json.tmp"
     _mf_tmp.write_text(json.dumps(manifest, indent=2, ensure_ascii=False))
     _mf_tmp.replace(_mf_path)  # POSIX-atomic rename on same filesystem
+
+    # Phase 1.11: clean up orphan PNG files left from previous reruns. When a
+    # layer gets dropped (below threshold, plan edit, etc.) its PNG remains
+    # unless we explicitly delete. Stale PNGs confuse visual review (I was
+    # looking at old mother-face in child_right__skin.png post-fix).
+    expected_png_names = {l["file"] for l in manifest_layers}
+    for existing_png in out_subdir.glob("*.png"):
+        if existing_png.name not in expected_png_names:
+            existing_png.unlink()
+            print(f"  [cleanup] removed stale {existing_png.name}")
 
     marker = "✓" if status == "ok" else "⚠"
     print(f"{marker} {slug}: {status.upper()} "
