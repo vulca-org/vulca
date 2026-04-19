@@ -99,12 +99,12 @@ The pipeline does not return a `face_parts_count` field. To count, filter `layer
 | `{"error": "pass either plan (inline JSON) or plan_path, not both"}` | Fix call, pass only one. |
 | `{"error": "orchestrated mode requires 'plan' (inline JSON) or 'plan_path'"}` | Author plan, retry. |
 | `{"error": "plan validation failed: ..."}` | Read details, fix specific field. |
-| `{"error": "pipeline error: MemoryError: ..."}` | (1) Call `unload_models()`. (2) Reduce image to ≤2 MP (resize or crop). (3) Reduce to 2-3 entities. Then retry ONCE. |
-| `{"error": "pipeline error: ConnectionError: ..."}` | HuggingFace weights failed to download. Report to user. **Do not auto-retry.** |
-| `{"error": "pipeline error: RuntimeError: ...MPS..."}` | 1 soft retry after `unload_models()`; if it recurs, suggest session restart. |
+| error contains `MemoryError`, `OutOfMemoryError`, `OutOfMemory`, or `CUDA out of memory` (any OOM variant) | (1) Call `unload_models()`. (2) Reduce image to ≤2 MP (resize or crop). (3) Reduce to 2-3 entities. Then retry ONCE. |
+| error contains `ConnectionError`, `HTTPError`, `ConnectTimeout`, or `OSError` with `huggingface` in message | HuggingFace weights failed to download. Report to user. **Do not auto-retry.** |
+| error contains `RuntimeError` AND (`MPS`, `Metal`, `mps`, or `mps_kernels` in the message) — treat as transient | 1 soft retry after `unload_models()`; if it recurs, suggest session restart. |
 | `{"error": "pipeline error: PermissionError: ..."}` | Change `output_dir`. |
 | `{"error": "pipeline error: FileNotFoundError: ..."}` | Verify `image_path`. |
-| `{"error": "pipeline error: ...decode..."}` | Convert WebP/HEIC to PNG/JPG. |
+| error contains `UnidentifiedImageError`, `cannot identify image`, `decode`, or `Invalid image` | Convert WebP/HEIC to PNG/JPG, or check the image file is not corrupted. |
 | `{"error": "pipeline error: <other>: ..."}` | Report full error. **Do not auto-retry.** |
 | `status == "error"` | Read `reason`. If `image_load: ...` → fix image. If `pipeline produced no manifest` → stop, no retry. |
 | `status == "skipped"` | Cached manifest returned; ensure `force=True` when retrying. |
