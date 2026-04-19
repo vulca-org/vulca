@@ -24,8 +24,10 @@ env/
 .idea/
 .DS_Store
 
-# Claude Code local session data
-.claude/
+# Claude Code local session data (but keep versioned skills + project config)
+.claude/*
+!.claude/skills/
+.claude/settings.local.json
 
 # Vulca pipeline outputs dropped at repo root
 /vulca-*.png
