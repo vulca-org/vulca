@@ -20,9 +20,16 @@ import hashlib
 import json
 import os
 import sys
+import threading
 import time
 from datetime import datetime, timezone
 from pathlib import Path
+
+# Module-level lock shared by all 4 @lru_cache'd model loaders.
+# Protects the first-call race where two threads simultaneously miss the
+# cache and each trigger a multi-second from_pretrained(). Lock does NOT
+# protect subsequent cache hits (lru_cache has its own read lock for those).
+_MODEL_LOCK = threading.Lock()
 
 import numpy as np
 import torch
@@ -84,19 +91,21 @@ SUCCESS_RATE_THRESHOLD = 0.70
 
 @functools.lru_cache(maxsize=2)
 def load_grounding_dino(device="mps"):
-    from transformers import AutoProcessor, AutoModelForZeroShotObjectDetection
-    proc = AutoProcessor.from_pretrained("IDEA-Research/grounding-dino-tiny")
-    model = AutoModelForZeroShotObjectDetection.from_pretrained(
-        "IDEA-Research/grounding-dino-tiny"
-    ).to(device).eval()
-    return proc, model
+    with _MODEL_LOCK:
+        from transformers import AutoProcessor, AutoModelForZeroShotObjectDetection
+        proc = AutoProcessor.from_pretrained("IDEA-Research/grounding-dino-tiny")
+        model = AutoModelForZeroShotObjectDetection.from_pretrained(
+            "IDEA-Research/grounding-dino-tiny"
+        ).to(device).eval()
+        return proc, model
 
 
 @functools.lru_cache(maxsize=1)
 def load_yolo():
     """YOLO26 for person detection — best person recall + precise bboxes."""
-    from ultralytics import YOLO
-    return YOLO("yolo26m.pt")
+    with _MODEL_LOCK:
+        from ultralytics import YOLO
+        return YOLO("yolo26m.pt")
 
 
 # SegFormer face-parsing (CelebAMask-HQ 19 classes)
@@ -118,12 +127,13 @@ FACE_PART_MIN_PX = 80  # below this, merge into skin
 
 @functools.lru_cache(maxsize=2)
 def load_face_parser(device="mps"):
-    from transformers import SegformerForSemanticSegmentation, SegformerImageProcessor
-    proc = SegformerImageProcessor.from_pretrained("jonathandinu/face-parsing")
-    model = SegformerForSemanticSegmentation.from_pretrained(
-        "jonathandinu/face-parsing"
-    ).to(device).eval()
-    return proc, model
+    with _MODEL_LOCK:
+        from transformers import SegformerForSemanticSegmentation, SegformerImageProcessor
+        proc = SegformerImageProcessor.from_pretrained("jonathandinu/face-parsing")
+        model = SegformerForSemanticSegmentation.from_pretrained(
+            "jonathandinu/face-parsing"
+        ).to(device).eval()
+        return proc, model
 
 
 def _run_face_parser(face_proc, face_model, device, crop_np):
@@ -401,8 +411,9 @@ def detect_persons_with_chain(chain, yolo_model, dino_proc, dino_model, device,
 @functools.lru_cache(maxsize=2)
 def _load_sam_model(device: str):
     """Cache the heavy SAM weights; predictor itself is cheap to build."""
-    from segment_anything import sam_model_registry
-    return sam_model_registry["vit_l"](checkpoint=SAM_CKPT).to(device)
+    with _MODEL_LOCK:
+        from segment_anything import sam_model_registry
+        return sam_model_registry["vit_l"](checkpoint=SAM_CKPT).to(device)
 
 
 def load_sam(device="mps"):
