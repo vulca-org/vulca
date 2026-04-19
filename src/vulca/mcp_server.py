@@ -1313,6 +1313,45 @@ async def layers_list(artwork_dir: str) -> dict:
     }
 
 
+@mcp.tool()
+async def unload_models() -> dict:
+    """Release cached model weights (~3GB on MPS: SAM + DINO + SegFormer + YOLO).
+
+    Admin/diagnostic tool. Call when subsequent decompose operations hit
+    MemoryError, when the MCP server feels sluggish, or between batches of
+    unrelated images. Loaders will re-cache lazily on next pipeline call
+    (~3-4s cold-start for SAM + DINO).
+
+    Returns:
+        status: "ok" if clears succeeded
+        cleared: number of loader caches cleared (should be 4)
+    """
+    import gc
+
+    from vulca.pipeline.segment.orchestrator import _import_cop
+
+    cop = _import_cop()
+    cleared = 0
+    for loader_name in ("load_grounding_dino", "load_yolo",
+                        "load_face_parser", "_load_sam_model"):
+        loader = getattr(cop, loader_name, None)
+        if loader is not None and hasattr(loader, "cache_clear"):
+            loader.cache_clear()
+            cleared += 1
+
+    gc.collect()
+
+    # Best-effort MPS cache eviction. torch import may fail on non-MPS
+    # systems; the 4 lru_cache clears above are the main contract.
+    try:
+        import torch
+        if hasattr(torch, "mps") and torch.backends.mps.is_available():
+            torch.mps.empty_cache()
+    except Exception:
+        pass
+
+    return {"status": "ok", "cleared": cleared}
+
 
 if __name__ == "__main__":
     mcp.run()
