@@ -11,9 +11,9 @@ REPO = Path(__file__).resolve().parents[1]
 
 
 def test_import_cop_from_fresh_process():
-    script = """
+    script = f"""
 import sys
-sys.path.insert(0, "src")
+sys.path.insert(0, {str(REPO / 'src')!r})
 from vulca.pipeline.segment.orchestrator import _import_cop
 cop = _import_cop()
 assert cop.__name__ == "claude_orchestrated_pipeline", cop.__name__
