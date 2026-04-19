@@ -30,16 +30,31 @@ def test_unload_models_calls_all_four_cache_clears(monkeypatch):
 
 
 def test_unload_models_survives_torch_missing(monkeypatch):
-    """If torch import fails, unload should still return ok for the 4 clears."""
+    """If torch import fails inside unload_models, 4 clears still complete.
+
+    Uses sys.modules[name] = None trick: Python treats None in sys.modules
+    as 'this module cannot be imported', raising ImportError on re-import.
+    This is the standard way to simulate a missing optional dep.
+    """
+    import sys
+
     from vulca.pipeline.segment.orchestrator import _import_cop
     from vulca import mcp_server
 
     cop = _import_cop()
+    mocks = {}
     for name in ("load_grounding_dino", "load_yolo",
                  "load_face_parser", "_load_sam_model"):
-        monkeypatch.setattr(getattr(cop, name), "cache_clear", MagicMock())
+        m = MagicMock()
+        monkeypatch.setattr(getattr(cop, name), "cache_clear", m)
+        mocks[name] = m
 
-    # Simulate torch import failure — done by patching the helper in mcp_server
-    # (if implementation uses try/except around torch, this should not raise)
+    # Force torch import to raise ImportError inside unload_models
+    monkeypatch.setitem(sys.modules, "torch", None)
+
     result = asyncio.run(mcp_server.unload_models())
-    assert result.get("status") == "ok"
+
+    assert result.get("status") == "ok", result
+    assert result.get("cleared") == 4, result
+    for name, m in mocks.items():
+        m.assert_called_once(), f"{name}.cache_clear not invoked after torch failure"
