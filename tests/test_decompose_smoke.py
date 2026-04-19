@@ -45,6 +45,23 @@ MINIMAL_PLAN = {
 }
 
 
+# Invariant: MINIMAL_PLAN must NOT look like a person path, otherwise
+# face-parsing fires and our mocks (MagicMock SegFormer) can't satisfy
+# downstream assertions. If the pipeline's person-path detection changes,
+# this assertion fails with a clear signal to update the plan.
+def _verify_not_person_path():
+    from vulca.pipeline.segment.orchestrator import _import_cop
+    cop = _import_cop()
+    for entity in MINIMAL_PLAN["entities"]:
+        assert not cop._is_person_path(entity["semantic_path"]), (
+            f"entity {entity['name']!r} has semantic_path "
+            f"{entity['semantic_path']!r} which matches person-detection; "
+            "pick a different path to keep face-parsing off the critical path"
+        )
+
+_verify_not_person_path()
+
+
 class _FakeSAMPredictor:
     """Mirrors scripts/claude_orchestrated_pipeline.segment_bbox expectations:
     predict(box=...) -> (masks[N,H,W], scores[N], low_res_logits|None).
@@ -122,10 +139,11 @@ def test_decompose_unload_reload_roundtrip(tmp_path, monkeypatch):
     assert manifest_mtime_2 > manifest_mtime_1, \
         "run2 manifest mtime not advanced — run may have been silent no-op"
 
-    # Second run shouldn't be pathologically slow (>3x) vs first, given
-    # both are mocked. Floor at 5s to forgive CI jitter on tiny timings.
-    assert second_s < max(first_s * 3.0, 5.0), \
-        f"2nd run {second_s:.2f}s suspicious vs 1st {first_s:.2f}s"
+    # Second run shouldn't be pathologically slow (>2x) vs first, given
+    # both are mocked. Floor at 2s — tight enough to catch accidental
+    # real model loads (which take >>2s), loose enough for CI jitter.
+    assert second_s < max(first_s * 2.0, 2.0), \
+        f"2nd run {second_s:.2f}s suspicious vs 1st {first_s:.2f}s (real model load?)"
 
 
 def test_plan_validation_error_strings_verbatim():
