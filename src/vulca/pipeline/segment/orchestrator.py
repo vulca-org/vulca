@@ -28,8 +28,20 @@ from vulca.pipeline.segment.context import (
 # scratch would invalidate our 24-image baseline.
 _REPO = Path(__file__).resolve().parents[4]
 _SCRIPTS = _REPO / "scripts"
-if str(_SCRIPTS) not in sys.path:
-    sys.path.insert(0, str(_SCRIPTS))
+
+
+def _import_cop():
+    """Import claude_orchestrated_pipeline.py as a module, ensuring sys.path
+    contains the scripts/ directory. Idempotent; returns the same module
+    instance on repeated calls via sys.modules cache.
+
+    Used by orchestrator.run() and by the unload_models MCP tool so both sites
+    bind the same @lru_cache'd loader instances.
+    """
+    if str(_SCRIPTS) not in sys.path:
+        sys.path.insert(0, str(_SCRIPTS))
+    import claude_orchestrated_pipeline as cop
+    return cop
 
 SUCCESS_RATE_THRESHOLD = 0.70
 MANIFEST_VERSION = 5
@@ -168,7 +180,7 @@ def run(
     # We reuse `claude_orchestrated_pipeline` but redirect its ORIG_DIR and
     # OUT_DIR so it doesn't pollute the repo's showcase assets (fixes part
     # of C1 — MCP no longer needs to shutil.copy into repo).
-    import claude_orchestrated_pipeline as cop
+    cop = _import_cop()
 
     # Temporarily override the paths in the script module for this call
     saved_orig_dir = cop.ORIG_DIR
