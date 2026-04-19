@@ -48,3 +48,31 @@ def test_skill_documents_phase_111_bans():
     # E3: no manual head/torso/limbs split
     assert "head/torso" in text or "body_remainder" in text, \
         "skill must mention the head/torso/limbs ban (E3)"
+
+
+@pytest.mark.parametrize("label", [
+    # Decision-tree branches — appear as table rows "| A | ...", etc.
+    "| A |", "| B |", "| C |", "| D |", "| E |",
+    "| F |", "| G |", "| H |", "| I |", "| J |",
+])
+def test_skill_branch_label_present(label):
+    text = SKILL_MD.read_text(encoding="utf-8")
+    assert label in text, (
+        f"decision-tree branch {label.strip()} missing from SKILL.md — "
+        "removing a branch silently is a regression"
+    )
+
+
+@pytest.mark.parametrize("ban", [
+    "E1 —",
+    "E2 —",
+    "E3 —",
+    "E4 —",
+    "E5 —",
+])
+def test_skill_ban_label_present(ban):
+    text = SKILL_MD.read_text(encoding="utf-8")
+    assert ban in text, (
+        f"ban {ban.strip()} missing from SKILL.md — each ban encodes a "
+        "Phase 1.11 invariant and must not be silently removed"
+    )
