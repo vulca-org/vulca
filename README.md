@@ -7,34 +7,37 @@
 
 **Agents can plan image edits but can't cut pixels. Vulca is the hands — semantic layer splits, cultural scoring, inpainting — as 21 MCP tools for Claude Code.**
 
-> *Below: Mona Lisa → 11 semantic layers via `/decompose` (background · clothing · skin · eyes · lips · nose · hair · neck · hands · head_remainder · chair_parapet), decomposed locally on Apple Silicon (ComfyUI + Ollama) with zero cloud API calls. SDK total: 21 MCP tools · 1446 tests passing.*
+> *Below: Michelangelo's *Creation of Adam* → 5 semantic layers via `/decompose` (background · adam · god_and_angels · red_cloak · green_ground), decomposed locally on Apple Silicon (ComfyUI + Ollama) with zero cloud API calls. SDK total: 21 MCP tools · 1446 tests passing.*
 
 ## What happens when you run `/decompose`
 
 ```
-> /decompose assets/showcase/originals/mona-lisa.jpg
+> /decompose assets/showcase/originals/creation-of-adam.jpg
 
-Claude: I'll inspect the image and plan a semantic decomposition.
-[tool_use: view_image(path="assets/showcase/originals/mona-lisa.jpg")]
+Claude: I'll inspect the fresco and plan a semantic decomposition.
+[tool_use: view_image(path="assets/showcase/originals/creation-of-adam.jpg")]
 [tool_use: layers_split(
-    path="assets/showcase/originals/mona-lisa.jpg",
+    path="assets/showcase/originals/creation-of-adam.jpg",
     mode="orchestrated",
-    plan={"domain": "portrait", "entities": [
-        {"name": "background",  "prompt": "the landscape behind her",
+    plan={"domain": "fresco", "entities": [
+        {"name": "background",     "prompt": "the pale cream sky of the ceiling",
          "semantic_path": "background"},
-        {"name": "clothing",    "prompt": "her dark green dress",
-         "semantic_path": "subject.body.clothing"},
-        {"name": "skin",        "prompt": "her face and neck skin",
-         "semantic_path": "subject.head.face"},
-        {"name": "eyes",        "prompt": "her eyes",
-         "semantic_path": "subject.head.face.eyes"}]})]
+        {"name": "adam",           "prompt": "the reclining nude male figure on the left",
+         "semantic_path": "subject.person[0]"},
+        {"name": "god_and_angels", "prompt": "the bearded figure of God with the angel group",
+         "semantic_path": "subject.person[1]"},
+        {"name": "red_cloak",      "prompt": "the billowing dark red cloak around God",
+         "semantic_path": "subject.drapery"},
+        {"name": "green_ground",   "prompt": "the mossy green ground beneath Adam",
+         "semantic_path": "foreground.ground"}]})]
 [tool_result: {"layers": [
-    {"name": "background",  "semantic_path": "background"},
-    {"name": "clothing",    "semantic_path": "subject.body.clothing"},
-    {"name": "skin",        "semantic_path": "subject.head.face"},
-    {"name": "eyes",        "semantic_path": "subject.head.face.eyes"}]}]
+    {"name": "background",     "semantic_path": "background"},
+    {"name": "adam",           "semantic_path": "subject.person[0]"},
+    {"name": "god_and_angels", "semantic_path": "subject.person[1]"},
+    {"name": "red_cloak",      "semantic_path": "subject.drapery"},
+    {"name": "green_ground",   "semantic_path": "foreground.ground"}]}]
 
-Claude: 4 layers at hierarchical depths 1–4. The full showcase manifest has 11 layers going down to `.eyes`, `.lips`, `.nose` under `subject.head.face`. Want to compose or redraw one?
+Claude: 5 layers extracted — each person figure isolated, drapery and ground separated from the pale fresco sky. Want to redraw God's cloak, composite with a different background, or run another image?
 ```
 
 ## Try it in 60 seconds
@@ -65,14 +68,14 @@ curl -o ~/.claude/skills/decompose/SKILL.md \
 ```
 
 <p align="center">
-  <img src="assets/showcase/originals/mona-lisa.jpg" alt="Mona Lisa original" height="180">
+  <img src="assets/showcase/originals/creation-of-adam.jpg" alt="Creation of Adam original" height="150">
   →
-  <img src="assets/showcase/layers/mona-lisa/background.png" alt="background layer (depth 1)" height="180">
-  <img src="assets/showcase/layers/mona-lisa/clothing.png" alt="clothing layer (depth 3)" height="180">
-  <img src="assets/showcase/layers/mona-lisa/skin.png" alt="skin layer (depth 4)" height="180">
-  <img src="assets/showcase/layers/mona-lisa/eyes.png" alt="eyes layer (depth 5)" height="180">
+  <img src="assets/showcase/layers/creation-of-adam/adam.png" alt="Adam figure" height="150">
+  <img src="assets/showcase/layers/creation-of-adam/god_and_angels.png" alt="God with angels" height="150">
+  <img src="assets/showcase/layers/creation-of-adam/red_cloak.png" alt="Red cloak drapery" height="150">
+  <img src="assets/showcase/layers/creation-of-adam/background.png" alt="Background ceiling sky" height="150">
 </p>
-<p align="center"><em>4 of 11 agent-produced semantic layers from <code>/decompose</code> — <code>background</code> (depth 1) · <code>subject.body.clothing</code> (depth 3) · <code>subject.head.face</code> (skin, depth 4) · <code>subject.head.face.eyes</code> (depth 5). See <a href="assets/showcase/layers/mona-lisa/manifest.json">manifest.json</a> for the full hierarchy.</em></p>
+<p align="center"><em>Michelangelo's <em>Creation of Adam</em> → 4 of 5 agent-produced semantic layers: <code>subject.person[0]</code> (Adam) · <code>subject.person[1]</code> (God + angels) · <code>subject.drapery</code> (red cloak) · <code>background</code>. Hierarchical path + the 5th layer (<code>foreground.ground</code>) in <a href="assets/showcase/layers/creation-of-adam/manifest.json">manifest.json</a>.</em></p>
 
 ---
 
@@ -391,13 +394,22 @@ From an agent: the `evaluate_artwork` MCP tool returns evolved weights alongside
 ## Showcase — agent-produced layer separations
 
 <p align="center">
-  <img src="assets/showcase/originals/great-wave.jpg" alt="Hokusai Great Wave original" height="180">
+  <img src="assets/showcase/originals/starry-night.jpg" alt="Starry Night original" height="150">
   →
-  <img src="assets/showcase/layers/great-wave/background.png" alt="background (sky + Mt. Fuji)" height="180">
-  <img src="assets/showcase/layers/great-wave/subject.png" alt="subject (the great wave)" height="180">
-  <img src="assets/showcase/layers/great-wave/foreground.png" alt="foreground (smaller waves)" height="180">
+  <img src="assets/showcase/layers/starry-night/background.png" alt="swirling sky with stars" height="150">
+  <img src="assets/showcase/layers/starry-night/subject.png" alt="dark cypress tree" height="150">
+  <img src="assets/showcase/layers/starry-night/foreground.png" alt="village and hills" height="150">
 </p>
-<p align="center"><em>Hokusai's Great Wave → 3 agent-produced layers: <code>background</code> (pale sky + Mt. Fuji) · <code>subject</code> (the curling wave with claw-like foam) · <code>foreground</code> (smaller waves at the bottom). See <a href="assets/showcase/layers/great-wave/manifest.json">manifest.json</a>.<br/>Works across traditions — 24 masterworks have been run through <code>/decompose</code>, producing 3–15 semantic layers each.</em></p>
+<p align="center"><em>Van Gogh's <em>Starry Night</em> → 3 layers: <code>background</code> (swirling blue sky with yellow stars) · <code>subject</code> (the dark cypress tree) · <code>foreground</code> (the small village and hills). See <a href="assets/showcase/layers/starry-night/manifest.json">manifest.json</a>.</em></p>
+
+<p align="center">
+  <img src="assets/showcase/originals/migrant-mother.jpg" alt="Migrant Mother photograph" height="180">
+  →
+  <img src="assets/showcase/layers/migrant-mother/subject.png" alt="the seated mother" height="180">
+  <img src="assets/showcase/layers/migrant-mother/foreground.png" alt="two children" height="180">
+  <img src="assets/showcase/layers/migrant-mother/background.png" alt="dark backdrop" height="180">
+</p>
+<p align="center"><em>Dorothea Lange's <em>Migrant Mother</em> (1936, FSA — public domain photograph) → 3 layers: <code>subject</code> (the seated woman) · <code>foreground</code> (the two children leaning against her) · <code>background</code> (the dark cloth backdrop). Shows <code>/decompose</code> also works on real photographs, not only painted masters. See <a href="assets/showcase/layers/migrant-mother/manifest.json">manifest.json</a>.<br/>Works across domains — 24 masterworks have been run through <code>/decompose</code>, producing 3–15 semantic layers each.</em></p>
 
 ---
 
