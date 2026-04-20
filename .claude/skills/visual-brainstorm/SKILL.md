@@ -168,3 +168,18 @@ Rules the agent running this skill MUST follow. Each: rule / consequence if viol
 | **B5** | Scope-check first; no out-of-scope brainstorm. Hard-exclude hit → redirect + terminate (no turn cap increment). | Skill props up a domain it cannot win | Fuzzy → first-Q disambiguate. Edge-accept → log `scope-accept rationale` in `## Notes`. |
 | **B6** | No parallel invocation on same slug. | File race; state corruption; resume broken | Detect via `updated` timestamp vs now; reject second call; user renames slug. |
 | **B7** | `frontmatter.tradition` MUST be enum-id or YAML literal `null`. Forbidden strings: `"N/A"`, `"none"`, `"null"`, `""`, `"unknown"`. | `if tradition:` truthy fails → rubric silently omitted → moat artifact missing | Self-assert before write: "tradition is enum-id or YAML null?" |
+
+## Error matrix
+
+| # | Signal | Response |
+|---|---|---|
+| 1 | Slug collision; existing `proposal.md` has `status: ready` | Print "already finalized at `<path>`; branch with `-v2` or pick new slug". Terminate. Do not overwrite. |
+| 2 | Slug collision; existing has `status: draft` | Resume path (A6): read `## Open questions`; continue loop; turn cap accumulates. |
+| 3 | Unknown tradition (not in `list_traditions` + no `--tradition-yaml` match) | Prompt: (a) ask for `--tradition-yaml <path>`; (b) set `tradition: null` + freeform in `## Notes`; (c) if user insists on undefined id, treat as `null` + warn "rubric omitted, tradition unvalidated". Never fabricate enum id. |
+| 4 | `--tradition-yaml` unreadable (FileNotFoundError / YAML parse / schema) | Print `tradition-yaml at <path> invalid: <err>`. Fall through to Error #3. Do not auto-retry. |
+| 5 | `--sketch` unreadable / `view_image` fails | Print `sketch at <path> unreadable: <err>. Proceeding text-only.` Degrade; do not charge turn cap. |
+| 6 | User requests pixel action mid-dialogue | Print "I don't generate images; I finalize the brief. After finalize, run /visual-spec then downstream pixel tools." Do not call B1 tools. Does not count toward cap. |
+| 7 | Turn cap reached without user finalize | Force-show draft + prompt "finalize or deep dive". Do not auto-finalize (B4). |
+| 8 | Scope hard-reject + user pushback | Explain once. Second pushback → terminate silently. |
+
+**Do-not-auto-retry**: Errors #3, #4, #8. **Do-not-overwrite**: Error #1, Error #6.
