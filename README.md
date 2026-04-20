@@ -62,7 +62,7 @@ curl -o ~/.claude/skills/decompose/SKILL.md \
   <img src="assets/demo/v2/masters/mona_lisa_layers/mona_lisa_face_and_hair.png" alt="Face and hair layer" height="220">
   <img src="assets/demo/v2/masters/mona_lisa_layers/mona_lisa_body_and_dress.png" alt="Body and dress layer" height="220">
 </p>
-<p align="center"><em>Mona Lisa → face & hair / body & dress — clean semantic separation, produced by the transcript above</em></p>
+<p align="center"><em>Mona Lisa → face & hair / body & dress — example output from the <code>/decompose</code> flow (illustrative; transcript above is abbreviated for readability)</em></p>
 
 ---
 
@@ -72,8 +72,9 @@ Most image SDKs ship a "brain" — a VLM planner that decides what to generate, 
 
 Practical consequences of this framing:
 - **Tools return structured JSON + paths**, not prose. The agent inspects, branches, retries.
-- **No hidden decisions** inside tools — every planning step is visible to the agent and can be rolled back.
-- **Skills (`.claude/skills/*`) are declarative prompts, not wrappers.** The agent reads the skill, the agent executes.
+- **No hidden LLM/planning decisions** inside tools — every tool call surfaces its detection report; the agent sees what ran, can branch, and can roll back.
+- **The skill we ship (`.claude/skills/decompose/SKILL.md`) is a declarative prompt, not a wrapper.** The agent reads it directly. Future skills follow the same shape.
+- **Vulca doesn't host a model** — it drives yours (ComfyUI / Gemini / OpenAI / mock) with structured tooling. No overlap with hosted image APIs; the value is in the pixel-level work between "agent planned" and "image on disk."
 - **Local-first is a first-class path** — ComfyUI + Ollama + MPS tested end-to-end; no cloud key required.
 
 ---
@@ -87,7 +88,7 @@ Practical consequences of this framing:
 | **Evaluate** | Judge a visual against L1–L5 cultural criteria over 13 traditions with citable rationale. | Roadmap | `evaluate_artwork`, `list_traditions`, `get_tradition_guide`, `search_traditions` |
 | **Create** | Generate a new image from intent + tradition guidance, optionally in structured layers. | — | `create_artwork`, `generate_image` |
 | **Brief / Studio** | Turn a creative brief into concept sketches and iterate. | — | `brief_parse`, `generate_concepts` |
-| **Admin** | Let the agent see intermediate artifacts, unload models, archive sessions. | — | `view_image`, `unload_models`, `archive_session`, `sync_data` |
+| **Admin** | Expose intermediate artifacts, unload models, archive sessions. | — | `view_image`, `unload_models`, `archive_session`, `sync_data` |
 
 ```
 User intent ─▶ Claude Code (planning) ─▶ Vulca MCP tools ─▶ Image artifacts ─┐
@@ -386,7 +387,7 @@ From an agent: the `evaluate_artwork` MCP tool returns evolved weights alongside
   <img src="assets/demo/v2/masters/qi_baishi_layers/ink_calligraphy.png" alt="Calligraphy layer" height="220">
   <img src="assets/demo/v2/masters/qi_baishi_layers/red_seals.png" alt="Seals layer" height="220">
 </p>
-<p align="center"><em>Qi Baishi's Shrimp → shrimp / calligraphy / seals — each on transparent canvas.<br/>These layer separations were produced by Claude Code driving Vulca MCP tools via <code>/decompose</code>.</em></p>
+<p align="center"><em>Qi Baishi's Shrimp → shrimp / calligraphy / seals — each on transparent canvas.<br/>Example outputs from the <code>/decompose</code> flow; reproducible from the skill + MCP tools documented above.</em></p>
 
 ---
 
