@@ -64,3 +64,86 @@ Cover these dimensions across the turn budget (cap 8 hard / 12 soft; see §Turn 
 | Market | "Is this for a 国内 / 海外 / 多语言 audience? Any region-specific constraints?" | Yes | "domestic, no multilingual" recorded |
 | Budget & deadline | "How many deliverables, by when, with what time budget for iteration?" | No — must have answer | — |
 | Color constraints | "Any required palette, brand color, or forbidden color?" | Yes | "none specified" recorded |
+
+## Produced artifact — `proposal.md` schema
+
+Write the final artifact to `docs/visual-specs/<slug>/proposal.md`. The artifact has a 6-field YAML frontmatter and 12 markdown sections (2 conditional). Copy the `## Template` block below verbatim and fill the bracketed placeholders.
+
+**Domain enum** (`frontmatter.domain`, required):
+
+| Deliverable signature | domain value |
+|---|---|
+| Activity / exhibition / event signage | `poster` |
+| Standalone illustrative artwork, no host | `illustration` |
+| Product packaging / bottle / label | `packaging` |
+| Brand visual system / marketing series / peripherals | `brand_visual` |
+| Book / magazine / report cover | `editorial_cover` |
+| Brief for an upcoming photo shoot | `photography_brief` |
+| Hero illustration / splash art for app or web (not layout) | `hero_visual_for_ui` |
+
+**Disambiguation**: art-exhibition poster → `poster` (activity-signage wins over editorial); book-with-illustrated-cover → `editorial_cover` (host-artifact wins over illustration).
+
+### Template (copy and fill)
+
+````markdown
+---
+slug: YYYY-MM-DD-<topic>
+status: draft
+domain: <one of poster | illustration | packaging | brand_visual | editorial_cover | photography_brief | hero_visual_for_ui>
+tradition: <enum id from list_traditions OR YAML literal null>  # NEVER "N/A", "none", "", "unknown" — see B7
+generated_by: visual-brainstorm@0.1.0
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+---
+
+# <human-readable title>
+
+> Partial OpenSpec alignment: status enum + RFC 2119 keywords. Does not use ADDED/MODIFIED/REMOVED delta markers. Full alignment deferred until /visual-spec consumption validates need.
+
+## Intent
+<2-5 sentences of user intent; no compositional detail>
+
+## Audience
+<viewer / consumer description; or the literal "none specified">
+
+## Physical form
+<print size / digital viewport / packaging die-line / etc.>
+
+## Market
+<国内 / 海外 / 多语言; or "domestic, no multilingual">
+
+## Budget & deadline
+<time budget, deliverables count, hard deadlines>
+
+## Color constraints
+<palette or "none specified">
+
+## References
+<external URLs / local paths, OR the literal "none">
+
+## Series plan
+<ONLY if series; count / variation axis / rhythm / deliverables list>
+
+## Acceptance rubric
+<ONLY if tradition is non-null>
+- [L1 <dimension>] ... **MUST** ...
+- [L2 <dimension>] ... **MUST** ...
+- [L3 <dimension>] ... **SHOULD** ...
+- [L4 <dimension>] ... **SHOULD** ...
+- [L5 <dimension>] ... **MAY** ...
+
+## Questions resolved
+- Q: ...
+  A: ...
+- ...
+
+## Open questions
+<bullet list; non-empty if turn cap forced show>
+
+## Notes
+<free-form; edge-accept cases MUST log "scope-accept rationale: <reason>" here>
+````
+
+**RFC 2119 usage**: tag each `## Acceptance rubric` bullet with MUST / SHOULD / MAY per L-level defaults (L1-L2 MUST, L3-L4 SHOULD, L5 MAY). Tradition guide MAY override (e.g., religious iconography taboos → L3 MUST). `## Open questions` bullets MAY use MUST to flag "downstream must resolve". Other sections: prose only.
+
+**Empty-section rule**: when a non-conditional section has no content, write the literal `none` (not `TBD`, `N/A`, or blank).
