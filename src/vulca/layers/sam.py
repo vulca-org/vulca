@@ -1,6 +1,8 @@
 """SAM2 integration for pixel-precise layer extraction.
 
-Optional dependency: pip install vulca[sam]
+Meta's SAM2 is not published on PyPI. Two-step install:
+    pip install vulca[sam]
+    pip install git+https://github.com/facebookresearch/sam2.git
 """
 from __future__ import annotations
 
@@ -97,11 +99,14 @@ def sam_split(
         List of LayerResult sorted by z_index ascending.
 
     Raises:
-        ImportError: If SAM2 is not installed. Install with: pip install vulca[sam]
+        ImportError: If SAM2 is not installed. See module docstring for the
+            two-step install (vulca[sam] deps + sam2 from git).
     """
     if not SAM_AVAILABLE:
         raise ImportError(
-            "SAM2 required for --mode sam. Install: pip install vulca[sam]"
+            "SAM2 required for --mode sam. Meta's SAM2 is not on PyPI; install via: "
+            "pip install vulca[sam] && "
+            "pip install git+https://github.com/facebookresearch/sam2.git"
         )
 
     img = Image.open(image_path).convert("RGB")

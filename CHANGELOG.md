@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.1] - 2026-04-20
+
+### Packaging fix
+
+- **Remove nonexistent `segment-anything-2` PyPI dep** (`pyproject.toml`): the `sam` and `layers-full` extras declared `segment-anything-2>=0.1`, a package that does not exist on PyPI. `pip install vulca[sam]` / `pip install vulca[layers-full]` failed with a resolver error. Meta does not publish SAM2 to PyPI — install separately via `pip install git+https://github.com/facebookresearch/sam2.git`. The `sam` extras now pulls only `torch`, `numpy`, `Pillow`; `layers-full` keeps `rembg` + `transformers` + `torch`.
+- **Actionable `sam_split` ImportError** (`src/vulca/layers/sam.py`): runtime error now instructs the two-step install path when `sam2` is not importable, so users hitting `vulca layers split --mode sam` without SAM2 see the correct command instead of the stale `pip install vulca[sam]` hint.
+
 ## [0.15.1] - 2026-04-13
 
 ### README major revision — local-first narrative
