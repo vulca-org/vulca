@@ -20,3 +20,22 @@ Before the first turn, scan the topic and any args for scope violations:
 2. **Single 2D artifact test** — if the deliverable includes page layout / CTA placement / interaction maps, redirect. If the deliverable is a single 2D image (or a series of 2D images), accept.
 3. **Fuzzy boundary** (e.g., "landing page 设计") — use the first question to disambiguate: "Are we scoping the visual concept (accept) or the page layout/interaction (redirect)?"
 4. **Edge-accept** (e.g., "SaaS hero banner with character illustration") — accept, BUT record `scope-accept rationale: <one sentence>` in the `## Notes` section of the produced `proposal.md`. Audit trail is mandatory (B5).
+
+## Opening turn
+
+1. Parse any args the user passed: `--sketch <path>`, `--ref-dir <dir>`, `--tradition-yaml <path>`.
+2. **If the target `docs/visual-specs/<slug>/proposal.md` already exists** — read its frontmatter:
+   - `status: ready` → Error #1: refuse to overwrite; print branch instructions; terminate.
+   - `status: draft` → **resume path**: read the `## Open questions` section; continue the question loop from there; preserve accumulated turn count.
+3. **If no sketch was provided**, open with this solicited-sketch question (A2):
+
+   > "Do you have a sketch or reference image I should look at? Paste a path if yes, or say 'no' to continue text-only."
+
+   If yes → call `view_image` once on the path for grounding. If no → proceed text-only. Either answer counts as turn 1.
+4. **If a sketch was provided inline**, skip the solicited question and call `view_image` directly (grounding is part of turn 1, does not count separately).
+
+## Slug generation
+
+1. Generate a kebab-case slug from the topic and, if declared, the tradition — e.g., `2026-04-21-spring-festival-song-gongbi-poster`.
+2. Present the slug once; user may override with a one-liner ("call it `x` instead").
+3. If the resulting slug collides with an existing `docs/visual-specs/<slug>/`, apply Error #1 (ready) or Error #2 (draft) per §Error matrix.
