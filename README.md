@@ -7,7 +7,7 @@
 
 **Agents can plan image edits but can't cut pixels. Vulca is the hands — semantic layer splits, cultural scoring, inpainting — as 21 MCP tools for Claude Code.**
 
-> *Below: Michelangelo's *Creation of Adam* → 5 semantic layers via `/decompose` (background · adam · god_and_angels · red_cloak · green_ground), decomposed locally on Apple Silicon (ComfyUI + Ollama) with zero cloud API calls. SDK total: 21 MCP tools · 1446 tests passing.*
+> *Below: Michelangelo's *Creation of Adam* → 5 semantic layers via `/decompose` (background · adam · god_and_angels · red_cloak · green_ground), decomposed locally on Apple Silicon (ComfyUI + Ollama) with zero cloud API calls. SDK total: 21 MCP tools · 1454 tests passing.*
 
 ## What happens when you run `/decompose`
 
@@ -47,7 +47,7 @@ Claude: 5 layers extracted — each person figure isolated, drapery and ground s
 ### Path A — plugin install (recommended)
 
 ```bash
-pip install vulca[mcp]==0.16.1
+pip install vulca[mcp]==0.17.2
 claude plugin install vulca-org/vulca-plugin
 ```
 
@@ -56,15 +56,15 @@ Then in Claude Code: `> /decompose /path/to/your_image.jpg`
 ### Path B — no plugin (power user)
 
 ```bash
-pip install vulca[mcp]==0.16.1
+pip install vulca[mcp]==0.17.2
 
 # Register MCP server — add to ~/.claude/settings.json:
-# {"mcpServers": {"vulca": {"command": "uvx", "args": ["--from", "vulca[mcp]==0.16.1", "vulca-mcp"]}}}
+# {"mcpServers": {"vulca": {"command": "uvx", "args": ["--from", "vulca[mcp]==0.17.2", "vulca-mcp"]}}}
 
 # Install the /decompose skill:
 mkdir -p ~/.claude/skills/decompose
 curl -o ~/.claude/skills/decompose/SKILL.md \
-  "https://raw.githubusercontent.com/vulca-org/vulca/v0.16.1/.claude/skills/decompose/SKILL.md?utm_source=github-readme&utm_medium=oss&utm_campaign=refresh-2026-04-20"
+  "https://raw.githubusercontent.com/vulca-org/vulca/v0.17.2/.claude/skills/decompose/SKILL.md?utm_source=github-readme&utm_medium=oss&utm_campaign=refresh-2026-04-20"
 ```
 
 <p align="center">
@@ -253,7 +253,7 @@ Custom traditions via YAML — `vulca evaluate painting.jpg --tradition ./my_sty
 ## Apple Silicon / MPS quickstart
 
 ```bash
-pip install vulca[mcp,tools]==0.16.1
+pip install vulca[mcp,tools]==0.17.2
 # Local stack: ComfyUI + Ollama, full MPS support
 ```
 
