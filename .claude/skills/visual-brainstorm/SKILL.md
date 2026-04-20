@@ -183,3 +183,17 @@ Rules the agent running this skill MUST follow. Each: rule / consequence if viol
 | 8 | Scope hard-reject + user pushback | Explain once. Second pushback → terminate silently. |
 
 **Do-not-auto-retry**: Errors #3, #4, #8. **Do-not-overwrite**: Error #1, Error #6.
+
+## Handoff
+
+On finalize (status: draft → ready), print exactly:
+
+> `Ready for /visual-spec. Run it with \`/visual-spec <slug>\`.`
+
+Do NOT auto-invoke `/visual-spec`. Human-in-the-loop gate is preserved here.
+
+## References
+
+- Design spec: `docs/superpowers/specs/2026-04-21-visual-brainstorm-skill-design.md`
+- L1-L5 cultural evaluation academic anchors: EMNLP 2025 Findings VULCA (`aclanthology.org/2025.findings-emnlp.103/`); VULCA-Bench (`arxiv.org/abs/2601.07986`)
+- Sibling skill for tone/rigor baseline: `.claude/skills/decompose/SKILL.md`
