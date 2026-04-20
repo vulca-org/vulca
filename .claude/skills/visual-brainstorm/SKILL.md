@@ -39,3 +39,15 @@ Before the first turn, scan the topic and any args for scope violations:
 1. Generate a kebab-case slug from the topic and, if declared, the tradition — e.g., `2026-04-21-spring-festival-song-gongbi-poster`.
 2. Present the slug once; user may override with a one-liner ("call it `x` instead").
 3. If the resulting slug collides with an existing `docs/visual-specs/<slug>/`, apply Error #1 (ready) or Error #2 (draft) per §Error matrix.
+
+## Decision tree — 5 nodes
+
+Walk these in order; each node's answer adjusts the question loop and the produced proposal.md.
+
+| Node | Question | If YES | If NO |
+|---|---|---|---|
+| A | User provided a sketch? | `view_image` once for grounding (no pixel analysis) | Skip; rely on text |
+| B | User declared a tradition (from `list_traditions` or `--tradition-yaml`)? | Call `get_tradition_guide(<tradition>)`; flag `## Acceptance rubric` MUST (B3) | Set `tradition: null`; rubric omitted |
+| C | User named reference images / URLs? | Record them in `## References` as plain text; do not analyze | Write `none` in `## References` |
+| D | Single image or series? | If series → include `## Series plan` section | If single → omit `## Series plan` |
+| E | User wants a spike to try a direction before committing? | Record the spike candidate under `## Open questions` for `/visual-spec` | Skip |
