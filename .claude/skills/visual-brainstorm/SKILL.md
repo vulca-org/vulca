@@ -51,3 +51,16 @@ Walk these in order; each node's answer adjusts the question loop and the produc
 | C | User named reference images / URLs? | Record them in `## References` as plain text; do not analyze | Write `none` in `## References` |
 | D | Single image or series? | If series → include `## Series plan` section | If single → omit `## Series plan` |
 | E | User wants a spike to try a direction before committing? | Record the spike candidate under `## Open questions` for `/visual-spec` | Skip |
+
+## Question bank — 6 dimensions
+
+Cover these dimensions across the turn budget (cap 8 hard / 12 soft; see §Turn cap). Order by what the user has not yet clarified; do not force all 6 if the answer is obvious from prior context.
+
+| Dimension | Sample prompt | Skip allowed? | Inferred default if skipped |
+|---|---|---|---|
+| Tradition | "Which cultural tradition should anchor this? (I can list options via `list_traditions`, or accept a custom YAML path.)" | Yes | `tradition: null`; omit rubric |
+| Audience | "Who is the viewer? Demographic, familiarity with the tradition, consumption context." | Yes | "unspecified audience" recorded |
+| Physical form | "What's the final deliverable format? Print size, digital viewport, packaging die-line, etc." | No — must have answer | — |
+| Market | "Is this for a 国内 / 海外 / 多语言 audience? Any region-specific constraints?" | Yes | "domestic, no multilingual" recorded |
+| Budget & deadline | "How many deliverables, by when, with what time budget for iteration?" | No — must have answer | — |
+| Color constraints | "Any required palette, brand color, or forbidden color?" | Yes | "none specified" recorded |
