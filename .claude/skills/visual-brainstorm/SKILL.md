@@ -147,3 +147,10 @@ updated: YYYY-MM-DD
 **RFC 2119 usage**: tag each `## Acceptance rubric` bullet with MUST / SHOULD / MAY per L-level defaults (L1-L2 MUST, L3-L4 SHOULD, L5 MAY). Tradition guide MAY override (e.g., religious iconography taboos → L3 MUST). `## Open questions` bullets MAY use MUST to flag "downstream must resolve". Other sections: prose only.
 
 **Empty-section rule**: when a non-conditional section has no content, write the literal `none` (not `TBD`, `N/A`, or blank).
+
+## Turn cap and finalize
+
+- **Hard cap: 8 questions per session.** Clarifying Qs + dimension-bank Qs + decision-tree follow-ups all count. Out-of-scope redirect turns and "I don't generate images" responses do NOT count.
+- **Soft extension: +4 (hard 12)** if the user explicitly says "deep dive" or equivalent.
+- When the cap is reached without the user having said "finalize" → Error #7: force-show the full current draft proposal.md and ask "finalize to lock `status: ready`, or 'deep dive' to extend +4?". **Do not auto-advance** (B4).
+- **Finalize trigger**: the user says "finalize" / "done" / "ready" / "lock it". Then and only then, flip `status: draft → status: ready` in frontmatter. Print the §Handoff line and stop.
