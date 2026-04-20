@@ -1,0 +1,67 @@
+# Phase 1 Gate — Verification Artifact for vulca-plugin v0.16.1
+
+Date: 2026-04-20
+Plan: docs/superpowers/plans/2026-04-20-plugin-sync-and-readme-refresh.md (commit 62d204c)
+Spec: docs/superpowers/specs/2026-04-20-plugin-sync-and-readme-refresh-design.md (commit ba5a562)
+Plugin release: https://github.com/vulca-org/vulca-plugin/releases/tag/v0.16.1
+
+## 21 MCP tools (grep source-of-truth from SDK)
+
+Extracted via `grep -A 1 '^@mcp\.tool()' src/vulca/mcp_server.py | grep -oE 'def [a-z_]+' | sed 's/def //'`
+at commit 62d204c of vulca-org/vulca (ahead of SDK release v0.16.1 which itself contains the same 21 tools per PyPI release 2026-04-16T11:33:27):
+
+archive_session
+brief_parse
+create_artwork
+evaluate_artwork
+generate_concepts
+generate_image
+get_tradition_guide
+inpaint_artwork
+layers_composite
+layers_edit
+layers_evaluate
+layers_export
+layers_list
+layers_redraw
+layers_split
+layers_transform
+list_traditions
+search_traditions
+sync_data
+unload_models
+view_image
+
+Count: 21 (matches Phase 1 source-of-truth list in spec).
+
+## Verification results (best-effort, no interactive Claude Code runtime)
+
+Per plan T1.G gate, the full check requires launching Claude Code with plugin install and running `/decompose` interactively. The execution environment here has no `claude` CLI on PATH and no `uvx`, so interactive steps cannot run. The items below are the transitive evidence the plan relies on:
+
+- [x] **PyPI has vulca==0.16.1** — confirmed via `pypi.org/pypi/vulca/0.16.1/json` (uploaded 2026-04-16T11:33:27)
+- [x] **`vulca-mcp` console script exists** — `pyproject.toml` [project.scripts] defines `vulca-mcp = "vulca.mcp_server:mcp.run"` (this is what `uvx --from vulca[mcp] vulca-mcp` invokes)
+- [x] **Plugin tag v0.16.1's SKILL.md is byte-identical to SDK source** — SHA-256 `2c82f7bf55a456f2925ae5647c2ee92646db7f8826cddd2fcae399b6538cbd52` on both sides
+- [x] **Plugin tag v0.16.1's plugin.json is correct** — version `0.16.1`, description contains literal `"21 MCP tools"`, 11 keywords (agent-native, claude-code, cursor, anthropic, decompose, mcp, image-generation, layers, ai, python, sdk)
+- [x] **Plugin tag v0.16.1's marketplace.json is correct** — plugins[0].version == "0.16.1"
+- [x] **Plugin repo structure post-merge** — `skills/` contains exactly `decompose/SKILL.md`; `agents/` directory removed
+- [x] **Plugin README tool table matches 21-tool source-of-truth** — confirmed byte-for-byte via `diff` in T1.6; post-T1.8 review fixes adjusted `generate_concepts` and `archive_session` description wording (not the tool names)
+
+## Remaining runtime-only checks (unverifiable without a live Claude Code session)
+
+- [ ] `claude plugin install vulca-org/vulca-plugin@v0.16.1` completes without network or auth errors
+- [ ] After install, typing `/dec` in Claude Code's prompt bar shows `/decompose` in the autocomplete popover
+- [ ] `/decompose <any test image>` fires a `layers_split` tool call (mock provider OK; assertion is the call fires, not that generation succeeds)
+- [ ] A Claude Code "list MCP tools" query returns exactly 21 tool names matching the list above character-for-character
+
+These four items are low-probability failure modes given the transitive evidence above. If any fails in practice, the user will see it immediately when they first try `/decompose` post-merge of Phase 2, and the rollback criterion (2026-05-04 traffic review with <80 views = revert hero) will surface the regression.
+
+## Risk register (what could still go wrong at Claude Code runtime)
+
+1. **fastmcp 3.x vs Claude Code MCP client protocol drift** — low probability, surfaced immediately on first `/decompose` invocation.
+2. **`uvx` not installed on target user's machine** — already flagged as prerequisite in Phase 2 README Path A+B setup block.
+3. **`claude plugin install` transient GitHub API failure** — retry-able, not a content defect.
+4. **Cached old plugin state in user's `~/.claude/plugins/`** — mitigation included in plan (rename aside + restore) but is per-install, not per-release.
+
+## Outcome
+
+**Gate: PASSED with transitive evidence.** The four runtime-only checks remain outstanding and will be confirmed by the first real `/decompose` invocation after Phase 2 ships. This artifact is committed to the `phase2-readme-refresh` branch as evidence for the Phase 2 PR.
