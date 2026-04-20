@@ -16,6 +16,12 @@ from vulca.layers.types import LayerInfo, LayerResult
 from vulca.layers.manifest import write_manifest
 from vulca.layers.mask import apply_mask_to_image
 
+# Default SAM2 model — valid HuggingFace Hub ID.
+# Note the "facebook/" prefix and hyphens (not underscores); Meta publishes
+# SAM2 checkpoints under the facebook org. An incorrect local-style name
+# like "sam2.1_hiera_small" fails inside SAM2ImagePredictor.from_pretrained.
+DEFAULT_SAM2_CHECKPOINT = "facebook/sam2.1-hiera-small"
+
 SAM_AVAILABLE = False
 try:
     from sam2.build_sam import build_sam2  # noqa: F401
@@ -23,6 +29,51 @@ try:
     SAM_AVAILABLE = True
 except ImportError:
     pass
+
+
+def _sam2_device() -> str:
+    """Select the device SAM2 should run on.
+
+    Upstream SAM2's build_sam2* functions call .cuda() unconditionally, so
+    non-CUDA hosts (Apple Silicon, CPU-only Linux) crash on default load.
+    We route through explicit device selection. MPS is intentionally NOT
+    returned here because SAM2 does not reliably support the MPS backend
+    as of 2026-04-20 — Apple Silicon users fall back to CPU.
+    """
+    try:
+        import torch
+        if torch.cuda.is_available():
+            return "cuda"
+    except ImportError:
+        pass
+    return "cpu"
+
+
+def _patch_sam2_build_to_device(device: str) -> None:
+    """Inject a `device` kwarg into SAM2's build_sam2* so non-CUDA hosts work.
+
+    SAM2's upstream build paths hard-code `.cuda()`. We wrap each build_*
+    function once per process to set `device` if the caller did not. The
+    wrapper is idempotent via a `_vulca_patched` marker so repeated calls
+    do not re-wrap.
+    """
+    if not SAM_AVAILABLE:
+        return
+    from sam2 import build_sam as _bs
+
+    for name in ("build_sam2", "build_sam2_hf", "build_sam2_video_predictor"):
+        fn = getattr(_bs, name, None)
+        if fn is None or getattr(fn, "_vulca_patched", False):
+            continue
+
+        def _make_wrapper(_orig, _device=device):
+            def _wrapper(*args, **kwargs):
+                kwargs.setdefault("device", _device)
+                return _orig(*args, **kwargs)
+            _wrapper._vulca_patched = True  # type: ignore[attr-defined]
+            return _wrapper
+
+        setattr(_bs, name, _make_wrapper(fn))
 
 
 def _compute_layer_point(
@@ -93,7 +144,7 @@ def sam_split(
         layers: LayerInfo list describing the semantic layers.
         output_dir: Directory to write layer PNGs and manifest.json.
         checkpoint: SAM2 model checkpoint name or path.
-                    Defaults to "sam2.1_hiera_small".
+                    Defaults to "facebook/sam2.1-hiera-small" (HF Hub ID).
 
     Returns:
         List of LayerResult sorted by z_index ascending.
@@ -113,7 +164,10 @@ def sam_split(
     img_np = np.array(img)
     h, w = img_np.shape[:2]
 
-    model_name = checkpoint or "sam2.1_hiera_small"
+    device = _sam2_device()
+    _patch_sam2_build_to_device(device)
+
+    model_name = checkpoint or DEFAULT_SAM2_CHECKPOINT
     predictor = SAM2ImagePredictor.from_pretrained(model_name)
     predictor.set_image(img_np)
 

@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.17.2] - Unreleased
+
+### SAM2 macOS / non-CUDA compatibility
+
+- **Fix default SAM2 checkpoint ID** (`src/vulca/layers/sam.py`): the default `checkpoint` fallback was `"sam2.1_hiera_small"`, not a valid HuggingFace Hub ID. `SAM2ImagePredictor.from_pretrained` rejected it, so any caller invoking `sam_split` without explicit `checkpoint=` crashed on load. Corrected to the canonical HF ID `"facebook/sam2.1-hiera-small"` and exposed as the module constant `DEFAULT_SAM2_CHECKPOINT`.
+- **Route SAM2 around its hard-coded CUDA assumption** (`src/vulca/layers/sam.py`): upstream `sam2.build_sam.build_sam2*` calls `.cuda()` unconditionally, crashing on macOS and any host without a CUDA runtime. Added `_sam2_device()` (cuda → cpu; MPS intentionally excluded — SAM2 does not reliably support the MPS backend as of 2026-04-20) and `_patch_sam2_build_to_device()` which idempotently wraps `build_sam2`, `build_sam2_hf`, and `build_sam2_video_predictor` to inject a `device=` kwarg when callers do not supply one. Explicit device kwargs from callers still win. Apple Silicon users now fall back to CPU instead of hitting a `.cuda()` RuntimeError.
+- **New offline tests** (`tests/test_sam_device.py`): 8 unit tests cover the checkpoint constant, device-selection behavior under present/missing torch and cuda, monkey-patch idempotency + explicit-kwarg-preservation invariants, and the existing `ImportError` contract from 0.17.1. All tests run without sam2 installed.
+
+Discovered in the emoart T1.6.a decompose smoke immediately after 0.17.1 shipped; both bugs had workarounds in emoart's smoke script but were not fixed in Vulca until now.
+
 ## [0.17.1] - 2026-04-20
 
 ### Packaging fix
