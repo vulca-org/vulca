@@ -7,26 +7,34 @@
 
 **Agents can plan image edits but can't cut pixels. Vulca is the hands — semantic layer splits, cultural scoring, inpainting — as 21 MCP tools for Claude Code.**
 
-> *Below: Mona Lisa → `face_and_hair.png` + `body_and_dress.png`, decomposed locally on Apple Silicon (ComfyUI + Ollama) with zero cloud API calls. SDK total: 21 MCP tools · 1446 tests passing.*
+> *Below: Mona Lisa → 11 semantic layers via `/decompose` (background · clothing · skin · eyes · lips · nose · hair · neck · hands · head_remainder · chair_parapet), decomposed locally on Apple Silicon (ComfyUI + Ollama) with zero cloud API calls. SDK total: 21 MCP tools · 1446 tests passing.*
 
 ## What happens when you run `/decompose`
 
 ```
-> /decompose assets/mona_lisa.jpg
+> /decompose assets/showcase/originals/mona-lisa.jpg
 
-Claude: I'll first look at the image and plan a decomposition.
-[tool_use: view_image(path="assets/mona_lisa.jpg")]
+Claude: I'll inspect the image and plan a semantic decomposition.
+[tool_use: view_image(path="assets/showcase/originals/mona-lisa.jpg")]
 [tool_use: layers_split(
-    path="assets/mona_lisa.jpg",
+    path="assets/showcase/originals/mona-lisa.jpg",
     mode="orchestrated",
     plan={"domain": "portrait", "entities": [
-        {"name": "face_and_hair", "prompt": "the woman's face and hair"},
-        {"name": "body_and_dress", "prompt": "the woman's body and dress"}]})]
+        {"name": "background",  "prompt": "the landscape behind her",
+         "semantic_path": "background"},
+        {"name": "clothing",    "prompt": "her dark green dress",
+         "semantic_path": "subject.body.clothing"},
+        {"name": "skin",        "prompt": "her face and neck skin",
+         "semantic_path": "subject.head.face"},
+        {"name": "eyes",        "prompt": "her eyes",
+         "semantic_path": "subject.head.face.eyes"}]})]
 [tool_result: {"layers": [
-    {"name": "face_and_hair", "path": "./layers/face_and_hair.png", "coverage": 0.38},
-    {"name": "body_and_dress", "path": "./layers/body_and_dress.png", "coverage": 0.54}]}]
+    {"name": "background",  "semantic_path": "background"},
+    {"name": "clothing",    "semantic_path": "subject.body.clothing"},
+    {"name": "skin",        "semantic_path": "subject.head.face"},
+    {"name": "eyes",        "semantic_path": "subject.head.face.eyes"}]}]
 
-Claude: Two layers extracted with 92% total coverage. Want to redraw one?
+Claude: 4 layers at hierarchical depths 1–4. The full showcase manifest has 11 layers going down to `.eyes`, `.lips`, `.nose` under `subject.head.face`. Want to compose or redraw one?
 ```
 
 ## Try it in 60 seconds
@@ -57,12 +65,14 @@ curl -o ~/.claude/skills/decompose/SKILL.md \
 ```
 
 <p align="center">
-  <img src="assets/demo/v2/masters/mona_lisa.jpg" alt="Mona Lisa original" height="220">
+  <img src="assets/showcase/originals/mona-lisa.jpg" alt="Mona Lisa original" height="180">
   →
-  <img src="assets/demo/v2/masters/mona_lisa_layers/mona_lisa_face_and_hair.png" alt="Face and hair layer" height="220">
-  <img src="assets/demo/v2/masters/mona_lisa_layers/mona_lisa_body_and_dress.png" alt="Body and dress layer" height="220">
+  <img src="assets/showcase/layers/mona-lisa/background.png" alt="background layer (depth 1)" height="180">
+  <img src="assets/showcase/layers/mona-lisa/clothing.png" alt="clothing layer (depth 3)" height="180">
+  <img src="assets/showcase/layers/mona-lisa/skin.png" alt="skin layer (depth 4)" height="180">
+  <img src="assets/showcase/layers/mona-lisa/eyes.png" alt="eyes layer (depth 5)" height="180">
 </p>
-<p align="center"><em>Mona Lisa → face & hair / body & dress — example output from the <code>/decompose</code> flow (illustrative; transcript above is abbreviated for readability)</em></p>
+<p align="center"><em>4 of 11 agent-produced semantic layers from <code>/decompose</code> — <code>background</code> (depth 1) · <code>subject.body.clothing</code> (depth 3) · <code>subject.head.face</code> (skin, depth 4) · <code>subject.head.face.eyes</code> (depth 5). See <a href="assets/showcase/layers/mona-lisa/manifest.json">manifest.json</a> for the full hierarchy.</em></p>
 
 ---
 
@@ -381,13 +391,13 @@ From an agent: the `evaluate_artwork` MCP tool returns evolved weights alongside
 ## Showcase — agent-produced layer separations
 
 <p align="center">
-  <img src="assets/demo/v2/masters/qi_baishi_shrimp.jpg" alt="Qi Baishi shrimp original" height="220">
+  <img src="assets/showcase/originals/great-wave.jpg" alt="Hokusai Great Wave original" height="180">
   →
-  <img src="assets/demo/v2/masters/qi_baishi_layers/ink_shrimp.png" alt="Shrimp layer" height="220">
-  <img src="assets/demo/v2/masters/qi_baishi_layers/ink_calligraphy.png" alt="Calligraphy layer" height="220">
-  <img src="assets/demo/v2/masters/qi_baishi_layers/red_seals.png" alt="Seals layer" height="220">
+  <img src="assets/showcase/layers/great-wave/background.png" alt="background (sky + Mt. Fuji)" height="180">
+  <img src="assets/showcase/layers/great-wave/subject.png" alt="subject (the great wave)" height="180">
+  <img src="assets/showcase/layers/great-wave/foreground.png" alt="foreground (smaller waves)" height="180">
 </p>
-<p align="center"><em>Qi Baishi's Shrimp → shrimp / calligraphy / seals — each on transparent canvas.<br/>Example outputs from the <code>/decompose</code> flow; reproducible from the skill + MCP tools documented above.</em></p>
+<p align="center"><em>Hokusai's Great Wave → 3 agent-produced layers: <code>background</code> (pale sky + Mt. Fuji) · <code>subject</code> (the curling wave with claw-like foam) · <code>foreground</code> (smaller waves at the bottom). See <a href="assets/showcase/layers/great-wave/manifest.json">manifest.json</a>.<br/>Works across traditions — 24 masterworks have been run through <code>/decompose</code>, producing 3–15 semantic layers each.</em></p>
 
 ---
 
