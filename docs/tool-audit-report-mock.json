@@ -1,0 +1,2195 @@
+{
+  "archive_session": {
+    "common_error_modes": [],
+    "p50_latency_ms": 0.05200000305194408,
+    "pass_rate": 1.0,
+    "results": [
+      {
+        "error_mode": null,
+        "image": "african_traditional.png",
+        "latency_ms": 3.164207999361679,
+        "output_hash": "f315755aac25a40b",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "brand_design.png",
+        "latency_ms": 0.07062501390464604,
+        "output_hash": "b1cc1c89b5673d13",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi.png",
+        "latency_ms": 0.06608301191590726,
+        "output_hash": "ddf72d95326fbb8f",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_xieyi.png",
+        "latency_ms": 0.05741699715144932,
+        "output_hash": "4b8527ecb6a66bac",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "contemporary_art.png",
+        "latency_ms": 0.05533298826776445,
+        "output_hash": "4ba7555ee8753f14",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "default.png",
+        "latency_ms": 0.05529201007448137,
+        "output_hash": "e4cb7a293118d565",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "islamic_geometric.png",
+        "latency_ms": 0.07466701208613813,
+        "output_hash": "ee843c18fd6946d8",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "japanese_traditional.png",
+        "latency_ms": 0.05754202720709145,
+        "output_hash": "27dc170b1e7d8c2e",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "photography.png",
+        "latency_ms": 0.05299999611452222,
+        "output_hash": "5e329f78fbf5fb1f",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "south_asian.png",
+        "latency_ms": 0.05045798025093973,
+        "output_hash": "23d45641c3e4c139",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "ui_ux_design.png",
+        "latency_ms": 0.04966600681655109,
+        "output_hash": "2b113c3e61b6d901",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "watercolor.png",
+        "latency_ms": 0.06329201278276742,
+        "output_hash": "7d17541b88c2d290",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "western_academic.png",
+        "latency_ms": 0.051000009989365935,
+        "output_hash": "078bd67af9ffdb18",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi_seed1.png",
+        "latency_ms": 0.050417002057656646,
+        "output_hash": "172ef0acc95c0cce",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi_seed2.png",
+        "latency_ms": 0.049708003643900156,
+        "output_hash": "fde569ff8f6346d3",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi_seed3.png",
+        "latency_ms": 0.04975000047124922,
+        "output_hash": "0f9532557a9e4832",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_xieyi.png",
+        "latency_ms": 0.04862499190494418,
+        "output_hash": "63960e28cf8e24fb",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "japanese_traditional.png",
+        "latency_ms": 0.060915976064279675,
+        "output_hash": "3f3bc1825acc1487",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "ambient_mist_and_rain_wash.png",
+        "latency_ms": 0.04941600491292775,
+        "output_hash": "f052eee616059448",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "base_xuan_paper.png",
+        "latency_ms": 0.04900002386420965,
+        "output_hash": "02ee0f84c91958e0",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "calligraphy_seal.png",
+        "latency_ms": 0.04837499000132084,
+        "output_hash": "fa5c8887676177ef",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "composite.png",
+        "latency_ms": 0.04774998524226248,
+        "output_hash": "626a1d63dc953f9c",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "distant_haze_mountains.png",
+        "latency_ms": 0.06220801151357591,
+        "output_hash": "1af4af841ff2c779",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "foreground_details_hut.png",
+        "latency_ms": 0.0484580232296139,
+        "output_hash": "064196f0e867dd75",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      }
+    ]
+  },
+  "brief_parse": {
+    "common_error_modes": [],
+    "p50_latency_ms": 0.01068750862032175,
+    "pass_rate": 1.0,
+    "results": [
+      {
+        "error_mode": null,
+        "image": "african_traditional.png",
+        "latency_ms": 0.7242500141728669,
+        "output_hash": "39b310bb1992134b",
+        "peak_rss_mb": 392.859375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "brand_design.png",
+        "latency_ms": 0.020292005501687527,
+        "output_hash": "39b310bb1992134b",
+        "peak_rss_mb": 392.859375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi.png",
+        "latency_ms": 0.015208002878353,
+        "output_hash": "39b310bb1992134b",
+        "peak_rss_mb": 392.859375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_xieyi.png",
+        "latency_ms": 0.013250013580545783,
+        "output_hash": "39b310bb1992134b",
+        "peak_rss_mb": 392.859375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "contemporary_art.png",
+        "latency_ms": 0.01216601231135428,
+        "output_hash": "39b310bb1992134b",
+        "peak_rss_mb": 392.859375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "default.png",
+        "latency_ms": 0.011833006283268332,
+        "output_hash": "39b310bb1992134b",
+        "peak_rss_mb": 392.859375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "islamic_geometric.png",
+        "latency_ms": 0.011500000255182385,
+        "output_hash": "39b310bb1992134b",
+        "peak_rss_mb": 392.859375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "japanese_traditional.png",
+        "latency_ms": 0.015166995581239462,
+        "output_hash": "39b310bb1992134b",
+        "peak_rss_mb": 392.859375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "photography.png",
+        "latency_ms": 0.01200000406242907,
+        "output_hash": "39b310bb1992134b",
+        "peak_rss_mb": 392.859375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "south_asian.png",
+        "latency_ms": 0.011041993275284767,
+        "output_hash": "39b310bb1992134b",
+        "peak_rss_mb": 392.859375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "ui_ux_design.png",
+        "latency_ms": 0.01058299676515162,
+        "output_hash": "39b310bb1992134b",
+        "peak_rss_mb": 392.859375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "watercolor.png",
+        "latency_ms": 0.010749994544312358,
+        "output_hash": "39b310bb1992134b",
+        "peak_rss_mb": 392.859375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "western_academic.png",
+        "latency_ms": 0.010707997716963291,
+        "output_hash": "39b310bb1992134b",
+        "peak_rss_mb": 392.859375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi_seed1.png",
+        "latency_ms": 0.01016599708236754,
+        "output_hash": "39b310bb1992134b",
+        "peak_rss_mb": 392.859375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi_seed2.png",
+        "latency_ms": 0.010207993909716606,
+        "output_hash": "39b310bb1992134b",
+        "peak_rss_mb": 392.859375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi_seed3.png",
+        "latency_ms": 0.01066701952368021,
+        "output_hash": "39b310bb1992134b",
+        "peak_rss_mb": 392.859375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_xieyi.png",
+        "latency_ms": 0.010499992640689015,
+        "output_hash": "39b310bb1992134b",
+        "peak_rss_mb": 392.859375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "japanese_traditional.png",
+        "latency_ms": 0.010458024917170405,
+        "output_hash": "39b310bb1992134b",
+        "peak_rss_mb": 392.859375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "ambient_mist_and_rain_wash.png",
+        "latency_ms": 0.010540999937802553,
+        "output_hash": "39b310bb1992134b",
+        "peak_rss_mb": 392.859375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "base_xuan_paper.png",
+        "latency_ms": 0.010208023013547063,
+        "output_hash": "39b310bb1992134b",
+        "peak_rss_mb": 392.859375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "calligraphy_seal.png",
+        "latency_ms": 0.01058299676515162,
+        "output_hash": "39b310bb1992134b",
+        "peak_rss_mb": 392.859375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "composite.png",
+        "latency_ms": 0.010207993909716606,
+        "output_hash": "39b310bb1992134b",
+        "peak_rss_mb": 392.859375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "distant_haze_mountains.png",
+        "latency_ms": 0.010167015716433525,
+        "output_hash": "39b310bb1992134b",
+        "peak_rss_mb": 392.859375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "foreground_details_hut.png",
+        "latency_ms": 0.010124989785254002,
+        "output_hash": "39b310bb1992134b",
+        "peak_rss_mb": 392.859375,
+        "status": "PASS"
+      }
+    ]
+  },
+  "create_artwork": {
+    "common_error_modes": [],
+    "p50_latency_ms": 1.07208349800203,
+    "pass_rate": 1.0,
+    "results": [
+      {
+        "error_mode": null,
+        "image": "african_traditional.png",
+        "latency_ms": 36.39691701391712,
+        "output_hash": "63cc1212d856c68f",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "brand_design.png",
+        "latency_ms": 1.2181670172140002,
+        "output_hash": "b7b069e429664963",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi.png",
+        "latency_ms": 1.0817919974215329,
+        "output_hash": "7235c6dee163017e",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_xieyi.png",
+        "latency_ms": 1.0867500095628202,
+        "output_hash": "36bd26da6f60c348",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "contemporary_art.png",
+        "latency_ms": 1.070708007318899,
+        "output_hash": "cab8ee6220f9e863",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "default.png",
+        "latency_ms": 1.0966249974444509,
+        "output_hash": "a802844e54ebe0be",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "islamic_geometric.png",
+        "latency_ms": 1.0658329993020743,
+        "output_hash": "44b4ab167245c111",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "japanese_traditional.png",
+        "latency_ms": 1.0907500109169632,
+        "output_hash": "04dcb6fdfda26b91",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "photography.png",
+        "latency_ms": 1.0706250031944364,
+        "output_hash": "310d49fa6a0ff8bd",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "south_asian.png",
+        "latency_ms": 1.0718749836087227,
+        "output_hash": "cc2fdf082da5b319",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "ui_ux_design.png",
+        "latency_ms": 1.0570409940555692,
+        "output_hash": "ecf755db0a6621f5",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "watercolor.png",
+        "latency_ms": 1.0640000109560788,
+        "output_hash": "342f7fa19f49c8f7",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "western_academic.png",
+        "latency_ms": 1.0471250279806554,
+        "output_hash": "8eb5a32355478ca9",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi_seed1.png",
+        "latency_ms": 1.1428750003688037,
+        "output_hash": "63ec07c4245d2258",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi_seed2.png",
+        "latency_ms": 1.073583000106737,
+        "output_hash": "ff77e360aec68ece",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi_seed3.png",
+        "latency_ms": 1.0722920123953372,
+        "output_hash": "28e7bcf06034225a",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_xieyi.png",
+        "latency_ms": 1.0551670275162905,
+        "output_hash": "e881b5ecccdd4949",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "japanese_traditional.png",
+        "latency_ms": 1.0494999878574163,
+        "output_hash": "325010a97ae5aabf",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "ambient_mist_and_rain_wash.png",
+        "latency_ms": 1.0605409916024655,
+        "output_hash": "bb48776c0599655a",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "base_xuan_paper.png",
+        "latency_ms": 1.0588750010356307,
+        "output_hash": "497062f4b1a6f493",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "calligraphy_seal.png",
+        "latency_ms": 1.07908301288262,
+        "output_hash": "9277df5ae3869b3d",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "composite.png",
+        "latency_ms": 1.0799580195453018,
+        "output_hash": "8a6bbaf75a607299",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "distant_haze_mountains.png",
+        "latency_ms": 1.1028749868273735,
+        "output_hash": "2db9c85566c15d28",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "foreground_details_hut.png",
+        "latency_ms": 1.0535840119700879,
+        "output_hash": "d53a58825b7111f3",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      }
+    ]
+  },
+  "generate_concepts": {
+    "common_error_modes": [],
+    "p50_latency_ms": 2.085917003569193,
+    "pass_rate": 1.0,
+    "results": [
+      {
+        "error_mode": null,
+        "image": "african_traditional.png",
+        "latency_ms": 2.1005410235375166,
+        "output_hash": "a5fb6ce494b3a3e7",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "brand_design.png",
+        "latency_ms": 2.0658329885918647,
+        "output_hash": "85d1cb9424d88aac",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi.png",
+        "latency_ms": 2.0783340150956064,
+        "output_hash": "9874be33ba842d9c",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_xieyi.png",
+        "latency_ms": 2.119042008416727,
+        "output_hash": "a64df90817b36ddf",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "contemporary_art.png",
+        "latency_ms": 2.0749170216731727,
+        "output_hash": "5cb192e225827c78",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "default.png",
+        "latency_ms": 2.081292012007907,
+        "output_hash": "d39e2e1c676acc3b",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "islamic_geometric.png",
+        "latency_ms": 2.090042020427063,
+        "output_hash": "9fd3f63470f3dbc2",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "japanese_traditional.png",
+        "latency_ms": 2.0881249802187085,
+        "output_hash": "7f5f0063ad25b2a4",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "photography.png",
+        "latency_ms": 2.132041990989819,
+        "output_hash": "2ee1631d673b6007",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "south_asian.png",
+        "latency_ms": 2.025416004471481,
+        "output_hash": "7469a7dbe266da40",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "ui_ux_design.png",
+        "latency_ms": 2.0952500053681433,
+        "output_hash": "007cd226db8c8231",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "watercolor.png",
+        "latency_ms": 2.063749998342246,
+        "output_hash": "4e9006e1e3069a1b",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "western_academic.png",
+        "latency_ms": 2.067041990812868,
+        "output_hash": "b4ad890fd5e343f2",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi_seed1.png",
+        "latency_ms": 2.083833998767659,
+        "output_hash": "cf85a716fa674818",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi_seed2.png",
+        "latency_ms": 2.0876670023426414,
+        "output_hash": "1242cd510d06f8d1",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi_seed3.png",
+        "latency_ms": 2.102291997289285,
+        "output_hash": "4886b25f2f63c61c",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_xieyi.png",
+        "latency_ms": 2.084167004795745,
+        "output_hash": "2d1963c2d6e1b35e",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "japanese_traditional.png",
+        "latency_ms": 2.0936249929945916,
+        "output_hash": "c80a26c300690892",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "ambient_mist_and_rain_wash.png",
+        "latency_ms": 2.186209021601826,
+        "output_hash": "e3a877b5792388e0",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "base_xuan_paper.png",
+        "latency_ms": 2.0596670219674706,
+        "output_hash": "8ceb7bc35e725b4c",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "calligraphy_seal.png",
+        "latency_ms": 2.067958004772663,
+        "output_hash": "0dd5a5d4f822d73d",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "composite.png",
+        "latency_ms": 2.0897499925922602,
+        "output_hash": "f1f2d0ce51bdd6dc",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "distant_haze_mountains.png",
+        "latency_ms": 2.0827499974984676,
+        "output_hash": "2c3af1a413d43b77",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "foreground_details_hut.png",
+        "latency_ms": 2.112749993102625,
+        "output_hash": "4e948c275040acc2",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      }
+    ]
+  },
+  "generate_image": {
+    "common_error_modes": [],
+    "p50_latency_ms": 1.069416495738551,
+    "pass_rate": 1.0,
+    "results": [
+      {
+        "error_mode": null,
+        "image": "african_traditional.png",
+        "latency_ms": 5.770374991698191,
+        "output_hash": "cf86ff10c0b3f820",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "brand_design.png",
+        "latency_ms": 1.1163750023115426,
+        "output_hash": "2934c58168af6305",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi.png",
+        "latency_ms": 1.1172500089742243,
+        "output_hash": "e27bd54f534fa096",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_xieyi.png",
+        "latency_ms": 1.3441250193864107,
+        "output_hash": "503acdc85d7d08ca",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "contemporary_art.png",
+        "latency_ms": 1.1628750071395189,
+        "output_hash": "503224caac3d172f",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "default.png",
+        "latency_ms": 1.106875017285347,
+        "output_hash": "6c9ad8afafda9156",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "islamic_geometric.png",
+        "latency_ms": 1.0899579792749137,
+        "output_hash": "6b5006e6fea4b8a7",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "japanese_traditional.png",
+        "latency_ms": 1.068832993041724,
+        "output_hash": "2f36e77a73cedc5c",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "photography.png",
+        "latency_ms": 1.0690409981179982,
+        "output_hash": "f83ec3f84d3c639b",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "south_asian.png",
+        "latency_ms": 1.0387500224169344,
+        "output_hash": "c8e6d6111d804eab",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "ui_ux_design.png",
+        "latency_ms": 1.0855000000447035,
+        "output_hash": "2bd14d12b65a1927",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "watercolor.png",
+        "latency_ms": 1.0477080068085343,
+        "output_hash": "5d867c2a05518195",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "western_academic.png",
+        "latency_ms": 1.0787499777507037,
+        "output_hash": "c95db545753ec463",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi_seed1.png",
+        "latency_ms": 1.0416670120321214,
+        "output_hash": "2da6bcc699b32dd1",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi_seed2.png",
+        "latency_ms": 1.0468749969732016,
+        "output_hash": "0375f67518f9e5ae",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi_seed3.png",
+        "latency_ms": 1.0491659922990948,
+        "output_hash": "b53e9981a5843122",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_xieyi.png",
+        "latency_ms": 1.071041013346985,
+        "output_hash": "f6661fcce3feaa14",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "japanese_traditional.png",
+        "latency_ms": 1.0565000120550394,
+        "output_hash": "b4cbcb906a750878",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "ambient_mist_and_rain_wash.png",
+        "latency_ms": 1.0588330042082816,
+        "output_hash": "e991adedacb143d5",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "base_xuan_paper.png",
+        "latency_ms": 1.060874987160787,
+        "output_hash": "91d34151838d586f",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "calligraphy_seal.png",
+        "latency_ms": 1.0697919933591038,
+        "output_hash": "64b04d684aefcfc4",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "composite.png",
+        "latency_ms": 1.0442079801578075,
+        "output_hash": "419f8dc08161c507",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "distant_haze_mountains.png",
+        "latency_ms": 1.036667003063485,
+        "output_hash": "64074156d40a3edf",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "foreground_details_hut.png",
+        "latency_ms": 1.1372089793439955,
+        "output_hash": "1258e947aff5dbba",
+        "peak_rss_mb": 394.296875,
+        "status": "PASS"
+      }
+    ]
+  },
+  "inpaint_artwork": {
+    "common_error_modes": [
+      "error-dict: litellm.AuthenticationError: GeminiException - {\n  \"error\": "
+    ],
+    "p50_latency_ms": 297.54552099620923,
+    "pass_rate": 0.0,
+    "results": [
+      {
+        "error_mode": "error-dict: litellm.AuthenticationError: GeminiException - {\n  \"error\": ",
+        "image": "african_traditional.png",
+        "latency_ms": 500.0254169863183,
+        "output_hash": null,
+        "peak_rss_mb": 468.953125,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: litellm.AuthenticationError: GeminiException - {\n  \"error\": ",
+        "image": "brand_design.png",
+        "latency_ms": 326.5066659951117,
+        "output_hash": null,
+        "peak_rss_mb": 482.203125,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: litellm.AuthenticationError: GeminiException - {\n  \"error\": ",
+        "image": "chinese_gongbi.png",
+        "latency_ms": 316.59787500393577,
+        "output_hash": null,
+        "peak_rss_mb": 511.515625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: litellm.AuthenticationError: GeminiException - {\n  \"error\": ",
+        "image": "chinese_xieyi.png",
+        "latency_ms": 402.8202500194311,
+        "output_hash": null,
+        "peak_rss_mb": 548.875,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: litellm.AuthenticationError: GeminiException - {\n  \"error\": ",
+        "image": "contemporary_art.png",
+        "latency_ms": 356.8293339922093,
+        "output_hash": null,
+        "peak_rss_mb": 587.0625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: litellm.AuthenticationError: GeminiException - {\n  \"error\": ",
+        "image": "default.png",
+        "latency_ms": 223.08470899588428,
+        "output_hash": null,
+        "peak_rss_mb": 588.265625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: litellm.AuthenticationError: GeminiException - {\n  \"error\": ",
+        "image": "islamic_geometric.png",
+        "latency_ms": 332.569375023013,
+        "output_hash": null,
+        "peak_rss_mb": 619.40625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: litellm.AuthenticationError: GeminiException - {\n  \"error\": ",
+        "image": "japanese_traditional.png",
+        "latency_ms": 385.170207999181,
+        "output_hash": null,
+        "peak_rss_mb": 648.09375,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: litellm.AuthenticationError: GeminiException - {\n  \"error\": ",
+        "image": "photography.png",
+        "latency_ms": 222.17512500355951,
+        "output_hash": null,
+        "peak_rss_mb": 648.09375,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: litellm.AuthenticationError: GeminiException - {\n  \"error\": ",
+        "image": "south_asian.png",
+        "latency_ms": 293.6026669922285,
+        "output_hash": null,
+        "peak_rss_mb": 660.265625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: litellm.AuthenticationError: GeminiException - {\n  \"error\": ",
+        "image": "ui_ux_design.png",
+        "latency_ms": 171.3305409939494,
+        "output_hash": null,
+        "peak_rss_mb": 660.265625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: litellm.AuthenticationError: GeminiException - {\n  \"error\": ",
+        "image": "watercolor.png",
+        "latency_ms": 310.39929200778715,
+        "output_hash": null,
+        "peak_rss_mb": 660.265625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: litellm.AuthenticationError: GeminiException - {\n  \"error\": ",
+        "image": "western_academic.png",
+        "latency_ms": 298.1440000003204,
+        "output_hash": null,
+        "peak_rss_mb": 660.265625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: litellm.AuthenticationError: GeminiException - {\n  \"error\": ",
+        "image": "chinese_gongbi_seed1.png",
+        "latency_ms": 331.1185419734102,
+        "output_hash": null,
+        "peak_rss_mb": 666.03125,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: litellm.AuthenticationError: GeminiException - {\n  \"error\": ",
+        "image": "chinese_gongbi_seed2.png",
+        "latency_ms": 365.57066699606366,
+        "output_hash": null,
+        "peak_rss_mb": 671.296875,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: litellm.AuthenticationError: GeminiException - {\n  \"error\": ",
+        "image": "chinese_gongbi_seed3.png",
+        "latency_ms": 317.6352500158828,
+        "output_hash": null,
+        "peak_rss_mb": 671.296875,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: litellm.AuthenticationError: GeminiException - {\n  \"error\": ",
+        "image": "chinese_xieyi.png",
+        "latency_ms": 296.9470419920981,
+        "output_hash": null,
+        "peak_rss_mb": 671.296875,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: litellm.AuthenticationError: GeminiException - {\n  \"error\": ",
+        "image": "japanese_traditional.png",
+        "latency_ms": 285.5904579919297,
+        "output_hash": null,
+        "peak_rss_mb": 672.015625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: litellm.AuthenticationError: GeminiException - {\n  \"error\": ",
+        "image": "ambient_mist_and_rain_wash.png",
+        "latency_ms": 41.86933400342241,
+        "output_hash": null,
+        "peak_rss_mb": 672.015625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: litellm.AuthenticationError: GeminiException - {\n  \"error\": ",
+        "image": "base_xuan_paper.png",
+        "latency_ms": 41.488332994049415,
+        "output_hash": null,
+        "peak_rss_mb": 672.015625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: litellm.AuthenticationError: GeminiException - {\n  \"error\": ",
+        "image": "calligraphy_seal.png",
+        "latency_ms": 41.518415993778035,
+        "output_hash": null,
+        "peak_rss_mb": 672.015625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: litellm.AuthenticationError: GeminiException - {\n  \"error\": ",
+        "image": "composite.png",
+        "latency_ms": 39.45625000051223,
+        "output_hash": null,
+        "peak_rss_mb": 672.015625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: litellm.AuthenticationError: GeminiException - {\n  \"error\": ",
+        "image": "distant_haze_mountains.png",
+        "latency_ms": 41.39816699898802,
+        "output_hash": null,
+        "peak_rss_mb": 672.015625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: litellm.AuthenticationError: GeminiException - {\n  \"error\": ",
+        "image": "foreground_details_hut.png",
+        "latency_ms": 39.32733301189728,
+        "output_hash": null,
+        "peak_rss_mb": 672.015625,
+        "status": "FAIL"
+      }
+    ]
+  },
+  "layers_edit": {
+    "common_error_modes": [],
+    "p50_latency_ms": 0.2590835065348074,
+    "pass_rate": 1.0,
+    "results": [
+      {
+        "error_mode": null,
+        "image": "african_traditional.png",
+        "latency_ms": 0.36670800182037055,
+        "output_hash": "685c4731856d070a",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "brand_design.png",
+        "latency_ms": 0.2835000050254166,
+        "output_hash": "685c4731856d070a",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi.png",
+        "latency_ms": 0.2731669810600579,
+        "output_hash": "685c4731856d070a",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_xieyi.png",
+        "latency_ms": 0.2675830037333071,
+        "output_hash": "685c4731856d070a",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "contemporary_art.png",
+        "latency_ms": 0.2631249953992665,
+        "output_hash": "685c4731856d070a",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "default.png",
+        "latency_ms": 0.2589999930933118,
+        "output_hash": "685c4731856d070a",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "islamic_geometric.png",
+        "latency_ms": 0.2624169865157455,
+        "output_hash": "685c4731856d070a",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "japanese_traditional.png",
+        "latency_ms": 0.2658330195117742,
+        "output_hash": "685c4731856d070a",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "photography.png",
+        "latency_ms": 0.2619579900056124,
+        "output_hash": "685c4731856d070a",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "south_asian.png",
+        "latency_ms": 0.25266598095186055,
+        "output_hash": "685c4731856d070a",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "ui_ux_design.png",
+        "latency_ms": 0.24941697483882308,
+        "output_hash": "685c4731856d070a",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "watercolor.png",
+        "latency_ms": 0.2530000056140125,
+        "output_hash": "685c4731856d070a",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "western_academic.png",
+        "latency_ms": 0.34875000710599124,
+        "output_hash": "685c4731856d070a",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi_seed1.png",
+        "latency_ms": 0.2565419999882579,
+        "output_hash": "685c4731856d070a",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi_seed2.png",
+        "latency_ms": 0.259167019976303,
+        "output_hash": "685c4731856d070a",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi_seed3.png",
+        "latency_ms": 0.2650410169735551,
+        "output_hash": "685c4731856d070a",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_xieyi.png",
+        "latency_ms": 0.26491598691791296,
+        "output_hash": "685c4731856d070a",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "japanese_traditional.png",
+        "latency_ms": 0.251209014095366,
+        "output_hash": "685c4731856d070a",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "ambient_mist_and_rain_wash.png",
+        "latency_ms": 0.2558339911047369,
+        "output_hash": "685c4731856d070a",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "base_xuan_paper.png",
+        "latency_ms": 0.2476660010870546,
+        "output_hash": "685c4731856d070a",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "calligraphy_seal.png",
+        "latency_ms": 0.24629198014736176,
+        "output_hash": "685c4731856d070a",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "composite.png",
+        "latency_ms": 0.2508750185370445,
+        "output_hash": "685c4731856d070a",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "distant_haze_mountains.png",
+        "latency_ms": 0.2473339845892042,
+        "output_hash": "685c4731856d070a",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "foreground_details_hut.png",
+        "latency_ms": 0.24691701401025057,
+        "output_hash": "685c4731856d070a",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      }
+    ]
+  },
+  "layers_evaluate": {
+    "common_error_modes": [],
+    "p50_latency_ms": 0.0618539925199002,
+    "pass_rate": 1.0,
+    "results": [
+      {
+        "error_mode": null,
+        "image": "african_traditional.png",
+        "latency_ms": 0.2529580087866634,
+        "output_hash": "45a5c205ab4c8316",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "brand_design.png",
+        "latency_ms": 0.06912500248290598,
+        "output_hash": "45a5c205ab4c8316",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi.png",
+        "latency_ms": 0.06354201468639076,
+        "output_hash": "45a5c205ab4c8316",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_xieyi.png",
+        "latency_ms": 0.06533399573527277,
+        "output_hash": "45a5c205ab4c8316",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "contemporary_art.png",
+        "latency_ms": 0.0619589991401881,
+        "output_hash": "45a5c205ab4c8316",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "default.png",
+        "latency_ms": 0.0625409884378314,
+        "output_hash": "45a5c205ab4c8316",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "islamic_geometric.png",
+        "latency_ms": 0.061875005485489964,
+        "output_hash": "45a5c205ab4c8316",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "japanese_traditional.png",
+        "latency_ms": 0.061416998505592346,
+        "output_hash": "45a5c205ab4c8316",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "photography.png",
+        "latency_ms": 0.06683298852294683,
+        "output_hash": "45a5c205ab4c8316",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "south_asian.png",
+        "latency_ms": 0.059125013649463654,
+        "output_hash": "45a5c205ab4c8316",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "ui_ux_design.png",
+        "latency_ms": 0.05891598993912339,
+        "output_hash": "45a5c205ab4c8316",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "watercolor.png",
+        "latency_ms": 0.05862498073838651,
+        "output_hash": "45a5c205ab4c8316",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "western_academic.png",
+        "latency_ms": 0.058792007621377707,
+        "output_hash": "45a5c205ab4c8316",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi_seed1.png",
+        "latency_ms": 0.0642079976387322,
+        "output_hash": "45a5c205ab4c8316",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi_seed2.png",
+        "latency_ms": 0.05829200381413102,
+        "output_hash": "45a5c205ab4c8316",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi_seed3.png",
+        "latency_ms": 0.058542005717754364,
+        "output_hash": "45a5c205ab4c8316",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_xieyi.png",
+        "latency_ms": 0.06470800144597888,
+        "output_hash": "45a5c205ab4c8316",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "japanese_traditional.png",
+        "latency_ms": 0.06104199565015733,
+        "output_hash": "45a5c205ab4c8316",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "ambient_mist_and_rain_wash.png",
+        "latency_ms": 0.060874997870996594,
+        "output_hash": "45a5c205ab4c8316",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "base_xuan_paper.png",
+        "latency_ms": 0.06379198748618364,
+        "output_hash": "45a5c205ab4c8316",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "calligraphy_seal.png",
+        "latency_ms": 0.06374999065883458,
+        "output_hash": "45a5c205ab4c8316",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "composite.png",
+        "latency_ms": 0.06183297955431044,
+        "output_hash": "45a5c205ab4c8316",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "distant_haze_mountains.png",
+        "latency_ms": 0.058792007621377707,
+        "output_hash": "45a5c205ab4c8316",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "foreground_details_hut.png",
+        "latency_ms": 0.05937498644925654,
+        "output_hash": "45a5c205ab4c8316",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      }
+    ]
+  },
+  "layers_redraw": {
+    "common_error_modes": [],
+    "p50_latency_ms": 12.163083505583927,
+    "pass_rate": 1.0,
+    "results": [
+      {
+        "error_mode": null,
+        "image": "african_traditional.png",
+        "latency_ms": 18.437833001371473,
+        "output_hash": "86a6fbc60581001b",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "brand_design.png",
+        "latency_ms": 14.702582993777469,
+        "output_hash": "86a6fbc60581001b",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi.png",
+        "latency_ms": 13.4470000048168,
+        "output_hash": "86a6fbc60581001b",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_xieyi.png",
+        "latency_ms": 12.964249996002764,
+        "output_hash": "86a6fbc60581001b",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "contemporary_art.png",
+        "latency_ms": 12.108208000427112,
+        "output_hash": "86a6fbc60581001b",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "default.png",
+        "latency_ms": 12.275415996555239,
+        "output_hash": "86a6fbc60581001b",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "islamic_geometric.png",
+        "latency_ms": 12.083375011570752,
+        "output_hash": "86a6fbc60581001b",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "japanese_traditional.png",
+        "latency_ms": 12.160834012320265,
+        "output_hash": "86a6fbc60581001b",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "photography.png",
+        "latency_ms": 12.165332998847589,
+        "output_hash": "86a6fbc60581001b",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "south_asian.png",
+        "latency_ms": 11.957125010667369,
+        "output_hash": "86a6fbc60581001b",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "ui_ux_design.png",
+        "latency_ms": 12.082875007763505,
+        "output_hash": "86a6fbc60581001b",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "watercolor.png",
+        "latency_ms": 12.105249974410981,
+        "output_hash": "86a6fbc60581001b",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "western_academic.png",
+        "latency_ms": 12.158457975601777,
+        "output_hash": "86a6fbc60581001b",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi_seed1.png",
+        "latency_ms": 12.181999976746738,
+        "output_hash": "86a6fbc60581001b",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi_seed2.png",
+        "latency_ms": 12.084832997061312,
+        "output_hash": "86a6fbc60581001b",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi_seed3.png",
+        "latency_ms": 12.193084025057033,
+        "output_hash": "86a6fbc60581001b",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_xieyi.png",
+        "latency_ms": 12.169583002105355,
+        "output_hash": "86a6fbc60581001b",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "japanese_traditional.png",
+        "latency_ms": 12.11933299782686,
+        "output_hash": "86a6fbc60581001b",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "ambient_mist_and_rain_wash.png",
+        "latency_ms": 12.346333998721093,
+        "output_hash": "86a6fbc60581001b",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "base_xuan_paper.png",
+        "latency_ms": 12.133375013945624,
+        "output_hash": "86a6fbc60581001b",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "calligraphy_seal.png",
+        "latency_ms": 12.134666001657024,
+        "output_hash": "86a6fbc60581001b",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "composite.png",
+        "latency_ms": 12.085624999599531,
+        "output_hash": "86a6fbc60581001b",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "distant_haze_mountains.png",
+        "latency_ms": 12.183208018541336,
+        "output_hash": "86a6fbc60581001b",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "foreground_details_hut.png",
+        "latency_ms": 12.191874993732199,
+        "output_hash": "86a6fbc60581001b",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      }
+    ]
+  },
+  "layers_transform": {
+    "common_error_modes": [],
+    "p50_latency_ms": 0.25845799245871603,
+    "pass_rate": 1.0,
+    "results": [
+      {
+        "error_mode": null,
+        "image": "african_traditional.png",
+        "latency_ms": 0.2672910050023347,
+        "output_hash": "d1b2fd9f7738ff70",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "brand_design.png",
+        "latency_ms": 0.2585829934105277,
+        "output_hash": "d1b2fd9f7738ff70",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi.png",
+        "latency_ms": 0.2549579949118197,
+        "output_hash": "d1b2fd9f7738ff70",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_xieyi.png",
+        "latency_ms": 0.5448750162031502,
+        "output_hash": "d1b2fd9f7738ff70",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "contemporary_art.png",
+        "latency_ms": 0.3253330069128424,
+        "output_hash": "d1b2fd9f7738ff70",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "default.png",
+        "latency_ms": 0.27462499565444887,
+        "output_hash": "d1b2fd9f7738ff70",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "islamic_geometric.png",
+        "latency_ms": 0.26108400197699666,
+        "output_hash": "d1b2fd9f7738ff70",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "japanese_traditional.png",
+        "latency_ms": 0.26412500301375985,
+        "output_hash": "d1b2fd9f7738ff70",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "photography.png",
+        "latency_ms": 0.25049998657777905,
+        "output_hash": "d1b2fd9f7738ff70",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "south_asian.png",
+        "latency_ms": 0.26175001403316855,
+        "output_hash": "d1b2fd9f7738ff70",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "ui_ux_design.png",
+        "latency_ms": 0.3026249760296196,
+        "output_hash": "d1b2fd9f7738ff70",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "watercolor.png",
+        "latency_ms": 0.2465830184519291,
+        "output_hash": "d1b2fd9f7738ff70",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "western_academic.png",
+        "latency_ms": 0.25058400933630764,
+        "output_hash": "d1b2fd9f7738ff70",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi_seed1.png",
+        "latency_ms": 0.24895797832868993,
+        "output_hash": "d1b2fd9f7738ff70",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi_seed2.png",
+        "latency_ms": 0.25920901680365205,
+        "output_hash": "d1b2fd9f7738ff70",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi_seed3.png",
+        "latency_ms": 0.26537501253187656,
+        "output_hash": "d1b2fd9f7738ff70",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_xieyi.png",
+        "latency_ms": 0.25437501608394086,
+        "output_hash": "d1b2fd9f7738ff70",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "japanese_traditional.png",
+        "latency_ms": 0.25541699142195284,
+        "output_hash": "d1b2fd9f7738ff70",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "ambient_mist_and_rain_wash.png",
+        "latency_ms": 0.25775001267902553,
+        "output_hash": "d1b2fd9f7738ff70",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "base_xuan_paper.png",
+        "latency_ms": 0.25833299150690436,
+        "output_hash": "d1b2fd9f7738ff70",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "calligraphy_seal.png",
+        "latency_ms": 0.2622920146677643,
+        "output_hash": "d1b2fd9f7738ff70",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "composite.png",
+        "latency_ms": 0.2550839853938669,
+        "output_hash": "d1b2fd9f7738ff70",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "distant_haze_mountains.png",
+        "latency_ms": 0.25725000887177885,
+        "output_hash": "d1b2fd9f7738ff70",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "foreground_details_hut.png",
+        "latency_ms": 0.2539579872973263,
+        "output_hash": "d1b2fd9f7738ff70",
+        "peak_rss_mb": 672.015625,
+        "status": "PASS"
+      }
+    ]
+  },
+  "sync_data": {
+    "common_error_modes": [
+      "error-dict: VULCA_API_URL not set. Set VULCA_API_URL and optionally VULC"
+    ],
+    "p50_latency_ms": 0.0011669908417388797,
+    "pass_rate": 0.0,
+    "results": [
+      {
+        "error_mode": "error-dict: VULCA_API_URL not set. Set VULCA_API_URL and optionally VULC",
+        "image": "african_traditional.png",
+        "latency_ms": 0.0037910067476332188,
+        "output_hash": null,
+        "peak_rss_mb": 672.015625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: VULCA_API_URL not set. Set VULCA_API_URL and optionally VULC",
+        "image": "brand_design.png",
+        "latency_ms": 0.0015840050764381886,
+        "output_hash": null,
+        "peak_rss_mb": 672.015625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: VULCA_API_URL not set. Set VULCA_API_URL and optionally VULC",
+        "image": "chinese_gongbi.png",
+        "latency_ms": 0.0013329845387488604,
+        "output_hash": null,
+        "peak_rss_mb": 672.015625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: VULCA_API_URL not set. Set VULCA_API_URL and optionally VULC",
+        "image": "chinese_xieyi.png",
+        "latency_ms": 0.0012499804142862558,
+        "output_hash": null,
+        "peak_rss_mb": 672.015625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: VULCA_API_URL not set. Set VULCA_API_URL and optionally VULC",
+        "image": "contemporary_art.png",
+        "latency_ms": 0.0012090022210031748,
+        "output_hash": null,
+        "peak_rss_mb": 672.015625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: VULCA_API_URL not set. Set VULCA_API_URL and optionally VULC",
+        "image": "default.png",
+        "latency_ms": 0.001167005393654108,
+        "output_hash": null,
+        "peak_rss_mb": 672.015625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: VULCA_API_URL not set. Set VULCA_API_URL and optionally VULC",
+        "image": "islamic_geometric.png",
+        "latency_ms": 0.001207983586937189,
+        "output_hash": null,
+        "peak_rss_mb": 672.015625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: VULCA_API_URL not set. Set VULCA_API_URL and optionally VULC",
+        "image": "japanese_traditional.png",
+        "latency_ms": 0.0032919924706220627,
+        "output_hash": null,
+        "peak_rss_mb": 672.015625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: VULCA_API_URL not set. Set VULCA_API_URL and optionally VULC",
+        "image": "photography.png",
+        "latency_ms": 0.0012090022210031748,
+        "output_hash": null,
+        "peak_rss_mb": 672.015625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: VULCA_API_URL not set. Set VULCA_API_URL and optionally VULC",
+        "image": "south_asian.png",
+        "latency_ms": 0.0011249794624745846,
+        "output_hash": null,
+        "peak_rss_mb": 672.015625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: VULCA_API_URL not set. Set VULCA_API_URL and optionally VULC",
+        "image": "ui_ux_design.png",
+        "latency_ms": 0.0011249794624745846,
+        "output_hash": null,
+        "peak_rss_mb": 672.015625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: VULCA_API_URL not set. Set VULCA_API_URL and optionally VULC",
+        "image": "watercolor.png",
+        "latency_ms": 0.0011669762898236513,
+        "output_hash": null,
+        "peak_rss_mb": 672.015625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: VULCA_API_URL not set. Set VULCA_API_URL and optionally VULC",
+        "image": "western_academic.png",
+        "latency_ms": 0.0010829826351255178,
+        "output_hash": null,
+        "peak_rss_mb": 672.015625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: VULCA_API_URL not set. Set VULCA_API_URL and optionally VULC",
+        "image": "chinese_gongbi_seed1.png",
+        "latency_ms": 0.0010829826351255178,
+        "output_hash": null,
+        "peak_rss_mb": 672.015625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: VULCA_API_URL not set. Set VULCA_API_URL and optionally VULC",
+        "image": "chinese_gongbi_seed2.png",
+        "latency_ms": 0.001167005393654108,
+        "output_hash": null,
+        "peak_rss_mb": 672.015625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: VULCA_API_URL not set. Set VULCA_API_URL and optionally VULC",
+        "image": "chinese_gongbi_seed3.png",
+        "latency_ms": 0.0011249794624745846,
+        "output_hash": null,
+        "peak_rss_mb": 672.015625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: VULCA_API_URL not set. Set VULCA_API_URL and optionally VULC",
+        "image": "chinese_xieyi.png",
+        "latency_ms": 0.0012080126907676458,
+        "output_hash": null,
+        "peak_rss_mb": 672.015625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: VULCA_API_URL not set. Set VULCA_API_URL and optionally VULC",
+        "image": "japanese_traditional.png",
+        "latency_ms": 0.001166015863418579,
+        "output_hash": null,
+        "peak_rss_mb": 672.015625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: VULCA_API_URL not set. Set VULCA_API_URL and optionally VULC",
+        "image": "ambient_mist_and_rain_wash.png",
+        "latency_ms": 0.001167005393654108,
+        "output_hash": null,
+        "peak_rss_mb": 672.015625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: VULCA_API_URL not set. Set VULCA_API_URL and optionally VULC",
+        "image": "base_xuan_paper.png",
+        "latency_ms": 0.0010840012691915035,
+        "output_hash": null,
+        "peak_rss_mb": 672.015625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: VULCA_API_URL not set. Set VULCA_API_URL and optionally VULC",
+        "image": "calligraphy_seal.png",
+        "latency_ms": 0.0011250085663050413,
+        "output_hash": null,
+        "peak_rss_mb": 672.015625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: VULCA_API_URL not set. Set VULCA_API_URL and optionally VULC",
+        "image": "composite.png",
+        "latency_ms": 0.0011250085663050413,
+        "output_hash": null,
+        "peak_rss_mb": 672.015625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: VULCA_API_URL not set. Set VULCA_API_URL and optionally VULC",
+        "image": "distant_haze_mountains.png",
+        "latency_ms": 0.0011250085663050413,
+        "output_hash": null,
+        "peak_rss_mb": 672.015625,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: VULCA_API_URL not set. Set VULCA_API_URL and optionally VULC",
+        "image": "foreground_details_hut.png",
+        "latency_ms": 0.0010830117389559746,
+        "output_hash": null,
+        "peak_rss_mb": 672.015625,
+        "status": "FAIL"
+      }
+    ]
+  }
+}

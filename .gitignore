@@ -41,3 +41,8 @@ FastSAM-s.pt
 .playwright-mcp/
 assets/showcase/*
 !assets/showcase/originals/
+
+# Audit / ship-gate transient outputs (verbose logs + subagent scratch)
+.scratch/
+tmp-shipgate/
+docs/tool-audit-logs/

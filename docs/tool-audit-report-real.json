@@ -1,0 +1,347 @@
+{
+  "archive_session": {
+    "common_error_modes": [],
+    "p50_latency_ms": 0.11979200644418597,
+    "pass_rate": 1.0,
+    "results": [
+      {
+        "error_mode": null,
+        "image": "african_traditional.png",
+        "latency_ms": 7.014583010459319,
+        "output_hash": "04f2fa9e2e3463df",
+        "peak_rss_mb": 418.234375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "brand_design.png",
+        "latency_ms": 0.11979200644418597,
+        "output_hash": "9c9c61332a71cfc4",
+        "peak_rss_mb": 418.234375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi.png",
+        "latency_ms": 0.10004098294302821,
+        "output_hash": "8752a66eeb004026",
+        "peak_rss_mb": 418.234375,
+        "status": "PASS"
+      }
+    ]
+  },
+  "brief_parse": {
+    "common_error_modes": [],
+    "p50_latency_ms": 0.0268329749815166,
+    "pass_rate": 1.0,
+    "results": [
+      {
+        "error_mode": null,
+        "image": "african_traditional.png",
+        "latency_ms": 1.3546250120270997,
+        "output_hash": "39b310bb1992134b",
+        "peak_rss_mb": 393.078125,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "brand_design.png",
+        "latency_ms": 0.0268329749815166,
+        "output_hash": "39b310bb1992134b",
+        "peak_rss_mb": 393.078125,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi.png",
+        "latency_ms": 0.020500010577961802,
+        "output_hash": "39b310bb1992134b",
+        "peak_rss_mb": 393.078125,
+        "status": "PASS"
+      }
+    ]
+  },
+  "create_artwork": {
+    "common_error_modes": [],
+    "p50_latency_ms": 75093.17129201372,
+    "pass_rate": 1.0,
+    "results": [
+      {
+        "error_mode": null,
+        "image": "african_traditional.png",
+        "latency_ms": 85083.75754198642,
+        "output_hash": "cd5ba59b6326a00c",
+        "peak_rss_mb": 408.4375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "brand_design.png",
+        "latency_ms": 75093.17129201372,
+        "output_hash": "02b235089ef70273",
+        "peak_rss_mb": 411.828125,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi.png",
+        "latency_ms": 70094.5758339949,
+        "output_hash": "f22f80ca4a4d348e",
+        "peak_rss_mb": 415.859375,
+        "status": "PASS"
+      }
+    ]
+  },
+  "generate_concepts": {
+    "common_error_modes": [],
+    "p50_latency_ms": 125249.70637500519,
+    "pass_rate": 1.0,
+    "results": [
+      {
+        "error_mode": null,
+        "image": "african_traditional.png",
+        "latency_ms": 125128.41716699768,
+        "output_hash": "9772e98e694d3456",
+        "peak_rss_mb": 417.375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "brand_design.png",
+        "latency_ms": 125249.70637500519,
+        "output_hash": "0ad8fe060c8838b7",
+        "peak_rss_mb": 418.234375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi.png",
+        "latency_ms": 160247.7748329984,
+        "output_hash": "0e842551a9f4dadf",
+        "peak_rss_mb": 418.234375,
+        "status": "PASS"
+      }
+    ]
+  },
+  "generate_image": {
+    "common_error_modes": [],
+    "p50_latency_ms": 80078.42283300124,
+    "pass_rate": 1.0,
+    "results": [
+      {
+        "error_mode": null,
+        "image": "african_traditional.png",
+        "latency_ms": 85090.00766600366,
+        "output_hash": "d817981c7ac9d0a5",
+        "peak_rss_mb": 393.34375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "brand_design.png",
+        "latency_ms": 75079.68062500004,
+        "output_hash": "33363ca26109a804",
+        "peak_rss_mb": 400.96875,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi.png",
+        "latency_ms": 80078.42283300124,
+        "output_hash": "14e0e4f7f4b73389",
+        "peak_rss_mb": 407.640625,
+        "status": "PASS"
+      }
+    ]
+  },
+  "inpaint_artwork": {
+    "common_error_modes": [
+      "error-dict: litellm.AuthenticationError: GeminiException - {\n  \"error\": "
+    ],
+    "p50_latency_ms": 330.6902500044089,
+    "pass_rate": 0.0,
+    "results": [
+      {
+        "error_mode": "error-dict: litellm.AuthenticationError: GeminiException - {\n  \"error\": ",
+        "image": "african_traditional.png",
+        "latency_ms": 539.4642500032205,
+        "output_hash": null,
+        "peak_rss_mb": 418.234375,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: litellm.AuthenticationError: GeminiException - {\n  \"error\": ",
+        "image": "brand_design.png",
+        "latency_ms": 263.03958299104124,
+        "output_hash": null,
+        "peak_rss_mb": 418.234375,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: litellm.AuthenticationError: GeminiException - {\n  \"error\": ",
+        "image": "chinese_gongbi.png",
+        "latency_ms": 330.6902500044089,
+        "output_hash": null,
+        "peak_rss_mb": 418.234375,
+        "status": "FAIL"
+      }
+    ]
+  },
+  "layers_edit": {
+    "common_error_modes": [],
+    "p50_latency_ms": 0.5531670176424086,
+    "pass_rate": 1.0,
+    "results": [
+      {
+        "error_mode": null,
+        "image": "african_traditional.png",
+        "latency_ms": 0.9139589965343475,
+        "output_hash": "685c4731856d070a",
+        "peak_rss_mb": 418.234375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "brand_design.png",
+        "latency_ms": 0.5531670176424086,
+        "output_hash": "685c4731856d070a",
+        "peak_rss_mb": 418.234375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi.png",
+        "latency_ms": 0.5344999954104424,
+        "output_hash": "685c4731856d070a",
+        "peak_rss_mb": 418.234375,
+        "status": "PASS"
+      }
+    ]
+  },
+  "layers_evaluate": {
+    "common_error_modes": [],
+    "p50_latency_ms": 0.1337080029770732,
+    "pass_rate": 1.0,
+    "results": [
+      {
+        "error_mode": null,
+        "image": "african_traditional.png",
+        "latency_ms": 0.8377920021302998,
+        "output_hash": "45a5c205ab4c8316",
+        "peak_rss_mb": 418.234375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "brand_design.png",
+        "latency_ms": 0.1337080029770732,
+        "output_hash": "45a5c205ab4c8316",
+        "peak_rss_mb": 418.234375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi.png",
+        "latency_ms": 0.12583300122059882,
+        "output_hash": "45a5c205ab4c8316",
+        "peak_rss_mb": 418.234375,
+        "status": "PASS"
+      }
+    ]
+  },
+  "layers_redraw": {
+    "common_error_modes": [],
+    "p50_latency_ms": 5058.2152499991935,
+    "pass_rate": 1.0,
+    "results": [
+      {
+        "error_mode": null,
+        "image": "african_traditional.png",
+        "latency_ms": 10076.291375007713,
+        "output_hash": "86a6fbc60581001b",
+        "peak_rss_mb": 418.234375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "brand_design.png",
+        "latency_ms": 5058.2152499991935,
+        "output_hash": "86a6fbc60581001b",
+        "peak_rss_mb": 418.234375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi.png",
+        "latency_ms": 5057.332249998581,
+        "output_hash": "86a6fbc60581001b",
+        "peak_rss_mb": 418.234375,
+        "status": "PASS"
+      }
+    ]
+  },
+  "layers_transform": {
+    "common_error_modes": [],
+    "p50_latency_ms": 0.5920420226175338,
+    "pass_rate": 1.0,
+    "results": [
+      {
+        "error_mode": null,
+        "image": "african_traditional.png",
+        "latency_ms": 0.7642919954378158,
+        "output_hash": "d1b2fd9f7738ff70",
+        "peak_rss_mb": 418.234375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "brand_design.png",
+        "latency_ms": 0.5920420226175338,
+        "output_hash": "d1b2fd9f7738ff70",
+        "peak_rss_mb": 418.234375,
+        "status": "PASS"
+      },
+      {
+        "error_mode": null,
+        "image": "chinese_gongbi.png",
+        "latency_ms": 0.5674999847542495,
+        "output_hash": "d1b2fd9f7738ff70",
+        "peak_rss_mb": 418.234375,
+        "status": "PASS"
+      }
+    ]
+  },
+  "sync_data": {
+    "common_error_modes": [
+      "error-dict: VULCA_API_URL not set. Set VULCA_API_URL and optionally VULC"
+    ],
+    "p50_latency_ms": 0.0030410010367631912,
+    "pass_rate": 0.0,
+    "results": [
+      {
+        "error_mode": "error-dict: VULCA_API_URL not set. Set VULCA_API_URL and optionally VULC",
+        "image": "african_traditional.png",
+        "latency_ms": 0.012500007869675756,
+        "output_hash": null,
+        "peak_rss_mb": 418.234375,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: VULCA_API_URL not set. Set VULCA_API_URL and optionally VULC",
+        "image": "brand_design.png",
+        "latency_ms": 0.0030410010367631912,
+        "output_hash": null,
+        "peak_rss_mb": 418.234375,
+        "status": "FAIL"
+      },
+      {
+        "error_mode": "error-dict: VULCA_API_URL not set. Set VULCA_API_URL and optionally VULC",
+        "image": "chinese_gongbi.png",
+        "latency_ms": 0.002541986759752035,
+        "output_hash": null,
+        "peak_rss_mb": 418.234375,
+        "status": "FAIL"
+      }
+    ]
+  }
+}

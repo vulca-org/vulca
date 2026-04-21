@@ -40,7 +40,7 @@ SHOWCASE_DIRS = [
     REPO_ROOT / "assets/demo/v3/layered",
     REPO_ROOT / "assets/demo/v3/defense3",
 ]
-TARGET_CORPUS_SIZE = 24
+DEFAULT_CORPUS_SIZE = 24
 
 SKELETON_TIER_TOOLS = [
     "brief_parse",
@@ -91,8 +91,8 @@ class ToolSummary:
         return sorted({r.error_mode for r in self.results if r.error_mode})
 
 
-def collect_corpus() -> list[Path]:
-    """Walk the 4 showcase dirs and return up to TARGET_CORPUS_SIZE unique images."""
+def collect_corpus(max_images: int = DEFAULT_CORPUS_SIZE) -> list[Path]:
+    """Walk the 4 showcase dirs and return up to max_images unique images."""
     images: list[Path] = []
     for d in SHOWCASE_DIRS:
         if not d.exists():
@@ -108,7 +108,7 @@ def collect_corpus() -> list[Path]:
             continue
         seen.add(key)
         unique.append(p)
-    return unique[:TARGET_CORPUS_SIZE]
+    return unique[:max_images]
 
 
 async def _time_call(fn: Callable[..., Awaitable], **kwargs) -> tuple[float, object]:
@@ -130,9 +130,28 @@ def _peak_rss_mb() -> float:
     return rss / (1024 * 1024) if sys.platform == "darwin" else rss / 1024
 
 
-async def run_tool_on_image(tool_name: str, image: Path) -> ToolResult:
-    """Invoke one Skeleton-tier tool against one image; convert any exception to FAIL."""
+LAYERED_ARTWORK_DIR = REPO_ROOT / "assets/demo/v3/layered"
+
+
+async def run_tool_on_image(
+    tool_name: str,
+    image: Path,
+    provider_mode: str = "mock",
+    real_provider: str = "comfyui",
+) -> ToolResult:
+    """Invoke one Skeleton-tier tool against one image; convert any exception to FAIL.
+
+    provider_mode: 'mock' routes image-gen tools to the in-process mock provider
+    (surface-validity audit). 'real' routes them to `real_provider` for
+    pipeline-validity audit against a live backend (ComfyUI / openai / gemini).
+    `inpaint_artwork` has no provider kwarg on its public MCP signature and so
+    always exercises its default provider — under 'mock' this surfaces as an
+    honest error_mode rather than a silent PASS.
+    """
     from vulca import mcp_server as srv
+
+    image_provider = "mock" if provider_mode == "mock" else real_provider
+    layers_provider = "mock" if provider_mode == "mock" else real_provider
 
     try:
         if tool_name == "brief_parse":
@@ -143,51 +162,74 @@ async def run_tool_on_image(tool_name: str, image: Path) -> ToolResult:
             latency, result = await _time_call(
                 srv.generate_image,
                 prompt="a single plum blossom branch, song gongbi",
-                output_dir=str(image.parent),
+                provider=image_provider,
             )
         elif tool_name == "create_artwork":
             latency, result = await _time_call(
                 srv.create_artwork,
                 intent="spring festival poster",
-                output_dir=str(image.parent),
+                provider=image_provider,
             )
         elif tool_name == "generate_concepts":
             latency, result = await _time_call(
-                srv.generate_concepts, prompt="spring festival poster", count=2
+                srv.generate_concepts,
+                prompt="spring festival poster",
+                count=2,
+                provider=image_provider,
             )
         elif tool_name == "inpaint_artwork":
             latency, result = await _time_call(
-                srv.inpaint_artwork, image_path=str(image), mask_hint="background"
+                srv.inpaint_artwork,
+                image_path=str(image),
+                region="the background sky area",
+                instruction="retain existing content; audit-only",
             )
         elif tool_name == "layers_redraw":
             latency, result = await _time_call(
-                srv.layers_redraw, artwork_dir=str(image.parent), layer="background"
+                srv.layers_redraw,
+                artwork_dir=str(LAYERED_ARTWORK_DIR),
+                layer="base_xuan_paper",
+                instruction="retain existing content",
+                provider=layers_provider,
             )
         elif tool_name == "layers_edit":
             latency, result = await _time_call(
-                srv.layers_edit, artwork_dir=str(image.parent), operation="list"
+                srv.layers_edit,
+                artwork_dir=str(LAYERED_ARTWORK_DIR),
+                operation="toggle",
+                layer="base_xuan_paper",
+                visible=True,
             )
         elif tool_name == "layers_transform":
             latency, result = await _time_call(
                 srv.layers_transform,
-                artwork_dir=str(image.parent),
-                layer="subject",
-                transform="identity",
+                artwork_dir=str(LAYERED_ARTWORK_DIR),
+                layer="base_xuan_paper",
+                dx=0.0,
             )
         elif tool_name == "layers_evaluate":
             latency, result = await _time_call(
-                srv.layers_evaluate, artwork_dir=str(image.parent)
+                srv.layers_evaluate, artwork_dir=str(LAYERED_ARTWORK_DIR)
             )
         elif tool_name == "archive_session":
             latency, result = await _time_call(
-                srv.archive_session,
-                intent="tool-audit",
-                output_dir=str(image.parent),
+                srv.archive_session, intent="tool-audit"
             )
         elif tool_name == "sync_data":
             latency, result = await _time_call(srv.sync_data, pull_only=True)
         else:
             return ToolResult(tool_name, image.name, "SKIP", error_mode="unknown-tool")
+
+        if isinstance(result, dict) and "error" in result:
+            err_msg = str(result["error"])[:60]
+            return ToolResult(
+                tool=tool_name,
+                image=image.name,
+                status="FAIL",
+                error_mode=f"error-dict: {err_msg}",
+                latency_ms=latency,
+                peak_rss_mb=_peak_rss_mb(),
+            )
 
         return ToolResult(
             tool=tool_name,
@@ -208,14 +250,23 @@ async def run_tool_on_image(tool_name: str, image: Path) -> ToolResult:
 
 
 async def audit(
-    tools: list[str], corpus: list[Path], verbose: bool
+    tools: list[str],
+    corpus: list[Path],
+    verbose: bool,
+    provider_mode: str = "mock",
+    real_provider: str = "comfyui",
 ) -> dict[str, ToolSummary]:
     summaries = {t: ToolSummary(tool=t) for t in tools}
     for tool in tools:
         for image in corpus:
             if verbose:
                 print(f"[{tool}] {image.name} ...", end="", flush=True)
-            result = await run_tool_on_image(tool, image)
+            result = await run_tool_on_image(
+                tool,
+                image,
+                provider_mode=provider_mode,
+                real_provider=real_provider,
+            )
             summaries[tool].results.append(result)
             if verbose:
                 tail = (
@@ -281,9 +332,26 @@ def main(argv: list[str] | None = None) -> int:
         help="Write the machine-readable report to this path.",
     )
     parser.add_argument("--verbose", action="store_true")
+    parser.add_argument(
+        "--max-images",
+        type=int,
+        default=DEFAULT_CORPUS_SIZE,
+        help=f"Cap corpus size. Default: {DEFAULT_CORPUS_SIZE}. Use a small value (e.g. 3) for real-provider runs to avoid multi-hour runtimes.",
+    )
+    parser.add_argument(
+        "--provider-mode",
+        choices=["mock", "real"],
+        default="mock",
+        help="'mock' for MCP-surface audit (fast, no external calls); 'real' routes image-gen tools to --real-provider. Default: mock.",
+    )
+    parser.add_argument(
+        "--real-provider",
+        default="comfyui",
+        help="Provider name when --provider-mode=real. Default: comfyui. Others: openai, gemini.",
+    )
     args = parser.parse_args(argv)
 
-    corpus = collect_corpus()
+    corpus = collect_corpus(max_images=args.max_images)
     if not corpus:
         print(
             "ERROR: no showcase images found under",
@@ -302,7 +370,19 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  - {p.relative_to(REPO_ROOT)}")
         return 0
 
-    summaries = asyncio.run(audit(args.tools, corpus, args.verbose))
+    print(
+        f"provider_mode: {args.provider_mode}"
+        + (f" (real_provider={args.real_provider})" if args.provider_mode == "real" else "")
+    )
+    summaries = asyncio.run(
+        audit(
+            args.tools,
+            corpus,
+            args.verbose,
+            provider_mode=args.provider_mode,
+            real_provider=args.real_provider,
+        )
+    )
     print()
     print(render_text_report(summaries))
 
