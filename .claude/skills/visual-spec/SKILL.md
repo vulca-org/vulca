@@ -41,6 +41,8 @@ Pre-cap. This phase produces the one user confirmation that is explicitly exclud
    - If user passed a measurement (e.g., "I timed my last run at 42s") → use that value; mark `per_gen_sec.source: measured, confidence: high`. Skip the mock calibration.
    - If user passed a policy number (e.g., "budget me 60s per gen") with no measurement backing → use that value; mark `source: assumed, confidence: low`. Skip the mock calibration.
    - If the flag is absent → proceed to step 2.
+
+   **Short-circuit when this path fires.** When `--budget-per-gen` was supplied (either measurement or policy number), you MUST skip steps 2-4 of Phase 2 (mock calibration, multiplier lookup, unknown-provider fallback, and the `t_mock × multiplier` F-value formula) entirely. Proceed directly to Phase 3 with the user-supplied value as the F baseline; tag F fields per step 1's source/confidence rules (not step 6's mock-path table). Set `provider_used_for_calibration: user-supplied` and `provider_multiplier_applied: null` in the F block. Step 5 (user confirm) and step 6 (confidence tagging) do not apply on this path — the user already committed the value by passing the flag.
 2. **Run mock calibration.** Call `generate_image(provider="mock")` exactly once. Record the elapsed wall time as `t_mock` (seconds; typically ~0.001).
 3. **Apply provider multiplier.** The multiplier depends on which provider Phase 3 will select for dim A. If A is not yet derived, make a provisional pick from `proposal.## Intent` + tradition hints, and revisit if Phase 3 diverges. Multiplier table:
 
@@ -282,7 +284,7 @@ Cap: **5 review turns** (hard). Each user-prompted reply increments the counter 
    - **`deep review`** → cap: 5 → 8. Print one-liner: `Cap extended to 8 turns.` Do NOT advance to Phase 6. Only usable once per session (second invocation treated as invalid reply).
    - **Ambiguous reply** (`"looks good but"`, `"mostly fine"`) → re-prompt the main menu; count as 1 turn. Do not guess which dim the user means.
    - **Pixel action requests** (e.g., `just generate it`, `run the spike now` when E is not active) → Err #8. Decline; do NOT charge the turn.
-4. **Per-turn housekeeping.** After each round, re-render the current draft (full block when any dim's YAML changed; compact `[unchanged dims: A, B, D1]` header otherwise) and update the `[resume-state] turns_used: <N>` line in `## Notes` (enables Err #3 resume). If the user is hovering at cap−1, give one courtesy notice: `1 turn remaining. Last 'change <dim>' or 'deep review'?`.
+4. **Per-turn housekeeping.** After each round, re-render the current draft (full block when any dim's YAML changed; compact `[unchanged dims: A, B, D1]` header otherwise) and update the `[resume-state] turns_used: <N>` line in `## Notes` (enables Err #3 resume). **Then re-`Write` `design.md` (with `status: draft`, `updated: <today>`) so the bumped counter is on disk. `Write` pairs with every `turns_used` change — no exceptions, even on ambiguous replies or invalid inputs that did not mutate any dim.** Otherwise a crash between the in-memory bump and the next `change <dim>` `Write` leaves the on-disk `turns_used` stale, and Err #3 resume undercounts the budget. If the user is hovering at cap−1, give one courtesy notice: `1 turn remaining. Last 'change <dim>' or 'deep review'?`.
 5. **Cap-hit behavior.** When the counter reaches the current cap (5 or 8) without an `accept all`:
    - Force-show the current full draft.
    - Prompt exactly: `Turn cap reached. finalize or deep review?`
