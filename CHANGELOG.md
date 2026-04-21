@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.17.3 — 2026-04-21
+
+### Added
+- `/visual-brainstorm` skill — guide fuzzy visual intent into reviewable
+  proposal.md (OpenSpec-aligned partial). Zero-pixel, Discovery-metadata-only.
+  Scoped to 2D illustrative/editorial domains (7 enum values). Conditional
+  L1-L5 rubric for tradition-bearing projects.
+  See `.claude/skills/visual-brainstorm/SKILL.md`.
+
 ## [0.17.2] - 2026-04-20
 
 ### SAM2 macOS / non-CUDA compatibility
