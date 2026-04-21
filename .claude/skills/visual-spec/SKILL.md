@@ -11,7 +11,7 @@ You are running `/visual-spec` — the second meta-skill in the `brainstorm → 
 **Tone:** decisive derivation + collaborative review. You do the intellectual work pre-user; then you present the draft and let the user accept/override per dimension.
 
 **Tools you may call** (phase-gated — see §Phase whitelist):
-- Baseline (Phase 1-4, 6): `Read` (proposal.md + optional tradition-yaml), `list_traditions`, `search_traditions`, `get_tradition_guide`, `view_image` (proposal sketch only), `Write` (design.md at finalize)
+- Baseline (Phase 1-4, 6): `Read` (proposal.md + optional tradition-yaml), `list_traditions`, `search_traditions`, `get_tradition_guide`, `view_image` (proposal sketch only), `Write` (design.md — Phase 4 draft persistence + Phase 6 finalize)
 - Phase 2 calibration only: `generate_image(provider="mock")` × 1
 - Phase 5 spike only (if E section active): `generate_image(provider per A)`, `evaluate_artwork`, MAY `unload_models` after
 
@@ -52,6 +52,8 @@ Pre-cap. This phase produces the one user confirmation that is explicitly exclud
    | `comfyui-mps` (full pipeline) | 80,000× | ~80 s |
    | `gemini` | 15,000× | ~15 s |
    | `openai` | 10,000× | ~10 s |
+
+   **Unknown-provider fallback.** If `A.provider` does not match any row in this table (new provider, typo, custom identifier): tag F fields with `source: assumed, confidence: low` and prompt the user verbatim: `Provider '<name>' not in multiplier table. Supply --budget-per-gen <seconds> to skip calibration.` Do NOT invent a multiplier; wait for the user's `--budget-per-gen` or provider correction before proceeding to step 4.
 
 4. **Propose F values.**
    - `per_gen_sec.value = t_mock × multiplier`
@@ -170,6 +172,8 @@ If the trigger fires: set `spike_requested: true`, extract `spike_count` from th
 
 If the trigger does not fire: **omit this section entirely** from design.md (yielding 8 markdown sections instead of 9).
 
+**Null-tradition guard.** If `proposal.frontmatter.tradition == null`, skip the E section regardless of the spike trigger above. Rationale: D1 is omitted when `tradition: null` (registry-authority asymmetry), and Phase 5's `weighted_total = sum(L_N × D1.L_N)` + D2's "proportional to D1" default both require D1 values that do not exist. When this branch fires, append one line to `## Notes`: `[null-tradition] spike skipped — requires tradition-guide weights for judgment.`
+
 ```yaml
 # ## E. Spike plan (only present if proposal.## Open questions flagged spike)
 reviewed: false
@@ -191,6 +195,8 @@ status: pending | skipped | complete | failed
 
 Populate from Phase 2 results. `source: measured` requires a non-mock `generate_image` call actually ran this session; Phase 2's mock-only path MUST emit `source: derived` on `per_gen_sec` and downgrade per the §Phase 2 confidence table.
 
+**Multiplier storage convention:** `provider_multiplier_applied` is the **raw factor from the Phase 2 multiplier table** (e.g., `20000` for `sdxl-mps`, `80000` for `comfyui-mps`), applied to `t_mock` (seconds) to compute `per_gen_sec`. The example below uses `comfyui-mps` (raw factor `80000`, producing ~80s/gen).
+
 ```yaml
 # ## F. Cost budget
 reviewed: false
@@ -198,7 +204,7 @@ per_gen_sec:              {value: 80, source: measured, confidence: high}
 total_session_sec:        {value: 480, source: derived, confidence: med}
 fail_fast_consecutive:    {value: 2, source: assumed, confidence: low}
 provider_used_for_calibration: mock
-provider_multiplier_applied: 20
+provider_multiplier_applied: 80000
 ```
 
 ## Produced artifact — `design.md` schema
@@ -261,7 +267,7 @@ updated: YYYY-MM-DD                 # bumped on every write (draft + finalize)
 
 Cap: **5 review turns** (hard). Each user-prompted reply increments the counter by 1. Soft extend: if user message contains the substring `deep review` (case-insensitive, loose — trigger also on `"let's do a deep review"`, `"DEEP REVIEW please"`) → raise cap to 8.
 
-1. **Render draft.** Print the full in-flight `design.md` with all 7 dims filled in (E only if the Phase 3 conditional fired). Frontmatter `status: draft`, `updated: <today>`, `created: <today or resumed value>`.
+1. **Render draft.** Print the full in-flight `design.md` with all 7 dims filled in (E only if the Phase 3 conditional fired). Frontmatter `status: draft`, `updated: <today>`, `created: <today or resumed value>`. **Persist to disk:** immediately after the initial render, `Write` the draft to `docs/visual-specs/<slug>/design.md` with `status: draft`. This enables Err #3 resume. Each subsequent `change <dim>` acceptance MUST also re-`Write` the updated draft (same path, `status: draft`, bumped `updated:`) so the on-disk state matches the rendered state and the `[resume-state] turns_used: <N>` line stays current.
 2. **Prompt exactly:**
 
    > `Draft design.md below. Type 'accept all' to finalize, 'change <dim>' to revise one dim, or 'deep review' to extend your review budget +3 turns.`
@@ -292,13 +298,13 @@ Runs only if Phase 3 emitted an E section with `spike_requested: true`. Not char
    - Store the returned `image_path`.
    - On provider unreachable (connection refused, missing API key, timeout) → Err #5. Set E `status: skipped`, `skip_reason: "<provider> unreachable: <err>"`. Log a 1-liner to `## Notes`. **Break the spike loop; main flow continues.** D2 and F are unaffected.
    - On `generate_image` returning an error dict (validation, OOM, unsupported param) → Err #6. Append a `results[]` row with `verdict: failed, error: "<excerpt>"`. **Continue** to the next spike. If all spikes fail → E `status: failed` (distinct from `skipped`).
-2. **Evaluate.** On each successful image: call `evaluate_artwork(image_path=<...>, tradition=<proposal.tradition>)`. Parse L1-L5 scores; compute `weighted_total = sum(L_N × D1.L_N)`. Pick `verdict` via the `judgment_criterion` string:
+3. **Evaluate.** On each successful image: call `evaluate_artwork(image_path=<...>, tradition=<proposal.tradition>)`. Parse L1-L5 scores; compute `weighted_total = sum(L_N × D1.L_N)`. Pick `verdict` via the `judgment_criterion` string:
    - If the criterion is a thresholded predicate (e.g., `L3>=0.6 AND L2>=0.7`) → `accept` on pass, `reject` on fail.
    - Fallback: `accept` if `weighted_total >= max(D2.thresholds) × 0.9`, else `review`.
-3. **Append results.** Each completed row: `{seed, image_path, L1_L5: {...}, weighted_total, verdict}` appended to E's `results[]`. **Append-only** during Phase 5 — do not rewrite earlier rows (data-flow invariant 2).
-4. **Cost gate.** If any spike's measured per-gen latency exceeds `F.per_gen_sec.value × 2` and this happens on `F.fail_fast_consecutive` consecutive spike calls → Err #7. Force-show the current draft + prompt the three-option pick verbatim. **Never auto-extend.**
-5. **Set E status.** After the loop: `status: complete` if all spikes scored; `status: failed` if all failed; `status: skipped` if Err #5 fired; `status: partial` if some but not all succeeded (log 1-liner to `## Notes`).
-6. **Memory hygiene (optional).** After spikes complete, you MAY call `unload_models()` to free provider-side model weights. If you do, append a 1-line rationale to `## Notes`: `unload_models called after spike: freeing <provider> weights for subsequent session.`
+4. **Append results.** Each completed row: `{seed, image_path, L1_L5: {...}, weighted_total, verdict}` appended to E's `results[]`. **Append-only** during Phase 5 — do not rewrite earlier rows (data-flow invariant 2).
+5. **Cost gate.** If any spike's measured per-gen latency exceeds `F.per_gen_sec.value × 2` and this happens on `F.fail_fast_consecutive` consecutive spike calls → Err #7. Force-show the current draft + prompt the three-option pick verbatim. **Never auto-extend.**
+6. **Set E status.** After the loop: `status: complete` if all spikes scored; `status: failed` if all failed; `status: skipped` if Err #5 fired; `status: partial` if some but not all succeeded (log 1-liner to `## Notes`).
+7. **Memory hygiene (optional).** After spikes complete, you MAY call `unload_models()` to free provider-side model weights. If you do, append a 1-line rationale to `## Notes`: `unload_models called after spike: freeing <provider> weights for subsequent session.`
 
 ## Phase 6 — Finalize + handoff
 
@@ -311,7 +317,7 @@ Runs only if Phase 3 emitted an E section with `spike_requested: true`. Not char
    Ready for /visual-plan. Run it with /visual-plan <slug>.
    ```
 
-   Downstream tooling may grep this string; do not add a trailing period, do not localize, do not paraphrase.
+   Downstream tooling may grep this string; print exactly as shown (the trailing period closes the second sentence — keep it). Do not localize, do not paraphrase, do not add further punctuation.
 5. **Do NOT auto-invoke `/visual-plan`.** The human-in-the-loop gate between spec and plan is preserved here.
 
 ### Date handling
@@ -337,7 +343,7 @@ Copy of §4 from the design spec; the `Counts toward cap?` column header is grep
 | 1 | Precondition gate | `Read` (proposal.md, optional tradition-yaml) | No | helper |
 | 2 | F calibration | `generate_image(provider="mock")` × 1 (if no `--budget-per-gen`); user Q to confirm F | No (explicitly excluded) | helper + prescription |
 | 3 | Dimension derivation | `get_tradition_guide` / `list_traditions` / `search_traditions` / `view_image` (proposal sketch only — sketch-eval exemption) | No | helper + prescription |
-| 4 | Derive-then-review loop | Same as Phase 3; no spike tools | **Yes** — each user-facing prompt = 1 turn | prescription |
+| 4 | Derive-then-review loop | Same as Phase 3; no spike tools; **plus `Write` (design.md, `status: draft`)** on initial render and after each accepted `change <dim>` | **Yes** — each user-facing prompt = 1 turn | prescription |
 | 5 | Spike execution *(conditional)* | Whitelist lifts: `generate_image(provider per A)`, `evaluate_artwork`, MAY `unload_models` after | No | prescription |
 | 6 | Finalize + handoff | `Write` (design.md) | No | helper + prescription (verbatim handoff) |
 
@@ -351,7 +357,7 @@ Rules the agent running this skill MUST follow. Each ban is enforceable or presc
 
 | # | Rule | Enforce class | Notes |
 |---|---|---|---|
-| **S1** | Do not call pixel tools outside Phase 5 spike execution and the Phase 3 `view_image` sketch-eval exemption. Forbidden baseline: `create_artwork`, `generate_concepts`, `inpaint_artwork`, any `layers_*`. | prescription | Agent self-discipline; no file lock. Violation → Err #8 if user requests; pure agent fault otherwise. |
+| **S1** | Pixel-tool ban baseline; exemptions: (a) Phase 5 spike execution authorizes ONLY `generate_image`, `evaluate_artwork`, and `unload_models` — no `create_artwork`, no `generate_concepts`, no `inpaint_artwork`, no `layers_*`; (b) Phase 3 `view_image` on proposal sketch for grounding. All other phases: zero pixel-tool calls. Forbidden across every phase (no exemption, ever): `create_artwork`, `generate_concepts`, `inpaint_artwork`, any `layers_*`. | prescription | Agent self-discipline; no file lock. Violation → Err #8 if user requests; pure agent fault otherwise. |
 | **S2** | Do not flip `frontmatter.status: draft → resolved` without an explicit finalize trigger (`finalize`/`done`/`ready`/`lock it`/`approve`). Turn-cap hit alone is NOT a trigger. | prescription | Vibe-spec anti-pattern; downstream burns tokens on misaligned decisions. |
 | **S3** | Only consume `proposal.md` with `status: ready`. Reject `status: draft` via Err #1; run `/visual-brainstorm <slug>` to finalize first. | helper (frontmatter read) | Enforceable at Phase 1 gate. |
 | **S4** | `design.frontmatter.tradition` and `design.frontmatter.domain` are copied from `proposal.md` and are **immutable** across the session. Phase 6 asserts equality before `Write`. | helper (Phase 6 write step) | Enforceable at write; violation is a code bug, not an agent choice. |
