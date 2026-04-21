@@ -26,7 +26,7 @@ Before the first turn, scan the topic and any args for scope violations:
 1. Parse any args the user passed: `--sketch <path>`, `--ref-dir <dir>`, `--tradition-yaml <path>`.
 2. **If the target `docs/visual-specs/<slug>/proposal.md` already exists** — read its frontmatter:
    - `status: ready` → Error #1: refuse to overwrite; print branch instructions; terminate.
-   - `status: draft` → **resume path**: read the `## Open questions` section; continue the question loop from there; preserve accumulated turn count.
+   - `status: draft` → **resume path**: read the `## Open questions` section; continue the question loop from there; preserve accumulated turn count. **Skip** the A2 solicited-sketch question (turn 1 was already spent in the original draft). On successful finalize, **bump** `updated:` to today's date; leave `created:` unchanged.
 3. **If no sketch was provided**, open with this solicited-sketch question (A2):
 
    > "Do you have a sketch or reference image I should look at? Paste a path if yes, or say 'no' to continue text-only."
@@ -68,7 +68,7 @@ Cover these dimensions across the turn budget (cap 8 hard / 12 soft; see §Turn 
 
 ## Produced artifact — `proposal.md` schema
 
-Write the final artifact to `docs/visual-specs/<slug>/proposal.md`. The artifact has a 7-field YAML frontmatter and 12 markdown sections (2 conditional). Copy the `## Template` block below verbatim and fill the bracketed placeholders.
+Write the final artifact to `docs/visual-specs/<slug>/proposal.md`. The artifact has a 7-field YAML frontmatter — **exactly 7 fields, no additional keys, no YAML comments inside the `---` fence** — and 12 markdown sections (2 conditional). Copy the `## Template` block below verbatim and fill the bracketed placeholders.
 
 **Domain enum** (`frontmatter.domain`, required):
 
@@ -174,7 +174,7 @@ Rules the agent running this skill MUST follow. Each: rule / consequence if viol
 
 | # | Signal | Response |
 |---|---|---|
-| 1 | Slug collision; existing `proposal.md` has `status: ready` | Print "already finalized at `<path>`; branch with `-v2` or pick new slug". Terminate. Do not overwrite. |
+| 1 | Slug collision; existing `proposal.md` has `status: ready` | Print exactly: `already finalized at <path>; branch with -v2 or pick new slug`. Terminate. Do not overwrite. (Verbatim per §Handoff convention — downstream tooling may grep for this string.) |
 | 2 | Slug collision; existing has `status: draft` | Resume path (A6): read `## Open questions`; continue loop; turn cap accumulates. |
 | 3 | Unknown tradition (not in `list_traditions` + no `--tradition-yaml` match) | Prompt: (a) ask for `--tradition-yaml <path>`; (b) set `tradition: null` + freeform in `## Notes`; (c) if user insists on undefined id, treat as `null` + warn "rubric omitted, tradition unvalidated". Never fabricate enum id. |
 | 4 | `--tradition-yaml` unreadable (FileNotFoundError / YAML parse / schema) | Print `tradition-yaml at <path> invalid: <err>`. Fall through to Error #3. Do not auto-retry. |

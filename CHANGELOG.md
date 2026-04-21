@@ -1,5 +1,32 @@
 # Changelog
 
+## v0.17.4 — 2026-04-21
+
+### Changed
+- `/visual-brainstorm` skill — 3 small clarifications to the `proposal.md` contract,
+  surfaced by the 2026-04-21 live ship-gate v2 (see
+  `docs/superpowers/plans/visual-brainstorm-live-ship-gate-log.md`):
+  - Frontmatter schema tightened — "exactly 7 fields, no additional keys, no
+    YAML comments inside the `---` fence".
+  - §Opening turn 2 resume path (`status: draft`) — explicit rules: skip the A2
+    solicited-sketch question; bump `updated:` to today on re-finalize;
+    `created:` unchanged.
+  - §Error matrix #1 — refusal phrase promoted to `Print exactly:` per §Handoff
+    convention so downstream tooling can reliably grep for it.
+
+### Added
+- `scripts/tool_audit.py` v2 — `--provider-mode {mock,real}`, `--real-provider`,
+  `--max-images` flags; silent-error-as-PASS bug fixed (error-dict returns now
+  FAIL); 4 stale-signature kwargs corrected.
+- `tests/test_visual_brainstorm_discovery_integration.py` — 12 pytest cases
+  (list_traditions / search_traditions / get_tradition_guide) acting as durable
+  tripwire for registry churn. Runs in ~2.5 s.
+- `docs/tools-readiness-matrix.md` — §2 (mock audit, 9/9 surface valid), §2.1
+  stratified gate interpretation, §2.2 (ComfyUI real-pipeline audit, 9/9 with
+  latency anchors), §2.3 gate decision GREEN.
+- `docs/superpowers/plans/visual-brainstorm-live-ship-gate-log.md` — v2 live
+  ship-gate, 5/5 integration cases PASS under real tools + real filesystem.
+
 ## v0.17.3 — 2026-04-21
 
 ### Added
