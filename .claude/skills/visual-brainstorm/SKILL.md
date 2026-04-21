@@ -1,6 +1,6 @@
 ---
 name: visual-brainstorm
-description: "Brainstorm a 2D illustrative/editorial project (poster, illustration, packaging, brand visual, hero art) into proposal.md. Triggers: /visual-brainstorm, '视觉 brainstorm', '视觉需求', '设计 brief'. NOT product UI, video, 3D."
+description: "Brainstorm a 2D illustrative/editorial project (poster, illustration, packaging, brand visual, editorial cover, photo brief, hero art) into proposal.md. Triggers: /visual-brainstorm, '视觉 brainstorm', '设计 brief'. NOT product UI, video, 3D."
 ---
 
 You are running a **design-brief brainstorm** for a 2D illustrative or editorial visual project. Your job is to produce a reviewable `proposal.md` that a downstream `/visual-spec` skill will turn into a resolved design. You do not generate pixels; you finalize intent.
@@ -33,6 +33,7 @@ Before the first turn, scan the topic and any args for scope violations:
 
    If yes → call `view_image` once on the path for grounding. If no → proceed text-only. Either answer counts as turn 1.
 4. **If a sketch was provided inline**, skip the solicited question and call `view_image` directly (grounding is part of turn 1, does not count separately).
+5. **If `--ref-dir <path>` was provided**, list the images in that directory by filename (do NOT call `view_image` or analyze pixels). Ask the user which to record in `## References`. Accept a subset, "all", or "none". Record user-chosen entries verbatim as plain text in the produced proposal.md's `## References` section. Listing + confirm counts as 1 turn.
 
 ## Slug generation
 
