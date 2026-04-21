@@ -68,7 +68,7 @@ Cover these dimensions across the turn budget (cap 8 hard / 12 soft; see §Turn 
 
 ## Produced artifact — `proposal.md` schema
 
-Write the final artifact to `docs/visual-specs/<slug>/proposal.md`. The artifact has a 6-field YAML frontmatter and 12 markdown sections (2 conditional). Copy the `## Template` block below verbatim and fill the bracketed placeholders.
+Write the final artifact to `docs/visual-specs/<slug>/proposal.md`. The artifact has a 7-field YAML frontmatter and 12 markdown sections (2 conditional). Copy the `## Template` block below verbatim and fill the bracketed placeholders.
 
 **Domain enum** (`frontmatter.domain`, required):
 

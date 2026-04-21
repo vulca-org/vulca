@@ -177,7 +177,7 @@ Hybrid skeleton (narrative head + structured body + rigor tail), ~140 lines to m
      Each row: prompt template · skip-allowed · inferred default
 
 §5   proposal.md schema (≤ 25 lines):
-     - Frontmatter field list (6 fields)
+     - Frontmatter field list (7 fields)
      - Domain enum priority table (7 values with disambiguation rules)
      - ## Template block (the canonical section layout agent copies from)
      - RFC 2119 usage rules (scope to ## Acceptance rubric + ## Open questions)
@@ -211,7 +211,7 @@ Hybrid skeleton (narrative head + structured body + rigor tail), ~140 lines to m
 
 ## 5. `proposal.md` schema
 
-### 5.1 Frontmatter (6 fields, all MUST)
+### 5.1 Frontmatter (7 fields, all MUST)
 
 ```yaml
 ---

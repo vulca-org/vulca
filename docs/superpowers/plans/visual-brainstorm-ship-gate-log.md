@@ -10,6 +10,28 @@
 
 Four parallel subagents acted as "Claude Code sessions loading the skill" — each read `SKILL.md` verbatim and simulated both the agent-following-skill role and the scripted user. Tool calls to `view_image` / `list_traditions` / `get_tradition_guide` / `search_traditions` were NOTED but not executed (subagents assumed hypothetical success); pixel-level tools were verified NOT called. The simulation is a legitimate RED-GREEN ship-gate per superpowers reviewer condition 2 — the skill body's decision tree / bans / schema are agent-facing rules, and Claude subagents are the same class of agent as the real session.
 
+## Simulation scope (what this ship-gate does and does not validate)
+
+Per superpowers PR reviewer feedback, the "9/9 PASS" claim below applies to the **mechanical rule surface** only. Integration paths that require live MCP tool returns were not exercised.
+
+**Validated (mechanical rules GREEN):**
+- Decision tree branching (nodes A-E); conditional section logic (B3 rubric omission when `tradition: null`; `## Series plan` gating on series flag)
+- Turn cap + force-show + no auto-advance at cap 8 AND cap 12 (B4)
+- Scope-check keyword hard-exclude + single-2D-artifact test + edge-accept rationale logging (B5)
+- B1 zero-pixel-tool enforcement (agent decline of pixel-action requests without tool invocation)
+- B6 (same-slug parallel rejection) — logical-only, not exercised under race
+- B7 tradition enum/null strictness
+- Error #6 (pixel-tool decline, no cap charge), Error #8 (double-pushback silent terminate)
+
+**Not exercised (integration gaps — deferred to /visual-spec bring-up or live MCP run):**
+- `view_image` actually receiving a sketch and returning grounded content — simulated as hypothetical success
+- `list_traditions` / `search_traditions` / `get_tradition_guide` actually returning registry data — simulated as hypothetical payloads
+- `Read` on `--tradition-yaml <path>` against real YAML schema violations — Error #4 path not exercised end-to-end
+- Error #3 (unknown tradition after real `list_traditions` + `search_traditions` calls) — simulated at the logical branch only
+- Actual proposal.md file I/O: `status: ready` flip resume, `docs/visual-specs/<slug>/proposal.md` collision detection against the real filesystem
+
+Integration-path regression testing SHOULD be repeated against a live MCP server as part of `/visual-spec` bring-up, and MUST be repeated if tool-layer changes (merges per `docs/tools-readiness-matrix.md`) happen before that.
+
 ## Result Summary
 
 | Case | Result | Turns | Key evidence |
