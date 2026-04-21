@@ -7,6 +7,7 @@ Fixtures are synthetic design.md strings representing canonical output shapes.
 from __future__ import annotations
 
 import re
+from pathlib import Path
 
 import pytest
 
@@ -172,7 +173,7 @@ class TestDesignMdShape:
         """Finding 9: handoff string MUST be byte-identical. Downstream tooling may grep."""
         # The test design.md doesn't contain handoff (that's printed, not written);
         # this test is a placeholder that inspects the skill file itself.
-        skill_path = "/Users/yhryzy/dev/vulca/.claude/skills/visual-spec/SKILL.md"
-        with open(skill_path) as f:
-            skill_body = f.read()
+        # Use a path relative to this test file so CI + contributor clones work.
+        skill_path = Path(__file__).resolve().parent.parent / ".claude/skills/visual-spec/SKILL.md"
+        skill_body = skill_path.read_text()
         assert "Ready for /visual-plan. Run it with /visual-plan <slug>." in skill_body
