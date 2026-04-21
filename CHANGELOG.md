@@ -1,5 +1,28 @@
 # Changelog
 
+## v0.17.5 — 2026-04-21
+
+### Added
+- `/visual-spec` skill — meta-skill #2 of the `brainstorm → spec → plan` architecture.
+  Turns a `proposal.md` (with `status: ready` from `/visual-brainstorm`) into a resolved
+  `design.md` that `/visual-plan` will consume. 6 phases (precondition gate → F
+  calibration → 7-dimension derivation → derive-then-review loop → optional spike →
+  finalize), 9-error matrix, 6 skill bans (S1-S6), 5-word finalize vocabulary
+  (superset of brainstorm's 4).
+  Design spec: `docs/superpowers/specs/2026-04-21-visual-spec-skill-design.md`.
+  Implementation plan: `docs/superpowers/plans/2026-04-21-visual-spec-skill.md`.
+  See `.claude/skills/visual-spec/SKILL.md` (~414 lines).
+- `tests/test_visual_spec_d1_registry_copy.py` + `tests/test_visual_spec_schema_invariants.py`
+  + `tests/test_visual_spec_source_confidence_matrix.py` — Layer A pytest tripwires
+  (22 cases, ~2s run). Assert D1 byte-identity with `get_tradition_guide().weights`,
+  design.md frontmatter + section + triple-form invariants, per-dim source/confidence
+  tag allowability.
+- Fenced YAML blocks in `design.md` carry `{value, source, confidence}` metadata on
+  D2/F numeric fields (epistemic humility machine-readable for `/visual-plan` downstream).
+- F cost budget uses per-session calibration (`mock × multiplier` by default, or
+  user-supplied `--budget-per-gen`); never hardcoded values. Unknown-provider fallback
+  rule requires user intervention.
+
 ## v0.17.4 — 2026-04-21
 
 ### Changed
