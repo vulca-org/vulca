@@ -1139,6 +1139,10 @@ async def generate_image(
     steps: int | None = None,
     cfg_scale: float | None = None,
     negative_prompt: str | None = None,
+    model: str | None = None,
+    input_fidelity: str | None = None,
+    quality: str | None = None,
+    output_format: str | None = None,
 ) -> dict:
     """Generate a single image from a text prompt — no evaluation, no loop.
 
@@ -1158,6 +1162,13 @@ async def generate_image(
             Ignored by Gemini/OpenAI.
         negative_prompt: Tokens to avoid. SDXL/ComfyUI use native negative conditioning;
             OpenAI/Gemini prepend "avoid: <tokens>" to the prompt.
+        model: Override the provider's default model id (e.g. "gpt-image-2").
+            Currently plumbed through as a provider kwarg — providers that
+            don't understand it ignore it.
+        input_fidelity: OpenAI gpt-image-2 only, /edits endpoint — "high" or "low".
+            Controls how closely the edit preserves input image features.
+        quality: OpenAI gpt-image-2 quality knob — "low" | "medium" | "high" | "auto".
+        output_format: OpenAI gpt-image-2 output encoding — "png" | "webp" | "jpeg".
 
     Returns:
         image_path, cost_usd, latency_ms, provider.
@@ -1174,6 +1185,11 @@ async def generate_image(
         t0 = time.monotonic()
 
         prov = get_image_provider(provider)
+        # Allow per-call model override (e.g. swap gpt-image-1 → gpt-image-2
+        # without instantiating a new provider). Silent no-op if the provider
+        # has no `model` attribute.
+        if model is not None and hasattr(prov, "model"):
+            prov.model = model
 
         ref_b64 = ""
         if reference_path:
@@ -1191,6 +1207,12 @@ async def generate_image(
             extra["cfg_scale"] = cfg_scale
         if negative_prompt is not None:
             extra["negative_prompt"] = negative_prompt
+        if input_fidelity is not None:
+            extra["input_fidelity"] = input_fidelity
+        if quality is not None:
+            extra["quality"] = quality
+        if output_format is not None:
+            extra["output_format"] = output_format
 
         result = await prov.generate(
             prompt,

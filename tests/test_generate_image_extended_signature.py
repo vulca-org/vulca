@@ -194,3 +194,57 @@ class TestExtendedSignature:
         assert "negative_prompt" not in meta
         # But candidate_id (always-populated mock field) still there
         assert "candidate_id" in meta
+
+
+class TestGptImage2Signature:
+    """v0.17.9: gpt-image-2 kwargs — input_fidelity / quality / output_format / model.
+
+    Surfaced by 2026-04-23 dogfooding of /visual-plan on the Scottish→Chinese
+    fusion showcase. gpt-image-2 released 2026-04-21 with an
+    edits-only `input_fidelity` knob that is a near-perfect fit for our
+    "preserve composition" contract.
+    """
+
+    def test_signature_has_new_gpt_image_2_kwargs(self):
+        """Hard gate: signature must expose input_fidelity / quality / output_format / model as Optional-None."""
+        from vulca.mcp_server import generate_image
+
+        sig = inspect.signature(generate_image)
+        params = sig.parameters
+
+        for name in ("input_fidelity", "quality", "output_format", "model"):
+            assert name in params, f"missing kwarg: {name}"
+            assert params[name].default is None, (
+                f"{name} default must be None, got {params[name].default!r}"
+            )
+
+    def test_gpt_image_2_kwargs_plumb_to_provider(self, capturing_provider, tmp_path):
+        """All four new kwargs reach prov.generate when the caller supplies them."""
+        from vulca.mcp_server import generate_image
+
+        run(generate_image(
+            "p",
+            provider="mock",
+            output_dir=str(tmp_path),
+            input_fidelity="high",
+            quality="high",
+            output_format="webp",
+        ))
+
+        received = capturing_provider.calls[0]
+        assert received["input_fidelity"] == "high"
+        assert received["quality"] == "high"
+        assert received["output_format"] == "webp"
+
+    def test_gpt_image_2_kwargs_none_excluded_from_provider_call(
+        self, capturing_provider, tmp_path
+    ):
+        """Absent kwargs MUST NOT appear in prov.generate's kwargs — same tight contract as v0.17.6."""
+        from vulca.mcp_server import generate_image
+
+        run(generate_image("p", provider="mock", output_dir=str(tmp_path)))
+
+        received = capturing_provider.calls[0]
+        assert "input_fidelity" not in received
+        assert "quality" not in received
+        assert "output_format" not in received

@@ -47,6 +47,9 @@ class ImageProvider(Protocol):
         cfg_scale: float | None = None,
         width: int = 1024,
         height: int = 1024,
+        input_fidelity: str | None = None,
+        quality: str | None = None,
+        output_format: str | None = None,
         **kwargs,
     ) -> ImageResult: ...
 

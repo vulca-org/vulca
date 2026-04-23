@@ -32,10 +32,14 @@ class OpenAIImageProvider:
         width: int = 1024,
         height: int = 1024,
         background: str = "auto",
+        input_fidelity: str | None = None,
+        quality: str | None = None,
+        output_format: str | None = None,
         **kwargs,
     ) -> ImageResult:
-        # OpenAI image endpoints (DALL-E 3 / gpt-image-1) do not expose seed,
-        # sampler steps, or CFG — accept for signature symmetry and ignore.
+        # OpenAI image endpoints (DALL-E 3 / gpt-image-1 / gpt-image-2) do not
+        # expose seed, sampler steps, or CFG — accept for signature symmetry
+        # and ignore.
         _ = (seed, steps, cfg_scale)
 
         if not self.api_key:
@@ -53,9 +57,18 @@ class OpenAIImageProvider:
         if negative_prompt:
             full_prompt = f"{full_prompt} (avoid: {negative_prompt})"
 
-        # DALL-E 3 only supports: 1024x1024, 1024x1792, 1792x1024
-        dalle3_sizes = {(1024, 1024), (1024, 1792), (1792, 1024)}
-        size = f"{width}x{height}" if (width, height) in dalle3_sizes else "1024x1024"
+        # Accepted sizes: DALL-E 3 uses 1024x1024, 1024x1792, 1792x1024.
+        # gpt-image-1 / gpt-image-2 additionally accept 1024x1536 (portrait)
+        # and 1536x1024 (landscape). Union both sets for simplicity; any
+        # unsupported combo still falls back to 1024x1024.
+        allowed_sizes = {
+            (1024, 1024),
+            (1024, 1792),
+            (1792, 1024),
+            (1024, 1536),
+            (1536, 1024),
+        }
+        size = f"{width}x{height}" if (width, height) in allowed_sizes else "1024x1024"
 
         def _is_retryable(exc: Exception) -> bool:
             # httpx.HTTPStatusError carries a response with status_code
@@ -80,6 +93,9 @@ class OpenAIImageProvider:
                 f"model; current model={self.model!r} is not supported on /edits."
             )
 
+        # Capture for closure
+        model = self.model
+
         async def _call() -> ImageResult:
             async with httpx.AsyncClient(timeout=120) as client:
                 headers = {"Authorization": f"Bearer {self.api_key}"}
@@ -89,31 +105,61 @@ class OpenAIImageProvider:
                         "image": ("ref.png", io.BytesIO(ref_bytes), "image/png"),
                     }
                     form = {
-                        "model": self.model,
+                        "model": model,
                         "prompt": full_prompt,
                         "n": "1",
                         "size": size,
                     }
+                    # gpt-image-2 additions. input_fidelity is edits-only per
+                    # OpenAI 2026-04-21 launch docs; quality + output_format
+                    # apply to both endpoints.
+                    if input_fidelity is not None:
+                        form["input_fidelity"] = input_fidelity
+                    if quality is not None:
+                        form["quality"] = quality
+                    if output_format is not None:
+                        form["output_format"] = output_format
                     resp = await client.post(
                         "https://api.openai.com/v1/images/edits",
                         headers=headers, files=files, data=form,
                     )
                 else:
-                    payload = {
-                        "model": self.model,
+                    payload: dict = {
+                        "model": model,
                         "prompt": full_prompt,
                         "n": 1,
                         "size": size,
                     }
-                    if self.model.startswith("gpt-image"):
+                    if model.startswith("gpt-image"):
                         payload["background"] = background
-                        payload["output_format"] = "png"
+                        # Caller-supplied output_format wins; default stays png
+                        # for backward-compat with gpt-image-1 callers.
+                        payload["output_format"] = (
+                            output_format if output_format is not None else "png"
+                        )
+                        if quality is not None:
+                            payload["quality"] = quality
                     else:
                         payload["response_format"] = "b64_json"
                     resp = await client.post(
                         "https://api.openai.com/v1/images/generations",
                         headers=headers, json=payload,
                     )
+                # Friendly 403 Org-verification detection (gpt-image-2 launch
+                # gates API access on Org verification; surface a clear
+                # remediation pointer before retry logic masks it).
+                if resp.status_code == 403:
+                    body_text = ""
+                    try:
+                        body_text = resp.text or ""
+                    except Exception:
+                        body_text = ""
+                    if "organization must be verified" in body_text.lower():
+                        raise RuntimeError(
+                            f"OpenAI model {model!r} requires Org verification at "
+                            "https://platform.openai.com/settings/organization/general. "
+                            "Wait 15 min after verifying."
+                        )
                 resp.raise_for_status()
                 data = resp.json()
 
