@@ -1,5 +1,58 @@
 # Changelog
 
+## v0.17.6 — 2026-04-23
+
+### Added
+- MCP `generate_image` signature extended with 4 new Optional kwargs:
+  `seed: int | None`, `steps: int | None`, `cfg_scale: float | None`,
+  `negative_prompt: str | None`. Required precondition for `/visual-plan`
+  Phase 5 spike execution (ships as v0.17.7). Backward-compatible: all 4
+  default to `None`; existing 5-param callers unaffected.
+- 4-provider plumbing for the new kwargs:
+  - `mock`: echoes non-None values into `ImageResult.metadata` for agent diagnostics.
+  - `comfyui`: parameterizes the `KSampler` node (seed/steps/cfg); random-seed
+    fallback preserved when `seed=None`.
+  - `openai`: `seed/steps/cfg_scale` explicitly ignored (no DALL-E support);
+    `negative_prompt` prepended as `"(avoid: ...)"` to main prompt.
+  - `gemini`: `negative_prompt` prepended to prompt; `seed` wired to
+    `GenerateContentConfig` via `try/except TypeError` for SDK-version tolerance;
+    `steps/cfg_scale` ignored (no diffusion sampler).
+- `tests/test_generate_image_extended_signature.py` — 8 pytest tripwires for
+  signature shape, backward-compat, per-kwarg plumbing, and None-exclusion hygiene.
+- `design.md` frontmatter gains `schema_version: "0.1"` (9 canonical fields).
+  Legacy pre-v0.17.6 drafts default to `"0.1"` on finalize (additive; no retro-write).
+- `RESOLVED_NULL_TRADITION_NO_SPIKE_MD` 7-section fixture + 3 new schema-invariants
+  tests (11 total, up from 8).
+
+### Changed
+- `.claude/skills/visual-spec/SKILL.md` — 10 clarity-gap patches from the v0.17.5
+  Layer B simulated ship-gate (9/9) + Layer C live ship-gate v2 (4/4):
+  - Err #9 Notes template wording normalized (`unreachable` → `unreadable`).
+  - Err #5 / #6 classifier tightened with content-semantic keyword regexes
+    (integration-layer vs per-call failure distinction); pipes unescaped.
+  - Multiplier table gains bare-`sdxl` row with host-detect resolution rules.
+  - Phase 3.A `recommended_providers` phantom key replaced with `pipeline_variant`
+    real reference.
+  - Phase 3.C `tradition_tokens` shape clarified (`list[dict]` from `.terminology`,
+    not flat string list) + concat recipe provided.
+  - D1 example weights annotated as illustrative-only; mechanical-copy rule
+    re-emphasized.
+  - Phase 4 `accept all` branch documents the finalize-Write-absorbs-bump
+    exception to the `Write`-pairs-with-every-`turns_used`-change rule.
+  - Phase 2 Err #3 resume behavior specified: trust the draft's `F` block,
+    do NOT re-calibrate mock latency.
+  - §Produced artifact documents all 3 section-count cases (9/8/7) including
+    the collapsed `tradition: null` + no-spike shape.
+- `tests/test_visual_spec_schema_invariants.py` fixture realigned to SKILL.md's
+  canonical 9-field frontmatter set (resolves gap #4: prior fixture was
+  vacuously testing itself against divergent field names).
+- `ImageProvider` Protocol (`src/vulca/providers/base.py`) updated to match the
+  4 concrete providers' new kwargs.
+
+### Fixed
+- Pre-v0.17.6 drift between `src/vulca/providers/base.py` Protocol and concrete
+  provider signatures (was type-checker surface bug, not runtime).
+
 ## v0.17.5 — 2026-04-21
 
 ### Added
