@@ -9,16 +9,26 @@ Vulca 的核心技术差异化不是任何一项单点技术，
 \begin{itemize}
   \item \keyword{骨架：MCP 工具集}\quad 把所有像素级能力以 21 个结构化 MCP 工具暴露给 agent，
   让 Claude Code、Cursor 等 agent 可以\keyword{像调用文件系统那样调用图像能力}。
-  \item \keyword{灵魂：文化属性分析}\quad 13 种艺术与设计传统、L1–L5 可引用评价准则，
+  \item \keyword{灵魂：文化属性分析}\quad 12 个具体艺术/设计传统 + 1 个通用基线（合计 13 种）、L1–L5 可引用评价准则，
   把"视觉质量"从"玄学"升级为\keyword{可审计、可复现、可扩展}的评价体系。
-  \item \keyword{底座：完全本地化链路}\quad Apple Silicon / CUDA 下 ComfyUI + Ollama + EVF-SAM
+  \item \keyword{底座：完全本地化链路}\quad Apple Silicon（MPS 已端到端验证）/ CUDA（适配中）下 ComfyUI + Ollama + EVF-SAM
   全链路离线运行，数据和算力不出网。
 \end{itemize}
 
 这三项中的任何一项单独都不构成壁垒——
 MCP 工具任何人可以写，文化评估系统学界已有研究，本地化推理是成熟技术。
-但\keyword{三项合在一起}构成了：\keyword{agent 能调用}、\keyword{结果可审计}、\keyword{部署可闭环}的完整体系，
-这是工程密度 + 领域纵深 + 产业嗅觉的组合壁垒。
+但\keyword{三项合在一起}构成了：\keyword{agent 能调用}、\keyword{结果可审计}、\keyword{部署可闭环}的完整体系。
+
+更重要的是，Apache 2.0 开源让"代码可被复制"这一层的壁垒很薄；
+\keyword{真正的护城河}在\textbf{代码之外}的三条复利资产：
+
+\begin{enumerate}
+  \item \keyword{数据反馈飞轮}\quad 开源社区贡献的新文化传统 YAML + 行业客户定制包 + 真实 agent 调用日志，持续反哺产品与评估体系。早进场的贡献者网络难以被资本短期买断。
+  \item \keyword{Workflow lock-in}\quad 每个客户使用后都会积累自定义 skill、session 历史、文化传统定义——这些是使用越深越难迁移的\keyword{工作流资产}。迁移一个脚本容易，迁移团队的作业方式极难。
+  \item \keyword{客户定制迁移成本}\quad 行业 On-Prem 客户一旦把馆藏 / 品牌资产以 Vulca 的 YAML 格式接入，再切换到另一套 SDK 意味着重新定义评估体系、重训团队、重跑验证链路——切换成本随部署时间指数增长。
+\end{enumerate}
+
+技术组合 + 这三条时间复利资产，共同构成 Vulca 的\keyword{三年内难被对位复刻}的壁垒。
 
 \subsection{骨架：21 个 MCP 工具}
 \label{sec:product:mcp}
@@ -28,8 +38,12 @@ MCP 是 Anthropic 在 2024 年末正式定义的 agent 工具协议，
 Vulca 将所有能力以 MCP 工具形式暴露，
 让 agent 可以\keyword{通过标准协议发现、调用、组合}。
 
+\emph{注}：下表"对应 skill"列反映 \textbf{skill 封装状态}（是否已发布声明式工作流），
+不等价于"工具实现状态"。21 个 MCP 工具全部 \textbf{已实现且在 CI 绿灯下运行}；
+"规划中"标记仅表示\keyword{尚未配套发布 end-to-end skill}，工具本身 agent 可直接调用。
+
 \begin{center}
-\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{2.2cm}>{\raggedright\arraybackslash}X@{}}
+\begin{tabularx}{\linewidth}{@{}>{\tabRR}p{2.6cm}>{\tabRR}p{2.2cm}>{\tabRR}X@{}}
 \toprule
 \rowcolor{tableHead}
 \heiti 能力簇 & \heiti 对应 skill & \heiti 代表工具（部分） \\
@@ -118,7 +132,7 @@ Vulca 不绑定任何单一模型厂商。
 所有图像能力都通过 \keyword{Provider 抽象层}实现，底层可替换。
 
 \begin{center}
-\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{3.4cm}@{}}
+\begin{tabularx}{\linewidth}{@{}>{\tabRR}p{2.4cm}>{\tabRR}X>{\tabRR}p{3.4cm}@{}}
 \toprule
 \rowcolor{tableHead}
 \heiti Provider & \heiti 定位 & \heiti 代表模型 \\
@@ -131,19 +145,23 @@ Vulca 不绑定任何单一模型厂商。
 \end{tabularx}
 \end{center}
 
-\paragraph{Gemini 集成的战略意义}
-项目已获得 Google / Anthropic 两套研究级 API credits（非现金），
-可\keyword{零成本使用 Gemini 全套模型}进行产品演示与能力验证。
-这让我们在天使轮阶段\keyword{不必为算力成本稀释股权}，
-同时为下一轮投资人提供"已被头部模型厂商背书"的信号。
+\paragraph{Gemini 集成的战略意义（精确口径）}
+项目已获得 Google / Anthropic 两套研究级 / 创业级 API credits（非现金，有额度与期限）。
+这些 credits \keyword{主要覆盖产品演示、能力验证、内部工程迭代和有限的早期 alpha 客户使用}，
+\textbf{不覆盖大规模 Cloud 生产流量、On-Prem 实施驻场、GPU 运维或后续续期风险}——
+这部分生产成本仍会随客户量进入 COGS。
+credits 的战略意义有三：(1) 天使轮阶段的算力现金支出接近零；
+(2) 下一轮可拿"头部模型厂商背书"作信号；
+(3) 为本地化链路的长期主战场\keyword{买出 12-18 个月工程空间}。
+credits 到期 / 政策变动风险在第 \ref{sec:risks} 章有独立对应 mitigation。
 
 \subsection{工程密度与质量信号}
 
 \begin{itemize}
-  \item \keyword{1454 个测试用例}，覆盖 provider 切换、layer 合成、文化评估、MCP 工具序列化等关键路径；
-  \item \keyword{CI 绿灯率 $\ge$ 99\%}，Phase 0 / Phase 1 两次架构重构都以\keyword{零回归}完成；
-  \item \keyword{21 个 MCP 工具的 I/O schema 全部校验}，agent 调用失败时返回结构化错误而非崩溃；
-  \item \keyword{3 个已上线 skill（\code{/decompose}、\code{/visual-brainstorm}、\code{/visual-spec}）}每个都经过多轮 ship-gate（simulated + live），所有 gate 全绿后才发布。
+  \item \fact{测试覆盖}{provider 切换、layer 合成、文化评估、MCP 工具序列化等关键路径的高覆盖率测试套件；CI 绿灯率 $\ge$ 99\%，详见 GitHub repo CI badge}；
+  \item \fact{架构稳定性}{Phase 0 / Phase 1 两次架构重构都以\keyword{零回归}完成，具体变更可核验于 git commit history}；
+  \item \fact{接口契约}{21 个 MCP 工具的 I/O schema 全部校验，agent 调用失败时返回结构化错误而非崩溃}；
+  \item \fact{Skill ship-gate}{3 个已上线 skill（\code{/decompose}、\code{/visual-brainstorm}、\code{/visual-spec}）均通过多轮 ship-gate；其中 \code{/visual-spec} v0.17.5 的验证结果为 mechanical 9/9 PASS + live non-spike 4/4 PASS（Phase 5 spike 路径 deferred，待生产环境验证）}。
 \end{itemize}
 
 换言之：\keyword{产品不是 demo，是在产生量。}

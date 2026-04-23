@@ -4,7 +4,7 @@
 \subsection{天使轮本轮诉求}
 
 \begin{center}
-\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{3.4cm}>{\raggedright\arraybackslash}X@{}}
+\begin{tabularx}{\linewidth}{@{}>{\tabRR}p{3.4cm}>{\tabRR}X@{}}
 \toprule
 \rowcolor{tableHead}
 \heiti 项 & \heiti 内容 \\
@@ -25,7 +25,7 @@
 默认按 \keyword{¥ 600 万}募资、\keyword{18 个月}跑道分配。}
 
 \begin{center}
-\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{3.8cm}>{\raggedleft\arraybackslash}p{1.6cm}>{\raggedleft\arraybackslash}p{1.6cm}>{\raggedright\arraybackslash}X@{}}
+\begin{tabularx}{\linewidth}{@{}>{\tabRR}p{3.8cm}>{\RaggedLeft\arraybackslash}p{1.6cm}>{\RaggedLeft\arraybackslash}p{1.6cm}>{\tabRR}X@{}}
 \toprule
 \rowcolor{tableHead}
 \heiti 科目 & \heiti 金额 & \heiti 占比 & \heiti 备注 \\
@@ -43,11 +43,18 @@
 \end{tabularx}
 \end{center}
 
-\paragraph{算力成本单独说明}
-项目已获得 \keyword{Google Gemini + Anthropic} 两套研究级 / 创业级 API credits，
-预计可覆盖未来 12–18 个月的\keyword{模型调用与演示}成本。
-这是 Vulca 相较同阶段团队的一项结构性优势：
-\keyword{我们不需要把天使资金花在 token 上}，可以几乎全部投入在人和市场。
+\paragraph{算力成本单独说明（精确口径）}
+项目已获得 \keyword{Google Gemini + Anthropic} 两套研究级 / 创业级 API credits（非现金、有额度与期限）。
+\keyword{覆盖范围需精确区分}——避免 DD 阶段被质疑：
+
+\begin{itemize}
+  \item \keyword{Credits 已覆盖}：产品演示、能力验证、内部工程迭代、有限的早期 alpha 客户使用、学术 benchmark 和演示素材生成。预计支撑未来 12-18 个月的\keyword{工程与演示}场景。
+  \item \keyword{Credits 未覆盖（进入 COGS）}：Cloud 正式付费客户的大规模模型调用、On-Prem 实施驻场的算力、GPU 运维、credits 到期后的续期议价风险。
+  \item \keyword{对冲方式}：multi-provider 抽象层允许一键切到\keyword{本地 ComfyUI 路径}（边际成本接近存储和带宽），\TBD{每 1000 MAU 的推理成本敏感性测算将在 alpha 阶段完成后补入}。
+\end{itemize}
+
+净效应：\keyword{天使轮资金不必用于 token 成本}，可全部投入人和市场；
+但我们\textbf{不}把 credits 误写为"永久算力 de-risk"，这部分真实压力由产品架构（本地优先）和 pricing（按量计费传导）吸收。
 
 \subsection{三年里程碑导向的收入预估（保守 / 中性 / 乐观）}
 
@@ -57,7 +64,7 @@
 
 \begin{center}
 \small
-\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{2.2cm}>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}X@{}}
+\begin{tabularx}{\linewidth}{@{}>{\tabRR}p{2.2cm}>{\tabRR}p{3.6cm}>{\tabRR}p{3.6cm}>{\tabRR}X@{}}
 \toprule
 \rowcolor{tableHead}
 \heiti 年份 & \heiti 保守（Bear） & \heiti 中性（Base） & \heiti 乐观（Bull） \\
@@ -92,7 +99,8 @@ Cloud 150 付费；3 行业客户稳定；ARR \TBD{¥ 600 万} &
 \subsection{资金使用里程碑承诺}
 
 作为 C 类受众（孵化器 / 政府立项）关心的\keyword{产出承诺}，
-我们把天使轮资金与 7 个可验证节点强绑定：
+我们把天使轮资金与 7 个可验证节点强绑定。\keyword{以下里程碑以本轮交割完成（预计 2026-Q2）为 T+0 起算}，
+与第 \ref{sec:roadmap} 章的季度路线图对齐（T+12 月 $\approx$ 2027-Q1 v1.0 发布节点）：
 
 \begin{enumerate}
   \item T+3 月：2 个新 skill shipped（\code{/evaluate} / \code{/inpaint}）；

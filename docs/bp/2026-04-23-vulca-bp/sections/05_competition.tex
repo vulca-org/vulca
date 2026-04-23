@@ -54,9 +54,38 @@
   \item 国内尚无团队在 Claude Code / MCP 插件生态位置上占有显著存在。
 \end{itemize}
 
-\TBD{此段在正式对外 BP 版本中，建议你补充 3–5 家\keyword{竞品或邻近项目}的公开对比表。
-候选：ComfyUI 社区工作流分享平台、RunningHub、即梦 AI、商汤秒画、腾讯智影、文心一格、阿里万相。
-指出它们\keyword{是应用层产品}，与 Vulca 的"SDK/agent 插件"定位不在同一层。}
+\subsubsection*{邻近项目对比（海内外共 5 家）}
+
+为避免"尚无直接竞品"被误读为调研不足，我们按\keyword{五个维度}对比常被归为同赛道的邻近项目。
+结论是：每家都与 Vulca 的"\textbf{agent-native 像素执行层}"存在一个以上错位，\keyword{五个维度同时具备的只有 Vulca}。
+
+\begin{center}
+\scriptsize
+\begin{tabularx}{\linewidth}{@{}>{\tabRR}p{2.1cm}|>{\tabRR}p{1.4cm}|>{\tabRR}p{1.6cm}|>{\tabRR}p{1.6cm}|>{\tabRR}p{1.4cm}|>{\tabRR}X@{}}
+\toprule
+\rowcolor{tableHead}
+\heiti 项目 & \heiti MCP 原生 & \heiti 工作流封装 & \heiti 文化评估 & \heiti 本地部署 & \heiti 商业定位 \\
+\midrule
+\keyword{ComfyUI} & 否（社区插件零散） & 节点图可复用 & 否 & 是 & 开源节点引擎 / 社区 \\
+\keyword{Replicate} & 否（REST API） & 否（单一模型封装） & 否 & 否 & 云端模型托管 \\
+\keyword{Stability AI SDK} & 否 & 否（模型调用） & 否 & 部分 & 基础模型厂商 \\
+\keyword{即梦 / 文心一格 / 商汤秒画} & 否 & 否（应用层产品） & 否 & 否 & C 端 / B 端生成工具 \\
+\keyword{Adobe Firefly Services} & 否 & 封闭 workflow & 否 & 否 & 企业端封闭 SaaS \\
+\midrule
+\rowcolor{tbdBg}
+\keyword{\textbf{Vulca}} & \textbf{是（21 工具）} & \textbf{是（3 shipped skill）} & \textbf{是（13 种 L1–L5）} & \textbf{是（MPS 已验证）} & \textbf{开源 SDK + 托管 + On-Prem} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\paragraph{补充说明}
+\begin{itemize}
+  \item \keyword{ComfyUI} 与 Vulca \textbf{非竞品}，是 Vulca 的 \keyword{provider 后端之一}（local 路径核心组件）；
+  \item \keyword{Replicate / Stability} 提供模型托管或 API，与 Vulca 的\keyword{工作流编排}层不重叠；
+  \item \keyword{国内 C 端 / 大厂应用}（即梦、文心一格、商汤秒画等）与 Vulca 在\keyword{"应用层 vs SDK/agent 插件层"}错位——它们的用户是终端创作者，Vulca 的"用户"是 agent；
+  \item \keyword{Adobe Firefly Services} 走封闭企业 SaaS 路径，不开放 MCP，也不支持本地部署；
+  \item \keyword{其它 MCP 生态里的图像工具}目前以\keyword{单一能力包装}（如"把文生图暴露成 MCP"）为主，\keyword{没有一家}提供完整的"拆图 $\to$ 编辑 $\to$ 评估 $\to$ 合成"链路加文化纵深。
+\end{itemize}
 
 \subsection{Vulca 的四项差异化}
 
@@ -66,7 +95,7 @@
   \item \keyword{文化纵深}：13 种艺术/设计传统的 L1–L5 评价体系，原生覆盖中国工笔/写意等东方语境；
   \item \keyword{自主可控}：完全本地化链路 + Apache 2.0，
   数据不出网、算法可审计、硬件可降级；
-  \item \keyword{工程质量信号}：1454 个测试、3 个已上线 skill、Phase 0/1 两次架构重构零回归，
+  \item \keyword{工程质量信号}：高覆盖率测试套件、3 个已上线 skill、Phase 0/1 两次架构重构零回归，
   不是\keyword{"发布即废弃"}的 demo 仓库。
 \end{enumerate}
 

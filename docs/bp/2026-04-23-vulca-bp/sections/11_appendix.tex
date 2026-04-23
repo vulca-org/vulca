@@ -8,7 +8,7 @@
 
 \begin{center}
 \small
-\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}X@{}}
+\begin{tabularx}{\linewidth}{@{}>{\tabRR}p{2.4cm}>{\tabRR}p{3.6cm}>{\tabRR}X@{}}
 \toprule
 \rowcolor{tableHead}
 \heiti 能力簇 & \heiti 工具名 & \heiti 作用概要 \\
@@ -97,7 +97,7 @@ L5 气韵：\\
 
 \begin{center}
 \small
-\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{2.2cm}>{\raggedright\arraybackslash}p{3.0cm}>{\raggedright\arraybackslash}X@{}}
+\begin{tabularx}{\linewidth}{@{}>{\tabRR}p{2.2cm}>{\tabRR}p{3.0cm}>{\tabRR}X@{}}
 \toprule
 \rowcolor{tableHead}
 \heiti Provider & \heiti 默认模型 & \heiti 适用场景 \\
@@ -125,17 +125,41 @@ L5 气韵：\\
 
 \subsection*{G. 待确认字段清单}
 
-本 BP 中所有\TBD{红框}字段汇总，便于定稿前一次扫完：
+本 BP 中所有\TBD{红框}字段汇总，便于定稿前一次扫完（按正文出现顺序）：
 
 \begin{itemize}
-  \item \keyword{第 1 章}：本轮募资金额、估值口径；
-  \item \keyword{第 2 章}：市场规模三项数据源；
-  \item \keyword{第 4 章}：SaaS 月订阅定价、文化评估 API 单次定价、On-Prem 年度许可定价、
-  灯塔客户候选名单、政府对接渠道；
-  \item \keyword{第 5 章}：3–5 家邻近项目公开对比表；
-  \item \keyword{第 6 章}：创始人 bio、核心成员、学术顾问、目标团队规模、股权与治理结构；
-  \item \keyword{第 7 章}：各季度 GitHub star、PyPI 下载、ARR 具体数字；
-  \item \keyword{第 8 章}：用资预算按本轮募资金额的最终校准、ARR 保守/中性/乐观具体数字；
-  \item \keyword{第 9 章}：商标注册范围、国产算力适配时间、算法备案条款、专利申报清单；
-  \item \keyword{第 10 章}：内容安全机制细节。
+  \item \keyword{第 1 章}：本轮募资金额、估值口径、本轮诉求一句话；
+  \item \keyword{第 2 章}：市场规模三项数据源（Gartner / a16z / 信通院 / 国家文物局口径）；
+  \item \keyword{第 4 章}：SaaS 月订阅定价 / 席、文化评估 API 单次定价、On-Prem 首年许可 + 年度维护定价、早期 SaaS GitHub star + PyPI 目标、灯塔客户候选名单、政府对接渠道、\keyword{学术 / 会议差旅预算}；
+  \item \keyword{第 6 章}：创始人 bio、核心成员、学术顾问 / 行业顾问具名、目标团队规模、公司主体形式、股权比例、ESOP 池、投资人股比与董事席位、IP 归属；
+  \item \keyword{第 7 章}：各季度 GitHub star / PyPI 下载 / Cloud MAU / 付费账户数 / ARR 具体数字（与第 4 章同源，避免两处数字不一致）；
+  \item \keyword{第 8 章}：本轮募资金额最终校准 → 用资预算比例、三年 ARR 保守/中性/乐观具体数字、定价假设、每 1000 MAU 推理成本敏感性；
+  \item \keyword{第 9 章}：国产算力（Ascend / 寒武纪）适配时间、算法备案判定结论、专利申报清单（是否全选）、商标类别（第 9 / 41 / 42 类）；社会效益 6 项年度目标数；
+  \item \keyword{第 10 章}：内容安全机制细节（黑白名单、敏感类别检测算法、审核日志策略）。
 \end{itemize}
+
+\paragraph{共享字段提示}
+GitHub star / PyPI 下载在 \keyword{第 4 章（获客目标）} 与 \keyword{第 7 章（路线图）} 两处都有 \TBD{}——
+定稿时必须\keyword{两处同源填写}，避免数字不一致被 DD 察觉。
+
+\subsection*{H. DD 问答预演（VC 与评审视角）}
+
+以下 5 组问题是\keyword{天使 VC + 孵化器评审}最可能追问的"必杀题"。
+预先把答案锚点写进 BP 附录，而非到现场临场组织，体现团队的\keyword{自我审视能力}。
+
+\begin{enumerate}
+  \item \keyword{Q：从目前 6 stars / 82 views 到 Q4 2026 1500 stars + 30 付费账户，这中间是怎么发生的？}\\
+  A：漏斗见第 \ref{sec:roadmap} 章（7.4 节）——曝光 / 知晓 / 尝试 / 激活 / 留存 / 付费意向 / 付费转化七级；配合 dev.to 月度深度文 + Xiaohongshu 双语种子内容 + Claude Code 插件生态生态位 + ACM MM 2026 学术引流。如果某一级转化不达预期，优先加码 \TBD{具体渠道组合}并降级目标。
+  \item \keyword{Q：文化评估 L1–L5 YAML 能否被 ComfyUI 社区 / 头部厂商两个月内复刻？}\\
+  A：理论上可以复制\keyword{格式}，但难以复制(1) 与学术合作方一起迭代的\keyword{规则原创性}、(2) 跨 13 种传统的\keyword{覆盖宽度}、(3) 社区扩展的\keyword{数据资产飞轮}、(4) 已经进入 ACM MM 2026 的\keyword{学术背书链}。真实护城河 = 时间 + 合作关系网络 + 贡献者生态，不是代码本身。
+  \item \keyword{Q：Google Gemini / Anthropic 的 credits 到期后怎么办？}\\
+  A：参见第 \ref{sec:product}.5 节和第 \ref{sec:financials}.2 节——credits 只覆盖 demo 与有限早期使用；生产路径由\keyword{本地 ComfyUI + Ollama}\textbf{兜底}，一键切换；客户侧由 pricing 设计传导部分成本；需要时可与上游厂商续期议价。不依赖任何单一厂商。
+  \item \keyword{Q：第一个愿意付费的博物馆 / 出版社 / 设计集团是谁？有 LOI 吗？}\\
+  A：\TBD{当前处于前期接触阶段，LOI 数量需你确认。建议本轮交割前至少锁定 1–2 家\keyword{非排他性意向书}作为 DD 实体证据，写入数据室}。
+  \item \keyword{Q：团队目前 solo，本轮融资后如何保证 ship 频率不下滑？}\\
+  A：参见第 \ref{sec:team} 章和第 \ref{sec:risks} 章人才部分——(1) 工程流程已标准化（brainstorm → spec → plan → ship gate，整套开源于 \code{docs/superpowers/}，任何新成员可按图索骥）；(2) 天使轮第一笔用途就是 de-risk 关键人依赖（P0 岗位为资深算法 + 产品/BD）；(3) 每个季度有明确的 shipped skill 指标为硬约束，新成员完成度可量化。
+\end{enumerate}
+
+\paragraph{说明}
+上述 Q\&A 旨在帮助 DD 准备与申报答辩演练，不构成正式承诺。
+\TBD{问题 4 的 LOI 状态需你在正式对外版本前更新}。

@@ -8,19 +8,19 @@
 
 \begin{center}
 \small
-\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{2.2cm}>{\raggedright\arraybackslash}p{3.0cm}>{\raggedright\arraybackslash}X@{}}
+\begin{tabularx}{\linewidth}{@{}>{\tabRR}p{2.2cm}>{\tabRR}p{3.0cm}>{\tabRR}X@{}}
 \toprule
 \rowcolor{tableHead}
 \heiti 日期 & \heiti 里程碑 & \heiti 意义 \\
 \midrule
 2026-04-09 & \code{v0.14.0} 发布 & 全部 v0.13.x backlog 清零；代码质量基线稳定 \\
 2026-04-12 & 本地链路验证完成 & ComfyUI + Ollama + MPS 端到端跑通；\keyword{自主可控底座确立} \\
-2026-04-16 & Phase 1 完成（v0.16.0 / v0.16.1） & MCP 工具从 29 压缩到 20 + 1（简洁化）；\keyword{agent-native pivot 正式落地} \\
+2026-04-16 & Phase 1 完成（v0.16.0 / v0.16.1） & MCP 工具从 29 精简到 21（精简约 28\%）；\keyword{agent-native pivot 正式落地} \\
 2026-04-16 & Phase 0 合并 & dual-field manifest，支持 10–20 层多图层；\keyword{拆图能力达到产品级} \\
 2026-04-19 & \code{/decompose} skill 上线 & 第一个端到端 agent-native 工作流；模型卸载 + 4-loader Lock \\
 2026-04-20 & README 重整 + 插件 v0.16.1 & 开发者入口重写为 60 秒上手流程；\keyword{社区首轮流量对接} \\
 2026-04-21 & \code{/visual-brainstorm} skill 上线（v0.17.3） & 视觉意图转 proposal 的第一层 meta-skill \\
-2026-04-21 & \code{/visual-spec} skill 上线（v0.17.5） & proposal 转可评审 design 的第二层 meta-skill；9/9 ship-gate 全绿 \\
+2026-04-21 & \code{/visual-spec} skill 上线（v0.17.5） & proposal 转可评审 design 的第二层 meta-skill；mechanical 9/9 + live non-spike 4/4 PASS（Phase 5 spike deferred） \\
 2026-04-22 & Layer C v2 全绿 & 活跃 MCP ship-gate 4/4 通过；非 spike 面全覆盖验证 \\
 2026-04-23 & \code{/visual-plan} 设计锁定 & 第三层 meta-skill 进入实施阶段 \\
 \bottomrule
@@ -77,17 +77,44 @@
 我们用三条 KPI 线\keyword{互相钳制}：
 
 \begin{center}
-\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}X@{}}
+\begin{tabularx}{\linewidth}{@{}>{\tabRR}p{2.4cm}>{\tabRR}X@{}}
 \toprule
 \rowcolor{tableHead}
 \heiti KPI 线 & \heiti 指标示例 \\
 \midrule
-\keyword{产品} & 已上线 skill 数、MCP 工具数、测试数、ship 频率、CI 绿灯率 \\
+\keyword{产品} & 已上线 skill 数、MCP 工具数、ship 频率、CI 绿灯率、Phase 完成度 \\
 \keyword{社区与商业} & GitHub star、PyPI 下载、Cloud MAU、付费账户、ARR、灯塔客户数 \\
 \keyword{学术与文化} & 已覆盖文化传统数、社区贡献 YAML 数、学术论文 / 会议投稿数、权威引用 \\
 \bottomrule
 \end{tabularx}
 \end{center}
+
+\subsection{转化漏斗：从流量到付费的中间指标}
+
+从目前的流量基线（2026-04-20 README refresh 节点：累计 82 views / 31 unique / 6 stars）到
+2026 Q4 保守目标（1500+ stars / 月下载 5000+ / 30 付费账户）之间，
+\keyword{需要可被周期性核对的中间漏斗指标}，避免"只讲两端不讲过程"。
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\tabRR}p{3.4cm}>{\tabRR}X>{\tabRR}p{2.4cm}@{}}
+\toprule
+\rowcolor{tableHead}
+\heiti 漏斗阶段 & \heiti 指标 & \heiti 目标（Q4 2026） \\
+\midrule
+\keyword{曝光} & GitHub views / dev.to 阅读 / Xiaohongshu 曝光 & 月均 20k+ \\
+\keyword{知晓} & GitHub stars & 1500+ \\
+\keyword{尝试} & PyPI 下载 / \code{claude plugin install} 安装量 & 月均 5000+ \\
+\keyword{激活} & 完整运行 \code{/decompose} 等 skill 一次的独立会话数 & 月均 800+ \\
+\keyword{留存} & 7 日内二次会话数 / 贡献 issue 或 YAML 的账户数 & 月均 150+ \\
+\keyword{付费意向} & Cloud alpha 申请 / 行业客户 POC 接触 & 累计 80+ \\
+\keyword{付费转化} & Cloud 正式付费账户 & 30+ \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+我们\keyword{不假设每一级的转化率}——转化率数据将在 Cloud alpha 阶段采集后进入 Pre-A 材料，
+届时形成完整的单位经济模型。天使轮阶段只做"基线 + 目标 + 中间锚点"。
 
 \subsection{里程碑节奏示意}
 

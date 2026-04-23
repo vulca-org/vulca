@@ -78,18 +78,21 @@
 
 \subsection{风险仪表盘（内部每季度复盘）}
 
+趋势列图例：$\downarrow$ = 缓解中，$\rightarrow$ = 持平，$\uparrow$ = 恶化中，$\Downarrow$ = 融资或里程碑达成后预计显著缓解。
+
 \begin{center}
 \small
-\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{3.4cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{2.0cm}@{}}
+\begin{tabularx}{\linewidth}{@{}>{\tabRR}p{3.4cm}>{\tabRR}X>{\tabRR}p{1.8cm}@{}}
 \toprule
 \rowcolor{tableHead}
 \heiti 风险类别 & \heiti 当前级别评估 & \heiti 趋势 \\
 \midrule
-模型依赖 & 低（多 provider + 本地路径兜底） & 持平 \\
-市场教育 & 中（agent 概念仍在扩散中） & 向下 \\
-政策合规 & 中（本地链路抵消大部分） & 持平 \\
-人才集中 & \keyword{高}（solo 起家，天使轮扩团队是关键用途） & \keyword{融资后下降} \\
-竞品突然进场 & 低（尚未观察到对位竞品） & 持平 \\
+模型依赖 & 低（多 provider + 本地路径兜底） & $\rightarrow$ \\
+市场教育 & 中（agent 概念仍在扩散中） & $\downarrow$ \\
+政策合规 & 中（本地链路抵消大部分） & $\rightarrow$ \\
+人才集中 & \keyword{高}（solo 起家，天使轮扩团队是关键用途） & $\Downarrow$ \\
+竞品突然进场 & 低（尚未观察到对位竞品） & $\rightarrow$ \\
+credits 到期 & 中（覆盖 demo 不覆盖生产） & $\rightarrow$（本地链路已就绪可替代） \\
 \bottomrule
 \end{tabularx}
 \end{center}

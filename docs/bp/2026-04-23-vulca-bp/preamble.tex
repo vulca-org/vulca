@@ -14,6 +14,9 @@
 \usepackage{longtable}
 \usepackage{array}
 \usepackage{tabularx}
+\usepackage{ragged2e}
+% 让 tabularx 内 p{} 列支持更激进的 CJK 断行（修复 overfull hbox）
+\newcommand{\tabRR}{\RaggedRight\arraybackslash}
 \usepackage{tikz}
 \usetikzlibrary{positioning,arrows.meta,shapes,fit,backgrounds}
 \usepackage[hidelinks,colorlinks=true,linkcolor=vulcaPrimary,urlcolor=vulcaPrimary,citecolor=vulcaPrimary]{hyperref}
@@ -75,11 +78,12 @@
 
 % === 自定义命令 ===
 % \TBD{label} — 红框高亮"待你填入的硬数据"（支持自动换行）
+% 宽度留足 2em 余量，兼容 itemize / enumerate / tabularx 内的嵌套使用
 \newcommand{\TBD}[1]{%
-  \begingroup\setlength{\fboxsep}{4pt}%
+  \begingroup\setlength{\fboxsep}{3pt}%
   \fcolorbox{tbdRed}{tbdBg}{%
-    \parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{%
-      \footnotesize\color{tbdRed}\raggedright%
+    \parbox{0.85\linewidth}{%
+      \footnotesize\color{tbdRed}\RaggedRight%
       \textsf{\textbf{TBD:}}~#1%
     }%
   }\endgroup%
@@ -106,6 +110,11 @@
 
 % 行距
 \linespread{1.18}
+
+% CJK 紧急拉伸：让 xelatex 在没有良好断点时允许更多行间伸缩，大幅减少 overfull
+\emergencystretch=4em
+\tolerance=9999
+\hbadness=9999
 
 % 超链接设置
 \hypersetup{

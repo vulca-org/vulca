@@ -11,13 +11,13 @@ Vulca 选择 \keyword{Apache 2.0} 作为主仓库协议，有两个目的：
 这三类都不是靠一份代码协议能复刻的：
 
 \begin{center}
-\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{3.4cm}>{\raggedright\arraybackslash}X@{}}
+\begin{tabularx}{\linewidth}{@{}>{\tabRR}p{3.4cm}>{\tabRR}X@{}}
 \toprule
 \rowcolor{tableHead}
 \heiti 资产类别 & \heiti 具体构成 \\
 \midrule
 \keyword{数据资产} & 13 种艺术/设计传统的 L1–L5 YAML 评价体系；社区扩展贡献的新传统；行业客户定制包 \\
-\keyword{工程资产} & MCP 工具标准 I/O schema、skill 模板、1454 测试、多 provider 抽象层、本地化链路工程 \\
+\keyword{工程资产} & MCP 工具标准 I/O schema、skill 模板、高覆盖率测试套件、多 provider 抽象层、本地化链路工程 \\
 \keyword{生态资产} & Claude Code 插件市场位置、GitHub 贡献者网络、学术合作（ACM MM / EmoArt）、模型厂商直联 credits \\
 \bottomrule
 \end{tabularx}
@@ -43,9 +43,27 @@ Vulca 有一条可以被审查的证明链：
   \item \keyword{算法自主可控}\quad 核心调度逻辑、文化评估规则、分层编排算法都写在 Vulca 自己的代码里，\keyword{不依赖任何厂商 SDK}；
   \item \keyword{模型可替换}\quad provider 抽象层支持 ComfyUI（本地开源）/ Gemini / OpenAI / mock 四条路径；
   \item \keyword{数据自主可控}\quad 本地链路所有图像、评估结果、会话历史都留存在客户本地磁盘（\code{artifacts/})，\keyword{不向任何云服务上报}；
-  \item \keyword{算力自主可控}\quad Apple Silicon MPS 已验证；\TBD{CUDA / Ascend / 国产算力适配在 2027 Q1 前完成}；
-  \item \keyword{合规自主可控}\quad \TBD{在正式申报时，附《生成式 AI 服务管理办法》第 X 条对应说明；列出算法备案计划（若适用）。}
+  \item \keyword{算力自主可控}\quad Apple Silicon MPS 已端到端验证；CUDA 适配在 2026 Q4 前完成；\TBD{国产算力（Ascend / 寒武纪）首轮适配时间建议 2027 Q1}；
+  \item \keyword{合规自主可控}\quad 下表给出主要政策与 Vulca 设计响应的\keyword{条款级}对应（示意口径，正式申报时依评审口径微调）：
 \end{enumerate}
+
+\paragraph{政策条款 → Vulca 设计响应（示意映射）}
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\tabRR}p{5.0cm}>{\tabRR}X@{}}
+\toprule
+\rowcolor{tableHead}
+\heiti 政策 / 条款 & \heiti Vulca 设计响应 \\
+\midrule
+《生成式 AI 服务管理办法》第 8 条（训练数据来源合规） & Vulca 自身不训练底层模型；上游 provider 可替换；本地路径允许客户完全使用自有模型 \\
+《生成式 AI 服务管理办法》第 11 条（算法备案） & \TBD{判断：面向公众服务的 Cloud 版本需备案；纯 SDK + On-Prem 不面向公众，不需备案。正式申报时由法务顾问最终判定} \\
+《生成式 AI 服务管理办法》第 14 条（内容审核义务） & 关键词黑名单 + 上游 provider 审核回调；敏感类别检测；违规内容日志；Cloud 模式下拒绝生成并记录 \\
+《数据出境安全评估办法》 & 本地 provider 路径\keyword{原生满足不出境}；Cloud 路径可选择国内节点 provider 或强制本地 provider \\
+《"十四五"数字经济发展规划》文化数字化章节 & Vulca 文化评估 L1–L5 YAML 对应"传统文化数字化复现"核心能力；可开放给国家文博数字化项目免费使用 \\
+\textit{著作权 / 开源协议} & 主仓库 Apache 2.0 对外；商业组件单独许可；第三方贡献走 CLA，避免协议混合 \\
+\bottomrule
+\end{tabularx}
+\end{center}
 
 \subsection{知识产权规划}
 
@@ -67,6 +85,33 @@ Vulca 有一条可以被审查的证明链：
   \item \keyword{商标}\quad \code{Vulca} 文字 + 设计标，第 9 类（软件）、第 42 类（SaaS/设计服务）、第 41 类（教育培训）；
   \item \keyword{美术作品著作权}\quad logo、官网视觉、核心 diagram 登记。
 \end{itemize}
+
+\subsection{社会效益与可量化指标}
+\label{sec:ip:social}
+
+作为 C 类受众（政府立项 / 孵化器 / 高校转化）的\keyword{打分维度}之一，
+Vulca 在社会效益上提供\keyword{可年度核对的量化指标}，而不是口号式描述。
+以下目标值为\keyword{12–24 个月内}可达成的保守口径：
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\tabRR}p{4.2cm}>{\tabRR}X>{\tabRR}p{2.6cm}@{}}
+\toprule
+\rowcolor{tableHead}
+\heiti 指标 & \heiti 说明 & \heiti 12-24 月目标 \\
+\midrule
+\keyword{服务机构数} & 博物馆 / 出版社 / 品牌 / 教育机构使用 Vulca（免费社区或商业部署均计入） & \TBD{$\ge$ 20 家} \\
+\keyword{数字化作品数} & 通过 Vulca 分层 / 编辑 / 评估的文化作品累计数 & \TBD{$\ge$ 5000 件} \\
+\keyword{非遗 / 馆藏 POC 案例} & 公开发表的非遗复现、馆藏数字化 POC 项目数 & \TBD{$\ge$ 3 个} \\
+\keyword{学术 / 教育课时} & 高校艺术 / 设计教学中使用 Vulca 的课时数（合作院校披露） & \TBD{$\ge$ 200 课时} \\
+\keyword{社区贡献 YAML} & 开源社区贡献的新文化传统定义数 & \TBD{$\ge$ 3 个（跨机构）} \\
+\keyword{就业拉动} & 团队直接雇佣 + 生态合作方兼职 & \TBD{$\ge$ 8 人全职 + 10 人兼职} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+每个指标配合\keyword{公开可核验的渠道}：GitHub / PyPI / 合作机构新闻稿 / 学术论文致谢 / 年度报告。
+申报阶段可据此加权生成对申报单位的\keyword{社会效益承诺书}，纳入里程碑 KPI。
 
 \subsection{数据合规与伦理}
 
