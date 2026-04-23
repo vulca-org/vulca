@@ -89,6 +89,16 @@
   }\endgroup%
 }
 
+% \presumed{default value} — 琥珀色框：AI 已用行业标准默认值填充；请扫读确认或修改
+\definecolor{presumedAmber}{HTML}{B7791F}
+\definecolor{presumedBg}{HTML}{FFFAF0}
+\newcommand{\presumed}[1]{%
+  \begingroup\setlength{\fboxsep}{2pt}%
+  \fcolorbox{presumedAmber}{presumedBg}{%
+    \footnotesize\color{presumedAmber}\textsf{\textbf{已默认:}~#1}%
+  }\endgroup%
+}
+
 % \fact{label}{value} — 事实性数据块
 \newcommand{\fact}[2]{%
   \textbf{\color{vulcaPrimary}#1:}~#2%

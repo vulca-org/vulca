@@ -54,7 +54,7 @@
 \begin{itemize}
   \item \keyword{本地化是天然响应}：国内客户可全程本地部署，合规问题从产品设计层面消解；
   \item \keyword{清晰的协议边界}：主仓库 Apache 2.0 + 商业组件单独许可 + CLA 覆盖第三方贡献，避免协议混合引发纠纷；
-  \item \keyword{内容安全机制}：\TBD{在内容生成路径上设置关键词黑名单、敏感类别检测；正式产品上线前完成安全评估。}；
+  \item \keyword{内容安全机制}：输入端关键词黑名单 + 上游 provider 审核回调 + 输出端敏感类别检测（CLIP-based）+ 审计日志；Cloud 正式上线前完成安全评估与备案 \presumed{默认三层防线，详见 \S \ref{sec:ip} 数据合规部分}；
   \item \keyword{合规顾问}：招聘或外聘熟悉\keyword{AIGC 合规}的法务顾问，至少一位。
 \end{itemize}
 

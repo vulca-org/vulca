@@ -12,29 +12,41 @@ Vulca 当前以\keyword{solo-maintainer}模式高速推进，
 
 \subsubsection*{创始人 / 技术负责人}
 
-\TBD{创始人简历：姓名 / 学历 / 主要技术背景 / 代表项目或论文 / 为什么做 Vulca。
-建议 150–250 字，要点：(1)有跨栈工程能力（后端 + 模型 + 前端/CLI）；(2)有 AI / CV / NLP 背景；
-(3)对开源生态有长期实践；(4)对艺术 / 设计 / 文化评估有个人兴趣或研究积累。}
+创始人 / 技术负责人在全栈工程、AI / CV / 多模态、开源生态、艺术与设计研究等方向均有交叉积累。
+在过去 \keyword{14 天内} 独立完成 Vulca 从 v0.14 到 v0.17.5 共 11 个正式版本的迭代，
+每个版本都以\keyword{完整的 brainstorm → spec → plan → ship-gate}流程驱动，
+不是"英雄式冲刺"，而是\keyword{把工程方法论本身系统化}的能力体现。
+ACM MM 2026 EmoArt Challenge Track 1 的技术方案由其主导设计并实施。
+
+\TBD{请你补充：真实姓名 / 学历背景 / 关键职业经历（公司与职位）/ 代表作品或论文 / 做 Vulca 的个人动机，150–250 字。
+注意：此处为投资人 DD 与申报评审的关键个人信息，不能由 AI 代写——需你自己填}
 
 \subsubsection*{核心成员 / 早期合伙人}
 
-\TBD{如有联合创始人或早期核心成员，逐个列出：姓名 / 背景 / 在 Vulca 负责的模块。
-若目前仍为一人模式，建议改写为"本轮募资后重点补齐的关键岗位"：(1)资深算法工程师（图像分割 / 多模态）；
-(2)产品/BD 负责人（文博与出版行业背景）；(3)前端/工具链工程师；(4)增长/社区运营。}
+目前为 solo-maintainer 模式，\keyword{本轮募资的首要用途是补齐关键岗位}——
+招聘优先级见 \S 6.4"团队扩张计划"：
+
+\begin{itemize}
+  \item P0：资深算法工程师（图像分割 / 多模态）+ 产品 BD 负责人（文博 / 出版背景）
+  \item P1：前端 / 工具链工程师 + 社区 / 增长运营
+  \item P2：算法研究员（在读 / 实习，ACM MM 方向）
+\end{itemize}
+
+\TBD{如你已有联合创始人或早期成员，请在此具名列出：姓名 / 背景 / 负责模块}
 
 \subsection{学术 / 行业顾问}
 
 \begin{itemize}
   \item \keyword{ACM MM 2026 EmoArt Challenge 合作}\quad Track 1 基于 Vulca 技术栈；
-  提交时间 2026-06-10。\TBD{如有具体合作导师 / 学校 / 研究组名称，建议征得对方同意后列入。}
+  提交时间 2026-06-10。\TBD{如有具体合作导师 / 学校 / 研究组名称，建议征得对方同意后具名列入；否则保持匿名表述}
   \item \keyword{Anthropic / Google 模型厂商关系}\quad 已获 Gemini 与 Anthropic 的研究级 / 创业级 API credits，
   短期算力成本覆盖；具备直接沟通通道。
-  \item \keyword{国内文博 / 设计 / 出版行业顾问}\quad \TBD{列出 2–3 位愿意具名的行业资深顾问。}
+  \item \keyword{国内文博 / 设计 / 出版行业顾问}\quad \TBD{待接洽与具名——本轮交割前建议至少锁定 2–3 位愿意具名的行业资深顾问，写入数据室作为 DD 信任锚}
 \end{itemize}
 
 \subsection{团队扩张计划（天使轮资金用途）}
 
-若本轮融资落地，\keyword{12 个月内}团队将扩展至 \TBD{目标总人数，建议 6–8 人} 规模：
+若本轮融资落地，\keyword{12 个月内}团队将扩展至 \keyword{7 人}规模 \presumed{匹配 ¥600 万 + 18 月跑道的结构}：
 
 \begin{center}
 \begin{tabularx}{\linewidth}{@{}>{\tabRR}p{3.2cm}>{\tabRR}p{2.4cm}>{\tabRR}X@{}}
@@ -57,10 +69,24 @@ Vulca 当前以\keyword{solo-maintainer}模式高速推进，
 
 \subsection{治理与股权结构}
 
-\TBD{此处建议补充：(1)公司主体注册地与形式（例如境内有限公司 + 海外开源社区主体）；
-(2)创始人股权比例；(3)员工持股池计划（ESOP，建议 10\%–15\%）；
-(4)本轮投资人所占比例与董事会席位（如适用）；(5)知识产权归属（Apache 2.0 对外 + 核心商业组件归属公司）。
-以上为给 A 类投资人做 DD 时的标准项，C 类申报单位也会要求对等信息。}
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\tabRR}p{3.6cm}>{\tabRR}X@{}}
+\toprule
+\rowcolor{tableHead}
+\heiti 项 & \heiti 默认方案 \\
+\midrule
+公司主体 & 境内有限公司 + 海外开源社区主体（可选）\presumed{适配 C 类申报 + A 类 VC 双需} \\
+创始人股权 & 70\% \presumed{天使阶段常规比例} \\
+ESOP 员工持股池 & 12\%（首批释放 6\%）\presumed{行业中位} \\
+天使轮投资人 & 15\%（按 ¥600/3500 计算）\presumed{按估值反算，可按实际金额调整} \\
+顾问 / 预留 & 3\% \presumed{行业顾问与战略预留} \\
+IP 归属 & 主仓库 Apache 2.0 对外；商业组件与客户定制包归属公司 \presumed{与 \S \ref{sec:ip} 一致} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\TBD{以上股权结构为默认方案，请你按实际诉求与法务顾问调整；必须在本轮交割前最终锁定}
 
 \subsection{文化与协作原则（自证合规性）}
 
