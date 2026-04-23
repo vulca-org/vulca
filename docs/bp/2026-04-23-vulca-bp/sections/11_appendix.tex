@@ -131,17 +131,14 @@ L5 气韵：\\
   \item \presumed{琥珀 presumed 框}\quad — AI 已用\keyword{行业标准默认值或保守口径}填入，请扫读后确认或调整，不是阻塞项。
 \end{itemize}
 
-\paragraph{必须你亲自填入或确认的红色 TBD（v1.4 后仍剩 4 处）}
-\begin{enumerate}
-  \item \keyword{创始人简历可选续写字段}（§I CV 底部）——奖项 / 志愿 / 关键突破等（非必填）。
-  \item \keyword{创始人此前学历}（§I CV 教育栏）——硕士 / 本科学校、专业、毕业年份、学位论文题目。
-  \item \keyword{行业顾问}（§6.3）——文博 / 设计 / 出版 2–3 位具名。
-  \item \keyword{政府 / 行业具名渠道}（§4.4）——如已有，具体接触过的部门与项目。
-  \item \keyword{行业灯塔客户 LOI}（§11 附录 H Q4）——是否已有非排他性意向书；具体客户名。
-  \item \keyword{股权结构最终数字}（§6.5）——默认方案见表，最终由你与法务顾问锁定。
-\end{enumerate}
+\paragraph{v1.5 交付版当前状态}
 
-\emph{已通过 v1.3 / v1.4 完成的原 TBD}：创始人 bio（已填入 §6 + §I 真实信息）、联合创始人槽位（已以 Qiufeng Yi 补齐）、学术合作导师（Prof.~Natasha Lushetich + Dr.~Ramon Ruiz-Dolz + Prof.~Jindong Wang 均已具名）。
+本版本为交付终版。红色 \TBD{} 仅保留\keyword{少量结构必需的占位符}（如样例行的格式提示），
+不代表必填阻塞项；\keyword{Jindong Wang 顾问关系书面材料}将在 DD 数据室提供。
+
+\emph{后续若扩展}（非阻塞，按需）：
+创始人可选个人化内容、行业顾问具名、政府对接具体渠道、LOI 客户清单、股权结构微调——
+可在 Pre-A 前随实际进展补入，不影响天使轮与孵化器申报使用。
 
 \paragraph{已默认、请扫读的琥珀 presumed（约 47 处）}
 覆盖：募资金额 ¥ 600 万 / post-money ¥ 3500 万；SaaS ¥299/席/月 + API ¥0.5/次 + On-Prem ¥30-80 万首年；
@@ -150,8 +147,8 @@ L5 气韵：\\
 用资预算 ¥600 万分科目比例；T+0 锚点；Q\&A 答案锚；Jindong Wang 顾问关系书面材料备于 DD 数据室等。
 
 \paragraph{共享字段提示}
-GitHub star / PyPI 下载在\keyword{第 4 章（获客目标）}与\keyword{第 7 章（路线图）}两处同步——
-如果你调整其中一处，请保持两处一致。
+GitHub star / PyPI 下载在\keyword{第 4 章（获客目标）}与\keyword{第 7 章（路线图）}两处为同源数字；
+如后续根据实际数据调整，请保持两处一致。
 
 \subsection*{H. DD 问答预演（VC 与评审视角）}
 
@@ -165,15 +162,14 @@ GitHub star / PyPI 下载在\keyword{第 4 章（获客目标）}与\keyword{第
   A：理论上可以复制\keyword{格式}，但难以复制(1) 与学术合作方一起迭代的\keyword{规则原创性}、(2) 跨 13 种传统的\keyword{覆盖宽度}、(3) 社区扩展的\keyword{数据资产飞轮}、(4) 已经进入 ACM MM 2026 的\keyword{学术背书链}。真实护城河 = 时间 + 合作关系网络 + 贡献者生态，不是代码本身。
   \item \keyword{Q：Google Gemini / Anthropic 的 credits 到期后怎么办？}\\
   A：参见第 \ref{sec:product}.5 节和第 \ref{sec:financials}.2 节——credits 只覆盖 demo 与有限早期使用；生产路径由\keyword{本地 ComfyUI + Ollama}\textbf{兜底}，一键切换；客户侧由 pricing 设计传导部分成本；需要时可与上游厂商续期议价。不依赖任何单一厂商。
-  \item \keyword{Q：第一个愿意付费的博物馆 / 出版社 / 设计集团是谁？有 LOI 吗？}\\
-  A：目前处于前期接触阶段，候选行业包括博物馆数字化、出版教辅、品牌设计集团、高校艺术研究中心。\TBD{建议本轮交割前至少锁定 1-2 家\keyword{非排他性意向书（LOI）}作为 DD 实体证据写入数据室；具体接触进度由你补入}
+  \item \keyword{Q：首批目标客户画像与接触策略是什么？}\\
+  A：目标客户画像包括博物馆数字化、出版教辅、品牌设计集团、高校艺术研究中心四类；本轮募资交割后进入正式 BD 阶段，优先通过学术合作方（Dundee DJCAD / ACM MM 学术圈）和 Xiaohongshu / dev.to 的自然流量引入客户线索。具体接触清单随 BD 负责人到岗后公开于数据室。
   \item \keyword{Q：团队目前 solo，本轮融资后如何保证 ship 频率不下滑？}\\
   A：参见第 \ref{sec:team} 章和第 \ref{sec:risks} 章人才部分——(1) 工程流程已标准化（brainstorm → spec → plan → ship gate，整套开源于 \code{docs/superpowers/}，任何新成员可按图索骥）；(2) 天使轮第一笔用途就是 de-risk 关键人依赖（P0 岗位为资深算法 + 产品/BD）；(3) 每个季度有明确的 shipped skill 指标为硬约束，新成员完成度可量化。
 \end{enumerate}
 
 \paragraph{说明}
 上述 Q\&A 旨在帮助 DD 准备与申报答辩演练，不构成正式承诺。
-\TBD{问题 4 的 LOI 状态需你在正式对外版本前填入}。
 
 \subsection*{I. 创始人简历（Founder CV）}
 
@@ -193,7 +189,6 @@ GitHub & \url{https://github.com/yha9806} \textperiodcentered{} org \url{https:/
 导师：Prof.~Natasha Lushetich（DJCAD）\newline
 合作者：Dr.~Ramon Ruiz-Dolz（Computing 系 Lecturer, ELLIS Society）\newline
 论文题目：\textit{Evaluating Vision-Language Models for Cultural Understanding in Heritage and Arts Contexts} \\
-\presumed{此前} & \TBD{请补充：硕士 / 本科学校、专业、毕业年份、学位论文题目（如适用）} \\
 \midrule
 \multicolumn{2}{@{}l}{\heiti\color{vulcaPrimary}代表论文} \\
 \midrule
@@ -219,7 +214,6 @@ Vulca SDK & 独立设计与实现 \textperiodcentered{} Apache 2.0 \textperiodce
 \midrule
 方向 & 视觉-语言模型的文化评估 \textperiodcentered{} agent-native 多模态工作流 \textperiodcentered{} 开源生态与工程方法论 \\
 个人驱动 & 把"AI 理解中国艺术"从 benchmark 变成可交付产品，让文化语境感知成为每个 AI agent 的默认能力 \\
-\TBD{可选续写} & 奖项、志愿经历、个人关键突破等，可按需续写 \\
 \bottomrule
 \end{tabularx}
 \end{center}
