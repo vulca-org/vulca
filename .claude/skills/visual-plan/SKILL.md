@@ -319,36 +319,64 @@ Schema rules:
 
 | # | Rule | Enforce class |
 |---|---|---|
-| **S1** | Pixel-tool ban baseline. Exemptions: (a) Phase 3 execution authorizes ONLY `generate_image`, `evaluate_artwork`, MAY `unload_models`; (b) no other phase uses pixel tools. Forbidden across EVERY phase (no exemption): `create_artwork`, `generate_concepts`, `inpaint_artwork`, any `layers_*`. | prescription |
-| **S2** | Do not flip `frontmatter.status` without explicit user trigger: `draft → running` requires `accept all`; `running → terminal` requires a terminal condition (all iters done, fail_fast, user-abort, Err #13). Cap-hit alone is NOT a trigger. | prescription |
+| **S1** | Pixel-tool ban baseline. Exemptions: Phase 3 execution authorizes ONLY `generate_image`, `evaluate_artwork`, MAY `unload_models`. Forbidden across every phase: `create_artwork`, `generate_concepts`, `inpaint_artwork`, any `layers_*`. | prescription |
+| **S2** | Do not flip `frontmatter.status` without explicit user trigger. `draft → running` requires `accept all` in Phase 2. `running → terminal` requires a terminal condition (all iters done / fail_fast / user-abort / Err #13 / Err #16). Cap-hit alone is NOT a trigger. | prescription |
 | **S3** | Only consume `design.md` with `status: resolved`. Reject anything else via Err #1. | helper |
-| **S4** | `frontmatter.{tradition, domain, slug}` are **immutable** across the session (captured at Phase 1, asserted at Phase 4). `A.provider` is **EXPLICITLY MUTABLE** via user-approved Err #13 cross-class failover only — any mutation outside Err #13 is an S4 violation. Additionally, `design.md` file bytes are content-hash-guarded: Phase 1 captures `sha256(design.md)` into session `design_hash`; Phase 3 re-hashes per iter; drift → Err #16 abort. | helper |
-| **S5** | Concurrency control via `plan.md.lock` (`O_CREAT\|O_EXCL` with `{pid, started_at_iso, design_ref}` JSON). Staleness judged by jsonl mtime (when present) OR lockfile `started_at` (when no jsonl), both compared to 300s threshold. Stale → auto-recover per Err #12. Fresh → refuse per Err #11. | helper |
-| **S6** | `plan.md.results.jsonl` is append-only during Phase 3. One row per completed iter (success OR failed OR skipped-via-failover). No rewrites; sequential append in `iter_idx` order. | helper |
-| **S7** | `plan.md` is a render artifact only. Phase 3 does NOT rewrite `plan.md` mid-loop (all per-iter progress goes to jsonl). Phase 4 finalize reads jsonl → renders `## Results` → atomic `os.rename(.jsonl → .jsonl.archive)` → Write terminal plan.md. | prescription + helper |
+| **S4** | `frontmatter.{tradition, domain, slug}` are immutable across the session (captured at Phase 1, asserted at Phase 4 Write). `A.provider` is **EXPLICITLY MUTABLE** via user-approved Err #13 cross-class failover only — any mutation outside Err #13 is an S4 violation. design.md file bytes are content-hash-guarded: Phase 1 captures `sha256(design.md)` into session `design_hash`; Phase 3 re-hashes per iter; drift → Err #16 abort. | helper |
+| **S5** | Concurrency control via `plan.md.lock` (`O_CREAT \| O_EXCL` with `{pid, started_at_iso, design_ref}` JSON). Staleness judged by jsonl mtime (when present) OR lockfile `started_at` (when no jsonl), both compared to 300s threshold. Stale → Err #12 auto-recover. Fresh → Err #11 refuse. Precedent: `src/vulca/digestion/dream.py:46-80`. | helper |
+| **S6** | `plan.md.results.jsonl` is append-only during Phase 3. One row per completed iter (success OR failed OR skipped). No rewrites; sequential append in `iter_idx` order (natural from sequential Phase 3). | helper |
+| **S7** | `plan.md` is a render artifact only. Phase 3 does NOT rewrite `plan.md` mid-loop (all per-iter progress goes to jsonl sidecar). Phase 4 finalize reads jsonl → renders `## Results` → atomic `os.rename(.jsonl → .jsonl.archive)` → Write terminal plan.md. | prescription + helper |
 
-## Error matrix (16 rows — grep contract)
+## Error matrix (16 rows, grep-contract verbatim)
 
-All `Print exactly:` strings are backtick-wrapped for downstream grep compatibility. Full-prose version in `docs/superpowers/specs/2026-04-23-visual-plan-skill-design.md` §6.
+| # | Signal | Response | Enforce |
+|---|---|---|---|
+| 1 | `design.md` not found OR `status != resolved` | Print exactly: `design.md not found or status != resolved at <path>. Run /visual-spec <slug> first.` Terminate. | helper |
+| 2 | Same-slug `plan.md` exists with terminal status (`completed` / `partial` / `aborted`) | Print exactly: `already <status> at <path>; branch with -v2 or pick new slug`. Terminate. **Do not overwrite.** | helper + prescription |
+| 3 | Same-slug `plan.md` status: draft (with or without jsonl) | Resume Phase 2 review loop; skip sections with `reviewed: true`; accumulate `turns_used` from Notes `[resume-state]` line. If jsonl present → Phase 3 entry replays `completed_iters`. **If a stale lockfile also exists, fold Err #12 side-effects (unlink + `[stale-lock-recovery]` Notes line + Phase 4 handoff suffix) into the resume path; only one recovery Notes line total.** | helper + prescription |
+| 4 | design.md frontmatter violation (`tradition` not in registry AND not YAML null; OR `domain` not in 7-enum) | Print exactly: `design.md frontmatter violation: <field> <value> invalid. Re-run /visual-spec <slug> to fix.` Terminate. **Do not auto-retry.** | helper |
+| 5 | Phase 3 provider unreachable (connection refused / missing key / timeout) | **No auto-failover.** Append `[failover-needed] <provider> unreachable: <err>` to Notes. Hand off directly to Err #13 user prompt. | helper (hands off to #13) |
+| 6 | `generate_image` returns error dict (validation / OOM / malformed param) | jsonl row: `verdict: failed, error: <excerpt>`. Continue next iter. All-fail → terminal `partial`. | helper |
+| 7 | Phase 3 `fail_fast_counter >= F.fail_fast_consecutive.value` (fires only when `F.fail_fast_consecutive is not None`) | Force-show current draft + print exactly: `cost budget exceeded (<consecutive>×over). Abort, extend budget, or accept remaining?` User `(a)` → `aborted`; `(b) extend <N>` → fail_fast_consecutive reset to N, counter reset 0, continue; `(c) accept-remaining` → `partial`. **Never auto-extend.** | prescription |
+| 8 | User requests pixel action in Phase 1/2/4 (`generate now`, `skip review`) | Print exactly: `plan layer executes pixels in Phase 3 only. Complete review (accept all) first, or change spec via /visual-spec <slug>.` Do NOT invoke tool. **Turn NOT charged.** | prescription |
+| 9 | design.md `## References` sketch unreadable at Phase 1 probe | Set state `sketch_available: false`; override `plan.C.sketch_integration: ignore`. Notes: `sketch at <path> unreadable at plan time: <err>. Proceeding text-only; C.sketch_integration forced to "ignore".` **Do not abort.** | helper |
+| 10 | design.md YAML parse-fail (required section missing / dup keys / fence syntax) | Print exactly: `design.md parse-fail at <slug>: <issue>. Re-run /visual-spec <slug> to regenerate.` Terminate. **Do not auto-retry.** | helper |
+| 11 | Same-slug concurrent /visual-plan (lockfile fresh + jsonl mtime < 300s OR lockfile.started_at < 300s + no jsonl) | Print exactly: `<slug> currently running (pid: <pid>, started: <iso>). Abort the other session first, or wait and retry.` Terminate. **Do not kill other pid.** | helper |
+| 12 | Stale lockfile (jsonl mtime > 300s OR lockfile.started_at > 300s + no jsonl) | Auto-recover silently: `os.unlink(lockfile)`. Append Notes: `[stale-lock-recovery] previous pid <N> abandoned at <iso>; reclaimed at <now>. Resuming from iter <K>.` Handoff string at Phase 4 appends ` (recovered from stale lock at iter <K>)` suffix. **No user prompt; NOT stderr** (Claude Code skills don't surface stderr). | helper |
+| 13 | Phase 3 provider unreachable AND failover requires cross-class switch (local ↔ cloud) | Print exactly: `<current> unreachable, failover to <alt> requires cross-class switch (local→cloud or reverse). Approve? (a) yes / (b) no, abort / (c) no, skip remaining iters as partial`. **Prompt user. Turn NOT charged.** `(a)` → execute failover + Notes `[failover-cross-class]`; `(b)` → `aborted`; `(c)` → `partial`. | prescription |
+| 14 | `Path("src/vulca").is_dir()` false | Print exactly: `not inside a Vulca checkout; /visual-plan requires repo presence at cwd. cd into your vulca repo and retry.` Terminate. | helper |
+| 15 | `design.frontmatter.schema_version` present AND not in supported set `{"0.1"}` | Print exactly: `design.md schema_version <got> not recognized; upgrade /visual-spec (pip install --upgrade vulca) or pin vulca@<compatible>.` Terminate. **Do not auto-retry; do not suggest /visual-spec re-run.** | helper |
+| 16 | Phase 3 per-iter hash guard detects `design.md` bytes changed since Phase 1 capture | Print exactly: `design.md mutated mid-session at iter <K>; aborting. Re-run /visual-plan <slug> to restart with new design.` Abort immediately. Status → `aborted`. jsonl up through iter `<K-1>` preserved. Append Notes: `[design-drift] design.md sha256 changed between Phase 1 and iter <K>; aborting.` | helper |
 
-| # | Signal | Response |
-|---|---|---|
-| Err #1 | `design.md` not found OR `status != resolved` | Print exactly: `design.md not found or status != resolved at <path>. Run /visual-spec <slug> first.` Terminate. |
-| Err #2 | Same-slug `plan.md` exists with terminal status (`completed` / `partial` / `aborted`) | Print exactly: `already <status> at <path>; branch with -v2 or pick new slug`. Terminate. **Do not overwrite.** |
-| Err #3 | Same-slug `plan.md` `status: draft` (with or without jsonl) | Resume Phase 2: re-enter review loop, skip sections with `reviewed: true`, accumulate turns_used from Notes `[resume-state]` line. If jsonl present → Phase 3 entry replays completed iters. **If a stale lockfile also exists, fold Err #12 side-effects into this resume path; only one recovery Notes line total.** |
-| Err #4 | design.md frontmatter violation (`tradition` not in registry and not YAML null; OR `domain` not in 7-enum) | Print exactly: `design.md frontmatter violation: <field> <value> invalid. Re-run /visual-spec <slug> to fix.` Terminate. **Do not auto-retry.** |
-| Err #5 | Phase 3 provider unreachable (connection refused / missing key / timeout) | **No auto-failover.** Append `[failover-needed] <provider> unreachable: <err>` to Notes. Advance directly to Err #13 user prompt. |
-| Err #6 | `generate_image` returns error dict (validation / OOM / malformed param) | jsonl row: `verdict: failed, error: <excerpt>`. Continue next iter. All-fail → terminal `partial`. |
-| Err #7 | Phase 3 `fail_fast_counter >= F.fail_fast_consecutive.value` (applies only when `F.fail_fast_consecutive is not None`) | Force-show current draft + print exactly: `cost budget exceeded (<consecutive>×over). Abort, extend budget, or accept remaining?` (a) abort → `aborted`; (b) extend → reset; (c) accept-remaining → `partial`. **Never auto-extend.** |
-| Err #8 | User requests pixel action in Phase 1/2/4 (`generate now`, `skip review`) | Print exactly: `plan layer executes pixels in Phase 3 only. Complete review (accept all) first, or change spec via /visual-spec <slug>.` Do NOT invoke tool. **Turn NOT charged.** |
-| Err #9 | design.md `## References` sketch unreadable at Phase 1 probe | Set `sketch_available: false`; override `plan.C.sketch_integration: ignore`. Notes: `sketch at <path> unreadable at plan time: <err>. Proceeding text-only; C.sketch_integration forced to "ignore".` **Do not abort.** |
-| Err #10 | design.md YAML parse-fail (required section missing / dup keys / fence syntax) | Print exactly: `design.md parse-fail at <slug>: <issue>. Re-run /visual-spec <slug> to regenerate.` Terminate. **Do not auto-retry.** |
-| Err #11 | Same-slug concurrent /visual-plan (lockfile exists + jsonl mtime < 300s OR lockfile.started_at < 300s + no jsonl) | Print exactly: `<slug> currently running (pid: <pid>, started: <iso>). Abort the other session first, or wait and retry.` Terminate. **Do not kill other pid.** |
-| Err #12 | Stale lockfile (lockfile exists + jsonl mtime > 300s OR lockfile.started_at > 300s + no jsonl) | Auto-recover silently: `os.unlink(lockfile)`. Append to Notes: `[stale-lock-recovery] previous pid <N> abandoned at <iso>; reclaimed at <now>. Resuming from iter <K>.` Handoff string at Phase 4 appends ` (recovered from stale lock at iter <K>)`. **No user prompt; no stderr print.** |
-| Err #13 | Phase 3 provider unreachable AND failover requires cross-class switch (local ↔ cloud) | Print exactly: `<current> unreachable, failover to <alt> requires cross-class switch (local→cloud or reverse). Approve? (a) yes / (b) no, abort / (c) no, skip remaining iters as partial`. **Prompt user. Turn NOT charged.** |
-| Err #14 | `Path("src/vulca").is_dir()` false (not inside Vulca checkout) | Print exactly: `not inside a Vulca checkout; /visual-plan requires repo presence at cwd. cd into your vulca repo and retry.` Terminate. |
-| Err #15 | `design.frontmatter.schema_version` present AND not in supported set `{"0.1"}` | Print exactly: `design.md schema_version <got> not recognized; upgrade /visual-spec (pip install --upgrade vulca) or pin vulca@<compatible>.` Terminate. **Do not auto-retry.** |
-| Err #16 | Phase 3 per-iter hash guard detects `design.md` bytes changed since Phase 1 capture | Print exactly: `design.md mutated mid-session at iter <K>; aborting. Re-run /visual-plan <slug> to restart with new design.` Abort immediately. Status → `aborted`. jsonl through iter `<K-1>` preserved. Notes: `[design-drift] design.md sha256 changed between Phase 1 and iter <K>; aborting.` |
+**Classification footer**:
+- **Do NOT auto-retry**: Err 1, 4, 7, 10, 14, 15, 16.
+- **Do NOT overwrite**: Err 2.
+- **Degrade, continue**: Err 6, 9.
+- **Resume / recover (special)**: Err 3 (draft resume), 12 (stale-lock auto-recover). Collision rule: Err #3 path absorbs Err #12 side-effects when both fire.
+- **Decline without charge**: Err 8, 13.
+- **Refuse-to-start**: Err 11, 14, 15.
+- **User prompt**: Err 7, 13.
+- **Hands-off**: Err 5 → #13.
+- **Content-guard abort**: Err 16.
+
+## Handoff — 8 variants byte-identical grep contract
+
+| Terminal status + conditions | Handoff string |
+|---|---|
+| `completed`, zero soft warnings | `Plan /visual-plan/<slug> completed. <N> images at docs/visual-specs/<slug>/iters/.` |
+| `completed`, ≥1 soft warning | `Plan /visual-plan/<slug> completed. <N> images; <K> iters with soft-gate warnings — review ## Results.` |
+| `partial` via fail_fast (Err #7) | `Plan /visual-plan/<slug> partial (<N>/<M>). fail_fast triggered at iter <K>. <err excerpt>.` |
+| `partial` via Err #7 `accept-remaining` | `Plan /visual-plan/<slug> partial (<N>/<M>). cost budget exceeded; user accepted remaining.` |
+| `partial` via Err #13(c) cross-class skip | `Plan /visual-plan/<slug> partial (<N>/<M>). <provider> unreachable; user skipped remaining.` |
+| `partial` via all-`failed` verdicts (Err #6) | `Plan /visual-plan/<slug> partial (<N>/<M>). all generate_image calls failed (<err excerpt>).` |
+| `aborted` via user interrupt / Err #13(b) / Err #16 | `Plan /visual-plan/<slug> aborted by user at iter <K>. resume with /visual-plan <slug>.` |
+| `aborted` via Err #7 `abort` | `Plan /visual-plan/<slug> aborted at iter <K>. cost budget exceeded.` |
+
+**Error-excerpt convention**: `<err excerpt>` is first 80 chars, with `\n` and `` ` `` replaced by single spaces.
+
+**Stale-lock suffix**: any recovery session appends ` (recovered from stale lock at iter <K>)` to the chosen variant **before the final period**.
+
+**`--dry-run` mode**: prints no terminal handoff. stdout is draft plan.md body only. `--dry-run` never reaches Phase 3 or 4.
 
 ## References
 
