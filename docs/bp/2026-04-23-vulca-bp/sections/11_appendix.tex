@@ -122,42 +122,13 @@ L5 气韵：\\
   \item[\keyword{EVF-SAM}] 基于 SAM 的语言引导分割模型，Vulca 语义分层核心组件之一；MPS 下约 3s / prompt。
 \end{description}
 
-\subsection*{G. 待确认字段清单（两色分级）}
+\subsection*{G. 关键问题与答复}
 
-本 BP 中的待确认字段分两类：
-
-\begin{itemize}
-  \item \TBD{红色 TBD 框}\quad — 真需你提供的\keyword{身份 / 关系 / 战略诉求}信息，AI 无法替代，不能编造；
-  \item \presumed{琥珀 presumed 框}\quad — AI 已用\keyword{行业标准默认值或保守口径}填入，请扫读后确认或调整，不是阻塞项。
-\end{itemize}
-
-\paragraph{v1.5 交付版当前状态}
-
-本版本为交付终版。红色 \TBD{} 仅保留\keyword{少量结构必需的占位符}（如样例行的格式提示），
-不代表必填阻塞项；\keyword{Jindong Wang 顾问关系书面材料}将在 DD 数据室提供。
-
-\emph{后续若扩展}（非阻塞，按需）：
-创始人可选个人化内容、行业顾问具名、政府对接具体渠道、LOI 客户清单、股权结构微调——
-可在 Pre-A 前随实际进展补入，不影响天使轮与孵化器申报使用。
-
-\paragraph{已默认、请扫读的琥珀 presumed（约 47 处）}
-覆盖：募资金额 ¥ 600 万 / post-money ¥ 3500 万；SaaS ¥299/席/月 + API ¥0.5/次 + On-Prem ¥30-80 万首年；
-市场规模三组数据的行业公开口径；星标 / PyPI / ARR 三年三档具体数字；社会效益 6 项指标年度目标数；
-差旅 ¥15-20 万 / 年；国产算力时间表；内容安全三层防线；商标 9/41/42 类全选；专利 2 件；
-用资预算 ¥600 万分科目比例；T+0 锚点；Q\&A 答案锚；Jindong Wang 顾问关系书面材料备于 DD 数据室等。
-
-\paragraph{共享字段提示}
-GitHub star / PyPI 下载在\keyword{第 4 章（获客目标）}与\keyword{第 7 章（路线图）}两处为同源数字；
-如后续根据实际数据调整，请保持两处一致。
-
-\subsection*{H. DD 问答预演（VC 与评审视角）}
-
-以下 5 组问题是\keyword{天使 VC + 孵化器评审}最可能追问的"必杀题"。
-预先把答案锚点写进 BP 附录，而非到现场临场组织，体现团队的\keyword{自我审视能力}。
+以下问答覆盖投资人与申报评审关注的核心疑问，同步梳理 Vulca 当前阶段的立场与路线。
 
 \begin{enumerate}
   \item \keyword{Q：从目前 6 stars / 82 views 到 Q4 2026 1500 stars + 30 付费账户，这中间是怎么发生的？}\\
-  A：漏斗见第 \ref{sec:roadmap} 章（7.4 节）——曝光 / 知晓 / 尝试 / 激活 / 留存 / 付费意向 / 付费转化七级；配合 dev.to 月度深度文 + Xiaohongshu 双语种子内容 + Claude Code 插件生态生态位 + ACM MM 2026 学术引流。如果某一级转化不达预期，优先加码的渠道组合：\keyword{dev.to 付费推广 + 针对 agent 创业项目的 Discord/Slack 置换投放 + 1-2 场线上 AI 开发者 meetup 主题分享} \presumed{默认策略：以内容驱动为主，付费推广为辅}，必要时降级目标。
+  A：漏斗见第 \ref{sec:roadmap} 章（7.4 节）——曝光 / 知晓 / 尝试 / 激活 / 留存 / 付费意向 / 付费转化七级；配合 dev.to 月度深度文 + Xiaohongshu 双语种子内容 + Claude Code 插件生态生态位 + ACM MM 2026 学术引流。如果某一级转化不达预期，优先加码的渠道组合：\keyword{dev.to 付费推广 + 针对 agent 创业项目的 Discord/Slack 置换投放 + 1-2 场线上 AI 开发者 meetup 主题分享}（整体以内容驱动为主、付费推广为辅），必要时降级目标。
   \item \keyword{Q：文化评估 L1–L5 YAML 能否被 ComfyUI 社区 / 头部厂商两个月内复刻？}\\
   A：理论上可以复制\keyword{格式}，但难以复制(1) 与学术合作方一起迭代的\keyword{规则原创性}、(2) 跨 13 种传统的\keyword{覆盖宽度}、(3) 社区扩展的\keyword{数据资产飞轮}、(4) 已经进入 ACM MM 2026 的\keyword{学术背书链}。真实护城河 = 时间 + 合作关系网络 + 贡献者生态，不是代码本身。
   \item \keyword{Q：Google Gemini / Anthropic 的 credits 到期后怎么办？}\\
@@ -168,10 +139,7 @@ GitHub star / PyPI 下载在\keyword{第 4 章（获客目标）}与\keyword{第
   A：参见第 \ref{sec:team} 章和第 \ref{sec:risks} 章人才部分——(1) 工程流程已标准化（brainstorm → spec → plan → ship gate，整套开源于 \code{docs/superpowers/}，任何新成员可按图索骥）；(2) 天使轮第一笔用途就是 de-risk 关键人依赖（P0 岗位为资深算法 + 产品/BD）；(3) 每个季度有明确的 shipped skill 指标为硬约束，新成员完成度可量化。
 \end{enumerate}
 
-\paragraph{说明}
-上述 Q\&A 旨在帮助 DD 准备与申报答辩演练，不构成正式承诺。
-
-\subsection*{I. 创始人简历（Founder CV）}
+\subsection*{H. 创始人简历（Founder CV）}
 
 \begin{center}
 \begin{tabularx}{\linewidth}{@{}>{\tabRR}p{2.8cm}>{\tabRR}X@{}}
@@ -218,5 +186,4 @@ Vulca SDK & 独立设计与实现 \textperiodcentered{} Apache 2.0 \textperiodce
 \end{tabularx}
 \end{center}
 
-\presumed{以上简历按公开信息（University of Dundee DJCAD profile / ACL Anthology / GitHub / PyPI）整理；
-\TBD 处为公开信息未覆盖但简历通常需要的字段，按需补充}
+

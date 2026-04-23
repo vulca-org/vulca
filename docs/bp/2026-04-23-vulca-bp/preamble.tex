@@ -27,8 +27,6 @@
 \definecolor{vulcaInk}{HTML}{1A1A2E}
 \definecolor{vulcaMuted}{HTML}{4A5568}
 \definecolor{vulcaSoft}{HTML}{F5F3FF}
-\definecolor{tbdRed}{HTML}{D63031}
-\definecolor{tbdBg}{HTML}{FFF5F5}
 \definecolor{tableHead}{HTML}{E8E3FB}
 \definecolor{successGreen}{HTML}{2E7D32}
 
@@ -77,31 +75,6 @@
 \fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\small\color{vulcaMuted}\thepage}\renewcommand{\headrulewidth}{0pt}}
 
 % === 自定义命令 ===
-% \TBD{label} — 红框高亮"待你填入的硬数据"（支持自动换行）
-% 宽度留足 2em 余量，兼容 itemize / enumerate / tabularx 内的嵌套使用
-\newcommand{\TBD}[1]{%
-  \begingroup\setlength{\fboxsep}{3pt}%
-  \fcolorbox{tbdRed}{tbdBg}{%
-    \parbox{0.85\linewidth}{%
-      \footnotesize\color{tbdRed}\RaggedRight%
-      \textsf{\textbf{TBD:}}~#1%
-    }%
-  }\endgroup%
-}
-
-% \presumed{default value} — 琥珀色框：AI 已用行业标准默认值填充；请扫读确认或修改
-% 支持自动换行（与 \TBD 同样的 0.85\linewidth parbox）
-\definecolor{presumedAmber}{HTML}{B7791F}
-\definecolor{presumedBg}{HTML}{FFFAF0}
-\newcommand{\presumed}[1]{%
-  \begingroup\setlength{\fboxsep}{2pt}%
-  \fcolorbox{presumedAmber}{presumedBg}{%
-    \parbox{0.85\linewidth}{%
-      \footnotesize\color{presumedAmber}\RaggedRight%
-      \textsf{\textbf{已默认:}}~#1%
-    }%
-  }\endgroup%
-}
 
 % \fact{label}{value} — 事实性数据块
 \newcommand{\fact}[2]{%

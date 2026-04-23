@@ -9,9 +9,9 @@
 \rowcolor{tableHead}
 \heiti 项 & \heiti 内容 \\
 \midrule
-\heiti 募资金额 & ¥ 600 万（区间 ¥ 500–800 万）\presumed{按 18 月跑道 + 7 人团队反推} \\
-\heiti 估值口径 & post-money ¥ 3500 万（区间 ¥ 3000–4500 万）\presumed{同阶段 agent + 文化科技天使中位数} \\
-\heiti 工具主体 & 境内有限公司 + 海外开源社区主体 \presumed{适配 C 类申报 + A 类 VC 双需；由法务顾问最终定稿} \\
+\heiti 募资金额 & ¥ 600 万（区间 ¥ 500–800 万，按 18 个月跑道与 7 人团队反推） \\
+\heiti 估值口径 & post-money ¥ 3500 万（区间 ¥ 3000–4500 万，对标同阶段 agent 与文化科技方向天使中位数） \\
+\heiti 工具主体 & 境内有限公司 + 海外开源社区主体 \\
 \heiti 主要用途 & 约 80\% 团队薪酬 + 福利；约 20\% 市场与行业落地；算力主要靠已有 credits \\
 \heiti 跑道 & 12–18 个月，至 Pre-A 启动 \\
 \heiti 投资人画像 & 对 agent / 开源 / 文化科技有长期兴趣的 VC、行业战略投资人 \\
@@ -21,7 +21,7 @@
 
 \subsection{12 个月用资计划（示意预算，单位：¥ 万）}
 
-\presumed{以下按 ¥ 600 万募资、18 个月跑道分配；若最终募资金额调整，各行按比例缩放}
+以下预算按募资 ¥ 600 万、18 个月跑道测算；若实际募资规模调整，预算结构按比例同步。
 
 \begin{center}
 \begin{tabularx}{\linewidth}{@{}>{\tabRR}p{3.8cm}>{\RaggedLeft\arraybackslash}p{1.6cm}>{\RaggedLeft\arraybackslash}p{1.6cm}>{\tabRR}X@{}}
@@ -49,7 +49,7 @@
 \begin{itemize}
   \item \keyword{Credits 已覆盖}：产品演示、能力验证、内部工程迭代、有限的早期 alpha 客户使用、学术 benchmark 和演示素材生成。预计支撑未来 12-18 个月的\keyword{工程与演示}场景。
   \item \keyword{Credits 未覆盖（进入 COGS）}：Cloud 正式付费客户的大规模模型调用、On-Prem 实施驻场的算力、GPU 运维、credits 到期后的续期议价风险。
-  \item \keyword{对冲方式}：multi-provider 抽象层允许一键切到\keyword{本地 ComfyUI 路径}（边际成本接近存储和带宽）。每 1000 MAU 的推理成本敏感性：Cloud 路径 ¥ 3000–5000（credits 覆盖阶段近零）/ 本地路径 ¥ 800–1500（含折旧与运维）\presumed{alpha 数据校准前的示意区间，Pre-A 前以实测数据替换}。
+  \item \keyword{对冲方式}：multi-provider 抽象层允许一键切到\keyword{本地 ComfyUI 路径}（边际成本接近存储和带宽）。每 1000 MAU 的推理成本敏感性：Cloud 路径 ¥ 3000–5000（credits 覆盖阶段近零）/ 本地路径 ¥ 800–1500（含折旧与运维）——当前为示意区间，Pre-A 阶段以实测数据替换。
 \end{itemize}
 
 净效应：\keyword{天使轮资金不必用于 token 成本}，可全部投入人和市场；
@@ -69,19 +69,19 @@
 \heiti 年份 & \heiti 保守（Bear） & \heiti 中性（Base） & \heiti 乐观（Bull） \\
 \midrule
 \keyword{2026} &
-Cloud alpha 20 内测团队；0 行业客户；ARR $<$ ¥ 30 万 \presumed{} &
-Cloud 签约 30 付费账户；1 行业灯塔客户 POC；ARR $\approx$ ¥ 150 万 \presumed{} &
-Cloud 签约 80+；2 行业客户 POC；ARR $\approx$ ¥ 300 万 \presumed{} \\
+Cloud alpha 20 内测团队；0 行业客户；ARR $<$ ¥ 30 万 &
+Cloud 签约 30 付费账户；1 行业灯塔客户 POC；ARR $\approx$ ¥ 150 万 &
+Cloud 签约 80+；2 行业客户 POC；ARR $\approx$ ¥ 300 万 \\
 \midrule
 \keyword{2027} &
-Cloud 50 付费；1 行业客户试点；ARR ¥ 300 万 \presumed{} &
-Cloud 150 付费；2–3 行业客户签约；ARR ¥ 800 万 \presumed{} &
-Cloud 300+ 付费；5 行业客户签约；ARR ¥ 1500 万 \presumed{} \\
+Cloud 50 付费；1 行业客户试点；ARR ¥ 300 万 &
+Cloud 150 付费；2–3 行业客户签约；ARR ¥ 800 万 &
+Cloud 300+ 付费；5 行业客户签约；ARR ¥ 1500 万 \\
 \midrule
 \keyword{2028} &
-Cloud 150 付费；3 行业客户稳定；ARR ¥ 600 万 \presumed{} &
-成为 MCP 图像域默认 SDK；ARR ¥ 2000 万 \presumed{} &
-行业 on-prem 集中释放；ARR ¥ 4000 万 \presumed{} \\
+Cloud 150 付费；3 行业客户稳定；ARR ¥ 600 万 &
+成为 MCP 图像域默认 SDK；ARR ¥ 2000 万 &
+行业 on-prem 集中释放；ARR ¥ 4000 万 \\
 \bottomrule
 \end{tabularx}
 \end{center}
