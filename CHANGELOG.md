@@ -1,5 +1,57 @@
 # Changelog
 
+## v0.17.7 — 2026-04-23
+
+### Added
+- `/visual-plan` skill — **3rd and final meta-skill** in the
+  `brainstorm → spec → plan → execute` architecture. Completes the triad:
+  - `/visual-brainstorm` (v0.17.3/v0.17.4) produces `proposal.md`
+  - `/visual-spec` (v0.17.5/v0.17.6) resolves into `design.md`
+  - `/visual-plan` (this release) executes → `plan.md` + `iters/*.png` +
+    `plan.md.results.jsonl` → terminal artifact `{completed, partial, aborted}`
+  See `.claude/skills/visual-plan/SKILL.md` (~413 lines).
+  Design spec: `docs/superpowers/specs/2026-04-23-visual-plan-skill-design.md`.
+  Implementation plan: `docs/superpowers/plans/2026-04-23-visual-plan-skill.md`
+  (1801 lines, 10 tasks, ~100 steps executed across this session).
+- 4 phases: Precondition gate + derivation + plan.md draft write → Plan-
+  review loop (5-turn cap, inherits `/visual-spec` Phase 4 vocabulary) →
+  Execution loop (sequential `seed_list` iter with generate+evaluate+jsonl
+  append) → Finalize + optional hygiene.
+- 7 invariants S1-S7: pixel-tool ban baseline (S1 with Phase 3 exemption
+  whitelist), status-transition discipline (S2), single-run guard (S3),
+  `design.md` content-hash immutability (S4 — per-iter re-assert + Err #16
+  on drift), lockfile `O_CREAT|O_EXCL` concurrency primitive (S5),
+  jsonl append-only recovery authority (S6), plan.md render-artifact only
+  (S7).
+- 16-row error matrix (`Err #1` through `Err #16`) with verbatim
+  `Print exactly:` strings for grep-contract stability.
+- 8-variant handoff string set covering the terminal states +
+  stale-lock-recovery suffix.
+- 57 pytest tripwires across 4 test files (tests/test_visual_plan_parser_invariants.py,
+  test_visual_plan_source_gating.py, test_visual_plan_execution_loop.py,
+  test_visual_plan_error_matrix.py).
+
+### Ship-gate status
+- **Layer A** (pytest tripwires): 57/57 PASS in <30s.
+- **Layer B** simulated (3 parallel subagents α/β/γ, 14 cases covering
+  P1-P3 positive + resume + concurrent, N1-N10 single-fire errors,
+  N11 user_elevated persistence): **14/14 PASS**. See
+  `docs/superpowers/plans/visual-plan-ship-gate-log.md`.
+- **Layer C** live v2 (2 parallel subagents, 6 gaps / 4 cases covering
+  real `generate_image(mock)` + real `evaluate_artwork` + real filesystem
+  lockfile + Err #16 design-drift): **4/4 PASS**. See
+  `docs/superpowers/plans/visual-plan-live-ship-gate-log.md`.
+- Combined: **v1 14/14 + v2 4/4 = 18/18 cases** for non-pixel-heavy surface.
+- 13 non-blocking clarity-gap candidates logged for a future v0.17.8
+  clarity patch (8 from v2, 5 from v1; most notable: MCP
+  `generate_image` drops provider metadata at the wire contract —
+  v0.17.6 mock-kwargs echo never reaches the tool caller).
+
+### Dependencies
+- Requires v0.17.6 (shipped prior) for `generate_image` MCP extension
+  (`seed/steps/cfg_scale/negative_prompt` kwargs) + `schema_version`
+  field in `design.md` frontmatter.
+
 ## v0.17.6 — 2026-04-23
 
 ### Added
