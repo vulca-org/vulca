@@ -1,5 +1,73 @@
 # Changelog
 
+## v0.17.8 — 2026-04-23
+
+### Fixed
+- **`src/vulca/mcp_server.py` — MCP `generate_image` wrapper now forwards
+  `provider.ImageResult.metadata` to the tool caller via the new
+  `"metadata"` return-dict key.** v0.17.6 landed mock-provider echo of
+  `seed / steps / cfg_scale / negative_prompt` into `ImageResult.metadata`,
+  but the MCP wrapper only extracted `cost_usd` and dropped the rest —
+  meaning agents could never observe kwargs round-trip. Surfaced by
+  /visual-plan Layer C v2 live ship-gate 2026-04-23. Backward-compat:
+  `"metadata"` key is always present (non-conditional), empty dict when
+  provider returned None.
+- **`src/vulca/_version.py` 0.15.1 → 0.17.8** — fixes stale `__version__`
+  drift. `pyproject.toml` had been bumped since v0.15.1 but the module
+  attribute wasn't. `python -c "import vulca; print(vulca.__version__)"`
+  now reports the true PyPI version.
+
+### Changed
+- `.claude/skills/visual-plan/SKILL.md` — 12 clarity-gap patches folded in
+  from v0.17.7 Layer C v2 (8) + v0.17.5 simulated Layer B (5) minus 1
+  covered by the `_version.py` fix:
+  - **Err #16 handoff variant split** from user-interrupt (variant 9 added).
+    §Handoff is now 9 variants (was 8), distinguishing content-guard abort
+    from user-triggered abort for downstream grep users.
+  - **`evaluate_artwork` dimensions shape** pin — Phase 3 pseudocode now
+    explicitly documents the mock flat-float vs live nested-dict contract
+    with unwrap recipe.
+  - **MCP metadata agent-hint** — Phase 3 pseudocode notes that mock
+    provider echoes all 4 MCP kwargs into `gen_result["metadata"]` for
+    round-trip verification.
+  - **Iter `<K>` semantic** — new paragraph in §Handoff clarifying that
+    `aborted` variants 7-9 use K as the iter_idx that WOULD have run (not
+    the last-successful iter); `<N>/<M>` numerator in `partial` variants =
+    `len(jsonl)` not K.
+  - **Phase 1 step 1 slug path convention** — rejects `/`-containing and
+    absolute-path slugs as malformed (Err #1).
+  - **Phase 1 step 2 traceback guard** — catch `FileNotFoundError` /
+    `PermissionError` and emit Err #1 verbatim BEFORE any Python traceback.
+  - **Phase 1 step 3 Err #3 + fresh-lockfile interaction** — documents
+    the mid-run crash scenario (fires Err #11, correct per S5 letter).
+  - **Phase 1 step 4 stale-lock K=0 rule** — explicit semantic:
+    K = `len(completed_iters)` where completed = jsonl rows with
+    `verdict ∈ {accept, reject}`; empty/absent jsonl → K=0.
+  - **Phase 1 step 7 FIRST-violation precedence** — if both `tradition`
+    (step 6) and `domain` (step 7) invalid, report only the tradition
+    violation via Err #4 (step 6 fires first; no concatenation).
+  - **Phase 2 step 4 Err #8 + denied-deep-review Write suppression** —
+    bolded: turns that mutate neither state nor counter skip the
+    Phase 2 step 5 `Write`.
+  - **Phase 2 step 5 "compact form" definition** — 1-line summary
+    `[unchanged sections: …] turns_used: <N>/<cap>` + full Notes block.
+  - **Phase 2 step 2 redundant-Write note** — clarified as symmetry, not
+    correctness.
+  - **Phase 4 step 4 overage_pct negative formatting** — display rule:
+    `< 0` → `"under budget (-<pct>%)"`; `>= 0` → `"+<pct>%"`.
+
+### Added
+- `tests/test_generate_image_extended_signature.py` — 2 new cases
+  (`test_mcp_wrapper_passes_metadata_through` +
+  `test_mcp_wrapper_metadata_backward_compat_empty_dict`) covering the
+  MCP wrapper metadata passthrough path that v0.17.6 unit tests missed
+  (they tested only the direct-provider layer).
+
+### Non-blocking deferrals
+The clarity-gap backlog is now **clear** — all 13 items folded in (8 from
+v0.17.7 Layer C v2 + 5 from v0.17.5 simulated B; one absorbed into the
+_version.py fix). No open skill-body clarity items.
+
 ## v0.17.7 — 2026-04-23
 
 ### Added
