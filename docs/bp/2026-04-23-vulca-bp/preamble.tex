@@ -90,12 +90,16 @@
 }
 
 % \presumed{default value} — 琥珀色框：AI 已用行业标准默认值填充；请扫读确认或修改
+% 支持自动换行（与 \TBD 同样的 0.85\linewidth parbox）
 \definecolor{presumedAmber}{HTML}{B7791F}
 \definecolor{presumedBg}{HTML}{FFFAF0}
 \newcommand{\presumed}[1]{%
   \begingroup\setlength{\fboxsep}{2pt}%
   \fcolorbox{presumedAmber}{presumedBg}{%
-    \footnotesize\color{presumedAmber}\textsf{\textbf{已默认:}~#1}%
+    \parbox{0.85\linewidth}{%
+      \footnotesize\color{presumedAmber}\RaggedRight%
+      \textsf{\textbf{已默认:}}~#1%
+    }%
   }\endgroup%
 }
 
