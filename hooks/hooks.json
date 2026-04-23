@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat \"${CLAUDE_PLUGIN_ROOT}/skills/using-vulca-skills/SKILL.md\" 2>/dev/null || true",
+            "async": false
+          }
+        ]
+      }
+    ]
+  }
+}

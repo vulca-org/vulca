@@ -1,7 +1,15 @@
 ---
 name: visual-brainstorm
-description: "Brainstorm a 2D illustrative/editorial project (poster, illustration, packaging, brand visual, editorial cover, photo brief, hero art) into proposal.md. Triggers: /visual-brainstorm, '视觉 brainstorm', '设计 brief'. NOT product UI, video, 3D."
+description: Use when the user wants to define a 2D illustrative or editorial visual project — poster, illustration, packaging, brand visual, editorial cover, photo brief, hero art — into a reviewable proposal.md. You MUST use this before /visual-spec and any pixel-generation work. NOT for product UI, video, or 3D.
 ---
+
+## Triggers
+
+- **Slash command**: `/visual-brainstorm <slug>` (preferred explicit entry).
+- **Chinese aliases**: `视觉 brainstorm`, `设计 brief`.
+- **Intent auto-match**: any user request to brainstorm, scope, or define a 2D illustrative / editorial visual project. Auto-invoke on phrases like "设计一个海报", "做一个 illustration brief", "plan a packaging visual", "出个小红书 hero 封面" — do NOT wait for the slash command.
+- **Skip-condition**: user asks about UI layout / interaction / video / 3D / automotive → redirect per Scope-check section; do NOT invoke.
+
 
 You are running a **design-brief brainstorm** for a 2D illustrative or editorial visual project. Your job is to produce a reviewable `proposal.md` that a downstream `/visual-spec` skill will turn into a resolved design. You do not generate pixels; you finalize intent.
 
@@ -153,8 +161,8 @@ updated: YYYY-MM-DD
 
 - **Hard cap: 8 questions per session.** Clarifying Qs + dimension-bank Qs + decision-tree follow-ups all count. Out-of-scope redirect turns and "I don't generate images" responses do NOT count.
 - **Soft extension: +4 (hard 12)** if the user explicitly says "deep dive" or equivalent.
-- When the cap is reached without the user having said "finalize" → Error #7: force-show the full current draft proposal.md and ask "finalize to lock `status: ready`, or 'deep dive' to extend +4?". **Do not auto-advance** (B4).
-- **Finalize trigger**: the user says "finalize" / "done" / "ready" / "lock it". Then and only then, flip `status: draft → status: ready` in frontmatter. Print the §Handoff line and stop.
+- When the cap is reached without the user having said any finalize trigger → Error #7: force-show the full current draft proposal.md and ask "finalize to lock `status: ready`, or 'deep dive' to extend +4?". **Do not auto-advance** (B4).
+- **Finalize trigger**: the user says any of `finalize` / `done` / `ready` / `lock it` / `approve` (case-insensitive substring match — 5-word normalized set shared with /visual-spec). Then and only then, flip `status: draft → status: ready` in frontmatter. Print the §Handoff line and stop.
 
 ## Skill bans
 
@@ -165,7 +173,7 @@ Rules the agent running this skill MUST follow. Each: rule / consequence if viol
 | **B1** | No pixel-level tool calls. Forbidden: `generate_image`, `create_artwork`, `inpaint_artwork`, any `layers_*`, `evaluate_artwork`. | Breaks zero-pixel promise; Week-1 shippability lost | Whitelist: `view_image`, `list_traditions`, `search_traditions`, `get_tradition_guide`, `Read` (only for `--tradition-yaml`). |
 | **B2** | No hidden brief. Even if user says "just go", finalize MUST show full draft + wait for explicit confirm. | Vibe-spec anti-pattern; downstream burns tokens on misaligned intent | User may shorten `## Intent`; `## Acceptance rubric`, `## Open questions`, frontmatter MUST display in full. |
 | **B3** | Tradition declared ⇒ `## Acceptance rubric` MUST appear (L1-L5 template; tradition-guide MAY override strength). | Vulca moat artifact missing | If user insists "no rubric", set `tradition: null` first — consistent declaration, not bypass. |
-| **B4** | No auto-advance status. `draft → ready` ONLY on explicit user trigger ("done" / "finalize" / "ready"). | Unverified draft consumed downstream; resume broken | At cap, present draft and ask; never flip status automatically. |
+| **B4** | No auto-advance status. `draft → ready` ONLY on explicit user trigger (any of `finalize` / `done` / `ready` / `lock it` / `approve` — 5-word normalized set). | Unverified draft consumed downstream; resume broken | At cap, present draft and ask; never flip status automatically. |
 | **B5** | Scope-check first; no out-of-scope brainstorm. Hard-exclude hit → redirect + terminate (no turn cap increment). | Skill props up a domain it cannot win | Fuzzy → first-Q disambiguate. Edge-accept → log `scope-accept rationale` in `## Notes`. |
 | **B6** | No parallel invocation on same slug. | File race; state corruption; resume broken | Detect via `updated` timestamp vs now; reject second call; user renames slug. |
 | **B7** | `frontmatter.tradition` MUST be enum-id or YAML literal `null`. Forbidden strings: `"N/A"`, `"none"`, `"null"`, `""`, `"unknown"`. | `if tradition:` truthy fails → rubric silently omitted → moat artifact missing | Self-assert before write: "tradition is enum-id or YAML null?" |

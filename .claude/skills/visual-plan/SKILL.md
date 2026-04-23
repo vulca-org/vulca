@@ -1,7 +1,15 @@
 ---
 name: visual-plan
-description: "Turn a resolved design.md (from /visual-spec) into reviewable plan.md + run generate+evaluate loop → status {completed, partial, aborted}. Triggers: /visual-plan, '视觉 plan', '设计 execute'. Requires design.md status: resolved + Vulca checkout."
+description: Use when a design.md with status resolved already exists and you need to review plan.md then execute the generate+evaluate loop, producing iters/*.png plus terminal status completed/partial/aborted. You MUST use this before any production image-generation run for the slug. Requires /visual-spec finalized first plus Vulca checkout at cwd.
 ---
+
+## Triggers
+
+- **Slash command**: `/visual-plan <slug>` (preferred explicit entry).
+- **Chinese aliases**: `视觉 plan`, `设计 execute`.
+- **Intent auto-match**: any user request to execute / run / generate the final images for a slug when `docs/visual-specs/<slug>/design.md` exists with `status: resolved`. Auto-invoke on phrases like "跑图", "execute the plan", "生成这个 slug 的最终图", "run the generate+evaluate loop" — do NOT wait for the slash command.
+- **Skip-condition**: no design.md exists (→ run /visual-spec first per Err #1) or plan.md already at terminal status (→ Err #2); cwd lacks `src/vulca/` (→ Err #14).
+
 
 You are running `/visual-plan` — the third meta-skill in the `brainstorm → spec → plan → execute` pipeline. Your job: read a `design.md` at `docs/visual-specs/<slug>/` (produced by `/visual-spec` with `status: resolved`), derive a reviewable `plan.md` draft, walk the user through plan review, execute the generate+evaluate loop against the provider specified by `design.A.provider`, and finalize with terminal status + handoff string.
 
@@ -189,14 +197,14 @@ Cap: **5 user turns** (hard). Soft extend: user message contains `deep review` (
 
 6. **Cap-hit behavior.** When counter reaches cap (5 or 8) without `accept all`:
    - Force-show current full draft.
-   - Prompt exactly: `Turn cap reached. finalize or deep review?`
+   - Prompt exactly: `Turn cap reached. 'accept all' or 'deep review'?`
    - Do NOT auto-advance. Never flip `status` without explicit `accept all` (S2).
 
 ## Phase 3 — Execution loop
 
 Runs only after Phase 2 user types `accept all` and status flips `draft → running`. No review cap. Sequential iteration over `seed_list`. Lockfile heartbeat = jsonl mtime (no separate heartbeat file).
 
-**S2 cross-phase reminder**: Phase 2 cap-hit without `accept all` force-shows the full draft and prompts `Turn cap reached. finalize or deep review?` — status STAYS `draft`; cap-hit alone never enters Phase 3 (see Phase 2 body).
+**S2 cross-phase reminder**: Phase 2 cap-hit without `accept all` force-shows the full draft and prompts `Turn cap reached. 'accept all' or 'deep review'?` — status STAYS `draft`; cap-hit alone never enters Phase 3 (see Phase 2 body).
 
 **S1 enforcement**: Phase 3 tool whitelist = `generate_image` + `evaluate_artwork` + MAY `unload_models` at loop end. Forbidden across all phases: `create_artwork`, `generate_concepts`, `inpaint_artwork`, any `layers_*`.
 

@@ -1,7 +1,15 @@
 ---
 name: visual-spec
-description: "Turn a reviewable proposal.md (from /visual-brainstorm) into a resolved design.md with technical decisions (provider, prompt, thresholds, cost budget) + optional spike validation. Triggers: /visual-spec, '视觉 spec', '设计 design'. Requires proposal.md status: ready."
+description: Use when a proposal.md with status ready already exists and you need to derive a resolved design.md with technical decisions (provider, prompt, thresholds, cost budget) plus optional spike validation. You MUST use this before /visual-plan. Requires /visual-brainstorm finalized first.
 ---
+
+## Triggers
+
+- **Slash command**: `/visual-spec <slug>` (preferred explicit entry).
+- **Chinese aliases**: `视觉 spec`, `设计 design`.
+- **Intent auto-match**: any user request to derive / resolve / spec a visual project when `docs/visual-specs/<slug>/proposal.md` exists with `status: ready`. Auto-invoke on phrases like "把这个 brief 变成 design.md", "resolve the technical decisions", "decide provider + prompt + thresholds" — do NOT wait for the slash command.
+- **Skip-condition**: no proposal.md exists (→ run /visual-brainstorm first per Err #1) or already a design.md with `status: resolved` (→ Err #2).
+
 
 You are running `/visual-spec` — the second meta-skill in the `brainstorm → spec → plan → execute` pipeline. Your job: read a `proposal.md` at `docs/visual-specs/<slug>/` (produced by `/visual-brainstorm` with `status: ready`), derive 7 technical dimensions into a draft `design.md`, walk the user through review, and finalize on explicit approval.
 
