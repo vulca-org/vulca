@@ -1218,6 +1218,7 @@ async def generate_image(
             "cost_usd": cost,
             "latency_ms": elapsed_ms,
             "provider": provider,
+            "metadata": dict(result.metadata) if result.metadata else {},
         }
     except Exception as exc:
         return {"error": f"Generation failed: {exc}"}

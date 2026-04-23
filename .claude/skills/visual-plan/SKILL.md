@@ -21,16 +21,20 @@ Runs before anything else. No turn cap charged. Early-exit on any Err; SKILL.md 
    - `jsonl_path = docs/visual-specs/<slug>/plan.md.results.jsonl`
    - `lock_path = docs/visual-specs/<slug>/plan.md.lock`
    - `iters_dir = docs/visual-specs/<slug>/iters/`
-2. **Read design.md.** Missing file → Err #1. Parse frontmatter. `status != resolved` → Err #1.
+
+   **Slug path convention.** All paths above are resolved relative to `cwd` (which step 0's sentinel assertion already pinned to a Vulca checkout root). Slugs MUST be simple identifiers (e.g. `2026-04-23-gongbi-poster`) — no leading slash, no `..`, no sub-directories. A slug that contains `/` or starts with an absolute-path prefix → reject as malformed and print the Err #1 verbatim string (treated as "design.md not found").
+2. **Read design.md.** Missing file → Err #1. Parse frontmatter. `status != resolved` → Err #1. On `FileNotFoundError` or `PermissionError`, catch the exception and emit the Err #1 verbatim string BEFORE any Python traceback surfaces — a strict-reader must not leak stack frames to the user.
 3. **Check same-slug plan.md collision.**
    - Terminal status (`completed` / `partial` / `aborted`) → Err #2 refuse-overwrite.
    - `status: draft` → Err #3 resume path. **If a stale lockfile also exists, fold Err #12 side-effects (unlink + `[stale-lock-recovery]` Notes line + Phase 4 handoff suffix) into the resume path.**
+   - **Err #3 resume + fresh lockfile interaction** (mid-run crash scenario): if `status: draft` AND lockfile exists + `started_at` < 300s → fire Err #11 (block resume; cannot distinguish crashed-peer-fresh from live-peer-fresh). User must wait 300s for stale-detection or manually `rm` the lockfile before re-invoking. This is correct per S5 letter but worth knowing: `turns_used` counter in the draft's Notes `[resume-state]` line IS preserved through the Err #11 refusal and will be honored on the next invocation.
 4. **Check lockfile** (skip if step 3 folded it):
    - Exists + jsonl fresh (< 300s mtime) OR lockfile `started_at` < 300s + no jsonl → Err #11 concurrent.
    - Exists + stale (jsonl > 300s OR lockfile.started_at > 300s + no jsonl) → Err #12 auto-recover: `os.unlink(lockfile)`, append Notes `[stale-lock-recovery]` line, continue.
+   - **Stale-lock resume iter `<K>`**: when the `[stale-lock-recovery]` Notes line reports `Resuming from iter <K>`, K is defined as `len(completed_iters)` where completed_iters is the list of jsonl rows with `verdict ∈ {accept, reject}` (failed/error rows don't advance iter count). If jsonl is empty or absent, K=0.
 5. **Validate schema_version.** `design.frontmatter.schema_version` in supported set `{"0.1"}`. Absent → treat as `"0.1"` (back-compat). Unrecognized → Err #15.
 6. **Validate tradition.** `list_traditions()`. `frontmatter.tradition` ∈ `traditions.keys()` OR literal YAML null. Violation → Err #4.
-7. **Validate domain.** `frontmatter.domain` ∈ `{poster, illustration, packaging, brand_visual, editorial_cover, photography_brief, hero_visual_for_ui}`. Violation → Err #4.
+7. **Validate domain.** `frontmatter.domain` ∈ `{poster, illustration, packaging, brand_visual, editorial_cover, photography_brief, hero_visual_for_ui}`. Violation → Err #4. **FIRST-violation precedence**: if both `tradition` (step 6) and `domain` (step 7) are invalid, report ONLY the tradition violation via Err #4 (step 6 fires first); do not concatenate or dual-report. The user re-runs `/visual-spec <slug>` to fix both at once.
 8. **Parse 7 fenced-YAML dim blocks** (A/B/C/D1/D2/E/F) per tolerant-read rules below. Required section missing → Err #10. **E section is optional** (fires only when `design.## Open questions` requested a spike); D1 is optional iff `tradition: null`; A/B/C/D2/F are always required.
 
 ### Fenced-YAML parser — tolerant read (Phase 1 step 8)
@@ -175,9 +179,13 @@ Cap: **5 user turns** (hard). Soft extend: user message contains `deep review` (
      - **`user_elevated` persists ONLY in plan.md — never back-written to design.md (S4 per design decision).**
    - **`deep review`** → cap += 3 (max 8). Print one-liner: `Cap extended to 8 turns.` Do NOT advance to Phase 3. One-time use per session; second invocation treated as invalid.
    - **Ambiguous reply** (`"looks good but"`, `"mostly fine"`) → re-prompt main menu; count as 1 turn.
-   - **Pixel action request** (`just generate it`, `run it now`) → Err #8 decline; turn NOT charged.
+   - **Pixel action request** (`just generate it`, `run it now`) → Err #8 decline; turn NOT charged. **Err #8 and a denied second `deep review` (third invocation rejected as invalid) mutate neither plan.md state nor the turn counter — skip the `Write` step in Phase 2 housekeeping (item 5) for these turns.**
 
 5. **Per-turn housekeeping.** After each round, re-render the current draft (compact form if no section mutated) and update `[resume-state] turns_used: <N>` line in Notes. **Then re-`Write` plan.md** (status: draft, updated: <today>) — pairs with EVERY turn that mutated state OR counter, per brainstorm/spec discipline. If user at cap−1, courtesy notice: `1 turn remaining. Last 'change <section>' or 'deep review'?`.
+
+   **"Compact form" definition**: if no section's fenced-YAML block mutated this turn, the re-render omits all 6 section bodies and prints only a 1-line summary `[unchanged sections: A, B, C, D, E, F] turns_used: <N>/<cap>` followed by the full `## Notes` block. The full draft still gets rewritten to disk via `Write` (per the pairs-with-every-counter-change rule); only the user-facing print is compact.
+
+   **Redundant-Write note**: the initial plan.md persistence happens in Phase 1 step 13 (status=draft, turns_used=0). Phase 2 step 2's render-and-Write is functionally a re-Write of the same content if the F-summary prompt in step 1 did not mutate F. Strictly speaking step 2's Write is redundant on the no-F-mutation path; we keep it for symmetry with the `change <section>` path (both paths Write at end-of-turn), not for correctness.
 
 6. **Cap-hit behavior.** When counter reaches cap (5 or 8) without `accept all`:
    - Force-show current full draft.
@@ -227,6 +235,13 @@ for iter_idx, seed in enumerate(seed_list):
             cfg_scale=plan.A.cfg_scale,            # MCP-extended
             negative_prompt=plan.A.negative_prompt, # MCP-extended
         )
+        # Since v0.17.8 the MCP generate_image wrapper forwards provider.metadata
+        # through on the "metadata" key (always present, may be empty dict).
+        # For mock provider, metadata echoes the 4 MCP kwargs for round-trip
+        # verification — agents MAY assert kwargs landed correctly by inspecting
+        # gen_result["metadata"].{seed,steps,cfg_scale,negative_prompt} on mock runs.
+        # For live providers, metadata shape is provider-specific (e.g. gemini
+        # surfaces image_size/aspect_ratio; openai surfaces model/revised_prompt).
     except ProviderUnreachable as e:
         # Err #5 hands off directly to Err #13 cross-class user prompt (no S8 auto-failover)
         user_choice = prompt_err13(e, plan.A.provider)
@@ -252,7 +267,10 @@ for iter_idx, seed in enumerate(seed_list):
         tradition=design.frontmatter.tradition,
     )
     # evaluate_artwork returns {"score": float, "dimensions": {...}, "tradition": str}.
-    # Map the 5 L scores out of the dimensions dict (keys are rubric names per tradition).
+    # `dimensions` shape varies by evaluator mode:
+    #   mock=True  → flat float dict, e.g. {"L1": 0.85, "L2": 0.80, "L3": 0.90, "L4": 0.83, "L5": 0.88}
+    #   live VLM   → nested dict,     e.g. {"L1": {"score": 0.85, "rationale": "..."}, ...}
+    # _extract_l_scores MUST handle both: float → use directly; dict → unwrap `.score`.
     # On missing / malformed dimensions → jsonl row verdict=failed with error=<excerpt>, continue.
     l_scores = _extract_l_scores(eval_result)
     weighted_total = sum(l_scores[k] * plan.D1[k] for k in ("L1", "L2", "L3", "L4", "L5"))
@@ -332,14 +350,14 @@ Schema rules:
    - **`completed`** trigger: all iters in seed_list completed AND at least one verdict ∈ {accept, accept-with-warning}. Soft warnings affect handoff variant selection but do NOT demote to partial.
    - **Zero-rows corner case**: if Err #16 / user abort fires at iter 0 before any jsonl row appended → fall-through to `aborted`.
 3. Render `## Results` markdown table from jsonl rows (columns: `iter | seed | variant | image | L1-L5 | weighted | verdict | wall_time | provider | notes`).
-4. Populate `## F. Cost ledger` actual: `total_wall_time` sum from jsonl, `overage_pct = actual / initial_budget - 1`.
+4. Populate `## F. Cost ledger` actual: `total_wall_time` sum from jsonl, `overage_pct = actual / initial_budget - 1`. **Display rule**: if `overage_pct < 0` render as `"under budget (-<pct>%)"` instead of raw negative decimal; if `overage_pct >= 0` render as `+<pct>%`.
 5. Append terminal-state Notes lines (`[fail-fast]`, `[aborted-at-iter]`, etc.).
 6. Rename `plan.md.results.jsonl` → `plan.md.results.jsonl.archive` (atomic on same filesystem).
 7. Delete `plan.md.lock` via `os.unlink`.
 8. MAY call `unload_models()` on `plan.A.provider`'s weight family for post-session cleanup. Log Notes if called.
 9. Write final `plan.md` with `status: <terminal>`, `updated: <today>`.
 10. Assert S4: `plan.frontmatter.{tradition, domain, slug}` == captured values. Violation → raise (code bug).
-11. Determine handoff string variant (8 variants total — see §Handoff below); append ` (recovered from stale lock at iter <K>)` suffix if Phase 1 fired Err #12 or folded via Err #3.
+11. Determine handoff string variant (9 variants total — see §Handoff below; Err #16 content-guard abort is its own variant since v0.17.8); append ` (recovered from stale lock at iter <K>)` suffix if Phase 1 fired Err #12 or folded via Err #3.
 12. Print handoff string byte-identical.
 
 **Do NOT auto-invoke anything downstream.** /visual-plan is terminal.
@@ -388,7 +406,7 @@ Schema rules:
 - **Hands-off**: Err 5 → #13.
 - **Content-guard abort**: Err 16.
 
-## Handoff — 8 variants byte-identical grep contract
+## Handoff — 9 variants byte-identical grep contract
 
 | Terminal status + conditions | Handoff string |
 |---|---|
@@ -398,8 +416,11 @@ Schema rules:
 | `partial` via Err #7 `accept-remaining` | `Plan /visual-plan/<slug> partial (<N>/<M>). cost budget exceeded; user accepted remaining.` |
 | `partial` via Err #13(c) cross-class skip | `Plan /visual-plan/<slug> partial (<N>/<M>). <provider> unreachable; user skipped remaining.` |
 | `partial` via all-`failed` verdicts (Err #6) | `Plan /visual-plan/<slug> partial (<N>/<M>). all generate_image calls failed (<err excerpt>).` |
-| `aborted` via user interrupt / Err #13(b) / Err #16 | `Plan /visual-plan/<slug> aborted by user at iter <K>. resume with /visual-plan <slug>.` |
+| `aborted` via user interrupt / Err #13(b) | `Plan /visual-plan/<slug> aborted by user at iter <K>. resume with /visual-plan <slug>.` |
 | `aborted` via Err #7 `abort` | `Plan /visual-plan/<slug> aborted at iter <K>. cost budget exceeded.` |
+| `aborted` via Err #16 design-drift (v0.17.8+) | `Plan /visual-plan/<slug> aborted at iter <K>. design.md mutated mid-session. Re-run /visual-plan <slug> to restart with new design.` |
+
+**Iter `<K>` semantic**: for `aborted` variants 7-9, `<K>` is the iter_idx value at which the abort/interrupt fired (i.e., the iter that WOULD have run but did not complete). `jsonl` rows 0..K-1 are preserved on disk; row K was never appended. So `<N>/<M>` numerators in partial variants represent **completed rows** (`len(jsonl)` post-archive), not `K` itself.
 
 **Error-excerpt convention**: `<err excerpt>` is first 80 chars, with `\n` and `` ` `` replaced by single spaces.
 

@@ -145,3 +145,52 @@ class TestExtendedSignature:
         assert result.metadata["steps"] == 25
         assert result.metadata["cfg_scale"] == 8.0
         assert result.metadata["negative_prompt"] == "noise"
+
+    def test_mcp_wrapper_passes_metadata_through(self, tmp_path):
+        """v0.17.8 fix: MCP generate_image must forward provider.ImageResult.metadata
+        to the tool caller.
+
+        v0.17.6 introduced mock-provider kwargs echo into ImageResult.metadata, but
+        the MCP wrapper (src/vulca/mcp_server.py) historically discarded metadata
+        after extracting cost_usd. This meant agents (via MCP) could never observe
+        seed/steps/cfg_scale round-trip — surfaced by /visual-plan Layer C v2 ship-gate
+        2026-04-23 as the most load-bearing of the 13 v0.17.8 clarity items.
+        """
+        from vulca.mcp_server import generate_image
+
+        r = run(generate_image(
+            "p",
+            provider="mock",
+            output_dir=str(tmp_path),
+            seed=4242,
+            steps=25,
+            cfg_scale=8.0,
+            negative_prompt="blurry",
+        ))
+
+        assert "metadata" in r, "MCP wrapper must include metadata key in return dict"
+        meta = r["metadata"]
+        assert meta["seed"] == 4242
+        assert meta["steps"] == 25
+        assert meta["cfg_scale"] == 8.0
+        assert meta["negative_prompt"] == "blurry"
+
+    def test_mcp_wrapper_metadata_backward_compat_empty_dict(self, tmp_path):
+        """When caller provides no kwargs, metadata key still present but kwargs keys absent.
+
+        Guards against a regression where `metadata` dict is non-None but empty → the
+        agent-facing contract is: `"metadata" in r` is always True (never missing key),
+        absent kwargs = absent metadata key (not None, not empty-string).
+        """
+        from vulca.mcp_server import generate_image
+
+        r = run(generate_image("p", provider="mock", output_dir=str(tmp_path)))
+
+        assert "metadata" in r
+        meta = r["metadata"]
+        assert "seed" not in meta
+        assert "steps" not in meta
+        assert "cfg_scale" not in meta
+        assert "negative_prompt" not in meta
+        # But candidate_id (always-populated mock field) still there
+        assert "candidate_id" in meta
