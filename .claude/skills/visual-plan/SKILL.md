@@ -93,6 +93,64 @@ updated: YYYY-MM-DD
 
 Notes convention lines (when relevant): `[parser-default]` / `[parser-warn]` / `[parser-normalize]` / `[override]` / `[resume-state]` / `[fail-fast]` / `[stale-lock-recovery]` / `[review-required]` / `[unload-models]` / `[evaluate-suspect]` / `[design-drift]` / `[failover-cross-class]`.
 
+## Source-gating decisions (consumed by Phase 2 + 3)
+
+For each design.md numeric threshold `{value, source, confidence}`, Phase 1 derivation maps to `gate_class`:
+
+| design.md field | source value | plan.md `gate_class` | Phase 3 behavior |
+|---|---|---|---|
+| `D2.L_N_threshold` | `measured` | **hard** | score < value → `reject` verdict, fail_fast_counter++ |
+| `D2.L_N_threshold` | `derived` | **hard** | same as measured (calibration-anchored, trusted) |
+| `D2.L_N_threshold` | `assumed` | **soft** | score < value → `accept-with-warning`, log `[review-required]` to Notes, soft_gate_warn_count++, counter unchanged |
+| `D2.L_N_threshold` | `user-confirmed` (post-elevation via Phase 2 change) | **hard** | same as measured; only possible after Phase 2 `change D.L_N` subcommand |
+| `F.per_gen_sec` | `measured` / `derived` | **hard-budget** | enforced by Err #7 fail_fast counter |
+| `F.per_gen_sec` | `assumed` | **Phase 2 F-summary prompt decides** | reply (a) → hard-budget continues + `user_ack_assumed_budget: true`; (b) → updates value, source=user-confirmed, hard-budget; (c) → disables Err #7 via `fail_fast_consecutive = None` |
+| `F.fail_fast_consecutive` | any source | **hard-counter** | value applies regardless of source once F-summary resolved |
+| `D1.L_N` weight | (no source triple) | **registry-authority** | weighted_total multiplier only; not itself a gate |
+
+**Critical invariant**: when Phase 2 `change D.L_N` elevates a threshold from assumed → user-confirmed, `user_elevated` list in plan.md tracks the change + `gate_class: soft → hard` + `[override]` Notes line logged. **`user_elevated` persists ONLY in plan.md — never back-written to design.md. design.md is immutable post-resolved per /visual-spec S4 contract.**
+
+### Phase 3 verdict tree
+
+```python
+# Sentinel: all-zero scores indicate evaluator failure masquerading as pass.
+# Without this guard, a broken evaluate_artwork silently greenlights every iter.
+# Threshold is <0.01 (not ==0.0) to catch float-representation noise from evaluators
+# that emit 1e-7 rather than exact zero. Legitimate single-L outliers at 0.008 do NOT
+# trigger — sentinel requires ALL FIVE dims simultaneously below 0.01.
+if all(l_scores[k] < 0.01 for k in ("L1", "L2", "L3", "L4", "L5")):
+    _append_notes(f"[evaluate-suspect] iter {iter}: all L_N scores < 0.01; flagged for review")
+    return "accept-with-warning"
+
+hard_fails = [L_N for L_N in L1..L5 if gate_class=hard AND score < value]
+soft_fails = [L_N for L_N in L1..L5 if gate_class=soft AND score < value]
+budget_overage = (F.fail_fast_consecutive is not None AND wall_time > F.per_gen_sec.value * 2)
+
+if hard_fails: return "reject"
+if soft_fails or budget_overage: return "accept-with-warning"   # NOT reject, counter unchanged
+return "accept"                                                   # fail_fast_counter → 0
+```
+
+### Phase 2 F-summary prompt (fires before main draft prompt; NOT charged toward 5-turn cap)
+
+triggered when any of `F.per_gen_sec / F.total_session_sec` has `source == "assumed"`. Print exactly:
+
+```
+F budget is assumed: per_gen_sec ~<X>s × <N> iters × 1.5 margin = ~<Y>s total.
+This is derived from mock calibration + provider multiplier; not measured on your hardware.
+Reply:
+  (a) accept this budget as-is
+  (b) override <per_gen_sec_seconds>
+  (c) skip-budget-check (disables Err #7 cost enforcement)
+```
+
+Reply handling:
+- `(a)` / `a` / `accept` → set `F.user_ack_assumed_budget: true`; F stays assumed; fail_fast still active.
+- `(b) <N>` / `override <N>` → `F.per_gen_sec = {value: N, source: user-confirmed, confidence: high}`; recompute `F.total_session_sec`; fail_fast active with new baseline.
+- `(c)` / `skip` / `skip-budget-check` → `F.fail_fast_consecutive = None`; Err #7 disabled; log Notes `[budget-skipped] user opted out of per-gen latency enforcement`.
+- Invalid first time → re-prompt once.
+- Invalid second time → default to `(a)` + log `[budget-assumed-default] invalid reply treated as accept`.
+
 ## Phase 2 — Plan-review loop
 
 (filled in Task 6)
