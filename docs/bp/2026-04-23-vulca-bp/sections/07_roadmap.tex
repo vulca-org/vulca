@@ -1,0 +1,111 @@
+\section{发展里程碑与三年路线图}
+\label{sec:roadmap}
+
+\subsection{已完成的里程碑（信用背书）}
+
+下面的节点都是\keyword{可在 GitHub 仓库 commit history 和 PyPI release 中独立核验}的事实，
+不是预测：
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{2.2cm}>{\raggedright\arraybackslash}p{3.0cm}>{\raggedright\arraybackslash}X@{}}
+\toprule
+\rowcolor{tableHead}
+\heiti 日期 & \heiti 里程碑 & \heiti 意义 \\
+\midrule
+2026-04-09 & \code{v0.14.0} 发布 & 全部 v0.13.x backlog 清零；代码质量基线稳定 \\
+2026-04-12 & 本地链路验证完成 & ComfyUI + Ollama + MPS 端到端跑通；\keyword{自主可控底座确立} \\
+2026-04-16 & Phase 1 完成（v0.16.0 / v0.16.1） & MCP 工具从 29 压缩到 20 + 1（简洁化）；\keyword{agent-native pivot 正式落地} \\
+2026-04-16 & Phase 0 合并 & dual-field manifest，支持 10–20 层多图层；\keyword{拆图能力达到产品级} \\
+2026-04-19 & \code{/decompose} skill 上线 & 第一个端到端 agent-native 工作流；模型卸载 + 4-loader Lock \\
+2026-04-20 & README 重整 + 插件 v0.16.1 & 开发者入口重写为 60 秒上手流程；\keyword{社区首轮流量对接} \\
+2026-04-21 & \code{/visual-brainstorm} skill 上线（v0.17.3） & 视觉意图转 proposal 的第一层 meta-skill \\
+2026-04-21 & \code{/visual-spec} skill 上线（v0.17.5） & proposal 转可评审 design 的第二层 meta-skill；9/9 ship-gate 全绿 \\
+2026-04-22 & Layer C v2 全绿 & 活跃 MCP ship-gate 4/4 通过；非 spike 面全覆盖验证 \\
+2026-04-23 & \code{/visual-plan} 设计锁定 & 第三层 meta-skill 进入实施阶段 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{未来 12 个月（2026 Q2 – 2027 Q1）—— 季度颗粒度}
+
+\subsubsection*{Q2 2026（本轮募资后立即启动）}
+\begin{itemize}
+  \item \keyword{产品}：\code{/visual-plan} 上线；\code{/evaluate} skill 进入 shipping；启动 \code{/inpaint} 的 brainstorm；
+  \item \keyword{开源}：GitHub star 目标 \TBD{500+}；PyPI 月下载 \TBD{2000+}；至少 2 篇英文深度技术文；
+  \item \keyword{团队}：完成资深算法工程师 + 产品/BD 入职；
+  \item \keyword{学术}：ACM MM 2026 EmoArt Challenge 提交（2026-06-10）；
+  \item \keyword{资本}：本轮交割完成、ESOP 搭建。
+\end{itemize}
+
+\subsubsection*{Q3 2026}
+\begin{itemize}
+  \item \keyword{产品}：\code{/inpaint} 上线，\code{/layered-create} 进入 brainstorm；
+  \item \keyword{商业}：\keyword{Vulca Cloud alpha} 对 10–30 个内测团队开放；首个付费意向书；
+  \item \keyword{社区}：文化传统 YAML 社区贡献者破 3 人（跨机构）；
+  \item \keyword{学术}：EmoArt 结果公布（预期 Track 1 名次）。
+\end{itemize}
+
+\subsubsection*{Q4 2026}
+\begin{itemize}
+  \item \keyword{产品}：\code{/layered-create} 上线；5 个端到端 skill 覆盖完整"brief $\to$ 分解 $\to$ 编辑 $\to$ 评估 $\to$ 合成"闭环；
+  \item \keyword{商业}：Vulca Cloud 正式转付费；\keyword{签下第一个行业灯塔客户}（博物馆 / 出版 / 设计集团其一）；
+  \item \keyword{增长}：GitHub star \TBD{1500+}；PyPI 月下载 \TBD{5000+}；
+  \item \keyword{政策对接}：完成至少一个\keyword{政府/孵化器项目申报}。
+\end{itemize}
+
+\subsubsection*{Q1 2027}
+\begin{itemize}
+  \item \keyword{产品}：\code{v1.0} 发布；API 稳定性承诺对外；
+  \item \keyword{商业}：2–3 个行业客户 On-Prem 签约；\keyword{ARR 爬坡至 \TBD{保守目标 ¥200–500 万}};
+  \item \keyword{资本}：Pre-A 轮启动，投资人数据室搭建完成。
+\end{itemize}
+
+\subsection{中期展望（2027 – 2028）}
+
+\begin{itemize}
+  \item 成为 \keyword{Claude Code / MCP 生态中图像域的默认 SDK}，类比代码域的 \code{git} 之于 GitHub；
+  \item 覆盖 \keyword{20+ 种文化传统}，其中至少 5 种来自社区贡献，形成\keyword{可持续扩展的数据资产}；
+  \item \keyword{10+ 家行业客户}完成本地化部署，其中至少 2 家为\keyword{国家级文博 / 出版集团}；
+  \item 完成 \keyword{Pre-A 或 A 轮融资}，团队扩展至 \TBD{30+ 人}，同时保持工程质量（tests/LOC、ship 频率）不下滑；
+  \item 成为 ACM MM / CVPR / SIGGRAPH 等会议的\keyword{稳定贡献者}，用学术发表反哺产品差异化。
+\end{itemize}
+
+\subsection{三条平行 KPI 线}
+
+路线图不是"只盯 ARR 不看产品"，也不是"只顾 star 数不顾现金流"。
+我们用三条 KPI 线\keyword{互相钳制}：
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}X@{}}
+\toprule
+\rowcolor{tableHead}
+\heiti KPI 线 & \heiti 指标示例 \\
+\midrule
+\keyword{产品} & 已上线 skill 数、MCP 工具数、测试数、ship 频率、CI 绿灯率 \\
+\keyword{社区与商业} & GitHub star、PyPI 下载、Cloud MAU、付费账户、ARR、灯塔客户数 \\
+\keyword{学术与文化} & 已覆盖文化传统数、社区贡献 YAML 数、学术论文 / 会议投稿数、权威引用 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{里程碑节奏示意}
+
+\begin{center}
+\begin{tikzpicture}[
+  milestone/.style={circle,draw=vulcaPrimary,fill=vulcaSoft,minimum size=7pt,inner sep=0pt},
+  label/.style={font=\scriptsize\heiti,color=vulcaInk,align=center},
+  line/.style={draw=vulcaMuted,thick,-{Stealth[scale=0.7]}}
+]
+  \draw[line] (0,0) -- (14.2,0);
+  \foreach \x/\t/\l in {
+    0/2026-Q2/{/visual-plan\\/evaluate ship\\EmoArt 提交},
+    3.2/2026-Q3/{/inpaint ship\\Cloud alpha\\EmoArt 结果},
+    6.4/2026-Q4/{/layered-create\\Cloud 正式付费\\行业灯塔客户},
+    9.6/2027-Q1/{v1.0 发布\\Pre-A 启动\\ARR 爬坡},
+    12.8/2027+/{生态默认 SDK\\政策试点落地}}
+    {\node[milestone] at (\x,0) {};
+     \node[label,above=6pt] at (\x,0) {\textbf{\t}};
+     \node[label,below=6pt] at (\x,0) {\l};}
+\end{tikzpicture}
+\end{center}

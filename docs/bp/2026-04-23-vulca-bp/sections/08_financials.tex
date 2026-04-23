@@ -1,0 +1,114 @@
+\section{用资计划与财务估算}
+\label{sec:financials}
+
+\subsection{天使轮本轮诉求}
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{3.4cm}>{\raggedright\arraybackslash}X@{}}
+\toprule
+\rowcolor{tableHead}
+\heiti 项 & \heiti 内容 \\
+\midrule
+\heiti 募资金额 & \TBD{¥ 500–800 万（建议区间）；或 US\$ 80–150k 等值} \\
+\heiti 估值口径 & \TBD{post-money 估值区间，例如 ¥ 3000–5000 万} \\
+\heiti 工具主体 & \TBD{境内有限公司 / VIE / 开源社区主体的搭配方案} \\
+\heiti 主要用途 & 约 80\% 团队薪酬 + 福利；约 20\% 市场与行业落地；算力主要靠已有 credits \\
+\heiti 跑道 & 12–18 个月，至 Pre-A 启动 \\
+\heiti 投资人画像 & 对 agent / 开源 / 文化科技有长期兴趣的 VC、行业战略投资人 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{12 个月用资计划（示意预算，单位：¥ 万）}
+
+\TBD{以下数字为示意口径，建议由你根据目标募资金额做最终校准。
+默认按 \keyword{¥ 600 万}募资、\keyword{18 个月}跑道分配。}
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{3.8cm}>{\raggedleft\arraybackslash}p{1.6cm}>{\raggedleft\arraybackslash}p{1.6cm}>{\raggedright\arraybackslash}X@{}}
+\toprule
+\rowcolor{tableHead}
+\heiti 科目 & \heiti 金额 & \heiti 占比 & \heiti 备注 \\
+\midrule
+人员薪酬（创始人 + 5–6 人团队，18 月） & 380 & 63\% & 含社保公积金；P0/P1 岗位优先 \\
+团队股权激励（ESOP 搭建 + 首批释放） & 20 & 3\% & 法律/顾问费用 \\
+市场与行业客户落地 & 80 & 13\% & 灯塔客户 POC 实施、行业会议、dev.to/Xiaohongshu 内容 \\
+学术 / 会议 / 认证 & 30 & 5\% & ACM MM、国内 AI 大会、软著 / 专利申报 \\
+办公与基础设施 & 40 & 7\% & 协作工具、云资源、少量非 credit 覆盖的算力 \\
+法务 / 工商 / 审计 & 30 & 5\% & 股权文件、合同模板、年审 \\
+应急储备 & 20 & 3\% & 不确定性缓冲 \\
+\midrule
+\textbf{合计} & \textbf{600} & \textbf{100\%} & \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\paragraph{算力成本单独说明}
+项目已获得 \keyword{Google Gemini + Anthropic} 两套研究级 / 创业级 API credits，
+预计可覆盖未来 12–18 个月的\keyword{模型调用与演示}成本。
+这是 Vulca 相较同阶段团队的一项结构性优势：
+\keyword{我们不需要把天使资金花在 token 上}，可以几乎全部投入在人和市场。
+
+\subsection{三年里程碑导向的收入预估（保守 / 中性 / 乐观）}
+
+天使阶段的 \keyword{P\&L 预测}本质是不可靠的。
+我们\keyword{不用 DCF、不用 LTV/CAC 公式}来蒙投资人；
+取而代之，以\keyword{三条可被验证的里程碑线}给出保守 / 中性 / 乐观三档：
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{2.2cm}>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}X@{}}
+\toprule
+\rowcolor{tableHead}
+\heiti 年份 & \heiti 保守（Bear） & \heiti 中性（Base） & \heiti 乐观（Bull） \\
+\midrule
+\keyword{2026} &
+Cloud alpha 20 内测团队；0 行业客户；ARR $<$ \TBD{¥ 50 万} &
+Cloud 签约 30 付费账户；1 行业灯塔客户 POC；ARR $\approx$ \TBD{¥ 100–200 万} &
+Cloud 签约 80+；2 行业客户 POC；ARR $\approx$ \TBD{¥ 300 万} \\
+\midrule
+\keyword{2027} &
+Cloud 50 付费；1 行业客户试点；ARR \TBD{¥ 200–400 万} &
+Cloud 150 付费；2–3 行业客户签约；ARR \TBD{¥ 600–1000 万} &
+Cloud 300+ 付费；5 行业客户签约；ARR \TBD{¥ 1500 万} \\
+\midrule
+\keyword{2028} &
+Cloud 150 付费；3 行业客户稳定；ARR \TBD{¥ 600 万} &
+成为 MCP 图像域默认 SDK；ARR \TBD{¥ 2000 万} &
+行业 on-prem 集中释放；ARR \TBD{¥ 4000 万} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\paragraph{为什么不做 SaaS 单位经济假财务}
+\begin{itemize}
+  \item 在 agent-native 这个新赛道上，\keyword{LTV / CAC / churn 等基础参数还没有可信经验值}，
+  任何精确数字都是假精度；
+  \item 天使轮的核心判断是"人 + 赛道"，不是"三年后 IRR"；
+  \item 我们更愿意给投资人一份\keyword{可验证的里程碑清单}，而不是一张无法质疑的 Excel；
+  \item Pre-A 轮再提供经过 12 个月真实数据校准的单位经济模型，届时数据会更有说服力。
+\end{itemize}
+
+\subsection{资金使用里程碑承诺}
+
+作为 C 类受众（孵化器 / 政府立项）关心的\keyword{产出承诺}，
+我们把天使轮资金与 7 个可验证节点强绑定：
+
+\begin{enumerate}
+  \item T+3 月：2 个新 skill shipped（\code{/evaluate} / \code{/inpaint}）；
+  \item T+6 月：团队扩张至 6 人 + 1 个灯塔客户 POC 启动 + EmoArt 结果发布；
+  \item T+9 月：Cloud alpha 上线、首批付费意向；
+  \item T+12 月：\code{v1.0} 发布、至少 1 个行业客户签约；
+  \item T+15 月：Pre-A 数据室搭建完成；
+  \item T+18 月：Pre-A 启动或现金流持平（只要二者之一达成即视为天使轮成功）；
+  \item \keyword{任何一个节点 miss 30 天以上}，主动向投资人汇报与提出修正方案。
+\end{enumerate}
+
+\subsection{退出路径示意}
+
+\begin{itemize}
+  \item \keyword{主线路径}：成为 agent-native 图像领域头部 SDK + 托管服务，被 AI 基础设施厂商（Anthropic / Google / 国内头部 agent / 云厂商）战略收购；
+  \item \keyword{次线路径}：在文博 / 出版 / 设计行业形成垂直壁垒，独立 IPO 或被行业集团收购；
+  \item \keyword{学术溢出}：开源项目本身持续产出论文和学术引用，形成\keyword{品牌护城河}；
+  \item \keyword{谨慎}：我们不把"下一轮融资"当成退出；它只是中间步骤。
+\end{itemize}

@@ -1,0 +1,116 @@
+% Vulca 商业计划书 · 通用 preamble
+% 目标读者：A（天使 VC）+ C（国内孵化器/政府立项/高校转化）
+% 字体：macOS 系统 CJK（Songti / STHeiti），英文走 fontspec 默认
+
+\usepackage[a4paper,top=2.4cm,bottom=2.6cm,left=2.2cm,right=2.2cm]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{colortbl}
+\usepackage{graphicx}
+\usepackage{fontspec}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,shapes,fit,backgrounds}
+\usepackage[hidelinks,colorlinks=true,linkcolor=vulcaPrimary,urlcolor=vulcaPrimary,citecolor=vulcaPrimary]{hyperref}
+
+% === 配色 ===
+\definecolor{vulcaPrimary}{HTML}{4B2F9C}
+\definecolor{vulcaAccent}{HTML}{F5A623}
+\definecolor{vulcaInk}{HTML}{1A1A2E}
+\definecolor{vulcaMuted}{HTML}{4A5568}
+\definecolor{vulcaSoft}{HTML}{F5F3FF}
+\definecolor{tbdRed}{HTML}{D63031}
+\definecolor{tbdBg}{HTML}{FFF5F5}
+\definecolor{tableHead}{HTML}{E8E3FB}
+\definecolor{successGreen}{HTML}{2E7D32}
+
+% === 字体 ===
+% 英文走 Latin Modern（默认）；等宽用 Menlo
+\setmonofont{Menlo}[Scale=0.92]
+
+% CJK 字体：Songti 作正文衬线、STHeiti 作标题黑体
+\setCJKmainfont{Songti SC}[
+  UprightFont = * Light,
+  BoldFont    = * Bold,
+  ItalicFont  = * Regular,
+  AutoFakeBold = 2.0]
+\setCJKsansfont{Heiti SC}[
+  UprightFont = * Light,
+  BoldFont    = * Medium,
+  AutoFakeBold = 2.0]
+\setCJKmonofont{Heiti SC}[AutoFakeBold = 2.0]
+
+% 注：\songti 与 \heiti 由 ctex 内置提供，ctex 默认已映射到系统 Songti/STHeiti
+% 我们只做 CJKmain/sans 的显式绑定即可
+
+% === 标题样式 ===
+\titleformat{\section}
+  {\heiti\Large\bfseries\color{vulcaPrimary}}
+  {\thesection}{0.8em}{}[{\color{vulcaPrimary}\vspace{-2pt}\titlerule[1pt]}]
+\titleformat{\subsection}
+  {\heiti\large\bfseries\color{vulcaInk}}
+  {\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}
+  {\heiti\normalsize\bfseries\color{vulcaMuted}}
+  {\thesubsubsection}{0.5em}{}
+
+\titlespacing*{\section}{0pt}{16pt}{8pt}
+\titlespacing*{\subsection}{0pt}{12pt}{6pt}
+\titlespacing*{\subsubsection}{0pt}{10pt}{4pt}
+
+% === 页眉页脚 ===
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\heiti\color{vulcaMuted}Vulca \textperiodcentered{} 商业计划书}
+\fancyhead[R]{\small\color{vulcaMuted}\leftmark}
+\fancyfoot[C]{\small\color{vulcaMuted}\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\small\color{vulcaMuted}\thepage}\renewcommand{\headrulewidth}{0pt}}
+
+% === 自定义命令 ===
+% \TBD{label} — 红框高亮"待你填入的硬数据"（支持自动换行）
+\newcommand{\TBD}[1]{%
+  \begingroup\setlength{\fboxsep}{4pt}%
+  \fcolorbox{tbdRed}{tbdBg}{%
+    \parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{%
+      \footnotesize\color{tbdRed}\raggedright%
+      \textsf{\textbf{TBD:}}~#1%
+    }%
+  }\endgroup%
+}
+
+% \fact{label}{value} — 事实性数据块
+\newcommand{\fact}[2]{%
+  \textbf{\color{vulcaPrimary}#1:}~#2%
+}
+
+% \keyword{text} — 强调关键词
+\newcommand{\keyword}[1]{\textbf{\color{vulcaPrimary}#1}}
+
+% \code{text} — 行内代码/命令
+\newcommand{\code}[1]{\texttt{\small\color{vulcaInk}#1}}
+
+% 表格样式
+\renewcommand{\arraystretch}{1.25}
+\setlength{\tabcolsep}{6pt}
+
+% 列表样式
+\setlist[itemize]{leftmargin=1.4em, itemsep=3pt, topsep=4pt}
+\setlist[enumerate]{leftmargin=1.6em, itemsep=3pt, topsep=4pt}
+
+% 行距
+\linespread{1.18}
+
+% 超链接设置
+\hypersetup{
+  pdftitle={Vulca 商业计划书},
+  pdfauthor={Vulca Team},
+  pdfsubject={Agent-Native Image SDK for Claude Code},
+  pdfkeywords={Agent, MCP, Image SDK, Vulca, Claude Code, 文化评估}
+}

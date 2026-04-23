@@ -1,0 +1,149 @@
+\section{产品与核心技术}
+\label{sec:product}
+
+\subsection{核心叙事：agent-native 三角}
+
+Vulca 的核心技术差异化不是任何一项单点技术，
+而是\keyword{三项技术互相支撑形成的稳定三角}：
+
+\begin{itemize}
+  \item \keyword{骨架：MCP 工具集}\quad 把所有像素级能力以 21 个结构化 MCP 工具暴露给 agent，
+  让 Claude Code、Cursor 等 agent 可以\keyword{像调用文件系统那样调用图像能力}。
+  \item \keyword{灵魂：文化属性分析}\quad 13 种艺术与设计传统、L1–L5 可引用评价准则，
+  把"视觉质量"从"玄学"升级为\keyword{可审计、可复现、可扩展}的评价体系。
+  \item \keyword{底座：完全本地化链路}\quad Apple Silicon / CUDA 下 ComfyUI + Ollama + EVF-SAM
+  全链路离线运行，数据和算力不出网。
+\end{itemize}
+
+这三项中的任何一项单独都不构成壁垒——
+MCP 工具任何人可以写，文化评估系统学界已有研究，本地化推理是成熟技术。
+但\keyword{三项合在一起}构成了：\keyword{agent 能调用}、\keyword{结果可审计}、\keyword{部署可闭环}的完整体系，
+这是工程密度 + 领域纵深 + 产业嗅觉的组合壁垒。
+
+\subsection{骨架：21 个 MCP 工具}
+\label{sec:product:mcp}
+
+MCP 是 Anthropic 在 2024 年末正式定义的 agent 工具协议，
+目前已被 Claude Code、Cursor、Windsurf 等主流 agent 产品采用。
+Vulca 将所有能力以 MCP 工具形式暴露，
+让 agent 可以\keyword{通过标准协议发现、调用、组合}。
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{2.2cm}>{\raggedright\arraybackslash}X@{}}
+\toprule
+\rowcolor{tableHead}
+\heiti 能力簇 & \heiti 对应 skill & \heiti 代表工具（部分） \\
+\midrule
+\keyword{语义分层} & \code{/decompose}（已上线） & \code{layers\_split}（orchestrated）、\code{layers\_list} \\
+\keyword{区域编辑} & 规划中 & \code{inpaint\_artwork}、\code{layers\_edit}、\code{layers\_redraw}、\code{layers\_transform}、\code{layers\_composite}、\code{layers\_export}、\code{layers\_evaluate} \\
+\keyword{文化评估} & 规划中 & \code{evaluate\_artwork}、\code{list\_traditions}、\code{get\_tradition\_guide}、\code{search\_traditions} \\
+\keyword{结构化生成} & 规划中 & \code{create\_artwork}、\code{generate\_image} \\
+\keyword{视觉 brief} & \code{/visual-brainstorm}（已上线）、\code{/visual-spec}（已上线） & \code{brief\_parse}、\code{generate\_concepts} \\
+\keyword{运行管理} & — & \code{view\_image}、\code{unload\_models}、\code{archive\_session}、\code{sync\_data} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\paragraph{agent-native 的工程含义}
+与传统 SDK 不同，Vulca 的每个 MCP 工具\keyword{只返回结构化 JSON 和文件路径}，不返回"模型解释"或"自然语言总结"。
+这是因为 \keyword{agent 已经有大脑}——我们返回散文只会干扰它的规划；
+agent 需要的是\keyword{可检视、可分支、可回滚}的原子结果。
+这种设计让 Vulca 在 Claude Code 里表现出与\code{read\_file}、\code{bash}同级的"工具感"，
+而不是"另一个 AI 画图网站"。
+
+\subsection{灵魂：文化属性分析（L1–L5 $\times$ 13 种传统）}
+\label{sec:product:cultural}
+
+\subsubsection*{为什么是文化评估，不是美学评分}
+
+"好看"是一个主观判断，不构成商业价值；
+"符合明代工笔花鸟的线条传统"是一个\keyword{可审计、可对话、可教学}的判断，
+这正是 Vulca 文化评估系统想要达到的颗粒度。
+
+我们把艺术/设计传统拆成五层评价指标（L1–L5）：
+
+\begin{itemize}
+  \item \keyword{L1 形制}：基本构图、比例、边界；
+  \item \keyword{L2 技法}：线条、笔触、色彩关系、材质肌理；
+  \item \keyword{L3 语汇}：典型元素、符号系统、题材惯例；
+  \item \keyword{L4 风格}：时代特征、流派归属、大师范式；
+  \item \keyword{L5 气韵}：整体气质、文化语境契合度、\keyword{可引用的评价}。
+\end{itemize}
+
+每个传统有一份\code{YAML}定义文件，结构化描述这五层的判别标准与典型失败模式。
+评估时 agent 读入这份文件作为\keyword{可解释的评价 prompt 骨架}，产出带引用的多维报告。
+
+\subsubsection*{当前覆盖的 13 种传统}
+
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\keyword{东方艺术} & 中国工笔（\code{chinese\_gongbi}）、中国写意（\code{chinese\_xieyi}）、日本传统（\code{japanese\_traditional}） \\
+\keyword{世界艺术} & 伊斯兰几何（\code{islamic\_geometric}）、西方学院（\code{western\_academic}）、南亚（\code{south\_asian}）、非洲传统（\code{african\_traditional}） \\
+\keyword{媒介范式} & 摄影（\code{photography}）、水彩（\code{watercolor}）、当代艺术（\code{contemporary\_art}） \\
+\keyword{设计领域} & 品牌设计（\code{brand\_design}）、UI/UX 设计（\code{ui\_ux\_design}） \\
+\keyword{通用基线} & 默认通用评价（\code{default}） \\
+\end{tabular}
+\end{center}
+
+这些 YAML 文件都在 \code{src/vulca/cultural/data/traditions/} 下开源，
+社区和客户可以\keyword{扩展自己的传统定义}（例如博物馆可以贡献"宋代山水"、"明式家具"的 L1–L5 定义），
+形成从开源社区到客户定制的\keyword{数据资产飞轮}。
+
+\subsection{底座：完全本地化链路}
+\label{sec:product:local}
+
+\begin{center}
+\begin{tabular}{@{}r@{\hskip 8pt}l@{}}
+\heiti\color{vulcaPrimary}阶段 & \heiti\color{vulcaInk}对应组件 \\
+意图解析 & Ollama（本地 LLM，Qwen / Llama / Mistral 任选） \\
+语义分割 & EVF-SAM（\code{transformers==4.49}，MPS \textasciitilde{}3s/prompt） \\
+图像生成 / 重绘 & ComfyUI + SDXL / FLUX（本地 workflow） \\
+视觉理解 & 本地 VLM（LLaVA / Qwen-VL） \\
+评估推理 & Ollama + Vulca 文化评估 prompt 模板 \\
+存储与导出 & 本地会话目录（\code{artifacts/}），含分层 PNG、JSON manifest、evaluation report \\
+\end{tabular}
+\end{center}
+
+\paragraph{为什么这条底座是"自主可控"的核心证明}
+\begin{itemize}
+  \item \keyword{无 API Key 依赖}：在 Apple Silicon 或国产算力（Ascend、昇腾、寒武纪）上端到端运行；
+  \item \keyword{数据零出网}：图像、评估结果、用户 prompt 全程不离开本地磁盘；
+  \item \keyword{算法可审计}：每个 YAML 传统定义、每个 MCP 工具源码都开源；
+  \item \keyword{硬件降级可接受}：完整功能需要 M2 Pro / RTX 3090 级别，但降级到 M1 Air / RTX 3060 仍可运行 Ollama + EVF-SAM，允许中小机构以较低门槛入场。
+\end{itemize}
+
+\subsection{Provider 矩阵：一套代码，四条算力路径}
+
+Vulca 不绑定任何单一模型厂商。
+所有图像能力都通过 \keyword{Provider 抽象层}实现，底层可替换。
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{3.4cm}@{}}
+\toprule
+\rowcolor{tableHead}
+\heiti Provider & \heiti 定位 & \heiti 代表模型 \\
+\midrule
+\code{comfyui} & 本地开源路径，自主可控首选 & SDXL、FLUX、ControlNet、自定义 workflow \\
+\code{gemini} & 云端高质量路径（已完成全套集成） & \code{gemini-3.1-flash-image-preview}、\code{gemini-2.5}（VLM） \\
+\code{openai} & 云端兼容路径 & DALL·E 系列 \\
+\code{mock} & 测试/CI 路径 & 无模型调用 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\paragraph{Gemini 集成的战略意义}
+项目已获得 Google / Anthropic 两套研究级 API credits（非现金），
+可\keyword{零成本使用 Gemini 全套模型}进行产品演示与能力验证。
+这让我们在天使轮阶段\keyword{不必为算力成本稀释股权}，
+同时为下一轮投资人提供"已被头部模型厂商背书"的信号。
+
+\subsection{工程密度与质量信号}
+
+\begin{itemize}
+  \item \keyword{1454 个测试用例}，覆盖 provider 切换、layer 合成、文化评估、MCP 工具序列化等关键路径；
+  \item \keyword{CI 绿灯率 $\ge$ 99\%}，Phase 0 / Phase 1 两次架构重构都以\keyword{零回归}完成；
+  \item \keyword{21 个 MCP 工具的 I/O schema 全部校验}，agent 调用失败时返回结构化错误而非崩溃；
+  \item \keyword{3 个已上线 skill（\code{/decompose}、\code{/visual-brainstorm}、\code{/visual-spec}）}每个都经过多轮 ship-gate（simulated + live），所有 gate 全绿后才发布。
+\end{itemize}
+
+换言之：\keyword{产品不是 demo，是在产生量。}

@@ -1,0 +1,109 @@
+\section{行业机会与市场分析}
+\label{sec:market}
+
+\subsection{三股趋势的交汇}
+
+Vulca 的市场机会不是单一赛道，而是\keyword{三股独立趋势的交汇处}。
+任何一股单独存在都不足以支撑新公司的生存空间，但\keyword{三股同时发生}在 2025–2027 年的时间窗口里，
+让"agent-native 像素执行层 + 文化评估 + 本地化"这种看似小众的定位成为一个真实的商业机会。
+
+\subsubsection*{趋势一：Agent 浪潮（全球）}
+
+2025 年以来，\keyword{Claude Code}、\keyword{Cursor}、\keyword{GitHub Copilot Workspace}、\keyword{Devin} 等 agent 产品进入主流开发者视野。
+Anthropic 正式定义 \keyword{MCP（Model Context Protocol）} 作为 agent 与外部工具交互的开放协议，
+并通过 Claude Code 的\keyword{插件生态}（plugin marketplace）向第三方开放。
+这使得\keyword{"agent 插件"}从一个抽象概念变成可 pip 安装、可\code{claude plugin install}的具象业态。
+
+\fact{对 Vulca 的意义}{任何成熟的 agent 系统都需要"非文本操作能力"——
+文件操作、数据库查询、代码执行这三类已经被 Anthropic、微软等巨头的官方工具覆盖，
+而\keyword{图像领域的 agent-native 操作能力}至今没有标准化实现。
+Vulca 的 21 个 MCP 工具是这个空白的第一批落地。}
+
+\subsubsection*{趋势二：多模态 SDK 的"生成-之后"空白（全球）}
+
+过去 3 年图像 AI 的叙事几乎全部围绕\keyword{"文本到图像的生成"}：Stable Diffusion、DALL·E、Midjourney、FLUX。
+但当用户真正想把 AI 图像放进\keyword{生产流程}——出版、广告、教学、文博——
+真正痛点不是"生成一张图"，而是：
+
+\begin{itemize}
+  \item 把\keyword{已有图像}拆成可独立编辑的\keyword{语义图层}（而不是 Photoshop 里繁琐的手动抠图）；
+  \item 对\keyword{单个区域}重绘、替换、风格化，而不破坏其他部分；
+  \item 对成品做\keyword{可解释的质量评估}，特别是涉及特定文化语境时（不只是"好看不好看"）；
+  \item 把这一切\keyword{沉淀为可复用的自动化工作流}，而不是每次都手动点击。
+\end{itemize}
+
+这些能力分散在 HuggingFace 的 SAM、ControlNet、diffusers 等"零件"中，但\keyword{没有统一的工作流 SDK}，更没有面向 agent 调用的结构化接口。
+
+\fact{对 Vulca 的意义}{我们不做"第 101 个文生图模型"——
+而是做"生成之后的所有事"：\code{layers\_split}（拆图）、
+\code{inpaint\_artwork}（区域重绘）、\code{evaluate\_artwork}（质量评估）、
+\code{layers\_composite}（合成导出）。
+这些原子能力由 agent 串联成完整工作流。}
+
+\subsubsection*{趋势三：中国文化资产数字化 + AI 自主可控（国内）}
+
+\keyword{《"十四五"数字经济发展规划》}与\keyword{《文化产业数字化战略》}明确支持：
+博物馆藏品数字化、传统工艺高精度复现、非遗传承可视化、出版行业 AI 工具链升级。
+与此同时\keyword{生成式 AI 服务管理办法（2023）}与\keyword{数据出境安全评估办法}
+推动国内用户优先选择\keyword{本地可部署、算法可解释、数据不出境}的 AI 工具。
+
+海外开源大模型（如 FLUX、SDXL、Qwen-VL）可以本地运行，但它们\keyword{不解决工作流}，
+更\keyword{不理解中国艺术传统的分析框架}（"工笔"与"写意"的判断标准、
+"国画用色观"与"西方色彩理论"的差异）。
+
+\fact{对 Vulca 的意义}{Vulca 的\keyword{完全本地化链路}（ComfyUI + Ollama + EVF-SAM on Apple Silicon / CUDA）
+让数据和算力都不出网；
+\keyword{13 种艺术传统的 L1–L5 评估体系}原生支持中国工笔、中国写意、日本传统等东方艺术语境，
+这是海外厂商无法快速补齐的文化纵深。}
+
+\subsection{目标市场细分}
+
+我们将目标市场分为三类，\keyword{不同类型对应不同的商业模式}（见第 \ref{sec:business} 章）。
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{2.8cm}@{}}
+\toprule
+\rowcolor{tableHead}
+\heiti 目标客群 & \heiti 核心画像与需求 & \heiti 对应商业模式 \\
+\midrule
+\keyword{开发者 / 独立设计师} &
+个人使用 Claude Code、Cursor；希望把 AI agent 用到自己的创作流程里；
+对"语义分层 + 区域重绘"有好奇心；价格敏感、社区驱动。 &
+开源免费 + 周边社区 \\
+\midrule
+\keyword{创意 / 内容团队} &
+5–50 人的品牌设计公司、广告公司、出版社、自媒体工作室；
+需要\keyword{可协作、可审计、有合规边界}的 AI 图像工具；
+愿意为 SaaS 付月费。 &
+托管 SaaS + 文化评估 API 订阅 \\
+\midrule
+\keyword{行业大客户} &
+博物馆、美术馆、出版集团、文博数字化项目、高校艺术研究中心；
+强要求\keyword{本地部署、数据不出网、文化专业度}；
+采购周期长但单笔合同金额高。 &
+本地化部署 + 年度许可 + 定制实施 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{市场规模的保守口径}
+
+\TBD{此处插入三组市场规模数据：(1)全球 agent 市场规模（Gartner / a16z 2026 最新口径）；
+(2)全球多模态图像工具市场规模；(3)国内文化资产数字化产业市场规模（信通院 / 国家文物局口径）。
+我们建议三项都引用\keyword{有官方背书的公开来源}，避免使用投资人难以验证的内部估算。}
+
+无论三项具体数字如何，关键结论是：
+\keyword{Vulca 不需要"吃下"其中任何一块的大比例}——
+只要成为\keyword{三块交集}里最好的开源 SDK + 托管服务，
+就足以支撑一家 30–50 人团队的中期成长。
+
+\subsection{时间窗口的紧迫性}
+
+\begin{itemize}
+  \item \keyword{2026 上半年}：MCP 协议生态仍在早期，第三方工具数量少，占位成本低；
+  \item \keyword{2026 下半年}：Anthropic / 头部 agent 厂商将加速扶持优质第三方插件，此时已建立社区信任的团队将受益；
+  \item \keyword{2027 年}：预计生态趋于饱和，后来者需要差异化叙事或更大资本投入才能获得同等位置。
+\end{itemize}
+
+换言之，\keyword{现在是决定 agent-native 图像工具生态格局的关键 12–18 个月}，
+天使轮的 funding 时机正好覆盖这段窗口。

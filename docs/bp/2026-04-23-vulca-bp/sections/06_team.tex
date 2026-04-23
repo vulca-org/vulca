@@ -1,0 +1,72 @@
+\section{团队与顾问}
+\label{sec:team}
+
+\subsection{团队画像（当前）}
+
+Vulca 当前以\keyword{solo-maintainer}模式高速推进，
+从 2026-04-09（v0.14.0）至 2026-04-23（v0.17.5）共发布\keyword{8 个正式版本}，
+平均每 2 天一次 ship，累计 1454 测试、21 MCP 工具、3 个端到端 skill。
+这种迭代密度在天使阶段的\keyword{一人项目}里是\keyword{极少见}的，直接反映了创始人的\keyword{工程密度与产品判断力}。
+
+\subsection{核心成员}
+
+\subsubsection*{创始人 / 技术负责人}
+
+\TBD{创始人简历：姓名 / 学历 / 主要技术背景 / 代表项目或论文 / 为什么做 Vulca。
+建议 150–250 字，要点：(1)有跨栈工程能力（后端 + 模型 + 前端/CLI）；(2)有 AI / CV / NLP 背景；
+(3)对开源生态有长期实践；(4)对艺术 / 设计 / 文化评估有个人兴趣或研究积累。}
+
+\subsubsection*{核心成员 / 早期合伙人}
+
+\TBD{如有联合创始人或早期核心成员，逐个列出：姓名 / 背景 / 在 Vulca 负责的模块。
+若目前仍为一人模式，建议改写为"本轮募资后重点补齐的关键岗位"：(1)资深算法工程师（图像分割 / 多模态）；
+(2)产品/BD 负责人（文博与出版行业背景）；(3)前端/工具链工程师；(4)增长/社区运营。}
+
+\subsection{学术 / 行业顾问}
+
+\begin{itemize}
+  \item \keyword{ACM MM 2026 EmoArt Challenge 合作}\quad Track 1 基于 Vulca 技术栈；
+  提交时间 2026-06-10。\TBD{如有具体合作导师 / 学校 / 研究组名称，建议征得对方同意后列入。}
+  \item \keyword{Anthropic / Google 模型厂商关系}\quad 已获 Gemini 与 Anthropic 的研究级 / 创业级 API credits，
+  短期算力成本覆盖；具备直接沟通通道。
+  \item \keyword{国内文博 / 设计 / 出版行业顾问}\quad \TBD{列出 2–3 位愿意具名的行业资深顾问。}
+\end{itemize}
+
+\subsection{团队扩张计划（天使轮资金用途）}
+
+若本轮融资落地，\keyword{12 个月内}团队将扩展至 \TBD{目标总人数，建议 6–8 人} 规模：
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}X@{}}
+\toprule
+\rowcolor{tableHead}
+\heiti 岗位 & \heiti 优先级 & \heiti 招聘 rationale \\
+\midrule
+资深算法工程师\\（多模态 / 分割） & P0 & EVF-SAM、SDXL、FLUX 链路持续优化；文化评估 prompt 工程 \\
+\midrule
+产品 / BD（文博/出版背景） & P0 & 第三层行业大客户的对接；政府项目申报 \\
+\midrule
+前端 / 工具链工程师 & P1 & Claude Code 插件增强、Vulca Cloud 控制台、dashboard \\
+\midrule
+社区 / 增长运营 & P1 & 中英双语社区运营、学术会议推广、种子内容 \\
+\midrule
+算法研究员（在读 / 实习） & P2 & 支持 ACM MM 学术产出和新文化传统 YAML 扩展 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{治理与股权结构}
+
+\TBD{此处建议补充：(1)公司主体注册地与形式（例如境内有限公司 + 海外开源社区主体）；
+(2)创始人股权比例；(3)员工持股池计划（ESOP，建议 10\%–15\%）；
+(4)本轮投资人所占比例与董事会席位（如适用）；(5)知识产权归属（Apache 2.0 对外 + 核心商业组件归属公司）。
+以上为给 A 类投资人做 DD 时的标准项，C 类申报单位也会要求对等信息。}
+
+\subsection{文化与协作原则（自证合规性）}
+
+\begin{itemize}
+  \item \keyword{开源优先}\quad 核心 SDK 与 MCP 工具集保持 Apache 2.0，商业化组件与服务层单独；
+  \item \keyword{ship-first}\quad 每个新特性都走"brainstorm $\to$ spec $\to$ plan $\to$ ship gate"的标准流程，所有 gate 通过才发布（流程本身开源于仓库的\code{docs/superpowers/}目录）；
+  \item \keyword{learning-centric}\quad 所有关键决策记录在可追溯的\code{memory}与\code{specs}中，保证团队扩张时的\keyword{上下文可继承性}；
+  \item \keyword{跨文化意识}\quad 13 种艺术传统的 YAML 评估体系本身就是文化纵深积累的一部分，团队鼓励补充新传统、邀请社区贡献。
+\end{itemize}

@@ -1,0 +1,141 @@
+\section{附录}
+\label{sec:appendix}
+
+\subsection*{A. 21 个 MCP 工具完整清单}
+
+按能力簇分组，与第 \ref{sec:product:mcp} 节的核心叙事对应。
+所有工具通过 MCP 协议暴露给 agent，返回结构化 JSON 而非自然语言。
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}X@{}}
+\toprule
+\rowcolor{tableHead}
+\heiti 能力簇 & \heiti 工具名 & \heiti 作用概要 \\
+\midrule
+\keyword{语义分层} & \code{layers\_split} & 根据 agent 提供的 orchestrated plan 把图像分解为多个带透明度的语义图层 \\
+ & \code{layers\_list} & 列出已分解会话的 layers 元信息 \\
+\midrule
+\keyword{区域编辑} & \code{inpaint\_artwork} & 对指定 mask 区域重绘 \\
+ & \code{layers\_edit} & 对指定 layer 原地编辑 \\
+ & \code{layers\_redraw} & 对指定 layer 用新 prompt 重绘 \\
+ & \code{layers\_transform} & 对 layer 做几何/色彩变换 \\
+ & \code{layers\_composite} & 多 layer 合成 \\
+ & \code{layers\_export} & 导出合成结果（PNG / 分层 PSD） \\
+ & \code{layers\_evaluate} & 对合成结果做质量评估 \\
+\midrule
+\keyword{文化评估} & \code{evaluate\_artwork} & 基于 L1–L5 \& 指定传统做多维评价 \\
+ & \code{list\_traditions} & 枚举已定义传统（当前 13 种） \\
+ & \code{get\_tradition\_guide} & 获取指定传统的完整 YAML 规则 \\
+ & \code{search\_traditions} & 按关键词搜索传统定义 \\
+\midrule
+\keyword{结构化生成} & \code{create\_artwork} & 基于 intent + tradition 生成新图像 \\
+ & \code{generate\_image} & 通用文生图 \\
+\midrule
+\keyword{视觉 brief} & \code{brief\_parse} & 解析视觉意图，产出 proposal 所需字段 \\
+ & \code{generate\_concepts} & 生成概念草图 / 选项 \\
+\midrule
+\keyword{运行管理} & \code{view\_image} & agent 把图像回传进 Claude Code 视野 \\
+ & \code{unload\_models} & 释放 GPU/MPS 显存 \\
+ & \code{archive\_session} & 归档会话工件 \\
+ & \code{sync\_data} & 同步外部数据源（可选） \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection*{B. 13 种文化/设计传统评价体系示例}
+
+每个传统的 YAML 都包含 L1–L5 判别规则、典型元素库、常见失败模式描述。
+以下给出一个\keyword{中国工笔}的简化示例，
+完整定义在 \code{src/vulca/cultural/data/traditions/chinese\_gongbi.yaml}。
+
+\begin{quote}
+\small\ttfamily
+L1 形制：\\
+\quad 画面以线造型，边界明确；\\
+\quad 构图多采取"折枝式"或"边角式"，避免满幅。\\
+L2 技法：\\
+\quad 白描 / 重彩 / 淡彩 三种基础技法；\\
+\quad 设色讲究层次叠染，每层需等待干透。\\
+L3 语汇：\\
+\quad 题材：花鸟、仕女、草虫、折枝；\\
+\quad 符号：屏风、云水纹、印章。\\
+L4 风格：\\
+\quad 宋院体、明代"吴门"、近现代"于非闇"等流派差异。\\
+L5 气韵：\\
+\quad 讲究"形神兼备"；\\
+\quad 评价时需引用 L1–L4 的具体证据，不做主观优劣判断。
+\end{quote}
+
+完整覆盖范围：
+\code{african\_traditional}、\code{brand\_design}、\code{chinese\_gongbi}、\code{chinese\_xieyi}、
+\code{contemporary\_art}、\code{islamic\_geometric}、\code{japanese\_traditional}、\code{photography}、
+\code{south\_asian}、\code{ui\_ux\_design}、\code{watercolor}、\code{western\_academic}、\code{default}。
+
+\subsection*{C. 开源与社区数据（持续更新）}
+
+\begin{itemize}
+  \item GitHub: \url{https://github.com/vulca-org/vulca}
+  \item Vulca Plugin: \url{https://github.com/vulca-org/vulca-plugin}
+  \item PyPI: \url{https://pypi.org/project/vulca/}
+  \item 截至 2026-04-20 README refresh 节点：累计 \keyword{82 views / 31 unique visitors / 6 stars}（基线），
+  正在进入种子内容驱动的流量窗口。后续数据在每季度复盘中更新。
+  \item 社区种子内容：dev.to（英文 deep-dive）、Xiaohongshu 中文 carousel（Bieber / Trump 案例 2026-04-18 发布）、
+  GitHub Discussions 首批讨论。
+\end{itemize}
+
+\subsection*{D. 学术产出与合作}
+
+\begin{itemize}
+  \item \keyword{ACM MM 2026 EmoArt Challenge}\quad Track 1 技术方案基于 Vulca 栈；
+  Track 2 涉及两份情绪识别子方向论文；提交截止 2026-06-10。
+  \item \keyword{\code{docs/superpowers/} 技术文档体系}\quad 所有设计、brainstorming、spec、plan、ship-gate 公开在仓库，
+  构成自证的方法论资产。
+\end{itemize}
+
+\subsection*{E. Provider 矩阵详细说明}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{2.2cm}>{\raggedright\arraybackslash}p{3.0cm}>{\raggedright\arraybackslash}X@{}}
+\toprule
+\rowcolor{tableHead}
+\heiti Provider & \heiti 默认模型 & \heiti 适用场景 \\
+\midrule
+\code{comfyui} & SDXL / FLUX / 自定义 workflow & 本地离线；自主可控首选 \\
+\code{gemini} & \code{gemini-3.1-flash-image-preview} & 云端高质量；credits 覆盖 \\
+\code{gemini} (VLM) & \code{gemini-2.5-pro} via LiteLLM & 视觉理解、评估推理辅助 \\
+\code{openai} & DALL·E 系列 & 云端兼容；特定客户偏好 \\
+\code{mock} & 无模型调用 & CI 与本地开发 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection*{F. 术语表}
+
+\begin{description}[leftmargin=5.6em,style=nextline,itemsep=2pt]
+  \item[\keyword{Agent-native}] 工具的接口与返回值为 agent 规划设计，不是为人类 UI 设计。
+  \item[\keyword{MCP}] Model Context Protocol，由 Anthropic 于 2024 年提出，是 agent 与外部工具交互的开放协议。
+  \item[\keyword{Skill}] Claude Code 中的一级扩展单位，包含声明式 prompt + 工具调用脚本；可被 agent 自动调用。
+  \item[\keyword{Ship-gate}] Vulca 的 pre-release 验证闸门：simulated + live MCP 双层验证，全绿才允许发布。
+  \item[\keyword{L1–L5}] Vulca 文化评估体系的五层评价指标（形制 / 技法 / 语汇 / 风格 / 气韵）。
+  \item[\keyword{Provider}] 底层模型访问抽象层，支持 comfyui / gemini / openai / mock 等；可 runtime 切换。
+  \item[\keyword{EVF-SAM}] 基于 SAM 的语言引导分割模型，Vulca 语义分层核心组件之一；MPS 下约 3s / prompt。
+\end{description}
+
+\subsection*{G. 待确认字段清单}
+
+本 BP 中所有\TBD{红框}字段汇总，便于定稿前一次扫完：
+
+\begin{itemize}
+  \item \keyword{第 1 章}：本轮募资金额、估值口径；
+  \item \keyword{第 2 章}：市场规模三项数据源；
+  \item \keyword{第 4 章}：SaaS 月订阅定价、文化评估 API 单次定价、On-Prem 年度许可定价、
+  灯塔客户候选名单、政府对接渠道；
+  \item \keyword{第 5 章}：3–5 家邻近项目公开对比表；
+  \item \keyword{第 6 章}：创始人 bio、核心成员、学术顾问、目标团队规模、股权与治理结构；
+  \item \keyword{第 7 章}：各季度 GitHub star、PyPI 下载、ARR 具体数字；
+  \item \keyword{第 8 章}：用资预算按本轮募资金额的最终校准、ARR 保守/中性/乐观具体数字；
+  \item \keyword{第 9 章}：商标注册范围、国产算力适配时间、算法备案条款、专利申报清单；
+  \item \keyword{第 10 章}：内容安全机制细节。
+\end{itemize}

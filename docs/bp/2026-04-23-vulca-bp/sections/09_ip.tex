@@ -1,0 +1,79 @@
+\section{知识产权与自主可控}
+\label{sec:ip}
+
+\subsection{为什么 Apache 2.0 不等于"无壁垒"}
+
+Vulca 选择 \keyword{Apache 2.0} 作为主仓库协议，有两个目的：
+\keyword{降低 agent 开发者试用门槛}（无审批即可 pip 安装），
+与\keyword{建立长期可信的开源品牌}（任何厂商可以审计源码，避免"封闭魔法"式不信任）。
+
+但开源不等于没有壁垒。Vulca 的真实护城河建立在\keyword{三类可持续积累的资产}上，
+这三类都不是靠一份代码协议能复刻的：
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{3.4cm}>{\raggedright\arraybackslash}X@{}}
+\toprule
+\rowcolor{tableHead}
+\heiti 资产类别 & \heiti 具体构成 \\
+\midrule
+\keyword{数据资产} & 13 种艺术/设计传统的 L1–L5 YAML 评价体系；社区扩展贡献的新传统；行业客户定制包 \\
+\keyword{工程资产} & MCP 工具标准 I/O schema、skill 模板、1454 测试、多 provider 抽象层、本地化链路工程 \\
+\keyword{生态资产} & Claude Code 插件市场位置、GitHub 贡献者网络、学术合作（ACM MM / EmoArt）、模型厂商直联 credits \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{开源协议策略（边界清晰）}
+
+\begin{itemize}
+  \item \keyword{核心 SDK（Apache 2.0）}：\code{vulca} 主包、MCP 工具集、13 种基础文化传统 YAML、provider 抽象层、skill 模板；
+  \item \keyword{商业专有部分}：Vulca Cloud 后端（托管、SSO、账单、审计日志）、行业客户定制 YAML 包、
+  On-Prem 打包脚本、企业级监控与升级支持；
+  \item \keyword{CLA（贡献者协议）}：对第三方提交到主仓库的代码或 YAML 要求签署 CLA，\keyword{允许将来的商业化组合使用}；
+  \item \keyword{品牌商标}：\code{Vulca} 名称与 logo 建议\TBD{申请国内商标（第 9 类、第 42 类）+ 国际 Madrid 注册}。
+\end{itemize}
+
+\subsection{自主可控证明链}
+
+针对 C 类受众（孵化器 / 政府立项 / 高校转化）最关注的\keyword{自主可控}问题，
+Vulca 有一条可以被审查的证明链：
+
+\begin{enumerate}
+  \item \keyword{代码自主可控}\quad 主包 Apache 2.0 开源，\keyword{零闭源依赖}运行（除了可选的云端 provider）；
+  \item \keyword{算法自主可控}\quad 核心调度逻辑、文化评估规则、分层编排算法都写在 Vulca 自己的代码里，\keyword{不依赖任何厂商 SDK}；
+  \item \keyword{模型可替换}\quad provider 抽象层支持 ComfyUI（本地开源）/ Gemini / OpenAI / mock 四条路径；
+  \item \keyword{数据自主可控}\quad 本地链路所有图像、评估结果、会话历史都留存在客户本地磁盘（\code{artifacts/})，\keyword{不向任何云服务上报}；
+  \item \keyword{算力自主可控}\quad Apple Silicon MPS 已验证；\TBD{CUDA / Ascend / 国产算力适配在 2027 Q1 前完成}；
+  \item \keyword{合规自主可控}\quad \TBD{在正式申报时，附《生成式 AI 服务管理办法》第 X 条对应说明；列出算法备案计划（若适用）。}
+\end{enumerate}
+
+\subsection{知识产权规划}
+
+\subsubsection*{已形成的 IP 资产}
+\begin{itemize}
+  \item \keyword{开源著作权}\quad 主仓库 commit history 完整，著作权归 Vulca 团队；
+  \item \keyword{文化评估体系}\quad 13 种传统 YAML 本身可作为\keyword{数据库著作权}声明（YAML 结构与内容的原创性聚合）；
+  \item \keyword{技术文档体系}\quad \code{docs/superpowers/specs/} 下的设计文档、\code{docs/} 下的工程手册，构成\keyword{独立的技术资产}。
+\end{itemize}
+
+\subsubsection*{计划申请的 IP}
+
+\TBD{建议确认：是否在 18 个月内申请以下 IP。
+选择哪几项取决于预算与战略需要，不是全选。}
+
+\begin{itemize}
+  \item \keyword{软件著作权登记}\quad 主仓库 + 文化评估体系各 1 件，成本低、周期短，建议 T+3 月内完成；
+  \item \keyword{发明专利}\quad 候选：\keyword{agent-native MCP 工具编排方法}、\keyword{基于 L1–L5 分层评估的多文化图像审美判别方法}、\keyword{多 provider 图像工作流的动态降级策略}。建议 2 件，T+6 月前完成提交；
+  \item \keyword{商标}\quad \code{Vulca} 文字 + 设计标，第 9 类（软件）、第 42 类（SaaS/设计服务）、第 41 类（教育培训）；
+  \item \keyword{美术作品著作权}\quad logo、官网视觉、核心 diagram 登记。
+\end{itemize}
+
+\subsection{数据合规与伦理}
+
+\begin{itemize}
+  \item \keyword{训练数据使用}\quad Vulca 自身\keyword{不训练底层生成模型}，所有生成能力通过 provider 调用既有模型（SDXL、FLUX、Gemini 等），训练数据责任由上游模型提供方承担；
+  \item \keyword{文化评估数据}\quad YAML 定义基于公开艺术史资料撰写；建议为每一条规则注明引用来源，以支持学术与政策层面的可追溯；
+  \item \keyword{用户数据}\quad 本地模式下不上传；Cloud 模式下遵循最小化收集原则，用户可一键导出和删除；
+  \item \keyword{伦理审查}\quad 文化评估不做"高低优劣"判断，仅做"是否符合 X 传统 L1–L5 描述"的判别，\keyword{避免文化偏见}写入产品；
+  \item \keyword{未成年人 / 敏感内容}\quad \TBD{在正式对外 BP 版本中补充安全策略与白名单/黑名单机制的高层说明。}
+\end{itemize}

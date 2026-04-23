@@ -1,0 +1,80 @@
+\section{竞争格局与差异化}
+\label{sec:competition}
+
+\subsection{三种角色，一个空白}
+
+市场上与 Vulca \keyword{"看起来类似"}的厂商可以归为两类，
+但它们\keyword{都不与 Vulca 直接竞争}，原因是各自选择的技术哲学和商业模型不同。
+这个二维坐标把整个战场讲清楚：
+
+\begin{center}
+\small
+\begin{tabular}{@{}p{3.2cm}p{4.8cm}p{4.8cm}@{}}
+\toprule
+ & \heiti\color{vulcaPrimary}\quad 封闭（整合式） & \heiti\color{vulcaPrimary}\quad 开放（可组合） \\
+\midrule
+\heiti 代表 & \textbf{OpenAI Images / Adobe Firefly / Runway} & \textbf{HuggingFace / SAM / ControlNet / Diffusers} \\
+\heiti 产品定位 & 自带"大脑"决策，全流程封闭 & 提供"零件"，不管工作流 \\
+\heiti 面向 & 终端消费者 / 企业一站式 & 开发者自己拼装 \\
+\heiti 对 agent & \keyword{agent 的竞争者}（自身就是 agent） & \keyword{agent 的原子能力}（不是工作流） \\
+\midrule
+\heiti\color{vulcaPrimary}\quad Vulca 的位置 & \multicolumn{2}{l}{\keyword{开放 + 整合式：给 agent 用的"手"；不自己决策，但提供完整工作流。}} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{关键竞品拆解}
+
+\subsubsection*{"大脑派"：OpenAI / Adobe Firefly / Runway}
+\begin{itemize}
+  \item \keyword{定位}：端到端产品，自己做 UI、自己做规划、自己做生成；
+  \item \keyword{对 Vulca 的关系}：不是竞品，是\keyword{共存关系}——它们面向不用 agent 的终端用户，
+  而 Vulca 面向\keyword{已经用 Claude Code / Cursor / 自建 agent 的专业人群}；
+  \item \keyword{在 agent 生态里}：它们的 API 可以作为 Vulca 的\keyword{后端 provider 之一}（OpenAI provider 已支持），
+  但不提供 MCP 原生工具化；
+  \item \keyword{国内市场}：均不提供本地化部署，数据出境风险高，政府与大机构采购受限。
+\end{itemize}
+
+\subsubsection*{"零件派"：HuggingFace / SAM / ControlNet / Diffusers}
+\begin{itemize}
+  \item \keyword{定位}：提供模型和基础算法，开发者自己写脚本拼装；
+  \item \keyword{对 Vulca 的关系}：\keyword{上游依赖}而非竞品——Vulca 用 EVF-SAM、SDXL、FLUX 等作为 provider 后端；
+  \item \keyword{差距}：它们不提供\keyword{agent-native 调用}（MCP）、\keyword{工作流封装}（skill）、
+  \keyword{文化评估框架}（L1–L5 YAML），三者都是 Vulca 的增量。
+\end{itemize}
+
+\subsubsection*{"agent-native 图像"：尚无直接竞品}
+据公开信息梳理，截至 2026-04-23：
+
+\begin{itemize}
+  \item 没有公司以"agent 的手"作为产品定位；
+  \item 现有 MCP 生态中的图像工具以\keyword{单一能力包装}（如"把文生图暴露成 MCP"）为主，
+  没有提供\keyword{完整工作流链路}；
+  \item 没有将\keyword{文化评估}作为原生能力嵌入 SDK 的开源项目；
+  \item 国内尚无团队在 Claude Code / MCP 插件生态位置上占有显著存在。
+\end{itemize}
+
+\TBD{此段在正式对外 BP 版本中，建议你补充 3–5 家\keyword{竞品或邻近项目}的公开对比表。
+候选：ComfyUI 社区工作流分享平台、RunningHub、即梦 AI、商汤秒画、腾讯智影、文心一格、阿里万相。
+指出它们\keyword{是应用层产品}，与 Vulca 的"SDK/agent 插件"定位不在同一层。}
+
+\subsection{Vulca 的四项差异化}
+
+\begin{enumerate}
+  \item \keyword{agent-native 协议先行}：21 个 MCP 工具原生支持 Claude Code 插件生态，
+  不是"另做一个 UI 加 MCP 包装"；
+  \item \keyword{文化纵深}：13 种艺术/设计传统的 L1–L5 评价体系，原生覆盖中国工笔/写意等东方语境；
+  \item \keyword{自主可控}：完全本地化链路 + Apache 2.0，
+  数据不出网、算法可审计、硬件可降级；
+  \item \keyword{工程质量信号}：1454 个测试、3 个已上线 skill、Phase 0/1 两次架构重构零回归，
+  不是\keyword{"发布即废弃"}的 demo 仓库。
+\end{enumerate}
+
+\subsection{壁垒强度与持续性}
+
+\begin{itemize}
+  \item \keyword{6–12 个月可复制}的部分：MCP 工具接口（但需要\keyword{生态位}与\keyword{信任}积累）；
+  \item \keyword{12–24 个月可复制}的部分：本地化链路工程（特别是 MPS / 国产算力适配）；
+  \item \keyword{24 个月以上难以复制}的部分：\keyword{13 种文化传统的 YAML 定义 + 学术合作网络 + 开源贡献者生态}——
+  这类资产依赖时间与学术关系网，无法靠资本短期堆出。
+\end{itemize}

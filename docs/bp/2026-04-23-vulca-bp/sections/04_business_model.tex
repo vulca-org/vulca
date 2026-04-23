@@ -1,0 +1,129 @@
+\section{商业模式与市场进入}
+\label{sec:business}
+
+\subsection{三层漏斗：Open-Core $\to$ 文化评估订阅 $\to$ 行业大客户}
+
+Vulca 的商业模式建立在一个\keyword{三层漏斗}上，三层互相喂养：
+
+\begin{center}
+\small
+\begin{tabular}{@{}p{0.7cm}p{3.6cm}p{3.6cm}p{3.6cm}@{}}
+\toprule
+\rowcolor{tableHead}
+ & \heiti 第一层 & \heiti 第二层 & \heiti 第三层 \\
+ & \heiti 开源社区 & \heiti 托管 SaaS + 订阅 & \heiti 行业本地部署 \\
+\midrule
+\heiti 定位 & 导流 & 月活转化 & 大合同 \\
+\heiti 客户 & 开发者 / 独立设计师 & 创意与内容团队 & 博物馆 / 出版社 / 品牌集团 \\
+\heiti 产品 & vulca[mcp] + \code{/decompose} + 文档 & Vulca Cloud（托管 MCP server + 数据空间） + 文化评估 API & Vulca On-Prem（完全离线） + 定制文化评估包 + 年度支持 \\
+\heiti 价格 & Apache 2.0 免费 & \TBD{月订阅 ¥ / 席 / 月} + \TBD{文化评估 API ¥ / 次} & \TBD{首年许可 ¥ + 年度维护 ¥} \\
+\heiti 交付 & GitHub + PyPI & 全托管 & 驻场实施 + 远程维护 \\
+\heiti 毛利 & 0（战略投入） & \TBD{$\ge$ 70\%（推荐）} & \TBD{$\ge$ 50\%（推荐）} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{三层为什么互相喂养}
+\begin{itemize}
+  \item 第一层的开源社区贡献者 $\to$ 部分会转化为第二层 SaaS 付费用户（团队场景需要协作与合规）；
+  \item 第二层的 SaaS 用户 $\to$ 会带着 Vulca 进入他们公司的正式采购流程，推动第三层的本地部署合同；
+  \item 第三层的行业客户 $\to$ 会贡献新的\keyword{文化传统 YAML 定义}和\keyword{行业 workflow}回开源仓库，反哺第一层社区。
+\end{itemize}
+
+\subsection{第一层：开源社区（2026 Q2–Q4 重点）}
+
+\subsubsection*{目标}
+在 12 个月内建立起\keyword{以 Vulca 为核心的 agent-native 图像工具开发者社区}：
+
+\begin{itemize}
+  \item GitHub star \TBD{目标：1500–3000（保守）}；
+  \item PyPI 月下载量 \TBD{目标：月均 5000+};
+  \item Claude Code 插件生态中进入\keyword{"推荐插件"}位置；
+  \item 至少 10 个社区贡献的\keyword{文化传统 YAML}。
+\end{itemize}
+
+\subsubsection*{获客渠道}
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{2.4cm}@{}}
+\toprule
+\rowcolor{tableHead}
+\heiti 渠道 & \heiti 内容与节奏 & \heiti 成本/月 \\
+\midrule
+GitHub README 重整 + Discussions & 已完成 2026-04-20 一次 refresh，后续每季度一次节奏 & 低 \\
+dev.to / Medium 英文技术文章 & 每月 1–2 篇 deep-dive（MCP 架构、agent-native 设计、EVF-SAM benchmark） & 低 \\
+Xiaohongshu / 知乎 中文种子内容 & 已启动（Bieber / Trump carousel shipped 2026-04-18），每周 1–2 条 case & 低 \\
+Claude Code 插件生态位 & 与 Anthropic DevRel 建立联系，争取生态推荐 & — \\
+学术会议 & ACM MM 2026 EmoArt Challenge 提交 + 参会 & \TBD{差旅 ¥} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{第二层：托管 SaaS + 文化评估订阅（2026 Q4–2027 Q2 启动）}
+
+\subsubsection*{产品形态}
+\begin{itemize}
+  \item \keyword{Vulca Cloud}：托管 MCP server，用户在 Claude Code 中配置单行\code{mcpServers}即可使用。
+  后端提供：SSO、团队空间、私有数据存储、使用量统计、SLA。
+  \item \keyword{文化评估 API（独立产品线）}：面向设计平台、出版社、选品/策展团队。
+  按调用次数或订阅包计费，产出带引用的多维评估报告。
+  可作为第三方平台的\keyword{后端能力}嵌入，不强制用户改变前端工作流。
+\end{itemize}
+
+\subsubsection*{目标客户画像（典型）}
+
+\begin{itemize}
+  \item 5–20 人的\keyword{品牌设计公司}，已使用 Figma + Midjourney，希望把 AI 工具链"agent 化"；
+  \item 独立出版工作室 / 教辅出版社的\keyword{美术编辑团队}，有大量图像标注与编辑需求；
+  \item \keyword{设计教育}培训机构，需要"对学生作品做可解释评价"的工具；
+  \item 文创选品 / 数字藏品团队，用于\keyword{文化属性筛查}。
+\end{itemize}
+
+\subsubsection*{单位经济说明}
+
+在天使轮阶段，我们\keyword{不做假 SaaS 财务模型}。
+给出三个可验证的\keyword{定性锚点}，具体数字留作 A 轮前的数据采集：
+
+\begin{itemize}
+  \item \keyword{边际成本}：Gemini / Anthropic credits 覆盖短期算力成本，
+  本地 provider 把长期边际成本进一步压到接近带宽和存储；
+  \item \keyword{自然流失}：agent-native 场景切换成本低，预计前 6 个月流失率偏高，
+  要通过\keyword{工作流 lock-in}（session 历史、自定义文化传统、团队空间）降低；
+  \item \keyword{扩张机制}：团队内部\keyword{协作一个 session}时，Vulca 会被更多成员激活，
+  按席位订阅是自然的收入增长路径。
+\end{itemize}
+
+\subsection{第三层：行业本地化部署（2027 起重点）}
+
+\subsubsection*{产品形态}
+\begin{itemize}
+  \item \keyword{Vulca On-Prem}：一键部署到客户 GPU 服务器或私有云，完全离线运行；
+  \item \keyword{定制文化评估包}：根据客户馆藏 / 品牌资产 / 学科方向扩展的 L1–L5 YAML 与 workflow；
+  \item \keyword{年度维护与咨询}：升级、培训、疑难会诊。
+\end{itemize}
+
+\subsubsection*{典型客户场景}
+
+\begin{itemize}
+  \item \keyword{博物馆数字化}：馆藏高清图像的语义分层、文化属性标注、展陈辅助生成；
+  \item \keyword{出版集团}：教辅图像批量校验与重绘；
+  \item \keyword{品牌集团}：内部创意工作流统一，合规审查；
+  \item \keyword{高校艺术研究中心}：风格传承可视化、研究成果发表辅助工具。
+\end{itemize}
+
+\subsubsection*{获客路径}
+第三层客户\keyword{不通过搜索引擎买}，靠的是：
+\begin{enumerate}
+  \item 第二层 SaaS 付费客户\keyword{内部推荐到采购部门}；
+  \item 学术合作伙伴（EmoArt Challenge 等）带来的学研通道；
+  \item \TBD{政府部门 / 国家级文化数字化试点项目的直接对接渠道，需要你补充目前已有的资源。}
+\end{enumerate}
+
+\subsection{最小可行商业闭环（12 个月）}
+
+\begin{enumerate}
+  \item Q2 2026：\keyword{开源产品打磨}——v0.18 / v0.19 推出 \code{/evaluate} 与 \code{/inpaint} 两个新 skill，社区开始真正使用；
+  \item Q3 2026：\keyword{种子 SaaS alpha}——向 10–30 个愿意付费的团队开放 Vulca Cloud 内测；
+  \item Q4 2026：\keyword{首个行业 POC}——签下 1–2 个\keyword{灯塔客户}（博物馆 / 出版社 / 设计集团），不求大单，求案例；
+  \item Q1 2027：\keyword{正式商业化}——Cloud 转付费、On-Prem 进入报价阶段；准备 Pre-A 材料。
+\end{enumerate}

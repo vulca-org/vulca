@@ -1,0 +1,95 @@
+\section{风险分析与应对}
+\label{sec:risks}
+
+一份诚实的 BP 不回避风险。
+我们把风险按\keyword{可控性}与\keyword{影响力}两个维度梳理为四大类，
+每类给出具体 mitigation，避免只说"加强管理"式空话。
+
+\subsection{技术与模型依赖风险}
+
+\subsubsection*{风险}
+\begin{itemize}
+  \item Google Gemini / Anthropic 的 API credits 到期或政策调整，导致演示与部分云路径受影响；
+  \item 上游开源模型（SDXL、FLUX、EVF-SAM）的协议 / 权重发生变化；
+  \item MPS / CUDA / 国产算力适配过程中的性能倒退。
+\end{itemize}
+
+\subsubsection*{应对}
+\begin{itemize}
+  \item \keyword{多 provider 抽象层已是现实}：Vulca 在代码层面就以 provider 抽象的方式避免单点依赖；
+  即使某个 provider 不可用，切换到本地 ComfyUI 只需要改一行配置；
+  \item \keyword{本地链路是一等公民}：完全离线的 ComfyUI + Ollama + EVF-SAM 能支撑核心产品路径；
+  \item \keyword{上游模型使用 pin}：\code{transformers==4.49}、\code{torch==2.9.0} 等关键依赖已版本锁定，避免被动升级；
+  \item \keyword{国产算力适配作为独立里程碑}：在 2027 Q1 前至少完成 CUDA 与一种国产算力（Ascend / 寒武纪）的适配。
+\end{itemize}
+
+\subsection{市场与商业化风险}
+
+\subsubsection*{风险}
+\begin{itemize}
+  \item \keyword{agent-native} 概念在国内中小企业普及速度低于预期；
+  \item 付费转化周期长于预期，现金流压力；
+  \item 竞品（特别是巨头）突然进场"碾压式"推出 MCP 图像工具集。
+\end{itemize}
+
+\subsubsection*{应对}
+\begin{itemize}
+  \item \keyword{国际+国内双渠道}：即使国内转化慢，海外 dev.to / GitHub / Claude Code 插件生态的开发者基础足以先形成付费基本面；
+  \item \keyword{三层漏斗的抗压性}：即使 SaaS 转化慢，行业 On-Prem 一单 20–100 万人民币的金额也能提供显著跑道缓冲；
+  \item \keyword{巨头威胁的现实判断}：OpenAI / Adobe 走的是封闭 SaaS 路径，难以突然开放给 MCP；
+  Google 有可能，但 Vulca 的\keyword{文化纵深 + 本地化}是他们短期难以复制的；
+  \item \keyword{里程碑响应机制}：每个用资里程碑错过 30 天以上主动与投资人沟通，提前谈判桥接或调整计划。
+\end{itemize}
+
+\subsection{政策与合规风险}
+
+\subsubsection*{风险}
+\begin{itemize}
+  \item 国内生成式 AI 监管趋严，算法备案 / 内容审核要求提高；
+  \item 数据出境规则变化，影响使用 Google / OpenAI provider 的国内客户；
+  \item 开源协议引发的第三方争议。
+\end{itemize}
+
+\subsubsection*{应对}
+\begin{itemize}
+  \item \keyword{本地化是天然响应}：国内客户可全程本地部署，合规问题从产品设计层面消解；
+  \item \keyword{清晰的协议边界}：主仓库 Apache 2.0 + 商业组件单独许可 + CLA 覆盖第三方贡献，避免协议混合引发纠纷；
+  \item \keyword{内容安全机制}：\TBD{在内容生成路径上设置关键词黑名单、敏感类别检测；正式产品上线前完成安全评估。}；
+  \item \keyword{合规顾问}：招聘或外聘熟悉\keyword{AIGC 合规}的法务顾问，至少一位。
+\end{itemize}
+
+\subsection{人才与组织风险}
+
+\subsubsection*{风险}
+\begin{itemize}
+  \item solo-maintainer 模式下\keyword{关键人依赖}过高；
+  \item 初期团队扩张可能带来工程质量和 ship 频率下降；
+  \item 学术合作伙伴不稳定。
+\end{itemize}
+
+\subsubsection*{应对}
+\begin{itemize}
+  \item \keyword{天使轮资金的首要用途就是 de-risk 关键人依赖}：引入资深算法工程师 + 产品/BD 为最优先级；
+  \item \keyword{工程流程已标准化}：所有新特性走 brainstorm $\to$ spec $\to$ plan $\to$ ship gate，新成员加入后流程可继承；
+  \item \keyword{内部文档与 memory 系统}：团队扩张时的上下文传递靠开源文档、而非\keyword{某个人的脑子}；
+  \item \keyword{ESOP + 长期激励}：给早期成员合理股权激励，降低流失率；
+  \item \keyword{学术合作多元化}：避免单一学校/实验室依赖，至少建立 2–3 条并行合作线。
+\end{itemize}
+
+\subsection{风险仪表盘（内部每季度复盘）}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{3.4cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{2.0cm}@{}}
+\toprule
+\rowcolor{tableHead}
+\heiti 风险类别 & \heiti 当前级别评估 & \heiti 趋势 \\
+\midrule
+模型依赖 & 低（多 provider + 本地路径兜底） & 持平 \\
+市场教育 & 中（agent 概念仍在扩散中） & 向下 \\
+政策合规 & 中（本地链路抵消大部分） & 持平 \\
+人才集中 & \keyword{高}（solo 起家，天使轮扩团队是关键用途） & \keyword{融资后下降} \\
+竞品突然进场 & 低（尚未观察到对位竞品） & 持平 \\
+\bottomrule
+\end{tabularx}
+\end{center}
