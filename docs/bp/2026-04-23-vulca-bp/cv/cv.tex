@@ -1,0 +1,224 @@
+% Haorui Yu — Academic CV
+% Build: ./build.sh  (or: xelatex cv.tex)
+% License: private
+
+\documentclass[10.5pt,a4paper]{article}
+
+\usepackage[a4paper,top=1.6cm,bottom=1.8cm,left=1.8cm,right=1.8cm]{geometry}
+\usepackage{xcolor}
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{hyperref}
+
+% === Palette ===
+\definecolor{ink}{HTML}{1A1A2E}
+\definecolor{accent}{HTML}{1F3A5F}
+\definecolor{muted}{HTML}{4A5568}
+\definecolor{rule}{HTML}{CBD5E0}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=accent,
+  urlcolor=accent,
+  pdftitle={Haorui Yu — CV},
+  pdfauthor={Haorui Yu}
+}
+
+% === Fonts ===
+\setmainfont{Times New Roman}
+\setmonofont{Menlo}[Scale=0.88]
+\setCJKmainfont{Songti SC}[UprightFont=* Light, BoldFont=* Bold]
+
+% === Section style ===
+\titleformat{\section}
+  {\large\bfseries\color{accent}}
+  {}{0em}{}[{\color{rule}\vspace{-3pt}\titlerule[0.6pt]}]
+\titlespacing*{\section}{0pt}{12pt}{5pt}
+
+% === Custom helpers ===
+\newcommand{\cvname}[1]{{\Huge\bfseries\color{ink}#1}}
+\newcommand{\cvtagline}[1]{{\color{muted}\large #1}}
+\newcommand{\cventry}[4]{%
+  % #1 dates, #2 title, #3 institution/venue, #4 details
+  \noindent\begin{minipage}[t]{0.18\linewidth}\color{muted}\small #1\end{minipage}%
+  \begin{minipage}[t]{0.80\linewidth}%
+    \textbf{#2}\ifx&#3&\else{} \textperiodcentered{} {\color{muted}#3}\fi%
+    \ifx&#4&\else\\[2pt]\small #4\fi%
+  \end{minipage}\\[6pt]%
+}
+\newcommand{\pub}[1]{\item #1}
+
+\renewcommand{\labelitemi}{\textcolor{accent}{\small$\bullet$}}
+\setlist[itemize]{leftmargin=1.2em, itemsep=3pt, topsep=3pt, parsep=0pt}
+
+\linespread{1.15}
+\pagestyle{empty}
+
+\begin{document}
+
+% =================================================================
+% HEADER
+% =================================================================
+\begin{center}
+\cvname{Haorui Yu}\\[6pt]
+\cvtagline{PhD Researcher \textperiodcentered{} Multimodal LLMs for Cultural Understanding}\\[10pt]
+{\color{muted}
+\href{mailto:yuhaorui48@gmail.com}{yuhaorui48@gmail.com}
+\ \textperiodcentered\
+\href{mailto:2655435@dundee.ac.uk}{2655435@dundee.ac.uk}
+\ \textperiodcentered\
+\href{https://github.com/yha9806}{github.com/yha9806}
+\ \textperiodcentered\
+\href{https://github.com/vulca-org}{vulca-org}
+\ \textperiodcentered\
+University of Dundee, UK
+}
+\end{center}
+
+\vspace{4pt}
+
+% =================================================================
+% RESEARCH INTERESTS
+% =================================================================
+\section*{Research Interests}
+
+\noindent Vision-Language Models for cultural understanding \textperiodcentered{}
+Multimodal LLM evaluation frameworks \textperiodcentered{}
+Agent-native AI workflows (MCP protocol) \textperiodcentered{}
+Computational argumentation in NLP \textperiodcentered{}
+AI for art, heritage and intangible cultural heritage.
+
+% =================================================================
+% EDUCATION
+% =================================================================
+\section*{Education}
+
+\cventry{2024 – present}
+  {PhD Researcher}
+  {University of Dundee, Duncan of Jordanstone College of Art \& Design (DJCAD)}
+  {Thesis: \emph{Evaluating Vision-Language Models for Cultural Understanding in Heritage and Arts Contexts}.\\
+   Supervisor: Prof.~Natasha Lushetich (DJCAD).\\
+   Collaborator: Dr.~Ramon Ruiz-Dolz (University of Dundee, Computing; ELLIS Society member).}
+
+% =================================================================
+% PUBLICATIONS
+% =================================================================
+\section*{Publications}
+
+\textbf{\small First author (peer-reviewed / preprint)}
+
+\begin{itemize}
+  \pub{\textbf{Haorui Yu}, Ramon Ruiz-Dolz, Qiufeng Yi.
+  \emph{A Structured Framework for Evaluating and Enhancing Interpretive Capabilities of Multimodal LLMs in Culturally Situated Tasks.}
+  Findings of the Association for Computational Linguistics: EMNLP 2025, pp.~1945–1971.
+  [\href{https://aclanthology.org/2025.findings-emnlp.103/}{ACL Anthology}]}
+
+  \pub{\textbf{Haorui Yu}.
+  \emph{VULCA-Bench: A Benchmark for Culturally-Aware Visual Understanding at Five Levels.}
+  arXiv preprint, 2026. \emph{Under review at ACL 2026 (Dataset Track).}
+  [\href{https://arxiv.org/abs/2601.07986}{arXiv:2601.07986}]}
+
+  \pub{\textbf{Haorui Yu}, Xuehang Wen, Fengrui Zhang, Qiufeng Yi.
+  \emph{Cross-Cultural Expert-Level Art Critique Evaluation with Vision-Language Models.}
+  arXiv preprint, 2026.
+  [\href{https://arxiv.org/abs/2601.07984}{arXiv:2601.07984}]}
+\end{itemize}
+
+% =================================================================
+% OPEN-SOURCE / RESEARCH PROJECTS
+% =================================================================
+\section*{Research \& Open-Source Projects}
+
+\cventry{2026 – present}
+  {Vulca — Agent-Native Image SDK for Claude Code}
+  {Sole architect, maintainer, and first author of the underlying research}
+  {%
+  Productionised the L1–L5 cultural evaluation framework from the EMNLP 2025 paper into
+  an agent-native image SDK targeting Anthropic's MCP (Model Context Protocol) ecosystem.
+  \begin{itemize}
+    \item Designed and shipped \textbf{21 MCP tools} and \textbf{3 end-to-end skills}
+    (\texttt{/decompose}, \texttt{/visual-brainstorm}, \texttt{/visual-spec}).
+    \item Authored \textbf{13 cultural/design tradition YAML definitions}
+    (Chinese Gongbi/Xieyi, Japanese traditional, Islamic geometric, Western academic,
+    South Asian, African, watercolour, photography, brand/UI-UX design, contemporary art,
+    plus a generic baseline).
+    \item Verified an end-to-end local stack on Apple Silicon (ComfyUI + Ollama + EVF-SAM),
+    ensuring data-never-leaves-device compliance.
+    \item Released v0.14.0 $\to$ v0.17.7 on PyPI (Apache 2.0) — 11+ versioned releases in 14 days,
+    with a fully standardised \emph{brainstorm $\to$ spec $\to$ plan $\to$ ship-gate} engineering workflow
+    open-sourced alongside the code.
+    \item Integrated into the Claude Code plugin marketplace as \texttt{vulca-org/vulca-plugin}.
+    \item Repository: \href{https://github.com/vulca-org/vulca}{github.com/vulca-org/vulca}.
+  \end{itemize}}
+
+% =================================================================
+% RESEARCH COLLABORATIONS
+% =================================================================
+\section*{Academic Collaborations \& Advising}
+
+\begin{itemize}
+  \item \textbf{Prof.~Natasha Lushetich} — PhD supervisor; University of Dundee, DJCAD.
+  \item \textbf{Dr.~Ramon Ruiz-Dolz} — research collaborator; University of Dundee, Computing;
+  ELLIS Society member; co-author on EMNLP 2025 Findings.
+  \item \textbf{Prof.~Jindong Wang} — senior academic advisor and research resource sponsor;
+  William \& Mary (Data Science), former senior researcher at Microsoft Research Asia (2019–2024);
+  World's Top 2\% Highly Cited Scientists (23{,}000+ citations, H-index 54).
+  \item \textbf{Qiufeng Yi} — collaborator and Vulca core developer;
+  University of Birmingham, School of Mechanical Engineering PhD researcher (computer vision, medical imaging).
+  \item \textbf{Xuehang Wen, Fengrui Zhang} — co-authors on the \emph{Art Critique} preprint.
+\end{itemize}
+
+% =================================================================
+% COMPETITIONS & RECOGNITION
+% =================================================================
+\section*{Selected Competitions \& Activities}
+
+\cventry{2026}
+  {ACM MM 2026 EmoArt Challenge — Track 1 Entrant}
+  {\emph{Emotion-Aware Artistic Image Generation}}
+  {Submitting Vulca as the entry technical solution; submission deadline 2026-06-10.
+  The challenge serves as a public benchmark for the Vulca stack and a third-party academic
+  endorsement channel.}
+
+% =================================================================
+% TECHNICAL SKILLS
+% =================================================================
+\section*{Technical Skills}
+
+\begin{center}
+\begin{tabular}{@{}p{3.6cm}p{13cm}@{}}
+\textbf{Languages}        & Python, TypeScript, Shell, \LaTeX{} \\
+\textbf{ML / AI}          & PyTorch, HuggingFace Transformers, diffusers, SAM / EVF-SAM, LiteLLM, prompt engineering \\
+\textbf{Agent / LLM}      & Anthropic Claude Code, MCP protocol, Anthropic SDK, Google Gemini, OpenAI API \\
+\textbf{Image / CV}       & SDXL, FLUX, ControlNet, ComfyUI workflows, inpainting / segmentation pipelines \\
+\textbf{Release / DevOps} & Git, GitHub Actions, PyPI packaging, pytest, xelatex \\
+\textbf{Platforms}        & macOS (Apple Silicon / MPS), Linux (CUDA) \\
+\end{tabular}
+\end{center}
+
+% =================================================================
+% LANGUAGES
+% =================================================================
+\section*{Languages}
+
+Chinese (native) \textperiodcentered{} English (fluent, academic \& professional)
+
+% =================================================================
+% REFERENCES
+% =================================================================
+\section*{References}
+
+Available upon request. Written recommendations from PhD supervisor and senior academic
+advisor can be provided for grant, investment, or academic DD purposes.
+
+\vspace{1cm}
+
+\begin{center}
+{\color{muted}\footnotesize
+Last updated: 2026-04-23 \textperiodcentered{} Version 1.0 \textperiodcentered{} Source:
+\href{https://github.com/vulca-org/vulca/tree/master/docs/bp/2026-04-23-vulca-bp/cv}{\texttt{vulca-org/vulca} \textperiodcentered{} docs/bp/.../cv}}
+\end{center}
+
+\end{document}
