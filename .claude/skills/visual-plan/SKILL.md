@@ -153,7 +153,36 @@ Reply handling:
 
 ## Phase 2 — Plan-review loop
 
-(filled in Task 6)
+Cap: **5 user turns** (hard). Soft extend: user message contains `deep review` (case-insensitive) → raise cap to 8. Inherits /visual-spec Phase 4 vocabulary byte-for-byte where possible.
+
+1. **F-summary prompt** (if any `F.per_gen_sec` / `F.total_session_sec` has `source: assumed`): fire the prompt from §Source-gating before the main draft prompt. This turn is **NOT** charged toward the cap. User reply resolves F per the 3-branch handler.
+
+2. **Render draft.** Print the full in-flight `plan.md` with all 6 sections (A/B/C/D/E/F) filled in. Frontmatter `status: draft`. **Persist to disk:** immediately after the initial render, `Write` the draft to `docs/visual-specs/<slug>/plan.md`. This enables Err #3 resume.
+
+3. **Main draft prompt.** Print exactly:
+
+   ```
+   Draft plan.md below. Type 'accept all' to finalize, 'change <section>' to revise one, or 'deep review' to extend your review budget +3 turns.
+   ```
+
+4. **Handle user replies:**
+   - **`accept all`** (case-insensitive exact match) → flip every section's internal `reviewed: true`, flip frontmatter `status: draft → running`, `Write` plan.md, enter Phase 3 (happy path; do not burn remaining cap).
+   - **`change <section>`** (`change A`, `change D.L3`, `change C.base_prompt`, etc.) → open sub-dialog scoped to that section only. Rules:
+     - Ask one targeted question per turn (e.g. `"D.L3 currently value: 0.6, source: assumed, gate_class: soft. New value + source (measured/user-confirmed)?"`).
+     - On user-supplied valid value, apply and flip `reviewed: true`.
+     - On invalid input: re-prompt once; second invalid = 1 turn cost + return to main prompt without changes.
+     - If the edit changes `D.L_N.source` from `assumed` → `user-confirmed` → add `L_N` to `user_elevated`, flip `gate_class: soft → hard`, append Notes `[override] D.L_N.source: assumed → user-confirmed. Reason: <user rationale>.` If user declines rationale, write `Reason: none provided by user`.
+     - **`user_elevated` persists ONLY in plan.md — never back-written to design.md (S4 per design decision).**
+   - **`deep review`** → cap += 3 (max 8). Print one-liner: `Cap extended to 8 turns.` Do NOT advance to Phase 3. One-time use per session; second invocation treated as invalid.
+   - **Ambiguous reply** (`"looks good but"`, `"mostly fine"`) → re-prompt main menu; count as 1 turn.
+   - **Pixel action request** (`just generate it`, `run it now`) → Err #8 decline; turn NOT charged.
+
+5. **Per-turn housekeeping.** After each round, re-render the current draft (compact form if no section mutated) and update `[resume-state] turns_used: <N>` line in Notes. **Then re-`Write` plan.md** (status: draft, updated: <today>) — pairs with EVERY turn that mutated state OR counter, per brainstorm/spec discipline. If user at cap−1, courtesy notice: `1 turn remaining. Last 'change <section>' or 'deep review'?`.
+
+6. **Cap-hit behavior.** When counter reaches cap (5 or 8) without `accept all`:
+   - Force-show current full draft.
+   - Prompt exactly: `Turn cap reached. finalize or deep review?`
+   - Do NOT auto-advance. Never flip `status` without explicit `accept all` (S2).
 
 ## Phase 3 — Execution loop
 
