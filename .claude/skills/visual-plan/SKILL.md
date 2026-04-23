@@ -157,11 +157,163 @@ Reply handling:
 
 ## Phase 3 — Execution loop
 
-(filled in Task 6)
+Runs only after Phase 2 user types `accept all` and status flips `draft → running`. No review cap. Sequential iteration over `seed_list`. Lockfile heartbeat = jsonl mtime (no separate heartbeat file).
+
+**S2 cross-phase reminder**: Phase 2 cap-hit without `accept all` force-shows the full draft and prompts `Turn cap reached. finalize or deep review?` — status STAYS `draft`; cap-hit alone never enters Phase 3 (see Phase 2 body).
+
+**S1 enforcement**: Phase 3 tool whitelist = `generate_image` + `evaluate_artwork` + MAY `unload_models` at loop end. Forbidden across all phases: `create_artwork`, `generate_concepts`, `inpaint_artwork`, any `layers_*`.
+
+```python
+fail_fast_counter = 0
+completed_iters = _replay_jsonl_if_exists()   # Err #3 resume or Err #12 recovery
+soft_gate_warn_count = 0
+
+for iter_idx, seed in enumerate(seed_list):
+    if iter_idx < len(completed_iters):
+        # Resume: rebuild fail_fast_counter from last contiguous reject-run
+        fail_fast_counter = _rebuild_counter(completed_iters)
+        soft_gate_warn_count = _rebuild_soft_count(completed_iters)
+        continue
+
+    # S4 content-guard: re-hash design.md and compare to captured session constant
+    current_hash = _sha256(Path(design_ref).read_bytes())
+    if current_hash != design_hash:
+        _terminate_phase3(status="aborted", at_iter=iter_idx, reason="err16")
+        return  # Err #16 fires
+
+    variant = _variant_for_iter(iter_idx, plan.B)
+    composed_prompt = plan.C.composed_prompts[variant.idx]
+    t0 = perf_counter()
+    started_at = now_iso()
+
+    try:
+        gen_result = await generate_image(
+            prompt=composed_prompt,
+            provider=plan.A.provider,
+            tradition=design.frontmatter.tradition,
+            reference_path=plan.A.reference_path if plan.C.sketch_integration != "ignore" else "",
+            output_dir=f"docs/visual-specs/{slug}/iters/{seed}/",
+            seed=plan.A.seed + iter_idx,          # MCP-extended (v0.17.6 prereq)
+            steps=plan.A.steps,                    # MCP-extended
+            cfg_scale=plan.A.cfg_scale,            # MCP-extended
+            negative_prompt=plan.A.negative_prompt, # MCP-extended
+        )
+    except ProviderUnreachable as e:
+        # Err #5 hands off directly to Err #13 cross-class user prompt (no S8 auto-failover)
+        user_choice = prompt_err13(e, plan.A.provider)
+        if user_choice == "a":
+            plan.A.provider = _alt_class_provider(plan.A.provider)
+            _log_failover_notes(plan.A.provider)
+            continue
+        elif user_choice == "b":
+            _terminate_phase3(status="aborted", at_iter=iter_idx); return
+        elif user_choice == "c":
+            _terminate_phase3(status="partial", at_iter=iter_idx); return
+
+    wall_time = perf_counter() - t0
+
+    if "error" in gen_result:
+        # Err #6: per-iter failure, log + continue
+        _append_jsonl_row(iter_idx, seed, verdict="failed",
+                          error=gen_result["error"], ...)
+        continue
+
+    eval_result = await evaluate_artwork(
+        image_path=gen_result["image_path"],
+        tradition=design.frontmatter.tradition,
+    )
+    # evaluate_artwork returns {"score": float, "dimensions": {...}, "tradition": str}.
+    # Map the 5 L scores out of the dimensions dict (keys are rubric names per tradition).
+    # On missing / malformed dimensions → jsonl row verdict=failed with error=<excerpt>, continue.
+    l_scores = _extract_l_scores(eval_result)
+    weighted_total = sum(l_scores[k] * plan.D1[k] for k in ("L1", "L2", "L3", "L4", "L5"))
+
+    verdict, gate_decisions = _compute_verdict(l_scores, plan.D.gating_decisions,
+                                                plan.F, wall_time)
+
+    _append_jsonl_row(iter_idx, seed, variant, gen_result["image_path"],
+                     started_at, wall_time, plan.A.provider,
+                     l_scores, weighted_total, verdict, gate_decisions,
+                     composed_prompt)
+
+    if verdict == "reject":
+        fail_fast_counter += 1
+    elif verdict == "accept":
+        fail_fast_counter = 0   # accept resets counter to 0
+    elif verdict == "accept-with-warning":
+        soft_gate_warn_count += 1
+        # fail_fast_counter unchanged — soft never contributes
+
+    # Err #7: unified 3-option prompt (no F.source branching)
+    if (plan.F.fail_fast_consecutive is not None
+        and fail_fast_counter >= plan.F.fail_fast_consecutive.value):
+        # force-show plan; print exactly: cost budget exceeded (<consecutive>×over). Abort, extend budget, or accept remaining?
+        user_choice = prompt_err7()
+        if user_choice == "abort":
+            _terminate_phase3(status="aborted", at_iter=iter_idx); return
+        elif user_choice.startswith("extend"):
+            plan.F.fail_fast_consecutive.value = _parse_extend(user_choice)
+            fail_fast_counter = 0  # reset on extend
+        elif user_choice == "accept-remaining":
+            _terminate_phase3(status="partial", at_iter=iter_idx); return
+```
+
+### plan.md.results.jsonl — row schema (14 required fields + 2 optional)
+
+```json
+{
+  "iter": 3,
+  "seed": 1340,
+  "variant_idx": 2,
+  "variant_name": "season=summer",
+  "image_path": "docs/visual-specs/<slug>/iters/1340/gen_abc12345.png",
+  "started_at": "2026-04-23T14:05:12Z",
+  "wall_time_sec": 82.34,
+  "provider_used": "sdxl-mps",
+  "l_scores": {"L1": 0.78, "L2": 0.72, "L3": 0.58, "L4": 0.61, "L5": 0.49},
+  "weighted_total": 0.651,
+  "verdict": "accept-with-warning",
+  "gate_decisions": {"hard_fails": [], "soft_fails": [["L3", 0.58, 0.6]], "budget_overage": false},
+  "prompt_used": "..."
+}
+```
+
+Schema rules:
+- UTF-8, NDJSON (newline-delimited JSON), one row per line.
+- Serialize: `json.dumps(..., ensure_ascii=True, separators=(",", ":"))` — grep-safe (CJK escapes to `\uXXXX`).
+- Always terminate with `"\n"`; read: `[json.loads(l) for l in content.splitlines() if l.strip()]` (tolerant of torn last line from crash).
+- 14 required fields above; 2 optional: `error` (on `verdict: failed` rows) and `evaluate_artwork_raw` (full tool return; off by default).
+- `iter` strictly monotonic increasing by 1 per append (natural from sequential Phase 3).
+- **append-only** — a crash between row N-1 and row N leaves exactly N-1 rows on disk, not N+partial.
+
+### Phase 3 tool whitelist reminder
+
+- `generate_image` (MCP-extended v0.17.6 signature)
+- `evaluate_artwork`
+- MAY `unload_models` at loop end (optional memory hygiene; log Notes `[unload-models] freeing <provider> weights` when called).
+
+**S1 absolute ban** (any phase): `create_artwork`, `generate_concepts`, `inpaint_artwork`, any `layers_*`. User request for any of these → Err #8 decline, turn NOT charged.
 
 ## Phase 4 — Finalize + optional hygiene
 
-(filled in Task 6)
+1. Read `plan.md.results.jsonl` → all completed rows.
+2. Determine terminal status (priority order: `aborted` > `partial` > `completed`):
+   - **`aborted`** triggers: user-triggered abort, Err #13(b) user picked "no, abort", Err #7 user picked "abort", Err #16 design.md drift detected mid-Phase-3.
+   - **`partial`** triggers: Err #7 user picked "accept-remaining", Err #13(c) user picked "skip as partial", all iters completed but zero had verdict ∈ {accept, accept-with-warning} (every row `verdict: failed` via Err #6). Mixed rows where at least one is `accept`/`accept-with-warning` fall through to `completed` with `[iter-failures]` Notes line.
+   - **`completed`** trigger: all iters in seed_list completed AND at least one verdict ∈ {accept, accept-with-warning}. Soft warnings affect handoff variant selection but do NOT demote to partial.
+   - **Zero-rows corner case**: if Err #16 / user abort fires at iter 0 before any jsonl row appended → fall-through to `aborted`.
+3. Render `## Results` markdown table from jsonl rows (columns: `iter | seed | variant | image | L1-L5 | weighted | verdict | wall_time | provider | notes`).
+4. Populate `## F. Cost ledger` actual: `total_wall_time` sum from jsonl, `overage_pct = actual / initial_budget - 1`.
+5. Append terminal-state Notes lines (`[fail-fast]`, `[aborted-at-iter]`, etc.).
+6. Rename `plan.md.results.jsonl` → `plan.md.results.jsonl.archive` (atomic on same filesystem).
+7. Delete `plan.md.lock` via `os.unlink`.
+8. MAY call `unload_models()` on `plan.A.provider`'s weight family for post-session cleanup. Log Notes if called.
+9. Write final `plan.md` with `status: <terminal>`, `updated: <today>`.
+10. Assert S4: `plan.frontmatter.{tradition, domain, slug}` == captured values. Violation → raise (code bug).
+11. Determine handoff string variant (8 variants total — see §Handoff below); append ` (recovered from stale lock at iter <K>)` suffix if Phase 1 fired Err #12 or folded via Err #3.
+12. Print handoff string byte-identical.
+
+**Do NOT auto-invoke anything downstream.** /visual-plan is terminal.
 
 ## Invariants (S1-S7)
 
