@@ -1,5 +1,47 @@
 # Changelog
 
+## v0.17.10 — 2026-04-23
+
+This release bundles **v0.17.9** (previously unshipped) with **v0.17.10**. Both surfaced from dogfooding the /visual-plan showcase on 2026-04-23 — real user corrections drove both fixes.
+
+### Added (from v0.17.9 OpenAI gpt-image-2 support)
+- `OpenAIImageProvider` now accepts `model="gpt-image-2"` (released 2026-04-21), unlocking the `/v1/images/edits` high-fidelity mode required for reference-preserving image fusions.
+- New kwargs plumbed through MCP `generate_image` + `OpenAIImageProvider.generate` + `ImageProvider` Protocol:
+  - `input_fidelity: "high" | "low"` — preserves reference composition (edits endpoint only)
+  - `quality: "low" | "medium" | "high" | "auto"`
+  - `output_format: "png" | "webp" | "jpeg"`
+- Size set extended with portrait + landscape: `(1024, 1536)`, `(1536, 1024)` in addition to prior DALL-E 3 sizes.
+- Friendly error detection on OpenAI 403 with `"organization must be verified"` message — raises `RuntimeError` with remediation URL + 15-min propagation note instead of raw HTTP error.
+- `tests/test_generate_image_extended_signature.py` gains 3 new test cases (`TestGptImage2Signature`) covering signature shape + plumbing + kwarg absence.
+
+### Added (v0.17.10 skill-design alignment)
+- **`.claude/skills/using-vulca-skills/SKILL.md`** — new meta-skill (≈50 lines) that establishes auto-invoke discipline for the brainstorm→spec→plan triad. Modeled on `superpowers:using-superpowers`. Includes intent-routing table, finalize vocabulary normalization, red-flag checklist.
+- **`.claude/settings.json`** — SessionStart hook (`matcher: "startup|clear|compact"`) preloads `using-vulca-skills/SKILL.md` so the agent matches user intent without requiring explicit slash commands.
+- **`.claude-plugin/plugin.json`** — distributable plugin manifest for `vulca-org/vulca-plugin` repo (v0.17.10).
+- **`hooks/hooks.json`** — mirror-ready hook config for distributed plugin. Uses `${CLAUDE_PLUGIN_ROOT}` to load meta-skill from the plugin's own skills directory.
+
+### Changed
+- **3 skill descriptions rewritten** from descriptive "Triggers: /slash-command" to imperative "Use when X / You MUST use this before X" — matches Superpowers' auto-invoke-friendly pattern. Without this, Claude Code's intent-matching heuristic over-interpreted "Triggers:" as slash-only gating. Affected files:
+  - `.claude/skills/visual-brainstorm/SKILL.md`
+  - `.claude/skills/visual-spec/SKILL.md`
+  - `.claude/skills/visual-plan/SKILL.md`
+- Each skill also gained a new `## Triggers` body section documenting (a) slash command, (b) Chinese aliases, (c) intent auto-match phrases, (d) skip conditions. Chinese triggers preserved as aliases (not dropped); just moved out of the description field.
+- **Finalize vocabulary normalized** across the 3 skills:
+  - Brainstorm/Spec: 5-word set `finalize / done / ready / lock it / approve` (brainstorm previously had only 4; `approve` added)
+  - Plan: `accept all` exact-match stays (stricter because it triggers real cost-incurring pixel calls)
+- **Plan cap-hit prompt** corrected — was asking `"Turn cap reached. finalize or deep review?"` but the actual gate requires `accept all`. Now: `"Turn cap reached. 'accept all' or 'deep review'?"` (2 occurrences fixed for internal consistency).
+
+### Dogfooding-driven surface discoveries
+Both of this release's changes came from real dogfooding work 2026-04-23:
+- **v0.17.9**: attempting to run /visual-plan Phase 3 with gpt-image-2 on a real Scottish street photo revealed `OpenAIImageProvider` was hardcoded to `gpt-image-1` without `input_fidelity` support.
+- **v0.17.10**: user observation — "Vulca skills require slash commands while Superpowers auto-invoke" — triggered a systemic audit (codex + superpowers:code-reviewer parallel) that surfaced the description-wording + meta-skill + SessionStart-hook gaps.
+
+Memory `feedback_dogfood_showcase_through_triad.md` captures the rule: user-facing showcases MUST use the triad, not one-off scripts. Memory `feedback_parallel_review_discipline.md` remains the validation pattern.
+
+### Known follow-ups deferred to v0.18+
+- Protocol body compression across the 3 SKILL.md files (currently 200-430 lines each vs Superpowers' peers at 60-170 lines). Superpowers code-reviewer flagged this as "long bodies dilute their own descriptions." Not blocking auto-invoke fix; scope creep risk now.
+- Cross-skill factoring of shared Err matrices + invariants — superpowers reviewer warned against this for shared-dep reasons. Monitor only.
+
 ## v0.17.8 — 2026-04-23
 
 ### Fixed
