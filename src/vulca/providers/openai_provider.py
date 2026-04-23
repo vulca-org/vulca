@@ -26,11 +26,18 @@ class OpenAIImageProvider:
         subject: str = "",
         reference_image_b64: str = "",
         negative_prompt: str = "",
+        seed: int | None = None,
+        steps: int | None = None,
+        cfg_scale: float | None = None,
         width: int = 1024,
         height: int = 1024,
         background: str = "auto",
         **kwargs,
     ) -> ImageResult:
+        # OpenAI image endpoints (DALL-E 3 / gpt-image-1) do not expose seed,
+        # sampler steps, or CFG — accept for signature symmetry and ignore.
+        _ = (seed, steps, cfg_scale)
+
         if not self.api_key:
             raise ValueError(
                 "OpenAI API key required. Set OPENAI_API_KEY env var "
@@ -43,6 +50,8 @@ class OpenAIImageProvider:
         if not kwargs.get("raw_prompt", False):
             if tradition and tradition != "default":
                 full_prompt = f"{prompt} (cultural tradition: {tradition.replace('_', ' ')})"
+        if negative_prompt:
+            full_prompt = f"{full_prompt} (avoid: {negative_prompt})"
 
         # DALL-E 3 only supports: 1024x1024, 1024x1792, 1792x1024
         dalle3_sizes = {(1024, 1024), (1024, 1792), (1792, 1024)}

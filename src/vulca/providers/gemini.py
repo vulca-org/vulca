@@ -84,6 +84,9 @@ class GeminiImageProvider:
         subject: str = "",
         reference_image_b64: str = "",
         negative_prompt: str = "",
+        seed: int | None = None,
+        steps: int | None = None,
+        cfg_scale: float | None = None,
         width: int = 1024,
         height: int = 1024,
         **kwargs,
@@ -111,6 +114,11 @@ class GeminiImageProvider:
             full_prompt = prompt
         else:
             full_prompt = self._build_prompt(prompt, tradition, subject, aspect_ratio, kwargs)
+        if negative_prompt:
+            full_prompt = f"{full_prompt}\n(avoid: {negative_prompt})"
+
+        # Gemini has no diffusion sampler → steps / cfg_scale do not apply.
+        _ = (steps, cfg_scale)
 
         contents: list = []
         if reference_image_b64:
@@ -129,13 +137,24 @@ class GeminiImageProvider:
             contents.append(types.Part.from_bytes(data=ref_bytes, mime_type=ref_mime))
         contents.append(full_prompt)
 
-        config = types.GenerateContentConfig(
+        config_kwargs: dict = dict(
             response_modalities=["Text", "Image"],
             image_config=types.ImageConfig(
                 image_size=image_size,
                 aspect_ratio=aspect_ratio,
             ),
         )
+        # Wire deterministic seed when caller supplied one. Older google-genai
+        # builds may not expose the `seed` field on GenerateContentConfig
+        # (TypeError on unknown kwarg); narrow the except to that case only so
+        # pydantic ValidationError from malformed seed input still surfaces.
+        if seed is not None:
+            try:
+                config = types.GenerateContentConfig(seed=seed, **config_kwargs)
+            except TypeError:
+                config = types.GenerateContentConfig(**config_kwargs)
+        else:
+            config = types.GenerateContentConfig(**config_kwargs)
 
         def _is_retryable(exc: Exception) -> bool:
             if isinstance(exc, asyncio.TimeoutError):

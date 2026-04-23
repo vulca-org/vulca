@@ -34,6 +34,9 @@ class MockImageProvider:
         subject: str = "",
         reference_image_b64: str = "",
         negative_prompt: str = "",
+        seed: int | None = None,
+        steps: int | None = None,
+        cfg_scale: float | None = None,
         width: int = 512,
         height: int = 512,
         **kwargs,
@@ -54,10 +57,20 @@ class MockImageProvider:
         img.save(buf, format="PNG")
         img_b64 = base64.b64encode(buf.getvalue()).decode()
 
+        metadata: dict = {"candidate_id": cid, "image_url": f"mock://{cid}.png"}
+        if seed is not None:
+            metadata["seed"] = seed
+        if steps is not None:
+            metadata["steps"] = steps
+        if cfg_scale is not None:
+            metadata["cfg_scale"] = cfg_scale
+        if negative_prompt:
+            metadata["negative_prompt"] = negative_prompt
+
         return ImageResult(
             image_b64=img_b64,
             mime="image/png",
-            metadata={"candidate_id": cid, "image_url": f"mock://{cid}.png"},
+            metadata=metadata,
         )
 
 

@@ -50,6 +50,9 @@ class ComfyUIImageProvider:
         subject: str = "",
         reference_image_b64: str = "",
         negative_prompt: str = "",
+        seed: int | None = None,
+        steps: int | None = None,
+        cfg_scale: float | None = None,
         width: int = 1024,
         height: int = 1024,
         **kwargs,
@@ -95,8 +98,11 @@ class ComfyUIImageProvider:
                               "inputs": {"width": width, "height": height, "batch_size": 1}}
                 latent_src = ["5", 0]
 
+            ksampler_seed = seed if seed is not None else secrets.randbelow(2**63)
+            ksampler_steps = steps if steps is not None else 20
+            ksampler_cfg = cfg_scale if cfg_scale is not None else 7.0
             nodes["3"] = {"class_type": "KSampler", "inputs": {
-                "seed": secrets.randbelow(2**63), "steps": 20, "cfg": 7.0,
+                "seed": ksampler_seed, "steps": ksampler_steps, "cfg": ksampler_cfg,
                 "sampler_name": "euler", "scheduler": "normal",
                 "denoise": denoise,
                 "model": ["4", 0], "positive": ["6", 0],

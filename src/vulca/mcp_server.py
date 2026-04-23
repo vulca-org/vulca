@@ -1135,6 +1135,10 @@ async def generate_image(
     tradition: str = "default",
     reference_path: str = "",
     output_dir: str = "",
+    seed: int | None = None,
+    steps: int | None = None,
+    cfg_scale: float | None = None,
+    negative_prompt: str | None = None,
 ) -> dict:
     """Generate a single image from a text prompt — no evaluation, no loop.
 
@@ -1147,6 +1151,13 @@ async def generate_image(
         tradition: Cultural tradition for prompt enrichment.
         reference_path: Optional reference/sketch image path.
         output_dir: Directory to save the generated image.
+        seed: Deterministic seed (diffusion providers). Ignored by DALL-E endpoint;
+            wired to generationConfig.seed on Gemini when supported.
+        steps: Sampler steps (diffusion providers only). Ignored by Gemini/OpenAI.
+        cfg_scale: Classifier-free guidance scale (diffusion providers only).
+            Ignored by Gemini/OpenAI.
+        negative_prompt: Tokens to avoid. SDXL/ComfyUI use native negative conditioning;
+            OpenAI/Gemini prepend "avoid: <tokens>" to the prompt.
 
     Returns:
         image_path, cost_usd, latency_ms, provider.
@@ -1171,11 +1182,22 @@ async def generate_image(
                 return {"error": f"Reference image not found: {reference_path}"}
             ref_b64 = base64.b64encode(ref_file.read_bytes()).decode()
 
+        extra: dict = {}
+        if seed is not None:
+            extra["seed"] = seed
+        if steps is not None:
+            extra["steps"] = steps
+        if cfg_scale is not None:
+            extra["cfg_scale"] = cfg_scale
+        if negative_prompt is not None:
+            extra["negative_prompt"] = negative_prompt
+
         result = await prov.generate(
             prompt,
             tradition=tradition,
             subject=prompt,
             reference_image_b64=ref_b64,
+            **extra,
         )
 
         elapsed_ms = round((time.monotonic() - t0) * 1000)
