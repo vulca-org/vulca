@@ -37,6 +37,8 @@ Only when all gates pass: advance to Phase 2.
 
 Pre-cap. This phase produces the one user confirmation that is explicitly excluded from the 5-turn review budget.
 
+**Resume behavior (Err #3).** On Err #3 resume, Phase 2 is skipped entirely — trust the draft's existing `F` block as-is. Do NOT re-invoke `generate_image(provider="mock")` nor re-apply the multiplier table. Rationale: the mock-calibration latency is a within-session noise measurement, not a repeatable physical constant; re-running it on resume adds jitter without new information, and re-prompting the user for F-confirm would silently inflate the turn count. If the draft's F block is malformed (missing keys, non-numeric values), that's a resume-corruption case — log `[resume-warning] F block malformed; re-enter Phase 2` to `## Notes` and re-run Phase 2 only then.
+
 1. **Check `--budget-per-gen <seconds>` flag.**
    - If user passed a measurement (e.g., "I timed my last run at 42s") → use that value; mark `per_gen_sec.source: measured, confidence: high`. Skip the mock calibration.
    - If user passed a policy number (e.g., "budget me 60s per gen") with no measurement backing → use that value; mark `source: assumed, confidence: low`. Skip the mock calibration.
@@ -49,13 +51,19 @@ Pre-cap. This phase produces the one user confirmation that is explicitly exclud
    | A.provider | Multiplier | Example per-gen (mock = 1 ms) |
    |---|---|---|
    | `mock` | 1× | 1 ms |
+   | `sdxl` (host-detect; aliases below) | — | see host-specific row |
    | `sdxl-mps` (Apple Silicon) | 20,000× | ~20 s |
    | `sdxl-cuda` | 5,000× | ~5 s |
    | `comfyui-mps` (full pipeline) | 80,000× | ~80 s |
    | `gemini` | 15,000× | ~15 s |
    | `openai` | 10,000× | ~10 s |
 
-   **Unknown-provider fallback.** If `A.provider` does not match any row in this table (new provider, typo, custom identifier): tag F fields with `source: assumed, confidence: low` and prompt the user verbatim: `Provider '<name>' not in multiplier table. Supply --budget-per-gen <seconds> to skip calibration.` Do NOT invent a multiplier; wait for the user's `--budget-per-gen` or provider correction before proceeding to step 4.
+   **Bare `sdxl` resolution.** Proposals from `/visual-brainstorm` name `provider: sdxl` without a hardware qualifier (brainstorm has no reason to know the user's host). Before the multiplier lookup, normalize the provider name:
+   - If `provider == "sdxl"` and `sys.platform == "darwin"` → treat as `sdxl-mps` for multiplier purposes.
+   - If `provider == "sdxl"` on any other platform → treat as `sdxl-cuda`.
+   - Record the resolved name in F as `provider_used_for_calibration`; keep the original `A.provider` value unchanged in the design.md `A` block.
+
+   **Unknown-provider fallback.** If `A.provider` does not match any row in this table after the `sdxl` normalization above (new provider, typo, custom identifier): tag F fields with `source: assumed, confidence: low` and prompt the user verbatim: `Provider '<name>' not in multiplier table. Supply --budget-per-gen <seconds> to skip calibration.` Do NOT invent a multiplier; wait for the user's `--budget-per-gen` or provider correction before proceeding to step 4.
 
 4. **Propose F values.**
    - `per_gen_sec.value = t_mock × multiplier`
@@ -86,7 +94,7 @@ Pre-cap. Derive all 7 dimensions, each as a fenced YAML block with a `reviewed: 
 
 **Derivation class:** derived.
 
-Reason from `proposal.## Intent` + `proposal.## Physical form` + `proposal.tradition` + local provider availability (check via quick `get_tradition_guide(tradition).recommended_providers` if the guide supplies one; else apply agent judgment). Pick seed as a stable integer (1337 is a safe default; steps and cfg_scale per tradition guide or provider default).
+Reason from `proposal.## Intent` + `proposal.## Physical form` + `proposal.tradition` + local provider availability. The tradition guide's `pipeline_variant` field (e.g., `"sdxl-base"`, `"comfyui-full"`) is the nearest provider hint the registry exposes — use it when present, else apply agent judgment from the intent shape. (Note: no `recommended_providers` field exists on the guide; do not rely on one.) Pick seed as a stable integer (1337 is a safe default; steps and cfg_scale per tradition guide or provider default).
 
 ```yaml
 # ## A. Provider + generation params
@@ -115,7 +123,19 @@ variant_count: 1                   # MUST match proposal's declared count
 
 **Derivation class:** derived.
 
-Compose `base_prompt` from `proposal.## Intent` + `proposal.## Physical form` + tradition tokens. Pull `tradition_tokens` MECHANICALLY from `get_tradition_guide(tradition).terminology` (no paraphrase). Pull `color_constraint_tokens` from `proposal.## Color constraints` (one token per constraint; bilingual form where the guide supplies one). `negative_prompt` is used only on SDXL / ComfyUI providers; set `""` on `gemini` / `openai`. `sketch_integration` is forced to `ignore` if Phase 1 set `sketch_available: false`.
+Compose `base_prompt` from `proposal.## Intent` + `proposal.## Physical form` + tradition tokens. Pull `tradition_tokens` MECHANICALLY from `get_tradition_guide(tradition).terminology` (no paraphrase).
+
+**Real shape of `.terminology`.** The registry returns `list[dict]` — each entry has keys `term` (English), `term_zh` / `translation` (non-English), `definition` (`dict | str`), `aliases`, `category`. It is NOT a flat list of bilingual strings. Concat recipe to produce each `tradition_tokens` entry:
+
+```
+token = t.term
+if t.translation or t.term_zh:
+    token = f"{t.term} {t.translation or t.term_zh}"
+```
+
+Emit one `token` string per terminology entry (skip entries with empty `term`). The example below is the post-concat shape — do not copy it as the registry output.
+
+Pull `color_constraint_tokens` from `proposal.## Color constraints` (one token per constraint; bilingual form where the guide supplies one). `negative_prompt` is used only on SDXL / ComfyUI providers; set `""` on `gemini` / `openai`. `sketch_integration` is forced to `ignore` if Phase 1 set `sketch_available: false`.
 
 ```yaml
 # ## C. Prompt composition
@@ -139,6 +159,8 @@ Call `get_tradition_guide(tradition).weights` and copy the 5 keys byte-for-byte.
 
 ```yaml
 # ## D1. L1-L5 weights (MECHANICAL — registry is authority; no source/confidence)
+# Values below are ILLUSTRATIVE only. Real weights vary per tradition — copy
+# byte-for-byte from get_tradition_guide(tradition).weights. Do NOT paraphrase.
 reviewed: false
 L1: 0.3
 L2: 0.25
@@ -211,7 +233,11 @@ provider_multiplier_applied: 80000
 
 ## Produced artifact — `design.md` schema
 
-The Phase 4 draft and the Phase 6 finalized file share the same shape. Frontmatter is **8 fields, no extras, no inline YAML comments inside the `---` fence**. Sections: **9 when E fires, 8 when E is omitted** (all `##` headings; downstream parsers locate by heading, not positional index — data-flow invariant 4).
+The Phase 4 draft and the Phase 6 finalized file share the same shape. Frontmatter is **9 fields, no extras, no inline YAML comments inside the `---` fence** (the 8 content fields below + `schema_version`). Sections: **9 when both D1 and E fire, 8 when either is omitted, 7 when both are omitted** (all `##` headings; downstream parsers locate by heading, not positional index — data-flow invariant 4). Specifically:
+
+- **9 sections** (A B C D1 D2 E F + Open questions + Notes) — tradition is non-null AND proposal flagged a spike.
+- **8 sections** — one of: (a) tradition non-null, no spike → omit E; (b) tradition null, spike flagged → but see null-tradition guard in §Phase 3.E which forces spike-skip → so case (b) collapses into (c); (c) tradition null, no spike → omit D1, E still absent.
+- **7 sections** (A B C D2 F + Open questions + Notes) — tradition null AND no spike. This is the collapsed case. When this branch fires, `## Notes` MUST include the `[null-tradition] spike skipped` audit line per §Phase 3.E even though no spike was attempted.
 
 ### Template (copy and fill)
 
@@ -219,6 +245,7 @@ The Phase 4 draft and the Phase 6 finalized file share the same shape. Frontmatt
 ---
 slug: YYYY-MM-DD-<topic>            # copied from proposal, unchanged
 status: draft                       # Phase 4: draft; Phase 6: resolved
+schema_version: "0.1"               # design.md shape version; bump on breaking schema change; absent on legacy files means "0.1"
 domain: <one of 7-enum>             # copied from proposal (S4 immutable)
 tradition: <enum id OR YAML null>   # copied from proposal (S4 immutable)
 generated_by: visual-spec@0.1.0
@@ -258,7 +285,7 @@ updated: YYYY-MM-DD                 # bumped on every write (draft + finalize)
 <free-form audit trail. MUST include (when relevant):
 - [resume-state] turns_used: <N>              — progress counter (Err #3)
 - [override] <dim>.<field>: <old> → <new>. Reason: <rationale>   — S6 override log
-- sketch at <path> unreachable at spec time: <err>   — Err #9 degrade log
+- sketch at <path> unreadable at spec time: <err>    — Err #9 degrade log
 - <provider> unreachable: <err>                — Err #5 spike-skip log
 - unload_models called after spike: <reason>   — Phase 5 memory-hygiene log>
 ````
@@ -275,7 +302,7 @@ Cap: **5 review turns** (hard). Each user-prompted reply increments the counter 
    > `Draft design.md below. Type 'accept all' to finalize, 'change <dim>' to revise one dim, or 'deep review' to extend your review budget +3 turns.`
 
 3. **Handle user replies:**
-   - **`accept all`** → flip every dim's `reviewed: true`. Jump to Phase 6 (do not burn remaining cap; this is the happy path).
+   - **`accept all`** → flip every dim's `reviewed: true`. Jump to Phase 6 (do not burn remaining cap; this is the happy path). **`accept all` does NOT require an intermediate draft-`Write` for the final `turns_used` bump** — Phase 6's finalize `Write` absorbs the +1 increment in the same transaction. Rationale: on this path, between the in-memory bump and the finalize `Write` no further turns can fire (the loop has already exited), so the single finalize `Write` is atomic for both status flip and counter state. This is the one exception to step 4's `Write`-pairs-with-every-`turns_used`-change rule.
    - **`change <dim>`** (e.g., `change A`, `change D2.batch_size`, `change C.base_prompt`) → open a sub-dialog scoped to that dim only. Rules:
      - Ask one targeted question per turn (e.g., `"D2.batch_size currently 4 (assumed, med). What value and why?"`).
      - When the user supplies a value, validate against the dim's schema (enum membership, positive integer, etc.). On invalid input: re-prompt once; a second invalid input counts as 1 turn and returns to the top prompt without changes.
@@ -311,8 +338,8 @@ Runs only if Phase 3 emitted an E section with `spike_requested: true`. Not char
 ## Phase 6 — Finalize + handoff
 
 1. **Finalize triggers.** On user reply, do a case-insensitive substring match against the 5-word trigger set: `finalize`, `done`, `ready`, `lock it`, `approve`. Any hit → proceed. Ambiguous mid-sentence use (e.g., `"ready to keep reviewing"`) → prefer the later explicit prompt; if in doubt, ask `"Finalize now? (yes/no)"` and do NOT charge the turn.
-2. **Flip status.** `frontmatter.status: draft → resolved`. `frontmatter.updated: <today in YYYY-MM-DD>`. `frontmatter.created:` unchanged from the draft / original write.
-3. **Write.** Call `Write` on `docs/visual-specs/<slug>/design.md`. Assert before writing: `frontmatter.tradition` and `frontmatter.domain` equal the values captured in Phase 1 (S4 write-time check).
+2. **Flip status.** `frontmatter.status: draft → resolved`. `frontmatter.updated: <today in YYYY-MM-DD>`. `frontmatter.created:` unchanged from the draft / original write. **Ensure `frontmatter.schema_version` is present**: if absent on the draft (legacy file from pre-v0.17.6), set `"0.1"` on finalize; if present, leave as-is (downstream schema-version bumps are additive, not retro-written on older files).
+3. **Write.** Call `Write` on `docs/visual-specs/<slug>/design.md`. Assert before writing: `frontmatter.tradition` and `frontmatter.domain` equal the values captured in Phase 1 (S4 write-time check). Assert `frontmatter.schema_version` is a non-empty string (defaults to `"0.1"` per step 2).
 4. **Print the handoff string — exactly, verbatim, no variants:**
 
    ```
@@ -376,8 +403,17 @@ Rules the agent running this skill MUST follow. Each ban is enforceable or presc
 | 2 | Same-slug `design.md` exists `status: resolved` | Print exactly: `already finalized at <path>; branch with -v2 or pick new slug`. Terminate. **Do not overwrite.** | helper + prescription |
 | 3 | Same-slug `design.md` exists `status: draft` | Resume path: re-enter Phase 4 review loop; skip dims whose fenced-block `reviewed: true` (per §Phase 3 preamble); prompt on remaining dims with `reviewed: false`. **Turn cap accumulates from draft's recorded count in `## Notes`** (`[resume-state] turns_used: <N>` line); does NOT reset. | helper + prescription |
 | 4 | Frontmatter schema violation: `tradition` not in registry AND not YAML `null`, OR `domain` not in 7-enum | Print exactly: `proposal.md frontmatter violation: <field> <value> invalid. Re-run /visual-brainstorm <slug> to fix.` Terminate. **Do not auto-retry.** | helper |
-| 5 | Spike flagged but provider unreachable (ComfyUI down, missing API key, timeout) | In E section: `status: skipped`, `skip_reason: "<provider> unreachable: <err>"`. Log 1-line to `## Notes`. **Continue main flow** (D2/F unaffected). | helper |
-| 6 | Spike `generate_image` returns error dict | In E section `results`: row with `verdict: failed, error: "<excerpt>"`. **Other spikes continue**; all-fail → `status: failed` (distinct from `skipped`). | helper |
+| 5 | Spike flagged but **integration-layer** failure (provider unreachable / timeout / 401 / connection refused / missing API key). Classify by error-content semantic, not return shape — keyword list below. | In E section: `status: skipped`, `skip_reason: "<provider> unreachable: <err>"`. Log 1-line to `## Notes`. **Continue main flow** (D2/F unaffected); **break the spike loop**. | helper |
+| 6 | Spike `generate_image` returns error dict due to **per-call** failure (validation error, OOM, malformed param, unsupported model error). Classify by error-content semantic — keyword list below. An ambiguous message that matches neither #5 nor #6 → default to #6 (continue-other-spikes is the safer degrade). | In E section `results`: row with `verdict: failed, error: "<excerpt>"`. **Other spikes continue**; all-fail → `status: failed` (distinct from `skipped`). | helper |
+
+**Err #5 / #6 classifier (canonical regexes — case-insensitive).** Kept outside the table so alternation pipes are not escaped for Markdown; copy verbatim into any consumer:
+
+```
+Err #5 pattern:  (unreachable|timeout|connection refused|401|missing API key|rate.?limit)
+Err #6 pattern:  (validation|OOM|malformed|unsupported|invalid param|model error)
+```
+
+Tiebreaker: on a message matching both patterns (e.g., `"OOM: fallback connection refused"`), prefer the diagnosis that is more actionable for the caller — integration-layer (#5) when the root cause is environmental, per-call (#6) when the root cause is input or model state. If unsure, the `default to #6` fallback in the matrix above applies (continue-other-spikes is the safer degrade).
 | 7 | **Phase 5 only**: cost budget exceeded during spike (per-gen latency > `F.per_gen_sec.value × 2` for `F.fail_fast_consecutive` consecutive spike calls) | Print force-show of current draft + exactly: `cost budget exceeded during spike (<consecutive>×over). Abort, extend budget, or accept partial?` Three-option user pick. **Never auto-extend.** Phase 1-4 never trigger Err #7 (no pixel calls in those phases). | prescription |
 | 8 | User requests pixel action outside spike (Phase 3 / Phase 4) | Print exactly: `spec layer doesn't execute pixels outside spike. Spike plan is determined by proposal's ## Open questions; run /visual-plan after finalize to execute.` **Do not** call the requested tool. **Turn NOT charged.** | prescription (S1 parallel) |
 | 9 | Sketch referenced by `proposal.## References` not readable at spec time (moved / symlink broken / permission denied) | Set phase state `sketch_available: false`. Proceed text-only. Log to `## Notes`: `sketch at <path> unreadable at spec time: <err>. Proceeding text-only; C.sketch_integration forced to "ignore".` **Do not abort.** | helper |

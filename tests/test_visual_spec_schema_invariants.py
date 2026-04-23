@@ -11,16 +11,18 @@ from pathlib import Path
 
 import pytest
 
-# Inline fixture: a canonical resolved design.md (E section present = spike_triggered=true).
+# Inline fixture: a canonical resolved design.md (E section present = spike fired).
+# Frontmatter is the canonical 9-field set from SKILL.md §"Produced artifact" template.
 RESOLVED_DESIGN_MD = """---
 slug: 2026-04-21-test-project-chinese-gongbi
 status: resolved
-input_proposal: ./proposal.md
+schema_version: "0.1"
+domain: illustration
+tradition: chinese_gongbi
 generated_by: visual-spec@0.1.0
+proposal_ref: docs/visual-specs/2026-04-21-test-project-chinese-gongbi/proposal.md
 created: 2026-04-21
 updated: 2026-04-21
-spike_triggered: true
-tradition: chinese_gongbi
 ---
 
 # Test Project in Chinese Gongbi
@@ -104,7 +106,7 @@ provider_multiplier_applied: 20
 - no overrides applied
 """
 
-# Second fixture: 8-section variant (no E / spike_triggered=false)
+# Second fixture: 8-section variant (tradition non-null, no spike → E omitted).
 RESOLVED_NO_SPIKE_MD = RESOLVED_DESIGN_MD.replace(
     """## E. Spike plan
 ```yaml
@@ -118,29 +120,138 @@ status: pending
 
 """,
     "",
-).replace("spike_triggered: true", "spike_triggered: false")
+)
+
+# Third fixture: 7-section variant (tradition: null AND no spike → D1 + E both omitted).
+# Documents the collapsed-case shape per SKILL.md §"Produced artifact".
+RESOLVED_NULL_TRADITION_NO_SPIKE_MD = """---
+slug: 2026-04-22-test-null-tradition
+status: resolved
+schema_version: "0.1"
+domain: illustration
+tradition: null
+generated_by: visual-spec@0.1.0
+proposal_ref: docs/visual-specs/2026-04-22-test-null-tradition/proposal.md
+created: 2026-04-22
+updated: 2026-04-22
+---
+
+# Test Null Tradition Collapsed Shape
+
+## A. Provider + generation params
+```yaml
+reviewed: true
+provider: sdxl
+seed: 1337
+steps: 30
+cfg_scale: 7.5
+```
+
+## B. Composition strategy
+```yaml
+reviewed: true
+strategy: single
+variation_axis: null
+variant_count: 1
+```
+
+## C. Prompt composition
+```yaml
+reviewed: true
+base_prompt: "abstract composition"
+negative_prompt: ""
+tradition_tokens: []
+color_constraint_tokens: []
+sketch_integration: ignore
+ref_integration: none
+```
+
+## D2. Thresholds + batch + rollback
+```yaml
+reviewed: true
+L1_threshold:   {value: 0.7, source: assumed, confidence: low}
+L2_threshold:   {value: 0.7, source: assumed, confidence: low}
+L3_threshold:   {value: 0.6, source: assumed, confidence: low}
+L4_threshold:   {value: 0.55, source: assumed, confidence: low}
+L5_threshold:   {value: 0.5, source: assumed, confidence: low}
+batch_size:     {value: 4, source: assumed, confidence: med}
+rollback_trigger: {value: "3 consecutive L3<0.5", source: assumed, confidence: low}
+override_rationale: null
+```
+
+## F. Cost budget
+```yaml
+reviewed: true
+per_gen_sec: {value: 20, source: derived, confidence: med}
+total_session_sec: {value: 120, source: derived, confidence: low}
+fail_fast_consecutive: {value: 2, source: assumed, confidence: low}
+provider_used_for_calibration: mock
+provider_multiplier_applied: 20000
+```
+
+## Open questions
+none
+
+## Notes
+- [null-tradition] spike skipped — requires tradition-guide weights for judgment.
+"""
+
+
+_CANONICAL_FRONTMATTER_FIELDS = {
+    "slug", "status", "schema_version", "domain", "tradition",
+    "generated_by", "proposal_ref", "created", "updated",
+}
+
+
+def _extract_frontmatter_fields(md: str) -> set[str]:
+    fm_match = re.search(r"^---\n(.*?)\n---", md, re.DOTALL)
+    assert fm_match, "frontmatter missing"
+    return {
+        line.split(":", 1)[0].strip()
+        for line in fm_match.group(1).strip().split("\n")
+        if line.strip()
+    }
 
 
 class TestDesignMdShape:
-    def test_frontmatter_has_exactly_8_fields(self):
-        """S4 + spec §6.2: frontmatter is 8 fields, no additional keys."""
-        fm_match = re.search(r"^---\n(.*?)\n---", RESOLVED_DESIGN_MD, re.DOTALL)
-        assert fm_match, "frontmatter missing"
-        fields = [line.split(":")[0].strip() for line in fm_match.group(1).strip().split("\n") if line.strip()]
-        assert set(fields) == {
-            "slug", "status", "input_proposal", "generated_by",
-            "created", "updated", "spike_triggered", "tradition"
-        }
+    def test_frontmatter_has_exactly_9_fields(self):
+        """SKILL.md §"Produced artifact": frontmatter is 9 canonical fields, no extras."""
+        assert _extract_frontmatter_fields(RESOLVED_DESIGN_MD) == _CANONICAL_FRONTMATTER_FIELDS
+
+    def test_frontmatter_fields_consistent_across_fixtures(self):
+        """All 3 canonical fixtures carry the same 9-field frontmatter shape."""
+        for fixture in (RESOLVED_DESIGN_MD, RESOLVED_NO_SPIKE_MD, RESOLVED_NULL_TRADITION_NO_SPIKE_MD):
+            assert _extract_frontmatter_fields(fixture) == _CANONICAL_FRONTMATTER_FIELDS
+
+    def test_schema_version_is_present_and_quoted(self):
+        """schema_version MUST be a quoted string (YAML implicit-float-coercion guard)."""
+        for fixture in (RESOLVED_DESIGN_MD, RESOLVED_NO_SPIKE_MD, RESOLVED_NULL_TRADITION_NO_SPIKE_MD):
+            assert re.search(r'^schema_version:\s*"0\.1"', fixture, re.MULTILINE), \
+                "schema_version must appear as quoted string to prevent YAML 0.1 → 0.1 float drift"
 
     def test_section_count_with_spike_is_9(self):
-        """Spec §5: 9 sections when spike_triggered=true."""
+        """SKILL.md §"Produced artifact": 9 sections when tradition non-null AND spike fires."""
         sections = re.findall(r"^## ", RESOLVED_DESIGN_MD, re.MULTILINE)
         assert len(sections) == 9
 
     def test_section_count_without_spike_is_8(self):
-        """Spec §5: 8 sections when spike_triggered=false (E omitted)."""
+        """SKILL.md §"Produced artifact": 8 sections when tradition non-null but E omitted."""
         sections = re.findall(r"^## ", RESOLVED_NO_SPIKE_MD, re.MULTILINE)
         assert len(sections) == 8
+
+    def test_section_count_null_tradition_no_spike_is_7(self):
+        """SKILL.md §"Produced artifact": collapsed 7-section case (tradition: null AND no spike).
+
+        D1 omitted per registry-authority asymmetry; E omitted per null-tradition guard.
+        Must include the [null-tradition] audit line in ## Notes.
+        """
+        sections = re.findall(r"^## ", RESOLVED_NULL_TRADITION_NO_SPIKE_MD, re.MULTILINE)
+        assert len(sections) == 7
+        assert "[null-tradition] spike skipped" in RESOLVED_NULL_TRADITION_NO_SPIKE_MD
+        # D1 must NOT appear in a null-tradition design.md
+        assert "## D1." not in RESOLVED_NULL_TRADITION_NO_SPIKE_MD
+        # E must NOT appear either
+        assert "## E." not in RESOLVED_NULL_TRADITION_NO_SPIKE_MD
 
     def test_d2_numerics_use_triple_form(self):
         """Spec §6.3 per-dim preamble: D2 numerics MUST use {value, source, confidence} triple."""
