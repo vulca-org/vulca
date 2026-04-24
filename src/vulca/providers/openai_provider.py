@@ -3,10 +3,117 @@ from __future__ import annotations
 
 import base64
 import io
+import logging
 import os
 
 from vulca.providers.base import ImageProvider, ImageResult
 from vulca.providers.retry import with_retry
+
+
+logger = logging.getLogger("vulca.openai")
+
+MODEL_CAPABILITIES: dict[str, dict[str, bool]] = {
+    "dall-e-2": {
+        "input_fidelity": False,
+        "quality": False,
+        "output_format": False,
+    },
+    "dall-e-3": {
+        "input_fidelity": False,
+        "quality": True,
+        "output_format": False,
+    },
+    "gpt-image-1": {
+        "input_fidelity": False,
+        "quality": True,
+        "output_format": True,
+    },
+    "gpt-image-1.5": {
+        "input_fidelity": True,
+        "quality": True,
+        "output_format": True,
+    },
+    "gpt-image-2": {
+        "input_fidelity": False,
+        "quality": True,
+        "output_format": True,
+    },
+}
+
+MODEL_TOKEN_PRICING_PER_MILLION: dict[str, dict[str, float]] = {
+    "gpt-image-1": {"input": 10.0, "output": 40.0},
+    "gpt-image-1.5": {"input": 8.0, "output": 32.0},
+    "gpt-image-2": {"input": 8.0, "output": 30.0},
+}
+
+MODEL_STATIC_IMAGE_PRICING: dict[str, dict[str, dict[str, float]]] = {
+    "dall-e-2": {
+        "standard": {
+            "1024x1024": 0.020,
+            "1024x1536": 0.018,
+            "1536x1024": 0.020,
+        },
+    },
+    "dall-e-3": {
+        "standard": {
+            "1024x1024": 0.040,
+            "1024x1792": 0.080,
+            "1792x1024": 0.080,
+        },
+        "hd": {
+            "1024x1024": 0.080,
+            "1024x1792": 0.120,
+            "1792x1024": 0.120,
+        },
+    },
+}
+
+
+def _drop_unsupported_params(model: str, values: dict[str, str | None]) -> dict[str, str]:
+    capabilities = MODEL_CAPABILITIES.get(
+        model,
+        {"input_fidelity": True, "quality": True, "output_format": True},
+    )
+    kept: dict[str, str] = {}
+    for param, value in values.items():
+        if value is None:
+            continue
+        if capabilities.get(param, True):
+            kept[param] = value
+            continue
+        logger.info("[param-dropped] model=%s param=%s — not supported", model, param)
+    return kept
+
+
+def _extract_cost_usd(
+    *,
+    model: str,
+    data: dict,
+    size: str,
+    quality: str | None,
+) -> float | None:
+    usage = data.get("usage") or {}
+    input_tokens = usage.get("input_tokens")
+    output_tokens = usage.get("output_tokens")
+
+    if isinstance(input_tokens, (int, float)) or isinstance(output_tokens, (int, float)):
+        pricing = MODEL_TOKEN_PRICING_PER_MILLION.get(model)
+        if pricing is not None:
+            total = (
+                (float(input_tokens or 0) * pricing["input"])
+                + (float(output_tokens or 0) * pricing["output"])
+            ) / 1_000_000
+            return round(total, 6)
+
+    static_pricing = MODEL_STATIC_IMAGE_PRICING.get(model)
+    if static_pricing is None:
+        return None
+
+    quality_key = "standard"
+    if model == "dall-e-3" and (quality or "").lower() in {"high", "hd"}:
+        quality_key = "hd"
+    by_size = static_pricing.get(quality_key, {})
+    return by_size.get(size) or by_size.get("1024x1024")
 
 
 class OpenAIImageProvider:
@@ -100,6 +207,14 @@ class OpenAIImageProvider:
 
         # Capture for closure
         model = self.model
+        filtered_params = _drop_unsupported_params(
+            model,
+            {
+                "input_fidelity": input_fidelity,
+                "quality": quality,
+                "output_format": output_format,
+            },
+        )
 
         async def _call() -> ImageResult:
             async with httpx.AsyncClient(timeout=120) as client:
@@ -115,15 +230,7 @@ class OpenAIImageProvider:
                         "n": "1",
                         "size": size,
                     }
-                    # gpt-image-2 additions. input_fidelity is edits-only per
-                    # OpenAI 2026-04-21 launch docs; quality + output_format
-                    # apply to both endpoints.
-                    if input_fidelity is not None:
-                        form["input_fidelity"] = input_fidelity
-                    if quality is not None:
-                        form["quality"] = quality
-                    if output_format is not None:
-                        form["output_format"] = output_format
+                    form.update(filtered_params)
                     resp = await client.post(
                         "https://api.openai.com/v1/images/edits",
                         headers=headers, files=files, data=form,
@@ -140,12 +247,14 @@ class OpenAIImageProvider:
                         # Caller-supplied output_format wins; default stays png
                         # for backward-compat with gpt-image-1 callers.
                         payload["output_format"] = (
-                            output_format if output_format is not None else "png"
+                            filtered_params.get("output_format", "png")
                         )
-                        if quality is not None:
-                            payload["quality"] = quality
+                        if "quality" in filtered_params:
+                            payload["quality"] = filtered_params["quality"]
                     else:
                         payload["response_format"] = "b64_json"
+                        if "quality" in filtered_params:
+                            payload["quality"] = filtered_params["quality"]
                     resp = await client.post(
                         "https://api.openai.com/v1/images/generations",
                         headers=headers, json=payload,
@@ -199,12 +308,25 @@ class OpenAIImageProvider:
                 data = resp.json()
 
             img_b64 = data["data"][0].get("b64_json") or data["data"][0].get("b64", "")
+            metadata = {
+                "model": self.model,
+                "endpoint": "edits" if use_edits else "generations",
+                "revised_prompt": data["data"][0].get("revised_prompt", ""),
+            }
+            cost_usd = _extract_cost_usd(
+                model=model,
+                data=data,
+                size=size,
+                quality=filtered_params.get("quality", quality),
+            )
+            if cost_usd is not None:
+                metadata["cost_usd"] = cost_usd
+            if data.get("usage"):
+                metadata["usage"] = data["usage"]
             return ImageResult(
                 image_b64=img_b64,
                 mime="image/png",
-                metadata={"model": self.model,
-                          "endpoint": "edits" if use_edits else "generations",
-                          "revised_prompt": data["data"][0].get("revised_prompt", "")},
+                metadata=metadata,
             )
 
         return await with_retry(
