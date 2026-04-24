@@ -35,10 +35,14 @@ jobs:
         # expansion tracked in v0.17.12+.
         run: ruff check src/ tests/
       - name: Test
-        # Ignore-list covers the 12 pre-existing cv2/layered-pipeline baseline
-        # failures (see memory feedback_cv2_test_noise.md). Keep this list in
-        # sync with the CONTRIBUTING.md "Dev loop" section. Remove entries as
-        # the underlying failures get fixed in v0.17.12+.
+        # Two ignore-list categories (see memory feedback_cv2_test_noise.md):
+        # (1) 10 pre-existing baseline assertion failures (fail locally too with
+        #     torch+cv2 installed).
+        # (2) 5 heavy-dep tests that collection-error on CI without torch/cv2
+        #     installed (imports `torch` or `cv2` at module scope, failing pytest
+        #     discovery). These pass locally when the maintainer has the heavy
+        #     deps. Keep in sync with CONTRIBUTING.md "Dev loop" section.
+        # Remove entries as underlying issues are fixed in v0.17.12+ (see task #28).
         run: |
           pytest tests/ \
             --ignore=tests/test_cli_layers_retry.py \
@@ -51,4 +55,9 @@ jobs:
             --ignore=tests/vulca/scripts/test_migrate_overlap_resolution.py \
             --ignore=tests/test_organism_phase2.py \
             --ignore=tests/test_providers.py \
+            --ignore=tests/test_decompose_smoke.py \
+            --ignore=tests/test_tool_color_gamut.py \
+            --ignore=tests/vulca/layers/test_image_loader.py \
+            --ignore=tests/vulca/scripts/test_evfsam_common_uses_image_loader.py \
+            --ignore=tests/vulca/scripts/test_evfsam_prompt_schema.py \
             -q
