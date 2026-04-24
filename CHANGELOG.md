@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.17.11 — 2026-04-23
+
+### Removed
+- **BREAKING**: `create_artwork.ref_type` parameter removed from MCP tool signature (`src/vulca/mcp_server.py:92-123`). The parameter was declared but never forwarded to the underlying `generate_image` call — callers who set it were silently ignored. Rather than wire it through (scope creep), the semantic space is now covered by the `Style-Treatment` dimension in `/visual-brainstorm`. Callers that passed `ref_type` must remove the kwarg; no behavior regression (the value had no effect anyway).
+
+### Fixed
+- **`src/vulca/mcp_server.py:578-602`** — `layers_split.plan` parameter now documented in the Args block (previously declared in signature but absent from docstring).
+- **`src/vulca/mcp_server.py:769-787`** — `layers_edit` docstring: split the compressed `visible` + `locked` line into two separate entries with explicit operation linkage, improving schema-driven caller clarity.
+- **`.claude/skills/decompose/SKILL.md:140`** and **`docs/superpowers/specs/2026-04-20-plugin-sync-and-readme-refresh-design.md:283-285`** — replaced hardcoded `/Users/yhryzy/` maintainer paths with `<vulca-repo-root>` placeholders.
+
 ## v0.17.10 — 2026-04-23
 
 This release bundles **v0.17.9** (previously unshipped) with **v0.17.10**. Both surfaced from dogfooding the /visual-plan showcase on 2026-04-23 — real user corrections drove both fixes.

@@ -96,7 +96,6 @@ async def create_artwork(
     provider: str = "mock",
     weights: str = "",
     reference_path: str = "",
-    ref_type: str = "full",
 ) -> dict:
     """Generate and evaluate an image in one call — convenience wrapper over generate_image + evaluate_artwork.
 
@@ -109,7 +108,6 @@ async def create_artwork(
         provider: Image generation provider (mock | gemini | nb2 | openai | comfyui).
         weights: Custom L1-L5 weights as "L1=0.3,L2=0.2,...".
         reference_path: Path or base64 of a reference image for style/composition guidance.
-        ref_type: Reference type — "style", "composition", or "full" (default).
 
     Returns:
         image_path, scores, rationales, recommendations, cost_usd, tradition, weighted_total.
@@ -599,6 +597,7 @@ async def layers_split(
         tradition: Cultural tradition for styling.
         plan_path: For mode="orchestrated": path to semantic plan JSON
                    (see assets/showcase/plans/*.json for examples).
+        plan: Inline JSON plan (alternative to plan_path). Used for mode="orchestrated".
 
     Returns:
         layers, manifest_path, split_mode. For orchestrated: detection_report
@@ -784,7 +783,8 @@ async def layers_edit(
         z_index: Z-index position (for add/reorder; -1 = top).
         content_type: Layer role label (e.g. background, subject, decoration).
         semantic_path: Dot-notation label (e.g. "subject.face.eyes"); "" if none.
-        visible: Visibility state (for toggle). locked: Lock state (for lock).
+        visible: Visibility state — applies to operation="toggle".
+        locked: Lock state — applies to operation="lock".
 
     Returns:
         Operation result with updated layer info.

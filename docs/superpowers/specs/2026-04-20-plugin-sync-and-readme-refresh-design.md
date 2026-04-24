@@ -280,9 +280,9 @@ Still open at spec-to-plan handoff:
 
 ## References
 
-- Current README: `/Users/yhryzy/dev/vulca/README.md`
-- Decompose skill: `/Users/yhryzy/dev/vulca/.claude/skills/decompose/SKILL.md`
-- MCP server: `/Users/yhryzy/dev/vulca/src/vulca/mcp_server.py` (21 `@mcp.tool()` decorators)
+- Current README: `<vulca-repo-root>/README.md`
+- Decompose skill: `<vulca-repo-root>/.claude/skills/decompose/SKILL.md`
+- MCP server: `<vulca-repo-root>/src/vulca/mcp_server.py` (21 `@mcp.tool()` decorators)
 - Plugin repo: https://github.com/vulca-org/vulca-plugin (v0.9.0, 13 days stale)
 - Traffic baseline memory: `memory/project_traffic_baseline_20260413.md`
 - README-refresh-pending memory: `memory/project_readme_refresh_pending.md` (supersede after Phase 2 merges)

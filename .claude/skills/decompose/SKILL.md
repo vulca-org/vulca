@@ -137,4 +137,4 @@ If the session has been running for hours and new decompose calls slow down or O
 
 ## Reference
 
-Full thesis + rescue-pattern writeup: [`docs/agent-native-workflow.md`](/Users/yhryzy/dev/vulca/docs/agent-native-workflow.md).
+Full thesis + rescue-pattern writeup: [`docs/agent-native-workflow.md`](<vulca-repo-root>/docs/agent-native-workflow.md).
