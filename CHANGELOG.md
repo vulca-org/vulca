@@ -2,13 +2,41 @@
 
 ## v0.17.11 — 2026-04-23
 
+**Honesty + quality-of-life patch.** Driven by today's (2026-04-23) dogfooding of the Scottish-Chinese fusion showcase + parallel codex + superpowers:code-reviewer product audits. User feedback: "我们的产品好不好？使用起来有bug吗？深度调研一下". The review surfaced real silent-data-loss bugs (ref_type), missing UX questions (Style-Treatment), weak error messages, over-claims in README / BP, and hygiene gaps. This release addresses all of them.
+
+### Added
+- **`.claude/skills/visual-brainstorm/SKILL.md`** — **Style-Treatment 7th question-bank dimension** (mandatory, no skip): `additive` (photo preserved, elements painted as distinct objects on top) / `unified` (whole image transformed) / `collage` (visible cut-outs) / `wash` (global style filter). Fixes the UX gap where the gpt-image-1.5 smoke test produced a whole-image painterly overlay when the user wanted additive treatment — the 6-dim question bank simply didn't ask about style application mode. See commit `69dbd5d1`.
+- **`.claude/skills/visual-brainstorm/SKILL.md`** — `proposal.md` frontmatter now carries `style_treatment` (7 → 8 fields).
+- **`.claude/skills/visual-spec/SKILL.md`** — Phase 1 step 8 validates `proposal.frontmatter.style_treatment ∈ {"additive", "unified", "collage", "wash"}` (Err #4); Phase 3 C.prompt derivation reads `style_treatment` and writes corresponding `negative_prompt` constraints (`additive` → excludes "global painterly filter, unified style wash, photo-texture loss"; `wash` / `unified` → inverse); S4 invariant extended to cover `C.style_treatment` immutability across session.
+
+### Changed
+- **Provider error messages normalized** for user-readability — codex 2026-04-23 audit flagged raw low-level errors across 3 providers. Commit `437f4dc0`:
+  - `src/vulca/providers/gemini.py:190-234` — classifies empty `response.candidates` into quota-exhaustion vs content-policy vs generic via `prompt_feedback.block_reason` inspection. Provides remediation URL (aistudio.google.com) for the free-tier quota case.
+  - `src/vulca/providers/openai_provider.py:148-200` — added user-facing messages for 402 (billing), 400 content-policy, 429 rate-limit on top of the existing 403 Org-verify path. `_is_retryable` extended so 429 RuntimeError stays retryable via string-match (fragile; flagged for v0.17.12 hardening).
+  - `src/vulca/providers/comfyui.py:136-153, 219-226` — execution-error extractor surfaces the first meaningful message from `status.messages` list + points to the ComfyUI server console; invalid-image hint explains the likely checkpoint/VAE failure mode.
+- **`README.md`** — "Try it in 60 seconds" section retitled to "Quick start" with explicit time breakdown: ~1 min if Claude Code + `uv` already installed, ~5-10 min from scratch. Honest vs aspirational. Commit `856ce54c`.
+- **`docs/bp/2026-04-23-vulca-bp/sections/05_competition.tex` §5.4** — "壁垒强度与持续性" moat language softened: "24 个月以上难以复制" → "12 个月以上需专门投入", replaced absolute phrasing with honest "竞品雇 3 位文化顾问一个季度可以追赶一种传统; 追赶 13 种 + 学术认同需要更长周期". Superpowers reviewer: "formal correctness fragile in practice; honest wording more credible to sophisticated readers". Commit `856ce54c`.
+- **`.gitignore`** — added `/gen_*.png`, `/gen_*.jpg` (75 files were polluting repo root, never committed) + `tmp-shipgate-*/` (ship-gate artifacts from prior versions). Commit `856ce54c`.
+
 ### Removed
-- **BREAKING**: `create_artwork.ref_type` parameter removed from MCP tool signature (`src/vulca/mcp_server.py:92-123`). The parameter was declared but never forwarded to the underlying `generate_image` call — callers who set it were silently ignored. Rather than wire it through (scope creep), the semantic space is now covered by the `Style-Treatment` dimension in `/visual-brainstorm`. Callers that passed `ref_type` must remove the kwarg; no behavior regression (the value had no effect anyway).
+- **BREAKING**: `create_artwork.ref_type` parameter removed from MCP tool signature (`src/vulca/mcp_server.py:92-123`). The parameter was declared but never forwarded to the underlying `generate_image` call — callers who set it were silently ignored (silent data loss per codex audit). Rather than wire it through (scope creep), the semantic space is now covered by the `Style-Treatment` dimension in `/visual-brainstorm`. Callers that passed `ref_type` must remove the kwarg; no behavior regression (the value had no effect anyway). Commit `5bf4b1ca`.
+  - **SDK-level `ref_type`** in `src/vulca/create.py` + `cli.py` + `studio/phases/{concept,generate}.py` is **unchanged in this release** — only the MCP tool surface was cleaned. Deeper SDK cleanup deferred to v0.18+.
 
 ### Fixed
-- **`src/vulca/mcp_server.py:578-602`** — `layers_split.plan` parameter now documented in the Args block (previously declared in signature but absent from docstring).
-- **`src/vulca/mcp_server.py:769-787`** — `layers_edit` docstring: split the compressed `visible` + `locked` line into two separate entries with explicit operation linkage, improving schema-driven caller clarity.
-- **`.claude/skills/decompose/SKILL.md:140`** and **`docs/superpowers/specs/2026-04-20-plugin-sync-and-readme-refresh-design.md:283-285`** — replaced hardcoded `/Users/yhryzy/` maintainer paths with `<vulca-repo-root>` placeholders.
+- **`src/vulca/mcp_server.py:578-602`** — `layers_split.plan` parameter now documented in the Args block (previously declared in signature but absent from docstring). Commit `5bf4b1ca`.
+- **`src/vulca/mcp_server.py:769-787`** — `layers_edit` docstring: split the compressed `visible` + `locked` line into two separate entries with explicit operation linkage. Commit `5bf4b1ca`.
+- **`.claude/skills/decompose/SKILL.md:140`** and **`docs/superpowers/specs/2026-04-20-plugin-sync-and-readme-refresh-design.md:283-285`** — replaced hardcoded `/Users/yhryzy/` maintainer paths with `<vulca-repo-root>` placeholders. Commit `5bf4b1ca`.
+
+### Tests + ship-gate
+- Full repo: **1920 passed**, 12 pre-existing baseline failures unchanged (cv2-missing + mock mime-type + layered pipeline edges). **Zero regressions** from any of the 4 v0.17.11 commits.
+
+### Known follow-ups deferred to v0.17.12
+- **`/visual-plan` Phase 3 `C.style_treatment` plumb**: the new `style_treatment` field is persisted in design.md but `/visual-plan` does NOT yet read it in Phase 3 prompt composition. Until v0.17.12 lands, the field is "declared but inert" for image generation — it only informs `/visual-spec` C.prompt's `negative_prompt`. Downstream propagation to the execution loop is the v0.17.12 target.
+- `openai_provider._is_retryable` uses fragile string-match (`"rate limit hit" in str(exc).lower()`) to preserve 429 retryability after RuntimeError normalization. Robust solution: custom exception subclass + attribute-based classification. v0.17.12.
+- SDK-level `create_artwork.ref_type` cleanup (mirrors the MCP-surface removal done here).
+
+### Dogfooding-driven origin
+Per 2026-04-23 session memory `feedback_dogfood_showcase_through_triad.md`: this is the 5th same-day ship driven entirely by real dogfooding (Scottish-Chinese fusion showcase run, paused at /visual-spec Phase 2 F-calibration). User feedback "这种类似的问题很严重 很卡手" (previous session) and the style-framing bug in the gpt-image-1.5 smoke test (this session) drove the changes.
 
 ## v0.17.10 — 2026-04-23
 
