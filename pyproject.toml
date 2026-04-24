@@ -52,11 +52,21 @@ tools = [
     "Pillow>=10.0",
 ]
 
-# SAM2 segmentation (optional, heavy)
+# SAM segmentation (optional, heavy)
+# Supports two pipelines pending convergence (issue #N+5 — v0.18.0):
+#   - SAM v1 (segment-anything) — used by scripts/claude_orchestrated_pipeline.py
+#     via sam_model_registry["vit_l"] at hardcoded /tmp/sam_vit_l.pth.
+#   - SAM v2 (sam2) — used by src/vulca/layers/sam.py via facebook/sam2.1-hiera-small.
+# timm>=1.0 required because transformers 4.49 timm_wrapper needs
+# timm.data.ImageNetInfo (introduced in timm 0.9+); torchscale pin to timm==0.6.13
+# is tolerated (torchscale not on orchestrated path).
+# SAM v1 checkpoint /tmp/sam_vit_l.pth is NOT auto-downloaded; see docs/INSTALL-RECIPE.md.
 sam = [
     "torch>=2.0",
     "numpy>=1.24",
     "Pillow>=10.0",
+    "segment-anything>=1.0",
+    "timm>=1.0.0",
 ]
 
 # SAM3 text-prompted segmentation (optional, heavy, GPU-only)
