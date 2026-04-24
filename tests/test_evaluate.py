@@ -36,6 +36,7 @@ class TestEvaluateImport:
         assert "subject" in params
         assert "skills" in params
         assert "api_key" in params
+        assert "vlm_model" in params
 
     def test_aevaluate_signature(self):
         from vulca.evaluate import aevaluate
@@ -43,6 +44,7 @@ class TestEvaluateImport:
         params = list(sig.parameters.keys())
         assert "image" in params
         assert "include_evidence" not in params
+        assert "vlm_model" in params
 
 
 class TestEvaluateWithMock:
@@ -119,6 +121,79 @@ class TestEvaluateWithMock:
 
         # latency_ms should be set (>= 0, usually very small in tests)
         assert result.latency_ms >= 0
+
+    def test_engine_run_rubric_only_skips_vlm(self):
+        import os
+        import vulca._engine as eng_mod
+        from vulca._engine import Engine
+
+        env = {k: v for k, v in os.environ.items()
+               if k not in {"GOOGLE_API_KEY", "GEMINI_API_KEY", "VULCA_VLM_MODEL"}}
+        eng_mod._instance = None
+
+        with patch.dict(os.environ, env, clear=True):
+            with patch("vulca._engine.score_image", new=AsyncMock()) as mock_score, \
+                 patch("vulca._engine.load_image_base64", new=AsyncMock()) as mock_load:
+                engine = Engine(_allow_missing_api_key=True)
+                result = asyncio.run(
+                    engine.run(
+                        "/tmp/test.png",
+                        tradition="chinese_gongbi",
+                        mode="rubric_only",
+                    )
+                )
+
+        assert result["eval_mode"] == "rubric_only"
+        assert result["tradition"] == "chinese_gongbi"
+        assert result["image_path"] == "/tmp/test.png"
+        assert result["score"] is None
+        assert result["summary"] == ""
+        assert result["score_schema"]["L1"] is None
+        assert result["score_schema"]["L5_rationale"] == ""
+        assert "rubric" in result
+        assert "tradition_layers" in result["rubric"]
+        mock_score.assert_not_called()
+        mock_load.assert_not_called()
+
+    def test_aevaluate_runtime_vlm_model_ollama_without_env(self):
+        import os
+        import vulca._engine as eng_mod
+
+        mock_vlm = {
+            "L1": 0.8,
+            "L2": 0.7,
+            "L3": 0.75,
+            "L4": 0.7,
+            "L5": 0.8,
+            "L1_rationale": "",
+            "L2_rationale": "",
+            "L3_rationale": "",
+            "L4_rationale": "",
+            "L5_rationale": "",
+        }
+        env = {k: v for k, v in os.environ.items()
+               if k not in {"GOOGLE_API_KEY", "GEMINI_API_KEY", "VULCA_VLM_MODEL"}}
+        eng_mod._instance = None
+
+        with patch.dict(os.environ, env, clear=True):
+            with patch("vulca._engine.load_image_base64", new=AsyncMock(return_value=("AAAA", "image/png"))), \
+                 patch("vulca._engine.score_image", new=AsyncMock(return_value=mock_vlm)) as mock_score:
+                from vulca.evaluate import aevaluate
+
+                result = asyncio.run(
+                    aevaluate(
+                        "test.png",
+                        tradition="default",
+                        vlm_model="ollama/gemma3:4b",
+                    )
+                )
+
+        assert isinstance(result, EvalResult)
+        assert result.eval_mode == "strict"
+        assert result.tradition == "default"
+        score_kwargs = mock_score.await_args.kwargs
+        assert score_kwargs["model"] == "ollama/gemma3:4b"
+        assert score_kwargs["api_key"] == "local"
 
 
 # -- Create Module ---------------------------------------------------------
