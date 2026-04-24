@@ -1,0 +1,14 @@
+# Disable the "Open a blank issue" option — force users to pick a template
+# so reports land with enough context. Contact-links provide escape hatches
+# for cases that don't fit either template.
+
+blank_issues_enabled: false
+
+contact_links:
+  - name: "💬 Discussions — open-ended questions, roadmap, usage help"
+    url: https://github.com/vulca-org/vulca/discussions
+    about: "For anything that isn't a concrete bug or a concrete feature request. Usage questions, design discussions, 'is this the right tool for X' questions — all welcome here."
+
+  - name: "🔒 Security issues"
+    url: https://github.com/vulca-org/vulca/blob/master/SECURITY.md
+    about: "Please email yuhaorui48@gmail.com privately — do NOT open a public issue. See SECURITY.md for scope + SLA."

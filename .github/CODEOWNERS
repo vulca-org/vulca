@@ -1,0 +1,12 @@
+# Vulca code ownership.
+# GitHub uses this to auto-request reviews on PRs and to gate branch-protection
+# rules when enabled.
+#
+# Solo maintainer: @yhryzy owns everything by default.
+
+* @yhryzy
+
+# When future contributors emerge, add per-path ownership here, e.g.:
+#   /src/vulca/cultural/  @culture-team
+#   /docs/bp/             @bp-review
+#   /.github/workflows/   @ci-team
