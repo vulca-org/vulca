@@ -38,6 +38,7 @@ Run before anything else; no turn cap charged for this phase.
 5. **Validate domain.** Assert `frontmatter.domain` is one of: `poster`, `illustration`, `packaging`, `brand_visual`, `editorial_cover`, `photography_brief`, `hero_visual_for_ui`. On violation → Err #4.
 6. **Sketch readability probe.** If `## References` lists a local sketch path (not a URL), attempt `Read` on it once. If unreadable (FileNotFoundError, permission denied, broken symlink) → set internal state `sketch_available: false` and queue a `## Notes` entry per Err #9. Do NOT abort; proceed text-only with `C.sketch_integration` forced to `ignore`.
 7. **Freeze tradition and domain.** Capture `tradition` and `domain` as session-level constants. They MUST NOT change between now and Phase 6 `Write` (S4).
+8. **Validate style_treatment.** Assert `proposal.frontmatter.style_treatment ∈ {"additive", "unified", "collage", "wash"}`. Violation → Err #4 (extend the Err #4 coverage). Capture `style_treatment` as a session-level constant alongside `tradition` and `domain` — immutable through Phase 6 `Write` (S4).
 
 Only when all gates pass: advance to Phase 2.
 
@@ -145,9 +146,12 @@ Emit one `token` string per terminology entry (skip entries with empty `term`). 
 
 Pull `color_constraint_tokens` from `proposal.## Color constraints` (one token per constraint; bilingual form where the guide supplies one). `negative_prompt` is used only on SDXL / ComfyUI providers; set `""` on `gemini` / `openai`. `sketch_integration` is forced to `ignore` if Phase 1 set `sketch_available: false`.
 
+**Style-treatment governance.** When `style_treatment == "additive"`, the composed `base_prompt` MUST include the explicit directive "preserve the base/reference image's photographic pixels unchanged; paint additive tradition-styled elements as visibly-distinct objects on top, NOT as a unified painterly overlay." The `negative_prompt` MUST include: `"global painterly filter, unified style wash, photo-texture loss, style-transfer overlay over preserved regions"`. When `"wash"` or `"unified"`, these constraints invert (allow global transform). When `"collage"`, add: `"elements appear as discrete painted cut-outs with visible layering"`.
+
 ```yaml
 # ## C. Prompt composition
 reviewed: false
+style_treatment: additive          # copied from proposal (S4-frozen)
 base_prompt: "..."
 negative_prompt: "..."             # SDXL/ComfyUI only; "" for gemini/openai
 tradition_tokens:                  # from get_tradition_guide.terminology (MECHANICAL copy)
@@ -397,7 +401,7 @@ Rules the agent running this skill MUST follow. Each ban is enforceable or presc
 | **S1** | Pixel-tool ban baseline; exemptions: (a) Phase 5 spike execution authorizes ONLY `generate_image`, `evaluate_artwork`, and `unload_models` — no `create_artwork`, no `generate_concepts`, no `inpaint_artwork`, no `layers_*`; (b) Phase 3 `view_image` on proposal sketch for grounding. All other phases: zero pixel-tool calls. Forbidden across every phase (no exemption, ever): `create_artwork`, `generate_concepts`, `inpaint_artwork`, any `layers_*`. | prescription | Agent self-discipline; no file lock. Violation → Err #8 if user requests; pure agent fault otherwise. |
 | **S2** | Do not flip `frontmatter.status: draft → resolved` without an explicit finalize trigger (`finalize`/`done`/`ready`/`lock it`/`approve`). Turn-cap hit alone is NOT a trigger. | prescription | Vibe-spec anti-pattern; downstream burns tokens on misaligned decisions. |
 | **S3** | Only consume `proposal.md` with `status: ready`. Reject `status: draft` via Err #1; run `/visual-brainstorm <slug>` to finalize first. | helper (frontmatter read) | Enforceable at Phase 1 gate. |
-| **S4** | `design.frontmatter.tradition` and `design.frontmatter.domain` are copied from `proposal.md` and are **immutable** across the session. Phase 6 asserts equality before `Write`. | helper (Phase 6 write step) | Enforceable at write; violation is a code bug, not an agent choice. |
+| **S4** | `design.frontmatter.tradition`, `design.frontmatter.domain`, and `C.style_treatment` (copied from `proposal.frontmatter.style_treatment`) are copied from `proposal.md` and are **immutable** across the session. Phase 6 asserts equality before `Write`. | helper (Phase 6 write step) | Enforceable at write; violation is a code bug, not an agent choice. |
 | **S5** | Do not dispatch two `/visual-spec` invocations on the same slug in parallel. Detect via `updated` timestamp vs wall-clock heuristic (if a same-slug `design.md` was updated <10 seconds ago, suspect concurrent run and abort). | prescription (not truly atomic) | File race corrupts state; resume broken. |
 | **S6** | D1 is a byte-for-byte copy from `get_tradition_guide(tradition).weights`. D2 defaults proportional to D1. Any user override of a D2 / F numeric MUST log `[override] <dim>.<field>: <old> → <new>. Reason: <rationale>` to `## Notes`. | prescription + helper (registry call enforceable; rationale-logging is discipline) | Split-class. If user refuses to give a rationale, write `Reason: none provided by user` and continue — audit trail is the point, not correctness. |
 
@@ -410,7 +414,7 @@ Rules the agent running this skill MUST follow. Each ban is enforceable or presc
 | 1 | `proposal.md` not found OR `status != ready` | Print exactly: `proposal.md not found or status != ready at <path>. Run /visual-brainstorm <slug> first.` Terminate. | helper |
 | 2 | Same-slug `design.md` exists `status: resolved` | Print exactly: `already finalized at <path>; branch with -v2 or pick new slug`. Terminate. **Do not overwrite.** | helper + prescription |
 | 3 | Same-slug `design.md` exists `status: draft` | Resume path: re-enter Phase 4 review loop; skip dims whose fenced-block `reviewed: true` (per §Phase 3 preamble); prompt on remaining dims with `reviewed: false`. **Turn cap accumulates from draft's recorded count in `## Notes`** (`[resume-state] turns_used: <N>` line); does NOT reset. | helper + prescription |
-| 4 | Frontmatter schema violation: `tradition` not in registry AND not YAML `null`, OR `domain` not in 7-enum | Print exactly: `proposal.md frontmatter violation: <field> <value> invalid. Re-run /visual-brainstorm <slug> to fix.` Terminate. **Do not auto-retry.** | helper |
+| 4 | Frontmatter schema violation: `tradition` not in registry AND not YAML `null`, OR `domain` not in 7-enum, OR `style_treatment` not in `{additive, unified, collage, wash}` | Print exactly: `proposal.md frontmatter violation: <field> <value> invalid. Re-run /visual-brainstorm <slug> to fix.` Terminate. **Do not auto-retry.** | helper |
 | 5 | Spike flagged but **integration-layer** failure (provider unreachable / timeout / 401 / connection refused / missing API key). Classify by error-content semantic, not return shape — keyword list below. | In E section: `status: skipped`, `skip_reason: "<provider> unreachable: <err>"`. Log 1-line to `## Notes`. **Continue main flow** (D2/F unaffected); **break the spike loop**. | helper |
 | 6 | Spike `generate_image` returns error dict due to **per-call** failure (validation error, OOM, malformed param, unsupported model error). Classify by error-content semantic — keyword list below. An ambiguous message that matches neither #5 nor #6 → default to #6 (continue-other-spikes is the safer degrade). | In E section `results`: row with `verdict: failed, error: "<excerpt>"`. **Other spikes continue**; all-fail → `status: failed` (distinct from `skipped`). | helper |
 

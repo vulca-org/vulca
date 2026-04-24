@@ -61,9 +61,9 @@ Walk these in order; each node's answer adjusts the question loop and the produc
 | D | Single image or series? | If series → include `## Series plan` section | If single → omit `## Series plan` |
 | E | User wants a spike to try a direction before committing? | Record the spike candidate under `## Open questions` for `/visual-spec` | Skip |
 
-## Question bank — 6 dimensions
+## Question bank — 7 dimensions
 
-Cover these dimensions across the turn budget (cap 8 hard / 12 soft; see §Turn cap). Order by what the user has not yet clarified; do not force all 6 if the answer is obvious from prior context.
+Cover these dimensions across the turn budget (cap 8 hard / 12 soft; see §Turn cap). Order by what the user has not yet clarified; do not force all 7 if the answer is obvious from prior context.
 
 | Dimension | Sample prompt | Skip allowed? | Inferred default if skipped |
 |---|---|---|---|
@@ -73,10 +73,11 @@ Cover these dimensions across the turn budget (cap 8 hard / 12 soft; see §Turn 
 | Market | "Is this for a 国内 / 海外 / 多语言 audience? Any region-specific constraints?" | Yes | "domestic, no multilingual" recorded |
 | Budget & deadline | "How many deliverables, by when, with what time budget for iteration?" | No — must have answer | — |
 | Color constraints | "Any required palette, brand color, or forbidden color?" | Yes | "none specified" recorded |
+| **Style treatment** | "How should the tradition be applied to the final image? **(a)** `additive` — base photo/reference pixels preserved as-is, tradition-styled elements added as visibly-distinct painted objects (collage feel). **(b)** `unified` — entire image transformed into the tradition's painterly style. **(c)** `collage` — elements visibly pasted as discrete cut-outs. **(d)** `wash` — global style-transfer filter over the whole image." | **No — MUST have answer** | — |
 
 ## Produced artifact — `proposal.md` schema
 
-Write the final artifact to `docs/visual-specs/<slug>/proposal.md`. The artifact has a 7-field YAML frontmatter — **exactly 7 fields, no additional keys, no YAML comments inside the `---` fence** — and 12 markdown sections (2 conditional). Copy the `## Template` block below verbatim and fill the bracketed placeholders.
+Write the final artifact to `docs/visual-specs/<slug>/proposal.md`. The artifact has an 8-field YAML frontmatter — **exactly 8 fields, no additional keys, no YAML comments inside the `---` fence** — and 12 markdown sections (2 conditional). Copy the `## Template` block below verbatim and fill the bracketed placeholders.
 
 **Domain enum** (`frontmatter.domain`, required):
 
@@ -100,6 +101,7 @@ slug: YYYY-MM-DD-<topic>
 status: draft
 domain: <one of poster | illustration | packaging | brand_visual | editorial_cover | photography_brief | hero_visual_for_ui>
 tradition: <enum id from list_traditions OR YAML literal null>  # NEVER "N/A", "none", "", "unknown" — see B7
+style_treatment: <one of additive | unified | collage | wash>    # from Style treatment question
 generated_by: visual-brainstorm@0.1.0
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
