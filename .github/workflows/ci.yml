@@ -8,6 +8,11 @@ on:
     tags-ignore:
       - 'v*'  # skip CI on tag pushes (release handled separately)
 
+# Cancel stale runs when a new commit is pushed to the same branch / PR.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -25,8 +30,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev,mcp]"
       - name: Lint
+        # Narrow rule set (E9/F63/F7/F82) per pyproject.toml [tool.ruff.lint].
+        # Legacy codebase has 377 violations under default rules; incremental
+        # expansion tracked in v0.17.12+.
         run: ruff check src/ tests/
-      - name: Test (skip cv2/layered baseline)
+      - name: Test
+        # Ignore-list covers the 12 pre-existing cv2/layered-pipeline baseline
+        # failures (see memory feedback_cv2_test_noise.md). Keep this list in
+        # sync with the CONTRIBUTING.md "Dev loop" section. Remove entries as
+        # the underlying failures get fixed in v0.17.12+.
         run: |
           pytest tests/ \
             --ignore=tests/test_cli_layers_retry.py \

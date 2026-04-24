@@ -14,7 +14,7 @@
 
 - [ ] Tests added or updated (ran `pytest` locally)
 - [ ] `CHANGELOG.md` updated under next unreleased section
-- [ ] Agent-native discipline checked — change does NOT centralise decisions the agent should make
+- [ ] Agent-native discipline checked — change does NOT centralise decisions the agent should make (no hardcoded thresholds, no Python-side prompt construction, no silent fallbacks — see [CONTRIBUTING.md § Anti-patterns](../CONTRIBUTING.md#anti-patterns--what-will-not-be-merged))
 - [ ] Follows commit style (`feat(...):`, `fix(...):`, `docs(...):`)
 - [ ] No binary artefacts committed
 

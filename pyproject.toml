@@ -106,6 +106,15 @@ dev = [
     "ruff>=0.6",
 ]
 
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+# Conservative floor: catch real bugs only (GitHub Actions recommended set).
+# Expand to E/W/I in v0.17.12+ when legacy code is cleaned incrementally.
+select = ["E9", "F63", "F7", "F82"]
+
 [project.urls]
 Homepage = "https://vulcaart.art"
 Documentation = "https://github.com/vulca-org/vulca"
