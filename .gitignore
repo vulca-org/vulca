@@ -32,6 +32,8 @@ env/
 # Vulca pipeline outputs dropped at repo root
 /vulca-*.png
 /vulca-*.jpg
+/gen_*.png
+/gen_*.jpg
 
 .worktrees/
 
@@ -45,4 +47,5 @@ assets/showcase/*
 # Audit / ship-gate transient outputs (verbose logs + subagent scratch)
 .scratch/
 tmp-shipgate/
+tmp-shipgate-*/
 docs/tool-audit-logs/

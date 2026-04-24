@@ -40,9 +40,11 @@ Claude: I'll inspect the fresco and plan a semantic decomposition.
 Claude: 5 layers extracted — each person figure isolated, drapery and ground separated from the pale fresco sky. Want to redraw God's cloak, composite with a different background, or run another image?
 ```
 
-## Try it in 60 seconds
+## Quick start
 
-**Prerequisite:** [`uv` installed](https://docs.astral.sh/uv/getting-started/installation/?utm_source=github-readme&utm_medium=oss&utm_campaign=refresh-2026-04-20) (provides `uvx`). Without `uv`, substitute `uvx --from vulca[mcp] vulca-mcp` with `python -m vulca.mcp_server` in Path B.
+**Realistic setup time:** ~1 minute if you already use Claude Code with [`uv`](https://docs.astral.sh/uv/getting-started/installation/?utm_source=github-readme&utm_medium=oss&utm_campaign=refresh-2026-04-20) installed; ~5–10 minutes from scratch (Claude Code + `uv` + plugin + key config).
+
+**Prerequisite:** `uv` installed (provides `uvx`). Without `uv`, substitute `uvx --from vulca[mcp] vulca-mcp` with `python -m vulca.mcp_server` in Path B.
 
 ### Path A — plugin install (recommended)
 
