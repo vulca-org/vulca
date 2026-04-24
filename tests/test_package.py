@@ -107,6 +107,7 @@ def test_dunder_all():
         "traditions", "get_weights",
         "EvalResult", "CreateResult", "SkillResult",
         "ImageProvider", "VLMProvider", "ImageResult", "L1L5Scores",
+        "compose_prompt_from_design",
     }
     studio_names = {"Brief", "SessionState", "StudioSession", "inpaint", "ainpaint", "InpaintResult",
                     "LayerInfo", "LayerResult", "LayeredArtwork"}
