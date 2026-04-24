@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.17.12 (2026-04-25)
+
+Bugfix rollup from γ Scottish showcase Part 1 session findings.
+
+### Fixed
+- openai_provider: gate `input_fidelity` / `quality` / `output_format` by per-model capability (#12) — `gpt-image-2` GA rejected `input_fidelity` while Vulca was sending it unconditionally
+- openai_provider: capture actual `cost_usd` from `response.usage` (#12)
+
+### Added
+- MCP tool `compose_prompt_from_design` (#13) — expose Vulca's structured prompt-composition value standalone for non-MCP consumers
+- `evaluate_artwork` `mode="rubric_only"` (#14) — agent-native scoring without VLM backend dependency
+- `evaluate_artwork` `vlm_model` runtime kwarg (#15) — bypass `VULCA_VLM_MODEL` env + MCP restart for runtime provider switching
+
 ## v0.17.11 — 2026-04-23
 
 **Honesty + quality-of-life patch.** Driven by today's (2026-04-23) dogfooding of the Scottish-Chinese fusion showcase + parallel codex + superpowers:code-reviewer product audits. User feedback: "我们的产品好不好？使用起来有bug吗？深度调研一下". The review surfaced real silent-data-loss bugs (ref_type), missing UX questions (Style-Treatment), weak error messages, over-claims in README / BP, and hygiene gaps. This release addresses all of them.
