@@ -212,6 +212,21 @@ async def evaluate_artwork(
 
 
 @mcp.tool()
+async def compose_prompt_from_design(
+    design_path: str,
+) -> dict:
+    """Compose a generation prompt from a resolved visual-spec design.md artifact.
+
+    Use when you want Vulca's structured prompt-assembly value without running the
+    full visual-plan flow. Returns the composed prompt, negative prompt, and the
+    tradition/color tokens that were applied.
+    """
+    from vulca.prompting import compose_prompt_from_design as _compose_prompt
+
+    return _compose_prompt(design_path)
+
+
+@mcp.tool()
 async def list_traditions() -> dict:
     """List all available cultural traditions with L1-L5 weights and emphasis — first step in tradition discovery.
 
