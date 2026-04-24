@@ -35,6 +35,7 @@ from vulca._version import __version__
 from vulca.create import acreate, create
 from vulca.evaluate import aevaluate, evaluate
 from vulca.inpaint import ainpaint, inpaint
+from vulca.prompting import compose_prompt_from_design
 from vulca.providers.base import ImageProvider, ImageResult, L1L5Scores, VLMProvider
 from vulca.session import asession, session
 from vulca.types import CreateResult, EvalResult, InpaintResult, SkillResult
@@ -81,6 +82,7 @@ __all__ = [
     "acreate",
     "inpaint",
     "ainpaint",
+    "compose_prompt_from_design",
     "session",
     "asession",
     "traditions",
