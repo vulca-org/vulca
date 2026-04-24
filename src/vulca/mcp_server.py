@@ -171,6 +171,7 @@ async def evaluate_artwork(
     intent: str = "",
     mock: bool = False,
     mode: str = "strict",
+    vlm_model: str = "",
 ) -> dict:
     """Score an image on L1-L5 cultural dimensions — returns scores, rationales, recommendations.
 
@@ -182,7 +183,8 @@ async def evaluate_artwork(
         tradition: Cultural tradition (auto-detected if empty) or path to custom YAML.
         intent: Optional description of what the artwork should express.
         mock: Use mock scoring (no API key required). Useful for testing.
-        mode: "strict" (judge) or "reference" (advisor, no judgment).
+        mode: "strict" (judge), "reference" (advisor), or "rubric_only" (no VLM call).
+        vlm_model: Runtime VLM override. Takes precedence over VULCA_VLM_MODEL.
 
     Returns:
         score, tradition, dimensions, suggestions, summary, cost_usd,
@@ -191,8 +193,15 @@ async def evaluate_artwork(
     from vulca import aevaluate
 
     result_obj = await aevaluate(
-        image_path, tradition=tradition, intent=intent, mock=mock, mode=mode,
+        image_path,
+        tradition=tradition,
+        intent=intent,
+        mock=mock,
+        mode=mode,
+        vlm_model=vlm_model,
     )
+    if isinstance(result_obj, dict):
+        return result_obj
 
     result: dict = {
         "score": result_obj.score,

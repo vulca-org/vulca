@@ -19,7 +19,8 @@ async def aevaluate(
     api_key: str = "",
     mock: bool = False,
     mode: str = "strict",
-) -> EvalResult:
+    vlm_model: str = "",
+) -> EvalResult | dict:
     """Evaluate an artwork image asynchronously.
 
     Parameters
@@ -48,7 +49,11 @@ async def aevaluate(
         Evaluation mode:
         - ``"strict"`` (default): Judge mode — scores reflect conformance.
         - ``"reference"``: Advisor mode — scores show alignment without judgment.
+        - ``"rubric_only"``: Return the resolved scoring rubric without a VLM call.
         - ``"fusion"``: Multi-tradition comparison (pass comma-separated traditions).
+    vlm_model:
+        Runtime VLM model override. Precedence: explicit kwarg > VULCA_VLM_MODEL
+        env var > ``gemini/gemini-2.5-flash`` default.
 
     Returns
     -------
@@ -57,7 +62,12 @@ async def aevaluate(
     """
     from vulca._engine import Engine
 
-    engine = Engine.get_instance(api_key=api_key, mock=mock)
+    engine = Engine.get_instance(
+        api_key=api_key,
+        mock=mock,
+        vlm_model=vlm_model,
+        _allow_missing_api_key=(mode == "rubric_only"),
+    )
     t0 = time.monotonic()
     result = await engine.run(
         image=str(image),
@@ -66,8 +76,13 @@ async def aevaluate(
         subject=subject,
         skills=skills or [],
         mode=mode,
+        vlm_model=vlm_model,
     )
-    result.latency_ms = int((time.monotonic() - t0) * 1000)
+    latency_ms = int((time.monotonic() - t0) * 1000)
+    if isinstance(result, EvalResult):
+        result.latency_ms = latency_ms
+    else:
+        result["latency_ms"] = latency_ms
 
     return result
 
@@ -82,7 +97,8 @@ def evaluate(
     api_key: str = "",
     mock: bool = False,
     mode: str = "strict",
-) -> EvalResult:
+    vlm_model: str = "",
+) -> EvalResult | dict:
     """Evaluate an artwork image (synchronous wrapper).
 
     See :func:`aevaluate` for parameter documentation.
@@ -101,6 +117,7 @@ def evaluate(
         api_key=api_key,
         mock=mock,
         mode=mode,
+        vlm_model=vlm_model,
     )
 
     if loop and loop.is_running():

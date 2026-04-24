@@ -543,6 +543,7 @@ async def score_image(
     api_key: str,
     *,
     mode: str = "strict",
+    model: str = "",
 ) -> dict:
     """Call Gemini Vision to score an image on L1-L5.
 
@@ -580,7 +581,7 @@ async def score_image(
             {"role": "system", "content": system_msg},
             {"role": "user", "content": user_parts},
         ]
-        model = os.environ.get("VULCA_VLM_MODEL", "gemini/gemini-2.5-flash")
+        model = model or os.environ.get("VULCA_VLM_MODEL", "gemini/gemini-2.5-flash")
 
         # Resolve api_base for local providers (e.g. Ollama)
         api_base = None

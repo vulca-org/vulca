@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import inspect
 
 import pytest
 pytest.importorskip("fastmcp", reason="fastmcp is an optional dependency (pip install vulca[mcp])")
@@ -71,3 +72,10 @@ class TestCreateArtworkTool:
         # Custom weights should produce a different weighted_total
         assert "weighted_total" in r_default
         assert "weighted_total" in r_custom
+
+
+def test_evaluate_artwork_signature_includes_vlm_model():
+    from vulca.mcp_server import evaluate_artwork
+
+    sig = inspect.signature(evaluate_artwork)
+    assert "vlm_model" in sig.parameters

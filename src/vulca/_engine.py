@@ -20,35 +20,107 @@ from vulca.types import EvalResult
 logger = logging.getLogger("vulca")
 
 _instance: Engine | None = None
+_DEFAULT_VLM_MODEL = "gemini/gemini-2.5-flash"
+
+
+def _resolve_vlm_model(vlm_model: str = "") -> str:
+    return vlm_model or os.environ.get("VULCA_VLM_MODEL", _DEFAULT_VLM_MODEL)
+
+
+def _resolve_api_key(
+    api_key: str = "",
+    *,
+    mock: bool = False,
+    vlm_model: str = "",
+    allow_missing: bool = False,
+) -> str:
+    if mock:
+        return api_key or ""
+
+    key = api_key or os.environ.get("GOOGLE_API_KEY", "") or os.environ.get("GEMINI_API_KEY", "")
+    resolved_model = _resolve_vlm_model(vlm_model)
+    if key:
+        return key
+    if resolved_model.startswith("ollama"):
+        return "local"
+    if allow_missing:
+        return ""
+    raise ValueError(
+        "No API key found. Set GOOGLE_API_KEY environment variable, "
+        "pass api_key='...' to vulca.evaluate(), or use mock=True."
+    )
+
+
+def _build_rubric_payload(tradition: str, image_path: str) -> dict:
+    from vulca.cultural.loader import get_tradition_guide
+    from vulca.layers.plan_prompt import get_tradition_layer_order
+
+    guide = get_tradition_guide(tradition)
+    if guide is None:
+        raise ValueError(f"Unknown tradition: {tradition!r}")
+
+    rubric = dict(guide)
+    rubric["tradition_layers"] = get_tradition_layer_order(tradition)
+    score_schema = {f"L{i}": None for i in range(1, 6)}
+    score_schema.update({f"L{i}_rationale": "" for i in range(1, 6)})
+    return {
+        "rubric": rubric,
+        "image_path": image_path,
+        "score_schema": score_schema,
+        "tradition": tradition,
+        "eval_mode": "rubric_only",
+        "score": None,
+        "summary": "",
+    }
 
 
 class Engine:
     """Stateless evaluation engine. Use ``Engine.get_instance()``."""
 
-    def __init__(self, api_key: str = "", mock: bool = False) -> None:
+    def __init__(
+        self,
+        api_key: str = "",
+        mock: bool = False,
+        vlm_model: str = "",
+        _allow_missing_api_key: bool = False,
+    ) -> None:
         self.mock = mock
-        self.api_key = api_key or os.environ.get("GOOGLE_API_KEY", "") or os.environ.get("GEMINI_API_KEY", "")
-        if not self.api_key and not self.mock:
-            # Allow keyless operation when VLM is a local provider (e.g. Ollama)
-            vlm_model = os.environ.get("VULCA_VLM_MODEL", "")
-            if vlm_model.startswith("ollama"):
-                self.api_key = "local"
-            else:
-                raise ValueError(
-                    "No API key found. Set GOOGLE_API_KEY environment variable, "
-                    "pass api_key='...' to vulca.evaluate(), or use mock=True."
-                )
+        self.vlm_model = _resolve_vlm_model(vlm_model)
+        self.api_key = _resolve_api_key(
+            api_key,
+            mock=mock,
+            vlm_model=self.vlm_model,
+            allow_missing=_allow_missing_api_key,
+        )
 
     @classmethod
-    def get_instance(cls, api_key: str = "", mock: bool = False) -> Engine:
+    def get_instance(
+        cls,
+        api_key: str = "",
+        mock: bool = False,
+        vlm_model: str = "",
+        _allow_missing_api_key: bool = False,
+    ) -> Engine:
         global _instance
-        key = api_key or os.environ.get("GOOGLE_API_KEY", "") or os.environ.get("GEMINI_API_KEY", "")
-        if not key and not mock:
-            vlm_model = os.environ.get("VULCA_VLM_MODEL", "")
-            if vlm_model.startswith("ollama"):
-                key = "local"
-        if _instance is None or (api_key and _instance.api_key != key) or (mock != (_instance.mock if _instance else False)):
-            _instance = cls(api_key=key, mock=mock)
+        resolved_model = _resolve_vlm_model(vlm_model)
+        key = _resolve_api_key(
+            api_key,
+            mock=mock,
+            vlm_model=resolved_model,
+            allow_missing=_allow_missing_api_key,
+        )
+        if (
+            _instance is None
+            or (api_key and _instance.api_key != key)
+            or mock != (_instance.mock if _instance else False)
+            or resolved_model != (_instance.vlm_model if _instance else "")
+        ):
+            _instance = cls(
+                api_key=key,
+                mock=mock,
+                vlm_model=resolved_model,
+                _allow_missing_api_key=_allow_missing_api_key,
+            )
         return _instance
 
     async def run(
@@ -59,8 +131,20 @@ class Engine:
         subject: str = "",
         skills: list[str] | None = None,
         mode: str = "strict",
-    ) -> EvalResult:
+        vlm_model: str = "",
+    ) -> EvalResult | dict:
+        resolved_vlm_model = _resolve_vlm_model(vlm_model or self.vlm_model)
+
         # Step 1: Load image (skip for mock)
+        if mode == "rubric_only":
+            resolved_tradition = tradition or "default"
+            if resolved_tradition not in TRADITIONS:
+                raise ValueError(
+                    "rubric_only mode requires an explicit built-in tradition. "
+                    "Use list_traditions() to choose one."
+                )
+            return _build_rubric_payload(resolved_tradition, image)
+
         if not self.mock:
             img_b64, mime = await load_image_base64(image)
         else:
@@ -90,8 +174,9 @@ class Engine:
                 mime=mime,
                 subject=subject or intent,
                 tradition=resolved_tradition,
-                api_key=self.api_key,
+                api_key=_resolve_api_key(self.api_key, vlm_model=resolved_vlm_model),
                 mode=mode,
+                model=resolved_vlm_model,
             )
 
         # Step 5: Compute weighted total + extract suggestions/deviations/observations
