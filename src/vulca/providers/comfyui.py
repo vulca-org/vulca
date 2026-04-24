@@ -135,8 +135,19 @@ class ComfyUIImageProvider:
                 consecutive_failures = 0
                 status = entry.get("status", {})
                 if status.get("status_str") == "error":
+                    # Extract the first meaningful message instead of dumping
+                    # the raw messages list, which is unreadable to users
+                    # (codex 2026-04-23 audit).
+                    raw_messages = status.get("messages", [])
+                    first_err = next(
+                        (m[1] for m in raw_messages if isinstance(m, list) and len(m) > 1),
+                        None,
+                    )
+                    err_hint = str(first_err) if first_err else "see ComfyUI server logs"
                     raise RuntimeError(
-                        f"ComfyUI execution failed: {status.get('messages', [])}"
+                        f"ComfyUI execution failed: {err_hint}. "
+                        f"Check the ComfyUI server console at {self.base_url} "
+                        f"for full traceback."
                     )
 
                 images = [
@@ -212,7 +223,9 @@ class ComfyUIImageProvider:
         if len(raw_bytes) < 1000 or raw_bytes[:4] != b'\x89PNG':
             raise ValueError(
                 f"ComfyUI returned invalid image "
-                f"({len(raw_bytes)} bytes, header={raw_bytes[:4]!r})"
+                f"({len(raw_bytes)} bytes, header={raw_bytes[:4]!r}). "
+                f"This usually means the checkpoint failed to load or VAE "
+                f"decode failed — check ComfyUI server logs."
             )
         return ImageResult(
             image_b64=base64.b64encode(raw_bytes).decode(),

@@ -201,7 +201,41 @@ class GeminiImageProvider:
                         },
                     )
 
-        raise RuntimeError("Gemini returned no image data")
+        # No image data — classify the failure before surfacing the error so
+        # users get an actionable remediation hint instead of a generic
+        # "no image data" message (codex 2026-04-23 audit).
+        prompt_feedback = getattr(response, "prompt_feedback", None)
+        block_reason = getattr(prompt_feedback, "block_reason", None) if prompt_feedback else None
+        if block_reason:
+            raise RuntimeError(
+                f"Gemini blocked the request: {block_reason}. "
+                f"Check content policy or tune prompt."
+            )
+
+        # Detect quota / billing blocks. Free-tier keys return a
+        # `limit: 0` error for image gen endpoints (see billing memory note);
+        # plus 429-style quota exhaustion on paid tiers.
+        raw_text = ""
+        try:
+            raw_text = str(response)
+        except Exception:
+            raw_text = ""
+        lowered = raw_text.lower()
+        if (
+            "quota" in lowered
+            or "limit: 0" in lowered
+            or "resource_exhausted" in lowered
+            or "billing" in lowered
+        ):
+            raise RuntimeError(
+                "Gemini quota exhausted or free tier blocked for image gen. "
+                "Upgrade via aistudio.google.com/app/apikey or switch provider."
+            )
+
+        raise RuntimeError(
+            "Gemini returned no image data "
+            "(enable VULCA_DEBUG=1 for raw response inspection)"
+        )
 
     def _build_prompt(
         self, prompt: str, tradition: str, subject: str,

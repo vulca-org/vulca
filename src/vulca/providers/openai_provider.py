@@ -78,6 +78,11 @@ class OpenAIImageProvider:
                 if status in (429, 500, 503):
                     return True
                 return False
+            # Our enriched 429 RuntimeError (normalized for readability) keeps
+            # the rate-limit marker so retry logic still kicks in. Terminal
+            # RuntimeErrors (403/402/400) do not carry this marker.
+            if isinstance(exc, RuntimeError) and "rate limit hit" in str(exc).lower():
+                return True
             # Network-level errors (timeout, connect) are retryable
             if isinstance(exc, (httpx.TimeoutException, httpx.ConnectError)):
                 return True
@@ -145,21 +150,51 @@ class OpenAIImageProvider:
                         "https://api.openai.com/v1/images/generations",
                         headers=headers, json=payload,
                     )
-                # Friendly 403 Org-verification detection (gpt-image-2 launch
-                # gates API access on Org verification; surface a clear
-                # remediation pointer before retry logic masks it).
-                if resp.status_code == 403:
+                # Classify common user-facing failure modes with actionable
+                # remediation hints BEFORE raise_for_status / retry logic
+                # sees them (codex 2026-04-23 audit). Only 429 is retryable
+                # downstream; 402/400/403 are terminal from the user's POV.
+                body_text = ""
+                try:
+                    body_text = (resp.text or "")[:500]
+                except Exception:
                     body_text = ""
-                    try:
-                        body_text = resp.text or ""
-                    except Exception:
-                        body_text = ""
-                    if "organization must be verified" in body_text.lower():
+                body_lower = body_text.lower()
+
+                # 403 Org-verification (gpt-image-2 launch gates API access)
+                if resp.status_code == 403:
+                    if "organization must be verified" in body_lower:
                         raise RuntimeError(
                             f"OpenAI model {model!r} requires Org verification at "
                             "https://platform.openai.com/settings/organization/general. "
                             "Wait 15 min after verifying."
                         )
+                # 402 billing / insufficient credits
+                elif resp.status_code == 402:
+                    raise RuntimeError(
+                        "OpenAI billing blocked: insufficient credits or "
+                        "payment failure. Visit "
+                        "https://platform.openai.com/settings/organization/billing "
+                        "to fix."
+                    )
+                # 400 content-policy / safety violation
+                elif resp.status_code == 400 and (
+                    "content_policy_violation" in body_lower
+                    or "safety" in body_lower
+                ):
+                    raise RuntimeError(
+                        "OpenAI content policy blocked the request. "
+                        "Revise the prompt or negative_prompt to reduce "
+                        "policy-triggering terms."
+                    )
+                # 429 rate limit — enrich the message. `_is_retryable`
+                # recognizes this RuntimeError marker ("rate limit hit") so
+                # with_retry still backs off and retries.
+                elif resp.status_code == 429:
+                    raise RuntimeError(
+                        "OpenAI rate limit hit. "
+                        "Retry in ~60s or reduce concurrency."
+                    )
                 resp.raise_for_status()
                 data = resp.json()
 
