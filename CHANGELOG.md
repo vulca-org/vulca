@@ -6,7 +6,11 @@ Bugfix rollup from γ Scottish showcase Part 1 session findings.
 
 ### Fixed
 - openai_provider: gate `input_fidelity` / `quality` / `output_format` by per-model capability (#12) — `gpt-image-2` GA rejected `input_fidelity` while Vulca was sending it unconditionally
-- openai_provider: capture actual `cost_usd` from `response.usage` (#12)
+- openai_provider: capture actual `cost_usd` from `response.usage` (#12); log at info level when a model has no pricing entry instead of silently returning None
+- openai_provider: normalize `quality` vocabulary across model families — DALL-E-3 receives `"standard"`/`"hd"` while gpt-image-* keeps `"high"`/`"auto"`/`"medium"`/`"low"` (post-review)
+- prompting: `compose_prompt_from_design` now handles `tradition: null` (a valid resolved-design state) and reads frozen `C.tradition_tokens` from the artifact when present rather than re-deriving from the live registry (post-review)
+- mcp_server: `compose_prompt_from_design` MCP wrapper raises an actionable error when given a relative path that doesn't resolve against the server CWD (post-review)
+- `[sam]` extra: pulls `segment-anything` + `timm>=1.0` so the orchestrated decompose pipeline imports cleanly; see `docs/INSTALL-RECIPE.md`
 
 ### Added
 - MCP tool `compose_prompt_from_design` (#13) — expose Vulca's structured prompt-composition value standalone for non-MCP consumers
