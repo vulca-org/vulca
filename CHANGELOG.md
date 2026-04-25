@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.17.13 (2026-04-25)
+
+Transparency fix surfaced from the same γ Scottish dogfood session as v0.17.12. Parallel `superpowers:code-reviewer` + `codex` review of the orchestrated decompose pipeline found that the DINO-object path was missing the SAM-quality gate that the hint-entity path had. Result: low-confidence detections (`sam_score < 0.70`, `bbox_fill < 0.30`) were silently marked `status: "detected"` and overall `success_rate: 1.0` — leaving calling agents with no signal to inspect the bad mask. Real-world impact: the `lanterns` entity in our dogfood plan returned a mask of building structure (sam_score 0.609, bbox_fill 0.256) but reported success.
+
+### Fixed
+- `scripts/claude_orchestrated_pipeline.py`: extract DINO-object quality gate into `compute_quality_flags()` helper; mirror the hint-path semantics (`empty_mask`, `low_sam_score`, `low_bbox_fill`, `mask_outside_bbox`) onto the DINO branch. Low-confidence object detections now correctly downgrade to `status: "suspect"` with `quality_flags: [...]`, and the overall manifest status cascades to `"partial"` when any object is suspect (mirroring existing behavior for hint-entity suspects).
+
+### Added
+- `tests/test_quality_gate.py`: 8 regression tests pinning the gate's threshold calibration (sam_score 0.70, bbox_fill 0.30, inside_ratio 0.60, pct 0.05) against the γ Scottish 9-entity baseline. 8 clean entities pass at sam ≥ 0.93 / fill ≥ 0.55; lanterns (sam 0.609 / fill 0.256) flips to suspect. Future refactors must update this test explicitly to change the gate.
+
+### Notes
+- The underlying multi-instance segmentation gap (single-bbox-per-label structural limit in `detect_all_bboxes`) is **not** fixed here — that's `v0.18` scope. v0.17.13 only fixes the transparency bug so the gap is now visible to callers instead of silent.
+
 ## v0.17.12 (2026-04-25)
 
 Bugfix rollup from γ Scottish showcase Part 1 session findings.

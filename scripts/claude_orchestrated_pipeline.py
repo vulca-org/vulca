@@ -609,6 +609,44 @@ def detect_bbox(dino_proc, dino_model, device, img_pil, label, threshold=0.25):
     return bbox, score
 
 
+def compute_quality_flags(
+    *,
+    pct: float,
+    sam_score: float,
+    bbox_fill: float,
+    inside_ratio: float,
+) -> tuple[list[str], str]:
+    """v0.17.13 transparency gate for DINO-object segmentation results.
+
+    Mirrors the hint-path gate (lines around the sam_bbox branch) into a
+    pure helper so the DINO-object loop can apply the same suspect/detected
+    logic. Pre-v0.17.13 this branch silently wrote `status: "detected"` even
+    when SAM was low-confidence, leading to silent "the lanterns layer
+    captured building structure" failures (γ Scottish iter 0 lanterns:
+    sam_score 0.609, bbox_fill 0.256 → suspect).
+
+    DINO-tier thresholds: looser than hint-path (0.05) because DINO bboxes
+    are model-supplied and tend wider. Calibrated against γ Scottish 9-entity
+    baseline (8 clean entities pass at sam>=0.93 / fill>=0.55, lanterns gets
+    flagged).
+
+    Returns:
+        (quality_flags, status) — flags is a list of triggered conditions;
+        status is "suspect" if any flag fired, else "detected".
+    """
+    flags: list[str] = []
+    if pct < 0.05:
+        flags.append("empty_mask")
+    if sam_score < 0.70:
+        flags.append("low_sam_score")
+    if bbox_fill < 0.30:
+        flags.append("low_bbox_fill")
+    if inside_ratio < 0.60:
+        flags.append("mask_outside_bbox")
+    status = "suspect" if flags else "detected"
+    return flags, status
+
+
 def segment_bbox(sam_pred, bbox, multimask=True):
     """Run SAM with bbox prompt, return best mask + quality signals.
 
@@ -1231,20 +1269,30 @@ def process(slug: str, force: bool = False):
                     pass
 
         pct = mask.sum() / (H * W) * 100
-        print(f"  [O{i}] {label[:30]:30s} → '{phrase[:20]}' bbox={bbox} "
-              f"det={score:.2f} sam={sam_score:.2f} pct={pct:.1f}%")
-        record.update({"status": "detected", "detector": "dino",
+
+        # v0.17.13 transparency gate — see compute_quality_flags() above.
+        quality_flags, status = compute_quality_flags(
+            pct=pct, sam_score=sam_score,
+            bbox_fill=bbox_fill, inside_ratio=inside_ratio,
+        )
+        marker = "?" if quality_flags else " "
+        print(f"  [O{i}]{marker}{label[:30]:30s} → '{phrase[:20]}' bbox={bbox} "
+              f"det={score:.2f} sam={sam_score:.2f} pct={pct:.1f}% fill={bbox_fill:.2f}"
+              + (f" flags={quality_flags}" if quality_flags else ""))
+        record.update({"status": status, "detector": "dino",
                        "matched_phrase": phrase, "bbox": bbox,
                        "det_score": score, "sam_score": sam_score,
                        "pct": round(pct, 2),
                        "bbox_fill": round(bbox_fill, 3),
-                       "inside_ratio": round(inside_ratio, 3)})
+                       "inside_ratio": round(inside_ratio, 3),
+                       "quality_flags": quality_flags})
         detection_report["per_entity"].append(record)
         layers_raw.append({
             "id": i, "label": label, "name": record["name"],
             "semantic_path": semantic_path, "bbox": bbox,
             "det_score": score, "sam_score": sam_score,
             "z": _z_index_for(semantic_path), "mask": mask,
+            "quality_status": status,
         })
 
     # (hint_entities were processed earlier, before face-parsing — see Stage 3b.)
