@@ -1038,13 +1038,24 @@ def process(slug: str, force: bool = False):
         bbox, det_conf = yolo_persons[rank]
         mask, sam_score, bbox_fill, inside_ratio = segment_bbox(sam_pred, bbox)
         pct = mask.sum() / (H * W) * 100
-        print(f"  [P{i}] {label[:30]:30s} {person_detector_used}[{rank}] bbox={bbox} "
-              f"det={det_conf:.2f} sam={sam_score:.2f} pct={pct:.1f}%")
-        record.update({"status": "detected", "detector": person_detector_used,
+        # v0.17.14 — mirror the v0.17.13 transparency gate from the
+        # DINO-object path. Person path had the same silent-success bug:
+        # status: "detected" even on low-confidence SAM masks. The gate
+        # uses the same DINO-tier thresholds calibrated against γ Scottish.
+        quality_flags, status = compute_quality_flags(
+            pct=pct, sam_score=sam_score,
+            bbox_fill=bbox_fill, inside_ratio=inside_ratio,
+        )
+        marker = "?" if quality_flags else " "
+        print(f"  [P{i}]{marker}{label[:30]:30s} {person_detector_used}[{rank}] bbox={bbox} "
+              f"det={det_conf:.2f} sam={sam_score:.2f} pct={pct:.1f}%"
+              + (f" flags={quality_flags}" if quality_flags else ""))
+        record.update({"status": status, "detector": person_detector_used,
                        "bbox": bbox, "det_score": det_conf, "sam_score": sam_score,
                        "pct": round(pct, 2),
                        "bbox_fill": round(bbox_fill, 3),
-                       "inside_ratio": round(inside_ratio, 3)})
+                       "inside_ratio": round(inside_ratio, 3),
+                       "quality_flags": quality_flags})
         detection_report["per_entity"].append(record)
         layers_raw.append({
             "id": i, "label": label, "name": record["name"],

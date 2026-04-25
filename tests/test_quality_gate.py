@@ -9,6 +9,9 @@ lanterns themselves, but manifest reported success_rate 1.0.
 Fix: mirror the hint-path quality gate into a pure helper, apply uniformly.
 These tests pin the threshold calibration (8 clean γ Scottish entities pass,
 lanterns fails) so future refactors can't silently widen or narrow the gate.
+
+v0.17.14 extends coverage to the person path (was the same silent-success
+bug as the DINO-object path that v0.17.13 closed).
 """
 from __future__ import annotations
 
@@ -124,3 +127,48 @@ def test_threshold_calibration_pins_for_v0_17_13():
     assert "empty_mask" in flags
     flags, _ = cop.compute_quality_flags(pct=0.05, sam_score=0.9, bbox_fill=0.5, inside_ratio=0.9)
     assert "empty_mask" not in flags
+
+
+# ---------------------------------------------------------------------------
+# v0.17.14 — person-path gate symmetry
+# ---------------------------------------------------------------------------
+
+def test_person_path_invokes_compute_quality_flags():
+    """Source-level invariant: the person loop in process() must call
+    compute_quality_flags so low-confidence person masks no longer slip
+    through as status: "detected" (mirrors the v0.17.13 DINO-object fix).
+    """
+    import inspect
+
+    src = inspect.getsource(cop.process)
+    # Locate the person loop
+    person_marker = "for rank, (i, entity) in enumerate(person_ents_sorted)"
+    hint_marker = "for i, entity in hint_entities"
+    assert person_marker in src, (
+        "person loop signature changed; update this test to match"
+    )
+    assert hint_marker in src, "hint loop signature changed"
+
+    person_start = src.index(person_marker)
+    hint_start = src.index(hint_marker)
+    person_block = src[person_start:hint_start]
+
+    assert "compute_quality_flags" in person_block, (
+        "v0.17.14: person path must invoke compute_quality_flags() — "
+        "previously this loop unconditionally wrote status: 'detected', "
+        "letting low-confidence person masks slip through silently."
+    )
+
+
+def test_person_path_low_confidence_flips_to_suspect():
+    """Threshold-symmetric: a low-confidence person input through the same
+    helper must produce status='suspect' just like the DINO-object path.
+    """
+    flags, status = cop.compute_quality_flags(
+        # Plausible bad-person scenario: SAM weakly responded, bbox half-filled
+        pct=2.5, sam_score=0.55, bbox_fill=0.20, inside_ratio=0.45,
+    )
+    assert status == "suspect"
+    assert "low_sam_score" in flags
+    assert "low_bbox_fill" in flags
+    assert "mask_outside_bbox" in flags
