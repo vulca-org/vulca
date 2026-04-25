@@ -569,32 +569,51 @@ async def archive_session(
 @mcp.tool()
 async def inpaint_artwork(
     image_path: str,
-    region: str,
-    instruction: str,
+    region: str = "",
+    instruction: str = "",
+    mask_path: str = "",
     tradition: str = "default",
+    provider: str = "openai",
+    output_path: str = "",
 ) -> dict:
-    """Repaint a specific region of an image — targeted fix without re-generating the whole artwork.
+    """Repaint part of an image — native mask (precise) or NL region (legacy, imprecise).
 
-    Use after evaluate_artwork identifies a problem area, or after view_image reveals a regional flaw.
-    For whole-image changes, use generate_image instead.
+    Two modes:
+    - **mask_path** (preferred): RGBA PNG where alpha=0 marks pixels to edit and
+      alpha=255 marks pixels to preserve. Routed to provider /v1/images/edits.
+      Currently OpenAI gpt-image-2 only; Gemini/ComfyUI raise NotImplementedError.
+    - **region** (legacy): NL ("fix the sky") or "x,y,w,h". Detects bbox via VLM,
+      crops, regenerates, feathers a rectangular paste. Imprecise — prefer mask_path.
+
+    Precedence: mask_path > region. Setting both logs a warning and uses mask_path.
 
     Args:
         image_path: Path to the image file.
-        region: Natural language ("fix the sky") or pixel coordinates ("0,0,100,35").
-        instruction: What to paint in the region.
+        region: Legacy NL/coords region. Ignored when mask_path is set.
+        instruction: What to paint in the masked / cropped region.
+        mask_path: PNG with alpha (0=edit, 255=preserve). Must match image size.
         tradition: Cultural tradition for style consistency.
+        provider: Image provider. Default "openai" (only one with native mask).
+        output_path: Explicit output PNG path. Default: <image_dir>/inpainted_<stem>.png.
 
     Returns:
-        image_path: Path to the blended result. bbox: Painted region. cost_usd, latency_ms.
+        image_path: Path to the blended result. bbox: Painted region (mask path
+        returns full canvas {0,0,100,100}). cost_usd, latency_ms.
     """
     from vulca.inpaint import ainpaint
+
+    if not mask_path and not region:
+        return {"error": "inpaint_artwork: pass mask_path=<png> or region=<NL|x,y,w,h>"}
 
     try:
         result = await ainpaint(
             image_path,
             region=region,
             instruction=instruction,
+            mask_path=mask_path,
             tradition=tradition,
+            provider=provider,
+            output_path=output_path,
             count=1,
             select=0,
         )

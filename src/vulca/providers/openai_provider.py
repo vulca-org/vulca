@@ -363,3 +363,144 @@ class OpenAIImageProvider:
             max_delay_ms=16_000,
             retryable_check=_is_retryable,
         )
+
+    async def inpaint_with_mask(
+        self,
+        *,
+        image_path: str,
+        mask_path: str,
+        prompt: str,
+        tradition: str = "default",
+        size: str = "",
+    ) -> ImageResult:
+        """Mask-aware inpaint via /v1/images/edits.
+
+        Convention: mask alpha=0 => editable, alpha=255 => preserved. This
+        matches PIL alpha semantics for SAM / layer-derived masks. (OpenAI
+        documents the inverse semantically — "transparent areas of the mask
+        will be edited" — so PNG alpha=0 in our mask becomes a transparent
+        area when the mask is uploaded as RGBA. We pass it through unchanged.)
+
+        Only supported on gpt-image-* models — DALL-E-2's /edits requires a
+        square PNG and returns URLs by default. Caller is expected to have
+        constructed this provider with model='gpt-image-2'.
+        """
+        if not self.api_key:
+            raise ValueError(
+                "OpenAI API key required. Set OPENAI_API_KEY env var "
+                "or pass api_key to OpenAIImageProvider()."
+            )
+        if not self.model.startswith("gpt-image"):
+            raise ValueError(
+                f"inpaint_with_mask requires a gpt-image-* model "
+                f"(current model={self.model!r})."
+            )
+
+        import httpx
+
+        full_prompt = prompt
+        if tradition and tradition != "default":
+            full_prompt = (
+                f"{prompt} (cultural tradition: {tradition.replace('_', ' ')})"
+            )
+
+        # Probe mask size; pick a supported edit size near it.
+        from PIL import Image as PILImage  # noqa: F401 — local import to keep deps lazy
+        with open(image_path, "rb") as fh_img, open(mask_path, "rb") as fh_mask:
+            image_bytes = fh_img.read()
+            mask_bytes = fh_mask.read()
+
+        if not size:
+            with PILImage.open(image_path) as src_img:
+                w, h = src_img.size
+            allowed_sizes = {
+                (1024, 1024),
+                (1024, 1536),
+                (1536, 1024),
+            }
+            size = f"{w}x{h}" if (w, h) in allowed_sizes else "1024x1024"
+
+        async def _call() -> ImageResult:
+            async with httpx.AsyncClient(timeout=180) as client:
+                headers = {"Authorization": f"Bearer {self.api_key}"}
+                files = {
+                    "image": ("image.png", image_bytes, "image/png"),
+                    "mask": ("mask.png", mask_bytes, "image/png"),
+                }
+                form = {
+                    "model": self.model,
+                    "prompt": full_prompt,
+                    "n": "1",
+                    "size": size,
+                }
+                resp = await client.post(
+                    "https://api.openai.com/v1/images/edits",
+                    headers=headers, files=files, data=form,
+                )
+
+                body_text = ""
+                try:
+                    body_text = (resp.text or "")[:500]
+                except Exception:
+                    body_text = ""
+                body_lower = body_text.lower()
+
+                if resp.status_code == 403 and "organization must be verified" in body_lower:
+                    raise RuntimeError(
+                        f"OpenAI model {self.model!r} requires Org verification at "
+                        "https://platform.openai.com/settings/organization/general."
+                    )
+                if resp.status_code == 402:
+                    raise RuntimeError(
+                        "OpenAI billing blocked: insufficient credits or "
+                        "payment failure."
+                    )
+                if resp.status_code == 400 and (
+                    "content_policy_violation" in body_lower
+                    or "safety" in body_lower
+                ):
+                    raise RuntimeError(
+                        "OpenAI content policy blocked the inpaint request."
+                    )
+                if resp.status_code == 429:
+                    raise RuntimeError("OpenAI rate limit hit. rate limit hit")
+                resp.raise_for_status()
+                data = resp.json()
+
+            img_b64 = data["data"][0].get("b64_json") or data["data"][0].get("b64", "")
+            metadata = {
+                "model": self.model,
+                "endpoint": "edits",
+                "mode": "inpaint_with_mask",
+            }
+            cost_usd = _extract_cost_usd(
+                model=self.model, data=data, size=size, quality=None,
+            )
+            if cost_usd is not None:
+                metadata["cost_usd"] = cost_usd
+            if data.get("usage"):
+                metadata["usage"] = data["usage"]
+            return ImageResult(
+                image_b64=img_b64,
+                mime="image/png",
+                metadata=metadata,
+            )
+
+        def _is_retryable(exc: Exception) -> bool:
+            response = getattr(exc, "response", None)
+            if response is not None:
+                status = getattr(response, "status_code", None)
+                return status in (429, 500, 503)
+            if isinstance(exc, RuntimeError) and "rate limit hit" in str(exc).lower():
+                return True
+            if isinstance(exc, (httpx.TimeoutException, httpx.ConnectError)):
+                return True
+            return False
+
+        return await with_retry(
+            _call,
+            max_retries=3,
+            base_delay_ms=500,
+            max_delay_ms=16_000,
+            retryable_check=_is_retryable,
+        )

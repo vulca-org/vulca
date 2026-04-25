@@ -1,36 +1,68 @@
-"""Inpaint API -- partial region redraw with Gemini blend."""
+"""Inpaint API -- partial region redraw with Gemini blend.
+
+v0.17.14 adds a native mask_path branch: callers supply a precision RGBA mask
+(SAM output, layer alpha, HSV filter result) instead of a coarse rectangular
+region. The mask path goes through a provider's mask-aware edit endpoint
+(currently OpenAI /v1/images/edits) and bypasses the legacy
+detect_region → crop → feathered-paste pipeline entirely.
+"""
 from __future__ import annotations
 
 import asyncio
+import logging
 import time
+from pathlib import Path
 
 from vulca.types import InpaintResult
+
+logger = logging.getLogger("vulca.inpaint")
 
 
 async def ainpaint(
     image: str,
     *,
-    region: str,
+    region: str = "",
     instruction: str,
+    mask_path: str = "",
     tradition: str = "default",
-    provider: str = "gemini",
+    provider: str = "openai",
     count: int = 4,
     select: int | None = None,
     output: str = "",
+    output_path: str = "",
     api_key: str = "",
     mock: bool = False,
 ) -> InpaintResult:
     """Inpaint a region of an artwork (async).
 
+    Two branches:
+
+    1. **Native mask** (preferred, v0.17.14+): pass ``mask_path`` to a PNG with
+       an alpha channel where alpha=0 marks pixels to edit and alpha=255 marks
+       pixels to preserve. Uses the provider's mask-aware edit endpoint
+       directly. Currently supported on ``openai`` (gpt-image-2).
+
+    2. **Legacy region**: ``region`` as NL ("fix the sky") or coordinates
+       ("0,0,100,35"). VLM detects bbox → crops → img2img full-canvas regen
+       → feathered rectangular paste. Imprecise — prefer mask_path when
+       available.
+
+    Precedence: ``mask_path`` wins over ``region`` if both are set (a warning
+    is logged).
+
     Args:
         image: Path to the image file.
-        region: NL description ("fix the sky") or coordinates ("0,0,100,35").
-        instruction: What to change in the region.
+        region: Legacy NL/coords region (used only when mask_path is empty).
+        instruction: What to paint in the masked / cropped region.
+        mask_path: PNG with alpha channel (0=edit, 255=preserve).
         tradition: Cultural tradition for style consistency.
-        provider: Image generation provider (e.g. "gemini", "openai").
-        count: Number of repaint variants to generate.
+        provider: Image generation provider. Default ``openai`` because that
+            is the only mask-aware backend right now; legacy callers passing
+            ``gemini`` for the region path still work.
+        count: Number of repaint variants for the legacy region path.
         select: Auto-select variant index (0-based). None = return all.
-        output: Output path for blended image.
+        output: (legacy alias of output_path) Output path for blended image.
+        output_path: Explicit output path. If empty, defaults next to source.
         api_key: API key override.
         mock: Use mock mode (no real API calls).
     """
@@ -42,6 +74,33 @@ async def ainpaint(
     )
 
     t0 = time.monotonic()
+
+    if mask_path and region:
+        logger.warning(
+            "ainpaint: both mask_path and region given — using mask_path "
+            "(precedence rule). Drop region= to silence."
+        )
+
+    if mask_path:
+        return await _ainpaint_with_mask(
+            image=image,
+            mask_path=mask_path,
+            instruction=instruction,
+            tradition=tradition,
+            provider=provider,
+            output_path=output_path or output,
+            api_key=api_key,
+            mock=mock,
+            t0=t0,
+        )
+
+    if not region:
+        raise ValueError(
+            "ainpaint: either mask_path or region is required. "
+            "Pass mask_path=<png> for native mask edits, or region=<NL|x,y,w,h> "
+            "for legacy crop-and-paste."
+        )
+
     phase = InpaintPhase()
 
     # 1. Parse or detect region
@@ -121,33 +180,119 @@ async def ainpaint(
     )
 
 
+async def _ainpaint_with_mask(
+    *,
+    image: str,
+    mask_path: str,
+    instruction: str,
+    tradition: str,
+    provider: str,
+    output_path: str,
+    api_key: str,
+    mock: bool,
+    t0: float,
+) -> InpaintResult:
+    """Native mask-based inpaint via provider edit endpoint."""
+    from PIL import Image as PILImage
+
+    src_p = Path(image)
+    mask_p = Path(mask_path)
+    if not src_p.exists():
+        raise FileNotFoundError(f"image not found: {image}")
+    if not mask_p.exists():
+        raise FileNotFoundError(f"mask_path not found: {mask_path}")
+
+    with PILImage.open(str(src_p)) as src_img:
+        src_img.load()
+        src_size = src_img.size
+    with PILImage.open(str(mask_p)) as mask_img:
+        mask_img.load()
+        mask_size = mask_img.size
+
+    if mask_size != src_size:
+        raise ValueError(
+            f"mask size {mask_size} != image size {src_size}; "
+            "resize mask to match before calling inpaint_artwork(mask_path=...)"
+        )
+
+    # Resolve output path early so mock and real branches share it.
+    out_path = output_path or str(src_p.with_name(f"inpainted_{src_p.stem}.png"))
+
+    if mock:
+        # Mock path: copy source as the "edited" output. Tests assert the
+        # mask path was honored without needing a real provider.
+        with PILImage.open(str(src_p)) as im:
+            im.convert("RGB").save(out_path, "PNG")
+        elapsed = int((time.monotonic() - t0) * 1000)
+        return InpaintResult(
+            bbox={"x": 0, "y": 0, "w": 100, "h": 100},
+            variants=[out_path],
+            selected=0,
+            blended=out_path,
+            original=image,
+            instruction=instruction,
+            tradition=tradition,
+            latency_ms=elapsed,
+            cost_usd=0.0,
+        )
+
+    if provider != "openai":
+        raise NotImplementedError(
+            f"inpaint_artwork(mask_path=...) is only supported on provider='openai' "
+            f"(gpt-image-2). Got provider={provider!r}. Either switch provider, "
+            "or fall back to the legacy region= path which does work for non-OpenAI "
+            "providers (less precise — feathered rectangle paste)."
+        )
+
+    from vulca.providers.openai_provider import OpenAIImageProvider
+
+    prov = OpenAIImageProvider(
+        api_key=api_key,
+        model="gpt-image-2",
+    )
+    result = await prov.inpaint_with_mask(
+        image_path=str(src_p),
+        mask_path=str(mask_p),
+        prompt=instruction,
+        tradition=tradition,
+    )
+
+    import base64
+
+    Path(out_path).parent.mkdir(parents=True, exist_ok=True)
+    Path(out_path).write_bytes(base64.b64decode(result.image_b64))
+
+    elapsed = int((time.monotonic() - t0) * 1000)
+    cost = float(result.metadata.get("cost_usd") or 0.05)
+    return InpaintResult(
+        bbox={"x": 0, "y": 0, "w": 100, "h": 100},
+        variants=[out_path],
+        selected=0,
+        blended=out_path,
+        original=image,
+        instruction=instruction,
+        tradition=tradition,
+        latency_ms=elapsed,
+        cost_usd=cost,
+    )
+
+
 def inpaint(
     image: str,
     *,
-    region: str,
+    region: str = "",
     instruction: str,
+    mask_path: str = "",
     tradition: str = "default",
-    provider: str = "gemini",
+    provider: str = "openai",
     count: int = 4,
     select: int | None = None,
     output: str = "",
+    output_path: str = "",
     api_key: str = "",
     mock: bool = False,
 ) -> InpaintResult:
-    """Inpaint a region of an artwork (sync wrapper).
-
-    Args:
-        image: Path to the image file.
-        region: NL description ("fix the sky") or coordinates ("0,0,100,35").
-        instruction: What to change in the region.
-        tradition: Cultural tradition for style consistency.
-        provider: Image generation provider (e.g. "gemini", "openai").
-        count: Number of repaint variants to generate.
-        select: Auto-select variant index (0-based). None = return all.
-        output: Output path for blended image.
-        api_key: API key override.
-        mock: Use mock mode (no real API calls).
-    """
+    """Inpaint a region of an artwork (sync wrapper). See ``ainpaint``."""
     loop = asyncio.new_event_loop()
     try:
         return loop.run_until_complete(
@@ -155,11 +300,13 @@ def inpaint(
                 image,
                 region=region,
                 instruction=instruction,
+                mask_path=mask_path,
                 tradition=tradition,
                 provider=provider,
                 count=count,
                 select=select,
                 output=output,
+                output_path=output_path,
                 api_key=api_key,
                 mock=mock,
             )
