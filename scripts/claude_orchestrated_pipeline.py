@@ -35,6 +35,13 @@ import numpy as np
 import torch
 from PIL import Image
 
+# Re-export the pure transparency-gate so this module's existing call sites
+# (process() person & DINO loops) keep resolving the name unchanged. The
+# canonical definition lives in src/vulca/_quality_gate.py (underscore-
+# prefixed = decompose-internal; thresholds are not a public API). Living
+# in the package lets CI run the regression suite without installing torch.
+from vulca._quality_gate import compute_quality_flags
+
 REPO = Path(__file__).resolve().parent.parent
 PLANS_DIR = REPO / "assets" / "showcase" / "plans"
 OUT_DIR = REPO / "assets" / "showcase" / "layers_v2"
@@ -607,44 +614,6 @@ def detect_bbox(dino_proc, dino_model, device, img_pil, label, threshold=0.25):
         return None, 0.0
     bbox, score, _ = assigned[label]
     return bbox, score
-
-
-def compute_quality_flags(
-    *,
-    pct: float,
-    sam_score: float,
-    bbox_fill: float,
-    inside_ratio: float,
-) -> tuple[list[str], str]:
-    """v0.17.13 transparency gate for DINO-object segmentation results.
-
-    Mirrors the hint-path gate (lines around the sam_bbox branch) into a
-    pure helper so the DINO-object loop can apply the same suspect/detected
-    logic. Pre-v0.17.13 this branch silently wrote `status: "detected"` even
-    when SAM was low-confidence, leading to silent "the lanterns layer
-    captured building structure" failures (γ Scottish iter 0 lanterns:
-    sam_score 0.609, bbox_fill 0.256 → suspect).
-
-    DINO-tier thresholds: looser than hint-path (0.05) because DINO bboxes
-    are model-supplied and tend wider. Calibrated against γ Scottish 9-entity
-    baseline (8 clean entities pass at sam>=0.93 / fill>=0.55, lanterns gets
-    flagged).
-
-    Returns:
-        (quality_flags, status) — flags is a list of triggered conditions;
-        status is "suspect" if any flag fired, else "detected".
-    """
-    flags: list[str] = []
-    if pct < 0.05:
-        flags.append("empty_mask")
-    if sam_score < 0.70:
-        flags.append("low_sam_score")
-    if bbox_fill < 0.30:
-        flags.append("low_bbox_fill")
-    if inside_ratio < 0.60:
-        flags.append("mask_outside_bbox")
-    status = "suspect" if flags else "detected"
-    return flags, status
 
 
 def segment_bbox(sam_pred, bbox, multimask=True):
