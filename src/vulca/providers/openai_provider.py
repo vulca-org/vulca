@@ -375,15 +375,9 @@ class OpenAIImageProvider:
     ) -> ImageResult:
         """Mask-aware inpaint via /v1/images/edits.
 
-        Convention: mask alpha=0 => editable, alpha=255 => preserved. This
-        matches PIL alpha semantics for SAM / layer-derived masks. (OpenAI
-        documents the inverse semantically — "transparent areas of the mask
-        will be edited" — so PNG alpha=0 in our mask becomes a transparent
-        area when the mask is uploaded as RGBA. We pass it through unchanged.)
-
-        Only supported on gpt-image-* models — DALL-E-2's /edits requires a
-        square PNG and returns URLs by default. Caller is expected to have
-        constructed this provider with model='gpt-image-2'.
+        Mask convention (alpha=0 = edit, alpha=255 = preserve) maps directly
+        onto OpenAI's transparency semantic — the mask is uploaded as PNG
+        unchanged. Only supported on gpt-image-* models.
         """
         if not self.api_key:
             raise ValueError(
@@ -405,7 +399,7 @@ class OpenAIImageProvider:
             )
 
         # Probe mask size; pick a supported edit size near it.
-        from PIL import Image as PILImage  # noqa: F401 — local import to keep deps lazy
+        from PIL import Image as PILImage
         with open(image_path, "rb") as fh_img, open(mask_path, "rb") as fh_mask:
             image_bytes = fh_img.read()
             mask_bytes = fh_mask.read()

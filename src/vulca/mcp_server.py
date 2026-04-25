@@ -573,7 +573,7 @@ async def inpaint_artwork(
     instruction: str = "",
     mask_path: str = "",
     tradition: str = "default",
-    provider: str = "openai",
+    provider: str = "",
     output_path: str = "",
 ) -> dict:
     """Repaint part of an image — native mask (precise) or NL region (legacy, imprecise).
@@ -593,7 +593,9 @@ async def inpaint_artwork(
         instruction: What to paint in the masked / cropped region.
         mask_path: PNG with alpha (0=edit, 255=preserve). Must match image size.
         tradition: Cultural tradition for style consistency.
-        provider: Image provider. Default "openai" (only one with native mask).
+        provider: Image provider. Empty (default) routes mask_path to "openai"
+            (only mask-aware backend) and region to "gemini" (legacy default).
+            Pass explicit "openai"/"gemini"/"comfyui" to override.
         output_path: Explicit output PNG path. Default: <image_dir>/inpainted_<stem>.png.
 
     Returns:

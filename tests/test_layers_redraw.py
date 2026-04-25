@@ -109,6 +109,31 @@ class TestNonDestructiveOutput:
         assert "fg" in names
         assert "fg_redrawn" in names
 
+    def test_z_index_in_memory_matches_manifest(self, tmp_path):
+        """P1.1 review: returned LayerResult.z_index must equal the z that
+        was actually written to the manifest. Pre-fix the in-memory result
+        kept the source z while the manifest got max(existing)+1, causing
+        the layer to silently move on next load_manifest()."""
+        from vulca.layers.redraw import redraw_layer
+
+        _setup_one_layer(tmp_path)
+        artwork = load_manifest(str(tmp_path))
+
+        result = _run(
+            redraw_layer(
+                artwork, layer_name="fg", instruction="x",
+                provider="mock", artwork_dir=str(tmp_path),
+                output_layer_name="fg_v2",
+            )
+        )
+
+        loaded = load_manifest(str(tmp_path))
+        manifest_layer = next(lr for lr in loaded.layers if lr.info.name == "fg_v2")
+        assert result.info.z_index == manifest_layer.info.z_index, (
+            f"in-memory z_index {result.info.z_index} != manifest z_index "
+            f"{manifest_layer.info.z_index} — agent and disk would disagree"
+        )
+
 
 # ---------------------------------------------------------------------------
 # Background strategy
@@ -184,13 +209,43 @@ class TestBackgroundStrategy:
 
 class TestPreserveAlpha:
     def test_preserve_alpha_true_matches_source_alpha(self, tmp_path):
-        """preserve_alpha=True → output alpha matches source alpha."""
+        """preserve_alpha=True → output alpha matches source alpha.
+
+        Uses a NON-UNIFORM alpha pattern (left half opaque, right half
+        partial) so the assertion can only succeed if the helper actually
+        re-applied the source alpha. A uniform-alpha source could pass by
+        accident if the mock returned uniform alpha (P1.2 from review).
+        """
         from vulca.layers.redraw import redraw_layer
 
-        _setup_one_layer(tmp_path, color=(180, 64, 32, 100))
-        src_alpha = Image.open(str(tmp_path / "fg.png")).split()[-1]
-        artwork = load_manifest(str(tmp_path))
+        # Build a non-uniform-alpha source layer
+        Image.new("RGB", (50, 50), (100, 100, 100)).save(
+            str(tmp_path / "source.png")
+        )
+        layer_img = Image.new("RGBA", (50, 50), (180, 64, 32, 0))
+        for y in range(50):
+            for x in range(25):  # left half opaque
+                layer_img.putpixel((x, y), (180, 64, 32, 255))
+            for x in range(25, 50):  # right half partial
+                layer_img.putpixel((x, y), (180, 64, 32, 80))
+        layer_img.save(str(tmp_path / "fg.png"))
 
+        fg = LayerInfo(
+            name="fg", description="non-uniform alpha", z_index=1,
+            content_type="subject",
+        )
+        from vulca.layers.manifest import write_manifest
+        write_manifest(
+            [fg], output_dir=str(tmp_path), width=50, height=50,
+            source_image="source.png",
+        )
+
+        src_alpha = Image.open(str(tmp_path / "fg.png")).split()[-1]
+        # Sanity check the fixture itself has the variation we need
+        assert src_alpha.getpixel((10, 10)) == 255
+        assert src_alpha.getpixel((40, 10)) == 80
+
+        artwork = load_manifest(str(tmp_path))
         _run(
             redraw_layer(
                 artwork, layer_name="fg", instruction="x",
@@ -199,7 +254,12 @@ class TestPreserveAlpha:
             )
         )
         out_alpha = Image.open(str(tmp_path / "fg.png")).split()[-1]
-        # Compare alpha channels
+        assert out_alpha.getpixel((10, 10)) == 255, (
+            "left half (originally fully opaque) must stay opaque"
+        )
+        assert out_alpha.getpixel((40, 10)) == 80, (
+            "right half (originally alpha=80) must keep alpha=80"
+        )
         assert list(out_alpha.getdata()) == list(src_alpha.getdata())
 
     def test_preserve_alpha_false_default_unchanged(self, tmp_path):

@@ -25,7 +25,7 @@ async def ainpaint(
     instruction: str,
     mask_path: str = "",
     tradition: str = "default",
-    provider: str = "openai",
+    provider: str = "",
     count: int = 4,
     select: int | None = None,
     output: str = "",
@@ -81,18 +81,25 @@ async def ainpaint(
             "(precedence rule). Drop region= to silence."
         )
 
+    # Default provider depends on path: openai for mask (only one with native
+    # /v1/images/edits mask-aware editing), gemini for legacy region (the
+    # historical default — codex P2.5 review flagged a silent default flip
+    # that would have rerouted legacy callers' billing).
     if mask_path:
+        resolved_provider = provider or "openai"
         return await _ainpaint_with_mask(
             image=image,
             mask_path=mask_path,
             instruction=instruction,
             tradition=tradition,
-            provider=provider,
+            provider=resolved_provider,
             output_path=output_path or output,
             api_key=api_key,
             mock=mock,
             t0=t0,
         )
+
+    resolved_provider = provider or "gemini"
 
     if not region:
         raise ValueError(
@@ -135,7 +142,7 @@ async def ainpaint(
             crop_path,
             instruction=instruction,
             tradition=tradition,
-            provider=provider,
+            provider=resolved_provider,
             count=count,
             output_dir=crop_dir,
             api_key=api_key,
@@ -180,6 +187,33 @@ async def ainpaint(
     )
 
 
+def _bbox_from_mask_alpha(mask_rgba) -> dict:
+    """Compute percentage bbox of the mask's alpha=0 (editable) region.
+
+    Returns ``{x, y, w, h}`` as integer percentages of the mask canvas.
+    Falls back to the full canvas when the mask is fully opaque (legacy
+    contract — agent gets a non-lying signal that everything was in scope).
+
+    Codex 2026-04-25 P1 finding: pre-revision returned hardcoded
+    {0,0,100,100} regardless of mask shape, which lied to downstream
+    attribution/scoring code.
+    """
+    from PIL import Image
+
+    alpha = mask_rgba.split()[-1]
+    bbox = alpha.point(lambda v: 255 if v < 128 else 0).getbbox()
+    if bbox is None:
+        return {"x": 0, "y": 0, "w": 100, "h": 100}
+    x1, y1, x2, y2 = bbox
+    w_total, h_total = mask_rgba.size
+    return {
+        "x": int(x1 / w_total * 100),
+        "y": int(y1 / h_total * 100),
+        "w": max(1, int((x2 - x1) / w_total * 100)),
+        "h": max(1, int((y2 - y1) / h_total * 100)),
+    }
+
+
 async def _ainpaint_with_mask(
     *,
     image: str,
@@ -208,6 +242,10 @@ async def _ainpaint_with_mask(
     with PILImage.open(str(mask_p)) as mask_img:
         mask_img.load()
         mask_size = mask_img.size
+        # Compute the actually-edited bbox from mask alpha=0 region. Codex
+        # 2026-04-25 P1: hardcoded {0,0,100,100} fabricated a full-canvas
+        # box and would poison downstream attribution / scoring.
+        edit_bbox = _bbox_from_mask_alpha(mask_img.convert("RGBA"))
 
     if mask_size != src_size:
         raise ValueError(
@@ -225,7 +263,7 @@ async def _ainpaint_with_mask(
             im.convert("RGB").save(out_path, "PNG")
         elapsed = int((time.monotonic() - t0) * 1000)
         return InpaintResult(
-            bbox={"x": 0, "y": 0, "w": 100, "h": 100},
+            bbox=edit_bbox,
             variants=[out_path],
             selected=0,
             blended=out_path,
@@ -265,7 +303,7 @@ async def _ainpaint_with_mask(
     elapsed = int((time.monotonic() - t0) * 1000)
     cost = float(result.metadata.get("cost_usd") or 0.05)
     return InpaintResult(
-        bbox={"x": 0, "y": 0, "w": 100, "h": 100},
+        bbox=edit_bbox,
         variants=[out_path],
         selected=0,
         blended=out_path,
@@ -284,7 +322,7 @@ def inpaint(
     instruction: str,
     mask_path: str = "",
     tradition: str = "default",
-    provider: str = "openai",
+    provider: str = "",
     count: int = 4,
     select: int | None = None,
     output: str = "",
@@ -292,7 +330,12 @@ def inpaint(
     api_key: str = "",
     mock: bool = False,
 ) -> InpaintResult:
-    """Inpaint a region of an artwork (sync wrapper). See ``ainpaint``."""
+    """Inpaint a region of an artwork (sync wrapper). See ``ainpaint``.
+
+    ``provider=""`` (default) means: route to ``openai`` when ``mask_path``
+    is set (only mask-aware backend), otherwise route to ``gemini``
+    (legacy region default). Pass an explicit ``provider=`` to override.
+    """
     loop = asyncio.new_event_loop()
     try:
         return loop.run_until_complete(
