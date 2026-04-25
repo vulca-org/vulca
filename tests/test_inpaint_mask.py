@@ -37,10 +37,12 @@ def _write_mask(path: Path, size=(100, 100)) -> str:
 
 class TestMaskPathPrecedence:
     def test_mask_path_overrides_region(self, tmp_path, caplog):
-        """Both set → mask wins, warning logged."""
+        """Both set → mask wins, warning logged. bbox reflects mask alpha=0
+        region (codex P1 — was hardcoded 100x100 pre-revision)."""
         from vulca.inpaint import ainpaint
 
         img = _write_rgb(tmp_path / "src.png")
+        # _write_mask creates inner 50x50 alpha=0 square at (25,25)
         mask = _write_mask(tmp_path / "mask.png")
 
         with caplog.at_level("WARNING", logger="vulca.inpaint"):
@@ -53,8 +55,8 @@ class TestMaskPathPrecedence:
                     mock=True,
                 )
             )
-        # bbox of mask path is full-canvas, not the legacy 50x50 region
-        assert result.bbox == {"x": 0, "y": 0, "w": 100, "h": 100}
+        # bbox follows the mask's alpha=0 region, NOT the ignored region= arg
+        assert result.bbox == {"x": 25, "y": 25, "w": 50, "h": 50}
         # Warning fired
         assert any(
             "mask_path and region" in rec.message
@@ -197,6 +199,86 @@ class TestLegacyRegionPath:
         img = _write_rgb(tmp_path / "src.png")
         with pytest.raises(ValueError, match="mask_path or region"):
             _run(ainpaint(img, instruction="x", mock=True))
+
+
+class TestBboxFromMask:
+    def test_bbox_reflects_actual_alpha_zero_region(self, tmp_path):
+        """Codex P1: bbox must come from the mask's editable region, not
+        a hardcoded full-canvas {0,0,100,100}."""
+        from vulca.inpaint import ainpaint
+
+        img = _write_rgb(tmp_path / "src.png", size=(100, 100))
+        # Mask: only middle 50% (25-75) is editable (alpha=0)
+        mask_p = tmp_path / "mask.png"
+        mask = Image.new("RGBA", (100, 100), (0, 0, 0, 255))
+        for y in range(25, 75):
+            for x in range(25, 75):
+                mask.putpixel((x, y), (0, 0, 0, 0))
+        mask.save(str(mask_p))
+
+        result = _run(
+            ainpaint(
+                img, mask_path=str(mask_p),
+                instruction="x", mock=True,
+            )
+        )
+        # bbox should be roughly {x=25, y=25, w=50, h=50}, not full canvas
+        assert result.bbox["x"] == 25
+        assert result.bbox["y"] == 25
+        assert result.bbox["w"] == 50
+        assert result.bbox["h"] == 50
+
+    def test_bbox_full_canvas_when_mask_fully_opaque(self, tmp_path):
+        """Edge case: fully-opaque mask (no alpha=0 pixels) returns full
+        canvas as a non-lying signal that nothing was actually editable."""
+        from vulca.inpaint import ainpaint
+
+        img = _write_rgb(tmp_path / "src.png")
+        mask_p = tmp_path / "mask.png"
+        Image.new("RGBA", (100, 100), (0, 0, 0, 255)).save(str(mask_p))
+
+        result = _run(
+            ainpaint(
+                img, mask_path=str(mask_p),
+                instruction="x", mock=True,
+            )
+        )
+        assert result.bbox == {"x": 0, "y": 0, "w": 100, "h": 100}
+
+
+class TestProviderDefaults:
+    def test_legacy_region_defaults_to_gemini(self, tmp_path, monkeypatch):
+        """P2.5 review: legacy region= callers must keep their pre-v0.17.14
+        gemini default. Silent flip to openai would reroute billing."""
+        captured: dict = {}
+
+        # Stub phase.repaint to capture provider arg
+        from vulca.studio.phases import inpaint as phase_mod
+
+        async def stub_repaint(*args, **kwargs):
+            captured["provider"] = kwargs.get("provider")
+            return [str(tmp_path / "v.png")]
+
+        monkeypatch.setattr(phase_mod.InpaintPhase, "repaint", stub_repaint)
+        # Stub blend so we don't actually try to open a fake variant
+        async def stub_blend(*args, **kwargs):
+            return str(tmp_path / "blended.png")
+        monkeypatch.setattr(phase_mod.InpaintPhase, "blend", stub_blend)
+
+        from vulca.inpaint import ainpaint
+
+        img = _write_rgb(tmp_path / "src.png")
+        # Save a stub variant + blended to make life easy
+        Image.new("RGB", (50, 50), (0, 0, 0)).save(str(tmp_path / "v.png"))
+        Image.new("RGB", (50, 50), (0, 0, 0)).save(str(tmp_path / "blended.png"))
+
+        _run(
+            ainpaint(
+                img, region="0,0,50,50", instruction="x",
+                mock=False,  # need real branch to see resolved_provider
+            )
+        )
+        assert captured["provider"] == "gemini"
 
 
 class TestOutputPath:

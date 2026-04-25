@@ -14,6 +14,11 @@ from typing import Literal
 
 BlendMode = Literal["alpha", "feathered", "hard"]
 
+# Hard-mode mask threshold (PIL convention midpoint). Codex 2026-04-25
+# review P2.4: hoisted from a magic 127 in mask.point() so future tuning
+# is one place to change.
+HARD_THRESHOLD = 127
+
 
 def paste_back(
     source_image: str,
@@ -77,14 +82,21 @@ def paste_back(
             raise ValueError(f"feather_px must be >= 0, got {feather_px}")
         applied_mask = mask.filter(ImageFilter.GaussianBlur(feather_px))
     elif blend_mode == "hard":
-        applied_mask = mask.point(lambda x: 255 if x > 127 else 0)
+        applied_mask = mask.point(lambda x: 255 if x > HARD_THRESHOLD else 0)
     else:
         raise ValueError(
             f"unknown blend_mode={blend_mode!r}; "
             "expected one of alpha, feathered, hard"
         )
 
-    result = Image.composite(layer.convert("RGB"), src, applied_mask)
+    # Codex 2026-04-25 P1: clamp the layer's RGB to the source where the
+    # layer's alpha is 0, so semi-transparent edge pixels of decompose
+    # outputs (which often store BLACK in the alpha=0 zone) do not bleed
+    # darkness into the composite via Image.composite mixing math.
+    layer_alpha = layer.split()[-1]
+    layer_rgb = layer.convert("RGB")
+    layer_clamped = Image.composite(layer_rgb, src, layer_alpha)
+    result = Image.composite(layer_clamped, src, applied_mask)
 
     if not output_path:
         output_path = str(

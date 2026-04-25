@@ -79,6 +79,11 @@ def _sample_median_bg(rgba_img) -> tuple[int, int, int]:
     Used by background_strategy="sample_median" so the flat canvas matches
     the dominant tone of the layer's actual pixels (e.g. cream parchment for
     a Scottish landscape, dark for a Goya).
+
+    Fallback: when fewer than 0.1% of pixels meet the alpha>=32 visibility
+    threshold (essentially fully-transparent layer), we log a warning and
+    return CREAM. Codex 2026-04-25 review flagged the silent fallback as a
+    "silent lie"; the warning is the agent's signal to inspect.
     """
     from PIL import Image
 
@@ -86,6 +91,11 @@ def _sample_median_bg(rgba_img) -> tuple[int, int, int]:
     pixels = list(rgba.getdata())
     visible = [(r, g, b) for r, g, b, a in pixels if a >= 32]
     if not visible:
+        logger.warning(
+            "redraw: sample_median found no visible pixels (alpha>=32) — "
+            "falling back to cream background. Layer may be effectively "
+            "transparent; consider background_strategy='cream' explicitly."
+        )
         return CREAM_BG_RGB
     visible.sort()
     return visible[len(visible) // 2]
@@ -150,11 +160,16 @@ def _add_or_replace_layer_in_manifest(
     new_name: str,
     template: LayerInfo,
     description: str = "",
-) -> None:
+) -> int:
     """Append a new layer entry mirroring template's metadata.
 
     Used when output_layer_name diverges from the source layer name. If a
     layer of the same name already exists, it is replaced (idempotent).
+
+    Returns the z_index assigned to the new layer so the caller's
+    in-memory ``LayerResult`` agrees with what was just written to disk
+    (P1.1 from 2026-04-25 review — disagreement caused the layer to
+    silently move on the next ``load_manifest``).
     """
     from vulca.layers.manifest import load_manifest, write_manifest
 
@@ -188,6 +203,7 @@ def _add_or_replace_layer_in_manifest(
         warnings=manifest_data.get("warnings", []),
         tradition=manifest_data.get("tradition", ""),
     )
+    return new_z
 
 
 async def redraw_layer(
@@ -311,9 +327,13 @@ async def redraw_layer(
             artwork_dir, manifest_data, target, out_path
         )
 
-        # 8c. Manifest update: append (idempotent on rewrite)
+        # 8c. Manifest update: append (idempotent on rewrite). Capture the
+        # assigned z_index so the in-memory LayerResult agrees with disk —
+        # otherwise next load_manifest silently moves the layer (P1 finding,
+        # 2026-04-25 review).
+        assigned_z = target.info.z_index
         try:
-            _add_or_replace_layer_in_manifest(
+            assigned_z = _add_or_replace_layer_in_manifest(
                 artwork_dir,
                 new_name=out_name,
                 template=target.info,
@@ -325,7 +345,7 @@ async def redraw_layer(
         new_info = LayerInfo(
             name=out_name,
             description=target.info.description,
-            z_index=target.info.z_index,
+            z_index=assigned_z,
             content_type=target.info.content_type,
             semantic_path=target.info.semantic_path,
             blend_mode=target.info.blend_mode,
@@ -435,7 +455,14 @@ async def redraw_merged(
             pass
 
     out_path = Path(artwork_dir) / f"{merged_name}.png"
-    _save_as_rgba(result.image_b64, result.mime, out_path, width=width, height=height)
+    # Aspect-preserving fit (codex 2026-04-25 P2 — redraw_merged was using
+    # blanket LANCZOS warp via _save_as_rgba, asymmetric with the new
+    # redraw_layer fit logic). Letterbox transparent so merged result keeps
+    # alpha-stack semantics for downstream composite.
+    _save_as_rgba_fit(
+        result.image_b64, result.mime, out_path,
+        width=width, height=height,
+    )
 
     min_z = min(lr.info.z_index for lr in selected)
     merged_info = LayerInfo(
@@ -477,7 +504,12 @@ def _save_as_rgba(
     image_b64: str, mime: str, out_path: Path,
     *, width: int = 0, height: int = 0,
 ) -> None:
-    """Decode image_b64, convert to RGBA, resize to canvas if needed, save as PNG."""
+    """Decode image_b64, convert to RGBA, resize to canvas if needed, save as PNG.
+
+    Legacy helper — uses LANCZOS warp on size mismatch. Kept for any
+    out-of-tree callers; new code should use _save_as_rgba_fit which is
+    aspect-preserving.
+    """
     from PIL import Image
     import io
 
@@ -494,5 +526,31 @@ def _save_as_rgba(
     img = img.convert("RGBA")
     if width and height and img.size != (width, height):
         img = img.resize((width, height), Image.LANCZOS)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    img.save(str(out_path), format="PNG")
+
+
+def _save_as_rgba_fit(
+    image_b64: str, mime: str, out_path: Path,
+    *, width: int = 0, height: int = 0,
+) -> None:
+    """Aspect-preserving variant of _save_as_rgba — letterboxes with alpha=0
+    when provider output's aspect differs from the canvas. Symmetric with
+    redraw_layer's flow."""
+    from PIL import Image
+    import io
+
+    raw = base64.b64decode(image_b64)
+
+    if mime and "svg" in mime:
+        w = width or 100
+        h = height or 100
+        img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    else:
+        img = Image.open(io.BytesIO(raw))
+
+    img = img.convert("RGBA")
+    if width and height and img.size != (width, height):
+        img = _fit_into_canvas(img, (width, height), bg_rgb=None)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     img.save(str(out_path), format="PNG")
