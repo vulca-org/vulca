@@ -4,6 +4,8 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+import yaml
+
 from vulca.cultural.loader import get_tradition_guide
 
 
@@ -11,8 +13,6 @@ _FRONTMATTER_RE = re.compile(r"\A---\n(.*?)\n---\n", re.DOTALL)
 
 
 def _parse_yaml_block(raw: str) -> dict:
-    import yaml
-
     parsed = yaml.safe_load(raw) or {}
     if not isinstance(parsed, dict):
         raise ValueError("Expected YAML mapping block")
@@ -56,20 +56,31 @@ def compose_prompt_from_design(design_path: str) -> dict:
     text = path.read_text(encoding="utf-8")
 
     frontmatter = _parse_frontmatter(text)
-    _a_block = _extract_section_yaml(text, "A. Provider + generation params")
+    # A-block presence is required by the resolved-design contract; validate
+    # it parses but don't consume here (provider/model belong to plan.md).
+    _extract_section_yaml(text, "A. Provider + generation params")
     c_block = _extract_section_yaml(text, "C. Prompt composition")
 
-    tradition = str(frontmatter.get("tradition", "")).strip()
-    if not tradition:
-        raise ValueError("design.md frontmatter is missing tradition")
+    raw_tradition = frontmatter.get("tradition")
+    tradition = str(raw_tradition).strip() if raw_tradition else ""
 
-    guide = get_tradition_guide(tradition)
-    if guide is None:
-        raise ValueError(f"Unknown tradition in design.md: {tradition!r}")
+    artifact_tokens = c_block.get("tradition_tokens")
+    if artifact_tokens is not None:
+        # design.md is the source of truth for a resolved spec; live registry
+        # may drift after freeze, so prefer artifact-frozen tokens.
+        tradition_tokens = [str(t) for t in artifact_tokens]
+    elif tradition:
+        guide = get_tradition_guide(tradition)
+        if guide is None:
+            raise ValueError(f"Unknown tradition in design.md: {tradition!r}")
+        tradition_tokens = _format_tradition_tokens(guide)
+    else:
+        # tradition: null is a valid resolved-design state (pure photo brief
+        # with no cultural mapping). Compose from base_prompt + color_tokens.
+        tradition_tokens = []
 
     base_prompt = str(c_block.get("base_prompt", "")).strip()
     negative_prompt = str(c_block.get("negative_prompt", ""))
-    tradition_tokens = _format_tradition_tokens(guide)
     color_tokens = [str(token) for token in (c_block.get("color_constraint_tokens") or [])]
     composed_parts = [part for part in [base_prompt, ", ".join(tradition_tokens), ", ".join(color_tokens)] if part]
     composed_prompt = ", ".join(composed_parts)

@@ -229,7 +229,20 @@ async def compose_prompt_from_design(
     Use when you want Vulca's structured prompt-assembly value without running the
     full visual-plan flow. Returns the composed prompt, negative prompt, and the
     tradition/color tokens that were applied.
+
+    Pass an **absolute path**: the MCP server CWD typically differs from the calling
+    agent's CWD, so relative paths resolve against the server, not the caller.
     """
+    from pathlib import Path as _Path
+
+    p = _Path(design_path)
+    if not p.is_absolute() and not p.exists():
+        raise ValueError(
+            f"design_path {design_path!r} not found relative to MCP server CWD "
+            f"({_Path.cwd()}). Pass an absolute path — the MCP server CWD differs "
+            f"from the calling agent's CWD."
+        )
+
     from vulca.prompting import compose_prompt_from_design as _compose_prompt
 
     return _compose_prompt(design_path)

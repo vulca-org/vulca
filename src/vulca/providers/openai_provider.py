@@ -85,6 +85,25 @@ def _drop_unsupported_params(model: str, values: dict[str, str | None]) -> dict[
     return kept
 
 
+def _normalize_quality_for_model(model: str, quality: str) -> str:
+    """Map gpt-image vocabulary to model-specific accepted values.
+
+    DALL-E-3 only accepts "standard" / "hd"; gpt-image-* uses "high" / "auto" /
+    "medium" / "low". Cross-model callers passing the gpt-image vocabulary to
+    DALL-E-3 would 400 upstream — translate to the closest equivalent here.
+    """
+    if model != "dall-e-3":
+        return quality
+    normalized = quality.lower()
+    if normalized in {"hd", "standard"}:
+        return normalized
+    if normalized in {"high", "auto"}:
+        return "hd"
+    if normalized in {"medium", "low"}:
+        return "standard"
+    return quality
+
+
 def _extract_cost_usd(
     *,
     model: str,
@@ -107,6 +126,10 @@ def _extract_cost_usd(
 
     static_pricing = MODEL_STATIC_IMAGE_PRICING.get(model)
     if static_pricing is None:
+        logger.info(
+            "[cost-unknown] model=%s usage=%s — no pricing entry, returning None",
+            model, usage,
+        )
         return None
 
     quality_key = "standard"
@@ -215,6 +238,10 @@ class OpenAIImageProvider:
                 "output_format": output_format,
             },
         )
+        if "quality" in filtered_params:
+            filtered_params["quality"] = _normalize_quality_for_model(
+                model, filtered_params["quality"]
+            )
 
         async def _call() -> ImageResult:
             async with httpx.AsyncClient(timeout=120) as client:

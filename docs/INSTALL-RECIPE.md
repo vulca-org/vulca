@@ -53,6 +53,12 @@ This pulls:
 `timm==0.6.13` which conflicts with transformers 4.49's timm_wrapper expectation.
 Tolerable since torchscale is not on orchestrated path; ignore the pip warning.
 
+**Critical conflict — do NOT install `[sam,sam3]` together.** The `[sam]` extra
+(EVF-SAM) requires `transformers==4.49`; the `[sam3]` extra requires
+`transformers>=4.50`. Pip resolves to 4.50+, breaking EVF-SAM at import time.
+Pick one extra per environment. v0.18.0 will resolve this via separate marker
+guards; until then this is a hard pick-one constraint.
+
 ## Step 3 — Download SAM v1 checkpoint
 
 The orchestrated pipeline references a hardcoded checkpoint path at
