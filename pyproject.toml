@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "vulca"
-version = "0.17.12"
+version = "0.17.13"
 description = "Agent-native cultural art SDK — 20 MCP tools for image generation, L1-L5 evaluation, layer editing, and 13 cultural traditions. Agents drive all creative decisions; Vulca provides hands + eyes."
 readme = "README.md"
 license = "Apache-2.0"
