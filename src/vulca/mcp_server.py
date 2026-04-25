@@ -1118,6 +1118,53 @@ async def layers_composite(artwork_dir: str, output_path: str = "") -> dict:
 
 
 @mcp.tool()
+async def layers_paste_back(
+    source_image: str,
+    layer_image: str,
+    mask_path: str = "",
+    output_path: str = "",
+    blend_mode: str = "alpha",
+    feather_px: int = 2,
+) -> dict:
+    """Paste an edited layer back into a foreign source image — open-loop edit.
+
+    Use after editing a single layer (via layers_redraw, inpaint_artwork, or
+    out-of-band tooling) to composite the edit back into the original source
+    image while preserving every other pixel. Distinct from layers_composite,
+    which flattens a manifest stack into a closed-loop Vulca artwork.
+
+    Pure PIL — no provider calls, deterministic, fast.
+
+    Args:
+        source_image: Original RGB image (e.g. iter0.png). Read-only.
+        layer_image: Edited layer RGBA (e.g. gongbi_lanterns.png). Its alpha
+            channel is the default mask.
+        mask_path: Optional override mask (8-bit grayscale or alpha PNG).
+            If empty, layer_image's alpha is used.
+        output_path: Default <source_dir>/<source_stem>_with_<layer_stem>.png.
+        blend_mode: "alpha" (mask as-is) | "feathered" (Gaussian blur) |
+            "hard" (binary threshold at 127).
+        feather_px: Gaussian blur radius for feathered mode.
+
+    Returns:
+        output_path, blend_mode.
+    """
+    from vulca.layers.paste_back import paste_back
+
+    try:
+        return paste_back(
+            source_image,
+            layer_image,
+            mask_path=mask_path,
+            output_path=output_path,
+            blend_mode=blend_mode,
+            feather_px=feather_px,
+        )
+    except Exception as exc:
+        return {"error": str(exc)}
+
+
+@mcp.tool()
 async def layers_export(
     artwork_dir: str,
     export_format: str = "png",
