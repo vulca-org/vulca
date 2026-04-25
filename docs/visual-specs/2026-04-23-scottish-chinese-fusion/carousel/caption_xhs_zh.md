@@ -39,7 +39,7 @@ GitHub: https://github.com/vulca-org/vulca
 
 pip install "vulca[mcp]==0.17.14"
 
-这次 carousel 是 dogfood 的活样本:跑 iter 0 时遇上 gpt-image-2 GA 拒收 input_fidelity,治了 → v0.17.12;跑 decompose 时发现 DINO-object 路径在低置信度下静默标 detected,加了透明性 gate → v0.17.13;最后把 inpaint_artwork(mask_path) + layers_redraw 重塑 + layers_paste_back 三件套合一发 → v0.17.14。三个 ship 全在同一天,v0.17.14 的 layers_redraw(background_strategy="cream", preserve_alpha=True) + layers_paste_back 让 slide 4 的灯笼重绘工作流终于能纯 MCP 闭环,不用再在 Python 里手搓 cream 平底了。
+这次 carousel 是 dogfood 的活样本:跑 iter 0 时遇上 gpt-image-2 GA 拒收 input_fidelity,治了 → v0.17.12;跑 decompose 时发现 DINO-object 路径在低置信度下静默标 detected,加了透明性 gate → v0.17.13;最后把 inpaint_artwork(mask_path) + layers_redraw 重塑 + layers_paste_back 三件套合一发 → v0.17.14。三个 ship 全在同一天。v0.17.14 让"编辑一层 → 贴回源图"这个机制纯 MCP 跑通(不再要 Python 里手搓 cream 平底);slide 4 RIGHT 的视觉等价仍走 generate_image 路径,多实例稀疏 alpha 的 per-lantern 重绘是 v0.18 的工作。
 ```
 
 ## 发布建议

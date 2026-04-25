@@ -20,7 +20,7 @@ The difference between path 1 and path 2 is **three markdown files** that an age
 This post walks through what that "structured prompt composition" actually is, the silent `input_fidelity` parameter drift we caught between `design.md` and the live `gpt-image-2` GA endpoint (and the `v0.17.12` fix shipped today), and how the same triad evaluates cross-cultural AI generation honestly (including an L2 hard-fail at `0.65` that we surface plus a `user-override-accept` we ALSO record).
 
 > Repo: <https://github.com/vulca-org/vulca>
-> Install: `pip install "vulca[mcp]==0.17.12"`
+> Install: `pip install "vulca[mcp]==0.17.14"`
 
 ---
 
@@ -113,7 +113,7 @@ mcp_vulca.layers_redraw(
 )
 ```
 
-`layers_redraw` sends the alpha-sparse layer through `gpt-image-2`'s edit endpoint with the cultural tradition's prompt-composition layer applied. Output (slide 4, right): a four-lantern + spire reinterpretation in full 工笔重彩, with deeper cinnabar saturation and gongbi-canonical line discipline (outline-and-fill, *勾勒填彩*). The model approximates the *visual register* of gongbi — but as the L1-L5 scorecard below makes explicit, **single-pass diffusion can't simulate the multi-pass alum-wash physics** of true 三矾九染. The redraw looks gongbi-flavored; it isn't gongbi-correct. Both can be true.
+`layers_redraw` sends the alpha-sparse layer through `gpt-image-2`'s edit endpoint with the cultural tradition's prompt-composition layer applied. The slide-4-right artifact you see — a four-lantern + spire reinterpretation in full 工笔重彩 with deeper cinnabar saturation and gongbi-canonical line discipline (outline-and-fill, *勾勒填彩*) — was authored via a fresh `generate_image` call seeded by this same gongbi prompt scaffold, **not** the literal `layers_redraw` output above. The native `layers_redraw` path on this row-of-six-lanterns alpha gives a stylistically incoherent result because cream-flat reference loses per-instance geometry (see [`decompose/v0_17_14_native/NOTES.md`](../decompose/v0_17_14_native/NOTES.md) for the v0.17.14 end-to-end MCP run and the v0.18 backlog item). The `layers_redraw` verb still works as documented; the carousel's slide-4-right just exercises the related `generate_image` path for visual coherence. The model approximates the *visual register* of gongbi — but as the L1-L5 scorecard below makes explicit, **single-pass diffusion can't simulate the multi-pass alum-wash physics** of true 三矾九染. The redraw looks gongbi-flavored; it isn't gongbi-correct. Both can be true.
 
 The agent now has two paths for the lanterns layer:
 
@@ -217,9 +217,17 @@ GitHub: <https://github.com/vulca-org/vulca>
 
 The two images at the top of this post differ by three markdown files. They're not magic; they're version-controllable, reviewable, replayable contracts. If your AI-art workflow today is "type a prompt, hope, retry" — try the markdown-trio approach once. The first time you get the same image back from a fresh agent two weeks later because the markdown is still there, you'll see why.
 
-— shipped today as `vulca==0.17.14` (the slide-4 redraw flow described above
-is reproducible end-to-end via MCP after the v0.17.14 ship: `layers_redraw`
-gained `background_strategy="cream"` + `preserve_alpha=True` to stop the
-alpha-sparse hallucination case, and `layers_paste_back` is a new glue verb
-for compositing an edited layer back onto a foreign source image. End-to-end
-validation evidence is archived in `decompose/v0_17_14_native/NOTES.md`).
+— shipped today as `vulca==0.17.14`. The v0.17.14 patches make the
+`layers_redraw` + `layers_paste_back` *mechanism* fully native: the
+`background_strategy="cream"` flag stops the alpha-sparse hallucination
+that pre-v0.17.14 tainted redraw of sparse layers, `preserve_alpha=True`
+re-applies the source layer's alpha, and `layers_paste_back` is a new
+glue verb for compositing an edited layer back into a foreign source
+image. **Visual parity** with the slide-4-right artifact specifically is
+a different goal: that artifact was authored via `generate_image` with a
+gongbi text prompt, not via `layers_redraw` on the lanterns layer alone.
+The v0.17.14 patch closes the *out-of-band Python* gap for the canonical
+edit-and-paste-back flow; per-instance multi-lantern redraw with full
+visual parity remains a v0.18 backlog item. Reproducible MCP-only
+validation of the mechanism is archived in
+[`decompose/v0_17_14_native/NOTES.md`](../decompose/v0_17_14_native/NOTES.md).
