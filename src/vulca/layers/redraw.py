@@ -233,6 +233,10 @@ async def redraw_layer(
     Default ``background_strategy="transparent"`` and ``preserve_alpha=False``
     will be flipped to ``"cream"`` and ``True`` in this same v0.18.0 release
     (Task 3); this task only adds the kwarg without changing other defaults.
+
+    Note: in this Task 1 scaffold the ``else`` branch still writes to
+    ``<layer>.png`` (legacy in-place); Task 3 flips it to the path
+    described above alongside the default-value flips and test updates.
     """
     import os
 
@@ -343,6 +347,12 @@ async def redraw_layer(
     out_path.parent.mkdir(parents=True, exist_ok=True)
     rgba.save(str(out_path), "PNG")
 
+    # Task 1 scaffold: manifest is non-destructive only when caller named an
+    # explicit output AND didn't ask for in-place. Task 3 flips this to
+    # `non_destructive = not in_place` so the empty-default else branch starts
+    # appending to the manifest.
+    non_destructive = bool(output_layer_name) and not in_place
+
     # Hybrid alpha mask still applies for legacy `extract`-mode layers whose
     # dominant_colors are stored — keep behavior parity across all branches.
     _maybe_apply_legacy_color_mask(artwork_dir, manifest_data, target, out_path)
@@ -353,8 +363,8 @@ async def redraw_layer(
     # and the default else fall-through both mutate the source layer in place
     # and skip manifest mutation. Task 3 will move the empty-default else
     # branch over to the non-destructive path alongside the test flip.
-    if in_place or not output_layer_name:
-        # Legacy in-place: mutate target, no manifest changes
+    if not non_destructive:
+        # Legacy in-place (explicit or scaffolded): mutate target, no manifest changes.
         target.image_path = str(out_path)
         return target
 
