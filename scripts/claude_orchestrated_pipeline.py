@@ -42,6 +42,11 @@ from PIL import Image
 # in the package lets CI run the regression suite without installing torch.
 from vulca._quality_gate import compute_quality_flags
 
+# Same pattern for pure detection-layer helpers (_iou, _nms_bboxes). Tests
+# in `tests/test_layers_v2_split.py::TestMultiInstanceDetection` import from
+# `vulca._segment` so they collect under CI without torch. v0.18.0+.
+from vulca._segment import _iou, _nms_bboxes
+
 REPO = Path(__file__).resolve().parent.parent
 PLANS_DIR = REPO / "assets" / "showcase" / "plans"
 OUT_DIR = REPO / "assets" / "showcase" / "layers_v2"
@@ -365,20 +370,6 @@ def detect_persons_dino(dino_proc, dino_model, device, img_pil, threshold=0.20):
     return deduped
 
 
-def _iou(a, b):
-    ax1, ay1, ax2, ay2 = a
-    bx1, by1, bx2, by2 = b
-    ix1, iy1 = max(ax1, bx1), max(ay1, by1)
-    ix2, iy2 = min(ax2, bx2), min(ay2, by2)
-    iw, ih = max(0, ix2 - ix1), max(0, iy2 - iy1)
-    inter = iw * ih
-    if inter == 0:
-        return 0.0
-    area_a = (ax2 - ax1) * (ay2 - ay1)
-    area_b = (bx2 - bx1) * (by2 - by1)
-    return inter / (area_a + area_b - inter)
-
-
 def detect_persons_with_chain(chain, yolo_model, dino_proc, dino_model, device,
                                img_pil, img_path, yolo_conf=0.20, dino_conf=0.20):
     """Try detector chain (e.g., ['yolo', 'dino']) until persons found.
@@ -488,24 +479,6 @@ def tile_image(img_pil, tile_size=None, overlap=TILE_OVERLAP):
             y += stride
 
 
-def _nms_bboxes(detections, iou_threshold=0.5):
-    """Non-max suppression on (bbox, score, phrase) tuples.
-    Keeps higher-score detections; removes lower-score ones that overlap >threshold.
-    """
-    detections = sorted(detections, key=lambda d: -d[1])
-    kept = []
-    for d in detections:
-        bbox, score, phrase = d
-        is_dup = False
-        for k in kept:
-            if _iou(bbox, k[0]) > iou_threshold:
-                is_dup = True
-                break
-        if not is_dup:
-            kept.append(d)
-    return kept
-
-
 def detect_all_bboxes_tiled(dino_proc, dino_model, device, img_pil, labels, threshold=0.15):
     """Tile-based detection for extreme-aspect images.
 
@@ -557,11 +530,35 @@ def detect_persons_upscaled(dino_proc, dino_model, device, img_pil, threshold=0.
     return [([b[0] // 2, b[1] // 2, b[2] // 2, b[3] // 2], c) for b, c in persons]
 
 
-def detect_all_bboxes(dino_proc, dino_model, device, img_pil, labels, threshold=0.15):
+def detect_all_bboxes(
+    dino_proc, dino_model, device, img_pil, labels, threshold=0.15,
+    multi_instance=None,                # dict[label, max_n] or None
+    multi_instance_box_threshold=0.25,  # lower threshold applied when any label is multi-instance
+):
     """Single Grounding DINO pass with all labels jointly.
 
-    Returns: dict label -> (bbox, score, matched_phrase) or None if no match.
+    Returns:
+        dict label -> (bbox, score, matched_phrase) for single-instance labels
+        (backward-compatible tuple form). For labels present in `multi_instance`,
+        the value is `list[(bbox, score, phrase)]` instead — callers
+        discriminate via `isinstance(value, list)`. Labels with no detections
+        are absent from the dict (same as pre-v0.18 behaviour).
+
+    Args:
+        multi_instance: optional dict mapping label -> max instances (>=1).
+            Labels in this dict get list-form returns capped at max_n via
+            `_nms_bboxes(keep_n=max_n)`. None or absent labels keep the
+            historical tuple form (top-1 by score, NMS dedup'd).
+        multi_instance_box_threshold: lower DINO box-confidence threshold
+            applied when `multi_instance` is non-empty. DINO does a single
+            joint pass, so this affects ALL labels in the call when ANY
+            label needs multi-instance recall. Defaults to 0.25 (vs the
+            usual 0.15) — calibrated against γ Scottish lanterns row.
     """
+    multi_instance = multi_instance or {}
+    effective_threshold = (
+        multi_instance_box_threshold if multi_instance else threshold
+    )
     # Join all labels with period separator (Grounding DINO convention)
     text = ". ".join(labels) + "."
     inputs = dino_proc(images=img_pil, text=text, return_tensors="pt").to(device)
@@ -569,13 +566,17 @@ def detect_all_bboxes(dino_proc, dino_model, device, img_pil, labels, threshold=
         outputs = dino_model(**inputs)
     results = dino_proc.post_process_grounded_object_detection(
         outputs, inputs.input_ids,
-        threshold=threshold, text_threshold=0.15,
+        threshold=effective_threshold, text_threshold=0.15,
         target_sizes=[img_pil.size[::-1]]
     )[0]
 
-    # Match each detection back to the closest requested label
-    # via substring overlap on the returned phrase
-    assigned = {}  # label -> (bbox, score)
+    # Match each detection back to the closest requested label via word
+    # overlap on the returned phrase. v0.18: collect ALL matches per label
+    # first (instead of overwriting with the highest-score), then NMS+cap
+    # below. Single-instance callers see no behaviour change because the
+    # final `_nms_bboxes(keep_n=1)` reproduces the old "highest score wins"
+    # semantics (NMS sorts by score desc and keeps the top survivor).
+    assigned_raw: dict[str, list[tuple]] = {lbl: [] for lbl in labels}
     det_scores = results["scores"].cpu().numpy()
     det_boxes = results["boxes"].cpu().numpy()
     det_labels = results.get("text_labels", results.get("labels", []))
@@ -596,14 +597,22 @@ def detect_all_bboxes(dino_proc, dino_model, device, img_pil, labels, threshold=
                 best_label = lbl
         if best_label is None:
             continue
+        bbox = det_boxes[i].astype(int).tolist()
         score = float(det_scores[i])
-        # Keep highest-score detection per label
-        if best_label not in assigned or score > assigned[best_label][1]:
-            assigned[best_label] = (
-                det_boxes[i].astype(int).tolist(),
-                score,
-                phrase,
-            )
+        assigned_raw[best_label].append((bbox, score, phrase))
+
+    # Final shape: tuple for single-instance, list for multi-instance
+    assigned: dict = {}
+    for lbl, dets in assigned_raw.items():
+        if not dets:
+            continue
+        if lbl in multi_instance:
+            max_n = max(1, int(multi_instance[lbl]))
+            kept = _nms_bboxes(dets, iou_threshold=0.5, keep_n=max_n)
+            assigned[lbl] = kept            # list form
+        else:
+            kept = _nms_bboxes(dets, iou_threshold=0.5, keep_n=1)
+            assigned[lbl] = kept[0]          # tuple form (backward compat)
     return assigned
 
 
