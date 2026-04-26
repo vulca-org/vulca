@@ -851,7 +851,27 @@ def _load_image_safely(img_path: Path, max_pixels: int = 100_000_000):
     return img_pil
 
 
-def process(slug: str, force: bool = False):
+def process(slug: str, force: bool = False, multi_instance_labels: dict | None = None):
+    """Run the full segmentation pipeline for a single slug.
+
+    Args:
+        slug: file stem matching plan JSON + image (under PLANS_DIR / ORIG_DIR).
+        force: overwrite existing manifest if True.
+        multi_instance_labels: optional ``{label: max_instances}`` dict forwarded
+            to ``detect_all_bboxes`` so DINO returns list-form detections for
+            opt-in labels (v0.18.0). When ``None``, the plan is consulted for
+            ``entity.multi_instance == True`` flags and a dict is built with
+            cap=8 (spec Q4). Empty dict / no opt-in entities preserves the
+            legacy top-1 tuple behavior end-to-end.
+
+    Raises:
+        NotImplementedError: if ``multi_instance_labels`` is non-empty AND the
+            image dimensions trigger the tiled or upscaled detection paths
+            (``needs_tile`` / ``needs_upscale``). Those wrappers do not yet
+            forward ``multi_instance`` kwargs (Task 4 reviewer I-1); rather
+            than silently degrade to top-1, we surface an actionable error.
+            Tracked for v0.18.1+.
+    """
     plan_path = PLANS_DIR / f"{slug}.json"
     if not plan_path.exists():
         print(f"FAIL {slug}: no plan at {plan_path}")
@@ -877,6 +897,18 @@ def process(slug: str, force: bool = False):
     except Exception as e:
         print(f"FAIL {slug}: plan schema validation: {e}")
         return {"status": "error", "reason": "plan_schema", "detail": str(e)[:500]}
+
+    # v0.18.0: when caller didn't pre-build the multi-instance map (CLI path,
+    # or orchestrator passing None), derive it from the validated plan so
+    # `entity.multi_instance: true` honors itself end-to-end. Cap = 8 per
+    # spec Q4. Empty dict (no opt-in entities) makes the downstream forward
+    # a no-op; legacy behavior preserved.
+    if multi_instance_labels is None:
+        multi_instance_labels = {
+            e["label"]: 8
+            for e in plan.get("entities", [])
+            if e.get("multi_instance")
+        }
 
     img_path = None
     for ext in (".jpg", ".jpeg", ".png", ".webp"):
@@ -989,19 +1021,41 @@ def process(slug: str, force: bool = False):
         low_thresh = min((e.get("threshold", object_thresh)
                           for _, e in object_entities), default=object_thresh)
         # Adapt to image shape: tile extreme-aspect, upscale tiny
-        if needs_tile(W, H) or profile.get("tile", False):
+        # v0.18.0 (Task 4 reviewer I-1): the tiled and upscaled wrappers do
+        # NOT yet forward `multi_instance` kwargs. Rather than silently drop
+        # back to top-1 detection, raise an actionable NotImplementedError so
+        # the user knows to either disable multi_instance for this run or
+        # pre-crop the image. v0.18.1+ can lift this once the wrappers learn
+        # to propagate the kwarg.
+        _is_tiled = needs_tile(W, H) or profile.get("tile", False)
+        _is_upscaled = (not _is_tiled) and needs_upscale(W, H)
+        if multi_instance_labels and (_is_tiled or _is_upscaled):
+            _path = "tiled" if _is_tiled else "upscaled"
+            raise NotImplementedError(
+                f"multi_instance is not yet supported on the {_path} detection "
+                f"path (image dimensions {W}x{H} triggered the {_path} route). "
+                f"Either disable multi_instance for this run, or pre-crop the "
+                f"image to avoid extreme aspect ratios / tiny dimensions. "
+                f"Tracked for v0.18.1+. Multi_instance labels were: "
+                f"{sorted(multi_instance_labels.keys())}"
+            )
+        if _is_tiled:
             print(f"    [adapt] tile inference (aspect {max(W,H)/min(W,H):.1f}:1)")
             dino_assigned = detect_all_bboxes_tiled(dino_proc, dino_model, device,
                                                      img_pil, object_labels,
                                                      threshold=low_thresh)
-        elif needs_upscale(W, H):
+        elif _is_upscaled:
             print(f"    [adapt] 2x upscale inference ({W}x{H} → {W*2}x{H*2})")
             dino_assigned = detect_all_bboxes_upscaled(dino_proc, dino_model, device,
                                                         img_pil, object_labels,
                                                         threshold=low_thresh)
         else:
-            dino_assigned = detect_all_bboxes(dino_proc, dino_model, device, img_pil,
-                                               object_labels, threshold=low_thresh)
+            dino_assigned = detect_all_bboxes(
+                dino_proc, dino_model, device, img_pil,
+                object_labels, threshold=low_thresh,
+                multi_instance=multi_instance_labels or {},
+                multi_instance_box_threshold=0.25,
+            )
         print(f"  DINO objects: {len(dino_assigned)}/{len(object_labels)} in {time.time()-t0:.1f}s")
 
     layers_raw = []

@@ -456,3 +456,69 @@ class TestMultiInstanceDetection:
         # Score-descending order (per _nms_bboxes contract)
         scores = [d[1] for d in result["lanterns"]]
         assert scores == sorted(scores, reverse=True)
+
+    def test_multi_instance_raises_on_tiled_path(self, monkeypatch, tmp_path):
+        """v0.18.0: multi_instance + tiled-image-trigger raises NotImplementedError.
+
+        Tracks Task 4 code-review I-1: tiled/upscaled paths don't yet forward
+        multi_instance kwargs. Defensive raise prevents silent degradation to
+        top-1 detection on extreme-aspect inputs.
+
+        Test setup pre-conditions (asserted inline so future fixture drift
+        fails loudly per v0.18 Task 3 lesson):
+          - test image is extreme-aspect (200x4000) so needs_tile(W,H) is True
+          - multi_instance_labels is non-empty {"lanterns": 8}
+          - heavy detector loaders are stubbed so no model download / no MPS
+        """
+        pytest.importorskip("torch")  # cop import requires torch; CI skips
+        from scripts import claude_orchestrated_pipeline as cop
+
+        # Pre-condition assertions: extreme aspect MUST route to the tiled path.
+        W, H = 200, 4000
+        assert cop.needs_tile(W, H), \
+            f"test fixture intent: ({W},{H}) must trigger needs_tile; " \
+            f"adjust dims if TILE_ASPECT_RATIO ({cop.TILE_ASPECT_RATIO}) changed"
+        assert not cop.needs_upscale(W, H), \
+            f"test fixture intent: ({W},{H}) should NOT trigger needs_upscale " \
+            f"(would mask the tiled-path branch we want to exercise)"
+
+        # Stage a temp ORIG_DIR + PLANS_DIR with the extreme-aspect image and
+        # a plan that opts a single label into multi_instance.
+        slug = "extreme_aspect_multi"
+        orig_dir = tmp_path / "originals"
+        plans_dir = tmp_path / "plans"
+        out_dir = tmp_path / "out"
+        orig_dir.mkdir()
+        plans_dir.mkdir()
+        out_dir.mkdir()
+        Image.new("RGB", (W, H), (128, 128, 128)).save(
+            str(orig_dir / f"{slug}.jpg"), "JPEG"
+        )
+        plan_payload = {
+            "entities": [
+                {"name": "lanterns", "label": "lantern", "multi_instance": True}
+            ],
+        }
+        (plans_dir / f"{slug}.json").write_text(json.dumps(plan_payload))
+
+        # Stub heavy loaders so test never touches the model hub / MPS device.
+        # The raise fires before detect_all_bboxes_tiled is invoked, so the
+        # DINO/SAM stubs never get exercised — but loaders themselves run
+        # earlier (load_sam + load_grounding_dino) and need to no-op cleanly.
+        class _StubSam:
+            def set_image(self, *_a, **_k):
+                return None
+
+        monkeypatch.setattr(cop, "load_sam", lambda *_a, **_k: _StubSam())
+        monkeypatch.setattr(
+            cop, "load_grounding_dino", lambda *_a, **_k: (object(), object())
+        )
+        # Redirect module-level dirs to our temp staging.
+        monkeypatch.setattr(cop, "ORIG_DIR", orig_dir)
+        monkeypatch.setattr(cop, "PLANS_DIR", plans_dir)
+        monkeypatch.setattr(cop, "OUT_DIR", out_dir)
+
+        with pytest.raises(NotImplementedError, match=r"multi_instance.*tiled"):
+            cop.process(
+                slug, force=True, multi_instance_labels={"lantern": 8}
+            )

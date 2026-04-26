@@ -53,6 +53,16 @@ class PlanEntity(BaseModel):
         description="Rough spatial hint [x1_pct, y1_pct, x2_pct, y2_pct] in [0,1]. "
                     "Used as SAM bbox when detector='sam_bbox' or as fallback."
     )
+    # v0.18.0 (Q2 in design spec): opt-in to per-instance detection. When True,
+    # the orchestrator routes this entity through DINO with a list-form
+    # response (up to 8 bboxes per Q4 cap) instead of the legacy top-1 tuple.
+    # Absent or False preserves legacy single-instance behavior; no plan
+    # version bump required.
+    multi_instance: bool = Field(
+        False,
+        description="If True, detect up to 8 instances of this label and emit "
+                    "one layer per instance. Default False (legacy top-1)."
+    )
 
     @field_validator("name", mode="before")
     @classmethod
