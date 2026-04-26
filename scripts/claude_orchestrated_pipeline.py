@@ -927,6 +927,26 @@ def process(slug: str, force: bool = False, multi_instance_labels: dict | None =
         return {"status": "error", "reason": "image_load", "detail": str(e)}
 
     W, H = img_pil.size
+
+    # v0.18.0 (Task 5 spec-review follow-up): hoist the multi_instance×tiled
+    # NotImplementedError to fire BEFORE expensive model loads (load_sam +
+    # set_image + load_grounding_dino can cost 5-15s on MPS). Predicate is
+    # dimension-only here (`profile` isn't computed until ~line 943); the
+    # rare profile-tile-override-on-non-extreme-aspect case still pays the
+    # model-load cost but is caught by the late-path check downstream.
+    # v0.18.1+ can lift this once the wrapped detectors learn to forward
+    # the `multi_instance` kwarg.
+    if multi_instance_labels and (needs_tile(W, H) or needs_upscale(W, H)):
+        _path = "tiled" if needs_tile(W, H) else "upscaled"
+        raise NotImplementedError(
+            f"multi_instance is not yet supported on the {_path} detection "
+            f"path (image dimensions {W}x{H} triggered the {_path} route). "
+            f"Either disable multi_instance for this run, or pre-crop the "
+            f"image to avoid extreme aspect ratios / tiny dimensions. "
+            f"Tracked for v0.18.1+. Multi_instance labels were: "
+            f"{sorted(multi_instance_labels.keys())}"
+        )
+
     img_np = np.array(img_pil)
 
     out_subdir = OUT_DIR / slug
@@ -1020,23 +1040,25 @@ def process(slug: str, force: bool = False, multi_instance_labels: dict | None =
                   "differentiate them in the plan")
         low_thresh = min((e.get("threshold", object_thresh)
                           for _, e in object_entities), default=object_thresh)
-        # Adapt to image shape: tile extreme-aspect, upscale tiny
-        # v0.18.0 (Task 4 reviewer I-1): the tiled and upscaled wrappers do
-        # NOT yet forward `multi_instance` kwargs. Rather than silently drop
-        # back to top-1 detection, raise an actionable NotImplementedError so
-        # the user knows to either disable multi_instance for this run or
-        # pre-crop the image. v0.18.1+ can lift this once the wrappers learn
-        # to propagate the kwarg.
+        # Adapt to image shape: tile extreme-aspect, upscale tiny.
+        # v0.18.0 (Task 4 reviewer I-1): the tiled/upscaled wrappers do NOT
+        # yet forward `multi_instance` kwargs. The dimension-only fail-fast
+        # raise lives early (just after `W, H = img_pil.size`) so real-user
+        # calls don't pay model-load cost. The late-path catch below covers
+        # the rare profile-driven tile override (`profile.tile=True` on a
+        # non-extreme-aspect image) that the early gate can't see.
+        # v0.18.1+ can lift this once the wrappers learn to propagate.
         _is_tiled = needs_tile(W, H) or profile.get("tile", False)
         _is_upscaled = (not _is_tiled) and needs_upscale(W, H)
-        if multi_instance_labels and (_is_tiled or _is_upscaled):
-            _path = "tiled" if _is_tiled else "upscaled"
+        if multi_instance_labels and _is_tiled and not needs_tile(W, H):
+            # Only reachable via profile.tile override (early gate already
+            # rejected dimension-driven tile/upscale routes).
             raise NotImplementedError(
-                f"multi_instance is not yet supported on the {_path} detection "
-                f"path (image dimensions {W}x{H} triggered the {_path} route). "
-                f"Either disable multi_instance for this run, or pre-crop the "
-                f"image to avoid extreme aspect ratios / tiny dimensions. "
-                f"Tracked for v0.18.1+. Multi_instance labels were: "
+                f"multi_instance is not yet supported on the tiled detection "
+                f"path (profile {domain!r} forced tile=True on {W}x{H}). "
+                f"Either disable multi_instance for this run, or use a "
+                f"different domain profile. Tracked for v0.18.1+. "
+                f"Multi_instance labels were: "
                 f"{sorted(multi_instance_labels.keys())}"
             )
         if _is_tiled:
