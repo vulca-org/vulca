@@ -405,6 +405,27 @@ class TestMultiInstanceDetection:
         assert len(kept) == 2
         assert kept[0][1] >= kept[1][1]  # score-sorted desc
 
+    def test_nms_keep_n_zero_clamps_to_one(self):
+        """keep_n=0 is clamped to 1 (not interpreted as 'return empty list')."""
+        from vulca._segment import _nms_bboxes
+        dets = [
+            ([0, 0, 100, 100], 0.9, "a"),
+            ([200, 0, 300, 100], 0.8, "a"),
+        ]
+        kept = _nms_bboxes(dets, iou_threshold=0.5, keep_n=0)
+        assert len(kept) == 1, "keep_n=0 should clamp to 1, not return []"
+        assert kept[0][1] == pytest.approx(0.9), "kept item should be highest-score"
+
+    def test_nms_keep_n_negative_clamps_to_one(self):
+        """keep_n=-1 (or other negative) is also clamped to 1."""
+        from vulca._segment import _nms_bboxes
+        dets = [
+            ([0, 0, 100, 100], 0.9, "a"),
+            ([200, 0, 300, 100], 0.8, "a"),
+        ]
+        kept = _nms_bboxes(dets, iou_threshold=0.5, keep_n=-5)
+        assert len(kept) == 1, "negative keep_n should clamp to 1"
+
     def test_detect_all_bboxes_single_label_backward_compat(self, mock_dino):
         """Without multi_instance kwarg, returns dict[label, tuple] as before."""
         _assert_mock_dino_intent(mock_dino)

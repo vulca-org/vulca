@@ -42,7 +42,13 @@ def _nms_bboxes(detections, iou_threshold=0.5, keep_n=None):
     `detect_all_bboxes`: multi-instance labels pass `keep_n=max_n` to bound
     fan-out per label; single-instance callers pass `keep_n=1` and unwrap the
     sole survivor as the (bbox, score, phrase) tuple.
+
+    `keep_n` is clamped to a minimum of 1: passing `keep_n=0` (or negative) is
+    treated as `keep_n=1`, NOT as "return empty list". Callers wanting an empty
+    result should not call `_nms_bboxes` at all.
     """
+    if keep_n is not None:
+        keep_n = max(1, int(keep_n))
     detections = sorted(detections, key=lambda d: -d[1])
     kept = []
     for d in detections:

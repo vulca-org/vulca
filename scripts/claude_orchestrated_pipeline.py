@@ -544,16 +544,24 @@ def detect_all_bboxes(
         discriminate via `isinstance(value, list)`. Labels with no detections
         are absent from the dict (same as pre-v0.18 behaviour).
 
+    Note:
+        `multi_instance_box_threshold` lowers the box threshold for the
+        ENTIRE DINO pass when ANY label is multi-instance, since DINO does
+        one joint inference. Single-instance labels in the same call also
+        receive the lower threshold (more recall, more noise). Callers
+        needing strict per-label thresholds should issue two separate
+        `detect_all_bboxes()` calls.
+
     Args:
         multi_instance: optional dict mapping label -> max instances (>=1).
             Labels in this dict get list-form returns capped at max_n via
             `_nms_bboxes(keep_n=max_n)`. None or absent labels keep the
             historical tuple form (top-1 by score, NMS dedup'd).
-        multi_instance_box_threshold: lower DINO box-confidence threshold
-            applied when `multi_instance` is non-empty. DINO does a single
-            joint pass, so this affects ALL labels in the call when ANY
-            label needs multi-instance recall. Defaults to 0.25 (vs the
-            usual 0.15) — calibrated against γ Scottish lanterns row.
+        multi_instance_box_threshold: When ``multi_instance`` is non-empty,
+            DINO is run with this threshold instead of ``threshold``. See
+            Note above for the joint-pass side-effect on single-instance
+            labels. Defaults to 0.25 (vs the usual 0.15) — calibrated
+            against γ Scottish lanterns row.
     """
     multi_instance = multi_instance or {}
     effective_threshold = (
