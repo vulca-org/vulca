@@ -218,14 +218,21 @@ async def redraw_layer(
     output_layer_name: str = "",
     background_strategy: str = "transparent",
     preserve_alpha: bool = False,
+    in_place: bool = False,
 ) -> LayerResult:
     """Redraw a single layer via img2img.
 
-    Default behavior preserves the legacy contract: writes back to the
-    layer's existing file, transparent background, no alpha re-application.
-    Pass ``output_layer_name`` to opt into non-destructive writes; pass
-    ``background_strategy`` and ``preserve_alpha`` to opt into the
-    hallucination-free path documented for the γ Scottish lanterns flow.
+    Output path resolution (v0.18.0):
+      - if ``in_place=True`` → overwrite the source layer's PNG (legacy parity)
+      - elif ``output_layer_name`` is non-empty → write to ``<output_layer_name>.png``
+      - else → write to ``<layer_name>_redrawn.png`` (new safe default)
+
+    ``in_place=True`` takes precedence; ``output_layer_name`` is silently
+    ignored when ``in_place=True``.
+
+    Default ``background_strategy="transparent"`` and ``preserve_alpha=False``
+    will be flipped to ``"cream"`` and ``True`` in this same v0.18.0 release
+    (Task 3); this task only adds the kwarg without changing other defaults.
     """
     import os
 
@@ -314,52 +321,67 @@ async def redraw_layer(
             src_alpha = src_alpha.resize(rgba.size, Image.LANCZOS)
         rgba.putalpha(src_alpha)
 
-    # 8. Write — default in-place (legacy), opt-in new file
-    if output_layer_name:
+    # 8. Decide output path (v0.18.0 3-way resolution scaffold).
+    #
+    # Task 1 only adds the ``in_place`` kwarg + restructures branching; the
+    # default ``else`` branch still falls through to legacy in-place semantics
+    # so existing tests (and call sites) remain byte-identical. Task 3 will
+    # atomically flip the ``else`` branch to write ``<layer>_redrawn.png`` +
+    # update the affected tests in one commit.
+    if in_place:
+        out_name = layer_name
+        out_path = Path(artwork_dir) / f"{layer_name}.png"
+    elif output_layer_name:
         out_name = output_layer_name
-        out_path = Path(artwork_dir) / f"{out_name}.png"
-        out_path.parent.mkdir(parents=True, exist_ok=True)
-        rgba.save(str(out_path), "PNG")
+        out_path = Path(artwork_dir) / f"{output_layer_name}.png"
+    else:
+        # Legacy fall-through: behaves like in_place=True until Task 3 flips
+        # this to ``f"{layer_name}_redrawn"`` + non-destructive manifest path.
+        out_name = layer_name
+        out_path = Path(artwork_dir) / f"{layer_name}.png"
 
-        # 8b. Hybrid alpha mask still applies for legacy `extract`-mode layers
-        # whose dominant_colors are stored — keep behavior parity.
-        _maybe_apply_legacy_color_mask(
-            artwork_dir, manifest_data, target, out_path
-        )
-
-        # 8c. Manifest update: append (idempotent on rewrite). Capture the
-        # assigned z_index so the in-memory LayerResult agrees with disk —
-        # otherwise next load_manifest silently moves the layer (P1 finding,
-        # 2026-04-25 review).
-        assigned_z = target.info.z_index
-        try:
-            assigned_z = _add_or_replace_layer_in_manifest(
-                artwork_dir,
-                new_name=out_name,
-                template=target.info,
-                description=f"Redraw of {layer_name}: {instruction[:60]}",
-            )
-        except Exception as exc:
-            logger.warning("redraw: manifest update failed (non-fatal): %s", exc)
-
-        new_info = LayerInfo(
-            name=out_name,
-            description=target.info.description,
-            z_index=assigned_z,
-            content_type=target.info.content_type,
-            semantic_path=target.info.semantic_path,
-            blend_mode=target.info.blend_mode,
-        )
-        return LayerResult(info=new_info, image_path=str(out_path))
-
-    # Legacy in-place path
-    out_path = Path(artwork_dir) / f"{layer_name}.png"
     out_path.parent.mkdir(parents=True, exist_ok=True)
     rgba.save(str(out_path), "PNG")
+
+    # Hybrid alpha mask still applies for legacy `extract`-mode layers whose
+    # dominant_colors are stored — keep behavior parity across all branches.
     _maybe_apply_legacy_color_mask(artwork_dir, manifest_data, target, out_path)
 
-    target.image_path = str(out_path)
-    return target
+    # 9. Manifest update branch.
+    #
+    # Today: ``output_layer_name`` is the only non-destructive path; in_place
+    # and the default else fall-through both mutate the source layer in place
+    # and skip manifest mutation. Task 3 will move the empty-default else
+    # branch over to the non-destructive path alongside the test flip.
+    if in_place or not output_layer_name:
+        # Legacy in-place: mutate target, no manifest changes
+        target.image_path = str(out_path)
+        return target
+
+    # Non-destructive (output_layer_name): append manifest entry. Capture the
+    # assigned z_index so the in-memory LayerResult agrees with disk —
+    # otherwise next load_manifest silently moves the layer (P1 finding,
+    # 2026-04-25 review).
+    assigned_z = target.info.z_index
+    try:
+        assigned_z = _add_or_replace_layer_in_manifest(
+            artwork_dir,
+            new_name=out_name,
+            template=target.info,
+            description=f"Redraw of {layer_name}: {instruction[:60]}",
+        )
+    except Exception as exc:
+        logger.warning("redraw: manifest update failed (non-fatal): %s", exc)
+
+    new_info = LayerInfo(
+        name=out_name,
+        description=target.info.description,
+        z_index=assigned_z,
+        content_type=target.info.content_type,
+        semantic_path=target.info.semantic_path,
+        blend_mode=target.info.blend_mode,
+    )
+    return LayerResult(info=new_info, image_path=str(out_path))
 
 
 def _maybe_apply_legacy_color_mask(
