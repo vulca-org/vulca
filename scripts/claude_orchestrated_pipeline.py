@@ -1309,64 +1309,117 @@ def process(slug: str, force: bool = False, multi_instance_labels: dict | None =
         all_persons_mask |= pl["mask"]
 
     # Object layers: use DINO results
+    # v0.18.0: multi_instance support — when dino_assigned[label] is a list,
+    # iterate per-bbox and emit N flat sibling layers (<label>_0..N-1). Track
+    # cumulative z-index push so subsequent entities don't collide. Single-
+    # instance entities (tuple form) flow through unchanged: detections=[raw],
+    # one inner iteration, name = base_name (no suffix).
+    z_offset = 0
     for i, entity in object_entities:
         label = entity["label"]
         semantic_path = entity.get("semantic_path", f"subject.entity[{i}]")
-        record = {"id": i, "name": entity.get("name", label.replace(" ", "_")),
-                  "label": label, "semantic_path": semantic_path, "kind": "object"}
+        base_name = entity.get("name", label.replace(" ", "_"))
+        is_multi = label in (multi_instance_labels or {})
+
         if label not in dino_assigned:
             print(f"  [O{i}] {label[:40]:40s} MISSED (dino)")
-            record.update({"status": "missed", "reason": "dino_not_matched"})
+            record = {"id": i, "name": base_name,
+                      "label": label, "semantic_path": semantic_path, "kind": "object",
+                      "status": "missed", "reason": "dino_not_matched"}
+            if is_multi:
+                record.setdefault("quality_flags", []).append("multi_instance_no_detection")
             detection_report["per_entity"].append(record)
             continue
-        bbox, score, phrase = dino_assigned[label]
-        mask, sam_score, bbox_fill, inside_ratio = segment_bbox(sam_pred, bbox)
 
-        # Pattern #3 fix: subtract person overlap ONLY in the "suspicious middle
-        # range" (30%-90%). Rationale:
-        #   - <30% overlap: probably no leak
-        #   - 30-90% overlap: partial leak (e.g. chair_parapet grabbed arms)
-        #   - >90% overlap: object is *contained* inside person by design
-        #     (jewelry, flag_pin, held object, vulture near child) — KEEP IT.
-        # Background layers (sky, ground, water) are exempt entirely.
-        if not semantic_path.startswith("background"):
-            overlap = (mask & all_persons_mask).sum()
-            obj_px = mask.sum()
-            if obj_px > 0:
-                ratio = overlap / obj_px
-                if 0.30 < ratio < 0.90:
-                    mask = mask & ~all_persons_mask
-                    print(f"    [leak-fix] {record['name']}: subtracted person overlap ({ratio*100:.0f}%)")
-                elif ratio >= 0.90:
-                    # Fully contained — accessory/held object. Keep as-is.
-                    pass
+        # Type-discriminated unwrap: list for multi-instance labels (v0.18+),
+        # tuple for single-instance (backward compat). Use isinstance per the
+        # detect_all_bboxes() contract — do NOT sniff via try/except or len.
+        raw = dino_assigned[label]
+        detections = raw if isinstance(raw, list) else [raw]
 
-        pct = mask.sum() / (H * W) * 100
+        # Multi-instance degraded fallback: requested but DINO returned <2.
+        # Spec: emit a single layer named <label> (no suffix) tagged with
+        # multi_instance_degraded. inst_idx will be 0 in this branch.
+        if is_multi and len(detections) < 2:
+            degraded = True
+            print(f"  [O{i}] {label[:40]:40s} MULTI_INSTANCE_DEGRADED "
+                  f"(dino returned {len(detections)})")
+        else:
+            degraded = False
 
-        # v0.17.13 transparency gate — see compute_quality_flags() above.
-        quality_flags, status = compute_quality_flags(
-            pct=pct, sam_score=sam_score,
-            bbox_fill=bbox_fill, inside_ratio=inside_ratio,
-        )
-        marker = "?" if quality_flags else " "
-        print(f"  [O{i}]{marker}{label[:30]:30s} → '{phrase[:20]}' bbox={bbox} "
-              f"det={score:.2f} sam={sam_score:.2f} pct={pct:.1f}% fill={bbox_fill:.2f}"
-              + (f" flags={quality_flags}" if quality_flags else ""))
-        record.update({"status": status, "detector": "dino",
-                       "matched_phrase": phrase, "bbox": bbox,
-                       "det_score": score, "sam_score": sam_score,
-                       "pct": round(pct, 2),
-                       "bbox_fill": round(bbox_fill, 3),
-                       "inside_ratio": round(inside_ratio, 3),
-                       "quality_flags": quality_flags})
-        detection_report["per_entity"].append(record)
-        layers_raw.append({
-            "id": i, "label": label, "name": record["name"],
-            "semantic_path": semantic_path, "bbox": bbox,
-            "det_score": score, "sam_score": sam_score,
-            "z": _z_index_for(semantic_path), "mask": mask,
-            "quality_status": status,
-        })
+        # Per-instance loop. Ordering preserved from detect_all_bboxes via
+        # _nms_bboxes — sorted by -score; do NOT re-sort here.
+        for inst_idx, (bbox, score, phrase) in enumerate(detections):
+            mask, sam_score, bbox_fill, inside_ratio = segment_bbox(sam_pred, bbox)
+
+            # Naming + record-id seed. Spec: degraded → no suffix; multi w/ ≥2
+            # → <base>_<inst_idx>; single-instance → <base> (unchanged).
+            if isinstance(raw, list) and len(detections) >= 2:
+                inst_name = f"{base_name}_{inst_idx}"
+            else:
+                inst_name = base_name
+
+            record = {"id": i, "name": inst_name,
+                      "label": label, "semantic_path": semantic_path,
+                      "kind": "object"}
+
+            # Pattern #3 fix: subtract person overlap ONLY in the "suspicious middle
+            # range" (30%-90%). Rationale:
+            #   - <30% overlap: probably no leak
+            #   - 30-90% overlap: partial leak (e.g. chair_parapet grabbed arms)
+            #   - >90% overlap: object is *contained* inside person by design
+            #     (jewelry, flag_pin, held object, vulture near child) — KEEP IT.
+            # Background layers (sky, ground, water) are exempt entirely.
+            if not semantic_path.startswith("background"):
+                overlap = (mask & all_persons_mask).sum()
+                obj_px = mask.sum()
+                if obj_px > 0:
+                    ratio = overlap / obj_px
+                    if 0.30 < ratio < 0.90:
+                        mask = mask & ~all_persons_mask
+                        print(f"    [leak-fix] {record['name']}: subtracted person overlap ({ratio*100:.0f}%)")
+                    elif ratio >= 0.90:
+                        # Fully contained — accessory/held object. Keep as-is.
+                        pass
+
+            pct = mask.sum() / (H * W) * 100
+
+            # v0.17.13 transparency gate — see compute_quality_flags() above.
+            quality_flags, status = compute_quality_flags(
+                pct=pct, sam_score=sam_score,
+                bbox_fill=bbox_fill, inside_ratio=inside_ratio,
+            )
+            if degraded:
+                # Append, don't overwrite — multi_instance_degraded coexists with
+                # any base quality_flags the gate decided.
+                quality_flags = list(quality_flags) + ["multi_instance_degraded"]
+
+            marker = "?" if quality_flags else " "
+            print(f"  [O{i}.{inst_idx}]{marker}{inst_name[:30]:30s} → '{phrase[:20]}' bbox={bbox} "
+                  f"det={score:.2f} sam={sam_score:.2f} pct={pct:.1f}% fill={bbox_fill:.2f}"
+                  + (f" flags={quality_flags}" if quality_flags else ""))
+            record.update({"status": status, "detector": "dino",
+                           "matched_phrase": phrase, "bbox": bbox,
+                           "det_score": score, "sam_score": sam_score,
+                           "pct": round(pct, 2),
+                           "bbox_fill": round(bbox_fill, 3),
+                           "inside_ratio": round(inside_ratio, 3),
+                           "quality_flags": quality_flags})
+            detection_report["per_entity"].append(record)
+            layers_raw.append({
+                "id": i, "label": label, "name": inst_name,
+                "semantic_path": semantic_path, "bbox": bbox,
+                "det_score": score, "sam_score": sam_score,
+                "z": _z_index_for(semantic_path) + z_offset + inst_idx,
+                "mask": mask,
+                "quality_status": status,
+            })
+
+        # After processing all instances of this entity, bump z_offset for
+        # subsequent entities (only if we actually wrote >1 layer). Keeps
+        # z-index assignments deterministic + collision-free across entities.
+        if isinstance(raw, list) and len(detections) >= 2:
+            z_offset += (len(detections) - 1)
 
     # (hint_entities were processed earlier, before face-parsing — see Stage 3b.)
 
