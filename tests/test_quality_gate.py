@@ -139,28 +139,60 @@ def test_threshold_calibration_pins_for_v0_17_13():
 # ---------------------------------------------------------------------------
 
 def test_person_path_invokes_compute_quality_flags():
-    """Source-level invariant: the person loop in process() must call
-    compute_quality_flags so low-confidence person masks no longer slip
-    through as status: "detected" (mirrors the v0.17.13 DINO-object fix).
+    """AST-level invariant: the person loop inside process() must contain a
+    Call to compute_quality_flags. Structurally rigorous — comments and
+    string literals containing the name (which a string-grep would accept)
+    cannot satisfy this assertion.
 
-    Reads cop.py source as text rather than importing it, so this test runs
-    in environments without torch (CI). The grep is on the same person_block
-    region the previous inspect-based version examined.
+    v0.17.15: migrated from str.index() / read_text() grep to ast.parse()
+    per codex review of v0.17.14-CI-hotfix; same invariant, no false-positive
+    risk from cleanup comments like `# TODO: re-add compute_quality_flags`.
     """
-    src = COP_SCRIPT.read_text(encoding="utf-8")
-    person_marker = "for rank, (i, entity) in enumerate(person_ents_sorted)"
-    hint_marker = "for i, entity in hint_entities"
-    assert person_marker in src, (
-        "person loop signature changed; update this test to match"
+    import ast
+
+    tree = ast.parse(COP_SCRIPT.read_text(encoding="utf-8"))
+
+    # Locate the process() function (orchestrated decompose entry point)
+    process_fn = next(
+        (n for n in ast.walk(tree)
+         if isinstance(n, ast.FunctionDef) and n.name == "process"),
+        None,
     )
-    assert hint_marker in src, "hint loop signature changed"
+    assert process_fn is not None, (
+        "cop.py: process() function not found — structure changed, update this test"
+    )
 
-    person_start = src.index(person_marker)
-    hint_start = src.index(hint_marker, person_start)
-    person_block = src[person_start:hint_start]
+    # Locate the person loop:
+    # `for rank, (i, entity) in enumerate(person_ents_sorted):`
+    def _is_person_loop(node: ast.AST) -> bool:
+        return (
+            isinstance(node, ast.For)
+            and isinstance(node.iter, ast.Call)
+            and isinstance(node.iter.func, ast.Name)
+            and node.iter.func.id == "enumerate"
+            and len(node.iter.args) == 1
+            and isinstance(node.iter.args[0], ast.Name)
+            and node.iter.args[0].id == "person_ents_sorted"
+        )
 
-    assert "compute_quality_flags" in person_block, (
-        "v0.17.14: person path must invoke compute_quality_flags() — "
+    person_loops = [n for n in ast.walk(process_fn) if _is_person_loop(n)]
+    assert len(person_loops) == 1, (
+        f"expected exactly 1 person loop in process(), found {len(person_loops)}; "
+        "structure changed — update this test"
+    )
+
+    # Walk the person-loop body subtree; require at least one Call to
+    # compute_quality_flags. Comments / strings cannot create Call nodes.
+    def _is_cqf_call(node: ast.AST) -> bool:
+        return (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "compute_quality_flags"
+        )
+
+    cqf_calls = [n for n in ast.walk(person_loops[0]) if _is_cqf_call(n)]
+    assert len(cqf_calls) >= 1, (
+        "v0.17.14 invariant broken: person path must invoke compute_quality_flags() — "
         "previously this loop unconditionally wrote status: 'detected', "
         "letting low-confidence person masks slip through silently."
     )

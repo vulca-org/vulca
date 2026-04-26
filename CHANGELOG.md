@@ -1,5 +1,30 @@
 # Changelog
 
+## v0.17.15 (2026-04-26)
+
+Maintenance release. Pure internal hardening — no API changes, no user-visible behavior changes. Two items closed from the v0.17.14-CI-hotfix backlog plus one GitHub deprecation tracker.
+
+### Changed
+- `tests/test_quality_gate.py`: migrated `test_person_path_invokes_compute_quality_flags` from string-grep (`Path.read_text() + str.index()`) to `ast.parse()` walk. Same invariant (the person loop in `process()` must contain a `Call` to `compute_quality_flags`), but structurally rigorous — comments and string literals containing the function name no longer satisfy the assertion. Closes the codex P2 from the 2026-04-26 v0.17.14-CI-hotfix review.
+- `.github/workflows/ci.yml`: bump `actions/checkout@v4 → @v5` and `actions/setup-python@v5 → @v6`. GitHub will force Node.js 24 default on Actions runners 2026-06-02 and remove Node 20 entirely 2026-09-16; v4/v5 are Node-20-pinned. v5/v6 are the first majors that support Node 24.
+
+### Notes
+- `compute_quality_flags` was extracted to `vulca._quality_gate` in the post-tag CI hotfix during v0.17.14 (commit `b5088caa`, 2026-04-26) — see retro entry below.
+
+## v0.17.14 (2026-04-25)
+
+5-patch surgical release surfaced from the 2026-04-25 parallel `superpowers:code-reviewer` + `codex:codex-rescue` review of the γ Scottish carousel. Carousel slide-4 mask-edit can now be reproduced via native MCP calls.
+
+### Added
+- `inpaint_artwork(mask_path=...)` native overload via OpenAI `/v1/images/edits`; Gemini and ComfyUI fail-loud when given a mask.
+- `layers_redraw` recontract: opt-in `output_layer_name` (no longer overwrites input by default), `background_strategy=cream|white|sample_median|transparent` (defends against alpha-sparse hallucination), `preserve_alpha`, provider-aware `api_key`, aspect-preserving fit.
+- `layers_paste_back`: new MCP glue verb for compositing edited layers onto base raster.
+- person-path quality gate (mirrors the v0.17.13 DINO-object fix; both paths now go through `compute_quality_flags`).
+- `layers_composite` non-destructive default.
+
+### Fixed (post-tag CI hotfix, 2026-04-26 — commit `b5088caa`)
+- Master CI red after `v0.17.14` tag: `tests/test_quality_gate.py` imported `scripts/claude_orchestrated_pipeline.py` (which has top-level `import torch`) → CI doesn't install torch → pytest collection ImportError → exit 2. Pure helper extracted to `vulca._quality_gate` (decompose-internal, underscore-prefixed); `cop.py` keeps its in-module name via re-export so the two internal call sites resolve unchanged. Test imports the new module directly.
+
 ## v0.17.13 (2026-04-25)
 
 Transparency fix surfaced from the same γ Scottish dogfood session as v0.17.12. Parallel `superpowers:code-reviewer` + `codex` review of the orchestrated decompose pipeline found that the DINO-object path was missing the SAM-quality gate that the hint-entity path had. Result: low-confidence detections (`sam_score < 0.70`, `bbox_fill < 0.30`) were silently marked `status: "detected"` and overall `success_rate: 1.0` — leaving calling agents with no signal to inspect the bad mask. Real-world impact: the `lanterns` entity in our dogfood plan returned a mask of building structure (sam_score 0.609, bbox_fill 0.256) but reported success.
