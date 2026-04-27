@@ -427,19 +427,32 @@ class TestMultiInstanceDetection:
         assert len(kept) == 1, "negative keep_n should clamp to 1"
 
     def test_detect_all_bboxes_single_label_backward_compat(self, mock_dino):
-        """Without multi_instance kwarg, returns dict[label, tuple] as before."""
+        """Without multi_instance kwarg, returns dict with "assigned"[label] as tuple.
+
+        v0.19: detect_all_bboxes now returns {"assigned": ..., "near_miss": ..., "nms_drops": ...}.
+        The "assigned" value for single-instance labels is still a tuple (backward compat shape).
+        """
         _assert_mock_dino_intent(mock_dino)
         pytest.importorskip("torch")  # cop import requires torch; CI skips
         from scripts.claude_orchestrated_pipeline import detect_all_bboxes
         result = detect_all_bboxes(*mock_dino, labels=["lanterns"], threshold=0.15)
-        assert "lanterns" in result
-        assert isinstance(result["lanterns"], tuple)
-        assert len(result["lanterns"]) == 3  # (bbox, score, phrase)
+        # v0.19: top-level keys
+        assert "assigned" in result
+        assert "near_miss" in result
+        assert "nms_drops" in result
+        assigned = result["assigned"]
+        assert "lanterns" in assigned
+        assert isinstance(assigned["lanterns"], tuple)
+        assert len(assigned["lanterns"]) == 3  # (bbox, score, phrase)
         # Highest-score detection wins under backward-compat tuple form
-        assert result["lanterns"][1] == pytest.approx(0.9)
+        assert assigned["lanterns"][1] == pytest.approx(0.9)
 
     def test_detect_all_bboxes_multi_instance_returns_list(self, mock_dino):
-        """With multi_instance={lanterns: 8}, returns dict[label, list[tuple]]."""
+        """With multi_instance={lanterns: 8}, returns assigned[label] as list[tuple].
+
+        v0.19: detect_all_bboxes now returns {"assigned": ..., "near_miss": ..., "nms_drops": ...}.
+        The "assigned" value for multi-instance labels is still a list of tuples.
+        """
         _assert_mock_dino_intent(mock_dino)
         pytest.importorskip("torch")  # cop import requires torch; CI skips
         from scripts.claude_orchestrated_pipeline import detect_all_bboxes
@@ -448,13 +461,16 @@ class TestMultiInstanceDetection:
             multi_instance={"lanterns": 8},
             multi_instance_box_threshold=0.25,
         )
-        assert isinstance(result["lanterns"], list)
-        assert len(result["lanterns"]) >= 2
+        # v0.19: top-level keys
+        assert "assigned" in result
+        assigned = result["assigned"]
+        assert isinstance(assigned["lanterns"], list)
+        assert len(assigned["lanterns"]) >= 2
         # All 3 mock detections survive (non-overlapping, all >= 0.25 threshold)
-        assert len(result["lanterns"]) == 3
-        assert all(isinstance(d, tuple) and len(d) == 3 for d in result["lanterns"])
+        assert len(assigned["lanterns"]) == 3
+        assert all(isinstance(d, tuple) and len(d) == 3 for d in assigned["lanterns"])
         # Score-descending order (per _nms_bboxes contract)
-        scores = [d[1] for d in result["lanterns"]]
+        scores = [d[1] for d in assigned["lanterns"]]
         assert scores == sorted(scores, reverse=True)
 
     def test_multi_instance_raises_on_tiled_path(self, monkeypatch, tmp_path):
@@ -710,7 +726,7 @@ class TestMultiInstance:
             "test intent: legacy path uses tuple-form return"
 
         monkeypatch.setattr(cop, "detect_all_bboxes",
-                            lambda *_a, **_k: mock_returns)
+                            lambda *_a, **_k: {"assigned": mock_returns, "near_miss": {}, "nms_drops": {}})
         monkeypatch.setattr(cop, "segment_bbox", _make_segment_bbox_mock())
 
         cop.process(slug, force=True)  # no multi_instance_labels
@@ -764,7 +780,7 @@ class TestMultiInstance:
             "test intent: scores must be strictly descending pre-NMS"
 
         monkeypatch.setattr(cop, "detect_all_bboxes",
-                            lambda *_a, **_k: {"lantern": bboxes})
+                            lambda *_a, **_k: {"assigned": {"lantern": bboxes}, "near_miss": {}, "nms_drops": {}})
         monkeypatch.setattr(cop, "segment_bbox", _make_segment_bbox_mock())
 
         cop.process(slug, force=True,
@@ -820,8 +836,8 @@ class TestMultiInstance:
         # (resilient to future base-z renumbering in `_z_index_for`).
 
         monkeypatch.setattr(cop, "detect_all_bboxes", lambda *_a, **_k: {
-            "lantern": lantern_bboxes,
-            "robot": robot_bbox,
+            "assigned": {"lantern": lantern_bboxes, "robot": robot_bbox},
+            "near_miss": {}, "nms_drops": {},
         })
         monkeypatch.setattr(cop, "segment_bbox", _make_segment_bbox_mock())
 
@@ -867,7 +883,7 @@ class TestMultiInstance:
             "test intent: exactly 1 detection triggers degraded branch"
 
         monkeypatch.setattr(cop, "detect_all_bboxes",
-                            lambda *_a, **_k: mock_returns)
+                            lambda *_a, **_k: {"assigned": mock_returns, "near_miss": {}, "nms_drops": {}})
         monkeypatch.setattr(cop, "segment_bbox", _make_segment_bbox_mock())
 
         cop.process(slug, force=True,
@@ -920,7 +936,7 @@ class TestMultiInstance:
             "test intent: label absent triggers MISSED branch in entity loop"
 
         monkeypatch.setattr(cop, "detect_all_bboxes",
-                            lambda *_a, **_k: mock_returns)
+                            lambda *_a, **_k: {"assigned": mock_returns, "near_miss": {}, "nms_drops": {}})
         monkeypatch.setattr(cop, "segment_bbox", _make_segment_bbox_mock())
 
         cop.process(slug, force=True,
@@ -979,7 +995,7 @@ class TestMultiInstance:
             "test intent: scores strictly descending → naming order matches index"
 
         monkeypatch.setattr(cop, "detect_all_bboxes",
-                            lambda *_a, **_k: {"lantern": bboxes})
+                            lambda *_a, **_k: {"assigned": {"lantern": bboxes}, "near_miss": {}, "nms_drops": {}})
         monkeypatch.setattr(cop, "segment_bbox", _make_segment_bbox_mock())
 
         cop.process(slug, force=True,
@@ -1032,7 +1048,7 @@ class TestMultiInstance:
             "test intent: scores must be distinct so ordering is unambiguous"
 
         monkeypatch.setattr(cop, "detect_all_bboxes",
-                            lambda *_a, **_k: {"lantern": bboxes})
+                            lambda *_a, **_k: {"assigned": {"lantern": bboxes}, "near_miss": {}, "nms_drops": {}})
         monkeypatch.setattr(cop, "segment_bbox", _make_segment_bbox_mock())
 
         cop.process(slug, force=True,
@@ -1098,8 +1114,8 @@ class TestMultiInstance:
             "test intent: cathedral must be tuple (legacy single)"
 
         monkeypatch.setattr(cop, "detect_all_bboxes", lambda *_a, **_k: {
-            "lantern": lantern_bboxes,
-            "cathedral": cathedral_bbox,
+            "assigned": {"lantern": lantern_bboxes, "cathedral": cathedral_bbox},
+            "near_miss": {}, "nms_drops": {},
         })
         monkeypatch.setattr(cop, "segment_bbox", _make_segment_bbox_mock())
 

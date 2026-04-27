@@ -59,6 +59,11 @@ SAM_CKPT = "/tmp/sam_vit_l.pth"
 # MCP tools) should import from here.
 ORCHESTRATED_MANIFEST_VERSION = 5
 
+# Minimum score floor for capturing below-threshold DINO candidates as near-miss
+# diagnostics. Candidates at [NEAR_MISS_FLOOR, effective_threshold) are returned
+# in the near_miss dict but never assigned. Lower than this is truly noise.
+NEAR_MISS_FLOOR = 0.05
+
 
 # ── Domain routing: which detector chain to use per image domain ──
 # "person_chain" is the ORDERED fallback list for person entities.
@@ -488,8 +493,9 @@ def detect_all_bboxes_tiled(dino_proc, dino_model, device, img_pil, labels, thre
     tile_count = 0
     for tile, (ox, oy, ow, oh) in tile_image(img_pil):
         tile_count += 1
-        tile_assigned = detect_all_bboxes(dino_proc, dino_model, device, tile,
-                                           labels, threshold=threshold)
+        tile_result = detect_all_bboxes(dino_proc, dino_model, device, tile,
+                                         labels, threshold=threshold)
+        tile_assigned = tile_result["assigned"]  # v0.19: unpack new dict return
         for lbl, (bbox, score, phrase) in tile_assigned.items():
             # Translate bbox from tile coords to full-image coords
             x1, y1, x2, y2 = bbox
@@ -498,6 +504,7 @@ def detect_all_bboxes_tiled(dino_proc, dino_model, device, img_pil, labels, thre
     print(f"    Tile inference: {tile_count} tiles processed")
 
     # NMS per label, keep highest-score detection per label
+    # TODO(v0.20): tiled path doesn't yet propagate near_miss/nms_drops diagnostics.
     assigned = {}
     for lbl, dets in all_detections_per_label.items():
         if not dets:
@@ -512,8 +519,11 @@ def detect_all_bboxes_upscaled(dino_proc, dino_model, device, img_pil, labels, t
     """Detection with 2x upscale for tiny images. Bboxes scaled back to original."""
     W, H = img_pil.size
     upscaled = img_pil.resize((W * 2, H * 2), Image.LANCZOS)
-    assigned = detect_all_bboxes(dino_proc, dino_model, device, upscaled,
-                                  labels, threshold=threshold)
+    # v0.19: unpack new dict return from detect_all_bboxes.
+    # TODO(v0.20): upscaled path doesn't yet propagate near_miss/nms_drops diagnostics.
+    result = detect_all_bboxes(dino_proc, dino_model, device, upscaled,
+                                labels, threshold=threshold)
+    assigned = result["assigned"]
     # Scale bboxes back to original resolution
     scaled = {}
     for lbl, (bbox, score, phrase) in assigned.items():
@@ -537,12 +547,25 @@ def detect_all_bboxes(
 ):
     """Single Grounding DINO pass with all labels jointly.
 
-    Returns:
-        dict label -> (bbox, score, matched_phrase) for single-instance labels
-        (backward-compatible tuple form). For labels present in `multi_instance`,
-        the value is `list[(bbox, score, phrase)]` instead — callers
-        discriminate via `isinstance(value, list)`. Labels with no detections
-        are absent from the dict (same as pre-v0.18 behaviour).
+    **v0.19 BREAKING CHANGE**: return type is now a dict with three keys:
+
+        {
+            "assigned":   dict[label, tuple|list],  # same as pre-v0.19 assigned dict
+            "near_miss":  dict[label, list[(bbox, score, phrase)]],  # NEAR_MISS_FLOOR ≤ score < effective_threshold
+            "nms_drops":  dict[label, list[(bbox, score, phrase)]],  # above threshold but lost within-label NMS
+        }
+
+    Callers that previously did ``result[label]`` must now do
+    ``result["assigned"][label]``.  The ``detect_bbox`` wrapper and the
+    orchestrator caller have been updated accordingly.
+
+    ``assigned`` preserves the pre-v0.19 shape:
+        - single-instance labels → tuple (bbox, score, phrase)
+        - multi-instance labels  → list[(bbox, score, phrase)]
+        - absent label           → key absent (no detection)
+
+    ``near_miss`` and ``nms_drops`` are keyed only for labels where candidates
+    exist; each list is capped at 10 items, sorted by score descending.
 
     Note:
         `multi_instance_box_threshold` lowers the box threshold for the
@@ -567,6 +590,10 @@ def detect_all_bboxes(
     effective_threshold = (
         multi_instance_box_threshold if multi_instance else threshold
     )
+    # v0.19: run DINO at NEAR_MISS_FLOOR so we can capture below-threshold
+    # candidates for diagnostic purposes.  assigned_raw still partitions on
+    # effective_threshold; near_miss_raw captures the gap.
+    call_threshold = min(effective_threshold, NEAR_MISS_FLOOR)
     # Join all labels with period separator (Grounding DINO convention)
     text = ". ".join(labels) + "."
     inputs = dino_proc(images=img_pil, text=text, return_tensors="pt").to(device)
@@ -574,7 +601,7 @@ def detect_all_bboxes(
         outputs = dino_model(**inputs)
     results = dino_proc.post_process_grounded_object_detection(
         outputs, inputs.input_ids,
-        threshold=effective_threshold, text_threshold=0.15,
+        threshold=call_threshold, text_threshold=0.15,
         target_sizes=[img_pil.size[::-1]]
     )[0]
 
@@ -584,7 +611,10 @@ def detect_all_bboxes(
     # below. Single-instance callers see no behaviour change because the
     # final `_nms_bboxes(keep_n=1)` reproduces the old "highest score wins"
     # semantics (NMS sorts by score desc and keeps the top survivor).
+    # v0.19: partition into assigned_raw (>= effective_threshold) vs
+    # near_miss_raw (NEAR_MISS_FLOOR <= score < effective_threshold).
     assigned_raw: dict[str, list[tuple]] = {lbl: [] for lbl in labels}
+    near_miss_raw: dict[str, list[tuple]] = {lbl: [] for lbl in labels}
     det_scores = results["scores"].cpu().numpy()
     det_boxes = results["boxes"].cpu().numpy()
     det_labels = results.get("text_labels", results.get("labels", []))
@@ -607,26 +637,49 @@ def detect_all_bboxes(
             continue
         bbox = det_boxes[i].astype(int).tolist()
         score = float(det_scores[i])
-        assigned_raw[best_label].append((bbox, score, phrase))
+        if score >= effective_threshold:
+            assigned_raw[best_label].append((bbox, score, phrase))
+        elif score >= NEAR_MISS_FLOOR:
+            near_miss_raw[best_label].append((bbox, score, phrase))
+        # scores < NEAR_MISS_FLOOR are true noise — discard silently
 
-    # Final shape: tuple for single-instance, list for multi-instance
+    # Final shape for assigned: tuple for single-instance, list for multi-instance
     assigned: dict = {}
+    nms_drops: dict[str, list] = {}
     for lbl, dets in assigned_raw.items():
         if not dets:
             continue
         if lbl in multi_instance:
             max_n = max(1, int(multi_instance[lbl]))
             kept = _nms_bboxes(dets, iou_threshold=0.5, keep_n=max_n)
+            # Track within-label NMS drops (above threshold but lost NMS)
+            kept_set = {id(d) for d in kept}
+            drops = [d for d in dets if id(d) not in kept_set]
+            if drops:
+                nms_drops[lbl] = sorted(drops, key=lambda d: -d[1])[:10]
             assigned[lbl] = kept            # list form
         else:
             kept = _nms_bboxes(dets, iou_threshold=0.5, keep_n=1)
+            # Track within-label NMS drops
+            kept_set = {id(d) for d in kept}
+            drops = [d for d in dets if id(d) not in kept_set]
+            if drops:
+                nms_drops[lbl] = sorted(drops, key=lambda d: -d[1])[:10]
             assigned[lbl] = kept[0]          # tuple form (backward compat)
-    return assigned
+
+    # Build near_miss output: cap at 10 per label, sorted by score desc
+    near_miss: dict[str, list] = {}
+    for lbl, dets in near_miss_raw.items():
+        if dets:
+            near_miss[lbl] = sorted(dets, key=lambda d: -d[1])[:10]
+
+    return {"assigned": assigned, "near_miss": near_miss, "nms_drops": nms_drops}
 
 
 def detect_bbox(dino_proc, dino_model, device, img_pil, label, threshold=0.25):
     """Legacy single-label detection (kept for compatibility)."""
-    assigned = detect_all_bboxes(dino_proc, dino_model, device, img_pil, [label], threshold)
+    result = detect_all_bboxes(dino_proc, dino_model, device, img_pil, [label], threshold)
+    assigned = result["assigned"]
     if label not in assigned:
         return None, 0.0
     bbox, score, _ = assigned[label]
@@ -1023,6 +1076,8 @@ def process(slug: str, force: bool = False, multi_instance_labels: dict | None =
 
     # ── Object detection via Grounding DINO (joint pass) ──
     dino_assigned = {}
+    dino_near_miss: dict = {}  # v0.19: NEAR_MISS_FLOOR ≤ score < effective_threshold
+    dino_nms_drops: dict = {}  # v0.19: above threshold but lost within-label NMS
     if object_entities and dino_proc is not None:
         t0 = time.time()
         object_labels = [e["label"] for _, e in object_entities]
@@ -1063,21 +1118,30 @@ def process(slug: str, force: bool = False, multi_instance_labels: dict | None =
             )
         if _is_tiled:
             print(f"    [adapt] tile inference (aspect {max(W,H)/min(W,H):.1f}:1)")
+            # TODO(v0.20): tiled path returns legacy assigned-only dict; wrap to uniform 3-key shape.
             dino_assigned = detect_all_bboxes_tiled(dino_proc, dino_model, device,
                                                      img_pil, object_labels,
                                                      threshold=low_thresh)
+            dino_near_miss: dict = {}
+            dino_nms_drops: dict = {}
         elif _is_upscaled:
             print(f"    [adapt] 2x upscale inference ({W}x{H} → {W*2}x{H*2})")
+            # TODO(v0.20): upscaled path returns legacy assigned-only dict; wrap to uniform 3-key shape.
             dino_assigned = detect_all_bboxes_upscaled(dino_proc, dino_model, device,
                                                         img_pil, object_labels,
                                                         threshold=low_thresh)
+            dino_near_miss = {}
+            dino_nms_drops = {}
         else:
-            dino_assigned = detect_all_bboxes(
+            dino_result = detect_all_bboxes(
                 dino_proc, dino_model, device, img_pil,
                 object_labels, threshold=low_thresh,
                 multi_instance=multi_instance_labels or {},
                 multi_instance_box_threshold=0.25,
             )
+            dino_assigned = dino_result["assigned"]
+            dino_near_miss = dino_result["near_miss"]
+            dino_nms_drops = dino_result["nms_drops"]
         print(f"  DINO objects: {len(dino_assigned)}/{len(object_labels)} in {time.time()-t0:.1f}s")
 
     layers_raw = []
@@ -1093,8 +1157,25 @@ def process(slug: str, force: bool = False, multi_instance_labels: dict | None =
                   "attempts": [{"detector": n, "count": c, "conf_range": r}
                                for n, c, r in person_attempts]}
         if rank >= len(yolo_persons):
-            print(f"  [{i}] {label[:40]:40s} MISSED (chain: {[n for n,_,_ in person_attempts]})")
-            record.update({"status": "missed", "reason": "no_detection_after_chain"})
+            # v0.19 FIX P0: distinguish two distinct failure modes so callers
+            # can take the right recovery action.
+            # chain_returned_zero  → no persons detected at all; try adding
+            #                        more person-class entities or change domain.
+            # rank_exceeded_chain_pool → chain found N < K persons; this is
+            #                        entity (rank+1); lower threshold or re-run
+            #                        with fewer person entities.
+            if len(yolo_persons) == 0:
+                miss_reason = "chain_returned_zero"
+                miss_extra: dict = {}
+            else:
+                miss_reason = "rank_exceeded_chain_pool"
+                miss_extra = {
+                    "entities_in_chain_pool": len(yolo_persons),
+                    "this_entity_rank": rank,
+                }
+            print(f"  [{i}] {label[:40]:40s} MISSED (chain: {[n for n,_,_ in person_attempts]},"
+                  f" reason={miss_reason})")
+            record.update({"status": "missed", "reason": miss_reason, **miss_extra})
             detection_report["per_entity"].append(record)
             continue
         bbox, det_conf = yolo_persons[rank]
@@ -1322,11 +1403,43 @@ def process(slug: str, force: bool = False, multi_instance_labels: dict | None =
         is_multi = label in (multi_instance_labels or {})
 
         if label not in dino_assigned:
-            print(f"  [O{i}] {label[:40]:40s} MISSED (dino)")
+            # v0.19 FIX P2: distinguish three sub-states of "not assigned":
+            #   dino_below_threshold   → DINO found candidates but all below effective_threshold;
+            #                           caller can lower threshold to recover.
+            #   dropped_by_within_label_nms → candidates passed threshold but NMS kept a
+            #                           different bbox; usually a sign of duplicate/overlapping
+            #                           detections.
+            #   dino_not_matched       → true zero — DINO found nothing for this label.
+            near_miss_cands = dino_near_miss.get(label, [])
+            nms_drop_cands = dino_nms_drops.get(label, [])
+            if near_miss_cands:
+                obj_reason = "dino_below_threshold"
+                obj_extra: dict = {
+                    "near_miss_candidates": [
+                        {"bbox": b, "conf": round(s, 4), "phrase": p}
+                        for b, s, p in near_miss_cands[:5]
+                    ]
+                }
+            elif nms_drop_cands:
+                obj_reason = "dropped_by_within_label_nms"
+                obj_extra = {
+                    "nms_drop_candidates": [
+                        {"bbox": b, "conf": round(s, 4), "phrase": p}
+                        for b, s, p in nms_drop_cands[:5]
+                    ]
+                }
+            else:
+                obj_reason = "dino_not_matched"
+                obj_extra = {}
+            print(f"  [O{i}] {label[:40]:40s} MISSED (dino, reason={obj_reason})")
             record = {"id": i, "name": base_name,
                       "label": label, "semantic_path": semantic_path, "kind": "object",
-                      "status": "missed", "reason": "dino_not_matched"}
-            if is_multi:
+                      "status": "missed", "reason": obj_reason, **obj_extra}
+            # multi_instance_no_detection fires for dino_not_matched (true zero) or
+            # dino_below_threshold (still recoverable but no assigned bbox). Does NOT
+            # fire for dropped_by_within_label_nms — that's an NMS artefact, not a
+            # detection gap.
+            if is_multi and obj_reason in ("dino_not_matched", "dino_below_threshold"):
                 record.setdefault("quality_flags", []).append("multi_instance_no_detection")
             detection_report["per_entity"].append(record)
             continue
