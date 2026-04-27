@@ -175,6 +175,33 @@ class Plan(BaseModel):
         return self
 
     @model_validator(mode="after")
+    def _unique_labels_when_multi_instance(self):
+        """Reject plans where 2+ multi_instance entities share the same label.
+
+        DINO returns one bbox-list per label, so two multi_instance entities
+        with the same label would each iterate the same N detections and emit
+        identical bbox/mask pairs under different filenames — silently masking
+        the duplication as N×2 seemingly-distinct layers. Single-instance
+        duplicate labels are allowed (caller may want to model two entities
+        the detector sees as one bbox).
+        """
+        multi_labels = [e.label for e in self.entities if e.multi_instance]
+        seen: set[str] = set()
+        duplicates: set[str] = set()
+        for lbl in multi_labels:
+            if lbl in seen:
+                duplicates.add(lbl)
+            seen.add(lbl)
+        if duplicates:
+            raise ValueError(
+                f"multi_instance entities must have unique labels; "
+                f"duplicate labels found: {sorted(duplicates)}. "
+                f"DINO returns one bbox-list per label, so 2+ multi_instance "
+                f"entities with the same label would emit identical masks N times."
+            )
+        return self
+
+    @model_validator(mode="after")
     def _reserved_names_and_paths(self):
         """Phase 1.9: `residual` is a pipeline-synthesized synthetic layer
         (emitted at z=1 for plan-uncovered pixels). User plans must not

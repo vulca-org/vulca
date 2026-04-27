@@ -4,7 +4,7 @@
 
 Two paired changes that close the largest hand-cuts surfaced by the γ Scottish carousel (2026-04-25): `layers_redraw` defaults flipped to the safe path (no more silent in-place overwrite + no more alpha-sparse hallucination by default), and `layers_split` orchestrated mode grew first-class multi-instance support so a "row of 6 lanterns" plan no longer collapses into one fragmented union mask.
 
-The migration is one explicit kwarg for callers who relied on the legacy `layers_redraw` behavior; everything else is additive.
+The migration is two-tier for callers who relied on the legacy `layers_redraw` behavior: most users only need to add `in_place=True` to keep their file-overwriting workflow; the small minority who depended on the legacy `transparent` background passthrough plus alpha drop must add all three kwargs (`in_place=True`, `background_strategy="transparent"`, `preserve_alpha=False`) for byte-identical v0.17.x parity. Everything else is additive.
 
 ### Breaking changes
 
@@ -16,9 +16,9 @@ The migration is one explicit kwarg for callers who relied on the legacy `layers
 | `background_strategy` | `"transparent"`       | `"cream"`                     |
 | `preserve_alpha`      | `False`               | `True`                        |
 
-A new parameter `in_place: bool = False` is the single explicit opt-out for callers who need the legacy in-place write.
+A new parameter `in_place: bool = False` is the explicit opt-out for callers who need the legacy in-place write. Most users only need this single kwarg — pass `in_place=True` to keep your v0.17.x file-overwriting workflow while inheriting the new safer `background_strategy="cream"` and `preserve_alpha=True` defaults (which improve, not regress, output quality on alpha-sparse layers).
 
-To restore v0.17.x behavior verbatim:
+To restore v0.17.x behavior **byte-for-byte** (rare; required only if you depended on the legacy `transparent` background passthrough plus alpha drop):
 
 ```python
 layers_redraw(
@@ -35,7 +35,7 @@ layers_redraw(
 
 ### Added
 
-`layers_split` orchestrated mode now supports multi-instance entities. Plan JSON entities accept an optional `multi_instance: true` flag. When set, Grounding DINO returns up to 8 bboxes for that label (instead of top-1) and SAM segments each independently. The orchestrator emits N flat sibling layers named `<label>_0..N-1` sorted by `sam_score` descending.
+`layers_split` orchestrated mode now supports multi-instance entities. Plan JSON entities accept an optional `multi_instance: true` flag. When set, Grounding DINO returns up to 8 bboxes for that label (instead of top-1) and SAM segments each independently. The orchestrator emits N flat sibling layers named `<label>_0..N-1` sorted by DINO `det_score` descending (the ordering is fixed at NMS time in `_nms_bboxes` before SAM runs, so SAM scores do not influence sibling order).
 
 ```json
 {
@@ -59,10 +59,6 @@ Closes the multi-instance gap deferred from v0.17.13. The plan JSON schema exten
 ### Limitation: tiled / upscaled detection paths
 
 `layers_split` orchestrated mode raises `NotImplementedError` early when `multi_instance: true` is requested **and** the input image triggers DINO's tiled or upscaled path (extreme aspect ratio, or dimensions outside the standard window). The error message is actionable: it tells the user to either disable `multi_instance` for that image or pre-crop to a non-extreme aspect ratio. Forwarding `multi_instance` kwargs through the tiled/upscaled wrappers is v0.18.1+ scope.
-
-### Changed (subtle, backward-incompatible-on-edge)
-
-When Grounding DINO returns 2+ detections for the same label with **identical** scores (extremely rare; floating-point ties to float64 precision), the chosen "winner" may differ from v0.17.x. Pre-v0.18: the last-iterated detection wins (overwrite-on-higher-score loop). v0.18: the first-by-score-descending wins (`_nms_bboxes(keep_n=1)` returns the sorted head). For typical workflows this is invisible. Anyone relying on the specific bbox returned in an exact-tie situation should be aware.
 
 ### Internal
 

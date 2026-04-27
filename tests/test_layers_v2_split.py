@@ -541,7 +541,7 @@ class TestMultiInstanceDetection:
 #   - degraded fallback when DINO returns 1 bbox (test_degraded_when_dino_…)
 #   - no-detection flag on 0 bboxes (test_no_detection)
 #   - cap consumption (test_caps_at_8 — cap itself is Task 4's territory)
-#   - score-desc sibling naming (test_naming_sorted_by_sam_score_desc)
+#   - score-desc sibling naming (test_naming_sorted_by_det_score_desc)
 #   - mixed single+multi entities in one plan (test_mixed_single_and_multi…)
 
 
@@ -994,12 +994,14 @@ class TestMultiInstance:
         assert names == [f"lanterns_{i}" for i in range(8)], \
             f"naming must produce lanterns_0..7, got {names}"
 
-    def test_naming_sorted_by_sam_score_desc(self, monkeypatch, tmp_path):
+    def test_naming_sorted_by_det_score_desc(self, monkeypatch, tmp_path):
         """3 bboxes with distinct DINO scores → lanterns_0 has highest det_score.
 
-        Spec: ordering is preserved from `detect_all_bboxes` via _nms_bboxes
-        (sorted by -score). The entity loop must NOT re-sort; lanterns_0 always
-        carries the top-scoring detection.
+        Spec: ordering is preserved from `detect_all_bboxes` via _nms_bboxes,
+        which sorts by `-d[1]` — i.e. DINO `det_score` descending — at NMS time
+        (before SAM segmentation runs). The entity loop must NOT re-sort;
+        lanterns_0 always carries the top-scoring DINO detection. SAM scores
+        do not influence sibling order.
         """
         pytest.importorskip("torch")
         from scripts import claude_orchestrated_pipeline as cop
