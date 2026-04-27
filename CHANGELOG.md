@@ -71,18 +71,43 @@ callers: `detect_bbox`, `detect_all_bboxes_tiled` (internal), and
 yet propagate `near_miss`/`nms_drops` (they emit empty dicts); this is
 documented with `TODO(v0.20)` comments.
 
+**Migration recipe** — to find all impacted call sites in your codebase:
+
+```bash
+grep -rn 'detect_all_bboxes(' --include='*.py' .
+# inspect each match: replace `result[label]` → `result["assigned"][label]`
+# new diagnostic keys are optional: result["near_miss"], result["nms_drops"]
+```
+
+`detect_bbox` (the legacy single-label wrapper) preserves its return shape
+`(bbox, score)` — no migration needed for that wrapper's callers.
+
 ### Tests added
 
-6 new regression tests in `tests/vulca/scripts/test_v0_19_detection_diagnostics.py`:
+10 new regression tests in `tests/vulca/scripts/test_v0_19_detection_diagnostics.py`:
 - `TestPersonChainReasonCodes::test_person_rank_exceeded_chain_pool`
 - `TestPersonChainReasonCodes::test_person_chain_returned_zero`
 - `TestPersonChainReasonCodes::test_person_chain_full_match`
 - `TestObjectDiagnosticReasonCodes::test_object_dino_below_threshold`
+- `TestObjectDiagnosticReasonCodes::test_object_dino_below_threshold_multi_instance_flag`
 - `TestObjectDiagnosticReasonCodes::test_object_dino_not_matched_true_zero`
+- `TestObjectDiagnosticReasonCodes::test_object_dino_not_matched_multi_instance_flag`
+- `TestObjectDiagnosticReasonCodes::test_object_dropped_by_within_label_nms`
+- `TestObjectDiagnosticReasonCodes::test_near_miss_candidates_capped_at_5`
 - `TestDetectAllBboxesReturnShape::test_detect_all_bboxes_returns_three_keys`
 
 Existing tests in `tests/test_layers_v2_split.py` updated to use the new
 three-key return shape.
+
+### Pre-ship review summary
+
+Both reviewers (fresh codex GPT-5.4 + superpowers Claude) cross-validated the
+diff at SHA 94e6147c. Both flagged the same P1 (the `id(d)` set comparison for
+NMS-drop tracking — fragile against `_nms_bboxes` internal refactor) and the
+test-count nit. Both fixed in this release on top of 94e6147c. Other P2 items
+(joint-pass threshold side-effect surfacing, tiled path diagnostic
+suppression flag, test boundary tightening, NEAR_MISS_FLOOR migration to
+`src/vulca/_segment.py`) deferred to v0.20 backlog.
 
 ## v0.18.0 (2026-04-26)
 

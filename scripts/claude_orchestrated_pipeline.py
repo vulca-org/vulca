@@ -652,17 +652,20 @@ def detect_all_bboxes(
         if lbl in multi_instance:
             max_n = max(1, int(multi_instance[lbl]))
             kept = _nms_bboxes(dets, iou_threshold=0.5, keep_n=max_n)
-            # Track within-label NMS drops (above threshold but lost NMS)
-            kept_set = {id(d) for d in kept}
-            drops = [d for d in dets if id(d) not in kept_set]
+            # Track within-label NMS drops (above threshold but lost NMS).
+            # Value-based key (bbox tuple + score) — robust against any
+            # _nms_bboxes refactor that reconstructs tuples instead of
+            # returning input refs (cross-validated by both reviewers).
+            kept_set = {(tuple(d[0]), d[1]) for d in kept}
+            drops = [d for d in dets if (tuple(d[0]), d[1]) not in kept_set]
             if drops:
                 nms_drops[lbl] = sorted(drops, key=lambda d: -d[1])[:10]
             assigned[lbl] = kept            # list form
         else:
             kept = _nms_bboxes(dets, iou_threshold=0.5, keep_n=1)
-            # Track within-label NMS drops
-            kept_set = {id(d) for d in kept}
-            drops = [d for d in dets if id(d) not in kept_set]
+            # Track within-label NMS drops (value-based; see note above).
+            kept_set = {(tuple(d[0]), d[1]) for d in kept}
+            drops = [d for d in dets if (tuple(d[0]), d[1]) not in kept_set]
             if drops:
                 nms_drops[lbl] = sorted(drops, key=lambda d: -d[1])[:10]
             assigned[lbl] = kept[0]          # tuple form (backward compat)
