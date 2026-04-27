@@ -27,6 +27,7 @@ import json
 import logging
 import tempfile
 from pathlib import Path
+from typing import Literal
 
 from vulca.layers.types import LayerInfo, LayerResult, LayeredArtwork
 
@@ -227,6 +228,11 @@ async def _redraw_via_inpaint_mask(
         else:
             out_img = Image.open(_io.BytesIO(raw))
 
+        # bg_rgb=CREAM_BG_RGB letterboxes any aspect-mismatched return
+        # onto cream; preserve_alpha re-crop downstream means PRESERVE-zone
+        # pixels (where mask alpha=255) are discarded regardless of letterbox
+        # color. If gpt-image-2 ever starts returning RGBA on the edits
+        # endpoint, switch to bg_rgb=None to pass through alpha (v0.21).
         out_img = _fit_into_canvas(out_img, (canvas_w, canvas_h), bg_rgb=CREAM_BG_RGB)
         return out_img.convert("RGBA"), result
     finally:
@@ -422,7 +428,7 @@ async def redraw_layer(
     background_strategy: str = "cream",
     preserve_alpha: bool = True,
     in_place: bool = False,
-    route: str = "auto",
+    route: Literal["auto", "img2img", "inpaint"] = "auto",
 ) -> LayerResult:
     """Redraw a single layer via img2img or mask-aware inpaint (v0.20).
 
@@ -452,9 +458,17 @@ async def redraw_layer(
       - ``"inpaint"``: force the mask-aware path. Falls back to img2img
         with a warning if the provider lacks ``inpaint_with_mask``.
 
+    On the inpaint path, ``background_strategy`` is honored only in the
+    sense that it controls how ``flat`` is built (which is used as the
+    inpaint base image); its semantic effect is reduced because the model
+    is told via mask which pixels to actually edit. ``cream`` remains the
+    recommended setting on inpaint so the visible-but-preserved subject
+    pixels read coherently if the API ever returns content outside the
+    mask zone.
+
     Spec: ``docs/superpowers/specs/2026-04-27-v0.20-mask-aware-redraw-routing-design.md``.
     """
-    import os
+    import numpy as np
 
     from PIL import Image
 
@@ -486,8 +500,7 @@ async def redraw_layer(
 
     # v0.20 — degenerate empty-layer guard (spec C7). A layer with no
     # opaque pixels can't be redrawn coherently regardless of route.
-    import numpy as _np
-    if int((_np.array(src_alpha) > 0).sum()) == 0:
+    if int((np.array(src_alpha) > 0).sum()) == 0:
         raise ValueError(
             f"Layer {layer_name!r} has no visible pixels (alpha == 0 everywhere); "
             "cannot redraw an empty layer."

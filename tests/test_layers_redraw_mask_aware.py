@@ -535,3 +535,36 @@ class TestRedrawMergedDeferred:
         assert "route" not in sig.parameters, (
             "redraw_merged should NOT accept `route` in v0.20 — B7 deferred."
         )
+
+
+# ---------------------------------------------------------------------------
+# 6. Degenerate empty-layer guard (spec C7)
+# ---------------------------------------------------------------------------
+
+class TestEmptyLayerGuard:
+    def test_redraw_layer_raises_on_all_zero_alpha(self, tmp_path):
+        """A layer with no opaque pixels raises ValueError before any
+        provider call — no point sending a fully-transparent layer to
+        gpt-image-2 (mask would be 100% PRESERVE, no edit zone).
+
+        Pins the spec C7 degenerate-case guard. Without this test, a
+        regression that silently no-ops on empty layers would slip
+        through (legacy v0.18.x silently produced cream output for
+        empty layers — a wasted API call that v0.20 short-circuits).
+        """
+        from vulca.layers import redraw as redraw_module
+        from vulca.layers.manifest import load_manifest
+
+        # Stage a layer with all-zero alpha
+        def factory(size):
+            return Image.new("L", size, 0)
+
+        _setup_layer(tmp_path, canvas_size=(200, 200), alpha_factory=factory)
+        artwork = load_manifest(str(tmp_path))
+
+        with pytest.raises(ValueError, match="no visible pixels"):
+            _run(redraw_module.redraw_layer(
+                artwork, layer_name="fg", instruction="anything",
+                provider="mock", artwork_dir=str(tmp_path),
+                route="auto",
+            ))

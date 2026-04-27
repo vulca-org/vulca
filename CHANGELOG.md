@@ -15,10 +15,17 @@ Both real-provider fixtures PASSED on OpenAI gpt-image-2 high (2026-04-27):
   79°/79°/154°, L 0.82/0.87/0.85, pct_white_like 67/72/72%. Compare legacy: hue 101°
   L=0.44 pct_white=0.1% — **80× improvement in white-pixel fraction**.
 - **Fixture 2 (Scottish lanterns multi-instance, 8% area, 6+ disconnected blobs)**:
-  PASSED. ≥5 connected components preserved + ≥4 components met cinnabar-red criteria
-  (hue ∈ [0°, 50°] ∪ [330°, 360°] AND S > 0.4). Scottish 2026-04-25 had
-  documented this case as a v0.18 limitation requiring `generate_image` workaround
-  (`feedback_cream_flat_reference_limit`); v0.20 closes it.
+  PASSED with **explicit `route="inpaint"`**. ≥5 connected components preserved + ≥4
+  components met cinnabar-red criteria (hue ∈ [0°, 50°] ∪ [330°, 360°] AND S > 0.4).
+  Scottish 2026-04-25 had documented this case as a v0.18 limitation requiring
+  `generate_image` workaround (`feedback_cream_flat_reference_limit`); v0.20 closes
+  it via mask-aware redraw, but **note**: the lantern row-of-N geometry has
+  ~0.6 bbox_fill which sits above the auto-routing threshold (0.5), so the
+  predicate does NOT auto-trigger inpaint. Users on row-of-N multi-instance
+  layouts must opt in via `route="inpaint"` until v0.21 (where the predicate
+  may incorporate connected-component count). Single-region sparse layers
+  (e.g. IMG_6847 flower_cluster_c at 3.3% area, bbox_fill 0.7) DO auto-trigger
+  via `area_pct < 5%`.
 
 Total ship-gate cost ~$0.48 (8 OpenAI gpt-image-2 high calls; one round of metric
 recalibration after first batch revealed hue acceptance band was over-fit).
