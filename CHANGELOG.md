@@ -1,5 +1,136 @@
 # Changelog
 
+## v0.20.0 (unreleased — ship-gate PASSED 2026-04-27)
+
+Mask-aware redraw routing for `layers_redraw`. Fixes the wrong-subject color/shape drift
+on alpha-sparse layers surfaced by the IMG_6847 iPad-cartoon dogfood (2026-04-27) and the
+γ Scottish row-of-6-lanterns case (2026-04-25, `feedback_cream_flat_reference_limit`).
+
+### Ship-gate result
+
+Both real-provider fixtures PASSED on OpenAI gpt-image-2 high (2026-04-27):
+
+- **Fixture 1 (IMG_6847 flower_cluster_c, single-region 3.3% area)**: 3/3 runs passed
+  calibrated criteria (L > 0.6 AND pct_white_like > 30%). Empirical results: hue
+  79°/79°/154°, L 0.82/0.87/0.85, pct_white_like 67/72/72%. Compare legacy: hue 101°
+  L=0.44 pct_white=0.1% — **80× improvement in white-pixel fraction**.
+- **Fixture 2 (Scottish lanterns multi-instance, 8% area, 6+ disconnected blobs)**:
+  PASSED with **explicit `route="inpaint"`**. ≥5 connected components preserved + ≥4
+  components met cinnabar-red criteria (hue ∈ [0°, 50°] ∪ [330°, 360°] AND S > 0.4).
+  Scottish 2026-04-25 had documented this case as a v0.18 limitation requiring
+  `generate_image` workaround (`feedback_cream_flat_reference_limit`); v0.20 closes
+  it via mask-aware redraw, but **note**: the lantern row-of-N geometry has
+  ~0.6 bbox_fill which sits above the auto-routing threshold (0.5), so the
+  predicate does NOT auto-trigger inpaint. Users on row-of-N multi-instance
+  layouts must opt in via `route="inpaint"` until v0.21 (where the predicate
+  may incorporate connected-component count). Single-region sparse layers
+  (e.g. IMG_6847 flower_cluster_c at 3.3% area, bbox_fill 0.7) DO auto-trigger
+  via `area_pct < 5%`.
+
+Total ship-gate cost ~$0.48 (8 OpenAI gpt-image-2 high calls; one round of metric
+recalibration after first batch revealed hue acceptance band was over-fit).
+
+Spec: `docs/superpowers/specs/2026-04-27-v0.20-mask-aware-redraw-routing-design.md`. Reviewed
+in 4 rounds (codex GPT-5.4 ×2, superpowers:code-reviewer ×2).
+
+### Fix
+
+**Sparse-alpha layers now route through OpenAI mask-aware editing.**
+
+`layers_redraw` previously sent every layer to `/v1/images/edits` *without a mask file* —
+unmasked img2img. The model freely painted the whole canvas, then `preserve_alpha=True`
+post-cropped to the original sparse bbox. For sparse subjects (<5% area or fragmented
+multi-instance), the model had no spatial cue for "where the subject is", so the crop
+yielded whatever the model painted at those pixel locations — green leaves, brown ground,
+multi-color banners — instead of the requested cartoon subject.
+
+Concrete drift evidence (alpha-mask-filtered pixel stats from
+`docs/visual-specs/2026-04-27-ipad-cartoon-roadside/execution_log.md`):
+
+| layer | original | redrawn (legacy) | drift |
+|---|---|---|---|
+| flower_cluster_c (3.3% area) | hue 74° L=0.38 (white-on-green) | hue 101° L=0.44 | white→green leaves |
+| yellow_truck (0.68% area) | hue 57° (yellow) | hue 151° L=0.54 | yellow→green abstract |
+| red_car (2.58% area, half-occluded) | dark red | hue 354° + 95 unique color buckets | shape collapse to multi-color flag |
+
+The `inpaint_with_mask` primitive existed since v0.17.14 but wasn't wired to `layers_redraw`.
+v0.20 wires it.
+
+### New `route` kwarg on `layers_redraw`
+
+```python
+mcp__vulca__layers_redraw(
+    artwork_dir=...,
+    layer="flower_cluster_c",
+    instruction="cartoon white wildflowers",
+    provider="openai",
+    route="auto",   # NEW: "auto" (default) | "img2img" | "inpaint"
+)
+```
+
+- `"auto"` (default): route sparse-alpha layers (`area_pct < 5%` OR `bbox_fill < 0.5` against
+  the true bounding box) through `inpaint_with_mask` when the provider is capable
+  (`hasattr(..., "inpaint_with_mask")`). Dense layers and incapable providers stay on
+  legacy img2img bit-identically.
+- `"img2img"`: force the legacy unmasked path (v0.18.x parity).
+- `"inpaint"`: force the mask-aware path. Falls back to img2img with a warning when the
+  provider lacks `inpaint_with_mask`.
+
+The capability gate covers all current providers without `inpaint_with_mask`
+(`mock`, `gemini`, `comfyui`); only `openai` (gpt-image-*) supports the mask-aware path
+today.
+
+### Mask + image dimension handling (B8)
+
+Source layers larger than OpenAI's edit-supported sizes (e.g. 4032×3024 IMG_6847 source)
+are aspect-preserving downsampled to 1024-class size (`{1024×1024, 1024×1536, 1536×1024}`)
+along with their mask before the API call. The model's response is upsampled back to the
+original canvas via `_fit_into_canvas`; `preserve_alpha=True` re-applies the
+**original-canvas** alpha (not the resized one) so output alpha is bit-identical to source.
+Quality cost: model output is at ~1024-class then upsampled — soft edges visible only at
+pixel-peeping zoom. v0.21 will revisit if tile-based super-resolution proves needed.
+
+### Mask polarity invariant pinned
+
+Constructed mask must satisfy: where source alpha > 0 (subject), mask alpha = 0 (EDIT
+zone); where source alpha == 0 (empty), mask alpha = 255 (PRESERVE zone). This is
+OpenAI's `/v1/images/edits` convention. Hard binary {0, 255} only — no GaussianBlur
+(intermediate values are undefined behavior). Pinned by
+`tests/test_layers_redraw_mask_aware.py::test_mask_polarity_invariant_pins_v2_to_v2_1_bug`.
+
+### Deferred to v0.21
+
+- `redraw_merged` retains v0.18 behavior (unmasked img2img). The `blend_layers` union
+  alpha makes the same fix conceptually wrong for merged subjects — needs separate
+  redesign. The new `route` kwarg is **ignored** on the merge path.
+- Typed advisory in tool return payload (`{sparse_detected, route_used, hint}`).
+  v0.20 surfaces routing decisions only via INFO-level log lines:
+  `[layers_redraw] layer=X sparse=true area_pct=3.3 bbox_fill=0.65 route_chosen=inpaint provider=OpenAIImageProvider`
+
+### Backward compat
+
+- All v0.18.x callers without a `route` kwarg get `route="auto"` → dense behavior is
+  bit-identical (predicate gates the change), sparse behavior is fixed.
+- All non-OpenAI providers fall back to legacy img2img via the capability gate.
+- `background_strategy="cream"` retained as the legacy workaround for
+  `route="img2img"`. Made redundant by `route="auto"` for sparse layers.
+- v0.17.x verbatim parity: `in_place=True, background_strategy="transparent",
+  preserve_alpha=False, route="img2img"`.
+
+### Tests
+
+- `tests/test_layers_redraw_mask_aware.py` — 14 unit tests: sparsity predicate (true bbox
+  including multi-instance corner-spread), RGBA mask polarity invariant + hard binary,
+  capability fallback (auto/inpaint/explicit-img2img), 4032×3024 dimension round-trip,
+  B7 deferral pin.
+- `tests/test_layers_redraw_mask_aware_real_provider.py` — 3 real-provider ship-gate tests
+  behind `@pytest.mark.real_provider`. Cost ceiling ~$0.24 per full run. Two acceptance
+  fixtures: IMG_6847 flower_cluster_c (single-region 3.3%, hue [30°,90°] AND L>0.6 AND
+  pct_white_like>5%, 3× variance ≥2/3 pass) and Scottish lanterns (multi-instance, ≥5
+  components + ≥4/6 components matching gongbi cinnabar+gold criteria).
+- 37/37 pre-existing `tests/test_layers_redraw.py`, `tests/test_layers_v2_redraw.py`,
+  `tests/test_inpaint_mask.py` continue to pass — backward-compat verified.
+
 ## v0.19.0 (2026-04-27)
 
 Two diagnostic improvements to the orchestrated detection pipeline surfaced by a
