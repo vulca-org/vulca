@@ -35,6 +35,207 @@ logger = logging.getLogger("vulca.layers")
 CREAM_BG_RGB = (252, 248, 240)
 WHITE_BG_RGB = (255, 255, 255)
 
+# v0.20 mask-aware redraw routing
+# spec: docs/superpowers/specs/2026-04-27-v0.20-mask-aware-redraw-routing-design.md
+SPARSE_AREA_PCT_THRESHOLD = 5.0
+SPARSE_BBOX_FILL_THRESHOLD = 0.5
+INPAINT_PROMPT_PREFIX = (
+    "Repaint the transparent region of the mask (where mask alpha=0) as: {instruction}. "
+    "Leave the opaque region (mask alpha=255) bit-identical. "
+    "Keep the same silhouette, placement, and scale as the underlying subject. "
+    "Do not bleed color outside the mask boundary."
+)
+
+
+def _compute_sparsity(alpha) -> tuple[bool, float, float]:
+    """Compute sparsity metrics from a layer's alpha channel.
+
+    Returns ``(sparse, area_pct, bbox_fill)`` where ``sparse`` is true when
+    either ``area_pct < 5%`` (single-region small subject like IMG_6847
+    flower_cluster_c) or ``bbox_fill < 0.5`` (multi-instance fragmented
+    alpha like Scottish row-of-6-lanterns at 8% area).
+
+    See spec B1 — "live alpha, not manifest area_pct" — manifest's persisted
+    area_pct can be wrong (Scottish NOTES.md:116-125 documents the case).
+    """
+    import numpy as np
+
+    arr = np.array(alpha)
+    if arr.ndim != 2:
+        raise ValueError(
+            f"_compute_sparsity expected 2D alpha band; got shape {arr.shape}"
+        )
+    visible_px = int((arr > 0).sum())
+    total_px = int(arr.size)
+    if total_px == 0:
+        return False, 0.0, 0.0
+    area_pct = 100.0 * visible_px / total_px
+
+    # True bounding box (min/max indices) — NOT "populated rows × populated
+    # cols" which under-estimates the bbox dramatically for multi-instance
+    # spread layouts (e.g. blobs at corners). Empty rows/cols between
+    # subjects must count toward the bbox so that bbox_fill reflects
+    # spatial sparsity, not just density-within-populated-strip.
+    rows_any = (arr > 0).any(axis=1)
+    cols_any = (arr > 0).any(axis=0)
+    if rows_any.any() and cols_any.any():
+        row_idx = np.where(rows_any)[0]
+        col_idx = np.where(cols_any)[0]
+        bbox_h = int(row_idx[-1] - row_idx[0] + 1)
+        bbox_w = int(col_idx[-1] - col_idx[0] + 1)
+    else:
+        bbox_h = bbox_w = 0
+    bbox_area = bbox_h * bbox_w
+    bbox_fill = visible_px / bbox_area if bbox_area else 0.0
+    sparse = (
+        area_pct < SPARSE_AREA_PCT_THRESHOLD
+        or bbox_fill < SPARSE_BBOX_FILL_THRESHOLD
+    )
+    return sparse, area_pct, bbox_fill
+
+
+def _build_inpaint_mask(alpha):
+    """Build an OpenAI-convention RGBA mask from a layer alpha channel.
+
+    OpenAI ``/v1/images/edits`` reads the mask alpha channel: alpha=0 is the
+    EDIT zone, alpha=255 is PRESERVE. For ``layers_redraw`` we want the
+    SUBJECT (where layer alpha > 0) to be EDITED, and the empty zone
+    (where layer alpha == 0) to be PRESERVED.
+
+    Polarity invariant: after construction, ``mask.split()[-1]`` has value 0
+    over subject pixels and 255 over empty pixels. The unit test
+    ``test_mask_polarity_invariant`` pins this.
+
+    Hard binary {0, 255} only — no GaussianBlur (intermediate alpha values
+    are undefined behavior under OpenAI's mask convention).
+    """
+    from PIL import Image, ImageOps
+
+    if alpha.mode != "L":
+        alpha = alpha.convert("L")
+    subject = alpha.point(lambda v: 255 if v > 0 else 0)
+    edit_mask_channel = ImageOps.invert(subject)  # 0 where subject (edit), 255 where empty (preserve)
+    mask = Image.new("RGBA", alpha.size, (0, 0, 0, 0))
+    mask.putalpha(edit_mask_channel)
+    return mask
+
+
+def _pick_inpaint_size(w: int, h: int) -> tuple[int, int]:
+    """Pick an OpenAI-supported edit size matching the layer's aspect.
+
+    OpenAI ``/v1/images/edits`` accepts {1024×1024, 1024×1536, 1536×1024}
+    (verified at openai_provider.py:410-415). Rather than letting the
+    provider silently fall back to 1024×1024 on a mismatch, we pre-fit
+    aspect-preserving so the model's output canvas matches the source.
+    """
+    if h == 0:
+        return (1024, 1024)
+    aspect = w / h
+    if aspect > 1.3:
+        return (1536, 1024)
+    if aspect < 1.0 / 1.3:
+        return (1024, 1536)
+    return (1024, 1024)
+
+
+def _build_inpaint_prompt(
+    instruction: str,
+    descriptions: list[str],
+    *,
+    tradition: str = "default",
+) -> str:
+    """Build the inpaint-route prompt — explicit alpha-channel reference.
+
+    Spec B5 (reviewer round 2 corrected wording): the canonical phrasing
+    "the masked subject pixels" was ambiguous given OpenAI's convention
+    treats alpha=0 as the inpaint zone. This wording references the mask
+    alpha channel directly.
+    """
+    parts = [INPAINT_PROMPT_PREFIX.format(instruction=instruction.strip())]
+    layer_ctx = "; ".join(d for d in descriptions if d)
+    if layer_ctx:
+        parts.append("Layer context: " + layer_ctx)
+    if tradition and tradition != "default":
+        parts.append(
+            f"Maintain the {tradition.replace('_', ' ')} cultural tradition "
+            "and technique."
+        )
+    return "\n".join(parts)
+
+
+async def _redraw_via_inpaint_mask(
+    *,
+    flat_img,
+    src_alpha,
+    canvas_size: tuple[int, int],
+    instruction: str,
+    provider_inst,
+    tradition: str,
+    target_description: str,
+):
+    """Mask-aware inpaint path for ``redraw_layer`` (v0.20).
+
+    Returns the model's output as an RGBA image at the original canvas
+    size. Caller is responsible for ``preserve_alpha`` re-application.
+
+    Image+mask are downsampled aspect-preserving to a 1024-class API size
+    (B8 — flower_cluster_c.png is 4032×3024 but ``/v1/images/edits``
+    accepts only {1024,1024×1536,1536×1024}). The model's response is
+    upsampled back to the canvas size via ``_fit_into_canvas`` so the
+    caller's ``preserve_alpha`` re-application against the ORIGINAL
+    canvas alpha works without size mismatch.
+    """
+    import base64
+    import io as _io
+    import tempfile
+
+    from PIL import Image
+
+    canvas_w, canvas_h = canvas_size
+    api_w, api_h = _pick_inpaint_size(canvas_w, canvas_h)
+
+    # Aspect-preserving resize of both image and mask to API size.
+    flat_for_api = _fit_into_canvas(
+        flat_img.convert("RGB"), (api_w, api_h), bg_rgb=CREAM_BG_RGB
+    )
+    mask_full = _build_inpaint_mask(src_alpha)
+    mask_for_api = _fit_into_canvas(mask_full, (api_w, api_h), bg_rgb=None)
+
+    # Persist to temp files — the provider's inpaint_with_mask reads paths,
+    # not bytes (openai_provider.py:403-405).
+    image_tmp = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
+    mask_tmp = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
+    try:
+        flat_for_api.save(image_tmp.name, "PNG")
+        image_tmp.close()
+        mask_for_api.save(mask_tmp.name, "PNG")
+        mask_tmp.close()
+
+        prompt = _build_inpaint_prompt(
+            instruction, [target_description], tradition=tradition
+        )
+        result = await provider_inst.inpaint_with_mask(
+            image_path=image_tmp.name,
+            mask_path=mask_tmp.name,
+            prompt=prompt,
+            tradition=tradition,
+        )
+
+        raw = base64.b64decode(result.image_b64)
+        if result.mime and "svg" in result.mime:
+            out_img = Image.new("RGBA", (canvas_w, canvas_h), (0, 0, 0, 0))
+        else:
+            out_img = Image.open(_io.BytesIO(raw))
+
+        out_img = _fit_into_canvas(out_img, (canvas_w, canvas_h), bg_rgb=CREAM_BG_RGB)
+        return out_img.convert("RGBA"), result
+    finally:
+        for tmp in (image_tmp.name, mask_tmp.name):
+            try:
+                Path(tmp).unlink(missing_ok=True)
+            except Exception:
+                pass
+
 
 def _build_redraw_prompt(
     instruction: str,
@@ -221,8 +422,9 @@ async def redraw_layer(
     background_strategy: str = "cream",
     preserve_alpha: bool = True,
     in_place: bool = False,
+    route: str = "auto",
 ) -> LayerResult:
-    """Redraw a single layer via img2img.
+    """Redraw a single layer via img2img or mask-aware inpaint (v0.20).
 
     Output path resolution (v0.18.0):
       - if ``in_place=True`` → overwrite the source layer's PNG (legacy parity)
@@ -237,6 +439,20 @@ async def redraw_layer(
     hallucinate scenes into the alpha-empty regions of sparse layers.
     To restore v0.17.x legacy behavior verbatim, pass
     ``in_place=True, background_strategy="transparent", preserve_alpha=False``.
+
+    v0.20 routing (``route``):
+      - ``"auto"`` (default): when the layer alpha is sparse (area_pct<5%
+        OR bbox_fill<0.5) AND the provider implements ``inpaint_with_mask``,
+        route through OpenAI's mask-aware ``/v1/images/edits`` so the model
+        receives explicit "edit here, preserve there" guidance instead of
+        unmasked img2img. Dense layers and providers without mask support
+        stay on the legacy img2img path bit-identically.
+      - ``"img2img"``: force the legacy unmasked path (v0.18.x parity).
+        The ``background_strategy="cream"`` workaround is most useful here.
+      - ``"inpaint"``: force the mask-aware path. Falls back to img2img
+        with a warning if the provider lacks ``inpaint_with_mask``.
+
+    Spec: ``docs/superpowers/specs/2026-04-27-v0.20-mask-aware-redraw-routing-design.md``.
     """
     import os
 
@@ -267,9 +483,19 @@ async def redraw_layer(
     src_path = Path(target.image_path)
     src_rgba = Image.open(str(src_path)).convert("RGBA")
     src_alpha = src_rgba.split()[-1]
+
+    # v0.20 — degenerate empty-layer guard (spec C7). A layer with no
+    # opaque pixels can't be redrawn coherently regardless of route.
+    import numpy as _np
+    if int((_np.array(src_alpha) > 0).sum()) == 0:
+        raise ValueError(
+            f"Layer {layer_name!r} has no visible pixels (alpha == 0 everywhere); "
+            "cannot redraw an empty layer."
+        )
+
     flat, bg_rgb = _flatten_layer(src_rgba, background_strategy=background_strategy)
 
-    # 3. Build prompt
+    # 3. Build prompt + read canvas size
     canvas_size_hint = ""
     manifest_path = Path(artwork_dir) / "manifest.json"
     manifest_data = json.loads(manifest_path.read_text())
@@ -277,46 +503,89 @@ async def redraw_layer(
     canvas_h = manifest_data.get("height", src_rgba.height)
     if canvas_w and canvas_h:
         canvas_size_hint = f"{canvas_w}x{canvas_h}"
-    prompt = _build_redraw_prompt(
-        instruction,
-        [target.info.description],
-        tradition=tradition,
-        canvas_size=canvas_size_hint,
-        background_strategy=background_strategy,
-    )
 
-    # 4. Encode reference (flat for non-transparent, src_rgba for legacy)
-    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as fh:
-        flat.save(fh.name, "PNG")
-        ref_b64 = base64.b64encode(Path(fh.name).read_bytes()).decode()
-    try:
-        Path(fh.name).unlink(missing_ok=True)
-    except Exception:
-        pass
-
-    # 5. Provider-aware api_key resolution. Bug fix: legacy code passed
-    # GOOGLE_API_KEY to every provider. Now: if caller didn't specify a
-    # key, hand "" to the provider so it self-resolves OPENAI_API_KEY /
-    # GOOGLE_API_KEY / etc from its own __init__.
+    # v0.20 mask-aware routing decision (spec B1+B4+B6).
+    sparse, area_pct, bbox_fill = _compute_sparsity(src_alpha)
     img_provider = get_image_provider(provider, api_key=api_key)
-    result = await img_provider.generate(
-        prompt,
-        tradition=tradition,
-        reference_image_b64=ref_b64,
+    has_inpaint = hasattr(img_provider, "inpaint_with_mask")
+
+    if route == "auto":
+        chosen_route = "inpaint" if (sparse and has_inpaint) else "img2img"
+    elif route == "inpaint":
+        if not has_inpaint:
+            logger.warning(
+                "Provider %s lacks inpaint_with_mask; falling back to img2img.",
+                type(img_provider).__name__,
+            )
+            chosen_route = "img2img"
+        else:
+            chosen_route = "inpaint"
+    elif route == "img2img":
+        chosen_route = "img2img"
+    else:
+        raise ValueError(
+            f"Unknown route={route!r}; expected one of 'auto', 'img2img', 'inpaint'."
+        )
+
+    # Spec E — log-channel advisory in v0.20 (typed return advisory deferred to v0.21).
+    logger.info(
+        "[layers_redraw] layer=%s sparse=%s area_pct=%.2f bbox_fill=%.3f "
+        "route_requested=%s route_chosen=%s provider=%s",
+        layer_name, sparse, area_pct, bbox_fill,
+        route, chosen_route, type(img_provider).__name__,
     )
 
-    # 6. Decode + aspect-preserving fit (replaces blanket LANCZOS warp)
-    raw = base64.b64decode(result.image_b64)
-    if result.mime and "svg" in result.mime:
-        # SVG fallback only — preserved for unusual mock branches
-        out_img = Image.new("RGBA", (canvas_w, canvas_h), (0, 0, 0, 0))
+    if chosen_route == "inpaint":
+        # 4-5. Mask-aware inpaint path (B2 + B3 + B5 + B8 in spec).
+        rgba_with_alpha, _result = await _redraw_via_inpaint_mask(
+            flat_img=flat,
+            src_alpha=src_alpha,
+            canvas_size=(canvas_w, canvas_h),
+            instruction=instruction,
+            provider_inst=img_provider,
+            tradition=tradition,
+            target_description=target.info.description,
+        )
+        # _redraw_via_inpaint_mask returns RGBA at canvas size with the
+        # model's (cream-bg) painted output but WITHOUT the source alpha
+        # re-applied. Step 7 below handles preserve_alpha re-application.
+        rgba = rgba_with_alpha
     else:
-        import io as _io
+        # 4-5. Legacy img2img path — unchanged from v0.18 behavior.
+        prompt = _build_redraw_prompt(
+            instruction,
+            [target.info.description],
+            tradition=tradition,
+            canvas_size=canvas_size_hint,
+            background_strategy=background_strategy,
+        )
 
-        out_img = Image.open(_io.BytesIO(raw))
+        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as fh:
+            flat.save(fh.name, "PNG")
+            ref_b64 = base64.b64encode(Path(fh.name).read_bytes()).decode()
+        try:
+            Path(fh.name).unlink(missing_ok=True)
+        except Exception:
+            pass
 
-    out_img = _fit_into_canvas(out_img, (canvas_w, canvas_h), bg_rgb)
-    rgba = out_img.convert("RGBA")
+        result = await img_provider.generate(
+            prompt,
+            tradition=tradition,
+            reference_image_b64=ref_b64,
+        )
+
+        # 6. Decode + aspect-preserving fit (replaces blanket LANCZOS warp)
+        raw = base64.b64decode(result.image_b64)
+        if result.mime and "svg" in result.mime:
+            # SVG fallback only — preserved for unusual mock branches
+            out_img = Image.new("RGBA", (canvas_w, canvas_h), (0, 0, 0, 0))
+        else:
+            import io as _io
+
+            out_img = Image.open(_io.BytesIO(raw))
+
+        out_img = _fit_into_canvas(out_img, (canvas_w, canvas_h), bg_rgb)
+        rgba = out_img.convert("RGBA")
 
     # 7. Optionally re-apply original alpha
     if preserve_alpha:
