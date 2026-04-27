@@ -1,5 +1,114 @@
 # Changelog
 
+## v0.19.0 (2026-04-27)
+
+Two diagnostic improvements to the orchestrated detection pipeline surfaced by a
+7-entity dogfood run on IMG_6847.jpg. Neither changes detection behavior — only
+the **reporting** of misses is improved so callers can take targeted recovery
+actions instead of guessing. See `feedback_dogfood_surfaces_design_bugs.md`.
+
+### Fixes
+
+**FIX P0 — Person path: distinguish chain-zero from rank-exceeded**
+
+Before v0.19, when the person chain (YOLO + DINO fallback) returned fewer
+detections than there were person-class entities in the plan, all remaining
+entities were silently reported as `reason: no_detection_after_chain` — even
+when the chain *did* return some detections. In the IMG_6847 case, the chain
+returned 1 detection for 2 person-entities; `yellow_truck` (rank=0) was
+correctly detected, but `red_car` (rank=1) showed the same `attempts` field as
+`yellow_truck` and `reason: no_detection_after_chain`, giving no indication that
+the chain *had* found a person — just not a second one.
+
+New reason codes emitted from the person loop:
+
+| Condition | Reason | Extra fields |
+|-----------|--------|--------------|
+| Chain returned 0 detections | `chain_returned_zero` | — |
+| Chain returned N < K detections for K entities | `rank_exceeded_chain_pool` | `entities_in_chain_pool: N`, `this_entity_rank: K-1` |
+
+The `attempts` field (chain-level summary) is unchanged and still present on all
+person-miss records.
+
+**FIX P2 — Object path: distinguish dino-zero from below-threshold**
+
+`detect_all_bboxes` now returns a three-key dict instead of a bare assigned-dict:
+
+```python
+{
+    "assigned":   dict[label, tuple | list],  # pre-v0.19 shape, unchanged
+    "near_miss":  dict[label, list[(bbox, score, phrase)]],  # NEAR_MISS_FLOOR ≤ score < effective_threshold
+    "nms_drops":  dict[label, list[(bbox, score, phrase)]],  # above threshold but lost within-label NMS
+}
+```
+
+A new module constant `NEAR_MISS_FLOOR = 0.05` sets the lower bound for
+diagnostic capture. DINO is called at `min(effective_threshold, 0.05)` so
+candidates the caller's threshold would have missed are still returned as
+diagnostics without being assigned.
+
+In the object-loop missed-branch, the reason now distinguishes three states:
+
+| Condition | Reason | Extra fields |
+|-----------|--------|--------------|
+| DINO found candidates below threshold | `dino_below_threshold` | `near_miss_candidates: [{bbox, conf, phrase}, ...]` (top 5) |
+| Candidate passed threshold but lost NMS | `dropped_by_within_label_nms` | `nms_drop_candidates: [...]` (top 5) |
+| DINO returned nothing (true zero) | `dino_not_matched` | — |
+
+In the IMG_6847 case, `wildflower_clusters` (threshold=0.18) would now report
+`reason: dino_below_threshold` with `near_miss_candidates` showing the actual
+scores (e.g., 0.10), letting the user lower threshold to 0.10 to recover.
+
+The `multi_instance_no_detection` quality flag now fires for both
+`dino_not_matched` and `dino_below_threshold` (neither has an assigned bbox),
+but NOT for `dropped_by_within_label_nms` (that is an NMS artefact, not a
+detection gap).
+
+**BREAKING (detect_all_bboxes callers):** All callers that previously read
+`result[label]` directly must now read `result["assigned"][label]`. Updated
+callers: `detect_bbox`, `detect_all_bboxes_tiled` (internal), and
+`detect_all_bboxes_upscaled` (internal). The tiled and upscaled paths do not
+yet propagate `near_miss`/`nms_drops` (they emit empty dicts); this is
+documented with `TODO(v0.20)` comments.
+
+**Migration recipe** — to find all impacted call sites in your codebase:
+
+```bash
+grep -rn 'detect_all_bboxes(' --include='*.py' .
+# inspect each match: replace `result[label]` → `result["assigned"][label]`
+# new diagnostic keys are optional: result["near_miss"], result["nms_drops"]
+```
+
+`detect_bbox` (the legacy single-label wrapper) preserves its return shape
+`(bbox, score)` — no migration needed for that wrapper's callers.
+
+### Tests added
+
+10 new regression tests in `tests/vulca/scripts/test_v0_19_detection_diagnostics.py`:
+- `TestPersonChainReasonCodes::test_person_rank_exceeded_chain_pool`
+- `TestPersonChainReasonCodes::test_person_chain_returned_zero`
+- `TestPersonChainReasonCodes::test_person_chain_full_match`
+- `TestObjectDiagnosticReasonCodes::test_object_dino_below_threshold`
+- `TestObjectDiagnosticReasonCodes::test_object_dino_below_threshold_multi_instance_flag`
+- `TestObjectDiagnosticReasonCodes::test_object_dino_not_matched_true_zero`
+- `TestObjectDiagnosticReasonCodes::test_object_dino_not_matched_multi_instance_flag`
+- `TestObjectDiagnosticReasonCodes::test_object_dropped_by_within_label_nms`
+- `TestObjectDiagnosticReasonCodes::test_near_miss_candidates_capped_at_5`
+- `TestDetectAllBboxesReturnShape::test_detect_all_bboxes_returns_three_keys`
+
+Existing tests in `tests/test_layers_v2_split.py` updated to use the new
+three-key return shape.
+
+### Pre-ship review summary
+
+Both reviewers (fresh codex GPT-5.4 + superpowers Claude) cross-validated the
+diff at SHA 94e6147c. Both flagged the same P1 (the `id(d)` set comparison for
+NMS-drop tracking — fragile against `_nms_bboxes` internal refactor) and the
+test-count nit. Both fixed in this release on top of 94e6147c. Other P2 items
+(joint-pass threshold side-effect surfacing, tiled path diagnostic
+suppression flag, test boundary tightening, NEAR_MISS_FLOOR migration to
+`src/vulca/_segment.py`) deferred to v0.20 backlog.
+
 ## v0.18.0 (2026-04-26)
 
 Two paired changes that close the largest hand-cuts surfaced by the γ Scottish carousel (2026-04-25): `layers_redraw` defaults flipped to the safe path (no more silent in-place overwrite + no more alpha-sparse hallucination by default), and `layers_split` orchestrated mode grew first-class multi-instance support so a "row of 6 lanterns" plan no longer collapses into one fragmented union mask.
