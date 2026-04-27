@@ -1,5 +1,71 @@
 # Changelog
 
+## v0.18.0 (2026-04-26)
+
+Two paired changes that close the largest hand-cuts surfaced by the γ Scottish carousel (2026-04-25): `layers_redraw` defaults flipped to the safe path (no more silent in-place overwrite + no more alpha-sparse hallucination by default), and `layers_split` orchestrated mode grew first-class multi-instance support so a "row of 6 lanterns" plan no longer collapses into one fragmented union mask.
+
+The migration is two-tier for callers who relied on the legacy `layers_redraw` behavior: most users only need to add `in_place=True` to keep their file-overwriting workflow; the small minority who depended on the legacy `transparent` background passthrough plus alpha drop must add all three kwargs (`in_place=True`, `background_strategy="transparent"`, `preserve_alpha=False`) for byte-identical v0.17.x parity. Everything else is additive.
+
+### Breaking changes
+
+`layers_redraw` defaults flipped — three parameters now choose the safe path by default:
+
+| Parameter             | v0.17.x default       | v0.18.0 default               |
+|-----------------------|-----------------------|-------------------------------|
+| Output path           | in-place overwrite    | `<layer>_redrawn.png` (input untouched) |
+| `background_strategy` | `"transparent"`       | `"cream"`                     |
+| `preserve_alpha`      | `False`               | `True`                        |
+
+A new parameter `in_place: bool = False` is the explicit opt-out for callers who need the legacy in-place write. Most users only need this single kwarg — pass `in_place=True` to keep your v0.17.x file-overwriting workflow while inheriting the new safer `background_strategy="cream"` and `preserve_alpha=True` defaults (which improve, not regress, output quality on alpha-sparse layers).
+
+To restore v0.17.x behavior **byte-for-byte** (rare; required only if you depended on the legacy `transparent` background passthrough plus alpha drop):
+
+```python
+layers_redraw(
+    artwork_dir, layer="lanterns", instruction="...",
+    in_place=True,
+    background_strategy="transparent",
+    preserve_alpha=False,
+)
+```
+
+**Why**: v0.17.14 introduced the opt-in defenses (`background_strategy="cream"`, `preserve_alpha=True`, `output_layer_name`) but left legacy as the default — making the trap (silent input destruction + scene hallucination on alpha-sparse layers) the path of least resistance. The γ Scottish Part 2 showcase confirmed the trap is easy to fall into even when the implementer knew about it. v0.18 makes the safe path the default; the unsafe path requires explicit opt-out. See commit `7679b488` (kwarg + 3-way path resolution) and `9631adf2` (atomic default flip).
+
+> Note: `layers_redraw(merge=True, layers="a,b,...")` does **not** yet honor the `in_place` kwarg — only the single-layer path. The merge path always writes the merged result to a new file. Tracked for v0.18.1+.
+
+### Added
+
+`layers_split` orchestrated mode now supports multi-instance entities. Plan JSON entities accept an optional `multi_instance: true` flag. When set, Grounding DINO returns up to 8 bboxes for that label (instead of top-1) and SAM segments each independently. The orchestrator emits N flat sibling layers named `<label>_0..N-1` sorted by DINO `det_score` descending (the ordering is fixed at NMS time in `_nms_bboxes` before SAM runs, so SAM scores do not influence sibling order).
+
+```json
+{
+  "entities": [
+    { "name": "lanterns", "label": "red paper lantern", "multi_instance": true }
+  ]
+}
+```
+
+(The schema key is `entities` on the `Plan` model; some prior design docs used `object_entities` informally — the actual `Plan.from_file()` JSON path is `entities`.)
+
+Edge cases:
+
+- DINO returns 0 bboxes → 0 layers emitted; manifest carries `quality_flags: ["multi_instance_no_detection"]`.
+- DINO returns exactly 1 bbox → 1 layer named `<label>` (no `_0` suffix); manifest carries `quality_flags: ["multi_instance_degraded"]`. The keystone naming contract: `_0` suffix means "instance 0 of N≥2"; never "lone instance".
+- DINO returns >8 bboxes → top-8 by score retained, rest dropped.
+- `z_index` of subsequent entities in the plan is auto-pushed by `(N-1)` so the multi-instance fan-out doesn't collide downstream.
+
+Closes the multi-instance gap deferred from v0.17.13. The plan JSON schema extension is additive; existing plans without `multi_instance` are byte-for-byte unaffected. See commits `c82880dd` (detection-layer multi_instance), `ae6471fe` (orchestrator wire + I-1 fail-fast), `bdc9d32e` (entity-loop refactor).
+
+### Limitation: tiled / upscaled detection paths
+
+`layers_split` orchestrated mode raises `NotImplementedError` early when `multi_instance: true` is requested **and** the input image triggers DINO's tiled or upscaled path (extreme aspect ratio, or dimensions outside the standard window). The error message is actionable: it tells the user to either disable `multi_instance` for that image or pre-crop to a non-extreme aspect ratio. Forwarding `multi_instance` kwargs through the tiled/upscaled wrappers is v0.18.1+ scope.
+
+### Internal
+
+- New `src/vulca/_segment.py` module hosts pure-Python NMS helpers (`_iou`, `_nms_bboxes`) extracted from `scripts/claude_orchestrated_pipeline.py` so they can be unit-tested without `import torch` (mirrors the v0.17.14 hotfix discipline for `_quality_gate`).
+- New fixture `tests/fixtures/multi_instance/lanterns_6.jpg` (440×700, ≈86 KB) — γ Scottish lanterns crop, anchored as the multi-instance regression baseline.
+- New `l4_local` pytest marker for local-only model-weight tests; CI skips automatically via `pytest.importorskip("torch")`. The pre-existing `real_provider` and `local_provider` markers are also now registered in `pyproject.toml`, eliminating `PytestUnknownMarkWarning` noise on every run.
+
 ## v0.17.15 (2026-04-26)
 
 Maintenance release. Pure internal hardening — no API changes, no user-visible behavior changes. Two items closed from the v0.17.14-CI-hotfix backlog plus one GitHub deprecation tracker.

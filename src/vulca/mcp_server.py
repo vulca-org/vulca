@@ -762,19 +762,23 @@ async def layers_redraw(
     provider: str = "gemini",
     tradition: str = "default",
     output_layer_name: str = "",
-    background_strategy: str = "transparent",
-    preserve_alpha: bool = False,
+    background_strategy: str = "cream",
+    preserve_alpha: bool = True,
+    in_place: bool = False,
 ) -> dict:
     """Redraw a layer via img2img with explicit content/style instructions — targeted layer regeneration.
 
     Use after layers_list identifies a weak layer, or after evaluate_artwork flags a specific issue.
     Be specific about position ("upper 30%"), scale ("covering 20%"), and style ("lighter ink wash").
 
-    v0.17.14: opt into the hallucination-free flow by passing
-    ``background_strategy="cream"`` (or "white"/"sample_median") plus
-    ``preserve_alpha=True``; pass ``output_layer_name="..."`` to write a new
-    layer file + manifest entry instead of overwriting in place. Defaults
-    keep the legacy contract for back-compat.
+    v0.18.0 path-resolution: 3-way decision — ``in_place`` > ``output_layer_name``
+    > auto-derive ``<layer>_redrawn.png``. Defaults preserve alpha
+    (``preserve_alpha=True``) and use cream background
+    (``background_strategy="cream"``) to avoid scene hallucination on
+    alpha-sparse layers.
+
+    To restore v0.17.x legacy behavior verbatim, pass
+    ``in_place=True, background_strategy="transparent", preserve_alpha=False``.
 
     Args:
         artwork_dir: Directory with layer PNGs + manifest.
@@ -785,14 +789,18 @@ async def layers_redraw(
         merged_name: Name for the merged output layer.
         provider: Image provider.
         tradition: Cultural tradition.
-        output_layer_name: NEW v0.17.14 — non-destructive: write to a new
-            layer file (default empty = overwrite source layer in place).
-        background_strategy: NEW v0.17.14 — flatten alpha-sparse layer
-            before sending to provider. "transparent" (default, legacy) |
-            "cream" | "white" | "sample_median". Non-transparent strategies
-            stop providers from hallucinating new content into empty regions.
-        preserve_alpha: NEW v0.17.14 — re-apply source layer's alpha to the
-            provider output. Default False (legacy).
+        output_layer_name: Explicit output name. If empty (default),
+            auto-derived as ``f'{layer}_redrawn'``. Ignored when
+            ``in_place=True``.
+        background_strategy: ``'cream'`` (default) | ``'white'`` |
+            ``'sample_median'`` | ``'transparent'`` (legacy, hallucinates on
+            alpha-sparse layers).
+        preserve_alpha: Re-apply source layer's alpha to provider output.
+            Default ``True``; pass ``False`` for legacy parity.
+        in_place: Legacy opt-out. If True, overwrites the source layer's PNG
+            and skips the new manifest entry; takes precedence over
+            ``output_layer_name``. **Single-layer path only; ignored on the
+            merge path (``merge=True``).** Default ``False``.
 
     Returns:
         name, file, z_index, content_type of the redrawn layer.
@@ -820,6 +828,7 @@ async def layers_redraw(
             output_layer_name=output_layer_name,
             background_strategy=background_strategy,
             preserve_alpha=preserve_alpha,
+            in_place=in_place,
         )
     else:
         return {"error": "Specify 'layer' or 'layers' with merge=true"}

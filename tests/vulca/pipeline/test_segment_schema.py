@@ -84,6 +84,43 @@ class TestPlan:
         with pytest.raises(ValueError, match="reserved"):
             Plan(entities=[{"name": "x", "label": "y", "semantic_path": "residual"}])
 
+    def test_rejects_duplicate_multi_instance_labels(self):
+        """Plan validator catches 2+ multi_instance entities sharing a label.
+
+        DINO returns one bbox-list per label; two multi_instance entities
+        with the same label would silently emit identical N masks per entity
+        under different filenames — caught here, not at runtime.
+        """
+        with pytest.raises(ValueError, match="duplicate labels"):
+            Plan(
+                slug="test",
+                domain="test",
+                entities=[
+                    {"name": "a", "label": "lantern",
+                     "semantic_path": "subject.a", "multi_instance": True},
+                    {"name": "b", "label": "lantern",
+                     "semantic_path": "subject.b", "multi_instance": True},
+                ],
+            )
+
+    def test_allows_duplicate_single_instance_labels(self):
+        """Single-instance entities with same label are permitted.
+
+        DINO top-1 mode returns one bbox per label per call — no duplication
+        risk. Caller may legitimately want two single-instance entities the
+        detector sees as one bbox (e.g. `cathedral` + `cathedral_facade`).
+        """
+        Plan(
+            slug="test",
+            domain="test",
+            entities=[
+                {"name": "a", "label": "lantern",
+                 "semantic_path": "subject.a"},
+                {"name": "b", "label": "lantern",
+                 "semantic_path": "subject.b"},
+            ],
+        )
+
     def test_unknown_device_rejected(self):
         with pytest.raises(ValueError):
             Plan(entities=[{"name": "a", "label": "b"}], device="nvidia-wtf")

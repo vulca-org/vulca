@@ -53,6 +53,16 @@ class PlanEntity(BaseModel):
         description="Rough spatial hint [x1_pct, y1_pct, x2_pct, y2_pct] in [0,1]. "
                     "Used as SAM bbox when detector='sam_bbox' or as fallback."
     )
+    # v0.18.0 (Q2 in design spec): opt-in to per-instance detection. When True,
+    # the orchestrator routes this entity through DINO with a list-form
+    # response (up to 8 bboxes per Q4 cap) instead of the legacy top-1 tuple.
+    # Absent or False preserves legacy single-instance behavior; no plan
+    # version bump required.
+    multi_instance: bool = Field(
+        False,
+        description="If True, detect up to 8 instances of this label and emit "
+                    "one layer per instance. Default False (legacy top-1)."
+    )
 
     @field_validator("name", mode="before")
     @classmethod
@@ -162,6 +172,33 @@ class Plan(BaseModel):
         if len(paths) != len(set(paths)):
             dups = sorted({p for p in paths if paths.count(p) > 1})
             raise ValueError(f"duplicate semantic_path across entities: {dups}")
+        return self
+
+    @model_validator(mode="after")
+    def _unique_labels_when_multi_instance(self):
+        """Reject plans where 2+ multi_instance entities share the same label.
+
+        DINO returns one bbox-list per label, so two multi_instance entities
+        with the same label would each iterate the same N detections and emit
+        identical bbox/mask pairs under different filenames — silently masking
+        the duplication as N×2 seemingly-distinct layers. Single-instance
+        duplicate labels are allowed (caller may want to model two entities
+        the detector sees as one bbox).
+        """
+        multi_labels = [e.label for e in self.entities if e.multi_instance]
+        seen: set[str] = set()
+        duplicates: set[str] = set()
+        for lbl in multi_labels:
+            if lbl in seen:
+                duplicates.add(lbl)
+            seen.add(lbl)
+        if duplicates:
+            raise ValueError(
+                f"multi_instance entities must have unique labels; "
+                f"duplicate labels found: {sorted(duplicates)}. "
+                f"DINO returns one bbox-list per label, so 2+ multi_instance "
+                f"entities with the same label would emit identical masks N times."
+            )
         return self
 
     @model_validator(mode="after")

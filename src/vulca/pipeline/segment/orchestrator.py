@@ -176,6 +176,13 @@ def run(
             reason=f"image_load: {e}",
         )
 
+    # ── v0.18.0: collect labels with multi_instance=True into {label: 8} dict ──
+    # 8 = max_instances cap from spec Q4. Empty dict (no opt-in entities) makes
+    # the downstream forward a no-op — legacy top-1 behavior preserved.
+    multi_instance_labels: dict[str, int] = {
+        e.label: 8 for e in plan_obj.entities if getattr(e, "multi_instance", False)
+    }
+
     # ── Delegate to existing script for actual heavy work ──
     # We reuse `claude_orchestrated_pipeline` but redirect its ORIG_DIR and
     # OUT_DIR so it doesn't pollute the repo's showcase assets (fixes part
@@ -210,7 +217,7 @@ def run(
             cop.PLANS_DIR = staging_plans
 
             # Invoke the script's process() — it writes to staging_out/{slug}/
-            cop.process(slug, force=True)
+            cop.process(slug, force=True, multi_instance_labels=multi_instance_labels)
 
             # Move results to requested output_dir
             produced = staging_out / slug

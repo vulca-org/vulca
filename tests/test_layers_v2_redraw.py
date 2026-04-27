@@ -57,7 +57,12 @@ def _setup_two_layer_artwork(tmp_path: Path) -> LayeredArtwork:
 
 class TestRedrawSingle:
     def test_redraw_replaces_target_layer(self, tmp_path):
-        """Redraw 'fg' layer — new file created, bg layer path unchanged."""
+        """Redraw 'fg' layer — new file created at auto-derived path, bg unchanged.
+
+        v0.18.0: default is non-destructive, so the result is a new layer
+        ``fg_redrawn`` written to ``fg_redrawn.png``; the source ``fg.png``
+        and the bg layer path stay intact.
+        """
         from vulca.layers.redraw import redraw_layer
 
         artwork = _setup_two_layer_artwork(tmp_path)
@@ -76,12 +81,15 @@ class TestRedrawSingle:
             )
         )
 
-        # Result is a LayerResult for "fg"
-        assert result.info.name == "fg"
+        # Result is a LayerResult for the auto-derived "fg_redrawn"
+        assert result.info.name == "fg_redrawn"
 
-        # New file exists at expected path
-        expected_path = tmp_path / "fg.png"
+        # New file exists at expected auto-derived path
+        expected_path = tmp_path / "fg_redrawn.png"
         assert expected_path.exists(), f"Expected output file at {expected_path}"
+
+        # Original source layer file untouched
+        assert (tmp_path / "fg.png").exists(), "original fg.png should still exist"
 
         # Output is RGBA PNG
         img = Image.open(str(expected_path))

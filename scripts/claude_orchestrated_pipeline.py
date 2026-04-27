@@ -42,6 +42,11 @@ from PIL import Image
 # in the package lets CI run the regression suite without installing torch.
 from vulca._quality_gate import compute_quality_flags
 
+# Same pattern for pure detection-layer helpers (_iou, _nms_bboxes). Tests
+# in `tests/test_layers_v2_split.py::TestMultiInstanceDetection` import from
+# `vulca._segment` so they collect under CI without torch. v0.18.0+.
+from vulca._segment import _iou, _nms_bboxes
+
 REPO = Path(__file__).resolve().parent.parent
 PLANS_DIR = REPO / "assets" / "showcase" / "plans"
 OUT_DIR = REPO / "assets" / "showcase" / "layers_v2"
@@ -365,20 +370,6 @@ def detect_persons_dino(dino_proc, dino_model, device, img_pil, threshold=0.20):
     return deduped
 
 
-def _iou(a, b):
-    ax1, ay1, ax2, ay2 = a
-    bx1, by1, bx2, by2 = b
-    ix1, iy1 = max(ax1, bx1), max(ay1, by1)
-    ix2, iy2 = min(ax2, bx2), min(ay2, by2)
-    iw, ih = max(0, ix2 - ix1), max(0, iy2 - iy1)
-    inter = iw * ih
-    if inter == 0:
-        return 0.0
-    area_a = (ax2 - ax1) * (ay2 - ay1)
-    area_b = (bx2 - bx1) * (by2 - by1)
-    return inter / (area_a + area_b - inter)
-
-
 def detect_persons_with_chain(chain, yolo_model, dino_proc, dino_model, device,
                                img_pil, img_path, yolo_conf=0.20, dino_conf=0.20):
     """Try detector chain (e.g., ['yolo', 'dino']) until persons found.
@@ -488,24 +479,6 @@ def tile_image(img_pil, tile_size=None, overlap=TILE_OVERLAP):
             y += stride
 
 
-def _nms_bboxes(detections, iou_threshold=0.5):
-    """Non-max suppression on (bbox, score, phrase) tuples.
-    Keeps higher-score detections; removes lower-score ones that overlap >threshold.
-    """
-    detections = sorted(detections, key=lambda d: -d[1])
-    kept = []
-    for d in detections:
-        bbox, score, phrase = d
-        is_dup = False
-        for k in kept:
-            if _iou(bbox, k[0]) > iou_threshold:
-                is_dup = True
-                break
-        if not is_dup:
-            kept.append(d)
-    return kept
-
-
 def detect_all_bboxes_tiled(dino_proc, dino_model, device, img_pil, labels, threshold=0.15):
     """Tile-based detection for extreme-aspect images.
 
@@ -557,11 +530,43 @@ def detect_persons_upscaled(dino_proc, dino_model, device, img_pil, threshold=0.
     return [([b[0] // 2, b[1] // 2, b[2] // 2, b[3] // 2], c) for b, c in persons]
 
 
-def detect_all_bboxes(dino_proc, dino_model, device, img_pil, labels, threshold=0.15):
+def detect_all_bboxes(
+    dino_proc, dino_model, device, img_pil, labels, threshold=0.15,
+    multi_instance=None,                # dict[label, max_n] or None
+    multi_instance_box_threshold=0.25,  # lower threshold applied when any label is multi-instance
+):
     """Single Grounding DINO pass with all labels jointly.
 
-    Returns: dict label -> (bbox, score, matched_phrase) or None if no match.
+    Returns:
+        dict label -> (bbox, score, matched_phrase) for single-instance labels
+        (backward-compatible tuple form). For labels present in `multi_instance`,
+        the value is `list[(bbox, score, phrase)]` instead — callers
+        discriminate via `isinstance(value, list)`. Labels with no detections
+        are absent from the dict (same as pre-v0.18 behaviour).
+
+    Note:
+        `multi_instance_box_threshold` lowers the box threshold for the
+        ENTIRE DINO pass when ANY label is multi-instance, since DINO does
+        one joint inference. Single-instance labels in the same call also
+        receive the lower threshold (more recall, more noise). Callers
+        needing strict per-label thresholds should issue two separate
+        `detect_all_bboxes()` calls.
+
+    Args:
+        multi_instance: optional dict mapping label -> max instances (>=1).
+            Labels in this dict get list-form returns capped at max_n via
+            `_nms_bboxes(keep_n=max_n)`. None or absent labels keep the
+            historical tuple form (top-1 by score, NMS dedup'd).
+        multi_instance_box_threshold: When ``multi_instance`` is non-empty,
+            DINO is run with this threshold instead of ``threshold``. See
+            Note above for the joint-pass side-effect on single-instance
+            labels. Defaults to 0.25 (vs the usual 0.15) — calibrated
+            against γ Scottish lanterns row.
     """
+    multi_instance = multi_instance or {}
+    effective_threshold = (
+        multi_instance_box_threshold if multi_instance else threshold
+    )
     # Join all labels with period separator (Grounding DINO convention)
     text = ". ".join(labels) + "."
     inputs = dino_proc(images=img_pil, text=text, return_tensors="pt").to(device)
@@ -569,13 +574,17 @@ def detect_all_bboxes(dino_proc, dino_model, device, img_pil, labels, threshold=
         outputs = dino_model(**inputs)
     results = dino_proc.post_process_grounded_object_detection(
         outputs, inputs.input_ids,
-        threshold=threshold, text_threshold=0.15,
+        threshold=effective_threshold, text_threshold=0.15,
         target_sizes=[img_pil.size[::-1]]
     )[0]
 
-    # Match each detection back to the closest requested label
-    # via substring overlap on the returned phrase
-    assigned = {}  # label -> (bbox, score)
+    # Match each detection back to the closest requested label via word
+    # overlap on the returned phrase. v0.18: collect ALL matches per label
+    # first (instead of overwriting with the highest-score), then NMS+cap
+    # below. Single-instance callers see no behaviour change because the
+    # final `_nms_bboxes(keep_n=1)` reproduces the old "highest score wins"
+    # semantics (NMS sorts by score desc and keeps the top survivor).
+    assigned_raw: dict[str, list[tuple]] = {lbl: [] for lbl in labels}
     det_scores = results["scores"].cpu().numpy()
     det_boxes = results["boxes"].cpu().numpy()
     det_labels = results.get("text_labels", results.get("labels", []))
@@ -596,14 +605,22 @@ def detect_all_bboxes(dino_proc, dino_model, device, img_pil, labels, threshold=
                 best_label = lbl
         if best_label is None:
             continue
+        bbox = det_boxes[i].astype(int).tolist()
         score = float(det_scores[i])
-        # Keep highest-score detection per label
-        if best_label not in assigned or score > assigned[best_label][1]:
-            assigned[best_label] = (
-                det_boxes[i].astype(int).tolist(),
-                score,
-                phrase,
-            )
+        assigned_raw[best_label].append((bbox, score, phrase))
+
+    # Final shape: tuple for single-instance, list for multi-instance
+    assigned: dict = {}
+    for lbl, dets in assigned_raw.items():
+        if not dets:
+            continue
+        if lbl in multi_instance:
+            max_n = max(1, int(multi_instance[lbl]))
+            kept = _nms_bboxes(dets, iou_threshold=0.5, keep_n=max_n)
+            assigned[lbl] = kept            # list form
+        else:
+            kept = _nms_bboxes(dets, iou_threshold=0.5, keep_n=1)
+            assigned[lbl] = kept[0]          # tuple form (backward compat)
     return assigned
 
 
@@ -834,7 +851,27 @@ def _load_image_safely(img_path: Path, max_pixels: int = 100_000_000):
     return img_pil
 
 
-def process(slug: str, force: bool = False):
+def process(slug: str, force: bool = False, multi_instance_labels: dict | None = None):
+    """Run the full segmentation pipeline for a single slug.
+
+    Args:
+        slug: file stem matching plan JSON + image (under PLANS_DIR / ORIG_DIR).
+        force: overwrite existing manifest if True.
+        multi_instance_labels: optional ``{label: max_instances}`` dict forwarded
+            to ``detect_all_bboxes`` so DINO returns list-form detections for
+            opt-in labels (v0.18.0). When ``None``, the plan is consulted for
+            ``entity.multi_instance == True`` flags and a dict is built with
+            cap=8 (spec Q4). Empty dict / no opt-in entities preserves the
+            legacy top-1 tuple behavior end-to-end.
+
+    Raises:
+        NotImplementedError: if ``multi_instance_labels`` is non-empty AND the
+            image dimensions trigger the tiled or upscaled detection paths
+            (``needs_tile`` / ``needs_upscale``). Those wrappers do not yet
+            forward ``multi_instance`` kwargs (Task 4 reviewer I-1); rather
+            than silently degrade to top-1, we surface an actionable error.
+            Tracked for v0.18.1+.
+    """
     plan_path = PLANS_DIR / f"{slug}.json"
     if not plan_path.exists():
         print(f"FAIL {slug}: no plan at {plan_path}")
@@ -861,6 +898,18 @@ def process(slug: str, force: bool = False):
         print(f"FAIL {slug}: plan schema validation: {e}")
         return {"status": "error", "reason": "plan_schema", "detail": str(e)[:500]}
 
+    # v0.18.0: when caller didn't pre-build the multi-instance map (CLI path,
+    # or orchestrator passing None), derive it from the validated plan so
+    # `entity.multi_instance: true` honors itself end-to-end. Cap = 8 per
+    # spec Q4. Empty dict (no opt-in entities) makes the downstream forward
+    # a no-op; legacy behavior preserved.
+    if multi_instance_labels is None:
+        multi_instance_labels = {
+            e["label"]: 8
+            for e in plan.get("entities", [])
+            if e.get("multi_instance")
+        }
+
     img_path = None
     for ext in (".jpg", ".jpeg", ".png", ".webp"):
         candidate = ORIG_DIR / f"{slug}{ext}"
@@ -878,6 +927,26 @@ def process(slug: str, force: bool = False):
         return {"status": "error", "reason": "image_load", "detail": str(e)}
 
     W, H = img_pil.size
+
+    # v0.18.0 (Task 5 spec-review follow-up): hoist the multi_instance×tiled
+    # NotImplementedError to fire BEFORE expensive model loads (load_sam +
+    # set_image + load_grounding_dino can cost 5-15s on MPS). Predicate is
+    # dimension-only here (`profile` isn't computed until ~line 943); the
+    # rare profile-tile-override-on-non-extreme-aspect case still pays the
+    # model-load cost but is caught by the late-path check downstream.
+    # v0.18.1+ can lift this once the wrapped detectors learn to forward
+    # the `multi_instance` kwarg.
+    if multi_instance_labels and (needs_tile(W, H) or needs_upscale(W, H)):
+        _path = "tiled" if needs_tile(W, H) else "upscaled"
+        raise NotImplementedError(
+            f"multi_instance is not yet supported on the {_path} detection "
+            f"path (image dimensions {W}x{H} triggered the {_path} route). "
+            f"Either disable multi_instance for this run, or pre-crop the "
+            f"image to avoid extreme aspect ratios / tiny dimensions. "
+            f"Tracked for v0.18.1+. Multi_instance labels were: "
+            f"{sorted(multi_instance_labels.keys())}"
+        )
+
     img_np = np.array(img_pil)
 
     out_subdir = OUT_DIR / slug
@@ -971,20 +1040,44 @@ def process(slug: str, force: bool = False):
                   "differentiate them in the plan")
         low_thresh = min((e.get("threshold", object_thresh)
                           for _, e in object_entities), default=object_thresh)
-        # Adapt to image shape: tile extreme-aspect, upscale tiny
-        if needs_tile(W, H) or profile.get("tile", False):
+        # Adapt to image shape: tile extreme-aspect, upscale tiny.
+        # v0.18.0 (Task 4 reviewer I-1): the tiled/upscaled wrappers do NOT
+        # yet forward `multi_instance` kwargs. The dimension-only fail-fast
+        # raise lives early (just after `W, H = img_pil.size`) so real-user
+        # calls don't pay model-load cost. The late-path catch below covers
+        # the rare profile-driven tile override (`profile.tile=True` on a
+        # non-extreme-aspect image) that the early gate can't see.
+        # v0.18.1+ can lift this once the wrappers learn to propagate.
+        _is_tiled = needs_tile(W, H) or profile.get("tile", False)
+        _is_upscaled = (not _is_tiled) and needs_upscale(W, H)
+        if multi_instance_labels and _is_tiled and not needs_tile(W, H):
+            # Only reachable via profile.tile override (early gate already
+            # rejected dimension-driven tile/upscale routes).
+            raise NotImplementedError(
+                f"multi_instance is not yet supported on the tiled detection "
+                f"path (profile {domain!r} forced tile=True on {W}x{H}). "
+                f"Either disable multi_instance for this run, or use a "
+                f"different domain profile. Tracked for v0.18.1+. "
+                f"Multi_instance labels were: "
+                f"{sorted(multi_instance_labels.keys())}"
+            )
+        if _is_tiled:
             print(f"    [adapt] tile inference (aspect {max(W,H)/min(W,H):.1f}:1)")
             dino_assigned = detect_all_bboxes_tiled(dino_proc, dino_model, device,
                                                      img_pil, object_labels,
                                                      threshold=low_thresh)
-        elif needs_upscale(W, H):
+        elif _is_upscaled:
             print(f"    [adapt] 2x upscale inference ({W}x{H} → {W*2}x{H*2})")
             dino_assigned = detect_all_bboxes_upscaled(dino_proc, dino_model, device,
                                                         img_pil, object_labels,
                                                         threshold=low_thresh)
         else:
-            dino_assigned = detect_all_bboxes(dino_proc, dino_model, device, img_pil,
-                                               object_labels, threshold=low_thresh)
+            dino_assigned = detect_all_bboxes(
+                dino_proc, dino_model, device, img_pil,
+                object_labels, threshold=low_thresh,
+                multi_instance=multi_instance_labels or {},
+                multi_instance_box_threshold=0.25,
+            )
         print(f"  DINO objects: {len(dino_assigned)}/{len(object_labels)} in {time.time()-t0:.1f}s")
 
     layers_raw = []
@@ -1216,64 +1309,141 @@ def process(slug: str, force: bool = False):
         all_persons_mask |= pl["mask"]
 
     # Object layers: use DINO results
+    # v0.18.0: multi_instance support — when dino_assigned[label] is a list,
+    # iterate per-bbox and emit N flat sibling layers (<label>_0..N-1). Track
+    # cumulative z-index push so subsequent entities don't collide. Single-
+    # instance entities (tuple form) flow through unchanged: detections=[raw],
+    # one inner iteration, name = base_name (no suffix).
+    z_offset = 0
     for i, entity in object_entities:
         label = entity["label"]
         semantic_path = entity.get("semantic_path", f"subject.entity[{i}]")
-        record = {"id": i, "name": entity.get("name", label.replace(" ", "_")),
-                  "label": label, "semantic_path": semantic_path, "kind": "object"}
+        base_name = entity.get("name", label.replace(" ", "_"))
+        is_multi = label in (multi_instance_labels or {})
+
         if label not in dino_assigned:
             print(f"  [O{i}] {label[:40]:40s} MISSED (dino)")
-            record.update({"status": "missed", "reason": "dino_not_matched"})
+            record = {"id": i, "name": base_name,
+                      "label": label, "semantic_path": semantic_path, "kind": "object",
+                      "status": "missed", "reason": "dino_not_matched"}
+            if is_multi:
+                record.setdefault("quality_flags", []).append("multi_instance_no_detection")
             detection_report["per_entity"].append(record)
             continue
-        bbox, score, phrase = dino_assigned[label]
-        mask, sam_score, bbox_fill, inside_ratio = segment_bbox(sam_pred, bbox)
 
-        # Pattern #3 fix: subtract person overlap ONLY in the "suspicious middle
-        # range" (30%-90%). Rationale:
-        #   - <30% overlap: probably no leak
-        #   - 30-90% overlap: partial leak (e.g. chair_parapet grabbed arms)
-        #   - >90% overlap: object is *contained* inside person by design
-        #     (jewelry, flag_pin, held object, vulture near child) — KEEP IT.
-        # Background layers (sky, ground, water) are exempt entirely.
-        if not semantic_path.startswith("background"):
-            overlap = (mask & all_persons_mask).sum()
-            obj_px = mask.sum()
-            if obj_px > 0:
-                ratio = overlap / obj_px
-                if 0.30 < ratio < 0.90:
-                    mask = mask & ~all_persons_mask
-                    print(f"    [leak-fix] {record['name']}: subtracted person overlap ({ratio*100:.0f}%)")
-                elif ratio >= 0.90:
-                    # Fully contained — accessory/held object. Keep as-is.
-                    pass
+        # Type-discriminated unwrap: list for multi-instance labels (v0.18+),
+        # tuple for single-instance (backward compat). Use isinstance per the
+        # detect_all_bboxes() contract — do NOT sniff via try/except or len.
+        raw = dino_assigned[label]
+        detections = raw if isinstance(raw, list) else [raw]
 
-        pct = mask.sum() / (H * W) * 100
+        # is_multi_expanded captures "did multi_instance actually produce ≥2
+        # layers". Used by the naming rule, the log tag, and the z_offset push
+        # so all three share a single source of truth — future tweaks (e.g.,
+        # "multi with 1 detection but score >0.9 should still split") edit one
+        # place. The `is_multi and len(detections) < 2` check below is
+        # intentionally NOT consolidated: it asks the inverse question
+        # ("multi was requested but DID NOT expand") gated on is_multi.
+        is_multi_expanded = isinstance(raw, list) and len(detections) >= 2
 
-        # v0.17.13 transparency gate — see compute_quality_flags() above.
-        quality_flags, status = compute_quality_flags(
-            pct=pct, sam_score=sam_score,
-            bbox_fill=bbox_fill, inside_ratio=inside_ratio,
-        )
-        marker = "?" if quality_flags else " "
-        print(f"  [O{i}]{marker}{label[:30]:30s} → '{phrase[:20]}' bbox={bbox} "
-              f"det={score:.2f} sam={sam_score:.2f} pct={pct:.1f}% fill={bbox_fill:.2f}"
-              + (f" flags={quality_flags}" if quality_flags else ""))
-        record.update({"status": status, "detector": "dino",
-                       "matched_phrase": phrase, "bbox": bbox,
-                       "det_score": score, "sam_score": sam_score,
-                       "pct": round(pct, 2),
-                       "bbox_fill": round(bbox_fill, 3),
-                       "inside_ratio": round(inside_ratio, 3),
-                       "quality_flags": quality_flags})
-        detection_report["per_entity"].append(record)
-        layers_raw.append({
-            "id": i, "label": label, "name": record["name"],
-            "semantic_path": semantic_path, "bbox": bbox,
-            "det_score": score, "sam_score": sam_score,
-            "z": _z_index_for(semantic_path), "mask": mask,
-            "quality_status": status,
-        })
+        # Multi-instance degraded fallback: requested but DINO returned <2.
+        # Spec: emit a single layer named <label> (no suffix) tagged with
+        # multi_instance_degraded. inst_idx will be 0 in this branch.
+        if is_multi and len(detections) < 2:
+            degraded = True
+            print(f"  [O{i}] {label[:40]:40s} MULTI_INSTANCE_DEGRADED "
+                  f"(dino returned {len(detections)})")
+        else:
+            degraded = False
+
+        # Per-instance loop. Ordering preserved from detect_all_bboxes via
+        # _nms_bboxes — sorted by -score; do NOT re-sort here.
+        for inst_idx, (bbox, score, phrase) in enumerate(detections):
+            mask, sam_score, bbox_fill, inside_ratio = segment_bbox(sam_pred, bbox)
+
+            # Naming + record-id seed. Spec: degraded → no suffix; multi w/ ≥2
+            # → <base>_<inst_idx>; single-instance → <base> (unchanged).
+            if is_multi_expanded:
+                inst_name = f"{base_name}_{inst_idx}"
+            else:
+                # Degraded multi_instance (1 bbox) and true single both name as
+                # <base>; the difference is that degraded carries
+                # multi_instance_degraded in quality_flags (see flag-append
+                # below) so callers that want to detect the degradation can.
+                # Downstream tools that only consume `name` can't tell them
+                # apart, which is the desired contract.
+                inst_name = base_name
+
+            # id reflects parent-entity index (shared across multi_instance
+            # siblings); name carries the suffix that disambiguates siblings.
+            record = {"id": i, "name": inst_name,
+                      "label": label, "semantic_path": semantic_path,
+                      "kind": "object"}
+
+            # Pattern #3 fix: subtract person overlap ONLY in the "suspicious middle
+            # range" (30%-90%). Rationale:
+            #   - <30% overlap: probably no leak
+            #   - 30-90% overlap: partial leak (e.g. chair_parapet grabbed arms)
+            #   - >90% overlap: object is *contained* inside person by design
+            #     (jewelry, flag_pin, held object, vulture near child) — KEEP IT.
+            # Background layers (sky, ground, water) are exempt entirely.
+            if not semantic_path.startswith("background"):
+                overlap = (mask & all_persons_mask).sum()
+                obj_px = mask.sum()
+                if obj_px > 0:
+                    ratio = overlap / obj_px
+                    if 0.30 < ratio < 0.90:
+                        mask = mask & ~all_persons_mask
+                        print(f"    [leak-fix] {record['name']}: subtracted person overlap ({ratio*100:.0f}%)")
+                    elif ratio >= 0.90:
+                        # Fully contained — accessory/held object. Keep as-is.
+                        pass
+
+            pct = mask.sum() / (H * W) * 100
+
+            # v0.17.13 transparency gate — see compute_quality_flags() above.
+            quality_flags, status = compute_quality_flags(
+                pct=pct, sam_score=sam_score,
+                bbox_fill=bbox_fill, inside_ratio=inside_ratio,
+            )
+            if degraded:
+                # Append, don't overwrite — multi_instance_degraded coexists with
+                # any base quality_flags the gate decided.
+                quality_flags = list(quality_flags) + ["multi_instance_degraded"]
+
+            marker = "?" if quality_flags else " "
+            # Conditional tag preserves the v0.17.x grep contract: single-
+            # instance entities (and degraded multi with len=1) keep `[O{i}]`
+            # so existing log scrapers / ship-gate assertions matching
+            # `\[O\d+\]` still hit. Only true multi-expansion shows the
+            # `[O{i}.{inst_idx}]` form.
+            tag = f"[O{i}.{inst_idx}]" if is_multi_expanded else f"[O{i}]"
+            print(f"  {tag}{marker}{inst_name[:30]:30s} → '{phrase[:20]}' bbox={bbox} "
+                  f"det={score:.2f} sam={sam_score:.2f} pct={pct:.1f}% fill={bbox_fill:.2f}"
+                  + (f" flags={quality_flags}" if quality_flags else ""))
+            record.update({"status": status, "detector": "dino",
+                           "matched_phrase": phrase, "bbox": bbox,
+                           "det_score": score, "sam_score": sam_score,
+                           "pct": round(pct, 2),
+                           "bbox_fill": round(bbox_fill, 3),
+                           "inside_ratio": round(inside_ratio, 3),
+                           "quality_flags": quality_flags})
+            detection_report["per_entity"].append(record)
+            # id is parent-entity index; siblings share — distinguished by `name`.
+            layers_raw.append({
+                "id": i, "label": label, "name": inst_name,
+                "semantic_path": semantic_path, "bbox": bbox,
+                "det_score": score, "sam_score": sam_score,
+                "z": _z_index_for(semantic_path) + z_offset + inst_idx,
+                "mask": mask,
+                "quality_status": status,
+            })
+
+        # After processing all instances of this entity, bump z_offset for
+        # subsequent entities (only if we actually wrote >1 layer). Keeps
+        # z-index assignments deterministic + collision-free across entities.
+        if is_multi_expanded:
+            z_offset += (len(detections) - 1)
 
     # (hint_entities were processed earlier, before face-parsing — see Stage 3b.)
 

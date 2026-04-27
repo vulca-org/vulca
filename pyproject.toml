@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "vulca"
-version = "0.17.15"
+version = "0.18.0"
 description = "Agent-native cultural art SDK — 20 MCP tools for image generation, L1-L5 evaluation, layer editing, and 13 cultural traditions. Agents drive all creative decisions; Vulca provides hands + eyes."
 readme = "README.md"
 license = "Apache-2.0"
@@ -156,6 +156,11 @@ include = [
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+markers = [
+    "l4_local: requires local model weights (DINO + SAM); skipped in CI via pytest.importorskip('torch')",
+    "real_provider: requires real cloud provider credentials (e.g. OpenAI, Gemini, etc); skipped in CI",
+    "local_provider: requires local provider stack (ComfyUI + Ollama); skipped in CI",
+]
 
 [tool.mypy]
 python_version = "3.11"

@@ -48,7 +48,11 @@ def _setup_one_layer(tmp_path: Path, *, size=(100, 100), color=(180, 64, 32, 200
 
 class TestNonDestructiveOutput:
     def test_default_inplace_for_backcompat(self, tmp_path):
-        """Default (no output_layer_name) writes back to <layer>.png."""
+        """Legacy in-place opt-out (in_place=True) writes back to <layer>.png.
+
+        v0.18.0 flipped the default to non-destructive; this test pins the
+        legacy parity path that callers must opt into via ``in_place=True``.
+        """
         from vulca.layers.redraw import redraw_layer
 
         _setup_one_layer(tmp_path)
@@ -59,6 +63,7 @@ class TestNonDestructiveOutput:
             redraw_layer(
                 artwork, layer_name="fg", instruction="brighter",
                 provider="mock", artwork_dir=str(tmp_path),
+                in_place=True,
             )
         )
         after = set(p.name for p in tmp_path.iterdir())
@@ -246,14 +251,14 @@ class TestPreserveAlpha:
         assert src_alpha.getpixel((40, 10)) == 80
 
         artwork = load_manifest(str(tmp_path))
-        _run(
+        result = _run(
             redraw_layer(
                 artwork, layer_name="fg", instruction="x",
                 provider="mock", artwork_dir=str(tmp_path),
                 preserve_alpha=True,
             )
         )
-        out_alpha = Image.open(str(tmp_path / "fg.png")).split()[-1]
+        out_alpha = Image.open(result.image_path).split()[-1]
         assert out_alpha.getpixel((10, 10)) == 255, (
             "left half (originally fully opaque) must stay opaque"
         )
@@ -263,13 +268,18 @@ class TestPreserveAlpha:
         assert list(out_alpha.getdata()) == list(src_alpha.getdata())
 
     def test_preserve_alpha_false_default_unchanged(self, tmp_path):
-        """preserve_alpha=False (default) — output is opaque RGBA."""
+        """preserve_alpha=False — output is opaque RGBA (legacy alpha drop).
+
+        v0.18.0 flipped the default to ``preserve_alpha=True``; this test
+        explicitly opts back into legacy parity to verify provider output is
+        opaque when alpha is not re-applied.
+        """
         from vulca.layers.redraw import redraw_layer
 
         _setup_one_layer(tmp_path)
         artwork = load_manifest(str(tmp_path))
 
-        _run(
+        result = _run(
             redraw_layer(
                 artwork, layer_name="fg", instruction="x",
                 provider="mock", artwork_dir=str(tmp_path),
@@ -277,7 +287,7 @@ class TestPreserveAlpha:
             )
         )
         # Mock provider returns opaque (alpha=255 across canvas)
-        out = Image.open(str(tmp_path / "fg.png"))
+        out = Image.open(result.image_path)
         alphas = set(out.split()[-1].getdata())
         # Allow some room — mock canvas is single solid color → all alphas equal
         assert max(alphas) == 255
@@ -351,3 +361,69 @@ class TestAspectPreservation:
         src = Image.new("RGB", (100, 100), (50, 50, 50))
         out = _fit_into_canvas(src, (100, 100), bg_rgb=(0, 0, 0))
         assert out.size == (100, 100)
+
+
+# ---------------------------------------------------------------------------
+# v0.18.0 default-flip opt-out paths
+# ---------------------------------------------------------------------------
+
+class TestV018DefaultFlip:
+    """v0.18.0: verify new safe defaults + explicit opt-out paths."""
+
+    def test_default_writes_to_redrawn_suffix(self, tmp_path):
+        """Default call writes to <layer>_redrawn.png, not in-place."""
+        from vulca.layers.redraw import redraw_layer
+
+        _setup_one_layer(tmp_path)
+        artwork = load_manifest(str(tmp_path))
+        result = _run(
+            redraw_layer(
+                artwork, layer_name="fg",
+                instruction="cinnabar reinterp",
+                provider="mock", artwork_dir=str(tmp_path),
+            )
+        )
+        assert result.image_path.endswith("fg_redrawn.png"), (
+            f"expected auto-derived name, got {result.image_path}"
+        )
+        # Original input must remain untouched
+        original = tmp_path / "fg.png"
+        assert original.exists(), "original fg.png should not be deleted"
+
+    def test_in_place_true_overwrites_input(self, tmp_path):
+        """in_place=True restores v0.17.x legacy behavior."""
+        from vulca.layers.redraw import redraw_layer
+
+        _setup_one_layer(tmp_path)
+        artwork = load_manifest(str(tmp_path))
+        result = _run(
+            redraw_layer(
+                artwork, layer_name="fg",
+                instruction="cinnabar reinterp",
+                provider="mock", artwork_dir=str(tmp_path),
+                in_place=True,
+            )
+        )
+        assert result.image_path.endswith("/fg.png"), (
+            f"in_place should overwrite input, got {result.image_path}"
+        )
+        assert not result.image_path.endswith("_redrawn.png")
+
+    def test_in_place_overrides_output_layer_name(self, tmp_path):
+        """in_place=True wins over an explicit output_layer_name."""
+        from vulca.layers.redraw import redraw_layer
+
+        _setup_one_layer(tmp_path)
+        artwork = load_manifest(str(tmp_path))
+        result = _run(
+            redraw_layer(
+                artwork, layer_name="fg",
+                instruction="cinnabar reinterp",
+                provider="mock", artwork_dir=str(tmp_path),
+                in_place=True,
+                output_layer_name="foo",
+            )
+        )
+        # in_place precedence: foo.png should NOT exist
+        assert result.image_path.endswith("/fg.png")
+        assert not (tmp_path / "foo.png").exists()
