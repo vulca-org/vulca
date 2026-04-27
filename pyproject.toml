@@ -156,6 +156,9 @@ include = [
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+markers = [
+    "l4_local: requires local model weights (DINO + SAM); skipped in CI via pytest.importorskip('torch')",
+]
 
 [tool.mypy]
 python_version = "3.11"

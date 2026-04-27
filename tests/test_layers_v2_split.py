@@ -1127,3 +1127,195 @@ class TestMultiInstance:
             f"single-instance cathedral must not carry multi_instance_* flags, "
             f"got {cathedral_flags}"
         )
+
+
+class TestMultiInstanceL4:
+    """L4: real DINO + SAM on lanterns fixture. CI-skipped via importorskip.
+
+    This test exercises the full multi_instance pipeline end-to-end against
+    real Grounding DINO + SAM weights. It runs locally for ship-gate
+    validation and is skipped in CI (no torch/model weights available there)
+    via ``pytest.importorskip("torch")`` at the top of the body.
+
+    Marker ``@pytest.mark.l4_local`` lets local devs opt out of the slow
+    MPS load with ``-m "not l4_local"`` while still getting unit-test
+    coverage from the mocked TestMultiInstance class above.
+
+    Fixture: tests/fixtures/multi_instance/lanterns_6.jpg — 440×700 JPEG
+    cropped from
+    docs/visual-specs/2026-04-23-scottish-chinese-fusion/decompose/lanterns_source_crop.png
+    showing 6 hanging red paper lanterns in a row (γ Scottish showcase
+    source). Dimensions chosen to NOT trigger needs_tile (max/min=1.59 <
+    3.0) or needs_upscale (min=440 ≥ UPSCALE_MIN_SIDE=384) so the test
+    actually exercises the standard DINO path instead of the v0.18.0
+    NotImplementedError fail-fast.
+    """
+
+    @pytest.mark.l4_local
+    def test_real_dino_sam_on_lanterns_fixture(self, tmp_path, monkeypatch):
+        """6-lantern fixture → ≥3 instances detected with sam_score>0.5, no overlap."""
+        # CI-skip seam: CI runners do not install torch (per Task 4 Approach
+        # E), so this importorskip causes the test to skip silently in CI.
+        # Local environments with the sam/sam3 extras installed will run it.
+        torch = pytest.importorskip("torch")  # noqa: F841 — referenced for skip side-effect
+        from scripts import claude_orchestrated_pipeline as cop
+
+        slug = "l4_lanterns_6"
+        fixture_path = (
+            Path(__file__).parent / "fixtures" / "multi_instance" / "lanterns_6.jpg"
+        )
+        assert fixture_path.exists(), f"L4 fixture missing: {fixture_path}"
+
+        # Pre-condition assertion (Task 3 fixture-intent discipline): verify
+        # the fixture image is in the expected aspect/size range so the test
+        # actually exercises the non-tiled, non-upscaled DINO path. If this
+        # assertion fails, either the fixture changed or the cop routing
+        # thresholds changed — either way, this test would silently change
+        # what it's testing, so fail loudly. Uses PIL-native (W, H) per the
+        # convention shared with _stage_artwork / _make_segment_bbox_mock
+        # (Task 7 I-1 carry-forward).
+        with Image.open(str(fixture_path)) as img:
+            W, H = img.size
+        assert not cop.needs_tile(W, H), (
+            f"fixture dims {W}x{H} unexpectedly route to tiled path; "
+            f"L4 test would hit the multi_instance NotImplementedError "
+            f"fail-fast at cop.process line ~939"
+        )
+        assert not cop.needs_upscale(W, H), (
+            f"fixture dims {W}x{H} unexpectedly route to upscale path; "
+            f"L4 test would hit the multi_instance NotImplementedError "
+            f"fail-fast at cop.process line ~939"
+        )
+
+        # Stage the artwork directories (per Task 7 _stage_artwork pattern,
+        # but inlined here because we need to copy a real fixture rather
+        # than synthesize a uniform-color test image).
+        orig_dir = tmp_path / "originals"
+        plans_dir = tmp_path / "plans"
+        out_dir = tmp_path / "out"
+        orig_dir.mkdir()
+        plans_dir.mkdir()
+        out_dir.mkdir()
+        monkeypatch.setattr(cop, "ORIG_DIR", orig_dir)
+        monkeypatch.setattr(cop, "PLANS_DIR", plans_dir)
+        monkeypatch.setattr(cop, "OUT_DIR", out_dir)
+
+        # Copy fixture into ORIG_DIR (process() looks up <slug>.jpg)
+        import shutil
+        shutil.copy(str(fixture_path), str(orig_dir / f"{slug}.jpg"))
+
+        # Build plan with one multi_instance entity for "red paper lanterns".
+        # Per cop.py L1321: base_name = entity["name"] when present, so
+        # sibling layers will be named lanterns_0, lanterns_1, ... matching
+        # the Task 7 mixed-plan convention (`lanterns_<n>`).
+        # Plan schema (src/vulca/pipeline/segment/plan.py) requires `name`
+        # + `label`, forbids `kind` and top-level `image` keys (extra=forbid).
+        # NOTE: DINO matches partial phrases — if a future model-weight
+        # update returns 0 detections on this label, see "Tunable knobs"
+        # in the v0.18 spec (Task 8) for label string alternatives.
+        plan = {
+            "domain": "renaissance_painting",
+            "entities": [
+                {
+                    "name": "lanterns",
+                    "label": "red paper lanterns",
+                    "semantic_path": "subject.lanterns",
+                    "multi_instance": True,
+                }
+            ],
+        }
+        (plans_dir / f"{slug}.json").write_text(json.dumps(plan))
+
+        # Build multi_instance_labels dict (mimicking what the CLI/orchestrator
+        # path does when caller passes None — cop.process at L906-911).
+        # Cap=8 matches spec Q4.
+        multi_instance_labels = {
+            e["label"]: 8
+            for e in plan["entities"]
+            if e.get("multi_instance")
+        }
+
+        # RUN — exercises real load_sam, real load_grounding_dino, real
+        # detect_all_bboxes (multi_instance kwarg path), real segment_bbox,
+        # and the entity loop. Will take several seconds on MPS.
+        cop.process(slug, force=True, multi_instance_labels=multi_instance_labels)
+
+        # Read manifest. detection_report is embedded INSIDE manifest.json
+        # under the "detection_report" key (per cop.py L1634), not a
+        # separate report.json file.
+        manifest_path = out_dir / slug / "manifest.json"
+        assert manifest_path.exists(), f"manifest not written: {manifest_path}"
+        manifest = json.loads(manifest_path.read_text())
+
+        # Filter sibling layers — base_name = entity["name"] = "lanterns",
+        # siblings take the form lanterns_0, lanterns_1, ... (cop.py L1367:
+        # f"{base_name}_{inst_idx}"). We use a strict `lanterns_` prefix
+        # rather than just `lanterns` so we don't accidentally pick up the
+        # degraded fallback's bare `lanterns` (no suffix) — that path means
+        # multi_instance did NOT expand (asserted negatively below).
+        layers = [
+            l for l in manifest["layers"]
+            if l["name"].startswith("lanterns_")
+        ]
+
+        # Loose-bound assertions defend against DINO weight drift. Fixture
+        # has 6 visible lanterns; even partial detection should reach 3+.
+        # If a real run only finds 2, that is a model-quality finding worth
+        # surfacing as DONE_WITH_CONCERNS rather than weakening this bound.
+        assert len(layers) >= 3, (
+            f"DINO should detect ≥3 lanterns on this fixture; "
+            f"got {len(layers)}: {[l['name'] for l in layers]}"
+        )
+        for layer in layers:
+            assert layer["sam_score"] > 0.5, (
+                f"sam_score too low for {layer['name']}: {layer['sam_score']} "
+                f"(<0.5 indicates poor mask quality; investigate before "
+                f"weakening this bound)"
+            )
+
+        # IoU non-overlap check — multi-instance detections should be
+        # spatially distinct. Heavy overlap (IoU≥0.5) between two siblings
+        # indicates an NMS regression (see _nms_bboxes(keep_n) — Task 4).
+        def iou(a, b):
+            ax1, ay1, ax2, ay2 = a
+            bx1, by1, bx2, by2 = b
+            inter_w = max(0, min(ax2, bx2) - max(ax1, bx1))
+            inter_h = max(0, min(ay2, by2) - max(ay1, by1))
+            inter = inter_w * inter_h
+            area_a = (ax2 - ax1) * (ay2 - ay1)
+            area_b = (bx2 - bx1) * (by2 - by1)
+            union = area_a + area_b - inter
+            return inter / union if union > 0 else 0.0
+
+        bboxes = [layer["bbox"] for layer in layers]
+        for i, b1 in enumerate(bboxes):
+            for b2 in bboxes[i + 1:]:
+                iou_val = iou(b1, b2)
+                assert iou_val < 0.5, (
+                    f"sibling instances should not overlap heavily: "
+                    f"IoU={iou_val:.3f} between {b1} and {b2}"
+                )
+
+        # Verify NO multi_instance_degraded flag — ≥3 detections means real
+        # multi-instance fired (not the degraded fallback). Find the
+        # per_entity record by matching the entity name (cop.py L1379:
+        # records use `inst_name`, but for the degraded path the record
+        # name is base_name — either way, all sibling records' quality_flags
+        # must be free of "multi_instance_degraded").
+        per_entity = manifest.get("detection_report", {}).get("per_entity", [])
+        sibling_records = [
+            r for r in per_entity
+            if r.get("name", "").startswith("lanterns")
+            or r.get("label") == "red paper lanterns"
+        ]
+        assert sibling_records, (
+            f"no per_entity records for 'red paper lanterns' label; "
+            f"per_entity names = "
+            f"{[r.get('name') for r in per_entity]}"
+        )
+        for rec in sibling_records:
+            flags = rec.get("quality_flags", [])
+            assert "multi_instance_degraded" not in flags, (
+                f"unexpected degradation on {rec.get('name')}: "
+                f"quality_flags={flags}"
+            )
