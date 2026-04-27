@@ -566,7 +566,7 @@ class _StubSamPredictor:
         )
 
 
-def _make_segment_bbox_mock(canvas_hw: tuple[int, int] = (600, 800),
+def _make_segment_bbox_mock(canvas_wh: tuple[int, int] = (800, 600),
                              sam_score: float = 0.85):
     """Build a `segment_bbox` replacement that fabricates a plausible mask.
 
@@ -575,12 +575,17 @@ def _make_segment_bbox_mock(canvas_hw: tuple[int, int] = (600, 800),
     flag gate to register the layer as `status="detected"` (no transparency
     flags) so we cleanly observe multi_instance-specific flags downstream.
 
+    Convention: ``canvas_wh`` is PIL-native (width, height) to match
+    ``_stage_artwork``. The internal numpy mask is created in (H, W) shape
+    order via an explicit unpack at the boundary, so the two helpers can never
+    silently disagree on canvas dims when a test overrides only one of them.
+
     Args:
-        canvas_hw: (H, W) of the test image. Mask is cropped to these dims.
+        canvas_wh: (W, H) of the test image. Mask is cropped to these dims.
         sam_score: returned SAM confidence; 0.85 is comfortably above the
             transparency gate's 0.65 floor (see compute_quality_flags).
     """
-    H, W = canvas_hw
+    W, H = canvas_wh  # explicit unpack at the boundary; numpy needs (H, W)
 
     def _seg(_sam_pred, bbox):
         x1, y1, x2, y2 = bbox
@@ -605,6 +610,10 @@ def _stage_artwork(tmp_path, slug: str, plan_payload: dict,
     Creates ORIG_DIR / PLANS_DIR / OUT_DIR under `tmp_path`, writes a uniform-
     color JPG at the requested size, writes the plan JSON, and (if
     `monkeypatch` + `cop` provided) rebinds the three module-level dirs.
+
+    Convention: ``canvas_wh`` is PIL-native (width, height); see also
+    ``_make_segment_bbox_mock`` which uses the same convention so the two
+    helpers stay aligned when a test overrides only one canvas.
 
     Returns the staged paths (orig_dir, plans_dir, out_dir) for tests that
     need to inspect the post-run manifest.
@@ -806,13 +815,9 @@ class TestMultiInstance:
         assert isinstance(robot_bbox, tuple), \
             "test intent: robot is single-instance (tuple form)"
 
-        # Z-index math: both `subject.lanterns` and `subject.robot` fall into
-        # the catch-all `subject.` rule in `_z_index_for` → base z=45. After
-        # 6 lanterns expand, `z_offset` = N-1 = 5. Robot's inst_idx = 0, so
-        # robot.z = 45 + 5 + 0 = 50. (Lantern_5 also lands at 50 via
-        # 45+0+inst_idx=5, but they have distinct semantic_paths so hierarchical
-        # resolve tiebreaks deterministically — collision is by design and out
-        # of scope for this test, which only verifies the push contract.)
+        # Z-index contract: lanterns expand ×6, so subsequent entities get
+        # z_offset = N-1 = 5. See computed assertion below for the full math
+        # (resilient to future base-z renumbering in `_z_index_for`).
 
         monkeypatch.setattr(cop, "detect_all_bboxes", lambda *_a, **_k: {
             "lantern": lantern_bboxes,
@@ -826,12 +831,12 @@ class TestMultiInstance:
         manifest = _read_manifest(out_dir, slug)
         robot_layer = self._layer_by_name(manifest, "robot")
         assert robot_layer is not None, "robot entity layer must be emitted"
-        # Base z for `subject.robot` = 45 (catch-all `subject.` rule). With
-        # 6 lanterns expanded ahead of it, z_offset should push by N-1 = 5.
-        # Final z_index = 45 + 5 + 0 (robot's own inst_idx=0) = 50.
-        assert robot_layer["z_index"] == 50, (
-            f"robot.z_index must be 50 (45 base + 5 push from lanterns), "
-            f"got {robot_layer['z_index']}"
+        # Robot's z_index = base z for its semantic_path + push from preceding
+        # lanterns (which expanded to 6 instances → push by N-1 = 5).
+        expected_z = cop._z_index_for("subject.robot") + 5
+        assert robot_layer["z_index"] == expected_z, (
+            f"robot.z_index={robot_layer['z_index']} != expected {expected_z} "
+            f"(base {cop._z_index_for('subject.robot')} + push 5)"
         )
 
     def test_degraded_when_dino_returns_one(self, monkeypatch, tmp_path):
