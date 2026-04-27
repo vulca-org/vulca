@@ -117,6 +117,9 @@ mcp_vulca.layers_redraw(
     provider="openai",
     tradition="chinese_gongbi",
 )
+# As of v0.18.0 this writes to `lanterns_redrawn.png` by default
+# (non-destructive); the original `lanterns.png` is preserved. Pass
+# `in_place=True` to restore the v0.17.x overwrite behavior.
 ```
 
 `layers_redraw` sends the alpha-sparse layer through `gpt-image-2`'s edit endpoint with the cultural tradition's prompt-composition layer applied. The slide-4-right artifact you see — a four-lantern + spire reinterpretation in full 工笔重彩 with deeper cinnabar saturation and gongbi-canonical line discipline (outline-and-fill, *勾勒填彩*) — was authored via a fresh `generate_image` call seeded by this same gongbi prompt scaffold, **not** the literal `layers_redraw` output above. The native `layers_redraw` path on this row-of-six-lanterns alpha gives a stylistically incoherent result because cream-flat reference loses per-instance geometry (see [`decompose/v0_17_14_native/NOTES.md`](../decompose/v0_17_14_native/NOTES.md) for the v0.17.14 end-to-end MCP run and the v0.18 backlog item). The `layers_redraw` verb still works as documented; the carousel's slide-4-right just exercises the related `generate_image` path for visual coherence. The model approximates the *visual register* of gongbi — but as the L1-L5 scorecard below makes explicit, **single-pass diffusion can't simulate the multi-pass alum-wash physics** of true 三矾九染. The redraw looks gongbi-flavored; it isn't gongbi-correct. Both can be true.
