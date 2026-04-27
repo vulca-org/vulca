@@ -158,6 +158,8 @@ asyncio_mode = "auto"
 testpaths = ["tests"]
 markers = [
     "l4_local: requires local model weights (DINO + SAM); skipped in CI via pytest.importorskip('torch')",
+    "real_provider: requires real cloud provider credentials (e.g. OpenAI, Gemini, etc); skipped in CI",
+    "local_provider: requires local provider stack (ComfyUI + Ollama); skipped in CI",
 ]
 
 [tool.mypy]

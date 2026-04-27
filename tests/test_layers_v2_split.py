@@ -1129,6 +1129,10 @@ class TestMultiInstance:
         )
 
 
+# ---------------------------------------------------------------------------
+# TestMultiInstanceL4 — real DINO + SAM, marker-gated (Task 8)
+# Runs locally with model weights; CI skips via pytest.importorskip("torch").
+# ---------------------------------------------------------------------------
 class TestMultiInstanceL4:
     """L4: real DINO + SAM on lanterns fixture. CI-skipped via importorskip.
 
@@ -1159,6 +1163,7 @@ class TestMultiInstanceL4:
         # Local environments with the sam/sam3 extras installed will run it.
         torch = pytest.importorskip("torch")  # noqa: F841 — referenced for skip side-effect
         from scripts import claude_orchestrated_pipeline as cop
+        from vulca._segment import _iou
 
         slug = "l4_lanterns_6"
         fixture_path = (
@@ -1276,21 +1281,12 @@ class TestMultiInstanceL4:
         # IoU non-overlap check — multi-instance detections should be
         # spatially distinct. Heavy overlap (IoU≥0.5) between two siblings
         # indicates an NMS regression (see _nms_bboxes(keep_n) — Task 4).
-        def iou(a, b):
-            ax1, ay1, ax2, ay2 = a
-            bx1, by1, bx2, by2 = b
-            inter_w = max(0, min(ax2, bx2) - max(ax1, bx1))
-            inter_h = max(0, min(ay2, by2) - max(ay1, by1))
-            inter = inter_w * inter_h
-            area_a = (ax2 - ax1) * (ay2 - ay1)
-            area_b = (bx2 - bx1) * (by2 - by1)
-            union = area_a + area_b - inter
-            return inter / union if union > 0 else 0.0
-
+        # Uses canonical vulca._segment._iou (imported above) — same primitive
+        # the production NMS path uses, per v0.17.13 _quality_gate precedent.
         bboxes = [layer["bbox"] for layer in layers]
         for i, b1 in enumerate(bboxes):
             for b2 in bboxes[i + 1:]:
-                iou_val = iou(b1, b2)
+                iou_val = _iou(b1, b2)
                 assert iou_val < 0.5, (
                     f"sibling instances should not overlap heavily: "
                     f"IoU={iou_val:.3f} between {b1} and {b2}"
