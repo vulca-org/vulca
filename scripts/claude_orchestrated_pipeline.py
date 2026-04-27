@@ -1337,6 +1337,15 @@ def process(slug: str, force: bool = False, multi_instance_labels: dict | None =
         raw = dino_assigned[label]
         detections = raw if isinstance(raw, list) else [raw]
 
+        # is_multi_expanded captures "did multi_instance actually produce ≥2
+        # layers". Used by the naming rule, the log tag, and the z_offset push
+        # so all three share a single source of truth — future tweaks (e.g.,
+        # "multi with 1 detection but score >0.9 should still split") edit one
+        # place. The `is_multi and len(detections) < 2` check below is
+        # intentionally NOT consolidated: it asks the inverse question
+        # ("multi was requested but DID NOT expand") gated on is_multi.
+        is_multi_expanded = isinstance(raw, list) and len(detections) >= 2
+
         # Multi-instance degraded fallback: requested but DINO returned <2.
         # Spec: emit a single layer named <label> (no suffix) tagged with
         # multi_instance_degraded. inst_idx will be 0 in this branch.
@@ -1354,11 +1363,19 @@ def process(slug: str, force: bool = False, multi_instance_labels: dict | None =
 
             # Naming + record-id seed. Spec: degraded → no suffix; multi w/ ≥2
             # → <base>_<inst_idx>; single-instance → <base> (unchanged).
-            if isinstance(raw, list) and len(detections) >= 2:
+            if is_multi_expanded:
                 inst_name = f"{base_name}_{inst_idx}"
             else:
+                # Degraded multi_instance (1 bbox) and true single both name as
+                # <base>; the difference is that degraded carries
+                # multi_instance_degraded in quality_flags (see flag-append
+                # below) so callers that want to detect the degradation can.
+                # Downstream tools that only consume `name` can't tell them
+                # apart, which is the desired contract.
                 inst_name = base_name
 
+            # id reflects parent-entity index (shared across multi_instance
+            # siblings); name carries the suffix that disambiguates siblings.
             record = {"id": i, "name": inst_name,
                       "label": label, "semantic_path": semantic_path,
                       "kind": "object"}
@@ -1395,7 +1412,13 @@ def process(slug: str, force: bool = False, multi_instance_labels: dict | None =
                 quality_flags = list(quality_flags) + ["multi_instance_degraded"]
 
             marker = "?" if quality_flags else " "
-            print(f"  [O{i}.{inst_idx}]{marker}{inst_name[:30]:30s} → '{phrase[:20]}' bbox={bbox} "
+            # Conditional tag preserves the v0.17.x grep contract: single-
+            # instance entities (and degraded multi with len=1) keep `[O{i}]`
+            # so existing log scrapers / ship-gate assertions matching
+            # `\[O\d+\]` still hit. Only true multi-expansion shows the
+            # `[O{i}.{inst_idx}]` form.
+            tag = f"[O{i}.{inst_idx}]" if is_multi_expanded else f"[O{i}]"
+            print(f"  {tag}{marker}{inst_name[:30]:30s} → '{phrase[:20]}' bbox={bbox} "
                   f"det={score:.2f} sam={sam_score:.2f} pct={pct:.1f}% fill={bbox_fill:.2f}"
                   + (f" flags={quality_flags}" if quality_flags else ""))
             record.update({"status": status, "detector": "dino",
@@ -1406,6 +1429,7 @@ def process(slug: str, force: bool = False, multi_instance_labels: dict | None =
                            "inside_ratio": round(inside_ratio, 3),
                            "quality_flags": quality_flags})
             detection_report["per_entity"].append(record)
+            # id is parent-entity index; siblings share — distinguished by `name`.
             layers_raw.append({
                 "id": i, "label": label, "name": inst_name,
                 "semantic_path": semantic_path, "bbox": bbox,
@@ -1418,7 +1442,7 @@ def process(slug: str, force: bool = False, multi_instance_labels: dict | None =
         # After processing all instances of this entity, bump z_offset for
         # subsequent entities (only if we actually wrote >1 layer). Keeps
         # z-index assignments deterministic + collision-free across entities.
-        if isinstance(raw, list) and len(detections) >= 2:
+        if is_multi_expanded:
             z_offset += (len(detections) - 1)
 
     # (hint_entities were processed earlier, before face-parsing — see Stage 3b.)
