@@ -13,6 +13,19 @@ class ImageResult:
     metadata: dict | None = None
 
 
+@dataclass(frozen=True)
+class ImageEditCapabilities:
+    """Provider/model edit support used by layer redraw routing."""
+
+    supports_edits: bool = False
+    requires_mask_for_edits: bool = True
+    supports_unmasked_edits: bool = False
+    supports_masked_edits: bool = False
+    supports_input_fidelity: bool = False
+    supports_quality: bool = False
+    supports_output_format: bool = False
+
+
 @dataclass
 class L1L5Scores:
     """L1-L5 dimension scores from a VLM provider."""
@@ -33,6 +46,8 @@ class ImageProvider(Protocol):
     # For coarse provider-kind questions (vlm_scoring, llm_text, cost_tracked)
     # use vulca.providers.capabilities.provider_capabilities() instead.
     capabilities: frozenset[str] = frozenset()
+
+    def edit_capabilities(self) -> ImageEditCapabilities: ...
 
     async def generate(
         self,

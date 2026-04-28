@@ -6,7 +6,7 @@ import io
 import logging
 import os
 
-from vulca.providers.base import ImageProvider, ImageResult
+from vulca.providers.base import ImageEditCapabilities, ImageProvider, ImageResult
 from vulca.providers.retry import with_retry
 
 
@@ -45,6 +45,30 @@ MODEL_TOKEN_PRICING_PER_MILLION: dict[str, dict[str, float]] = {
     "gpt-image-1.5": {"input": 8.0, "output": 32.0},
     "gpt-image-2": {"input": 8.0, "output": 30.0},
 }
+
+def _openai_edit_capabilities(model: str) -> ImageEditCapabilities:
+    if not model.startswith("gpt-image"):
+        return ImageEditCapabilities()
+    if model == "gpt-image-2":
+        return ImageEditCapabilities(
+            supports_edits=True,
+            requires_mask_for_edits=True,
+            supports_unmasked_edits=False,
+            supports_masked_edits=True,
+            supports_input_fidelity=False,
+            supports_quality=True,
+            supports_output_format=True,
+        )
+    return ImageEditCapabilities(
+        supports_edits=True,
+        requires_mask_for_edits=False,
+        supports_unmasked_edits=True,
+        supports_masked_edits=True,
+        supports_input_fidelity=(model == "gpt-image-1.5"),
+        supports_quality=True,
+        supports_output_format=True,
+    )
+
 
 MODEL_STATIC_IMAGE_PRICING: dict[str, dict[str, dict[str, float]]] = {
     "dall-e-2": {
@@ -147,6 +171,9 @@ class OpenAIImageProvider:
     def __init__(self, api_key: str = "", model: str = "gpt-image-1"):
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY", "")
         self.model = model
+
+    def edit_capabilities(self) -> ImageEditCapabilities:
+        return _openai_edit_capabilities(self.model)
 
     async def generate(
         self,
