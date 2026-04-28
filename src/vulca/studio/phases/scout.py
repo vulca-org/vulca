@@ -60,6 +60,9 @@ class ScoutPhase:
 
         try:
             from vulca.providers import get_image_provider
+            # TODO(v0.21): plumb model/quality from studio orchestrator —
+            # currently defaults to OpenAIImageProvider's gpt-image-1 silently.
+            # See v0.20 PR audit on layers_redraw model-plumbing fix.
             img_provider = get_image_provider(provider, api_key=api_key)
         except Exception:
             logger.debug("Could not load provider %s for scout", provider)

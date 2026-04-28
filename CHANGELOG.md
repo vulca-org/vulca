@@ -1,6 +1,121 @@
 # Changelog
 
-## v0.20.0 (unreleased — ship-gate PASSED 2026-04-27)
+## v0.20.1 (unreleased — pre-merge correction)
+
+Pre-merge audit on PR #20 caught that v0.20's ship-gate evidence was
+attributed to the wrong OpenAI model. Correcting before merge so the
+release notes do not ship a false claim.
+
+### What was wrong
+
+`layers_redraw` (and `redraw_merged`) called `get_image_provider("openai")`
+without a `model` kwarg. `OpenAIImageProvider.__init__` defaults to
+`model="gpt-image-1"` (`src/vulca/providers/openai_provider.py:147`). The
+v0.20 spec, plan.md, CHANGELOG entry, and real-provider ship-gate test
+header all stated "gpt-image-2 high" — but every actual API call used
+`gpt-image-1` default quality. The 24 OpenAI calls across Phase 2,
+fixture 1 (3×), fixture 2 (1×), and G5 carousel (9×) all ran on the
+wrong model.
+
+The "80× white-pixel improvement" reported in v0.20 fixture 1 is real
+but mis-attributed: it is the *inpaint-vs-img2img on gpt-image-1*
+delta, NOT the gpt-image-2 high outcome the docs claimed.
+
+The Scottish 2026-04-25 carousel slide-4 RIGHT (`lanterns_after.png`)
+genuinely ran on gpt-image-2 because it was authored via `generate_image`
+MCP with explicit `model="gpt-image-2"` — that tool exposes a `model`
+kwarg. `layers_redraw` did not.
+
+### How it slipped past 4 review rounds
+
+Three validation layers never intersected at the boundary:
+- **Spec/CHANGELOG** validated intended policy
+- **Provider unit tests** validated endpoint capability with explicitly
+  constructed `OpenAIImageProvider(model="gpt-image-2")`
+- **Real-provider integration tests** asserted pixel-level outcomes
+  (hue, saturation, white-pixel fraction) but **never inspected the
+  HTTP form-data sent to OpenAI**
+
+No reviewer ran `git grep "gpt-image-2" src/vulca/layers/redraw.py` —
+which would have returned only comments, not arguments. The bug-shape
+was a 5-second `git grep` away from detection. Process audit at
+[reviewer round 4](docs/superpowers/specs/2026-04-27-v0.20-mask-aware-redraw-routing-design.md)
+fully diagnosed.
+
+### Fix
+
+- `redraw_layer` and `redraw_merged` now accept `model`, `quality`,
+  `input_fidelity`, `output_format` kwargs (matching the pattern in
+  `generate_image` MCP). Plumbed through `provider.model = model` and
+  `provider.generate(quality=...)` / `inpaint_with_mask(quality=...)`.
+- `OpenAIImageProvider.inpaint_with_mask` now accepts and forwards
+  `quality` / `input_fidelity` / `output_format` form-data fields,
+  routed through `_drop_unsupported_params` so per-model capability
+  matrices are honored automatically.
+- `layers_redraw` MCP tool exposes the same kwargs; v0.18.x callers
+  without these kwargs continue to land on the provider default
+  (gpt-image-1) — bit-identical backward compat.
+- `regenerate_from_composite` (`src/vulca/layers/regenerate.py`) gets
+  the same kwarg surface, AND a separate latent bug fixed: it was
+  silently injecting `GOOGLE_API_KEY` into every provider construction
+  via `api_key=api_key or os.environ.get("GOOGLE_API_KEY", "")` — that
+  fallback is removed; provider self-resolves from its own env var.
+- 4 deeper studio/phase call sites (`concept.py`, `scout.py`,
+  `generate.py`, `pipeline/nodes/generate.py`) get `TODO(v0.21)`
+  annotations marking the silent default. Deep plumbing through the
+  studio orchestrator is v0.21 scope.
+
+### New safeguard — wire-level invocation contract test
+
+`tests/test_layers_redraw_wire_contract.py` (5 tests). Replaces
+`httpx.AsyncClient` with a recording wrapper that captures the outbound
+POST form-data. Asserts:
+
+- `data["model"] == "gpt-image-2"` when caller passes that model
+- `data["quality"] == "high"` when caller passes that quality
+- Default omission lands on provider default (currently gpt-image-1)
+- `input_fidelity` is silently dropped for gpt-image-2 (capability table
+  marks it unsupported) but kept for gpt-image-1.5
+
+This is the exact failure mode that 4 review rounds missed. Per
+reviewer round-4's safeguard recommendation: convert soft prose claims
+into hard runtime assertions on the HTTP boundary.
+
+### Ship-gate re-run on real gpt-image-2 high
+
+**Fixture 1 (IMG_6847 flower_cluster_c, single-region 3.3% area)** — 3/3 PASS:
+
+| run | hue | L | pct_white_like |
+|---|---|---|---|
+| v0.20.0 (gpt-image-1 default, mis-attributed) | 79° / 79° / 154° | 0.82 / 0.87 / 0.85 | 67% / 72% / 72% |
+| **v0.20.1 (gpt-image-2 high, corrected)** | **62° / 83° / 61°** | **0.79 / 0.78 / 0.79** | **65% / 66% / 64%** |
+
+`gpt-image-2 high` is materially MORE deterministic than `gpt-image-1
+default`: hue range tightens from 75° spread to 22°. All 3 v0.20.1
+runs land squarely in the `[60°, 90°]` white-flower hue band that the
+original spec's calibrated criteria specified before we had to relax
+to `pct_white_like` only because of the hidden gpt-image-1 variance.
+
+**Fixture 2 (Scottish lanterns multi-instance, 8% area)** — PASS:
+- Structural: 18 connected components preserved (≥5 required)
+- Per-component cinnabar criterion: 4 components meet hue ∈ [0°, 50°]
+  ∪ [330°, 360°] AND S > 0.4 (≥4 of 6 required)
+
+The originally claimed "PASSED both fixtures" ship-gate evidence (8
+calls, ~$0.48) is preserved on disk at
+`docs/visual-specs/2026-04-27-ipad-cartoon-roadside/decompose/pass3/v0_20_ship_gate/`
+but now correctly labeled as gpt-image-1 default-quality results.
+
+The v0.20.1 ship-gate (4 calls so far + G5 carousel re-run pending)
+is the canonical evidence for v0.20 + v0.20.1 combined claim.
+
+### Backward compat
+
+All v0.20.0 callers without `model` kwarg get the same model as before
+(provider default) → bit-identical. The new kwargs are opt-in. No API
+break.
+
+## v0.20.0 (superseded by v0.20.1)
 
 Mask-aware redraw routing for `layers_redraw`. Fixes the wrong-subject color/shape drift
 on alpha-sparse layers surfaced by the IMG_6847 iPad-cartoon dogfood (2026-04-27) and the

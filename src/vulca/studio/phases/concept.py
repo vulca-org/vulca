@@ -110,6 +110,9 @@ class ConceptPhase:
 
         try:
             from vulca.providers import get_image_provider
+            # TODO(v0.21): plumb model/quality from studio orchestrator —
+            # currently silently defaults to OpenAIImageProvider's gpt-image-1.
+            # See v0.20 PR audit + spec at docs/superpowers/specs/2026-04-27-v0.20-mask-aware-redraw-routing-design.md
             img_provider = get_image_provider(provider, api_key=api_key)
         except Exception:
             for i in range(count):

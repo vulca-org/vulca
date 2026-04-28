@@ -85,6 +85,8 @@ class _CapableProvider:
     async def inpaint_with_mask(
         self, *, image_path: str, mask_path: str, prompt: str,
         tradition: str = "default", size: str = "",
+        quality: str | None = None, input_fidelity: str | None = None,
+        output_format: str | None = None,
     ):
         with open(image_path, "rb") as fh_img, open(mask_path, "rb") as fh_mask:
             image_bytes = fh_img.read()

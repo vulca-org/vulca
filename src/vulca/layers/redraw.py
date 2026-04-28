@@ -173,6 +173,9 @@ async def _redraw_via_inpaint_mask(
     provider_inst,
     tradition: str,
     target_description: str,
+    quality: str = "",
+    input_fidelity: str = "",
+    output_format: str = "",
 ):
     """Mask-aware inpaint path for ``redraw_layer`` (v0.20).
 
@@ -220,6 +223,9 @@ async def _redraw_via_inpaint_mask(
             mask_path=mask_tmp.name,
             prompt=prompt,
             tradition=tradition,
+            quality=quality or None,
+            input_fidelity=input_fidelity or None,
+            output_format=output_format or None,
         )
 
         raw = base64.b64decode(result.image_b64)
@@ -429,6 +435,10 @@ async def redraw_layer(
     preserve_alpha: bool = True,
     in_place: bool = False,
     route: Literal["auto", "img2img", "inpaint"] = "auto",
+    model: str = "",
+    quality: str = "",
+    input_fidelity: str = "",
+    output_format: str = "",
 ) -> LayerResult:
     """Redraw a single layer via img2img or mask-aware inpaint (v0.20).
 
@@ -465,6 +475,16 @@ async def redraw_layer(
     recommended setting on inpaint so the visible-but-preserved subject
     pixels read coherently if the API ever returns content outside the
     mask zone.
+
+    v0.20.1 model contract (fix the silent-drop bug uncovered in v0.20 PR audit):
+      - ``model``: provider model id (e.g. ``"gpt-image-2"``). Empty → provider default.
+        Plumbed by setting ``provider.model`` after instantiation, matching the
+        ``generate_image`` MCP tool's per-call override pattern.
+      - ``quality``: ``"low" | "medium" | "high" | "auto"`` for gpt-image-*.
+      - ``input_fidelity``: ``"high" | "low"`` — model-specific knob. Silently
+        dropped by ``_drop_unsupported_params`` if the current model lacks
+        the capability flag.
+      - ``output_format``: ``"png" | "webp" | "jpeg"`` for gpt-image-*.
 
     Spec: ``docs/superpowers/specs/2026-04-27-v0.20-mask-aware-redraw-routing-design.md``.
     """
@@ -520,6 +540,10 @@ async def redraw_layer(
     # v0.20 mask-aware routing decision (spec B1+B4+B6).
     sparse, area_pct, bbox_fill = _compute_sparsity(src_alpha)
     img_provider = get_image_provider(provider, api_key=api_key)
+    # v0.20.1 — per-call model override, matching generate_image MCP pattern
+    # (mcp_server.py:1340-1344). Silent no-op if provider has no `model` attr.
+    if model and hasattr(img_provider, "model"):
+        img_provider.model = model
     has_inpaint = hasattr(img_provider, "inpaint_with_mask")
 
     if route == "auto":
@@ -558,6 +582,9 @@ async def redraw_layer(
             provider_inst=img_provider,
             tradition=tradition,
             target_description=target.info.description,
+            quality=quality,
+            input_fidelity=input_fidelity,
+            output_format=output_format,
         )
         # _redraw_via_inpaint_mask returns RGBA at canvas size with the
         # model's (cream-bg) painted output but WITHOUT the source alpha
@@ -581,11 +608,15 @@ async def redraw_layer(
         except Exception:
             pass
 
-        result = await img_provider.generate(
-            prompt,
-            tradition=tradition,
-            reference_image_b64=ref_b64,
-        )
+        # v0.20.1 — quality/input_fidelity/output_format honored on img2img too
+        gen_kwargs = {"tradition": tradition, "reference_image_b64": ref_b64}
+        if quality:
+            gen_kwargs["quality"] = quality
+        if input_fidelity:
+            gen_kwargs["input_fidelity"] = input_fidelity
+        if output_format:
+            gen_kwargs["output_format"] = output_format
+        result = await img_provider.generate(prompt, **gen_kwargs)
 
         # 6. Decode + aspect-preserving fit (replaces blanket LANCZOS warp)
         raw = base64.b64decode(result.image_b64)
@@ -706,6 +737,10 @@ async def redraw_merged(
     api_key: str = "",
     artwork_dir: str,
     re_split: bool = False,
+    model: str = "",
+    quality: str = "",
+    input_fidelity: str = "",
+    output_format: str = "",
 ) -> LayerResult | list[LayerResult]:
     """Merge selected layers, redraw via img2img, return as single new layer.
 
@@ -748,11 +783,17 @@ async def redraw_merged(
 
         # Provider-aware api_key (Patch 6 from spec, folded in)
         img_provider = get_image_provider(provider, api_key=api_key)
-        result = await img_provider.generate(
-            prompt,
-            tradition=tradition,
-            reference_image_b64=ref_b64,
-        )
+        # v0.20.1 — per-call model/quality override; same plumbing as redraw_layer
+        if model and hasattr(img_provider, "model"):
+            img_provider.model = model
+        gen_kwargs = {"tradition": tradition, "reference_image_b64": ref_b64}
+        if quality:
+            gen_kwargs["quality"] = quality
+        if input_fidelity:
+            gen_kwargs["input_fidelity"] = input_fidelity
+        if output_format:
+            gen_kwargs["output_format"] = output_format
+        result = await img_provider.generate(prompt, **gen_kwargs)
     finally:
         try:
             Path(tmp_file.name).unlink(missing_ok=True)

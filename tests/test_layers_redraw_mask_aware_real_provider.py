@@ -168,6 +168,10 @@ def test_flower_cluster_c_route_inpaint_hits_white_flower_band(tmp_path):
             background_strategy="cream",  # ignored on inpaint route
             preserve_alpha=True,
             route="inpaint",
+            # v0.20.1 — pin model/quality at the wire (was silently
+            # gpt-image-1 default in original v0.20 ship-gate)
+            model="gpt-image-2",
+            quality="high",
         ))
         out = Image.open(result.image_path)
         stats = _alpha_masked_stats(out)
@@ -227,6 +231,8 @@ def test_flower_cluster_c_route_img2img_reproduces_legacy_failure(tmp_path):
         background_strategy="transparent",
         preserve_alpha=True,
         route="img2img",
+        model="gpt-image-2",
+        quality="high",
     ))
     out = Image.open(result.image_path)
     stats = _alpha_masked_stats(out)
@@ -304,6 +310,8 @@ def test_lanterns_multi_instance_route_inpaint_preserves_topology_and_color(tmp_
         background_strategy="cream",
         preserve_alpha=True,
         route="inpaint",
+        model="gpt-image-2",
+        quality="high",
     ))
     out = Image.open(result.image_path).convert("RGBA")
     out_arr = np.array(out)

@@ -766,6 +766,10 @@ async def layers_redraw(
     preserve_alpha: bool = True,
     in_place: bool = False,
     route: str = "auto",
+    model: str = "",
+    quality: str = "",
+    input_fidelity: str = "",
+    output_format: str = "",
 ) -> dict:
     """Redraw a layer via img2img with explicit content/style instructions — targeted layer regeneration.
 
@@ -830,12 +834,15 @@ async def layers_redraw(
         layer_names = [n.strip() for n in layers.split(",") if n.strip()]
         if not layer_names:
             return {"error": "No layer names provided"}
-        # B7 deferred — redraw_merged unchanged in v0.20 (route ignored).
+        # B7 deferred — redraw_merged retains v0.18 routing in v0.20 (route ignored).
+        # v0.20.1 — model/quality plumbed through to fix silent-default bug.
         result = await redraw_merged(
             artwork, layer_names=layer_names,
             instruction=instruction, merged_name=merged_name,
             provider=provider, tradition=tradition,
             artwork_dir=artwork_dir,
+            model=model, quality=quality,
+            input_fidelity=input_fidelity, output_format=output_format,
         )
     elif layer:
         result = await redraw_layer(
@@ -847,6 +854,8 @@ async def layers_redraw(
             preserve_alpha=preserve_alpha,
             in_place=in_place,
             route=route,
+            model=model, quality=quality,
+            input_fidelity=input_fidelity, output_format=output_format,
         )
     else:
         return {"error": "Specify 'layer' or 'layers' with merge=true"}
