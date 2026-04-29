@@ -465,8 +465,8 @@ class TestDimensionResize:
     def test_inpaint_path_returns_canvas_sized_output_with_original_alpha(
         self, tmp_path, monkeypatch
     ):
-        """Spec B8 round-trip: 4032×3024 layer → 1536×1024 API → upsampled
-        back → preserve_alpha re-applies ORIGINAL canvas alpha (not resized).
+        """v0.21 crop route: 4032×3024 sparse layer → padded crop upload →
+        pasted back into the original canvas with original alpha.
         """
         from vulca.layers import redraw as redraw_module
         from vulca.layers.manifest import load_manifest
@@ -513,12 +513,14 @@ class TestDimensionResize:
             "round-trip-resized version"
         )
 
-        # The provider should have received an upload at API size, not 4032×3024.
+        # v0.21: sparse layer uploads the padded crop, not a 1536x1024
+        # full-canvas API proxy. This keeps tiny subjects spatially salient.
         assert len(capable.inpaint_calls) == 1
         with Image.open(io.BytesIO(capable.inpaint_calls[0]["image_bytes"])) as up_img:
-            assert up_img.size == (1536, 1024), (
-                f"upload should be at API size 1536x1024; got {up_img.size}"
-            )
+            assert up_img.size[0] < canvas[0]
+            assert up_img.size[1] < canvas[1]
+            assert up_img.size[0] >= 200
+            assert up_img.size[1] >= 200
 
 
 # ---------------------------------------------------------------------------

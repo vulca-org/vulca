@@ -205,6 +205,32 @@ class TestImg2ImgWireContract:
             f"img2img quality drop: form.quality={form.get('quality')!r}; full: {form}"
         )
 
+    def test_gpt_image_2_img2img_uses_masked_edit_not_maskless_edit(self, tmp_path):
+        """gpt-image-2 rejects maskless /images/edits; redraw must shim with a mask."""
+        from vulca.layers import redraw as redraw_module
+        from vulca.layers.manifest import load_manifest
+
+        _setup_layer(tmp_path, canvas_size=(512, 512), sparse_pct=0.8)
+        artwork = load_manifest(str(tmp_path))
+
+        _run(
+            redraw_module.redraw_layer(
+                artwork,
+                layer_name="fg",
+                instruction="cartoon",
+                provider="openai",
+                artwork_dir=str(tmp_path),
+                route="img2img",
+                model="gpt-image-2",
+                quality="high",
+            )
+        )
+
+        edits = [c for c in _RecordingHTTPClient.CALLS if "edits" in c["url"]]
+        assert edits
+        assert edits[0]["files_keys"] == ["image", "mask"]
+        assert edits[0]["data"]["model"] == "gpt-image-2"
+
 
 class TestUnsupportedParamsAreSilentlyDropped:
     """Verify _drop_unsupported_params hides model-incompatible knobs."""

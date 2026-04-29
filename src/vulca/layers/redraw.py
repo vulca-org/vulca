@@ -176,6 +176,7 @@ async def _redraw_via_inpaint_mask(
     quality: str = "",
     input_fidelity: str = "",
     output_format: str = "",
+    resize_to_api_size: bool = True,
 ):
     """Mask-aware inpaint path for ``redraw_layer`` (v0.20).
 
@@ -196,14 +197,23 @@ async def _redraw_via_inpaint_mask(
     from PIL import Image
 
     canvas_w, canvas_h = canvas_size
-    api_w, api_h = _pick_inpaint_size(canvas_w, canvas_h)
 
-    # Aspect-preserving resize of both image and mask to API size.
-    flat_for_api = _fit_into_canvas(
-        flat_img.convert("RGB"), (api_w, api_h), bg_rgb=CREAM_BG_RGB
-    )
+    # Full-canvas v0.20 path resizes to API-supported dimensions. v0.21 crop
+    # path deliberately uploads the real crop dimensions so tiny subjects stay
+    # spatially salient; provider output is still fitted back to crop size.
+    if resize_to_api_size:
+        api_w, api_h = _pick_inpaint_size(canvas_w, canvas_h)
+        flat_for_api = _fit_into_canvas(
+            flat_img.convert("RGB"), (api_w, api_h), bg_rgb=CREAM_BG_RGB
+        )
+    else:
+        flat_for_api = flat_img.convert("RGB")
+
     mask_full = _build_inpaint_mask(src_alpha)
-    mask_for_api = _fit_into_canvas(mask_full, (api_w, api_h), bg_rgb=None)
+    if resize_to_api_size:
+        mask_for_api = _fit_into_canvas(mask_full, (api_w, api_h), bg_rgb=None)
+    else:
+        mask_for_api = mask_full
 
     # Persist to temp files — the provider's inpaint_with_mask reads paths,
     # not bytes (openai_provider.py:403-405).
@@ -369,6 +379,27 @@ def _fit_into_canvas(out_img, target_size: tuple[int, int], bg_rgb):
     return canvas
 
 
+def _crop_rgba_and_alpha(src_rgba, crop_box):
+    box = (
+        crop_box.x,
+        crop_box.y,
+        crop_box.x + crop_box.w,
+        crop_box.y + crop_box.h,
+    )
+    crop = src_rgba.crop(box).convert("RGBA")
+    return crop, crop.split()[-1]
+
+
+def _paste_crop_preserving_alpha(canvas, crop_rgba, crop_alpha, crop_box) -> None:
+    crop_rgba = crop_rgba.convert("RGBA")
+    if crop_rgba.size != crop_alpha.size:
+        from PIL import Image
+
+        crop_rgba = crop_rgba.resize(crop_alpha.size, Image.LANCZOS)
+    crop_rgba.putalpha(crop_alpha)
+    canvas.alpha_composite(crop_rgba, dest=(crop_box.x, crop_box.y))
+
+
 def _add_or_replace_layer_in_manifest(
     artwork_dir: str,
     *,
@@ -492,6 +523,11 @@ async def redraw_layer(
 
     from PIL import Image
 
+    from vulca.layers.redraw_strategy import (
+        RedrawRoute,
+        analyze_alpha_geometry,
+        choose_redraw_route,
+    )
     from vulca.providers import get_image_provider
 
     # 1. Find target layer
@@ -539,12 +575,19 @@ async def redraw_layer(
 
     # v0.20 mask-aware routing decision (spec B1+B4+B6).
     sparse, area_pct, bbox_fill = _compute_sparsity(src_alpha)
+    geometry = analyze_alpha_geometry(src_alpha)
+    redraw_plan = choose_redraw_route(geometry)
     img_provider = get_image_provider(provider, api_key=api_key)
     # v0.20.1 — per-call model override, matching generate_image MCP pattern
     # (mcp_server.py:1340-1344). Silent no-op if provider has no `model` attr.
     if model and hasattr(img_provider, "model"):
         img_provider.model = model
     has_inpaint = hasattr(img_provider, "inpaint_with_mask")
+    edit_caps = (
+        img_provider.edit_capabilities()
+        if hasattr(img_provider, "edit_capabilities")
+        else None
+    )
 
     if route == "auto":
         chosen_route = "inpaint" if (sparse and has_inpaint) else "img2img"
@@ -572,7 +615,33 @@ async def redraw_layer(
         route, chosen_route, type(img_provider).__name__,
     )
 
-    if chosen_route == "inpaint":
+    sparse_crop_routes = {
+        RedrawRoute.SPARSE_BBOX_CROP,
+        RedrawRoute.SPARSE_PER_INSTANCE,
+    }
+
+    if chosen_route == "inpaint" and redraw_plan.route in sparse_crop_routes:
+        rgba = Image.new("RGBA", src_rgba.size, (0, 0, 0, 0))
+        for crop_box in redraw_plan.crop_boxes:
+            crop_rgba, crop_alpha = _crop_rgba_and_alpha(src_rgba, crop_box)
+            crop_flat, _crop_bg = _flatten_layer(
+                crop_rgba, background_strategy=background_strategy
+            )
+            crop_out, _result = await _redraw_via_inpaint_mask(
+                flat_img=crop_flat,
+                src_alpha=crop_alpha,
+                canvas_size=crop_rgba.size,
+                instruction=instruction,
+                provider_inst=img_provider,
+                tradition=tradition,
+                target_description=target.info.description,
+                quality=quality,
+                input_fidelity=input_fidelity,
+                output_format=output_format,
+                resize_to_api_size=False,
+            )
+            _paste_crop_preserving_alpha(rgba, crop_out, crop_alpha, crop_box)
+    elif chosen_route == "inpaint":
         # 4-5. Mask-aware inpaint path (B2 + B3 + B5 + B8 in spec).
         rgba_with_alpha, _result = await _redraw_via_inpaint_mask(
             flat_img=flat,
@@ -616,20 +685,44 @@ async def redraw_layer(
             gen_kwargs["input_fidelity"] = input_fidelity
         if output_format:
             gen_kwargs["output_format"] = output_format
-        result = await img_provider.generate(prompt, **gen_kwargs)
 
-        # 6. Decode + aspect-preserving fit (replaces blanket LANCZOS warp)
-        raw = base64.b64decode(result.image_b64)
-        if result.mime and "svg" in result.mime:
-            # SVG fallback only — preserved for unusual mock branches
-            out_img = Image.new("RGBA", (canvas_w, canvas_h), (0, 0, 0, 0))
+        requires_masked_edit = bool(
+            edit_caps
+            and edit_caps.requires_mask_for_edits
+            and has_inpaint
+        )
+        if requires_masked_edit:
+            # gpt-image-2 rejects maskless /images/edits. Keep the user-facing
+            # img2img route semantics by sending a full-canvas edit mask.
+            all_edit_alpha = Image.new("L", flat.size, 255)
+            rgba_with_alpha, _result = await _redraw_via_inpaint_mask(
+                flat_img=flat,
+                src_alpha=all_edit_alpha,
+                canvas_size=(canvas_w, canvas_h),
+                instruction=instruction,
+                provider_inst=img_provider,
+                tradition=tradition,
+                target_description=target.info.description,
+                quality=quality,
+                input_fidelity=input_fidelity,
+                output_format=output_format,
+            )
+            rgba = rgba_with_alpha
         else:
-            import io as _io
+            result = await img_provider.generate(prompt, **gen_kwargs)
 
-            out_img = Image.open(_io.BytesIO(raw))
+            # 6. Decode + aspect-preserving fit (replaces blanket LANCZOS warp)
+            raw = base64.b64decode(result.image_b64)
+            if result.mime and "svg" in result.mime:
+                # SVG fallback only — preserved for unusual mock branches
+                out_img = Image.new("RGBA", (canvas_w, canvas_h), (0, 0, 0, 0))
+            else:
+                import io as _io
 
-        out_img = _fit_into_canvas(out_img, (canvas_w, canvas_h), bg_rgb)
-        rgba = out_img.convert("RGBA")
+                out_img = Image.open(_io.BytesIO(raw))
+
+            out_img = _fit_into_canvas(out_img, (canvas_w, canvas_h), bg_rgb)
+            rgba = out_img.convert("RGBA")
 
     # 7. Optionally re-apply original alpha
     if preserve_alpha:
