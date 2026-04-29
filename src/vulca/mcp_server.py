@@ -860,12 +860,14 @@ async def layers_redraw(
     else:
         return {"error": "Specify 'layer' or 'layers' with merge=true"}
 
-    return {
+    payload = {
         "name": result.info.name,
         "file": result.image_path,
         "z_index": result.info.z_index,
         "content_type": result.info.content_type,
     }
+    payload.update(getattr(result, "redraw_advisory", {}) or {})
+    return payload
 
 
 @mcp.tool()

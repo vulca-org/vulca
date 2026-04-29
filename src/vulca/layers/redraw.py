@@ -740,6 +740,20 @@ async def redraw_layer(
             quality_report.failures,
             quality_report.metrics,
         )
+    redraw_advisory = {
+        "redraw_route": redraw_plan.route.value,
+        "route_requested": route,
+        "route_chosen": chosen_route,
+        "sparse_detected": redraw_plan.route != RedrawRoute.DENSE_FULL_CANVAS,
+        "area_pct": area_pct,
+        "bbox_fill": bbox_fill,
+        "component_count": geometry.component_count,
+        "provider_requires_mask_for_edits": bool(
+            edit_caps and edit_caps.requires_mask_for_edits
+        ),
+        "quality_gate_passed": quality_report.passed,
+        "quality_failures": list(quality_report.failures),
+    }
 
     # 8. Decide output path (v0.18.0 3-way resolution).
     if in_place:
@@ -773,6 +787,7 @@ async def redraw_layer(
     if not non_destructive:
         # Legacy in-place: mutate target, no manifest changes.
         target.image_path = str(out_path)
+        setattr(target, "redraw_advisory", redraw_advisory)
         return target
 
     # Non-destructive (auto-derived ``<layer>_redrawn`` or explicit
@@ -798,7 +813,9 @@ async def redraw_layer(
         semantic_path=target.info.semantic_path,
         blend_mode=target.info.blend_mode,
     )
-    return LayerResult(info=new_info, image_path=str(out_path))
+    result = LayerResult(info=new_info, image_path=str(out_path))
+    setattr(result, "redraw_advisory", redraw_advisory)
+    return result
 
 
 def _maybe_apply_legacy_color_mask(
