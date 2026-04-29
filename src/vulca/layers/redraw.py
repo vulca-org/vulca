@@ -528,6 +528,7 @@ async def redraw_layer(
         analyze_alpha_geometry,
         choose_redraw_route,
     )
+    from vulca.layers.redraw_quality import evaluate_redraw_quality
     from vulca.providers import get_image_provider
 
     # 1. Find target layer
@@ -730,6 +731,15 @@ async def redraw_layer(
         if src_alpha.size != rgba.size:
             src_alpha = src_alpha.resize(rgba.size, Image.LANCZOS)
         rgba.putalpha(src_alpha)
+
+    quality_report = evaluate_redraw_quality(src_rgba, rgba)
+    if not quality_report.passed:
+        logger.warning(
+            "redraw quality gate failed for layer=%s failures=%s metrics=%s",
+            layer_name,
+            quality_report.failures,
+            quality_report.metrics,
+        )
 
     # 8. Decide output path (v0.18.0 3-way resolution).
     if in_place:
