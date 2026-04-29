@@ -1,5 +1,38 @@
 # Changelog
 
+## v0.21.0 (unreleased — redraw recontract)
+
+v0.20.1 fixed the hidden model/quality plumbing bug, but dogfood still
+showed a deeper design flaw: sparse layers were being edited as
+full-canvas images, then post-cropped back to the original alpha. For tiny
+or fragmented subjects, that loses the visual evidence the model needs.
+
+### Fix
+
+- Added explicit provider edit capability routing so `gpt-image-2` no
+  longer relies on maskless `/v1/images/edits`.
+- Replaced full-canvas sparse redraw with padded bbox crop redraw for
+  single sparse subjects and bounded per-component redraw for fragmented
+  sparse subjects.
+- Added a gpt-image-2-safe `route="img2img"` shim that sends a full-canvas
+  all-edit mask instead of a maskless edit request.
+- Added local quality gates that warn on alpha expansion and large white
+  block failures without hard-failing v0.21 outputs.
+- `layers_redraw` MCP responses now include route/geometry/quality
+  advisory fields such as `redraw_route`, `route_chosen`, `area_pct`,
+  `geometry_redraw_route`, `bbox_fill`, `component_count`, and
+  `quality_gate_passed`.
+
+### Verification
+
+- Local redraw contract tests cover provider capabilities, wire-level
+  model/quality params, gpt-image-2 masked-edit behavior, crop/per-instance
+  routing, quality gates, and MCP advisory output.
+- The real-provider gate now includes a skip-by-default v0.21 comparison:
+  crop route vs full-canvas gpt-image-2-safe control for
+  `flower_cluster_c`. It only runs with `--run-real-provider` and
+  `OPENAI_API_KEY`.
+
 ## v0.20.1 (unreleased — pre-merge correction)
 
 Pre-merge audit on PR #20 caught that v0.20's ship-gate evidence was

@@ -1,4 +1,4 @@
-"""v0.20 — real-provider ship-gate for mask-aware redraw routing.
+"""v0.20/v0.21 — real-provider ship-gate for mask-aware redraw routing.
 
 Spec D2: docs/superpowers/specs/2026-04-27-v0.20-mask-aware-redraw-routing-design.md
 
@@ -15,9 +15,12 @@ Requires:
 Acceptance criteria are pre-computed from the failure-mode pixel statistics
 recorded in execution_log.md (IMG_6847 dogfood 2026-04-27).
 
-Cost ceiling: ~$0.24 per full ship-gate run
+Cost ceiling: ~$0.24 per v0.20 ship-gate run
   Fixture 1 (flower_cluster_c × 3 variance):  3 × $0.06 = $0.18
   Fixture 2 (lanterns × 1):                       $0.06
+
+v0.21 adds a skip-by-default comparison gate:
+  flower_cluster_c crop route vs full-canvas gpt-image-2-safe control: 2 calls
 """
 from __future__ import annotations
 
@@ -114,6 +117,66 @@ def _stage_single_layer_artwork(
 # ---------------------------------------------------------------------------
 # Fixture 1 — IMG_6847 flower_cluster_c (single-region sparse, 3.3% area)
 # ---------------------------------------------------------------------------
+
+@pytest.mark.real_provider
+def test_flower_cluster_c_v021_crop_route_beats_full_canvas_control(tmp_path):
+    """Compare v0.21 crop redraw against the full-canvas control.
+
+    The control deliberately uses route='img2img': for gpt-image-2 the
+    provider-capability shim sends a full-canvas all-edit mask, which keeps
+    this test compatible with models that reject maskless edits while still
+    exercising the old full-canvas failure shape.
+    """
+    if not os.environ.get("OPENAI_API_KEY"):
+        pytest.skip("OPENAI_API_KEY not set")
+
+    from vulca.layers.manifest import load_manifest
+    from vulca.layers.redraw import redraw_layer
+
+    _stage_single_layer_artwork(tmp_path, FLOWER_C_PATH, "flower_cluster_c")
+    artwork = load_manifest(str(tmp_path))
+
+    instruction = (
+        "Small bright white wildflowers with yellow centers, iPad cartoon "
+        "style, clean rounded petals, pastel leaves, no photorealism."
+    )
+
+    crop = _run(redraw_layer(
+        artwork,
+        layer_name="flower_cluster_c",
+        instruction=instruction,
+        provider="openai",
+        artwork_dir=str(tmp_path),
+        output_layer_name="flower_cluster_c_v021_crop",
+        route="auto",
+        model="gpt-image-2",
+        quality="high",
+    ))
+    full = _run(redraw_layer(
+        artwork,
+        layer_name="flower_cluster_c",
+        instruction=instruction,
+        provider="openai",
+        artwork_dir=str(tmp_path),
+        output_layer_name="flower_cluster_c_full_canvas_control",
+        route="img2img",
+        model="gpt-image-2",
+        quality="high",
+    ))
+
+    crop_advisory = getattr(crop, "redraw_advisory", {})
+    full_advisory = getattr(full, "redraw_advisory", {})
+    assert crop_advisory["route_chosen"] == "inpaint"
+    assert crop_advisory["redraw_route"] == "sparse_bbox_crop"
+    assert full_advisory["route_chosen"] == "img2img"
+
+    crop_stats = _alpha_masked_stats(Image.open(crop.image_path))
+    full_stats = _alpha_masked_stats(Image.open(full.image_path))
+    print(f"\n[v0.21 crop] {crop_stats}")
+    print(f"\n[full-canvas control] {full_stats}")
+    assert crop_stats["lightness"] > 0.6
+    assert crop_stats["pct_white_like"] >= full_stats["pct_white_like"] - 10.0
+
 
 @pytest.mark.real_provider
 def test_flower_cluster_c_route_inpaint_hits_white_flower_band(tmp_path):

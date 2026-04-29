@@ -740,8 +740,14 @@ async def redraw_layer(
             quality_report.failures,
             quality_report.metrics,
         )
+    actual_redraw_route = (
+        redraw_plan.route
+        if chosen_route == "inpaint"
+        else RedrawRoute.DENSE_FULL_CANVAS
+    )
     redraw_advisory = {
-        "redraw_route": redraw_plan.route.value,
+        "redraw_route": actual_redraw_route.value,
+        "geometry_redraw_route": redraw_plan.route.value,
         "route_requested": route,
         "route_chosen": chosen_route,
         "sparse_detected": redraw_plan.route != RedrawRoute.DENSE_FULL_CANVAS,

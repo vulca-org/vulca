@@ -151,3 +151,30 @@ def test_sparse_multi_uses_one_call_per_component(tmp_path, monkeypatch):
 
     assert len(provider.calls) == 3
     assert all(call["size"][0] < 500 for call in provider.calls)
+
+
+def test_forced_img2img_reports_full_canvas_advisory(tmp_path, monkeypatch):
+    from vulca.layers import redraw as redraw_module
+    import vulca.providers as providers_mod
+
+    provider = RecordingEditProvider()
+    monkeypatch.setattr(
+        providers_mod, "get_image_provider", lambda name, api_key="": provider
+    )
+    artwork = _stage(tmp_path, [(440, 440, 80, 80)])
+
+    result = _run(
+        redraw_module.redraw_layer(
+            artwork,
+            layer_name="fg",
+            instruction="make it cleaner",
+            provider="openai",
+            artwork_dir=str(tmp_path),
+            route="img2img",
+            preserve_alpha=True,
+        )
+    )
+
+    advisory = getattr(result, "redraw_advisory", {})
+    assert advisory["route_chosen"] == "img2img"
+    assert advisory["redraw_route"] == "dense_full_canvas"
