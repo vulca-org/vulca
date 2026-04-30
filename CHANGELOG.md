@@ -1,5 +1,284 @@
 # Changelog
 
+## v0.21.0 (unreleased — redraw recontract)
+
+v0.20.1 fixed the hidden model/quality plumbing bug, but dogfood still
+showed a deeper design flaw: sparse layers were being edited as
+full-canvas images, then post-cropped back to the original alpha. For tiny
+or fragmented subjects, that loses the visual evidence the model needs.
+
+### Fix
+
+- Added explicit provider edit capability routing so `gpt-image-2` no
+  longer relies on maskless `/v1/images/edits`.
+- Replaced full-canvas sparse redraw with padded bbox crop redraw for
+  single sparse subjects and bounded per-component redraw for fragmented
+  sparse subjects.
+- Added a gpt-image-2-safe `route="img2img"` shim that sends a full-canvas
+  all-edit mask instead of a maskless edit request.
+- Added local quality gates that warn on alpha expansion and large white
+  block failures without hard-failing v0.21 outputs.
+- `layers_redraw` MCP responses now include route/geometry/quality
+  advisory fields such as `redraw_route`, `route_chosen`, `area_pct`,
+  `geometry_redraw_route`, `bbox_fill`, `component_count`, and
+  `quality_gate_passed`.
+
+### Verification
+
+- Local redraw contract tests cover provider capabilities, wire-level
+  model/quality params, gpt-image-2 masked-edit behavior, crop/per-instance
+  routing, quality gates, and MCP advisory output.
+- The real-provider gate now includes a skip-by-default v0.21 comparison:
+  crop route vs full-canvas gpt-image-2-safe control for
+  `flower_cluster_c`. It only runs with `--run-real-provider` and
+  `OPENAI_API_KEY`.
+
+## v0.20.1 (unreleased — pre-merge correction)
+
+Pre-merge audit on PR #20 caught that v0.20's ship-gate evidence was
+attributed to the wrong OpenAI model. Correcting before merge so the
+release notes do not ship a false claim.
+
+### What was wrong
+
+`layers_redraw` (and `redraw_merged`) called `get_image_provider("openai")`
+without a `model` kwarg. `OpenAIImageProvider.__init__` defaults to
+`model="gpt-image-1"` (`src/vulca/providers/openai_provider.py:147`). The
+v0.20 spec, plan.md, CHANGELOG entry, and real-provider ship-gate test
+header all stated "gpt-image-2 high" — but every actual API call used
+`gpt-image-1` default quality. The 24 OpenAI calls across Phase 2,
+fixture 1 (3×), fixture 2 (1×), and G5 carousel (9×) all ran on the
+wrong model.
+
+The "80× white-pixel improvement" reported in v0.20 fixture 1 is real
+but mis-attributed: it is the *inpaint-vs-img2img on gpt-image-1*
+delta, NOT the gpt-image-2 high outcome the docs claimed.
+
+The Scottish 2026-04-25 carousel slide-4 RIGHT (`lanterns_after.png`)
+genuinely ran on gpt-image-2 because it was authored via `generate_image`
+MCP with explicit `model="gpt-image-2"` — that tool exposes a `model`
+kwarg. `layers_redraw` did not.
+
+### How it slipped past 4 review rounds
+
+Three validation layers never intersected at the boundary:
+- **Spec/CHANGELOG** validated intended policy
+- **Provider unit tests** validated endpoint capability with explicitly
+  constructed `OpenAIImageProvider(model="gpt-image-2")`
+- **Real-provider integration tests** asserted pixel-level outcomes
+  (hue, saturation, white-pixel fraction) but **never inspected the
+  HTTP form-data sent to OpenAI**
+
+No reviewer ran `git grep "gpt-image-2" src/vulca/layers/redraw.py` —
+which would have returned only comments, not arguments. The bug-shape
+was a 5-second `git grep` away from detection. Process audit at
+[reviewer round 4](docs/superpowers/specs/2026-04-27-v0.20-mask-aware-redraw-routing-design.md)
+fully diagnosed.
+
+### Fix
+
+- `redraw_layer` and `redraw_merged` now accept `model`, `quality`,
+  `input_fidelity`, `output_format` kwargs (matching the pattern in
+  `generate_image` MCP). Plumbed through `provider.model = model` and
+  `provider.generate(quality=...)` / `inpaint_with_mask(quality=...)`.
+- `OpenAIImageProvider.inpaint_with_mask` now accepts and forwards
+  `quality` / `input_fidelity` / `output_format` form-data fields,
+  routed through `_drop_unsupported_params` so per-model capability
+  matrices are honored automatically.
+- `layers_redraw` MCP tool exposes the same kwargs; v0.18.x callers
+  without these kwargs continue to land on the provider default
+  (gpt-image-1) — bit-identical backward compat.
+- `regenerate_from_composite` (`src/vulca/layers/regenerate.py`) gets
+  the same kwarg surface, AND a separate latent bug fixed: it was
+  silently injecting `GOOGLE_API_KEY` into every provider construction
+  via `api_key=api_key or os.environ.get("GOOGLE_API_KEY", "")` — that
+  fallback is removed; provider self-resolves from its own env var.
+- 4 deeper studio/phase call sites (`concept.py`, `scout.py`,
+  `generate.py`, `pipeline/nodes/generate.py`) get `TODO(v0.21)`
+  annotations marking the silent default. Deep plumbing through the
+  studio orchestrator is v0.21 scope.
+
+### New safeguard — wire-level invocation contract test
+
+`tests/test_layers_redraw_wire_contract.py` (5 tests). Replaces
+`httpx.AsyncClient` with a recording wrapper that captures the outbound
+POST form-data. Asserts:
+
+- `data["model"] == "gpt-image-2"` when caller passes that model
+- `data["quality"] == "high"` when caller passes that quality
+- Default omission lands on provider default (currently gpt-image-1)
+- `input_fidelity` is silently dropped for gpt-image-2 (capability table
+  marks it unsupported) but kept for gpt-image-1.5
+
+This is the exact failure mode that 4 review rounds missed. Per
+reviewer round-4's safeguard recommendation: convert soft prose claims
+into hard runtime assertions on the HTTP boundary.
+
+### Ship-gate re-run on real gpt-image-2 high
+
+**Fixture 1 (IMG_6847 flower_cluster_c, single-region 3.3% area)** — 3/3 PASS:
+
+| run | hue | L | pct_white_like |
+|---|---|---|---|
+| v0.20.0 (gpt-image-1 default, mis-attributed) | 79° / 79° / 154° | 0.82 / 0.87 / 0.85 | 67% / 72% / 72% |
+| **v0.20.1 (gpt-image-2 high, corrected)** | **62° / 83° / 61°** | **0.79 / 0.78 / 0.79** | **65% / 66% / 64%** |
+
+`gpt-image-2 high` is materially MORE deterministic than `gpt-image-1
+default`: hue range tightens from 75° spread to 22°. All 3 v0.20.1
+runs land squarely in the `[60°, 90°]` white-flower hue band that the
+original spec's calibrated criteria specified before we had to relax
+to `pct_white_like` only because of the hidden gpt-image-1 variance.
+
+**Fixture 2 (Scottish lanterns multi-instance, 8% area)** — PASS:
+- Structural: 18 connected components preserved (≥5 required)
+- Per-component cinnabar criterion: 4 components meet hue ∈ [0°, 50°]
+  ∪ [330°, 360°] AND S > 0.4 (≥4 of 6 required)
+
+The originally claimed "PASSED both fixtures" ship-gate evidence (8
+calls, ~$0.48) is preserved on disk at
+`docs/visual-specs/2026-04-27-ipad-cartoon-roadside/decompose/pass3/v0_20_ship_gate/`
+but now correctly labeled as gpt-image-1 default-quality results.
+
+The v0.20.1 ship-gate (4 calls so far + G5 carousel re-run pending)
+is the canonical evidence for v0.20 + v0.20.1 combined claim.
+
+### Backward compat
+
+All v0.20.0 callers without `model` kwarg get the same model as before
+(provider default) → bit-identical. The new kwargs are opt-in. No API
+break.
+
+## v0.20.0 (superseded by v0.20.1)
+
+Mask-aware redraw routing for `layers_redraw`. Fixes the wrong-subject color/shape drift
+on alpha-sparse layers surfaced by the IMG_6847 iPad-cartoon dogfood (2026-04-27) and the
+γ Scottish row-of-6-lanterns case (2026-04-25, `feedback_cream_flat_reference_limit`).
+
+### Ship-gate result
+
+Both real-provider fixtures PASSED on OpenAI gpt-image-2 high (2026-04-27):
+
+- **Fixture 1 (IMG_6847 flower_cluster_c, single-region 3.3% area)**: 3/3 runs passed
+  calibrated criteria (L > 0.6 AND pct_white_like > 30%). Empirical results: hue
+  79°/79°/154°, L 0.82/0.87/0.85, pct_white_like 67/72/72%. Compare legacy: hue 101°
+  L=0.44 pct_white=0.1% — **80× improvement in white-pixel fraction**.
+- **Fixture 2 (Scottish lanterns multi-instance, 8% area, 6+ disconnected blobs)**:
+  PASSED with **explicit `route="inpaint"`**. ≥5 connected components preserved + ≥4
+  components met cinnabar-red criteria (hue ∈ [0°, 50°] ∪ [330°, 360°] AND S > 0.4).
+  Scottish 2026-04-25 had documented this case as a v0.18 limitation requiring
+  `generate_image` workaround (`feedback_cream_flat_reference_limit`); v0.20 closes
+  it via mask-aware redraw, but **note**: the lantern row-of-N geometry has
+  ~0.6 bbox_fill which sits above the auto-routing threshold (0.5), so the
+  predicate does NOT auto-trigger inpaint. Users on row-of-N multi-instance
+  layouts must opt in via `route="inpaint"` until v0.21 (where the predicate
+  may incorporate connected-component count). Single-region sparse layers
+  (e.g. IMG_6847 flower_cluster_c at 3.3% area, bbox_fill 0.7) DO auto-trigger
+  via `area_pct < 5%`.
+
+Total ship-gate cost ~$0.48 (8 OpenAI gpt-image-2 high calls; one round of metric
+recalibration after first batch revealed hue acceptance band was over-fit).
+
+Spec: `docs/superpowers/specs/2026-04-27-v0.20-mask-aware-redraw-routing-design.md`. Reviewed
+in 4 rounds (codex GPT-5.4 ×2, superpowers:code-reviewer ×2).
+
+### Fix
+
+**Sparse-alpha layers now route through OpenAI mask-aware editing.**
+
+`layers_redraw` previously sent every layer to `/v1/images/edits` *without a mask file* —
+unmasked img2img. The model freely painted the whole canvas, then `preserve_alpha=True`
+post-cropped to the original sparse bbox. For sparse subjects (<5% area or fragmented
+multi-instance), the model had no spatial cue for "where the subject is", so the crop
+yielded whatever the model painted at those pixel locations — green leaves, brown ground,
+multi-color banners — instead of the requested cartoon subject.
+
+Concrete drift evidence (alpha-mask-filtered pixel stats from
+`docs/visual-specs/2026-04-27-ipad-cartoon-roadside/execution_log.md`):
+
+| layer | original | redrawn (legacy) | drift |
+|---|---|---|---|
+| flower_cluster_c (3.3% area) | hue 74° L=0.38 (white-on-green) | hue 101° L=0.44 | white→green leaves |
+| yellow_truck (0.68% area) | hue 57° (yellow) | hue 151° L=0.54 | yellow→green abstract |
+| red_car (2.58% area, half-occluded) | dark red | hue 354° + 95 unique color buckets | shape collapse to multi-color flag |
+
+The `inpaint_with_mask` primitive existed since v0.17.14 but wasn't wired to `layers_redraw`.
+v0.20 wires it.
+
+### New `route` kwarg on `layers_redraw`
+
+```python
+mcp__vulca__layers_redraw(
+    artwork_dir=...,
+    layer="flower_cluster_c",
+    instruction="cartoon white wildflowers",
+    provider="openai",
+    route="auto",   # NEW: "auto" (default) | "img2img" | "inpaint"
+)
+```
+
+- `"auto"` (default): route sparse-alpha layers (`area_pct < 5%` OR `bbox_fill < 0.5` against
+  the true bounding box) through `inpaint_with_mask` when the provider is capable
+  (`hasattr(..., "inpaint_with_mask")`). Dense layers and incapable providers stay on
+  legacy img2img bit-identically.
+- `"img2img"`: force the legacy unmasked path (v0.18.x parity).
+- `"inpaint"`: force the mask-aware path. Falls back to img2img with a warning when the
+  provider lacks `inpaint_with_mask`.
+
+The capability gate covers all current providers without `inpaint_with_mask`
+(`mock`, `gemini`, `comfyui`); only `openai` (gpt-image-*) supports the mask-aware path
+today.
+
+### Mask + image dimension handling (B8)
+
+Source layers larger than OpenAI's edit-supported sizes (e.g. 4032×3024 IMG_6847 source)
+are aspect-preserving downsampled to 1024-class size (`{1024×1024, 1024×1536, 1536×1024}`)
+along with their mask before the API call. The model's response is upsampled back to the
+original canvas via `_fit_into_canvas`; `preserve_alpha=True` re-applies the
+**original-canvas** alpha (not the resized one) so output alpha is bit-identical to source.
+Quality cost: model output is at ~1024-class then upsampled — soft edges visible only at
+pixel-peeping zoom. v0.21 will revisit if tile-based super-resolution proves needed.
+
+### Mask polarity invariant pinned
+
+Constructed mask must satisfy: where source alpha > 0 (subject), mask alpha = 0 (EDIT
+zone); where source alpha == 0 (empty), mask alpha = 255 (PRESERVE zone). This is
+OpenAI's `/v1/images/edits` convention. Hard binary {0, 255} only — no GaussianBlur
+(intermediate values are undefined behavior). Pinned by
+`tests/test_layers_redraw_mask_aware.py::test_mask_polarity_invariant_pins_v2_to_v2_1_bug`.
+
+### Deferred to v0.21
+
+- `redraw_merged` retains v0.18 behavior (unmasked img2img). The `blend_layers` union
+  alpha makes the same fix conceptually wrong for merged subjects — needs separate
+  redesign. The new `route` kwarg is **ignored** on the merge path.
+- Typed advisory in tool return payload (`{sparse_detected, route_used, hint}`).
+  v0.20 surfaces routing decisions only via INFO-level log lines:
+  `[layers_redraw] layer=X sparse=true area_pct=3.3 bbox_fill=0.65 route_chosen=inpaint provider=OpenAIImageProvider`
+
+### Backward compat
+
+- All v0.18.x callers without a `route` kwarg get `route="auto"` → dense behavior is
+  bit-identical (predicate gates the change), sparse behavior is fixed.
+- All non-OpenAI providers fall back to legacy img2img via the capability gate.
+- `background_strategy="cream"` retained as the legacy workaround for
+  `route="img2img"`. Made redundant by `route="auto"` for sparse layers.
+- v0.17.x verbatim parity: `in_place=True, background_strategy="transparent",
+  preserve_alpha=False, route="img2img"`.
+
+### Tests
+
+- `tests/test_layers_redraw_mask_aware.py` — 14 unit tests: sparsity predicate (true bbox
+  including multi-instance corner-spread), RGBA mask polarity invariant + hard binary,
+  capability fallback (auto/inpaint/explicit-img2img), 4032×3024 dimension round-trip,
+  B7 deferral pin.
+- `tests/test_layers_redraw_mask_aware_real_provider.py` — 3 real-provider ship-gate tests
+  behind `@pytest.mark.real_provider`. Cost ceiling ~$0.24 per full run. Two acceptance
+  fixtures: IMG_6847 flower_cluster_c (single-region 3.3%, hue [30°,90°] AND L>0.6 AND
+  pct_white_like>5%, 3× variance ≥2/3 pass) and Scottish lanterns (multi-instance, ≥5
+  components + ≥4/6 components matching gongbi cinnabar+gold criteria).
+- 37/37 pre-existing `tests/test_layers_redraw.py`, `tests/test_layers_v2_redraw.py`,
+  `tests/test_inpaint_mask.py` continue to pass — backward-compat verified.
+
 ## v0.19.0 (2026-04-27)
 
 Two diagnostic improvements to the orchestrated detection pipeline surfaced by a

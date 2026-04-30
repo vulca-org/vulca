@@ -46,11 +46,11 @@ class TestProtocolCompliance:
 
 
 class TestMockImageProvider:
-    def test_generates_svg(self):
+    def test_generates_png(self):
         from vulca.providers.mock import MockImageProvider
         p = MockImageProvider()
         result = asyncio.run(p.generate("test prompt", tradition="chinese_xieyi"))
-        assert result.mime == "image/svg+xml"
+        assert result.mime == "image/png"
         assert len(result.image_b64) > 0
         assert result.metadata is not None
         assert "candidate_id" in result.metadata

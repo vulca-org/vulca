@@ -59,7 +59,7 @@ def test_gpt_image_2_drops_input_fidelity_from_edit_form():
 
     ref_b64 = base64.b64encode(_png_bytes()).decode()
     with _httpx_with_handler(handler):
-        asyncio.run(
+        result = asyncio.run(
             OpenAIImageProvider(api_key="sk-test", model="gpt-image-2").generate(
                 "edit this",
                 reference_image_b64=ref_b64,
@@ -73,6 +73,8 @@ def test_gpt_image_2_drops_input_fidelity_from_edit_form():
     assert b'name="input_fidelity"' not in body
     assert b'name="quality"' in body
     assert b'name="output_format"' in body
+    assert result.mime == "image/webp"
+    assert result.metadata["output_format"] == "webp"
 
 
 def test_gpt_image_15_keeps_input_fidelity_in_edit_form():

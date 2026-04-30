@@ -1,0 +1,30 @@
+[
+  {
+    "model": "gpt-image-2",
+    "error": "Client error '400 Bad Request' for url 'https://api.openai.com/v1/images/edits'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+    "traceback_tail": [
+      "           ^^^^^^^^^^^^^^^^^",
+      "  File \"/Users/yhryzy/dev/vulca/src/vulca/providers/openai_provider.py\", line 461, in _call",
+      "    resp.raise_for_status()",
+      "    ~~~~~~~~~~~~~~~~~~~~~^^",
+      "  File \"/opt/homebrew/lib/python3.14/site-packages/httpx/_models.py\", line 829, in raise_for_status",
+      "    raise HTTPStatusError(message, request=request, response=self)",
+      "httpx.HTTPStatusError: Client error '400 Bad Request' for url 'https://api.openai.com/v1/images/edits'",
+      "For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+    ]
+  },
+  {
+    "model": "gpt-image-1.5",
+    "error": "Client error '400 Bad Request' for url 'https://api.openai.com/v1/images/edits'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+    "traceback_tail": [
+      "           ^^^^^^^^^^^^^^^^^",
+      "  File \"/Users/yhryzy/dev/vulca/src/vulca/providers/openai_provider.py\", line 461, in _call",
+      "    resp.raise_for_status()",
+      "    ~~~~~~~~~~~~~~~~~~~~~^^",
+      "  File \"/opt/homebrew/lib/python3.14/site-packages/httpx/_models.py\", line 829, in raise_for_status",
+      "    raise HTTPStatusError(message, request=request, response=self)",
+      "httpx.HTTPStatusError: Client error '400 Bad Request' for url 'https://api.openai.com/v1/images/edits'",
+      "For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+    ]
+  }
+]

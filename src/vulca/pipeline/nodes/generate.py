@@ -133,6 +133,9 @@ class GenerateNode(PipelineNode):
             if ctx.image_provider is not None:
                 provider_instance = ctx.image_provider
             else:
+                # TODO(v0.21): plumb model/quality from pipeline ctx —
+                # currently silently defaults to OpenAIImageProvider's
+                # gpt-image-1. See v0.20 PR audit on layers_redraw fix.
                 provider_instance = get_image_provider(
                     provider_name, api_key=ctx.api_key
                 )

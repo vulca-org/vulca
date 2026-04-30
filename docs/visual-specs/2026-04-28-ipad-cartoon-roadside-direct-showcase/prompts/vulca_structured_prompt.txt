@@ -1,0 +1,17 @@
+Transform the provided roadside photo into a polished iPad Procreate cartoon illustration.
+Keep the same camera angle, road layout, guardrail placement, roadside hedge, trees,
+sky, yellow maintenance truck, red car, and small white wildflowers as recognizable
+scene anchors. Redraw the whole image as one coherent illustration, not as separate
+pasted layer cutouts.
+
+Visual style: vibrant pastel iPad illustration, soft rounded outlines, clean flat
+shading, simple readable shapes, cheerful roadside atmosphere, crisp but gentle linework,
+no photorealistic texture.
+
+Critical constraints:
+- no large white or cream blank blocks
+- no mask-shaped halos
+- no pasted stickers
+- no muddy green/brown color drift on flower regions
+- no global low-contrast wash
+- keep the roadside scene composition legible
