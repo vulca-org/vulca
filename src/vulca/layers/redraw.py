@@ -390,6 +390,19 @@ def _crop_rgba_and_alpha(src_rgba, crop_box):
     return crop, crop.split()[-1]
 
 
+def _crop_rgba_with_alpha(src_rgba, alpha, crop_box):
+    box = (
+        crop_box.x,
+        crop_box.y,
+        crop_box.x + crop_box.w,
+        crop_box.y + crop_box.h,
+    )
+    crop = src_rgba.crop(box).convert("RGBA")
+    crop_alpha = alpha.crop(box).convert("L")
+    crop.putalpha(crop_alpha)
+    return crop, crop_alpha
+
+
 def _paste_crop_preserving_alpha(canvas, crop_rgba, crop_alpha, crop_box) -> None:
     crop_rgba = crop_rgba.convert("RGBA")
     if crop_rgba.size != crop_alpha.size:
@@ -528,6 +541,7 @@ async def redraw_layer(
         analyze_alpha_geometry,
         choose_redraw_route,
     )
+    from vulca.layers.mask_refine import refine_mask_for_target
     from vulca.layers.redraw_quality import evaluate_redraw_quality
     from vulca.providers import get_image_provider
 
@@ -578,6 +592,12 @@ async def redraw_layer(
     sparse, area_pct, bbox_fill = _compute_sparsity(src_alpha)
     geometry = analyze_alpha_geometry(src_alpha)
     redraw_plan = choose_redraw_route(geometry)
+    refinement = refine_mask_for_target(
+        src_rgba.convert("RGB"),
+        src_alpha,
+        description=target.info.description,
+        instruction=instruction,
+    )
     img_provider = get_image_provider(provider, api_key=api_key)
     # v0.20.1 — per-call model override, matching generate_image MCP pattern
     # (mcp_server.py:1340-1344). Silent no-op if provider has no `model` attr.
@@ -589,6 +609,8 @@ async def redraw_layer(
         if hasattr(img_provider, "edit_capabilities")
         else None
     )
+
+    refinement_path_available = refinement.applied and has_inpaint and route != "img2img"
 
     if route == "auto":
         chosen_route = "inpaint" if (sparse and has_inpaint) else "img2img"
@@ -607,6 +629,8 @@ async def redraw_layer(
         raise ValueError(
             f"Unknown route={route!r}; expected one of 'auto', 'img2img', 'inpaint'."
         )
+    if refinement_path_available:
+        chosen_route = "inpaint"
 
     # Spec E — log-channel advisory in v0.20 (typed return advisory deferred to v0.21).
     logger.info(
@@ -621,7 +645,40 @@ async def redraw_layer(
         RedrawRoute.SPARSE_PER_INSTANCE,
     }
 
-    if chosen_route == "inpaint" and redraw_plan.route in sparse_crop_routes:
+    refined_alpha = None
+    if refinement_path_available:
+        rgba = Image.new("RGBA", src_rgba.size, (0, 0, 0, 0))
+        refined_alpha = Image.new("L", src_alpha.size, 0)
+        for child_mask in refinement.child_masks:
+            child_geometry = analyze_alpha_geometry(child_mask)
+            crop_box = child_geometry.bbox
+            if crop_box.w <= 0 or crop_box.h <= 0:
+                continue
+            crop_rgba, crop_alpha = _crop_rgba_with_alpha(
+                src_rgba,
+                child_mask,
+                crop_box,
+            )
+            crop_flat, _crop_bg = _flatten_layer(
+                crop_rgba,
+                background_strategy=background_strategy,
+            )
+            crop_out, _result = await _redraw_via_inpaint_mask(
+                flat_img=crop_flat,
+                src_alpha=crop_alpha,
+                canvas_size=crop_rgba.size,
+                instruction=instruction,
+                provider_inst=img_provider,
+                tradition=tradition,
+                target_description=target.info.description,
+                quality=quality,
+                input_fidelity=input_fidelity,
+                output_format=output_format,
+                resize_to_api_size=False,
+            )
+            _paste_crop_preserving_alpha(rgba, crop_out, crop_alpha, crop_box)
+            refined_alpha.paste(crop_alpha, (crop_box.x, crop_box.y))
+    elif chosen_route == "inpaint" and redraw_plan.route in sparse_crop_routes:
         rgba = Image.new("RGBA", src_rgba.size, (0, 0, 0, 0))
         for crop_box in redraw_plan.crop_boxes:
             crop_rgba, crop_alpha = _crop_rgba_and_alpha(src_rgba, crop_box)
@@ -727,12 +784,28 @@ async def redraw_layer(
 
     # 7. Optionally re-apply original alpha
     if preserve_alpha:
+        output_alpha = refined_alpha if refined_alpha is not None else src_alpha
         # Resize alpha to match if canvas resized (rare; manifest dims drive both)
-        if src_alpha.size != rgba.size:
-            src_alpha = src_alpha.resize(rgba.size, Image.LANCZOS)
-        rgba.putalpha(src_alpha)
+        if output_alpha.size != rgba.size:
+            output_alpha = output_alpha.resize(rgba.size, Image.LANCZOS)
+        rgba.putalpha(output_alpha)
 
-    quality_report = evaluate_redraw_quality(src_rgba, rgba)
+    quality_report = evaluate_redraw_quality(
+        src_rgba,
+        rgba,
+        description=target.info.description,
+        instruction=instruction,
+        refinement_applied=refinement_path_available,
+        refined_child_count=len(refinement.child_masks)
+        if refinement_path_available
+        else 0,
+        refined_coverage_pct=refinement.metrics.get("refined_coverage_pct", 0.0)
+        if refinement_path_available
+        else 0.0,
+        mask_granularity_score=refinement.metrics.get(
+            "mask_granularity_score", 0.0
+        ),
+    )
     if not quality_report.passed:
         logger.warning(
             "redraw quality gate failed for layer=%s failures=%s metrics=%s",
@@ -741,7 +814,9 @@ async def redraw_layer(
             quality_report.metrics,
         )
     actual_redraw_route = (
-        redraw_plan.route
+        RedrawRoute.SPARSE_PER_INSTANCE
+        if refinement_path_available
+        else redraw_plan.route
         if chosen_route == "inpaint"
         else RedrawRoute.DENSE_FULL_CANVAS
     )
@@ -759,6 +834,15 @@ async def redraw_layer(
         ),
         "quality_gate_passed": quality_report.passed,
         "quality_failures": list(quality_report.failures),
+        "refinement_applied": refinement_path_available,
+        "refinement_reason": refinement.reason,
+        "refinement_strategy": refinement.strategy,
+        "refined_child_count": len(refinement.child_masks)
+        if refinement_path_available
+        else 0,
+        "mask_granularity_score": refinement.metrics.get(
+            "mask_granularity_score", 0.0
+        ),
     }
 
     # 8. Decide output path (v0.18.0 3-way resolution).

@@ -9,7 +9,7 @@
   5. Session:      archive_session, sync_data, unload_models
 
 Typical agent loop: brief_parse → get_tradition_guide → generate_image → view_image
-  → evaluate_artwork → (layers_split → layers_edit/redraw → layers_composite) → archive_session
+  → evaluate_artwork → (layers_split → layers_edit/redraw → layers_paste_back or layers_composite) → archive_session
 
 Usage:
     vulca-mcp                   # stdio transport (default)
@@ -19,6 +19,7 @@ Usage:
 from __future__ import annotations
 
 import logging
+from pathlib import Path
 
 from fastmcp import FastMCP
 
@@ -55,6 +56,46 @@ def _parse_weights_str(raw: str) -> dict[str, float]:
             except ValueError:
                 continue
     return weights
+
+
+def _resolve_artwork_source_path(artwork_dir: str, source_image: str) -> Path | None:
+    if not source_image:
+        return None
+    source_path = Path(source_image)
+    if source_path.is_absolute() and source_path.exists():
+        return source_path
+
+    artwork_path = Path(artwork_dir)
+    candidates = (
+        artwork_path / source_image,
+        artwork_path.parent / source_image,
+    )
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    return None
+
+
+def _source_pasteback_preview(
+    *,
+    artwork_dir: str,
+    source_image: str,
+    layer_image: str,
+) -> dict:
+    source_path = _resolve_artwork_source_path(artwork_dir, source_image)
+    if source_path is None:
+        return {}
+
+    from vulca.layers.paste_back import paste_back
+
+    layer_path = Path(layer_image)
+    output_path = layer_path.with_name(f"{layer_path.stem}_on_source.png")
+    return paste_back(
+        str(source_path),
+        str(layer_path),
+        output_path=str(output_path),
+        blend_mode="alpha",
+    )
 
 
 _TOOL_TIERS: dict[str, str] = {
@@ -823,7 +864,10 @@ async def layers_redraw(
             retains v0.18 behavior; v0.21 will redesign separately.
 
     Returns:
-        name, file, z_index, content_type of the redrawn layer.
+        name, file, z_index, content_type of the redrawn layer. When the
+        manifest has a resolvable source_image, also returns
+        source_pasteback_path: a flat preview with the redrawn layer composited
+        onto the original source image.
     """
     from vulca.layers.manifest import load_manifest
     from vulca.layers.redraw import redraw_layer, redraw_merged
@@ -866,6 +910,19 @@ async def layers_redraw(
         "z_index": result.info.z_index,
         "content_type": result.info.content_type,
     }
+    try:
+        pasteback = _source_pasteback_preview(
+            artwork_dir=artwork_dir,
+            source_image=artwork.source_image,
+            layer_image=result.image_path,
+        )
+    except Exception as exc:
+        pasteback = {"source_pasteback_error": str(exc)}
+    if pasteback.get("output_path"):
+        payload["source_pasteback_path"] = pasteback["output_path"]
+        payload["source_pasteback_blend_mode"] = pasteback.get("blend_mode", "alpha")
+    elif pasteback.get("source_pasteback_error"):
+        payload.update(pasteback)
     payload.update(getattr(result, "redraw_advisory", {}) or {})
     return payload
 
