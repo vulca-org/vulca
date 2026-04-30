@@ -26,6 +26,7 @@ class _CapturingProvider:
 
     def __init__(self):
         self.calls: list[dict[str, Any]] = []
+        self.mime = "image/png"
 
     async def generate(self, prompt: str, **kwargs) -> ImageResult:
         import base64
@@ -35,10 +36,13 @@ class _CapturingProvider:
         self.calls.append({"prompt": prompt, **kwargs})
 
         buf = io.BytesIO()
-        Image.new("RGBA", (8, 8), (0, 0, 0, 255)).save(buf, format="PNG")
+        if self.mime == "image/jpeg":
+            Image.new("RGB", (8, 8), (0, 0, 0)).save(buf, format="JPEG")
+        else:
+            Image.new("RGBA", (8, 8), (0, 0, 0, 255)).save(buf, format="PNG")
         return ImageResult(
             image_b64=base64.b64encode(buf.getvalue()).decode(),
-            mime="image/png",
+            mime=self.mime,
             metadata={"cost_usd": 0.0},
         )
 
@@ -194,6 +198,18 @@ class TestExtendedSignature:
         assert "negative_prompt" not in meta
         # But candidate_id (always-populated mock field) still there
         assert "candidate_id" in meta
+
+    def test_mcp_wrapper_uses_provider_mime_for_file_extension(
+        self, capturing_provider, tmp_path
+    ):
+        from vulca.mcp_server import generate_image
+
+        capturing_provider.mime = "image/jpeg"
+
+        r = run(generate_image("p", provider="mock", output_dir=str(tmp_path)))
+
+        assert r["image_path"].endswith(".jpg")
+        assert r["mime"] == "image/jpeg"
 
 
 class TestGptImage2Signature:

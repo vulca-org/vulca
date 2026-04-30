@@ -9,7 +9,7 @@ def _card():
         slug="tea",
         intent="premium tea packaging with ink atmosphere and liu bai",
     )
-    return generate_direction_cards(profile, count=1)[0]
+    return generate_direction_cards(profile, count=3)[0]
 
 
 def test_openai_prompt_artifact_uses_gpt_image_2_hint():
@@ -42,3 +42,16 @@ def test_unknown_target_rejected():
 
     with pytest.raises(ValueError, match="unknown provider target"):
         compose_prompt_from_direction_card(_card(), target="video")
+
+
+def test_comfyui_prompt_artifact_is_clip_friendly():
+    from vulca.discovery.prompting import compose_prompt_from_direction_card
+
+    card = _card()
+    final = compose_prompt_from_direction_card(card, target="final")
+    local = compose_prompt_from_direction_card(card, target="local")
+
+    assert local.provider == "comfyui"
+    assert "CLIP-friendly" in local.prompt
+    assert "high-fidelity commercial visual candidate" not in local.prompt
+    assert len(local.prompt) < len(final.prompt)

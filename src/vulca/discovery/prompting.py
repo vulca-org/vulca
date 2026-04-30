@@ -34,7 +34,15 @@ def compose_prompt_from_direction_card(
             "Create an exploratory thumbnail for visual direction comparison",
         )
     elif target == "local":
-        base_parts.insert(0, "CLIP-friendly local generation prompt")
+        base_parts = [
+            "CLIP-friendly local generation prompt",
+            card.summary,
+            ops.composition,
+            ops.color,
+            ops.texture,
+            ops.symbol_strategy,
+            f"Culture terms: {', '.join(card.culture_terms)}",
+        ]
     else:
         base_parts.insert(0, "Create a high-fidelity commercial visual candidate")
 

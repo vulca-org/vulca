@@ -93,7 +93,7 @@ def generate_direction_cards(
     profile: TasteProfile,
     count: int = 3,
 ) -> list[DirectionCard]:
-    count = max(1, min(count, 5))
+    count = max(3, min(count, 5))
     tradition = (
         profile.candidate_traditions[0]
         if profile.candidate_traditions

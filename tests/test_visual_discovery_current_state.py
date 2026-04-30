@@ -4,8 +4,6 @@ import asyncio
 
 import pytest
 
-pytest.importorskip("fastmcp", reason="fastmcp is optional; install vulca[mcp]")
-
 
 def run(coro):
     return asyncio.run(coro)
@@ -65,6 +63,8 @@ EXPECTED_TRADITIONS = {
 
 
 def test_runtime_mcp_surface_contains_current_expected_tools():
+    pytest.importorskip("fastmcp", reason="fastmcp is optional; install vulca[mcp]")
+
     from vulca.mcp_server import mcp
 
     names = {tool.name for tool in run(mcp.list_tools())}

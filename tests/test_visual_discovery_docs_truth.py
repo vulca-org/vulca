@@ -19,6 +19,7 @@ def test_stale_tool_count_claims_removed_from_public_docs():
 
     assert "20 MCP tools" not in public_text
     assert "21 MCP tools" not in public_text
+    assert "21 tools" not in public_text
 
 
 def test_readme_mentions_visual_discovery_and_mock_boundary():

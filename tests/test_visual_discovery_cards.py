@@ -31,3 +31,16 @@ def test_generate_direction_cards_returns_operational_cards():
     assert cards[0].visual_ops.composition != ""
     assert cards[0].evaluation_focus.L5 != ""
     assert cards[0].status == "candidate"
+
+
+def test_generate_direction_cards_clamps_to_three_to_five_cards():
+    from vulca.discovery.cards import generate_direction_cards
+    from vulca.discovery.profile import infer_taste_profile
+
+    profile = infer_taste_profile(
+        slug="tea",
+        intent="premium tea packaging with ink atmosphere and liu bai",
+    )
+
+    assert len(generate_direction_cards(profile, count=1)) == 3
+    assert len(generate_direction_cards(profile, count=8)) == 5

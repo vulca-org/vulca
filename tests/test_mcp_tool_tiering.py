@@ -63,3 +63,18 @@ def test_tier_description_applied_to_adapter_registration():
     assert len(desc) <= 50, (
         f"Advanced-tier tool description should be ≤50 chars but got {len(desc)}: {desc!r}"
     )
+
+
+def test_auto_registered_tool_protocol_descriptions_are_tiered():
+    """Tool Protocol descriptions must already be tiered during mcp_server import."""
+    import asyncio
+
+    from vulca.mcp_server import _DESC_LIMITS, mcp
+
+    tools = asyncio.run(mcp.list_tools())
+    tool_protocol_descs = [
+        tool.description or "" for tool in tools if tool.name.startswith("tool_")
+    ]
+
+    assert tool_protocol_descs
+    assert all(len(desc) <= _DESC_LIMITS["advanced"] for desc in tool_protocol_descs)

@@ -128,6 +128,15 @@ def _normalize_quality_for_model(model: str, quality: str) -> str:
     return quality
 
 
+def _mime_for_output_format(output_format: str | None) -> str:
+    normalized = (output_format or "png").lower()
+    if normalized in {"jpeg", "jpg"}:
+        return "image/jpeg"
+    if normalized == "webp":
+        return "image/webp"
+    return "image/png"
+
+
 def _extract_cost_usd(
     *,
     model: str,
@@ -269,6 +278,11 @@ class OpenAIImageProvider:
             filtered_params["quality"] = _normalize_quality_for_model(
                 model, filtered_params["quality"]
             )
+        effective_output_format = (
+            filtered_params.get("output_format", "png")
+            if model.startswith("gpt-image")
+            else "png"
+        )
 
         async def _call() -> ImageResult:
             async with httpx.AsyncClient(timeout=120) as client:
@@ -300,9 +314,7 @@ class OpenAIImageProvider:
                         payload["background"] = background
                         # Caller-supplied output_format wins; default stays png
                         # for backward-compat with gpt-image-1 callers.
-                        payload["output_format"] = (
-                            filtered_params.get("output_format", "png")
-                        )
+                        payload["output_format"] = effective_output_format
                         if "quality" in filtered_params:
                             payload["quality"] = filtered_params["quality"]
                     else:
@@ -365,6 +377,7 @@ class OpenAIImageProvider:
             metadata = {
                 "model": self.model,
                 "endpoint": "edits" if use_edits else "generations",
+                "output_format": effective_output_format,
                 "revised_prompt": data["data"][0].get("revised_prompt", ""),
             }
             cost_usd = _extract_cost_usd(
@@ -379,7 +392,7 @@ class OpenAIImageProvider:
                 metadata["usage"] = data["usage"]
             return ImageResult(
                 image_b64=img_b64,
-                mime="image/png",
+                mime=_mime_for_output_format(effective_output_format),
                 metadata=metadata,
             )
 
@@ -466,6 +479,7 @@ class OpenAIImageProvider:
                 "output_format": output_format,
             },
         )
+        effective_output_format = edit_filtered_params.get("output_format", "png")
 
         async def _call() -> ImageResult:
             async with httpx.AsyncClient(timeout=180) as client:
@@ -520,6 +534,7 @@ class OpenAIImageProvider:
                 "model": self.model,
                 "endpoint": "edits",
                 "mode": "inpaint_with_mask",
+                "output_format": effective_output_format,
             }
             cost_usd = _extract_cost_usd(
                 model=self.model, data=data, size=size, quality=None,
@@ -530,7 +545,7 @@ class OpenAIImageProvider:
                 metadata["usage"] = data["usage"]
             return ImageResult(
                 image_b64=img_b64,
-                mime="image/png",
+                mime=_mime_for_output_format(effective_output_format),
                 metadata=metadata,
             )
 
