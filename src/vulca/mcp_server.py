@@ -769,6 +769,11 @@ async def layers_redraw(
     background_strategy: str = "cream",
     preserve_alpha: bool = True,
     in_place: bool = False,
+    route: str = "auto",
+    model: str = "",
+    quality: str = "",
+    input_fidelity: str = "",
+    output_format: str = "",
 ) -> dict:
     """Redraw a layer via img2img with explicit content/style instructions — targeted layer regeneration.
 
@@ -781,8 +786,18 @@ async def layers_redraw(
     (``background_strategy="cream"``) to avoid scene hallucination on
     alpha-sparse layers.
 
+    v0.20.0 mask-aware routing: ``route`` selects between unmasked img2img
+    (legacy) and OpenAI mask-aware ``/v1/images/edits`` (new). Defaults to
+    ``"auto"`` — routes sparse-alpha layers (area_pct<5% OR bbox_fill<0.5)
+    to the mask-aware path on capable providers (gpt-image-*), keeps dense
+    layers and other providers on the legacy path bit-identically. The
+    fix targets the failure mode where small-subject layers (white wildflowers,
+    lanterns row, partial vehicles) drifted to wrong colors/shapes because
+    unmasked img2img gave the model no spatial cue. See
+    ``docs/superpowers/specs/2026-04-27-v0.20-mask-aware-redraw-routing-design.md``.
+
     To restore v0.17.x legacy behavior verbatim, pass
-    ``in_place=True, background_strategy="transparent", preserve_alpha=False``.
+    ``in_place=True, background_strategy="transparent", preserve_alpha=False, route="img2img"``.
 
     Args:
         artwork_dir: Directory with layer PNGs + manifest.
@@ -798,13 +813,18 @@ async def layers_redraw(
             ``in_place=True``.
         background_strategy: ``'cream'`` (default) | ``'white'`` |
             ``'sample_median'`` | ``'transparent'`` (legacy, hallucinates on
-            alpha-sparse layers).
+            alpha-sparse layers). Most useful with ``route="img2img"``.
         preserve_alpha: Re-apply source layer's alpha to provider output.
             Default ``True``; pass ``False`` for legacy parity.
         in_place: Legacy opt-out. If True, overwrites the source layer's PNG
             and skips the new manifest entry; takes precedence over
             ``output_layer_name``. **Single-layer path only; ignored on the
             merge path (``merge=True``).** Default ``False``.
+        route: ``'auto'`` (default, v0.20+) | ``'img2img'`` (force legacy
+            unmasked) | ``'inpaint'`` (force mask-aware; falls back to
+            img2img with a warning if provider lacks ``inpaint_with_mask``).
+            Ignored on the merge path (``merge=True``) — merged redraw
+            retains v0.18 behavior; v0.21 will redesign separately.
 
     Returns:
         name, file, z_index, content_type of the redrawn layer.
@@ -818,11 +838,15 @@ async def layers_redraw(
         layer_names = [n.strip() for n in layers.split(",") if n.strip()]
         if not layer_names:
             return {"error": "No layer names provided"}
+        # B7 deferred — redraw_merged retains v0.18 routing in v0.20 (route ignored).
+        # v0.20.1 — model/quality plumbed through to fix silent-default bug.
         result = await redraw_merged(
             artwork, layer_names=layer_names,
             instruction=instruction, merged_name=merged_name,
             provider=provider, tradition=tradition,
             artwork_dir=artwork_dir,
+            model=model, quality=quality,
+            input_fidelity=input_fidelity, output_format=output_format,
         )
     elif layer:
         result = await redraw_layer(
@@ -833,16 +857,21 @@ async def layers_redraw(
             background_strategy=background_strategy,
             preserve_alpha=preserve_alpha,
             in_place=in_place,
+            route=route,
+            model=model, quality=quality,
+            input_fidelity=input_fidelity, output_format=output_format,
         )
     else:
         return {"error": "Specify 'layer' or 'layers' with merge=true"}
 
-    return {
+    payload = {
         "name": result.info.name,
         "file": result.image_path,
         "z_index": result.info.z_index,
         "content_type": result.info.content_type,
     }
+    payload.update(getattr(result, "redraw_advisory", {}) or {})
+    return payload
 
 
 @mcp.tool()

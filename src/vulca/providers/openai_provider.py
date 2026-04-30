@@ -6,7 +6,7 @@ import io
 import logging
 import os
 
-from vulca.providers.base import ImageProvider, ImageResult
+from vulca.providers.base import ImageEditCapabilities, ImageProvider, ImageResult
 from vulca.providers.retry import with_retry
 
 
@@ -45,6 +45,30 @@ MODEL_TOKEN_PRICING_PER_MILLION: dict[str, dict[str, float]] = {
     "gpt-image-1.5": {"input": 8.0, "output": 32.0},
     "gpt-image-2": {"input": 8.0, "output": 30.0},
 }
+
+def _openai_edit_capabilities(model: str) -> ImageEditCapabilities:
+    if not model.startswith("gpt-image"):
+        return ImageEditCapabilities()
+    if model == "gpt-image-2":
+        return ImageEditCapabilities(
+            supports_edits=True,
+            requires_mask_for_edits=True,
+            supports_unmasked_edits=False,
+            supports_masked_edits=True,
+            supports_input_fidelity=False,
+            supports_quality=True,
+            supports_output_format=True,
+        )
+    return ImageEditCapabilities(
+        supports_edits=True,
+        requires_mask_for_edits=False,
+        supports_unmasked_edits=True,
+        supports_masked_edits=True,
+        supports_input_fidelity=(model == "gpt-image-1.5"),
+        supports_quality=True,
+        supports_output_format=True,
+    )
+
 
 MODEL_STATIC_IMAGE_PRICING: dict[str, dict[str, dict[str, float]]] = {
     "dall-e-2": {
@@ -147,6 +171,9 @@ class OpenAIImageProvider:
     def __init__(self, api_key: str = "", model: str = "gpt-image-1"):
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY", "")
         self.model = model
+
+    def edit_capabilities(self) -> ImageEditCapabilities:
+        return _openai_edit_capabilities(self.model)
 
     async def generate(
         self,
@@ -372,12 +399,25 @@ class OpenAIImageProvider:
         prompt: str,
         tradition: str = "default",
         size: str = "",
+        quality: str | None = None,
+        input_fidelity: str | None = None,
+        output_format: str | None = None,
     ) -> ImageResult:
         """Mask-aware inpaint via /v1/images/edits.
 
         Mask convention (alpha=0 = edit, alpha=255 = preserve) maps directly
         onto OpenAI's transparency semantic — the mask is uploaded as PNG
         unchanged. Only supported on gpt-image-* models.
+
+        Optional model knobs (v0.20.1 — fix the silent-drop bug uncovered
+        in v0.20 PR audit):
+        - ``quality``: ``"low" | "medium" | "high" | "auto"`` (gpt-image-*).
+        - ``input_fidelity``: ``"high" | "low"`` — only honored by models
+          whose capability table sets ``input_fidelity=True`` (currently
+          gpt-image-1.5; gpt-image-2 strips it).
+        - ``output_format``: ``"png" | "webp" | "jpeg"`` (gpt-image-*).
+        Each parameter is passed through ``_drop_unsupported_params`` so
+        callers don't have to know per-model capability matrices.
         """
         if not self.api_key:
             raise ValueError(
@@ -414,6 +454,19 @@ class OpenAIImageProvider:
             }
             size = f"{w}x{h}" if (w, h) in allowed_sizes else "1024x1024"
 
+        # v0.20.1 — drop knobs the current model doesn't support, then fold
+        # them into the form so /v1/images/edits sees them at the wire layer.
+        # Fixes the silent-drop hole that let v0.20 ship-gate run on
+        # gpt-image-1 default while CHANGELOG claimed gpt-image-2 high.
+        edit_filtered_params = _drop_unsupported_params(
+            self.model,
+            {
+                "input_fidelity": input_fidelity,
+                "quality": quality,
+                "output_format": output_format,
+            },
+        )
+
         async def _call() -> ImageResult:
             async with httpx.AsyncClient(timeout=180) as client:
                 headers = {"Authorization": f"Bearer {self.api_key}"}
@@ -427,6 +480,7 @@ class OpenAIImageProvider:
                     "n": "1",
                     "size": size,
                 }
+                form.update(edit_filtered_params)
                 resp = await client.post(
                     "https://api.openai.com/v1/images/edits",
                     headers=headers, files=files, data=form,

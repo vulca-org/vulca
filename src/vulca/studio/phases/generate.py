@@ -97,6 +97,10 @@ class GeneratePhase:
 
         try:
             from vulca.providers import get_image_provider
+            # TODO(v0.21): plumb model/quality from create_artwork MCP signature —
+            # currently silently defaults to OpenAIImageProvider's gpt-image-1.
+            # The user-facing fix is the same shape as redraw.py:524 (per-call
+            # `provider.model = model` after instantiation). v0.20 PR audit.
             img_provider = get_image_provider(provider, api_key=api_key)
         except Exception:
             filepath = output_dir / f"r{round_num}.png"

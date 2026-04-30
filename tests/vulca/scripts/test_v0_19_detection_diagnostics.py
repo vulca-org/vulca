@@ -13,6 +13,7 @@ See feedback memory: feedback_dogfood_surfaces_design_bugs.md
 from __future__ import annotations
 
 import sys
+import builtins
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -35,8 +36,6 @@ def _make_entity(i, label, kind="object", **extra):
 
 def _run_person_loop(person_entities, yolo_persons, person_attempts=None):
     """Exercise only the person loop of process() using a minimal mock."""
-    import claude_orchestrated_pipeline as cop
-
     if person_attempts is None:
         person_attempts = [("yolo", len(yolo_persons), "0.50-0.90")]
 
@@ -127,6 +126,24 @@ def _run_object_missed_branch(label, dino_near_miss, dino_nms_drops, is_multi=Fa
 
 class TestPersonChainReasonCodes:
     """v0.19 FIX P0: distinguish chain_returned_zero vs rank_exceeded_chain_pool."""
+
+    def test_person_loop_mock_does_not_import_heavy_pipeline(self, monkeypatch):
+        """Person-loop diagnostics are pure logic and must run without torch."""
+        real_import = builtins.__import__
+
+        def guarded_import(name, *args, **kwargs):
+            if name == "claude_orchestrated_pipeline":
+                raise AssertionError("person-loop mock must not import heavy pipeline")
+            return real_import(name, *args, **kwargs)
+
+        monkeypatch.setattr(builtins, "__import__", guarded_import)
+
+        report = _run_person_loop(
+            [_make_entity(0, "main_subject", kind="person")],
+            [],
+        )
+
+        assert report["per_entity"][0]["reason"] == "chain_returned_zero"
 
     def test_person_rank_exceeded_chain_pool(self):
         """2 person entities, chain returns 1 yolo_person.
