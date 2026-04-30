@@ -630,6 +630,52 @@ def _write_redraw_debug_summary(
     summary_path.write_text(json.dumps(summary, indent=2, ensure_ascii=False))
 
 
+def _build_flower_output_alpha(crop_rgba, edit_matte):
+    import numpy as np
+
+    from PIL import Image, ImageFilter
+
+    base_alpha = edit_matte.convert("L")
+    alpha_arr = np.asarray(base_alpha).copy()
+    rgb = np.asarray(crop_rgba.convert("RGB")).astype(np.int16)
+
+    red = rgb[:, :, 0]
+    green = rgb[:, :, 1]
+    blue = rgb[:, :, 2]
+    channel_spread = np.maximum.reduce((red, green, blue)) - np.minimum.reduce(
+        (red, green, blue)
+    )
+    white_like = (
+        (red > 145)
+        & (green > 145)
+        & (blue > 120)
+        & (channel_spread < 120)
+    )
+    yellow_center = (
+        (red > 130)
+        & (green > 95)
+        & (blue < 160)
+        & ((red - blue) > 20)
+    )
+    flower_like = (white_like | yellow_center) & (alpha_arr > 0)
+    if flower_like.any():
+        support = Image.fromarray((flower_like.astype(np.uint8) * 255))
+        support = support.filter(ImageFilter.MaxFilter(5)).filter(
+            ImageFilter.GaussianBlur(0.7)
+        )
+        alpha_arr = np.minimum(alpha_arr, np.asarray(support))
+    else:
+        alpha_arr[:] = 0
+
+    dark_artifact = (
+        (alpha_arr > 0)
+        & (rgb.mean(axis=2) < 35)
+        & (rgb.max(axis=2) < 45)
+    )
+    alpha_arr[dark_artifact] = 0
+    return Image.fromarray(alpha_arr.astype(np.uint8), mode="L")
+
+
 async def _redraw_source_context_with_edit_matte(
     *,
     source_crop,
@@ -722,25 +768,7 @@ async def _redraw_source_context_with_edit_matte(
         out_img = _fit_into_canvas(out_img, (1024, 1024), bg_rgb=CREAM_BG_RGB)
         crop_out = out_img.crop(content_box).resize(source_crop.size, Image.LANCZOS)
         crop_out = crop_out.convert("RGBA")
-        output_alpha = edit_matte.convert("L")
-        rgb = np.asarray(crop_out.convert("RGB"))
-        alpha_arr = np.asarray(output_alpha).copy()
-        dark_artifact = (
-            (alpha_arr > 0)
-            & (rgb.mean(axis=2) < 35)
-            & (rgb.max(axis=2) < 45)
-        )
-        generated_hedge_like = (
-            (rgb[:, :, 1] > rgb[:, :, 0] + 20)
-            & (rgb[:, :, 1] > rgb[:, :, 2] + 20)
-            & (rgb[:, :, 0] < 90)
-            & (rgb[:, :, 2] < 90)
-            & (rgb[:, :, 1] < 140)
-        )
-        generated_artifact = dark_artifact | ((alpha_arr > 0) & generated_hedge_like)
-        if generated_artifact.any():
-            alpha_arr[generated_artifact] = 0
-            output_alpha = Image.fromarray(alpha_arr.astype(np.uint8), mode="L")
+        output_alpha = _build_flower_output_alpha(crop_out, edit_matte)
         crop_out.putalpha(output_alpha)
         if debug_record is not None:
             crop_out.save(debug_record["patch_path"])
