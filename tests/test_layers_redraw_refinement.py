@@ -324,6 +324,22 @@ def test_refined_flower_layer_suppresses_olive_generated_fill_inside_matte(
     assert not np.asarray(out_alpha).astype(bool).any()
 
 
+def test_flower_output_alpha_removes_green_fill_adjacent_to_petals():
+    from vulca.layers import redraw as redraw_module
+
+    patch = Image.new("RGB", (20, 20), (95, 120, 65))
+    patch.putpixel((10, 10), (238, 235, 220))
+    patch.putpixel((11, 10), (218, 172, 54))
+    matte = Image.new("L", patch.size, 255)
+
+    alpha = redraw_module._build_flower_output_alpha(patch, matte)
+    arr = np.asarray(alpha)
+
+    assert arr[10, 10] > 0
+    assert arr[10, 11] > 0
+    assert arr[10, 12] == 0
+
+
 def test_flower_edit_matte_removes_isolated_bright_specks():
     from vulca.layers import redraw as redraw_module
 
