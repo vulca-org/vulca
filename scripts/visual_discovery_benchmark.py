@@ -6,7 +6,7 @@ import asyncio
 import base64
 import json
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date as date_type
 from pathlib import Path
 from typing import Any
@@ -17,7 +17,7 @@ os.environ.setdefault("LITELLM_LOCAL_MODEL_COST_MAP", "true")
 from vulca.discovery.cards import generate_direction_cards
 from vulca.discovery.profile import infer_taste_profile
 from vulca.discovery.prompting import compose_prompt_from_direction_card
-from vulca.discovery.types import DirectionCard
+from vulca.discovery.types import DirectionCard, TasteProfile
 from vulca.providers.openai_provider import OpenAIImageProvider
 
 
@@ -86,11 +86,22 @@ def get_experiment_project(slug: str) -> ExperimentProject:
     raise ValueError(f"unknown project slug: {slug!r}; expected one of: {known}")
 
 
-def select_direction_card(project: ExperimentProject) -> DirectionCard:
+def _taste_profile_for_project(project: ExperimentProject) -> TasteProfile:
     profile = infer_taste_profile(
         slug=project.slug,
         intent=f"{project.prompt}; {'; '.join(project.tradition_terms)}",
     )
+    if profile.culture_terms:
+        return profile
+    return replace(
+        profile,
+        culture_terms=list(project.tradition_terms),
+        confidence="med",
+    )
+
+
+def select_direction_card(project: ExperimentProject) -> DirectionCard:
+    profile = _taste_profile_for_project(project)
     return generate_direction_cards(profile, count=3)[0]
 
 
