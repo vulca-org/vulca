@@ -32,7 +32,23 @@ Run the no-cost dry-run harness with:
 PYTHONPATH=src python3 scripts/visual_discovery_benchmark.py --date 2026-04-30
 ```
 
-The harness writes prompts, manifests, empty result records, and summaries. It does not call OpenAI, Gemini, ComfyUI, or `mock` for quality evidence. Real provider execution is a future explicit opt-in path and is disabled in this version.
+The default harness writes prompts, manifests, empty result records, and summaries. It does not call OpenAI, Gemini, ComfyUI, or `mock` for quality evidence.
+
+Real provider execution requires explicit opt-in:
+
+```bash
+VULCA_REAL_PROVIDER_BASE_URL=https://example.openai-compatible-gateway.test \
+VULCA_REAL_PROVIDER_API_KEY=... \
+VULCA_REAL_PROVIDER_MODEL=gpt-image-2 \
+PYTHONPATH=src python3 scripts/visual_discovery_benchmark.py \
+  --real-provider \
+  --provider openai \
+  --slug premium-tea-packaging \
+  --output-root /private/tmp/vulca-cultural-term-real-provider \
+  --date 2026-04-30
+```
+
+Never put live API keys in repository files, generated artifacts, PR bodies, or documentation. Use local environment variables or a secret manager.
 
 ## Projects
 

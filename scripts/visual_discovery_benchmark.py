@@ -2,19 +2,23 @@
 from __future__ import annotations
 
 import argparse
+import asyncio
+import base64
 import json
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date as date_type
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit, urlunsplit
 
 os.environ.setdefault("LITELLM_LOCAL_MODEL_COST_MAP", "true")
 
 from vulca.discovery.cards import generate_direction_cards
 from vulca.discovery.profile import infer_taste_profile
 from vulca.discovery.prompting import compose_prompt_from_direction_card
-from vulca.discovery.types import DirectionCard
+from vulca.discovery.types import DirectionCard, TasteProfile
+from vulca.providers.openai_provider import OpenAIImageProvider
 
 
 PROVIDERS = [
@@ -82,11 +86,22 @@ def get_experiment_project(slug: str) -> ExperimentProject:
     raise ValueError(f"unknown project slug: {slug!r}; expected one of: {known}")
 
 
-def select_direction_card(project: ExperimentProject) -> DirectionCard:
+def _taste_profile_for_project(project: ExperimentProject) -> TasteProfile:
     profile = infer_taste_profile(
         slug=project.slug,
         intent=f"{project.prompt}; {'; '.join(project.tradition_terms)}",
     )
+    if profile.culture_terms:
+        return profile
+    return replace(
+        profile,
+        culture_terms=list(project.tradition_terms),
+        confidence="med",
+    )
+
+
+def select_direction_card(project: ExperimentProject) -> DirectionCard:
+    profile = _taste_profile_for_project(project)
     return generate_direction_cards(profile, count=3)[0]
 
 
@@ -171,6 +186,66 @@ def _provider_records() -> list[dict[str, str]]:
         }
         for provider in PROVIDERS
     ]
+
+
+def _sanitize_base_url(base_url: str) -> str:
+    raw = (base_url or "").strip()
+    if not raw:
+        return ""
+    if any(char.isspace() or ord(char) < 32 for char in raw):
+        raise RuntimeError(
+            "VULCA_REAL_PROVIDER_BASE_URL must be a valid absolute http(s) URL."
+        )
+    parsed = urlsplit(raw)
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+        raise RuntimeError(
+            "VULCA_REAL_PROVIDER_BASE_URL must be a valid absolute http(s) URL."
+        )
+    hostname = parsed.hostname
+    if not hostname:
+        raise RuntimeError(
+            "VULCA_REAL_PROVIDER_BASE_URL must be a valid absolute http(s) URL."
+        )
+    if hostname:
+        netloc = f"[{hostname}]" if ":" in hostname else hostname
+        try:
+            port = parsed.port
+        except ValueError as exc:
+            raise RuntimeError(
+                "VULCA_REAL_PROVIDER_BASE_URL must include a valid port."
+            ) from exc
+        if port:
+            netloc = f"{netloc}:{port}"
+    return urlunsplit((parsed.scheme, netloc, "", "", "")).rstrip("/")
+
+
+def _real_provider_config() -> dict[str, str]:
+    api_key = os.environ.get("VULCA_REAL_PROVIDER_API_KEY") or os.environ.get(
+        "OPENAI_API_KEY"
+    )
+    if not api_key:
+        raise RuntimeError(
+            "Real provider execution requires VULCA_REAL_PROVIDER_API_KEY "
+            "or OPENAI_API_KEY."
+        )
+    base_url = (
+        os.environ.get("VULCA_REAL_PROVIDER_BASE_URL")
+        or os.environ.get("VULCA_OPENAI_BASE_URL")
+        or os.environ.get("OPENAI_BASE_URL")
+        or ""
+    )
+    model = os.environ.get("VULCA_REAL_PROVIDER_MODEL") or "gpt-image-2"
+    return {
+        "api_key": api_key,
+        "base_url": _sanitize_base_url(base_url),
+        "model": model,
+    }
+
+
+def _decode_image_bytes(image_b64: str) -> bytes:
+    if not image_b64:
+        raise RuntimeError("provider returned an empty image payload")
+    return base64.b64decode(image_b64)
 
 
 def write_experiment_dry_run(
@@ -286,15 +361,157 @@ metadata, and result structure only.
     }
 
 
-def run_real_provider_experiment(*, real_provider: bool = False) -> None:
+async def _write_openai_real_provider_run(
+    output_root: str | Path,
+    slug: str,
+    date: str | None,
+    config: dict[str, str],
+) -> dict[str, str]:
+    result = write_experiment_dry_run(
+        output_root=output_root,
+        slug=slug,
+        date=date,
+    )
+    out_dir = Path(result["output_dir"])
+    images_dir = out_dir / "images"
+    project = get_experiment_project(slug)
+    card = select_direction_card(project)
+    conditions = build_conditions(project.prompt, card)
+    provider = OpenAIImageProvider(
+        api_key=config["api_key"],
+        model=config["model"],
+        base_url=config["base_url"],
+    )
+
+    image_records: list[dict[str, Any]] = []
+    cost_records: list[dict[str, Any]] = []
+    total_usd = 0.0
+    for condition in conditions:
+        condition_id = condition["id"]
+        image_path = images_dir / f"{condition_id}.png"
+        image_result = await provider.generate(
+            prompt=condition["prompt"],
+            raw_prompt=True,
+            width=1024,
+            height=1024,
+            output_format="png",
+            negative_prompt=condition["negative_prompt"],
+        )
+        image_path.write_bytes(_decode_image_bytes(image_result.image_b64))
+        metadata = image_result.metadata or {}
+        image_records.append(
+            {
+                "id": condition_id,
+                "image_path": f"images/{condition_id}.png",
+                "mime": image_result.mime,
+                "metadata": metadata,
+            }
+        )
+        cost_usd = metadata.get("cost_usd")
+        if isinstance(cost_usd, (int, float)):
+            total_usd += float(cost_usd)
+            cost_records.append(
+                {
+                    "condition_id": condition_id,
+                    "cost_usd": float(cost_usd),
+                }
+            )
+
+    _write_json(
+        images_dir / "metadata.json",
+        {
+            "schema_version": "0.1",
+            "provider": "openai",
+            "model": config["model"],
+            "conditions": image_records,
+        },
+    )
+    _write_json(
+        out_dir / "provider_costs.json",
+        {
+            "schema_version": "0.1",
+            "status": "collected" if cost_records else "unavailable",
+            "providers": [
+                {
+                    "provider": "openai",
+                    "model": config["model"],
+                    "base_url": config["base_url"],
+                    "conditions": cost_records,
+                }
+            ],
+            "total_usd": round(total_usd, 6),
+        },
+    )
+    (images_dir / "README.md").write_text(
+        "# Images\n\n"
+        "Real provider run. Images A-D were generated through the configured "
+        "OpenAI-compatible provider. See `metadata.json` for provider metadata.\n",
+        encoding="utf-8",
+    )
+
+    manifest_path = out_dir / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["mode"] = "real_provider"
+    manifest["provider_execution"] = "enabled"
+    manifest["real_provider"] = {
+        "provider": "openai",
+        "model": config["model"],
+        "base_url": config["base_url"],
+    }
+    for provider_record in manifest["providers"]:
+        if provider_record["provider"] == "openai":
+            provider_record["execution"] = "run"
+            provider_record["model"] = config["model"]
+    _write_json(manifest_path, manifest)
+
+    summary = f"""# Cultural-Term Efficacy Real Provider Run: {project.slug}
+
+## Status
+real_provider
+
+## Provider Execution
+enabled
+
+## Provider
+openai / {config["model"]}
+
+## Conditions
+{chr(10).join(f"- {item['id']}: {item['label']}" for item in conditions)}
+
+## Generated Images
+{chr(10).join(f"- {item['id']}: {item['image_path']}" for item in image_records)}
+
+## Decision Boundary
+Images were generated, but no quality conclusion can be drawn until human
+ranking and `/evaluate` results are collected.
+"""
+    (out_dir / "summary.md").write_text(summary, encoding="utf-8")
+    return result
+
+
+def run_real_provider_experiment(
+    *,
+    real_provider: bool = False,
+    provider: str = "openai",
+    output_root: str | Path = "docs/product/experiments/results",
+    slug: str = "premium-tea-packaging",
+    date: str | None = None,
+) -> dict[str, str]:
     if not real_provider:
         raise RuntimeError(
             "Real provider execution requires explicit opt-in and is disabled "
             "for the dry-run harness."
         )
-    raise NotImplementedError(
-        "Real provider execution is intentionally not implemented in this "
-        "harness version."
+    if provider != "openai":
+        raise ValueError("supported real provider: openai")
+    config = _real_provider_config()
+    return asyncio.run(
+        _write_openai_real_provider_run(
+            output_root=output_root,
+            slug=slug,
+            date=date,
+            config=config,
+        )
     )
 
 
@@ -334,10 +551,23 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--date", default=date_type.today().isoformat())
     parser.add_argument("--real-provider", action="store_true")
+    parser.add_argument("--provider", default="openai")
     args = parser.parse_args(argv)
 
     if args.real_provider:
-        run_real_provider_experiment(real_provider=True)
+        projects = build_experiment_projects()
+        slugs = [
+            project.slug for project in projects
+        ] if args.slug == "all" else [args.slug]
+        for slug in slugs:
+            run_real_provider_experiment(
+                real_provider=True,
+                provider=args.provider,
+                output_root=args.output_root,
+                slug=slug,
+                date=args.date,
+            )
+        return 0
 
     projects = build_experiment_projects()
     slugs = [project.slug for project in projects] if args.slug == "all" else [args.slug]

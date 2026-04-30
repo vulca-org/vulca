@@ -101,7 +101,7 @@ Vulca implication:
 
 - Keep Gemini as a first-class provider for sketching, reference-heavy exploration, and provider comparisons.
 - Document Google as "provider current, agent distribution planned" until an ADK or Vertex Agent Engine integration is implemented and tested.
-- Do not claim a Google plugin marketplace listing path.
+- Do not claim Google has a Vulca marketplace-listing path for plugins.
 
 ## Redraw Distribution Rule
 
