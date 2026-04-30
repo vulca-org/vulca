@@ -582,7 +582,7 @@ In `docs/product/experiments/cultural-term-efficacy.md`, add this section after 
 Run the no-cost dry-run harness with:
 
 ```bash
-PYTHONPATH=src python scripts/visual_discovery_benchmark.py --date 2026-04-30
+PYTHONPATH=src python3 scripts/visual_discovery_benchmark.py --date 2026-04-30
 ```
 
 The harness writes prompts, manifests, empty result records, and summaries. It does not call OpenAI, Gemini, ComfyUI, or `mock` for quality evidence. Real provider execution is a future explicit opt-in path and is disabled in this version.
@@ -618,7 +618,7 @@ Expected: pass.
 Run:
 
 ```bash
-PYTHONPATH=src python scripts/visual_discovery_benchmark.py --output-root /private/tmp/vulca-cultural-term-efficacy --date 2026-04-30
+PYTHONPATH=src python3 scripts/visual_discovery_benchmark.py --output-root /private/tmp/vulca-cultural-term-efficacy --date 2026-04-30
 ```
 
 Expected: command exits 0 and writes three result directories under `/private/tmp/vulca-cultural-term-efficacy`.
