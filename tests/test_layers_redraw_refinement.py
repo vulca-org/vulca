@@ -258,6 +258,43 @@ def test_refined_flower_layer_suppresses_black_generated_artifacts(
     assert not dark_visible.any()
 
 
+def test_refined_flower_layer_suppresses_generated_hedge_fill_inside_matte(
+    tmp_path, monkeypatch
+):
+    from vulca.layers import redraw as redraw_module
+    import vulca.providers as providers_mod
+
+    provider = RecordingEditProvider(output_rgb=(35, 92, 43))
+    monkeypatch.setattr(
+        providers_mod, "get_image_provider", lambda name, api_key="": provider
+    )
+    artwork = _stage_broad_flower_layer(tmp_path)
+
+    result = _run(
+        redraw_module.redraw_layer(
+            artwork,
+            layer_name="flowers",
+            instruction="small bright white wildflowers with warm yellow centers",
+            provider="openai",
+            artwork_dir=str(tmp_path),
+            route="auto",
+            preserve_alpha=True,
+        )
+    )
+
+    out = Image.open(result.image_path).convert("RGBA")
+    arr = np.asarray(out)
+    visible = arr[:, :, 3] > 0
+    green_fill = (
+        visible
+        & (arr[:, :, 0] < 70)
+        & (arr[:, :, 1] > 70)
+        & (arr[:, :, 2] < 70)
+    )
+
+    assert not green_fill.any()
+
+
 def test_flower_edit_matte_removes_isolated_bright_specks():
     from vulca.layers import redraw as redraw_module
 

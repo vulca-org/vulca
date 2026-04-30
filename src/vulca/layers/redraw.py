@@ -730,8 +730,16 @@ async def _redraw_source_context_with_edit_matte(
             & (rgb.mean(axis=2) < 35)
             & (rgb.max(axis=2) < 45)
         )
-        if dark_artifact.any():
-            alpha_arr[dark_artifact] = 0
+        generated_hedge_like = (
+            (rgb[:, :, 1] > rgb[:, :, 0] + 20)
+            & (rgb[:, :, 1] > rgb[:, :, 2] + 20)
+            & (rgb[:, :, 0] < 90)
+            & (rgb[:, :, 2] < 90)
+            & (rgb[:, :, 1] < 140)
+        )
+        generated_artifact = dark_artifact | ((alpha_arr > 0) & generated_hedge_like)
+        if generated_artifact.any():
+            alpha_arr[generated_artifact] = 0
             output_alpha = Image.fromarray(alpha_arr.astype(np.uint8), mode="L")
         crop_out.putalpha(output_alpha)
         if debug_record is not None:

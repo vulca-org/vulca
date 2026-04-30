@@ -1,7 +1,7 @@
 {
   "name": "vulca",
-  "version": "0.17.10",
-  "description": "Vulca visual-skills plugin — brainstorm → spec → plan triad for structured AI image creation with L1-L5 cultural evaluation. 21 MCP tools + 4 skills (visual-brainstorm, visual-spec, visual-plan, decompose) + using-vulca-skills meta-skill for auto-invoke discipline.",
+  "version": "0.19.0",
+  "description": "Vulca visual-control plugin for Claude Code: discovery, brainstorm, spec, plan, evaluate, and decompose workflows backed by Vulca MCP tools.",
   "homepage": "https://github.com/vulca-org/vulca-plugin",
   "license": "Apache-2.0",
   "author": {

@@ -59,8 +59,8 @@ def test_gpt_image_2_drops_input_fidelity_from_edit_form():
 
     ref_b64 = base64.b64encode(_png_bytes()).decode()
     with _httpx_with_handler(handler):
-        asyncio.run(
-            OpenAIImageProvider(api_key="sk-test", model="gpt-image-2").generate(
+        result = asyncio.run(
+            OpenAIImageProvider(api_key="test-token", model="gpt-image-2").generate(
                 "edit this",
                 reference_image_b64=ref_b64,
                 input_fidelity="high",
@@ -73,6 +73,8 @@ def test_gpt_image_2_drops_input_fidelity_from_edit_form():
     assert b'name="input_fidelity"' not in body
     assert b'name="quality"' in body
     assert b'name="output_format"' in body
+    assert result.mime == "image/webp"
+    assert result.metadata["output_format"] == "webp"
 
 
 def test_gpt_image_15_keeps_input_fidelity_in_edit_form():
@@ -85,7 +87,7 @@ def test_gpt_image_15_keeps_input_fidelity_in_edit_form():
     ref_b64 = base64.b64encode(_png_bytes()).decode()
     with _httpx_with_handler(handler):
         asyncio.run(
-            OpenAIImageProvider(api_key="sk-test", model="gpt-image-1.5").generate(
+            OpenAIImageProvider(api_key="test-token", model="gpt-image-1.5").generate(
                 "edit this",
                 reference_image_b64=ref_b64,
                 input_fidelity="high",
@@ -113,7 +115,7 @@ def test_usage_cost_populates_cost_usd_metadata():
 
     with _httpx_with_handler(handler):
         result = asyncio.run(
-            OpenAIImageProvider(api_key="sk-test", model="gpt-image-1").generate(
+            OpenAIImageProvider(api_key="test-token", model="gpt-image-1").generate(
                 "a sunset",
                 quality="high",
             )
@@ -262,3 +264,41 @@ def test_chat_completions_image_endpoint_fetches_returned_url(monkeypatch, tmp_p
         "https://cdn.example/out.png",
     ]
     assert result.image_b64 == base64.b64encode(_png_bytes()).decode()
+
+
+def test_custom_base_url_is_used_for_image_generations():
+    requested_urls: list[str] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        requested_urls.append(str(request.url))
+        return httpx.Response(200, json={"data": [{"b64_json": "AAAA"}]})
+
+    with _httpx_with_handler(handler):
+        asyncio.run(
+            OpenAIImageProvider(
+                api_key="test-token",
+                model="gpt-image-2",
+                base_url="https://gateway.example/v1/",
+            ).generate("a sunset")
+        )
+
+    assert requested_urls == ["https://gateway.example/v1/images/generations"]
+
+
+def test_openai_base_url_can_come_from_environment(monkeypatch):
+    requested_urls: list[str] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        requested_urls.append(str(request.url))
+        return httpx.Response(200, json={"data": [{"b64_json": "AAAA"}]})
+
+    monkeypatch.setenv("VULCA_OPENAI_BASE_URL", "https://env-gateway.example")
+
+    with _httpx_with_handler(handler):
+        asyncio.run(
+            OpenAIImageProvider(api_key="test-token", model="gpt-image-2").generate(
+                "a sunset"
+            )
+        )
+
+    assert requested_urls == ["https://env-gateway.example/v1/images/generations"]

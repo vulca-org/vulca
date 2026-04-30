@@ -1,7 +1,11 @@
 """VULCA MCP Server — agent-native surface for cultural art creation, evaluation, and layer editing.
 
-21 tools (including unload_models admin/diagnostic) organized into five workflow stages:
-  1. Discovery:    list_traditions, search_traditions, get_tradition_guide, brief_parse
+Core workflow tools are organized into five workflow stages. Additional Tool
+Protocol analyzers are auto-registered when optional tool dependencies import
+successfully.
+
+  1. Discovery:    list_traditions, search_traditions, get_tradition_guide,
+                   brief_parse, compose_prompt_from_design
   2. Generation:   generate_image, create_artwork, generate_concepts, inpaint_artwork
   3. Evaluation:   evaluate_artwork, view_image
   4. Layer editing: layers_split, layers_list, layers_edit, layers_transform,
@@ -24,6 +28,66 @@ from pathlib import Path
 from fastmcp import FastMCP
 
 mcp = FastMCP("VULCA", instructions="AI-native cultural art creation & evaluation")
+
+
+_TOOL_TIERS: dict[str, str] = {
+    "create_artwork": "core", "evaluate_artwork": "core",
+    "list_traditions": "core", "get_tradition_guide": "core",
+    "search_traditions": "core",
+    "brief_parse": "core",
+    "inpaint_artwork": "standard",
+    "sync_data": "standard", "generate_concepts": "standard",
+    "archive_session": "standard",
+    # unload_models: out-of-band admin/diagnostic (memory free); grouped with sync_data tier
+    "unload_models": "standard",
+    "layers_split": "standard", "layers_composite": "standard",
+    "layers_paste_back": "standard",
+    "layers_edit": "advanced", "layers_redraw": "advanced",
+    "layers_evaluate": "advanced",
+    "layers_export": "advanced",
+    "layers_transform": "advanced",
+    "generate_image": "core",
+    "view_image": "core",
+    "layers_list": "standard",
+}
+
+_DESC_LIMITS: dict[str, int] = {"core": 300, "standard": 100, "advanced": 50}
+
+
+def _tier_description(tool_name: str, full_desc: str) -> str:
+    """Truncate tool description based on tier assignment."""
+    tier = _TOOL_TIERS.get(tool_name, "advanced")
+    limit = _DESC_LIMITS[tier]
+    if len(full_desc) <= limit:
+        return full_desc
+    return full_desc[:limit - 3] + "..."
+
+
+_IMAGE_MIME_EXTENSIONS = {
+    "image/png": "png",
+    "image/webp": "webp",
+    "image/jpeg": "jpg",
+    "image/jpg": "jpg",
+}
+
+_IMAGE_FORMAT_EXTENSIONS = {
+    "png": "png",
+    "webp": "webp",
+    "jpeg": "jpg",
+    "jpg": "jpg",
+}
+
+
+def _generated_image_extension(
+    mime: str | None,
+    requested_output_format: str | None = None,
+) -> str:
+    mime_key = (mime or "").split(";", 1)[0].strip().lower()
+    if mime_key in _IMAGE_MIME_EXTENSIONS:
+        return _IMAGE_MIME_EXTENSIONS[mime_key]
+    fmt_key = (requested_output_format or "").strip().lower()
+    return _IMAGE_FORMAT_EXTENSIONS.get(fmt_key, "png")
+
 
 # Auto-register Tool Protocol tools (whitespace_analyze, color_correct, etc.)
 try:
@@ -96,38 +160,6 @@ def _source_pasteback_preview(
         output_path=str(output_path),
         blend_mode="alpha",
     )
-
-
-_TOOL_TIERS: dict[str, str] = {
-    "create_artwork": "core", "evaluate_artwork": "core",
-    "list_traditions": "core", "get_tradition_guide": "core",
-    "search_traditions": "core",
-    "brief_parse": "core",
-    "inpaint_artwork": "standard",
-    "sync_data": "standard", "generate_concepts": "standard",
-    "archive_session": "standard",
-    # unload_models: out-of-band admin/diagnostic (memory free); grouped with sync_data tier
-    "unload_models": "standard",
-    "layers_split": "standard", "layers_composite": "standard",
-    "layers_edit": "advanced", "layers_redraw": "advanced",
-    "layers_evaluate": "advanced",
-    "layers_export": "advanced",
-    "layers_transform": "advanced",
-    "generate_image": "core",
-    "view_image": "core",
-    "layers_list": "standard",
-}
-
-_DESC_LIMITS: dict[str, int] = {"core": 300, "standard": 100, "advanced": 50}
-
-
-def _tier_description(tool_name: str, full_desc: str) -> str:
-    """Truncate tool description based on tier assignment."""
-    tier = _TOOL_TIERS.get(tool_name, "advanced")
-    limit = _DESC_LIMITS[tier]
-    if len(full_desc) <= limit:
-        return full_desc
-    return full_desc[:limit - 3] + "..."
 
 
 @mcp.tool()
@@ -622,7 +654,8 @@ async def inpaint_artwork(
     Two modes:
     - **mask_path** (preferred): RGBA PNG where alpha=0 marks pixels to edit and
       alpha=255 marks pixels to preserve. Routed to provider /v1/images/edits.
-      Currently OpenAI gpt-image-2 only; Gemini/ComfyUI raise NotImplementedError.
+      Currently routed through OpenAI gpt-image-* mask-aware editing. Capability
+      gates decide which model knobs are honored.
     - **region** (legacy): NL ("fix the sky") or "x,y,w,h". Detects bbox via VLM,
       crops, regenerates, feathers a rectangular paste. Imprecise — prefer mask_path.
 
@@ -1385,10 +1418,10 @@ async def generate_image(
         model: Override the provider's default model id (e.g. "gpt-image-2").
             Currently plumbed through as a provider kwarg — providers that
             don't understand it ignore it.
-        input_fidelity: OpenAI gpt-image-2 only, /edits endpoint — "high" or "low".
-            Controls how closely the edit preserves input image features.
-        quality: OpenAI gpt-image-2 quality knob — "low" | "medium" | "high" | "auto".
-        output_format: OpenAI gpt-image-2 output encoding — "png" | "webp" | "jpeg".
+        input_fidelity: OpenAI edit-mode knob for models that support it
+            (currently gpt-image-1.5); unsupported models drop it before the API call.
+        quality: OpenAI image quality knob — "low" | "medium" | "high" | "auto".
+        output_format: OpenAI image output encoding — "png" | "webp" | "jpeg".
 
     Returns:
         image_path, cost_usd, latency_ms, provider.
@@ -1447,7 +1480,8 @@ async def generate_image(
         # Save to disk
         out = Path(output_dir) if output_dir else Path(tempfile.mkdtemp(prefix="vulca_gen_"))
         out.mkdir(parents=True, exist_ok=True)
-        filename = f"gen_{uuid.uuid4().hex[:8]}.png"
+        ext = _generated_image_extension(result.mime, output_format)
+        filename = f"gen_{uuid.uuid4().hex[:8]}.{ext}"
         image_path = out / filename
         image_path.write_bytes(base64.b64decode(result.image_b64))
 
@@ -1460,6 +1494,7 @@ async def generate_image(
             "cost_usd": cost,
             "latency_ms": elapsed_ms,
             "provider": provider,
+            "mime": result.mime,
             "metadata": dict(result.metadata) if result.metadata else {},
         }
     except Exception as exc:

@@ -1,0 +1,33 @@
+{
+  "verdict": "blocked_billing_hard_limit_reached",
+  "blocked_reason": "OpenAI billing hard limit reached before A/B image generation could run.",
+  "provider": "openai",
+  "model": "gpt-image-2",
+  "endpoint": "images/edits",
+  "reference": "/Users/yhryzy/dev/vulca/docs/visual-specs/2026-04-28-ipad-cartoon-roadside-direct-showcase/source/reference_1536x1024.png",
+  "mask": "/Users/yhryzy/dev/vulca/docs/visual-specs/2026-04-28-ipad-cartoon-roadside-direct-showcase/source/full_edit_mask_1536x1024.png",
+  "arms_planned": [
+    {
+      "arm": "naive",
+      "prompt": "/Users/yhryzy/dev/vulca/docs/visual-specs/2026-04-28-ipad-cartoon-roadside-direct-showcase/prompts/naive_prompt.txt",
+      "output": "/Users/yhryzy/dev/vulca/docs/visual-specs/2026-04-28-ipad-cartoon-roadside-direct-showcase/iters/ab/naive_gpt_image_2.png"
+    },
+    {
+      "arm": "vulca_structured",
+      "prompt": "/Users/yhryzy/dev/vulca/docs/visual-specs/2026-04-28-ipad-cartoon-roadside-direct-showcase/prompts/vulca_structured_prompt.txt",
+      "output": "/Users/yhryzy/dev/vulca/docs/visual-specs/2026-04-28-ipad-cartoon-roadside-direct-showcase/iters/ab/vulca_structured_gpt_image_2.png"
+    }
+  ],
+  "evidence": {
+    "status_code": 400,
+    "response_body": {
+      "error": {
+        "message": "Billing hard limit has been reached.",
+        "type": "billing_limit_user_error",
+        "param": null,
+        "code": "billing_hard_limit_reached"
+      }
+    }
+  },
+  "next_command_after_billing_fix": "set -a; . /Users/yhryzy/dev/vulca/.env.local; set +a; python3 docs/visual-specs/2026-04-28-ipad-cartoon-roadside-direct-showcase/run_ab_experiment.py"
+}

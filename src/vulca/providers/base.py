@@ -47,8 +47,6 @@ class ImageProvider(Protocol):
     # use vulca.providers.capabilities.provider_capabilities() instead.
     capabilities: frozenset[str] = frozenset()
 
-    def edit_capabilities(self) -> ImageEditCapabilities: ...
-
     async def generate(
         self,
         prompt: str,
