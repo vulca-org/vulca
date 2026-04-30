@@ -21,8 +21,10 @@ Vulca is an agent-native visual control layer. The product turns fuzzy visual in
 ## Next
 
 - Claude plugin marketplace packaging and submission checklist.
+- Claude marketplace submission packet review.
 - Codex plugin marketplace validation and MCP usage guide.
 - ChatGPT remote MCP prototype scope.
+- ChatGPT remote MCP safe-profile prototype.
 - Cultural-term efficacy benchmark real-provider opt-in.
 - v0.22 target-aware mask refinement review and merge gate.
 
