@@ -6,9 +6,36 @@
 [![CI](https://github.com/vulca-org/vulca/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/vulca-org/vulca/actions/workflows/ci.yml)
 [![MCP Tools](https://img.shields.io/badge/MCP_tools-current-blueviolet.svg)](https://github.com/vulca-org/vulca-plugin)
 
-**Agents can plan image edits but can't cut pixels. Vulca is the hands — semantic layer splits, cultural scoring, inpainting, structured prompt composition, and visual discovery — as MCP tools for Claude Code.**
+**Vulca turns fuzzy visual intent into controlled creative production.**
 
-> *Below: Michelangelo's *Creation of Adam* → 5 semantic layers via `/decompose` (background · adam · god_and_angels · red_cloak · green_ground), decomposed locally on Apple Silicon (ComfyUI + Ollama) with zero cloud API calls. SDK surface: MCP tools plus agent skills, validated by the test suite.*
+Discover the direction, compile the brief, route the model, edit the pixels,
+and evaluate the result — as agent-native artifacts and MCP tools.
+
+One-click models are getting stronger. Vulca does not try to beat them at raw
+generation. Vulca sits around them: it helps agents clarify what should be made,
+choose and constrain the right provider, preserve non-target pixels during edits,
+and record why a result does or does not fit the cultural and visual brief.
+
+```text
+fuzzy intent
+  -> /visual-discovery
+  -> /visual-brainstorm
+  -> /visual-spec
+  -> /visual-plan
+  -> generate / decompose / edit / evaluate
+  -> archived artifacts
+```
+
+| Stage | What Vulca gives the agent | Status |
+|---|---|---|
+| Discover | Taste/culture profile, direction cards, sketch prompts | PR-ready |
+| Specify | `proposal.md`, `design.md`, `plan.md` | Current |
+| Generate | Provider-routed image calls across OpenAI, Gemini, ComfyUI, mock | Current |
+| Edit | Semantic layers, masks, redraw, inpaint, composite, paste-back | Current + v0.22 hardening |
+| Evaluate | L1-L5 cultural and visual scoring | Tool current, skill next |
+| Archive | Prompts, masks, layers, evaluations, errors, user overrides | Current |
+
+> *Concrete demo below: Michelangelo's *Creation of Adam* → 5 semantic layers via `/decompose` (background · adam · god_and_angels · red_cloak · green_ground), decomposed locally on Apple Silicon (ComfyUI + Ollama) with zero cloud API calls. SDK surface: MCP tools plus agent skills, validated by the test suite.*
 
 ## What happens when you run `/decompose`
 
