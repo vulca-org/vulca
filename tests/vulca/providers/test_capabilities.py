@@ -7,8 +7,8 @@ from vulca.providers.openai_provider import OpenAIImageProvider
 from vulca.providers.comfyui import ComfyUIImageProvider
 
 
-def test_mock_has_no_raw_rgba():
-    assert "raw_rgba" not in getattr(MockImageProvider, "capabilities", frozenset())
+def test_mock_declares_raw_rgba():
+    assert "raw_rgba" in getattr(MockImageProvider, "capabilities", frozenset())
 
 
 def test_gemini_declares_raw_rgba():
