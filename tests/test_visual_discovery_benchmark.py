@@ -65,6 +65,49 @@ def test_build_conditions_a_through_d():
     assert conditions[3]["source_card_id"] == card.id
 
 
+def test_all_experiment_projects_have_nonempty_direction_signal():
+    from scripts.visual_discovery_benchmark import (
+        build_conditions,
+        build_experiment_projects,
+        select_direction_card,
+    )
+
+    for project in build_experiment_projects():
+        card = select_direction_card(project)
+        conditions = build_conditions(project.prompt, card)
+        by_id = {condition["id"]: condition for condition in conditions}
+
+        assert card.culture_terms, project.slug
+        assert by_id["B"]["culture_terms"], project.slug
+        assert by_id["C"]["culture_terms"], project.slug
+        assert by_id["D"]["culture_terms"], project.slug
+        assert "Culture terms:\n\n" not in by_id["D"]["prompt"], project.slug
+        assert by_id["D"]["negative_prompt"], project.slug
+        assert by_id["D"]["evaluation_focus"]["L3"], project.slug
+
+
+def test_spiritual_and_material_projects_use_specific_visual_ops():
+    from scripts.visual_discovery_benchmark import (
+        get_experiment_project,
+        select_direction_card,
+    )
+
+    spiritual = select_direction_card(
+        get_experiment_project("spiritual-editorial-poster")
+    )
+    material = select_direction_card(
+        get_experiment_project("cultural-material-campaign")
+    )
+
+    assert spiritual.culture_terms == ["sacred atmosphere"]
+    assert "ritualized stillness" in spiritual.visual_ops.composition
+    assert "literal religious iconography" in spiritual.visual_ops.avoid
+
+    assert material.culture_terms == ["material culture"]
+    assert "macro material detail" in material.visual_ops.composition
+    assert "generic product render" in material.visual_ops.avoid
+
+
 def test_write_experiment_dry_run_artifacts(tmp_path):
     from scripts.visual_discovery_benchmark import write_experiment_dry_run
 
