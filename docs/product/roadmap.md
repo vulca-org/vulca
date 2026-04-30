@@ -10,14 +10,13 @@ Vulca is an agent-native visual control layer. The product turns fuzzy visual in
 - `/decompose`: semantic layer extraction into transparent PNG artifacts.
 - `/visual-discovery`: fuzzy intent -> taste profile -> direction cards -> discovery artifacts.
 - `/visual-brainstorm`, `/visual-spec`, `/visual-plan`: proposal/design/plan workflow for controlled generation.
+- `/evaluate`: user-facing evaluation skill over existing `evaluate_artwork`.
 - Provider registry: `mock`, `gemini`, `nb2`, `openai`, `comfyui`.
 - MCP tools for image generation, image viewing, evaluation, inpainting, layers, redraw, compositing, paste-back, and Tool Protocol analysis.
 - 13 cultural traditions and L1-L5 evaluation framework.
 
 ## Next
 
-- README repositioning around the full Discover -> Spec -> Generate -> Edit -> Evaluate workflow.
-- `/evaluate` skill packaging on top of existing `evaluate_artwork`.
 - Provider capability matrix for public docs.
 - Cultural-term efficacy benchmark.
 
