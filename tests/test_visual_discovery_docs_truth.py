@@ -95,3 +95,25 @@ def test_public_docs_do_not_overclaim_cultural_terms():
     ]
     for phrase in forbidden:
         assert phrase not in public_text
+
+
+def test_real_provider_docs_do_not_contain_live_credentials():
+    experiment_doc = (
+        ROOT / "docs" / "product" / "experiments" / "cultural-term-efficacy.md"
+    ).read_text(encoding="utf-8")
+    public_text = "\n".join(
+        [
+            experiment_doc,
+            (
+                ROOT
+                / "docs"
+                / "superpowers"
+                / "specs"
+                / "2026-04-30-cultural-term-real-provider-opt-in-design.md"
+            ).read_text(encoding="utf-8"),
+        ]
+    )
+
+    assert "sk-" not in public_text
+    assert "global" + "ai" not in public_text.lower()
+    assert "example.openai-compatible-gateway.test" in experiment_doc
