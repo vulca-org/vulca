@@ -125,6 +125,147 @@ def test_usage_cost_populates_cost_usd_metadata():
     assert result.metadata["cost_usd"] == pytest.approx(0.18)
 
 
+def test_openai_compatible_base_url_routes_image_generation(monkeypatch):
+    captured_urls: list[str] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured_urls.append(str(request.url))
+        return httpx.Response(200, json={"data": [{"b64_json": "AAAA"}]})
+
+    monkeypatch.setenv("OPENAI_BASE_URL", "https://globalai.example/v1")
+    with _httpx_with_handler(handler):
+        asyncio.run(
+            OpenAIImageProvider(api_key="sk-test", model="gpt-image-2").generate(
+                "a flower",
+                quality="low",
+            )
+        )
+
+    assert captured_urls == ["https://globalai.example/v1/images/generations"]
+
+
+def test_openai_compatible_base_url_routes_masked_edits(monkeypatch, tmp_path):
+    captured_urls: list[str] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured_urls.append(str(request.url))
+        return httpx.Response(200, json={"data": [{"b64_json": "AAAA"}]})
+
+    image_path = tmp_path / "image.png"
+    mask_path = tmp_path / "mask.png"
+    image_path.write_bytes(_png_bytes())
+    mask_path.write_bytes(_png_bytes())
+
+    monkeypatch.setenv("OPENAI_BASE_URL", "https://globalai.example/v1/")
+    with _httpx_with_handler(handler):
+        asyncio.run(
+            OpenAIImageProvider(api_key="sk-test", model="gpt-image-2").inpaint_with_mask(
+                image_path=str(image_path),
+                mask_path=str(mask_path),
+                prompt="paint flowers",
+                quality="low",
+            )
+        )
+
+    assert captured_urls == ["https://globalai.example/v1/images/edits"]
+
+
+def test_chat_completions_image_endpoint_routes_masked_edit(monkeypatch, tmp_path):
+    captured: list[dict] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured.append(
+            {
+                "url": str(request.url),
+                "payload": json.loads(request.content.decode()),
+            }
+        )
+        return httpx.Response(
+            200,
+            json={
+                "choices": [
+                    {
+                        "message": {
+                            "content": "![result](data:image/png;base64,AAAA)"
+                        }
+                    }
+                ]
+            },
+        )
+
+    image_path = tmp_path / "image.png"
+    mask_path = tmp_path / "mask.png"
+    image_path.write_bytes(_png_bytes())
+    mask_path.write_bytes(_png_bytes())
+
+    monkeypatch.setenv("OPENAI_BASE_URL", "https://globalai.example/v1")
+    monkeypatch.setenv("VULCA_OPENAI_IMAGE_ENDPOINT", "chat_completions")
+    with _httpx_with_handler(handler):
+        result = asyncio.run(
+            OpenAIImageProvider(api_key="sk-test", model="gpt-image-2").inpaint_with_mask(
+                image_path=str(image_path),
+                mask_path=str(mask_path),
+                prompt="paint flowers",
+                quality="low",
+            )
+        )
+
+    assert captured[0]["url"] == "https://globalai.example/v1/chat/completions"
+    payload = captured[0]["payload"]
+    assert payload["model"] == "gpt-image-2"
+    content = payload["messages"][0]["content"]
+    assert content[0]["type"] == "text"
+    assert content[1]["type"] == "image_url"
+    assert content[1]["image_url"]["url"].startswith("data:image/png;base64,")
+    assert content[2]["type"] == "image_url"
+    assert content[2]["image_url"]["url"].startswith("data:image/png;base64,")
+    assert result.image_b64 == "AAAA"
+    assert result.metadata["endpoint"] == "chat/completions"
+
+
+def test_chat_completions_image_endpoint_fetches_returned_url(monkeypatch, tmp_path):
+    captured_urls: list[str] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured_urls.append(str(request.url))
+        if str(request.url).endswith("/chat/completions"):
+            return httpx.Response(
+                200,
+                json={
+                    "choices": [
+                        {
+                            "message": {
+                                "content": "generated: https://cdn.example/out.png"
+                            }
+                        }
+                    ]
+                },
+            )
+        return httpx.Response(200, content=_png_bytes(), headers={"content-type": "image/png"})
+
+    image_path = tmp_path / "image.png"
+    mask_path = tmp_path / "mask.png"
+    image_path.write_bytes(_png_bytes())
+    mask_path.write_bytes(_png_bytes())
+
+    monkeypatch.setenv("OPENAI_BASE_URL", "https://globalai.example/v1")
+    monkeypatch.setenv("VULCA_OPENAI_IMAGE_ENDPOINT", "chat_completions")
+    with _httpx_with_handler(handler):
+        result = asyncio.run(
+            OpenAIImageProvider(api_key="sk-test", model="gpt-image-2").inpaint_with_mask(
+                image_path=str(image_path),
+                mask_path=str(mask_path),
+                prompt="paint flowers",
+            )
+        )
+
+    assert captured_urls == [
+        "https://globalai.example/v1/chat/completions",
+        "https://cdn.example/out.png",
+    ]
+    assert result.image_b64 == base64.b64encode(_png_bytes()).decode()
+
+
 def test_custom_base_url_is_used_for_image_generations():
     requested_urls: list[str] = []
 

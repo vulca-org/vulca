@@ -31,3 +31,30 @@ def test_quality_gate_passes_same_alpha_reasonable_color():
     output = _rgba(color=(130, 90, 70))
     report = evaluate_redraw_quality(source, output)
     assert report.passed
+
+
+def test_quality_gate_flags_broad_small_bright_target_without_refinement():
+    source = _rgba(
+        size=(240, 180),
+        color=(35, 92, 43),
+        box=(28, 25, 188, 98),
+    )
+    output = _rgba(
+        size=(240, 180),
+        color=(242, 240, 224),
+        box=(28, 25, 188, 98),
+    )
+
+    report = evaluate_redraw_quality(
+        source,
+        output,
+        description="wildflower cluster on hedge",
+        instruction="small bright white wildflowers with yellow centers",
+        refinement_applied=False,
+        refined_child_count=0,
+    )
+
+    assert not report.passed
+    assert "mask_too_broad_for_target" in report.failures
+    assert report.metrics["refined_child_count"] == 0
+    assert report.metrics["mask_granularity_score"] == 0

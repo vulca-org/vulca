@@ -390,6 +390,430 @@ def _crop_rgba_and_alpha(src_rgba, crop_box):
     return crop, crop.split()[-1]
 
 
+def _crop_rgba_with_alpha(src_rgba, alpha, crop_box):
+    box = (
+        crop_box.x,
+        crop_box.y,
+        crop_box.x + crop_box.w,
+        crop_box.y + crop_box.h,
+    )
+    crop = src_rgba.crop(box).convert("RGBA")
+    crop_alpha = alpha.crop(box).convert("L")
+    crop.putalpha(crop_alpha)
+    return crop, crop_alpha
+
+
+def _resolve_source_context_image(
+    *,
+    artwork_dir: str,
+    manifest_data: dict,
+    expected_size: tuple[int, int],
+):
+    source_image = manifest_data.get("source_image", "")
+    if not source_image:
+        return None
+
+    from PIL import Image
+
+    source_path = Path(source_image)
+    candidates = [source_path] if source_path.is_absolute() else []
+    candidates.extend(
+        [
+            Path(artwork_dir) / source_image,
+            Path(artwork_dir).parent / source_image,
+        ]
+    )
+    for candidate in candidates:
+        if not candidate.exists():
+            continue
+        source = Image.open(candidate).convert("RGB")
+        if source.size != expected_size:
+            logger.warning(
+                "redraw: source_image size %s differs from layer size %s; resizing "
+                "source context for refined masked edit.",
+                source.size,
+                expected_size,
+            )
+            source = source.resize(expected_size, Image.LANCZOS)
+        return source
+    return None
+
+
+def _remove_tiny_binary_components(mask, *, min_area: int):
+    import numpy as np
+
+    binary = np.asarray(mask).astype(bool)
+    visited = np.zeros(binary.shape, dtype=bool)
+    kept = np.zeros(binary.shape, dtype=bool)
+    height, width = binary.shape
+    for y in range(height):
+        for x in range(width):
+            if not binary[y, x] or visited[y, x]:
+                continue
+            stack = [(y, x)]
+            visited[y, x] = True
+            component = []
+            while stack:
+                cy, cx = stack.pop()
+                component.append((cy, cx))
+                for ny in range(max(0, cy - 1), min(height, cy + 2)):
+                    for nx in range(max(0, cx - 1), min(width, cx + 2)):
+                        if visited[ny, nx] or not binary[ny, nx]:
+                            continue
+                        visited[ny, nx] = True
+                        stack.append((ny, nx))
+            if len(component) >= min_area:
+                ys, xs = zip(*component)
+                kept[ys, xs] = True
+    return kept
+
+
+def _build_flower_edit_matte(source_crop, child_alpha):
+    """Derive the actual edit pixels inside a refined flower child mask.
+
+    The child mask is allowed to define the crop/context window, but the
+    provider should edit only flower-like evidence inside that window. This
+    keeps hedge pixels as source context instead of generated patch content.
+    """
+    import numpy as np
+
+    from PIL import Image, ImageFilter
+
+    rgb = np.asarray(source_crop.convert("RGB")).astype(np.int16)
+    child = np.asarray(child_alpha.convert("L"))
+    child_visible = child > 0
+    if rgb.shape[:2] != child_visible.shape:
+        raise ValueError("source crop and child alpha sizes must match")
+
+    red = rgb[:, :, 0]
+    green = rgb[:, :, 1]
+    blue = rgb[:, :, 2]
+    channel_spread = np.maximum.reduce((red, green, blue)) - np.minimum.reduce(
+        (red, green, blue)
+    )
+    white_like = (
+        (red > 165)
+        & (green > 165)
+        & (blue > 145)
+        & (channel_spread < 95)
+    )
+    yellow_center = (
+        (red > 145)
+        & (green > 115)
+        & (blue < 135)
+        & ((red - blue) > 25)
+    )
+    edit = (white_like | yellow_center) & child_visible
+
+    if not edit.any():
+        return child_alpha.convert("L")
+
+    min_area = max(6, round(int(child_visible.sum()) * 0.00002))
+    edit = _remove_tiny_binary_components(edit, min_area=min_area)
+    if not edit.any():
+        return Image.new("L", child_alpha.size, 0)
+
+    matte = Image.fromarray((edit.astype(np.uint8) * 255))
+    matte = matte.filter(ImageFilter.MaxFilter(5)).filter(ImageFilter.GaussianBlur(1.0))
+    matte_arr = np.minimum(np.asarray(matte), child).astype(np.uint8)
+    matte_arr[matte_arr < 10] = 0
+    return Image.fromarray(matte_arr)
+
+
+def _build_square_padded_edit_inputs(
+    source_crop,
+    edit_matte,
+    *,
+    target_size: int = 1024,
+):
+    from PIL import Image
+
+    crop = source_crop.convert("RGB")
+    matte = edit_matte.convert("L")
+    if crop.size != matte.size:
+        raise ValueError("source crop and edit matte sizes must match")
+
+    width, height = crop.size
+    if width <= 0 or height <= 0:
+        raise ValueError("source crop must be non-empty")
+
+    scale = min(target_size / width, target_size / height)
+    resized_size = (
+        max(1, round(width * scale)),
+        max(1, round(height * scale)),
+    )
+    offset = (
+        (target_size - resized_size[0]) // 2,
+        (target_size - resized_size[1]) // 2,
+    )
+    content_box = (
+        offset[0],
+        offset[1],
+        offset[0] + resized_size[0],
+        offset[1] + resized_size[1],
+    )
+
+    input_image = Image.new("RGB", (target_size, target_size), CREAM_BG_RGB)
+    input_image.paste(crop.resize(resized_size, Image.LANCZOS), offset)
+
+    resized_matte = matte.resize(resized_size, Image.LANCZOS)
+    edit_alpha = resized_matte.point(lambda value: 0 if value > 8 else 255)
+    mask_alpha = Image.new("L", (target_size, target_size), 255)
+    mask_alpha.paste(edit_alpha, offset)
+    mask = Image.new("RGBA", (target_size, target_size), (0, 0, 0, 0))
+    mask.putalpha(mask_alpha)
+    return input_image, mask, content_box
+
+
+def _new_redraw_debug_artifacts(
+    debug_artifact_dir: str,
+    *,
+    layer_name: str,
+    instruction: str,
+    provider: str,
+    model: str,
+):
+    if not debug_artifact_dir:
+        return None
+    out_dir = Path(debug_artifact_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    return {
+        "dir": out_dir,
+        "layer_name": layer_name,
+        "instruction": instruction,
+        "provider": provider,
+        "model": model,
+        "calls": [],
+        "failures": [],
+    }
+
+
+def _write_redraw_debug_summary(
+    debug_artifacts,
+    *,
+    status: str,
+    advisory: dict | None = None,
+    output_path: str = "",
+    error: str = "",
+) -> None:
+    if not debug_artifacts:
+        return
+    calls = debug_artifacts["calls"]
+    total_cost = 0.0
+    cost_known = False
+    for call in calls:
+        cost = call.get("cost_usd")
+        if isinstance(cost, (int, float)):
+            total_cost += float(cost)
+            cost_known = True
+    summary = {
+        "status": status,
+        "layer_name": debug_artifacts["layer_name"],
+        "instruction": debug_artifacts["instruction"],
+        "provider": debug_artifacts["provider"],
+        "model": debug_artifacts["model"],
+        "child_count": len(calls),
+        "completed_child_count": sum(
+            1 for call in calls if call.get("status") == "completed"
+        ),
+        "calls": calls,
+        "failures": debug_artifacts["failures"],
+        "total_cost_usd": round(total_cost, 6) if cost_known else None,
+    }
+    if advisory is not None:
+        summary["redraw_advisory"] = advisory
+    if output_path:
+        summary["output_path"] = output_path
+    if error:
+        summary["error"] = error
+    summary_path = debug_artifacts["dir"] / "summary.json"
+    summary_path.write_text(json.dumps(summary, indent=2, ensure_ascii=False))
+
+
+def _build_flower_output_alpha(crop_rgba, edit_matte):
+    import numpy as np
+
+    from PIL import Image, ImageFilter
+
+    base_alpha = edit_matte.convert("L")
+    alpha_arr = np.asarray(base_alpha).copy()
+    rgb = np.asarray(crop_rgba.convert("RGB")).astype(np.int16)
+
+    red = rgb[:, :, 0]
+    green = rgb[:, :, 1]
+    blue = rgb[:, :, 2]
+    channel_spread = np.maximum.reduce((red, green, blue)) - np.minimum.reduce(
+        (red, green, blue)
+    )
+    white_like = (
+        (red > 145)
+        & (green > 145)
+        & (blue > 120)
+        & (channel_spread < 120)
+    )
+    yellow_center = (
+        (red > 130)
+        & (green > 95)
+        & (blue < 160)
+        & ((red - blue) > 20)
+    )
+    flower_like = (white_like | yellow_center) & (alpha_arr > 0)
+    if flower_like.any():
+        support = Image.fromarray((flower_like.astype(np.uint8) * 255))
+        support = support.filter(ImageFilter.MaxFilter(5)).filter(
+            ImageFilter.GaussianBlur(0.7)
+        )
+        alpha_arr = np.minimum(alpha_arr, np.asarray(support))
+    else:
+        alpha_arr[:] = 0
+
+    dark_artifact = (
+        (alpha_arr > 0)
+        & (rgb.mean(axis=2) < 35)
+        & (rgb.max(axis=2) < 45)
+    )
+    hedge_like = (
+        (green > red + 10)
+        & (green > blue + 10)
+        & (red < 140)
+        & (blue < 130)
+        & (green < 190)
+        & ~white_like
+        & ~yellow_center
+    )
+    alpha_arr[dark_artifact] = 0
+    alpha_arr[hedge_like] = 0
+    return Image.fromarray(alpha_arr.astype(np.uint8), mode="L")
+
+
+async def _redraw_source_context_with_edit_matte(
+    *,
+    source_crop,
+    edit_matte,
+    instruction: str,
+    provider_inst,
+    tradition: str,
+    target_description: str,
+    quality: str = "",
+    input_fidelity: str = "",
+    output_format: str = "",
+    debug_artifacts=None,
+    debug_child_index: int = 0,
+):
+    import base64
+    import io as _io
+    import tempfile
+
+    import numpy as np
+    from PIL import Image
+
+    input_image, mask, content_box = _build_square_padded_edit_inputs(
+        source_crop,
+        edit_matte,
+        target_size=1024,
+    )
+    image_tmp = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
+    mask_tmp = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
+    debug_record = None
+    try:
+        input_image.save(image_tmp.name, "PNG")
+        image_tmp.close()
+        mask.save(mask_tmp.name, "PNG")
+        mask_tmp.close()
+
+        if debug_artifacts:
+            index = debug_child_index or len(debug_artifacts["calls"]) + 1
+            prefix = f"child_{index:02d}"
+            input_path = debug_artifacts["dir"] / f"{prefix}_input.png"
+            mask_path = debug_artifacts["dir"] / f"{prefix}_mask.png"
+            raw_path = debug_artifacts["dir"] / f"{prefix}_raw.png"
+            patch_path = debug_artifacts["dir"] / f"{prefix}_patch.png"
+            pasteback_path = debug_artifacts["dir"] / f"{prefix}_pasteback.png"
+            input_image.save(input_path)
+            mask.save(mask_path)
+            debug_record = {
+                "index": index,
+                "status": "started",
+                "input_path": str(input_path),
+                "mask_path": str(mask_path),
+                "raw_path": str(raw_path),
+                "patch_path": str(patch_path),
+                "pasteback_path": str(pasteback_path),
+            }
+            debug_artifacts["calls"].append(debug_record)
+            _write_redraw_debug_summary(debug_artifacts, status="running")
+
+        prompt = _build_inpaint_prompt(
+            instruction,
+            [target_description],
+            tradition=tradition,
+        )
+        prompt = (
+            f"{prompt}\n"
+            "Use the source crop as visual context. Only repaint the transparent "
+            "mask pixels. Keep opaque/unmasked hedge leaves and lighting unchanged. "
+            "Do not create a new dark hedge patch or repaint the whole crop."
+        )
+        result = await provider_inst.inpaint_with_mask(
+            image_path=image_tmp.name,
+            mask_path=mask_tmp.name,
+            prompt=prompt,
+            tradition=tradition,
+            size="1024x1024",
+            quality=quality or None,
+            input_fidelity=input_fidelity or None,
+            output_format=output_format or None,
+        )
+
+        raw = base64.b64decode(result.image_b64)
+        if result.mime and "svg" in result.mime:
+            out_img = Image.new("RGBA", (1024, 1024), (0, 0, 0, 0))
+        else:
+            out_img = Image.open(_io.BytesIO(raw))
+            out_img.load()
+
+        if debug_record is not None:
+            out_img.convert("RGBA").save(debug_record["raw_path"])
+
+        out_img = _fit_into_canvas(out_img, (1024, 1024), bg_rgb=CREAM_BG_RGB)
+        crop_out = out_img.crop(content_box).resize(source_crop.size, Image.LANCZOS)
+        crop_out = crop_out.convert("RGBA")
+        output_alpha = _build_flower_output_alpha(crop_out, edit_matte)
+        crop_out.putalpha(output_alpha)
+        if debug_record is not None:
+            crop_out.save(debug_record["patch_path"])
+            pasteback = source_crop.convert("RGBA")
+            pasteback.alpha_composite(crop_out)
+            pasteback.save(debug_record["pasteback_path"])
+            metadata = getattr(result, "metadata", {}) or {}
+            debug_record.update(
+                {
+                    "status": "completed",
+                    "cost_usd": metadata.get("cost_usd"),
+                    "usage": metadata.get("usage"),
+                    "metadata": metadata,
+                }
+            )
+            _write_redraw_debug_summary(debug_artifacts, status="running")
+        return crop_out, result
+    except Exception as exc:
+        if debug_record is not None:
+            debug_record.update({"status": "failed", "error": str(exc)})
+            debug_artifacts["failures"].append(debug_record)
+            _write_redraw_debug_summary(
+                debug_artifacts,
+                status="failed",
+                error=str(exc),
+            )
+        raise
+    finally:
+        for tmp in (image_tmp.name, mask_tmp.name):
+            try:
+                Path(tmp).unlink(missing_ok=True)
+            except Exception:
+                pass
+
+
 def _paste_crop_preserving_alpha(canvas, crop_rgba, crop_alpha, crop_box) -> None:
     crop_rgba = crop_rgba.convert("RGBA")
     if crop_rgba.size != crop_alpha.size:
@@ -470,6 +894,7 @@ async def redraw_layer(
     quality: str = "",
     input_fidelity: str = "",
     output_format: str = "",
+    debug_artifact_dir: str = "",
 ) -> LayerResult:
     """Redraw a single layer via img2img or mask-aware inpaint (v0.20).
 
@@ -528,6 +953,7 @@ async def redraw_layer(
         analyze_alpha_geometry,
         choose_redraw_route,
     )
+    from vulca.layers.mask_refine import refine_mask_for_target
     from vulca.layers.redraw_quality import evaluate_redraw_quality
     from vulca.providers import get_image_provider
 
@@ -578,17 +1004,32 @@ async def redraw_layer(
     sparse, area_pct, bbox_fill = _compute_sparsity(src_alpha)
     geometry = analyze_alpha_geometry(src_alpha)
     redraw_plan = choose_redraw_route(geometry)
+    refinement = refine_mask_for_target(
+        src_rgba.convert("RGB"),
+        src_alpha,
+        description=target.info.description,
+        instruction=instruction,
+    )
     img_provider = get_image_provider(provider, api_key=api_key)
     # v0.20.1 — per-call model override, matching generate_image MCP pattern
     # (mcp_server.py:1340-1344). Silent no-op if provider has no `model` attr.
     if model and hasattr(img_provider, "model"):
         img_provider.model = model
+    debug_artifacts = _new_redraw_debug_artifacts(
+        debug_artifact_dir,
+        layer_name=layer_name,
+        instruction=instruction,
+        provider=provider,
+        model=getattr(img_provider, "model", model),
+    )
     has_inpaint = hasattr(img_provider, "inpaint_with_mask")
     edit_caps = (
         img_provider.edit_capabilities()
         if hasattr(img_provider, "edit_capabilities")
         else None
     )
+
+    refinement_path_available = refinement.applied and has_inpaint and route != "img2img"
 
     if route == "auto":
         chosen_route = "inpaint" if (sparse and has_inpaint) else "img2img"
@@ -607,6 +1048,8 @@ async def redraw_layer(
         raise ValueError(
             f"Unknown route={route!r}; expected one of 'auto', 'img2img', 'inpaint'."
         )
+    if refinement_path_available:
+        chosen_route = "inpaint"
 
     # Spec E — log-channel advisory in v0.20 (typed return advisory deferred to v0.21).
     logger.info(
@@ -621,7 +1064,74 @@ async def redraw_layer(
         RedrawRoute.SPARSE_PER_INSTANCE,
     }
 
-    if chosen_route == "inpaint" and redraw_plan.route in sparse_crop_routes:
+    refined_alpha = None
+    source_context = None
+    if refinement_path_available:
+        source_context = _resolve_source_context_image(
+            artwork_dir=artwork_dir,
+            manifest_data=manifest_data,
+            expected_size=src_rgba.size,
+        )
+    if refinement_path_available:
+        rgba = Image.new("RGBA", src_rgba.size, (0, 0, 0, 0))
+        refined_alpha = Image.new("L", src_alpha.size, 0)
+        for child_index, child_mask in enumerate(refinement.child_masks, start=1):
+            child_geometry = analyze_alpha_geometry(child_mask)
+            crop_box = child_geometry.bbox
+            if crop_box.w <= 0 or crop_box.h <= 0:
+                continue
+            if source_context is not None:
+                box = (
+                    crop_box.x,
+                    crop_box.y,
+                    crop_box.x + crop_box.w,
+                    crop_box.y + crop_box.h,
+                )
+                source_crop = source_context.crop(box).convert("RGB")
+                crop_alpha = child_mask.crop(box).convert("L")
+                edit_matte = _build_flower_edit_matte(source_crop, crop_alpha)
+                crop_out, _result = await _redraw_source_context_with_edit_matte(
+                    source_crop=source_crop,
+                    edit_matte=edit_matte,
+                    instruction=instruction,
+                    provider_inst=img_provider,
+                    tradition=tradition,
+                    target_description=target.info.description,
+                    quality=quality,
+                    input_fidelity=input_fidelity,
+                    output_format=output_format,
+                    debug_artifacts=debug_artifacts,
+                    debug_child_index=child_index,
+                )
+                output_alpha = crop_out.split()[-1]
+                _paste_crop_preserving_alpha(rgba, crop_out, output_alpha, crop_box)
+                refined_alpha.paste(output_alpha, (crop_box.x, crop_box.y))
+            else:
+                crop_rgba, crop_alpha = _crop_rgba_with_alpha(
+                    src_rgba,
+                    child_mask,
+                    crop_box,
+                )
+                crop_flat, _crop_bg = _flatten_layer(
+                    crop_rgba,
+                    background_strategy=background_strategy,
+                )
+                crop_out, _result = await _redraw_via_inpaint_mask(
+                    flat_img=crop_flat,
+                    src_alpha=crop_alpha,
+                    canvas_size=crop_rgba.size,
+                    instruction=instruction,
+                    provider_inst=img_provider,
+                    tradition=tradition,
+                    target_description=target.info.description,
+                    quality=quality,
+                    input_fidelity=input_fidelity,
+                    output_format=output_format,
+                    resize_to_api_size=False,
+                )
+                _paste_crop_preserving_alpha(rgba, crop_out, crop_alpha, crop_box)
+                refined_alpha.paste(crop_alpha, (crop_box.x, crop_box.y))
+    elif chosen_route == "inpaint" and redraw_plan.route in sparse_crop_routes:
         rgba = Image.new("RGBA", src_rgba.size, (0, 0, 0, 0))
         for crop_box in redraw_plan.crop_boxes:
             crop_rgba, crop_alpha = _crop_rgba_and_alpha(src_rgba, crop_box)
@@ -727,12 +1237,28 @@ async def redraw_layer(
 
     # 7. Optionally re-apply original alpha
     if preserve_alpha:
+        output_alpha = refined_alpha if refined_alpha is not None else src_alpha
         # Resize alpha to match if canvas resized (rare; manifest dims drive both)
-        if src_alpha.size != rgba.size:
-            src_alpha = src_alpha.resize(rgba.size, Image.LANCZOS)
-        rgba.putalpha(src_alpha)
+        if output_alpha.size != rgba.size:
+            output_alpha = output_alpha.resize(rgba.size, Image.LANCZOS)
+        rgba.putalpha(output_alpha)
 
-    quality_report = evaluate_redraw_quality(src_rgba, rgba)
+    quality_report = evaluate_redraw_quality(
+        src_rgba,
+        rgba,
+        description=target.info.description,
+        instruction=instruction,
+        refinement_applied=refinement_path_available,
+        refined_child_count=len(refinement.child_masks)
+        if refinement_path_available
+        else 0,
+        refined_coverage_pct=refinement.metrics.get("refined_coverage_pct", 0.0)
+        if refinement_path_available
+        else 0.0,
+        mask_granularity_score=refinement.metrics.get(
+            "mask_granularity_score", 0.0
+        ),
+    )
     if not quality_report.passed:
         logger.warning(
             "redraw quality gate failed for layer=%s failures=%s metrics=%s",
@@ -741,7 +1267,9 @@ async def redraw_layer(
             quality_report.metrics,
         )
     actual_redraw_route = (
-        redraw_plan.route
+        RedrawRoute.SPARSE_PER_INSTANCE
+        if refinement_path_available
+        else redraw_plan.route
         if chosen_route == "inpaint"
         else RedrawRoute.DENSE_FULL_CANVAS
     )
@@ -759,6 +1287,23 @@ async def redraw_layer(
         ),
         "quality_gate_passed": quality_report.passed,
         "quality_failures": list(quality_report.failures),
+        "refinement_applied": refinement_path_available,
+        "refinement_reason": refinement.reason,
+        "refinement_strategy": refinement.strategy,
+        "refinement_source_context_used": bool(
+            refinement_path_available and source_context is not None
+        ),
+        "refinement_edit_matte": "flower_evidence"
+        if refinement_path_available and source_context is not None
+        else "child_alpha"
+        if refinement_path_available
+        else "none",
+        "refined_child_count": len(refinement.child_masks)
+        if refinement_path_available
+        else 0,
+        "mask_granularity_score": refinement.metrics.get(
+            "mask_granularity_score", 0.0
+        ),
     }
 
     # 8. Decide output path (v0.18.0 3-way resolution).
@@ -774,6 +1319,12 @@ async def redraw_layer(
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     rgba.save(str(out_path), "PNG")
+    _write_redraw_debug_summary(
+        debug_artifacts,
+        status="completed",
+        advisory=redraw_advisory,
+        output_path=str(out_path),
+    )
 
     # v0.18.0: manifest update happens whenever the caller is NOT in legacy
     # in-place mode. Both the auto-derived else branch and the explicit

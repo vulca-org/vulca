@@ -85,6 +85,29 @@ def _stage_artwork(tmp_path):
     )
 
 
+def _stage_mismatched_source_artwork(tmp_path):
+    size = (1000, 1000)
+    alpha = Image.new("L", size, 0)
+    alpha.paste(Image.new("L", (80, 80), 255), (440, 440))
+    rgb = Image.new("RGB", size, (120, 80, 60))
+    Image.merge("RGBA", (*rgb.split(), alpha)).save(tmp_path / "fg.png")
+    Image.new("RGB", (900, 900), (100, 100, 100)).save(tmp_path / "source.png")
+    write_manifest(
+        [
+            LayerInfo(
+                name="fg",
+                description="foreground object",
+                z_index=1,
+                content_type="subject",
+            )
+        ],
+        output_dir=str(tmp_path),
+        width=size[0],
+        height=size[1],
+        source_image="source.png",
+    )
+
+
 class _FastMCPStub:
     def __init__(self, *args, **kwargs):
         pass
@@ -140,3 +163,65 @@ def test_layers_redraw_returns_route_and_quality_advisory(tmp_path, monkeypatch)
     assert result["component_count"] == 1
     assert result["quality_gate_passed"] is True
     assert result["quality_failures"] == []
+
+
+def test_layers_redraw_returns_source_pasteback_preview(tmp_path, monkeypatch):
+    _install_fastmcp_stub(monkeypatch)
+
+    from vulca.mcp_server import layers_redraw
+    import vulca.providers as providers_mod
+
+    provider = RecordingEditProvider()
+    monkeypatch.setattr(
+        providers_mod, "get_image_provider", lambda name, api_key="": provider
+    )
+    _stage_artwork(tmp_path)
+
+    result = _run(
+        layers_redraw(
+            artwork_dir=str(tmp_path),
+            layer="fg",
+            instruction="make it cleaner",
+            provider="openai",
+            route="auto",
+            preserve_alpha=True,
+        )
+    )
+
+    pasteback_path = result["source_pasteback_path"]
+    preview = Image.open(pasteback_path).convert("RGB")
+
+    assert pasteback_path.endswith("_on_source.png")
+    assert preview.size == (1000, 1000)
+    assert preview.getpixel((10, 10)) == (100, 100, 100)
+    assert preview.getpixel((460, 460)) == (240, 240, 210)
+
+
+def test_layers_redraw_returns_nonfatal_source_pasteback_error(tmp_path, monkeypatch):
+    _install_fastmcp_stub(monkeypatch)
+
+    from vulca.mcp_server import layers_redraw
+    import vulca.providers as providers_mod
+
+    provider = RecordingEditProvider()
+    monkeypatch.setattr(
+        providers_mod, "get_image_provider", lambda name, api_key="": provider
+    )
+    _stage_mismatched_source_artwork(tmp_path)
+
+    result = _run(
+        layers_redraw(
+            artwork_dir=str(tmp_path),
+            layer="fg",
+            instruction="make it cleaner",
+            provider="openai",
+            route="auto",
+            preserve_alpha=True,
+        )
+    )
+
+    assert result["file"].endswith("fg_redrawn.png")
+    assert "source_pasteback_path" not in result
+    assert "source size (900, 900) != layer size (1000, 1000)" in result[
+        "source_pasteback_error"
+    ]

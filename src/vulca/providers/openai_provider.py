@@ -5,12 +5,15 @@ import base64
 import io
 import logging
 import os
+import re
 
 from vulca.providers.base import ImageEditCapabilities, ImageProvider, ImageResult
 from vulca.providers.retry import with_retry
 
 
 logger = logging.getLogger("vulca.openai")
+
+DEFAULT_OPENAI_BASE_URL = "https://api.openai.com/v1"
 
 MODEL_CAPABILITIES: dict[str, dict[str, bool]] = {
     "dall-e-2": {
@@ -185,6 +188,33 @@ def _extract_cost_usd(
     return by_size.get(size) or by_size.get("1024x1024")
 
 
+def _extract_chat_image_reference(data: dict) -> str:
+    choices = data.get("choices") or []
+    if not choices:
+        raise RuntimeError("chat completions image response had no choices")
+    message = choices[0].get("message") or {}
+    content = message.get("content") or ""
+    if isinstance(content, list):
+        content = "\n".join(
+            str(part.get("text", "") or part.get("image_url", {}).get("url", ""))
+            for part in content
+            if isinstance(part, dict)
+        )
+    if not isinstance(content, str):
+        raise RuntimeError("chat completions image response content was not text")
+
+    data_url = re.search(r"data:image/[^;]+;base64,([A-Za-z0-9+/=_-]+)", content)
+    if data_url:
+        return data_url.group(1)
+    markdown_url = re.search(r"!\[[^\]]*\]\((https?://[^)]+)\)", content)
+    if markdown_url:
+        return markdown_url.group(1)
+    plain_url = re.search(r"https?://\S+", content)
+    if plain_url:
+        return plain_url.group(0).rstrip(").,;")
+    raise RuntimeError("chat completions image response did not contain an image")
+
+
 class OpenAIImageProvider:
     """Image generation via OpenAI DALL-E 3 API."""
 
@@ -206,6 +236,9 @@ class OpenAIImageProvider:
 
     def edit_capabilities(self) -> ImageEditCapabilities:
         return _openai_edit_capabilities(self.model)
+
+    def _image_endpoint_mode(self) -> str:
+        return os.environ.get("VULCA_OPENAI_IMAGE_ENDPOINT", "").strip().lower()
 
     async def generate(
         self,
@@ -489,6 +522,89 @@ class OpenAIImageProvider:
                 (1536, 1024),
             }
             size = f"{w}x{h}" if (w, h) in allowed_sizes else "1024x1024"
+
+        if self._image_endpoint_mode() in {"chat_completions", "chat-completions"}:
+            image_b64 = base64.b64encode(image_bytes).decode()
+            mask_b64 = base64.b64encode(mask_bytes).decode()
+            chat_prompt = (
+                f"{full_prompt}\n\n"
+                "Use the first image as the source crop. Use the second image "
+                "as the edit mask; the transparent region marks the pixels to "
+                "repaint, and opaque pixels should be preserved as context. "
+                "Return only the edited image."
+            )
+
+            async def _call_chat() -> ImageResult:
+                async with httpx.AsyncClient(timeout=180) as client:
+                    headers = {"Authorization": f"Bearer {self.api_key}"}
+                    payload = {
+                        "model": self.model,
+                        "messages": [
+                            {
+                                "role": "user",
+                                "content": [
+                                    {"type": "text", "text": chat_prompt},
+                                    {
+                                        "type": "image_url",
+                                        "image_url": {
+                                            "url": f"data:image/png;base64,{image_b64}"
+                                        },
+                                    },
+                                    {
+                                        "type": "image_url",
+                                        "image_url": {
+                                            "url": f"data:image/png;base64,{mask_b64}"
+                                        },
+                                    },
+                                ],
+                            }
+                        ],
+                    }
+                    resp = await client.post(
+                        f"{self.base_url}/chat/completions",
+                        headers=headers,
+                        json=payload,
+                    )
+                    if resp.status_code == 429:
+                        raise RuntimeError("OpenAI rate limit hit. rate limit hit")
+                    resp.raise_for_status()
+                    data = resp.json()
+                    image_ref = _extract_chat_image_reference(data)
+                    if image_ref.startswith("http://") or image_ref.startswith("https://"):
+                        img_resp = await client.get(image_ref)
+                        img_resp.raise_for_status()
+                        image_ref = base64.b64encode(img_resp.content).decode()
+                    metadata = {
+                        "model": self.model,
+                        "endpoint": "chat/completions",
+                        "mode": "chat_completions_image",
+                    }
+                    if data.get("usage"):
+                        metadata["usage"] = data["usage"]
+                    return ImageResult(
+                        image_b64=image_ref,
+                        mime="image/png",
+                        metadata=metadata,
+                    )
+
+            def _is_chat_retryable(exc: Exception) -> bool:
+                response = getattr(exc, "response", None)
+                if response is not None:
+                    status = getattr(response, "status_code", None)
+                    return status in (429, 500, 503)
+                if isinstance(exc, RuntimeError) and "rate limit hit" in str(exc).lower():
+                    return True
+                if isinstance(exc, (httpx.TimeoutException, httpx.ConnectError)):
+                    return True
+                return False
+
+            return await with_retry(
+                _call_chat,
+                max_retries=3,
+                base_delay_ms=500,
+                max_delay_ms=16_000,
+                retryable_check=_is_chat_retryable,
+            )
 
         # v0.20.1 — drop knobs the current model doesn't support, then fold
         # them into the form so /v1/images/edits sees them at the wire layer.

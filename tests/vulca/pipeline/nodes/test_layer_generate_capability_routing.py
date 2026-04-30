@@ -34,9 +34,9 @@ def test_injected_non_raw_provider_does_not_support_native():
     assert LayerGenerateNode._provider_supports_native(ctx) is False
 
 
-def test_default_mock_provider_blocked():
+def test_default_mock_provider_supports_native_png():
     ctx = _ctx("mock", image_provider=None)
-    assert LayerGenerateNode._provider_supports_native(ctx) is False
+    assert LayerGenerateNode._provider_supports_native(ctx) is True
 
 
 def test_future_mock_v2_with_empty_capabilities_also_blocked():
