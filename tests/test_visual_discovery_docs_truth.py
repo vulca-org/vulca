@@ -30,6 +30,19 @@ def test_readme_mentions_visual_discovery_and_mock_boundary():
     assert "real provider sketch" in readme.lower()
 
 
+def test_readme_and_roadmap_mark_evaluate_skill_current():
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    roadmap = (ROOT / "docs" / "product" / "roadmap.md").read_text(
+        encoding="utf-8"
+    )
+
+    assert "✅ `/evaluate`" in readme
+    assert "`/evaluate`: user-facing evaluation skill" in roadmap
+    assert "/evaluate` skill packaging" not in roadmap
+    assert "no separate skill needed" not in readme
+    assert "no agent skill yet" not in readme.lower()
+
+
 def test_readme_leads_with_full_visual_workflow():
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     first_screen = readme[:2500].lower()

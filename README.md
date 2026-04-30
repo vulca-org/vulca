@@ -32,7 +32,7 @@ fuzzy intent
 | Specify | `proposal.md`, `design.md`, `plan.md` | Current |
 | Generate | Provider-routed image calls across OpenAI, Gemini, ComfyUI, mock | Current |
 | Edit | Semantic layers, masks, redraw, inpaint, composite, paste-back | Current + v0.22 hardening |
-| Evaluate | L1-L5 cultural and visual scoring | Tool current, skill next |
+| Evaluate | L1-L5 cultural and visual scoring | Current |
 | Archive | Prompts, masks, layers, evaluations, errors, user overrides | Current |
 
 > *Concrete demo below: Michelangelo's *Creation of Adam* → 5 semantic layers via `/decompose` (background · adam · god_and_angels · red_cloak · green_ground), decomposed locally on Apple Silicon (ComfyUI + Ollama) with zero cloud API calls. SDK surface: MCP tools plus agent skills, validated by the test suite.*
@@ -128,7 +128,7 @@ Practical consequences of this framing:
 |---|---|:---:|---|
 | **Decompose** | Extract 10–20 semantic layers from any image with real transparency. | ✅ `/decompose` | `layers_split` (orchestrated), `layers_list` |
 | **Edit** | Redraw one region or one layer without touching the rest. Composite back. | Roadmap | `inpaint_artwork`, `layers_edit`, `layers_redraw`, `layers_transform`, `layers_composite`, `layers_export`, `layers_evaluate` |
-| **Evaluate** | Judge a visual against L1–L5 cultural criteria over 13 traditions with citable rationale. | Roadmap | `evaluate_artwork`, `list_traditions`, `get_tradition_guide`, `search_traditions` |
+| **Evaluate** | Judge a visual against L1–L5 cultural criteria over 13 traditions with citable rationale. | ✅ `/evaluate` | `evaluate_artwork`, `list_traditions`, `get_tradition_guide`, `search_traditions` |
 | **Create** | Generate a new image from intent + tradition guidance, optionally in structured layers. | — | `create_artwork`, `generate_image` |
 | **Discovery / Brief / Studio** | Turn fuzzy intent into direction cards, then a reviewable proposal.md; mock sketch records by default, real provider sketch only after explicit opt-in. | ✅ `/visual-discovery`, ✅ `/visual-brainstorm` | `brief_parse`, `generate_concepts(provider="mock")`, `compose_prompt_from_design` |
 | **Admin** | Expose intermediate artifacts, unload models, archive sessions. | — | `view_image`, `unload_models`, `archive_session`, `sync_data` |
@@ -141,8 +141,8 @@ User intent ─▶ Claude Code (planning) ─▶ Vulca MCP tools ─▶ Image ar
 
 ### Roadmap — no promises, just honest order
 
-- **Next skill:** `/evaluate` — reactivates the EMNLP anchor for agent-driven cultural scoring
-- **Then:** `/inpaint` (region-level edit), `/layered-create` (structured generation)
+- **Next skill:** `/inpaint` (region-level edit), once v0.22 redraw routes are hardened
+- **Then:** `/layered-create` (structured generation)
 - **Beyond:** community-driven — file an issue with your workflow
 
 See [docs/agent-native-workflow.md](docs/agent-native-workflow.md) for the deeper walkthrough.
@@ -152,7 +152,7 @@ See [docs/agent-native-workflow.md](docs/agent-native-workflow.md) for the deepe
 <details>
 <summary><strong>Evaluate — three modes (L1–L5 cultural scoring)</strong></summary>
 
-Beyond decomposition, Vulca evaluates any image against a cultural tradition across 5 dimensions (L1 Visual Perception, L2 Technical Execution, L3 Cultural Context, L4 Critical Interpretation, L5 Philosophical Aesthetics) in three modes. The MCP tool is `evaluate_artwork`; the CLI is `vulca evaluate`. No agent skill yet — **`/evaluate` is next on the roadmap**.
+Beyond decomposition, Vulca evaluates any image against a cultural tradition across 5 dimensions (L1 Visual Perception, L2 Technical Execution, L3 Cultural Context, L4 Critical Interpretation, L5 Philosophical Aesthetics) in three modes. The MCP tool is `evaluate_artwork`; the CLI is `vulca evaluate`. The `/evaluate` skill wraps `evaluate_artwork` for agent-led critique and next-action guidance.
 
 ### Strict (binary cultural judgment)
 
@@ -415,7 +415,7 @@ $ vulca evolution chinese_xieyi
   Sessions: 71
 ```
 
-From an agent: the `evaluate_artwork` MCP tool returns evolved weights alongside scores; no separate skill needed.
+From an agent: `/evaluate` calls the `evaluate_artwork` MCP tool and returns evolved weights alongside scores.
 
 </details>
 

@@ -1,6 +1,6 @@
 ---
 name: using-vulca-skills
-description: Use when starting any conversation about Vulca visual workflows — establishes auto-invoke discipline for the discovery → brainstorm → spec → plan chain. Preload via SessionStart hook so the agent matches user intent without requiring slash commands.
+description: Use when starting any conversation about Vulca visual workflows - establishes auto-invoke discipline for the discovery -> brainstorm -> spec -> plan -> evaluate chain. Preload via SessionStart hook so the agent matches user intent without requiring slash commands.
 ---
 
 <SUBAGENT-STOP>
@@ -28,6 +28,7 @@ If the user says "skip the brainstorm, just generate" — that's an explicit ins
 | explore fuzzy visual direction, taste, culture tendency, "抽卡", "方向探索", "审美分析", "文化倾向分析"; no discovery artifacts yet | `visual-discovery` |
 | define / scope / brainstorm a 2D visual project (poster / illustration / packaging / brand / editorial / photo brief / hero art); no proposal.md yet | `visual-brainstorm` |
 | derive technical decisions (provider, prompt, L1-L5 weights, thresholds, cost) from an existing `proposal.md` with `status: ready` | `visual-spec` |
+| evaluate an existing image against a tradition/brief, ask for L1-L5 scoring, cultural critique, "评价这张图", "文化评分"; image already exists | `evaluate` |
 | review the derived plan.md AND execute the real generate+evaluate loop for an existing `design.md` with `status: resolved` | `visual-plan` |
 | decompose a given image into semantic layers | `decompose` |
 
@@ -72,4 +73,5 @@ Then follow the skill's body exactly.
 - `.agents/skills/visual-brainstorm/SKILL.md`
 - `.agents/skills/visual-spec/SKILL.md`
 - `.agents/skills/visual-plan/SKILL.md`
+- `.agents/skills/evaluate/SKILL.md`
 - Sibling pattern: `superpowers:using-superpowers` (Superpowers' meta-skill this one is modeled on).
