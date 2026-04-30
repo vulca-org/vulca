@@ -43,6 +43,22 @@ def test_readme_and_roadmap_mark_evaluate_skill_current():
     assert "no agent skill yet" not in readme.lower()
 
 
+def test_roadmap_marks_provider_matrix_current():
+    roadmap = (ROOT / "docs" / "product" / "roadmap.md").read_text(
+        encoding="utf-8"
+    )
+    provider_matrix = (
+        ROOT / "docs" / "product" / "provider-capabilities.md"
+    ).read_text(encoding="utf-8")
+
+    assert "Vulca Provider and Platform Capability Matrix" in provider_matrix
+    assert (
+        "`docs/product/provider-capabilities.md`: provider/platform capability matrix"
+        in roadmap
+    )
+    assert "Provider capability matrix for public docs" not in roadmap
+
+
 def test_readme_leads_with_full_visual_workflow():
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     first_screen = readme[:2500].lower()

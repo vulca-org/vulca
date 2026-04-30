@@ -1,15 +1,203 @@
+# Cultural-Term Efficacy Harness Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Build a no-cost dry-run harness for the cultural-term efficacy experiment so Vulca can test whether culture terms, visual operations, avoid lists, and evaluation criteria actually improve model outputs.
+
+**Architecture:** Extend the existing `scripts/visual_discovery_benchmark.py` into a deterministic experiment artifact writer. The harness produces A/B/C/D prompt conditions, built-in project fixtures, manifest/results skeletons, and product docs, while keeping real providers disabled by default.
+
+**Tech Stack:** Python standard library, existing `vulca.discovery` dataclasses/functions, pytest, Markdown product docs.
+
+---
+
+## File Map
+
+- Modify `scripts/visual_discovery_benchmark.py`: experiment fixtures, A-D condition builder, dry-run artifact writer, fail-closed real-provider stub, CLI.
+- Modify `tests/test_visual_discovery_benchmark.py`: TDD contract for fixtures, conditions, artifact skeleton, and real-provider safety.
+- Modify `tests/test_visual_discovery_docs_truth.py`: roadmap consistency and public-claim guardrails.
+- Modify `docs/product/roadmap.md`: move provider capability matrix into Current.
+- Modify `docs/product/experiments/cultural-term-efficacy.md`: document the dry-run harness and explicit opt-in boundary.
+
+## Task 1: Add Roadmap Consistency Tests
+
+**Files:**
+- Modify: `tests/test_visual_discovery_docs_truth.py`
+
+- [ ] **Step 1: Write failing docs truth test**
+
+Append this test after `test_readme_and_roadmap_mark_evaluate_skill_current`:
+
+```python
+def test_roadmap_marks_provider_matrix_current():
+    roadmap = (ROOT / "docs" / "product" / "roadmap.md").read_text(
+        encoding="utf-8"
+    )
+    provider_matrix = (
+        ROOT / "docs" / "product" / "provider-capabilities.md"
+    ).read_text(encoding="utf-8")
+
+    assert "Vulca Provider and Platform Capability Matrix" in provider_matrix
+    assert (
+        "`docs/product/provider-capabilities.md`: provider/platform capability matrix"
+        in roadmap
+    )
+    assert "Provider capability matrix for public docs" not in roadmap
+```
+
+- [ ] **Step 2: Verify RED**
+
+Run:
+
+```bash
+PYTHONPATH=src pytest tests/test_visual_discovery_docs_truth.py -q
+```
+
+Expected: one failure because `docs/product/roadmap.md` still lists the provider matrix under Next instead of Current.
+
+## Task 2: Add Benchmark Harness Contract Tests
+
+**Files:**
+- Modify: `tests/test_visual_discovery_benchmark.py`
+
+- [ ] **Step 1: Replace benchmark tests with the A-D harness contract**
+
+Replace `tests/test_visual_discovery_benchmark.py` with:
+
+```python
+from __future__ import annotations
+
+import json
+import sys
+from pathlib import Path
+
+import pytest
+
+
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+
+def test_experiment_projects_match_protocol_domains():
+    from scripts.visual_discovery_benchmark import build_experiment_projects
+
+    projects = build_experiment_projects()
+
+    assert [project.slug for project in projects] == [
+        "premium-tea-packaging",
+        "spiritual-editorial-poster",
+        "cultural-material-campaign",
+    ]
+    assert "xieyi restraint" in projects[0].prompt
+    assert "spiritual but non-religious" in projects[1].prompt
+    assert "material references" in projects[2].prompt
+
+
+def test_build_conditions_a_through_d():
+    from scripts.visual_discovery_benchmark import (
+        build_conditions,
+        build_experiment_projects,
+        select_direction_card,
+    )
+
+    project = build_experiment_projects()[0]
+    card = select_direction_card(project)
+
+    conditions = build_conditions(project.prompt, card)
+
+    assert [condition["id"] for condition in conditions] == ["A", "B", "C", "D"]
+    assert conditions[0]["label"] == "User prompt only"
+    assert conditions[0]["source_card_id"] == ""
+    assert "cultural terms" in conditions[1]["label"].lower()
+    assert card.culture_terms[0] in conditions[1]["prompt"]
+    assert "Visual operations:" in conditions[2]["prompt"]
+    assert conditions[3]["label"] == "Full direction-card prompt"
+    assert conditions[3]["negative_prompt"]
+    assert conditions[3]["evaluation_focus"]["L1"]
+    assert conditions[3]["source_card_id"] == card.id
+
+
+def test_write_experiment_dry_run_artifacts(tmp_path):
+    from scripts.visual_discovery_benchmark import write_experiment_dry_run
+
+    result = write_experiment_dry_run(
+        output_root=tmp_path,
+        slug="premium-tea-packaging",
+        date="2026-04-30",
+    )
+
+    out_dir = Path(result["output_dir"])
+    assert out_dir == tmp_path / "2026-04-30-premium-tea-packaging"
+    for condition_id in ["A", "B", "C", "D"]:
+        assert (out_dir / "prompts" / f"{condition_id}.txt").exists()
+    assert (out_dir / "images" / "README.md").exists()
+    assert (out_dir / "evaluations" / "README.md").exists()
+
+    manifest = json.loads((out_dir / "manifest.json").read_text(encoding="utf-8"))
+    assert manifest["schema_version"] == "0.1"
+    assert manifest["experiment"] == "cultural-term-efficacy"
+    assert manifest["mode"] == "dry_run"
+    assert manifest["provider_execution"] == "disabled"
+    assert manifest["project"]["slug"] == "premium-tea-packaging"
+    assert [condition["id"] for condition in manifest["conditions"]] == [
+        "A",
+        "B",
+        "C",
+        "D",
+    ]
+    assert {provider["execution"] for provider in manifest["providers"]} == {
+        "not_run"
+    }
+
+    human_ranking = json.loads(
+        (out_dir / "human_ranking.json").read_text(encoding="utf-8")
+    )
+    provider_costs = json.loads(
+        (out_dir / "provider_costs.json").read_text(encoding="utf-8")
+    )
+    assert human_ranking["status"] == "not_collected"
+    assert provider_costs["status"] == "not_collected"
+    assert "No image quality conclusion" in (
+        out_dir / "summary.md"
+    ).read_text(encoding="utf-8")
+
+
+def test_real_provider_execution_fails_closed():
+    from scripts.visual_discovery_benchmark import run_real_provider_experiment
+
+    with pytest.raises(RuntimeError, match="explicit opt-in"):
+        run_real_provider_experiment(real_provider=False)
+```
+
+- [ ] **Step 2: Verify RED**
+
+Run:
+
+```bash
+PYTHONPATH=src pytest tests/test_visual_discovery_benchmark.py -q
+```
+
+Expected: failures because the script still emits A-F conditions and lacks the project fixtures, dry-run artifact writer, and fail-closed real-provider function.
+
+## Task 3: Implement the Dry-Run Harness
+
+**Files:**
+- Modify: `scripts/visual_discovery_benchmark.py`
+
+- [ ] **Step 1: Replace the benchmark script implementation**
+
+Replace `scripts/visual_discovery_benchmark.py` with:
+
+```python
 """Dry-run harness for the cultural-term efficacy experiment."""
 from __future__ import annotations
 
 import argparse
 import json
-import os
 from dataclasses import dataclass
 from datetime import date as date_type
 from pathlib import Path
 from typing import Any
-
-os.environ.setdefault("LITELLM_LOCAL_MODEL_COST_MAP", "true")
 
 from vulca.discovery.cards import generate_direction_cards
 from vulca.discovery.profile import infer_taste_profile
@@ -352,3 +540,114 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+```
+
+- [ ] **Step 2: Verify benchmark tests pass**
+
+Run:
+
+```bash
+PYTHONPATH=src pytest tests/test_visual_discovery_benchmark.py -q
+```
+
+Expected: pass.
+
+## Task 4: Update Product Docs
+
+**Files:**
+- Modify: `docs/product/roadmap.md`
+- Modify: `docs/product/experiments/cultural-term-efficacy.md`
+
+- [ ] **Step 1: Update roadmap**
+
+In `docs/product/roadmap.md`, under `## Current`, add:
+
+```markdown
+- `docs/product/provider-capabilities.md`: provider/platform capability matrix.
+```
+
+Under `## Next`, remove:
+
+```markdown
+- Provider capability matrix for public docs.
+```
+
+- [ ] **Step 2: Update cultural-term efficacy docs**
+
+In `docs/product/experiments/cultural-term-efficacy.md`, add this section after `## Providers`:
+
+```markdown
+## Harness
+
+Run the no-cost dry-run harness with:
+
+```bash
+PYTHONPATH=src python3 scripts/visual_discovery_benchmark.py --date 2026-04-30
+```
+
+The harness writes prompts, manifests, empty result records, and summaries. It does not call OpenAI, Gemini, ComfyUI, or `mock` for quality evidence. Real provider execution is a future explicit opt-in path and is disabled in this version.
+```
+
+- [ ] **Step 3: Verify docs truth tests pass**
+
+Run:
+
+```bash
+PYTHONPATH=src pytest tests/test_visual_discovery_docs_truth.py -q
+```
+
+Expected: pass.
+
+## Task 5: Final Verification and Commit
+
+**Files:**
+- All files above.
+
+- [ ] **Step 1: Run focused tests**
+
+Run:
+
+```bash
+PYTHONPATH=src pytest tests/test_visual_discovery_benchmark.py tests/test_visual_discovery_docs_truth.py tests/test_visual_discovery_prompting.py tests/test_visual_discovery_artifacts.py -q
+```
+
+Expected: pass.
+
+- [ ] **Step 2: Run dry-run CLI into a temporary directory**
+
+Run:
+
+```bash
+PYTHONPATH=src python3 scripts/visual_discovery_benchmark.py --output-root /private/tmp/vulca-cultural-term-efficacy --date 2026-04-30
+```
+
+Expected: command exits 0 and writes three result directories under `/private/tmp/vulca-cultural-term-efficacy`.
+
+- [ ] **Step 3: Scan for unfinished markers**
+
+Run:
+
+```bash
+grep -RInE "TB[D]|TO[D]O|lo[r]em|coming soo[n]" scripts/visual_discovery_benchmark.py tests/test_visual_discovery_benchmark.py docs/product/roadmap.md docs/product/experiments/cultural-term-efficacy.md docs/superpowers/specs/2026-04-30-cultural-term-efficacy-harness-design.md docs/superpowers/plans/2026-04-30-cultural-term-efficacy-harness.md
+```
+
+Expected: no matches.
+
+- [ ] **Step 4: Check whitespace**
+
+Run:
+
+```bash
+git diff --check
+```
+
+Expected: no output.
+
+- [ ] **Step 5: Commit implementation**
+
+Run:
+
+```bash
+git add scripts/visual_discovery_benchmark.py tests/test_visual_discovery_benchmark.py tests/test_visual_discovery_docs_truth.py docs/product/roadmap.md docs/product/experiments/cultural-term-efficacy.md docs/superpowers/plans/2026-04-30-cultural-term-efficacy-harness.md
+git commit -m "feat: add cultural term efficacy harness"
+```

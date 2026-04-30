@@ -24,6 +24,16 @@ Do cultural and taste terms improve generated visual outputs, or do concrete vis
 
 `mock` may validate artifact structure but must not be used for quality conclusions.
 
+## Harness
+
+Run the no-cost dry-run harness with:
+
+```bash
+PYTHONPATH=src python3 scripts/visual_discovery_benchmark.py --date 2026-04-30
+```
+
+The harness writes prompts, manifests, empty result records, and summaries. It does not call OpenAI, Gemini, ComfyUI, or `mock` for quality evidence. Real provider execution is a future explicit opt-in path and is disabled in this version.
+
 ## Projects
 
 Run at least three domains:

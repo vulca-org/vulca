@@ -12,12 +12,12 @@ Vulca is an agent-native visual control layer. The product turns fuzzy visual in
 - `/visual-brainstorm`, `/visual-spec`, `/visual-plan`: proposal/design/plan workflow for controlled generation.
 - `/evaluate`: user-facing evaluation skill over existing `evaluate_artwork`.
 - Provider registry: `mock`, `gemini`, `nb2`, `openai`, `comfyui`.
+- `docs/product/provider-capabilities.md`: provider/platform capability matrix.
 - MCP tools for image generation, image viewing, evaluation, inpainting, layers, redraw, compositing, paste-back, and Tool Protocol analysis.
 - 13 cultural traditions and L1-L5 evaluation framework.
 
 ## Next
 
-- Provider capability matrix for public docs.
 - Cultural-term efficacy benchmark.
 
 ## In Parallel
