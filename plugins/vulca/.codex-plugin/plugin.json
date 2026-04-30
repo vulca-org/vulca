@@ -1,0 +1,38 @@
+{
+  "name": "vulca",
+  "version": "0.19.0",
+  "description": "Agent-native visual control for discovery, prompt structure, image generation routing, semantic layers, redraw, and cultural evaluation.",
+  "author": {
+    "name": "Vulca maintainers",
+    "url": "https://github.com/vulca-org"
+  },
+  "homepage": "https://github.com/vulca-org/vulca-plugin",
+  "repository": "https://github.com/vulca-org/vulca-plugin",
+  "license": "Apache-2.0",
+  "keywords": [
+    "visual-control",
+    "image-generation",
+    "mcp",
+    "creative-direction"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Vulca",
+    "shortDescription": "Control visual projects with discovery, structured prompts, layers, and evaluation.",
+    "longDescription": "Vulca turns fuzzy visual intent into reviewable creative artifacts: discovery notes, direction cards, structured prompts, semantic layers, provider-routed generation, redraw workflows, and L1-L5 cultural evaluation. Redraw and inpaint tools are available for advanced workflows; polished user-facing redraw skills should wait for the v0.22 target-aware mask refinement gate.",
+    "developerName": "Vulca",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write",
+      "MCP"
+    ],
+    "websiteURL": "https://github.com/vulca-org/vulca-plugin",
+    "defaultPrompt": [
+      "Run Vulca visual discovery for this visual idea and produce direction cards.",
+      "Decompose this image into semantic layers and summarize what can be edited.",
+      "Evaluate this generated image against the selected cultural tradition and intent."
+    ]
+  }
+}

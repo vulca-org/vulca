@@ -397,7 +397,7 @@ Schema rules:
 | 9 | design.md `## References` sketch unreadable at Phase 1 probe | Set state `sketch_available: false`; override `plan.C.sketch_integration: ignore`. Notes: `sketch at <path> unreadable at plan time: <err>. Proceeding text-only; C.sketch_integration forced to "ignore".` **Do not abort.** | helper |
 | 10 | design.md YAML parse-fail (required section missing / dup keys / fence syntax) | Print exactly: `design.md parse-fail at <slug>: <issue>. Re-run /visual-spec <slug> to regenerate.` Terminate. **Do not auto-retry.** | helper |
 | 11 | Same-slug concurrent /visual-plan (lockfile fresh + jsonl mtime < 300s OR lockfile.started_at < 300s + no jsonl) | Print exactly: `<slug> currently running (pid: <pid>, started: <iso>). Abort the other session first, or wait and retry.` Terminate. **Do not kill other pid.** | helper |
-| 12 | Stale lockfile (jsonl mtime > 300s OR lockfile.started_at > 300s + no jsonl) | Auto-recover silently: `os.unlink(lockfile)`. Append Notes: `[stale-lock-recovery] previous pid <N> abandoned at <iso>; reclaimed at <now>. Resuming from iter <K>.` Handoff string at Phase 4 appends ` (recovered from stale lock at iter <K>)` suffix. **No user prompt; NOT stderr** (Claude Code skills don't surface stderr). | helper |
+| 12 | Stale lockfile (jsonl mtime > 300s OR lockfile.started_at > 300s + no jsonl) | Auto-recover silently: `os.unlink(lockfile)`. Append Notes: `[stale-lock-recovery] previous pid <N> abandoned at <iso>; reclaimed at <now>. Resuming from iter <K>.` Handoff string at Phase 4 appends ` (recovered from stale lock at iter <K>)` suffix. **No user prompt; NOT stderr** (agent-hosted skills do not reliably surface stderr). | helper |
 | 13 | Phase 3 provider unreachable AND failover requires cross-class switch (local ↔ cloud) | Print exactly: `<current> unreachable, failover to <alt> requires cross-class switch (local→cloud or reverse). Approve? (a) yes / (b) no, abort / (c) no, skip remaining iters as partial`. **Prompt user. Turn NOT charged.** `(a)` → execute failover + Notes `[failover-cross-class]`; `(b)` → `aborted`; `(c)` → `partial`. | prescription |
 | 14 | `Path("src/vulca").is_dir()` false | Print exactly: `not inside a Vulca checkout; /visual-plan requires repo presence at cwd. cd into your vulca repo and retry.` Terminate. | helper |
 | 15 | `design.frontmatter.schema_version` present AND not in supported set `{"0.1"}` | Print exactly: `design.md schema_version <got> not recognized; upgrade /visual-spec (pip install --upgrade vulca) or pin vulca@<compatible>.` Terminate. **Do not auto-retry; do not suggest /visual-spec re-run.** | helper |
@@ -439,4 +439,4 @@ Schema rules:
 ## References
 
 - Design spec: `docs/superpowers/specs/2026-04-23-visual-plan-skill-design.md`
-- Sibling skills: `.claude/skills/visual-brainstorm/SKILL.md` (v0.17.4), `.claude/skills/visual-spec/SKILL.md` (v0.17.5)
+- Sibling skills: `visual-brainstorm` (v0.17.4), `visual-spec` (v0.17.5)

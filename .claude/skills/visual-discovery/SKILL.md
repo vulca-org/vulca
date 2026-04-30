@@ -1,6 +1,6 @@
 ---
 name: visual-discovery
-description: Discover visual direction from fuzzy intent before /visual-brainstorm: taste profile, culture analysis, direction cards, and sketch prompts.
+description: "Discover visual direction from fuzzy intent before /visual-brainstorm: taste profile, culture analysis, direction cards, and sketch prompts."
 ---
 
 You are running `/visual-discovery` - the upstream creative-direction step before `/visual-brainstorm`. Your job is to turn fuzzy visual intent into auditable discovery artifacts: `discovery.md`, `taste_profile.json`, and `direction_cards.json`.

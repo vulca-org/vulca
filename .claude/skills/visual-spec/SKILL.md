@@ -456,7 +456,7 @@ Do NOT auto-invoke `/visual-plan`. The human-in-the-loop gate between `/visual-s
 
 ## References
 
-- Sibling skill: `.claude/skills/visual-brainstorm/SKILL.md` (v0.17.4; voice template)
+- Sibling skill: `visual-brainstorm` (v0.17.4; voice template)
 - Design spec: `docs/superpowers/specs/2026-04-21-visual-spec-skill-design.md`
 - Tools matrix (F multiplier anchors): `docs/tools-readiness-matrix.md` §2.2
 - EMNLP 2025 Findings VULCA + VULCA-Bench L1-L5 anchors: same as brainstorm
