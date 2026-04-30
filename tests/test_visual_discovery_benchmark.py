@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import json
 import importlib
 import os
@@ -12,6 +13,17 @@ import pytest
 ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
+
+
+def _tiny_png_b64() -> str:
+    return base64.b64encode(
+        b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR"
+        b"\x00\x00\x00\x01\x00\x00\x00\x01"
+        b"\x08\x06\x00\x00\x00\x1f\x15\xc4\x89"
+        b"\x00\x00\x00\rIDATx\x9cc\xf8\x0f\x00"
+        b"\x01\x01\x01\x00\x18\xdd\x8d\xb0"
+        b"\x00\x00\x00\x00IEND\xaeB`\x82"
+    ).decode("ascii")
 
 
 def test_experiment_projects_match_protocol_domains():
@@ -112,3 +124,212 @@ def test_harness_forces_litellm_local_cost_map(monkeypatch):
     importlib.reload(benchmark)
 
     assert os.environ["LITELLM_LOCAL_MODEL_COST_MAP"] == "true"
+
+
+def test_real_provider_requires_env_key_before_provider_construction(
+    monkeypatch, tmp_path
+):
+    import scripts.visual_discovery_benchmark as benchmark
+
+    monkeypatch.delenv("VULCA_REAL_PROVIDER_API_KEY", raising=False)
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+
+    def fail_if_constructed(**kwargs):
+        raise AssertionError("provider should not be constructed")
+
+    monkeypatch.setattr(benchmark, "OpenAIImageProvider", fail_if_constructed)
+
+    with pytest.raises(RuntimeError, match="VULCA_REAL_PROVIDER_API_KEY"):
+        benchmark.run_real_provider_experiment(
+            real_provider=True,
+            provider="openai",
+            output_root=tmp_path,
+            slug="premium-tea-packaging",
+            date="2026-04-30",
+        )
+
+
+def test_real_provider_rejects_unsupported_provider(monkeypatch, tmp_path):
+    import scripts.visual_discovery_benchmark as benchmark
+
+    monkeypatch.setenv("VULCA_REAL_PROVIDER_API_KEY", "test-token")
+
+    with pytest.raises(ValueError, match="supported real provider"):
+        benchmark.run_real_provider_experiment(
+            real_provider=True,
+            provider="gemini",
+            output_root=tmp_path,
+            slug="premium-tea-packaging",
+            date="2026-04-30",
+        )
+
+
+def test_real_provider_rejects_malformed_base_url_before_provider_construction(
+    monkeypatch, tmp_path
+):
+    import scripts.visual_discovery_benchmark as benchmark
+
+    monkeypatch.setenv("VULCA_REAL_PROVIDER_API_KEY", "test-token")
+    monkeypatch.setenv(
+        "VULCA_REAL_PROVIDER_BASE_URL",
+        "gateway.example/v1?token=secret#frag",
+    )
+
+    def fail_if_constructed(**kwargs):
+        raise AssertionError("provider should not be constructed")
+
+    monkeypatch.setattr(benchmark, "OpenAIImageProvider", fail_if_constructed)
+
+    with pytest.raises(RuntimeError, match="absolute http"):
+        benchmark.run_real_provider_experiment(
+            real_provider=True,
+            provider="openai",
+            output_root=tmp_path,
+            slug="premium-tea-packaging",
+            date="2026-04-30",
+        )
+
+
+def test_real_provider_rejects_absolute_base_url_with_whitespace_before_provider_construction(
+    monkeypatch, tmp_path
+):
+    import scripts.visual_discovery_benchmark as benchmark
+
+    monkeypatch.setenv("VULCA_REAL_PROVIDER_API_KEY", "test-token")
+    monkeypatch.setenv(
+        "VULCA_REAL_PROVIDER_BASE_URL",
+        "https://exa mple.com/v1?token=secret#frag",
+    )
+
+    def fail_if_constructed(**kwargs):
+        raise AssertionError("provider should not be constructed")
+
+    monkeypatch.setattr(benchmark, "OpenAIImageProvider", fail_if_constructed)
+
+    with pytest.raises(RuntimeError, match="valid absolute http"):
+        benchmark.run_real_provider_experiment(
+            real_provider=True,
+            provider="openai",
+            output_root=tmp_path,
+            slug="premium-tea-packaging",
+            date="2026-04-30",
+        )
+
+
+def test_real_provider_writes_images_metadata_and_costs(monkeypatch, tmp_path):
+    import scripts.visual_discovery_benchmark as benchmark
+    from vulca.providers.base import ImageResult
+
+    constructed = {}
+    calls = []
+
+    class FakeOpenAIProvider:
+        def __init__(self, *, api_key, model, base_url):
+            constructed.update(
+                {"api_key": api_key, "model": model, "base_url": base_url}
+            )
+
+        async def generate(
+            self,
+            *,
+            prompt,
+            raw_prompt,
+            width,
+            height,
+            output_format,
+            negative_prompt="",
+        ):
+            condition_id = chr(ord("A") + len(calls))
+            calls.append(
+                {
+                    "condition_id": condition_id,
+                    "prompt": prompt,
+                    "raw_prompt": raw_prompt,
+                    "width": width,
+                    "height": height,
+                    "output_format": output_format,
+                    "negative_prompt": negative_prompt,
+                }
+            )
+            return ImageResult(
+                image_b64=_tiny_png_b64(),
+                mime="image/png",
+                metadata={
+                    "endpoint": "generations",
+                    "condition_id": condition_id,
+                    "cost_usd": 0.01,
+                },
+            )
+
+    monkeypatch.setattr(benchmark, "OpenAIImageProvider", FakeOpenAIProvider)
+    monkeypatch.setenv("VULCA_REAL_PROVIDER_API_KEY", "test-token")
+    monkeypatch.setenv(
+        "VULCA_REAL_PROVIDER_BASE_URL",
+        "https://gateway.example/v1/ignored?token=nope",
+    )
+    monkeypatch.setenv("VULCA_REAL_PROVIDER_MODEL", "gpt-image-2")
+
+    benchmark.run_real_provider_experiment(
+        real_provider=True,
+        provider="openai",
+        output_root=tmp_path,
+        slug="premium-tea-packaging",
+        date="2026-04-30",
+    )
+
+    out_dir = tmp_path / "2026-04-30-premium-tea-packaging"
+    assert constructed == {
+        "api_key": "test-token",
+        "model": "gpt-image-2",
+        "base_url": "https://gateway.example",
+    }
+    assert len(calls) == 4
+    for condition_id in ["A", "B", "C", "D"]:
+        assert (out_dir / "prompts" / f"{condition_id}.txt").exists()
+        assert (out_dir / "images" / f"{condition_id}.png").exists()
+    images_readme = (out_dir / "images" / "README.md").read_text(encoding="utf-8")
+    assert "Real provider run" in images_readme
+    assert "not generated" not in images_readme
+
+    manifest_text = (out_dir / "manifest.json").read_text(encoding="utf-8")
+    manifest = json.loads(manifest_text)
+    assert manifest["mode"] == "real_provider"
+    assert manifest["provider_execution"] == "enabled"
+    assert manifest["real_provider"] == {
+        "provider": "openai",
+        "model": "gpt-image-2",
+        "base_url": "https://gateway.example",
+    }
+    assert "test-token" not in manifest_text
+
+    metadata = json.loads(
+        (out_dir / "images" / "metadata.json").read_text(encoding="utf-8")
+    )
+    assert metadata["provider"] == "openai"
+    assert metadata["model"] == "gpt-image-2"
+    assert [item["id"] for item in metadata["conditions"]] == [
+        "A",
+        "B",
+        "C",
+        "D",
+    ]
+    assert metadata["conditions"][0]["image_path"] == "images/A.png"
+
+    provider_costs = json.loads(
+        (out_dir / "provider_costs.json").read_text(encoding="utf-8")
+    )
+    assert provider_costs["status"] == "collected"
+    assert provider_costs["providers"] == [
+        {
+            "provider": "openai",
+            "model": "gpt-image-2",
+            "base_url": "https://gateway.example",
+            "conditions": [
+                {"condition_id": "A", "cost_usd": 0.01},
+                {"condition_id": "B", "cost_usd": 0.01},
+                {"condition_id": "C", "cost_usd": 0.01},
+                {"condition_id": "D", "cost_usd": 0.01},
+            ],
+        }
+    ]
+    assert provider_costs["total_usd"] == 0.04

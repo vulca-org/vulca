@@ -137,6 +137,19 @@ def _mime_for_output_format(output_format: str | None) -> str:
     return "image/png"
 
 
+def _normalize_openai_base_url(base_url: str) -> str:
+    url = (base_url or "https://api.openai.com").strip().rstrip("/")
+    if not url:
+        url = "https://api.openai.com"
+    if url.endswith("/v1"):
+        return url
+    return f"{url}/v1"
+
+
+def _openai_image_endpoint(base_url: str, endpoint: str) -> str:
+    return f"{_normalize_openai_base_url(base_url)}/images/{endpoint}"
+
+
 def _extract_cost_usd(
     *,
     model: str,
@@ -177,9 +190,19 @@ class OpenAIImageProvider:
 
     capabilities: frozenset[str] = frozenset({"raw_rgba"})
 
-    def __init__(self, api_key: str = "", model: str = "gpt-image-1"):
+    def __init__(
+        self,
+        api_key: str = "",
+        model: str = "gpt-image-1",
+        base_url: str = "",
+    ):
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY", "")
         self.model = model
+        self.base_url = _normalize_openai_base_url(
+            base_url
+            or os.environ.get("VULCA_OPENAI_BASE_URL", "")
+            or os.environ.get("OPENAI_BASE_URL", "")
+        )
 
     def edit_capabilities(self) -> ImageEditCapabilities:
         return _openai_edit_capabilities(self.model)
@@ -300,7 +323,7 @@ class OpenAIImageProvider:
                     }
                     form.update(filtered_params)
                     resp = await client.post(
-                        "https://api.openai.com/v1/images/edits",
+                        _openai_image_endpoint(self.base_url, "edits"),
                         headers=headers, files=files, data=form,
                     )
                 else:
@@ -322,7 +345,7 @@ class OpenAIImageProvider:
                         if "quality" in filtered_params:
                             payload["quality"] = filtered_params["quality"]
                     resp = await client.post(
-                        "https://api.openai.com/v1/images/generations",
+                        _openai_image_endpoint(self.base_url, "generations"),
                         headers=headers, json=payload,
                     )
                 # Classify common user-facing failure modes with actionable
@@ -496,7 +519,7 @@ class OpenAIImageProvider:
                 }
                 form.update(edit_filtered_params)
                 resp = await client.post(
-                    "https://api.openai.com/v1/images/edits",
+                    _openai_image_endpoint(self.base_url, "edits"),
                     headers=headers, files=files, data=form,
                 )
 
