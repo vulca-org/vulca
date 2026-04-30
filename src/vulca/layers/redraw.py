@@ -672,7 +672,17 @@ def _build_flower_output_alpha(crop_rgba, edit_matte):
         & (rgb.mean(axis=2) < 35)
         & (rgb.max(axis=2) < 45)
     )
+    hedge_like = (
+        (green > red + 10)
+        & (green > blue + 10)
+        & (red < 140)
+        & (blue < 130)
+        & (green < 190)
+        & ~white_like
+        & ~yellow_center
+    )
     alpha_arr[dark_artifact] = 0
+    alpha_arr[hedge_like] = 0
     return Image.fromarray(alpha_arr.astype(np.uint8), mode="L")
 
 
