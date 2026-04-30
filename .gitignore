@@ -40,6 +40,11 @@ env/
 # Phase 0 Task 7 — ignore large model weights and generated showcase/demo assets
 FastSAM-s.pt
 *.pt
+*.pth
+*.ckpt
+*.safetensors
+*.onnx
+/mobileclip_blt.ts
 .playwright-mcp/
 assets/showcase/*
 !assets/showcase/originals/
@@ -49,3 +54,13 @@ assets/showcase/*
 tmp-shipgate/
 tmp-shipgate-*/
 docs/tool-audit-logs/
+
+# Local browser/social publishing screenshots and transient logs
+/error.log
+/bieber-search-*.jpeg
+/devto-draft-saved.png
+/hn-submit-*.png
+/x-compose-ready.png
+/x-posted-verify*.png
+/xhs-*.png
+/yt-*.jpeg
