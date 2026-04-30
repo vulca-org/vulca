@@ -68,8 +68,8 @@ Then follow the skill's body exactly.
 
 ## References
 
-- `.claude/skills/visual-discovery/SKILL.md`
-- `.claude/skills/visual-brainstorm/SKILL.md`
-- `.claude/skills/visual-spec/SKILL.md`
-- `.claude/skills/visual-plan/SKILL.md`
+- `.agents/skills/visual-discovery/SKILL.md`
+- `.agents/skills/visual-brainstorm/SKILL.md`
+- `.agents/skills/visual-spec/SKILL.md`
+- `.agents/skills/visual-plan/SKILL.md`
 - Sibling pattern: `superpowers:using-superpowers` (Superpowers' meta-skill this one is modeled on).

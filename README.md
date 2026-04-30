@@ -4,11 +4,11 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://pypi.org/project/vulca/)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-green.svg)](https://github.com/vulca-org/vulca/blob/master/LICENSE)
 [![CI](https://github.com/vulca-org/vulca/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/vulca-org/vulca/actions/workflows/ci.yml)
-[![MCP Tools](https://img.shields.io/badge/MCP_tools-21-blueviolet.svg)](https://github.com/vulca-org/vulca-plugin)
+[![MCP Tools](https://img.shields.io/badge/MCP_tools-current-blueviolet.svg)](https://github.com/vulca-org/vulca-plugin)
 
-**Agents can plan image edits but can't cut pixels. Vulca is the hands — semantic layer splits, cultural scoring, inpainting — as 21 MCP tools for Claude Code.**
+**Agents can plan image edits but can't cut pixels. Vulca is the hands — semantic layer splits, cultural scoring, inpainting, structured prompt composition, and visual discovery — as MCP tools for Claude Code.**
 
-> *Below: Michelangelo's *Creation of Adam* → 5 semantic layers via `/decompose` (background · adam · god_and_angels · red_cloak · green_ground), decomposed locally on Apple Silicon (ComfyUI + Ollama) with zero cloud API calls. SDK total: 21 MCP tools · 1454 tests passing.*
+> *Below: Michelangelo's *Creation of Adam* → 5 semantic layers via `/decompose` (background · adam · god_and_angels · red_cloak · green_ground), decomposed locally on Apple Silicon (ComfyUI + Ollama) with zero cloud API calls. SDK surface: MCP tools plus agent skills, validated by the test suite.*
 
 ## What happens when you run `/decompose`
 
@@ -103,7 +103,7 @@ Practical consequences of this framing:
 | **Edit** | Redraw one region or one layer without touching the rest. Composite back. | Roadmap | `inpaint_artwork`, `layers_edit`, `layers_redraw`, `layers_transform`, `layers_composite`, `layers_export`, `layers_evaluate` |
 | **Evaluate** | Judge a visual against L1–L5 cultural criteria over 13 traditions with citable rationale. | Roadmap | `evaluate_artwork`, `list_traditions`, `get_tradition_guide`, `search_traditions` |
 | **Create** | Generate a new image from intent + tradition guidance, optionally in structured layers. | — | `create_artwork`, `generate_image` |
-| **Brief / Studio** | Turn fuzzy visual intent into a reviewable proposal.md; concept sketches and iteration. | ✅ `/visual-brainstorm` | `brief_parse`, `generate_concepts` |
+| **Discovery / Brief / Studio** | Turn fuzzy intent into direction cards, then a reviewable proposal.md; mock sketch records by default, real provider sketch only after explicit opt-in. | ✅ `/visual-discovery`, ✅ `/visual-brainstorm` | `brief_parse`, `generate_concepts(provider="mock")`, `compose_prompt_from_design` |
 | **Admin** | Expose intermediate artifacts, unload models, archive sessions. | — | `view_image`, `unload_models`, `archive_session`, `sync_data` |
 
 ```
@@ -421,6 +421,7 @@ From an agent: the `evaluate_artwork` MCP tool returns evolved weights alongside
 - **Issues:** [github.com/vulca-org/vulca/issues](https://github.com/vulca-org/vulca/issues) — bug reports, feature requests, workflow needs that should become a skill
 - **Plugin:** [vulca-org/vulca-plugin](https://github.com/vulca-org/vulca-plugin) — version-tracked with the SDK; install via `claude plugin install`
 - **Skill source:** [`.claude/skills/decompose/SKILL.md`](.claude/skills/decompose/SKILL.md) in this repo — the only source of truth for the `/decompose` flow
+- **Skill source:** [`.claude/skills/visual-discovery/SKILL.md`](.claude/skills/visual-discovery/SKILL.md) — **`/visual-discovery`** explores fuzzy visual intent into taste profile, culture analysis, direction cards, and proposal-ready handoff. It is text/artifact-first: mock sketch records are allowed by default; real provider sketch generation requires explicit opt-in. The Codex/Superpowers mirror lives at [`.agents/skills/visual-discovery/SKILL.md`](.agents/skills/visual-discovery/SKILL.md).
 - **Skill source:** [`.claude/skills/visual-brainstorm/SKILL.md`](.claude/skills/visual-brainstorm/SKILL.md) — **`/visual-brainstorm`** turns fuzzy visual intent (topic, optional sketch, optional references) into a reviewable `proposal.md`. Zero-pixel, Discovery-metadata only. Scoped to 2D illustrative/editorial imagery (poster, illustration, packaging, brand visual, cover art, photography brief, hero visuals for UI).
 
 ## License

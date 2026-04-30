@@ -1,7 +1,11 @@
 """VULCA MCP Server — agent-native surface for cultural art creation, evaluation, and layer editing.
 
-21 tools (including unload_models admin/diagnostic) organized into five workflow stages:
-  1. Discovery:    list_traditions, search_traditions, get_tradition_guide, brief_parse
+Core workflow tools are organized into five workflow stages. Additional Tool
+Protocol analyzers are auto-registered when optional tool dependencies import
+successfully.
+
+  1. Discovery:    list_traditions, search_traditions, get_tradition_guide,
+                   brief_parse, compose_prompt_from_design
   2. Generation:   generate_image, create_artwork, generate_concepts, inpaint_artwork
   3. Evaluation:   evaluate_artwork, view_image
   4. Layer editing: layers_split, layers_list, layers_edit, layers_transform,
