@@ -13,12 +13,18 @@ Vulca is an agent-native visual control layer. The product turns fuzzy visual in
 - `/evaluate`: user-facing evaluation skill over existing `evaluate_artwork`.
 - Provider registry: `mock`, `gemini`, `nb2`, `openai`, `comfyui`.
 - `docs/product/provider-capabilities.md`: provider/platform capability matrix.
+- `plugins/vulca`: repo-local Codex plugin package for marketplace validation.
+- `.agents/plugins/marketplace.json`: repo marketplace entry for Codex plugin testing.
 - MCP tools for image generation, image viewing, evaluation, inpainting, layers, redraw, compositing, paste-back, and Tool Protocol analysis.
 - 13 cultural traditions and L1-L5 evaluation framework.
 
 ## Next
 
-- Cultural-term efficacy benchmark.
+- Claude plugin marketplace packaging and submission checklist.
+- Codex plugin marketplace validation and MCP usage guide.
+- ChatGPT remote MCP prototype scope.
+- Cultural-term efficacy benchmark real-provider opt-in.
+- v0.22 target-aware mask refinement review and merge gate.
 
 ## In Parallel
 
@@ -28,7 +34,8 @@ Vulca is an agent-native visual control layer. The product turns fuzzy visual in
 ## Later
 
 - `/inpaint` or `/redraw-layer` skill once redraw routes are robust.
-- OpenAI/Codex and Gemini-facing usage guides.
+- Official Codex public plugin listing, once OpenAI opens the public publishing flow.
+- Google ADK / Vertex Agent Engine prototype.
 - Lightweight Studio review UI for direction cards, sketch grids, layers, and evaluation reports.
 
 ## Non-Goals

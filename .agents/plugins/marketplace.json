@@ -1,0 +1,20 @@
+{
+  "name": "vulca-plugins",
+  "interface": {
+    "displayName": "Vulca Plugins"
+  },
+  "plugins": [
+    {
+      "name": "vulca",
+      "source": {
+        "source": "local",
+        "path": "./plugins/vulca"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_USE"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

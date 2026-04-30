@@ -1,9 +1,42 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
+
+import yaml
 
 
 ROOT = Path(__file__).resolve().parent.parent
+
+
+def _read_public_tree(relative: str) -> list[str]:
+    root = ROOT / relative
+    if not root.exists():
+        return []
+    return [
+        path.read_text(encoding="utf-8")
+        for path in sorted(root.rglob("*"))
+        if path.is_file()
+        and path.suffix in {".md", ".toml", ".json", ".py"}
+        and ".git" not in path.parts
+    ]
+
+
+def _skill_files(relative: str) -> dict[str, str]:
+    root = ROOT / relative
+    return {
+        str(path.relative_to(root)): path.read_text(encoding="utf-8")
+        for path in sorted(root.rglob("SKILL.md"))
+    }
+
+
+def _frontmatter(text: str) -> str:
+    if not text.startswith("---\n"):
+        return ""
+    end = text.find("\n---", 4)
+    if end == -1:
+        return ""
+    return text[4:end]
 
 
 def test_stale_tool_count_claims_removed_from_public_docs():
@@ -11,10 +44,15 @@ def test_stale_tool_count_claims_removed_from_public_docs():
         [
             (ROOT / "README.md").read_text(encoding="utf-8"),
             (ROOT / "pyproject.toml").read_text(encoding="utf-8"),
+            (ROOT / ".claude-plugin" / "plugin.json").read_text(encoding="utf-8"),
             (ROOT / "src" / "vulca" / "mcp_server.py").read_text(
                 encoding="utf-8"
             ),
         ]
+        + _read_public_tree("docs/product")
+        + _read_public_tree("docs/platform")
+        + _read_public_tree("skills")
+        + _read_public_tree("plugins/vulca")
     )
 
     assert "20 MCP tools" not in public_text
@@ -85,6 +123,9 @@ def test_public_docs_do_not_overclaim_cultural_terms():
                 / "cultural-term-efficacy.md"
             ).read_text(encoding="utf-8"),
         ]
+        + _read_public_tree("docs/platform")
+        + _read_public_tree("skills")
+        + _read_public_tree("plugins/vulca")
     ).lower()
 
     forbidden = [
@@ -95,3 +136,99 @@ def test_public_docs_do_not_overclaim_cultural_terms():
     ]
     for phrase in forbidden:
         assert phrase not in public_text
+
+
+def test_public_docs_do_not_overclaim_codex_public_listing():
+    public_text = "\n".join(
+        [
+            (ROOT / "README.md").read_text(encoding="utf-8"),
+            (ROOT / "docs" / "product" / "provider-capabilities.md").read_text(
+                encoding="utf-8"
+            ),
+            (ROOT / "docs" / "product" / "roadmap.md").read_text(
+                encoding="utf-8"
+            ),
+        ]
+        + _read_public_tree("docs/platform")
+        + _read_public_tree("skills")
+        + _read_public_tree("plugins/vulca")
+    ).lower()
+
+    forbidden = [
+        "official codex public listing is live",
+        "official codex public publishing is live",
+        "official codex public plugin publishing is available now",
+    ]
+    for phrase in forbidden:
+        assert phrase not in public_text
+
+
+def test_codex_plugin_package_has_installable_metadata():
+    manifest = json.loads(
+        (ROOT / "plugins" / "vulca" / ".codex-plugin" / "plugin.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    marketplace = json.loads(
+        (ROOT / ".agents" / "plugins" / "marketplace.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    mcp_config = json.loads(
+        (ROOT / "plugins" / "vulca" / ".mcp.json").read_text(encoding="utf-8")
+    )
+    root_mcp_config = json.loads((ROOT / ".mcp.json").read_text(encoding="utf-8"))
+
+    assert manifest["name"] == "vulca"
+    assert manifest["version"] == "0.19.0"
+    assert manifest["skills"] == "./skills/"
+    assert manifest["mcpServers"] == "./.mcp.json"
+    assert "[TODO:" not in json.dumps(manifest)
+
+    skill_names = {
+        path.parent.name
+        for path in (ROOT / "plugins" / "vulca" / "skills").glob("*/SKILL.md")
+    }
+    assert {
+        "decompose",
+        "evaluate",
+        "visual-discovery",
+        "visual-brainstorm",
+        "visual-spec",
+        "visual-plan",
+        "using-vulca-skills",
+    } <= skill_names
+
+    assert marketplace["name"] == "vulca-plugins"
+    plugin_entry = marketplace["plugins"][0]
+    assert plugin_entry["name"] == "vulca"
+    assert plugin_entry["source"] == {
+        "source": "local",
+        "path": "./plugins/vulca",
+    }
+
+    assert mcp_config["mcpServers"]["vulca"]["command"] == "vulca-mcp"
+    assert root_mcp_config["mcpServers"]["vulca"]["command"] == "vulca-mcp"
+
+
+def test_platform_skill_packages_are_synced():
+    canonical = _skill_files(".agents/skills")
+
+    assert canonical
+    assert _skill_files(".claude/skills") == canonical
+    assert _skill_files("skills") == canonical
+    assert _skill_files("plugins/vulca/skills") == canonical
+
+
+def test_skill_frontmatter_is_yaml_parseable_for_plugin_hosts():
+    for relative in [
+        ".agents/skills",
+        ".claude/skills",
+        "skills",
+        "plugins/vulca/skills",
+    ]:
+        for path in sorted((ROOT / relative).rglob("SKILL.md")):
+            metadata = yaml.safe_load(_frontmatter(path.read_text(encoding="utf-8")))
+            assert isinstance(metadata, dict), path
+            assert metadata.get("name"), path
+            assert metadata.get("description"), path
