@@ -9,9 +9,10 @@ Vulca separates agent surfaces from image providers.
 
 | Surface | Role | Status |
 |---|---|---|
-| Claude Code | Primary agent surface for MCP tools and skills | Current |
-| OpenAI Codex / ChatGPT developer surfaces | Future agent surface; OpenAI is already a provider backend | Planned |
-| Gemini / Antigravity-like developer agents | Future agent surface for Google-native workflows | Planned |
+| Claude Code | Primary agent surface for MCP tools, skills, and marketplace distribution | Current, marketplace packaging next |
+| OpenAI Codex | Plugin marketplace surface plus local MCP consumer for developer workflows | Repo-local Codex plugin package current, official public listing later |
+| ChatGPT developer mode | Remote MCP app surface for interactive workflows | Remote MCP prototype planned |
+| Gemini API / Vertex AI | Image provider and future agent runtime target | Provider current, ADK/Agent Engine planned |
 | Python SDK / CLI | Power-user and test harness path | Current |
 | Vulca Studio UI | Review surface for cards, sketches, layers, and evaluations | Later |
 
