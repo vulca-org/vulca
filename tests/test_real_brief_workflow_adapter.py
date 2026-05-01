@@ -118,6 +118,42 @@ def test_adapt_real_brief_package_writes_supported_visual_workflow(tmp_path):
     )
 
 
+def test_adapt_real_brief_package_generated_artifacts_do_not_leak_secrets(tmp_path):
+    from vulca.real_brief.workflow_adapter import adapt_real_brief_package
+
+    source_package = _source_package(
+        tmp_path,
+        "seattle-polish-film-festival-poster",
+    )
+
+    adapt_real_brief_package(
+        source_package=source_package,
+        root=tmp_path / "repo",
+        date="2026-05-01",
+    )
+
+    project_dir = (
+        tmp_path
+        / "repo"
+        / "docs"
+        / "visual-specs"
+        / "seattle-polish-film-festival-poster"
+    )
+    generated_files = sorted(
+        path
+        for path in project_dir.rglob("*")
+        if path.suffix in {".md", ".json", ".txt"}
+    )
+
+    assert generated_files
+    for generated_file in generated_files:
+        text = generated_file.read_text(encoding="utf-8")
+        assert "sk-" not in text, generated_file
+        assert "VULCA_REAL_PROVIDER_API_KEY" not in text, generated_file
+        assert "OPENAI_API_KEY" not in text, generated_file
+        assert "globalai" not in text.casefold(), generated_file
+
+
 def test_adapt_real_brief_package_dry_run_writes_nothing(tmp_path):
     from vulca.real_brief.workflow_adapter import adapt_real_brief_package
 
