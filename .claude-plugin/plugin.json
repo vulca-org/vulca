@@ -1,6 +1,6 @@
 {
   "name": "vulca",
-  "version": "0.19.0",
+  "version": "0.23.0",
   "description": "Vulca visual-control plugin for Claude Code: discovery, brainstorm, spec, plan, evaluate, and decompose workflows backed by Vulca MCP tools.",
   "homepage": "https://github.com/vulca-org/vulca-plugin",
   "license": "Apache-2.0",

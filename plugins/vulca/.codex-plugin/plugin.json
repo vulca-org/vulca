@@ -1,6 +1,6 @@
 {
   "name": "vulca",
-  "version": "0.19.0",
+  "version": "0.23.0",
   "description": "Agent-native visual control for discovery, prompt structure, image generation routing, semantic layers, redraw, and cultural evaluation.",
   "author": {
     "name": "Vulca maintainers",

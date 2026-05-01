@@ -202,7 +202,7 @@ def test_codex_plugin_package_has_installable_metadata():
     root_mcp_config = json.loads((ROOT / ".mcp.json").read_text(encoding="utf-8"))
 
     assert manifest["name"] == "vulca"
-    assert manifest["version"] == "0.19.0"
+    assert manifest["version"] == "0.23.0"
     assert manifest["skills"] == "./skills/"
     assert manifest["mcpServers"] == "./.mcp.json"
     assert "[TODO:" not in json.dumps(manifest)

@@ -1,6 +1,39 @@
 # Changelog
 
-## v0.21.0 (unreleased — redraw recontract)
+## v0.23.0 (2026-05-01)
+
+First public PyPI release after v0.19.0. This release bundles the v0.20-v0.22
+redraw hardening work, visual workflow skills, remote MCP profiles, platform
+distribution docs, cultural-term benchmark tooling, and hosted provider SDK
+aliases.
+
+### Highlights
+
+- Added `/visual-discovery`, `/visual-brainstorm`, `/visual-spec`,
+  `/visual-plan`, and `/evaluate` skill surfaces for agent-native visual
+  workflows.
+- Added remote-safe MCP profile support via `vulca-mcp-remote` for hosted
+  clients such as ChatGPT-style remote MCP integrations.
+- Added target-aware redraw hardening: source-context edit mattes, generated
+  evidence gating, local quality gates, route/geometry advisory fields, and
+  target mask refinement helpers.
+- Added cultural-term efficacy benchmark tooling, including real-provider
+  opt-in and signal-strengthening checks.
+- Added provider SDK image aliases:
+  `gemini-tools` / `nb2-tools` for Google GenAI tool-backed image calls, and
+  `openai-responses` for the OpenAI Responses API image generation tool.
+- Added `vulca[providers]` optional dependency group for hosted provider SDKs.
+- Refreshed README install pins from `0.17.11` to `0.23.0`.
+
+### Compatibility
+
+- Existing `vulca[mcp]` installs continue to work.
+- Hosted provider SDKs remain optional; install `vulca[providers]` only when
+  using Gemini/OpenAI hosted backends directly.
+- `layers_redraw` keeps backward-compatible defaults while surfacing new route,
+  model, quality, and advisory controls for advanced callers.
+
+## v0.21.0 workstream (bundled into v0.23.0 — redraw recontract)
 
 v0.20.1 fixed the hidden model/quality plumbing bug, but dogfood still
 showed a deeper design flaw: sparse layers were being edited as
@@ -33,7 +66,7 @@ or fragmented subjects, that loses the visual evidence the model needs.
   `flower_cluster_c`. It only runs with `--run-real-provider` and
   `OPENAI_API_KEY`.
 
-## v0.20.1 (unreleased — pre-merge correction)
+## v0.20.1 workstream (bundled into v0.23.0 — pre-merge correction)
 
 Pre-merge audit on PR #20 caught that v0.20's ship-gate evidence was
 attributed to the wrong OpenAI model. Correcting before merge so the
