@@ -86,6 +86,27 @@ def _series_plan(deliverables: list[dict[str, Any]]) -> str:
     )
 
 
+def _acceptance_rubric(review_schema: dict[str, Any]) -> str:
+    dimensions = list(review_schema.get("dimensions", []))
+    if not dimensions:
+        return "none"
+
+    scale = review_schema.get("scale", {})
+    min_score = scale.get("min")
+    max_score = scale.get("max")
+    score_range = (
+        f"{min_score}-{max_score}"
+        if min_score is not None and max_score is not None
+        else "source scale"
+    )
+    lines = []
+    for dimension in dimensions:
+        label = str(dimension.get("label") or dimension.get("id") or "").strip()
+        if label:
+            lines.append(f"- {label} ({score_range})")
+    return "\n".join(lines) if lines else "none"
+
+
 def _references(structured: dict[str, Any], project_dir: Path) -> str:
     source = structured.get("source", {})
     lines = [
@@ -187,6 +208,7 @@ def _proposal_markdown(
     project_dir: Path,
     structured: dict[str, Any],
     handoff: dict[str, Any],
+    review_schema: dict[str, Any],
     date: str,
 ) -> str:
     slug = safe_slug(str(structured.get("slug") or handoff.get("slug") or ""))
@@ -246,7 +268,7 @@ def _proposal_markdown(
             _series_plan(deliverables),
             "",
             "## Acceptance rubric",
-            "none",
+            _acceptance_rubric(review_schema),
             "",
             "## Questions resolved",
             _questions_resolved(structured, handoff),
@@ -261,7 +283,9 @@ def _proposal_markdown(
     )
 
 
-def _load_seed(project_dir: Path) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
+def _load_seed(
+    project_dir: Path,
+) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any], dict[str, Any]]:
     _require_file(project_dir / "workflow_seed.md")
     real_brief_dir = project_dir / "real_brief"
     adapter_manifest = _read_json(
@@ -269,7 +293,8 @@ def _load_seed(project_dir: Path) -> tuple[dict[str, Any], dict[str, Any], dict[
     )
     structured = _read_json(_require_file(real_brief_dir / "structured_brief.json"))
     handoff = _read_json(_require_file(real_brief_dir / "workflow_handoff.json"))
-    return adapter_manifest, structured, handoff
+    review_schema = _read_json(_require_file(real_brief_dir / "review_schema.json"))
+    return adapter_manifest, structured, handoff, review_schema
 
 
 def _assert_ready_seed(
@@ -325,7 +350,7 @@ def seed_real_brief_brainstorm_proposal(
     project_dir = _project_dir(root_path, safe)
     proposal_path = project_dir / "proposal.md"
 
-    adapter_manifest, structured, handoff = _load_seed(project_dir)
+    adapter_manifest, structured, handoff, review_schema = _load_seed(project_dir)
     _assert_ready_seed(adapter_manifest, structured, handoff)
     _assert_can_write(proposal_path, force)
 
@@ -344,6 +369,7 @@ def seed_real_brief_brainstorm_proposal(
             project_dir=project_dir,
             structured=structured,
             handoff=handoff,
+            review_schema=review_schema,
             date=safe_date,
         ),
         encoding="utf-8",

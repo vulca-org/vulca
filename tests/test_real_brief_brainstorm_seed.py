@@ -93,9 +93,32 @@ def test_seed_real_brief_brainstorm_proposal_writes_draft_proposal(tmp_path):
     assert "bottom sponsor or patron logo band must remain available" in proposal
     assert "not specified by source" in proposal
     assert "source: https://www.polishfilms.org/submit-a-poster" in proposal
-    assert "## Acceptance rubric\nnone" in proposal
+    assert "## Acceptance rubric" in proposal
+    assert "- brief compliance (0-2)" in proposal
+    assert "- cultural taste specificity (0-2)" in proposal
     assert "Which stakeholder approves the final direction?" in proposal
     assert "Human approval required before `/visual-spec`." in proposal
+
+
+def test_seed_real_brief_brainstorm_proposal_includes_review_schema_rubric(tmp_path):
+    from vulca.real_brief.brainstorm_seed import (
+        seed_real_brief_brainstorm_proposal,
+    )
+
+    project_dir = _adapted_project(tmp_path, "model-young-package-unpacking-taboo")
+
+    seed_real_brief_brainstorm_proposal(
+        root=tmp_path / "repo",
+        slug="model-young-package-unpacking-taboo",
+        date="2026-05-01",
+    )
+
+    proposal = (project_dir / "proposal.md").read_text(encoding="utf-8")
+    assert "## Acceptance rubric" in proposal
+    assert "- brief compliance (0-2)" in proposal
+    assert "- structural control (0-2)" in proposal
+    assert "- production realism (0-2)" in proposal
+    assert "- decision usefulness (0-2)" in proposal
 
 
 def test_seed_real_brief_brainstorm_proposal_dry_run_writes_nothing(tmp_path):
