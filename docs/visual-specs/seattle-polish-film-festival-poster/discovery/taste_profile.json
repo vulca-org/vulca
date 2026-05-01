@@ -1,0 +1,42 @@
+{
+  "schema_version": "0.1",
+  "slug": "seattle-polish-film-festival-poster",
+  "source": {
+    "initial_intent": "Create layout-safe poster concept directions for a Polish film festival, including required text strategy, margins, sponsor band, and print-risk notes.",
+    "reference_paths": [],
+    "conversation_signals": []
+  },
+  "domain": {
+    "primary": "poster",
+    "candidates": [],
+    "confidence": "low"
+  },
+  "culture": {
+    "primary_tradition": "brand_design",
+    "candidate_traditions": [
+      "brand_design"
+    ],
+    "terms": [],
+    "avoid_cliches": [],
+    "risk_flags": []
+  },
+  "aesthetic": {
+    "mood": [],
+    "composition": [],
+    "color": [],
+    "material": [],
+    "typography": [],
+    "symbol_strategy": ""
+  },
+  "commercial_context": {
+    "audience": "",
+    "channel": "",
+    "conversion_pressure": "unknown",
+    "brand_maturity": "unknown"
+  },
+  "selection_history": [],
+  "confidence": {
+    "overall": "low",
+    "needs_more_questions": true
+  }
+}

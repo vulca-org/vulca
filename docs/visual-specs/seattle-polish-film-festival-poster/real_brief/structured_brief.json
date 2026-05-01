@@ -1,0 +1,76 @@
+{
+  "ai_policy": "unspecified",
+  "audience": [
+    "festival attendees",
+    "Polish cinema community",
+    "Seattle arts audience"
+  ],
+  "avoid": [
+    "illegible typography",
+    "crowded logo area",
+    "flag-only concept"
+  ],
+  "budget": "not specified by source",
+  "client": "Seattle Polish Film Festival",
+  "constraints": [
+    "required festival text must be present",
+    "dates, venues, website, and producer line must be accounted for",
+    "bottom sponsor or patron logo band must remain available",
+    "print output should anticipate CMYK and 300 dpi production"
+  ],
+  "context": "Signature poster concept for the 34th festival edition.",
+  "deliverables": [
+    {
+      "channel": "print/digital",
+      "format": "11 x 17 in vertical",
+      "name": "poster concept",
+      "required": true
+    },
+    {
+      "channel": "print",
+      "format": "same key art",
+      "name": "program cover adaptation",
+      "required": true
+    }
+  ],
+  "domain": "poster",
+  "evaluation_dimensions": [
+    "brief_compliance",
+    "audience_fit",
+    "deliverable_fit",
+    "constraint_handling",
+    "cultural_taste_specificity",
+    "structural_control",
+    "editability_reusability",
+    "production_realism",
+    "risk_avoidance",
+    "decision_usefulness"
+  ],
+  "required_outputs": [
+    "decision_package",
+    "production_package"
+  ],
+  "risks": [
+    "broken generated text",
+    "unsafe margins",
+    "generic Polish national symbolism",
+    "missing sponsor band"
+  ],
+  "schema_version": "0.1",
+  "simulation_only": true,
+  "slug": "seattle-polish-film-festival-poster",
+  "source": {
+    "deadline": "2026-06-01 23:59",
+    "retrieved_on": "2026-04-30",
+    "url": "https://www.polishfilms.org/submit-a-poster",
+    "usage_note": "Internal benchmark only"
+  },
+  "source_brief": "Create layout-safe poster concept directions for a Polish film festival, including required text strategy, margins, sponsor band, and print-risk notes.",
+  "tags": [
+    "poster",
+    "film",
+    "layout"
+  ],
+  "timeline": "source-specific contest deadline",
+  "title": "Seattle Polish Film Festival Poster"
+}

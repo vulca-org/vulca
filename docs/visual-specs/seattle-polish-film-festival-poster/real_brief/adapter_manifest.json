@@ -1,0 +1,24 @@
+{
+  "adapter": "real-brief-workflow-adapter",
+  "created": "2026-05-01",
+  "domain": "poster",
+  "human_gate_required": true,
+  "next_steps": [
+    "/visual-brainstorm seattle-polish-film-festival-poster",
+    "/visual-spec seattle-polish-film-festival-poster",
+    "/visual-plan seattle-polish-film-festival-poster",
+    "/evaluate seattle-polish-film-festival-poster"
+  ],
+  "schema_version": "0.1",
+  "simulation_only": true,
+  "slug": "seattle-polish-film-festival-poster",
+  "source_experiment": "real-brief-benchmark",
+  "source_mode": "dry_run",
+  "source_package_manifest": "source_package_manifest.json",
+  "visual_workflow_domain": "poster",
+  "workflow_artifacts": {
+    "discovery_md": "../discovery/discovery.md",
+    "workflow_seed_md": "../workflow_seed.md"
+  },
+  "workflow_status": "ready_for_visual_brainstorm"
+}

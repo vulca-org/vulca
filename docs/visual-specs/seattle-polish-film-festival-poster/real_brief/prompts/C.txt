@@ -1,0 +1,167 @@
+Build a Vulca planning package before generating final pixels.
+
+Client: Seattle Polish Film Festival
+Context: Signature poster concept for the 34th festival edition.
+Audience:
+- festival attendees
+- Polish cinema community
+- Seattle arts audience
+Required deliverables:
+- poster concept (11 x 17 in vertical, print/digital)
+- program cover adaptation (same key art, print)
+Constraints:
+- required festival text must be present
+- dates, venues, website, and producer line must be accounted for
+- bottom sponsor or patron logo band must remain available
+- print output should anticipate CMYK and 300 dpi production
+Budget: not specified by source
+Timeline: source-specific contest deadline
+Risks:
+- broken generated text
+- unsafe margins
+- generic Polish national symbolism
+- missing sponsor band
+Avoid:
+- illegible typography
+- crowded logo area
+- flag-only concept
+AI policy: unspecified
+Simulation only: True
+
+Missing questions:
+- Which stakeholder approves the final direction?
+- Which deliverable must be most production-ready first?
+- Which source assets already exist?
+
+Selected direction card: Commercial clarity
+Direction summary:
+A commercial clarity route for Client: Seattle Polish Film Festival
+Context: Signature poster concept for the 34th festival edition.
+Audience:
+- festival attendees
+- Polish cinema community
+- Seattle arts audience
+Required deliverables:
+- poster concept (11 x 17 in vertical, print/digital)
+- program cover adaptation (same key art, print)
+Constraints:
+- required festival text must be present
+- dates, venues, website, and producer line must be accounted for
+- bottom sponsor or patron logo band must remain available
+- print output should anticipate CMYK and 300 dpi production
+Budget: not specified by source
+Timeline: source-specific contest deadline
+Risks:
+- broken generated text
+- unsafe margins
+- generic Polish national symbolism
+- missing sponsor band
+Avoid:
+- illegible typography
+- crowded logo area
+- flag-only concept
+AI policy: unspecified
+Simulation only: True.
+Visual operations:
+- Composition: large readable subject, product-first hierarchy, high scan speed
+- Color: limited palette aligned to the brand and medium
+- Texture/material: material treatment supports the selected direction
+- Typography: legible and secondary to the visual concept
+- Symbol strategy: specific visual behavior over decorative symbols
+Evaluation focus:
+- L1: composition is readable
+- L2: execution supports the visual direction
+- L3: cultural references are grounded
+- L4: interpretation matches the project intent
+- L5: the visual idea has depth beyond styling
+
+Generated direction set for comparison:
+Direction 1 id: seattle-polish-film-festival-poster-1-commercial-clarity
+Direction 1 label: Commercial clarity
+Direction 1 summary: A commercial clarity route for Client: Seattle Polish Film Festival
+Context: Signature poster concept for the 34th festival edition.
+Audience:
+- festival attendees
+- Polish cinema community
+- Seattle arts audience
+Required deliverables:
+- poster concept (11 x 17 in vertical, print/digital)
+- program cover adaptation (same key art, print)
+Constraints:
+- required festival text must be present
+- dates, venues, website, and producer line must be accounted for
+- bottom sponsor or patron logo band must remain available
+- print output should anticipate CMYK and 300 dpi production
+Budget: not specified by source
+Timeline: source-specific contest deadline
+Risks:
+- broken generated text
+- unsafe margins
+- generic Polish national symbolism
+- missing sponsor band
+Avoid:
+- illegible typography
+- crowded logo area
+- flag-only concept
+AI policy: unspecified
+Simulation only: True.
+Direction 2 id: seattle-polish-film-festival-poster-2-editorial-atmosphere
+Direction 2 label: Editorial atmosphere
+Direction 2 summary: A editorial atmosphere route for Client: Seattle Polish Film Festival
+Context: Signature poster concept for the 34th festival edition.
+Audience:
+- festival attendees
+- Polish cinema community
+- Seattle arts audience
+Required deliverables:
+- poster concept (11 x 17 in vertical, print/digital)
+- program cover adaptation (same key art, print)
+Constraints:
+- required festival text must be present
+- dates, venues, website, and producer line must be accounted for
+- bottom sponsor or patron logo band must remain available
+- print output should anticipate CMYK and 300 dpi production
+Budget: not specified by source
+Timeline: source-specific contest deadline
+Risks:
+- broken generated text
+- unsafe margins
+- generic Polish national symbolism
+- missing sponsor band
+Avoid:
+- illegible typography
+- crowded logo area
+- flag-only concept
+AI policy: unspecified
+Simulation only: True.
+Direction 3 id: seattle-polish-film-festival-poster-3-modern-restraint
+Direction 3 label: Modern restraint
+Direction 3 summary: A modern restraint route for Client: Seattle Polish Film Festival
+Context: Signature poster concept for the 34th festival edition.
+Audience:
+- festival attendees
+- Polish cinema community
+- Seattle arts audience
+Required deliverables:
+- poster concept (11 x 17 in vertical, print/digital)
+- program cover adaptation (same key art, print)
+Constraints:
+- required festival text must be present
+- dates, venues, website, and producer line must be accounted for
+- bottom sponsor or patron logo band must remain available
+- print output should anticipate CMYK and 300 dpi production
+Budget: not specified by source
+Timeline: source-specific contest deadline
+Risks:
+- broken generated text
+- unsafe margins
+- generic Polish national symbolism
+- missing sponsor band
+Avoid:
+- illegible typography
+- crowded logo area
+- flag-only concept
+AI policy: unspecified
+Simulation only: True.
+
+Plan a candidate route before making final assets.

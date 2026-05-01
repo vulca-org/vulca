@@ -1,0 +1,56 @@
+{
+  "condition_ids": [
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "dimensions": [
+    {
+      "id": "brief_compliance",
+      "label": "brief compliance"
+    },
+    {
+      "id": "audience_fit",
+      "label": "audience fit"
+    },
+    {
+      "id": "deliverable_fit",
+      "label": "deliverable fit"
+    },
+    {
+      "id": "constraint_handling",
+      "label": "constraint handling"
+    },
+    {
+      "id": "cultural_taste_specificity",
+      "label": "cultural taste specificity"
+    },
+    {
+      "id": "structural_control",
+      "label": "structural control"
+    },
+    {
+      "id": "editability_reusability",
+      "label": "editability reusability"
+    },
+    {
+      "id": "production_realism",
+      "label": "production realism"
+    },
+    {
+      "id": "risk_avoidance",
+      "label": "risk avoidance"
+    },
+    {
+      "id": "decision_usefulness",
+      "label": "decision usefulness"
+    }
+  ],
+  "scale": {
+    "max": 2,
+    "min": 0,
+    "step": 1
+  },
+  "schema_version": "0.1"
+}

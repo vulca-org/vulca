@@ -1,0 +1,96 @@
+{
+  "condition_ids": [
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "evaluate_seed": {
+    "mode": "brief_compliance",
+    "review_schema_path": "review_schema.json"
+  },
+  "fixture_slug": "seattle-polish-film-festival-poster",
+  "human_gate_required": true,
+  "schema_version": "0.1",
+  "simulation_only": true,
+  "slug": "seattle-polish-film-festival-poster",
+  "structured_brief_path": "structured_brief.json",
+  "visual_brainstorm_seed": {
+    "audience": [
+      "festival attendees",
+      "Polish cinema community",
+      "Seattle arts audience"
+    ],
+    "avoid": [
+      "illegible typography",
+      "crowded logo area",
+      "flag-only concept"
+    ],
+    "client": "Seattle Polish Film Festival",
+    "constraints": [
+      "required festival text must be present",
+      "dates, venues, website, and producer line must be accounted for",
+      "bottom sponsor or patron logo band must remain available",
+      "print output should anticipate CMYK and 300 dpi production"
+    ],
+    "deliverables": [
+      {
+        "channel": "print/digital",
+        "format": "11 x 17 in vertical",
+        "name": "poster concept",
+        "required": true
+      },
+      {
+        "channel": "print",
+        "format": "same key art",
+        "name": "program cover adaptation",
+        "required": true
+      }
+    ],
+    "domain": "poster",
+    "physical_form": "poster concept",
+    "risks": [
+      "broken generated text",
+      "unsafe margins",
+      "generic Polish national symbolism",
+      "missing sponsor band"
+    ],
+    "slug": "seattle-polish-film-festival-poster"
+  },
+  "visual_discovery_seed": {
+    "domain": "poster",
+    "initial_intent": "Create layout-safe poster concept directions for a Polish film festival, including required text strategy, margins, sponsor band, and print-risk notes.",
+    "slug": "seattle-polish-film-festival-poster",
+    "source_usage_note": "Internal benchmark only",
+    "tags": [
+      "poster",
+      "film",
+      "layout"
+    ],
+    "title": "Seattle Polish Film Festival Poster"
+  },
+  "visual_plan_seed": {
+    "condition_ids": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "requires_explicit_real_provider_opt_in": true
+  },
+  "visual_spec_seed": {
+    "evaluation_dimensions": [
+      "brief_compliance",
+      "audience_fit",
+      "deliverable_fit",
+      "constraint_handling",
+      "cultural_taste_specificity",
+      "structural_control",
+      "editability_reusability",
+      "production_realism",
+      "risk_avoidance",
+      "decision_usefulness"
+    ],
+    "provider_policy": "dry_run_default"
+  }
+}
