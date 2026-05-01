@@ -373,10 +373,9 @@ def write_real_brief_dry_run(
     )
     written_files.extend(["images/README.md", "evaluations/README.md"])
 
-    summary = _summary_markdown(fixture.slug, date, len(conditions))
+    summary = _summary_markdown(fixture.slug, safe_date, len(conditions))
     _write_text(out_dir / "summary.md", summary)
     if write_html_review:
-        _write_html_review(out_dir)
         written_files.append("human_review.html")
 
     manifest = {
@@ -398,6 +397,8 @@ def write_real_brief_dry_run(
         "files": sorted(written_files),
     }
     _write_json(out_dir / "manifest.json", manifest)
+    if write_html_review:
+        _write_html_review(out_dir)
 
     return {
         "output_dir": str(out_dir),

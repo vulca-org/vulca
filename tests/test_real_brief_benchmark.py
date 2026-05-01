@@ -699,3 +699,33 @@ def test_write_real_brief_dry_run_default_html_review_writes_placeholder(tmp_pat
     assert "Full renderer pending" in text
     assert "manifest.json" in text
     assert "review_schema.json" in text
+
+
+def test_write_real_brief_dry_run_writes_manifest_before_html_renderer(
+    tmp_path,
+    monkeypatch,
+):
+    from pathlib import Path
+    import sys
+    import types
+
+    from vulca.real_brief.artifacts import write_real_brief_dry_run
+
+    module = types.ModuleType("vulca.real_brief.review_html")
+
+    def fake_write_review_html(out_dir):
+        assert (out_dir / "manifest.json").exists()
+        assert (out_dir / "review_schema.json").exists()
+        (out_dir / "human_review.html").write_text("fake review", encoding="utf-8")
+
+    module.write_review_html = fake_write_review_html
+    monkeypatch.setitem(sys.modules, "vulca.real_brief.review_html", module)
+
+    result = write_real_brief_dry_run(
+        output_root=tmp_path,
+        slug="seattle-polish-film-festival-poster",
+        date="2026-05-01",
+    )
+
+    out_dir = Path(result["output_dir"])
+    assert (out_dir / "human_review.html").read_text(encoding="utf-8") == "fake review"
