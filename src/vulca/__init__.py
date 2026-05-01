@@ -31,6 +31,12 @@ Usage::
     session = StudioSession(brief=brief)
 """
 
+import os
+
+# Importing provider-facing modules can touch LiteLLM. Keep default imports
+# offline unless the caller has explicitly chosen another cost-map behavior.
+os.environ.setdefault("LITELLM_LOCAL_MODEL_COST_MAP", "true")
+
 from vulca._version import __version__
 from vulca.create import acreate, create
 from vulca.evaluate import aevaluate, evaluate

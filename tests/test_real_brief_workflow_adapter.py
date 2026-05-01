@@ -437,3 +437,37 @@ def test_real_brief_workflow_adapter_public_export_is_lazy():
     from vulca.real_brief import adapt_real_brief_package
 
     assert callable(adapt_real_brief_package)
+
+
+def test_workflow_adapter_import_forces_litellm_local_cost_map():
+    import os
+    import subprocess
+    import sys
+
+    source_path = str(Path(__file__).resolve().parents[1] / "src")
+    env = dict(os.environ)
+    env.pop("LITELLM_LOCAL_MODEL_COST_MAP", None)
+    env["PYTHONPATH"] = (
+        source_path
+        if not env.get("PYTHONPATH")
+        else f"{source_path}{os.pathsep}{env['PYTHONPATH']}"
+    )
+
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            (
+                "import os\n"
+                "import vulca.real_brief.workflow_adapter\n"
+                "print(os.environ.get('LITELLM_LOCAL_MODEL_COST_MAP'))\n"
+            ),
+        ],
+        env=env,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+
+    assert completed.stdout.strip() == "true"
+    assert "Failed to fetch remote model cost map" not in completed.stderr
