@@ -185,3 +185,40 @@ def test_fixture_validation_rejects_missing_required_field():
 
     with pytest.raises(ValueError, match="client"):
         fixture.validate()
+
+
+def test_builtin_fixtures_are_valid_and_ordered():
+    from vulca.real_brief.fixtures import build_real_brief_fixtures
+
+    fixtures = build_real_brief_fixtures()
+
+    assert [fixture.slug for fixture in fixtures] == [
+        "gsm-community-market-campaign",
+        "seattle-polish-film-festival-poster",
+        "model-young-package-unpacking-taboo",
+        "erie-botanical-gardens-public-art",
+        "music-video-treatment-low-budget",
+    ]
+    for fixture in fixtures:
+        fixture.validate()
+        payload = fixture.to_dict()
+        assert payload["schema_version"] == "0.1"
+        assert payload["source"]["retrieved_on"] == "2026-04-30"
+        assert payload["source"]["usage_note"] == "Internal benchmark only"
+        assert payload["simulation_only"] is True
+
+
+def test_get_real_brief_fixture_rejects_unknown_slug():
+    from vulca.real_brief.fixtures import get_real_brief_fixture
+
+    with pytest.raises(ValueError, match="unknown real brief slug"):
+        get_real_brief_fixture("missing-brief")
+
+
+def test_ai_prohibited_fixture_is_marked_for_internal_simulation_only():
+    from vulca.real_brief.fixtures import get_real_brief_fixture
+
+    imageout_like = get_real_brief_fixture("seattle-polish-film-festival-poster")
+
+    assert imageout_like.simulation_only is True
+    assert imageout_like.source.usage_note == "Internal benchmark only"
