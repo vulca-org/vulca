@@ -123,6 +123,18 @@ def test_remote_fastmcp_tools_have_descriptions():
     } == set(list_remote_safe_tools())
 
 
+def test_remote_fastmcp_tools_have_openai_review_annotations():
+    from vulca.mcp_remote import remote_mcp
+
+    tools = asyncio.run(remote_mcp.list_tools())
+
+    for tool in tools:
+        assert tool.annotations is not None
+        assert tool.annotations.readOnlyHint is True
+        assert tool.annotations.destructiveHint is False
+        assert tool.annotations.openWorldHint is False
+
+
 def test_remote_mcp_listing_does_not_import_full_local_mcp_server():
     result = subprocess.run(
         [
