@@ -170,14 +170,16 @@ The adapter maps `structured_brief.domain` to the existing visual workflow domai
 | `editorial_cover` | `editorial_cover` | supported |
 | `photography_brief` | `photography_brief` | supported |
 | `hero_visual_for_ui` | `hero_visual_for_ui` | supported |
-| video or treatment-only domains | none | unsupported for visual chain v1 |
+| `public_art` | none | unsupported for visual chain v1 |
+| `video_treatment` | none | unsupported for visual chain v1 |
+| other video or treatment-only domains | none | unsupported for visual chain v1 |
 
-The existing `music-video-treatment-low-budget` fixture remains useful for Phase 1 benchmarking, but Phase 2 v1 must not force it into the static 2D visual chain. It should produce a real-brief import package and mark:
+The existing `erie-botanical-gardens-public-art` and `music-video-treatment-low-budget` fixtures remain useful for Phase 1 benchmarking, but Phase 2 v1 must not force them into the static 2D visual chain. They should produce real-brief import packages and mark:
 
 ```json
 {
   "workflow_status": "unsupported_for_visual_chain",
-  "reason": "video treatment is outside /visual-brainstorm static 2D scope"
+  "reason": "source domain is outside /visual-brainstorm static 2D scope"
 }
 ```
 
@@ -394,7 +396,7 @@ Add focused tests in `tests/test_real_brief_workflow_adapter.py`:
 - unsafe slugs and path traversal are rejected;
 - missing required files fail before partial writes;
 - existing ready `proposal.md` collision aborts;
-- `music-video-treatment-low-budget` is marked unsupported for visual chain instead of forced into `/visual-brainstorm`;
+- `erie-botanical-gardens-public-art` and `music-video-treatment-low-budget` are marked unsupported for visual chain instead of forced into `/visual-brainstorm`;
 - generated artifacts contain no provider keys, live endpoints, or secret-like markers;
 - CLI `--dry-run` reports planned writes and writes nothing;
 - CLI normal mode writes the same files as the Python API.
