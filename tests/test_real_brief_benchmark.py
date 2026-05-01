@@ -649,8 +649,10 @@ def test_write_real_brief_dry_run_packages_are_reviewable(tmp_path):
 
 def test_real_brief_public_import_lazily_loads_heavy_exports():
     import json
+    import os
     import subprocess
     import sys
+    from pathlib import Path
 
     script = """
 import json
@@ -668,10 +670,18 @@ after_export = {
 }
 print(json.dumps({"after_import": after_import, "after_export": after_export}))
 """
+    env = dict(os.environ)
+    source_path = str(Path(__file__).resolve().parents[1] / "src")
+    env["PYTHONPATH"] = (
+        source_path
+        if not env.get("PYTHONPATH")
+        else f"{source_path}{os.pathsep}{env['PYTHONPATH']}"
+    )
     completed = subprocess.run(
         [sys.executable, "-c", script],
         check=True,
         capture_output=True,
+        env=env,
         text=True,
     )
 
