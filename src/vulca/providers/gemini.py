@@ -144,6 +144,10 @@ class GeminiImageProvider:
                 aspect_ratio=aspect_ratio,
             ),
         )
+        tools = kwargs.pop("tools", None)
+        if tools:
+            config_kwargs["tools"] = tools
+
         # Wire deterministic seed when caller supplied one. Older google-genai
         # builds may not expose the `seed` field on GenerateContentConfig
         # (TypeError on unknown kwarg); narrow the except to that case only so

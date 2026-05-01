@@ -105,6 +105,16 @@ remote_mcp = FastMCP(
     ),
 )
 
+REMOTE_APP_TOOL_ANNOTATIONS: dict[str, dict[str, bool]] = {
+    tool_name: {
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "openWorldHint": False,
+        "idempotentHint": True,
+    }
+    for tool_name in list_remote_safe_tools()
+}
+
 
 async def _remote_list_traditions() -> dict:
     """Use this when selecting from Vulca's traditions before prompt or evaluation work."""
@@ -127,11 +137,26 @@ async def _remote_search_traditions(tags: list[str], limit: int = 5) -> dict:
     return await search_traditions(tags=tags, limit=limit)
 
 
-remote_mcp.tool(name="list_traditions")(_remote_list_traditions)
-remote_mcp.tool(name="get_tradition_guide")(_remote_get_tradition_guide)
-remote_mcp.tool(name="search_traditions")(_remote_search_traditions)
-remote_mcp.tool(name="compose_prompt_from_design")(_remote_compose_prompt_from_design)
-remote_mcp.tool(name="evaluate_artwork")(_remote_evaluate_artwork)
+remote_mcp.tool(
+    name="list_traditions",
+    annotations=REMOTE_APP_TOOL_ANNOTATIONS["list_traditions"],
+)(_remote_list_traditions)
+remote_mcp.tool(
+    name="get_tradition_guide",
+    annotations=REMOTE_APP_TOOL_ANNOTATIONS["get_tradition_guide"],
+)(_remote_get_tradition_guide)
+remote_mcp.tool(
+    name="search_traditions",
+    annotations=REMOTE_APP_TOOL_ANNOTATIONS["search_traditions"],
+)(_remote_search_traditions)
+remote_mcp.tool(
+    name="compose_prompt_from_design",
+    annotations=REMOTE_APP_TOOL_ANNOTATIONS["compose_prompt_from_design"],
+)(_remote_compose_prompt_from_design)
+remote_mcp.tool(
+    name="evaluate_artwork",
+    annotations=REMOTE_APP_TOOL_ANNOTATIONS["evaluate_artwork"],
+)(_remote_evaluate_artwork)
 
 
 def main() -> None:

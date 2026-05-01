@@ -1,5 +1,9 @@
 # VULCA
 
+<p align="center">
+  <img src="assets/brand/vulca-logo.svg" alt="Vulca logo" width="240">
+</p>
+
 [![PyPI](https://img.shields.io/pypi/v/vulca.svg)](https://pypi.org/project/vulca/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://pypi.org/project/vulca/)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-green.svg)](https://github.com/vulca-org/vulca/blob/master/LICENSE)
@@ -77,7 +81,7 @@ Claude: 5 layers extracted — each person figure isolated, drapery and ground s
 ### Path A — plugin install (recommended)
 
 ```bash
-pip install vulca[mcp]==0.17.11
+pip install vulca[mcp]==0.23.0
 claude plugin install vulca-org/vulca-plugin
 ```
 
@@ -86,15 +90,15 @@ Then in Claude Code: `> /decompose /path/to/your_image.jpg`
 ### Path B — no plugin (power user)
 
 ```bash
-pip install vulca[mcp]==0.17.11
+pip install vulca[mcp]==0.23.0
 
 # Register MCP server — add to ~/.claude/settings.json:
-# {"mcpServers": {"vulca": {"command": "uvx", "args": ["--from", "vulca[mcp]==0.17.11", "vulca-mcp"]}}}
+# {"mcpServers": {"vulca": {"command": "uvx", "args": ["--from", "vulca[mcp]==0.23.0", "vulca-mcp"]}}}
 
 # Install the /decompose skill:
 mkdir -p ~/.claude/skills/decompose
 curl -o ~/.claude/skills/decompose/SKILL.md \
-  "https://raw.githubusercontent.com/vulca-org/vulca/v0.17.11/.claude/skills/decompose/SKILL.md?utm_source=github-readme&utm_medium=oss&utm_campaign=refresh-2026-04-20"
+  "https://raw.githubusercontent.com/vulca-org/vulca/v0.23.0/.claude/skills/decompose/SKILL.md?utm_source=github-readme&utm_medium=oss&utm_campaign=refresh-2026-05-01"
 ```
 
 <p align="center">
@@ -283,11 +287,70 @@ Custom traditions via YAML — `vulca evaluate painting.jpg --tradition ./my_sty
 ## Apple Silicon / MPS quickstart
 
 ```bash
-pip install vulca[mcp,tools]==0.17.11
+pip install vulca[mcp,tools]==0.23.0
 # Local stack: ComfyUI + Ollama, full MPS support
 ```
 
 See [docs/apple-silicon-mps-comfyui-guide.md](docs/apple-silicon-mps-comfyui-guide.md) for the full [ComfyUI](https://github.com/comfyanonymous/ComfyUI?utm_source=github-readme&utm_medium=oss&utm_campaign=refresh-2026-04-20) + Ollama setup tested on MPS.
+
+---
+
+## Cloud provider SDKs
+
+Install provider SDKs only when you need hosted image backends:
+
+```bash
+pip install vulca[providers]
+
+# Google GenAI / Gemini / Nano Banana
+export GEMINI_API_KEY="..."
+
+# OpenAI Images / Responses image tool
+export OPENAI_API_KEY="..."
+```
+
+Built-in image provider IDs:
+
+| Provider ID | Backend path | Use when |
+|---|---|---|
+| `gemini` / `nb2` | Google GenAI image generation | direct Gemini/Nano Banana image calls |
+| `gemini-tools` / `nb2-tools` | Google GenAI image generation plus opt-in tools | image calls that may use `tool_profile="web"`, `"url"`, or `"code"` |
+| `openai` | OpenAI Images API | direct image generation/editing with GPT Image models |
+| `openai-responses` | OpenAI Responses API `image_generation` tool | conversational or multi-turn image flows with `previous_response_id` |
+| `comfyui` | local ComfyUI | local-first generation, edits, and layer workflows |
+| `mock` | deterministic local mock | tests, docs, and dry runs |
+
+```python
+import asyncio
+import os
+from vulca.providers import get_image_provider
+
+
+async def main():
+    nb2 = get_image_provider("nb2-tools", api_key=os.environ["GEMINI_API_KEY"])
+    sketch = await nb2.generate(
+        "one green square on a white background",
+        raw_prompt=True,
+        width=512,
+        height=512,
+        tool_profile="web",
+    )
+
+    openai = get_image_provider("openai-responses", api_key=os.environ["OPENAI_API_KEY"])
+    final = await openai.generate(
+        "one blue circle on a white background",
+        raw_prompt=True,
+        width=1024,
+        height=1024,
+        quality="low",
+        output_format="png",
+    )
+
+    print(sketch.mime, final.metadata["response_id"])
+
+
+asyncio.run(main())
+```
 
 ---
 
@@ -296,7 +359,7 @@ See [docs/apple-silicon-mps-comfyui-guide.md](docs/apple-silicon-mps-comfyui-gui
 
 ```bash
 # Create
-vulca create "intent" -t tradition --provider mock|gemini|openai|comfyui
+vulca create "intent" -t tradition --provider mock|gemini|nb2|openai|openai-responses|comfyui
   --layered                    # structured layer generation
   --hitl                       # pause for human review
   --reference ref.png          # reference image
@@ -383,7 +446,8 @@ weights = vulca.get_weights("chinese_xieyi")
               ┌───────────▼───────────┐
               │    Image Providers    │
               │  ComfyUI │ Gemini     │
-              │  OpenAI  │ Mock       │
+              │  OpenAI  │ Responses  │
+              │  Tools   │ Mock       │
               └───────────────────────┘
 ```
 
@@ -391,7 +455,9 @@ weights = vulca.get_weights("chinese_xieyi")
 |----------|----------|---------|---------|--------------|
 | ComfyUI  | ✓        | ✓       | ✓       | English-only |
 | Gemini   | ✓        | ✓       | ✓       | CJK native   |
+| Gemini Tools | ✓    | ✓       | ✓       | CJK native   |
 | OpenAI   | ✓        | —       | —       | English-only |
+| OpenAI Responses | ✓ | —      | —       | English-only |
 | Mock     | ✓        | ✓       | ✓       | —            |
 
 All 8 end-to-end pipeline phases validated on the local stack (ComfyUI + Ollama, Apple Silicon MPS). See the MPS guide linked above.
@@ -446,7 +512,8 @@ From an agent: `/evaluate` calls the `evaluate_artwork` MCP tool and returns evo
 ## Support
 
 - **Issues:** [github.com/vulca-org/vulca/issues](https://github.com/vulca-org/vulca/issues) — bug reports, feature requests, workflow needs that should become a skill
-- **Plugin:** [vulca-org/vulca-plugin](https://github.com/vulca-org/vulca-plugin) — version-tracked with the SDK; install via `claude plugin install`
+- **Plugin:** [vulca-org/vulca-plugin](https://github.com/vulca-org/vulca-plugin) — version-tracked with the SDK; install in Claude Code, Gemini CLI, or Codex Desktop/CLI
+- **Web platform:** [vulcaart.art](https://vulcaart.art) and [vulca-platform](https://github.com/yha9806/vulca-platform) — the deployed demo/site and platform workspace
 - **Skill source:** [`.claude/skills/decompose/SKILL.md`](.claude/skills/decompose/SKILL.md) in this repo — the only source of truth for the `/decompose` flow
 - **Skill source:** [`.claude/skills/visual-discovery/SKILL.md`](.claude/skills/visual-discovery/SKILL.md) — **`/visual-discovery`** explores fuzzy visual intent into taste profile, culture analysis, direction cards, and proposal-ready handoff. It is text/artifact-first: mock sketch records are allowed by default; real provider sketch generation requires explicit opt-in. The Codex/Superpowers mirror lives at [`.agents/skills/visual-discovery/SKILL.md`](.agents/skills/visual-discovery/SKILL.md).
 - **Skill source:** [`.claude/skills/visual-brainstorm/SKILL.md`](.claude/skills/visual-brainstorm/SKILL.md) — **`/visual-brainstorm`** turns fuzzy visual intent (topic, optional sketch, optional references) into a reviewable `proposal.md`. Zero-pixel, Discovery-metadata only. Scoped to 2D illustrative/editorial imagery (poster, illustration, packaging, brand visual, cover art, photography brief, hero visuals for UI).

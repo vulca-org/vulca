@@ -19,8 +19,19 @@ def _lazy_load_providers():
     except ImportError:
         pass
     try:
+        from vulca.providers.gemini_tools import GeminiToolsImageProvider
+        _IMAGE_PROVIDERS["gemini-tools"] = GeminiToolsImageProvider
+        _IMAGE_PROVIDERS["nb2-tools"] = GeminiToolsImageProvider  # alias
+    except ImportError:
+        pass
+    try:
         from vulca.providers.openai_provider import OpenAIImageProvider
         _IMAGE_PROVIDERS["openai"] = OpenAIImageProvider
+    except ImportError:
+        pass
+    try:
+        from vulca.providers.openai_responses import OpenAIResponsesImageProvider
+        _IMAGE_PROVIDERS["openai-responses"] = OpenAIResponsesImageProvider
     except ImportError:
         pass
     try:

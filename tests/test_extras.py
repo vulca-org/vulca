@@ -78,14 +78,21 @@ def test_sam_import_guard():
 def test_extras_groups_in_pyproject():
     """Verify the expected extras keys exist in pyproject.toml."""
     from pathlib import Path
+    import tomllib
 
     pyproject = Path(__file__).parent.parent / "pyproject.toml"
     assert pyproject.exists(), "pyproject.toml must exist"
 
     content = pyproject.read_text()
+    data = tomllib.loads(content)
+    extras = data["project"]["optional-dependencies"]
 
     # All required extras must be declared
-    for extra in ("core", "layers", "tools", "all", "dev"):
-        assert extra in content, (
+    for extra in ("core", "layers", "tools", "providers", "all", "dev"):
+        assert extra in extras, (
             f"extras group '{extra}' not found in pyproject.toml"
         )
+
+    assert any(dep.startswith("google-genai") for dep in extras["providers"])
+    assert any(dep.startswith("openai") for dep in extras["providers"])
+    assert "vulca[layers,tools,mcp,scout,providers]" in extras["all"]

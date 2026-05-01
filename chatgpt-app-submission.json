@@ -1,0 +1,156 @@
+{
+  "$schema": "https://developers.openai.com/apps-sdk/schemas/chatgpt-app-submission.v1.json",
+  "schema_version": 1,
+  "app_info": {
+    "display_name": "Vulca",
+    "subtitle": "Structure visual work",
+    "description": "Vulca helps users turn fuzzy visual intent into reviewable creative artifacts: visual direction discovery, cultural tradition lookup, structured prompt composition, and L1-L5 visual or cultural evaluation. This submitted remote profile is local-first and review-oriented; provider-backed image generation, redraw, inpainting, and publishing workflows are intentionally outside this app profile.",
+    "category": "DESIGN"
+  },
+  "tools": {
+    "list_traditions": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only returns the supported Vulca tradition identifiers and does not modify files, jobs, or external systems.",
+        "open_world_justification": "Does not publish content, submit forms, send messages, or change public internet state.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform irreversible actions."
+      }
+    },
+    "get_tradition_guide": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only retrieves structured guidance for one Vulca tradition and does not change user data or project state.",
+        "open_world_justification": "Does not write to third-party systems or make public-facing changes.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform irreversible actions."
+      }
+    },
+    "search_traditions": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only matches user-supplied visual or cultural keywords against Vulca's local tradition catalog.",
+        "open_world_justification": "Does not call publishing endpoints, send content externally, or mutate public internet state.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform irreversible actions."
+      }
+    },
+    "compose_prompt_from_design": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only reads an approved design document inside the configured workspace and returns a provider-ready prompt.",
+        "open_world_justification": "Does not submit prompts to image providers, publish content, or change external systems.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform irreversible actions."
+      }
+    },
+    "evaluate_artwork": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only returns Vulca's rubric-only L1-L5 evaluation wrapper and is configured to avoid pixel reading or VLM calls by default.",
+        "open_world_justification": "Does not publish results, upload files to public services, or modify third-party systems.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, or perform irreversible actions."
+      }
+    }
+  },
+  "test_cases": [
+    {
+      "description": "List available visual traditions before choosing a direction.",
+      "user_prompt": "Show me the visual traditions Vulca can use for a poster direction.",
+      "file_attachment_urls": null,
+      "tools_triggered": "list_traditions",
+      "expected_output": "Returns the supported tradition identifiers so the user can choose a visual or cultural direction.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Retrieve detailed guidance for a specific tradition.",
+      "user_prompt": "Give me Vulca's guide for chinese_xieyi before I write an image brief.",
+      "file_attachment_urls": null,
+      "tools_triggered": "get_tradition_guide",
+      "expected_output": "Returns practical guidance such as visual weights, terminology, taboos, and layer guidance for the requested tradition.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Search traditions using fuzzy visual keywords.",
+      "user_prompt": "Find Vulca traditions that fit ink, mountain, mist, and negative space.",
+      "file_attachment_urls": null,
+      "tools_triggered": "search_traditions",
+      "expected_output": "Returns ranked tradition matches with enough context for the user to pick the most relevant direction.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Compose a prompt from an approved design document.",
+      "user_prompt": "Use the approved design.md in my workspace to compose a provider-ready prompt.",
+      "file_attachment_urls": null,
+      "tools_triggered": "compose_prompt_from_design",
+      "expected_output": "Returns a structured prompt derived from the design document without calling an image provider.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Evaluate an artwork concept with the rubric-only profile.",
+      "user_prompt": "Evaluate this artwork direction against chinese_xieyi using Vulca's L1-L5 rubric.",
+      "file_attachment_urls": null,
+      "tools_triggered": "evaluate_artwork",
+      "expected_output": "Returns L1-L5 rubric guidance and next-action critique without uploading pixels or invoking a VLM by default.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Combine tradition lookup and guide retrieval for a brand-style direction.",
+      "user_prompt": "I need a visual direction for a restrained technology brand using negative space; find the closest traditions and then open the best guide.",
+      "file_attachment_urls": null,
+      "tools_triggered": "search_traditions, get_tradition_guide",
+      "expected_output": "Returns relevant tradition matches and detailed guidance for the chosen tradition so the user can continue drafting.",
+      "expected_output_url": null
+    }
+  ],
+  "negative_test_cases": [
+    {
+      "description": "Do not trigger for image generation requests.",
+      "user_prompt": "Generate the final poster image now using the best provider.",
+      "file_attachment_urls": null,
+      "tools_triggered": null,
+      "expected_output": "The app should not be invoked because provider-backed generation is outside the submitted remote profile.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Do not trigger for redraw or inpainting requests.",
+      "user_prompt": "Redraw the face in this image and paste it back into the original file.",
+      "file_attachment_urls": null,
+      "tools_triggered": null,
+      "expected_output": "The app should not be invoked because pixel editing and paste-back workflows are outside the submitted remote profile.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Do not trigger for publishing or marketplace submission actions.",
+      "user_prompt": "Publish this image to my website and submit the app to a public marketplace.",
+      "file_attachment_urls": null,
+      "tools_triggered": null,
+      "expected_output": "The app should not be invoked because it cannot publish content, submit external forms, or change public internet state.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Do not trigger for unrelated scheduling requests.",
+      "user_prompt": "What meetings do I have tomorrow afternoon?",
+      "file_attachment_urls": null,
+      "tools_triggered": null,
+      "expected_output": "The app should not be invoked because the request is unrelated to Vulca's visual workflow support.",
+      "expected_output_url": null
+    }
+  ]
+}

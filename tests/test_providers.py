@@ -151,6 +151,21 @@ class TestProviderRegistry:
         p = get_image_provider("nb2", api_key="test")
         assert p is not None
 
+    def test_openai_responses_alias(self):
+        from vulca.providers import get_image_provider
+        p = get_image_provider("openai-responses", api_key="test")
+        assert p is not None
+
+    def test_gemini_tools_alias(self):
+        from vulca.providers import get_image_provider
+        p = get_image_provider("gemini-tools", api_key="test")
+        assert p is not None
+
+    def test_nb2_tools_alias(self):
+        from vulca.providers import get_image_provider
+        p = get_image_provider("nb2-tools", api_key="test")
+        assert p is not None
+
 
 class TestTraditionGuide:
     def test_returns_guide(self):
