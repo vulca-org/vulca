@@ -690,25 +690,30 @@ print(json.dumps({"after_import": after_import, "after_export": after_export}))
     assert payload["after_export"] == {"callable": True, "artifacts": True}
 
 
-def test_write_real_brief_dry_run_default_html_review_writes_placeholder(tmp_path):
+def test_human_review_html_contains_conditions_dimensions_and_export(tmp_path):
+    from pathlib import Path
+
     from vulca.real_brief.artifacts import write_real_brief_dry_run
 
     result = write_real_brief_dry_run(
         output_root=tmp_path,
-        slug="seattle-polish-film-festival-poster",
+        slug="model-young-package-unpacking-taboo",
         date="2026-05-01",
+        write_html_review=True,
     )
 
-    html = (
-        tmp_path
-        / "2026-05-01-seattle-polish-film-festival-poster"
-        / "human_review.html"
-    )
-    text = html.read_text(encoding="utf-8")
-    assert result["output_dir"] == str(html.parent)
-    assert "Full renderer pending" in text
-    assert "manifest.json" in text
-    assert "review_schema.json" in text
+    html = Path(result["output_dir"], "human_review.html").read_text(encoding="utf-8")
+    assert "Real Brief Benchmark Review" in html
+    assert "A-one-shot.md" in html
+    assert "D-vulca-preview-iterate.md" in html
+    assert "brief_compliance" in html
+    assert "decision_usefulness" in html
+    assert "Export JSON" in html
+    assert "Full renderer pending" not in html
+    assert "sk-" not in html
+    assert "VULCA_REAL_PROVIDER_API_KEY" not in html
+    assert "OPENAI_API_KEY" not in html
+    assert "globalai" not in html.lower()
 
 
 def test_write_real_brief_dry_run_writes_manifest_before_html_renderer(
