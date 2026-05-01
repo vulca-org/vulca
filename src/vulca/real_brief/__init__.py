@@ -27,6 +27,7 @@ __all__ = [
     "seed_real_brief_brainstorm_proposal",
     "SourceInfo",
     "safe_slug",
+    "write_workflow_review_html",
     "write_real_brief_dry_run",
 ]
 
@@ -47,6 +48,10 @@ _LAZY_EXPORTS = {
     "write_real_brief_dry_run": (
         "vulca.real_brief.artifacts",
         "write_real_brief_dry_run",
+    ),
+    "write_workflow_review_html": (
+        "vulca.real_brief.workflow_review_html",
+        "write_workflow_review_html",
     ),
 }
 
