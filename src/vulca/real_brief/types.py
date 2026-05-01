@@ -4,6 +4,7 @@ from __future__ import annotations
 import re
 from dataclasses import asdict, dataclass, field
 from typing import Any
+from urllib.parse import urlparse
 
 
 _SAFE_SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9._-]*$")
@@ -31,7 +32,7 @@ def safe_slug(slug: str) -> str:
         or "/" in slug
         or "\\" in slug
         or ".." in slug
-        or not _SAFE_SLUG_RE.match(slug)
+        or not _SAFE_SLUG_RE.fullmatch(slug)
     ):
         raise ValueError(
             "safe slug required: lowercase letters, digits, '.', '_' or '-' only"
@@ -87,7 +88,11 @@ class RealBriefFixture:
         safe_slug(self.slug)
         if not self.title.strip():
             raise ValueError(f"{self.slug}: title is required")
-        if not self.source.url.startswith(("https://", "http://")):
+        parsed_source_url = urlparse(self.source.url)
+        if (
+            parsed_source_url.scheme not in {"http", "https"}
+            or not parsed_source_url.netloc
+        ):
             raise ValueError(f"{self.slug}: source.url must be absolute http(s)")
         for field_name in (
             "client",

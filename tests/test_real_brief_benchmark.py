@@ -19,13 +19,53 @@ def test_safe_slug_accepts_fixture_style_ids():
 
 @pytest.mark.parametrize(
     "slug",
-    ["", ".", "..", "../escape", "/abs/path", "has space", "UpperCase", "x/y"],
+    [
+        "",
+        ".",
+        "..",
+        "../escape",
+        "/abs/path",
+        "has space",
+        "UpperCase",
+        "x/y",
+        "abc\n",
+    ],
 )
 def test_safe_slug_rejects_unsafe_ids(slug):
     from vulca.real_brief.types import safe_slug
 
     with pytest.raises(ValueError, match="safe slug"):
         safe_slug(slug)
+
+
+def test_fixture_validation_rejects_url_without_netloc():
+    from vulca.real_brief.types import Deliverable, RealBriefFixture, SourceInfo
+
+    fixture = RealBriefFixture(
+        slug="broken-fixture",
+        title="Broken Fixture",
+        source=SourceInfo(
+            url="https://",
+            retrieved_on="2026-05-01",
+            usage_note="Internal benchmark only",
+        ),
+        client="Client exists",
+        context="Context exists",
+        audience=["audience"],
+        deliverables=[Deliverable("deliverable", "format", "channel")],
+        constraints=["constraint"],
+        budget="not specified by source",
+        timeline="source-specific deadline",
+        required_outputs=["decision_package", "production_package"],
+        ai_policy="unspecified",
+        simulation_only=True,
+        risks=["risk"],
+        avoid=["avoid"],
+        evaluation_dimensions=["brief_compliance"],
+    )
+
+    with pytest.raises(ValueError, match="source.url"):
+        fixture.validate()
 
 
 def test_fixture_validation_rejects_missing_required_field():
