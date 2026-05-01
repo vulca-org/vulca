@@ -331,6 +331,8 @@ def adapt_real_brief_package(
     source_package_path = Path(source_package)
     root_path = Path(root)
     safe_date = _safe_date(date)
+    if not source_package_path.exists():
+        raise FileNotFoundError(f"source package not found: {source_package_path}")
     _validate_copy_sources(source_package_path)
     source_manifest, structured, handoff = _load_source_package(source_package_path)
     slug = safe_slug(str(structured.get("slug") or source_manifest.get("fixture_slug")))
