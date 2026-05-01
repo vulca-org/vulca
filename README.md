@@ -1,5 +1,9 @@
 # VULCA
 
+<p align="center">
+  <img src="assets/brand/vulca-logo.svg" alt="Vulca logo" width="240">
+</p>
+
 [![PyPI](https://img.shields.io/pypi/v/vulca.svg)](https://pypi.org/project/vulca/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://pypi.org/project/vulca/)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-green.svg)](https://github.com/vulca-org/vulca/blob/master/LICENSE)
@@ -508,7 +512,8 @@ From an agent: `/evaluate` calls the `evaluate_artwork` MCP tool and returns evo
 ## Support
 
 - **Issues:** [github.com/vulca-org/vulca/issues](https://github.com/vulca-org/vulca/issues) — bug reports, feature requests, workflow needs that should become a skill
-- **Plugin:** [vulca-org/vulca-plugin](https://github.com/vulca-org/vulca-plugin) — version-tracked with the SDK; install via `claude plugin install`
+- **Plugin:** [vulca-org/vulca-plugin](https://github.com/vulca-org/vulca-plugin) — version-tracked with the SDK; install in Claude Code, Gemini CLI, or Codex Desktop/CLI
+- **Web platform:** [vulcaart.art](https://vulcaart.art) and [vulca-platform](https://github.com/yha9806/vulca-platform) — the deployed demo/site and platform workspace
 - **Skill source:** [`.claude/skills/decompose/SKILL.md`](.claude/skills/decompose/SKILL.md) in this repo — the only source of truth for the `/decompose` flow
 - **Skill source:** [`.claude/skills/visual-discovery/SKILL.md`](.claude/skills/visual-discovery/SKILL.md) — **`/visual-discovery`** explores fuzzy visual intent into taste profile, culture analysis, direction cards, and proposal-ready handoff. It is text/artifact-first: mock sketch records are allowed by default; real provider sketch generation requires explicit opt-in. The Codex/Superpowers mirror lives at [`.agents/skills/visual-discovery/SKILL.md`](.agents/skills/visual-discovery/SKILL.md).
 - **Skill source:** [`.claude/skills/visual-brainstorm/SKILL.md`](.claude/skills/visual-brainstorm/SKILL.md) — **`/visual-brainstorm`** turns fuzzy visual intent (topic, optional sketch, optional references) into a reviewable `proposal.md`. Zero-pixel, Discovery-metadata only. Scoped to 2D illustrative/editorial imagery (poster, illustration, packaging, brand visual, cover art, photography brief, hero visuals for UI).
