@@ -99,6 +99,7 @@ def _condition_manifest(conditions: list[dict[str, Any]]) -> list[dict[str, str]
         {
             "id": condition["id"],
             "label": condition["label"],
+            "purpose": condition["purpose"],
             **_condition_paths(condition),
         }
         for condition in conditions

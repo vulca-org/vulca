@@ -580,24 +580,37 @@ def test_write_real_brief_dry_run_writes_planned_handoff_and_manifest(tmp_path):
         {
             "id": "A",
             "label": "One-shot model baseline",
+            "purpose": "Raw real brief condensed into a single model ask.",
             "condition_path": "conditions/A-one-shot.md",
             "prompt_path": "prompts/A.txt",
         },
         {
             "id": "B",
             "label": "Structured brief baseline",
+            "purpose": (
+                "Same brief normalized into structured client, deliverable, "
+                "and constraint fields."
+            ),
             "condition_path": "conditions/B-structured-brief.md",
             "prompt_path": "prompts/B.txt",
         },
         {
             "id": "C",
             "label": "Vulca planning workflow",
+            "purpose": (
+                "Ambiguity handling, direction cards, visual operations, and "
+                "evaluation focus before generation."
+            ),
             "condition_path": "conditions/C-vulca-planning.md",
             "prompt_path": "prompts/C.txt",
         },
         {
             "id": "D",
             "label": "Vulca preview-and-iterate workflow",
+            "purpose": (
+                "Preview prompts, critique, refinement, and editability checks "
+                "before final composition."
+            ),
             "condition_path": "conditions/D-vulca-preview-iterate.md",
             "prompt_path": "prompts/D.txt",
         },
@@ -714,6 +727,31 @@ def test_human_review_html_contains_conditions_dimensions_and_export(tmp_path):
     assert "VULCA_REAL_PROVIDER_API_KEY" not in html
     assert "OPENAI_API_KEY" not in html
     assert "globalai" not in html.lower()
+
+
+def test_human_review_html_links_review_packages_and_condition_purposes(tmp_path):
+    from pathlib import Path
+
+    from vulca.real_brief.artifacts import write_real_brief_dry_run
+
+    result = write_real_brief_dry_run(
+        output_root=tmp_path,
+        slug="seattle-polish-film-festival-poster",
+        date="2026-05-01",
+        write_html_review=True,
+    )
+
+    html = Path(result["output_dir"], "human_review.html").read_text(encoding="utf-8")
+
+    assert 'href="decision_package.md"' in html
+    assert 'href="production_package.md"' in html
+    assert "Decision Package" in html
+    assert "Production Package" in html
+    assert "Raw real brief condensed into a single model ask." in html
+    assert (
+        "Preview prompts, critique, refinement, and editability checks "
+        "before final composition."
+    ) in html
 
 
 def test_human_review_html_scores_every_condition_dimension_pair(tmp_path):

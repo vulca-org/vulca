@@ -33,6 +33,7 @@ def _condition_cards(manifest: dict[str, Any]) -> str:
     for condition in manifest.get("conditions", []):
         condition_id = _escape(condition.get("id", ""))
         label = _escape(condition.get("label", "Untitled condition"))
+        purpose = _escape(condition.get("purpose", ""))
         condition_path = _escape(condition.get("condition_path", ""))
         prompt_path = _escape(condition.get("prompt_path", ""))
         cards.append(
@@ -41,6 +42,7 @@ def _condition_cards(manifest: dict[str, Any]) -> str:
                     '<article class="card condition-card">',
                     f"<h2>Condition {condition_id}</h2>",
                     f"<p>{label}</p>",
+                    f'<p class="muted">{purpose}</p>',
                     '<div class="links">',
                     f'<a href="{condition_path}">{condition_path}</a>',
                     f'<a href="{prompt_path}">{prompt_path}</a>',
@@ -50,6 +52,22 @@ def _condition_cards(manifest: dict[str, Any]) -> str:
             )
         )
     return "\n".join(cards)
+
+
+def _package_links() -> str:
+    return "\n".join(
+        [
+            '<section class="card package-links">',
+            "<h2>Review Packages</h2>",
+            '<div class="links horizontal-links">',
+            '<a href="decision_package.md">Decision Package</a>',
+            '<a href="production_package.md">Production Package</a>',
+            '<a href="workflow_handoff.json">Workflow Handoff</a>',
+            '<a href="review_schema.json">Review Schema</a>',
+            "</div>",
+            "</section>",
+        ]
+    )
 
 
 def _dimension_rows(
@@ -145,6 +163,7 @@ def _html_document(
             ".grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}",
             ".card{padding:14px}",
             ".links{display:flex;flex-direction:column;gap:6px}",
+            ".horizontal-links{flex-direction:row;flex-wrap:wrap}",
             "a{color:#154f7f}",
             "table{width:100%;border-collapse:collapse;margin-top:12px;overflow:hidden}",
             "th,td{padding:12px;border-top:1px solid #e6e0d5;text-align:left;vertical-align:top}",
@@ -166,6 +185,7 @@ def _html_document(
             '<button id="export-json" type="button">Export JSON</button>',
             "</header>",
             _brief_summary(structured_brief),
+            _package_links(),
             "<section>",
             "<h2>Conditions</h2>",
             f'<div class="grid">{_condition_cards(manifest)}</div>',
