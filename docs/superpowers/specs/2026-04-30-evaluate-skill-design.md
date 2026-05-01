@@ -141,7 +141,7 @@ The user-facing response must include:
   - `accept`
   - `revise prompt`
   - `rerun /visual-plan`
-  - `redraw target after v0.22 route is available`
+  - `redraw target with dogfooded v0.22 route`
   - `run /visual-discovery` if the brief is unclear
 
 Artifact markdown should include:

@@ -188,7 +188,7 @@ In `docs/product/roadmap.md`, set `## Next` to:
 - Codex plugin marketplace validation and MCP usage guide.
 - ChatGPT remote MCP prototype scope.
 - Cultural-term efficacy benchmark real-provider opt-in.
-- v0.22 target-aware mask refinement review and merge gate.
+- Real-image v0.22 redraw dogfood before promoting `/inpaint` or `/redraw-layer` as polished skills.
 ```
 
 - [ ] **Step 3: Run docs truth tests**
@@ -252,7 +252,7 @@ Create `docs/platform/claude-plugin-marketplace-checklist.md` with:
 
 - No fixed MCP tool count claims.
 - No promise that cultural terms improve output quality.
-- No public promotion of `/inpaint` or `/redraw-layer` until v0.22 evidence lands.
+- No public promotion of `/inpaint` or `/redraw-layer` until real-image v0.22 redraw dogfood evidence lands.
 - Real-provider generation is explicit opt-in.
 - README includes security notes for local file access and provider uploads.
 
@@ -495,7 +495,7 @@ Acceptance:
 Until real-image dogfood passes, public docs must use this wording:
 
 ```markdown
-Redraw and inpaint tools are available for advanced workflows. Polished user-facing `/inpaint` or `/redraw-layer` skills will be promoted after v0.22 target-aware mask refinement evidence lands.
+Redraw and inpaint tools are available for advanced workflows. Polished user-facing `/inpaint` or `/redraw-layer` skills will be promoted after real-image dogfood validates the v0.22 target-aware mask refinement route.
 ```
 
 ## Task 7: Final Verification

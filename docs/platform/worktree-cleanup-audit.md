@@ -1,17 +1,15 @@
 # Worktree Cleanup Audit
 
 **Status:** Review notes
-**Last checked:** 2026-04-30
+**Last checked:** 2026-05-01
 
 ## Worktrees
 
 | Path | Branch | Status | Recommendation |
 |---|---|---|---|
-| `/Users/yhryzy/dev/vulca/.worktrees/platform-distribution-realtime-plan` | `codex/platform-distribution-realtime-plan` | Dirty by design | Keep for manual review, then stage/commit as the platform distribution package. |
-| `/Users/yhryzy/dev/vulca/.worktrees/v0-22-mask-refinement` | `codex/v0-22-mask-refinement` | Dirty with redraw code/test changes plus showcase artifacts | Keep separate. Review and commit code/test changes before merging; decide separately whether showcase artifacts should be tracked. |
-| `/Users/yhryzy/dev/vulca/.worktrees/cultural-term-benchmark-signal` | `codex/cultural-term-benchmark-signal` | Clean | No cleanup needed. |
+| `/Users/yhryzy/dev/vulca/.worktrees/real-brief-benchmark-design` | `codex/real-brief-benchmark-design` | Clean, ahead of its upstream by 5 commits | Keep separate from platform distribution. Review/push/PR when benchmark design is ready. |
 | `/Users/yhryzy/.codex/worktrees/9919/vulca` | detached | Clean | Archive/remove later if no longer needed; no code cleanup needed. |
-| `/Users/yhryzy/dev/vulca` | `master` | Dirty with local `.mcp.json` and many untracked demo/assets/log/model files | Do not auto-clean. Decide which generated artifacts matter, then either move to ignored local storage, track intentionally, or remove after backup. |
+| `/Users/yhryzy/dev/vulca` | `master` | No tracked edits; untracked demo/spec/research artifacts remain | Do not auto-clean. Decide which generated artifacts matter, then either move to ignored local storage, track intentionally, or remove after backup. |
 
 ## Platform Branch Dirty Set
 
@@ -34,20 +32,13 @@ These files are expected for the current platform distribution work:
 
 ## Main Worktree Notes
 
-Main has a local `.mcp.json` that loads `/Users/yhryzy/dev/vulca/.env.local` before starting `/opt/homebrew/bin/vulca-mcp`. That may be useful for local development, but it is user-machine-specific and should not be blindly committed into a public package.
+Main previously had a local `.mcp.json` that loaded `/Users/yhryzy/dev/vulca/.env.local` before starting `/opt/homebrew/bin/vulca-mcp`. That user-machine-specific version is preserved in `stash@{0}` as `codex-local-mcp-before-origin-master-ff`; the tracked package uses the portable `vulca-mcp` config.
 
 Main also has many untracked generated or local files, including demo assets, visual-spec outputs, screenshots, `error.log`, `mobileclip_blt.ts`, and `rf-detr-base.pth`. These should be treated as local artifacts until a human decides otherwise.
 
 ## v0.22 Notes
 
-The v0.22 worktree has dirty changes in:
-
-- `src/vulca/layers/redraw.py`
-- `tests/test_layers_redraw_refinement.py`
-- `.superpowers/`
-- `docs/visual-specs/2026-04-27-ipad-cartoon-roadside/v0_22_gpt_image_2/`
-
-The redraw test gates pass, but this branch should be reviewed independently from platform distribution. Do not mix these files into the platform branch.
+v0.22 target-aware mask refinement has merged to `master`. Keep redraw promotion gated on real-image dogfood and final paste-back review; do not market sparse transparent layer outputs as final after-images.
 
 ## Cleanup Policy
 

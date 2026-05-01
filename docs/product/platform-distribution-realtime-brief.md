@@ -1,7 +1,7 @@
 # Vulca Platform Distribution Realtime Brief
 
 **Status:** Working brief for platform distribution
-**Last verified:** 2026-04-30
+**Last verified:** 2026-05-01
 
 This brief records current public platform facts for distributing Vulca into Claude, OpenAI/Codex/ChatGPT, and Google/Gemini workflows. It should be refreshed before marketplace submission, remote MCP launch, or public claims about platform support.
 
@@ -37,7 +37,7 @@ Vulca implication:
 - The existing `.claude-plugin/plugin.json` should be treated as the packaging entry point, but it must not claim fixed MCP tool counts.
 - Claude marketplace packaging needs root-level `skills/` and `.mcp.json`; keep those synced from `.agents/skills/` with `scripts/sync_plugin_skills.py`.
 - Marketplace submission should wait until plugin install, skill invocation, MCP startup, and at least one no-cost workflow are tested in a fresh Claude Code session.
-- The first official submission should emphasize `/decompose`, `/visual-discovery`, `/visual-brainstorm`, `/visual-spec`, `/visual-plan`, and `/evaluate`; `/inpaint` or `/redraw-layer` should wait for v0.22 evidence.
+- The first official submission should emphasize `/decompose`, `/visual-discovery`, `/visual-brainstorm`, `/visual-spec`, `/visual-plan`, and `/evaluate`; `/inpaint` or `/redraw-layer` should wait for real-image v0.22 redraw dogfood evidence.
 
 ## OpenAI / Codex / ChatGPT
 
@@ -105,11 +105,11 @@ Vulca implication:
 
 ## Redraw Distribution Rule
 
-Redraw should not lead marketplace copy until v0.22 target-aware mask refinement passes a real-image dogfood gate.
+Redraw should not lead marketplace copy until the merged v0.22 target-aware mask refinement route passes a real-image dogfood gate.
 
 Use this public wording until then:
 
-> Redraw and inpaint tools are available for advanced workflows. Polished user-facing `/inpaint` or `/redraw-layer` skills will be promoted after v0.22 target-aware mask refinement evidence lands.
+> Redraw and inpaint tools are available for advanced workflows. Polished user-facing `/inpaint` or `/redraw-layer` skills will be promoted after real-image dogfood validates the v0.22 target-aware mask refinement route.
 
 The first public marketplace copy should lead with artifact control, decomposition, discovery, prompt composition, and evaluation.
 

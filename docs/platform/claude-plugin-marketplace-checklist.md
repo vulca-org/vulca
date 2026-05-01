@@ -1,7 +1,7 @@
 # Claude Plugin Marketplace Checklist
 
 **Status:** Pre-submission checklist
-**Last verified:** 2026-04-30
+**Last verified:** 2026-05-01
 
 ## Official Path
 
@@ -31,7 +31,7 @@ Lead with the workflows that are already product-ready:
 - `/visual-plan`
 - `/evaluate`
 
-Do not lead marketplace copy with redraw. Redraw and inpaint can be described as advanced MCP tools, but polished user-facing `/inpaint` or `/redraw-layer` promotion should wait for v0.22 target-aware mask refinement evidence.
+Do not lead marketplace copy with redraw. Redraw and inpaint can be described as advanced MCP tools, but polished user-facing `/inpaint` or `/redraw-layer` promotion should wait for real-image dogfood evidence from the v0.22 target-aware mask refinement route.
 
 ## Package Layout
 
