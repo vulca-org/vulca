@@ -88,6 +88,12 @@ scout = [
     "faiss-cpu>=1.7.0",
 ]
 
+# Cloud provider SDKs
+providers = [
+    "google-genai>=1.74.0",
+    "openai>=2.30.0",
+]
+
 # MCP server
 mcp = [
     "fastmcp>=3.0",
@@ -105,7 +111,7 @@ layers-full = [
 
 # Full installation (layers + tools, excluding heavy ML deps)
 all = [
-    "vulca[layers,tools,mcp,scout]",
+    "vulca[layers,tools,mcp,scout,providers]",
 ]
 
 # Development

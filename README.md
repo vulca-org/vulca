@@ -291,12 +291,71 @@ See [docs/apple-silicon-mps-comfyui-guide.md](docs/apple-silicon-mps-comfyui-gui
 
 ---
 
+## Cloud provider SDKs
+
+Install provider SDKs only when you need hosted image backends:
+
+```bash
+pip install vulca[providers]
+
+# Google GenAI / Gemini / Nano Banana
+export GEMINI_API_KEY="..."
+
+# OpenAI Images / Responses image tool
+export OPENAI_API_KEY="..."
+```
+
+Built-in image provider IDs:
+
+| Provider ID | Backend path | Use when |
+|---|---|---|
+| `gemini` / `nb2` | Google GenAI image generation | direct Gemini/Nano Banana image calls |
+| `gemini-tools` / `nb2-tools` | Google GenAI image generation plus opt-in tools | image calls that may use `tool_profile="web"`, `"url"`, or `"code"` |
+| `openai` | OpenAI Images API | direct image generation/editing with GPT Image models |
+| `openai-responses` | OpenAI Responses API `image_generation` tool | conversational or multi-turn image flows with `previous_response_id` |
+| `comfyui` | local ComfyUI | local-first generation, edits, and layer workflows |
+| `mock` | deterministic local mock | tests, docs, and dry runs |
+
+```python
+import asyncio
+import os
+from vulca.providers import get_image_provider
+
+
+async def main():
+    nb2 = get_image_provider("nb2-tools", api_key=os.environ["GEMINI_API_KEY"])
+    sketch = await nb2.generate(
+        "one green square on a white background",
+        raw_prompt=True,
+        width=512,
+        height=512,
+        tool_profile="web",
+    )
+
+    openai = get_image_provider("openai-responses", api_key=os.environ["OPENAI_API_KEY"])
+    final = await openai.generate(
+        "one blue circle on a white background",
+        raw_prompt=True,
+        width=1024,
+        height=1024,
+        quality="low",
+        output_format="png",
+    )
+
+    print(sketch.mime, final.metadata["response_id"])
+
+
+asyncio.run(main())
+```
+
+---
+
 <details>
 <summary>CLI / SDK cheat sheet</summary>
 
 ```bash
 # Create
-vulca create "intent" -t tradition --provider mock|gemini|openai|comfyui
+vulca create "intent" -t tradition --provider mock|gemini|nb2|openai|openai-responses|comfyui
   --layered                    # structured layer generation
   --hitl                       # pause for human review
   --reference ref.png          # reference image
@@ -383,7 +442,8 @@ weights = vulca.get_weights("chinese_xieyi")
               ┌───────────▼───────────┐
               │    Image Providers    │
               │  ComfyUI │ Gemini     │
-              │  OpenAI  │ Mock       │
+              │  OpenAI  │ Responses  │
+              │  Tools   │ Mock       │
               └───────────────────────┘
 ```
 
@@ -391,7 +451,9 @@ weights = vulca.get_weights("chinese_xieyi")
 |----------|----------|---------|---------|--------------|
 | ComfyUI  | ✓        | ✓       | ✓       | English-only |
 | Gemini   | ✓        | ✓       | ✓       | CJK native   |
+| Gemini Tools | ✓    | ✓       | ✓       | CJK native   |
 | OpenAI   | ✓        | —       | —       | English-only |
+| OpenAI Responses | ✓ | —      | —       | English-only |
 | Mock     | ✓        | ✓       | ✓       | —            |
 
 All 8 end-to-end pipeline phases validated on the local stack (ComfyUI + Ollama, Apple Silicon MPS). See the MPS guide linked above.

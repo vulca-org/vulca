@@ -43,7 +43,16 @@ EXPECTED_TOOL_PROTOCOL_TOOLS = {
     "tool_whitespace_analyze",
 }
 
-EXPECTED_IMAGE_PROVIDERS = {"mock", "gemini", "nb2", "openai", "comfyui"}
+EXPECTED_IMAGE_PROVIDERS = {
+    "mock",
+    "gemini",
+    "nb2",
+    "gemini-tools",
+    "nb2-tools",
+    "openai",
+    "openai-responses",
+    "comfyui",
+}
 EXPECTED_VLM_PROVIDERS = {"mock", "litellm"}
 EXPECTED_TRADITIONS = {
     "african_traditional",
