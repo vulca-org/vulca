@@ -94,6 +94,8 @@ class RealBriefFixture:
             or not parsed_source_url.netloc
         ):
             raise ValueError(f"{self.slug}: source.url must be absolute http(s)")
+        if not self.source.retrieved_on.strip():
+            raise ValueError(f"{self.slug}: source.retrieved_on is required")
         for field_name in (
             "client",
             "context",
@@ -106,6 +108,10 @@ class RealBriefFixture:
                 raise ValueError(f"{self.slug}: {field_name} is required")
         if self.ai_policy not in AI_POLICIES:
             raise ValueError(f"{self.slug}: unsupported ai_policy {self.ai_policy!r}")
+        if self.ai_policy == "prohibited_for_submission" and not self.simulation_only:
+            raise ValueError(
+                f"{self.slug}: simulation_only is required when AI is prohibited"
+            )
         list_fields = {
             "audience": self.audience,
             "deliverables": self.deliverables,
@@ -118,6 +124,15 @@ class RealBriefFixture:
         for field_name, value in list_fields.items():
             if not value:
                 raise ValueError(f"{self.slug}: {field_name} must not be empty")
+            if any(isinstance(item, str) and not item.strip() for item in value):
+                raise ValueError(f"{self.slug}: {field_name} must not contain blanks")
+        for deliverable in self.deliverables:
+            if not deliverable.name.strip():
+                raise ValueError(f"{self.slug}: deliverables.name is required")
+            if not deliverable.format.strip():
+                raise ValueError(f"{self.slug}: deliverables.format is required")
+            if not deliverable.channel.strip():
+                raise ValueError(f"{self.slug}: deliverables.channel is required")
         unknown_dimensions = [
             item for item in self.evaluation_dimensions if item not in REVIEW_DIMENSIONS
         ]
