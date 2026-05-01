@@ -37,8 +37,8 @@ The default harness writes prompts, manifests, empty result records, and summari
 Real provider execution requires explicit opt-in:
 
 ```bash
+# Export the provider API key in your local shell before running this command.
 VULCA_REAL_PROVIDER_BASE_URL=https://example.openai-compatible-gateway.test \
-VULCA_REAL_PROVIDER_API_KEY=... \
 VULCA_REAL_PROVIDER_MODEL=gpt-image-2 \
 PYTHONPATH=src python3 scripts/visual_discovery_benchmark.py \
   --real-provider \
@@ -99,3 +99,9 @@ Use `scripts/real_brief_benchmark.py` for the successor dry-run harness:
 ```bash
 PYTHONPATH=src python3 scripts/real_brief_benchmark.py --date 2026-05-01
 ```
+
+Phase 2 real-brief workflow adapter: `scripts/real_brief_workflow_adapter.py`
+imports a Phase 1 real-brief package into `docs/visual-specs/<slug>/` as
+`discovery/`, `real_brief/`, and `workflow_seed.md` artifacts. It preserves
+`/visual-brainstorm`, `/visual-spec`, and `/visual-plan` human gates and does
+not call image providers.
