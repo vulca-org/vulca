@@ -242,3 +242,33 @@ def test_seattle_fixture_is_marked_for_internal_simulation_only():
 
     assert seattle.simulation_only is True
     assert seattle.source.usage_note == "Internal benchmark only"
+
+
+def test_build_real_brief_conditions_a_through_d():
+    from vulca.real_brief.conditions import build_real_brief_conditions
+    from vulca.real_brief.fixtures import get_real_brief_fixture
+
+    fixture = get_real_brief_fixture("seattle-polish-film-festival-poster")
+    conditions = build_real_brief_conditions(fixture)
+
+    assert [condition["id"] for condition in conditions] == ["A", "B", "C", "D"]
+    assert conditions[0]["label"] == "One-shot model baseline"
+    assert "Raw real brief" in conditions[0]["purpose"]
+    assert "Required deliverables" in conditions[1]["prompt"]
+    assert "Missing questions" in conditions[2]["prompt"]
+    assert "Preview plan" in conditions[3]["prompt"]
+    assert conditions[3]["workflow_stage"] == "vulca-preview-iterate"
+
+
+def test_condition_generation_preserves_fixture_constraints():
+    from vulca.real_brief.conditions import build_real_brief_conditions
+    from vulca.real_brief.fixtures import get_real_brief_fixture
+
+    fixture = get_real_brief_fixture("gsm-community-market-campaign")
+    conditions = build_real_brief_conditions(fixture)
+    joined = "\n".join(condition["prompt"] for condition in conditions)
+
+    assert "Canva-editable" in joined
+    assert "real photography" in joined
+    assert "19-week" in joined
+    assert "clip art" in joined

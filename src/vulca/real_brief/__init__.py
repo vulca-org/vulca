@@ -5,6 +5,10 @@ from vulca.real_brief.fixtures import (
     build_real_brief_fixtures,
     get_real_brief_fixture,
 )
+from vulca.real_brief.conditions import (
+    brief_digest,
+    build_real_brief_conditions,
+)
 from vulca.real_brief.types import (
     CONDITION_IDS,
     REVIEW_DIMENSIONS,
@@ -17,6 +21,8 @@ from vulca.real_brief.types import (
 __all__ = [
     "CONDITION_IDS",
     "REVIEW_DIMENSIONS",
+    "brief_digest",
+    "build_real_brief_conditions",
     "build_real_brief_fixtures",
     "Deliverable",
     "get_real_brief_fixture",
