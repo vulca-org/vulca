@@ -52,7 +52,10 @@ def _condition_cards(manifest: dict[str, Any]) -> str:
     return "\n".join(cards)
 
 
-def _dimension_rows(review_schema: dict[str, Any]) -> str:
+def _dimension_rows(
+    manifest: dict[str, Any],
+    review_schema: dict[str, Any],
+) -> str:
     scale = review_schema.get("scale", {})
     min_score = int(scale.get("min", 0))
     max_score = int(scale.get("max", 2))
@@ -61,20 +64,31 @@ def _dimension_rows(review_schema: dict[str, Any]) -> str:
         for score in range(min_score, max_score + 1)
     )
     rows = []
-    for dimension in review_schema.get("dimensions", []):
-        dimension_id = _escape(dimension.get("id", ""))
-        label = _escape(dimension.get("label", dimension.get("id", "")))
-        rows.append(
-            "\n".join(
-                [
-                    "<tr>",
-                    f"<th scope=\"row\"><code>{dimension_id}</code><span>{label}</span></th>",
-                    f'<td><select data-score="{dimension_id}"><option value="">-</option>{options}</select></td>',
-                    f'<td><textarea data-note="{dimension_id}" rows="2"></textarea></td>',
-                    "</tr>",
-                ]
+    for condition in manifest.get("conditions", []):
+        condition_id = _escape(condition.get("id", ""))
+        condition_label = _escape(condition.get("label", "Untitled condition"))
+        for dimension in review_schema.get("dimensions", []):
+            dimension_id = _escape(dimension.get("id", ""))
+            label = _escape(dimension.get("label", dimension.get("id", "")))
+            rows.append(
+                "\n".join(
+                    [
+                        "<tr>",
+                        f"<th scope=\"row\"><code>{condition_id}</code><span>{condition_label}</span></th>",
+                        f"<td><code>{dimension_id}</code><span>{label}</span></td>",
+                        (
+                            f'<td><select data-score-condition="{condition_id}" '
+                            f'data-score-dimension="{dimension_id}">'
+                            f'<option value="">-</option>{options}</select></td>'
+                        ),
+                        (
+                            f'<td><textarea data-note-condition="{condition_id}" '
+                            f'data-note-dimension="{dimension_id}" rows="2"></textarea></td>'
+                        ),
+                        "</tr>",
+                    ]
+                )
             )
-        )
     return "\n".join(rows)
 
 
@@ -134,7 +148,7 @@ def _html_document(
             "a{color:#154f7f}",
             "table{width:100%;border-collapse:collapse;margin-top:12px;overflow:hidden}",
             "th,td{padding:12px;border-top:1px solid #e6e0d5;text-align:left;vertical-align:top}",
-            "th span{display:block;font-weight:400;color:#5c6670;margin-top:4px}",
+            "th span,td span{display:block;font-weight:400;color:#5c6670;margin-top:4px}",
             "select,textarea{width:100%;box-sizing:border-box;border:1px solid #b8c0c8;border-radius:6px;padding:8px;font:inherit}",
             "textarea{resize:vertical}",
             "button{border:1px solid #1d2329;background:#1d2329;color:#fff;border-radius:6px;padding:9px 12px;font:inherit;cursor:pointer}",
@@ -159,8 +173,8 @@ def _html_document(
             "<section>",
             "<h2>Review Dimensions</h2>",
             "<table>",
-            "<thead><tr><th>Dimension</th><th>Score</th><th>Notes</th></tr></thead>",
-            f"<tbody>{_dimension_rows(review_schema)}</tbody>",
+            "<thead><tr><th>Condition</th><th>Dimension</th><th>Score</th><th>Notes</th></tr></thead>",
+            f"<tbody>{_dimension_rows(manifest, review_schema)}</tbody>",
             "</table>",
             '<div class="actions"><button id="save-review" type="button">Save</button><span id="status" class="muted"></span></div>',
             "</section>",
@@ -170,8 +184,9 @@ def _html_document(
             f"const storageKey = {json.dumps(storage_key)};",
             "const data = JSON.parse(document.getElementById('review-data').textContent);",
             "const status = document.getElementById('status');",
-            "function collect(){const scores={};document.querySelectorAll('[data-score]').forEach(function(el){scores[el.dataset.score]=el.value;});const notes={};document.querySelectorAll('[data-note]').forEach(function(el){notes[el.dataset.note]=el.value;});return {schema_version:'0.1',fixture_slug:data.manifest.fixture_slug,condition_ids:data.manifest.condition_ids,reviewed_at:new Date().toISOString(),scores:scores,notes:notes};}",
-            "function restore(){const saved=localStorage.getItem(storageKey);if(!saved)return;const parsed=JSON.parse(saved);Object.entries(parsed.scores||{}).forEach(function(entry){const el=document.querySelector('[data-score=\"'+entry[0]+'\"]');if(el)el.value=entry[1];});Object.entries(parsed.notes||{}).forEach(function(entry){const el=document.querySelector('[data-note=\"'+entry[0]+'\"]');if(el)el.value=entry[1];});status.textContent='Loaded saved review';}",
+            "function ensureNested(root,conditionId){if(!root[conditionId])root[conditionId]={};return root[conditionId];}",
+            "function collect(){const scores={};document.querySelectorAll('[data-score-condition]').forEach(function(el){const conditionId=el.dataset.scoreCondition;const dimensionId=el.dataset.scoreDimension;ensureNested(scores,conditionId);scores[conditionId][dimensionId]=el.value;});const notes={};document.querySelectorAll('[data-note-condition]').forEach(function(el){const conditionId=el.dataset.noteCondition;const dimensionId=el.dataset.noteDimension;ensureNested(notes,conditionId);notes[conditionId][dimensionId]=el.value;});return {schema_version:'0.1',fixture_slug:data.manifest.fixture_slug,condition_ids:data.manifest.condition_ids,reviewed_at:new Date().toISOString(),scores:scores,notes:notes};}",
+            "function restore(){const saved=localStorage.getItem(storageKey);if(!saved)return;const parsed=JSON.parse(saved);(data.manifest.condition_ids||[]).forEach(function(conditionId){const scoreBucket=(parsed.scores&&parsed.scores[conditionId])||{};Object.entries(scoreBucket).forEach(function(entry){const el=document.querySelector('[data-score-condition=\"'+conditionId+'\"][data-score-dimension=\"'+entry[0]+'\"]');if(el)el.value=entry[1];});const noteBucket=(parsed.notes&&parsed.notes[conditionId])||{};Object.entries(noteBucket).forEach(function(entry){const el=document.querySelector('[data-note-condition=\"'+conditionId+'\"][data-note-dimension=\"'+entry[0]+'\"]');if(el)el.value=entry[1];});});status.textContent='Loaded saved review';}",
             "function save(){localStorage.setItem(storageKey,JSON.stringify(collect(),null,2));status.textContent='Saved locally';}",
             "document.getElementById('save-review').addEventListener('click',save);",
             "document.getElementById('export-json').addEventListener('click',function(){const blob=new Blob([JSON.stringify(collect(),null,2)+'\\n'],{type:'application/json'});const link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download='human_review.json';link.click();URL.revokeObjectURL(link.href);});",

@@ -716,6 +716,50 @@ def test_human_review_html_contains_conditions_dimensions_and_export(tmp_path):
     assert "globalai" not in html.lower()
 
 
+def test_human_review_html_scores_every_condition_dimension_pair(tmp_path):
+    import json
+    from pathlib import Path
+
+    from vulca.real_brief.artifacts import write_real_brief_dry_run
+
+    result = write_real_brief_dry_run(
+        output_root=tmp_path,
+        slug="model-young-package-unpacking-taboo",
+        date="2026-05-01",
+        write_html_review=True,
+    )
+
+    out_dir = Path(result["output_dir"])
+    html = (out_dir / "human_review.html").read_text(encoding="utf-8")
+    manifest = json.loads((out_dir / "manifest.json").read_text(encoding="utf-8"))
+    review_schema = json.loads(
+        (out_dir / "review_schema.json").read_text(encoding="utf-8")
+    )
+    condition_ids = manifest["condition_ids"]
+    dimension_ids = [
+        dimension["id"] for dimension in review_schema["dimensions"]
+    ]
+    expected_control_count = len(condition_ids) * len(dimension_ids)
+
+    assert html.count('<select data-score-condition="') == expected_control_count
+    assert html.count('<textarea data-note-condition="') == expected_control_count
+    for condition_id in condition_ids:
+        for dimension_id in dimension_ids:
+            assert (
+                f'<select data-score-condition="{condition_id}" '
+                f'data-score-dimension="{dimension_id}"'
+            ) in html
+            assert (
+                f'<textarea data-note-condition="{condition_id}" '
+                f'data-note-dimension="{dimension_id}"'
+            ) in html
+
+    assert "scores[conditionId][dimensionId]" in html
+    assert "notes[conditionId][dimensionId]" in html
+    assert "parsed.scores[conditionId]" in html
+    assert "parsed.notes[conditionId]" in html
+
+
 def test_write_real_brief_dry_run_writes_manifest_before_html_renderer(
     tmp_path,
     monkeypatch,
