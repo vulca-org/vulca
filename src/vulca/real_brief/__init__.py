@@ -15,6 +15,7 @@ from vulca.real_brief.types import (
 )
 
 __all__ = [
+    "adapt_real_brief_package",
     "CONDITION_IDS",
     "REVIEW_DIMENSIONS",
     "brief_digest",
@@ -29,6 +30,10 @@ __all__ = [
 ]
 
 _LAZY_EXPORTS = {
+    "adapt_real_brief_package": (
+        "vulca.real_brief.workflow_adapter",
+        "adapt_real_brief_package",
+    ),
     "brief_digest": ("vulca.real_brief.conditions", "brief_digest"),
     "build_real_brief_conditions": (
         "vulca.real_brief.conditions",

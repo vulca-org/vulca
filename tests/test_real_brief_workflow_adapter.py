@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 import pytest
@@ -307,3 +308,96 @@ def test_adapt_real_brief_package_preserves_unsupported_domain_without_discovery
     workflow_seed = (project_dir / "workflow_seed.md").read_text(encoding="utf-8")
     assert "unsupported_for_visual_chain" in workflow_seed
     assert "does not start `/visual-brainstorm`" in workflow_seed
+
+
+def test_real_brief_workflow_adapter_cli_dry_run(tmp_path, capsys):
+    from scripts.real_brief_workflow_adapter import main
+
+    source_package = _source_package(tmp_path, "seattle-polish-film-festival-poster")
+
+    rc = main(
+        [
+            "--source-package",
+            str(source_package),
+            "--root",
+            str(tmp_path / "repo"),
+            "--date",
+            "2026-05-01",
+            "--dry-run",
+        ]
+    )
+
+    captured = capsys.readouterr()
+    payload = json.loads(captured.out)
+
+    assert rc == 0
+    assert payload["slug"] == "seattle-polish-film-festival-poster"
+    assert payload["status"] == "ready_for_visual_brainstorm"
+    assert payload["dry_run"] == "true"
+    assert not (tmp_path / "repo" / "docs").exists()
+
+
+def test_real_brief_workflow_adapter_cli_writes_files(tmp_path, capsys):
+    from scripts.real_brief_workflow_adapter import main
+
+    source_package = _source_package(tmp_path, "gsm-community-market-campaign")
+
+    rc = main(
+        [
+            "--source-package",
+            str(source_package),
+            "--root",
+            str(tmp_path / "repo"),
+            "--date",
+            "2026-05-01",
+        ]
+    )
+
+    captured = capsys.readouterr()
+    payload = json.loads(captured.out)
+    project_dir = tmp_path / "repo" / "docs" / "visual-specs" / (
+        "gsm-community-market-campaign"
+    )
+
+    assert rc == 0
+    assert payload["status"] == "ready_for_visual_brainstorm"
+    assert (project_dir / "workflow_seed.md").exists()
+
+
+def test_real_brief_workflow_adapter_can_resolve_source_root_slug_date(tmp_path):
+    from scripts.real_brief_workflow_adapter import main
+
+    _source_package(tmp_path, "gsm-community-market-campaign")
+
+    rc = main(
+        [
+            "--source-root",
+            str(tmp_path / "source"),
+            "--slug",
+            "gsm-community-market-campaign",
+            "--root",
+            str(tmp_path / "repo"),
+            "--date",
+            "2026-05-01",
+            "--dry-run",
+        ]
+    )
+
+    assert rc == 0
+
+
+def test_real_brief_workflow_adapter_validates_selector_before_adapter_import():
+    from scripts.real_brief_workflow_adapter import main
+
+    sys.modules.pop("vulca.real_brief.workflow_adapter", None)
+
+    with pytest.raises(RuntimeError, match="--source-package"):
+        main(["--date", "2026-05-01"])
+
+    assert "vulca.real_brief.workflow_adapter" not in sys.modules
+
+
+def test_real_brief_workflow_adapter_public_export_is_lazy():
+    from vulca.real_brief import adapt_real_brief_package
+
+    assert callable(adapt_real_brief_package)
