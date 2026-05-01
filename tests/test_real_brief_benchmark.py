@@ -272,3 +272,107 @@ def test_condition_generation_preserves_fixture_constraints():
     assert "real photography" in joined
     assert "19-week" in joined
     assert "clip art" in joined
+
+
+def test_brief_digest_matches_task_three_field_contract():
+    from vulca.real_brief.conditions import brief_digest
+    from vulca.real_brief.fixtures import get_real_brief_fixture
+
+    fixture = get_real_brief_fixture("seattle-polish-film-festival-poster")
+    digest = brief_digest(fixture)
+
+    for label in [
+        "Client:",
+        "Context:",
+        "Audience:",
+        "Required deliverables:",
+        "Constraints:",
+        "Budget:",
+        "Timeline:",
+        "Risks:",
+        "Avoid:",
+        "AI policy:",
+        "Simulation only:",
+    ]:
+        assert label in digest
+
+    assert "poster concept (11 x 17 in vertical, print/digital)" in digest
+    assert "program cover adaptation (same key art, print)" in digest
+    assert "Brief:" not in digest
+    assert "Source brief:" not in digest
+    assert "Source deadline:" not in digest
+    assert "Required outputs:" not in digest
+    assert "simulation_only:" not in digest
+
+
+def test_condition_prompts_match_task_three_contract_phrases():
+    from vulca.real_brief.conditions import build_real_brief_conditions
+    from vulca.real_brief.fixtures import get_real_brief_fixture
+
+    fixture = get_real_brief_fixture("seattle-polish-film-festival-poster")
+    conditions = build_real_brief_conditions(fixture)
+
+    assert (
+        "Return a polished concept and any visual prompt needed to generate it."
+        in conditions[0]["prompt"]
+    )
+    assert "satisfy required deliverables" in conditions[1]["prompt"]
+    assert "respect every listed constraint" in conditions[1]["prompt"]
+    assert "identify the most production-relevant risk" in conditions[1]["prompt"]
+    assert conditions[2]["prompt"].startswith(
+        "Build a Vulca planning package before generating final pixels."
+    )
+    assert "Direction summary:" in conditions[2]["prompt"]
+    assert (
+        "produce 2-3 low-cost thumbnail directions before final comp"
+        in conditions[3]["prompt"]
+    )
+    assert (
+        "critique each direction against constraints and risks"
+        in conditions[3]["prompt"]
+    )
+    assert (
+        "refine the strongest direction into a final comp prompt"
+        in conditions[3]["prompt"]
+    )
+    assert (
+        "document editability, redraw, and reuse notes"
+        in conditions[3]["prompt"]
+    )
+
+
+def test_vulca_condition_prompts_include_generated_direction_set():
+    from vulca.real_brief.conditions import build_real_brief_conditions
+    from vulca.real_brief.fixtures import get_real_brief_fixture
+
+    fixture = get_real_brief_fixture("seattle-polish-film-festival-poster")
+    conditions = build_real_brief_conditions(fixture)
+    condition_c_prompt = conditions[2]["prompt"]
+    condition_d_prompt = conditions[3]["prompt"]
+
+    for prompt in [condition_c_prompt, condition_d_prompt]:
+        assert "Generated direction set:" in prompt
+        assert prompt.count("Direction ") >= 3
+        assert prompt.count(f"{fixture.slug}-") >= 3
+
+
+def test_preview_iterate_prompt_has_concrete_iteration_sections():
+    from vulca.real_brief.conditions import build_real_brief_conditions
+    from vulca.real_brief.fixtures import get_real_brief_fixture
+
+    fixture = get_real_brief_fixture("gsm-community-market-campaign")
+    prompt = build_real_brief_conditions(fixture)[3]["prompt"]
+
+    for section in [
+        "Preview prompts:",
+        "Critique criteria:",
+        "Refinement notes:",
+        "Editability, redraw, and reuse notes:",
+    ]:
+        assert section in prompt
+
+    assert "thumbnail" in prompt
+    assert "required deliverables" in prompt
+    assert "constraints" in prompt
+    assert "risks" in prompt
+    assert "Canva-editable" in prompt
