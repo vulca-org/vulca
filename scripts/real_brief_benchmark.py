@@ -4,12 +4,6 @@ from __future__ import annotations
 import argparse
 from datetime import date as date_type
 
-from vulca.real_brief.artifacts import write_real_brief_dry_run
-from vulca.real_brief.fixtures import (
-    build_real_brief_fixtures,
-    get_real_brief_fixture,
-)
-
 
 def _non_negative_int(value: str) -> int:
     parsed = int(value)
@@ -19,6 +13,11 @@ def _non_negative_int(value: str) -> int:
 
 
 def _selected_slugs(slug: str) -> list[str]:
+    from vulca.real_brief.fixtures import (
+        build_real_brief_fixtures,
+        get_real_brief_fixture,
+    )
+
     if slug == "all":
         return [fixture.slug for fixture in build_real_brief_fixtures()]
     return [get_real_brief_fixture(slug).slug]
@@ -54,10 +53,12 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
-    slugs = _selected_slugs(args.slug)
     if args.real_provider:
         raise RuntimeError("real provider execution is not implemented")
 
+    from vulca.real_brief.artifacts import write_real_brief_dry_run
+
+    slugs = _selected_slugs(args.slug)
     for slug in slugs:
         write_real_brief_dry_run(
             output_root=args.output_root,
@@ -68,5 +69,12 @@ def main(argv: list[str] | None = None) -> int:
     return 0
 
 
+def _cli() -> int:
+    try:
+        return main()
+    except (RuntimeError, ValueError) as exc:
+        raise SystemExit(f"error: {exc}") from None
+
+
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(_cli())

@@ -825,3 +825,89 @@ def test_real_brief_benchmark_cli_real_provider_fails_closed(tmp_path):
                 "--real-provider",
             ]
         )
+
+
+def test_real_brief_benchmark_cli_import_and_help_are_offline():
+    import json
+    import os
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    source_path = str(Path(__file__).resolve().parents[1] / "src")
+    env = dict(os.environ)
+    env["PYTHONPATH"] = (
+        source_path
+        if not env.get("PYTHONPATH")
+        else f"{source_path}{os.pathsep}{env['PYTHONPATH']}"
+    )
+    import_probe = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            (
+                "import json, sys\n"
+                "import scripts.real_brief_benchmark\n"
+                "print(json.dumps({"
+                "'artifacts': 'vulca.real_brief.artifacts' in sys.modules,"
+                "'conditions': 'vulca.real_brief.conditions' in sys.modules"
+                "}))"
+            ),
+        ],
+        check=True,
+        capture_output=True,
+        env=env,
+        text=True,
+    )
+    help_probe = subprocess.run(
+        [sys.executable, "scripts/real_brief_benchmark.py", "--help"],
+        check=True,
+        capture_output=True,
+        env=env,
+        text=True,
+    )
+
+    assert json.loads(import_probe.stdout) == {
+        "artifacts": False,
+        "conditions": False,
+    }
+    assert "LiteLLM" not in import_probe.stderr
+    assert "model cost" not in import_probe.stderr.lower()
+    assert "LiteLLM" not in help_probe.stderr
+    assert "model cost" not in help_probe.stderr.lower()
+    assert "Write real-brief benchmark dry-run artifacts" in help_probe.stdout
+
+
+def test_real_brief_benchmark_script_errors_do_not_traceback(tmp_path):
+    import os
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    source_path = str(Path(__file__).resolve().parents[1] / "src")
+    env = dict(os.environ)
+    env["PYTHONPATH"] = (
+        source_path
+        if not env.get("PYTHONPATH")
+        else f"{source_path}{os.pathsep}{env['PYTHONPATH']}"
+    )
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "scripts/real_brief_benchmark.py",
+            "--slug",
+            "gsm-community-market-campaign",
+            "--date",
+            "2026-05-01",
+            "--output-root",
+            str(tmp_path),
+            "--real-provider",
+        ],
+        capture_output=True,
+        env=env,
+        text=True,
+    )
+
+    assert completed.returncode != 0
+    assert "not implemented" in completed.stderr
+    assert "Traceback" not in completed.stderr
