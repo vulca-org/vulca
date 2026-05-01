@@ -509,3 +509,193 @@ def test_write_real_brief_dry_run_rejects_secret_like_output_root(tmp_path):
     assert "VULCA_REAL_PROVIDER_API_KEY" not in generated
     assert "OPENAI_API_KEY" not in generated
     assert "globalai" not in generated.lower()
+
+
+@pytest.mark.parametrize("date", ["../escape", "2026/05/01", "20260501"])
+def test_write_real_brief_dry_run_rejects_unsafe_dates(tmp_path, date):
+    from vulca.real_brief.artifacts import write_real_brief_dry_run
+
+    with pytest.raises(ValueError, match="YYYY-MM-DD"):
+        write_real_brief_dry_run(
+            output_root=tmp_path,
+            slug="seattle-polish-film-festival-poster",
+            date=date,
+            write_html_review=False,
+        )
+
+    assert not (tmp_path.parent / "escape-seattle-polish-film-festival-poster").exists()
+
+
+def test_write_real_brief_dry_run_writes_planned_handoff_and_manifest(tmp_path):
+    import json
+
+    from vulca.real_brief.artifacts import write_real_brief_dry_run
+
+    result = write_real_brief_dry_run(
+        output_root=tmp_path,
+        slug="seattle-polish-film-festival-poster",
+        date="2026-05-01",
+        write_html_review=False,
+    )
+    out_dir = tmp_path / "2026-05-01-seattle-polish-film-festival-poster"
+    assert result["manifest_json"] == str(out_dir / "manifest.json")
+
+    handoff = json.loads((out_dir / "workflow_handoff.json").read_text())
+    assert handoff["slug"] == "seattle-polish-film-festival-poster"
+    assert handoff["structured_brief_path"] == "structured_brief.json"
+    assert handoff["visual_discovery_seed"]["initial_intent"]
+    assert handoff["visual_discovery_seed"]["title"] == (
+        "Seattle Polish Film Festival Poster"
+    )
+    assert handoff["visual_brainstorm_seed"]["physical_form"] == "poster concept"
+    assert "required festival text must be present" in (
+        handoff["visual_brainstorm_seed"]["constraints"]
+    )
+    assert handoff["visual_spec_seed"]["provider_policy"] == "dry_run_default"
+    assert "decision_usefulness" in handoff["visual_spec_seed"][
+        "evaluation_dimensions"
+    ]
+    assert handoff["visual_plan_seed"]["condition_ids"] == ["A", "B", "C", "D"]
+    assert (
+        handoff["visual_plan_seed"]["requires_explicit_real_provider_opt_in"] is True
+    )
+    assert handoff["evaluate_seed"] == {
+        "review_schema_path": "review_schema.json",
+        "mode": "brief_compliance",
+    }
+    assert handoff["human_gate_required"] is True
+
+    manifest = json.loads((out_dir / "manifest.json").read_text())
+    assert manifest["schema_version"] == "0.1"
+    assert manifest["experiment"] == "real-brief-benchmark"
+    assert manifest["mode"] == "dry_run"
+    assert manifest["provider_execution"] == "disabled"
+    assert manifest["fixture"] == {
+        "slug": "seattle-polish-film-festival-poster",
+        "title": "Seattle Polish Film Festival Poster",
+    }
+    assert manifest["review_schema_path"] == "review_schema.json"
+    assert manifest["workflow_handoff_path"] == "workflow_handoff.json"
+    assert manifest["conditions"] == [
+        {
+            "id": "A",
+            "label": "One-shot model baseline",
+            "condition_path": "conditions/A-one-shot.md",
+            "prompt_path": "prompts/A.txt",
+        },
+        {
+            "id": "B",
+            "label": "Structured brief baseline",
+            "condition_path": "conditions/B-structured-brief.md",
+            "prompt_path": "prompts/B.txt",
+        },
+        {
+            "id": "C",
+            "label": "Vulca planning workflow",
+            "condition_path": "conditions/C-vulca-planning.md",
+            "prompt_path": "prompts/C.txt",
+        },
+        {
+            "id": "D",
+            "label": "Vulca preview-and-iterate workflow",
+            "condition_path": "conditions/D-vulca-preview-iterate.md",
+            "prompt_path": "prompts/D.txt",
+        },
+    ]
+
+
+def test_write_real_brief_dry_run_packages_are_reviewable(tmp_path):
+    from vulca.real_brief.artifacts import write_real_brief_dry_run
+
+    write_real_brief_dry_run(
+        output_root=tmp_path,
+        slug="gsm-community-market-campaign",
+        date="2026-05-01",
+        write_html_review=False,
+    )
+    out_dir = tmp_path / "2026-05-01-gsm-community-market-campaign"
+    decision_package = (out_dir / "decision_package.md").read_text()
+    production_package = (out_dir / "production_package.md").read_text()
+
+    for heading in [
+        "Brief Digest",
+        "Assumptions",
+        "Missing Questions",
+        "Creative Directions",
+        "Direction Rationale",
+        "Risks And Rejected Approaches",
+        "Recommended Direction",
+        "Decision Checklist",
+    ]:
+        assert f"## {heading}" in decision_package
+
+    for heading in [
+        "Selected Direction",
+        "Prompt Packet",
+        "Visual Operations",
+        "Layout And Structure Constraints",
+        "Channel And Deliverable Constraints",
+        "Preview Or Thumbnail Plan",
+        "Evaluation Checklist",
+        "Editability And Reusability Notes",
+        "Redraw And Layer Notes",
+        "Next Iteration Plan",
+    ]:
+        assert f"## {heading}" in production_package
+
+    for path in ["prompts/A.txt", "prompts/B.txt", "prompts/C.txt", "prompts/D.txt"]:
+        assert path in production_package
+
+
+def test_real_brief_public_import_lazily_loads_heavy_exports():
+    import json
+    import subprocess
+    import sys
+
+    script = """
+import json
+import sys
+import vulca.real_brief as rb
+
+after_import = {
+    "artifacts": "vulca.real_brief.artifacts" in sys.modules,
+    "conditions": "vulca.real_brief.conditions" in sys.modules,
+}
+from vulca.real_brief import write_real_brief_dry_run
+after_export = {
+    "callable": callable(write_real_brief_dry_run),
+    "artifacts": "vulca.real_brief.artifacts" in sys.modules,
+}
+print(json.dumps({"after_import": after_import, "after_export": after_export}))
+"""
+    completed = subprocess.run(
+        [sys.executable, "-c", script],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    payload = json.loads(completed.stdout)
+    assert payload["after_import"] == {"artifacts": False, "conditions": False}
+    assert payload["after_export"] == {"callable": True, "artifacts": True}
+
+
+def test_write_real_brief_dry_run_default_html_review_writes_placeholder(tmp_path):
+    from vulca.real_brief.artifacts import write_real_brief_dry_run
+
+    result = write_real_brief_dry_run(
+        output_root=tmp_path,
+        slug="seattle-polish-film-festival-poster",
+        date="2026-05-01",
+    )
+
+    html = (
+        tmp_path
+        / "2026-05-01-seattle-polish-film-festival-poster"
+        / "human_review.html"
+    )
+    text = html.read_text(encoding="utf-8")
+    assert result["output_dir"] == str(html.parent)
+    assert "Full renderer pending" in text
+    assert "manifest.json" in text
+    assert "review_schema.json" in text
