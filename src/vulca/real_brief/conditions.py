@@ -56,14 +56,12 @@ def _success_criteria() -> str:
     )
 
 
-def _missing_questions(fixture: RealBriefFixture) -> str:
+def _missing_questions() -> str:
     questions = [
-        "Which brand assets, copy, logos, or required text are final?",
-        "Which production format and review milestone should be optimized first?",
-        "What editability handoff standard will the client actually use?",
+        "Which stakeholder approves the final direction?",
+        "Which deliverable must be most production-ready first?",
+        "Which source assets already exist?",
     ]
-    if fixture.ai_policy == "unspecified":
-        questions.append("What AI-use disclosure or usage limit should apply?")
     return "Missing questions:\n" + _bullet_list(questions)
 
 
@@ -87,7 +85,7 @@ def _condition(
 
 
 def _direction_set(direction_cards: list[Any]) -> str:
-    lines = ["Generated direction set:"]
+    lines = ["Generated direction set for comparison:"]
     for idx, card in enumerate(direction_cards, start=1):
         payload = card.to_dict()
         lines.extend(
@@ -106,7 +104,7 @@ def _selected_card_details(card_payload: dict[str, Any]) -> str:
             f"Selected direction card: {card_payload['label']}",
             "Direction summary:",
             card_payload["summary"],
-            "Visual ops:",
+            "Visual operations:",
             f"- Composition: {card_payload['visual_ops']['composition']}",
             f"- Color: {card_payload['visual_ops']['color']}",
             f"- Texture/material: {card_payload['visual_ops']['texture']}",
@@ -189,15 +187,15 @@ def build_real_brief_conditions(fixture: RealBriefFixture) -> list[dict[str, Any
             CONDITION_IDS[0],
             "One-shot model baseline",
             "one-shot",
-            "Raw real brief broad ask without structured planning.",
+            "Raw real brief condensed into a single model ask.",
             "\n\n".join(
                 [
-                    "Create the requested creative work from this raw real brief.",
+                    "Create the requested creative output for this real brief.",
+                    digest,
                     (
                         "Return a polished concept and any visual prompt needed "
                         "to generate it."
                     ),
-                    digest,
                 ]
             ),
         ),
@@ -205,10 +203,13 @@ def build_real_brief_conditions(fixture: RealBriefFixture) -> list[dict[str, Any
             CONDITION_IDS[1],
             "Structured brief baseline",
             "structured-brief",
-            "Normalized fields and success criteria before generation.",
+            (
+                "Same brief normalized into structured client, deliverable, "
+                "and constraint fields."
+            ),
             "\n\n".join(
                 [
-                    "Use the normalized brief fields below to produce a complete response.",
+                    "Create a direction from the structured brief below.",
                     digest,
                     _success_criteria(),
                 ]
@@ -226,9 +227,9 @@ def build_real_brief_conditions(fixture: RealBriefFixture) -> list[dict[str, Any
                 [
                     "Build a Vulca planning package before generating final pixels.",
                     digest,
-                    _missing_questions(fixture),
-                    direction_set,
+                    _missing_questions(),
                     card_details,
+                    direction_set,
                     "Plan a candidate route before making final assets.",
                 ]
             ),
@@ -245,6 +246,7 @@ def build_real_brief_conditions(fixture: RealBriefFixture) -> list[dict[str, Any
             ),
             "\n\n".join(
                 [
+                    "Build a Vulca preview-and-iterate package for this brief.",
                     digest,
                     preview_plan,
                     direction_set,

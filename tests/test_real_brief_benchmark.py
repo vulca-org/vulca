@@ -3,6 +3,14 @@ from __future__ import annotations
 import pytest
 
 
+def _assert_ordered(text, expected_parts):
+    cursor = -1
+    for part in expected_parts:
+        next_cursor = text.find(part, cursor + 1)
+        assert next_cursor != -1, f"missing or out of order: {part!r}"
+        cursor = next_cursor
+
+
 def _valid_fixture(**overrides):
     from vulca.real_brief.types import Deliverable, RealBriefFixture, SourceInfo
 
@@ -313,16 +321,65 @@ def test_condition_prompts_match_task_three_contract_phrases():
     conditions = build_real_brief_conditions(fixture)
 
     assert (
-        "Return a polished concept and any visual prompt needed to generate it."
-        in conditions[0]["prompt"]
+        conditions[0]["purpose"]
+        == "Raw real brief condensed into a single model ask."
     )
-    assert "satisfy required deliverables" in conditions[1]["prompt"]
-    assert "respect every listed constraint" in conditions[1]["prompt"]
-    assert "identify the most production-relevant risk" in conditions[1]["prompt"]
+    _assert_ordered(
+        conditions[0]["prompt"],
+        [
+            "Create the requested creative output for this real brief.",
+            "Client: Seattle Polish Film Festival",
+            "Return a polished concept and any visual prompt needed to generate it.",
+        ],
+    )
+
+    assert (
+        conditions[1]["purpose"]
+        == "Same brief normalized into structured client, deliverable, and constraint fields."
+    )
+    _assert_ordered(
+        conditions[1]["prompt"],
+        [
+            "Create a direction from the structured brief below.",
+            "Client: Seattle Polish Film Festival",
+            "Success criteria:",
+            "- satisfy required deliverables",
+            "- respect every listed constraint",
+            "- identify the most production-relevant risk",
+        ],
+    )
+
     assert conditions[2]["prompt"].startswith(
         "Build a Vulca planning package before generating final pixels."
     )
-    assert "Direction summary:" in conditions[2]["prompt"]
+    _assert_ordered(
+        conditions[2]["prompt"],
+        [
+            "Missing questions:",
+            "- Which stakeholder approves the final direction?",
+            "- Which deliverable must be most production-ready first?",
+            "- Which source assets already exist?",
+            "Selected direction card:",
+            "Direction summary:",
+            "Visual operations:",
+            "Evaluation focus:",
+            "Generated direction set for comparison:",
+        ],
+    )
+
+    assert conditions[3]["prompt"].startswith(
+        "Build a Vulca preview-and-iterate package for this brief."
+    )
+    _assert_ordered(
+        conditions[3]["prompt"],
+        [
+            "Preview plan:",
+            "- produce 2-3 low-cost thumbnail directions before final comp",
+            "- critique each direction against constraints and risks",
+            "- refine the strongest direction into a final comp prompt",
+            "- document editability, redraw, and reuse notes",
+        ],
+    )
     assert (
         "produce 2-3 low-cost thumbnail directions before final comp"
         in conditions[3]["prompt"]
@@ -351,7 +408,7 @@ def test_vulca_condition_prompts_include_generated_direction_set():
     condition_d_prompt = conditions[3]["prompt"]
 
     for prompt in [condition_c_prompt, condition_d_prompt]:
-        assert "Generated direction set:" in prompt
+        assert "Generated direction set for comparison:" in prompt
         assert prompt.count("Direction ") >= 3
         assert prompt.count(f"{fixture.slug}-") >= 3
 
