@@ -1,11 +1,22 @@
 from __future__ import annotations
 
+import asyncio
+import os
+from pathlib import Path
+import subprocess
+import sys
+
+import pytest
+
 from vulca.mcp_profiles import (
     REMOTE_DENIED_TOOLS,
     REMOTE_SAFE_TOOLS,
     get_remote_tool_policy,
     list_remote_safe_tools,
 )
+
+
+ROOT = Path(__file__).resolve().parent.parent
 
 
 def test_remote_profile_exposes_only_safe_tools():
@@ -85,8 +96,123 @@ def test_remote_mcp_summary_uses_allowlist_and_policy():
 
     assert summary["profile"] == "chatgpt_remote_safe"
     assert summary["allowed_tools"] == list_remote_safe_tools()
-    assert summary["transport_status"] == "profile_only"
+    assert summary["transport_status"] == "streamable_http_ready"
     assert summary["policies"]["evaluate_artwork"]["default_kwargs"] == {
         "mock": True,
         "mode": "rubric_only",
     }
+
+
+def test_remote_fastmcp_server_exposes_allowlist_only():
+    from vulca.mcp_remote import remote_mcp
+
+    tools = asyncio.run(remote_mcp.list_tools())
+    tool_names = sorted(tool.name for tool in tools)
+
+    assert tool_names == list_remote_safe_tools()
+
+
+def test_remote_fastmcp_tools_have_descriptions():
+    from vulca.mcp_remote import remote_mcp
+
+    tools = asyncio.run(remote_mcp.list_tools())
+
+    assert all(tool.description for tool in tools)
+    assert {
+        tool.name for tool in tools if "Use this when" in (tool.description or "")
+    } == set(list_remote_safe_tools())
+
+
+def test_remote_mcp_listing_does_not_import_full_local_mcp_server():
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            (
+                "import asyncio, sys; "
+                "from vulca.mcp_remote import remote_mcp; "
+                "asyncio.run(remote_mcp.list_tools()); "
+                "print('vulca.mcp_server' in sys.modules)"
+            ),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+        env={**os.environ, "PYTHONPATH": str(ROOT / "src")},
+    )
+
+    assert result.stdout.strip() == "False"
+
+
+def test_remote_workspace_path_requires_configured_root(tmp_path):
+    from vulca.mcp_remote import RemoteMCPAccessError, resolve_remote_workspace_path
+
+    design_path = tmp_path / "design.md"
+    design_path.write_text("# Design\n", encoding="utf-8")
+
+    with pytest.raises(RemoteMCPAccessError, match="VULCA_REMOTE_WORKSPACE_ROOT"):
+        resolve_remote_workspace_path(str(design_path), workspace_root="")
+
+
+def test_remote_workspace_path_blocks_escape(tmp_path):
+    from vulca.mcp_remote import RemoteMCPAccessError, resolve_remote_workspace_path
+
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    secret = tmp_path / "secret-design.md"
+    secret.write_text("# Secret\n", encoding="utf-8")
+
+    with pytest.raises(RemoteMCPAccessError, match="outside"):
+        resolve_remote_workspace_path(str(secret), workspace_root=str(workspace))
+
+
+def test_remote_workspace_path_allows_relative_file_inside_root(tmp_path):
+    from vulca.mcp_remote import resolve_remote_workspace_path
+
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    design_path = workspace / "design.md"
+    design_path.write_text("# Design\n", encoding="utf-8")
+
+    assert resolve_remote_workspace_path(
+        "design.md",
+        workspace_root=str(workspace),
+    ) == design_path.resolve()
+
+
+def test_remote_evaluate_artwork_forces_mock_rubric_only(monkeypatch):
+    from vulca import mcp_remote
+
+    captured: dict[str, object] = {}
+
+    async def fake_evaluate_artwork(**kwargs):
+        captured.update(kwargs)
+        return {"ok": True}
+
+    monkeypatch.setattr(mcp_remote, "_evaluate_artwork", fake_evaluate_artwork)
+
+    result = asyncio.run(
+        mcp_remote._remote_evaluate_artwork(
+            image_path="artwork.png",
+            tradition="chinese_xieyi",
+            intent="misty mountain",
+        )
+    )
+
+    assert result == {"ok": True}
+    assert captured == {
+        "image_path": "artwork.png",
+        "tradition": "chinese_xieyi",
+        "intent": "misty mountain",
+        "mock": True,
+        "mode": "rubric_only",
+        "vlm_model": "",
+    }
+
+
+def test_pyproject_exposes_remote_mcp_console_script():
+    pyproject = (ROOT / "pyproject.toml").read_text(
+        encoding="utf-8"
+    )
+
+    assert 'vulca-mcp-remote = "vulca.mcp_remote:main"' in pyproject
