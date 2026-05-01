@@ -85,3 +85,17 @@ docs/product/experiments/results/<date>-<slug>/
 ## Decision Rule
 
 If condition D does not outperform A/B/C on at least two of three domains for human preference and cliche avoidance, product language must shift from "culture terms guide models" to "Vulca converts culture analysis into visual operations and evaluation criteria."
+
+## Successor: Real-Brief Benchmark
+
+The cultural-term prompt signal test is useful for isolating whether cultural
+terms alone move model output, but it is weaker than real briefs as product
+evidence. Real briefs include client context, deliverables, constraints,
+timelines, risks, and approval questions, so they better test whether Vulca
+turns messy creative inputs into reviewable decision and production packages.
+
+Use `scripts/real_brief_benchmark.py` for the successor dry-run harness:
+
+```bash
+PYTHONPATH=src python3 scripts/real_brief_benchmark.py --date 2026-05-01
+```

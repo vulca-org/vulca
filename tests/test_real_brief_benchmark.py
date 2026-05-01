@@ -788,3 +788,40 @@ def test_write_real_brief_dry_run_writes_manifest_before_html_renderer(
 
     out_dir = Path(result["output_dir"])
     assert (out_dir / "human_review.html").read_text(encoding="utf-8") == "fake review"
+
+
+def test_real_brief_benchmark_cli_writes_all_slugs(tmp_path):
+    from scripts.real_brief_benchmark import main
+
+    rc = main(
+        [
+            "--slug",
+            "all",
+            "--date",
+            "2026-05-01",
+            "--output-root",
+            str(tmp_path),
+            "--no-html-review",
+        ]
+    )
+
+    assert rc == 0
+    assert (tmp_path / "2026-05-01-gsm-community-market-campaign").exists()
+    assert (tmp_path / "2026-05-01-music-video-treatment-low-budget").exists()
+
+
+def test_real_brief_benchmark_cli_real_provider_fails_closed(tmp_path):
+    from scripts.real_brief_benchmark import main
+
+    with pytest.raises(RuntimeError, match="not implemented"):
+        main(
+            [
+                "--slug",
+                "gsm-community-market-campaign",
+                "--date",
+                "2026-05-01",
+                "--output-root",
+                str(tmp_path),
+                "--real-provider",
+            ]
+        )
