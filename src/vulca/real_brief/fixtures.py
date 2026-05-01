@@ -26,6 +26,7 @@ def build_real_brief_fixtures() -> list[RealBriefFixture]:
                 ),
                 retrieved_on="2026-04-30",
                 usage_note="Internal benchmark only",
+                deadline="2026-03-13 17:00",
             ),
             client="Rogers Park Business Alliance / Glenwood Sunday Market",
             context=(
@@ -76,6 +77,7 @@ def build_real_brief_fixtures() -> list[RealBriefFixture]:
                 url="https://www.polishfilms.org/submit-a-poster",
                 retrieved_on="2026-04-30",
                 usage_note="Internal benchmark only",
+                deadline="2026-06-01 23:59",
             ),
             client="Seattle Polish Film Festival",
             context="Signature poster concept for the 34th festival edition.",
@@ -125,6 +127,7 @@ def build_real_brief_fixtures() -> list[RealBriefFixture]:
                 ),
                 retrieved_on="2026-04-30",
                 usage_note="Internal benchmark only",
+                deadline="2026-04-17",
             ),
             client="Model Young Package",
             context=(
@@ -173,6 +176,7 @@ def build_real_brief_fixtures() -> list[RealBriefFixture]:
                 ),
                 retrieved_on="2026-04-30",
                 usage_note="Internal benchmark only",
+                deadline="2026-04-20 12:00",
             ),
             client="Erie County / Buffalo and Erie County Botanical Gardens",
             context=(
@@ -217,6 +221,7 @@ def build_real_brief_fixtures() -> list[RealBriefFixture]:
                 url="https://creative-commission.com/briefs/brief-10642",
                 retrieved_on="2026-04-30",
                 usage_note="Internal benchmark only",
+                deadline="2026-01-31",
             ),
             client="Music artist / label brief",
             context=(

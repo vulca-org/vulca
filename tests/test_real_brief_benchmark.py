@@ -208,6 +208,26 @@ def test_builtin_fixtures_are_valid_and_ordered():
         assert payload["simulation_only"] is True
 
 
+def test_builtin_fixtures_include_expected_source_deadlines():
+    from vulca.real_brief.fixtures import build_real_brief_fixtures
+
+    expected_deadlines = {
+        "gsm-community-market-campaign": "2026-03-13 17:00",
+        "seattle-polish-film-festival-poster": "2026-06-01 23:59",
+        "model-young-package-unpacking-taboo": "2026-04-17",
+        "erie-botanical-gardens-public-art": "2026-04-20 12:00",
+        "music-video-treatment-low-budget": "2026-01-31",
+    }
+    fixtures_by_slug = {
+        fixture.slug: fixture for fixture in build_real_brief_fixtures()
+    }
+
+    assert {
+        slug: fixtures_by_slug[slug].source.deadline
+        for slug in expected_deadlines
+    } == expected_deadlines
+
+
 def test_get_real_brief_fixture_rejects_unknown_slug():
     from vulca.real_brief.fixtures import get_real_brief_fixture
 
@@ -215,10 +235,10 @@ def test_get_real_brief_fixture_rejects_unknown_slug():
         get_real_brief_fixture("missing-brief")
 
 
-def test_ai_prohibited_fixture_is_marked_for_internal_simulation_only():
+def test_seattle_fixture_is_marked_for_internal_simulation_only():
     from vulca.real_brief.fixtures import get_real_brief_fixture
 
-    imageout_like = get_real_brief_fixture("seattle-polish-film-festival-poster")
+    seattle = get_real_brief_fixture("seattle-polish-film-festival-poster")
 
-    assert imageout_like.simulation_only is True
-    assert imageout_like.source.usage_note == "Internal benchmark only"
+    assert seattle.simulation_only is True
+    assert seattle.source.usage_note == "Internal benchmark only"
