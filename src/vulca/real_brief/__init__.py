@@ -9,6 +9,7 @@ from vulca.real_brief.conditions import (
     brief_digest,
     build_real_brief_conditions,
 )
+from vulca.real_brief.artifacts import write_real_brief_dry_run
 from vulca.real_brief.types import (
     CONDITION_IDS,
     REVIEW_DIMENSIONS,
@@ -29,4 +30,5 @@ __all__ = [
     "RealBriefFixture",
     "SourceInfo",
     "safe_slug",
+    "write_real_brief_dry_run",
 ]

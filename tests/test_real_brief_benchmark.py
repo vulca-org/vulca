@@ -433,3 +433,79 @@ def test_preview_iterate_prompt_has_concrete_iteration_sections():
     assert "constraints" in prompt
     assert "risks" in prompt
     assert "Canva-editable" in prompt
+
+
+def test_write_real_brief_dry_run_artifacts(tmp_path):
+    import json
+    from pathlib import Path
+
+    from vulca.real_brief.artifacts import write_real_brief_dry_run
+
+    result = write_real_brief_dry_run(
+        output_root=tmp_path,
+        slug="seattle-polish-film-festival-poster",
+        date="2026-05-01",
+        write_html_review=False,
+    )
+
+    out_dir = Path(result["output_dir"])
+    assert out_dir == tmp_path / "2026-05-01-seattle-polish-film-festival-poster"
+    for rel in [
+        "source_brief.md",
+        "structured_brief.json",
+        "decision_package.md",
+        "production_package.md",
+        "workflow_handoff.json",
+        "review_schema.json",
+        "conditions/A-one-shot.md",
+        "conditions/B-structured-brief.md",
+        "conditions/C-vulca-planning.md",
+        "conditions/D-vulca-preview-iterate.md",
+        "prompts/A.txt",
+        "prompts/B.txt",
+        "prompts/C.txt",
+        "prompts/D.txt",
+        "images/README.md",
+        "evaluations/README.md",
+        "summary.md",
+        "manifest.json",
+    ]:
+        assert (out_dir / rel).exists(), rel
+
+    handoff = json.loads((out_dir / "workflow_handoff.json").read_text())
+    assert handoff["schema_version"] == "0.1"
+    assert handoff["human_gate_required"] is True
+    assert handoff["visual_discovery_seed"]["slug"] == (
+        "seattle-polish-film-festival-poster"
+    )
+    assert handoff["visual_brainstorm_seed"]["domain"] == "poster"
+
+    review = json.loads((out_dir / "review_schema.json").read_text())
+    assert review["scale"] == {"min": 0, "max": 2, "step": 1}
+    assert review["condition_ids"] == ["A", "B", "C", "D"]
+    assert "decision_usefulness" in [d["id"] for d in review["dimensions"]]
+
+    summary = (out_dir / "summary.md").read_text(encoding="utf-8")
+    assert "No image quality conclusion" in summary
+    assert "simulation_only: true" in summary
+
+
+def test_write_real_brief_dry_run_rejects_secret_like_output_root(tmp_path):
+    from vulca.real_brief.artifacts import write_real_brief_dry_run
+
+    out = tmp_path / "safe-output"
+    write_real_brief_dry_run(
+        output_root=out,
+        slug="gsm-community-market-campaign",
+        date="2026-05-01",
+        write_html_review=False,
+    )
+    generated = "\n".join(
+        path.read_text(encoding="utf-8", errors="ignore")
+        for path in out.rglob("*")
+        if path.is_file() and path.suffix in {".md", ".json", ".txt", ".html"}
+    )
+    assert "sk-" not in generated
+    assert "VULCA_REAL_PROVIDER_API_KEY" not in generated
+    assert "OPENAI_API_KEY" not in generated
+    assert "globalai" not in generated.lower()
