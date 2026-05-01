@@ -1,7 +1,7 @@
 # Platform Manual Review Checklist
 
 **Status:** Human review checklist
-**Last verified:** 2026-04-30
+**Last verified:** 2026-05-01
 
 Use this checklist before merging or submitting Vulca to a plugin directory.
 
@@ -82,7 +82,6 @@ Do not state that official Codex public publishing has opened until OpenAI's doc
 
 Before marketplace copy leads with redraw:
 
-- review and merge `codex/v0-22-mask-refinement`;
 - run its redraw-focused tests;
-- dogfood at least one real image where target-aware masks avoid editing unrelated pixels;
+- dogfood representative real images where target-aware masks avoid editing unrelated pixels;
 - confirm final user-facing image uses paste-back output, not sparse transparent layer output.

@@ -298,7 +298,7 @@ Output:
 ### Phase 2: Skill Packaging
 
 - Ship `/evaluate`.
-- Productize `/inpaint` or `/redraw-layer` after v0.22 lands.
+- Productize `/inpaint` or `/redraw-layer` after real-image dogfood validates the v0.22 redraw route.
 - Update `using-vulca-skills` routing once these skills exist.
 
 ### Phase 3: Evidence and Distribution

@@ -1,7 +1,7 @@
 # Vulca Product Roadmap
 
 **Status:** Public product roadmap
-**Last updated:** 2026-04-30
+**Last updated:** 2026-05-01
 
 Vulca is an agent-native visual control layer. The product turns fuzzy visual intent into controlled creative production through reviewable artifacts, provider-routed generation, semantic pixel editing, and cultural evaluation.
 
@@ -15,6 +15,7 @@ Vulca is an agent-native visual control layer. The product turns fuzzy visual in
 - `docs/product/provider-capabilities.md`: provider/platform capability matrix.
 - `plugins/vulca`: repo-local Codex plugin package for marketplace validation.
 - `.agents/plugins/marketplace.json`: repo marketplace entry for Codex plugin testing.
+- v0.22 target-aware mask refinement merged for redraw route hardening.
 - MCP tools for image generation, image viewing, evaluation, inpainting, layers, redraw, compositing, paste-back, and Tool Protocol analysis.
 - 13 cultural traditions and L1-L5 evaluation framework.
 
@@ -26,12 +27,12 @@ Vulca is an agent-native visual control layer. The product turns fuzzy visual in
 - ChatGPT remote MCP prototype scope.
 - ChatGPT remote MCP safe-profile prototype.
 - Cultural-term efficacy benchmark real-provider opt-in.
-- v0.22 target-aware mask refinement review and merge gate.
+- Real-image v0.22 redraw dogfood before promoting `/inpaint` or `/redraw-layer` as polished skills.
 
 ## In Parallel
 
-- v0.22 target-aware mask refinement in `.worktrees/v0-22-mask-refinement`.
-- This work owns redraw robustness and should land before `/inpaint` or `/redraw-layer` is marketed as a polished user-facing skill.
+- Real-brief benchmark design work in `.worktrees/real-brief-benchmark-design`.
+- Untracked generated demo/spec artifacts in the main worktree need an explicit keep/move/remove decision before broad cleanup.
 
 ## Later
 

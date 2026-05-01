@@ -141,7 +141,7 @@ User intent ─▶ Claude Code (planning) ─▶ Vulca MCP tools ─▶ Image ar
 
 ### Roadmap — no promises, just honest order
 
-- **Next skill:** `/inpaint` (region-level edit), once v0.22 redraw routes are hardened
+- **Next skill:** `/inpaint` (region-level edit), after real-image dogfood validates the v0.22 redraw routes
 - **Then:** `/layered-create` (structured generation)
 - **Beyond:** community-driven — file an issue with your workflow
 

@@ -1,7 +1,7 @@
 # Marketplace Copy Draft
 
 **Status:** Draft for human review
-**Last verified:** 2026-04-30
+**Last verified:** 2026-05-01
 
 ## One-Liner
 
@@ -22,7 +22,7 @@ The first marketplace release should emphasize:
 - `/decompose` for semantic layer extraction;
 - `/evaluate` for structured review against Vulca's L1-L5 framework.
 
-Redraw and inpaint tools are available for advanced workflows. Polished user-facing `/inpaint` or `/redraw-layer` skills will be promoted after v0.22 target-aware mask refinement evidence lands.
+Redraw and inpaint tools are available for advanced workflows. Polished user-facing `/inpaint` or `/redraw-layer` skills will be promoted after real-image dogfood validates the v0.22 target-aware mask refinement route.
 
 ## Claude Marketplace Notes
 
