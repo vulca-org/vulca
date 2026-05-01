@@ -911,3 +911,41 @@ def test_real_brief_benchmark_script_errors_do_not_traceback(tmp_path):
     assert completed.returncode != 0
     assert "not implemented" in completed.stderr
     assert "Traceback" not in completed.stderr
+
+
+def test_real_brief_benchmark_cli_dry_run_uses_local_cost_map(tmp_path):
+    import os
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    source_path = str(Path(__file__).resolve().parents[1] / "src")
+    env = dict(os.environ)
+    env.pop("LITELLM_LOCAL_MODEL_COST_MAP", None)
+    env["PYTHONPATH"] = (
+        source_path
+        if not env.get("PYTHONPATH")
+        else f"{source_path}{os.pathsep}{env['PYTHONPATH']}"
+    )
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "scripts/real_brief_benchmark.py",
+            "--slug",
+            "gsm-community-market-campaign",
+            "--date",
+            "2026-05-01",
+            "--output-root",
+            str(tmp_path),
+            "--no-html-review",
+        ],
+        check=True,
+        capture_output=True,
+        env=env,
+        text=True,
+    )
+
+    assert completed.stderr == ""
+    assert "LiteLLM" not in completed.stderr
+    assert "model cost" not in completed.stderr.lower()
+    assert (tmp_path / "2026-05-01-gsm-community-market-campaign").exists()

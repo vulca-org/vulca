@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 from datetime import date as date_type
+import os
 
 
 def _non_negative_int(value: str) -> int:
@@ -21,6 +22,10 @@ def _selected_slugs(slug: str) -> list[str]:
     if slug == "all":
         return [fixture.slug for fixture in build_real_brief_fixtures()]
     return [get_real_brief_fixture(slug).slug]
+
+
+def _force_local_cost_map() -> None:
+    os.environ.setdefault("LITELLM_LOCAL_MODEL_COST_MAP", "true")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -56,6 +61,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.real_provider:
         raise RuntimeError("real provider execution is not implemented")
 
+    _force_local_cost_map()
     from vulca.real_brief.artifacts import write_real_brief_dry_run
 
     slugs = _selected_slugs(args.slug)
