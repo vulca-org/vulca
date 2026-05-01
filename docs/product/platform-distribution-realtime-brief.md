@@ -78,29 +78,32 @@ Vulca implication:
 
 ## Google / Gemini
 
-Google's immediate value for Vulca is provider infrastructure, not a direct equivalent of the Claude plugin marketplace. Gemini API and Vertex AI support image generation and editing, and Google ADK supports MCP tools for agents.
+Google's immediate value for Vulca is provider infrastructure and MCP-compatible agent wiring, not a direct equivalent of the Claude plugin marketplace. Gemini API and Vertex AI support image generation and editing, Gemini CLI / Gemini Code Assist can consume MCP servers, and Google ADK supports consuming and exposing MCP tools for agents.
 
 Current official facts:
 
-- Gemini image generation and editing supports Gemini 2.5 Flash Image and Gemini 3 Pro Image preview on Vertex AI.
-- Gemini 2.5 Flash Image supports 1024px output; Gemini 3 Pro Image preview supports up to 4096px.
+- Nano Banana is Google's public name for Gemini native image generation capabilities in the Gemini API.
+- The Gemini API image-generation docs currently identify three Nano Banana model families: Nano Banana 2 / `gemini-3.1-flash-image-preview`, Nano Banana Pro / `gemini-3-pro-image-preview`, and Nano Banana / `gemini-2.5-flash-image`.
+- Gemini 3 image models add higher-resolution output, reference-image mixing, improved text rendering, and optional grounding features, with model-specific limits.
 - Gemini image models support text-to-image, text rendering, interleaved text/image output, and image-plus-text editing.
-- Vertex AI Agent Engine supports deploying and managing production agents.
+- Gemini CLI is an open-source terminal agent and can use local or remote MCP servers; Gemini Code Assist agent mode exposes a subset of Gemini CLI functionality in VS Code.
+- Gemini Enterprise Agent Platform / Agent Platform Runtime supports deploying and managing production agents.
 - Gemini API supports function calling with typed function declarations and modes such as AUTO, ANY, NONE, and VALIDATED.
-- Google ADK documents MCP as a way to consume or expose tools to agents.
+- Google ADK documents MCP as a way to consume external MCP servers from agents and expose ADK tools through MCP servers.
 
 Sources:
 
 - [Gemini image generation](https://ai.google.dev/gemini-api/docs/image-generation)
 - [Vertex AI Gemini image generation and editing](https://docs.cloud.google.com/vertex-ai/generative-ai/docs/multimodal/image-generation)
+- [Gemini CLI](https://docs.cloud.google.com/gemini/docs/codeassist/gemini-cli)
 - [Gemini function calling](https://ai.google.dev/gemini-api/docs/function-calling)
-- [Vertex AI Agent Engine overview](https://docs.cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/overview)
+- [Gemini Enterprise Agent Platform scale guide](https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale)
 - [Google ADK MCP](https://google.github.io/adk-docs/mcp/)
 
 Vulca implication:
 
 - Keep Gemini as a first-class provider for sketching, reference-heavy exploration, and provider comparisons.
-- Document Google as "provider current, agent distribution planned" until an ADK or Vertex Agent Engine integration is implemented and tested.
+- Document Google as "provider current, MCP/agent integration planned" until a Gemini CLI, ADK, or Agent Platform Runtime integration is implemented and tested.
 - Do not claim Google has a Vulca marketplace-listing path for plugins.
 
 ## Redraw Distribution Rule
