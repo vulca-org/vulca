@@ -34,6 +34,7 @@ _SOURCE_FILES = [
     "review_schema.json",
     "source_brief.md",
     "summary.md",
+    "human_review.html",
 ]
 _SOURCE_DIRS = ["conditions", "prompts", "images", "evaluations"]
 _REQUIRED_SOURCE_FILES = [
@@ -264,6 +265,31 @@ def _copy_source_package(source_package: Path, real_brief_dir: Path) -> None:
             shutil.copytree(source_dir, target_dir)
 
 
+def _assert_source_path_safe(source_package: Path, path: Path) -> None:
+    if path.is_symlink():
+        raise ValueError(f"source package path must not be a symlink: {path}")
+    source_root = source_package.resolve()
+    resolved = path.resolve(strict=True)
+    if source_root != resolved and source_root not in resolved.parents:
+        raise ValueError(f"source package path escapes package: {path}")
+
+
+def _validate_copy_sources(source_package: Path) -> None:
+    source_package_root = source_package.resolve()
+    _assert_source_path_safe(source_package, source_package)
+    for filename in ["manifest.json", *_SOURCE_FILES]:
+        source = source_package / filename
+        if source.exists() or source.is_symlink():
+            _assert_source_path_safe(source_package_root, source)
+    for dirname in _SOURCE_DIRS:
+        source_dir = source_package / dirname
+        if not source_dir.exists() and not source_dir.is_symlink():
+            continue
+        _assert_source_path_safe(source_package_root, source_dir)
+        for child in source_dir.rglob("*"):
+            _assert_source_path_safe(source_package_root, child)
+
+
 def _assert_destination_can_write(
     *,
     project_dir: Path,
@@ -305,6 +331,7 @@ def adapt_real_brief_package(
     source_package_path = Path(source_package)
     root_path = Path(root)
     safe_date = _safe_date(date)
+    _validate_copy_sources(source_package_path)
     source_manifest, structured, handoff = _load_source_package(source_package_path)
     slug = safe_slug(str(structured.get("slug") or source_manifest.get("fixture_slug")))
     domain = str(

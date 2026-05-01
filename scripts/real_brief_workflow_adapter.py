@@ -50,7 +50,7 @@ def main(argv: list[str] | None = None) -> int:
 def _cli() -> int:
     try:
         return main()
-    except (RuntimeError, ValueError) as exc:
+    except (FileNotFoundError, RuntimeError, ValueError) as exc:
         raise SystemExit(f"error: {exc}") from None
 
 

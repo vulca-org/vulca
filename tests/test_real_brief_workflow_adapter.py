@@ -154,6 +154,104 @@ def test_adapt_real_brief_package_generated_artifacts_do_not_leak_secrets(tmp_pa
         assert "globalai" not in text.casefold(), generated_file
 
 
+def test_adapt_real_brief_package_preserves_human_review_html_when_present(tmp_path):
+    from vulca.real_brief.artifacts import write_real_brief_dry_run
+    from vulca.real_brief.workflow_adapter import adapt_real_brief_package
+
+    result = write_real_brief_dry_run(
+        output_root=tmp_path / "source",
+        slug="seattle-polish-film-festival-poster",
+        date="2026-05-01",
+        write_html_review=True,
+    )
+    source_package = Path(result["output_dir"])
+
+    adapt_real_brief_package(
+        source_package=source_package,
+        root=tmp_path / "repo",
+        date="2026-05-01",
+    )
+
+    copied_review = (
+        tmp_path
+        / "repo"
+        / "docs"
+        / "visual-specs"
+        / "seattle-polish-film-festival-poster"
+        / "real_brief"
+        / "human_review.html"
+    )
+
+    assert copied_review.exists()
+    assert copied_review.read_text(encoding="utf-8") == (
+        source_package / "human_review.html"
+    ).read_text(encoding="utf-8")
+
+
+def test_adapt_real_brief_package_rejects_symlinked_source_files(tmp_path):
+    from vulca.real_brief.workflow_adapter import adapt_real_brief_package
+
+    source_package = _source_package(tmp_path, "seattle-polish-film-festival-poster")
+    outside_file = tmp_path / "outside-secret.txt"
+    outside_file.write_text("outside data", encoding="utf-8")
+    source_brief = source_package / "source_brief.md"
+    source_brief.unlink()
+    source_brief.symlink_to(outside_file)
+
+    with pytest.raises(ValueError, match="symlink"):
+        adapt_real_brief_package(
+            source_package=source_package,
+            root=tmp_path / "repo",
+            date="2026-05-01",
+        )
+
+    copied_outside = (
+        tmp_path
+        / "repo"
+        / "docs"
+        / "visual-specs"
+        / "seattle-polish-film-festival-poster"
+        / "real_brief"
+        / "source_brief.md"
+    )
+    assert not copied_outside.exists()
+    assert not copied_outside.parents[1].exists()
+
+
+def test_adapt_real_brief_package_rejects_symlinked_source_dirs(tmp_path):
+    from vulca.real_brief.workflow_adapter import adapt_real_brief_package
+
+    source_package = _source_package(tmp_path, "seattle-polish-film-festival-poster")
+    outside_dir = tmp_path / "outside-dir"
+    outside_dir.mkdir()
+    (outside_dir / "outside.txt").write_text("outside data", encoding="utf-8")
+    prompts_dir = source_package / "prompts"
+    for path in prompts_dir.iterdir():
+        path.unlink()
+    prompts_dir.rmdir()
+    prompts_dir.symlink_to(outside_dir, target_is_directory=True)
+
+    with pytest.raises(ValueError, match="symlink"):
+        adapt_real_brief_package(
+            source_package=source_package,
+            root=tmp_path / "repo",
+            date="2026-05-01",
+        )
+
+    copied_outside = (
+        tmp_path
+        / "repo"
+        / "docs"
+        / "visual-specs"
+        / "seattle-polish-film-festival-poster"
+        / "real_brief"
+        / "prompts"
+        / "outside.txt"
+    )
+    assert not copied_outside.exists()
+    assert not copied_outside.parents[2].exists()
+
+
 def test_adapt_real_brief_package_dry_run_writes_nothing(tmp_path):
     from vulca.real_brief.workflow_adapter import adapt_real_brief_package
 
@@ -431,6 +529,37 @@ def test_real_brief_workflow_adapter_validates_selector_before_adapter_import():
         main(["--date", "2026-05-01"])
 
     assert "vulca.real_brief.workflow_adapter" not in sys.modules
+
+
+def test_real_brief_workflow_adapter_cli_reports_missing_source_package(
+    capsys,
+    monkeypatch,
+):
+    from scripts.real_brief_workflow_adapter import _cli
+
+    missing = "/private/tmp/vulca-missing-real-brief-package"
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "real_brief_workflow_adapter.py",
+            "--source-package",
+            missing,
+            "--root",
+            "/private/tmp/vulca-target",
+            "--date",
+            "2026-05-01",
+            "--dry-run",
+        ],
+    )
+
+    with pytest.raises(SystemExit) as excinfo:
+        _cli()
+
+    captured = capsys.readouterr()
+
+    assert str(excinfo.value).startswith("error: ")
+    assert missing in str(excinfo.value)
+    assert captured.err == ""
 
 
 def test_real_brief_workflow_adapter_public_export_is_lazy():
