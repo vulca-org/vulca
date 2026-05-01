@@ -35,13 +35,20 @@ Before the first turn, scan the topic and any args for scope violations:
 2. **If the target `docs/visual-specs/<slug>/proposal.md` already exists** — read its frontmatter:
    - `status: ready` → Error #1: refuse to overwrite; print branch instructions; terminate.
    - `status: draft` → **resume path**: read the `## Open questions` section; continue the question loop from there; preserve accumulated turn count. **Skip** the A2 solicited-sketch question (turn 1 was already spent in the original draft). On successful finalize, **bump** `updated:` to today's date; leave `created:` unchanged.
-3. **If no sketch was provided**, open with this solicited-sketch question (A2):
+3. **If no proposal exists but `workflow_seed.md` and `real_brief/adapter_manifest.json` exist**:
+   - Read `real_brief/adapter_manifest.json`.
+   - If `workflow_status: ready_for_visual_brainstorm`, run the real-brief seed step instead of starting from an empty question loop:
+     `PYTHONPATH=src python3 scripts/real_brief_brainstorm_seed.py --slug <slug> --date <YYYY-MM-DD>`.
+   - Show the generated `proposal.md` draft in full and continue from `## Open questions`.
+   - Do not flip `status: draft` to `ready` until the user says `finalize` / `done` / `ready` / `lock it` / `approve`.
+   - If `workflow_status` is not `ready_for_visual_brainstorm`, print the unsupported status and terminate.
+4. **If no sketch was provided**, open with this solicited-sketch question (A2):
 
    > "Do you have a sketch or reference image I should look at? Paste a path if yes, or say 'no' to continue text-only."
 
    If yes → call `view_image` once on the path for grounding. If no → proceed text-only. Either answer counts as turn 1.
-4. **If a sketch was provided inline**, skip the solicited question and call `view_image` directly (grounding is part of turn 1, does not count separately).
-5. **If `--ref-dir <path>` was provided**, list the images in that directory by filename (do NOT call `view_image` or analyze pixels). Ask the user which to record in `## References`. Accept a subset, "all", or "none". Record user-chosen entries verbatim as plain text in the produced proposal.md's `## References` section. Listing + confirm counts as 1 turn.
+5. **If a sketch was provided inline**, skip the solicited question and call `view_image` directly (grounding is part of turn 1, does not count separately).
+6. **If `--ref-dir <path>` was provided**, list the images in that directory by filename (do NOT call `view_image` or analyze pixels). Ask the user which to record in `## References`. Accept a subset, "all", or "none". Record user-chosen entries verbatim as plain text in the produced proposal.md's `## References` section. Listing + confirm counts as 1 turn.
 
 ## Slug generation
 

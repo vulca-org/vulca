@@ -24,6 +24,7 @@ __all__ = [
     "Deliverable",
     "get_real_brief_fixture",
     "RealBriefFixture",
+    "seed_real_brief_brainstorm_proposal",
     "SourceInfo",
     "safe_slug",
     "write_real_brief_dry_run",
@@ -33,6 +34,10 @@ _LAZY_EXPORTS = {
     "adapt_real_brief_package": (
         "vulca.real_brief.workflow_adapter",
         "adapt_real_brief_package",
+    ),
+    "seed_real_brief_brainstorm_proposal": (
+        "vulca.real_brief.brainstorm_seed",
+        "seed_real_brief_brainstorm_proposal",
     ),
     "brief_digest": ("vulca.real_brief.conditions", "brief_digest"),
     "build_real_brief_conditions": (
