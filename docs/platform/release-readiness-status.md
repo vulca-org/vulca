@@ -8,7 +8,7 @@
 - Vulca has a Claude plugin package shape at the repository root: `.claude-plugin/plugin.json`, `.mcp.json`, and `skills/`.
 - Vulca has a repo-local Codex plugin package for validation: `plugins/vulca/.codex-plugin/plugin.json`, `plugins/vulca/.mcp.json`, and `plugins/vulca/skills/`.
 - Codex can be documented as a plugin plus MCP target; official public Codex plugin publishing should remain future-facing until OpenAI opens that flow.
-- ChatGPT can be documented as a remote MCP app/prototype target.
+- ChatGPT can be documented as a remote MCP app/prototype target with a remote-safe streamable HTTP entry point, `vulca-mcp-remote`.
 - Google/Gemini can be documented as a provider path now, with ADK / Vertex Agent Engine later.
 - Redraw is an advanced workflow today. v0.22 target-aware mask refinement is merged, but polished `/inpaint` or `/redraw-layer` promotion remains gated on real-image dogfood evidence.
 
@@ -91,10 +91,19 @@ Observed: 14 passed.
 
 Observed: 44 passed.
 
+Run after adding the ChatGPT remote-safe MCP entry point:
+
+```bash
+/opt/homebrew/bin/python3 -m pytest tests/test_mcp_remote_profile.py -q
+```
+
+Observed: 14 passed.
+
 ## Manual Gates Remaining
 
 - Optional: run a full interactive `claude --plugin-dir .` session if you want UI-level confirmation beyond `plugin validate` and non-interactive skill discovery.
 - Optional: open Codex UI and confirm the newly added `vulca-plugins` marketplace source appears as expected.
+- Deploy `vulca-mcp-remote` behind HTTPS/auth/logging before connecting it to ChatGPT developer mode from a public URL.
 - Review marketplace copy and screenshots before submission.
 - Dogfood v0.22 redraw on representative real images and confirm the user-facing after-image is `source_pasteback_path`.
 - Decide what to do with main-worktree untracked generated artifacts before any broad cleanup.

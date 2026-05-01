@@ -134,6 +134,7 @@ Issues = "https://github.com/vulca-org/vulca/issues"
 [project.scripts]
 vulca = "vulca.cli:main"
 vulca-mcp = "vulca.mcp_server:mcp.run"
+vulca-mcp-remote = "vulca.mcp_remote:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/vulca"]
