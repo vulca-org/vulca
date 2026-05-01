@@ -1,0 +1,33 @@
+{
+  "schema_version": "0.1",
+  "slug": "seattle-polish-film-festival-poster",
+  "sketch_prompts": [
+    {
+      "card_id": "seattle-polish-film-festival-poster-1-commercial-clarity",
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-image-preview",
+      "prompt": "Create an exploratory thumbnail for visual direction comparison. A commercial clarity route for Create layout-safe poster concept directions for a Polish film festival, including required text strategy, margins, sponsor band, and print-risk notes... Composition: large readable subject, product-first hierarchy, high scan speed. Color: limited palette aligned to the brand and medium. Texture/material: material treatment supports the selected direction. Lighting: clear subject readability. Camera/layout: stable hierarchy with no accidental crop. Typography: legible and secondary to the visual concept. Symbol strategy: specific visual behavior over decorative symbols. Culture terms:",
+      "negative_prompt": "generic ai aesthetic, literal cliché symbolism",
+      "size": "1024x1024",
+      "purpose": "visual workflow adapter discovery thumbnail seed"
+    },
+    {
+      "card_id": "seattle-polish-film-festival-poster-2-editorial-atmosphere",
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-image-preview",
+      "prompt": "Create an exploratory thumbnail for visual direction comparison. A editorial atmosphere route for Create layout-safe poster concept directions for a Polish film festival, including required text strategy, margins, sponsor band, and print-risk notes... Composition: more negative space, slower reading, stronger mood. Color: limited palette aligned to the brand and medium. Texture/material: material treatment supports the selected direction. Lighting: clear subject readability. Camera/layout: stable hierarchy with no accidental crop. Typography: legible and secondary to the visual concept. Symbol strategy: specific visual behavior over decorative symbols. Culture terms:",
+      "negative_prompt": "generic ai aesthetic, literal cliché symbolism",
+      "size": "1024x1024",
+      "purpose": "visual workflow adapter discovery thumbnail seed"
+    },
+    {
+      "card_id": "seattle-polish-film-festival-poster-3-modern-restraint",
+      "provider": "gemini",
+      "model": "gemini-3.1-flash-image-preview",
+      "prompt": "Create an exploratory thumbnail for visual direction comparison. A modern restraint route for Create layout-safe poster concept directions for a Polish film festival, including required text strategy, margins, sponsor band, and print-risk notes... Composition: simple geometry, low ornament, sharp hierarchy. Color: limited palette aligned to the brand and medium. Texture/material: material treatment supports the selected direction. Lighting: clear subject readability. Camera/layout: stable hierarchy with no accidental crop. Typography: legible and secondary to the visual concept. Symbol strategy: specific visual behavior over decorative symbols. Culture terms:",
+      "negative_prompt": "generic ai aesthetic, literal cliché symbolism",
+      "size": "1024x1024",
+      "purpose": "visual workflow adapter discovery thumbnail seed"
+    }
+  ]
+}

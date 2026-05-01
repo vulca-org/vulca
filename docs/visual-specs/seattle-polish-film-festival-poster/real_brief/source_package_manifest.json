@@ -1,0 +1,71 @@
+{
+  "condition_ids": [
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "conditions": [
+    {
+      "condition_path": "conditions/A-one-shot.md",
+      "id": "A",
+      "label": "One-shot model baseline",
+      "prompt_path": "prompts/A.txt",
+      "purpose": "Raw real brief condensed into a single model ask."
+    },
+    {
+      "condition_path": "conditions/B-structured-brief.md",
+      "id": "B",
+      "label": "Structured brief baseline",
+      "prompt_path": "prompts/B.txt",
+      "purpose": "Same brief normalized into structured client, deliverable, and constraint fields."
+    },
+    {
+      "condition_path": "conditions/C-vulca-planning.md",
+      "id": "C",
+      "label": "Vulca planning workflow",
+      "prompt_path": "prompts/C.txt",
+      "purpose": "Ambiguity handling, direction cards, visual operations, and evaluation focus before generation."
+    },
+    {
+      "condition_path": "conditions/D-vulca-preview-iterate.md",
+      "id": "D",
+      "label": "Vulca preview-and-iterate workflow",
+      "prompt_path": "prompts/D.txt",
+      "purpose": "Preview prompts, critique, refinement, and editability checks before final composition."
+    }
+  ],
+  "date": "2026-05-01",
+  "experiment": "real-brief-benchmark",
+  "files": [
+    "conditions/A-one-shot.md",
+    "conditions/B-structured-brief.md",
+    "conditions/C-vulca-planning.md",
+    "conditions/D-vulca-preview-iterate.md",
+    "decision_package.md",
+    "evaluations/README.md",
+    "images/README.md",
+    "manifest.json",
+    "production_package.md",
+    "prompts/A.txt",
+    "prompts/B.txt",
+    "prompts/C.txt",
+    "prompts/D.txt",
+    "review_schema.json",
+    "source_brief.md",
+    "structured_brief.json",
+    "summary.md",
+    "workflow_handoff.json"
+  ],
+  "fixture": {
+    "slug": "seattle-polish-film-festival-poster",
+    "title": "Seattle Polish Film Festival Poster"
+  },
+  "fixture_slug": "seattle-polish-film-festival-poster",
+  "mode": "dry_run",
+  "provider_execution": "disabled",
+  "review_schema_path": "review_schema.json",
+  "schema_version": "0.1",
+  "simulation_only": true,
+  "workflow_handoff_path": "workflow_handoff.json"
+}

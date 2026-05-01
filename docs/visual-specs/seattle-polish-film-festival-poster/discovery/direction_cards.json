@@ -1,0 +1,129 @@
+{
+  "schema_version": "0.1",
+  "slug": "seattle-polish-film-festival-poster",
+  "cards": [
+    {
+      "id": "seattle-polish-film-festival-poster-1-commercial-clarity",
+      "label": "Commercial clarity",
+      "summary": "A commercial clarity route for Create layout-safe poster concept directions for a Polish film festival, including required text strategy, margins, sponsor band, and print-risk notes..",
+      "culture_terms": [],
+      "visual_ops": {
+        "composition": "large readable subject, product-first hierarchy, high scan speed",
+        "color": "limited palette aligned to the brand and medium",
+        "texture": "material treatment supports the selected direction",
+        "lighting": "clear subject readability",
+        "camera": "stable hierarchy with no accidental crop",
+        "typography": "legible and secondary to the visual concept",
+        "symbol_strategy": "specific visual behavior over decorative symbols",
+        "avoid": [
+          "generic ai aesthetic",
+          "literal cliché symbolism"
+        ]
+      },
+      "provider_hint": {
+        "sketch": {
+          "provider": "gemini",
+          "model": "gemini-3.1-flash-image-preview"
+        },
+        "final": {
+          "provider": "openai",
+          "model": "gpt-image-2"
+        },
+        "local": {
+          "provider": "comfyui"
+        }
+      },
+      "evaluation_focus": {
+        "L1": "composition is readable",
+        "L2": "execution supports the visual direction",
+        "L3": "cultural references are grounded",
+        "L4": "interpretation matches the project intent",
+        "L5": "the visual idea has depth beyond styling"
+      },
+      "risk": "Needs a selected culture term or reference to become more specific.",
+      "status": "candidate"
+    },
+    {
+      "id": "seattle-polish-film-festival-poster-2-editorial-atmosphere",
+      "label": "Editorial atmosphere",
+      "summary": "A editorial atmosphere route for Create layout-safe poster concept directions for a Polish film festival, including required text strategy, margins, sponsor band, and print-risk notes..",
+      "culture_terms": [],
+      "visual_ops": {
+        "composition": "more negative space, slower reading, stronger mood",
+        "color": "limited palette aligned to the brand and medium",
+        "texture": "material treatment supports the selected direction",
+        "lighting": "clear subject readability",
+        "camera": "stable hierarchy with no accidental crop",
+        "typography": "legible and secondary to the visual concept",
+        "symbol_strategy": "specific visual behavior over decorative symbols",
+        "avoid": [
+          "generic ai aesthetic",
+          "literal cliché symbolism"
+        ]
+      },
+      "provider_hint": {
+        "sketch": {
+          "provider": "gemini",
+          "model": "gemini-3.1-flash-image-preview"
+        },
+        "final": {
+          "provider": "openai",
+          "model": "gpt-image-2"
+        },
+        "local": {
+          "provider": "comfyui"
+        }
+      },
+      "evaluation_focus": {
+        "L1": "composition is readable",
+        "L2": "execution supports the visual direction",
+        "L3": "cultural references are grounded",
+        "L4": "interpretation matches the project intent",
+        "L5": "the visual idea has depth beyond styling"
+      },
+      "risk": "Needs a selected culture term or reference to become more specific.",
+      "status": "candidate"
+    },
+    {
+      "id": "seattle-polish-film-festival-poster-3-modern-restraint",
+      "label": "Modern restraint",
+      "summary": "A modern restraint route for Create layout-safe poster concept directions for a Polish film festival, including required text strategy, margins, sponsor band, and print-risk notes..",
+      "culture_terms": [],
+      "visual_ops": {
+        "composition": "simple geometry, low ornament, sharp hierarchy",
+        "color": "limited palette aligned to the brand and medium",
+        "texture": "material treatment supports the selected direction",
+        "lighting": "clear subject readability",
+        "camera": "stable hierarchy with no accidental crop",
+        "typography": "legible and secondary to the visual concept",
+        "symbol_strategy": "specific visual behavior over decorative symbols",
+        "avoid": [
+          "generic ai aesthetic",
+          "literal cliché symbolism"
+        ]
+      },
+      "provider_hint": {
+        "sketch": {
+          "provider": "gemini",
+          "model": "gemini-3.1-flash-image-preview"
+        },
+        "final": {
+          "provider": "openai",
+          "model": "gpt-image-2"
+        },
+        "local": {
+          "provider": "comfyui"
+        }
+      },
+      "evaluation_focus": {
+        "L1": "composition is readable",
+        "L2": "execution supports the visual direction",
+        "L3": "cultural references are grounded",
+        "L4": "interpretation matches the project intent",
+        "L5": "the visual idea has depth beyond styling"
+      },
+      "risk": "Needs a selected culture term or reference to become more specific.",
+      "status": "candidate"
+    }
+  ]
+}
