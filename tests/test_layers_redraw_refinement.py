@@ -801,6 +801,31 @@ def test_yellow_replacement_patch_uses_yellow_paint_not_scene_context():
     assert old_pixel[2] < 120
 
 
+def test_yellow_replacement_patch_does_not_expand_across_whole_old_head():
+    from vulca.layers import redraw as redraw_module
+
+    source = Image.new("RGB", (60, 40), (35, 92, 43))
+    old_flower_xy = (20, 20)
+    ImageDraw.Draw(source).ellipse((16, 16, 28, 24), fill=(232, 190, 42))
+
+    cleared = Image.new("RGB", source.size, (95, 120, 65))
+    removal_matte = Image.new("L", source.size, 0)
+    ImageDraw.Draw(removal_matte).ellipse((14, 14, 30, 26), fill=255)
+    generated = Image.new("RGBA", source.size, (0, 0, 0, 0))
+    generated.putpixel((33, 20), (232, 190, 42, 255))
+
+    patch = redraw_module._compose_flower_replacement_patch(
+        source,
+        cleared,
+        generated,
+        removal_matte,
+        target_palette="yellow",
+    )
+
+    assert patch.getpixel(old_flower_xy)[3] == 0
+    assert patch.getpixel((33, 20))[3] > 0
+
+
 def test_flower_replacement_patch_does_not_fill_distant_old_flowers():
     from vulca.layers import redraw as redraw_module
 
