@@ -733,7 +733,12 @@ def _build_source_flower_cover_alpha(source_crop, removal_matte):
     return Image.fromarray(cover_arr, mode="L")
 
 
-def _build_generated_flower_cover_patch(generated_crop, source_cover_alpha):
+def _build_generated_flower_cover_patch(
+    generated_crop,
+    source_cover_alpha,
+    *,
+    target_palette: str = "mixed",
+):
     import numpy as np
 
     from PIL import Image, ImageFilter
@@ -764,7 +769,18 @@ def _build_generated_flower_cover_patch(generated_crop, source_cover_alpha):
         & (blue < 160)
         & ((red - blue) > 20)
     )
-    flower_paint = (white_like | yellow_center) & (flower_alpha > 8)
+    yellow_like = (
+        (red > 160)
+        & (green > 110)
+        & (blue < 135)
+        & ((red - blue) > 45)
+        & ((green - blue) > 15)
+        & ((red + green - 2 * blue) > 135)
+    )
+    if target_palette == "yellow":
+        flower_paint = yellow_like & (flower_alpha > 8)
+    else:
+        flower_paint = (white_like | yellow_center) & (flower_alpha > 8)
     cover_visible = cover > 8
     if not flower_paint.any() or not cover_visible.any():
         return Image.new("RGBA", flowers.size, (0, 0, 0, 0))
@@ -794,6 +810,8 @@ def _compose_flower_replacement_patch(
     cleared_crop,
     generated_crop,
     removal_matte,
+    *,
+    target_palette: str = "mixed",
 ):
     from PIL import Image
 
@@ -802,7 +820,11 @@ def _compose_flower_replacement_patch(
     flowers = generated_crop.convert("RGBA")
     base.alpha_composite(flowers)
     base.alpha_composite(
-        _build_generated_flower_cover_patch(flowers, source_cover_alpha)
+        _build_generated_flower_cover_patch(
+            flowers,
+            source_cover_alpha,
+            target_palette=target_palette,
+        )
     )
     return base
 
@@ -923,7 +945,30 @@ def _write_redraw_debug_summary(
     summary_path.write_text(json.dumps(summary, indent=2, ensure_ascii=False))
 
 
-def _build_flower_output_alpha(crop_rgba, edit_matte):
+def _image_result_cost_usd(result) -> float | None:
+    metadata = getattr(result, "metadata", {}) or {}
+    cost = metadata.get("cost_usd")
+    if isinstance(cost, (int, float)):
+        return float(cost)
+    return None
+
+
+def _infer_small_botanical_target_palette(
+    *,
+    description: str = "",
+    instruction: str = "",
+) -> str:
+    text = f"{description} {instruction}".lower()
+    if any(term in text for term in ("dandelion", "buttercup")):
+        return "yellow"
+    if "yellow" in text and not any(
+        term in text for term in ("white flower", "white wildflower", "white petal")
+    ):
+        return "yellow"
+    return "mixed"
+
+
+def _build_flower_output_alpha(crop_rgba, edit_matte, *, target_palette: str = "mixed"):
     import numpy as np
 
     from PIL import Image, ImageFilter
@@ -950,7 +995,18 @@ def _build_flower_output_alpha(crop_rgba, edit_matte):
         & (blue < 160)
         & ((red - blue) > 20)
     )
-    flower_like = (white_like | yellow_center) & (alpha_arr > 0)
+    yellow_like = (
+        (red > 160)
+        & (green > 110)
+        & (blue < 135)
+        & ((red - blue) > 45)
+        & ((green - blue) > 15)
+        & ((red + green - 2 * blue) > 135)
+    )
+    if target_palette == "yellow":
+        flower_like = yellow_like & (alpha_arr > 0)
+    else:
+        flower_like = (white_like | yellow_center) & (alpha_arr > 0)
     if flower_like.any():
         support = Image.fromarray((flower_like.astype(np.uint8) * 255))
         support = support.filter(ImageFilter.MaxFilter(5)).filter(
@@ -959,6 +1015,9 @@ def _build_flower_output_alpha(crop_rgba, edit_matte):
         alpha_arr = np.minimum(alpha_arr, np.asarray(support))
     else:
         alpha_arr[:] = 0
+
+    if target_palette == "yellow":
+        alpha_arr[~yellow_like] = 0
 
     dark_artifact = (
         (alpha_arr > 0)
@@ -973,6 +1032,7 @@ def _build_flower_output_alpha(crop_rgba, edit_matte):
         & (green < 190)
         & ~white_like
         & ~yellow_center
+        & ~yellow_like
     )
     olive_halo = (
         (red > 45)
@@ -984,6 +1044,7 @@ def _build_flower_output_alpha(crop_rgba, edit_matte):
         & (green >= red - 10)
         & ~white_like
         & ~yellow_center
+        & ~yellow_like
     )
     alpha_arr[dark_artifact] = 0
     alpha_arr[hedge_like] = 0
@@ -1005,6 +1066,7 @@ async def _redraw_source_context_with_edit_matte(
     output_format: str = "",
     debug_artifacts=None,
     debug_child_index: int = 0,
+    target_palette: str = "mixed",
 ):
     import base64
     import io as _io
@@ -1106,13 +1168,18 @@ async def _redraw_source_context_with_edit_matte(
         out_img = _fit_into_canvas(out_img, (1024, 1024), bg_rgb=CREAM_BG_RGB)
         crop_out = out_img.crop(content_box).resize(source_crop.size, Image.LANCZOS)
         crop_out = crop_out.convert("RGBA")
-        flower_alpha = _build_flower_output_alpha(crop_out, generation_matte)
+        flower_alpha = _build_flower_output_alpha(
+            crop_out,
+            generation_matte,
+            target_palette=target_palette,
+        )
         crop_out.putalpha(flower_alpha)
         crop_out = _compose_flower_replacement_patch(
             source_crop,
             cleared_crop,
             crop_out,
             replacement_matte,
+            target_palette=target_palette,
         )
         if debug_record is not None:
             crop_out.save(debug_record["patch_path"])
@@ -1229,6 +1296,8 @@ async def redraw_layer(
     input_fidelity: str = "",
     output_format: str = "",
     debug_artifact_dir: str = "",
+    max_refinement_children: int = 0,
+    max_redraw_cost_usd: float = 0.0,
 ) -> LayerResult:
     """Redraw a single layer via img2img or mask-aware inpaint (v0.20).
 
@@ -1341,9 +1410,17 @@ async def redraw_layer(
     sparse, area_pct, bbox_fill = _compute_sparsity(src_alpha)
     geometry = analyze_alpha_geometry(src_alpha)
     redraw_plan = choose_redraw_route(geometry)
+    refinement_max_children = (
+        max_refinement_children if max_refinement_children > 0 else 24
+    )
     refinement = refine_mask_for_target(
         src_rgba.convert("RGB"),
         src_alpha,
+        description=target.info.description,
+        instruction=instruction,
+        max_children=refinement_max_children,
+    )
+    target_palette = _infer_small_botanical_target_palette(
         description=target.info.description,
         instruction=instruction,
     )
@@ -1417,6 +1494,9 @@ async def redraw_layer(
 
     refined_alpha = None
     source_context = None
+    processed_refined_child_count = 0
+    redraw_estimated_cost_usd = 0.0
+    redraw_cost_cap_reached = False
     if refinement_path_available:
         source_context = _resolve_source_context_image(
             artwork_dir=artwork_dir,
@@ -1429,6 +1509,12 @@ async def redraw_layer(
         rgba = Image.new("RGBA", src_rgba.size, (0, 0, 0, 0))
         refined_alpha = Image.new("L", src_alpha.size, 0)
         for child_index, child_mask in enumerate(refinement.child_masks, start=1):
+            if (
+                max_redraw_cost_usd > 0
+                and redraw_estimated_cost_usd >= max_redraw_cost_usd
+            ):
+                redraw_cost_cap_reached = True
+                break
             child_geometry = analyze_alpha_geometry(child_mask)
             crop_box = child_geometry.bbox
             if crop_box.w <= 0 or crop_box.h <= 0:
@@ -1467,7 +1553,11 @@ async def redraw_layer(
                     output_format=output_format,
                     debug_artifacts=debug_artifacts,
                     debug_child_index=child_index,
+                    target_palette=target_palette,
                 )
+                cost_usd = _image_result_cost_usd(_result)
+                if cost_usd is not None:
+                    redraw_estimated_cost_usd += cost_usd
                 output_alpha = crop_out.split()[-1]
                 _paste_crop_preserving_alpha(rgba, crop_out, output_alpha, crop_box)
                 refined_alpha.paste(output_alpha, (crop_box.x, crop_box.y))
@@ -1494,8 +1584,17 @@ async def redraw_layer(
                     output_format=output_format,
                     resize_to_api_size=False,
                 )
+                cost_usd = _image_result_cost_usd(_result)
+                if cost_usd is not None:
+                    redraw_estimated_cost_usd += cost_usd
                 _paste_crop_preserving_alpha(rgba, crop_out, crop_alpha, crop_box)
                 refined_alpha.paste(crop_alpha, (crop_box.x, crop_box.y))
+            processed_refined_child_count += 1
+            if (
+                max_redraw_cost_usd > 0
+                and redraw_estimated_cost_usd >= max_redraw_cost_usd
+            ):
+                redraw_cost_cap_reached = True
     elif chosen_route == "inpaint" and redraw_plan.route in sparse_crop_routes:
         rgba = Image.new("RGBA", src_rgba.size, (0, 0, 0, 0))
         for crop_box in redraw_plan.crop_boxes:
@@ -1614,9 +1713,7 @@ async def redraw_layer(
         description=target.info.description,
         instruction=instruction,
         refinement_applied=refinement_path_available,
-        refined_child_count=len(refinement.child_masks)
-        if refinement_path_available
-        else 0,
+        refined_child_count=processed_refined_child_count,
         refined_coverage_pct=refinement.metrics.get("refined_coverage_pct", 0.0)
         if refinement_path_available
         else 0.0,
@@ -1674,12 +1771,17 @@ async def redraw_layer(
         "refinement_replacement_matte": "small_botanical_removal"
         if refinement_path_available and source_context is not None
         else "none",
+        "refinement_target_palette": target_palette
+        if refinement_path_available
+        else "none",
         "refinement_composition": "small_botanical_evidence_paint_cover"
         if refinement_path_available and source_context is not None
         else "generated_patch",
-        "refined_child_count": len(refinement.child_masks)
-        if refinement_path_available
-        else 0,
+        "refined_child_count": processed_refined_child_count,
+        "max_refinement_children": max_refinement_children,
+        "redraw_cost_cap_usd": max_redraw_cost_usd,
+        "redraw_cost_cap_reached": redraw_cost_cap_reached,
+        "redraw_estimated_cost_usd": round(redraw_estimated_cost_usd, 6),
         "mask_granularity_score": refinement.metrics.get(
             "mask_granularity_score", 0.0
         ),

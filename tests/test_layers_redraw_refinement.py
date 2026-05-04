@@ -191,6 +191,68 @@ def test_refined_flower_layer_uses_one_masked_edit_per_child(tmp_path, monkeypat
     )
 
 
+def test_refined_flower_layer_honors_max_refinement_children(tmp_path, monkeypatch):
+    from vulca.layers import redraw as redraw_module
+    import vulca.providers as providers_mod
+
+    provider = RecordingEditProvider()
+    monkeypatch.setattr(
+        providers_mod, "get_image_provider", lambda name, api_key="": provider
+    )
+    artwork = _stage_broad_flower_layer(tmp_path)
+
+    result = _run(
+        redraw_module.redraw_layer(
+            artwork,
+            layer_name="flowers",
+            instruction="small bright white wildflowers with warm yellow centers",
+            provider="openai",
+            artwork_dir=str(tmp_path),
+            route="auto",
+            preserve_alpha=True,
+            max_refinement_children=2,
+        )
+    )
+
+    advisory = getattr(result, "redraw_advisory", {})
+
+    assert len(provider.calls) == 2
+    assert advisory["refined_child_count"] == 2
+    assert advisory["max_refinement_children"] == 2
+
+
+def test_refined_flower_layer_stops_at_redraw_cost_cap(tmp_path, monkeypatch):
+    from vulca.layers import redraw as redraw_module
+    import vulca.providers as providers_mod
+
+    provider = RecordingEditProvider()
+    monkeypatch.setattr(
+        providers_mod, "get_image_provider", lambda name, api_key="": provider
+    )
+    artwork = _stage_broad_flower_layer(tmp_path)
+
+    result = _run(
+        redraw_module.redraw_layer(
+            artwork,
+            layer_name="flowers",
+            instruction="small bright white wildflowers with warm yellow centers",
+            provider="openai",
+            artwork_dir=str(tmp_path),
+            route="auto",
+            preserve_alpha=True,
+            max_redraw_cost_usd=0.0123,
+        )
+    )
+
+    advisory = getattr(result, "redraw_advisory", {})
+
+    assert len(provider.calls) == 1
+    assert advisory["redraw_cost_cap_reached"] is True
+    assert advisory["redraw_cost_cap_usd"] == 0.0123
+    assert advisory["redraw_estimated_cost_usd"] == 0.0123
+    assert advisory["refined_child_count"] == 1
+
+
 def test_auto_redraw_skips_broad_leaf_texture_risk(tmp_path, monkeypatch):
     from vulca.layers import redraw as redraw_module
     import vulca.providers as providers_mod
@@ -428,6 +490,31 @@ def test_flower_output_alpha_removes_neutral_olive_halo_adjacent_to_petals():
     assert arr[10, 10] > 0
     assert arr[10, 11] > 0
     assert arr[10, 12] == 0
+
+
+def test_yellow_flower_output_alpha_rejects_gray_and_olive_scene_context():
+    from vulca.layers import redraw as redraw_module
+
+    patch = Image.new("RGB", (24, 18), (88, 116, 64))
+    patch.putpixel((8, 9), (232, 190, 42))
+    patch.putpixel((9, 9), (238, 206, 72))
+    patch.putpixel((10, 9), (218, 218, 204))
+    patch.putpixel((11, 9), (128, 138, 96))
+    patch.putpixel((12, 9), (236, 235, 226))
+    matte = Image.new("L", patch.size, 255)
+
+    alpha = redraw_module._build_flower_output_alpha(
+        patch,
+        matte,
+        target_palette="yellow",
+    )
+    arr = np.asarray(alpha)
+
+    assert arr[9, 8] > 0
+    assert arr[9, 9] > 0
+    assert arr[9, 10] == 0
+    assert arr[9, 11] == 0
+    assert arr[9, 12] == 0
 
 
 def test_flower_edit_matte_removes_isolated_bright_specks():
@@ -681,6 +768,37 @@ def test_flower_replacement_patch_does_not_propagate_generated_green_halo():
     assert old_pixel[0] > 170
     assert old_pixel[1] > 140
     assert old_pixel[2] > 100
+
+
+def test_yellow_replacement_patch_uses_yellow_paint_not_scene_context():
+    from vulca.layers import redraw as redraw_module
+
+    source = Image.new("RGB", (50, 40), (35, 92, 43))
+    old_flower_xy = (20, 20)
+    ImageDraw.Draw(source).ellipse((18, 18, 22, 22), fill=(232, 190, 42))
+
+    cleared = Image.new("RGB", source.size, (95, 120, 65))
+    removal_matte = Image.new("L", source.size, 0)
+    ImageDraw.Draw(removal_matte).ellipse((16, 16, 24, 24), fill=255)
+    generated = Image.new("RGBA", source.size, (0, 0, 0, 0))
+    generated.putpixel((19, 20), (94, 122, 67, 255))
+    generated.putpixel((25, 20), (232, 190, 42, 255))
+    generated.putpixel((26, 20), (218, 218, 204, 255))
+
+    patch = redraw_module._compose_flower_replacement_patch(
+        source,
+        cleared,
+        generated,
+        removal_matte,
+        target_palette="yellow",
+    )
+
+    old_pixel = patch.getpixel(old_flower_xy)
+
+    assert old_pixel[3] > 0
+    assert old_pixel[0] > 180
+    assert old_pixel[1] > 140
+    assert old_pixel[2] < 120
 
 
 def test_flower_replacement_patch_does_not_fill_distant_old_flowers():
