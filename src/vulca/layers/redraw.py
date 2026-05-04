@@ -1307,9 +1307,10 @@ async def _redraw_source_context_with_edit_matte(
                         "raw_scene_gate": raw_scene_gate,
                     }
                 )
+        output_matte = edit_matte if target_palette == "yellow" else generation_matte
         flower_alpha = _build_flower_output_alpha(
             crop_out,
-            generation_matte,
+            output_matte,
             target_palette=target_palette,
         )
         crop_out.putalpha(flower_alpha)

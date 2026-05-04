@@ -783,6 +783,38 @@ def test_source_context_generation_rejects_raw_scene_thumbnail():
     assert alpha_px == 0
 
 
+def test_yellow_source_context_output_keeps_source_head_footprint_scale():
+    from vulca.layers import redraw as redraw_module
+
+    raw = Image.new("RGBA", (1024, 1024), (0, 0, 0, 0))
+    ImageDraw.Draw(raw).ellipse((320, 320, 704, 704), fill=(232, 190, 42, 255))
+    provider = StaticRawEditProvider(raw)
+
+    source = Image.new("RGB", (72, 72), (35, 92, 43))
+    edit_matte = Image.new("L", source.size, 0)
+    ImageDraw.Draw(edit_matte).ellipse((31, 31, 41, 41), fill=255)
+    removal_matte = Image.new("L", source.size, 0)
+    ImageDraw.Draw(removal_matte).ellipse((22, 22, 50, 50), fill=255)
+    edit_px = int((np.asarray(edit_matte) > 0).sum())
+
+    crop_out, _result = _run(
+        redraw_module._redraw_source_context_with_edit_matte(
+            source_crop=source,
+            edit_matte=edit_matte,
+            removal_matte=removal_matte,
+            instruction="paint yellow dandelion and buttercup flower heads",
+            provider_inst=provider,
+            tradition="default",
+            target_description="dandelion heads in grass",
+            target_palette="yellow",
+        )
+    )
+
+    alpha_px = int((np.asarray(crop_out.convert("RGBA").split()[-1]) > 0).sum())
+
+    assert alpha_px <= int(edit_px * 1.4)
+
+
 def test_refined_flower_replacement_covers_old_source_flower_residue(
     tmp_path, monkeypatch
 ):
