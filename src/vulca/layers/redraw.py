@@ -969,6 +969,76 @@ def _infer_small_botanical_target_palette(
     return "mixed"
 
 
+def _build_small_botanical_child_prompt(
+    *,
+    instruction: str,
+    tradition: str,
+    target_palette: str,
+    head_count: int = 1,
+) -> str:
+    if target_palette == "yellow":
+        subject = "compact yellow dandelion or buttercup flower head replacements"
+        style = (
+            "hand-painted flower heads with warm centers, varied spacing, and "
+            "natural scale"
+        )
+    else:
+        subject = "compact small wildflower head replacements"
+        style = "hand-painted petals with warm centers, varied spacing, and natural scale"
+    parts = [
+        "Repaint only the transparent mask pixels (mask alpha=0) as "
+        f"{subject}.",
+        "Treat the source crop only as scale, lighting, and edge context.",
+        "Leave every opaque/unmasked pixel unchanged.",
+        f"Paint exactly {max(1, head_count)} separated flower head"
+        f"{'' if max(1, head_count) == 1 else 's'}; do not add extra heads.",
+        "Match the original head size and footprint.",
+        f"Paint separated {style}.",
+        "Do not generate non-botanical background scene content, rectangular "
+        "thumbnails, or broad texture patches.",
+    ]
+    lower_instruction = instruction.lower()
+    if "storybook" in lower_instruction:
+        parts.append("Use a subtle storybook botanical accent, not a new scene.")
+    if tradition and tradition != "default":
+        parts.append(
+            f"Maintain the {tradition.replace('_', ' ')} cultural tradition "
+            "and technique."
+        )
+    return "\n".join(parts)
+
+
+def _estimate_small_botanical_head_count(edit_matte) -> int:
+    import numpy as np
+    from collections import deque
+
+    arr = np.asarray(edit_matte.convert("L")) > 8
+    height, width = arr.shape
+    seen = np.zeros(arr.shape, dtype=bool)
+    count = 0
+    for y in range(height):
+        for x in range(width):
+            if not arr[y, x] or seen[y, x]:
+                continue
+            q: deque[tuple[int, int]] = deque([(x, y)])
+            seen[y, x] = True
+            area = 0
+            while q:
+                cx, cy = q.popleft()
+                area += 1
+                for nx in (cx - 1, cx, cx + 1):
+                    for ny in (cy - 1, cy, cy + 1):
+                        if nx < 0 or ny < 0 or nx >= width or ny >= height:
+                            continue
+                        if seen[ny, nx] or not arr[ny, nx]:
+                            continue
+                        seen[ny, nx] = True
+                        q.append((nx, ny))
+            if area >= 8:
+                count += 1
+    return max(1, min(count, 8))
+
+
 def _build_flower_output_alpha(crop_rgba, edit_matte, *, target_palette: str = "mixed"):
     import numpy as np
 
@@ -1053,6 +1123,58 @@ def _build_flower_output_alpha(crop_rgba, edit_matte, *, target_palette: str = "
     return Image.fromarray(alpha_arr.astype(np.uint8), mode="L")
 
 
+def _small_botanical_scene_like_mask(rgb_arr):
+    import numpy as np
+
+    rgb = rgb_arr.astype(np.int16)
+    red = rgb[:, :, 0]
+    green = rgb[:, :, 1]
+    blue = rgb[:, :, 2]
+    spread = np.maximum.reduce((red, green, blue)) - np.minimum.reduce(
+        (red, green, blue)
+    )
+    mean = rgb.mean(axis=2)
+    sky_like = (blue > 135) & (blue > red + 35) & (blue > green + 20) & (red < 135)
+    vehicle_red = (red > 120) & (red > green + 45) & (red > blue + 35)
+    road_or_metal_gray = (mean > 105) & (mean < 225) & (spread < 34)
+    return sky_like | vehicle_red | road_or_metal_gray
+
+
+def _small_botanical_raw_scene_rejection(
+    *,
+    source_crop,
+    generated_crop,
+    target_palette: str,
+) -> dict:
+    import numpy as np
+
+    if target_palette != "yellow":
+        return {"reject": False, "reason": ""}
+    source = source_crop.convert("RGB")
+    generated = generated_crop.convert("RGB")
+    if source.size != generated.size:
+        from PIL import Image
+
+        source = source.resize(generated.size, Image.LANCZOS)
+    src_scene = _small_botanical_scene_like_mask(np.asarray(source))
+    gen_scene = _small_botanical_scene_like_mask(np.asarray(generated))
+    if not gen_scene.any():
+        return {"reject": False, "reason": "", "new_scene_like_pct": 0.0}
+    scene_growth = gen_scene & ~src_scene
+    new_scene_like_pct = 100.0 * float(scene_growth.sum()) / float(gen_scene.size)
+    if new_scene_like_pct > 8.0:
+        return {
+            "reject": True,
+            "reason": "raw_scene_thumbnail_leak",
+            "new_scene_like_pct": round(new_scene_like_pct, 3),
+        }
+    return {
+        "reject": False,
+        "reason": "",
+        "new_scene_like_pct": round(new_scene_like_pct, 3),
+    }
+
+
 async def _redraw_source_context_with_edit_matte(
     *,
     source_crop,
@@ -1132,18 +1254,11 @@ async def _redraw_source_context_with_edit_matte(
             debug_artifacts["calls"].append(debug_record)
             _write_redraw_debug_summary(debug_artifacts, status="running")
 
-        prompt = _build_inpaint_prompt(
-            instruction,
-            [target_description],
+        prompt = _build_small_botanical_child_prompt(
+            instruction=instruction,
             tradition=tradition,
-        )
-        prompt = (
-            f"{prompt}\n"
-            "Use the source crop as visual context. The transparent mask pixels "
-            "are a replacement zone where the previous flowers have already been "
-            "cleared from the input. Paint new flowers there while keeping "
-            "opaque/unmasked hedge leaves and lighting unchanged. Do not create a "
-            "new dark hedge patch or repaint the whole crop."
+            target_palette=target_palette,
+            head_count=_estimate_small_botanical_head_count(edit_matte),
         )
         result = await provider_inst.inpaint_with_mask(
             image_path=image_tmp.name,
@@ -1169,6 +1284,29 @@ async def _redraw_source_context_with_edit_matte(
         out_img = _fit_into_canvas(out_img, (1024, 1024), bg_rgb=CREAM_BG_RGB)
         crop_out = out_img.crop(content_box).resize(source_crop.size, Image.LANCZOS)
         crop_out = crop_out.convert("RGBA")
+        raw_scene_gate = _small_botanical_raw_scene_rejection(
+            source_crop=source_crop,
+            generated_crop=crop_out,
+            target_palette=target_palette,
+        )
+        if raw_scene_gate.get("reject"):
+            crop_out = Image.new("RGBA", source_crop.size, (0, 0, 0, 0))
+            if debug_record is not None:
+                debug_record.update(
+                    {
+                        "raw_scene_rejected": True,
+                        "raw_scene_reject_reason": raw_scene_gate.get("reason", ""),
+                        "raw_scene_gate": raw_scene_gate,
+                    }
+                )
+        else:
+            if debug_record is not None:
+                debug_record.update(
+                    {
+                        "raw_scene_rejected": False,
+                        "raw_scene_gate": raw_scene_gate,
+                    }
+                )
         flower_alpha = _build_flower_output_alpha(
             crop_out,
             generation_matte,

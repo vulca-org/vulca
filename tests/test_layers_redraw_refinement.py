@@ -87,6 +87,39 @@ class RecordingEditProvider:
         raise AssertionError("refinement route must use masked edits")
 
 
+class StaticRawEditProvider(RecordingEditProvider):
+    def __init__(self, output):
+        super().__init__()
+        self.output = output.convert("RGBA")
+
+    async def inpaint_with_mask(self, *, image_path, mask_path, prompt, **kwargs):
+        with Image.open(image_path) as probe:
+            size = probe.size
+        with Image.open(mask_path) as mask_probe:
+            mask_alpha = mask_probe.convert("RGBA").split()[-1]
+            mask_arr = np.asarray(mask_alpha)
+        self.calls.append(
+            {
+                "image_path": image_path,
+                "mask_path": mask_path,
+                "size": size,
+                "prompt": prompt,
+                "edit_pixels": int((mask_arr == 0).sum()),
+                "preserve_pixels": int((mask_arr == 255).sum()),
+            }
+        )
+        raw = self.output.resize(size, Image.Resampling.NEAREST)
+        return type(
+            "Result",
+            (),
+            {
+                "image_b64": _png_b64(raw),
+                "mime": "image/png",
+                "metadata": {"cost_usd": 0.0123, "usage": {}},
+            },
+        )()
+
+
 def _stage_broad_flower_layer(tmp_path: Path):
     size = (240, 180)
     source = Image.new("RGB", size, (35, 92, 43))
@@ -648,6 +681,106 @@ def test_source_context_generation_expands_organic_matte_without_filling_removal
 
     assert 90_000 < provider.calls[0]["edit_pixels"] < 360_000
     assert 350 < output_alpha_px < 1400
+
+
+def test_source_context_generation_uses_micro_botanical_prompt():
+    from vulca.layers import redraw as redraw_module
+
+    provider = RecordingEditProvider(output_rgb=(232, 190, 42))
+    source = Image.new("RGB", (64, 64), (35, 92, 43))
+    edit_matte = Image.new("L", source.size, 0)
+    ImageDraw.Draw(edit_matte).ellipse((27, 27, 37, 37), fill=255)
+
+    _run(
+        redraw_module._redraw_source_context_with_edit_matte(
+            source_crop=source,
+            edit_matte=edit_matte,
+            instruction=(
+                "Preserve grass stems, hedge leaves, white flowers, guardrail, "
+                "sky, vehicles, source lighting, and spatial depth. Make the "
+                "yellow dandelion and buttercup flower heads feel hand-painted "
+                "with warm centers and varied spacing."
+            ),
+            provider_inst=provider,
+            tradition="default",
+            target_description="roadside dandelion heads beside vehicles",
+            target_palette="yellow",
+        )
+    )
+
+    prompt = provider.calls[0]["prompt"].lower()
+
+    assert "only the transparent mask pixels" in prompt
+    assert "yellow dandelion" in prompt
+    assert "flower head" in prompt
+    assert "hand-painted" in prompt
+    assert "guardrail" not in prompt
+    assert "vehicle" not in prompt
+    assert "sky" not in prompt
+    assert "roadside" not in prompt
+
+
+def test_source_context_generation_prompts_child_count_and_scale():
+    from vulca.layers import redraw as redraw_module
+
+    provider = RecordingEditProvider(output_rgb=(232, 190, 42))
+    source = Image.new("RGB", (72, 72), (35, 92, 43))
+    edit_matte = Image.new("L", source.size, 0)
+    draw = ImageDraw.Draw(edit_matte)
+    draw.ellipse((16, 28, 28, 40), fill=255)
+    draw.ellipse((44, 29, 56, 41), fill=255)
+
+    _run(
+        redraw_module._redraw_source_context_with_edit_matte(
+            source_crop=source,
+            edit_matte=edit_matte,
+            instruction="paint yellow dandelion and buttercup flower heads",
+            provider_inst=provider,
+            tradition="default",
+            target_description="dandelion heads in grass",
+            target_palette="yellow",
+        )
+    )
+
+    prompt = provider.calls[0]["prompt"].lower()
+
+    assert "exactly 2" in prompt
+    assert "do not add extra" in prompt
+    assert "match the original head size" in prompt
+
+
+def test_source_context_generation_rejects_raw_scene_thumbnail():
+    from vulca.layers import redraw as redraw_module
+
+    raw_scene = Image.new("RGBA", (1024, 1024), (54, 126, 220, 255))
+    draw = ImageDraw.Draw(raw_scene)
+    draw.rectangle((0, 540, 1024, 1024), fill=(78, 118, 58, 255))
+    draw.rectangle((160, 650, 880, 760), fill=(155, 160, 158, 255))
+    draw.rectangle((250, 455, 760, 620), fill=(170, 24, 35, 255))
+    draw.ellipse((480, 480, 544, 544), fill=(232, 190, 42, 255))
+    for x in range(340, 700, 60):
+        draw.ellipse((x, 720, x + 28, 748), fill=(232, 190, 42, 255))
+    provider = StaticRawEditProvider(raw_scene)
+
+    source = Image.new("RGB", (72, 72), (35, 92, 43))
+    edit_matte = Image.new("L", source.size, 0)
+    ImageDraw.Draw(edit_matte).ellipse((25, 25, 47, 47), fill=255)
+
+    crop_out, _result = _run(
+        redraw_module._redraw_source_context_with_edit_matte(
+            source_crop=source,
+            edit_matte=edit_matte,
+            instruction="paint yellow dandelion and buttercup flower heads",
+            provider_inst=provider,
+            tradition="default",
+            target_description="dandelion heads in grass",
+            target_palette="yellow",
+        )
+    )
+
+    alpha_px = int((np.asarray(crop_out.convert("RGBA").split()[-1]) > 0).sum())
+
+    assert alpha_px == 0
 
 
 def test_refined_flower_replacement_covers_old_source_flower_residue(
