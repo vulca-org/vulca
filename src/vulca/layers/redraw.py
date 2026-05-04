@@ -403,6 +403,14 @@ def _crop_rgba_with_alpha(src_rgba, alpha, crop_box):
     return crop, crop_alpha
 
 
+def _pad_crop_box(crop_box, canvas_w: int, canvas_h: int, padding: int):
+    x = max(0, crop_box.x - padding)
+    y = max(0, crop_box.y - padding)
+    right = min(canvas_w, crop_box.x + crop_box.w + padding)
+    bottom = min(canvas_h, crop_box.y + crop_box.h + padding)
+    return type(crop_box)(x, y, max(0, right - x), max(0, bottom - y))
+
+
 def _resolve_source_context_image(
     *,
     artwork_dir: str,
@@ -513,11 +521,290 @@ def _build_flower_edit_matte(source_crop, child_alpha):
     if not edit.any():
         return Image.new("L", child_alpha.size, 0)
 
+    seed = Image.fromarray((edit.astype(np.uint8) * 255))
+    opened = seed.filter(ImageFilter.MinFilter(3)).filter(ImageFilter.MaxFilter(3))
+    opened_arr = (np.asarray(opened) > 0) & child_visible
+    if opened_arr.any() and int(opened_arr.sum()) >= max(6, int(edit.sum() * 0.25)):
+        edit = opened_arr
+
     matte = Image.fromarray((edit.astype(np.uint8) * 255))
-    matte = matte.filter(ImageFilter.MaxFilter(5)).filter(ImageFilter.GaussianBlur(1.0))
+    matte = matte.filter(ImageFilter.MaxFilter(3)).filter(ImageFilter.GaussianBlur(0.7))
     matte_arr = np.minimum(np.asarray(matte), child).astype(np.uint8)
     matte_arr[matte_arr < 10] = 0
     return Image.fromarray(matte_arr)
+
+
+def _build_flower_removal_matte(source_crop, child_alpha, edit_matte):
+    import numpy as np
+
+    from PIL import Image, ImageFilter
+
+    rgb = np.asarray(source_crop.convert("RGB")).astype(np.int16)
+    child = np.asarray(child_alpha.convert("L")) > 0
+    edit = np.asarray(edit_matte.convert("L")) > 0
+    if rgb.shape[:2] != child.shape or child.shape != edit.shape:
+        raise ValueError("source crop, child alpha, and edit matte sizes must match")
+    if not edit.any():
+        return edit_matte.convert("L")
+
+    red = rgb[:, :, 0]
+    green = rgb[:, :, 1]
+    blue = rgb[:, :, 2]
+    channel_spread = np.maximum.reduce((red, green, blue)) - np.minimum.reduce(
+        (red, green, blue)
+    )
+    old_flower_residue = (
+        (red > 145)
+        & (green > 135)
+        & (blue > 105)
+        & (channel_spread < 105)
+        & ~((green > red + 12) & (green > blue + 12))
+    )
+
+    seed = Image.fromarray((edit.astype(np.uint8) * 255))
+    proximity = seed.filter(ImageFilter.MaxFilter(17))
+    proximity_arr = np.asarray(proximity) > 0
+    removal = proximity_arr | (old_flower_residue & child)
+    removal = _remove_tiny_binary_components(removal, min_area=4)
+    if not removal.any():
+        return edit_matte.convert("L")
+
+    matte = Image.fromarray((removal.astype(np.uint8) * 255))
+    matte = matte.filter(ImageFilter.MaxFilter(3)).filter(ImageFilter.GaussianBlur(0.8))
+    matte_arr = np.asarray(matte).astype(np.uint8)
+    matte_arr[matte_arr < 10] = 0
+    return Image.fromarray(matte_arr, mode="L")
+
+
+def _build_flower_generation_matte(edit_matte, removal_matte):
+    import numpy as np
+
+    from PIL import Image, ImageFilter
+
+    edit = edit_matte.convert("L")
+    removal = removal_matte.convert("L")
+    if edit.size != removal.size:
+        raise ValueError("edit matte and removal matte sizes must match")
+
+    edit_arr = np.asarray(edit)
+    removal_arr = np.asarray(removal)
+    if not np.any(edit_arr > 8):
+        return edit
+
+    expanded = edit.filter(ImageFilter.MaxFilter(13)).filter(
+        ImageFilter.GaussianBlur(0.8)
+    )
+    generation_arr = np.minimum(np.asarray(expanded), removal_arr).astype(np.uint8)
+    generation_arr = np.maximum(generation_arr, edit_arr).astype(np.uint8)
+    generation_arr[generation_arr < 10] = 0
+    return Image.fromarray(generation_arr, mode="L")
+
+
+def _clear_source_crop_with_matte(source_crop, removal_matte):
+    import numpy as np
+
+    from PIL import Image
+
+    source = source_crop.convert("RGB")
+    arr = np.asarray(source).copy()
+    remove = np.asarray(removal_matte.convert("L")) > 8
+    if arr.shape[:2] != remove.shape:
+        raise ValueError("source crop and removal matte sizes must match")
+    if not remove.any():
+        return source
+
+    red = arr[:, :, 0].astype(np.int16)
+    green = arr[:, :, 1].astype(np.int16)
+    blue = arr[:, :, 2].astype(np.int16)
+    channel_spread = np.maximum.reduce((red, green, blue)) - np.minimum.reduce(
+        (red, green, blue)
+    )
+    flower_like = (
+        (red > 145)
+        & (green > 135)
+        & (blue > 105)
+        & (channel_spread < 120)
+    )
+    background = (~remove) & (~flower_like)
+    if not background.any():
+        background = ~remove
+    if not background.any():
+        arr[remove] = np.array(CREAM_BG_RGB, dtype=np.uint8)
+        return Image.fromarray(arr, mode="RGB")
+
+    arr = _fill_removed_pixels_from_boundary(arr, remove, background)
+    return Image.fromarray(arr, mode="RGB")
+
+
+def _fill_removed_pixels_from_boundary(arr, remove, known):
+    import numpy as np
+
+    filled = arr.copy()
+    unknown = remove.copy()
+    known = known.copy()
+    height, width = unknown.shape
+    max_iterations = max(1, min(max(height, width), 512))
+
+    for _ in range(max_iterations):
+        if not unknown.any():
+            break
+
+        acc = np.zeros(filled.shape, dtype=np.uint32)
+        count = np.zeros(unknown.shape, dtype=np.uint8)
+        for dy in (-1, 0, 1):
+            for dx in (-1, 0, 1):
+                if dy == 0 and dx == 0:
+                    continue
+                src_y0 = max(0, -dy)
+                src_y1 = height - max(0, dy)
+                dst_y0 = max(0, dy)
+                dst_y1 = height - max(0, -dy)
+                src_x0 = max(0, -dx)
+                src_x1 = width - max(0, dx)
+                dst_x0 = max(0, dx)
+                dst_x1 = width - max(0, -dx)
+
+                src_known = known[src_y0:src_y1, src_x0:src_x1]
+                target = unknown[dst_y0:dst_y1, dst_x0:dst_x1] & src_known
+                if not target.any():
+                    continue
+                src_values = filled[src_y0:src_y1, src_x0:src_x1]
+                for channel in range(3):
+                    acc_channel = acc[dst_y0:dst_y1, dst_x0:dst_x1, channel]
+                    acc_channel[target] += src_values[:, :, channel][target]
+                count_view = count[dst_y0:dst_y1, dst_x0:dst_x1]
+                count_view[target] += 1
+
+        candidates = unknown & (count > 0)
+        if not candidates.any():
+            break
+        filled[candidates] = (
+            acc[candidates] / count[candidates, None]
+        ).astype(np.uint8)
+        known[candidates] = True
+        unknown[candidates] = False
+
+    if unknown.any():
+        fallback = np.median(filled[known], axis=0).astype(np.uint8)
+        filled[unknown] = fallback
+    return filled
+
+
+def _build_source_flower_cover_alpha(source_crop, removal_matte):
+    import numpy as np
+
+    from PIL import Image, ImageFilter
+
+    rgb = np.asarray(source_crop.convert("RGB")).astype(np.int16)
+    removal = np.asarray(removal_matte.convert("L"))
+    if rgb.shape[:2] != removal.shape:
+        raise ValueError("source crop and removal matte sizes must match")
+
+    red = rgb[:, :, 0]
+    green = rgb[:, :, 1]
+    blue = rgb[:, :, 2]
+    channel_spread = np.maximum.reduce((red, green, blue)) - np.minimum.reduce(
+        (red, green, blue)
+    )
+    white_like = (
+        (red > 155)
+        & (green > 150)
+        & (blue > 120)
+        & (channel_spread < 120)
+    )
+    yellow_center = (
+        (red > 135)
+        & (green > 105)
+        & (blue < 145)
+        & ((red - blue) > 20)
+    )
+    old_flower = (white_like | yellow_center) & (removal > 8)
+    if not old_flower.any():
+        return Image.new("L", source_crop.size, 0)
+
+    old_flower = _remove_tiny_binary_components(old_flower, min_area=1)
+    if not old_flower.any():
+        return Image.new("L", source_crop.size, 0)
+
+    cover = Image.fromarray((old_flower.astype(np.uint8) * 255))
+    cover = cover.filter(ImageFilter.MaxFilter(3)).filter(ImageFilter.GaussianBlur(0.5))
+    cover_arr = np.minimum(np.asarray(cover), removal).astype(np.uint8)
+    cover_arr[cover_arr < 10] = 0
+    return Image.fromarray(cover_arr, mode="L")
+
+
+def _build_generated_flower_cover_patch(generated_crop, source_cover_alpha):
+    import numpy as np
+
+    from PIL import Image, ImageFilter
+
+    flowers = generated_crop.convert("RGBA")
+    cover_alpha = source_cover_alpha.convert("L")
+    if flowers.size != cover_alpha.size:
+        raise ValueError("generated crop and source cover alpha sizes must match")
+
+    flower_alpha = np.asarray(flowers.split()[-1])
+    rgb = np.asarray(flowers.convert("RGB")).astype(np.int16)
+    cover = np.asarray(cover_alpha)
+    red = rgb[:, :, 0]
+    green = rgb[:, :, 1]
+    blue = rgb[:, :, 2]
+    channel_spread = np.maximum.reduce((red, green, blue)) - np.minimum.reduce(
+        (red, green, blue)
+    )
+    white_like = (
+        (red > 145)
+        & (green > 145)
+        & (blue > 120)
+        & (channel_spread < 120)
+    )
+    yellow_center = (
+        (red > 130)
+        & (green > 95)
+        & (blue < 160)
+        & ((red - blue) > 20)
+    )
+    flower_paint = (white_like | yellow_center) & (flower_alpha > 8)
+    cover_visible = cover > 8
+    if not flower_paint.any() or not cover_visible.any():
+        return Image.new("RGBA", flowers.size, (0, 0, 0, 0))
+
+    proximity = Image.fromarray((flower_paint.astype(np.uint8) * 255))
+    proximity = proximity.filter(ImageFilter.MaxFilter(25))
+    fill_area = cover_visible & (np.asarray(proximity) > 8) & ~flower_paint
+    if not fill_area.any():
+        return Image.new("RGBA", flowers.size, (0, 0, 0, 0))
+
+    flower_rgb = np.asarray(flowers.convert("RGB")).copy()
+    filled_rgb = _fill_removed_pixels_from_boundary(
+        flower_rgb,
+        fill_area,
+        flower_paint,
+    )
+    patch_arr = np.zeros((*cover.shape, 4), dtype=np.uint8)
+    patch_arr[:, :, :3] = filled_rgb
+    patch_alpha = cover.copy().astype(np.uint8)
+    patch_alpha[~fill_area] = 0
+    patch_arr[:, :, 3] = patch_alpha
+    return Image.fromarray(patch_arr, mode="RGBA")
+
+
+def _compose_flower_replacement_patch(
+    source_crop,
+    cleared_crop,
+    generated_crop,
+    removal_matte,
+):
+    from PIL import Image
+
+    source_cover_alpha = _build_source_flower_cover_alpha(source_crop, removal_matte)
+    base = Image.new("RGBA", cleared_crop.size, (0, 0, 0, 0))
+    flowers = generated_crop.convert("RGBA")
+    base.alpha_composite(flowers)
+    base.alpha_composite(
+        _build_generated_flower_cover_patch(flowers, source_cover_alpha)
+    )
+    return base
 
 
 def _build_square_padded_edit_inputs(
@@ -594,6 +881,8 @@ def _write_redraw_debug_summary(
     status: str,
     advisory: dict | None = None,
     output_path: str = "",
+    final_source_pasteback_path: str = "",
+    source_pasteback_error: str = "",
     error: str = "",
 ) -> None:
     if not debug_artifacts:
@@ -624,6 +913,10 @@ def _write_redraw_debug_summary(
         summary["redraw_advisory"] = advisory
     if output_path:
         summary["output_path"] = output_path
+    if final_source_pasteback_path:
+        summary["final_source_pasteback_path"] = final_source_pasteback_path
+    if source_pasteback_error:
+        summary["source_pasteback_error"] = source_pasteback_error
     if error:
         summary["error"] = error
     summary_path = debug_artifacts["dir"] / "summary.json"
@@ -681,8 +974,20 @@ def _build_flower_output_alpha(crop_rgba, edit_matte):
         & ~white_like
         & ~yellow_center
     )
+    olive_halo = (
+        (red > 45)
+        & (red < 120)
+        & (green > 55)
+        & (green < 135)
+        & (blue > 25)
+        & (blue < 95)
+        & (green >= red - 10)
+        & ~white_like
+        & ~yellow_center
+    )
     alpha_arr[dark_artifact] = 0
     alpha_arr[hedge_like] = 0
+    alpha_arr[olive_halo] = 0
     return Image.fromarray(alpha_arr.astype(np.uint8), mode="L")
 
 
@@ -690,6 +995,7 @@ async def _redraw_source_context_with_edit_matte(
     *,
     source_crop,
     edit_matte,
+    removal_matte=None,
     instruction: str,
     provider_inst,
     tradition: str,
@@ -704,12 +1010,16 @@ async def _redraw_source_context_with_edit_matte(
     import io as _io
     import tempfile
 
-    import numpy as np
     from PIL import Image
 
+    replacement_matte = (
+        removal_matte.convert("L") if removal_matte is not None else edit_matte
+    )
+    generation_matte = _build_flower_generation_matte(edit_matte, replacement_matte)
+    cleared_crop = _clear_source_crop_with_matte(source_crop, replacement_matte)
     input_image, mask, content_box = _build_square_padded_edit_inputs(
-        source_crop,
-        edit_matte,
+        cleared_crop,
+        generation_matte,
         target_size=1024,
     )
     image_tmp = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
@@ -724,16 +1034,32 @@ async def _redraw_source_context_with_edit_matte(
         if debug_artifacts:
             index = debug_child_index or len(debug_artifacts["calls"]) + 1
             prefix = f"child_{index:02d}"
+            source_crop_path = debug_artifacts["dir"] / f"{prefix}_source_crop.png"
+            edit_matte_path = debug_artifacts["dir"] / f"{prefix}_edit_matte.png"
+            removal_matte_path = (
+                debug_artifacts["dir"] / f"{prefix}_removal_matte.png"
+            )
+            cleared_crop_path = (
+                debug_artifacts["dir"] / f"{prefix}_cleared_crop.png"
+            )
             input_path = debug_artifacts["dir"] / f"{prefix}_input.png"
             mask_path = debug_artifacts["dir"] / f"{prefix}_mask.png"
             raw_path = debug_artifacts["dir"] / f"{prefix}_raw.png"
             patch_path = debug_artifacts["dir"] / f"{prefix}_patch.png"
             pasteback_path = debug_artifacts["dir"] / f"{prefix}_pasteback.png"
+            source_crop.save(source_crop_path)
+            generation_matte.save(edit_matte_path)
+            replacement_matte.save(removal_matte_path)
+            cleared_crop.save(cleared_crop_path)
             input_image.save(input_path)
             mask.save(mask_path)
             debug_record = {
                 "index": index,
                 "status": "started",
+                "source_crop_path": str(source_crop_path),
+                "edit_matte_path": str(edit_matte_path),
+                "removal_matte_path": str(removal_matte_path),
+                "cleared_crop_path": str(cleared_crop_path),
                 "input_path": str(input_path),
                 "mask_path": str(mask_path),
                 "raw_path": str(raw_path),
@@ -750,9 +1076,11 @@ async def _redraw_source_context_with_edit_matte(
         )
         prompt = (
             f"{prompt}\n"
-            "Use the source crop as visual context. Only repaint the transparent "
-            "mask pixels. Keep opaque/unmasked hedge leaves and lighting unchanged. "
-            "Do not create a new dark hedge patch or repaint the whole crop."
+            "Use the source crop as visual context. The transparent mask pixels "
+            "are a replacement zone where the previous flowers have already been "
+            "cleared from the input. Paint new flowers there while keeping "
+            "opaque/unmasked hedge leaves and lighting unchanged. Do not create a "
+            "new dark hedge patch or repaint the whole crop."
         )
         result = await provider_inst.inpaint_with_mask(
             image_path=image_tmp.name,
@@ -778,8 +1106,14 @@ async def _redraw_source_context_with_edit_matte(
         out_img = _fit_into_canvas(out_img, (1024, 1024), bg_rgb=CREAM_BG_RGB)
         crop_out = out_img.crop(content_box).resize(source_crop.size, Image.LANCZOS)
         crop_out = crop_out.convert("RGBA")
-        output_alpha = _build_flower_output_alpha(crop_out, edit_matte)
-        crop_out.putalpha(output_alpha)
+        flower_alpha = _build_flower_output_alpha(crop_out, generation_matte)
+        crop_out.putalpha(flower_alpha)
+        crop_out = _compose_flower_replacement_patch(
+            source_crop,
+            cleared_crop,
+            crop_out,
+            replacement_matte,
+        )
         if debug_record is not None:
             crop_out.save(debug_record["patch_path"])
             pasteback = source_crop.convert("RGBA")
@@ -954,7 +1288,10 @@ async def redraw_layer(
         choose_redraw_route,
     )
     from vulca.layers.mask_refine import refine_mask_for_target
-    from vulca.layers.redraw_quality import evaluate_redraw_quality
+    from vulca.layers.redraw_quality import (
+        evaluate_redraw_quality,
+        is_texture_redraw_request,
+    )
     from vulca.providers import get_image_provider
 
     # 1. Find target layer
@@ -1010,6 +1347,18 @@ async def redraw_layer(
         description=target.info.description,
         instruction=instruction,
     )
+    bbox_area_pct = area_pct / max(0.0001, bbox_fill)
+    preflight_skip_reason = ""
+    if (
+        route == "auto"
+        and not refinement.applied
+        and is_texture_redraw_request(
+            description=target.info.description,
+            instruction=instruction,
+        )
+        and (area_pct > 5.0 or bbox_area_pct > 10.0)
+    ):
+        preflight_skip_reason = "broad_texture_repaint_risk"
     img_provider = get_image_provider(provider, api_key=api_key)
     # v0.20.1 — per-call model override, matching generate_image MCP pattern
     # (mcp_server.py:1340-1344). Silent no-op if provider has no `model` attr.
@@ -1031,7 +1380,9 @@ async def redraw_layer(
 
     refinement_path_available = refinement.applied and has_inpaint and route != "img2img"
 
-    if route == "auto":
+    if preflight_skip_reason:
+        chosen_route = "skip"
+    elif route == "auto":
         chosen_route = "inpaint" if (sparse and has_inpaint) else "img2img"
     elif route == "inpaint":
         if not has_inpaint:
@@ -1072,7 +1423,9 @@ async def redraw_layer(
             manifest_data=manifest_data,
             expected_size=src_rgba.size,
         )
-    if refinement_path_available:
+    if preflight_skip_reason:
+        rgba = src_rgba.copy()
+    elif refinement_path_available:
         rgba = Image.new("RGBA", src_rgba.size, (0, 0, 0, 0))
         refined_alpha = Image.new("L", src_alpha.size, 0)
         for child_index, child_mask in enumerate(refinement.child_masks, start=1):
@@ -1081,6 +1434,12 @@ async def redraw_layer(
             if crop_box.w <= 0 or crop_box.h <= 0:
                 continue
             if source_context is not None:
+                crop_box = _pad_crop_box(
+                    crop_box,
+                    src_rgba.size[0],
+                    src_rgba.size[1],
+                    padding=max(8, round(max(crop_box.w, crop_box.h) * 0.5)),
+                )
                 box = (
                     crop_box.x,
                     crop_box.y,
@@ -1090,9 +1449,15 @@ async def redraw_layer(
                 source_crop = source_context.crop(box).convert("RGB")
                 crop_alpha = child_mask.crop(box).convert("L")
                 edit_matte = _build_flower_edit_matte(source_crop, crop_alpha)
+                removal_matte = _build_flower_removal_matte(
+                    source_crop,
+                    crop_alpha,
+                    edit_matte,
+                )
                 crop_out, _result = await _redraw_source_context_with_edit_matte(
                     source_crop=source_crop,
                     edit_matte=edit_matte,
+                    removal_matte=removal_matte,
                     instruction=instruction,
                     provider_inst=img_provider,
                     tradition=tradition,
@@ -1259,11 +1624,17 @@ async def redraw_layer(
             "mask_granularity_score", 0.0
         ),
     )
-    if not quality_report.passed:
+    quality_failures = list(quality_report.failures)
+    quality_gate_passed = quality_report.passed
+    if preflight_skip_reason:
+        quality_failures.append(preflight_skip_reason)
+        quality_gate_passed = False
+
+    if not quality_gate_passed:
         logger.warning(
             "redraw quality gate failed for layer=%s failures=%s metrics=%s",
             layer_name,
-            quality_report.failures,
+            quality_failures,
             quality_report.metrics,
         )
     actual_redraw_route = (
@@ -1285,19 +1656,27 @@ async def redraw_layer(
         "provider_requires_mask_for_edits": bool(
             edit_caps and edit_caps.requires_mask_for_edits
         ),
-        "quality_gate_passed": quality_report.passed,
-        "quality_failures": list(quality_report.failures),
+        "quality_gate_passed": quality_gate_passed,
+        "quality_failures": quality_failures,
+        "redraw_skipped": bool(preflight_skip_reason),
+        "redraw_skip_reason": preflight_skip_reason,
         "refinement_applied": refinement_path_available,
         "refinement_reason": refinement.reason,
         "refinement_strategy": refinement.strategy,
         "refinement_source_context_used": bool(
             refinement_path_available and source_context is not None
         ),
-        "refinement_edit_matte": "flower_evidence"
+        "refinement_edit_matte": "small_botanical_evidence"
         if refinement_path_available and source_context is not None
         else "child_alpha"
         if refinement_path_available
         else "none",
+        "refinement_replacement_matte": "small_botanical_removal"
+        if refinement_path_available and source_context is not None
+        else "none",
+        "refinement_composition": "small_botanical_evidence_paint_cover"
+        if refinement_path_available and source_context is not None
+        else "generated_patch",
         "refined_child_count": len(refinement.child_masks)
         if refinement_path_available
         else 0,
@@ -1319,11 +1698,25 @@ async def redraw_layer(
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     rgba.save(str(out_path), "PNG")
+    final_source_pasteback_path = ""
+    source_pasteback_error = ""
+    if debug_artifacts and source_context is not None:
+        try:
+            source_pasteback = source_context.convert("RGBA")
+            source_pasteback.alpha_composite(rgba.convert("RGBA"))
+            final_source_pasteback_path = str(
+                debug_artifacts["dir"] / "final_source_pasteback.png"
+            )
+            source_pasteback.save(final_source_pasteback_path)
+        except Exception as exc:
+            source_pasteback_error = str(exc)
     _write_redraw_debug_summary(
         debug_artifacts,
         status="completed",
         advisory=redraw_advisory,
         output_path=str(out_path),
+        final_source_pasteback_path=final_source_pasteback_path,
+        source_pasteback_error=source_pasteback_error,
     )
 
     # v0.18.0: manifest update happens whenever the caller is NOT in legacy
