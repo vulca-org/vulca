@@ -812,7 +812,7 @@ def test_yellow_replacement_patch_does_not_expand_across_whole_old_head():
     removal_matte = Image.new("L", source.size, 0)
     ImageDraw.Draw(removal_matte).ellipse((14, 14, 30, 26), fill=255)
     generated = Image.new("RGBA", source.size, (0, 0, 0, 0))
-    generated.putpixel((33, 20), (232, 190, 42, 255))
+    generated.putpixel((30, 20), (232, 190, 42, 255))
 
     patch = redraw_module._compose_flower_replacement_patch(
         source,
@@ -823,7 +823,7 @@ def test_yellow_replacement_patch_does_not_expand_across_whole_old_head():
     )
 
     assert patch.getpixel(old_flower_xy)[3] == 0
-    assert patch.getpixel((33, 20))[3] > 0
+    assert patch.getpixel((30, 20))[3] > 0
 
 
 def test_flower_replacement_patch_does_not_fill_distant_old_flowers():

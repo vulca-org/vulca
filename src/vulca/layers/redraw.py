@@ -786,7 +786,8 @@ def _build_generated_flower_cover_patch(
         return Image.new("RGBA", flowers.size, (0, 0, 0, 0))
 
     proximity = Image.fromarray((flower_paint.astype(np.uint8) * 255))
-    proximity = proximity.filter(ImageFilter.MaxFilter(25))
+    cover_radius = 11 if target_palette == "yellow" else 25
+    proximity = proximity.filter(ImageFilter.MaxFilter(cover_radius))
     fill_area = cover_visible & (np.asarray(proximity) > 8) & ~flower_paint
     if not fill_area.any():
         return Image.new("RGBA", flowers.size, (0, 0, 0, 0))
