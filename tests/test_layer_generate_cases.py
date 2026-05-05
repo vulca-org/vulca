@@ -229,3 +229,119 @@ def test_layer_generate_case_requires_per_layer_asset_paths():
             layers=bad_layers,
             created_at="2026-05-05T12:00:00Z",
         )
+
+
+def test_layer_generate_case_taxonomy_rejects_unknown_labels():
+    from vulca.layers.layer_generate_cases import (
+        validate_failure_type,
+        validate_preferred_action,
+        validate_route_recommendation,
+    )
+
+    assert validate_failure_type("") == ""
+    assert validate_failure_type("style_drift") == "style_drift"
+    with pytest.raises(ValueError, match="unsupported layer_generate failure_type"):
+        validate_failure_type("pasteback_mismatch")
+
+    assert validate_preferred_action("") == ""
+    assert validate_preferred_action("split_layer") == "split_layer"
+    with pytest.raises(ValueError, match="unsupported layer_generate preferred_action"):
+        validate_preferred_action("adjust_mask")
+
+    assert validate_route_recommendation("") == ""
+    assert validate_route_recommendation("direct_generation") == "direct_generation"
+    with pytest.raises(
+        ValueError,
+        match="unsupported layer_generate route_recommendation",
+    ):
+        validate_route_recommendation("sparse_bbox_crop")
+
+
+def test_layer_generate_case_learning_targets_round_trip():
+    from vulca.layers.layer_generate_cases import build_layer_generate_case
+
+    record = build_layer_generate_case(
+        user_intent="Create layers.",
+        tradition="test",
+        style_constraints=_style_constraints(),
+        layer_plan=_layer_plan(),
+        prompt_stack=_prompt_stack(),
+        provider="openai",
+        model="gpt-image-2",
+        layer_manifest_path="runs/layered/case/manifest.json",
+        layers=_layers(),
+        learning_targets={
+            "tiny_model": {
+                "failure_classification": "style_drift",
+                "quality_score": 0.42,
+                "route_recommendation": "adjust_prompt",
+            },
+            "tiny_agent": {
+                "next_action_policy": "adjust_prompt",
+            },
+        },
+        failure_type="style_drift",
+        preferred_action="adjust_prompt",
+        reviewer="human:reviewer-a",
+        reviewed_at="2026-05-05T13:00:00Z",
+        created_at="2026-05-05T12:00:00Z",
+    )
+
+    assert record["learning_targets"] == {
+        "tiny_model": {
+            "failure_classification": "style_drift",
+            "quality_score": 0.42,
+            "route_recommendation": "adjust_prompt",
+        },
+        "tiny_agent": {
+            "next_action_policy": "adjust_prompt",
+        },
+    }
+    assert record["review"] == {
+        "human_accept": None,
+        "failure_type": "style_drift",
+        "preferred_action": "adjust_prompt",
+        "reviewer": "human:reviewer-a",
+        "reviewed_at": "2026-05-05T13:00:00Z",
+    }
+
+
+def test_layer_generate_case_id_is_stable_for_same_inputs():
+    from vulca.layers.layer_generate_cases import build_layer_generate_case
+
+    kwargs = {
+        "user_intent": "Create layers.",
+        "tradition": "test",
+        "style_constraints": _style_constraints(),
+        "layer_plan": _layer_plan(),
+        "prompt_stack": _prompt_stack(),
+        "provider": "openai",
+        "model": "gpt-image-2",
+        "layer_manifest_path": "runs/layered/case/manifest.json",
+        "layers": _layers(),
+        "created_at": "2026-05-05T12:00:00Z",
+    }
+    first = build_layer_generate_case(**kwargs)
+    second = build_layer_generate_case(**kwargs)
+    changed = build_layer_generate_case(**{**kwargs, "model": "other-model"})
+
+    assert first["case_id"] == second["case_id"]
+    assert first["case_id"] != changed["case_id"]
+
+
+def test_append_layer_generate_case_writes_one_json_line(tmp_path):
+    from vulca.layers.layer_generate_cases import append_layer_generate_case
+
+    path = tmp_path / "cases" / "layer_generate_cases.jsonl"
+    record = {
+        "schema_version": 1,
+        "case_type": "layer_generate_case",
+        "case_id": "layer_generate_example",
+    }
+
+    written = append_layer_generate_case(str(path), record)
+
+    assert written == str(path)
+    lines = path.read_text().splitlines()
+    assert len(lines) == 1
+    assert json.loads(lines[0]) == record
