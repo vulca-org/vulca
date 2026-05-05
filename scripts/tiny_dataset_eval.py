@@ -52,6 +52,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="Write a comparison report for default tiny baselines.",
     )
     parser.add_argument(
+        "--prediction",
+        action="append",
+        default=[],
+        help="External prediction JSONL path; repeat to compare multiple models.",
+    )
+    parser.add_argument(
         "--output",
         "-o",
         default="",
@@ -72,6 +78,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             examples,
             train_split=args.train_split,
             eval_split=eval_split,
+            prediction_paths=args.prediction,
         )
     else:
         report = evaluate_tiny_dataset_examples(
