@@ -18,7 +18,7 @@
     },
     {
       "id": "scottish_lantern_multi_instance",
-      "source_artifact": "docs/visual-specs/2026-04-23-scottish-chinese-fusion/source.jpg",
+      "source_artifact": "tests/fixtures/multi_instance/lanterns_6.jpg",
       "failure_type": "mask_too_broad",
       "preferred_action": "adjust_mask",
       "notes": "Multi-instance lantern rows should remain separate enough for targeted redraw."

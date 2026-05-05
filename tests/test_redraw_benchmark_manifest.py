@@ -1,4 +1,5 @@
 import json
+import subprocess
 from pathlib import Path
 
 from vulca.layers.redraw_cases import FAILURE_TYPES, PREFERRED_ACTIONS
@@ -18,6 +19,8 @@ def test_redraw_failure_taxonomy_matches_seed_manifest():
     taxonomy_preferred_actions = set(taxonomy["preferred_actions"])
     expected_preferred_actions = PREFERRED_ACTIONS - {""}
 
+    assert taxonomy["schema_version"] == 1
+    assert taxonomy["case_type"] == "redraw_failure_taxonomy"
     assert taxonomy_failure_types == FAILURE_TYPES
     assert len(taxonomy["failure_types"]) == len(FAILURE_TYPES)
     assert taxonomy_preferred_actions == expected_preferred_actions
@@ -34,3 +37,16 @@ def test_redraw_failure_taxonomy_matches_seed_manifest():
         artifact = (ROOT / source_artifact).resolve()
         assert artifact.is_relative_to(root), item["source_artifact"]
         assert artifact.is_file(), item["source_artifact"]
+        subprocess.run(
+            [
+                "git",
+                "-C",
+                str(ROOT),
+                "ls-files",
+                "--error-unmatch",
+                item["source_artifact"],
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
