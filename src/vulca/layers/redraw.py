@@ -1968,7 +1968,8 @@ async def redraw_layer(
 
     # Hybrid alpha mask still applies for legacy `extract`-mode layers whose
     # dominant_colors are stored — keep behavior parity across all branches.
-    _maybe_apply_legacy_color_mask(artwork_dir, manifest_data, target, out_path)
+    if not refinement_path_available:
+        _maybe_apply_legacy_color_mask(artwork_dir, manifest_data, target, out_path)
 
     # 9. Manifest update branch.
     #

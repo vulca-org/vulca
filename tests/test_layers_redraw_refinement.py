@@ -383,6 +383,42 @@ def test_refined_flower_layer_outputs_flower_edit_matte_not_child_context(
     assert out_area <= sum(call["edit_pixels"] for call in provider.calls)
 
 
+def test_refined_flower_layer_ignores_legacy_color_mask_dominant_colors(
+    tmp_path, monkeypatch
+):
+    from vulca.layers import redraw as redraw_module
+    import vulca.providers as providers_mod
+
+    provider = RecordingEditProvider()
+    monkeypatch.setattr(
+        providers_mod, "get_image_provider", lambda name, api_key="": provider
+    )
+    artwork = _stage_broad_flower_layer(tmp_path)
+    artwork.layers[0].info.dominant_colors = ["#235c2b"]
+    parent_alpha = Image.open(tmp_path / "flowers.png").convert("RGBA").split()[-1]
+    parent_area = int(np.asarray(parent_alpha).astype(bool).sum())
+
+    result = _run(
+        redraw_module.redraw_layer(
+            artwork,
+            layer_name="flowers",
+            instruction="small bright white wildflowers with warm yellow centers",
+            provider="openai",
+            artwork_dir=str(tmp_path),
+            route="auto",
+            preserve_alpha=True,
+        )
+    )
+
+    out_alpha = Image.open(result.image_path).convert("RGBA").split()[-1]
+    out_area = int(np.asarray(out_alpha).astype(bool).sum())
+    advisory = getattr(result, "redraw_advisory", {})
+
+    assert advisory["refinement_applied"] is True
+    assert out_area < parent_area * 0.5
+    assert out_area <= sum(call["edit_pixels"] for call in provider.calls)
+
+
 def test_refined_flower_layer_suppresses_black_generated_artifacts(
     tmp_path, monkeypatch
 ):
