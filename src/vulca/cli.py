@@ -1372,9 +1372,9 @@ def _cmd_layers(args: argparse.Namespace) -> None:
                         resolved_case_log_path,
                         record,
                     )
-                    print(f"Case log: {record['case_id']} -> {written_case_log_path}")
+                    print(f"  Case log: {record['case_id']} -> {written_case_log_path}")
                 except Exception as exc:
-                    print(f"Case log error: {exc}", file=sys.stderr)
+                    print(f"  Case log error: {exc}", file=sys.stderr)
         else:
             print("  Error: specify --layer or --layers with --merge", file=sys.stderr)
             sys.exit(1)
