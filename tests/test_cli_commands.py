@@ -1,7 +1,15 @@
+import os
+from pathlib import Path
 import subprocess
 import sys
 
 VULCA = [sys.executable, "-m", "vulca.cli"]
+ROOT = Path(__file__).resolve().parent.parent
+os.environ["PYTHONPATH"] = (
+    str(ROOT / "src")
+    + os.pathsep
+    + os.environ.get("PYTHONPATH", "")
+)
 
 
 class TestCLICommands:
@@ -47,3 +55,11 @@ class TestCLICommands:
         )
         assert result.returncode == 0
         assert "evaluate" in result.stdout.lower() or "artwork" in result.stdout.lower()
+
+    def test_layers_redraw_help_mentions_case_log(self):
+        result = subprocess.run(
+            VULCA + ["layers", "redraw", "--help"],
+            capture_output=True, text=True, timeout=10,
+        )
+        assert result.returncode == 0
+        assert "--case-log" in result.stdout

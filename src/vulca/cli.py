@@ -195,6 +195,14 @@ def main(argv: list[str] | None = None) -> None:
     layers_redraw.add_argument("--tradition", "-t", default="default", help="Cultural tradition")
     layers_redraw.add_argument("--re-split", action="store_true",
                                help="After merge+redraw, re-analyze and split back")
+    layers_redraw.add_argument(
+        "--case-log",
+        default="",
+        help=(
+            "Append a Learning Loop v0 redraw case JSONL record to this path. "
+            "If omitted, VULCA_REDRAW_CASE_LOG can enable logging."
+        ),
+    )
 
     layers_composite = layers_sub.add_parser("composite", help="Composite layers into flat image")
     layers_composite.add_argument("artwork_dir", help="Directory with layer PNGs + manifest")
@@ -1324,12 +1332,49 @@ def _cmd_layers(args: argparse.Namespace) -> None:
             else:
                 print(f"  Merged redraw: {result.info.name} -> {result.image_path}")
         elif args.layer:
+            source_layer = next(
+                (lr for lr in artwork.layers if lr.info.name == args.layer),
+                None,
+            )
             result = loop.run_until_complete(
                 redraw_layer(artwork, layer_name=args.layer,
                              instruction=args.instruction, provider=args.provider,
                              tradition=args.tradition, artwork_dir=args.artwork_dir)
             )
             print(f"  Redrawn: {result.info.name} -> {result.image_path}")
+            from vulca.layers.redraw_cases import (
+                append_redraw_case,
+                build_redraw_case,
+                resolve_case_log_path,
+            )
+            resolved_case_log_path = resolve_case_log_path(
+                getattr(args, "case_log", ""),
+                args.artwork_dir,
+            )
+            if resolved_case_log_path:
+                try:
+                    if source_layer is None:
+                        raise ValueError(f"layer {args.layer!r} not found in artwork")
+                    advisory = getattr(result, "redraw_advisory", {}) or {}
+                    record = build_redraw_case(
+                        artwork_dir=args.artwork_dir,
+                        source_image=artwork.source_image,
+                        layer_info=source_layer.info,
+                        instruction=args.instruction,
+                        provider=args.provider,
+                        model="",
+                        route_requested=str(advisory.get("route_requested", "")),
+                        source_layer_path=source_layer.image_path,
+                        redrawn_layer_path=result.image_path,
+                        redraw_advisory=advisory,
+                    )
+                    written_case_log_path = append_redraw_case(
+                        resolved_case_log_path,
+                        record,
+                    )
+                    print(f"Case log: {record['case_id']} -> {written_case_log_path}")
+                except Exception as exc:
+                    print(f"Case log error: {exc}", file=sys.stderr)
         else:
             print("  Error: specify --layer or --layers with --merge", file=sys.stderr)
             sys.exit(1)
