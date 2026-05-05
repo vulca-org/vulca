@@ -199,6 +199,55 @@ def test_build_decompose_case_uses_residual_complement_for_hierarchical_coverage
     assert record["quality"]["layer_coverage"]["claimed_pct"] == 40.0
 
 
+def test_build_decompose_case_fallback_coverage_uses_root_layers(tmp_path):
+    from vulca.layers.decompose_cases import build_decompose_case
+
+    manifest_path = tmp_path / "manifest.json"
+    manifest_data = {
+        "version": 5,
+        "split_mode": "claude_orchestrated",
+        "status": "ok",
+        "layers": [
+            {
+                "id": "layer_person",
+                "name": "person",
+                "semantic_path": "subject.person",
+                "file": "person.png",
+                "z_index": 20,
+                "quality_status": "detected",
+                "area_pct": 30.0,
+                "bbox": [10, 10, 40, 80],
+                "parent_layer_id": None,
+            },
+            {
+                "id": "layer_face",
+                "name": "face",
+                "semantic_path": "subject.person.face",
+                "file": "face.png",
+                "z_index": 30,
+                "quality_status": "detected",
+                "area_pct": 15.0,
+                "bbox": [15, 10, 25, 30],
+                "parent_layer_id": "layer_person",
+            },
+        ],
+    }
+    manifest_path.write_text(json.dumps(manifest_data))
+
+    record = build_decompose_case(
+        source_image="source.jpg",
+        mode="orchestrated",
+        provider="",
+        model="",
+        tradition="portrait",
+        output_dir=str(tmp_path),
+        manifest_path=str(manifest_path),
+        created_at="2026-05-05T12:00:00Z",
+    )
+
+    assert record["quality"]["layer_coverage"]["claimed_pct"] == 30.0
+
+
 def test_validate_decompose_labels_reject_unknown_values():
     from vulca.layers.decompose_cases import (
         validate_failure_type,

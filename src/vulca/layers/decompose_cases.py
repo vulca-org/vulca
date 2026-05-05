@@ -287,12 +287,9 @@ def _quality_record(
     if residual_pct:
         claimed_pct = round(_clamp_pct(100.0 - residual_pct), 4)
     else:
-        claimed_pct = round(
-            _clamp_pct(
-                sum(float(layer.get("area_pct", 0.0) or 0.0) for layer in non_residual)
-            ),
-            4,
-        )
+        root_layers = [layer for layer in non_residual if not layer.get("parent_layer_id")]
+        coverage_layers = root_layers or non_residual
+        claimed_pct = round(_clamp_pct(_sum_area_pct(coverage_layers)), 4)
     empty_layer_count = sum(
         1 for layer in non_residual if float(layer.get("area_pct", 0.0) or 0.0) <= 0.0
     )
@@ -325,6 +322,10 @@ def _quality_record(
 
 def _clamp_pct(value: float) -> float:
     return max(0.0, min(100.0, float(value)))
+
+
+def _sum_area_pct(layers: Sequence[Mapping[str, Any]]) -> float:
+    return sum(float(layer.get("area_pct", 0.0) or 0.0) for layer in layers)
 
 
 def _report_count(detection_report: Mapping[str, Any], key: str) -> int:
