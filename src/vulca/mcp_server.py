@@ -162,6 +162,18 @@ def _source_pasteback_preview(
     )
 
 
+def _should_log_orchestrated_decompose_case(
+    *,
+    status: str,
+    manifest_path: str | Path | None,
+) -> bool:
+    return (
+        status in {"ok", "partial"}
+        and bool(manifest_path)
+        and Path(manifest_path).exists()
+    )
+
+
 @mcp.tool()
 async def create_artwork(
     intent: str,
@@ -801,7 +813,10 @@ async def layers_split(
             case_log_path,
             str(result.output_dir),
         )
-        if resolved_case_log_path:
+        if resolved_case_log_path and _should_log_orchestrated_decompose_case(
+            status=result.status,
+            manifest_path=result.manifest_path,
+        ):
             try:
                 record = build_decompose_case(
                     source_image=str(img_p),

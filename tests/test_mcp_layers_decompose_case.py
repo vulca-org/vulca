@@ -30,11 +30,19 @@ def _install_fastmcp_stub(monkeypatch):
 
 
 class _FakePipelineResult:
-    def __init__(self, output_dir: Path, manifest_path: Path):
-        self.status = "partial"
+    def __init__(
+        self,
+        output_dir: Path,
+        manifest_path: Path,
+        *,
+        status: str = "partial",
+        reason: str | None = None,
+        layers: list[dict] | None = None,
+    ):
+        self.status = status
         self.manifest_path = manifest_path
         self.output_dir = output_dir
-        self.reason = None
+        self.reason = reason
         self.detection_report = {
             "requested": 1,
             "detected": 0,
@@ -43,7 +51,7 @@ class _FakePipelineResult:
             "success_rate": 0.0,
         }
         self.stage_timings = [{"stage": "total", "seconds": 0.01}]
-        self.layers = [
+        self.layers = layers if layers is not None else [
             {
                 "id": "layer_residual",
                 "name": "residual",
@@ -150,3 +158,61 @@ def test_layers_split_orchestrated_appends_decompose_case(tmp_path, monkeypatch)
     )
     assert record["quality"]["layer_coverage"]["residual_pct"] == 100.0
     assert record["review"]["preferred_action"] == ""
+
+
+def test_layers_split_orchestrated_error_skips_decompose_case_logging(
+    tmp_path,
+    monkeypatch,
+):
+    _install_fastmcp_stub(monkeypatch)
+
+    import vulca.pipeline.segment as segment_mod
+    from vulca.mcp_server import layers_split
+
+    source = tmp_path / "source.png"
+    source.write_bytes(b"not-read-by-stub")
+    out_dir = tmp_path / "layers"
+    case_log = tmp_path / "decompose_cases.jsonl"
+    plan = {
+        "slug": "case-test",
+        "domain": "news_photograph",
+        "entities": [
+            {
+                "name": "subject",
+                "label": "main subject",
+                "semantic_path": "subject.main",
+                "detector": "sam_bbox",
+                "bbox_hint_pct": [0.1, 0.1, 0.9, 0.9],
+            }
+        ],
+    }
+
+    def _fake_run(plan_obj, image_path, output_dir, force=True):  # noqa: ARG001
+        output_dir = Path(output_dir)
+        return _FakePipelineResult(
+            output_dir,
+            output_dir / "manifest.json",
+            status="error",
+            reason="pipeline produced no manifest",
+            layers=[],
+        )
+
+    monkeypatch.setattr(segment_mod, "run", _fake_run)
+
+    result = _run(
+        layers_split(
+            image_path=str(source),
+            output_dir=str(out_dir),
+            mode="orchestrated",
+            plan=json.dumps(plan),
+            case_log_path=str(case_log),
+        )
+    )
+
+    assert result["status"] == "error"
+    assert result["reason"] == "pipeline produced no manifest"
+    assert result["manifest_path"] == str(out_dir / "manifest.json")
+    assert "case_id" not in result
+    assert "case_log_path" not in result
+    assert "case_log_error" not in result
+    assert not case_log.exists()
