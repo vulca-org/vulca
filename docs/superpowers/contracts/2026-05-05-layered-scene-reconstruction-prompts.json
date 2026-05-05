@@ -1,0 +1,460 @@
+{
+  "schema_version": "2026-05-05.source_layered_generation.prompt_contracts.v1",
+  "name": "roadside_source_layered_generation_v0_24",
+  "product_contract": {
+    "workflow_kind": "source_conditioned_layered_generation",
+    "not_a_decompose_workflow": true,
+    "source_image_role": "Reference for geometry, scale, lighting, palette, and object identity.",
+    "control_mask_role": "Generation and compositing scaffold for layer ownership; not a decomposed source layer product.",
+    "output_role": "Editable semantic layer stack made from generated, locally redrawn, preserved, and residual layers."
+  },
+  "provider_contract": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "api_key_env": "OPENAI_API_KEY",
+    "base_url_env": "VULCA_OPENAI_BASE_URL",
+    "default_base_url": "https://globalai.vip/v1",
+    "endpoint": "/v1/images/edits",
+    "forbidden_endpoints": [
+      "/v1/chat/completions"
+    ],
+    "mask_convention": "Provider edit masks use alpha=0 for edit pixels and alpha=255 for preserved context.",
+    "control_mask_convention": "Curated semantic control masks use alpha>0 for pixels initially intended for that semantic layer before ownership normalization.",
+    "curl_template_lines": [
+      "export VULCA_OPENAI_BASE_URL=${VULCA_OPENAI_BASE_URL:-https://globalai.vip/v1}",
+      "curl -sS \"$VULCA_OPENAI_BASE_URL/images/edits\" \\",
+      "  -H \"Authorization: Bearer $OPENAI_API_KEY\" \\",
+      "  -F \"model=gpt-image-2\" \\",
+      "  -F \"image=@$LAYER_INPUT\" \\",
+      "  -F \"mask=@$LAYER_EDIT_MASK\" \\",
+      "  -F \"prompt=$LAYER_PROMPT\" \\",
+      "  -F \"size=${LAYER_SIZE:-1024x1024}\" \\",
+      "  -F \"quality=${LAYER_QUALITY:-high}\" \\",
+      "  -F \"output_format=png\""
+    ]
+  },
+  "artifact_policy": {
+    "default_artifact_root": ".scratch/source-layered-generation",
+    "large_images_are_gitignored_by_default": true,
+    "commit_large_generated_images_by_default": false,
+    "required_artifacts": [
+      "layer_plan.json",
+      "manifest.json",
+      "layers/<semantic_path>/input.png",
+      "layers/<semantic_path>/mask.png",
+      "layers/<semantic_path>/raw.png",
+      "layers/<semantic_path>/patch.png",
+      "layers/<semantic_path>/pasteback.png",
+      "source_pasteback.png",
+      "layered_composite.png",
+      "summary.json"
+    ]
+  },
+  "global_layer_planning_prompt_lines": [
+    "You are planning an editable semantic layer generation/reconstruction of one source image.",
+    "Return JSON only. Do not describe the image in prose.",
+    "Goal:",
+    "- Recreate the source image as a stack of editable generated visual layers.",
+    "- Each layer must own a clear semantic surface or object.",
+    "- Prefer fewer stable layers over many fragile fragments.",
+    "- Use a residual layer for pixels that are uncertain or not worth editing.",
+    "For each layer return:",
+    "- semantic_path: dot-separated stable name.",
+    "- display_name: short human-readable name.",
+    "- z_index: integer, lower means farther back.",
+    "- visual_role: background | subject | foreground | detail | residual.",
+    "- mask_prompt: concise phrase for segmentation.",
+    "- reconstruction_policy: reconstruct | preserve | local_redraw | residual.",
+    "- edit_risk: low | medium | high.",
+    "- forbidden_content: objects that must not appear in this layer.",
+    "- parent_layer: semantic_path or null.",
+    "Important:",
+    "- White and yellow flower heads should be detail layers, not part of hedge.",
+    "- Guardrail should be separate from vehicles and plants.",
+    "- Sky should not include trees, vehicles, rail, road, hedge, flowers, stems, or residual texture.",
+    "- Broad grass, hedge, and tree texture are high risk unless masks are clean.",
+    "- Detail control masks may overlap parent masks before normalization; normalized ownership must subtract detail pixels from their parents.",
+    "- This is not image decomposition: masks are generation and compositing scaffolds, not final extracted source layers."
+  ],
+  "common_edit_prefix_lines": [
+    "Edit only the transparent mask pixels where mask alpha=0.",
+    "Leave every opaque pixel unchanged.",
+    "Use the source crop only as geometry, lighting, edge, and scale context.",
+    "Do not create a full miniature scene.",
+    "Do not add objects outside the requested layer.",
+    "Return a clean layer-compatible result with no rectangular thumbnail, black background, hard pasted block, or unrelated scene content."
+  ],
+  "negative_prompt_block_lines": [
+    "Forbidden: black background, gray background, rectangular thumbnail, full scene, roadside panorama, car, truck, guardrail, sky, road, hedge, grass, tree, stems, extra flowers, sticker sheet, poster, text, watermark, logo, frame, border.",
+    "Only include the requested layer.",
+    "When the requested layer is one of the forbidden terms, remove that term from the forbidden list before sending the prompt."
+  ],
+  "layers": [
+    {
+      "semantic_path": "background.sky.clean_blue",
+      "display_name": "Clean sky",
+      "z_index": 0,
+      "visual_role": "background",
+      "mvp_policy": "reconstruct",
+      "allowed_policies": [
+        "reconstruct",
+        "preserve"
+      ],
+      "edit_risk": "low",
+      "parent_layer": null,
+      "mask_prompt": "clean blue sky region above trees and road",
+      "forbidden_content": [
+        "trees",
+        "vehicles",
+        "guardrail",
+        "road",
+        "hedge",
+        "flowers",
+        "stems",
+        "clouds",
+        "text",
+        "birds",
+        "buildings",
+        "silhouettes"
+      ],
+      "prompt_lines": [
+        "Reconstruct only the sky layer.",
+        "Create a clean, calm blue sky plate matching the source camera angle and light.",
+        "Keep it simple and graphic, suitable for a polished illustrated roadside scene.",
+        "Do not include trees, vehicles, guardrail, road, hedge, flowers, stems, clouds, text, birds, buildings, or silhouettes.",
+        "The sky should be smooth enough to sit behind all other layers."
+      ]
+    },
+    {
+      "semantic_path": "background.distant_trees",
+      "display_name": "Distant trees",
+      "z_index": 10,
+      "visual_role": "background",
+      "mvp_policy": "preserve",
+      "allowed_policies": [
+        "preserve",
+        "reconstruct"
+      ],
+      "edit_risk": "high",
+      "parent_layer": null,
+      "mask_prompt": "distant green tree canopy behind vehicles and guardrail",
+      "forbidden_content": [
+        "sky",
+        "vehicles",
+        "guardrail",
+        "road",
+        "foreground hedge",
+        "flowers",
+        "stems"
+      ],
+      "prompt_lines": [
+        "Reconstruct only the distant tree canopy layer.",
+        "Keep the tree mass behind the vehicles and guardrail.",
+        "Preserve the broad shape, height, light direction, and soft depth of the source.",
+        "Render it as cohesive illustrated foliage, not detailed noisy leaf texture.",
+        "Do not include sky, cars, trucks, guardrail, road, foreground hedge, flowers, or stems.",
+        "Avoid black fill, rectangular patches, and photo-real leaf noise."
+      ]
+    },
+    {
+      "semantic_path": "subject.vehicle.red_car",
+      "display_name": "Red car",
+      "z_index": 20,
+      "visual_role": "subject",
+      "mvp_policy": "preserve",
+      "allowed_policies": [
+        "preserve",
+        "reconstruct"
+      ],
+      "edit_risk": "medium",
+      "parent_layer": null,
+      "mask_prompt": "red car body and visible wheels on the roadside",
+      "forbidden_content": [
+        "sky",
+        "trees",
+        "guardrail",
+        "road",
+        "hedge",
+        "flowers",
+        "stems",
+        "other vehicles"
+      ],
+      "prompt_lines": [
+        "Reconstruct only the red car as a separate visual layer.",
+        "Preserve the car's source position, scale, side profile, roofline, windows, wheels, and perspective.",
+        "Make the styling cleaner and more graphic while still recognizable as the same roadside vehicle.",
+        "Do not include sky, trees, guardrail, road, hedge, flowers, stems, or other vehicles.",
+        "Keep edges crisp enough for compositing, with natural antialiasing."
+      ]
+    },
+    {
+      "semantic_path": "subject.vehicle.yellow_truck",
+      "display_name": "Yellow truck",
+      "z_index": 30,
+      "visual_role": "subject",
+      "mvp_policy": "preserve",
+      "allowed_policies": [
+        "preserve",
+        "reconstruct"
+      ],
+      "edit_risk": "high",
+      "parent_layer": null,
+      "mask_prompt": "distant yellow truck or vehicle behind the red car",
+      "forbidden_content": [
+        "sky",
+        "trees",
+        "red car",
+        "guardrail",
+        "road",
+        "hedge",
+        "flowers",
+        "stems"
+      ],
+      "prompt_lines": [
+        "Reconstruct only the distant yellow truck as a separate vehicle layer.",
+        "Preserve its source location, scale, perspective, and simple readable vehicle silhouette.",
+        "Keep the form understated because it is distant in the scene.",
+        "Do not include sky, tree canopy, red car, guardrail, road, hedge, grass, flowers, or stems.",
+        "If the mask boundary is uncertain, preserve the source pixels instead of inventing a new truck."
+      ]
+    },
+    {
+      "semantic_path": "foreground.guardrail",
+      "display_name": "Guardrail",
+      "z_index": 40,
+      "visual_role": "foreground",
+      "mvp_policy": "reconstruct",
+      "allowed_policies": [
+        "reconstruct",
+        "preserve"
+      ],
+      "edit_risk": "medium",
+      "parent_layer": null,
+      "mask_prompt": "metal roadside guardrail horizontal rail and posts",
+      "forbidden_content": [
+        "cars",
+        "sky",
+        "trees",
+        "road",
+        "hedge",
+        "grass",
+        "flowers",
+        "stems"
+      ],
+      "prompt_lines": [
+        "Reconstruct only the metal roadside guardrail layer.",
+        "Preserve the long horizontal rail direction, post rhythm, perspective, and occlusion relationship with the vehicles and plants.",
+        "Use a clean illustrated metal surface with subtle highlights.",
+        "Do not include cars, sky, trees, road, hedge, grass, flowers, or stems.",
+        "Avoid thick blocky bands, broken floating rail pieces, and dark background fill."
+      ]
+    },
+    {
+      "semantic_path": "foreground.grass_bank",
+      "display_name": "Grass bank",
+      "z_index": 50,
+      "visual_role": "foreground",
+      "mvp_policy": "preserve",
+      "allowed_policies": [
+        "preserve",
+        "residual"
+      ],
+      "edit_risk": "high",
+      "parent_layer": null,
+      "mask_prompt": "broad grass bank along the road below the guardrail",
+      "forbidden_content": [
+        "flowers",
+        "stems",
+        "vehicles",
+        "guardrail",
+        "sky",
+        "trees"
+      ],
+      "prompt_lines": [
+        "Preserve the broad grass bank source texture for the MVP.",
+        "Do not repaint this layer with the small botanical replacement strategy.",
+        "If a later reconstruction is enabled, preserve the broad silhouette, slope, and light direction while avoiding noisy photo leaf texture and rectangular patches."
+      ]
+    },
+    {
+      "semantic_path": "foreground.hedge_bush",
+      "display_name": "Hedge and bush base",
+      "z_index": 60,
+      "visual_role": "foreground",
+      "mvp_policy": "preserve",
+      "allowed_policies": [
+        "preserve",
+        "residual"
+      ],
+      "edit_risk": "high",
+      "parent_layer": null,
+      "mask_prompt": "dense green hedge and bush base behind small flowers",
+      "forbidden_content": [
+        "white flowers",
+        "yellow flowers",
+        "car parts",
+        "guardrail",
+        "sky",
+        "road",
+        "tree trunks"
+      ],
+      "prompt_lines": [
+        "Reconstruct only the broad foreground hedge and bush mass.",
+        "Preserve the overall silhouette, density, light direction, and roadside depth.",
+        "Create a cohesive illustrated green plant mass with controlled texture.",
+        "Do not generate individual white flowers, yellow flowers, car parts, guardrail, sky, road, or tree trunks unless those pixels are explicitly inside the mask.",
+        "Avoid noisy photo leaves, black fill, rectangular pasted blocks, and large color shifts.",
+        "MVP policy is preserve; this prompt is available only when broad texture reconstruction is explicitly enabled."
+      ]
+    },
+    {
+      "semantic_path": "detail.dry_stems",
+      "display_name": "Dry stems",
+      "z_index": 70,
+      "visual_role": "detail",
+      "mvp_policy": "preserve",
+      "allowed_policies": [
+        "preserve",
+        "reconstruct"
+      ],
+      "edit_risk": "medium",
+      "parent_layer": "foreground.hedge_bush",
+      "mask_prompt": "thin dry foreground stems and small branch lines",
+      "forbidden_content": [
+        "flower heads",
+        "leaves",
+        "sky",
+        "vehicles",
+        "guardrail",
+        "broad hedge texture"
+      ],
+      "prompt_lines": [
+        "Reconstruct only the thin dry foreground stems and small branch lines.",
+        "Preserve the source position, direction, taper, and overlap relationship with flowers and hedge.",
+        "Render as delicate natural line details with transparent surrounding pixels.",
+        "Do not include flower heads, leaves, sky, vehicles, guardrail, or broad hedge texture."
+      ]
+    },
+    {
+      "semantic_path": "detail.white_flower_cluster",
+      "display_name": "White flower heads",
+      "z_index": 80,
+      "visual_role": "detail",
+      "mvp_policy": "local_redraw",
+      "allowed_policies": [
+        "local_redraw",
+        "preserve"
+      ],
+      "edit_risk": "medium",
+      "parent_layer": "foreground.hedge_bush",
+      "mask_prompt": "small white wildflower heads in the hedge, excluding green leaves",
+      "forbidden_content": [
+        "hedge texture",
+        "grass",
+        "stems",
+        "guardrail",
+        "vehicles",
+        "sky",
+        "road",
+        "broad background area"
+      ],
+      "prompt_lines": [
+        "Reconstruct only the small white flower heads inside the transparent mask.",
+        "Paint separated tiny white wildflower heads with warm centers, varied spacing, and a clean illustrated style.",
+        "Match the source footprint, scale, lighting, and edge softness.",
+        "Do not repaint hedge texture, grass, stems, guardrail, vehicles, sky, road, or any broad background area.",
+        "Do not stack new flowers on top of visible old flower residue; the flower layer owns these pixels."
+      ]
+    },
+    {
+      "semantic_path": "detail.yellow_dandelion_heads",
+      "display_name": "Yellow dandelion heads",
+      "z_index": 90,
+      "visual_role": "detail",
+      "mvp_policy": "local_redraw",
+      "allowed_policies": [
+        "local_redraw",
+        "preserve"
+      ],
+      "edit_risk": "medium",
+      "parent_layer": "foreground.hedge_bush",
+      "mask_prompt": "small yellow dandelion or buttercup flower heads, excluding green leaves",
+      "template_variables": [
+        "head_count",
+        "plural_suffix"
+      ],
+      "forbidden_content": [
+        "extra heads",
+        "hedge texture",
+        "grass",
+        "stems",
+        "guardrail",
+        "vehicles",
+        "sky",
+        "road",
+        "broad background area"
+      ],
+      "prompt_lines": [
+        "Reconstruct only the yellow dandelion or buttercup flower heads inside the transparent mask.",
+        "Paint exactly {head_count} separated yellow flower head{plural_suffix}.",
+        "Match the original head size, footprint, and spacing.",
+        "Use warm yellow petals with slightly deeper centers and natural edge softness.",
+        "Do not add extra heads.",
+        "Do not repaint hedge texture, grass, stems, guardrail, vehicles, sky, road, or any broad background area.",
+        "Do not create a whole roadside scene, thumbnail, sticker sheet, black background, or rectangular patch."
+      ]
+    },
+    {
+      "semantic_path": "residual.source_texture",
+      "display_name": "Residual source texture",
+      "z_index": 100,
+      "visual_role": "residual",
+      "mvp_policy": "residual",
+      "allowed_policies": [
+        "residual"
+      ],
+      "edit_risk": "low",
+      "parent_layer": null,
+      "mask_prompt": "all pixels not owned by any named semantic layer",
+      "forbidden_content": [],
+      "prompt_lines": [
+        "Do not send residual source texture to the provider.",
+        "Copy source pixels into this locked safety layer for unassigned pixels.",
+        "Keep this layer visible in MVP composites so holes and missed masks are auditable."
+      ]
+    }
+  ],
+  "quality_gates": {
+    "per_layer": [
+      "alpha_non_empty_unless_explicitly_skipped",
+      "output_bbox_close_to_owned_mask_bbox",
+      "outside_mask_color_drift_below_threshold",
+      "no_black_or_dark_fill_artifacts",
+      "no_forbidden_semantic_content",
+      "crop_edge_seams_below_threshold",
+      "small_botanical_head_count_close_to_expected",
+      "broad_texture_not_noisy_or_blocky"
+    ],
+    "full_composite": [
+      "ownership_masks_have_no_overlap",
+      "residual_fills_all_unassigned_pixels",
+      "flower_pixels_absent_from_parent_hedge_mask",
+      "z_order_matches_source_layout",
+      "source_layout_preserved",
+      "old_white_or_yellow_flower_residue_not_visible_at_2x"
+    ]
+  },
+  "summary_json_required_keys": [
+    "schema_version",
+    "source_image",
+    "artifact_dir",
+    "provider",
+    "model",
+    "layer_policies",
+    "ownership",
+    "usage",
+    "cost",
+    "failures",
+    "quality_gates"
+  ]
+}

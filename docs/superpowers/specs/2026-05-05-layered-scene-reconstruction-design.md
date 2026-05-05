@@ -1,4 +1,4 @@
-# Layered Scene Reconstruction Design
+# Source-Conditioned Layered Generation Design
 
 **Date:** 2026-05-05
 **Target version:** v0.24 candidate
@@ -32,15 +32,32 @@ Can Vulca combine the existing layered-generation architecture with the new
 redraw replacement contract to produce a more controllable "source photo ->
 editable stylized layer stack" workflow?
 
+## Product Boundary: Layered Generation, Not Decompose
+
+This workflow is not the same product operation as `decompose`.
+
+`decompose` takes an existing flat image and extracts source pixels into
+semantic layers. Layered scene reconstruction should instead generate a new
+editable layer stack that is source-conditioned by the photo: each layer has its
+own prompt, policy, z-order, reference crop, and control/ownership mask. Masks
+are scaffolding for generation and compositing, not the product definition.
+
+The MVP can use curated masks to test layer ownership and geometry. That does
+not make the workflow a split-image pipeline. The output should be a generated
+or preserved semantic stack whose layers are independently editable.
+
 ## Recommended Approach
 
-Use **source-driven layered reconstruction** as the first implementation lane.
-It starts from an existing image, creates semantic masks, reconstructs selected
-layers, and uses redraw only for local replacements inside those layers.
+Use **source-conditioned layered generation/reconstruction** as the first
+implementation lane. It starts from an existing photo as reference, defines the
+semantic layer stack, uses control masks to constrain generation and ownership,
+generates or preserves selected layers, and calls redraw only for local
+replacement details inside those layers.
 
 This approach fits the current branch because it reuses proven pieces:
 
-- `decompose` and manifest output for semantic layers.
+- layered manifest output for semantic layer stacks.
+- control masks for geometry and pixel ownership.
 - target-aware mask refinement for small repeated details.
 - source crop padding and OpenAI-compatible `/v1/images/edits`.
 - pasteback/composite for visual review.
@@ -52,10 +69,11 @@ instead of being treated as giant flower masks.
 
 ## Alternatives Considered
 
-### A. Source-driven layered reconstruction
+### A. Source-conditioned layered generation/reconstruction
 
-Start from a source image, segment it into named semantic layers, then
-reconstruct or clean each layer using layer-specific prompts.
+Start from a source image, plan named semantic output layers, then use
+layer-specific prompts and control masks to generate, preserve, or locally
+replace each layer.
 
 Pros:
 
@@ -66,7 +84,7 @@ Pros:
 
 Cons:
 
-- Depends on mask quality.
+- Depends on control mask quality for geometry and ownership.
 - Requires z-index and overlap validation.
 - Large layers need different gates than small-object replacement.
 
@@ -113,7 +131,8 @@ editor.
 In scope:
 
 - Build a semantic layer plan for a source image.
-- Normalize masks into non-overlapping layer ownership.
+- Use masks as generation/control scaffolds and normalize them into
+  non-overlapping layer ownership.
 - Reconstruct selected layers using layer-specific image-edit prompts.
 - Use `redraw_layer` for small detail layers such as white and yellow flower
   heads.
@@ -156,12 +175,11 @@ strategy exists.
 
 ```text
 source image
-  -> semantic layer plan
-  -> masks per semantic path
-  -> mask ownership normalization
-  -> per-layer crop + prompt contract
-  -> provider edit or preserve
-  -> layer RGBA output
+  -> semantic output layer plan
+  -> control/ownership masks per semantic path
+  -> ownership normalization for compositing
+  -> per-layer reference crop + prompt contract
+  -> provider-generated, locally-redrawn, preserved, or residual layer RGBA
   -> manifest
   -> composite preview
   -> per-layer and full-scene evaluation
@@ -378,10 +396,10 @@ requested layer. For example, do not forbid `guardrail` in the guardrail prompt.
 The eventual API should be a new workflow above individual redraw:
 
 ```python
-result = await reconstruct_layers(
-    artwork,
+result = await source_layered_generate(
     source_image="source.png",
-    layer_plan="auto",
+    layer_contract="roadside_source_layered_generation_v0_24",
+    control_masks="curated_masks/",
     policies={
         "background.sky.clean_blue": "reconstruct",
         "foreground.guardrail": "reconstruct",
@@ -395,9 +413,10 @@ result = await reconstruct_layers(
 )
 ```
 
-This should not replace `redraw_layer`. It should call `redraw_layer` for
-layers whose policy is `local_redraw`, and use separate layer reconstruction
-helpers for larger semantic layers.
+This should not replace `redraw_layer` or `decompose`. It should call
+`redraw_layer` for layers whose policy is `local_redraw`, use mask-aware
+provider edits for larger generated semantic layers, and treat decompose/split
+outputs only as optional sources of control masks.
 
 ## Quality Gates
 
@@ -468,10 +487,11 @@ The workflow is successful when:
 
 ## Implementation Starting Point
 
-The first implementation plan should start with existing or hand-curated masks
-for the current roadside image. The visual question is layer ownership and
-composite quality, not whether a general planner can already infer the perfect
-taxonomy.
+The first implementation plan should start with existing or hand-curated
+control masks for the current roadside image. These masks are not the product
+output and should not be treated as a `decompose` result. The visual question is
+whether source-conditioned generated layers plus ownership subtraction produce
+a better editable composite.
 
 A general planner pass can come after the prototype proves that subtracting
 detail layers from broad parent layers removes old-source residue and produces a
