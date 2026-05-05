@@ -162,6 +162,18 @@ def _source_pasteback_preview(
     )
 
 
+def _should_log_orchestrated_decompose_case(
+    *,
+    status: str,
+    manifest_path: str | Path | None,
+) -> bool:
+    return (
+        status in {"ok", "partial"}
+        and bool(manifest_path)
+        and Path(manifest_path).exists()
+    )
+
+
 @mcp.tool()
 async def create_artwork(
     intent: str,
@@ -713,6 +725,7 @@ async def layers_split(
     tradition: str = "default",
     plan_path: str = "",
     plan: str = "",
+    case_log_path: str = "",
 ) -> dict:
     """Decompose an image into full-canvas RGBA layers via segmentation or regeneration.
 
@@ -730,10 +743,14 @@ async def layers_split(
         plan_path: For mode="orchestrated": path to semantic plan JSON
                    (see assets/showcase/plans/*.json for examples).
         plan: Inline JSON plan (alternative to plan_path). Used for mode="orchestrated".
+        case_log_path: Optional JSONL path for Learning Loop decompose_case logging.
+                       If omitted, VULCA_DECOMPOSE_CASE_LOG can enable logging.
 
     Returns:
         layers, manifest_path, split_mode. For orchestrated: detection_report
-        with per-entity status and success_rate.
+        with per-entity status and success_rate. When case logging succeeds,
+        also returns case_id and case_log_path; when enabled logging fails,
+        returns case_log_error.
     """
     from pathlib import Path
 
@@ -766,7 +783,7 @@ async def layers_split(
         except Exception as e:
             return {"error": f"pipeline error: {type(e).__name__}: {e}"}
 
-        return {
+        payload = {
             "split_mode": "orchestrated",
             "status": result.status,
             "manifest_path": str(result.manifest_path),
@@ -783,6 +800,44 @@ async def layers_split(
                 for l in result.layers
             ],
         }
+
+        from vulca.layers.decompose_cases import (
+            append_decompose_case,
+            build_decompose_case,
+            debug_artifacts_from_output_dir,
+            resolve_case_log_path,
+            target_hints_from_plan,
+        )
+
+        resolved_case_log_path = resolve_case_log_path(
+            case_log_path,
+            str(result.output_dir),
+        )
+        if resolved_case_log_path and _should_log_orchestrated_decompose_case(
+            status=result.status,
+            manifest_path=result.manifest_path,
+        ):
+            try:
+                record = build_decompose_case(
+                    source_image=str(img_p),
+                    mode="orchestrated",
+                    provider=provider,
+                    model="",
+                    tradition=getattr(plan_obj, "domain", "") or tradition,
+                    output_dir=str(result.output_dir),
+                    manifest_path=str(result.manifest_path),
+                    target_layer_hints=target_hints_from_plan(plan_obj),
+                    debug_artifacts=debug_artifacts_from_output_dir(result.output_dir),
+                )
+                payload["case_log_path"] = append_decompose_case(
+                    resolved_case_log_path,
+                    record,
+                )
+                payload["case_id"] = record["case_id"]
+            except Exception as exc:
+                payload["case_log_error"] = str(exc)
+
+        return payload
 
     from vulca.layers.analyze import analyze_layers as _analyze
     from vulca.layers.split import split_extract, split_regenerate
@@ -809,7 +864,7 @@ async def layers_split(
             provider=provider, tradition=tradition,
         )
 
-    return {
+    payload = {
         "split_mode": mode,
         "manifest_path": str(Path(out) / "manifest.json"),
         "layers": [
@@ -823,6 +878,40 @@ async def layers_split(
             for r in results
         ],
     }
+
+    from vulca.layers.decompose_cases import (
+        append_decompose_case,
+        build_decompose_case,
+        debug_artifacts_from_output_dir,
+        resolve_case_log_path,
+        target_hints_from_layer_infos,
+    )
+
+    resolved_case_log_path = resolve_case_log_path(case_log_path, out)
+    if resolved_case_log_path:
+        try:
+            record = build_decompose_case(
+                source_image=image_path,
+                mode=mode,
+                provider=provider,
+                model="",
+                tradition=tradition,
+                output_dir=out,
+                manifest_path=payload["manifest_path"],
+                target_layer_hints=target_hints_from_layer_infos(
+                    [r.info for r in results]
+                ),
+                debug_artifacts=debug_artifacts_from_output_dir(out),
+            )
+            payload["case_log_path"] = append_decompose_case(
+                resolved_case_log_path,
+                record,
+            )
+            payload["case_id"] = record["case_id"]
+        except Exception as exc:
+            payload["case_log_error"] = str(exc)
+
+    return payload
 
 
 @mcp.tool()

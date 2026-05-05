@@ -55,3 +55,8 @@ class TestCLICommands:
         result = run_vulca(["layers", "redraw", "--help"])
         assert result.returncode == 0
         assert "--case-log" in result.stdout
+
+    def test_layers_split_help_mentions_case_log(self):
+        result = run_vulca(["layers", "split", "--help"])
+        assert result.returncode == 0
+        assert "--case-log" in result.stdout

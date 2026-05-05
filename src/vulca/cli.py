@@ -183,6 +183,14 @@ def main(argv: list[str] | None = None) -> None:
                               help="Split mode: regenerate | extract | sam | vlm | sam3 (needs vulca[sam3] + GPU)")
     layers_split.add_argument("--provider", "-p", default="gemini", help="Image provider (regenerate mode)")
     layers_split.add_argument("--tradition", "-t", default="default", help="Cultural tradition")
+    layers_split.add_argument(
+        "--case-log",
+        default="",
+        help=(
+            "Append a Learning Loop decompose_case JSONL record to this path. "
+            "If omitted, VULCA_DECOMPOSE_CASE_LOG can enable logging."
+        ),
+    )
 
     layers_redraw = layers_sub.add_parser("redraw", help="Redraw layer(s) via img2img")
     layers_redraw.add_argument("artwork_dir", help="Directory with layers")
@@ -1343,6 +1351,39 @@ def _cmd_layers(args: argparse.Namespace) -> None:
         for r in results:
             print(f"    [{r.info.z_index}] {r.info.name} -> {r.image_path}")
         print(f"    manifest.json -> {Path(out_dir) / 'manifest.json'}")
+        from vulca.layers.decompose_cases import (
+            append_decompose_case,
+            build_decompose_case,
+            debug_artifacts_from_output_dir,
+            resolve_case_log_path,
+            target_hints_from_layer_infos,
+        )
+
+        resolved_case_log_path = resolve_case_log_path(
+            getattr(args, "case_log", ""),
+            out_dir,
+        )
+        if resolved_case_log_path:
+            try:
+                manifest_path = str(Path(out_dir) / "manifest.json")
+                record = build_decompose_case(
+                    source_image=args.image,
+                    mode=args.mode,
+                    provider=args.provider,
+                    model="",
+                    tradition=args.tradition,
+                    output_dir=out_dir,
+                    manifest_path=manifest_path,
+                    target_layer_hints=target_hints_from_layer_infos(layers),
+                    debug_artifacts=debug_artifacts_from_output_dir(out_dir),
+                )
+                written_case_log_path = append_decompose_case(
+                    resolved_case_log_path,
+                    record,
+                )
+                print(f"    Case log: {record['case_id']} -> {written_case_log_path}")
+            except Exception as exc:
+                print(f"    Case log error: {exc}")
 
     elif args.layers_command == "redraw":
         from vulca.layers.manifest import load_manifest
