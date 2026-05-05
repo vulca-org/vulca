@@ -145,6 +145,144 @@ def test_tiny_dataset_merges_additional_case_logs(tmp_path):
     assert extra_examples[0]["targets"]["preferred_action"] == "manual_review"
 
 
+def test_tiny_dataset_case_source_manifest_preserves_source_metadata(tmp_path):
+    from vulca.learning.seed_cases import build_local_seed_cases
+    from vulca.learning.tiny_dataset import write_tiny_dataset
+
+    seed = build_local_seed_cases(ROOT)["redraw_case"][0]
+    user_case = json.loads(json.dumps(seed))
+    user_case["case_id"] = "redraw_user_private_case"
+    user_case["review"]["preferred_action"] = "manual_review"
+    manual_case = json.loads(json.dumps(seed))
+    manual_case["case_id"] = "redraw_manual_boundary_case"
+    manual_case["review"]["preferred_action"] = "adjust_mask"
+
+    user_log = tmp_path / "user_cases.jsonl"
+    manual_log = tmp_path / "manual_cases.jsonl"
+    user_log.write_text(json.dumps(user_case) + "\n", encoding="utf-8")
+    manual_log.write_text(json.dumps(manual_case) + "\n", encoding="utf-8")
+    manifest_path = tmp_path / "case_sources.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "case_type": "learning_tiny_case_source_manifest",
+                "sources": [
+                    {
+                        "source_id": "user_session_redraw_001",
+                        "kind": "user_case_log",
+                        "path": "user_cases.jsonl",
+                        "privacy_scope": "private",
+                        "curation_status": "reviewed",
+                    },
+                    {
+                        "source_id": "manual_redraw_boundaries_v1",
+                        "kind": "manual_case_log",
+                        "path": "manual_cases.jsonl",
+                        "privacy_scope": "project",
+                        "curation_status": "curated",
+                    },
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    output_path = tmp_path / "tiny_dataset.jsonl"
+
+    result = write_tiny_dataset(
+        repo_root=ROOT,
+        output_path=output_path,
+        include_local_seeds=False,
+        case_source_manifest_path=manifest_path,
+    )
+
+    assert result.example_count == 2
+    records = _read_jsonl(output_path)
+    source_by_case_id = {
+        item["source_case"]["case_id"]: item["source"] for item in records
+    }
+    assert source_by_case_id["redraw_user_private_case"] == {
+        "kind": "user_case_log",
+        "source_id": "user_session_redraw_001",
+        "path": str(user_log),
+        "privacy_scope": "private",
+        "curation_status": "reviewed",
+        "index": 0,
+    }
+    assert source_by_case_id["redraw_manual_boundary_case"] == {
+        "kind": "manual_case_log",
+        "source_id": "manual_redraw_boundaries_v1",
+        "path": str(manual_log),
+        "privacy_scope": "project",
+        "curation_status": "curated",
+        "index": 0,
+    }
+
+    index = json.loads(Path(result.index_path).read_text(encoding="utf-8"))
+    assert index["case_source_manifest_path"] == str(manifest_path)
+    assert index["counts_by_source"] == {
+        "manual_case_log": 1,
+        "user_case_log": 1,
+    }
+    assert index["case_sources"] == [
+        {
+            "source_id": "user_session_redraw_001",
+            "kind": "user_case_log",
+            "path": str(user_log),
+            "privacy_scope": "private",
+            "curation_status": "reviewed",
+            "record_count": 1,
+        },
+        {
+            "source_id": "manual_redraw_boundaries_v1",
+            "kind": "manual_case_log",
+            "path": str(manual_log),
+            "privacy_scope": "project",
+            "curation_status": "curated",
+            "record_count": 1,
+        },
+    ]
+
+
+def test_tiny_dataset_rejects_invalid_case_source_manifest(tmp_path):
+    from vulca.learning.tiny_dataset import write_tiny_dataset
+
+    manifest_path = tmp_path / "case_sources.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "case_type": "learning_tiny_case_source_manifest",
+                "sources": [
+                    {
+                        "source_id": "",
+                        "kind": "spreadsheet_dump",
+                        "path": "missing.jsonl",
+                        "privacy_scope": "unknown",
+                        "curation_status": "raw",
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    try:
+        write_tiny_dataset(
+            repo_root=ROOT,
+            output_path=tmp_path / "tiny_dataset.jsonl",
+            include_local_seeds=False,
+            case_source_manifest_path=manifest_path,
+        )
+    except ValueError as exc:
+        message = str(exc)
+        assert "source_id is required" in message
+        assert "unsupported case source kind" in message
+        assert "unsupported privacy_scope" in message
+    else:
+        raise AssertionError("expected invalid case source manifest to fail")
+
+
 def test_cases_export_dataset_cli_writes_dataset(tmp_path):
     output_path = tmp_path / "tiny_dataset.jsonl"
     result = subprocess.run(
@@ -175,6 +313,65 @@ def test_cases_export_dataset_cli_writes_dataset(tmp_path):
     assert "dev: 2" in result.stdout
     assert "test: 2" in result.stdout
     assert (tmp_path / "tiny_dataset.index.json").exists()
+
+
+def test_cases_export_dataset_cli_accepts_case_source_manifest(tmp_path):
+    from vulca.learning.seed_cases import build_local_seed_cases
+
+    seed = build_local_seed_cases(ROOT)["redraw_case"][0]
+    manual_case = json.loads(json.dumps(seed))
+    manual_case["case_id"] = "redraw_cli_manual_case"
+    manual_case["review"]["preferred_action"] = "manual_review"
+    manual_log = tmp_path / "manual_cases.jsonl"
+    manual_log.write_text(json.dumps(manual_case) + "\n", encoding="utf-8")
+    manifest_path = tmp_path / "case_sources.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "case_type": "learning_tiny_case_source_manifest",
+                "sources": [
+                    {
+                        "source_id": "manual_cli_pack",
+                        "kind": "manual_case_log",
+                        "path": "manual_cases.jsonl",
+                        "privacy_scope": "project",
+                        "curation_status": "curated",
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    output_path = tmp_path / "tiny_dataset.jsonl"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "vulca.cli",
+            "cases",
+            "export-dataset",
+            "--repo-root",
+            str(ROOT),
+            "--output",
+            str(output_path),
+            "--no-local-seeds",
+            "--case-source-manifest",
+            str(manifest_path),
+        ],
+        capture_output=True,
+        text=True,
+        timeout=20,
+        env=CLI_ENV,
+        cwd=tmp_path,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "redraw_case: 1" in result.stdout
+    records = _read_jsonl(output_path)
+    assert records[0]["source"]["kind"] == "manual_case_log"
+    assert records[0]["source"]["source_id"] == "manual_cli_pack"
 
 
 def test_tiny_dataset_eval_scores_redraw_observable_signal(tmp_path):

@@ -34,6 +34,7 @@ DATASET_CASE_TYPE = "learning_tiny_dataset_example"
 DATASET_INDEX_CASE_TYPE = "learning_tiny_dataset_index"
 EVAL_REPORT_CASE_TYPE = "learning_tiny_dataset_eval_report"
 COMPARISON_REPORT_CASE_TYPE = "learning_tiny_dataset_comparison_report"
+CASE_SOURCE_MANIFEST_CASE_TYPE = "learning_tiny_case_source_manifest"
 
 POLICY_MAJORITY_ACTION = "majority_action"
 POLICY_REDRAW_OBSERVABLE_SIGNAL = "redraw_observable_signal"
@@ -45,6 +46,15 @@ DEFAULT_COMPARISON_POLICIES: tuple[str, ...] = (
     POLICY_REDRAW_OBSERVABLE_SIGNAL,
 )
 DATASET_SPLITS: tuple[str, ...] = ("train", "dev", "test")
+CASE_SOURCE_KINDS: frozenset[str] = frozenset(
+    {"case_log", "manual_case_log", "synthetic_case_log", "user_case_log"}
+)
+CASE_SOURCE_PRIVACY_SCOPES: frozenset[str] = frozenset(
+    {"private", "project", "public"}
+)
+CASE_SOURCE_CURATION_STATUSES: frozenset[str] = frozenset(
+    {"curated", "reviewed", "synthetic_reviewed"}
+)
 SUPPORTED_SOURCE_CASE_TYPES: frozenset[str] = frozenset(
     {REDRAW_CASE_TYPE, DECOMPOSE_CASE_TYPE, LAYER_GENERATE_CASE_TYPE}
 )
@@ -64,11 +74,31 @@ class TinyDatasetWriteResult:
     counts_by_split: dict[str, int]
 
 
+@dataclass(frozen=True)
+class TinyCaseSourceSpec:
+    source_id: str
+    kind: str
+    path: str
+    privacy_scope: str
+    curation_status: str
+
+    def source_for_record(self, index: int) -> dict[str, Any]:
+        return {
+            "kind": self.kind,
+            "source_id": self.source_id,
+            "path": self.path,
+            "privacy_scope": self.privacy_scope,
+            "curation_status": self.curation_status,
+            "index": index,
+        }
+
+
 def build_tiny_dataset_examples(
     *,
     repo_root: str | Path,
     manifest_path: str | Path = DEFAULT_SEED_MANIFEST,
     case_log_paths: Sequence[str | Path] = (),
+    case_source_manifest_path: str | Path | None = None,
     include_local_seeds: bool = True,
 ) -> list[dict[str, Any]]:
     """Build leak-resistant tiny dataset examples from seeds and case logs."""
@@ -109,6 +139,17 @@ def build_tiny_dataset_examples(
                 )
             )
 
+    case_sources = _load_case_source_specs(case_source_manifest_path)
+    for spec in case_sources:
+        records = load_cases(spec.path)
+        for index, record in enumerate(records):
+            examples.append(
+                _build_example(
+                    record,
+                    source=spec.source_for_record(index),
+                )
+            )
+
     _assign_dataset_splits(examples)
     return examples
 
@@ -119,13 +160,16 @@ def write_tiny_dataset(
     output_path: str | Path,
     manifest_path: str | Path = DEFAULT_SEED_MANIFEST,
     case_log_paths: Sequence[str | Path] = (),
+    case_source_manifest_path: str | Path | None = None,
     include_local_seeds: bool = True,
     index_path: str | Path | None = None,
 ) -> TinyDatasetWriteResult:
+    case_sources = _load_case_source_specs(case_source_manifest_path)
     examples = build_tiny_dataset_examples(
         repo_root=repo_root,
         manifest_path=manifest_path,
         case_log_paths=case_log_paths,
+        case_source_manifest_path=case_source_manifest_path,
         include_local_seeds=include_local_seeds,
     )
     output = Path(output_path)
@@ -143,6 +187,8 @@ def write_tiny_dataset(
                 "output_path": str(output),
                 "source_manifest": str(manifest_path),
                 "case_log_paths": [str(path) for path in case_log_paths],
+                "case_source_manifest_path": str(case_source_manifest_path or ""),
+                "case_sources": _case_source_summaries(case_sources, examples),
                 "include_local_seeds": bool(include_local_seeds),
                 "example_count": len(examples),
                 "counts_by_case_type": counts,
@@ -496,6 +542,107 @@ def _build_example(
             },
         },
     }
+
+
+def _load_case_source_specs(
+    manifest_path: str | Path | None,
+) -> tuple[TinyCaseSourceSpec, ...]:
+    if not manifest_path:
+        return ()
+
+    path = Path(manifest_path)
+    manifest = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(manifest, Mapping):
+        raise ValueError("case source manifest must be a JSON object")
+    if manifest.get("case_type") != CASE_SOURCE_MANIFEST_CASE_TYPE:
+        raise ValueError(
+            f"case source manifest case_type must be {CASE_SOURCE_MANIFEST_CASE_TYPE!r}"
+        )
+    sources = manifest.get("sources")
+    if not isinstance(sources, list):
+        raise ValueError("case source manifest sources must be a list")
+
+    specs: list[TinyCaseSourceSpec] = []
+    errors: list[str] = []
+    seen_source_ids: set[str] = set()
+    for index, item in enumerate(sources):
+        if not isinstance(item, Mapping):
+            errors.append(f"sources[{index}] must be an object")
+            continue
+
+        source_id = str(item.get("source_id") or "")
+        kind = str(item.get("kind") or "")
+        raw_path = str(item.get("path") or "")
+        privacy_scope = str(item.get("privacy_scope") or "")
+        curation_status = str(item.get("curation_status") or "")
+
+        if not source_id:
+            errors.append(f"sources[{index}]: source_id is required")
+        elif source_id in seen_source_ids:
+            errors.append(f"sources[{index}]: duplicate source_id {source_id!r}")
+        else:
+            seen_source_ids.add(source_id)
+
+        if kind not in CASE_SOURCE_KINDS:
+            errors.append(
+                f"sources[{index}]: unsupported case source kind {kind!r}; "
+                f"expected one of {sorted(CASE_SOURCE_KINDS)}"
+            )
+        if not raw_path:
+            errors.append(f"sources[{index}]: path is required")
+        if privacy_scope not in CASE_SOURCE_PRIVACY_SCOPES:
+            errors.append(
+                f"sources[{index}]: unsupported privacy_scope {privacy_scope!r}; "
+                f"expected one of {sorted(CASE_SOURCE_PRIVACY_SCOPES)}"
+            )
+        if curation_status not in CASE_SOURCE_CURATION_STATUSES:
+            errors.append(
+                f"sources[{index}]: unsupported curation_status "
+                f"{curation_status!r}; expected one of "
+                f"{sorted(CASE_SOURCE_CURATION_STATUSES)}"
+            )
+
+        if source_id and kind in CASE_SOURCE_KINDS and raw_path:
+            source_path = Path(raw_path)
+            if not source_path.is_absolute():
+                source_path = path.parent / source_path
+            specs.append(
+                TinyCaseSourceSpec(
+                    source_id=source_id,
+                    kind=kind,
+                    path=str(source_path),
+                    privacy_scope=privacy_scope,
+                    curation_status=curation_status,
+                )
+            )
+
+    if errors:
+        raise ValueError("; ".join(errors))
+    return tuple(specs)
+
+
+def _case_source_summaries(
+    specs: Sequence[TinyCaseSourceSpec],
+    examples: Iterable[Mapping[str, Any]],
+) -> list[dict[str, Any]]:
+    counts: Counter[str] = Counter()
+    for example in examples:
+        source = _mapping(example.get("source"))
+        source_id = str(source.get("source_id") or "")
+        if source_id:
+            counts[source_id] += 1
+
+    return [
+        {
+            "source_id": spec.source_id,
+            "kind": spec.kind,
+            "path": spec.path,
+            "privacy_scope": spec.privacy_scope,
+            "curation_status": spec.curation_status,
+            "record_count": counts.get(spec.source_id, 0),
+        }
+        for spec in specs
+    ]
 
 
 def _assign_dataset_splits(examples: list[dict[str, Any]]) -> None:

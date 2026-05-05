@@ -427,6 +427,11 @@ def main(argv: list[str] | None = None) -> None:
         help="Additional reviewed case JSONL path; repeat to include multiple logs",
     )
     cases_export.add_argument(
+        "--case-source-manifest",
+        default="",
+        help="JSON manifest describing user/manual/synthetic reviewed case logs",
+    )
+    cases_export.add_argument(
         "--no-local-seeds",
         action="store_true",
         help="Only export records from --case-log inputs",
@@ -1749,6 +1754,7 @@ def _cmd_cases(args: argparse.Namespace) -> None:
                 output_path=args.output,
                 manifest_path=args.manifest or DEFAULT_SEED_MANIFEST,
                 case_log_paths=args.case_log,
+                case_source_manifest_path=args.case_source_manifest or None,
                 include_local_seeds=not args.no_local_seeds,
             )
         except (
