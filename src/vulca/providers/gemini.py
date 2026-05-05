@@ -9,7 +9,7 @@ import base64
 import math
 import os
 
-from vulca.providers.base import ImageProvider, ImageResult
+from vulca.providers.base import ImageEditCapabilities, ImageProvider, ImageResult
 from vulca.providers.retry import with_retry
 
 # Gemini API uses named size tiers, not arbitrary pixel dimensions.
@@ -53,6 +53,19 @@ def _dims_to_aspect_ratio(width: int, height: int) -> str:
     return best_ratio
 
 
+def _detect_mime_type(data: bytes) -> str:
+    """Detect image mime type from magic bytes."""
+    if data[:3] == b"\xff\xd8\xff":
+        return "image/jpeg"
+    if data[:8] == b"\x89PNG\r\n\x1a\n":
+        return "image/png"
+    if data[:6] in (b"GIF87a", b"GIF89a"):
+        return "image/gif"
+    if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+        return "image/webp"
+    return "image/png"
+
+
 class GeminiImageProvider:
     """Image generation via Google Gemini API.
 
@@ -75,6 +88,14 @@ class GeminiImageProvider:
         )
         self.model = model
         self.timeout = timeout
+
+    def edit_capabilities(self) -> ImageEditCapabilities:
+        return ImageEditCapabilities(
+            supports_edits=True,
+            requires_mask_for_edits=True,
+            supports_unmasked_edits=False,
+            supports_masked_edits=True,
+        )
 
     async def generate(
         self,
@@ -123,17 +144,7 @@ class GeminiImageProvider:
         contents: list = []
         if reference_image_b64:
             ref_bytes = base64.b64decode(reference_image_b64)
-            # Detect mime type from magic bytes — wrong type makes Gemini hang.
-            if ref_bytes[:3] == b"\xff\xd8\xff":
-                ref_mime = "image/jpeg"
-            elif ref_bytes[:8] == b"\x89PNG\r\n\x1a\n":
-                ref_mime = "image/png"
-            elif ref_bytes[:6] in (b"GIF87a", b"GIF89a"):
-                ref_mime = "image/gif"
-            elif ref_bytes[:4] == b"RIFF" and ref_bytes[8:12] == b"WEBP":
-                ref_mime = "image/webp"
-            else:
-                ref_mime = "image/png"  # safe fallback
+            ref_mime = _detect_mime_type(ref_bytes)
             contents.append(types.Part.from_bytes(data=ref_bytes, mime_type=ref_mime))
         contents.append(full_prompt)
 
@@ -238,6 +249,154 @@ class GeminiImageProvider:
 
         raise RuntimeError(
             "Gemini returned no image data "
+            "(enable VULCA_DEBUG=1 for raw response inspection)"
+        )
+
+    async def inpaint_with_mask(
+        self,
+        *,
+        image_path: str,
+        mask_path: str,
+        prompt: str,
+        tradition: str = "default",
+        size: str = "",
+        quality: str | None = None,
+        input_fidelity: str | None = None,
+        output_format: str | None = None,
+    ) -> ImageResult:
+        if not self.api_key:
+            raise ValueError(
+                "Gemini API key required. Set GOOGLE_API_KEY env var "
+                "or pass api_key to GeminiImageProvider()."
+            )
+
+        from google import genai
+        from google.genai import types
+        from PIL import Image
+
+        _ = (quality, input_fidelity, output_format)
+        with open(image_path, "rb") as image_fh:
+            image_bytes = image_fh.read()
+        with open(mask_path, "rb") as mask_fh:
+            mask_bytes = mask_fh.read()
+
+        if size and "x" in size:
+            try:
+                width_text, height_text = size.lower().split("x", 1)
+                width, height = int(width_text), int(height_text)
+            except ValueError:
+                with Image.open(image_path) as source_probe:
+                    width, height = source_probe.size
+        else:
+            with Image.open(image_path) as source_probe:
+                width, height = source_probe.size
+
+        image_size = _pixels_to_image_size(max(width, height))
+        aspect_ratio = _dims_to_aspect_ratio(width, height)
+        full_prompt = (
+            f"{prompt}\n\n"
+            "Use the first image as the source crop. Use the second image as an "
+            "RGBA edit mask: transparent mask pixels mark the edit region, and "
+            "opaque mask pixels mark source context that should stay visually "
+            "preserved. Repaint only the transparent mask pixels. Do not create "
+            "a new scene outside the masked replacement area."
+        )
+        if tradition and tradition != "default":
+            full_prompt += (
+                f"\nMaintain the {tradition.replace('_', ' ')} cultural tradition "
+                "and technique."
+            )
+
+        client = genai.Client(api_key=self.api_key)
+        contents = [
+            types.Part.from_bytes(
+                data=image_bytes,
+                mime_type=_detect_mime_type(image_bytes),
+            ),
+            types.Part.from_bytes(
+                data=mask_bytes,
+                mime_type=_detect_mime_type(mask_bytes),
+            ),
+            full_prompt,
+        ]
+        config = types.GenerateContentConfig(
+            response_modalities=["Text", "Image"],
+            image_config=types.ImageConfig(
+                image_size=image_size,
+                aspect_ratio=aspect_ratio,
+            ),
+        )
+
+        def _is_retryable(exc: Exception) -> bool:
+            if isinstance(exc, asyncio.TimeoutError):
+                return True
+            status = getattr(exc, "status_code", None) or getattr(exc, "code", None)
+            return status in (429, 500, 503)
+
+        async def _call() -> object:
+            try:
+                return await asyncio.wait_for(
+                    asyncio.to_thread(
+                        client.models.generate_content,
+                        model=self.model,
+                        contents=contents,
+                        config=config,
+                    ),
+                    timeout=self.timeout,
+                )
+            except asyncio.TimeoutError:
+                raise TimeoutError(f"Gemini image edit timed out after {self.timeout}s")
+
+        response = await with_retry(
+            _call,
+            max_retries=3,
+            base_delay_ms=500,
+            max_delay_ms=16_000,
+            retryable_check=_is_retryable,
+        )
+
+        if response.candidates:
+            for part in response.candidates[0].content.parts:
+                if part.inline_data and part.inline_data.mime_type.startswith("image/"):
+                    img_b64 = base64.b64encode(part.inline_data.data).decode()
+                    return ImageResult(
+                        image_b64=img_b64,
+                        mime=part.inline_data.mime_type,
+                        metadata={
+                            "model": self.model,
+                            "mode": "gemini_mask_adapter",
+                            "image_size": image_size,
+                            "aspect_ratio": aspect_ratio,
+                        },
+                    )
+
+        prompt_feedback = getattr(response, "prompt_feedback", None)
+        block_reason = getattr(prompt_feedback, "block_reason", None) if prompt_feedback else None
+        if block_reason:
+            raise RuntimeError(
+                f"Gemini blocked the edit request: {block_reason}. "
+                f"Check content policy or tune prompt."
+            )
+
+        raw_text = ""
+        try:
+            raw_text = str(response)
+        except Exception:
+            raw_text = ""
+        lowered = raw_text.lower()
+        if (
+            "quota" in lowered
+            or "limit: 0" in lowered
+            or "resource_exhausted" in lowered
+            or "billing" in lowered
+        ):
+            raise RuntimeError(
+                "Gemini quota exhausted or free tier blocked for image edits. "
+                "Upgrade via aistudio.google.com/app/apikey or switch provider."
+            )
+
+        raise RuntimeError(
+            "Gemini returned no image data for masked edit "
             "(enable VULCA_DEBUG=1 for raw response inspection)"
         )
 

@@ -9,7 +9,7 @@ from PIL import Image
 
 @dataclass(frozen=True)
 class TargetRefinementProfile:
-    kind: Literal["bright_small_subject"]
+    kind: Literal["small_botanical_subject_replacement"]
     keywords: tuple[str, ...]
 
 
@@ -22,7 +22,10 @@ class MaskRefinementResult:
     metrics: dict[str, float]
 
 
-_BRIGHT_SMALL_SUBJECT_KEYWORDS = (
+SMALL_BOTANICAL_SUBJECT_REPLACEMENT = "small_botanical_subject_replacement"
+
+
+_SMALL_BOTANICAL_SUBJECT_KEYWORDS = (
     "flower",
     "wildflower",
     "blossom",
@@ -32,6 +35,8 @@ _BRIGHT_SMALL_SUBJECT_KEYWORDS = (
     "small",
     "daisy",
     "aster",
+    "dandelion",
+    "buttercup",
 )
 
 
@@ -42,11 +47,14 @@ def infer_refinement_profile(
 ) -> TargetRefinementProfile | None:
     text = f"{description} {instruction}".lower()
     matches = tuple(
-        keyword for keyword in _BRIGHT_SMALL_SUBJECT_KEYWORDS if keyword in text
+        keyword for keyword in _SMALL_BOTANICAL_SUBJECT_KEYWORDS if keyword in text
     )
     if not matches:
         return None
-    return TargetRefinementProfile(kind="bright_small_subject", keywords=matches)
+    return TargetRefinementProfile(
+        kind=SMALL_BOTANICAL_SUBJECT_REPLACEMENT,
+        keywords=matches,
+    )
 
 
 def refine_mask_for_target(
@@ -57,7 +65,7 @@ def refine_mask_for_target(
     instruction: str = "",
     min_component_area: int = 24,
     merge_distance_px: int = 10,
-    max_children: int = 12,
+    max_children: int = 24,
 ) -> MaskRefinementResult:
     profile = infer_refinement_profile(
         description=description,
@@ -72,7 +80,7 @@ def refine_mask_for_target(
             metrics={},
         )
 
-    child_masks, metrics = _extract_bright_small_subject_masks(
+    child_masks, metrics = _extract_small_botanical_subject_masks(
         source,
         alpha,
         min_component_area=min_component_area,
@@ -97,7 +105,7 @@ def refine_mask_for_target(
     )
 
 
-def _extract_bright_small_subject_masks(
+def _extract_small_botanical_subject_masks(
     source: Image.Image,
     alpha: Image.Image,
     *,
@@ -119,8 +127,22 @@ def _extract_bright_small_subject_masks(
 
     white_like = (red > 185) & (green > 185) & (blue > 170) & (channel_spread < 70)
     yellow_center = (red > 170) & (green > 130) & (blue < 120)
+    green_dominant = (green > red + 12) & (green > blue + 12)
+    muted_flower_footprint = (
+        (red > 135)
+        & (green > 120)
+        & (blue > 70)
+        & (channel_spread < 115)
+        & ~green_dominant
+    )
     evidence_raw = parent & (white_like | yellow_center)
     evidence = _dilate(evidence_raw, radius=2) & parent
+    footprint_radius = max(6, min(14, merge_distance_px + 2))
+    footprint = (
+        parent
+        & (white_like | yellow_center | muted_flower_footprint)
+        & _dilate(evidence_raw, radius=footprint_radius)
+    )
 
     component_seed = _open(evidence_raw, radius=1) & parent
     if not component_seed.any():
@@ -128,15 +150,29 @@ def _extract_bright_small_subject_masks(
 
     components = _connected_component_boxes(component_seed, min_area=min_component_area)
     boxes = _merge_nearby_boxes(components, distance_px=merge_distance_px)
+    boxes = _split_oversized_boxes(
+        boxes,
+        component_seed,
+        max_span_px=128,
+        min_area=min_component_area,
+    )
     boxes = sorted(boxes, key=_box_area, reverse=True)[:max_children]
 
     height, width = parent.shape
     child_masks: list[Image.Image] = []
     for box in boxes:
-        left, top, right, bottom = _expand_box(box, width, height, padding=6)
+        left, top, right, bottom = _expand_box(
+            box,
+            width,
+            height,
+            padding=footprint_radius,
+        )
         child = np.zeros(parent.shape, dtype=np.uint8)
         local_evidence = evidence_raw[top:bottom, left:right]
-        local_child = _dilate(local_evidence, radius=4) & parent[top:bottom, left:right]
+        local_footprint = footprint[top:bottom, left:right]
+        local_child = (
+            _dilate(local_evidence, radius=4) | local_footprint
+        ) & parent[top:bottom, left:right]
         child[top:bottom, left:right] = local_child * 255
         if np.any(child):
             child_masks.append(Image.fromarray(child, mode="L"))
@@ -153,6 +189,47 @@ def _extract_bright_small_subject_masks(
         "mask_granularity_score": float(len(child_masks)),
     }
     return tuple(child_masks), metrics
+
+
+def _split_oversized_boxes(
+    boxes: list[tuple[int, int, int, int]],
+    evidence: np.ndarray,
+    *,
+    max_span_px: int,
+    min_area: int,
+) -> list[tuple[int, int, int, int]]:
+    split: list[tuple[int, int, int, int]] = []
+    height, width = evidence.shape
+    for left, top, right, bottom in boxes:
+        box_w = right - left
+        box_h = bottom - top
+        if box_w <= max_span_px and box_h <= max_span_px:
+            split.append((left, top, right, bottom))
+            continue
+
+        cols = max(1, int(np.ceil(box_w / max_span_px)))
+        rows = max(1, int(np.ceil(box_h / max_span_px)))
+        tile_w = int(np.ceil(box_w / cols))
+        tile_h = int(np.ceil(box_h / rows))
+        for row in range(rows):
+            tile_top = min(height, top + row * tile_h)
+            tile_bottom = min(height, top + (row + 1) * tile_h)
+            for col in range(cols):
+                tile_left = min(width, left + col * tile_w)
+                tile_right = min(width, left + (col + 1) * tile_w)
+                local = evidence[tile_top:tile_bottom, tile_left:tile_right]
+                if int(local.sum()) < min_area:
+                    continue
+                ys, xs = np.where(local)
+                split.append(
+                    (
+                        int(tile_left + xs.min()),
+                        int(tile_top + ys.min()),
+                        int(tile_left + xs.max() + 1),
+                        int(tile_top + ys.max() + 1),
+                    )
+                )
+    return split
 
 
 def _connected_component_boxes(

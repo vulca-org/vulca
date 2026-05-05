@@ -1,4 +1,12 @@
 """Tests for Gemini provider imageSize + aspectRatio mapping."""
+import asyncio
+import base64
+import io
+import sys
+import types as py_types
+
+from PIL import Image
+
 from vulca.providers.gemini import (
     _pixels_to_image_size,
     _dims_to_aspect_ratio,
@@ -96,3 +104,107 @@ class TestGeminiProviderConfig:
         p = GeminiImageProvider(api_key="fake")
         prompt = p._build_prompt("test", "default", "", "1:1", {})
         assert "tradition" not in prompt.lower()
+
+    def test_declares_masked_edit_adapter_capabilities(self):
+        p = GeminiImageProvider(api_key="fake")
+
+        caps = p.edit_capabilities()
+
+        assert caps.supports_edits is True
+        assert caps.supports_masked_edits is True
+        assert caps.requires_mask_for_edits is True
+        assert caps.supports_unmasked_edits is False
+
+    def test_inpaint_with_mask_sends_source_and_mask_parts(
+        self,
+        tmp_path,
+        monkeypatch,
+    ):
+        recorded = {}
+
+        class FakeInlineData:
+            mime_type = "image/png"
+
+            def __init__(self, data):
+                self.data = data
+
+        class FakePart:
+            def __init__(self, data=None, mime_type="", inline_data=None):
+                self.data = data
+                self.mime_type = mime_type
+                self.inline_data = inline_data
+
+            @classmethod
+            def from_bytes(cls, *, data, mime_type):
+                return cls(data=data, mime_type=mime_type)
+
+        class FakeImageConfig:
+            def __init__(self, **kwargs):
+                self.kwargs = kwargs
+
+        class FakeGenerateContentConfig:
+            def __init__(self, **kwargs):
+                self.kwargs = kwargs
+
+        class FakeModels:
+            def generate_content(self, *, model, contents, config):
+                recorded["model"] = model
+                recorded["contents"] = contents
+                recorded["config"] = config
+                out = Image.new("RGB", (8, 8), (232, 190, 42))
+                buf = io.BytesIO()
+                out.save(buf, format="PNG")
+                inline = FakeInlineData(buf.getvalue())
+                return py_types.SimpleNamespace(
+                    candidates=[
+                        py_types.SimpleNamespace(
+                            content=py_types.SimpleNamespace(
+                                parts=[FakePart(inline_data=inline)]
+                            )
+                        )
+                    ],
+                    prompt_feedback=None,
+                )
+
+        class FakeClient:
+            def __init__(self, api_key):
+                recorded["api_key"] = api_key
+                self.models = FakeModels()
+
+        fake_types = py_types.SimpleNamespace(
+            Part=FakePart,
+            ImageConfig=FakeImageConfig,
+            GenerateContentConfig=FakeGenerateContentConfig,
+        )
+        fake_genai = py_types.SimpleNamespace(Client=FakeClient, types=fake_types)
+        fake_google = py_types.SimpleNamespace(genai=fake_genai)
+        monkeypatch.setitem(sys.modules, "google", fake_google)
+        monkeypatch.setitem(sys.modules, "google.genai", fake_genai)
+        monkeypatch.setitem(sys.modules, "google.genai.types", fake_types)
+
+        image_path = tmp_path / "source.png"
+        mask_path = tmp_path / "mask.png"
+        Image.new("RGB", (16, 12), (35, 92, 43)).save(image_path)
+        mask = Image.new("RGBA", (16, 12), (0, 0, 0, 255))
+        mask.putpixel((8, 6), (0, 0, 0, 0))
+        mask.save(mask_path)
+
+        result = asyncio.run(
+            GeminiImageProvider(api_key="gemini-key").inpaint_with_mask(
+                image_path=str(image_path),
+                mask_path=str(mask_path),
+                prompt="paint one compact yellow flower head",
+                tradition="default",
+            )
+        )
+
+        assert recorded["api_key"] == "gemini-key"
+        assert recorded["model"] == "gemini-3.1-flash-image-preview"
+        assert recorded["contents"][0].mime_type == "image/png"
+        assert recorded["contents"][1].mime_type == "image/png"
+        assert "transparent mask pixels" in recorded["contents"][2]
+        assert "opaque mask pixels" in recorded["contents"][2]
+        assert "paint one compact yellow flower head" in recorded["contents"][2]
+        assert result.mime == "image/png"
+        assert base64.b64decode(result.image_b64).startswith(b"\x89PNG")
+        assert result.metadata["mode"] == "gemini_mask_adapter"
