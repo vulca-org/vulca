@@ -359,6 +359,33 @@ def main(argv: list[str] | None = None) -> None:
         default="",
         help="Seed manifest path (default: docs/benchmarks/learning/local_seed_manifest.json)",
     )
+    cases_baseline = cases_sub.add_parser(
+        "baseline-report",
+        help="Build local seed baseline metrics report",
+    )
+    cases_baseline.add_argument(
+        "--output",
+        "-o",
+        required=True,
+        help="Output JSON report path",
+    )
+    cases_baseline.add_argument(
+        "--repo-root",
+        default="",
+        help="Repository root (default: current working directory)",
+    )
+    cases_baseline.add_argument(
+        "--manifest",
+        default="",
+        help="Seed manifest path (default: docs/benchmarks/learning/local_seed_manifest.json)",
+    )
+    cases_baseline.add_argument(
+        "--policy",
+        action="append",
+        default=[],
+        choices=("label_oracle", "observable_signal"),
+        help="Redraw router policy to evaluate; repeat to include multiple policies",
+    )
 
     # resume command
     resume_p = sub.add_parser("resume", help="Resume pipeline from checkpoint")
@@ -1666,6 +1693,34 @@ def _cmd_layers(args: argparse.Namespace) -> None:
 
 def _cmd_cases(args: argparse.Namespace) -> None:
     import json as _json
+
+    if args.cases_command == "baseline-report":
+        from vulca.learning.seed_report import (
+            DEFAULT_BASELINE_POLICIES,
+            write_local_seed_baseline_report,
+        )
+        from vulca.learning.seed_cases import DEFAULT_SEED_MANIFEST
+
+        policies = tuple(args.policy) if args.policy else DEFAULT_BASELINE_POLICIES
+        try:
+            output_path = write_local_seed_baseline_report(
+                repo_root=args.repo_root or Path.cwd(),
+                output_path=args.output,
+                manifest_path=args.manifest or DEFAULT_SEED_MANIFEST,
+                policies=policies,
+            )
+            report = _json.loads(Path(output_path).read_text(encoding="utf-8"))
+        except (ValueError, FileNotFoundError, subprocess.CalledProcessError, _json.JSONDecodeError) as exc:
+            print(f"Error: {exc}", file=sys.stderr)
+            sys.exit(1)
+
+        print(f"  Baseline report: {output_path}")
+        for case_type in sorted(report["seed_counts"]):
+            print(f"  {case_type}: {report['seed_counts'][case_type]}")
+        for policy in policies:
+            metrics = report["redraw_router_baselines"][policy]
+            print(f"  {policy} action_accuracy: {metrics['action_accuracy']}")
+        return
 
     if args.cases_command == "seed":
         from vulca.learning.seed_cases import (
