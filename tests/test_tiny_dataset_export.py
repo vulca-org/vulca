@@ -253,6 +253,179 @@ def test_tiny_dataset_comparison_report_compares_rule_and_majority_baselines(tmp
     assert report["ranked_policies"][0]["policy_name"] == "redraw_observable_signal"
 
 
+def test_tiny_prediction_jsonl_scores_against_dataset_split(tmp_path):
+    from vulca.learning.tiny_dataset import (
+        evaluate_tiny_prediction_records,
+        load_tiny_prediction_records,
+        write_tiny_dataset,
+    )
+
+    dataset_path = tmp_path / "tiny_dataset.jsonl"
+    write_tiny_dataset(repo_root=ROOT, output_path=dataset_path)
+    examples = _read_jsonl(dataset_path)
+    test_examples = [item for item in examples if item["split"] == "test"]
+    prediction_path = tmp_path / "mock_tiny_model_predictions.jsonl"
+    prediction_path.write_text(
+        "\n".join(
+            json.dumps(
+                {
+                    "policy_name": "mock_tiny_model",
+                    "example_id": item["example_id"],
+                    "recommended_action": item["targets"]["preferred_action"],
+                    "failure_hint": item["targets"]["failure_type"],
+                    "confidence": 0.91,
+                }
+            )
+            for item in test_examples
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    predictions = load_tiny_prediction_records(prediction_path)
+    report = evaluate_tiny_prediction_records(
+        examples,
+        predictions,
+        dataset_split="test",
+    )
+
+    assert report["case_type"] == "learning_tiny_dataset_eval_report"
+    assert report["policy_name"] == "mock_tiny_model"
+    assert report["split"] == "test"
+    assert report["example_count"] == 2
+    assert report["prediction_count"] == 2
+    assert report["matched_count"] == 2
+    assert report["missing_count"] == 0
+    assert report["extra_count"] == 0
+    assert report["action_accuracy"] == 1.0
+    assert report["recommendations"][0]["confidence"] == 0.91
+
+
+def test_tiny_prediction_jsonl_reports_missing_and_extra_predictions(tmp_path):
+    from vulca.learning.tiny_dataset import (
+        evaluate_tiny_prediction_records,
+        load_tiny_prediction_records,
+        write_tiny_dataset,
+    )
+
+    dataset_path = tmp_path / "tiny_dataset.jsonl"
+    write_tiny_dataset(repo_root=ROOT, output_path=dataset_path)
+    examples = _read_jsonl(dataset_path)
+    test_examples = [item for item in examples if item["split"] == "test"]
+    prediction_path = tmp_path / "partial_predictions.jsonl"
+    prediction_path.write_text(
+        "\n".join(
+            [
+                json.dumps(
+                    {
+                        "policy_name": "partial_tiny_model",
+                        "example_id": test_examples[0]["example_id"],
+                        "recommended_action": "manual_review",
+                    }
+                ),
+                json.dumps(
+                    {
+                        "policy_name": "partial_tiny_model",
+                        "example_id": "tiny_unknown_extra",
+                        "recommended_action": "manual_review",
+                    }
+                ),
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    report = evaluate_tiny_prediction_records(
+        examples,
+        load_tiny_prediction_records(prediction_path),
+        dataset_split="test",
+    )
+
+    assert report["policy_name"] == "partial_tiny_model"
+    assert report["matched_count"] == 1
+    assert report["missing_count"] == 1
+    assert report["extra_count"] == 1
+    assert len(report["missing_predictions"]) == 1
+    assert report["extra_predictions"] == ["tiny_unknown_extra"]
+
+
+def test_tiny_prediction_jsonl_rejects_duplicate_example_ids(tmp_path):
+    from vulca.learning.tiny_dataset import load_tiny_prediction_records
+
+    prediction_path = tmp_path / "duplicate_predictions.jsonl"
+    prediction_path.write_text(
+        "\n".join(
+            [
+                json.dumps(
+                    {
+                        "example_id": "tiny_duplicate",
+                        "recommended_action": "accept",
+                    }
+                ),
+                json.dumps(
+                    {
+                        "example_id": "tiny_duplicate",
+                        "recommended_action": "manual_review",
+                    }
+                ),
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    try:
+        load_tiny_prediction_records(prediction_path)
+    except ValueError as exc:
+        assert "duplicate prediction example_id" in str(exc)
+    else:
+        raise AssertionError("expected duplicate prediction example_id to fail")
+
+
+def test_tiny_dataset_comparison_report_includes_prediction_file(tmp_path):
+    from vulca.learning.tiny_dataset import (
+        build_tiny_dataset_comparison_report,
+        write_tiny_dataset,
+    )
+
+    dataset_path = tmp_path / "tiny_dataset.jsonl"
+    write_tiny_dataset(repo_root=ROOT, output_path=dataset_path)
+    examples = _read_jsonl(dataset_path)
+    test_examples = [item for item in examples if item["split"] == "test"]
+    prediction_path = tmp_path / "mock_tiny_model_predictions.jsonl"
+    prediction_path.write_text(
+        "\n".join(
+            json.dumps(
+                {
+                    "policy_name": "mock_tiny_model",
+                    "example_id": item["example_id"],
+                    "recommended_action": item["targets"]["preferred_action"],
+                }
+            )
+            for item in test_examples
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    report = build_tiny_dataset_comparison_report(
+        examples,
+        train_split="train",
+        eval_split="test",
+        prediction_paths=[prediction_path],
+    )
+
+    assert "mock_tiny_model" in report["policy_reports"]
+    assert report["policy_reports"]["mock_tiny_model"]["prediction_path"] == str(
+        prediction_path
+    )
+    assert report["policy_reports"]["mock_tiny_model"]["action_accuracy"] == 1.0
+    assert {
+        row["policy_name"] for row in report["ranked_policies"]
+    } >= {"mock_tiny_model", "majority_action", "redraw_observable_signal"}
+
+
 def test_tiny_dataset_eval_script_writes_report(tmp_path):
     from vulca.learning.tiny_dataset import write_tiny_dataset
 
@@ -313,3 +486,53 @@ def test_tiny_dataset_eval_script_writes_comparison_report(tmp_path):
     assert report["case_type"] == "learning_tiny_dataset_comparison_report"
     assert "majority_action action_accuracy:" in result.stdout
     assert "redraw_observable_signal action_accuracy:" in result.stdout
+
+
+def test_tiny_dataset_eval_script_accepts_prediction_jsonl(tmp_path):
+    from vulca.learning.tiny_dataset import write_tiny_dataset
+
+    dataset_path = tmp_path / "tiny_dataset.jsonl"
+    report_path = tmp_path / "tiny_dataset_prediction_comparison.json"
+    prediction_path = tmp_path / "mock_tiny_model_predictions.jsonl"
+    write_tiny_dataset(repo_root=ROOT, output_path=dataset_path)
+    examples = _read_jsonl(dataset_path)
+    test_examples = [item for item in examples if item["split"] == "test"]
+    prediction_path.write_text(
+        "\n".join(
+            json.dumps(
+                {
+                    "policy_name": "mock_tiny_model",
+                    "example_id": item["example_id"],
+                    "recommended_action": item["targets"]["preferred_action"],
+                }
+            )
+            for item in test_examples
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "scripts" / "tiny_dataset_eval.py"),
+            str(dataset_path),
+            "--compare",
+            "--split",
+            "test",
+            "--prediction",
+            str(prediction_path),
+            "--output",
+            str(report_path),
+        ],
+        capture_output=True,
+        text=True,
+        timeout=20,
+        env=CLI_ENV,
+        cwd=ROOT,
+    )
+
+    assert result.returncode == 0, result.stderr
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    assert "mock_tiny_model" in report["policy_reports"]
+    assert "mock_tiny_model action_accuracy: 1.0" in result.stdout

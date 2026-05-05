@@ -9,9 +9,18 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Sequence
 
-from vulca.layers.decompose_cases import CASE_TYPE as DECOMPOSE_CASE_TYPE
-from vulca.layers.layer_generate_cases import CASE_TYPE as LAYER_GENERATE_CASE_TYPE
-from vulca.layers.redraw_cases import CASE_TYPE as REDRAW_CASE_TYPE
+from vulca.layers.decompose_cases import (
+    CASE_TYPE as DECOMPOSE_CASE_TYPE,
+    PREFERRED_ACTIONS as DECOMPOSE_PREFERRED_ACTIONS,
+)
+from vulca.layers.layer_generate_cases import (
+    CASE_TYPE as LAYER_GENERATE_CASE_TYPE,
+    PREFERRED_ACTIONS as LAYER_GENERATE_PREFERRED_ACTIONS,
+)
+from vulca.layers.redraw_cases import (
+    CASE_TYPE as REDRAW_CASE_TYPE,
+    PREFERRED_ACTIONS as REDRAW_PREFERRED_ACTIONS,
+)
 from vulca.layers.redraw_router_baseline import (
     POLICY_OBSERVABLE_SIGNAL,
     recommend_action,
@@ -38,6 +47,11 @@ DEFAULT_COMPARISON_POLICIES: tuple[str, ...] = (
 DATASET_SPLITS: tuple[str, ...] = ("train", "dev", "test")
 SUPPORTED_SOURCE_CASE_TYPES: frozenset[str] = frozenset(
     {REDRAW_CASE_TYPE, DECOMPOSE_CASE_TYPE, LAYER_GENERATE_CASE_TYPE}
+)
+SUPPORTED_PREDICTION_ACTIONS: frozenset[str] = frozenset(
+    set(REDRAW_PREFERRED_ACTIONS)
+    | set(DECOMPOSE_PREFERRED_ACTIONS)
+    | set(LAYER_GENERATE_PREFERRED_ACTIONS)
 )
 
 
@@ -155,6 +169,51 @@ def load_tiny_dataset_examples(path: str | Path) -> list[dict[str, Any]]:
     return load_cases(path)
 
 
+def load_tiny_prediction_records(
+    path: str | Path,
+    *,
+    policy_name: str | None = None,
+) -> list[dict[str, Any]]:
+    """Load external tiny model/agent predictions keyed by dataset example_id."""
+    prediction_path = Path(path)
+    records = load_cases(prediction_path)
+    predictions: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    default_policy = policy_name or prediction_path.stem
+
+    for index, record in enumerate(records):
+        example_id = str(record.get("example_id") or "")
+        if not example_id:
+            raise ValueError(f"{prediction_path}:{index + 1}: example_id is required")
+        if example_id in seen:
+            raise ValueError(f"duplicate prediction example_id {example_id!r}")
+        seen.add(example_id)
+
+        action = str(record.get("recommended_action") or "")
+        if not action:
+            raise ValueError(
+                f"{prediction_path}:{index + 1}: recommended_action is required"
+            )
+        if action not in SUPPORTED_PREDICTION_ACTIONS:
+            raise ValueError(
+                f"{prediction_path}:{index + 1}: unsupported recommended_action "
+                f"{action!r}"
+            )
+
+        predictions.append(
+            {
+                "policy_name": str(record.get("policy_name") or default_policy),
+                "example_id": example_id,
+                "recommended_action": action,
+                "failure_hint": str(record.get("failure_hint") or ""),
+                "confidence": record.get("confidence"),
+                "source_path": str(prediction_path),
+            }
+        )
+
+    return predictions
+
+
 def evaluate_tiny_dataset_examples(
     examples: Iterable[Mapping[str, Any]],
     *,
@@ -241,6 +300,93 @@ def evaluate_tiny_dataset_examples(
     }
 
 
+def evaluate_tiny_prediction_records(
+    examples: Iterable[Mapping[str, Any]],
+    predictions: Iterable[Mapping[str, Any]],
+    *,
+    dataset_split: str | None = None,
+    policy_name: str | None = None,
+    prediction_path: str | Path | None = None,
+) -> dict[str, Any]:
+    """Evaluate external predictions against exported tiny dataset examples."""
+    items = _filter_by_split(list(examples), dataset_split)
+    prediction_items = list(predictions)
+    resolved_policy = policy_name or _prediction_policy_name(prediction_items)
+    prediction_by_id = {
+        str(item.get("example_id") or ""): item for item in prediction_items
+    }
+    expected_ids = {str(item.get("example_id") or "") for item in items}
+    extra_ids = sorted(set(prediction_by_id) - expected_ids)
+
+    action_total = 0
+    action_correct = 0
+    matched_count = 0
+    missing_predictions: list[dict[str, str]] = []
+    mismatches: list[dict[str, Any]] = []
+    recommendations: list[dict[str, Any]] = []
+
+    for example in items:
+        example_id = str(example.get("example_id") or "")
+        source_case = _mapping(example.get("source_case"))
+        target_action = str(
+            _mapping(example.get("targets")).get("preferred_action") or ""
+        )
+        prediction = prediction_by_id.get(example_id)
+        if prediction is None:
+            missing_predictions.append(
+                {
+                    "example_id": example_id,
+                    "case_id": str(source_case.get("case_id") or ""),
+                    "source_case_type": str(source_case.get("case_type") or ""),
+                    "target_action": target_action,
+                }
+            )
+            continue
+
+        matched_count += 1
+        recommended_action = str(prediction.get("recommended_action") or "")
+        recommendation_record = {
+            "example_id": example_id,
+            "case_id": str(source_case.get("case_id") or ""),
+            "source_case_type": str(source_case.get("case_type") or ""),
+            "target_action": target_action,
+            "recommended_action": recommended_action,
+            "failure_hint": str(prediction.get("failure_hint") or ""),
+            "confidence": prediction.get("confidence"),
+            "rule_reason": "prediction_jsonl",
+        }
+        recommendations.append(recommendation_record)
+        if target_action:
+            action_total += 1
+            if recommended_action == target_action:
+                action_correct += 1
+            else:
+                mismatches.append(recommendation_record)
+
+    return {
+        "schema_version": DATASET_SCHEMA_VERSION,
+        "case_type": EVAL_REPORT_CASE_TYPE,
+        "policy_name": resolved_policy,
+        "split": dataset_split or "all",
+        "prediction_path": str(prediction_path or _prediction_path(prediction_items)),
+        "example_count": len(items),
+        "prediction_count": len(prediction_items),
+        "matched_count": matched_count,
+        "missing_count": len(missing_predictions),
+        "extra_count": len(extra_ids),
+        "extra_predictions": extra_ids,
+        "missing_predictions": missing_predictions,
+        "evaluated_count": matched_count,
+        "skipped_count": len(missing_predictions),
+        "skipped_by_case_type": _missing_counts_by_case_type(missing_predictions),
+        "action_labeled_count": action_total,
+        "action_accuracy": _ratio(action_correct, action_total),
+        "mismatch_count": len(mismatches),
+        "mismatches": mismatches,
+        "recommendations": recommendations,
+    }
+
+
 def write_tiny_dataset_eval_report(
     *,
     dataset_path: str | Path,
@@ -270,6 +416,7 @@ def build_tiny_dataset_comparison_report(
     train_split: str = "train",
     eval_split: str = "test",
     policy_names: Sequence[str] = DEFAULT_COMPARISON_POLICIES,
+    prediction_paths: Sequence[str | Path] = (),
 ) -> dict[str, Any]:
     """Compare offline baselines on a fixed dataset split."""
     items = list(examples)
@@ -282,6 +429,15 @@ def build_tiny_dataset_comparison_report(
         )
         for policy in policy_names
     }
+    for prediction_path in prediction_paths:
+        predictions = load_tiny_prediction_records(prediction_path)
+        report = evaluate_tiny_prediction_records(
+            items,
+            predictions,
+            dataset_split=eval_split,
+            prediction_path=prediction_path,
+        )
+        reports[str(report["policy_name"])] = report
     return {
         "schema_version": DATASET_SCHEMA_VERSION,
         "case_type": COMPARISON_REPORT_CASE_TYPE,
@@ -472,12 +628,52 @@ def _rank_policy_reports(
     return sorted(
         rows,
         key=lambda item: (
-            -(float(item["action_accuracy"]) if item["action_accuracy"] is not None else -1.0),
+            -(
+                float(item["action_accuracy"])
+                if item["action_accuracy"] is not None
+                else -1.0
+            ),
             -int(item["evaluated_count"] or 0),
             int(item["mismatch_count"] or 0),
             str(item["policy_name"]),
         ),
     )
+
+
+def _prediction_policy_name(predictions: Sequence[Mapping[str, Any]]) -> str:
+    names = {
+        str(item.get("policy_name") or "")
+        for item in predictions
+        if str(item.get("policy_name") or "")
+    }
+    if len(names) > 1:
+        raise ValueError(
+            "prediction file contains multiple policy_name values: "
+            f"{sorted(names)}"
+        )
+    if names:
+        return next(iter(names))
+    return "prediction_file"
+
+
+def _prediction_path(predictions: Sequence[Mapping[str, Any]]) -> str:
+    paths = {
+        str(item.get("source_path") or "")
+        for item in predictions
+        if str(item.get("source_path") or "")
+    }
+    if len(paths) == 1:
+        return next(iter(paths))
+    return ""
+
+
+def _missing_counts_by_case_type(
+    missing_predictions: Iterable[Mapping[str, Any]],
+) -> dict[str, int]:
+    counts: Counter[str] = Counter()
+    for item in missing_predictions:
+        counts[str(item.get("source_case_type") or "unknown")] += 1
+    return dict(sorted(counts.items()))
 
 
 def _sanitize_case_for_input(record: Mapping[str, Any]) -> dict[str, Any]:
