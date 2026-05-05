@@ -170,3 +170,60 @@ def test_cases_baseline_report_cli_fails_when_gate_violates(tmp_path):
     assert output_path.exists()
     assert "Baseline gate failed:" in result.stderr
     assert "observable_signal action_accuracy 1.0 < 1.01" in result.stderr
+
+
+def test_local_seed_baseline_gate_script_passes_default_gate(tmp_path):
+    output_path = tmp_path / "ci-baseline-report.json"
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "scripts" / "local_seed_baseline_gate.py"),
+            "--repo-root",
+            str(ROOT),
+            "--output",
+            str(output_path),
+        ],
+        capture_output=True,
+        text=True,
+        timeout=20,
+        env=CLI_ENV,
+        cwd=ROOT,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert output_path.exists()
+    assert "Local seed baseline gate passed" in result.stdout
+    assert "observable_signal action_accuracy: 1.0" in result.stdout
+
+
+def test_local_seed_baseline_gate_script_fails_on_threshold_regression(tmp_path):
+    output_path = tmp_path / "ci-baseline-report.json"
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "scripts" / "local_seed_baseline_gate.py"),
+            "--repo-root",
+            str(ROOT),
+            "--output",
+            str(output_path),
+            "--min-action-accuracy",
+            "observable_signal=1.01",
+        ],
+        capture_output=True,
+        text=True,
+        timeout=20,
+        env=CLI_ENV,
+        cwd=ROOT,
+    )
+
+    assert result.returncode == 1
+    assert output_path.exists()
+    assert "Local seed baseline gate failed" in result.stderr
+    assert "observable_signal action_accuracy 1.0 < 1.01" in result.stderr
+
+
+def test_ci_workflow_runs_local_seed_baseline_gate():
+    workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+
+    assert "Local seed baseline gate" in workflow
+    assert "scripts/local_seed_baseline_gate.py" in workflow
