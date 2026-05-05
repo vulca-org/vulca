@@ -345,3 +345,30 @@ def test_append_layer_generate_case_writes_one_json_line(tmp_path):
     lines = path.read_text().splitlines()
     assert len(lines) == 1
     assert json.loads(lines[0]) == record
+
+
+def test_layer_generate_case_uses_sibling_schema_not_redraw_or_decompose():
+    from vulca.layers.layer_generate_cases import build_layer_generate_case
+
+    record = build_layer_generate_case(
+        user_intent="Create layers.",
+        tradition="test",
+        style_constraints=_style_constraints(),
+        layer_plan=_layer_plan(),
+        prompt_stack=_prompt_stack(),
+        provider="openai",
+        model="gpt-image-2",
+        layer_manifest_path="runs/layered/case/manifest.json",
+        layers=_layers(),
+        created_at="2026-05-05T12:00:00Z",
+    )
+
+    assert record["case_type"] == "layer_generate_case"
+    assert "route" not in record
+    assert "geometry" not in record
+    assert "refinement" not in record
+    assert "artifacts" not in record
+    assert "inputs" in record
+    assert "decisions" in record
+    assert "outputs" in record
+    assert record["outputs"]["layer_manifest_path"].endswith("manifest.json")
