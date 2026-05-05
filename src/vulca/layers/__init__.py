@@ -21,6 +21,18 @@ from vulca.layers.vlm_mask import generate_vlm_mask, apply_vlm_mask, VLM_MASK_PR
 from vulca.layers.transform import apply_spatial_transform, compute_content_bbox, needs_transform
 from vulca.layers.plan_prompt import build_plan_prompt, get_tradition_layer_order
 from vulca.layers.alpha import ensure_alpha
+from vulca.layers.reconstruction import (
+    SourceLayeredGenerationResult,
+    apply_owned_mask_to_source,
+    asource_layered_generate,
+    assert_image_edits_endpoint_allowed,
+    evaluate_ownership_quality_gates,
+    load_reconstruction_contracts,
+    normalize_layer_ownership,
+    should_use_local_redraw,
+    source_layered_generate,
+    write_reconstruction_summary,
+)
 
 # V1 compat re-exports
 from vulca.layers.manifest import load_manifest as load_artwork
@@ -50,4 +62,14 @@ __all__ = [
     "build_plan_prompt", "get_tradition_layer_order",
     "ensure_alpha",
     "apply_spatial_transform", "compute_content_bbox", "needs_transform",
+    "SourceLayeredGenerationResult",
+    "apply_owned_mask_to_source",
+    "asource_layered_generate",
+    "assert_image_edits_endpoint_allowed",
+    "evaluate_ownership_quality_gates",
+    "load_reconstruction_contracts",
+    "normalize_layer_ownership",
+    "should_use_local_redraw",
+    "source_layered_generate",
+    "write_reconstruction_summary",
 ]
