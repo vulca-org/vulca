@@ -2,6 +2,7 @@ import json
 import os
 import subprocess
 import sys
+from collections import Counter
 from pathlib import Path
 
 
@@ -76,6 +77,47 @@ def test_write_tiny_dataset_writes_jsonl_and_index(tmp_path):
     assert index["case_type"] == "learning_tiny_dataset_index"
     assert index["example_count"] == 12
     assert index["counts_by_case_type"]["layer_generate_case"] == 5
+    assert index["counts_by_split"] == {
+        "dev": 2,
+        "test": 2,
+        "train": 8,
+    }
+
+
+def test_tiny_dataset_assigns_deterministic_train_dev_test_splits():
+    from vulca.learning.tiny_dataset import build_tiny_dataset_examples
+
+    examples = build_tiny_dataset_examples(repo_root=ROOT)
+    repeated = build_tiny_dataset_examples(repo_root=ROOT)
+
+    assert [item["split"] for item in examples] == [
+        item["split"] for item in repeated
+    ]
+    assert Counter(item["split"] for item in examples) == {
+        "dev": 2,
+        "test": 2,
+        "train": 8,
+    }
+
+    split_by_case_type = {
+        case_type: Counter(
+            item["split"]
+            for item in examples
+            if item["source_case"]["case_type"] == case_type
+        )
+        for case_type in {item["source_case"]["case_type"] for item in examples}
+    }
+    assert split_by_case_type["redraw_case"] == {
+        "dev": 1,
+        "test": 1,
+        "train": 4,
+    }
+    assert split_by_case_type["decompose_case"] == {"train": 1}
+    assert split_by_case_type["layer_generate_case"] == {
+        "dev": 1,
+        "test": 1,
+        "train": 3,
+    }
 
 
 def test_tiny_dataset_merges_additional_case_logs(tmp_path):
@@ -129,6 +171,9 @@ def test_cases_export_dataset_cli_writes_dataset(tmp_path):
     assert "Tiny dataset:" in result.stdout
     assert "redraw_case: 6" in result.stdout
     assert "layer_generate_case: 5" in result.stdout
+    assert "train: 8" in result.stdout
+    assert "dev: 2" in result.stdout
+    assert "test: 2" in result.stdout
     assert (tmp_path / "tiny_dataset.index.json").exists()
 
 
@@ -154,6 +199,58 @@ def test_tiny_dataset_eval_scores_redraw_observable_signal(tmp_path):
     assert report["skipped_count"] == 6
     assert report["action_accuracy"] == 1.0
     assert report["mismatches"] == []
+
+
+def test_tiny_dataset_eval_filters_to_requested_split(tmp_path):
+    from vulca.learning.tiny_dataset import (
+        evaluate_tiny_dataset_examples,
+        write_tiny_dataset,
+    )
+
+    output_path = tmp_path / "tiny_dataset.jsonl"
+    write_tiny_dataset(repo_root=ROOT, output_path=output_path)
+    examples = _read_jsonl(output_path)
+
+    report = evaluate_tiny_dataset_examples(
+        examples,
+        policy_name="redraw_observable_signal",
+        dataset_split="test",
+    )
+
+    assert report["split"] == "test"
+    assert report["example_count"] == 2
+    assert report["evaluated_count"] == 1
+    assert report["skipped_by_case_type"] == {"layer_generate_case": 1}
+    assert report["action_accuracy"] == 1.0
+
+
+def test_tiny_dataset_comparison_report_compares_rule_and_majority_baselines(tmp_path):
+    from vulca.learning.tiny_dataset import (
+        build_tiny_dataset_comparison_report,
+        write_tiny_dataset,
+    )
+
+    output_path = tmp_path / "tiny_dataset.jsonl"
+    write_tiny_dataset(repo_root=ROOT, output_path=output_path)
+    examples = _read_jsonl(output_path)
+
+    report = build_tiny_dataset_comparison_report(
+        examples,
+        train_split="train",
+        eval_split="test",
+    )
+
+    assert report["case_type"] == "learning_tiny_dataset_comparison_report"
+    assert report["train_split"] == "train"
+    assert report["eval_split"] == "test"
+    assert set(report["policy_reports"]) == {
+        "majority_action",
+        "redraw_observable_signal",
+    }
+    assert report["policy_reports"]["majority_action"]["majority_action"] == "accept"
+    assert report["policy_reports"]["majority_action"]["evaluated_count"] == 2
+    assert report["policy_reports"]["redraw_observable_signal"]["evaluated_count"] == 1
+    assert report["ranked_policies"][0]["policy_name"] == "redraw_observable_signal"
 
 
 def test_tiny_dataset_eval_script_writes_report(tmp_path):
@@ -184,3 +281,35 @@ def test_tiny_dataset_eval_script_writes_report(tmp_path):
     assert report["evaluated_count"] == 6
     assert report["action_accuracy"] == 1.0
     assert "redraw_observable_signal action_accuracy: 1.0" in result.stdout
+
+
+def test_tiny_dataset_eval_script_writes_comparison_report(tmp_path):
+    from vulca.learning.tiny_dataset import write_tiny_dataset
+
+    dataset_path = tmp_path / "tiny_dataset.jsonl"
+    report_path = tmp_path / "tiny_dataset_comparison.json"
+    write_tiny_dataset(repo_root=ROOT, output_path=dataset_path)
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "scripts" / "tiny_dataset_eval.py"),
+            str(dataset_path),
+            "--compare",
+            "--split",
+            "test",
+            "--output",
+            str(report_path),
+        ],
+        capture_output=True,
+        text=True,
+        timeout=20,
+        env=CLI_ENV,
+        cwd=ROOT,
+    )
+
+    assert result.returncode == 0, result.stderr
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    assert report["case_type"] == "learning_tiny_dataset_comparison_report"
+    assert "majority_action action_accuracy:" in result.stdout
+    assert "redraw_observable_signal action_accuracy:" in result.stdout

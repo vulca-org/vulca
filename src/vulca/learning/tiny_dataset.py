@@ -24,11 +24,18 @@ DATASET_SCHEMA_VERSION = 1
 DATASET_CASE_TYPE = "learning_tiny_dataset_example"
 DATASET_INDEX_CASE_TYPE = "learning_tiny_dataset_index"
 EVAL_REPORT_CASE_TYPE = "learning_tiny_dataset_eval_report"
+COMPARISON_REPORT_CASE_TYPE = "learning_tiny_dataset_comparison_report"
 
+POLICY_MAJORITY_ACTION = "majority_action"
 POLICY_REDRAW_OBSERVABLE_SIGNAL = "redraw_observable_signal"
 TINY_DATASET_EVAL_POLICIES: frozenset[str] = frozenset(
-    {POLICY_REDRAW_OBSERVABLE_SIGNAL}
+    {POLICY_MAJORITY_ACTION, POLICY_REDRAW_OBSERVABLE_SIGNAL}
 )
+DEFAULT_COMPARISON_POLICIES: tuple[str, ...] = (
+    POLICY_MAJORITY_ACTION,
+    POLICY_REDRAW_OBSERVABLE_SIGNAL,
+)
+DATASET_SPLITS: tuple[str, ...] = ("train", "dev", "test")
 SUPPORTED_SOURCE_CASE_TYPES: frozenset[str] = frozenset(
     {REDRAW_CASE_TYPE, DECOMPOSE_CASE_TYPE, LAYER_GENERATE_CASE_TYPE}
 )
@@ -40,6 +47,7 @@ class TinyDatasetWriteResult:
     index_path: str
     example_count: int
     counts_by_case_type: dict[str, int]
+    counts_by_split: dict[str, int]
 
 
 def build_tiny_dataset_examples(
@@ -87,6 +95,7 @@ def build_tiny_dataset_examples(
                 )
             )
 
+    _assign_dataset_splits(examples)
     return examples
 
 
@@ -123,6 +132,7 @@ def write_tiny_dataset(
                 "include_local_seeds": bool(include_local_seeds),
                 "example_count": len(examples),
                 "counts_by_case_type": counts,
+                "counts_by_split": _counts_by_split(examples),
                 "counts_by_source": _counts_by_source(examples),
                 "target_counts": _target_counts(examples),
             },
@@ -137,6 +147,7 @@ def write_tiny_dataset(
         index_path=str(index),
         example_count=len(examples),
         counts_by_case_type=counts,
+        counts_by_split=_counts_by_split(examples),
     )
 
 
@@ -148,6 +159,8 @@ def evaluate_tiny_dataset_examples(
     examples: Iterable[Mapping[str, Any]],
     *,
     policy_name: str = POLICY_REDRAW_OBSERVABLE_SIGNAL,
+    dataset_split: str | None = None,
+    train_split: str = "train",
 ) -> dict[str, Any]:
     """Evaluate provider-free policies on exported tiny dataset examples."""
     if policy_name not in TINY_DATASET_EVAL_POLICIES:
@@ -156,7 +169,16 @@ def evaluate_tiny_dataset_examples(
             f"expected one of {sorted(TINY_DATASET_EVAL_POLICIES)}"
         )
 
-    items = list(examples)
+    all_items = list(examples)
+    items = _filter_by_split(all_items, dataset_split)
+    if policy_name == POLICY_MAJORITY_ACTION:
+        return _evaluate_majority_action(
+            all_items,
+            items,
+            dataset_split=dataset_split,
+            train_split=train_split,
+        )
+
     action_total = 0
     action_correct = 0
     evaluated_count = 0
@@ -206,6 +228,7 @@ def evaluate_tiny_dataset_examples(
         "schema_version": DATASET_SCHEMA_VERSION,
         "case_type": EVAL_REPORT_CASE_TYPE,
         "policy_name": policy_name,
+        "split": dataset_split or "all",
         "example_count": len(items),
         "evaluated_count": evaluated_count,
         "skipped_count": skipped_count,
@@ -223,10 +246,14 @@ def write_tiny_dataset_eval_report(
     dataset_path: str | Path,
     output_path: str | Path,
     policy_name: str = POLICY_REDRAW_OBSERVABLE_SIGNAL,
+    dataset_split: str | None = None,
+    train_split: str = "train",
 ) -> str:
     report = evaluate_tiny_dataset_examples(
         load_tiny_dataset_examples(dataset_path),
         policy_name=policy_name,
+        dataset_split=dataset_split,
+        train_split=train_split,
     )
     path = Path(output_path)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -235,6 +262,35 @@ def write_tiny_dataset_eval_report(
         encoding="utf-8",
     )
     return str(path)
+
+
+def build_tiny_dataset_comparison_report(
+    examples: Iterable[Mapping[str, Any]],
+    *,
+    train_split: str = "train",
+    eval_split: str = "test",
+    policy_names: Sequence[str] = DEFAULT_COMPARISON_POLICIES,
+) -> dict[str, Any]:
+    """Compare offline baselines on a fixed dataset split."""
+    items = list(examples)
+    reports = {
+        policy: evaluate_tiny_dataset_examples(
+            items,
+            policy_name=policy,
+            dataset_split=eval_split,
+            train_split=train_split,
+        )
+        for policy in policy_names
+    }
+    return {
+        "schema_version": DATASET_SCHEMA_VERSION,
+        "case_type": COMPARISON_REPORT_CASE_TYPE,
+        "train_split": train_split,
+        "eval_split": eval_split,
+        "example_count": len(_filter_by_split(items, eval_split)),
+        "policy_reports": reports,
+        "ranked_policies": _rank_policy_reports(reports),
+    }
 
 
 def _build_example(
@@ -284,6 +340,144 @@ def _build_example(
             },
         },
     }
+
+
+def _assign_dataset_splits(examples: list[dict[str, Any]]) -> None:
+    groups: dict[str, list[dict[str, Any]]] = {}
+    for example in examples:
+        case_type = str(_mapping(example.get("source_case")).get("case_type") or "")
+        groups.setdefault(case_type, []).append(example)
+
+    for case_type in sorted(groups):
+        group = groups[case_type]
+        counts = _split_counts(len(group))
+        cursor = 0
+        for split in DATASET_SPLITS:
+            count = counts.get(split, 0)
+            for example in group[cursor : cursor + count]:
+                example["split"] = split
+            cursor += count
+
+
+def _split_counts(total: int) -> dict[str, int]:
+    if total <= 0:
+        return {"train": 0, "dev": 0, "test": 0}
+    if total == 1:
+        return {"train": 1, "dev": 0, "test": 0}
+    if total == 2:
+        return {"train": 1, "dev": 1, "test": 0}
+
+    train = max(1, int(total * 0.7))
+    dev = max(1, int(total * 0.15))
+    test = total - train - dev
+    if test < 1:
+        train = max(1, train - (1 - test))
+        test = 1
+    return {"train": train, "dev": dev, "test": test}
+
+
+def _filter_by_split(
+    examples: Iterable[Mapping[str, Any]],
+    dataset_split: str | None,
+) -> list[Mapping[str, Any]]:
+    if not dataset_split or dataset_split == "all":
+        return list(examples)
+    if dataset_split not in DATASET_SPLITS:
+        raise ValueError(
+            f"unsupported dataset split {dataset_split!r}; "
+            f"expected one of {DATASET_SPLITS}"
+        )
+    return [item for item in examples if item.get("split") == dataset_split]
+
+
+def _evaluate_majority_action(
+    all_items: Sequence[Mapping[str, Any]],
+    eval_items: Sequence[Mapping[str, Any]],
+    *,
+    dataset_split: str | None,
+    train_split: str,
+) -> dict[str, Any]:
+    train_items = _filter_by_split(all_items, train_split)
+    majority_action = _majority_action(train_items) or "manual_review"
+    action_total = 0
+    action_correct = 0
+    mismatches: list[dict[str, Any]] = []
+    recommendations: list[dict[str, Any]] = []
+
+    for example in eval_items:
+        source_case = _mapping(example.get("source_case"))
+        target_action = str(
+            _mapping(example.get("targets")).get("preferred_action") or ""
+        )
+        recommendation_record = {
+            "example_id": str(example.get("example_id") or ""),
+            "case_id": str(source_case.get("case_id") or ""),
+            "source_case_type": str(source_case.get("case_type") or ""),
+            "target_action": target_action,
+            "recommended_action": majority_action,
+            "failure_hint": "",
+            "rule_reason": f"train_split_majority:{train_split}",
+        }
+        recommendations.append(recommendation_record)
+        if target_action:
+            action_total += 1
+            if target_action == majority_action:
+                action_correct += 1
+            else:
+                mismatches.append(recommendation_record)
+
+    return {
+        "schema_version": DATASET_SCHEMA_VERSION,
+        "case_type": EVAL_REPORT_CASE_TYPE,
+        "policy_name": POLICY_MAJORITY_ACTION,
+        "split": dataset_split or "all",
+        "train_split": train_split,
+        "majority_action": majority_action,
+        "example_count": len(eval_items),
+        "evaluated_count": len(eval_items),
+        "skipped_count": 0,
+        "skipped_by_case_type": {},
+        "action_labeled_count": action_total,
+        "action_accuracy": _ratio(action_correct, action_total),
+        "mismatch_count": len(mismatches),
+        "mismatches": mismatches,
+        "recommendations": recommendations,
+    }
+
+
+def _majority_action(examples: Iterable[Mapping[str, Any]]) -> str:
+    counts: Counter[str] = Counter()
+    for example in examples:
+        action = str(_mapping(example.get("targets")).get("preferred_action") or "")
+        if action:
+            counts[action] += 1
+    if not counts:
+        return ""
+    return sorted(counts.items(), key=lambda item: (-item[1], item[0]))[0][0]
+
+
+def _rank_policy_reports(
+    reports: Mapping[str, Mapping[str, Any]],
+) -> list[dict[str, Any]]:
+    rows = []
+    for policy_name, report in reports.items():
+        rows.append(
+            {
+                "policy_name": policy_name,
+                "action_accuracy": report.get("action_accuracy"),
+                "evaluated_count": report.get("evaluated_count", 0),
+                "mismatch_count": report.get("mismatch_count", 0),
+            }
+        )
+    return sorted(
+        rows,
+        key=lambda item: (
+            -(float(item["action_accuracy"]) if item["action_accuracy"] is not None else -1.0),
+            -int(item["evaluated_count"] or 0),
+            int(item["mismatch_count"] or 0),
+            str(item["policy_name"]),
+        ),
+    )
 
 
 def _sanitize_case_for_input(record: Mapping[str, Any]) -> dict[str, Any]:
@@ -356,6 +550,14 @@ def _counts_by_case_type(examples: Iterable[Mapping[str, Any]]) -> dict[str, int
     for example in examples:
         key = str(_mapping(example.get("source_case")).get("case_type") or "unknown")
         counts[key] += 1
+    return dict(sorted(counts.items()))
+
+
+def _counts_by_split(examples: Iterable[Mapping[str, Any]]) -> dict[str, int]:
+    counts: Counter[str] = Counter()
+    for example in examples:
+        split = str(example.get("split") or "unknown")
+        counts[split] += 1
     return dict(sorted(counts.items()))
 
 
