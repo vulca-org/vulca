@@ -41,6 +41,9 @@ QUALITY_FAILURE_ALIASES: dict[str, tuple[str, str]] = {
     "alpha_bbox_expanded": ("alpha_expansion", "adjust_mask"),
     "background_bleed": ("background_bleed", "adjust_mask"),
     "large_white_component": ("large_white_component", "adjust_mask"),
+    "color_drift": ("color_drift", "adjust_mask"),
+    "under_split": ("under_split", "fallback_to_agent"),
+    "over_split": ("over_split", "fallback_to_original"),
     "route_error": ("route_error", "adjust_route"),
     "pasteback_mismatch": ("pasteback_mismatch", "manual_review"),
 }

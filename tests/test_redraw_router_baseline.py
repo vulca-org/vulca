@@ -118,6 +118,30 @@ def test_observable_signal_routes_quality_failures_to_mask_adjustment():
     assert result.accept_prediction is False
 
 
+def test_observable_signal_routes_seed_calibration_quality_failures():
+    from vulca.layers.redraw_router_baseline import recommend_action
+
+    expected = {
+        "color_drift": "adjust_mask",
+        "under_split": "fallback_to_agent",
+        "over_split": "fallback_to_original",
+    }
+
+    for failure_type, action in expected.items():
+        result = recommend_action(
+            _case(
+                quality={
+                    "gate_passed": False,
+                    "failures": [failure_type],
+                    "metrics": {},
+                }
+            ),
+            policy_name="observable_signal",
+        )
+        assert result.recommended_action == action
+        assert result.failure_hint == failure_type
+
+
 def test_observable_signal_routes_geometry_mismatch_to_route_adjustment():
     from vulca.layers.redraw_router_baseline import recommend_action
 
