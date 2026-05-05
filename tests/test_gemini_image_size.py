@@ -202,8 +202,17 @@ class TestGeminiProviderConfig:
         assert recorded["model"] == "gemini-3.1-flash-image-preview"
         assert recorded["contents"][0].mime_type == "image/png"
         assert recorded["contents"][1].mime_type == "image/png"
+        visible_mask = Image.open(io.BytesIO(recorded["contents"][1].data)).convert(
+            "RGB"
+        )
+        assert visible_mask.getpixel((8, 6)) == (255, 255, 255)
+        assert visible_mask.getpixel((0, 0)) == (0, 0, 0)
         assert "transparent mask pixels" in recorded["contents"][2]
         assert "opaque mask pixels" in recorded["contents"][2]
+        assert "white mask pixels" in recorded["contents"][2]
+        assert "black mask pixels" in recorded["contents"][2]
+        assert "do not draw the mask" in recorded["contents"][2].lower()
+        assert "not part of the output" in recorded["contents"][2].lower()
         assert "paint one compact yellow flower head" in recorded["contents"][2]
         assert result.mime == "image/png"
         assert base64.b64decode(result.image_b64).startswith(b"\x89PNG")
