@@ -37,8 +37,8 @@ def test_build_local_seed_baseline_report_summarizes_cases_and_router_metrics():
 
     observable = report["redraw_router_baselines"]["observable_signal"]
     assert observable["case_count"] == 6
-    assert observable["action_accuracy"] == 0.5
-    assert len(report["redraw_router_mismatches"]["observable_signal"]) == 3
+    assert observable["action_accuracy"] == 1.0
+    assert report["redraw_router_mismatches"]["observable_signal"] == []
 
 
 def test_write_local_seed_baseline_report_creates_json(tmp_path):
@@ -55,7 +55,7 @@ def test_write_local_seed_baseline_report_creates_json(tmp_path):
     report = json.loads(output_path.read_text(encoding="utf-8"))
     assert report["redraw_router_baselines"]["observable_signal"][
         "failure_macro_f1"
-    ] == 0.42857142857142855
+    ] == 1.0
 
 
 def test_cases_baseline_report_cli_writes_report(tmp_path):
@@ -82,4 +82,4 @@ def test_cases_baseline_report_cli_writes_report(tmp_path):
     assert result.returncode == 0, result.stderr
     assert output_path.exists()
     assert "Baseline report:" in result.stdout
-    assert "observable_signal action_accuracy: 0.5" in result.stdout
+    assert "observable_signal action_accuracy: 1.0" in result.stdout
