@@ -21,7 +21,7 @@ def test_build_local_seed_baseline_report_summarizes_cases_and_router_metrics():
     assert report["seed_counts"] == {
         "redraw_case": 6,
         "decompose_case": 1,
-        "layer_generate_case": 1,
+        "layer_generate_case": 5,
     }
     assert report["review_summary"]["redraw_case"]["preferred_action_counts"][
         "adjust_mask"

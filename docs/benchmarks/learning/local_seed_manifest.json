@@ -20,6 +20,34 @@
   ],
   "layer_generate_seeds": [
     {
+      "id": "demo_layers_extract_layer_generate",
+      "user_intent": "Generate a layered Chinese ink landscape with paper background, distant mountains, midground landscape, pavilion pines, mist, and calligraphy/seals.",
+      "tradition": "chinese_xieyi",
+      "provider": "local_seed",
+      "model": "tracked_artifact",
+      "artifact_dir": "assets/demo/v2/layers-extract",
+      "layer_manifest_path": "assets/demo/v2/layers-extract/manifest.json",
+      "composite_path": "assets/demo/v2/layers-extract/composite.png",
+      "preview_path": "assets/demo/v2/layers-extract/composite.png",
+      "human_accept": true,
+      "failure_type": "",
+      "preferred_action": "accept"
+    },
+    {
+      "id": "scenario1_layer_generate",
+      "user_intent": "Generate a layered Chinese ink mountain landscape with canvas, distant mountains, mist, midground landscape, and calligraphy/seals.",
+      "tradition": "chinese_xieyi",
+      "provider": "local_seed",
+      "model": "tracked_artifact",
+      "artifact_dir": "assets/demo/v2/scenario1",
+      "layer_manifest_path": "assets/demo/v2/scenario1/manifest.json",
+      "composite_path": "assets/demo/v2/scenario1/final-with-sunset.png",
+      "preview_path": "assets/demo/v2/scenario1/preview-no-mist.png",
+      "human_accept": true,
+      "failure_type": "",
+      "preferred_action": "accept"
+    },
+    {
       "id": "scenario1_redo_layer_generate",
       "user_intent": "Generate a layered Chinese ink landscape with sky, mountains, midground landscape, pavilion pines, and calligraphy/seals.",
       "tradition": "chinese_xieyi",
@@ -29,6 +57,30 @@
       "layer_manifest_path": "assets/demo/v2/scenario1-redo/manifest.json",
       "composite_path": "assets/demo/v2/scenario1-redo/after.png",
       "preview_path": "assets/demo/v2/scenario1-redo/after.png",
+      "human_accept": true,
+      "failure_type": "",
+      "preferred_action": "accept"
+    },
+    {
+      "id": "great_wave_layer_generate",
+      "user_intent": "Generate a layered ukiyo-e wave composition with background, subject wave, and foreground water forms.",
+      "tradition": "ukiyoe",
+      "provider": "local_seed",
+      "model": "tracked_artifact",
+      "artifact_dir": "assets/showcase/layers/great-wave",
+      "layer_manifest_path": "assets/showcase/layers/great-wave/manifest.json",
+      "human_accept": true,
+      "failure_type": "",
+      "preferred_action": "accept"
+    },
+    {
+      "id": "nighthawks_v2_layer_generate",
+      "user_intent": "Generate a layered Nighthawks-style diner scene with separated people, diner interior, glass, street buildings, and residual layer.",
+      "tradition": "american_modernism",
+      "provider": "local_seed",
+      "model": "tracked_artifact",
+      "artifact_dir": "assets/showcase/layers_v2/nighthawks",
+      "layer_manifest_path": "assets/showcase/layers_v2/nighthawks/manifest.json",
       "human_accept": true,
       "failure_type": "",
       "preferred_action": "accept"
