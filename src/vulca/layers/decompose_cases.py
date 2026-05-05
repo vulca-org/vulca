@@ -284,7 +284,15 @@ def _quality_record(
     residual_pct: float,
 ) -> dict[str, Any]:
     non_residual = [layer for layer in layers if not _is_residual_layer(layer)]
-    claimed_pct = round(sum(float(layer.get("area_pct", 0.0) or 0.0) for layer in non_residual), 4)
+    if residual_pct:
+        claimed_pct = round(_clamp_pct(100.0 - residual_pct), 4)
+    else:
+        claimed_pct = round(
+            _clamp_pct(
+                sum(float(layer.get("area_pct", 0.0) or 0.0) for layer in non_residual)
+            ),
+            4,
+        )
     empty_layer_count = sum(
         1 for layer in non_residual if float(layer.get("area_pct", 0.0) or 0.0) <= 0.0
     )
@@ -313,6 +321,10 @@ def _quality_record(
             "evidence": [],
         },
     }
+
+
+def _clamp_pct(value: float) -> float:
+    return max(0.0, min(100.0, float(value)))
 
 
 def _report_count(detection_report: Mapping[str, Any], key: str) -> int:
