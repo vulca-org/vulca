@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "case_type": "redraw_case_seed",
+  "items": [
+    {
+      "id": "ipad_flower_color_drift",
+      "source_artifact": "docs/visual-specs/2026-04-28-ipad-cartoon-roadside-direct-showcase/source/IMG_6847.jpg",
+      "failure_type": "color_drift",
+      "preferred_action": "adjust_mask",
+      "notes": "Small bright flowers can drift in hue or subject identity without target-aware mask evidence."
+    },
+    {
+      "id": "ipad_full_edit_mask_route",
+      "source_artifact": "docs/visual-specs/2026-04-28-ipad-cartoon-roadside-direct-showcase/source/full_edit_mask_1536x1024.png",
+      "failure_type": "route_error",
+      "preferred_action": "adjust_route",
+      "notes": "Full-canvas edit masks are route evidence, not final product quality evidence."
+    },
+    {
+      "id": "scottish_lantern_multi_instance",
+      "source_artifact": "docs/visual-specs/2026-04-23-scottish-chinese-fusion/source.jpg",
+      "failure_type": "mask_too_broad",
+      "preferred_action": "adjust_mask",
+      "notes": "Multi-instance lantern rows should remain separate enough for targeted redraw."
+    },
+    {
+      "id": "mona_lisa_under_split",
+      "source_artifact": "assets/demo/v2/masters/mona_lisa.jpg",
+      "failure_type": "under_split",
+      "preferred_action": "fallback_to_agent",
+      "notes": "Missed chair/parapet style evidence should route to agent review instead of blind redraw."
+    },
+    {
+      "id": "starry_night_over_split",
+      "source_artifact": "assets/demo/v2/masters/starry_night.jpg",
+      "failure_type": "over_split",
+      "preferred_action": "fallback_to_original",
+      "notes": "Low residual baselines should not be over-split or over-edited."
+    },
+    {
+      "id": "scenario1_pasteback_contract",
+      "source_artifact": "assets/demo/v2/scenario1-redo/original.png",
+      "failure_type": "pasteback_mismatch",
+      "preferred_action": "manual_review",
+      "notes": "Pasteback preview is product evidence separate from isolated layer quality."
+    }
+  ]
+}
