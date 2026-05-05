@@ -5,7 +5,7 @@ Status: approved-for-planning
 
 ## Purpose
 
-Vulca is already evolving along several parallel workstreams: redraw hardening, decomposition/layer quality, provider SDK/MCP surfaces, and future specialist models. These should not be collapsed into one implementation branch or one model project. Learning Loop v0 creates a thin data layer underneath those workstreams so each redraw or layer-edit experiment can become training and evaluation evidence.
+Vulca is already evolving along several parallel workstreams: redraw hardening, decomposition/layer quality, layered generation quality, provider SDK/MCP surfaces, and future specialist models. These should not be collapsed into one implementation branch or one model project. Learning Loop v0 creates a thin data layer underneath those workstreams so each redraw or layer-edit experiment can become training and evaluation evidence.
 
 The first milestone is not model training. It is a stable `redraw_case` record, optional case logging, and a small benchmark seed set. This gives future tiny models and tiny agents a factual substrate without changing existing runtime behavior.
 
@@ -20,7 +20,9 @@ The system should be layered by responsibility and by maturity:
 - Level 4: tiny agents/state machines for routing and retries
 - Level 5: large agent/VLM teacher for open-ended planning, labeling, and failure review
 
-Current redraw and decomposition branches can continue independently at Levels 0-1. Learning Loop v0 sits at Level 2 and observes their output. It must not block or rewrite those branches.
+Current redraw, decomposition, and layered-generation branches can continue independently at Levels 0-1. Learning Loop v0 sits at Level 2 and observes their output. It must not block or rewrite those branches.
+
+Decomposition and layered generation are separate workstreams. Decomposition starts from an existing image and splits it into semantic layers, masks, residuals, and manifest records. Layered generation starts from an intent or plan and creates multiple coordinated layers as the output. They share artifact vocabulary, but the causal direction is different. Learning Loop v0 should not blur those two tasks or use one schema for both.
 
 ## Scope
 
@@ -40,6 +42,7 @@ Learning Loop v0 does not add:
 - a rewrite of `redraw.py`
 - agent calls in the redraw runtime loop
 - changes to decomposition execution logic
+- changes to layered generation execution logic
 
 ## Redraw Case Record
 
@@ -141,7 +144,7 @@ The logger should be best-effort but not silent. If logging is explicitly enable
 
 ## Branch And Workstream Boundaries
 
-Parallel redraw optimization branches should continue to modify route selection, mask refinement, quality gates, and provider behavior. Parallel decomposition branches should continue to improve semantic paths, bbox hints, masks, residuals, and manifest quality.
+Parallel redraw optimization branches should continue to modify route selection, mask refinement, quality gates, and provider behavior. Parallel decomposition branches should continue to improve semantic paths, bbox hints, masks, residuals, and manifest quality. Parallel layered-generation branches should continue to improve plan-to-layer generation, layer coordination, per-layer prompts, composites, and generation manifests.
 
 Learning Loop v0 should avoid direct conflict with those branches by using a new module and reading existing outputs instead of moving logic. Its integration points should be narrow:
 
@@ -151,6 +154,14 @@ Learning Loop v0 should avoid direct conflict with those branches by using a new
 - append JSONL only when enabled
 
 This makes the logger a shared observation layer across experiments rather than another competing redraw implementation.
+
+Future case types should be separate records, not overloads of `redraw_case`:
+
+- `decompose_case`: existing image -> semantic layer split
+- `layer_generate_case`: plan/intent -> generated layered artifact
+- `redraw_case`: existing layer/artifact -> edited layer and pasteback preview
+
+Learning Loop v0 implements only `redraw_case`, but the module and docs should leave room for sibling case schemas later.
 
 ## Tiny Model And Tiny Agent Roadmap
 
