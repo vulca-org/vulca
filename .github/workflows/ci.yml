@@ -69,3 +69,5 @@ jobs:
             --ignore=tests/test_unload_models.py \
             --ignore=tests/vulca/scripts/test_claude_orchestrated_pipeline.py \
             -q
+      - name: Local seed baseline gate
+        run: python scripts/local_seed_baseline_gate.py
