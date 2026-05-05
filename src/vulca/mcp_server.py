@@ -844,6 +844,7 @@ async def layers_redraw(
     quality: str = "",
     input_fidelity: str = "",
     output_format: str = "",
+    case_log_path: str = "",
 ) -> dict:
     """Redraw a layer via img2img with explicit content/style instructions — targeted layer regeneration.
 
@@ -895,6 +896,9 @@ async def layers_redraw(
             img2img with a warning if provider lacks ``inpaint_with_mask``).
             Ignored on the merge path (``merge=True``) — merged redraw
             retains v0.18 behavior; v0.21 will redesign separately.
+        case_log_path: Optional JSONL path for Learning Loop v0 redraw case
+            logging. Empty means disabled unless VULCA_REDRAW_CASE_LOG is set.
+            Logging is best-effort and never invalidates the redraw result.
 
     Returns:
         name, file, z_index, content_type of the redrawn layer. When the
@@ -957,6 +961,47 @@ async def layers_redraw(
     elif pasteback.get("source_pasteback_error"):
         payload.update(pasteback)
     payload.update(getattr(result, "redraw_advisory", {}) or {})
+
+    from vulca.layers.redraw_cases import (
+        append_redraw_case,
+        build_redraw_case,
+        resolve_case_log_path,
+    )
+
+    resolved_case_log_path = resolve_case_log_path(case_log_path, artwork_dir)
+    if resolved_case_log_path:
+        if merge or not layer:
+            payload["case_log_error"] = (
+                "redraw case logging supports only single-layer redraw in v0"
+            )
+        else:
+            try:
+                source_layer = next(
+                    (lr for lr in artwork.layers if lr.info.name == layer),
+                    None,
+                )
+                if source_layer is None:
+                    raise ValueError(f"layer {layer!r} not found in artwork")
+                record = build_redraw_case(
+                    artwork_dir=artwork_dir,
+                    source_image=artwork.source_image,
+                    layer_info=source_layer.info,
+                    instruction=instruction,
+                    provider=provider,
+                    model=model,
+                    route_requested=route,
+                    source_layer_path=source_layer.image_path,
+                    redrawn_layer_path=result.image_path,
+                    source_pasteback_path=payload.get("source_pasteback_path", ""),
+                    redraw_advisory=payload,
+                )
+                payload["case_log_path"] = append_redraw_case(
+                    resolved_case_log_path,
+                    record,
+                )
+                payload["case_id"] = record["case_id"]
+            except Exception as exc:
+                payload["case_log_error"] = str(exc)
     return payload
 
 
