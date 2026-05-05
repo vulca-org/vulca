@@ -58,6 +58,62 @@ def test_write_local_seed_baseline_report_creates_json(tmp_path):
     ] == 1.0
 
 
+def test_baseline_gate_returns_violations_for_threshold_regressions():
+    from vulca.learning.seed_report import (
+        build_local_seed_baseline_report,
+        check_baseline_report,
+    )
+
+    report = build_local_seed_baseline_report(ROOT)
+    assert check_baseline_report(
+        report,
+        min_action_accuracy={"observable_signal": 1.0},
+        max_mismatches={"observable_signal": 0},
+    ) == []
+
+    regressed = json.loads(json.dumps(report))
+    regressed["redraw_router_baselines"]["observable_signal"]["action_accuracy"] = 0.5
+    regressed["redraw_router_mismatches"]["observable_signal"] = [
+        {"case_id": "seed_regression"}
+    ]
+
+    violations = check_baseline_report(
+        regressed,
+        min_action_accuracy={"observable_signal": 1.0},
+        max_mismatches={"observable_signal": 0},
+    )
+
+    assert violations == [
+        {
+            "policy": "observable_signal",
+            "metric": "action_accuracy",
+            "actual": 0.5,
+            "expected": ">= 1.0",
+        },
+        {
+            "policy": "observable_signal",
+            "metric": "mismatch_count",
+            "actual": 1,
+            "expected": "<= 0",
+        },
+    ]
+
+
+def test_parse_baseline_gate_thresholds_validates_policy_values():
+    from vulca.learning.seed_report import parse_policy_thresholds
+
+    assert parse_policy_thresholds(["observable_signal=1.0"]) == {
+        "observable_signal": 1.0
+    }
+
+    try:
+        parse_policy_thresholds(["unknown=1.0"])
+    except ValueError as exc:
+        assert "unsupported baseline policy" in str(exc)
+    else:
+        raise AssertionError("expected unsupported policy to be rejected")
+
+
 def test_cases_baseline_report_cli_writes_report(tmp_path):
     output_path = tmp_path / "baseline.json"
     result = subprocess.run(
@@ -83,3 +139,34 @@ def test_cases_baseline_report_cli_writes_report(tmp_path):
     assert output_path.exists()
     assert "Baseline report:" in result.stdout
     assert "observable_signal action_accuracy: 1.0" in result.stdout
+
+
+def test_cases_baseline_report_cli_fails_when_gate_violates(tmp_path):
+    output_path = tmp_path / "baseline.json"
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "vulca.cli",
+            "cases",
+            "baseline-report",
+            "--repo-root",
+            str(ROOT),
+            "--output",
+            str(output_path),
+            "--min-action-accuracy",
+            "observable_signal=1.01",
+            "--max-mismatches",
+            "observable_signal=0",
+        ],
+        capture_output=True,
+        text=True,
+        timeout=20,
+        env=CLI_ENV,
+        cwd=tmp_path,
+    )
+
+    assert result.returncode == 1
+    assert output_path.exists()
+    assert "Baseline gate failed:" in result.stderr
+    assert "observable_signal action_accuracy 1.0 < 1.01" in result.stderr

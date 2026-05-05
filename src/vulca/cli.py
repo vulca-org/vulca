@@ -386,6 +386,20 @@ def main(argv: list[str] | None = None) -> None:
         choices=("label_oracle", "observable_signal"),
         help="Redraw router policy to evaluate; repeat to include multiple policies",
     )
+    cases_baseline.add_argument(
+        "--min-action-accuracy",
+        action="append",
+        default=[],
+        metavar="POLICY=VALUE",
+        help="Fail if a policy action_accuracy is below VALUE",
+    )
+    cases_baseline.add_argument(
+        "--max-mismatches",
+        action="append",
+        default=[],
+        metavar="POLICY=COUNT",
+        help="Fail if a policy has more than COUNT mismatched cases",
+    )
 
     # resume command
     resume_p = sub.add_parser("resume", help="Resume pipeline from checkpoint")
@@ -1697,6 +1711,9 @@ def _cmd_cases(args: argparse.Namespace) -> None:
     if args.cases_command == "baseline-report":
         from vulca.learning.seed_report import (
             DEFAULT_BASELINE_POLICIES,
+            check_baseline_report,
+            parse_policy_int_thresholds,
+            parse_policy_thresholds,
             write_local_seed_baseline_report,
         )
         from vulca.learning.seed_cases import DEFAULT_SEED_MANIFEST
@@ -1710,6 +1727,13 @@ def _cmd_cases(args: argparse.Namespace) -> None:
                 policies=policies,
             )
             report = _json.loads(Path(output_path).read_text(encoding="utf-8"))
+            violations = check_baseline_report(
+                report,
+                min_action_accuracy=parse_policy_thresholds(
+                    args.min_action_accuracy
+                ),
+                max_mismatches=parse_policy_int_thresholds(args.max_mismatches),
+            )
         except (ValueError, FileNotFoundError, subprocess.CalledProcessError, _json.JSONDecodeError) as exc:
             print(f"Error: {exc}", file=sys.stderr)
             sys.exit(1)
@@ -1720,6 +1744,24 @@ def _cmd_cases(args: argparse.Namespace) -> None:
         for policy in policies:
             metrics = report["redraw_router_baselines"][policy]
             print(f"  {policy} action_accuracy: {metrics['action_accuracy']}")
+        if violations:
+            print("Baseline gate failed:", file=sys.stderr)
+            for item in violations:
+                if item["metric"] == "action_accuracy":
+                    expected = str(item["expected"]).replace(">= ", "")
+                    print(
+                        f"  {item['policy']} action_accuracy "
+                        f"{item['actual']} < {expected}",
+                        file=sys.stderr,
+                    )
+                elif item["metric"] == "mismatch_count":
+                    expected = str(item["expected"]).replace("<= ", "")
+                    print(
+                        f"  {item['policy']} mismatch_count "
+                        f"{item['actual']} > {expected}",
+                        file=sys.stderr,
+                    )
+            sys.exit(1)
         return
 
     if args.cases_command == "seed":
