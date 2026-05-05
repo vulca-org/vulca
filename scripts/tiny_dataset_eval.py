@@ -15,7 +15,9 @@ if str(SRC) not in sys.path:
 
 from vulca.learning.tiny_dataset import (  # noqa: E402
     POLICY_REDRAW_OBSERVABLE_SIGNAL,
+    DATASET_SPLITS,
     TINY_DATASET_EVAL_POLICIES,
+    build_tiny_dataset_comparison_report,
     evaluate_tiny_dataset_examples,
     load_tiny_dataset_examples,
 )
@@ -33,6 +35,23 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="Offline policy to evaluate.",
     )
     parser.add_argument(
+        "--split",
+        default="all",
+        choices=("all", *DATASET_SPLITS),
+        help="Dataset split to evaluate.",
+    )
+    parser.add_argument(
+        "--train-split",
+        default="train",
+        choices=DATASET_SPLITS,
+        help="Training split used by train-derived baselines.",
+    )
+    parser.add_argument(
+        "--compare",
+        action="store_true",
+        help="Write a comparison report for default tiny baselines.",
+    )
+    parser.add_argument(
         "--output",
         "-o",
         default="",
@@ -45,10 +64,22 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
-    report = evaluate_tiny_dataset_examples(
-        load_tiny_dataset_examples(args.dataset),
-        policy_name=args.policy,
-    )
+    dataset_split = None if args.split == "all" else args.split
+    examples = load_tiny_dataset_examples(args.dataset)
+    if args.compare:
+        eval_split = dataset_split or "test"
+        report = build_tiny_dataset_comparison_report(
+            examples,
+            train_split=args.train_split,
+            eval_split=eval_split,
+        )
+    else:
+        report = evaluate_tiny_dataset_examples(
+            examples,
+            policy_name=args.policy,
+            dataset_split=dataset_split,
+            train_split=args.train_split,
+        )
     if args.output:
         output_path = Path(args.output)
         output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -61,9 +92,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         indent = 2 if args.pretty else None
         print(json.dumps(report, indent=indent, sort_keys=True))
 
-    print(f"{args.policy} evaluated_count: {report['evaluated_count']}")
-    print(f"{args.policy} skipped_count: {report['skipped_count']}")
-    print(f"{args.policy} action_accuracy: {report['action_accuracy']}")
+    if args.compare:
+        for policy_name in sorted(report["policy_reports"]):
+            policy_report = report["policy_reports"][policy_name]
+            print(f"{policy_name} evaluated_count: {policy_report['evaluated_count']}")
+            print(f"{policy_name} skipped_count: {policy_report['skipped_count']}")
+            print(f"{policy_name} action_accuracy: {policy_report['action_accuracy']}")
+    else:
+        print(f"{args.policy} evaluated_count: {report['evaluated_count']}")
+        print(f"{args.policy} skipped_count: {report['skipped_count']}")
+        print(f"{args.policy} action_accuracy: {report['action_accuracy']}")
     return 0
 
 

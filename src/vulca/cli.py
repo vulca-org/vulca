@@ -1763,6 +1763,8 @@ def _cmd_cases(args: argparse.Namespace) -> None:
         print(f"  Tiny dataset: {result.output_path}")
         for case_type in sorted(result.counts_by_case_type):
             print(f"  {case_type}: {result.counts_by_case_type[case_type]}")
+        for split in sorted(result.counts_by_split):
+            print(f"  {split}: {result.counts_by_split[split]}")
         print(f"  Tiny dataset index: {result.index_path}")
         return
 
