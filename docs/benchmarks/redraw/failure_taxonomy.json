@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "case_type": "redraw_failure_taxonomy",
+  "failure_types": [
+    "color_drift",
+    "shape_collapse",
+    "wrong_subject",
+    "missing_detail",
+    "over_smoothing",
+    "texture_leak",
+    "alpha_expansion",
+    "mask_too_broad",
+    "background_bleed",
+    "large_white_component",
+    "pasteback_mismatch",
+    "route_error",
+    "over_split",
+    "under_split",
+    "uncertain"
+  ],
+  "preferred_actions": [
+    "accept",
+    "rerun",
+    "fallback_to_agent",
+    "fallback_to_original",
+    "manual_review",
+    "adjust_route",
+    "adjust_mask",
+    "adjust_instruction"
+  ]
+}

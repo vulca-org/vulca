@@ -225,3 +225,45 @@ def test_layers_redraw_returns_nonfatal_source_pasteback_error(tmp_path, monkeyp
     assert "source size (900, 900) != layer size (1000, 1000)" in result[
         "source_pasteback_error"
     ]
+
+
+def test_layers_redraw_appends_case_log_when_enabled(tmp_path, monkeypatch):
+    _install_fastmcp_stub(monkeypatch)
+
+    from vulca.mcp_server import layers_redraw
+    import vulca.providers as providers_mod
+
+    provider = RecordingEditProvider()
+    monkeypatch.setattr(
+        providers_mod, "get_image_provider", lambda name, api_key="": provider
+    )
+    _stage_artwork(tmp_path)
+    case_log = tmp_path / "redraw_cases.jsonl"
+
+    result = _run(
+        layers_redraw(
+            artwork_dir=str(tmp_path),
+            layer="fg",
+            instruction="make it cleaner",
+            provider="openai",
+            route="auto",
+            preserve_alpha=True,
+            case_log_path=str(case_log),
+        )
+    )
+
+    assert result["case_log_path"] == str(case_log)
+    assert result["case_id"].startswith("redraw_")
+    lines = case_log.read_text().splitlines()
+    assert len(lines) == 1
+
+    import json
+
+    record = json.loads(lines[0])
+    assert record["case_id"] == result["case_id"]
+    assert record["layer"]["name"] == "fg"
+    assert record["instruction"] == "make it cleaner"
+    assert record["provider"] == "openai"
+    assert record["model"] == ""
+    assert record["route"]["chosen"] == "inpaint"
+    assert record["artifacts"]["source_pasteback_path"].endswith("_on_source.png")
