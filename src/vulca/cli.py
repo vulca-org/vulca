@@ -400,6 +400,37 @@ def main(argv: list[str] | None = None) -> None:
         metavar="POLICY=COUNT",
         help="Fail if a policy has more than COUNT mismatched cases",
     )
+    cases_export = cases_sub.add_parser(
+        "export-dataset",
+        help="Export leak-resistant tiny model/agent dataset JSONL",
+    )
+    cases_export.add_argument(
+        "--output",
+        "-o",
+        required=True,
+        help="Output JSONL dataset path",
+    )
+    cases_export.add_argument(
+        "--repo-root",
+        default="",
+        help="Repository root (default: current working directory)",
+    )
+    cases_export.add_argument(
+        "--manifest",
+        default="",
+        help="Seed manifest path (default: docs/benchmarks/learning/local_seed_manifest.json)",
+    )
+    cases_export.add_argument(
+        "--case-log",
+        action="append",
+        default=[],
+        help="Additional reviewed case JSONL path; repeat to include multiple logs",
+    )
+    cases_export.add_argument(
+        "--no-local-seeds",
+        action="store_true",
+        help="Only export records from --case-log inputs",
+    )
 
     # resume command
     resume_p = sub.add_parser("resume", help="Resume pipeline from checkpoint")
@@ -1707,6 +1738,33 @@ def _cmd_layers(args: argparse.Namespace) -> None:
 
 def _cmd_cases(args: argparse.Namespace) -> None:
     import json as _json
+
+    if args.cases_command == "export-dataset":
+        from vulca.learning.seed_cases import DEFAULT_SEED_MANIFEST
+        from vulca.learning.tiny_dataset import write_tiny_dataset
+
+        try:
+            result = write_tiny_dataset(
+                repo_root=args.repo_root or Path.cwd(),
+                output_path=args.output,
+                manifest_path=args.manifest or DEFAULT_SEED_MANIFEST,
+                case_log_paths=args.case_log,
+                include_local_seeds=not args.no_local_seeds,
+            )
+        except (
+            ValueError,
+            FileNotFoundError,
+            subprocess.CalledProcessError,
+            _json.JSONDecodeError,
+        ) as exc:
+            print(f"Error: {exc}", file=sys.stderr)
+            sys.exit(1)
+
+        print(f"  Tiny dataset: {result.output_path}")
+        for case_type in sorted(result.counts_by_case_type):
+            print(f"  {case_type}: {result.counts_by_case_type[case_type]}")
+        print(f"  Tiny dataset index: {result.index_path}")
+        return
 
     if args.cases_command == "baseline-report":
         from vulca.learning.seed_report import (
