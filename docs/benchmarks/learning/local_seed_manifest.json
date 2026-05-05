@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "case_type": "learning_local_seed_manifest",
+  "redraw_seed_manifest": "docs/benchmarks/redraw/seed_manifest.json",
+  "decompose_seeds": [
+    {
+      "id": "scottish_chinese_native_decompose",
+      "source_image": "docs/visual-specs/2026-04-23-scottish-chinese-fusion/decompose/v0_17_14_native/iter0.png",
+      "output_dir": "docs/visual-specs/2026-04-23-scottish-chinese-fusion/decompose/v0_17_14_native",
+      "manifest_path": "docs/visual-specs/2026-04-23-scottish-chinese-fusion/decompose/v0_17_14_native/manifest.json",
+      "mode": "orchestrated",
+      "provider": "",
+      "model": "",
+      "tradition": "scottish_chinese_fusion",
+      "human_accept": true,
+      "failure_type": "",
+      "preferred_action": "accept",
+      "notes": "Tracked multi-layer split artifact used as a positive decompose seed."
+    }
+  ],
+  "layer_generate_seeds": [
+    {
+      "id": "scenario1_redo_layer_generate",
+      "user_intent": "Generate a layered Chinese ink landscape with sky, mountains, midground landscape, pavilion pines, and calligraphy/seals.",
+      "tradition": "chinese_xieyi",
+      "provider": "local_seed",
+      "model": "tracked_artifact",
+      "artifact_dir": "assets/demo/v2/scenario1-redo",
+      "layer_manifest_path": "assets/demo/v2/scenario1-redo/manifest.json",
+      "composite_path": "assets/demo/v2/scenario1-redo/after.png",
+      "preview_path": "assets/demo/v2/scenario1-redo/after.png",
+      "human_accept": true,
+      "failure_type": "",
+      "preferred_action": "accept"
+    }
+  ]
+}

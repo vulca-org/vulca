@@ -12,6 +12,16 @@ from vulca.layers.redraw_cases import (
     validate_failure_type as validate_redraw_failure_type,
     validate_preferred_action as validate_redraw_preferred_action,
 )
+from vulca.layers.decompose_cases import (
+    CASE_TYPE as DECOMPOSE_CASE_TYPE,
+    validate_failure_type as validate_decompose_failure_type,
+    validate_preferred_action as validate_decompose_preferred_action,
+)
+from vulca.layers.layer_generate_cases import (
+    CASE_TYPE as LAYER_GENERATE_CASE_TYPE,
+    validate_failure_type as validate_layer_generate_failure_type,
+    validate_preferred_action as validate_layer_generate_preferred_action,
+)
 
 
 _UNSET = object()
@@ -41,7 +51,17 @@ CASE_REVIEW_SPECS: dict[str, CaseReviewSpec] = {
         case_type=REDRAW_CASE_TYPE,
         validate_failure_type=validate_redraw_failure_type,
         validate_preferred_action=validate_redraw_preferred_action,
-    )
+    ),
+    DECOMPOSE_CASE_TYPE: CaseReviewSpec(
+        case_type=DECOMPOSE_CASE_TYPE,
+        validate_failure_type=validate_decompose_failure_type,
+        validate_preferred_action=validate_decompose_preferred_action,
+    ),
+    LAYER_GENERATE_CASE_TYPE: CaseReviewSpec(
+        case_type=LAYER_GENERATE_CASE_TYPE,
+        validate_failure_type=validate_layer_generate_failure_type,
+        validate_preferred_action=validate_layer_generate_preferred_action,
+    ),
 }
 
 

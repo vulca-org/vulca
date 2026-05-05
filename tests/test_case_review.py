@@ -105,6 +105,53 @@ def test_review_case_log_rejects_invalid_labels(tmp_path):
         )
 
 
+def test_review_case_log_supports_decompose_and_layer_generate_cases(tmp_path):
+    from vulca.learning.case_review import load_cases, review_case_log
+
+    input_path = tmp_path / "cases.jsonl"
+    output_path = tmp_path / "reviewed.jsonl"
+    _write_jsonl(
+        input_path,
+        [
+            {
+                "schema_version": 1,
+                "case_type": "decompose_case",
+                "case_id": "decompose_a",
+                "review": {},
+            },
+            {
+                "schema_version": 1,
+                "case_type": "layer_generate_case",
+                "case_id": "layer_generate_a",
+                "review": {},
+            },
+        ],
+    )
+
+    review_case_log(
+        input_path,
+        case_id="decompose_a",
+        output_path=output_path,
+        failure_type="under_split",
+        preferred_action="adjust_hints",
+        reviewed_at="2026-05-05T14:00:00Z",
+    )
+    review_case_log(
+        output_path,
+        case_id="layer_generate_a",
+        output_path=output_path,
+        failure_type="missing_layer",
+        preferred_action="rerun_layer",
+        reviewed_at="2026-05-05T14:01:00Z",
+    )
+
+    reread = load_cases(output_path)
+    assert reread[0]["review"]["failure_type"] == "under_split"
+    assert reread[0]["review"]["preferred_action"] == "adjust_hints"
+    assert reread[1]["review"]["failure_type"] == "missing_layer"
+    assert reread[1]["review"]["preferred_action"] == "rerun_layer"
+
+
 def test_review_case_log_can_append_review_sidecar(tmp_path):
     from vulca.learning.case_review import review_case_log
 

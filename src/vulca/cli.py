@@ -14,7 +14,9 @@ from __future__ import annotations
 
 import argparse
 import logging
+import subprocess
 import sys
+from pathlib import Path
 
 from vulca._version import __version__
 
@@ -339,6 +341,23 @@ def main(argv: list[str] | None = None) -> None:
         "--sidecar-output",
         default="",
         help="Optional review-only JSONL sidecar path, appended if provided",
+    )
+    cases_seed = cases_sub.add_parser("seed", help="Build local seed case JSONL logs")
+    cases_seed.add_argument(
+        "--output",
+        "-o",
+        required=True,
+        help="Output directory for seed JSONL logs",
+    )
+    cases_seed.add_argument(
+        "--repo-root",
+        default="",
+        help="Repository root (default: current working directory)",
+    )
+    cases_seed.add_argument(
+        "--manifest",
+        default="",
+        help="Seed manifest path (default: docs/benchmarks/learning/local_seed_manifest.json)",
     )
 
     # resume command
@@ -1647,6 +1666,28 @@ def _cmd_layers(args: argparse.Namespace) -> None:
 
 def _cmd_cases(args: argparse.Namespace) -> None:
     import json as _json
+
+    if args.cases_command == "seed":
+        from vulca.learning.seed_cases import (
+            DEFAULT_SEED_MANIFEST,
+            write_local_seed_case_logs,
+        )
+
+        try:
+            result = write_local_seed_case_logs(
+                repo_root=args.repo_root or Path.cwd(),
+                output_dir=args.output,
+                manifest_path=args.manifest or DEFAULT_SEED_MANIFEST,
+            )
+        except (ValueError, FileNotFoundError, subprocess.CalledProcessError, _json.JSONDecodeError) as exc:
+            print(f"Error: {exc}", file=sys.stderr)
+            sys.exit(1)
+
+        print(f"  Seed cases: {result.output_dir}")
+        for case_type in sorted(result.counts):
+            print(f"  {case_type}: {result.counts[case_type]} -> {result.paths[case_type]}")
+        print(f"  Seed index: {result.index_path}")
+        return
 
     if args.cases_command != "review":
         print(f"Unknown cases command: {args.cases_command}", file=sys.stderr)
