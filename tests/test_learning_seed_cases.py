@@ -23,7 +23,7 @@ def test_build_local_seed_cases_uses_tracked_repo_artifacts():
 
     assert len(bundle["redraw_case"]) == 6
     assert len(bundle["decompose_case"]) == 1
-    assert len(bundle["layer_generate_case"]) == 1
+    assert len(bundle["layer_generate_case"]) == 5
 
     redraw = bundle["redraw_case"][0]
     assert redraw["case_type"] == "redraw_case"
@@ -43,6 +43,16 @@ def test_build_local_seed_cases_uses_tracked_repo_artifacts():
     assert layer_generate["review"]["preferred_action"] == "accept"
     assert layer_generate["outputs"]["layers"]
     assert {item["status"] for item in layer_generate["outputs"]["layers"]} == {"accepted"}
+    assert {
+        item["outputs"]["artifact_dir"]
+        for item in bundle["layer_generate_case"]
+    } == {
+        "assets/demo/v2/layers-extract",
+        "assets/demo/v2/scenario1",
+        "assets/demo/v2/scenario1-redo",
+        "assets/showcase/layers/great-wave",
+        "assets/showcase/layers_v2/nighthawks",
+    }
 
 
 def test_write_local_seed_case_logs_creates_reviewable_jsonl(tmp_path):
@@ -58,7 +68,7 @@ def test_write_local_seed_case_logs_creates_reviewable_jsonl(tmp_path):
     assert result.counts == {
         "redraw_case": 6,
         "decompose_case": 1,
-        "layer_generate_case": 1,
+        "layer_generate_case": 5,
     }
     assert set(result.paths) == {
         "redraw_case",
@@ -105,7 +115,7 @@ def test_cases_seed_cli_writes_seed_logs(tmp_path):
     assert result.returncode == 0, result.stderr
     assert "redraw_case: 6" in result.stdout
     assert "decompose_case: 1" in result.stdout
-    assert "layer_generate_case: 1" in result.stdout
+    assert "layer_generate_case: 5" in result.stdout
     assert (output_dir / "redraw_cases.seed.jsonl").exists()
     assert (output_dir / "decompose_cases.seed.jsonl").exists()
     assert (output_dir / "layer_generate_cases.seed.jsonl").exists()
