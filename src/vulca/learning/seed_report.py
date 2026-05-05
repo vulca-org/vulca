@@ -76,6 +76,82 @@ def write_local_seed_baseline_report(
     return str(path)
 
 
+def parse_policy_thresholds(values: Sequence[str]) -> dict[str, float]:
+    """Parse CLI ``policy=value`` threshold pairs."""
+    thresholds: dict[str, float] = {}
+    for raw in values:
+        if "=" not in raw:
+            raise ValueError(
+                f"invalid baseline threshold {raw!r}; expected POLICY=VALUE"
+            )
+        policy, value = raw.split("=", 1)
+        policy = policy.strip()
+        if policy not in REDRAW_ROUTER_POLICIES:
+            raise ValueError(
+                f"unsupported baseline policy {policy!r}; "
+                f"expected one of {sorted(REDRAW_ROUTER_POLICIES)}"
+            )
+        try:
+            thresholds[policy] = float(value.strip())
+        except ValueError as exc:
+            raise ValueError(
+                f"invalid threshold value {value!r} for policy {policy!r}"
+            ) from exc
+    return thresholds
+
+
+def parse_policy_int_thresholds(values: Sequence[str]) -> dict[str, int]:
+    """Parse CLI ``policy=count`` threshold pairs."""
+    thresholds: dict[str, int] = {}
+    for policy, value in parse_policy_thresholds(values).items():
+        count = int(value)
+        if count != value:
+            raise ValueError(
+                f"integer threshold required for policy {policy!r}: {value!r}"
+            )
+        thresholds[policy] = count
+    return thresholds
+
+
+def check_baseline_report(
+    report: Mapping[str, Any],
+    *,
+    min_action_accuracy: Mapping[str, float] | None = None,
+    max_mismatches: Mapping[str, int] | None = None,
+) -> list[dict[str, Any]]:
+    """Return threshold violations for a local seed baseline report."""
+    violations: list[dict[str, Any]] = []
+    baselines = _mapping(report.get("redraw_router_baselines"))
+    mismatches = _mapping(report.get("redraw_router_mismatches"))
+
+    for policy, threshold in sorted((min_action_accuracy or {}).items()):
+        metrics = _mapping(baselines.get(policy))
+        actual = metrics.get("action_accuracy")
+        if actual is None or float(actual) < float(threshold):
+            violations.append(
+                {
+                    "policy": str(policy),
+                    "metric": "action_accuracy",
+                    "actual": actual,
+                    "expected": f">= {float(threshold)}",
+                }
+            )
+
+    for policy, threshold in sorted((max_mismatches or {}).items()):
+        actual = len(list(mismatches.get(policy) or []))
+        if actual > int(threshold):
+            violations.append(
+                {
+                    "policy": str(policy),
+                    "metric": "mismatch_count",
+                    "actual": actual,
+                    "expected": f"<= {int(threshold)}",
+                }
+            )
+
+    return violations
+
+
 def _validate_policies(policies: Sequence[str]) -> tuple[str, ...]:
     checked = tuple(str(item) for item in policies)
     if not checked:
