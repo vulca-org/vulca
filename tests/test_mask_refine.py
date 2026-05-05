@@ -193,3 +193,31 @@ def test_refines_yellow_dandelion_heads_without_flower_keyword():
     assert result.strategy == "small_botanical_subject_replacement"
     assert len(result.child_masks) >= 4
     assert result.metrics["refined_coverage_pct"] < 0.25
+
+
+def test_refined_yellow_child_mask_covers_muted_source_head_footprint():
+    source = Image.new("RGB", (140, 100), (76, 112, 52))
+    draw = ImageDraw.Draw(source)
+    draw.ellipse((50, 36, 84, 64), fill=(156, 154, 132))
+    draw.ellipse((60, 43, 74, 57), fill=(232, 190, 31))
+    draw.ellipse((65, 48, 69, 52), fill=(176, 130, 18))
+
+    alpha = Image.new("L", source.size, 0)
+    ImageDraw.Draw(alpha).rectangle((28, 20, 112, 80), fill=255)
+
+    result = refine_mask_for_target(
+        source,
+        alpha,
+        description="roadside dandelion heads in grass",
+        instruction="turn the yellow dots into buttercup flower heads",
+    )
+
+    assert result.applied is True
+    child = result.child_masks[0]
+    child_arr = np.asarray(child)
+    parent_area = int(np.asarray(alpha).astype(bool).sum())
+    child_area = int((child_arr > 0).sum())
+
+    assert child_arr[50, 52] > 0
+    assert child_arr[50, 82] > 0
+    assert child_area < parent_area * 0.2

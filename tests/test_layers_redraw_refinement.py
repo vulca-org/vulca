@@ -966,6 +966,38 @@ def test_yellow_replacement_patch_uses_yellow_paint_not_scene_context():
     assert old_pixel[2] < 120
 
 
+def test_yellow_replacement_patch_covers_source_head_footprint_edges():
+    from vulca.layers import redraw as redraw_module
+
+    source = Image.new("RGB", (72, 56), (35, 92, 43))
+    draw = ImageDraw.Draw(source)
+    draw.ellipse((22, 14, 50, 42), fill=(156, 154, 132))
+    draw.ellipse((31, 23, 41, 33), fill=(232, 190, 42))
+
+    cleared = Image.new("RGB", source.size, (95, 120, 65))
+    removal_matte = Image.new("L", source.size, 0)
+    ImageDraw.Draw(removal_matte).ellipse((20, 12, 52, 44), fill=255)
+    generated = Image.new("RGBA", source.size, (0, 0, 0, 0))
+    ImageDraw.Draw(generated).ellipse((31, 23, 41, 33), fill=(232, 190, 42, 255))
+
+    patch = redraw_module._compose_flower_replacement_patch(
+        source,
+        cleared,
+        generated,
+        removal_matte,
+        target_palette="yellow",
+    )
+
+    left_edge = patch.getpixel((23, 28))
+    right_edge = patch.getpixel((49, 28))
+
+    assert left_edge[3] > 0
+    assert right_edge[3] > 0
+    assert left_edge[0] > 180
+    assert left_edge[1] > 130
+    assert left_edge[2] < 140
+
+
 def test_yellow_replacement_patch_does_not_expand_across_whole_old_head():
     from vulca.layers import redraw as redraw_module
 

@@ -127,8 +127,22 @@ def _extract_small_botanical_subject_masks(
 
     white_like = (red > 185) & (green > 185) & (blue > 170) & (channel_spread < 70)
     yellow_center = (red > 170) & (green > 130) & (blue < 120)
+    green_dominant = (green > red + 12) & (green > blue + 12)
+    muted_flower_footprint = (
+        (red > 135)
+        & (green > 120)
+        & (blue > 70)
+        & (channel_spread < 115)
+        & ~green_dominant
+    )
     evidence_raw = parent & (white_like | yellow_center)
     evidence = _dilate(evidence_raw, radius=2) & parent
+    footprint_radius = max(6, min(14, merge_distance_px + 2))
+    footprint = (
+        parent
+        & (white_like | yellow_center | muted_flower_footprint)
+        & _dilate(evidence_raw, radius=footprint_radius)
+    )
 
     component_seed = _open(evidence_raw, radius=1) & parent
     if not component_seed.any():
@@ -147,10 +161,18 @@ def _extract_small_botanical_subject_masks(
     height, width = parent.shape
     child_masks: list[Image.Image] = []
     for box in boxes:
-        left, top, right, bottom = _expand_box(box, width, height, padding=6)
+        left, top, right, bottom = _expand_box(
+            box,
+            width,
+            height,
+            padding=footprint_radius,
+        )
         child = np.zeros(parent.shape, dtype=np.uint8)
         local_evidence = evidence_raw[top:bottom, left:right]
-        local_child = _dilate(local_evidence, radius=4) & parent[top:bottom, left:right]
+        local_footprint = footprint[top:bottom, left:right]
+        local_child = (
+            _dilate(local_evidence, radius=4) | local_footprint
+        ) & parent[top:bottom, left:right]
         child[top:bottom, left:right] = local_child * 255
         if np.any(child):
             child_masks.append(Image.fromarray(child, mode="L"))
