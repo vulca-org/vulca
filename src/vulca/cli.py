@@ -305,6 +305,34 @@ def main(argv: list[str] | None = None) -> None:
     sessions_list.add_argument("--limit", "-n", type=int, default=20, help="Max sessions to show")
     sessions_list.add_argument("--sort", default="date", choices=["score", "date"], help="Sort order")
 
+    # cases command group
+    cases_p = sub.add_parser("cases", help="Review and label learning-loop case logs")
+    cases_sub = cases_p.add_subparsers(dest="cases_command")
+    cases_review = cases_sub.add_parser("review", help="Apply human review labels to one case")
+    cases_review.add_argument("input", help="Input JSONL case log")
+    cases_review.add_argument("--case-id", required=True, help="Case id to update")
+    cases_review.add_argument(
+        "--human-accept",
+        default=None,
+        help="Human acceptance label: true/false",
+    )
+    cases_review.add_argument("--failure-type", default=None, help="Failure taxonomy label")
+    cases_review.add_argument("--preferred-action", default=None, help="Preferred next action label")
+    cases_review.add_argument("--reviewer", default=None, help="Reviewer id/name")
+    cases_review.add_argument("--reviewed-at", default=None, help="Review timestamp, ISO-8601 UTC recommended")
+    cases_review.add_argument("--notes", default=None, help="Free-form review notes")
+    cases_review.add_argument(
+        "--output",
+        "-o",
+        default="",
+        help="Output reviewed JSONL path (default: INPUT.reviewed.jsonl)",
+    )
+    cases_review.add_argument(
+        "--sidecar-output",
+        default="",
+        help="Optional review-only JSONL sidecar path, appended if provided",
+    )
+
     # resume command
     resume_p = sub.add_parser("resume", help="Resume pipeline from checkpoint")
     resume_p.add_argument("session_id", help="Session ID to resume")
@@ -367,6 +395,11 @@ def main(argv: list[str] | None = None) -> None:
             sessions_p.print_help()
             sys.exit(0)
         _cmd_sessions(args)
+    elif args.command == "cases":
+        if not args.cases_command:
+            cases_p.print_help()
+            sys.exit(0)
+        _cmd_cases(args)
     elif args.command == "resume":
         _cmd_resume(args)
     elif args.command == "tools":
@@ -1565,6 +1598,47 @@ def _cmd_layers(args: argparse.Namespace) -> None:
     else:
         print(f"Unknown layers command: {args.layers_command}", file=sys.stderr)
         sys.exit(1)
+
+
+# ---------------------------------------------------------------------------
+# Cases command group
+# ---------------------------------------------------------------------------
+
+def _cmd_cases(args: argparse.Namespace) -> None:
+    import json as _json
+
+    if args.cases_command != "review":
+        print(f"Unknown cases command: {args.cases_command}", file=sys.stderr)
+        sys.exit(1)
+
+    from vulca.learning.case_review import parse_human_accept, review_case_log
+
+    review_kwargs = {
+        "case_id": args.case_id,
+        "output_path": args.output or None,
+        "failure_type": args.failure_type,
+        "preferred_action": args.preferred_action,
+        "reviewer": args.reviewer,
+        "reviewed_at": args.reviewed_at,
+        "notes": args.notes,
+        "sidecar_output_path": args.sidecar_output or None,
+    }
+    if args.human_accept is not None:
+        try:
+            review_kwargs["human_accept"] = parse_human_accept(args.human_accept)
+        except ValueError as exc:
+            print(f"Error: {exc}", file=sys.stderr)
+            sys.exit(1)
+
+    try:
+        result = review_case_log(args.input, **review_kwargs)
+    except (ValueError, FileNotFoundError, _json.JSONDecodeError) as exc:
+        print(f"Error: {exc}", file=sys.stderr)
+        sys.exit(1)
+
+    print(f"  Reviewed case: {result.case_id} -> {result.output_path}")
+    if result.sidecar_path:
+        print(f"  Review sidecar: {result.sidecar_path}")
 
 
 def _cmd_sessions(args: argparse.Namespace) -> None:
