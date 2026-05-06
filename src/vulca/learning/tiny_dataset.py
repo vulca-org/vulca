@@ -103,6 +103,7 @@ def build_tiny_dataset_examples(
     manifest_path: str | Path = DEFAULT_SEED_MANIFEST,
     case_log_paths: Sequence[str | Path] = (),
     case_source_manifest_path: str | Path | None = None,
+    auxiliary_signal_manifest_path: str | Path | None = None,
     include_local_seeds: bool = True,
 ) -> list[dict[str, Any]]:
     """Build leak-resistant tiny dataset examples from seeds and case logs."""
@@ -155,6 +156,15 @@ def build_tiny_dataset_examples(
             )
 
     _assign_dataset_splits(examples, source_aware=len(case_sources) > 1)
+    if auxiliary_signal_manifest_path:
+        from vulca.learning.open_model_signal_review import (
+            attach_promoted_open_model_signals,
+        )
+
+        attach_promoted_open_model_signals(
+            examples,
+            manifest_path=auxiliary_signal_manifest_path,
+        )
     return examples
 
 
@@ -165,6 +175,7 @@ def write_tiny_dataset(
     manifest_path: str | Path = DEFAULT_SEED_MANIFEST,
     case_log_paths: Sequence[str | Path] = (),
     case_source_manifest_path: str | Path | None = None,
+    auxiliary_signal_manifest_path: str | Path | None = None,
     include_local_seeds: bool = True,
     index_path: str | Path | None = None,
 ) -> TinyDatasetWriteResult:
@@ -174,6 +185,7 @@ def write_tiny_dataset(
         manifest_path=manifest_path,
         case_log_paths=case_log_paths,
         case_source_manifest_path=case_source_manifest_path,
+        auxiliary_signal_manifest_path=auxiliary_signal_manifest_path,
         include_local_seeds=include_local_seeds,
     )
     output = Path(output_path)
@@ -192,6 +204,9 @@ def write_tiny_dataset(
                 "source_manifest": str(manifest_path),
                 "case_log_paths": [str(path) for path in case_log_paths],
                 "case_source_manifest_path": str(case_source_manifest_path or ""),
+                "auxiliary_signal_manifest_path": str(
+                    auxiliary_signal_manifest_path or ""
+                ),
                 "case_sources": _case_source_summaries(case_sources, examples),
                 "include_local_seeds": bool(include_local_seeds),
                 "example_count": len(examples),
