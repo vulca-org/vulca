@@ -18,6 +18,7 @@ env/
 .env
 .env.*
 !.env.example
+*.private.asset_map.json
 
 # Editor / OS
 .vscode/

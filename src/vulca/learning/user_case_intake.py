@@ -10,6 +10,7 @@ from pathlib import Path, PureWindowsPath
 from typing import Any, Mapping
 
 from vulca.learning.case_review import load_cases, write_cases
+from vulca.learning.private_asset_map import write_private_asset_map as write_asset_map
 
 
 USER_CASE_INTAKE_SCHEMA_VERSION = 1
@@ -42,6 +43,7 @@ class UserCaseIntakeResult:
     source_id: str
     output_path: str
     manifest_path: str
+    asset_map_path: str
     record_count: int
 
 
@@ -52,6 +54,8 @@ def write_user_case_intake(
     output_dir: str | Path | None = None,
     output_path: str | Path | None = None,
     manifest_path: str | Path | None = None,
+    asset_map_path: str | Path | None = None,
+    write_private_asset_map: bool = False,
 ) -> UserCaseIntakeResult:
     """Normalize reviewed user case JSONL into a private user_case_log source."""
     resolved_source_id = str(source_id).strip()
@@ -71,12 +75,20 @@ def write_user_case_intake(
         if manifest_path is not None
         else base_dir / f"{path_token}.case_source_manifest.json"
     )
+    asset_map = (
+        Path(asset_map_path)
+        if asset_map_path is not None
+        else base_dir / f"{path_token}.private.asset_map.json"
+    )
+    should_write_asset_map = bool(write_private_asset_map or asset_map_path)
 
+    private_asset_entries: dict[str, str] = {}
     normalized_records = [
         normalize_user_case_record(
             record,
             source_id=resolved_source_id,
             record_index=index,
+            private_asset_entries=private_asset_entries,
         )
         for index, record in enumerate(input_records)
     ]
@@ -87,10 +99,17 @@ def write_user_case_intake(
         output_path=output,
         source_id=resolved_source_id,
     )
+    if should_write_asset_map:
+        write_asset_map(
+            asset_map,
+            source_id=resolved_source_id,
+            entries=private_asset_entries,
+        )
     return UserCaseIntakeResult(
         source_id=resolved_source_id,
         output_path=str(output),
         manifest_path=str(manifest),
+        asset_map_path=str(asset_map) if should_write_asset_map else "",
         record_count=len(normalized_records),
     )
 
@@ -100,10 +119,15 @@ def normalize_user_case_record(
     *,
     source_id: str,
     record_index: int,
+    private_asset_entries: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     """Return a sanitized reviewed case record with private intake metadata."""
     _validate_reviewed_case(record, record_index=record_index)
-    normalized = _sanitize_value(dict(record), key="")
+    normalized = _sanitize_value(
+        dict(record),
+        key="",
+        private_asset_entries=private_asset_entries,
+    )
     if not isinstance(normalized, dict):
         raise ValueError(f"record {record_index}: expected JSON object")
     normalized["user_case_intake"] = {
@@ -164,38 +188,84 @@ def _write_case_source_manifest(
     )
 
 
-def _sanitize_value(value: Any, *, key: str) -> Any:
+def _sanitize_value(
+    value: Any,
+    *,
+    key: str,
+    private_asset_entries: dict[str, str] | None = None,
+) -> Any:
     if _SENSITIVE_KEY_RE.search(key):
         return "<redacted>"
     if isinstance(value, dict):
         return {
-            str(child_key): _sanitize_value(child_value, key=str(child_key))
+            str(child_key): _sanitize_value(
+                child_value,
+                key=str(child_key),
+                private_asset_entries=private_asset_entries,
+            )
             for child_key, child_value in value.items()
         }
     if isinstance(value, list):
-        return [_sanitize_value(child, key=key) for child in value]
+        return [
+            _sanitize_value(
+                child,
+                key=key,
+                private_asset_entries=private_asset_entries,
+            )
+            for child in value
+        ]
     if isinstance(value, str):
-        return _sanitize_text(value)
+        return _sanitize_text(value, private_asset_entries=private_asset_entries)
     return value
 
 
-def _sanitize_text(value: str) -> str:
-    sanitized = _POSIX_LOCAL_PATH_RE.sub(_canonical_posix_path, value)
-    sanitized = _WINDOWS_LOCAL_PATH_RE.sub(_canonical_windows_path, sanitized)
+def _sanitize_text(
+    value: str,
+    *,
+    private_asset_entries: dict[str, str] | None = None,
+) -> str:
+    sanitized = _POSIX_LOCAL_PATH_RE.sub(
+        lambda match: _canonical_posix_path(
+            match,
+            private_asset_entries=private_asset_entries,
+        ),
+        value,
+    )
+    sanitized = _WINDOWS_LOCAL_PATH_RE.sub(
+        lambda match: _canonical_windows_path(
+            match,
+            private_asset_entries=private_asset_entries,
+        ),
+        sanitized,
+    )
     sanitized = _EMAIL_RE.sub("<email:redacted>", sanitized)
     sanitized = _PHONE_RE.sub("<phone:redacted>", sanitized)
     sanitized = _SECRET_RE.sub("<secret:redacted>", sanitized)
     return sanitized
 
 
-def _canonical_posix_path(match: re.Match[str]) -> str:
+def _canonical_posix_path(
+    match: re.Match[str],
+    *,
+    private_asset_entries: dict[str, str] | None = None,
+) -> str:
     raw, trailing = _strip_trailing_punctuation(match.group(0))
-    return f"{_canonical_path_token(raw, Path(raw).name)}{trailing}"
+    token = _canonical_path_token(raw, Path(raw).name)
+    if private_asset_entries is not None:
+        private_asset_entries[token] = raw
+    return f"{token}{trailing}"
 
 
-def _canonical_windows_path(match: re.Match[str]) -> str:
+def _canonical_windows_path(
+    match: re.Match[str],
+    *,
+    private_asset_entries: dict[str, str] | None = None,
+) -> str:
     raw, trailing = _strip_trailing_punctuation(match.group(0))
-    return f"{_canonical_path_token(raw, PureWindowsPath(raw).name)}{trailing}"
+    token = _canonical_path_token(raw, PureWindowsPath(raw).name)
+    if private_asset_entries is not None:
+        private_asset_entries[token] = raw
+    return f"{token}{trailing}"
 
 
 def _canonical_path_token(raw_path: str, name: str) -> str:

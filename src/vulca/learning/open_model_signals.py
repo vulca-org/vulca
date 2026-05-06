@@ -58,6 +58,7 @@ def run_open_model_signal_adapter(
     sam_model_type: str = "vit_b",
     sam_device: str = "auto",
     sam_points_per_side: int = 16,
+    private_asset_map_paths: Sequence[str | Path] = (),
 ) -> dict[str, Any]:
     """Write dry-run or injected open-model signal records and a summary report."""
     if max_examples is not None and max_examples < 0:
@@ -97,6 +98,7 @@ def run_open_model_signal_adapter(
         sam_model_type=sam_model_type,
         sam_device=sam_device,
         sam_points_per_side=sam_points_per_side,
+        private_asset_map_paths=private_asset_map_paths,
     )
     records = build_open_model_signal_records(
         examples,
@@ -118,6 +120,7 @@ def run_open_model_signal_adapter(
         enable_local_runners=enable_local_runners,
         max_examples=max_examples,
         weight_download_enabled=allow_weight_download,
+        private_asset_map_count=len(private_asset_map_paths),
     )
     resolved_report_path.parent.mkdir(parents=True, exist_ok=True)
     resolved_report_path.write_text(
@@ -224,6 +227,7 @@ def build_open_model_signal_report(
     enable_local_runners: Sequence[str] = (),
     max_examples: int | None = None,
     weight_download_enabled: bool = False,
+    private_asset_map_count: int = 0,
 ) -> dict[str, Any]:
     """Summarize signal-record coverage and safety policy."""
     counts_by_model: Counter[str] = Counter()
@@ -250,6 +254,7 @@ def build_open_model_signal_report(
             "model_ids": [str(item.get("id") or "") for item in model_specs],
             "enable_local_runners": [str(item) for item in enable_local_runners],
             "max_examples": max_examples,
+            "private_asset_map_count": int(private_asset_map_count),
         },
         "artifacts": {
             "output_path": _safe_artifact_path(repo_root, output_path),
@@ -372,6 +377,7 @@ def _build_runner_map(
     sam_model_type: str,
     sam_device: str,
     sam_points_per_side: int,
+    private_asset_map_paths: Sequence[str | Path],
 ) -> dict[str, SignalRunner]:
     runner_map = dict(runners or {})
     model_id_set = {str(item) for item in model_ids}
@@ -397,6 +403,7 @@ def _build_runner_map(
                     "allow_weight_download": allow_weight_download,
                     "model_id": florence_model_id,
                     "device": florence_device,
+                    "private_asset_map_paths": tuple(private_asset_map_paths),
                 }
             elif model_id == "segment_anything_sam_vit":
                 from vulca.learning.sam_signal_runner import (
@@ -410,6 +417,7 @@ def _build_runner_map(
                     "model_type": sam_model_type,
                     "device": sam_device,
                     "points_per_side": sam_points_per_side,
+                    "private_asset_map_paths": tuple(private_asset_map_paths),
                 }
             else:
                 raise ValueError(f"no local runner is available for model {model_id!r}")
@@ -424,6 +432,7 @@ def _build_runner_map(
                 sam_model_type=sam_model_type,
                 sam_device=sam_device,
                 sam_points_per_side=sam_points_per_side,
+                private_asset_map_paths=private_asset_map_paths,
             )
         runner_map[model_id] = factory(**factory_kwargs)
     return runner_map
@@ -440,6 +449,7 @@ def _local_runner_factory_kwargs(
     sam_model_type: str,
     sam_device: str,
     sam_points_per_side: int,
+    private_asset_map_paths: Sequence[str | Path],
 ) -> dict[str, Any]:
     if model_id == "florence_2":
         return {
@@ -447,6 +457,7 @@ def _local_runner_factory_kwargs(
             "allow_weight_download": allow_weight_download,
             "model_id": florence_model_id,
             "device": florence_device,
+            "private_asset_map_paths": tuple(private_asset_map_paths),
         }
     if model_id == "segment_anything_sam_vit":
         return {
@@ -455,8 +466,12 @@ def _local_runner_factory_kwargs(
             "model_type": sam_model_type,
             "device": sam_device,
             "points_per_side": sam_points_per_side,
+            "private_asset_map_paths": tuple(private_asset_map_paths),
         }
-    return {"repo_root": repo_root}
+    return {
+        "repo_root": repo_root,
+        "private_asset_map_paths": tuple(private_asset_map_paths),
+    }
 
 
 def _safe_model_summary(model_spec: Mapping[str, Any]) -> dict[str, Any]:

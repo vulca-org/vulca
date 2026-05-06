@@ -31,6 +31,17 @@ def _example_with_source(source_image: str) -> dict:
     }
 
 
+def _write_jsonl(path: Path, records: list[dict]) -> None:
+    path.write_text(
+        "\n".join(json.dumps(record, sort_keys=True) for record in records) + "\n",
+        encoding="utf-8",
+    )
+
+
+def _read_jsonl(path: Path) -> list[dict]:
+    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
+
+
 class FakeFlorenceBackend:
     def __init__(self):
         self.calls = []
@@ -112,6 +123,63 @@ def test_florence_runner_skips_private_or_missing_source_without_leaking_path(tm
     }
     assert "private://local_path" not in encoded
     assert "/Users/" not in encoded
+
+
+def test_florence_runner_resolves_private_asset_map_without_leaking_ref(tmp_path):
+    from vulca.learning.florence_signal_runner import build_florence2_signal_runner
+    from vulca.learning.user_case_intake import write_user_case_intake
+
+    image_path = tmp_path / "private-source.png"
+    Image.new("RGB", (9, 7), (255, 0, 0)).save(image_path)
+    input_path = tmp_path / "reviewed_user_cases.jsonl"
+    _write_jsonl(
+        input_path,
+        [
+            {
+                "schema_version": 1,
+                "case_type": "redraw_case",
+                "case_id": "private_mapped_case",
+                "created_at": "2026-05-06T00:00:00Z",
+                "source_image": str(image_path),
+                "review": {
+                    "human_accept": False,
+                    "failure_type": "style_drift",
+                    "preferred_action": "adjust_instruction",
+                    "reviewed_at": "2026-05-06T01:00:00Z",
+                },
+            }
+        ],
+    )
+    intake = write_user_case_intake(
+        input_path=input_path,
+        output_dir=tmp_path / "intake",
+        source_id="private_map_test",
+        write_private_asset_map=True,
+    )
+    sanitized = _read_jsonl(Path(intake.output_path))[0]
+    backend = FakeFlorenceBackend()
+    runner = build_florence2_signal_runner(
+        repo_root=tmp_path,
+        backend=backend,
+        private_asset_map_paths=(intake.asset_map_path,),
+    )
+
+    signals = runner(
+        _example_with_source(sanitized["source_image"]),
+        {"id": "florence_2", "model_role": "vision_caption_grounding_ocr"},
+    )
+
+    encoded = json.dumps(signals, sort_keys=True)
+    assert signals["status"] == "completed"
+    assert signals["source_image"] == {
+        "available": True,
+        "ref_kind": "private_uri_mapped",
+        "width": 9,
+        "height": 7,
+    }
+    assert backend.calls[0]["image_path"] == str(image_path)
+    assert "private://local_path" not in encoded
+    assert str(tmp_path) not in encoded
 
 
 def test_open_model_adapter_enables_florence_local_runner_with_factory(tmp_path):

@@ -6,11 +6,12 @@ does not convert masks into accepted decompose or redraw labels.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Mapping, Protocol
+from typing import Any, Mapping, Protocol, Sequence
 
 from PIL import Image
 
 from vulca.learning.florence_signal_runner import resolve_case_source_image_path
+from vulca.learning.private_asset_map import load_private_asset_maps
 
 
 DEFAULT_SAM_MODEL_TYPE = "vit_b"
@@ -36,6 +37,7 @@ def build_sam_vit_signal_runner(
     model_type: str = DEFAULT_SAM_MODEL_TYPE,
     device: str = "auto",
     points_per_side: int = DEFAULT_SAM_POINTS_PER_SIDE,
+    private_asset_map_paths: Sequence[str | Path] = (),
     **_: Any,
 ) -> Any:
     """Build a local SAM signal runner.
@@ -44,6 +46,7 @@ def build_sam_vit_signal_runner(
     when no test/experiment backend is injected.
     """
     root = Path(repo_root)
+    private_asset_map = load_private_asset_maps(private_asset_map_paths)
     resolved_backend = backend or SamVitLocalBackend(
         checkpoint_path=checkpoint_path,
         model_type=model_type,
@@ -53,7 +56,11 @@ def build_sam_vit_signal_runner(
 
     def run(example: Mapping[str, Any], model_spec: Mapping[str, Any]) -> dict[str, Any]:
         case_record = _case_record_from_example(example)
-        source = resolve_case_source_image_path(case_record, repo_root=root)
+        source = resolve_case_source_image_path(
+            case_record,
+            repo_root=root,
+            private_asset_map=private_asset_map,
+        )
         if source.path is None:
             return {
                 "status": "skipped",

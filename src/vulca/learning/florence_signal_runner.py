@@ -7,9 +7,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Mapping, Protocol
+from typing import Any, Mapping, Protocol, Sequence
 
 from PIL import Image
+
+from vulca.learning.private_asset_map import (
+    load_private_asset_maps,
+    resolve_private_asset_ref,
+)
 
 
 DEFAULT_FLORENCE_MODEL_ID = "microsoft/Florence-2-base"
@@ -39,6 +44,7 @@ def build_florence2_signal_runner(
     model_id: str = DEFAULT_FLORENCE_MODEL_ID,
     device: str = "auto",
     allow_weight_download: bool = False,
+    private_asset_map_paths: Sequence[str | Path] = (),
 ) -> Any:
     """Build a local Florence-2 signal runner.
 
@@ -46,6 +52,7 @@ def build_florence2_signal_runner(
     local cached weights unless the caller explicitly opts into downloads.
     """
     root = Path(repo_root)
+    private_asset_map = load_private_asset_maps(private_asset_map_paths)
     resolved_backend = backend or Florence2LocalBackend(
         model_id=model_id,
         device=device,
@@ -54,7 +61,11 @@ def build_florence2_signal_runner(
 
     def run(example: Mapping[str, Any], model_spec: Mapping[str, Any]) -> dict[str, Any]:
         case_record = _case_record_from_example(example)
-        source = resolve_case_source_image_path(case_record, repo_root=root)
+        source = resolve_case_source_image_path(
+            case_record,
+            repo_root=root,
+            private_asset_map=private_asset_map,
+        )
         if source.path is None:
             return {
                 "status": "skipped",
@@ -100,13 +111,25 @@ def resolve_case_source_image_path(
     case_record: Mapping[str, Any],
     *,
     repo_root: str | Path,
+    private_asset_map: Mapping[str, str | Path] | None = None,
 ) -> ResolvedSourceImage:
     """Resolve a case source image to a local path without leaking private refs."""
     ref = _source_image_ref(case_record)
     if not ref:
         return ResolvedSourceImage(path=None, ref_kind="missing")
     ref_kind = _ref_kind(ref)
-    if ref_kind in {"private_uri", "remote_url"}:
+    if ref_kind == "private_uri":
+        private_path = resolve_private_asset_ref(
+            ref,
+            private_asset_map=private_asset_map,
+        )
+        if private_path is not None and private_path.exists():
+            return ResolvedSourceImage(
+                path=private_path,
+                ref_kind="private_uri_mapped",
+            )
+        return ResolvedSourceImage(path=None, ref_kind=ref_kind)
+    if ref_kind == "remote_url":
         return ResolvedSourceImage(path=None, ref_kind=ref_kind)
 
     candidate = Path(ref)
