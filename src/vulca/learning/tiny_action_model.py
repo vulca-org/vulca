@@ -25,6 +25,7 @@ FAILURE_HINT_ACTION_PRIORS: Mapping[str, str] = {
     "large_white_component": "adjust_mask",
     "mask_leak": "adjust_mask",
     "mask_too_broad": "adjust_mask",
+    "missing_detail": "adjust_instruction",
     "occlusion": "fallback_to_agent",
     "over_segmentation": "merge_layers",
     "over_split": "fallback_to_original",
@@ -34,6 +35,7 @@ FAILURE_HINT_ACTION_PRIORS: Mapping[str, str] = {
     "style_drift": "adjust_prompt",
     "under_segmentation": "split_layer_further",
     "under_split": "fallback_to_agent",
+    "wrong_subject": "adjust_instruction",
 }
 
 

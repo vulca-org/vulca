@@ -217,3 +217,31 @@ def test_tiny_action_model_uses_manual_curated_failure_signals(tmp_path):
     )
     assert prediction_report["example_count"] == 5
     assert prediction_report["action_accuracy"] == 1.0
+
+
+def test_tiny_action_model_uses_redraw_instruction_failure_priors():
+    from vulca.learning.tiny_action_model import TinyActionClassifier
+
+    classifier = TinyActionClassifier.fit([])
+    prediction = classifier.predict(
+        {
+            "example_id": "example-redraw-missing-detail",
+            "input": {
+                "case_record": {
+                    "case_type": "redraw_case",
+                    "quality": {
+                        "failures": ["missing_detail"],
+                        "gate_passed": False,
+                    },
+                }
+            },
+            "source_case": {
+                "case_id": "real_redraw_missing_detail",
+                "case_type": "redraw_case",
+            },
+        }
+    )
+
+    assert prediction["recommended_action"] == "adjust_instruction"
+    assert prediction["failure_hint"] == "missing_detail"
+    assert prediction["explanation"]["fallback_reason"] == "failure_hint_prior"

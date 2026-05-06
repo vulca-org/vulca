@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "case_type": "learning_tiny_case_source_manifest",
+  "sources": [
+    {
+      "source_id": "manual_curated_cases_v1",
+      "kind": "manual_case_log",
+      "path": "manual_curated_cases_v1.reviewed.jsonl",
+      "privacy_scope": "project",
+      "curation_status": "curated"
+    },
+    {
+      "source_id": "real_user_cases_v1",
+      "kind": "user_case_log",
+      "path": "real_user_cases_v1.private.user_cases.jsonl",
+      "privacy_scope": "private",
+      "curation_status": "reviewed"
+    }
+  ]
+}
