@@ -363,6 +363,16 @@ def main(argv: list[str] | None = None) -> None:
         default="",
         help="Output case source manifest path (default: OUTPUT_DIR/SOURCE.case_source_manifest.json)",
     )
+    cases_intake_user.add_argument(
+        "--write-private-asset-map",
+        action="store_true",
+        help="Write a local-only private:// ref to absolute path sidecar map",
+    )
+    cases_intake_user.add_argument(
+        "--asset-map-output",
+        default="",
+        help="Output private asset map path (default: OUTPUT_DIR/SOURCE.private.asset_map.json)",
+    )
     cases_seed = cases_sub.add_parser("seed", help="Build local seed case JSONL logs")
     cases_seed.add_argument(
         "--output",
@@ -1783,6 +1793,8 @@ def _cmd_cases(args: argparse.Namespace) -> None:
                 output_dir=args.output_dir or None,
                 output_path=args.output_log or None,
                 manifest_path=args.manifest_output or None,
+                asset_map_path=args.asset_map_output or None,
+                write_private_asset_map=bool(args.write_private_asset_map),
             )
         except (ValueError, FileNotFoundError, _json.JSONDecodeError) as exc:
             print(f"Error: {exc}", file=sys.stderr)
@@ -1792,6 +1804,8 @@ def _cmd_cases(args: argparse.Namespace) -> None:
         print(f"  Records: {result.record_count}")
         print(f"  Source id: {result.source_id}")
         print(f"  Case source manifest: {result.manifest_path}")
+        if result.asset_map_path:
+            print(f"  Private asset map: {result.asset_map_path}")
         return
 
     if args.cases_command == "export-dataset":

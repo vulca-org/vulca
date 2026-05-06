@@ -120,6 +120,15 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="SAM automatic mask generator points_per_side for local pilot runs.",
     )
     parser.add_argument(
+        "--private-asset-map",
+        action="append",
+        default=[],
+        help=(
+            "Local-only private:// asset map JSON for resolving reviewed user "
+            "case images. Repeat for multiple maps."
+        ),
+    )
+    parser.add_argument(
         "--no-local-seeds",
         action="store_true",
         help="Only use records from the case source manifest.",
@@ -149,6 +158,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             sam_model_type=args.sam_model_type,
             sam_device=args.sam_device,
             sam_points_per_side=args.sam_points_per_side,
+            private_asset_map_paths=tuple(args.private_asset_map),
         )
     except (FileNotFoundError, RuntimeError, ValueError, json.JSONDecodeError) as exc:
         print(f"Error: {exc}", file=sys.stderr)

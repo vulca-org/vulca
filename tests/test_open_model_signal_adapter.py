@@ -141,6 +141,44 @@ def test_open_model_signal_adapter_uses_injected_runner_outputs():
     assert records[0]["training_use"]["review_status"] == "needs_human_review"
 
 
+def test_open_model_signal_adapter_passes_private_asset_maps_to_local_runner_factory(
+    tmp_path,
+):
+    from vulca.learning.open_model_signals import run_open_model_signal_adapter
+
+    captured = {}
+    asset_map_path = tmp_path / "session.private.asset_map.json"
+
+    def fake_factory(**kwargs):
+        captured.update(kwargs)
+
+        def run(_example, _model):
+            return {
+                "status": "completed",
+                "signal_source": "local_runner",
+                "review_status": "needs_human_review",
+            }
+
+        return run
+
+    report = run_open_model_signal_adapter(
+        repo_root=ROOT,
+        output_path=tmp_path / "signals.jsonl",
+        report_path=tmp_path / "report.json",
+        model_catalog_path=CATALOG,
+        case_source_manifest_path=COMBINED_MANIFEST,
+        model_ids=("florence_2",),
+        include_local_seeds=False,
+        enable_local_runners=("florence_2",),
+        local_runner_factories={"florence_2": fake_factory},
+        private_asset_map_paths=(asset_map_path,),
+        max_examples=1,
+    )
+
+    assert report["runtime"]["uses_local_runner"] is True
+    assert captured["private_asset_map_paths"] == (asset_map_path,)
+
+
 def test_open_model_signal_adapter_cli_writes_report(tmp_path):
     output_path = tmp_path / "signals.jsonl"
     report_path = tmp_path / "report.json"
@@ -171,3 +209,21 @@ def test_open_model_signal_adapter_cli_writes_report(tmp_path):
     assert report["case_type"] == "learning_open_model_signal_report"
     assert report["record_count"] == len(_read_jsonl(output_path))
     assert "Open model signal records:" in result.stdout
+
+
+def test_open_model_signal_adapter_cli_exposes_private_asset_map_flag():
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "scripts/open_model_signal_adapter.py"),
+            "--help",
+        ],
+        cwd=ROOT,
+        env=CLI_ENV,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert "--private-asset-map" in result.stdout

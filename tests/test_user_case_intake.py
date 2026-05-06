@@ -125,6 +125,45 @@ def test_user_case_intake_writes_private_manifest_and_sanitized_log(tmp_path):
     assert example["source_case"]["case_id"] == "redraw_user_001"
 
 
+def test_user_case_intake_can_write_private_asset_map_sidecar(tmp_path):
+    from vulca.learning.user_case_intake import write_user_case_intake
+
+    input_path = tmp_path / "reviewed_user_cases.jsonl"
+    _write_jsonl(input_path, [_reviewed_redraw_case()])
+
+    result = write_user_case_intake(
+        input_path=input_path,
+        output_dir=tmp_path / "intake",
+        source_id="user_session_2026_05",
+        write_private_asset_map=True,
+    )
+
+    assert result.asset_map_path
+    asset_map_path = Path(result.asset_map_path)
+    assert asset_map_path.name == "user_session_2026_05.private.asset_map.json"
+    asset_map = json.loads(asset_map_path.read_text(encoding="utf-8"))
+    records = _read_jsonl(Path(result.output_path))
+    source_ref = records[0]["source_image"]
+    layer_ref = records[0]["artifacts"]["source_layer_path"]
+
+    assert asset_map["case_type"] == "learning_private_asset_map"
+    assert asset_map["source_id"] == "user_session_2026_05"
+    assert asset_map["privacy_scope"] == "private_local"
+    assert {
+        "private_ref": source_ref,
+        "local_path": "/Users/alice/private-client/source.png",
+    } in asset_map["entries"]
+    assert {
+        "private_ref": layer_ref,
+        "local_path": "/Users/alice/private-client/layers/sign.png",
+    } in asset_map["entries"]
+    assert "/Users/alice" not in json.dumps(records[0], sort_keys=True)
+    assert "/Users/alice/private-client/source.png" in json.dumps(
+        asset_map,
+        sort_keys=True,
+    )
+
+
 def test_user_case_intake_rejects_unreviewed_cases(tmp_path):
     from vulca.learning.user_case_intake import write_user_case_intake
 
@@ -158,6 +197,7 @@ def test_cases_intake_user_cli_writes_manifest_and_private_log(tmp_path):
             "cli_user_session",
             "--output-dir",
             str(output_dir),
+            "--write-private-asset-map",
         ],
         capture_output=True,
         text=True,
@@ -177,3 +217,6 @@ def test_cases_intake_user_cli_writes_manifest_and_private_log(tmp_path):
     assert manifest["sources"][0]["kind"] == "user_case_log"
     assert manifest["sources"][0]["privacy_scope"] == "private"
     assert manifest["sources"][0]["curation_status"] == "reviewed"
+    asset_map_path = output_dir / "cli_user_session.private.asset_map.json"
+    assert asset_map_path.exists()
+    assert "Private asset map:" in result.stdout
