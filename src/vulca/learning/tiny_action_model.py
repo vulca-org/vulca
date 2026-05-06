@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import re
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
@@ -37,6 +38,23 @@ FAILURE_HINT_ACTION_PRIORS: Mapping[str, str] = {
     "under_split": "fallback_to_agent",
     "wrong_subject": "adjust_instruction",
 }
+_AUX_TEXT_TOKEN_RE = re.compile(r"[A-Za-z][A-Za-z0-9]{2,31}")
+_AUX_TEXT_STOPWORDS: frozenset[str] = frozenset(
+    {
+        "and",
+        "are",
+        "for",
+        "from",
+        "into",
+        "next",
+        "of",
+        "on",
+        "the",
+        "this",
+        "with",
+    }
+)
+_AUX_TEXT_MAX_TOKENS = 12
 
 
 @dataclass(frozen=True)
@@ -467,6 +485,25 @@ def _auxiliary_signal_features(example: Mapping[str, Any]) -> tuple[str, ...]:
         signal_source = str(signals.get("signal_source") or "")
         if signal_source:
             features.append(f"aux_signal.source:{signal_source}")
+        features.extend(
+            _aux_text_features(
+                signals.get("caption_candidates"),
+                prefix="caption_token",
+            )
+        )
+        features.extend(
+            _aux_text_features(
+                signals.get("dense_region_descriptions"),
+                prefix="dense_token",
+            )
+        )
+        features.extend(
+            _aux_text_features(
+                signals.get("ocr_text"),
+                prefix="ocr_token",
+                max_tokens=8,
+            )
+        )
         mask_count = _number(signals.get("mask_count"))
         if mask_count is not None:
             features.append(f"aux_signal.sam_mask_count:{_mask_count_bucket(mask_count)}")
@@ -479,6 +516,46 @@ def _auxiliary_signal_features(example: Mapping[str, Any]) -> tuple[str, ...]:
         if boundary_complexity:
             features.append(f"aux_signal.boundary_complexity:{boundary_complexity}")
     return tuple(features)
+
+
+def _aux_text_features(
+    value: Any,
+    *,
+    prefix: str,
+    max_tokens: int = _AUX_TEXT_MAX_TOKENS,
+) -> tuple[str, ...]:
+    tokens: list[str] = []
+    for text in _flatten_aux_text(value):
+        for match in _AUX_TEXT_TOKEN_RE.finditer(text.lower()):
+            token = match.group(0)
+            if token in _AUX_TEXT_STOPWORDS:
+                continue
+            tokens.append(token)
+            if len(tokens) >= max_tokens:
+                return _aux_token_features(prefix, tokens)
+    return _aux_token_features(prefix, tokens)
+
+
+def _aux_token_features(prefix: str, tokens: Sequence[str]) -> tuple[str, ...]:
+    return tuple(f"aux_signal.{prefix}:{item}" for item in dict.fromkeys(tokens))
+
+
+def _flatten_aux_text(value: Any) -> tuple[str, ...]:
+    if value is None:
+        return ()
+    if isinstance(value, str):
+        return (value,)
+    if isinstance(value, Mapping):
+        texts: list[str] = []
+        for child in value.values():
+            texts.extend(_flatten_aux_text(child))
+        return tuple(texts)
+    if isinstance(value, Sequence) and not isinstance(value, (str, bytes)):
+        texts = []
+        for item in value:
+            texts.extend(_flatten_aux_text(item))
+        return tuple(texts)
+    return (str(value),)
 
 
 def _target_action(example: Mapping[str, Any]) -> str:
