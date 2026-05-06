@@ -71,3 +71,8 @@ jobs:
             -q
       - name: Local seed baseline gate
         run: python scripts/local_seed_baseline_gate.py
+      - name: Tiny training eval gate
+        run: |
+          python scripts/tiny_training_eval_gate.py \
+            --output-dir "$RUNNER_TEMP/tiny-training-eval" \
+            --report "$RUNNER_TEMP/tiny-training-eval/report.json"
