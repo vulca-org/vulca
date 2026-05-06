@@ -21,6 +21,7 @@ FAILURE_TYPES: frozenset[str] = frozenset(
         "missing_detail",
         "over_smoothing",
         "texture_leak",
+        "mask_leak",
         "alpha_expansion",
         "mask_too_broad",
         "background_bleed",
