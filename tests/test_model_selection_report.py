@@ -49,12 +49,12 @@ def test_model_selection_report_promotes_tiny_action_model_and_keeps_baselines(t
     assert report["case_type"] == "learning_model_selection_report"
     assert report["status"] == "ready_for_selection"
     assert report["dataset"] == {
-        "example_count": 36,
-        "eval_example_count": 17,
+        "example_count": 43,
+        "eval_example_count": 19,
         "data_gap_count": 0,
         "counts_by_source_kind": {
             "local_seed": 12,
-            "manual_case_log": 8,
+            "manual_case_log": 15,
             "synthetic_case_log": 11,
             "user_case_log": 5,
         },
@@ -121,8 +121,8 @@ def test_model_selection_report_script_writes_report_and_prints_selection(tmp_pa
     report = json.loads(report_path.read_text(encoding="utf-8"))
     assert report["case_type"] == "learning_model_selection_report"
     assert "Model selection report:" in result.stdout
-    assert "Dataset examples: 36" in result.stdout
-    assert "Eval examples: 17" in result.stdout
+    assert "Dataset examples: 43" in result.stdout
+    assert "Eval examples: 19" in result.stdout
     assert "Recommended primary: tiny_action_model_v1" in result.stdout
     assert "Recommended baseline: tiny_agent_v0" in result.stdout
     assert "Data gaps: 0" in result.stdout

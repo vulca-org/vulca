@@ -48,11 +48,16 @@ def test_training_effectiveness_report_uses_combined_real_manual_and_seed_data(t
 
     assert report["case_type"] == "learning_training_effectiveness_report"
     assert report["status"] == "passed"
-    assert report["dataset"]["example_count"] == 36
-    assert report["dataset"]["eval_example_count"] == 17
+    assert report["dataset"]["example_count"] == 43
+    assert report["dataset"]["eval_example_count"] == 19
+    assert report["dataset"]["counts_by_split"] == {
+        "dev": 7,
+        "test": 19,
+        "train": 17,
+    }
     assert report["dataset"]["counts_by_source_kind"] == {
         "local_seed": 12,
-        "manual_case_log": 8,
+        "manual_case_log": 15,
         "synthetic_case_log": 11,
         "user_case_log": 5,
     }
@@ -83,6 +88,10 @@ def test_training_effectiveness_report_has_no_default_eval_coverage_gaps(tmp_pat
         "example_count": 11,
         "eval_example_count": 11,
     }
+    assert report["coverage"]["source_kind"]["user_case_log"] == {
+        "example_count": 5,
+        "eval_example_count": 1,
+    }
 
 
 def test_training_effectiveness_report_script_writes_report_and_prints_summary(tmp_path):
@@ -93,8 +102,8 @@ def test_training_effectiveness_report_script_writes_report_and_prints_summary(t
     report = json.loads(report_path.read_text(encoding="utf-8"))
     assert report["case_type"] == "learning_training_effectiveness_report"
     assert "Training effectiveness report:" in result.stdout
-    assert "Dataset examples: 36" in result.stdout
-    assert "Eval examples: 17" in result.stdout
+    assert "Dataset examples: 43" in result.stdout
+    assert "Eval examples: 19" in result.stdout
     assert "tiny_action_model_v1 action_accuracy: 1.0" in result.stdout
     assert "tiny_agent_v0 action_accuracy:" in result.stdout
     assert "Data gaps: 0" in result.stdout

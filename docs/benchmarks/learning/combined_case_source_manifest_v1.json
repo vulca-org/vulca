@@ -23,6 +23,13 @@
       "privacy_scope": "project",
       "curation_status": "synthetic_reviewed",
       "preferred_split": "test"
+    },
+    {
+      "source_id": "backlog_manual_cases_v1",
+      "kind": "manual_case_log",
+      "path": "backlog_manual_cases_v1.reviewed.jsonl",
+      "privacy_scope": "project",
+      "curation_status": "curated"
     }
   ]
 }

@@ -50,7 +50,7 @@ def test_data_expansion_backlog_targets_decompose_and_layer_generate_gaps(tmp_pa
     assert report["case_type"] == "learning_data_expansion_backlog"
     assert report["status"] == "ready_for_case_collection"
     assert report["summary"] == {
-        "source_review_row_count": 17,
+        "source_review_row_count": 19,
         "backlog_item_count": 7,
         "requested_real_case_count": 14,
         "requested_manual_case_count": 7,
@@ -64,13 +64,13 @@ def test_data_expansion_backlog_targets_decompose_and_layer_generate_gaps(tmp_pa
 
     items = report["backlog_items"]
     assert [item["backlog_id"] for item in items] == [
-        "layer_generate_case__prompt_ambiguity",
-        "decompose_case__occlusion",
-        "decompose_case__over_segmentation",
-        "layer_generate_case__layer_order",
         "layer_generate_case__provider_failure",
         "layer_generate_case__style_drift",
         "decompose_case__under_segmentation",
+        "layer_generate_case__prompt_ambiguity",
+        "decompose_case__over_segmentation",
+        "layer_generate_case__layer_order",
+        "decompose_case__occlusion",
     ]
     assert all(item["workload_decision"] == "collect_more_real_cases" for item in items)
     assert all(item["requested_real_cases"] == 2 for item in items)
@@ -91,13 +91,14 @@ def test_data_expansion_backlog_prioritizes_real_user_signal_and_actions(tmp_pat
     by_id = {item["backlog_id"]: item for item in report["backlog_items"]}
     prompt = by_id["layer_generate_case__prompt_ambiguity"]
     assert prompt["priority_tier"] == "P0"
+    assert prompt["priority_score"] == 100
     assert prompt["current_real_eval_count"] == 1
     assert prompt["target_actions"] == {"manual_review": 1}
     assert prompt["source_kind_counts"]["user_case_log"] == 1
     assert "real user case" in prompt["priority_reason"]
 
     occlusion = by_id["decompose_case__occlusion"]
-    assert occlusion["priority_tier"] == "P1"
+    assert occlusion["priority_tier"] == "P2"
     assert occlusion["current_real_eval_count"] == 0
     assert occlusion["target_actions"] == {"fallback_to_agent": 1}
     assert occlusion["source_kind_counts"]["synthetic_case_log"] == 1
@@ -130,7 +131,7 @@ def test_data_expansion_backlog_writes_csv_for_parallel_case_sessions(tmp_path):
         "target_actions",
         "collection_prompt",
     }
-    assert rows[0]["backlog_id"] == "layer_generate_case__prompt_ambiguity"
+    assert rows[0]["backlog_id"] == "layer_generate_case__provider_failure"
     assert rows[0]["requested_real_cases"] == "2"
 
 
@@ -146,4 +147,4 @@ def test_data_expansion_backlog_script_writes_artifacts_and_summary(tmp_path):
     assert "Backlog items: 7" in result.stdout
     assert "Requested real cases: 14" in result.stdout
     assert "Requested manual cases: 7" in result.stdout
-    assert "layer_generate_case__prompt_ambiguity" in result.stdout
+    assert "layer_generate_case__provider_failure" in result.stdout
