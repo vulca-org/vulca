@@ -652,7 +652,7 @@ def _assign_dataset_splits(examples: list[dict[str, Any]]) -> None:
         groups.setdefault(case_type, []).append(example)
 
     for case_type in sorted(groups):
-        group = groups[case_type]
+        group = _source_interleaved_examples(groups[case_type])
         counts = _split_counts(len(group))
         cursor = 0
         for split in DATASET_SPLITS:
@@ -660,6 +660,43 @@ def _assign_dataset_splits(examples: list[dict[str, Any]]) -> None:
             for example in group[cursor : cursor + count]:
                 example["split"] = split
             cursor += count
+
+
+def _source_interleaved_examples(examples: Sequence[dict[str, Any]]) -> list[dict[str, Any]]:
+    buckets: dict[str, list[dict[str, Any]]] = {}
+    for example in examples:
+        buckets.setdefault(_source_kind_for_split(example), []).append(example)
+
+    for items in buckets.values():
+        items.sort(key=_split_stable_key)
+
+    ordered: list[dict[str, Any]] = []
+    source_kinds = sorted(buckets)
+    cursors: dict[str, int] = {source_kind: 0 for source_kind in source_kinds}
+    while len(ordered) < len(examples):
+        for source_kind in source_kinds:
+            cursor = cursors[source_kind]
+            bucket = buckets[source_kind]
+            if cursor >= len(bucket):
+                continue
+            ordered.append(bucket[cursor])
+            cursors[source_kind] = cursor + 1
+    return ordered
+
+
+def _source_kind_for_split(example: Mapping[str, Any]) -> str:
+    source = _mapping(example.get("source"))
+    return str(source.get("kind") or "unknown")
+
+
+def _split_stable_key(example: Mapping[str, Any]) -> tuple[str, str, str]:
+    source = _mapping(example.get("source"))
+    source_case = _mapping(example.get("source_case"))
+    return (
+        str(source.get("source_id") or source.get("kind") or ""),
+        str(source_case.get("case_id") or ""),
+        str(example.get("example_id") or ""),
+    )
 
 
 def _split_counts(total: int) -> dict[str, int]:

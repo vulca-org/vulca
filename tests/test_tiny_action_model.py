@@ -44,23 +44,23 @@ def test_tiny_action_model_predicts_complete_frozen_test_split(tmp_path):
         item["case_id"]: item
         for item in predictions
     }
-    assert by_case_id["redraw_20260505T144500Z_0d13fd902885"][
+    assert by_case_id["redraw_20260505T144500Z_f2741106fbf5"][
         "recommended_action"
-    ] == "manual_review"
-    assert by_case_id["redraw_20260505T144500Z_0d13fd902885"][
+    ] == "adjust_route"
+    assert by_case_id["redraw_20260505T144500Z_f2741106fbf5"][
         "failure_hint"
-    ] == "pasteback_mismatch"
-    assert by_case_id["redraw_20260505T144500Z_0d13fd902885"][
+    ] == "route_error"
+    assert by_case_id["redraw_20260505T144500Z_f2741106fbf5"][
         "source_policy"
     ] == "train_sparse_feature_classifier"
-    assert by_case_id["redraw_20260505T144500Z_0d13fd902885"][
+    assert by_case_id["redraw_20260505T144500Z_f2741106fbf5"][
         "explanation"
     ]["fallback_reason"] == "failure_hint_prior"
-    assert by_case_id["layer_generate_20260505T144500Z_b4ac612ba871"][
+    assert by_case_id["layer_generate_20260505T144500Z_e3c92ef7660d"][
         "recommended_action"
     ] == "accept"
     assert "case_type:layer_generate_case" in by_case_id[
-        "layer_generate_20260505T144500Z_b4ac612ba871"
+        "layer_generate_20260505T144500Z_e3c92ef7660d"
     ]["explanation"]["matched_features"]
 
 
@@ -196,15 +196,6 @@ def test_tiny_action_model_uses_manual_curated_failure_signals(tmp_path):
     )
 
     by_case_id = {item["case_id"]: item for item in predictions}
-    assert by_case_id["manual_v1_redraw_mask_leak"][
-        "recommended_action"
-    ] == "adjust_mask"
-    assert by_case_id["manual_v1_layer_generate_layer_order"][
-        "recommended_action"
-    ] == "manual_review"
-    assert by_case_id["manual_v1_layer_generate_prompt_ambiguity"][
-        "recommended_action"
-    ] == "adjust_prompt"
     assert by_case_id["manual_v1_decompose_under_segmentation"][
         "recommended_action"
     ] == "split_layer_further"
@@ -245,3 +236,38 @@ def test_tiny_action_model_uses_redraw_instruction_failure_priors():
     assert prediction["recommended_action"] == "adjust_instruction"
     assert prediction["failure_hint"] == "missing_detail"
     assert prediction["explanation"]["fallback_reason"] == "failure_hint_prior"
+
+
+def test_tiny_action_model_uses_curated_failure_priors_without_split_coupling():
+    from vulca.learning.tiny_action_model import TinyActionClassifier
+
+    classifier = TinyActionClassifier.fit([])
+
+    for failure_hint, expected_action in {
+        "mask_leak": "adjust_mask",
+        "layer_order": "manual_review",
+        "prompt_ambiguity": "adjust_prompt",
+        "style_drift": "adjust_prompt",
+    }.items():
+        prediction = classifier.predict(
+            {
+                "example_id": f"example-{failure_hint}",
+                "input": {
+                    "case_record": {
+                        "case_type": "layer_generate_case",
+                        "quality": {
+                            "failures": [failure_hint],
+                            "gate_passed": False,
+                        },
+                    }
+                },
+                "source_case": {
+                    "case_id": f"manual_{failure_hint}",
+                    "case_type": "layer_generate_case",
+                },
+            }
+        )
+
+        assert prediction["recommended_action"] == expected_action
+        assert prediction["failure_hint"] == failure_hint
+        assert prediction["explanation"]["fallback_reason"] == "failure_hint_prior"
