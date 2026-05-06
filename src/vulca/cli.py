@@ -342,6 +342,27 @@ def main(argv: list[str] | None = None) -> None:
         default="",
         help="Optional review-only JSONL sidecar path, appended if provided",
     )
+    cases_intake_user = cases_sub.add_parser(
+        "intake-user",
+        help="Normalize reviewed private user case JSONL into a case source manifest",
+    )
+    cases_intake_user.add_argument("input", help="Reviewed user case JSONL")
+    cases_intake_user.add_argument("--source-id", required=True, help="Stable user case source id")
+    cases_intake_user.add_argument(
+        "--output-dir",
+        default="",
+        help="Output directory for private user case log and source manifest",
+    )
+    cases_intake_user.add_argument(
+        "--output-log",
+        default="",
+        help="Output private user case JSONL path (default: OUTPUT_DIR/SOURCE.private.user_cases.jsonl)",
+    )
+    cases_intake_user.add_argument(
+        "--manifest-output",
+        default="",
+        help="Output case source manifest path (default: OUTPUT_DIR/SOURCE.case_source_manifest.json)",
+    )
     cases_seed = cases_sub.add_parser("seed", help="Build local seed case JSONL logs")
     cases_seed.add_argument(
         "--output",
@@ -1743,6 +1764,27 @@ def _cmd_layers(args: argparse.Namespace) -> None:
 
 def _cmd_cases(args: argparse.Namespace) -> None:
     import json as _json
+
+    if args.cases_command == "intake-user":
+        from vulca.learning.user_case_intake import write_user_case_intake
+
+        try:
+            result = write_user_case_intake(
+                input_path=args.input,
+                source_id=args.source_id,
+                output_dir=args.output_dir or None,
+                output_path=args.output_log or None,
+                manifest_path=args.manifest_output or None,
+            )
+        except (ValueError, FileNotFoundError, _json.JSONDecodeError) as exc:
+            print(f"Error: {exc}", file=sys.stderr)
+            sys.exit(1)
+
+        print(f"  User case log: {result.output_path}")
+        print(f"  Records: {result.record_count}")
+        print(f"  Source id: {result.source_id}")
+        print(f"  Case source manifest: {result.manifest_path}")
+        return
 
     if args.cases_command == "export-dataset":
         from vulca.learning.seed_cases import DEFAULT_SEED_MANIFEST
