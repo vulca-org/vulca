@@ -96,6 +96,30 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="Florence-2 device for local runner execution: auto, cpu, mps, or cuda.",
     )
     parser.add_argument(
+        "--sam-checkpoint",
+        default="",
+        help=(
+            "Local SAM v1 checkpoint path for "
+            "--enable-local-runner segment_anything_sam_vit."
+        ),
+    )
+    parser.add_argument(
+        "--sam-model-type",
+        default="vit_b",
+        help="SAM model type for local runner execution, e.g. vit_b, vit_l, vit_h.",
+    )
+    parser.add_argument(
+        "--sam-device",
+        default="auto",
+        help="SAM device for local runner execution: auto, cpu, mps, or cuda.",
+    )
+    parser.add_argument(
+        "--sam-points-per-side",
+        type=int,
+        default=16,
+        help="SAM automatic mask generator points_per_side for local pilot runs.",
+    )
+    parser.add_argument(
         "--no-local-seeds",
         action="store_true",
         help="Only use records from the case source manifest.",
@@ -121,6 +145,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             allow_weight_download=args.allow_weight_download,
             florence_model_id=args.florence_model_id,
             florence_device=args.florence_device,
+            sam_checkpoint=args.sam_checkpoint or None,
+            sam_model_type=args.sam_model_type,
+            sam_device=args.sam_device,
+            sam_points_per_side=args.sam_points_per_side,
         )
     except (FileNotFoundError, RuntimeError, ValueError, json.JSONDecodeError) as exc:
         print(f"Error: {exc}", file=sys.stderr)

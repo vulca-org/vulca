@@ -54,6 +54,10 @@ def run_open_model_signal_adapter(
     allow_weight_download: bool = False,
     florence_model_id: str = "microsoft/Florence-2-base",
     florence_device: str = "auto",
+    sam_checkpoint: str | Path | None = None,
+    sam_model_type: str = "vit_b",
+    sam_device: str = "auto",
+    sam_points_per_side: int = 16,
 ) -> dict[str, Any]:
     """Write dry-run or injected open-model signal records and a summary report."""
     if max_examples is not None and max_examples < 0:
@@ -89,6 +93,10 @@ def run_open_model_signal_adapter(
         allow_weight_download=allow_weight_download,
         florence_model_id=florence_model_id,
         florence_device=florence_device,
+        sam_checkpoint=sam_checkpoint,
+        sam_model_type=sam_model_type,
+        sam_device=sam_device,
+        sam_points_per_side=sam_points_per_side,
     )
     records = build_open_model_signal_records(
         examples,
@@ -360,6 +368,10 @@ def _build_runner_map(
     allow_weight_download: bool,
     florence_model_id: str,
     florence_device: str,
+    sam_checkpoint: str | Path | None,
+    sam_model_type: str,
+    sam_device: str,
+    sam_points_per_side: int,
 ) -> dict[str, SignalRunner]:
     runner_map = dict(runners or {})
     model_id_set = {str(item) for item in model_ids}
@@ -374,20 +386,77 @@ def _build_runner_map(
             raise ValueError(f"runner for model {model_id!r} is already provided")
         factory = factories.get(model_id)
         if factory is None:
-            if model_id != "florence_2":
-                raise ValueError(f"no local runner is available for model {model_id!r}")
-            from vulca.learning.florence_signal_runner import (
-                build_florence2_signal_runner,
-            )
+            if model_id == "florence_2":
+                from vulca.learning.florence_signal_runner import (
+                    build_florence2_signal_runner,
+                )
 
-            factory = build_florence2_signal_runner
-        runner_map[model_id] = factory(
-            repo_root=repo_root,
-            allow_weight_download=allow_weight_download,
-            model_id=florence_model_id,
-            device=florence_device,
-        )
+                factory = build_florence2_signal_runner
+                factory_kwargs = {
+                    "repo_root": repo_root,
+                    "allow_weight_download": allow_weight_download,
+                    "model_id": florence_model_id,
+                    "device": florence_device,
+                }
+            elif model_id == "segment_anything_sam_vit":
+                from vulca.learning.sam_signal_runner import (
+                    build_sam_vit_signal_runner,
+                )
+
+                factory = build_sam_vit_signal_runner
+                factory_kwargs = {
+                    "repo_root": repo_root,
+                    "checkpoint_path": sam_checkpoint,
+                    "model_type": sam_model_type,
+                    "device": sam_device,
+                    "points_per_side": sam_points_per_side,
+                }
+            else:
+                raise ValueError(f"no local runner is available for model {model_id!r}")
+        else:
+            factory_kwargs = _local_runner_factory_kwargs(
+                model_id,
+                repo_root=repo_root,
+                allow_weight_download=allow_weight_download,
+                florence_model_id=florence_model_id,
+                florence_device=florence_device,
+                sam_checkpoint=sam_checkpoint,
+                sam_model_type=sam_model_type,
+                sam_device=sam_device,
+                sam_points_per_side=sam_points_per_side,
+            )
+        runner_map[model_id] = factory(**factory_kwargs)
     return runner_map
+
+
+def _local_runner_factory_kwargs(
+    model_id: str,
+    *,
+    repo_root: Path,
+    allow_weight_download: bool,
+    florence_model_id: str,
+    florence_device: str,
+    sam_checkpoint: str | Path | None,
+    sam_model_type: str,
+    sam_device: str,
+    sam_points_per_side: int,
+) -> dict[str, Any]:
+    if model_id == "florence_2":
+        return {
+            "repo_root": repo_root,
+            "allow_weight_download": allow_weight_download,
+            "model_id": florence_model_id,
+            "device": florence_device,
+        }
+    if model_id == "segment_anything_sam_vit":
+        return {
+            "repo_root": repo_root,
+            "checkpoint_path": sam_checkpoint,
+            "model_type": sam_model_type,
+            "device": sam_device,
+            "points_per_side": sam_points_per_side,
+        }
+    return {"repo_root": repo_root}
 
 
 def _safe_model_summary(model_spec: Mapping[str, Any]) -> dict[str, Any]:
