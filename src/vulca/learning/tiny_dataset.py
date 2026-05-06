@@ -81,9 +81,10 @@ class TinyCaseSourceSpec:
     path: str
     privacy_scope: str
     curation_status: str
+    preferred_split: str = ""
 
     def source_for_record(self, index: int) -> dict[str, Any]:
-        return {
+        source = {
             "kind": self.kind,
             "source_id": self.source_id,
             "path": self.path,
@@ -91,6 +92,9 @@ class TinyCaseSourceSpec:
             "curation_status": self.curation_status,
             "index": index,
         }
+        if self.preferred_split:
+            source["preferred_split"] = self.preferred_split
+        return source
 
 
 def build_tiny_dataset_examples(
@@ -575,6 +579,7 @@ def _load_case_source_specs(
         raw_path = str(item.get("path") or "")
         privacy_scope = str(item.get("privacy_scope") or "")
         curation_status = str(item.get("curation_status") or "")
+        preferred_split = str(item.get("preferred_split") or "")
 
         if not source_id:
             errors.append(f"sources[{index}]: source_id is required")
@@ -601,6 +606,11 @@ def _load_case_source_specs(
                 f"{curation_status!r}; expected one of "
                 f"{sorted(CASE_SOURCE_CURATION_STATUSES)}"
             )
+        if preferred_split and preferred_split not in DATASET_SPLITS:
+            errors.append(
+                f"sources[{index}]: unsupported preferred_split "
+                f"{preferred_split!r}; expected one of {DATASET_SPLITS}"
+            )
 
         if source_id and kind in CASE_SOURCE_KINDS and raw_path:
             source_path = Path(raw_path)
@@ -613,6 +623,7 @@ def _load_case_source_specs(
                     path=str(source_path),
                     privacy_scope=privacy_scope,
                     curation_status=curation_status,
+                    preferred_split=preferred_split,
                 )
             )
 
@@ -632,8 +643,9 @@ def _case_source_summaries(
         if source_id:
             counts[source_id] += 1
 
-    return [
-        {
+    summaries: list[dict[str, Any]] = []
+    for spec in specs:
+        summary = {
             "source_id": spec.source_id,
             "kind": spec.kind,
             "path": spec.path,
@@ -641,13 +653,24 @@ def _case_source_summaries(
             "curation_status": spec.curation_status,
             "record_count": counts.get(spec.source_id, 0),
         }
-        for spec in specs
-    ]
+        if spec.preferred_split:
+            summary["preferred_split"] = spec.preferred_split
+        summaries.append(summary)
+    return summaries
 
 
 def _assign_dataset_splits(examples: list[dict[str, Any]]) -> None:
     groups: dict[str, list[dict[str, Any]]] = {}
     for example in examples:
+        preferred_split = str(_mapping(example.get("source")).get("preferred_split") or "")
+        if preferred_split:
+            if preferred_split not in DATASET_SPLITS:
+                raise ValueError(
+                    f"unsupported preferred_split {preferred_split!r}; "
+                    f"expected one of {DATASET_SPLITS}"
+                )
+            example["split"] = preferred_split
+            continue
         case_type = str(_mapping(example.get("source_case")).get("case_type") or "")
         groups.setdefault(case_type, []).append(example)
 
