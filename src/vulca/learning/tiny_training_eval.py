@@ -21,6 +21,7 @@ from vulca.learning.tiny_dataset import (
     load_tiny_dataset_examples,
     write_tiny_dataset,
 )
+from vulca.learning.tiny_feature_ablation import run_tiny_feature_ablation_report_for_dataset
 
 
 SCHEMA_VERSION = 1
@@ -50,6 +51,7 @@ def run_tiny_training_eval_gate(
     eval_split: str = "test",
     train_split: str = "train",
     min_action_accuracy: Mapping[str, float] | None = None,
+    min_ablation_action_accuracy: Mapping[str, float] | None = None,
     max_mismatches: Mapping[str, int] | None = None,
     require_no_missing_predictions: bool = True,
 ) -> dict[str, Any]:
@@ -64,6 +66,7 @@ def run_tiny_training_eval_gate(
     tiny_agent_path = output / "tiny_agent_v0.predictions.jsonl"
     tiny_action_model_path = output / "tiny_action_model_v1.predictions.jsonl"
     comparison_report_path = output / "tiny_dataset_comparison.json"
+    ablation_report_path = output / "tiny_feature_ablation.json"
     resolved_report_path = Path(report_path) if report_path else output / "tiny_training_eval_report.json"
     resolved_manifest_path = manifest_path or DEFAULT_SEED_MANIFEST
 
@@ -103,6 +106,12 @@ def run_tiny_training_eval_gate(
         json.dumps(comparison_report, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
+    ablation_report = run_tiny_feature_ablation_report_for_dataset(
+        dataset_path=dataset_path,
+        output_path=ablation_report_path,
+        eval_split=eval_split,
+        train_split=train_split,
+    )
 
     min_thresholds = dict(DEFAULT_MIN_ACTION_ACCURACY)
     min_thresholds.update(min_action_accuracy or {})
@@ -110,7 +119,9 @@ def run_tiny_training_eval_gate(
     max_thresholds.update(max_mismatches or {})
     gate = build_tiny_training_eval_gate_result(
         comparison_report,
+        ablation_report=ablation_report,
         min_action_accuracy=min_thresholds,
+        min_ablation_action_accuracy=min_ablation_action_accuracy or {},
         max_mismatches=max_thresholds,
         require_no_missing_predictions=require_no_missing_predictions,
     )
@@ -134,6 +145,7 @@ def run_tiny_training_eval_gate(
             "tiny_agent_v0_prediction_path": str(tiny_agent_path),
             "tiny_action_model_v1_prediction_path": str(tiny_action_model_path),
             "comparison_report_path": str(comparison_report_path),
+            "tiny_feature_ablation_report_path": str(ablation_report_path),
             "report_path": str(resolved_report_path),
         },
         "dataset": asdict(dataset_result),
@@ -142,6 +154,7 @@ def run_tiny_training_eval_gate(
             POLICY_TINY_ACTION_MODEL: asdict(tiny_action_model_result),
         },
         "comparison": comparison_report,
+        "ablation": ablation_report,
         "gate": gate,
     }
     resolved_report_path.parent.mkdir(parents=True, exist_ok=True)
@@ -155,11 +168,14 @@ def run_tiny_training_eval_gate(
 def build_tiny_training_eval_gate_result(
     comparison_report: Mapping[str, Any],
     *,
+    ablation_report: Mapping[str, Any] | None = None,
     min_action_accuracy: Mapping[str, float],
+    min_ablation_action_accuracy: Mapping[str, float] | None = None,
     max_mismatches: Mapping[str, int],
     require_no_missing_predictions: bool = True,
 ) -> dict[str, Any]:
     policy_reports = _mapping(comparison_report.get("policy_reports"))
+    ablation_by_variant = _ablation_variants_by_id(ablation_report or {})
     violations: list[dict[str, Any]] = []
 
     for policy, threshold in sorted(min_action_accuracy.items()):
@@ -170,6 +186,20 @@ def build_tiny_training_eval_gate_result(
                 {
                     "policy": str(policy),
                     "metric": "action_accuracy",
+                    "actual": actual,
+                    "expected": f">= {_format_number(float(threshold))}",
+                }
+            )
+
+    for variant, threshold in sorted((min_ablation_action_accuracy or {}).items()):
+        metrics = _mapping(_mapping(ablation_by_variant.get(variant)).get("policy_report"))
+        actual = metrics.get("action_accuracy")
+        if actual is None or float(actual) < float(threshold):
+            violations.append(
+                {
+                    "policy": POLICY_TINY_ACTION_MODEL,
+                    "variant": str(variant),
+                    "metric": "ablation_action_accuracy",
                     "actual": actual,
                     "expected": f">= {_format_number(float(threshold))}",
                 }
@@ -210,6 +240,10 @@ def build_tiny_training_eval_gate_result(
             "min_action_accuracy": {
                 policy: float(value)
                 for policy, value in sorted(min_action_accuracy.items())
+            },
+            "min_ablation_action_accuracy": {
+                variant: float(value)
+                for variant, value in sorted((min_ablation_action_accuracy or {}).items())
             },
             "max_mismatches": {
                 policy: int(value) for policy, value in sorted(max_mismatches.items())
@@ -265,7 +299,24 @@ def format_gate_violation(violation: Mapping[str, Any]) -> str:
         return f"{policy} mismatch_count {actual} > {threshold}"
     if metric == "missing_count":
         return f"{policy} missing_count {actual} > 0"
+    if metric == "ablation_action_accuracy":
+        variant = str(violation.get("variant") or "")
+        threshold = expected.replace(">= ", "")
+        return f"{policy} {variant} action_accuracy {actual} < {threshold}"
     return f"{policy} {metric} {actual} violates {expected}"
+
+
+def parse_variant_float_thresholds(values: Sequence[str]) -> dict[str, float]:
+    thresholds: dict[str, float] = {}
+    for raw in values:
+        variant, value = _split_policy_threshold(raw)
+        try:
+            thresholds[variant] = float(value)
+        except ValueError as exc:
+            raise ValueError(
+                f"invalid threshold value {value!r} for variant {variant!r}"
+            ) from exc
+    return thresholds
 
 
 def _split_policy_threshold(raw: str) -> tuple[str, str]:
@@ -302,6 +353,19 @@ def _format_number(value: float) -> str:
     if value.is_integer():
         return f"{value:.1f}"
     return str(value)
+
+
+def _ablation_variants_by_id(
+    ablation_report: Mapping[str, Any],
+) -> dict[str, Mapping[str, Any]]:
+    variants = ablation_report.get("variant_reports")
+    if not isinstance(variants, Sequence) or isinstance(variants, (str, bytes)):
+        return {}
+    return {
+        str(_mapping(item).get("variant_id") or ""): _mapping(item)
+        for item in variants
+        if isinstance(item, Mapping)
+    }
 
 
 def _mapping(value: Any) -> Mapping[str, Any]:

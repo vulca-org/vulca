@@ -22,6 +22,7 @@ from vulca.learning.tiny_training_eval import (  # noqa: E402
     format_gate_violation,
     parse_policy_float_thresholds,
     parse_policy_int_thresholds,
+    parse_variant_float_thresholds,
     run_tiny_training_eval_gate,
 )
 
@@ -119,6 +120,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         ),
     )
     parser.add_argument(
+        "--min-ablation-action-accuracy",
+        action="append",
+        default=[],
+        metavar="VARIANT=VALUE",
+        help=(
+            "Fail if a tiny_action_model_v1 ablation variant action_accuracy "
+            "is below VALUE. Example: without_failure_and_action_hints=0.5."
+        ),
+    )
+    parser.add_argument(
         "--allow-missing-predictions",
         action="store_true",
         help="Do not fail when prediction JSONL files omit examples from the eval split.",
@@ -132,6 +143,9 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     try:
         min_thresholds = parse_policy_float_thresholds(args.min_action_accuracy)
+        min_ablation_thresholds = parse_variant_float_thresholds(
+            args.min_ablation_action_accuracy
+        )
         max_thresholds = parse_policy_int_thresholds(args.max_mismatches)
         report = run_tiny_training_eval_gate(
             repo_root=args.repo_root,
@@ -147,6 +161,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             eval_split=args.split,
             train_split=args.train_split,
             min_action_accuracy=min_thresholds,
+            min_ablation_action_accuracy=min_ablation_thresholds,
             max_mismatches=max_thresholds,
             require_no_missing_predictions=not args.allow_missing_predictions,
         )
@@ -170,6 +185,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     for policy in sorted(report["comparison"]["policy_reports"]):
         policy_report = report["comparison"]["policy_reports"][policy]
         print(f"{policy} action_accuracy: {policy_report['action_accuracy']}")
+    print("tiny_action_model_v1 ablation:")
+    for variant in report["ablation"]["variant_reports"]:
+        policy_report = variant["policy_report"]
+        print(f"  {variant['variant_id']} action_accuracy: {policy_report['action_accuracy']}")
 
     if not report["gate"]["passed"]:
         print("Tiny training/eval gate failed:", file=sys.stderr)

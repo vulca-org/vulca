@@ -112,6 +112,9 @@ def run_aggregated_case_source_eval(
                 "tiny_action_model_v1_prediction_path"
             ],
             "comparison_report_path": tiny_report["artifacts"]["comparison_report_path"],
+            "tiny_feature_ablation_report_path": tiny_report["artifacts"][
+                "tiny_feature_ablation_report_path"
+            ],
         },
         "dataset_summary": _build_dataset_summary(examples),
         "source_summary": _build_source_summary(examples),
@@ -122,6 +125,7 @@ def run_aggregated_case_source_eval(
             policy_comparison=policy_comparison,
         ),
         "tiny_training_eval": {
+            "ablation": tiny_report.get("ablation", {}),
             "gate": tiny_report["gate"],
             "predictions": tiny_report["predictions"],
         },
