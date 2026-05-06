@@ -1,0 +1,283 @@
+{
+  "schema_version": 1,
+  "case_type": "learning_external_dataset_catalog",
+  "created_at": "2026-05-06T00:00:00Z",
+  "default_training_input": false,
+  "requires_reviewed_case_conversion": true,
+  "pilot_policy": {
+    "max_records_per_dataset": 300,
+    "requires_license_review_before_download": true,
+    "requires_manual_review_before_training": true,
+    "output_kind": "external_candidate_cases"
+  },
+  "datasets": [
+    {
+      "id": "magicbrush",
+      "name": "MagicBrush",
+      "source_url": "https://huggingface.co/datasets/osunlp/MagicBrush",
+      "paper_url": "https://arxiv.org/abs/2306.10012",
+      "license": "cc-by-4.0",
+      "license_risk": "attribution_required",
+      "supervision_kind": "paired_instruction_edit",
+      "size_note": "about 10K manually annotated instruction-guided image edit triples",
+      "target_case_types": [
+        "redraw_case"
+      ],
+      "candidate_mapping": {
+        "source_image": "source_img",
+        "instruction": "instruction",
+        "edited_image": "target_img",
+        "failure_label": "derive_by_policy_or_manual_review",
+        "preferred_action": "derive_by_policy_or_manual_review"
+      },
+      "recommended_use": "pilot_redraw_instruction_and_preservation_cases",
+      "intake_status": "recommended_pilot",
+      "default_training_input": false,
+      "requires_manual_review": true,
+      "risks": [
+        "does not provide Vulca failure taxonomy labels",
+        "must derive mask/pasteback failure labels with review",
+        "CC-BY attribution must be preserved in downstream metadata"
+      ]
+    },
+    {
+      "id": "instructpix2pix_clip_filtered",
+      "name": "InstructPix2Pix CLIP-filtered",
+      "source_url": "https://huggingface.co/datasets/timbrooks/instructpix2pix-clip-filtered",
+      "paper_url": "https://arxiv.org/abs/2211.09800",
+      "license": "unspecified_on_dataset_card",
+      "license_risk": "license_review_required",
+      "supervision_kind": "synthetic_paired_instruction_edit",
+      "size_note": "100K to 1M synthetic edit examples",
+      "target_case_types": [
+        "redraw_case"
+      ],
+      "candidate_mapping": {
+        "source_image": "original_image",
+        "instruction": "edit_prompt",
+        "edited_image": "edited_image",
+        "failure_label": "derive_by_policy_or_manual_review",
+        "preferred_action": "derive_by_policy_or_manual_review"
+      },
+      "recommended_use": "instruction_parser_pretraining_only_after_license_review",
+      "intake_status": "catalog_only",
+      "default_training_input": false,
+      "requires_manual_review": true,
+      "risks": [
+        "synthetic source can teach shortcut behavior",
+        "dataset card does not expose an explicit license tag",
+        "not suitable for holdout evaluation"
+      ]
+    },
+    {
+      "id": "pie_bench",
+      "name": "PIE-Bench",
+      "source_url": "https://paperswithcode.com/dataset/pie-bench",
+      "paper_url": "https://arxiv.org/abs/2304.05490",
+      "license": "linked_external_license_document",
+      "license_risk": "license_review_required",
+      "supervision_kind": "editing_benchmark_with_masks",
+      "size_note": "700 prompt-based image editing benchmark examples across 10 edit types",
+      "target_case_types": [
+        "redraw_case"
+      ],
+      "candidate_mapping": {
+        "source_image": "image",
+        "instruction": "editing_instruction",
+        "mask": "editing_mask",
+        "source_prompt": "source_prompt",
+        "target_prompt": "target_prompt",
+        "failure_label": "benchmark_metric_or_manual_review",
+        "preferred_action": "manual_review"
+      },
+      "recommended_use": "benchmark_only_for_redraw_regression",
+      "intake_status": "benchmark_only",
+      "default_training_input": false,
+      "requires_manual_review": true,
+      "risks": [
+        "small benchmark should not be used for training",
+        "license document must be reviewed before download",
+        "benchmark labels do not match Vulca taxonomy directly"
+      ]
+    },
+    {
+      "id": "imagerewarddb",
+      "name": "ImageRewardDB",
+      "source_url": "https://huggingface.co/datasets/zai-org/ImageRewardDB",
+      "paper_url": "https://arxiv.org/abs/2304.05977",
+      "license": "apache-2.0",
+      "license_risk": "permissive",
+      "supervision_kind": "human_preference_pair",
+      "size_note": "137K expert comparison pairs for text-to-image outputs",
+      "target_case_types": [
+        "layer_generate_case"
+      ],
+      "candidate_mapping": {
+        "prompt": "prompt",
+        "candidate_images": "generated_outputs",
+        "review_label": "preferred_image",
+        "failure_label": "derive_quality_failure_or_manual_review",
+        "preferred_action": "derive_accept_or_adjust_prompt_with_review"
+      },
+      "recommended_use": "pilot_quality_preference_cases_for_layer_generation",
+      "intake_status": "recommended_pilot",
+      "default_training_input": false,
+      "requires_manual_review": true,
+      "risks": [
+        "preference pairs do not identify actionable Vulca fixes",
+        "source images are generated rather than user workflow artifacts",
+        "must not replace real_user holdout"
+      ]
+    },
+    {
+      "id": "fifa_pickapic_v2",
+      "name": "FiFA filtered Pick-a-Pic v2",
+      "source_url": "https://huggingface.co/datasets/Dragonjinny/FiFA-pickapic-v2",
+      "paper_url": "https://arxiv.org/abs/2305.01569",
+      "license": "mit",
+      "license_risk": "permissive",
+      "supervision_kind": "filtered_human_preference_pair",
+      "size_note": "100K to 1M filtered Pick-a-Pic preference records",
+      "target_case_types": [
+        "layer_generate_case"
+      ],
+      "candidate_mapping": {
+        "prompt": "caption_or_prompt",
+        "candidate_images": "image_pair",
+        "review_label": "preferred_image",
+        "failure_label": "derive_quality_failure_or_manual_review",
+        "preferred_action": "derive_accept_or_adjust_prompt_with_review"
+      },
+      "recommended_use": "secondary_quality_preference_source_after_ImageRewardDB",
+      "intake_status": "catalog_only",
+      "default_training_input": false,
+      "requires_manual_review": true,
+      "risks": [
+        "filtered subset may bias toward easy preference margins",
+        "not an editing dataset",
+        "must track original Pick-a-Pic provenance"
+      ]
+    },
+    {
+      "id": "ade20k",
+      "name": "ADE20K",
+      "source_url": "https://huggingface.co/datasets/1aurent/ADE20K",
+      "paper_url": "https://arxiv.org/abs/1608.05442",
+      "license": "bsd_metadata_with_image_copyright_notice",
+      "license_risk": "license_review_required",
+      "supervision_kind": "scene_parsing_instance_and_part_segmentation",
+      "size_note": "27K+ images with object, part, polygon, and panoptic annotations",
+      "target_case_types": [
+        "decompose_case"
+      ],
+      "candidate_mapping": {
+        "source_image": "image",
+        "layer_hints": "object_part_annotations",
+        "semantic_paths": "object_and_part_names",
+        "mask": "panoptic_or_polygon_annotation",
+        "failure_label": "derive_over_under_segmentation_or_manual_review",
+        "preferred_action": "derive_split_or_merge_with_review"
+      },
+      "recommended_use": "pilot_decompose_layer_taxonomy_and_part_boundary_cases",
+      "intake_status": "recommended_pilot",
+      "default_training_input": false,
+      "requires_manual_review": true,
+      "risks": [
+        "image copyright is not owned by dataset publisher",
+        "semantic classes do not equal Vulca editable layer roles",
+        "dense scene parsing may overfit decompose toward dataset classes"
+      ]
+    },
+    {
+      "id": "coco_panoptic",
+      "name": "COCO Panoptic",
+      "source_url": "https://www.tensorflow.org/datasets/catalog/coco",
+      "paper_url": "https://arxiv.org/abs/1405.0312",
+      "license": "annotations_cc-by-4.0_images_original_licenses",
+      "license_risk": "attribution_required",
+      "supervision_kind": "panoptic_segmentation_and_captions",
+      "size_note": "large object/stuff segmentation and caption dataset",
+      "target_case_types": [
+        "decompose_case",
+        "redraw_case"
+      ],
+      "candidate_mapping": {
+        "source_image": "image",
+        "layer_hints": "panoptic_segments",
+        "semantic_paths": "category_names",
+        "mask": "segmentation",
+        "instruction": "caption_or_synthetic_edit_instruction",
+        "failure_label": "derive_by_policy_or_manual_review",
+        "preferred_action": "derive_by_policy_or_manual_review"
+      },
+      "recommended_use": "secondary_decompose_and_mask_geometry_source_after_ADE20K",
+      "intake_status": "catalog_only",
+      "default_training_input": false,
+      "requires_manual_review": true,
+      "risks": [
+        "image licenses vary and require attribution tracking",
+        "object/stuff categories are not semantic editable layers",
+        "synthetic edit instructions require separate quality review"
+      ]
+    },
+    {
+      "id": "p3m_10k",
+      "name": "P3M-10k",
+      "source_url": "https://github.com/JizhiziLi/P3M",
+      "paper_url": "https://arxiv.org/abs/2104.14222",
+      "license": "mit_with_dataset_release_agreement",
+      "license_risk": "permissive",
+      "supervision_kind": "portrait_alpha_matting",
+      "size_note": "10,421 privacy-preserving portrait images with manually labeled alpha mattes",
+      "target_case_types": [
+        "redraw_case",
+        "decompose_case"
+      ],
+      "candidate_mapping": {
+        "source_image": "face_blurred_portrait",
+        "alpha": "alpha_matte",
+        "mask": "derived_binary_or_trimap_mask",
+        "failure_label": "derive_alpha_expansion_mask_leak_or_manual_review",
+        "preferred_action": "derive_adjust_mask_or_manual_review"
+      },
+      "recommended_use": "pilot_alpha_edge_mask_leak_and_pasteback_boundary_cases",
+      "intake_status": "catalog_only",
+      "default_training_input": false,
+      "requires_manual_review": true,
+      "risks": [
+        "portrait-only distribution may not transfer to object layers",
+        "release agreement should be reviewed before download",
+        "alpha quality labels still need Vulca action labels"
+      ]
+    },
+    {
+      "id": "sa1b",
+      "name": "Segment Anything 1B",
+      "source_url": "https://www.tensorflow.org/datasets/catalog/segment_anything",
+      "paper_url": "https://arxiv.org/abs/2304.02643",
+      "license": "custom_research_terms",
+      "license_risk": "research_only",
+      "supervision_kind": "large_scale_promptable_masks",
+      "size_note": "11M images and 1.1B mask annotations",
+      "target_case_types": [
+        "decompose_case"
+      ],
+      "candidate_mapping": {
+        "source_image": "image",
+        "mask": "rle_masks",
+        "layer_hints": "mask_proposals_without_classes",
+        "failure_label": "not_available_without_review",
+        "preferred_action": "not_available_without_review"
+      },
+      "recommended_use": "research_reference_only_until_license_review",
+      "intake_status": "blocked_pending_license_review",
+      "default_training_input": false,
+      "requires_manual_review": true,
+      "risks": [
+        "custom dataset terms restrict use",
+        "masks do not include semantic class labels",
+        "scale is unnecessary for current tiny action model"
+      ]
+    }
+  ]
+}
