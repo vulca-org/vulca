@@ -17,6 +17,24 @@ from vulca.learning.tiny_dataset import (
 POLICY_TINY_ACTION_MODEL = "tiny_action_model_v1"
 SOURCE_POLICY_TRAIN_SPARSE = "train_sparse_feature_classifier"
 TRAINING_MODE_SPARSE_FEATURE_BASELINE = "sparse_feature_baseline"
+FAILURE_HINT_ACTION_PRIORS: Mapping[str, str] = {
+    "alpha_expansion": "adjust_mask",
+    "background_bleed": "adjust_mask",
+    "color_drift": "adjust_mask",
+    "layer_order": "manual_review",
+    "large_white_component": "adjust_mask",
+    "mask_leak": "adjust_mask",
+    "mask_too_broad": "adjust_mask",
+    "occlusion": "fallback_to_agent",
+    "over_segmentation": "merge_layers",
+    "over_split": "fallback_to_original",
+    "pasteback_mismatch": "manual_review",
+    "prompt_ambiguity": "adjust_prompt",
+    "route_error": "adjust_route",
+    "style_drift": "adjust_prompt",
+    "under_segmentation": "split_layer_further",
+    "under_split": "fallback_to_agent",
+}
 
 
 @dataclass(frozen=True)
@@ -74,6 +92,7 @@ class TinyActionClassifier:
         source_case = _mapping(example.get("source_case"))
         features = sorted(set(extract_tiny_action_features(example)))
         failure_hints = extract_failure_hints(example)
+        action_hints = extract_action_hints(example)
         matched_features: list[str] = []
         feature_votes: list[dict[str, Any]] = []
         action_scores: dict[str, float] = {}
@@ -102,7 +121,15 @@ class TinyActionClassifier:
             if f"failure_hint:{hint}" not in self.feature_action_counts
         ]
         fallback_reason = ""
-        if unseen_failure_hints:
+        hint_action = _prior_action_for_failure_hints(failure_hints)
+        direct_action_hint = _first_supported_action(action_hints)
+        if direct_action_hint:
+            action = direct_action_hint
+            fallback_reason = "visible_action_hint"
+        elif hint_action:
+            action = hint_action
+            fallback_reason = "failure_hint_prior"
+        elif unseen_failure_hints:
             action = "manual_review"
             fallback_reason = "unseen_failure_hint"
         elif action_scores:
@@ -127,6 +154,7 @@ class TinyActionClassifier:
                 "train_example_count": self.train_example_count,
                 "matched_features": matched_features,
                 "unseen_failure_hints": unseen_failure_hints,
+                "action_hints": action_hints,
                 "fallback_reason": fallback_reason,
                 "action_scores": _rounded_scores(action_scores),
                 "top_feature_votes": feature_votes[:5],
@@ -208,7 +236,10 @@ def extract_failure_hints(example: Mapping[str, Any]) -> tuple[str, ...]:
     for key in (
         "over_split",
         "under_split",
+        "over_segmentation",
+        "under_segmentation",
         "semantic_mismatch",
+        "occlusion",
         "residual_leakage",
         "alpha_quality",
     ):
@@ -217,6 +248,26 @@ def extract_failure_hints(example: Mapping[str, Any]) -> tuple[str, ...]:
             hints.append(key)
         if key == "alpha_quality" and int(value.get("empty_layer_count") or 0) > 0:
             hints.append("empty_layer")
+
+    return tuple(dict.fromkeys(hints))
+
+
+def extract_action_hints(example: Mapping[str, Any]) -> tuple[str, ...]:
+    """Extract visible next-action hints produced before human review."""
+    case_record = _case_record(example)
+    decisions = _mapping(case_record.get("decisions"))
+    hints: list[str] = []
+
+    fallback_decisions = decisions.get("fallback_decisions")
+    if isinstance(fallback_decisions, Sequence) and not isinstance(
+        fallback_decisions, (str, bytes)
+    ):
+        for item in fallback_decisions:
+            if not isinstance(item, Mapping):
+                continue
+            action = str(item.get("suggested_action") or "")
+            if action:
+                hints.append(action)
 
     return tuple(dict.fromkeys(hints))
 
@@ -338,6 +389,16 @@ def _layer_generate_features(case_record: Mapping[str, Any]) -> tuple[str, ...]:
         for status, count in sorted(statuses.items()):
             if status:
                 features.append(f"output.layer_status:{status}:{_count_bucket(count)}")
+    fallback_decisions = decisions.get("fallback_decisions")
+    if isinstance(fallback_decisions, Sequence) and not isinstance(
+        fallback_decisions, (str, bytes)
+    ):
+        for item in fallback_decisions:
+            if not isinstance(item, Mapping):
+                continue
+            action = str(item.get("suggested_action") or "")
+            if action:
+                features.append(f"decision.suggested_action:{action}")
     return tuple(features)
 
 
@@ -345,11 +406,28 @@ def _target_action(example: Mapping[str, Any]) -> str:
     return str(_mapping(example.get("targets")).get("preferred_action") or "")
 
 
+def _prior_action_for_failure_hints(hints: Sequence[str]) -> str:
+    for hint in hints:
+        action = FAILURE_HINT_ACTION_PRIORS.get(hint)
+        if action in SUPPORTED_PREDICTION_ACTIONS:
+            return action
+    return ""
+
+
+def _first_supported_action(actions: Sequence[str]) -> str:
+    for action in actions:
+        if action in SUPPORTED_PREDICTION_ACTIONS:
+            return action
+    return ""
+
+
 def _case_record(example: Mapping[str, Any]) -> Mapping[str, Any]:
     return _mapping(_mapping(example.get("input")).get("case_record"))
 
 
 def _feature_weight(feature: str) -> float:
+    if feature.startswith("decision.suggested_action:"):
+        return 5.0
     if feature.startswith("failure_hint:"):
         return 4.0
     if feature.startswith("route.signal:"):
@@ -366,6 +444,10 @@ def _confidence(
     action: str,
     fallback_reason: str,
 ) -> float:
+    if fallback_reason == "visible_action_hint":
+        return 0.88
+    if fallback_reason == "failure_hint_prior":
+        return 0.82
     if fallback_reason == "unseen_failure_hint":
         return 0.45
     if fallback_reason:

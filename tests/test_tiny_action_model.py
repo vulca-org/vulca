@@ -55,7 +55,7 @@ def test_tiny_action_model_predicts_complete_frozen_test_split(tmp_path):
     ] == "train_sparse_feature_classifier"
     assert by_case_id["redraw_20260505T144500Z_0d13fd902885"][
         "explanation"
-    ]["fallback_reason"] == "unseen_failure_hint"
+    ]["fallback_reason"] == "failure_hint_prior"
     assert by_case_id["layer_generate_20260505T144500Z_b4ac612ba871"][
         "recommended_action"
     ] == "accept"
@@ -169,3 +169,51 @@ def test_tiny_action_model_prediction_script_compares_required_baselines(tmp_pat
     assert action_report["missing_count"] == 0
     assert action_report["extra_count"] == 0
     assert action_report["action_accuracy"] == 1.0
+
+
+def test_tiny_action_model_uses_manual_curated_failure_signals(tmp_path):
+    from vulca.learning.tiny_action_model import build_tiny_action_model_predictions
+    from vulca.learning.tiny_dataset import (
+        evaluate_tiny_prediction_records,
+        write_tiny_dataset,
+    )
+
+    dataset_path = tmp_path / "tiny_dataset.jsonl"
+    write_tiny_dataset(
+        repo_root=ROOT,
+        output_path=dataset_path,
+        case_source_manifest_path=(
+            ROOT
+            / "docs/benchmarks/learning/manual_curated_case_source_manifest_v1.json"
+        ),
+    )
+    examples = _read_jsonl(dataset_path)
+
+    predictions = build_tiny_action_model_predictions(
+        examples,
+        split="test",
+        train_split="train",
+    )
+
+    by_case_id = {item["case_id"]: item for item in predictions}
+    assert by_case_id["manual_v1_redraw_mask_leak"][
+        "recommended_action"
+    ] == "adjust_mask"
+    assert by_case_id["manual_v1_layer_generate_layer_order"][
+        "recommended_action"
+    ] == "manual_review"
+    assert by_case_id["manual_v1_layer_generate_prompt_ambiguity"][
+        "recommended_action"
+    ] == "adjust_prompt"
+    assert by_case_id["manual_v1_decompose_under_segmentation"][
+        "recommended_action"
+    ] == "split_layer_further"
+
+    prediction_report = evaluate_tiny_prediction_records(
+        examples,
+        predictions,
+        dataset_split="test",
+        policy_name="tiny_action_model_v1",
+    )
+    assert prediction_report["example_count"] == 5
+    assert prediction_report["action_accuracy"] == 1.0
