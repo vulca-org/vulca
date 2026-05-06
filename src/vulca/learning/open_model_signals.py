@@ -35,6 +35,7 @@ DEFAULT_MODEL_IDS: tuple[str, ...] = (
 ELIGIBLE_INTAKE_STATUSES: frozenset[str] = frozenset({"recommended_pilot"})
 
 SignalRunner = Callable[[Mapping[str, Any], Mapping[str, Any]], Mapping[str, Any]]
+LocalRunnerFactory = Callable[..., SignalRunner]
 
 
 def run_open_model_signal_adapter(
@@ -47,8 +48,17 @@ def run_open_model_signal_adapter(
     model_ids: Sequence[str] = DEFAULT_MODEL_IDS,
     include_local_seeds: bool = True,
     runners: Mapping[str, SignalRunner] | None = None,
+    enable_local_runners: Sequence[str] = (),
+    local_runner_factories: Mapping[str, LocalRunnerFactory] | None = None,
+    max_examples: int | None = None,
+    allow_weight_download: bool = False,
+    florence_model_id: str = "microsoft/Florence-2-base",
+    florence_device: str = "auto",
 ) -> dict[str, Any]:
     """Write dry-run or injected open-model signal records and a summary report."""
+    if max_examples is not None and max_examples < 0:
+        raise ValueError("max_examples must be >= 0")
+
     root = Path(repo_root)
     resolved_catalog_path = _resolve_repo_path(root, model_catalog_path)
     resolved_manifest_path = _resolve_repo_path(root, case_source_manifest_path)
@@ -64,14 +74,26 @@ def run_open_model_signal_adapter(
         case_source_manifest_path=resolved_manifest_path,
         include_local_seeds=include_local_seeds,
     )
+    if max_examples is not None:
+        examples = examples[:max_examples]
     model_specs = select_open_model_specs(
         resolved_catalog_path,
         model_ids=model_ids,
     )
+    runner_map = _build_runner_map(
+        root,
+        runners=runners,
+        enable_local_runners=enable_local_runners,
+        local_runner_factories=local_runner_factories,
+        model_ids=[str(item.get("id") or "") for item in model_specs],
+        allow_weight_download=allow_weight_download,
+        florence_model_id=florence_model_id,
+        florence_device=florence_device,
+    )
     records = build_open_model_signal_records(
         examples,
         model_specs=model_specs,
-        runners=runners,
+        runners=runner_map,
     )
 
     _write_jsonl(resolved_output_path, records)
@@ -85,6 +107,9 @@ def run_open_model_signal_adapter(
         output_path=resolved_output_path,
         report_path=resolved_report_path,
         include_local_seeds=include_local_seeds,
+        enable_local_runners=enable_local_runners,
+        max_examples=max_examples,
+        weight_download_enabled=allow_weight_download,
     )
     resolved_report_path.parent.mkdir(parents=True, exist_ok=True)
     resolved_report_path.write_text(
@@ -188,6 +213,9 @@ def build_open_model_signal_report(
     output_path: str | Path,
     report_path: str | Path,
     include_local_seeds: bool,
+    enable_local_runners: Sequence[str] = (),
+    max_examples: int | None = None,
+    weight_download_enabled: bool = False,
 ) -> dict[str, Any]:
     """Summarize signal-record coverage and safety policy."""
     counts_by_model: Counter[str] = Counter()
@@ -212,6 +240,8 @@ def build_open_model_signal_report(
             "case_source_manifest_path": _safe_repo_path(case_source_manifest_path),
             "include_local_seeds": bool(include_local_seeds),
             "model_ids": [str(item.get("id") or "") for item in model_specs],
+            "enable_local_runners": [str(item) for item in enable_local_runners],
+            "max_examples": max_examples,
         },
         "artifacts": {
             "output_path": _safe_artifact_path(repo_root, output_path),
@@ -229,8 +259,10 @@ def build_open_model_signal_report(
         },
         "runtime": {
             "downloads_weights": False,
+            "weight_download_enabled": bool(weight_download_enabled),
             "calls_model_provider": False,
             "uses_injected_runner": _uses_injected_runner(records),
+            "uses_local_runner": _uses_local_runner(records),
             "default_runtime_enabled": False,
         },
     }
@@ -249,7 +281,7 @@ def _build_signal_record(
     runner_output = dict(runner(example, model_spec)) if runner is not None else {}
     if runner_output:
         signals = dict(runner_output)
-        signals["signal_source"] = "injected_runner"
+        signals.setdefault("signal_source", "injected_runner")
     else:
         signals = _dry_run_signals(input_case, model_spec=model_spec)
     output_policy = str(model_spec.get("output_training_policy") or "")
@@ -316,6 +348,46 @@ def _dry_run_signals(
             ),
         },
     }
+
+
+def _build_runner_map(
+    repo_root: Path,
+    *,
+    runners: Mapping[str, SignalRunner] | None,
+    enable_local_runners: Sequence[str],
+    local_runner_factories: Mapping[str, LocalRunnerFactory] | None,
+    model_ids: Sequence[str],
+    allow_weight_download: bool,
+    florence_model_id: str,
+    florence_device: str,
+) -> dict[str, SignalRunner]:
+    runner_map = dict(runners or {})
+    model_id_set = {str(item) for item in model_ids}
+    factories = dict(local_runner_factories or {})
+    for raw_model_id in enable_local_runners:
+        model_id = str(raw_model_id)
+        if model_id not in model_id_set:
+            raise ValueError(
+                f"local runner {model_id!r} was enabled but the model is not selected"
+            )
+        if model_id in runner_map:
+            raise ValueError(f"runner for model {model_id!r} is already provided")
+        factory = factories.get(model_id)
+        if factory is None:
+            if model_id != "florence_2":
+                raise ValueError(f"no local runner is available for model {model_id!r}")
+            from vulca.learning.florence_signal_runner import (
+                build_florence2_signal_runner,
+            )
+
+            factory = build_florence2_signal_runner
+        runner_map[model_id] = factory(
+            repo_root=repo_root,
+            allow_weight_download=allow_weight_download,
+            model_id=florence_model_id,
+            device=florence_device,
+        )
+    return runner_map
 
 
 def _safe_model_summary(model_spec: Mapping[str, Any]) -> dict[str, Any]:
@@ -425,6 +497,15 @@ def _uses_injected_runner(records: Sequence[Mapping[str, Any]]) -> bool:
     for record in records:
         if str(_mapping(record.get("signals")).get("signal_source") or "") == (
             "injected_runner"
+        ):
+            return True
+    return False
+
+
+def _uses_local_runner(records: Sequence[Mapping[str, Any]]) -> bool:
+    for record in records:
+        if str(_mapping(record.get("signals")).get("signal_source") or "") == (
+            "local_runner"
         ):
             return True
     return False

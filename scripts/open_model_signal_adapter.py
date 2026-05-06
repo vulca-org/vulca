@@ -63,6 +63,39 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="Open model id to include; repeat for multiple models.",
     )
     parser.add_argument(
+        "--enable-local-runner",
+        action="append",
+        default=[],
+        help=(
+            "Explicitly run a local model runner for the given model id. "
+            "Currently supports florence_2."
+        ),
+    )
+    parser.add_argument(
+        "--max-examples",
+        type=int,
+        default=None,
+        help="Limit source examples before model expansion for local pilot runs.",
+    )
+    parser.add_argument(
+        "--allow-weight-download",
+        action="store_true",
+        help=(
+            "Allow local runners to download open model weights. Without this, "
+            "local runners use cached weights only."
+        ),
+    )
+    parser.add_argument(
+        "--florence-model-id",
+        default="microsoft/Florence-2-base",
+        help="Florence-2 model id for --enable-local-runner florence_2.",
+    )
+    parser.add_argument(
+        "--florence-device",
+        default="auto",
+        help="Florence-2 device for local runner execution: auto, cpu, mps, or cuda.",
+    )
+    parser.add_argument(
         "--no-local-seeds",
         action="store_true",
         help="Only use records from the case source manifest.",
@@ -83,8 +116,13 @@ def main(argv: Sequence[str] | None = None) -> int:
             case_source_manifest_path=args.case_source_manifest,
             model_ids=tuple(args.model) or DEFAULT_MODEL_IDS,
             include_local_seeds=not args.no_local_seeds,
+            enable_local_runners=tuple(args.enable_local_runner),
+            max_examples=args.max_examples,
+            allow_weight_download=args.allow_weight_download,
+            florence_model_id=args.florence_model_id,
+            florence_device=args.florence_device,
         )
-    except (FileNotFoundError, ValueError, json.JSONDecodeError) as exc:
+    except (FileNotFoundError, RuntimeError, ValueError, json.JSONDecodeError) as exc:
         print(f"Error: {exc}", file=sys.stderr)
         return 2
 
