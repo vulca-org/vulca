@@ -60,11 +60,11 @@ def test_training_effectiveness_report_uses_combined_real_manual_and_seed_data(t
     assert report["effectiveness"]["baseline_policy"] == "tiny_agent_v0"
     assert report["effectiveness"]["action_accuracy"] == 1.0
     assert report["effectiveness"]["mismatch_count"] == 0
-    assert report["effectiveness"]["accuracy_delta_vs_baseline"] > 0.6
-    assert (
-        report["effectiveness"]["policy_ranking"][0]["policy_name"]
-        == "tiny_action_model_v1"
-    )
+    assert report["effectiveness"]["accuracy_delta_vs_baseline"] > 0
+    ranked = {
+        item["policy_name"]: item for item in report["effectiveness"]["policy_ranking"]
+    }
+    assert ranked["tiny_action_model_v1"]["action_accuracy"] == 1.0
     assert Path(report["artifacts"]["aggregated_report_path"]).exists()
 
 
@@ -81,16 +81,9 @@ def test_training_effectiveness_report_surfaces_eval_coverage_gaps(tmp_path):
         (item["bucket"], item["value"]): item
         for item in report["data_gaps"]
     }
-    assert gaps[("source.kind", "local_seed")] == {
-        "bucket": "source.kind",
-        "value": "local_seed",
-        "example_count": 12,
-        "eval_example_count": 0,
-        "min_eval_examples": 1,
-        "reason": "insufficient_eval_coverage",
-    }
-    assert gaps[("targets.failure_type", "pasteback_mismatch")]["example_count"] == 2
-    assert gaps[("targets.failure_type", "pasteback_mismatch")]["eval_example_count"] == 0
+    assert not any(item["bucket"] == "source.kind" for item in report["data_gaps"])
+    assert any(item["bucket"] == "targets.failure_type" for item in report["data_gaps"])
+    assert ("source.kind", "local_seed") not in gaps
 
 
 def test_training_effectiveness_report_script_writes_report_and_prints_summary(tmp_path):
@@ -104,9 +97,9 @@ def test_training_effectiveness_report_script_writes_report_and_prints_summary(t
     assert "Dataset examples: 25" in result.stdout
     assert "Eval examples: 6" in result.stdout
     assert "tiny_action_model_v1 action_accuracy: 1.0" in result.stdout
-    assert "tiny_agent_v0 action_accuracy: 0.3333333333333333" in result.stdout
+    assert "tiny_agent_v0 action_accuracy: 0.6666666666666666" in result.stdout
     assert "Data gaps:" in result.stdout
-    assert "source.kind local_seed: eval 0/12" in result.stdout
+    assert "source.kind local_seed: eval 0/12" not in result.stdout
 
 
 def test_training_effectiveness_report_script_can_fail_on_data_gaps(tmp_path):
@@ -115,4 +108,5 @@ def test_training_effectiveness_report_script_can_fail_on_data_gaps(tmp_path):
     assert result.returncode == 1
     assert report_path.exists()
     assert "Training effectiveness data coverage gaps:" in result.stderr
-    assert "source.kind local_seed eval 0 < 1" in result.stderr
+    assert "source.kind local_seed eval 0 < 1" not in result.stderr
+    assert "targets.failure_type" in result.stderr

@@ -90,6 +90,9 @@ def test_combined_case_source_manifest_v1_runs_aggregated_eval_gate(tmp_path):
     assert bucket_metrics["source.kind"]["local_seed"]["example_count"] == 12
     assert bucket_metrics["source.kind"]["manual_case_log"]["example_count"] == 8
     assert bucket_metrics["source.kind"]["user_case_log"]["example_count"] == 5
+    assert bucket_metrics["source.kind"]["local_seed"]["eval_example_count"] >= 1
+    assert bucket_metrics["source.kind"]["manual_case_log"]["eval_example_count"] >= 1
+    assert bucket_metrics["source.kind"]["user_case_log"]["eval_example_count"] >= 1
     assert bucket_metrics["source_id"]["manual_curated_cases_v1"]["example_count"] == 8
     assert bucket_metrics["source_id"]["real_user_cases_v1"]["example_count"] == 5
 
