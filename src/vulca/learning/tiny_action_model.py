@@ -1,0 +1,480 @@
+"""Provider-free tiny action classifier for exported tiny datasets."""
+from __future__ import annotations
+
+import json
+from collections import Counter
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Iterable, Mapping, Sequence
+
+from vulca.learning.tiny_dataset import (
+    DATASET_SPLITS,
+    SUPPORTED_PREDICTION_ACTIONS,
+    load_tiny_dataset_examples,
+)
+
+
+POLICY_TINY_ACTION_MODEL = "tiny_action_model_v1"
+SOURCE_POLICY_TRAIN_SPARSE = "train_sparse_feature_classifier"
+TRAINING_MODE_SPARSE_FEATURE_BASELINE = "sparse_feature_baseline"
+
+
+@dataclass(frozen=True)
+class TinyActionModelPredictionResult:
+    output_path: str
+    policy_name: str
+    split: str
+    train_split: str
+    prediction_count: int
+
+
+@dataclass(frozen=True)
+class TinyActionClassifier:
+    """Explainable train-derived sparse feature baseline for tiny action prediction."""
+
+    train_split: str
+    train_example_count: int
+    feature_action_counts: Mapping[str, Counter[str]]
+    global_action_counts: Counter[str]
+
+    @classmethod
+    def fit(
+        cls,
+        examples: Iterable[Mapping[str, Any]],
+        *,
+        train_split: str = "train",
+    ) -> "TinyActionClassifier":
+        _validate_split(train_split)
+        feature_action_counts: dict[str, Counter[str]] = {}
+        global_action_counts: Counter[str] = Counter()
+        train_example_count = 0
+
+        for example in examples:
+            if example.get("split") != train_split:
+                continue
+            action = _target_action(example)
+            if not action:
+                continue
+            if action not in SUPPORTED_PREDICTION_ACTIONS:
+                raise ValueError(f"unsupported tiny action model target action {action!r}")
+
+            train_example_count += 1
+            global_action_counts[action] += 1
+            for feature in sorted(set(extract_tiny_action_features(example))):
+                feature_action_counts.setdefault(feature, Counter())[action] += 1
+
+        return cls(
+            train_split=train_split,
+            train_example_count=train_example_count,
+            feature_action_counts=feature_action_counts,
+            global_action_counts=global_action_counts,
+        )
+
+    def predict(self, example: Mapping[str, Any]) -> dict[str, Any]:
+        source_case = _mapping(example.get("source_case"))
+        features = sorted(set(extract_tiny_action_features(example)))
+        failure_hints = extract_failure_hints(example)
+        matched_features: list[str] = []
+        feature_votes: list[dict[str, Any]] = []
+        action_scores: dict[str, float] = {}
+
+        for feature in features:
+            counts = self.feature_action_counts.get(feature)
+            if not counts:
+                continue
+            matched_features.append(feature)
+            weight = _feature_weight(feature)
+            top_action = _best_counted_action(counts, self.global_action_counts)
+            feature_votes.append(
+                {
+                    "feature": feature,
+                    "action": top_action,
+                    "count": counts[top_action],
+                    "weight": weight,
+                }
+            )
+            for action, count in counts.items():
+                action_scores[action] = action_scores.get(action, 0.0) + count * weight
+
+        unseen_failure_hints = [
+            hint
+            for hint in failure_hints
+            if f"failure_hint:{hint}" not in self.feature_action_counts
+        ]
+        fallback_reason = ""
+        if unseen_failure_hints:
+            action = "manual_review"
+            fallback_reason = "unseen_failure_hint"
+        elif action_scores:
+            action = _best_scored_action(action_scores, self.global_action_counts)
+        else:
+            action = _best_counted_action(self.global_action_counts, Counter()) or "manual_review"
+            fallback_reason = "global_majority"
+
+        return {
+            "policy_name": POLICY_TINY_ACTION_MODEL,
+            "model_version": POLICY_TINY_ACTION_MODEL,
+            "example_id": str(example.get("example_id") or ""),
+            "case_id": str(source_case.get("case_id") or ""),
+            "source_case_type": str(source_case.get("case_type") or ""),
+            "recommended_action": action,
+            "failure_hint": failure_hints[0] if failure_hints else "",
+            "confidence": _confidence(action_scores, action, fallback_reason),
+            "source_policy": SOURCE_POLICY_TRAIN_SPARSE,
+            "explanation": {
+                "training_mode": TRAINING_MODE_SPARSE_FEATURE_BASELINE,
+                "train_split": self.train_split,
+                "train_example_count": self.train_example_count,
+                "matched_features": matched_features,
+                "unseen_failure_hints": unseen_failure_hints,
+                "fallback_reason": fallback_reason,
+                "action_scores": _rounded_scores(action_scores),
+                "top_feature_votes": feature_votes[:5],
+            },
+        }
+
+
+def build_tiny_action_model_predictions(
+    examples: Iterable[Mapping[str, Any]],
+    *,
+    split: str = "test",
+    train_split: str = "train",
+) -> list[dict[str, Any]]:
+    """Fit on train split examples and predict the requested frozen split."""
+    _validate_split(split)
+    _validate_split(train_split)
+    items = list(examples)
+    classifier = TinyActionClassifier.fit(items, train_split=train_split)
+    return [
+        classifier.predict(example)
+        for example in items
+        if example.get("split") == split
+    ]
+
+
+def write_tiny_action_model_predictions(
+    *,
+    dataset_path: str | Path,
+    output_path: str | Path,
+    split: str = "test",
+    train_split: str = "train",
+) -> TinyActionModelPredictionResult:
+    predictions = build_tiny_action_model_predictions(
+        load_tiny_dataset_examples(dataset_path),
+        split=split,
+        train_split=train_split,
+    )
+    path = Path(output_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as fh:
+        for record in predictions:
+            fh.write(json.dumps(record, sort_keys=True, separators=(",", ":")))
+            fh.write("\n")
+    return TinyActionModelPredictionResult(
+        output_path=str(path),
+        policy_name=POLICY_TINY_ACTION_MODEL,
+        split=split,
+        train_split=train_split,
+        prediction_count=len(predictions),
+    )
+
+
+def extract_tiny_action_features(example: Mapping[str, Any]) -> tuple[str, ...]:
+    """Extract leak-resistant sparse features from tiny dataset model input."""
+    source_case = _mapping(example.get("source_case"))
+    case_record = _case_record(example)
+    case_type = str(source_case.get("case_type") or case_record.get("case_type") or "")
+    features: list[str] = []
+    if case_type:
+        features.append(f"case_type:{case_type}")
+
+    features.extend(_quality_features(case_record))
+    features.extend(_route_features(case_record))
+    features.extend(_geometry_features(case_record))
+    features.extend(_refinement_features(case_record))
+    features.extend(_layer_generate_features(case_record))
+    return tuple(features)
+
+
+def extract_failure_hints(example: Mapping[str, Any]) -> tuple[str, ...]:
+    case_record = _case_record(example)
+    quality = _mapping(case_record.get("quality"))
+    hints: list[str] = []
+
+    failures = quality.get("failures")
+    if isinstance(failures, Sequence) and not isinstance(failures, (str, bytes)):
+        hints.extend(str(item) for item in failures if str(item or ""))
+
+    for key in (
+        "over_split",
+        "under_split",
+        "semantic_mismatch",
+        "residual_leakage",
+        "alpha_quality",
+    ):
+        value = _mapping(quality.get(key))
+        if value.get("evidence") or _positive_number(value.get("score")):
+            hints.append(key)
+        if key == "alpha_quality" and int(value.get("empty_layer_count") or 0) > 0:
+            hints.append("empty_layer")
+
+    return tuple(dict.fromkeys(hints))
+
+
+def _quality_features(case_record: Mapping[str, Any]) -> tuple[str, ...]:
+    quality = _mapping(case_record.get("quality"))
+    if not quality:
+        return ()
+
+    features: list[str] = []
+    gate_passed = quality.get("gate_passed")
+    if isinstance(gate_passed, bool):
+        features.append(f"quality.gate_passed:{str(gate_passed).lower()}")
+
+    for hint in extract_failure_hints({"input": {"case_record": case_record}}):
+        features.append(f"failure_hint:{hint}")
+
+    layer_coverage = _mapping(quality.get("layer_coverage"))
+    residual_pct = _number(layer_coverage.get("residual_pct"))
+    if residual_pct is not None:
+        features.append(f"quality.layer_coverage.residual_pct:{_pct_bucket(residual_pct)}")
+    claimed_pct = _number(layer_coverage.get("claimed_pct"))
+    if claimed_pct is not None:
+        features.append(f"quality.layer_coverage.claimed_pct:{_pct_bucket(claimed_pct)}")
+
+    return tuple(features)
+
+
+def _route_features(case_record: Mapping[str, Any]) -> tuple[str, ...]:
+    route = _mapping(case_record.get("route"))
+    if not route:
+        return ()
+
+    features: list[str] = []
+    values: dict[str, str] = {}
+    for key in ("requested", "chosen", "redraw_route", "geometry_redraw_route"):
+        value = str(route.get(key) or "")
+        values[key] = value
+        if value:
+            features.append(f"route.{key}:{value}")
+
+    chosen = values.get("chosen") or values.get("redraw_route")
+    geometry_route = values.get("geometry_redraw_route")
+    requested = values.get("requested")
+    if chosen and geometry_route and chosen != geometry_route:
+        features.append("route.signal:mismatch_chosen_geometry")
+    if requested and chosen and requested != "seed" and requested != chosen:
+        features.append("route.signal:mismatch_requested_chosen")
+    return tuple(features)
+
+
+def _geometry_features(case_record: Mapping[str, Any]) -> tuple[str, ...]:
+    geometry = _mapping(case_record.get("geometry"))
+    if not geometry:
+        return ()
+
+    features: list[str] = []
+    area_pct = _number(geometry.get("area_pct"))
+    if area_pct is not None:
+        features.append(f"geometry.area_pct:{_pct_bucket(area_pct)}")
+    bbox_fill = _number(geometry.get("bbox_fill"))
+    if bbox_fill is not None:
+        features.append(f"geometry.bbox_fill:{_ratio_bucket(bbox_fill)}")
+    component_count = _number(geometry.get("component_count"))
+    if component_count is not None:
+        features.append(f"geometry.component_count:{_count_bucket(component_count)}")
+    sparse_detected = geometry.get("sparse_detected")
+    if isinstance(sparse_detected, bool):
+        features.append(f"geometry.sparse_detected:{str(sparse_detected).lower()}")
+    return tuple(features)
+
+
+def _refinement_features(case_record: Mapping[str, Any]) -> tuple[str, ...]:
+    refinement = _mapping(case_record.get("refinement"))
+    if not refinement:
+        return ()
+
+    features: list[str] = []
+    applied = refinement.get("applied")
+    if isinstance(applied, bool):
+        features.append(f"refinement.applied:{str(applied).lower()}")
+    strategy = str(refinement.get("strategy") or "")
+    if strategy:
+        features.append(f"refinement.strategy:{strategy}")
+    reason = str(refinement.get("reason") or "")
+    if reason:
+        features.append(f"refinement.reason:{reason}")
+    child_count = _number(refinement.get("child_count"))
+    if child_count is not None:
+        features.append(f"refinement.child_count:{_count_bucket(child_count)}")
+    granularity = _number(refinement.get("mask_granularity_score"))
+    if granularity is not None:
+        features.append(f"refinement.mask_granularity_score:{_ratio_bucket(granularity)}")
+    return tuple(features)
+
+
+def _layer_generate_features(case_record: Mapping[str, Any]) -> tuple[str, ...]:
+    decisions = _mapping(case_record.get("decisions"))
+    outputs = _mapping(case_record.get("outputs"))
+    features: list[str] = []
+
+    layer_count = _mapping(decisions.get("layer_count"))
+    planned = _number(layer_count.get("planned"))
+    generated = _number(layer_count.get("generated"))
+    if planned is not None:
+        features.append(f"layer_count.planned:{_count_bucket(planned)}")
+    if generated is not None:
+        features.append(f"layer_count.generated:{_count_bucket(generated)}")
+    if planned is not None and generated is not None:
+        features.append(f"layer_count.complete:{str(generated >= planned).lower()}")
+
+    layers = outputs.get("layers")
+    if isinstance(layers, Sequence) and not isinstance(layers, (str, bytes)):
+        statuses = Counter(
+            str(layer.get("status") or "")
+            for layer in layers
+            if isinstance(layer, Mapping)
+        )
+        for status, count in sorted(statuses.items()):
+            if status:
+                features.append(f"output.layer_status:{status}:{_count_bucket(count)}")
+    return tuple(features)
+
+
+def _target_action(example: Mapping[str, Any]) -> str:
+    return str(_mapping(example.get("targets")).get("preferred_action") or "")
+
+
+def _case_record(example: Mapping[str, Any]) -> Mapping[str, Any]:
+    return _mapping(_mapping(example.get("input")).get("case_record"))
+
+
+def _feature_weight(feature: str) -> float:
+    if feature.startswith("failure_hint:"):
+        return 4.0
+    if feature.startswith("route.signal:"):
+        return 3.0
+    if feature.startswith(("quality.", "geometry.", "refinement.", "layer_count.", "output.")):
+        return 2.0
+    if feature.startswith("case_type:"):
+        return 1.0
+    return 1.0
+
+
+def _confidence(
+    action_scores: Mapping[str, float],
+    action: str,
+    fallback_reason: str,
+) -> float:
+    if fallback_reason == "unseen_failure_hint":
+        return 0.45
+    if fallback_reason:
+        return 0.4
+    total = sum(action_scores.values())
+    if total <= 0:
+        return 0.4
+    share = action_scores.get(action, 0.0) / total
+    return round(min(0.95, 0.5 + share * 0.45), 3)
+
+
+def _rounded_scores(scores: Mapping[str, float]) -> dict[str, float]:
+    return {
+        action: round(score, 4)
+        for action, score in sorted(scores.items())
+    }
+
+
+def _best_scored_action(
+    scores: Mapping[str, float],
+    global_counts: Counter[str],
+) -> str:
+    if not scores:
+        return ""
+    return sorted(
+        scores,
+        key=lambda action: (
+            -scores[action],
+            -global_counts.get(action, 0),
+            action,
+        ),
+    )[0]
+
+
+def _best_counted_action(
+    counts: Mapping[str, int],
+    global_counts: Counter[str],
+) -> str:
+    if not counts:
+        return ""
+    return sorted(
+        counts,
+        key=lambda action: (
+            -counts[action],
+            -global_counts.get(action, 0),
+            action,
+        ),
+    )[0]
+
+
+def _pct_bucket(value: float) -> str:
+    if value <= 0:
+        return "zero"
+    if value < 5:
+        return "tiny"
+    if value < 20:
+        return "small"
+    if value < 50:
+        return "medium"
+    if value < 80:
+        return "large"
+    return "very_large"
+
+
+def _ratio_bucket(value: float) -> str:
+    if value <= 0:
+        return "zero"
+    if value < 0.1:
+        return "tiny"
+    if value < 0.35:
+        return "low"
+    if value < 0.7:
+        return "medium"
+    return "high"
+
+
+def _count_bucket(value: float) -> str:
+    if value <= 0:
+        return "zero"
+    if value == 1:
+        return "one"
+    if value <= 3:
+        return "few"
+    if value <= 8:
+        return "several"
+    return "many"
+
+
+def _number(value: Any) -> float | None:
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)):
+        return float(value)
+    return None
+
+
+def _positive_number(value: Any) -> bool:
+    number = _number(value)
+    return number is not None and number > 0
+
+
+def _validate_split(value: str) -> None:
+    if value not in DATASET_SPLITS:
+        raise ValueError(
+            f"unsupported tiny action model split {value!r}; expected one of {DATASET_SPLITS}"
+        )
+
+
+def _mapping(value: Any) -> Mapping[str, Any]:
+    if isinstance(value, Mapping):
+        return value
+    return {}
