@@ -1,0 +1,238 @@
+{
+  "schema_version": 1,
+  "case_type": "learning_open_source_model_catalog",
+  "created_at": "2026-05-06T00:00:00Z",
+  "default_runtime_enabled": false,
+  "default_training_input": false,
+  "requires_explicit_enablement": true,
+  "requires_reviewed_case_conversion": true,
+  "pilot_policy": {
+    "requires_license_review_before_download": true,
+    "requires_model_card_review_before_runtime": true,
+    "requires_manual_review_before_training": true,
+    "allow_weight_download_by_default": false,
+    "output_kind": "open_model_candidate_signals"
+  },
+  "models": [
+    {
+      "id": "qwen_image_edit",
+      "name": "Qwen-Image-Edit",
+      "source_url": "https://huggingface.co/Qwen/Qwen-Image-Edit",
+      "license": "apache-2.0",
+      "license_risk": "permissive",
+      "model_role": "open_image_edit_provider",
+      "target_case_types": [
+        "redraw_case",
+        "layer_generate_case"
+      ],
+      "target_workflows": [
+        "redraw_candidate_generation",
+        "layer_generate_provider_trial",
+        "text_and_style_editing"
+      ],
+      "recommended_use": "pilot_open_image_edit_provider_for_case_generation_and_provider_comparison",
+      "intake_status": "recommended_pilot",
+      "default_runtime_enabled": false,
+      "default_training_input": false,
+      "output_training_policy": "candidate_cases_only",
+      "requires_manual_review_for_training_labels": true,
+      "evidence_urls": [
+        "https://huggingface.co/Qwen/Qwen-Image-Edit"
+      ],
+      "risks": [
+        "20B model may require GPU or hosted inference for acceptable latency",
+        "edited images do not provide Vulca failure labels without review",
+        "provider comparison must separate image quality from user action labels"
+      ]
+    },
+    {
+      "id": "segment_anything_sam_vit",
+      "name": "Segment Anything Model",
+      "source_url": "https://github.com/facebookresearch/segment-anything",
+      "license": "apache-2.0",
+      "license_risk": "permissive",
+      "model_role": "mask_proposal",
+      "target_case_types": [
+        "decompose_case",
+        "redraw_case"
+      ],
+      "target_workflows": [
+        "mask_proposal",
+        "layer_boundary_candidates",
+        "pasteback_mask_review"
+      ],
+      "recommended_use": "pilot_mask_proposals_for_decompose_and_redraw_boundary_review",
+      "intake_status": "recommended_pilot",
+      "default_runtime_enabled": false,
+      "default_training_input": false,
+      "output_training_policy": "quality_signals_only",
+      "requires_manual_review_for_training_labels": true,
+      "evidence_urls": [
+        "https://github.com/facebookresearch/segment-anything",
+        "https://tensorflow.google.cn/datasets/catalog/segment_anything"
+      ],
+      "risks": [
+        "mask proposals are class-agnostic and do not define editable layer roles",
+        "SA-1B dataset terms are custom even though the model license is permissive",
+        "mask quality signals must not become action labels without review"
+      ]
+    },
+    {
+      "id": "grounding_dino",
+      "name": "Grounding DINO",
+      "source_url": "https://github.com/IDEA-Research/GroundingDINO",
+      "license": "apache-2.0",
+      "license_risk": "permissive",
+      "model_role": "text_grounded_detection",
+      "target_case_types": [
+        "decompose_case",
+        "layer_generate_case"
+      ],
+      "target_workflows": [
+        "text_to_box_grounding",
+        "semantic_layer_candidate_discovery",
+        "prompt_object_coverage_review"
+      ],
+      "recommended_use": "pilot_grounded_object_boxes_for_layer_generation_and_decompose_review",
+      "intake_status": "recommended_pilot",
+      "default_runtime_enabled": false,
+      "default_training_input": false,
+      "output_training_policy": "quality_signals_only",
+      "requires_manual_review_for_training_labels": true,
+      "evidence_urls": [
+        "https://github.com/IDEA-Research/GroundingDINO",
+        "https://github.com/IDEA-Research/GroundingDINO/blob/main/LICENSE"
+      ],
+      "risks": [
+        "grounded boxes are not layer masks",
+        "text prompts can bias detection toward expected objects",
+        "object coverage signals require human review before training"
+      ]
+    },
+    {
+      "id": "florence_2",
+      "name": "Florence-2",
+      "source_url": "https://huggingface.co/microsoft/Florence-2-base",
+      "license": "mit",
+      "license_risk": "permissive",
+      "model_role": "vision_caption_grounding_ocr",
+      "target_case_types": [
+        "redraw_case",
+        "decompose_case",
+        "layer_generate_case"
+      ],
+      "target_workflows": [
+        "caption_observable_signals",
+        "ocr_text_preservation_review",
+        "dense_region_description"
+      ],
+      "recommended_use": "pilot_observable_signal_extraction_for_case_review_and_tiny_router_features",
+      "intake_status": "recommended_pilot",
+      "default_runtime_enabled": false,
+      "default_training_input": false,
+      "output_training_policy": "quality_signals_only",
+      "requires_manual_review_for_training_labels": true,
+      "evidence_urls": [
+        "https://huggingface.co/microsoft/Florence-2-base"
+      ],
+      "risks": [
+        "caption and OCR signals can miss subtle visual failures",
+        "vision-language outputs are weak labels until reviewed",
+        "dense descriptions may over-explain artifacts that users would ignore"
+      ]
+    },
+    {
+      "id": "openai_clip",
+      "name": "OpenAI CLIP",
+      "source_url": "https://github.com/openai/CLIP",
+      "license": "mit",
+      "license_risk": "permissive",
+      "model_role": "image_text_similarity_evaluator",
+      "target_case_types": [
+        "redraw_case",
+        "layer_generate_case"
+      ],
+      "target_workflows": [
+        "prompt_image_similarity",
+        "candidate_ranking_baseline",
+        "style_drift_screening"
+      ],
+      "recommended_use": "catalog_similarity_baseline_only_for_evaluator_comparison",
+      "intake_status": "catalog_only",
+      "default_runtime_enabled": false,
+      "default_training_input": false,
+      "output_training_policy": "quality_signals_only",
+      "requires_manual_review_for_training_labels": true,
+      "evidence_urls": [
+        "https://github.com/openai/CLIP",
+        "https://github.com/openai/CLIP/blob/main/LICENSE"
+      ],
+      "risks": [
+        "similarity scores do not identify actionable fixes",
+        "CLIP can reward prompt overlap while missing edit preservation failures",
+        "should be compared against user decisions rather than used as ground truth"
+      ]
+    },
+    {
+      "id": "flux_kontext_dev",
+      "name": "FLUX.1 Kontext dev",
+      "source_url": "https://huggingface.co/black-forest-labs/FLUX.1-Kontext-dev",
+      "license": "flux-1-dev-non-commercial-license",
+      "license_risk": "non_commercial",
+      "model_role": "open_weight_image_edit_reference",
+      "target_case_types": [
+        "redraw_case",
+        "layer_generate_case"
+      ],
+      "target_workflows": [
+        "research_reference_image_editing",
+        "non_commercial_benchmark_comparison"
+      ],
+      "recommended_use": "reference_only_until_license_review_or_commercial_terms",
+      "intake_status": "blocked_non_commercial",
+      "default_runtime_enabled": false,
+      "default_training_input": false,
+      "output_training_policy": "blocked_for_training",
+      "requires_manual_review_for_training_labels": true,
+      "evidence_urls": [
+        "https://huggingface.co/black-forest-labs/FLUX.1-Kontext-dev"
+      ],
+      "risks": [
+        "non-commercial model license blocks default product runtime use",
+        "gated access requires accepting additional terms",
+        "outputs must not be used for training without license review"
+      ]
+    },
+    {
+      "id": "stable_diffusion_3_5_large",
+      "name": "Stable Diffusion 3.5 Large",
+      "source_url": "https://huggingface.co/stabilityai/stable-diffusion-3.5-large",
+      "license": "stabilityai-ai-community",
+      "license_risk": "commercial_license_required",
+      "model_role": "open_weight_generation_reference",
+      "target_case_types": [
+        "redraw_case",
+        "layer_generate_case"
+      ],
+      "target_workflows": [
+        "generation_reference",
+        "style_and_prompt_coverage_comparison"
+      ],
+      "recommended_use": "catalog_only_until_stability_license_review",
+      "intake_status": "blocked_pending_license_review",
+      "default_runtime_enabled": false,
+      "default_training_input": false,
+      "output_training_policy": "blocked_for_training",
+      "requires_manual_review_for_training_labels": true,
+      "evidence_urls": [
+        "https://huggingface.co/stabilityai/stable-diffusion-3.5-large",
+        "https://huggingface.co/stabilityai/stable-diffusion-3.5-large/blob/main/LICENSE.md"
+      ],
+      "risks": [
+        "community license has business and revenue-dependent conditions",
+        "not an instruction-editing specialist by default",
+        "must not be used as a silent training source"
+      ]
+    }
+  ]
+}
