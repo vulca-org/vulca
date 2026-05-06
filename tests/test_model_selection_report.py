@@ -49,14 +49,14 @@ def test_model_selection_report_promotes_tiny_action_model_and_keeps_baselines(t
     assert report["case_type"] == "learning_model_selection_report"
     assert report["status"] == "ready_for_selection"
     assert report["dataset"] == {
-        "example_count": 43,
-        "eval_example_count": 19,
+        "example_count": 50,
+        "eval_example_count": 21,
         "data_gap_count": 0,
         "counts_by_source_kind": {
             "local_seed": 12,
             "manual_case_log": 15,
             "synthetic_case_log": 11,
-            "user_case_log": 5,
+            "user_case_log": 12,
         },
     }
     assert report["selection"]["recommended_primary_policy"] == "tiny_action_model_v1"
@@ -107,7 +107,8 @@ def test_model_selection_report_recommends_specialized_work_tracks(tmp_path):
         "layer_generate_action_specialist_v1"
     )
     assert tracks["layer_generate_case"]["secondary_policy"] == "tiny_agent_v0"
-    assert tracks["layer_generate_case"]["decision"] == "collect_more_real_cases"
+    assert tracks["layer_generate_case"]["eval_example_count"] == 8
+    assert tracks["layer_generate_case"]["decision"] == "promote_current_policy"
     assert tracks["decompose_case"]["recommended_track"] == "decompose_action_specialist_v1"
     assert tracks["decompose_case"]["secondary_policy"] == "tiny_agent_v0"
     assert tracks["decompose_case"]["decision"] == "collect_more_real_cases"
@@ -121,8 +122,8 @@ def test_model_selection_report_script_writes_report_and_prints_selection(tmp_pa
     report = json.loads(report_path.read_text(encoding="utf-8"))
     assert report["case_type"] == "learning_model_selection_report"
     assert "Model selection report:" in result.stdout
-    assert "Dataset examples: 43" in result.stdout
-    assert "Eval examples: 19" in result.stdout
+    assert "Dataset examples: 50" in result.stdout
+    assert "Eval examples: 21" in result.stdout
     assert "Recommended primary: tiny_action_model_v1" in result.stdout
     assert "Recommended baseline: tiny_agent_v0" in result.stdout
     assert "Data gaps: 0" in result.stdout
