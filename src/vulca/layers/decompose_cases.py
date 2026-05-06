@@ -15,7 +15,10 @@ FAILURE_TYPES: frozenset[str] = frozenset(
     {
         "over_split",
         "under_split",
+        "over_segmentation",
+        "under_segmentation",
         "semantic_mismatch",
+        "occlusion",
         "alpha_bad",
         "residual_leakage",
         "missed_concept",
