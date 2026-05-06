@@ -271,3 +271,83 @@ def test_tiny_action_model_uses_curated_failure_priors_without_split_coupling():
         assert prediction["recommended_action"] == expected_action
         assert prediction["failure_hint"] == failure_hint
         assert prediction["explanation"]["fallback_reason"] == "failure_hint_prior"
+
+
+def test_tiny_action_model_learns_promoted_florence_caption_tokens():
+    from vulca.learning.tiny_action_model import (
+        TinyActionClassifier,
+        extract_tiny_action_features,
+    )
+
+    def example(example_id, split, target_action, caption, ocr):
+        return {
+            "example_id": example_id,
+            "split": split,
+            "source_case": {
+                "case_id": example_id,
+                "case_type": "layer_generate_case",
+            },
+            "input": {
+                "case_record": {
+                    "case_type": "layer_generate_case",
+                    "quality": {
+                        "gate_passed": False,
+                    },
+                },
+                "auxiliary_signals": [
+                    {
+                        "signal_id": f"signal_{example_id}",
+                        "model": {
+                            "id": "florence_2",
+                        },
+                        "signals": {
+                            "status": "completed",
+                            "signal_source": "local_runner",
+                            "caption_candidates": [caption],
+                            "ocr_text": [ocr],
+                        },
+                        "training_use": {
+                            "approved_for_auxiliary_training": True,
+                            "review_status": "reviewed_promoted",
+                        },
+                    }
+                ],
+            },
+            "targets": {
+                "preferred_action": target_action,
+            },
+        }
+
+    train = example(
+        "train_provider_failure_car",
+        "train",
+        "fallback_to_agent",
+        "A red car is parked on the side of the road.",
+        "JAMES CO.UK",
+    )
+    distractor = example(
+        "train_prompt_case_bar",
+        "train",
+        "adjust_prompt",
+        "A group of people sitting at a bar.",
+        "PHILLIES",
+    )
+    test = example(
+        "test_provider_failure_car",
+        "test",
+        "fallback_to_agent",
+        "A red car is parked on the side of the road.",
+        "JAMES CO.UK",
+    )
+
+    features = extract_tiny_action_features(test)
+    assert "aux_signal.caption_token:red" in features
+    assert "aux_signal.caption_token:car" in features
+    assert "aux_signal.ocr_token:james" in features
+    prediction = TinyActionClassifier.fit([train, distractor]).predict(test)
+
+    assert prediction["recommended_action"] == "fallback_to_agent"
+    assert "aux_signal.caption_token:car" in prediction["explanation"][
+        "matched_features"
+    ]
+    assert prediction["explanation"]["fallback_reason"] == ""
