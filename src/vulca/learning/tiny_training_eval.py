@@ -45,6 +45,7 @@ def run_tiny_training_eval_gate(
     manifest_path: str | Path | None = DEFAULT_SEED_MANIFEST,
     case_log_paths: Sequence[str | Path] = (),
     case_source_manifest_path: str | Path | None = DEFAULT_MANUAL_CURATED_CASE_SOURCE_MANIFEST,
+    auxiliary_signal_manifest_path: str | Path | None = None,
     include_local_seeds: bool = True,
     eval_split: str = "test",
     train_split: str = "train",
@@ -76,6 +77,7 @@ def run_tiny_training_eval_gate(
         manifest_path=resolved_manifest_path,
         case_log_paths=case_log_paths,
         case_source_manifest_path=resolved_case_source_manifest,
+        auxiliary_signal_manifest_path=auxiliary_signal_manifest_path,
         include_local_seeds=include_local_seeds,
     )
     tiny_agent_result = write_tiny_baseline_predictions(
@@ -123,6 +125,7 @@ def run_tiny_training_eval_gate(
             "source_manifest": str(resolved_manifest_path),
             "case_log_paths": [str(path) for path in case_log_paths],
             "case_source_manifest_path": str(resolved_case_source_manifest or ""),
+            "auxiliary_signal_manifest_path": str(auxiliary_signal_manifest_path or ""),
             "include_local_seeds": bool(include_local_seeds),
         },
         "artifacts": {

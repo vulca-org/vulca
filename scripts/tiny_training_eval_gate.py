@@ -69,6 +69,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         ),
     )
     parser.add_argument(
+        "--auxiliary-signal-manifest",
+        default="",
+        help=(
+            "Explicit reviewed open-model signal promotion manifest to attach "
+            "as auxiliary training features."
+        ),
+    )
+    parser.add_argument(
         "--no-case-source-manifest",
         action="store_true",
         help="Do not include the default manual curated case source manifest.",
@@ -134,6 +142,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             case_source_manifest_path=(
                 None if args.no_case_source_manifest else args.case_source_manifest
             ),
+            auxiliary_signal_manifest_path=args.auxiliary_signal_manifest or None,
             include_local_seeds=not args.no_local_seeds,
             eval_split=args.split,
             train_split=args.train_split,

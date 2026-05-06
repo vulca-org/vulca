@@ -453,6 +453,14 @@ def main(argv: list[str] | None = None) -> None:
         help="JSON manifest describing user/manual/synthetic reviewed case logs",
     )
     cases_export.add_argument(
+        "--auxiliary-signal-manifest",
+        default="",
+        help=(
+            "Explicit open-model signal promotion manifest to attach as "
+            "reviewed auxiliary training features"
+        ),
+    )
+    cases_export.add_argument(
         "--no-local-seeds",
         action="store_true",
         help="Only export records from --case-log inputs",
@@ -1797,6 +1805,9 @@ def _cmd_cases(args: argparse.Namespace) -> None:
                 manifest_path=args.manifest or DEFAULT_SEED_MANIFEST,
                 case_log_paths=args.case_log,
                 case_source_manifest_path=args.case_source_manifest or None,
+                auxiliary_signal_manifest_path=(
+                    args.auxiliary_signal_manifest or None
+                ),
                 include_local_seeds=not args.no_local_seeds,
             )
         except (

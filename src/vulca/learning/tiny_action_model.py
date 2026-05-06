@@ -227,6 +227,7 @@ def extract_tiny_action_features(example: Mapping[str, Any]) -> tuple[str, ...]:
     features.extend(_geometry_features(case_record))
     features.extend(_refinement_features(case_record))
     features.extend(_layer_generate_features(case_record))
+    features.extend(_auxiliary_signal_features(example))
     return tuple(features)
 
 
@@ -435,6 +436,51 @@ def _layer_generate_features(case_record: Mapping[str, Any]) -> tuple[str, ...]:
     return tuple(features)
 
 
+def _auxiliary_signal_features(example: Mapping[str, Any]) -> tuple[str, ...]:
+    input_block = _mapping(example.get("input"))
+    auxiliary_signals = input_block.get("auxiliary_signals")
+    if not isinstance(auxiliary_signals, Sequence) or isinstance(
+        auxiliary_signals, (str, bytes)
+    ):
+        return ()
+
+    features: list[str] = []
+    for signal_record in auxiliary_signals:
+        if not isinstance(signal_record, Mapping):
+            continue
+        training_use = _mapping(signal_record.get("training_use"))
+        if not bool(training_use.get("approved_for_auxiliary_training")):
+            continue
+        review_status = str(training_use.get("review_status") or "")
+        if review_status != "reviewed_promoted":
+            continue
+
+        model_id = str(_mapping(signal_record.get("model")).get("id") or "")
+        signals = _mapping(signal_record.get("signals"))
+        if model_id:
+            features.append(f"aux_signal.model:{model_id}")
+        status = str(signals.get("status") or "")
+        if status:
+            features.append(f"aux_signal.status:{status}")
+        features.append(f"aux_signal.review_status:{review_status}")
+
+        signal_source = str(signals.get("signal_source") or "")
+        if signal_source:
+            features.append(f"aux_signal.source:{signal_source}")
+        mask_count = _number(signals.get("mask_count"))
+        if mask_count is not None:
+            features.append(f"aux_signal.sam_mask_count:{_mask_count_bucket(mask_count)}")
+        total_area = _number(signals.get("total_mask_area_pct"))
+        if total_area is not None:
+            features.append(
+                f"aux_signal.sam_total_area_pct:{_aux_percent_bucket(total_area)}"
+            )
+        boundary_complexity = str(signals.get("boundary_complexity") or "")
+        if boundary_complexity:
+            features.append(f"aux_signal.boundary_complexity:{boundary_complexity}")
+    return tuple(features)
+
+
 def _target_action(example: Mapping[str, Any]) -> str:
     return str(_mapping(example.get("targets")).get("preferred_action") or "")
 
@@ -467,6 +513,8 @@ def _feature_weight(feature: str) -> float:
         return 3.0
     if feature.startswith(("quality.", "geometry.", "refinement.", "layer_count.", "output.")):
         return 2.0
+    if feature.startswith("aux_signal."):
+        return 1.5
     if feature.startswith("case_type:"):
         return 1.0
     return 1.0
@@ -567,6 +615,33 @@ def _count_bucket(value: float) -> str:
     if value <= 8:
         return "several"
     return "many"
+
+
+def _mask_count_bucket(value: float) -> str:
+    if value <= 0:
+        return "zero"
+    if value == 1:
+        return "one"
+    if value <= 4:
+        return "2-4"
+    if value <= 8:
+        return "5-8"
+    return "9+"
+
+
+def _aux_percent_bucket(value: float) -> str:
+    percent = value * 100 if 0 < value <= 1 else value
+    if percent <= 0:
+        return "0"
+    if percent < 5:
+        return "0-5"
+    if percent < 25:
+        return "5-25"
+    if percent < 50:
+        return "25-50"
+    if percent < 75:
+        return "50-75"
+    return "75-100"
 
 
 def _number(value: Any) -> float | None:
