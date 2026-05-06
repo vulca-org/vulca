@@ -1,12 +1,13 @@
 import json
+from collections import Counter
 from pathlib import Path
 
 from vulca.learning.case_review import CASE_REVIEW_SPECS, load_cases
 
 
 ROOT = Path(__file__).resolve().parent.parent
-CASE_LOG = ROOT / "docs/benchmarks/learning/backlog_manual_cases_v1.reviewed.jsonl"
-MANIFEST = ROOT / "docs/benchmarks/learning/backlog_manual_case_source_manifest_v1.json"
+CASE_LOG = ROOT / "docs/benchmarks/learning/real_user_cases_v2.private.user_cases.jsonl"
+MANIFEST = ROOT / "docs/benchmarks/learning/real_user_case_source_manifest_v2.json"
 COMBINED_MANIFEST = ROOT / "docs/benchmarks/learning/combined_case_source_manifest_v1.json"
 
 EXPECTED_BUCKETS = {
@@ -20,7 +21,7 @@ EXPECTED_BUCKETS = {
 }
 
 
-def test_backlog_manual_case_pack_v1_manifest_and_reviews():
+def test_real_user_case_pack_v2_manifest_and_reviews():
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
     cases = load_cases(CASE_LOG)
 
@@ -29,11 +30,11 @@ def test_backlog_manual_case_pack_v1_manifest_and_reviews():
         "case_type": "learning_tiny_case_source_manifest",
         "sources": [
             {
-                "source_id": "backlog_manual_cases_v1",
-                "kind": "manual_case_log",
-                "path": "backlog_manual_cases_v1.reviewed.jsonl",
-                "privacy_scope": "project",
-                "curation_status": "curated",
+                "source_id": "real_user_cases_v2",
+                "kind": "user_case_log",
+                "path": "real_user_cases_v2.private.user_cases.jsonl",
+                "privacy_scope": "private",
+                "curation_status": "reviewed",
             }
         ],
     }
@@ -46,10 +47,12 @@ def test_backlog_manual_case_pack_v1_manifest_and_reviews():
         )
         for item in cases
     } == EXPECTED_BUCKETS
-    assert sum(1 for item in cases if item["case_type"] == "decompose_case") == 3
-    assert sum(1 for item in cases if item["case_type"] == "layer_generate_case") == 4
+    assert Counter(item["case_type"] for item in cases) == {
+        "decompose_case": 3,
+        "layer_generate_case": 4,
+    }
 
-    for record in cases:
+    for index, record in enumerate(cases):
         review = record["review"]
         spec = CASE_REVIEW_SPECS[record["case_type"]]
         assert review["human_accept"] is False
@@ -57,15 +60,23 @@ def test_backlog_manual_case_pack_v1_manifest_and_reviews():
         assert spec.validate_preferred_action(review["preferred_action"]) == review[
             "preferred_action"
         ]
-        assert review["reviewer"] == "backlog_manual_cases_v1"
+        assert review["reviewer"] == "real_user_cases_v2"
         assert review["reviewed_at"] == "2026-05-06T00:00:00Z"
+        assert record["user_case_intake"] == {
+            "schema_version": 1,
+            "source_id": "real_user_cases_v2",
+            "privacy_scope": "private",
+            "curation_status": "reviewed",
+            "record_index": index,
+        }
 
     serialized = MANIFEST.read_text(encoding="utf-8") + CASE_LOG.read_text(encoding="utf-8")
     assert "/Users/" not in serialized
-    assert "private://local_path" not in serialized
+    assert "@example.com" not in serialized
+    assert "private://local_path/" in serialized
 
 
-def test_backlog_manual_case_pack_v1_exports_tiny_dataset(tmp_path):
+def test_real_user_case_pack_v2_exports_tiny_dataset(tmp_path):
     from vulca.learning.tiny_dataset import write_tiny_dataset
 
     output_path = tmp_path / "tiny_dataset.jsonl"
@@ -90,11 +101,15 @@ def test_backlog_manual_case_pack_v1_exports_tiny_dataset(tmp_path):
         )
         for item in records
     } == EXPECTED_BUCKETS
-    assert {item["source"]["kind"] for item in records} == {"manual_case_log"}
-    assert {item["source"]["source_id"] for item in records} == {"backlog_manual_cases_v1"}
+    assert {item["source"]["source_id"] for item in records} == {"real_user_cases_v2"}
+    assert {item["source"]["kind"] for item in records} == {"user_case_log"}
+    assert {item["source"]["privacy_scope"] for item in records} == {"private"}
+    encoded_inputs = json.dumps([item["input"] for item in records], sort_keys=True)
+    assert '"review"' not in encoded_inputs
+    assert '"learning_targets"' not in encoded_inputs
 
 
-def test_combined_manifest_includes_backlog_manual_pack():
+def test_combined_manifest_includes_real_user_case_pack_v2():
     manifest = json.loads(COMBINED_MANIFEST.read_text(encoding="utf-8"))
 
     assert {
@@ -103,13 +118,13 @@ def test_combined_manifest_includes_backlog_manual_pack():
     } == {
         "manual_curated_cases_v1",
         "real_user_cases_v1",
-        "real_user_cases_v2",
         "taxonomy_holdout_cases_v1",
         "backlog_manual_cases_v1",
+        "real_user_cases_v2",
     }
 
 
-def test_combined_dataset_includes_backlog_manual_pack(tmp_path):
+def test_combined_dataset_includes_real_user_case_pack_v2(tmp_path):
     from vulca.learning.tiny_dataset import write_tiny_dataset
 
     output_path = tmp_path / "tiny_dataset.jsonl"
@@ -130,6 +145,6 @@ def test_combined_dataset_includes_backlog_manual_pack(tmp_path):
     assert sum(
         1
         for item in records
-        if item["source"].get("source_id") == "backlog_manual_cases_v1"
+        if item["source"].get("source_id") == "real_user_cases_v2"
     ) == 7
-    assert sum(1 for item in records if item["source"]["kind"] == "manual_case_log") == 15
+    assert sum(1 for item in records if item["source"]["kind"] == "user_case_log") == 12

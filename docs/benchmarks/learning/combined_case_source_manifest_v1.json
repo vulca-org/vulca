@@ -30,6 +30,13 @@
       "path": "backlog_manual_cases_v1.reviewed.jsonl",
       "privacy_scope": "project",
       "curation_status": "curated"
+    },
+    {
+      "source_id": "real_user_cases_v2",
+      "kind": "user_case_log",
+      "path": "real_user_cases_v2.private.user_cases.jsonl",
+      "privacy_scope": "private",
+      "curation_status": "reviewed"
     }
   ]
 }

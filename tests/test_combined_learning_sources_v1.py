@@ -44,6 +44,13 @@ def test_combined_case_source_manifest_v1_keeps_sources_explicit():
                 "privacy_scope": "project",
                 "curation_status": "curated",
             },
+            {
+                "source_id": "real_user_cases_v2",
+                "kind": "user_case_log",
+                "path": "real_user_cases_v2.private.user_cases.jsonl",
+                "privacy_scope": "private",
+                "curation_status": "reviewed",
+            },
         ],
     }
     serialized = COMBINED_MANIFEST.read_text(encoding="utf-8")
@@ -51,7 +58,7 @@ def test_combined_case_source_manifest_v1_keeps_sources_explicit():
     assert "/Users/" not in serialized
 
 
-def test_combined_case_source_manifest_v1_exports_43_example_training_eval_set(tmp_path):
+def test_combined_case_source_manifest_v1_exports_50_example_training_eval_set(tmp_path):
     from vulca.learning.tiny_dataset import write_tiny_dataset
 
     output_path = tmp_path / "tiny_dataset.jsonl"
@@ -62,22 +69,22 @@ def test_combined_case_source_manifest_v1_exports_43_example_training_eval_set(t
         case_source_manifest_path=COMBINED_MANIFEST,
     )
 
-    assert result.example_count == 43
+    assert result.example_count == 50
     assert result.counts_by_case_type == {
-        "decompose_case": 9,
-        "layer_generate_case": 19,
+        "decompose_case": 12,
+        "layer_generate_case": 23,
         "redraw_case": 15,
     }
     assert result.counts_by_split == {
-        "dev": 7,
-        "test": 19,
-        "train": 17,
+        "dev": 9,
+        "test": 21,
+        "train": 20,
     }
 
     records = load_cases(output_path)
     assert sum(1 for item in records if item["source"]["kind"] == "local_seed") == 12
     assert sum(1 for item in records if item["source"]["kind"] == "manual_case_log") == 15
-    assert sum(1 for item in records if item["source"]["kind"] == "user_case_log") == 5
+    assert sum(1 for item in records if item["source"]["kind"] == "user_case_log") == 12
     assert sum(1 for item in records if item["source"]["kind"] == "synthetic_case_log") == 11
     assert any(
         item["split"] == "test" and item["source"]["kind"] == "user_case_log"
@@ -96,6 +103,7 @@ def test_combined_case_source_manifest_v1_exports_43_example_training_eval_set(t
         "backlog_manual_cases_v1",
         "manual_curated_cases_v1",
         "real_user_cases_v1",
+        "real_user_cases_v2",
         "taxonomy_holdout_cases_v1",
     }
 
@@ -104,7 +112,7 @@ def test_combined_case_source_manifest_v1_exports_43_example_training_eval_set(t
         "local_seed": 12,
         "manual_case_log": 15,
         "synthetic_case_log": 11,
-        "user_case_log": 5,
+        "user_case_log": 12,
     }
 
 
@@ -121,23 +129,24 @@ def test_combined_case_source_manifest_v1_runs_aggregated_eval_gate(tmp_path):
         train_split="train",
     )
 
-    assert report["dataset_summary"]["example_count"] == 43
+    assert report["dataset_summary"]["example_count"] == 50
     assert report["dataset_summary"]["counts_by_split"] == {
-        "dev": 7,
-        "test": 19,
-        "train": 17,
+        "dev": 9,
+        "test": 21,
+        "train": 20,
     }
     bucket_metrics = report["bucket_metrics"]
     assert bucket_metrics["source.kind"]["local_seed"]["example_count"] == 12
     assert bucket_metrics["source.kind"]["manual_case_log"]["example_count"] == 15
-    assert bucket_metrics["source.kind"]["user_case_log"]["example_count"] == 5
+    assert bucket_metrics["source.kind"]["user_case_log"]["example_count"] == 12
     assert bucket_metrics["source.kind"]["synthetic_case_log"]["example_count"] == 11
     assert bucket_metrics["source.kind"]["local_seed"]["eval_example_count"] == 3
     assert bucket_metrics["source.kind"]["manual_case_log"]["eval_example_count"] == 4
-    assert bucket_metrics["source.kind"]["user_case_log"]["eval_example_count"] == 1
+    assert bucket_metrics["source.kind"]["user_case_log"]["eval_example_count"] == 3
     assert bucket_metrics["source.kind"]["synthetic_case_log"]["eval_example_count"] == 11
     assert bucket_metrics["source_id"]["manual_curated_cases_v1"]["example_count"] == 8
     assert bucket_metrics["source_id"]["real_user_cases_v1"]["example_count"] == 5
+    assert bucket_metrics["source_id"]["real_user_cases_v2"]["example_count"] == 7
     assert bucket_metrics["source_id"]["taxonomy_holdout_cases_v1"]["example_count"] == 11
     assert bucket_metrics["source_id"]["backlog_manual_cases_v1"]["example_count"] == 7
 

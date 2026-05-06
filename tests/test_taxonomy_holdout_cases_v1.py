@@ -60,7 +60,7 @@ def test_combined_training_effectiveness_has_failure_type_holdout_coverage(tmp_p
         report_path=tmp_path / "training_effectiveness_report.json",
     )
 
-    assert report["dataset"]["example_count"] == 43
+    assert report["dataset"]["example_count"] == 50
     assert report["effectiveness"]["gate_passed"] is True
     assert report["effectiveness"]["evaluated_policy"] == "tiny_action_model_v1"
     assert report["effectiveness"]["action_accuracy"] == 1.0

@@ -55,16 +55,16 @@ def test_model_selection_review_table_exports_eval_rows_for_manual_review(tmp_pa
 
     assert report["case_type"] == "learning_model_selection_review_table"
     assert report["status"] == "ready_for_review"
-    assert report["summary"]["row_count"] == 19
+    assert report["summary"]["row_count"] == 21
     assert report["summary"]["primary_mismatch_count"] == 0
-    assert report["summary"]["baseline_mismatch_count"] == 10
-    assert report["summary"]["policy_disagreement_count"] == 18
+    assert report["summary"]["baseline_mismatch_count"] == 12
+    assert report["summary"]["policy_disagreement_count"] == 19
     assert report["selection"]["primary_policy"] == "tiny_action_model_v1"
     assert report["selection"]["baseline_policy"] == "tiny_agent_v0"
     assert report["selection"]["guardrail_policy"] == "redraw_observable_signal"
 
     rows = _read_jsonl(Path(report["artifacts"]["review_table_jsonl_path"]))
-    assert len(rows) == 19
+    assert len(rows) == 21
     assert rows == sorted(
         rows,
         key=lambda item: (
@@ -103,7 +103,8 @@ def test_model_selection_review_table_marks_workload_data_collection(tmp_path):
     )
 
     assert report["summary"]["workload_decision_counts"] == {
-        "collect_more_real_cases": 11,
+        "collect_more_real_cases": 5,
+        "promote_current_policy": 8,
         "promote_with_guardrail": 8,
     }
     rows = _read_jsonl(Path(report["artifacts"]["review_table_jsonl_path"]))
@@ -111,11 +112,11 @@ def test_model_selection_review_table_marks_workload_data_collection(tmp_path):
     layer_rows = [row for row in rows if row["case_type"] == "layer_generate_case"]
     redraw_rows = [row for row in rows if row["case_type"] == "redraw_case"]
 
-    assert len(decompose_rows) == 4
-    assert len(layer_rows) == 7
+    assert len(decompose_rows) == 5
+    assert len(layer_rows) == 8
     assert len(redraw_rows) == 8
     assert all(row["workload_decision"] == "collect_more_real_cases" for row in decompose_rows)
-    assert all(row["workload_decision"] == "collect_more_real_cases" for row in layer_rows)
+    assert all(row["workload_decision"] == "promote_current_policy" for row in layer_rows)
     assert all(row["workload_decision"] == "promote_with_guardrail" for row in redraw_rows)
     assert any(row["source_kind"] == "user_case_log" for row in rows)
 
@@ -135,7 +136,7 @@ def test_model_selection_review_table_writes_csv_with_stable_columns(tmp_path):
     with csv_path.open(newline="", encoding="utf-8") as handle:
         rows = list(csv.DictReader(handle))
 
-    assert len(rows) == 19
+    assert len(rows) == 21
     assert rows[0].keys() >= {
         "review_action",
         "priority_score",
@@ -165,7 +166,7 @@ def test_model_selection_review_table_script_writes_artifacts_and_summary(tmp_pa
     assert Path(report["artifacts"]["review_table_jsonl_path"]).exists()
     assert Path(report["artifacts"]["review_table_csv_path"]).exists()
     assert "Model selection review table:" in result.stdout
-    assert "Review rows: 19" in result.stdout
+    assert "Review rows: 21" in result.stdout
     assert "Primary mismatches: 0" in result.stdout
-    assert "Baseline mismatches: 10" in result.stdout
+    assert "Baseline mismatches: 12" in result.stdout
     assert "CSV:" in result.stdout
