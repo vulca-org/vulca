@@ -92,6 +92,7 @@ class TinyActionClassifier:
 
     def predict(self, example: Mapping[str, Any]) -> dict[str, Any]:
         source_case = _mapping(example.get("source_case"))
+        case_record = _case_record(example)
         features = sorted(set(extract_tiny_action_features(example)))
         failure_hints = extract_failure_hints(example)
         action_hints = extract_action_hints(example)
@@ -134,6 +135,9 @@ class TinyActionClassifier:
         elif unseen_failure_hints:
             action = "manual_review"
             fallback_reason = "unseen_failure_hint"
+        elif _looks_like_clean_accept(case_record, features=features):
+            action = "accept"
+            fallback_reason = "no_visible_failure_signal"
         elif action_scores:
             action = _best_scored_action(action_scores, self.global_action_counts)
         else:
@@ -272,6 +276,33 @@ def extract_action_hints(example: Mapping[str, Any]) -> tuple[str, ...]:
                 hints.append(action)
 
     return tuple(dict.fromkeys(hints))
+
+
+def _looks_like_clean_accept(
+    case_record: Mapping[str, Any],
+    *,
+    features: Sequence[str],
+) -> bool:
+    quality = _mapping(case_record.get("quality"))
+    if quality.get("gate_passed") is False:
+        return False
+    failures = quality.get("failures")
+    if isinstance(failures, Sequence) and not isinstance(failures, (str, bytes)):
+        if any(str(item or "") for item in failures):
+            return False
+    if any(feature.startswith("route.signal:") for feature in features):
+        return False
+
+    outputs = _mapping(case_record.get("outputs"))
+    layers = outputs.get("layers")
+    if isinstance(layers, Sequence) and not isinstance(layers, (str, bytes)):
+        for layer in layers:
+            if not isinstance(layer, Mapping):
+                continue
+            status = str(layer.get("status") or "")
+            if status and status not in {"generated", "accepted"}:
+                return False
+    return True
 
 
 def _quality_features(case_record: Mapping[str, Any]) -> tuple[str, ...]:

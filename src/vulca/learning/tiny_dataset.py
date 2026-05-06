@@ -154,7 +154,7 @@ def build_tiny_dataset_examples(
                 )
             )
 
-    _assign_dataset_splits(examples)
+    _assign_dataset_splits(examples, source_aware=len(case_sources) > 1)
     return examples
 
 
@@ -659,8 +659,12 @@ def _case_source_summaries(
     return summaries
 
 
-def _assign_dataset_splits(examples: list[dict[str, Any]]) -> None:
-    groups: dict[str, list[dict[str, Any]]] = {}
+def _assign_dataset_splits(
+    examples: list[dict[str, Any]],
+    *,
+    source_aware: bool = False,
+) -> None:
+    groups: dict[str | tuple[str, str], list[dict[str, Any]]] = {}
     for example in examples:
         preferred_split = str(_mapping(example.get("source")).get("preferred_split") or "")
         if preferred_split:
@@ -672,10 +676,17 @@ def _assign_dataset_splits(examples: list[dict[str, Any]]) -> None:
             example["split"] = preferred_split
             continue
         case_type = str(_mapping(example.get("source_case")).get("case_type") or "")
-        groups.setdefault(case_type, []).append(example)
+        if source_aware:
+            group_key: str | tuple[str, str] = (case_type, _source_key_for_split(example))
+        else:
+            group_key = case_type
+        groups.setdefault(group_key, []).append(example)
 
-    for case_type in sorted(groups):
-        group = _source_interleaved_examples(groups[case_type])
+    for group_key in sorted(groups):
+        if source_aware:
+            group = sorted(groups[group_key], key=_split_stable_key)
+        else:
+            group = _source_interleaved_examples(groups[group_key])
         counts = _split_counts(len(group))
         cursor = 0
         for split in DATASET_SPLITS:
@@ -683,6 +694,9 @@ def _assign_dataset_splits(examples: list[dict[str, Any]]) -> None:
             for example in group[cursor : cursor + count]:
                 example["split"] = split
             cursor += count
+
+    if source_aware:
+        _ensure_labeled_failure_eval_coverage(examples)
 
 
 def _source_interleaved_examples(examples: Sequence[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -710,6 +724,48 @@ def _source_interleaved_examples(examples: Sequence[dict[str, Any]]) -> list[dic
 def _source_kind_for_split(example: Mapping[str, Any]) -> str:
     source = _mapping(example.get("source"))
     return str(source.get("kind") or "unknown")
+
+
+def _source_key_for_split(example: Mapping[str, Any]) -> str:
+    source = _mapping(example.get("source"))
+    return str(source.get("source_id") or source.get("kind") or "unknown")
+
+
+def _ensure_labeled_failure_eval_coverage(examples: list[dict[str, Any]]) -> None:
+    eval_failures = {
+        str(_mapping(example.get("targets")).get("failure_type") or "")
+        for example in examples
+        if example.get("split") == "test"
+    }
+    eval_failures.discard("")
+
+    candidates_by_failure: dict[str, list[dict[str, Any]]] = {}
+    for example in examples:
+        failure_type = str(_mapping(example.get("targets")).get("failure_type") or "")
+        if not failure_type or failure_type in eval_failures:
+            continue
+        if _mapping(example.get("source")).get("preferred_split"):
+            continue
+        candidates_by_failure.setdefault(failure_type, []).append(example)
+
+    for failure_type in sorted(candidates_by_failure):
+        if failure_type in eval_failures:
+            continue
+        candidates = sorted(
+            candidates_by_failure[failure_type],
+            key=lambda example: (
+                _split_move_rank(str(example.get("split") or "")),
+                _split_stable_key(example),
+            ),
+        )
+        if not candidates:
+            continue
+        candidates[0]["split"] = "test"
+        eval_failures.add(failure_type)
+
+
+def _split_move_rank(split: str) -> int:
+    return {"dev": 0, "train": 1, "test": 2}.get(split, 9)
 
 
 def _split_stable_key(example: Mapping[str, Any]) -> tuple[str, str, str]:
