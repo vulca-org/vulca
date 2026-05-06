@@ -45,6 +45,7 @@ def test_tiny_training_eval_gate_command_writes_dataset_predictions_and_report(t
     assert (output_dir / "tiny_agent_v0.predictions.jsonl").exists()
     assert (output_dir / "tiny_action_model_v1.predictions.jsonl").exists()
     assert (output_dir / "tiny_dataset_comparison.json").exists()
+    assert (output_dir / "tiny_feature_ablation.json").exists()
     assert report_path.exists()
 
     report = json.loads(report_path.read_text(encoding="utf-8"))
@@ -54,8 +55,21 @@ def test_tiny_training_eval_gate_command_writes_dataset_predictions_and_report(t
     assert report["artifacts"]["comparison_report_path"] == str(
         output_dir / "tiny_dataset_comparison.json"
     )
+    assert report["artifacts"]["tiny_feature_ablation_report_path"] == str(
+        output_dir / "tiny_feature_ablation.json"
+    )
     assert report["dataset"]["example_count"] == 20
     assert report["dataset"]["counts_by_split"]["test"] == 5
+    assert report["ablation"]["case_type"] == "learning_tiny_feature_ablation_report"
+    assert {
+        item["variant_id"] for item in report["ablation"]["variant_reports"]
+    } >= {
+        "full",
+        "without_failure_hints",
+        "without_action_hints",
+        "without_failure_and_action_hints",
+        "without_auxiliary_signals",
+    }
 
 
 def test_tiny_training_eval_gate_report_includes_required_policies(tmp_path):
@@ -89,6 +103,34 @@ def test_tiny_training_eval_gate_fails_below_action_accuracy_threshold(tmp_path)
             "policy": "tiny_action_model_v1",
             "metric": "action_accuracy",
             "actual": 1.0,
+            "expected": ">= 1.01",
+        }
+    ]
+
+
+def test_tiny_training_eval_gate_fails_below_ablation_threshold(tmp_path):
+    result, _, report_path = _run_gate(
+        tmp_path,
+        "--min-ablation-action-accuracy",
+        "without_failure_and_action_hints=1.01",
+    )
+
+    assert result.returncode == 1
+    assert "Tiny training/eval gate failed" in result.stderr
+    assert (
+        "tiny_action_model_v1 without_failure_and_action_hints "
+        "action_accuracy" in result.stderr
+    )
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    assert report["gate"]["passed"] is False
+    assert report["gate"]["violations"] == [
+        {
+            "policy": "tiny_action_model_v1",
+            "variant": "without_failure_and_action_hints",
+            "metric": "ablation_action_accuracy",
+            "actual": report["ablation"]["variant_reports"][3]["policy_report"][
+                "action_accuracy"
+            ],
             "expected": ">= 1.01",
         }
     ]

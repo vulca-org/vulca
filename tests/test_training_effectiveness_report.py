@@ -67,6 +67,17 @@ def test_training_effectiveness_report_uses_combined_real_manual_and_seed_data(t
     assert report["effectiveness"]["action_accuracy"] == 1.0
     assert report["effectiveness"]["mismatch_count"] == 0
     assert report["effectiveness"]["accuracy_delta_vs_baseline"] > 0
+    assert report["effectiveness"]["ablation_summary"]["full_action_accuracy"] == 1.0
+    assert (
+        report["effectiveness"]["ablation_summary"]["largest_accuracy_drop"][
+            "variant_id"
+        ]
+        == "without_failure_and_action_hints"
+    )
+    assert (
+        "tiny_feature_ablation_report_path"
+        in report["artifacts"]
+    )
     ranked = {
         item["policy_name"]: item for item in report["effectiveness"]["policy_ranking"]
     }
@@ -105,6 +116,7 @@ def test_training_effectiveness_report_script_writes_report_and_prints_summary(t
     assert "Dataset examples: 50" in result.stdout
     assert "Eval examples: 21" in result.stdout
     assert "tiny_action_model_v1 action_accuracy: 1.0" in result.stdout
+    assert "Ablation hardest drop:" in result.stdout
     assert "tiny_agent_v0 action_accuracy:" in result.stdout
     assert "Data gaps: 0" in result.stdout
     assert "source.kind local_seed: eval 0/12" not in result.stdout

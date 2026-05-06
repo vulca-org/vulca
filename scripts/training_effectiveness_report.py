@@ -120,6 +120,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         "Accuracy delta vs baseline: "
         f"{effectiveness['accuracy_delta_vs_baseline']}"
     )
+    hardest_drop = effectiveness.get("ablation_summary", {}).get(
+        "largest_accuracy_drop",
+        {},
+    )
+    if hardest_drop:
+        print(
+            "Ablation hardest drop: "
+            f"{hardest_drop.get('variant_id')} "
+            f"{hardest_drop.get('accuracy_delta_vs_full')}"
+        )
     print(f"Tiny gate passed: {effectiveness['gate_passed']}")
     print(f"Data gaps: {len(report['data_gaps'])}")
     for gap in report["data_gaps"][:10]:

@@ -97,6 +97,9 @@ def run_training_effectiveness_report(
             "comparison_report_path": aggregated_report["artifacts"][
                 "comparison_report_path"
             ],
+            "tiny_feature_ablation_report_path": aggregated_report["artifacts"][
+                "tiny_feature_ablation_report_path"
+            ],
         },
         "dataset": {
             "example_count": int(dataset_summary.get("example_count") or 0),
@@ -144,6 +147,9 @@ def _build_effectiveness_summary(aggregated_report: Mapping[str, Any]) -> dict[s
         accuracy_delta = action_accuracy - baseline_accuracy
 
     gate = _mapping(_mapping(aggregated_report.get("tiny_training_eval")).get("gate"))
+    ablation = _mapping(
+        _mapping(aggregated_report.get("tiny_training_eval")).get("ablation")
+    )
     return {
         "gate_passed": bool(gate.get("passed")),
         "evaluated_policy": DEFAULT_EVALUATED_POLICY,
@@ -153,6 +159,8 @@ def _build_effectiveness_summary(aggregated_report: Mapping[str, Any]) -> dict[s
         "accuracy_delta_vs_baseline": accuracy_delta,
         "mismatch_count": int(evaluated.get("mismatch_count") or 0),
         "missing_count": int(evaluated.get("missing_count") or 0),
+        "ablation_summary": dict(_mapping(ablation.get("summary"))),
+        "ablation_variants": _compact_ablation_variants(ablation),
         "gate": dict(gate),
         "policy_ranking": _policy_ranking(policy_reports),
     }
@@ -179,6 +187,40 @@ def _policy_ranking(policy_reports: Mapping[str, Any]) -> list[dict[str, Any]]:
             item["policy_name"],
         ),
     )
+
+
+def _compact_ablation_variants(
+    ablation_report: Mapping[str, Any],
+) -> list[dict[str, Any]]:
+    variants = ablation_report.get("variant_reports")
+    if not isinstance(variants, Sequence) or isinstance(variants, (str, bytes)):
+        return []
+    rows: list[dict[str, Any]] = []
+    for variant_value in variants:
+        variant = _mapping(variant_value)
+        policy_report = _mapping(variant.get("policy_report"))
+        rows.append(
+            {
+                "variant_id": str(variant.get("variant_id") or ""),
+                "removed_feature_groups": list(
+                    variant.get("removed_feature_groups") or []
+                ),
+                "action_accuracy": _float_or_none(
+                    policy_report.get("action_accuracy")
+                ),
+                "mismatch_count": int(policy_report.get("mismatch_count") or 0),
+                "accuracy_delta_vs_full": _float_or_none(
+                    variant.get("accuracy_delta_vs_full")
+                ),
+                "fallback_reason_counts": dict(
+                    _mapping(variant.get("fallback_reason_counts"))
+                ),
+                "auxiliary_feature_match_count": int(
+                    variant.get("auxiliary_feature_match_count") or 0
+                ),
+            }
+        )
+    return rows
 
 
 def _build_coverage_summary(aggregated_report: Mapping[str, Any]) -> dict[str, Any]:
