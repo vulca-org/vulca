@@ -15,6 +15,14 @@
       "path": "real_user_cases_v1.private.user_cases.jsonl",
       "privacy_scope": "private",
       "curation_status": "reviewed"
+    },
+    {
+      "source_id": "taxonomy_holdout_cases_v1",
+      "kind": "synthetic_case_log",
+      "path": "taxonomy_holdout_cases_v1.synthetic_reviewed.jsonl",
+      "privacy_scope": "project",
+      "curation_status": "synthetic_reviewed",
+      "preferred_split": "test"
     }
   ]
 }

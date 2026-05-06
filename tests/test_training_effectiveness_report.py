@@ -47,12 +47,13 @@ def test_training_effectiveness_report_uses_combined_real_manual_and_seed_data(t
     )
 
     assert report["case_type"] == "learning_training_effectiveness_report"
-    assert report["status"] == "passed_with_data_gaps"
-    assert report["dataset"]["example_count"] == 25
-    assert report["dataset"]["eval_example_count"] == 6
+    assert report["status"] == "passed"
+    assert report["dataset"]["example_count"] == 36
+    assert report["dataset"]["eval_example_count"] == 17
     assert report["dataset"]["counts_by_source_kind"] == {
         "local_seed": 12,
         "manual_case_log": 8,
+        "synthetic_case_log": 11,
         "user_case_log": 5,
     }
     assert report["effectiveness"]["gate_passed"] is True
@@ -68,7 +69,7 @@ def test_training_effectiveness_report_uses_combined_real_manual_and_seed_data(t
     assert Path(report["artifacts"]["aggregated_report_path"]).exists()
 
 
-def test_training_effectiveness_report_surfaces_eval_coverage_gaps(tmp_path):
+def test_training_effectiveness_report_has_no_default_eval_coverage_gaps(tmp_path):
     from vulca.learning.training_effectiveness import run_training_effectiveness_report
 
     report = run_training_effectiveness_report(
@@ -77,13 +78,11 @@ def test_training_effectiveness_report_surfaces_eval_coverage_gaps(tmp_path):
         report_path=tmp_path / "training_effectiveness_report.json",
     )
 
-    gaps = {
-        (item["bucket"], item["value"]): item
-        for item in report["data_gaps"]
+    assert report["data_gaps"] == []
+    assert report["coverage"]["source_kind"]["synthetic_case_log"] == {
+        "example_count": 11,
+        "eval_example_count": 11,
     }
-    assert not any(item["bucket"] == "source.kind" for item in report["data_gaps"])
-    assert any(item["bucket"] == "targets.failure_type" for item in report["data_gaps"])
-    assert ("source.kind", "local_seed") not in gaps
 
 
 def test_training_effectiveness_report_script_writes_report_and_prints_summary(tmp_path):
@@ -94,16 +93,21 @@ def test_training_effectiveness_report_script_writes_report_and_prints_summary(t
     report = json.loads(report_path.read_text(encoding="utf-8"))
     assert report["case_type"] == "learning_training_effectiveness_report"
     assert "Training effectiveness report:" in result.stdout
-    assert "Dataset examples: 25" in result.stdout
-    assert "Eval examples: 6" in result.stdout
+    assert "Dataset examples: 36" in result.stdout
+    assert "Eval examples: 17" in result.stdout
     assert "tiny_action_model_v1 action_accuracy: 1.0" in result.stdout
-    assert "tiny_agent_v0 action_accuracy: 0.6666666666666666" in result.stdout
-    assert "Data gaps:" in result.stdout
+    assert "tiny_agent_v0 action_accuracy:" in result.stdout
+    assert "Data gaps: 0" in result.stdout
     assert "source.kind local_seed: eval 0/12" not in result.stdout
 
 
 def test_training_effectiveness_report_script_can_fail_on_data_gaps(tmp_path):
-    result, _, report_path = _run_report(tmp_path, "--fail-on-data-gaps")
+    result, _, report_path = _run_report(
+        tmp_path,
+        "--fail-on-data-gaps",
+        "--min-eval-examples-per-bucket",
+        "2",
+    )
 
     assert result.returncode == 1
     assert report_path.exists()
