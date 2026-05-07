@@ -121,6 +121,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     print(f"Fallback agent decisions: {summary['fallback_agent_count']}")
     print(f"Runtime recovery decisions: {summary['runtime_recovery_count']}")
     print(
+        "Visual ownership planner decisions: "
+        f"{summary['visual_ownership_planner_count']}"
+    )
+    print(
         "tiny_action_model_v1 action_accuracy: "
         f"{evaluation['action_accuracy']}"
     )

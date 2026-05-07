@@ -250,8 +250,13 @@ def _dispatch_record(
         recommended_action == "fallback_to_agent" and failure_hint == "provider_failure"
     )
     runtime_recovery_kind = "provider_failure" if runtime_recovery else ""
+    visual_ownership_planner = (
+        recommended_action == "fallback_to_agent"
+        and failure_hint in {"occlusion", "under_split"}
+    )
+    visual_ownership_kind = failure_hint if visual_ownership_planner else ""
     if recommended_action == "fallback_to_agent":
-        if not runtime_recovery:
+        if not runtime_recovery and not visual_ownership_planner:
             fallback_reasons.append("action_fallback_to_agent")
     low_confidence = action_confidence < min_action_confidence
     accept_with_source_context = (
@@ -274,6 +279,8 @@ def _dispatch_record(
     decision_owner = (
         "runtime_provider_recovery"
         if runtime_recovery
+        else "visual_ownership_planner"
+        if visual_ownership_planner
         else "fallback_agent"
         if "low_action_confidence" in fallback_reasons
         else "tiny_model"
@@ -281,6 +288,8 @@ def _dispatch_record(
     execution_owner = (
         "runtime_provider_recovery"
         if runtime_recovery
+        else "visual_ownership_planner"
+        if visual_ownership_planner
         else "fallback_agent"
         if fallback_agent
         else "tiny_model"
@@ -291,6 +300,8 @@ def _dispatch_record(
         "fallback_agent": fallback_agent,
         "runtime_recovery": runtime_recovery,
         "runtime_recovery_kind": runtime_recovery_kind,
+        "visual_ownership_planner": visual_ownership_planner,
+        "visual_ownership_kind": visual_ownership_kind,
         "fallback_reasons": fallback_reasons,
         "data_gap_tags": data_gap_tags,
         "confidence_calibration": confidence_calibration,
@@ -338,6 +349,13 @@ def _build_summary(decisions: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
             1
             for decision in decisions
             if bool(_mapping(decision.get("dispatch")).get("runtime_recovery"))
+        ),
+        "visual_ownership_planner_count": sum(
+            1
+            for decision in decisions
+            if bool(
+                _mapping(decision.get("dispatch")).get("visual_ownership_planner")
+            )
         ),
         "fallback_reason_counts": dict(sorted(fallback_reason_counts.items())),
         "data_gap_counts": dict(sorted(data_gap_counts.items())),

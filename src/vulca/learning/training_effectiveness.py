@@ -402,6 +402,9 @@ def _compact_dry_run_report(report: Mapping[str, Any]) -> dict[str, Any]:
         "decision_count": int(summary.get("decision_count") or 0),
         "fallback_agent_count": int(summary.get("fallback_agent_count") or 0),
         "runtime_recovery_count": int(summary.get("runtime_recovery_count") or 0),
+        "visual_ownership_planner_count": int(
+            summary.get("visual_ownership_planner_count") or 0
+        ),
         "data_gap_counts": dict(_mapping(summary.get("data_gap_counts"))),
         "fallback_reason_counts": dict(_mapping(summary.get("fallback_reason_counts"))),
         "counts_by_execution_owner": dict(
