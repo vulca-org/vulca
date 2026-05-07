@@ -77,7 +77,15 @@ def _fixture_decisions() -> list[dict]:
             failure_hint="",
             fallback_reasons=["low_action_confidence"],
             data_gap_tags=["low_action_confidence"],
-        ),
+        )
+        | {
+            "dispatch": {
+                "fallback_agent": False,
+                "fallback_reasons": [],
+                "data_gap_tags": [],
+                "confidence_calibration": "accept_with_source_context",
+            }
+        },
         _decision(
             "redraw_under_split",
             case_type="redraw_case",
@@ -140,31 +148,25 @@ def test_fallback_residual_audit_classifies_remaining_agent_work(tmp_path):
     assert report["status"] == "needs_agent_or_router_boundary_work"
     assert report["summary"] == {
         "decision_count": 6,
-        "fallback_agent_count": 5,
+        "fallback_agent_count": 4,
         "agent_required_count": 4,
-        "tiny_router_candidate_count": 1,
+        "tiny_router_candidate_count": 0,
         "source_context_gap_count": 0,
     }
     assert report["counts_by_residual_kind"] == {
         "agent_boundary_complex_visual_ownership": 2,
         "provider_runtime_fallback": 2,
-        "tiny_router_confidence_gap": 1,
     }
     assert report["counts_by_recommended_next_step"] == {
         "keep_agent_boundary": 2,
         "route_provider_failure_to_runtime_handler": 2,
-        "add_confidence_calibration_or_label": 1,
     }
     assert [item["case_id"] for item in report["residual_cases"]] == [
         "decompose_occlusion",
         "redraw_under_split",
         "layer_provider_failure",
         "manual_provider_failure",
-        "seed_low_confidence",
     ]
-    seed = next(item for item in report["residual_cases"] if item["case_id"] == "seed_low_confidence")
-    assert seed["residual_kind"] == "tiny_router_confidence_gap"
-    assert seed["recommended_next_step"] == "add_confidence_calibration_or_label"
     assert report_path.exists()
 
 
@@ -192,8 +194,8 @@ def test_fallback_residual_audit_cli_writes_summary(tmp_path):
 
     assert result.returncode == 0, result.stderr
     assert "Fallback residual audit:" in result.stdout
-    assert "Fallback agent decisions: 5" in result.stdout
-    assert "Tiny router candidates: 1" in result.stdout
+    assert "Fallback agent decisions: 4" in result.stdout
+    assert "Tiny router candidates: 0" in result.stdout
     assert "Agent-required residuals: 4" in result.stdout
     report = json.loads(report_path.read_text(encoding="utf-8"))
-    assert report["summary"]["fallback_agent_count"] == 5
+    assert report["summary"]["fallback_agent_count"] == 4
