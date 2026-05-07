@@ -57,6 +57,9 @@
       "layer_manifest_path": "assets/demo/v2/scenario1-redo/manifest.json",
       "composite_path": "assets/demo/v2/scenario1-redo/after.png",
       "preview_path": "assets/demo/v2/scenario1-redo/after.png",
+      "source_refs": {
+        "source_brief_path": "docs/benchmarks/learning/local_seed_source_context_sources_v1/scenario1_redo_layer_generate.md"
+      },
       "human_accept": true,
       "failure_type": "",
       "preferred_action": "accept"

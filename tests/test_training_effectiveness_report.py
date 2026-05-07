@@ -69,18 +69,11 @@ def test_training_effectiveness_report_uses_combined_real_manual_and_seed_data(t
     assert report["effectiveness"]["accuracy_delta_vs_baseline"] > 0
     assert report["effectiveness"]["ablation_summary"]["full_action_accuracy"] == 1.0
     assert (
-        report["effectiveness"]["ablation_summary"]["largest_accuracy_drop"][
-            "variant_id"
-        ]
+        report["effectiveness"]["ablation_summary"]["largest_accuracy_drop"]["variant_id"]
         == "without_failure_and_action_hints"
     )
-    assert (
-        "tiny_feature_ablation_report_path"
-        in report["artifacts"]
-    )
-    ranked = {
-        item["policy_name"]: item for item in report["effectiveness"]["policy_ranking"]
-    }
+    assert "tiny_feature_ablation_report_path" in report["artifacts"]
+    ranked = {item["policy_name"]: item for item in report["effectiveness"]["policy_ranking"]}
     assert ranked["tiny_action_model_v1"]["action_accuracy"] == 1.0
     assert Path(report["artifacts"]["aggregated_report_path"]).exists()
 
@@ -109,9 +102,7 @@ def test_training_effectiveness_report_includes_source_dependency_eval_and_leade
     assert source_dependency["best_policy"]["dependency_accuracy"] == 1.0
     assert source_dependency["best_policy"]["decision_basis_accuracy"] == 1.0
     assert source_dependency["best_policy"]["mismatch_count"] == 0
-    assert source_dependency["policy_reports"]["source_dependency_majority"][
-        "decision_basis_accuracy"
-    ] == 0.5
+    assert source_dependency["policy_reports"]["source_dependency_majority"]["decision_basis_accuracy"] == 0.5
 
     leaderboard = {item["task"]: item for item in report["leaderboard"]}
     assert leaderboard["action_routing"] == {
@@ -159,26 +150,25 @@ def test_training_effectiveness_report_compares_source_context_router_improvemen
     assert router["status"] == "improved_with_source_context_signals"
     assert router["source_context_signal_summary"] == {
         "example_count": 50,
-        "promoted_signal_count": 30,
-        "skipped_count": 20,
+        "promoted_signal_count": 31,
+        "skipped_count": 19,
     }
     assert router["baseline_without_source_context_signals"]["fallback_agent_count"] == 21
     assert router["with_source_context_signals"]["fallback_agent_count"] == 7
     assert router["delta"] == {
         "fallback_agent_count": -14,
         "fallback_agent_count_reduction": 14,
-        "no_source_context_for_required_source": -16,
-        "no_source_context_for_required_source_reduction": 16,
+        "no_source_context_for_required_source": -17,
+        "no_source_context_for_required_source_reduction": 17,
     }
     assert router["improved_case_count"] == 14
-    assert router["remaining_no_source_context_gap_count"] == 3
-    assert {
-        item["case_type"] for item in router["improved_cases"]
-    } == {"redraw_case", "decompose_case", "layer_generate_case"}
-    assert all(
-        item["source_context"]["source"] == "auxiliary_signal"
-        for item in router["improved_cases"]
-    )
+    assert router["remaining_no_source_context_gap_count"] == 2
+    assert {item["case_type"] for item in router["improved_cases"]} == {
+        "redraw_case",
+        "decompose_case",
+        "layer_generate_case",
+    }
+    assert all(item["source_context"]["source"] == "auxiliary_signal" for item in router["improved_cases"])
 
     leaderboard = {item["task"]: item for item in report["leaderboard"]}
     assert leaderboard["dry_run_dispatch"] == {
@@ -188,7 +178,7 @@ def test_training_effectiveness_report_compares_source_context_router_improvemen
         "primary_metric": "fallback_agent_count_reduction",
         "primary_accuracy": 14,
         "secondary_metric": "no_source_context_gap_reduction",
-        "secondary_accuracy": 16,
+        "secondary_accuracy": 17,
         "mismatch_count": 0,
         "gate_passed": True,
     }
@@ -229,19 +219,14 @@ def test_training_effectiveness_report_script_writes_report_and_prints_summary(t
     assert "source_dependency_rule_v1 decision_basis_accuracy: 1.0" in result.stdout
     assert "Source dependency labeled examples: 12" in result.stdout
     assert (
-        "Leaderboard source_dependency: "
-        "source_dependency_rule_v1 dependency_accuracy=1.0 "
-        "decision_basis_accuracy=1.0"
+        "Leaderboard source_dependency: source_dependency_rule_v1 dependency_accuracy=1.0 decision_basis_accuracy=1.0"
     ) in result.stdout
     assert "Ablation hardest drop:" in result.stdout
-    assert "Source context signals: 30/50" in result.stdout
+    assert "Source context signals: 31/50" in result.stdout
     assert "Dry-run fallback_agent_count: 21 -> 7 (reduction 14)" in result.stdout
-    assert (
-        "Dry-run no_source_context_for_required_source: 19 -> 3 (reduction 16)"
-        in result.stdout
-    )
+    assert "Dry-run no_source_context_for_required_source: 19 -> 2 (reduction 17)" in result.stdout
     assert "Dry-run improved cases: 14" in result.stdout
-    assert "Dry-run remaining source-context gaps: 3" in result.stdout
+    assert "Dry-run remaining source-context gaps: 2" in result.stdout
     assert "tiny_agent_v0 action_accuracy:" in result.stdout
     assert "Data gaps: 0" in result.stdout
     assert "source.kind local_seed: eval 0/12" not in result.stdout
