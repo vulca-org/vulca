@@ -241,3 +241,78 @@ def test_real_source_context_recovery_eval_cli_writes_summary(tmp_path):
         )
     )
     assert report["delta"]["fallback_agent_count_reduction"] == 1
+
+
+def test_real_source_context_recovery_eval_cli_supports_success_thresholds(tmp_path):
+    manifest, artifact_root, image_root = _write_manifest(tmp_path)
+    output_dir = tmp_path / "recovery_eval"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(SCRIPT),
+            "--repo-root",
+            str(tmp_path),
+            "--case-source-manifest",
+            str(manifest),
+            "--artifact-search-root",
+            str(artifact_root),
+            "--image-search-root",
+            str(image_root),
+            "--output-dir",
+            str(output_dir),
+            "--no-local-seeds",
+            "--max-recovered-source-context-gaps",
+            "0",
+            "--min-fallback-agent-reduction",
+            "1",
+            "--min-recovered-eval-cases",
+            "1",
+        ],
+        cwd=ROOT,
+        env=CLI_ENV,
+        text=True,
+        capture_output=True,
+        timeout=30,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "Thresholds: passed" in result.stdout
+
+
+def test_real_source_context_recovery_eval_cli_fails_when_thresholds_miss(tmp_path):
+    manifest, artifact_root, image_root = _write_manifest(tmp_path)
+    output_dir = tmp_path / "recovery_eval"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(SCRIPT),
+            "--repo-root",
+            str(tmp_path),
+            "--case-source-manifest",
+            str(manifest),
+            "--artifact-search-root",
+            str(artifact_root),
+            "--image-search-root",
+            str(image_root),
+            "--output-dir",
+            str(output_dir),
+            "--no-local-seeds",
+            "--max-recovered-source-context-gaps",
+            "0",
+            "--min-fallback-agent-reduction",
+            "2",
+        ],
+        cwd=ROOT,
+        env=CLI_ENV,
+        text=True,
+        capture_output=True,
+        timeout=30,
+        check=False,
+    )
+
+    assert result.returncode == 1
+    assert "Thresholds: failed" in result.stderr
+    assert "fallback_agent_count_reduction 1 < 2" in result.stderr

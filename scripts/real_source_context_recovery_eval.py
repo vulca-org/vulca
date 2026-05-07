@@ -104,6 +104,27 @@ def main(argv: Sequence[str] | None = None) -> int:
         action="store_true",
         help="Print the full safe JSON report to stdout after writing it.",
     )
+    parser.add_argument(
+        "--max-recovered-source-context-gaps",
+        type=int,
+        default=None,
+        help=(
+            "Fail if recovered no_source_context_for_required_source count is "
+            "greater than this value."
+        ),
+    )
+    parser.add_argument(
+        "--min-fallback-agent-reduction",
+        type=int,
+        default=None,
+        help="Fail if fallback_agent_count_reduction is below this value.",
+    )
+    parser.add_argument(
+        "--min-recovered-eval-cases",
+        type=int,
+        default=None,
+        help="Fail if fewer than this many eval cases recover dispatch.",
+    )
     args = parser.parse_args(argv)
 
     try:
@@ -159,6 +180,24 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     print(f"Recovered eval cases: {report['recovered_eval_case_count']}")
     print(f"Status: {report['status']}")
+
+    threshold_failures = _threshold_failures(
+        report,
+        max_recovered_source_context_gaps=args.max_recovered_source_context_gaps,
+        min_fallback_agent_reduction=args.min_fallback_agent_reduction,
+        min_recovered_eval_cases=args.min_recovered_eval_cases,
+    )
+    if threshold_failures:
+        print("Thresholds: failed", file=sys.stderr)
+        for failure in threshold_failures:
+            print(f"- {failure}", file=sys.stderr)
+        return 1
+    if _thresholds_requested(
+        args.max_recovered_source_context_gaps,
+        args.min_fallback_agent_reduction,
+        args.min_recovered_eval_cases,
+    ):
+        print("Thresholds: passed")
     return 0
 
 
@@ -178,6 +217,54 @@ def _parse_aliases(values: Sequence[str]) -> dict[str, str]:
             )
         aliases[source_name] = local_name
     return aliases
+
+
+def _threshold_failures(
+    report: dict,
+    *,
+    max_recovered_source_context_gaps: int | None,
+    min_fallback_agent_reduction: int | None,
+    min_recovered_eval_cases: int | None,
+) -> list[str]:
+    failures: list[str] = []
+    recovered_gaps = int(
+        report["recovered"]["data_gap_counts"].get(
+            "no_source_context_for_required_source",
+            0,
+        )
+    )
+    fallback_reduction = int(report["delta"]["fallback_agent_count_reduction"])
+    recovered_eval_cases = int(report["recovered_eval_case_count"])
+
+    if (
+        max_recovered_source_context_gaps is not None
+        and recovered_gaps > max_recovered_source_context_gaps
+    ):
+        failures.append(
+            "recovered no_source_context_for_required_source "
+            f"{recovered_gaps} > {max_recovered_source_context_gaps}"
+        )
+    if (
+        min_fallback_agent_reduction is not None
+        and fallback_reduction < min_fallback_agent_reduction
+    ):
+        failures.append(
+            "fallback_agent_count_reduction "
+            f"{fallback_reduction} < {min_fallback_agent_reduction}"
+        )
+    if (
+        min_recovered_eval_cases is not None
+        and recovered_eval_cases < min_recovered_eval_cases
+    ):
+        failures.append(
+            f"recovered_eval_case_count {recovered_eval_cases} < "
+            f"{min_recovered_eval_cases}"
+        )
+    return failures
+
+
+def _thresholds_requested(*values: int | None) -> bool:
+    return any(value is not None for value in values)
 
 
 if __name__ == "__main__":
