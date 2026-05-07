@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 from vulca.learning.aggregated_case_source_eval import run_aggregated_case_source_eval
+from vulca.learning.dry_run_decision_router import run_dry_run_decision_router
 from vulca.learning.source_dependency_eval import (
     DEFAULT_SOURCE_DEPENDENCY_MANIFEST,
     POLICY_SOURCE_DEPENDENCY_MAJORITY,
@@ -16,7 +17,7 @@ from vulca.learning.tiny_baseline_model import POLICY_TINY_AGENT
 from vulca.learning.tiny_dataset import DATASET_SPLITS
 
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 REPORT_CASE_TYPE = "learning_training_effectiveness_report"
 DEFAULT_OUTPUT_DIR = Path("build/training_effectiveness_report")
 DEFAULT_REPORT_NAME = "training_effectiveness_report.json"
@@ -90,6 +91,15 @@ def run_training_effectiveness_report(
     )
     effectiveness = _build_effectiveness_summary(aggregated_report)
     source_dependency = _build_source_dependency_summary(source_dependency_report)
+    source_context_router = _build_source_context_router_summary(
+        repo_root=root,
+        output_dir=output,
+        case_source_manifest_path=resolved_manifest_path,
+        source_dependency_manifest_path=resolved_source_dependency_manifest_path,
+        include_local_seeds=include_local_seeds,
+        eval_split=eval_split,
+        train_split=train_split,
+    )
     gate_passed = bool(effectiveness["gate_passed"]) and bool(
         source_dependency["gate_passed"]
     )
@@ -141,6 +151,27 @@ def run_training_effectiveness_report(
             "source_dependency_comparison_report_path": source_dependency_report[
                 "artifacts"
             ]["comparison_report_path"],
+            "source_context_signal_report_path": source_context_router["artifacts"][
+                "source_context_signal_report_path"
+            ],
+            "source_context_signal_manifest_path": source_context_router["artifacts"][
+                "source_context_signal_manifest_path"
+            ],
+            "source_context_signal_output_path": source_context_router["artifacts"][
+                "source_context_signal_output_path"
+            ],
+            "dry_run_without_source_context_report_path": source_context_router[
+                "artifacts"
+            ]["dry_run_without_source_context_report_path"],
+            "dry_run_with_source_context_report_path": source_context_router[
+                "artifacts"
+            ]["dry_run_with_source_context_report_path"],
+            "dry_run_without_source_context_decision_path": source_context_router[
+                "artifacts"
+            ]["dry_run_without_source_context_decision_path"],
+            "dry_run_with_source_context_decision_path": source_context_router[
+                "artifacts"
+            ]["dry_run_with_source_context_decision_path"],
         },
         "dataset": {
             "example_count": int(dataset_summary.get("example_count") or 0),
@@ -157,7 +188,12 @@ def run_training_effectiveness_report(
         "coverage": _build_coverage_summary(aggregated_report),
         "effectiveness": effectiveness,
         "source_dependency": source_dependency,
-        "leaderboard": _build_task_leaderboard(effectiveness, source_dependency),
+        "source_context_router": source_context_router,
+        "leaderboard": _build_task_leaderboard(
+            effectiveness,
+            source_dependency,
+            source_context_router,
+        ),
         "data_gaps": data_gaps,
     }
 
@@ -239,6 +275,240 @@ def _build_source_dependency_summary(
     }
 
 
+def _build_source_context_router_summary(
+    *,
+    repo_root: Path,
+    output_dir: Path,
+    case_source_manifest_path: Path,
+    source_dependency_manifest_path: Path,
+    include_local_seeds: bool,
+    eval_split: str,
+    train_split: str,
+) -> dict[str, Any]:
+    from vulca.learning.source_context_signals import write_source_context_signal_pack
+
+    source_context_output = output_dir / "source_context"
+    signal_output_path = source_context_output / "source_context_signals.promoted.jsonl"
+    signal_manifest_path = (
+        source_context_output / "source_context_signal_promotion_manifest.json"
+    )
+    signal_report_path = source_context_output / "source_context_signal_report.json"
+    signal_report = write_source_context_signal_pack(
+        repo_root=repo_root,
+        case_source_manifest_path=case_source_manifest_path,
+        output_path=signal_output_path,
+        manifest_path=signal_manifest_path,
+        report_path=signal_report_path,
+        include_local_seeds=include_local_seeds,
+    )
+
+    baseline_report = run_dry_run_decision_router(
+        repo_root=repo_root,
+        output_dir=output_dir / "dry_run_without_source_context",
+        report_path=output_dir / "dry_run_without_source_context" / "report.json",
+        case_source_manifest_path=case_source_manifest_path,
+        source_dependency_manifest_path=source_dependency_manifest_path,
+        include_local_seeds=include_local_seeds,
+        eval_split=eval_split,
+        train_split=train_split,
+    )
+    current_report = run_dry_run_decision_router(
+        repo_root=repo_root,
+        output_dir=output_dir / "dry_run_with_source_context",
+        report_path=output_dir / "dry_run_with_source_context" / "report.json",
+        case_source_manifest_path=case_source_manifest_path,
+        source_dependency_manifest_path=source_dependency_manifest_path,
+        auxiliary_signal_manifest_path=signal_manifest_path,
+        include_local_seeds=include_local_seeds,
+        eval_split=eval_split,
+        train_split=train_split,
+    )
+
+    baseline_decisions = _load_jsonl(
+        _mapping(baseline_report["artifacts"])["decision_path"]
+    )
+    current_decisions = _load_jsonl(
+        _mapping(current_report["artifacts"])["decision_path"]
+    )
+    improved_cases = _build_source_context_improved_cases(
+        baseline_decisions,
+        current_decisions,
+    )
+    remaining_gap_cases = _build_remaining_source_context_gap_cases(current_decisions)
+
+    baseline_gap_count = _data_gap_count(
+        baseline_report,
+        "no_source_context_for_required_source",
+    )
+    current_gap_count = _data_gap_count(
+        current_report,
+        "no_source_context_for_required_source",
+    )
+    baseline_fallback_count = _fallback_agent_count(baseline_report)
+    current_fallback_count = _fallback_agent_count(current_report)
+    fallback_delta = current_fallback_count - baseline_fallback_count
+    gap_delta = current_gap_count - baseline_gap_count
+    fallback_reduction = baseline_fallback_count - current_fallback_count
+    gap_reduction = baseline_gap_count - current_gap_count
+
+    if fallback_reduction > 0 or gap_reduction > 0:
+        status = "improved_with_source_context_signals"
+    elif int(_mapping(signal_report.get("summary")).get("promoted_signal_count") or 0):
+        status = "signals_available_no_dispatch_change"
+    else:
+        status = "no_source_context_signals"
+
+    return {
+        "status": status,
+        "source_context_signal_summary": dict(_mapping(signal_report.get("summary"))),
+        "baseline_without_source_context_signals": _compact_dry_run_report(
+            baseline_report,
+        ),
+        "with_source_context_signals": _compact_dry_run_report(current_report),
+        "delta": {
+            "fallback_agent_count": fallback_delta,
+            "fallback_agent_count_reduction": fallback_reduction,
+            "no_source_context_for_required_source": gap_delta,
+            "no_source_context_for_required_source_reduction": gap_reduction,
+        },
+        "improved_case_count": len(improved_cases),
+        "improved_cases": improved_cases,
+        "remaining_no_source_context_gap_count": len(remaining_gap_cases),
+        "remaining_no_source_context_gap_cases": remaining_gap_cases,
+        "artifacts": {
+            "source_context_signal_report_path": str(signal_report_path),
+            "source_context_signal_manifest_path": str(signal_manifest_path),
+            "source_context_signal_output_path": str(signal_output_path),
+            "dry_run_without_source_context_report_path": str(
+                _mapping(baseline_report["artifacts"])["report_path"]
+            ),
+            "dry_run_with_source_context_report_path": str(
+                _mapping(current_report["artifacts"])["report_path"]
+            ),
+            "dry_run_without_source_context_decision_path": str(
+                _mapping(baseline_report["artifacts"])["decision_path"]
+            ),
+            "dry_run_with_source_context_decision_path": str(
+                _mapping(current_report["artifacts"])["decision_path"]
+            ),
+        },
+    }
+
+
+def _compact_dry_run_report(report: Mapping[str, Any]) -> dict[str, Any]:
+    summary = _mapping(report.get("summary"))
+    evaluation = _mapping(report.get("evaluation"))
+    return {
+        "decision_count": int(summary.get("decision_count") or 0),
+        "fallback_agent_count": int(summary.get("fallback_agent_count") or 0),
+        "data_gap_counts": dict(_mapping(summary.get("data_gap_counts"))),
+        "fallback_reason_counts": dict(_mapping(summary.get("fallback_reason_counts"))),
+        "counts_by_execution_owner": dict(
+            _mapping(summary.get("counts_by_execution_owner"))
+        ),
+        "action_accuracy": _float_or_none(evaluation.get("action_accuracy")),
+        "source_dependency_accuracy": _float_or_none(
+            evaluation.get("source_dependency_accuracy")
+        ),
+        "decision_basis_accuracy": _float_or_none(
+            evaluation.get("decision_basis_accuracy")
+        ),
+    }
+
+
+def _build_source_context_improved_cases(
+    baseline_decisions: Sequence[Mapping[str, Any]],
+    current_decisions: Sequence[Mapping[str, Any]],
+) -> list[dict[str, Any]]:
+    current_by_example_id = {
+        str(item.get("example_id") or ""): item for item in current_decisions
+    }
+    cases: list[dict[str, Any]] = []
+    for baseline in baseline_decisions:
+        example_id = str(baseline.get("example_id") or "")
+        current = current_by_example_id.get(example_id)
+        if current is None:
+            continue
+        baseline_dispatch = _mapping(baseline.get("dispatch"))
+        current_dispatch = _mapping(current.get("dispatch"))
+        if not bool(baseline_dispatch.get("fallback_agent")):
+            continue
+        if bool(current_dispatch.get("fallback_agent")):
+            continue
+        cases.append(
+            {
+                "example_id": example_id,
+                "case_id": str(baseline.get("case_id") or ""),
+                "case_type": str(baseline.get("source_case_type") or ""),
+                "recommended_action": str(
+                    _mapping(current.get("action_router")).get(
+                        "recommended_action",
+                    )
+                    or ""
+                ),
+                "source_dependency": str(
+                    _mapping(current.get("source_dependency_router")).get(
+                        "recommended_source_dependency",
+                    )
+                    or ""
+                ),
+                "removed_fallback_reasons": _list_difference(
+                    baseline_dispatch.get("fallback_reasons"),
+                    current_dispatch.get("fallback_reasons"),
+                ),
+                "removed_data_gap_tags": _list_difference(
+                    baseline_dispatch.get("data_gap_tags"),
+                    current_dispatch.get("data_gap_tags"),
+                ),
+                "source_context": dict(_mapping(current.get("source_context"))),
+            }
+        )
+    return sorted(cases, key=lambda item: (item["case_type"], item["case_id"]))
+
+
+def _build_remaining_source_context_gap_cases(
+    decisions: Sequence[Mapping[str, Any]],
+) -> list[dict[str, Any]]:
+    cases: list[dict[str, Any]] = []
+    for decision in decisions:
+        dispatch = _mapping(decision.get("dispatch"))
+        data_gap_tags = dispatch.get("data_gap_tags")
+        if "no_source_context_for_required_source" not in _string_list(data_gap_tags):
+            continue
+        cases.append(
+            {
+                "example_id": str(decision.get("example_id") or ""),
+                "case_id": str(decision.get("case_id") or ""),
+                "case_type": str(decision.get("source_case_type") or ""),
+                "recommended_action": str(
+                    _mapping(decision.get("action_router")).get(
+                        "recommended_action",
+                    )
+                    or ""
+                ),
+                "source_dependency": str(
+                    _mapping(decision.get("source_dependency_router")).get(
+                        "recommended_source_dependency",
+                    )
+                    or ""
+                ),
+                "data_gap_tags": _string_list(data_gap_tags),
+            }
+        )
+    return sorted(cases, key=lambda item: (item["case_type"], item["case_id"]))
+
+
+def _data_gap_count(report: Mapping[str, Any], tag: str) -> int:
+    return int(
+        _mapping(_mapping(report.get("summary")).get("data_gap_counts")).get(tag)
+        or 0
+    )
+
+
+def _fallback_agent_count(report: Mapping[str, Any]) -> int:
+    return int(_mapping(report.get("summary")).get("fallback_agent_count") or 0)
+
+
 def _compact_source_dependency_rank(rank: Mapping[str, Any]) -> dict[str, Any]:
     return {
         "policy_name": str(rank.get("policy_name") or ""),
@@ -272,8 +542,10 @@ def _compact_source_dependency_policy_report(
 def _build_task_leaderboard(
     effectiveness: Mapping[str, Any],
     source_dependency: Mapping[str, Any],
+    source_context_router: Mapping[str, Any],
 ) -> list[dict[str, Any]]:
     source_best = _mapping(source_dependency.get("best_policy"))
+    source_context_delta = _mapping(source_context_router.get("delta"))
     return [
         {
             "task": "action_routing",
@@ -300,6 +572,27 @@ def _build_task_leaderboard(
             ),
             "mismatch_count": int(source_best.get("mismatch_count") or 0),
             "gate_passed": bool(source_dependency.get("gate_passed")),
+        },
+        {
+            "task": "dry_run_dispatch",
+            "best_policy": "tiny_model_with_source_context_signals",
+            "baseline_policy": "tiny_model_without_source_context_signals",
+            "primary_metric": "fallback_agent_count_reduction",
+            "primary_accuracy": int(
+                source_context_delta.get("fallback_agent_count_reduction") or 0
+            ),
+            "secondary_metric": "no_source_context_gap_reduction",
+            "secondary_accuracy": int(
+                source_context_delta.get(
+                    "no_source_context_for_required_source_reduction",
+                )
+                or 0
+            ),
+            "mismatch_count": 0,
+            "gate_passed": bool(
+                source_context_router.get("status")
+                != "no_source_context_signals"
+            ),
         },
     ]
 
@@ -429,6 +722,28 @@ def _resolve_repo_path(repo_root: Path, path: str | Path) -> Path:
     if not resolved.is_absolute():
         resolved = repo_root / resolved
     return resolved
+
+
+def _load_jsonl(path: str | Path) -> list[dict[str, Any]]:
+    records: list[dict[str, Any]] = []
+    for line in Path(path).read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        item = json.loads(line)
+        if isinstance(item, Mapping):
+            records.append(dict(item))
+    return records
+
+
+def _list_difference(old_value: Any, new_value: Any) -> list[str]:
+    new_items = set(_string_list(new_value))
+    return [item for item in _string_list(old_value) if item not in new_items]
+
+
+def _string_list(value: Any) -> list[str]:
+    if not isinstance(value, Sequence) or isinstance(value, (str, bytes)):
+        return []
+    return [str(item) for item in value]
 
 
 def _validate_split(value: str, *, label: str) -> None:
