@@ -504,6 +504,7 @@ def _auxiliary_signal_features(example: Mapping[str, Any]) -> tuple[str, ...]:
                 max_tokens=8,
             )
         )
+        features.extend(_aux_source_context_features(signals))
         mask_count = _number(signals.get("mask_count"))
         if mask_count is not None:
             features.append(f"aux_signal.sam_mask_count:{_mask_count_bucket(mask_count)}")
@@ -516,6 +517,39 @@ def _auxiliary_signal_features(example: Mapping[str, Any]) -> tuple[str, ...]:
         if boundary_complexity:
             features.append(f"aux_signal.boundary_complexity:{boundary_complexity}")
     return tuple(features)
+
+
+def _aux_source_context_features(signals: Mapping[str, Any]) -> tuple[str, ...]:
+    features: list[str] = []
+    tags = signals.get("source_context_tags")
+    if isinstance(tags, Sequence) and not isinstance(tags, (str, bytes)):
+        for tag in tags:
+            safe_tag = _safe_source_context_tag(str(tag or ""))
+            if safe_tag:
+                features.append(f"aux_signal.source_context_tag:{safe_tag}")
+
+    source_artifacts = _mapping(signals.get("source_artifacts"))
+    artifact_kind_counts = source_artifacts.get("artifact_kind_counts")
+    if isinstance(artifact_kind_counts, Mapping):
+        for kind, count in sorted(artifact_kind_counts.items()):
+            if _positive_number(count):
+                safe_kind = _safe_source_context_tag(str(kind or ""))
+                if safe_kind:
+                    features.append(f"aux_signal.source_artifact_kind:{safe_kind}")
+
+    source_image = _mapping(signals.get("source_image"))
+    if bool(source_image.get("available")):
+        features.append("aux_signal.source_image:present")
+    aspect = _safe_source_context_tag(str(source_image.get("aspect") or ""))
+    if aspect:
+        features.append(f"aux_signal.source_image_aspect:{aspect}")
+    return tuple(features)
+
+
+def _safe_source_context_tag(value: str) -> str:
+    normalized = value.strip().lower().replace(" ", "_")
+    cleaned = re.sub(r"[^a-z0-9_.:-]+", "_", normalized).strip("_")
+    return cleaned[:80]
 
 
 def _aux_text_features(
