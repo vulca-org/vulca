@@ -23,6 +23,14 @@ NEXT_PROVIDER = "route_provider_failure_to_runtime_handler"
 NEXT_AGENT_BOUNDARY = "keep_agent_boundary"
 NEXT_SOURCE_CONTEXT = "recover_source_context"
 
+BOUNDARY_EXPECTED = "expected_boundary"
+BOUNDARY_UNEXPECTED = "unexpected_fallback"
+
+OWNER_TINY_ROUTER = "tiny_router"
+OWNER_RUNTIME_PROVIDER = "runtime_provider_recovery"
+OWNER_AGENT_VISUAL = "agent_visual_ownership_planner"
+OWNER_SOURCE_CONTEXT = "source_context_recovery"
+
 
 def run_fallback_residual_audit(
     *,
@@ -54,6 +62,8 @@ def run_fallback_residual_audit(
             residual_cases,
             "recommended_next_step",
         ),
+        "counts_by_boundary_status": _counter_by(residual_cases, "boundary_status"),
+        "counts_by_boundary_owner": _counter_by(residual_cases, "boundary_owner"),
         "counts_by_fallback_reason": _fallback_reason_counts(residual_cases),
         "residual_cases": residual_cases,
         "safe_handling": {
@@ -81,10 +91,15 @@ def _summary(
     source_context_gap_count = sum(
         1 for item in residual_cases if item.get("residual_kind") == RESIDUAL_SOURCE_CONTEXT_GAP
     )
+    expected_boundary_count = sum(
+        1 for item in residual_cases if item.get("boundary_status") == BOUNDARY_EXPECTED
+    )
     return {
         "decision_count": len(decisions),
         "fallback_agent_count": len(residual_cases),
         "agent_required_count": len(residual_cases) - tiny_router_candidate_count,
+        "expected_boundary_count": expected_boundary_count,
+        "unexpected_fallback_count": len(residual_cases) - expected_boundary_count,
         "tiny_router_candidate_count": tiny_router_candidate_count,
         "source_context_gap_count": source_context_gap_count,
     }
@@ -103,6 +118,7 @@ def _residual_case(decision: Mapping[str, Any]) -> dict[str, Any]:
         data_gap_tags=data_gap_tags,
         failure_hint=failure_hint,
     )
+    boundary_status, boundary_owner = _boundary(residual_kind)
     return {
         "example_id": str(decision.get("example_id") or ""),
         "case_id": str(decision.get("case_id") or ""),
@@ -117,6 +133,8 @@ def _residual_case(decision: Mapping[str, Any]) -> dict[str, Any]:
         "source_dependency": str(source_dependency.get("recommended_source_dependency") or ""),
         "decision_basis": str(source_dependency.get("recommended_decision_basis") or ""),
         "residual_kind": residual_kind,
+        "boundary_status": boundary_status,
+        "boundary_owner": boundary_owner,
         "tiny_router_candidate": tiny_candidate,
         "recommended_next_step": next_step,
     }
@@ -137,6 +155,18 @@ def _classify_residual(
     if failure_hint in {"occlusion", "under_split"}:
         return RESIDUAL_COMPLEX_OWNERSHIP, NEXT_AGENT_BOUNDARY, False
     return RESIDUAL_AGENT_ACTION, NEXT_AGENT_BOUNDARY, False
+
+
+def _boundary(residual_kind: str) -> tuple[str, str]:
+    if residual_kind == RESIDUAL_PROVIDER_RUNTIME:
+        return BOUNDARY_EXPECTED, OWNER_RUNTIME_PROVIDER
+    if residual_kind == RESIDUAL_COMPLEX_OWNERSHIP:
+        return BOUNDARY_EXPECTED, OWNER_AGENT_VISUAL
+    if residual_kind == RESIDUAL_SOURCE_CONTEXT_GAP:
+        return BOUNDARY_UNEXPECTED, OWNER_SOURCE_CONTEXT
+    if residual_kind == RESIDUAL_TINY_CONFIDENCE:
+        return BOUNDARY_UNEXPECTED, OWNER_TINY_ROUTER
+    return BOUNDARY_EXPECTED, OWNER_AGENT_VISUAL
 
 
 def _fallback_reason_counts(

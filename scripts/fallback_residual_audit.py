@@ -61,6 +61,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     print(f"Fallback agent decisions: {summary['fallback_agent_count']}")
     print(f"Tiny router candidates: {summary['tiny_router_candidate_count']}")
     print(f"Agent-required residuals: {summary['agent_required_count']}")
+    print(f"Expected boundaries: {summary['expected_boundary_count']}")
+    print(f"Unexpected fallbacks: {summary['unexpected_fallback_count']}")
     print(f"Source-context gaps: {summary['source_context_gap_count']}")
     return 0
 
