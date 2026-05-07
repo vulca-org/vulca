@@ -168,6 +168,40 @@ def main(argv: Sequence[str] | None = None) -> int:
             f"{hardest_drop.get('variant_id')} "
             f"{hardest_drop.get('accuracy_delta_vs_full')}"
         )
+    source_context_router = report["source_context_router"]
+    signal_summary = source_context_router["source_context_signal_summary"]
+    baseline_router = source_context_router["baseline_without_source_context_signals"]
+    current_router = source_context_router["with_source_context_signals"]
+    router_delta = source_context_router["delta"]
+    print(
+        "Source context signals: "
+        f"{signal_summary['promoted_signal_count']}/{signal_summary['example_count']}"
+    )
+    print(
+        "Dry-run fallback_agent_count: "
+        f"{baseline_router['fallback_agent_count']} -> "
+        f"{current_router['fallback_agent_count']} "
+        f"(reduction {router_delta['fallback_agent_count_reduction']})"
+    )
+    baseline_gap_count = baseline_router["data_gap_counts"].get(
+        "no_source_context_for_required_source",
+        0,
+    )
+    current_gap_count = current_router["data_gap_counts"].get(
+        "no_source_context_for_required_source",
+        0,
+    )
+    print(
+        "Dry-run no_source_context_for_required_source: "
+        f"{baseline_gap_count} -> {current_gap_count} "
+        f"(reduction "
+        f"{router_delta['no_source_context_for_required_source_reduction']})"
+    )
+    print(f"Dry-run improved cases: {source_context_router['improved_case_count']}")
+    print(
+        "Dry-run remaining source-context gaps: "
+        f"{source_context_router['remaining_no_source_context_gap_count']}"
+    )
     print(f"Tiny gate passed: {effectiveness['gate_passed']}")
     print(f"Data gaps: {len(report['data_gaps'])}")
     for gap in report["data_gaps"][:10]:

@@ -96,7 +96,7 @@ def test_training_effectiveness_report_includes_source_dependency_eval_and_leade
         report_path=tmp_path / "training_effectiveness_report.json",
     )
 
-    assert report["schema_version"] == 2
+    assert report["schema_version"] == 3
     assert Path(report["artifacts"]["source_dependency_eval_report_path"]).exists()
     assert Path(report["artifacts"]["source_dependency_dataset_path"]).exists()
     assert Path(report["artifacts"]["source_dependency_comparison_report_path"]).exists()
@@ -133,6 +133,62 @@ def test_training_effectiveness_report_includes_source_dependency_eval_and_leade
         "primary_accuracy": 1.0,
         "secondary_metric": "decision_basis_accuracy",
         "secondary_accuracy": 1.0,
+        "mismatch_count": 0,
+        "gate_passed": True,
+    }
+
+
+def test_training_effectiveness_report_compares_source_context_router_improvement(
+    tmp_path,
+):
+    from vulca.learning.training_effectiveness import run_training_effectiveness_report
+
+    report = run_training_effectiveness_report(
+        repo_root=ROOT,
+        output_dir=tmp_path / "effectiveness",
+        report_path=tmp_path / "training_effectiveness_report.json",
+    )
+
+    artifacts = report["artifacts"]
+    assert Path(artifacts["source_context_signal_report_path"]).exists()
+    assert Path(artifacts["source_context_signal_manifest_path"]).exists()
+    assert Path(artifacts["dry_run_without_source_context_report_path"]).exists()
+    assert Path(artifacts["dry_run_with_source_context_report_path"]).exists()
+
+    router = report["source_context_router"]
+    assert router["status"] == "improved_with_source_context_signals"
+    assert router["source_context_signal_summary"] == {
+        "example_count": 50,
+        "promoted_signal_count": 18,
+        "skipped_count": 32,
+    }
+    assert router["baseline_without_source_context_signals"]["fallback_agent_count"] == 21
+    assert router["with_source_context_signals"]["fallback_agent_count"] == 17
+    assert router["delta"] == {
+        "fallback_agent_count": -4,
+        "fallback_agent_count_reduction": 4,
+        "no_source_context_for_required_source": -4,
+        "no_source_context_for_required_source_reduction": 4,
+    }
+    assert router["improved_case_count"] == 4
+    assert router["remaining_no_source_context_gap_count"] == 15
+    assert {
+        item["case_type"] for item in router["improved_cases"]
+    } == {"redraw_case", "decompose_case"}
+    assert all(
+        item["source_context"]["source"] == "auxiliary_signal"
+        for item in router["improved_cases"]
+    )
+
+    leaderboard = {item["task"]: item for item in report["leaderboard"]}
+    assert leaderboard["dry_run_dispatch"] == {
+        "task": "dry_run_dispatch",
+        "best_policy": "tiny_model_with_source_context_signals",
+        "baseline_policy": "tiny_model_without_source_context_signals",
+        "primary_metric": "fallback_agent_count_reduction",
+        "primary_accuracy": 4,
+        "secondary_metric": "no_source_context_gap_reduction",
+        "secondary_accuracy": 4,
         "mismatch_count": 0,
         "gate_passed": True,
     }
@@ -178,6 +234,14 @@ def test_training_effectiveness_report_script_writes_report_and_prints_summary(t
         "decision_basis_accuracy=1.0"
     ) in result.stdout
     assert "Ablation hardest drop:" in result.stdout
+    assert "Source context signals: 18/50" in result.stdout
+    assert "Dry-run fallback_agent_count: 21 -> 17 (reduction 4)" in result.stdout
+    assert (
+        "Dry-run no_source_context_for_required_source: 19 -> 15 (reduction 4)"
+        in result.stdout
+    )
+    assert "Dry-run improved cases: 4" in result.stdout
+    assert "Dry-run remaining source-context gaps: 15" in result.stdout
     assert "tiny_agent_v0 action_accuracy:" in result.stdout
     assert "Data gaps: 0" in result.stdout
     assert "source.kind local_seed: eval 0/12" not in result.stdout
