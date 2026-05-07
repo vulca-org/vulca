@@ -188,6 +188,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         f"{baseline_router['runtime_recovery_count']} -> "
         f"{current_router['runtime_recovery_count']}"
     )
+    print(
+        "Dry-run visual_ownership_planner_count: "
+        f"{baseline_router['visual_ownership_planner_count']} -> "
+        f"{current_router['visual_ownership_planner_count']}"
+    )
     baseline_gap_count = baseline_router["data_gap_counts"].get(
         "no_source_context_for_required_source",
         0,

@@ -118,11 +118,12 @@ def test_dry_run_decisions_combine_action_source_dependency_and_dispatch():
             "test_decompose_source_available",
             split="test",
             case_type="decompose_case",
-            failure_type="under_segmentation",
-            preferred_action="split_layer_further",
+            failure_type="occlusion",
+            preferred_action="fallback_to_agent",
             source_dependency="required",
             source_decision_basis="image_source",
             source_context_available=True,
+            action_hint="fallback_to_agent",
         ),
     ]
 
@@ -178,12 +179,16 @@ def test_dry_run_decisions_combine_action_source_dependency_and_dispatch():
     assert provider["dispatch"]["data_gap_tags"] == []
 
     decompose = by_case["test_decompose_source_available"]
-    assert decompose["action_router"]["recommended_action"] == "split_layer_further"
+    assert decompose["action_router"]["recommended_action"] == "fallback_to_agent"
     assert decompose["source_dependency_router"]["recommended_decision_basis"] == (
         "image_source"
     )
     assert decompose["dispatch"]["fallback_agent"] is False
-    assert decompose["dispatch"]["execution_owner"] == "tiny_model"
+    assert decompose["dispatch"]["decision_owner"] == "visual_ownership_planner"
+    assert decompose["dispatch"]["execution_owner"] == "visual_ownership_planner"
+    assert decompose["dispatch"]["visual_ownership_planner"] is True
+    assert decompose["dispatch"]["visual_ownership_kind"] == "occlusion"
+    assert decompose["dispatch"]["fallback_reasons"] == []
 
 
 def test_dry_run_decisions_treat_auxiliary_source_context_signal_as_available():
@@ -326,6 +331,7 @@ def test_dry_run_decision_router_cli_writes_real_dataset_report(tmp_path):
     assert "Dry-run decision router report:" in result.stdout
     assert "Decisions: 21" in result.stdout
     assert "Runtime recovery decisions: 2" in result.stdout
+    assert "Visual ownership planner decisions: 2" in result.stdout
     assert "tiny_action_model_v1 action_accuracy: 1.0" in result.stdout
     assert "source_dependency_rule_v1 source_dependency_accuracy:" in result.stdout
     assert (output_dir / "dry_run_decisions.jsonl").exists()
@@ -336,6 +342,8 @@ def test_dry_run_decision_router_cli_writes_real_dataset_report(tmp_path):
     assert report["summary"]["counts_by_source_dependency"]["required"] > 0
     assert report["summary"]["counts_by_execution_owner"]["runtime_provider_recovery"] == 2
     assert report["summary"]["runtime_recovery_count"] == 2
+    assert report["summary"]["counts_by_execution_owner"]["visual_ownership_planner"] == 2
+    assert report["summary"]["visual_ownership_planner_count"] == 2
     assert report["evaluation"]["action_accuracy"] == 1.0
     assert report["artifacts"]["decision_path"] == str(
         output_dir / "dry_run_decisions.jsonl"
