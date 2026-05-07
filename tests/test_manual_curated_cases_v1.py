@@ -7,6 +7,7 @@ from vulca.learning.case_review import CASE_REVIEW_SPECS, load_cases
 ROOT = Path(__file__).resolve().parent.parent
 CASE_LOG = ROOT / "docs/benchmarks/learning/manual_curated_cases_v1.reviewed.jsonl"
 MANIFEST = ROOT / "docs/benchmarks/learning/manual_curated_case_source_manifest_v1.json"
+SOURCE_PACKET_DIR = ROOT / "docs/benchmarks/learning/manual_source_context_sources_v1"
 
 EXPECTED_FAILURE_TAXONOMY = {
     "pasteback_mismatch",
@@ -85,3 +86,27 @@ def test_manual_curated_case_pack_v1_exports_tiny_dataset(tmp_path):
     assert {item["source"]["kind"] for item in records} == {"manual_case_log"}
     assert {item["source"]["privacy_scope"] for item in records} == {"project"}
     assert {item["source"]["curation_status"] for item in records} == {"curated"}
+
+
+def test_manual_style_drift_case_has_reviewed_source_context_packet():
+    cases = load_cases(CASE_LOG)
+    record = next(
+        item for item in cases if item["case_id"] == "manual_v1_layer_generate_style_drift"
+    )
+
+    source_refs = record["source_refs"]
+    assert source_refs == {
+        "source_brief_path": (
+            "docs/benchmarks/learning/manual_source_context_sources_v1/"
+            "manual_v1_layer_generate_style_drift.md"
+        )
+    }
+    packet_path = ROOT / source_refs["source_brief_path"]
+    assert packet_path.exists()
+    assert packet_path.parent == SOURCE_PACKET_DIR
+    packet_text = packet_path.read_text(encoding="utf-8")
+    assert "manual_v1_layer_generate_style_drift" in packet_text
+    assert "semantic_path" in packet_text
+    assert "z_index" in packet_text
+    assert "/Users/" not in packet_text
+    assert "private://local_path" not in packet_text

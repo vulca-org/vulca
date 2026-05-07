@@ -159,22 +159,22 @@ def test_training_effectiveness_report_compares_source_context_router_improvemen
     assert router["status"] == "improved_with_source_context_signals"
     assert router["source_context_signal_summary"] == {
         "example_count": 50,
-        "promoted_signal_count": 18,
-        "skipped_count": 32,
+        "promoted_signal_count": 20,
+        "skipped_count": 30,
     }
     assert router["baseline_without_source_context_signals"]["fallback_agent_count"] == 21
-    assert router["with_source_context_signals"]["fallback_agent_count"] == 17
+    assert router["with_source_context_signals"]["fallback_agent_count"] == 15
     assert router["delta"] == {
-        "fallback_agent_count": -4,
-        "fallback_agent_count_reduction": 4,
-        "no_source_context_for_required_source": -4,
-        "no_source_context_for_required_source_reduction": 4,
+        "fallback_agent_count": -6,
+        "fallback_agent_count_reduction": 6,
+        "no_source_context_for_required_source": -6,
+        "no_source_context_for_required_source_reduction": 6,
     }
-    assert router["improved_case_count"] == 4
-    assert router["remaining_no_source_context_gap_count"] == 15
+    assert router["improved_case_count"] == 6
+    assert router["remaining_no_source_context_gap_count"] == 13
     assert {
         item["case_type"] for item in router["improved_cases"]
-    } == {"redraw_case", "decompose_case"}
+    } == {"redraw_case", "decompose_case", "layer_generate_case"}
     assert all(
         item["source_context"]["source"] == "auxiliary_signal"
         for item in router["improved_cases"]
@@ -186,9 +186,9 @@ def test_training_effectiveness_report_compares_source_context_router_improvemen
         "best_policy": "tiny_model_with_source_context_signals",
         "baseline_policy": "tiny_model_without_source_context_signals",
         "primary_metric": "fallback_agent_count_reduction",
-        "primary_accuracy": 4,
+        "primary_accuracy": 6,
         "secondary_metric": "no_source_context_gap_reduction",
-        "secondary_accuracy": 4,
+        "secondary_accuracy": 6,
         "mismatch_count": 0,
         "gate_passed": True,
     }
@@ -234,14 +234,14 @@ def test_training_effectiveness_report_script_writes_report_and_prints_summary(t
         "decision_basis_accuracy=1.0"
     ) in result.stdout
     assert "Ablation hardest drop:" in result.stdout
-    assert "Source context signals: 18/50" in result.stdout
-    assert "Dry-run fallback_agent_count: 21 -> 17 (reduction 4)" in result.stdout
+    assert "Source context signals: 20/50" in result.stdout
+    assert "Dry-run fallback_agent_count: 21 -> 15 (reduction 6)" in result.stdout
     assert (
-        "Dry-run no_source_context_for_required_source: 19 -> 15 (reduction 4)"
+        "Dry-run no_source_context_for_required_source: 19 -> 13 (reduction 6)"
         in result.stdout
     )
-    assert "Dry-run improved cases: 4" in result.stdout
-    assert "Dry-run remaining source-context gaps: 15" in result.stdout
+    assert "Dry-run improved cases: 6" in result.stdout
+    assert "Dry-run remaining source-context gaps: 13" in result.stdout
     assert "tiny_agent_v0 action_accuracy:" in result.stdout
     assert "Data gaps: 0" in result.stdout
     assert "source.kind local_seed: eval 0/12" not in result.stdout

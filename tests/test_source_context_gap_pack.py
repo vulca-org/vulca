@@ -25,24 +25,22 @@ def test_source_context_gap_pack_prioritizes_remaining_v3_router_gaps(tmp_path):
     assert report["case_type"] == "learning_source_context_gap_pack_report"
     assert report["status"] == "needs_source_context_gap_pack"
     assert report["summary"] == {
-        "remaining_gap_count": 15,
-        "source_context_gap_closable_count": 15,
-        "tiny_model_dispatch_recoverable_count": 12,
+        "remaining_gap_count": 13,
+        "source_context_gap_closable_count": 13,
+        "tiny_model_dispatch_recoverable_count": 10,
         "still_agent_required_after_source_context_count": 3,
     }
     assert report["counts_by_case_type"] == {
-        "decompose_case": 3,
-        "layer_generate_case": 6,
+        "decompose_case": 2,
+        "layer_generate_case": 5,
         "redraw_case": 6,
     }
     assert report["counts_by_source_kind"] == {
         "local_seed": 1,
-        "manual_case_log": 2,
         "synthetic_case_log": 10,
         "user_case_log": 2,
     }
     assert report["counts_by_gap_task"] == {
-        "attach_reviewed_source_artifact": 2,
         "author_synthetic_source_packet": 10,
         "recover_real_user_source_context": 2,
         "review_seed_source_dependency": 1,
@@ -50,7 +48,7 @@ def test_source_context_gap_pack_prioritizes_remaining_v3_router_gaps(tmp_path):
     assert report["counts_by_secondary_blocker"] == {
         "action_fallback_to_agent": 2,
         "low_action_confidence": 1,
-        "source_context_only": 12,
+        "source_context_only": 10,
     }
 
     groups = {item["gap_task"]: item for item in report["gap_groups"]}
@@ -106,10 +104,10 @@ def test_source_context_gap_pack_cli_writes_summary(tmp_path):
     assert result.returncode == 0, result.stderr
     assert report_path.exists()
     assert "Source context gap pack report:" in result.stdout
-    assert "Remaining source-context gaps: 15" in result.stdout
-    assert "Tiny-model dispatch recoverable after source context: 12" in result.stdout
+    assert "Remaining source-context gaps: 13" in result.stdout
+    assert "Tiny-model dispatch recoverable after source context: 10" in result.stdout
     assert "Gap task recover_real_user_source_context: 2" in result.stdout
     assert "Gap task author_synthetic_source_packet: 10" in result.stdout
 
     report = json.loads(report_path.read_text(encoding="utf-8"))
-    assert report["summary"]["remaining_gap_count"] == 15
+    assert report["summary"]["remaining_gap_count"] == 13
