@@ -471,6 +471,14 @@ def main(argv: list[str] | None = None) -> None:
         ),
     )
     cases_export.add_argument(
+        "--source-dependency-manifest",
+        default="",
+        help=(
+            "Explicit source-dependency label manifest to attach as reviewed "
+            "source-context training targets"
+        ),
+    )
+    cases_export.add_argument(
         "--no-local-seeds",
         action="store_true",
         help="Only export records from --case-log inputs",
@@ -1821,6 +1829,9 @@ def _cmd_cases(args: argparse.Namespace) -> None:
                 case_source_manifest_path=args.case_source_manifest or None,
                 auxiliary_signal_manifest_path=(
                     args.auxiliary_signal_manifest or None
+                ),
+                source_dependency_manifest_path=(
+                    args.source_dependency_manifest or None
                 ),
                 include_local_seeds=not args.no_local_seeds,
             )
