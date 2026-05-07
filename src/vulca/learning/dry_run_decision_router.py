@@ -188,6 +188,7 @@ def _decision_record(
     targets = _mapping(example.get("targets"))
     confidence = _float(action_prediction.get("confidence"), default=0.0)
     recommended_action = str(action_prediction.get("recommended_action") or "")
+    failure_hint = str(action_prediction.get("failure_hint") or "")
     source_dependency = str(source_prediction.source_dependency or "")
     decision_basis = str(source_prediction.decision_basis or "")
     target_dependency = str(targets.get("source_dependency") or "")
@@ -195,6 +196,7 @@ def _decision_record(
     source_context = _source_context_summary(example)
     dispatch = _dispatch_record(
         recommended_action=recommended_action,
+        failure_hint=failure_hint,
         action_confidence=confidence,
         min_action_confidence=min_action_confidence,
         source_dependency=source_dependency,
@@ -213,7 +215,7 @@ def _decision_record(
             "policy_name": POLICY_TINY_ACTION_MODEL,
             "recommended_action": recommended_action,
             "confidence": confidence,
-            "failure_hint": str(action_prediction.get("failure_hint") or ""),
+            "failure_hint": failure_hint,
             "rule_reason": _action_rule_reason(action_prediction),
             "target_action": str(targets.get("preferred_action") or ""),
         },
@@ -234,6 +236,7 @@ def _decision_record(
 def _dispatch_record(
     *,
     recommended_action: str,
+    failure_hint: str,
     action_confidence: float,
     min_action_confidence: float,
     source_dependency: str,
@@ -243,8 +246,13 @@ def _dispatch_record(
     fallback_reasons: list[str] = []
     data_gap_tags: list[str] = []
     confidence_calibration = ""
+    runtime_recovery = (
+        recommended_action == "fallback_to_agent" and failure_hint == "provider_failure"
+    )
+    runtime_recovery_kind = "provider_failure" if runtime_recovery else ""
     if recommended_action == "fallback_to_agent":
-        fallback_reasons.append("action_fallback_to_agent")
+        if not runtime_recovery:
+            fallback_reasons.append("action_fallback_to_agent")
     low_confidence = action_confidence < min_action_confidence
     accept_with_source_context = (
         recommended_action == "accept"
@@ -263,14 +271,26 @@ def _dispatch_record(
         data_gap_tags.append("no_source_dependency_label")
 
     fallback_agent = bool(fallback_reasons)
+    decision_owner = (
+        "runtime_provider_recovery"
+        if runtime_recovery
+        else "fallback_agent"
+        if "low_action_confidence" in fallback_reasons
+        else "tiny_model"
+    )
+    execution_owner = (
+        "runtime_provider_recovery"
+        if runtime_recovery
+        else "fallback_agent"
+        if fallback_agent
+        else "tiny_model"
+    )
     return {
-        "decision_owner": (
-            "fallback_agent"
-            if "low_action_confidence" in fallback_reasons
-            else "tiny_model"
-        ),
-        "execution_owner": "fallback_agent" if fallback_agent else "tiny_model",
+        "decision_owner": decision_owner,
+        "execution_owner": execution_owner,
         "fallback_agent": fallback_agent,
+        "runtime_recovery": runtime_recovery,
+        "runtime_recovery_kind": runtime_recovery_kind,
         "fallback_reasons": fallback_reasons,
         "data_gap_tags": data_gap_tags,
         "confidence_calibration": confidence_calibration,
@@ -313,6 +333,11 @@ def _build_summary(decisions: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         "counts_by_execution_owner": _counter_by(
             decisions,
             lambda item: _mapping(item.get("dispatch")).get("execution_owner"),
+        ),
+        "runtime_recovery_count": sum(
+            1
+            for decision in decisions
+            if bool(_mapping(decision.get("dispatch")).get("runtime_recovery"))
         ),
         "fallback_reason_counts": dict(sorted(fallback_reason_counts.items())),
         "data_gap_counts": dict(sorted(data_gap_counts.items())),

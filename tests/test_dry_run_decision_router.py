@@ -169,7 +169,12 @@ def test_dry_run_decisions_combine_action_source_dependency_and_dispatch():
     assert provider["source_dependency_router"]["recommended_decision_basis"] == (
         "metadata_only"
     )
-    assert provider["dispatch"]["fallback_reasons"] == ["action_fallback_to_agent"]
+    assert provider["dispatch"]["decision_owner"] == "runtime_provider_recovery"
+    assert provider["dispatch"]["execution_owner"] == "runtime_provider_recovery"
+    assert provider["dispatch"]["fallback_agent"] is False
+    assert provider["dispatch"]["runtime_recovery"] is True
+    assert provider["dispatch"]["runtime_recovery_kind"] == "provider_failure"
+    assert provider["dispatch"]["fallback_reasons"] == []
     assert provider["dispatch"]["data_gap_tags"] == []
 
     decompose = by_case["test_decompose_source_available"]
@@ -320,6 +325,7 @@ def test_dry_run_decision_router_cli_writes_real_dataset_report(tmp_path):
     assert result.returncode == 0, result.stderr
     assert "Dry-run decision router report:" in result.stdout
     assert "Decisions: 21" in result.stdout
+    assert "Runtime recovery decisions: 2" in result.stdout
     assert "tiny_action_model_v1 action_accuracy: 1.0" in result.stdout
     assert "source_dependency_rule_v1 source_dependency_accuracy:" in result.stdout
     assert (output_dir / "dry_run_decisions.jsonl").exists()
@@ -328,6 +334,8 @@ def test_dry_run_decision_router_cli_writes_real_dataset_report(tmp_path):
     report = json.loads(report_path.read_text(encoding="utf-8"))
     assert report["summary"]["decision_count"] == 21
     assert report["summary"]["counts_by_source_dependency"]["required"] > 0
+    assert report["summary"]["counts_by_execution_owner"]["runtime_provider_recovery"] == 2
+    assert report["summary"]["runtime_recovery_count"] == 2
     assert report["evaluation"]["action_accuracy"] == 1.0
     assert report["artifacts"]["decision_path"] == str(
         output_dir / "dry_run_decisions.jsonl"

@@ -183,6 +183,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         f"{current_router['fallback_agent_count']} "
         f"(reduction {router_delta['fallback_agent_count_reduction']})"
     )
+    print(
+        "Dry-run runtime_recovery_count: "
+        f"{baseline_router['runtime_recovery_count']} -> "
+        f"{current_router['runtime_recovery_count']}"
+    )
     baseline_gap_count = baseline_router["data_gap_counts"].get(
         "no_source_context_for_required_source",
         0,
