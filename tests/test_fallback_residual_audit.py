@@ -150,6 +150,8 @@ def test_fallback_residual_audit_classifies_remaining_agent_work(tmp_path):
         "decision_count": 6,
         "fallback_agent_count": 4,
         "agent_required_count": 4,
+        "expected_boundary_count": 4,
+        "unexpected_fallback_count": 0,
         "tiny_router_candidate_count": 0,
         "source_context_gap_count": 0,
     }
@@ -161,12 +163,30 @@ def test_fallback_residual_audit_classifies_remaining_agent_work(tmp_path):
         "keep_agent_boundary": 2,
         "route_provider_failure_to_runtime_handler": 2,
     }
+    assert report["counts_by_boundary_status"] == {
+        "expected_boundary": 4,
+    }
+    assert report["counts_by_boundary_owner"] == {
+        "agent_visual_ownership_planner": 2,
+        "runtime_provider_recovery": 2,
+    }
     assert [item["case_id"] for item in report["residual_cases"]] == [
         "decompose_occlusion",
         "redraw_under_split",
         "layer_provider_failure",
         "manual_provider_failure",
     ]
+    by_case = {item["case_id"]: item for item in report["residual_cases"]}
+    assert by_case["decompose_occlusion"]["boundary_owner"] == (
+        "agent_visual_ownership_planner"
+    )
+    assert by_case["layer_provider_failure"]["boundary_owner"] == (
+        "runtime_provider_recovery"
+    )
+    assert all(
+        item["boundary_status"] == "expected_boundary"
+        for item in report["residual_cases"]
+    )
     assert report_path.exists()
 
 
@@ -197,5 +217,7 @@ def test_fallback_residual_audit_cli_writes_summary(tmp_path):
     assert "Fallback agent decisions: 4" in result.stdout
     assert "Tiny router candidates: 0" in result.stdout
     assert "Agent-required residuals: 4" in result.stdout
+    assert "Expected boundaries: 4" in result.stdout
+    assert "Unexpected fallbacks: 0" in result.stdout
     report = json.loads(report_path.read_text(encoding="utf-8"))
     assert report["summary"]["fallback_agent_count"] == 4
