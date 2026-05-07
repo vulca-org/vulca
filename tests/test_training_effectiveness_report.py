@@ -154,14 +154,14 @@ def test_training_effectiveness_report_compares_source_context_router_improvemen
         "skipped_count": 19,
     }
     assert router["baseline_without_source_context_signals"]["fallback_agent_count"] == 21
-    assert router["with_source_context_signals"]["fallback_agent_count"] == 7
+    assert router["with_source_context_signals"]["fallback_agent_count"] == 6
     assert router["delta"] == {
-        "fallback_agent_count": -14,
-        "fallback_agent_count_reduction": 14,
+        "fallback_agent_count": -15,
+        "fallback_agent_count_reduction": 15,
         "no_source_context_for_required_source": -17,
         "no_source_context_for_required_source_reduction": 17,
     }
-    assert router["improved_case_count"] == 14
+    assert router["improved_case_count"] == 15
     assert router["remaining_no_source_context_gap_count"] == 2
     assert {item["case_type"] for item in router["improved_cases"]} == {
         "redraw_case",
@@ -176,7 +176,7 @@ def test_training_effectiveness_report_compares_source_context_router_improvemen
         "best_policy": "tiny_model_with_source_context_signals",
         "baseline_policy": "tiny_model_without_source_context_signals",
         "primary_metric": "fallback_agent_count_reduction",
-        "primary_accuracy": 14,
+        "primary_accuracy": 15,
         "secondary_metric": "no_source_context_gap_reduction",
         "secondary_accuracy": 17,
         "mismatch_count": 0,
@@ -223,9 +223,9 @@ def test_training_effectiveness_report_script_writes_report_and_prints_summary(t
     ) in result.stdout
     assert "Ablation hardest drop:" in result.stdout
     assert "Source context signals: 31/50" in result.stdout
-    assert "Dry-run fallback_agent_count: 21 -> 7 (reduction 14)" in result.stdout
+    assert "Dry-run fallback_agent_count: 21 -> 6 (reduction 15)" in result.stdout
     assert "Dry-run no_source_context_for_required_source: 19 -> 2 (reduction 17)" in result.stdout
-    assert "Dry-run improved cases: 14" in result.stdout
+    assert "Dry-run improved cases: 15" in result.stdout
     assert "Dry-run remaining source-context gaps: 2" in result.stdout
     assert "tiny_agent_v0 action_accuracy:" in result.stdout
     assert "Data gaps: 0" in result.stdout

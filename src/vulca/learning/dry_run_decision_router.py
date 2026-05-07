@@ -242,9 +242,18 @@ def _dispatch_record(
 ) -> dict[str, Any]:
     fallback_reasons: list[str] = []
     data_gap_tags: list[str] = []
+    confidence_calibration = ""
     if recommended_action == "fallback_to_agent":
         fallback_reasons.append("action_fallback_to_agent")
-    if action_confidence < min_action_confidence:
+    low_confidence = action_confidence < min_action_confidence
+    accept_with_source_context = (
+        recommended_action == "accept"
+        and source_context_available
+        and source_dependency == "required"
+    )
+    if low_confidence and accept_with_source_context:
+        confidence_calibration = "accept_with_source_context"
+    elif low_confidence:
         fallback_reasons.append("low_action_confidence")
         data_gap_tags.append("low_action_confidence")
     if source_dependency == "required" and not source_context_available:
@@ -257,13 +266,14 @@ def _dispatch_record(
     return {
         "decision_owner": (
             "fallback_agent"
-            if action_confidence < min_action_confidence
+            if "low_action_confidence" in fallback_reasons
             else "tiny_model"
         ),
         "execution_owner": "fallback_agent" if fallback_agent else "tiny_model",
         "fallback_agent": fallback_agent,
         "fallback_reasons": fallback_reasons,
         "data_gap_tags": data_gap_tags,
+        "confidence_calibration": confidence_calibration,
     }
 
 

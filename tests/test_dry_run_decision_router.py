@@ -213,6 +213,36 @@ def test_dry_run_decisions_treat_auxiliary_source_context_signal_as_available():
     }
 
 
+def test_dry_run_decisions_do_not_fallback_accepted_cases_with_source_context():
+    from vulca.learning.dry_run_decision_router import build_dry_run_decisions
+
+    train = _example("train_style", split="train")
+    accepted = _example(
+        "test_accepted_with_source_context",
+        split="test",
+        failure_type="",
+        preferred_action="accept",
+        source_dependency="required",
+        source_decision_basis="artifact_source",
+        source_context_available=True,
+    )
+
+    decisions = build_dry_run_decisions(
+        [train, accepted],
+        eval_split="test",
+        train_split="train",
+    )
+
+    assert len(decisions) == 1
+    decision = decisions[0]
+    assert decision["action_router"]["recommended_action"] == "accept"
+    assert decision["action_router"]["confidence"] < 0.5
+    assert decision["dispatch"]["fallback_agent"] is False
+    assert decision["dispatch"]["fallback_reasons"] == []
+    assert decision["dispatch"]["data_gap_tags"] == []
+    assert decision["dispatch"]["confidence_calibration"] == "accept_with_source_context"
+
+
 def test_dry_run_router_report_summarizes_counts_and_evaluation():
     from vulca.learning.dry_run_decision_router import build_dry_run_router_report
 
