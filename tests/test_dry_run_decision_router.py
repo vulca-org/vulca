@@ -69,6 +69,27 @@ def _example(
     }
 
 
+def _source_context_signal(example_id: str) -> dict:
+    return {
+        "signal_id": f"source_context_{example_id}",
+        "model": {"id": "source_context_static_v1"},
+        "signals": {
+            "status": "completed",
+            "signal_source": "source_context_static",
+            "source_context_tags": ["source_artifact:present"],
+            "source_image": {"available": False},
+            "source_artifacts": {
+                "available_count": 1,
+                "artifact_kind_counts": {"file": 1},
+            },
+        },
+        "training_use": {
+            "approved_for_auxiliary_training": True,
+            "review_status": "reviewed_promoted",
+        },
+    }
+
+
 def test_dry_run_decisions_combine_action_source_dependency_and_dispatch():
     from vulca.learning.dry_run_decision_router import build_dry_run_decisions
 
@@ -160,6 +181,38 @@ def test_dry_run_decisions_combine_action_source_dependency_and_dispatch():
     assert decompose["dispatch"]["execution_owner"] == "tiny_model"
 
 
+def test_dry_run_decisions_treat_auxiliary_source_context_signal_as_available():
+    from vulca.learning.dry_run_decision_router import build_dry_run_decisions
+
+    train = _example("train_style", split="train")
+    test = _example("test_style_aux_source_context", split="test")
+    test["source_context"] = {
+        "available": False,
+        "source_artifact_available_count": 0,
+        "source_image_available": False,
+    }
+    test["input"]["auxiliary_signals"] = [
+        _source_context_signal("example_test_style_aux_source_context")
+    ]
+
+    decisions = build_dry_run_decisions(
+        [train, test],
+        eval_split="test",
+        train_split="train",
+    )
+
+    assert len(decisions) == 1
+    dispatch = decisions[0]["dispatch"]
+    assert dispatch["fallback_agent"] is False
+    assert dispatch["fallback_reasons"] == []
+    assert dispatch["data_gap_tags"] == []
+    assert decisions[0]["source_context"] == {
+        "available": True,
+        "source": "auxiliary_signal",
+        "signal_count": 1,
+    }
+
+
 def test_dry_run_router_report_summarizes_counts_and_evaluation():
     from vulca.learning.dry_run_decision_router import build_dry_run_router_report
 
@@ -221,6 +274,8 @@ def test_dry_run_decision_router_cli_writes_real_dataset_report(tmp_path):
                 ROOT
                 / "docs/benchmarks/learning/real_source_dependency_label_manifest_v1.json"
             ),
+            "--auxiliary-signal-manifest",
+            "",
             "--split",
             "test",
         ],

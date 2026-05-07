@@ -58,6 +58,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="Reviewed source-dependency label manifest.",
     )
     parser.add_argument(
+        "--auxiliary-signal-manifest",
+        default="",
+        help="Reviewed promoted auxiliary signal manifest to attach to the dataset.",
+    )
+    parser.add_argument(
         "--no-local-seeds",
         action="store_true",
         help="Only export records from the case source manifest.",
@@ -94,6 +99,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             report_path=args.report or None,
             case_source_manifest_path=args.case_source_manifest,
             source_dependency_manifest_path=args.source_dependency_manifest,
+            auxiliary_signal_manifest_path=args.auxiliary_signal_manifest or None,
             include_local_seeds=not args.no_local_seeds,
             eval_split=args.split,
             train_split=args.train_split,
