@@ -119,6 +119,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     print(f"Dataset: {report['artifacts']['dataset_path']}")
     print(f"Decisions: {summary['decision_count']}")
     print(f"Fallback agent decisions: {summary['fallback_agent_count']}")
+    print(f"Runtime recovery decisions: {summary['runtime_recovery_count']}")
     print(
         "tiny_action_model_v1 action_accuracy: "
         f"{evaluation['action_accuracy']}"
