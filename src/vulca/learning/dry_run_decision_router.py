@@ -42,6 +42,7 @@ def run_dry_run_decision_router(
     case_log_paths: Sequence[str | Path] = (),
     case_source_manifest_path: str | Path | None = DEFAULT_CASE_SOURCE_MANIFEST,
     source_dependency_manifest_path: str | Path | None = DEFAULT_SOURCE_DEPENDENCY_MANIFEST,
+    auxiliary_signal_manifest_path: str | Path | None = None,
     include_local_seeds: bool = True,
     eval_split: str = "test",
     train_split: str = "train",
@@ -66,6 +67,10 @@ def run_dry_run_decision_router(
         root,
         source_dependency_manifest_path,
     )
+    resolved_auxiliary_signal_manifest = _resolve_optional_repo_path(
+        root,
+        auxiliary_signal_manifest_path,
+    )
 
     dataset_result = write_tiny_dataset(
         repo_root=root,
@@ -74,6 +79,7 @@ def run_dry_run_decision_router(
         case_log_paths=case_log_paths,
         case_source_manifest_path=resolved_case_source_manifest,
         source_dependency_manifest_path=resolved_source_dependency_manifest,
+        auxiliary_signal_manifest_path=resolved_auxiliary_signal_manifest,
         include_local_seeds=include_local_seeds,
     )
     examples = load_tiny_dataset_examples(dataset_path)
@@ -95,6 +101,9 @@ def run_dry_run_decision_router(
             "case_source_manifest_path": str(resolved_case_source_manifest or ""),
             "source_dependency_manifest_path": str(
                 resolved_source_dependency_manifest or ""
+            ),
+            "auxiliary_signal_manifest_path": str(
+                resolved_auxiliary_signal_manifest or ""
             ),
             "include_local_seeds": bool(include_local_seeds),
             "min_action_confidence": float(min_action_confidence),
@@ -183,13 +192,13 @@ def _decision_record(
     decision_basis = str(source_prediction.decision_basis or "")
     target_dependency = str(targets.get("source_dependency") or "")
     target_basis = str(targets.get("source_decision_basis") or "")
-    source_context_available = _source_context_available(example)
+    source_context = _source_context_summary(example)
     dispatch = _dispatch_record(
         recommended_action=recommended_action,
         action_confidence=confidence,
         min_action_confidence=min_action_confidence,
         source_dependency=source_dependency,
-        source_context_available=source_context_available,
+        source_context_available=bool(source_context["available"]),
         target_dependency=target_dependency,
     )
 
@@ -217,6 +226,7 @@ def _decision_record(
             "target_source_dependency": target_dependency,
             "target_decision_basis": target_basis,
         },
+        "source_context": source_context,
         "dispatch": dispatch,
     }
 
@@ -343,13 +353,81 @@ def _action_rule_reason(action_prediction: Mapping[str, Any]) -> str:
     return fallback_reason or str(action_prediction.get("source_policy") or "")
 
 
-def _source_context_available(example: Mapping[str, Any]) -> bool:
+def _source_context_summary(example: Mapping[str, Any]) -> dict[str, Any]:
     source_context = _mapping(example.get("source_context"))
     if isinstance(source_context.get("available"), bool):
-        return bool(source_context.get("available"))
+        available = bool(source_context.get("available"))
+        if available:
+            return {
+                "available": True,
+                "source": "source_context",
+                "signal_count": 0,
+            }
     if int(source_context.get("source_artifact_available_count") or 0) > 0:
-        return True
-    return bool(source_context.get("source_image_available"))
+        return {
+            "available": True,
+            "source": "source_context",
+            "signal_count": 0,
+        }
+    if bool(source_context.get("source_image_available")):
+        return {
+            "available": True,
+            "source": "source_context",
+            "signal_count": 0,
+        }
+
+    signal_count = _source_context_auxiliary_signal_count(example)
+    if signal_count:
+        return {
+            "available": True,
+            "source": "auxiliary_signal",
+            "signal_count": signal_count,
+        }
+    return {
+        "available": False,
+        "source": "",
+        "signal_count": 0,
+    }
+
+
+def _source_context_auxiliary_signal_count(example: Mapping[str, Any]) -> int:
+    input_block = _mapping(example.get("input"))
+    signals = input_block.get("auxiliary_signals")
+    if not isinstance(signals, Sequence) or isinstance(signals, (str, bytes)):
+        return 0
+    count = 0
+    for signal in signals:
+        if not isinstance(signal, Mapping):
+            continue
+        if not _is_promoted_source_context_signal(signal):
+            continue
+        signal_payload = _mapping(signal.get("signals"))
+        source_image = _mapping(signal_payload.get("source_image"))
+        source_artifacts = _mapping(signal_payload.get("source_artifacts"))
+        tags = signal_payload.get("source_context_tags")
+        has_tags = isinstance(tags, Sequence) and not isinstance(tags, (str, bytes)) and bool(tags)
+        if (
+            bool(source_image.get("available"))
+            or int(source_artifacts.get("available_count") or 0) > 0
+            or bool(source_artifacts.get("artifact_kind_counts"))
+            or has_tags
+        ):
+            count += 1
+    return count
+
+
+def _is_promoted_source_context_signal(signal: Mapping[str, Any]) -> bool:
+    training_use = _mapping(signal.get("training_use"))
+    if not bool(training_use.get("approved_for_auxiliary_training")):
+        return False
+    if str(training_use.get("review_status") or "") != "reviewed_promoted":
+        return False
+    signal_payload = _mapping(signal.get("signals"))
+    if str(signal_payload.get("status") or "") != "completed":
+        return False
+    model_id = str(_mapping(signal.get("model")).get("id") or "")
+    signal_source = str(signal_payload.get("signal_source") or "")
+    return model_id == "source_context_static_v1" or signal_source == "source_context_static"
 
 
 def _counter_by(
