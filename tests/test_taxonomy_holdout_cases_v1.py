@@ -7,6 +7,7 @@ from vulca.learning.case_review import CASE_REVIEW_SPECS, load_cases
 ROOT = Path(__file__).resolve().parent.parent
 CASE_LOG = ROOT / "docs/benchmarks/learning/taxonomy_holdout_cases_v1.synthetic_reviewed.jsonl"
 COMBINED_MANIFEST = ROOT / "docs/benchmarks/learning/combined_case_source_manifest_v1.json"
+SOURCE_PACKET_DIR = ROOT / "docs/benchmarks/learning/synthetic_source_context_sources_v1"
 
 TARGET_HOLDOUT_FAILURES = {
     "color_drift",
@@ -20,6 +21,19 @@ TARGET_HOLDOUT_FAILURES = {
     "provider_failure",
     "style_drift",
     "under_split",
+}
+
+EXPECTED_SYNTHETIC_SOURCE_PACKET_CASES = {
+    "taxonomy_v1_decompose_occlusion_holdout",
+    "taxonomy_v1_decompose_over_segmentation_holdout",
+    "taxonomy_v1_layer_generate_layer_order_holdout",
+    "taxonomy_v1_layer_generate_style_drift_holdout",
+    "taxonomy_v1_redraw_color_drift_holdout",
+    "taxonomy_v1_redraw_mask_leak_holdout",
+    "taxonomy_v1_redraw_mask_too_broad_holdout",
+    "taxonomy_v1_redraw_missing_detail_holdout",
+    "taxonomy_v1_redraw_pasteback_mismatch_holdout",
+    "taxonomy_v1_redraw_under_split_holdout",
 }
 
 
@@ -70,3 +84,26 @@ def test_combined_training_effectiveness_has_failure_type_holdout_coverage(tmp_p
     failure_type_coverage = report["coverage"]["failure_type"]
     for failure_type in TARGET_HOLDOUT_FAILURES:
         assert failure_type_coverage[failure_type]["eval_example_count"] >= 1
+
+
+def test_taxonomy_holdout_source_context_packets_cover_synthetic_router_gaps():
+    cases = load_cases(CASE_LOG)
+    records_by_id = {item["case_id"]: item for item in cases}
+
+    assert EXPECTED_SYNTHETIC_SOURCE_PACKET_CASES <= set(records_by_id)
+    for case_id in EXPECTED_SYNTHETIC_SOURCE_PACKET_CASES:
+        source_refs = records_by_id[case_id]["source_refs"]
+        assert source_refs == {
+            "source_brief_path": (
+                f"docs/benchmarks/learning/synthetic_source_context_sources_v1/"
+                f"{case_id}.md"
+            )
+        }
+        packet_path = ROOT / source_refs["source_brief_path"]
+        assert packet_path.exists()
+        assert packet_path.parent == SOURCE_PACKET_DIR
+        packet_text = packet_path.read_text(encoding="utf-8")
+        assert case_id in packet_text
+        assert "semantic_path" in packet_text
+        assert "/Users/" not in packet_text
+        assert "private://local_path" not in packet_text
