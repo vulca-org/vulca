@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "case_type": "learning_tiny_case_source_manifest",
+  "sources": [
+    {
+      "source_id": "source_context_challenge_cases_v1_train",
+      "kind": "synthetic_case_log",
+      "path": "source_context_challenge_cases_v1.train_reviewed.jsonl",
+      "privacy_scope": "project",
+      "curation_status": "synthetic_reviewed",
+      "preferred_split": "train"
+    },
+    {
+      "source_id": "source_context_challenge_cases_v1_test",
+      "kind": "synthetic_case_log",
+      "path": "source_context_challenge_cases_v1.test_reviewed.jsonl",
+      "privacy_scope": "project",
+      "curation_status": "synthetic_reviewed",
+      "preferred_split": "test"
+    }
+  ]
+}
