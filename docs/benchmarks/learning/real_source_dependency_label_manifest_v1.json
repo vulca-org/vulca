@@ -1,0 +1,39 @@
+{
+  "case_type": "learning_source_dependency_label_manifest",
+  "counts_by_decision_basis": {
+    "artifact_source": 6,
+    "image_source": 4,
+    "metadata_only": 2
+  },
+  "counts_by_source_dependency": {
+    "not_needed": 2,
+    "required": 10
+  },
+  "record_count": 12,
+  "schema_version": 1,
+  "sources": [
+    {
+      "approved_label_use": "source_dependency_training_label",
+      "counts_by_decision_basis": {
+        "artifact_source": 6,
+        "image_source": 4,
+        "metadata_only": 2
+      },
+      "counts_by_source_dependency": {
+        "not_needed": 2,
+        "required": 10
+      },
+      "curation_status": "reviewed_source_dependency_label",
+      "kind": "source_dependency_label_log",
+      "path": "real_source_dependency_labels_v1.reviewed.jsonl",
+      "privacy_scope": "project",
+      "record_count": 12,
+      "source_id": "real_source_dependency_labels_v1"
+    }
+  ],
+  "training_use": {
+    "approved_label_use": "source_dependency_training_label",
+    "default_training_input": false,
+    "requires_explicit_dataset_flag": true
+  }
+}
