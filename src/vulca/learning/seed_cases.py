@@ -1,4 +1,5 @@
 """Build local seed case logs from tracked Vulca artifacts."""
+
 from __future__ import annotations
 
 import hashlib
@@ -115,27 +116,30 @@ def _build_redraw_seeds(
             area_pct=0.0,
         )
         records.append(
-            build_redraw_case(
-                artwork_dir=str(Path(source_artifact).parent),
-                source_image=source_artifact,
-                layer_info=layer,
-                instruction=str(item.get("notes", "")),
-                provider="local_seed",
-                model="tracked_artifact",
-                route_requested="seed",
-                source_layer_path=source_artifact,
-                redrawn_layer_path="",
-                redraw_advisory={
-                    "route_chosen": "",
-                    "quality_gate_passed": False,
-                    "quality_failures": [str(item["failure_type"])],
-                },
-                created_at=CREATED_AT,
-                human_accept=False,
-                failure_type=str(item["failure_type"]),
-                preferred_action=str(item["preferred_action"]),
-                reviewer="seed_manifest",
-                reviewed_at=CREATED_AT,
+            _with_source_refs(
+                build_redraw_case(
+                    artwork_dir=str(Path(source_artifact).parent),
+                    source_image=source_artifact,
+                    layer_info=layer,
+                    instruction=str(item.get("notes", "")),
+                    provider="local_seed",
+                    model="tracked_artifact",
+                    route_requested="seed",
+                    source_layer_path=source_artifact,
+                    redrawn_layer_path="",
+                    redraw_advisory={
+                        "route_chosen": "",
+                        "quality_gate_passed": False,
+                        "quality_failures": [str(item["failure_type"])],
+                    },
+                    created_at=CREATED_AT,
+                    human_accept=False,
+                    failure_type=str(item["failure_type"]),
+                    preferred_action=str(item["preferred_action"]),
+                    reviewer="seed_manifest",
+                    reviewed_at=CREATED_AT,
+                ),
+                item,
             )
         )
     return records
@@ -154,23 +158,26 @@ def _build_decompose_seeds(
         manifest_file = _repo_file(root, manifest_path)
         manifest_data = json.loads(manifest_file.read_text(encoding="utf-8"))
         records.append(
-            build_decompose_case(
-                source_image=source_image,
-                mode=str(item.get("mode", "")),
-                provider=str(item.get("provider", "")),
-                model=str(item.get("model", "")),
-                tradition=str(item.get("tradition", "")),
-                output_dir=output_dir,
-                manifest_path=manifest_path,
-                manifest_data=manifest_data,
-                target_layer_hints=[],
-                created_at=CREATED_AT,
-                human_accept=bool(item.get("human_accept", False)),
-                failure_type=str(item.get("failure_type", "")),
-                preferred_action=str(item.get("preferred_action", "")),
-                reviewer="seed_manifest",
-                reviewed_at=CREATED_AT,
-                notes=str(item.get("notes", "")),
+            _with_source_refs(
+                build_decompose_case(
+                    source_image=source_image,
+                    mode=str(item.get("mode", "")),
+                    provider=str(item.get("provider", "")),
+                    model=str(item.get("model", "")),
+                    tradition=str(item.get("tradition", "")),
+                    output_dir=output_dir,
+                    manifest_path=manifest_path,
+                    manifest_data=manifest_data,
+                    target_layer_hints=[],
+                    created_at=CREATED_AT,
+                    human_accept=bool(item.get("human_accept", False)),
+                    failure_type=str(item.get("failure_type", "")),
+                    preferred_action=str(item.get("preferred_action", "")),
+                    reviewer="seed_manifest",
+                    reviewed_at=CREATED_AT,
+                    notes=str(item.get("notes", "")),
+                ),
+                item,
             )
         )
     return records
@@ -199,25 +206,28 @@ def _build_layer_generate_seeds(
                 _repo_file(root, Path(artifact_dir) / layer_file)
         layer_status = _accepted_layer_status(item)
         records.append(
-            build_layer_generate_case(
-                user_intent=str(item["user_intent"]),
-                tradition=str(item.get("tradition", "")),
-                style_constraints=_style_constraints(manifest_data),
-                layer_plan=_layer_plan(layers),
-                prompt_stack=_prompt_stack(layers),
-                provider=str(item.get("provider", "")),
-                model=str(item.get("model", "")),
-                artifact_dir=artifact_dir,
-                layer_manifest_path=layer_manifest_path,
-                layers=_layer_outputs(artifact_dir, layers, status=layer_status),
-                composite_path=composite_path,
-                preview_path=preview_path,
-                created_at=CREATED_AT,
-                human_accept=bool(item.get("human_accept", False)),
-                failure_type=str(item.get("failure_type", "")),
-                preferred_action=str(item.get("preferred_action", "")),
-                reviewer="seed_manifest",
-                reviewed_at=CREATED_AT,
+            _with_source_refs(
+                build_layer_generate_case(
+                    user_intent=str(item["user_intent"]),
+                    tradition=str(item.get("tradition", "")),
+                    style_constraints=_style_constraints(manifest_data),
+                    layer_plan=_layer_plan(layers),
+                    prompt_stack=_prompt_stack(layers),
+                    provider=str(item.get("provider", "")),
+                    model=str(item.get("model", "")),
+                    artifact_dir=artifact_dir,
+                    layer_manifest_path=layer_manifest_path,
+                    layers=_layer_outputs(artifact_dir, layers, status=layer_status),
+                    composite_path=composite_path,
+                    preview_path=preview_path,
+                    created_at=CREATED_AT,
+                    human_accept=bool(item.get("human_accept", False)),
+                    failure_type=str(item.get("failure_type", "")),
+                    preferred_action=str(item.get("preferred_action", "")),
+                    reviewer="seed_manifest",
+                    reviewed_at=CREATED_AT,
+                ),
+                item,
             )
         )
     return records
@@ -229,6 +239,16 @@ def _accepted_layer_status(item: Mapping[str, Any]) -> str:
     return "generated"
 
 
+def _with_source_refs(
+    record: dict[str, Any],
+    item: Mapping[str, Any],
+) -> dict[str, Any]:
+    source_refs = item.get("source_refs")
+    if isinstance(source_refs, Mapping):
+        record["source_refs"] = {str(key): str(value) for key, value in source_refs.items() if str(key) and str(value)}
+    return record
+
+
 def _style_constraints(manifest_data: Mapping[str, Any]) -> dict[str, Any]:
     return {
         "positive": ["tracked layered artifact", "manifest-backed layer assets"],
@@ -236,9 +256,7 @@ def _style_constraints(manifest_data: Mapping[str, Any]) -> dict[str, Any]:
         "palette": [],
         "composition": [],
         "required_motifs": [
-            str(layer.get("name", ""))
-            for layer in manifest_data.get("layers", []) or []
-            if layer.get("name")
+            str(layer.get("name", "")) for layer in manifest_data.get("layers", []) or [] if layer.get("name")
         ],
         "prohibited_motifs": [],
     }

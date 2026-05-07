@@ -10,6 +10,7 @@ CLI_ENV = dict(
     os.environ,
     PYTHONPATH=str(ROOT / "src") + os.pathsep + os.environ.get("PYTHONPATH", ""),
 )
+LOCAL_SEED_SOURCE_DIR = ROOT / "docs/benchmarks/learning/local_seed_source_context_sources_v1"
 
 
 def _read_jsonl(path: Path):
@@ -43,16 +44,40 @@ def test_build_local_seed_cases_uses_tracked_repo_artifacts():
     assert layer_generate["review"]["preferred_action"] == "accept"
     assert layer_generate["outputs"]["layers"]
     assert {item["status"] for item in layer_generate["outputs"]["layers"]} == {"accepted"}
-    assert {
-        item["outputs"]["artifact_dir"]
-        for item in bundle["layer_generate_case"]
-    } == {
+    assert {item["outputs"]["artifact_dir"] for item in bundle["layer_generate_case"]} == {
         "assets/demo/v2/layers-extract",
         "assets/demo/v2/scenario1",
         "assets/demo/v2/scenario1-redo",
         "assets/showcase/layers/great-wave",
         "assets/showcase/layers_v2/nighthawks",
     }
+
+
+def test_build_local_seed_cases_preserves_reviewed_source_refs():
+    from vulca.learning.seed_cases import DEFAULT_SEED_MANIFEST, build_local_seed_cases
+
+    bundle = build_local_seed_cases(ROOT, DEFAULT_SEED_MANIFEST)
+    seed = next(
+        item
+        for item in bundle["layer_generate_case"]
+        if item["case_id"] == "layer_generate_20260505T144500Z_e3c92ef7660d"
+    )
+
+    source_refs = seed["source_refs"]
+    assert source_refs == {
+        "source_brief_path": (
+            "docs/benchmarks/learning/local_seed_source_context_sources_v1/scenario1_redo_layer_generate.md"
+        )
+    }
+    packet_path = ROOT / source_refs["source_brief_path"]
+    assert packet_path.exists()
+    assert packet_path.parent == LOCAL_SEED_SOURCE_DIR
+    packet_text = packet_path.read_text(encoding="utf-8")
+    assert "layer_generate_20260505T144500Z_e3c92ef7660d" in packet_text
+    assert "semantic_path" in packet_text
+    assert "z_index" in packet_text
+    assert "/Users/" not in packet_text
+    assert "private://local_path" not in packet_text
 
 
 def test_write_local_seed_case_logs_creates_reviewable_jsonl(tmp_path):
