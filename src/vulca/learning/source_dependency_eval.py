@@ -258,6 +258,13 @@ def evaluate_source_dependency_policy(
     }
 
 
+def predict_source_dependency_for_example(
+    example: Mapping[str, Any],
+) -> SourceDependencyPrediction:
+    """Predict source dependency for one example using the stable rule policy."""
+    return _rule_prediction(example)
+
+
 def build_source_dependency_comparison_report(
     examples: Iterable[Mapping[str, Any]],
     *,
