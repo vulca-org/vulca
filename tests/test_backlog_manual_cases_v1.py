@@ -8,6 +8,7 @@ ROOT = Path(__file__).resolve().parent.parent
 CASE_LOG = ROOT / "docs/benchmarks/learning/backlog_manual_cases_v1.reviewed.jsonl"
 MANIFEST = ROOT / "docs/benchmarks/learning/backlog_manual_case_source_manifest_v1.json"
 COMBINED_MANIFEST = ROOT / "docs/benchmarks/learning/combined_case_source_manifest_v1.json"
+SOURCE_PACKET_DIR = ROOT / "docs/benchmarks/learning/manual_source_context_sources_v1"
 
 EXPECTED_BUCKETS = {
     ("decompose_case", "occlusion", "fallback_to_agent"),
@@ -133,3 +134,29 @@ def test_combined_dataset_includes_backlog_manual_pack(tmp_path):
         if item["source"].get("source_id") == "backlog_manual_cases_v1"
     ) == 7
     assert sum(1 for item in records if item["source"]["kind"] == "manual_case_log") == 15
+
+
+def test_backlog_under_segmentation_case_has_reviewed_source_context_packet():
+    cases = load_cases(CASE_LOG)
+    record = next(
+        item
+        for item in cases
+        if item["case_id"] == "backlog_manual_v1_decompose_under_segmentation"
+    )
+
+    source_refs = record["source_refs"]
+    assert source_refs == {
+        "source_brief_path": (
+            "docs/benchmarks/learning/manual_source_context_sources_v1/"
+            "backlog_manual_v1_decompose_under_segmentation.md"
+        )
+    }
+    packet_path = ROOT / source_refs["source_brief_path"]
+    assert packet_path.exists()
+    assert packet_path.parent == SOURCE_PACKET_DIR
+    packet_text = packet_path.read_text(encoding="utf-8")
+    assert "backlog_manual_v1_decompose_under_segmentation" in packet_text
+    assert "semantic_path" in packet_text
+    assert "multi_instance" in packet_text
+    assert "/Users/" not in packet_text
+    assert "private://local_path" not in packet_text
