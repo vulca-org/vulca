@@ -17,6 +17,7 @@ from vulca.learning.tiny_dataset import DATASET_SPLITS  # noqa: E402
 from vulca.learning.training_effectiveness import (  # noqa: E402
     DEFAULT_COMBINED_CASE_SOURCE_MANIFEST,
     DEFAULT_OUTPUT_DIR,
+    DEFAULT_SOURCE_DEPENDENCY_MANIFEST,
     format_data_gap,
     run_training_effectiveness_report,
 )
@@ -48,6 +49,17 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--case-source-manifest",
         default=str(DEFAULT_COMBINED_CASE_SOURCE_MANIFEST),
         help="Combined reviewed case source manifest.",
+    )
+    parser.add_argument(
+        "--source-dependency-manifest",
+        default=str(DEFAULT_SOURCE_DEPENDENCY_MANIFEST),
+        help="Reviewed source-dependency label manifest.",
+    )
+    parser.add_argument(
+        "--source-dependency-split",
+        default="all",
+        choices=("all", *DATASET_SPLITS),
+        help="Dataset split for source-dependency eval; default evaluates all labeled examples.",
     )
     parser.add_argument(
         "--no-local-seeds",
@@ -94,6 +106,12 @@ def main(argv: Sequence[str] | None = None) -> int:
             eval_split=args.split,
             train_split=args.train_split,
             min_eval_examples_per_bucket=args.min_eval_examples_per_bucket,
+            source_dependency_manifest_path=args.source_dependency_manifest,
+            source_dependency_eval_split=(
+                None
+                if args.source_dependency_split == "all"
+                else args.source_dependency_split
+            ),
         )
     except (ValueError, FileNotFoundError, json.JSONDecodeError) as exc:
         print(f"Error: {exc}", file=sys.stderr)
@@ -120,6 +138,26 @@ def main(argv: Sequence[str] | None = None) -> int:
         "Accuracy delta vs baseline: "
         f"{effectiveness['accuracy_delta_vs_baseline']}"
     )
+    source_dependency = report["source_dependency"]
+    source_best = source_dependency["best_policy"]
+    print(f"Source dependency labeled examples: {source_dependency['labeled_count']}")
+    print(
+        f"{source_best['policy_name']} dependency_accuracy: "
+        f"{source_best['dependency_accuracy']}"
+    )
+    print(
+        f"{source_best['policy_name']} decision_basis_accuracy: "
+        f"{source_best['decision_basis_accuracy']}"
+    )
+    for row in report["leaderboard"]:
+        if row["task"] != "source_dependency":
+            continue
+        print(
+            "Leaderboard source_dependency: "
+            f"{row['best_policy']} "
+            f"{row['primary_metric']}={row['primary_accuracy']} "
+            f"{row['secondary_metric']}={row['secondary_accuracy']}"
+        )
     hardest_drop = effectiveness.get("ablation_summary", {}).get(
         "largest_accuracy_drop",
         {},
@@ -141,6 +179,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     if not effectiveness["gate_passed"]:
         print("Training effectiveness gate failed:", file=sys.stderr)
         for violation in effectiveness["gate"].get("violations", []) or []:
+            print(f"  {violation}", file=sys.stderr)
+        return 1
+    if not source_dependency["gate_passed"]:
+        print("Source dependency effectiveness gate failed:", file=sys.stderr)
+        for violation in source_dependency["gate"].get("violations", []) or []:
             print(f"  {violation}", file=sys.stderr)
         return 1
 

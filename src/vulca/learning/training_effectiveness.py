@@ -6,12 +6,17 @@ from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 from vulca.learning.aggregated_case_source_eval import run_aggregated_case_source_eval
+from vulca.learning.source_dependency_eval import (
+    DEFAULT_SOURCE_DEPENDENCY_MANIFEST,
+    POLICY_SOURCE_DEPENDENCY_MAJORITY,
+    run_source_dependency_eval,
+)
 from vulca.learning.tiny_action_model import POLICY_TINY_ACTION_MODEL
 from vulca.learning.tiny_baseline_model import POLICY_TINY_AGENT
 from vulca.learning.tiny_dataset import DATASET_SPLITS
 
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 REPORT_CASE_TYPE = "learning_training_effectiveness_report"
 DEFAULT_OUTPUT_DIR = Path("build/training_effectiveness_report")
 DEFAULT_REPORT_NAME = "training_effectiveness_report.json"
@@ -37,10 +42,17 @@ def run_training_effectiveness_report(
     eval_split: str = "test",
     train_split: str = "train",
     min_eval_examples_per_bucket: int = 1,
+    source_dependency_manifest_path: str | Path = DEFAULT_SOURCE_DEPENDENCY_MANIFEST,
+    source_dependency_eval_split: str | None = None,
 ) -> dict[str, Any]:
     """Run combined tiny eval and summarize model effectiveness plus data gaps."""
     _validate_split(eval_split, label="eval_split")
     _validate_split(train_split, label="train_split")
+    if source_dependency_eval_split is not None:
+        _validate_split(
+            source_dependency_eval_split,
+            label="source_dependency_eval_split",
+        )
     if min_eval_examples_per_bucket < 0:
         raise ValueError("min_eval_examples_per_bucket must be >= 0")
 
@@ -49,6 +61,10 @@ def run_training_effectiveness_report(
     output.mkdir(parents=True, exist_ok=True)
     resolved_report_path = Path(report_path) if report_path else output / DEFAULT_REPORT_NAME
     resolved_manifest_path = _resolve_repo_path(root, case_source_manifest_path)
+    resolved_source_dependency_manifest_path = _resolve_repo_path(
+        root,
+        source_dependency_manifest_path,
+    )
     aggregated_output_dir = output / "aggregated"
     aggregated_report = run_aggregated_case_source_eval(
         repo_root=root,
@@ -59,12 +75,24 @@ def run_training_effectiveness_report(
         eval_split=eval_split,
         train_split=train_split,
     )
+    source_dependency_report = run_source_dependency_eval(
+        repo_root=root,
+        output_dir=output / "source_dependency",
+        case_source_manifest_path=resolved_manifest_path,
+        source_dependency_manifest_path=resolved_source_dependency_manifest_path,
+        include_local_seeds=include_local_seeds,
+        eval_split=source_dependency_eval_split,
+        train_split=train_split,
+    )
     data_gaps = _build_data_gaps(
         aggregated_report,
         min_eval_examples=min_eval_examples_per_bucket,
     )
     effectiveness = _build_effectiveness_summary(aggregated_report)
-    gate_passed = bool(effectiveness["gate_passed"])
+    source_dependency = _build_source_dependency_summary(source_dependency_report)
+    gate_passed = bool(effectiveness["gate_passed"]) and bool(
+        source_dependency["gate_passed"]
+    )
     if not gate_passed:
         status = "failed_gate"
     elif data_gaps:
@@ -83,8 +111,12 @@ def run_training_effectiveness_report(
         "inputs": {
             "repo_root": str(root),
             "case_source_manifest_path": str(resolved_manifest_path),
+            "source_dependency_manifest_path": str(
+                resolved_source_dependency_manifest_path
+            ),
             "include_local_seeds": bool(include_local_seeds),
             "min_eval_examples_per_bucket": int(min_eval_examples_per_bucket),
+            "source_dependency_eval_split": source_dependency["eval_split"],
         },
         "artifacts": {
             "report_path": str(resolved_report_path),
@@ -100,6 +132,15 @@ def run_training_effectiveness_report(
             "tiny_feature_ablation_report_path": aggregated_report["artifacts"][
                 "tiny_feature_ablation_report_path"
             ],
+            "source_dependency_eval_report_path": source_dependency_report["artifacts"][
+                "report_path"
+            ],
+            "source_dependency_dataset_path": source_dependency_report["artifacts"][
+                "dataset_path"
+            ],
+            "source_dependency_comparison_report_path": source_dependency_report[
+                "artifacts"
+            ]["comparison_report_path"],
         },
         "dataset": {
             "example_count": int(dataset_summary.get("example_count") or 0),
@@ -115,6 +156,8 @@ def run_training_effectiveness_report(
         },
         "coverage": _build_coverage_summary(aggregated_report),
         "effectiveness": effectiveness,
+        "source_dependency": source_dependency,
+        "leaderboard": _build_task_leaderboard(effectiveness, source_dependency),
         "data_gaps": data_gaps,
     }
 
@@ -164,6 +207,101 @@ def _build_effectiveness_summary(aggregated_report: Mapping[str, Any]) -> dict[s
         "gate": dict(gate),
         "policy_ranking": _policy_ranking(policy_reports),
     }
+
+
+def _build_source_dependency_summary(
+    source_dependency_report: Mapping[str, Any],
+) -> dict[str, Any]:
+    comparison = _mapping(source_dependency_report.get("comparison"))
+    policy_reports = _mapping(comparison.get("policy_reports"))
+    ranking = [
+        _compact_source_dependency_rank(item)
+        for item in comparison.get("ranked_policies", []) or []
+        if isinstance(item, Mapping)
+    ]
+    best_policy = ranking[0] if ranking else {}
+    return {
+        "gate_passed": bool(_mapping(source_dependency_report.get("gate")).get("passed")),
+        "eval_split": str(source_dependency_report.get("eval_split") or "all"),
+        "labeled_count": int(
+            _mapping(source_dependency_report.get("dataset")).get(
+                "source_dependency_labeled_count",
+            )
+            or 0
+        ),
+        "best_policy": best_policy,
+        "policy_ranking": ranking,
+        "policy_reports": {
+            str(policy_name): _compact_source_dependency_policy_report(report_value)
+            for policy_name, report_value in sorted(policy_reports.items())
+        },
+        "gate": dict(_mapping(source_dependency_report.get("gate"))),
+    }
+
+
+def _compact_source_dependency_rank(rank: Mapping[str, Any]) -> dict[str, Any]:
+    return {
+        "policy_name": str(rank.get("policy_name") or ""),
+        "dependency_accuracy": _float_or_none(rank.get("dependency_accuracy")),
+        "decision_basis_accuracy": _float_or_none(rank.get("decision_basis_accuracy")),
+        "evaluated_count": int(rank.get("evaluated_count") or 0),
+        "mismatch_count": int(rank.get("mismatch_count") or 0),
+    }
+
+
+def _compact_source_dependency_policy_report(
+    report_value: Any,
+) -> dict[str, Any]:
+    report = _mapping(report_value)
+    return {
+        "dependency_accuracy": _float_or_none(report.get("dependency_accuracy")),
+        "decision_basis_accuracy": _float_or_none(
+            report.get("decision_basis_accuracy")
+        ),
+        "dependency_labeled_count": int(
+            report.get("dependency_labeled_count") or 0
+        ),
+        "decision_basis_labeled_count": int(
+            report.get("decision_basis_labeled_count") or 0
+        ),
+        "evaluated_count": int(report.get("evaluated_count") or 0),
+        "mismatch_count": int(report.get("mismatch_count") or 0),
+    }
+
+
+def _build_task_leaderboard(
+    effectiveness: Mapping[str, Any],
+    source_dependency: Mapping[str, Any],
+) -> list[dict[str, Any]]:
+    source_best = _mapping(source_dependency.get("best_policy"))
+    return [
+        {
+            "task": "action_routing",
+            "best_policy": str(effectiveness.get("evaluated_policy") or ""),
+            "baseline_policy": str(effectiveness.get("baseline_policy") or ""),
+            "primary_metric": "action_accuracy",
+            "primary_accuracy": _float_or_none(effectiveness.get("action_accuracy")),
+            "secondary_metric": None,
+            "secondary_accuracy": None,
+            "mismatch_count": int(effectiveness.get("mismatch_count") or 0),
+            "gate_passed": bool(effectiveness.get("gate_passed")),
+        },
+        {
+            "task": "source_dependency",
+            "best_policy": str(source_best.get("policy_name") or ""),
+            "baseline_policy": POLICY_SOURCE_DEPENDENCY_MAJORITY,
+            "primary_metric": "dependency_accuracy",
+            "primary_accuracy": _float_or_none(
+                source_best.get("dependency_accuracy")
+            ),
+            "secondary_metric": "decision_basis_accuracy",
+            "secondary_accuracy": _float_or_none(
+                source_best.get("decision_basis_accuracy")
+            ),
+            "mismatch_count": int(source_best.get("mismatch_count") or 0),
+            "gate_passed": bool(source_dependency.get("gate_passed")),
+        },
+    ]
 
 
 def _policy_ranking(policy_reports: Mapping[str, Any]) -> list[dict[str, Any]]:

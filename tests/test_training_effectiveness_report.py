@@ -85,6 +85,59 @@ def test_training_effectiveness_report_uses_combined_real_manual_and_seed_data(t
     assert Path(report["artifacts"]["aggregated_report_path"]).exists()
 
 
+def test_training_effectiveness_report_includes_source_dependency_eval_and_leaderboard(
+    tmp_path,
+):
+    from vulca.learning.training_effectiveness import run_training_effectiveness_report
+
+    report = run_training_effectiveness_report(
+        repo_root=ROOT,
+        output_dir=tmp_path / "effectiveness",
+        report_path=tmp_path / "training_effectiveness_report.json",
+    )
+
+    assert report["schema_version"] == 2
+    assert Path(report["artifacts"]["source_dependency_eval_report_path"]).exists()
+    assert Path(report["artifacts"]["source_dependency_dataset_path"]).exists()
+    assert Path(report["artifacts"]["source_dependency_comparison_report_path"]).exists()
+
+    source_dependency = report["source_dependency"]
+    assert source_dependency["eval_split"] == "all"
+    assert source_dependency["gate_passed"] is True
+    assert source_dependency["labeled_count"] == 12
+    assert source_dependency["best_policy"]["policy_name"] == "source_dependency_rule_v1"
+    assert source_dependency["best_policy"]["dependency_accuracy"] == 1.0
+    assert source_dependency["best_policy"]["decision_basis_accuracy"] == 1.0
+    assert source_dependency["best_policy"]["mismatch_count"] == 0
+    assert source_dependency["policy_reports"]["source_dependency_majority"][
+        "decision_basis_accuracy"
+    ] == 0.5
+
+    leaderboard = {item["task"]: item for item in report["leaderboard"]}
+    assert leaderboard["action_routing"] == {
+        "task": "action_routing",
+        "best_policy": "tiny_action_model_v1",
+        "baseline_policy": "tiny_agent_v0",
+        "primary_metric": "action_accuracy",
+        "primary_accuracy": 1.0,
+        "secondary_metric": None,
+        "secondary_accuracy": None,
+        "mismatch_count": 0,
+        "gate_passed": True,
+    }
+    assert leaderboard["source_dependency"] == {
+        "task": "source_dependency",
+        "best_policy": "source_dependency_rule_v1",
+        "baseline_policy": "source_dependency_majority",
+        "primary_metric": "dependency_accuracy",
+        "primary_accuracy": 1.0,
+        "secondary_metric": "decision_basis_accuracy",
+        "secondary_accuracy": 1.0,
+        "mismatch_count": 0,
+        "gate_passed": True,
+    }
+
+
 def test_training_effectiveness_report_has_no_default_eval_coverage_gaps(tmp_path):
     from vulca.learning.training_effectiveness import run_training_effectiveness_report
 
@@ -116,6 +169,14 @@ def test_training_effectiveness_report_script_writes_report_and_prints_summary(t
     assert "Dataset examples: 50" in result.stdout
     assert "Eval examples: 21" in result.stdout
     assert "tiny_action_model_v1 action_accuracy: 1.0" in result.stdout
+    assert "source_dependency_rule_v1 dependency_accuracy: 1.0" in result.stdout
+    assert "source_dependency_rule_v1 decision_basis_accuracy: 1.0" in result.stdout
+    assert "Source dependency labeled examples: 12" in result.stdout
+    assert (
+        "Leaderboard source_dependency: "
+        "source_dependency_rule_v1 dependency_accuracy=1.0 "
+        "decision_basis_accuracy=1.0"
+    ) in result.stdout
     assert "Ablation hardest drop:" in result.stdout
     assert "tiny_agent_v0 action_accuracy:" in result.stdout
     assert "Data gaps: 0" in result.stdout
