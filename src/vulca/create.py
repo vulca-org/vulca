@@ -25,6 +25,7 @@ async def acreate(
     reference: str = "",
     ref_type: str = "full",
     colors: str = "",
+    content_lock: bool = False,
 ) -> CreateResult:
     """Create artwork via local pipeline or remote API (async).
 
@@ -55,6 +56,9 @@ async def acreate(
     reference:
         Reference image path or base64. Also serves as sketch input --
         providers treat both identically as ``reference_image_b64``.
+    content_lock:
+        Treat explicit subjects and visible attributes in the intent as
+        non-negotiable generation and evaluation requirements.
 
     Returns
     -------
@@ -80,6 +84,8 @@ async def acreate(
             reference=reference,
             ref_type=ref_type,
             colors=colors,
+            api_key=api_key,
+            content_lock=content_lock,
         )
     return await _create_remote(
         intent,
@@ -88,6 +94,7 @@ async def acreate(
         provider=provider,
         base_url=base_url,
         api_key=api_key,
+        content_lock=content_lock,
     )
 
 
@@ -104,6 +111,8 @@ async def _create_local(
     reference: str = "",
     ref_type: str = "full",
     colors: str = "",
+    api_key: str = "",
+    content_lock: bool = False,
 ) -> CreateResult:
     """Run the slim pipeline engine locally."""
     from vulca._image import resolve_image_input
@@ -116,6 +125,21 @@ async def _create_local(
     node_params: dict[str, dict] = {}
     if weights:
         node_params["evaluate"] = {"custom_weights": weights}
+
+    if content_lock:
+        from vulca.content_lock import extract_content_lock
+
+        lock = extract_content_lock(intent)
+        if lock.has_requirements:
+            lock_data = lock.to_dict()
+            node_params["generate"] = {
+                **node_params.get("generate", {}),
+                "content_lock": lock_data,
+            }
+            node_params["evaluate"] = {
+                **node_params.get("evaluate", {}),
+                "content_lock": lock_data,
+            }
 
     # Inject reference/colors into generate node params
     gen_params: dict[str, Any] = {}
@@ -132,6 +156,7 @@ async def _create_local(
         intent=intent,
         tradition=tradition or "default",
         provider=provider,
+        api_key=api_key,
         node_params=node_params,
         image_provider=image_provider,
         eval_mode=eval_mode,
@@ -195,6 +220,7 @@ async def _create_remote(
     provider: str = "nb2",
     base_url: str = "",
     api_key: str = "",
+    content_lock: bool = False,
 ) -> CreateResult:
     """Call remote VULCA API for creation."""
     import httpx
@@ -209,6 +235,8 @@ async def _create_remote(
         "provider": provider,
         "stream": False,
     }
+    if content_lock:
+        body["content_lock"] = True
 
     headers = {"Content-Type": "application/json"}
     if key:
@@ -257,6 +285,7 @@ def create(
     reference: str = "",
     ref_type: str = "full",
     colors: str = "",
+    content_lock: bool = False,
 ) -> CreateResult:
     """Create artwork (synchronous wrapper).
 
@@ -282,6 +311,7 @@ def create(
         reference=reference,
         ref_type=ref_type,
         colors=colors,
+        content_lock=content_lock,
     )
 
     if loop and loop.is_running():

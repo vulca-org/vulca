@@ -221,32 +221,64 @@ def _build_dynamic_suffix(
     return "\n".join(p for p in parts if p)
 
 def _extract_scoring(text: str) -> str:
-    """Extract content inside the **last** <scoring>...</scoring> block.
+    """Extract parseable scoring JSON from a two-phase VLM response.
 
-    Implements the two-phase scratchpad protocol: the model writes free-form
-    observations in <observation> tags (discarded), then structured JSON in
-    <scoring> tags (parsed). Falls back to full text for backward compatibility
-    with responses that do not use the tag protocol.
-
-    Uses rfind for the last ``</scoring>`` to avoid mis-matching when earlier
-    text (e.g. observation or JSON values) accidentally contains ``<scoring>``.
+    Prefer the last valid <scoring> block. If the model omits scoring tags,
+    strip scratchpad observation blocks and return the first balanced JSON
+    object. Falling back this way avoids Gemini scratchpad braces poisoning the
+    generic JSON parser.
     """
-    close_tag = "</scoring>"
-    close_idx = text.rfind(close_tag)
-    if close_idx == -1:
-        return text
-    prefix = text[:close_idx]
-    open_tag = "<scoring>"
-    # Search backwards for the <scoring> that yields content starting with '{'
-    search_end = len(prefix)
-    while True:
-        open_idx = prefix.rfind(open_tag, 0, search_end)
-        if open_idx == -1:
-            return text
-        candidate = prefix[open_idx + len(open_tag):].strip()
+    scoring_blocks = list(
+        re.finditer(
+            r"<scoring>\s*(.*?)\s*</scoring>",
+            text,
+            flags=re.IGNORECASE | re.DOTALL,
+        )
+    )
+    for match in reversed(scoring_blocks):
+        candidate = match.group(1).strip()
         if candidate.startswith("{"):
             return candidate
-        search_end = open_idx
+
+    without_observation = re.sub(
+        r"<observation>.*?</observation>",
+        "",
+        text,
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+    json_candidate = _first_balanced_json(without_observation)
+    if json_candidate:
+        return json_candidate
+    return text.strip()
+
+
+def _first_balanced_json(text: str) -> str:
+    start = text.find("{")
+    if start < 0:
+        return ""
+
+    depth = 0
+    in_string = False
+    escaped = False
+    for index, char in enumerate(text[start:], start=start):
+        if in_string:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == '"':
+                in_string = False
+            continue
+
+        if char == '"':
+            in_string = True
+        elif char == "{":
+            depth += 1
+        elif char == "}":
+            depth -= 1
+            if depth == 0:
+                return text[start : index + 1].strip()
+    return ""
 
 
 def _build_extra_dimensions_prompt(extras: list[dict]) -> str:
@@ -544,6 +576,7 @@ async def score_image(
     *,
     mode: str = "strict",
     model: str = "",
+    content_lock: dict | None = None,
 ) -> dict:
     """Call Gemini Vision to score an image on L1-L5.
 
@@ -572,9 +605,21 @@ async def score_image(
         {"type": "image_url", "image_url": {"url": f"data:{mime};base64,{img_b64}"}},
     ]
     if subject:
-        user_parts.append({"type": "text", "text": f"Subject/context: {subject}"})
+        user_text = f"Subject/context: {subject}"
     else:
-        user_parts.append({"type": "text", "text": "Evaluate this artwork."})
+        user_text = "Evaluate this artwork."
+    resolved_content_lock = None
+    if content_lock:
+        from vulca.content_lock import (
+            build_content_fidelity_prompt,
+            content_lock_from_dict,
+        )
+
+        resolved_content_lock = content_lock_from_dict(content_lock)
+        fidelity_prompt = build_content_fidelity_prompt(resolved_content_lock)
+        if fidelity_prompt:
+            user_text = f"{user_text}\n\n{fidelity_prompt}"
+    user_parts.append({"type": "text", "text": user_text})
 
     try:
         messages = [
@@ -651,6 +696,14 @@ async def score_image(
                 logger.debug("VLM debug dump failed: %s", _dump_exc)
 
         parsed_json = parse_llm_json(scoring_text)
+        content_fidelity_gate = None
+        if resolved_content_lock is not None:
+            from vulca.content_lock import build_content_fidelity_gate
+
+            content_fidelity_gate = build_content_fidelity_gate(
+                resolved_content_lock,
+                parsed_json,
+            )
 
         # Use _parse_vlm_response to extract and validate all fields (including extras)
         parsed = _parse_vlm_response(parsed_json, extra_keys=extra_keys)
@@ -673,6 +726,8 @@ async def score_image(
             data[f"{level}_reference_technique"] = ref_techniques.get(level, "")
         # Include risk_flags so _engine.py can read it from the flat dict
         data["risk_flags"] = parsed["risk_flags"]
+        if content_fidelity_gate is not None:
+            data["content_fidelity_gate"] = content_fidelity_gate
         # Store extra_keys and names in data so _engine.py can split core vs extra
         data["_extra_keys"] = extra_keys
         data["_extra_names"] = {e["key"]: e["name"] for e in extra_dims[:3]}

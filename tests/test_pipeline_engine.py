@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import asyncio
+
 import pytest
 
 from vulca.pipeline.node import NodeContext, PipelineNode
@@ -99,6 +101,49 @@ class TestGenerateNode:
         r1 = await node.run(ctx1)
         r2 = await node.run(ctx2)
         assert r1["candidate_id"] != r2["candidate_id"]
+
+    def test_generate_node_puts_content_lock_before_cultural_guidance(self):
+        from vulca.content_lock import extract_content_lock
+        from vulca.providers.base import ImageResult
+
+        class CapturingProvider:
+            def __init__(self):
+                self.prompts = []
+
+            async def generate(self, prompt, **kwargs):
+                self.prompts.append(prompt)
+                self.kwargs = kwargs
+                return ImageResult(
+                    image_b64="iVBORw0KGgo=",
+                    mime="image/png",
+                    metadata={"candidate_id": "captured"},
+                )
+
+        intent = (
+            "Ink and wash painting of delicate bamboo and orchid grasses beside "
+            "vertical Chinese calligraphy and red seals on aged paper."
+        )
+        provider = CapturingProvider()
+        lock = extract_content_lock(intent)
+        output = asyncio.run(
+            execute(
+                FAST,
+                PipelineInput(
+                    subject="track1_0002",
+                    intent=intent,
+                    tradition="chinese_xieyi",
+                    provider="gemini",
+                    image_provider=provider,
+                    max_rounds=1,
+                    node_params={"generate": {"content_lock": lock.to_dict()}},
+                ),
+            )
+        )
+
+        assert output.status == "completed"
+        prompt = provider.prompts[0]
+        assert prompt.index("NON-NEGOTIABLE CONTENT REQUIREMENTS") < prompt.index(intent)
+        assert "Do not replace these subjects with mountains" in prompt
 
 
 # ── EvaluateNode ────────────────────────────────────────────────────

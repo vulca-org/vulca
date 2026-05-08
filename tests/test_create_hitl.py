@@ -36,6 +36,16 @@ class TestCreateHITL:
         assert result.status == "waiting_human"
         assert result.interrupted_at == "decide"
 
+    def test_create_accepts_content_lock_argument(self):
+        result = create(
+            "Ink and wash painting of bamboo beside calligraphy.",
+            provider="mock",
+            mode="local",
+            content_lock=True,
+        )
+
+        assert result.status == "completed"
+
 
 class TestCreateWeights:
     """Custom weights change the weighted_total."""

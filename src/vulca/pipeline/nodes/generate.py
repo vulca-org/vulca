@@ -91,6 +91,24 @@ class GenerateNode(PipelineNode):
         from vulca.providers import get_image_provider
 
         prompt = ctx.get("prompt") or ctx.subject or ctx.intent
+        node_params = ctx.get("node_params") or {}
+        gen_params = node_params.get("generate") or {}
+
+        content_lock_data = gen_params.get("content_lock")
+        if content_lock_data:
+            from vulca.content_lock import (
+                build_content_lock_prompt,
+                content_lock_from_dict,
+            )
+
+            content_lock = content_lock_from_dict(content_lock_data)
+            lock_prompt = build_content_lock_prompt(content_lock)
+            if lock_prompt:
+                original_prompt = ctx.intent or prompt
+                prompt = (
+                    f"{lock_prompt}\n\n"
+                    f"USER INTENT TO PRESERVE VERBATIM:\n{original_prompt}"
+                )
 
         # Build extra kwargs with cultural guidance + improvement instructions
         extra_kwargs: dict[str, Any] = {}
@@ -106,8 +124,6 @@ class GenerateNode(PipelineNode):
 
         # Resolve reference image (top-level or node_params)
         ref_b64 = ctx.get("reference_image_b64") or ""
-        node_params = ctx.get("node_params") or {}
-        gen_params = node_params.get("generate") or {}
         if not ref_b64:
             ref_b64 = gen_params.get("reference_image_b64", "")
 

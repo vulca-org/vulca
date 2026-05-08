@@ -107,6 +107,11 @@ def main(argv: list[str] | None = None) -> None:
     create_p.add_argument("--ref-type", default="full", choices=["style", "composition", "full"],
                           help="Reference type: style, composition, or full")
     create_p.add_argument("--colors", default="", help="Hex color palette (comma-separated, e.g. '#C87F4A,#5F8A50')")
+    create_p.add_argument(
+        "--content-lock",
+        action="store_true",
+        help="Treat explicit subjects and visible attributes in the intent as non-negotiable constraints",
+    )
     create_p.add_argument("--output", "-o", default="", help="Save generated image to this path (default: ./vulca-<session>.png)")
 
     # traditions command
@@ -843,6 +848,20 @@ def _cmd_create(args: argparse.Namespace) -> None:
         node_params: dict[str, dict] = {}
         if weights:
             node_params["evaluate"] = {"custom_weights": weights}
+        if getattr(args, "content_lock", False):
+            from vulca.content_lock import extract_content_lock
+
+            lock = extract_content_lock(args.intent)
+            if lock.has_requirements:
+                lock_data = lock.to_dict()
+                node_params["generate"] = {
+                    **node_params.get("generate", {}),
+                    "content_lock": lock_data,
+                }
+                node_params["evaluate"] = {
+                    **node_params.get("evaluate", {}),
+                    "content_lock": lock_data,
+                }
 
         pipeline_input = PipelineInput(
             subject=args.subject or args.intent,
@@ -892,6 +911,7 @@ def _cmd_create(args: argparse.Namespace) -> None:
             reference=getattr(args, "reference", "") or "",
             ref_type=getattr(args, "ref_type", "full") or "full",
             colors=getattr(args, "colors", "") or "",
+            content_lock=getattr(args, "content_lock", False),
         )
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
