@@ -205,6 +205,7 @@ async def _create_local(
             elif event.payload.get("image_b64"):
                 best_image_b64 = event.payload["image_b64"]
 
+    output_dict = output.to_dict()
     return CreateResult(
         session_id=output.session_id,
         mode="create",
@@ -220,12 +221,16 @@ async def _create_local(
         rounds=[r.to_dict() for r in output.rounds],
         summary=output.summary,
         recommendations=output.recommendations,
+        risk_flags=output.risk_flags,
+        content_fidelity_gate=output.content_fidelity_gate,
+        evaluation_source=output.evaluation_source,
+        evaluation_error=output.evaluation_error,
         suggestions=suggestions,
         deviation_types=deviation_types,
         eval_mode=eval_mode,
         latency_ms=output.total_latency_ms,
         cost_usd=output.total_cost_usd,
-        raw=output.to_dict(),
+        raw=output_dict,
     )
 
 
@@ -283,6 +288,10 @@ async def _create_remote(
         rounds=data.get("rounds") or [],
         summary=data.get("summary") or "",
         recommendations=data.get("recommendations") or [],
+        risk_flags=data.get("risk_flags") or [],
+        content_fidelity_gate=data.get("content_fidelity_gate") or {},
+        evaluation_source=data.get("evaluation_source") or "",
+        evaluation_error=data.get("evaluation_error") or "",
         latency_ms=data.get("latency_ms", 0),
         cost_usd=data.get("cost_usd", 0.0),
         raw=data,

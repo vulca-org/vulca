@@ -242,7 +242,10 @@ class EvaluateNode(PipelineNode):
         # If VLM failed (quota/network error), fall back to mock scores
         if data.get("error"):
             logger.warning("VLM scoring failed, falling back to mock: %s", data["error"])
-            return EvaluateNode._mock_scores(ctx)
+            fallback = EvaluateNode._mock_scores(ctx)
+            fallback["evaluation_source"] = "mock_fallback"
+            fallback["evaluation_error"] = str(data["error"])
+            return fallback
 
         scores = {f"L{i}": data.get(f"L{i}", 0.0) for i in range(1, 6)}
         rationales = {
@@ -263,4 +266,6 @@ class EvaluateNode(PipelineNode):
             "risk_flags": data.get("risk_flags", []),
             "weighted_total": round(weighted_total, 4),
             "content_fidelity_gate": data.get("content_fidelity_gate"),
+            "evaluation_source": "vlm",
+            "evaluation_error": "",
         }

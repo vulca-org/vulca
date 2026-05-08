@@ -453,6 +453,35 @@ def test_evaluate_node_applies_vlm_content_fidelity_gate():
     assert "content_fidelity_failed" in result["risk_flags"]
 
 
+def test_evaluate_node_marks_vlm_parse_fallback_explicitly():
+    from vulca.pipeline.node import NodeContext
+    from vulca.pipeline.nodes import EvaluateNode
+
+    ctx = NodeContext(
+        subject="track1_0064",
+        intent="A Gongbi vertical hanging scroll with lotus blossoms.",
+        tradition="chinese_gongbi",
+        provider="gemini",
+        api_key="fake-key",
+    )
+    ctx.set("image_b64", "iVBORw0KGgo=")
+
+    scored = {
+        "error": "Could not parse JSON from LLM output",
+        "L1": 0.0,
+        "L2": 0.0,
+        "L3": 0.0,
+        "L4": 0.0,
+        "L5": 0.0,
+    }
+
+    with patch("vulca._vlm.score_image", new=AsyncMock(return_value=scored)):
+        result = asyncio.run(EvaluateNode().run(ctx))
+
+    assert result["evaluation_source"] == "mock_fallback"
+    assert result["evaluation_error"] == "Could not parse JSON from LLM output"
+
+
 def test_extract_scoring_falls_back_to_first_json_after_scratchpad():
     from vulca._parse import parse_llm_json
     from vulca._vlm import _extract_scoring
