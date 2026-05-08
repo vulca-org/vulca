@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import base64
 import asyncio
 
 import pytest
@@ -102,6 +103,15 @@ class TestGenerateNode:
         r2 = await node.run(ctx2)
         assert r1["candidate_id"] != r2["candidate_id"]
 
+    def test_mock_generate_suppresses_sample_id_text(self):
+        node = GenerateNode()
+        ctx = NodeContext(subject="track1_0301", intent="draw branching lines")
+
+        result = node._mock_generate(ctx)
+        svg = base64.b64decode(result["image_b64"]).decode()
+
+        assert "track1_0301" not in svg
+
     def test_generate_node_puts_content_lock_before_cultural_guidance(self):
         from vulca.content_lock import extract_content_lock
         from vulca.providers.base import ImageResult
@@ -144,6 +154,45 @@ class TestGenerateNode:
         prompt = provider.prompts[0]
         assert prompt.index("NON-NEGOTIABLE CONTENT REQUIREMENTS") < prompt.index(intent)
         assert "Do not replace these subjects with mountains" in prompt
+
+    def test_generate_node_does_not_send_sample_id_as_provider_subject_with_content_lock(self):
+        from vulca.content_lock import extract_content_lock
+        from vulca.providers.base import ImageResult
+
+        class CapturingProvider:
+            async def generate(self, prompt, **kwargs):
+                self.prompt = prompt
+                self.kwargs = kwargs
+                return ImageResult(
+                    image_b64="iVBORw0KGgo=",
+                    mime="image/png",
+                    metadata={"candidate_id": "captured"},
+                )
+
+        intent = (
+            "Abstract hand-drawn branching lines fill a rectangular frame on graph "
+            "paper in monochrome pencil style."
+        )
+        provider = CapturingProvider()
+        lock = extract_content_lock(intent)
+        output = asyncio.run(
+            execute(
+                FAST,
+                PipelineInput(
+                    subject="track1_0301",
+                    intent=intent,
+                    tradition="default",
+                    provider="gemini",
+                    image_provider=provider,
+                    max_rounds=1,
+                    node_params={"generate": {"content_lock": lock.to_dict()}},
+                ),
+            )
+        )
+
+        assert output.status == "completed"
+        assert provider.kwargs["subject"] == ""
+        assert "track1_0301" not in provider.prompt
 
 
 # ── EvaluateNode ────────────────────────────────────────────────────

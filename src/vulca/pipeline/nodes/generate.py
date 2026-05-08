@@ -6,6 +6,7 @@ import asyncio
 import base64
 import hashlib
 import logging
+import re
 import time
 from typing import Any
 
@@ -50,6 +51,10 @@ _REFINEMENT_STRATEGIES: dict[str, str] = {
         "The work should transcend technique to reach aesthetic meaning."
     ),
 }
+
+
+def _looks_like_sample_id(value: str) -> bool:
+    return bool(re.fullmatch(r"[a-z][a-z0-9]*[_-]\d{2,}", value.strip(), re.IGNORECASE))
 
 
 class GenerateNode(PipelineNode):
@@ -156,11 +161,15 @@ class GenerateNode(PipelineNode):
                     provider_name, api_key=ctx.api_key
                 )
 
+            subject_for_provider = ctx.subject or ""
+            if content_lock_data and _looks_like_sample_id(subject_for_provider):
+                subject_for_provider = ""
+
             result = await asyncio.wait_for(
                 provider_instance.generate(
                     prompt,
                     tradition=ctx.tradition,
-                    subject=ctx.subject or "",
+                    subject=subject_for_provider,
                     reference_image_b64=ref_b64,
                     **extra_kwargs,
                 ),
@@ -252,7 +261,10 @@ class GenerateNode(PipelineNode):
         tradition = ctx.tradition or "default"
         bg = GenerateNode._TRADITION_COLORS.get(tradition, "#5F8A50")
         tradition_display = tradition.replace("_", " ").title()
-        subject_display = (ctx.subject or "Untitled")[:50]
+        subject_value = ctx.subject or "Untitled"
+        if _looks_like_sample_id(subject_value):
+            subject_value = "Untitled"
+        subject_display = subject_value[:50]
         # Escape XML special characters
         for old, new in [("&", "&amp;"), ("<", "&lt;"), (">", "&gt;"), ('"', "&quot;")]:
             subject_display = subject_display.replace(old, new)

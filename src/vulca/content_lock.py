@@ -75,10 +75,15 @@ def extract_content_lock(intent: str) -> ContentLock:
 
     subjects = _extract_subjects(text)
     subjects = _replace_known_subjects(subjects, lower)
+    subjects.extend(_extract_keyword_subjects(lower))
 
     text_elements: list[str] = []
-    if re.search(r"\bvertical chinese calligraphy\b", lower):
+    if re.search(r"\bcircular calligraphy panel\b", lower):
+        text_elements.append("circular calligraphy panel")
+    elif re.search(r"\bvertical chinese calligraphy\b", lower):
         text_elements.append("vertical Chinese calligraphy")
+    elif re.search(r"\bcalligraphy along the side\b", lower):
+        text_elements.append("calligraphy along the side")
     elif re.search(r"\bcalligraphy\b", lower):
         text_elements.append("calligraphy")
     if re.search(r"\bred seals?\b", lower):
@@ -87,8 +92,28 @@ def extract_content_lock(intent: str) -> ContentLock:
     surface: list[str] = []
     if re.search(r"\baged paper\b", lower):
         surface.append("aged paper")
+    if re.search(r"\bgraph paper\b", lower):
+        surface.append("graph paper")
+    if re.search(r"\bpale beige silk ground\b", lower):
+        surface.append("pale beige silk ground")
+    if re.search(r"\bornate pale patterned border\b", lower):
+        surface.append("ornate pale patterned border")
 
     style_attributes: list[str] = []
+    if re.search(r"\bgongbi vertical hanging scroll\b", lower):
+        style_attributes.append("Gongbi vertical hanging scroll")
+    elif re.search(r"\bvertical hanging scroll\b", lower):
+        style_attributes.append("vertical hanging scroll")
+    if re.search(r"\bgongbi album leaf\b", lower):
+        style_attributes.append("Gongbi album leaf")
+    if re.search(r"\brectangular frame\b", lower):
+        style_attributes.append("rectangular frame")
+    if re.search(r"\bmonochrome pencil style\b", lower):
+        style_attributes.append("monochrome pencil style")
+    if re.search(r"\bdelicate linework\b", lower):
+        style_attributes.append("delicate linework")
+    if re.search(r"\bmuted brown tones\b", lower):
+        style_attributes.append("muted brown tones")
     if re.search(r"\bsparse brushwork\b", lower):
         style_attributes.append("sparse brushwork")
 
@@ -137,6 +162,11 @@ def build_content_lock_prompt(lock: ContentLock) -> str:
         "or unrelated tradition prototypes."
     )
     lines.append(
+        "Do not render sample IDs, filenames, watermarks, large labels, gallery "
+        "walls, exhibition labels, framed museum installations, or photographed "
+        "artwork mockups unless the user explicitly requested them."
+    )
+    lines.append(
         "If any required subject is absent, the image is a failed response even "
         "if the cultural style is strong."
     )
@@ -163,13 +193,24 @@ def build_content_fidelity_prompt(lock: ContentLock) -> str:
         )
     if lock.required_surface:
         lines.append(f"- Required surface/material: {', '.join(lock.required_surface)}")
+    if lock.required_style_attributes:
+        lines.append(
+            f"- Required style attributes: {', '.join(lock.required_style_attributes)}"
+        )
     lines.extend(
         [
+            (
+                "Also check for forbidden visual artifacts: visible sample IDs, "
+                "filenames, watermarks, large labels, gallery walls, exhibition "
+                "labels, framed museum installations, and photographed artwork mockups."
+            ),
             "Add these exact fields to the JSON inside <scoring>:",
             '"missing_required_subjects": [strings copied exactly from the required subjects list],',
             '"missing_required_text_elements": [strings copied exactly from the required text/seal list],',
             '"missing_required_surface": [strings copied exactly from the required surface/material list].',
-            "Use an empty list when every item in a category is visible.",
+            '"missing_required_style_attributes": [strings copied exactly from the required style attributes list],',
+            '"forbidden_visual_artifacts": [visible forbidden artifacts, or an empty list].',
+            "Use an empty list when every item in a category is visible or no forbidden artifact is present.",
         ]
     )
     return "\n".join(lines)
@@ -194,6 +235,13 @@ def build_content_fidelity_gate(
         "missing_required_surface": _as_string_list(
             scoring_data.get("missing_required_surface")
         ),
+        "required_style_attributes": list(content_lock.required_style_attributes),
+        "missing_required_style_attributes": _as_string_list(
+            scoring_data.get("missing_required_style_attributes")
+        ),
+        "forbidden_visual_artifacts": _as_string_list(
+            scoring_data.get("forbidden_visual_artifacts")
+        ),
     }
 
 
@@ -202,8 +250,16 @@ def apply_content_fidelity_gate(result: dict[str, Any], gate: dict[str, Any]) ->
     missing_subjects = _as_string_list(gate.get("missing_required_subjects"))
     missing_text = _as_string_list(gate.get("missing_required_text_elements"))
     missing_surface = _as_string_list(gate.get("missing_required_surface"))
+    missing_style = _as_string_list(gate.get("missing_required_style_attributes"))
+    forbidden_artifacts = _as_string_list(gate.get("forbidden_visual_artifacts"))
 
-    if not (missing_subjects or missing_text or missing_surface):
+    if not (
+        missing_subjects
+        or missing_text
+        or missing_surface
+        or missing_style
+        or forbidden_artifacts
+    ):
         return result
 
     updated = dict(result)
@@ -223,6 +279,14 @@ def apply_content_fidelity_gate(result: dict[str, Any], gate: dict[str, Any]) ->
     if missing_surface:
         rationale_parts.append(
             f"Missing required surface/material: {', '.join(missing_surface)}"
+        )
+    if missing_style:
+        rationale_parts.append(
+            f"Missing required style attributes: {', '.join(missing_style)}"
+        )
+    if forbidden_artifacts:
+        rationale_parts.append(
+            f"Forbidden visual artifacts: {', '.join(forbidden_artifacts)}"
         )
     rationales = dict(updated.get("rationales") or {})
     rationales["content_fidelity"] = "; ".join(rationale_parts)
@@ -272,6 +336,32 @@ def _replace_known_subjects(subjects: list[str], lower: str) -> list[str]:
         ]
         return _dedupe([*known, *remaining])
     return subjects
+
+
+def _extract_keyword_subjects(lower: str) -> list[str]:
+    subjects: list[str] = []
+    for pattern, label in (
+        (r"\blotus blossoms?\b", "lotus blossoms"),
+        (r"\bslender stems?\b", "slender stems"),
+        (r"\bsmall leaves\b", "small leaves"),
+        (r"\bdense tree-like network\b", "dense tree-like network"),
+        (r"\bsmall heart\b", "small heart"),
+        (r"\bgeometric marks\b", "geometric marks"),
+        (r"\bsparse branches\b", "sparse branches"),
+    ):
+        if re.search(pattern, lower):
+            subjects.append(label)
+    if re.search(r"\bhand-drawn branching lines\b", lower):
+        subjects.append("hand-drawn branching lines")
+    elif re.search(r"\bbranching lines\b", lower):
+        subjects.append("branching lines")
+    if re.search(r"\bfinely detailed bird\b", lower):
+        subjects.append("finely detailed bird")
+    elif re.search(r"\bsmall bird\b", lower):
+        subjects.append("small bird")
+    elif re.search(r"\bbird\b", lower):
+        subjects.append("bird")
+    return _dedupe(subjects)
 
 
 def _clean_subject(value: str) -> str:
