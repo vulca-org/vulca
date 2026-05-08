@@ -194,6 +194,43 @@ class TestGenerateNode:
         assert provider.kwargs["subject"] == ""
         assert "track1_0301" not in provider.prompt
 
+    def test_generate_node_puts_artifact_boundary_before_content_requirements(self):
+        from vulca.content_lock import extract_content_lock
+        from vulca.providers.base import ImageResult
+
+        class CapturingProvider:
+            async def generate(self, prompt, **kwargs):
+                self.prompt = prompt
+                return ImageResult(
+                    image_b64="iVBORw0KGgo=",
+                    mime="image/png",
+                    metadata={"candidate_id": "captured"},
+                )
+
+        intent = "Socialist Realism propaganda poster with workers and red banners."
+        provider = CapturingProvider()
+        lock = extract_content_lock(intent)
+        output = asyncio.run(
+            execute(
+                FAST,
+                PipelineInput(
+                    subject="track1_0151",
+                    intent=intent,
+                    tradition="default",
+                    provider="gemini",
+                    image_provider=provider,
+                    max_rounds=1,
+                    node_params={"generate": {"content_lock": lock.to_dict()}},
+                ),
+            )
+        )
+
+        assert output.status == "completed"
+        assert provider.prompt.index("ARTIFACT BOUNDARY REQUIREMENT") < provider.prompt.index(
+            "NON-NEGOTIABLE CONTENT REQUIREMENTS"
+        )
+        assert "flat, front-facing propaganda poster artwork" in provider.prompt
+
 
 # ── EvaluateNode ────────────────────────────────────────────────────
 

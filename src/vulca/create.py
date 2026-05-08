@@ -26,6 +26,7 @@ async def acreate(
     ref_type: str = "full",
     colors: str = "",
     content_lock: bool = False,
+    output_is_artwork_itself: bool = False,
 ) -> CreateResult:
     """Create artwork via local pipeline or remote API (async).
 
@@ -59,6 +60,9 @@ async def acreate(
     content_lock:
         Treat explicit subjects and visible attributes in the intent as
         non-negotiable generation and evaluation requirements.
+    output_is_artwork_itself:
+        Treat the requested artwork as the full output surface. Generation and
+        evaluation should reject gallery/display/mockup artifacts.
 
     Returns
     -------
@@ -86,6 +90,7 @@ async def acreate(
             colors=colors,
             api_key=api_key,
             content_lock=content_lock,
+            output_is_artwork_itself=output_is_artwork_itself,
         )
     return await _create_remote(
         intent,
@@ -95,6 +100,7 @@ async def acreate(
         base_url=base_url,
         api_key=api_key,
         content_lock=content_lock,
+        output_is_artwork_itself=output_is_artwork_itself,
     )
 
 
@@ -113,6 +119,7 @@ async def _create_local(
     colors: str = "",
     api_key: str = "",
     content_lock: bool = False,
+    output_is_artwork_itself: bool = False,
 ) -> CreateResult:
     """Run the slim pipeline engine locally."""
     from vulca._image import resolve_image_input
@@ -126,11 +133,21 @@ async def _create_local(
     if weights:
         node_params["evaluate"] = {"custom_weights": weights}
 
-    if content_lock:
-        from vulca.content_lock import extract_content_lock
+    if content_lock or output_is_artwork_itself:
+        from vulca.content_lock import ContentLock, extract_content_lock
 
-        lock = extract_content_lock(intent)
-        if lock.has_requirements:
+        artifact_boundary = output_is_artwork_itself or content_lock
+        if content_lock:
+            lock = extract_content_lock(
+                intent,
+                output_is_artwork_itself=artifact_boundary,
+            )
+        else:
+            lock = ContentLock(
+                original_intent=" ".join(intent.strip().split()),
+                output_is_artwork_itself=artifact_boundary,
+            )
+        if lock.has_requirements or lock.output_is_artwork_itself:
             lock_data = lock.to_dict()
             node_params["generate"] = {
                 **node_params.get("generate", {}),
@@ -221,6 +238,7 @@ async def _create_remote(
     base_url: str = "",
     api_key: str = "",
     content_lock: bool = False,
+    output_is_artwork_itself: bool = False,
 ) -> CreateResult:
     """Call remote VULCA API for creation."""
     import httpx
@@ -237,6 +255,8 @@ async def _create_remote(
     }
     if content_lock:
         body["content_lock"] = True
+    if output_is_artwork_itself or content_lock:
+        body["output_is_artwork_itself"] = True
 
     headers = {"Content-Type": "application/json"}
     if key:
@@ -286,6 +306,7 @@ def create(
     ref_type: str = "full",
     colors: str = "",
     content_lock: bool = False,
+    output_is_artwork_itself: bool = False,
 ) -> CreateResult:
     """Create artwork (synchronous wrapper).
 
@@ -312,6 +333,7 @@ def create(
         ref_type=ref_type,
         colors=colors,
         content_lock=content_lock,
+        output_is_artwork_itself=output_is_artwork_itself,
     )
 
     if loop and loop.is_running():

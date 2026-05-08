@@ -98,3 +98,22 @@ class TestCreateOutputParam:
         captured = capsys.readouterr()
         assert '"session_id": "s1"' in captured.out
         assert mock_create.call_args.kwargs["content_lock"] is True
+
+    def test_create_cli_accepts_output_is_artwork_itself_flag(self, capsys):
+        """create --output-is-artwork-itself should pass the artifact-boundary flag."""
+        from vulca.cli import main
+        from vulca.types import CreateResult
+
+        with patch("vulca.create", return_value=CreateResult(session_id="s1")) as mock_create:
+            main([
+                "create",
+                "Socialist Realism propaganda poster with workers.",
+                "--output-is-artwork-itself",
+                "--provider",
+                "mock",
+                "--json",
+            ])
+
+        captured = capsys.readouterr()
+        assert '"session_id": "s1"' in captured.out
+        assert mock_create.call_args.kwargs["output_is_artwork_itself"] is True

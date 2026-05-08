@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from vulca.content_lock import (
+    ContentLock,
     apply_content_fidelity_gate,
+    build_content_fidelity_gate,
     build_content_fidelity_prompt,
     build_content_lock_prompt,
     extract_content_lock,
@@ -96,6 +98,33 @@ def test_content_lock_prompt_bans_visible_ids_and_gallery_artifacts():
     assert "large labels" in prompt
 
 
+def test_artifact_boundary_prompt_for_poster_requires_flat_artwork_surface():
+    lock = ContentLock(
+        original_intent="Socialist Realism propaganda poster with workers and red banners.",
+        output_is_artwork_itself=True,
+    )
+
+    prompt = build_content_lock_prompt(lock)
+
+    assert "ARTIFACT BOUNDARY REQUIREMENT" in prompt
+    assert "artwork itself" in prompt
+    assert "flat, front-facing propaganda poster artwork" in prompt
+    assert "poster hanging on a wall" in prompt
+
+
+def test_artifact_boundary_prompt_for_scroll_rejects_catalog_displays():
+    lock = ContentLock(
+        original_intent="A Gongbi vertical hanging scroll with lotus blossoms.",
+        output_is_artwork_itself=True,
+    )
+
+    prompt = build_content_lock_prompt(lock)
+
+    assert "scroll/album-leaf artwork as the primary image surface" in prompt
+    assert "catalog spread" in prompt
+    assert "framed display" in prompt
+
+
 def test_content_fidelity_prompt_requests_missing_elements():
     lock = extract_content_lock(
         "Ink and wash painting of bamboo beside vertical Chinese calligraphy."
@@ -109,6 +138,8 @@ def test_content_fidelity_prompt_requests_missing_elements():
     assert "bamboo" in prompt
     assert "vertical Chinese calligraphy" in prompt
     assert "forbidden_visual_artifacts" in prompt
+    assert "output_is_artwork_itself" in prompt
+    assert "unwanted_visible_text" in prompt
 
 
 def test_content_fidelity_prompt_requests_missing_style_attributes():
@@ -197,6 +228,47 @@ def test_forbidden_visual_artifact_caps_high_score():
     assert gated["weighted_total"] == 0.25
     assert "content_fidelity_failed" in gated["risk_flags"]
     assert "Forbidden visual artifacts" in gated["rationales"]["content_fidelity"]
+
+
+def test_artifact_boundary_violation_caps_high_score():
+    result = {
+        "scores": {"L1": 0.95, "L2": 0.92, "L3": 1.0, "L4": 1.0, "L5": 0.94},
+        "weighted_total": 0.965,
+        "rationales": {},
+    }
+    gate = {
+        "required_output_is_artwork_itself": True,
+        "output_is_artwork_itself": False,
+        "unwanted_visible_text": True,
+    }
+
+    gated = apply_content_fidelity_gate(result, gate)
+
+    assert gated["weighted_total"] == 0.25
+    assert "content_fidelity_failed" in gated["risk_flags"]
+    assert "Output is not the artwork itself" in gated["rationales"]["content_fidelity"]
+    assert "Unwanted visible text" in gated["rationales"]["content_fidelity"]
+
+
+def test_content_fidelity_gate_reads_artifact_boundary_fields():
+    lock = ContentLock(
+        original_intent="Graph-paper branching pencil drawing.",
+        output_is_artwork_itself=True,
+    )
+
+    gate = build_content_fidelity_gate(
+        lock,
+        {
+            "forbidden_visual_artifacts": ["gallery wall"],
+            "unwanted_visible_text": True,
+            "output_is_artwork_itself": False,
+        },
+    )
+
+    assert gate["required_output_is_artwork_itself"] is True
+    assert gate["output_is_artwork_itself"] is False
+    assert gate["unwanted_visible_text"] is True
+    assert gate["forbidden_visual_artifacts"] == ["gallery wall"]
 
 
 def test_present_required_subjects_do_not_cap_score():

@@ -46,6 +46,16 @@ class TestCreateHITL:
 
         assert result.status == "completed"
 
+    def test_create_accepts_output_is_artwork_itself_argument(self):
+        result = create(
+            "Socialist Realism propaganda poster with workers.",
+            provider="mock",
+            mode="local",
+            output_is_artwork_itself=True,
+        )
+
+        assert result.status == "completed"
+
 
 class TestCreateWeights:
     """Custom weights change the weighted_total."""

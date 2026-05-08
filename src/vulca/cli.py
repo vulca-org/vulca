@@ -112,6 +112,11 @@ def main(argv: list[str] | None = None) -> None:
         action="store_true",
         help="Treat explicit subjects and visible attributes in the intent as non-negotiable constraints",
     )
+    create_p.add_argument(
+        "--output-is-artwork-itself",
+        action="store_true",
+        help="Require the output to be the artwork surface itself, not a gallery/photo/mockup display",
+    )
     create_p.add_argument("--output", "-o", default="", help="Save generated image to this path (default: ./vulca-<session>.png)")
 
     # traditions command
@@ -848,11 +853,24 @@ def _cmd_create(args: argparse.Namespace) -> None:
         node_params: dict[str, dict] = {}
         if weights:
             node_params["evaluate"] = {"custom_weights": weights}
-        if getattr(args, "content_lock", False):
-            from vulca.content_lock import extract_content_lock
+        if getattr(args, "content_lock", False) or getattr(args, "output_is_artwork_itself", False):
+            from vulca.content_lock import ContentLock, extract_content_lock
 
-            lock = extract_content_lock(args.intent)
-            if lock.has_requirements:
+            artifact_boundary = (
+                getattr(args, "output_is_artwork_itself", False)
+                or getattr(args, "content_lock", False)
+            )
+            if getattr(args, "content_lock", False):
+                lock = extract_content_lock(
+                    args.intent,
+                    output_is_artwork_itself=artifact_boundary,
+                )
+            else:
+                lock = ContentLock(
+                    original_intent=" ".join(args.intent.strip().split()),
+                    output_is_artwork_itself=artifact_boundary,
+                )
+            if lock.has_requirements or lock.output_is_artwork_itself:
                 lock_data = lock.to_dict()
                 node_params["generate"] = {
                     **node_params.get("generate", {}),
@@ -912,6 +930,7 @@ def _cmd_create(args: argparse.Namespace) -> None:
             ref_type=getattr(args, "ref_type", "full") or "full",
             colors=getattr(args, "colors", "") or "",
             content_lock=getattr(args, "content_lock", False),
+            output_is_artwork_itself=getattr(args, "output_is_artwork_itself", False),
         )
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)

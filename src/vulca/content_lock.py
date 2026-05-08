@@ -17,6 +17,7 @@ class ContentLock:
     required_surface: list[str] = field(default_factory=list)
     required_style_attributes: list[str] = field(default_factory=list)
     required_mood: list[str] = field(default_factory=list)
+    output_is_artwork_itself: bool = False
 
     @property
     def has_requirements(self) -> bool:
@@ -38,6 +39,7 @@ class ContentLock:
             "required_surface": list(self.required_surface),
             "required_style_attributes": list(self.required_style_attributes),
             "required_mood": list(self.required_mood),
+            "output_is_artwork_itself": self.output_is_artwork_itself,
         }
 
 
@@ -51,6 +53,7 @@ def content_lock_from_dict(data: dict[str, Any] | ContentLock) -> ContentLock:
         "required_surface",
         "required_style_attributes",
         "required_mood",
+        "output_is_artwork_itself",
     }
     cleaned = {key: value for key, value in data.items() if key in allowed}
     return ContentLock(
@@ -60,10 +63,15 @@ def content_lock_from_dict(data: dict[str, Any] | ContentLock) -> ContentLock:
         required_surface=_as_string_list(cleaned.get("required_surface")),
         required_style_attributes=_as_string_list(cleaned.get("required_style_attributes")),
         required_mood=_as_string_list(cleaned.get("required_mood")),
+        output_is_artwork_itself=bool(cleaned.get("output_is_artwork_itself")),
     )
 
 
-def extract_content_lock(intent: str) -> ContentLock:
+def extract_content_lock(
+    intent: str,
+    *,
+    output_is_artwork_itself: bool = True,
+) -> ContentLock:
     """Extract explicit visual requirements from a short caption-like intent.
 
     This is intentionally conservative: it locks concrete, named objects and
@@ -128,21 +136,31 @@ def extract_content_lock(intent: str) -> ContentLock:
         required_surface=_dedupe(surface),
         required_style_attributes=_dedupe(style_attributes),
         required_mood=_dedupe(mood),
+        output_is_artwork_itself=output_is_artwork_itself,
     )
 
 
 def build_content_lock_prompt(lock: ContentLock) -> str:
     """Build generation instructions that make explicit content non-negotiable."""
-    if not lock.has_requirements:
+    if not lock.has_requirements and not lock.output_is_artwork_itself:
         return ""
 
-    lines = [
-        "NON-NEGOTIABLE CONTENT REQUIREMENTS:",
-        (
-            "The following requirements come from the user's explicit request "
-            "and must be satisfied before style optimization."
-        ),
-    ]
+    lines: list[str] = []
+    if lock.output_is_artwork_itself:
+        lines.extend(_build_artifact_boundary_lines(lock.original_intent))
+
+    if lock.has_requirements:
+        if lines:
+            lines.append("")
+        lines.extend(
+            [
+                "NON-NEGOTIABLE CONTENT REQUIREMENTS:",
+                (
+                    "The following requirements come from the user's explicit request "
+                    "and must be satisfied before style optimization."
+                ),
+            ]
+        )
     if lock.required_subjects:
         lines.append(f"- Required subjects: {', '.join(lock.required_subjects)}.")
     if lock.required_text_elements:
@@ -157,25 +175,26 @@ def build_content_lock_prompt(lock: ContentLock) -> str:
         )
     if lock.required_mood:
         lines.append(f"- Required mood/composition: {', '.join(lock.required_mood)}.")
-    lines.append(
-        "Do not replace these subjects with mountains, generic landscapes, "
-        "or unrelated tradition prototypes."
-    )
-    lines.append(
-        "Do not render sample IDs, filenames, watermarks, large labels, gallery "
-        "walls, exhibition labels, framed museum installations, or photographed "
-        "artwork mockups unless the user explicitly requested them."
-    )
-    lines.append(
-        "If any required subject is absent, the image is a failed response even "
-        "if the cultural style is strong."
-    )
+    if lock.has_requirements:
+        lines.append(
+            "Do not replace these subjects with mountains, generic landscapes, "
+            "or unrelated tradition prototypes."
+        )
+        lines.append(
+            "Do not render sample IDs, filenames, watermarks, large labels, gallery "
+            "walls, exhibition labels, framed museum installations, or photographed "
+            "artwork mockups unless the user explicitly requested them."
+        )
+        lines.append(
+            "If any required subject is absent, the image is a failed response even "
+            "if the cultural style is strong."
+        )
     return "\n".join(lines)
 
 
 def build_content_fidelity_prompt(lock: ContentLock) -> str:
     """Build VLM scoring instructions for explicit content presence checks."""
-    if not lock.has_requirements:
+    if not lock.has_requirements and not lock.output_is_artwork_itself:
         return ""
 
     lines = [
@@ -197,6 +216,14 @@ def build_content_fidelity_prompt(lock: ContentLock) -> str:
         lines.append(
             f"- Required style attributes: {', '.join(lock.required_style_attributes)}"
         )
+    if lock.output_is_artwork_itself:
+        lines.append(
+            (
+                "- Required artifact boundary: output_is_artwork_itself must be true; "
+                "the image must be the requested artwork surface, not a photo, "
+                "gallery scene, installation, catalog/mockup, or framed display."
+            )
+        )
     lines.extend(
         [
             (
@@ -210,6 +237,8 @@ def build_content_fidelity_prompt(lock: ContentLock) -> str:
             '"missing_required_surface": [strings copied exactly from the required surface/material list].',
             '"missing_required_style_attributes": [strings copied exactly from the required style attributes list],',
             '"forbidden_visual_artifacts": [visible forbidden artifacts, or an empty list].',
+            '"unwanted_visible_text": true or false,',
+            '"output_is_artwork_itself": true or false.',
             "Use an empty list when every item in a category is visible or no forbidden artifact is present.",
         ]
     )
@@ -242,6 +271,13 @@ def build_content_fidelity_gate(
         "forbidden_visual_artifacts": _as_string_list(
             scoring_data.get("forbidden_visual_artifacts")
         ),
+        "required_output_is_artwork_itself": content_lock.output_is_artwork_itself,
+        "output_is_artwork_itself": _as_optional_bool(
+            scoring_data.get("output_is_artwork_itself")
+        ),
+        "unwanted_visible_text": _as_optional_bool(
+            scoring_data.get("unwanted_visible_text")
+        ),
     }
 
 
@@ -252,6 +288,13 @@ def apply_content_fidelity_gate(result: dict[str, Any], gate: dict[str, Any]) ->
     missing_surface = _as_string_list(gate.get("missing_required_surface"))
     missing_style = _as_string_list(gate.get("missing_required_style_attributes"))
     forbidden_artifacts = _as_string_list(gate.get("forbidden_visual_artifacts"))
+    required_artwork_itself = bool(gate.get("required_output_is_artwork_itself"))
+    output_is_artwork_itself = gate.get("output_is_artwork_itself")
+    unwanted_visible_text = gate.get("unwanted_visible_text")
+    artifact_boundary_failed = (
+        required_artwork_itself and output_is_artwork_itself is False
+    )
+    unwanted_text_failed = unwanted_visible_text is True
 
     if not (
         missing_subjects
@@ -259,6 +302,8 @@ def apply_content_fidelity_gate(result: dict[str, Any], gate: dict[str, Any]) ->
         or missing_surface
         or missing_style
         or forbidden_artifacts
+        or artifact_boundary_failed
+        or unwanted_text_failed
     ):
         return result
 
@@ -288,6 +333,10 @@ def apply_content_fidelity_gate(result: dict[str, Any], gate: dict[str, Any]) ->
         rationale_parts.append(
             f"Forbidden visual artifacts: {', '.join(forbidden_artifacts)}"
         )
+    if artifact_boundary_failed:
+        rationale_parts.append("Output is not the artwork itself")
+    if unwanted_text_failed:
+        rationale_parts.append("Unwanted visible text")
     rationales = dict(updated.get("rationales") or {})
     rationales["content_fidelity"] = "; ".join(rationale_parts)
     updated["rationales"] = rationales
@@ -338,6 +387,39 @@ def _replace_known_subjects(subjects: list[str], lower: str) -> list[str]:
     return subjects
 
 
+def _build_artifact_boundary_lines(intent: str) -> list[str]:
+    lower = intent.lower()
+    lines = [
+        "ARTIFACT BOUNDARY REQUIREMENT:",
+        (
+            "The output image must be the artwork itself, not a photograph or "
+            "display of the artwork."
+        ),
+        (
+            "Fill the entire canvas with the requested poster/scroll/album/artwork "
+            "surface."
+        ),
+        (
+            "Do not include gallery walls, museum displays, framed mockups, "
+            "installation views, catalog layouts, UI screens, QR codes, filename "
+            "labels, sample IDs, watermarks, or unrequested readable text."
+        ),
+        "Do not show the artwork as an object in a room.",
+    ]
+    if re.search(r"\bposter\b|\bpropaganda poster\b", lower):
+        lines.append(
+            "Render a flat, front-facing propaganda poster artwork that fills the canvas."
+        )
+        lines.append("Do not render a poster hanging on a wall or photographed in a room.")
+    if re.search(r"\bscroll\b|\balbum leaf\b|\balbum-leaf\b", lower):
+        lines.append("Render the scroll/album-leaf artwork as the primary image surface.")
+        lines.append(
+            "Do not render a gallery wall, catalog spread, side-by-side detail mockup, "
+            "or framed display."
+        )
+    return lines
+
+
 def _extract_keyword_subjects(lower: str) -> list[str]:
     subjects: list[str] = []
     for pattern, label in (
@@ -348,6 +430,8 @@ def _extract_keyword_subjects(lower: str) -> list[str]:
         (r"\bsmall heart\b", "small heart"),
         (r"\bgeometric marks\b", "geometric marks"),
         (r"\bsparse branches\b", "sparse branches"),
+        (r"\bworkers?\b", "workers"),
+        (r"\bred banners?\b", "red banners"),
     ):
         if re.search(pattern, lower):
             subjects.append(label)
@@ -379,6 +463,20 @@ def _as_string_list(value: Any) -> list[str]:
     if isinstance(value, (list, tuple)):
         return [str(item) for item in value if str(item).strip()]
     return []
+
+
+def _as_optional_bool(value: Any) -> bool | None:
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        normalized = value.strip().lower()
+        if normalized in {"true", "yes", "1"}:
+            return True
+        if normalized in {"false", "no", "0"}:
+            return False
+    return None
 
 
 def _dedupe(values: list[str]) -> list[str]:
