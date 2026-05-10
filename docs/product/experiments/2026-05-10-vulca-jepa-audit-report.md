@@ -44,6 +44,36 @@
 
 解释：`subject_drift_warning` 只说明样本需要进入 Vulca 人工/规则复核队列；当前动作为 `warn_only`，不会影响生成结果，也不会覆盖用户 override。
 
+## Pipeline Smoke 结果
+
+这一步验证 `eval_metadata` 进入 Vulca 输出层后的实际效果。
+
+| 场景 | 命令要点 | 结果 |
+| --- | --- | --- |
+| 失败 baseline evaluate | `vulca evaluate assets/demo/v3/gallery/chinese_gongbi.png --mock --eval-metadata ... --eval-inventory ...` | 显示 `vulca_jepa_subject_drift`，`warnings_total=1`，样本为 `gongbi_baseline_failed_subject` |
+| 正常 promptfix evaluate | `vulca evaluate assets/demo/v3/gallery-promptfix/chinese_gongbi_seed1.png --mock --json --eval-metadata ... --eval-inventory ...` | inventory 推导出 `current_sample_id=gongbi_promptfix_seed1`，`status=ok`，`warnings_total=0` |
+| create/local pipeline | `vulca create "Chinese gongbi single large peony flower" --provider mock --json --eval-metadata ... --eval-sample-id gongbi_baseline_failed_subject` | `raw.eval_metadata` 保留 warning，但 pipeline 仍 `decision=accept`，`weighted_total=0.7545` |
+
+结论：guard 已经能辅助 Vulca 更准确地理解“这张图可能主体跑偏”，但当前只作为审计提示。它不会修改生成图，也不会自动降低 L1-L5 分数。
+
+使用边界：`create` 没有输入图片路径，无法像 `evaluate` 一样通过 inventory 自动推导 sample_id。对 create smoke 或复现实验传入 `--eval-metadata` 时，应同时传 `--eval-sample-id`，否则输出可能携带整份 metadata 的聚合 warning。
+
+## 何时回到 Challenge
+
+可以回到 challenge 的门槛不是“JEPA 被正式用于 Vulca 评分”，而是“Vulca 侧已经证明这些视觉信号可以作为非阻塞审计元数据稳定透传”。
+
+| 门槛 | 当前状态 | 说明 |
+| --- | --- | --- |
+| Vulca-only 边界明确 | 已满足 | 实验文档已明确不做 EmoArt Track2，不读取 challenge 标签，不改提交包 |
+| 质量分流完成 | 已满足 | core=21，artifact_qa=9，黑图/低信息图不会进入主 embedding 实验 |
+| DINOv2 + SigLIP 信号跑通 | 已满足 | baseline 工笔失败样本被两个信号共同指出 |
+| guard 为 warn-only | 已满足 | `action=warn_only`，不改变 L1-L5、accept/reject、用户 override |
+| evaluate smoke | 已满足 | baseline 出 warning，promptfix 不出 warning |
+| create/local pipeline smoke | 已满足 | `raw.eval_metadata` 透传，pipeline 决策不变 |
+| 回归测试 | 已满足 | 相关 CLI/pipeline 用例通过，diff 检查通过 |
+
+因此，本次提交完成并验证后，就可以回到 challenge 工作。回去以后应在 `/Users/yhryzy/dev/emoart-130k` 里另开分支/路径，把这里得到的经验翻译成 challenge 专用实验：重新定义 challenge inventory、标签边界、Track2 guard 和提交包安全检查。不要把 Vulca 的样本、metadata 或阈值直接当作 challenge 结论。
+
 ## DINOv2 图像相似度观察
 
 | sample_id | mean_distance | nearest_sample_id | nearest_distance |
