@@ -13,6 +13,7 @@ Usage::
 from __future__ import annotations
 
 import argparse
+import json
 import logging
 import subprocess
 import sys
@@ -59,6 +60,81 @@ def _parse_weights(raw: str) -> dict[str, float]:
     return weights
 
 
+def _load_eval_metadata(path: str) -> dict:
+    if not path:
+        return {}
+    metadata_path = Path(path)
+    try:
+        data = json.loads(metadata_path.read_text(encoding="utf-8"))
+    except FileNotFoundError as exc:
+        raise ValueError(f"eval metadata file not found: {metadata_path}") from exc
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"eval metadata file is not valid JSON: {metadata_path}") from exc
+    if not isinstance(data, dict):
+        raise ValueError(f"eval metadata must be a JSON object: {metadata_path}")
+    return data
+
+
+def _load_eval_metadata_or_exit(args: argparse.Namespace) -> dict:
+    try:
+        return _load_eval_metadata(getattr(args, "eval_metadata", ""))
+    except ValueError as exc:
+        print(f"Error: {exc}", file=sys.stderr)
+        sys.exit(1)
+
+
+def _guard_action_summary(warnings: object) -> str:
+    if not isinstance(warnings, list):
+        return "n/a"
+    actions = sorted(
+        {
+            str(warning.get("action"))
+            for warning in warnings
+            if isinstance(warning, dict) and warning.get("action")
+        }
+    )
+    return ", ".join(actions) if actions else "n/a"
+
+
+def _guard_sample_summary(warnings: object) -> str:
+    if not isinstance(warnings, list):
+        return "n/a"
+    sample_ids = [
+        str(warning.get("sample_id"))
+        for warning in warnings
+        if isinstance(warning, dict) and warning.get("sample_id")
+    ]
+    if not sample_ids:
+        return "n/a"
+    shown = sample_ids[:3]
+    suffix = f" (+{len(sample_ids) - len(shown)} more)" if len(sample_ids) > len(shown) else ""
+    return ", ".join(shown) + suffix
+
+
+def _print_eval_metadata_guards(metadata: dict) -> None:
+    guards = metadata.get("guards", {})
+    if not isinstance(guards, dict):
+        return
+
+    rows: list[tuple[str, dict]] = [
+        (name, guard)
+        for name, guard in guards.items()
+        if isinstance(guard, dict) and int(guard.get("warnings_total") or 0) > 0
+    ]
+    if not rows:
+        return
+
+    print(f"\n  Eval Metadata Guards")
+    print(f"  {'=' * 50}")
+    for name, guard in rows:
+        warnings = guard.get("warnings", [])
+        total = int(guard.get("warnings_total") or 0)
+        non_blocking = "non-blocking" if guard.get("non_blocking", True) else "blocking"
+        print(f"    - {name}: {total} warning(s), {non_blocking}, action={_guard_action_summary(warnings)}")
+        print(f"      samples: {_guard_sample_summary(warnings)}")
+    print()
+
+
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
         prog="vulca",
@@ -83,6 +159,7 @@ def main(argv: list[str] | None = None) -> None:
     eval_p.add_argument("--vlm-model", default="", help="VLM model (LiteLLM format, e.g. ollama/llava)")
     eval_p.add_argument("--vlm-base-url", default="", help="VLM base URL (for local models)")
     eval_p.add_argument("--reference", default="", help="Reference image path or base64 for comparison")
+    eval_p.add_argument("--eval-metadata", default="", help="Experimental eval metadata JSON with non-blocking guard hints")
 
     # create command
     create_p = sub.add_parser("create", aliases=["c"], help="Create artwork via pipeline")
@@ -108,6 +185,7 @@ def main(argv: list[str] | None = None) -> None:
                           help="Reference type: style, composition, or full")
     create_p.add_argument("--colors", default="", help="Hex color palette (comma-separated, e.g. '#C87F4A,#5F8A50')")
     create_p.add_argument("--output", "-o", default="", help="Save generated image to this path (default: ./vulca-<session>.png)")
+    create_p.add_argument("--eval-metadata", default="", help="Experimental eval metadata JSON with non-blocking guard hints")
 
     # traditions command
     sub.add_parser("traditions", aliases=["t"], help="List available cultural traditions")
@@ -578,6 +656,8 @@ def _cmd_evaluate(args: argparse.Namespace) -> None:
     import os
     from vulca import evaluate
 
+    eval_metadata = _load_eval_metadata_or_exit(args)
+
     if hasattr(args, 'vlm_model') and args.vlm_model:
         os.environ["VULCA_VLM_MODEL"] = args.vlm_model
     if hasattr(args, 'vlm_base_url') and args.vlm_base_url:
@@ -588,7 +668,7 @@ def _cmd_evaluate(args: argparse.Namespace) -> None:
 
     # Fusion mode: evaluate against multiple traditions
     if mode == "fusion" and "," in args.tradition:
-        _cmd_evaluate_fusion(args, skills)
+        _cmd_evaluate_fusion(args, skills, eval_metadata)
         return
 
     try:
@@ -608,13 +688,17 @@ def _cmd_evaluate(args: argparse.Namespace) -> None:
 
     if args.json:
         import dataclasses
-        print(json_mod.dumps(dataclasses.asdict(result), indent=2, ensure_ascii=False))
+        data = dataclasses.asdict(result)
+        if eval_metadata:
+            data["eval_metadata"] = eval_metadata
+        print(json_mod.dumps(data, indent=2, ensure_ascii=False))
         return
 
     if mode == "reference":
         _print_reference_result(result)
     else:
         _print_strict_result(result)
+    _print_eval_metadata_guards(eval_metadata)
 
 
 
@@ -713,7 +797,11 @@ def _print_reference_result(result) -> None:
     print()
 
 
-def _cmd_evaluate_fusion(args: argparse.Namespace, skills: list[str] | None) -> None:
+def _cmd_evaluate_fusion(
+    args: argparse.Namespace,
+    skills: list[str] | None,
+    eval_metadata: dict | None = None,
+) -> None:
     """Fusion mode: evaluate against multiple traditions and compare."""
     import json as json_mod
     from vulca import evaluate
@@ -744,6 +832,8 @@ def _cmd_evaluate_fusion(args: argparse.Namespace, skills: list[str] | None) -> 
     if args.json:
         import dataclasses
         all_data = {t: dataclasses.asdict(r) for t, r in results}
+        if eval_metadata:
+            all_data = {"results": all_data, "eval_metadata": eval_metadata}
         print(json_mod.dumps(all_data, indent=2, ensure_ascii=False))
         return
 
@@ -775,6 +865,7 @@ def _cmd_evaluate_fusion(args: argparse.Namespace, skills: list[str] | None) -> 
     # Best tradition analysis
     best_trad, best_result = max(results, key=lambda x: x[1].score)
     print(f"\n  Closest tradition: {best_trad} ({best_result.score:.0%})")
+    _print_eval_metadata_guards(eval_metadata or {})
 
     # Divergence highlights
     print(f"\n  Divergence highlights:")
@@ -801,6 +892,8 @@ def _cmd_create(args: argparse.Namespace) -> None:
     import json as json_mod
     import os
     from vulca import create
+
+    eval_metadata = _load_eval_metadata_or_exit(args)
 
     # Warn if tradition doesn't exist
     if args.tradition:
@@ -866,7 +959,10 @@ def _cmd_create(args: argparse.Namespace) -> None:
             sys.exit(1)
 
         if args.json:
-            print(json_mod.dumps(output.to_dict(), indent=2, ensure_ascii=False))
+            data = output.to_dict()
+            if eval_metadata:
+                data["eval_metadata"] = eval_metadata
+            print(json_mod.dumps(data, indent=2, ensure_ascii=False))
             return
 
         print(f"\n  VULCA Layered Creation Result")
@@ -877,6 +973,7 @@ def _cmd_create(args: argparse.Namespace) -> None:
         print(f"  Rounds:    {output.total_rounds}")
         print(f"  Score:     {output.weighted_total:.0%}")
         print()
+        _print_eval_metadata_guards(eval_metadata)
         return
 
     try:
@@ -914,6 +1011,8 @@ def _cmd_create(args: argparse.Namespace) -> None:
         data = dataclasses.asdict(result)
         if image_path:
             data["image_path"] = image_path
+        if eval_metadata:
+            data["eval_metadata"] = eval_metadata
         print(json_mod.dumps(data, indent=2, ensure_ascii=False))
         return
 
@@ -944,6 +1043,7 @@ def _cmd_create(args: argparse.Namespace) -> None:
 
     print(f"\n  Latency: {result.latency_ms}ms | Cost: ${result.cost_usd:.4f}")
     print()
+    _print_eval_metadata_guards(eval_metadata)
 
 
 def _cmd_create_hitl(args: argparse.Namespace) -> None:

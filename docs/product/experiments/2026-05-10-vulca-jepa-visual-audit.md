@@ -617,4 +617,35 @@ warnings: 1
 - `guards.vulca_jepa_subject_drift.non_blocking=true`
 - `guards.vulca_jepa_subject_drift.warnings_total=1`
 
-下一步可以让 Vulca evaluate/create 的实验模式读取这份 metadata，先只在评估结果里显示非阻断复核提示。
+2026-05-10 已接入 CLI 输出层：
+
+```bash
+PYTHONPATH=src python3 -m vulca evaluate mock.png \
+  --mock \
+  --eval-metadata docs/product/experiments/2026-05-10-vulca-jepa-eval-metadata.json
+```
+
+预期输出包含：
+
+```text
+Eval Metadata Guards
+- vulca_jepa_subject_drift: 1 warning(s), non-blocking, action=warn_only
+samples: gongbi_baseline_failed_subject
+```
+
+JSON 输出也会携带完整 `eval_metadata`：
+
+```bash
+PYTHONPATH=src python3 -m vulca evaluate mock.png \
+  --mock \
+  --json \
+  --eval-metadata docs/product/experiments/2026-05-10-vulca-jepa-eval-metadata.json
+
+PYTHONPATH=src python3 -m vulca create "test artwork" \
+  --provider mock \
+  --output /tmp/vulca-jepa-metadata-smoke.png \
+  --json \
+  --eval-metadata docs/product/experiments/2026-05-10-vulca-jepa-eval-metadata.json
+```
+
+这一步只把 guard 作为非阻断复核提示展示，不改变 Vulca L1-L5 分数，也不自动拒绝生成结果。下一步要把 warning 与当前输入 image/sample_id 绑定，只在当前样本命中时提示，而不是显示整份全局 metadata。
