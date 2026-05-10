@@ -5,12 +5,21 @@ from pathlib import Path
 
 from PIL import Image
 
-from scripts.experiments.vulca_jepa_inventory import SampleSpec, build_inventory, write_inventory
+from scripts.experiments.vulca_jepa_inventory import SampleSpec, analyze_image_quality, build_inventory, write_inventory
 
 
 def _write_image(path: Path, color: tuple[int, int, int]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     Image.new("RGB", (8, 6), color).save(path)
+
+
+def _write_pattern_image(path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    image = Image.new("RGB", (8, 6))
+    for y in range(image.height):
+        for x in range(image.width):
+            image.putpixel((x, y), (x * 31 % 256, y * 47 % 256, (x + y) * 29 % 256))
+    image.save(path)
 
 
 def test_build_inventory_records_dimensions_and_missing_count(tmp_path: Path) -> None:
@@ -45,11 +54,90 @@ def test_build_inventory_records_dimensions_and_missing_count(tmp_path: Path) ->
     assert inventory["samples"][1]["width"] is None
 
 
+def test_analyze_image_quality_marks_opaque_black_as_unusable(tmp_path: Path) -> None:
+    _write_image(tmp_path / "black.png", (0, 0, 0))
+
+    quality = analyze_image_quality(tmp_path / "black.png")
+
+    assert quality["luma_mean"] == 0.0
+    assert quality["luma_stddev"] == 0.0
+    assert quality["alpha_coverage"] == 1.0
+    assert quality["near_black_opaque"] is True
+    assert quality["low_information"] is True
+
+
+def test_inventory_splits_black_image_into_artifact_qa(tmp_path: Path) -> None:
+    _write_image(tmp_path / "assets" / "black.png", (0, 0, 0))
+
+    inventory = build_inventory(
+        repo_root=tmp_path,
+        sample_specs=[
+            SampleSpec(
+                sample_id="black_edit",
+                group="edit_inpaint",
+                path="assets/black.png",
+                purpose="black edit artifact",
+            )
+        ],
+    )
+
+    sample = inventory["samples"][0]
+    assert sample["audit_set"] == "artifact_qa"
+    assert sample["usable_for_embedding"] is False
+    assert sample["reject_reasons"] == ["near_black_opaque", "low_information"]
+    assert inventory["audit_sets"] == {"artifact_qa": 1}
+
+
+def test_inventory_keeps_visual_gallery_image_in_core(tmp_path: Path) -> None:
+    _write_pattern_image(tmp_path / "assets" / "visual.png")
+
+    inventory = build_inventory(
+        repo_root=tmp_path,
+        sample_specs=[
+            SampleSpec(
+                sample_id="visual_gallery",
+                group="gallery_breadth",
+                path="assets/visual.png",
+                purpose="usable visual sample",
+            )
+        ],
+    )
+
+    sample = inventory["samples"][0]
+    assert sample["audit_set"] == "core"
+    assert sample["usable_for_embedding"] is True
+    assert sample["reject_reasons"] == []
+    assert inventory["audit_sets"] == {"core": 1}
+
+
+def test_inventory_keeps_intermediate_layers_out_of_core(tmp_path: Path) -> None:
+    _write_pattern_image(tmp_path / "assets" / "layer.png")
+
+    inventory = build_inventory(
+        repo_root=tmp_path,
+        sample_specs=[
+            SampleSpec(
+                sample_id="layer",
+                group="layered",
+                path="assets/layer.png",
+                purpose="intermediate layer",
+            )
+        ],
+    )
+
+    sample = inventory["samples"][0]
+    assert sample["audit_set"] == "artifact_qa"
+    assert sample["usable_for_embedding"] is False
+    assert sample["reject_reasons"] == ["intermediate_artifact"]
+
+
 def test_default_inventory_is_vulca_only() -> None:
     inventory = build_inventory()
     paths = [sample["path"] for sample in inventory["samples"]]
 
     assert inventory["samples_total"] == 30
+    assert inventory["audit_sets"]["core"] >= 1
+    assert inventory["audit_sets"]["artifact_qa"] >= 1
     assert "gallery_promptfix" in inventory["groups"]
     assert "fusion" in inventory["groups"]
     assert all("/Users/yhryzy/dev/emoart-130k" not in path for path in paths)

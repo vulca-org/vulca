@@ -11,10 +11,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable
 
-from PIL import Image
+from PIL import Image, ImageStat
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+INTERMEDIATE_ARTIFACT_GROUPS = {"layered", "defense"}
+NEAR_BLACK_LUMA_MAX = 5.0
+LOW_INFORMATION_STDDEV_MAX = 2.0
+OPAQUE_ALPHA_COVERAGE_MIN = 0.95
 
 
 @dataclass(frozen=True)
@@ -264,6 +268,54 @@ def _read_image_metadata(path: Path) -> dict[str, int | str | None]:
         return {"width": image.width, "height": image.height, "mode": image.mode}
 
 
+def analyze_image_quality(path: Path) -> dict[str, float | bool | None]:
+    if not path.exists():
+        return {
+            "luma_mean": None,
+            "luma_stddev": None,
+            "alpha_coverage": None,
+            "near_black_opaque": False,
+            "low_information": False,
+        }
+
+    with Image.open(path) as image:
+        rgba = image.convert("RGBA")
+        luma = ImageStat.Stat(rgba.convert("L"))
+        alpha = rgba.getchannel("A")
+        alpha_histogram = alpha.histogram()
+        total_pixels = alpha.width * alpha.height
+        alpha_coverage = sum(alpha_histogram[1:]) / total_pixels
+
+    luma_mean = round(float(luma.mean[0]), 2)
+    luma_stddev = round(float(luma.stddev[0]), 2)
+    alpha_coverage = round(float(alpha_coverage), 4)
+    near_black_opaque = luma_mean <= NEAR_BLACK_LUMA_MAX and alpha_coverage >= OPAQUE_ALPHA_COVERAGE_MIN
+    low_information = luma_stddev <= LOW_INFORMATION_STDDEV_MAX and alpha_coverage >= OPAQUE_ALPHA_COVERAGE_MIN
+    return {
+        "luma_mean": luma_mean,
+        "luma_stddev": luma_stddev,
+        "alpha_coverage": alpha_coverage,
+        "near_black_opaque": near_black_opaque,
+        "low_information": low_information,
+    }
+
+
+def _classify_sample(group: str, exists: bool, quality: dict[str, float | bool | None]) -> tuple[str, bool, list[str]]:
+    reject_reasons: list[str] = []
+    if not exists:
+        reject_reasons.append("missing_file")
+    if group in INTERMEDIATE_ARTIFACT_GROUPS:
+        reject_reasons.append("intermediate_artifact")
+    if quality["near_black_opaque"]:
+        reject_reasons.append("near_black_opaque")
+    if quality["low_information"]:
+        reject_reasons.append("low_information")
+
+    if reject_reasons:
+        return "artifact_qa", False, reject_reasons
+    return "core", True, []
+
+
 def build_inventory(
     repo_root: Path | str | None = None,
     sample_specs: Iterable[SampleSpec] | None = None,
@@ -274,6 +326,7 @@ def build_inventory(
 
     samples: list[dict[str, object]] = []
     groups: Counter[str] = Counter()
+    audit_sets: Counter[str] = Counter()
     missing_total = 0
     for spec in specs:
         groups[spec.group] += 1
@@ -282,6 +335,9 @@ def build_inventory(
         if not exists:
             missing_total += 1
         metadata = _read_image_metadata(image_path)
+        quality = analyze_image_quality(image_path)
+        audit_set, usable_for_embedding, reject_reasons = _classify_sample(spec.group, exists, quality)
+        audit_sets[audit_set] += 1
         sample = asdict(spec)
         sample["context"] = list(spec.context)
         sample.update(
@@ -289,17 +345,22 @@ def build_inventory(
                 "absolute_path": str(image_path),
                 "exists": exists,
                 **metadata,
+                "quality": quality,
+                "audit_set": audit_set,
+                "usable_for_embedding": usable_for_embedding,
+                "reject_reasons": reject_reasons,
             }
         )
         samples.append(sample)
 
     return {
-        "schema_version": "vulca_jepa_inventory.v1",
+        "schema_version": "vulca_jepa_inventory.v2",
         "generated_at": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
         "repo_root": str(root),
         "samples_total": len(samples),
         "missing_total": missing_total,
         "groups": dict(groups),
+        "audit_sets": dict(audit_sets),
         "samples": samples,
     }
 
@@ -328,6 +389,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"samples: {inventory['samples_total']}")
     print(f"missing: {inventory['missing_total']}")
     print(f"groups: {', '.join(inventory['groups'])}")
+    print(f"audit_sets: {', '.join(f'{key}={value}' for key, value in inventory['audit_sets'].items())}")
     if inventory["missing_total"] and not args.allow_missing:
         return 2
     return 0

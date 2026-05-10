@@ -17,6 +17,7 @@ TEXT = "#c9d1d9"
 MUTED = "#8b949e"
 ACCENT = "#58a6ff"
 ERROR = "#f85149"
+WARN = "#f0883e"
 
 
 def _load_font(size: int) -> ImageFont.ImageFont:
@@ -69,19 +70,30 @@ def make_contact_sheet(
     *,
     tile_size: int = 192,
     columns: int = 5,
+    audit_set: str | None = None,
 ) -> Path:
     inv_path = Path(inventory_path)
     output_path = Path(out)
     inventory = json.loads(inv_path.read_text())
     repo_root = Path(inventory.get("repo_root") or ".")
     samples = [sample for sample in inventory["samples"] if sample.get("exists")]
+    if audit_set:
+        samples = [sample for sample in samples if sample.get("audit_set") == audit_set]
+    samples = sorted(
+        samples,
+        key=lambda sample: (
+            0 if sample.get("audit_set") == "core" else 1,
+            str(sample.get("group", "")),
+            str(sample.get("sample_id", "")),
+        ),
+    )
 
     label_h = 82
     pad = 12
     header_h = 72
     cell_w = tile_size
     cell_h = tile_size + label_h
-    rows = (len(samples) + columns - 1) // columns
+    rows = max(1, (len(samples) + columns - 1) // columns)
     width = columns * cell_w + (columns + 1) * pad
     height = header_h + rows * cell_h + (rows + 1) * pad
     sheet = Image.new("RGB", (width, height), BG)
@@ -90,8 +102,14 @@ def make_contact_sheet(
     small = _load_font(11)
     title = _load_font(17)
 
-    draw.text((pad, 12), "Vulca JEPA visual audit sample pack", fill=ACCENT, font=title)
-    summary = f"samples={inventory['samples_total']} missing={inventory['missing_total']} groups={', '.join(inventory['groups'])}"
+    title_suffix = f" ({audit_set})" if audit_set else ""
+    draw.text((pad, 12), f"Vulca JEPA visual audit sample pack{title_suffix}", fill=ACCENT, font=title)
+    audit_sets = inventory.get("audit_sets", {})
+    audit_summary = ", ".join(f"{key}={value}" for key, value in audit_sets.items()) or "unclassified"
+    summary = (
+        f"shown={len(samples)} samples={inventory['samples_total']} missing={inventory['missing_total']} "
+        f"audit_sets={audit_summary}"
+    )
     draw.text((pad, 40), summary, fill=TEXT, font=font)
 
     for idx, sample in enumerate(samples):
@@ -107,17 +125,27 @@ def make_contact_sheet(
             draw.text((x + 6, y + 6), f"ERR: {exc}", fill=ERROR, font=small)
 
         draw.text((x, y + tile_size + 6), sample["sample_id"][:34], fill=TEXT, font=font)
-        draw.text((x, y + tile_size + 24), sample["group"], fill=ACCENT, font=small)
+        set_label = sample.get("audit_set", "unclassified")
+        set_color = ACCENT if set_label == "core" else WARN
+        draw.text((x, y + tile_size + 24), f"{sample['group']} · {set_label}", fill=set_color, font=small)
         size_label = f"{sample.get('width')}x{sample.get('height')} {sample.get('mode')}"
         draw.text((x, y + tile_size + 40), size_label, fill=MUTED, font=small)
+        if sample.get("reject_reasons"):
+            reason = ",".join(sample["reject_reasons"])
+            draw.text((x, y + tile_size + 56), reason[:34], fill=WARN, font=small)
+            purpose_y = y + tile_size + 68
+            max_lines = 1
+        else:
+            purpose_y = y + tile_size + 56
+            max_lines = 2
         _draw_wrapped_text(
             draw,
-            (x, y + tile_size + 56),
+            (x, purpose_y),
             sample.get("purpose", ""),
             small,
             MUTED,
             max_chars=30,
-            max_lines=2,
+            max_lines=max_lines,
             line_height=12,
         )
 
@@ -132,12 +160,26 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--out", required=True, type=Path, help="Contact sheet PNG output path.")
     parser.add_argument("--tile-size", type=int, default=192)
     parser.add_argument("--columns", type=int, default=5)
+    parser.add_argument("--audit-set", choices=("core", "artifact_qa"), help="Only render one audit set.")
     args = parser.parse_args(argv)
 
-    out = make_contact_sheet(args.manifest, args.out, tile_size=args.tile_size, columns=args.columns)
+    out = make_contact_sheet(
+        args.manifest,
+        args.out,
+        tile_size=args.tile_size,
+        columns=args.columns,
+        audit_set=args.audit_set,
+    )
     inventory = json.loads(args.manifest.read_text())
+    shown = inventory["samples_total"] - inventory["missing_total"]
+    if args.audit_set:
+        shown = sum(
+            1
+            for sample in inventory["samples"]
+            if sample.get("exists") and sample.get("audit_set") == args.audit_set
+        )
     print(f"wrote {out}")
-    print(f"tiles: {inventory['samples_total'] - inventory['missing_total']}")
+    print(f"tiles: {shown}")
     return 0
 
 

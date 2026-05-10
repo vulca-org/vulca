@@ -1,6 +1,6 @@
 {
-  "schema_version": "vulca_jepa_inventory.v1",
-  "generated_at": "2026-05-10T15:45:06+00:00",
+  "schema_version": "vulca_jepa_inventory.v2",
+  "generated_at": "2026-05-10T16:20:09+00:00",
   "repo_root": "/Users/yhryzy/dev/vulca",
   "samples_total": 30,
   "missing_total": 0,
@@ -11,6 +11,10 @@
     "defense": 2,
     "edit_inpaint": 4,
     "fusion": 2
+  },
+  "audit_sets": {
+    "core": 21,
+    "artifact_qa": 9
   },
   "samples": [
     {
@@ -27,7 +31,17 @@
       "exists": true,
       "width": 1024,
       "height": 1024,
-      "mode": "RGB"
+      "mode": "RGB",
+      "quality": {
+        "luma_mean": 157.16,
+        "luma_stddev": 32.76,
+        "alpha_coverage": 1.0,
+        "near_black_opaque": false,
+        "low_information": false
+      },
+      "audit_set": "core",
+      "usable_for_embedding": true,
+      "reject_reasons": []
     },
     {
       "sample_id": "gongbi_promptfix_seed1",
@@ -43,7 +57,17 @@
       "exists": true,
       "width": 1024,
       "height": 1024,
-      "mode": "RGB"
+      "mode": "RGB",
+      "quality": {
+        "luma_mean": 176.01,
+        "luma_stddev": 66.54,
+        "alpha_coverage": 1.0,
+        "near_black_opaque": false,
+        "low_information": false
+      },
+      "audit_set": "core",
+      "usable_for_embedding": true,
+      "reject_reasons": []
     },
     {
       "sample_id": "gongbi_promptfix_seed2",
@@ -59,7 +83,17 @@
       "exists": true,
       "width": 1024,
       "height": 1024,
-      "mode": "RGB"
+      "mode": "RGB",
+      "quality": {
+        "luma_mean": 177.16,
+        "luma_stddev": 64.26,
+        "alpha_coverage": 1.0,
+        "near_black_opaque": false,
+        "low_information": false
+      },
+      "audit_set": "core",
+      "usable_for_embedding": true,
+      "reject_reasons": []
     },
     {
       "sample_id": "gongbi_promptfix_seed3",
@@ -75,7 +109,17 @@
       "exists": true,
       "width": 1024,
       "height": 1024,
-      "mode": "RGB"
+      "mode": "RGB",
+      "quality": {
+        "luma_mean": 183.85,
+        "luma_stddev": 58.99,
+        "alpha_coverage": 1.0,
+        "near_black_opaque": false,
+        "low_information": false
+      },
+      "audit_set": "core",
+      "usable_for_embedding": true,
+      "reject_reasons": []
     },
     {
       "sample_id": "xieyi_baseline",
@@ -91,7 +135,17 @@
       "exists": true,
       "width": 1024,
       "height": 1024,
-      "mode": "RGB"
+      "mode": "RGB",
+      "quality": {
+        "luma_mean": 134.68,
+        "luma_stddev": 48.59,
+        "alpha_coverage": 1.0,
+        "near_black_opaque": false,
+        "low_information": false
+      },
+      "audit_set": "core",
+      "usable_for_embedding": true,
+      "reject_reasons": []
     },
     {
       "sample_id": "xieyi_promptfix",
@@ -106,7 +160,17 @@
       "exists": true,
       "width": 1024,
       "height": 1024,
-      "mode": "RGB"
+      "mode": "RGB",
+      "quality": {
+        "luma_mean": 163.63,
+        "luma_stddev": 80.41,
+        "alpha_coverage": 1.0,
+        "near_black_opaque": false,
+        "low_information": false
+      },
+      "audit_set": "core",
+      "usable_for_embedding": true,
+      "reject_reasons": []
     },
     {
       "sample_id": "japanese_baseline_failed_style",
@@ -122,7 +186,17 @@
       "exists": true,
       "width": 1024,
       "height": 1024,
-      "mode": "RGB"
+      "mode": "RGB",
+      "quality": {
+        "luma_mean": 143.05,
+        "luma_stddev": 67.39,
+        "alpha_coverage": 1.0,
+        "near_black_opaque": false,
+        "low_information": false
+      },
+      "audit_set": "core",
+      "usable_for_embedding": true,
+      "reject_reasons": []
     },
     {
       "sample_id": "japanese_promptfix",
@@ -137,7 +211,17 @@
       "exists": true,
       "width": 1024,
       "height": 1024,
-      "mode": "RGB"
+      "mode": "RGB",
+      "quality": {
+        "luma_mean": 157.37,
+        "luma_stddev": 68.35,
+        "alpha_coverage": 1.0,
+        "near_black_opaque": false,
+        "low_information": false
+      },
+      "audit_set": "core",
+      "usable_for_embedding": true,
+      "reject_reasons": []
     },
     {
       "sample_id": "western_academic",
@@ -153,7 +237,17 @@
       "exists": true,
       "width": 1024,
       "height": 1024,
-      "mode": "RGB"
+      "mode": "RGB",
+      "quality": {
+        "luma_mean": 107.97,
+        "luma_stddev": 34.5,
+        "alpha_coverage": 1.0,
+        "near_black_opaque": false,
+        "low_information": false
+      },
+      "audit_set": "core",
+      "usable_for_embedding": true,
+      "reject_reasons": []
     },
     {
       "sample_id": "watercolor",
@@ -169,7 +263,17 @@
       "exists": true,
       "width": 1024,
       "height": 1024,
-      "mode": "RGB"
+      "mode": "RGB",
+      "quality": {
+        "luma_mean": 152.7,
+        "luma_stddev": 50.01,
+        "alpha_coverage": 1.0,
+        "near_black_opaque": false,
+        "low_information": false
+      },
+      "audit_set": "core",
+      "usable_for_embedding": true,
+      "reject_reasons": []
     },
     {
       "sample_id": "islamic_geometric",
@@ -185,7 +289,17 @@
       "exists": true,
       "width": 1024,
       "height": 1024,
-      "mode": "RGB"
+      "mode": "RGB",
+      "quality": {
+        "luma_mean": 129.15,
+        "luma_stddev": 33.29,
+        "alpha_coverage": 1.0,
+        "near_black_opaque": false,
+        "low_information": false
+      },
+      "audit_set": "core",
+      "usable_for_embedding": true,
+      "reject_reasons": []
     },
     {
       "sample_id": "african_traditional",
@@ -201,7 +315,17 @@
       "exists": true,
       "width": 1024,
       "height": 1024,
-      "mode": "RGB"
+      "mode": "RGB",
+      "quality": {
+        "luma_mean": 111.07,
+        "luma_stddev": 76.31,
+        "alpha_coverage": 1.0,
+        "near_black_opaque": false,
+        "low_information": false
+      },
+      "audit_set": "core",
+      "usable_for_embedding": true,
+      "reject_reasons": []
     },
     {
       "sample_id": "south_asian",
@@ -217,7 +341,17 @@
       "exists": true,
       "width": 1024,
       "height": 1024,
-      "mode": "RGB"
+      "mode": "RGB",
+      "quality": {
+        "luma_mean": 130.94,
+        "luma_stddev": 38.9,
+        "alpha_coverage": 1.0,
+        "near_black_opaque": false,
+        "low_information": false
+      },
+      "audit_set": "core",
+      "usable_for_embedding": true,
+      "reject_reasons": []
     },
     {
       "sample_id": "brand_design",
@@ -233,7 +367,17 @@
       "exists": true,
       "width": 1024,
       "height": 1024,
-      "mode": "RGB"
+      "mode": "RGB",
+      "quality": {
+        "luma_mean": 160.87,
+        "luma_stddev": 48.84,
+        "alpha_coverage": 1.0,
+        "near_black_opaque": false,
+        "low_information": false
+      },
+      "audit_set": "core",
+      "usable_for_embedding": true,
+      "reject_reasons": []
     },
     {
       "sample_id": "photography",
@@ -249,7 +393,17 @@
       "exists": true,
       "width": 1024,
       "height": 1024,
-      "mode": "RGB"
+      "mode": "RGB",
+      "quality": {
+        "luma_mean": 108.93,
+        "luma_stddev": 57.93,
+        "alpha_coverage": 1.0,
+        "near_black_opaque": false,
+        "low_information": false
+      },
+      "audit_set": "core",
+      "usable_for_embedding": true,
+      "reject_reasons": []
     },
     {
       "sample_id": "contemporary_art",
@@ -265,7 +419,17 @@
       "exists": true,
       "width": 1024,
       "height": 1024,
-      "mode": "RGB"
+      "mode": "RGB",
+      "quality": {
+        "luma_mean": 112.61,
+        "luma_stddev": 55.08,
+        "alpha_coverage": 1.0,
+        "near_black_opaque": false,
+        "low_information": false
+      },
+      "audit_set": "core",
+      "usable_for_embedding": true,
+      "reject_reasons": []
     },
     {
       "sample_id": "ui_ux_design",
@@ -281,7 +445,17 @@
       "exists": true,
       "width": 1024,
       "height": 1024,
-      "mode": "RGB"
+      "mode": "RGB",
+      "quality": {
+        "luma_mean": 205.87,
+        "luma_stddev": 35.1,
+        "alpha_coverage": 1.0,
+        "near_black_opaque": false,
+        "low_information": false
+      },
+      "audit_set": "core",
+      "usable_for_embedding": true,
+      "reject_reasons": []
     },
     {
       "sample_id": "layered_composite",
@@ -296,7 +470,21 @@
       "exists": true,
       "width": 1024,
       "height": 1024,
-      "mode": "RGBA"
+      "mode": "RGBA",
+      "quality": {
+        "luma_mean": 0.0,
+        "luma_stddev": 0.0,
+        "alpha_coverage": 1.0,
+        "near_black_opaque": true,
+        "low_information": true
+      },
+      "audit_set": "artifact_qa",
+      "usable_for_embedding": false,
+      "reject_reasons": [
+        "intermediate_artifact",
+        "near_black_opaque",
+        "low_information"
+      ]
     },
     {
       "sample_id": "layer_base_xuan_paper",
@@ -311,7 +499,19 @@
       "exists": true,
       "width": 1024,
       "height": 1024,
-      "mode": "RGBA"
+      "mode": "RGBA",
+      "quality": {
+        "luma_mean": 104.33,
+        "luma_stddev": 14.18,
+        "alpha_coverage": 1.0,
+        "near_black_opaque": false,
+        "low_information": false
+      },
+      "audit_set": "artifact_qa",
+      "usable_for_embedding": false,
+      "reject_reasons": [
+        "intermediate_artifact"
+      ]
     },
     {
       "sample_id": "layer_distant_mountains",
@@ -326,7 +526,21 @@
       "exists": true,
       "width": 1024,
       "height": 1024,
-      "mode": "RGBA"
+      "mode": "RGBA",
+      "quality": {
+        "luma_mean": 0.0,
+        "luma_stddev": 0.0,
+        "alpha_coverage": 1.0,
+        "near_black_opaque": true,
+        "low_information": true
+      },
+      "audit_set": "artifact_qa",
+      "usable_for_embedding": false,
+      "reject_reasons": [
+        "intermediate_artifact",
+        "near_black_opaque",
+        "low_information"
+      ]
     },
     {
       "sample_id": "layer_midground_river_forest",
@@ -341,7 +555,21 @@
       "exists": true,
       "width": 1024,
       "height": 1024,
-      "mode": "RGBA"
+      "mode": "RGBA",
+      "quality": {
+        "luma_mean": 0.0,
+        "luma_stddev": 0.0,
+        "alpha_coverage": 1.0,
+        "near_black_opaque": true,
+        "low_information": true
+      },
+      "audit_set": "artifact_qa",
+      "usable_for_embedding": false,
+      "reject_reasons": [
+        "intermediate_artifact",
+        "near_black_opaque",
+        "low_information"
+      ]
     },
     {
       "sample_id": "layer_foreground_details_hut",
@@ -356,7 +584,21 @@
       "exists": true,
       "width": 1024,
       "height": 1024,
-      "mode": "RGBA"
+      "mode": "RGBA",
+      "quality": {
+        "luma_mean": 0.0,
+        "luma_stddev": 0.0,
+        "alpha_coverage": 1.0,
+        "near_black_opaque": true,
+        "low_information": true
+      },
+      "audit_set": "artifact_qa",
+      "usable_for_embedding": false,
+      "reject_reasons": [
+        "intermediate_artifact",
+        "near_black_opaque",
+        "low_information"
+      ]
     },
     {
       "sample_id": "defense_no_ref_composite",
@@ -371,7 +613,21 @@
       "exists": true,
       "width": 1024,
       "height": 1024,
-      "mode": "RGBA"
+      "mode": "RGBA",
+      "quality": {
+        "luma_mean": 0.0,
+        "luma_stddev": 0.0,
+        "alpha_coverage": 1.0,
+        "near_black_opaque": true,
+        "low_information": true
+      },
+      "audit_set": "artifact_qa",
+      "usable_for_embedding": false,
+      "reject_reasons": [
+        "intermediate_artifact",
+        "near_black_opaque",
+        "low_information"
+      ]
     },
     {
       "sample_id": "defense_with_ref_composite",
@@ -386,7 +642,21 @@
       "exists": true,
       "width": 1024,
       "height": 1024,
-      "mode": "RGBA"
+      "mode": "RGBA",
+      "quality": {
+        "luma_mean": 0.0,
+        "luma_stddev": 0.0,
+        "alpha_coverage": 1.0,
+        "near_black_opaque": true,
+        "low_information": true
+      },
+      "audit_set": "artifact_qa",
+      "usable_for_embedding": false,
+      "reject_reasons": [
+        "intermediate_artifact",
+        "near_black_opaque",
+        "low_information"
+      ]
     },
     {
       "sample_id": "edit_before",
@@ -399,7 +669,20 @@
       "exists": true,
       "width": 1024,
       "height": 1024,
-      "mode": "RGBA"
+      "mode": "RGBA",
+      "quality": {
+        "luma_mean": 0.0,
+        "luma_stddev": 0.0,
+        "alpha_coverage": 1.0,
+        "near_black_opaque": true,
+        "low_information": true
+      },
+      "audit_set": "artifact_qa",
+      "usable_for_embedding": false,
+      "reject_reasons": [
+        "near_black_opaque",
+        "low_information"
+      ]
     },
     {
       "sample_id": "edit_after",
@@ -412,7 +695,20 @@
       "exists": true,
       "width": 1024,
       "height": 1024,
-      "mode": "RGBA"
+      "mode": "RGBA",
+      "quality": {
+        "luma_mean": 0.0,
+        "luma_stddev": 0.0,
+        "alpha_coverage": 1.0,
+        "near_black_opaque": true,
+        "low_information": true
+      },
+      "audit_set": "artifact_qa",
+      "usable_for_embedding": false,
+      "reject_reasons": [
+        "near_black_opaque",
+        "low_information"
+      ]
     },
     {
       "sample_id": "inpaint_before",
@@ -425,7 +721,17 @@
       "exists": true,
       "width": 1024,
       "height": 1024,
-      "mode": "RGB"
+      "mode": "RGB",
+      "quality": {
+        "luma_mean": 134.68,
+        "luma_stddev": 48.59,
+        "alpha_coverage": 1.0,
+        "near_black_opaque": false,
+        "low_information": false
+      },
+      "audit_set": "core",
+      "usable_for_embedding": true,
+      "reject_reasons": []
     },
     {
       "sample_id": "inpaint_after",
@@ -438,7 +744,17 @@
       "exists": true,
       "width": 1024,
       "height": 1024,
-      "mode": "RGBA"
+      "mode": "RGBA",
+      "quality": {
+        "luma_mean": 133.39,
+        "luma_stddev": 48.71,
+        "alpha_coverage": 1.0,
+        "near_black_opaque": false,
+        "low_information": false
+      },
+      "audit_set": "core",
+      "usable_for_embedding": true,
+      "reject_reasons": []
     },
     {
       "sample_id": "fusion_source",
@@ -453,7 +769,17 @@
       "exists": true,
       "width": 1280,
       "height": 1707,
-      "mode": "RGBA"
+      "mode": "RGBA",
+      "quality": {
+        "luma_mean": 90.01,
+        "luma_stddev": 63.08,
+        "alpha_coverage": 1.0,
+        "near_black_opaque": false,
+        "low_information": false
+      },
+      "audit_set": "core",
+      "usable_for_embedding": true,
+      "reject_reasons": []
     },
     {
       "sample_id": "fusion_iter0",
@@ -469,7 +795,17 @@
       "exists": true,
       "width": 1024,
       "height": 1024,
-      "mode": "RGB"
+      "mode": "RGB",
+      "quality": {
+        "luma_mean": 84.84,
+        "luma_stddev": 59.41,
+        "alpha_coverage": 1.0,
+        "near_black_opaque": false,
+        "low_information": false
+      },
+      "audit_set": "core",
+      "usable_for_embedding": true,
+      "reject_reasons": []
     }
   ]
 }

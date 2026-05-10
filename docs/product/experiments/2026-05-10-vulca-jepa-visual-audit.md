@@ -48,6 +48,27 @@
 
 这些文件已在当前 Vulca 仓库确认存在。
 
+### 3.0 样本分流：core 与 artifact_qa
+
+inventory 不把 30 张图都直接送进 embedding。先做轻量质量预检，再分成两类：
+
+| audit_set | 数量 | 用途 | 是否进入 JEPA/DINO/SigLIP 主实验 |
+|---|---:|---|---|
+| `core` | 21 | 有真实视觉信息的 gallery、promptfix、inpaint、fusion 样本 | 是 |
+| `artifact_qa` | 9 | 黑图、低信息图、layered/defense 中间产物和坏 composite | 否 |
+
+质量预检字段：
+
+- `luma_mean`：亮度均值。
+- `luma_stddev`：亮度标准差，用来识别纯色/低信息图。
+- `alpha_coverage`：非透明像素占比。
+- `near_black_opaque`：近黑且几乎完全不透明。
+- `low_information`：亮度变化极低。
+- `usable_for_embedding`：是否允许进入主 embedding 实验。
+- `reject_reasons`：例如 `near_black_opaque`、`low_information`、`intermediate_artifact`。
+
+这里的黑图和灰图不是好图样本，也不是要展示的视觉结果。它们保留在 `artifact_qa` 里，是为了测试 Vulca 能不能自动挡住坏产物：空层、全黑 composite、坏 edit 输出、低信息中间层。主实验只用 `usable_for_embedding=true` 的样本。
+
 ### 3.1 Gallery baseline 与 promptfix 对照
 
 | sample_id | 文件 | 尺寸 | 用途 |
@@ -103,10 +124,9 @@
 
 - `assets/demo/v3/layered/manifest.json`
 
-这一组不用于判断文化正确性，主要检查：
+这一组归入 `artifact_qa`，不进入首轮 JEPA/DINO 主 embedding。它主要检查：
 
 - layer alpha 覆盖率是否合理。
-- 单层和 composite 的 embedding 距离是否符合层级语义。
 - 分层输出是否出现空层、重复层或主体层丢失。
 
 ### 3.4 Defense no_ref 与 with_ref 对照
@@ -121,7 +141,7 @@
 - `assets/demo/v3/defense3/no_ref/.layered_cache/*.report.json`
 - `assets/demo/v3/defense3/with_ref/.layered_cache/*.report.json`
 
-这一组用于检查 reference 是否改善结构稳定性和 layerability。
+这一组归入 `artifact_qa`，用于检查 reference 是否改善结构稳定性和 layerability。当前样本如果是全黑 composite，结论不是“reference 无效”，而是“这一路产物需要先被质量闸门挡住”。
 
 ### 3.5 Edit / Inpaint 对照
 
@@ -132,7 +152,7 @@
 | `inpaint_before` | `assets/demo/v3/inpaint/before.png` | 1024x1024 | inpaint 前图 |
 | `inpaint_after` | `assets/demo/v3/inpaint/after.png` | 1024x1024 | inpaint 后图 |
 
-这一组用于检查局部编辑是否导致全局结构漂移。第一轮只做全图 embedding 和基础像素差异，后续如果有 mask，再升级为局部区域审计。
+这一组用于检查局部编辑是否导致全局结构漂移。当前 `edit_before` / `edit_after` 被质量预检识别为全黑不透明图，归入 `artifact_qa`；`inpaint_before` / `inpaint_after` 有真实视觉内容，归入 `core`。后续如果有 mask，再把审计从全图升级到局部区域。
 
 ### 3.6 Scottish-Chinese fusion visual-spec 样本
 
@@ -252,12 +272,14 @@
 
 | 文件 | 责任 |
 |---|---|
-| `scripts/experiments/vulca_jepa_inventory.py` | 生成样本 manifest，检查路径、尺寸、模式、分组和配对关系 |
-| `scripts/experiments/vulca_jepa_contact_sheet.py` | 根据 manifest 生成 contact sheet，便于人工快速查看样本 |
+| `scripts/experiments/vulca_jepa_inventory.py` | 生成样本 manifest，检查路径、尺寸、模式、质量指标和 `core`/`artifact_qa` 分流 |
+| `scripts/experiments/vulca_jepa_contact_sheet.py` | 根据 manifest 生成 full/core/artifact_qa contact sheet，便于人工快速查看样本 |
 | `scripts/experiments/vulca_jepa_audit.py` | 跑 image embedding / text-image embedding / mock backend，输出 pairwise distance 和异常排序 |
 | `scripts/experiments/vulca_jepa_compare_eval.py` | 把 embedding 结果与 `eval-v2merged`、`gemini-vlm-rescore.json` 对齐 |
 | `docs/product/experiments/2026-05-10-vulca-jepa-inventory.json` | 样本 manifest 输出 |
 | `docs/product/experiments/2026-05-10-vulca-jepa-contact-sheet.png` | 人工审计用 contact sheet |
+| `docs/product/experiments/2026-05-10-vulca-jepa-contact-sheet.core.png` | 主 embedding 实验样本 contact sheet |
+| `docs/product/experiments/2026-05-10-vulca-jepa-contact-sheet.artifact-qa.png` | 坏产物/中间产物 QA contact sheet |
 | `docs/product/experiments/2026-05-10-vulca-jepa-audit.json` | embedding 审计原始结果 |
 | `docs/product/experiments/2026-05-10-vulca-jepa-audit-report.md` | 实验结论报告 |
 | `tests/experiments/test_vulca_jepa_inventory.py` | inventory 脚本测试 |
@@ -283,6 +305,7 @@ wrote docs/product/experiments/2026-05-10-vulca-jepa-inventory.json
 samples: 30
 missing: 0
 groups: gallery_promptfix, gallery_breadth, layered, defense, edit_inpaint, fusion
+audit_sets: core=21, artifact_qa=9
 ```
 
 测试：
@@ -294,7 +317,7 @@ python3 -m pytest tests/experiments/test_vulca_jepa_inventory.py -q
 预期输出：
 
 ```text
-3 passed
+8 passed
 ```
 
 提交建议：
@@ -312,6 +335,16 @@ git commit -m "docs: define vulca jepa visual audit samples"
 python3 scripts/experiments/vulca_jepa_contact_sheet.py \
   --manifest docs/product/experiments/2026-05-10-vulca-jepa-inventory.json \
   --out docs/product/experiments/2026-05-10-vulca-jepa-contact-sheet.png
+
+python3 scripts/experiments/vulca_jepa_contact_sheet.py \
+  --manifest docs/product/experiments/2026-05-10-vulca-jepa-inventory.json \
+  --audit-set core \
+  --out docs/product/experiments/2026-05-10-vulca-jepa-contact-sheet.core.png
+
+python3 scripts/experiments/vulca_jepa_contact_sheet.py \
+  --manifest docs/product/experiments/2026-05-10-vulca-jepa-inventory.json \
+  --audit-set artifact_qa \
+  --out docs/product/experiments/2026-05-10-vulca-jepa-contact-sheet.artifact-qa.png
 ```
 
 预期输出：
@@ -319,18 +352,22 @@ python3 scripts/experiments/vulca_jepa_contact_sheet.py \
 ```text
 wrote docs/product/experiments/2026-05-10-vulca-jepa-contact-sheet.png
 tiles: 30
+wrote docs/product/experiments/2026-05-10-vulca-jepa-contact-sheet.core.png
+tiles: 21
+wrote docs/product/experiments/2026-05-10-vulca-jepa-contact-sheet.artifact-qa.png
+tiles: 9
 ```
 
 测试：
 
 ```bash
-python3 -m pytest tests/experiments/test_vulca_jepa_inventory.py::test_contact_sheet_inputs_are_valid -q
+python3 -m pytest tests/experiments/test_vulca_jepa_inventory.py tests/experiments/test_vulca_jepa_contact_sheet.py -q
 ```
 
 预期输出：
 
 ```text
-1 passed
+10 passed
 ```
 
 提交建议：
@@ -356,8 +393,8 @@ python3 scripts/experiments/vulca_jepa_audit.py \
 ```text
 wrote docs/product/experiments/2026-05-10-vulca-jepa-audit.mock.json
 backend: mock
-samples: 30
-pairwise_distances: 435
+samples: 21
+pairwise_distances: 210
 ```
 
 测试：
@@ -397,8 +434,8 @@ python3 scripts/experiments/vulca_jepa_audit.py \
 wrote docs/product/experiments/2026-05-10-vulca-jepa-audit.dinov2.json
 backend: dinov2
 model: facebook/dinov2-base
-samples: 30
-pairwise_distances: 435
+samples: 21
+pairwise_distances: 210
 ```
 
 失败时的可接受输出：
@@ -432,8 +469,8 @@ python3 scripts/experiments/vulca_jepa_audit.py \
 wrote docs/product/experiments/2026-05-10-vulca-jepa-audit.siglip.json
 backend: siglip
 model: google/siglip-base-patch16-224
-samples: 30
-text_image_scores: 30
+samples: 21
+text_image_scores: 21
 ```
 
 失败时的可接受输出：
@@ -491,8 +528,9 @@ git commit -m "docs: compare vulca jepa audit with existing evals"
 首轮实验算通过，需要同时满足：
 
 - manifest 加载 30 个样本，`missing=0`。
-- contact sheet 能生成，人工可以快速看到所有样本。
-- mock backend 测试通过，距离矩阵稳定输出 435 个 pair。
+- manifest 输出 `audit_sets: core=21, artifact_qa=9`。
+- full/core/artifact_qa 三张 contact sheet 能生成，人工可以快速看到样本分流。
+- mock backend 测试通过，只对 `usable_for_embedding=true` 的 21 张 core 样本输出 210 个 pair。
 - DINO/DINOv2 或 SigLIP 至少有一个真实 backend 跑通；如果本地环境缺依赖，报告要明确记录失败命令和缺失依赖。
 - 报告能解释 `chinese_gongbi.png` 为什么是高价值失败样本。
 - 报告明确 JEPA/DINO/SigLIP 不能替代 Vulca L1-L5。
@@ -502,4 +540,4 @@ git commit -m "docs: compare vulca jepa audit with existing evals"
 
 ## 8. 下一步建议
 
-下一步先实现 Task 1 和 Task 2。原因是这两步不需要下载模型，也不会引入外部依赖，能先把 Vulca-only 样本边界固定下来。等 inventory 和 contact sheet 稳定后，再做 mock backend 和真实 embedding backend。
+下一步实现 Task 3：mock audit backend。它默认只读取 `usable_for_embedding=true` 的 21 张 core 样本，先把 pairwise distance、最近邻、异常排序的数据结构跑通。`artifact_qa` 暂时不跑 embedding，只用于质量闸门报告。
