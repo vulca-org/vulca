@@ -18,6 +18,7 @@ _LOCAL_EVOLVED_PATH = Path.home() / ".vulca" / "data" / "evolved_context.json"
 # Token budget: start low, escalate on truncation
 _DEFAULT_MAX_TOKENS = 3072
 _ESCALATED_MAX_TOKENS = 8192
+_CONTENT_LOCK_MAX_TOKENS = 16384
 _MAX_ESCALATION_ATTEMPTS = 1
 
 # Local (Ollama) models consistently emit >3072 tokens for the L1-L5 JSON
@@ -636,10 +637,19 @@ async def score_image(
 
         # Adaptive token budget: cloud models start small (cost-conscious),
         # local models start at the escalated budget since tokens are free
-        # and Gemma-class models regularly exceed 3072.
-        max_tokens = _LOCAL_DEFAULT_MAX_TOKENS if is_local else _DEFAULT_MAX_TOKENS
+        # and Gemma-class models regularly exceed 3072. Content-lock scoring
+        # asks for additional gate fields, so allow one larger final attempt
+        # when the model truncates twice.
+        token_budgets = (
+            [_LOCAL_DEFAULT_MAX_TOKENS]
+            if is_local
+            else [_DEFAULT_MAX_TOKENS, _ESCALATED_MAX_TOKENS]
+        )
+        if content_lock and _CONTENT_LOCK_MAX_TOKENS not in token_budgets:
+            token_budgets.append(_CONTENT_LOCK_MAX_TOKENS)
+        max_tokens = token_budgets[0]
         resp = None
-        for attempt in range(_MAX_ESCALATION_ATTEMPTS + 1):
+        for attempt, max_tokens in enumerate(token_budgets):
             # Local models (Ollama) need longer timeout for first load
             timeout = 300 if model.startswith("ollama") else 55
             call_kwargs = dict(
@@ -654,14 +664,13 @@ async def score_image(
                 call_kwargs["api_base"] = api_base
             resp = await litellm.acompletion(**call_kwargs)
             finish_reason = getattr(resp.choices[0], "finish_reason", "stop")
-            if finish_reason == "length" and attempt < _MAX_ESCALATION_ATTEMPTS:
+            if finish_reason == "length" and attempt < len(token_budgets) - 1:
                 logger.info(
                     "VLM response truncated (finish_reason=length) at %d tokens; "
                     "escalating to %d tokens",
                     max_tokens,
-                    _ESCALATED_MAX_TOKENS,
+                    token_budgets[attempt + 1],
                 )
-                max_tokens = _ESCALATED_MAX_TOKENS
             else:
                 break
 

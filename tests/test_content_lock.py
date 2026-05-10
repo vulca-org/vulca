@@ -97,6 +97,23 @@ def test_extracts_relation_semantics_for_escort_evacuation_caption():
     assert "escort/protect" in lock.composition_intent
 
 
+def test_extracts_relation_semantics_with_modifier_between_mounted_and_soldiers():
+    lock = extract_content_lock(
+        "A Socialist Realism poster with mounted Soviet soldiers escorting and "
+        "protecting civilians as they flee burning village ruins, aircraft overhead."
+    )
+
+    assert "mounted soldiers" in lock.required_subjects
+    assert "fleeing civilians" in lock.required_subjects
+    assert "aircraft overhead" in lock.required_subjects
+    assert lock.required_relations[0] == {
+        "subject": "mounted soldiers",
+        "relation": "escort/protect",
+        "object": "fleeing civilians",
+    }
+    assert "soldiers chasing civilians" in lock.forbidden_readings
+
+
 def test_content_lock_prompt_makes_subjects_non_negotiable():
     lock = extract_content_lock(
         "Ink and wash painting of delicate bamboo and orchid grasses beside "

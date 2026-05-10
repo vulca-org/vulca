@@ -4,6 +4,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from vulca._vlm import (
+    _CONTENT_LOCK_MAX_TOKENS,
     _DEFAULT_MAX_TOKENS,
     _ESCALATED_MAX_TOKENS,
     _STATIC_SCORING_PREFIX,
@@ -236,3 +237,28 @@ class TestScoreImageTokenEscalation:
 
         # _MAX_ESCALATION_ATTEMPTS=1 means at most 2 calls total
         assert mock_acompletion.call_count == 2
+
+    def test_score_image_content_lock_gets_final_large_budget_on_second_truncation(self):
+        truncated = _make_mock_response("length", "<scoring>" + _VALID_SCORING_JSON + "</scoring>")
+        full_resp = _make_mock_response("stop", "<scoring>" + _VALID_SCORING_JSON + "</scoring>")
+        mock_acompletion = AsyncMock(side_effect=[truncated, truncated, full_resp])
+
+        with patch("litellm.acompletion", mock_acompletion):
+            result = asyncio.run(
+                score_image(
+                    img_b64="aGVsbG8=",
+                    mime="image/png",
+                    subject="test artwork",
+                    tradition="chinese_xieyi",
+                    api_key="test-key",
+                    content_lock={"original_intent": "test artwork"},
+                )
+            )
+
+        assert mock_acompletion.call_count == 3
+        assert [call.kwargs["max_tokens"] for call in mock_acompletion.call_args_list] == [
+            _DEFAULT_MAX_TOKENS,
+            _ESCALATED_MAX_TOKENS,
+            _CONTENT_LOCK_MAX_TOKENS,
+        ]
+        assert result.get("L1") == pytest.approx(0.8)

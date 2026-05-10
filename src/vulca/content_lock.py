@@ -522,9 +522,13 @@ def _extract_relation_semantics(
     lower: str,
 ) -> tuple[list[str], list[dict[str, str]], str, list[str]]:
     """Extract conservative subject-relation-object locks from narrative captions."""
-    has_mounted_soldiers = bool(re.search(r"\bmounted soldiers?\b", lower))
+    has_mounted_soldiers = bool(
+        re.search(r"\bmounted(?:\s+[a-z-]+){0,3}\s+soldiers?\b", lower)
+    )
     has_fleeing_civilians = bool(
         re.search(r"\b(?:fleeing|evacuating|displaced)\s+civilians?\b", lower)
+        or re.search(r"\bcivilians?\s+(?:as\s+they\s+)?(?:flee|evacuate)\b", lower)
+        or re.search(r"\bcivilians?\s+(?:fleeing|evacuating|displaced)\b", lower)
     )
     has_burning_village_ruins = bool(
         re.search(r"\bburning village ruins?\b|\bburning villages?\b", lower)
