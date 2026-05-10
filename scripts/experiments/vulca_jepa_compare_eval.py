@@ -123,25 +123,30 @@ def build_report_data(
     siglip_audit_path: Path | str,
     eval_dir: Path | str,
     gemini_rescore_path: Path | str,
+    guard_path: Path | str | None = None,
 ) -> dict[str, Any]:
     inventory = _load_json(inventory_path)
     dinov2 = _load_json(dinov2_audit_path)
     siglip = _load_json(siglip_audit_path)
     gemini = _load_json(gemini_rescore_path)
+    guard = _load_json(guard_path) if guard_path else None
     sample_by_id, path_to_sample_id = _sample_maps(inventory)
     eval_scores = _load_eval_scores(eval_dir)
     gemini_items = _match_gemini_items(gemini, path_to_sample_id)
     dinov2_by_id = _dinov2_lookup(dinov2)
     siglip_by_id = _siglip_lookup(siglip)
+    sources = {
+        "inventory": str(inventory_path),
+        "dinov2_audit": str(dinov2_audit_path),
+        "siglip_audit": str(siglip_audit_path),
+        "eval_dir": str(eval_dir),
+        "gemini_rescore": str(gemini_rescore_path),
+    }
+    if guard_path:
+        sources["guard"] = str(guard_path)
 
     return {
-        "sources": {
-            "inventory": str(inventory_path),
-            "dinov2_audit": str(dinov2_audit_path),
-            "siglip_audit": str(siglip_audit_path),
-            "eval_dir": str(eval_dir),
-            "gemini_rescore": str(gemini_rescore_path),
-        },
+        "sources": sources,
         "counts": {
             "inventory_samples": inventory["samples_total"],
             "core_samples": inventory.get("audit_sets", {}).get("core", 0),
@@ -182,6 +187,7 @@ def build_report_data(
         ],
         "gongbi_case": _build_gongbi_case(gemini_items, dinov2_by_id, siglip_by_id),
         "fusion_case": _build_fusion_case(dinov2_by_id, siglip_by_id),
+        "guard": guard,
     }
 
 
@@ -198,6 +204,42 @@ def _render_table(headers: list[str], rows: list[list[Any]]) -> str:
     for row in rows:
         lines.append("| " + " | ".join(_fmt(value) for value in row) + " |")
     return "\n".join(lines)
+
+
+def _render_guard_section(guard: dict[str, Any] | None) -> list[str]:
+    if not guard:
+        return []
+
+    warnings = guard.get("warnings", [])
+    first_warning = warnings[0] if warnings else {}
+    signals = first_warning.get("signals", {}) if isinstance(first_warning, dict) else {}
+    rules = guard.get("rules", {})
+    rule_name = first_warning.get("warning_type") or next(iter(rules), None)
+    rule = rules.get(rule_name, {}) if rule_name else {}
+    rows = [
+        ["guard_scope", guard.get("guard_scope")],
+        ["samples_evaluated", guard.get("samples_evaluated")],
+        ["warnings", guard.get("warnings_total", len(warnings))],
+        ["warning_type", first_warning.get("warning_type")],
+        ["rule.action", rule.get("action")],
+        ["siglip_probability_max", rule.get("siglip_probability_max")],
+        ["requires_nearest_family_mismatch", rule.get("requires_nearest_family_mismatch")],
+        ["sample_id", first_warning.get("sample_id")],
+        ["action", first_warning.get("action")],
+        ["nearest_sample_id", signals.get("nearest_sample_id")],
+        ["siglip_probability", signals.get("siglip_probability")],
+    ]
+
+    return [
+        "## Guard 原型结果",
+        "",
+        f"第一版 guard 只在 `{guard.get('guard_scope')}` 组内运行，且只报警不拒绝；samples={guard.get('samples_evaluated')}，warnings={guard.get('warnings_total', len(warnings))}。",
+        "",
+        _render_table(["字段", "值"], rows),
+        "",
+        "解释：`subject_drift_warning` 只说明样本需要进入 Vulca 人工/规则复核队列；当前动作为 `warn_only`，不会影响生成结果，也不会覆盖用户 override。",
+        "",
+    ]
 
 
 def render_report(data: dict[str, Any]) -> str:
@@ -235,6 +277,7 @@ def render_report(data: dict[str, Any]) -> str:
         "",
         "解释：DINOv2 把工笔牡丹 baseline 拉到山水/写意邻近区域；SigLIP 给 baseline 的 prompt-image 分数低于 promptfix 牡丹；Gemini rescore 也记录 baseline 未通过。三者方向一致，说明这类主体跑偏可以形成自动 guard。",
         "",
+        *_render_guard_section(data.get("guard")),
         "## DINOv2 图像相似度观察",
         "",
         _render_table(
@@ -316,7 +359,7 @@ def render_report(data: dict[str, Any]) -> str:
         "",
         "## 下一步",
         "",
-        "- 把 DINOv2 nearest-neighbor 和 SigLIP prompt-image score 接入一个轻量 guard 规则：先只对 gallery_promptfix 组报警，不自动拒绝。",
+        "- 把当前 warn_only guard 接入 Vulca 实验 CLI 的评估 metadata，先作为复核提示，不自动拒绝。",
         "- 对 `text_source=purpose` 的样本补真实 prompt/brief 字段，否则 SigLIP 分数只能弱参考。",
         "- 用 Vulca L1-L5 解释 DINO/SigLIP 不能覆盖的文化问题，例如工笔技法深度、风格完成度、用户 override。",
         "- 后续再考虑 I-JEPA/V-JEPA；当前静态图实验里 DINOv2 与 SigLIP 已经覆盖了主要验证问题。",
@@ -331,6 +374,7 @@ def write_report(
     siglip_audit_path: Path | str,
     eval_dir: Path | str,
     gemini_rescore_path: Path | str,
+    guard_path: Path | str | None = None,
     out: Path | str,
 ) -> str:
     data = build_report_data(
@@ -339,6 +383,7 @@ def write_report(
         siglip_audit_path=siglip_audit_path,
         eval_dir=eval_dir,
         gemini_rescore_path=gemini_rescore_path,
+        guard_path=guard_path,
     )
     report = render_report(data)
     output_path = Path(out)
@@ -354,6 +399,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--siglip-audit", required=True, type=Path)
     parser.add_argument("--eval-dir", required=True, type=Path)
     parser.add_argument("--gemini-rescore", required=True, type=Path)
+    parser.add_argument("--guard", type=Path)
     parser.add_argument("--out", required=True, type=Path)
     args = parser.parse_args(argv)
 
@@ -363,6 +409,7 @@ def main(argv: list[str] | None = None) -> int:
         siglip_audit_path=args.siglip_audit,
         eval_dir=args.eval_dir,
         gemini_rescore_path=args.gemini_rescore,
+        guard_path=args.guard,
     )
     report = render_report(data)
     args.out.parent.mkdir(parents=True, exist_ok=True)
@@ -370,6 +417,8 @@ def main(argv: list[str] | None = None) -> int:
     print(f"wrote {args.out}")
     print(f"matched_eval_files: {data['counts']['matched_eval_files']}")
     print(f"matched_gemini_items: {data['counts']['matched_gemini_items']}")
+    if data.get("guard"):
+        print(f"guard_warnings: {data['guard'].get('warnings_total', 0)}")
     return 0
 
 

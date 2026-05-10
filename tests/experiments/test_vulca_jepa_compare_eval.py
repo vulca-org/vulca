@@ -85,6 +85,32 @@ def _fixture_files(tmp_path: Path) -> dict[str, Path]:
         ],
         "excluded_samples": [{"sample_id": "black"}],
     }
+    guard = {
+        "schema_version": "vulca_jepa_guard.v1",
+        "status": "ok",
+        "non_blocking": True,
+        "guard_scope": "gallery_promptfix",
+        "samples_evaluated": 3,
+        "warnings_total": 1,
+        "rules": {
+            "subject_drift_warning": {
+                "action": "warn_only",
+                "siglip_probability_max": 0.001,
+                "requires_nearest_family_mismatch": True,
+            }
+        },
+        "warnings": [
+            {
+                "sample_id": "gongbi_baseline_failed_subject",
+                "warning_type": "subject_drift_warning",
+                "action": "warn_only",
+                "signals": {
+                    "nearest_sample_id": "xieyi_promptfix",
+                    "siglip_probability": 0.00008,
+                },
+            }
+        ],
+    }
     gemini = {
         "items": [
             {
@@ -113,6 +139,7 @@ def _fixture_files(tmp_path: Path) -> dict[str, Path]:
         "inventory": _write_json(tmp_path / "inventory.json", inventory),
         "dinov2": _write_json(tmp_path / "dinov2.json", dinov2),
         "siglip": _write_json(tmp_path / "siglip.json", siglip),
+        "guard": _write_json(tmp_path / "guard.json", guard),
         "gemini": _write_json(tmp_path / "gemini.json", gemini),
         "eval_dir": eval_dir,
     }
@@ -127,6 +154,7 @@ def test_build_report_data_matches_eval_and_gemini(tmp_path: Path) -> None:
         siglip_audit_path=files["siglip"],
         eval_dir=files["eval_dir"],
         gemini_rescore_path=files["gemini"],
+        guard_path=files["guard"],
     )
 
     assert data["counts"]["core_samples"] == 3
@@ -137,6 +165,8 @@ def test_build_report_data_matches_eval_and_gemini(tmp_path: Path) -> None:
     assert data["gongbi_case"]["dinov2_baseline_nearest"] == "xieyi_promptfix"
     assert data["gongbi_case"]["siglip_baseline_probability"] == 0.01
     assert data["gongbi_case"]["siglip_promptfix_best_probability"] == 0.25
+    assert data["guard"]["warnings_total"] == 1
+    assert data["guard"]["warnings"][0]["sample_id"] == "gongbi_baseline_failed_subject"
 
 
 def test_render_report_contains_chinese_conclusions(tmp_path: Path) -> None:
@@ -147,6 +177,7 @@ def test_render_report_contains_chinese_conclusions(tmp_path: Path) -> None:
         siglip_audit_path=files["siglip"],
         eval_dir=files["eval_dir"],
         gemini_rescore_path=files["gemini"],
+        guard_path=files["guard"],
     )
 
     report = render_report(data)
@@ -158,6 +189,10 @@ def test_render_report_contains_chinese_conclusions(tmp_path: Path) -> None:
     assert "xieyi_promptfix" in report
     assert "Vulca L1-L5 文化评估观察" in report
     assert "不能替代 Vulca L1-L5" in report
+    assert "Guard 原型结果" in report
+    assert "subject_drift_warning" in report
+    assert "siglip_probability_max" in report
+    assert "warn_only" in report
 
 
 def test_write_report_outputs_markdown(tmp_path: Path) -> None:
@@ -170,8 +205,10 @@ def test_write_report_outputs_markdown(tmp_path: Path) -> None:
         siglip_audit_path=files["siglip"],
         eval_dir=files["eval_dir"],
         gemini_rescore_path=files["gemini"],
+        guard_path=files["guard"],
         out=out,
     )
 
     assert out.read_text() == report
     assert "matched_gemini_items=2" in report
+    assert "warnings=1" in report
