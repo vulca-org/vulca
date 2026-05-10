@@ -157,3 +157,53 @@ def test_write_audit_records_unavailable_dinov2_backend(tmp_path: Path, monkeypa
     assert audit["error"] == "install torch/transformers"
     assert audit["samples_total"] == 0
     assert json.loads(out.read_text()) == audit
+
+
+def test_write_audit_dispatches_siglip_backend(tmp_path: Path, monkeypatch) -> None:
+    manifest = _write_manifest(tmp_path)
+    out = tmp_path / "siglip.json"
+    calls = {}
+
+    def fake_run(manifest_path, *, audit_set, model):
+        calls["manifest"] = manifest_path
+        calls["audit_set"] = audit_set
+        calls["model"] = model
+        return {
+            "schema_version": "vulca_jepa_text_image_audit.v1",
+            "backend": "siglip",
+            "status": "ok",
+            "model": model,
+            "audit_set": audit_set,
+            "samples_total": 1,
+            "text_image_scores_total": 1,
+            "text_image_scores": [{"sample_id": "a", "score": 0.5}],
+            "samples": [],
+            "excluded_samples": [],
+        }
+
+    monkeypatch.setattr(audit_mod, "run_siglip_audit", fake_run)
+
+    audit = write_audit(manifest, out, backend="siglip", model="fake/siglip")
+
+    assert audit["backend"] == "siglip"
+    assert audit["text_image_scores_total"] == 1
+    assert calls == {"manifest": manifest, "audit_set": "core", "model": "fake/siglip"}
+    assert json.loads(out.read_text()) == audit
+
+
+def test_write_audit_records_unavailable_siglip_backend(tmp_path: Path, monkeypatch) -> None:
+    manifest = _write_manifest(tmp_path)
+    out = tmp_path / "siglip.json"
+
+    def fake_run(manifest_path, *, audit_set, model):
+        raise BackendUnavailable("install torch/transformers")
+
+    monkeypatch.setattr(audit_mod, "run_siglip_audit", fake_run)
+
+    audit = write_audit(manifest, out, backend="siglip", model="fake/siglip")
+
+    assert audit["backend"] == "siglip"
+    assert audit["status"] == "unavailable"
+    assert audit["error"] == "install torch/transformers"
+    assert audit["samples_total"] == 0
+    assert json.loads(out.read_text()) == audit

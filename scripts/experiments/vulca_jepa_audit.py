@@ -18,6 +18,9 @@ from typing import Iterable
 
 from PIL import Image, ImageStat
 
+DEFAULT_DINOV2_MODEL = "facebook/dinov2-base"
+DEFAULT_SIGLIP_MODEL = "google/siglip2-base-patch16-224"
+
 
 class BackendUnavailable(RuntimeError):
     """Raised when an optional embedding backend cannot run in this environment."""
@@ -213,6 +216,22 @@ def _load_dinov2_components(model: str):
     return torch, processor, model_obj
 
 
+def _load_siglip_components(model: str):
+    try:
+        import torch
+        from transformers import AutoModel, AutoProcessor
+    except ImportError as exc:
+        raise BackendUnavailable("backend unavailable: install torch/transformers or run with --backend mock") from exc
+
+    try:
+        processor = AutoProcessor.from_pretrained(model)
+        model_obj = AutoModel.from_pretrained(model)
+        model_obj.eval()
+    except Exception as exc:
+        raise BackendUnavailable(f"backend unavailable: {exc}") from exc
+    return torch, processor, model_obj
+
+
 def dinov2_image_embedding(path: Path, *, torch_module, processor, model_obj) -> list[float]:
     with Image.open(path) as image:
         inputs = processor(images=image.convert("RGB"), return_tensors="pt")
@@ -230,11 +249,41 @@ def dinov2_image_embedding(path: Path, *, torch_module, processor, model_obj) ->
     return [round(float(value), 6) for value in vector.tolist()]
 
 
+def _text_for_sample(sample: dict[str, object]) -> tuple[str, str]:
+    prompt = str(sample.get("prompt") or "").strip()
+    if prompt:
+        return prompt, "prompt"
+    return str(sample.get("purpose") or sample["sample_id"]), "purpose"
+
+
+def siglip_text_image_score(path: Path, text: str, *, torch_module, processor, model_obj) -> dict[str, float]:
+    with Image.open(path) as image:
+        inputs = processor(
+            text=[text],
+            images=image.convert("RGB"),
+            padding="max_length",
+            return_tensors="pt",
+        )
+
+    with torch_module.no_grad():
+        outputs = model_obj(**inputs)
+
+    logits = getattr(outputs, "logits_per_image", None)
+    if logits is None:
+        raise BackendUnavailable("backend unavailable: SigLIP output did not include logits_per_image")
+    logit = float(logits[0][0])
+    probability = float(torch_module.sigmoid(logits)[0][0])
+    return {
+        "logit": round(logit, 6),
+        "probability": round(probability, 6),
+    }
+
+
 def run_dinov2_audit(
     manifest: Path | str,
     *,
     audit_set: str = "core",
-    model: str = "facebook/dinov2-base",
+    model: str = DEFAULT_DINOV2_MODEL,
 ) -> dict[str, object]:
     manifest_path, _inventory, repo_root, selected, excluded = _load_inventory_and_samples(manifest, audit_set)
     torch_module, processor, model_obj = _load_dinov2_components(model)
@@ -258,6 +307,52 @@ def run_dinov2_audit(
     )
 
 
+def run_siglip_audit(
+    manifest: Path | str,
+    *,
+    audit_set: str = "core",
+    model: str = DEFAULT_SIGLIP_MODEL,
+) -> dict[str, object]:
+    manifest_path, _inventory, repo_root, selected, excluded = _load_inventory_and_samples(manifest, audit_set)
+    torch_module, processor, model_obj = _load_siglip_components(model)
+
+    scored_samples: list[dict[str, object]] = []
+    for sample in selected:
+        text, text_source = _text_for_sample(sample)
+        score = siglip_text_image_score(
+            repo_root / sample["path"],
+            text,
+            torch_module=torch_module,
+            processor=processor,
+            model_obj=model_obj,
+        )
+        scored_samples.append(
+            {
+                "sample_id": sample["sample_id"],
+                "group": sample["group"],
+                "path": sample["path"],
+                "text": text,
+                "text_source": text_source,
+                **score,
+            }
+        )
+
+    return {
+        "schema_version": "vulca_jepa_text_image_audit.v1",
+        "generated_at": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
+        "backend": "siglip",
+        "status": "ok",
+        "model": model,
+        "manifest": str(manifest_path),
+        "audit_set": audit_set,
+        "samples_total": len(scored_samples),
+        "text_image_scores_total": len(scored_samples),
+        "samples": scored_samples,
+        "text_image_scores": sorted(scored_samples, key=lambda item: float(item["probability"])),
+        "excluded_samples": excluded,
+    }
+
+
 def _unavailable_result(
     manifest: Path | str,
     *,
@@ -277,8 +372,10 @@ def _unavailable_result(
         "error": error,
         "samples_total": 0,
         "pairwise_distances_total": 0,
+        "text_image_scores_total": 0,
         "samples": [],
         "pairwise_distances": [],
+        "text_image_scores": [],
         "anomaly_ranking": [],
         "excluded_samples": [],
     }
@@ -295,9 +392,21 @@ def write_audit(
     if backend == "mock":
         audit = run_mock_audit(manifest, audit_set=audit_set)
     elif backend == "dinov2":
-        model_name = model or "facebook/dinov2-base"
+        model_name = model or DEFAULT_DINOV2_MODEL
         try:
             audit = run_dinov2_audit(manifest, audit_set=audit_set, model=model_name)
+        except BackendUnavailable as exc:
+            audit = _unavailable_result(
+                manifest,
+                backend=backend,
+                model=model_name,
+                audit_set=audit_set,
+                error=str(exc),
+            )
+    elif backend == "siglip":
+        model_name = model or DEFAULT_SIGLIP_MODEL
+        try:
+            audit = run_siglip_audit(manifest, audit_set=audit_set, model=model_name)
         except BackendUnavailable as exc:
             audit = _unavailable_result(
                 manifest,
@@ -317,7 +426,7 @@ def write_audit(
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--manifest", required=True, type=Path, help="Inventory JSON path.")
-    parser.add_argument("--backend", default="mock", choices=("mock", "dinov2"), help="Audit backend to run.")
+    parser.add_argument("--backend", default="mock", choices=("mock", "dinov2", "siglip"), help="Audit backend to run.")
     parser.add_argument("--model", default=None, help="Backend model id, e.g. facebook/dinov2-base.")
     parser.add_argument("--audit-set", default="core", choices=("core",), help="Inventory audit set to embed.")
     parser.add_argument("--out", required=True, type=Path, help="Audit JSON output path.")
@@ -332,7 +441,10 @@ def main(argv: list[str] | None = None) -> int:
     if audit.get("model"):
         print(f"model: {audit['model']}")
     print(f"samples: {audit['samples_total']}")
-    print(f"pairwise_distances: {audit['pairwise_distances_total']}")
+    if "text_image_scores_total" in audit and audit.get("backend") == "siglip":
+        print(f"text_image_scores: {audit['text_image_scores_total']}")
+    else:
+        print(f"pairwise_distances: {audit['pairwise_distances_total']}")
     return 0
 
 
