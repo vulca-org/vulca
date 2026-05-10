@@ -5,7 +5,9 @@ from pathlib import Path
 
 from PIL import Image
 
+import scripts.experiments.vulca_jepa_audit as audit_mod
 from scripts.experiments.vulca_jepa_audit import (
+    BackendUnavailable,
     compute_pairwise_distances,
     mock_image_embedding,
     run_mock_audit,
@@ -104,3 +106,54 @@ def test_write_audit_outputs_json(tmp_path: Path) -> None:
     assert loaded == audit
     assert loaded["samples_total"] == 3
     assert loaded["pairwise_distances_total"] == 3
+
+
+def test_write_audit_dispatches_dinov2_backend(tmp_path: Path, monkeypatch) -> None:
+    manifest = _write_manifest(tmp_path)
+    out = tmp_path / "dinov2.json"
+    calls = {}
+
+    def fake_run(manifest_path, *, audit_set, model):
+        calls["manifest"] = manifest_path
+        calls["audit_set"] = audit_set
+        calls["model"] = model
+        return {
+            "schema_version": "vulca_jepa_audit.v1",
+            "backend": "dinov2",
+            "status": "ok",
+            "model": model,
+            "audit_set": audit_set,
+            "samples_total": 0,
+            "pairwise_distances_total": 0,
+            "samples": [],
+            "pairwise_distances": [],
+            "anomaly_ranking": [],
+            "excluded_samples": [],
+        }
+
+    monkeypatch.setattr(audit_mod, "run_dinov2_audit", fake_run)
+
+    audit = write_audit(manifest, out, backend="dinov2", model="fake/dinov2")
+
+    assert audit["backend"] == "dinov2"
+    assert audit["model"] == "fake/dinov2"
+    assert calls == {"manifest": manifest, "audit_set": "core", "model": "fake/dinov2"}
+    assert json.loads(out.read_text()) == audit
+
+
+def test_write_audit_records_unavailable_dinov2_backend(tmp_path: Path, monkeypatch) -> None:
+    manifest = _write_manifest(tmp_path)
+    out = tmp_path / "dinov2.json"
+
+    def fake_run(manifest_path, *, audit_set, model):
+        raise BackendUnavailable("install torch/transformers")
+
+    monkeypatch.setattr(audit_mod, "run_dinov2_audit", fake_run)
+
+    audit = write_audit(manifest, out, backend="dinov2", model="fake/dinov2")
+
+    assert audit["backend"] == "dinov2"
+    assert audit["status"] == "unavailable"
+    assert audit["error"] == "install torch/transformers"
+    assert audit["samples_total"] == 0
+    assert json.loads(out.read_text()) == audit

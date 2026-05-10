@@ -19,6 +19,10 @@ from typing import Iterable
 from PIL import Image, ImageStat
 
 
+class BackendUnavailable(RuntimeError):
+    """Raised when an optional embedding backend cannot run in this environment."""
+
+
 def mock_image_embedding(path: Path) -> list[float]:
     with Image.open(path) as image:
         rgba = image.convert("RGBA")
@@ -124,23 +128,39 @@ def _select_samples(inventory: dict[str, object], audit_set: str) -> tuple[list[
     return selected, excluded
 
 
-def run_mock_audit(manifest: Path | str, *, audit_set: str = "core") -> dict[str, object]:
+def _load_inventory_and_samples(
+    manifest: Path | str,
+    audit_set: str,
+) -> tuple[Path, dict[str, object], Path, list[dict[str, object]], list[dict[str, object]]]:
     manifest_path = Path(manifest)
     inventory = json.loads(manifest_path.read_text())
     repo_root = Path(inventory["repo_root"])
     selected, excluded = _select_samples(inventory, audit_set)
+    return manifest_path, inventory, repo_root, selected, excluded
 
+
+def _build_audit_result(
+    *,
+    manifest_path: Path,
+    backend: str,
+    model: str,
+    audit_set: str,
+    selected: list[dict[str, object]],
+    excluded: list[dict[str, object]],
+    embeddings: dict[str, list[float]],
+) -> dict[str, object]:
     embeddings = {
-        sample["sample_id"]: mock_image_embedding(repo_root / sample["path"])
-        for sample in selected
+        sample_id: [round(float(value), 6) for value in embedding]
+        for sample_id, embedding in embeddings.items()
     }
     pairwise_distances = compute_pairwise_distances(embeddings)
     sample_ids = [sample["sample_id"] for sample in selected]
     return {
         "schema_version": "vulca_jepa_audit.v1",
         "generated_at": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
-        "backend": "mock",
-        "model": "image-statistics-v1",
+        "backend": backend,
+        "status": "ok",
+        "model": model,
         "manifest": str(manifest_path),
         "audit_set": audit_set,
         "samples_total": len(selected),
@@ -160,17 +180,135 @@ def run_mock_audit(manifest: Path | str, *, audit_set: str = "core") -> dict[str
     }
 
 
+def run_mock_audit(manifest: Path | str, *, audit_set: str = "core") -> dict[str, object]:
+    manifest_path, _inventory, repo_root, selected, excluded = _load_inventory_and_samples(manifest, audit_set)
+    embeddings = {
+        sample["sample_id"]: mock_image_embedding(repo_root / sample["path"])
+        for sample in selected
+    }
+    return _build_audit_result(
+        manifest_path=manifest_path,
+        backend="mock",
+        model="image-statistics-v1",
+        audit_set=audit_set,
+        selected=selected,
+        excluded=excluded,
+        embeddings=embeddings,
+    )
+
+
+def _load_dinov2_components(model: str):
+    try:
+        import torch
+        from transformers import AutoImageProcessor, AutoModel
+    except ImportError as exc:
+        raise BackendUnavailable("backend unavailable: install torch/transformers or run with --backend mock") from exc
+
+    try:
+        processor = AutoImageProcessor.from_pretrained(model)
+        model_obj = AutoModel.from_pretrained(model)
+        model_obj.eval()
+    except Exception as exc:
+        raise BackendUnavailable(f"backend unavailable: {exc}") from exc
+    return torch, processor, model_obj
+
+
+def dinov2_image_embedding(path: Path, *, torch_module, processor, model_obj) -> list[float]:
+    with Image.open(path) as image:
+        inputs = processor(images=image.convert("RGB"), return_tensors="pt")
+
+    with torch_module.no_grad():
+        outputs = model_obj(**inputs)
+
+    pooled = getattr(outputs, "pooler_output", None)
+    if pooled is None:
+        pooled = outputs.last_hidden_state[:, 0]
+    vector = pooled[0].detach().cpu().float()
+    norm = torch_module.linalg.vector_norm(vector)
+    if float(norm) > 0:
+        vector = vector / norm
+    return [round(float(value), 6) for value in vector.tolist()]
+
+
+def run_dinov2_audit(
+    manifest: Path | str,
+    *,
+    audit_set: str = "core",
+    model: str = "facebook/dinov2-base",
+) -> dict[str, object]:
+    manifest_path, _inventory, repo_root, selected, excluded = _load_inventory_and_samples(manifest, audit_set)
+    torch_module, processor, model_obj = _load_dinov2_components(model)
+    embeddings = {
+        sample["sample_id"]: dinov2_image_embedding(
+            repo_root / sample["path"],
+            torch_module=torch_module,
+            processor=processor,
+            model_obj=model_obj,
+        )
+        for sample in selected
+    }
+    return _build_audit_result(
+        manifest_path=manifest_path,
+        backend="dinov2",
+        model=model,
+        audit_set=audit_set,
+        selected=selected,
+        excluded=excluded,
+        embeddings=embeddings,
+    )
+
+
+def _unavailable_result(
+    manifest: Path | str,
+    *,
+    backend: str,
+    model: str,
+    audit_set: str,
+    error: str,
+) -> dict[str, object]:
+    return {
+        "schema_version": "vulca_jepa_audit.v1",
+        "generated_at": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
+        "backend": backend,
+        "status": "unavailable",
+        "model": model,
+        "manifest": str(Path(manifest)),
+        "audit_set": audit_set,
+        "error": error,
+        "samples_total": 0,
+        "pairwise_distances_total": 0,
+        "samples": [],
+        "pairwise_distances": [],
+        "anomaly_ranking": [],
+        "excluded_samples": [],
+    }
+
+
 def write_audit(
     manifest: Path | str,
     out: Path | str,
     *,
     backend: str = "mock",
     audit_set: str = "core",
+    model: str | None = None,
 ) -> dict[str, object]:
-    if backend != "mock":
+    if backend == "mock":
+        audit = run_mock_audit(manifest, audit_set=audit_set)
+    elif backend == "dinov2":
+        model_name = model or "facebook/dinov2-base"
+        try:
+            audit = run_dinov2_audit(manifest, audit_set=audit_set, model=model_name)
+        except BackendUnavailable as exc:
+            audit = _unavailable_result(
+                manifest,
+                backend=backend,
+                model=model_name,
+                audit_set=audit_set,
+                error=str(exc),
+            )
+    else:
         raise ValueError(f"unsupported backend for this script revision: {backend}")
     output_path = Path(out)
-    audit = run_mock_audit(manifest, audit_set=audit_set)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(audit, ensure_ascii=False, indent=2) + "\n")
     return audit
@@ -179,14 +317,20 @@ def write_audit(
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--manifest", required=True, type=Path, help="Inventory JSON path.")
-    parser.add_argument("--backend", default="mock", choices=("mock",), help="Audit backend to run.")
+    parser.add_argument("--backend", default="mock", choices=("mock", "dinov2"), help="Audit backend to run.")
+    parser.add_argument("--model", default=None, help="Backend model id, e.g. facebook/dinov2-base.")
     parser.add_argument("--audit-set", default="core", choices=("core",), help="Inventory audit set to embed.")
     parser.add_argument("--out", required=True, type=Path, help="Audit JSON output path.")
     args = parser.parse_args(argv)
 
-    audit = write_audit(args.manifest, args.out, backend=args.backend, audit_set=args.audit_set)
+    audit = write_audit(args.manifest, args.out, backend=args.backend, audit_set=args.audit_set, model=args.model)
     print(f"wrote {args.out}")
     print(f"backend: {audit['backend']}")
+    if audit.get("status") == "unavailable":
+        print(audit["error"])
+        return 0
+    if audit.get("model"):
+        print(f"model: {audit['model']}")
     print(f"samples: {audit['samples_total']}")
     print(f"pairwise_distances: {audit['pairwise_distances_total']}")
     return 0
