@@ -653,3 +653,32 @@ PYTHONPATH=src python3 -m vulca create "test artwork" \
 ```
 
 这一步只把 guard 作为非阻断复核提示展示，不改变 Vulca L1-L5 分数，也不自动拒绝生成结果。当前 `sample_id` 仍由调用方显式传入；下一步要从 inventory/image path 自动推导 sample_id，减少手工参数。
+
+2026-05-10 已继续接入 `--eval-inventory` 自动推导：
+
+```bash
+PYTHONPATH=src python3 -m vulca evaluate \
+  assets/demo/v3/gallery/chinese_gongbi.png \
+  --mock \
+  --eval-metadata docs/product/experiments/2026-05-10-vulca-jepa-eval-metadata.json \
+  --eval-inventory docs/product/experiments/2026-05-10-vulca-jepa-inventory.json
+```
+
+这个命令会从 inventory 推导出 `gongbi_baseline_failed_subject`，因此输出 `Eval Metadata Guards`：
+
+```text
+vulca_jepa_subject_drift: 1 warning(s), non-blocking, action=warn_only
+samples: gongbi_baseline_failed_subject
+```
+
+对 promptfix 样本：
+
+```bash
+PYTHONPATH=src python3 -m vulca evaluate \
+  assets/demo/v3/gallery-promptfix/chinese_gongbi_seed1.png \
+  --mock \
+  --eval-metadata docs/product/experiments/2026-05-10-vulca-jepa-eval-metadata.json \
+  --eval-inventory docs/product/experiments/2026-05-10-vulca-jepa-inventory.json
+```
+
+普通文本输出不显示 guard 段；JSON 输出里 `current_sample_id=gongbi_promptfix_seed1`，`warnings_total=0`。这说明当前 guard 的实际效果符合预期：它只提示已知主体漂移失败样本，没有误伤 promptfix 牡丹样本。

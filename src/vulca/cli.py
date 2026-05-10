@@ -82,7 +82,62 @@ def _load_eval_metadata_or_exit(args: argparse.Namespace) -> dict:
     except ValueError as exc:
         print(f"Error: {exc}", file=sys.stderr)
         sys.exit(1)
-    return _filter_eval_metadata_by_sample_id(metadata, getattr(args, "eval_sample_id", ""))
+    try:
+        sample_id = _resolve_eval_sample_id(args)
+    except ValueError as exc:
+        print(f"Error: {exc}", file=sys.stderr)
+        sys.exit(1)
+    return _filter_eval_metadata_by_sample_id(metadata, sample_id)
+
+
+def _resolve_eval_sample_id(args: argparse.Namespace) -> str:
+    explicit_sample_id = getattr(args, "eval_sample_id", "")
+    if explicit_sample_id:
+        return explicit_sample_id
+    inventory_path = getattr(args, "eval_inventory", "")
+    image = getattr(args, "image", "")
+    if not inventory_path or not image:
+        return ""
+    return _infer_eval_sample_id_from_inventory(image=image, inventory_path=inventory_path)
+
+
+def _infer_eval_sample_id_from_inventory(*, image: str, inventory_path: str) -> str:
+    path = Path(inventory_path)
+    try:
+        inventory = json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError as exc:
+        raise ValueError(f"eval inventory file not found: {path}") from exc
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"eval inventory file is not valid JSON: {path}") from exc
+    if not isinstance(inventory, dict):
+        raise ValueError(f"eval inventory must be a JSON object: {path}")
+
+    image_path = Path(image)
+    candidates = {image, str(image_path)}
+    try:
+        candidates.add(str(image_path.resolve()))
+    except OSError:
+        pass
+
+    cwd = Path.cwd()
+    for sample in inventory.get("samples", []):
+        if not isinstance(sample, dict):
+            continue
+        sample_path = sample.get("path")
+        sample_id = sample.get("sample_id")
+        if not sample_path or not sample_id:
+            continue
+        sample_path_obj = Path(str(sample_path))
+        sample_candidates = {str(sample_path), str(sample_path_obj)}
+        try:
+            sample_candidates.add(str(sample_path_obj.resolve()))
+        except OSError:
+            pass
+        if not sample_path_obj.is_absolute():
+            sample_candidates.add(str((cwd / sample_path_obj).resolve()))
+        if candidates & sample_candidates:
+            return str(sample_id)
+    return ""
 
 
 def _filter_eval_metadata_by_sample_id(metadata: dict, sample_id: str) -> dict:
@@ -189,6 +244,7 @@ def main(argv: list[str] | None = None) -> None:
     eval_p.add_argument("--reference", default="", help="Reference image path or base64 for comparison")
     eval_p.add_argument("--eval-metadata", default="", help="Experimental eval metadata JSON with non-blocking guard hints")
     eval_p.add_argument("--eval-sample-id", default="", help="Filter eval metadata warnings to the current sample id")
+    eval_p.add_argument("--eval-inventory", default="", help="Infer eval sample id from this inventory JSON and the image path")
 
     # create command
     create_p = sub.add_parser("create", aliases=["c"], help="Create artwork via pipeline")
