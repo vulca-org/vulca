@@ -583,4 +583,25 @@ git commit -m "docs: compare vulca jepa audit with existing evals"
 
 ## 8. 下一步建议
 
-下一步实现轻量 guard 原型：只对 `gallery_promptfix` 组报警，不自动拒绝。第一条规则建议是“DINOv2 nearest-neighbor 指向错误类型 + SigLIP prompt-image 概率显著低于 promptfix 对照”时标记为 `subject_drift_warning`。
+轻量 guard 原型已经实现：
+
+```bash
+python3 scripts/experiments/vulca_jepa_guard.py \
+  --inventory docs/product/experiments/2026-05-10-vulca-jepa-inventory.json \
+  --dinov2-audit docs/product/experiments/2026-05-10-vulca-jepa-audit.dinov2.json \
+  --siglip-audit docs/product/experiments/2026-05-10-vulca-jepa-audit.siglip.json \
+  --out docs/product/experiments/2026-05-10-vulca-jepa-guard.json
+```
+
+实际输出：
+
+```text
+wrote docs/product/experiments/2026-05-10-vulca-jepa-guard.json
+guard_scope: gallery_promptfix
+samples_evaluated: 8
+warnings: 1
+```
+
+第一条规则是：DINOv2 nearest-neighbor 指向不同 prompt family，同时 SigLIP prompt-image probability `< 0.001`，标记为 `subject_drift_warning`。当前只对 `gongbi_baseline_failed_subject` 报警，动作是 `warn_only`，不自动拒绝。
+
+下一步可以把 `subject_drift_warning` 接进 Vulca 实验 CLI 或 eval metadata，先只作为非阻断警告。

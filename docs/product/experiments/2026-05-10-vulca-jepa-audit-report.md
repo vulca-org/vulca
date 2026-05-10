@@ -24,6 +24,23 @@
 
 解释：DINOv2 把工笔牡丹 baseline 拉到山水/写意邻近区域；SigLIP 给 baseline 的 prompt-image 分数低于 promptfix 牡丹；Gemini rescore 也记录 baseline 未通过。三者方向一致，说明这类主体跑偏可以形成自动 guard。
 
+## Guard 原型结果
+
+第一版 guard 只在 `gallery_promptfix` 组内运行，且只报警不拒绝。规则是：SigLIP prompt-image probability `< 0.001`，同时 DINOv2 最近邻落到不同 prompt family。
+
+| 字段 | 值 |
+| --- | --- |
+| guard_scope | gallery_promptfix |
+| samples_evaluated | 8 |
+| warnings | 1 |
+| warning_type | subject_drift_warning |
+| sample_id | gongbi_baseline_failed_subject |
+| action | warn_only |
+| nearest_sample_id | xieyi_promptfix |
+| siglip_probability | 8.6e-05 |
+
+这个 guard 目前只证明一件事：Vulca 可以把 DINOv2 的图像相似度和 SigLIP 的文本对齐信号合成一个保守的主体漂移报警。它还不应该自动拒绝产物，也不应该扩展到所有 domain。
+
 ## DINOv2 图像相似度观察
 
 | sample_id | mean_distance | nearest_sample_id | nearest_distance |
@@ -97,7 +114,7 @@ DINOv2 能看到 source 与 edit 之间的结构保留关系；但 fusion 的 Si
 
 ## 下一步
 
-- 把 DINOv2 nearest-neighbor 和 SigLIP prompt-image score 接入一个轻量 guard 规则：先只对 gallery_promptfix 组报警，不自动拒绝。
+- 把 `subject_drift_warning` 接进 Vulca 实验 CLI 或 eval metadata，先只作为非阻断警告。
 - 对 `text_source=purpose` 的样本补真实 prompt/brief 字段，否则 SigLIP 分数只能弱参考。
 - 用 Vulca L1-L5 解释 DINO/SigLIP 不能覆盖的文化问题，例如工笔技法深度、风格完成度、用户 override。
 - 后续再考虑 I-JEPA/V-JEPA；当前静态图实验里 DINOv2 与 SigLIP 已经覆盖了主要验证问题。
