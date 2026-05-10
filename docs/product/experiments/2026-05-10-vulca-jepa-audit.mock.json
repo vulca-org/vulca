@@ -1,0 +1,2045 @@
+{
+  "schema_version": "vulca_jepa_audit.v1",
+  "generated_at": "2026-05-10T16:25:39+00:00",
+  "backend": "mock",
+  "model": "image-statistics-v1",
+  "manifest": "docs/product/experiments/2026-05-10-vulca-jepa-inventory.json",
+  "audit_set": "core",
+  "samples_total": 21,
+  "pairwise_distances_total": 210,
+  "samples": [
+    {
+      "sample_id": "gongbi_baseline_failed_subject",
+      "group": "gallery_promptfix",
+      "path": "assets/demo/v3/gallery/chinese_gongbi.png",
+      "embedding": [
+        0.687556,
+        0.602457,
+        0.500924,
+        0.15056,
+        0.125456,
+        0.098025,
+        0.616318,
+        0.128468,
+        0.5
+      ]
+    },
+    {
+      "sample_id": "gongbi_promptfix_seed1",
+      "group": "gallery_promptfix",
+      "path": "assets/demo/v3/gallery-promptfix/chinese_gongbi_seed1.png",
+      "embedding": [
+        0.714313,
+        0.688649,
+        0.635551,
+        0.290982,
+        0.247804,
+        0.286495,
+        0.690237,
+        0.260957,
+        0.5
+      ]
+    },
+    {
+      "sample_id": "gongbi_promptfix_seed2",
+      "group": "gallery_promptfix",
+      "path": "assets/demo/v3/gallery-promptfix/chinese_gongbi_seed2.png",
+      "embedding": [
+        0.713365,
+        0.697903,
+        0.629323,
+        0.305726,
+        0.231113,
+        0.278939,
+        0.694742,
+        0.252008,
+        0.5
+      ]
+    },
+    {
+      "sample_id": "gongbi_promptfix_seed3",
+      "group": "gallery_promptfix",
+      "path": "assets/demo/v3/gallery-promptfix/chinese_gongbi_seed3.png",
+      "embedding": [
+        0.761555,
+        0.713104,
+        0.655079,
+        0.263371,
+        0.219436,
+        0.249295,
+        0.720969,
+        0.231333,
+        0.5
+      ]
+    },
+    {
+      "sample_id": "xieyi_baseline",
+      "group": "gallery_promptfix",
+      "path": "assets/demo/v3/gallery/chinese_xieyi.png",
+      "embedding": [
+        0.554408,
+        0.526744,
+        0.466682,
+        0.206879,
+        0.188603,
+        0.165606,
+        0.528166,
+        0.190534,
+        0.5
+      ]
+    },
+    {
+      "sample_id": "xieyi_promptfix",
+      "group": "gallery_promptfix",
+      "path": "assets/demo/v3/gallery-promptfix/chinese_xieyi.png",
+      "embedding": [
+        0.645762,
+        0.642133,
+        0.628154,
+        0.316141,
+        0.315641,
+        0.312249,
+        0.641689,
+        0.315337,
+        0.5
+      ]
+    },
+    {
+      "sample_id": "japanese_baseline_failed_style",
+      "group": "gallery_promptfix",
+      "path": "assets/demo/v3/gallery/japanese_traditional.png",
+      "embedding": [
+        0.560583,
+        0.566083,
+        0.535613,
+        0.275046,
+        0.263709,
+        0.251077,
+        0.560969,
+        0.264255,
+        0.5
+      ]
+    },
+    {
+      "sample_id": "japanese_promptfix",
+      "group": "gallery_promptfix",
+      "path": "assets/demo/v3/gallery-promptfix/japanese_traditional.png",
+      "embedding": [
+        0.630728,
+        0.616647,
+        0.583252,
+        0.269097,
+        0.268565,
+        0.26952,
+        0.617132,
+        0.268038,
+        0.5
+      ]
+    },
+    {
+      "sample_id": "western_academic",
+      "group": "gallery_breadth",
+      "path": "assets/demo/v3/gallery/western_academic.png",
+      "embedding": [
+        0.466901,
+        0.418438,
+        0.334835,
+        0.160683,
+        0.131147,
+        0.126495,
+        0.423402,
+        0.13528,
+        0.5
+      ]
+    },
+    {
+      "sample_id": "watercolor",
+      "group": "gallery_breadth",
+      "path": "assets/demo/v3/gallery/watercolor.png",
+      "embedding": [
+        0.618926,
+        0.610772,
+        0.484639,
+        0.214973,
+        0.193199,
+        0.196984,
+        0.598833,
+        0.196099,
+        0.5
+      ]
+    },
+    {
+      "sample_id": "islamic_geometric",
+      "group": "gallery_breadth",
+      "path": "assets/demo/v3/gallery/islamic_geometric.png",
+      "embedding": [
+        0.329763,
+        0.608902,
+        0.442504,
+        0.349805,
+        0.08967,
+        0.157133,
+        0.50647,
+        0.130546,
+        0.5
+      ]
+    },
+    {
+      "sample_id": "african_traditional",
+      "group": "gallery_breadth",
+      "path": "assets/demo/v3/gallery/african_traditional.png",
+      "embedding": [
+        0.494288,
+        0.426248,
+        0.329641,
+        0.374091,
+        0.308644,
+        0.299806,
+        0.435574,
+        0.299269,
+        0.5
+      ]
+    },
+    {
+      "sample_id": "south_asian",
+      "group": "gallery_breadth",
+      "path": "assets/demo/v3/gallery/south_asian.png",
+      "embedding": [
+        0.531145,
+        0.521325,
+        0.426765,
+        0.179745,
+        0.147048,
+        0.146814,
+        0.513478,
+        0.152533,
+        0.5
+      ]
+    },
+    {
+      "sample_id": "brand_design",
+      "group": "gallery_breadth",
+      "path": "assets/demo/v3/gallery/brand_design.png",
+      "embedding": [
+        0.655711,
+        0.6302,
+        0.569183,
+        0.2035,
+        0.188142,
+        0.194227,
+        0.630869,
+        0.191517,
+        0.5
+      ]
+    },
+    {
+      "sample_id": "photography",
+      "group": "gallery_breadth",
+      "path": "assets/demo/v3/gallery/photography.png",
+      "embedding": [
+        0.442595,
+        0.422946,
+        0.408724,
+        0.24358,
+        0.226559,
+        0.199275,
+        0.427193,
+        0.227164,
+        0.5
+      ]
+    },
+    {
+      "sample_id": "contemporary_art",
+      "group": "gallery_breadth",
+      "path": "assets/demo/v3/gallery/contemporary_art.png",
+      "embedding": [
+        0.493816,
+        0.424657,
+        0.392038,
+        0.24763,
+        0.217314,
+        0.215631,
+        0.441611,
+        0.215992,
+        0.5
+      ]
+    },
+    {
+      "sample_id": "ui_ux_design",
+      "group": "gallery_breadth",
+      "path": "assets/demo/v3/gallery/ui_ux_design.png",
+      "embedding": [
+        0.790249,
+        0.813338,
+        0.821405,
+        0.171497,
+        0.133921,
+        0.144703,
+        0.807346,
+        0.137638,
+        0.5
+      ]
+    },
+    {
+      "sample_id": "inpaint_before",
+      "group": "edit_inpaint",
+      "path": "assets/demo/v3/inpaint/before.png",
+      "embedding": [
+        0.554408,
+        0.526744,
+        0.466682,
+        0.206879,
+        0.188603,
+        0.165606,
+        0.528166,
+        0.190534,
+        0.5
+      ]
+    },
+    {
+      "sample_id": "inpaint_after",
+      "group": "edit_inpaint",
+      "path": "assets/demo/v3/inpaint/after.png",
+      "embedding": [
+        0.550769,
+        0.520692,
+        0.462962,
+        0.205708,
+        0.191206,
+        0.16872,
+        0.523104,
+        0.191023,
+        0.5
+      ]
+    },
+    {
+      "sample_id": "fusion_source",
+      "group": "fusion",
+      "path": "docs/visual-specs/2026-04-23-scottish-chinese-fusion/source.png",
+      "embedding": [
+        0.329662,
+        0.356097,
+        0.397883,
+        0.231299,
+        0.257141,
+        0.282511,
+        0.352973,
+        0.247355,
+        0.374927
+      ]
+    },
+    {
+      "sample_id": "fusion_iter0",
+      "group": "fusion",
+      "path": "docs/visual-specs/2026-04-23-scottish-chinese-fusion/iters/7/gen_bfbbacd2.png",
+      "embedding": [
+        0.31956,
+        0.334065,
+        0.360258,
+        0.210843,
+        0.245974,
+        0.295995,
+        0.332705,
+        0.232979,
+        0.5
+      ]
+    }
+  ],
+  "pairwise_distances": [
+    {
+      "pair": [
+        "gongbi_baseline_failed_subject",
+        "gongbi_promptfix_seed1"
+      ],
+      "distance": 0.345681
+    },
+    {
+      "pair": [
+        "gongbi_baseline_failed_subject",
+        "gongbi_promptfix_seed2"
+      ],
+      "distance": 0.340066
+    },
+    {
+      "pair": [
+        "gongbi_baseline_failed_subject",
+        "gongbi_promptfix_seed3"
+      ],
+      "distance": 0.327806
+    },
+    {
+      "pair": [
+        "gongbi_baseline_failed_subject",
+        "xieyi_baseline"
+      ],
+      "distance": 0.21905
+    },
+    {
+      "pair": [
+        "gongbi_baseline_failed_subject",
+        "xieyi_promptfix"
+      ],
+      "distance": 0.405649
+    },
+    {
+      "pair": [
+        "gongbi_baseline_failed_subject",
+        "japanese_baseline_failed_style"
+      ],
+      "distance": 0.313346
+    },
+    {
+      "pair": [
+        "gongbi_baseline_failed_subject",
+        "japanese_promptfix"
+      ],
+      "distance": 0.305992
+    },
+    {
+      "pair": [
+        "gongbi_baseline_failed_subject",
+        "western_academic"
+      ],
+      "distance": 0.385157
+    },
+    {
+      "pair": [
+        "gongbi_baseline_failed_subject",
+        "watercolor"
+      ],
+      "distance": 0.168686
+    },
+    {
+      "pair": [
+        "gongbi_baseline_failed_subject",
+        "islamic_geometric"
+      ],
+      "distance": 0.433606
+    },
+    {
+      "pair": [
+        "gongbi_baseline_failed_subject",
+        "african_traditional"
+      ],
+      "distance": 0.532748
+    },
+    {
+      "pair": [
+        "gongbi_baseline_failed_subject",
+        "south_asian"
+      ],
+      "distance": 0.226715
+    },
+    {
+      "pair": [
+        "gongbi_baseline_failed_subject",
+        "brand_design"
+      ],
+      "distance": 0.163147
+    },
+    {
+      "pair": [
+        "gongbi_baseline_failed_subject",
+        "photography"
+      ],
+      "distance": 0.418767
+    },
+    {
+      "pair": [
+        "gongbi_baseline_failed_subject",
+        "contemporary_art"
+      ],
+      "distance": 0.388431
+    },
+    {
+      "pair": [
+        "gongbi_baseline_failed_subject",
+        "ui_ux_design"
+      ],
+      "distance": 0.443835
+    },
+    {
+      "pair": [
+        "gongbi_baseline_failed_subject",
+        "inpaint_before"
+      ],
+      "distance": 0.21905
+    },
+    {
+      "pair": [
+        "gongbi_baseline_failed_subject",
+        "inpaint_after"
+      ],
+      "distance": 0.227599
+    },
+    {
+      "pair": [
+        "gongbi_baseline_failed_subject",
+        "fusion_source"
+      ],
+      "distance": 0.597011
+    },
+    {
+      "pair": [
+        "gongbi_baseline_failed_subject",
+        "fusion_iter0"
+      ],
+      "distance": 0.613149
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed1",
+        "gongbi_promptfix_seed2"
+      ],
+      "distance": 0.027906
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed1",
+        "gongbi_promptfix_seed3"
+      ],
+      "distance": 0.089354
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed1",
+        "xieyi_baseline"
+      ],
+      "distance": 0.369754
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed1",
+        "xieyi_promptfix"
+      ],
+      "distance": 0.134647
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed1",
+        "japanese_baseline_failed_style"
+      ],
+      "distance": 0.259086
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed1",
+        "japanese_promptfix"
+      ],
+      "distance": 0.146624
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed1",
+        "western_academic"
+      ],
+      "distance": 0.606497
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed1",
+        "watercolor"
+      ],
+      "distance": 0.259366
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed1",
+        "islamic_geometric"
+      ],
+      "distance": 0.536175
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed1",
+        "african_traditional"
+      ],
+      "distance": 0.536613
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed1",
+        "south_asian"
+      ],
+      "distance": 0.436091
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed1",
+        "brand_design"
+      ],
+      "distance": 0.198312
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed1",
+        "photography"
+      ],
+      "distance": 0.525851
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed1",
+        "contemporary_art"
+      ],
+      "distance": 0.499276
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed1",
+        "ui_ux_design"
+      ],
+      "distance": 0.363495
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed1",
+        "inpaint_before"
+      ],
+      "distance": 0.369754
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed1",
+        "inpaint_after"
+      ],
+      "distance": 0.376714
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed1",
+        "fusion_source"
+      ],
+      "distance": 0.669532
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed1",
+        "fusion_iter0"
+      ],
+      "distance": 0.701765
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed2",
+        "gongbi_promptfix_seed3"
+      ],
+      "distance": 0.084505
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed2",
+        "xieyi_baseline"
+      ],
+      "distance": 0.370086
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed2",
+        "xieyi_promptfix"
+      ],
+      "distance": 0.151228
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed2",
+        "japanese_baseline_failed_style"
+      ],
+      "distance": 0.26519
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed2",
+        "japanese_promptfix"
+      ],
+      "distance": 0.157058
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed2",
+        "western_academic"
+      ],
+      "distance": 0.605879
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed2",
+        "watercolor"
+      ],
+      "distance": 0.257213
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed2",
+        "islamic_geometric"
+      ],
+      "distance": 0.526268
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed2",
+        "african_traditional"
+      ],
+      "distance": 0.540483
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed2",
+        "south_asian"
+      ],
+      "distance": 0.434236
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed2",
+        "brand_design"
+      ],
+      "distance": 0.196815
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed2",
+        "photography"
+      ],
+      "distance": 0.52916
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed2",
+        "contemporary_art"
+      ],
+      "distance": 0.502111
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed2",
+        "ui_ux_design"
+      ],
+      "distance": 0.356896
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed2",
+        "inpaint_before"
+      ],
+      "distance": 0.370086
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed2",
+        "inpaint_after"
+      ],
+      "distance": 0.377413
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed2",
+        "fusion_source"
+      ],
+      "distance": 0.675518
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed2",
+        "fusion_iter0"
+      ],
+      "distance": 0.707675
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed3",
+        "xieyi_baseline"
+      ],
+      "distance": 0.403877
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed3",
+        "xieyi_promptfix"
+      ],
+      "distance": 0.220262
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed3",
+        "japanese_baseline_failed_style"
+      ],
+      "distance": 0.32413
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed3",
+        "japanese_promptfix"
+      ],
+      "distance": 0.215786
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed3",
+        "western_academic"
+      ],
+      "distance": 0.638277
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed3",
+        "watercolor"
+      ],
+      "distance": 0.28599
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed3",
+        "islamic_geometric"
+      ],
+      "distance": 0.575728
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed3",
+        "african_traditional"
+      ],
+      "distance": 0.607011
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed3",
+        "south_asian"
+      ],
+      "distance": 0.462594
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed3",
+        "brand_design"
+      ],
+      "distance": 0.20677
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed3",
+        "photography"
+      ],
+      "distance": 0.579555
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed3",
+        "contemporary_art"
+      ],
+      "distance": 0.551124
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed3",
+        "ui_ux_design"
+      ],
+      "distance": 0.285425
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed3",
+        "inpaint_before"
+      ],
+      "distance": 0.403877
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed3",
+        "inpaint_after"
+      ],
+      "distance": 0.412009
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed3",
+        "fusion_source"
+      ],
+      "distance": 0.731444
+    },
+    {
+      "pair": [
+        "gongbi_promptfix_seed3",
+        "fusion_iter0"
+      ],
+      "distance": 0.763116
+    },
+    {
+      "pair": [
+        "xieyi_baseline",
+        "xieyi_promptfix"
+      ],
+      "distance": 0.354651
+    },
+    {
+      "pair": [
+        "xieyi_baseline",
+        "japanese_baseline_failed_style"
+      ],
+      "distance": 0.174473
+    },
+    {
+      "pair": [
+        "xieyi_baseline",
+        "japanese_promptfix"
+      ],
+      "distance": 0.249962
+    },
+    {
+      "pair": [
+        "xieyi_baseline",
+        "western_academic"
+      ],
+      "distance": 0.240343
+    },
+    {
+      "pair": [
+        "xieyi_baseline",
+        "watercolor"
+      ],
+      "distance": 0.132822
+    },
+    {
+      "pair": [
+        "xieyi_baseline",
+        "islamic_geometric"
+      ],
+      "distance": 0.303573
+    },
+    {
+      "pair": [
+        "xieyi_baseline",
+        "african_traditional"
+      ],
+      "distance": 0.336556
+    },
+    {
+      "pair": [
+        "xieyi_baseline",
+        "south_asian"
+      ],
+      "distance": 0.081486
+    },
+    {
+      "pair": [
+        "xieyi_baseline",
+        "brand_design"
+      ],
+      "distance": 0.207006
+    },
+    {
+      "pair": [
+        "xieyi_baseline",
+        "photography"
+      ],
+      "distance": 0.205168
+    },
+    {
+      "pair": [
+        "xieyi_baseline",
+        "contemporary_art"
+      ],
+      "distance": 0.181086
+    },
+    {
+      "pair": [
+        "xieyi_baseline",
+        "ui_ux_design"
+      ],
+      "distance": 0.590766
+    },
+    {
+      "pair": [
+        "xieyi_baseline",
+        "inpaint_before"
+      ],
+      "distance": 0.0
+    },
+    {
+      "pair": [
+        "xieyi_baseline",
+        "inpaint_after"
+      ],
+      "distance": 0.010364
+    },
+    {
+      "pair": [
+        "xieyi_baseline",
+        "fusion_source"
+      ],
+      "distance": 0.391011
+    },
+    {
+      "pair": [
+        "xieyi_baseline",
+        "fusion_iter0"
+      ],
+      "distance": 0.40487
+    },
+    {
+      "pair": [
+        "xieyi_promptfix",
+        "japanese_baseline_failed_style"
+      ],
+      "distance": 0.197119
+    },
+    {
+      "pair": [
+        "xieyi_promptfix",
+        "japanese_promptfix"
+      ],
+      "distance": 0.109485
+    },
+    {
+      "pair": [
+        "xieyi_promptfix",
+        "western_academic"
+      ],
+      "distance": 0.58382
+    },
+    {
+      "pair": [
+        "xieyi_promptfix",
+        "watercolor"
+      ],
+      "distance": 0.27725
+    },
+    {
+      "pair": [
+        "xieyi_promptfix",
+        "islamic_geometric"
+      ],
+      "distance": 0.513921
+    },
+    {
+      "pair": [
+        "xieyi_promptfix",
+        "african_traditional"
+      ],
+      "distance": 0.45273
+    },
+    {
+      "pair": [
+        "xieyi_promptfix",
+        "south_asian"
+      ],
+      "distance": 0.430846
+    },
+    {
+      "pair": [
+        "xieyi_promptfix",
+        "brand_design"
+      ],
+      "distance": 0.24908
+    },
+    {
+      "pair": [
+        "xieyi_promptfix",
+        "photography"
+      ],
+      "distance": 0.466065
+    },
+    {
+      "pair": [
+        "xieyi_promptfix",
+        "contemporary_art"
+      ],
+      "distance": 0.446914
+    },
+    {
+      "pair": [
+        "xieyi_promptfix",
+        "ui_ux_design"
+      ],
+      "distance": 0.478088
+    },
+    {
+      "pair": [
+        "xieyi_promptfix",
+        "inpaint_before"
+      ],
+      "distance": 0.354651
+    },
+    {
+      "pair": [
+        "xieyi_promptfix",
+        "inpaint_after"
+      ],
+      "distance": 0.358966
+    },
+    {
+      "pair": [
+        "xieyi_promptfix",
+        "fusion_source"
+      ],
+      "distance": 0.591512
+    },
+    {
+      "pair": [
+        "xieyi_promptfix",
+        "fusion_iter0"
+      ],
+      "distance": 0.625733
+    },
+    {
+      "pair": [
+        "japanese_baseline_failed_style",
+        "japanese_promptfix"
+      ],
+      "distance": 0.115387
+    },
+    {
+      "pair": [
+        "japanese_baseline_failed_style",
+        "western_academic"
+      ],
+      "distance": 0.390664
+    },
+    {
+      "pair": [
+        "japanese_baseline_failed_style",
+        "watercolor"
+      ],
+      "distance": 0.159952
+    },
+    {
+      "pair": [
+        "japanese_baseline_failed_style",
+        "islamic_geometric"
+      ],
+      "distance": 0.359629
+    },
+    {
+      "pair": [
+        "japanese_baseline_failed_style",
+        "african_traditional"
+      ],
+      "distance": 0.312293
+    },
+    {
+      "pair": [
+        "japanese_baseline_failed_style",
+        "south_asian"
+      ],
+      "distance": 0.251033
+    },
+    {
+      "pair": [
+        "japanese_baseline_failed_style",
+        "brand_design"
+      ],
+      "distance": 0.196278
+    },
+    {
+      "pair": [
+        "japanese_baseline_failed_style",
+        "photography"
+      ],
+      "distance": 0.273561
+    },
+    {
+      "pair": [
+        "japanese_baseline_failed_style",
+        "contemporary_art"
+      ],
+      "distance": 0.256533
+    },
+    {
+      "pair": [
+        "japanese_baseline_failed_style",
+        "ui_ux_design"
+      ],
+      "distance": 0.55783
+    },
+    {
+      "pair": [
+        "japanese_baseline_failed_style",
+        "inpaint_before"
+      ],
+      "distance": 0.174473
+    },
+    {
+      "pair": [
+        "japanese_baseline_failed_style",
+        "inpaint_after"
+      ],
+      "distance": 0.176291
+    },
+    {
+      "pair": [
+        "japanese_baseline_failed_style",
+        "fusion_source"
+      ],
+      "distance": 0.422521
+    },
+    {
+      "pair": [
+        "japanese_baseline_failed_style",
+        "fusion_iter0"
+      ],
+      "distance": 0.449678
+    },
+    {
+      "pair": [
+        "japanese_promptfix",
+        "western_academic"
+      ],
+      "distance": 0.483825
+    },
+    {
+      "pair": [
+        "japanese_promptfix",
+        "watercolor"
+      ],
+      "distance": 0.171112
+    },
+    {
+      "pair": [
+        "japanese_promptfix",
+        "islamic_geometric"
+      ],
+      "distance": 0.439031
+    },
+    {
+      "pair": [
+        "japanese_promptfix",
+        "african_traditional"
+      ],
+      "distance": 0.408255
+    },
+    {
+      "pair": [
+        "japanese_promptfix",
+        "south_asian"
+      ],
+      "distance": 0.324629
+    },
+    {
+      "pair": [
+        "japanese_promptfix",
+        "brand_design"
+      ],
+      "distance": 0.153264
+    },
+    {
+      "pair": [
+        "japanese_promptfix",
+        "photography"
+      ],
+      "distance": 0.38532
+    },
+    {
+      "pair": [
+        "japanese_promptfix",
+        "contemporary_art"
+      ],
+      "distance": 0.362872
+    },
+    {
+      "pair": [
+        "japanese_promptfix",
+        "ui_ux_design"
+      ],
+      "distance": 0.466123
+    },
+    {
+      "pair": [
+        "japanese_promptfix",
+        "inpaint_before"
+      ],
+      "distance": 0.249962
+    },
+    {
+      "pair": [
+        "japanese_promptfix",
+        "inpaint_after"
+      ],
+      "distance": 0.254963
+    },
+    {
+      "pair": [
+        "japanese_promptfix",
+        "fusion_source"
+      ],
+      "distance": 0.529592
+    },
+    {
+      "pair": [
+        "japanese_promptfix",
+        "fusion_iter0"
+      ],
+      "distance": 0.559587
+    },
+    {
+      "pair": [
+        "western_academic",
+        "watercolor"
+      ],
+      "distance": 0.358869
+    },
+    {
+      "pair": [
+        "western_academic",
+        "islamic_geometric"
+      ],
+      "distance": 0.334701
+    },
+    {
+      "pair": [
+        "western_academic",
+        "african_traditional"
+      ],
+      "distance": 0.367374
+    },
+    {
+      "pair": [
+        "western_academic",
+        "south_asian"
+      ],
+      "distance": 0.180567
+    },
+    {
+      "pair": [
+        "western_academic",
+        "brand_design"
+      ],
+      "distance": 0.437362
+    },
+    {
+      "pair": [
+        "western_academic",
+        "photography"
+      ],
+      "distance": 0.189209
+    },
+    {
+      "pair": [
+        "western_academic",
+        "contemporary_art"
+      ],
+      "distance": 0.183878
+    },
+    {
+      "pair": [
+        "western_academic",
+        "ui_ux_design"
+      ],
+      "distance": 0.803197
+    },
+    {
+      "pair": [
+        "western_academic",
+        "inpaint_before"
+      ],
+      "distance": 0.240343
+    },
+    {
+      "pair": [
+        "western_academic",
+        "inpaint_after"
+      ],
+      "distance": 0.233177
+    },
+    {
+      "pair": [
+        "western_academic",
+        "fusion_source"
+      ],
+      "distance": 0.324133
+    },
+    {
+      "pair": [
+        "western_academic",
+        "fusion_iter0"
+      ],
+      "distance": 0.302782
+    },
+    {
+      "pair": [
+        "watercolor",
+        "islamic_geometric"
+      ],
+      "distance": 0.358759
+    },
+    {
+      "pair": [
+        "watercolor",
+        "african_traditional"
+      ],
+      "distance": 0.400155
+    },
+    {
+      "pair": [
+        "watercolor",
+        "south_asian"
+      ],
+      "distance": 0.184735
+    },
+    {
+      "pair": [
+        "watercolor",
+        "brand_design"
+      ],
+      "distance": 0.100451
+    },
+    {
+      "pair": [
+        "watercolor",
+        "photography"
+      ],
+      "distance": 0.323259
+    },
+    {
+      "pair": [
+        "watercolor",
+        "contemporary_art"
+      ],
+      "distance": 0.293217
+    },
+    {
+      "pair": [
+        "watercolor",
+        "ui_ux_design"
+      ],
+      "distance": 0.488701
+    },
+    {
+      "pair": [
+        "watercolor",
+        "inpaint_before"
+      ],
+      "distance": 0.132822
+    },
+    {
+      "pair": [
+        "watercolor",
+        "inpaint_after"
+      ],
+      "distance": 0.140993
+    },
+    {
+      "pair": [
+        "watercolor",
+        "fusion_source"
+      ],
+      "distance": 0.496434
+    },
+    {
+      "pair": [
+        "watercolor",
+        "fusion_iter0"
+      ],
+      "distance": 0.516185
+    },
+    {
+      "pair": [
+        "islamic_geometric",
+        "african_traditional"
+      ],
+      "distance": 0.418996
+    },
+    {
+      "pair": [
+        "islamic_geometric",
+        "south_asian"
+      ],
+      "distance": 0.285173
+    },
+    {
+      "pair": [
+        "islamic_geometric",
+        "brand_design"
+      ],
+      "distance": 0.417629
+    },
+    {
+      "pair": [
+        "islamic_geometric",
+        "photography"
+      ],
+      "distance": 0.309629
+    },
+    {
+      "pair": [
+        "islamic_geometric",
+        "contemporary_art"
+      ],
+      "distance": 0.324143
+    },
+    {
+      "pair": [
+        "islamic_geometric",
+        "ui_ux_design"
+      ],
+      "distance": 0.72242
+    },
+    {
+      "pair": [
+        "islamic_geometric",
+        "inpaint_before"
+      ],
+      "distance": 0.303573
+    },
+    {
+      "pair": [
+        "islamic_geometric",
+        "inpaint_after"
+      ],
+      "distance": 0.30362
+    },
+    {
+      "pair": [
+        "islamic_geometric",
+        "fusion_source"
+      ],
+      "distance": 0.420191
+    },
+    {
+      "pair": [
+        "islamic_geometric",
+        "fusion_iter0"
+      ],
+      "distance": 0.43141
+    },
+    {
+      "pair": [
+        "african_traditional",
+        "south_asian"
+      ],
+      "distance": 0.367045
+    },
+    {
+      "pair": [
+        "african_traditional",
+        "brand_design"
+      ],
+      "distance": 0.479118
+    },
+    {
+      "pair": [
+        "african_traditional",
+        "photography"
+      ],
+      "distance": 0.219281
+    },
+    {
+      "pair": [
+        "african_traditional",
+        "contemporary_art"
+      ],
+      "distance": 0.205637
+    },
+    {
+      "pair": [
+        "african_traditional",
+        "ui_ux_design"
+      ],
+      "distance": 0.859786
+    },
+    {
+      "pair": [
+        "african_traditional",
+        "inpaint_before"
+      ],
+      "distance": 0.336556
+    },
+    {
+      "pair": [
+        "african_traditional",
+        "inpaint_after"
+      ],
+      "distance": 0.329532
+    },
+    {
+      "pair": [
+        "african_traditional",
+        "fusion_source"
+      ],
+      "distance": 0.29186
+    },
+    {
+      "pair": [
+        "african_traditional",
+        "fusion_iter0"
+      ],
+      "distance": 0.292461
+    },
+    {
+      "pair": [
+        "south_asian",
+        "brand_design"
+      ],
+      "distance": 0.259721
+    },
+    {
+      "pair": [
+        "south_asian",
+        "photography"
+      ],
+      "distance": 0.209783
+    },
+    {
+      "pair": [
+        "south_asian",
+        "contemporary_art"
+      ],
+      "distance": 0.188195
+    },
+    {
+      "pair": [
+        "south_asian",
+        "ui_ux_design"
+      ],
+      "distance": 0.628468
+    },
+    {
+      "pair": [
+        "south_asian",
+        "inpaint_before"
+      ],
+      "distance": 0.081486
+    },
+    {
+      "pair": [
+        "south_asian",
+        "inpaint_after"
+      ],
+      "distance": 0.079836
+    },
+    {
+      "pair": [
+        "south_asian",
+        "fusion_source"
+      ],
+      "distance": 0.39028
+    },
+    {
+      "pair": [
+        "south_asian",
+        "fusion_iter0"
+      ],
+      "distance": 0.395495
+    },
+    {
+      "pair": [
+        "brand_design",
+        "photography"
+      ],
+      "distance": 0.399978
+    },
+    {
+      "pair": [
+        "brand_design",
+        "contemporary_art"
+      ],
+      "distance": 0.373514
+    },
+    {
+      "pair": [
+        "brand_design",
+        "ui_ux_design"
+      ],
+      "distance": 0.394613
+    },
+    {
+      "pair": [
+        "brand_design",
+        "inpaint_before"
+      ],
+      "distance": 0.207006
+    },
+    {
+      "pair": [
+        "brand_design",
+        "inpaint_after"
+      ],
+      "distance": 0.215792
+    },
+    {
+      "pair": [
+        "brand_design",
+        "fusion_source"
+      ],
+      "distance": 0.565773
+    },
+    {
+      "pair": [
+        "brand_design",
+        "fusion_iter0"
+      ],
+      "distance": 0.590524
+    },
+    {
+      "pair": [
+        "photography",
+        "contemporary_art"
+      ],
+      "distance": 0.060059
+    },
+    {
+      "pair": [
+        "photography",
+        "ui_ux_design"
+      ],
+      "distance": 0.782855
+    },
+    {
+      "pair": [
+        "photography",
+        "inpaint_before"
+      ],
+      "distance": 0.205168
+    },
+    {
+      "pair": [
+        "photography",
+        "inpaint_after"
+      ],
+      "distance": 0.195756
+    },
+    {
+      "pair": [
+        "photography",
+        "fusion_source"
+      ],
+      "distance": 0.216596
+    },
+    {
+      "pair": [
+        "photography",
+        "fusion_iter0"
+      ],
+      "distance": 0.212489
+    },
+    {
+      "pair": [
+        "contemporary_art",
+        "ui_ux_design"
+      ],
+      "distance": 0.762223
+    },
+    {
+      "pair": [
+        "contemporary_art",
+        "inpaint_before"
+      ],
+      "distance": 0.181086
+    },
+    {
+      "pair": [
+        "contemporary_art",
+        "inpaint_after"
+      ],
+      "distance": 0.171467
+    },
+    {
+      "pair": [
+        "contemporary_art",
+        "fusion_source"
+      ],
+      "distance": 0.249981
+    },
+    {
+      "pair": [
+        "contemporary_art",
+        "fusion_iter0"
+      ],
+      "distance": 0.245691
+    },
+    {
+      "pair": [
+        "ui_ux_design",
+        "inpaint_before"
+      ],
+      "distance": 0.590766
+    },
+    {
+      "pair": [
+        "ui_ux_design",
+        "inpaint_after"
+      ],
+      "distance": 0.600122
+    },
+    {
+      "pair": [
+        "ui_ux_design",
+        "fusion_source"
+      ],
+      "distance": 0.934059
+    },
+    {
+      "pair": [
+        "ui_ux_design",
+        "fusion_iter0"
+      ],
+      "distance": 0.967096
+    },
+    {
+      "pair": [
+        "inpaint_before",
+        "inpaint_after"
+      ],
+      "distance": 0.010364
+    },
+    {
+      "pair": [
+        "inpaint_before",
+        "fusion_source"
+      ],
+      "distance": 0.391011
+    },
+    {
+      "pair": [
+        "inpaint_before",
+        "fusion_iter0"
+      ],
+      "distance": 0.40487
+    },
+    {
+      "pair": [
+        "inpaint_after",
+        "fusion_source"
+      ],
+      "distance": 0.382004
+    },
+    {
+      "pair": [
+        "inpaint_after",
+        "fusion_iter0"
+      ],
+      "distance": 0.39506
+    },
+    {
+      "pair": [
+        "fusion_source",
+        "fusion_iter0"
+      ],
+      "distance": 0.1378
+    }
+  ],
+  "anomaly_ranking": [
+    {
+      "sample_id": "ui_ux_design",
+      "mean_distance": 0.603838,
+      "nearest_sample_id": "gongbi_promptfix_seed3",
+      "nearest_distance": 0.285425
+    },
+    {
+      "sample_id": "fusion_iter0",
+      "mean_distance": 0.485872,
+      "nearest_sample_id": "fusion_source",
+      "nearest_distance": 0.1378
+    },
+    {
+      "sample_id": "fusion_source",
+      "mean_distance": 0.470413,
+      "nearest_sample_id": "fusion_iter0",
+      "nearest_distance": 0.1378
+    },
+    {
+      "sample_id": "islamic_geometric",
+      "mean_distance": 0.415909,
+      "nearest_sample_id": "south_asian",
+      "nearest_distance": 0.285173
+    },
+    {
+      "sample_id": "african_traditional",
+      "mean_distance": 0.414724,
+      "nearest_sample_id": "contemporary_art",
+      "nearest_distance": 0.205637
+    },
+    {
+      "sample_id": "gongbi_promptfix_seed3",
+      "mean_distance": 0.408432,
+      "nearest_sample_id": "gongbi_promptfix_seed2",
+      "nearest_distance": 0.084505
+    },
+    {
+      "sample_id": "western_academic",
+      "mean_distance": 0.394503,
+      "nearest_sample_id": "south_asian",
+      "nearest_distance": 0.180567
+    },
+    {
+      "sample_id": "gongbi_promptfix_seed2",
+      "mean_distance": 0.37379,
+      "nearest_sample_id": "gongbi_promptfix_seed1",
+      "nearest_distance": 0.027906
+    },
+    {
+      "sample_id": "gongbi_promptfix_seed1",
+      "mean_distance": 0.372625,
+      "nearest_sample_id": "gongbi_promptfix_seed2",
+      "nearest_distance": 0.027906
+    },
+    {
+      "sample_id": "xieyi_promptfix",
+      "mean_distance": 0.370131,
+      "nearest_sample_id": "japanese_promptfix",
+      "nearest_distance": 0.109485
+    },
+    {
+      "sample_id": "gongbi_baseline_failed_subject",
+      "mean_distance": 0.353775,
+      "nearest_sample_id": "brand_design",
+      "nearest_distance": 0.163147
+    },
+    {
+      "sample_id": "photography",
+      "mean_distance": 0.335375,
+      "nearest_sample_id": "contemporary_art",
+      "nearest_distance": 0.060059
+    },
+    {
+      "sample_id": "contemporary_art",
+      "mean_distance": 0.321372,
+      "nearest_sample_id": "photography",
+      "nearest_distance": 0.060059
+    },
+    {
+      "sample_id": "japanese_promptfix",
+      "mean_distance": 0.304441,
+      "nearest_sample_id": "xieyi_promptfix",
+      "nearest_distance": 0.109485
+    },
+    {
+      "sample_id": "brand_design",
+      "mean_distance": 0.300608,
+      "nearest_sample_id": "watercolor",
+      "nearest_distance": 0.100451
+    },
+    {
+      "sample_id": "south_asian",
+      "mean_distance": 0.294921,
+      "nearest_sample_id": "inpaint_after",
+      "nearest_distance": 0.079836
+    },
+    {
+      "sample_id": "japanese_baseline_failed_style",
+      "mean_distance": 0.281473,
+      "nearest_sample_id": "japanese_promptfix",
+      "nearest_distance": 0.115387
+    },
+    {
+      "sample_id": "watercolor",
+      "mean_distance": 0.275349,
+      "nearest_sample_id": "brand_design",
+      "nearest_distance": 0.100451
+    },
+    {
+      "sample_id": "inpaint_after",
+      "mean_distance": 0.262602,
+      "nearest_sample_id": "xieyi_baseline",
+      "nearest_distance": 0.010364
+    },
+    {
+      "sample_id": "inpaint_before",
+      "mean_distance": 0.261345,
+      "nearest_sample_id": "xieyi_baseline",
+      "nearest_distance": 0.0
+    },
+    {
+      "sample_id": "xieyi_baseline",
+      "mean_distance": 0.261345,
+      "nearest_sample_id": "inpaint_before",
+      "nearest_distance": 0.0
+    }
+  ],
+  "excluded_samples": [
+    {
+      "sample_id": "layered_composite",
+      "path": "assets/demo/v3/layered/composite.png",
+      "audit_set": "artifact_qa",
+      "usable_for_embedding": false,
+      "reject_reasons": [
+        "intermediate_artifact",
+        "near_black_opaque",
+        "low_information"
+      ]
+    },
+    {
+      "sample_id": "layer_base_xuan_paper",
+      "path": "assets/demo/v3/layered/base_xuan_paper.png",
+      "audit_set": "artifact_qa",
+      "usable_for_embedding": false,
+      "reject_reasons": [
+        "intermediate_artifact"
+      ]
+    },
+    {
+      "sample_id": "layer_distant_mountains",
+      "path": "assets/demo/v3/layered/distant_haze_mountains.png",
+      "audit_set": "artifact_qa",
+      "usable_for_embedding": false,
+      "reject_reasons": [
+        "intermediate_artifact",
+        "near_black_opaque",
+        "low_information"
+      ]
+    },
+    {
+      "sample_id": "layer_midground_river_forest",
+      "path": "assets/demo/v3/layered/midground_river_forest.png",
+      "audit_set": "artifact_qa",
+      "usable_for_embedding": false,
+      "reject_reasons": [
+        "intermediate_artifact",
+        "near_black_opaque",
+        "low_information"
+      ]
+    },
+    {
+      "sample_id": "layer_foreground_details_hut",
+      "path": "assets/demo/v3/layered/foreground_details_hut.png",
+      "audit_set": "artifact_qa",
+      "usable_for_embedding": false,
+      "reject_reasons": [
+        "intermediate_artifact",
+        "near_black_opaque",
+        "low_information"
+      ]
+    },
+    {
+      "sample_id": "defense_no_ref_composite",
+      "path": "assets/demo/v3/defense3/no_ref/composite.png",
+      "audit_set": "artifact_qa",
+      "usable_for_embedding": false,
+      "reject_reasons": [
+        "intermediate_artifact",
+        "near_black_opaque",
+        "low_information"
+      ]
+    },
+    {
+      "sample_id": "defense_with_ref_composite",
+      "path": "assets/demo/v3/defense3/with_ref/composite.png",
+      "audit_set": "artifact_qa",
+      "usable_for_embedding": false,
+      "reject_reasons": [
+        "intermediate_artifact",
+        "near_black_opaque",
+        "low_information"
+      ]
+    },
+    {
+      "sample_id": "edit_before",
+      "path": "assets/demo/v3/edit/before.png",
+      "audit_set": "artifact_qa",
+      "usable_for_embedding": false,
+      "reject_reasons": [
+        "near_black_opaque",
+        "low_information"
+      ]
+    },
+    {
+      "sample_id": "edit_after",
+      "path": "assets/demo/v3/edit/after.png",
+      "audit_set": "artifact_qa",
+      "usable_for_embedding": false,
+      "reject_reasons": [
+        "near_black_opaque",
+        "low_information"
+      ]
+    }
+  ]
+}
