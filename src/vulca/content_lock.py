@@ -290,6 +290,99 @@ def build_content_fidelity_prompt(lock: ContentLock) -> str:
     return "\n".join(lines)
 
 
+def build_blind_relation_read_prompt(lock: ContentLock | dict[str, Any]) -> str:
+    """Build an image-only relation-reading prompt without caption anchors."""
+    content_lock = content_lock_from_dict(lock) if isinstance(lock, dict) else lock
+    if not content_lock.required_relations:
+        return ""
+
+    return "\n".join(
+        [
+            "BLIND IMAGE RELATION READ:",
+            (
+                "Describe only what is visible in the image. Do not use any "
+                "external prompt, sample id, filename, or expected story."
+            ),
+            (
+                "Focus on visible relationships among people, animals, vehicles, "
+                "objects, threats, movement direction, gaze, weapons, gestures, "
+                "and safety cues."
+            ),
+            "Return exactly one JSON object with these fields:",
+            '"visible_entities": [short strings],',
+            (
+                '"primary_reading": "one sentence describing the most natural '
+                'visible relationship reading",'
+            ),
+            (
+                '"apparent_relations": [short subject-relation-object strings '
+                'visible in the image],'
+            ),
+            '"threat_cues": [short strings],',
+            '"safety_cues": [short strings],',
+            (
+                '"ambiguous_readings": [short strings for plausible alternate '
+                'readings, or empty list],'
+            ),
+            '"confidence": number from 0.0 to 1.0.',
+        ]
+    )
+
+
+def build_blind_relation_gate(
+    lock: ContentLock | dict[str, Any],
+    blind_read: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Compare image-only relation reading against required relations."""
+    content_lock = content_lock_from_dict(lock) if isinstance(lock, dict) else lock
+    if not content_lock.required_relations:
+        return {"blind_relation_decision": "not_applicable"}
+    if not blind_read:
+        return {
+            "blind_relation_decision": "unavailable",
+            "blind_relation_reason": "blind relation read unavailable",
+        }
+    if blind_read.get("_error"):
+        return {
+            "blind_relation_decision": "unavailable",
+            "blind_relation_reason": str(blind_read.get("_error")),
+        }
+
+    primary = str(blind_read.get("primary_reading") or "")
+    apparent = _as_string_list(blind_read.get("apparent_relations"))
+    ambiguous = _as_string_list(blind_read.get("ambiguous_readings"))
+    joined = " ".join([primary, *apparent]).lower()
+    forbidden_present = [
+        reading
+        for reading in content_lock.forbidden_readings
+        if _relation_reading_matches(reading, joined)
+    ]
+
+    decision = "pass"
+    reason = "blind read did not contradict required relations"
+    has_high_confidence_forbidden = any(
+        reading != "soldiers chasing civilians" for reading in forbidden_present
+    )
+    if forbidden_present and has_high_confidence_forbidden:
+        decision = "reject"
+        reason = "blind read matches forbidden relation reading"
+    elif ambiguous:
+        decision = "hold"
+        reason = "blind read is ambiguous for required relations"
+    elif forbidden_present:
+        decision = "reject"
+        reason = "blind read matches forbidden relation reading"
+
+    return {
+        "blind_relation_decision": decision,
+        "blind_relation_reason": reason,
+        "blind_primary_reading": primary,
+        "blind_apparent_relations": apparent,
+        "blind_ambiguous_readings": ambiguous,
+        "blind_forbidden_readings_present": forbidden_present,
+    }
+
+
 def build_content_fidelity_gate(
     lock: ContentLock | dict[str, Any],
     scoring_data: dict[str, Any],
@@ -357,6 +450,8 @@ def apply_content_fidelity_gate(result: dict[str, Any], gate: dict[str, Any]) ->
         required_artwork_itself and output_is_artwork_itself is False
     )
     unwanted_text_failed = unwanted_visible_text is True
+    blind_relation_decision = str(gate.get("blind_relation_decision") or "")
+    blind_relation_failed = blind_relation_decision in {"reject", "hold"}
 
     if not (
         missing_subjects
@@ -368,6 +463,7 @@ def apply_content_fidelity_gate(result: dict[str, Any], gate: dict[str, Any]) ->
         or forbidden_artifacts
         or artifact_boundary_failed
         or unwanted_text_failed
+        or blind_relation_failed
     ):
         return result
 
@@ -407,6 +503,11 @@ def apply_content_fidelity_gate(result: dict[str, Any], gate: dict[str, Any]) ->
         rationale_parts.append("Output is not the artwork itself")
     if unwanted_text_failed:
         rationale_parts.append("Unwanted visible text")
+    if blind_relation_failed:
+        rationale_parts.append(
+            "Blind relation gate rejected image: "
+            f"{gate.get('blind_relation_reason') or blind_relation_decision}"
+        )
     rationales = dict(updated.get("rationales") or {})
     rationales["content_fidelity"] = "; ".join(rationale_parts)
     updated["rationales"] = rationales
@@ -638,6 +739,23 @@ def _as_optional_bool(value: Any) -> bool | None:
         if normalized in {"false", "no", "0"}:
             return False
     return None
+
+
+def _relation_reading_matches(reading: str, joined: str) -> bool:
+    normalized = reading.lower()
+    has_soldiers = "soldier" in joined or "rider" in joined or "mounted" in joined
+    has_civilians = "civilian" in joined or "people" in joined or "refugee" in joined
+    if "chasing" in normalized:
+        return has_soldiers and has_civilians and re.search(r"\bchas\w*|\bpursu\w*", joined) is not None
+    if "attacking" in normalized:
+        return has_soldiers and has_civilians and re.search(r"\battack\w*|\bassault\w*|\bshoot\w*", joined) is not None
+    if "threatened" in normalized:
+        return has_soldiers and has_civilians and re.search(
+            r"\bthreat\w*|\bmenac\w*|\bbrandish\w*|\bdrawn\s+swords?\b|"
+            r"\bcharge\w*\b|\bweapon\w*",
+            joined,
+        ) is not None
+    return reading.lower() in joined
 
 
 def _dedupe(values: list[str]) -> list[str]:

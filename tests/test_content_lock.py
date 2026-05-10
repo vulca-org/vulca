@@ -3,6 +3,8 @@ from __future__ import annotations
 from vulca.content_lock import (
     ContentLock,
     apply_content_fidelity_gate,
+    build_blind_relation_gate,
+    build_blind_relation_read_prompt,
     build_content_fidelity_gate,
     build_content_fidelity_prompt,
     build_content_lock_prompt,
@@ -160,6 +162,137 @@ def test_content_lock_prompt_makes_relations_non_negotiable():
     assert "COMPOSITION INTENT" in prompt
     assert "FORBIDDEN RELATION READINGS" in prompt
     assert "soldiers chasing civilians" in prompt
+
+
+def test_blind_relation_prompt_does_not_anchor_on_caption_or_forbidden_reading():
+    lock = extract_content_lock(
+        "Wartime illustration of mounted soldiers beside fleeing civilians, "
+        "burning village ruins, and aircraft overhead."
+    )
+
+    prompt = build_blind_relation_read_prompt(lock)
+
+    assert "caption" not in prompt.lower()
+    assert "escort" not in prompt.lower()
+    assert "protect" not in prompt.lower()
+    assert "soldiers chasing civilians" not in prompt.lower()
+    assert "visible relationships" in prompt.lower()
+
+
+def test_blind_relation_gate_rejects_forbidden_primary_reading():
+    lock = extract_content_lock(
+        "Wartime illustration of mounted soldiers beside fleeing civilians, "
+        "burning village ruins, and aircraft overhead."
+    )
+
+    gate = build_blind_relation_gate(
+        lock,
+        {
+            "primary_reading": "Mounted soldiers appear to chase fleeing civilians.",
+            "apparent_relations": ["mounted soldiers chasing civilians"],
+            "ambiguous_readings": [],
+        },
+    )
+
+    assert gate["blind_relation_decision"] == "reject"
+    assert "soldiers chasing civilians" in gate["blind_forbidden_readings_present"]
+
+
+def test_blind_relation_gate_rejects_weapon_threat_to_civilians():
+    lock = extract_content_lock(
+        "Wartime illustration of mounted soldiers beside fleeing civilians, "
+        "burning village ruins, and aircraft overhead."
+    )
+
+    gate = build_blind_relation_gate(
+        lock,
+        {
+            "primary_reading": (
+                "Soldiers on horseback charge forward with drawn swords past "
+                "fleeing civilians."
+            ),
+            "apparent_relations": [
+                "soldiers brandish swords",
+                "civilians flee from fire",
+            ],
+            "ambiguous_readings": [],
+        },
+    )
+
+    assert gate["blind_relation_decision"] == "reject"
+    assert "civilians threatened by soldiers" in gate[
+        "blind_forbidden_readings_present"
+    ]
+
+
+def test_blind_relation_gate_rejects_weapon_threat_even_with_ambiguity():
+    lock = extract_content_lock(
+        "Wartime illustration of mounted soldiers beside fleeing civilians, "
+        "burning village ruins, and aircraft overhead."
+    )
+
+    gate = build_blind_relation_gate(
+        lock,
+        {
+            "primary_reading": (
+                "Soldiers on horseback charge forward with drawn swords past "
+                "fleeing civilians."
+            ),
+            "apparent_relations": [
+                "soldiers brandish swords",
+                "civilians flee from fire",
+            ],
+            "ambiguous_readings": [
+                "soldiers could be arriving to defend or passing through"
+            ],
+        },
+    )
+
+    assert gate["blind_relation_decision"] == "reject"
+    assert "civilians threatened by soldiers" in gate[
+        "blind_forbidden_readings_present"
+    ]
+
+
+def test_blind_relation_gate_holds_ambiguous_relation_reading():
+    lock = extract_content_lock(
+        "Wartime illustration of mounted soldiers beside fleeing civilians, "
+        "burning village ruins, and aircraft overhead."
+    )
+
+    gate = build_blind_relation_gate(
+        lock,
+        {
+            "primary_reading": "The riders could be escorting or pursuing the civilians.",
+            "apparent_relations": ["riders behind fleeing civilians"],
+            "ambiguous_readings": ["escort or pursuit"],
+        },
+    )
+
+    assert gate["blind_relation_decision"] == "hold"
+    assert gate["blind_ambiguous_readings"] == ["escort or pursuit"]
+
+
+def test_blind_relation_gate_passes_clear_escort_reading():
+    lock = extract_content_lock(
+        "Wartime illustration of mounted soldiers beside fleeing civilians, "
+        "burning village ruins, and aircraft overhead."
+    )
+
+    gate = build_blind_relation_gate(
+        lock,
+        {
+            "primary_reading": (
+                "Mounted soldiers flank civilians and guide them away from burning ruins."
+            ),
+            "apparent_relations": [
+                "mounted soldiers guiding civilians away from burning ruins"
+            ],
+            "ambiguous_readings": [],
+        },
+    )
+
+    assert gate["blind_relation_decision"] == "pass"
 
 
 def test_artifact_boundary_prompt_for_poster_requires_flat_artwork_surface():
@@ -397,6 +530,29 @@ def test_relation_semantics_failure_caps_high_score():
     assert "content_fidelity_failed" in gated["risk_flags"]
     assert "Relation semantics failed" in gated["rationales"]["content_fidelity"]
     assert "Forbidden relation readings: soldiers chasing civilians" in gated["rationales"]["content_fidelity"]
+
+
+def test_blind_relation_reject_caps_high_score():
+    result = {
+        "scores": {"L1": 0.95, "L2": 0.92, "L3": 1.0, "L4": 1.0, "L5": 0.94},
+        "weighted_total": 0.965,
+        "rationales": {},
+    }
+    gate = {
+        "blind_relation_decision": "reject",
+        "blind_relation_reason": "blind read matches forbidden relation reading",
+        "blind_forbidden_readings_present": ["soldiers chasing civilians"],
+        "blind_primary_reading": "Mounted soldiers appear to chase civilians.",
+    }
+
+    gated = apply_content_fidelity_gate(result, gate)
+
+    assert gated["weighted_total"] == 0.25
+    assert (
+        "Blind relation gate rejected image"
+        in gated["rationales"]["content_fidelity"]
+    )
+    assert "content_fidelity_failed" in gated["risk_flags"]
 
 
 def test_present_required_subjects_do_not_cap_score():

@@ -707,12 +707,27 @@ async def score_image(
         parsed_json = parse_llm_json(scoring_text)
         content_fidelity_gate = None
         if resolved_content_lock is not None:
-            from vulca.content_lock import build_content_fidelity_gate
+            from vulca.content_lock import (
+                build_blind_relation_gate,
+                build_content_fidelity_gate,
+            )
 
             content_fidelity_gate = build_content_fidelity_gate(
                 resolved_content_lock,
                 parsed_json,
             )
+            if resolved_content_lock.required_relations:
+                blind_read = await _blind_relation_read(
+                    img_b64=img_b64,
+                    mime=mime,
+                    api_key=api_key,
+                    model=model,
+                    api_base=api_base,
+                    content_lock=resolved_content_lock,
+                )
+                content_fidelity_gate.update(
+                    build_blind_relation_gate(resolved_content_lock, blind_read)
+                )
 
         # Use _parse_vlm_response to extract and validate all fields (including extras)
         parsed = _parse_vlm_response(parsed_json, extra_keys=extra_keys)
@@ -754,3 +769,52 @@ async def score_image(
             fallback[f"{level}_observations"] = ""
             fallback[f"{level}_reference_technique"] = ""
         return fallback
+
+
+async def _blind_relation_read(
+    *,
+    img_b64: str,
+    mime: str,
+    api_key: str,
+    model: str,
+    api_base: str | None,
+    content_lock,
+) -> dict:
+    """Run an image-only relation read without caption or intended-relation anchors."""
+    try:
+        from vulca._parse import parse_llm_json
+        from vulca.content_lock import build_blind_relation_read_prompt
+
+        prompt = build_blind_relation_read_prompt(content_lock)
+        if not prompt:
+            return {}
+
+        user_parts = [
+            {"type": "image_url", "image_url": {"url": f"data:{mime};base64,{img_b64}"}},
+            {"type": "text", "text": prompt},
+        ]
+        call_kwargs = dict(
+            model=model,
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "You are a strict image-only visual relationship reader. "
+                        "Use only visible evidence in the image."
+                    ),
+                },
+                {"role": "user", "content": user_parts},
+            ],
+            max_tokens=2048,
+            temperature=0.0,
+            api_key=api_key,
+            timeout=300 if model.startswith("ollama") else 55,
+        )
+        if api_base:
+            call_kwargs["api_base"] = api_base
+        resp = await litellm.acompletion(**call_kwargs)
+        text = resp.choices[0].message.content.strip()
+        return parse_llm_json(text)
+    except Exception as exc:
+        logger.warning("Blind relation read failed: %s", exc)
+        return {"_error": str(exc)}
