@@ -231,6 +231,46 @@ class TestGenerateNode:
         )
         assert "flat, front-facing propaganda poster artwork" in provider.prompt
 
+    def test_generate_node_puts_relation_semantics_before_user_intent(self):
+        from vulca.content_lock import extract_content_lock
+        from vulca.providers.base import ImageResult
+
+        class CapturingProvider:
+            async def generate(self, prompt, **kwargs):
+                self.prompt = prompt
+                return ImageResult(
+                    image_b64="iVBORw0KGgo=",
+                    mime="image/png",
+                    metadata={"candidate_id": "captured"},
+                )
+
+        intent = (
+            "Wartime illustration of mounted soldiers beside fleeing civilians, "
+            "burning village ruins, and aircraft overhead."
+        )
+        provider = CapturingProvider()
+        lock = extract_content_lock(intent)
+        output = asyncio.run(
+            execute(
+                FAST,
+                PipelineInput(
+                    subject="track1_0747",
+                    intent=intent,
+                    tradition="default",
+                    provider="gemini",
+                    image_provider=provider,
+                    max_rounds=1,
+                    node_params={"generate": {"content_lock": lock.to_dict()}},
+                ),
+            )
+        )
+
+        assert output.status == "completed"
+        assert provider.prompt.index("RELATION SEMANTICS REQUIREMENTS") < provider.prompt.index(
+            "USER INTENT TO PRESERVE VERBATIM"
+        )
+        assert "soldiers chasing civilians" in provider.prompt
+
 
 # ── EvaluateNode ────────────────────────────────────────────────────
 

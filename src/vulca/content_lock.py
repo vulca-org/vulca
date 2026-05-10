@@ -17,6 +17,9 @@ class ContentLock:
     required_surface: list[str] = field(default_factory=list)
     required_style_attributes: list[str] = field(default_factory=list)
     required_mood: list[str] = field(default_factory=list)
+    required_relations: list[dict[str, str]] = field(default_factory=list)
+    composition_intent: str = ""
+    forbidden_readings: list[str] = field(default_factory=list)
     output_is_artwork_itself: bool = False
 
     @property
@@ -28,6 +31,9 @@ class ContentLock:
                 self.required_surface,
                 self.required_style_attributes,
                 self.required_mood,
+                self.required_relations,
+                self.composition_intent,
+                self.forbidden_readings,
             )
         )
 
@@ -39,6 +45,9 @@ class ContentLock:
             "required_surface": list(self.required_surface),
             "required_style_attributes": list(self.required_style_attributes),
             "required_mood": list(self.required_mood),
+            "required_relations": [dict(relation) for relation in self.required_relations],
+            "composition_intent": self.composition_intent,
+            "forbidden_readings": list(self.forbidden_readings),
             "output_is_artwork_itself": self.output_is_artwork_itself,
         }
 
@@ -53,6 +62,9 @@ def content_lock_from_dict(data: dict[str, Any] | ContentLock) -> ContentLock:
         "required_surface",
         "required_style_attributes",
         "required_mood",
+        "required_relations",
+        "composition_intent",
+        "forbidden_readings",
         "output_is_artwork_itself",
     }
     cleaned = {key: value for key, value in data.items() if key in allowed}
@@ -63,6 +75,9 @@ def content_lock_from_dict(data: dict[str, Any] | ContentLock) -> ContentLock:
         required_surface=_as_string_list(cleaned.get("required_surface")),
         required_style_attributes=_as_string_list(cleaned.get("required_style_attributes")),
         required_mood=_as_string_list(cleaned.get("required_mood")),
+        required_relations=_as_relation_list(cleaned.get("required_relations")),
+        composition_intent=str(cleaned.get("composition_intent") or ""),
+        forbidden_readings=_as_string_list(cleaned.get("forbidden_readings")),
         output_is_artwork_itself=bool(cleaned.get("output_is_artwork_itself")),
     )
 
@@ -84,6 +99,13 @@ def extract_content_lock(
     subjects = _extract_subjects(text)
     subjects = _replace_known_subjects(subjects, lower)
     subjects.extend(_extract_keyword_subjects(lower))
+    (
+        relation_subjects,
+        required_relations,
+        composition_intent,
+        forbidden_readings,
+    ) = _extract_relation_semantics(lower)
+    subjects.extend(relation_subjects)
 
     text_elements: list[str] = []
     if re.search(r"\bcircular calligraphy panel\b", lower):
@@ -136,6 +158,9 @@ def extract_content_lock(
         required_surface=_dedupe(surface),
         required_style_attributes=_dedupe(style_attributes),
         required_mood=_dedupe(mood),
+        required_relations=required_relations,
+        composition_intent=composition_intent,
+        forbidden_readings=forbidden_readings,
         output_is_artwork_itself=output_is_artwork_itself,
     )
 
@@ -175,6 +200,14 @@ def build_content_lock_prompt(lock: ContentLock) -> str:
         )
     if lock.required_mood:
         lines.append(f"- Required mood/composition: {', '.join(lock.required_mood)}.")
+    if lock.required_relations:
+        lines.append("RELATION SEMANTICS REQUIREMENTS:")
+        for relation in lock.required_relations:
+            lines.append(f"- {_format_required_relation(relation)}.")
+    if lock.composition_intent:
+        lines.append(f"COMPOSITION INTENT: {lock.composition_intent}.")
+    if lock.forbidden_readings:
+        lines.append(f"FORBIDDEN RELATION READINGS: {', '.join(lock.forbidden_readings)}.")
     if lock.has_requirements:
         lines.append(
             "Do not replace these subjects with mountains, generic landscapes, "
@@ -216,6 +249,15 @@ def build_content_fidelity_prompt(lock: ContentLock) -> str:
         lines.append(
             f"- Required style attributes: {', '.join(lock.required_style_attributes)}"
         )
+    if lock.required_relations:
+        lines.append(
+            "- Required relations: "
+            f"{'; '.join(_format_required_relation(relation) for relation in lock.required_relations)}"
+        )
+    if lock.composition_intent:
+        lines.append(f"- Required composition intent: {lock.composition_intent}")
+    if lock.forbidden_readings:
+        lines.append(f"- Forbidden relation readings: {', '.join(lock.forbidden_readings)}")
     if lock.output_is_artwork_itself:
         lines.append(
             (
@@ -236,6 +278,9 @@ def build_content_fidelity_prompt(lock: ContentLock) -> str:
             '"missing_required_text_elements": [strings copied exactly from the required text/seal list],',
             '"missing_required_surface": [strings copied exactly from the required surface/material list].',
             '"missing_required_style_attributes": [strings copied exactly from the required style attributes list],',
+            '"apparent_relations": [short strings describing visible subject-relation-object readings],',
+            '"relation_semantics_failed": true or false,',
+            '"forbidden_readings_present": [strings copied from forbidden relation readings, or close visual readings],',
             '"forbidden_visual_artifacts": [visible forbidden artifacts, or an empty list].',
             '"unwanted_visible_text": true or false,',
             '"output_is_artwork_itself": true or false.',
@@ -248,7 +293,7 @@ def build_content_fidelity_prompt(lock: ContentLock) -> str:
 def build_content_fidelity_gate(
     lock: ContentLock | dict[str, Any],
     scoring_data: dict[str, Any],
-) -> dict[str, list[str]]:
+) -> dict[str, Any]:
     """Create deterministic gate data from VLM missing-item fields."""
     content_lock = content_lock_from_dict(lock) if isinstance(lock, dict) else lock
     return {
@@ -267,6 +312,17 @@ def build_content_fidelity_gate(
         "required_style_attributes": list(content_lock.required_style_attributes),
         "missing_required_style_attributes": _as_string_list(
             scoring_data.get("missing_required_style_attributes")
+        ),
+        "required_relations": [
+            dict(relation) for relation in content_lock.required_relations
+        ],
+        "apparent_relations": _as_string_list(scoring_data.get("apparent_relations")),
+        "relation_semantics_failed": _as_optional_bool(
+            scoring_data.get("relation_semantics_failed")
+        ),
+        "forbidden_readings": list(content_lock.forbidden_readings),
+        "forbidden_readings_present": _as_string_list(
+            scoring_data.get("forbidden_readings_present")
         ),
         "forbidden_visual_artifacts": _as_string_list(
             scoring_data.get("forbidden_visual_artifacts")
@@ -287,6 +343,12 @@ def apply_content_fidelity_gate(result: dict[str, Any], gate: dict[str, Any]) ->
     missing_text = _as_string_list(gate.get("missing_required_text_elements"))
     missing_surface = _as_string_list(gate.get("missing_required_surface"))
     missing_style = _as_string_list(gate.get("missing_required_style_attributes"))
+    relation_semantics_failed = (
+        _as_optional_bool(gate.get("relation_semantics_failed")) is True
+    )
+    forbidden_readings_present = _as_string_list(
+        gate.get("forbidden_readings_present")
+    )
     forbidden_artifacts = _as_string_list(gate.get("forbidden_visual_artifacts"))
     required_artwork_itself = bool(gate.get("required_output_is_artwork_itself"))
     output_is_artwork_itself = gate.get("output_is_artwork_itself")
@@ -301,6 +363,8 @@ def apply_content_fidelity_gate(result: dict[str, Any], gate: dict[str, Any]) ->
         or missing_text
         or missing_surface
         or missing_style
+        or relation_semantics_failed
+        or forbidden_readings_present
         or forbidden_artifacts
         or artifact_boundary_failed
         or unwanted_text_failed
@@ -328,6 +392,12 @@ def apply_content_fidelity_gate(result: dict[str, Any], gate: dict[str, Any]) ->
     if missing_style:
         rationale_parts.append(
             f"Missing required style attributes: {', '.join(missing_style)}"
+        )
+    if relation_semantics_failed:
+        rationale_parts.append("Relation semantics failed")
+    if forbidden_readings_present:
+        rationale_parts.append(
+            f"Forbidden relation readings: {', '.join(forbidden_readings_present)}"
         )
     if forbidden_artifacts:
         rationale_parts.append(
@@ -448,6 +518,77 @@ def _extract_keyword_subjects(lower: str) -> list[str]:
     return _dedupe(subjects)
 
 
+def _extract_relation_semantics(
+    lower: str,
+) -> tuple[list[str], list[dict[str, str]], str, list[str]]:
+    """Extract conservative subject-relation-object locks from narrative captions."""
+    has_mounted_soldiers = bool(re.search(r"\bmounted soldiers?\b", lower))
+    has_fleeing_civilians = bool(
+        re.search(r"\b(?:fleeing|evacuating|displaced)\s+civilians?\b", lower)
+    )
+    has_burning_village_ruins = bool(
+        re.search(r"\bburning village ruins?\b|\bburning villages?\b", lower)
+    )
+    has_aircraft_overhead = bool(
+        re.search(r"\baircraft overhead\b|\baircraft\b|\bplanes? overhead\b", lower)
+    )
+
+    if not (has_mounted_soldiers and has_fleeing_civilians and has_burning_village_ruins):
+        return [], [], "", []
+
+    subjects = [
+        "mounted soldiers",
+        "fleeing civilians",
+        "burning village ruins",
+    ]
+    relations = [
+        {
+            "subject": "mounted soldiers",
+            "relation": "escort/protect",
+            "object": "fleeing civilians",
+        },
+        {
+            "subject": "fleeing civilians",
+            "relation": "evacuate_from",
+            "object": "burning village ruins",
+        },
+    ]
+    composition_intent = (
+        "mounted soldiers must read as escort/protect figures for fleeing "
+        "civilians while the civilians evacuate from burning village ruins"
+    )
+    if has_aircraft_overhead:
+        subjects.append("aircraft overhead")
+        relations.append(
+            {
+                "subject": "aircraft overhead",
+                "relation": "overhead_threat_or_wartime_context",
+                "object": "scene",
+            }
+        )
+        composition_intent += (
+            " and the aircraft overhead reads as wartime threat/context"
+        )
+
+    forbidden_readings = [
+        "soldiers chasing civilians",
+        "soldiers attacking civilians",
+        "civilians threatened by soldiers",
+    ]
+    return subjects, relations, composition_intent, forbidden_readings
+
+
+def _format_required_relation(relation: dict[str, str]) -> str:
+    subject = relation.get("subject", "").strip()
+    predicate = relation.get("relation", "").strip()
+    obj = relation.get("object", "").strip()
+    if subject and predicate and obj:
+        return f"{subject} must read as {predicate} {obj}"
+    if subject and predicate:
+        return f"{subject} must read as {predicate}"
+    return subject or predicate or obj
+
+
 def _clean_subject(value: str) -> str:
     value = value.strip(" .,:;")
     value = re.sub(r"^(?:a|an|the)\s+", "", value, flags=re.IGNORECASE)
@@ -463,6 +604,22 @@ def _as_string_list(value: Any) -> list[str]:
     if isinstance(value, (list, tuple)):
         return [str(item) for item in value if str(item).strip()]
     return []
+
+
+def _as_relation_list(value: Any) -> list[dict[str, str]]:
+    if not isinstance(value, (list, tuple)):
+        return []
+    relations: list[dict[str, str]] = []
+    for item in value:
+        if not isinstance(item, dict):
+            continue
+        subject = str(item.get("subject") or "").strip()
+        relation = str(item.get("relation") or "").strip()
+        obj = str(item.get("object") or "").strip()
+        if not (subject and relation and obj):
+            continue
+        relations.append({"subject": subject, "relation": relation, "object": obj})
+    return relations
 
 
 def _as_optional_bool(value: Any) -> bool | None:

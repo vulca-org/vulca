@@ -66,6 +66,37 @@ def test_extracts_gongbi_album_leaf_subjects_and_format():
     assert "Gongbi album leaf" in lock.required_style_attributes
 
 
+def test_extracts_relation_semantics_for_escort_evacuation_caption():
+    lock = extract_content_lock(
+        "Wartime illustration of mounted soldiers beside fleeing civilians, "
+        "burning village ruins, and aircraft overhead."
+    )
+
+    assert "mounted soldiers" in lock.required_subjects
+    assert "fleeing civilians" in lock.required_subjects
+    assert "burning village ruins" in lock.required_subjects
+    assert "aircraft overhead" in lock.required_subjects
+    assert lock.required_relations == [
+        {
+            "subject": "mounted soldiers",
+            "relation": "escort/protect",
+            "object": "fleeing civilians",
+        },
+        {
+            "subject": "fleeing civilians",
+            "relation": "evacuate_from",
+            "object": "burning village ruins",
+        },
+        {
+            "subject": "aircraft overhead",
+            "relation": "overhead_threat_or_wartime_context",
+            "object": "scene",
+        },
+    ]
+    assert "soldiers chasing civilians" in lock.forbidden_readings
+    assert "escort/protect" in lock.composition_intent
+
+
 def test_content_lock_prompt_makes_subjects_non_negotiable():
     lock = extract_content_lock(
         "Ink and wash painting of delicate bamboo and orchid grasses beside "
@@ -96,6 +127,22 @@ def test_content_lock_prompt_bans_visible_ids_and_gallery_artifacts():
     assert "sample IDs" in prompt
     assert "gallery" in prompt.lower()
     assert "large labels" in prompt
+
+
+def test_content_lock_prompt_makes_relations_non_negotiable():
+    lock = extract_content_lock(
+        "Wartime illustration of mounted soldiers beside fleeing civilians, "
+        "burning village ruins, and aircraft overhead."
+    )
+
+    prompt = build_content_lock_prompt(lock)
+
+    assert "RELATION SEMANTICS REQUIREMENTS" in prompt
+    assert "mounted soldiers must read as escort/protect fleeing civilians" in prompt
+    assert "fleeing civilians must read as evacuate_from burning village ruins" in prompt
+    assert "COMPOSITION INTENT" in prompt
+    assert "FORBIDDEN RELATION READINGS" in prompt
+    assert "soldiers chasing civilians" in prompt
 
 
 def test_artifact_boundary_prompt_for_poster_requires_flat_artwork_surface():
@@ -140,6 +187,21 @@ def test_content_fidelity_prompt_requests_missing_elements():
     assert "forbidden_visual_artifacts" in prompt
     assert "output_is_artwork_itself" in prompt
     assert "unwanted_visible_text" in prompt
+
+
+def test_content_fidelity_prompt_requests_relation_semantics_fields():
+    lock = extract_content_lock(
+        "Wartime illustration of mounted soldiers beside fleeing civilians, "
+        "burning village ruins, and aircraft overhead."
+    )
+
+    prompt = build_content_fidelity_prompt(lock)
+
+    assert "Required relations" in prompt
+    assert "Forbidden relation readings" in prompt
+    assert "apparent_relations" in prompt
+    assert "relation_semantics_failed" in prompt
+    assert "forbidden_readings_present" in prompt
 
 
 def test_content_fidelity_prompt_requests_missing_style_attributes():
@@ -269,6 +331,55 @@ def test_content_fidelity_gate_reads_artifact_boundary_fields():
     assert gate["output_is_artwork_itself"] is False
     assert gate["unwanted_visible_text"] is True
     assert gate["forbidden_visual_artifacts"] == ["gallery wall"]
+
+
+def test_content_fidelity_gate_reads_relation_semantics_fields():
+    lock = extract_content_lock(
+        "Wartime illustration of mounted soldiers beside fleeing civilians, "
+        "burning village ruins, and aircraft overhead."
+    )
+
+    gate = build_content_fidelity_gate(
+        lock,
+        {
+            "apparent_relations": ["mounted soldiers appear to chase civilians"],
+            "relation_semantics_failed": True,
+            "forbidden_readings_present": ["soldiers chasing civilians"],
+        },
+    )
+
+    assert gate["required_relations"] == lock.required_relations
+    assert gate["apparent_relations"] == ["mounted soldiers appear to chase civilians"]
+    assert gate["relation_semantics_failed"] is True
+    assert gate["forbidden_readings"] == lock.forbidden_readings
+    assert gate["forbidden_readings_present"] == ["soldiers chasing civilians"]
+
+
+def test_relation_semantics_failure_caps_high_score():
+    result = {
+        "scores": {"L1": 0.95, "L2": 0.92, "L3": 1.0, "L4": 1.0, "L5": 0.94},
+        "weighted_total": 0.965,
+        "rationales": {},
+    }
+    gate = {
+        "required_relations": [
+            {
+                "subject": "mounted soldiers",
+                "relation": "escort/protect",
+                "object": "fleeing civilians",
+            }
+        ],
+        "relation_semantics_failed": True,
+        "forbidden_readings_present": ["soldiers chasing civilians"],
+    }
+
+    gated = apply_content_fidelity_gate(result, gate)
+
+    assert gated["weighted_total"] == 0.25
+    assert gated["scores"]["L4"] <= 0.25
+    assert "content_fidelity_failed" in gated["risk_flags"]
+    assert "Relation semantics failed" in gated["rationales"]["content_fidelity"]
+    assert "Forbidden relation readings: soldiers chasing civilians" in gated["rationales"]["content_fidelity"]
 
 
 def test_present_required_subjects_do_not_cap_score():

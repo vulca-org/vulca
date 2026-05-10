@@ -453,6 +453,53 @@ def test_evaluate_node_applies_vlm_content_fidelity_gate():
     assert "content_fidelity_failed" in result["risk_flags"]
 
 
+def test_evaluate_node_applies_vlm_relation_semantics_gate():
+    from vulca.content_lock import extract_content_lock
+    from vulca.pipeline.node import NodeContext
+    from vulca.pipeline.nodes import EvaluateNode
+
+    lock = extract_content_lock(
+        "Wartime illustration of mounted soldiers beside fleeing civilians, "
+        "burning village ruins, and aircraft overhead."
+    )
+    ctx = NodeContext(
+        subject="track1_0747",
+        intent=lock.original_intent,
+        tradition="default",
+        provider="gemini",
+        api_key="fake-key",
+    )
+    ctx.set("image_b64", "iVBORw0KGgo=")
+    ctx.set("node_params", {"evaluate": {"content_lock": lock.to_dict()}})
+
+    scored = {
+        "L1": 0.95,
+        "L2": 0.92,
+        "L3": 1.0,
+        "L4": 1.0,
+        "L5": 0.94,
+        "L1_rationale": "Strong image.",
+        "L2_rationale": "Strong technique.",
+        "L3_rationale": "Strong style.",
+        "L4_rationale": "Respectful.",
+        "L5_rationale": "Poetic.",
+        "content_fidelity_gate": {
+            "required_relations": lock.required_relations,
+            "apparent_relations": ["mounted soldiers appear to chase civilians"],
+            "relation_semantics_failed": True,
+            "forbidden_readings_present": ["soldiers chasing civilians"],
+        },
+    }
+
+    with patch("vulca._vlm.score_image", new=AsyncMock(return_value=scored)):
+        result = asyncio.run(EvaluateNode().run(ctx))
+
+    assert result["weighted_total"] == 0.25
+    assert result["scores"]["L4"] == 0.25
+    assert "content_fidelity_failed" in result["risk_flags"]
+    assert "Relation semantics failed" in result["rationales"]["content_fidelity"]
+
+
 def test_evaluate_node_marks_vlm_parse_fallback_explicitly():
     from vulca.pipeline.node import NodeContext
     from vulca.pipeline.nodes import EvaluateNode
