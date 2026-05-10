@@ -529,7 +529,8 @@ git commit -m "data: record vulca siglip audit smoke run"
 ```bash
 python3 scripts/experiments/vulca_jepa_compare_eval.py \
   --inventory docs/product/experiments/2026-05-10-vulca-jepa-inventory.json \
-  --audit docs/product/experiments/2026-05-10-vulca-jepa-audit.dinov2.json \
+  --dinov2-audit docs/product/experiments/2026-05-10-vulca-jepa-audit.dinov2.json \
+  --siglip-audit docs/product/experiments/2026-05-10-vulca-jepa-audit.siglip.json \
   --eval-dir assets/demo/v3/eval-v2merged \
   --gemini-rescore assets/demo/v3/gemini-vlm-rescore.json \
   --out docs/product/experiments/2026-05-10-vulca-jepa-audit-report.md
@@ -542,6 +543,12 @@ wrote docs/product/experiments/2026-05-10-vulca-jepa-audit-report.md
 matched_eval_files: 13
 matched_gemini_items: 8
 ```
+
+2026-05-10 实际输出已生成：
+
+- `docs/product/experiments/2026-05-10-vulca-jepa-audit-report.md`
+- `matched_eval_files=13`
+- `matched_gemini_items=8`
 
 报告必须包含：
 
@@ -567,7 +574,7 @@ git commit -m "docs: compare vulca jepa audit with existing evals"
 - manifest 输出 `audit_sets: core=21, artifact_qa=9`。
 - full/core/artifact_qa 三张 contact sheet 能生成，人工可以快速看到样本分流。
 - mock backend 测试通过，只对 `usable_for_embedding=true` 的 21 张 core 样本输出 210 个 pair。
-- DINO/DINOv2 或 SigLIP 至少有一个真实 backend 跑通；如果本地环境缺依赖，报告要明确记录失败命令和缺失依赖。
+- DINOv2 和 SigLIP/SigLIP2 两个真实 backend 均跑通；如果本地环境缺依赖，报告要明确记录失败命令和缺失依赖。
 - 报告能解释 `chinese_gongbi.png` 为什么是高价值失败样本。
 - 报告明确 JEPA/DINO/SigLIP 不能替代 Vulca L1-L5。
 - 没有任何输出写入 `/Users/yhryzy/dev/emoart-130k`。
@@ -576,4 +583,4 @@ git commit -m "docs: compare vulca jepa audit with existing evals"
 
 ## 8. 下一步建议
 
-下一步实现 Task 3：mock audit backend。它默认只读取 `usable_for_embedding=true` 的 21 张 core 样本，先把 pairwise distance、最近邻、异常排序的数据结构跑通。`artifact_qa` 暂时不跑 embedding，只用于质量闸门报告。
+下一步实现轻量 guard 原型：只对 `gallery_promptfix` 组报警，不自动拒绝。第一条规则建议是“DINOv2 nearest-neighbor 指向错误类型 + SigLIP prompt-image 概率显著低于 promptfix 对照”时标记为 `subject_drift_warning`。
