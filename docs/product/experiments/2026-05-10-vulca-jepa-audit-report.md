@@ -117,7 +117,7 @@ DINOv2 能看到 source 与 edit 之间的结构保留关系；但 fusion 的 Si
 
 ## 下一步
 
-- 把当前 warn_only guard 接入 Vulca 实验 CLI 的评估 metadata，先作为复核提示，不自动拒绝。
+- 让 Vulca evaluate/create 的实验模式读取 guard eval metadata，先只显示非阻断复核提示。
 - 对 `text_source=purpose` 的样本补真实 prompt/brief 字段，否则 SigLIP 分数只能弱参考。
 - 用 Vulca L1-L5 解释 DINO/SigLIP 不能覆盖的文化问题，例如工笔技法深度、风格完成度、用户 override。
 - 后续再考虑 I-JEPA/V-JEPA；当前静态图实验里 DINOv2 与 SigLIP 已经覆盖了主要验证问题。

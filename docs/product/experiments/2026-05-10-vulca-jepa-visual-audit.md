@@ -533,6 +533,7 @@ python3 scripts/experiments/vulca_jepa_compare_eval.py \
   --siglip-audit docs/product/experiments/2026-05-10-vulca-jepa-audit.siglip.json \
   --eval-dir assets/demo/v3/eval-v2merged \
   --gemini-rescore assets/demo/v3/gemini-vlm-rescore.json \
+  --guard docs/product/experiments/2026-05-10-vulca-jepa-guard.json \
   --out docs/product/experiments/2026-05-10-vulca-jepa-audit-report.md
 ```
 
@@ -542,6 +543,7 @@ python3 scripts/experiments/vulca_jepa_compare_eval.py \
 wrote docs/product/experiments/2026-05-10-vulca-jepa-audit-report.md
 matched_eval_files: 13
 matched_gemini_items: 8
+guard_warnings: 1
 ```
 
 2026-05-10 实际输出已生成：
@@ -549,11 +551,13 @@ matched_gemini_items: 8
 - `docs/product/experiments/2026-05-10-vulca-jepa-audit-report.md`
 - `matched_eval_files=13`
 - `matched_gemini_items=8`
+- `guard_warnings=1`
 
 报告必须包含：
 
 - 工笔牡丹 baseline 失败样本是否被 embedding 标为异常。
 - promptfix 三个 seed 是否比 baseline 更接近。
+- `Guard 原型结果` 段落是否由 `2026-05-10-vulca-jepa-guard.json` 生成。
 - 哪些结论只能由 Vulca L1-L5 或人工 override 判断。
 - 哪些信号适合进入后续自动 guard。
 
@@ -590,13 +594,15 @@ python3 scripts/experiments/vulca_jepa_guard.py \
   --inventory docs/product/experiments/2026-05-10-vulca-jepa-inventory.json \
   --dinov2-audit docs/product/experiments/2026-05-10-vulca-jepa-audit.dinov2.json \
   --siglip-audit docs/product/experiments/2026-05-10-vulca-jepa-audit.siglip.json \
-  --out docs/product/experiments/2026-05-10-vulca-jepa-guard.json
+  --out docs/product/experiments/2026-05-10-vulca-jepa-guard.json \
+  --metadata-out docs/product/experiments/2026-05-10-vulca-jepa-eval-metadata.json
 ```
 
 实际输出：
 
 ```text
 wrote docs/product/experiments/2026-05-10-vulca-jepa-guard.json
+wrote_metadata docs/product/experiments/2026-05-10-vulca-jepa-eval-metadata.json
 guard_scope: gallery_promptfix
 samples_evaluated: 8
 warnings: 1
@@ -604,4 +610,11 @@ warnings: 1
 
 第一条规则是：DINOv2 nearest-neighbor 指向不同 prompt family，同时 SigLIP prompt-image probability `< 0.001`，标记为 `subject_drift_warning`。当前只对 `gongbi_baseline_failed_subject` 报警，动作是 `warn_only`，不自动拒绝。
 
-下一步可以把 `subject_drift_warning` 接进 Vulca 实验 CLI 或 eval metadata，先只作为非阻断警告。
+`2026-05-10-vulca-jepa-eval-metadata.json` 是给后续 Vulca evaluate/create 实验入口消费的压缩结构：
+
+- `schema_version=vulca_eval_metadata.v1`
+- `guards.vulca_jepa_subject_drift.status=warning`
+- `guards.vulca_jepa_subject_drift.non_blocking=true`
+- `guards.vulca_jepa_subject_drift.warnings_total=1`
+
+下一步可以让 Vulca evaluate/create 的实验模式读取这份 metadata，先只在评估结果里显示非阻断复核提示。

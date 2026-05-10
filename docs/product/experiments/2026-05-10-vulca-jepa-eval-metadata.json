@@ -1,0 +1,40 @@
+{
+  "schema_version": "vulca_eval_metadata.v1",
+  "generated_at": "2026-05-10T19:32:16+00:00",
+  "source_schema_version": "vulca_jepa_guard.v1",
+  "guards": {
+    "vulca_jepa_subject_drift": {
+      "status": "warning",
+      "non_blocking": true,
+      "scope": "gallery_promptfix",
+      "rules": {
+        "subject_drift_warning": {
+          "action": "warn_only",
+          "siglip_probability_max": 0.001,
+          "requires_prompt_text": true,
+          "requires_nearest_family_mismatch": true
+        }
+      },
+      "samples_evaluated": 8,
+      "warnings_total": 1,
+      "warnings": [
+        {
+          "sample_id": "gongbi_baseline_failed_subject",
+          "type": "subject_drift_warning",
+          "severity": "warning",
+          "action": "warn_only",
+          "message": "DINOv2 nearest neighbor points to a different prompt family while SigLIP prompt-image score is very low.",
+          "signals": {
+            "sample_family": "gongbi",
+            "nearest_sample_id": "xieyi_promptfix",
+            "nearest_family": "xieyi",
+            "nearest_distance": 0.623181,
+            "siglip_probability": 8.6e-05,
+            "siglip_logit": -9.363158,
+            "siglip_text_source": "prompt"
+          }
+        }
+      ]
+    }
+  }
+}

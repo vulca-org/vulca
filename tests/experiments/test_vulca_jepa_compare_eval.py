@@ -193,6 +193,7 @@ def test_render_report_contains_chinese_conclusions(tmp_path: Path) -> None:
     assert "subject_drift_warning" in report
     assert "siglip_probability_max" in report
     assert "warn_only" in report
+    assert "evaluate/create" in report
 
 
 def test_write_report_outputs_markdown(tmp_path: Path) -> None:

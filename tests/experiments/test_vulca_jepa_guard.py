@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from scripts.experiments.vulca_jepa_guard import build_guard_result, sample_family, write_guard
+from scripts.experiments.vulca_jepa_guard import build_eval_metadata, build_guard_result, sample_family, write_guard
 
 
 def _write_json(path: Path, data: object) -> Path:
@@ -139,3 +139,41 @@ def test_write_guard_outputs_json(tmp_path: Path) -> None:
 
     assert json.loads(out.read_text()) == result
     assert result["warnings_total"] == 1
+
+
+def test_build_eval_metadata_wraps_guard_as_non_blocking_signal(tmp_path: Path) -> None:
+    files = _fixture_files(tmp_path)
+    guard = build_guard_result(
+        inventory_path=files["inventory"],
+        dinov2_audit_path=files["dinov2"],
+        siglip_audit_path=files["siglip"],
+    )
+
+    metadata = build_eval_metadata(guard)
+
+    subject_guard = metadata["guards"]["vulca_jepa_subject_drift"]
+    assert metadata["schema_version"] == "vulca_eval_metadata.v1"
+    assert subject_guard["status"] == "warning"
+    assert subject_guard["non_blocking"] is True
+    assert subject_guard["warnings_total"] == 1
+    assert subject_guard["warnings"][0]["sample_id"] == "gongbi_baseline_failed_subject"
+    assert subject_guard["warnings"][0]["type"] == "subject_drift_warning"
+
+
+def test_write_guard_can_emit_eval_metadata_file(tmp_path: Path) -> None:
+    files = _fixture_files(tmp_path)
+    out = tmp_path / "guard.json"
+    metadata_out = tmp_path / "eval-metadata.json"
+
+    result = write_guard(
+        inventory_path=files["inventory"],
+        dinov2_audit_path=files["dinov2"],
+        siglip_audit_path=files["siglip"],
+        out=out,
+        metadata_out=metadata_out,
+    )
+
+    metadata = json.loads(metadata_out.read_text())
+    subject_guard = metadata["guards"]["vulca_jepa_subject_drift"]
+    assert subject_guard["warnings_total"] == result["warnings_total"]
+    assert subject_guard["scope"] == result["guard_scope"]

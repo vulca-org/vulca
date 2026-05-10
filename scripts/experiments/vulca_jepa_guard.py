@@ -136,12 +136,45 @@ def build_guard_result(
     }
 
 
+def build_eval_metadata(guard_result: dict[str, Any]) -> dict[str, Any]:
+    warnings = guard_result.get("warnings", [])
+    compact_warnings = [
+        {
+            "sample_id": warning.get("sample_id"),
+            "type": warning.get("warning_type"),
+            "severity": warning.get("severity"),
+            "action": warning.get("action"),
+            "message": warning.get("message"),
+            "signals": warning.get("signals", {}),
+        }
+        for warning in warnings
+    ]
+
+    return {
+        "schema_version": "vulca_eval_metadata.v1",
+        "generated_at": guard_result.get("generated_at"),
+        "source_schema_version": guard_result.get("schema_version"),
+        "guards": {
+            "vulca_jepa_subject_drift": {
+                "status": "warning" if compact_warnings else "ok",
+                "non_blocking": guard_result.get("non_blocking", True),
+                "scope": guard_result.get("guard_scope"),
+                "rules": guard_result.get("rules", {}),
+                "samples_evaluated": guard_result.get("samples_evaluated", 0),
+                "warnings_total": guard_result.get("warnings_total", len(compact_warnings)),
+                "warnings": compact_warnings,
+            }
+        },
+    }
+
+
 def write_guard(
     *,
     inventory_path: Path | str,
     dinov2_audit_path: Path | str,
     siglip_audit_path: Path | str,
     out: Path | str,
+    metadata_out: Path | str | None = None,
 ) -> dict[str, Any]:
     result = build_guard_result(
         inventory_path=inventory_path,
@@ -151,6 +184,12 @@ def write_guard(
     output_path = Path(out)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n")
+    if metadata_out:
+        metadata_path = Path(metadata_out)
+        metadata_path.parent.mkdir(parents=True, exist_ok=True)
+        metadata_path.write_text(
+            json.dumps(build_eval_metadata(result), ensure_ascii=False, indent=2) + "\n"
+        )
     return result
 
 
@@ -160,6 +199,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--dinov2-audit", required=True, type=Path)
     parser.add_argument("--siglip-audit", required=True, type=Path)
     parser.add_argument("--out", required=True, type=Path)
+    parser.add_argument("--metadata-out", type=Path)
     args = parser.parse_args(argv)
 
     result = write_guard(
@@ -167,8 +207,11 @@ def main(argv: list[str] | None = None) -> int:
         dinov2_audit_path=args.dinov2_audit,
         siglip_audit_path=args.siglip_audit,
         out=args.out,
+        metadata_out=args.metadata_out,
     )
     print(f"wrote {args.out}")
+    if args.metadata_out:
+        print(f"wrote_metadata {args.metadata_out}")
     print(f"guard_scope: {result['guard_scope']}")
     print(f"samples_evaluated: {result['samples_evaluated']}")
     print(f"warnings: {result['warnings_total']}")
