@@ -117,7 +117,7 @@ DINOv2 能看到 source 与 edit 之间的结构保留关系；但 fusion 的 Si
 
 ## 下一步
 
-- Vulca evaluate/create 已可通过 `--eval-metadata` 读取 guard metadata；下一步把 warning 与当前 image/sample_id 绑定，只在命中当前输入时提示。
+- Vulca evaluate/create 已可通过 `--eval-metadata` 与 `--eval-sample-id` 只显示当前样本命中的 guard；下一步从 inventory/image path 自动推导 sample_id。
 - 对 `text_source=purpose` 的样本补真实 prompt/brief 字段，否则 SigLIP 分数只能弱参考。
 - 用 Vulca L1-L5 解释 DINO/SigLIP 不能覆盖的文化问题，例如工笔技法深度、风格完成度、用户 override。
 - 后续再考虑 I-JEPA/V-JEPA；当前静态图实验里 DINOv2 与 SigLIP 已经覆盖了主要验证问题。

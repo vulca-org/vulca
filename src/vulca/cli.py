@@ -13,6 +13,7 @@ Usage::
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import logging
 import subprocess
@@ -77,10 +78,37 @@ def _load_eval_metadata(path: str) -> dict:
 
 def _load_eval_metadata_or_exit(args: argparse.Namespace) -> dict:
     try:
-        return _load_eval_metadata(getattr(args, "eval_metadata", ""))
+        metadata = _load_eval_metadata(getattr(args, "eval_metadata", ""))
     except ValueError as exc:
         print(f"Error: {exc}", file=sys.stderr)
         sys.exit(1)
+    return _filter_eval_metadata_by_sample_id(metadata, getattr(args, "eval_sample_id", ""))
+
+
+def _filter_eval_metadata_by_sample_id(metadata: dict, sample_id: str) -> dict:
+    if not metadata or not sample_id:
+        return metadata
+
+    filtered = copy.deepcopy(metadata)
+    guards = filtered.get("guards", {})
+    if not isinstance(guards, dict):
+        return filtered
+
+    for guard in guards.values():
+        if not isinstance(guard, dict):
+            continue
+        warnings = guard.get("warnings", [])
+        matched = [
+            warning
+            for warning in warnings
+            if isinstance(warning, dict) and warning.get("sample_id") == sample_id
+        ] if isinstance(warnings, list) else []
+        guard["current_sample_id"] = sample_id
+        guard["warnings"] = matched
+        guard["warnings_total"] = len(matched)
+        if not matched and guard.get("status") == "warning":
+            guard["status"] = "ok"
+    return filtered
 
 
 def _guard_action_summary(warnings: object) -> str:
@@ -160,6 +188,7 @@ def main(argv: list[str] | None = None) -> None:
     eval_p.add_argument("--vlm-base-url", default="", help="VLM base URL (for local models)")
     eval_p.add_argument("--reference", default="", help="Reference image path or base64 for comparison")
     eval_p.add_argument("--eval-metadata", default="", help="Experimental eval metadata JSON with non-blocking guard hints")
+    eval_p.add_argument("--eval-sample-id", default="", help="Filter eval metadata warnings to the current sample id")
 
     # create command
     create_p = sub.add_parser("create", aliases=["c"], help="Create artwork via pipeline")
@@ -186,6 +215,7 @@ def main(argv: list[str] | None = None) -> None:
     create_p.add_argument("--colors", default="", help="Hex color palette (comma-separated, e.g. '#C87F4A,#5F8A50')")
     create_p.add_argument("--output", "-o", default="", help="Save generated image to this path (default: ./vulca-<session>.png)")
     create_p.add_argument("--eval-metadata", default="", help="Experimental eval metadata JSON with non-blocking guard hints")
+    create_p.add_argument("--eval-sample-id", default="", help="Filter eval metadata warnings to the current sample id")
 
     # traditions command
     sub.add_parser("traditions", aliases=["t"], help="List available cultural traditions")

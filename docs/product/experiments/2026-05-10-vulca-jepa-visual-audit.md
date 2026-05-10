@@ -622,7 +622,8 @@ warnings: 1
 ```bash
 PYTHONPATH=src python3 -m vulca evaluate mock.png \
   --mock \
-  --eval-metadata docs/product/experiments/2026-05-10-vulca-jepa-eval-metadata.json
+  --eval-metadata docs/product/experiments/2026-05-10-vulca-jepa-eval-metadata.json \
+  --eval-sample-id gongbi_baseline_failed_subject
 ```
 
 预期输出包含：
@@ -634,18 +635,21 @@ samples: gongbi_baseline_failed_subject
 ```
 
 JSON 输出也会携带完整 `eval_metadata`：
+如果传入不相关的 `--eval-sample-id`，metadata 会被过滤为当前样本视角，`warnings_total=0`，普通文本输出不显示 guard 段。
 
 ```bash
 PYTHONPATH=src python3 -m vulca evaluate mock.png \
   --mock \
   --json \
-  --eval-metadata docs/product/experiments/2026-05-10-vulca-jepa-eval-metadata.json
+  --eval-metadata docs/product/experiments/2026-05-10-vulca-jepa-eval-metadata.json \
+  --eval-sample-id unrelated_sample
 
 PYTHONPATH=src python3 -m vulca create "test artwork" \
   --provider mock \
   --output /tmp/vulca-jepa-metadata-smoke.png \
   --json \
-  --eval-metadata docs/product/experiments/2026-05-10-vulca-jepa-eval-metadata.json
+  --eval-metadata docs/product/experiments/2026-05-10-vulca-jepa-eval-metadata.json \
+  --eval-sample-id gongbi_baseline_failed_subject
 ```
 
-这一步只把 guard 作为非阻断复核提示展示，不改变 Vulca L1-L5 分数，也不自动拒绝生成结果。下一步要把 warning 与当前输入 image/sample_id 绑定，只在当前样本命中时提示，而不是显示整份全局 metadata。
+这一步只把 guard 作为非阻断复核提示展示，不改变 Vulca L1-L5 分数，也不自动拒绝生成结果。当前 `sample_id` 仍由调用方显式传入；下一步要从 inventory/image path 自动推导 sample_id，减少手工参数。
