@@ -96,6 +96,8 @@ class PipelineInput:
     node_params: dict[str, dict] = field(default_factory=dict)
     eval_mode: str = "strict"
     """Evaluation mode: strict|reference|fusion."""
+    eval_metadata: dict[str, Any] = field(default_factory=dict)
+    """Optional non-blocking evaluation metadata carried through outputs."""
     # Custom ImageProvider instance (not serialized; overrides provider lookup)
     image_provider: Any = field(default=None, repr=False)
     layered: bool = False             # Use LAYERED template for structured creation
@@ -111,7 +113,7 @@ class PipelineInput:
             )
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        data = {
             "subject": self.subject,
             "intent": self.intent,
             "tradition": self.tradition,
@@ -120,6 +122,9 @@ class PipelineInput:
             "max_cost_usd": self.max_cost_usd,
             "template": self.template,
         }
+        if self.eval_metadata:
+            data["eval_metadata"] = self.eval_metadata
+        return data
 
 
 @dataclass
@@ -149,9 +154,11 @@ class PipelineOutput:
     # callers don't have to re-read manifest.json to know the artifact is
     # partially degraded.
     layered_partial: bool = False
+    eval_metadata: dict[str, Any] = field(default_factory=dict)
+    """Optional non-blocking evaluation metadata supplied by the caller."""
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        data = {
             "session_id": self.session_id,
             "status": self.status,
             "tradition": self.tradition,
@@ -171,6 +178,9 @@ class PipelineOutput:
             "original_provider": self.original_provider,
             "layered_partial": self.layered_partial,
         }
+        if self.eval_metadata:
+            data["eval_metadata"] = self.eval_metadata
+        return data
 
 
 @dataclass(frozen=True)

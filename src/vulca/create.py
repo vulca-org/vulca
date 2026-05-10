@@ -25,6 +25,7 @@ async def acreate(
     reference: str = "",
     ref_type: str = "full",
     colors: str = "",
+    eval_metadata: dict[str, Any] | None = None,
 ) -> CreateResult:
     """Create artwork via local pipeline or remote API (async).
 
@@ -55,6 +56,8 @@ async def acreate(
     reference:
         Reference image path or base64. Also serves as sketch input --
         providers treat both identically as ``reference_image_b64``.
+    eval_metadata:
+        Optional non-blocking evaluation metadata to carry in the raw output.
 
     Returns
     -------
@@ -80,8 +83,9 @@ async def acreate(
             reference=reference,
             ref_type=ref_type,
             colors=colors,
+            eval_metadata=eval_metadata,
         )
-    return await _create_remote(
+    result = await _create_remote(
         intent,
         tradition=tradition,
         subject=subject,
@@ -89,6 +93,9 @@ async def acreate(
         base_url=base_url,
         api_key=api_key,
     )
+    if eval_metadata:
+        result.raw = {**result.raw, "eval_metadata": eval_metadata}
+    return result
 
 
 async def _create_local(
@@ -104,6 +111,7 @@ async def _create_local(
     reference: str = "",
     ref_type: str = "full",
     colors: str = "",
+    eval_metadata: dict[str, Any] | None = None,
 ) -> CreateResult:
     """Run the slim pipeline engine locally."""
     from vulca._image import resolve_image_input
@@ -135,6 +143,7 @@ async def _create_local(
         node_params=node_params,
         image_provider=image_provider,
         eval_mode=eval_mode,
+        eval_metadata=eval_metadata or {},
     )
 
     # HITL: interrupt before decide node; skip on_complete (pipeline incomplete)
@@ -257,6 +266,7 @@ def create(
     reference: str = "",
     ref_type: str = "full",
     colors: str = "",
+    eval_metadata: dict[str, Any] | None = None,
 ) -> CreateResult:
     """Create artwork (synchronous wrapper).
 
@@ -282,6 +292,7 @@ def create(
         reference=reference,
         ref_type=ref_type,
         colors=colors,
+        eval_metadata=eval_metadata,
     )
 
     if loop and loop.is_running():

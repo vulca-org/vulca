@@ -118,6 +118,7 @@ DINOv2 能看到 source 与 edit 之间的结构保留关系；但 fusion 的 Si
 ## 下一步
 
 - Vulca evaluate 已可通过 `--eval-metadata` 与 `--eval-inventory` 从 image path 自动推导 sample_id：baseline 工笔样本显示 warning，promptfix 牡丹样本不显示 warning。
+- Vulca create/local pipeline 已可选择性携带 `eval_metadata`：结果会进入 `PipelineOutput.to_dict()` 和 `CreateResult.raw`，但不改变 L1-L5 分数、accept/reject 或生成逻辑。
 - 对 `text_source=purpose` 的样本补真实 prompt/brief 字段，否则 SigLIP 分数只能弱参考。
 - 用 Vulca L1-L5 解释 DINO/SigLIP 不能覆盖的文化问题，例如工笔技法深度、风格完成度、用户 override。
 - 后续再考虑 I-JEPA/V-JEPA；当前静态图实验里 DINOv2 与 SigLIP 已经覆盖了主要验证问题。

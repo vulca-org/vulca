@@ -265,3 +265,4 @@ def test_create_json_includes_eval_metadata(tmp_path: Path) -> None:
     subject_guard = data["eval_metadata"]["guards"]["vulca_jepa_subject_drift"]
     assert subject_guard["warnings_total"] == 1
     assert subject_guard["warnings"][0]["type"] == "subject_drift_warning"
+    assert data["raw"]["eval_metadata"] == data["eval_metadata"]

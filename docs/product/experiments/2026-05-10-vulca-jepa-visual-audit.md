@@ -6,6 +6,8 @@
 
 **范围修正：** 本实验只做 Vulca 项目的视觉审计实验，不做 EmoArt challenge Track2。Track2 的 guard、标签、提交包和 challenge 复现实验都应放在 `/Users/yhryzy/dev/emoart-130k` 另开路径处理。
 
+**当前接入状态：** JEPA/DINO/SigLIP 信号先作为 `eval_metadata` 进入 Vulca 输出层，用于提示 subject drift 和样本审计；它是 `warn_only`，不会改变生成、L1-L5 打分、accept/reject 或用户 override。
+
 ---
 
 ## 1. 实验边界

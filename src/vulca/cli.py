@@ -1030,6 +1030,7 @@ def _cmd_create(args: argparse.Namespace) -> None:
             provider=args.provider,
             node_params=node_params,
             eval_mode=args.mode,
+            eval_metadata=eval_metadata,
             layered=True,
             no_cache=getattr(args, "no_cache", False),
             strict=getattr(args, "strict", False),
@@ -1075,6 +1076,7 @@ def _cmd_create(args: argparse.Namespace) -> None:
             reference=getattr(args, "reference", "") or "",
             ref_type=getattr(args, "ref_type", "full") or "full",
             colors=getattr(args, "colors", "") or "",
+            eval_metadata=eval_metadata,
         )
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
@@ -1141,6 +1143,7 @@ def _cmd_create_hitl(args: argparse.Namespace) -> None:
     from vulca.pipeline.types import PipelineInput
 
     weights = _parse_weights(args.weights) if args.weights else None
+    eval_metadata = _load_eval_metadata_or_exit(args)
 
     node_params: dict[str, dict] = {}
     if weights:
@@ -1153,6 +1156,7 @@ def _cmd_create_hitl(args: argparse.Namespace) -> None:
         provider=args.provider,
         node_params=node_params,
         eval_mode=args.mode,
+        eval_metadata=eval_metadata,
         layered=getattr(args, "layered", False),
     )
 
@@ -1191,6 +1195,7 @@ def _cmd_create_hitl(args: argparse.Namespace) -> None:
         print(f"    {level} {_DIM_NAMES[level]:<25s} {bar} {score:.0%}")
     print(f"\n  Weighted Total: {output.weighted_total:.0%}")
     print()
+    _print_eval_metadata_guards(eval_metadata)
 
     # Interactive prompt
     try:
@@ -2234,6 +2239,7 @@ def _cmd_resume(args: argparse.Namespace) -> None:
         tradition=meta.get("tradition", "default"),
         provider=provider,
         max_rounds=meta.get("max_rounds", 3),
+        eval_metadata=meta.get("eval_metadata") or {},
     )
 
     ref_b64 = target_round.get("image_b64", "")
