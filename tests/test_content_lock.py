@@ -511,6 +511,29 @@ def test_content_fidelity_gate_infers_modern_ui_text_artifacts():
     assert "unrequested visible text labels" in gate["forbidden_visual_artifacts"]
 
 
+def test_content_fidelity_gate_rejects_english_labels_even_with_allowed_cyrillic():
+    lock = extract_content_lock(
+        "A Socialist Realism propaganda poster of a triumphant armored rider "
+        "under bold Cyrillic lettering."
+    )
+
+    gate = build_content_fidelity_gate(
+        lock,
+        {
+            "apparent_relations": [
+                "bold Cyrillic headline spans the poster",
+                "English text labels explain concepts in the city",
+            ],
+            "forbidden_visual_artifacts": [],
+            "unwanted_visible_text": False,
+            "output_is_artwork_itself": True,
+        },
+    )
+
+    assert gate["unwanted_visible_text"] is True
+    assert "unrequested visible text labels" in gate["forbidden_visual_artifacts"]
+
+
 def test_content_fidelity_gate_reads_relation_semantics_fields():
     lock = extract_content_lock(
         "Wartime illustration of mounted soldiers beside fleeing civilians, "

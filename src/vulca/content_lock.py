@@ -569,6 +569,12 @@ def _has_unrequested_text_label_reading(lock: ContentLock, joined: str) -> bool:
         joined,
     ):
         return False
+    if re.search(
+        r"\b(english|metadata|acquisition|condition report|concept|concepts|"
+        r"speech bubble|sample id|filename)\b",
+        joined,
+    ):
+        return True
 
     allowed_text_terms = [
         *lock.required_text_elements,
