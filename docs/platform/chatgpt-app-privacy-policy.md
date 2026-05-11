@@ -162,6 +162,5 @@ required by the platform.
 
 For privacy requests or support, contact:
 
-Yu Haorui  
+Yu Haorui
 Email: `yuhaorui48@gmail.com`
-

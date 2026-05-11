@@ -89,4 +89,3 @@ We will resubmit the app from the OpenAI Platform dashboard.
 Best,
 Haorui Yu
 ```
-
