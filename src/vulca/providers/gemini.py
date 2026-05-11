@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import asyncio
 import base64
+import io
 import math
 import os
 
@@ -64,6 +65,20 @@ def _detect_mime_type(data: bytes) -> str:
     if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
         return "image/webp"
     return "image/png"
+
+
+def _build_visible_mask_reference(mask_bytes: bytes) -> bytes:
+    """Render an alpha edit mask as visible black/white guidance for Gemini."""
+    from PIL import Image
+
+    with Image.open(io.BytesIO(mask_bytes)) as mask_img:
+        alpha = mask_img.convert("RGBA").split()[-1]
+        visible = alpha.point(lambda value: 255 if value < 128 else 0)
+    rgb = Image.new("RGB", visible.size, (0, 0, 0))
+    rgb.paste((255, 255, 255), mask=visible)
+    buf = io.BytesIO()
+    rgb.save(buf, format="PNG")
+    return buf.getvalue()
 
 
 class GeminiImageProvider:
@@ -279,6 +294,7 @@ class GeminiImageProvider:
             image_bytes = image_fh.read()
         with open(mask_path, "rb") as mask_fh:
             mask_bytes = mask_fh.read()
+        visible_mask_bytes = _build_visible_mask_reference(mask_bytes)
 
         if size and "x" in size:
             try:
@@ -295,11 +311,15 @@ class GeminiImageProvider:
         aspect_ratio = _dims_to_aspect_ratio(width, height)
         full_prompt = (
             f"{prompt}\n\n"
-            "Use the first image as the source crop. Use the second image as an "
-            "RGBA edit mask: transparent mask pixels mark the edit region, and "
-            "opaque mask pixels mark source context that should stay visually "
-            "preserved. Repaint only the transparent mask pixels. Do not create "
-            "a new scene outside the masked replacement area."
+            "Use the first image as the source crop. Use the second image as a "
+            "visible binary edit mask rendered from the original RGBA mask: "
+            "white mask pixels (original transparent mask pixels) mark the edit "
+            "region, and black mask pixels (original opaque mask pixels) mark "
+            "source context that should stay visually preserved. Repaint only "
+            "the white edit region. Do not create a new scene outside the masked "
+            "replacement area. The mask image is not part of the output: do not "
+            "draw the mask, do not copy its white or black shapes, and do not "
+            "leave mask-colored background behind."
         )
         if tradition and tradition != "default":
             full_prompt += (
@@ -314,8 +334,8 @@ class GeminiImageProvider:
                 mime_type=_detect_mime_type(image_bytes),
             ),
             types.Part.from_bytes(
-                data=mask_bytes,
-                mime_type=_detect_mime_type(mask_bytes),
+                data=visible_mask_bytes,
+                mime_type="image/png",
             ),
             full_prompt,
         ]
