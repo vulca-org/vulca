@@ -81,7 +81,7 @@ Claude: 5 layers extracted — each person figure isolated, drapery and ground s
 ### Path A — plugin install (recommended)
 
 ```bash
-pip install vulca[mcp]==0.23.0
+pip install vulca[mcp]==0.23.1
 claude plugin install vulca-org/vulca-plugin
 ```
 
@@ -90,15 +90,15 @@ Then in Claude Code: `> /decompose /path/to/your_image.jpg`
 ### Path B — no plugin (power user)
 
 ```bash
-pip install vulca[mcp]==0.23.0
+pip install vulca[mcp]==0.23.1
 
 # Register MCP server — add to ~/.claude/settings.json:
-# {"mcpServers": {"vulca": {"command": "uvx", "args": ["--from", "vulca[mcp]==0.23.0", "vulca-mcp"]}}}
+# {"mcpServers": {"vulca": {"command": "uvx", "args": ["--from", "vulca[mcp]==0.23.1", "vulca-mcp"]}}}
 
 # Install the /decompose skill:
 mkdir -p ~/.claude/skills/decompose
 curl -o ~/.claude/skills/decompose/SKILL.md \
-  "https://raw.githubusercontent.com/vulca-org/vulca/v0.23.0/.claude/skills/decompose/SKILL.md?utm_source=github-readme&utm_medium=oss&utm_campaign=refresh-2026-05-01"
+  "https://raw.githubusercontent.com/vulca-org/vulca/v0.23.1/.claude/skills/decompose/SKILL.md?utm_source=github-readme&utm_medium=oss&utm_campaign=refresh-2026-05-11"
 ```
 
 <p align="center">
@@ -287,7 +287,7 @@ Custom traditions via YAML — `vulca evaluate painting.jpg --tradition ./my_sty
 ## Apple Silicon / MPS quickstart
 
 ```bash
-pip install vulca[mcp,tools]==0.23.0
+pip install vulca[mcp,tools]==0.23.1
 # Local stack: ComfyUI + Ollama, full MPS support
 ```
 

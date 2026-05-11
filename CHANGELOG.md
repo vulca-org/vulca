@@ -1,5 +1,24 @@
 # Changelog
 
+## v0.23.1 (2026-05-11)
+
+Patch release for the NB2/Gemini masked-edit adapter.
+
+### Fixes
+
+- Rendered RGBA edit masks as visible black/white coordinate masks before
+  sending them to Gemini/NB2 image-edit calls, while preserving the public
+  `inpaint_with_mask` API contract.
+- Tightened the Gemini adapter prompt so the visible mask is treated as edit
+  guidance, not output content.
+
+### Verification
+
+- Focused redraw/provider suite: 143 passed, 5 warnings.
+- `ruff check src/vulca/providers/gemini.py tests/test_gemini_image_size.py`:
+  passed.
+- `git diff --check`: passed.
+
 ## v0.23.0 (2026-05-01)
 
 First public PyPI release after v0.19.0. This release bundles the v0.20-v0.22
