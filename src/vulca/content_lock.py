@@ -389,6 +389,14 @@ def build_content_fidelity_gate(
 ) -> dict[str, Any]:
     """Create deterministic gate data from VLM missing-item fields."""
     content_lock = content_lock_from_dict(lock) if isinstance(lock, dict) else lock
+    apparent_relations = _as_string_list(scoring_data.get("apparent_relations"))
+    forbidden_artifacts = _as_string_list(
+        scoring_data.get("forbidden_visual_artifacts")
+    )
+    inferred_artifacts = _infer_artifacts_from_readings(content_lock, apparent_relations)
+    unwanted_visible_text = _as_optional_bool(scoring_data.get("unwanted_visible_text"))
+    if "unrequested visible text labels" in inferred_artifacts:
+        unwanted_visible_text = True
     return {
         "required_subjects": list(content_lock.required_subjects),
         "missing_required_subjects": _as_string_list(
@@ -409,7 +417,7 @@ def build_content_fidelity_gate(
         "required_relations": [
             dict(relation) for relation in content_lock.required_relations
         ],
-        "apparent_relations": _as_string_list(scoring_data.get("apparent_relations")),
+        "apparent_relations": apparent_relations,
         "relation_semantics_failed": _as_optional_bool(
             scoring_data.get("relation_semantics_failed")
         ),
@@ -417,16 +425,12 @@ def build_content_fidelity_gate(
         "forbidden_readings_present": _as_string_list(
             scoring_data.get("forbidden_readings_present")
         ),
-        "forbidden_visual_artifacts": _as_string_list(
-            scoring_data.get("forbidden_visual_artifacts")
-        ),
+        "forbidden_visual_artifacts": _dedupe([*forbidden_artifacts, *inferred_artifacts]),
         "required_output_is_artwork_itself": content_lock.output_is_artwork_itself,
         "output_is_artwork_itself": _as_optional_bool(
             scoring_data.get("output_is_artwork_itself")
         ),
-        "unwanted_visible_text": _as_optional_bool(
-            scoring_data.get("unwanted_visible_text")
-        ),
+        "unwanted_visible_text": unwanted_visible_text,
     }
 
 
@@ -538,6 +542,44 @@ def _extract_subjects(text: str) -> list[str]:
         if normalized:
             subjects.append(normalized)
     return _dedupe(subjects)
+
+
+def _infer_artifacts_from_readings(
+    lock: ContentLock,
+    apparent_relations: list[str],
+) -> list[str]:
+    """Infer obvious artifact-boundary failures from VLM free-text readings."""
+    joined = " ".join(apparent_relations).lower()
+    artifacts: list[str] = []
+    if re.search(
+        r"\b(meme|memes|social|icon|icons|qr|chat|ui|interface|screen|app|"
+        r"notification|overlay|collage)\b",
+        joined,
+    ):
+        artifacts.append("modern UI/collage artifacts")
+    if _has_unrequested_text_label_reading(lock, joined):
+        artifacts.append("unrequested visible text labels")
+    return artifacts
+
+
+def _has_unrequested_text_label_reading(lock: ContentLock, joined: str) -> bool:
+    if not re.search(
+        r"\b(english|label|labels|text|caption|captions|metadata|acquisition|"
+        r"condition report|concept|concepts|speech bubble)\b",
+        joined,
+    ):
+        return False
+
+    allowed_text_terms = [
+        *lock.required_text_elements,
+        "cyrillic" if "cyrillic" in lock.original_intent.lower() else "",
+        "calligraphy" if "calligraphy" in lock.original_intent.lower() else "",
+        "lettering" if "lettering" in lock.original_intent.lower() else "",
+    ]
+    normalized_allowed = [term.lower() for term in allowed_text_terms if term]
+    if normalized_allowed and any(term in joined for term in normalized_allowed):
+        return False
+    return True
 
 
 def _replace_known_subjects(subjects: list[str], lower: str) -> list[str]:

@@ -483,6 +483,34 @@ def test_content_fidelity_gate_reads_artifact_boundary_fields():
     assert gate["forbidden_visual_artifacts"] == ["gallery wall"]
 
 
+def test_content_fidelity_gate_infers_modern_ui_text_artifacts():
+    lock = extract_content_lock(
+        "A Socialist Realism propaganda poster of a triumphant armored rider "
+        "on horseback beside Soviet soldiers with rifles, fallen enemies in "
+        "the foreground, and a fortified city rising in the background under "
+        "bold Cyrillic lettering."
+    )
+
+    gate = build_content_fidelity_gate(
+        lock,
+        {
+            "apparent_relations": [
+                "rider-leads-soldiers",
+                "memes-overlay-history",
+                "text-labels-concepts",
+                "social icons frame the city",
+            ],
+            "forbidden_visual_artifacts": [],
+            "unwanted_visible_text": False,
+            "output_is_artwork_itself": True,
+        },
+    )
+
+    assert gate["unwanted_visible_text"] is True
+    assert "modern UI/collage artifacts" in gate["forbidden_visual_artifacts"]
+    assert "unrequested visible text labels" in gate["forbidden_visual_artifacts"]
+
+
 def test_content_fidelity_gate_reads_relation_semantics_fields():
     lock = extract_content_lock(
         "Wartime illustration of mounted soldiers beside fleeing civilians, "
