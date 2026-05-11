@@ -69,6 +69,12 @@ Use `http://127.0.0.1:8765/mcp` for local API experiments. ChatGPT developer mod
 
 - Do not pass private images to a remote server without explicit user approval.
 - Do not pass private project paths to a remote server unless the path is inside `VULCA_REMOTE_WORKSPACE_ROOT`.
+- Do not echo local filesystem paths in remote tool responses.
+- Do not return diagnostic metadata such as request IDs, trace IDs, session IDs, timestamps, or latency measurements unless required for the user's request.
 - Do not enable pixel-reading or provider-backed VLM evaluation by default.
 - Do not expose filesystem-writing tools in the first prototype.
 - Keep all cost-incurring tools behind explicit opt-in.
+
+Published app submissions should use `docs/platform/chatgpt-app-privacy-policy.md`
+as the privacy-policy source of truth and should verify raw MCP responses against
+`docs/platform/chatgpt-app-resubmission-checklist.md` before resubmission.

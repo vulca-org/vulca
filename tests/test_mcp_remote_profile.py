@@ -192,6 +192,37 @@ def test_remote_workspace_path_allows_relative_file_inside_root(tmp_path):
     ) == design_path.resolve()
 
 
+def test_remote_compose_prompt_does_not_echo_source_path(monkeypatch, tmp_path):
+    from vulca import mcp_remote
+
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    design_path = workspace / "design.md"
+    design_path.write_text("# Design\n", encoding="utf-8")
+
+    async def fake_compose_prompt_from_design(path):
+        return {
+            "composed_prompt": "misty mountain",
+            "negative_prompt": "",
+            "source_design_path": path,
+        }
+
+    monkeypatch.setenv("VULCA_REMOTE_WORKSPACE_ROOT", str(workspace))
+    monkeypatch.setattr(
+        "vulca.mcp_server.compose_prompt_from_design",
+        fake_compose_prompt_from_design,
+    )
+
+    result = asyncio.run(
+        mcp_remote._remote_compose_prompt_from_design("design.md")
+    )
+
+    assert result == {
+        "composed_prompt": "misty mountain",
+        "negative_prompt": "",
+    }
+
+
 def test_remote_evaluate_artwork_forces_mock_rubric_only(monkeypatch):
     from vulca import mcp_remote
 
@@ -199,7 +230,11 @@ def test_remote_evaluate_artwork_forces_mock_rubric_only(monkeypatch):
 
     async def fake_evaluate_artwork(**kwargs):
         captured.update(kwargs)
-        return {"ok": True}
+        return {
+            "ok": True,
+            "image_path": kwargs["image_path"],
+            "latency_ms": 12,
+        }
 
     monkeypatch.setattr(mcp_remote, "_evaluate_artwork", fake_evaluate_artwork)
 

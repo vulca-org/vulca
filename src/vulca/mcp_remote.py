@@ -71,7 +71,11 @@ async def _remote_compose_prompt_from_design(design_path: str) -> dict:
     )
     from vulca.mcp_server import compose_prompt_from_design
 
-    return await compose_prompt_from_design(str(safe_path))
+    result = await compose_prompt_from_design(str(safe_path))
+    # The local tool returns the source path for agent debugging. The public
+    # remote profile should not echo local filesystem paths back to ChatGPT.
+    result.pop("source_design_path", None)
+    return result
 
 
 async def _evaluate_artwork(**kwargs) -> dict:
@@ -86,7 +90,7 @@ async def _remote_evaluate_artwork(
     intent: str = "",
 ) -> dict:
     """Use this when returning Vulca's L1-L5 rubric without reading pixels or calling a VLM."""
-    return await _evaluate_artwork(
+    result = await _evaluate_artwork(
         image_path=image_path,
         tradition=tradition,
         intent=intent,
@@ -94,6 +98,11 @@ async def _remote_evaluate_artwork(
         mode="rubric_only",
         vlm_model="",
     )
+    # Keep remote responses purpose-bound: do not echo user file paths or
+    # diagnostic timing metadata in the submitted ChatGPT app profile.
+    result.pop("image_path", None)
+    result.pop("latency_ms", None)
+    return result
 
 
 remote_mcp = FastMCP(
