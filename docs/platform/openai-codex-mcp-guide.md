@@ -102,6 +102,7 @@ Before public install instructions:
 - verify `vulca-mcp-remote` starts with `VULCA_REMOTE_WORKSPACE_ROOT` set before ChatGPT remote MCP experiments;
 - publish and submit the privacy policy in `docs/platform/chatgpt-app-privacy-policy.md`;
 - audit the raw remote MCP responses against `docs/platform/chatgpt-app-resubmission-checklist.md`;
+- recapture OpenAI App screenshots and test evidence with `docs/platform/chatgpt-app-screenshot-and-test-evidence.md`;
 - run one no-cost `/visual-discovery` or prompt-composition workflow;
 - confirm generated artifacts stay in the workspace;
 - confirm public copy says official Codex public publishing is still pending unless OpenAI has opened it.

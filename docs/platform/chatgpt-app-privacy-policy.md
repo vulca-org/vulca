@@ -1,6 +1,6 @@
 # Vulca ChatGPT App Privacy Policy
 
-**Effective date:** 2026-05-07
+**Effective date:** 2026-05-11
 
 This policy describes the data practices for the submitted Vulca ChatGPT App
 remote profile. Vulca is an agent-native visual workflow tool for tradition
@@ -30,6 +30,20 @@ filesystem-writing tools.
 profile. It returns an L1-L5 rubric payload and does not read image pixels or
 call a vision model by default.
 
+All submitted tools are read-only from the ChatGPT App perspective. They do not
+create, modify, delete, publish, send messages, start paid provider jobs, or
+write files.
+
+## Tool Inputs And Outputs
+
+| Tool | Inputs Vulca Receives | Outputs Vulca Returns |
+| --- | --- | --- |
+| `list_traditions` | No required user input. | Public tradition identifiers, display names, categories, and L1-L5 weights. |
+| `get_tradition_guide` | A tradition identifier or name selected or supplied by the user. | Public guide content for that tradition, including terminology, taboos, weight definitions, and layer guidance. |
+| `search_traditions` | User-supplied visual keywords, cultural terms, or tags, plus an optional result limit. | Ranked public tradition matches and matched terms relevant to the request. |
+| `compose_prompt_from_design` | A workspace-relative `design.md` path inside the configured remote workspace root. The tool reads that approved design document only for the requested prompt-composition task. | A composed prompt, negative prompt, tradition tokens, color tokens, and style treatment derived from the approved design document. The submitted profile removes the source file path from the response. |
+| `evaluate_artwork` | An image reference string, selected tradition, and user-supplied evaluation intent. In the submitted profile, the image reference is not opened, uploaded, inspected, or returned. | A rubric-only L1-L5 evaluation payload for the selected tradition and intent. The submitted profile removes image path and timing diagnostics from the response. |
+
 ## Data We Receive
 
 Vulca receives only the tool arguments that ChatGPT sends to the selected MCP
@@ -52,6 +66,9 @@ tool. Depending on the tool, this can include:
 The submitted profile does not intentionally request or collect precise
 location, payment card data, government identifiers, health information,
 passwords, API keys, MFA codes, OAuth tokens, raw full chat history, or images.
+It also does not reconstruct the user's full ChatGPT conversation. It operates
+only on the specific tool arguments or approved resource references that
+ChatGPT sends for a selected tool call.
 
 ## Data We Return To ChatGPT
 
