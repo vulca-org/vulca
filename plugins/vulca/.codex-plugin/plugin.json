@@ -1,7 +1,7 @@
 {
   "name": "vulca",
   "version": "0.23.1",
-  "description": "Agent-native visual control for discovery, prompt structure, image generation routing, semantic layers, redraw, and cultural evaluation.",
+  "description": "Agent-native visual control for discovery, prompt structure, semantic layers, redraw workflows, and cultural evaluation.",
   "author": {
     "name": "Vulca maintainers",
     "url": "https://github.com/vulca-org"
@@ -20,7 +20,7 @@
   "interface": {
     "displayName": "Vulca",
     "shortDescription": "Control visual projects with discovery, structured prompts, layers, and evaluation.",
-    "longDescription": "Vulca turns fuzzy visual intent into reviewable creative artifacts: discovery notes, direction cards, structured prompts, semantic layers, provider-routed generation, redraw workflows, and L1-L5 cultural evaluation. Redraw and inpaint tools are available for advanced workflows; polished user-facing redraw skills should wait for the v0.22 target-aware mask refinement gate.",
+    "longDescription": "Vulca turns fuzzy visual intent into reviewable creative artifacts: discovery notes, direction cards, structured prompts, semantic layers, provider-routed generation, redraw workflows, and L1-L5 cultural evaluation. Redraw and inpaint tools are advanced workflows and should remain explicit opt-in.",
     "developerName": "Vulca",
     "category": "Productivity",
     "capabilities": [
