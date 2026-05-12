@@ -29,7 +29,7 @@ Run before submission:
 PYTHONPATH=src python scripts/chatgpt_app_preflight.py \
   --submission chatgpt-app-submission.json \
   --privacy-url https://github.com/vulca-org/vulca/blob/master/docs/platform/chatgpt-app-privacy-policy.md \
-  --mcp-url https://<production-service-url>/mcp
+  --mcp-url https://harryhurry-vulca-openai-mcp.hf.space/mcp
 ```
 
 ## Deployment Evidence
@@ -37,16 +37,17 @@ PYTHONPATH=src python scripts/chatgpt_app_preflight.py \
 Production MCP URL:
 
 ```text
-TODO: https://<cloud-run-service-url>/mcp
+https://harryhurry-vulca-openai-mcp.hf.space/mcp
 ```
 
 Deployment command or workflow:
 
 ```text
-Use deploy/chatgpt-mcp/Dockerfile with deploy/chatgpt-mcp/cloudbuild.yaml.
-The image installs vulca[mcp]==0.23.1 from PyPI and runs vulca-mcp-remote.
-Deploy the built image directly to Cloud Run with VULCA_REMOTE_MCP_* environment
-values and submit the Cloud Run service URL plus /mcp.
+Hugging Face Space: harryHURRY/vulca-openai-mcp
+SDK: docker
+Hardware: cpu-basic
+Runtime package: vulca[mcp]==0.23.1 from PyPI
+MCP path: /mcp
 ```
 
 Expected deployed profile:
@@ -91,7 +92,7 @@ Use these values unless the dashboard form has a stricter current constraint:
 - Category: `DESIGN`
 - Privacy policy URL:
   `https://github.com/vulca-org/vulca/blob/master/docs/platform/chatgpt-app-privacy-policy.md`
-- MCP server URL: `TODO: https://<cloud-run-service-url>/mcp`
+- MCP server URL: `https://harryhurry-vulca-openai-mcp.hf.space/mcp`
 - Tools: exactly the five allowlisted tools above.
 
 Release note:

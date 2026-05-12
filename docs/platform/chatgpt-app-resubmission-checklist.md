@@ -50,12 +50,15 @@ Relevant OpenAI requirements:
   PYTHONPATH=src python scripts/chatgpt_app_preflight.py \
     --submission chatgpt-app-submission.json \
     --privacy-url https://github.com/vulca-org/vulca/blob/master/docs/platform/chatgpt-app-privacy-policy.md \
-    --mcp-url https://<cloud-run-service-url>/mcp
+    --mcp-url https://harryhurry-vulca-openai-mcp.hf.space/mcp
   ```
-- Deploy the review-safe MCP profile using `deploy/chatgpt-mcp/` to a direct
-  Cloud Run service URL. The Docker image installs `vulca[mcp]==0.23.1` from
-  PyPI and the deployed command must run `vulca-mcp-remote`, not the full local
-  `vulca-mcp` server.
+- Deploy the review-safe MCP profile to a public HTTPS host. The current
+  resubmission endpoint is the Hugging Face Docker Space
+  `https://harryhurry-vulca-openai-mcp.hf.space/mcp`, running
+  `vulca[mcp]==0.23.1` from PyPI.
+- If using Cloud Run instead, deploy `deploy/chatgpt-mcp/` to a direct Cloud Run
+  service URL. The deployed command must run `vulca-mcp-remote`, not the full
+  local `vulca-mcp` server.
 - Do not use `https://vulcaart.art/mcp` for this resubmission unless Firebase
   Hosting has first been explicitly rewired to the deployed Cloud Run service
   and the production preflight command passes against that domain.
