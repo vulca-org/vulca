@@ -1,0 +1,18 @@
+substitutions:
+  _IMAGE: gcr.io/$PROJECT_ID/vulca-chatgpt-mcp:manual
+  _VULCA_VERSION: 0.23.1
+
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -f
+      - deploy/chatgpt-mcp/Dockerfile
+      - --build-arg
+      - VULCA_VERSION=${_VULCA_VERSION}
+      - -t
+      - ${_IMAGE}
+      - .
+
+images:
+  - ${_IMAGE}
