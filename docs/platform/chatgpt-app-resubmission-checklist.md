@@ -45,6 +45,20 @@ Relevant OpenAI requirements:
 - Confirm `compose_prompt_from_design` does not echo `source_design_path`.
 - Confirm remote `evaluate_artwork` does not echo `image_path` or `latency_ms`.
 - Re-run remote-profile tests before resubmission.
+- Run the submission preflight script before resubmission:
+  ```bash
+  PYTHONPATH=src python scripts/chatgpt_app_preflight.py \
+    --submission chatgpt-app-submission.json \
+    --privacy-url https://github.com/vulca-org/vulca/blob/master/docs/platform/chatgpt-app-privacy-policy.md \
+    --mcp-url https://<cloud-run-service-url>/mcp
+  ```
+- Deploy the review-safe MCP profile using `deploy/chatgpt-mcp/` to a direct
+  Cloud Run service URL. The Docker image installs `vulca[mcp]==0.23.1` from
+  PyPI and the deployed command must run `vulca-mcp-remote`, not the full local
+  `vulca-mcp` server.
+- Do not use `https://vulcaart.art/mcp` for this resubmission unless Firebase
+  Hosting has first been explicitly rewired to the deployed Cloud Run service
+  and the production preflight command passes against that domain.
 - Capture new app screenshots and test evidence using
   `docs/platform/chatgpt-app-screenshot-and-test-evidence.md`.
 
