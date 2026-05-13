@@ -1,7 +1,7 @@
 # ChatGPT App Resubmission Evidence
 
 **Status:** In progress
-**Last updated:** 2026-05-12
+**Last updated:** 2026-05-13
 
 This file tracks the evidence needed before resubmitting the Vulca ChatGPT App
 after OpenAI review feedback.
@@ -19,16 +19,19 @@ after OpenAI review feedback.
   - `evaluate_artwork`
 - `chatgpt-app-submission.json` covers 5 tools, 6 positive test cases, and 4
   negative test cases.
-- `docs/platform/chatgpt-app-privacy-policy.md` is present on `master` and is
-  reachable at:
-  `https://github.com/vulca-org/vulca/blob/master/docs/platform/chatgpt-app-privacy-policy.md`
+- `docs/platform/chatgpt-app-privacy-policy.md` is present on `master`.
+- The public website privacy route is live at
+  `https://vulcaart.art/chatgpt-app-privacy`.
+- Production browser verification on 2026-05-13 confirmed the desktop and
+  mobile routes render `Vulca ChatGPT App Privacy Policy` and the submitted
+  tool list, not the SPA fallback 404 page.
 
 Run before submission:
 
 ```bash
 PYTHONPATH=src python scripts/chatgpt_app_preflight.py \
   --submission chatgpt-app-submission.json \
-  --privacy-url https://github.com/vulca-org/vulca/blob/master/docs/platform/chatgpt-app-privacy-policy.md \
+  --privacy-url https://vulcaart.art/chatgpt-app-privacy \
   --mcp-url https://harryhurry-vulca-openai-mcp.hf.space/mcp
 ```
 
@@ -91,7 +94,7 @@ Use these values unless the dashboard form has a stricter current constraint:
 - Subtitle: `Structure visual work`
 - Category: `DESIGN`
 - Privacy policy URL:
-  `https://github.com/vulca-org/vulca/blob/master/docs/platform/chatgpt-app-privacy-policy.md`
+  `https://vulcaart.art/chatgpt-app-privacy`
 - MCP server URL: `https://harryhurry-vulca-openai-mcp.hf.space/mcp`
 - Tools: exactly the five allowlisted tools above.
 

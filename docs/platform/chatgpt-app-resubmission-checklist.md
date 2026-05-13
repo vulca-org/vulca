@@ -33,9 +33,8 @@ Relevant OpenAI requirements:
 
 ## Code/Docs Remediation
 
-- Publish `docs/platform/chatgpt-app-privacy-policy.md` at a stable public URL,
-  for example:
-  `https://github.com/vulca-org/vulca/blob/master/docs/platform/chatgpt-app-privacy-policy.md`
+- Publish `docs/platform/chatgpt-app-privacy-policy.md` at a stable public URL:
+  `https://vulcaart.art/chatgpt-app-privacy`
 - Keep the submitted remote profile limited to:
   - `list_traditions`
   - `get_tradition_guide`
@@ -49,7 +48,7 @@ Relevant OpenAI requirements:
   ```bash
   PYTHONPATH=src python scripts/chatgpt_app_preflight.py \
     --submission chatgpt-app-submission.json \
-    --privacy-url https://github.com/vulca-org/vulca/blob/master/docs/platform/chatgpt-app-privacy-policy.md \
+    --privacy-url https://vulcaart.art/chatgpt-app-privacy \
     --mcp-url https://harryhurry-vulca-openai-mcp.hf.space/mcp
   ```
 - Deploy the review-safe MCP profile to a public HTTPS host. The current
@@ -64,6 +63,10 @@ Relevant OpenAI requirements:
   and the production preflight command passes against that domain.
 - Capture new app screenshots and test evidence using
   `docs/platform/chatgpt-app-screenshot-and-test-evidence.md`.
+- After the website deploy, manually open `https://vulcaart.art/chatgpt-app-privacy`
+  in a browser and confirm it renders the ChatGPT App privacy policy content.
+  A static SPA fallback can return HTTP 200 for an unregistered route, so HEAD
+  preflight alone is not enough for this URL.
 
 ## Tool Response Audit
 

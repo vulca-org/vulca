@@ -100,7 +100,7 @@ Before public install instructions:
 - validate the repo marketplace in a clean Codex Desktop session;
 - verify `vulca-mcp` is available in the target environment;
 - verify `vulca-mcp-remote` starts with `VULCA_REMOTE_WORKSPACE_ROOT` set before ChatGPT remote MCP experiments;
-- publish and submit the privacy policy in `docs/platform/chatgpt-app-privacy-policy.md`;
+- publish and submit the privacy policy at `https://vulcaart.art/chatgpt-app-privacy`;
 - audit the raw remote MCP responses against `docs/platform/chatgpt-app-resubmission-checklist.md`;
 - recapture OpenAI App screenshots and test evidence with `docs/platform/chatgpt-app-screenshot-and-test-evidence.md`;
 - run one no-cost `/visual-discovery` or prompt-composition workflow;

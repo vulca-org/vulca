@@ -104,8 +104,9 @@ Observed: 14 passed.
 - Optional: run a full interactive `claude --plugin-dir .` session if you want UI-level confirmation beyond `plugin validate` and non-interactive skill discovery.
 - Optional: open Codex UI and confirm the newly added `vulca-plugins` marketplace source appears as expected.
 - Deploy `vulca-mcp-remote` behind HTTPS/auth/logging before connecting it to ChatGPT developer mode from a public URL.
-- For ChatGPT App resubmission, publish `docs/platform/chatgpt-app-privacy-policy.md`
-  at a stable public URL and complete `docs/platform/chatgpt-app-resubmission-checklist.md`.
-- Review marketplace copy and screenshots before submission.
+- For ChatGPT App resubmission, the public privacy policy route is live at
+  `https://vulcaart.art/chatgpt-app-privacy`; complete
+  `docs/platform/chatgpt-app-resubmission-checklist.md`.
+- Review marketplace copy and capture fresh ChatGPT app screenshots before submission.
 - Dogfood v0.22 redraw on representative real images and confirm the user-facing after-image is `source_pasteback_path`.
 - Decide what to do with main-worktree untracked generated artifacts before any broad cleanup.

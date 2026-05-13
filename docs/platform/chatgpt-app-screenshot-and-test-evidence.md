@@ -72,7 +72,8 @@ evidence.
 
 ## Pre-Upload QA
 
-- Privacy policy URL opens without login and matches
+- Privacy policy URL opens without login at
+  `https://vulcaart.art/chatgpt-app-privacy` and matches
   `docs/platform/chatgpt-app-privacy-policy.md`.
 - Tool list in the dashboard matches the submitted remote profile exactly:
   `list_traditions`, `get_tradition_guide`, `search_traditions`,

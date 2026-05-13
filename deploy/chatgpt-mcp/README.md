@@ -104,7 +104,7 @@ Before submitting, run:
 ```bash
 PYTHONPATH=src python scripts/chatgpt_app_preflight.py \
   --submission chatgpt-app-submission.json \
-  --privacy-url https://github.com/vulca-org/vulca/blob/master/docs/platform/chatgpt-app-privacy-policy.md \
+  --privacy-url https://vulcaart.art/chatgpt-app-privacy \
   --mcp-url https://<cloud-run-service-url>/mcp
 ```
 
