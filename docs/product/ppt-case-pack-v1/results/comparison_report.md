@@ -1,10 +1,15 @@
 # Comparison Report
 
-**Status:** not-run
+**Status:** baseline-generated
 
 ## Baseline
 
-The baseline deck has not been generated yet.
+- Status: generated
+- Source: `docs/product/ppt-case-pack-v1/baseline_prompt.md`
+- PPTX path: `outputs/019e7ed2-6e44-7140-8ed1-d2ad117e97da/presentations/vulca-ppt-baseline/output/vulca-prompt-baseline.pptx`
+- Contact sheet path: `outputs/019e7ed2-6e44-7140-8ed1-d2ad117e97da/presentations/vulca-ppt-baseline/preview/contact-sheet.png`
+- Layout JSON path: `outputs/019e7ed2-6e44-7140-8ed1-d2ad117e97da/presentations/vulca-ppt-baseline/layout/final/`
+- Initial assessment: baseline exists for comparison only. It is not the product-quality target.
 
 ## Vulca Case-Pack Deck
 
