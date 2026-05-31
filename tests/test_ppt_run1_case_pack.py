@@ -137,6 +137,7 @@ def test_run1_results_track_generation_lifecycle() -> None:
     comparison = (PACK / "results" / "comparison_report.md").read_text(encoding="utf-8")
     render_check = (PACK / "results" / "render_check.md").read_text(encoding="utf-8")
     iteration_log = (PACK / "results" / "iteration_log.md").read_text(encoding="utf-8")
+    demo_outline = (PACK / "results" / "demo_video_outline.md").read_text(encoding="utf-8")
 
     assert provenance["status"] == "generated-no-external-assets"
     assert provenance["assets"] == []
@@ -148,6 +149,10 @@ def test_run1_results_track_generation_lifecycle() -> None:
     assert_contains(render_check, ["Status", "baseline and Vulca case-pack deck checked"])
     assert_contains(render_check, ["Renderer", "not available"])
     assert_contains(iteration_log, ["Repair pass", "completed"])
+    assert_contains(comparison, ["Score Table", "Average score", "delta", "+1.1"])
+    assert_contains(comparison, ["Quality Gate Decision", "Public publishing status", "blocked"])
+    assert_contains(comparison, ["Product Primitive Decision", "renderer", "cross-platform QA"])
+    assert_contains(demo_outline, ["Status", "draft", "not public until human approval"])
 
 
 def test_run1_pack_does_not_commit_generated_artifacts() -> None:
