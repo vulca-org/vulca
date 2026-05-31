@@ -4,6 +4,7 @@ import asyncio
 
 from vulca.chatgpt_prompt_studio import PROMPT_STUDIO_WIDGET_URI
 from vulca.mcp_remote import build_remote_mcp_server
+from vulca.mcp_profiles import REMOTE_DENIED_TOOLS, REMOTE_SAFE_TOOLS
 
 
 def test_prompt_studio_preview_registers_tool_with_ui_metadata():
@@ -94,3 +95,23 @@ def test_prompt_studio_tool_returns_structured_error_for_empty_prompt():
         "widget_uri": PROMPT_STUDIO_WIDGET_URI,
     }
     assert result.meta == {"openai/outputTemplate": PROMPT_STUDIO_WIDGET_URI}
+
+
+def test_prompt_studio_preview_does_not_enable_provider_tools():
+    unsafe = {
+        "generate_image",
+        "create_artwork",
+        "generate_concepts",
+        "inpaint_artwork",
+        "layers_redraw",
+        "view_image",
+    }
+
+    assert unsafe <= REMOTE_DENIED_TOOLS
+    assert "open_prompt_studio" not in REMOTE_SAFE_TOOLS
+
+    server = build_remote_mcp_server(enable_prompt_studio=True)
+    preview_tools = {tool.name for tool in asyncio.run(server.list_tools())}
+
+    assert unsafe.isdisjoint(preview_tools)
+    assert "open_prompt_studio" in preview_tools
