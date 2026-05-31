@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "opening": "Name the workflow problem before naming the feature.",
+  "progression": [
+    "pain",
+    "market_shift",
+    "vulca_approach",
+    "workflow",
+    "proof",
+    "comparison",
+    "call_to_action"
+  ],
+  "technical_depth": "Expose technical control through diagrams, proof objects, and concrete QA gates rather than long prose.",
+  "closing": "End with a concrete next workflow, not a generic vision statement."
+}

@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "title": "Vulca Product Launch Deck",
+  "slides": [
+    {
+      "id": "slide_01",
+      "pattern_id": "cover",
+      "title": "Vulca",
+      "claim": "Design knowledge becomes editable presentation code.",
+      "proof_object": "A simple system mark showing case pack, skill, code, review, and deck output."
+    }
+  ]
+}

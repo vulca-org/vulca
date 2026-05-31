@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "preferred_assets": [
+    "editable_svg",
+    "native_shapes",
+    "editable_connectors",
+    "generated_bitmap_backgrounds_with_recorded_prompts"
+  ],
+  "bitmap_use": "Use generated bitmap images only for atmospheric or illustrative background moments. Do not use bitmap images as containers for essential text, diagrams, or labels.",
+  "forbidden": [
+    "rasterized_text",
+    "copied_reference_visuals",
+    "proprietary_slide_images",
+    "pseudo_logos",
+    "unlicensed_brand_marks",
+    "full_article_text",
+    "video_transcripts"
+  ],
+  "provenance_required": true
+}
