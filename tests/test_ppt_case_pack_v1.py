@@ -70,6 +70,17 @@ def test_all_required_slide_patterns_exist() -> None:
     assert REQUIRED_PATTERN_IDS <= pattern_ids
 
 
+def test_product_pillars_pattern_matches_five_pillar_outline() -> None:
+    outline = load_json(PACK / "deck_outline.json")
+    patterns = load_json(PACK / "slide_patterns.json")
+
+    product_pillars_slide = next(slide for slide in outline["slides"] if slide["pattern_id"] == "product_pillars")
+    product_pillars_pattern = next(pattern for pattern in patterns["patterns"] if pattern["id"] == "product_pillars")
+
+    assert "Five pillars" in product_pillars_slide["proof_object"]
+    assert "five_pillars" in product_pillars_pattern["layout_shape"]
+
+
 def test_source_summaries_mentions_every_source_id() -> None:
     sources = load_json(PACK / "sources.json")
     summaries = (PACK / "source_summaries.md").read_text(encoding="utf-8")

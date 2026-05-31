@@ -37,7 +37,7 @@
       "id": "product_pillars",
       "role": "product_pillars",
       "content_density": "medium",
-      "layout_shape": "four_pillars_with_proof_labels",
+      "layout_shape": "five_pillars_with_proof_labels",
       "visual_asset_type": "native_shapes",
       "editability_requirements": ["pillar_titles_are_editable", "proof_labels_are_editable", "icons_are_editable"]
     },
