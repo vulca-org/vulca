@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "status": "not-run",
+  "arms": [
+    {
+      "id": "prompt_only",
+      "blocking": true,
+      "description": "Baseline generation from a plain prompt without Vulca case-pack memory.",
+      "allowed_inputs": [
+        "baseline_prompt.md"
+      ],
+      "forbidden_inputs": [
+        "design_memory.json",
+        "tutorial_notes.md",
+        "vulca_generation_brief.md",
+        "vulca_ppt_skill.md"
+      ]
+    },
+    {
+      "id": "full_vulca",
+      "blocking": true,
+      "description": "Full product-lab generation using evidence, tutorial notes, memory, outline, patterns, and QA gates.",
+      "allowed_inputs": [
+        "sources.json",
+        "source_summaries.md",
+        "tutorial_notes.md",
+        "commercial_brief.md",
+        "design_notes.md",
+        "design_memory.json",
+        "deck_outline.json",
+        "slide_patterns.json",
+        "vulca_generation_brief.md",
+        "vulca_ppt_skill.md"
+      ],
+      "forbidden_inputs": []
+    },
+    {
+      "id": "bad_data",
+      "blocking": true,
+      "description": "Negative control with corrupted but structurally valid rules.",
+      "allowed_inputs": [
+        "bad_data_generation_brief.md",
+        "sources.json",
+        "deck_outline.json"
+      ],
+      "forbidden_inputs": [
+        "invalid_json",
+        "malformed_pptx",
+        "missing_required_files"
+      ]
+    }
+  ],
+  "deferred_arms": [
+    "source_only",
+    "tutorial_only"
+  ]
+}

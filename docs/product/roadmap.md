@@ -27,6 +27,7 @@ Vulca is an agent-native visual control layer. The product turns fuzzy visual in
 - ChatGPT remote MCP prototype scope.
 - ChatGPT remote MCP safe-profile prototype.
 - PPT Run 1: AI presentation product launch deck case pack -> baseline/Vulca deck -> Gemini review -> repair pass -> score-gated demo script.
+- PPT Run 1.5 product lab: three-arm proof that design evidence becomes design memory, affects code-generated PPT output, and exposes QA/publish gates.
 - PPT case-pack wedge: real commercial references -> structured design knowledge -> editable code-generated launch deck -> Gemini, layout QA, and renderer/cross-platform QA.
 - Cultural-term efficacy benchmark real-provider opt-in.
 - Real-image v0.22 redraw dogfood before promoting `/inpaint` or `/redraw-layer` as polished skills.

@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "patterns": [
+    {
+      "id": "experiment_cover",
+      "role": "experiment_frame",
+      "content_density": "low",
+      "layout_shape": "large_title_with_arm_status_strip",
+      "visual_asset_type": "native_shapes_and_editable_text",
+      "editability_requirements": [
+        "title_text_is_editable",
+        "arm_status_strip_is_native_shapes",
+        "blocked_status_is_editable"
+      ]
+    },
+    {
+      "id": "brief_cockpit",
+      "role": "brief_control_surface",
+      "content_density": "medium",
+      "layout_shape": "dominant_cockpit_with_three_secondary_panels",
+      "visual_asset_type": "editable_dashboard_primitives",
+      "editability_requirements": [
+        "brief_fields_are_editable",
+        "constraints_are_native_text",
+        "decision_marker_is_editable"
+      ]
+    },
+    {
+      "id": "source_tutorial_intake",
+      "role": "evidence_intake",
+      "content_density": "medium",
+      "layout_shape": "two_lane_intake_matrix_with_boundary_footer",
+      "visual_asset_type": "native_tables_and_tags",
+      "editability_requirements": [
+        "source_rows_are_editable",
+        "tutorial_rows_are_editable",
+        "copyright_boundary_is_text"
+      ]
+    },
+    {
+      "id": "design_memory_compiler",
+      "role": "memory_translation",
+      "content_density": "high",
+      "layout_shape": "compiler_pipeline_with_contract_sidebar",
+      "visual_asset_type": "editable_flow_and_code_labels",
+      "editability_requirements": [
+        "field_names_are_editable",
+        "primitive_tags_are_native_shapes",
+        "qa_signal_labels_are_editable"
+      ]
+    },
+    {
+      "id": "skill_workflow_surface",
+      "role": "workflow_explanation",
+      "content_density": "medium",
+      "layout_shape": "horizontal_workflow_rail_with_gate_nodes",
+      "visual_asset_type": "native_flowchart_primitives",
+      "editability_requirements": [
+        "workflow_nodes_are_editable",
+        "gate_states_are_native_shapes",
+        "no_rasterized_process_text"
+      ]
+    },
+    {
+      "id": "code_generation_anatomy",
+      "role": "editable_artifact_anatomy",
+      "content_density": "medium",
+      "layout_shape": "annotated_slide_specimen_with_callouts",
+      "visual_asset_type": "native_shapes_callouts_and_text",
+      "editability_requirements": [
+        "specimen_blocks_are_native_shapes",
+        "callouts_are_editable",
+        "evidence_ids_are_editable_text"
+      ]
+    },
+    {
+      "id": "baseline_vs_vulca",
+      "role": "comparison",
+      "content_density": "medium",
+      "layout_shape": "split_before_after_with_dominant_delta",
+      "visual_asset_type": "editable_comparison_delta",
+      "editability_requirements": [
+        "delta_values_are_editable",
+        "before_after_labels_are_editable",
+        "supporting_scores_are_native_text"
+      ]
+    },
+    {
+      "id": "ablation_proof",
+      "role": "negative_control",
+      "content_density": "medium",
+      "layout_shape": "three_arm_lab_bench_with_failure_callout",
+      "visual_asset_type": "editable_lab_comparison",
+      "editability_requirements": [
+        "arm_labels_are_editable",
+        "bad_data_warning_is_editable",
+        "failure_reason_is_native_text"
+      ]
+    },
+    {
+      "id": "qa_publish_gate",
+      "role": "quality_gate",
+      "content_density": "medium",
+      "layout_shape": "dominant_gate_panel_with_remediation_list",
+      "visual_asset_type": "editable_checklist_and_status_tokens",
+      "editability_requirements": [
+        "gate_checks_are_editable",
+        "status_tokens_are_native_shapes",
+        "publish_block_text_is_editable"
+      ]
+    },
+    {
+      "id": "product_decision",
+      "role": "decision",
+      "content_density": "medium",
+      "layout_shape": "decision_table_with_next_step_footer",
+      "visual_asset_type": "native_decision_table",
+      "editability_requirements": [
+        "decision_rows_are_editable",
+        "risk_cells_are_editable",
+        "next_step_footer_is_text"
+      ]
+    }
+  ]
+}

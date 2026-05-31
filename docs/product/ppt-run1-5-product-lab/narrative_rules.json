@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "opening": "Open with the experiment frame and the commercial question: does evidence-backed design memory change generated PPT output?",
+  "progression": [
+    "brief",
+    "evidence_intake",
+    "memory_compilation",
+    "workflow",
+    "code_generation",
+    "comparison",
+    "ablation",
+    "qa_gate",
+    "decision"
+  ],
+  "technical_depth": "Expose mechanics through editable proof objects, field names, status tokens, and primitive mappings instead of long explanatory prose.",
+  "closing": "Close on the product decision, release gate, and next experiment rather than a generic product pitch."
+}

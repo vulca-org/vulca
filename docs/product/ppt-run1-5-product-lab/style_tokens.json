@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "palette": {
+    "ink": "#1E1F24",
+    "paper": "#F8F7F3",
+    "panel": "#FFFFFF",
+    "signal": "#0FA36B",
+    "warning": "#C94B32",
+    "data": "#3767E8",
+    "muted": "#68707C"
+  },
+  "font_stack": [
+    "Aptos",
+    "Inter",
+    "Arial",
+    "sans-serif"
+  ],
+  "spacing": {
+    "xs": 6,
+    "sm": 12,
+    "md": 20,
+    "lg": 32,
+    "xl": 48
+  },
+  "corner_radius": {
+    "small": 4,
+    "medium": 8,
+    "large": 12
+  },
+  "stroke_widths": {
+    "hairline": 1,
+    "standard": 1.5,
+    "strong": 2.5
+  },
+  "layout_controls": {
+    "dominant_proof_object_per_slide": true,
+    "max_secondary_panels": 3,
+    "main_claim_contact_sheet_readable": true
+  }
+}

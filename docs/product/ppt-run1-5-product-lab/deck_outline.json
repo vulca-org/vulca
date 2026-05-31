@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "title": "Vulca PPT Run 1.5 Product Lab",
+  "audience": "Product, growth, and engineering reviewers deciding whether evidence-backed design memory improves generated PPT output.",
+  "slides": [
+    {
+      "id": "slide_01",
+      "pattern_id": "experiment_cover",
+      "title": "PPT Run 1.5 Product Lab",
+      "claim": "This run tests whether design evidence changes generated presentation output.",
+      "proof_object": "Three-arm experiment label with not-run status and public publishing block."
+    },
+    {
+      "id": "slide_02",
+      "pattern_id": "brief_cockpit",
+      "title": "Brief Cockpit",
+      "claim": "The commercial brief becomes a visible control surface before generation starts.",
+      "proof_object": "Editable brief cockpit showing audience, goal, constraints, decision, and output promise."
+    },
+    {
+      "id": "slide_03",
+      "pattern_id": "source_tutorial_intake",
+      "title": "Source and Tutorial Intake",
+      "claim": "Reference analysis and tutorial rules are separated before they become memory.",
+      "proof_object": "Intake matrix mapping source roles, tutorial notes, allowed use, and do-not-copy boundaries."
+    },
+    {
+      "id": "slide_04",
+      "pattern_id": "design_memory_compiler",
+      "title": "Design Memory Compiler",
+      "claim": "Evidence becomes strict memory fields that can drive slide primitives.",
+      "proof_object": "Compiler view linking evidence_id to design_rule, slide_primitive, and QA signal."
+    },
+    {
+      "id": "slide_05",
+      "pattern_id": "skill_workflow_surface",
+      "title": "Skill Workflow Surface",
+      "claim": "The Vulca PPT skill translates memory into a controlled generation sequence.",
+      "proof_object": "Workflow rail from intake to outline, code generation, render check, review, and gate."
+    },
+    {
+      "id": "slide_06",
+      "pattern_id": "code_generation_anatomy",
+      "title": "Code Generation Anatomy",
+      "claim": "Generated slides should expose editable primitives instead of rasterized composition.",
+      "proof_object": "Annotated native-shape anatomy of claim, proof object, evidence tag, and QA marker."
+    },
+    {
+      "id": "slide_07",
+      "pattern_id": "baseline_vs_vulca",
+      "title": "Prompt-Only vs Full Vulca",
+      "claim": "The comparison should show whether memory changes structure, hierarchy, and proof density.",
+      "proof_object": "Before-after comparison delta for prompt-only and full Vulca outputs."
+    },
+    {
+      "id": "slide_08",
+      "pattern_id": "ablation_proof",
+      "title": "Ablation Proof",
+      "claim": "The negative control should fail visibly without relying on malformed artifacts.",
+      "proof_object": "bad-data arm delta showing structurally valid corrupted rules and expected QA catch."
+    },
+    {
+      "id": "slide_09",
+      "pattern_id": "qa_publish_gate",
+      "title": "QA and Publish Gate",
+      "claim": "Public release is blocked until provenance, render, comparison, and review evidence exist.",
+      "proof_object": "Gate checklist with not-run status, missing evidence slots, and blocked public publishing state."
+    },
+    {
+      "id": "slide_10",
+      "pattern_id": "product_decision",
+      "title": "Product Decision",
+      "claim": "The run should end with a decision on whether design memory is a productized advantage.",
+      "proof_object": "Decision table linking scores, risks, next experiment, and release recommendation."
+    }
+  ]
+}
