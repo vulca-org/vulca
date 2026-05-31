@@ -229,9 +229,7 @@ def test_gemini_review_prompt_scores_every_required_dimension() -> None:
     prompt = (PACK / "gemini_review_prompt.md").read_text(encoding="utf-8")
     rubric = (PACK / "evaluation_rubric.md").read_text(encoding="utf-8")
     rubric_dimensions = [
-        heading
-        for heading in re.findall(r"^## (.+)$", rubric, flags=re.MULTILINE)
-        if heading != "Evaluation Rubric"
+        heading for heading in re.findall(r"^## (.+)$", rubric, flags=re.MULTILINE) if heading != "Evaluation Rubric"
     ]
     additional_score_dimensions = [
         "premium versus template-like feel",

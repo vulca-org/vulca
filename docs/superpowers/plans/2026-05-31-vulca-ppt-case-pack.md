@@ -8,6 +8,8 @@
 
 **Tech Stack:** Python stdlib for case-pack validation, pytest for tests, Codex bundled Node runtime plus `@oai/artifact-tool/presentation-jsx` for PPTX generation, Gemini-agent for visual review.
 
+**Execution Status:** Completed on branch `codex/vulca-ppt-case-pack`. Final evidence includes the validator, repository tests, baseline deck artifact, Vulca case-pack deck artifact, Gemini review notes, and the P2 score/primitive decision. Generated PPTX/contact-sheet/layout outputs remain local under `outputs/` and are intentionally not committed.
+
 ---
 
 ## File Map
@@ -41,7 +43,7 @@
 - Create: `scripts/validate_ppt_case_pack.py`
 - Create: `tests/test_ppt_case_pack_validator.py`
 
-- [ ] **Step 1: Write validator unit tests**
+- [x] **Step 1: Write validator unit tests**
 
 Create `tests/test_ppt_case_pack_validator.py`:
 
@@ -227,7 +229,7 @@ def test_deck_outline_references_existing_patterns(tmp_path: Path) -> None:
     assert "deck_outline.slides[0].pattern_id unknown_pattern is not defined in slide_patterns.json" in result.errors
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run:
 
@@ -237,7 +239,7 @@ python3 -m pytest tests/test_ppt_case_pack_validator.py -q
 
 Expected: FAIL with `ModuleNotFoundError: No module named 'scripts.validate_ppt_case_pack'`.
 
-- [ ] **Step 3: Implement the validator**
+- [x] **Step 3: Implement the validator**
 
 Create `scripts/validate_ppt_case_pack.py`:
 
@@ -441,7 +443,7 @@ if __name__ == "__main__":
     raise SystemExit(main())
 ```
 
-- [ ] **Step 4: Run validator tests**
+- [x] **Step 4: Run validator tests**
 
 Run:
 
@@ -451,7 +453,7 @@ python3 -m pytest tests/test_ppt_case_pack_validator.py -q
 
 Expected: PASS, `4 passed`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add scripts/validate_ppt_case_pack.py tests/test_ppt_case_pack_validator.py
@@ -482,7 +484,7 @@ git commit -m "test: add PPT case pack validator"
 - Create: `docs/product/ppt-case-pack-v1/results/comparison_report.md`
 - Create: `tests/test_ppt_case_pack_v1.py`
 
-- [ ] **Step 1: Write repository contract test**
+- [x] **Step 1: Write repository contract test**
 
 Create `tests/test_ppt_case_pack_v1.py`:
 
@@ -504,7 +506,7 @@ def test_ppt_case_pack_v1_is_valid() -> None:
     assert result.ok is True, result.errors
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run:
 
@@ -514,7 +516,7 @@ python3 -m pytest tests/test_ppt_case_pack_v1.py -q
 
 Expected: FAIL with `case pack directory does not exist`.
 
-- [ ] **Step 3: Create `sources.json`**
+- [x] **Step 3: Create `sources.json`**
 
 Create `docs/product/ppt-case-pack-v1/sources.json`:
 
@@ -571,7 +573,7 @@ Create `docs/product/ppt-case-pack-v1/sources.json`:
 }
 ```
 
-- [ ] **Step 4: Create core markdown files**
+- [x] **Step 4: Create core markdown files**
 
 Create `docs/product/ppt-case-pack-v1/README.md`:
 
@@ -759,7 +761,7 @@ Text contrast, reading order, and density are suitable for a live presentation a
 The deck avoids fragile font, image, and layout choices that are likely to break across PowerPoint, Keynote, or Google Slides.
 ```
 
-- [ ] **Step 5: Create JSON rule files**
+- [x] **Step 5: Create JSON rule files**
 
 Create `docs/product/ppt-case-pack-v1/narrative_rules.json`:
 
@@ -908,7 +910,7 @@ Create `docs/product/ppt-case-pack-v1/slide_patterns.json`:
 }
 ```
 
-- [ ] **Step 6: Create minimal generation input files**
+- [x] **Step 6: Create minimal generation input files**
 
 Create `docs/product/ppt-case-pack-v1/deck_outline.json`:
 
@@ -952,7 +954,7 @@ Create `docs/product/ppt-case-pack-v1/gemini_review_prompt.md`:
 Review the rendered Vulca PPT contact sheet for commercial clarity, visual hierarchy, brand coherence, editability risk, and whether it looks stronger than a prompt-only deck.
 ```
 
-- [ ] **Step 7: Create first skill draft and result folder**
+- [x] **Step 7: Create first skill draft and result folder**
 
 Create `docs/product/ppt-case-pack-v1/vulca_ppt_skill.md`:
 
@@ -1022,7 +1024,7 @@ The Vulca case-pack deck has not been generated yet.
 Scores will be recorded after both decks have exported screenshots and editable presentation files.
 ```
 
-- [ ] **Step 8: Run repository validation**
+- [x] **Step 8: Run repository validation**
 
 Run:
 
@@ -1038,7 +1040,7 @@ Expected:
 case pack ok: docs/product/ppt-case-pack-v1
 ```
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add docs/product/ppt-case-pack-v1 tests/test_ppt_case_pack_v1.py
@@ -1055,7 +1057,7 @@ git commit -m "docs: add PPT case pack v1"
 - Modify: `docs/product/ppt-case-pack-v1/vulca_generation_brief.md`
 - Modify: `docs/product/ppt-case-pack-v1/gemini_review_prompt.md`
 
-- [ ] **Step 1: Replace minimal deck outline with 10-slide outline**
+- [x] **Step 1: Replace minimal deck outline with 10-slide outline**
 
 Update `docs/product/ppt-case-pack-v1/deck_outline.json`:
 
@@ -1139,7 +1141,7 @@ Update `docs/product/ppt-case-pack-v1/deck_outline.json`:
 }
 ```
 
-- [ ] **Step 2: Write baseline prompt**
+- [x] **Step 2: Write baseline prompt**
 
 Update `docs/product/ppt-case-pack-v1/baseline_prompt.md`:
 
@@ -1162,7 +1164,7 @@ The deck should explain:
 Make the deck look premium, modern, and suitable for a product launch video.
 ```
 
-- [ ] **Step 3: Write Vulca generation brief**
+- [x] **Step 3: Write Vulca generation brief**
 
 Update `docs/product/ppt-case-pack-v1/vulca_generation_brief.md`:
 
@@ -1205,7 +1207,7 @@ Generate the Vulca Product Launch Deck using the full case pack.
 - comparison report against the baseline deck.
 ```
 
-- [ ] **Step 4: Write Gemini review prompt**
+- [x] **Step 4: Write Gemini review prompt**
 
 Update `docs/product/ppt-case-pack-v1/gemini_review_prompt.md`:
 
@@ -1237,7 +1239,7 @@ Return:
 Do not praise the deck generically. Focus on visible issues, hierarchy, taste, and commercial credibility.
 ```
 
-- [ ] **Step 5: Validate updated pack**
+- [x] **Step 5: Validate updated pack**
 
 Run:
 
@@ -1253,7 +1255,7 @@ Expected:
 case pack ok: docs/product/ppt-case-pack-v1
 ```
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add docs/product/ppt-case-pack-v1
@@ -1268,7 +1270,7 @@ git commit -m "docs: define Vulca PPT launch deck inputs"
 - Create final artifacts under: `outputs/$THREAD_ID/presentations/vulca-ppt-baseline/`
 - Copy final summary to: `docs/product/ppt-case-pack-v1/results/comparison_report.md`
 
-- [ ] **Step 1: Use Presentations skill in create mode**
+- [x] **Step 1: Use Presentations skill in create mode**
 
 Set the workspace variables:
 
@@ -1278,9 +1280,8 @@ WORKSPACE="$PWD/outputs/$THREAD_ID/presentations/vulca-ppt-baseline"
 SLIDES_DIR="$WORKSPACE/slides"
 PREVIEW_DIR="$WORKSPACE/preview"
 LAYOUT_DIR="$WORKSPACE/layout"
-QA_DIR="$WORKSPACE/qa"
 OUTPUT_DIR="$WORKSPACE/output"
-mkdir -p "$SLIDES_DIR" "$PREVIEW_DIR" "$LAYOUT_DIR" "$QA_DIR" "$OUTPUT_DIR"
+mkdir -p "$SLIDES_DIR" "$PREVIEW_DIR" "$LAYOUT_DIR" "$OUTPUT_DIR"
 ```
 
 Task mode: `create`.
@@ -1289,7 +1290,7 @@ Primary deck profile: `product-platform`.
 
 Use only `docs/product/ppt-case-pack-v1/baseline_prompt.md` as the source story. Do not use the case-pack rules for this baseline.
 
-- [ ] **Step 2: Write baseline profile plan**
+- [x] **Step 2: Write baseline profile plan**
 
 Create `$WORKSPACE/profile-plan.txt`:
 
@@ -1305,7 +1306,7 @@ profile-specific QA gates: no generic feature-card grid; every slide has a claim
 known missing inputs: no external metrics; use qualitative proof only
 ```
 
-- [ ] **Step 3: Build baseline deck with artifact-tool**
+- [x] **Step 3: Build baseline deck with artifact-tool**
 
 Use the Presentations skill workflow:
 
@@ -1335,20 +1336,18 @@ created contact sheet: preview/contact-sheet.png
 created layout JSON under layout/final
 ```
 
-- [ ] **Step 4: Run visual and layout QA**
+- [x] **Step 4: Run visual and layout QA**
 
 Run artifact-tool layout quality check:
 
 ```bash
 "$NODE" "$SKILL_DIR/scripts/check_layout_quality.mjs" \
-  --layout-dir "$LAYOUT_DIR/final" \
-  --preview-dir "$PREVIEW_DIR" \
-  --qa-dir "$QA_DIR"
+  --layout "$LAYOUT_DIR/final"
 ```
 
 Expected: PASS or a short list of layout failures. If failures occur, revise the weakest slides before continuing.
 
-- [ ] **Step 5: Update comparison report with baseline manifest**
+- [x] **Step 5: Update comparison report with baseline manifest**
 
 Update `docs/product/ppt-case-pack-v1/results/comparison_report.md` with:
 
@@ -1368,7 +1367,7 @@ Artifacts:
 Initial assessment: baseline exists for comparison only. It is not the product-quality target.
 ```
 
-- [ ] **Step 6: Commit report update**
+- [x] **Step 6: Commit report update**
 
 ```bash
 git add docs/product/ppt-case-pack-v1/results/comparison_report.md
@@ -1385,7 +1384,7 @@ Do not commit the full `outputs/` workspace unless the user explicitly approves 
 - Create final artifacts under: `outputs/$THREAD_ID/presentations/vulca-ppt-case-pack/`
 - Modify: `docs/product/ppt-case-pack-v1/results/comparison_report.md`
 
-- [ ] **Step 1: Use Presentations skill in create mode with the case pack**
+- [x] **Step 1: Use Presentations skill in create mode with the case pack**
 
 Set the workspace variables:
 
@@ -1395,9 +1394,8 @@ WORKSPACE="$PWD/outputs/$THREAD_ID/presentations/vulca-ppt-case-pack"
 SLIDES_DIR="$WORKSPACE/slides"
 PREVIEW_DIR="$WORKSPACE/preview"
 LAYOUT_DIR="$WORKSPACE/layout"
-QA_DIR="$WORKSPACE/qa"
 OUTPUT_DIR="$WORKSPACE/output"
-mkdir -p "$SLIDES_DIR" "$PREVIEW_DIR" "$LAYOUT_DIR" "$QA_DIR" "$OUTPUT_DIR"
+mkdir -p "$SLIDES_DIR" "$PREVIEW_DIR" "$LAYOUT_DIR" "$OUTPUT_DIR"
 ```
 
 Task mode: `create`.
@@ -1418,7 +1416,7 @@ docs/product/ppt-case-pack-v1/vulca_generation_brief.md
 docs/product/ppt-case-pack-v1/evaluation_rubric.md
 ```
 
-- [ ] **Step 2: Write case-pack profile plan**
+- [x] **Step 2: Write case-pack profile plan**
 
 Create `$WORKSPACE/profile-plan.txt`:
 
@@ -1434,7 +1432,7 @@ profile-specific QA gates: every slide must map to deck_outline.json; every diag
 known missing inputs: no customer metrics; product proof is workflow evidence rather than quantitative adoption
 ```
 
-- [ ] **Step 3: Build case-pack deck with artifact-tool**
+- [x] **Step 3: Build case-pack deck with artifact-tool**
 
 Use:
 
@@ -1459,20 +1457,18 @@ created contact sheet: preview/contact-sheet.png
 created layout JSON under layout/final
 ```
 
-- [ ] **Step 4: Run artifact-tool QA**
+- [x] **Step 4: Run artifact-tool QA**
 
 Run:
 
 ```bash
 "$NODE" "$SKILL_DIR/scripts/check_layout_quality.mjs" \
-  --layout-dir "$LAYOUT_DIR/final" \
-  --preview-dir "$PREVIEW_DIR" \
-  --qa-dir "$QA_DIR"
+  --layout "$LAYOUT_DIR/final"
 ```
 
 Expected: PASS. If it fails, revise slide modules until there are no hard layout failures.
 
-- [ ] **Step 5: Update comparison report with case-pack artifact paths**
+- [x] **Step 5: Update comparison report with case-pack artifact paths**
 
 Update `docs/product/ppt-case-pack-v1/results/comparison_report.md`:
 
@@ -1499,7 +1495,7 @@ Artifacts:
 - Layout JSON: `outputs/$THREAD_ID/presentations/vulca-ppt-case-pack/layout/final/`
 ```
 
-- [ ] **Step 6: Commit report update**
+- [x] **Step 6: Commit report update**
 
 ```bash
 git add docs/product/ppt-case-pack-v1/results/comparison_report.md
@@ -1515,7 +1511,7 @@ Do not commit the full `outputs/` workspace unless the user explicitly approves 
 **Files:**
 - Modify: `docs/product/ppt-case-pack-v1/results/comparison_report.md`
 
-- [ ] **Step 1: Review the baseline deck artifact**
+- [x] **Step 1: Review the baseline deck artifact**
 
 Use `mcp__gemini_agent.gemini_artifact_review`:
 
@@ -1530,7 +1526,7 @@ Use `mcp__gemini_agent.gemini_artifact_review`:
 
 Expected: compact structured review artifact with design issues and quality notes.
 
-- [ ] **Step 2: Review the Vulca case-pack deck artifact**
+- [x] **Step 2: Review the Vulca case-pack deck artifact**
 
 Use `mcp__gemini_agent.gemini_artifact_review`:
 
@@ -1545,7 +1541,7 @@ Use `mcp__gemini_agent.gemini_artifact_review`:
 
 Expected: compact structured review artifact with slide-specific fixes and judgment on commercial credibility.
 
-- [ ] **Step 3: Update comparison report with Gemini findings**
+- [x] **Step 3: Update comparison report with Gemini findings**
 
 Add a `## Gemini Review` section to `docs/product/ppt-case-pack-v1/results/comparison_report.md`.
 
@@ -1565,7 +1561,7 @@ Decision
 
 For each label, copy one concrete sentence from the Gemini artifact or write a one-sentence paraphrase that preserves Gemini's critique. Do not commit a label without a value. The `Decision` sentence must state whether the case-pack deck is stronger than the baseline on narrative specificity, design coherence, and editability.
 
-- [ ] **Step 4: Commit report update**
+- [x] **Step 4: Commit report update**
 
 ```bash
 git add docs/product/ppt-case-pack-v1/results/comparison_report.md
@@ -1580,7 +1576,7 @@ git commit -m "docs: add Gemini PPT deck review"
 - Modify: `docs/product/ppt-case-pack-v1/results/comparison_report.md`
 - Modify: `docs/product/roadmap.md`
 
-- [ ] **Step 1: Score both decks**
+- [x] **Step 1: Score both decks**
 
 Update `docs/product/ppt-case-pack-v1/results/comparison_report.md` with a `## Score Table` section.
 
@@ -1601,7 +1597,7 @@ Cross-platform rendering risk
 
 For each dimension, record an integer score from 0 to 5 for the baseline deck, an integer score from 0 to 5 for the Vulca case-pack deck, and one evidence sentence grounded in screenshots, layout JSON, or Gemini review. Do not commit unscored rows.
 
-- [ ] **Step 2: Record product primitive decision**
+- [x] **Step 2: Record product primitive decision**
 
 Add:
 
@@ -1617,7 +1613,7 @@ Next product question: which slide patterns are reliable enough to become reusab
 
 If generated evidence points to a different primitive, write that primitive and one evidence-backed reason.
 
-- [ ] **Step 3: Update roadmap**
+- [x] **Step 3: Update roadmap**
 
 Modify `docs/product/roadmap.md` under `## Next`:
 
@@ -1631,7 +1627,7 @@ Modify `docs/product/roadmap.md` under `## Later`:
 - PPT slide layout engine or reusable slide primitives, gated on the PPT case-pack P2 comparison.
 ```
 
-- [ ] **Step 4: Validate and commit**
+- [x] **Step 4: Validate and commit**
 
 Run:
 
