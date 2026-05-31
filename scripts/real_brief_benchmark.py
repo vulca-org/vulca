@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 from datetime import date as date_type
+import logging
 import os
 
 
@@ -26,6 +27,12 @@ def _selected_slugs(slug: str) -> list[str]:
 
 def _force_local_cost_map() -> None:
     os.environ.setdefault("LITELLM_LOCAL_MODEL_COST_MAP", "true")
+
+
+def _quiet_litellm_import_logs() -> None:
+    os.environ.setdefault("LITELLM_LOG", "ERROR")
+    for logger_name in ("LiteLLM", "litellm"):
+        logging.getLogger(logger_name).setLevel(logging.ERROR)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -62,6 +69,7 @@ def main(argv: list[str] | None = None) -> int:
         raise RuntimeError("real provider execution is not implemented")
 
     _force_local_cost_map()
+    _quiet_litellm_import_logs()
     from vulca.real_brief.artifacts import write_real_brief_dry_run
 
     slugs = _selected_slugs(args.slug)
