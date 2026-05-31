@@ -15,6 +15,8 @@ REMOTE_SAFE_TOOLS = frozenset(
     }
 )
 
+REMOTE_PROMPT_STUDIO_TOOLS = frozenset({"open_prompt_studio"})
+
 REMOTE_DENIED_TOOLS = frozenset(
     {
         "generate_image",
@@ -82,11 +84,22 @@ _POLICIES = {
         requires_approval=True,
         default_kwargs=MappingProxyType({"mock": True, "mode": "rubric_only"}),
     ),
+    "open_prompt_studio": RemoteToolPolicy(
+        name="open_prompt_studio",
+        allowed=True,
+        access="read",
+        cost="none",
+        image_exposure="none",
+        requires_approval=False,
+    ),
 }
 
 
-def list_remote_safe_tools() -> list[str]:
-    return sorted(REMOTE_SAFE_TOOLS)
+def list_remote_safe_tools(*, include_prompt_studio: bool = False) -> list[str]:
+    tools = set(REMOTE_SAFE_TOOLS)
+    if include_prompt_studio:
+        tools.update(REMOTE_PROMPT_STUDIO_TOOLS)
+    return sorted(tools)
 
 
 def get_remote_tool_policy(tool_name: str) -> RemoteToolPolicy:

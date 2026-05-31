@@ -29,6 +29,19 @@ def test_remote_profile_exposes_only_safe_tools():
     ]
 
 
+def test_remote_profile_can_list_prompt_studio_preview_tools():
+    from vulca.mcp_profiles import list_remote_safe_tools
+
+    assert list_remote_safe_tools(include_prompt_studio=True) == [
+        "compose_prompt_from_design",
+        "evaluate_artwork",
+        "get_tradition_guide",
+        "list_traditions",
+        "open_prompt_studio",
+        "search_traditions",
+    ]
+
+
 def test_remote_profile_denies_generation_and_mutation_tools():
     unsafe = {
         "generate_image",
@@ -78,6 +91,17 @@ def test_remote_tool_policy_requires_approval_for_design_file_reads():
     assert policy.cost == "none"
     assert policy.image_exposure == "user_supplied_design_path"
     assert policy.requires_approval is True
+
+
+def test_remote_tool_policy_marks_prompt_studio_as_safe_preview_tool():
+    policy = get_remote_tool_policy("open_prompt_studio")
+
+    assert policy.name == "open_prompt_studio"
+    assert policy.allowed is True
+    assert policy.access == "read"
+    assert policy.cost == "none"
+    assert policy.image_exposure == "none"
+    assert policy.requires_approval is False
 
 
 def test_unknown_remote_tool_policy_fails_closed():
