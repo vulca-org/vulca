@@ -1,6 +1,7 @@
 {
   "schema_version": 1,
   "title": "Vulca Product Launch Deck",
+  "audience": "builders, designers, AI platform reviewers, and early technical adopters",
   "slides": [
     {
       "id": "slide_01",
@@ -8,6 +9,69 @@
       "title": "Vulca",
       "claim": "Design knowledge becomes editable presentation code.",
       "proof_object": "A simple system mark showing case pack, skill, code, review, and deck output."
+    },
+    {
+      "id": "slide_02",
+      "pattern_id": "problem",
+      "title": "Fast decks are not the same as designed decks",
+      "claim": "Prompt-only presentation tools collapse design intent into generic templates.",
+      "proof_object": "Three failure modes: weak hierarchy, opaque design logic, fragile editability."
+    },
+    {
+      "id": "slide_03",
+      "pattern_id": "market_shift",
+      "title": "The next presentation system needs design memory",
+      "claim": "The opportunity is not faster slide generation; it is reusable design reasoning.",
+      "proof_object": "Before/after shift from prompt-to-deck to case-pack-to-editable-code."
+    },
+    {
+      "id": "slide_04",
+      "pattern_id": "workflow",
+      "title": "Vulca turns references into a workflow",
+      "claim": "Public commercial references become structured rules before any slide is generated.",
+      "proof_object": "Pipeline diagram: sources, summaries, rules, slide patterns, style tokens, generation brief."
+    },
+    {
+      "id": "slide_05",
+      "pattern_id": "product_pillars",
+      "title": "The product is a control layer",
+      "claim": "Vulca controls story, visual system, assets, code generation, and review.",
+      "proof_object": "Five pillars with one proof label each."
+    },
+    {
+      "id": "slide_06",
+      "pattern_id": "case_pack_method",
+      "title": "Case packs make taste inspectable",
+      "claim": "A case pack stores design decisions as files that agents and humans can review.",
+      "proof_object": "File-to-decision map linking each case-pack artifact to a deck decision."
+    },
+    {
+      "id": "slide_07",
+      "pattern_id": "proof",
+      "title": "Generation is code-first",
+      "claim": "The deck is built from editable text, shapes, SVGs, and diagrams, with images as support.",
+      "proof_object": "Artifact grid showing PPTX, screenshots, layout JSON, and review notes."
+    },
+    {
+      "id": "slide_08",
+      "pattern_id": "comparison",
+      "title": "The benchmark is baseline versus Vulca",
+      "claim": "The case-pack deck should beat an ordinary prompt deck on story, hierarchy, coherence, and editability.",
+      "proof_object": "Comparison matrix with the rubric dimensions."
+    },
+    {
+      "id": "slide_09",
+      "pattern_id": "roadmap",
+      "title": "The first wedge becomes product primitives",
+      "claim": "Evidence from this deck decides whether to productize the skill, schema, layout engine, or review loop.",
+      "proof_object": "Three-stage path: case pack, reliable slide primitives, reusable PPT workflow."
+    },
+    {
+      "id": "slide_10",
+      "pattern_id": "closing",
+      "title": "Design work should leave evidence",
+      "claim": "Vulca makes presentation design reusable, reviewable, and editable.",
+      "proof_object": "Final call to run the workflow on the next real commercial deck."
     }
   ]
 }

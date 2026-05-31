@@ -2,6 +2,8 @@
 
 ## Supervity AI Presentation Case
 
+Source ID: `supervity_ai_keynote`
+
 Role: main commercial reference.
 
 Original summary: Muse Creatives presents this as a two-week presentation-design engagement for an autonomous AI company preparing a live keynote. The useful signal is the move from dense technical material and old deck structure into a clearer narrative, data visualization, generated supporting assets, and a sharper visual system.
@@ -11,6 +13,8 @@ Why it matters: Vulca's launch deck needs the same commercial move: turn an AI-n
 Use boundary: reference analysis only. Do not copy slides, layouts, images, source text, or proprietary client material.
 
 ## Figma Config 2025 Identity
+
+Source ID: `figma_config_2025_identity`
 
 Role: visual system reference.
 
@@ -22,6 +26,8 @@ Use boundary: reference analysis only. Do not copy event artwork, photography, g
 
 ## Figma Slides Case by GEO
 
+Source ID: `figma_slides_geo`
+
 Role: product slide reference.
 
 Original summary: GEO frames the Figma Slides launch work around creating a broad set of presentation templates and a confident product world for users encountering a new tool. The source is compact, but it is directly relevant because it treats presentation design as both product onboarding and brand proof.
@@ -32,6 +38,8 @@ Use boundary: reference analysis only. Do not copy campaign visuals, templates, 
 
 ## Launch Labs Presentation Case
 
+Source ID: `launch_labs_sales_deck`
+
 Role: commercial deck reference.
 
 Original summary: Whitepage presents this as a sales-deck redesign for Launch Labs' Ignite product, with emphasis on simplifying complex concepts, building a clearer sales narrative, using clean layouts and infographics, and improving client engagement.
@@ -41,6 +49,8 @@ Why it matters: Vulca's launch deck must still behave like a working commercial 
 Use boundary: reference analysis only. Do not copy client slides, before-after imagery, layouts, visuals, testimonials, or sales copy.
 
 ## Google Cloud Next Keynote Case
+
+Source ID: `google_cloud_next_keynote`
 
 Role: high-end keynote reference.
 

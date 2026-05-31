@@ -22,7 +22,8 @@ Use this skill when generating a commercial product-launch deck from the Vulca P
 6. Each slide needs one claim and one proof object.
 7. Map every slide to a `slide_patterns.json` pattern.
 8. Run Gemini review on rendered screenshots before finalizing the deck.
-9. Run layout and editability checks before claiming the deck is ready.
+9. Record generated bitmap and SVG prompt provenance in `results/asset_provenance.json`.
+10. Run layout and editability checks before claiming the deck is ready.
 
 ## Outputs
 
@@ -30,5 +31,6 @@ Use this skill when generating a commercial product-launch deck from the Vulca P
 - Vulca generation brief.
 - PPTX or HTML slide artifact.
 - Rendered screenshots or PDF.
+- Asset provenance record.
 - Gemini review notes.
 - Comparison report.
