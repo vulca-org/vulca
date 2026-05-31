@@ -132,16 +132,21 @@ def test_run1_gemini_prompt_is_not_final_approval() -> None:
     assert_contains(prompt, ["not final approval", "human review", "numeric zero-through-five score"])
 
 
-def test_run1_results_start_as_not_run() -> None:
+def test_run1_results_track_generation_lifecycle() -> None:
     provenance = load_json(PACK / "results" / "asset_provenance.json")
     comparison = (PACK / "results" / "comparison_report.md").read_text(encoding="utf-8")
     render_check = (PACK / "results" / "render_check.md").read_text(encoding="utf-8")
     iteration_log = (PACK / "results" / "iteration_log.md").read_text(encoding="utf-8")
 
-    assert provenance["status"] == "not-run"
+    assert provenance["status"] == "generated-no-external-assets"
     assert provenance["assets"] == []
-    assert_contains(comparison, ["Status", "not generated"])
-    assert_contains(render_check, ["Renderer", "not checked"])
+    assert provenance["external_assets"] == []
+    assert provenance["generated_assets"] == []
+    assert provenance["copied_assets"] == []
+    assert_contains(comparison, ["Status", "baseline and Vulca case-pack decks generated"])
+    assert_contains(comparison, ["Gemini review", "pending"])
+    assert_contains(render_check, ["Status", "baseline and Vulca case-pack deck checked"])
+    assert_contains(render_check, ["Renderer", "not available"])
     assert_contains(iteration_log, ["Repair pass", "not started"])
 
 

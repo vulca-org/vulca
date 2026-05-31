@@ -1,7 +1,7 @@
 # Iteration Log
 
-Status: not started.
+Status: deck generation completed; repair pass not started.
 
 Repair pass: not started.
 
-Run 1 deck generation has not begun. Record baseline generation, Vulca generation, Gemini review, repair decisions, changed slides, and remaining concerns here after artifacts exist.
+Run 1 baseline and Vulca case-pack decks have been generated. Record Gemini review, repair decisions, changed slides, and remaining concerns here after review artifacts exist.

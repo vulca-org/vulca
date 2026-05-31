@@ -1,8 +1,8 @@
 # PPT Run 1: AI Presentation Launch
 
-Status: case-pack skeleton ready for validation. No baseline deck, Vulca deck, contact sheet, layout JSON, Gemini review, or repair pass has been generated yet.
+Status: baseline and Vulca case-pack decks generated. Gemini review, repair pass, final scoring, product decision, and demo readiness are pending.
 
-This pack defines Run 1 for an AI presentation product launch deck. The deck will argue that prompt-only slides are not enough for high-stakes product communication, then show a controlled workflow: public reference analysis, structured design memory, code-generated PPT, visual review, repair, and comparison against a baseline.
+This pack defines Run 1 for an AI presentation product launch deck. The generated decks argue that prompt-only slides are not enough for high-stakes product communication, then show a controlled workflow: public reference analysis, structured design memory, code-generated PPT, visual review, repair, and comparison against a baseline.
 
 ## Source Boundary
 
@@ -17,4 +17,4 @@ The public references in `sources.json` are reference analysis only. Use them to
 
 ## Local Artifact Rule
 
-Generated PPTX files, contact sheets, layout JSON, preview renders, and temporary assets must stay under `outputs/$THREAD_ID/presentations/` unless a human explicitly approves release packaging. This committed pack records source rules and result status only.
+Generated PPTX files, contact sheets, layout JSON, preview renders, and temporary assets stay under `outputs/$THREAD_ID/presentations/` unless a human explicitly approves release packaging. This committed pack records source rules and result status only.
