@@ -302,3 +302,132 @@ def test_run1_profile_validates_design_memory(tmp_path: Path) -> None:
     result = validate_case_pack(pack, profile="run1")
 
     assert result.ok is True, result.errors
+
+
+def write_run1_5_required_files(pack: Path) -> None:
+    (pack / "tutorial_notes.md").write_text("# Tutorial Notes\n\nOriginal teaching notes.\n", encoding="utf-8")
+    (pack / "experiment_protocol.md").write_text(
+        "# Experiment Protocol\n\nThree arms: prompt-only, full Vulca, bad-data.\n",
+        encoding="utf-8",
+    )
+    (pack / "bad_data_generation_brief.md").write_text(
+        "# Bad Data Generation Brief\n\nUse intentionally mismatched design rules for the negative control.\n",
+        encoding="utf-8",
+    )
+    (pack / "results" / "asset_provenance.json").write_text(
+        json.dumps({"schema_version": 1, "status": "not-run", "assets": []}, indent=2),
+        encoding="utf-8",
+    )
+    (pack / "results" / "iteration_log.md").write_text("# Iteration Log\n\nNo repair pass yet.\n", encoding="utf-8")
+    (pack / "results" / "render_check.md").write_text("# Render Check\n\nRenderer not checked yet.\n", encoding="utf-8")
+    (pack / "results" / "ablation_report.md").write_text(
+        "# Ablation Report\n\nPrompt-only, full Vulca, and bad-data arms not run yet.\n",
+        encoding="utf-8",
+    )
+    (pack / "results" / "ablation_report.json").write_text(
+        json.dumps({"schema_version": 1, "status": "not-run", "arms": []}, indent=2),
+        encoding="utf-8",
+    )
+    (pack / "results" / "comparison_report.json").write_text(
+        json.dumps({"schema_version": 1, "status": "not-run", "scores": []}, indent=2),
+        encoding="utf-8",
+    )
+    (pack / "results" / "delivery_gate.md").write_text(
+        "# Delivery Gate\n\nPublic publishing is blocked before native render and human review.\n",
+        encoding="utf-8",
+    )
+
+
+def valid_run1_5_design_memory() -> dict:
+    return {
+        "schema_version": 2,
+        "contract": {
+            "required_fields": [
+                "evidence_id",
+                "source_role",
+                "observation",
+                "design_rule",
+                "slide_primitive",
+                "layout_constraint",
+                "qa_signal",
+            ],
+            "allowed_source_roles": ["brief", "source", "tutorial", "review"],
+            "allowed_slide_primitives": [
+                "cockpit",
+                "learning_map",
+                "comparison_delta",
+                "qa_gate",
+                "decision_table",
+            ],
+        },
+        "observations": [
+            {
+                "evidence_id": "tutorial_hierarchy_to_delta",
+                "source_role": "tutorial",
+                "source_ids": ["supervity_ai_keynote"],
+                "observation": "Dense AI stories become clearer when a single outcome anchors each process step.",
+                "design_rule": "Use one dominant proof object per slide and replace full rubric tables with large comparison deltas.",
+                "slide_primitive": "comparison_delta",
+                "layout_constraint": "Main score delta must occupy the largest visual zone on comparison slides.",
+                "qa_signal": "Gemini must comment on whether the comparison is understandable from the contact sheet.",
+                "do_not_copy": "Do not copy source visuals, layouts, screenshots, or brand marks.",
+            }
+        ],
+    }
+
+
+def test_run1_5_profile_requires_product_lab_files(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+
+    result = validate_case_pack(pack, profile="run1_5")
+
+    assert result.ok is False
+    assert "missing required file: tutorial_notes.md" in result.errors
+    assert "missing required file: experiment_protocol.md" in result.errors
+    assert "missing required file: bad_data_generation_brief.md" in result.errors
+    assert "missing required file: results/ablation_report.md" in result.errors
+    assert "missing required file: results/ablation_report.json" in result.errors
+    assert "missing required file: results/delivery_gate.md" in result.errors
+
+
+def test_run1_5_profile_validates_design_memory_contract(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run1_5_required_files(pack)
+    (pack / "design_memory.json").write_text(json.dumps(valid_run1_5_design_memory(), indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run1_5")
+
+    assert result.ok is True, result.errors
+
+
+def test_run1_5_profile_rejects_invalid_design_memory_primitive(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run1_5_required_files(pack)
+    memory = valid_run1_5_design_memory()
+    memory["observations"][0]["slide_primitive"] = "generic_card_grid"
+    (pack / "design_memory.json").write_text(json.dumps(memory, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run1_5")
+
+    assert result.ok is False
+    assert (
+        "design_memory.observations[0].slide_primitive must be one of cockpit, comparison_delta, decision_table, "
+        "learning_map, qa_gate"
+    ) in result.errors
+
+
+def test_run1_5_profile_rejects_invalid_contract_field_type_without_raising(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run1_5_required_files(pack)
+    memory = valid_run1_5_design_memory()
+    memory["contract"]["required_fields"] = 7
+    (pack / "design_memory.json").write_text(json.dumps(memory, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run1_5")
+
+    assert result.ok is False
+    assert "design_memory.contract.required_fields must be a non-empty list" in result.errors

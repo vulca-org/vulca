@@ -37,6 +37,32 @@ RUN1_REQUIRED_FILES = [
 ]
 
 
+RUN1_5_REQUIRED_FILES = [
+    *RUN1_REQUIRED_FILES,
+    "experiment_protocol.md",
+    "bad_data_generation_brief.md",
+    "results/ablation_report.md",
+    "results/ablation_report.json",
+    "results/comparison_report.json",
+    "results/delivery_gate.md",
+]
+
+
+RUN1_5_REQUIRED_MEMORY_FIELDS = [
+    "evidence_id",
+    "source_role",
+    "observation",
+    "design_rule",
+    "slide_primitive",
+    "layout_constraint",
+    "qa_signal",
+]
+
+
+RUN1_5_SOURCE_ROLES = {"brief", "source", "tutorial", "review"}
+RUN1_5_SLIDE_PRIMITIVES = {"cockpit", "learning_map", "comparison_delta", "qa_gate", "decision_table"}
+
+
 @dataclass(frozen=True)
 class ValidationResult:
     ok: bool
@@ -48,6 +74,8 @@ def required_files_for_profile(profile: str) -> list[str]:
         return REQUIRED_FILES
     if profile == "run1":
         return [*REQUIRED_FILES, *RUN1_REQUIRED_FILES]
+    if profile == "run1_5":
+        return [*REQUIRED_FILES, *RUN1_5_REQUIRED_FILES]
     raise ValueError(f"unknown case-pack profile: {profile}")
 
 
@@ -131,6 +159,15 @@ def validate_string_mapping(label: str, value: Any, errors: list[str]) -> bool:
         if not require_non_empty_string(f"{label}.{key}", item, errors):
             ok = False
     return ok
+
+
+def validate_choice(label: str, value: Any, choices: set[str], errors: list[str]) -> bool:
+    if not require_non_empty_string(label, value, errors):
+        return False
+    if value not in choices:
+        errors.append(f"{label} must be one of {', '.join(sorted(choices))}")
+        return False
+    return True
 
 
 def validate_number_mapping(label: str, value: Any, errors: list[str]) -> bool:
@@ -291,16 +328,7 @@ def validate_deck_outline(pack_dir: Path, pattern_ids: set[str], errors: list[st
             errors.append(f"deck_outline.slides[{index}].pattern_id {pattern_id} is not defined in slide_patterns.json")
 
 
-def validate_design_memory(pack_dir: Path, errors: list[str]) -> None:
-    data = load_json(pack_dir / "design_memory.json", errors)
-    require_keys("design_memory.json", data, ["schema_version", "observations"], errors)
-    if "schema_version" in data:
-        require_integer("design_memory.schema_version", data["schema_version"], errors)
-    observations = data.get("observations", [])
-    if not isinstance(observations, list) or not observations:
-        errors.append("design_memory.observations must be a non-empty list")
-        return
-
+def validate_run1_design_memory_observations(observations: list[Any], errors: list[str]) -> None:
     required = ["id", "source_ids", "principle", "code_generation_rule", "do_not_copy"]
     seen_ids: set[str] = set()
     for index, observation in enumerate(observations):
@@ -318,6 +346,96 @@ def validate_design_memory(pack_dir: Path, errors: list[str]) -> None:
             seen_ids.add(observation_id)
         if "source_ids" in observation:
             validate_string_list(f"design_memory.observations[{index}].source_ids", observation["source_ids"], errors)
+
+
+def validate_run1_5_design_memory_contract(data: dict[str, Any], errors: list[str]) -> None:
+    contract = data.get("contract")
+    if not isinstance(contract, dict):
+        errors.append("design_memory.contract must be an object")
+        return
+
+    require_keys(
+        "design_memory.contract",
+        contract,
+        ["required_fields", "allowed_source_roles", "allowed_slide_primitives"],
+        errors,
+    )
+    if "required_fields" in contract:
+        required_fields = contract["required_fields"]
+        if validate_string_list("design_memory.contract.required_fields", required_fields, errors):
+            missing_fields = sorted(set(RUN1_5_REQUIRED_MEMORY_FIELDS) - set(required_fields))
+            for field in missing_fields:
+                errors.append(f"design_memory.contract.required_fields missing value: {field}")
+    if "allowed_source_roles" in contract:
+        allowed_source_roles = contract["allowed_source_roles"]
+        if validate_string_list("design_memory.contract.allowed_source_roles", allowed_source_roles, errors):
+            missing_roles = sorted(RUN1_5_SOURCE_ROLES - set(allowed_source_roles))
+            for role in missing_roles:
+                errors.append(f"design_memory.contract.allowed_source_roles missing value: {role}")
+    if "allowed_slide_primitives" in contract:
+        allowed_slide_primitives = contract["allowed_slide_primitives"]
+        if validate_string_list(
+            "design_memory.contract.allowed_slide_primitives",
+            allowed_slide_primitives,
+            errors,
+        ):
+            missing_primitives = sorted(RUN1_5_SLIDE_PRIMITIVES - set(allowed_slide_primitives))
+            for primitive in missing_primitives:
+                errors.append(f"design_memory.contract.allowed_slide_primitives missing value: {primitive}")
+
+
+def validate_run1_5_design_memory_observations(observations: list[Any], errors: list[str]) -> None:
+    required = [*RUN1_5_REQUIRED_MEMORY_FIELDS, "source_ids", "do_not_copy"]
+    seen_ids: set[str] = set()
+    for index, observation in enumerate(observations):
+        if not isinstance(observation, dict):
+            errors.append(f"design_memory.observations[{index}] must be an object")
+            continue
+        require_keys(f"design_memory.observations[{index}]", observation, required, errors)
+        for key in [*RUN1_5_REQUIRED_MEMORY_FIELDS, "do_not_copy"]:
+            if key in observation and key not in {"source_role", "slide_primitive"}:
+                require_non_empty_string(f"design_memory.observations[{index}].{key}", observation[key], errors)
+        if "source_role" in observation:
+            validate_choice(
+                f"design_memory.observations[{index}].source_role",
+                observation["source_role"],
+                RUN1_5_SOURCE_ROLES,
+                errors,
+            )
+        if "slide_primitive" in observation:
+            validate_choice(
+                f"design_memory.observations[{index}].slide_primitive",
+                observation["slide_primitive"],
+                RUN1_5_SLIDE_PRIMITIVES,
+                errors,
+            )
+        evidence_id = observation.get("evidence_id")
+        if isinstance(evidence_id, str) and evidence_id.strip():
+            if evidence_id in seen_ids:
+                errors.append(f"design_memory.observations[{index}].evidence_id duplicates {evidence_id}")
+            seen_ids.add(evidence_id)
+        if "source_ids" in observation:
+            validate_string_list(f"design_memory.observations[{index}].source_ids", observation["source_ids"], errors)
+
+
+def validate_design_memory(pack_dir: Path, errors: list[str], profile: str = "run1") -> None:
+    data = load_json(pack_dir / "design_memory.json", errors)
+    required_top_level = ["schema_version", "observations"]
+    if profile == "run1_5":
+        required_top_level.append("contract")
+    require_keys("design_memory.json", data, required_top_level, errors)
+    if "schema_version" in data:
+        require_integer("design_memory.schema_version", data["schema_version"], errors)
+    observations = data.get("observations", [])
+    if not isinstance(observations, list) or not observations:
+        errors.append("design_memory.observations must be a non-empty list")
+        return
+
+    if profile == "run1_5":
+        validate_run1_5_design_memory_contract(data, errors)
+        validate_run1_5_design_memory_observations(observations, errors)
+    else:
+        validate_run1_design_memory_observations(observations, errors)
 
 
 def validate_markdown_not_empty(pack_dir: Path, errors: list[str], required_files: list[str]) -> None:
@@ -355,15 +473,15 @@ def validate_case_pack(pack_dir: str | Path, profile: str = "default") -> Valida
     pattern_ids = validate_slide_patterns(root, errors)
     validate_deck_outline(root, pattern_ids, errors)
     validate_markdown_not_empty(root, errors, required_files)
-    if profile == "run1":
-        validate_design_memory(root, errors)
+    if profile in {"run1", "run1_5"}:
+        validate_design_memory(root, errors, profile=profile)
     return ValidationResult(not errors, errors)
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate a Vulca PPT case pack.")
     parser.add_argument("pack_dir", type=Path)
-    parser.add_argument("--profile", choices=["default", "run1"], default="default")
+    parser.add_argument("--profile", choices=["default", "run1", "run1_5"], default="default")
     args = parser.parse_args()
     result = validate_case_pack(args.pack_dir, profile=args.profile)
     if result.ok:
