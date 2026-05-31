@@ -6,9 +6,9 @@ URL: https://geo-nyc.com/projects/figma-slides/
 
 GEO describes the Figma Slides launch work as a product-facing creative system rather than a single campaign image. The useful lesson for Run 1 is that a presentation product needs a confident launch surface, a range of reusable starting points, and enough aesthetic variety to help new users understand the tool's expressive range. The Run 1 deck should translate that idea into original, editable slide patterns instead of copying any template, screenshot, or product-specific look.
 
-## Inside Config 2024
+## Config 2024 in Review
 
-URL: https://www.figma.com/blog/inside-config-2024/
+URL: https://www.figma.com/blog/config-2024-recap/
 
 The Config 2024 launch context connects AI, redesigned product surfaces, developer workflow, and Figma Slides into one event story about how product teams work. The relevant lesson is sequencing: the deck should frame a broad shift in work, then introduce the presentation product as a practical answer for collaboration, design control, and communication. Run 1 should not mimic Figma's event visuals or language; it should use the launch-event structure as a reference for original narrative planning.
 

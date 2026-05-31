@@ -5,7 +5,7 @@ Generate a code-generated PPT for Run 1 using this case pack. The output must be
 ## Sources
 
 - `geo_figma_slides`: https://geo-nyc.com/projects/figma-slides/
-- `figma_config_2024`: https://www.figma.com/blog/inside-config-2024/
+- `figma_config_2024`: https://www.figma.com/blog/config-2024-recap/
 - `figma_config_2025_identity`: https://www.figma.com/blog/how-we-shaped-the-visual-identity-for-config-2025/
 - `supervity_ai_keynote`: https://musecreatives.org/case-studies/visual-presentation-for-ai-thought-leadership/
 

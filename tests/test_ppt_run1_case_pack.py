@@ -15,6 +15,12 @@ EXPECTED_SOURCE_IDS = {
     "figma_config_2025_identity",
     "supervity_ai_keynote",
 }
+EXPECTED_SOURCE_URLS = {
+    "geo_figma_slides": "https://geo-nyc.com/projects/figma-slides/",
+    "figma_config_2024": "https://www.figma.com/blog/config-2024-recap/",
+    "figma_config_2025_identity": "https://www.figma.com/blog/how-we-shaped-the-visual-identity-for-config-2025/",
+    "supervity_ai_keynote": "https://musecreatives.org/case-studies/visual-presentation-for-ai-thought-leadership/",
+}
 EXPECTED_PATTERN_IDS = [
     "cover",
     "problem",
@@ -27,6 +33,16 @@ EXPECTED_PATTERN_IDS = [
     "product_decision",
     "closing",
 ]
+GENERATED_ARTIFACT_DIRS = {
+    "artifacts",
+    "contact_sheets",
+    "generated",
+    "generated_artifacts",
+    "presentations",
+    "rendered",
+    "renders",
+}
+GENERATED_ARTIFACT_SUFFIXES = {".jpeg", ".jpg", ".mp4", ".pdf", ".png", ".pptx"}
 
 
 def load_json(path: Path) -> dict:
@@ -58,6 +74,13 @@ def test_run1_sources_are_reference_analysis_only() -> None:
         assert source["allowed_use"] == "reference_analysis_only"
         assert source["url"].startswith("https://")
         assert "do not copy" in source["copyright_note"].lower()
+
+
+def test_run1_sources_use_canonical_urls() -> None:
+    data = load_json(PACK / "sources.json")
+
+    urls_by_id = {source["id"]: source["url"] for source in data["sources"]}
+    assert urls_by_id == EXPECTED_SOURCE_URLS
 
 
 def test_run1_deck_outline_uses_exact_pattern_sequence() -> None:
@@ -98,3 +121,20 @@ def test_run1_results_start_as_not_run() -> None:
     assert_contains(comparison, ["Status", "not generated"])
     assert_contains(render_check, ["Renderer", "not checked"])
     assert_contains(iteration_log, ["Repair pass", "not started"])
+
+
+def test_run1_pack_does_not_commit_generated_artifacts() -> None:
+    blocked: list[str] = []
+    for path in PACK.rglob("*"):
+        if not path.is_file():
+            continue
+        rel_path = path.relative_to(PACK)
+        suffix = path.suffix.lower()
+        if suffix in GENERATED_ARTIFACT_SUFFIXES:
+            blocked.append(str(rel_path))
+            continue
+        in_generated_dir = any(part in GENERATED_ARTIFACT_DIRS for part in rel_path.parts[:-1])
+        if in_generated_dir and suffix == ".json" and "layout" in path.stem.lower():
+            blocked.append(str(rel_path))
+
+    assert blocked == []
