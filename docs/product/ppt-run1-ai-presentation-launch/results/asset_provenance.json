@@ -1,9 +1,12 @@
 {
   "schema_version": 1,
-  "status": "not-run",
+  "status": "generated-no-external-assets",
+  "run": "ppt-run1-vulca",
+  "workspace": "/Users/yhryzy/.codex/worktrees/031a/vulca/outputs/019e7f6e-bd46-7990-95b1-8ea3dcc98bb4/presentations/ppt-run1-vulca",
+  "output_pptx": "/Users/yhryzy/.codex/worktrees/031a/vulca/outputs/019e7f6e-bd46-7990-95b1-8ea3dcc98bb4/presentations/ppt-run1-vulca/output/ppt-run1-vulca.pptx",
   "assets": [],
   "external_assets": [],
   "generated_assets": [],
   "copied_assets": [],
-  "notes": "Run 1 deck has not been generated. No external images, generated bitmap assets, or copied reference visuals have been used."
+  "notes": "The Vulca case-pack deck was generated with native PowerPoint shapes and editable text through the Presentations artifact-tool workflow. No external images, generated bitmap assets, copied reference visuals, screenshots, brand marks, template files, rasterized text, or embedded media assets were used. Public references were used only through the case-pack analysis boundary. PPTX media check found no ppt/media entries."
 }
