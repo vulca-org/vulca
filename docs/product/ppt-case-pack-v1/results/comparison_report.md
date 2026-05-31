@@ -1,6 +1,6 @@
 # Comparison Report
 
-**Status:** baseline-generated
+**Status:** baseline-and-case-pack-generated
 
 ## Baseline
 
@@ -13,8 +13,22 @@
 
 ## Vulca Case-Pack Deck
 
-The Vulca case-pack deck has not been generated yet.
+- Status: generated
+- Sources:
+  - `docs/product/ppt-case-pack-v1/commercial_brief.md`
+  - `docs/product/ppt-case-pack-v1/design_notes.md`
+  - `docs/product/ppt-case-pack-v1/narrative_rules.json`
+  - `docs/product/ppt-case-pack-v1/slide_patterns.json`
+  - `docs/product/ppt-case-pack-v1/style_tokens.json`
+  - `docs/product/ppt-case-pack-v1/asset_rules.json`
+  - `docs/product/ppt-case-pack-v1/deck_outline.json`
+  - `docs/product/ppt-case-pack-v1/vulca_generation_brief.md`
+  - `docs/product/ppt-case-pack-v1/evaluation_rubric.md`
+- PPTX path: `outputs/019e7ee0-8340-7713-8017-5a0227447ae4/presentations/vulca-ppt-case-pack/output/vulca-case-pack-launch.pptx`
+- Contact sheet path: `outputs/019e7ee0-8340-7713-8017-5a0227447ae4/presentations/vulca-ppt-case-pack/preview/contact-sheet.png`
+- Layout JSON path: `outputs/019e7ee0-8340-7713-8017-5a0227447ae4/presentations/vulca-ppt-case-pack/layout/final/`
+- Initial assessment: generated from the structured case pack with editable text and native shape proof objects. No copied reference visuals or external image assets were used.
 
 ## Evaluation
 
-Scores will be recorded after both decks have exported screenshots and editable presentation files.
+Both decks now have exported screenshots and editable presentation files. Formal scoring and external model review remain separate review work.
