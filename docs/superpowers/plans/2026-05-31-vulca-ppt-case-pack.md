@@ -474,6 +474,10 @@ git commit -m "test: add PPT case pack validator"
 - Create: `docs/product/ppt-case-pack-v1/asset_rules.json`
 - Create: `docs/product/ppt-case-pack-v1/evaluation_rubric.md`
 - Create: `docs/product/ppt-case-pack-v1/vulca_ppt_skill.md`
+- Create: `docs/product/ppt-case-pack-v1/deck_outline.json`
+- Create: `docs/product/ppt-case-pack-v1/baseline_prompt.md`
+- Create: `docs/product/ppt-case-pack-v1/vulca_generation_brief.md`
+- Create: `docs/product/ppt-case-pack-v1/gemini_review_prompt.md`
 - Create: `docs/product/ppt-case-pack-v1/results/README.md`
 - Create: `docs/product/ppt-case-pack-v1/results/comparison_report.md`
 - Create: `tests/test_ppt_case_pack_v1.py`
@@ -904,7 +908,51 @@ Create `docs/product/ppt-case-pack-v1/slide_patterns.json`:
 }
 ```
 
-- [ ] **Step 6: Create first skill draft and result folder**
+- [ ] **Step 6: Create minimal generation input files**
+
+Create `docs/product/ppt-case-pack-v1/deck_outline.json`:
+
+```json
+{
+  "schema_version": 1,
+  "title": "Vulca Product Launch Deck",
+  "slides": [
+    {
+      "id": "slide_01",
+      "pattern_id": "cover",
+      "title": "Vulca",
+      "claim": "Design knowledge becomes editable presentation code.",
+      "proof_object": "A simple system mark showing case pack, skill, code, review, and deck output."
+    }
+  ]
+}
+```
+
+Create `docs/product/ppt-case-pack-v1/baseline_prompt.md`:
+
+```markdown
+# Baseline Prompt
+
+Create a product launch deck for Vulca that explains how AI agents can generate editable presentation code from design knowledge.
+```
+
+Create `docs/product/ppt-case-pack-v1/vulca_generation_brief.md`:
+
+```markdown
+# Vulca Generation Brief
+
+Use the case-pack rules, slide patterns, style tokens, and asset rules to generate an editable Vulca product launch presentation.
+```
+
+Create `docs/product/ppt-case-pack-v1/gemini_review_prompt.md`:
+
+```markdown
+# Gemini Review Prompt
+
+Review the rendered Vulca PPT contact sheet for commercial clarity, visual hierarchy, brand coherence, editability risk, and whether it looks stronger than a prompt-only deck.
+```
+
+- [ ] **Step 7: Create first skill draft and result folder**
 
 Create `docs/product/ppt-case-pack-v1/vulca_ppt_skill.md`:
 
@@ -974,7 +1022,7 @@ The Vulca case-pack deck has not been generated yet.
 Scores will be recorded after both decks have exported screenshots and editable presentation files.
 ```
 
-- [ ] **Step 7: Run repository validation**
+- [ ] **Step 8: Run repository validation**
 
 Run:
 
@@ -986,11 +1034,11 @@ python3 scripts/validate_ppt_case_pack.py docs/product/ppt-case-pack-v1
 Expected:
 
 ```text
-5 passed
+10 passed
 case pack ok: docs/product/ppt-case-pack-v1
 ```
 
-- [ ] **Step 8: Commit**
+- [ ] **Step 9: Commit**
 
 ```bash
 git add docs/product/ppt-case-pack-v1 tests/test_ppt_case_pack_v1.py
