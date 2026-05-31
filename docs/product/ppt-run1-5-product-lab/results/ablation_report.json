@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "not-run",
+  "status": "generated-pending-review",
   "generation_status": "generated-pending-review",
   "scoring_status": "pending_gemini_review",
   "arms": [
