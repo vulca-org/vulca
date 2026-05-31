@@ -41,7 +41,7 @@ Vulca is an agent-native visual control layer. The product turns fuzzy visual in
 - `/inpaint` or `/redraw-layer` skill once redraw routes are robust.
 - Official Codex public plugin listing, once OpenAI opens the public publishing flow.
 - Google ADK / Vertex Agent Engine prototype.
-- PPT renderer/cross-platform QA adapter for generated PPTX inspection, selected by PPT Run 1 scoring as the next bottleneck before public publishing.
+- PPT renderer/cross-platform QA adapter for generated PPTX inspection, starting from `docs/product/ppt-delivery-qa-v1/`, selected by PPT Run 1 scoring as the next bottleneck before public publishing.
 - PPT slide layout engine or reusable slide primitives, gated on the next PPT case-pack comparison after renderer QA exists.
 - Lightweight Studio review UI for direction cards, sketch grids, layers, and evaluation reports.
 
