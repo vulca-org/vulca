@@ -170,6 +170,16 @@ def validate_choice(label: str, value: Any, choices: set[str], errors: list[str]
     return True
 
 
+def validate_exact_string_set(label: str, value: Any, expected: set[str], errors: list[str]) -> None:
+    if not validate_string_list(label, value, errors):
+        return
+    actual = set(value)
+    for item in sorted(expected - actual):
+        errors.append(f"{label} missing value: {item}")
+    for item in sorted(actual - expected):
+        errors.append(f"{label} has unexpected value: {item}")
+
+
 def validate_number_mapping(label: str, value: Any, errors: list[str]) -> bool:
     if not require_non_empty_dict(label, value, errors):
         return False
@@ -361,27 +371,26 @@ def validate_run1_5_design_memory_contract(data: dict[str, Any], errors: list[st
         errors,
     )
     if "required_fields" in contract:
-        required_fields = contract["required_fields"]
-        if validate_string_list("design_memory.contract.required_fields", required_fields, errors):
-            missing_fields = sorted(set(RUN1_5_REQUIRED_MEMORY_FIELDS) - set(required_fields))
-            for field in missing_fields:
-                errors.append(f"design_memory.contract.required_fields missing value: {field}")
-    if "allowed_source_roles" in contract:
-        allowed_source_roles = contract["allowed_source_roles"]
-        if validate_string_list("design_memory.contract.allowed_source_roles", allowed_source_roles, errors):
-            missing_roles = sorted(RUN1_5_SOURCE_ROLES - set(allowed_source_roles))
-            for role in missing_roles:
-                errors.append(f"design_memory.contract.allowed_source_roles missing value: {role}")
-    if "allowed_slide_primitives" in contract:
-        allowed_slide_primitives = contract["allowed_slide_primitives"]
-        if validate_string_list(
-            "design_memory.contract.allowed_slide_primitives",
-            allowed_slide_primitives,
+        validate_exact_string_set(
+            "design_memory.contract.required_fields",
+            contract["required_fields"],
+            set(RUN1_5_REQUIRED_MEMORY_FIELDS),
             errors,
-        ):
-            missing_primitives = sorted(RUN1_5_SLIDE_PRIMITIVES - set(allowed_slide_primitives))
-            for primitive in missing_primitives:
-                errors.append(f"design_memory.contract.allowed_slide_primitives missing value: {primitive}")
+        )
+    if "allowed_source_roles" in contract:
+        validate_exact_string_set(
+            "design_memory.contract.allowed_source_roles",
+            contract["allowed_source_roles"],
+            RUN1_5_SOURCE_ROLES,
+            errors,
+        )
+    if "allowed_slide_primitives" in contract:
+        validate_exact_string_set(
+            "design_memory.contract.allowed_slide_primitives",
+            contract["allowed_slide_primitives"],
+            RUN1_5_SLIDE_PRIMITIVES,
+            errors,
+        )
 
 
 def validate_run1_5_design_memory_observations(observations: list[Any], errors: list[str]) -> None:

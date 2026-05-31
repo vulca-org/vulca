@@ -431,3 +431,45 @@ def test_run1_5_profile_rejects_invalid_contract_field_type_without_raising(tmp_
 
     assert result.ok is False
     assert "design_memory.contract.required_fields must be a non-empty list" in result.errors
+
+
+def test_run1_5_profile_rejects_extra_contract_required_field(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run1_5_required_files(pack)
+    memory = valid_run1_5_design_memory()
+    memory["contract"]["required_fields"].append("extra_field")
+    (pack / "design_memory.json").write_text(json.dumps(memory, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run1_5")
+
+    assert result.ok is False
+    assert "design_memory.contract.required_fields has unexpected value: extra_field" in result.errors
+
+
+def test_run1_5_profile_rejects_extra_contract_source_role(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run1_5_required_files(pack)
+    memory = valid_run1_5_design_memory()
+    memory["contract"]["allowed_source_roles"].append("blog")
+    (pack / "design_memory.json").write_text(json.dumps(memory, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run1_5")
+
+    assert result.ok is False
+    assert "design_memory.contract.allowed_source_roles has unexpected value: blog" in result.errors
+
+
+def test_run1_5_profile_rejects_extra_contract_slide_primitive(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run1_5_required_files(pack)
+    memory = valid_run1_5_design_memory()
+    memory["contract"]["allowed_slide_primitives"].append("generic_card_grid")
+    (pack / "design_memory.json").write_text(json.dumps(memory, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run1_5")
+
+    assert result.ok is False
+    assert ("design_memory.contract.allowed_slide_primitives has unexpected value: generic_card_grid") in result.errors
