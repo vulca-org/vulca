@@ -32,3 +32,15 @@
 ## Evaluation
 
 Both decks now have exported screenshots and editable presentation files. Formal scoring and external model review remain separate review work.
+
+## Gemini Review
+
+- **Baseline commercial clarity:** The baseline clearly frames Vulca's thesis, but it stays broad by discussing generic deck-generation limits more than concrete buyer-facing workflow outcomes.
+- **Baseline visual hierarchy:** The baseline uses a readable slide-by-slide structure, though the contact sheet suggests several slides lean on familiar prompt-deck patterns and fine-print text is difficult to inspect.
+- **Baseline template-like risks:** Gemini flagged that prompt-only generation can drift toward generic slide structures, so the baseline risks feeling interchangeable where it should prove Vulca's specific method.
+- **Baseline most important fix:** The baseline's most important fix is to make the Gemini review loop and reference-to-recipe translation explicit, visually traceable steps.
+- **Vulca commercial clarity:** The case-pack deck more directly sells Vulca as a case-pack-to-editable-code workflow with clear failure modes, control layers, artifacts, and outputs.
+- **Vulca visual hierarchy:** The case-pack deck presents a stronger claim/proof rhythm through named failure modes, workflow stages, product pillars, and code-first output evidence.
+- **Vulca reference-case alignment:** Gemini found the case-pack deck better aligned to the supplied design memory because design decisions are tied to structured artifacts instead of inferred from a single prompt.
+- **Vulca most important fix:** The case-pack deck's most important fix is to define the `slide_patterns` schema, provenance gate, and overlap-resolution behavior with implementation-level specificity.
+- **Decision:** Gemini's contact-sheet aesthetic/design review indicates the case-pack deck is stronger than the baseline on narrative specificity, design coherence, and editability, but this is not final human approval, video readiness, or a full cross-platform PPT editability test.
