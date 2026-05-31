@@ -54,6 +54,6 @@ No ppt/media image entries found in the generated PPTX.
 
 ## Visual Check Notes
 
-The artifact-tool contact sheet was inspected after a repair pass. No obvious clipped text, blank slides, image dependency, or incoherent element overlap was observed in the baseline contact sheet.
+The artifact-tool contact sheet was inspected after baseline generation. No obvious clipped text, blank slides, image dependency, or incoherent element overlap was observed in the baseline contact sheet.
 
 LibreOffice was not available in this environment, so no PDF or Office-rendered image export was produced for the baseline deck.

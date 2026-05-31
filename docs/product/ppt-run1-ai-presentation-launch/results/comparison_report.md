@@ -26,7 +26,7 @@ Expected comparison limitations:
 - Commercial clarity: adequate for a first-pass product launch narrative, but not yet scored against the Run 1 rubric.
 - Narrative flow: follows the requested outline from problem to closing; finer story evidence is pending the Vulca case-pack deck.
 - Technical understandability: explains design memory, code generation, and review loop at a high level without deeper architecture proof.
-- Visual hierarchy: automated layout QA passed with 0 errors and 0 warnings after repair.
+- Visual hierarchy: automated layout QA passed with 0 errors and 0 warnings.
 - Editability: generated with native text and shapes; no raster slide images or external assets were used.
 - Reviewability: artifact-tool previews and layout JSON exist; Gemini review and final comparative scoring are pending later tasks.
 
