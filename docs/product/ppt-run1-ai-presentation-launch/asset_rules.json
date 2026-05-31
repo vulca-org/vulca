@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "preferred_assets": [
+    "native_shapes",
+    "editable_text",
+    "editable_connectors",
+    "editable_svg_system_marks",
+    "generated_bitmap_backgrounds_with_recorded_prompts"
+  ],
+  "bitmap_use": "Use generated bitmap images only as auxiliary atmosphere or optional background texture. Essential text, labels, diagrams, matrices, proof objects, and source boundaries must remain editable.",
+  "forbidden": [
+    "rasterized_text",
+    "copied_reference_visuals",
+    "proprietary_slide_images",
+    "source_screenshots",
+    "brand_marks",
+    "template_files",
+    "glyph_copies",
+    "full_article_text",
+    "video_transcripts"
+  ],
+  "provenance_required": true
+}

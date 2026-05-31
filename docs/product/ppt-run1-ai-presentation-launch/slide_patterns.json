@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "patterns": [
+    {
+      "id": "cover",
+      "role": "launch_promise",
+      "content_density": "low",
+      "layout_shape": "hero_claim_with_editable_system_mark",
+      "visual_asset_type": "editable_svg",
+      "editability_requirements": ["title_text_is_editable", "subtitle_text_is_editable", "system_mark_is_editable"]
+    },
+    {
+      "id": "problem",
+      "role": "buyer_problem",
+      "content_density": "medium",
+      "layout_shape": "claim_plus_three_failure_modes",
+      "visual_asset_type": "native_shapes",
+      "editability_requirements": ["failure_labels_are_editable", "body_text_is_editable", "no_rasterized_copy"]
+    },
+    {
+      "id": "reference_shift",
+      "role": "source_grounded_shift",
+      "content_density": "medium",
+      "layout_shape": "reference_insight_to_original_rule_map",
+      "visual_asset_type": "native_shapes",
+      "editability_requirements": ["source_labels_are_editable", "rule_labels_are_editable", "boundary_notes_are_editable"]
+    },
+    {
+      "id": "workflow",
+      "role": "controlled_generation_workflow",
+      "content_density": "medium",
+      "layout_shape": "left_to_right_pipeline_with_review_gate",
+      "visual_asset_type": "native_shapes",
+      "editability_requirements": ["nodes_are_editable", "connectors_are_attached", "step_labels_are_editable"]
+    },
+    {
+      "id": "design_memory",
+      "role": "design_memory_inventory",
+      "content_density": "medium_high",
+      "layout_shape": "file_inventory_to_design_decision_grid",
+      "visual_asset_type": "native_shapes",
+      "editability_requirements": ["file_names_are_editable", "decision_labels_are_editable", "observation_cards_are_editable"]
+    },
+    {
+      "id": "code_generation",
+      "role": "editable_ppt_proof",
+      "content_density": "medium",
+      "layout_shape": "artifact_stack_with_layout_json_callout",
+      "visual_asset_type": "native_shapes",
+      "editability_requirements": ["artifact_labels_are_editable", "status_badges_are_editable", "code_callouts_are_editable"]
+    },
+    {
+      "id": "review_loop",
+      "role": "visual_review_and_repair",
+      "content_density": "medium",
+      "layout_shape": "closed_loop_review_cycle",
+      "visual_asset_type": "editable_svg",
+      "editability_requirements": ["cycle_labels_are_editable", "risk_labels_are_editable", "repair_notes_are_editable"]
+    },
+    {
+      "id": "comparison",
+      "role": "baseline_vs_vulca_benchmark",
+      "content_density": "medium_high",
+      "layout_shape": "two_column_score_matrix",
+      "visual_asset_type": "native_shapes",
+      "editability_requirements": ["matrix_cells_are_editable", "scores_are_editable", "dimension_labels_are_editable"]
+    },
+    {
+      "id": "product_decision",
+      "role": "product_primitive_decision",
+      "content_density": "medium",
+      "layout_shape": "decision_tree_with_next_primitive",
+      "visual_asset_type": "native_shapes",
+      "editability_requirements": ["decision_labels_are_editable", "evidence_notes_are_editable", "next_step_is_editable"]
+    },
+    {
+      "id": "closing",
+      "role": "closing_call_to_action",
+      "content_density": "low",
+      "layout_shape": "final_claim_and_next_run",
+      "visual_asset_type": "editable_svg",
+      "editability_requirements": ["claim_text_is_editable", "call_to_action_is_editable", "system_mark_is_editable"]
+    }
+  ]
+}

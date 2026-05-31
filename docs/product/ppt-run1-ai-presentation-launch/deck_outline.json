@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "title": "Vulca AI Presentation Launch Deck",
+  "audience": "founders, product leads, design leads, and AI tool evaluators",
+  "slides": [
+    {
+      "id": "slide_01",
+      "pattern_id": "cover",
+      "title": "Vulca",
+      "claim": "AI decks need design memory, not just faster prompts.",
+      "proof_object": "Editable system mark showing sources, rules, code, review, and PPT output."
+    },
+    {
+      "id": "slide_02",
+      "pattern_id": "problem",
+      "title": "Prompt-only decks break at launch quality",
+      "claim": "Fast generation often hides the design logic buyers need to trust and edit.",
+      "proof_object": "Three failure modes: generic story, weak hierarchy, brittle editability."
+    },
+    {
+      "id": "slide_03",
+      "pattern_id": "reference_shift",
+      "title": "References become rules, not moodboards",
+      "claim": "Public launches and AI keynotes point to a more controlled presentation workflow.",
+      "proof_object": "Four source cards mapped to original Run 1 design rules and do-not-copy boundaries."
+    },
+    {
+      "id": "slide_04",
+      "pattern_id": "workflow",
+      "title": "The workflow is inspectable before generation",
+      "claim": "Vulca turns source analysis into case-pack files that guide deterministic deck code.",
+      "proof_object": "Pipeline diagram from sources to summaries, design memory, slide patterns, style tokens, code, and review."
+    },
+    {
+      "id": "slide_05",
+      "pattern_id": "design_memory",
+      "title": "Design memory makes taste reviewable",
+      "claim": "The case pack stores reusable observations that humans and agents can audit.",
+      "proof_object": "File inventory connecting observations to editable code-generation rules."
+    },
+    {
+      "id": "slide_06",
+      "pattern_id": "code_generation",
+      "title": "Generation is code-first",
+      "claim": "The main output is an editable PPT with native shapes, diagrams, and layout JSON.",
+      "proof_object": "Artifact stack: PPTX, layout JSON, contact sheet, provenance manifest, and integrity check."
+    },
+    {
+      "id": "slide_07",
+      "pattern_id": "review_loop",
+      "title": "Review becomes part of the product",
+      "claim": "Gemini critiques the contact sheet, then a focused repair pass fixes concrete issues.",
+      "proof_object": "Review cycle showing scores, design issues, editability risks, accessibility risks, and repairs."
+    },
+    {
+      "id": "slide_08",
+      "pattern_id": "comparison",
+      "title": "The benchmark is baseline versus Vulca",
+      "claim": "Run 1 compares a prompt-only deck against the case-pack deck on ten dimensions.",
+      "proof_object": "Score matrix covering commercial clarity, narrative, hierarchy, coherence, editability, and rendering risk."
+    },
+    {
+      "id": "slide_09",
+      "pattern_id": "product_decision",
+      "title": "Evidence decides the next primitive",
+      "claim": "The result should identify whether schema, layout primitives, review loops, or assets are the bottleneck.",
+      "proof_object": "Decision tree from score gaps and review evidence to the next product primitive."
+    },
+    {
+      "id": "slide_10",
+      "pattern_id": "closing",
+      "title": "Make presentation design leave evidence",
+      "claim": "Vulca turns deck creation into a reusable, editable, reviewable workflow.",
+      "proof_object": "Final call to run the same workflow on the next real commercial launch deck."
+    }
+  ]
+}

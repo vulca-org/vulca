@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "opening": "Open with the commercial promise that AI slide generation needs design memory before it needs more images.",
+  "progression": [
+    "promise",
+    "buyer_problem",
+    "reference_shift",
+    "controlled_workflow",
+    "design_memory",
+    "code_generation",
+    "review_and_repair",
+    "baseline_comparison",
+    "product_decision",
+    "next_action"
+  ],
+  "technical_depth": "Expose technical control through visible files, diagrams, layout JSON, asset rules, and review gates rather than long implementation prose.",
+  "closing": "End with the next product primitive and a concrete invitation to run the workflow on another commercial deck."
+}

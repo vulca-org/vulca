@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "sources": [
+    {
+      "id": "geo_figma_slides",
+      "title": "GEO / Figma Slides case study",
+      "url": "https://geo-nyc.com/projects/figma-slides/",
+      "role": "presentation_product_launch_reference",
+      "accessed_on": "2026-05-31",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Use for original analysis of presentation-product launch framing. Do not copy proprietary visuals, screenshots, layouts, brand marks, template files, or full prose."
+    },
+    {
+      "id": "figma_config_2024",
+      "title": "Inside Config 2024",
+      "url": "https://www.figma.com/blog/inside-config-2024/",
+      "role": "product_event_context_reference",
+      "accessed_on": "2026-05-31",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Use for original analysis of product-launch context and event storytelling. Do not copy proprietary visuals, screenshots, layouts, brand marks, or full prose."
+    },
+    {
+      "id": "figma_config_2025_identity",
+      "title": "How we shaped the visual identity for Config 2025",
+      "url": "https://www.figma.com/blog/how-we-shaped-the-visual-identity-for-config-2025/",
+      "role": "visual_identity_system_reference",
+      "accessed_on": "2026-05-31",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Use for original analysis of identity-system thinking. Do not copy proprietary visuals, glyphs, screenshots, layouts, brand marks, or full prose."
+    },
+    {
+      "id": "supervity_ai_keynote",
+      "title": "MUSE Creatives / Supervity AI keynote presentation case",
+      "url": "https://musecreatives.org/case-studies/visual-presentation-for-ai-thought-leadership/",
+      "role": "ai_keynote_commercial_reference",
+      "accessed_on": "2026-05-31",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Use for original analysis of AI keynote communication and commercial clarity. Do not copy proprietary visuals, screenshots, layouts, brand marks, or full prose."
+    }
+  ]
+}
