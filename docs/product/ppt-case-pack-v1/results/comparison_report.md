@@ -31,7 +31,7 @@
 
 ## Evaluation
 
-Both decks now have exported screenshots and editable presentation files. Formal scoring and external model review remain separate review work.
+Both decks now have exported screenshots and editable presentation files. The scores below are a first P2 comparison grounded in Gemini contact-sheet review, artifact manifests, and layout QA; full human approval, accessibility audit, and cross-platform editor testing remain separate review work.
 
 ## Gemini Review
 
