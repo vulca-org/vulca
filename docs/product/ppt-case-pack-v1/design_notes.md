@@ -2,7 +2,7 @@
 
 ## Narrative
 
-Lead with the workflow problem: teams can now create slides quickly, but speed does not guarantee design reasoning, commercial fit, or editable structure. Introduce Vulca as the layer that turns reference-aware design knowledge into code-generated presentation systems.
+Lead with the workflow problem: teams can now create slides quickly, but speed does not preserve design reasoning, commercial fit, or editable structure. Introduce Vulca as the layer that turns reference-aware design knowledge into code-generated presentation systems.
 
 ## Hierarchy
 

@@ -9,16 +9,21 @@ Score 0-5:
 - technical understandability;
 - visual hierarchy;
 - brand coherence;
-- cultural/design intent;
+- cultural and design intent;
 - slide-to-slide consistency;
+- editability;
+- accessibility;
+- cross-platform rendering risk;
 - premium versus template-like feel;
-- editability risk visible from screenshots;
 - reference-case alignment without copying.
 
 Return:
 
+- a score table with a numeric 0-5 score for every dimension above;
 - three highest-priority design issues;
 - three slide-specific fixes;
+- visible editability risks, including any rasterized text or non-editable diagrams;
+- accessibility and cross-platform rendering risks that could affect exported PDF, PowerPoint, Keynote, or Google Slides use;
 - one judgment on whether the deck is video-demo ready;
 - one judgment on whether it looks materially stronger than a prompt-only deck.
 

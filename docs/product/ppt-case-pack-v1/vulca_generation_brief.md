@@ -36,5 +36,6 @@ Respect the source boundary: use the references only for original analysis. Do n
 - rendered slide PNGs;
 - contact sheet;
 - layout JSON;
+- asset provenance record at `results/asset_provenance.json`, including generated bitmap/SVG prompts and license/source status;
 - Gemini review notes;
 - comparison report against the baseline deck.
