@@ -71,7 +71,7 @@ Build:
 
 ```text
 slideCount: 10
-outputBytes: 60497
+outputBytes: 60484
 contactSheet: /Users/yhryzy/.codex/worktrees/031a/vulca/outputs/019e7f6e-bd46-7990-95b1-8ea3dcc98bb4/presentations/ppt-run1-vulca/preview/contact-sheet.png
 layoutDir: /Users/yhryzy/.codex/worktrees/031a/vulca/outputs/019e7f6e-bd46-7990-95b1-8ea3dcc98bb4/presentations/ppt-run1-vulca/layout/final
 ```
@@ -105,3 +105,9 @@ Renderer: not available; artifact-tool preview and layout JSON used for Run 1 au
 The artifact-tool contact sheet was inspected after the final rebuild. All ten required slides rendered, the sequence follows the deck outline, and no blank slides, clipped text, image dependency, or incoherent element overlap was observed.
 
 LibreOffice was not available in this environment, so no PDF or Office-rendered image export was produced for the Vulca case-pack deck.
+
+## Repair-Pass Check Notes
+
+The focused repair pass changed slide 07 and slide 09 in the local generated workspace, then rebuilt the Vulca PPTX, previews, layout JSON, and contact sheet.
+
+Two intermediate layout QA failures caught slide 07 proof-object overlap after the repair copy changed. The final rebuild passed with `0 error(s), 0 warning(s)`, PPTX zip integrity passed, and the package still has no `ppt/media` entries.

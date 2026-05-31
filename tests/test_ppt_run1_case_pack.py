@@ -144,10 +144,10 @@ def test_run1_results_track_generation_lifecycle() -> None:
     assert provenance["generated_assets"] == []
     assert provenance["copied_assets"] == []
     assert_contains(comparison, ["Status", "baseline and Vulca case-pack decks generated"])
-    assert_contains(comparison, ["Gemini review", "pending"])
+    assert_contains(comparison, ["Gemini review", "Decision caveat"])
     assert_contains(render_check, ["Status", "baseline and Vulca case-pack deck checked"])
     assert_contains(render_check, ["Renderer", "not available"])
-    assert_contains(iteration_log, ["Repair pass", "not started"])
+    assert_contains(iteration_log, ["Repair pass", "completed"])
 
 
 def test_run1_pack_does_not_commit_generated_artifacts() -> None:

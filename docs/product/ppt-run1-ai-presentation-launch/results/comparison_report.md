@@ -1,6 +1,6 @@
 # Comparison Report
 
-Status: baseline and Vulca case-pack decks generated; Gemini review and final rubric scoring pending Task 6.
+Status: baseline and Vulca case-pack decks generated; Gemini review and focused repair pass completed. Final scorecard and human approval remain pending.
 
 ## Baseline Artifacts
 
@@ -45,7 +45,7 @@ Baseline comparison limitations:
 - Technical understandability: explains design memory, code generation, and review loop at a high level without deeper architecture proof.
 - Visual hierarchy: automated layout QA passed with 0 errors and 0 warnings.
 - Editability: generated with native text and shapes; no raster slide images or external assets were used.
-- Reviewability: artifact-tool previews and layout JSON exist; Gemini review and final comparative scoring are pending later tasks.
+- Reviewability: artifact-tool previews and layout JSON exist; Gemini review is recorded below, with final comparative scoring still pending.
 
 Initial Vulca case-pack assessment:
 
@@ -54,8 +54,30 @@ Initial Vulca case-pack assessment:
 - Technical understandability: makes the workflow inspectable through visible files, slide modules, artifact outputs, layout JSON, and integrity checks rather than vague AI claims.
 - Visual hierarchy: automated layout QA passed with 0 errors and 0 warnings, and the contact sheet shows a more varied slide rhythm than the baseline.
 - Editability: generated with native editable text and shapes; no media entries were found in the PPTX package.
-- Reviewability: case-pack deck artifacts are ready for Task 6 Gemini critique and the later human approval gate.
+- Reviewability: case-pack deck artifacts passed Gemini critique intake, focused repair, layout QA, PPTX integrity, and the later human approval gate remains open.
+
+## Gemini Review
+
+- **Baseline commercial clarity:** Gemini read the baseline as a clear structured-creation value proposition that addresses prompt-to-slide cleanup backlog, but it remains a high-level product story.
+- **Baseline visual hierarchy:** Gemini identified a legible five-stage workflow, design-memory concept, code-generation claim, and review loop; the hierarchy is adequate but less evidence-dense than the case-pack deck.
+- **Baseline most important fix:** Make the repair-loop mechanism and design-memory ingestion more explicit. The target generation boundary remains artifact-tool native PPT output, not `python-pptx`.
+- **Vulca commercial clarity:** Gemini read the Vulca deck as a sharper argument against prompt-only decks, with the case pack, source boundaries, code-first workflow, and QA evidence visible.
+- **Vulca visual hierarchy:** Gemini recognized the ten-slide sequence from prompt-only failure to source rules, workflow, file inventory, code stack, review loop, benchmark, and product decision.
+- **Vulca most important fix:** Clarify how Gemini critique maps back to target slide modules, repair actions, QA evidence, and the next product primitive decision.
+- **Review conflict:** No visual conflict. One Gemini implementation hint suggested `python-pptx`, which is rejected because the Presentations workflow requires artifact-tool editable PPT generation.
+- **Decision caveat:** Gemini is qualitative evidence, not final human approval.
+
+## Focused Repair Pass
+
+The repair pass changed two local Vulca slide modules under the generated output workspace:
+
+- `slide-07.mjs`: replaced generic review-loop wording with structured issue fields, target module mapping, repair action, QA evidence, and human caveat.
+- `slide-09.mjs`: replaced broad product-decision wording with converging evidence gates across rubric delta, Gemini risk, QA evidence, and human gate.
+
+No external images, generated bitmap images, screenshots, copied reference visuals, brand marks, or media assets were added.
+
+The first two rebuild QA runs caught slide 07 proof-object overlap after the repair text changed. The final rebuild passed layout QA with `0 error(s), 0 warning(s)`, passed PPTX zip integrity, and still contains no `ppt/media` entries.
 
 ## Comparison Status
 
-The Vulca case-pack deck is available. Gemini review, final rubric scores, repair-pass notes, product decision, and demo readiness decision are pending Task 6 and later Run 1 tasks.
+The Vulca case-pack deck is available after Gemini review and a focused repair pass. Final rubric scores, product decision, public demo readiness, and human approval remain pending later Run 1 tasks.
