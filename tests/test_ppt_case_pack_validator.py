@@ -245,3 +245,60 @@ def test_deck_outline_references_existing_patterns(tmp_path: Path) -> None:
 
     assert result.ok is False
     assert "deck_outline.slides[0].pattern_id unknown_pattern is not defined in slide_patterns.json" in result.errors
+
+
+def test_default_profile_does_not_require_run1_extra_files(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+
+    result = validate_case_pack(pack)
+
+    assert result.ok is True, result.errors
+
+
+def test_run1_profile_requires_extra_files(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+
+    result = validate_case_pack(pack, profile="run1")
+
+    assert result.ok is False
+    assert "missing required file: tutorial_notes.md" in result.errors
+    assert "missing required file: design_memory.json" in result.errors
+    assert "missing required file: results/asset_provenance.json" in result.errors
+    assert "missing required file: results/iteration_log.md" in result.errors
+    assert "missing required file: results/render_check.md" in result.errors
+
+
+def test_run1_profile_validates_design_memory(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    (pack / "tutorial_notes.md").write_text("# Tutorial Notes\n\nOriginal teaching notes.\n", encoding="utf-8")
+    (pack / "results" / "asset_provenance.json").write_text(
+        json.dumps({"schema_version": 1, "status": "not-run", "assets": []}, indent=2),
+        encoding="utf-8",
+    )
+    (pack / "results" / "iteration_log.md").write_text("# Iteration Log\n\nNo repair pass yet.\n", encoding="utf-8")
+    (pack / "results" / "render_check.md").write_text("# Render Check\n\nRenderer not checked yet.\n", encoding="utf-8")
+    (pack / "design_memory.json").write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "observations": [
+                    {
+                        "id": "launch_system_language",
+                        "source_ids": ["supervity_ai_keynote"],
+                        "principle": "Turn technical AI claims into a visible workflow.",
+                        "code_generation_rule": "Use native shapes and editable labels for workflow diagrams.",
+                        "do_not_copy": "Do not copy source visuals, layouts, screenshots, or brand marks.",
+                    }
+                ],
+            },
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+    result = validate_case_pack(pack, profile="run1")
+
+    assert result.ok is True, result.errors
