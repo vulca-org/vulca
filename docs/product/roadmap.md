@@ -26,6 +26,7 @@ Vulca is an agent-native visual control layer. The product turns fuzzy visual in
 - Codex plugin marketplace validation and MCP usage guide.
 - ChatGPT remote MCP prototype scope.
 - ChatGPT remote MCP safe-profile prototype.
+- PPT case-pack wedge: real commercial references -> structured design knowledge -> editable code-generated launch deck -> Gemini and layout QA.
 - Cultural-term efficacy benchmark real-provider opt-in.
 - Real-image v0.22 redraw dogfood before promoting `/inpaint` or `/redraw-layer` as polished skills.
 
@@ -39,6 +40,7 @@ Vulca is an agent-native visual control layer. The product turns fuzzy visual in
 - `/inpaint` or `/redraw-layer` skill once redraw routes are robust.
 - Official Codex public plugin listing, once OpenAI opens the public publishing flow.
 - Google ADK / Vertex Agent Engine prototype.
+- PPT slide layout engine or reusable slide primitives, gated on the PPT case-pack P2 comparison.
 - Lightweight Studio review UI for direction cards, sketch grids, layers, and evaluation reports.
 
 ## Non-Goals

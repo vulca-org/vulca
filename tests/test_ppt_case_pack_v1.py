@@ -120,8 +120,21 @@ def test_asset_provenance_record_exists() -> None:
     provenance = load_json(PACK / "results" / "asset_provenance.json")
 
     assert provenance["schema_version"] == 1
-    assert provenance["status"] == "not-run"
+    assert provenance["status"] == "generated-no-external-assets"
     assert provenance["assets"] == []
+
+    for empty_asset_field in ("external_assets", "generated_assets", "copied_assets"):
+        if empty_asset_field in provenance:
+            assert provenance[empty_asset_field] == []
+
+    assert_contains_keyword_groups(
+        provenance.get("notes", ""),
+        [
+            ["no", "external", "images"],
+            ["generated", "bitmap", "assets"],
+            ["copied", "reference", "visuals"],
+        ],
+    )
 
 
 def test_baseline_prompt_defines_launch_deck_request() -> None:
