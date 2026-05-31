@@ -1,7 +1,7 @@
 # Vulca Product Roadmap
 
 **Status:** Public product roadmap
-**Last updated:** 2026-05-01
+**Last updated:** 2026-06-01
 
 Vulca is an agent-native visual control layer. The product turns fuzzy visual intent into controlled creative production through reviewable artifacts, provider-routed generation, semantic pixel editing, and cultural evaluation.
 
@@ -18,6 +18,7 @@ Vulca is an agent-native visual control layer. The product turns fuzzy visual in
 - v0.22 target-aware mask refinement merged for redraw route hardening.
 - MCP tools for image generation, image viewing, evaluation, inpainting, layers, redraw, compositing, paste-back, and Tool Protocol analysis.
 - 13 cultural traditions and L1-L5 evaluation framework.
+- PPT Run 1.5 product lab has generated three local arms, recorded Gemini qualitative contact-sheet review, repaired the full-Vulca arm, and scored the internal comparison as full Vulca > prompt-only > bad-data. Public publishing remains blocked pending native/cross-platform render inspection and human approval.
 
 ## Next
 
@@ -27,7 +28,7 @@ Vulca is an agent-native visual control layer. The product turns fuzzy visual in
 - ChatGPT remote MCP prototype scope.
 - ChatGPT remote MCP safe-profile prototype.
 - PPT Run 1: AI presentation product launch deck case pack -> baseline/Vulca deck -> Gemini review -> repair pass -> score-gated demo script.
-- PPT Run 1.5 product lab: three-arm proof that design evidence becomes design memory, affects code-generated PPT output, and exposes QA/publish gates.
+- PPT Run 1.5 native/cross-platform render inspection and human approval gate before any public publishing claim.
 - PPT case-pack wedge: real commercial references -> structured design knowledge -> editable code-generated launch deck -> Gemini, layout QA, and renderer/cross-platform QA.
 - Cultural-term efficacy benchmark real-provider opt-in.
 - Real-image v0.22 redraw dogfood before promoting `/inpaint` or `/redraw-layer` as polished skills.

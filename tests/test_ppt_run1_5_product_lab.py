@@ -100,17 +100,17 @@ def test_run1_5_generation_briefs_define_separate_arms() -> None:
     assert_contains(bad_data, ["bad-data", "corrupted rules", "negative control"])
 
 
-def test_run1_5_results_generated_pending_review_and_blocked() -> None:
+def test_run1_5_results_reviewed_and_public_blocked() -> None:
     comparison = (PACK / "results" / "comparison_report.md").read_text(encoding="utf-8")
     comparison_json = load_json(PACK / "results" / "comparison_report.json")
     ablation = (PACK / "results" / "ablation_report.md").read_text(encoding="utf-8")
     ablation_json = load_json(PACK / "results" / "ablation_report.json")
     delivery = (PACK / "results" / "delivery_gate.md").read_text(encoding="utf-8")
 
-    assert_contains(comparison, ["Status", "generated-pending-review"])
-    assert comparison_json["status"] == "generated-pending-review"
-    assert_contains(ablation, ["prompt-only", "full Vulca", "bad-data", "pending Gemini review"])
-    assert ablation_json["status"] == "generated-pending-review"
+    assert_contains(comparison, ["Status", "reviewed-public-blocked"])
+    assert comparison_json["status"] == "reviewed-public-blocked"
+    assert_contains(ablation, ["prompt-only", "full Vulca", "bad-data", "Gemini review is qualitative evidence"])
+    assert ablation_json["status"] == "reviewed"
     assert_contains(delivery, ["Public publishing", "blocked"])
 
 

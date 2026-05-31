@@ -1,38 +1,68 @@
 {
   "schema_version": 1,
-  "status": "generated-pending-review",
-  "generation_status": "generated-pending-review",
-  "scoring_status": "pending_gemini_review",
+  "status": "reviewed",
+  "generation_status": "generated-repaired",
+  "scoring_status": "reviewed",
+  "hypothesis": "Design evidence compiled into memory and slide primitives should improve generated PPT output compared with a prompt-only baseline, while deliberately weak bad-data rules should degrade semantic quality without breaking structural delivery.",
   "arms": [
     {
       "id": "prompt_only",
       "input_boundary": "baseline_prompt.md only; design_memory.json, tutorial_notes.md, vulca_generation_brief.md, and vulca_ppt_skill.md excluded while writing slide modules.",
       "expected_signal": "Baseline comparator should be structurally valid and comparatively generic because it only receives the baseline prompt.",
-      "observed_signal": "pending_gemini_review",
+      "observed_signal": "Valid editable deck with named experiment arms and gates, but Gemini characterized it as more technical specification/testing dashboard than polished product surface.",
+      "average_score": 3.29,
       "generation_warnings": [
         "artifact-tool layout QA reported 0 errors and 24 warnings, mostly tight text or table split-inline warnings",
-        "native render was not executed"
+        "native render was not executed",
+        "Gemini review is qualitative evidence only"
       ]
     },
     {
       "id": "full_vulca",
-      "input_boundary": "vulca_generation_brief.md, design_memory.json, deck_outline.json, and product-lab slide primitives.",
+      "input_boundary": "vulca_generation_brief.md, design_memory.json, deck_outline.json, tutorial-derived rules, and product-lab slide primitives.",
       "expected_signal": "Full Vulca should show stronger product-lab surfaces: Brief Cockpit, Learning Map, Experiment Lab, QA Gate, Product Decision.",
-      "observed_signal": "pending_gemini_review",
+      "observed_signal": "Strongest arm: specific product-lab run report with schemas, boundaries, pipeline stages, memory compiler, code-generation anatomy, QA gate, and repaired score-delta/ablation slides.",
+      "average_score": 4.29,
       "generation_warnings": [
-        "artifact-tool layout QA reported 0 errors and 25 warnings, mostly tight text or table split-inline warnings",
-        "native render was not executed"
+        "artifact-tool layout QA reported 0 errors and 25 warnings after repair, mostly tight text or table split-inline warnings",
+        "native render was not executed",
+        "Gemini review is qualitative evidence only"
+      ],
+      "repair_notes": [
+        "Slide 7 made explicit score-delta comparison.",
+        "Slide 8 made explicit ablation/negative-control proof.",
+        "Slide 10 decision table updated with reviewed-public-blocked decision."
       ]
     },
     {
       "id": "bad_data",
       "input_boundary": "bad_data_generation_brief.md with deliberately weak but structurally valid rules.",
       "expected_signal": "Bad-data should remain structurally valid while visibly weaker through generic card grids, mismatched hierarchy, weak source boundaries, and poor product-surface feel.",
-      "observed_signal": "pending_gemini_review",
+      "observed_signal": "Structurally valid but semantically degraded through generic workflows, poor claim-to-proof relationship, non-committal content, and weaker source-boundary discipline.",
+      "average_score": 2.71,
       "generation_warnings": [
         "artifact-tool layout QA reported 0 errors and 26 warnings, mostly tight text or table split-inline warnings",
-        "native render was not executed"
+        "native render was not executed",
+        "degraded semantic quality supports negative-control signal but does not prove automatic corruption detection"
       ]
     }
+  ],
+  "observed_signal": {
+    "data_to_rule_path_affects_output": true,
+    "bad_data_degraded_output": true,
+    "bad_data_triggered_warnings": true,
+    "full_vulca_beats_prompt_only": true,
+    "full_vulca_beats_bad_data": true
+  },
+  "remaining_uncertainty": [
+    "Native PowerPoint, Keynote, or Google Slides render fidelity has not been executed.",
+    "Human review has not approved public publishing.",
+    "Gemini review is qualitative evidence, not final approval.",
+    "The negative control demonstrates visible degradation but not automatic runtime rejection."
+  ],
+  "warnings": [
+    "public publishing blocked",
+    "native render pending",
+    "human approval pending"
   ]
 }

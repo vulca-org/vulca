@@ -1,13 +1,67 @@
 {
   "schema_version": 1,
-  "status": "generated-pending-review",
-  "generation_status": "generated-pending-review",
-  "scoring_status": "pending_gemini_review",
-  "scores": [],
+  "status": "reviewed-public-blocked",
+  "generation_status": "generated-repaired",
+  "scoring_status": "reviewed",
+  "score_scale": {
+    "min": 0,
+    "max": 5,
+    "direction": "higher_is_better",
+    "rendering_risk_note": "Rendering risk score reflects structural risk control only; native visual fidelity remains unapproved."
+  },
+  "categories": [
+    "commercial_clarity",
+    "learning_evidence",
+    "product_surface_feel",
+    "visual_hierarchy",
+    "editability",
+    "qa_evidence",
+    "rendering_risk"
+  ],
+  "scores": [
+    {
+      "arm_id": "prompt_only",
+      "commercial_clarity": 3,
+      "learning_evidence": 3,
+      "product_surface_feel": 3,
+      "visual_hierarchy": 3,
+      "editability": 3,
+      "qa_evidence": 4,
+      "rendering_risk": 4,
+      "average": 3.29,
+      "rationale": "Structurally valid and usable as a comparator, but Gemini found it closer to a technical specification/testing dashboard than a polished product surface."
+    },
+    {
+      "arm_id": "full_vulca",
+      "commercial_clarity": 4,
+      "learning_evidence": 5,
+      "product_surface_feel": 4,
+      "visual_hierarchy": 4,
+      "editability": 4,
+      "qa_evidence": 5,
+      "rendering_risk": 4,
+      "average": 4.29,
+      "rationale": "Strongest arm after repair: specific product-lab report with schemas, boundaries, pipeline stages, memory compiler, code anatomy, QA gate, and explicit score/ablation slides."
+    },
+    {
+      "arm_id": "bad_data",
+      "commercial_clarity": 2,
+      "learning_evidence": 2,
+      "product_surface_feel": 2,
+      "visual_hierarchy": 2,
+      "editability": 3,
+      "qa_evidence": 4,
+      "rendering_risk": 4,
+      "average": 2.71,
+      "rationale": "Structurally valid and editable, but semantically degraded with generic workflows, weak claim-to-proof mapping, and poorer source-boundary discipline."
+    }
+  ],
   "arms": [
     {
       "id": "prompt_only",
-      "generation_status": "generated-pending-review",
+      "generation_status": "generated",
+      "review_status": "reviewed",
+      "gemini_artifact": ".gemini-agent/artifacts/2026-05-31T234706549Z-artifacts.json",
       "pptx_path": "/Users/yhryzy/.codex/worktrees/031a/vulca/outputs/019e805d-ace6-7490-8141-a3315b6d096d/presentations/ppt-run1-5-prompt-only/output/ppt-run1-5-prompt-only.pptx",
       "contact_sheet_path": "/Users/yhryzy/.codex/worktrees/031a/vulca/outputs/019e805d-ace6-7490-8141-a3315b6d096d/presentations/ppt-run1-5-prompt-only/preview/contact-sheet.png",
       "layout_dir": "/Users/yhryzy/.codex/worktrees/031a/vulca/outputs/019e805d-ace6-7490-8141-a3315b6d096d/presentations/ppt-run1-5-prompt-only/layout/final",
@@ -16,21 +70,45 @@
     },
     {
       "id": "full_vulca",
-      "generation_status": "generated-pending-review",
+      "generation_status": "generated-repaired",
+      "review_status": "reviewed",
+      "gemini_artifact": ".gemini-agent/artifacts/2026-05-31T234720384Z-artifacts.json",
       "pptx_path": "/Users/yhryzy/.codex/worktrees/031a/vulca/outputs/019e805d-ace6-7490-8141-a3315b6d096d/presentations/ppt-run1-5-full-vulca/output/ppt-run1-5-full-vulca.pptx",
       "contact_sheet_path": "/Users/yhryzy/.codex/worktrees/031a/vulca/outputs/019e805d-ace6-7490-8141-a3315b6d096d/presentations/ppt-run1-5-full-vulca/preview/contact-sheet.png",
       "layout_dir": "/Users/yhryzy/.codex/worktrees/031a/vulca/outputs/019e805d-ace6-7490-8141-a3315b6d096d/presentations/ppt-run1-5-full-vulca/layout/final",
       "media_entries": 0,
-      "delivery_gate": "internal-demo-ok-public-blocked"
+      "delivery_gate": "internal-demo-ok-public-blocked",
+      "repair_notes": [
+        "Slide 7 changed to explicit prompt-only versus full-Vulca score delta.",
+        "Slide 8 changed to ablation proof with prompt-only, full-Vulca, and bad-data observed signals.",
+        "Slide 10 decision table updated to reviewed-public-blocked with native-render and human-review blockers."
+      ]
     },
     {
       "id": "bad_data",
-      "generation_status": "generated-pending-review",
+      "generation_status": "generated",
+      "review_status": "reviewed",
+      "gemini_artifact": ".gemini-agent/artifacts/2026-05-31T234733731Z-artifacts.json",
       "pptx_path": "/Users/yhryzy/.codex/worktrees/031a/vulca/outputs/019e805d-ace6-7490-8141-a3315b6d096d/presentations/ppt-run1-5-bad-data/output/ppt-run1-5-bad-data.pptx",
       "contact_sheet_path": "/Users/yhryzy/.codex/worktrees/031a/vulca/outputs/019e805d-ace6-7490-8141-a3315b6d096d/presentations/ppt-run1-5-bad-data/preview/contact-sheet.png",
       "layout_dir": "/Users/yhryzy/.codex/worktrees/031a/vulca/outputs/019e805d-ace6-7490-8141-a3315b6d096d/presentations/ppt-run1-5-bad-data/layout/final",
       "media_entries": 0,
       "delivery_gate": "internal-demo-ok-public-blocked"
     }
+  ],
+  "decision_summary": {
+    "winner": "full_vulca",
+    "prompt_only_average": 3.29,
+    "full_vulca_average": 4.29,
+    "bad_data_average": 2.71,
+    "full_vulca_vs_prompt_only_delta": 1.0,
+    "full_vulca_vs_bad_data_delta": 1.58,
+    "public_publish_status": "blocked",
+    "reason": "Full Vulca shows the strongest internal signal, but native render fidelity and human approval remain incomplete."
+  },
+  "warnings": [
+    "Gemini contact-sheet review is qualitative evidence only and is not final human approval.",
+    "Native PowerPoint, Keynote, or Google Slides visual fidelity was not executed.",
+    "Public publishing remains blocked."
   ]
 }
