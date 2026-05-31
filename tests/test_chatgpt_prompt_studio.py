@@ -6,6 +6,7 @@ from vulca.chatgpt_prompt_studio import (
     PROMPT_STUDIO_WIDGET_URI,
     build_prompt_studio_package,
 )
+from vulca.chatgpt_prompt_studio_widget import PROMPT_STUDIO_WIDGET_HTML
 
 
 def test_build_prompt_studio_package_normalizes_fields():
@@ -56,3 +57,18 @@ def test_build_prompt_studio_package_rejects_empty_final_prompt():
             tradition="chinese_xieyi",
             final_prompt="   ",
         )
+
+
+def test_prompt_studio_widget_contains_bridge_and_fallbacks():
+    assert "window.openai.sendFollowUpMessage" in PROMPT_STUDIO_WIDGET_HTML
+    assert "window.openai.setWidgetState" in PROMPT_STUDIO_WIDGET_HTML
+    assert "navigator.clipboard.writeText" in PROMPT_STUDIO_WIDGET_HTML
+    assert "Generate in ChatGPT" in PROMPT_STUDIO_WIDGET_HTML
+    assert "Copy prompt" in PROMPT_STUDIO_WIDGET_HTML
+    assert 'data-field="final_prompt"' in PROMPT_STUDIO_WIDGET_HTML
+
+
+def test_prompt_studio_widget_static_followup_defaults_and_copy_fallback():
+    assert "use Vulca's L1-L5 rubric" in PROMPT_STUDIO_WIDGET_HTML
+    assert 'document.createElement("textarea")' in PROMPT_STUDIO_WIDGET_HTML
+    assert "copyTarget.value = text" in PROMPT_STUDIO_WIDGET_HTML
