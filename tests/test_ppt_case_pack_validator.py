@@ -165,6 +165,74 @@ def test_source_must_be_reference_only(tmp_path: Path) -> None:
     assert "sources[0].allowed_use must be reference_analysis_only" in result.errors
 
 
+def test_source_title_must_be_string(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    sources_path = pack / "sources.json"
+    data = json.loads(sources_path.read_text(encoding="utf-8"))
+    data["sources"][0]["title"] = []
+    sources_path.write_text(json.dumps(data), encoding="utf-8")
+
+    result = validate_case_pack(pack)
+
+    assert result.ok is False
+    assert "sources[0].title must be a non-empty string" in result.errors
+
+
+def test_sources_json_directory_fails_without_raising(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    sources_path = pack / "sources.json"
+    sources_path.unlink()
+    sources_path.mkdir()
+
+    result = validate_case_pack(pack)
+
+    assert result.ok is False
+    assert "required path is not a file: sources.json" in result.errors
+
+
+def test_readme_directory_fails_without_raising(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    readme_path = pack / "README.md"
+    readme_path.unlink()
+    readme_path.mkdir()
+
+    result = validate_case_pack(pack)
+
+    assert result.ok is False
+    assert "required path is not a file: README.md" in result.errors
+
+
+def test_slide_pattern_role_must_be_string(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    patterns_path = pack / "slide_patterns.json"
+    data = json.loads(patterns_path.read_text(encoding="utf-8"))
+    data["patterns"][0]["role"] = []
+    patterns_path.write_text(json.dumps(data), encoding="utf-8")
+
+    result = validate_case_pack(pack)
+
+    assert result.ok is False
+    assert "slide_patterns.patterns[0].role must be a non-empty string" in result.errors
+
+
+def test_deck_outline_claim_must_be_string(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    outline_path = pack / "deck_outline.json"
+    data = json.loads(outline_path.read_text(encoding="utf-8"))
+    data["slides"][0]["claim"] = []
+    outline_path.write_text(json.dumps(data), encoding="utf-8")
+
+    result = validate_case_pack(pack)
+
+    assert result.ok is False
+    assert "deck_outline.slides[0].claim must be a non-empty string" in result.errors
+
+
 def test_deck_outline_references_existing_patterns(tmp_path: Path) -> None:
     pack = tmp_path / "pack"
     write_pack(pack)
