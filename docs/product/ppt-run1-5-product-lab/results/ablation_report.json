@@ -1,5 +1,38 @@
 {
   "schema_version": 1,
   "status": "not-run",
-  "arms": []
+  "generation_status": "generated-pending-review",
+  "scoring_status": "pending_gemini_review",
+  "arms": [
+    {
+      "id": "prompt_only",
+      "input_boundary": "baseline_prompt.md only; design_memory.json, tutorial_notes.md, vulca_generation_brief.md, and vulca_ppt_skill.md excluded while writing slide modules.",
+      "expected_signal": "Baseline comparator should be structurally valid and comparatively generic because it only receives the baseline prompt.",
+      "observed_signal": "pending_gemini_review",
+      "generation_warnings": [
+        "artifact-tool layout QA reported 0 errors and 24 warnings, mostly tight text or table split-inline warnings",
+        "native render was not executed"
+      ]
+    },
+    {
+      "id": "full_vulca",
+      "input_boundary": "vulca_generation_brief.md, design_memory.json, deck_outline.json, and product-lab slide primitives.",
+      "expected_signal": "Full Vulca should show stronger product-lab surfaces: Brief Cockpit, Learning Map, Experiment Lab, QA Gate, Product Decision.",
+      "observed_signal": "pending_gemini_review",
+      "generation_warnings": [
+        "artifact-tool layout QA reported 0 errors and 25 warnings, mostly tight text or table split-inline warnings",
+        "native render was not executed"
+      ]
+    },
+    {
+      "id": "bad_data",
+      "input_boundary": "bad_data_generation_brief.md with deliberately weak but structurally valid rules.",
+      "expected_signal": "Bad-data should remain structurally valid while visibly weaker through generic card grids, mismatched hierarchy, weak source boundaries, and poor product-surface feel.",
+      "observed_signal": "pending_gemini_review",
+      "generation_warnings": [
+        "artifact-tool layout QA reported 0 errors and 26 warnings, mostly tight text or table split-inline warnings",
+        "native render was not executed"
+      ]
+    }
+  ]
 }

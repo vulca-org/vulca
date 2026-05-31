@@ -1,5 +1,36 @@
 {
   "schema_version": 1,
   "status": "not-run",
-  "scores": []
+  "generation_status": "generated-pending-review",
+  "scoring_status": "pending_gemini_review",
+  "scores": [],
+  "arms": [
+    {
+      "id": "prompt_only",
+      "generation_status": "generated-pending-review",
+      "pptx_path": "/Users/yhryzy/.codex/worktrees/031a/vulca/outputs/019e805d-ace6-7490-8141-a3315b6d096d/presentations/ppt-run1-5-prompt-only/output/ppt-run1-5-prompt-only.pptx",
+      "contact_sheet_path": "/Users/yhryzy/.codex/worktrees/031a/vulca/outputs/019e805d-ace6-7490-8141-a3315b6d096d/presentations/ppt-run1-5-prompt-only/preview/contact-sheet.png",
+      "layout_dir": "/Users/yhryzy/.codex/worktrees/031a/vulca/outputs/019e805d-ace6-7490-8141-a3315b6d096d/presentations/ppt-run1-5-prompt-only/layout/final",
+      "media_entries": 0,
+      "delivery_gate": "internal-demo-ok-public-blocked"
+    },
+    {
+      "id": "full_vulca",
+      "generation_status": "generated-pending-review",
+      "pptx_path": "/Users/yhryzy/.codex/worktrees/031a/vulca/outputs/019e805d-ace6-7490-8141-a3315b6d096d/presentations/ppt-run1-5-full-vulca/output/ppt-run1-5-full-vulca.pptx",
+      "contact_sheet_path": "/Users/yhryzy/.codex/worktrees/031a/vulca/outputs/019e805d-ace6-7490-8141-a3315b6d096d/presentations/ppt-run1-5-full-vulca/preview/contact-sheet.png",
+      "layout_dir": "/Users/yhryzy/.codex/worktrees/031a/vulca/outputs/019e805d-ace6-7490-8141-a3315b6d096d/presentations/ppt-run1-5-full-vulca/layout/final",
+      "media_entries": 0,
+      "delivery_gate": "internal-demo-ok-public-blocked"
+    },
+    {
+      "id": "bad_data",
+      "generation_status": "generated-pending-review",
+      "pptx_path": "/Users/yhryzy/.codex/worktrees/031a/vulca/outputs/019e805d-ace6-7490-8141-a3315b6d096d/presentations/ppt-run1-5-bad-data/output/ppt-run1-5-bad-data.pptx",
+      "contact_sheet_path": "/Users/yhryzy/.codex/worktrees/031a/vulca/outputs/019e805d-ace6-7490-8141-a3315b6d096d/presentations/ppt-run1-5-bad-data/preview/contact-sheet.png",
+      "layout_dir": "/Users/yhryzy/.codex/worktrees/031a/vulca/outputs/019e805d-ace6-7490-8141-a3315b6d096d/presentations/ppt-run1-5-bad-data/layout/final",
+      "media_entries": 0,
+      "delivery_gate": "internal-demo-ok-public-blocked"
+    }
+  ]
 }
