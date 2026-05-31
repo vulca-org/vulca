@@ -53,7 +53,7 @@ def test_run1_sources_are_reference_analysis_only() -> None:
     data = load_json(PACK / "sources.json")
 
     ids = {source["id"] for source in data["sources"]}
-    assert EXPECTED_SOURCE_IDS <= ids
+    assert ids == EXPECTED_SOURCE_IDS
     for source in data["sources"]:
         assert source["allowed_use"] == "reference_analysis_only"
         assert source["url"].startswith("https://")
