@@ -2,6 +2,8 @@
 
 Create a prompt-only baseline 10-slide AI presentation product launch deck.
 
+Do not use Vulca case-pack rules, source registry entries, design memory, slide-pattern constraints, style tokens, layout JSON requirements, asset-provenance policy, or review rubric. Treat this as a normal standalone prompt-only baseline request.
+
 The deck is for a product called Vulca. Vulca helps teams create better PowerPoint presentations with AI while preserving design quality, editability, and reviewability.
 
 Audience: founders, product leads, design leads, and AI tool evaluators.

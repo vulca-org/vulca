@@ -110,6 +110,28 @@ def test_run1_prompts_keep_code_generation_primary() -> None:
     assert_contains(baseline, ["prompt-only baseline", "10-slide", "product launch deck"])
 
 
+def test_run1_generation_brief_requires_artifact_outputs() -> None:
+    brief = (PACK / "vulca_generation_brief.md").read_text(encoding="utf-8")
+
+    assert_contains(
+        brief,
+        [
+            "PPTX",
+            "contact sheet",
+            "layout JSON",
+            "asset provenance",
+            "iteration log",
+            "renderer availability",
+        ],
+    )
+
+
+def test_run1_gemini_prompt_is_not_final_approval() -> None:
+    prompt = (PACK / "gemini_review_prompt.md").read_text(encoding="utf-8")
+
+    assert_contains(prompt, ["not final approval", "human review", "numeric zero-through-five score"])
+
+
 def test_run1_results_start_as_not_run() -> None:
     provenance = load_json(PACK / "results" / "asset_provenance.json")
     comparison = (PACK / "results" / "comparison_report.md").read_text(encoding="utf-8")
