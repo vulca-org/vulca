@@ -48,6 +48,30 @@ RUN1_5_REQUIRED_FILES = [
 ]
 
 
+RUN2_REQUIRED_FILES = [
+    "README.md",
+    "commercial_case.md",
+    "sources.json",
+    "source_cards/README.md",
+    "video_cards/README.md",
+    "evidence_memory.json",
+    "aesthetic_memory.json",
+    "asset_memory.json",
+    "narrative_spine.json",
+    "slide_archetypes.json",
+    "aesthetic_rubric.md",
+    "vulca_ppt_skill.md",
+    "generation_briefs/README.md",
+    "generation_briefs/prompt_only.md",
+    "generation_briefs/run1_5_skill.md",
+    "generation_briefs/run2_skill.md",
+    "generation_briefs/bad_aesthetic_memory.md",
+    "results/README.md",
+    "results/comparison_report.md",
+    "results/delivery_gate.md",
+]
+
+
 RUN1_5_REQUIRED_MEMORY_FIELDS = [
     "evidence_id",
     "source_role",
@@ -61,6 +85,17 @@ RUN1_5_REQUIRED_MEMORY_FIELDS = [
 
 RUN1_5_SOURCE_ROLES = {"brief", "source", "tutorial", "review"}
 RUN1_5_SLIDE_PRIMITIVES = {"cockpit", "learning_map", "comparison_delta", "qa_gate", "decision_table"}
+RUN2_SOURCE_TYPES = {"commercial_case", "tutorial", "video", "design_article", "reference_deck"}
+RUN2_ALLOWED_USES = {"short_analysis", "derived_rules_only", "visual_inspiration", "timestamped_observation_only"}
+RUN2_RHYTHM_ROLES = {"cover", "setup", "contrast", "proof", "climax", "relief", "close"}
+RUN2_ASSET_TYPES = {
+    "generated_background",
+    "editable_svg",
+    "native_shapes",
+    "chart",
+    "diagram",
+    "video_derived_reference",
+}
 
 
 @dataclass(frozen=True)
@@ -76,6 +111,8 @@ def required_files_for_profile(profile: str) -> list[str]:
         return [*REQUIRED_FILES, *RUN1_REQUIRED_FILES]
     if profile == "run1_5":
         return [*REQUIRED_FILES, *RUN1_5_REQUIRED_FILES]
+    if profile == "run2":
+        return RUN2_REQUIRED_FILES
     raise ValueError(f"unknown case-pack profile: {profile}")
 
 
@@ -102,6 +139,20 @@ def load_json(path: Path, errors: list[str]) -> dict[str, Any]:
         errors.append(f"{path.name} must contain a JSON object")
         return {}
     return value
+
+
+def load_json_files(directory: Path, label: str, errors: list[str]) -> list[tuple[Path, dict[str, Any]]]:
+    if not directory.exists():
+        errors.append(f"{label} directory does not exist")
+        return []
+    if not directory.is_dir():
+        errors.append(f"{label} must be a directory")
+        return []
+    paths = sorted(directory.glob("*.json"))
+    if not paths:
+        errors.append(f"{label} must contain at least one JSON file")
+        return []
+    return [(path, load_json(path, errors)) for path in paths]
 
 
 def require_keys(label: str, value: dict[str, Any], keys: list[str], errors: list[str]) -> None:
@@ -338,6 +389,186 @@ def validate_deck_outline(pack_dir: Path, pattern_ids: set[str], errors: list[st
             errors.append(f"deck_outline.slides[{index}].pattern_id {pattern_id} is not defined in slide_patterns.json")
 
 
+def collect_run2_card_ids(pack_dir: Path, errors: list[str]) -> set[str]:
+    card_ids: set[str] = set()
+    common_required = ["schema_version", "card_id", "source_id", "source_type", "allowed_use", "do_not_copy"]
+    source_required = ["observed_move", "why_it_works", "ppt_translation", "quality_risk"]
+    video_required = [
+        "timestamp_map",
+        "keyframe_descriptions",
+        "pacing_notes",
+        "transition_observations",
+        "derived_aesthetic_cards",
+    ]
+
+    for label, required in [
+        ("source_cards", [*common_required, *source_required]),
+        ("video_cards", [*common_required, *video_required]),
+    ]:
+        for path, card in load_json_files(pack_dir / label, label, errors):
+            card_label = f"{label}/{path.name}"
+            require_keys(card_label, card, required, errors)
+            if "schema_version" in card:
+                require_integer(f"{card_label}.schema_version", card["schema_version"], errors)
+            card_id = card.get("card_id")
+            if "card_id" in card and require_non_empty_string(f"{card_label}.card_id", card_id, errors):
+                if card_id in card_ids:
+                    errors.append(f"{card_label}.card_id duplicates {card_id}")
+                card_ids.add(card_id)
+            if "source_id" in card:
+                require_non_empty_string(f"{card_label}.source_id", card["source_id"], errors)
+            if "source_type" in card:
+                validate_choice(f"{card_label}.source_type", card["source_type"], RUN2_SOURCE_TYPES, errors)
+            if "allowed_use" in card:
+                validate_choice(f"{card_label}.allowed_use", card["allowed_use"], RUN2_ALLOWED_USES, errors)
+            if "do_not_copy" in card:
+                require_non_empty_string(f"{card_label}.do_not_copy", card["do_not_copy"], errors)
+
+            if label == "source_cards":
+                for key in source_required:
+                    if key in card:
+                        require_non_empty_string(f"{card_label}.{key}", card[key], errors)
+            else:
+                for key in ["timestamp_map", "keyframe_descriptions", "derived_aesthetic_cards"]:
+                    if key in card:
+                        validate_string_list(f"{card_label}.{key}", card[key], errors)
+                for key in ["pacing_notes", "transition_observations"]:
+                    if key in card:
+                        require_non_empty_string(f"{card_label}.{key}", card[key], errors)
+    return card_ids
+
+
+def validate_run2_source_references(
+    label: str,
+    source_card_ids: Any,
+    card_ids: set[str],
+    errors: list[str],
+) -> None:
+    if not validate_string_list(label, source_card_ids, errors):
+        return
+    for index, source_card_id in enumerate(source_card_ids):
+        if source_card_id not in card_ids:
+            errors.append(f"{label}[{index}] {source_card_id} is not defined by source_cards or video_cards")
+
+
+def validate_run2_evidence_memory(pack_dir: Path, card_ids: set[str], errors: list[str]) -> None:
+    data = load_json(pack_dir / "evidence_memory.json", errors)
+    require_keys("evidence_memory.json", data, ["schema_version", "claims"], errors)
+    if "schema_version" in data:
+        require_integer("evidence_memory.schema_version", data["schema_version"], errors)
+    claims = data.get("claims", [])
+    if not isinstance(claims, list) or not claims:
+        errors.append("evidence_memory.claims must be a non-empty list")
+        return
+
+    required = ["id", "source_card_ids", "claim", "business_relevance", "allowed_use", "qa_checks"]
+    for index, claim in enumerate(claims):
+        label = f"evidence_memory.claims[{index}]"
+        if not isinstance(claim, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        require_keys(label, claim, required, errors)
+        for key in ["id", "claim", "business_relevance"]:
+            if key in claim:
+                require_non_empty_string(f"{label}.{key}", claim[key], errors)
+        if "allowed_use" in claim:
+            validate_choice(f"{label}.allowed_use", claim["allowed_use"], RUN2_ALLOWED_USES, errors)
+        if "qa_checks" in claim:
+            validate_string_list(f"{label}.qa_checks", claim["qa_checks"], errors)
+        if "source_card_ids" in claim:
+            validate_run2_source_references(f"{label}.source_card_ids", claim["source_card_ids"], card_ids, errors)
+
+
+def validate_run2_aesthetic_memory(pack_dir: Path, card_ids: set[str], errors: list[str]) -> None:
+    data = load_json(pack_dir / "aesthetic_memory.json", errors)
+    require_keys("aesthetic_memory.json", data, ["schema_version", "moves"], errors)
+    if "schema_version" in data:
+        require_integer("aesthetic_memory.schema_version", data["schema_version"], errors)
+    moves = data.get("moves", [])
+    if not isinstance(moves, list) or not moves:
+        errors.append("aesthetic_memory.moves must be a non-empty list")
+        return
+
+    required = [
+        "id",
+        "source_card_ids",
+        "aesthetic_move",
+        "trigger",
+        "composition_rule",
+        "typography_rule",
+        "density_budget",
+        "rhythm_role",
+        "ppt_primitive",
+        "negative_rules",
+        "qa_signal",
+    ]
+    string_fields = [
+        "id",
+        "aesthetic_move",
+        "trigger",
+        "composition_rule",
+        "typography_rule",
+        "ppt_primitive",
+        "qa_signal",
+    ]
+    for index, move in enumerate(moves):
+        label = f"aesthetic_memory.moves[{index}]"
+        if not isinstance(move, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        require_keys(label, move, required, errors)
+        for key in string_fields:
+            if key in move:
+                require_non_empty_string(f"{label}.{key}", move[key], errors)
+        if "source_card_ids" in move:
+            validate_run2_source_references(f"{label}.source_card_ids", move["source_card_ids"], card_ids, errors)
+        if "density_budget" in move:
+            validate_number_mapping(f"{label}.density_budget", move["density_budget"], errors)
+        if "rhythm_role" in move:
+            validate_choice(f"{label}.rhythm_role", move["rhythm_role"], RUN2_RHYTHM_ROLES, errors)
+        if "negative_rules" in move:
+            validate_string_list(f"{label}.negative_rules", move["negative_rules"], errors)
+
+
+def validate_run2_asset_memory(pack_dir: Path, card_ids: set[str], errors: list[str]) -> None:
+    data = load_json(pack_dir / "asset_memory.json", errors)
+    require_keys("asset_memory.json", data, ["schema_version", "assets"], errors)
+    if "schema_version" in data:
+        require_integer("asset_memory.schema_version", data["schema_version"], errors)
+    assets = data.get("assets", [])
+    if not isinstance(assets, list) or not assets:
+        errors.append("asset_memory.assets must be a non-empty list")
+        return
+
+    required = [
+        "id",
+        "asset_type",
+        "source_card_ids",
+        "allowed_slide_roles",
+        "provenance_state",
+        "text_editability",
+        "license_state",
+        "render_risks",
+        "accessibility_risks",
+    ]
+    for index, asset in enumerate(assets):
+        label = f"asset_memory.assets[{index}]"
+        if not isinstance(asset, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        require_keys(label, asset, required, errors)
+        for key in ["id", "provenance_state", "text_editability", "license_state"]:
+            if key in asset:
+                require_non_empty_string(f"{label}.{key}", asset[key], errors)
+        if "asset_type" in asset:
+            validate_choice(f"{label}.asset_type", asset["asset_type"], RUN2_ASSET_TYPES, errors)
+        if "source_card_ids" in asset:
+            validate_run2_source_references(f"{label}.source_card_ids", asset["source_card_ids"], card_ids, errors)
+        for key in ["allowed_slide_roles", "render_risks", "accessibility_risks"]:
+            if key in asset:
+                validate_string_list(f"{label}.{key}", asset[key], errors)
+
+
 def validate_run1_design_memory_observations(observations: list[Any], errors: list[str]) -> None:
     required = ["id", "source_ids", "principle", "code_generation_rule", "do_not_copy"]
     seen_ids: set[str] = set()
@@ -475,13 +706,20 @@ def validate_case_pack(pack_dir: str | Path, profile: str = "default") -> Valida
     if errors:
         return ValidationResult(False, errors)
 
+    validate_markdown_not_empty(root, errors, required_files)
+    if profile == "run2":
+        card_ids = collect_run2_card_ids(root, errors)
+        validate_run2_evidence_memory(root, card_ids, errors)
+        validate_run2_aesthetic_memory(root, card_ids, errors)
+        validate_run2_asset_memory(root, card_ids, errors)
+        return ValidationResult(not errors, errors)
+
     validate_sources(root, errors)
     validate_narrative_rules(root, errors)
     validate_style_tokens(root, errors)
     validate_asset_rules(root, errors)
     pattern_ids = validate_slide_patterns(root, errors)
     validate_deck_outline(root, pattern_ids, errors)
-    validate_markdown_not_empty(root, errors, required_files)
     if profile in {"run1", "run1_5"}:
         validate_design_memory(root, errors, profile=profile)
     return ValidationResult(not errors, errors)
@@ -490,7 +728,7 @@ def validate_case_pack(pack_dir: str | Path, profile: str = "default") -> Valida
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate a Vulca PPT case pack.")
     parser.add_argument("pack_dir", type=Path)
-    parser.add_argument("--profile", choices=["default", "run1", "run1_5"], default="default")
+    parser.add_argument("--profile", choices=["default", "run1", "run1_5", "run2"], default="default")
     args = parser.parse_args()
     result = validate_case_pack(args.pack_dir, profile=args.profile)
     if result.ok:
