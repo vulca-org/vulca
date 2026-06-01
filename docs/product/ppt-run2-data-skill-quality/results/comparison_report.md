@@ -2,7 +2,48 @@
 
 Status: rerun-reviewed-public-blocked.
 
-Run 2.1 has now been regenerated as a four-arm local experiment. The result is clear but bounded:
+Run 2.2 has now been regenerated as a four-arm local experiment after adding `multimodal_database.json` and `visual_learning_targets.json`. The result is clear but bounded:
+
+- `run2_2_full_skill` wins on visible learning evidence: before/after, mini-preview, rhythm budget, transcript compression, and public-demo climax targets now appear in the deck structure and trace.
+- It still does not win as a public-video-grade presentation: the targets are represented schematically, not as high-fidelity native slide thumbnails.
+- The next pass must turn target schemas into real editable visual components before another four-arm rerun.
+
+| Arm | Generation status | Review status | Delivery gate | Average |
+| --- | --- | --- | --- | ---: |
+| `prompt_only` | generated | reviewed | `internal-demo-ok-public-blocked` | 1.86 |
+| `run1_5_skill` | generated | reviewed | `internal-demo-ok-public-blocked` | 2.93 |
+| `run2_2_full_skill` | generated | reviewed | `internal-demo-ok-public-blocked` | 4.05 |
+| `bad_aesthetic_memory` | generated | reviewed | `internal-demo-ok-public-blocked` | 2.10 |
+
+Public publishing remains blocked until native or cross-platform render inspection and human approval pass.
+
+## Run 2.2 Rerun Score Table
+
+Scores are 0-5 internal pilot scores. They combine local contact-sheet inspection, Gemini artifact review, trace refresh state, structural delivery QA, and layout QA. They are not public-release claims.
+
+| Dimension | `prompt_only` | `run1_5_skill` | `run2_2_full_skill` | `bad_aesthetic_memory` |
+| --- | ---: | ---: | ---: | ---: |
+| `commercial_specificity` | 3.0 | 3.5 | 4.3 | 3.2 |
+| `evidence_alignment` | 1.0 | 4.0 | 4.7 | 3.2 |
+| `multimodal_learning` | 0.0 | 0.0 | 4.4 | 3.0 |
+| `visual_learning_target_execution` | 0.0 | 0.0 | 3.6 | 1.4 |
+| `visual_hierarchy` | 2.3 | 3.0 | 3.8 | 1.7 |
+| `rhythm_variance` | 2.0 | 2.5 | 3.8 | 1.4 |
+| `density_control` | 2.8 | 2.4 | 3.7 | 1.6 |
+| `public_video_taste` | 1.8 | 2.2 | 3.0 | 1.3 |
+| `trace_closure` | 2.0 | 3.8 | 4.5 | 3.5 |
+
+## Run 2.2 Findings
+
+- `prompt_only`: still structurally valid but cannot use multimodal data, visual learning targets, or memory.
+- `run1_5_skill`: remains useful as an evidence-heavy baseline but has no multimodal/visual-target layer.
+- `run2_2_full_skill`: best internal arm for proving that multimodal data changed generation behavior. It is not yet visually polished enough for public release.
+- `bad_aesthetic_memory`: confirms that valid data plus weak aesthetic memory still collapses into dashboard-like report pages.
+- Audit correction: Run 2.2 should repeat the same five layers again. The next pass must replace schematic boxes with native high-fidelity before/after thumbnails and a real visual climax.
+
+## Run 2.1 Rerun Summary
+
+Run 2.1 was regenerated as a four-arm local experiment. The result was clear but bounded:
 
 - `run2_1_full_skill` wins on product learning: tutorial/case observations now become executable rules, guards, and QA probes.
 - It does not yet win as a public-video-grade presentation: the deck is cleaner and more intentional, but still reads as a product/system proof more than a high-aesthetic public demo.
@@ -75,6 +116,8 @@ This is the older Run 2.0 internal score table retained for comparison.
 - `.gemini-agent/artifacts/2026-06-01T152221854Z-artifacts.json`
 - `.gemini-agent/artifacts/2026-06-01T161711306Z-artifacts.json`
 - `.gemini-agent/artifacts/2026-06-01T161738825Z-artifacts.json`
+- `.gemini-agent/artifacts/2026-06-01T173422454Z-artifacts.json`
+- `.gemini-agent/artifacts/2026-06-01T173452863Z-artifacts.json`
 
 ## Local Contact Sheets
 
@@ -87,11 +130,16 @@ This is the older Run 2.0 internal score table retained for comparison.
 - `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-1-full-vulca/preview/contact-sheet.png`
 - `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-1-bad-aesthetic-memory/preview/contact-sheet.png`
 - `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-1-four-arm-contact-sheet.png`
+- `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-2-prompt-only/preview/contact-sheet.png`
+- `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-2-run1-5-skill/preview/contact-sheet.png`
+- `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-2-full-vulca/preview/contact-sheet.png`
+- `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-2-bad-aesthetic-memory/preview/contact-sheet.png`
+- `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-2-four-arm-contact-sheet.png`
 
 ## Blockers
 
-- Trace QA outcome refresh has been written back for the regenerated local Run 2.1 arms; those outputs remain untracked under `outputs/`.
+- Trace QA outcome refresh has been written back for the regenerated local Run 2.2 arms; those outputs remain untracked under `outputs/`.
 - Native PowerPoint, Keynote, or Google Slides render inspection has not passed.
 - Human approval has not been recorded.
-- Public-video-grade visual proof is still weak: the current best arm uses abstract diagrams instead of real slide diffs or realistic design previews.
+- Public-video-grade visual proof is still weak: the current best arm uses schematic boxes instead of high-fidelity native before/after thumbnails and realistic design previews.
 - Public-ready status is therefore blocked.

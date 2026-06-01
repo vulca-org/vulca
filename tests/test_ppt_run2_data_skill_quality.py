@@ -455,10 +455,14 @@ def test_run2_results_reviewed_and_public_blocked() -> None:
 
     assert_contains(comparison, ["Status", "rerun-reviewed-public-blocked"])
     assert_contains(comparison, ["prompt_only", "run1_5_skill", "run2_skill", "bad_aesthetic_memory"])
+    assert_contains(
+        comparison,
+        ["Run 2.2", "run2_2_full_skill", "multimodal_learning", "visual_learning_target_execution"],
+    )
     assert_contains(comparison, ["Run 2.1", "run2_1_full_skill", "product learning", "not public-release claims"])
     assert "0.00" not in comparison
     assert_contains(delivery, ["public publishing", "blocked", "native render", "human approval", "trace manifest"])
-    assert_contains(delivery, ["Run 2.1", "pass for local Run 2.1 arms", "public-video-grade visual proof"])
+    assert_contains(delivery, ["Run 2.2", "pass for local Run 2.2 arms", "public-video-grade visual proof"])
     assert trace_contract["required_output_name"] == "trace_manifest.json"
     assert "aesthetic_move_ids" in trace_contract["per_slide_required_fields"]
     assert "runtime_isolation" in trace_contract["arm_required_fields"]
@@ -481,6 +485,39 @@ def test_run2_audit_records_trace_and_native_render_blockers() -> None:
     assert_contains(audit, ["Keynote -609 recovery", "manual export"])
     assert_contains(delivery, ["trace QA outcome fields refreshed", "blocked"])
     assert_contains(comparison, ["Trace QA outcome refresh", "not public-release claims"])
+
+
+def test_run2_2_records_visual_target_rerun_result() -> None:
+    result = (PACK / "results" / "run2_2_rerun_result.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_2_rerun_result.json")
+
+    assert result_json["status"] == "rerun_completed_public_blocked"
+    assert result_json["public_ready"] is False
+    assert result_json["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert result_json["rerun"]["status"] == "completed"
+    assert result_json["rerun"]["best_internal_arm"] == "run2_2_full_skill"
+    assert result_json["rerun"]["generated_outputs_committed"] is False
+    assert (
+        result_json["rerun"]["best_internal_arm_verdict"]
+        == "visible_learning_targets_present_but_not_public_video_grade"
+    )
+    assert result_json["next_required_action"] == "turn_visual_targets_into_real_native_slide_thumbnails_and_rerun"
+    assert_contains(
+        json.dumps(result_json["visible_learning"]),
+        ["schematic", "not_high_fidelity", "traceable", "placeholder"],
+    )
+    assert_contains(
+        result,
+        [
+            "Run 2.2",
+            "multimodal database",
+            "visual learning targets",
+            "schematic",
+            "not public-video-grade",
+            "Do not advance to Run 3.0",
+            "native-PPT components",
+        ],
+    )
 
 
 def test_run2_1_records_rerun_result_and_next_visual_depth_gate() -> None:
