@@ -778,3 +778,45 @@ def test_run2_profile_rejects_card_source_id_absent_from_sources(tmp_path: Path)
         "source_cards/card_cinematic_cover.json.source_id missing_source is not defined in sources.json"
         in result.errors
     )
+
+
+def test_run2_profile_rejects_narrative_spine_unknown_aesthetic_move(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    spine_path = pack / "narrative_spine.json"
+    spine = json.loads(spine_path.read_text(encoding="utf-8"))
+    spine["slides"][0]["aesthetic_move_ids"] = ["missing_move"]
+    spine_path.write_text(json.dumps(spine, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert (
+        "narrative_spine.slides[0].aesthetic_move_ids[0] missing_move is not defined in aesthetic_memory.json"
+        in result.errors
+    )
+
+
+def test_run2_profile_rejects_slide_archetype_unknown_aesthetic_move(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    archetypes_path = pack / "slide_archetypes.json"
+    archetypes = json.loads(archetypes_path.read_text(encoding="utf-8"))
+    archetypes["archetypes"][0]["aesthetic_move_ids"] = ["missing_move"]
+    archetypes_path.write_text(json.dumps(archetypes, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert (
+        "slide_archetypes.archetypes[0].aesthetic_move_ids[0] missing_move is not defined in aesthetic_memory.json"
+        in result.errors
+    )

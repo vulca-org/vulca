@@ -457,6 +457,19 @@ def validate_run2_source_references(
             errors.append(f"{label}[{index}] {source_card_id} is not defined by source_cards or video_cards")
 
 
+def validate_run2_aesthetic_move_references(
+    label: str,
+    aesthetic_move_ids: Any,
+    move_ids: set[str],
+    errors: list[str],
+) -> None:
+    if not validate_string_list(label, aesthetic_move_ids, errors):
+        return
+    for index, move_id in enumerate(aesthetic_move_ids):
+        if move_id not in move_ids:
+            errors.append(f"{label}[{index}] {move_id} is not defined in aesthetic_memory.json")
+
+
 def validate_run2_evidence_memory(pack_dir: Path, card_ids: set[str], errors: list[str]) -> None:
     data = load_json(pack_dir / "evidence_memory.json", errors)
     require_keys("evidence_memory.json", data, ["schema_version", "claims"], errors)
@@ -485,7 +498,7 @@ def validate_run2_evidence_memory(pack_dir: Path, card_ids: set[str], errors: li
             validate_run2_source_references(f"{label}.source_card_ids", claim["source_card_ids"], card_ids, errors)
 
 
-def validate_run2_aesthetic_memory(pack_dir: Path, card_ids: set[str], errors: list[str]) -> None:
+def validate_run2_aesthetic_memory(pack_dir: Path, card_ids: set[str], errors: list[str]) -> set[str]:
     data = load_json(pack_dir / "aesthetic_memory.json", errors)
     require_keys("aesthetic_memory.json", data, ["schema_version", "moves"], errors)
     if "schema_version" in data:
@@ -493,7 +506,7 @@ def validate_run2_aesthetic_memory(pack_dir: Path, card_ids: set[str], errors: l
     moves = data.get("moves", [])
     if not isinstance(moves, list) or not moves:
         errors.append("aesthetic_memory.moves must be a non-empty list")
-        return
+        return set()
 
     required = [
         "id",
@@ -517,6 +530,7 @@ def validate_run2_aesthetic_memory(pack_dir: Path, card_ids: set[str], errors: l
         "ppt_primitive",
         "qa_signal",
     ]
+    move_ids: set[str] = set()
     for index, move in enumerate(moves):
         label = f"aesthetic_memory.moves[{index}]"
         if not isinstance(move, dict):
@@ -526,6 +540,11 @@ def validate_run2_aesthetic_memory(pack_dir: Path, card_ids: set[str], errors: l
         for key in string_fields:
             if key in move:
                 require_non_empty_string(f"{label}.{key}", move[key], errors)
+        move_id = move.get("id")
+        if isinstance(move_id, str) and move_id.strip():
+            if move_id in move_ids:
+                errors.append(f"{label}.id duplicates {move_id}")
+            move_ids.add(move_id)
         if "source_card_ids" in move:
             validate_run2_source_references(f"{label}.source_card_ids", move["source_card_ids"], card_ids, errors)
         if "density_budget" in move:
@@ -534,6 +553,7 @@ def validate_run2_aesthetic_memory(pack_dir: Path, card_ids: set[str], errors: l
             validate_choice(f"{label}.rhythm_role", move["rhythm_role"], RUN2_RHYTHM_ROLES, errors)
         if "negative_rules" in move:
             validate_string_list(f"{label}.negative_rules", move["negative_rules"], errors)
+    return move_ids
 
 
 def validate_run2_asset_memory(pack_dir: Path, card_ids: set[str], errors: list[str]) -> None:
@@ -575,7 +595,7 @@ def validate_run2_asset_memory(pack_dir: Path, card_ids: set[str], errors: list[
                 validate_string_list(f"{label}.{key}", asset[key], errors)
 
 
-def validate_run2_narrative_spine(pack_dir: Path, errors: list[str]) -> None:
+def validate_run2_narrative_spine(pack_dir: Path, move_ids: set[str], errors: list[str]) -> None:
     data = load_json(pack_dir / "narrative_spine.json", errors)
     require_keys("narrative_spine.json", data, ["schema_version", "deck_length", "slides"], errors)
     if "schema_version" in data:
@@ -599,10 +619,15 @@ def validate_run2_narrative_spine(pack_dir: Path, errors: list[str]) -> None:
         if "rhythm_role" in slide:
             validate_choice(f"{label}.rhythm_role", slide["rhythm_role"], RUN2_RHYTHM_ROLES, errors)
         if "aesthetic_move_ids" in slide:
-            validate_string_list(f"{label}.aesthetic_move_ids", slide["aesthetic_move_ids"], errors)
+            validate_run2_aesthetic_move_references(
+                f"{label}.aesthetic_move_ids",
+                slide["aesthetic_move_ids"],
+                move_ids,
+                errors,
+            )
 
 
-def validate_run2_slide_archetypes(pack_dir: Path, errors: list[str]) -> None:
+def validate_run2_slide_archetypes(pack_dir: Path, move_ids: set[str], errors: list[str]) -> None:
     data = load_json(pack_dir / "slide_archetypes.json", errors)
     require_keys("slide_archetypes.json", data, ["schema_version", "archetypes"], errors)
     if "schema_version" in data:
@@ -624,7 +649,12 @@ def validate_run2_slide_archetypes(pack_dir: Path, errors: list[str]) -> None:
         if "rhythm_role" in archetype:
             validate_choice(f"{label}.rhythm_role", archetype["rhythm_role"], RUN2_RHYTHM_ROLES, errors)
         if "aesthetic_move_ids" in archetype:
-            validate_string_list(f"{label}.aesthetic_move_ids", archetype["aesthetic_move_ids"], errors)
+            validate_run2_aesthetic_move_references(
+                f"{label}.aesthetic_move_ids",
+                archetype["aesthetic_move_ids"],
+                move_ids,
+                errors,
+            )
         if "density_budget" in archetype:
             validate_number_mapping(f"{label}.density_budget", archetype["density_budget"], errors)
 
@@ -771,10 +801,10 @@ def validate_case_pack(pack_dir: str | Path, profile: str = "default") -> Valida
         source_ids = validate_sources(root, errors)
         card_ids = collect_run2_card_ids(root, source_ids, errors)
         validate_run2_evidence_memory(root, card_ids, errors)
-        validate_run2_aesthetic_memory(root, card_ids, errors)
+        move_ids = validate_run2_aesthetic_memory(root, card_ids, errors)
         validate_run2_asset_memory(root, card_ids, errors)
-        validate_run2_narrative_spine(root, errors)
-        validate_run2_slide_archetypes(root, errors)
+        validate_run2_narrative_spine(root, move_ids, errors)
+        validate_run2_slide_archetypes(root, move_ids, errors)
         return ValidationResult(not errors, errors)
 
     validate_sources(root, errors)
