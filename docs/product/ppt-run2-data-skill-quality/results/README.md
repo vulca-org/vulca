@@ -1,9 +1,16 @@
 # Results
 
-Status: not-run-public-blocked.
+Status: reviewed-public-blocked.
 
-Generated decks, contact sheets, previews, and layout JSON remain local under `outputs/` unless the user explicitly approves release packaging.
+Four local pilot arms were generated under `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/`:
 
-Results are empty until the four generation arms run, render inspection is recorded, and human approval gates are evaluated. This package must not claim that Run 2.0 won or is public-ready before those gates pass.
+- `ppt-run2-prompt-only`
+- `ppt-run2-run1-5-skill`
+- `ppt-run2-full-vulca`
+- `ppt-run2-bad-aesthetic-memory`
 
-Each arm must include a persisted `trace_manifest.json` under `outputs/` before comparison. The manifest is the audit trail for runtime isolation, memory selection, density counts, deletion/routing decisions, native PPT object counts, raster-image limits, layout geometry checks, asset provenance, QA outcomes, and release-gate status.
+Generated decks, contact sheets, previews, trace manifests, layout JSON, and delivery reports remain local under `outputs/` unless the user explicitly approves release packaging.
+
+The reviewed internal result is that `run2_skill` is visibly stronger than `prompt_only` and `run1_5_skill` on aesthetic memory usage, rhythm variance, and density control. `bad_aesthetic_memory` degrades visual quality while preserving structural validity.
+
+Public publishing remains blocked until native or cross-platform render inspection and human approval pass.

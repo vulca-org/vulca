@@ -261,12 +261,14 @@ def test_run2_bad_aesthetic_memory_has_structured_replacement() -> None:
     assert_contains(json.dumps(replacement), ["dashboard", "dense", "small labels", "no visual climax"])
 
 
-def test_run2_results_start_public_blocked() -> None:
+def test_run2_results_reviewed_and_public_blocked() -> None:
     comparison = (PACK / "results" / "comparison_report.md").read_text(encoding="utf-8")
     delivery = (PACK / "results" / "delivery_gate.md").read_text(encoding="utf-8")
     trace_contract = load_json(PACK / "results" / "trace_manifest_contract.json")
 
-    assert_contains(comparison, ["Status", "not-run-public-blocked"])
+    assert_contains(comparison, ["Status", "reviewed-public-blocked"])
+    assert_contains(comparison, ["prompt_only", "run1_5_skill", "run2_skill", "bad_aesthetic_memory"])
+    assert "0.00" not in comparison
     assert_contains(delivery, ["public publishing", "blocked", "native render", "human approval", "trace manifest"])
     assert trace_contract["required_output_name"] == "trace_manifest.json"
     assert "aesthetic_move_ids" in trace_contract["per_slide_required_fields"]
