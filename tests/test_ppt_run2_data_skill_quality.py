@@ -25,6 +25,7 @@ EXPECTED_VIDEO_CARD_IDS = {
     "video_keynote_rhythm",
     "video_transition_pacing",
 }
+EXPECTED_MULTIMODAL_MODALITIES = {"text", "image_reference", "video", "audio", "transcript", "interaction"}
 EXPECTED_CLAIM_IDS = {
     "claim_data_changes_deck_quality",
     "claim_aesthetic_memory_controls_rhythm",
@@ -145,6 +146,64 @@ def test_run2_has_thick_source_and_video_cards() -> None:
         )
 
 
+def test_run2_has_multimodal_lesson_database() -> None:
+    database = load_json(PACK / "multimodal_database.json")
+    records = database["records"]
+    covered_modalities = {modality for record in records for modality in record["modalities"]}
+
+    assert database["status"] == "run2_2_multimodal_contract_public_blocked"
+    assert set(database["required_modalities"]) == EXPECTED_MULTIMODAL_MODALITIES
+    assert covered_modalities == EXPECTED_MULTIMODAL_MODALITIES
+    assert database["storage_policy"]["raw_media"] == "forbidden"
+    assert_contains(
+        json.dumps(database["storage_policy"]),
+        ["Do not store", "audio", "video", "full transcripts", "screenshots", "source assets"],
+    )
+
+    for record in records:
+        assert record["allowed_storage"] == "derived_observations_only"
+        assert record["anchors"]
+        assert set(record["modalities"]) <= EXPECTED_MULTIMODAL_MODALITIES
+        assert record["do_not_store"]
+        for anchor in record["anchors"]:
+            assert anchor["modality"] in record["modalities"]
+            assert anchor["allowed_use"] in {
+                "short_analysis",
+                "derived_rules_only",
+                "visual_inspiration",
+                "timestamped_observation_only",
+            }
+            assert_mentions_any(
+                anchor["extracted_design_signal"],
+                {"slide", "Generate", "Reject", "Convert", "Reduce", "Use"},
+            )
+
+    anchors_by_modality = {"transcript": [], "interaction": []}
+    for record in records:
+        for anchor in record["anchors"]:
+            if anchor["modality"] in anchors_by_modality:
+                anchors_by_modality[anchor["modality"]].append(anchor)
+    assert anchors_by_modality["transcript"]
+    assert anchors_by_modality["interaction"]
+    assert_contains(
+        " ".join(anchor["extracted_design_signal"] for anchor in anchors_by_modality["transcript"]),
+        ["native headline", "do not place full transcript text"],
+    )
+    assert_contains(
+        " ".join(anchor["extracted_design_signal"] for anchor in anchors_by_modality["interaction"]),
+        ["selected memory", "density budget", "release gate"],
+    )
+
+    tasks = database["cross_modal_design_tasks"]
+    assert {task["id"] for task in tasks} >= {
+        "before_after_visual_delta",
+        "audio_to_rhythm_budget",
+        "transcript_to_native_headline",
+        "interaction_to_skill_surface",
+    }
+    assert_contains(json.dumps(tasks), ["visible transformation", "density", "native", "generator behavior"])
+
+
 def test_run2_cards_have_executable_extraction_units() -> None:
     required = {"unit_id", "source_anchor", "derived_rule", "slide_role", "execution_guard", "qa_probe"}
     allowed_roles = {"cover", "setup", "contrast", "proof", "climax", "relief", "close"}
@@ -218,6 +277,7 @@ def test_run2_skill_is_a_staged_deck_director() -> None:
     assert_contains(
         body,
         [
+            "compile the multimodal database",
             "select the narrative spine",
             "compile evidence memory",
             "compile aesthetic memory",
@@ -241,6 +301,7 @@ def test_run2_skill_is_a_staged_deck_director() -> None:
             "QA outcomes",
         ],
     )
+    assert_contains(body, ["text, image-reference, video, audio, transcript, and interaction anchors"])
 
 
 def test_run2_skill_workflow_is_declarative_and_gated() -> None:
@@ -248,8 +309,17 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
     stage_ids = [stage["id"] for stage in workflow["stages"]]
 
     assert workflow["workflow_type"] == "declarative_skill_director"
+    assert workflow["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert workflow["five_layer_loop"] == [
+        "real_commercial_case",
+        "multimodal_tutorial_case_data",
+        "evidence_aesthetic_asset_memory",
+        "skill_workflow",
+        "rerun_and_evaluation",
+    ]
     assert stage_ids == [
         "read_commercial_case",
+        "compile_multimodal_database",
         "compile_evidence_memory",
         "compile_aesthetic_memory",
         "select_slide_archetypes",
@@ -259,8 +329,10 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
         "refresh_trace_qa_outcomes",
         "emit_release_decision",
     ]
-    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 10))
+    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 11))
     assert workflow["repair_triggers"]
+    assert "multimodal_database.json" in json.dumps(workflow)
+    assert_contains(json.dumps(workflow), ["all required modalities covered", "no copied source media stored"])
     assert "public_blocked" in workflow["release_decisions"]
     assert "public_ready" not in workflow["release_decisions"]
     assert "automated repair without human gate" not in normalize(json.dumps(workflow))
@@ -280,7 +352,10 @@ def test_run2_generation_briefs_define_four_arms() -> None:
         (PACK / "generation_briefs" / "prompt_only.md").read_text(encoding="utf-8"), ["commercial brief only"]
     )
     assert_contains((PACK / "generation_briefs" / "run1_5_skill.md").read_text(encoding="utf-8"), ["evidence-heavy"])
-    assert_contains((PACK / "generation_briefs" / "run2_skill.md").read_text(encoding="utf-8"), ["aesthetic memory"])
+    assert_contains(
+        (PACK / "generation_briefs" / "run2_skill.md").read_text(encoding="utf-8"),
+        ["multimodal database", "aesthetic memory"],
+    )
     assert_contains(
         (PACK / "generation_briefs" / "bad_aesthetic_memory.md").read_text(encoding="utf-8"), ["negative control"]
     )

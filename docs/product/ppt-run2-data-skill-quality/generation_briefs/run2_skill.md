@@ -2,7 +2,7 @@
 
 Arm id: `run2_skill`.
 
-Use commercial case, source cards, video cards, evidence memory, aesthetic memory, asset memory, narrative spine, slide archetypes, and the Run 2.0 staged deck-director skill.
+Use commercial case, multimodal database, source cards, video cards, evidence memory, aesthetic memory, asset memory, narrative spine, slide archetypes, and the Run 2.0 staged deck-director skill.
 
 The arm must generate a code-first PPT with editable native text and structures. It must select source/evidence/aesthetic/asset memory before writing slide code, enforce density budgets and negative rules, apply the deletion rule, and keep public-ready claims blocked until render, provenance, and human approval gates pass.
 
@@ -10,6 +10,7 @@ The arm must generate a code-first PPT with editable native text and structures.
 
 - `commercial_case.md`
 - `sources.json`
+- `multimodal_database.json`
 - `source_cards/`
 - `video_cards/`
 - `evidence_memory.json`

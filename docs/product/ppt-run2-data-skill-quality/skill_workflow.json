@@ -1,7 +1,15 @@
 {
   "schema_version": 1,
   "workflow_type": "declarative_skill_director",
-  "status": "run2_1_declarative_public_blocked",
+  "status": "run2_2_multimodal_declarative_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "five_layer_loop": [
+    "real_commercial_case",
+    "multimodal_tutorial_case_data",
+    "evidence_aesthetic_asset_memory",
+    "skill_workflow",
+    "rerun_and_evaluation"
+  ],
   "stages": [
     {
       "id": "read_commercial_case",
@@ -12,24 +20,32 @@
       "gates": ["case is concrete", "public-demo failure mode is named"]
     },
     {
-      "id": "compile_evidence_memory",
+      "id": "compile_multimodal_database",
       "order": 2,
+      "layer": "tutorial_case_video_audio_data",
+      "inputs": ["multimodal_database.json", "sources.json"],
+      "outputs": ["modal anchors", "cross-modal design tasks", "storage boundaries", "source-to-skill trace"],
+      "gates": ["all required modalities covered", "no copied source media stored", "anchors become executable design signals"]
+    },
+    {
+      "id": "compile_evidence_memory",
+      "order": 3,
       "layer": "tutorial_case_video_data",
-      "inputs": ["source_cards/", "video_cards/", "evidence_memory.json"],
-      "outputs": ["claim ids", "allowed use rules", "source boundaries"],
-      "gates": ["every claim traces to a card", "no copied source assets or long prose"]
+      "inputs": ["multimodal_database.json", "source_cards/", "video_cards/", "evidence_memory.json"],
+      "outputs": ["claim ids", "allowed use rules", "source boundaries", "multimodal anchor references"],
+      "gates": ["every claim traces to a card", "multimodal anchors are derived observations only", "no copied source assets or long prose"]
     },
     {
       "id": "compile_aesthetic_memory",
-      "order": 3,
+      "order": 4,
       "layer": "memory_layer",
-      "inputs": ["aesthetic_memory.json", "asset_memory.json"],
-      "outputs": ["rhythm roles", "density budgets", "negative rules", "asset constraints"],
+      "inputs": ["multimodal_database.json", "aesthetic_memory.json", "asset_memory.json"],
+      "outputs": ["rhythm roles", "density budgets", "negative rules", "asset constraints", "before/after visual tasks"],
       "gates": ["every aesthetic move traces to extraction units", "density budget is enforceable"]
     },
     {
       "id": "select_slide_archetypes",
-      "order": 4,
+      "order": 5,
       "layer": "skill_workflow",
       "inputs": ["narrative_spine.json", "slide_archetypes.json"],
       "outputs": ["slide role map", "selected aesthetic move ids", "deletion or routing plan"],
@@ -37,7 +53,7 @@
     },
     {
       "id": "generate_code_first_ppt",
-      "order": 5,
+      "order": 6,
       "layer": "skill_workflow",
       "inputs": ["generation_briefs/run2_skill.md", "selected archetypes", "asset memory"],
       "outputs": ["editable PPTX", "preview PNGs", "layout JSON", "trace_manifest.json"],
@@ -45,7 +61,7 @@
     },
     {
       "id": "run_structural_and_aesthetic_qa",
-      "order": 6,
+      "order": 7,
       "layer": "rerun_and_evaluation",
       "inputs": ["PPTX", "layout JSON", "contact sheet", "aesthetic_rubric.md"],
       "outputs": ["delivery report", "layout report", "Gemini artifact review", "score table"],
@@ -53,7 +69,7 @@
     },
     {
       "id": "recommend_repairs",
-      "order": 7,
+      "order": 8,
       "layer": "skill_workflow",
       "inputs": ["delivery report", "layout report", "Gemini review", "human visual notes"],
       "outputs": ["repair recommendations", "blocked release reasons"],
@@ -61,7 +77,7 @@
     },
     {
       "id": "refresh_trace_qa_outcomes",
-      "order": 8,
+      "order": 9,
       "layer": "rerun_and_evaluation",
       "inputs": ["trace_manifest.json", "delivery report", "layout report"],
       "outputs": ["post-QA trace manifest", "backup manifest", "dry-run diff"],
@@ -69,7 +85,7 @@
     },
     {
       "id": "emit_release_decision",
-      "order": 9,
+      "order": 10,
       "layer": "rerun_and_evaluation",
       "inputs": ["post-QA trace manifest", "native render result", "human approval record"],
       "outputs": ["internal_only or public_blocked decision"],

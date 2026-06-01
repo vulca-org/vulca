@@ -8,7 +8,8 @@ Scores are 0-5. Higher is better. A score is valid only when the reviewer can po
 | --- | --- |
 | `commercial_specificity` | The deck names a concrete audience, decision, and failure mode. |
 | `evidence_alignment` | Claims trace to evidence memory and source cards. |
-| `aesthetic_memory_usage` | Visible design moves trace to aesthetic memory ids. |
+| `aesthetic_memory_usage` | Visible design moves trace to aesthetic memory ids and multimodal anchors where applicable. |
+| `multimodal_learning` | Text, image-reference, video, audio, transcript, or interaction observations produce visible generator behavior rather than abstract process boxes. |
 | `visual_hierarchy` | Each slide has one dominant claim and one dominant visual object. |
 | `rhythm_variance` | The six-slide sequence includes cover, setup, contrast, proof, climax, and close. |
 | `density_control` | Main slides avoid dense tables, repeated dashboard grids, and small-label overload. |
@@ -23,6 +24,7 @@ Run 2.0 must beat Run 1.5 on `aesthetic_memory_usage`, `rhythm_variance`, and `d
 - Score from generated outputs only; do not score intent, prompts, or memory files as deck quality.
 - Use the comparison arms exactly as defined in `generation_briefs/`.
 - Require a persisted per-slide `trace_manifest.json` for every generated arm before scoring.
+- Require any claimed multimodal learning to trace to `multimodal_database.json` anchors and to visible slide behavior.
 - Require `generation_protocol.md` runtime isolation, native PPT QA, and layout geometry QA before scoring.
 - Treat missing native render inspection as a public-release blocker even when screenshots look acceptable.
 - Penalize any slide where a bitmap replaces editable text, labels, tables, diagrams, or proof structure.

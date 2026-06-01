@@ -537,10 +537,112 @@ def write_run2_required_files(pack: Path) -> None:
         "# Bad Aesthetic Memory\n\nNegative control arm.\n",
         encoding="utf-8",
     )
+    (pack / "multimodal_database.json").write_text(
+        json.dumps(valid_run2_multimodal_database(), indent=2),
+        encoding="utf-8",
+    )
     (pack / "results" / "delivery_gate.md").write_text(
         "# Delivery Gate\n\nPublic publishing is blocked before native render and human review.\n",
         encoding="utf-8",
     )
+
+
+def valid_run2_multimodal_database() -> dict:
+    return {
+        "schema_version": 1,
+        "status": "run2_2_multimodal_contract_public_blocked",
+        "storage_policy": {
+            "default": "derived_observations_only",
+            "raw_media": "forbidden",
+            "copyright_boundary": "Store derived observations only; do not store copied source media.",
+        },
+        "required_modalities": ["text", "image_reference", "video", "audio", "transcript", "interaction"],
+        "records": [
+            {
+                "id": "mm_text_image_interaction",
+                "source_id": "supervity_ai_keynote",
+                "source_kind": "case_study",
+                "modalities": ["text", "image_reference", "interaction"],
+                "allowed_storage": "derived_observations_only",
+                "ingestion_status": "metadata_and_derived_observations_recorded",
+                "anchors": [
+                    {
+                        "anchor_id": "text_case_hierarchy",
+                        "modality": "text",
+                        "locator": "case-study summary",
+                        "observation": "Commercial case text can become a slide hierarchy rule.",
+                        "extracted_design_signal": "Use one dominant claim and one proof object.",
+                        "allowed_use": "derived_rules_only",
+                    },
+                    {
+                        "anchor_id": "image_reference_case_surface",
+                        "modality": "image_reference",
+                        "locator": "page-level visual reference",
+                        "observation": "Image references can guide focal scale without copying layout.",
+                        "extracted_design_signal": "Generate original editable surfaces with a clear focal object.",
+                        "allowed_use": "visual_inspiration",
+                    },
+                    {
+                        "anchor_id": "interaction_case_handoff",
+                        "modality": "interaction",
+                        "locator": "audience decision journey",
+                        "observation": "The close should hand the audience to a decision.",
+                        "extracted_design_signal": "End with one release gate and one decision handoff.",
+                        "allowed_use": "derived_rules_only",
+                    },
+                ],
+                "derived_outputs": ["aesthetic_memory_candidates", "layout_qa_probes"],
+                "do_not_store": ["screenshots", "source layouts", "brand marks"],
+                "qa_gates": ["source boundary recorded", "no copied media stored"],
+            },
+            {
+                "id": "mm_video_audio_transcript",
+                "source_id": "schema_2025_keynote_video",
+                "source_kind": "video_tutorial_or_keynote",
+                "modalities": ["video", "audio", "transcript"],
+                "allowed_storage": "derived_observations_only",
+                "ingestion_status": "timestamped_observations_recorded_no_media_saved",
+                "anchors": [
+                    {
+                        "anchor_id": "video_opening_rhythm",
+                        "modality": "video",
+                        "locator": "00:00-00:45 visual beat",
+                        "observation": "Video opening rhythm can become a low-density cover rule.",
+                        "extracted_design_signal": "Start with one wide visual field before proof panels appear.",
+                        "allowed_use": "timestamped_observation_only",
+                    },
+                    {
+                        "anchor_id": "audio_density_pause",
+                        "modality": "audio",
+                        "locator": "00:00-00:45 speech cadence",
+                        "observation": "Audio pacing can become a density budget.",
+                        "extracted_design_signal": "Reduce visible words on orientation beats.",
+                        "allowed_use": "timestamped_observation_only",
+                    },
+                    {
+                        "anchor_id": "transcript_headline_compression",
+                        "modality": "transcript",
+                        "locator": "short paraphrase only",
+                        "observation": "Spoken explanation should become a native headline, not slide transcript text.",
+                        "extracted_design_signal": "Route long explanation to speaker notes.",
+                        "allowed_use": "derived_rules_only",
+                    },
+                ],
+                "derived_outputs": ["rhythm_roles", "speaker_note_routes"],
+                "do_not_store": ["video frames", "audio files", "full transcripts"],
+                "qa_gates": ["timestamps are anchors only", "no raw media stored"],
+            },
+        ],
+        "cross_modal_design_tasks": [
+            {
+                "id": "before_after_visual_delta",
+                "input_modalities": ["text", "image_reference"],
+                "task": "Convert observations into a before/after slide target.",
+                "required_generator_behavior": "Show a visible transformation from report layout to hierarchy.",
+            }
+        ],
+        "qa_gates": ["all required modalities covered", "no copied media stored"],
+    }
 
 
 def write_run2_source_card(pack: Path, card_id: str = "card_cinematic_cover") -> None:
@@ -719,6 +821,7 @@ def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
 
     assert result.ok is False
     assert "missing required file: commercial_case.md" in result.errors
+    assert "missing required file: multimodal_database.json" in result.errors
     assert "missing required file: source_cards/README.md" in result.errors
     assert "missing required file: video_cards/README.md" in result.errors
     assert "missing required file: aesthetic_memory.json" in result.errors
@@ -773,6 +876,66 @@ def test_run2_profile_validates_memory_contracts(tmp_path: Path) -> None:
     result = validate_case_pack(pack, profile="run2")
 
     assert result.ok is True, result.errors
+
+
+def test_run2_profile_rejects_multimodal_missing_audio_coverage(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    database_path = pack / "multimodal_database.json"
+    database = json.loads(database_path.read_text(encoding="utf-8"))
+    database["records"][1]["modalities"] = ["video", "transcript"]
+    database["records"][1]["anchors"] = [
+        anchor for anchor in database["records"][1]["anchors"] if anchor["modality"] != "audio"
+    ]
+    database_path.write_text(json.dumps(database, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "multimodal_database.records missing modality coverage: audio" in result.errors
+
+
+def test_run2_profile_rejects_multimodal_unknown_source(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    database_path = pack / "multimodal_database.json"
+    database = json.loads(database_path.read_text(encoding="utf-8"))
+    database["records"][0]["source_id"] = "missing_source"
+    database_path.write_text(json.dumps(database, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "multimodal_database.records[0].source_id missing_source is not defined in sources.json" in result.errors
+
+
+def test_run2_profile_rejects_multimodal_anchor_outside_parent_modalities(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    database_path = pack / "multimodal_database.json"
+    database = json.loads(database_path.read_text(encoding="utf-8"))
+    database["records"][0]["modalities"] = ["text", "interaction"]
+    database_path.write_text(json.dumps(database, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert (
+        "multimodal_database.records[0].anchors[1].modality image_reference is not listed in the parent record "
+        "modalities"
+    ) in result.errors
 
 
 def test_run2_profile_rejects_untraced_aesthetic_move(tmp_path: Path) -> None:

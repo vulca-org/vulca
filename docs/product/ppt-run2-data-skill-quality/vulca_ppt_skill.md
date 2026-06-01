@@ -6,21 +6,25 @@ Run 2.0 is a staged deck-director workflow for code-generated PowerPoint. It mus
 
 Run 2.1 makes the workflow contract machine-checkable in `skill_workflow.json`. That file remains declarative: it records stage order, required inputs and outputs, gates, and repair recommendations. It does not authorize automated public-ready promotion or ungated repair changes.
 
+Run 2.2 adds `multimodal_database.json` as the data layer before evidence and aesthetic memory. The database can include text tutorial observations, image-reference analysis, video time anchors, audio pacing observations, transcript paraphrase anchors, and interaction observations. It stores only metadata, locators, short observations, and derived design signals; it must not store copied source prose, screenshots, frames, audio, video, full transcripts, layouts, logos, or brand marks.
+
 Run 2.0 workflow:
 
 1. Read `commercial_case.md` and select the narrative spine.
-2. Compile evidence memory into claims and guardrails.
-3. Compile aesthetic memory into slide archetypes, rhythm roles, density budgets, and negative rules.
-4. Select assets only after the slide role is known.
-5. Generate code-first PPT modules with editable text and native structures.
-6. Run structural QA before aesthetic repair.
-7. Run aesthetic QA against the rubric.
-8. Repair the deck with explicit reasons.
-9. Emit a release decision: internal only, demo candidate, or public blocked.
+2. Compile the multimodal database into executable anchors and cross-modal design tasks.
+3. Compile evidence memory into claims and guardrails.
+4. Compile aesthetic memory into slide archetypes, rhythm roles, density budgets, and negative rules.
+5. Select assets only after the slide role is known.
+6. Generate code-first PPT modules with editable text and native structures.
+7. Run structural QA before aesthetic repair.
+8. Run aesthetic QA against the rubric.
+9. Repair the deck with explicit reasons.
+10. Emit a release decision: internal only, demo candidate, or public blocked.
 
 ## Source And Memory Selection
 
 - Use `sources.json` only for reference-analysis policy and source identity.
+- Use `multimodal_database.json` to select text, image-reference, video, audio, transcript, and interaction anchors before selecting evidence or aesthetic memory.
 - Use `source_cards/` and `video_cards/` as the source-card layer; do not copy screenshots, logos, transcripts, frames, layouts, or brand marks.
 - Use `evidence_memory.json` to choose claims, business relevance, allowed use, and evidence QA checks.
 - Use `aesthetic_memory.json` to choose visible moves, rhythm roles, density budgets, typography rules, composition rules, and negative rules.
@@ -34,6 +38,7 @@ Run 2.0 workflow:
 - Repeated dashboard grids, dense status strips, four-column tables, tiny labels, and decorative filler are failures unless the selected archetype explicitly requires them.
 - A visual climax must be visually different from setup and proof slides.
 - A close must feel like a decision handoff, not an appendix page.
+- Multimodal anchors must become visible generation behavior: before/after slide targets, pacing budgets, native headline compression, slide mini-previews, or release-gate surfaces. If an anchor only restates a design principle, it is not strong enough for Run 2.2.
 
 ## Deletion Rule
 

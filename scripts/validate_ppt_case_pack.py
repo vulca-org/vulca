@@ -52,6 +52,7 @@ RUN2_REQUIRED_FILES = [
     "README.md",
     "commercial_case.md",
     "sources.json",
+    "multimodal_database.json",
     "source_cards/README.md",
     "video_cards/README.md",
     "evidence_memory.json",
@@ -89,6 +90,13 @@ RUN1_5_SLIDE_PRIMITIVES = {"cockpit", "learning_map", "comparison_delta", "qa_ga
 RUN2_SOURCE_TYPES = {"commercial_case", "tutorial", "video", "design_article", "reference_deck"}
 RUN2_ALLOWED_USES = {"short_analysis", "derived_rules_only", "visual_inspiration", "timestamped_observation_only"}
 RUN2_RHYTHM_ROLES = {"cover", "setup", "contrast", "proof", "climax", "relief", "close"}
+RUN2_MULTIMODAL_MODALITIES = {"text", "image_reference", "video", "audio", "transcript", "interaction"}
+RUN2_MULTIMODAL_ALLOWED_STORAGE = {
+    "metadata_only",
+    "derived_observations_only",
+    "generated_assets_only",
+    "local_untracked_cache_only",
+}
 RUN2_ASSET_TYPES = {
     "generated_background",
     "editable_svg",
@@ -270,6 +278,160 @@ def validate_run2_extraction_units(label: str, value: Any, errors: list[str]) ->
                 validate_choice(f"{unit_label}.{key}", unit[key], RUN2_RHYTHM_ROLES, errors)
             else:
                 require_non_empty_string(f"{unit_label}.{key}", unit[key], errors)
+
+
+def validate_run2_multimodal_anchors(
+    label: str,
+    value: Any,
+    record_modalities: set[str],
+    errors: list[str],
+) -> None:
+    if not require_non_empty_list(label, value, errors):
+        return
+    required = ["anchor_id", "modality", "locator", "observation", "extracted_design_signal", "allowed_use"]
+    seen_anchor_ids: set[str] = set()
+    for index, anchor in enumerate(value):
+        anchor_label = f"{label}[{index}]"
+        if not isinstance(anchor, dict):
+            errors.append(f"{anchor_label} must be an object")
+            continue
+        require_keys(anchor_label, anchor, required, errors)
+        anchor_id = anchor.get("anchor_id")
+        if "anchor_id" in anchor and require_non_empty_string(f"{anchor_label}.anchor_id", anchor_id, errors):
+            if anchor_id in seen_anchor_ids:
+                errors.append(f"{anchor_label}.anchor_id duplicates {anchor_id}")
+            seen_anchor_ids.add(anchor_id)
+        if "modality" in anchor:
+            modality = anchor["modality"]
+            if validate_choice(f"{anchor_label}.modality", modality, RUN2_MULTIMODAL_MODALITIES, errors):
+                if modality not in record_modalities:
+                    errors.append(f"{anchor_label}.modality {modality} is not listed in the parent record modalities")
+        for key in ["locator", "observation", "extracted_design_signal"]:
+            if key in anchor:
+                require_non_empty_string(f"{anchor_label}.{key}", anchor[key], errors)
+        if "allowed_use" in anchor:
+            validate_choice(f"{anchor_label}.allowed_use", anchor["allowed_use"], RUN2_ALLOWED_USES, errors)
+
+
+def validate_run2_multimodal_database(pack_dir: Path, source_ids: set[str], errors: list[str]) -> None:
+    data = load_json(pack_dir / "multimodal_database.json", errors)
+    require_keys(
+        "multimodal_database.json",
+        data,
+        [
+            "schema_version",
+            "status",
+            "storage_policy",
+            "required_modalities",
+            "records",
+            "cross_modal_design_tasks",
+            "qa_gates",
+        ],
+        errors,
+    )
+    if "schema_version" in data:
+        require_integer("multimodal_database.schema_version", data["schema_version"], errors)
+    if "status" in data:
+        require_non_empty_string("multimodal_database.status", data["status"], errors)
+    if "storage_policy" in data:
+        storage_policy = data["storage_policy"]
+        if require_non_empty_dict("multimodal_database.storage_policy", storage_policy, errors):
+            for key in ["default", "raw_media", "copyright_boundary"]:
+                if key in storage_policy:
+                    require_non_empty_string(f"multimodal_database.storage_policy.{key}", storage_policy[key], errors)
+            default_storage = storage_policy.get("default")
+            if isinstance(default_storage, str) and default_storage not in RUN2_MULTIMODAL_ALLOWED_STORAGE:
+                errors.append("multimodal_database.storage_policy.default must be an allowed storage policy")
+            raw_media = storage_policy.get("raw_media")
+            if isinstance(raw_media, str) and raw_media != "forbidden":
+                errors.append("multimodal_database.storage_policy.raw_media must be forbidden")
+    if "required_modalities" in data:
+        validate_exact_string_set(
+            "multimodal_database.required_modalities",
+            data["required_modalities"],
+            RUN2_MULTIMODAL_MODALITIES,
+            errors,
+        )
+
+    records = data.get("records", [])
+    if not require_non_empty_list("multimodal_database.records", records, errors):
+        return
+    seen_record_ids: set[str] = set()
+    covered_modalities: set[str] = set()
+    required_record_fields = [
+        "id",
+        "source_id",
+        "source_kind",
+        "modalities",
+        "allowed_storage",
+        "ingestion_status",
+        "anchors",
+        "derived_outputs",
+        "do_not_store",
+        "qa_gates",
+    ]
+    for index, record in enumerate(records):
+        label = f"multimodal_database.records[{index}]"
+        if not isinstance(record, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        require_keys(label, record, required_record_fields, errors)
+        record_id = record.get("id")
+        if "id" in record and require_non_empty_string(f"{label}.id", record_id, errors):
+            if record_id in seen_record_ids:
+                errors.append(f"{label}.id duplicates {record_id}")
+            seen_record_ids.add(record_id)
+        source_id = record.get("source_id")
+        if "source_id" in record:
+            if require_non_empty_string(f"{label}.source_id", source_id, errors) and source_id not in source_ids:
+                errors.append(f"{label}.source_id {source_id} is not defined in sources.json")
+        if "source_kind" in record:
+            require_non_empty_string(f"{label}.source_kind", record["source_kind"], errors)
+        record_modalities: set[str] = set()
+        if "modalities" in record and validate_string_list(f"{label}.modalities", record["modalities"], errors):
+            for modality in record["modalities"]:
+                if modality not in RUN2_MULTIMODAL_MODALITIES:
+                    errors.append(f"{label}.modalities has unexpected value: {modality}")
+                else:
+                    record_modalities.add(modality)
+                    covered_modalities.add(modality)
+        if "allowed_storage" in record:
+            validate_choice(
+                f"{label}.allowed_storage",
+                record["allowed_storage"],
+                RUN2_MULTIMODAL_ALLOWED_STORAGE,
+                errors,
+            )
+        if "ingestion_status" in record:
+            require_non_empty_string(f"{label}.ingestion_status", record["ingestion_status"], errors)
+        if "anchors" in record:
+            validate_run2_multimodal_anchors(f"{label}.anchors", record["anchors"], record_modalities, errors)
+        for key in ["derived_outputs", "do_not_store", "qa_gates"]:
+            if key in record:
+                validate_string_list(f"{label}.{key}", record[key], errors)
+
+    for modality in sorted(RUN2_MULTIMODAL_MODALITIES - covered_modalities):
+        errors.append(f"multimodal_database.records missing modality coverage: {modality}")
+
+    tasks = data.get("cross_modal_design_tasks", [])
+    if require_non_empty_list("multimodal_database.cross_modal_design_tasks", tasks, errors):
+        for index, task in enumerate(tasks):
+            label = f"multimodal_database.cross_modal_design_tasks[{index}]"
+            if not isinstance(task, dict):
+                errors.append(f"{label} must be an object")
+                continue
+            require_keys(label, task, ["id", "input_modalities", "task", "required_generator_behavior"], errors)
+            for key in ["id", "task", "required_generator_behavior"]:
+                if key in task:
+                    require_non_empty_string(f"{label}.{key}", task[key], errors)
+            if "input_modalities" in task and validate_string_list(
+                f"{label}.input_modalities", task["input_modalities"], errors
+            ):
+                for modality in task["input_modalities"]:
+                    if modality not in RUN2_MULTIMODAL_MODALITIES:
+                        errors.append(f"{label}.input_modalities has unexpected value: {modality}")
+    if "qa_gates" in data:
+        validate_string_list("multimodal_database.qa_gates", data["qa_gates"], errors)
 
 
 def validate_sources(pack_dir: Path, errors: list[str]) -> set[str]:
@@ -708,6 +870,22 @@ def validate_run2_skill_workflow(pack_dir: Path, errors: list[str]) -> None:
         require_integer("skill_workflow.schema_version", data["schema_version"], errors)
     if "workflow_type" in data:
         require_non_empty_string("skill_workflow.workflow_type", data["workflow_type"], errors)
+    if "stage_policy" in data:
+        if data["stage_policy"] != "repeat_same_five_layers_not_run3":
+            errors.append("skill_workflow.stage_policy must be repeat_same_five_layers_not_run3")
+    if "five_layer_loop" in data:
+        validate_exact_string_set(
+            "skill_workflow.five_layer_loop",
+            data["five_layer_loop"],
+            {
+                "real_commercial_case",
+                "multimodal_tutorial_case_data",
+                "evidence_aesthetic_asset_memory",
+                "skill_workflow",
+                "rerun_and_evaluation",
+            },
+            errors,
+        )
     if "release_decisions" in data:
         validate_string_list("skill_workflow.release_decisions", data["release_decisions"], errors)
 
@@ -890,6 +1068,7 @@ def validate_case_pack(pack_dir: str | Path, profile: str = "default") -> Valida
     validate_markdown_not_empty(root, errors, required_files)
     if profile == "run2":
         source_ids = validate_sources(root, errors)
+        validate_run2_multimodal_database(root, source_ids, errors)
         card_ids = collect_run2_card_ids(root, source_ids, errors)
         validate_run2_evidence_memory(root, card_ids, errors)
         move_ids = validate_run2_aesthetic_memory(root, card_ids, errors)
