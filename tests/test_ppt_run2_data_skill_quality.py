@@ -1241,6 +1241,14 @@ def test_run2_6r_generator_consumes_visual_repair_policy_and_preserves_boundarie
             "no_cross_arm_reuse",
         ],
     )
+    assert "function renderFull(" not in body
+    assert re.search(
+        r'if \(arm\.armId === "run2_6r_visual_repair_full_skill"\) \{\s*'
+        r"renderFullRepair\(slide, spec, arm, n\);\s*"
+        r"\} else \{\s*"
+        r"renderControl\(slide, spec, arm\);",
+        body,
+    )
     prompt_allowed = section(arm_block("prompt_only"), "allowed:", "forbidden:")
     prompt_forbidden = section(arm_block("prompt_only"), "forbidden:", "palette:")
     run1_allowed = section(arm_block("run1_5_skill"), "allowed:", "forbidden:")
