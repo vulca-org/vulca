@@ -822,6 +822,83 @@ def test_run2_4_generator_preserves_motion_trace_boundaries() -> None:
     )
 
 
+def test_run2_5_generator_consumes_production_data_and_preserves_control_boundaries() -> None:
+    body = (ROOT / "scripts" / "generate_ppt_run2_5_arms.mjs").read_text(encoding="utf-8")
+    arm_order = ["prompt_only", "run1_5_skill", "run2_5_full_skill", "bad_aesthetic_memory"]
+
+    def arm_block(arm_id: str) -> str:
+        start = body.index(f'armId: "{arm_id}"')
+        next_starts = [body.find(f'armId: "{next_arm}"', start + 1) for next_arm in arm_order]
+        next_starts = [index for index in next_starts if index > start]
+        end = min(next_starts) if next_starts else body.index("function sequenceStepsForSlide", start)
+        return body[start:end]
+
+    def section(block: str, start_marker: str, end_marker: str) -> str:
+        start = block.index(start_marker)
+        end = block.index(end_marker, start)
+        return block[start:end]
+
+    restricted_production_inputs = [
+        "production_reference_decompositions.json",
+        "aesthetic_memory_v2.json",
+        "visual_production_modules.json",
+    ]
+
+    assert_contains(
+        body,
+        [
+            "prompt_only",
+            "run1_5_skill",
+            "run2_5_full_skill",
+            "bad_aesthetic_memory",
+            "production_reference_decompositions.json",
+            "aesthetic_memory_v2.json",
+            "visual_production_modules.json",
+            "no_cross_arm_reuse",
+        ],
+    )
+    prompt_allowed = section(arm_block("prompt_only"), "allowed:", "forbidden:")
+    prompt_forbidden = section(arm_block("prompt_only"), "forbidden:", "palette:")
+    run1_allowed = section(arm_block("run1_5_skill"), "allowed:", "forbidden:")
+    run1_forbidden = section(arm_block("run1_5_skill"), "forbidden:", "palette:")
+    full_allowed = section(arm_block("run2_5_full_skill"), "allowed:", "forbidden:")
+    full_forbidden = section(arm_block("run2_5_full_skill"), "forbidden:", "palette:")
+    bad_allowed = section(arm_block("bad_aesthetic_memory"), "allowed:", "forbidden:")
+    bad_forbidden = section(arm_block("bad_aesthetic_memory"), "forbidden:", "palette:")
+
+    for term in restricted_production_inputs:
+        assert term not in prompt_allowed
+        assert term in prompt_forbidden
+        assert term not in run1_allowed
+        assert term in run1_forbidden
+        assert term in full_allowed
+        assert term not in full_forbidden
+    assert "production_reference_decompositions.json" in bad_allowed
+    assert "aesthetic_memory_v2.json" not in bad_allowed
+    assert "visual_production_modules.json" not in bad_allowed
+    assert "aesthetic_memory_v2.json" in bad_forbidden
+    assert "visual_production_modules.json" in bad_forbidden
+    assert 'if (!["run2_5_full_skill", "bad_aesthetic_memory"].includes(arm.armId)) return [];' in body
+    assert 'const productionEligible = ["run2_5_full_skill", "bad_aesthetic_memory"].includes(arm.armId);' in body
+    assert 'const fullProduction = arm.armId === "run2_5_full_skill";' in body
+    assert re.search(r"production_reference_ids:\s*productionEligible\s*\?", body)
+    assert re.search(r"aesthetic_memory_v2_ids:\s*fullProduction\s*\?", body)
+    assert re.search(r"visual_production_module_ids:\s*fullProduction\s*\?", body)
+    assert "fallback_policy:" in body
+    assert "visual_validation_probe:" in body
+    assert_contains(
+        body,
+        [
+            "module_cinematic_cover_field",
+            "module_editorial_before_after_delta",
+            "module_proof_route_choreography",
+            "module_system_mini_preview",
+            "module_climax_hero_object",
+            "module_release_handoff_gate",
+        ],
+    )
+
+
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
     layout_dir = tmp_path / "layout"
     layout_dir.mkdir()
@@ -1008,6 +1085,45 @@ def test_run2_4_records_motion_sequence_rerun_result() -> None:
             "sequence",
             "run2_4_full_skill",
             "public-video-grade",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_run2_5_records_production_design_rerun_result() -> None:
+    result = (PACK / "results" / "run2_5_rerun_result.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_5_rerun_result.json")
+
+    assert result_json["status"] == "rerun_completed_public_blocked"
+    assert result_json["public_ready"] is False
+    assert result_json["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert result_json["rerun"]["status"] == "completed"
+    assert result_json["rerun"]["best_internal_arm"] == "run2_5_full_skill"
+    assert result_json["rerun"]["generated_outputs_committed"] is False
+    assert (
+        result_json["rerun"]["best_internal_arm_verdict"]
+        == "production_modules_visible_but_not_public_release_ready"
+    )
+    assert result_json["next_required_action"] == "native_render_and_human_review_then_deepen_visual_polish_if_needed"
+    assert_contains(
+        json.dumps(result_json["production_design_learning"]),
+        [
+            "production_reference_ids",
+            "aesthetic_memory_v2_ids",
+            "visual_production_module_ids",
+            "fallback_policy_recorded",
+            "still_internal_demo_grade",
+        ],
+    )
+    assert_contains(
+        result,
+        [
+            "Run 2.5",
+            "production_reference_decompositions.json",
+            "aesthetic_memory_v2.json",
+            "visual_production_modules.json",
+            "run2_5_full_skill",
+            "public blocked",
             "Do not advance to Run 3.0",
         ],
     )
