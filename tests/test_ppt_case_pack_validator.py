@@ -36,7 +36,16 @@ def write_pack(root: Path) -> None:
                         "accessed_on": "2026-05-31",
                         "allowed_use": "reference_analysis_only",
                         "copyright_note": "Use for analysis; do not copy proprietary visuals or full text.",
-                    }
+                    },
+                    {
+                        "id": "schema_2025_keynote_video",
+                        "title": "Schema 2025 Keynote Video",
+                        "url": "https://example.com/schema-2025-keynote-video",
+                        "role": "video_rhythm_reference",
+                        "accessed_on": "2026-05-31",
+                        "allowed_use": "reference_analysis_only",
+                        "copyright_note": "Use for timestamped observation only; do not copy proprietary visuals.",
+                    },
                 ],
             },
             indent=2,
@@ -625,7 +634,7 @@ def write_run2_memory_files(pack: Path) -> None:
                 "slides": [
                     {
                         "id": "slide_01",
-                        "role": "cover",
+                        "rhythm_role": "cover",
                         "aesthetic_move_ids": ["aesthetic_cinematic_cover"],
                     }
                 ],
@@ -715,3 +724,57 @@ def test_run2_profile_rejects_asset_without_provenance_state(tmp_path: Path) -> 
 
     assert result.ok is False
     assert "asset_memory.assets[0] missing key: provenance_state" in result.errors
+
+
+def test_run2_profile_rejects_invalid_narrative_spine_json(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    (pack / "narrative_spine.json").write_text("{", encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "narrative_spine.json is not valid JSON: Expecting property name enclosed in double quotes" in result.errors
+
+
+def test_run2_profile_rejects_wrong_shape_slide_archetypes(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    (pack / "slide_archetypes.json").write_text(
+        json.dumps({"schema_version": 1, "archetypes": []}, indent=2),
+        encoding="utf-8",
+    )
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "slide_archetypes.archetypes must be a non-empty list" in result.errors
+
+
+def test_run2_profile_rejects_card_source_id_absent_from_sources(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    source_card_path = pack / "source_cards" / "card_cinematic_cover.json"
+    source_card = json.loads(source_card_path.read_text(encoding="utf-8"))
+    source_card["source_id"] = "missing_source"
+    source_card_path.write_text(json.dumps(source_card, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert (
+        "source_cards/card_cinematic_cover.json.source_id missing_source is not defined in sources.json"
+        in result.errors
+    )

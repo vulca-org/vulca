@@ -245,7 +245,7 @@ def validate_number_mapping(label: str, value: Any, errors: list[str]) -> bool:
     return ok
 
 
-def validate_sources(pack_dir: Path, errors: list[str]) -> None:
+def validate_sources(pack_dir: Path, errors: list[str]) -> set[str]:
     data = load_json(pack_dir / "sources.json", errors)
     require_keys("sources.json", data, ["schema_version", "sources"], errors)
     if "schema_version" in data:
@@ -253,7 +253,7 @@ def validate_sources(pack_dir: Path, errors: list[str]) -> None:
     sources = data.get("sources", [])
     if not isinstance(sources, list) or not sources:
         errors.append("sources.json sources must be a non-empty list")
-        return
+        return set()
 
     required = ["id", "title", "url", "role", "accessed_on", "allowed_use", "copyright_note"]
     seen_ids: set[str] = set()
@@ -276,6 +276,7 @@ def validate_sources(pack_dir: Path, errors: list[str]) -> None:
         allowed_use = source.get("allowed_use")
         if isinstance(allowed_use, str) and allowed_use != "reference_analysis_only":
             errors.append(f"sources[{index}].allowed_use must be reference_analysis_only")
+    return seen_ids
 
 
 def validate_narrative_rules(pack_dir: Path, errors: list[str]) -> None:
@@ -389,7 +390,7 @@ def validate_deck_outline(pack_dir: Path, pattern_ids: set[str], errors: list[st
             errors.append(f"deck_outline.slides[{index}].pattern_id {pattern_id} is not defined in slide_patterns.json")
 
 
-def collect_run2_card_ids(pack_dir: Path, errors: list[str]) -> set[str]:
+def collect_run2_card_ids(pack_dir: Path, source_ids: set[str], errors: list[str]) -> set[str]:
     card_ids: set[str] = set()
     common_required = ["schema_version", "card_id", "source_id", "source_type", "allowed_use", "do_not_copy"]
     source_required = ["observed_move", "why_it_works", "ppt_translation", "quality_risk"]
@@ -416,7 +417,12 @@ def collect_run2_card_ids(pack_dir: Path, errors: list[str]) -> set[str]:
                     errors.append(f"{card_label}.card_id duplicates {card_id}")
                 card_ids.add(card_id)
             if "source_id" in card:
-                require_non_empty_string(f"{card_label}.source_id", card["source_id"], errors)
+                source_id = card["source_id"]
+                if (
+                    require_non_empty_string(f"{card_label}.source_id", source_id, errors)
+                    and source_id not in source_ids
+                ):
+                    errors.append(f"{card_label}.source_id {source_id} is not defined in sources.json")
             if "source_type" in card:
                 validate_choice(f"{card_label}.source_type", card["source_type"], RUN2_SOURCE_TYPES, errors)
             if "allowed_use" in card:
@@ -569,6 +575,60 @@ def validate_run2_asset_memory(pack_dir: Path, card_ids: set[str], errors: list[
                 validate_string_list(f"{label}.{key}", asset[key], errors)
 
 
+def validate_run2_narrative_spine(pack_dir: Path, errors: list[str]) -> None:
+    data = load_json(pack_dir / "narrative_spine.json", errors)
+    require_keys("narrative_spine.json", data, ["schema_version", "deck_length", "slides"], errors)
+    if "schema_version" in data:
+        require_integer("narrative_spine.schema_version", data["schema_version"], errors)
+    if "deck_length" in data:
+        require_integer("narrative_spine.deck_length", data["deck_length"], errors)
+    slides = data.get("slides", [])
+    if not isinstance(slides, list) or not slides:
+        errors.append("narrative_spine.slides must be a non-empty list")
+        return
+
+    required = ["id", "rhythm_role", "aesthetic_move_ids"]
+    for index, slide in enumerate(slides):
+        label = f"narrative_spine.slides[{index}]"
+        if not isinstance(slide, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        require_keys(label, slide, required, errors)
+        if "id" in slide:
+            require_non_empty_string(f"{label}.id", slide["id"], errors)
+        if "rhythm_role" in slide:
+            validate_choice(f"{label}.rhythm_role", slide["rhythm_role"], RUN2_RHYTHM_ROLES, errors)
+        if "aesthetic_move_ids" in slide:
+            validate_string_list(f"{label}.aesthetic_move_ids", slide["aesthetic_move_ids"], errors)
+
+
+def validate_run2_slide_archetypes(pack_dir: Path, errors: list[str]) -> None:
+    data = load_json(pack_dir / "slide_archetypes.json", errors)
+    require_keys("slide_archetypes.json", data, ["schema_version", "archetypes"], errors)
+    if "schema_version" in data:
+        require_integer("slide_archetypes.schema_version", data["schema_version"], errors)
+    archetypes = data.get("archetypes", [])
+    if not isinstance(archetypes, list) or not archetypes:
+        errors.append("slide_archetypes.archetypes must be a non-empty list")
+        return
+
+    required = ["id", "rhythm_role", "aesthetic_move_ids", "density_budget"]
+    for index, archetype in enumerate(archetypes):
+        label = f"slide_archetypes.archetypes[{index}]"
+        if not isinstance(archetype, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        require_keys(label, archetype, required, errors)
+        if "id" in archetype:
+            require_non_empty_string(f"{label}.id", archetype["id"], errors)
+        if "rhythm_role" in archetype:
+            validate_choice(f"{label}.rhythm_role", archetype["rhythm_role"], RUN2_RHYTHM_ROLES, errors)
+        if "aesthetic_move_ids" in archetype:
+            validate_string_list(f"{label}.aesthetic_move_ids", archetype["aesthetic_move_ids"], errors)
+        if "density_budget" in archetype:
+            validate_number_mapping(f"{label}.density_budget", archetype["density_budget"], errors)
+
+
 def validate_run1_design_memory_observations(observations: list[Any], errors: list[str]) -> None:
     required = ["id", "source_ids", "principle", "code_generation_rule", "do_not_copy"]
     seen_ids: set[str] = set()
@@ -708,10 +768,13 @@ def validate_case_pack(pack_dir: str | Path, profile: str = "default") -> Valida
 
     validate_markdown_not_empty(root, errors, required_files)
     if profile == "run2":
-        card_ids = collect_run2_card_ids(root, errors)
+        source_ids = validate_sources(root, errors)
+        card_ids = collect_run2_card_ids(root, source_ids, errors)
         validate_run2_evidence_memory(root, card_ids, errors)
         validate_run2_aesthetic_memory(root, card_ids, errors)
         validate_run2_asset_memory(root, card_ids, errors)
+        validate_run2_narrative_spine(root, errors)
+        validate_run2_slide_archetypes(root, errors)
         return ValidationResult(not errors, errors)
 
     validate_sources(root, errors)
