@@ -541,6 +541,10 @@ def write_run2_required_files(pack: Path) -> None:
         json.dumps(valid_run2_multimodal_database(), indent=2),
         encoding="utf-8",
     )
+    (pack / "visual_learning_targets.json").write_text(
+        json.dumps(valid_run2_visual_learning_targets(), indent=2),
+        encoding="utf-8",
+    )
     (pack / "results" / "delivery_gate.md").write_text(
         "# Delivery Gate\n\nPublic publishing is blocked before native render and human review.\n",
         encoding="utf-8",
@@ -642,6 +646,34 @@ def valid_run2_multimodal_database() -> dict:
             }
         ],
         "qa_gates": ["all required modalities covered", "no copied media stored"],
+    }
+
+
+def valid_run2_visual_learning_targets() -> dict:
+    return {
+        "schema_version": 1,
+        "status": "run2_2_visual_learning_targets_public_blocked",
+        "stage_policy": "repeat_same_five_layers_not_run3",
+        "native_editable_definition": [
+            "Targets must use native editable PPT text and native shapes.",
+            "Targets must not contain external media URLs or copied source assets.",
+        ],
+        "targets": [
+            {
+                "id": "target_report_to_visual_delta",
+                "source_record_ids": ["mm_text_image_interaction", "mm_video_audio_transcript"],
+                "anchor_ids": ["text_case_hierarchy", "video_opening_rhythm"],
+                "slide_roles": ["contrast", "proof"],
+                "failure_pattern": "A report-like slide has equal visual weight everywhere.",
+                "desired_behavior": "The generated slide shows a native before/after hierarchy change.",
+                "code_generation_requirements": [
+                    "Use native editable PPT text.",
+                    "Use native shapes for the mini-preview.",
+                ],
+                "qa_probe": "The contact sheet shows the before/after difference.",
+                "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval",
+            }
+        ],
     }
 
 
@@ -822,6 +854,7 @@ def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     assert result.ok is False
     assert "missing required file: commercial_case.md" in result.errors
     assert "missing required file: multimodal_database.json" in result.errors
+    assert "missing required file: visual_learning_targets.json" in result.errors
     assert "missing required file: source_cards/README.md" in result.errors
     assert "missing required file: video_cards/README.md" in result.errors
     assert "missing required file: aesthetic_memory.json" in result.errors
@@ -936,6 +969,87 @@ def test_run2_profile_rejects_multimodal_anchor_outside_parent_modalities(tmp_pa
         "multimodal_database.records[0].anchors[1].modality image_reference is not listed in the parent record "
         "modalities"
     ) in result.errors
+
+
+def test_run2_profile_rejects_visual_target_unknown_anchor(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    targets_path = pack / "visual_learning_targets.json"
+    targets = json.loads(targets_path.read_text(encoding="utf-8"))
+    targets["targets"][0]["anchor_ids"] = ["missing_anchor"]
+    targets_path.write_text(json.dumps(targets, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert (
+        "visual_learning_targets.targets[0].anchor_ids references unknown multimodal anchor: missing_anchor"
+        in result.errors
+    )
+
+
+def test_run2_profile_rejects_visual_target_without_native_editable_requirement(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    targets_path = pack / "visual_learning_targets.json"
+    targets = json.loads(targets_path.read_text(encoding="utf-8"))
+    targets["targets"][0]["code_generation_requirements"] = ["Use a screenshot preview."]
+    targets_path.write_text(json.dumps(targets, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert (
+        "visual_learning_targets.targets[0].code_generation_requirements must require native editable output"
+        in result.errors
+    )
+
+
+def test_run2_profile_rejects_visual_target_with_external_media_reference(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    targets_path = pack / "visual_learning_targets.json"
+    targets = json.loads(targets_path.read_text(encoding="utf-8"))
+    targets["targets"][0]["desired_behavior"] = "Use https://example.com/copied-slide.png as the after state."
+    targets_path.write_text(json.dumps(targets, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert (
+        "visual_learning_targets.targets[0].desired_behavior must not include external media URLs or file references"
+        in result.errors
+    )
+
+
+def test_run2_profile_rejects_visual_target_without_public_blocked_boundary(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    targets_path = pack / "visual_learning_targets.json"
+    targets = json.loads(targets_path.read_text(encoding="utf-8"))
+    targets["targets"][0]["release_boundary"] = "public_ready_after_generation"
+    targets_path.write_text(json.dumps(targets, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "visual_learning_targets.targets[0].release_boundary must keep public_blocked status" in result.errors
 
 
 def test_run2_profile_rejects_untraced_aesthetic_move(tmp_path: Path) -> None:

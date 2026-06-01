@@ -10,6 +10,8 @@ The arm should remain traceable enough to avoid becoming a random failure. Its p
 
 - `commercial_case.md`
 - `sources.json`
+- `multimodal_database.json`
+- `visual_learning_targets.json`
 - `source_cards/`
 - `video_cards/`
 - `evidence_memory.json`

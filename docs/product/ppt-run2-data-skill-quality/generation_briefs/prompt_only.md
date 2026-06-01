@@ -2,7 +2,7 @@
 
 Arm id: `prompt_only`.
 
-Use the commercial brief only. Do not use evidence memory, aesthetic memory, asset memory, source cards, video cards, Run 1.5 skill files, or Run 2.0 skill files.
+Use the commercial brief only. Do not use multimodal database, visual learning targets, evidence memory, aesthetic memory, asset memory, source cards, video cards, Run 1.5 skill files, or Run 2.0 skill files.
 
 This arm tests whether a prompt alone can produce a commercially specific, editable, public-demo-quality six-slide deck. It is not allowed to borrow the structured memory layer after generation starts.
 
@@ -13,6 +13,8 @@ This arm tests whether a prompt alone can produce a commercially specific, edita
 ## Forbidden Inputs
 
 - `sources.json`
+- `multimodal_database.json`
+- `visual_learning_targets.json`
 - `source_cards/`
 - `video_cards/`
 - `evidence_memory.json`

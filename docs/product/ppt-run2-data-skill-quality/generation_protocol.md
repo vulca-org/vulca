@@ -8,12 +8,15 @@ Run 2.1 adds `skill_workflow.json` as the declarative stage contract. The file i
 
 Run 2.2 adds `multimodal_database.json` as the layer-2 data contract. The file records text, image-reference, video, audio, transcript, and interaction anchors as derived observations only. It does not authorize storing raw media, copied tutorial prose, screenshots, video frames, audio files, full transcripts, source layouts, logos, or brand marks.
 
+Run 2.2 adds `visual_learning_targets.json` as the target contract for the next rerun. A target is not a source asset; it is an original, native-PPT behavior requirement derived from allowed observations.
+
 ## Multimodal Data Boundary
 
 - Treat all tutorial pages, videos, audio, transcripts, screenshots, and product references as sources for derived design signals only.
 - Store source identity, short locator anchors, observations, executable design signals, allowed use, and QA gates.
 - Keep any temporary media processing cache under untracked `outputs/`; do not commit downloaded media or extracted frames.
 - Convert audio/video/tutorial observations into code-generation behavior: density budgets, pacing rules, before/after slide targets, native headline compression, and visual-climax requirements.
+- Select visual learning target ids before writing slide code, and record them in the trace manifest.
 - If an arm cannot trace a visible design move back to `multimodal_database.json`, source/video cards, and memory ids, it can be inspected internally but cannot be used as evidence that the database improved design quality.
 
 ## Runtime Isolation

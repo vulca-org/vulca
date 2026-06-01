@@ -26,6 +26,23 @@ EXPECTED_VIDEO_CARD_IDS = {
     "video_transition_pacing",
 }
 EXPECTED_MULTIMODAL_MODALITIES = {"text", "image_reference", "video", "audio", "transcript", "interaction"}
+EXPECTED_MULTIMODAL_RECORD_IDS = {
+    "mm_text_visual_hierarchy_tutorial",
+    "mm_text_whitespace_tutorial",
+    "mm_video_audio_keynote_rhythm",
+    "mm_interaction_presentation_product_reference",
+    "mm_case_public_keynote_reference",
+    "mm_duarte_visual_storytelling_webinar",
+    "mm_duarte_slide_design_course",
+    "mm_udel_design_principles_video",
+}
+EXPECTED_VISUAL_TARGET_IDS = {
+    "target_report_to_visual_delta",
+    "target_slide_mini_preview",
+    "target_audio_rhythm_budget",
+    "target_transcript_headline_compression",
+    "target_public_demo_climax",
+}
 EXPECTED_CLAIM_IDS = {
     "claim_data_changes_deck_quality",
     "claim_aesthetic_memory_controls_rhythm",
@@ -148,10 +165,19 @@ def test_run2_has_thick_source_and_video_cards() -> None:
 
 def test_run2_has_multimodal_lesson_database() -> None:
     database = load_json(PACK / "multimodal_database.json")
+    sources = load_json(PACK / "sources.json")
     records = database["records"]
+    source_ids = {source["id"] for source in sources["sources"]}
+    record_ids = {record["id"] for record in records}
     covered_modalities = {modality for record in records for modality in record["modalities"]}
 
     assert database["status"] == "run2_2_multimodal_contract_public_blocked"
+    assert EXPECTED_MULTIMODAL_RECORD_IDS <= record_ids
+    assert {
+        "duarte_persuasive_visual_storytelling",
+        "duarte_slide_design_course",
+        "udel_design_principles_video",
+    } <= source_ids
     assert set(database["required_modalities"]) == EXPECTED_MULTIMODAL_MODALITIES
     assert covered_modalities == EXPECTED_MULTIMODAL_MODALITIES
     assert database["storage_policy"]["raw_media"] == "forbidden"
@@ -202,6 +228,46 @@ def test_run2_has_multimodal_lesson_database() -> None:
         "interaction_to_skill_surface",
     }
     assert_contains(json.dumps(tasks), ["visible transformation", "density", "native", "generator behavior"])
+
+
+def test_run2_has_visual_learning_targets_for_next_rerun() -> None:
+    database = load_json(PACK / "multimodal_database.json")
+    targets = load_json(PACK / "visual_learning_targets.json")
+    record_ids = {record["id"] for record in database["records"]}
+    anchor_ids = {anchor["anchor_id"] for record in database["records"] for anchor in record["anchors"]}
+
+    assert targets["status"] == "run2_2_visual_learning_targets_public_blocked"
+    assert targets["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert_contains(" ".join(targets["native_editable_definition"]), ["native", "editable", "must not contain"])
+    assert EXPECTED_VISUAL_TARGET_IDS <= {target["id"] for target in targets["targets"]}
+
+    for target in targets["targets"]:
+        assert set(target["source_record_ids"]) <= record_ids
+        assert set(target["anchor_ids"]) <= anchor_ids
+        assert_contains(target["release_boundary"], ["public blocked"])
+        assert_mentions_any(
+            target["desired_behavior"], {"before/after", "mini-preview", "rhythm", "headline", "climax"}
+        )
+        requirements = " ".join(target["code_generation_requirements"])
+        assert_contains(requirements, ["native"])
+        assert_mentions_any(requirements, {"editable", "record", "trace"})
+        assert_mentions_any(
+            target["qa_probe"],
+            {"contact sheet", "headline", "rhythm", "climax", "mini-preview"},
+        )
+
+
+def test_run2_four_arm_isolation_mentions_multimodal_and_target_boundaries() -> None:
+    prompt_only = (PACK / "generation_briefs" / "prompt_only.md").read_text(encoding="utf-8")
+    run1_5 = (PACK / "generation_briefs" / "run1_5_skill.md").read_text(encoding="utf-8")
+    run2 = (PACK / "generation_briefs" / "run2_skill.md").read_text(encoding="utf-8")
+    bad = (PACK / "generation_briefs" / "bad_aesthetic_memory.md").read_text(encoding="utf-8")
+
+    assert_contains(prompt_only, ["Do not use multimodal database", "visual learning targets"])
+    assert_contains(run1_5, ["Do not use Run 2.2 multimodal database", "visual learning targets"])
+    assert_contains(run2, ["multimodal_database.json", "visual_learning_targets.json"])
+    assert_contains(bad, ["multimodal_database.json", "visual_learning_targets.json"])
+    assert_contains(bad, ["Good aesthetic_memory.json", "Good slide_archetypes.json"])
 
 
 def test_run2_cards_have_executable_extraction_units() -> None:
@@ -295,6 +361,7 @@ def test_run2_skill_is_a_staged_deck_director() -> None:
         [
             "trace manifest",
             "per slide",
+            "Selected multimodal record ids",
             "density counts",
             "deleted or routed content",
             "asset provenance",
@@ -302,6 +369,7 @@ def test_run2_skill_is_a_staged_deck_director() -> None:
         ],
     )
     assert_contains(body, ["text, image-reference, video, audio, transcript, and interaction anchors"])
+    assert_contains(body, ["visual_learning_targets.json", "before/after visual deltas", "slide mini-previews"])
 
 
 def test_run2_skill_workflow_is_declarative_and_gated() -> None:
@@ -331,8 +399,13 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
     ]
     assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 11))
     assert workflow["repair_triggers"]
-    assert "multimodal_database.json" in json.dumps(workflow)
-    assert_contains(json.dumps(workflow), ["all required modalities covered", "no copied source media stored"])
+    workflow_text = json.dumps(workflow)
+    assert "multimodal_database.json" in workflow_text
+    assert "visual_learning_targets.json" in workflow_text
+    assert_contains(workflow_text, ["all required modalities covered", "no copied source media stored"])
+    assert_contains(
+        workflow_text, ["visual targets reference valid multimodal anchors", "selected visual learning targets"]
+    )
     assert "public_blocked" in workflow["release_decisions"]
     assert "public_ready" not in workflow["release_decisions"]
     assert "automated repair without human gate" not in normalize(json.dumps(workflow))
@@ -354,7 +427,7 @@ def test_run2_generation_briefs_define_four_arms() -> None:
     assert_contains((PACK / "generation_briefs" / "run1_5_skill.md").read_text(encoding="utf-8"), ["evidence-heavy"])
     assert_contains(
         (PACK / "generation_briefs" / "run2_skill.md").read_text(encoding="utf-8"),
-        ["multimodal database", "aesthetic memory"],
+        ["multimodal database", "visual learning targets", "aesthetic memory"],
     )
     assert_contains(
         (PACK / "generation_briefs" / "bad_aesthetic_memory.md").read_text(encoding="utf-8"), ["negative control"]

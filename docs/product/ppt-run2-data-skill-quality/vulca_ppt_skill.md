@@ -8,10 +8,12 @@ Run 2.1 makes the workflow contract machine-checkable in `skill_workflow.json`. 
 
 Run 2.2 adds `multimodal_database.json` as the data layer before evidence and aesthetic memory. The database can include text tutorial observations, image-reference analysis, video time anchors, audio pacing observations, transcript paraphrase anchors, and interaction observations. It stores only metadata, locators, short observations, and derived design signals; it must not store copied source prose, screenshots, frames, audio, video, full transcripts, layouts, logos, or brand marks.
 
+Run 2.2 also adds `visual_learning_targets.json`. Targets convert multimodal anchors into concrete generator obligations: before/after visual deltas, slide mini-previews, audio rhythm budgets, transcript-to-headline compression, and public-demo climax requirements. A target is useful only if it changes generated PPT code, trace fields, or QA probes.
+
 Run 2.0 workflow:
 
 1. Read `commercial_case.md` and select the narrative spine.
-2. Compile the multimodal database into executable anchors and cross-modal design tasks.
+2. Compile the multimodal database into executable anchors, cross-modal design tasks, and visual learning targets.
 3. Compile evidence memory into claims and guardrails.
 4. Compile aesthetic memory into slide archetypes, rhythm roles, density budgets, and negative rules.
 5. Select assets only after the slide role is known.
@@ -25,6 +27,7 @@ Run 2.0 workflow:
 
 - Use `sources.json` only for reference-analysis policy and source identity.
 - Use `multimodal_database.json` to select text, image-reference, video, audio, transcript, and interaction anchors before selecting evidence or aesthetic memory.
+- Use `visual_learning_targets.json` to force the selected anchors into visible native-PPT output requirements before writing slide code.
 - Use `source_cards/` and `video_cards/` as the source-card layer; do not copy screenshots, logos, transcripts, frames, layouts, or brand marks.
 - Use `evidence_memory.json` to choose claims, business relevance, allowed use, and evidence QA checks.
 - Use `aesthetic_memory.json` to choose visible moves, rhythm roles, density budgets, typography rules, composition rules, and negative rules.
@@ -39,6 +42,7 @@ Run 2.0 workflow:
 - A visual climax must be visually different from setup and proof slides.
 - A close must feel like a decision handoff, not an appendix page.
 - Multimodal anchors must become visible generation behavior: before/after slide targets, pacing budgets, native headline compression, slide mini-previews, or release-gate surfaces. If an anchor only restates a design principle, it is not strong enough for Run 2.2.
+- Visual learning targets must be implemented with editable native text, native shapes, editable SVG, native charts, or grouped objects. Do not satisfy a target with pasted screenshots or full-slide images.
 
 ## Deletion Rule
 
@@ -67,6 +71,7 @@ Every generated arm must persist a per-slide `trace_manifest.json` under its loc
 - Arm id and generation brief path.
 - Runtime isolation evidence: output directory, prompt/context reset, cache scope, allowed input files, and forbidden input files.
 - Slide id, rhythm role, selected source card ids, evidence claim ids, aesthetic move ids, and asset ids.
+- Selected multimodal record ids, multimodal anchor ids, and visual learning target ids.
 - Density counts: claims, panels, visible words, and proof objects.
 - Deleted or routed content: what moved to appendix, speaker notes, result reports, or trace notes.
 - Asset provenance: bitmap prompts, SVG/native object origin, license state, and render risks.

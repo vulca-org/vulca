@@ -14,6 +14,8 @@ Run 2.0 does not claim post-training or fine-tuning. It tests runtime case-pack-
 
 `multimodal_database.json` is the Run 2.2 layer-2 contract. It stores source identity, anchors, short observations, and derived design signals only. It must not store copied tutorial prose, screenshots, video frames, audio, full transcripts, layouts, brand marks, or source assets.
 
+`visual_learning_targets.json` converts those anchors into concrete generator obligations for the next four-arm rerun: before/after deltas, slide mini-previews, rhythm budgets, transcript-to-headline compression, and public-demo climax requirements.
+
 Generation must follow `generation_protocol.md`: separate arm runtimes, no cross-arm context leakage, native PPT object checks, and layout geometry QA before scoring.
 
 ## Public Publishing

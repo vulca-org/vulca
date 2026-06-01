@@ -72,6 +72,33 @@
       "accessed_on": "2026-06-01",
       "allowed_use": "reference_analysis_only",
       "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, template files, full prose, transcripts, audio, or video frames."
+    },
+    {
+      "id": "duarte_persuasive_visual_storytelling",
+      "title": "Persuasive Visual Storytelling",
+      "url": "https://www.duarte.com/resources/webinars-videos/persuasive-visual-storytelling/",
+      "role": "webinar_video_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, template files, full prose, transcripts, audio, video frames, webinar materials, or gated content."
+    },
+    {
+      "id": "duarte_slide_design_course",
+      "title": "Presentation Design Training",
+      "url": "https://www.duarte.com/training/slide-document-design/slide-design/",
+      "role": "slide_design_course_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy course lessons, visuals, layouts, screenshots, brand marks, exercise files, full prose, transcripts, audio, or video frames."
+    },
+    {
+      "id": "udel_design_principles_video",
+      "title": "Design Principles",
+      "url": "https://library.udel.edu/teaching-and-learning/tutorials/design-principles/",
+      "role": "design_principles_video_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; license boundary noted as CC BY-NC for the source video content, but this pack stores only derived observations and does not copy video, audio, frames, full transcripts, visuals, or source layouts."
     }
   ]
 }

@@ -53,6 +53,7 @@ RUN2_REQUIRED_FILES = [
     "commercial_case.md",
     "sources.json",
     "multimodal_database.json",
+    "visual_learning_targets.json",
     "source_cards/README.md",
     "video_cards/README.md",
     "evidence_memory.json",
@@ -113,6 +114,23 @@ RUN2_EXTRACTION_UNIT_FIELDS = [
     "execution_guard",
     "qa_probe",
 ]
+RUN2_FORBIDDEN_MEDIA_REFERENCE_MARKERS = (
+    "http://",
+    "https://",
+    "data:image",
+    "base64,",
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".gif",
+    ".webp",
+    ".mp4",
+    ".mov",
+    ".mp3",
+    ".wav",
+    ".pptx",
+    ".key",
+)
 
 
 @dataclass(frozen=True)
@@ -262,6 +280,21 @@ def validate_number_mapping(label: str, value: Any, errors: list[str]) -> bool:
     return ok
 
 
+def validate_no_external_media_reference(label: str, value: Any, errors: list[str]) -> None:
+    if isinstance(value, str):
+        lowered = value.lower()
+        if any(marker in lowered for marker in RUN2_FORBIDDEN_MEDIA_REFERENCE_MARKERS):
+            errors.append(f"{label} must not include external media URLs or file references")
+        return
+    if isinstance(value, list):
+        for index, item in enumerate(value):
+            validate_no_external_media_reference(f"{label}[{index}]", item, errors)
+        return
+    if isinstance(value, dict):
+        for key, item in value.items():
+            validate_no_external_media_reference(f"{label}.{key}", item, errors)
+
+
 def validate_run2_extraction_units(label: str, value: Any, errors: list[str]) -> None:
     if not require_non_empty_list(label, value, errors):
         return
@@ -313,7 +346,9 @@ def validate_run2_multimodal_anchors(
             validate_choice(f"{anchor_label}.allowed_use", anchor["allowed_use"], RUN2_ALLOWED_USES, errors)
 
 
-def validate_run2_multimodal_database(pack_dir: Path, source_ids: set[str], errors: list[str]) -> None:
+def validate_run2_multimodal_database(
+    pack_dir: Path, source_ids: set[str], errors: list[str]
+) -> tuple[set[str], set[str]]:
     data = load_json(pack_dir / "multimodal_database.json", errors)
     require_keys(
         "multimodal_database.json",
@@ -355,8 +390,9 @@ def validate_run2_multimodal_database(pack_dir: Path, source_ids: set[str], erro
 
     records = data.get("records", [])
     if not require_non_empty_list("multimodal_database.records", records, errors):
-        return
+        return set(), set()
     seen_record_ids: set[str] = set()
+    seen_anchor_ids: set[str] = set()
     covered_modalities: set[str] = set()
     required_record_fields = [
         "id",
@@ -406,6 +442,14 @@ def validate_run2_multimodal_database(pack_dir: Path, source_ids: set[str], erro
             require_non_empty_string(f"{label}.ingestion_status", record["ingestion_status"], errors)
         if "anchors" in record:
             validate_run2_multimodal_anchors(f"{label}.anchors", record["anchors"], record_modalities, errors)
+            if isinstance(record["anchors"], list):
+                for anchor in record["anchors"]:
+                    if isinstance(anchor, dict):
+                        anchor_id = anchor.get("anchor_id")
+                        if isinstance(anchor_id, str) and anchor_id.strip():
+                            if anchor_id in seen_anchor_ids:
+                                errors.append(f"{label}.anchors has duplicate global anchor_id: {anchor_id}")
+                            seen_anchor_ids.add(anchor_id)
         for key in ["derived_outputs", "do_not_store", "qa_gates"]:
             if key in record:
                 validate_string_list(f"{label}.{key}", record[key], errors)
@@ -432,6 +476,98 @@ def validate_run2_multimodal_database(pack_dir: Path, source_ids: set[str], erro
                         errors.append(f"{label}.input_modalities has unexpected value: {modality}")
     if "qa_gates" in data:
         validate_string_list("multimodal_database.qa_gates", data["qa_gates"], errors)
+    return seen_record_ids, seen_anchor_ids
+
+
+def validate_run2_visual_learning_targets(
+    pack_dir: Path,
+    multimodal_record_ids: set[str],
+    multimodal_anchor_ids: set[str],
+    errors: list[str],
+) -> None:
+    data = load_json(pack_dir / "visual_learning_targets.json", errors)
+    require_keys(
+        "visual_learning_targets.json",
+        data,
+        ["schema_version", "status", "stage_policy", "native_editable_definition", "targets"],
+        errors,
+    )
+    if "schema_version" in data:
+        require_integer("visual_learning_targets.schema_version", data["schema_version"], errors)
+    if "status" in data:
+        require_non_empty_string("visual_learning_targets.status", data["status"], errors)
+    if "stage_policy" in data and data["stage_policy"] != "repeat_same_five_layers_not_run3":
+        errors.append("visual_learning_targets.stage_policy must be repeat_same_five_layers_not_run3")
+    if "native_editable_definition" in data:
+        if validate_string_list(
+            "visual_learning_targets.native_editable_definition", data["native_editable_definition"], errors
+        ):
+            combined_definition = " ".join(data["native_editable_definition"]).lower()
+            if "native" not in combined_definition or "editable" not in combined_definition:
+                errors.append("visual_learning_targets.native_editable_definition must define native editable output")
+        validate_no_external_media_reference(
+            "visual_learning_targets.native_editable_definition", data["native_editable_definition"], errors
+        )
+
+    targets = data.get("targets", [])
+    if not require_non_empty_list("visual_learning_targets.targets", targets, errors):
+        return
+    required = [
+        "id",
+        "source_record_ids",
+        "anchor_ids",
+        "slide_roles",
+        "failure_pattern",
+        "desired_behavior",
+        "code_generation_requirements",
+        "qa_probe",
+        "release_boundary",
+    ]
+    seen_target_ids: set[str] = set()
+    for index, target in enumerate(targets):
+        label = f"visual_learning_targets.targets[{index}]"
+        if not isinstance(target, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        require_keys(label, target, required, errors)
+        target_id = target.get("id")
+        if "id" in target and require_non_empty_string(f"{label}.id", target_id, errors):
+            if target_id in seen_target_ids:
+                errors.append(f"{label}.id duplicates {target_id}")
+            seen_target_ids.add(target_id)
+        if "source_record_ids" in target and validate_string_list(
+            f"{label}.source_record_ids", target["source_record_ids"], errors
+        ):
+            for record_id in target["source_record_ids"]:
+                if record_id not in multimodal_record_ids:
+                    errors.append(f"{label}.source_record_ids references unknown multimodal record: {record_id}")
+        if "anchor_ids" in target and validate_string_list(f"{label}.anchor_ids", target["anchor_ids"], errors):
+            for anchor_id in target["anchor_ids"]:
+                if anchor_id not in multimodal_anchor_ids:
+                    errors.append(f"{label}.anchor_ids references unknown multimodal anchor: {anchor_id}")
+        if "slide_roles" in target and validate_string_list(f"{label}.slide_roles", target["slide_roles"], errors):
+            for role in target["slide_roles"]:
+                if role not in RUN2_RHYTHM_ROLES:
+                    errors.append(f"{label}.slide_roles has unexpected value: {role}")
+        for key in ["failure_pattern", "desired_behavior", "qa_probe", "release_boundary"]:
+            if key in target:
+                require_non_empty_string(f"{label}.{key}", target[key], errors)
+                validate_no_external_media_reference(f"{label}.{key}", target[key], errors)
+        if "code_generation_requirements" in target:
+            if validate_string_list(
+                f"{label}.code_generation_requirements", target["code_generation_requirements"], errors
+            ):
+                combined = " ".join(target["code_generation_requirements"]).lower()
+                if "native" not in combined or "editable" not in combined:
+                    errors.append(f"{label}.code_generation_requirements must require native editable output")
+            validate_no_external_media_reference(
+                f"{label}.code_generation_requirements",
+                target["code_generation_requirements"],
+                errors,
+            )
+        release_boundary = target.get("release_boundary")
+        if isinstance(release_boundary, str) and "public_blocked" not in release_boundary:
+            errors.append(f"{label}.release_boundary must keep public_blocked status")
 
 
 def validate_sources(pack_dir: Path, errors: list[str]) -> set[str]:
@@ -1068,7 +1204,8 @@ def validate_case_pack(pack_dir: str | Path, profile: str = "default") -> Valida
     validate_markdown_not_empty(root, errors, required_files)
     if profile == "run2":
         source_ids = validate_sources(root, errors)
-        validate_run2_multimodal_database(root, source_ids, errors)
+        multimodal_record_ids, multimodal_anchor_ids = validate_run2_multimodal_database(root, source_ids, errors)
+        validate_run2_visual_learning_targets(root, multimodal_record_ids, multimodal_anchor_ids, errors)
         card_ids = collect_run2_card_ids(root, source_ids, errors)
         validate_run2_evidence_memory(root, card_ids, errors)
         move_ids = validate_run2_aesthetic_memory(root, card_ids, errors)

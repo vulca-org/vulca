@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "status": "run2_2_visual_learning_targets_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "native_editable_definition": [
+    "Core claims, labels, proof annotations, and target previews must be editable native PPT text or native vector/shape objects.",
+    "Generated bitmaps may not carry core claims, labels, before/after structures, transcript text, or proof objects.",
+    "Targets may reference source record ids and anchor ids, but they must not contain external media URLs, copied source assets, downloaded files, base64 images, or full transcripts."
+  ],
+  "targets": [
+    {
+      "id": "target_report_to_visual_delta",
+      "source_record_ids": [
+        "mm_duarte_visual_storytelling_webinar",
+        "mm_text_visual_hierarchy_tutorial",
+        "mm_udel_design_principles_video"
+      ],
+      "anchor_ids": [
+        "duarte_storytelling_data_kill_rest",
+        "text_hierarchy_single_dominant_object",
+        "udel_video_action_in_practice"
+      ],
+      "slide_roles": ["contrast", "proof"],
+      "failure_pattern": "The baseline slide is a report-like grid where all cards share equal visual weight and the main data point is not identifiable from the contact sheet.",
+      "desired_behavior": "The full-skill arm shows a native before/after visual delta: the before side is visibly flat, the after side enlarges one supported proof object, removes nonessential labels, and routes detail to notes or trace.",
+      "code_generation_requirements": [
+        "Use editable native PPT text for all labels and claims.",
+        "Use native shapes or editable SVG for the before/after mini-preview structures.",
+        "Do not use copied source screenshots, course visuals, video frames, or rasterized slide images.",
+        "Record selected anchor ids and routed detail in trace_manifest.json."
+      ],
+      "qa_probe": "From the contact sheet, a reviewer can tell which side is before, which side is after, and what visual hierarchy changed.",
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "target_slide_mini_preview",
+      "source_record_ids": ["mm_duarte_slide_design_course", "mm_interaction_presentation_product_reference"],
+      "anchor_ids": [
+        "duarte_course_image_reference_polish",
+        "duarte_course_powerpoint_tooling",
+        "interaction_controls_as_slide_system"
+      ],
+      "slide_roles": ["setup", "proof"],
+      "failure_pattern": "The deck explains the workflow with abstract process cards but never shows what a generated slide is supposed to look like.",
+      "desired_behavior": "The full-skill arm includes original slide mini-previews built from native objects, showing selected memory ids, density budget, and release gate only where those controls clarify product behavior.",
+      "code_generation_requirements": [
+        "Build mini-previews from native rectangles, lines, editable text, and grouped objects.",
+        "Keep preview labels editable and large enough for contact-sheet review.",
+        "Use no copied UI screenshots, template previews, source layouts, or brand marks.",
+        "Trace the mini-preview target id in each relevant slide record."
+      ],
+      "qa_probe": "The mini-preview reads as a generated PPT target, not a generic dashboard or a pasted screenshot.",
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "target_audio_rhythm_budget",
+      "source_record_ids": ["mm_video_audio_keynote_rhythm", "mm_duarte_visual_storytelling_webinar", "mm_udel_design_principles_video"],
+      "anchor_ids": [
+        "audio_pause_density_control",
+        "duarte_webinar_audio_attention_space",
+        "udel_audio_stepwise_teaching"
+      ],
+      "slide_roles": ["cover", "setup", "proof", "climax"],
+      "failure_pattern": "All slides carry similar word counts and similar panel density, so the deck feels like a static report instead of a paced presentation.",
+      "desired_behavior": "The full-skill arm applies a rhythm budget: orientation beats stay sparse, proof beats add detail only after the focal object is established, and the climax has the largest proof object.",
+      "code_generation_requirements": [
+        "Use native editable PPT text for rhythm labels and proof annotations.",
+        "Record visible word count, panel count, proof object count, and selected rhythm budget in trace_manifest.json.",
+        "Keep orientation slides under 30 visible words.",
+        "Keep proof slides under 55 visible words unless detail is routed to notes.",
+        "Do not shrink text to hide density."
+      ],
+      "qa_probe": "The contact sheet shows clear rhythm variance between orientation, proof, and climax slides.",
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "target_transcript_headline_compression",
+      "source_record_ids": ["mm_video_audio_keynote_rhythm", "mm_udel_design_principles_video"],
+      "anchor_ids": ["transcript_claim_compression", "udel_transcript_timecode_boundary"],
+      "slide_roles": ["setup", "proof", "close"],
+      "failure_pattern": "Transcript-like explanation becomes small body text on the slide, making the deck feel like notes pasted into PowerPoint.",
+      "desired_behavior": "The full-skill arm compresses long spoken or written explanation into one native headline, one short support line, and optional speaker-note or trace detail.",
+      "code_generation_requirements": [
+        "Never copy transcript text into the slide.",
+        "Use native editable headline and support text.",
+        "Route longer explanation to speaker notes or trace notes.",
+        "Record transcript anchor ids only as locator metadata."
+      ],
+      "qa_probe": "No slide contains transcript-like paragraphs; the main claim is readable as a headline from the contact sheet.",
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "target_public_demo_climax",
+      "source_record_ids": [
+        "mm_case_public_keynote_reference",
+        "mm_duarte_visual_storytelling_webinar",
+        "mm_text_whitespace_tutorial"
+      ],
+      "anchor_ids": [
+        "case_large_scale_climax",
+        "duarte_storytelling_action_motivation",
+        "image_reference_negative_space"
+      ],
+      "slide_roles": ["climax", "close"],
+      "failure_pattern": "The outcome and close slides repeat the same process boxes used earlier, so the deck has no public-demo moment.",
+      "desired_behavior": "The full-skill arm gives the climax the largest supported outcome object and makes the close a decision handoff with a visible public-blocked release gate.",
+      "code_generation_requirements": [
+        "Reserve at least 45 percent of the climax canvas for the dominant outcome object.",
+        "Use editable native labels and shapes for the outcome object and release gate.",
+        "Avoid appendix-like status grids on the close.",
+        "Record public-blocked status until native render, provenance, and human approval pass."
+      ],
+      "qa_probe": "The climax slide is visually distinct from setup/proof slides, and the close reads as a decision handoff rather than a report page.",
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    }
+  ]
+}
