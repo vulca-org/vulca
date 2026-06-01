@@ -12,14 +12,16 @@ Run 2.2 also adds `visual_learning_targets.json`. Targets convert multimodal anc
 
 Run 2.3 adds `visual_target_components.json`. Components turn the target obligations into reusable native-PPT layout contracts: before/after thumbnail, slide mini-preview, rhythm budget strip, transcript headline route, and public-demo climax object. A component is valid only when it can be drawn with editable native PowerPoint text, shapes, connectors, grouped objects, or editable SVG. It must not be satisfied by screenshots, copied source media, or full-slide raster output.
 
+Run 2.4 adds `video_demo_beat_map.json`, `motion_learning_targets.json`, and `presentation_sequence_components.json`. These files convert tutorial/video demonstrations into motion grammar for code generation: attention reset, before/after reveal, proof build, climax scale emphasis, and release handoff. This is not a claim that the deck has final animation. It is a native-PPT sequence contract that records ordered reveal steps, motion metadata, motion target ids, and sequence component ids before any public video workflow is attempted.
+
 Run 2.0 workflow:
 
 1. Read `commercial_case.md` and select the narrative spine.
-2. Compile the multimodal database into executable anchors, cross-modal design tasks, and visual learning targets.
+2. Compile the multimodal database into executable anchors, cross-modal design tasks, visual learning targets, video beats, and motion targets.
 3. Compile evidence memory into claims and guardrails.
 4. Compile aesthetic memory into slide archetypes, rhythm roles, density budgets, and negative rules.
 5. Select assets only after the slide role is known.
-6. Generate code-first PPT modules with editable text and native structures.
+6. Generate code-first PPT modules with editable text, native structures, and ordered sequence components.
 7. Run structural QA before aesthetic repair.
 8. Run aesthetic QA against the rubric.
 9. Repair the deck with explicit reasons.
@@ -31,6 +33,9 @@ Run 2.0 workflow:
 - Use `multimodal_database.json` to select text, image-reference, video, audio, transcript, and interaction anchors before selecting evidence or aesthetic memory.
 - Use `visual_learning_targets.json` to force the selected anchors into visible native-PPT output requirements before writing slide code.
 - Use `visual_target_components.json` to choose the concrete native component that will satisfy each selected target before writing slide code.
+- Use `video_demo_beat_map.json` to select derived tutorial/video beats before claiming that motion or rhythm learning changed the deck.
+- Use `motion_learning_targets.json` to choose the motion target ids that the generator must satisfy with native editable PPT objects, metadata, and trace fields.
+- Use `presentation_sequence_components.json` to choose ordered reveal, build, scale, pause, and handoff components before writing slide code.
 - Use `source_cards/` and `video_cards/` as the source-card layer; do not copy screenshots, logos, transcripts, frames, layouts, or brand marks.
 - Use `evidence_memory.json` to choose claims, business relevance, allowed use, and evidence QA checks.
 - Use `aesthetic_memory.json` to choose visible moves, rhythm roles, density budgets, typography rules, composition rules, and negative rules.
@@ -47,6 +52,8 @@ Run 2.0 workflow:
 - Multimodal anchors must become visible generation behavior: before/after slide targets, pacing budgets, native headline compression, slide mini-previews, or release-gate surfaces. If an anchor only restates a design principle, it is not strong enough for Run 2.2.
 - Visual learning targets must be implemented with editable native text, native shapes, editable SVG, native charts, or grouped objects. Do not satisfy a target with pasted screenshots or full-slide images.
 - Visual target components must be visible in the generated slide code and trace. If a before/after target is represented only by text labels, it is still a failed component.
+- Motion learning targets must change the sequence, spacing, scale, build order, or handoff behavior of the generated slides. If motion is only named in copy, it is still failed motion grammar.
+- Sequence components must be represented through native editable PPT objects and trace metadata. Do not use a rendered video, copied frame sequence, or flattened animation export as proof.
 
 ## Deletion Rule
 
@@ -77,6 +84,7 @@ Every generated arm must persist a per-slide `trace_manifest.json` under its loc
 - Slide id, rhythm role, selected source card ids, evidence claim ids, aesthetic move ids, and asset ids.
 - Selected multimodal record ids, multimodal anchor ids, and visual learning target ids.
 - Selected visual component ids and the native PPT primitives used to render them.
+- Selected video beat ids, motion target ids, sequence component ids, and ordered native reveal steps.
 - Density counts: claims, panels, visible words, and proof objects.
 - Deleted or routed content: what moved to appendix, speaker notes, result reports, or trace notes.
 - Asset provenance: bitmap prompts, SVG/native object origin, license state, and render risks.

@@ -55,6 +55,9 @@ RUN2_REQUIRED_FILES = [
     "multimodal_database.json",
     "visual_learning_targets.json",
     "visual_target_components.json",
+    "video_demo_beat_map.json",
+    "motion_learning_targets.json",
+    "presentation_sequence_components.json",
     "source_cards/README.md",
     "video_cards/README.md",
     "evidence_memory.json",
@@ -92,6 +95,13 @@ RUN1_5_SLIDE_PRIMITIVES = {"cockpit", "learning_map", "comparison_delta", "qa_ga
 RUN2_SOURCE_TYPES = {"commercial_case", "tutorial", "video", "design_article", "reference_deck"}
 RUN2_ALLOWED_USES = {"short_analysis", "derived_rules_only", "visual_inspiration", "timestamped_observation_only"}
 RUN2_RHYTHM_ROLES = {"cover", "setup", "contrast", "proof", "climax", "relief", "close"}
+RUN2_MOTION_ROLES = {
+    "attention_reset",
+    "before_after_reveal",
+    "proof_build",
+    "scale_emphasis",
+    "release_handoff",
+}
 RUN2_MULTIMODAL_MODALITIES = {"text", "image_reference", "video", "audio", "transcript", "interaction"}
 RUN2_MULTIMODAL_ALLOWED_STORAGE = {
     "metadata_only",
@@ -294,6 +304,34 @@ def validate_no_external_media_reference(label: str, value: Any, errors: list[st
     if isinstance(value, dict):
         for key, item in value.items():
             validate_no_external_media_reference(f"{label}.{key}", item, errors)
+
+
+def validate_public_blocked_boundary(label: str, value: Any, errors: list[str]) -> None:
+    if require_non_empty_string(label, value, errors) and "public_blocked" not in value:
+        errors.append(f"{label} must keep public_blocked status")
+
+
+def validate_known_string_references(
+    label: str,
+    value: Any,
+    known_ids: set[str],
+    unknown_name: str,
+    errors: list[str],
+) -> None:
+    if not validate_string_list(label, value, errors):
+        return
+    for item in value:
+        if item not in known_ids:
+            errors.append(f"{label} references unknown {unknown_name}: {item}")
+
+
+def validate_combined_terms(label: str, values: Any, terms: list[str], errors: list[str]) -> None:
+    if not validate_string_list(label, values, errors):
+        return
+    combined = " ".join(values).lower()
+    for term in terms:
+        if term not in combined:
+            errors.append(f"{label} must mention {term}")
 
 
 def validate_run2_extraction_units(label: str, value: Any, errors: list[str]) -> None:
@@ -576,7 +614,7 @@ def validate_run2_visual_target_components(
     pack_dir: Path,
     visual_target_ids: set[str],
     errors: list[str],
-) -> None:
+) -> set[str]:
     data = load_json(pack_dir / "visual_target_components.json", errors)
     require_keys(
         "visual_target_components.json",
@@ -593,7 +631,7 @@ def validate_run2_visual_target_components(
 
     components = data.get("components", [])
     if not require_non_empty_list("visual_target_components.components", components, errors):
-        return
+        return set()
     required = [
         "id",
         "target_ids",
@@ -651,6 +689,326 @@ def validate_run2_visual_target_components(
 
     if "qa_gates" in data:
         validate_string_list("visual_target_components.qa_gates", data["qa_gates"], errors)
+    return seen_component_ids
+
+
+def validate_run2_video_demo_beat_map(
+    pack_dir: Path,
+    source_ids: set[str],
+    multimodal_record_ids: set[str],
+    multimodal_anchor_ids: set[str],
+    card_ids: set[str],
+    errors: list[str],
+) -> set[str]:
+    data = load_json(pack_dir / "video_demo_beat_map.json", errors)
+    require_keys(
+        "video_demo_beat_map.json",
+        data,
+        ["schema_version", "status", "stage_policy", "storage_policy", "beats", "qa_gates"],
+        errors,
+    )
+    if "schema_version" in data:
+        require_integer("video_demo_beat_map.schema_version", data["schema_version"], errors)
+    if "status" in data:
+        require_non_empty_string("video_demo_beat_map.status", data["status"], errors)
+    if "stage_policy" in data and data["stage_policy"] != "repeat_same_five_layers_not_run3":
+        errors.append("video_demo_beat_map.stage_policy must be repeat_same_five_layers_not_run3")
+    if "storage_policy" in data:
+        storage_policy = data["storage_policy"]
+        if require_non_empty_dict("video_demo_beat_map.storage_policy", storage_policy, errors):
+            raw_media = storage_policy.get("raw_media")
+            if isinstance(raw_media, str) and raw_media != "forbidden":
+                errors.append("video_demo_beat_map.storage_policy.raw_media must be forbidden")
+            for key in ["default", "raw_media", "copyright_boundary"]:
+                if key in storage_policy:
+                    require_non_empty_string(f"video_demo_beat_map.storage_policy.{key}", storage_policy[key], errors)
+        validate_no_external_media_reference("video_demo_beat_map.storage_policy", storage_policy, errors)
+
+    beats = data.get("beats", [])
+    if not require_non_empty_list("video_demo_beat_map.beats", beats, errors):
+        return set()
+    required = [
+        "id",
+        "source_id",
+        "source_record_ids",
+        "anchor_ids",
+        "video_card_ids",
+        "locator",
+        "observed_demo_move",
+        "derived_presentation_rule",
+        "motion_role",
+        "reveal_sequence",
+        "pacing_signal",
+        "do_not_store",
+        "qa_probe",
+        "release_boundary",
+    ]
+    seen_beat_ids: set[str] = set()
+    for index, beat in enumerate(beats):
+        label = f"video_demo_beat_map.beats[{index}]"
+        if not isinstance(beat, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        require_keys(label, beat, required, errors)
+        validate_no_external_media_reference(label, beat, errors)
+        beat_id = beat.get("id")
+        if "id" in beat and require_non_empty_string(f"{label}.id", beat_id, errors):
+            if beat_id in seen_beat_ids:
+                errors.append(f"{label}.id duplicates {beat_id}")
+            seen_beat_ids.add(beat_id)
+        source_id = beat.get("source_id")
+        if "source_id" in beat and require_non_empty_string(f"{label}.source_id", source_id, errors):
+            if source_id not in source_ids:
+                errors.append(f"{label}.source_id {source_id} is not defined in sources.json")
+        if "source_record_ids" in beat:
+            validate_known_string_references(
+                f"{label}.source_record_ids",
+                beat["source_record_ids"],
+                multimodal_record_ids,
+                "multimodal record",
+                errors,
+            )
+        if "anchor_ids" in beat:
+            validate_known_string_references(
+                f"{label}.anchor_ids",
+                beat["anchor_ids"],
+                multimodal_anchor_ids,
+                "multimodal anchor",
+                errors,
+            )
+        if "video_card_ids" in beat:
+            validate_known_string_references(
+                f"{label}.video_card_ids",
+                beat["video_card_ids"],
+                card_ids,
+                "source or video card",
+                errors,
+            )
+        for key in ["locator", "observed_demo_move", "derived_presentation_rule", "pacing_signal", "qa_probe"]:
+            if key in beat:
+                require_non_empty_string(f"{label}.{key}", beat[key], errors)
+        if "motion_role" in beat:
+            validate_choice(f"{label}.motion_role", beat["motion_role"], RUN2_MOTION_ROLES, errors)
+        if "reveal_sequence" in beat:
+            validate_combined_terms(f"{label}.reveal_sequence", beat["reveal_sequence"], ["native"], errors)
+        if "do_not_store" in beat:
+            if validate_string_list(f"{label}.do_not_store", beat["do_not_store"], errors):
+                combined = " ".join(beat["do_not_store"]).lower()
+                for term in ["video", "frames", "audio", "transcript"]:
+                    if term not in combined:
+                        errors.append(f"{label}.do_not_store must mention {term}")
+        if "release_boundary" in beat:
+            validate_public_blocked_boundary(f"{label}.release_boundary", beat["release_boundary"], errors)
+    if "qa_gates" in data:
+        validate_string_list("video_demo_beat_map.qa_gates", data["qa_gates"], errors)
+        validate_no_external_media_reference("video_demo_beat_map.qa_gates", data["qa_gates"], errors)
+    return seen_beat_ids
+
+
+def validate_run2_motion_learning_targets(
+    pack_dir: Path,
+    beat_ids: set[str],
+    visual_target_ids: set[str],
+    visual_component_ids: set[str],
+    errors: list[str],
+) -> set[str]:
+    data = load_json(pack_dir / "motion_learning_targets.json", errors)
+    require_keys(
+        "motion_learning_targets.json",
+        data,
+        ["schema_version", "status", "stage_policy", "targets", "qa_gates"],
+        errors,
+    )
+    if "schema_version" in data:
+        require_integer("motion_learning_targets.schema_version", data["schema_version"], errors)
+    if "status" in data:
+        require_non_empty_string("motion_learning_targets.status", data["status"], errors)
+    if "stage_policy" in data and data["stage_policy"] != "repeat_same_five_layers_not_run3":
+        errors.append("motion_learning_targets.stage_policy must be repeat_same_five_layers_not_run3")
+
+    targets = data.get("targets", [])
+    if not require_non_empty_list("motion_learning_targets.targets", targets, errors):
+        return set()
+    required = [
+        "id",
+        "beat_ids",
+        "visual_target_ids",
+        "visual_component_ids",
+        "slide_roles",
+        "motion_role",
+        "failure_pattern",
+        "desired_behavior",
+        "code_generation_requirements",
+        "qa_probe",
+        "release_boundary",
+    ]
+    seen_target_ids: set[str] = set()
+    for index, target in enumerate(targets):
+        label = f"motion_learning_targets.targets[{index}]"
+        if not isinstance(target, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        require_keys(label, target, required, errors)
+        validate_no_external_media_reference(label, target, errors)
+        target_id = target.get("id")
+        if "id" in target and require_non_empty_string(f"{label}.id", target_id, errors):
+            if target_id in seen_target_ids:
+                errors.append(f"{label}.id duplicates {target_id}")
+            seen_target_ids.add(target_id)
+        if "beat_ids" in target:
+            validate_known_string_references(f"{label}.beat_ids", target["beat_ids"], beat_ids, "video beat", errors)
+        if "visual_target_ids" in target:
+            validate_known_string_references(
+                f"{label}.visual_target_ids",
+                target["visual_target_ids"],
+                visual_target_ids,
+                "visual target",
+                errors,
+            )
+        if "visual_component_ids" in target:
+            validate_known_string_references(
+                f"{label}.visual_component_ids",
+                target["visual_component_ids"],
+                visual_component_ids,
+                "visual component",
+                errors,
+            )
+        if "slide_roles" in target and validate_string_list(f"{label}.slide_roles", target["slide_roles"], errors):
+            for role in target["slide_roles"]:
+                if role not in RUN2_RHYTHM_ROLES:
+                    errors.append(f"{label}.slide_roles has unexpected value: {role}")
+        if "motion_role" in target:
+            validate_choice(f"{label}.motion_role", target["motion_role"], RUN2_MOTION_ROLES, errors)
+        for key in ["failure_pattern", "desired_behavior", "qa_probe"]:
+            if key in target:
+                require_non_empty_string(f"{label}.{key}", target[key], errors)
+        if "code_generation_requirements" in target:
+            validate_combined_terms(
+                f"{label}.code_generation_requirements",
+                target["code_generation_requirements"],
+                ["native", "editable", "metadata", "trace"],
+                errors,
+            )
+        if "release_boundary" in target:
+            validate_public_blocked_boundary(f"{label}.release_boundary", target["release_boundary"], errors)
+    if "qa_gates" in data:
+        validate_string_list("motion_learning_targets.qa_gates", data["qa_gates"], errors)
+        validate_no_external_media_reference("motion_learning_targets.qa_gates", data["qa_gates"], errors)
+    return seen_target_ids
+
+
+def validate_run2_presentation_sequence_components(
+    pack_dir: Path,
+    motion_target_ids: set[str],
+    visual_component_ids: set[str],
+    errors: list[str],
+) -> set[str]:
+    data = load_json(pack_dir / "presentation_sequence_components.json", errors)
+    require_keys(
+        "presentation_sequence_components.json",
+        data,
+        ["schema_version", "status", "stage_policy", "components", "qa_gates"],
+        errors,
+    )
+    if "schema_version" in data:
+        require_integer("presentation_sequence_components.schema_version", data["schema_version"], errors)
+    if "status" in data:
+        require_non_empty_string("presentation_sequence_components.status", data["status"], errors)
+    if "stage_policy" in data and data["stage_policy"] != "repeat_same_five_layers_not_run3":
+        errors.append("presentation_sequence_components.stage_policy must be repeat_same_five_layers_not_run3")
+
+    components = data.get("components", [])
+    if not require_non_empty_list("presentation_sequence_components.components", components, errors):
+        return set()
+    required = [
+        "id",
+        "motion_target_ids",
+        "visual_component_ids",
+        "slide_roles",
+        "native_ppt_primitives",
+        "sequence_steps",
+        "trace_fields",
+        "qa_probe",
+        "failure_modes",
+        "release_boundary",
+    ]
+    step_required = ["step_id", "order", "reveal_object", "trigger", "duration", "purpose"]
+    seen_component_ids: set[str] = set()
+    for index, component in enumerate(components):
+        label = f"presentation_sequence_components.components[{index}]"
+        if not isinstance(component, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        require_keys(label, component, required, errors)
+        validate_no_external_media_reference(label, component, errors)
+        component_id = component.get("id")
+        if "id" in component and require_non_empty_string(f"{label}.id", component_id, errors):
+            if component_id in seen_component_ids:
+                errors.append(f"{label}.id duplicates {component_id}")
+            seen_component_ids.add(component_id)
+        if "motion_target_ids" in component:
+            validate_known_string_references(
+                f"{label}.motion_target_ids",
+                component["motion_target_ids"],
+                motion_target_ids,
+                "motion target",
+                errors,
+            )
+        if "visual_component_ids" in component:
+            validate_known_string_references(
+                f"{label}.visual_component_ids",
+                component["visual_component_ids"],
+                visual_component_ids,
+                "visual component",
+                errors,
+            )
+        if "slide_roles" in component and validate_string_list(
+            f"{label}.slide_roles", component["slide_roles"], errors
+        ):
+            for role in component["slide_roles"]:
+                if role not in RUN2_RHYTHM_ROLES:
+                    errors.append(f"{label}.slide_roles has unexpected value: {role}")
+        if "native_ppt_primitives" in component:
+            validate_combined_terms(
+                f"{label}.native_ppt_primitives",
+                component["native_ppt_primitives"],
+                ["native", "editable"],
+                errors,
+            )
+        steps = component.get("sequence_steps", [])
+        if require_non_empty_list(f"{label}.sequence_steps", steps, errors):
+            seen_orders: list[int] = []
+            for step_index, step in enumerate(steps):
+                step_label = f"{label}.sequence_steps[{step_index}]"
+                if not isinstance(step, dict):
+                    errors.append(f"{step_label} must be an object")
+                    continue
+                require_keys(step_label, step, step_required, errors)
+                if "order" in step and require_integer(f"{step_label}.order", step["order"], errors):
+                    seen_orders.append(step["order"])
+                for key in ["step_id", "reveal_object", "trigger", "duration", "purpose"]:
+                    if key in step:
+                        require_non_empty_string(f"{step_label}.{key}", step[key], errors)
+            expected_orders = list(range(1, len(seen_orders) + 1))
+            if seen_orders != expected_orders:
+                errors.append(f"{label}.sequence_steps order must be sequential starting at 1")
+        if "trace_fields" in component:
+            if validate_string_list(f"{label}.trace_fields", component["trace_fields"], errors):
+                required_trace = {"motion_target_ids", "sequence_component_ids"}
+                actual_trace = set(component["trace_fields"])
+                for trace_field in sorted(required_trace - actual_trace):
+                    errors.append(f"{label}.trace_fields missing value: {trace_field}")
+        for key in ["qa_probe", "release_boundary"]:
+            if key in component:
+                require_non_empty_string(f"{label}.{key}", component[key], errors)
+        if "failure_modes" in component:
+            validate_string_list(f"{label}.failure_modes", component["failure_modes"], errors)
+        if "release_boundary" in component:
+            validate_public_blocked_boundary(f"{label}.release_boundary", component["release_boundary"], errors)
+    if "qa_gates" in data:
+        validate_string_list("presentation_sequence_components.qa_gates", data["qa_gates"], errors)
+        validate_no_external_media_reference("presentation_sequence_components.qa_gates", data["qa_gates"], errors)
+    return seen_component_ids
 
 
 def validate_sources(pack_dir: Path, errors: list[str]) -> set[str]:
@@ -1287,6 +1645,7 @@ def validate_case_pack(pack_dir: str | Path, profile: str = "default") -> Valida
     validate_markdown_not_empty(root, errors, required_files)
     if profile == "run2":
         source_ids = validate_sources(root, errors)
+        card_ids = collect_run2_card_ids(root, source_ids, errors)
         multimodal_record_ids, multimodal_anchor_ids = validate_run2_multimodal_database(root, source_ids, errors)
         visual_target_ids = validate_run2_visual_learning_targets(
             root,
@@ -1294,8 +1653,23 @@ def validate_case_pack(pack_dir: str | Path, profile: str = "default") -> Valida
             multimodal_anchor_ids,
             errors,
         )
-        validate_run2_visual_target_components(root, visual_target_ids, errors)
-        card_ids = collect_run2_card_ids(root, source_ids, errors)
+        visual_component_ids = validate_run2_visual_target_components(root, visual_target_ids, errors)
+        beat_ids = validate_run2_video_demo_beat_map(
+            root,
+            source_ids,
+            multimodal_record_ids,
+            multimodal_anchor_ids,
+            card_ids,
+            errors,
+        )
+        motion_target_ids = validate_run2_motion_learning_targets(
+            root,
+            beat_ids,
+            visual_target_ids,
+            visual_component_ids,
+            errors,
+        )
+        validate_run2_presentation_sequence_components(root, motion_target_ids, visual_component_ids, errors)
         validate_run2_evidence_memory(root, card_ids, errors)
         move_ids = validate_run2_aesthetic_memory(root, card_ids, errors)
         validate_run2_asset_memory(root, card_ids, errors)

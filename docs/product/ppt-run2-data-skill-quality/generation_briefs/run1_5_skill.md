@@ -4,7 +4,7 @@ Arm id: `run1_5_skill`.
 
 Use the previous evidence-heavy product-lab workflow as the current baseline. This arm is expected to be more traceable than prompt-only but more report-like than Run 2.0.
 
-Do not use Run 2.2 multimodal database, visual learning targets, visual target components, aesthetic memory, asset memory, video cards, or slide archetypes. Preserve the older workflow's emphasis on evidence traceability so the comparison can isolate whether the new multimodal, aesthetic, and asset layers matter.
+Do not use Run 2.2 multimodal database, visual learning targets, visual target components, video demo beat map, motion learning targets, presentation sequence components, aesthetic memory, asset memory, video cards, or slide archetypes. Preserve the older workflow's emphasis on evidence traceability so the comparison can isolate whether the new multimodal, aesthetic, asset, and motion grammar layers matter.
 
 ## Allowed Inputs
 
@@ -17,6 +17,9 @@ Do not use Run 2.2 multimodal database, visual learning targets, visual target c
 - `multimodal_database.json`
 - `visual_learning_targets.json`
 - `visual_target_components.json`
+- `video_demo_beat_map.json`
+- `motion_learning_targets.json`
+- `presentation_sequence_components.json`
 - `video_cards/`
 - `evidence_memory.json`
 - `aesthetic_memory.json`

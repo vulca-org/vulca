@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "status": "run2_4_motion_learning_targets_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "targets": [
+    {
+      "id": "motion_target_opening_attention_reset",
+      "beat_ids": ["beat_opening_scale_reset"],
+      "visual_target_ids": ["target_audio_rhythm_budget"],
+      "visual_component_ids": ["component_rhythm_budget_strip"],
+      "slide_roles": ["cover", "setup"],
+      "motion_role": "attention_reset",
+      "failure_pattern": "The deck begins like an engineering report, with proof density and mechanism labels visible before the audience has an orientation moment.",
+      "desired_behavior": "The opening should pause on a sparse native visual field, then reveal the editable headline before any proof marker appears.",
+      "code_generation_requirements": [
+        "Use native editable PPT text and shape objects for the opening field and headline.",
+        "Attach motion metadata describing attention reset, hold, and delayed proof reveal.",
+        "Record selected beat ids, motion target ids, visual component ids, density counts, and trace notes."
+      ],
+      "qa_probe": "A reviewer can see the attention reset from the contact sheet and verify the reveal order in trace metadata.",
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "motion_target_before_after_reveal",
+      "beat_ids": ["beat_before_after_transformation"],
+      "visual_target_ids": ["target_report_to_visual_delta"],
+      "visual_component_ids": ["component_before_after_thumbnail"],
+      "slide_roles": ["contrast", "proof"],
+      "motion_role": "before_after_reveal",
+      "failure_pattern": "The slide says the design improved but never shows the change as a visible original before and after object.",
+      "desired_behavior": "The before thumbnail should reveal first, the after thumbnail should reveal second with a larger proof object, and the delta label should explain the edit.",
+      "code_generation_requirements": [
+        "Use native editable PPT thumbnail frames, labels, arrows, and proof objects.",
+        "Attach motion metadata for before reveal, after reveal, and delta lockup.",
+        "Record selected beat ids, visual target ids, visual component ids, deleted content, and trace notes."
+      ],
+      "qa_probe": "The transformation direction is visible before reading the body copy.",
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "motion_target_proof_build",
+      "beat_ids": ["beat_proof_reveal_cadence"],
+      "visual_target_ids": ["target_transcript_headline_compression", "target_audio_rhythm_budget"],
+      "visual_component_ids": ["component_transcript_headline_route", "component_rhythm_budget_strip"],
+      "slide_roles": ["proof"],
+      "motion_role": "proof_build",
+      "failure_pattern": "Proof appears as pasted explanation or equal panels, so the audience cannot tell which object is being built.",
+      "desired_behavior": "The proof should build from headline to object to route marker, with a small pause between claim and evidence.",
+      "code_generation_requirements": [
+        "Use native editable PPT headline, proof object, route marker, and rhythm strip.",
+        "Attach motion metadata for build order, pause, and detail routing.",
+        "Record selected transcript anchors, beat ids, motion target ids, and trace notes."
+      ],
+      "qa_probe": "The proof object enters as the main build, while transcript-like detail stays out of the slide body.",
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "motion_target_climax_scale_emphasis",
+      "beat_ids": ["beat_climax_scale_up"],
+      "visual_target_ids": ["target_public_demo_climax"],
+      "visual_component_ids": ["component_public_demo_climax_object"],
+      "slide_roles": ["climax"],
+      "motion_role": "scale_emphasis",
+      "failure_pattern": "The climax repeats the same scale and density as the proof slide, so no public-demo moment is created.",
+      "desired_behavior": "The climax should scale one native outcome object above prior proof objects and let minor labels become subordinate.",
+      "code_generation_requirements": [
+        "Use native editable PPT outcome object, comparison labels, and supporting shapes.",
+        "Attach motion metadata for scale emphasis and label reduction.",
+        "Record selected beat ids, visual component ids, object scale ratio, and trace notes."
+      ],
+      "qa_probe": "The climax object is the largest object in the sequence and can be identified from the contact sheet.",
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "motion_target_release_gate_handoff",
+      "beat_ids": ["beat_close_release_handoff"],
+      "visual_target_ids": ["target_public_demo_climax", "target_slide_mini_preview"],
+      "visual_component_ids": ["component_public_demo_climax_object", "component_slide_mini_preview"],
+      "slide_roles": ["close"],
+      "motion_role": "release_handoff",
+      "failure_pattern": "The close adds a final status grid instead of converting the outcome into a decision handoff.",
+      "desired_behavior": "The close should create a handoff from outcome state to public-blocked release gate and one next decision line.",
+      "code_generation_requirements": [
+        "Use native editable PPT release gate, handoff line, and optional mini-preview object.",
+        "Attach motion metadata for handoff reveal and final pause.",
+        "Record selected beat ids, release gate inputs, sequence component ids, and trace notes."
+      ],
+      "qa_probe": "The close reads as a decision handoff and keeps public release blocked.",
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    }
+  ],
+  "qa_gates": [
+    "each motion target references known beat ids",
+    "each motion target references known visual targets and native components",
+    "each motion target requires native editable objects, motion metadata, and trace fields",
+    "motion targets contain no copied source media references",
+    "public release remains blocked until render, provenance, and human approval"
+  ]
+}

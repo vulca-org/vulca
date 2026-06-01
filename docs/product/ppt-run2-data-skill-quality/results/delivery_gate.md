@@ -64,9 +64,11 @@ Combined local comparison sheet: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/p
 | Editable text and native structure inspection completed | pass |
 | Human approval recorded | blocked |
 | Native visual components visible | pass for local Run 2.3 full arm |
+| Run 2.4 motion grammar contract exists | pass for `video_demo_beat_map.json`, `motion_learning_targets.json`, and `presentation_sequence_components.json` |
+| Motion target ids and sequence component ids visible in regenerated deck trace | blocked until formal Run 2.4 rerun |
 | Public-video-grade visual proof completed | blocked |
 
-Delivery status remains `rerun-reviewed-public-blocked`. The regenerated Run 2.3 arms were built locally, structurally checked, trace-refreshed, and Gemini-reviewed. They are still not public release evidence because native render inspection, human approval, and a stronger public-demo visual pass are missing.
+Delivery status remains `rerun-reviewed-public-blocked`. The regenerated Run 2.3 arms were built locally, structurally checked, trace-refreshed, and Gemini-reviewed. Run 2.4 adds the motion grammar contract for the next rerun, but it is not a new generated result yet. The work is still not public release evidence because native render inspection, human approval, and a stronger public-demo visual pass are missing.
 
 ## Release Decision Thresholds
 

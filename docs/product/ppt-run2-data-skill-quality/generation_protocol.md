@@ -12,6 +12,8 @@ Run 2.2 adds `visual_learning_targets.json` as the target contract for the next 
 
 Run 2.3 adds `visual_target_components.json` as the component contract for the next rerun. A component is not decorative metadata; it is the exact native-PPT object family the generator must draw to satisfy a target.
 
+Run 2.4 adds `video_demo_beat_map.json`, `motion_learning_targets.json`, and `presentation_sequence_components.json` as the motion grammar contract for the next rerun. Motion grammar is not rendered video or decorative animation. It is derived tutorial/video observation converted into ordered native-PPT reveal, scale, build, pause, and handoff requirements that code generation and trace QA can inspect.
+
 ## Multimodal Data Boundary
 
 - Treat all tutorial pages, videos, audio, transcripts, screenshots, and product references as sources for derived design signals only.
@@ -20,7 +22,16 @@ Run 2.3 adds `visual_target_components.json` as the component contract for the n
 - Convert audio/video/tutorial observations into code-generation behavior: density budgets, pacing rules, before/after slide targets, native headline compression, and visual-climax requirements.
 - Select visual learning target ids before writing slide code, and record them in the trace manifest.
 - Select visual component ids after target selection and before slide-code generation. If a target has no visible native component in the rendered slide, treat the target as failed.
+- Select video beat ids, motion target ids, and sequence component ids before writing slide code. If a deck claims to use tutorial/video motion learning but does not record these ids and ordered native reveal steps, treat the claim as failed.
 - If an arm cannot trace a visible design move back to `multimodal_database.json`, source/video cards, and memory ids, it can be inspected internally but cannot be used as evidence that the database improved design quality.
+
+## Motion Grammar Boundary
+
+- Treat motion grammar as code-generation metadata until native PPT objects and static layout quality are proven.
+- Do not store downloaded videos, extracted frames, audio files, full transcript text, source screenshots, or copied animation timing files in the pack.
+- Represent a tutorial/demo beat as source id, locator, short observation, derived presentation rule, motion role, ordered native reveal sequence, QA probe, and release boundary.
+- Use sequence components for presentation rhythm: attention reset, before/after reveal, proof build, climax scale emphasis, and release handoff.
+- Public video or actual PowerPoint animation can be explored only after the generated deck passes native object checks, trace completeness, render checks, provenance, and human approval.
 
 ## Runtime Isolation
 
@@ -36,6 +47,7 @@ Run 2.3 adds `visual_target_components.json` as the component contract for the n
 - Reject any core title, claim, label, chart value, gate statement, or proof annotation that exists only inside a bitmap.
 - Record native text box count, native shape/chart/table/diagram count, raster asset count, and image-to-native-object ratio for every slide.
 - Record selected visual component ids and the native primitives used for the component.
+- Record selected motion target ids, sequence component ids, ordered reveal steps, and the native primitives used for each step.
 - Keep image-to-native-object ratio at or below `0.5` unless the image is an approved atmosphere background with all core content still native and editable.
 
 ## Layout Geometry QA

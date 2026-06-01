@@ -25,6 +25,10 @@
     "multimodal_anchor_ids",
     "visual_learning_target_ids",
     "visual_component_ids",
+    "video_beat_ids",
+    "motion_target_ids",
+    "sequence_component_ids",
+    "ordered_reveal_steps",
     "asset_ids",
     "density_counts",
     "deleted_or_routed_content",
@@ -38,6 +42,7 @@
     "release_gate_inputs"
   ],
   "density_count_fields": ["claims", "panels", "visible_words", "proof_objects"],
+  "ordered_reveal_step_fields": ["step_id", "order", "reveal_object", "trigger", "duration", "purpose"],
   "native_ppt_check_fields": [
     "native_text_box_count",
     "native_shape_chart_table_diagram_count",

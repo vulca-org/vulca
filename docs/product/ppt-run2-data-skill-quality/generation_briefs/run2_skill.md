@@ -2,7 +2,7 @@
 
 Arm id: `run2_skill`.
 
-Use commercial case, multimodal database, visual learning targets, visual target components, source cards, video cards, evidence memory, aesthetic memory, asset memory, narrative spine, slide archetypes, and the Run 2.0 staged deck-director skill.
+Use commercial case, multimodal database, visual learning targets, visual target components, video demo beat map, motion learning targets, presentation sequence components, source cards, video cards, evidence memory, aesthetic memory, asset memory, narrative spine, slide archetypes, and the Run 2.0 staged deck-director skill.
 
 The arm must generate a code-first PPT with editable native text and structures. It must select source/evidence/aesthetic/asset memory before writing slide code, enforce density budgets and negative rules, apply the deletion rule, and keep public-ready claims blocked until render, provenance, and human approval gates pass.
 
@@ -13,6 +13,9 @@ The arm must generate a code-first PPT with editable native text and structures.
 - `multimodal_database.json`
 - `visual_learning_targets.json`
 - `visual_target_components.json`
+- `video_demo_beat_map.json`
+- `motion_learning_targets.json`
+- `presentation_sequence_components.json`
 - `source_cards/`
 - `video_cards/`
 - `evidence_memory.json`
@@ -32,4 +35,4 @@ The arm must generate a code-first PPT with editable native text and structures.
 
 ## Trace Output
 
-Write `trace_manifest.json` under the arm's local `outputs/` directory with one record per slide: selected multimodal record ids, anchor ids, visual learning target ids, visual component ids, memory ids, density counts, deleted or routed content, asset provenance, QA outcomes, repair actions, and release-gate status.
+Write `trace_manifest.json` under the arm's local `outputs/` directory with one record per slide: selected multimodal record ids, anchor ids, visual learning target ids, visual component ids, video beat ids, motion target ids, sequence component ids, ordered native reveal steps, memory ids, density counts, deleted or routed content, asset provenance, QA outcomes, repair actions, and release-gate status.

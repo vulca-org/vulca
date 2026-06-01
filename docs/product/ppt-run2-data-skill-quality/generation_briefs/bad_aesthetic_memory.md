@@ -4,7 +4,7 @@ Arm id: `bad_aesthetic_memory`.
 
 Use valid evidence memory but intentionally weak aesthetic memory: repeated dashboard grids, dense tables, small labels, low rhythm variance, no visual climax, and no low-density high-impact slides. This is the negative control for the aesthetic layer.
 
-The arm should remain traceable enough to avoid becoming a random failure. Its purpose is to test whether bad aesthetic memory degrades an otherwise valid evidence workflow.
+The arm should remain traceable enough to avoid becoming a random failure. Its purpose is to test whether bad aesthetic memory degrades an otherwise valid evidence, multimodal, and motion grammar workflow.
 
 ## Allowed Inputs
 
@@ -13,6 +13,9 @@ The arm should remain traceable enough to avoid becoming a random failure. Its p
 - `multimodal_database.json`
 - `visual_learning_targets.json`
 - `visual_target_components.json`
+- `video_demo_beat_map.json`
+- `motion_learning_targets.json`
+- `presentation_sequence_components.json`
 - `source_cards/`
 - `video_cards/`
 - `evidence_memory.json`
@@ -34,4 +37,4 @@ Use `bad_aesthetic_memory_replacement.json` as the exact replacement for `aesthe
 
 ## Trace Output
 
-Write `trace_manifest.json` under the arm's local `outputs/` directory with one record per slide: bad replacement move ids, visual component ids, density counts, repeated-template evidence, asset provenance, QA outcomes, and release-gate status.
+Write `trace_manifest.json` under the arm's local `outputs/` directory with one record per slide: bad replacement move ids, visual component ids, video beat ids, motion target ids, sequence component ids, density counts, repeated-template evidence, asset provenance, QA outcomes, and release-gate status.

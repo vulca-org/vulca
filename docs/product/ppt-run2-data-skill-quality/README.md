@@ -1,8 +1,8 @@
 # PPT Run 2.0 Data Skill Quality
 
-Status: run2_3-native-component-contract-public-blocked.
+Status: run2_4-motion-grammar-contract-public-blocked.
 
-Run 2.2 does not move to a new stage. It repeats and thickens the same five fixed PPT product layers before the next generation pass:
+Run 2.4 does not move to a new stage. It repeats and thickens the same five fixed PPT product layers before the next generation pass:
 
 1. Real commercial case.
 2. Multimodal tutorial, video, audio, transcript, image-reference, interaction, and case data.
@@ -17,6 +17,12 @@ Run 2.0 does not claim post-training or fine-tuning. It tests runtime case-pack-
 `visual_learning_targets.json` converts those anchors into concrete generator obligations for the next four-arm rerun: before/after deltas, slide mini-previews, rhythm budgets, transcript-to-headline compression, and public-demo climax requirements.
 
 `visual_target_components.json` converts those obligations into native-PPT component contracts. Run 2.3 still repeats the same five layers; it does not advance to Run 3.0. The new depth is that a target must become a drawable component such as a before/after thumbnail, slide mini-preview, rhythm strip, transcript headline route, or public-demo climax object.
+
+`video_demo_beat_map.json` converts tutorial and video demonstrations into derived presentation beats: attention reset, before/after reveal, proof build, climax scale, and release handoff. It stores locator ranges and observations only, not source media.
+
+`motion_learning_targets.json` converts those beats into code-generation obligations. It requires native editable PPT objects, motion metadata, trace fields, and public-blocked release boundaries.
+
+`presentation_sequence_components.json` converts the obligations into ordered reveal/scale/build/handoff components. Run 2.4 still outputs static contracts first; real PPT animation or public video editing is a later renderer layer after native object quality is proven.
 
 Generation must follow `generation_protocol.md`: separate arm runtimes, no cross-arm context leakage, native PPT object checks, and layout geometry QA before scoring.
 

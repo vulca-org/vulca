@@ -50,6 +50,27 @@ EXPECTED_VISUAL_COMPONENT_IDS = {
     "component_transcript_headline_route",
     "component_public_demo_climax_object",
 }
+EXPECTED_VIDEO_BEAT_IDS = {
+    "beat_opening_scale_reset",
+    "beat_before_after_transformation",
+    "beat_proof_reveal_cadence",
+    "beat_climax_scale_up",
+    "beat_close_release_handoff",
+}
+EXPECTED_MOTION_TARGET_IDS = {
+    "motion_target_opening_attention_reset",
+    "motion_target_before_after_reveal",
+    "motion_target_proof_build",
+    "motion_target_climax_scale_emphasis",
+    "motion_target_release_gate_handoff",
+}
+EXPECTED_SEQUENCE_COMPONENT_IDS = {
+    "sequence_component_opening_reset",
+    "sequence_component_before_after_reveal",
+    "sequence_component_proof_build",
+    "sequence_component_climax_scale",
+    "sequence_component_release_gate",
+}
 EXPECTED_CLAIM_IDS = {
     "claim_data_changes_deck_quality",
     "claim_aesthetic_memory_controls_rhythm",
@@ -298,6 +319,63 @@ def test_run2_has_visual_target_components_for_native_generation() -> None:
         assert_contains(component["release_boundary"], ["public_blocked"])
 
 
+def test_run2_has_video_demo_beat_map_for_motion_learning() -> None:
+    database = load_json(PACK / "multimodal_database.json")
+    beat_map = load_json(PACK / "video_demo_beat_map.json")
+    record_ids = {record["id"] for record in database["records"]}
+    anchor_ids = {anchor["anchor_id"] for record in database["records"] for anchor in record["anchors"]}
+    video_card_ids = {card["card_id"] for card in (load_json(path) for path in json_files("video_cards"))}
+
+    assert beat_map["status"] == "run2_4_video_demo_beat_map_public_blocked"
+    assert beat_map["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert beat_map["storage_policy"]["raw_media"] == "forbidden"
+    assert EXPECTED_VIDEO_BEAT_IDS <= {beat["id"] for beat in beat_map["beats"]}
+
+    for beat in beat_map["beats"]:
+        assert set(beat["source_record_ids"]) <= record_ids
+        assert set(beat["anchor_ids"]) <= anchor_ids
+        assert set(beat["video_card_ids"]) <= video_card_ids
+        assert_contains(beat["locator"], [":"])
+        assert_mentions_any(beat["motion_role"], {"attention_reset", "reveal", "build", "scale", "handoff"})
+        assert_contains(" ".join(beat["reveal_sequence"]), ["native"])
+        assert_contains(" ".join(beat["do_not_store"]), ["video", "frames", "audio", "transcript"])
+        assert_contains(beat["release_boundary"], ["public_blocked"])
+
+
+def test_run2_has_motion_learning_targets_and_sequence_components() -> None:
+    beat_map = load_json(PACK / "video_demo_beat_map.json")
+    motion_targets = load_json(PACK / "motion_learning_targets.json")
+    visual_components = load_json(PACK / "visual_target_components.json")
+    sequence_components = load_json(PACK / "presentation_sequence_components.json")
+    beat_ids = {beat["id"] for beat in beat_map["beats"]}
+    visual_component_ids = {component["id"] for component in visual_components["components"]}
+    motion_target_ids = {target["id"] for target in motion_targets["targets"]}
+
+    assert motion_targets["status"] == "run2_4_motion_learning_targets_public_blocked"
+    assert sequence_components["status"] == "run2_4_sequence_components_public_blocked"
+    assert EXPECTED_MOTION_TARGET_IDS <= motion_target_ids
+    assert EXPECTED_SEQUENCE_COMPONENT_IDS <= {component["id"] for component in sequence_components["components"]}
+
+    for target in motion_targets["targets"]:
+        assert set(target["beat_ids"]) <= beat_ids
+        assert set(target["visual_component_ids"]) <= visual_component_ids
+        assert_contains(" ".join(target["code_generation_requirements"]), ["native", "metadata", "trace"])
+        assert_mentions_any(target["desired_behavior"], {"reveal", "scale", "build", "handoff", "pause"})
+        assert_contains(target["release_boundary"], ["public_blocked"])
+
+    for component in sequence_components["components"]:
+        assert set(component["motion_target_ids"]) <= motion_target_ids
+        assert set(component["visual_component_ids"]) <= visual_component_ids
+        assert component["sequence_steps"]
+        assert [step["order"] for step in component["sequence_steps"]] == list(
+            range(1, len(component["sequence_steps"]) + 1)
+        )
+        assert_contains(" ".join(component["native_ppt_primitives"]), ["native", "editable"])
+        assert_contains(" ".join(component["trace_fields"]), ["motion_target_ids", "sequence_component_ids"])
+        assert_contains(component["qa_probe"], ["reveal"])
+        assert_contains(component["release_boundary"], ["public_blocked"])
+
+
 def test_run2_four_arm_isolation_mentions_multimodal_and_target_boundaries() -> None:
     prompt_only = (PACK / "generation_briefs" / "prompt_only.md").read_text(encoding="utf-8")
     run1_5 = (PACK / "generation_briefs" / "run1_5_skill.md").read_text(encoding="utf-8")
@@ -307,12 +385,36 @@ def test_run2_four_arm_isolation_mentions_multimodal_and_target_boundaries() -> 
     assert_contains(
         prompt_only, ["Do not use multimodal database", "visual learning targets", "visual target components"]
     )
+    assert_contains(prompt_only, ["video demo beat map", "motion learning targets", "presentation sequence components"])
     assert_contains(
         run1_5,
         ["Do not use Run 2.2 multimodal database", "visual learning targets", "visual target components"],
     )
-    assert_contains(run2, ["multimodal_database.json", "visual_learning_targets.json", "visual_target_components.json"])
-    assert_contains(bad, ["multimodal_database.json", "visual_learning_targets.json", "visual_target_components.json"])
+    assert_contains(
+        run1_5, ["video_demo_beat_map.json", "motion_learning_targets.json", "presentation_sequence_components.json"]
+    )
+    assert_contains(
+        run2,
+        [
+            "multimodal_database.json",
+            "visual_learning_targets.json",
+            "visual_target_components.json",
+            "video_demo_beat_map.json",
+            "motion_learning_targets.json",
+            "presentation_sequence_components.json",
+        ],
+    )
+    assert_contains(
+        bad,
+        [
+            "multimodal_database.json",
+            "visual_learning_targets.json",
+            "visual_target_components.json",
+            "video_demo_beat_map.json",
+            "motion_learning_targets.json",
+            "presentation_sequence_components.json",
+        ],
+    )
     assert_contains(bad, ["Good aesthetic_memory.json", "Good slide_archetypes.json"])
 
 
@@ -417,6 +519,16 @@ def test_run2_skill_is_a_staged_deck_director() -> None:
     assert_contains(body, ["text, image-reference, video, audio, transcript, and interaction anchors"])
     assert_contains(body, ["visual_learning_targets.json", "before/after visual deltas", "slide mini-previews"])
     assert_contains(body, ["visual_target_components.json", "before/after thumbnail", "visual component ids"])
+    assert_contains(
+        body,
+        [
+            "video_demo_beat_map.json",
+            "motion_learning_targets.json",
+            "presentation_sequence_components.json",
+            "motion target ids",
+            "sequence component ids",
+        ],
+    )
 
 
 def test_run2_skill_workflow_is_declarative_and_gated() -> None:
@@ -450,11 +562,15 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
     assert "multimodal_database.json" in workflow_text
     assert "visual_learning_targets.json" in workflow_text
     assert "visual_target_components.json" in workflow_text
+    assert "video_demo_beat_map.json" in workflow_text
+    assert "motion_learning_targets.json" in workflow_text
+    assert "presentation_sequence_components.json" in workflow_text
     assert_contains(workflow_text, ["all required modalities covered", "no copied source media stored"])
     assert_contains(
         workflow_text, ["visual targets reference valid multimodal anchors", "selected visual learning targets"]
     )
     assert_contains(workflow_text, ["native visual components", "selected visual target components"])
+    assert_contains(workflow_text, ["motion grammar", "selected motion targets", "sequence components"])
     assert "public_blocked" in workflow["release_decisions"]
     assert "public_ready" not in workflow["release_decisions"]
     assert "automated repair without human gate" not in normalize(json.dumps(workflow))
@@ -476,7 +592,15 @@ def test_run2_generation_briefs_define_four_arms() -> None:
     assert_contains((PACK / "generation_briefs" / "run1_5_skill.md").read_text(encoding="utf-8"), ["evidence-heavy"])
     assert_contains(
         (PACK / "generation_briefs" / "run2_skill.md").read_text(encoding="utf-8"),
-        ["multimodal database", "visual learning targets", "visual target components", "aesthetic memory"],
+        [
+            "multimodal database",
+            "visual learning targets",
+            "visual target components",
+            "video demo beat map",
+            "motion learning targets",
+            "presentation sequence components",
+            "aesthetic memory",
+        ],
     )
     assert_contains(
         (PACK / "generation_briefs" / "bad_aesthetic_memory.md").read_text(encoding="utf-8"), ["negative control"]
@@ -510,6 +634,10 @@ def test_run2_results_reviewed_and_public_blocked() -> None:
     )
     assert_contains(
         comparison,
+        ["Run 2.4", "motion grammar", "video_demo_beat_map", "presentation_sequence_components"],
+    )
+    assert_contains(
+        comparison,
         ["Run 2.2", "run2_2_full_skill", "multimodal_learning", "visual_learning_target_execution"],
     )
     assert_contains(comparison, ["Run 2.1", "run2_1_full_skill", "product learning", "not public-release claims"])
@@ -520,6 +648,9 @@ def test_run2_results_reviewed_and_public_blocked() -> None:
     assert trace_contract["required_output_name"] == "trace_manifest.json"
     assert "aesthetic_move_ids" in trace_contract["per_slide_required_fields"]
     assert "visual_component_ids" in trace_contract["per_slide_required_fields"]
+    assert "video_beat_ids" in trace_contract["per_slide_required_fields"]
+    assert "motion_target_ids" in trace_contract["per_slide_required_fields"]
+    assert "sequence_component_ids" in trace_contract["per_slide_required_fields"]
     assert "runtime_isolation" in trace_contract["arm_required_fields"]
     assert "native_ppt_checks" in trace_contract["per_slide_required_fields"]
     assert "layout_geometry_checks" in trace_contract["per_slide_required_fields"]

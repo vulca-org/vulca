@@ -2,6 +2,13 @@
 
 Status: rerun-reviewed-public-blocked.
 
+Run 2.4 is contract-ready, not rerun-scored. It adds motion grammar on top of Run 2.3 native visual components:
+
+- `video_demo_beat_map.json` maps tutorial/video observations into derived beats: attention reset, before/after reveal, proof build, climax scale, and release handoff.
+- `motion_learning_targets.json` turns those beats into native editable PPT obligations with motion metadata and trace requirements.
+- `presentation_sequence_components.json` turns the obligations into ordered reveal/scale/build/handoff components for the next four-arm rerun.
+- No new winner score is claimed until prompt-only, Run 1.5, Run 2.4 full, and bad aesthetic memory arms are regenerated and reviewed.
+
 Run 2.3 has now been regenerated as a four-arm local experiment after adding `visual_target_components.json`. The result is stronger but still bounded:
 
 - `run2_3_full_skill` wins on native visual components: before/after thumbnail, slide mini-preview, rhythm strip, transcript headline route, and public-demo climax object are visible in the deck, not only named in trace.

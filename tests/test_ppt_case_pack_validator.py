@@ -549,6 +549,18 @@ def write_run2_required_files(pack: Path) -> None:
         json.dumps(valid_run2_visual_target_components(), indent=2),
         encoding="utf-8",
     )
+    (pack / "video_demo_beat_map.json").write_text(
+        json.dumps(valid_run2_video_demo_beat_map(), indent=2),
+        encoding="utf-8",
+    )
+    (pack / "motion_learning_targets.json").write_text(
+        json.dumps(valid_run2_motion_learning_targets(), indent=2),
+        encoding="utf-8",
+    )
+    (pack / "presentation_sequence_components.json").write_text(
+        json.dumps(valid_run2_presentation_sequence_components(), indent=2),
+        encoding="utf-8",
+    )
     (pack / "results" / "delivery_gate.md").write_text(
         "# Delivery Gate\n\nPublic publishing is blocked before native render and human review.\n",
         encoding="utf-8",
@@ -710,6 +722,105 @@ def valid_run2_visual_target_components() -> dict:
             }
         ],
         "qa_gates": ["components reference known visual targets", "no copied media in component contracts"],
+    }
+
+
+def valid_run2_video_demo_beat_map() -> dict:
+    return {
+        "schema_version": 1,
+        "status": "run2_4_video_demo_beat_map_public_blocked",
+        "stage_policy": "repeat_same_five_layers_not_run3",
+        "storage_policy": {
+            "default": "derived_observations_only",
+            "raw_media": "forbidden",
+            "copyright_boundary": "Store derived beat observations only; do not store raw media.",
+        },
+        "beats": [
+            {
+                "id": "beat_opening_scale_reset",
+                "source_id": "schema_2025_keynote_video",
+                "source_record_ids": ["mm_video_audio_transcript"],
+                "anchor_ids": ["video_opening_rhythm", "audio_density_pause"],
+                "video_card_ids": ["video_keynote_rhythm"],
+                "locator": "00:00-00:45 opening beat",
+                "observed_demo_move": "The opening holds one large field before proof appears.",
+                "derived_presentation_rule": "Start with a sparse native opening object before adding proof panels.",
+                "motion_role": "attention_reset",
+                "reveal_sequence": ["native opening field", "native headline", "native proof marker"],
+                "pacing_signal": "Hold before adding proof density.",
+                "do_not_store": ["source video", "video frames", "audio", "full transcript"],
+                "qa_probe": "The contact sheet shows a sparse opening before proof density.",
+                "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval",
+            }
+        ],
+        "qa_gates": ["beat ids reference known anchors", "raw media remains forbidden"],
+    }
+
+
+def valid_run2_motion_learning_targets() -> dict:
+    return {
+        "schema_version": 1,
+        "status": "run2_4_motion_learning_targets_public_blocked",
+        "stage_policy": "repeat_same_five_layers_not_run3",
+        "targets": [
+            {
+                "id": "motion_target_opening_attention_reset",
+                "beat_ids": ["beat_opening_scale_reset"],
+                "visual_target_ids": ["target_report_to_visual_delta"],
+                "visual_component_ids": ["component_before_after_thumbnail"],
+                "slide_roles": ["cover", "proof"],
+                "motion_role": "attention_reset",
+                "failure_pattern": "The deck opens with report density and no attention reset.",
+                "desired_behavior": "Pause on a sparse native field before proof objects reveal.",
+                "code_generation_requirements": [
+                    "Use native editable PPT objects.",
+                    "Record motion metadata and trace ids.",
+                ],
+                "qa_probe": "Opening beat has a visible reveal order.",
+                "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval",
+            }
+        ],
+        "qa_gates": ["motion targets reference known beats and components"],
+    }
+
+
+def valid_run2_presentation_sequence_components() -> dict:
+    return {
+        "schema_version": 1,
+        "status": "run2_4_sequence_components_public_blocked",
+        "stage_policy": "repeat_same_five_layers_not_run3",
+        "components": [
+            {
+                "id": "sequence_component_opening_reset",
+                "motion_target_ids": ["motion_target_opening_attention_reset"],
+                "visual_component_ids": ["component_before_after_thumbnail"],
+                "slide_roles": ["cover", "proof"],
+                "native_ppt_primitives": ["native editable text boxes", "native editable shape groups"],
+                "sequence_steps": [
+                    {
+                        "step_id": "field_first",
+                        "order": 1,
+                        "reveal_object": "native opening field",
+                        "trigger": "on slide start",
+                        "duration": "short hold",
+                        "purpose": "Create attention space before proof.",
+                    },
+                    {
+                        "step_id": "proof_second",
+                        "order": 2,
+                        "reveal_object": "native proof marker",
+                        "trigger": "after hold",
+                        "duration": "quick reveal",
+                        "purpose": "Add proof after orientation.",
+                    },
+                ],
+                "trace_fields": ["motion_target_ids", "sequence_component_ids", "visual_component_ids"],
+                "qa_probe": "The reveal order is visible in the static sequence notes.",
+                "failure_modes": ["all objects visible with no staged order"],
+                "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval",
+            }
+        ],
+        "qa_gates": ["sequence steps are ordered", "native editable primitives are required"],
     }
 
 
@@ -892,6 +1003,9 @@ def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     assert "missing required file: multimodal_database.json" in result.errors
     assert "missing required file: visual_learning_targets.json" in result.errors
     assert "missing required file: visual_target_components.json" in result.errors
+    assert "missing required file: video_demo_beat_map.json" in result.errors
+    assert "missing required file: motion_learning_targets.json" in result.errors
+    assert "missing required file: presentation_sequence_components.json" in result.errors
     assert "missing required file: source_cards/README.md" in result.errors
     assert "missing required file: video_cards/README.md" in result.errors
     assert "missing required file: aesthetic_memory.json" in result.errors
@@ -1168,6 +1282,230 @@ def test_run2_profile_rejects_visual_component_without_public_blocked_boundary(t
 
     assert result.ok is False
     assert "visual_target_components.components[0].release_boundary must keep public_blocked status" in result.errors
+
+
+def test_run2_profile_rejects_video_beat_unknown_anchor(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    beat_map_path = pack / "video_demo_beat_map.json"
+    beat_map = json.loads(beat_map_path.read_text(encoding="utf-8"))
+    beat_map["beats"][0]["anchor_ids"] = ["missing_anchor"]
+    beat_map_path.write_text(json.dumps(beat_map, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert (
+        "video_demo_beat_map.beats[0].anchor_ids references unknown multimodal anchor: missing_anchor" in result.errors
+    )
+
+
+def test_run2_profile_rejects_video_beat_unknown_video_card(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    beat_map_path = pack / "video_demo_beat_map.json"
+    beat_map = json.loads(beat_map_path.read_text(encoding="utf-8"))
+    beat_map["beats"][0]["video_card_ids"] = ["missing_card"]
+    beat_map_path.write_text(json.dumps(beat_map, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert (
+        "video_demo_beat_map.beats[0].video_card_ids references unknown source or video card: missing_card"
+        in result.errors
+    )
+
+
+def test_run2_profile_rejects_video_beat_external_media_reference(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    beat_map_path = pack / "video_demo_beat_map.json"
+    beat_map = json.loads(beat_map_path.read_text(encoding="utf-8"))
+    beat_map["beats"][0]["locator"] = "https://example.com/source-video.mp4"
+    beat_map_path.write_text(json.dumps(beat_map, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert (
+        "video_demo_beat_map.beats[0].locator must not include external media URLs or file references" in result.errors
+    )
+
+
+def test_run2_profile_rejects_video_beat_without_public_blocked_boundary(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    beat_map_path = pack / "video_demo_beat_map.json"
+    beat_map = json.loads(beat_map_path.read_text(encoding="utf-8"))
+    beat_map["beats"][0]["release_boundary"] = "public_ready_after_generation"
+    beat_map_path.write_text(json.dumps(beat_map, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "video_demo_beat_map.beats[0].release_boundary must keep public_blocked status" in result.errors
+
+
+def test_run2_profile_rejects_motion_target_unknown_beat(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    targets_path = pack / "motion_learning_targets.json"
+    targets = json.loads(targets_path.read_text(encoding="utf-8"))
+    targets["targets"][0]["beat_ids"] = ["missing_beat"]
+    targets_path.write_text(json.dumps(targets, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "motion_learning_targets.targets[0].beat_ids references unknown video beat: missing_beat" in result.errors
+
+
+def test_run2_profile_rejects_motion_target_without_trace_metadata_requirement(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    targets_path = pack / "motion_learning_targets.json"
+    targets = json.loads(targets_path.read_text(encoding="utf-8"))
+    targets["targets"][0]["code_generation_requirements"] = ["Use native editable PPT objects."]
+    targets_path.write_text(json.dumps(targets, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "motion_learning_targets.targets[0].code_generation_requirements must mention metadata" in result.errors
+    assert "motion_learning_targets.targets[0].code_generation_requirements must mention trace" in result.errors
+
+
+def test_run2_profile_rejects_motion_target_external_media_reference(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    targets_path = pack / "motion_learning_targets.json"
+    targets = json.loads(targets_path.read_text(encoding="utf-8"))
+    targets["targets"][0]["desired_behavior"] = "Use https://example.com/demo-frame.png as reveal reference."
+    targets_path.write_text(json.dumps(targets, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert (
+        "motion_learning_targets.targets[0].desired_behavior must not include external media URLs or file references"
+        in result.errors
+    )
+
+
+def test_run2_profile_rejects_sequence_component_unknown_motion_target(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    components_path = pack / "presentation_sequence_components.json"
+    components = json.loads(components_path.read_text(encoding="utf-8"))
+    components["components"][0]["motion_target_ids"] = ["missing_motion_target"]
+    components_path.write_text(json.dumps(components, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert (
+        "presentation_sequence_components.components[0].motion_target_ids references unknown motion target: "
+        "missing_motion_target"
+    ) in result.errors
+
+
+def test_run2_profile_rejects_sequence_component_nonsequential_steps(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    components_path = pack / "presentation_sequence_components.json"
+    components = json.loads(components_path.read_text(encoding="utf-8"))
+    components["components"][0]["sequence_steps"][1]["order"] = 3
+    components_path.write_text(json.dumps(components, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert (
+        "presentation_sequence_components.components[0].sequence_steps order must be sequential starting at 1"
+        in result.errors
+    )
+
+
+def test_run2_profile_rejects_sequence_component_missing_trace_fields(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    components_path = pack / "presentation_sequence_components.json"
+    components = json.loads(components_path.read_text(encoding="utf-8"))
+    components["components"][0]["trace_fields"] = ["visual_component_ids"]
+    components_path.write_text(json.dumps(components, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert (
+        "presentation_sequence_components.components[0].trace_fields missing value: motion_target_ids" in result.errors
+    )
+    assert (
+        "presentation_sequence_components.components[0].trace_fields missing value: sequence_component_ids"
+        in result.errors
+    )
+
+
+def test_run2_profile_rejects_sequence_component_external_media_reference(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    components_path = pack / "presentation_sequence_components.json"
+    components = json.loads(components_path.read_text(encoding="utf-8"))
+    components["components"][0]["sequence_steps"][0]["reveal_object"] = "local copied frame demo.png"
+    components_path.write_text(json.dumps(components, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert (
+        "presentation_sequence_components.components[0].sequence_steps[0].reveal_object must not include external "
+        "media URLs or file references"
+    ) in result.errors
 
 
 def test_run2_profile_rejects_untraced_aesthetic_move(tmp_path: Path) -> None:
