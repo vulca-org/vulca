@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "status": "generated-pending-review",
+  "status": "reviewed-public-blocked",
   "arms": [
     {
       "id": "prompt_only",
-      "status": "generated-pending-review",
+      "status": "reviewed-public-blocked",
       "workspace_path": "/Users/yhryzy/.codex/worktrees/031a/vulca/outputs/019e805d-ace6-7490-8141-a3315b6d096d/presentations/ppt-run1-5-prompt-only",
       "pptx_path": "/Users/yhryzy/.codex/worktrees/031a/vulca/outputs/019e805d-ace6-7490-8141-a3315b6d096d/presentations/ppt-run1-5-prompt-only/output/ppt-run1-5-prompt-only.pptx",
       "contact_sheet_path": "/Users/yhryzy/.codex/worktrees/031a/vulca/outputs/019e805d-ace6-7490-8141-a3315b6d096d/presentations/ppt-run1-5-prompt-only/preview/contact-sheet.png",
@@ -14,7 +14,7 @@
     },
     {
       "id": "full_vulca",
-      "status": "generated-pending-review",
+      "status": "reviewed-public-blocked",
       "workspace_path": "/Users/yhryzy/.codex/worktrees/031a/vulca/outputs/019e805d-ace6-7490-8141-a3315b6d096d/presentations/ppt-run1-5-full-vulca",
       "pptx_path": "/Users/yhryzy/.codex/worktrees/031a/vulca/outputs/019e805d-ace6-7490-8141-a3315b6d096d/presentations/ppt-run1-5-full-vulca/output/ppt-run1-5-full-vulca.pptx",
       "contact_sheet_path": "/Users/yhryzy/.codex/worktrees/031a/vulca/outputs/019e805d-ace6-7490-8141-a3315b6d096d/presentations/ppt-run1-5-full-vulca/preview/contact-sheet.png",
@@ -24,7 +24,7 @@
     },
     {
       "id": "bad_data",
-      "status": "generated-pending-review",
+      "status": "reviewed-public-blocked",
       "workspace_path": "/Users/yhryzy/.codex/worktrees/031a/vulca/outputs/019e805d-ace6-7490-8141-a3315b6d096d/presentations/ppt-run1-5-bad-data",
       "pptx_path": "/Users/yhryzy/.codex/worktrees/031a/vulca/outputs/019e805d-ace6-7490-8141-a3315b6d096d/presentations/ppt-run1-5-bad-data/output/ppt-run1-5-bad-data.pptx",
       "contact_sheet_path": "/Users/yhryzy/.codex/worktrees/031a/vulca/outputs/019e805d-ace6-7490-8141-a3315b6d096d/presentations/ppt-run1-5-bad-data/preview/contact-sheet.png",

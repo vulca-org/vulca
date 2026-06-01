@@ -101,12 +101,20 @@ def test_run1_5_generation_briefs_define_separate_arms() -> None:
 
 
 def test_run1_5_results_reviewed_and_public_blocked() -> None:
+    readme = (PACK / "results" / "README.md").read_text(encoding="utf-8")
+    asset_provenance = load_json(PACK / "results" / "asset_provenance.json")
     comparison = (PACK / "results" / "comparison_report.md").read_text(encoding="utf-8")
     comparison_json = load_json(PACK / "results" / "comparison_report.json")
     ablation = (PACK / "results" / "ablation_report.md").read_text(encoding="utf-8")
     ablation_json = load_json(PACK / "results" / "ablation_report.json")
     delivery = (PACK / "results" / "delivery_gate.md").read_text(encoding="utf-8")
 
+    assert_contains(readme, ["Status", "reviewed-public-blocked", "Public publishing remains blocked"])
+    assert asset_provenance["status"] == "reviewed-public-blocked"
+    assert {arm["status"] for arm in asset_provenance["arms"]} == {"reviewed-public-blocked"}
+    assert asset_provenance["external_assets"] == []
+    assert asset_provenance["generated_assets"] == []
+    assert asset_provenance["copied_assets"] == []
     assert_contains(comparison, ["Status", "reviewed-public-blocked"])
     assert comparison_json["status"] == "reviewed-public-blocked"
     assert_contains(ablation, ["prompt-only", "full Vulca", "bad-data", "Gemini review is qualitative evidence"])
