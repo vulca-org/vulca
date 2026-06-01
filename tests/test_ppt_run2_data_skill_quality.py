@@ -243,6 +243,29 @@ def test_run2_skill_is_a_staged_deck_director() -> None:
     )
 
 
+def test_run2_skill_workflow_is_declarative_and_gated() -> None:
+    workflow = load_json(PACK / "skill_workflow.json")
+    stage_ids = [stage["id"] for stage in workflow["stages"]]
+
+    assert workflow["workflow_type"] == "declarative_skill_director"
+    assert stage_ids == [
+        "read_commercial_case",
+        "compile_evidence_memory",
+        "compile_aesthetic_memory",
+        "select_slide_archetypes",
+        "generate_code_first_ppt",
+        "run_structural_and_aesthetic_qa",
+        "recommend_repairs",
+        "refresh_trace_qa_outcomes",
+        "emit_release_decision",
+    ]
+    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 10))
+    assert workflow["repair_triggers"]
+    assert "public_blocked" in workflow["release_decisions"]
+    assert "public_ready" not in workflow["release_decisions"]
+    assert "automated repair without human gate" not in normalize(json.dumps(workflow))
+
+
 def test_run2_generation_briefs_define_four_arms() -> None:
     briefs = {path.stem for path in (PACK / "generation_briefs").glob("*.md") if path.name != "README.md"}
 

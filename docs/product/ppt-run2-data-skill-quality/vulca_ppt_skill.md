@@ -4,6 +4,8 @@ Status: not-run.
 
 Run 2.0 is a staged deck-director workflow for code-generated PowerPoint. It must produce editable native text and native structures wherever possible: text boxes, grouped shapes, tables, charts, diagrams, and SVG objects that remain inspectable in PowerPoint. Bitmap assets may set atmosphere or illustrate a focal object, but they must not carry core claims, labels, evidence, or proof structure.
 
+Run 2.1 makes the workflow contract machine-checkable in `skill_workflow.json`. That file remains declarative: it records stage order, required inputs and outputs, gates, and repair recommendations. It does not authorize automated public-ready promotion or ungated repair changes.
+
 Run 2.0 workflow:
 
 1. Read `commercial_case.md` and select the narrative spine.

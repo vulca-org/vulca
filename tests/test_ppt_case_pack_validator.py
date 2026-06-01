@@ -492,6 +492,35 @@ def write_run2_required_files(pack: Path) -> None:
     (pack / "commercial_case.md").write_text("# Commercial Case\n\nCommercial product narrative.\n", encoding="utf-8")
     (pack / "aesthetic_rubric.md").write_text("# Aesthetic Rubric\n\nQuality bar.\n", encoding="utf-8")
     (pack / "vulca_ppt_skill.md").write_text("# Vulca PPT Skill\n\nRun 2.0 workflow.\n", encoding="utf-8")
+    (pack / "skill_workflow.json").write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "workflow_type": "declarative_skill_director",
+                "stages": [
+                    {
+                        "id": "read_commercial_case",
+                        "order": 1,
+                        "layer": "real_commercial_case",
+                        "inputs": ["commercial_case.md"],
+                        "outputs": ["decision context"],
+                        "gates": ["case is concrete"],
+                    }
+                ],
+                "repair_triggers": [
+                    {
+                        "id": "trace_qa_pending",
+                        "trigger": "trace QA fields remain pending after validation",
+                        "recommendation": "refresh trace QA outcomes before scoring",
+                        "human_gate": "required before public release",
+                    }
+                ],
+                "release_decisions": ["internal_only", "public_blocked"],
+            },
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
     (pack / "generation_briefs" / "prompt_only.md").write_text(
         "# Prompt Only\n\nBaseline generation arm.\n",
         encoding="utf-8",
@@ -694,7 +723,43 @@ def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     assert "missing required file: video_cards/README.md" in result.errors
     assert "missing required file: aesthetic_memory.json" in result.errors
     assert "missing required file: asset_memory.json" in result.errors
+    assert "missing required file: skill_workflow.json" in result.errors
     assert "missing required file: generation_briefs/run2_skill.md" in result.errors
+
+
+def test_run2_profile_rejects_skill_workflow_without_repair_triggers(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    (pack / "skill_workflow.json").write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "workflow_type": "declarative_skill_director",
+                "stages": [
+                    {
+                        "id": "read_commercial_case",
+                        "order": 1,
+                        "layer": "real_commercial_case",
+                        "inputs": ["commercial_case.md"],
+                        "outputs": ["narrative intent"],
+                        "gates": ["commercial case exists"],
+                    }
+                ],
+                "release_decisions": ["internal_only", "public_blocked"],
+            },
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "skill_workflow.json missing key: repair_triggers" in result.errors
 
 
 def test_run2_profile_validates_memory_contracts(tmp_path: Path) -> None:

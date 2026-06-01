@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "workflow_type": "declarative_skill_director",
+  "status": "run2_1_declarative_public_blocked",
+  "stages": [
+    {
+      "id": "read_commercial_case",
+      "order": 1,
+      "layer": "real_commercial_case",
+      "inputs": ["commercial_case.md"],
+      "outputs": ["audience", "decision", "failed_deck_definition", "six_slide_path"],
+      "gates": ["case is concrete", "public-demo failure mode is named"]
+    },
+    {
+      "id": "compile_evidence_memory",
+      "order": 2,
+      "layer": "tutorial_case_video_data",
+      "inputs": ["source_cards/", "video_cards/", "evidence_memory.json"],
+      "outputs": ["claim ids", "allowed use rules", "source boundaries"],
+      "gates": ["every claim traces to a card", "no copied source assets or long prose"]
+    },
+    {
+      "id": "compile_aesthetic_memory",
+      "order": 3,
+      "layer": "memory_layer",
+      "inputs": ["aesthetic_memory.json", "asset_memory.json"],
+      "outputs": ["rhythm roles", "density budgets", "negative rules", "asset constraints"],
+      "gates": ["every aesthetic move traces to extraction units", "density budget is enforceable"]
+    },
+    {
+      "id": "select_slide_archetypes",
+      "order": 4,
+      "layer": "skill_workflow",
+      "inputs": ["narrative_spine.json", "slide_archetypes.json"],
+      "outputs": ["slide role map", "selected aesthetic move ids", "deletion or routing plan"],
+      "gates": ["six-slide path preserved", "visual climax and close are distinct"]
+    },
+    {
+      "id": "generate_code_first_ppt",
+      "order": 5,
+      "layer": "skill_workflow",
+      "inputs": ["generation_briefs/run2_skill.md", "selected archetypes", "asset memory"],
+      "outputs": ["editable PPTX", "preview PNGs", "layout JSON", "trace_manifest.json"],
+      "gates": ["core text is native", "no full-slide rasterized output", "runtime isolation recorded"]
+    },
+    {
+      "id": "run_structural_and_aesthetic_qa",
+      "order": 6,
+      "layer": "rerun_and_evaluation",
+      "inputs": ["PPTX", "layout JSON", "contact sheet", "aesthetic_rubric.md"],
+      "outputs": ["delivery report", "layout report", "Gemini artifact review", "score table"],
+      "gates": ["structural QA passes", "layout errors are zero", "Gemini review is recorded"]
+    },
+    {
+      "id": "recommend_repairs",
+      "order": 7,
+      "layer": "skill_workflow",
+      "inputs": ["delivery report", "layout report", "Gemini review", "human visual notes"],
+      "outputs": ["repair recommendations", "blocked release reasons"],
+      "gates": ["repair remains recommendation-only until accepted", "no automated public-ready promotion"]
+    },
+    {
+      "id": "refresh_trace_qa_outcomes",
+      "order": 8,
+      "layer": "rerun_and_evaluation",
+      "inputs": ["trace_manifest.json", "delivery report", "layout report"],
+      "outputs": ["post-QA trace manifest", "backup manifest", "dry-run diff"],
+      "gates": ["refresh is atomic", "backup exists before overwrite", "public gate remains blocked without render and human approval"]
+    },
+    {
+      "id": "emit_release_decision",
+      "order": 9,
+      "layer": "rerun_and_evaluation",
+      "inputs": ["post-QA trace manifest", "native render result", "human approval record"],
+      "outputs": ["internal_only or public_blocked decision"],
+      "gates": ["native render passed before demo candidate", "human approval recorded before public-ready claim"]
+    }
+  ],
+  "repair_triggers": [
+    {
+      "id": "trace_qa_pending",
+      "trigger": "per-slide structural_qa or aesthetic_qa remains pending after validation",
+      "recommendation": "run the trace QA refresh step before scoring or winner claims",
+      "human_gate": "required before public release"
+    },
+    {
+      "id": "density_budget_exceeded",
+      "trigger": "visible words, panels, or proof objects exceed the selected aesthetic move budget",
+      "recommendation": "route proof detail to notes/results or select a lower-density archetype",
+      "human_gate": "required before repair changes are treated as accepted"
+    },
+    {
+      "id": "native_render_missing",
+      "trigger": "PowerPoint, Keynote, or cross-platform render inspection has not passed",
+      "recommendation": "keep release decision public_blocked and perform manual export if automation fails",
+      "human_gate": "required before demo candidate"
+    },
+    {
+      "id": "visual_climax_not_distinct",
+      "trigger": "outcome slide repeats setup or proof grid without a larger justified object",
+      "recommendation": "revise the climax archetype so the strongest supported delta gets the largest field",
+      "human_gate": "required before public-facing polish"
+    }
+  ],
+  "release_decisions": ["internal_only", "demo_candidate_blocked", "public_blocked"]
+}

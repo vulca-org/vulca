@@ -61,6 +61,7 @@ RUN2_REQUIRED_FILES = [
     "slide_archetypes.json",
     "aesthetic_rubric.md",
     "vulca_ppt_skill.md",
+    "skill_workflow.json",
     "generation_briefs/README.md",
     "generation_briefs/prompt_only.md",
     "generation_briefs/run1_5_skill.md",
@@ -695,6 +696,60 @@ def validate_run2_slide_archetypes(pack_dir: Path, move_ids: set[str], errors: l
             validate_number_mapping(f"{label}.density_budget", archetype["density_budget"], errors)
 
 
+def validate_run2_skill_workflow(pack_dir: Path, errors: list[str]) -> None:
+    data = load_json(pack_dir / "skill_workflow.json", errors)
+    require_keys(
+        "skill_workflow.json",
+        data,
+        ["schema_version", "workflow_type", "stages", "repair_triggers", "release_decisions"],
+        errors,
+    )
+    if "schema_version" in data:
+        require_integer("skill_workflow.schema_version", data["schema_version"], errors)
+    if "workflow_type" in data:
+        require_non_empty_string("skill_workflow.workflow_type", data["workflow_type"], errors)
+    if "release_decisions" in data:
+        validate_string_list("skill_workflow.release_decisions", data["release_decisions"], errors)
+
+    stages = data.get("stages", [])
+    if not require_non_empty_list("skill_workflow.stages", stages, errors):
+        return
+    expected_order = 1
+    seen_stage_ids: set[str] = set()
+    for index, stage in enumerate(stages):
+        label = f"skill_workflow.stages[{index}]"
+        if not isinstance(stage, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        require_keys(label, stage, ["id", "order", "layer", "inputs", "outputs", "gates"], errors)
+        if "id" in stage and require_non_empty_string(f"{label}.id", stage["id"], errors):
+            if stage["id"] in seen_stage_ids:
+                errors.append(f"{label}.id duplicates {stage['id']}")
+            seen_stage_ids.add(stage["id"])
+        if "order" in stage and require_integer(f"{label}.order", stage["order"], errors):
+            if stage["order"] != expected_order:
+                errors.append(f"{label}.order must be {expected_order}")
+            expected_order += 1
+        if "layer" in stage:
+            require_non_empty_string(f"{label}.layer", stage["layer"], errors)
+        for key in ["inputs", "outputs", "gates"]:
+            if key in stage:
+                validate_string_list(f"{label}.{key}", stage[key], errors)
+
+    triggers = data.get("repair_triggers", [])
+    if not require_non_empty_list("skill_workflow.repair_triggers", triggers, errors):
+        return
+    for index, trigger in enumerate(triggers):
+        label = f"skill_workflow.repair_triggers[{index}]"
+        if not isinstance(trigger, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        require_keys(label, trigger, ["id", "trigger", "recommendation", "human_gate"], errors)
+        for key in ["id", "trigger", "recommendation", "human_gate"]:
+            if key in trigger:
+                require_non_empty_string(f"{label}.{key}", trigger[key], errors)
+
+
 def validate_run1_design_memory_observations(observations: list[Any], errors: list[str]) -> None:
     required = ["id", "source_ids", "principle", "code_generation_rule", "do_not_copy"]
     seen_ids: set[str] = set()
@@ -841,6 +896,7 @@ def validate_case_pack(pack_dir: str | Path, profile: str = "default") -> Valida
         validate_run2_asset_memory(root, card_ids, errors)
         validate_run2_narrative_spine(root, move_ids, errors)
         validate_run2_slide_archetypes(root, move_ids, errors)
+        validate_run2_skill_workflow(root, errors)
         return ValidationResult(not errors, errors)
 
     validate_sources(root, errors)

@@ -4,6 +4,8 @@ Status: not-run-public-blocked.
 
 This protocol must run before any Run 2.0 deck arm is scored.
 
+Run 2.1 adds `skill_workflow.json` as the declarative stage contract. The file is not a new orchestration engine; it defines the order, inputs, outputs, gates, and human-gated repair triggers that generation and QA must satisfy.
+
 ## Runtime Isolation
 
 - Run each arm in a separate output directory under `outputs/<thread-id>/presentations/<arm-id>/`.
@@ -25,6 +27,12 @@ This protocol must run before any Run 2.0 deck arm is scored.
 - Reject default-styled tables or charts unless the selected arm is `bad_aesthetic_memory`.
 - Reject repeated equal-density grids across adjacent main-story slides unless the selected arm is `bad_aesthetic_memory`.
 - Record geometry checks, density counts, and any repair actions in `trace_manifest.json` before scoring.
+
+## Trace Outcome Refresh
+
+- After structural and aesthetic QA run, refresh per-slide `structural_qa` and `aesthetic_qa` outcomes in `trace_manifest.json`.
+- The refresh step must support dry-run review, preserve a backup manifest, and keep the release decision public-blocked unless native render and human approval gates pass.
+- If trace outcome refresh is missing, the arm can be inspected internally but cannot be used as public-release evidence.
 
 ## Scoring Boundary
 
