@@ -1,0 +1,190 @@
+{
+  "schema_version": 1,
+  "status": "run2_5_production_reference_decomposition_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "storage_policy": {
+    "raw_media": "forbidden",
+    "allowed_storage": "derived_observations_only",
+    "forbidden_storage": [
+      "source screenshots",
+      "video frames",
+      "audio",
+      "full transcripts",
+      "copied layouts",
+      "brand marks",
+      "template files",
+      "long source prose"
+    ]
+  },
+  "extraction_policy": {
+    "method": "manual and model-assisted derived observation only",
+    "automation_boundary": "no automatic frame extraction, no copied screenshots, no source-layout cloning",
+    "claim_boundary": "these decompositions are production design contracts for the next rerun, not proof of public-video-grade output"
+  },
+  "references": [
+    {
+      "id": "prod_ref_cinematic_cover_field",
+      "source_ids": ["geo_figma_slides", "figma_config_2025_identity", "schema_2025_keynote_video"],
+      "visual_component_ids": ["component_rhythm_budget_strip", "component_slide_mini_preview"],
+      "motion_target_ids": ["motion_target_opening_attention_reset"],
+      "sequence_component_ids": ["sequence_component_opening_reset"],
+      "visual_observations": [
+        "A high-aesthetic opening uses native composition pressure: one large field, one decisive headline, and a small system cue instead of a report scaffold.",
+        "The cover should feel like the product already has a designed world before proof text appears."
+      ],
+      "composition_primitives": [
+        "Reserve one canvas field for a dominant native object or SVG-like editable mark.",
+        "Place the headline against the field edge with an intentional asymmetry rather than a centered dashboard header."
+      ],
+      "typography_primitives": [
+        "Use headline hierarchy with a clear 3x or larger size difference between title and supporting labels.",
+        "Keep support copy secondary and sparse so the headline owns the first read."
+      ],
+      "spacing_primitives": [
+        "Use broad whitespace around the focal field and keep margin rhythm consistent across the sequence.",
+        "Do not fill the unused margin with badges, small metrics, or trace labels."
+      ],
+      "motion_or_sequence_primitives": [
+        "Opening sequence starts with the field and headline, then reveals the small system cue after a pause.",
+        "Static PPT output must still trace the intended sequence as ordered native reveal steps."
+      ],
+      "module_implications": [
+        "Generate a code module for a cinematic cover field and record the selected module in trace.",
+        "The module must use native editable PPT shapes, headline text, and trace metadata."
+      ],
+      "extraction_notes": [
+        "Derived from source identity and keynote rhythm observations; not copied from source visuals.",
+        "The exact brand colors, marks, screenshots, and layouts are not copied."
+      ],
+      "do_not_copy": [
+        "Do not copy screenshots, brand marks, source layouts, event graphics, or full prose.",
+        "Do not copy a reference cover composition one-to-one."
+      ],
+      "qa_probe": "From the contact sheet, the cover should read as a designed product opening before any small explanatory text is readable.",
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "prod_ref_editorial_before_after_delta",
+      "source_ids": ["slidemodel_visual_hierarchy", "present_partners_whitespace", "supervity_ai_keynote"],
+      "visual_component_ids": ["component_before_after_thumbnail", "component_transcript_headline_route"],
+      "motion_target_ids": ["motion_target_before_after_reveal"],
+      "sequence_component_ids": ["sequence_component_before_after_reveal"],
+      "visual_observations": [
+        "A useful before/after slide needs native composition that visibly changes hierarchy, not a pair of equal cards with different labels.",
+        "The delta should be a visual event: one object becomes larger, clearer, or more editorially placed."
+      ],
+      "composition_primitives": [
+        "Use the canvas for two unequal before/after fields with the after state visually dominant.",
+        "Add one delta marker that connects the old report state to the new designed state."
+      ],
+      "typography_primitives": [
+        "Use headline hierarchy to separate state labels, delta label, and business implication.",
+        "Keep the implication line shorter than the two state labels combined."
+      ],
+      "spacing_primitives": [
+        "Use whitespace to make the after state breathe and keep margin gutters larger than internal card gaps.",
+        "Avoid equal grid spacing when the point is hierarchy change."
+      ],
+      "motion_or_sequence_primitives": [
+        "Sequence reveals the before state, then the delta marker, then the after state scale change.",
+        "The native static output must preserve that sequence in ordered trace steps."
+      ],
+      "module_implications": [
+        "Generate a code module for editorial before/after delta with native thumbnails and a traceable hierarchy change.",
+        "The module must reject equal dashboard cards and record the selected visual component ids."
+      ],
+      "extraction_notes": [
+        "Derived from public hierarchy and whitespace teaching plus commercial AI presentation observations; not copied from source visuals.",
+        "No source slide, screenshot, or brand system is embedded."
+      ],
+      "do_not_copy": [
+        "Do not copy screenshots, source diagrams, course visuals, brand marks, or proprietary layouts.",
+        "Do not reproduce tutorial prose or exact slide examples."
+      ],
+      "qa_probe": "From the contact sheet, a reviewer should see the before/after direction and the enlarged after-state object in under five seconds.",
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "prod_ref_product_system_mini_preview",
+      "source_ids": ["geo_figma_slides", "launch_lab_sales_deck", "duarte_slide_design_course"],
+      "visual_component_ids": ["component_slide_mini_preview", "component_rhythm_budget_strip"],
+      "motion_target_ids": ["motion_target_proof_build"],
+      "sequence_component_ids": ["sequence_component_proof_build"],
+      "visual_observations": [
+        "A product-system proof slide needs native composition that shows the product choosing an output, not a text description of the workflow.",
+        "The mini preview should look like a designed slide target with controls, density budget, and selected memory visible as small but readable primitives."
+      ],
+      "composition_primitives": [
+        "Reserve the main canvas for a native mini-preview frame and place workflow controls around it as secondary objects.",
+        "Use one proof route line from data to memory to generated slide, with unequal emphasis on the generated slide target."
+      ],
+      "typography_primitives": [
+        "Use headline hierarchy for the proof claim and small functional labels for controls.",
+        "Avoid paragraph copy inside the preview; labels must be short enough to remain readable."
+      ],
+      "spacing_primitives": [
+        "Use whitespace between data, memory, and output zones; keep margin gutters quiet and consistent.",
+        "The mini-preview should not touch the slide edge or collapse into a tiny screenshot-like rectangle."
+      ],
+      "motion_or_sequence_primitives": [
+        "Sequence builds from data anchor to selected memory to generated native slide preview.",
+        "If animation is unavailable, trace the intended build order and keep the static composition readable."
+      ],
+      "module_implications": [
+        "Generate a code module for native system mini preview and proof route choreography.",
+        "The module must record production reference ids, aesthetic memory v2 ids, visual production module ids, fallback state, and trace evidence."
+      ],
+      "extraction_notes": [
+        "Derived from presentation product and training observations; not copied from source layouts or training materials.",
+        "The output preview is an original native PPT abstraction, not a screenshot."
+      ],
+      "do_not_copy": [
+        "Do not copy screenshots, product UI, deck templates, brand marks, or course exercise files.",
+        "Do not use a pasted interface capture as proof of native editability."
+      ],
+      "qa_probe": "From the contact sheet, the proof slide should show a real product/system mini-preview rather than generic process cards.",
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "prod_ref_climax_handoff_sequence",
+      "source_ids": ["google_cloud_next_keynote", "schema_2025_keynote_video", "duarte_persuasive_visual_storytelling"],
+      "visual_component_ids": ["component_public_demo_climax_object", "component_rhythm_budget_strip"],
+      "motion_target_ids": ["motion_target_climax_scale_emphasis", "motion_target_release_gate_handoff"],
+      "sequence_component_ids": ["sequence_component_climax_scale", "sequence_component_release_gate"],
+      "visual_observations": [
+        "The climax should be a native composition break: a larger object, darker or higher-contrast field, and fewer competing proof panels.",
+        "The close should hand off a decision gate instead of adding another report page."
+      ],
+      "composition_primitives": [
+        "Give the climax object the largest canvas area in the deck and reduce surrounding proof surfaces.",
+        "Use a separate close canvas with one status, one handoff line, and a small editable mark."
+      ],
+      "typography_primitives": [
+        "Use headline hierarchy where the climax verdict is short and secondary labels are restrained.",
+        "The closing line should read as governance and next action, not inspiration copy."
+      ],
+      "spacing_primitives": [
+        "Use whitespace and margin discipline to make the climax object feel intentional, not oversized by accident.",
+        "Keep the close slide calm with wide margins and no appendix-like grid."
+      ],
+      "motion_or_sequence_primitives": [
+        "Sequence scales the climax object after proof is established, then hands off to the release gate.",
+        "Trace must preserve scale emphasis and handoff order even when the generated PPT remains static."
+      ],
+      "module_implications": [
+        "Generate code modules for climax hero object and release handoff gate.",
+        "The modules must include native fallback behavior, visual validation probes, and trace evidence."
+      ],
+      "extraction_notes": [
+        "Derived from keynote rhythm and storytelling observations; not copied from video frames or webinar materials.",
+        "No audio, transcript, slide frame, or brand asset is stored."
+      ],
+      "do_not_copy": [
+        "Do not copy screenshots, video frames, brand marks, keynote stage visuals, or webinar materials.",
+        "Do not copy source language or exact transition timing."
+      ],
+      "qa_probe": "From the contact sheet, the climax should be the visual peak and the close should read as a decision handoff.",
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    }
+  ]
+}

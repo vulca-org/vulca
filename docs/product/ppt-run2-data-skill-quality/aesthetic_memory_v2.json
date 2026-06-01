@@ -1,0 +1,230 @@
+{
+  "schema_version": 1,
+  "status": "run2_5_aesthetic_memory_v2_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "purpose": "Convert production reference decompositions into hard native-PPT composition, typography, spacing, and sequence contracts for the next rerun.",
+  "moves": [
+    {
+      "id": "aesthetic_v2_cinematic_cover_field",
+      "production_reference_ids": ["prod_ref_cinematic_cover_field"],
+      "visual_component_ids": ["component_rhythm_budget_strip", "component_slide_mini_preview"],
+      "motion_target_ids": ["motion_target_opening_attention_reset"],
+      "sequence_component_ids": ["sequence_component_opening_reset"],
+      "slide_roles": ["cover"],
+      "composition_contract": "Use one focal native canvas field that occupies at least 42 percent of the slide; the cover must not expose report panels before the product promise lands.",
+      "typography_contract": "Use one headline hierarchy with a 3x title-to-label size gap and no more than two secondary labels.",
+      "spacing_contract": "Keep wide whitespace around the focal field, preserve quiet outer margins, and avoid filling margin space with badges.",
+      "density_budget": {
+        "max_claims": 1,
+        "max_panels": 1,
+        "max_words": 30
+      },
+      "provenance_boundary": "Use derived observations only; do not copy screenshots, brand marks, source layouts, source prose, video frames, audio, or transcripts.",
+      "code_generation_contract": [
+        "Generate a native PPT module, not a screenshot or full-slide raster.",
+        "Use editable headline text, grouped native shapes, and a traceable opening sequence.",
+        "Record fallback state if the focal object cannot be built natively."
+      ],
+      "trace_fields": [
+        "production_reference_ids",
+        "aesthetic_memory_v2_ids",
+        "visual_production_module_ids",
+        "sequence_component_ids",
+        "fallback_policy"
+      ],
+      "forbidden_report_patterns": [
+        "dashboard grid on cover",
+        "equal grid",
+        "tiny labels",
+        "report header with no focal object"
+      ],
+      "qa_probe": "The contact sheet should read as a cinematic product opening, not an experiment report cover.",
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "aesthetic_v2_editorial_before_after_delta",
+      "production_reference_ids": ["prod_ref_editorial_before_after_delta"],
+      "visual_component_ids": ["component_before_after_thumbnail", "component_transcript_headline_route"],
+      "motion_target_ids": ["motion_target_before_after_reveal"],
+      "sequence_component_ids": ["sequence_component_before_after_reveal"],
+      "slide_roles": ["contrast"],
+      "composition_contract": "Use an asymmetric canvas with before and after states; the after state must have the focal object and the before state must look intentionally weaker.",
+      "typography_contract": "Use headline hierarchy for state labels, one delta label, and one short implication line.",
+      "spacing_contract": "Use whitespace to separate states and keep the margin around the after-state field larger than internal card gutters.",
+      "density_budget": {
+        "max_claims": 1,
+        "max_panels": 2,
+        "max_words": 46
+      },
+      "provenance_boundary": "Use derived observations only; do not copy screenshots, brand marks, source layouts, source prose, video frames, audio, or transcripts.",
+      "code_generation_contract": [
+        "Generate a native PPT module with editable before/after thumbnails and one delta object.",
+        "Use native rectangles, lines, connectors, labels, and grouped objects.",
+        "Record fallback state if text length forces the after-state object below the required scale."
+      ],
+      "trace_fields": [
+        "production_reference_ids",
+        "aesthetic_memory_v2_ids",
+        "visual_production_module_ids",
+        "visual_component_ids",
+        "density_counts"
+      ],
+      "forbidden_report_patterns": [
+        "dashboard of metrics",
+        "equal grid",
+        "tiny labels",
+        "report cards with only text labels"
+      ],
+      "qa_probe": "The contact sheet should show a visible before/after transformation, not just text saying transformation.",
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "aesthetic_v2_proof_route_choreography",
+      "production_reference_ids": ["prod_ref_product_system_mini_preview"],
+      "visual_component_ids": ["component_slide_mini_preview", "component_rhythm_budget_strip"],
+      "motion_target_ids": ["motion_target_proof_build"],
+      "sequence_component_ids": ["sequence_component_proof_build"],
+      "slide_roles": ["proof"],
+      "composition_contract": "Use the canvas to choreograph data to memory to generated slide; the generated native slide preview must be the focal object.",
+      "typography_contract": "Use headline hierarchy for the proof claim and concise functional labels for route nodes.",
+      "spacing_contract": "Keep whitespace between data, memory, and output zones; preserve a generous margin around the generated slide preview.",
+      "density_budget": {
+        "max_claims": 1,
+        "max_panels": 3,
+        "max_words": 52
+      },
+      "provenance_boundary": "Use derived observations only; do not copy screenshots, brand marks, source layouts, source prose, video frames, audio, or transcripts.",
+      "code_generation_contract": [
+        "Generate a native PPT module with a proof route and editable mini-preview.",
+        "Use sequence metadata to show build order without relying on rendered video.",
+        "Record fallback state if the route becomes equal-weight process boxes."
+      ],
+      "trace_fields": [
+        "production_reference_ids",
+        "aesthetic_memory_v2_ids",
+        "visual_production_module_ids",
+        "motion_target_ids",
+        "ordered_reveal_steps"
+      ],
+      "forbidden_report_patterns": [
+        "equal grid",
+        "generic process report",
+        "tiny labels",
+        "dashboard proof surface"
+      ],
+      "qa_probe": "The contact sheet should show a proof route with a generated slide target, not generic workflow cards.",
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "aesthetic_v2_system_mini_preview",
+      "production_reference_ids": ["prod_ref_product_system_mini_preview"],
+      "visual_component_ids": ["component_slide_mini_preview"],
+      "motion_target_ids": ["motion_target_proof_build"],
+      "sequence_component_ids": ["sequence_component_proof_build"],
+      "slide_roles": ["setup", "proof"],
+      "composition_contract": "Use a native canvas preview of the product's intended slide output as the focal object; controls must support the preview instead of replacing it.",
+      "typography_contract": "Use headline hierarchy for the claim and short control labels inside or around the preview.",
+      "spacing_contract": "Keep preview margin large enough that it reads as a designed object, with whitespace separating controls from the preview frame.",
+      "density_budget": {
+        "max_claims": 1,
+        "max_panels": 2,
+        "max_words": 48
+      },
+      "provenance_boundary": "Use derived observations only; do not copy screenshots, brand marks, source layouts, source prose, video frames, audio, or transcripts.",
+      "code_generation_contract": [
+        "Generate a native PPT module with editable slide-frame, labels, density controls, and selected memory markers.",
+        "Never satisfy the preview with a pasted screenshot.",
+        "Record fallback state when the preview cannot remain readable."
+      ],
+      "trace_fields": [
+        "production_reference_ids",
+        "aesthetic_memory_v2_ids",
+        "visual_production_module_ids",
+        "selected_memory_ids",
+        "native_ppt_checks"
+      ],
+      "forbidden_report_patterns": [
+        "screenshot-like report",
+        "dashboard control grid",
+        "tiny labels",
+        "equal grid"
+      ],
+      "qa_probe": "The contact sheet should show a native system mini-preview that feels like product behavior, not an explanation box.",
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "aesthetic_v2_climax_hero_object",
+      "production_reference_ids": ["prod_ref_climax_handoff_sequence"],
+      "visual_component_ids": ["component_public_demo_climax_object", "component_rhythm_budget_strip"],
+      "motion_target_ids": ["motion_target_climax_scale_emphasis"],
+      "sequence_component_ids": ["sequence_component_climax_scale"],
+      "slide_roles": ["climax"],
+      "composition_contract": "Break the prior canvas rhythm and give one focal outcome object at least 48 percent of the slide area.",
+      "typography_contract": "Use headline hierarchy with one short verdict line and sparse labels around the focal object.",
+      "spacing_contract": "Use whitespace and wide margin around the hero object so scale feels intentional rather than crowded.",
+      "density_budget": {
+        "max_claims": 1,
+        "max_panels": 2,
+        "max_words": 42
+      },
+      "provenance_boundary": "Use derived observations only; do not copy screenshots, brand marks, source layouts, source prose, video frames, audio, or transcripts.",
+      "code_generation_contract": [
+        "Generate a native PPT module with an editable hero object, scale cue, and sparse comparison labels.",
+        "Use native grouped objects or editable SVG; do not flatten the climax.",
+        "Record fallback state if the slide repeats the proof grid."
+      ],
+      "trace_fields": [
+        "production_reference_ids",
+        "aesthetic_memory_v2_ids",
+        "visual_production_module_ids",
+        "motion_target_ids",
+        "layout_geometry_checks"
+      ],
+      "forbidden_report_patterns": [
+        "dashboard climax",
+        "equal grid",
+        "report page",
+        "tiny labels"
+      ],
+      "qa_probe": "The contact sheet should make the climax visibly larger and more dramatic than proof slides.",
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "aesthetic_v2_release_handoff_gate",
+      "production_reference_ids": ["prod_ref_climax_handoff_sequence"],
+      "visual_component_ids": ["component_public_demo_climax_object"],
+      "motion_target_ids": ["motion_target_release_gate_handoff"],
+      "sequence_component_ids": ["sequence_component_release_gate"],
+      "slide_roles": ["close"],
+      "composition_contract": "Use a calm decision-handoff canvas with one focal release gate, one next action, and one small native mark.",
+      "typography_contract": "Use headline hierarchy for the gate status and a smaller support line for the next action.",
+      "spacing_contract": "Keep wide whitespace and disciplined margin; do not convert the close into an appendix grid.",
+      "density_budget": {
+        "max_claims": 1,
+        "max_panels": 1,
+        "max_words": 36
+      },
+      "provenance_boundary": "Use derived observations only; do not copy screenshots, brand marks, source layouts, source prose, video frames, audio, or transcripts.",
+      "code_generation_contract": [
+        "Generate a native PPT module with editable release gate and handoff line.",
+        "Keep all status text native and trace the public-blocked reason.",
+        "Record fallback state if the close becomes a report summary."
+      ],
+      "trace_fields": [
+        "production_reference_ids",
+        "aesthetic_memory_v2_ids",
+        "visual_production_module_ids",
+        "release_gate_inputs",
+        "fallback_policy"
+      ],
+      "forbidden_report_patterns": [
+        "appendix report",
+        "dashboard status grid",
+        "tiny labels",
+        "equal grid"
+      ],
+      "qa_probe": "The contact sheet should close on a clear decision handoff, not another evidence page.",
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    }
+  ]
+}

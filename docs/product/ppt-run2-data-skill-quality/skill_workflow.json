@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "workflow_type": "declarative_skill_director",
-  "status": "run2_4_motion_grammar_declarative_public_blocked",
+  "status": "run2_5_production_design_declarative_public_blocked",
   "stage_policy": "repeat_same_five_layers_not_run3",
   "five_layer_loop": [
     "real_commercial_case",
@@ -60,7 +60,11 @@
       "layer": "tutorial_case_video_data",
       "inputs": ["multimodal_database.json", "source_cards/", "video_cards/", "evidence_memory.json"],
       "outputs": ["claim ids", "allowed use rules", "source boundaries", "multimodal anchor references"],
-      "gates": ["every claim traces to a card", "multimodal anchors are derived observations only", "no copied source assets or long prose"]
+      "gates": [
+        "every claim traces to a card",
+        "multimodal anchors are derived observations only",
+        "no copied source assets or long prose"
+      ]
     },
     {
       "id": "compile_aesthetic_memory",
@@ -95,16 +99,100 @@
       ]
     },
     {
-      "id": "select_slide_archetypes",
+      "id": "compile_production_reference_decompositions",
       "order": 5,
+      "layer": "multimodal_tutorial_case_data",
+      "inputs": [
+        "sources.json",
+        "multimodal_database.json",
+        "visual_target_components.json",
+        "motion_learning_targets.json",
+        "presentation_sequence_components.json",
+        "production_reference_decompositions.json"
+      ],
+      "outputs": [
+        "production reference ids",
+        "composition primitives",
+        "typography primitives",
+        "spacing primitives",
+        "motion or sequence primitives",
+        "copyright-safe extraction notes"
+      ],
+      "gates": [
+        "production reference observations are derived only",
+        "production reference schema validation passes before aesthetic memory v2 compilation",
+        "no automatic frame extraction is treated as evidence",
+        "no copied screenshots, brand marks, source layouts, full transcripts, or source prose",
+        "every production reference maps to known visual components, motion targets, and sequence components"
+      ]
+    },
+    {
+      "id": "compile_aesthetic_memory_v2",
+      "order": 6,
+      "layer": "evidence_aesthetic_asset_memory",
+      "inputs": [
+        "production_reference_decompositions.json",
+        "aesthetic_memory.json",
+        "aesthetic_memory_v2.json",
+        "visual_target_components.json",
+        "motion_learning_targets.json",
+        "presentation_sequence_components.json"
+      ],
+      "outputs": [
+        "aesthetic memory v2 ids",
+        "hard composition contracts",
+        "typography contracts",
+        "spacing contracts",
+        "native PPT module requirements",
+        "forbidden report patterns",
+        "fallback policy requirements"
+      ],
+      "gates": [
+        "aesthetic memory v2 schema validation passes before module selection",
+        "aesthetic memory constraints define composition, typography, spacing, density, trace fields, and forbidden report patterns",
+        "provenance metadata records copyright boundary before generation",
+        "aesthetic memory v2 references production reference ids",
+        "composition contracts name focal canvas behavior",
+        "typography and spacing contracts are enforceable before code generation",
+        "fallback remains public_blocked when a module cannot be rendered natively"
+      ]
+    },
+    {
+      "id": "select_slide_archetypes",
+      "order": 7,
       "layer": "skill_workflow",
-      "inputs": ["narrative_spine.json", "slide_archetypes.json"],
-      "outputs": ["slide role map", "selected aesthetic move ids", "deletion or routing plan"],
-      "gates": ["six-slide path preserved", "visual climax and close are distinct"]
+      "inputs": ["narrative_spine.json", "slide_archetypes.json", "aesthetic_memory_v2.json"],
+      "outputs": ["slide role map", "selected aesthetic move ids", "selected aesthetic memory v2 ids", "deletion or routing plan"],
+      "gates": ["six-slide path preserved", "visual climax and close are distinct", "each main slide has a selected production aesthetic contract"]
+    },
+    {
+      "id": "select_visual_production_modules",
+      "order": 8,
+      "layer": "skill_workflow",
+      "inputs": [
+        "visual_production_modules.json",
+        "aesthetic_memory_v2.json",
+        "production_reference_decompositions.json",
+        "selected archetypes"
+      ],
+      "outputs": [
+        "selected visual production modules",
+        "module-to-slide mapping",
+        "native fallback plan",
+        "visual validation probes"
+      ],
+      "gates": [
+        "visual production module schema validation passes before generation",
+        "each selected module references aesthetic memory v2",
+        "module provenance metadata records copyright boundary before generation",
+        "module fallback policy is known before generation",
+        "visual validation probe is defined before scoring",
+        "modules remain native editable PPT contracts"
+      ]
     },
     {
       "id": "generate_code_first_ppt",
-      "order": 6,
+      "order": 9,
       "layer": "skill_workflow",
       "inputs": [
         "generation_briefs/run2_skill.md",
@@ -113,50 +201,56 @@
         "selected visual target components",
         "selected motion targets",
         "selected sequence components",
+        "selected aesthetic memory v2 ids",
+        "selected visual production modules",
         "asset memory"
       ],
       "outputs": ["editable PPTX", "preview PNGs", "layout JSON", "trace_manifest.json"],
       "gates": [
         "core text is native",
         "component ids are recorded",
+        "aesthetic_memory_v2_ids are recorded",
+        "visual_production_module_ids are recorded",
         "motion target ids and sequence component ids are recorded",
         "ordered reveal steps use native editable objects",
+        "fallback policy is recorded when selected modules degrade",
         "no full-slide rasterized output",
         "runtime isolation recorded"
       ]
     },
     {
       "id": "run_structural_and_aesthetic_qa",
-      "order": 7,
+      "order": 10,
       "layer": "rerun_and_evaluation",
       "inputs": ["PPTX", "layout JSON", "contact sheet", "aesthetic_rubric.md", "trace_manifest.json"],
-      "outputs": ["delivery report", "layout report", "Gemini artifact review", "score table"],
+      "outputs": ["delivery report", "layout report", "Gemini artifact review", "score table", "visual validation outcome"],
       "gates": [
         "structural QA passes",
         "layout errors are zero",
         "motion grammar sequence is traceable",
+        "visual validation checks whether production modules are visible in the contact sheet",
         "Gemini review is recorded"
       ]
     },
     {
       "id": "recommend_repairs",
-      "order": 8,
+      "order": 11,
       "layer": "skill_workflow",
-      "inputs": ["delivery report", "layout report", "Gemini review", "human visual notes"],
+      "inputs": ["delivery report", "layout report", "Gemini review", "visual validation outcome", "human visual notes"],
       "outputs": ["repair recommendations", "blocked release reasons"],
       "gates": ["repair remains recommendation-only until accepted", "no automated public-ready promotion"]
     },
     {
       "id": "refresh_trace_qa_outcomes",
-      "order": 9,
+      "order": 12,
       "layer": "rerun_and_evaluation",
-      "inputs": ["trace_manifest.json", "delivery report", "layout report"],
+      "inputs": ["trace_manifest.json", "delivery report", "layout report", "visual validation outcome"],
       "outputs": ["post-QA trace manifest", "backup manifest", "dry-run diff"],
       "gates": ["refresh is atomic", "backup exists before overwrite", "public gate remains blocked without render and human approval"]
     },
     {
       "id": "emit_release_decision",
-      "order": 10,
+      "order": 13,
       "layer": "rerun_and_evaluation",
       "inputs": ["post-QA trace manifest", "native render result", "human approval record"],
       "outputs": ["internal_only or public_blocked decision"],
@@ -169,6 +263,18 @@
       "trigger": "per-slide structural_qa or aesthetic_qa remains pending after validation",
       "recommendation": "run the trace QA refresh step before scoring or winner claims",
       "human_gate": "required before public release"
+    },
+    {
+      "id": "production_module_not_visible",
+      "trigger": "selected visual production modules are recorded in trace but not visible in the contact sheet",
+      "recommendation": "repair the slide module or keep the rerun as data-only evidence, not visual-quality evidence",
+      "human_gate": "required before visual-quality claims"
+    },
+    {
+      "id": "native_fallback_used",
+      "trigger": "selected visual production module falls back to a simpler native representation",
+      "recommendation": "keep release decision public_blocked and record the fallback policy in trace",
+      "human_gate": "required before demo candidate"
     },
     {
       "id": "density_budget_exceeded",

@@ -1,8 +1,8 @@
 # PPT Run 2.0 Data Skill Quality
 
-Status: run2_4-motion-grammar-contract-public-blocked.
+Status: run2_5-production-design-contract-public-blocked.
 
-Run 2.4 does not move to a new stage. It repeats and thickens the same five fixed PPT product layers before the next generation pass:
+Run 2.5 does not move to a new stage. It repeats and thickens the same five fixed PPT product layers before the next generation pass:
 
 1. Real commercial case.
 2. Multimodal tutorial, video, audio, transcript, image-reference, interaction, and case data.
@@ -23,6 +23,12 @@ Run 2.0 does not claim post-training or fine-tuning. It tests runtime case-pack-
 `motion_learning_targets.json` converts those beats into code-generation obligations. It requires native editable PPT objects, motion metadata, trace fields, and public-blocked release boundaries.
 
 `presentation_sequence_components.json` converts the obligations into ordered reveal/scale/build/handoff components. Run 2.4 still outputs static contracts first; real PPT animation or public video editing is a later renderer layer after native object quality is proven.
+
+`production_reference_decompositions.json` is the Run 2.5 production-design data layer. It decomposes high-quality reference/tutorial/video sources into derived composition, typography, spacing, and sequence primitives. It stores only original observations and module implications; it must not store screenshots, video frames, copied layouts, brand marks, source prose, audio, or full transcripts.
+
+`aesthetic_memory_v2.json` turns those production decompositions into hard high-aesthetic contracts: focal canvas rules, headline hierarchy, whitespace/margin rules, forbidden report patterns, native-PPT module requirements, and fallback boundaries.
+
+`visual_production_modules.json` converts the v2 aesthetic contracts into reusable native editable PPT modules: cinematic cover field, editorial before/after delta, proof route choreography, system mini-preview, climax hero object, and release handoff gate. A module is valid only if it can be generated as editable native PPT primitives or records a public-blocked fallback.
 
 Generation must follow `generation_protocol.md`: separate arm runtimes, no cross-arm context leakage, native PPT object checks, and layout geometry QA before scoring.
 

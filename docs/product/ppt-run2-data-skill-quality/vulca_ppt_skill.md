@@ -14,18 +14,22 @@ Run 2.3 adds `visual_target_components.json`. Components turn the target obligat
 
 Run 2.4 adds `video_demo_beat_map.json`, `motion_learning_targets.json`, and `presentation_sequence_components.json`. These files convert tutorial/video demonstrations into motion grammar for code generation: attention reset, before/after reveal, proof build, climax scale emphasis, and release handoff. This is not a claim that the deck has final animation. It is a native-PPT sequence contract that records ordered reveal steps, motion metadata, motion target ids, and sequence component ids before any public video workflow is attempted.
 
+Run 2.5 adds `production_reference_decompositions.json`, `aesthetic_memory_v2.json`, and `visual_production_modules.json`. These files turn high-quality reference/tutorial/video observations into production modules: cinematic cover field, editorial before/after delta, proof route choreography, system mini-preview, climax hero object, and release handoff gate. The data remains derived-only. The workflow must not copy screenshots, frames, brand marks, source layouts, full transcripts, or source prose. If a production module cannot be rendered with native editable PPT objects, the generator must record fallback and keep public release blocked.
+
 Run 2.0 workflow:
 
 1. Read `commercial_case.md` and select the narrative spine.
 2. Compile the multimodal database into executable anchors, cross-modal design tasks, visual learning targets, video beats, and motion targets.
 3. Compile evidence memory into claims and guardrails.
 4. Compile aesthetic memory into slide archetypes, rhythm roles, density budgets, and negative rules.
-5. Select assets only after the slide role is known.
-6. Generate code-first PPT modules with editable text, native structures, and ordered sequence components.
-7. Run structural QA before aesthetic repair.
-8. Run aesthetic QA against the rubric.
-9. Repair the deck with explicit reasons.
-10. Emit a release decision: internal only, demo candidate, or public blocked.
+5. Compile production reference decompositions into safe composition, typography, spacing, and sequence primitives.
+6. Compile aesthetic memory v2 into production modules, forbidden report patterns, and fallback rules.
+7. Select assets only after the slide role and production module are known.
+8. Generate code-first PPT modules with editable text, native structures, ordered sequence components, and selected production modules.
+9. Run structural QA before aesthetic repair.
+10. Run aesthetic QA and visual validation against the rubric and selected production modules.
+11. Repair the deck with explicit reasons.
+12. Emit a release decision: internal only, demo candidate, or public blocked.
 
 ## Source And Memory Selection
 
@@ -36,6 +40,9 @@ Run 2.0 workflow:
 - Use `video_demo_beat_map.json` to select derived tutorial/video beats before claiming that motion or rhythm learning changed the deck.
 - Use `motion_learning_targets.json` to choose the motion target ids that the generator must satisfy with native editable PPT objects, metadata, and trace fields.
 - Use `presentation_sequence_components.json` to choose ordered reveal, build, scale, pause, and handoff components before writing slide code.
+- Use `production_reference_decompositions.json` to choose copyright-safe production reference primitives before selecting aesthetic memory v2.
+- Use `aesthetic_memory_v2.json` to choose focal canvas, headline hierarchy, whitespace/margin, forbidden report pattern, native module, and fallback contracts before writing slide code.
+- Use `visual_production_modules.json` to choose production modules before writing slide code; selected production modules must be visible in the contact sheet or recorded as failed/fallback.
 - Use `source_cards/` and `video_cards/` as the source-card layer; do not copy screenshots, logos, transcripts, frames, layouts, or brand marks.
 - Use `evidence_memory.json` to choose claims, business relevance, allowed use, and evidence QA checks.
 - Use `aesthetic_memory.json` to choose visible moves, rhythm roles, density budgets, typography rules, composition rules, and negative rules.
@@ -54,6 +61,9 @@ Run 2.0 workflow:
 - Visual target components must be visible in the generated slide code and trace. If a before/after target is represented only by text labels, it is still a failed component.
 - Motion learning targets must change the sequence, spacing, scale, build order, or handoff behavior of the generated slides. If motion is only named in copy, it is still failed motion grammar.
 - Sequence components must be represented through native editable PPT objects and trace metadata. Do not use a rendered video, copied frame sequence, or flattened animation export as proof.
+- Production reference decompositions must become visible module behavior, not just extra trace fields.
+- Aesthetic memory v2 must change composition, typography, spacing, or focal-object choice before it can be credited.
+- Visual production modules must be drawn as native editable PPT primitives or recorded as fallback; fallback keeps the release public blocked.
 
 ## Deletion Rule
 
@@ -85,6 +95,7 @@ Every generated arm must persist a per-slide `trace_manifest.json` under its loc
 - Selected multimodal record ids, multimodal anchor ids, and visual learning target ids.
 - Selected visual component ids and the native PPT primitives used to render them.
 - Selected video beat ids, motion target ids, sequence component ids, and ordered native reveal steps.
+- Selected production reference ids, aesthetic memory v2 ids, visual production module ids, and fallback policy.
 - Density counts: claims, panels, visible words, and proof objects.
 - Deleted or routed content: what moved to appendix, speaker notes, result reports, or trace notes.
 - Asset provenance: bitmap prompts, SVG/native object origin, license state, and render risks.

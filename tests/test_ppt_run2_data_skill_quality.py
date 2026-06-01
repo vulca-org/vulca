@@ -72,6 +72,78 @@ EXPECTED_SEQUENCE_COMPONENT_IDS = {
     "sequence_component_climax_scale",
     "sequence_component_release_gate",
 }
+EXPECTED_PRODUCTION_REFERENCE_IDS = {
+    "prod_ref_cinematic_cover_field",
+    "prod_ref_editorial_before_after_delta",
+    "prod_ref_product_system_mini_preview",
+    "prod_ref_climax_handoff_sequence",
+}
+EXPECTED_PRODUCTION_MODULE_IDS = {
+    "module_cinematic_cover_field",
+    "module_editorial_before_after_delta",
+    "module_proof_route_choreography",
+    "module_system_mini_preview",
+    "module_climax_hero_object",
+    "module_release_handoff_gate",
+}
+EXPECTED_AESTHETIC_V2_MOVE_IDS = {
+    "aesthetic_v2_cinematic_cover_field",
+    "aesthetic_v2_editorial_before_after_delta",
+    "aesthetic_v2_proof_route_choreography",
+    "aesthetic_v2_system_mini_preview",
+    "aesthetic_v2_climax_hero_object",
+    "aesthetic_v2_release_handoff_gate",
+}
+EXPECTED_PRODUCTION_REFERENCE_FIELDS = {
+    "id",
+    "source_ids",
+    "visual_component_ids",
+    "motion_target_ids",
+    "sequence_component_ids",
+    "visual_observations",
+    "composition_primitives",
+    "typography_primitives",
+    "spacing_primitives",
+    "motion_or_sequence_primitives",
+    "module_implications",
+    "extraction_notes",
+    "do_not_copy",
+    "qa_probe",
+    "release_boundary",
+}
+EXPECTED_AESTHETIC_V2_FIELDS = {
+    "id",
+    "production_reference_ids",
+    "visual_component_ids",
+    "motion_target_ids",
+    "sequence_component_ids",
+    "slide_roles",
+    "composition_contract",
+    "typography_contract",
+    "spacing_contract",
+    "density_budget",
+    "provenance_boundary",
+    "code_generation_contract",
+    "trace_fields",
+    "forbidden_report_patterns",
+    "qa_probe",
+    "release_boundary",
+}
+EXPECTED_VISUAL_PRODUCTION_MODULE_FIELDS = {
+    "id",
+    "production_reference_ids",
+    "aesthetic_memory_v2_ids",
+    "slide_roles",
+    "native_ppt_primitives",
+    "layout_recipe",
+    "typography_recipe",
+    "spacing_recipe",
+    "fallback_policy",
+    "provenance_boundary",
+    "trace_fields",
+    "qa_probe",
+    "release_boundary",
+}
 EXPECTED_CLAIM_IDS = {
     "claim_data_changes_deck_quality",
     "claim_aesthetic_memory_controls_rhythm",
@@ -377,6 +449,89 @@ def test_run2_has_motion_learning_targets_and_sequence_components() -> None:
         assert_contains(component["release_boundary"], ["public_blocked"])
 
 
+def test_run2_5_has_production_reference_decompositions() -> None:
+    references = load_json(PACK / "production_reference_decompositions.json")
+    sources = load_json(PACK / "sources.json")
+    source_ids = {source["id"] for source in sources["sources"]}
+    visual_component_ids = {component["id"] for component in load_json(PACK / "visual_target_components.json")["components"]}
+    motion_target_ids = {target["id"] for target in load_json(PACK / "motion_learning_targets.json")["targets"]}
+    sequence_component_ids = {
+        component["id"] for component in load_json(PACK / "presentation_sequence_components.json")["components"]
+    }
+
+    assert references["status"] == "run2_5_production_reference_decomposition_public_blocked"
+    assert references["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert references["storage_policy"]["raw_media"] == "forbidden"
+    assert_contains(json.dumps(references["extraction_policy"]), ["derived observation", "no automatic frame extraction"])
+    assert EXPECTED_PRODUCTION_REFERENCE_IDS <= {record["id"] for record in references["references"]}
+
+    for record in references["references"]:
+        assert EXPECTED_PRODUCTION_REFERENCE_FIELDS <= set(record), record["id"]
+        assert set(record["source_ids"]) <= source_ids
+        assert set(record["visual_component_ids"]) <= visual_component_ids
+        assert set(record["motion_target_ids"]) <= motion_target_ids
+        assert set(record["sequence_component_ids"]) <= sequence_component_ids
+        assert_contains(" ".join(record["visual_observations"]), ["native", "composition"])
+        assert_contains(" ".join(record["composition_primitives"]), ["canvas"])
+        assert_contains(" ".join(record["typography_primitives"]), ["headline", "hierarchy"])
+        assert_contains(" ".join(record["spacing_primitives"]), ["whitespace", "margin"])
+        assert_contains(" ".join(record["motion_or_sequence_primitives"]), ["sequence"])
+        assert_contains(" ".join(record["module_implications"]), ["code", "module", "trace"])
+        assert_contains(" ".join(record["do_not_copy"]), ["do not copy", "screenshot", "brand"])
+        assert_contains(" ".join(record["extraction_notes"]), ["derived", "not copied"])
+        assert_contains(record["qa_probe"], ["contact sheet"])
+        assert_contains(record["release_boundary"], ["public_blocked"])
+
+
+def test_run2_5_has_aesthetic_memory_v2_and_visual_production_modules() -> None:
+    references = load_json(PACK / "production_reference_decompositions.json")
+    aesthetic_v2 = load_json(PACK / "aesthetic_memory_v2.json")
+    modules = load_json(PACK / "visual_production_modules.json")
+    reference_ids = {record["id"] for record in references["references"]}
+    visual_component_ids = {component["id"] for component in load_json(PACK / "visual_target_components.json")["components"]}
+    motion_target_ids = {target["id"] for target in load_json(PACK / "motion_learning_targets.json")["targets"]}
+    sequence_component_ids = {
+        component["id"] for component in load_json(PACK / "presentation_sequence_components.json")["components"]
+    }
+
+    assert aesthetic_v2["status"] == "run2_5_aesthetic_memory_v2_public_blocked"
+    assert modules["status"] == "run2_5_visual_production_modules_public_blocked"
+    assert EXPECTED_AESTHETIC_V2_MOVE_IDS <= {move["id"] for move in aesthetic_v2["moves"]}
+    assert EXPECTED_PRODUCTION_MODULE_IDS <= {module["id"] for module in modules["modules"]}
+
+    for move in aesthetic_v2["moves"]:
+        assert EXPECTED_AESTHETIC_V2_FIELDS <= set(move), move["id"]
+        assert set(move["production_reference_ids"]) <= reference_ids
+        assert set(move["visual_component_ids"]) <= visual_component_ids
+        assert set(move["motion_target_ids"]) <= motion_target_ids
+        assert set(move["sequence_component_ids"]) <= sequence_component_ids
+        assert move["density_budget"]["max_words"] <= 52
+        assert_contains(move["composition_contract"], ["canvas", "focal"])
+        assert_contains(move["typography_contract"], ["headline", "hierarchy"])
+        assert_contains(move["spacing_contract"], ["whitespace", "margin"])
+        assert_contains(move["provenance_boundary"], ["derived", "do not copy"])
+        assert_contains(" ".join(move["code_generation_contract"]), ["native", "PPT", "module"])
+        assert_contains(" ".join(move["trace_fields"]), ["aesthetic_memory_v2_ids", "visual_production_module_ids"])
+        assert_mentions_any(" ".join(move["forbidden_report_patterns"]), {"dashboard", "equal grid", "report", "tiny"})
+        assert_contains(move["qa_probe"], ["contact sheet"])
+
+    module_ids_by_move = {move_id for module in modules["modules"] for move_id in module["aesthetic_memory_v2_ids"]}
+    assert EXPECTED_AESTHETIC_V2_MOVE_IDS <= module_ids_by_move
+    for module in modules["modules"]:
+        assert EXPECTED_VISUAL_PRODUCTION_MODULE_FIELDS <= set(module), module["id"]
+        assert set(module["production_reference_ids"]) <= reference_ids
+        assert set(module["aesthetic_memory_v2_ids"]) <= {move["id"] for move in aesthetic_v2["moves"]}
+        assert_contains(" ".join(module["native_ppt_primitives"]), ["native", "editable"])
+        assert_contains(module["layout_recipe"], ["canvas"])
+        assert_contains(module["typography_recipe"], ["headline"])
+        assert_contains(module["spacing_recipe"], ["margin"])
+        assert_contains(" ".join(module["trace_fields"]), ["visual_production_module_ids", "aesthetic_memory_v2_ids"])
+        assert_contains(module["fallback_policy"], ["native", "public_blocked"])
+        assert_contains(module["provenance_boundary"], ["derived", "do not copy"])
+        assert_contains(module["qa_probe"], ["contact sheet"])
+        assert_contains(module["release_boundary"], ["public_blocked"])
+
+
 def test_run2_four_arm_isolation_mentions_multimodal_and_target_boundaries() -> None:
     prompt_only = (PACK / "generation_briefs" / "prompt_only.md").read_text(encoding="utf-8")
     run1_5 = (PACK / "generation_briefs" / "run1_5_skill.md").read_text(encoding="utf-8")
@@ -403,6 +558,9 @@ def test_run2_four_arm_isolation_mentions_multimodal_and_target_boundaries() -> 
             "video_demo_beat_map.json",
             "motion_learning_targets.json",
             "presentation_sequence_components.json",
+            "production_reference_decompositions.json",
+            "aesthetic_memory_v2.json",
+            "visual_production_modules.json",
         ],
     )
     assert_contains(
@@ -530,6 +688,15 @@ def test_run2_skill_is_a_staged_deck_director() -> None:
             "sequence component ids",
         ],
     )
+    assert_contains(
+        body,
+        [
+            "production_reference_decompositions.json",
+            "aesthetic_memory_v2.json",
+            "visual_production_modules.json",
+            "production modules",
+        ],
+    )
 
 
 def test_run2_skill_workflow_is_declarative_and_gated() -> None:
@@ -550,14 +717,17 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
         "compile_multimodal_database",
         "compile_evidence_memory",
         "compile_aesthetic_memory",
+        "compile_production_reference_decompositions",
+        "compile_aesthetic_memory_v2",
         "select_slide_archetypes",
+        "select_visual_production_modules",
         "generate_code_first_ppt",
         "run_structural_and_aesthetic_qa",
         "recommend_repairs",
         "refresh_trace_qa_outcomes",
         "emit_release_decision",
     ]
-    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 11))
+    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 14))
     assert workflow["repair_triggers"]
     workflow_text = json.dumps(workflow)
     assert "multimodal_database.json" in workflow_text
@@ -566,12 +736,19 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
     assert "video_demo_beat_map.json" in workflow_text
     assert "motion_learning_targets.json" in workflow_text
     assert "presentation_sequence_components.json" in workflow_text
+    assert "production_reference_decompositions.json" in workflow_text
+    assert "aesthetic_memory_v2.json" in workflow_text
+    assert "visual_production_modules.json" in workflow_text
     assert_contains(workflow_text, ["all required modalities covered", "no copied source media stored"])
     assert_contains(
         workflow_text, ["visual targets reference valid multimodal anchors", "selected visual learning targets"]
     )
     assert_contains(workflow_text, ["native visual components", "selected visual target components"])
     assert_contains(workflow_text, ["motion grammar", "selected motion targets", "sequence components"])
+    assert_contains(workflow_text, ["production reference", "aesthetic memory v2", "visual production modules"])
+    assert_contains(workflow_text, ["fallback", "visual validation"])
+    assert_contains(workflow_text, ["schema validation", "aesthetic memory constraints"])
+    assert_contains(workflow_text, ["provenance metadata", "copyright boundary"])
     assert "public_blocked" in workflow["release_decisions"]
     assert "public_ready" not in workflow["release_decisions"]
     assert "automated repair without human gate" not in normalize(json.dumps(workflow))
@@ -600,6 +777,9 @@ def test_run2_generation_briefs_define_four_arms() -> None:
             "video demo beat map",
             "motion learning targets",
             "presentation sequence components",
+            "production reference decompositions",
+            "aesthetic memory v2",
+            "visual production modules",
             "aesthetic memory",
         ],
     )

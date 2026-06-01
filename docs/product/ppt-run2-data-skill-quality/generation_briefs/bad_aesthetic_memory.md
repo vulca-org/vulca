@@ -4,7 +4,7 @@ Arm id: `bad_aesthetic_memory`.
 
 Use valid evidence memory but intentionally weak aesthetic memory: repeated dashboard grids, dense tables, small labels, low rhythm variance, no visual climax, and no low-density high-impact slides. This is the negative control for the aesthetic layer.
 
-The arm should remain traceable enough to avoid becoming a random failure. Its purpose is to test whether bad aesthetic memory degrades an otherwise valid evidence, multimodal, and motion grammar workflow.
+The arm should remain traceable enough to avoid becoming a random failure. Its purpose is to test whether bad aesthetic memory degrades an otherwise valid evidence, multimodal, motion grammar, and production-reference workflow.
 
 ## Allowed Inputs
 
@@ -16,6 +16,7 @@ The arm should remain traceable enough to avoid becoming a random failure. Its p
 - `video_demo_beat_map.json`
 - `motion_learning_targets.json`
 - `presentation_sequence_components.json`
+- `production_reference_decompositions.json`
 - `source_cards/`
 - `video_cards/`
 - `evidence_memory.json`
@@ -27,6 +28,8 @@ The arm should remain traceable enough to avoid becoming a random failure. Its p
 ## Forbidden Inputs
 
 - Good `aesthetic_memory.json`
+- Good `aesthetic_memory_v2.json`
+- Good `visual_production_modules.json`
 - Good `slide_archetypes.json`
 - Run 1.5 product-lab skill files
 - Any manual aesthetic repair that restores low density, cinematic opening, rhythm variance, or a visual climax before scoring.
