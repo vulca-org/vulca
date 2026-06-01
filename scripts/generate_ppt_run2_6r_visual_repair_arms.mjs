@@ -532,13 +532,13 @@ function materialPreview(slide, x, y, w, h, arm, label) {
 
 function drawEditorialClimaxSpread(slide, arm) {
   rect(slide, 54, 88, 1170, 542, arm.palette.bg, colorLine("#d8dde1", 1));
-  text(slide, "The workflow becomes visible.", 84, 118, 620, 68, {
+  text(slide, "The workflow becomes visible.", 84, 118, 620, 104, {
     fontSize: 46,
     bold: true,
     title: true,
     color: arm.palette.title,
   });
-  text(slide, "Run 2.6R turns usecase, benchmark, typography, spacing, and repair policy into one native proof spread.", 88, 198, 540, 58, {
+  text(slide, "Run 2.6R turns usecase, benchmark, typography, spacing, and repair policy into one native proof spread.", 88, 238, 540, 46, {
     fontSize: 15,
     color: arm.palette.muted,
   });
@@ -569,6 +569,10 @@ function renderFullRepair(slide, spec, arm, n) {
     editorialRule(slide, 76, 576, 606, arm);
     return;
   }
+  if (spec.role === "climax") {
+    drawEditorialClimaxSpread(slide, arm);
+    return;
+  }
   simpleTitle(slide, spec, arm, true);
   if (spec.role === "setup") {
     selectedState(slide, "selected usecase", "design-to-production platform launch", 82, 292, 300, arm);
@@ -596,8 +600,6 @@ function renderFullRepair(slide, spec, arm, n) {
       if (index < route.length - 1) rect(slide, x + 226, 346 + (index % 2) * 82, 36, 4, arm.palette.proof);
     });
     editorialRule(slide, 92, 566, 830, arm);
-  } else if (spec.role === "climax") {
-    drawEditorialClimaxSpread(slide, arm);
   } else {
     materialPreview(slide, 90, 292, 360, 250, arm, "editable handoff surface");
     selectedState(slide, "gate", "native render pending", 520, 318, 260, arm);

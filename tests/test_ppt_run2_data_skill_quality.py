@@ -1249,6 +1249,17 @@ def test_run2_6r_generator_consumes_visual_repair_policy_and_preserves_boundarie
         r"renderControl\(slide, spec, arm\);",
         body,
     )
+    repair_start = body.index("function renderFullRepair")
+    repair_end = body.index("function renderSlide", repair_start)
+    repair_body = body[repair_start:repair_end]
+    assert re.search(
+        r'if \(spec\.role === "climax"\) \{\s*'
+        r"drawEditorialClimaxSpread\(slide, arm\);\s*"
+        r"return;\s*"
+        r"\}\s*"
+        r"simpleTitle\(slide, spec, arm, true\);",
+        repair_body,
+    )
     prompt_allowed = section(arm_block("prompt_only"), "allowed:", "forbidden:")
     prompt_forbidden = section(arm_block("prompt_only"), "forbidden:", "palette:")
     run1_allowed = section(arm_block("run1_5_skill"), "allowed:", "forbidden:")
