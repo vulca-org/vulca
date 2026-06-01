@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "card_id": "card_editorial_comparison",
+  "source_id": "launch_lab_sales_deck",
+  "source_type": "reference_deck",
+  "allowed_use": "derived_rules_only",
+  "do_not_copy": "Do not copy source visuals, layouts, screenshots, brand marks, sales copy, or deck assets.",
+  "observed_move": "Compare before and after as an editorial delta, with the business change carrying the slide rather than a spreadsheet of attributes.",
+  "why_it_works": "The audience understands change faster when the contrast is framed around consequences, not rows. A focused comparison makes the buyer's current pain and future state visible at once.",
+  "ppt_translation": "Use an editable comparison chart or native split layout with two named states, one highlighted delta, and a short implication line in PowerPoint text.",
+  "quality_risk": "The slide collapses into a dashboard or report when too many cells, badges, or metrics compete for the same level of attention."
+}

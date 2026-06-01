@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "card_id": "card_big_object_layout",
+  "source_id": "figma_config_2025_identity",
+  "source_type": "design_article",
+  "allowed_use": "visual_inspiration",
+  "do_not_copy": "Do not copy source visuals, layouts, screenshots, brand marks, identity motifs, article prose, or proprietary design assets.",
+  "observed_move": "Let a large focal object anchor the system identity so the deck feels designed from a repeatable language rather than slide-by-slide decoration.",
+  "why_it_works": "A dominant object gives memory to the sequence. It can evolve across slides while keeping the audience oriented to one product system.",
+  "ppt_translation": "Build a native shape, SVG, or diagram object that occupies the primary visual field and carries the deck identity. The object should change state across slides and encode outcome or mechanism, with editable labels only where they clarify the shift.",
+  "quality_risk": "The move becomes overdesigned or generic when the object is decorative, static, and replaces evidence instead of organizing it."
+}

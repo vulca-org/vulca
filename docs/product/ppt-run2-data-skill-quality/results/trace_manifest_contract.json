@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "status": "contract-only",
+  "required_output_name": "trace_manifest.json",
+  "required_location": "outputs/<thread-id>/presentations/<arm-id>/trace_manifest.json",
+  "arm_required_fields": [
+    "arm_id",
+    "generation_brief",
+    "commercial_case",
+    "inputs_allowed",
+    "inputs_forbidden",
+    "release_decision"
+  ],
+  "per_slide_required_fields": [
+    "slide_id",
+    "rhythm_role",
+    "source_card_ids",
+    "evidence_claim_ids",
+    "aesthetic_move_ids",
+    "asset_ids",
+    "density_counts",
+    "deleted_or_routed_content",
+    "asset_provenance",
+    "editability_checks",
+    "structural_qa",
+    "aesthetic_qa",
+    "repair_actions",
+    "release_gate_inputs"
+  ],
+  "density_count_fields": ["claims", "panels", "visible_words", "proof_objects"],
+  "release_decision_values": ["internal_only", "demo_candidate", "public_blocked", "public_ready"],
+  "blocking_rule": "A generated arm cannot be scored or used in public claims when its trace_manifest.json is missing, incomplete, or inconsistent with the arm isolation manifest."
+}

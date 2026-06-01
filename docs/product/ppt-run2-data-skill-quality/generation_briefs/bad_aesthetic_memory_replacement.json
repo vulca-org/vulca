@@ -1,0 +1,192 @@
+{
+  "schema_version": 1,
+  "replacement_for": "aesthetic_memory.json",
+  "status": "negative-control-only",
+  "use_rule": "Use this schema-compatible replacement memory only for the bad_aesthetic_memory arm. It intentionally weakens rhythm, density, hierarchy, and climax behavior while keeping source traceability intact.",
+  "moves": [
+    {
+      "id": "bad_aesthetic_cinematic_cover",
+      "replaces": "aesthetic_cinematic_cover",
+      "source_card_ids": ["card_cinematic_cover", "video_keynote_rhythm"],
+      "aesthetic_move": "cinematic_cover",
+      "trigger": "Use when the deck needs an opening but the negative control should make it feel like a status report.",
+      "composition_rule": "Use a small centered title, equal-width status panels, and a generic dashboard grid instead of a dominant focal object.",
+      "typography_rule": "Keep headline and supporting labels similar in size so the cover has weak hierarchy.",
+      "density_budget": {
+        "max_claims": 4,
+        "max_panels": 6,
+        "max_words": 120
+      },
+      "rhythm_role": "cover",
+      "ppt_primitive": "editable dashboard grid with repeated native panels",
+      "negative_rules": [
+        "Do not introduce a dominant cinematic focal object.",
+        "Do not create strong type contrast between headline and labels.",
+        "Do not reduce panel count to make the opening feel premium."
+      ],
+      "qa_signal": "The opening feels like an engineering status report rather than a cinematic public-demo promise.",
+      "expected_failure": "The opening feels like an engineering status report rather than a cinematic public-demo promise."
+    },
+    {
+      "id": "bad_aesthetic_low_density_claim",
+      "replaces": "aesthetic_low_density_claim",
+      "source_card_ids": ["card_low_density_claim", "video_transition_pacing"],
+      "aesthetic_move": "low_density_claim",
+      "trigger": "Use when the setup should remain traceable but lose the benefit of a single low-density claim.",
+      "composition_rule": "Fill whitespace with extra proof snippets, small labels, and repeated badges.",
+      "typography_rule": "Use similar text sizes for claim, proof hook, and labels.",
+      "density_budget": {
+        "max_claims": 4,
+        "max_panels": 5,
+        "max_words": 110
+      },
+      "rhythm_role": "setup",
+      "ppt_primitive": "editable dense claim panel with repeated badges",
+      "negative_rules": [
+        "Do not leave generous whitespace around the main claim.",
+        "Do not keep only one proof hook.",
+        "Do not create a clear dominant headline."
+      ],
+      "qa_signal": "The slide cannot hold one memorable claim and loses the low-density contrast beat.",
+      "expected_failure": "The slide cannot hold one memorable claim and loses the low-density contrast beat."
+    },
+    {
+      "id": "bad_aesthetic_big_object_layout",
+      "replaces": "aesthetic_big_object_layout",
+      "source_card_ids": ["card_big_object_layout"],
+      "aesthetic_move": "big_object_layout",
+      "trigger": "Use when the negative control should retain a system object but remove its stateful visual role.",
+      "composition_rule": "Use the system object as a small repeated icon in every panel rather than one stateful focal object.",
+      "typography_rule": "Attach many equal labels to the object instead of using it to carry the mechanism.",
+      "density_budget": {
+        "max_claims": 5,
+        "max_panels": 6,
+        "max_words": 120
+      },
+      "rhythm_role": "climax",
+      "ppt_primitive": "small repeated editable SVG icons inside native panels",
+      "negative_rules": [
+        "Do not let the object occupy the primary visual field.",
+        "Do not show a meaningful state change across the sequence.",
+        "Do not let the object explain the mechanism without labels."
+      ],
+      "qa_signal": "The object becomes decoration and does not create a visible mechanism or progression.",
+      "expected_failure": "The object becomes decoration and does not create a visible mechanism or progression."
+    },
+    {
+      "id": "bad_aesthetic_editorial_comparison",
+      "replaces": "aesthetic_editorial_comparison",
+      "source_card_ids": ["card_editorial_comparison", "video_transition_pacing"],
+      "aesthetic_move": "editorial_comparison",
+      "trigger": "Use when the contrast slide should be evidence-complete but visually hard to interpret.",
+      "composition_rule": "Use a metric table with many rows and equal weights for all arms instead of one named delta.",
+      "typography_rule": "Use small table labels and avoid a clear implication line.",
+      "density_budget": {
+        "max_claims": 5,
+        "max_panels": 8,
+        "max_words": 140
+      },
+      "rhythm_role": "contrast",
+      "ppt_primitive": "editable dense table or equal-weight comparison grid",
+      "negative_rules": [
+        "Do not isolate one highlighted delta.",
+        "Do not make the business implication visually larger than the table.",
+        "Do not reduce the number of metrics to improve scanability."
+      ],
+      "qa_signal": "The comparison reads as a dashboard and does not isolate the business implication.",
+      "expected_failure": "The comparison reads as a dashboard and does not isolate the business implication."
+    },
+    {
+      "id": "bad_aesthetic_proof_reveal",
+      "replaces": "aesthetic_proof_reveal",
+      "source_card_ids": ["card_proof_reveal", "video_keynote_rhythm"],
+      "aesthetic_move": "proof_reveal",
+      "trigger": "Use when proof should remain source-traceable but lose staged reveal and visual pacing.",
+      "composition_rule": "Show source data, memory, generation, QA, and release gate as equal process boxes with dense annotations.",
+      "typography_rule": "Use uniform labels and explanatory text for every stage.",
+      "density_budget": {
+        "max_claims": 5,
+        "max_panels": 8,
+        "max_words": 150
+      },
+      "rhythm_role": "proof",
+      "ppt_primitive": "equal-weight native process boxes with dense editable annotations",
+      "negative_rules": [
+        "Do not vary visual weight between stages.",
+        "Do not reveal source, memory, generation, QA, and gate as separate beats.",
+        "Do not route explanatory detail out of the main slide."
+      ],
+      "qa_signal": "The proof reveal flattens into a process diagram instead of building visual proof over time.",
+      "expected_failure": "The proof reveal flattens into a process diagram instead of building visual proof over time."
+    },
+    {
+      "id": "bad_aesthetic_visual_climax",
+      "replaces": "aesthetic_visual_climax",
+      "source_card_ids": ["card_visual_climax", "video_keynote_rhythm"],
+      "aesthetic_move": "visual_climax",
+      "trigger": "Use when the deck reaches the evaluation moment but the negative control should prevent a visible climax.",
+      "composition_rule": "Repeat the same grid and scale as the proof slide; keep all outcomes equal size.",
+      "typography_rule": "Use multiple verdict lines and small labels with no dominant measured delta.",
+      "density_budget": {
+        "max_claims": 5,
+        "max_panels": 6,
+        "max_words": 130
+      },
+      "rhythm_role": "climax",
+      "ppt_primitive": "equal-weight editable comparison grid",
+      "negative_rules": [
+        "Do not break the prior grid.",
+        "Do not make the strongest measured delta visually largest.",
+        "Do not create a single dominant verdict line."
+      ],
+      "qa_signal": "There is no visual climax and no outcome field that earns the deck peak.",
+      "expected_failure": "There is no visual climax and no outcome field that earns the deck peak."
+    },
+    {
+      "id": "bad_aesthetic_premium_closing",
+      "replaces": "aesthetic_premium_closing",
+      "source_card_ids": ["card_premium_closing", "video_transition_pacing"],
+      "aesthetic_move": "premium_closing",
+      "trigger": "Use when the close should preserve gate content but lose the premium decision-handoff feeling.",
+      "composition_rule": "End with another dense proof table, multiple next actions, and repeated status badges.",
+      "typography_rule": "Use many small labels and no calm release-gate statement.",
+      "density_budget": {
+        "max_claims": 5,
+        "max_panels": 6,
+        "max_words": 130
+      },
+      "rhythm_role": "close",
+      "ppt_primitive": "editable dense closing table with repeated status badges",
+      "negative_rules": [
+        "Do not reduce the close to one release status.",
+        "Do not leave a calm field around the gate statement.",
+        "Do not create a single next-action line."
+      ],
+      "qa_signal": "The close feels like more evidence collection instead of a governed decision handoff.",
+      "expected_failure": "The close feels like more evidence collection instead of a governed decision handoff."
+    },
+    {
+      "id": "bad_aesthetic_appendix_absorption",
+      "replaces": "aesthetic_appendix_absorption",
+      "source_card_ids": ["card_appendix_absorption"],
+      "aesthetic_move": "appendix_absorption",
+      "trigger": "Use when proof detail threatens to crowd a main slide and the negative control should show the failure mode.",
+      "composition_rule": "Compress appendix detail into visible main-slide microtext rather than routing it to notes or result reports.",
+      "typography_rule": "Shrink evidence labels to fit instead of deleting or routing.",
+      "density_budget": {
+        "max_claims": 5,
+        "max_panels": 8,
+        "max_words": 160
+      },
+      "rhythm_role": "relief",
+      "ppt_primitive": "native dense evidence table with microtext",
+      "negative_rules": [
+        "Do not move dense evidence to appendix or notes.",
+        "Do not preserve main-slide density budgets.",
+        "Do not delete secondary proof objects."
+      ],
+      "qa_signal": "The main story becomes dense and defensive even though the evidence remains traceable.",
+      "expected_failure": "The main story becomes dense and defensive even though the evidence remains traceable."
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "deck_length": 6,
+  "slides": [
+    {
+      "id": "slide_01",
+      "rhythm_role": "cover",
+      "title": "Vulca: make taste repeatable before the first public demo",
+      "job": "Create a public-demo opening that feels designed before explaining the system.",
+      "aesthetic_move_ids": ["aesthetic_cinematic_cover", "aesthetic_big_object_layout"],
+      "evidence_claim_ids": ["claim_aesthetic_memory_controls_rhythm", "claim_asset_memory_preserves_editability"]
+    },
+    {
+      "id": "slide_02",
+      "rhythm_role": "setup",
+      "title": "The problem is not making slides. It is making taste repeatable.",
+      "job": "Frame the commercial problem as repeatable taste, not slide generation volume.",
+      "aesthetic_move_ids": ["aesthetic_low_density_claim"],
+      "evidence_claim_ids": ["claim_aesthetic_memory_controls_rhythm"]
+    },
+    {
+      "id": "slide_03",
+      "rhythm_role": "contrast",
+      "title": "Data changes the deck only when it becomes design memory.",
+      "job": "Contrast raw source collection with usable design memory that changes layout decisions.",
+      "aesthetic_move_ids": ["aesthetic_editorial_comparison"],
+      "evidence_claim_ids": ["claim_data_changes_deck_quality", "claim_bad_aesthetic_memory_is_negative_control"]
+    },
+    {
+      "id": "slide_04",
+      "rhythm_role": "proof",
+      "title": "The skill chooses what to show, what to remove, and what to gate.",
+      "job": "Reveal the skill as a staged deck director that routes detail and preserves governance.",
+      "aesthetic_move_ids": ["aesthetic_proof_reveal", "aesthetic_appendix_absorption"],
+      "evidence_claim_ids": ["claim_appendix_absorbs_proof_detail", "claim_public_release_requires_render_and_human_gate"]
+    },
+    {
+      "id": "slide_05",
+      "rhythm_role": "climax",
+      "title": "Run 2.0 earns the climax only when measured results support it.",
+      "job": "Reserve the largest visual field for the measured experiment result and make the evaluation delta unmistakable once results exist.",
+      "aesthetic_move_ids": ["aesthetic_visual_climax", "aesthetic_big_object_layout"],
+      "evidence_claim_ids": ["claim_data_changes_deck_quality", "claim_bad_aesthetic_memory_is_negative_control"]
+    },
+    {
+      "id": "slide_06",
+      "rhythm_role": "close",
+      "title": "Public-ready is a gate, not a vibe.",
+      "job": "Close on release governance, render verification, and human approval.",
+      "aesthetic_move_ids": ["aesthetic_premium_closing"],
+      "evidence_claim_ids": ["claim_public_release_requires_render_and_human_gate", "claim_asset_memory_preserves_editability"]
+    }
+  ]
+}

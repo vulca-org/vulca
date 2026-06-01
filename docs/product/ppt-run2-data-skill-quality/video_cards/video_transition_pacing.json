@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "card_id": "video_transition_pacing",
+  "source_id": "schema_2025_keynote_video",
+  "source_type": "video",
+  "allowed_use": "timestamped_observation_only",
+  "do_not_copy": "Do not copy source visuals or speaker language. Do not store full transcripts, screenshots, audio, or video frames.",
+  "timestamp_map": [
+    "00:45-02:00: Early transition should move from broad event scale into the first actionable idea by shrinking the visual field and giving text a clearer hierarchy.",
+    "05:30-07:00: Explanatory sequence should hand off from concept to example by moving objects across space, not by adding another same-size panel.",
+    "13:00-15:00: Later transition needs a stronger visual beat: reduce minor labels, enlarge the outcome object, and let the layout pause before the close."
+  ],
+  "keyframe_descriptions": [
+    "A transition beat can be represented by an editable divider, scale shift, or object relocation rather than copied video imagery.",
+    "Mechanism slides should change spatial arrangement when the story changes mode, for example from centered object to left-to-right staged sequence.",
+    "The final transition should simplify, not add more panels; the largest object should absorb the meaning that earlier labels explained."
+  ],
+  "pacing_notes": "Avoid identical slide templates across adjacent beats. Run 2.0 should encode rhythm changes in native PPT layout, scale, and density. A transition is successful when the audience can infer a mode change from spacing and object hierarchy before reading the body text.",
+  "transition_observations": "Use object movement and hierarchy shifts as derived pacing rules: small proof surfaces can assemble into one large outcome object before the closing gate. When density rises, reserve the next beat for visual relief so the deck does not become an even report grid.",
+  "derived_aesthetic_cards": [
+    "aesthetic_low_density_claim",
+    "aesthetic_editorial_comparison",
+    "aesthetic_premium_closing"
+  ]
+}

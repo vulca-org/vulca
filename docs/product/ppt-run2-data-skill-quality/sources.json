@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "sources": [
+    {
+      "id": "geo_figma_slides",
+      "title": "Figma Slides",
+      "url": "https://geo-nyc.com/projects/figma-slides/",
+      "role": "presentation_product_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, template files, full prose, or proprietary assets."
+    },
+    {
+      "id": "figma_config_2025_identity",
+      "title": "How We Shaped the Visual Identity for Config 2025",
+      "url": "https://www.figma.com/blog/how-we-shaped-the-visual-identity-for-config-2025/",
+      "role": "identity_system_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, template files, full prose, or proprietary assets."
+    },
+    {
+      "id": "supervity_ai_keynote",
+      "title": "Visual Presentation for AI Thought Leadership",
+      "url": "https://musecreatives.org/case-studies/visual-presentation-for-ai-thought-leadership/",
+      "role": "commercial_ai_keynote_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, template files, full prose, or proprietary assets."
+    },
+    {
+      "id": "launch_lab_sales_deck",
+      "title": "Launch Lab Sales Deck",
+      "url": "https://www.whitepage.studio/portfolio/launch-lab",
+      "role": "sales_deck_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, template files, full prose, or proprietary assets."
+    },
+    {
+      "id": "google_cloud_next_keynote",
+      "title": "Google Cloud Next",
+      "url": "https://www.wearesparks.com/our-work/google-cloud-next/",
+      "role": "large_scale_keynote_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, template files, full prose, or proprietary assets."
+    },
+    {
+      "id": "slidemodel_visual_hierarchy",
+      "title": "Visual Hierarchy for Presentations",
+      "url": "https://slidemodel.com/visual-hierarchy-for-presentations/",
+      "role": "tutorial_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, template files, full prose, or proprietary assets."
+    },
+    {
+      "id": "present_partners_whitespace",
+      "title": "White Space and Visual Hierarchy in Slides",
+      "url": "https://present.partners/resources/white-space-visual-hierarchy-slides",
+      "role": "tutorial_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, template files, full prose, or proprietary assets."
+    },
+    {
+      "id": "schema_2025_keynote_video",
+      "title": "Schema 2025 Keynote Video",
+      "url": "https://www.youtube.com/watch?v=QFjIaN_wlWg",
+      "role": "video_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, template files, full prose, transcripts, audio, or video frames."
+    }
+  ]
+}

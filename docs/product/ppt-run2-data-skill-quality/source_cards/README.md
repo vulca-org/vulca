@@ -1,0 +1,5 @@
+# Source Cards
+
+Each JSON file is one original analysis card derived from a public reference. Store observations and derived design rules only. Do not store copied layouts, screenshots, logos, full article text, full transcripts, or proprietary assets.
+
+Required fields: `schema_version`, `card_id`, `source_id`, `source_type`, `allowed_use`, `do_not_copy`, `observed_move`, `why_it_works`, `ppt_translation`, `quality_risk`.

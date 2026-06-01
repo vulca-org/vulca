@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "archetypes": [
+    {
+      "id": "cinematic_cover",
+      "rhythm_role": "cover",
+      "aesthetic_move_ids": ["aesthetic_cinematic_cover", "aesthetic_big_object_layout"],
+      "density_budget": {
+        "max_claims": 1,
+        "max_panels": 1,
+        "max_words": 32
+      },
+      "layout_contract": "One dominant editable focal object, one headline, and no dashboard structure.",
+      "best_for": "Opening the public demo with designed confidence before mechanism detail."
+    },
+    {
+      "id": "low_density_problem",
+      "rhythm_role": "setup",
+      "aesthetic_move_ids": ["aesthetic_low_density_claim"],
+      "density_budget": {
+        "max_claims": 1,
+        "max_panels": 1,
+        "max_words": 45
+      },
+      "layout_contract": "One problem claim with a proof hook and generous margins.",
+      "best_for": "Naming the repeatable-taste problem without making the slide feel empty."
+    },
+    {
+      "id": "editorial_memory_comparison",
+      "rhythm_role": "contrast",
+      "aesthetic_move_ids": ["aesthetic_editorial_comparison"],
+      "density_budget": {
+        "max_claims": 1,
+        "max_panels": 2,
+        "max_words": 60
+      },
+      "layout_contract": "Two named states and one highlighted delta with an editable implication line.",
+      "best_for": "Showing that raw data matters only after it becomes actionable design memory."
+    },
+    {
+      "id": "staged_skill_reveal",
+      "rhythm_role": "proof",
+      "aesthetic_move_ids": ["aesthetic_proof_reveal", "aesthetic_appendix_absorption"],
+      "density_budget": {
+        "max_claims": 1,
+        "max_panels": 5,
+        "max_words": 68
+      },
+      "layout_contract": "Unequal staged surfaces for source data, memory, generation, QA, and release gate.",
+      "best_for": "Explaining skill behavior while routing dense proof outside the main body."
+    },
+    {
+      "id": "comparison_climax",
+      "rhythm_role": "climax",
+      "aesthetic_move_ids": ["aesthetic_visual_climax", "aesthetic_big_object_layout"],
+      "density_budget": {
+        "max_claims": 1,
+        "max_panels": 3,
+        "max_words": 52
+      },
+      "layout_contract": "Break the prior grid and give the measured outcome with the largest justified delta the largest field.",
+      "best_for": "Making the evaluation result feel like the visible peak of the deck without pre-claiming the winner."
+    },
+    {
+      "id": "premium_gate_close",
+      "rhythm_role": "close",
+      "aesthetic_move_ids": ["aesthetic_premium_closing"],
+      "density_budget": {
+        "max_claims": 1,
+        "max_panels": 1,
+        "max_words": 40
+      },
+      "layout_contract": "Restrained gate statement, small native mark, and one next action.",
+      "best_for": "Ending on public-release governance rather than another proof slide."
+    }
+  ]
+}

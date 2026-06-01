@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "card_id": "video_keynote_rhythm",
+  "source_id": "schema_2025_keynote_video",
+  "source_type": "video",
+  "allowed_use": "timestamped_observation_only",
+  "do_not_copy": "Do not copy source visuals or speaker language. Do not store full transcripts, screenshots, audio, or video frames.",
+  "timestamp_map": [
+    "00:00-00:45: Opening beat should be treated as scale contrast: one large visual field, minimal text, and no explanatory panels until the audience understands the arena.",
+    "03:00-04:30: Conceptual framing should shift from a single focal idea into a sparse object/text hierarchy, with the headline carrying the claim and support text kept visibly subordinate.",
+    "10:00-12:00: Proof cadence should alternate density: explanatory text contracts while the proof object expands, then the next beat resets space before adding another layer."
+  ],
+  "keyframe_descriptions": [
+    "A wide opening moment should translate into a low-density cinematic cover with a dominant object-to-text ratio, not a crowded title slide.",
+    "A middle-section explanation should stage mechanism layers one at a time, with each added layer receiving less area than the main object.",
+    "An outcome beat should receive noticeably larger visual weight than setup slides and should break from the prior explanatory density."
+  ],
+  "pacing_notes": "Use the timestamps as observation anchors only. The Run 2.0 deck should vary slide density: cover, setup, contrast, proof, climax, close rather than six equal technical panels. The operational rule is to expand object scale when the audience needs orientation, then reduce text area as proof becomes visible.",
+  "transition_observations": "Transitions should feel like shifts in attention: promise to mechanism, mechanism to contrast, contrast to proof, proof to outcome, and outcome to release gate. Spatially, the deck should move from one wide field to staged surfaces, then back to one large outcome object.",
+  "derived_aesthetic_cards": [
+    "aesthetic_cinematic_cover",
+    "aesthetic_proof_reveal",
+    "aesthetic_visual_climax"
+  ]
+}

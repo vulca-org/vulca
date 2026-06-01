@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "assets": [
+    {
+      "id": "asset_launch_atmosphere_background",
+      "asset_type": "generated_background",
+      "source_card_ids": ["card_cinematic_cover", "video_keynote_rhythm"],
+      "allowed_slide_roles": ["cover", "close"],
+      "provenance_state": "May be generated from derived atmosphere rules only; no source screenshots, brand marks, or copied visual motifs.",
+      "text_editability": "Background must contain no essential text; all headlines, labels, and gate language remain native PPT text.",
+      "license_state": "Requires recorded generation prompt, model/provider, date, and review status before public use.",
+      "render_risks": [
+        "Bitmap crop may hide the focal field at 16:9.",
+        "High contrast may reduce headline legibility.",
+        "Atmosphere may look generic if unrelated to the product decision."
+      ],
+      "accessibility_risks": [
+        "Text contrast can fail over busy areas.",
+        "Background may imply meaning that is unavailable to screen readers."
+      ]
+    },
+    {
+      "id": "asset_system_svg_mark",
+      "asset_type": "editable_svg",
+      "source_card_ids": ["card_big_object_layout", "card_premium_closing"],
+      "allowed_slide_roles": ["cover", "setup", "proof", "climax", "close"],
+      "provenance_state": "Created as an original system mark from derived rules; must avoid copied identity motifs or proprietary assets.",
+      "text_editability": "SVG contains shape geometry only; any labels are separate editable PPT text.",
+      "license_state": "Internal original asset pending human visual review before public release.",
+      "render_risks": [
+        "SVG gradients or masks may render inconsistently in PowerPoint.",
+        "Overly detailed paths may become hard to edit.",
+        "Static mark may become decoration if not tied to slide state."
+      ],
+      "accessibility_risks": [
+        "Meaning can be lost without an adjacent text label.",
+        "Low-contrast strokes may disappear in projector conditions."
+      ]
+    },
+    {
+      "id": "asset_evidence_flow_diagram",
+      "asset_type": "diagram",
+      "source_card_ids": ["card_proof_reveal", "card_appendix_absorption", "video_keynote_rhythm"],
+      "allowed_slide_roles": ["proof", "relief"],
+      "provenance_state": "Built from native shapes using derived process stages: source data, memory, generation, QA, and release gate.",
+      "text_editability": "All stage labels and proof notes remain editable PPT text; shapes are native where possible.",
+      "license_state": "No external visual license needed if constructed from original native shapes.",
+      "render_risks": [
+        "Equal-weight process boxes can flatten the intended reveal.",
+        "Too many labels can turn the slide into a report.",
+        "Connector alignment can drift after PowerPoint edits."
+      ],
+      "accessibility_risks": [
+        "Flow order must be readable from left to right or top to bottom.",
+        "Color alone must not communicate pass or blocked states."
+      ]
+    },
+    {
+      "id": "asset_comparison_delta_chart",
+      "asset_type": "chart",
+      "source_card_ids": ["card_editorial_comparison", "card_visual_climax", "video_transition_pacing"],
+      "allowed_slide_roles": ["contrast", "climax"],
+      "provenance_state": "Uses experiment arm labels and derived comparison rules; no copied charts or deck screenshots.",
+      "text_editability": "State names, delta label, and implication line remain editable; chart data should be editable or rebuildable from native shapes.",
+      "license_state": "Internal chart asset; requires source data notes and human review before public claim use.",
+      "render_risks": [
+        "Too many metrics can make the chart read as a dashboard.",
+        "Equal bar or panel weights can hide the intended outcome.",
+        "Small labels may fail in exported images."
+      ],
+      "accessibility_risks": [
+        "Delta must be labeled in text, not only color.",
+        "Comparison order must be clear for non-visual review."
+      ]
+    }
+  ]
+}

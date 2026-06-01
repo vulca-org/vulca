@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "card_id": "card_cinematic_cover",
+  "source_id": "supervity_ai_keynote",
+  "source_type": "commercial_case",
+  "allowed_use": "derived_rules_only",
+  "do_not_copy": "Do not copy source visuals, layouts, screenshots, brand marks, case-study prose, or presentation assets.",
+  "observed_move": "Open with a high-confidence product promise before technical detail, giving the audience a single reason to care before the mechanism appears.",
+  "why_it_works": "A commercial AI keynote has to lower buyer anxiety quickly. The opening earns attention by framing the system as a strategic capability, then lets proof arrive later instead of crowding the first impression.",
+  "ppt_translation": "Use an editable low-density PPT cover with one focal object, one decisive headline, and no more than two support labels. Build the focal object from native shapes or a simple SVG so the slide remains PowerPoint-editable.",
+  "quality_risk": "The cover can become generic if the promise is abstract or if the focal object has no concrete relationship to the product decision."
+}

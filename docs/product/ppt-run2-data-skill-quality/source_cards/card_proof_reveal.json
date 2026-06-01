@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "card_id": "card_proof_reveal",
+  "source_id": "geo_figma_slides",
+  "source_type": "reference_deck",
+  "allowed_use": "derived_rules_only",
+  "do_not_copy": "Do not copy source visuals, layouts, screenshots, brand marks, template files, product UI captures, or deck assets.",
+  "observed_move": "Reveal the product mechanism through staged editable surfaces rather than explaining every layer at once.",
+  "why_it_works": "A staged reveal lets the viewer see control forming step by step. It converts process complexity into a sequence of visible choices.",
+  "ppt_translation": "Construct an editable diagram or shape sequence where each stage has a distinct weight: source data, compiled memory, generation, QA, and release gate.",
+  "quality_risk": "The reveal turns into a report or dashboard if every step gets equal visual weight and the audience cannot see what changed."
+}

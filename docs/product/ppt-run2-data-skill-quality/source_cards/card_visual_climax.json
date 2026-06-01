@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "card_id": "card_visual_climax",
+  "source_id": "google_cloud_next_keynote",
+  "source_type": "reference_deck",
+  "allowed_use": "visual_inspiration",
+  "do_not_copy": "Do not copy source visuals, layouts, screenshots, brand marks, event assets, staging imagery, or proprietary presentation materials.",
+  "observed_move": "Reserve a peak slide for the strongest outcome so the story has a visible moment of arrival.",
+  "why_it_works": "Large-scale keynote pacing needs a crest. If every slide has the same intensity, the audience cannot feel the product argument land.",
+  "ppt_translation": "Create an editable big-number, chart, or dominant object climax that compares generated deck quality states, breaks the prior grid, and makes the largest object encode the outcome.",
+  "quality_risk": "The climax is weak if it repeats an earlier layout, uses the same density, or lacks a clear before-and-after proof object."
+}
