@@ -4,6 +4,19 @@ Status: rerun-reviewed-public-blocked.
 
 Public publishing is blocked until native render or cross-platform render inspection passes and human approval is recorded.
 
+## Run 2.6 Arm Artifacts
+
+| Arm | PPTX | Contact sheet | Trace manifest | Delivery QA |
+| --- | --- | --- | --- | --- |
+| `prompt_only` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-6-prompt-only/output/ppt-run2-6-prompt-only.pptx` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-6-prompt-only/preview/contact-sheet.png` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-6-prompt-only/trace_manifest.json` | `internal-demo-ok-public-blocked` |
+| `run1_5_skill` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-6-run1-5-skill/output/ppt-run2-6-run1-5-skill.pptx` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-6-run1-5-skill/preview/contact-sheet.png` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-6-run1-5-skill/trace_manifest.json` | `internal-demo-ok-public-blocked` |
+| `run2_6_full_skill` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-6-full-vulca/output/ppt-run2-6-full-vulca.pptx` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-6-full-vulca/preview/contact-sheet.png` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-6-full-vulca/trace_manifest.json` | `internal-demo-ok-public-blocked` |
+| `bad_aesthetic_memory` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-6-bad-aesthetic-memory/output/ppt-run2-6-bad-aesthetic-memory.pptx` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-6-bad-aesthetic-memory/preview/contact-sheet.png` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-6-bad-aesthetic-memory/trace_manifest.json` | `internal-demo-ok-public-blocked` |
+
+Combined local comparison sheet: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-6-four-arm-contact-sheet.png`.
+
+Full-skill series comparison sheet: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png`.
+
 ## Run 2.5 Arm Artifacts
 
 | Arm | PPTX | Contact sheet | Trace manifest | Delivery QA |
@@ -88,6 +101,8 @@ Combined local comparison sheet: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/p
 | Native visual components visible | pass for local Run 2.3 full arm |
 | Run 2.4 motion grammar contract exists | pass for `video_demo_beat_map.json`, `motion_learning_targets.json`, and `presentation_sequence_components.json` |
 | Motion target ids and sequence component ids visible in regenerated deck trace | pass for local Run 2.4 full and bad-memory arms |
+| Run 2.6 data/workflow policy contract exists | pass for `commercial_usecase_bank.json`, `aesthetic_benchmark_bank.json`, and `workflow_decision_policy.json` |
+| Usecase, benchmark, theme, typography, spacing, decision, and source-brand fields visible in trace | pass for local Run 2.6 full arm; intentionally partial for bad-memory arm |
 | Run 2.5 production-design contracts exist | pass for `production_reference_decompositions.json`, `aesthetic_memory_v2.json`, and `visual_production_modules.json` |
 | Production reference ids and visual production module ids visible in regenerated deck trace | pass for local Run 2.5 full arm; production references only for bad-memory arm |
 | Public-video-grade visual proof completed | blocked |

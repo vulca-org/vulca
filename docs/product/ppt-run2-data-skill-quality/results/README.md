@@ -28,9 +28,13 @@ Four local pilot arms were generated under `outputs/019e7d9c-532a-70b3-8892-fa3a
 - `ppt-run2-5-run1-5-skill`
 - `ppt-run2-5-full-vulca`
 - `ppt-run2-5-bad-aesthetic-memory`
+- `ppt-run2-6-prompt-only`
+- `ppt-run2-6-run1-5-skill`
+- `ppt-run2-6-full-vulca`
+- `ppt-run2-6-bad-aesthetic-memory`
 
 Generated decks, contact sheets, previews, trace manifests, layout JSON, and delivery reports remain local under `outputs/` unless the user explicitly approves release packaging.
 
-The latest reviewed internal result is that `run2_5_full_skill` is stronger than `prompt_only` and `run1_5_skill` as production-design workflow evidence: the multimodal database, visual learning targets, visual target components, video demo beat map, motion learning targets, sequence components, production reference decompositions, aesthetic memory v2, visual production modules, declarative skill workflow, and refreshed trace outputs now visibly affect generation behavior. `bad_aesthetic_memory` degrades visual quality while preserving structural validity.
+The latest reviewed internal result is that `run2_6_full_skill` is stronger than `prompt_only` and `run1_5_skill` as data/workflow-policy evidence: the commercial usecase bank, aesthetic benchmark bank, workflow decision policy, production modules, declarative skill workflow, and refreshed trace outputs now affect generation boundaries and trace behavior. `bad_aesthetic_memory` proves the negative control boundary by receiving the commercial usecase but not the good benchmark/policy artifacts.
 
-`audit_review.md` is the prior release audit. `run2_1_readiness.md` records the Run 2.1 rerun result. `run2_2_rerun_result.md` records the Run 2.2 rerun result. `run2_3_rerun_result.md` records the Run 2.3 native-component rerun result. `run2_4_rerun_result.md` records the Run 2.4 motion-sequence rerun result. `run2_5_rerun_result.md` records the Run 2.5 production-design rerun result. Public publishing remains blocked because native or cross-platform render inspection, human approval, finished motion/render support, and a public-demo-grade visual pass are still missing.
+`audit_review.md` is the prior release audit. `run2_1_readiness.md` records the Run 2.1 rerun result. `run2_2_rerun_result.md` records the Run 2.2 rerun result. `run2_3_rerun_result.md` records the Run 2.3 native-component rerun result. `run2_4_rerun_result.md` records the Run 2.4 motion-sequence rerun result. `run2_5_rerun_result.md` records the Run 2.5 production-design rerun result. `run2_6_rerun_result.md` records the Run 2.6 data/workflow-policy rerun result. Public publishing remains blocked because native or cross-platform render inspection, human approval, finished motion/render support, source-brand sanitization approval, and a public-demo-grade visual pass are still missing.
