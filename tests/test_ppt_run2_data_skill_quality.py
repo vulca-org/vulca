@@ -5,6 +5,7 @@ import re
 import subprocess
 from pathlib import Path
 
+from scripts.check_ppt_layout_quality import check_layout, write_report
 from scripts.validate_ppt_case_pack import validate_case_pack
 
 
@@ -607,6 +608,113 @@ def test_run2_generation_briefs_define_four_arms() -> None:
     )
 
 
+def test_run2_4_generator_preserves_motion_trace_boundaries() -> None:
+    body = (ROOT / "scripts" / "generate_ppt_run2_4_arms.mjs").read_text(encoding="utf-8")
+
+    assert_contains(
+        body,
+        [
+            "prompt_only",
+            "run1_5_skill",
+            "run2_4_full_skill",
+            "bad_aesthetic_memory",
+            "no_cross_arm_reuse",
+            "layout JSON",
+            "contact sheets",
+        ],
+    )
+    assert 'if (!["run2_4_full_skill", "bad_aesthetic_memory"].includes(arm.armId)) return [];' in body
+    assert 'const goodOrBad = ["run2_4_full_skill", "bad_aesthetic_memory"].includes(arm.armId);' in body
+    assert re.search(r"multimodal_record_ids:\s*goodOrBad\s*\?", body)
+    assert re.search(r"visual_learning_target_ids:\s*goodOrBad\s*\?", body)
+    assert re.search(r"visual_component_ids:\s*goodOrBad\s*\?", body)
+    assert "video_beat_ids: motion.video_beat_ids ?? []" in body
+    assert "motion_target_ids: motion.motion_target_ids ?? []" in body
+    assert "sequence_component_ids: motion.sequence_component_ids ?? []" in body
+    assert "ordered_reveal_steps: sequenceSteps.map" in body
+    assert_contains(
+        body,
+        [
+            "beat_opening_scale_reset",
+            "motion_target_climax_scale_emphasis",
+            "sequence_component_release_gate",
+        ],
+    )
+
+
+def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
+    layout_dir = tmp_path / "layout"
+    layout_dir.mkdir()
+    ok_path = layout_dir / "slide-01.layout.json"
+    bad_path = layout_dir / "slide-02.layout.json"
+    out_path = tmp_path / "layout-report.txt"
+
+    ok_path.write_text(
+        json.dumps(
+            {
+                "slide": {"frame": {"width": 1280, "height": 720}},
+                "elements": [
+                    {
+                        "id": "headline",
+                        "text": "One clear headline",
+                        "bbox": [80, 80, 520, 64],
+                        "resolvedFontSize": 28,
+                        "textLayout": {"lineCount": 1},
+                    },
+                    {"id": "proof-object", "bbox": [760, 120, 320, 240]},
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    bad_path.write_text(
+        json.dumps(
+            {
+                "slide": {"frame": {"width": 1280, "height": 720}},
+                "elements": [
+                    {
+                        "id": "escaped",
+                        "text": "Escaped box",
+                        "bbox": [-10, 20, 200, 40],
+                        "resolvedFontSize": 18,
+                        "textLayout": {"lineCount": 1},
+                    },
+                    {
+                        "id": "overlap-a",
+                        "text": "Overlap A",
+                        "bbox": [50, 50, 200, 40],
+                        "resolvedFontSize": 18,
+                        "textLayout": {"lineCount": 1},
+                    },
+                    {
+                        "id": "overlap-b",
+                        "text": "Overlap B",
+                        "bbox": [60, 55, 190, 38],
+                        "resolvedFontSize": 18,
+                        "textLayout": {"lineCount": 1},
+                    },
+                    {
+                        "id": "microtype",
+                        "text": "Fine print",
+                        "bbox": [300, 300, 100, 5],
+                        "resolvedFontSize": 6,
+                        "textLayout": {"lineCount": 1},
+                    },
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    issue_codes = {issue.code for issue in check_layout(bad_path)}
+    assert {"out-of-bounds", "text-overlap", "microtype", "tight-text"} <= issue_codes
+
+    report = write_report(layout_dir, out_path)
+
+    assert report == {"layout_files": 2, "layout_errors": 2, "layout_warnings": 2}
+    assert "text-overlap" in out_path.read_text(encoding="utf-8")
+
+
 def test_run2_bad_aesthetic_memory_has_structured_replacement() -> None:
     replacement = load_json(PACK / "generation_briefs" / "bad_aesthetic_memory_replacement.json")
 
@@ -684,6 +792,42 @@ def test_run2_3_records_native_component_rerun_result() -> None:
             "native visual components",
             "before/after thumbnail",
             "public blocked",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_run2_4_records_motion_sequence_rerun_result() -> None:
+    result = (PACK / "results" / "run2_4_rerun_result.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_4_rerun_result.json")
+
+    assert result_json["status"] == "rerun_completed_public_blocked"
+    assert result_json["public_ready"] is False
+    assert result_json["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert result_json["rerun"]["status"] == "completed"
+    assert result_json["rerun"]["best_internal_arm"] == "run2_4_full_skill"
+    assert result_json["rerun"]["generated_outputs_committed"] is False
+    assert result_json["rerun"]["best_internal_arm_verdict"] == "motion_sequence_visible_but_not_public_video_grade"
+    assert (
+        result_json["next_required_action"]
+        == "thicken_public_grade_visual_system_and_motion_rendering_then_rerun_same_five_layers"
+    )
+    assert_contains(
+        json.dumps(result_json["motion_sequence_learning"]),
+        [
+            "native_sequence_visible",
+            "video_beat_ids_motion_target_ids_sequence_component_ids_ordered_reveal_steps_present",
+            "still_schematic_internal_demo_grade",
+        ],
+    )
+    assert_contains(
+        result,
+        [
+            "Run 2.4",
+            "motion",
+            "sequence",
+            "run2_4_full_skill",
+            "public-video-grade",
             "Do not advance to Run 3.0",
         ],
     )

@@ -2,12 +2,49 @@
 
 Status: rerun-reviewed-public-blocked.
 
-Run 2.4 is contract-ready, not rerun-scored. It adds motion grammar on top of Run 2.3 native visual components:
+Run 2.4 has now been regenerated as a four-arm local experiment after adding motion grammar on top of Run 2.3 native visual components:
 
 - `video_demo_beat_map.json` maps tutorial/video observations into derived beats: attention reset, before/after reveal, proof build, climax scale, and release handoff.
 - `motion_learning_targets.json` turns those beats into native editable PPT obligations with motion metadata and trace requirements.
-- `presentation_sequence_components.json` turns the obligations into ordered reveal/scale/build/handoff components for the next four-arm rerun.
-- No new winner score is claimed until prompt-only, Run 1.5, Run 2.4 full, and bad aesthetic memory arms are regenerated and reviewed.
+- `presentation_sequence_components.json` turns those obligations into ordered reveal/scale/build/handoff components.
+- `run2_4_full_skill` is the current best internal arm because it shows a stronger presentation arc: sparse opening, visible before/after reveal, proof route, dominant climax object, and release handoff.
+
+The result is stronger than Run 2.3, but it is still not public-ready. Gemini review judged the full arm a significant leap in contrast, rhythm, and structural intent, while also noting that it remains schematic and lacks finished motion rendering, high-fidelity assets, and polished typography.
+
+| Arm | Generation status | Review status | Delivery gate | Average |
+| --- | --- | --- | --- | ---: |
+| `prompt_only` | generated | reviewed | `internal-demo-ok-public-blocked` | 1.49 |
+| `run1_5_skill` | generated | reviewed | `internal-demo-ok-public-blocked` | 2.14 |
+| `run2_4_full_skill` | generated | reviewed | `internal-demo-ok-public-blocked` | 4.26 |
+| `bad_aesthetic_memory` | generated | reviewed | `internal-demo-ok-public-blocked` | 2.08 |
+
+Public publishing remains blocked until native or cross-platform render inspection and human approval pass.
+
+## Run 2.4 Rerun Score Table
+
+Scores are 0-5 internal pilot scores. They combine local contact-sheet inspection, Gemini artifact review, refreshed trace manifests, structural delivery QA, and layout QA. They are not public-release claims.
+
+| Dimension | `prompt_only` | `run1_5_skill` | `run2_4_full_skill` | `bad_aesthetic_memory` |
+| --- | ---: | ---: | ---: | ---: |
+| `commercial_specificity` | 3.0 | 3.5 | 4.3 | 3.2 |
+| `evidence_alignment` | 1.0 | 4.0 | 4.7 | 3.2 |
+| `multimodal_learning` | 0.0 | 0.0 | 4.6 | 3.0 |
+| `visual_learning_target_execution` | 0.0 | 0.0 | 4.2 | 1.6 |
+| `visual_component_execution` | 0.0 | 0.0 | 4.2 | 1.2 |
+| `motion_sequence_execution` | 0.0 | 0.0 | 4.0 | 2.8 |
+| `visual_hierarchy` | 2.3 | 3.0 | 4.2 | 1.7 |
+| `rhythm_variance` | 2.0 | 2.5 | 4.3 | 1.4 |
+| `density_control` | 2.8 | 2.4 | 4.0 | 1.6 |
+| `public_video_taste` | 1.8 | 2.2 | 3.5 | 1.3 |
+| `trace_closure` | 2.0 | 3.8 | 4.8 | 3.5 |
+
+## Run 2.4 Findings
+
+- `prompt_only`: remains a clean baseline but has no access to multimodal data, motion grammar, sequence components, or memory.
+- `run1_5_skill`: remains useful as the evidence-heavy comparator; it is traceable but visually close to the prompt-only report pattern.
+- `run2_4_full_skill`: best internal arm for proving that tutorial/video-derived motion grammar changed generated PPT rhythm and structure.
+- `bad_aesthetic_memory`: confirms that valid motion/data contracts still degrade when aesthetic memory encourages dense, low-contrast, dashboard-like output.
+- Audit correction: Run 2.4 should repeat the same five layers again. The next pass must improve typography, high-fidelity native mini-previews, climax composition, and actual motion/render support rather than advance to Run 3.0.
 
 Run 2.3 has now been regenerated as a four-arm local experiment after adding `visual_target_components.json`. The result is stronger but still bounded:
 
@@ -167,6 +204,7 @@ This is the older Run 2.0 internal score table retained for comparison.
 - `.gemini-agent/artifacts/2026-06-01T161738825Z-artifacts.json`
 - `.gemini-agent/artifacts/2026-06-01T173422454Z-artifacts.json`
 - `.gemini-agent/artifacts/2026-06-01T173452863Z-artifacts.json`
+- `.gemini-agent/artifacts/2026-06-01T203249986Z-artifacts.json`
 
 ## Local Contact Sheets
 
@@ -184,11 +222,16 @@ This is the older Run 2.0 internal score table retained for comparison.
 - `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-2-full-vulca/preview/contact-sheet.png`
 - `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-2-bad-aesthetic-memory/preview/contact-sheet.png`
 - `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-2-four-arm-contact-sheet.png`
+- `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-4-prompt-only/preview/contact-sheet.png`
+- `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-4-run1-5-skill/preview/contact-sheet.png`
+- `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-4-full-vulca/preview/contact-sheet.png`
+- `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-4-bad-aesthetic-memory/preview/contact-sheet.png`
+- `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-4-four-arm-contact-sheet.png`
 
 ## Blockers
 
-- Trace QA outcome refresh has been written back for the regenerated local Run 2.2 arms; those outputs remain untracked under `outputs/`.
+- Trace QA outcome refresh has been written back for the regenerated local Run 2.4 arms; those outputs remain untracked under `outputs/`.
 - Native PowerPoint, Keynote, or Google Slides render inspection has not passed.
 - Human approval has not been recorded.
-- Public-video-grade visual proof is still weak: the current best arm uses schematic boxes instead of high-fidelity native before/after thumbnails and realistic design previews.
+- Public-video-grade visual proof is still weak: the current best arm uses stronger sequence and rhythm, but still relies on schematic native objects instead of high-fidelity native before/after thumbnails, realistic design previews, polished typography, and finished motion rendering.
 - Public-ready status is therefore blocked.
