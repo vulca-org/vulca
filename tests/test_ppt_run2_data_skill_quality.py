@@ -184,6 +184,31 @@ EXPECTED_RUN2_6_TRACE_FIELDS = {
     "benchmark_validation_probe",
     "theme_validation_probe",
 }
+EXPECTED_RUN2_6R_REPAIR_IDS = {
+    "repair_editorial_typography_system",
+    "repair_spacing_token_visibility",
+    "repair_climax_editorial_spread",
+    "repair_theme_differentiation_from_run2_5",
+    "repair_mini_preview_fidelity",
+}
+EXPECTED_RUN2_6R_REPAIR_FIELDS = {
+    "id",
+    "target_slide_roles",
+    "source_policy_ids",
+    "typography_delta",
+    "spacing_delta",
+    "composition_delta",
+    "theme_delta",
+    "must_differ_from",
+    "native_ppt_requirements",
+    "qa_probe",
+    "release_boundary",
+}
+EXPECTED_RUN2_6R_TRACE_FIELDS = {
+    "visual_repair_policy_ids",
+    "visual_delta_from_run2_5",
+    "visual_repair_validation_probe",
+}
 EXPECTED_RUN2_6_USECASE_FIELDS = {
     "id",
     "source_ids",
@@ -683,6 +708,57 @@ def test_run2_6_has_workflow_decision_policy_and_trace_contract() -> None:
     assert EXPECTED_RUN2_6_TRACE_FIELDS <= set(trace_contract["per_slide_required_fields"])
 
 
+def test_run2_6r_has_visual_repair_policy() -> None:
+    policy = load_json(PACK / "visual_repair_policy.json")
+    workflow_policy = load_json(PACK / "workflow_decision_policy.json")
+    workflow_policy_ids = {
+        mapping["theme_policy_id"] for mapping in workflow_policy["usecase_benchmark_map"]
+    } | {
+        mapping["typography_system_id"] for mapping in workflow_policy["usecase_benchmark_map"]
+    } | {
+        mapping["spacing_token_set_id"] for mapping in workflow_policy["usecase_benchmark_map"]
+    } | {
+        benchmark_id
+        for mapping in workflow_policy["usecase_benchmark_map"]
+        for benchmark_id in mapping["benchmark_ids"]
+    }
+
+    assert policy["status"] == "run2_6r_visual_repair_policy_public_blocked"
+    assert policy["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert policy["default_visual_direction"] == "light_first_editorial_graphite_with_vivid_proof_color"
+    assert EXPECTED_RUN2_6R_REPAIR_IDS <= {repair["id"] for repair in policy["repairs"]}
+    policy_delta_text = " ".join(
+        repair[field]
+        for repair in policy["repairs"]
+        for field in ("typography_delta", "spacing_delta", "composition_delta", "theme_delta")
+    )
+    assert_contains(policy_delta_text, ["Run 2.5", "native", "forest-green", "source-brand"])
+
+    for repair in policy["repairs"]:
+        assert EXPECTED_RUN2_6R_REPAIR_FIELDS <= set(repair), repair["id"]
+        assert repair["target_slide_roles"]
+        assert set(repair["target_slide_roles"]) <= {"cover", "setup", "contrast", "proof", "climax", "close"}
+        assert set(repair["source_policy_ids"]) <= workflow_policy_ids | {"workflow_decision_policy.json"}
+        assert_contains(repair["composition_delta"], ["native"])
+        assert_contains(repair["theme_delta"], ["forest-green", "source-brand"])
+        assert "ppt-run2-5-full-vulca" in repair["must_differ_from"]
+        assert "ppt-run2-6-full-vulca" in repair["must_differ_from"]
+        assert_contains(" ".join(repair["native_ppt_requirements"]), ["native", "editable"])
+        assert_contains(repair["qa_probe"], ["contact sheet"])
+        assert_contains(repair["release_boundary"], ["public_blocked"])
+
+
+def test_run2_6r_workflow_and_trace_contract_include_visual_repair() -> None:
+    workflow = load_json(PACK / "skill_workflow.json")
+    trace_contract = load_json(PACK / "results" / "trace_manifest_contract.json")
+
+    workflow_stage_ids = {stage["id"] for stage in workflow["stages"]}
+    assert "select_visual_repair_policy" in workflow_stage_ids
+    workflow_text = json.dumps(workflow)
+    assert_contains(workflow_text, ["visual_repair_policy.json", "visual repair", "not Run 3.0"])
+    assert EXPECTED_RUN2_6R_TRACE_FIELDS <= set(trace_contract["per_slide_required_fields"])
+
+
 def test_run2_four_arm_isolation_mentions_multimodal_and_target_boundaries() -> None:
     prompt_only = (PACK / "generation_briefs" / "prompt_only.md").read_text(encoding="utf-8")
     run1_5 = (PACK / "generation_briefs" / "run1_5_skill.md").read_text(encoding="utf-8")
@@ -874,6 +950,7 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
         "select_commercial_usecase",
         "select_aesthetic_benchmarks",
         "select_theme_typography_spacing_policy",
+        "select_visual_repair_policy",
         "select_visual_production_modules",
         "generate_code_first_ppt",
         "run_structural_and_aesthetic_qa",
@@ -881,7 +958,7 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
         "refresh_trace_qa_outcomes",
         "emit_release_decision",
     ]
-    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 17))
+    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 18))
     assert workflow["repair_triggers"]
     workflow_text = json.dumps(workflow)
     assert "multimodal_database.json" in workflow_text
@@ -896,6 +973,7 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
     assert "commercial_usecase_bank.json" in workflow_text
     assert "aesthetic_benchmark_bank.json" in workflow_text
     assert "workflow_decision_policy.json" in workflow_text
+    assert "visual_repair_policy.json" in workflow_text
     assert_contains(workflow_text, ["all required modalities covered", "no copied source media stored"])
     assert_contains(
         workflow_text, ["visual targets reference valid multimodal anchors", "selected visual learning targets"]
@@ -904,6 +982,7 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
     assert_contains(workflow_text, ["motion grammar", "selected motion targets", "sequence components"])
     assert_contains(workflow_text, ["production reference", "aesthetic memory v2", "visual production modules"])
     assert_contains(workflow_text, ["commercial usecase", "aesthetic benchmark", "theme policy"])
+    assert_contains(workflow_text, ["visual repair", "Run 2.6R"])
     assert_contains(workflow_text, ["fallback", "visual validation"])
     assert_contains(workflow_text, ["schema validation", "aesthetic memory constraints"])
     assert_contains(workflow_text, ["provenance metadata", "copyright boundary"])
