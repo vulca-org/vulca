@@ -305,10 +305,12 @@ def test_run2_results_reviewed_and_public_blocked() -> None:
     delivery = (PACK / "results" / "delivery_gate.md").read_text(encoding="utf-8")
     trace_contract = load_json(PACK / "results" / "trace_manifest_contract.json")
 
-    assert_contains(comparison, ["Status", "reviewed-public-blocked"])
+    assert_contains(comparison, ["Status", "rerun-reviewed-public-blocked"])
     assert_contains(comparison, ["prompt_only", "run1_5_skill", "run2_skill", "bad_aesthetic_memory"])
+    assert_contains(comparison, ["Run 2.1", "run2_1_full_skill", "product learning", "not public-release claims"])
     assert "0.00" not in comparison
     assert_contains(delivery, ["public publishing", "blocked", "native render", "human approval", "trace manifest"])
+    assert_contains(delivery, ["Run 2.1", "pass for local Run 2.1 arms", "public-video-grade visual proof"])
     assert trace_contract["required_output_name"] == "trace_manifest.json"
     assert "aesthetic_move_ids" in trace_contract["per_slide_required_fields"]
     assert "runtime_isolation" in trace_contract["arm_required_fields"]
@@ -330,22 +332,35 @@ def test_run2_audit_records_trace_and_native_render_blockers() -> None:
     assert_contains(audit, ["trace QA outcome refresh required", "native render inspection blocked"])
     assert_contains(audit, ["Keynote -609 recovery", "manual export"])
     assert_contains(delivery, ["trace QA outcome fields refreshed", "blocked"])
-    assert_contains(comparison, ["outcome refresh", "not public-release evidence"])
+    assert_contains(comparison, ["Trace QA outcome refresh", "not public-release claims"])
 
 
-def test_run2_1_readiness_records_rerun_gate() -> None:
+def test_run2_1_records_rerun_result_and_next_visual_depth_gate() -> None:
     readiness = (PACK / "results" / "run2_1_readiness.md").read_text(encoding="utf-8")
     readiness_json = load_json(PACK / "results" / "run2_1_readiness.json")
 
-    assert readiness_json["status"] == "ready_to_rerun_public_blocked"
-    assert readiness_json["next_required_action"] == "rerun_four_arms"
+    assert readiness_json["status"] == "rerun_completed_public_blocked"
+    assert readiness_json["next_required_action"] == "thicken_visual_taste_evidence_and_rerun"
     assert readiness_json["public_ready"] is False
     assert "extraction_units" in readiness_json["completed_depth_layers"]
     assert "skill_workflow" in readiness_json["completed_depth_layers"]
     assert "trace_refresh_utility" in readiness_json["completed_depth_layers"]
+    assert readiness_json["rerun"]["status"] == "completed"
+    assert readiness_json["rerun"]["best_internal_arm"] == "run2_1_full_skill"
+    assert readiness_json["rerun"]["generated_outputs_committed"] is False
+    assert readiness_json["rerun"]["best_internal_arm_verdict"] == "stronger_product_learning_not_public_video_grade"
+    assert readiness_json["stage_policy"] == "repeat_same_five_layers_not_run3"
     assert_contains(
         readiness,
-        ["Run 2.1", "rerun four arms", "public blocked", "not a new stage", "not release evidence"],
+        [
+            "Run 2.1",
+            "rerun four arms",
+            "public blocked",
+            "not a new stage",
+            "does not advance",
+            "realistic slide diffs",
+            "visual transformation",
+        ],
     )
 
 

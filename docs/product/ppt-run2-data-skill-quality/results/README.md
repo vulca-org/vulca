@@ -1,6 +1,6 @@
 # Results
 
-Status: reviewed-public-blocked.
+Status: rerun-reviewed-public-blocked.
 
 Four local pilot arms were generated under `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/`:
 
@@ -8,9 +8,13 @@ Four local pilot arms were generated under `outputs/019e7d9c-532a-70b3-8892-fa3a
 - `ppt-run2-run1-5-skill`
 - `ppt-run2-full-vulca`
 - `ppt-run2-bad-aesthetic-memory`
+- `ppt-run2-1-prompt-only`
+- `ppt-run2-1-run1-5-skill`
+- `ppt-run2-1-full-vulca`
+- `ppt-run2-1-bad-aesthetic-memory`
 
 Generated decks, contact sheets, previews, trace manifests, layout JSON, and delivery reports remain local under `outputs/` unless the user explicitly approves release packaging.
 
-The reviewed internal result is that `run2_skill` is visibly stronger than `prompt_only` and `run1_5_skill` on aesthetic memory usage, rhythm variance, and density control. `bad_aesthetic_memory` degrades visual quality while preserving structural validity.
+The reviewed internal result is that `run2_1_full_skill` is stronger than `prompt_only` and `run1_5_skill` as product-learning evidence: the data cards, extraction units, declarative skill workflow, and refreshed trace outputs now visibly affect generation behavior. `bad_aesthetic_memory` degrades visual quality while preserving structural validity.
 
-`audit_review.md` is the current release audit. `run2_1_readiness.md` records that the data cards, declarative skill workflow, and trace refresh utility are ready for a new four-arm rerun. Public publishing remains blocked until regenerated arms pass trace refresh, native or cross-platform render inspection, and human approval.
+`audit_review.md` is the prior release audit. `run2_1_readiness.md` now records the Run 2.1 rerun result. Public publishing remains blocked because native or cross-platform render inspection, human approval, and a public-demo-grade visual pass are still missing.
