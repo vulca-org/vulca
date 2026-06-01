@@ -1,6 +1,6 @@
 # PPT Run 2.0 Data Skill Quality
 
-Status: run2_2-multimodal-contract-public-blocked.
+Status: run2_3-native-component-contract-public-blocked.
 
 Run 2.2 does not move to a new stage. It repeats and thickens the same five fixed PPT product layers before the next generation pass:
 
@@ -15,6 +15,8 @@ Run 2.0 does not claim post-training or fine-tuning. It tests runtime case-pack-
 `multimodal_database.json` is the Run 2.2 layer-2 contract. It stores source identity, anchors, short observations, and derived design signals only. It must not store copied tutorial prose, screenshots, video frames, audio, full transcripts, layouts, brand marks, or source assets.
 
 `visual_learning_targets.json` converts those anchors into concrete generator obligations for the next four-arm rerun: before/after deltas, slide mini-previews, rhythm budgets, transcript-to-headline compression, and public-demo climax requirements.
+
+`visual_target_components.json` converts those obligations into native-PPT component contracts. Run 2.3 still repeats the same five layers; it does not advance to Run 3.0. The new depth is that a target must become a drawable component such as a before/after thumbnail, slide mini-preview, rhythm strip, transcript headline route, or public-demo climax object.
 
 Generation must follow `generation_protocol.md`: separate arm runtimes, no cross-arm context leakage, native PPT object checks, and layout geometry QA before scoring.
 

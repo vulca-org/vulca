@@ -31,6 +31,7 @@ env/
 .claude/settings.local.json
 
 # Vulca pipeline outputs dropped at repo root
+/outputs/
 /vulca-*.png
 /vulca-*.jpg
 /gen_*.png

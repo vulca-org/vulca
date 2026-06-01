@@ -2,7 +2,7 @@
 
 Arm id: `run2_skill`.
 
-Use commercial case, multimodal database, visual learning targets, source cards, video cards, evidence memory, aesthetic memory, asset memory, narrative spine, slide archetypes, and the Run 2.0 staged deck-director skill.
+Use commercial case, multimodal database, visual learning targets, visual target components, source cards, video cards, evidence memory, aesthetic memory, asset memory, narrative spine, slide archetypes, and the Run 2.0 staged deck-director skill.
 
 The arm must generate a code-first PPT with editable native text and structures. It must select source/evidence/aesthetic/asset memory before writing slide code, enforce density budgets and negative rules, apply the deletion rule, and keep public-ready claims blocked until render, provenance, and human approval gates pass.
 
@@ -12,6 +12,7 @@ The arm must generate a code-first PPT with editable native text and structures.
 - `sources.json`
 - `multimodal_database.json`
 - `visual_learning_targets.json`
+- `visual_target_components.json`
 - `source_cards/`
 - `video_cards/`
 - `evidence_memory.json`
@@ -31,4 +32,4 @@ The arm must generate a code-first PPT with editable native text and structures.
 
 ## Trace Output
 
-Write `trace_manifest.json` under the arm's local `outputs/` directory with one record per slide: selected multimodal record ids, anchor ids, visual learning target ids, memory ids, density counts, deleted or routed content, asset provenance, QA outcomes, repair actions, and release-gate status.
+Write `trace_manifest.json` under the arm's local `outputs/` directory with one record per slide: selected multimodal record ids, anchor ids, visual learning target ids, visual component ids, memory ids, density counts, deleted or routed content, asset provenance, QA outcomes, repair actions, and release-gate status.

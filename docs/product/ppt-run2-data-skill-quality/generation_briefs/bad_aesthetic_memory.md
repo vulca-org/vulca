@@ -12,6 +12,7 @@ The arm should remain traceable enough to avoid becoming a random failure. Its p
 - `sources.json`
 - `multimodal_database.json`
 - `visual_learning_targets.json`
+- `visual_target_components.json`
 - `source_cards/`
 - `video_cards/`
 - `evidence_memory.json`
@@ -33,4 +34,4 @@ Use `bad_aesthetic_memory_replacement.json` as the exact replacement for `aesthe
 
 ## Trace Output
 
-Write `trace_manifest.json` under the arm's local `outputs/` directory with one record per slide: bad replacement move ids, density counts, repeated-template evidence, asset provenance, QA outcomes, and release-gate status.
+Write `trace_manifest.json` under the arm's local `outputs/` directory with one record per slide: bad replacement move ids, visual component ids, density counts, repeated-template evidence, asset provenance, QA outcomes, and release-gate status.

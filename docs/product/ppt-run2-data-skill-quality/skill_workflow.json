@@ -23,13 +23,14 @@
       "id": "compile_multimodal_database",
       "order": 2,
       "layer": "tutorial_case_video_audio_data",
-      "inputs": ["multimodal_database.json", "visual_learning_targets.json", "sources.json"],
-      "outputs": ["modal anchors", "cross-modal design tasks", "visual learning targets", "storage boundaries", "source-to-skill trace"],
+      "inputs": ["multimodal_database.json", "visual_learning_targets.json", "visual_target_components.json", "sources.json"],
+      "outputs": ["modal anchors", "cross-modal design tasks", "visual learning targets", "native visual components", "storage boundaries", "source-to-skill trace"],
       "gates": [
         "all required modalities covered",
         "no copied source media stored",
         "anchors become executable design signals",
-        "visual targets reference valid multimodal anchors"
+        "visual targets reference valid multimodal anchors",
+        "visual components reference valid targets and native PPT primitives"
       ]
     },
     {
@@ -44,8 +45,8 @@
       "id": "compile_aesthetic_memory",
       "order": 4,
       "layer": "memory_layer",
-      "inputs": ["multimodal_database.json", "visual_learning_targets.json", "aesthetic_memory.json", "asset_memory.json"],
-      "outputs": ["rhythm roles", "density budgets", "negative rules", "asset constraints", "before/after visual tasks"],
+      "inputs": ["multimodal_database.json", "visual_learning_targets.json", "visual_target_components.json", "aesthetic_memory.json", "asset_memory.json"],
+      "outputs": ["rhythm roles", "density budgets", "negative rules", "asset constraints", "before/after visual tasks", "component-level layout contracts"],
       "gates": ["every aesthetic move traces to extraction units", "density budget is enforceable", "visual target ids are selected before code generation"]
     },
     {
@@ -60,9 +61,9 @@
       "id": "generate_code_first_ppt",
       "order": 6,
       "layer": "skill_workflow",
-      "inputs": ["generation_briefs/run2_skill.md", "selected archetypes", "selected visual learning targets", "asset memory"],
+      "inputs": ["generation_briefs/run2_skill.md", "selected archetypes", "selected visual learning targets", "selected visual target components", "asset memory"],
       "outputs": ["editable PPTX", "preview PNGs", "layout JSON", "trace_manifest.json"],
-      "gates": ["core text is native", "no full-slide rasterized output", "runtime isolation recorded"]
+      "gates": ["core text is native", "component ids are recorded", "no full-slide rasterized output", "runtime isolation recorded"]
     },
     {
       "id": "run_structural_and_aesthetic_qa",

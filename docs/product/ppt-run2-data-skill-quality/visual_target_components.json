@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "status": "run2_3_native_visual_components_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "components": [
+    {
+      "id": "component_before_after_thumbnail",
+      "target_ids": ["target_report_to_visual_delta"],
+      "slide_roles": ["contrast", "proof"],
+      "native_ppt_primitives": [
+        "native editable PPT text boxes for before and after labels",
+        "native editable PPT rectangle, line, and connector groups for mini slide thumbnails",
+        "native editable PPT emphasis object for the after-state proof object"
+      ],
+      "layout_contract": "Reserve the main canvas for two thumbnail states: the before thumbnail uses equal panels, and the after thumbnail enlarges one supported object with subordinate labels.",
+      "density_contract": "Use one claim, two thumbnail panels, one dominant object, and fewer than 48 visible words; route extra evidence to trace.",
+      "trace_fields": [
+        "visual_learning_target_ids",
+        "visual_component_ids",
+        "density_counts",
+        "native_ppt_checks",
+        "deleted_or_routed_content"
+      ],
+      "generator_prompt": "Draw the before/after transformation as original native editable PPT shapes and labels; do not paste a reference or screenshot.",
+      "qa_probe": "From the contact sheet, the reviewer can identify before/after direction, the enlarged object, and the hierarchy change.",
+      "failure_modes": [
+        "equal dashboard grid",
+        "abstract process boxes with no thumbnail",
+        "screenshot-like preview"
+      ],
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "component_slide_mini_preview",
+      "target_ids": ["target_slide_mini_preview"],
+      "slide_roles": ["setup", "proof"],
+      "native_ppt_primitives": [
+        "native editable PPT mini slide frame",
+        "native editable PPT title, claim, metric, and gate labels",
+        "native editable PPT grouped object showing selected memory and density controls"
+      ],
+      "layout_contract": "Place a clear mini-preview object on the canvas, not a generic workflow card; it should read like a generated slide target with visible control zones.",
+      "density_contract": "Use one mini-preview object, no more than two panels, no more than three control labels, and fewer than 52 visible words; no explanatory paragraph inside the preview.",
+      "trace_fields": [
+        "visual_learning_target_ids",
+        "visual_component_ids",
+        "selected_memory_ids",
+        "density_counts",
+        "native_ppt_checks"
+      ],
+      "generator_prompt": "Build an original mini-preview from native editable PPT frames, labels, and control marks that show how the product chooses a slide output.",
+      "qa_probe": "The contact sheet reads as a slide mini-preview, not a pasted screenshot or a generic dashboard.",
+      "failure_modes": [
+        "process cards replace the preview",
+        "preview labels become tiny",
+        "memory ids appear as clutter"
+      ],
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "component_rhythm_budget_strip",
+      "target_ids": ["target_audio_rhythm_budget"],
+      "slide_roles": ["cover", "setup", "proof", "climax"],
+      "native_ppt_primitives": [
+        "native editable PPT rhythm strip labels",
+        "native editable PPT beat markers and density bars",
+        "native editable PPT focal object scale markers"
+      ],
+      "layout_contract": "Use the canvas to show rhythm variance: orientation beats stay sparse, proof beats add detail after the focal object, and climax increases object scale.",
+      "density_contract": "Expose visible words, panels, and proof object count in trace; keep orientation slides sparse and avoid hiding density with smaller type.",
+      "trace_fields": [
+        "visual_learning_target_ids",
+        "visual_component_ids",
+        "density_counts",
+        "rhythm_budget",
+        "native_ppt_checks"
+      ],
+      "generator_prompt": "Convert audio pacing observations into a native editable rhythm strip and panel budget that changes slide density across the sequence.",
+      "qa_probe": "The contact sheet shows rhythm difference between sparse orientation, proof, and climax slides.",
+      "failure_modes": [
+        "all slides share the same density",
+        "rhythm appears only as text",
+        "dense strip competes with the focal object"
+      ],
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "component_transcript_headline_route",
+      "target_ids": ["target_transcript_headline_compression"],
+      "slide_roles": ["setup", "proof", "close"],
+      "native_ppt_primitives": [
+        "native editable PPT headline text",
+        "native editable PPT support line",
+        "native editable PPT route marker for trace-only detail"
+      ],
+      "layout_contract": "Use the canvas for one compressed headline object and one support line; transcript-like detail is represented by a small route marker outside the main claim area.",
+      "density_contract": "Use one headline, one support line, one route marker, panels capped at one, and fewer than 38 visible words; never paste transcript paragraphs.",
+      "trace_fields": [
+        "visual_learning_target_ids",
+        "visual_component_ids",
+        "transcript_anchor_ids",
+        "deleted_or_routed_content",
+        "density_counts"
+      ],
+      "generator_prompt": "Compress long spoken or written explanation into native editable headline structure and record the transcript anchor only in trace metadata.",
+      "qa_probe": "The contact sheet shows a readable headline instead of transcript-like body text.",
+      "failure_modes": [
+        "paragraph copied onto slide",
+        "headline is too small",
+        "route marker becomes a status grid"
+      ],
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    },
+    {
+      "id": "component_public_demo_climax_object",
+      "target_ids": ["target_public_demo_climax"],
+      "slide_roles": ["climax", "close"],
+      "native_ppt_primitives": [
+        "native editable PPT dominant outcome object",
+        "native editable PPT comparison labels",
+        "native editable PPT public-blocked release gate"
+      ],
+      "layout_contract": "Reserve at least 45 percent of the climax canvas for one dominant outcome object; the close should use a decision handoff gate instead of an appendix-like grid.",
+      "density_contract": "Use one dominant object, no more than three supporting labels, no more than three panels, and fewer than 50 visible words.",
+      "trace_fields": [
+        "visual_learning_target_ids",
+        "visual_component_ids",
+        "native_ppt_checks",
+        "release_gate_inputs",
+        "density_counts"
+      ],
+      "generator_prompt": "Build the public-demo climax as a native editable outcome object with clear release gate support; do not repeat the process grid.",
+      "qa_probe": "The contact sheet shows a visually distinct climax object and a close that reads as a decision handoff.",
+      "failure_modes": [
+        "climax repeats setup grid",
+        "release gate is buried",
+        "outcome object is smaller than proof cards"
+      ],
+      "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval"
+    }
+  ],
+  "qa_gates": [
+    "each component references a known visual learning target",
+    "each component requires native editable PPT primitives",
+    "component contracts contain no copied media references",
+    "component trace fields include visual_component_ids",
+    "public release remains blocked until render, provenance, and human approval"
+  ]
+}

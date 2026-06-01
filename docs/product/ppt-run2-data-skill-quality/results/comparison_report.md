@@ -2,6 +2,48 @@
 
 Status: rerun-reviewed-public-blocked.
 
+Run 2.3 has now been regenerated as a four-arm local experiment after adding `visual_target_components.json`. The result is stronger but still bounded:
+
+- `run2_3_full_skill` wins on native visual components: before/after thumbnail, slide mini-preview, rhythm strip, transcript headline route, and public-demo climax object are visible in the deck, not only named in trace.
+- This improves the main Run 2.2 weakness: targets no longer appear only as schematic labels.
+- It is still not public-ready. The full arm is a better internal demo, but it still needs a stronger public-grade visual system, native render inspection, provenance review, and human approval.
+
+| Arm | Generation status | Review status | Delivery gate | Average |
+| --- | --- | --- | --- | ---: |
+| `prompt_only` | generated | reviewed | `internal-demo-ok-public-blocked` | 1.49 |
+| `run1_5_skill` | generated | reviewed | `internal-demo-ok-public-blocked` | 2.14 |
+| `run2_3_full_skill` | generated | reviewed | `internal-demo-ok-public-blocked` | 4.17 |
+| `bad_aesthetic_memory` | generated | reviewed | `internal-demo-ok-public-blocked` | 2.08 |
+
+Public publishing remains blocked until native or cross-platform render inspection and human approval pass.
+
+## Run 2.3 Rerun Score Table
+
+Scores are 0-5 internal pilot scores. They combine local contact-sheet inspection, Gemini artifact review, trace refresh state, structural delivery QA, and layout QA. They are not public-release claims.
+
+| Dimension | `prompt_only` | `run1_5_skill` | `run2_3_full_skill` | `bad_aesthetic_memory` |
+| --- | ---: | ---: | ---: | ---: |
+| `commercial_specificity` | 3.0 | 3.5 | 4.3 | 3.2 |
+| `evidence_alignment` | 1.0 | 4.0 | 4.7 | 3.2 |
+| `multimodal_learning` | 0.0 | 0.0 | 4.5 | 3.0 |
+| `visual_learning_target_execution` | 0.0 | 0.0 | 4.2 | 1.6 |
+| `visual_component_execution` | 0.0 | 0.0 | 4.0 | 1.2 |
+| `visual_hierarchy` | 2.3 | 3.0 | 4.1 | 1.7 |
+| `rhythm_variance` | 2.0 | 2.5 | 4.0 | 1.4 |
+| `density_control` | 2.8 | 2.4 | 3.9 | 1.6 |
+| `public_video_taste` | 1.8 | 2.2 | 3.4 | 1.3 |
+| `trace_closure` | 2.0 | 3.8 | 4.6 | 3.5 |
+
+## Run 2.3 Findings
+
+- `prompt_only`: remains a clean baseline but cannot use the multimodal database, visual learning targets, components, or memory.
+- `run1_5_skill`: still useful as the evidence-heavy comparator; traceability improves structure but not visual authorship.
+- `run2_3_full_skill`: best internal arm for proving that tutorial/case data changed generated PPT structure at the native component level.
+- `bad_aesthetic_memory`: confirms that even valid data and component contracts degrade when aesthetic memory encourages dense, flat, dashboard-like layouts.
+- Audit correction: Run 2.3 should repeat the same five layers again. The next pass must improve the visual system itself, not advance to Run 3.0.
+
+## Run 2.2 Rerun Summary
+
 Run 2.2 has now been regenerated as a four-arm local experiment after adding `multimodal_database.json` and `visual_learning_targets.json`. The result is clear but bounded:
 
 - `run2_2_full_skill` wins on visible learning evidence: before/after, mini-preview, rhythm budget, transcript compression, and public-demo climax targets now appear in the deck structure and trace.

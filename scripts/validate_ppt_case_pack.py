@@ -54,6 +54,7 @@ RUN2_REQUIRED_FILES = [
     "sources.json",
     "multimodal_database.json",
     "visual_learning_targets.json",
+    "visual_target_components.json",
     "source_cards/README.md",
     "video_cards/README.md",
     "evidence_memory.json",
@@ -484,7 +485,7 @@ def validate_run2_visual_learning_targets(
     multimodal_record_ids: set[str],
     multimodal_anchor_ids: set[str],
     errors: list[str],
-) -> None:
+) -> set[str]:
     data = load_json(pack_dir / "visual_learning_targets.json", errors)
     require_keys(
         "visual_learning_targets.json",
@@ -511,7 +512,7 @@ def validate_run2_visual_learning_targets(
 
     targets = data.get("targets", [])
     if not require_non_empty_list("visual_learning_targets.targets", targets, errors):
-        return
+        return set()
     required = [
         "id",
         "source_record_ids",
@@ -568,6 +569,88 @@ def validate_run2_visual_learning_targets(
         release_boundary = target.get("release_boundary")
         if isinstance(release_boundary, str) and "public_blocked" not in release_boundary:
             errors.append(f"{label}.release_boundary must keep public_blocked status")
+    return seen_target_ids
+
+
+def validate_run2_visual_target_components(
+    pack_dir: Path,
+    visual_target_ids: set[str],
+    errors: list[str],
+) -> None:
+    data = load_json(pack_dir / "visual_target_components.json", errors)
+    require_keys(
+        "visual_target_components.json",
+        data,
+        ["schema_version", "status", "stage_policy", "components", "qa_gates"],
+        errors,
+    )
+    if "schema_version" in data:
+        require_integer("visual_target_components.schema_version", data["schema_version"], errors)
+    if "status" in data:
+        require_non_empty_string("visual_target_components.status", data["status"], errors)
+    if "stage_policy" in data and data["stage_policy"] != "repeat_same_five_layers_not_run3":
+        errors.append("visual_target_components.stage_policy must be repeat_same_five_layers_not_run3")
+
+    components = data.get("components", [])
+    if not require_non_empty_list("visual_target_components.components", components, errors):
+        return
+    required = [
+        "id",
+        "target_ids",
+        "slide_roles",
+        "native_ppt_primitives",
+        "layout_contract",
+        "density_contract",
+        "trace_fields",
+        "generator_prompt",
+        "qa_probe",
+        "failure_modes",
+        "release_boundary",
+    ]
+    seen_component_ids: set[str] = set()
+    for index, component in enumerate(components):
+        label = f"visual_target_components.components[{index}]"
+        if not isinstance(component, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        require_keys(label, component, required, errors)
+        component_id = component.get("id")
+        if "id" in component and require_non_empty_string(f"{label}.id", component_id, errors):
+            if component_id in seen_component_ids:
+                errors.append(f"{label}.id duplicates {component_id}")
+            seen_component_ids.add(component_id)
+        if "target_ids" in component and validate_string_list(f"{label}.target_ids", component["target_ids"], errors):
+            for target_index, target_id in enumerate(component["target_ids"]):
+                if target_id not in visual_target_ids:
+                    errors.append(f"{label}.target_ids[{target_index}] references unknown visual target: {target_id}")
+        if "slide_roles" in component and validate_string_list(
+            f"{label}.slide_roles", component["slide_roles"], errors
+        ):
+            for role in component["slide_roles"]:
+                if role not in RUN2_RHYTHM_ROLES:
+                    errors.append(f"{label}.slide_roles has unexpected value: {role}")
+        if "native_ppt_primitives" in component:
+            if validate_string_list(f"{label}.native_ppt_primitives", component["native_ppt_primitives"], errors):
+                combined = " ".join(component["native_ppt_primitives"]).lower()
+                if "native" not in combined or "editable" not in combined:
+                    errors.append(f"{label}.native_ppt_primitives must require native editable PPT output")
+            validate_no_external_media_reference(
+                f"{label}.native_ppt_primitives", component["native_ppt_primitives"], errors
+            )
+        for key in ["layout_contract", "density_contract", "generator_prompt", "qa_probe", "release_boundary"]:
+            if key in component:
+                require_non_empty_string(f"{label}.{key}", component[key], errors)
+                validate_no_external_media_reference(f"{label}.{key}", component[key], errors)
+        for key in ["trace_fields", "failure_modes"]:
+            if key in component:
+                validate_string_list(f"{label}.{key}", component[key], errors)
+                validate_no_external_media_reference(f"{label}.{key}", component[key], errors)
+        release_boundary = component.get("release_boundary")
+        if isinstance(release_boundary, str) and "public_blocked" not in release_boundary:
+            errors.append(f"{label}.release_boundary must keep public_blocked status")
+
+    if "qa_gates" in data:
+        validate_string_list("visual_target_components.qa_gates", data["qa_gates"], errors)
 
 
 def validate_sources(pack_dir: Path, errors: list[str]) -> set[str]:
@@ -1205,7 +1288,13 @@ def validate_case_pack(pack_dir: str | Path, profile: str = "default") -> Valida
     if profile == "run2":
         source_ids = validate_sources(root, errors)
         multimodal_record_ids, multimodal_anchor_ids = validate_run2_multimodal_database(root, source_ids, errors)
-        validate_run2_visual_learning_targets(root, multimodal_record_ids, multimodal_anchor_ids, errors)
+        visual_target_ids = validate_run2_visual_learning_targets(
+            root,
+            multimodal_record_ids,
+            multimodal_anchor_ids,
+            errors,
+        )
+        validate_run2_visual_target_components(root, visual_target_ids, errors)
         card_ids = collect_run2_card_ids(root, source_ids, errors)
         validate_run2_evidence_memory(root, card_ids, errors)
         move_ids = validate_run2_aesthetic_memory(root, card_ids, errors)

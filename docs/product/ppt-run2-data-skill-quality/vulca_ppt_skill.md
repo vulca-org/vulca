@@ -10,6 +10,8 @@ Run 2.2 adds `multimodal_database.json` as the data layer before evidence and ae
 
 Run 2.2 also adds `visual_learning_targets.json`. Targets convert multimodal anchors into concrete generator obligations: before/after visual deltas, slide mini-previews, audio rhythm budgets, transcript-to-headline compression, and public-demo climax requirements. A target is useful only if it changes generated PPT code, trace fields, or QA probes.
 
+Run 2.3 adds `visual_target_components.json`. Components turn the target obligations into reusable native-PPT layout contracts: before/after thumbnail, slide mini-preview, rhythm budget strip, transcript headline route, and public-demo climax object. A component is valid only when it can be drawn with editable native PowerPoint text, shapes, connectors, grouped objects, or editable SVG. It must not be satisfied by screenshots, copied source media, or full-slide raster output.
+
 Run 2.0 workflow:
 
 1. Read `commercial_case.md` and select the narrative spine.
@@ -28,6 +30,7 @@ Run 2.0 workflow:
 - Use `sources.json` only for reference-analysis policy and source identity.
 - Use `multimodal_database.json` to select text, image-reference, video, audio, transcript, and interaction anchors before selecting evidence or aesthetic memory.
 - Use `visual_learning_targets.json` to force the selected anchors into visible native-PPT output requirements before writing slide code.
+- Use `visual_target_components.json` to choose the concrete native component that will satisfy each selected target before writing slide code.
 - Use `source_cards/` and `video_cards/` as the source-card layer; do not copy screenshots, logos, transcripts, frames, layouts, or brand marks.
 - Use `evidence_memory.json` to choose claims, business relevance, allowed use, and evidence QA checks.
 - Use `aesthetic_memory.json` to choose visible moves, rhythm roles, density budgets, typography rules, composition rules, and negative rules.
@@ -43,6 +46,7 @@ Run 2.0 workflow:
 - A close must feel like a decision handoff, not an appendix page.
 - Multimodal anchors must become visible generation behavior: before/after slide targets, pacing budgets, native headline compression, slide mini-previews, or release-gate surfaces. If an anchor only restates a design principle, it is not strong enough for Run 2.2.
 - Visual learning targets must be implemented with editable native text, native shapes, editable SVG, native charts, or grouped objects. Do not satisfy a target with pasted screenshots or full-slide images.
+- Visual target components must be visible in the generated slide code and trace. If a before/after target is represented only by text labels, it is still a failed component.
 
 ## Deletion Rule
 
@@ -72,6 +76,7 @@ Every generated arm must persist a per-slide `trace_manifest.json` under its loc
 - Runtime isolation evidence: output directory, prompt/context reset, cache scope, allowed input files, and forbidden input files.
 - Slide id, rhythm role, selected source card ids, evidence claim ids, aesthetic move ids, and asset ids.
 - Selected multimodal record ids, multimodal anchor ids, and visual learning target ids.
+- Selected visual component ids and the native PPT primitives used to render them.
 - Density counts: claims, panels, visible words, and proof objects.
 - Deleted or routed content: what moved to appendix, speaker notes, result reports, or trace notes.
 - Asset provenance: bitmap prompts, SVG/native object origin, license state, and render risks.

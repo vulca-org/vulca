@@ -43,6 +43,13 @@ EXPECTED_VISUAL_TARGET_IDS = {
     "target_transcript_headline_compression",
     "target_public_demo_climax",
 }
+EXPECTED_VISUAL_COMPONENT_IDS = {
+    "component_before_after_thumbnail",
+    "component_slide_mini_preview",
+    "component_rhythm_budget_strip",
+    "component_transcript_headline_route",
+    "component_public_demo_climax_object",
+}
 EXPECTED_CLAIM_IDS = {
     "claim_data_changes_deck_quality",
     "claim_aesthetic_memory_controls_rhythm",
@@ -257,16 +264,55 @@ def test_run2_has_visual_learning_targets_for_next_rerun() -> None:
         )
 
 
+def test_run2_has_visual_target_components_for_native_generation() -> None:
+    targets = load_json(PACK / "visual_learning_targets.json")
+    components = load_json(PACK / "visual_target_components.json")
+    target_ids = {target["id"] for target in targets["targets"]}
+    component_ids = {component["id"] for component in components["components"]}
+
+    assert components["status"] == "run2_3_native_visual_components_public_blocked"
+    assert components["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert EXPECTED_VISUAL_COMPONENT_IDS <= component_ids
+
+    covered_targets = {target_id for component in components["components"] for target_id in component["target_ids"]}
+    assert EXPECTED_VISUAL_TARGET_IDS <= covered_targets
+
+    for component in components["components"]:
+        assert set(component["target_ids"]) <= target_ids
+        assert component["slide_roles"]
+        assert_contains(" ".join(component["native_ppt_primitives"]), ["native", "editable"])
+        assert_contains(component["layout_contract"], ["object", "canvas"])
+        assert_mentions_any(
+            component["layout_contract"],
+            {"thumbnail", "mini-preview", "rhythm", "headline", "climax", "gate"},
+        )
+        assert_contains(component["density_contract"], ["visible words", "panels"])
+        assert_mentions_any(
+            " ".join(component["trace_fields"]),
+            {"visual_learning_target_ids", "visual_component_ids", "density_counts", "native_ppt_checks"},
+        )
+        assert_mentions_any(
+            component["qa_probe"],
+            {"contact sheet", "thumbnail", "rhythm", "climax", "before/after"},
+        )
+        assert_contains(component["release_boundary"], ["public_blocked"])
+
+
 def test_run2_four_arm_isolation_mentions_multimodal_and_target_boundaries() -> None:
     prompt_only = (PACK / "generation_briefs" / "prompt_only.md").read_text(encoding="utf-8")
     run1_5 = (PACK / "generation_briefs" / "run1_5_skill.md").read_text(encoding="utf-8")
     run2 = (PACK / "generation_briefs" / "run2_skill.md").read_text(encoding="utf-8")
     bad = (PACK / "generation_briefs" / "bad_aesthetic_memory.md").read_text(encoding="utf-8")
 
-    assert_contains(prompt_only, ["Do not use multimodal database", "visual learning targets"])
-    assert_contains(run1_5, ["Do not use Run 2.2 multimodal database", "visual learning targets"])
-    assert_contains(run2, ["multimodal_database.json", "visual_learning_targets.json"])
-    assert_contains(bad, ["multimodal_database.json", "visual_learning_targets.json"])
+    assert_contains(
+        prompt_only, ["Do not use multimodal database", "visual learning targets", "visual target components"]
+    )
+    assert_contains(
+        run1_5,
+        ["Do not use Run 2.2 multimodal database", "visual learning targets", "visual target components"],
+    )
+    assert_contains(run2, ["multimodal_database.json", "visual_learning_targets.json", "visual_target_components.json"])
+    assert_contains(bad, ["multimodal_database.json", "visual_learning_targets.json", "visual_target_components.json"])
     assert_contains(bad, ["Good aesthetic_memory.json", "Good slide_archetypes.json"])
 
 
@@ -370,6 +416,7 @@ def test_run2_skill_is_a_staged_deck_director() -> None:
     )
     assert_contains(body, ["text, image-reference, video, audio, transcript, and interaction anchors"])
     assert_contains(body, ["visual_learning_targets.json", "before/after visual deltas", "slide mini-previews"])
+    assert_contains(body, ["visual_target_components.json", "before/after thumbnail", "visual component ids"])
 
 
 def test_run2_skill_workflow_is_declarative_and_gated() -> None:
@@ -402,10 +449,12 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
     workflow_text = json.dumps(workflow)
     assert "multimodal_database.json" in workflow_text
     assert "visual_learning_targets.json" in workflow_text
+    assert "visual_target_components.json" in workflow_text
     assert_contains(workflow_text, ["all required modalities covered", "no copied source media stored"])
     assert_contains(
         workflow_text, ["visual targets reference valid multimodal anchors", "selected visual learning targets"]
     )
+    assert_contains(workflow_text, ["native visual components", "selected visual target components"])
     assert "public_blocked" in workflow["release_decisions"]
     assert "public_ready" not in workflow["release_decisions"]
     assert "automated repair without human gate" not in normalize(json.dumps(workflow))
@@ -427,7 +476,7 @@ def test_run2_generation_briefs_define_four_arms() -> None:
     assert_contains((PACK / "generation_briefs" / "run1_5_skill.md").read_text(encoding="utf-8"), ["evidence-heavy"])
     assert_contains(
         (PACK / "generation_briefs" / "run2_skill.md").read_text(encoding="utf-8"),
-        ["multimodal database", "visual learning targets", "aesthetic memory"],
+        ["multimodal database", "visual learning targets", "visual target components", "aesthetic memory"],
     )
     assert_contains(
         (PACK / "generation_briefs" / "bad_aesthetic_memory.md").read_text(encoding="utf-8"), ["negative control"]
@@ -457,18 +506,56 @@ def test_run2_results_reviewed_and_public_blocked() -> None:
     assert_contains(comparison, ["prompt_only", "run1_5_skill", "run2_skill", "bad_aesthetic_memory"])
     assert_contains(
         comparison,
+        ["Run 2.3", "run2_3_full_skill", "visual_component_execution", "native visual components"],
+    )
+    assert_contains(
+        comparison,
         ["Run 2.2", "run2_2_full_skill", "multimodal_learning", "visual_learning_target_execution"],
     )
     assert_contains(comparison, ["Run 2.1", "run2_1_full_skill", "product learning", "not public-release claims"])
     assert "0.00" not in comparison
     assert_contains(delivery, ["public publishing", "blocked", "native render", "human approval", "trace manifest"])
-    assert_contains(delivery, ["Run 2.2", "pass for local Run 2.2 arms", "public-video-grade visual proof"])
+    assert_contains(delivery, ["Run 2.3", "pass for local Run 2.3 arms", "native visual components"])
+    assert_contains(delivery, ["Run 2.2", "run2-2-four-arm-contact-sheet", "public-video-grade visual proof"])
     assert trace_contract["required_output_name"] == "trace_manifest.json"
     assert "aesthetic_move_ids" in trace_contract["per_slide_required_fields"]
+    assert "visual_component_ids" in trace_contract["per_slide_required_fields"]
     assert "runtime_isolation" in trace_contract["arm_required_fields"]
     assert "native_ppt_checks" in trace_contract["per_slide_required_fields"]
     assert "layout_geometry_checks" in trace_contract["per_slide_required_fields"]
     assert trace_contract["native_ppt_thresholds"]["full_slide_rasterized_allowed"] is False
+
+
+def test_run2_3_records_native_component_rerun_result() -> None:
+    result = (PACK / "results" / "run2_3_rerun_result.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_3_rerun_result.json")
+
+    assert result_json["status"] == "rerun_completed_public_blocked"
+    assert result_json["public_ready"] is False
+    assert result_json["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert result_json["rerun"]["status"] == "completed"
+    assert result_json["rerun"]["best_internal_arm"] == "run2_3_full_skill"
+    assert result_json["rerun"]["generated_outputs_committed"] is False
+    assert (
+        result_json["rerun"]["best_internal_arm_verdict"]
+        == "native_visual_components_visible_but_not_public_release_ready"
+    )
+    assert result_json["next_required_action"] == "turn_component_execution_into_public_grade_visual_system"
+    assert_contains(
+        json.dumps(result_json["native_component_learning"]),
+        ["native_component_visible", "layout_errors_zero", "still_internal_demo_grade"],
+    )
+    assert_contains(
+        result,
+        [
+            "Run 2.3",
+            "visual_target_components.json",
+            "native visual components",
+            "before/after thumbnail",
+            "public blocked",
+            "Do not advance to Run 3.0",
+        ],
+    )
 
 
 def test_run2_audit_records_trace_and_native_render_blockers() -> None:

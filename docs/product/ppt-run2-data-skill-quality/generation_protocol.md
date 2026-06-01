@@ -10,6 +10,8 @@ Run 2.2 adds `multimodal_database.json` as the layer-2 data contract. The file r
 
 Run 2.2 adds `visual_learning_targets.json` as the target contract for the next rerun. A target is not a source asset; it is an original, native-PPT behavior requirement derived from allowed observations.
 
+Run 2.3 adds `visual_target_components.json` as the component contract for the next rerun. A component is not decorative metadata; it is the exact native-PPT object family the generator must draw to satisfy a target.
+
 ## Multimodal Data Boundary
 
 - Treat all tutorial pages, videos, audio, transcripts, screenshots, and product references as sources for derived design signals only.
@@ -17,6 +19,7 @@ Run 2.2 adds `visual_learning_targets.json` as the target contract for the next 
 - Keep any temporary media processing cache under untracked `outputs/`; do not commit downloaded media or extracted frames.
 - Convert audio/video/tutorial observations into code-generation behavior: density budgets, pacing rules, before/after slide targets, native headline compression, and visual-climax requirements.
 - Select visual learning target ids before writing slide code, and record them in the trace manifest.
+- Select visual component ids after target selection and before slide-code generation. If a target has no visible native component in the rendered slide, treat the target as failed.
 - If an arm cannot trace a visible design move back to `multimodal_database.json`, source/video cards, and memory ids, it can be inspected internally but cannot be used as evidence that the database improved design quality.
 
 ## Runtime Isolation
@@ -32,6 +35,7 @@ Run 2.2 adds `visual_learning_targets.json` as the target contract for the next 
 - Reject any slide that is flattened into one full-slide raster image.
 - Reject any core title, claim, label, chart value, gate statement, or proof annotation that exists only inside a bitmap.
 - Record native text box count, native shape/chart/table/diagram count, raster asset count, and image-to-native-object ratio for every slide.
+- Record selected visual component ids and the native primitives used for the component.
 - Keep image-to-native-object ratio at or below `0.5` unless the image is an approved atmosphere background with all core content still native and editable.
 
 ## Layout Geometry QA

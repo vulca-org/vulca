@@ -545,6 +545,10 @@ def write_run2_required_files(pack: Path) -> None:
         json.dumps(valid_run2_visual_learning_targets(), indent=2),
         encoding="utf-8",
     )
+    (pack / "visual_target_components.json").write_text(
+        json.dumps(valid_run2_visual_target_components(), indent=2),
+        encoding="utf-8",
+    )
     (pack / "results" / "delivery_gate.md").write_text(
         "# Delivery Gate\n\nPublic publishing is blocked before native render and human review.\n",
         encoding="utf-8",
@@ -674,6 +678,38 @@ def valid_run2_visual_learning_targets() -> dict:
                 "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval",
             }
         ],
+    }
+
+
+def valid_run2_visual_target_components() -> dict:
+    return {
+        "schema_version": 1,
+        "status": "run2_3_native_visual_components_public_blocked",
+        "stage_policy": "repeat_same_five_layers_not_run3",
+        "components": [
+            {
+                "id": "component_before_after_thumbnail",
+                "target_ids": ["target_report_to_visual_delta"],
+                "slide_roles": ["contrast", "proof"],
+                "native_ppt_primitives": [
+                    "native editable text boxes",
+                    "native editable rectangle and line groups",
+                ],
+                "layout_contract": "A before/after thumbnail pair must reserve most of the canvas for one changed object.",
+                "density_contract": "Use one claim, two preview panels, and fewer than 45 visible words.",
+                "trace_fields": [
+                    "visual_learning_target_ids",
+                    "visual_component_ids",
+                    "density_counts",
+                    "native_ppt_checks",
+                ],
+                "generator_prompt": "Build the before/after from native editable PowerPoint shapes and labels.",
+                "qa_probe": "The contact sheet shows which side is before and which side is after.",
+                "failure_modes": ["screenshot preview", "equal dashboard grid"],
+                "release_boundary": "internal_analysis_public_blocked_until_render_provenance_and_human_approval",
+            }
+        ],
+        "qa_gates": ["components reference known visual targets", "no copied media in component contracts"],
     }
 
 
@@ -855,6 +891,7 @@ def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     assert "missing required file: commercial_case.md" in result.errors
     assert "missing required file: multimodal_database.json" in result.errors
     assert "missing required file: visual_learning_targets.json" in result.errors
+    assert "missing required file: visual_target_components.json" in result.errors
     assert "missing required file: source_cards/README.md" in result.errors
     assert "missing required file: video_cards/README.md" in result.errors
     assert "missing required file: aesthetic_memory.json" in result.errors
@@ -1050,6 +1087,87 @@ def test_run2_profile_rejects_visual_target_without_public_blocked_boundary(tmp_
 
     assert result.ok is False
     assert "visual_learning_targets.targets[0].release_boundary must keep public_blocked status" in result.errors
+
+
+def test_run2_profile_rejects_visual_component_unknown_target(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    components_path = pack / "visual_target_components.json"
+    components = json.loads(components_path.read_text(encoding="utf-8"))
+    components["components"][0]["target_ids"] = ["missing_target"]
+    components_path.write_text(json.dumps(components, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert (
+        "visual_target_components.components[0].target_ids[0] references unknown visual target: missing_target"
+        in result.errors
+    )
+
+
+def test_run2_profile_rejects_visual_component_without_native_editable_primitives(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    components_path = pack / "visual_target_components.json"
+    components = json.loads(components_path.read_text(encoding="utf-8"))
+    components["components"][0]["native_ppt_primitives"] = ["screenshot crop"]
+    components_path.write_text(json.dumps(components, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert (
+        "visual_target_components.components[0].native_ppt_primitives must require native editable PPT output"
+        in result.errors
+    )
+
+
+def test_run2_profile_rejects_visual_component_external_media_reference(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    components_path = pack / "visual_target_components.json"
+    components = json.loads(components_path.read_text(encoding="utf-8"))
+    components["components"][0]["generator_prompt"] = "Paste https://example.com/reference.png as the preview."
+    components_path.write_text(json.dumps(components, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert (
+        "visual_target_components.components[0].generator_prompt must not include external media URLs or file references"
+        in result.errors
+    )
+
+
+def test_run2_profile_rejects_visual_component_without_public_blocked_boundary(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    components_path = pack / "visual_target_components.json"
+    components = json.loads(components_path.read_text(encoding="utf-8"))
+    components["components"][0]["release_boundary"] = "public_ready_after_generation"
+    components_path.write_text(json.dumps(components, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "visual_target_components.components[0].release_boundary must keep public_blocked status" in result.errors
 
 
 def test_run2_profile_rejects_untraced_aesthetic_move(tmp_path: Path) -> None:
