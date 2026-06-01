@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "status": "reviewed-public-blocked",
+  "review_date": "2026-06-01",
+  "run2_skill_verdict": "best_internal_arm_not_public_ready",
+  "passed_checks": [
+    "four_local_pptx_arms_exist",
+    "structural_delivery_qa_returns_internal_demo_ok_public_blocked",
+    "full_run2_uses_native_editable_text_and_shapes",
+    "gemini_contact_sheet_review_completed",
+    "negative_control_degrades_structural_taste"
+  ],
+  "blocking_issues": [
+    "trace_qa_outcome_refresh_required",
+    "native_render_inspection_blocked",
+    "human_approval_not_recorded",
+    "repair_loop_definition_thin"
+  ],
+  "native_render_attempt": {
+    "renderer": "Keynote",
+    "result": "blocked",
+    "error": "-609 invalid connection"
+  },
+  "gemini_artifacts": [
+    ".gemini-agent/artifacts/2026-06-01T152210085Z-artifacts.json",
+    ".gemini-agent/artifacts/2026-06-01T152221854Z-artifacts.json"
+  ],
+  "release_decision": "keep_internal_winner_do_not_publish",
+  "next_action": "refresh_trace_qa_outcomes_then_rerun_native_or_cross_platform_render_inspection"
+}

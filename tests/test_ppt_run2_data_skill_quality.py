@@ -278,6 +278,22 @@ def test_run2_results_reviewed_and_public_blocked() -> None:
     assert trace_contract["native_ppt_thresholds"]["full_slide_rasterized_allowed"] is False
 
 
+def test_run2_audit_records_trace_and_native_render_blockers() -> None:
+    audit = (PACK / "results" / "audit_review.md").read_text(encoding="utf-8")
+    audit_json = load_json(PACK / "results" / "audit_review.json")
+    delivery = (PACK / "results" / "delivery_gate.md").read_text(encoding="utf-8")
+    comparison = (PACK / "results" / "comparison_report.md").read_text(encoding="utf-8")
+
+    assert audit_json["status"] == "reviewed-public-blocked"
+    assert audit_json["run2_skill_verdict"] == "best_internal_arm_not_public_ready"
+    assert "trace_qa_outcome_refresh_required" in audit_json["blocking_issues"]
+    assert "native_render_inspection_blocked" in audit_json["blocking_issues"]
+    assert_contains(audit, ["trace QA outcome refresh required", "native render inspection blocked"])
+    assert_contains(audit, ["Keynote -609 recovery", "manual export"])
+    assert_contains(delivery, ["trace QA outcome fields refreshed", "blocked"])
+    assert_contains(comparison, ["outcome refresh", "not public-release evidence"])
+
+
 def test_run2_generation_protocol_blocks_leakage_and_rasterized_report_failures() -> None:
     body = (PACK / "generation_protocol.md").read_text(encoding="utf-8")
 

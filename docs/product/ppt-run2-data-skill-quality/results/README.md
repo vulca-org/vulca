@@ -13,4 +13,4 @@ Generated decks, contact sheets, previews, trace manifests, layout JSON, and del
 
 The reviewed internal result is that `run2_skill` is visibly stronger than `prompt_only` and `run1_5_skill` on aesthetic memory usage, rhythm variance, and density control. `bad_aesthetic_memory` degrades visual quality while preserving structural validity.
 
-Public publishing remains blocked until native or cross-platform render inspection and human approval pass.
+`audit_review.md` is the current release audit. Public publishing remains blocked until trace QA outcome fields are refreshed after validation, native or cross-platform render inspection passes, and human approval is recorded.

@@ -9,11 +9,11 @@ Status: reviewed-public-blocked.
 | `run2_skill` | generated | reviewed | `internal-demo-ok-public-blocked` | 4.27 |
 | `bad_aesthetic_memory` | generated | reviewed | `internal-demo-ok-public-blocked` | 2.64 |
 
-Public publishing remains blocked until native or cross-platform render inspection and human approval pass.
+Public publishing remains blocked until trace QA outcome refresh, native or cross-platform render inspection, and human approval pass.
 
 ## Score Table
 
-Scores are 0-5. They combine Gemini artifact review, contact-sheet inspection, trace-manifest checks, structural delivery QA, and layout QA. These are internal pilot scores, not public-release claims.
+Scores are 0-5. They combine Gemini artifact review, contact-sheet inspection, trace-manifest contract checks, structural delivery QA, and layout QA. These are internal pilot scores, not public-release claims. The current local trace manifests are contract-present but require outcome refresh because per-slide QA fields still carry pre-QA `pending` values; they are not public-release evidence.
 
 | Dimension | `prompt_only` | `run1_5_skill` | `run2_skill` | `bad_aesthetic_memory` |
 | --- | ---: | ---: | ---: | ---: |
@@ -33,6 +33,7 @@ Scores are 0-5. They combine Gemini artifact review, contact-sheet inspection, t
 - `run1_5_skill`: stronger evidence traceability than prompt-only, but the deck remains table-shaped and report-like.
 - `run2_skill`: visibly stronger rhythm, lower density, clearer public-demo gate, and a real visual peak on the measured-result slide.
 - `bad_aesthetic_memory`: successfully degrades into dense process boxes, equal-weight comparisons, and no visual climax while keeping a valid PPTX structure.
+- Audit correction: the Run 2.0 arm is the best internal arm, but the score is not public-release evidence until trace QA outcome refresh, native render inspection, and human approval pass.
 
 ## Review Artifacts
 
@@ -40,6 +41,8 @@ Scores are 0-5. They combine Gemini artifact review, contact-sheet inspection, t
 - `.gemini-agent/artifacts/2026-06-01T145015548Z-artifacts.json`
 - `.gemini-agent/artifacts/2026-06-01T145033149Z-artifacts.json`
 - `.gemini-agent/artifacts/2026-06-01T145051076Z-artifacts.json`
+- `.gemini-agent/artifacts/2026-06-01T152210085Z-artifacts.json`
+- `.gemini-agent/artifacts/2026-06-01T152221854Z-artifacts.json`
 
 ## Local Contact Sheets
 
@@ -50,6 +53,7 @@ Scores are 0-5. They combine Gemini artifact review, contact-sheet inspection, t
 
 ## Blockers
 
-- Native PowerPoint, Keynote, or Google Slides render inspection has not been executed.
+- Trace QA outcome refresh has not been written back into local `trace_manifest.json` files after validation.
+- Native PowerPoint, Keynote, or Google Slides render inspection has not passed. A Keynote export attempt failed with error `-609`.
 - Human approval has not been recorded.
 - Public-ready status is therefore blocked.
