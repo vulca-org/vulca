@@ -23,13 +23,14 @@ Run 2.0 must beat Run 1.5 on `aesthetic_memory_usage`, `rhythm_variance`, and `d
 - Score from generated outputs only; do not score intent, prompts, or memory files as deck quality.
 - Use the comparison arms exactly as defined in `generation_briefs/`.
 - Require a persisted per-slide `trace_manifest.json` for every generated arm before scoring.
+- Require `generation_protocol.md` runtime isolation, native PPT QA, and layout geometry QA before scoring.
 - Treat missing native render inspection as a public-release blocker even when screenshots look acceptable.
 - Penalize any slide where a bitmap replaces editable text, labels, tables, diagrams, or proof structure.
 - Penalize any slide that hides unresolved proof density by shrinking type below a reviewable size.
 
 ## Release Thresholds
 
-- `internal only`: any required arm is missing, any trace manifest is missing, or any public-release gate is blocked.
-- `demo candidate`: all four arms exist, trace manifests exist, render inspection is complete, and Run 2.0 scores at least 4 on `editability`, `asset_discipline`, and `render_risk`.
+- `internal only`: any required arm is missing, any trace manifest is missing, runtime isolation is unproven, native PPT QA fails, layout geometry QA fails, or any public-release gate is blocked.
+- `demo candidate`: all four arms exist, trace manifests exist, runtime isolation is recorded, native PPT QA passes, layout geometry QA passes, render inspection is complete, and Run 2.0 scores at least 4 on `editability`, `asset_discipline`, and `render_risk`.
 - `public blocked`: default status until provenance and human approval are recorded, even when the deck qualifies as a demo candidate.
 - `public ready`: only after human approval confirms the generated deck, trace manifest, provenance, and render inspection.

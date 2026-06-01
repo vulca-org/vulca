@@ -10,6 +10,9 @@ Public publishing is blocked until generated outputs exist, native render or cro
 | --- | --- |
 | Four generated arms exist under `outputs/` | blocked |
 | Per-arm `trace_manifest.json` files exist and pass review | blocked |
+| Runtime isolation and cache separation recorded for each arm | blocked |
+| Native PPT object checks pass; no full-slide rasterized decks | blocked |
+| Layout geometry checks pass for overlap, clipping, microtype, and default tables | blocked |
 | Native render inspection completed | blocked |
 | Cross-platform render inspection completed if needed | blocked |
 | Asset provenance complete | blocked |
@@ -20,6 +23,6 @@ Delivery status remains internal-only until every gate is unblocked.
 
 ## Release Decision Thresholds
 
-- `internal only`: any generated arm, trace manifest, render check, provenance note, editability check, or human approval is missing.
-- `demo candidate`: all four arms exist, trace manifests pass review, render inspection is complete, and the Run 2.0 arm scores at least 4 on `editability`, `asset_discipline`, and `render_risk`.
+- `internal only`: any generated arm, trace manifest, runtime isolation record, native PPT check, layout geometry check, render check, provenance note, editability check, or human approval is missing.
+- `demo candidate`: all four arms exist, trace manifests pass review, runtime isolation is recorded, native PPT and layout geometry checks pass, render inspection is complete, and the Run 2.0 arm scores at least 4 on `editability`, `asset_discipline`, and `render_risk`.
 - `public blocked`: the default external status until human approval explicitly records that the generated deck, trace manifest, provenance, and render inspection are acceptable.

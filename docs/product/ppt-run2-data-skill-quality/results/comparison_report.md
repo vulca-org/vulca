@@ -15,4 +15,4 @@ Required arms:
 
 The comparison must score commercial specificity, evidence alignment, aesthetic memory usage, visual hierarchy, rhythm variance, density control, asset discipline, editability, and render risk.
 
-No winner is recorded until every arm has generated outputs, a trace manifest, contact-sheet review, structural QA, render inspection, and a completed comparison table.
+No winner is recorded until every arm has generated outputs, a trace manifest, runtime-isolation proof, native PPT QA, layout geometry QA, contact-sheet review, structural QA, render inspection, and a completed comparison table.

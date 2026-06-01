@@ -1392,7 +1392,18 @@ mkdir -p outputs/$THREAD_ID/presentations/ppt-run2-bad-aesthetic-memory
 
 Expected: directories exist under `outputs/`. They remain untracked.
 
-- [ ] **Step 2: Generate the `prompt_only` arm**
+- [ ] **Step 2: Apply arm isolation and generation protocol**
+
+Before any arm generation:
+
+- Follow `docs/product/ppt-run2-data-skill-quality/generation_protocol.md`.
+- Run each arm from a fresh generation prompt/context and a separate output directory.
+- Do not reuse cached memory summaries, slide code, layout JSON, SVG assets, screenshots, contact sheets, or repair notes across arms.
+- Record allowed files, forbidden files, model/provider, tool versions, cache scope, native PPT object counts, raster-image checks, and layout geometry checks in each arm's local `trace_manifest.json`.
+
+Expected: any arm missing protocol evidence remains `internal_only` and cannot support winner/public-readiness claims.
+
+- [ ] **Step 3: Generate the `prompt_only` arm**
 
 Input boundary:
 
@@ -1414,9 +1425,10 @@ Expected local artifacts:
 outputs/$THREAD_ID/presentations/ppt-run2-prompt-only/output/ppt-run2-prompt-only.pptx
 outputs/$THREAD_ID/presentations/ppt-run2-prompt-only/preview/contact-sheet.png
 outputs/$THREAD_ID/presentations/ppt-run2-prompt-only/layout/final/*.layout.json
+outputs/$THREAD_ID/presentations/ppt-run2-prompt-only/trace_manifest.json
 ```
 
-- [ ] **Step 3: Generate the `run1_5_skill` arm**
+- [ ] **Step 4: Generate the `run1_5_skill` arm**
 
 Input boundary:
 
@@ -1432,9 +1444,10 @@ Expected local artifacts:
 outputs/$THREAD_ID/presentations/ppt-run2-run1-5-skill/output/ppt-run2-run1-5-skill.pptx
 outputs/$THREAD_ID/presentations/ppt-run2-run1-5-skill/preview/contact-sheet.png
 outputs/$THREAD_ID/presentations/ppt-run2-run1-5-skill/layout/final/*.layout.json
+outputs/$THREAD_ID/presentations/ppt-run2-run1-5-skill/trace_manifest.json
 ```
 
-- [ ] **Step 4: Generate the `run2_skill` arm**
+- [ ] **Step 5: Generate the `run2_skill` arm**
 
 Input boundary:
 
@@ -1458,15 +1471,17 @@ Expected local artifacts:
 outputs/$THREAD_ID/presentations/ppt-run2-full-vulca/output/ppt-run2-full-vulca.pptx
 outputs/$THREAD_ID/presentations/ppt-run2-full-vulca/preview/contact-sheet.png
 outputs/$THREAD_ID/presentations/ppt-run2-full-vulca/layout/final/*.layout.json
+outputs/$THREAD_ID/presentations/ppt-run2-full-vulca/trace_manifest.json
 ```
 
-- [ ] **Step 5: Generate the `bad_aesthetic_memory` arm**
+- [ ] **Step 6: Generate the `bad_aesthetic_memory` arm**
 
 Input boundary:
 
 ```text
-Use valid commercial case and evidence memory.
-Replace aesthetic memory at runtime with weak rules: repeated dashboard grids, dense tables, small labels, low rhythm variance, no cinematic cover, no visual climax, and no appendix absorption.
+Use valid commercial case, source cards, video cards, evidence memory, asset memory, narrative spine, and Run 2.0 skill.
+Replace aesthetic_memory.json at runtime with docs/product/ppt-run2-data-skill-quality/generation_briefs/bad_aesthetic_memory_replacement.json.
+Do not use the good aesthetic_memory.json or good slide_archetypes.json.
 Do not corrupt JSON, do not break PPTX structure, and do not remove source boundaries.
 Generate a six-slide editable PPTX and contact sheet.
 ```
@@ -1477,9 +1492,10 @@ Expected local artifacts:
 outputs/$THREAD_ID/presentations/ppt-run2-bad-aesthetic-memory/output/ppt-run2-bad-aesthetic-memory.pptx
 outputs/$THREAD_ID/presentations/ppt-run2-bad-aesthetic-memory/preview/contact-sheet.png
 outputs/$THREAD_ID/presentations/ppt-run2-bad-aesthetic-memory/layout/final/*.layout.json
+outputs/$THREAD_ID/presentations/ppt-run2-bad-aesthetic-memory/trace_manifest.json
 ```
 
-- [ ] **Step 6: Run structural delivery QA for all four arms**
+- [ ] **Step 7: Run structural delivery QA for all four arms**
 
 Run:
 
@@ -1515,7 +1531,7 @@ python3 scripts/validate_pptx_delivery.py \
 
 Expected: each command exits 0 with delivery gate `internal-demo-ok-public-blocked`. Public release remains blocked.
 
-- [ ] **Step 7: Commit nothing from `outputs/`**
+- [ ] **Step 8: Commit nothing from `outputs/`**
 
 Run:
 

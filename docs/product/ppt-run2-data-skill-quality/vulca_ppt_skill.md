@@ -48,7 +48,7 @@ If a slide has too many proof objects, move detail to appendix, speaker notes, o
 
 ## QA And Repair
 
-- Run structural QA before aesthetic repair: file existence, slide count, native text extraction, artifact paths, and renderability.
+- Run structural QA before aesthetic repair: file existence, slide count, native text extraction, artifact paths, runtime isolation, native object counts, raster/full-slide-image checks, layout geometry, and renderability.
 - Run aesthetic QA against `aesthetic_rubric.md`: commercial specificity, evidence alignment, aesthetic memory usage, visual hierarchy, rhythm variance, density control, asset discipline, editability, and render risk.
 - Repair only with explicit reasons tied to a failed check, selected memory entry, or render issue.
 - Record any repair that changes evidence claims, asset provenance, or release status.
@@ -58,11 +58,14 @@ If a slide has too many proof objects, move detail to appendix, speaker notes, o
 Every generated arm must persist a per-slide `trace_manifest.json` under its local `outputs/` directory before scoring. The manifest must record:
 
 - Arm id and generation brief path.
+- Runtime isolation evidence: output directory, prompt/context reset, cache scope, allowed input files, and forbidden input files.
 - Slide id, rhythm role, selected source card ids, evidence claim ids, aesthetic move ids, and asset ids.
 - Density counts: claims, panels, visible words, and proof objects.
 - Deleted or routed content: what moved to appendix, speaker notes, result reports, or trace notes.
 - Asset provenance: bitmap prompts, SVG/native object origin, license state, and render risks.
 - Editability checks for native text, charts, diagrams, and grouped objects.
+- Native PPT QA: native text count, native shape/chart/table/diagram count, raster asset count, image-to-native-object ratio, and full-slide-raster rejection.
+- Layout geometry QA: overlap checks, clipping checks, readable type checks, default-table checks, repeated-grid checks, and repair actions.
 - Structural QA, aesthetic QA outcomes, repair actions, and release-gate inputs.
 
 If the trace manifest is missing or incomplete, the arm is `internal only` and cannot be used to claim that data, memory, or skill quality improved the deck.

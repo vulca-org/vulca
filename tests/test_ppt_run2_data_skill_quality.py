@@ -231,6 +231,8 @@ def test_run2_generation_briefs_define_four_arms() -> None:
     briefs = {path.stem for path in (PACK / "generation_briefs").glob("*.md") if path.name != "README.md"}
 
     assert briefs == EXPECTED_ARMS
+    readme = (PACK / "generation_briefs" / "README.md").read_text(encoding="utf-8")
+    assert_contains(readme, ["runtime isolation", "fresh prompt", "separate output directory", "forbidden input"])
     for arm in EXPECTED_ARMS:
         body = (PACK / "generation_briefs" / f"{arm}.md").read_text(encoding="utf-8")
         assert_contains(body, ["Allowed Inputs", "Forbidden Inputs", "Trace Output"])
@@ -268,6 +270,28 @@ def test_run2_results_start_public_blocked() -> None:
     assert_contains(delivery, ["public publishing", "blocked", "native render", "human approval", "trace manifest"])
     assert trace_contract["required_output_name"] == "trace_manifest.json"
     assert "aesthetic_move_ids" in trace_contract["per_slide_required_fields"]
+    assert "runtime_isolation" in trace_contract["arm_required_fields"]
+    assert "native_ppt_checks" in trace_contract["per_slide_required_fields"]
+    assert "layout_geometry_checks" in trace_contract["per_slide_required_fields"]
+    assert trace_contract["native_ppt_thresholds"]["full_slide_rasterized_allowed"] is False
+
+
+def test_run2_generation_protocol_blocks_leakage_and_rasterized_report_failures() -> None:
+    body = (PACK / "generation_protocol.md").read_text(encoding="utf-8")
+
+    assert_contains(
+        body,
+        [
+            "runtime isolation",
+            "fresh generation prompt",
+            "cache directory",
+            "full-slide raster",
+            "image-to-native-object ratio",
+            "visible text overlap",
+            "clipped text",
+            "default-styled tables",
+        ],
+    )
 
 
 def test_run2_pack_does_not_commit_generated_artifacts() -> None:

@@ -9,6 +9,10 @@
     "commercial_case",
     "inputs_allowed",
     "inputs_forbidden",
+    "runtime_isolation",
+    "cache_scope",
+    "model_provider",
+    "tool_versions",
     "release_decision"
   ],
   "per_slide_required_fields": [
@@ -22,12 +26,32 @@
     "deleted_or_routed_content",
     "asset_provenance",
     "editability_checks",
+    "native_ppt_checks",
+    "layout_geometry_checks",
     "structural_qa",
     "aesthetic_qa",
     "repair_actions",
     "release_gate_inputs"
   ],
   "density_count_fields": ["claims", "panels", "visible_words", "proof_objects"],
+  "native_ppt_check_fields": [
+    "native_text_box_count",
+    "native_shape_chart_table_diagram_count",
+    "raster_asset_count",
+    "image_to_native_object_ratio",
+    "full_slide_rasterized"
+  ],
+  "layout_geometry_check_fields": [
+    "text_overlap",
+    "text_clipping",
+    "microtype",
+    "default_table_or_chart",
+    "repeated_equal_density_grid"
+  ],
+  "native_ppt_thresholds": {
+    "max_image_to_native_object_ratio": 0.5,
+    "full_slide_rasterized_allowed": false
+  },
   "release_decision_values": ["internal_only", "demo_candidate", "public_blocked", "public_ready"],
-  "blocking_rule": "A generated arm cannot be scored or used in public claims when its trace_manifest.json is missing, incomplete, or inconsistent with the arm isolation manifest."
+  "blocking_rule": "A generated arm cannot be scored or used in public claims when its trace_manifest.json is missing, incomplete, inconsistent with the arm isolation manifest, missing native PPT checks, missing layout geometry checks, or showing full-slide rasterization."
 }
