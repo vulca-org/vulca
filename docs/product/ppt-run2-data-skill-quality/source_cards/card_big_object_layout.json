@@ -8,5 +8,23 @@
   "observed_move": "Let a large focal object anchor the system identity so the deck feels designed from a repeatable language rather than slide-by-slide decoration.",
   "why_it_works": "A dominant object gives memory to the sequence. It can evolve across slides while keeping the audience oriented to one product system.",
   "ppt_translation": "Build a native shape, SVG, or diagram object that occupies the primary visual field and carries the deck identity. The object should change state across slides and encode outcome or mechanism, with editable labels only where they clarify the shift.",
-  "quality_risk": "The move becomes overdesigned or generic when the object is decorative, static, and replaces evidence instead of organizing it."
+  "quality_risk": "The move becomes overdesigned or generic when the object is decorative, static, and replaces evidence instead of organizing it.",
+  "extraction_units": [
+    {
+      "unit_id": "big_object_as_system_memory",
+      "source_anchor": "identity-system article pattern: one repeated focal language",
+      "derived_rule": "Use one editable focal object as a repeatable system memory across multiple slides.",
+      "slide_role": "cover",
+      "execution_guard": "The object must encode the product mechanism or state, not act as decoration.",
+      "qa_probe": "A reviewer can identify the repeated object and explain what state it represents."
+    },
+    {
+      "unit_id": "big_object_state_change",
+      "source_anchor": "identity-system article pattern: motif variation across touchpoints",
+      "derived_rule": "Change the focal object's scale, position, or internal state when the story changes mode.",
+      "slide_role": "climax",
+      "execution_guard": "Do not reuse the object at identical scale for adjacent beats.",
+      "qa_probe": "The climax slide visibly breaks from setup/proof rhythm through object state change."
+    }
+  ]
 }

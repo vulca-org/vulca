@@ -8,5 +8,23 @@
   "observed_move": "Open with a high-confidence product promise before technical detail, giving the audience a single reason to care before the mechanism appears.",
   "why_it_works": "A commercial AI keynote has to lower buyer anxiety quickly. The opening earns attention by framing the system as a strategic capability, then lets proof arrive later instead of crowding the first impression.",
   "ppt_translation": "Use an editable low-density PPT cover with one focal object, one decisive headline, and no more than two support labels. Build the focal object from native shapes or a simple SVG so the slide remains PowerPoint-editable.",
-  "quality_risk": "The cover can become generic if the promise is abstract or if the focal object has no concrete relationship to the product decision."
+  "quality_risk": "The cover can become generic if the promise is abstract or if the focal object has no concrete relationship to the product decision.",
+  "extraction_units": [
+    {
+      "unit_id": "cover_one_commercial_promise",
+      "source_anchor": "commercial AI keynote case opening",
+      "derived_rule": "Open with one concrete commercial promise before any mechanism or workflow proof appears.",
+      "slide_role": "cover",
+      "execution_guard": "Do not place multiple product claims or proof cards on the cover.",
+      "qa_probe": "The contact sheet communicates the product promise before small text is readable."
+    },
+    {
+      "unit_id": "cover_native_focal_object",
+      "source_anchor": "commercial AI keynote need for premium first impression",
+      "derived_rule": "Build the cover's focal object from editable native shapes or a simple SVG tied to the product decision.",
+      "slide_role": "cover",
+      "execution_guard": "Do not use copied visuals or rasterized headline text as the core claim.",
+      "qa_probe": "The focal object remains editable and has a stated relationship to the deck decision."
+    }
+  ]
 }

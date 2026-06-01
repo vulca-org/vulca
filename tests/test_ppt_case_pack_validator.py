@@ -528,6 +528,16 @@ def write_run2_source_card(pack: Path, card_id: str = "card_cinematic_cover") ->
                 "why_it_works": "It gives technical material a memorable commercial first impression.",
                 "ppt_translation": "Use editable title text over a generated abstract background.",
                 "quality_risk": "Avoid illegible title contrast and copied case-study composition.",
+                "extraction_units": [
+                    {
+                        "unit_id": "cover_claim_before_detail",
+                        "source_anchor": "commercial opening pattern",
+                        "derived_rule": "Lead with one commercial claim before proof detail appears.",
+                        "slide_role": "cover",
+                        "execution_guard": "Do not add a dashboard grid or dense status strip.",
+                        "qa_probe": "The contact sheet should read as a launch moment before body text is readable.",
+                    }
+                ],
             },
             indent=2,
         ),
@@ -550,6 +560,16 @@ def write_run2_video_card(pack: Path, card_id: str = "video_keynote_rhythm") -> 
                 "pacing_notes": "The opening holds before proof density increases.",
                 "transition_observations": "Motion is reserved for transitions between roles.",
                 "derived_aesthetic_cards": ["aesthetic_cinematic_cover"],
+                "extraction_units": [
+                    {
+                        "unit_id": "video_opening_scale",
+                        "source_anchor": "00:00 cover",
+                        "derived_rule": "Use a large opening field before introducing proof panels.",
+                        "slide_role": "cover",
+                        "execution_guard": "Do not explain mechanism layers in the first beat.",
+                        "qa_probe": "The cover has one dominant field and no explanatory panel row.",
+                    }
+                ],
             },
             indent=2,
         ),
@@ -778,6 +798,50 @@ def test_run2_profile_rejects_card_source_id_absent_from_sources(tmp_path: Path)
         "source_cards/card_cinematic_cover.json.source_id missing_source is not defined in sources.json"
         in result.errors
     )
+
+
+def test_run2_profile_rejects_source_card_without_extraction_units(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    source_card_path = pack / "source_cards" / "card_cinematic_cover.json"
+    source_card = json.loads(source_card_path.read_text(encoding="utf-8"))
+    source_card.pop("extraction_units", None)
+    source_card_path.write_text(json.dumps(source_card, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "source_cards/card_cinematic_cover.json missing key: extraction_units" in result.errors
+
+
+def test_run2_profile_rejects_malformed_extraction_unit(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    video_card_path = pack / "video_cards" / "video_keynote_rhythm.json"
+    video_card = json.loads(video_card_path.read_text(encoding="utf-8"))
+    video_card["extraction_units"] = [
+        {
+            "unit_id": "video_opening_scale",
+            "source_anchor": "00:00-00:45 opening",
+            "derived_rule": "Use a large opening field.",
+            "slide_role": "cover",
+            "execution_guard": "No explanatory panels on the cover.",
+        }
+    ]
+    video_card_path.write_text(json.dumps(video_card, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "video_cards/video_keynote_rhythm.json.extraction_units[0] missing key: qa_probe" in result.errors
 
 
 def test_run2_profile_rejects_narrative_spine_unknown_aesthetic_move(tmp_path: Path) -> None:

@@ -8,5 +8,23 @@
   "observed_move": "Compare before and after as an editorial delta, with the business change carrying the slide rather than a spreadsheet of attributes.",
   "why_it_works": "The audience understands change faster when the contrast is framed around consequences, not rows. A focused comparison makes the buyer's current pain and future state visible at once.",
   "ppt_translation": "Use an editable comparison chart or native split layout with two named states, one highlighted delta, and a short implication line in PowerPoint text.",
-  "quality_risk": "The slide collapses into a dashboard or report when too many cells, badges, or metrics compete for the same level of attention."
+  "quality_risk": "The slide collapses into a dashboard or report when too many cells, badges, or metrics compete for the same level of attention.",
+  "extraction_units": [
+    {
+      "unit_id": "comparison_single_delta",
+      "source_anchor": "sales deck before-after contrast pattern",
+      "derived_rule": "Show two named states and one highlighted delta instead of a matrix of equal attributes.",
+      "slide_role": "contrast",
+      "execution_guard": "Do not add more than one primary comparison axis on the main slide.",
+      "qa_probe": "A reviewer can identify the before state, after state, and single delta in under five seconds."
+    },
+    {
+      "unit_id": "comparison_business_implication",
+      "source_anchor": "sales deck consequence framing",
+      "derived_rule": "Attach a short business implication to the highlighted delta so the comparison has a decision point.",
+      "slide_role": "contrast",
+      "execution_guard": "Do not leave the comparison as visual symmetry without a buyer consequence.",
+      "qa_probe": "The slide contains an editable implication line shorter than the state labels combined."
+    }
+  ]
 }

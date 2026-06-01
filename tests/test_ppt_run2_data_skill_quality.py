@@ -145,6 +145,22 @@ def test_run2_has_thick_source_and_video_cards() -> None:
         )
 
 
+def test_run2_cards_have_executable_extraction_units() -> None:
+    required = {"unit_id", "source_anchor", "derived_rule", "slide_role", "execution_guard", "qa_probe"}
+    allowed_roles = {"cover", "setup", "contrast", "proof", "climax", "relief", "close"}
+
+    cards = [load_json(path) for path in [*json_files("source_cards"), *json_files("video_cards")]]
+
+    for card in cards:
+        units = card.get("extraction_units")
+        assert isinstance(units, list) and len(units) >= 2, card["card_id"]
+        for unit in units:
+            assert required <= set(unit), card["card_id"]
+            assert unit["slide_role"] in allowed_roles
+            for key in required - {"slide_role"}:
+                assert isinstance(unit[key], str) and unit[key].strip(), f"{card['card_id']} {key}"
+
+
 def test_run2_evidence_memory_has_required_claims() -> None:
     memory = load_json(PACK / "evidence_memory.json")
     claims = memory["claims"]

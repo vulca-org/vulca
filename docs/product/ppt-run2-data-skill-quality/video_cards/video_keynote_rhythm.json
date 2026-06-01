@@ -21,5 +21,23 @@
     "aesthetic_cinematic_cover",
     "aesthetic_proof_reveal",
     "aesthetic_visual_climax"
+  ],
+  "extraction_units": [
+    {
+      "unit_id": "video_rhythm_open_wide",
+      "source_anchor": "00:00-00:45 opening beat",
+      "derived_rule": "Start with one wide low-density field before any explanatory panel appears.",
+      "slide_role": "cover",
+      "execution_guard": "Do not use a multi-card dashboard as the opening beat.",
+      "qa_probe": "The cover has a single dominant field and fewer panels than proof slides."
+    },
+    {
+      "unit_id": "video_rhythm_contract_expand",
+      "source_anchor": "10:00-12:00 proof cadence",
+      "derived_rule": "As proof becomes visible, contract explanatory text and expand the proof object.",
+      "slide_role": "climax",
+      "execution_guard": "Do not let the outcome slide keep the same density as setup/proof.",
+      "qa_probe": "The outcome object is larger than the proof-stage objects and text is reduced."
+    }
   ]
 }

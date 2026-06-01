@@ -96,6 +96,14 @@ RUN2_ASSET_TYPES = {
     "diagram",
     "video_derived_reference",
 }
+RUN2_EXTRACTION_UNIT_FIELDS = [
+    "unit_id",
+    "source_anchor",
+    "derived_rule",
+    "slide_role",
+    "execution_guard",
+    "qa_probe",
+]
 
 
 @dataclass(frozen=True)
@@ -245,6 +253,24 @@ def validate_number_mapping(label: str, value: Any, errors: list[str]) -> bool:
     return ok
 
 
+def validate_run2_extraction_units(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_list(label, value, errors):
+        return
+    for index, unit in enumerate(value):
+        unit_label = f"{label}[{index}]"
+        if not isinstance(unit, dict):
+            errors.append(f"{unit_label} must be an object")
+            continue
+        require_keys(unit_label, unit, RUN2_EXTRACTION_UNIT_FIELDS, errors)
+        for key in RUN2_EXTRACTION_UNIT_FIELDS:
+            if key not in unit:
+                continue
+            if key == "slide_role":
+                validate_choice(f"{unit_label}.{key}", unit[key], RUN2_RHYTHM_ROLES, errors)
+            else:
+                require_non_empty_string(f"{unit_label}.{key}", unit[key], errors)
+
+
 def validate_sources(pack_dir: Path, errors: list[str]) -> set[str]:
     data = load_json(pack_dir / "sources.json", errors)
     require_keys("sources.json", data, ["schema_version", "sources"], errors)
@@ -392,7 +418,15 @@ def validate_deck_outline(pack_dir: Path, pattern_ids: set[str], errors: list[st
 
 def collect_run2_card_ids(pack_dir: Path, source_ids: set[str], errors: list[str]) -> set[str]:
     card_ids: set[str] = set()
-    common_required = ["schema_version", "card_id", "source_id", "source_type", "allowed_use", "do_not_copy"]
+    common_required = [
+        "schema_version",
+        "card_id",
+        "source_id",
+        "source_type",
+        "allowed_use",
+        "do_not_copy",
+        "extraction_units",
+    ]
     source_required = ["observed_move", "why_it_works", "ppt_translation", "quality_risk"]
     video_required = [
         "timestamp_map",
@@ -429,6 +463,8 @@ def collect_run2_card_ids(pack_dir: Path, source_ids: set[str], errors: list[str
                 validate_choice(f"{card_label}.allowed_use", card["allowed_use"], RUN2_ALLOWED_USES, errors)
             if "do_not_copy" in card:
                 require_non_empty_string(f"{card_label}.do_not_copy", card["do_not_copy"], errors)
+            if "extraction_units" in card:
+                validate_run2_extraction_units(f"{card_label}.extraction_units", card["extraction_units"], errors)
 
             if label == "source_cards":
                 for key in source_required:
