@@ -1,0 +1,288 @@
+{
+  "schema_version": 1,
+  "status": "run2_6_aesthetic_benchmark_bank_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "storage_policy": {
+    "raw_media": "forbidden",
+    "allowed_storage": "derived_observations_only",
+    "forbidden_storage": [
+      "screenshots",
+      "video frames",
+      "audio",
+      "full transcripts",
+      "copied layouts",
+      "brand marks",
+      "template files",
+      "long source prose"
+    ]
+  },
+  "benchmarks": [
+    {
+      "id": "benchmark_design_to_production_grid_precision",
+      "source_ids": ["figma_config_2025_recap"],
+      "allowed_use": "derived_rules_only",
+      "composition_rules": [
+        "Use native grid discipline as an invisible structure; the generated slide must not expose a generic equal-card grid.",
+        "Place the focal object on a deliberate grid span and keep support objects subordinate."
+      ],
+      "typography_rules": [
+        "Use hierarchy to separate product promise, proof object, and support labels.",
+        "Avoid tiny implementation labels unless routed to trace."
+      ],
+      "spacing_rules": [
+        "Use spacing, margin, and gutter tokens before module generation.",
+        "Whitespace must support focal scale instead of acting as decoration."
+      ],
+      "theme_rules": [
+        "Do not copy Figma colors or event identity.",
+        "Generate an original theme policy with light and dark variants."
+      ],
+      "motion_or_interaction_rules": [
+        "If interaction is referenced, convert it into ordered native reveal steps, not copied UI behavior."
+      ],
+      "native_ppt_implications": [
+        "Require editable grid-aligned shape groups.",
+        "Trace theme_policy_id, typography_system_id, and spacing_token_set_id."
+      ],
+      "anti_copy_rules": [
+        "Do not copy source layouts, screenshots, brand marks, product UI, event graphics, or exact color systems."
+      ],
+      "qa_probe": "The contact sheet should show precise alignment and focal hierarchy without source-brand resemblance.",
+      "trace_fields": [
+        "aesthetic_benchmark_ids",
+        "theme_policy_id",
+        "typography_system_id",
+        "spacing_token_set_id"
+      ],
+      "release_boundary": "public_blocked_until_native_render_human_approval_and_source_brand_sanitization"
+    },
+    {
+      "id": "benchmark_visual_fidelity_interactive_slide_surface",
+      "source_ids": ["figma_slides_product", "figma_slides_help"],
+      "allowed_use": "derived_rules_only",
+      "composition_rules": [
+        "Represent a presentation product as native editable slide surfaces, not raster screenshots.",
+        "Use native nested frames, mini-previews, and selected states only when they serve the workflow story."
+      ],
+      "typography_rules": [
+        "Hierarchy must make the active slide and primary decision readable before support metadata.",
+        "Small labels are allowed only as trace-like annotations outside the main claim."
+      ],
+      "spacing_rules": [
+        "Use spacing to separate active slide, surrounding context, and controls.",
+        "Do not let preview grids consume the same visual weight as the focal slide."
+      ],
+      "theme_rules": [
+        "Keep the theme original and product-system neutral.",
+        "Use contrast to separate canvas, chrome, and content without copying source colors."
+      ],
+      "motion_or_interaction_rules": [
+        "Translate interactions into native step sequences: select, focus, reveal, validate."
+      ],
+      "native_ppt_implications": [
+        "Build mini-preview and active-surface modules from editable rectangles and text.",
+        "Trace benchmark_validation_probe for each slide using this reference."
+      ],
+      "anti_copy_rules": [
+        "Do not copy source UI, deck templates, product screenshots, brand marks, or exact interface proportions."
+      ],
+      "qa_probe": "The contact sheet should show a native editable slide-surface concept, not a screenshot of a presentation tool.",
+      "trace_fields": [
+        "aesthetic_benchmark_ids",
+        "benchmark_validation_probe",
+        "source_brand_sanitization"
+      ],
+      "release_boundary": "public_blocked_until_native_render_human_approval_and_source_brand_sanitization"
+    },
+    {
+      "id": "benchmark_fintech_product_keynote_breadth_without_grid",
+      "source_ids": ["stripe_sessions_2025_product_keynote"],
+      "allowed_use": "derived_rules_only",
+      "composition_rules": [
+        "Compress product breadth into one native route diagram plus one hero demo object.",
+        "Do not use an equal-density feature matrix as the main composition."
+      ],
+      "typography_rules": [
+        "Hierarchy must make the commercial shift readable before product names.",
+        "Use sparse support copy so demo action and business consequence dominate."
+      ],
+      "spacing_rules": [
+        "Use spacing to isolate the demo path from secondary feature breadth.",
+        "Reserve a large quiet area for the proof object so finance details do not crowd it."
+      ],
+      "theme_rules": [
+        "Use an original high-contrast commerce palette, not Stripe identity colors.",
+        "Keep financial trust cues restrained and functional."
+      ],
+      "motion_or_interaction_rules": [
+        "Represent demo flow as a staged native reveal from trigger to transaction to result."
+      ],
+      "native_ppt_implications": [
+        "Use editable route nodes, transaction markers, and callout text.",
+        "Trace commercial_usecase_id and workflow_decision_ids to prevent generic feature-grid output."
+      ],
+      "anti_copy_rules": [
+        "Do not copy source layouts, screenshots, brand marks, transcript text, stage visuals, or exact Stripe product framing."
+      ],
+      "qa_probe": "The contact sheet should show keynote-scale commerce proof without becoming a product catalogue.",
+      "trace_fields": [
+        "commercial_usecase_id",
+        "aesthetic_benchmark_ids",
+        "workflow_decision_ids"
+      ],
+      "release_boundary": "public_blocked_until_native_render_human_approval_and_source_brand_sanitization"
+    },
+    {
+      "id": "benchmark_ai_platform_demo_climax",
+      "source_ids": ["google_cloud_next_2025_wrap", "google_cloud_next_2025_sundar"],
+      "allowed_use": "derived_rules_only",
+      "composition_rules": [
+        "Build toward a native climax object that proves the AI platform transformation.",
+        "Use supporting infrastructure scale as secondary context, not as a wall of announcements."
+      ],
+      "typography_rules": [
+        "Hierarchy must separate demo result, enterprise impact, and infrastructure support.",
+        "Avoid dense model-name clusters unless routed into notes or trace."
+      ],
+      "spacing_rules": [
+        "Use spacing to enlarge the climax object and push secondary announcements away from the focal field.",
+        "Keep proof routes readable at contact-sheet scale."
+      ],
+      "theme_rules": [
+        "Create an original AI platform theme; do not copy Google Cloud identity, gradients, or event color systems.",
+        "Use material contrast to show platform depth without brand imitation."
+      ],
+      "motion_or_interaction_rules": [
+        "Translate live demo rhythm into ordered reveal steps: pressure, action, result, scale."
+      ],
+      "native_ppt_implications": [
+        "Use editable diagrams, native labels, and reveal-step metadata for the climax.",
+        "Trace benchmark_validation_probe and theme_validation_probe for every climax slide."
+      ],
+      "anti_copy_rules": [
+        "Do not copy source layouts, screenshots, brand marks, keynote stage visuals, model announcement graphics, or source color identity."
+      ],
+      "qa_probe": "The contact sheet should show one large AI transformation proof object with controlled supporting context.",
+      "trace_fields": [
+        "aesthetic_benchmark_ids",
+        "benchmark_validation_probe",
+        "theme_validation_probe"
+      ],
+      "release_boundary": "public_blocked_until_native_render_human_approval_and_source_brand_sanitization"
+    },
+    {
+      "id": "benchmark_content_first_dynamic_material",
+      "source_ids": ["apple_liquid_glass_newsroom", "apple_liquid_glass_developer"],
+      "allowed_use": "derived_rules_only",
+      "composition_rules": [
+        "Treat material behavior as a native layer that supports content, not as decorative glass effects.",
+        "Keep the proof object original and content-first with a clear functional layer above the slide field."
+      ],
+      "typography_rules": [
+        "Hierarchy must keep content meaning ahead of material labels.",
+        "Use restrained type scale so the material system does not overpower the message."
+      ],
+      "spacing_rules": [
+        "Use spacing to separate content, material layer, and control layer.",
+        "Avoid crowding translucent or layered shapes around text."
+      ],
+      "theme_rules": [
+        "Create an original material-language theme with no Apple-like colors, UI shapes, or keynote identity.",
+        "Use light and dark variants only as generic material behavior tests."
+      ],
+      "motion_or_interaction_rules": [
+        "Represent material adaptation as native reveal states, not copied video frames or Apple UI animations."
+      ],
+      "native_ppt_implications": [
+        "Use editable translucent shapes, masks, and grouped layers where PPT supports them.",
+        "Trace source_brand_sanitization and theme_policy_id before public review."
+      ],
+      "anti_copy_rules": [
+        "Do not copy Apple UI, screenshots, brand marks, device frames, Liquid Glass visuals, source prose, or keynote composition."
+      ],
+      "qa_probe": "The contact sheet should show an original content-first material language, not Apple-like glassmorphism.",
+      "trace_fields": [
+        "aesthetic_benchmark_ids",
+        "theme_policy_id",
+        "source_brand_sanitization"
+      ],
+      "release_boundary": "public_blocked_until_native_render_human_approval_and_source_brand_sanitization"
+    },
+    {
+      "id": "benchmark_glance_test_visual_hierarchy",
+      "source_ids": ["slidemodel_visual_hierarchy", "duarte_slide_design"],
+      "allowed_use": "derived_rules_only",
+      "composition_rules": [
+        "Every slide must pass a native glance test: one focal object, one headline, and one support path.",
+        "Use visual hierarchy to route detail away from the main slide when proof density rises."
+      ],
+      "typography_rules": [
+        "Hierarchy must be visible through size, weight, contrast, and placement.",
+        "Avoid uniform label sizes that make a slide read as an engineering report."
+      ],
+      "spacing_rules": [
+        "Use spacing to make the reading order unambiguous.",
+        "Group related elements with consistent internal spacing and separate unrelated groups with larger gaps."
+      ],
+      "theme_rules": [
+        "Theme choices must support readability, not decoration.",
+        "Contrast must distinguish focal claim, proof object, and secondary annotations."
+      ],
+      "motion_or_interaction_rules": [
+        "Use reveal order to preserve hierarchy instead of showing every proof element at once."
+      ],
+      "native_ppt_implications": [
+        "Add editable grouping and layer-order checks to layout QA.",
+        "Trace typography_system_id and spacing_token_set_id for each slide."
+      ],
+      "anti_copy_rules": [
+        "Do not copy tutorial diagrams, source screenshots, brand marks, course exercises, article prose, or template layouts."
+      ],
+      "qa_probe": "At contact-sheet scale, a reviewer should understand each slide's first read without zooming.",
+      "trace_fields": [
+        "typography_system_id",
+        "spacing_token_set_id",
+        "benchmark_validation_probe"
+      ],
+      "release_boundary": "public_blocked_until_native_render_human_approval_and_source_brand_sanitization"
+    },
+    {
+      "id": "benchmark_story_driven_data_emphasis",
+      "source_ids": ["duarte_visual_storytelling", "duarte_slide_design"],
+      "allowed_use": "derived_rules_only",
+      "composition_rules": [
+        "Use native emphasis to make the most important data point carry the story.",
+        "Delete, route, or subordinate data that does not support the slide's decision."
+      ],
+      "typography_rules": [
+        "Hierarchy must distinguish story headline, emphasized data, and explanatory note.",
+        "Use short declarative headlines instead of long source-like explanations."
+      ],
+      "spacing_rules": [
+        "Use spacing to isolate the important data from supporting evidence.",
+        "Do not pack multiple unrelated charts into one slide."
+      ],
+      "theme_rules": [
+        "Theme contrast should make the emphasized data feel intentional and original.",
+        "Avoid copying any Duarte visual system, course material, or webinar graphics."
+      ],
+      "motion_or_interaction_rules": [
+        "Reveal the emphasized data after context so the viewer experiences the turn in the story."
+      ],
+      "native_ppt_implications": [
+        "Use editable chart, diagram, or shape emphasis rather than image-only data.",
+        "Trace workflow_decision_ids when data is deleted, routed, or emphasized."
+      ],
+      "anti_copy_rules": [
+        "Do not copy webinar visuals, course slides, source layouts, brand marks, full prose, transcripts, audio, video frames, or exercise files."
+      ],
+      "qa_probe": "The contact sheet should show one emphasized data or proof point per relevant slide.",
+      "trace_fields": [
+        "workflow_decision_ids",
+        "benchmark_validation_probe",
+        "commercial_usecase_id"
+      ],
+      "release_boundary": "public_blocked_until_native_render_human_approval_and_source_brand_sanitization"
+    }
+  ]
+}

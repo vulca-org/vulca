@@ -144,6 +144,76 @@ EXPECTED_VISUAL_PRODUCTION_MODULE_FIELDS = {
     "qa_probe",
     "release_boundary",
 }
+EXPECTED_RUN2_6_SOURCE_IDS = {
+    "figma_config_2025_platform_launch",
+    "figma_config_2025_recap",
+    "figma_slides_product",
+    "figma_slides_help",
+    "stripe_sessions_2025_product_keynote",
+    "google_cloud_next_2025_wrap",
+    "google_cloud_next_2025_sundar",
+    "apple_liquid_glass_newsroom",
+    "apple_liquid_glass_developer",
+    "duarte_slide_design",
+    "duarte_visual_storytelling",
+    "slidemodel_visual_hierarchy",
+}
+EXPECTED_RUN2_6_USECASE_IDS = {
+    "usecase_design_to_production_platform_launch",
+    "usecase_fintech_product_keynote",
+    "usecase_ai_cloud_keynote_demo",
+    "usecase_design_language_public_reveal",
+}
+EXPECTED_RUN2_6_BENCHMARK_IDS = {
+    "benchmark_design_to_production_grid_precision",
+    "benchmark_visual_fidelity_interactive_slide_surface",
+    "benchmark_fintech_product_keynote_breadth_without_grid",
+    "benchmark_ai_platform_demo_climax",
+    "benchmark_content_first_dynamic_material",
+    "benchmark_glance_test_visual_hierarchy",
+    "benchmark_story_driven_data_emphasis",
+}
+EXPECTED_RUN2_6_TRACE_FIELDS = {
+    "commercial_usecase_id",
+    "aesthetic_benchmark_ids",
+    "theme_policy_id",
+    "typography_system_id",
+    "spacing_token_set_id",
+    "workflow_decision_ids",
+    "source_brand_sanitization",
+    "benchmark_validation_probe",
+    "theme_validation_probe",
+}
+EXPECTED_RUN2_6_USECASE_FIELDS = {
+    "id",
+    "source_ids",
+    "audience",
+    "business_decision",
+    "deck_mission",
+    "slide_arc",
+    "must_show",
+    "must_not_show",
+    "failure_modes",
+    "visual_risk",
+    "workflow_implications",
+    "qa_probe",
+    "release_boundary",
+}
+EXPECTED_RUN2_6_BENCHMARK_FIELDS = {
+    "id",
+    "source_ids",
+    "allowed_use",
+    "composition_rules",
+    "typography_rules",
+    "spacing_rules",
+    "theme_rules",
+    "motion_or_interaction_rules",
+    "native_ppt_implications",
+    "anti_copy_rules",
+    "qa_probe",
+    "trace_fields",
+    "release_boundary",
+}
 EXPECTED_CLAIM_IDS = {
     "claim_data_changes_deck_quality",
     "claim_aesthetic_memory_controls_rhythm",
@@ -532,6 +602,87 @@ def test_run2_5_has_aesthetic_memory_v2_and_visual_production_modules() -> None:
         assert_contains(module["release_boundary"], ["public_blocked"])
 
 
+def test_run2_6_has_commercial_usecase_bank() -> None:
+    sources = load_json(PACK / "sources.json")
+    usecases = load_json(PACK / "commercial_usecase_bank.json")
+    source_ids = {source["id"] for source in sources["sources"]}
+
+    assert EXPECTED_RUN2_6_SOURCE_IDS <= source_ids
+    assert usecases["status"] == "run2_6_commercial_usecase_bank_public_blocked"
+    assert usecases["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert usecases["storage_policy"]["raw_media"] == "forbidden"
+    assert EXPECTED_RUN2_6_USECASE_IDS <= {item["id"] for item in usecases["usecases"]}
+
+    for item in usecases["usecases"]:
+        assert EXPECTED_RUN2_6_USECASE_FIELDS <= set(item), item["id"]
+        assert set(item["source_ids"]) <= source_ids
+        assert_contains(" ".join(item["must_not_show"]), ["copy", "brand"])
+        assert_contains(" ".join(item["workflow_implications"]), ["select", "benchmark"])
+        assert_contains(item["qa_probe"], ["contact sheet"])
+        assert_contains(item["release_boundary"], ["public_blocked"])
+
+
+def test_run2_6_has_aesthetic_benchmark_bank() -> None:
+    sources = load_json(PACK / "sources.json")
+    benchmarks = load_json(PACK / "aesthetic_benchmark_bank.json")
+    source_ids = {source["id"] for source in sources["sources"]}
+
+    assert benchmarks["status"] == "run2_6_aesthetic_benchmark_bank_public_blocked"
+    assert benchmarks["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert benchmarks["storage_policy"]["raw_media"] == "forbidden"
+    assert EXPECTED_RUN2_6_BENCHMARK_IDS <= {item["id"] for item in benchmarks["benchmarks"]}
+
+    for item in benchmarks["benchmarks"]:
+        assert EXPECTED_RUN2_6_BENCHMARK_FIELDS <= set(item), item["id"]
+        assert set(item["source_ids"]) <= source_ids
+        assert item["allowed_use"] == "derived_rules_only"
+        assert_contains(" ".join(item["composition_rules"]), ["native"])
+        assert_contains(" ".join(item["typography_rules"]), ["hierarchy"])
+        assert_contains(" ".join(item["spacing_rules"]), ["spacing"])
+        assert_contains(" ".join(item["anti_copy_rules"]), ["do not copy"])
+        assert EXPECTED_RUN2_6_TRACE_FIELDS & set(item["trace_fields"])
+        assert_contains(item["release_boundary"], ["public_blocked"])
+
+
+def test_run2_6_has_workflow_decision_policy_and_trace_contract() -> None:
+    usecases = load_json(PACK / "commercial_usecase_bank.json")
+    benchmarks = load_json(PACK / "aesthetic_benchmark_bank.json")
+    policy = load_json(PACK / "workflow_decision_policy.json")
+    workflow = load_json(PACK / "skill_workflow.json")
+    trace_contract = load_json(PACK / "results" / "trace_manifest_contract.json")
+
+    usecase_ids = {item["id"] for item in usecases["usecases"]}
+    benchmark_ids = {item["id"] for item in benchmarks["benchmarks"]}
+
+    assert policy["status"] == "run2_6_workflow_decision_policy_public_blocked"
+    assert policy["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert set(policy["selection_chain"]) == {
+        "commercial_case",
+        "usecase_id",
+        "benchmark_ids",
+        "theme_policy_id",
+        "typography_system_id",
+        "spacing_token_set_id",
+        "visual_production_module_ids",
+        "qa_probes",
+    }
+    for mapping in policy["usecase_benchmark_map"]:
+        assert mapping["usecase_id"] in usecase_ids
+        assert set(mapping["benchmark_ids"]) <= benchmark_ids
+        assert mapping["theme_policy_id"]
+        assert mapping["typography_system_id"]
+        assert mapping["spacing_token_set_id"]
+        assert_contains(" ".join(mapping["source_brand_sanitization"]), ["do not copy"])
+
+    workflow_stage_ids = {stage["id"] for stage in workflow["stages"]}
+    assert {
+        "select_commercial_usecase",
+        "select_aesthetic_benchmarks",
+        "select_theme_typography_spacing_policy",
+    } <= workflow_stage_ids
+    assert EXPECTED_RUN2_6_TRACE_FIELDS <= set(trace_contract["per_slide_required_fields"])
+
+
 def test_run2_four_arm_isolation_mentions_multimodal_and_target_boundaries() -> None:
     prompt_only = (PACK / "generation_briefs" / "prompt_only.md").read_text(encoding="utf-8")
     run1_5 = (PACK / "generation_briefs" / "run1_5_skill.md").read_text(encoding="utf-8")
@@ -720,6 +871,9 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
         "compile_production_reference_decompositions",
         "compile_aesthetic_memory_v2",
         "select_slide_archetypes",
+        "select_commercial_usecase",
+        "select_aesthetic_benchmarks",
+        "select_theme_typography_spacing_policy",
         "select_visual_production_modules",
         "generate_code_first_ppt",
         "run_structural_and_aesthetic_qa",
@@ -727,7 +881,7 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
         "refresh_trace_qa_outcomes",
         "emit_release_decision",
     ]
-    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 14))
+    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 17))
     assert workflow["repair_triggers"]
     workflow_text = json.dumps(workflow)
     assert "multimodal_database.json" in workflow_text
@@ -739,6 +893,9 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
     assert "production_reference_decompositions.json" in workflow_text
     assert "aesthetic_memory_v2.json" in workflow_text
     assert "visual_production_modules.json" in workflow_text
+    assert "commercial_usecase_bank.json" in workflow_text
+    assert "aesthetic_benchmark_bank.json" in workflow_text
+    assert "workflow_decision_policy.json" in workflow_text
     assert_contains(workflow_text, ["all required modalities covered", "no copied source media stored"])
     assert_contains(
         workflow_text, ["visual targets reference valid multimodal anchors", "selected visual learning targets"]
@@ -746,6 +903,7 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
     assert_contains(workflow_text, ["native visual components", "selected visual target components"])
     assert_contains(workflow_text, ["motion grammar", "selected motion targets", "sequence components"])
     assert_contains(workflow_text, ["production reference", "aesthetic memory v2", "visual production modules"])
+    assert_contains(workflow_text, ["commercial usecase", "aesthetic benchmark", "theme policy"])
     assert_contains(workflow_text, ["fallback", "visual validation"])
     assert_contains(workflow_text, ["schema validation", "aesthetic memory constraints"])
     assert_contains(workflow_text, ["provenance metadata", "copyright boundary"])

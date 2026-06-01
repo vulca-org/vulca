@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "workflow_type": "declarative_skill_director",
-  "status": "run2_5_production_design_declarative_public_blocked",
+  "status": "run2_6_data_workflow_policy_directed_public_blocked",
   "stage_policy": "repeat_same_five_layers_not_run3",
   "five_layer_loop": [
     "real_commercial_case",
@@ -166,13 +166,51 @@
       "gates": ["six-slide path preserved", "visual climax and close are distinct", "each main slide has a selected production aesthetic contract"]
     },
     {
-      "id": "select_visual_production_modules",
+      "id": "select_commercial_usecase",
       "order": 8,
+      "layer": "skill_workflow",
+      "inputs": ["commercial_case.md", "commercial_usecase_bank.json"],
+      "outputs": ["commercial_usecase_id", "usecase slide arc", "usecase QA probe"],
+      "gates": ["selected usecase references valid sources", "selected usecase is concrete", "source-brand imitation remains forbidden"]
+    },
+    {
+      "id": "select_aesthetic_benchmarks",
+      "order": 9,
+      "layer": "skill_workflow",
+      "inputs": ["aesthetic_benchmark_bank.json", "commercial_usecase_id", "workflow_decision_policy.json"],
+      "outputs": ["aesthetic_benchmark_ids", "benchmark validation probes", "anti-copy rules"],
+      "gates": [
+        "selected benchmarks reference valid sources",
+        "benchmark rules are derived observations only",
+        "benchmark selection happens before visual production module selection"
+      ]
+    },
+    {
+      "id": "select_theme_typography_spacing_policy",
+      "order": 10,
+      "layer": "skill_workflow",
+      "inputs": ["workflow_decision_policy.json", "commercial_usecase_id", "aesthetic_benchmark_ids"],
+      "outputs": ["theme_policy_id", "typography_system_id", "spacing_token_set_id", "workflow decision ids"],
+      "gates": [
+        "theme policy is original and source-brand sanitized",
+        "typography system defines visible hierarchy before code generation",
+        "spacing token set is selected before layout module generation"
+      ]
+    },
+    {
+      "id": "select_visual_production_modules",
+      "order": 11,
       "layer": "skill_workflow",
       "inputs": [
         "visual_production_modules.json",
         "aesthetic_memory_v2.json",
         "production_reference_decompositions.json",
+        "workflow_decision_policy.json",
+        "commercial_usecase_id",
+        "aesthetic_benchmark_ids",
+        "theme_policy_id",
+        "typography_system_id",
+        "spacing_token_set_id",
         "selected archetypes"
       ],
       "outputs": [
@@ -186,17 +224,23 @@
         "each selected module references aesthetic memory v2",
         "module provenance metadata records copyright boundary before generation",
         "module fallback policy is known before generation",
+        "theme, typography, and spacing policy are recorded before generation",
         "visual validation probe is defined before scoring",
         "modules remain native editable PPT contracts"
       ]
     },
     {
       "id": "generate_code_first_ppt",
-      "order": 9,
+      "order": 12,
       "layer": "skill_workflow",
       "inputs": [
         "generation_briefs/run2_skill.md",
         "selected archetypes",
+        "commercial_usecase_id",
+        "aesthetic_benchmark_ids",
+        "theme_policy_id",
+        "typography_system_id",
+        "spacing_token_set_id",
         "selected visual learning targets",
         "selected visual target components",
         "selected motion targets",
@@ -209,6 +253,9 @@
       "gates": [
         "core text is native",
         "component ids are recorded",
+        "commercial_usecase_id is recorded",
+        "aesthetic_benchmark_ids are recorded",
+        "theme_policy_id, typography_system_id, and spacing_token_set_id are recorded",
         "aesthetic_memory_v2_ids are recorded",
         "visual_production_module_ids are recorded",
         "motion target ids and sequence component ids are recorded",
@@ -220,7 +267,7 @@
     },
     {
       "id": "run_structural_and_aesthetic_qa",
-      "order": 10,
+      "order": 13,
       "layer": "rerun_and_evaluation",
       "inputs": ["PPTX", "layout JSON", "contact sheet", "aesthetic_rubric.md", "trace_manifest.json"],
       "outputs": ["delivery report", "layout report", "Gemini artifact review", "score table", "visual validation outcome"],
@@ -228,13 +275,15 @@
         "structural QA passes",
         "layout errors are zero",
         "motion grammar sequence is traceable",
+        "benchmark validation checks whether selected benchmarks are visible in the contact sheet",
+        "theme validation checks whether selected theme, typography, and spacing policies are visible",
         "visual validation checks whether production modules are visible in the contact sheet",
         "Gemini review is recorded"
       ]
     },
     {
       "id": "recommend_repairs",
-      "order": 11,
+      "order": 14,
       "layer": "skill_workflow",
       "inputs": ["delivery report", "layout report", "Gemini review", "visual validation outcome", "human visual notes"],
       "outputs": ["repair recommendations", "blocked release reasons"],
@@ -242,7 +291,7 @@
     },
     {
       "id": "refresh_trace_qa_outcomes",
-      "order": 12,
+      "order": 15,
       "layer": "rerun_and_evaluation",
       "inputs": ["trace_manifest.json", "delivery report", "layout report", "visual validation outcome"],
       "outputs": ["post-QA trace manifest", "backup manifest", "dry-run diff"],
@@ -250,7 +299,7 @@
     },
     {
       "id": "emit_release_decision",
-      "order": 13,
+      "order": 16,
       "layer": "rerun_and_evaluation",
       "inputs": ["post-QA trace manifest", "native render result", "human approval record"],
       "outputs": ["internal_only or public_blocked decision"],

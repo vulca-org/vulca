@@ -99,6 +99,105 @@
       "accessed_on": "2026-06-01",
       "allowed_use": "reference_analysis_only",
       "copyright_note": "Original analysis only; license boundary noted as CC BY-NC for the source video content, but this pack stores only derived observations and does not copy video, audio, frames, full transcripts, visuals, or source layouts."
+    },
+    {
+      "id": "figma_config_2025_platform_launch",
+      "title": "Config 2025 launches deepen Figma's design capabilities as its platform expands",
+      "url": "https://www.figma.com/blog/config-2025-press-release/",
+      "role": "design_to_production_platform_launch_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, source prose, template files, or proprietary assets."
+    },
+    {
+      "id": "figma_config_2025_recap",
+      "title": "Config 2025: Pushing Design Further",
+      "url": "https://www.figma.com/blog/config-2025-recap/",
+      "role": "craft_grid_design_to_production_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, source prose, template files, or proprietary assets."
+    },
+    {
+      "id": "figma_slides_product",
+      "title": "Figma Slides",
+      "url": "https://www.figma.com/slides/",
+      "role": "presentation_product_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, source prose, template files, or proprietary assets."
+    },
+    {
+      "id": "figma_slides_help",
+      "title": "Explore Figma Slides",
+      "url": "https://help.figma.com/hc/en-us/articles/24170630629911-Explore-Figma-Slides",
+      "role": "presentation_workflow_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, source prose, template files, or proprietary assets."
+    },
+    {
+      "id": "stripe_sessions_2025_product_keynote",
+      "title": "Stripe Sessions 2025 Product Keynote",
+      "url": "https://stripe.com/gb/sessions/2025/product-keynote",
+      "role": "fintech_product_keynote_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, transcript text, event graphics, or proprietary assets."
+    },
+    {
+      "id": "google_cloud_next_2025_wrap",
+      "title": "Google Cloud Next 2025 Wrap Up",
+      "url": "https://cloud.google.com/blog/topics/google-cloud-next/google-cloud-next-2025-wrap-up/?hl=en",
+      "role": "large_scale_ai_cloud_keynote_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, transcript text, event graphics, or proprietary assets."
+    },
+    {
+      "id": "google_cloud_next_2025_sundar",
+      "title": "Google Cloud Next 25: New AI capabilities to transform your business",
+      "url": "https://blog.google/innovation-and-ai/infrastructure-and-cloud/google-cloud/google-cloud-next-2025-sundar-pichai-keynote/",
+      "role": "executive_ai_platform_keynote_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, transcript text, event graphics, or proprietary assets."
+    },
+    {
+      "id": "apple_liquid_glass_newsroom",
+      "title": "Apple introduces a delightful and elegant new software design",
+      "url": "https://www.apple.com/newsroom/2025/06/apple-introduces-a-delightful-and-elegant-new-software-design/",
+      "role": "design_language_launch_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, source prose, video frames, or proprietary design assets."
+    },
+    {
+      "id": "apple_liquid_glass_developer",
+      "title": "Meet Liquid Glass",
+      "url": "https://developer.apple.com/videos/play/wwdc2025/219/",
+      "role": "design_language_principles_video_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy visuals, layouts, screenshots, brand marks, source prose, video frames, audio, or transcripts."
+    },
+    {
+      "id": "duarte_slide_design",
+      "title": "Presentation Design Training",
+      "url": "https://www.duarte.com/training/slide-document-design/slide-design/",
+      "role": "slide_design_training_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy course lessons, visuals, layouts, screenshots, brand marks, exercise files, full prose, transcripts, audio, or video frames."
+    },
+    {
+      "id": "duarte_visual_storytelling",
+      "title": "Persuasive Visual Storytelling",
+      "url": "https://www.duarte.com/resources/webinars-videos/persuasive-visual-storytelling/",
+      "role": "visual_storytelling_training_reference",
+      "accessed_on": "2026-06-01",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original analysis only; do not copy webinar materials, visuals, layouts, screenshots, brand marks, full prose, transcripts, audio, or video frames."
     }
   ]
 }

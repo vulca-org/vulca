@@ -1,0 +1,186 @@
+{
+  "schema_version": 1,
+  "status": "run2_6_commercial_usecase_bank_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "storage_policy": {
+    "raw_media": "forbidden",
+    "allowed_storage": "derived_observations_only",
+    "forbidden_storage": [
+      "screenshots",
+      "video frames",
+      "audio",
+      "full transcripts",
+      "copied layouts",
+      "brand marks",
+      "template files",
+      "long source prose"
+    ]
+  },
+  "usecases": [
+    {
+      "id": "usecase_design_to_production_platform_launch",
+      "source_ids": [
+        "figma_config_2025_platform_launch",
+        "figma_config_2025_recap",
+        "figma_slides_product",
+        "figma_slides_help"
+      ],
+      "audience": "AI product builders and design-led founders evaluating whether Vulca can turn design memory into production-grade code-generated PPT.",
+      "business_decision": "Should the team position Vulca as a design-to-production presentation workflow rather than a prompt-only slide generator?",
+      "deck_mission": "Show that the product selects data, memory, modules, and QA gates before writing slide code.",
+      "slide_arc": [
+        "designed opening",
+        "workflow selection",
+        "before after delta",
+        "proof route",
+        "hero result",
+        "release gate"
+      ],
+      "must_show": [
+        "usecase selection before generation",
+        "visual benchmark selection",
+        "native editable module output",
+        "traceable release boundary"
+      ],
+      "must_not_show": [
+        "do not copy Figma brand visuals",
+        "do not copy Figma product UI",
+        "do not become a feature grid",
+        "do not borrow source brand color identity"
+      ],
+      "failure_modes": [
+        "looks like an engineering report",
+        "lists capabilities without visual proof",
+        "uses generic SaaS dashboard cards"
+      ],
+      "visual_risk": "Can drift into Figma-like branding or generic product grid if source-brand sanitization is weak.",
+      "workflow_implications": [
+        "select benchmark_design_to_production_grid_precision before code generation",
+        "select benchmark_visual_fidelity_interactive_slide_surface before code generation",
+        "select theme and spacing policy before production modules"
+      ],
+      "qa_probe": "From the contact sheet, the full arm should read as a designed workflow product, not a source-brand imitation or report.",
+      "release_boundary": "public_blocked_until_native_render_human_approval_and_source_brand_sanitization"
+    },
+    {
+      "id": "usecase_fintech_product_keynote",
+      "source_ids": ["stripe_sessions_2025_product_keynote"],
+      "audience": "Product, growth, and platform teams who need a keynote-style narrative for a technical fintech capability without turning the deck into a product catalogue.",
+      "business_decision": "Should the deck sell a specific commercial shift by staging one memorable product demo instead of listing every shipped feature?",
+      "deck_mission": "Compress a broad product launch into a keynote route where one demo-scale action proves the business value.",
+      "slide_arc": [
+        "market shift",
+        "business tension",
+        "product mechanism",
+        "demo route",
+        "commercial implication",
+        "trust gate"
+      ],
+      "must_show": [
+        "one visible demo object",
+        "product breadth only as supporting context",
+        "business implication for operators",
+        "clear trust and risk boundary"
+      ],
+      "must_not_show": [
+        "do not copy Stripe brand visuals",
+        "do not copy Stripe event graphics",
+        "do not flatten into a feature grid",
+        "do not use source brand marks or copied transcript text"
+      ],
+      "failure_modes": [
+        "too many product tiles compete with the main demo",
+        "financial complexity becomes a table dump",
+        "the narrative reads like a changelog instead of a commercial keynote"
+      ],
+      "visual_risk": "Fintech references can produce dense grids, badges, or default charts unless the workflow selects a climax object and density budget first.",
+      "workflow_implications": [
+        "select benchmark_fintech_product_keynote_breadth_without_grid before module generation",
+        "select benchmark_story_driven_data_emphasis before chart selection",
+        "select trust boundary and benchmark probes before final QA"
+      ],
+      "qa_probe": "From the contact sheet, the full arm should show one commercial proof route rather than a spreadsheet of features.",
+      "release_boundary": "public_blocked_until_native_render_human_approval_and_source_brand_sanitization"
+    },
+    {
+      "id": "usecase_ai_cloud_keynote_demo",
+      "source_ids": ["google_cloud_next_2025_wrap", "google_cloud_next_2025_sundar"],
+      "audience": "Enterprise AI buyers and technical executives deciding whether a platform story feels credible, large-scale, and grounded in a concrete demo path.",
+      "business_decision": "Should the product narrative prioritize a credible AI platform transformation over a list of model announcements?",
+      "deck_mission": "Turn a wide AI platform story into a staged demo with a clear climax, infrastructure credibility, and business outcome.",
+      "slide_arc": [
+        "enterprise pressure",
+        "platform capability",
+        "workflow demo",
+        "scale proof",
+        "climax transformation",
+        "adoption gate"
+      ],
+      "must_show": [
+        "one large demo path",
+        "visible platform scale",
+        "before after business transformation",
+        "adoption and governance boundary"
+      ],
+      "must_not_show": [
+        "do not copy Google brand visuals",
+        "do not copy Google Cloud event graphics",
+        "do not build a logo wall",
+        "do not use source brand colors as the theme"
+      ],
+      "failure_modes": [
+        "AI claims become generic",
+        "demo scale is too small for an enterprise keynote",
+        "too many technical terms crowd the slide"
+      ],
+      "visual_risk": "Cloud keynotes can default to broad announcement grids; the workflow must force a demo climax and route secondary evidence away from the main canvas.",
+      "workflow_implications": [
+        "select benchmark_ai_platform_demo_climax before code generation",
+        "select benchmark_story_driven_data_emphasis before proof layout",
+        "select benchmark_glance_test_visual_hierarchy before contact-sheet QA"
+      ],
+      "qa_probe": "From the contact sheet, the full arm should show a readable AI demo climax with enterprise scale, not an announcement inventory.",
+      "release_boundary": "public_blocked_until_native_render_human_approval_and_source_brand_sanitization"
+    },
+    {
+      "id": "usecase_design_language_public_reveal",
+      "source_ids": ["apple_liquid_glass_newsroom", "apple_liquid_glass_developer"],
+      "audience": "Design leaders and product teams evaluating whether a new design language can be explained as an interaction system, not only an aesthetic surface.",
+      "business_decision": "Should the presentation make a design language credible by showing material behavior, interaction hierarchy, and adoption constraints?",
+      "deck_mission": "Show a design language as a product system with material rules, content focus, and implementation boundaries.",
+      "slide_arc": [
+        "design language premise",
+        "material behavior",
+        "content focus",
+        "interaction layer",
+        "system-wide proof object",
+        "implementation boundary"
+      ],
+      "must_show": [
+        "design language as a system",
+        "content-first hierarchy",
+        "material behavior translated into native editable objects",
+        "source-brand sanitization"
+      ],
+      "must_not_show": [
+        "do not copy Apple brand visuals",
+        "do not copy Apple UI or Liquid Glass screenshots",
+        "do not imitate Apple keynote composition",
+        "do not use source brand marks or source prose"
+      ],
+      "failure_modes": [
+        "looks like glassmorphism decoration",
+        "material effect overwhelms content",
+        "presentation becomes an Apple-style imitation instead of a Vulca-native proof"
+      ],
+      "visual_risk": "Design-language references are high-risk for brand imitation; the workflow must abstract behavior rules and generate an original theme.",
+      "workflow_implications": [
+        "select benchmark_content_first_dynamic_material before theme generation",
+        "select benchmark_visual_fidelity_interactive_slide_surface before native module selection",
+        "select source-brand sanitization before public review"
+      ],
+      "qa_probe": "From the contact sheet, the full arm should read as an original design-system explanation with no Apple-like brand identity.",
+      "release_boundary": "public_blocked_until_native_render_human_approval_and_source_brand_sanitization"
+    }
+  ]
+}
