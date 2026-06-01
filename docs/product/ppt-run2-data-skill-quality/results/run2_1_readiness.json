@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "status": "ready_to_rerun_public_blocked",
+  "public_ready": false,
+  "completed_depth_layers": [
+    "extraction_units",
+    "skill_workflow",
+    "trace_refresh_utility"
+  ],
+  "local_trace_refresh": {
+    "status": "completed_for_existing_outputs",
+    "committed": false,
+    "note": "Existing local outputs were refreshed for inspection only; outputs remain untracked."
+  },
+  "next_required_action": "rerun_four_arms",
+  "required_arms": [
+    "prompt_only",
+    "run1_5_skill",
+    "run2_1_full_skill",
+    "bad_aesthetic_memory"
+  ],
+  "release_gate": "public_blocked_until_native_render_and_human_approval"
+}

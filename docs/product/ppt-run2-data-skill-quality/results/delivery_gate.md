@@ -19,7 +19,7 @@ Public publishing is blocked until generated outputs exist, trace QA outcome fie
 | --- | --- |
 | Four generated arms exist under `outputs/` | pass |
 | Per-arm `trace_manifest.json` files exist and satisfy the contract shape | pass |
-| Trace QA outcome fields refreshed after validation | blocked |
+| Trace QA outcome fields refreshed after validation | tool-ready; rerun required |
 | Runtime isolation and cache separation recorded for each arm | pass |
 | Native PPT object checks pass; no full-slide rasterized decks | pass |
 | Layout geometry checks pass for overlap, clipping, microtype, and default tables | pass |
@@ -31,7 +31,7 @@ Public publishing is blocked until generated outputs exist, trace QA outcome fie
 | Editable text and native structure inspection completed | pass |
 | Human approval recorded | blocked |
 
-Delivery status remains `reviewed-public-blocked`. Current trace manifests are contract-present, but their per-slide QA outcome fields still need a post-validation refresh before they can be treated as release evidence.
+Delivery status remains `reviewed-public-blocked`. A trace refresh utility now exists and has been run on local untracked outputs for inspection, but regenerated Run 2.1 arms are still required before release evidence can be claimed.
 
 ## Release Decision Thresholds
 

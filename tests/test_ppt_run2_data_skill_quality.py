@@ -333,6 +333,22 @@ def test_run2_audit_records_trace_and_native_render_blockers() -> None:
     assert_contains(comparison, ["outcome refresh", "not public-release evidence"])
 
 
+def test_run2_1_readiness_records_rerun_gate() -> None:
+    readiness = (PACK / "results" / "run2_1_readiness.md").read_text(encoding="utf-8")
+    readiness_json = load_json(PACK / "results" / "run2_1_readiness.json")
+
+    assert readiness_json["status"] == "ready_to_rerun_public_blocked"
+    assert readiness_json["next_required_action"] == "rerun_four_arms"
+    assert readiness_json["public_ready"] is False
+    assert "extraction_units" in readiness_json["completed_depth_layers"]
+    assert "skill_workflow" in readiness_json["completed_depth_layers"]
+    assert "trace_refresh_utility" in readiness_json["completed_depth_layers"]
+    assert_contains(
+        readiness,
+        ["Run 2.1", "rerun four arms", "public blocked", "not a new stage", "not release evidence"],
+    )
+
+
 def test_run2_generation_protocol_blocks_leakage_and_rasterized_report_failures() -> None:
     body = (PACK / "generation_protocol.md").read_text(encoding="utf-8")
 
