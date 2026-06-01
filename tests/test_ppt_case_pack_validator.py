@@ -561,6 +561,10 @@ def write_run2_required_files(pack: Path) -> None:
         json.dumps(valid_run2_presentation_sequence_components(), indent=2),
         encoding="utf-8",
     )
+    (pack / "visual_repair_policy.json").write_text(
+        json.dumps(valid_run2_visual_repair_policy(), indent=2),
+        encoding="utf-8",
+    )
     (pack / "results" / "delivery_gate.md").write_text(
         "# Delivery Gate\n\nPublic publishing is blocked before native render and human review.\n",
         encoding="utf-8",
@@ -824,6 +828,35 @@ def valid_run2_presentation_sequence_components() -> dict:
     }
 
 
+def valid_run2_visual_repair_policy() -> dict:
+    repair_fields = {
+        "target_slide_roles": ["cover", "setup"],
+        "source_policy_ids": ["workflow_decision_policy.json"],
+        "typography_delta": "Run 2.5 type scale is the negative baseline.",
+        "spacing_delta": "Run 2.5 spacing is the negative baseline.",
+        "composition_delta": "Use native editable PPT shapes.",
+        "theme_delta": "Avoid forest-green and source-brand mimicry.",
+        "must_differ_from": ["ppt-run2-5-full-vulca", "ppt-run2-6-full-vulca"],
+        "native_ppt_requirements": ["native editable text", "native editable shapes"],
+        "qa_probe": "Review the contact sheet for visible repair.",
+        "release_boundary": "public_blocked_until_native_render_human_approval_and_visual_delta_review",
+    }
+    repair_ids = [
+        "repair_editorial_typography_system",
+        "repair_spacing_token_visibility",
+        "repair_climax_editorial_spread",
+        "repair_theme_differentiation_from_run2_5",
+        "repair_mini_preview_fidelity",
+    ]
+    return {
+        "schema_version": 1,
+        "status": "run2_6r_visual_repair_policy_public_blocked",
+        "stage_policy": "repeat_same_five_layers_not_run3",
+        "default_visual_direction": "light_first_editorial_graphite_with_vivid_proof_color",
+        "repairs": [{"id": repair_id, **repair_fields} for repair_id in repair_ids],
+    }
+
+
 def write_run2_source_card(pack: Path, card_id: str = "card_cinematic_cover") -> None:
     (pack / "source_cards" / f"{card_id}.json").write_text(
         json.dumps(
@@ -1012,6 +1045,52 @@ def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     assert "missing required file: asset_memory.json" in result.errors
     assert "missing required file: skill_workflow.json" in result.errors
     assert "missing required file: generation_briefs/run2_skill.md" in result.errors
+    assert "missing required file: visual_repair_policy.json" in result.errors
+
+
+def test_run2_profile_requires_visual_repair_policy_file(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    (pack / "visual_repair_policy.json").unlink()
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "missing required file: visual_repair_policy.json" in result.errors
+
+
+def test_run2_profile_rejects_invalid_visual_repair_policy(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    policy_path = pack / "visual_repair_policy.json"
+    policy = json.loads(policy_path.read_text(encoding="utf-8"))
+    policy["repairs"][0]["theme_delta"] = "Use a graphite editorial theme."
+    policy["repairs"][1]["target_slide_roles"] = ["run3"]
+    policy["repairs"][2]["native_ppt_requirements"] = ["native shapes only"]
+    policy["repairs"][3]["qa_probe"] = "Review visual delta."
+    policy["repairs"][4]["release_boundary"] = "public_ready_after_generation"
+    policy_path.write_text(json.dumps(policy, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "visual_repair_policy.repairs[0].theme_delta must mention forest-green" in result.errors
+    assert "visual_repair_policy.repairs[0].theme_delta must mention source-brand" in result.errors
+    assert (
+        "visual_repair_policy.repairs[1].target_slide_roles[0] must be one of "
+        "climax, close, contrast, cover, proof, setup"
+    ) in result.errors
+    assert "visual_repair_policy.repairs[2].native_ppt_requirements must mention editable" in result.errors
+    assert "visual_repair_policy.repairs[3].qa_probe must mention contact sheet" in result.errors
+    assert "visual_repair_policy.repairs[4].release_boundary must keep public_blocked status" in result.errors
 
 
 def test_run2_profile_rejects_skill_workflow_without_repair_triggers(tmp_path: Path) -> None:

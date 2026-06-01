@@ -58,6 +58,7 @@ RUN2_REQUIRED_FILES = [
     "video_demo_beat_map.json",
     "motion_learning_targets.json",
     "presentation_sequence_components.json",
+    "visual_repair_policy.json",
     "source_cards/README.md",
     "video_cards/README.md",
     "evidence_memory.json",
@@ -142,6 +143,27 @@ RUN2_FORBIDDEN_MEDIA_REFERENCE_MARKERS = (
     ".pptx",
     ".key",
 )
+RUN2_6R_REPAIR_IDS = {
+    "repair_editorial_typography_system",
+    "repair_spacing_token_visibility",
+    "repair_climax_editorial_spread",
+    "repair_theme_differentiation_from_run2_5",
+    "repair_mini_preview_fidelity",
+}
+RUN2_6R_REPAIR_FIELDS = [
+    "id",
+    "target_slide_roles",
+    "source_policy_ids",
+    "typography_delta",
+    "spacing_delta",
+    "composition_delta",
+    "theme_delta",
+    "must_differ_from",
+    "native_ppt_requirements",
+    "qa_probe",
+    "release_boundary",
+]
+RUN2_6R_REPAIR_ROLES = {"cover", "setup", "contrast", "proof", "climax", "close"}
 
 
 @dataclass(frozen=True)
@@ -331,6 +353,15 @@ def validate_combined_terms(label: str, values: Any, terms: list[str], errors: l
     combined = " ".join(values).lower()
     for term in terms:
         if term not in combined:
+            errors.append(f"{label} must mention {term}")
+
+
+def validate_string_mentions(label: str, value: Any, terms: list[str], errors: list[str]) -> None:
+    if not require_non_empty_string(label, value, errors):
+        return
+    lowered = value.lower()
+    for term in terms:
+        if term.lower() not in lowered:
             errors.append(f"{label} must mention {term}")
 
 
@@ -1505,6 +1536,84 @@ def validate_run2_skill_workflow(pack_dir: Path, errors: list[str]) -> None:
                 require_non_empty_string(f"{label}.{key}", trigger[key], errors)
 
 
+def validate_run2_visual_repair_policy(pack_dir: Path, errors: list[str]) -> None:
+    data = load_json(pack_dir / "visual_repair_policy.json", errors)
+    require_keys(
+        "visual_repair_policy.json",
+        data,
+        ["schema_version", "status", "stage_policy", "default_visual_direction", "repairs"],
+        errors,
+    )
+    if "schema_version" in data:
+        require_integer("visual_repair_policy.schema_version", data["schema_version"], errors)
+    if "status" in data and data["status"] != "run2_6r_visual_repair_policy_public_blocked":
+        errors.append("visual_repair_policy.status must be run2_6r_visual_repair_policy_public_blocked")
+    if "stage_policy" in data and data["stage_policy"] != "repeat_same_five_layers_not_run3":
+        errors.append("visual_repair_policy.stage_policy must be repeat_same_five_layers_not_run3")
+    if (
+        "default_visual_direction" in data
+        and data["default_visual_direction"] != "light_first_editorial_graphite_with_vivid_proof_color"
+    ):
+        errors.append(
+            "visual_repair_policy.default_visual_direction must be "
+            "light_first_editorial_graphite_with_vivid_proof_color"
+        )
+
+    repairs = data.get("repairs", [])
+    if not require_non_empty_list("visual_repair_policy.repairs", repairs, errors):
+        return
+
+    seen_repair_ids: set[str] = set()
+    for index, repair in enumerate(repairs):
+        label = f"visual_repair_policy.repairs[{index}]"
+        if not isinstance(repair, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        require_keys(label, repair, RUN2_6R_REPAIR_FIELDS, errors)
+        repair_id = repair.get("id")
+        if "id" in repair and require_non_empty_string(f"{label}.id", repair_id, errors):
+            if repair_id in seen_repair_ids:
+                errors.append(f"{label}.id duplicates {repair_id}")
+            seen_repair_ids.add(repair_id)
+        if "target_slide_roles" in repair and validate_string_list(
+            f"{label}.target_slide_roles",
+            repair["target_slide_roles"],
+            errors,
+        ):
+            for role_index, role in enumerate(repair["target_slide_roles"]):
+                validate_choice(
+                    f"{label}.target_slide_roles[{role_index}]",
+                    role,
+                    RUN2_6R_REPAIR_ROLES,
+                    errors,
+                )
+        if "source_policy_ids" in repair:
+            validate_string_list(f"{label}.source_policy_ids", repair["source_policy_ids"], errors)
+        for key in ["typography_delta", "spacing_delta", "composition_delta"]:
+            if key in repair:
+                require_non_empty_string(f"{label}.{key}", repair[key], errors)
+        if "theme_delta" in repair:
+            validate_string_mentions(f"{label}.theme_delta", repair["theme_delta"], ["forest-green", "source-brand"], errors)
+        if "must_differ_from" in repair:
+            validate_exact_string_set(
+                f"{label}.must_differ_from",
+                repair["must_differ_from"],
+                {"ppt-run2-5-full-vulca", "ppt-run2-6-full-vulca"},
+                errors,
+            )
+        if "native_ppt_requirements" in repair:
+            validate_combined_terms(f"{label}.native_ppt_requirements", repair["native_ppt_requirements"], ["native", "editable"], errors)
+        if "qa_probe" in repair:
+            validate_string_mentions(f"{label}.qa_probe", repair["qa_probe"], ["contact sheet"], errors)
+        if "release_boundary" in repair:
+            validate_public_blocked_boundary(f"{label}.release_boundary", repair["release_boundary"], errors)
+
+    for repair_id in sorted(RUN2_6R_REPAIR_IDS - seen_repair_ids):
+        errors.append(f"visual_repair_policy.repairs missing repair id: {repair_id}")
+    for repair_id in sorted(seen_repair_ids - RUN2_6R_REPAIR_IDS):
+        errors.append(f"visual_repair_policy.repairs has unexpected repair id: {repair_id}")
+
+
 def validate_run1_design_memory_observations(observations: list[Any], errors: list[str]) -> None:
     required = ["id", "source_ids", "principle", "code_generation_rule", "do_not_copy"]
     seen_ids: set[str] = set()
@@ -1676,6 +1785,7 @@ def validate_case_pack(pack_dir: str | Path, profile: str = "default") -> Valida
         validate_run2_narrative_spine(root, move_ids, errors)
         validate_run2_slide_archetypes(root, move_ids, errors)
         validate_run2_skill_workflow(root, errors)
+        validate_run2_visual_repair_policy(root, errors)
         return ValidationResult(not errors, errors)
 
     validate_sources(root, errors)

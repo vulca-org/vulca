@@ -1193,6 +1193,8 @@ def test_run2_6_generator_consumes_workflow_policy_and_preserves_control_boundar
     assert "workflow_decision_policy.json" not in bad_allowed
     assert "aesthetic_benchmark_bank.json" in bad_forbidden
     assert "workflow_decision_policy.json" in bad_forbidden
+    assert "visual_repair_policy.json" not in full_allowed
+    assert "run2_6r_visual_repair_full_skill" not in body
     assert 'const workflowEligible = ["run2_6_full_skill", "bad_aesthetic_memory"].includes(arm.armId);' in body
     assert 'const fullWorkflow = arm.armId === "run2_6_full_skill";' in body
     assert re.search(r"commercial_usecase_id:\s*workflowEligible\s*\?", body)
@@ -1202,6 +1204,12 @@ def test_run2_6_generator_consumes_workflow_policy_and_preserves_control_boundar
     assert re.search(r"spacing_token_set_id:\s*fullWorkflow\s*\?", body)
     assert re.search(r"workflow_decision_ids:\s*fullWorkflow\s*\?", body)
     assert "source_brand_sanitization:" in body
+    assert "visual_repair_policy_ids: []" in body
+    assert 'visual_delta_from_run2_5: "not-applicable; existing Run 2.6 generator does not apply visual repair policy"' in body
+    assert (
+        'visual_repair_validation_probe: "not-applicable; existing Run 2.6 generator does not select visual repair"'
+        in body
+    )
 
 
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
