@@ -2,18 +2,42 @@
 
 Status: rerun-reviewed-public-blocked.
 
-Run 2.9 is the latest data/workflow repair layer, not a new generated-arm result. It adds visual primitive repair data, executable visual modules, and a visual gate matrix to address the Run 2.8 box/card/report aesthetic failure before the next four-arm rerun.
+Run 2.9 is the latest reviewed internal result. It reran the four-arm experiment as a same-stage visual-primitive pass, adding Run 2.9 visual primitive repair data, executable visual modules, and a visual gate matrix on top of the Run 2.8 executable-memory loop without advancing to Run 3.0:
 
-Run 2.8 is the latest reviewed internal result. It reran the four-arm experiment as a same-stage executable-design-memory pass, adding Run 2.8 tutorial decomposition, executable design memory, and workflow gate matrix on top of the Run 2.7 data/workflow loop without advancing to Run 3.0:
+- `run2_9_visual_primitive_repair.json` turns the Run 2.8 box/card/report diagnosis into derived visual primitives.
+- `run2_9_executable_visual_modules.json` binds those primitives to concrete native module functions.
+- `run2_9_visual_gate_matrix.json` requires per-slide primitive ids, module ids, gate ids, actual code module ids, boxiness probes, and visual delta from Run 2.8.
+- `run2_9_full_skill` is the current best internal arm for proving data/workflow execution because the contact sheet shows typographic fields, editorial spreads, layered product surfaces, motion storyboards, and a dark climax stage.
+- `run2-9-four-arm-contact-sheet` records the four-arm comparison, and `run2-full-skill-series-horizontal` records the full-skill progression through Run 2.9.
+- public blocked remains the correct release state until native render inspection, source-brand sanitization review, and human approval pass.
+
+Gemini artifact review judged Run 2.9 full a clear four-arm visual winner with stronger asymmetry, hierarchy, layered composition, and climax contrast. Gemini's full-series review also warned that Run 2.7, 2.8, and 2.9 still share a similar visual system; Run 2.9 is mainly a structural/compositional improvement, not a fully new aesthetic direction. The critical engineering improvement is trace truthfulness: `run2_9_code_module_ids` now comes from actual native visual module calls recorded during rendering, and the full arm fails if required gate-matrix modules are missing.
+
+| Arm | Generation status | Review status | Delivery gate | Result |
+| --- | --- | --- | --- | --- |
+| `prompt_only` | generated | reviewed | `internal-demo-ok-public-blocked` | control |
+| `run1_5_skill` | generated | reviewed | `internal-demo-ok-public-blocked` | baseline |
+| `run2_9_full_skill` | generated | reviewed | `internal-demo-ok-public-blocked` | best internal visual-primitive arm |
+| `bad_visual_primitive_memory` | generated | reviewed | `internal-demo-ok-public-blocked` | negative control |
+
+## Run 2.9 Findings
+
+- `prompt_only`: remains isolated from Run 2.9 visual primitive repair, executable visual modules, visual gate matrix, and trace contract inputs.
+- `run1_5_skill`: remains the evidence-heavy baseline and forbids Run 2.9 visual primitive/module/gate inputs.
+- `run2_9_full_skill`: best internal arm for proving the five-layer product loop can route derived visual primitives into code-generated native PPT with actual module-call trace closure.
+- `bad_visual_primitive_memory`: confirms that primitive repair data alone is insufficient; without executable visual modules and gate matrix, the output keeps a flat box/checklist feel.
+- Audit correction: Run 2.9 should continue the same five-layer loop by thickening tutorial/video decomposition, visual primitive memory specificity, workflow gates, typography, spacing, and climax composition. Do not advance to Run 3.0.
+
+Run 2.8 was the prior reviewed internal result. It reran the four-arm experiment as a same-stage executable-design-memory pass, adding Run 2.8 tutorial decomposition, executable design memory, and workflow gate matrix on top of the Run 2.7 data/workflow loop without advancing to Run 3.0:
 
 - `run2_8_tutorial_decomposition.json` turns tutorial/video/audio/transcript/image/interaction observations into derived native-PPT obligations.
 - `run2_8_executable_design_memory.json` binds those obligations to concrete native module functions.
 - `run2_8_workflow_gate_matrix.json` requires per-slide decomposition units, memory binding ids, code bindings, layout budgets, and trace fields.
-- `run2_8_full_skill` is the current best internal arm for proving data/workflow execution because the contact sheet shows selected type/spacing modules, before-after delta modules, workflow gates, and a climax hero object.
-- `run2-8-four-arm-contact-sheet` records the four-arm comparison, and `run2-full-skill-series-horizontal` records the full-skill progression through Run 2.8.
+- `run2_8_full_skill` was the best internal arm for proving data/workflow execution because the contact sheet showed selected type/spacing modules, before-after delta modules, workflow gates, and a climax hero object.
+- `run2-8-four-arm-contact-sheet` records the four-arm comparison, and `run2-full-skill-series-horizontal` recorded the full-skill progression through Run 2.8.
 - public blocked remains the correct release state until native render inspection, source-brand sanitization review, and human approval pass.
 
-Gemini artifact review judged Run 2.8 full stronger on hierarchy, cleaner layout, high-contrast hero-object emphasis, and data-to-memory-to-gate-to-native-PPT routing. The critical engineering improvement is trace truthfulness: `run2_8_code_binding_ids` now comes from actual native module calls recorded during rendering, and the full arm fails if required gate-matrix bindings are missing.
+Gemini artifact review judged Run 2.8 full stronger on hierarchy, cleaner layout, high-contrast hero-object emphasis, and data-to-memory-to-gate-to-native-PPT routing. The critical engineering improvement was trace truthfulness: `run2_8_code_binding_ids` came from actual native module calls recorded during rendering, and the full arm failed if required gate-matrix bindings were missing.
 
 | Arm | Generation status | Review status | Delivery gate | Result |
 | --- | --- | --- | --- | --- |
@@ -26,7 +50,7 @@ Gemini artifact review judged Run 2.8 full stronger on hierarchy, cleaner layout
 
 - `prompt_only`: remains isolated from Run 2.8 tutorial decomposition, executable design memory, workflow gate matrix, and trace contract inputs.
 - `run1_5_skill`: remains the evidence-heavy baseline and forbids Run 2.8 executable memory/workflow inputs.
-- `run2_8_full_skill`: best internal arm for proving the five-layer product loop can route into generated native PPT with actual module-call trace closure.
+- `run2_8_full_skill`: best prior arm for proving the five-layer product loop can route into generated native PPT with actual module-call trace closure.
 - `bad_memory_schema`: confirms that decomposition alone is insufficient; without executable design memory and gate matrix, the output weakens into muted equal panels, weaker delta, and less credible climax.
 - Audit correction: Run 2.8 should continue the same five-layer loop by thickening tutorial/video decomposition, design-memory specificity, workflow gates, typography, spacing, and climax composition. Do not advance to Run 3.0.
 

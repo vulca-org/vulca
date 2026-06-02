@@ -139,6 +139,17 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ArmSpec("bad_memory_schema", "Bad memory schema", "ppt-run2-8-bad-memory-schema", "negative"),
         ),
     ),
+    RunSpec(
+        "2.9",
+        "Run 2.9",
+        "run2-9-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-9-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-9-run1-5-skill", "baseline"),
+            ArmSpec("run2_9_full_skill", "Run 2.9 full", "ppt-run2-9-full-vulca", "full"),
+            ArmSpec("bad_visual_primitive_memory", "Bad visual primitive", "ppt-run2-9-bad-visual-primitive-memory", "negative"),
+        ),
+    ),
 )
 
 

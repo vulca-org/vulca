@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "status": "rerun_completed_public_blocked",
+  "public_ready": false,
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "rerun": {
+    "status": "completed",
+    "generated_outputs_committed": false,
+    "combined_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-9-four-arm-contact-sheet.png",
+    "full_skill_series_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png",
+    "html_viewer": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run-viewer.html",
+    "delivery_gate": "internal-demo-ok-public-blocked",
+    "best_internal_arm": "run2_9_full_skill",
+    "best_internal_arm_verdict": "visual_primitive_modules_are_visible_and_trace_truthful_but_public_release_remains_blocked"
+  },
+  "five_layer_learning": {
+    "real_commercial_usecase": "Run 2.9 continues the same commercial PPT design usecase rather than advancing to Run 3.0.",
+    "multimodal_tutorial_case_database": "Run 2.9 consumes the existing tutorial/case/video-derived learning and the Run 2.8 boxiness diagnosis through run2_9_visual_primitive_repair.json.",
+    "design_memory": "run2_9_executable_visual_modules.json turns the visual primitive repairs into concrete native function contracts.",
+    "skill_workflow": "run2_9_visual_gate_matrix.json requires primitive ids, module ids, gate ids, actual code module ids, boxiness failure probes, and visual delta from Run 2.8.",
+    "code_generated_native_ppt": "run2_9_full_skill generated native editable PPT shapes and records actual drawRun29 visual module calls in trace_manifest.json."
+  },
+  "actual_full_arm_modules_by_role": {
+    "cover": [
+      "drawRun29TypographicField",
+      "drawRun29EditorialSpread"
+    ],
+    "setup": [
+      "drawRun29EditorialSpread",
+      "drawRun29LayeredProductSurface"
+    ],
+    "contrast": [
+      "drawRun29EditorialSpread"
+    ],
+    "proof": [
+      "drawRun29LayeredProductSurface",
+      "drawRun29MotionStoryboard"
+    ],
+    "climax": [
+      "drawRun29ClimaxStage",
+      "drawRun29MotionStoryboard"
+    ],
+    "close": [
+      "drawRun29TypographicField",
+      "drawRun29LayeredProductSurface",
+      "drawRun29MotionStoryboard"
+    ]
+  },
+  "qa_summary": {
+    "focused_run2_9_tests": "3 passed",
+    "full_run2_data_skill_tests": "54 passed",
+    "delivery_validator_tests": "7 passed",
+    "case_pack_validator": "passed with --profile run2",
+    "generator_run": "passed",
+    "browser_viewer_check": "passed; latest run is 2.9 and no console errors were reported",
+    "trace_truthfulness_guard": "passed; run2_9_code_module_ids are populated from actual visualModuleIds captured during rendering",
+    "generated_outputs_committed": false,
+    "gemini_contact_sheet_reviews": [
+      ".gemini-agent/artifacts/2026-06-02T154311542Z-artifacts.json",
+      ".gemini-agent/artifacts/2026-06-02T154327740Z-artifacts.json"
+    ]
+  },
+  "visual_learning": {
+    "useful_delta": "Run 2.9 full visibly changes the four-arm comparison: it uses typographic fields, editorial asymmetry, layered product surfaces, motion storyboards, and a dark climax stage instead of equal cards and report panels.",
+    "gemini_four_arm_summary": "Gemini judged Run 2.9 full as a clear four-arm visual winner with stronger asymmetry, hierarchy, and custom composition.",
+    "gemini_full_series_caution": "Gemini also judged Run 2.7, 2.8, and 2.9 as sharing a similar visual system; Run 2.9 is mainly a structural/compositional improvement, not a fully new aesthetic direction.",
+    "release_correction": "Even when Gemini calls the contact sheet public-demo ready visually, the project gate remains public blocked until native render inspection, source-brand sanitization review, motion/render support, and human approval pass.",
+    "remaining_visual_gap": "The next loop should make the visual system itself more distinctive and less rectangle-led while keeping code-generated native PPT editability.",
+    "visual_quality_boundary": "internal_demo_grade_until_native_render_human_review_source_sanitization_and_public_demo_visual_pass"
+  },
+  "control_boundary": {
+    "prompt_only": "commercial_case_only; all Run 2.9 visual primitive/module/gate inputs are forbidden",
+    "run1_5_skill": "commercial_case_plus_run1_5_only; all Run 2.9 visual primitive/module/gate inputs are forbidden",
+    "run2_9_full_skill": "commercial_case_plus_run2_9_visual_primitive_repair_executable_visual_modules_visual_gate_matrix",
+    "bad_visual_primitive_memory": "commercial_case_plus_visual_primitive_repair_only; executable visual modules and gate matrix are forbidden"
+  },
+  "next_required_action": "Continue the same five layers: improve source/tutorial/video decomposition quality, make visual primitive memory more specific, harden workflow gates, and produce another code-generated native PPT rerun focused on a more distinctive visual system rather than palette or box count.",
+  "release_gate": "public_blocked_until_native_render_human_approval_source_brand_sanitization_motion_render_support_and_public_demo_visual_pass"
+}

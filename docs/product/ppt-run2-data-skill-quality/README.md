@@ -1,6 +1,6 @@
 # PPT Run 2.0 Data Skill Quality
 
-Status: run2_9-visual-primitive-repair-public-blocked.
+Status: run2_9-visual-primitive-rerun-public-blocked.
 
 Run 2.5 does not move to a new stage. It repeats and thickens the same five fixed PPT product layers before the next generation pass:
 
@@ -30,7 +30,7 @@ Run 2.0 does not claim post-training or fine-tuning. It tests runtime case-pack-
 
 `visual_production_modules.json` converts the v2 aesthetic contracts into reusable native editable PPT modules: cinematic cover field, editorial before/after delta, proof route choreography, system mini-preview, climax hero object, and release handoff gate. A module is valid only if it can be generated as editable native PPT primitives or records a public-blocked fallback.
 
-`run2_9_visual_primitive_repair.json`, `run2_9_executable_visual_modules.json`, and `run2_9_visual_gate_matrix.json` are the Run 2.9 repair layer. They respond to the Run 2.8 visual diagnosis: the traceable data-to-code path works, but the deck still reads as boxes, cards, equal panels, and engineering-report composition. Run 2.9 converts that diagnosis into executable visual primitives: editorial spread, product surface depth, motion storyboard, climax stage, and typographic field.
+`run2_9_visual_primitive_repair.json`, `run2_9_executable_visual_modules.json`, and `run2_9_visual_gate_matrix.json` are the Run 2.9 visual-primitive layer. They respond to the Run 2.8 visual diagnosis: the traceable data-to-code path works, but the deck still reads as boxes, cards, equal panels, and engineering-report composition. Run 2.9 converts that diagnosis into executable visual primitives: editorial spread, product surface depth, motion storyboard, climax stage, and typographic field. The Run 2.9 rerun now calls the corresponding `drawRun29...` native modules and records actual code module ids in trace.
 
 Generation must follow `generation_protocol.md`: separate arm runtimes, no cross-arm context leakage, native PPT object checks, and layout geometry QA before scoring.
 

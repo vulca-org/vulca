@@ -2064,6 +2064,103 @@ def test_run2_8_generator_uses_executable_memory_and_preserves_boundaries() -> N
     assert "drawRun28Climax(slide, heroBinding, arm, spec, metrics, { typeBinding })" in climax_block
 
 
+def test_run2_9_generator_uses_visual_primitive_modules_and_preserves_boundaries() -> None:
+    script_path = ROOT / "scripts" / "generate_ppt_run2_9_visual_primitive_arms.mjs"
+    assert script_path.exists(), "missing Run 2.9 visual-primitive generator"
+    body = script_path.read_text(encoding="utf-8")
+    arm_order = ["prompt_only", "run1_5_skill", "run2_9_full_skill", "bad_visual_primitive_memory"]
+
+    def arm_block(arm_id: str) -> str:
+        start = body.index(f'armId: "{arm_id}"')
+        next_starts = [body.find(f'armId: "{next_arm}"', start + 1) for next_arm in arm_order]
+        next_starts = [index for index in next_starts if index > start]
+        end = min(next_starts) if next_starts else len(body)
+        return body[start:end]
+
+    def section(block: str, start_marker: str, end_marker: str) -> str:
+        start = block.index(start_marker)
+        end = block.index(end_marker, start)
+        return block[start:end]
+
+    restricted_run2_9_inputs = [
+        "run2_9_visual_primitive_repair.json",
+        "run2_9_executable_visual_modules.json",
+        "run2_9_visual_gate_matrix.json",
+    ]
+
+    assert_contains(
+        body,
+        [
+            "prompt_only",
+            "run1_5_skill",
+            "run2_9_full_skill",
+            "bad_visual_primitive_memory",
+            "run2_9_visual_primitive_repair.json",
+            "run2_9_executable_visual_modules.json",
+            "run2_9_visual_gate_matrix.json",
+            "drawRun29EditorialSpread",
+            "drawRun29LayeredProductSurface",
+            "drawRun29MotionStoryboard",
+            "drawRun29ClimaxStage",
+            "drawRun29TypographicField",
+            "run29VisualModulesByRole",
+            "assertRun29VisualGateSelfCheck",
+            "registerVisualModule",
+            "run2_9_code_module_ids",
+        ],
+    )
+    prompt_allowed = section(arm_block("prompt_only"), "allowed:", "forbidden:")
+    prompt_forbidden = section(arm_block("prompt_only"), "forbidden:", "palette:")
+    run1_allowed = section(arm_block("run1_5_skill"), "allowed:", "forbidden:")
+    run1_forbidden = section(arm_block("run1_5_skill"), "forbidden:", "palette:")
+    full_allowed = section(arm_block("run2_9_full_skill"), "allowed:", "forbidden:")
+    full_forbidden = section(arm_block("run2_9_full_skill"), "forbidden:", "palette:")
+    bad_allowed = section(arm_block("bad_visual_primitive_memory"), "allowed:", "forbidden:")
+    bad_forbidden = section(arm_block("bad_visual_primitive_memory"), "forbidden:", "palette:")
+
+    for term in restricted_run2_9_inputs:
+        assert term not in prompt_allowed
+        assert term in prompt_forbidden
+        assert term not in run1_allowed
+        assert term in run1_forbidden
+        assert term in full_allowed
+        assert term not in full_forbidden
+
+    assert "run2_9_visual_primitive_repair.json" in bad_allowed
+    assert "run2_9_executable_visual_modules.json" not in bad_allowed
+    assert "run2_9_visual_gate_matrix.json" not in bad_allowed
+    assert "run2_9_executable_visual_modules.json" in bad_forbidden
+    assert "run2_9_visual_gate_matrix.json" in bad_forbidden
+    assert 'const fullRun29 = arm.armId === "run2_9_full_skill";' in body
+    for field in EXPECTED_RUN2_9_TRACE_FIELDS:
+        assert re.search(fr"{field}:\s*fullRun29\s*\?", body), field
+    assert "const actualCodeModuleIds = Array.from(roleMetrics.visualModuleIds);" in body
+    assert "run2_9_code_module_ids: fullRun29" in body
+    for function_name in [
+        "drawRun29EditorialSpread",
+        "drawRun29LayeredProductSurface",
+        "drawRun29MotionStoryboard",
+        "drawRun29ClimaxStage",
+        "drawRun29TypographicField",
+    ]:
+        assert f'registerVisualModule(metrics, "{function_name}")' in body
+    render_start = body.index("function renderRun29FullSlide")
+    setup_start = body.index('} else if (spec.role === "setup")', render_start)
+    contrast_start = body.index('} else if (spec.role === "contrast")', render_start)
+    proof_start = body.index('} else if (spec.role === "proof")', render_start)
+    climax_start = body.index('} else if (spec.role === "climax")', render_start)
+    close_start = body.index('} else {', climax_start)
+    cover_block = body[render_start:setup_start]
+    setup_block = body[setup_start:contrast_start]
+    proof_block = body[proof_start:climax_start]
+    climax_block = body[climax_start:close_start]
+    assert "drawRun29TypographicField" in cover_block
+    assert "drawRun29EditorialSpread" in cover_block
+    assert "drawRun29LayeredProductSurface" in setup_block
+    assert "drawRun29MotionStoryboard" in proof_block
+    assert "drawRun29ClimaxStage" in climax_block
+
+
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
     layout_dir = tmp_path / "layout"
     layout_dir.mkdir()
@@ -2449,6 +2546,54 @@ def test_run2_8_records_executable_design_memory_rerun_result() -> None:
     )
 
 
+def test_run2_9_records_visual_primitive_rerun_result() -> None:
+    result = (PACK / "results" / "run2_9_visual_primitive_rerun_result.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_9_visual_primitive_rerun_result.json")
+
+    assert result_json["status"] == "rerun_completed_public_blocked"
+    assert result_json["public_ready"] is False
+    assert result_json["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert result_json["rerun"]["status"] == "completed"
+    assert result_json["rerun"]["best_internal_arm"] == "run2_9_full_skill"
+    assert result_json["rerun"]["generated_outputs_committed"] is False
+    assert "run2-9-four-arm-contact-sheet.png" in result_json["rerun"]["combined_contact_sheet"]
+    assert "run2-full-skill-series-horizontal.png" in result_json["rerun"]["full_skill_series_sheet"]
+    assert result_json["rerun"]["html_viewer"].endswith("/ppt-run-viewer.html")
+    assert result_json["qa_summary"]["trace_truthfulness_guard"].startswith("passed")
+    assert result_json["qa_summary"]["case_pack_validator"] == "passed with --profile run2"
+    assert result_json["control_boundary"]["bad_visual_primitive_memory"].startswith("commercial_case_plus_visual_primitive_repair_only")
+    assert_contains(
+        json.dumps(result_json["actual_full_arm_modules_by_role"]),
+        [
+            "drawRun29TypographicField",
+            "drawRun29EditorialSpread",
+            "drawRun29LayeredProductSurface",
+            "drawRun29MotionStoryboard",
+            "drawRun29ClimaxStage",
+        ],
+    )
+    assert_contains(
+        json.dumps(result_json["five_layer_learning"]),
+        [
+            "run2_9_visual_primitive_repair.json",
+            "run2_9_executable_visual_modules.json",
+            "run2_9_visual_gate_matrix.json",
+            "actual drawRun29 visual module calls",
+        ],
+    )
+    assert_contains(
+        result,
+        [
+            "Run 2.9",
+            "visual primitive",
+            "HTML viewer",
+            "drawRun29ClimaxStage",
+            "public blocked",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
 def test_ppt_run_html_viewer_builder_tracks_run2_8_outputs() -> None:
     script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
 
@@ -2461,6 +2606,11 @@ def test_ppt_run_html_viewer_builder_tracks_run2_8_outputs() -> None:
             "ppt-run2-8-run1-5-skill",
             "ppt-run2-8-full-vulca",
             "ppt-run2-8-bad-memory-schema",
+            "Run 2.9",
+            "ppt-run2-9-prompt-only",
+            "ppt-run2-9-run1-5-skill",
+            "ppt-run2-9-full-vulca",
+            "ppt-run2-9-bad-visual-primitive-memory",
             "Full skill series",
             "Data / Skill",
             "renderData",

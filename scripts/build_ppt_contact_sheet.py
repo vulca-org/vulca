@@ -58,13 +58,14 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Build a PNG contact sheet from rendered presentation slides.")
     parser.add_argument("--out", required=True, type=Path)
     parser.add_argument("--title", required=True)
+    parser.add_argument("--cols", type=int, default=3)
     parser.add_argument("slides", nargs="+", type=Path)
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
-    build_contact_sheet(args.slides, args.out, args.title)
+    build_contact_sheet(args.slides, args.out, args.title, cols=max(1, args.cols))
     print(f"created contact sheet: {args.out}")
     return 0
 
