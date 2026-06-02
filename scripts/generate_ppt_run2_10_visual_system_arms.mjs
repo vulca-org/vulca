@@ -997,6 +997,11 @@ function renderRun210FullSlide(presentation, spec, arm, n, fullData, metricsByRo
     drawRun210NonRectangularProofPath(slide, arm, spec, null, metrics, {
       x: 168,
       y: 372,
+      nodes: [
+        { label: "Run 2.9", x: 188, y: 438, r: 58, fill: C.white },
+        { label: "gap", x: 486, y: 382, r: 72, fill: C.sky },
+        { label: "2.10", x: 814, y: 444, r: 86, fill: arm.palette.accent },
+      ],
       caption: "proof crosses the field instead of sitting in panels",
     });
   } else if (spec.role === "proof") {
@@ -1033,9 +1038,8 @@ function renderRun210FullSlide(presentation, spec, arm, n, fullData, metricsByRo
       w: 720,
       h: 78,
       beats: [
-        ["pause", 0.26],
         ["scale", 0.34],
-        ["proof", 0.24],
+        ["proof", 0.28],
       ],
     });
   } else {
