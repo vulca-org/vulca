@@ -1,11 +1,22 @@
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
 
 from scripts.validate_ppt_case_pack import validate_case_pack
 
 
+ROOT = Path(__file__).resolve().parents[1]
+RUN2_PACK = ROOT / "docs" / "product" / "ppt-run2-data-skill-quality"
+RUN2_8_TRACE_FIELDS = {
+    "run2_8_decomposition_unit_ids",
+    "run2_8_memory_binding_ids",
+    "run2_8_gate_matrix_ids",
+    "run2_8_code_binding_ids",
+    "run2_8_layout_budget",
+    "run2_8_visual_delta_from_run2_7",
+}
 REQUIRED_MARKDOWN = {
     "README.md": "# Pack\n",
     "source_summaries.md": "# Source Summaries\n\nOriginal notes.\n",
@@ -17,6 +28,175 @@ REQUIRED_MARKDOWN = {
     "vulca_generation_brief.md": "# Vulca Generation Brief\n\nUse structured case-pack rules.\n",
     "gemini_review_prompt.md": "# Gemini Review Prompt\n\nScore commercial design quality.\n",
 }
+
+
+def copy_run2_pack(tmp_path: Path) -> Path:
+    pack = tmp_path / "pack"
+    shutil.copytree(RUN2_PACK, pack)
+    return pack
+
+
+def write_minimal_run2_8_fixture(pack: Path) -> None:
+    decomposition_ids = [
+        "decomp_2_8_duarte_remove_nonessential_data",
+        "decomp_2_8_type_hierarchy_readability_stack",
+        "decomp_2_8_makeover_split_text_into_visual_steps",
+        "decomp_2_8_design_first_code_second_pipeline",
+        "decomp_2_8_climax_object_scale_and_pause",
+        "decomp_2_8_source_brand_sanitized_case_evidence",
+    ]
+    binding_specs = [
+        ("binding_type_scale_readability", "drawRun28TypeScale", "fontSize"),
+        ("binding_spacing_zone_grid", "drawRun28SpacingZones", "spacing"),
+        ("binding_climax_hero_object", "drawRun28ClimaxHero", "heroObject"),
+        ("binding_before_after_delta", "drawRun28BeforeAfterDelta", "beforeAfter"),
+        ("binding_public_gate_legibility", "drawRun28WorkflowGate", "workflowGate"),
+    ]
+    source_record_ids = [
+        "mm_2_7_video_climax_single_object",
+        "mm_2_7_typography_hierarchy_tutorial",
+        "mm_2_7_spacing_editorial_grid_tutorial",
+        "mm_2_7_product_surface_interaction_reference",
+    ]
+    source_ids = [
+        "duarte_persuasive_visual_storytelling",
+        "duarte_slide_design_course",
+        "udel_design_principles_video",
+    ]
+    decomposition = {
+        "schema_version": 1,
+        "status": "run2_8_tutorial_decomposition_public_blocked",
+        "stage_policy": "repeat_same_five_layers_not_run3",
+        "storage_policy": {"raw_media": "forbidden"},
+        "units": [
+            {
+                "id": unit_id,
+                "source_record_ids": [source_record_ids[index % len(source_record_ids)]],
+                "source_ids": [source_ids[index % len(source_ids)]],
+                "modality_mix": ["video", "transcript"],
+                "tutorial_anchor": f"derived tutorial anchor {index + 1}",
+                "observed_design_move": "Remove nonessential detail and make one visual decision visible.",
+                "derived_rule": "Bind the observed move to a native PPT layout decision before drawing.",
+                "code_generation_binding": "native PPT binding required before slide code generation",
+                "native_ppt_obligation": "Use editable text and native shapes only.",
+                "layout_budget": {"max_text_boxes": 9, "max_visible_words": 52},
+                "failure_probe": "Fails if the result reads as a report page.",
+                "anti_copy_boundary": "Do not copy source visuals, source brand, frames, audio, or transcripts.",
+                "qa_probe": "contact sheet review must show the derived move",
+                "release_boundary": "public_blocked_until_native_render_and_human_review",
+            }
+            for index, unit_id in enumerate(decomposition_ids)
+        ],
+    }
+    (pack / "run2_8_tutorial_decomposition.json").write_text(
+        json.dumps(decomposition, indent=2),
+        encoding="utf-8",
+    )
+
+    memory = {
+        "schema_version": 1,
+        "status": "run2_8_executable_design_memory_public_blocked",
+        "stage_policy": "repeat_same_five_layers_not_run3",
+        "memory_type": "executable_schema_bindings",
+        "bindings": [
+            {
+                "id": binding_id,
+                "decomposition_unit_ids": [decomposition_ids[index % len(decomposition_ids)]],
+                "applies_to_slide_roles": ["cover", "setup", "contrast", "proof", "climax", "close"],
+                "design_token": token,
+                "code_binding": {
+                    "function_name": function_name,
+                    "params": {token: True},
+                    "layout_budget": {"max_text_boxes": 9, "max_visible_words": 52},
+                },
+                "native_ppt_constraints": ["native editable shapes", "trace recorded"],
+                "typography_constraints": ["fontSize hierarchy must be readable"],
+                "spacing_constraints": ["spacing zones must be explicit"],
+                "composition_constraints": ["heroObject or beforeAfter must be visible"],
+                "negative_control_failure": "bad memory schema weakens hierarchy",
+                "qa_probe": "contact sheet review",
+                "release_boundary": "public_blocked_until_native_render_and_human_review",
+            }
+            for index, (binding_id, function_name, token) in enumerate(binding_specs)
+        ],
+    }
+    (pack / "run2_8_executable_design_memory.json").write_text(
+        json.dumps(memory, indent=2),
+        encoding="utf-8",
+    )
+
+    matrix = {
+        "schema_version": 1,
+        "status": "run2_8_workflow_gate_matrix_public_blocked",
+        "stage_policy": "repeat_same_five_layers_not_run3",
+        "selection_chain": [
+            "commercial_usecase",
+            "run2_8_decomposition_units",
+            "run2_8_executable_memory_bindings",
+            "run2_8_gate_matrix",
+            "native_ppt_code_generation",
+            "layout_quality_gate",
+            "delivery_gate",
+            "visual_qa_gate",
+        ],
+        "gates": [
+            {
+                "id": f"gate_2_8_{role}",
+                "slide_role": role,
+                "decomposition_unit_ids": [decomposition_ids[index % len(decomposition_ids)]],
+                "memory_binding_ids": [binding_specs[index % len(binding_specs)][0]],
+                "required_code_bindings": [binding_specs[index % len(binding_specs)][1]],
+                "layout_budget": {"max_text_boxes": 9, "max_visible_words": 52},
+                "pass_fail_checks": ["layout QA passes", "native shape trace exists"],
+                "trace_fields": sorted(RUN2_8_TRACE_FIELDS),
+                "public_release_gate": "public_blocked_until_native_render_and_human_review",
+            }
+            for index, role in enumerate(["cover", "setup", "contrast", "proof", "climax", "close"])
+        ],
+    }
+    (pack / "run2_8_workflow_gate_matrix.json").write_text(
+        json.dumps(matrix, indent=2),
+        encoding="utf-8",
+    )
+
+    trace_path = pack / "results" / "trace_manifest_contract.json"
+    trace = json.loads(trace_path.read_text(encoding="utf-8"))
+    for field in sorted(RUN2_8_TRACE_FIELDS):
+        if field not in trace["per_slide_required_fields"]:
+            trace["per_slide_required_fields"].append(field)
+    trace_path.write_text(json.dumps(trace, indent=2), encoding="utf-8")
+
+    workflow_path = pack / "skill_workflow.json"
+    workflow = json.loads(workflow_path.read_text(encoding="utf-8"))
+    stage_ids = [stage["id"] for stage in workflow["stages"]]
+    insert_at = stage_ids.index("generate_code_first_ppt")
+    additions = [
+        {
+            "id": "decompose_run2_8_tutorial_video_units",
+            "layer": "multimodal_tutorial_case_data",
+            "inputs": ["run2_8_tutorial_decomposition.json"],
+            "outputs": ["Run 2.8 decomposition units"],
+            "gates": ["raw media remains forbidden"],
+        },
+        {
+            "id": "select_run2_8_executable_design_memory",
+            "layer": "evidence_aesthetic_asset_memory",
+            "inputs": ["run2_8_executable_design_memory.json"],
+            "outputs": ["Run 2.8 executable design memory bindings"],
+            "gates": ["code bindings reference valid decomposition units"],
+        },
+        {
+            "id": "apply_run2_8_workflow_gate_matrix",
+            "layer": "skill_workflow",
+            "inputs": ["run2_8_workflow_gate_matrix.json"],
+            "outputs": ["Run 2.8 workflow gate decisions"],
+            "gates": ["gate matrix references valid memory bindings"],
+        },
+    ]
+    workflow["stages"] = workflow["stages"][:insert_at] + additions + workflow["stages"][insert_at:]
+    for order, stage in enumerate(workflow["stages"], start=1):
+        stage["order"] = order
+    workflow_path.write_text(json.dumps(workflow, indent=2), encoding="utf-8")
 
 
 def write_pack(root: Path) -> None:
@@ -2053,3 +2233,66 @@ def test_run2_profile_rejects_run2_7_workflow_missing_trace_field(tmp_path: Path
         "run2_7_workflow_policy.slide_role_memory_map[0].trace_fields missing value: run2_7_quality_gate"
         in result.errors
     )
+
+
+def test_run2_profile_rejects_run2_8_empty_decomposition_code_binding(tmp_path: Path) -> None:
+    pack = copy_run2_pack(tmp_path)
+    write_minimal_run2_8_fixture(pack)
+    decomposition_path = pack / "run2_8_tutorial_decomposition.json"
+    decomposition = json.loads(decomposition_path.read_text(encoding="utf-8"))
+    decomposition["units"][0]["code_generation_binding"] = ""
+    decomposition_path.write_text(json.dumps(decomposition, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "run2_8_tutorial_decomposition.units[0].code_generation_binding must be a non-empty string" in result.errors
+
+
+def test_run2_profile_rejects_run2_8_unknown_decomposition_reference_in_memory(tmp_path: Path) -> None:
+    pack = copy_run2_pack(tmp_path)
+    write_minimal_run2_8_fixture(pack)
+    memory_path = pack / "run2_8_executable_design_memory.json"
+    memory = json.loads(memory_path.read_text(encoding="utf-8"))
+    memory["bindings"][0]["decomposition_unit_ids"] = ["missing_decomposition_unit"]
+    memory_path.write_text(json.dumps(memory, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert (
+        "run2_8_executable_design_memory.bindings[0].decomposition_unit_ids references unknown "
+        "Run 2.8 decomposition unit: missing_decomposition_unit"
+    ) in result.errors
+
+
+def test_run2_profile_rejects_run2_8_unknown_memory_binding_in_gate_matrix(tmp_path: Path) -> None:
+    pack = copy_run2_pack(tmp_path)
+    write_minimal_run2_8_fixture(pack)
+    matrix_path = pack / "run2_8_workflow_gate_matrix.json"
+    matrix = json.loads(matrix_path.read_text(encoding="utf-8"))
+    matrix["gates"][0]["memory_binding_ids"] = ["missing_memory_binding"]
+    matrix_path.write_text(json.dumps(matrix, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert (
+        "run2_8_workflow_gate_matrix.gates[0].memory_binding_ids references unknown Run 2.8 memory binding: "
+        "missing_memory_binding"
+    ) in result.errors
+
+
+def test_run2_profile_rejects_run2_8_trace_contract_missing_required_field(tmp_path: Path) -> None:
+    pack = copy_run2_pack(tmp_path)
+    write_minimal_run2_8_fixture(pack)
+    trace_path = pack / "results" / "trace_manifest_contract.json"
+    trace = json.loads(trace_path.read_text(encoding="utf-8"))
+    assert "run2_8_memory_binding_ids" in trace["per_slide_required_fields"]
+    trace["per_slide_required_fields"].remove("run2_8_memory_binding_ids")
+    trace_path.write_text(json.dumps(trace, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "trace_manifest_contract.per_slide_required_fields missing value: run2_8_memory_binding_ids" in result.errors

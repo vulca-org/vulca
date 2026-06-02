@@ -265,6 +265,29 @@ EXPECTED_RUN2_7_TRACE_FIELDS = {
     "run2_7_delta_from_run2_6r",
     "run2_7_quality_gate",
 }
+EXPECTED_RUN2_8_DECOMPOSITION_IDS = {
+    "decomp_2_8_duarte_remove_nonessential_data",
+    "decomp_2_8_type_hierarchy_readability_stack",
+    "decomp_2_8_makeover_split_text_into_visual_steps",
+    "decomp_2_8_design_first_code_second_pipeline",
+    "decomp_2_8_climax_object_scale_and_pause",
+    "decomp_2_8_source_brand_sanitized_case_evidence",
+}
+EXPECTED_RUN2_8_MEMORY_BINDING_IDS = {
+    "binding_type_scale_readability",
+    "binding_spacing_zone_grid",
+    "binding_climax_hero_object",
+    "binding_before_after_delta",
+    "binding_public_gate_legibility",
+}
+EXPECTED_RUN2_8_TRACE_FIELDS = {
+    "run2_8_decomposition_unit_ids",
+    "run2_8_memory_binding_ids",
+    "run2_8_gate_matrix_ids",
+    "run2_8_code_binding_ids",
+    "run2_8_layout_budget",
+    "run2_8_visual_delta_from_run2_7",
+}
 EXPECTED_RUN2_6_USECASE_FIELDS = {
     "id",
     "source_ids",
@@ -335,6 +358,19 @@ EXPECTED_BAD_MEMORY_FIELDS = {
     "expected_failure",
 }
 EXPECTED_RHYTHM_ROLES = {"cover", "setup", "contrast", "proof", "climax", "relief", "close"}
+RUN2_8_FORBIDDEN_MEDIA_MARKERS = (
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".webp",
+    ".mp4",
+    ".mov",
+    "http://",
+    "https://",
+    "data:image",
+    "base64,",
+)
+RUN2_8_CODE_BINDING_TERMS = {"fontSize", "bbox", "spacing", "heroObject", "beforeAfter", "workflowGate"}
 
 
 def load_json(path: Path) -> dict:
@@ -354,6 +390,17 @@ def assert_contains(body: str, terms: list[str]) -> None:
 def assert_mentions_any(body: str, terms: set[str]) -> None:
     normalized = normalize(body)
     assert any(normalize(term) in normalized for term in terms), f"missing one of: {sorted(terms)!r}"
+
+
+def iter_string_values(value: object):
+    if isinstance(value, str):
+        yield value
+    elif isinstance(value, list):
+        for item in value:
+            yield from iter_string_values(item)
+    elif isinstance(value, dict):
+        for item in value.values():
+            yield from iter_string_values(item)
 
 
 def json_files(directory: str) -> list[Path]:
@@ -946,6 +993,180 @@ def test_run2_7_workflow_and_trace_contract_include_memory_selection() -> None:
     assert EXPECTED_RUN2_7_TRACE_FIELDS <= set(trace_contract["per_slide_required_fields"])
 
 
+def test_run2_8_has_tutorial_video_decomposition_units() -> None:
+    decomposition_path = PACK / "run2_8_tutorial_decomposition.json"
+    assert decomposition_path.exists(), "missing Run 2.8 tutorial decomposition data"
+    decomposition = load_json(decomposition_path)
+    source_records = load_json(PACK / "run2_7_multimodal_source_records.json")
+    sources = load_json(PACK / "sources.json")
+    source_record_ids = {record["id"] for record in source_records["records"]}
+    source_ids = {source["id"] for source in sources["sources"]}
+
+    assert decomposition["status"] == "run2_8_tutorial_decomposition_public_blocked"
+    assert decomposition["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert decomposition["storage_policy"]["raw_media"] == "forbidden"
+    assert EXPECTED_RUN2_8_DECOMPOSITION_IDS <= {unit["id"] for unit in decomposition["units"]}
+
+    required = {
+        "id",
+        "source_record_ids",
+        "source_ids",
+        "modality_mix",
+        "tutorial_anchor",
+        "observed_design_move",
+        "derived_rule",
+        "code_generation_binding",
+        "native_ppt_obligation",
+        "layout_budget",
+        "failure_probe",
+        "anti_copy_boundary",
+        "qa_probe",
+        "release_boundary",
+    }
+    derived_modalities = {"video", "audio", "transcript", "image_reference", "interaction"}
+    for unit in decomposition["units"]:
+        assert required <= set(unit), unit["id"]
+        assert unit["source_record_ids"]
+        assert unit["source_ids"]
+        assert unit["modality_mix"]
+        assert set(unit["source_record_ids"]) <= source_record_ids
+        assert set(unit["source_ids"]) <= source_ids
+        assert set(unit["modality_mix"]) & derived_modalities
+        assert_contains(json.dumps(unit["code_generation_binding"]), ["native"])
+        assert isinstance(unit["layout_budget"], dict) and unit["layout_budget"]
+        for field_value in iter_string_values(unit):
+            lowered = field_value.lower()
+            for marker in RUN2_8_FORBIDDEN_MEDIA_MARKERS:
+                assert marker not in lowered, f"{unit['id']} contains copied media marker {marker!r}"
+
+
+def test_run2_8_has_executable_design_memory_bindings() -> None:
+    memory_path = PACK / "run2_8_executable_design_memory.json"
+    decomposition_path = PACK / "run2_8_tutorial_decomposition.json"
+    assert memory_path.exists(), "missing Run 2.8 executable design memory"
+    assert decomposition_path.exists(), "missing Run 2.8 tutorial decomposition data"
+    memory = load_json(memory_path)
+    decomposition = load_json(decomposition_path)
+    decomposition_unit_ids = {unit["id"] for unit in decomposition["units"]}
+
+    assert memory["status"] == "run2_8_executable_design_memory_public_blocked"
+    assert memory["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert memory["memory_type"] == "executable_schema_bindings"
+    assert EXPECTED_RUN2_8_MEMORY_BINDING_IDS <= {binding["id"] for binding in memory["bindings"]}
+
+    required = {
+        "id",
+        "decomposition_unit_ids",
+        "applies_to_slide_roles",
+        "design_token",
+        "code_binding",
+        "native_ppt_constraints",
+        "typography_constraints",
+        "spacing_constraints",
+        "composition_constraints",
+        "negative_control_failure",
+        "qa_probe",
+        "release_boundary",
+    }
+    for binding in memory["bindings"]:
+        assert required <= set(binding), binding["id"]
+        assert binding["decomposition_unit_ids"]
+        assert binding["applies_to_slide_roles"]
+        assert set(binding["decomposition_unit_ids"]) <= decomposition_unit_ids
+        assert set(binding["applies_to_slide_roles"]) <= EXPECTED_RHYTHM_ROLES
+        assert isinstance(binding["code_binding"], dict), binding["id"]
+        assert {"function_name", "params", "layout_budget"} <= set(binding["code_binding"]), binding["id"]
+        assert isinstance(binding["code_binding"]["params"], dict) and binding["code_binding"]["params"]
+        assert isinstance(binding["code_binding"]["layout_budget"], dict) and binding["code_binding"]["layout_budget"]
+        code_binding_text = json.dumps(binding["code_binding"])
+        assert any(term in code_binding_text for term in RUN2_8_CODE_BINDING_TERMS), binding["id"]
+
+
+def test_run2_8_workflow_gate_matrix_connects_schema_to_trace() -> None:
+    matrix_path = PACK / "run2_8_workflow_gate_matrix.json"
+    decomposition_path = PACK / "run2_8_tutorial_decomposition.json"
+    memory_path = PACK / "run2_8_executable_design_memory.json"
+    assert matrix_path.exists(), "missing Run 2.8 workflow gate matrix"
+    assert decomposition_path.exists(), "missing Run 2.8 tutorial decomposition data"
+    assert memory_path.exists(), "missing Run 2.8 executable design memory"
+    matrix = load_json(matrix_path)
+    decomposition = load_json(decomposition_path)
+    memory = load_json(memory_path)
+    workflow = load_json(PACK / "skill_workflow.json")
+    trace_contract = load_json(PACK / "results" / "trace_manifest_contract.json")
+    decomposition_unit_ids = {unit["id"] for unit in decomposition["units"]}
+    memory_binding_ids = {binding["id"] for binding in memory["bindings"]}
+    code_binding_ids = {binding["code_binding"]["function_name"] for binding in memory["bindings"]}
+
+    assert matrix["status"] == "run2_8_workflow_gate_matrix_public_blocked"
+    assert matrix["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert set(matrix["selection_chain"]) == {
+        "commercial_usecase",
+        "run2_8_decomposition_units",
+        "run2_8_executable_memory_bindings",
+        "run2_8_gate_matrix",
+        "native_ppt_code_generation",
+        "layout_quality_gate",
+        "delivery_gate",
+        "visual_qa_gate",
+    }
+    assert EXPECTED_RUN2_8_TRACE_FIELDS <= set(trace_contract["per_slide_required_fields"])
+
+    workflow_stage_ids = [stage["id"] for stage in workflow["stages"]]
+    run2_8_stages = [
+        "decompose_run2_8_tutorial_video_units",
+        "select_run2_8_executable_design_memory",
+        "apply_run2_8_workflow_gate_matrix",
+    ]
+    for stage_id in run2_8_stages:
+        assert stage_id in workflow_stage_ids
+        assert workflow_stage_ids.index(stage_id) < workflow_stage_ids.index("generate_code_first_ppt")
+    assert workflow_stage_ids.index(run2_8_stages[0]) < workflow_stage_ids.index(run2_8_stages[1])
+    assert workflow_stage_ids.index(run2_8_stages[1]) < workflow_stage_ids.index(run2_8_stages[2])
+    workflow_text = json.dumps(workflow)
+    assert_contains(
+        workflow_text,
+        [
+            "run2_8_tutorial_decomposition.json",
+            "run2_8_executable_design_memory.json",
+            "run2_8_workflow_gate_matrix.json",
+        ],
+    )
+
+    required = {
+        "slide_role",
+        "decomposition_unit_ids",
+        "memory_binding_ids",
+        "required_code_bindings",
+        "layout_budget",
+        "pass_fail_checks",
+        "trace_fields",
+        "public_release_gate",
+    }
+    covered_trace_fields = set()
+    covered_decomposition_unit_ids = set()
+    covered_memory_binding_ids = set()
+    covered_code_binding_ids = set()
+    for gate in matrix["gates"]:
+        assert required <= set(gate), gate.get("id", gate["slide_role"])
+        assert gate["slide_role"] in EXPECTED_RHYTHM_ROLES
+        assert gate["decomposition_unit_ids"]
+        assert gate["memory_binding_ids"]
+        assert gate["required_code_bindings"]
+        assert set(gate["decomposition_unit_ids"]) <= decomposition_unit_ids
+        assert set(gate["memory_binding_ids"]) <= memory_binding_ids
+        assert set(gate["required_code_bindings"]) <= code_binding_ids
+        assert set(gate["trace_fields"]) <= set(trace_contract["per_slide_required_fields"])
+        covered_decomposition_unit_ids.update(gate["decomposition_unit_ids"])
+        covered_memory_binding_ids.update(gate["memory_binding_ids"])
+        covered_code_binding_ids.update(gate["required_code_bindings"])
+        covered_trace_fields.update(gate["trace_fields"])
+    assert EXPECTED_RUN2_8_DECOMPOSITION_IDS <= covered_decomposition_unit_ids
+    assert EXPECTED_RUN2_8_MEMORY_BINDING_IDS <= covered_memory_binding_ids
+    assert code_binding_ids <= covered_code_binding_ids
+    assert EXPECTED_RUN2_8_TRACE_FIELDS <= covered_trace_fields
+
+
 def test_run2_four_arm_isolation_mentions_multimodal_and_target_boundaries() -> None:
     prompt_only = (PACK / "generation_briefs" / "prompt_only.md").read_text(encoding="utf-8")
     run1_5 = (PACK / "generation_briefs" / "run1_5_skill.md").read_text(encoding="utf-8")
@@ -1140,13 +1361,16 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
         "select_visual_repair_policy",
         "select_run2_7_design_memory",
         "select_visual_production_modules",
+        "decompose_run2_8_tutorial_video_units",
+        "select_run2_8_executable_design_memory",
+        "apply_run2_8_workflow_gate_matrix",
         "generate_code_first_ppt",
         "run_structural_and_aesthetic_qa",
         "recommend_repairs",
         "refresh_trace_qa_outcomes",
         "emit_release_decision",
     ]
-    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 19))
+    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 22))
     assert workflow["repair_triggers"]
     workflow_text = json.dumps(workflow)
     assert "multimodal_database.json" in workflow_text
@@ -1163,6 +1387,9 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
     assert "run2_7_multimodal_source_records.json" in workflow_text
     assert "run2_7_design_memory.json" in workflow_text
     assert "run2_7_workflow_policy.json" in workflow_text
+    assert "run2_8_tutorial_decomposition.json" in workflow_text
+    assert "run2_8_executable_design_memory.json" in workflow_text
+    assert "run2_8_workflow_gate_matrix.json" in workflow_text
     assert "aesthetic_benchmark_bank.json" in workflow_text
     assert "workflow_decision_policy.json" in workflow_text
     assert "visual_repair_policy.json" in workflow_text
@@ -1553,6 +1780,75 @@ def test_run2_7_generator_consumes_design_memory_and_preserves_control_boundarie
     assert "bad_workflow_memory.md" not in body
     assert 'if (armId === "bad_workflow_memory") return "bad_aesthetic_memory";' in body
     assert re.search(r"generation_brief:\s*`\$\{pack\}/generation_briefs/\$\{generationBriefArmId\(arm\.armId\)\}\.md`", body)
+
+
+def test_run2_8_generator_uses_executable_memory_and_preserves_boundaries() -> None:
+    script_path = ROOT / "scripts" / "generate_ppt_run2_8_executable_memory_arms.mjs"
+    assert script_path.exists(), "missing Run 2.8 executable-memory generator"
+    body = script_path.read_text(encoding="utf-8")
+    arm_order = ["prompt_only", "run1_5_skill", "run2_8_full_skill", "bad_memory_schema"]
+
+    def arm_block(arm_id: str) -> str:
+        start = body.index(f'armId: "{arm_id}"')
+        next_starts = [body.find(f'armId: "{next_arm}"', start + 1) for next_arm in arm_order]
+        next_starts = [index for index in next_starts if index > start]
+        end = min(next_starts) if next_starts else len(body)
+        return body[start:end]
+
+    def section(block: str, start_marker: str, end_marker: str) -> str:
+        start = block.index(start_marker)
+        end = block.index(end_marker, start)
+        return block[start:end]
+
+    restricted_run2_8_inputs = [
+        "run2_8_tutorial_decomposition.json",
+        "run2_8_executable_design_memory.json",
+        "run2_8_workflow_gate_matrix.json",
+    ]
+
+    assert_contains(
+        body,
+        [
+            "prompt_only",
+            "run1_5_skill",
+            "run2_8_full_skill",
+            "bad_memory_schema",
+            "run2_8_tutorial_decomposition.json",
+            "run2_8_executable_design_memory.json",
+            "run2_8_workflow_gate_matrix.json",
+            "renderRun28Full",
+            "drawRun28Climax",
+            "run28MemoryBindingsByRole",
+            "assertRun28GateMatrixSelfCheck",
+            "run2_8_memory_binding_ids",
+        ],
+    )
+    prompt_allowed = section(arm_block("prompt_only"), "allowed:", "forbidden:")
+    prompt_forbidden = section(arm_block("prompt_only"), "forbidden:", "palette:")
+    run1_allowed = section(arm_block("run1_5_skill"), "allowed:", "forbidden:")
+    run1_forbidden = section(arm_block("run1_5_skill"), "forbidden:", "palette:")
+    full_allowed = section(arm_block("run2_8_full_skill"), "allowed:", "forbidden:")
+    full_forbidden = section(arm_block("run2_8_full_skill"), "forbidden:", "palette:")
+    bad_allowed = section(arm_block("bad_memory_schema"), "allowed:", "forbidden:")
+    bad_forbidden = section(arm_block("bad_memory_schema"), "forbidden:", "palette:")
+
+    for term in restricted_run2_8_inputs:
+        assert term not in prompt_allowed
+        assert term in prompt_forbidden
+        assert term not in run1_allowed
+        assert term in run1_forbidden
+        assert term in full_allowed
+        assert term not in full_forbidden
+
+    assert "run2_8_tutorial_decomposition.json" in bad_allowed
+    assert "run2_8_executable_design_memory.json" not in bad_allowed
+    assert "run2_8_workflow_gate_matrix.json" not in bad_allowed
+    assert "run2_8_executable_design_memory.json" in bad_forbidden
+    assert "run2_8_workflow_gate_matrix.json" in bad_forbidden
+    assert 'const fullRun28 = arm.armId === "run2_8_full_skill";' in body
+    for field in EXPECTED_RUN2_8_TRACE_FIELDS:
+        assert re.search(fr"{field}:\s*fullRun28\s*\?", body), field
+    assert not re.search(r"run2_8_memory_binding_ids:\s*bad", body)
 
 
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
