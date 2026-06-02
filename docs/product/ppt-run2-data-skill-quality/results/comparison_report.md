@@ -2,7 +2,35 @@
 
 Status: rerun-reviewed-public-blocked.
 
-Run 2.9 is the latest reviewed internal result. It reran the four-arm experiment as a same-stage visual-primitive pass, adding Run 2.9 visual primitive repair data, executable visual modules, and a visual gate matrix on top of the Run 2.8 executable-memory loop without advancing to Run 3.0:
+Run 2.10 is the latest reviewed internal result. It reran the four-arm experiment as a same-stage visual-system pass, adding Run 2.10 visual-system sources, visual-system memory, and a visual-system gate matrix on top of the Run 2.9 visual-primitive loop without advancing to Run 3.0:
+
+- `run2_10_visual_system_sources.json` turns tutorial and commercial-case observations into derived visual-system source records.
+- `run2_10_visual_system_memory.json` binds those records to executable visual-system contracts: editorial cinema, product theater, typographic field, kinetic demo, and non-rectangular proof.
+- `run2_10_visual_system_gate_matrix.json` requires per-slide source ids, memory ids, gate ids, actual code module ids, visual delta from Run 2.9, sameness failure probes, public-demo first-read probes, shape budgets, and asymmetry/whitespace rules.
+- `run2_10_full_skill` is the current best internal arm for proving visual-system workflow execution because the contact sheet shows structural asymmetry, visible whitespace, product theater, non-rectangular proof paths, kinetic sequence objects, and a cinematic climax.
+- `run2-10-four-arm-contact-sheet` records the four-arm comparison, and `run2-full-skill-series-horizontal` records the full-skill progression through Run 2.10.
+- public blocked remains the correct release state until native render inspection, source-brand sanitization review, Gemini and human visual review, and human approval pass.
+
+The critical engineering improvement is trace truthfulness: `run2_10_code_module_ids` now comes from actual native visual-system module calls recorded during rendering, and the full arm fails if required gate-matrix modules or shape/text budgets are missing.
+
+Gemini artifact review judged Run 2.10 full a clear four-arm winner, but the full-skill series review remains cautionary: Run 2.10 is still not highly visually distinguishable from Runs 2.7, 2.8, and 2.9 because the black/orange palette, rectangle-led containers, and box-and-arrow diagram language still repeat. This is why public release remains blocked and the next same-stage pass should focus on typography, spacing, and climax editorial composition.
+
+| Arm | Generation status | Review status | Delivery gate | Result |
+| --- | --- | --- | --- | --- |
+| `prompt_only` | generated | reviewed | `internal-demo-ok-public-blocked` | control |
+| `run1_5_skill` | generated | reviewed | `internal-demo-ok-public-blocked` | baseline |
+| `run2_10_full_skill` | generated | reviewed | `internal-demo-ok-public-blocked` | best internal visual-system arm |
+| `bad_visual_system_memory` | generated | reviewed | `internal-demo-ok-public-blocked` | negative control |
+
+## Run 2.10 Findings
+
+- `prompt_only`: remains isolated from Run 2.10 visual-system sources, memory, gate matrix, and trace contract inputs.
+- `run1_5_skill`: remains the evidence-heavy baseline and forbids Run 2.10 visual-system inputs.
+- `run2_10_full_skill`: best internal arm for proving the five-layer product loop can route derived visual-system memory into code-generated native PPT with actual module-call trace closure.
+- `bad_visual_system_memory`: confirms that sources alone are insufficient; without visual-system memory and gate matrix, the output keeps a primitive/checklist feel.
+- Audit correction: Run 2.10 is still public blocked and should continue the same five-layer loop by thickening tutorial/video decomposition, visual-system memory specificity, workflow gates, typography, spacing, and climax composition. Do not advance to Run 3.0.
+
+Run 2.9 was the prior reviewed internal result. It reran the four-arm experiment as a same-stage visual-primitive pass, adding Run 2.9 visual primitive repair data, executable visual modules, and a visual gate matrix on top of the Run 2.8 executable-memory loop without advancing to Run 3.0:
 
 - `run2_9_visual_primitive_repair.json` turns the Run 2.8 box/card/report diagnosis into derived visual primitives.
 - `run2_9_executable_visual_modules.json` binds those primitives to concrete native module functions.

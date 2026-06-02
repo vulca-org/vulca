@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "status": "rerun_completed_public_blocked",
+  "public_ready": false,
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "rerun": {
+    "status": "completed",
+    "generated_outputs_committed": false,
+    "combined_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-10-four-arm-contact-sheet.png",
+    "full_skill_series_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png",
+    "html_viewer": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run-viewer.html",
+    "delivery_gate": "internal-demo-ok-public-blocked",
+    "best_internal_arm": "run2_10_full_skill",
+    "best_internal_arm_verdict": "visual_system_modules_are_trace_truthful_and_distinct_from_controls_but_public_release_remains_blocked"
+  },
+  "five_layer_learning": {
+    "real_commercial_usecase": "Run 2.10 continues the same commercial PPT design usecase rather than advancing to Run 3.0.",
+    "multimodal_tutorial_case_database": "Run 2.10 consumes the existing tutorial/case/video-derived learning through run2_10_visual_system_sources.json.",
+    "design_memory": "run2_10_visual_system_memory.json turns derived observations into visual-system contracts: editorial cinema, product theater, typographic field, kinetic demo, and non-rectangular proof.",
+    "skill_workflow": "run2_10_visual_system_gate_matrix.json requires per-role source ids, memory ids, actual code module ids, shape budgets, sameness probes, and asymmetry or whitespace rules.",
+    "code_generated_native_ppt": "run2_10_full_skill generated native editable PPT shapes and records actual drawRun210 visual-system module calls in trace_manifest.json."
+  },
+  "actual_full_arm_modules_by_role": {
+    "cover": [
+      "drawRun210EditorialTypeSystem",
+      "drawRun210FullBleedVisualField"
+    ],
+    "setup": [
+      "drawRun210ProductTheater",
+      "drawRun210NonRectangularProofPath"
+    ],
+    "contrast": [
+      "drawRun210FullBleedVisualField",
+      "drawRun210NonRectangularProofPath"
+    ],
+    "proof": [
+      "drawRun210ProductTheater",
+      "drawRun210KineticSequence"
+    ],
+    "climax": [
+      "drawRun210CinematicClimax",
+      "drawRun210KineticSequence"
+    ],
+    "close": [
+      "drawRun210EditorialTypeSystem",
+      "drawRun210ProductTheater"
+    ]
+  },
+  "qa_summary": {
+    "focused_run2_10_tests": "3 passed",
+    "generator_run": "passed; self-check enforced required modules and shape/text budgets",
+    "browser_viewer_check": "passed; latest run is 2.10, four-arm view, sheets, full-series, Data / Skill, and console errors were checked",
+    "trace_truthfulness_guard": "passed; run2_10_code_module_ids are populated from actual visualModuleIds captured during rendering",
+    "case_pack_validator": "passed with --profile run2",
+    "generated_outputs_committed": false,
+    "gemini_contact_sheet_reviews": [
+      ".gemini-agent/artifacts/2026-06-02T193804723Z-artifacts.json",
+      ".gemini-agent/artifacts/2026-06-02T193825036Z-artifacts.json"
+    ]
+  },
+  "visual_learning": {
+    "useful_delta": "Run 2.10 full uses structural asymmetry, visible whitespace, product theater, non-rectangular proof paths, kinetic sequence objects, and a cinematic climax; it is not merely recolored Run 2.9 rectangles.",
+    "what_data_changed": "The data layer moved from visual primitive repairs to explicit visual-system sources, visual-system memory, and a gate matrix with shape budgets and sameness failure probes.",
+    "gemini_four_arm_summary": "Gemini judged Run 2.10 full as the clear four-arm winner and credited structural asymmetry, whitespace, non-rectangular proof paths, and product theater rather than a palette-only change.",
+    "gemini_full_series_caution": "Gemini judged Run 2.10 as still not highly visually distinguishable from Runs 2.7, 2.8, and 2.9 in the full-skill series because the black/orange palette, rectangle-led containers, and box-and-arrow language still repeat.",
+    "remaining_visual_gap": "The result is still public blocked: the four-arm result improved, but the full-skill series shows that typography, spacing, and especially climax editorial composition need another same-stage thickening pass before public-video-grade claims.",
+    "visual_quality_boundary": "internal_demo_grade_until_native_render_human_review_source_sanitization_and_public_demo_visual_pass"
+  },
+  "control_boundary": {
+    "prompt_only": "commercial_case_only; all Run 2.10 visual-system source, memory, and gate inputs are forbidden",
+    "run1_5_skill": "commercial_case_plus_run1_5_only; all Run 2.10 visual-system source, memory, and gate inputs are forbidden",
+    "run2_10_full_skill": "commercial_case_plus_run2_10_visual_system_sources_memory_gate_matrix",
+    "bad_visual_system_memory": "commercial_case_plus_visual_system_sources_only; visual-system memory and gate matrix are forbidden"
+  },
+  "next_required_action": "Review whether Run 2.10 is visually distinct enough from Runs 2.7-2.9, then continue the same five layers by thickening source/tutorial/video decomposition, visual-system memory specificity, workflow gates, typography, spacing, and climax editorial composition.",
+  "release_gate": "public_blocked_until_native_render_human_approval_source_brand_sanitization_motion_render_support_and_public_demo_visual_pass"
+}

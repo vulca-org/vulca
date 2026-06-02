@@ -2530,6 +2530,15 @@ def test_run2_results_reviewed_and_public_blocked() -> None:
     assert_contains(
         comparison,
         [
+            "Run 2.10",
+            "run2_10_full_skill",
+            "run2_10_visual_system_memory.json",
+            "actual code module ids",
+        ],
+    )
+    assert_contains(
+        comparison,
+        [
             "Run 2.8",
             "run2_8_full_skill",
             "run2_8_executable_design_memory.json",
@@ -2548,6 +2557,10 @@ def test_run2_results_reviewed_and_public_blocked() -> None:
     assert_contains(
         delivery,
         ["Run 2.8", "run2-8-four-arm-contact-sheet", "actual native module calls"],
+    )
+    assert_contains(
+        delivery,
+        ["Run 2.10", "run2-10-four-arm-contact-sheet", "actual native visual-system module calls"],
     )
     assert_contains(delivery, ["Run 2.2", "run2-2-four-arm-contact-sheet", "public-video-grade visual proof"])
     assert trace_contract["required_output_name"] == "trace_manifest.json"
@@ -2848,6 +2861,53 @@ def test_run2_9_records_visual_primitive_rerun_result() -> None:
             "visual primitive",
             "HTML viewer",
             "drawRun29ClimaxStage",
+            "public blocked",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_run2_10_records_visual_system_rerun_result() -> None:
+    result = (PACK / "results" / "run2_10_visual_system_rerun_result.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_10_visual_system_rerun_result.json")
+
+    assert result_json["status"] == "rerun_completed_public_blocked"
+    assert result_json["public_ready"] is False
+    assert result_json["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert result_json["rerun"]["status"] == "completed"
+    assert result_json["rerun"]["best_internal_arm"] == "run2_10_full_skill"
+    assert result_json["rerun"]["generated_outputs_committed"] is False
+    assert "run2-10-four-arm-contact-sheet.png" in result_json["rerun"]["combined_contact_sheet"]
+    assert "run2-full-skill-series-horizontal.png" in result_json["rerun"]["full_skill_series_sheet"]
+    assert result_json["rerun"]["html_viewer"].endswith("/ppt-run-viewer.html")
+    assert result_json["qa_summary"]["trace_truthfulness_guard"].startswith("passed")
+    assert result_json["qa_summary"]["case_pack_validator"] == "passed with --profile run2"
+    assert result_json["qa_summary"]["browser_viewer_check"].startswith("passed")
+    assert_contains(
+        json.dumps(result_json["actual_full_arm_modules_by_role"]),
+        [
+            "drawRun210FullBleedVisualField",
+            "drawRun210ProductTheater",
+            "drawRun210KineticSequence",
+            "drawRun210EditorialTypeSystem",
+            "drawRun210NonRectangularProofPath",
+            "drawRun210CinematicClimax",
+        ],
+    )
+    assert_contains(
+        json.dumps(result_json["visual_learning"]),
+        [
+            "structural asymmetry",
+            "not merely recolored",
+            "public blocked",
+        ],
+    )
+    assert_contains(
+        result,
+        [
+            "Run 2.10",
+            "visual system",
+            "HTML viewer",
             "public blocked",
             "Do not advance to Run 3.0",
         ],
