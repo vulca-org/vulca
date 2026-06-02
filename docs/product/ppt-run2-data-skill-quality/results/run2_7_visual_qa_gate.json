@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "status": "run2_7_visual_qa_gate_public_blocked",
+  "public_ready": false,
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "review_artifacts": [
+    ".gemini-agent/artifacts/2026-06-02T025308959Z-artifacts.json",
+    ".gemini-agent/artifacts/2026-06-02T025321445Z-artifacts.json"
+  ],
+  "reviewed_images": [
+    "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-7-four-arm-contact-sheet.png",
+    "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png"
+  ],
+  "non_numeric_review": {
+    "run2_7_four_arm": {
+      "positive_findings": [
+        "run2_7_full uses stronger hierarchy than prompt-only, Run 1.5, and bad-workflow controls",
+        "source records, workflow gates, and editable proof objects are visible",
+        "bad-workflow shows the intended negative-control failure mode: dashboard-like repetition, over-explaining, and weak climax"
+      ],
+      "risks": [
+        "small body text and diagram labels are hard to inspect at contact-sheet scale",
+        "palette differences may bias the visual comparison",
+        "the algorithmic data-routing difference needs clearer slide-level explanation"
+      ]
+    },
+    "run2_full_skill_series": {
+      "positive_findings": [
+        "progression from Run 2.0 to Run 2.7 is visible",
+        "Run 2.7 moves from citation-like evidence toward editable proof objects",
+        "human approval and provenance gates remain visible across the series"
+      ],
+      "risks": [
+        "Run 2.5 and Run 2.6 remain visually subtle as a progression step",
+        "exact design-memory-to-code mechanism is still conceptually described more than technically demonstrated",
+        "native PPT serialization/render inspection is not yet proven in public-release conditions",
+        "the image is too wide for reliable small-text review"
+      ]
+    }
+  },
+  "thresholds": {
+    "layout_errors": 0,
+    "layout_warnings": 0,
+    "media_entries": 0,
+    "picture_shapes": 0,
+    "required_delivery_gate": "internal-demo-ok-public-blocked",
+    "required_human_approval_for_public": true,
+    "required_native_render_inspection_for_public": true,
+    "required_source_brand_sanitization_for_public": true
+  },
+  "observed": {
+    "layout_errors_all_arms": 0,
+    "layout_warnings_all_arms": 0,
+    "media_entries_all_arms": 0,
+    "picture_shapes_all_arms": 0,
+    "delivery_gate_all_arms": "internal-demo-ok-public-blocked",
+    "human_approval": false,
+    "native_render_inspection": false,
+    "source_brand_sanitization_public_approval": false
+  },
+  "decision": "public_blocked",
+  "blocking_reasons": [
+    "human approval is not recorded",
+    "native or cross-platform render inspection is not complete",
+    "source-brand sanitization approval is not recorded",
+    "contact-sheet review still flags small-text legibility and comparison-bias risk",
+    "Run 2.5 to Run 2.6 visual delta remains subtle in the full-skill series view",
+    "public-demo-grade visual pass is not yet proven"
+  ],
+  "next_required_action": "Use the gate findings as input for the next same-stage data/workflow thickening pass."
+}

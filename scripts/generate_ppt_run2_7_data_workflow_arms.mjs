@@ -456,7 +456,7 @@ function nativeMiniPreview(slide, x, y, w, h, arm, opts = {}) {
   rect(slide, x + w * 0.56, y + 110, w * 0.25, 12, arm.palette.accent2);
   rect(slide, x + w * 0.56, y + 142, w * 0.30, 8, C.line);
   rect(slide, x + w * 0.56, y + 168, w * 0.20, 8, C.line);
-  text(slide, opts.title ?? "selected memory -> generated canvas", x + 34, y + h - 54, w - 68, 32, {
+  text(slide, opts.title ?? "selected memory -> generated canvas", x + 34, y + h - 58, w - 68, 44, {
     fontSize: 18,
     bold: true,
     title: true,
@@ -516,43 +516,48 @@ function memoryRail(slide, x, y, w, arm, labels) {
 }
 
 function sourceStack(slide, x, y, w, h, arm, role) {
+  const ids = (run27SourceRecordsByRole[role] ?? []).slice(0, 3);
+  const rowGap = ids.length > 1 ? Math.min(44, Math.max(30, (h - 62) / (ids.length - 1))) : 0;
   rect(slide, x, y, w, h, "#f1f5f7", colorLine("#cfd6dd", 1));
   text(slide, "source records", x + 20, y + 18, w - 40, 16, { fontSize: 9, bold: true, mono: true, color: arm.palette.accent });
-  (run27SourceRecordsByRole[role] ?? []).slice(0, 3).forEach((id, index) => {
-    const cy = y + 56 + index * 44;
+  ids.forEach((id, index) => {
+    const cy = y + 50 + index * rowGap;
     rect(slide, x + 22, cy, 11, 11, index === 0 ? arm.palette.proof : arm.palette.accent2);
-    text(slide, id.replace("mm_2_7_", ""), x + 44, cy - 5, w - 68, 25, { fontSize: 10, color: arm.palette.title });
+    text(slide, id.replace("mm_2_7_", ""), x + 44, cy - 4, w - 68, 18, { fontSize: 10, color: arm.palette.title });
   });
 }
 
 function workflowGate(slide, x, y, w, arm, role) {
-  rect(slide, x, y, w, 104, "#172026", colorLine("#172026", 1));
+  const decisionLabel = ((run27WorkflowDecisionByRole[role] ?? [])[0] ?? "decision_run2_7")
+    .replace("decision_run2_7_", "")
+    .replaceAll("_", " ");
+  rect(slide, x, y, w, 122, "#172026", colorLine("#172026", 1));
   text(slide, "workflow gate", x + 20, y + 18, w - 40, 16, { fontSize: 9, bold: true, mono: true, color: "#d7eff2" });
-  text(slide, (run27WorkflowDecisionByRole[role] ?? [])[0] ?? "decision_run2_7", x + 20, y + 44, w - 40, 34, {
-    fontSize: 13,
+  text(slide, decisionLabel, x + 20, y + 44, w - 40, 42, {
+    fontSize: 11,
     bold: true,
     title: true,
     color: C.white,
   });
-  text(slide, "native + trace + public_blocked", x + 20, y + 82, w - 40, 18, { fontSize: 9, mono: true, color: "#d7eff2" });
+  text(slide, "native trace public gate", x + 20, y + 92, w - 40, 24, { fontSize: 9, mono: true, color: "#d7eff2" });
 }
 
 function drawRun27Climax(slide, arm) {
   rect(slide, 54, 88, 1170, 542, arm.palette.bg, colorLine("#d8dde1", 1));
-  text(slide, "Data becomes an editable proof object.", 84, 114, 610, 106, {
-    fontSize: 50,
+  text(slide, "Data becomes an editable proof object.", 84, 114, 376, 150, {
+    fontSize: 44,
     bold: true,
     title: true,
     color: arm.palette.title,
   });
-  text(slide, "The full arm selects source records, design memory, and workflow gates before drawing native PPT objects.", 88, 236, 545, 46, {
+  text(slide, "Source records, memory, and workflow gates are selected before native PPT is drawn.", 88, 284, 360, 56, {
     fontSize: 15,
     color: arm.palette.muted,
   });
-  const objectX = 454;
-  const objectY = 160;
-  const objectW = 520;
-  const objectH = 340;
+  const objectX = 496;
+  const objectY = 164;
+  const objectW = 472;
+  const objectH = 332;
   rect(slide, objectX, objectY, objectW, objectH, C.white, colorLine(arm.palette.proof, 3));
   text(slide, "native proof object", objectX + 34, objectY + 28, 210, 18, {
     fontSize: 9,
@@ -565,7 +570,7 @@ function drawRun27Climax(slide, arm) {
   rect(slide, objectX + 346, objectY + 78, 126, 188, arm.palette.proof);
   text(slide, "source", objectX + 60, objectY + 106, 88, 18, { fontSize: 10, bold: true, mono: true, color: arm.palette.accent });
   text(slide, "memory", objectX + 226, objectY + 106, 88, 18, { fontSize: 10, bold: true, mono: true, color: arm.palette.accent });
-  text(slide, "PPT", objectX + 382, objectY + 106, 76, 18, { fontSize: 18, bold: true, title: true, color: C.white });
+  text(slide, "PPT", objectX + 382, objectY + 106, 76, 24, { fontSize: 18, bold: true, title: true, color: C.white });
   rect(slide, objectX + 190, objectY + 164, 22, 8, arm.palette.proof);
   rect(slide, objectX + 324, objectY + 164, 22, 8, arm.palette.proof);
   text(slide, "40-55% canvas", objectX + 44, objectY + objectH - 54, objectW - 88, 26, {
@@ -575,7 +580,7 @@ function drawRun27Climax(slide, arm) {
     color: arm.palette.title,
   });
   sourceStack(slide, 88, 326, 320, 174, arm, "climax");
-  workflowGate(slide, 1018, 226, 150, arm, "climax");
+  workflowGate(slide, 1000, 226, 190, arm, "climax");
   memoryRail(slide, 88, 540, 890, arm, [
     ["type", "editorial"],
     ["space", "zones"],
@@ -869,7 +874,7 @@ const armSpecs = [
     kicker: "RUN 2.7 / CONTROL",
     footer: "prompt_only | commercial_case.md only | public blocked",
     boundaryTitle: "commercial brief only",
-    boundaryBody: "No multimodal database, visual targets, motion grammar, source cards, or skill workflow.",
+    boundaryBody: "No Run 2.7 source records, design memory, workflow policy, source cards, or skill workflow.",
     allowed: [`${pack}/commercial_case.md`],
     forbidden: [
       "multimodal_database.json",
@@ -909,7 +914,7 @@ const armSpecs = [
     kicker: "RUN 2.7 / BASELINE",
     footer: "run1_5_skill | prior product-lab workflow | public blocked",
     boundaryTitle: "prior workflow",
-    boundaryBody: "Uses Run 1.5 workflow and the commercial case; no Run 2.7 motion or sequence data.",
+    boundaryBody: "Uses Run 1.5 workflow and the commercial case; no Run 2.7 source records, design memory, or workflow policy.",
     allowed: [`${pack}/commercial_case.md`, "docs/product/ppt-run1-5-product-lab/"],
     forbidden: [
       "multimodal_database.json",
@@ -936,7 +941,7 @@ const armSpecs = [
       "asset_memory.json",
       "slide_archetypes.json",
       "vulca_ppt_skill.md",
-      "bad_workflow_memory_replacement.json",
+      "generation_briefs/bad_aesthetic_memory_replacement.json",
     ],
     palette: { bg: "#f4f6fa", rail: "#2d3a55", accent: C.blue, accent2: C.green, panel: C.white, muted: C.muted },
     release: "public_blocked",
@@ -950,7 +955,7 @@ const armSpecs = [
         "The evaluation peak is still table-shaped.",
         "The baseline remains an internal comparator.",
       ][index],
-      trace: "Run 1.5 workflow; no Run 2.7 motion grammar",
+      trace: "Run 1.5 workflow; no Run 2.7 source-record/design-memory/workflow policy",
     })),
   },
   {
@@ -958,9 +963,9 @@ const armSpecs = [
     slug: "ppt-run2-7-full-vulca",
     label: "Run 2.7 full Vulca skill",
     kicker: "RUN 2.7 / FULL VULCA",
-    footer: "run2_7_full_skill | production modules + native sequence contracts | public blocked",
+    footer: "run2_7_full_skill | source records + design memory + workflow policy | public blocked",
     boundaryTitle: "full package",
-    boundaryBody: "Commercial case, multimodal database, visual targets, motion grammar, production references, aesthetic memory v2, native modules, workflow.",
+    boundaryBody: "Commercial case, Run 2.7 source records, design memory, workflow policy, visual repair policy, native modules, and QA gates.",
     allowed: [
       `${pack}/commercial_case.md`,
       `${pack}/sources.json`,
@@ -993,7 +998,12 @@ const armSpecs = [
       `${pack}/skill_workflow.json`,
       `${pack}/generation_protocol.md`,
     ],
-    forbidden: ["docs/product/ppt-run1-5-product-lab/", "bad_workflow_memory_replacement.json", "copied source visuals", "winner claims before scoring"],
+    forbidden: [
+      "docs/product/ppt-run1-5-product-lab/",
+      "generation_briefs/bad_aesthetic_memory_replacement.json",
+      "copied source visuals",
+      "winner claims before scoring",
+    ],
     palette: {
       bg: "#f7f4ee",
       rail: "#1a2228",
@@ -1013,7 +1023,7 @@ const armSpecs = [
     slug: "ppt-run2-7-bad-workflow-memory",
     label: "Bad workflow/design-memory boundary control",
     kicker: "RUN 2.7 / NEGATIVE CONTROL",
-    footer: "bad_workflow_memory | valid motion data + blocked workflow/design memory | internal only",
+    footer: "bad_workflow_memory | valid source records + blocked workflow/design memory | internal only",
     boundaryTitle: "bad workflow/design-memory boundary",
     boundaryBody: "Uses the Run 2.7 usecase and source records but blocks design memory and workflow policy to test the boundary.",
     allowed: [

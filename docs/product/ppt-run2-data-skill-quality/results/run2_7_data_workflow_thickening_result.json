@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "status": "rerun_completed_public_blocked",
+  "public_ready": false,
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "rerun": {
+    "status": "completed",
+    "generated_outputs_committed": false,
+    "combined_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-7-four-arm-contact-sheet.png",
+    "full_skill_series_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png",
+    "delivery_gate": "internal-demo-ok-public-blocked",
+    "best_internal_arm": "run2_7_full_skill",
+    "best_internal_arm_verdict": "data_workflow_memory_visible_but_not_public_release_ready"
+  },
+  "five_layer_learning": {
+    "real_commercial_usecase": "run2_7_commercial_usecase.json selected one AI design-to-production platform launch deck usecase before generation.",
+    "multimodal_tutorial_case_database": "run2_7_multimodal_source_records.json stores derived text, image-reference, video, audio, transcript, and interaction observations with anti-copy boundaries.",
+    "design_memory": "run2_7_design_memory.json serializes typography, spacing, composition, rhythm, and source-brand sanitization memories.",
+    "skill_workflow": "run2_7_workflow_policy.json maps usecase, source records, design memory ids, visual repair policies, native generation, and QA gates per slide role.",
+    "code_generated_native_ppt": "run2_7_full_skill generated native editable PPT shapes with source-record rails, workflow gates, and a climax proof object."
+  },
+  "qa_summary": {
+    "prompt_only_layout_errors": 0,
+    "prompt_only_layout_warnings": 0,
+    "run1_5_layout_errors": 0,
+    "run1_5_layout_warnings": 0,
+    "run2_7_full_layout_errors": 0,
+    "run2_7_full_layout_warnings": 0,
+    "bad_workflow_memory_layout_errors": 0,
+    "bad_workflow_memory_layout_warnings": 0,
+    "delivery_gate_all_arms": "internal-demo-ok-public-blocked",
+    "arm_isolation_guard": "passed",
+    "prompt_only_media_entries": 0,
+    "run1_5_media_entries": 0,
+    "run2_7_full_media_entries": 0,
+    "bad_workflow_media_entries": 0,
+    "prompt_only_picture_shapes": 0,
+    "run1_5_picture_shapes": 0,
+    "run2_7_full_picture_shapes": 0,
+    "bad_workflow_picture_shapes": 0,
+    "prompt_only_native_shape_count": 200,
+    "run1_5_native_shape_count": 200,
+    "run2_7_full_native_shape_count": 260,
+    "bad_workflow_native_shape_count": 216,
+    "generated_outputs_committed": false,
+    "gemini_contact_sheet_reviews": [
+      ".gemini-agent/artifacts/2026-06-02T025308959Z-artifacts.json",
+      ".gemini-agent/artifacts/2026-06-02T025321445Z-artifacts.json"
+    ]
+  },
+  "control_boundary": {
+    "prompt_only": "commercial_case_only",
+    "run1_5_skill": "commercial_case_plus_run1_5_only",
+    "run2_7_full_skill": "commercial_case_plus_run2_7_source_records_design_memory_workflow_policy",
+    "bad_workflow_memory": "valid data plus negative-control replacement memory; good run2_7_design_memory and workflow_policy are forbidden"
+  },
+  "visual_learning": {
+    "gemini_summary": "Gemini identified superior hierarchy and contrast in run2_7_full_skill, with source-record routing, workflow gates, and an editable proof object visible in the contact sheet.",
+    "useful_delta": "Run 2.7 makes the data/workflow path more visible than Run 2.6R: design memory becomes presentation code, and source records route into native PPT.",
+    "remaining_visual_gap": "Contact-sheet-level review still shows small-text legibility limits, possible palette bias, subtle Run 2.5/2.6 differences in the series view, and a need for clearer design-memory schema evidence; native render inspection and human approval are still missing.",
+    "visual_quality_boundary": "internal_demo_grade_until_native_render_human_review_source_sanitization_and_public_demo_visual_pass"
+  },
+  "next_required_action": "Continue the same five layers: thicken multimodal/video tutorial decomposition, make design memory more specific, tighten workflow gates, improve editorial typography and spacing, and rerun four arms.",
+  "release_gate": "public_blocked_until_native_render_human_approval_source_brand_sanitization_and_public_demo_visual_pass"
+}

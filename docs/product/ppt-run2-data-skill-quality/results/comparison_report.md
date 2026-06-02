@@ -2,10 +2,37 @@
 
 Status: rerun-reviewed-public-blocked.
 
-Run 2.6R is the latest reviewed internal result. It reran the four-arm experiment as a same-stage visual repair, adding `visual_repair_policy.json` on top of the Run 2.6 data/workflow-policy layer without advancing to Run 3.0:
+Run 2.7 is the latest reviewed internal result. It reran the four-arm experiment as a same-stage data/workflow thickening pass, adding Run 2.7-specific usecase, multimodal source records, design memory, and workflow policy on top of the Run 2.6R visual repair loop without advancing to Run 3.0:
+
+- `run2_7_commercial_usecase.json` selects one concrete AI design-to-production platform launch deck before generation.
+- `run2_7_multimodal_source_records.json` turns tutorial/case/video/audio/transcript/interaction observations into derived rules with anti-copy boundaries.
+- `run2_7_design_memory.json` serializes typography, spacing, composition, rhythm, and source-brand sanitization memory.
+- `run2_7_workflow_policy.json` maps usecase, source records, memory ids, repair policy, native PPT generation, and QA gates per slide role.
+- `run2_7_full_skill` is the current best internal arm for proving data/workflow execution because the contact sheet shows source-record routing, workflow gates, design-memory traces, and an editable native proof object.
+- `run2-7-four-arm-contact-sheet` records the four-arm comparison, and `run2-full-skill-series-horizontal` records the full-skill progression.
+- public blocked remains the correct release state until native render inspection, source-brand sanitization review, and human approval pass.
+
+Gemini artifact review judged Run 2.7 full stronger on hierarchy, source-record routing, workflow gates, and editable proof-object composition. The caution remains material: small text is hard to inspect at contact-sheet scale, palette differences may bias the visual comparison, and the exact design-memory-to-code mechanism still needs clearer slide-level evidence.
+
+| Arm | Generation status | Review status | Delivery gate | Result |
+| --- | --- | --- | --- | --- |
+| `prompt_only` | generated | reviewed | `internal-demo-ok-public-blocked` | control |
+| `run1_5_skill` | generated | reviewed | `internal-demo-ok-public-blocked` | baseline |
+| `run2_7_full_skill` | generated | reviewed | `internal-demo-ok-public-blocked` | best internal data/workflow arm |
+| `bad_workflow_memory` | generated | reviewed | `internal-demo-ok-public-blocked` | negative control |
+
+## Run 2.7 Findings
+
+- `prompt_only`: remains isolated from Run 2.7 data, design memory, and workflow policy.
+- `run1_5_skill`: remains the evidence-heavy baseline and forbids Run 2.7 full memory/workflow inputs.
+- `run2_7_full_skill`: best internal arm for proving the five-layer product loop can route into generated native PPT.
+- `bad_workflow_memory`: confirms that valid source data without good design/workflow memory still collapses toward over-explained, dashboard-like output.
+- Audit correction: Run 2.7 should continue the same five-layer loop by thickening usecase quality, multimodal/video decomposition, design memory specificity, workflow gates, typography, spacing, and climax composition. Do not advance to Run 3.0.
+
+Run 2.6R reran the four-arm experiment as a same-stage visual repair, adding `visual_repair_policy.json` on top of the Run 2.6 data/workflow-policy layer without advancing to Run 3.0:
 
 - `visual_repair_policy.json` selects repair obligations for typography, spacing, climax composition, theme differentiation, and mini-preview fidelity.
-- `run2_6r_visual_repair_full_skill` is the current best internal arm because the contact sheet shows a visible move away from the Run 2.5/Run 2.6 look into a light editorial/schematic system with orange/red proof accents.
+- `run2_6r_visual_repair_full_skill` was the best internal visual-repair arm for that pass because the contact sheet showed a visible move away from the Run 2.5/Run 2.6 look into a light editorial/schematic system with orange/red proof accents.
 - `run2-6r-four-arm-contact-sheet` records the four-arm comparison, and `run2-full-skill-series-horizontal` records the full-skill progression.
 - public blocked remains the correct release state until native render inspection, source-brand sanitization review, and human approval pass.
 
@@ -31,7 +58,7 @@ Run 2.6 has now been regenerated as a four-arm local experiment after adding dat
 - `commercial_usecase_bank.json` turns real commercial presentation cases into selectable generation constraints.
 - `aesthetic_benchmark_bank.json` turns public tutorials and commercial reference cases into derived composition, typography, spacing, theme, and motion rules.
 - `workflow_decision_policy.json` maps usecase, benchmark, theme, typography, spacing, production modules, QA probes, and source-brand sanitization before code generation.
-- `run2_6_full_skill` is the current best internal arm for proving data/workflow execution because it records `commercial_usecase_id`, `aesthetic_benchmark_ids`, `theme_policy_id`, `typography_system_id`, `spacing_token_set_id`, `workflow_decision_ids`, and `source_brand_sanitization`.
+- `run2_6_full_skill` was the best internal arm for proving Run 2.6 data/workflow execution because it records `commercial_usecase_id`, `aesthetic_benchmark_ids`, `theme_policy_id`, `typography_system_id`, `spacing_token_set_id`, `workflow_decision_ids`, and `source_brand_sanitization`.
 
 The result is stronger as a product-system proof than Run 2.5, but it is still not public-ready. Gemini review judged the full arm more visually polished than the controls while also noting that contact-sheet resolution limits detailed aesthetic review. The visual style is still close to Run 2.5, so the next pass must thicken typography, spacing, and editorial climax composition inside the same five-layer loop.
 
@@ -79,7 +106,7 @@ Run 2.5 has now been regenerated as a four-arm local experiment after adding pro
 - `production_reference_decompositions.json` turns real tutorial/case observations into derived composition, type, spacing, and sequence primitives.
 - `aesthetic_memory_v2.json` turns those primitives into stricter density, hierarchy, and provenance contracts.
 - `visual_production_modules.json` turns the contracts into native editable PPT module recipes with fallback and QA probes.
-- `run2_5_full_skill` is the current best internal arm because the production modules are visible in the deck: cinematic cover field, mini-preview, editorial before/after delta, proof route, climax hero object, and release handoff.
+- `run2_5_full_skill` was the best internal production-design arm for that pass because the production modules are visible in the deck: cinematic cover field, mini-preview, editorial before/after delta, proof route, climax hero object, and release handoff.
 
 The result is stronger than Run 2.4, but it is still not public-ready. Gemini review judged the full arm a clear move away from engineering-report visuals, while also flagging dark-theme generalization, older PPT rendering risk, and aesthetic-memory drift.
 
@@ -125,7 +152,7 @@ Run 2.4 has now been regenerated as a four-arm local experiment after adding mot
 - `video_demo_beat_map.json` maps tutorial/video observations into derived beats: attention reset, before/after reveal, proof build, climax scale, and release handoff.
 - `motion_learning_targets.json` turns those beats into native editable PPT obligations with motion metadata and trace requirements.
 - `presentation_sequence_components.json` turns those obligations into ordered reveal/scale/build/handoff components.
-- `run2_4_full_skill` is the current best internal arm because it shows a stronger presentation arc: sparse opening, visible before/after reveal, proof route, dominant climax object, and release handoff.
+- `run2_4_full_skill` was the best internal motion-sequence arm for that pass because it shows a stronger presentation arc: sparse opening, visible before/after reveal, proof route, dominant climax object, and release handoff.
 
 The result is stronger than Run 2.3, but it is still not public-ready. Gemini review judged the full arm a significant leap in contrast, rhythm, and structural intent, while also noting that it remains schematic and lacks finished motion rendering, high-fidelity assets, and polished typography.
 
@@ -364,5 +391,5 @@ This is the older Run 2.0 internal score table retained for comparison.
 - Trace QA outcome refresh has been written back for the regenerated local Run 2.6 arms; those outputs remain untracked under `outputs/`.
 - Native PowerPoint, Keynote, or Google Slides render inspection has not passed.
 - Human approval has not been recorded.
-- Public-video-grade visual proof is still incomplete: the current best arm uses stronger data/workflow policy and production modules, but still needs native render inspection, source-brand sanitization approval, human approval, theme generalization, polished typography, and finished motion rendering.
+- Public-video-grade visual proof is still incomplete: the current best Run 2.7 arm uses stronger data/workflow policy and production modules, but still needs native render inspection, source-brand sanitization approval, human approval, theme generalization, polished typography, and finished motion rendering.
 - Public-ready status is therefore blocked.
