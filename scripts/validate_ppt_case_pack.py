@@ -1562,7 +1562,7 @@ def validate_run2_skill_workflow(pack_dir: Path, errors: list[str]) -> None:
                 require_non_empty_string(f"{label}.{key}", trigger[key], errors)
 
 
-def validate_run2_visual_repair_policy(pack_dir: Path, errors: list[str]) -> None:
+def validate_run2_visual_repair_policy(pack_dir: Path, errors: list[str]) -> set[str]:
     data = load_json(pack_dir / "visual_repair_policy.json", errors)
     require_keys(
         "visual_repair_policy.json",
@@ -1587,7 +1587,7 @@ def validate_run2_visual_repair_policy(pack_dir: Path, errors: list[str]) -> Non
 
     repairs = data.get("repairs", [])
     if not require_non_empty_list("visual_repair_policy.repairs", repairs, errors):
-        return
+        return set()
 
     seen_repair_ids: set[str] = set()
     for index, repair in enumerate(repairs):
@@ -1638,6 +1638,7 @@ def validate_run2_visual_repair_policy(pack_dir: Path, errors: list[str]) -> Non
         errors.append(f"visual_repair_policy.repairs missing repair id: {repair_id}")
     for repair_id in sorted(seen_repair_ids - RUN2_6R_REPAIR_IDS):
         errors.append(f"visual_repair_policy.repairs has unexpected repair id: {repair_id}")
+    return seen_repair_ids
 
 
 def validate_run2_7_commercial_usecase(pack_dir: Path, errors: list[str]) -> set[str]:
@@ -1904,6 +1905,7 @@ def validate_run2_7_workflow_policy(
     source_record_ids: set[str],
     usecase_ids: set[str],
     memory_ids: set[str],
+    visual_repair_ids: set[str],
     errors: list[str],
 ) -> None:
     data = load_json(pack_dir / "run2_7_workflow_policy.json", errors)
@@ -1997,9 +1999,16 @@ def validate_run2_7_workflow_policy(
                 "Run 2.7 design memory",
                 errors,
             )
-        for key in ["workflow_decision_ids", "visual_repair_policy_ids"]:
-            if key in mapping:
-                validate_string_list(f"{label}.{key}", mapping[key], errors)
+        if "workflow_decision_ids" in mapping:
+            validate_string_list(f"{label}.workflow_decision_ids", mapping["workflow_decision_ids"], errors)
+        if "visual_repair_policy_ids" in mapping:
+            validate_known_string_references(
+                f"{label}.visual_repair_policy_ids",
+                mapping["visual_repair_policy_ids"],
+                visual_repair_ids,
+                "visual repair policy",
+                errors,
+            )
         if "native_ppt_generation" in mapping:
             validate_string_mentions(f"{label}.native_ppt_generation", mapping["native_ppt_generation"], ["native", "editable"], errors)
         if "workflow_gates" in mapping:
@@ -2184,7 +2193,7 @@ def validate_case_pack(pack_dir: str | Path, profile: str = "default") -> Valida
         validate_run2_narrative_spine(root, move_ids, errors)
         validate_run2_slide_archetypes(root, move_ids, errors)
         validate_run2_skill_workflow(root, errors)
-        validate_run2_visual_repair_policy(root, errors)
+        visual_repair_ids = validate_run2_visual_repair_policy(root, errors)
         run2_7_usecase_ids = validate_run2_7_commercial_usecase(root, errors)
         run2_7_source_record_ids = validate_run2_7_source_records(root, source_ids, errors)
         run2_7_memory_ids = validate_run2_7_design_memory(
@@ -2198,6 +2207,7 @@ def validate_case_pack(pack_dir: str | Path, profile: str = "default") -> Valida
             run2_7_source_record_ids,
             run2_7_usecase_ids,
             run2_7_memory_ids,
+            visual_repair_ids,
             errors,
         )
         return ValidationResult(not errors, errors)

@@ -1304,6 +1304,27 @@ def test_run2_profile_rejects_invalid_visual_repair_policy(tmp_path: Path) -> No
     assert "visual_repair_policy.repairs[4].release_boundary must keep public_blocked status" in result.errors
 
 
+def test_run2_profile_rejects_run2_7_unknown_visual_repair_policy_id(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    policy_path = pack / "run2_7_workflow_policy.json"
+    policy = json.loads(policy_path.read_text(encoding="utf-8"))
+    policy["slide_role_memory_map"][0]["visual_repair_policy_ids"] = ["missing_repair_policy"]
+    policy_path.write_text(json.dumps(policy, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert (
+        "run2_7_workflow_policy.slide_role_memory_map[0].visual_repair_policy_ids references unknown visual repair policy: missing_repair_policy"
+        in result.errors
+    )
+
+
 def test_run2_profile_rejects_skill_workflow_without_repair_triggers(tmp_path: Path) -> None:
     pack = tmp_path / "pack"
     write_pack(pack)
