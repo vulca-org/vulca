@@ -3,6 +3,10 @@
   "status": "run2_7_design_memory_public_blocked",
   "stage_policy": "repeat_same_five_layers_not_run3",
   "memory_type": "deterministic_serializable_rules",
+  "qa_gates": [
+    "Confirm selected memories trace back to Run 2.7 source record ids and the commercial usecase.",
+    "Confirm contact sheet review can see the selected typography, spacing, composition, rhythm, and sanitization rules."
+  ],
   "memories": [
     {
       "id": "memory_typography_editorial_launch",

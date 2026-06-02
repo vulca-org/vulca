@@ -7,6 +7,10 @@
     "raw_media": "forbidden",
     "copyright_boundary": "Store only paraphrased observations and extracted design rules; do not store copied media, screenshots, transcripts, brand marks, or raw assets."
   },
+  "qa_gates": [
+    "Confirm each source record stores derived rules only and no copied media, screenshots, transcripts, brand marks, layouts, or prose.",
+    "Confirm every source record has a contact sheet qa_probe and public_blocked release boundary before generation."
+  ],
   "records": [
     {
       "id": "mm_2_7_design_system_launch_case",

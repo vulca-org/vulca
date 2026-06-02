@@ -1673,18 +1673,18 @@ def validate_run2_7_commercial_usecase(pack_dir: Path, errors: list[str]) -> set
     usecase_ids: set[str] = set()
     if "id" in data and require_non_empty_string("run2_7_commercial_usecase.id", usecase_id, errors):
         usecase_ids.add(usecase_id)
-    for key in ["primary_usecase", "audience", "business_job", "business_decision", "deck_mission"]:
+    for key in ["primary_usecase", "business_decision", "deck_mission"]:
         if key in data:
             require_non_empty_string(f"run2_7_commercial_usecase.{key}", data[key], errors)
     if "audience" in data:
-        validate_string_mentions(
+        validate_combined_terms(
             "run2_7_commercial_usecase.audience",
             data["audience"],
-            ["AI product builders", "design engineering leaders", "technical founders"],
+            ["ai product builders", "design engineering leaders", "technical founders"],
             errors,
         )
     if "business_job" in data:
-        validate_string_mentions(
+        validate_combined_terms(
             "run2_7_commercial_usecase.business_job",
             data["business_job"],
             ["product-system learning", "not one-shot prompting"],
@@ -1715,10 +1715,17 @@ def validate_run2_7_commercial_usecase(pack_dir: Path, errors: list[str]) -> set
             if not isinstance(slide, dict):
                 errors.append(f"{label} must be an object")
                 continue
-            require_keys(label, slide, ["rhythm_role"], errors)
+            require_keys(label, slide, ["slide_id", "rhythm_role", "job", "must_show", "must_not_show"], errors)
+            if "slide_id" in slide:
+                require_non_empty_string(f"{label}.slide_id", slide["slide_id"], errors)
             role = slide.get("rhythm_role")
             if "rhythm_role" in slide and validate_choice(f"{label}.rhythm_role", role, RUN2_6R_REPAIR_ROLES, errors):
                 actual_roles.append(role)
+            if "job" in slide:
+                require_non_empty_string(f"{label}.job", slide["job"], errors)
+            for key in ["must_show", "must_not_show"]:
+                if key in slide:
+                    validate_string_list(f"{label}.{key}", slide[key], errors)
         if actual_roles != expected_roles:
             errors.append("run2_7_commercial_usecase.six_slide_arc rhythm_role order must be cover, setup, contrast, proof, climax, close")
     if "release_boundary" in data:
@@ -1731,7 +1738,7 @@ def validate_run2_7_source_records(pack_dir: Path, source_ids: set[str], errors:
     require_keys(
         "run2_7_multimodal_source_records.json",
         data,
-        ["schema_version", "status", "stage_policy", "storage_policy", "records"],
+        ["schema_version", "status", "stage_policy", "storage_policy", "records", "qa_gates"],
         errors,
     )
     if "schema_version" in data:
@@ -1747,6 +1754,8 @@ def validate_run2_7_source_records(pack_dir: Path, source_ids: set[str], errors:
             errors.append("run2_7_multimodal_source_records.storage_policy.raw_media must be forbidden")
     elif "storage_policy" in data:
         errors.append("run2_7_multimodal_source_records.storage_policy must be a non-empty object")
+    if "qa_gates" in data:
+        validate_string_list("run2_7_multimodal_source_records.qa_gates", data["qa_gates"], errors)
 
     records = data.get("records", [])
     if not require_non_empty_list("run2_7_multimodal_source_records.records", records, errors):
@@ -1822,7 +1831,7 @@ def validate_run2_7_design_memory(
     require_keys(
         "run2_7_design_memory.json",
         data,
-        ["schema_version", "status", "stage_policy", "memory_type", "memories"],
+        ["schema_version", "status", "stage_policy", "memory_type", "memories", "qa_gates"],
         errors,
     )
     if "schema_version" in data:
@@ -1833,6 +1842,8 @@ def validate_run2_7_design_memory(
         errors.append("run2_7_design_memory.stage_policy must be repeat_same_five_layers_not_run3")
     if "memory_type" in data and data["memory_type"] != "deterministic_serializable_rules":
         errors.append("run2_7_design_memory.memory_type must be deterministic_serializable_rules")
+    if "qa_gates" in data:
+        validate_string_list("run2_7_design_memory.qa_gates", data["qa_gates"], errors)
 
     memories = data.get("memories", [])
     if not require_non_empty_list("run2_7_design_memory.memories", memories, errors):
@@ -1899,7 +1910,15 @@ def validate_run2_7_workflow_policy(
     require_keys(
         "run2_7_workflow_policy.json",
         data,
-        ["schema_version", "status", "stage_policy", "commercial_usecase_id", "selection_chain", "slide_role_memory_map"],
+        [
+            "schema_version",
+            "status",
+            "stage_policy",
+            "commercial_usecase_id",
+            "selection_chain",
+            "slide_role_memory_map",
+            "qa_gates",
+        ],
         errors,
     )
     if "schema_version" in data:
@@ -1908,6 +1927,8 @@ def validate_run2_7_workflow_policy(
         errors.append("run2_7_workflow_policy.status must be run2_7_workflow_policy_public_blocked")
     if "stage_policy" in data and data["stage_policy"] != "repeat_same_five_layers_not_run3":
         errors.append("run2_7_workflow_policy.stage_policy must be repeat_same_five_layers_not_run3")
+    if "qa_gates" in data:
+        validate_string_list("run2_7_workflow_policy.qa_gates", data["qa_gates"], errors)
     usecase_id = data.get("commercial_usecase_id")
     if "commercial_usecase_id" in data and require_non_empty_string(
         "run2_7_workflow_policy.commercial_usecase_id", usecase_id, errors

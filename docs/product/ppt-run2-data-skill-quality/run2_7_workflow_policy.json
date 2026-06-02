@@ -15,6 +15,10 @@
     "native_ppt_generation",
     "qa_gate"
   ],
+  "qa_gates": [
+    "Confirm every slide role maps to source records, design memories, workflow decisions, repair policies, native PPT generation, and trace fields.",
+    "Confirm native render, contact sheet, source-boundary, and human approval gates keep public_blocked active."
+  ],
   "slide_role_memory_map": [
     {
       "rhythm_role": "cover",

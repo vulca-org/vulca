@@ -880,17 +880,53 @@ def valid_run2_7_commercial_usecase() -> dict:
         "stage_policy": "repeat_same_five_layers_not_run3",
         "id": "usecase_ai_design_to_production_platform_launch",
         "primary_usecase": "AI design-to-production platform launch deck",
-        "audience": "AI product builders, design engineering leaders, and technical founders.",
-        "business_job": "Show product-system learning and not one-shot prompting.",
+        "audience": ["AI product builders", "design engineering leaders", "technical founders"],
+        "business_job": ["Show product-system learning", "Reject not one-shot prompting"],
         "business_decision": "Decide whether the platform can replace ad hoc deck drafting.",
         "deck_mission": "Make the data, memory, workflow, and editable PPT path legible.",
         "six_slide_arc": [
-            {"slide": 1, "rhythm_role": "cover", "job": "Name the launch."},
-            {"slide": 2, "rhythm_role": "setup", "job": "Frame the current workflow gap."},
-            {"slide": 3, "rhythm_role": "contrast", "job": "Show prompt-only versus system learning."},
-            {"slide": 4, "rhythm_role": "proof", "job": "Trace source data into memory."},
-            {"slide": 5, "rhythm_role": "climax", "job": "Reveal one native proof object."},
-            {"slide": 6, "rhythm_role": "close", "job": "Gate the release decision."},
+            {
+                "slide_id": "slide_01",
+                "rhythm_role": "cover",
+                "job": "Name the launch.",
+                "must_show": ["Launch promise"],
+                "must_not_show": ["Source brand"],
+            },
+            {
+                "slide_id": "slide_02",
+                "rhythm_role": "setup",
+                "job": "Frame the current workflow gap.",
+                "must_show": ["Workflow gap"],
+                "must_not_show": ["One-off prompt"],
+            },
+            {
+                "slide_id": "slide_03",
+                "rhythm_role": "contrast",
+                "job": "Show prompt-only versus system learning.",
+                "must_show": ["System learning contrast"],
+                "must_not_show": ["Equal card wall"],
+            },
+            {
+                "slide_id": "slide_04",
+                "rhythm_role": "proof",
+                "job": "Trace source data into memory.",
+                "must_show": ["Source-to-memory trace"],
+                "must_not_show": ["Opaque output"],
+            },
+            {
+                "slide_id": "slide_05",
+                "rhythm_role": "climax",
+                "job": "Reveal one native proof object.",
+                "must_show": ["Native proof object"],
+                "must_not_show": ["Full-slide raster"],
+            },
+            {
+                "slide_id": "slide_06",
+                "rhythm_role": "close",
+                "job": "Gate the release decision.",
+                "must_show": ["Release gate"],
+                "must_not_show": ["Public release claim"],
+            },
         ],
         "must_show": ["data lineage", "selected design memory", "editable PPT trace"],
         "must_not_show": ["copy source layouts", "source brand mimicry", "full-slide raster"],
@@ -922,6 +958,7 @@ def valid_run2_7_multimodal_source_records() -> dict:
         "status": "run2_7_multimodal_source_records_public_blocked",
         "stage_policy": "repeat_same_five_layers_not_run3",
         "storage_policy": {"raw_media": "forbidden"},
+        "qa_gates": ["source boundary reviewed", "contact sheet reviewed"],
         "records": [
             {
                 **base,
@@ -957,6 +994,7 @@ def valid_run2_7_design_memory() -> dict:
         "status": "run2_7_design_memory_public_blocked",
         "stage_policy": "repeat_same_five_layers_not_run3",
         "memory_type": "deterministic_serializable_rules",
+        "qa_gates": ["contact sheet reviewed", "native render trace reviewed"],
         "memories": [
             {"id": "memory_typography_editorial_launch", **common},
             {
@@ -1013,6 +1051,7 @@ def valid_run2_7_workflow_policy() -> dict:
             "native_ppt_generation",
             "qa_gate",
         ],
+        "qa_gates": ["workflow trace reviewed", "native PPT output reviewed"],
         "slide_role_memory_map": [
             {
                 "rhythm_role": "cover",
@@ -1954,6 +1993,24 @@ def test_run2_profile_rejects_run2_7_unknown_memory_source_record(tmp_path: Path
         "run2_7_design_memory.memories[0].source_record_ids references unknown Run 2.7 source record: "
         "missing_source_record"
     ) in result.errors
+
+
+def test_run2_profile_rejects_run2_7_empty_source_record_qa_gate(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    source_records_path = pack / "run2_7_multimodal_source_records.json"
+    source_records = json.loads(source_records_path.read_text(encoding="utf-8"))
+    source_records["qa_gates"] = ["contact sheet reviewed", ""]
+    source_records_path.write_text(json.dumps(source_records, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "run2_7_multimodal_source_records.qa_gates[1] must be a non-empty string" in result.errors
 
 
 def test_run2_profile_rejects_run2_7_workflow_missing_trace_field(tmp_path: Path) -> None:
