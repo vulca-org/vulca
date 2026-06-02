@@ -1,0 +1,240 @@
+{
+  "schema_version": 1,
+  "status": "run2_8_executable_design_memory_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "memory_type": "executable_schema_bindings",
+  "bindings": [
+    {
+      "id": "binding_type_scale_readability",
+      "decomposition_unit_ids": [
+        "decomp_2_8_type_hierarchy_readability_stack",
+        "decomp_2_8_duarte_remove_nonessential_data"
+      ],
+      "applies_to_slide_roles": [
+        "cover",
+        "setup",
+        "contrast",
+        "proof",
+        "climax",
+        "close"
+      ],
+      "design_token": "run2_8_type_scale_readability",
+      "code_binding": {
+        "function_name": "drawRun28TypeScale",
+        "params": {
+          "title_min_pt": 40,
+          "body_min_pt": 18,
+          "max_line_chars": 60,
+          "letter_spacing": 0,
+          "fontSize": 40
+        },
+        "layout_budget": {
+          "max_text_boxes": 9,
+          "max_visible_words": 52
+        }
+      },
+      "native_ppt_constraints": [
+        "Use editable native PPT text boxes for every visible string.",
+        "Record selected type roles in per-slide trace fields."
+      ],
+      "typography_constraints": [
+        "Title text must be at least forty points.",
+        "Body text must be at least eighteen points.",
+        "Letter spacing must be zero."
+      ],
+      "spacing_constraints": [
+        "Keep enough margin for the largest type role.",
+        "Avoid dense stacked text zones."
+      ],
+      "composition_constraints": [
+        "One headline owns the first-read position.",
+        "Secondary proof cannot compete with the headline."
+      ],
+      "negative_control_failure": "Bad memory schema collapses text into equal-size report prose.",
+      "qa_probe": "Contact sheet review should show clear reading order before body text is inspected.",
+      "release_boundary": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "id": "binding_spacing_zone_grid",
+      "decomposition_unit_ids": [
+        "decomp_2_8_makeover_split_text_into_visual_steps",
+        "decomp_2_8_design_first_code_second_pipeline"
+      ],
+      "applies_to_slide_roles": [
+        "setup",
+        "contrast",
+        "proof",
+        "close"
+      ],
+      "design_token": "run2_8_spacing_zone_grid",
+      "code_binding": {
+        "function_name": "drawRun28SpacingZones",
+        "params": {
+          "outer_margin_pt": 44,
+          "gutter_pt": 22,
+          "min_zone_gap_pt": 18,
+          "spacing": 22
+        },
+        "layout_budget": {
+          "max_text_boxes": 8,
+          "max_visible_words": 48,
+          "max_zones": 4
+        }
+      },
+      "native_ppt_constraints": [
+        "Use native rectangles, guides, and text objects to express zones.",
+        "Record zone count and spacing budget in trace."
+      ],
+      "typography_constraints": [
+        "Labels remain subordinate to zone structure.",
+        "No label may force a zone resize after layout."
+      ],
+      "spacing_constraints": [
+        "Outer margin must remain visibly larger than inner gutters.",
+        "Every zone must have a deliberate gap from neighboring zones."
+      ],
+      "composition_constraints": [
+        "Proof zones must be unequal when priority differs.",
+        "Do not create repeated equal-density dashboard cards."
+      ],
+      "negative_control_failure": "Bad memory schema produces cramped equal panels and weak priority.",
+      "qa_probe": "Contact sheet review should show margins and gutters before text detail.",
+      "release_boundary": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "id": "binding_climax_hero_object",
+      "decomposition_unit_ids": [
+        "decomp_2_8_climax_object_scale_and_pause",
+        "decomp_2_8_duarte_remove_nonessential_data"
+      ],
+      "applies_to_slide_roles": [
+        "climax"
+      ],
+      "design_token": "run2_8_climax_hero_object",
+      "code_binding": {
+        "function_name": "drawRun28Climax",
+        "params": {
+          "heroObject_canvas_share_min": 0.44,
+          "heroObject_canvas_share_max": 0.58,
+          "pause_label_max_words": 8,
+          "support_label_max_words": 16
+        },
+        "layout_budget": {
+          "max_text_boxes": 5,
+          "max_visible_words": 34,
+          "max_hero_objects": 1
+        }
+      },
+      "native_ppt_constraints": [
+        "Build the hero object from editable native PPT shapes.",
+        "Record hero object bounds and selected binding id in trace."
+      ],
+      "typography_constraints": [
+        "The hero label must stay short enough to preserve the pause.",
+        "Supporting labels cannot exceed body minimum size."
+      ],
+      "spacing_constraints": [
+        "Hero object needs a clear field around it.",
+        "Supporting explanation sits outside the hero field."
+      ],
+      "composition_constraints": [
+        "Hero object must occupy forty four to fifty eight percent of the main canvas.",
+        "No secondary object may be larger than the hero object."
+      ],
+      "negative_control_failure": "Bad memory schema repeats proof grids and loses the climax.",
+      "qa_probe": "Contact sheet review should identify the hero object before reading labels.",
+      "release_boundary": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "id": "binding_before_after_delta",
+      "decomposition_unit_ids": [
+        "decomp_2_8_makeover_split_text_into_visual_steps",
+        "decomp_2_8_source_brand_sanitized_case_evidence"
+      ],
+      "applies_to_slide_roles": [
+        "contrast",
+        "proof"
+      ],
+      "design_token": "run2_8_before_after_delta",
+      "code_binding": {
+        "function_name": "drawRun28BeforeAfterDelta",
+        "params": {
+          "beforeAfter_panel_count": 2,
+          "delta_arrow_weight_pt": 3,
+          "max_panel_label_words": 9,
+          "shared_axis_required": true
+        },
+        "layout_budget": {
+          "max_text_boxes": 8,
+          "max_visible_words": 44,
+          "max_delta_panels": 2
+        }
+      },
+      "native_ppt_constraints": [
+        "Use editable native panels, arrows, and labels.",
+        "Record before and after panel ids in trace."
+      ],
+      "typography_constraints": [
+        "Before and after labels must share the same type role.",
+        "Delta annotation must be shorter than either panel label."
+      ],
+      "spacing_constraints": [
+        "Panels must share a baseline and a visible gutter.",
+        "Delta arrow needs open space around the midpoint."
+      ],
+      "composition_constraints": [
+        "The after state must be visually distinct without copying any source layout.",
+        "The comparison axis must be readable from the contact sheet."
+      ],
+      "negative_control_failure": "Bad memory schema leaves a paragraph instead of a visible delta.",
+      "qa_probe": "Contact sheet review should show a beforeAfter change without reading all labels.",
+      "release_boundary": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "id": "binding_public_gate_legibility",
+      "decomposition_unit_ids": [
+        "decomp_2_8_design_first_code_second_pipeline",
+        "decomp_2_8_source_brand_sanitized_case_evidence"
+      ],
+      "applies_to_slide_roles": [
+        "cover",
+        "proof",
+        "close"
+      ],
+      "design_token": "run2_8_public_gate_legibility",
+      "code_binding": {
+        "function_name": "drawRun28WorkflowGate",
+        "params": {
+          "workflowGate_required": true,
+          "gate_label_min_pt": 18,
+          "max_gate_labels": 3,
+          "source_boundary_badge": 1
+        },
+        "layout_budget": {
+          "max_text_boxes": 7,
+          "max_visible_words": 46,
+          "max_gate_objects": 3
+        }
+      },
+      "native_ppt_constraints": [
+        "Represent the gate with editable native text, shapes, and connectors.",
+        "Record public release boundary and source sanitization in trace."
+      ],
+      "typography_constraints": [
+        "Gate labels must remain readable at contact-sheet scale.",
+        "Release status cannot be hidden in small footnote text."
+      ],
+      "spacing_constraints": [
+        "Gate objects must not crowd the primary proof object.",
+        "Release boundary labels need a stable alignment zone."
+      ],
+      "composition_constraints": [
+        "The workflow gate must be visible but subordinate to the slide job.",
+        "Source-boundary evidence must use original labels and shapes."
+      ],
+      "negative_control_failure": "Bad memory schema claims release readiness without visible boundary checks.",
+      "qa_probe": "Trace and contact sheet review should agree on public_blocked release state.",
+      "release_boundary": "public_blocked_until_native_render_trace_and_human_review"
+    }
+  ]
+}

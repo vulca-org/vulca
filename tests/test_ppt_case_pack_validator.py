@@ -17,6 +17,7 @@ RUN2_8_TRACE_FIELDS = {
     "run2_8_layout_budget",
     "run2_8_visual_delta_from_run2_7",
 }
+RUN2_8_RELEASE_BOUNDARY = "public_blocked_until_native_render_trace_and_human_review"
 REQUIRED_MARKDOWN = {
     "README.md": "# Pack\n",
     "source_summaries.md": "# Source Summaries\n\nOriginal notes.\n",
@@ -59,9 +60,8 @@ def write_minimal_run2_8_fixture(pack: Path) -> None:
         "mm_2_7_product_surface_interaction_reference",
     ]
     source_ids = [
-        "duarte_persuasive_visual_storytelling",
-        "duarte_slide_design_course",
-        "udel_design_principles_video",
+        "supervity_ai_keynote",
+        "schema_2025_keynote_video",
     ]
     decomposition = {
         "schema_version": 1,
@@ -83,7 +83,7 @@ def write_minimal_run2_8_fixture(pack: Path) -> None:
                 "failure_probe": "Fails if the result reads as a report page.",
                 "anti_copy_boundary": "Do not copy source visuals, source brand, frames, audio, or transcripts.",
                 "qa_probe": "contact sheet review must show the derived move",
-                "release_boundary": "public_blocked_until_native_render_and_human_review",
+                "release_boundary": RUN2_8_RELEASE_BOUNDARY,
             }
             for index, unit_id in enumerate(decomposition_ids)
         ],
@@ -115,7 +115,7 @@ def write_minimal_run2_8_fixture(pack: Path) -> None:
                 "composition_constraints": ["heroObject or beforeAfter must be visible"],
                 "negative_control_failure": "bad memory schema weakens hierarchy",
                 "qa_probe": "contact sheet review",
-                "release_boundary": "public_blocked_until_native_render_and_human_review",
+                "release_boundary": RUN2_8_RELEASE_BOUNDARY,
             }
             for index, (binding_id, function_name, token) in enumerate(binding_specs)
         ],
@@ -149,7 +149,7 @@ def write_minimal_run2_8_fixture(pack: Path) -> None:
                 "layout_budget": {"max_text_boxes": 9, "max_visible_words": 52},
                 "pass_fail_checks": ["layout QA passes", "native shape trace exists"],
                 "trace_fields": sorted(RUN2_8_TRACE_FIELDS),
-                "public_release_gate": "public_blocked_until_native_render_and_human_review",
+                "public_release_gate": RUN2_8_RELEASE_BOUNDARY,
             }
             for index, role in enumerate(["cover", "setup", "contrast", "proof", "climax", "close"])
         ],
@@ -160,7 +160,10 @@ def write_minimal_run2_8_fixture(pack: Path) -> None:
     )
 
     trace_path = pack / "results" / "trace_manifest_contract.json"
-    trace = json.loads(trace_path.read_text(encoding="utf-8"))
+    if trace_path.exists():
+        trace = json.loads(trace_path.read_text(encoding="utf-8"))
+    else:
+        trace = {"schema_version": 1, "per_slide_required_fields": []}
     for field in sorted(RUN2_8_TRACE_FIELDS):
         if field not in trace["per_slide_required_fields"]:
             trace["per_slide_required_fields"].append(field)
@@ -168,27 +171,42 @@ def write_minimal_run2_8_fixture(pack: Path) -> None:
 
     workflow_path = pack / "skill_workflow.json"
     workflow = json.loads(workflow_path.read_text(encoding="utf-8"))
+    addition_ids = {
+        "decompose_run2_8_tutorial_video_units",
+        "select_run2_8_executable_design_memory",
+        "apply_run2_8_workflow_gate_matrix",
+    }
+    workflow["stages"] = [stage for stage in workflow["stages"] if stage.get("id") not in addition_ids]
     stage_ids = [stage["id"] for stage in workflow["stages"]]
-    insert_at = stage_ids.index("generate_code_first_ppt")
+    insert_at = stage_ids.index("generate_code_first_ppt") if "generate_code_first_ppt" in stage_ids else len(stage_ids)
     additions = [
         {
             "id": "decompose_run2_8_tutorial_video_units",
             "layer": "multimodal_tutorial_case_data",
-            "inputs": ["run2_8_tutorial_decomposition.json"],
+            "inputs": [
+                "run2_8_tutorial_decomposition.json",
+                "run2_7_multimodal_source_records.json",
+                "sources.json",
+            ],
             "outputs": ["Run 2.8 decomposition units"],
             "gates": ["raw media remains forbidden"],
         },
         {
             "id": "select_run2_8_executable_design_memory",
             "layer": "evidence_aesthetic_asset_memory",
-            "inputs": ["run2_8_executable_design_memory.json"],
+            "inputs": ["run2_8_tutorial_decomposition.json", "run2_8_executable_design_memory.json"],
             "outputs": ["Run 2.8 executable design memory bindings"],
             "gates": ["code bindings reference valid decomposition units"],
         },
         {
             "id": "apply_run2_8_workflow_gate_matrix",
             "layer": "skill_workflow",
-            "inputs": ["run2_8_workflow_gate_matrix.json"],
+            "inputs": [
+                "run2_8_tutorial_decomposition.json",
+                "run2_8_executable_design_memory.json",
+                "run2_8_workflow_gate_matrix.json",
+                "results/trace_manifest_contract.json",
+            ],
             "outputs": ["Run 2.8 workflow gate decisions"],
             "gates": ["gate matrix references valid memory bindings"],
         },
@@ -685,6 +703,14 @@ def write_run2_required_files(pack: Path) -> None:
                         "inputs": ["commercial_case.md"],
                         "outputs": ["decision context"],
                         "gates": ["case is concrete"],
+                    },
+                    {
+                        "id": "generate_code_first_ppt",
+                        "order": 2,
+                        "layer": "code_generated_native_ppt",
+                        "inputs": ["skill_workflow.json"],
+                        "outputs": ["native PPT generation plan"],
+                        "gates": ["Run 2.8 stages complete before generation"],
                     }
                 ],
                 "repair_triggers": [
@@ -765,6 +791,7 @@ def write_run2_required_files(pack: Path) -> None:
         "# Delivery Gate\n\nPublic publishing is blocked before native render and human review.\n",
         encoding="utf-8",
     )
+    write_minimal_run2_8_fixture(pack)
 
 
 def valid_run2_multimodal_database() -> dict:
@@ -1437,6 +1464,10 @@ def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     assert "missing required file: skill_workflow.json" in result.errors
     assert "missing required file: generation_briefs/run2_skill.md" in result.errors
     assert "missing required file: visual_repair_policy.json" in result.errors
+    assert "missing required file: run2_8_tutorial_decomposition.json" in result.errors
+    assert "missing required file: run2_8_executable_design_memory.json" in result.errors
+    assert "missing required file: run2_8_workflow_gate_matrix.json" in result.errors
+    assert "missing required file: results/trace_manifest_contract.json" in result.errors
 
 
 def test_run2_profile_requires_visual_repair_policy_file(tmp_path: Path) -> None:
@@ -2296,3 +2327,65 @@ def test_run2_profile_rejects_run2_8_trace_contract_missing_required_field(tmp_p
 
     assert result.ok is False
     assert "trace_manifest_contract.per_slide_required_fields missing value: run2_8_memory_binding_ids" in result.errors
+
+
+def test_run2_profile_rejects_run2_8_gate_without_id(tmp_path: Path) -> None:
+    pack = copy_run2_pack(tmp_path)
+    matrix_path = pack / "run2_8_workflow_gate_matrix.json"
+    matrix = json.loads(matrix_path.read_text(encoding="utf-8"))
+    matrix["gates"][0].pop("id")
+    matrix_path.write_text(json.dumps(matrix, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "run2_8_workflow_gate_matrix.gates[0] missing key: id" in result.errors
+
+
+def test_run2_profile_rejects_run2_8_gate_missing_required_trace_field(tmp_path: Path) -> None:
+    pack = copy_run2_pack(tmp_path)
+    matrix_path = pack / "run2_8_workflow_gate_matrix.json"
+    matrix = json.loads(matrix_path.read_text(encoding="utf-8"))
+    matrix["gates"][0]["trace_fields"].remove("run2_8_layout_budget")
+    matrix_path.write_text(json.dumps(matrix, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "run2_8_workflow_gate_matrix.gates[0].trace_fields missing value: run2_8_layout_budget" in result.errors
+
+
+def test_run2_profile_rejects_missing_run2_8_workflow_stage(tmp_path: Path) -> None:
+    pack = copy_run2_pack(tmp_path)
+    workflow_path = pack / "skill_workflow.json"
+    workflow = json.loads(workflow_path.read_text(encoding="utf-8"))
+    workflow["stages"] = [
+        stage for stage in workflow["stages"] if stage["id"] != "decompose_run2_8_tutorial_video_units"
+    ]
+    for order, stage in enumerate(workflow["stages"], start=1):
+        stage["order"] = order
+    workflow_path.write_text(json.dumps(workflow, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert (
+        "skill_workflow.stages missing required Run 2.8 stage: decompose_run2_8_tutorial_video_units"
+        in result.errors
+    )
+
+
+def test_run2_profile_rejects_run2_8_release_boundary_without_trace_gate(tmp_path: Path) -> None:
+    pack = copy_run2_pack(tmp_path)
+    memory_path = pack / "run2_8_executable_design_memory.json"
+    memory = json.loads(memory_path.read_text(encoding="utf-8"))
+    memory["bindings"][0]["release_boundary"] = "public_blocked_until_native_render_and_human_review"
+    memory_path.write_text(json.dumps(memory, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert (
+        "run2_8_executable_design_memory.bindings[0].release_boundary must be "
+        f"{RUN2_8_RELEASE_BOUNDARY}"
+    ) in result.errors

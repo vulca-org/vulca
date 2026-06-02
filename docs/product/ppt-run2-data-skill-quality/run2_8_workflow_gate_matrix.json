@@ -1,0 +1,238 @@
+{
+  "schema_version": 1,
+  "status": "run2_8_workflow_gate_matrix_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "selection_chain": [
+    "commercial_usecase",
+    "run2_8_decomposition_units",
+    "run2_8_executable_memory_bindings",
+    "run2_8_gate_matrix",
+    "native_ppt_code_generation",
+    "layout_quality_gate",
+    "delivery_gate",
+    "visual_qa_gate"
+  ],
+  "gates": [
+    {
+      "id": "gate_2_8_cover",
+      "slide_role": "cover",
+      "decomposition_unit_ids": [
+        "decomp_2_8_duarte_remove_nonessential_data",
+        "decomp_2_8_type_hierarchy_readability_stack",
+        "decomp_2_8_source_brand_sanitized_case_evidence"
+      ],
+      "memory_binding_ids": [
+        "binding_type_scale_readability",
+        "binding_public_gate_legibility"
+      ],
+      "required_code_bindings": [
+        "drawRun28TypeScale",
+        "drawRun28WorkflowGate"
+      ],
+      "layout_budget": {
+        "max_text_boxes": 6,
+        "max_visible_words": 40,
+        "max_proof_objects": 1
+      },
+      "pass_fail_checks": [
+        "One first-read launch claim is visible.",
+        "Source-brand evidence is sanitized before native PPT generation.",
+        "Run 2.8 trace fields are populated."
+      ],
+      "trace_fields": [
+        "run2_8_decomposition_unit_ids",
+        "run2_8_memory_binding_ids",
+        "run2_8_gate_matrix_ids",
+        "run2_8_code_binding_ids",
+        "run2_8_layout_budget",
+        "run2_8_visual_delta_from_run2_7"
+      ],
+      "public_release_gate": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "id": "gate_2_8_setup",
+      "slide_role": "setup",
+      "decomposition_unit_ids": [
+        "decomp_2_8_duarte_remove_nonessential_data",
+        "decomp_2_8_type_hierarchy_readability_stack",
+        "decomp_2_8_design_first_code_second_pipeline"
+      ],
+      "memory_binding_ids": [
+        "binding_type_scale_readability",
+        "binding_spacing_zone_grid"
+      ],
+      "required_code_bindings": [
+        "drawRun28TypeScale",
+        "drawRun28SpacingZones"
+      ],
+      "layout_budget": {
+        "max_text_boxes": 8,
+        "max_visible_words": 48,
+        "max_zones": 3
+      },
+      "pass_fail_checks": [
+        "Setup names the decision before proof detail.",
+        "Spacing zones separate claim, context, and next action.",
+        "Generator trace records selected memory before code generation."
+      ],
+      "trace_fields": [
+        "run2_8_decomposition_unit_ids",
+        "run2_8_memory_binding_ids",
+        "run2_8_gate_matrix_ids",
+        "run2_8_code_binding_ids",
+        "run2_8_layout_budget",
+        "run2_8_visual_delta_from_run2_7"
+      ],
+      "public_release_gate": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "id": "gate_2_8_contrast",
+      "slide_role": "contrast",
+      "decomposition_unit_ids": [
+        "decomp_2_8_type_hierarchy_readability_stack",
+        "decomp_2_8_makeover_split_text_into_visual_steps"
+      ],
+      "memory_binding_ids": [
+        "binding_type_scale_readability",
+        "binding_spacing_zone_grid",
+        "binding_before_after_delta"
+      ],
+      "required_code_bindings": [
+        "drawRun28TypeScale",
+        "drawRun28SpacingZones",
+        "drawRun28BeforeAfterDelta"
+      ],
+      "layout_budget": {
+        "max_text_boxes": 8,
+        "max_visible_words": 44,
+        "max_delta_panels": 2
+      },
+      "pass_fail_checks": [
+        "Before and after states are visible without a paragraph block.",
+        "Shared comparison axis is native and editable.",
+        "Type hierarchy keeps delta labels readable."
+      ],
+      "trace_fields": [
+        "run2_8_decomposition_unit_ids",
+        "run2_8_memory_binding_ids",
+        "run2_8_gate_matrix_ids",
+        "run2_8_code_binding_ids",
+        "run2_8_layout_budget",
+        "run2_8_visual_delta_from_run2_7"
+      ],
+      "public_release_gate": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "id": "gate_2_8_proof",
+      "slide_role": "proof",
+      "decomposition_unit_ids": [
+        "decomp_2_8_makeover_split_text_into_visual_steps",
+        "decomp_2_8_design_first_code_second_pipeline",
+        "decomp_2_8_source_brand_sanitized_case_evidence"
+      ],
+      "memory_binding_ids": [
+        "binding_spacing_zone_grid",
+        "binding_before_after_delta",
+        "binding_public_gate_legibility"
+      ],
+      "required_code_bindings": [
+        "drawRun28SpacingZones",
+        "drawRun28BeforeAfterDelta",
+        "drawRun28WorkflowGate"
+      ],
+      "layout_budget": {
+        "max_text_boxes": 9,
+        "max_visible_words": 50,
+        "max_workflow_objects": 5
+      },
+      "pass_fail_checks": [
+        "Proof uses native visual steps rather than report prose.",
+        "Source-boundary gate is visible in trace and layout.",
+        "Spacing budget prevents equal-density card grids."
+      ],
+      "trace_fields": [
+        "run2_8_decomposition_unit_ids",
+        "run2_8_memory_binding_ids",
+        "run2_8_gate_matrix_ids",
+        "run2_8_code_binding_ids",
+        "run2_8_layout_budget",
+        "run2_8_visual_delta_from_run2_7"
+      ],
+      "public_release_gate": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "id": "gate_2_8_climax",
+      "slide_role": "climax",
+      "decomposition_unit_ids": [
+        "decomp_2_8_climax_object_scale_and_pause",
+        "decomp_2_8_duarte_remove_nonessential_data",
+        "decomp_2_8_type_hierarchy_readability_stack"
+      ],
+      "memory_binding_ids": [
+        "binding_climax_hero_object",
+        "binding_type_scale_readability"
+      ],
+      "required_code_bindings": [
+        "drawRun28Climax",
+        "drawRun28TypeScale"
+      ],
+      "layout_budget": {
+        "max_text_boxes": 5,
+        "max_visible_words": 34,
+        "hero_object_canvas_share_min": 0.44,
+        "hero_object_canvas_share_max": 0.58
+      },
+      "pass_fail_checks": [
+        "Hero object occupies forty four to fifty eight percent of the main canvas.",
+        "No other object is visually larger than the hero object.",
+        "The pause label is shorter than the supporting proof label."
+      ],
+      "trace_fields": [
+        "run2_8_decomposition_unit_ids",
+        "run2_8_memory_binding_ids",
+        "run2_8_gate_matrix_ids",
+        "run2_8_code_binding_ids",
+        "run2_8_layout_budget",
+        "run2_8_visual_delta_from_run2_7"
+      ],
+      "public_release_gate": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "id": "gate_2_8_close",
+      "slide_role": "close",
+      "decomposition_unit_ids": [
+        "decomp_2_8_design_first_code_second_pipeline",
+        "decomp_2_8_source_brand_sanitized_case_evidence"
+      ],
+      "memory_binding_ids": [
+        "binding_type_scale_readability",
+        "binding_spacing_zone_grid",
+        "binding_public_gate_legibility"
+      ],
+      "required_code_bindings": [
+        "drawRun28TypeScale",
+        "drawRun28SpacingZones",
+        "drawRun28WorkflowGate"
+      ],
+      "layout_budget": {
+        "max_text_boxes": 7,
+        "max_visible_words": 42,
+        "max_gate_objects": 3
+      },
+      "pass_fail_checks": [
+        "Close shows the workflow handoff and public release boundary.",
+        "Gate labels remain legible and native editable.",
+        "Trace keeps the same five-layer loop visible through delivery."
+      ],
+      "trace_fields": [
+        "run2_8_decomposition_unit_ids",
+        "run2_8_memory_binding_ids",
+        "run2_8_gate_matrix_ids",
+        "run2_8_code_binding_ids",
+        "run2_8_layout_budget",
+        "run2_8_visual_delta_from_run2_7"
+      ],
+      "public_release_gate": "public_blocked_until_native_render_trace_and_human_review"
+    }
+  ]
+}

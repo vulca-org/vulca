@@ -275,8 +275,71 @@
       ]
     },
     {
-      "id": "generate_code_first_ppt",
+      "id": "decompose_run2_8_tutorial_video_units",
       "order": 14,
+      "layer": "multimodal_tutorial_case_data",
+      "inputs": [
+        "run2_8_tutorial_decomposition.json",
+        "run2_7_multimodal_source_records.json",
+        "sources.json"
+      ],
+      "outputs": [
+        "selected Run 2.8 decomposition unit ids",
+        "derived tutorial and video moves",
+        "native PPT obligations",
+        "anti-copy boundaries"
+      ],
+      "gates": [
+        "every decomposition unit references valid Run 2.7 source records",
+        "raw media remains forbidden",
+        "every derived rule maps to a native code-generation binding"
+      ]
+    },
+    {
+      "id": "select_run2_8_executable_design_memory",
+      "order": 15,
+      "layer": "evidence_aesthetic_asset_memory",
+      "inputs": [
+        "run2_8_tutorial_decomposition.json",
+        "run2_8_executable_design_memory.json"
+      ],
+      "outputs": [
+        "selected Run 2.8 memory binding ids",
+        "native PPT function names",
+        "parameterized layout budgets",
+        "negative control failure probes"
+      ],
+      "gates": [
+        "every memory binding references valid Run 2.8 decomposition units",
+        "every binding exposes function_name, params, and layout_budget",
+        "typography, spacing, and composition constraints are explicit"
+      ]
+    },
+    {
+      "id": "apply_run2_8_workflow_gate_matrix",
+      "order": 16,
+      "layer": "skill_workflow",
+      "inputs": [
+        "run2_8_tutorial_decomposition.json",
+        "run2_8_executable_design_memory.json",
+        "run2_8_workflow_gate_matrix.json",
+        "results/trace_manifest_contract.json"
+      ],
+      "outputs": [
+        "selected Run 2.8 gate matrix ids",
+        "required code bindings by slide role",
+        "Run 2.8 trace field obligations",
+        "public release gate checks"
+      ],
+      "gates": [
+        "every gate references valid decomposition units and memory bindings",
+        "required code bindings match executable memory function names",
+        "trace contract contains all Run 2.8 fields before native generation"
+      ]
+    },
+    {
+      "id": "generate_code_first_ppt",
+      "order": 17,
       "layer": "skill_workflow",
       "inputs": [
         "generation_briefs/run2_skill.md",
@@ -293,6 +356,9 @@
         "selected aesthetic memory v2 ids",
         "selected visual production modules",
         "selected visual repair policy ids",
+        "selected Run 2.8 decomposition units",
+        "selected Run 2.8 executable design memory bindings",
+        "selected Run 2.8 workflow gate matrix",
         "visual delta from Run 2.5",
         "visual repair validation probe",
         "asset memory"
@@ -315,7 +381,7 @@
     },
     {
       "id": "run_structural_and_aesthetic_qa",
-      "order": 15,
+      "order": 18,
       "layer": "rerun_and_evaluation",
       "inputs": ["PPTX", "layout JSON", "contact sheet", "aesthetic_rubric.md", "trace_manifest.json"],
       "outputs": ["delivery report", "layout report", "Gemini artifact review", "score table", "visual validation outcome"],
@@ -332,7 +398,7 @@
     },
     {
       "id": "recommend_repairs",
-      "order": 16,
+      "order": 19,
       "layer": "skill_workflow",
       "inputs": ["delivery report", "layout report", "Gemini review", "visual validation outcome", "human visual notes"],
       "outputs": ["repair recommendations", "blocked release reasons"],
@@ -340,7 +406,7 @@
     },
     {
       "id": "refresh_trace_qa_outcomes",
-      "order": 17,
+      "order": 20,
       "layer": "rerun_and_evaluation",
       "inputs": ["trace_manifest.json", "delivery report", "layout report", "visual validation outcome"],
       "outputs": ["post-QA trace manifest", "backup manifest", "dry-run diff"],
@@ -348,7 +414,7 @@
     },
     {
       "id": "emit_release_decision",
-      "order": 18,
+      "order": 21,
       "layer": "rerun_and_evaluation",
       "inputs": ["post-QA trace manifest", "native render result", "human approval record"],
       "outputs": ["internal_only or public_blocked decision"],

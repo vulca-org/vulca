@@ -1134,6 +1134,7 @@ def test_run2_8_workflow_gate_matrix_connects_schema_to_trace() -> None:
     )
 
     required = {
+        "id",
         "slide_role",
         "decomposition_unit_ids",
         "memory_binding_ids",

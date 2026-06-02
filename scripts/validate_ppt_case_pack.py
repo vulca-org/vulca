@@ -84,6 +84,14 @@ RUN2_REQUIRED_FILES = [
 ]
 
 
+RUN2_8_REQUIRED_FILES = [
+    "run2_8_tutorial_decomposition.json",
+    "run2_8_executable_design_memory.json",
+    "run2_8_workflow_gate_matrix.json",
+    "results/trace_manifest_contract.json",
+]
+
+
 RUN1_5_REQUIRED_MEMORY_FIELDS = [
     "evidence_id",
     "source_role",
@@ -190,6 +198,84 @@ RUN2_7_TRACE_FIELDS = {
     "run2_7_delta_from_run2_6r",
     "run2_7_quality_gate",
 }
+RUN2_8_DECOMPOSITION_FIELDS = [
+    "id",
+    "source_record_ids",
+    "source_ids",
+    "modality_mix",
+    "tutorial_anchor",
+    "observed_design_move",
+    "derived_rule",
+    "code_generation_binding",
+    "native_ppt_obligation",
+    "layout_budget",
+    "failure_probe",
+    "anti_copy_boundary",
+    "qa_probe",
+    "release_boundary",
+]
+RUN2_8_MEMORY_BINDING_FIELDS = [
+    "id",
+    "decomposition_unit_ids",
+    "applies_to_slide_roles",
+    "design_token",
+    "code_binding",
+    "native_ppt_constraints",
+    "typography_constraints",
+    "spacing_constraints",
+    "composition_constraints",
+    "negative_control_failure",
+    "qa_probe",
+    "release_boundary",
+]
+RUN2_8_GATE_FIELDS = [
+    "id",
+    "slide_role",
+    "decomposition_unit_ids",
+    "memory_binding_ids",
+    "required_code_bindings",
+    "layout_budget",
+    "pass_fail_checks",
+    "trace_fields",
+    "public_release_gate",
+]
+RUN2_8_TRACE_FIELDS = {
+    "run2_8_decomposition_unit_ids",
+    "run2_8_memory_binding_ids",
+    "run2_8_gate_matrix_ids",
+    "run2_8_code_binding_ids",
+    "run2_8_layout_budget",
+    "run2_8_visual_delta_from_run2_7",
+}
+RUN2_8_RELEASE_BOUNDARY = "public_blocked_until_native_render_trace_and_human_review"
+RUN2_8_SELECTION_CHAIN = {
+    "commercial_usecase",
+    "run2_8_decomposition_units",
+    "run2_8_executable_memory_bindings",
+    "run2_8_gate_matrix",
+    "native_ppt_code_generation",
+    "layout_quality_gate",
+    "delivery_gate",
+    "visual_qa_gate",
+}
+RUN2_8_WORKFLOW_STAGE_INPUTS = {
+    "decompose_run2_8_tutorial_video_units": {
+        "run2_8_tutorial_decomposition.json",
+        "run2_7_multimodal_source_records.json",
+        "sources.json",
+    },
+    "select_run2_8_executable_design_memory": {
+        "run2_8_tutorial_decomposition.json",
+        "run2_8_executable_design_memory.json",
+    },
+    "apply_run2_8_workflow_gate_matrix": {
+        "run2_8_tutorial_decomposition.json",
+        "run2_8_executable_design_memory.json",
+        "run2_8_workflow_gate_matrix.json",
+        "results/trace_manifest_contract.json",
+    },
+}
+RUN2_8_CODE_BINDING_TERMS = {"fontSize", "bbox", "spacing", "heroObject", "beforeAfter", "workflowGate"}
 
 
 @dataclass(frozen=True)
@@ -206,7 +292,7 @@ def required_files_for_profile(profile: str) -> list[str]:
     if profile == "run1_5":
         return [*REQUIRED_FILES, *RUN1_5_REQUIRED_FILES]
     if profile == "run2":
-        return RUN2_REQUIRED_FILES
+        return [*RUN2_REQUIRED_FILES, *RUN2_8_REQUIRED_FILES]
     raise ValueError(f"unknown case-pack profile: {profile}")
 
 
@@ -357,6 +443,11 @@ def validate_no_external_media_reference(label: str, value: Any, errors: list[st
 def validate_public_blocked_boundary(label: str, value: Any, errors: list[str]) -> None:
     if require_non_empty_string(label, value, errors) and "public_blocked" not in value:
         errors.append(f"{label} must keep public_blocked status")
+
+
+def validate_run2_8_release_boundary(label: str, value: Any, errors: list[str]) -> None:
+    if require_non_empty_string(label, value, errors) and value != RUN2_8_RELEASE_BOUNDARY:
+        errors.append(f"{label} must be {RUN2_8_RELEASE_BOUNDARY}")
 
 
 def validate_known_string_references(
@@ -1492,6 +1583,34 @@ def validate_run2_slide_archetypes(pack_dir: Path, move_ids: set[str], errors: l
             validate_number_mapping(f"{label}.density_budget", archetype["density_budget"], errors)
 
 
+def validate_run2_8_skill_workflow_contract(
+    stage_indexes: dict[str, int],
+    stage_inputs: dict[str, set[str]],
+    errors: list[str],
+) -> None:
+    stage_ids = list(RUN2_8_WORKFLOW_STAGE_INPUTS)
+    for stage_id, expected_inputs in RUN2_8_WORKFLOW_STAGE_INPUTS.items():
+        if stage_id not in stage_indexes:
+            errors.append(f"skill_workflow.stages missing required Run 2.8 stage: {stage_id}")
+            continue
+        missing_inputs = expected_inputs - stage_inputs.get(stage_id, set())
+        for item in sorted(missing_inputs):
+            errors.append(f"skill_workflow.stages[{stage_id}].inputs missing value: {item}")
+
+    if "generate_code_first_ppt" not in stage_indexes:
+        errors.append("skill_workflow.stages missing required generation stage: generate_code_first_ppt")
+        return
+
+    generation_index = stage_indexes["generate_code_first_ppt"]
+    for stage_id in stage_ids:
+        if stage_id in stage_indexes and stage_indexes[stage_id] >= generation_index:
+            errors.append(f"skill_workflow.stages[{stage_id}] must appear before generate_code_first_ppt")
+
+    for before, after in zip(stage_ids, stage_ids[1:]):
+        if before in stage_indexes and after in stage_indexes and stage_indexes[before] >= stage_indexes[after]:
+            errors.append(f"skill_workflow.stages[{before}] must appear before {after}")
+
+
 def validate_run2_skill_workflow(pack_dir: Path, errors: list[str]) -> None:
     data = load_json(pack_dir / "skill_workflow.json", errors)
     require_keys(
@@ -1528,6 +1647,8 @@ def validate_run2_skill_workflow(pack_dir: Path, errors: list[str]) -> None:
         return
     expected_order = 1
     seen_stage_ids: set[str] = set()
+    stage_indexes: dict[str, int] = {}
+    stage_inputs: dict[str, set[str]] = {}
     for index, stage in enumerate(stages):
         label = f"skill_workflow.stages[{index}]"
         if not isinstance(stage, dict):
@@ -1538,6 +1659,7 @@ def validate_run2_skill_workflow(pack_dir: Path, errors: list[str]) -> None:
             if stage["id"] in seen_stage_ids:
                 errors.append(f"{label}.id duplicates {stage['id']}")
             seen_stage_ids.add(stage["id"])
+            stage_indexes[stage["id"]] = index
         if "order" in stage and require_integer(f"{label}.order", stage["order"], errors):
             if stage["order"] != expected_order:
                 errors.append(f"{label}.order must be {expected_order}")
@@ -1546,7 +1668,11 @@ def validate_run2_skill_workflow(pack_dir: Path, errors: list[str]) -> None:
             require_non_empty_string(f"{label}.layer", stage["layer"], errors)
         for key in ["inputs", "outputs", "gates"]:
             if key in stage:
-                validate_string_list(f"{label}.{key}", stage[key], errors)
+                valid_strings = validate_string_list(f"{label}.{key}", stage[key], errors)
+                if key == "inputs" and valid_strings and isinstance(stage.get("id"), str):
+                    stage_inputs[stage["id"]] = set(stage["inputs"])
+
+    validate_run2_8_skill_workflow_contract(stage_indexes, stage_inputs, errors)
 
     triggers = data.get("repair_triggers", [])
     if not require_non_empty_list("skill_workflow.repair_triggers", triggers, errors):
@@ -2022,6 +2148,295 @@ def validate_run2_7_workflow_policy(
             validate_exact_string_set(f"{label}.trace_fields", mapping["trace_fields"], RUN2_7_TRACE_FIELDS, errors)
 
 
+def validate_run2_8_trace_manifest_contract(pack_dir: Path, errors: list[str]) -> set[str]:
+    path = pack_dir / "results" / "trace_manifest_contract.json"
+    if not path.exists():
+        return set()
+    data = load_json(path, errors)
+    require_keys(
+        "trace_manifest_contract.json",
+        data,
+        ["schema_version", "per_slide_required_fields"],
+        errors,
+    )
+    if "schema_version" in data:
+        require_integer("trace_manifest_contract.schema_version", data["schema_version"], errors)
+    fields = data.get("per_slide_required_fields", [])
+    if not validate_string_list("trace_manifest_contract.per_slide_required_fields", fields, errors):
+        return set()
+    actual = set(fields)
+    for field in sorted(RUN2_8_TRACE_FIELDS - actual):
+        errors.append(f"trace_manifest_contract.per_slide_required_fields missing value: {field}")
+    return actual
+
+
+def validate_run2_8_tutorial_decomposition(
+    pack_dir: Path,
+    source_ids: set[str],
+    run2_7_source_record_ids: set[str],
+    errors: list[str],
+) -> set[str]:
+    data = load_json(pack_dir / "run2_8_tutorial_decomposition.json", errors)
+    require_keys(
+        "run2_8_tutorial_decomposition.json",
+        data,
+        ["schema_version", "status", "stage_policy", "storage_policy", "units"],
+        errors,
+    )
+    if "schema_version" in data:
+        require_integer("run2_8_tutorial_decomposition.schema_version", data["schema_version"], errors)
+    if "status" in data and data["status"] != "run2_8_tutorial_decomposition_public_blocked":
+        errors.append(
+            "run2_8_tutorial_decomposition.status must be run2_8_tutorial_decomposition_public_blocked"
+        )
+    if "stage_policy" in data and data["stage_policy"] != "repeat_same_five_layers_not_run3":
+        errors.append("run2_8_tutorial_decomposition.stage_policy must be repeat_same_five_layers_not_run3")
+    storage_policy = data.get("storage_policy")
+    if isinstance(storage_policy, dict):
+        raw_media = storage_policy.get("raw_media")
+        if isinstance(raw_media, str) and raw_media != "forbidden":
+            errors.append("run2_8_tutorial_decomposition.storage_policy.raw_media must be forbidden")
+        validate_no_external_media_reference("run2_8_tutorial_decomposition.storage_policy", storage_policy, errors)
+    elif "storage_policy" in data:
+        errors.append("run2_8_tutorial_decomposition.storage_policy must be a non-empty object")
+
+    units = data.get("units", [])
+    if not require_non_empty_list("run2_8_tutorial_decomposition.units", units, errors):
+        return set()
+    unit_ids: set[str] = set()
+    derived_modalities = {"video", "audio", "transcript", "image_reference", "interaction"}
+    for index, unit in enumerate(units):
+        label = f"run2_8_tutorial_decomposition.units[{index}]"
+        if not isinstance(unit, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        require_keys(label, unit, RUN2_8_DECOMPOSITION_FIELDS, errors)
+        validate_no_external_media_reference(label, unit, errors)
+        unit_id = unit.get("id")
+        if "id" in unit and require_non_empty_string(f"{label}.id", unit_id, errors):
+            if unit_id in unit_ids:
+                errors.append(f"{label}.id duplicates {unit_id}")
+            unit_ids.add(unit_id)
+        if "source_record_ids" in unit:
+            validate_known_string_references(
+                f"{label}.source_record_ids",
+                unit["source_record_ids"],
+                run2_7_source_record_ids,
+                "Run 2.7 source record",
+                errors,
+            )
+        if "source_ids" in unit:
+            validate_known_string_references(
+                f"{label}.source_ids",
+                unit["source_ids"],
+                source_ids,
+                "source",
+                errors,
+            )
+        if "modality_mix" in unit and validate_string_list(f"{label}.modality_mix", unit["modality_mix"], errors):
+            actual_modalities = set(unit["modality_mix"])
+            for modality in actual_modalities:
+                if modality not in RUN2_MULTIMODAL_MODALITIES:
+                    errors.append(f"{label}.modality_mix has unexpected value: {modality}")
+            if not actual_modalities & derived_modalities:
+                errors.append(f"{label}.modality_mix must include video, audio, transcript, image_reference, or interaction")
+        for key in [
+            "tutorial_anchor",
+            "observed_design_move",
+            "derived_rule",
+            "native_ppt_obligation",
+            "failure_probe",
+            "anti_copy_boundary",
+            "qa_probe",
+        ]:
+            if key in unit:
+                require_non_empty_string(f"{label}.{key}", unit[key], errors)
+        if "code_generation_binding" in unit:
+            if require_non_empty_string(f"{label}.code_generation_binding", unit["code_generation_binding"], errors):
+                validate_string_mentions(f"{label}.code_generation_binding", unit["code_generation_binding"], ["native"], errors)
+        if "layout_budget" in unit:
+            validate_number_mapping(f"{label}.layout_budget", unit["layout_budget"], errors)
+        if "release_boundary" in unit:
+            validate_run2_8_release_boundary(f"{label}.release_boundary", unit["release_boundary"], errors)
+    return unit_ids
+
+
+def validate_run2_8_executable_design_memory(
+    pack_dir: Path,
+    decomposition_unit_ids: set[str],
+    errors: list[str],
+) -> tuple[set[str], set[str]]:
+    data = load_json(pack_dir / "run2_8_executable_design_memory.json", errors)
+    require_keys(
+        "run2_8_executable_design_memory.json",
+        data,
+        ["schema_version", "status", "stage_policy", "memory_type", "bindings"],
+        errors,
+    )
+    if "schema_version" in data:
+        require_integer("run2_8_executable_design_memory.schema_version", data["schema_version"], errors)
+    if "status" in data and data["status"] != "run2_8_executable_design_memory_public_blocked":
+        errors.append(
+            "run2_8_executable_design_memory.status must be run2_8_executable_design_memory_public_blocked"
+        )
+    if "stage_policy" in data and data["stage_policy"] != "repeat_same_five_layers_not_run3":
+        errors.append("run2_8_executable_design_memory.stage_policy must be repeat_same_five_layers_not_run3")
+    if "memory_type" in data and data["memory_type"] != "executable_schema_bindings":
+        errors.append("run2_8_executable_design_memory.memory_type must be executable_schema_bindings")
+
+    bindings = data.get("bindings", [])
+    if not require_non_empty_list("run2_8_executable_design_memory.bindings", bindings, errors):
+        return set(), set()
+    binding_ids: set[str] = set()
+    code_binding_ids: set[str] = set()
+    for index, binding in enumerate(bindings):
+        label = f"run2_8_executable_design_memory.bindings[{index}]"
+        if not isinstance(binding, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        require_keys(label, binding, RUN2_8_MEMORY_BINDING_FIELDS, errors)
+        validate_no_external_media_reference(label, binding, errors)
+        binding_id = binding.get("id")
+        if "id" in binding and require_non_empty_string(f"{label}.id", binding_id, errors):
+            if binding_id in binding_ids:
+                errors.append(f"{label}.id duplicates {binding_id}")
+            binding_ids.add(binding_id)
+        if "decomposition_unit_ids" in binding:
+            validate_known_string_references(
+                f"{label}.decomposition_unit_ids",
+                binding["decomposition_unit_ids"],
+                decomposition_unit_ids,
+                "Run 2.8 decomposition unit",
+                errors,
+            )
+        if "applies_to_slide_roles" in binding and validate_string_list(
+            f"{label}.applies_to_slide_roles",
+            binding["applies_to_slide_roles"],
+            errors,
+        ):
+            for role in binding["applies_to_slide_roles"]:
+                if role not in RUN2_RHYTHM_ROLES:
+                    errors.append(f"{label}.applies_to_slide_roles has unexpected value: {role}")
+        for key in [
+            "native_ppt_constraints",
+            "typography_constraints",
+            "spacing_constraints",
+            "composition_constraints",
+        ]:
+            if key in binding:
+                validate_string_list(f"{label}.{key}", binding[key], errors)
+        for key in ["design_token", "negative_control_failure", "qa_probe"]:
+            if key in binding:
+                require_non_empty_string(f"{label}.{key}", binding[key], errors)
+        code_binding = binding.get("code_binding")
+        if "code_binding" in binding:
+            if require_non_empty_dict(f"{label}.code_binding", code_binding, errors):
+                require_keys(f"{label}.code_binding", code_binding, ["function_name", "params", "layout_budget"], errors)
+                function_name = code_binding.get("function_name")
+                if "function_name" in code_binding and require_non_empty_string(
+                    f"{label}.code_binding.function_name",
+                    function_name,
+                    errors,
+                ):
+                    code_binding_ids.add(function_name)
+                if "params" in code_binding:
+                    require_non_empty_dict(f"{label}.code_binding.params", code_binding["params"], errors)
+                if "layout_budget" in code_binding:
+                    require_non_empty_dict(f"{label}.code_binding.layout_budget", code_binding["layout_budget"], errors)
+                code_binding_text = json.dumps(code_binding)
+                if not any(term in code_binding_text for term in RUN2_8_CODE_BINDING_TERMS):
+                    errors.append(f"{label}.code_binding must mention a Run 2.8 code binding term")
+        if "release_boundary" in binding:
+            validate_run2_8_release_boundary(f"{label}.release_boundary", binding["release_boundary"], errors)
+    return binding_ids, code_binding_ids
+
+
+def validate_run2_8_workflow_gate_matrix(
+    pack_dir: Path,
+    decomposition_unit_ids: set[str],
+    memory_binding_ids: set[str],
+    code_binding_ids: set[str],
+    trace_fields: set[str],
+    errors: list[str],
+) -> None:
+    data = load_json(pack_dir / "run2_8_workflow_gate_matrix.json", errors)
+    require_keys(
+        "run2_8_workflow_gate_matrix.json",
+        data,
+        ["schema_version", "status", "stage_policy", "selection_chain", "gates"],
+        errors,
+    )
+    if "schema_version" in data:
+        require_integer("run2_8_workflow_gate_matrix.schema_version", data["schema_version"], errors)
+    if "status" in data and data["status"] != "run2_8_workflow_gate_matrix_public_blocked":
+        errors.append("run2_8_workflow_gate_matrix.status must be run2_8_workflow_gate_matrix_public_blocked")
+    if "stage_policy" in data and data["stage_policy"] != "repeat_same_five_layers_not_run3":
+        errors.append("run2_8_workflow_gate_matrix.stage_policy must be repeat_same_five_layers_not_run3")
+    if "selection_chain" in data:
+        validate_exact_string_set(
+            "run2_8_workflow_gate_matrix.selection_chain",
+            data["selection_chain"],
+            RUN2_8_SELECTION_CHAIN,
+            errors,
+        )
+
+    gates = data.get("gates", [])
+    if not require_non_empty_list("run2_8_workflow_gate_matrix.gates", gates, errors):
+        return
+    gate_ids: set[str] = set()
+    for index, gate in enumerate(gates):
+        label = f"run2_8_workflow_gate_matrix.gates[{index}]"
+        if not isinstance(gate, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        require_keys(label, gate, RUN2_8_GATE_FIELDS, errors)
+        validate_no_external_media_reference(label, gate, errors)
+        gate_id = gate.get("id")
+        if "id" in gate and require_non_empty_string(f"{label}.id", gate_id, errors):
+            if gate_id in gate_ids:
+                errors.append(f"{label}.id duplicates {gate_id}")
+            gate_ids.add(gate_id)
+        if "slide_role" in gate:
+            validate_choice(f"{label}.slide_role", gate["slide_role"], RUN2_6R_REPAIR_ROLES, errors)
+        if "decomposition_unit_ids" in gate:
+            validate_known_string_references(
+                f"{label}.decomposition_unit_ids",
+                gate["decomposition_unit_ids"],
+                decomposition_unit_ids,
+                "Run 2.8 decomposition unit",
+                errors,
+            )
+        if "memory_binding_ids" in gate:
+            validate_known_string_references(
+                f"{label}.memory_binding_ids",
+                gate["memory_binding_ids"],
+                memory_binding_ids,
+                "Run 2.8 memory binding",
+                errors,
+            )
+        if "required_code_bindings" in gate:
+            validate_known_string_references(
+                f"{label}.required_code_bindings",
+                gate["required_code_bindings"],
+                code_binding_ids,
+                "Run 2.8 code binding",
+                errors,
+            )
+        if "layout_budget" in gate:
+            validate_number_mapping(f"{label}.layout_budget", gate["layout_budget"], errors)
+        if "pass_fail_checks" in gate:
+            validate_string_list(f"{label}.pass_fail_checks", gate["pass_fail_checks"], errors)
+        if "trace_fields" in gate and validate_string_list(f"{label}.trace_fields", gate["trace_fields"], errors):
+            actual_trace_fields = set(gate["trace_fields"])
+            for field in sorted(RUN2_8_TRACE_FIELDS - actual_trace_fields):
+                errors.append(f"{label}.trace_fields missing value: {field}")
+            for field in gate["trace_fields"]:
+                if trace_fields and field not in trace_fields:
+                    errors.append(f"{label}.trace_fields references unknown trace field: {field}")
+        if "public_release_gate" in gate:
+            validate_run2_8_release_boundary(f"{label}.public_release_gate", gate["public_release_gate"], errors)
+
+
 def validate_run1_design_memory_observations(observations: list[Any], errors: list[str]) -> None:
     required = ["id", "source_ids", "principle", "code_generation_rule", "do_not_copy"]
     seen_ids: set[str] = set()
@@ -2150,6 +2565,7 @@ def validate_case_pack(pack_dir: str | Path, profile: str = "default") -> Valida
         return ValidationResult(False, [str(exc)])
     if not root.exists():
         return ValidationResult(False, [f"case pack directory does not exist: {root}"])
+    run2_8_enabled = profile == "run2"
     for rel in required_files:
         path = root / rel
         if not path.exists():
@@ -2210,6 +2626,27 @@ def validate_case_pack(pack_dir: str | Path, profile: str = "default") -> Valida
             visual_repair_ids,
             errors,
         )
+        if run2_8_enabled:
+            trace_fields = validate_run2_8_trace_manifest_contract(root, errors)
+            run2_8_decomposition_unit_ids = validate_run2_8_tutorial_decomposition(
+                root,
+                source_ids,
+                run2_7_source_record_ids,
+                errors,
+            )
+            run2_8_memory_binding_ids, run2_8_code_binding_ids = validate_run2_8_executable_design_memory(
+                root,
+                run2_8_decomposition_unit_ids,
+                errors,
+            )
+            validate_run2_8_workflow_gate_matrix(
+                root,
+                run2_8_decomposition_unit_ids,
+                run2_8_memory_binding_ids,
+                run2_8_code_binding_ids,
+                trace_fields,
+                errors,
+            )
         return ValidationResult(not errors, errors)
 
     validate_sources(root, errors)
