@@ -145,28 +145,28 @@ const repairPolicyByRole = {
   close: ["repair_editorial_typography_system", "repair_mini_preview_fidelity"],
 };
 const run27SourceRecordsByRole = {
-  cover: ["mm_2_7_design_system_launch_case", "mm_2_7_motion_demo_pacing_reference"],
-  setup: ["mm_2_7_design_system_launch_case", "mm_2_7_typography_hierarchy_tutorial"],
-  contrast: ["mm_2_7_typography_hierarchy_tutorial", "mm_2_7_spacing_editorial_grid_tutorial"],
-  proof: ["mm_2_7_spacing_editorial_grid_tutorial", "mm_2_7_product_surface_interaction_reference", "mm_2_7_motion_demo_pacing_reference"],
-  climax: ["mm_2_7_video_climax_single_object", "mm_2_7_motion_demo_pacing_reference"],
-  close: ["mm_2_7_product_surface_interaction_reference", "mm_2_7_motion_demo_pacing_reference"],
+  cover: ["mm_2_7_design_system_launch_case", "mm_2_7_typography_hierarchy_tutorial", "mm_2_7_motion_demo_pacing_reference"],
+  setup: ["mm_2_7_design_system_launch_case", "mm_2_7_spacing_editorial_grid_tutorial", "mm_2_7_motion_demo_pacing_reference"],
+  contrast: ["mm_2_7_typography_hierarchy_tutorial", "mm_2_7_spacing_editorial_grid_tutorial", "mm_2_7_design_system_launch_case"],
+  proof: ["mm_2_7_design_system_launch_case", "mm_2_7_product_surface_interaction_reference", "mm_2_7_spacing_editorial_grid_tutorial"],
+  climax: ["mm_2_7_video_climax_single_object", "mm_2_7_product_surface_interaction_reference", "mm_2_7_typography_hierarchy_tutorial"],
+  close: ["mm_2_7_design_system_launch_case", "mm_2_7_motion_demo_pacing_reference", "mm_2_7_spacing_editorial_grid_tutorial"],
 };
 const run27DesignMemoryByRole = {
   cover: ["memory_typography_editorial_launch", "memory_rhythm_six_slide_launch", "memory_source_brand_sanitization_v2"],
-  setup: ["memory_typography_editorial_launch", "memory_rhythm_six_slide_launch", "memory_source_brand_sanitization_v2"],
-  contrast: ["memory_typography_editorial_launch", "memory_spacing_climax_proof_grid", "memory_rhythm_six_slide_launch", "memory_source_brand_sanitization_v2"],
+  setup: ["memory_spacing_climax_proof_grid", "memory_rhythm_six_slide_launch", "memory_source_brand_sanitization_v2"],
+  contrast: ["memory_typography_editorial_launch", "memory_spacing_climax_proof_grid", "memory_rhythm_six_slide_launch"],
   proof: ["memory_spacing_climax_proof_grid", "memory_rhythm_six_slide_launch", "memory_source_brand_sanitization_v2"],
-  climax: ["memory_composition_single_object_climax", "memory_spacing_climax_proof_grid", "memory_rhythm_six_slide_launch", "memory_source_brand_sanitization_v2"],
-  close: ["memory_rhythm_six_slide_launch", "memory_source_brand_sanitization_v2"],
+  climax: ["memory_composition_single_object_climax", "memory_typography_editorial_launch", "memory_source_brand_sanitization_v2"],
+  close: ["memory_rhythm_six_slide_launch", "memory_spacing_climax_proof_grid", "memory_source_brand_sanitization_v2"],
 };
 const run27WorkflowDecisionByRole = {
-  cover: ["decision_run2_7_cover_launch_claim", "decision_run2_7_source_brand_sanitized"],
-  setup: ["decision_run2_7_setup_problem_frame", "decision_run2_7_type_ladder_selected"],
-  contrast: ["decision_run2_7_contrast_prompt_vs_system", "decision_run2_7_spacing_grid_selected"],
-  proof: ["decision_run2_7_proof_trace_visible", "decision_run2_7_native_flow_selected"],
-  climax: ["decision_run2_7_climax_single_proof_object", "decision_run2_7_climax_scale_delta"],
-  close: ["decision_run2_7_close_release_gate", "decision_run2_7_ppt_trace_handoff"],
+  cover: ["decision_run2_7_select_real_usecase", "decision_run2_7_select_editorial_typography", "decision_run2_7_apply_brand_sanitization"],
+  setup: ["decision_run2_7_select_setup_density", "decision_run2_7_select_spacing_zones", "decision_run2_7_apply_brand_sanitization"],
+  contrast: ["decision_run2_7_select_before_after_delta", "decision_run2_7_select_editorial_typography", "decision_run2_7_select_spacing_zones"],
+  proof: ["decision_run2_7_select_source_to_memory_route", "decision_run2_7_select_native_surface_route", "decision_run2_7_apply_brand_sanitization"],
+  climax: ["decision_run2_7_select_single_object_climax", "decision_run2_7_select_editorial_typography", "decision_run2_7_apply_brand_sanitization"],
+  close: ["decision_run2_7_select_release_gate", "decision_run2_7_select_spacing_zones", "decision_run2_7_apply_brand_sanitization"],
 };
 const run27DeltaByRole = {
   cover: "from Run 2.6R visual repair to real usecase plus selected typography memory",
@@ -701,7 +701,7 @@ function renderRun27Full(slide, spec, arm, n) {
   if (spec.role === "setup") {
     sourceStack(slide, 82, 286, 330, 190, arm, "setup");
     memoryRail(slide, 470, 300, 500, arm, [
-      ["type", "editorial"],
+      ["spacing", "zones"],
       ["rhythm", "six slide"],
       ["brand", "safe"],
     ]);
