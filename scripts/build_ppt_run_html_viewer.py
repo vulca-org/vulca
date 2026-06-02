@@ -150,6 +150,17 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ArmSpec("bad_visual_primitive_memory", "Bad visual primitive", "ppt-run2-9-bad-visual-primitive-memory", "negative"),
         ),
     ),
+    RunSpec(
+        "2.10",
+        "Run 2.10",
+        "run2-10-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-10-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-10-run1-5-skill", "baseline"),
+            ArmSpec("run2_10_full_skill", "Run 2.10 full", "ppt-run2-10-full-vulca", "full"),
+            ArmSpec("bad_visual_system_memory", "Bad visual system", "ppt-run2-10-bad-visual-system-memory", "negative"),
+        ),
+    ),
 )
 
 
@@ -203,6 +214,9 @@ def build_reference_data(repo_root: Path) -> dict[str, Any]:
     run29_repair = read_json(pack / "run2_9_visual_primitive_repair.json")
     run29_modules = read_json(pack / "run2_9_executable_visual_modules.json")
     run29_gate_matrix = read_json(pack / "run2_9_visual_gate_matrix.json")
+    run210_sources = read_json(pack / "run2_10_visual_system_sources.json")
+    run210_memory = read_json(pack / "run2_10_visual_system_memory.json")
+    run210_gate_matrix = read_json(pack / "run2_10_visual_system_gate_matrix.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
     skill_markdown = read_text(pack / "vulca_ppt_skill.md")
@@ -222,6 +236,10 @@ def build_reference_data(repo_root: Path) -> dict[str, Any]:
                 "label": "Next design problem",
                 "body": "The next rerun must upgrade visual primitives: product-surface composition, asymmetry, depth, editorial spread, motion beats, and a non-dashboard climax.",
             },
+            {
+                "label": "2.10 visual-system guard",
+                "body": "Run 2.10 is a same-stage thickening pass that must prove structural asymmetry, visible whitespace, product theater, non-rectangular proof paths, and a shape-count budget rather than another palette swap.",
+            },
         ],
         "sources": sources.get("sources", []),
         "sourceRecords": source_records.get("records", []),
@@ -237,6 +255,12 @@ def build_reference_data(repo_root: Path) -> dict[str, Any]:
         "run29VisualModules": run29_modules.get("modules", []),
         "run29GateStatus": run29_gate_matrix.get("status", ""),
         "run29VisualGates": run29_gate_matrix.get("gates", []),
+        "run210SourceStatus": run210_sources.get("status", ""),
+        "run210VisualSystemSources": run210_sources.get("sources", []),
+        "run210MemoryStatus": run210_memory.get("status", ""),
+        "run210VisualSystems": run210_memory.get("visual_systems", []),
+        "run210GateStatus": run210_gate_matrix.get("status", ""),
+        "run210VisualGates": run210_gate_matrix.get("gates", []),
         "workflowStatus": workflow.get("status", ""),
         "workflowStages": workflow.get("stages", []),
         "skillMarkdown": skill_markdown,
@@ -644,6 +668,49 @@ def build_html(data: dict[str, Any]) -> str:
       </article>`;
     }}
 
+    function run210SourceCard(source) {{
+      return `<article class="dataCard">
+        <h4>${{escapeHtml(source.id)}}</h4>
+        ${{chipList([source.visual_system_direction, source.reference_type].filter(Boolean))}}
+        ${{detailBlock("Source ids", source.source_ids)}}
+        ${{detailBlock("Typography", source.typography_observation)}}
+        ${{detailBlock("Composition", source.spatial_composition_observation)}}
+        ${{detailBlock("Asset strategy", source.asset_strategy_observation)}}
+        ${{detailBlock("Sequence", source.motion_or_sequence_observation)}}
+        ${{detailBlock("Native implication", source.native_ppt_implication)}}
+        ${{detailBlock("Probe", source.public_demo_probe)}}
+      </article>`;
+    }}
+
+    function run210VisualSystemCard(system) {{
+      return `<article class="dataCard">
+        <h4>${{escapeHtml(system.visual_system_id)}}</h4>
+        ${{chipList(system.applicable_slide_roles)}}
+        ${{detailBlock("Source records", system.source_record_ids)}}
+        ${{detailBlock("Typography contract", system.typography_contract)}}
+        ${{detailBlock("Composition contract", system.composition_contract)}}
+        ${{detailBlock("Asset strategy", system.asset_strategy_contract)}}
+        ${{detailBlock("Motion sequence", system.motion_sequence_contract)}}
+        ${{detailBlock("Native module implications", system.native_ppt_module_implications)}}
+        ${{detailBlock("Forbidden sameness", system.forbidden_sameness_patterns)}}
+      </article>`;
+    }}
+
+    function run210VisualGateCard(gate) {{
+      return `<article class="dataCard">
+        <h4>${{escapeHtml(gate.id)}}</h4>
+        ${{chipList([gate.slide_role])}}
+        ${{detailBlock("Visual system source ids", gate.visual_system_source_ids)}}
+        ${{detailBlock("Visual system memory ids", gate.visual_system_memory_ids)}}
+        ${{detailBlock("Required code modules", gate.required_code_modules)}}
+        ${{detailBlock("Delta from 2.9", gate.visual_delta_from_run2_9)}}
+        ${{detailBlock("Sameness probe", gate.sameness_failure_probe)}}
+        ${{detailBlock("Shape budget", gate.shape_count_budget)}}
+        ${{detailBlock("Asymmetry and whitespace", gate.asymmetry_whitespace_rule)}}
+        ${{detailBlock("Trace fields", gate.trace_fields)}}
+      </article>`;
+    }}
+
     function stageCard(stage) {{
       return `<article class="dataCard">
         <h4>${{String(stage.order || "").padStart(2, "0")}} / ${{escapeHtml(stage.id)}}</h4>
@@ -665,11 +732,14 @@ def build_html(data: dict[str, Any]) -> str:
       const run29Primitives = (refs.run29PrimitiveRepairs || []).map(run29PrimitiveCard).join("");
       const run29Modules = (refs.run29VisualModules || []).map(run29ModuleCard).join("");
       const run29Gates = (refs.run29VisualGates || []).map(run29VisualGateCard).join("");
+      const run210Sources = (refs.run210VisualSystemSources || []).map(run210SourceCard).join("");
+      const run210Systems = (refs.run210VisualSystems || []).map(run210VisualSystemCard).join("");
+      const run210Gates = (refs.run210VisualGates || []).map(run210VisualGateCard).join("");
       const stages = (refs.workflowStages || []).map(stageCard).join("");
       const skill = escapeHtml(refs.skillMarkdown || "Missing vulca_ppt_skill.md");
 
       content.innerHTML = `<div class="sectionHeader">
-        <div><h2>Reference data and skill workflow</h2><div class="summary">Shows the allowed derived evidence behind Run 2.8, not copied tutorial media or source layouts.</div></div>
+        <div><h2>Reference data and skill workflow</h2><div class="summary">Shows the allowed derived evidence behind the case pack, not copied tutorial media or source layouts.</div></div>
         <span class="pill">${{escapeHtml(refs.packPath || "case pack")}}</span>
       </div>
       <div class="dataStack">
@@ -708,6 +778,18 @@ def build_html(data: dict[str, Any]) -> str:
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.9 visual gate matrix</h3><p>${{escapeHtml(refs.run29GateStatus)}}. Per-role gates require visual delta from Run 2.8 and explicit boxiness failure probes.</p></div><span class="pill">${{(refs.run29VisualGates || []).length}} gates</span></div>
           <div class="dataGrid">${{run29Gates}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.10 visual-system sources</h3><p>${{escapeHtml(refs.run210SourceStatus)}}. Derived observations for editorial cinema, product theater, typographic launch fields, kinetic sequence, and non-rectangular proof paths.</p></div><span class="pill">${{(refs.run210VisualSystemSources || []).length}} sources</span></div>
+          <div class="dataGrid">${{run210Sources}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.10 visual-system memory</h3><p>${{escapeHtml(refs.run210MemoryStatus)}}. Executable contracts that force structural asymmetry, whitespace, and visual-system differentiation before code generation.</p></div><span class="pill">${{(refs.run210VisualSystems || []).length}} systems</span></div>
+          <div class="dataGrid">${{run210Systems}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.10 visual-system gate matrix</h3><p>${{escapeHtml(refs.run210GateStatus)}}. Per-role gates require actual drawRun210 module calls, shape budgets, and sameness failure probes against Run 2.9.</p></div><span class="pill">${{(refs.run210VisualGates || []).length}} gates</span></div>
+          <div class="dataGrid">${{run210Gates}}</div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Skill workflow stages</h3><p>${{escapeHtml(refs.workflowStatus)}}. This is the ordered product loop, not a one-off prompt.</p></div><span class="pill">${{(refs.workflowStages || []).length}} stages</span></div>

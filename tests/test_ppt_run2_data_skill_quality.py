@@ -2854,7 +2854,7 @@ def test_run2_9_records_visual_primitive_rerun_result() -> None:
     )
 
 
-def test_ppt_run_html_viewer_builder_tracks_run2_8_outputs() -> None:
+def test_ppt_run_html_viewer_builder_tracks_latest_outputs() -> None:
     script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
 
     assert_contains(
@@ -2871,6 +2871,11 @@ def test_ppt_run_html_viewer_builder_tracks_run2_8_outputs() -> None:
             "ppt-run2-9-run1-5-skill",
             "ppt-run2-9-full-vulca",
             "ppt-run2-9-bad-visual-primitive-memory",
+            "Run 2.10",
+            "ppt-run2-10-prompt-only",
+            "ppt-run2-10-run1-5-skill",
+            "ppt-run2-10-full-vulca",
+            "ppt-run2-10-bad-visual-system-memory",
             "Full skill series",
             "Data / Skill",
             "renderData",
@@ -2883,7 +2888,13 @@ def test_ppt_run_html_viewer_builder_tracks_run2_8_outputs() -> None:
             "run2_9_visual_primitive_repair.json",
             "run2_9_executable_visual_modules.json",
             "run2_9_visual_gate_matrix.json",
+            "run2_10_visual_system_sources.json",
+            "run2_10_visual_system_memory.json",
+            "run2_10_visual_system_gate_matrix.json",
             "Run 2.9 visual primitive repair",
+            "Run 2.10 visual-system sources",
+            "Run 2.10 visual-system memory",
+            "Run 2.10 visual-system gate matrix",
             "vulca_ppt_skill.md",
             "Why 2.8 still looks close to 2.7",
         ],
