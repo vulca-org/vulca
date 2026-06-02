@@ -1989,6 +1989,15 @@ def test_run2_results_reviewed_and_public_blocked() -> None:
     )
     assert_contains(
         comparison,
+        [
+            "Run 2.8",
+            "run2_8_full_skill",
+            "run2_8_executable_design_memory.json",
+            "actual native module calls",
+        ],
+    )
+    assert_contains(
+        comparison,
         ["Run 2.2", "run2_2_full_skill", "multimodal_learning", "visual_learning_target_execution"],
     )
     assert_contains(comparison, ["Run 2.1", "run2_1_full_skill", "product learning", "not public-release claims"])
@@ -1996,6 +2005,10 @@ def test_run2_results_reviewed_and_public_blocked() -> None:
     assert_contains(delivery, ["public publishing", "blocked", "native render", "human approval", "trace manifest"])
     assert_contains(delivery, ["Run 2.3", "pass for local Run 2.3 arms", "native visual components"])
     assert_contains(delivery, ["Run 2.6", "run2-6-four-arm-contact-sheet", "workflow_decision_policy"])
+    assert_contains(
+        delivery,
+        ["Run 2.8", "run2-8-four-arm-contact-sheet", "actual native module calls"],
+    )
     assert_contains(delivery, ["Run 2.2", "run2-2-four-arm-contact-sheet", "public-video-grade visual proof"])
     assert trace_contract["required_output_name"] == "trace_manifest.json"
     assert "aesthetic_move_ids" in trace_contract["per_slide_required_fields"]
@@ -2200,6 +2213,51 @@ def test_run2_6r_records_visual_repair_rerun_result() -> None:
             "visual_repair_policy.json",
             "run2_6r_visual_repair_full_skill",
             "full-skill-series",
+            "public blocked",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_run2_8_records_executable_design_memory_rerun_result() -> None:
+    result = (PACK / "results" / "run2_8_executable_design_memory_result.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_8_executable_design_memory_result.json")
+    gate_json = load_json(PACK / "results" / "run2_8_visual_qa_gate.json")
+
+    assert result_json["status"] == "rerun_completed_public_blocked"
+    assert result_json["public_ready"] is False
+    assert result_json["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert result_json["rerun"]["status"] == "completed"
+    assert result_json["rerun"]["best_internal_arm"] == "run2_8_full_skill"
+    assert result_json["rerun"]["generated_outputs_committed"] is False
+    assert result_json["qa_summary"]["arm_isolation_guard"] == "passed"
+    assert result_json["qa_summary"]["trace_truthfulness_guard"] == "passed"
+    assert result_json["qa_summary"]["run2_8_full_media_entries"] == 0
+    assert result_json["qa_summary"]["run2_8_full_picture_shapes"] == 0
+    assert result_json["control_boundary"]["bad_memory_schema"].startswith("commercial_case_plus_decomposition_only")
+    assert "run2-8-four-arm-contact-sheet.png" in result_json["rerun"]["combined_contact_sheet"]
+    assert "run2-full-skill-series-horizontal.png" in result_json["rerun"]["full_skill_series_sheet"]
+    assert gate_json["status"] == "run2_8_visual_qa_gate_public_blocked"
+    assert gate_json["observed"]["full_arm_trace_origin"] == "actual_native_module_calls"
+    assert gate_json["observed"]["full_arm_required_code_bindings_missing"] == 0
+    assert gate_json["observed"]["full_arm_budget_failures"] == 0
+    assert gate_json["decision"] == "public_blocked"
+    assert_contains(
+        json.dumps(result_json["five_layer_learning"]),
+        [
+            "run2_8_tutorial_decomposition.json",
+            "run2_8_executable_design_memory.json",
+            "run2_8_workflow_gate_matrix.json",
+            "actual native module calls",
+        ],
+    )
+    assert_contains(
+        result,
+        [
+            "Run 2.8",
+            "executable design memory",
+            "workflow gate matrix",
+            "actual native module calls",
             "public blocked",
             "Do not advance to Run 3.0",
         ],

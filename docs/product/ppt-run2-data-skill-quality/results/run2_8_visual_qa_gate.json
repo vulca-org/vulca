@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "status": "run2_8_visual_qa_gate_public_blocked",
+  "public_ready": false,
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "review_artifacts": [
+    ".gemini-agent/artifacts/2026-06-02T043532104Z-artifacts.json",
+    ".gemini-agent/artifacts/2026-06-02T043547016Z-artifacts.json"
+  ],
+  "reviewed_images": [
+    "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-8-four-arm-contact-sheet.png",
+    "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png"
+  ],
+  "non_numeric_review": {
+    "run2_8_four_arm": {
+      "positive_findings": [
+        "run2_8_full uses stronger hierarchy and cleaner layout than prompt-only, Run 1.5, and bad-memory controls",
+        "one hero object carries the climax instead of equal panels",
+        "data-to-memory-to-gate-to-native-PPT routing is visible",
+        "bad-memory-schema shows the intended negative-control failure mode: muted palette, weaker delta, and less credible climax"
+      ],
+      "risks": [
+        "small body text and diagram labels are hard to inspect at contact-sheet scale",
+        "high-contrast red/dark palette may overstate improvement if not tested with alternate visual directions",
+        "native render inspection and human approval are still missing"
+      ]
+    },
+    "run2_full_skill_series": {
+      "positive_findings": [
+        "progression from Run 2.0 to Run 2.8 is visible",
+        "Run 2.8 shifts the series toward more concrete data-flow and executable-memory mapping",
+        "Run 2.8 keeps public-blocked release gates visible"
+      ],
+      "risks": [
+        "the image is too wide for reliable small-text review",
+        "some earlier run-to-run differences remain subtle at series scale",
+        "native PPT serialization/render inspection is not yet proven in public-release conditions"
+      ]
+    }
+  },
+  "thresholds": {
+    "layout_errors": 0,
+    "layout_warnings": 0,
+    "media_entries": 0,
+    "picture_shapes": 0,
+    "required_delivery_gate": "internal-demo-ok-public-blocked",
+    "required_trace_origin_for_full_arm": "actual_native_module_calls",
+    "required_human_approval_for_public": true,
+    "required_native_render_inspection_for_public": true,
+    "required_source_brand_sanitization_for_public": true
+  },
+  "observed": {
+    "layout_errors_all_arms": 0,
+    "layout_warnings_all_arms": 0,
+    "media_entries_all_arms": 0,
+    "picture_shapes_all_arms": 0,
+    "delivery_gate_all_arms": "internal-demo-ok-public-blocked",
+    "full_arm_trace_origin": "actual_native_module_calls",
+    "full_arm_required_code_bindings_missing": 0,
+    "full_arm_budget_failures": 0,
+    "human_approval": false,
+    "native_render_inspection": false,
+    "source_brand_sanitization_public_approval": false
+  },
+  "decision": "public_blocked",
+  "blocking_reasons": [
+    "human approval is not recorded",
+    "native or cross-platform render inspection is not complete",
+    "source-brand sanitization approval is not recorded",
+    "contact-sheet review still flags small-text legibility risk",
+    "public-demo-grade typography and final visual direction are not yet proven"
+  ],
+  "next_required_action": "Use the gate findings as input for the next same-stage data/workflow and design-memory thickening pass."
+}

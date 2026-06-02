@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "status": "rerun_completed_public_blocked",
+  "public_ready": false,
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "rerun": {
+    "status": "completed",
+    "generated_outputs_committed": false,
+    "combined_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-8-four-arm-contact-sheet.png",
+    "full_skill_series_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png",
+    "delivery_gate": "internal-demo-ok-public-blocked",
+    "best_internal_arm": "run2_8_full_skill",
+    "best_internal_arm_verdict": "executable_design_memory_visible_and_trace_truthful_but_not_public_release_ready"
+  },
+  "five_layer_learning": {
+    "real_commercial_usecase": "Run 2.8 continues the same commercial PPT design usecase rather than advancing to Run 3.0.",
+    "multimodal_tutorial_case_database": "run2_8_tutorial_decomposition.json decomposes tutorial/video/audio/transcript/image/interaction observations into native PPT obligations without storing copied media.",
+    "design_memory": "run2_8_executable_design_memory.json turns derived observations into executable schema bindings with code binding functions.",
+    "skill_workflow": "run2_8_workflow_gate_matrix.json requires per-slide decomposition units, memory binding ids, code bindings, layout budgets, and trace fields before generated output can pass.",
+    "code_generated_native_ppt": "run2_8_full_skill generated native editable PPT shapes and records actual native module calls in trace_manifest.json."
+  },
+  "qa_summary": {
+    "prompt_only_layout_errors": 0,
+    "prompt_only_layout_warnings": 0,
+    "run1_5_layout_errors": 0,
+    "run1_5_layout_warnings": 0,
+    "run2_8_full_layout_errors": 0,
+    "run2_8_full_layout_warnings": 0,
+    "bad_memory_schema_layout_errors": 0,
+    "bad_memory_schema_layout_warnings": 0,
+    "delivery_gate_all_arms": "internal-demo-ok-public-blocked",
+    "arm_isolation_guard": "passed",
+    "trace_truthfulness_guard": "passed",
+    "prompt_only_media_entries": 0,
+    "run1_5_media_entries": 0,
+    "run2_8_full_media_entries": 0,
+    "bad_memory_schema_media_entries": 0,
+    "prompt_only_picture_shapes": 0,
+    "run1_5_picture_shapes": 0,
+    "run2_8_full_picture_shapes": 0,
+    "bad_memory_schema_picture_shapes": 0,
+    "prompt_only_native_shape_count": 200,
+    "run1_5_native_shape_count": 200,
+    "run2_8_full_native_shape_count": 266,
+    "bad_memory_schema_native_shape_count": 225,
+    "generated_outputs_committed": false,
+    "gemini_contact_sheet_reviews": [
+      ".gemini-agent/artifacts/2026-06-02T043532104Z-artifacts.json",
+      ".gemini-agent/artifacts/2026-06-02T043547016Z-artifacts.json"
+    ]
+  },
+  "control_boundary": {
+    "prompt_only": "commercial_case_only",
+    "run1_5_skill": "commercial_case_plus_run1_5_only",
+    "run2_8_full_skill": "commercial_case_plus_run2_8_tutorial_decomposition_executable_design_memory_workflow_gate_matrix",
+    "bad_memory_schema": "commercial_case_plus_decomposition_only; executable design memory and gate matrix are forbidden"
+  },
+  "visual_learning": {
+    "gemini_summary": "Gemini identified stronger hierarchy, cleaner layout, high-contrast hero-object emphasis, and clearer data-to-memory-to-gate-to-native-PPT routing in Run 2.8 full compared with controls.",
+    "useful_delta": "Run 2.8 improves the proof mechanism: trace now records actual native module calls, and full-arm required code bindings are checked against rendered metrics.",
+    "remaining_visual_gap": "Contact-sheet scale still limits fine typography review; full skill series remains too wide for small-text inspection; native render inspection and human approval remain missing.",
+    "visual_quality_boundary": "internal_demo_grade_until_native_render_human_review_source_sanitization_and_public_demo_visual_pass"
+  },
+  "next_required_action": "Continue the same five layers: thicken tutorial/video decomposition quality, make executable design memory more specific, keep strict workflow gates, improve editorial typography/spacing/climax composition, and rerun four arms.",
+  "release_gate": "public_blocked_until_native_render_human_approval_source_brand_sanitization_and_public_demo_visual_pass"
+}

@@ -2,7 +2,33 @@
 
 Status: rerun-reviewed-public-blocked.
 
-Run 2.7 is the latest reviewed internal result. It reran the four-arm experiment as a same-stage data/workflow thickening pass, adding Run 2.7-specific usecase, multimodal source records, design memory, and workflow policy on top of the Run 2.6R visual repair loop without advancing to Run 3.0:
+Run 2.8 is the latest reviewed internal result. It reran the four-arm experiment as a same-stage executable-design-memory pass, adding Run 2.8 tutorial decomposition, executable design memory, and workflow gate matrix on top of the Run 2.7 data/workflow loop without advancing to Run 3.0:
+
+- `run2_8_tutorial_decomposition.json` turns tutorial/video/audio/transcript/image/interaction observations into derived native-PPT obligations.
+- `run2_8_executable_design_memory.json` binds those obligations to concrete native module functions.
+- `run2_8_workflow_gate_matrix.json` requires per-slide decomposition units, memory binding ids, code bindings, layout budgets, and trace fields.
+- `run2_8_full_skill` is the current best internal arm for proving data/workflow execution because the contact sheet shows selected type/spacing modules, before-after delta modules, workflow gates, and a climax hero object.
+- `run2-8-four-arm-contact-sheet` records the four-arm comparison, and `run2-full-skill-series-horizontal` records the full-skill progression through Run 2.8.
+- public blocked remains the correct release state until native render inspection, source-brand sanitization review, and human approval pass.
+
+Gemini artifact review judged Run 2.8 full stronger on hierarchy, cleaner layout, high-contrast hero-object emphasis, and data-to-memory-to-gate-to-native-PPT routing. The critical engineering improvement is trace truthfulness: `run2_8_code_binding_ids` now comes from actual native module calls recorded during rendering, and the full arm fails if required gate-matrix bindings are missing.
+
+| Arm | Generation status | Review status | Delivery gate | Result |
+| --- | --- | --- | --- | --- |
+| `prompt_only` | generated | reviewed | `internal-demo-ok-public-blocked` | control |
+| `run1_5_skill` | generated | reviewed | `internal-demo-ok-public-blocked` | baseline |
+| `run2_8_full_skill` | generated | reviewed | `internal-demo-ok-public-blocked` | best internal executable-memory arm |
+| `bad_memory_schema` | generated | reviewed | `internal-demo-ok-public-blocked` | negative control |
+
+## Run 2.8 Findings
+
+- `prompt_only`: remains isolated from Run 2.8 tutorial decomposition, executable design memory, workflow gate matrix, and trace contract inputs.
+- `run1_5_skill`: remains the evidence-heavy baseline and forbids Run 2.8 executable memory/workflow inputs.
+- `run2_8_full_skill`: best internal arm for proving the five-layer product loop can route into generated native PPT with actual module-call trace closure.
+- `bad_memory_schema`: confirms that decomposition alone is insufficient; without executable design memory and gate matrix, the output weakens into muted equal panels, weaker delta, and less credible climax.
+- Audit correction: Run 2.8 should continue the same five-layer loop by thickening tutorial/video decomposition, design-memory specificity, workflow gates, typography, spacing, and climax composition. Do not advance to Run 3.0.
+
+Run 2.7 was the prior reviewed internal result. It reran the four-arm experiment as a same-stage data/workflow thickening pass, adding Run 2.7-specific usecase, multimodal source records, design memory, and workflow policy on top of the Run 2.6R visual repair loop without advancing to Run 3.0:
 
 - `run2_7_commercial_usecase.json` selects one concrete AI design-to-production platform launch deck before generation.
 - `run2_7_multimodal_source_records.json` turns tutorial/case/video/audio/transcript/interaction observations into derived rules with anti-copy boundaries.
