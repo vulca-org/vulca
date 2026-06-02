@@ -9,6 +9,7 @@ from typing import Any
 
 
 DEFAULT_THREAD_ID = "019e7d9c-532a-70b3-8892-fa3ae42baef2"
+PACK_REL = Path("docs") / "product" / "ppt-run2-data-skill-quality"
 
 
 @dataclass(frozen=True)
@@ -154,6 +155,12 @@ def read_json(path: Path) -> dict[str, Any]:
         return {}
 
 
+def read_text(path: Path) -> str:
+    if not path.exists():
+        return ""
+    return path.read_text(encoding="utf-8")
+
+
 def build_arm(base: Path, out: Path, spec: ArmSpec) -> dict[str, Any] | None:
     arm_dir = base / spec.slug
     preview = arm_dir / "preview"
@@ -176,7 +183,48 @@ def build_arm(base: Path, out: Path, spec: ArmSpec) -> dict[str, Any] | None:
     }
 
 
+def build_reference_data(repo_root: Path) -> dict[str, Any]:
+    pack = repo_root / PACK_REL
+    sources = read_json(pack / "sources.json")
+    decomposition = read_json(pack / "run2_8_tutorial_decomposition.json")
+    memory = read_json(pack / "run2_8_executable_design_memory.json")
+    gate_matrix = read_json(pack / "run2_8_workflow_gate_matrix.json")
+    workflow = read_json(pack / "skill_workflow.json")
+    source_records = read_json(pack / "run2_7_multimodal_source_records.json")
+    skill_markdown = read_text(pack / "vulca_ppt_skill.md")
+
+    return {
+        "packPath": PACK_REL.as_posix(),
+        "diagnosis": [
+            {
+                "label": "2.8 visual verdict",
+                "body": "The data and workflow are executable, but the code bindings still render mostly type ladders, spacing zones, before/after panels, gates, and one hero object.",
+            },
+            {
+                "label": "Why it still feels boxy",
+                "body": "Tutorial learning has been translated into native PPT rectangles and text modules, so it proves traceable execution more than high-end editorial composition.",
+            },
+            {
+                "label": "Next design problem",
+                "body": "The next rerun must upgrade visual primitives: product-surface composition, asymmetry, depth, editorial spread, motion beats, and a non-dashboard climax.",
+            },
+        ],
+        "sources": sources.get("sources", []),
+        "sourceRecords": source_records.get("records", []),
+        "decompositionStatus": decomposition.get("status", ""),
+        "decompositionUnits": decomposition.get("units", []),
+        "memoryStatus": memory.get("status", ""),
+        "memoryBindings": memory.get("bindings", []),
+        "gateStatus": gate_matrix.get("status", ""),
+        "workflowGates": gate_matrix.get("gates", []),
+        "workflowStatus": workflow.get("status", ""),
+        "workflowStages": workflow.get("stages", []),
+        "skillMarkdown": skill_markdown,
+    }
+
+
 def build_data(presentations_dir: Path, out: Path) -> dict[str, Any]:
+    repo_root = Path(__file__).resolve().parents[1]
     runs: list[dict[str, Any]] = []
     for run in RUN_SPECS:
         arms = [arm for arm_spec in run.arms if (arm := build_arm(presentations_dir, out, arm_spec))]
@@ -199,6 +247,7 @@ def build_data(presentations_dir: Path, out: Path) -> dict[str, Any]:
         "runs": runs,
         "latestRunId": runs[-1]["id"] if runs else "",
         "generatedFrom": "scripts/build_ppt_run_html_viewer.py",
+        "references": build_reference_data(repo_root),
     }
 
 
@@ -266,6 +315,22 @@ def build_html(data: dict[str, Any]) -> str:
     .contactRow button {{ height: 30px; border: 1px solid var(--line); background: #f8f8f5; border-radius: 6px; padding: 0 10px; cursor: zoom-in; color: var(--muted); }}
     .sheetPanel {{ background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px; min-width: 1120px; }}
     .sheetPanel img {{ display: block; width: 100%; height: auto; border: 1px solid #c8c4b8; background: #fff; cursor: zoom-in; }}
+    .dataStack {{ display: grid; gap: 16px; max-width: 1480px; }}
+    .dataBand {{ background: var(--panel); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }}
+    .dataBandHead {{ display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; padding: 14px 16px; border-bottom: 1px solid var(--line); background: #fbfaf7; }}
+    .dataBandHead h3 {{ margin: 0; font-size: 16px; }}
+    .dataBandHead p {{ margin: 4px 0 0; color: var(--muted); font-size: 12px; line-height: 1.45; }}
+    .dataGrid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; padding: 14px; }}
+    .dataCard {{ border: 1px solid #d8d5ce; border-radius: 8px; background: #fff; padding: 12px; display: grid; gap: 9px; align-content: start; min-width: 0; }}
+    .dataCard h4 {{ margin: 0; font-size: 14px; line-height: 1.25; overflow-wrap: anywhere; }}
+    .dataCard p {{ margin: 0; color: var(--muted); font-size: 12px; line-height: 1.45; overflow-wrap: anywhere; }}
+    .dataCard a {{ color: var(--blue); text-decoration: none; overflow-wrap: anywhere; }}
+    .dataCard a:hover {{ text-decoration: underline; }}
+    .dataLabel {{ color: var(--muted); font-size: 10px; font-weight: 800; letter-spacing: 0; text-transform: uppercase; }}
+    .chipRow {{ display: flex; flex-wrap: wrap; gap: 5px; }}
+    .chip {{ display: inline-flex; align-items: center; min-height: 22px; padding: 2px 7px; border: 1px solid #d8d5ce; border-radius: 999px; background: #f7f6f1; color: #343841; font-size: 11px; overflow-wrap: anywhere; }}
+    .dataList {{ margin: 0; padding-left: 18px; color: var(--muted); font-size: 12px; line-height: 1.45; }}
+    .dataPre {{ margin: 0; max-height: 420px; overflow: auto; white-space: pre-wrap; color: #2a2e35; font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; padding: 14px; }}
     .empty {{ padding: 40px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; color: var(--muted); }}
     .modal {{ position: fixed; inset: 0; z-index: 20; display: none; align-items: center; justify-content: center; background: rgba(12, 14, 17, 0.86); padding: 22px; }}
     .modal.open {{ display: flex; }}
@@ -305,6 +370,7 @@ def build_html(data: dict[str, Any]) -> str:
         <button class="seg active" data-view="four">Four arms</button>
         <button class="seg" data-view="series">Full series</button>
         <button class="seg" data-view="sheet">Sheets</button>
+        <button class="seg" data-view="data">Data / Skill</button>
       </div>
     </nav>
     <main class="content" id="content"></main>
@@ -338,6 +404,50 @@ def build_html(data: dict[str, Any]) -> str:
 
     function button(label, className, attrs = "") {{
       return `<button class="${{className}}" ${{attrs}}>${{label}}</button>`;
+    }}
+
+    function safe(value) {{
+      return value === undefined || value === null ? "" : String(value);
+    }}
+
+    function escapeHtml(value) {{
+      const map = {{
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }};
+      return safe(value).replace(/[&<>"']/g, (char) => map[char]);
+    }}
+
+    function safeHref(value) {{
+      const url = safe(value).trim();
+      return /^https?:\\/\\//i.test(url) ? url : "";
+    }}
+
+    function chipList(items) {{
+      const values = Array.isArray(items) ? items : [];
+      if (!values.length) return "";
+      return `<div class="chipRow">${{values.map((item) => `<span class="chip">${{escapeHtml(item)}}</span>`).join("")}}</div>`;
+    }}
+
+    function listBlock(items) {{
+      const values = Array.isArray(items) ? items : [];
+      if (!values.length) return "";
+      return `<ul class="dataList">${{values.map((item) => `<li>${{escapeHtml(item)}}</li>`).join("")}}</ul>`;
+    }}
+
+    function detailBlock(label, value) {{
+      if (value === undefined || value === null || value === "") return "";
+      if (Array.isArray(value) && !value.length) return "";
+      if (typeof value === "object" && !Array.isArray(value)) {{
+        return `<div><div class="dataLabel">${{escapeHtml(label)}}</div><pre class="dataPre">${{escapeHtml(JSON.stringify(value, null, 2))}}</pre></div>`;
+      }}
+      if (Array.isArray(value)) {{
+        return `<div><div class="dataLabel">${{escapeHtml(label)}}</div>${{listBlock(value)}}</div>`;
+      }}
+      return `<div><div class="dataLabel">${{escapeHtml(label)}}</div><p>${{escapeHtml(value)}}</p></div>`;
     }}
 
     function slideTile(src, title, index) {{
@@ -408,6 +518,131 @@ def build_html(data: dict[str, Any]) -> str:
       </div>`;
     }}
 
+    function sourceCard(source) {{
+      const href = safeHref(source.url);
+      const url = href
+        ? `<a href="${{escapeHtml(href)}}" target="_blank" rel="noreferrer">${{escapeHtml(source.url)}}</a>`
+        : detailBlock("URL", source.url);
+      return `<article class="dataCard">
+        <h4>${{escapeHtml(source.title || source.id)}}</h4>
+        ${{chipList([source.role, source.allowed_use].filter(Boolean))}}
+        <p><strong>${{escapeHtml(source.id)}}</strong></p>
+        ${{url}}
+        ${{detailBlock("Accessed", source.accessed_on)}}
+      </article>`;
+    }}
+
+    function sourceRecordCard(record) {{
+      return `<article class="dataCard">
+        <h4>${{escapeHtml(record.id)}}</h4>
+        ${{chipList(record.modalities)}}
+        ${{detailBlock("Source", record.source_id)}}
+        ${{detailBlock("Observation", record.visual_observation)}}
+        ${{detailBlock("Derived rule", record.extracted_design_rule)}}
+        ${{detailBlock("Native implication", record.native_ppt_implication)}}
+      </article>`;
+    }}
+
+    function decompositionCard(unit) {{
+      return `<article class="dataCard">
+        <h4>${{escapeHtml(unit.id)}}</h4>
+        ${{chipList(unit.modality_mix)}}
+        ${{detailBlock("Source ids", unit.source_ids)}}
+        ${{detailBlock("Tutorial method", unit.tutorial_anchor)}}
+        ${{detailBlock("Observed move", unit.observed_design_move)}}
+        ${{detailBlock("Derived rule", unit.derived_rule)}}
+        ${{detailBlock("Code binding", unit.code_generation_binding)}}
+        ${{detailBlock("Native obligation", unit.native_ppt_obligation)}}
+        ${{detailBlock("Failure probe", unit.failure_probe)}}
+      </article>`;
+    }}
+
+    function bindingCard(binding) {{
+      const code = binding.code_binding || {{}};
+      return `<article class="dataCard">
+        <h4>${{escapeHtml(binding.id)}}</h4>
+        ${{chipList(binding.applies_to_slide_roles)}}
+        ${{detailBlock("Function", code.function_name)}}
+        ${{detailBlock("Params", code.params)}}
+        ${{detailBlock("Composition constraints", binding.composition_constraints)}}
+        ${{detailBlock("Typography constraints", binding.typography_constraints)}}
+        ${{detailBlock("Spacing constraints", binding.spacing_constraints)}}
+        ${{detailBlock("Negative-control failure", binding.negative_control_failure)}}
+      </article>`;
+    }}
+
+    function gateCard(gate) {{
+      return `<article class="dataCard">
+        <h4>${{escapeHtml(gate.id)}}</h4>
+        ${{chipList([gate.slide_role])}}
+        ${{detailBlock("Required code bindings", gate.required_code_bindings)}}
+        ${{detailBlock("Layout budget", gate.layout_budget)}}
+        ${{detailBlock("Pass/fail checks", gate.pass_fail_checks)}}
+        ${{detailBlock("Trace fields", gate.trace_fields)}}
+      </article>`;
+    }}
+
+    function stageCard(stage) {{
+      return `<article class="dataCard">
+        <h4>${{String(stage.order || "").padStart(2, "0")}} / ${{escapeHtml(stage.id)}}</h4>
+        ${{detailBlock("Inputs", stage.inputs || stage.input_files || stage.input_ids)}}
+        ${{detailBlock("Outputs", stage.outputs || stage.output_files || stage.output_ids)}}
+        ${{detailBlock("Gate", stage.pass_fail_gate || stage.gate || stage.qa_gate)}}
+        ${{detailBlock("Repair", stage.repair_recommendation)}}
+      </article>`;
+    }}
+
+    function renderData() {{
+      const refs = DATA.references || {{}};
+      const diagnosis = (refs.diagnosis || []).map((item) => `<article class="dataCard"><h4>${{escapeHtml(item.label)}}</h4><p>${{escapeHtml(item.body)}}</p></article>`).join("");
+      const sources = (refs.sources || []).map(sourceCard).join("");
+      const records = (refs.sourceRecords || []).map(sourceRecordCard).join("");
+      const units = (refs.decompositionUnits || []).map(decompositionCard).join("");
+      const bindings = (refs.memoryBindings || []).map(bindingCard).join("");
+      const gates = (refs.workflowGates || []).map(gateCard).join("");
+      const stages = (refs.workflowStages || []).map(stageCard).join("");
+      const skill = escapeHtml(refs.skillMarkdown || "Missing vulca_ppt_skill.md");
+
+      content.innerHTML = `<div class="sectionHeader">
+        <div><h2>Reference data and skill workflow</h2><div class="summary">Shows the allowed derived evidence behind Run 2.8, not copied tutorial media or source layouts.</div></div>
+        <span class="pill">${{escapeHtml(refs.packPath || "case pack")}}</span>
+      </div>
+      <div class="dataStack">
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Why 2.8 still looks close to 2.7</h3><p>The current bottleneck is visual primitive quality, not trace plumbing.</p></div></div>
+          <div class="dataGrid">${{diagnosis}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Source URLs</h3><p>Reference identities stored in sources.json. These links are for inspection; copied media, layouts, transcripts, and brand marks remain forbidden.</p></div><span class="pill">${{(refs.sources || []).length}} sources</span></div>
+          <div class="dataGrid">${{sources}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.7 multimodal records</h3><p>Derived source observations feeding the later Run 2.8 decomposition.</p></div><span class="pill">${{(refs.sourceRecords || []).length}} records</span></div>
+          <div class="dataGrid">${{records}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.8 tutorial decomposition</h3><p>${{escapeHtml(refs.decompositionStatus)}}. This is where tutorial/video methods become generator rules.</p></div><span class="pill">${{(refs.decompositionUnits || []).length}} units</span></div>
+          <div class="dataGrid">${{units}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Executable design memory</h3><p>${{escapeHtml(refs.memoryStatus)}}. These bindings explain why the output still depends on a small set of native PPT modules.</p></div><span class="pill">${{(refs.memoryBindings || []).length}} bindings</span></div>
+          <div class="dataGrid">${{bindings}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Workflow gate matrix</h3><p>${{escapeHtml(refs.gateStatus)}}. Per-slide role gates connect data selection to required code calls and trace fields.</p></div><span class="pill">${{(refs.workflowGates || []).length}} gates</span></div>
+          <div class="dataGrid">${{gates}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Skill workflow stages</h3><p>${{escapeHtml(refs.workflowStatus)}}. This is the ordered product loop, not a one-off prompt.</p></div><span class="pill">${{(refs.workflowStages || []).length}} stages</span></div>
+          <div class="dataGrid">${{stages}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Vulca PPT Skill</h3><p>The persistent skill contract used to decide what data, memory, code, QA, and release gates mean.</p></div></div>
+          <pre class="dataPre">${{skill}}</pre>
+        </section>
+      </div>`;
+    }}
+
     function render() {{
       renderVersionRail();
       document.querySelectorAll("#viewRail .seg").forEach((item) => {{
@@ -415,6 +650,7 @@ def build_html(data: dict[str, Any]) -> str:
       }});
       if (selectedView === "series") renderSeries();
       else if (selectedView === "sheet") renderSheets();
+      else if (selectedView === "data") renderData();
       else renderFour();
     }}
 

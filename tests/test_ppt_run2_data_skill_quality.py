@@ -2279,6 +2279,16 @@ def test_ppt_run_html_viewer_builder_tracks_run2_8_outputs() -> None:
             "ppt-run2-8-full-vulca",
             "ppt-run2-8-bad-memory-schema",
             "Full skill series",
+            "Data / Skill",
+            "renderData",
+            "safeHref",
+            "sources.json",
+            "run2_7_multimodal_source_records.json",
+            "run2_8_tutorial_decomposition.json",
+            "run2_8_executable_design_memory.json",
+            "run2_8_workflow_gate_matrix.json",
+            "vulca_ppt_skill.md",
+            "Why 2.8 still looks close to 2.7",
         ],
     )
 
