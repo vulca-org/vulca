@@ -1850,6 +1850,35 @@ def test_run2_8_generator_uses_executable_memory_and_preserves_boundaries() -> N
     for field in EXPECTED_RUN2_8_TRACE_FIELDS:
         assert re.search(fr"{field}:\s*fullRun28\s*\?", body), field
     assert not re.search(r"run2_8_memory_binding_ids:\s*bad", body)
+    for function_name in [
+        "drawRun28TypeScale",
+        "drawRun28SpacingZones",
+        "drawRun28BeforeAfterDelta",
+        "drawRun28WorkflowGate",
+        "drawRun28Climax",
+    ]:
+        assert f'registerNativeModule(metrics, "{function_name}")' in body
+    assert "const actualCodeBindingIds = Array.from(roleMetrics.codeBindingIds);" in body
+    assert "run2_8_code_binding_ids: fullRun28" in body
+    assert "actualCodeBindingIds" in body
+    assert "gate objects ${metrics.gateObjects}" in body
+    assert "metrics.workflowObjects > layoutBudget.max_gate_objects" not in body
+    assert "full_arm_contract_preview_not_rendered" in body
+    assert "full_arm_native_generator_rendered" in body
+    render_start = body.index("function renderRun28FullSlide")
+    contrast_start = body.index('} else if (spec.role === "contrast")', render_start)
+    proof_start = body.index('} else if (spec.role === "proof")', render_start)
+    climax_start = body.index('} else if (spec.role === "climax")', render_start)
+    close_start = body.index('} else {', climax_start)
+    contrast_block = body[contrast_start:proof_start]
+    proof_block = body[proof_start:climax_start]
+    climax_block = body[climax_start:close_start]
+    assert "drawRun28SpacingZones" in contrast_block
+    assert "drawRun28BeforeAfterDelta" in contrast_block
+    assert "drawRun28BeforeAfterDelta" in proof_block
+    assert "drawRun28SpacingZones" in proof_block
+    assert "drawRun28WorkflowGate" in proof_block
+    assert "drawRun28Climax(slide, heroBinding, arm, spec, metrics, { typeBinding })" in climax_block
 
 
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
