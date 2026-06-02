@@ -8,6 +8,7 @@
     "generated_outputs_committed": false,
     "combined_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-8-four-arm-contact-sheet.png",
     "full_skill_series_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png",
+    "html_viewer": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run-viewer.html",
     "delivery_gate": "internal-demo-ok-public-blocked",
     "best_internal_arm": "run2_8_full_skill",
     "best_internal_arm_verdict": "executable_design_memory_visible_and_trace_truthful_but_not_public_release_ready"

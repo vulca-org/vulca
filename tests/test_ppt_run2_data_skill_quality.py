@@ -2237,6 +2237,7 @@ def test_run2_8_records_executable_design_memory_rerun_result() -> None:
     assert result_json["control_boundary"]["bad_memory_schema"].startswith("commercial_case_plus_decomposition_only")
     assert "run2-8-four-arm-contact-sheet.png" in result_json["rerun"]["combined_contact_sheet"]
     assert "run2-full-skill-series-horizontal.png" in result_json["rerun"]["full_skill_series_sheet"]
+    assert result_json["rerun"]["html_viewer"].endswith("/ppt-run-viewer.html")
     assert gate_json["status"] == "run2_8_visual_qa_gate_public_blocked"
     assert gate_json["observed"]["full_arm_trace_origin"] == "actual_native_module_calls"
     assert gate_json["observed"]["full_arm_required_code_bindings_missing"] == 0
@@ -2256,10 +2257,28 @@ def test_run2_8_records_executable_design_memory_rerun_result() -> None:
         [
             "Run 2.8",
             "executable design memory",
+            "HTML viewer",
             "workflow gate matrix",
             "actual native module calls",
             "public blocked",
             "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_builder_tracks_run2_8_outputs() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "ppt-run-viewer.html",
+            "Run 2.8",
+            "ppt-run2-8-prompt-only",
+            "ppt-run2-8-run1-5-skill",
+            "ppt-run2-8-full-vulca",
+            "ppt-run2-8-bad-memory-schema",
+            "Full skill series",
         ],
     )
 

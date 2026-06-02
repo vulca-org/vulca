@@ -19,6 +19,7 @@ Two mandatory images were generated locally:
 
 - Four-arm sheet: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-8-four-arm-contact-sheet.png`
 - Full-skill-series sheet: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png`
+- HTML viewer: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run-viewer.html`
 
 Gemini artifact reviews at `.gemini-agent/artifacts/2026-06-02T043532104Z-artifacts.json` and `.gemini-agent/artifacts/2026-06-02T043547016Z-artifacts.json` judged Run 2.8 full stronger on hierarchy, cleaner layout, high-contrast hero-object emphasis, and data-to-memory-to-gate-to-native-PPT routing. The same reviews keep the result public blocked because contact-sheet scale makes small typography hard to inspect and native render/human approval gates are still incomplete.
 
