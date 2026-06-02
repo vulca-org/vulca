@@ -2,6 +2,8 @@
 
 Status: rerun-reviewed-public-blocked.
 
+Run 2.9 is the latest data/workflow repair layer, not a new generated-arm result. It adds visual primitive repair data, executable visual modules, and a visual gate matrix to address the Run 2.8 box/card/report aesthetic failure before the next four-arm rerun.
+
 Run 2.8 is the latest reviewed internal result. It reran the four-arm experiment as a same-stage executable-design-memory pass, adding Run 2.8 tutorial decomposition, executable design memory, and workflow gate matrix on top of the Run 2.7 data/workflow loop without advancing to Run 3.0:
 
 - `run2_8_tutorial_decomposition.json` turns tutorial/video/audio/transcript/image/interaction observations into derived native-PPT obligations.

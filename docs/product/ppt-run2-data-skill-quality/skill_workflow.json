@@ -338,8 +338,74 @@
       ]
     },
     {
-      "id": "generate_code_first_ppt",
+      "id": "repair_run2_9_visual_primitives",
       "order": 17,
+      "layer": "multimodal_tutorial_case_data",
+      "inputs": [
+        "run2_9_visual_primitive_repair.json",
+        "run2_8_tutorial_decomposition.json",
+        "sources.json"
+      ],
+      "outputs": [
+        "selected Run 2.9 visual primitive ids",
+        "boxiness failure probes",
+        "native PPT visual repair obligations",
+        "anti-copy boundaries"
+      ],
+      "gates": [
+        "every visual primitive references valid Run 2.8 decomposition units",
+        "raw media remains forbidden",
+        "each primitive names the visual problem and a native PPT translation",
+        "boxiness failure probe is defined before generation"
+      ]
+    },
+    {
+      "id": "select_run2_9_executable_visual_modules",
+      "order": 18,
+      "layer": "evidence_aesthetic_asset_memory",
+      "inputs": [
+        "run2_9_visual_primitive_repair.json",
+        "run2_9_executable_visual_modules.json"
+      ],
+      "outputs": [
+        "selected Run 2.9 visual module ids",
+        "drawRun29 code module names",
+        "native visual primitive layout budgets",
+        "negative control failure probes"
+      ],
+      "gates": [
+        "every visual module references valid Run 2.9 visual primitives",
+        "every module exposes function_name, params, and layout_budget",
+        "native editable primitives are explicit",
+        "negative control failure mentions boxiness or report-like patterns"
+      ]
+    },
+    {
+      "id": "apply_run2_9_visual_gate_matrix",
+      "order": 19,
+      "layer": "skill_workflow",
+      "inputs": [
+        "run2_9_visual_primitive_repair.json",
+        "run2_9_executable_visual_modules.json",
+        "run2_9_visual_gate_matrix.json",
+        "results/trace_manifest_contract.json"
+      ],
+      "outputs": [
+        "selected Run 2.9 visual gate matrix ids",
+        "required visual code modules by slide role",
+        "Run 2.9 trace field obligations",
+        "visual delta and boxiness gate checks"
+      ],
+      "gates": [
+        "every gate references valid visual primitives and executable modules",
+        "required code modules match executable visual module function names",
+        "trace contract contains all Run 2.9 fields before native generation",
+        "visual delta from Run 2.8 is checked before claiming aesthetic improvement"
+      ]
+    },
+    {
+      "id": "generate_code_first_ppt",
+      "order": 20,
       "layer": "skill_workflow",
       "inputs": [
         "generation_briefs/run2_skill.md",
@@ -359,6 +425,9 @@
         "selected Run 2.8 decomposition units",
         "selected Run 2.8 executable design memory bindings",
         "selected Run 2.8 workflow gate matrix",
+        "selected Run 2.9 visual primitive repairs",
+        "selected Run 2.9 executable visual modules",
+        "selected Run 2.9 visual gate matrix",
         "visual delta from Run 2.5",
         "visual repair validation probe",
         "asset memory"
@@ -373,6 +442,10 @@
         "aesthetic_memory_v2_ids are recorded",
         "visual_production_module_ids are recorded",
         "motion target ids and sequence component ids are recorded",
+        "run2_9_visual_primitive_ids are recorded",
+        "run2_9_visual_module_ids are recorded",
+        "run2_9_code_module_ids are recorded",
+        "run2_9_boxiness_failure_probe is recorded",
         "ordered reveal steps use native editable objects",
         "fallback policy is recorded when selected modules degrade",
         "no full-slide rasterized output",
@@ -381,7 +454,7 @@
     },
     {
       "id": "run_structural_and_aesthetic_qa",
-      "order": 18,
+      "order": 21,
       "layer": "rerun_and_evaluation",
       "inputs": ["PPTX", "layout JSON", "contact sheet", "aesthetic_rubric.md", "trace_manifest.json"],
       "outputs": ["delivery report", "layout report", "Gemini artifact review", "score table", "visual validation outcome"],
@@ -393,12 +466,13 @@
         "theme validation checks whether selected theme, typography, and spacing policies are visible",
         "visual validation checks whether production modules are visible in the contact sheet",
         "visual repair validation checks whether Run 2.6R differs visibly from Run 2.5 and Run 2.6",
+        "Run 2.9 visual delta gate checks whether boxiness decreased from Run 2.8",
         "Gemini review is recorded"
       ]
     },
     {
       "id": "recommend_repairs",
-      "order": 19,
+      "order": 22,
       "layer": "skill_workflow",
       "inputs": ["delivery report", "layout report", "Gemini review", "visual validation outcome", "human visual notes"],
       "outputs": ["repair recommendations", "blocked release reasons"],
@@ -406,7 +480,7 @@
     },
     {
       "id": "refresh_trace_qa_outcomes",
-      "order": 20,
+      "order": 23,
       "layer": "rerun_and_evaluation",
       "inputs": ["trace_manifest.json", "delivery report", "layout report", "visual validation outcome"],
       "outputs": ["post-QA trace manifest", "backup manifest", "dry-run diff"],
@@ -414,7 +488,7 @@
     },
     {
       "id": "emit_release_decision",
-      "order": 21,
+      "order": 24,
       "layer": "rerun_and_evaluation",
       "inputs": ["post-QA trace manifest", "native render result", "human approval record"],
       "outputs": ["internal_only or public_blocked decision"],

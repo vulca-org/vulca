@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "status": "run2_9_executable_visual_modules_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "memory_type": "visual_primitive_code_modules",
+  "modules": [
+    {
+      "id": "module_2_9_editorial_spread",
+      "primitive_repair_ids": [
+        "primitive_2_9_editorial_spread_composition"
+      ],
+      "applies_to_slide_roles": [
+        "cover",
+        "setup",
+        "contrast"
+      ],
+      "code_binding": {
+        "function_name": "drawRun29EditorialSpread",
+        "params": {
+          "dominantFieldCanvasShareMin": 0.56,
+          "proofRailCanvasShareMax": 0.22,
+          "maxParallelPanels": 1,
+          "asymmetryRequired": true
+        },
+        "layout_budget": {
+          "max_text_boxes": 7,
+          "max_visible_words": 44,
+          "max_equal_panels": 1
+        }
+      },
+      "composition_contract": "Create one dominant editorial field and one subordinate proof rail before any evidence object is drawn.",
+      "native_ppt_primitives": [
+        "editable native headline text",
+        "native guide lines",
+        "native proof rail",
+        "editable anchor shape group"
+      ],
+      "negative_control_failure": "Bad memory keeps the slide as equal box cards, dashboard panels, or report sections.",
+      "qa_probe": "Contact sheet should show asymmetry and one dominant field before proof details.",
+      "release_boundary": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "id": "module_2_9_layered_product_surface",
+      "primitive_repair_ids": [
+        "primitive_2_9_product_surface_depth"
+      ],
+      "applies_to_slide_roles": [
+        "setup",
+        "proof",
+        "close"
+      ],
+      "code_binding": {
+        "function_name": "drawRun29LayeredProductSurface",
+        "params": {
+          "layerCountMin": 3,
+          "foregroundShareMin": 0.34,
+          "backgroundOpacityMax": 0.24,
+          "activePathNodes": 3
+        },
+        "layout_budget": {
+          "max_text_boxes": 9,
+          "max_visible_words": 48,
+          "max_surface_labels": 7
+        }
+      },
+      "composition_contract": "Build product evidence as layered native planes with a foreground action and a traceable decision path.",
+      "native_ppt_primitives": [
+        "editable native planes",
+        "native path connectors",
+        "editable chips",
+        "native foreground action object"
+      ],
+      "negative_control_failure": "Bad memory renders a flat box, dashboard card cluster, or copied source-like UI.",
+      "qa_probe": "Contact sheet should show depth and an active foreground layer without relying on source imagery.",
+      "release_boundary": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "id": "module_2_9_motion_storyboard",
+      "primitive_repair_ids": [
+        "primitive_2_9_motion_storyboard_sequence"
+      ],
+      "applies_to_slide_roles": [
+        "proof",
+        "climax",
+        "close"
+      ],
+      "code_binding": {
+        "function_name": "drawRun29MotionStoryboard",
+        "params": {
+          "beatCount": 3,
+          "maxWordsPerBeat": 8,
+          "scaleDeltaMin": 1.35,
+          "pauseMarkerRequired": true
+        },
+        "layout_budget": {
+          "max_text_boxes": 8,
+          "max_visible_words": 42,
+          "max_storyboard_beats": 3
+        }
+      },
+      "composition_contract": "Represent motion as three unequal native scenes with a visible scale and pause change.",
+      "native_ppt_primitives": [
+        "editable native mini-scenes",
+        "native arrows",
+        "editable scale markers",
+        "native sequence labels"
+      ],
+      "negative_control_failure": "Bad memory turns motion into three equal boxes or a static grid with text-only motion claims.",
+      "qa_probe": "Contact sheet should show setup, transformation, and handoff as visually different beats.",
+      "release_boundary": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "id": "module_2_9_climax_stage",
+      "primitive_repair_ids": [
+        "primitive_2_9_climax_stage_composition"
+      ],
+      "applies_to_slide_roles": [
+        "climax"
+      ],
+      "code_binding": {
+        "function_name": "drawRun29ClimaxStage",
+        "params": {
+          "heroCanvasShareMin": 0.62,
+          "perimeterEvidenceMax": 3,
+          "supportingPanelCanvasShareMax": 0.18,
+          "stageContrastRequired": true
+        },
+        "layout_budget": {
+          "max_text_boxes": 5,
+          "max_visible_words": 32,
+          "max_hero_objects": 1
+        }
+      },
+      "composition_contract": "Reserve a theatrical stage field for one hero object, with proof pushed to the perimeter.",
+      "native_ppt_primitives": [
+        "editable native hero object",
+        "native contrast field",
+        "editable perimeter proof labels",
+        "native connector highlights"
+      ],
+      "negative_control_failure": "Bad memory produces a dashboard climax, hero inside a card, or report-like proof grid.",
+      "qa_probe": "Full-series contact sheet should make the climax the strongest visual break.",
+      "release_boundary": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "id": "module_2_9_typographic_field",
+      "primitive_repair_ids": [
+        "primitive_2_9_typographic_field_composition"
+      ],
+      "applies_to_slide_roles": [
+        "cover",
+        "close"
+      ],
+      "code_binding": {
+        "function_name": "drawRun29TypographicField",
+        "params": {
+          "headlineCanvasShareMin": 0.42,
+          "supportObjectCountMax": 2,
+          "markerCountMax": 4,
+          "boxFrameAllowed": false
+        },
+        "layout_budget": {
+          "max_text_boxes": 6,
+          "max_visible_words": 38,
+          "max_support_objects": 2
+        }
+      },
+      "composition_contract": "Let editable typography define the canvas before supporting objects appear.",
+      "native_ppt_primitives": [
+        "editable native headline text",
+        "native marker shapes",
+        "editable response object",
+        "native alignment guides"
+      ],
+      "negative_control_failure": "Bad memory places big type into a card or follows it with a box grid.",
+      "qa_probe": "Cover and close should read as typographic compositions rather than title plus cards.",
+      "release_boundary": "public_blocked_until_native_render_trace_and_human_review"
+    }
+  ]
+}

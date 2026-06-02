@@ -1,0 +1,234 @@
+{
+  "schema_version": 1,
+  "status": "run2_9_visual_primitive_repair_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "storage_policy": {
+    "default": "derived_visual_primitives_only",
+    "raw_media": "forbidden",
+    "copyright_boundary": "Store only paraphrased visual methods, native-PPT translations, and failure probes; do not store copied media, frames, screenshots, transcripts, source layouts, brand marks, or raw assets."
+  },
+  "diagnosis": {
+    "from_run": "2.8",
+    "failure": "Run 2.8 proves traceable data-to-code execution, but the visible result still reads as cards, boxes, panels, and report-like grids.",
+    "repair_principle": "Upgrade the extracted data from design principles to visual primitives that can be implemented as native editable PPT modules."
+  },
+  "primitive_repairs": [
+    {
+      "id": "primitive_2_9_editorial_spread_composition",
+      "source_ids": [
+        "duarte_slide_design_course",
+        "slidemodel_visual_hierarchy",
+        "present_partners_whitespace"
+      ],
+      "decomposition_unit_ids": [
+        "decomp_2_8_type_hierarchy_readability_stack",
+        "decomp_2_8_makeover_split_text_into_visual_steps"
+      ],
+      "target_slide_roles": [
+        "cover",
+        "setup",
+        "contrast"
+      ],
+      "visual_problem": "The slide reads as stacked cards because each proof unit receives similar shape weight and spacing.",
+      "reference_method": "Use an editorial spread: one oversized claim field, one narrow proof rail, and one anchor object that breaks the equal-panel rhythm.",
+      "extracted_visual_primitive": "Asymmetric editorial canvas with a dominant text/object field and a subordinate evidence rail.",
+      "native_ppt_translation": "Render editable native headline text, a native proof rail, one anchor shape group, and guide lines; no copied layout or rasterized full slide.",
+      "code_module_obligation": "Call a drawRun29EditorialSpread function before drawing any card-like proof block, then record primitive id, module id, and trace geometry.",
+      "layout_recipe": {
+        "dominant_field_canvas_share_min": 0.56,
+        "proof_rail_canvas_share_max": 0.22,
+        "max_parallel_panels": 1,
+        "asymmetry_required": true
+      },
+      "typography_recipe": {
+        "headline_min_pt": 48,
+        "proof_rail_label_max_words": 7,
+        "secondary_note_max_words": 12
+      },
+      "motion_or_sequence_recipe": "Reveal the dominant claim before proof rail details; proof appears as a route, not as equal boxes.",
+      "forbidden_box_patterns": [
+        "four equal dashboard cards",
+        "three equal report panels",
+        "card grid with identical weight",
+        "rectangle-only composition"
+      ],
+      "boxiness_failure_probe": "Fails if the contact sheet first reads as a box grid rather than an editorial spread.",
+      "qa_probe": "At contact-sheet scale, the slide should show one dominant field and one secondary rail before any detail is read.",
+      "anti_copy_boundary": "Do not copy course examples, screenshots, grids, source brand, exercise files, or lesson prose.",
+      "release_boundary": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "id": "primitive_2_9_product_surface_depth",
+      "source_ids": [
+        "figma_slides_product",
+        "figma_config_2025_identity",
+        "run2_7_figma_design_system_launch_reference"
+      ],
+      "decomposition_unit_ids": [
+        "decomp_2_8_design_first_code_second_pipeline",
+        "decomp_2_8_source_brand_sanitized_case_evidence"
+      ],
+      "target_slide_roles": [
+        "setup",
+        "proof",
+        "close"
+      ],
+      "visual_problem": "The product proof surface is currently a flat placeholder, so it looks like another rectangle instead of a believable product system.",
+      "reference_method": "Build an original product surface using layered planes, offset shadows, active state chips, and one decision path.",
+      "extracted_visual_primitive": "Layered product-surface stack with foreground action, middle evidence layer, and muted background context.",
+      "native_ppt_translation": "Use editable native rounded-free rectangles, lines, chips, connectors, and text; generated images may only be ambient background, not proof content.",
+      "code_module_obligation": "Call a drawRun29LayeredProductSurface function that creates depth through offsets, scale, opacity, and native connectors, then traces active-layer ids.",
+      "layout_recipe": {
+        "layer_count_min": 3,
+        "foreground_layer_canvas_share_min": 0.34,
+        "background_context_opacity_max": 0.24,
+        "active_path_nodes": 3
+      },
+      "typography_recipe": {
+        "surface_title_min_pt": 26,
+        "chip_label_min_pt": 15,
+        "max_surface_labels": 7
+      },
+      "motion_or_sequence_recipe": "Build depth from back layer to front layer, then reveal the active decision path.",
+      "forbidden_box_patterns": [
+        "single flat product rectangle",
+        "dashboard card cluster",
+        "source UI copy",
+        "equal panel grid"
+      ],
+      "boxiness_failure_probe": "Fails if the product surface can be reduced to one flat box with labels.",
+      "qa_probe": "The viewer should perceive foreground, middle, and background layers before reading labels.",
+      "anti_copy_boundary": "Do not copy product UI, icons, source brand, screenshots, interaction layouts, or product names.",
+      "release_boundary": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "id": "primitive_2_9_motion_storyboard_sequence",
+      "source_ids": [
+        "figma_config_2025_identity",
+        "run2_7_product_demo_video_reference",
+        "duarte_persuasive_visual_storytelling"
+      ],
+      "decomposition_unit_ids": [
+        "decomp_2_8_climax_object_scale_and_pause",
+        "decomp_2_8_duarte_remove_nonessential_data"
+      ],
+      "target_slide_roles": [
+        "proof",
+        "climax",
+        "close"
+      ],
+      "visual_problem": "Motion learning is mostly trace metadata, so the static deck does not show how the story builds toward the climax.",
+      "reference_method": "Represent motion as a storyboard strip with scale, pause, and handoff states instead of naming motion in copy.",
+      "extracted_visual_primitive": "Three-beat native storyboard: setup state, transformation state, and handoff state with clear scale delta.",
+      "native_ppt_translation": "Draw editable native mini-scenes, arrows, scale markers, and sequence labels; do not store or embed source video frames.",
+      "code_module_obligation": "Call a drawRun29MotionStoryboard function that creates ordered native scene objects and records reveal order in trace.",
+      "layout_recipe": {
+        "beat_count": 3,
+        "max_words_per_beat": 8,
+        "scale_delta_min": 1.35,
+        "pause_marker_required": true
+      },
+      "typography_recipe": {
+        "beat_label_min_pt": 18,
+        "sequence_caption_max_words": 10,
+        "climax_beat_label_max_words": 6
+      },
+      "motion_or_sequence_recipe": "Beat one orients, beat two transforms, beat three hands off; no beat may be a duplicate card.",
+      "forbidden_box_patterns": [
+        "three identical cards",
+        "static timeline with equal rectangles",
+        "motion described only in text",
+        "video-frame imitation"
+      ],
+      "boxiness_failure_probe": "Fails if the storyboard is visually indistinguishable from three equal boxes.",
+      "qa_probe": "Contact-sheet review should show a visible progression and climax beat without reading the captions.",
+      "anti_copy_boundary": "Do not copy video frames, audio, transcript text, source camera composition, or source brand.",
+      "release_boundary": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "id": "primitive_2_9_climax_stage_composition",
+      "source_ids": [
+        "stripe_sessions_2025_product_keynote",
+        "google_cloud_next_2025_wrap",
+        "run2_7_product_demo_video_reference"
+      ],
+      "decomposition_unit_ids": [
+        "decomp_2_8_climax_object_scale_and_pause",
+        "decomp_2_8_design_first_code_second_pipeline"
+      ],
+      "target_slide_roles": [
+        "climax"
+      ],
+      "visual_problem": "The climax object is larger in Run 2.8, but it still sits inside a report-like composition.",
+      "reference_method": "Stage the climax like a keynote reveal: one theatrical focal object, one verdict phrase, and supporting proof pushed to the perimeter.",
+      "extracted_visual_primitive": "Climax stage with central hero object, dark or high-contrast field, perimeter evidence, and a deliberate pause zone.",
+      "native_ppt_translation": "Use editable native grouped objects, contrast fields, connector highlights, and restrained text; do not flatten the climax.",
+      "code_module_obligation": "Call a drawRun29ClimaxStage function that reserves the stage field, blocks dashboard grids, and records hero bounds in trace.",
+      "layout_recipe": {
+        "hero_canvas_share_min": 0.62,
+        "perimeter_evidence_max": 3,
+        "supporting_panel_canvas_share_max": 0.18,
+        "stage_contrast_required": true
+      },
+      "typography_recipe": {
+        "verdict_min_pt": 44,
+        "verdict_max_words": 7,
+        "support_label_min_pt": 18
+      },
+      "motion_or_sequence_recipe": "Reveal the stage field first, then scale the hero object, then reveal perimeter evidence after the pause.",
+      "forbidden_box_patterns": [
+        "dashboard climax",
+        "equal proof panels",
+        "hero inside a card",
+        "dense status strip"
+      ],
+      "boxiness_failure_probe": "Fails if the climax object appears trapped inside a box or competes with equal panels.",
+      "qa_probe": "The climax slide must be the strongest visual break in the full-series contact sheet.",
+      "anti_copy_boundary": "Do not copy keynote slides, source product UI, source brand, camera framing, screenshots, or transcript text.",
+      "release_boundary": "public_blocked_until_native_render_trace_and_human_review"
+    },
+    {
+      "id": "primitive_2_9_typographic_field_composition",
+      "source_ids": [
+        "figma_config_2025_identity",
+        "duarte_slide_design_course",
+        "run2_7_presentation_hierarchy_reference"
+      ],
+      "decomposition_unit_ids": [
+        "decomp_2_8_type_hierarchy_readability_stack",
+        "decomp_2_8_duarte_remove_nonessential_data"
+      ],
+      "target_slide_roles": [
+        "cover",
+        "close"
+      ],
+      "visual_problem": "Large text alone is not enough; Run 2.8 type changes still sit on box-based layouts.",
+      "reference_method": "Use typography as the composition field: type scale, cropping-safe alignment, sparse markers, and one object that responds to the headline.",
+      "extracted_visual_primitive": "Typographic field where the headline shapes the canvas and smaller proof objects orbit it.",
+      "native_ppt_translation": "Render editable native type, marker shapes, and one response object; keep all claim text editable and avoid text-as-image.",
+      "code_module_obligation": "Call a drawRun29TypographicField function that lays out text as a field before any supporting object is drawn, then records type-object trace relationships.",
+      "layout_recipe": {
+        "headline_canvas_share_min": 0.42,
+        "support_object_count_max": 2,
+        "marker_count_max": 4,
+        "box_frame_allowed": false
+      },
+      "typography_recipe": {
+        "headline_min_pt": 58,
+        "headline_line_count_max": 3,
+        "support_note_max_words": 14
+      },
+      "motion_or_sequence_recipe": "Headline appears first as the field; supporting object responds after the message is understood.",
+      "forbidden_box_patterns": [
+        "headline in a card",
+        "large text plus four boxes",
+        "boxed footer strip",
+        "equal label blocks"
+      ],
+      "boxiness_failure_probe": "Fails if the headline is merely placed inside a box rectangle or followed by a card grid.",
+      "qa_probe": "At thumbnail scale, the cover and close should read as typographic compositions, not title slides above boxes.",
+      "anti_copy_boundary": "Do not copy source type specimens, brand marks, screenshots, event graphics, or source layouts.",
+      "release_boundary": "public_blocked_until_native_render_trace_and_human_review"
+    }
+  ]
+}

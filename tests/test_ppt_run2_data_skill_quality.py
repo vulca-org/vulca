@@ -288,6 +288,28 @@ EXPECTED_RUN2_8_TRACE_FIELDS = {
     "run2_8_layout_budget",
     "run2_8_visual_delta_from_run2_7",
 }
+EXPECTED_RUN2_9_VISUAL_PRIMITIVE_IDS = {
+    "primitive_2_9_editorial_spread_composition",
+    "primitive_2_9_product_surface_depth",
+    "primitive_2_9_motion_storyboard_sequence",
+    "primitive_2_9_climax_stage_composition",
+    "primitive_2_9_typographic_field_composition",
+}
+EXPECTED_RUN2_9_VISUAL_MODULE_IDS = {
+    "module_2_9_editorial_spread",
+    "module_2_9_layered_product_surface",
+    "module_2_9_motion_storyboard",
+    "module_2_9_climax_stage",
+    "module_2_9_typographic_field",
+}
+EXPECTED_RUN2_9_TRACE_FIELDS = {
+    "run2_9_visual_primitive_ids",
+    "run2_9_visual_module_ids",
+    "run2_9_gate_matrix_ids",
+    "run2_9_code_module_ids",
+    "run2_9_boxiness_failure_probe",
+    "run2_9_visual_delta_from_run2_8",
+}
 EXPECTED_RUN2_6_USECASE_FIELDS = {
     "id",
     "source_ids",
@@ -1168,6 +1190,161 @@ def test_run2_8_workflow_gate_matrix_connects_schema_to_trace() -> None:
     assert EXPECTED_RUN2_8_TRACE_FIELDS <= covered_trace_fields
 
 
+def test_run2_9_has_visual_primitive_repair_data() -> None:
+    repair_path = PACK / "run2_9_visual_primitive_repair.json"
+    assert repair_path.exists(), "missing Run 2.9 visual primitive repair data"
+    repair = load_json(repair_path)
+    sources = load_json(PACK / "sources.json")
+    run2_8_decomposition = load_json(PACK / "run2_8_tutorial_decomposition.json")
+    source_ids = {source["id"] for source in sources["sources"]}
+    decomposition_ids = {unit["id"] for unit in run2_8_decomposition["units"]}
+
+    assert repair["status"] == "run2_9_visual_primitive_repair_public_blocked"
+    assert repair["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert repair["storage_policy"]["raw_media"] == "forbidden"
+    assert EXPECTED_RUN2_9_VISUAL_PRIMITIVE_IDS <= {item["id"] for item in repair["primitive_repairs"]}
+
+    required = {
+        "id",
+        "source_ids",
+        "decomposition_unit_ids",
+        "target_slide_roles",
+        "visual_problem",
+        "reference_method",
+        "extracted_visual_primitive",
+        "native_ppt_translation",
+        "code_module_obligation",
+        "layout_recipe",
+        "typography_recipe",
+        "motion_or_sequence_recipe",
+        "forbidden_box_patterns",
+        "boxiness_failure_probe",
+        "qa_probe",
+        "anti_copy_boundary",
+        "release_boundary",
+    }
+    for primitive in repair["primitive_repairs"]:
+        assert required <= set(primitive), primitive["id"]
+        assert set(primitive["source_ids"]) <= source_ids
+        assert set(primitive["decomposition_unit_ids"]) <= decomposition_ids
+        assert set(primitive["target_slide_roles"]) <= EXPECTED_RHYTHM_ROLES
+        assert_contains(primitive["native_ppt_translation"], ["native", "editable"])
+        assert_contains(primitive["code_module_obligation"], ["function", "trace"])
+        assert_mentions_any(
+            " ".join(primitive["forbidden_box_patterns"]),
+            {"dashboard", "card", "equal panel", "rectangle", "grid"},
+        )
+        assert_contains(primitive["boxiness_failure_probe"], ["box"])
+        for field_value in iter_string_values(primitive):
+            lowered = field_value.lower()
+            for marker in RUN2_8_FORBIDDEN_MEDIA_MARKERS:
+                assert marker not in lowered, f"{primitive['id']} contains copied media marker {marker!r}"
+
+
+def test_run2_9_has_executable_visual_modules_and_gate_matrix() -> None:
+    repair_path = PACK / "run2_9_visual_primitive_repair.json"
+    modules_path = PACK / "run2_9_executable_visual_modules.json"
+    matrix_path = PACK / "run2_9_visual_gate_matrix.json"
+    trace_contract_path = PACK / "results" / "trace_manifest_contract.json"
+    workflow_path = PACK / "skill_workflow.json"
+    assert repair_path.exists(), "missing Run 2.9 visual primitive repair data"
+    assert modules_path.exists(), "missing Run 2.9 executable visual modules"
+    assert matrix_path.exists(), "missing Run 2.9 visual gate matrix"
+    modules = load_json(modules_path)
+    matrix = load_json(matrix_path)
+    repair = load_json(repair_path)
+    trace_contract = load_json(trace_contract_path)
+    workflow = load_json(workflow_path)
+    primitive_ids = {item["id"] for item in repair["primitive_repairs"]}
+    module_ids = {module["id"] for module in modules["modules"]}
+    code_module_ids = {module["code_binding"]["function_name"] for module in modules["modules"]}
+
+    assert modules["status"] == "run2_9_executable_visual_modules_public_blocked"
+    assert modules["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert modules["memory_type"] == "visual_primitive_code_modules"
+    assert EXPECTED_RUN2_9_VISUAL_MODULE_IDS <= module_ids
+    assert EXPECTED_RUN2_9_TRACE_FIELDS <= set(trace_contract["per_slide_required_fields"])
+
+    module_required = {
+        "id",
+        "primitive_repair_ids",
+        "applies_to_slide_roles",
+        "code_binding",
+        "composition_contract",
+        "native_ppt_primitives",
+        "negative_control_failure",
+        "qa_probe",
+        "release_boundary",
+    }
+    for module in modules["modules"]:
+        assert module_required <= set(module), module["id"]
+        assert set(module["primitive_repair_ids"]) <= primitive_ids
+        assert set(module["applies_to_slide_roles"]) <= EXPECTED_RHYTHM_ROLES
+        assert {"function_name", "params", "layout_budget"} <= set(module["code_binding"]), module["id"]
+        assert module["code_binding"]["function_name"].startswith("drawRun29")
+        assert_contains(" ".join(module["native_ppt_primitives"]), ["native", "editable"])
+        assert_mentions_any(
+            module["negative_control_failure"],
+            {"box", "dashboard", "card", "grid", "report"},
+        )
+
+    assert matrix["status"] == "run2_9_visual_gate_matrix_public_blocked"
+    assert matrix["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert set(matrix["selection_chain"]) == {
+        "run2_8_visual_diagnosis",
+        "run2_9_visual_primitive_repairs",
+        "run2_9_executable_visual_modules",
+        "run2_9_visual_gate_matrix",
+        "native_ppt_code_generation",
+        "visual_delta_gate",
+        "delivery_gate",
+    }
+    gate_required = {
+        "id",
+        "slide_role",
+        "visual_primitive_ids",
+        "visual_module_ids",
+        "required_code_modules",
+        "boxiness_failure_probe",
+        "pass_fail_checks",
+        "trace_fields",
+        "public_release_gate",
+    }
+    covered_trace_fields = set()
+    for gate in matrix["gates"]:
+        assert gate_required <= set(gate), gate["id"]
+        assert gate["slide_role"] in EXPECTED_RHYTHM_ROLES
+        assert set(gate["visual_primitive_ids"]) <= primitive_ids
+        assert set(gate["visual_module_ids"]) <= module_ids
+        assert set(gate["required_code_modules"]) <= code_module_ids
+        assert set(gate["trace_fields"]) <= set(trace_contract["per_slide_required_fields"])
+        assert_contains(gate["boxiness_failure_probe"], ["box"])
+        covered_trace_fields |= set(gate["trace_fields"])
+    assert EXPECTED_RUN2_9_TRACE_FIELDS <= covered_trace_fields
+
+    workflow_stage_ids = [stage["id"] for stage in workflow["stages"]]
+    run2_9_stages = [
+        "repair_run2_9_visual_primitives",
+        "select_run2_9_executable_visual_modules",
+        "apply_run2_9_visual_gate_matrix",
+    ]
+    for stage_id in run2_9_stages:
+        assert stage_id in workflow_stage_ids
+        assert workflow_stage_ids.index(stage_id) < workflow_stage_ids.index("generate_code_first_ppt")
+    assert workflow_stage_ids.index(run2_9_stages[0]) < workflow_stage_ids.index(run2_9_stages[1])
+    assert workflow_stage_ids.index(run2_9_stages[1]) < workflow_stage_ids.index(run2_9_stages[2])
+    assert_contains(
+        json.dumps(workflow),
+        [
+            "run2_9_visual_primitive_repair.json",
+            "run2_9_executable_visual_modules.json",
+            "run2_9_visual_gate_matrix.json",
+            "visual primitive",
+            "boxiness",
+        ],
+    )
+
+
 def test_run2_four_arm_isolation_mentions_multimodal_and_target_boundaries() -> None:
     prompt_only = (PACK / "generation_briefs" / "prompt_only.md").read_text(encoding="utf-8")
     run1_5 = (PACK / "generation_briefs" / "run1_5_skill.md").read_text(encoding="utf-8")
@@ -1365,13 +1542,16 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
         "decompose_run2_8_tutorial_video_units",
         "select_run2_8_executable_design_memory",
         "apply_run2_8_workflow_gate_matrix",
+        "repair_run2_9_visual_primitives",
+        "select_run2_9_executable_visual_modules",
+        "apply_run2_9_visual_gate_matrix",
         "generate_code_first_ppt",
         "run_structural_and_aesthetic_qa",
         "recommend_repairs",
         "refresh_trace_qa_outcomes",
         "emit_release_decision",
     ]
-    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 22))
+    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 25))
     assert workflow["repair_triggers"]
     workflow_text = json.dumps(workflow)
     assert "multimodal_database.json" in workflow_text
@@ -1391,6 +1571,9 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
     assert "run2_8_tutorial_decomposition.json" in workflow_text
     assert "run2_8_executable_design_memory.json" in workflow_text
     assert "run2_8_workflow_gate_matrix.json" in workflow_text
+    assert "run2_9_visual_primitive_repair.json" in workflow_text
+    assert "run2_9_executable_visual_modules.json" in workflow_text
+    assert "run2_9_visual_gate_matrix.json" in workflow_text
     assert "aesthetic_benchmark_bank.json" in workflow_text
     assert "workflow_decision_policy.json" in workflow_text
     assert "visual_repair_policy.json" in workflow_text
@@ -2287,6 +2470,10 @@ def test_ppt_run_html_viewer_builder_tracks_run2_8_outputs() -> None:
             "run2_8_tutorial_decomposition.json",
             "run2_8_executable_design_memory.json",
             "run2_8_workflow_gate_matrix.json",
+            "run2_9_visual_primitive_repair.json",
+            "run2_9_executable_visual_modules.json",
+            "run2_9_visual_gate_matrix.json",
+            "Run 2.9 visual primitive repair",
             "vulca_ppt_skill.md",
             "Why 2.8 still looks close to 2.7",
         ],

@@ -189,6 +189,9 @@ def build_reference_data(repo_root: Path) -> dict[str, Any]:
     decomposition = read_json(pack / "run2_8_tutorial_decomposition.json")
     memory = read_json(pack / "run2_8_executable_design_memory.json")
     gate_matrix = read_json(pack / "run2_8_workflow_gate_matrix.json")
+    run29_repair = read_json(pack / "run2_9_visual_primitive_repair.json")
+    run29_modules = read_json(pack / "run2_9_executable_visual_modules.json")
+    run29_gate_matrix = read_json(pack / "run2_9_visual_gate_matrix.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
     skill_markdown = read_text(pack / "vulca_ppt_skill.md")
@@ -217,6 +220,12 @@ def build_reference_data(repo_root: Path) -> dict[str, Any]:
         "memoryBindings": memory.get("bindings", []),
         "gateStatus": gate_matrix.get("status", ""),
         "workflowGates": gate_matrix.get("gates", []),
+        "run29RepairStatus": run29_repair.get("status", ""),
+        "run29PrimitiveRepairs": run29_repair.get("primitive_repairs", []),
+        "run29ModuleStatus": run29_modules.get("status", ""),
+        "run29VisualModules": run29_modules.get("modules", []),
+        "run29GateStatus": run29_gate_matrix.get("status", ""),
+        "run29VisualGates": run29_gate_matrix.get("gates", []),
         "workflowStatus": workflow.get("status", ""),
         "workflowStages": workflow.get("stages", []),
         "skillMarkdown": skill_markdown,
@@ -582,6 +591,48 @@ def build_html(data: dict[str, Any]) -> str:
       </article>`;
     }}
 
+    function run29PrimitiveCard(primitive) {{
+      return `<article class="dataCard">
+        <h4>${{escapeHtml(primitive.id)}}</h4>
+        ${{chipList(primitive.target_slide_roles)}}
+        ${{detailBlock("Source ids", primitive.source_ids)}}
+        ${{detailBlock("Visual problem", primitive.visual_problem)}}
+        ${{detailBlock("Reference method", primitive.reference_method)}}
+        ${{detailBlock("Visual primitive", primitive.extracted_visual_primitive)}}
+        ${{detailBlock("Native PPT translation", primitive.native_ppt_translation)}}
+        ${{detailBlock("Code obligation", primitive.code_module_obligation)}}
+        ${{detailBlock("Forbidden box patterns", primitive.forbidden_box_patterns)}}
+        ${{detailBlock("Boxiness probe", primitive.boxiness_failure_probe)}}
+      </article>`;
+    }}
+
+    function run29ModuleCard(module) {{
+      const code = module.code_binding || {{}};
+      return `<article class="dataCard">
+        <h4>${{escapeHtml(module.id)}}</h4>
+        ${{chipList(module.applies_to_slide_roles)}}
+        ${{detailBlock("Function", code.function_name)}}
+        ${{detailBlock("Params", code.params)}}
+        ${{detailBlock("Composition contract", module.composition_contract)}}
+        ${{detailBlock("Native primitives", module.native_ppt_primitives)}}
+        ${{detailBlock("Negative control", module.negative_control_failure)}}
+        ${{detailBlock("QA probe", module.qa_probe)}}
+      </article>`;
+    }}
+
+    function run29VisualGateCard(gate) {{
+      return `<article class="dataCard">
+        <h4>${{escapeHtml(gate.id)}}</h4>
+        ${{chipList([gate.slide_role])}}
+        ${{detailBlock("Visual primitive ids", gate.visual_primitive_ids)}}
+        ${{detailBlock("Visual module ids", gate.visual_module_ids)}}
+        ${{detailBlock("Required code modules", gate.required_code_modules)}}
+        ${{detailBlock("Boxiness probe", gate.boxiness_failure_probe)}}
+        ${{detailBlock("Pass/fail checks", gate.pass_fail_checks)}}
+        ${{detailBlock("Trace fields", gate.trace_fields)}}
+      </article>`;
+    }}
+
     function stageCard(stage) {{
       return `<article class="dataCard">
         <h4>${{String(stage.order || "").padStart(2, "0")}} / ${{escapeHtml(stage.id)}}</h4>
@@ -600,6 +651,9 @@ def build_html(data: dict[str, Any]) -> str:
       const units = (refs.decompositionUnits || []).map(decompositionCard).join("");
       const bindings = (refs.memoryBindings || []).map(bindingCard).join("");
       const gates = (refs.workflowGates || []).map(gateCard).join("");
+      const run29Primitives = (refs.run29PrimitiveRepairs || []).map(run29PrimitiveCard).join("");
+      const run29Modules = (refs.run29VisualModules || []).map(run29ModuleCard).join("");
+      const run29Gates = (refs.run29VisualGates || []).map(run29VisualGateCard).join("");
       const stages = (refs.workflowStages || []).map(stageCard).join("");
       const skill = escapeHtml(refs.skillMarkdown || "Missing vulca_ppt_skill.md");
 
@@ -631,6 +685,18 @@ def build_html(data: dict[str, Any]) -> str:
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Workflow gate matrix</h3><p>${{escapeHtml(refs.gateStatus)}}. Per-slide role gates connect data selection to required code calls and trace fields.</p></div><span class="pill">${{(refs.workflowGates || []).length}} gates</span></div>
           <div class="dataGrid">${{gates}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.9 visual primitive repair</h3><p>${{escapeHtml(refs.run29RepairStatus)}}. Converts the Run 2.8 boxiness diagnosis into native editable visual primitives.</p></div><span class="pill">${{(refs.run29PrimitiveRepairs || []).length}} primitives</span></div>
+          <div class="dataGrid">${{run29Primitives}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.9 executable visual modules</h3><p>${{escapeHtml(refs.run29ModuleStatus)}}. Function-level contracts for editorial spread, product depth, storyboard, climax stage, and typographic field modules.</p></div><span class="pill">${{(refs.run29VisualModules || []).length}} modules</span></div>
+          <div class="dataGrid">${{run29Modules}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.9 visual gate matrix</h3><p>${{escapeHtml(refs.run29GateStatus)}}. Per-role gates require visual delta from Run 2.8 and explicit boxiness failure probes.</p></div><span class="pill">${{(refs.run29VisualGates || []).length}} gates</span></div>
+          <div class="dataGrid">${{run29Gates}}</div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Skill workflow stages</h3><p>${{escapeHtml(refs.workflowStatus)}}. This is the ordered product loop, not a one-off prompt.</p></div><span class="pill">${{(refs.workflowStages || []).length}} stages</span></div>

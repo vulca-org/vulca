@@ -16,6 +16,8 @@ Run 2.4 adds `video_demo_beat_map.json`, `motion_learning_targets.json`, and `pr
 
 Run 2.5 adds `production_reference_decompositions.json`, `aesthetic_memory_v2.json`, and `visual_production_modules.json`. These files turn high-quality reference/tutorial/video observations into production modules: cinematic cover field, editorial before/after delta, proof route choreography, system mini-preview, climax hero object, and release handoff gate. The data remains derived-only. The workflow must not copy screenshots, frames, brand marks, source layouts, full transcripts, or source prose. If a production module cannot be rendered with native editable PPT objects, the generator must record fallback and keep public release blocked.
 
+Run 2.9 adds `run2_9_visual_primitive_repair.json`, `run2_9_executable_visual_modules.json`, and `run2_9_visual_gate_matrix.json`. These files respond to the Run 2.8 failure mode: the data-to-code chain is traceable, but the visible deck still reads as boxes, cards, equal panels, and report grids. Run 2.9 must therefore upgrade tutorial and case learning from broad design principles into executable visual primitives: editorial spread composition, layered product surface depth, motion storyboard sequence, climax stage composition, and typographic field composition. A Run 2.9 module is creditable only when it changes native PPT composition and records a boxiness failure probe.
+
 Run 2.0 workflow:
 
 1. Read `commercial_case.md` and select the narrative spine.
@@ -24,12 +26,14 @@ Run 2.0 workflow:
 4. Compile aesthetic memory into slide archetypes, rhythm roles, density budgets, and negative rules.
 5. Compile production reference decompositions into safe composition, typography, spacing, and sequence primitives.
 6. Compile aesthetic memory v2 into production modules, forbidden report patterns, and fallback rules.
-7. Select assets only after the slide role and production module are known.
-8. Generate code-first PPT modules with editable text, native structures, ordered sequence components, and selected production modules.
-9. Run structural QA before aesthetic repair.
-10. Run aesthetic QA and visual validation against the rubric and selected production modules.
-11. Repair the deck with explicit reasons.
-12. Emit a release decision: internal only, demo candidate, or public blocked.
+7. Repair visual primitive extraction when the previous run still reads as boxes, cards, panels, or report grids.
+8. Select executable visual modules and visual gate matrices before writing code.
+9. Select assets only after the slide role, production module, and visual primitive module are known.
+10. Generate code-first PPT modules with editable text, native structures, ordered sequence components, selected production modules, and selected Run 2.9 visual modules.
+11. Run structural QA before aesthetic repair.
+12. Run aesthetic QA and visual validation against the rubric, selected production modules, and Run 2.9 boxiness probes.
+13. Repair the deck with explicit reasons.
+14. Emit a release decision: internal only, demo candidate, or public blocked.
 
 ## Source And Memory Selection
 
@@ -43,6 +47,9 @@ Run 2.0 workflow:
 - Use `production_reference_decompositions.json` to choose copyright-safe production reference primitives before selecting aesthetic memory v2.
 - Use `aesthetic_memory_v2.json` to choose focal canvas, headline hierarchy, whitespace/margin, forbidden report pattern, native module, and fallback contracts before writing slide code.
 - Use `visual_production_modules.json` to choose production modules before writing slide code; selected production modules must be visible in the contact sheet or recorded as failed/fallback.
+- Use `run2_9_visual_primitive_repair.json` when the previous run is traceable but still boxy; it must identify the specific visual problem, extracted visual primitive, native PPT translation, code module obligation, and boxiness failure probe.
+- Use `run2_9_executable_visual_modules.json` to choose the Run 2.9 native composition function before writing slide code; selected modules must expose `drawRun29...` function names, layout budgets, native editable primitives, and negative-control failures.
+- Use `run2_9_visual_gate_matrix.json` to map slide roles to visual primitives, required code modules, trace fields, and visual delta checks before claiming aesthetic improvement over Run 2.8.
 - Use `source_cards/` and `video_cards/` as the source-card layer; do not copy screenshots, logos, transcripts, frames, layouts, or brand marks.
 - Use `evidence_memory.json` to choose claims, business relevance, allowed use, and evidence QA checks.
 - Use `aesthetic_memory.json` to choose visible moves, rhythm roles, density budgets, typography rules, composition rules, and negative rules.
@@ -64,6 +71,8 @@ Run 2.0 workflow:
 - Production reference decompositions must become visible module behavior, not just extra trace fields.
 - Aesthetic memory v2 must change composition, typography, spacing, or focal-object choice before it can be credited.
 - Visual production modules must be drawn as native editable PPT primitives or recorded as fallback; fallback keeps the release public blocked.
+- Run 2.9 visual primitive repair must reduce boxiness through composition, depth, sequence, stage, or typographic field behavior. It is not enough to change color, increase text size, add more rectangles, or rename a dashboard panel as a product surface.
+- Run 2.9 executable visual modules must call native composition functions and record trace fields. If the output remains a card grid, equal panel layout, boxed title, or dashboard climax, the module is treated as failed even if its ids appear in trace.
 
 ## Deletion Rule
 
@@ -96,6 +105,7 @@ Every generated arm must persist a per-slide `trace_manifest.json` under its loc
 - Selected visual component ids and the native PPT primitives used to render them.
 - Selected video beat ids, motion target ids, sequence component ids, and ordered native reveal steps.
 - Selected production reference ids, aesthetic memory v2 ids, visual production module ids, and fallback policy.
+- Selected Run 2.9 visual primitive ids, visual module ids, visual gate matrix ids, code module ids, boxiness failure probe, and visual delta from Run 2.8.
 - Density counts: claims, panels, visible words, and proof objects.
 - Deleted or routed content: what moved to appendix, speaker notes, result reports, or trace notes.
 - Asset provenance: bitmap prompts, SVG/native object origin, license state, and render risks.
