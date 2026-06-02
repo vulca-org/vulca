@@ -4,6 +4,21 @@ Status: rerun-reviewed-public-blocked.
 
 Public publishing is blocked until native render or cross-platform render inspection passes and human approval is recorded.
 
+## Run 2.6R Arm Artifacts
+
+Run 2.6R is the latest internal same-stage visual repair result. It uses `visual_repair_policy.json` and keeps the external state public blocked.
+
+| Arm | PPTX | Contact sheet | Trace manifest | Delivery QA |
+| --- | --- | --- | --- | --- |
+| `prompt_only` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-6r-prompt-only/output/ppt-run2-6r-prompt-only.pptx` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-6r-prompt-only/preview/contact-sheet.png` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-6r-prompt-only/trace_manifest.json` | `internal-demo-ok-public-blocked` |
+| `run1_5_skill` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-6r-run1-5-skill/output/ppt-run2-6r-run1-5-skill.pptx` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-6r-run1-5-skill/preview/contact-sheet.png` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-6r-run1-5-skill/trace_manifest.json` | `internal-demo-ok-public-blocked` |
+| `run2_6r_visual_repair_full_skill` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-6r-full-vulca/output/ppt-run2-6r-full-vulca.pptx` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-6r-full-vulca/preview/contact-sheet.png` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-6r-full-vulca/trace_manifest.json` | `internal-demo-ok-public-blocked` |
+| `bad_aesthetic_memory` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-6r-bad-aesthetic-memory/output/ppt-run2-6r-bad-aesthetic-memory.pptx` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-6r-bad-aesthetic-memory/preview/contact-sheet.png` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-6r-bad-aesthetic-memory/trace_manifest.json` | `internal-demo-ok-public-blocked` |
+
+Combined local comparison sheet: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-6r-four-arm-contact-sheet.png`.
+
+Full-skill series comparison sheet: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png`.
+
 ## Run 2.6 Arm Artifacts
 
 | Arm | PPTX | Contact sheet | Trace manifest | Delivery QA |
@@ -98,6 +113,9 @@ Combined local comparison sheet: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/p
 | Asset provenance complete | pass |
 | Editable text and native structure inspection completed | pass |
 | Human approval recorded | blocked |
+| Run 2.6R visual repair policy contract exists | pass for `visual_repair_policy.json` |
+| Visual repair fields visible in trace | pass for local Run 2.6R full arm; intentionally forbidden for controls |
+| Run 2.6R comparison images exist | pass for `run2-6r-four-arm-contact-sheet` and `run2-full-skill-series-horizontal` |
 | Native visual components visible | pass for local Run 2.3 full arm |
 | Run 2.4 motion grammar contract exists | pass for `video_demo_beat_map.json`, `motion_learning_targets.json`, and `presentation_sequence_components.json` |
 | Motion target ids and sequence component ids visible in regenerated deck trace | pass for local Run 2.4 full and bad-memory arms |
@@ -107,10 +125,10 @@ Combined local comparison sheet: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/p
 | Production reference ids and visual production module ids visible in regenerated deck trace | pass for local Run 2.5 full arm; production references only for bad-memory arm |
 | Public-video-grade visual proof completed | blocked |
 
-Delivery status remains `rerun-reviewed-public-blocked`. The regenerated Run 2.5 arms were built locally, structurally checked, trace-refreshed, and Gemini-reviewed. The work is still not public release evidence because native render inspection, human approval, finished motion/render support, and a stronger public-demo visual pass are missing.
+Delivery status remains `rerun-reviewed-public-blocked`. The regenerated Run 2.6R arms were built locally, structurally checked, trace-refreshed, and Gemini-reviewed as a same-stage visual repair. The work is still not public release evidence because native render inspection, human approval, source-brand sanitization approval, finished motion/render support, and a stronger public-demo visual pass are missing.
 
 ## Release Decision Thresholds
 
 - `internal only`: any generated arm, trace manifest, runtime isolation record, native PPT check, layout geometry check, render check, provenance note, editability check, or human approval is missing.
-- `demo candidate`: all four Run 2.5 arms exist, trace manifests pass contract review, post-QA trace outcome refresh is complete, runtime isolation is recorded, native PPT and layout geometry checks pass, render inspection is complete, and the full Run 2.5 arm scores at least 4 on `evidence_alignment`, `multimodal_learning`, `visual_component_execution`, `production_reference_execution`, `visual_production_module_execution`, and `trace_closure`.
+- `demo candidate`: all four Run 2.6R arms exist, trace manifests pass contract review, post-QA trace outcome refresh is complete, runtime isolation is recorded, native PPT and layout geometry checks pass, render inspection is complete, and the Run 2.6R full arm passes human review for `visual_repair_policy.json` execution, legibility, source-brand sanitization, and public-demo visual quality.
 - `public blocked`: the current external status until human approval explicitly records that the generated deck, trace manifest, provenance, and render inspection are acceptable.

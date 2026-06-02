@@ -1562,6 +1562,53 @@ def test_run2_6_records_data_workflow_rerun_result() -> None:
     )
 
 
+def test_run2_6r_records_visual_repair_rerun_result() -> None:
+    result = (PACK / "results" / "run2_6r_visual_repair_result.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_6r_visual_repair_result.json")
+
+    assert result_json["status"] == "rerun_completed_public_blocked"
+    assert result_json["public_ready"] is False
+    assert result_json["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert result_json["rerun"]["status"] == "completed"
+    assert result_json["rerun"]["best_internal_arm"] == "run2_6r_visual_repair_full_skill"
+    assert result_json["rerun"]["generated_outputs_committed"] is False
+    assert result_json["rerun"]["best_internal_arm_verdict"] in {
+        "visual_repair_visible_but_not_public_release_ready",
+        "visual_repair_insufficient_same_stage_repeat_required",
+    }
+    assert result_json["next_required_action"] in {
+        "native_render_and_human_review_then_continue_same_five_layers_if_needed",
+        "repeat_same_stage_visual_repair_before_native_review",
+    }
+    assert_contains(
+        json.dumps(result_json["visual_repair_learning"]),
+        [
+            "visual_repair_policy_ids",
+            "visual_delta_from_run2_5",
+            "visual_repair_validation_probe",
+            "typography",
+            "spacing",
+            "climax",
+            "theme",
+        ],
+    )
+    assert result_json["qa_summary"]["arm_isolation_guard"] == "passed"
+    assert result_json["qa_summary"]["run2_6r_full_media_entries"] == 0
+    assert result_json["qa_summary"]["run2_6r_full_picture_shapes"] == 0
+    assert result_json["qa_summary"]["run2_6r_full_native_shape_minimum_passed"] is True
+    assert_contains(
+        result,
+        [
+            "Run 2.6R",
+            "visual_repair_policy.json",
+            "run2_6r_visual_repair_full_skill",
+            "full-skill-series",
+            "public blocked",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
 def test_run2_audit_records_trace_and_native_render_blockers() -> None:
     audit = (PACK / "results" / "audit_review.md").read_text(encoding="utf-8")
     audit_json = load_json(PACK / "results" / "audit_review.json")

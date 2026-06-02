@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "rerun_completed_public_blocked",
+  "public_ready": false,
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "rerun": {
+    "status": "completed",
+    "generated_outputs_committed": false,
+    "combined_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-6r-four-arm-contact-sheet.png",
+    "full_skill_series_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png",
+    "delivery_gate": "internal-demo-ok-public-blocked",
+    "best_internal_arm": "run2_6r_visual_repair_full_skill",
+    "best_internal_arm_verdict": "visual_repair_visible_but_not_public_release_ready"
+  },
+  "visual_repair_learning": {
+    "visual_repair_policy_ids": "present_for_run2_6r_visual_repair_full_skill_only",
+    "visual_delta_from_run2_5": "recorded_per_slide_for_full_arm",
+    "visual_repair_validation_probe": "recorded_per_slide_for_full_arm",
+    "typography": "editorial_type_scale_changed_from_run2_5_with_small_text_legibility_pending_human_review",
+    "spacing": "focal_support_trace_zones_changed_from_run2_5",
+    "climax": "slide_05_recomposed_as_editorial_proof_spread",
+    "theme": "light_first_graphite_with_orange_red_proof_color_replaces_forest_green_dominance",
+    "gemini_human_review_caution": "Gemini judged the visual repair visibly different and more presentation-grade, but small text legibility and whether the orange red accent is final style or diagnostic marker need human review.",
+    "control_boundary": "prompt_only_run1_5_and_bad_memory_forbid_visual_repair_policy",
+    "visual_quality_boundary": "still_internal_demo_grade_until_native_render_and_human_review"
+  },
+  "qa_summary": {
+    "prompt_only_layout_errors": 0,
+    "prompt_only_layout_warnings": 0,
+    "run1_5_layout_errors": 0,
+    "run1_5_layout_warnings": 0,
+    "run2_6r_full_layout_errors": 0,
+    "run2_6r_full_layout_warnings": 0,
+    "bad_aesthetic_memory_layout_errors": 0,
+    "bad_aesthetic_memory_layout_warnings": 0,
+    "arm_isolation_guard": "passed",
+    "run2_6r_full_media_entries": 0,
+    "run2_6r_full_picture_shapes": 0,
+    "run2_6r_full_native_shape_minimum_passed": true,
+    "generated_outputs_committed": false,
+    "gemini_contact_sheet_reviews": [
+      ".gemini-agent/artifacts/2026-06-01T235706850Z-artifacts.json"
+    ]
+  },
+  "next_required_action": "native_render_and_human_review_then_continue_same_five_layers_if_needed",
+  "release_gate": "public_blocked_until_native_render_human_approval_source_brand_sanitization_and_public_demo_visual_pass"
+}

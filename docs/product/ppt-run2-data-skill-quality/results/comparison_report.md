@@ -2,6 +2,30 @@
 
 Status: rerun-reviewed-public-blocked.
 
+Run 2.6R is the latest reviewed internal result. It reran the four-arm experiment as a same-stage visual repair, adding `visual_repair_policy.json` on top of the Run 2.6 data/workflow-policy layer without advancing to Run 3.0:
+
+- `visual_repair_policy.json` selects repair obligations for typography, spacing, climax composition, theme differentiation, and mini-preview fidelity.
+- `run2_6r_visual_repair_full_skill` is the current best internal arm because the contact sheet shows a visible move away from the Run 2.5/Run 2.6 look into a light editorial/schematic system with orange/red proof accents.
+- `run2-6r-four-arm-contact-sheet` records the four-arm comparison, and `run2-full-skill-series-horizontal` records the full-skill progression.
+- public blocked remains the correct release state until native render inspection, source-brand sanitization review, and human approval pass.
+
+Gemini artifact review judged Run 2.6R visibly different and more presentation-grade than Run 2.5/Run 2.6. The caution remains material: small text legibility and whether the red/orange accent is final style or diagnostic marker need human review.
+
+| Arm | Generation status | Review status | Delivery gate | Result |
+| --- | --- | --- | --- | --- |
+| `prompt_only` | generated | reviewed | `internal-demo-ok-public-blocked` | control |
+| `run1_5_skill` | generated | reviewed | `internal-demo-ok-public-blocked` | baseline |
+| `run2_6r_visual_repair_full_skill` | generated | reviewed | `internal-demo-ok-public-blocked` | best internal visual repair arm |
+| `bad_aesthetic_memory` | generated | reviewed | `internal-demo-ok-public-blocked` | negative control |
+
+## Run 2.6R Findings
+
+- `prompt_only`: remains isolated from the Run 2.6R repair policy.
+- `run1_5_skill`: remains the evidence-heavy baseline and forbids visual repair policy.
+- `run2_6r_visual_repair_full_skill`: best internal arm for proving same-stage visual repair is visible in generated native PPT shapes.
+- `bad_aesthetic_memory`: continues to prove that commercial usecase selection without good aesthetic policy is not enough.
+- Audit correction: Run 2.6R should proceed to native render and human review, then continue the same five-layer loop if quality is still short. Do not advance to Run 3.0.
+
 Run 2.6 has now been regenerated as a four-arm local experiment after adding data/workflow-policy selection on top of Run 2.5 production-design modules:
 
 - `commercial_usecase_bank.json` turns real commercial presentation cases into selectable generation constraints.
