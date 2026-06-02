@@ -2316,6 +2316,111 @@ def test_run2_9_generator_uses_visual_primitive_modules_and_preserves_boundaries
     assert "drawRun29ClimaxStage" in climax_block
 
 
+def test_run2_10_generator_uses_visual_system_modules_and_preserves_boundaries() -> None:
+    script_path = ROOT / "scripts" / "generate_ppt_run2_10_visual_system_arms.mjs"
+    assert script_path.exists(), "missing Run 2.10 visual-system generator"
+    body = script_path.read_text(encoding="utf-8")
+    arm_order = ["prompt_only", "run1_5_skill", "run2_10_full_skill", "bad_visual_system_memory"]
+
+    def arm_block(arm_id: str) -> str:
+        start = body.index(f'armId: "{arm_id}"')
+        next_starts = [body.find(f'armId: "{next_arm}"', start + 1) for next_arm in arm_order]
+        next_starts = [index for index in next_starts if index > start]
+        end = min(next_starts) if next_starts else len(body)
+        return body[start:end]
+
+    def section(block: str, start_marker: str, end_marker: str) -> str:
+        start = block.index(start_marker)
+        end = block.index(end_marker, start)
+        return block[start:end]
+
+    restricted_run2_10_inputs = [
+        "run2_10_visual_system_sources.json",
+        "run2_10_visual_system_memory.json",
+        "run2_10_visual_system_gate_matrix.json",
+    ]
+
+    assert_contains(
+        body,
+        [
+            "prompt_only",
+            "run1_5_skill",
+            "run2_10_full_skill",
+            "bad_visual_system_memory",
+            "drawRun210FullBleedVisualField",
+            "drawRun210ProductTheater",
+            "drawRun210KineticSequence",
+            "drawRun210EditorialTypeSystem",
+            "drawRun210NonRectangularProofPath",
+            "drawRun210CinematicClimax",
+            "run210VisualSystemsByRole",
+            "assertRun210VisualSystemGateSelfCheck",
+            "registerRun210VisualModule",
+            "run2_10_code_module_ids",
+            "run2_10_shape_count_budget",
+            "run2_10_asymmetry_whitespace_rule",
+        ],
+    )
+
+    prompt_allowed = section(arm_block("prompt_only"), "allowed:", "forbidden:")
+    prompt_forbidden = section(arm_block("prompt_only"), "forbidden:", "palette:")
+    run1_allowed = section(arm_block("run1_5_skill"), "allowed:", "forbidden:")
+    run1_forbidden = section(arm_block("run1_5_skill"), "forbidden:", "palette:")
+    full_allowed = section(arm_block("run2_10_full_skill"), "allowed:", "forbidden:")
+    full_forbidden = section(arm_block("run2_10_full_skill"), "forbidden:", "palette:")
+    bad_allowed = section(arm_block("bad_visual_system_memory"), "allowed:", "forbidden:")
+    bad_forbidden = section(arm_block("bad_visual_system_memory"), "forbidden:", "palette:")
+
+    for term in restricted_run2_10_inputs:
+        assert term not in prompt_allowed
+        assert term in prompt_forbidden
+        assert term not in run1_allowed
+        assert term in run1_forbidden
+        assert term in full_allowed
+        assert term not in full_forbidden
+
+    assert "run2_10_visual_system_sources.json" in bad_allowed
+    assert "run2_10_visual_system_memory.json" not in bad_allowed
+    assert "run2_10_visual_system_gate_matrix.json" not in bad_allowed
+    assert "run2_10_visual_system_memory.json" in bad_forbidden
+    assert "run2_10_visual_system_gate_matrix.json" in bad_forbidden
+    assert 'const fullRun210 = arm.armId === "run2_10_full_skill";' in body
+    for field in EXPECTED_RUN2_10_TRACE_FIELDS:
+        assert re.search(fr"{field}:\s*fullRun210\s*\?", body), field
+    assert "const actualCodeModuleIds = Array.from(roleMetrics.visualModuleIds);" in body
+    assert "run2_10_code_module_ids: fullRun210" in body
+    for function_name in [
+        "drawRun210FullBleedVisualField",
+        "drawRun210ProductTheater",
+        "drawRun210KineticSequence",
+        "drawRun210EditorialTypeSystem",
+        "drawRun210NonRectangularProofPath",
+        "drawRun210CinematicClimax",
+    ]:
+        assert f'registerRun210VisualModule(metrics, "{function_name}")' in body
+    render_start = body.index("function renderRun210FullSlide")
+    setup_start = body.index('} else if (spec.role === "setup")', render_start)
+    contrast_start = body.index('} else if (spec.role === "contrast")', render_start)
+    proof_start = body.index('} else if (spec.role === "proof")', render_start)
+    climax_start = body.index('} else if (spec.role === "climax")', render_start)
+    close_start = body.index('} else {', climax_start)
+    cover_block = body[render_start:setup_start]
+    setup_block = body[setup_start:contrast_start]
+    contrast_block = body[contrast_start:proof_start]
+    proof_block = body[proof_start:climax_start]
+    climax_block = body[climax_start:close_start]
+    assert "drawRun210EditorialTypeSystem" in cover_block
+    assert "drawRun210FullBleedVisualField" in cover_block
+    assert "drawRun210ProductTheater" in setup_block
+    assert "drawRun210NonRectangularProofPath" in setup_block
+    assert "drawRun210FullBleedVisualField" in contrast_block
+    assert "drawRun210NonRectangularProofPath" in contrast_block
+    assert "drawRun210ProductTheater" in proof_block
+    assert "drawRun210KineticSequence" in proof_block
+    assert "drawRun210CinematicClimax" in climax_block
+    assert "drawRun210KineticSequence" in climax_block
+
+
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
     layout_dir = tmp_path / "layout"
     layout_dir.mkdir()
