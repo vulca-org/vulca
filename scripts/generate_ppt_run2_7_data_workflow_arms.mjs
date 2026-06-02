@@ -817,7 +817,7 @@ const baseSlides = [
       ["Release", "blocked", "human approval"],
     ],
     sideTitle: "Next",
-    sideBody: "Compare against Run 1.5, Run 2.7 full, and bad aesthetic memory.",
+    sideBody: "Compare against Run 1.5, Run 2.7 full, and bad workflow/design-memory boundary.",
     trace: "delivery_gate=public_blocked",
   },
 ];
@@ -1011,11 +1011,11 @@ const armSpecs = [
   {
     armId: "bad_workflow_memory",
     slug: "ppt-run2-7-bad-workflow-memory",
-    label: "Bad aesthetic memory negative control",
+    label: "Bad workflow/design-memory boundary control",
     kicker: "RUN 2.7 / NEGATIVE CONTROL",
-    footer: "bad_workflow_memory | valid motion data + weak aesthetic memory | internal only",
-    boundaryTitle: "bad workflow memory",
-    boundaryBody: "Uses the Run 2.7 usecase and source records but blocks design memory and workflow policy.",
+    footer: "bad_workflow_memory | valid motion data + blocked workflow/design memory | internal only",
+    boundaryTitle: "bad workflow/design-memory boundary",
+    boundaryBody: "Uses the Run 2.7 usecase and source records but blocks design memory and workflow policy to test the boundary.",
     allowed: [
       `${pack}/commercial_case.md`,
       `${pack}/run2_7_commercial_usecase.json`,
@@ -1046,7 +1046,7 @@ const armSpecs = [
       `${pack}/visual_production_modules.json`,
       `${pack}/slide_archetypes.json`,
       "docs/product/ppt-run1-5-product-lab/",
-      "manual aesthetic repair before scoring",
+      "manual workflow/design-memory repair before scoring",
     ],
     palette: { bg: "#f2efe1", rail: "#6d633e", accent: C.bad, accent2: C.bad2, panel: "#f9f6e8", muted: "#6f684f" },
     release: "internal_only",
@@ -1060,10 +1060,16 @@ const armSpecs = [
         "There is no visual climax.",
         "The close becomes another report page.",
       ][index],
-      trace: "valid Run 2.7 data; bad aesthetic memory replacement",
+      trace: "valid Run 2.7 data; blocked workflow/design-memory boundary",
     })),
   },
 ];
+
+function generationBriefArmId(armId) {
+  if (armId === "bad_workflow_memory") return "bad_aesthetic_memory";
+  if (armId === "run2_7_full_skill") return "run2_skill";
+  return armId;
+}
 
 function sequenceStepsForSlide(arm, role) {
   if (!["run2_7_full_skill", "bad_workflow_memory"].includes(arm.armId)) return [];
@@ -1083,7 +1089,7 @@ function traceFor(arm) {
     schema_version: 1,
     arm_id: arm.armId,
     render_style_arm_id: arm.armId,
-    generation_brief: `${pack}/generation_briefs/${arm.armId === "run2_7_full_skill" ? "run2_skill" : arm.armId}.md`,
+    generation_brief: `${pack}/generation_briefs/${generationBriefArmId(arm.armId)}.md`,
     commercial_case: `${pack}/commercial_case.md`,
     inputs_allowed: arm.allowed,
     inputs_forbidden: arm.forbidden,
@@ -1114,7 +1120,7 @@ function traceFor(arm) {
           arm.armId === "run2_7_full_skill"
             ? [`aesthetic_${slide.role === "cover" ? "cinematic_cover" : slide.role === "setup" ? "low_density_claim" : slide.role === "contrast" ? "editorial_comparison" : slide.role === "proof" ? "proof_reveal" : slide.role === "climax" ? "visual_climax" : "premium_closing"}`]
             : arm.armId === "bad_workflow_memory"
-              ? [`bad_aesthetic_${slide.role === "cover" ? "cinematic_cover" : slide.role === "setup" ? "low_density_claim" : slide.role === "contrast" ? "editorial_comparison" : slide.role === "proof" ? "proof_reveal" : slide.role === "climax" ? "visual_climax" : "premium_closing"}`]
+              ? [`bad_workflow_boundary_${slide.role === "cover" ? "cinematic_cover" : slide.role === "setup" ? "low_density_claim" : slide.role === "contrast" ? "editorial_comparison" : slide.role === "proof" ? "proof_reveal" : slide.role === "climax" ? "visual_climax" : "premium_closing"}`]
               : [],
         multimodal_record_ids: productionEligible ? ["mm_video_audio_keynote_rhythm", "mm_duarte_slide_design_course", "mm_udel_design_principles_video"].slice(index % 3, (index % 3) + 1) : [],
         multimodal_anchor_ids: productionEligible
@@ -1153,7 +1159,7 @@ function traceFor(arm) {
             ? "native_climax_object_present"
             : "run2_7_memory_trace_present"
           : "",
-        commercial_usecase_id: workflowEligible ? usecaseByRole[slide.role] ?? null : null,
+        commercial_usecase_id: run27Eligible ? "usecase_ai_design_to_production_platform_launch" : workflowEligible ? usecaseByRole[slide.role] ?? null : null,
         aesthetic_benchmark_ids: fullWorkflow ? benchmarkByRole[slide.role] ?? [] : [],
         theme_policy_id: fullWorkflow ? workflowPolicyByRole[slide.role]?.theme_policy_id ?? null : null,
         typography_system_id: fullWorkflow ? workflowPolicyByRole[slide.role]?.typography_system_id ?? null : null,
@@ -1170,14 +1176,14 @@ function traceFor(arm) {
         visual_delta_from_run2_5: repairEligible ? visualDeltaByRole[slide.role] ?? "Run 2.7 data workflow memory delta recorded" : "not applicable; repair policy forbidden for this arm",
         visual_repair_validation_probe: repairEligible
           ? "contact sheet and full-skill-series must show visible difference from Run 2.5 and Run 2.6"
-          : "control arm must not claim Run 2.7 data workflow memory",
+          : "control arm must not claim Run 2.7 workflow/design-memory learning",
         production_reference_ids: productionEligible ? productionReferenceByRole[slide.role] ?? [] : [],
         aesthetic_memory_v2_ids: fullProduction ? aestheticV2ByRole[slide.role] ?? [] : [],
         visual_production_module_ids: fullProduction ? productionModuleByRole[slide.role] ?? [] : [],
         fallback_policy: fullProduction
           ? "native editable module rendered; public_blocked until native/cross-platform render and human review"
           : arm.armId === "bad_workflow_memory"
-            ? "production references available, but good aesthetic memory v2 and visual production modules are forbidden"
+            ? "production references available, but design memory v2 and visual production modules are forbidden"
             : "not applicable; production data forbidden for this arm",
         visual_validation_probe: fullProduction
           ? "contact sheet must show the selected production module as a visible composition change"
@@ -1201,7 +1207,7 @@ function traceFor(arm) {
           fullProduction
             ? "Production reference detail routed to trace manifest; main slide keeps one claim, one native module, and a visual validation probe."
             : arm.armId === "bad_workflow_memory"
-              ? "Bad memory keeps too many visible labels; trace remains valid but aesthetic routing fails."
+              ? "Boundary control keeps too many visible labels; trace remains valid but workflow/design-memory routing fails."
               : "No appendix routing beyond local generation notes.",
         asset_provenance: {
           raster_assets: [],

@@ -1549,6 +1549,10 @@ def test_run2_7_generator_consumes_design_memory_and_preserves_control_boundarie
     assert re.search(r"run2_7_workflow_decision_ids:\s*fullRun27\s*\?", body)
     assert re.search(r"run2_7_delta_from_run2_6r:\s*fullRun27\s*\?", body)
     assert re.search(r"run2_7_quality_gate:\s*fullRun27\s*\?", body)
+    assert (PACK / "generation_briefs" / "bad_aesthetic_memory.md").exists()
+    assert "bad_workflow_memory.md" not in body
+    assert 'if (armId === "bad_workflow_memory") return "bad_aesthetic_memory";' in body
+    assert re.search(r"generation_brief:\s*`\$\{pack\}/generation_briefs/\$\{generationBriefArmId\(arm\.armId\)\}\.md`", body)
 
 
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
