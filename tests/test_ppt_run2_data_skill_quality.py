@@ -1476,6 +1476,81 @@ def test_run2_6r_generator_consumes_visual_repair_policy_and_preserves_boundarie
     assert re.search(r"visual_repair_validation_probe:\s*repairEligible\s*\?", body)
 
 
+def test_run2_7_generator_consumes_design_memory_and_preserves_control_boundaries() -> None:
+    body = (ROOT / "scripts" / "generate_ppt_run2_7_data_workflow_arms.mjs").read_text(encoding="utf-8")
+    arm_order = ["prompt_only", "run1_5_skill", "run2_7_full_skill", "bad_workflow_memory"]
+
+    def arm_block(arm_id: str) -> str:
+        start = body.index(f'armId: "{arm_id}"')
+        next_starts = [body.find(f'armId: "{next_arm}"', start + 1) for next_arm in arm_order]
+        next_starts = [index for index in next_starts if index > start]
+        end = min(next_starts) if next_starts else body.index("function sequenceStepsForSlide", start)
+        return body[start:end]
+
+    def section(block: str, start_marker: str, end_marker: str) -> str:
+        start = block.index(start_marker)
+        end = block.index(end_marker, start)
+        return block[start:end]
+
+    restricted_run2_7_inputs = [
+        "run2_7_commercial_usecase.json",
+        "run2_7_multimodal_source_records.json",
+        "run2_7_design_memory.json",
+        "run2_7_workflow_policy.json",
+    ]
+
+    assert_contains(
+        body,
+        [
+            "prompt_only",
+            "run1_5_skill",
+            "run2_7_full_skill",
+            "bad_workflow_memory",
+            "run2_7_commercial_usecase.json",
+            "run2_7_multimodal_source_records.json",
+            "run2_7_design_memory.json",
+            "run2_7_workflow_policy.json",
+            "renderRun27Full",
+            "drawRun27Climax",
+            "assertRun27MemorySelfCheck",
+            "run27VisualSelfCheck",
+            "run27Eligible",
+            "run2_7_design_memory_ids",
+            "run2_7_delta_from_run2_6r",
+            "no_cross_arm_reuse",
+        ],
+    )
+    prompt_allowed = section(arm_block("prompt_only"), "allowed:", "forbidden:")
+    prompt_forbidden = section(arm_block("prompt_only"), "forbidden:", "palette:")
+    run1_allowed = section(arm_block("run1_5_skill"), "allowed:", "forbidden:")
+    run1_forbidden = section(arm_block("run1_5_skill"), "forbidden:", "palette:")
+    full_allowed = section(arm_block("run2_7_full_skill"), "allowed:", "forbidden:")
+    full_forbidden = section(arm_block("run2_7_full_skill"), "forbidden:", "palette:")
+    bad_allowed = section(arm_block("bad_workflow_memory"), "allowed:", "forbidden:")
+    bad_forbidden = section(arm_block("bad_workflow_memory"), "forbidden:", "palette:")
+
+    for term in restricted_run2_7_inputs:
+        assert term not in prompt_allowed
+        assert term in prompt_forbidden
+        assert term not in run1_allowed
+        assert term in run1_forbidden
+        assert term in full_allowed
+        assert term not in full_forbidden
+
+    assert "run2_7_commercial_usecase.json" in bad_allowed
+    assert "run2_7_multimodal_source_records.json" in bad_allowed
+    assert "run2_7_design_memory.json" not in bad_allowed
+    assert "run2_7_workflow_policy.json" not in bad_allowed
+    assert "run2_7_design_memory.json" in bad_forbidden
+    assert "run2_7_workflow_policy.json" in bad_forbidden
+    assert re.search(r"run2_7_usecase_id:\s*run27Eligible\s*\?", body)
+    assert re.search(r"run2_7_source_record_ids:\s*run27Eligible\s*\?", body)
+    assert re.search(r"run2_7_design_memory_ids:\s*fullRun27\s*\?", body)
+    assert re.search(r"run2_7_workflow_decision_ids:\s*fullRun27\s*\?", body)
+    assert re.search(r"run2_7_delta_from_run2_6r:\s*fullRun27\s*\?", body)
+    assert re.search(r"run2_7_quality_gate:\s*fullRun27\s*\?", body)
+
+
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
     layout_dir = tmp_path / "layout"
     layout_dir.mkdir()
