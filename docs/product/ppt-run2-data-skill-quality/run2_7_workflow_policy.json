@@ -1,0 +1,184 @@
+{
+  "schema_version": 1,
+  "status": "run2_7_workflow_policy_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "commercial_usecase_id": "usecase_ai_design_to_production_platform_launch",
+  "selection_chain": [
+    "commercial_usecase",
+    "source_record_ids",
+    "typography_memory_id",
+    "spacing_memory_id",
+    "composition_memory_id",
+    "rhythm_memory_id",
+    "brand_sanitization_memory_id",
+    "visual_repair_policy_ids",
+    "native_ppt_generation",
+    "qa_gate"
+  ],
+  "slide_role_memory_map": [
+    {
+      "rhythm_role": "cover",
+      "commercial_usecase_id": "usecase_ai_design_to_production_platform_launch",
+      "source_record_ids": ["mm_2_7_design_system_launch_case", "mm_2_7_motion_demo_pacing_reference"],
+      "design_memory_ids": [
+        "memory_typography_editorial_launch",
+        "memory_rhythm_six_slide_launch",
+        "memory_source_brand_sanitization_v2"
+      ],
+      "workflow_decision_ids": ["decision_run2_7_cover_launch_claim", "decision_run2_7_source_brand_sanitized"],
+      "visual_repair_policy_ids": ["repair_editorial_typography_system", "repair_theme_differentiation_from_run2_5"],
+      "native_ppt_generation": "Generate native editable headline text and original native shape fields with trace ids.",
+      "workflow_gates": [
+        "public_blocked release gate remains active",
+        "native editable PPT output is required",
+        "source-brand copying blocked before generation"
+      ],
+      "trace_fields": [
+        "run2_7_usecase_id",
+        "run2_7_source_record_ids",
+        "run2_7_design_memory_ids",
+        "run2_7_workflow_decision_ids",
+        "run2_7_delta_from_run2_6r",
+        "run2_7_quality_gate"
+      ]
+    },
+    {
+      "rhythm_role": "setup",
+      "commercial_usecase_id": "usecase_ai_design_to_production_platform_launch",
+      "source_record_ids": ["mm_2_7_design_system_launch_case", "mm_2_7_typography_hierarchy_tutorial"],
+      "design_memory_ids": [
+        "memory_typography_editorial_launch",
+        "memory_rhythm_six_slide_launch",
+        "memory_source_brand_sanitization_v2"
+      ],
+      "workflow_decision_ids": ["decision_run2_7_setup_problem_frame", "decision_run2_7_type_ladder_selected"],
+      "visual_repair_policy_ids": ["repair_editorial_typography_system"],
+      "native_ppt_generation": "Generate native editable problem framing with traceable hierarchy and original product-system labels.",
+      "workflow_gates": [
+        "public_blocked release gate remains active",
+        "native editable PPT output is required",
+        "source-brand copying blocked before generation"
+      ],
+      "trace_fields": [
+        "run2_7_usecase_id",
+        "run2_7_source_record_ids",
+        "run2_7_design_memory_ids",
+        "run2_7_workflow_decision_ids",
+        "run2_7_delta_from_run2_6r",
+        "run2_7_quality_gate"
+      ]
+    },
+    {
+      "rhythm_role": "contrast",
+      "commercial_usecase_id": "usecase_ai_design_to_production_platform_launch",
+      "source_record_ids": [
+        "mm_2_7_typography_hierarchy_tutorial",
+        "mm_2_7_spacing_editorial_grid_tutorial"
+      ],
+      "design_memory_ids": [
+        "memory_typography_editorial_launch",
+        "memory_spacing_climax_proof_grid",
+        "memory_rhythm_six_slide_launch",
+        "memory_source_brand_sanitization_v2"
+      ],
+      "workflow_decision_ids": ["decision_run2_7_contrast_prompt_vs_system", "decision_run2_7_spacing_grid_selected"],
+      "visual_repair_policy_ids": ["repair_spacing_token_visibility", "repair_theme_differentiation_from_run2_5"],
+      "native_ppt_generation": "Generate native editable contrast panels where one side clearly shows workflow memory selection.",
+      "workflow_gates": [
+        "public_blocked release gate remains active",
+        "native editable PPT output is required",
+        "source-brand copying blocked before generation"
+      ],
+      "trace_fields": [
+        "run2_7_usecase_id",
+        "run2_7_source_record_ids",
+        "run2_7_design_memory_ids",
+        "run2_7_workflow_decision_ids",
+        "run2_7_delta_from_run2_6r",
+        "run2_7_quality_gate"
+      ]
+    },
+    {
+      "rhythm_role": "proof",
+      "commercial_usecase_id": "usecase_ai_design_to_production_platform_launch",
+      "source_record_ids": [
+        "mm_2_7_spacing_editorial_grid_tutorial",
+        "mm_2_7_product_surface_interaction_reference",
+        "mm_2_7_motion_demo_pacing_reference"
+      ],
+      "design_memory_ids": [
+        "memory_spacing_climax_proof_grid",
+        "memory_rhythm_six_slide_launch",
+        "memory_source_brand_sanitization_v2"
+      ],
+      "workflow_decision_ids": ["decision_run2_7_proof_trace_visible", "decision_run2_7_native_flow_selected"],
+      "visual_repair_policy_ids": ["repair_spacing_token_visibility", "repair_mini_preview_fidelity"],
+      "native_ppt_generation": "Generate native editable data-to-memory-to-PPT proof objects with recorded trace fields.",
+      "workflow_gates": [
+        "public_blocked release gate remains active",
+        "native editable PPT output is required",
+        "source-brand copying blocked before generation"
+      ],
+      "trace_fields": [
+        "run2_7_usecase_id",
+        "run2_7_source_record_ids",
+        "run2_7_design_memory_ids",
+        "run2_7_workflow_decision_ids",
+        "run2_7_delta_from_run2_6r",
+        "run2_7_quality_gate"
+      ]
+    },
+    {
+      "rhythm_role": "climax",
+      "commercial_usecase_id": "usecase_ai_design_to_production_platform_launch",
+      "source_record_ids": ["mm_2_7_video_climax_single_object", "mm_2_7_motion_demo_pacing_reference"],
+      "design_memory_ids": [
+        "memory_composition_single_object_climax",
+        "memory_spacing_climax_proof_grid",
+        "memory_rhythm_six_slide_launch",
+        "memory_source_brand_sanitization_v2"
+      ],
+      "workflow_decision_ids": ["decision_run2_7_climax_single_proof_object", "decision_run2_7_climax_scale_delta"],
+      "visual_repair_policy_ids": ["repair_climax_editorial_spread", "repair_theme_differentiation_from_run2_5"],
+      "native_ppt_generation": "Generate one large native editable proof object with traceable composition memory.",
+      "workflow_gates": [
+        "public_blocked release gate remains active",
+        "native editable PPT output is required",
+        "source-brand copying blocked before generation"
+      ],
+      "trace_fields": [
+        "run2_7_usecase_id",
+        "run2_7_source_record_ids",
+        "run2_7_design_memory_ids",
+        "run2_7_workflow_decision_ids",
+        "run2_7_delta_from_run2_6r",
+        "run2_7_quality_gate"
+      ]
+    },
+    {
+      "rhythm_role": "close",
+      "commercial_usecase_id": "usecase_ai_design_to_production_platform_launch",
+      "source_record_ids": ["mm_2_7_product_surface_interaction_reference", "mm_2_7_motion_demo_pacing_reference"],
+      "design_memory_ids": [
+        "memory_rhythm_six_slide_launch",
+        "memory_source_brand_sanitization_v2"
+      ],
+      "workflow_decision_ids": ["decision_run2_7_close_release_gate", "decision_run2_7_ppt_trace_handoff"],
+      "visual_repair_policy_ids": ["repair_theme_differentiation_from_run2_5"],
+      "native_ppt_generation": "Generate native editable close objects that show release gate and trace handoff.",
+      "workflow_gates": [
+        "public_blocked release gate remains active",
+        "native editable PPT output is required",
+        "source-brand copying blocked before generation"
+      ],
+      "trace_fields": [
+        "run2_7_usecase_id",
+        "run2_7_source_record_ids",
+        "run2_7_design_memory_ids",
+        "run2_7_workflow_decision_ids",
+        "run2_7_delta_from_run2_6r",
+        "run2_7_quality_gate"
+      ]
+    }
+  ]
+}

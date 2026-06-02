@@ -565,6 +565,22 @@ def write_run2_required_files(pack: Path) -> None:
         json.dumps(valid_run2_visual_repair_policy(), indent=2),
         encoding="utf-8",
     )
+    (pack / "run2_7_commercial_usecase.json").write_text(
+        json.dumps(valid_run2_7_commercial_usecase(), indent=2),
+        encoding="utf-8",
+    )
+    (pack / "run2_7_multimodal_source_records.json").write_text(
+        json.dumps(valid_run2_7_multimodal_source_records(), indent=2),
+        encoding="utf-8",
+    )
+    (pack / "run2_7_design_memory.json").write_text(
+        json.dumps(valid_run2_7_design_memory(), indent=2),
+        encoding="utf-8",
+    )
+    (pack / "run2_7_workflow_policy.json").write_text(
+        json.dumps(valid_run2_7_workflow_policy(), indent=2),
+        encoding="utf-8",
+    )
     (pack / "results" / "delivery_gate.md").write_text(
         "# Delivery Gate\n\nPublic publishing is blocked before native render and human review.\n",
         encoding="utf-8",
@@ -854,6 +870,162 @@ def valid_run2_visual_repair_policy() -> dict:
         "stage_policy": "repeat_same_five_layers_not_run3",
         "default_visual_direction": "light_first_editorial_graphite_with_vivid_proof_color",
         "repairs": [{"id": repair_id, **repair_fields} for repair_id in repair_ids],
+    }
+
+
+def valid_run2_7_commercial_usecase() -> dict:
+    return {
+        "schema_version": 1,
+        "status": "run2_7_commercial_usecase_public_blocked",
+        "stage_policy": "repeat_same_five_layers_not_run3",
+        "id": "usecase_ai_design_to_production_platform_launch",
+        "primary_usecase": "AI design-to-production platform launch deck",
+        "audience": "AI product builders, design engineering leaders, and technical founders.",
+        "business_job": "Show product-system learning and not one-shot prompting.",
+        "business_decision": "Decide whether the platform can replace ad hoc deck drafting.",
+        "deck_mission": "Make the data, memory, workflow, and editable PPT path legible.",
+        "six_slide_arc": [
+            {"slide": 1, "rhythm_role": "cover", "job": "Name the launch."},
+            {"slide": 2, "rhythm_role": "setup", "job": "Frame the current workflow gap."},
+            {"slide": 3, "rhythm_role": "contrast", "job": "Show prompt-only versus system learning."},
+            {"slide": 4, "rhythm_role": "proof", "job": "Trace source data into memory."},
+            {"slide": 5, "rhythm_role": "climax", "job": "Reveal one native proof object."},
+            {"slide": 6, "rhythm_role": "close", "job": "Gate the release decision."},
+        ],
+        "must_show": ["data lineage", "selected design memory", "editable PPT trace"],
+        "must_not_show": ["copy source layouts", "source brand mimicry", "full-slide raster"],
+        "proof_questions": ["Which data?", "Which memory?", "Which workflow?", "Which PPT trace?"],
+        "release_boundary": "public_blocked_until_native_render_and_human_review",
+    }
+
+
+def valid_run2_7_multimodal_source_records() -> dict:
+    base = {
+        "source_id": "supervity_ai_keynote",
+        "source_type": "commercial_case",
+        "allowed_use": "derived_rules_only",
+        "native_ppt_implication": "Generate native editable PPT shapes and text only.",
+        "anti_copy_boundary": "do not copy source media, brand, screenshots, or layouts.",
+        "qa_probe": "Contact sheet confirms the derived rule is visible.",
+        "release_boundary": "public_blocked_until_native_render_and_human_review",
+    }
+    records = [
+        ("mm_2_7_design_system_launch_case", ["text", "image_reference"], ["cover", "setup"]),
+        ("mm_2_7_video_climax_single_object", ["video", "audio"], ["climax"]),
+        ("mm_2_7_typography_hierarchy_tutorial", ["text", "transcript"], ["setup", "proof"]),
+        ("mm_2_7_spacing_editorial_grid_tutorial", ["image_reference", "text"], ["contrast", "proof"]),
+        ("mm_2_7_motion_demo_pacing_reference", ["video", "audio", "transcript"], ["proof", "climax"]),
+        ("mm_2_7_product_surface_interaction_reference", ["interaction", "text"], ["close"]),
+    ]
+    return {
+        "schema_version": 1,
+        "status": "run2_7_multimodal_source_records_public_blocked",
+        "stage_policy": "repeat_same_five_layers_not_run3",
+        "storage_policy": {"raw_media": "forbidden"},
+        "records": [
+            {
+                **base,
+                "id": record_id,
+                "anchor": f"{record_id} derived observation anchor",
+                "modalities": modalities,
+                "visual_observation": "A single hierarchy decision controls the slide role.",
+                "transcript_or_teaching_claim": "Teaching claim is stored as a paraphrased design rule.",
+                "extracted_design_rule": "Use one dominant native editable object before adding supporting detail.",
+                "slide_roles": slide_roles,
+            }
+            for record_id, modalities, slide_roles in records
+        ],
+    }
+
+
+def valid_run2_7_design_memory() -> dict:
+    common = {
+        "source_record_ids": ["mm_2_7_design_system_launch_case"],
+        "applicable_usecases": ["usecase_ai_design_to_production_platform_launch"],
+        "applicable_slide_roles": ["cover", "proof"],
+        "typography_rules": ["Use editable headline hierarchy."],
+        "spacing_rules": ["Reserve visible margin and whitespace."],
+        "composition_rules": ["Use native proof objects with clear focal weight."],
+        "rhythm_rules": ["Preserve the six-slide launch rhythm."],
+        "native_ppt_generation_requirements": ["native editable output", "trace selected memory ids"],
+        "forbidden_patterns": ["report density", "dashboard grid", "equal card rows"],
+        "qa_probes": ["Contact sheet confirms selected memory is visible."],
+        "release_boundary": "public_blocked_until_native_render_and_human_review",
+    }
+    return {
+        "schema_version": 1,
+        "status": "run2_7_design_memory_public_blocked",
+        "stage_policy": "repeat_same_five_layers_not_run3",
+        "memory_type": "deterministic_serializable_rules",
+        "memories": [
+            {"id": "memory_typography_editorial_launch", **common},
+            {
+                "id": "memory_spacing_climax_proof_grid",
+                **common,
+                "source_record_ids": ["mm_2_7_spacing_editorial_grid_tutorial"],
+            },
+            {
+                "id": "memory_composition_single_object_climax",
+                **common,
+                "source_record_ids": ["mm_2_7_video_climax_single_object"],
+                "applicable_slide_roles": ["climax"],
+                "composition_rules": ["Allocate 40-55% of the canvas to one native proof object."],
+                "forbidden_patterns": ["full-slide raster", "source brand mimicry"],
+            },
+            {
+                "id": "memory_rhythm_six_slide_launch",
+                **common,
+                "source_record_ids": ["mm_2_7_motion_demo_pacing_reference"],
+            },
+            {
+                "id": "memory_source_brand_sanitization_v2",
+                **common,
+                "source_record_ids": ["mm_2_7_product_surface_interaction_reference"],
+                "forbidden_patterns": ["source brand mimicry", "copy source layout"],
+            },
+        ],
+    }
+
+
+def valid_run2_7_workflow_policy() -> dict:
+    trace_fields = [
+        "run2_7_usecase_id",
+        "run2_7_source_record_ids",
+        "run2_7_design_memory_ids",
+        "run2_7_workflow_decision_ids",
+        "run2_7_delta_from_run2_6r",
+        "run2_7_quality_gate",
+    ]
+    return {
+        "schema_version": 1,
+        "status": "run2_7_workflow_policy_public_blocked",
+        "stage_policy": "repeat_same_five_layers_not_run3",
+        "commercial_usecase_id": "usecase_ai_design_to_production_platform_launch",
+        "selection_chain": [
+            "commercial_usecase",
+            "source_record_ids",
+            "typography_memory_id",
+            "spacing_memory_id",
+            "composition_memory_id",
+            "rhythm_memory_id",
+            "brand_sanitization_memory_id",
+            "visual_repair_policy_ids",
+            "native_ppt_generation",
+            "qa_gate",
+        ],
+        "slide_role_memory_map": [
+            {
+                "rhythm_role": "cover",
+                "commercial_usecase_id": "usecase_ai_design_to_production_platform_launch",
+                "source_record_ids": ["mm_2_7_design_system_launch_case"],
+                "design_memory_ids": ["memory_typography_editorial_launch"],
+                "workflow_decision_ids": ["decision_run2_7_cover_memory"],
+                "visual_repair_policy_ids": ["repair_editorial_typography_system"],
+                "native_ppt_generation": "native editable PPT objects with trace",
+                "workflow_gates": ["public_blocked gate", "native output gate", "source-brand copying blocked"],
+                "trace_fields": trace_fields,
+            }
+        ],
     }
 
 
@@ -1759,5 +1931,47 @@ def test_run2_profile_rejects_slide_archetype_unknown_aesthetic_move(tmp_path: P
     assert result.ok is False
     assert (
         "slide_archetypes.archetypes[0].aesthetic_move_ids[0] missing_move is not defined in aesthetic_memory.json"
+        in result.errors
+    )
+
+
+def test_run2_profile_rejects_run2_7_unknown_memory_source_record(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    memory_path = pack / "run2_7_design_memory.json"
+    memory = json.loads(memory_path.read_text(encoding="utf-8"))
+    memory["memories"][0]["source_record_ids"] = ["missing_source_record"]
+    memory_path.write_text(json.dumps(memory, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert (
+        "run2_7_design_memory.memories[0].source_record_ids references unknown Run 2.7 source record: "
+        "missing_source_record"
+    ) in result.errors
+
+
+def test_run2_profile_rejects_run2_7_workflow_missing_trace_field(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    policy_path = pack / "run2_7_workflow_policy.json"
+    policy = json.loads(policy_path.read_text(encoding="utf-8"))
+    policy["slide_role_memory_map"][0]["trace_fields"].remove("run2_7_quality_gate")
+    policy_path.write_text(json.dumps(policy, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert (
+        "run2_7_workflow_policy.slide_role_memory_map[0].trace_fields missing value: run2_7_quality_gate"
         in result.errors
     )

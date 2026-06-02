@@ -218,8 +218,33 @@
       ]
     },
     {
-      "id": "select_visual_production_modules",
+      "id": "select_run2_7_design_memory",
       "order": 12,
+      "layer": "skill_workflow",
+      "inputs": [
+        "run2_7_commercial_usecase.json",
+        "run2_7_multimodal_source_records.json",
+        "run2_7_design_memory.json",
+        "run2_7_workflow_policy.json",
+        "visual_repair_policy.json"
+      ],
+      "outputs": [
+        "selected Run 2.7 usecase id",
+        "selected Run 2.7 source record ids",
+        "selected Run 2.7 design memory ids",
+        "selected Run 2.7 workflow decision ids"
+      ],
+      "gates": [
+        "commercial usecase is real and public_blocked",
+        "multimodal source records store derived observations only",
+        "design memory is deterministic and serializable",
+        "trace memory ids before native PPT generation",
+        "source-brand copying blocked before visual production"
+      ]
+    },
+    {
+      "id": "select_visual_production_modules",
+      "order": 13,
       "layer": "skill_workflow",
       "inputs": [
         "visual_production_modules.json",
@@ -251,7 +276,7 @@
     },
     {
       "id": "generate_code_first_ppt",
-      "order": 13,
+      "order": 14,
       "layer": "skill_workflow",
       "inputs": [
         "generation_briefs/run2_skill.md",
@@ -290,7 +315,7 @@
     },
     {
       "id": "run_structural_and_aesthetic_qa",
-      "order": 14,
+      "order": 15,
       "layer": "rerun_and_evaluation",
       "inputs": ["PPTX", "layout JSON", "contact sheet", "aesthetic_rubric.md", "trace_manifest.json"],
       "outputs": ["delivery report", "layout report", "Gemini artifact review", "score table", "visual validation outcome"],
@@ -307,7 +332,7 @@
     },
     {
       "id": "recommend_repairs",
-      "order": 15,
+      "order": 16,
       "layer": "skill_workflow",
       "inputs": ["delivery report", "layout report", "Gemini review", "visual validation outcome", "human visual notes"],
       "outputs": ["repair recommendations", "blocked release reasons"],
@@ -315,7 +340,7 @@
     },
     {
       "id": "refresh_trace_qa_outcomes",
-      "order": 16,
+      "order": 17,
       "layer": "rerun_and_evaluation",
       "inputs": ["trace_manifest.json", "delivery report", "layout report", "visual validation outcome"],
       "outputs": ["post-QA trace manifest", "backup manifest", "dry-run diff"],
@@ -323,7 +348,7 @@
     },
     {
       "id": "emit_release_decision",
-      "order": 17,
+      "order": 18,
       "layer": "rerun_and_evaluation",
       "inputs": ["post-QA trace manifest", "native render result", "human approval record"],
       "outputs": ["internal_only or public_blocked decision"],

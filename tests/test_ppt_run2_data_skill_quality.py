@@ -209,6 +209,62 @@ EXPECTED_RUN2_6R_TRACE_FIELDS = {
     "visual_delta_from_run2_5",
     "visual_repair_validation_probe",
 }
+EXPECTED_RUN2_7_USECASE_IDS = {
+    "usecase_ai_design_to_production_platform_launch",
+}
+EXPECTED_RUN2_7_SOURCE_RECORD_IDS = {
+    "mm_2_7_design_system_launch_case",
+    "mm_2_7_video_climax_single_object",
+    "mm_2_7_typography_hierarchy_tutorial",
+    "mm_2_7_spacing_editorial_grid_tutorial",
+    "mm_2_7_motion_demo_pacing_reference",
+    "mm_2_7_product_surface_interaction_reference",
+}
+EXPECTED_RUN2_7_MEMORY_IDS = {
+    "memory_typography_editorial_launch",
+    "memory_spacing_climax_proof_grid",
+    "memory_composition_single_object_climax",
+    "memory_rhythm_six_slide_launch",
+    "memory_source_brand_sanitization_v2",
+}
+EXPECTED_RUN2_7_SOURCE_RECORD_FIELDS = {
+    "id",
+    "source_id",
+    "source_type",
+    "allowed_use",
+    "anchor",
+    "modalities",
+    "visual_observation",
+    "transcript_or_teaching_claim",
+    "extracted_design_rule",
+    "slide_roles",
+    "native_ppt_implication",
+    "anti_copy_boundary",
+    "qa_probe",
+    "release_boundary",
+}
+EXPECTED_RUN2_7_MEMORY_FIELDS = {
+    "id",
+    "source_record_ids",
+    "applicable_usecases",
+    "applicable_slide_roles",
+    "typography_rules",
+    "spacing_rules",
+    "composition_rules",
+    "rhythm_rules",
+    "native_ppt_generation_requirements",
+    "forbidden_patterns",
+    "qa_probes",
+    "release_boundary",
+}
+EXPECTED_RUN2_7_TRACE_FIELDS = {
+    "run2_7_usecase_id",
+    "run2_7_source_record_ids",
+    "run2_7_design_memory_ids",
+    "run2_7_workflow_decision_ids",
+    "run2_7_delta_from_run2_6r",
+    "run2_7_quality_gate",
+}
 EXPECTED_RUN2_6_USECASE_FIELDS = {
     "id",
     "source_ids",
@@ -759,6 +815,137 @@ def test_run2_6r_workflow_and_trace_contract_include_visual_repair() -> None:
     assert EXPECTED_RUN2_6R_TRACE_FIELDS <= set(trace_contract["per_slide_required_fields"])
 
 
+def test_run2_7_has_real_usecase_and_multimodal_source_records() -> None:
+    usecase = load_json(PACK / "run2_7_commercial_usecase.json")
+    source_records = load_json(PACK / "run2_7_multimodal_source_records.json")
+    sources = load_json(PACK / "sources.json")
+    source_ids = {source["id"] for source in sources["sources"]}
+
+    assert usecase["status"] == "run2_7_commercial_usecase_public_blocked"
+    assert usecase["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert EXPECTED_RUN2_7_USECASE_IDS <= {usecase["id"]}
+    assert usecase["primary_usecase"] == "AI design-to-production platform launch deck"
+    assert len(usecase["six_slide_arc"]) == 6
+    assert [slide["rhythm_role"] for slide in usecase["six_slide_arc"]] == [
+        "cover",
+        "setup",
+        "contrast",
+        "proof",
+        "climax",
+        "close",
+    ]
+    assert_contains(json.dumps(usecase), ["AI product builders", "design engineering leaders", "technical founders"])
+    assert_contains(json.dumps(usecase["business_job"]), ["product-system learning", "not one-shot prompting"])
+    assert_contains(" ".join(usecase["must_not_show"]), ["copy", "source brand", "full-slide raster"])
+    assert_contains(" ".join(usecase["proof_questions"]), ["data", "memory", "workflow", "PPT"])
+    assert_contains(usecase["release_boundary"], ["public_blocked"])
+
+    assert source_records["status"] == "run2_7_multimodal_source_records_public_blocked"
+    assert source_records["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert source_records["storage_policy"]["raw_media"] == "forbidden"
+    assert EXPECTED_RUN2_7_SOURCE_RECORD_IDS <= {record["id"] for record in source_records["records"]}
+
+    covered_modalities = {modality for record in source_records["records"] for modality in record["modalities"]}
+    assert {"text", "image_reference", "video", "audio", "transcript", "interaction"} <= covered_modalities
+
+    for record in source_records["records"]:
+        assert EXPECTED_RUN2_7_SOURCE_RECORD_FIELDS <= set(record), record["id"]
+        assert record["source_id"] in source_ids
+        assert record["allowed_use"] == "derived_rules_only"
+        assert set(record["slide_roles"]) <= EXPECTED_RHYTHM_ROLES
+        assert_contains(record["native_ppt_implication"], ["native", "editable"])
+        assert_contains(record["anti_copy_boundary"], ["do not copy"])
+        assert_contains(record["qa_probe"], ["contact sheet"])
+        assert_contains(record["release_boundary"], ["public_blocked"])
+
+
+def test_run2_7_has_serializable_design_memory() -> None:
+    usecase = load_json(PACK / "run2_7_commercial_usecase.json")
+    source_records = load_json(PACK / "run2_7_multimodal_source_records.json")
+    memory = load_json(PACK / "run2_7_design_memory.json")
+    source_record_ids = {record["id"] for record in source_records["records"]}
+
+    assert memory["status"] == "run2_7_design_memory_public_blocked"
+    assert memory["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert memory["memory_type"] == "deterministic_serializable_rules"
+    assert EXPECTED_RUN2_7_MEMORY_IDS <= {record["id"] for record in memory["memories"]}
+
+    for record in memory["memories"]:
+        assert EXPECTED_RUN2_7_MEMORY_FIELDS <= set(record), record["id"]
+        assert set(record["source_record_ids"]) <= source_record_ids
+        assert usecase["id"] in record["applicable_usecases"]
+        assert set(record["applicable_slide_roles"]) <= EXPECTED_RHYTHM_ROLES
+        assert record["typography_rules"]
+        assert record["spacing_rules"]
+        assert record["composition_rules"]
+        assert record["rhythm_rules"]
+        assert_contains(" ".join(record["native_ppt_generation_requirements"]), ["native", "editable", "trace"])
+        assert_mentions_any(
+            " ".join(record["forbidden_patterns"]),
+            {"report", "dashboard", "equal card", "source brand", "full-slide raster"},
+        )
+        assert_contains(" ".join(record["qa_probes"]), ["contact sheet"])
+        assert_contains(record["release_boundary"], ["public_blocked"])
+
+    climax_memory = next(
+        record for record in memory["memories"] if record["id"] == "memory_composition_single_object_climax"
+    )
+    assert "climax" in climax_memory["applicable_slide_roles"]
+    assert_contains(" ".join(climax_memory["composition_rules"]), ["40-55%", "one native proof object"])
+
+
+def test_run2_7_workflow_and_trace_contract_include_memory_selection() -> None:
+    usecase = load_json(PACK / "run2_7_commercial_usecase.json")
+    source_records = load_json(PACK / "run2_7_multimodal_source_records.json")
+    memory = load_json(PACK / "run2_7_design_memory.json")
+    policy = load_json(PACK / "run2_7_workflow_policy.json")
+    workflow = load_json(PACK / "skill_workflow.json")
+    trace_contract = load_json(PACK / "results" / "trace_manifest_contract.json")
+
+    source_record_ids = {record["id"] for record in source_records["records"]}
+    memory_ids = {record["id"] for record in memory["memories"]}
+
+    assert policy["status"] == "run2_7_workflow_policy_public_blocked"
+    assert policy["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert policy["commercial_usecase_id"] == usecase["id"]
+    assert set(policy["selection_chain"]) == {
+        "commercial_usecase",
+        "source_record_ids",
+        "typography_memory_id",
+        "spacing_memory_id",
+        "composition_memory_id",
+        "rhythm_memory_id",
+        "brand_sanitization_memory_id",
+        "visual_repair_policy_ids",
+        "native_ppt_generation",
+        "qa_gate",
+    }
+
+    for mapping in policy["slide_role_memory_map"]:
+        assert mapping["commercial_usecase_id"] == usecase["id"]
+        assert set(mapping["source_record_ids"]) <= source_record_ids
+        assert set(mapping["design_memory_ids"]) <= memory_ids
+        assert EXPECTED_RUN2_7_TRACE_FIELDS <= set(mapping["trace_fields"])
+        assert_contains(" ".join(mapping["workflow_gates"]), ["public_blocked", "native", "source-brand"])
+
+    workflow_stage_ids = [stage["id"] for stage in workflow["stages"]]
+    assert "select_run2_7_design_memory" in workflow_stage_ids
+    assert workflow_stage_ids.index("select_run2_7_design_memory") < workflow_stage_ids.index(
+        "select_visual_production_modules"
+    )
+    workflow_text = json.dumps(workflow)
+    assert_contains(
+        workflow_text,
+        [
+            "run2_7_commercial_usecase.json",
+            "run2_7_multimodal_source_records.json",
+            "run2_7_design_memory.json",
+            "run2_7_workflow_policy.json",
+        ],
+    )
+    assert EXPECTED_RUN2_7_TRACE_FIELDS <= set(trace_contract["per_slide_required_fields"])
+
+
 def test_run2_four_arm_isolation_mentions_multimodal_and_target_boundaries() -> None:
     prompt_only = (PACK / "generation_briefs" / "prompt_only.md").read_text(encoding="utf-8")
     run1_5 = (PACK / "generation_briefs" / "run1_5_skill.md").read_text(encoding="utf-8")
@@ -951,6 +1138,7 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
         "select_aesthetic_benchmarks",
         "select_theme_typography_spacing_policy",
         "select_visual_repair_policy",
+        "select_run2_7_design_memory",
         "select_visual_production_modules",
         "generate_code_first_ppt",
         "run_structural_and_aesthetic_qa",
@@ -958,7 +1146,7 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
         "refresh_trace_qa_outcomes",
         "emit_release_decision",
     ]
-    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 18))
+    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 19))
     assert workflow["repair_triggers"]
     workflow_text = json.dumps(workflow)
     assert "multimodal_database.json" in workflow_text
@@ -971,6 +1159,10 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
     assert "aesthetic_memory_v2.json" in workflow_text
     assert "visual_production_modules.json" in workflow_text
     assert "commercial_usecase_bank.json" in workflow_text
+    assert "run2_7_commercial_usecase.json" in workflow_text
+    assert "run2_7_multimodal_source_records.json" in workflow_text
+    assert "run2_7_design_memory.json" in workflow_text
+    assert "run2_7_workflow_policy.json" in workflow_text
     assert "aesthetic_benchmark_bank.json" in workflow_text
     assert "workflow_decision_policy.json" in workflow_text
     assert "visual_repair_policy.json" in workflow_text

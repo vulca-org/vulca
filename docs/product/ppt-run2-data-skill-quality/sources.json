@@ -198,6 +198,42 @@
       "accessed_on": "2026-06-01",
       "allowed_use": "reference_analysis_only",
       "copyright_note": "Original analysis only; do not copy webinar materials, visuals, layouts, screenshots, brand marks, full prose, transcripts, audio, or video frames."
+    },
+    {
+      "id": "run2_7_figma_design_system_launch_reference",
+      "title": "Config 2025 Launch Reference",
+      "url": "https://www.figma.com/blog/config-2025-press-release/",
+      "role": "run2_7_design_system_launch_reference",
+      "accessed_on": "2026-06-02",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original reference analysis only; do not copy media, screenshots, source brand, product marks, raw assets, source layouts, or prose."
+    },
+    {
+      "id": "run2_7_slide_design_tutorial_reference",
+      "title": "Slide Design Tutorial Reference",
+      "url": "https://www.duarte.com/training/slide-document-design/slide-design/",
+      "role": "run2_7_slide_design_tutorial_reference",
+      "accessed_on": "2026-06-02",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original reference analysis only; do not copy tutorial media, source brand, course materials, raw assets, exercise files, layouts, or prose."
+    },
+    {
+      "id": "run2_7_product_demo_video_reference",
+      "title": "Product Demo Video Reference",
+      "url": "https://www.youtube.com/watch?v=QFjIaN_wlWg",
+      "role": "run2_7_product_demo_video_reference",
+      "accessed_on": "2026-06-02",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original reference analysis only; do not copy video, audio, frames, screenshots, transcripts, source brand, raw assets, or demo UI."
+    },
+    {
+      "id": "run2_7_presentation_hierarchy_reference",
+      "title": "Presentation Hierarchy Reference",
+      "url": "https://slidemodel.com/visual-hierarchy-for-presentations/",
+      "role": "run2_7_presentation_hierarchy_reference",
+      "accessed_on": "2026-06-02",
+      "allowed_use": "reference_analysis_only",
+      "copyright_note": "Original reference analysis only; do not copy tutorial media, diagrams, screenshots, source brand, raw assets, layouts, or prose."
     }
   ]
 }

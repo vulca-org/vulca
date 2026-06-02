@@ -59,6 +59,10 @@ RUN2_REQUIRED_FILES = [
     "motion_learning_targets.json",
     "presentation_sequence_components.json",
     "visual_repair_policy.json",
+    "run2_7_commercial_usecase.json",
+    "run2_7_multimodal_source_records.json",
+    "run2_7_design_memory.json",
+    "run2_7_workflow_policy.json",
     "source_cards/README.md",
     "video_cards/README.md",
     "evidence_memory.json",
@@ -164,6 +168,28 @@ RUN2_6R_REPAIR_FIELDS = [
     "release_boundary",
 ]
 RUN2_6R_REPAIR_ROLES = {"cover", "setup", "contrast", "proof", "climax", "close"}
+RUN2_7_MEMORY_FIELDS = [
+    "id",
+    "source_record_ids",
+    "applicable_usecases",
+    "applicable_slide_roles",
+    "typography_rules",
+    "spacing_rules",
+    "composition_rules",
+    "rhythm_rules",
+    "native_ppt_generation_requirements",
+    "forbidden_patterns",
+    "qa_probes",
+    "release_boundary",
+]
+RUN2_7_TRACE_FIELDS = {
+    "run2_7_usecase_id",
+    "run2_7_source_record_ids",
+    "run2_7_design_memory_ids",
+    "run2_7_workflow_decision_ids",
+    "run2_7_delta_from_run2_6r",
+    "run2_7_quality_gate",
+}
 
 
 @dataclass(frozen=True)
@@ -1614,6 +1640,358 @@ def validate_run2_visual_repair_policy(pack_dir: Path, errors: list[str]) -> Non
         errors.append(f"visual_repair_policy.repairs has unexpected repair id: {repair_id}")
 
 
+def validate_run2_7_commercial_usecase(pack_dir: Path, errors: list[str]) -> set[str]:
+    data = load_json(pack_dir / "run2_7_commercial_usecase.json", errors)
+    require_keys(
+        "run2_7_commercial_usecase.json",
+        data,
+        [
+            "schema_version",
+            "status",
+            "stage_policy",
+            "id",
+            "primary_usecase",
+            "audience",
+            "business_job",
+            "business_decision",
+            "deck_mission",
+            "six_slide_arc",
+            "must_show",
+            "must_not_show",
+            "proof_questions",
+            "release_boundary",
+        ],
+        errors,
+    )
+    if "schema_version" in data:
+        require_integer("run2_7_commercial_usecase.schema_version", data["schema_version"], errors)
+    if "status" in data and data["status"] != "run2_7_commercial_usecase_public_blocked":
+        errors.append("run2_7_commercial_usecase.status must be run2_7_commercial_usecase_public_blocked")
+    if "stage_policy" in data and data["stage_policy"] != "repeat_same_five_layers_not_run3":
+        errors.append("run2_7_commercial_usecase.stage_policy must be repeat_same_five_layers_not_run3")
+    usecase_id = data.get("id")
+    usecase_ids: set[str] = set()
+    if "id" in data and require_non_empty_string("run2_7_commercial_usecase.id", usecase_id, errors):
+        usecase_ids.add(usecase_id)
+    for key in ["primary_usecase", "audience", "business_job", "business_decision", "deck_mission"]:
+        if key in data:
+            require_non_empty_string(f"run2_7_commercial_usecase.{key}", data[key], errors)
+    if "audience" in data:
+        validate_string_mentions(
+            "run2_7_commercial_usecase.audience",
+            data["audience"],
+            ["AI product builders", "design engineering leaders", "technical founders"],
+            errors,
+        )
+    if "business_job" in data:
+        validate_string_mentions(
+            "run2_7_commercial_usecase.business_job",
+            data["business_job"],
+            ["product-system learning", "not one-shot prompting"],
+            errors,
+        )
+    if "must_not_show" in data:
+        validate_combined_terms(
+            "run2_7_commercial_usecase.must_not_show",
+            data["must_not_show"],
+            ["copy", "source brand", "full-slide raster"],
+            errors,
+        )
+    if "proof_questions" in data:
+        validate_combined_terms(
+            "run2_7_commercial_usecase.proof_questions",
+            data["proof_questions"],
+            ["data", "memory", "workflow", "ppt"],
+            errors,
+        )
+    if "must_show" in data:
+        validate_string_list("run2_7_commercial_usecase.must_show", data["must_show"], errors)
+    arc = data.get("six_slide_arc", [])
+    if require_non_empty_list("run2_7_commercial_usecase.six_slide_arc", arc, errors):
+        expected_roles = ["cover", "setup", "contrast", "proof", "climax", "close"]
+        actual_roles: list[str] = []
+        for index, slide in enumerate(arc):
+            label = f"run2_7_commercial_usecase.six_slide_arc[{index}]"
+            if not isinstance(slide, dict):
+                errors.append(f"{label} must be an object")
+                continue
+            require_keys(label, slide, ["rhythm_role"], errors)
+            role = slide.get("rhythm_role")
+            if "rhythm_role" in slide and validate_choice(f"{label}.rhythm_role", role, RUN2_6R_REPAIR_ROLES, errors):
+                actual_roles.append(role)
+        if actual_roles != expected_roles:
+            errors.append("run2_7_commercial_usecase.six_slide_arc rhythm_role order must be cover, setup, contrast, proof, climax, close")
+    if "release_boundary" in data:
+        validate_public_blocked_boundary("run2_7_commercial_usecase.release_boundary", data["release_boundary"], errors)
+    return usecase_ids
+
+
+def validate_run2_7_source_records(pack_dir: Path, source_ids: set[str], errors: list[str]) -> set[str]:
+    data = load_json(pack_dir / "run2_7_multimodal_source_records.json", errors)
+    require_keys(
+        "run2_7_multimodal_source_records.json",
+        data,
+        ["schema_version", "status", "stage_policy", "storage_policy", "records"],
+        errors,
+    )
+    if "schema_version" in data:
+        require_integer("run2_7_multimodal_source_records.schema_version", data["schema_version"], errors)
+    if "status" in data and data["status"] != "run2_7_multimodal_source_records_public_blocked":
+        errors.append("run2_7_multimodal_source_records.status must be run2_7_multimodal_source_records_public_blocked")
+    if "stage_policy" in data and data["stage_policy"] != "repeat_same_five_layers_not_run3":
+        errors.append("run2_7_multimodal_source_records.stage_policy must be repeat_same_five_layers_not_run3")
+    storage_policy = data.get("storage_policy")
+    if isinstance(storage_policy, dict):
+        raw_media = storage_policy.get("raw_media")
+        if isinstance(raw_media, str) and raw_media != "forbidden":
+            errors.append("run2_7_multimodal_source_records.storage_policy.raw_media must be forbidden")
+    elif "storage_policy" in data:
+        errors.append("run2_7_multimodal_source_records.storage_policy must be a non-empty object")
+
+    records = data.get("records", [])
+    if not require_non_empty_list("run2_7_multimodal_source_records.records", records, errors):
+        return set()
+    required = [
+        "id",
+        "source_id",
+        "source_type",
+        "allowed_use",
+        "anchor",
+        "modalities",
+        "visual_observation",
+        "transcript_or_teaching_claim",
+        "extracted_design_rule",
+        "slide_roles",
+        "native_ppt_implication",
+        "anti_copy_boundary",
+        "qa_probe",
+        "release_boundary",
+    ]
+    seen_record_ids: set[str] = set()
+    covered_modalities: set[str] = set()
+    for index, record in enumerate(records):
+        label = f"run2_7_multimodal_source_records.records[{index}]"
+        if not isinstance(record, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        require_keys(label, record, required, errors)
+        record_id = record.get("id")
+        if "id" in record and require_non_empty_string(f"{label}.id", record_id, errors):
+            if record_id in seen_record_ids:
+                errors.append(f"{label}.id duplicates {record_id}")
+            seen_record_ids.add(record_id)
+        source_id = record.get("source_id")
+        if "source_id" in record and require_non_empty_string(f"{label}.source_id", source_id, errors):
+            if source_id not in source_ids:
+                errors.append(f"{label}.source_id {source_id} is not defined in sources.json")
+        if "allowed_use" in record and record["allowed_use"] != "derived_rules_only":
+            errors.append(f"{label}.allowed_use must be derived_rules_only")
+        if "modalities" in record and validate_string_list(f"{label}.modalities", record["modalities"], errors):
+            for modality in record["modalities"]:
+                if modality not in RUN2_MULTIMODAL_MODALITIES:
+                    errors.append(f"{label}.modalities has unexpected value: {modality}")
+                else:
+                    covered_modalities.add(modality)
+        if "slide_roles" in record and validate_string_list(f"{label}.slide_roles", record["slide_roles"], errors):
+            for role in record["slide_roles"]:
+                if role not in RUN2_RHYTHM_ROLES:
+                    errors.append(f"{label}.slide_roles has unexpected value: {role}")
+        for key in ["source_type", "anchor", "visual_observation", "transcript_or_teaching_claim", "extracted_design_rule"]:
+            if key in record:
+                require_non_empty_string(f"{label}.{key}", record[key], errors)
+        if "native_ppt_implication" in record:
+            validate_string_mentions(f"{label}.native_ppt_implication", record["native_ppt_implication"], ["native", "editable"], errors)
+        if "anti_copy_boundary" in record:
+            validate_string_mentions(f"{label}.anti_copy_boundary", record["anti_copy_boundary"], ["do not copy"], errors)
+        if "qa_probe" in record:
+            validate_string_mentions(f"{label}.qa_probe", record["qa_probe"], ["contact sheet"], errors)
+        if "release_boundary" in record:
+            validate_public_blocked_boundary(f"{label}.release_boundary", record["release_boundary"], errors)
+    for modality in sorted(RUN2_MULTIMODAL_MODALITIES - covered_modalities):
+        errors.append(f"run2_7_multimodal_source_records.records missing modality coverage: {modality}")
+    return seen_record_ids
+
+
+def validate_run2_7_design_memory(
+    pack_dir: Path,
+    source_record_ids: set[str],
+    usecase_ids: set[str],
+    errors: list[str],
+) -> set[str]:
+    data = load_json(pack_dir / "run2_7_design_memory.json", errors)
+    require_keys(
+        "run2_7_design_memory.json",
+        data,
+        ["schema_version", "status", "stage_policy", "memory_type", "memories"],
+        errors,
+    )
+    if "schema_version" in data:
+        require_integer("run2_7_design_memory.schema_version", data["schema_version"], errors)
+    if "status" in data and data["status"] != "run2_7_design_memory_public_blocked":
+        errors.append("run2_7_design_memory.status must be run2_7_design_memory_public_blocked")
+    if "stage_policy" in data and data["stage_policy"] != "repeat_same_five_layers_not_run3":
+        errors.append("run2_7_design_memory.stage_policy must be repeat_same_five_layers_not_run3")
+    if "memory_type" in data and data["memory_type"] != "deterministic_serializable_rules":
+        errors.append("run2_7_design_memory.memory_type must be deterministic_serializable_rules")
+
+    memories = data.get("memories", [])
+    if not require_non_empty_list("run2_7_design_memory.memories", memories, errors):
+        return set()
+    memory_ids: set[str] = set()
+    for index, memory in enumerate(memories):
+        label = f"run2_7_design_memory.memories[{index}]"
+        if not isinstance(memory, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        require_keys(label, memory, RUN2_7_MEMORY_FIELDS, errors)
+        memory_id = memory.get("id")
+        if "id" in memory and require_non_empty_string(f"{label}.id", memory_id, errors):
+            if memory_id in memory_ids:
+                errors.append(f"{label}.id duplicates {memory_id}")
+            memory_ids.add(memory_id)
+        if "source_record_ids" in memory:
+            validate_known_string_references(
+                f"{label}.source_record_ids",
+                memory["source_record_ids"],
+                source_record_ids,
+                "Run 2.7 source record",
+                errors,
+            )
+        if "applicable_usecases" in memory:
+            validate_known_string_references(
+                f"{label}.applicable_usecases",
+                memory["applicable_usecases"],
+                usecase_ids,
+                "Run 2.7 usecase",
+                errors,
+            )
+        if "applicable_slide_roles" in memory and validate_string_list(
+            f"{label}.applicable_slide_roles", memory["applicable_slide_roles"], errors
+        ):
+            for role in memory["applicable_slide_roles"]:
+                if role not in RUN2_RHYTHM_ROLES:
+                    errors.append(f"{label}.applicable_slide_roles has unexpected value: {role}")
+        for key in ["typography_rules", "spacing_rules", "composition_rules", "rhythm_rules", "forbidden_patterns"]:
+            if key in memory:
+                validate_string_list(f"{label}.{key}", memory[key], errors)
+        if "native_ppt_generation_requirements" in memory:
+            validate_combined_terms(
+                f"{label}.native_ppt_generation_requirements",
+                memory["native_ppt_generation_requirements"],
+                ["native", "editable", "trace"],
+                errors,
+            )
+        if "qa_probes" in memory:
+            validate_combined_terms(f"{label}.qa_probes", memory["qa_probes"], ["contact sheet"], errors)
+        if "release_boundary" in memory:
+            validate_public_blocked_boundary(f"{label}.release_boundary", memory["release_boundary"], errors)
+    return memory_ids
+
+
+def validate_run2_7_workflow_policy(
+    pack_dir: Path,
+    source_record_ids: set[str],
+    usecase_ids: set[str],
+    memory_ids: set[str],
+    errors: list[str],
+) -> None:
+    data = load_json(pack_dir / "run2_7_workflow_policy.json", errors)
+    require_keys(
+        "run2_7_workflow_policy.json",
+        data,
+        ["schema_version", "status", "stage_policy", "commercial_usecase_id", "selection_chain", "slide_role_memory_map"],
+        errors,
+    )
+    if "schema_version" in data:
+        require_integer("run2_7_workflow_policy.schema_version", data["schema_version"], errors)
+    if "status" in data and data["status"] != "run2_7_workflow_policy_public_blocked":
+        errors.append("run2_7_workflow_policy.status must be run2_7_workflow_policy_public_blocked")
+    if "stage_policy" in data and data["stage_policy"] != "repeat_same_five_layers_not_run3":
+        errors.append("run2_7_workflow_policy.stage_policy must be repeat_same_five_layers_not_run3")
+    usecase_id = data.get("commercial_usecase_id")
+    if "commercial_usecase_id" in data and require_non_empty_string(
+        "run2_7_workflow_policy.commercial_usecase_id", usecase_id, errors
+    ):
+        if usecase_id not in usecase_ids:
+            errors.append(f"run2_7_workflow_policy.commercial_usecase_id references unknown Run 2.7 usecase: {usecase_id}")
+    if "selection_chain" in data:
+        validate_exact_string_set(
+            "run2_7_workflow_policy.selection_chain",
+            data["selection_chain"],
+            {
+                "commercial_usecase",
+                "source_record_ids",
+                "typography_memory_id",
+                "spacing_memory_id",
+                "composition_memory_id",
+                "rhythm_memory_id",
+                "brand_sanitization_memory_id",
+                "visual_repair_policy_ids",
+                "native_ppt_generation",
+                "qa_gate",
+            },
+            errors,
+        )
+
+    mappings = data.get("slide_role_memory_map", [])
+    if not require_non_empty_list("run2_7_workflow_policy.slide_role_memory_map", mappings, errors):
+        return
+    required = [
+        "rhythm_role",
+        "commercial_usecase_id",
+        "source_record_ids",
+        "design_memory_ids",
+        "workflow_decision_ids",
+        "visual_repair_policy_ids",
+        "native_ppt_generation",
+        "workflow_gates",
+        "trace_fields",
+    ]
+    for index, mapping in enumerate(mappings):
+        label = f"run2_7_workflow_policy.slide_role_memory_map[{index}]"
+        if not isinstance(mapping, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        require_keys(label, mapping, required, errors)
+        if "rhythm_role" in mapping:
+            validate_choice(f"{label}.rhythm_role", mapping["rhythm_role"], RUN2_6R_REPAIR_ROLES, errors)
+        if "commercial_usecase_id" in mapping:
+            mapping_usecase_id = mapping["commercial_usecase_id"]
+            if require_non_empty_string(f"{label}.commercial_usecase_id", mapping_usecase_id, errors):
+                if mapping_usecase_id not in usecase_ids:
+                    errors.append(f"{label}.commercial_usecase_id references unknown Run 2.7 usecase: {mapping_usecase_id}")
+        if "source_record_ids" in mapping:
+            validate_known_string_references(
+                f"{label}.source_record_ids",
+                mapping["source_record_ids"],
+                source_record_ids,
+                "Run 2.7 source record",
+                errors,
+            )
+        if "design_memory_ids" in mapping:
+            validate_known_string_references(
+                f"{label}.design_memory_ids",
+                mapping["design_memory_ids"],
+                memory_ids,
+                "Run 2.7 design memory",
+                errors,
+            )
+        for key in ["workflow_decision_ids", "visual_repair_policy_ids"]:
+            if key in mapping:
+                validate_string_list(f"{label}.{key}", mapping[key], errors)
+        if "native_ppt_generation" in mapping:
+            validate_string_mentions(f"{label}.native_ppt_generation", mapping["native_ppt_generation"], ["native", "editable"], errors)
+        if "workflow_gates" in mapping:
+            validate_combined_terms(
+                f"{label}.workflow_gates",
+                mapping["workflow_gates"],
+                ["public_blocked", "native", "source-brand"],
+                errors,
+            )
+        if "trace_fields" in mapping:
+            validate_exact_string_set(f"{label}.trace_fields", mapping["trace_fields"], RUN2_7_TRACE_FIELDS, errors)
+
+
 def validate_run1_design_memory_observations(observations: list[Any], errors: list[str]) -> None:
     required = ["id", "source_ids", "principle", "code_generation_rule", "do_not_copy"]
     seen_ids: set[str] = set()
@@ -1786,6 +2164,21 @@ def validate_case_pack(pack_dir: str | Path, profile: str = "default") -> Valida
         validate_run2_slide_archetypes(root, move_ids, errors)
         validate_run2_skill_workflow(root, errors)
         validate_run2_visual_repair_policy(root, errors)
+        run2_7_usecase_ids = validate_run2_7_commercial_usecase(root, errors)
+        run2_7_source_record_ids = validate_run2_7_source_records(root, source_ids, errors)
+        run2_7_memory_ids = validate_run2_7_design_memory(
+            root,
+            run2_7_source_record_ids,
+            run2_7_usecase_ids,
+            errors,
+        )
+        validate_run2_7_workflow_policy(
+            root,
+            run2_7_source_record_ids,
+            run2_7_usecase_ids,
+            run2_7_memory_ids,
+            errors,
+        )
         return ValidationResult(not errors, errors)
 
     validate_sources(root, errors)
