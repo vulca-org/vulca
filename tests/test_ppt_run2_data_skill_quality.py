@@ -310,6 +310,31 @@ EXPECTED_RUN2_9_TRACE_FIELDS = {
     "run2_9_boxiness_failure_probe",
     "run2_9_visual_delta_from_run2_8",
 }
+EXPECTED_RUN2_10_SOURCE_IDS = {
+    "vs_source_2_10_editorial_keynote_system",
+    "vs_source_2_10_product_theater_demo",
+    "vs_source_2_10_typographic_launch_field",
+    "vs_source_2_10_kinetic_climax_sequence",
+    "vs_source_2_10_non_rectangular_proof_path",
+}
+EXPECTED_RUN2_10_MEMORY_IDS = {
+    "visual_system_editorial_cinema",
+    "visual_system_product_theater",
+    "visual_system_typographic_field",
+    "visual_system_kinetic_demo",
+    "visual_system_non_rectangular_proof",
+}
+EXPECTED_RUN2_10_TRACE_FIELDS = {
+    "run2_10_visual_system_source_ids",
+    "run2_10_visual_system_memory_ids",
+    "run2_10_gate_matrix_ids",
+    "run2_10_code_module_ids",
+    "run2_10_visual_delta_from_run2_9",
+    "run2_10_sameness_failure_probe",
+    "run2_10_public_demo_first_read_probe",
+    "run2_10_shape_count_budget",
+    "run2_10_asymmetry_whitespace_rule",
+}
 EXPECTED_RUN2_6_USECASE_FIELDS = {
     "id",
     "source_ids",
@@ -1345,6 +1370,125 @@ def test_run2_9_has_executable_visual_modules_and_gate_matrix() -> None:
     )
 
 
+def test_run2_10_has_visual_system_sources_memory_and_gate_matrix() -> None:
+    sources_path = PACK / "run2_10_visual_system_sources.json"
+    memory_path = PACK / "run2_10_visual_system_memory.json"
+    matrix_path = PACK / "run2_10_visual_system_gate_matrix.json"
+    trace_contract_path = PACK / "results" / "trace_manifest_contract.json"
+    workflow_path = PACK / "skill_workflow.json"
+
+    assert sources_path.exists(), "missing Run 2.10 visual-system sources"
+    assert memory_path.exists(), "missing Run 2.10 visual-system memory"
+    assert matrix_path.exists(), "missing Run 2.10 visual-system gate matrix"
+
+    sources = load_json(sources_path)
+    memory = load_json(memory_path)
+    matrix = load_json(matrix_path)
+    trace_contract = load_json(trace_contract_path)
+    workflow = load_json(workflow_path)
+
+    assert sources["status"] == "run2_10_visual_system_sources_public_blocked"
+    assert memory["status"] == "run2_10_visual_system_memory_public_blocked"
+    assert matrix["status"] == "run2_10_visual_system_gate_matrix_public_blocked"
+    assert sources["storage_policy"]["raw_media"] == "forbidden"
+    assert sources["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert memory["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert matrix["stage_policy"] == "repeat_same_five_layers_not_run3"
+
+    source_ids = {item["id"] for item in sources["sources"]}
+    memory_ids = {item["visual_system_id"] for item in memory["visual_systems"]}
+    assert EXPECTED_RUN2_10_SOURCE_IDS <= source_ids
+    assert EXPECTED_RUN2_10_MEMORY_IDS <= memory_ids
+    assert EXPECTED_RUN2_10_TRACE_FIELDS <= set(trace_contract["per_slide_required_fields"])
+
+    required_source_fields = {
+        "id",
+        "source_ids",
+        "reference_type",
+        "allowed_use",
+        "visual_system_direction",
+        "typography_observation",
+        "spatial_composition_observation",
+        "asset_strategy_observation",
+        "motion_or_sequence_observation",
+        "climax_grammar_observation",
+        "native_ppt_implication",
+        "anti_copy_boundary",
+        "public_demo_probe",
+        "release_boundary",
+    }
+    for source in sources["sources"]:
+        assert required_source_fields <= set(source), source["id"]
+        assert source["allowed_use"] == "derived_observations_only"
+        assert_contains(source["native_ppt_implication"], ["native", "editable"])
+        for field_value in iter_string_values(source):
+            lowered = field_value.lower()
+            for marker in RUN2_8_FORBIDDEN_MEDIA_MARKERS:
+                assert marker not in lowered, f"{source['id']} contains copied media marker {marker!r}"
+
+    required_memory_fields = {
+        "visual_system_id",
+        "source_record_ids",
+        "applicable_slide_roles",
+        "typography_contract",
+        "composition_contract",
+        "asset_strategy_contract",
+        "motion_sequence_contract",
+        "native_ppt_module_implications",
+        "forbidden_sameness_patterns",
+        "public_demo_first_read_probe",
+        "anti_copy_boundary",
+        "release_boundary",
+    }
+    for entry in memory["visual_systems"]:
+        assert required_memory_fields <= set(entry), entry["visual_system_id"]
+        assert set(entry["source_record_ids"]) <= source_ids
+        assert set(entry["applicable_slide_roles"]) <= EXPECTED_RHYTHM_ROLES
+        assert_mentions_any(
+            " ".join(entry["forbidden_sameness_patterns"]),
+            {"rectangle", "same visual family", "palette-only", "dashboard"},
+        )
+
+    gate_required_fields = {
+        "id",
+        "slide_role",
+        "visual_system_source_ids",
+        "visual_system_memory_ids",
+        "required_code_modules",
+        "visual_delta_from_run2_9",
+        "sameness_failure_probe",
+        "public_demo_first_read_probe",
+        "shape_count_budget",
+        "asymmetry_whitespace_rule",
+        "trace_fields",
+        "public_release_gate",
+    }
+    covered_trace_fields = set()
+    for gate in matrix["gates"]:
+        assert gate_required_fields <= set(gate), gate["id"]
+        assert gate["slide_role"] in EXPECTED_RHYTHM_ROLES
+        assert set(gate["visual_system_source_ids"]) <= source_ids
+        assert set(gate["visual_system_memory_ids"]) <= memory_ids
+        assert set(gate["trace_fields"]) <= set(trace_contract["per_slide_required_fields"])
+        assert_contains(gate["sameness_failure_probe"], ["Run 2.9"])
+        assert_contains(gate["asymmetry_whitespace_rule"], ["asymmetry", "whitespace"])
+        assert gate["shape_count_budget"]["max_native_shapes"] <= 72
+        covered_trace_fields |= set(gate["trace_fields"])
+    assert EXPECTED_RUN2_10_TRACE_FIELDS <= covered_trace_fields
+
+    workflow_stage_ids = [stage["id"] for stage in workflow["stages"]]
+    run2_10_stages = [
+        "select_run2_10_visual_system_sources",
+        "compile_run2_10_visual_system_memory",
+        "apply_run2_10_visual_system_gate_matrix",
+    ]
+    for stage_id in run2_10_stages:
+        assert stage_id in workflow_stage_ids
+        assert workflow_stage_ids.index(stage_id) < workflow_stage_ids.index("generate_code_first_ppt")
+    assert workflow_stage_ids.index(run2_10_stages[0]) < workflow_stage_ids.index(run2_10_stages[1])
+    assert workflow_stage_ids.index(run2_10_stages[1]) < workflow_stage_ids.index(run2_10_stages[2])
+
+
 def test_run2_four_arm_isolation_mentions_multimodal_and_target_boundaries() -> None:
     prompt_only = (PACK / "generation_briefs" / "prompt_only.md").read_text(encoding="utf-8")
     run1_5 = (PACK / "generation_briefs" / "run1_5_skill.md").read_text(encoding="utf-8")
@@ -1508,6 +1652,10 @@ def test_run2_skill_is_a_staged_deck_director() -> None:
             "aesthetic_memory_v2.json",
             "visual_production_modules.json",
             "production modules",
+            "run2_10_visual_system_sources.json",
+            "run2_10_visual_system_memory.json",
+            "run2_10_visual_system_gate_matrix.json",
+            "sameness failure probes",
         ],
     )
 
@@ -1545,13 +1693,16 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
         "repair_run2_9_visual_primitives",
         "select_run2_9_executable_visual_modules",
         "apply_run2_9_visual_gate_matrix",
+        "select_run2_10_visual_system_sources",
+        "compile_run2_10_visual_system_memory",
+        "apply_run2_10_visual_system_gate_matrix",
         "generate_code_first_ppt",
         "run_structural_and_aesthetic_qa",
         "recommend_repairs",
         "refresh_trace_qa_outcomes",
         "emit_release_decision",
     ]
-    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 25))
+    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 28))
     assert workflow["repair_triggers"]
     workflow_text = json.dumps(workflow)
     assert "multimodal_database.json" in workflow_text
@@ -1574,6 +1725,9 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
     assert "run2_9_visual_primitive_repair.json" in workflow_text
     assert "run2_9_executable_visual_modules.json" in workflow_text
     assert "run2_9_visual_gate_matrix.json" in workflow_text
+    assert "run2_10_visual_system_sources.json" in workflow_text
+    assert "run2_10_visual_system_memory.json" in workflow_text
+    assert "run2_10_visual_system_gate_matrix.json" in workflow_text
     assert "aesthetic_benchmark_bank.json" in workflow_text
     assert "workflow_decision_policy.json" in workflow_text
     assert "visual_repair_policy.json" in workflow_text
@@ -1589,6 +1743,7 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
     assert_contains(workflow_text, ["fallback", "visual validation"])
     assert_contains(workflow_text, ["schema validation", "aesthetic memory constraints"])
     assert_contains(workflow_text, ["provenance metadata", "copyright boundary"])
+    assert_contains(workflow_text, ["visual system", "sameness failure", "asymmetry", "whitespace"])
     assert "public_blocked" in workflow["release_decisions"]
     assert "public_ready" not in workflow["release_decisions"]
     assert "automated repair without human gate" not in normalize(json.dumps(workflow))

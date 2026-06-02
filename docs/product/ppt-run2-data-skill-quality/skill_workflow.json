@@ -404,8 +404,77 @@
       ]
     },
     {
-      "id": "generate_code_first_ppt",
+      "id": "select_run2_10_visual_system_sources",
       "order": 20,
+      "layer": "multimodal_tutorial_case_data",
+      "inputs": [
+        "run2_10_visual_system_sources.json",
+        "sources.json",
+        "run2_9_visual_primitive_repair.json"
+      ],
+      "outputs": [
+        "selected Run 2.10 visual system source ids",
+        "derived visual system directions",
+        "anti-copy boundaries",
+        "public demo first-read probes"
+      ],
+      "gates": [
+        "visual system sources store derived observations only",
+        "raw media remains forbidden",
+        "every source names native editable PPT implications",
+        "selection remains same-stage and not Run 3.0"
+      ]
+    },
+    {
+      "id": "compile_run2_10_visual_system_memory",
+      "order": 21,
+      "layer": "evidence_aesthetic_asset_memory",
+      "inputs": [
+        "run2_10_visual_system_sources.json",
+        "run2_10_visual_system_memory.json"
+      ],
+      "outputs": [
+        "selected Run 2.10 visual system memory ids",
+        "typography contracts",
+        "composition contracts",
+        "asset strategy contracts",
+        "motion sequence contracts",
+        "native PPT module implications"
+      ],
+      "gates": [
+        "every visual system references valid Run 2.10 source records",
+        "memory forbids same visual family, palette-only changes, dashboard grids, and rectangle-led proof",
+        "visual system contracts are executable before native PPT generation"
+      ]
+    },
+    {
+      "id": "apply_run2_10_visual_system_gate_matrix",
+      "order": 22,
+      "layer": "skill_workflow",
+      "inputs": [
+        "run2_10_visual_system_sources.json",
+        "run2_10_visual_system_memory.json",
+        "run2_10_visual_system_gate_matrix.json",
+        "results/trace_manifest_contract.json"
+      ],
+      "outputs": [
+        "selected Run 2.10 visual system gate matrix ids",
+        "required visual system code modules by slide role",
+        "Run 2.10 trace field obligations",
+        "sameness failure probes",
+        "shape count budgets",
+        "asymmetry and whitespace rules"
+      ],
+      "gates": [
+        "every gate references valid visual system sources and memory ids",
+        "required code modules match native Run 2.10 module function names",
+        "trace contract contains all Run 2.10 fields before native generation",
+        "sameness failure gate checks whether Run 2.10 is structurally distinct from Run 2.9"
+      ]
+    },
+    {
+      "id": "generate_code_first_ppt",
+      "order": 23,
       "layer": "skill_workflow",
       "inputs": [
         "generation_briefs/run2_skill.md",
@@ -428,6 +497,9 @@
         "selected Run 2.9 visual primitive repairs",
         "selected Run 2.9 executable visual modules",
         "selected Run 2.9 visual gate matrix",
+        "selected Run 2.10 visual system sources",
+        "selected Run 2.10 visual system memory",
+        "selected Run 2.10 visual system gate matrix",
         "visual delta from Run 2.5",
         "visual repair validation probe",
         "asset memory"
@@ -446,6 +518,10 @@
         "run2_9_visual_module_ids are recorded",
         "run2_9_code_module_ids are recorded",
         "run2_9_boxiness_failure_probe is recorded",
+        "run2_10_visual_system_source_ids are recorded",
+        "run2_10_visual_system_memory_ids are recorded",
+        "run2_10_code_module_ids are recorded from actual native module calls",
+        "run2_10_sameness_failure_probe and asymmetry whitespace rule are recorded",
         "ordered reveal steps use native editable objects",
         "fallback policy is recorded when selected modules degrade",
         "no full-slide rasterized output",
@@ -454,7 +530,7 @@
     },
     {
       "id": "run_structural_and_aesthetic_qa",
-      "order": 21,
+      "order": 24,
       "layer": "rerun_and_evaluation",
       "inputs": ["PPTX", "layout JSON", "contact sheet", "aesthetic_rubric.md", "trace_manifest.json"],
       "outputs": ["delivery report", "layout report", "Gemini artifact review", "score table", "visual validation outcome"],
@@ -467,12 +543,13 @@
         "visual validation checks whether production modules are visible in the contact sheet",
         "visual repair validation checks whether Run 2.6R differs visibly from Run 2.5 and Run 2.6",
         "Run 2.9 visual delta gate checks whether boxiness decreased from Run 2.8",
+        "Run 2.10 sameness gate checks whether visual system structure differs from Run 2.9",
         "Gemini review is recorded"
       ]
     },
     {
       "id": "recommend_repairs",
-      "order": 22,
+      "order": 25,
       "layer": "skill_workflow",
       "inputs": ["delivery report", "layout report", "Gemini review", "visual validation outcome", "human visual notes"],
       "outputs": ["repair recommendations", "blocked release reasons"],
@@ -480,7 +557,7 @@
     },
     {
       "id": "refresh_trace_qa_outcomes",
-      "order": 23,
+      "order": 26,
       "layer": "rerun_and_evaluation",
       "inputs": ["trace_manifest.json", "delivery report", "layout report", "visual validation outcome"],
       "outputs": ["post-QA trace manifest", "backup manifest", "dry-run diff"],
@@ -488,7 +565,7 @@
     },
     {
       "id": "emit_release_decision",
-      "order": 24,
+      "order": 27,
       "layer": "rerun_and_evaluation",
       "inputs": ["post-QA trace manifest", "native render result", "human approval record"],
       "outputs": ["internal_only or public_blocked decision"],

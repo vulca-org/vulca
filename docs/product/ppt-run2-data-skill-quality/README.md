@@ -1,6 +1,6 @@
 # PPT Run 2.0 Data Skill Quality
 
-Status: run2_9-visual-primitive-rerun-public-blocked.
+Status: run2_10-visual-system-thickening-public-blocked.
 
 Run 2.5 does not move to a new stage. It repeats and thickens the same five fixed PPT product layers before the next generation pass:
 
@@ -31,6 +31,8 @@ Run 2.0 does not claim post-training or fine-tuning. It tests runtime case-pack-
 `visual_production_modules.json` converts the v2 aesthetic contracts into reusable native editable PPT modules: cinematic cover field, editorial before/after delta, proof route choreography, system mini-preview, climax hero object, and release handoff gate. A module is valid only if it can be generated as editable native PPT primitives or records a public-blocked fallback.
 
 `run2_9_visual_primitive_repair.json`, `run2_9_executable_visual_modules.json`, and `run2_9_visual_gate_matrix.json` are the Run 2.9 visual-primitive layer. They respond to the Run 2.8 visual diagnosis: the traceable data-to-code path works, but the deck still reads as boxes, cards, equal panels, and engineering-report composition. Run 2.9 converts that diagnosis into executable visual primitives: editorial spread, product surface depth, motion storyboard, climax stage, and typographic field. The Run 2.9 rerun now calls the corresponding `drawRun29...` native modules and records actual code module ids in trace.
+
+`run2_10_visual_system_sources.json`, `run2_10_visual_system_memory.json`, and `run2_10_visual_system_gate_matrix.json` are the Run 2.10 visual-system layer. They respond to the Run 2.9 limitation: the full arm wins the four-arm test, but Runs 2.7-2.9 still share a similar rectangle-led visual family. Run 2.10 must force structural asymmetry, visible whitespace, product-theater composition, non-rectangular proof paths, kinetic sequence objects, and shape-count budgets before native PPT code generation. A Run 2.10 improvement is creditable only when the output is visually distinct from Run 2.9, not merely recolored or filled with more boxes.
 
 Generation must follow `generation_protocol.md`: separate arm runtimes, no cross-arm context leakage, native PPT object checks, and layout geometry QA before scoring.
 

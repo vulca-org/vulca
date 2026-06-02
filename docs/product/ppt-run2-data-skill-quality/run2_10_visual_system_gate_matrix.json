@@ -1,0 +1,248 @@
+{
+  "schema_version": 1,
+  "status": "run2_10_visual_system_gate_matrix_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "selection_chain": [
+    "run2_9_visual_diagnosis",
+    "run2_10_visual_system_sources",
+    "run2_10_visual_system_memory",
+    "run2_10_visual_system_gate_matrix",
+    "native_ppt_code_generation",
+    "sameness_failure_gate",
+    "delivery_gate"
+  ],
+  "gates": [
+    {
+      "id": "gate_2_10_cover_editorial_field",
+      "slide_role": "cover",
+      "visual_system_source_ids": [
+        "vs_source_2_10_editorial_keynote_system",
+        "vs_source_2_10_typographic_launch_field"
+      ],
+      "visual_system_memory_ids": [
+        "visual_system_editorial_cinema",
+        "visual_system_typographic_field"
+      ],
+      "required_code_modules": [
+        "drawRun210EditorialTypeSystem",
+        "drawRun210FullBleedVisualField"
+      ],
+      "visual_delta_from_run2_9": "Cover must abandon the Run 2.9 title-object plus lower editorial card rhythm and read as one launch-scale field.",
+      "sameness_failure_probe": "Fails if it still reads like Run 2.9 with a large rectangle, small proof card, and palette swap.",
+      "public_demo_first_read_probe": "At thumbnail scale, the first read should be a launch statement with one field and one proof route.",
+      "shape_count_budget": {
+        "max_native_shapes": 54,
+        "max_rectangular_panels": 2,
+        "max_text_boxes": 9,
+        "max_visible_words": 42
+      },
+      "asymmetry_whitespace_rule": "Use asymmetry and whitespace: at least one quiet third of the canvas must remain free of boxes while the proof route crosses the field.",
+      "trace_fields": [
+        "run2_10_visual_system_source_ids",
+        "run2_10_visual_system_memory_ids",
+        "run2_10_gate_matrix_ids",
+        "run2_10_code_module_ids",
+        "run2_10_visual_delta_from_run2_9",
+        "run2_10_sameness_failure_probe",
+        "run2_10_public_demo_first_read_probe",
+        "run2_10_shape_count_budget",
+        "run2_10_asymmetry_whitespace_rule"
+      ],
+      "public_release_gate": "public_blocked_until_native_render_human_review_and_visual_distinctness_pass"
+    },
+    {
+      "id": "gate_2_10_setup_product_theater",
+      "slide_role": "setup",
+      "visual_system_source_ids": [
+        "vs_source_2_10_product_theater_demo",
+        "vs_source_2_10_non_rectangular_proof_path"
+      ],
+      "visual_system_memory_ids": [
+        "visual_system_product_theater",
+        "visual_system_non_rectangular_proof"
+      ],
+      "required_code_modules": [
+        "drawRun210ProductTheater",
+        "drawRun210NonRectangularProofPath"
+      ],
+      "visual_delta_from_run2_9": "Setup must stage an original product object and path instead of another editorial-card plus layered-surface pair.",
+      "sameness_failure_probe": "Fails if it still reads like Run 2.9 product rectangles with labels inside equal panels.",
+      "public_demo_first_read_probe": "The first read should be product theater: object, route, and decision state.",
+      "shape_count_budget": {
+        "max_native_shapes": 66,
+        "max_rectangular_panels": 4,
+        "max_text_boxes": 10,
+        "max_visible_words": 48
+      },
+      "asymmetry_whitespace_rule": "Use asymmetry and whitespace: product surface sits off-center with a curved or diagonal proof path through open canvas.",
+      "trace_fields": [
+        "run2_10_visual_system_source_ids",
+        "run2_10_visual_system_memory_ids",
+        "run2_10_gate_matrix_ids",
+        "run2_10_code_module_ids",
+        "run2_10_visual_delta_from_run2_9",
+        "run2_10_sameness_failure_probe",
+        "run2_10_public_demo_first_read_probe",
+        "run2_10_shape_count_budget",
+        "run2_10_asymmetry_whitespace_rule"
+      ],
+      "public_release_gate": "public_blocked_until_native_render_human_review_and_visual_distinctness_pass"
+    },
+    {
+      "id": "gate_2_10_contrast_path_field",
+      "slide_role": "contrast",
+      "visual_system_source_ids": [
+        "vs_source_2_10_editorial_keynote_system",
+        "vs_source_2_10_non_rectangular_proof_path"
+      ],
+      "visual_system_memory_ids": [
+        "visual_system_editorial_cinema",
+        "visual_system_typographic_field",
+        "visual_system_non_rectangular_proof"
+      ],
+      "required_code_modules": [
+        "drawRun210FullBleedVisualField",
+        "drawRun210NonRectangularProofPath"
+      ],
+      "visual_delta_from_run2_9": "Contrast must become a before-after path through one field, not a side-by-side report comparison.",
+      "sameness_failure_probe": "Fails if the contrast is still Run 2.9 editorial spread with boxed before and after labels.",
+      "public_demo_first_read_probe": "The viewer should see movement from failed prompt to learned system without reading paragraph copy.",
+      "shape_count_budget": {
+        "max_native_shapes": 60,
+        "max_rectangular_panels": 2,
+        "max_text_boxes": 9,
+        "max_visible_words": 44
+      },
+      "asymmetry_whitespace_rule": "Use asymmetry and whitespace: before state is compressed into a small edge marker while the after path owns the open field.",
+      "trace_fields": [
+        "run2_10_visual_system_source_ids",
+        "run2_10_visual_system_memory_ids",
+        "run2_10_gate_matrix_ids",
+        "run2_10_code_module_ids",
+        "run2_10_visual_delta_from_run2_9",
+        "run2_10_sameness_failure_probe",
+        "run2_10_public_demo_first_read_probe",
+        "run2_10_shape_count_budget",
+        "run2_10_asymmetry_whitespace_rule"
+      ],
+      "public_release_gate": "public_blocked_until_native_render_human_review_and_visual_distinctness_pass"
+    },
+    {
+      "id": "gate_2_10_proof_product_kinetic",
+      "slide_role": "proof",
+      "visual_system_source_ids": [
+        "vs_source_2_10_product_theater_demo",
+        "vs_source_2_10_kinetic_climax_sequence"
+      ],
+      "visual_system_memory_ids": [
+        "visual_system_product_theater",
+        "visual_system_kinetic_demo",
+        "visual_system_non_rectangular_proof"
+      ],
+      "required_code_modules": [
+        "drawRun210ProductTheater",
+        "drawRun210KineticSequence"
+      ],
+      "visual_delta_from_run2_9": "Proof must show product plus kinetic sequence in one staged argument instead of a surface beside a storyboard strip.",
+      "sameness_failure_probe": "Fails if it still looks like Run 2.9 with product rectangles and a horizontal sequence row.",
+      "public_demo_first_read_probe": "The viewer should see data learning flowing into a product result before reading labels.",
+      "shape_count_budget": {
+        "max_native_shapes": 72,
+        "max_rectangular_panels": 5,
+        "max_text_boxes": 11,
+        "max_visible_words": 52
+      },
+      "asymmetry_whitespace_rule": "Use asymmetry and whitespace: sequence nodes should climb or arc around the product, leaving a clear empty decision corridor.",
+      "trace_fields": [
+        "run2_10_visual_system_source_ids",
+        "run2_10_visual_system_memory_ids",
+        "run2_10_gate_matrix_ids",
+        "run2_10_code_module_ids",
+        "run2_10_visual_delta_from_run2_9",
+        "run2_10_sameness_failure_probe",
+        "run2_10_public_demo_first_read_probe",
+        "run2_10_shape_count_budget",
+        "run2_10_asymmetry_whitespace_rule"
+      ],
+      "public_release_gate": "public_blocked_until_native_render_human_review_and_visual_distinctness_pass"
+    },
+    {
+      "id": "gate_2_10_climax_cinematic_sequence",
+      "slide_role": "climax",
+      "visual_system_source_ids": [
+        "vs_source_2_10_editorial_keynote_system",
+        "vs_source_2_10_kinetic_climax_sequence",
+        "vs_source_2_10_non_rectangular_proof_path"
+      ],
+      "visual_system_memory_ids": [
+        "visual_system_editorial_cinema",
+        "visual_system_kinetic_demo",
+        "visual_system_non_rectangular_proof"
+      ],
+      "required_code_modules": [
+        "drawRun210CinematicClimax",
+        "drawRun210KineticSequence"
+      ],
+      "visual_delta_from_run2_9": "Climax must stop being a dark framed hero card and become a cinematic reveal field with path convergence.",
+      "sameness_failure_probe": "Fails if it still reads like Run 2.9 dark stage plus inner rectangle and labels.",
+      "public_demo_first_read_probe": "At thumbnail scale, the climax should be the most distinct slide in the deck.",
+      "shape_count_budget": {
+        "max_native_shapes": 68,
+        "max_rectangular_panels": 2,
+        "max_text_boxes": 8,
+        "max_visible_words": 36
+      },
+      "asymmetry_whitespace_rule": "Use asymmetry and whitespace: one large reveal object must sit off-center with a visible pause field and no equal evidence boxes.",
+      "trace_fields": [
+        "run2_10_visual_system_source_ids",
+        "run2_10_visual_system_memory_ids",
+        "run2_10_gate_matrix_ids",
+        "run2_10_code_module_ids",
+        "run2_10_visual_delta_from_run2_9",
+        "run2_10_sameness_failure_probe",
+        "run2_10_public_demo_first_read_probe",
+        "run2_10_shape_count_budget",
+        "run2_10_asymmetry_whitespace_rule"
+      ],
+      "public_release_gate": "public_blocked_until_native_render_human_review_and_visual_distinctness_pass"
+    },
+    {
+      "id": "gate_2_10_close_decision_theater",
+      "slide_role": "close",
+      "visual_system_source_ids": [
+        "vs_source_2_10_product_theater_demo",
+        "vs_source_2_10_typographic_launch_field"
+      ],
+      "visual_system_memory_ids": [
+        "visual_system_product_theater",
+        "visual_system_typographic_field"
+      ],
+      "required_code_modules": [
+        "drawRun210EditorialTypeSystem",
+        "drawRun210ProductTheater"
+      ],
+      "visual_delta_from_run2_9": "Close must feel like a decision handoff on a product stage, not a checklist of next steps.",
+      "sameness_failure_probe": "Fails if it still reads like Run 2.9 close with typographic field plus small product card.",
+      "public_demo_first_read_probe": "The viewer should see the handoff decision and blocked release state immediately.",
+      "shape_count_budget": {
+        "max_native_shapes": 58,
+        "max_rectangular_panels": 3,
+        "max_text_boxes": 9,
+        "max_visible_words": 42
+      },
+      "asymmetry_whitespace_rule": "Use asymmetry and whitespace: the decision phrase and product state should occupy opposing weights with a clear empty release lane.",
+      "trace_fields": [
+        "run2_10_visual_system_source_ids",
+        "run2_10_visual_system_memory_ids",
+        "run2_10_gate_matrix_ids",
+        "run2_10_code_module_ids",
+        "run2_10_visual_delta_from_run2_9",
+        "run2_10_sameness_failure_probe",
+        "run2_10_public_demo_first_read_probe",
+        "run2_10_shape_count_budget",
+        "run2_10_asymmetry_whitespace_rule"
+      ],
+      "public_release_gate": "public_blocked_until_native_render_human_review_and_visual_distinctness_pass"
+    }
+  ]
+}
