@@ -544,6 +544,49 @@ RUN2_8_FORBIDDEN_MEDIA_MARKERS = (
     "base64,",
 )
 RUN2_8_CODE_BINDING_TERMS = {"fontSize", "bbox", "spacing", "heroObject", "beforeAfter", "workflowGate"}
+RUN2_18_EVIDENCE_FIELDS = {
+    "record_id",
+    "source_family",
+    "commercial_usecase_ids",
+    "source_ids",
+    "modality_mix",
+    "source_locator",
+    "observed_design_method",
+    "business_requirement",
+    "derived_generation_constraint",
+    "memory_targets",
+    "workflow_gate_targets",
+    "anti_copy_boundary",
+    "bad_control_probe",
+    "release_boundary",
+}
+RUN2_18_MEMORY_FIELDS = {
+    "memory_id",
+    "memory_family",
+    "slide_roles",
+    "evidence_record_ids",
+    "composition_contract",
+    "typography_contract",
+    "spacing_contract",
+    "motion_or_sequence_contract",
+    "proof_object_contract",
+    "code_generation_binding",
+    "trace_fields_required",
+    "negative_control_failure",
+    "release_boundary",
+}
+RUN2_18_WORKFLOW_GATE_FIELDS = {
+    "gate_id",
+    "required_before_next_rerun",
+    "evidence_record_ids",
+    "memory_ids",
+    "selection_rules",
+    "rejection_rules",
+    "trace_fields",
+    "qa_probe",
+    "bad_control_probe",
+    "release_boundary",
+}
 
 
 def load_json(path: Path) -> dict:
@@ -2130,8 +2173,11 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
         "recommend_repairs",
         "refresh_trace_qa_outcomes",
         "emit_release_decision",
+        "expand_run2_18_multimodal_evidence",
+        "expand_run2_18_design_memory",
+        "apply_run2_18_workflow_gate_expansion",
     ]
-    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 29))
+    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 32))
     assert workflow["repair_triggers"]
     workflow_text = json.dumps(workflow)
     assert "multimodal_database.json" in workflow_text
@@ -3389,7 +3435,8 @@ def test_run2_results_reviewed_and_public_blocked() -> None:
     delivery = (PACK / "results" / "delivery_gate.md").read_text(encoding="utf-8")
     trace_contract = load_json(PACK / "results" / "trace_manifest_contract.json")
 
-    assert_contains(comparison, ["Status", "motion-renderer-proof-public-blocked"])
+    assert_contains(comparison, ["Status", "run2_18-thickness-pack-public-blocked"])
+    assert_contains(comparison, ["Prior delivery status", "motion-renderer-proof-public-blocked"])
     assert_contains(
         comparison,
         [
@@ -4159,6 +4206,119 @@ def test_run2_17_motion_renderer_proof_script_is_code_generated_and_bounded() ->
         ],
     )
     assert ".pptx" not in script.lower()
+
+
+def test_run2_18_records_data_memory_workflow_thickness_pack() -> None:
+    evidence = load_json(PACK / "run2_18_multimodal_evidence_expansion.json")
+    memory = load_json(PACK / "run2_18_design_memory_expansion.json")
+    workflow_gates = load_json(PACK / "run2_18_workflow_gate_expansion.json")
+
+    assert evidence["status"] == "run2_18_multimodal_evidence_expansion_ready"
+    assert memory["status"] == "run2_18_design_memory_expansion_ready"
+    assert workflow_gates["status"] == "run2_18_workflow_gate_expansion_ready"
+    for payload in [evidence, memory, workflow_gates]:
+        assert payload["stage_policy"] == "repeat_same_five_layers_not_run3"
+        assert payload["public_ready"] is False
+        assert payload["creates_new_ppt_deck"] is False
+
+    records = evidence["records"]
+    assert len(records) >= 8
+    assert {record["record_id"] for record in records} >= {
+        "thick_2_18_figma_launch_identity_system",
+        "thick_2_18_stripe_keynote_business_demo",
+        "thick_2_18_apple_liquid_glass_motion_surface",
+        "thick_2_18_duarte_slide_design_method",
+    }
+    for record in records:
+        assert RUN2_18_EVIDENCE_FIELDS <= set(record)
+        assert record["commercial_usecase_ids"]
+        assert record["source_ids"]
+        assert record["modality_mix"]
+        assert record["memory_targets"]
+        assert record["workflow_gate_targets"]
+        assert_contains(record["anti_copy_boundary"], ["derived", "no copied"])
+        assert "raw_transcript" not in record
+        for marker in RUN2_8_FORBIDDEN_MEDIA_MARKERS:
+            assert marker not in " ".join(iter_string_values(record)).lower()
+
+    memories = memory["memory_expansions"]
+    assert len(memories) >= 6
+    evidence_ids = {record["record_id"] for record in records}
+    for item in memories:
+        assert RUN2_18_MEMORY_FIELDS <= set(item)
+        assert set(item["evidence_record_ids"]) <= evidence_ids
+        assert item["trace_fields_required"]
+        assert_contains(item["code_generation_binding"], ["native PPT", "code"])
+        assert_contains(item["negative_control_failure"], ["bad control", "fails"])
+
+    gates = workflow_gates["gates"]
+    assert len(gates) >= 6
+    memory_ids = {item["memory_id"] for item in memories}
+    for gate in gates:
+        assert RUN2_18_WORKFLOW_GATE_FIELDS <= set(gate)
+        assert gate["required_before_next_rerun"] is True
+        assert set(gate["evidence_record_ids"]) <= evidence_ids
+        assert set(gate["memory_ids"]) <= memory_ids
+        assert gate["trace_fields"]
+        assert_contains(gate["bad_control_probe"], ["bad control", "fail"])
+        assert_contains(gate["release_boundary"], ["public", "blocked"])
+
+
+def test_run2_18_records_thickness_result_and_no_new_ppt_output() -> None:
+    result = (PACK / "results" / "run2_18_thickness_result.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_18_thickness_result.json")
+    workflow = load_json(PACK / "skill_workflow.json")
+
+    assert result_json["status"] == "run2_18_thickness_pack_ready_public_blocked"
+    assert result_json["public_ready"] is False
+    assert result_json["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert result_json["creates_new_ppt_deck"] is False
+    assert result_json["latest_generated_ppt_run"] == "2.16"
+    assert result_json["next_required_action"] == "consume_run2_18_thickness_pack_in_next_four_arm_rerun"
+    assert result_json["artifact_counts"] == {
+        "evidence_records": 8,
+        "memory_expansions": 6,
+        "workflow_gates": 6,
+    }
+    assert "ppt-run2-18-" not in result
+    assert_contains(
+        result,
+        [
+            "Run 2.18",
+            "thickness pack",
+            "data",
+            "design memory",
+            "workflow gate",
+            "not generate a new PPT",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+    assert workflow["status"] == "run2_18_thickness_pack_directed_public_blocked"
+    assert {stage["id"] for stage in workflow["stages"]} >= {
+        "expand_run2_18_multimodal_evidence",
+        "expand_run2_18_design_memory",
+        "apply_run2_18_workflow_gate_expansion",
+    }
+    assert any(trigger["id"] == "run2_18_thickness_pack_required_before_next_rerun" for trigger in workflow["repair_triggers"])
+
+
+def test_ppt_run_html_viewer_mentions_run2_18_thickness_pack() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "run2_18_multimodal_evidence_expansion.json",
+            "run2_18_design_memory_expansion.json",
+            "run2_18_workflow_gate_expansion.json",
+            "Run 2.18 thickness pack",
+            "data/workflow thickness",
+            "not a new PPT",
+        ],
+    )
+    assert "Run 2.18" not in script.split("RUN_SPECS", 1)[1].split("def rel", 1)[0]
+    assert "ppt-run2-18-" not in script
 
 
 def test_ppt_run_html_viewer_mentions_run2_15_selector_artifacts() -> None:

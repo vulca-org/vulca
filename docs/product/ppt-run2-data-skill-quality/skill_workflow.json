@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "workflow_type": "declarative_skill_director",
-  "status": "run2_15_layout_selector_directed_public_blocked",
+  "status": "run2_18_thickness_pack_directed_public_blocked",
   "stage_policy": "repeat_same_five_layers_not_run3",
   "five_layer_loop": [
     "real_commercial_case",
@@ -609,9 +609,51 @@
       "inputs": ["post-QA trace manifest", "native render result", "human approval record"],
       "outputs": ["internal_only or public_blocked decision"],
       "gates": ["native render passed before demo candidate", "human approval recorded before public-ready claim"]
+    },
+    {
+      "id": "expand_run2_18_multimodal_evidence",
+      "order": 29,
+      "layer": "multimodal_data",
+      "inputs": ["sources.json", "run2_12_thick_multimodal_evidence.json", "run2_15_layout_selector_sources.json", "human thickness priority"],
+      "outputs": ["run2_18_multimodal_evidence_expansion.json"],
+      "gates": [
+        "derived observations only",
+        "raw media, copied layouts, full transcripts, and brand marks remain forbidden",
+        "each record binds source locator, commercial requirement, generation constraint, memory target, workflow target, bad-control probe, and release boundary"
+      ]
+    },
+    {
+      "id": "expand_run2_18_design_memory",
+      "order": 30,
+      "layer": "design_memory",
+      "inputs": ["run2_18_multimodal_evidence_expansion.json"],
+      "outputs": ["run2_18_design_memory_expansion.json"],
+      "gates": [
+        "each memory binds evidence ids to composition, typography, spacing, motion or sequence, proof object, code-generation binding, and required trace fields",
+        "negative-control failure is explicit",
+        "public release remains blocked"
+      ]
+    },
+    {
+      "id": "apply_run2_18_workflow_gate_expansion",
+      "order": 31,
+      "layer": "skill_workflow",
+      "inputs": ["run2_18_multimodal_evidence_expansion.json", "run2_18_design_memory_expansion.json"],
+      "outputs": ["run2_18_workflow_gate_expansion.json", "results/run2_18_thickness_result.json"],
+      "gates": [
+        "next four-arm rerun must select Run 2.18 evidence, memory, and gates before native PPT code generation",
+        "negative control may read evidence but not design memory or workflow gates",
+        "Run 2.18 is not a new PPT output and does not advance to Run 3.0"
+      ]
     }
   ],
   "repair_triggers": [
+    {
+      "id": "run2_18_thickness_pack_required_before_next_rerun",
+      "trigger": "The latest generated output still depends on thin source-to-memory selection or the next quality target is data/workflow thickness rather than visual polish",
+      "recommendation": "require run2_18_multimodal_evidence_expansion.json, run2_18_design_memory_expansion.json, and run2_18_workflow_gate_expansion.json before the next four-arm rerun",
+      "human_gate": "required before next four-arm rerun"
+    },
     {
       "id": "run2_12_thick_data_required_before_next_rerun",
       "trigger": "Run 2.11 data_workflow_chain_gate is weak_pass_internal_only or the multimodal tutorial/video database is too compact for a learning-quality claim",

@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "status": "run2_18_multimodal_evidence_expansion_ready",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "public_ready": false,
+  "creates_new_ppt_deck": false,
+  "derived_from": [
+    "sources.json",
+    "run2_12_thick_multimodal_evidence.json",
+    "run2_15_layout_selector_sources.json",
+    "results/run2_17_motion_renderer_proof_result.json"
+  ],
+  "storage_policy": {
+    "default": "derived_observations_only",
+    "raw_media": "forbidden",
+    "raw_transcript": "forbidden",
+    "copied_layout": "forbidden",
+    "brand_mark": "forbidden"
+  },
+  "run_scope": {
+    "run_id": "2.18",
+    "primary_quality_target": "data_memory_workflow_thickness",
+    "next_rerun_policy": "consume_this_pack_before_next_four_arm_rerun"
+  },
+  "commercial_usecases": [
+    {
+      "usecase_id": "usecase_2_18_ai_design_platform_public_launch",
+      "buyer_need": "A product team needs a public-demo-grade launch deck that proves an AI design-to-production platform is credible, usable, and commercially grounded.",
+      "required_story_roles": ["cover", "setup", "contrast", "proof", "climax", "close"]
+    },
+    {
+      "usecase_id": "usecase_2_18_fintech_agentic_commerce_keynote",
+      "buyer_need": "A fintech platform needs an executive keynote deck that turns agentic commerce capability into a visible business workflow and one memorable outcome.",
+      "required_story_roles": ["cover", "setup", "proof", "climax"]
+    }
+  ],
+  "records": [
+    {
+      "record_id": "thick_2_18_figma_launch_identity_system",
+      "source_family": "launch_identity_system",
+      "commercial_usecase_ids": ["usecase_2_18_ai_design_platform_public_launch"],
+      "source_ids": ["figma_config_2025_identity", "figma_config_2025_platform_launch"],
+      "modality_mix": ["text", "image_reference", "audio"],
+      "source_locator": "official Config identity article plus platform launch announcement; theme, palette, product-family, and sound-design observations only",
+      "observed_design_method": "The launch system ties product breadth to a controllable identity grammar: theme-coded palettes, platform motifs, product-family cues, and audiovisual pacing are treated as one system.",
+      "business_requirement": "Make a broad product expansion feel like one platform story instead of a catalog of features.",
+      "derived_generation_constraint": "Cover and setup slides must use one dominant promise field, one platform motif, and a limited theme cue set; equal feature-card grids fail.",
+      "memory_targets": ["memory_2_18_launch_identity_field", "memory_2_18_typographic_whitespace_system"],
+      "workflow_gate_targets": ["gate_2_18_usecase_source_selection", "gate_2_18_identity_field_selection"],
+      "anti_copy_boundary": "Use derived identity-system logic only; no copied source imagery, no copied brand marks, no copied layout.",
+      "bad_control_probe": "A bad control may cite the same launch sources but fails if it renders product breadth as equal boxes without an identity field.",
+      "release_boundary": "public_blocked until source-brand sanitization and human visual review pass"
+    },
+    {
+      "record_id": "thick_2_18_figma_design_to_production_surface",
+      "source_family": "design_to_production_product_surface",
+      "commercial_usecase_ids": ["usecase_2_18_ai_design_platform_public_launch"],
+      "source_ids": ["figma_config_2025_platform_launch", "figma_slides_product", "figma_slides_help"],
+      "modality_mix": ["text", "image_reference", "interaction"],
+      "source_locator": "official platform launch, product page, and help page interaction descriptions; product-surface behavior paraphrased",
+      "observed_design_method": "The product story becomes credible when a viewer sees an editable work surface, a collaboration or handoff state, and a production consequence in the same frame.",
+      "business_requirement": "Prove that the product is an operational workflow, not an abstract AI promise.",
+      "derived_generation_constraint": "Proof slides must allocate the largest area to an original native product surface; trace and method labels move to a small secondary rail.",
+      "memory_targets": ["memory_2_18_product_surface_theater"],
+      "workflow_gate_targets": ["gate_2_18_product_surface_theater_selection"],
+      "anti_copy_boundary": "Use derived workflow shape grammar only; no copied product screenshots, no copied UI chrome, no copied help text.",
+      "bad_control_probe": "A bad control fails if it shows workflow proof as a table, checklist, or generic dashboard instead of a native product theater surface.",
+      "release_boundary": "public_blocked until product-surface originality and editable-object QA pass"
+    },
+    {
+      "record_id": "thick_2_18_stripe_keynote_business_demo",
+      "source_family": "business_demo_sequence",
+      "commercial_usecase_ids": ["usecase_2_18_fintech_agentic_commerce_keynote"],
+      "source_ids": ["stripe_sessions_2025_product_keynote"],
+      "modality_mix": ["text", "video", "audio", "transcript", "interaction"],
+      "source_locator": "official Sessions product keynote page and public player summary; demo sequence paraphrased only",
+      "observed_design_method": "A business keynote demo works when capability is shown as ordered states: command, route, evidence of progress, and resolved commercial state.",
+      "business_requirement": "Turn agentic commerce into a legible executive workflow with a clear value endpoint.",
+      "derived_generation_constraint": "Demo slides must draw ordered native states with one path of motion or sequence metadata; equal screenshot rows fail.",
+      "memory_targets": ["memory_2_18_demo_sequence_route"],
+      "workflow_gate_targets": ["gate_2_18_demo_sequence_selection"],
+      "anti_copy_boundary": "Use derived sequence abstraction only; no copied transcript, no copied video frame, no copied product interface.",
+      "bad_control_probe": "A bad control fails if it lists features without command-route-result sequencing.",
+      "release_boundary": "public_blocked until demo sequence review and video/audio provenance checks pass"
+    },
+    {
+      "record_id": "thick_2_18_stripe_metric_climax",
+      "source_family": "business_metric_climax",
+      "commercial_usecase_ids": ["usecase_2_18_fintech_agentic_commerce_keynote"],
+      "source_ids": ["stripe_sessions_2025_product_keynote"],
+      "modality_mix": ["text", "video", "audio", "transcript"],
+      "source_locator": "official product keynote page; business-scale and tailwind claims paraphrased without numeric invention",
+      "observed_design_method": "The strongest keynote moments isolate one business implication, then route caveats and support into a secondary layer.",
+      "business_requirement": "Make the climax feel like a business outcome, not another explanatory slide.",
+      "derived_generation_constraint": "Climax slide must reserve the largest field for one outcome object and force all caveats into trace or notes; competing primary metrics fail.",
+      "memory_targets": ["memory_2_18_metric_climax_object"],
+      "workflow_gate_targets": ["gate_2_18_metric_climax_selection"],
+      "anti_copy_boundary": "Use derived sourced-claim structure and generated native objects only; no copied numbers beyond verified source claims and no copied keynote visuals.",
+      "bad_control_probe": "A bad control fails if it uses several equal metrics, small tables, or unverified numbers as the climax.",
+      "release_boundary": "public_blocked until exact-metric verification and human approval pass"
+    },
+    {
+      "record_id": "thick_2_18_apple_liquid_glass_motion_surface",
+      "source_family": "material_motion_surface",
+      "commercial_usecase_ids": ["usecase_2_18_ai_design_platform_public_launch"],
+      "source_ids": ["apple_liquid_glass_newsroom", "apple_liquid_glass_developer"],
+      "modality_mix": ["text", "video", "audio", "transcript", "image_reference", "interaction"],
+      "source_locator": "official newsroom design announcement and developer session; material, depth, and motion principles paraphrased",
+      "observed_design_method": "A high-end surface uses material depth, responsive highlights, and content-preserving translucency to create product theater without hiding the main content.",
+      "business_requirement": "Lift the deck out of flat engineering-report composition while keeping product evidence readable.",
+      "derived_generation_constraint": "Slides that claim premium product experience must combine native layered surfaces, protected content zones, and bounded highlight motion; decorative glass effects without evidence fail.",
+      "memory_targets": ["memory_2_18_material_depth_motion", "memory_2_18_product_surface_theater"],
+      "workflow_gate_targets": ["gate_2_18_product_surface_theater_selection", "gate_2_18_demo_sequence_selection"],
+      "anti_copy_boundary": "Use derived material-depth principles only; no copied Apple interface, icons, screenshots, or session transcript.",
+      "bad_control_probe": "A bad control fails if it applies blur-like decoration without product proof, readability checks, or motion fallback.",
+      "release_boundary": "public_blocked until readability, contrast, motion fallback, and platform-render checks pass"
+    },
+    {
+      "record_id": "thick_2_18_google_cloud_ai_platform_climax",
+      "source_family": "ai_platform_keynote_climax",
+      "commercial_usecase_ids": ["usecase_2_18_ai_design_platform_public_launch"],
+      "source_ids": ["google_cloud_next_2025_wrap", "google_cloud_next_2025_sundar"],
+      "modality_mix": ["text", "video", "audio"],
+      "source_locator": "official Cloud Next recap and keynote writeup; AI capability and platform transformation claims paraphrased",
+      "observed_design_method": "AI platform announcements need a staged reveal: business pressure, capability system, product proof, and one transformation claim.",
+      "business_requirement": "Show why AI platform capability changes a real workflow rather than merely naming models or features.",
+      "derived_generation_constraint": "Setup and proof slides must bind capability labels to a visible workflow map; abstract AI feature piles fail.",
+      "memory_targets": ["memory_2_18_demo_sequence_route", "memory_2_18_metric_climax_object"],
+      "workflow_gate_targets": ["gate_2_18_demo_sequence_selection", "gate_2_18_metric_climax_selection"],
+      "anti_copy_boundary": "Use derived platform-story structure only; no copied event visuals, partner logos, or keynote frames.",
+      "bad_control_probe": "A bad control fails if it turns AI claims into a dense logo wall, model list, or non-sequenced feature grid.",
+      "release_boundary": "public_blocked until claim-source mapping and brand sanitization pass"
+    },
+    {
+      "record_id": "thick_2_18_duarte_slide_design_method",
+      "source_family": "presentation_design_method",
+      "commercial_usecase_ids": ["usecase_2_18_ai_design_platform_public_launch", "usecase_2_18_fintech_agentic_commerce_keynote"],
+      "source_ids": ["duarte_slide_design", "duarte_visual_storytelling"],
+      "modality_mix": ["text", "video", "transcript"],
+      "source_locator": "official Duarte slide-design training and visual storytelling webinar pages; method-level claims paraphrased",
+      "observed_design_method": "Professional slide design starts from the message hierarchy and story contrast before decoration or layout.",
+      "business_requirement": "Prevent the product from producing visually busy slides that are traceable but not persuasive.",
+      "derived_generation_constraint": "Every slide must declare one claim, one proof object, and one reading route before code draws shapes; slides with multiple equal claims fail.",
+      "memory_targets": ["memory_2_18_typographic_whitespace_system", "memory_2_18_launch_identity_field"],
+      "workflow_gate_targets": ["gate_2_18_identity_field_selection", "gate_2_18_density_and_anti_copy_selection"],
+      "anti_copy_boundary": "Use derived paraphrased design-method principles only; no copied course language, example slides, diagrams, or transcript.",
+      "bad_control_probe": "A bad control fails if it treats tutorial evidence as generic design tips without claim-proof-route binding.",
+      "release_boundary": "public_blocked until human editorial review confirms claim hierarchy"
+    },
+    {
+      "record_id": "thick_2_18_whitespace_powerpoint_method",
+      "source_family": "typography_spacing_method",
+      "commercial_usecase_ids": ["usecase_2_18_ai_design_platform_public_launch", "usecase_2_18_fintech_agentic_commerce_keynote"],
+      "source_ids": ["present_partners_whitespace", "slidecow_whitespace_powerpoint_tutorial"],
+      "modality_mix": ["text", "image_reference", "video", "audio"],
+      "source_locator": "presentation whitespace and PowerPoint tutorial pages; spacing, hierarchy, and margin observations only",
+      "observed_design_method": "Whitespace is a structural decision: macro zones create story emphasis while micro gaps protect labels, rails, and proof marks.",
+      "business_requirement": "Make generated decks look authored instead of assembled from dense blocks.",
+      "derived_generation_constraint": "Before native drawing, the generator must choose macro zones, minimum margin, gutter, and visible-word budget; collapsed margins fail.",
+      "memory_targets": ["memory_2_18_typographic_whitespace_system"],
+      "workflow_gate_targets": ["gate_2_18_density_and_anti_copy_selection"],
+      "anti_copy_boundary": "Use derived spacing principles only; no copied tutorial visuals, no copied arrows, no copied examples.",
+      "bad_control_probe": "A bad control fails if it changes color or font size without enforcing spacing tokens and density budgets.",
+      "release_boundary": "public_blocked until layout geometry QA and thumbnail hierarchy review pass"
+    }
+  ]
+}

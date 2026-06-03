@@ -1,6 +1,6 @@
 # PPT Run 2.0 Data Skill Quality
 
-Status: run2_17-motion-renderer-proof-public-blocked.
+Status: run2_18-thickness-pack-public-blocked.
 
 Run 2.5 does not move to a new stage. It repeats and thickens the same five fixed PPT product layers before the next generation pass:
 
@@ -37,6 +37,8 @@ Run 2.0 does not claim post-training or fine-tuning. It tests runtime case-pack-
 `results/run2_17_motion_delivery_audit.json` is the current delivery-truth layer. It does not create a new `ppt-run2-17-*` deck. It audits the Run 2.16 PPTX outputs and records that the HTML viewer is static, the current PPTX files have no transition/timing/animation/audio/video XML, and Keynote will show static editable slides until a renderer proof is built.
 
 `results/run2_17_motion_renderer_proof_result.json` is the first motion renderer proof. It does not create a new PPT deck and does not claim native Keynote animation. It creates a separate local HTML motion renderer for cover, before/after, and climax scenes while keeping the Run 2.16 PPT as the editable static product output.
+
+`run2_18_multimodal_evidence_expansion.json`, `run2_18_design_memory_expansion.json`, and `run2_18_workflow_gate_expansion.json` are the latest data/workflow thickness layer. Run 2.18 creates no new `ppt-run2-18-*` deck. It expands real commercial usecases, tutorial/video/design references, design memory, and workflow gates so the next four-arm rerun must select evidence, memory, gates, bad-control probes, and release boundaries before native PPT code generation.
 
 Generation must follow `generation_protocol.md`: separate arm runtimes, no cross-arm context leakage, native PPT object checks, and layout geometry QA before scoring.
 

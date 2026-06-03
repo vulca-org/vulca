@@ -269,6 +269,10 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run215_gate_matrix = read_json(pack / "run2_15_layout_selector_gate_matrix.json")
     run217_motion_audit = read_json(pack / "results" / "run2_17_motion_delivery_audit.json")
     run217_motion_proof = read_json(pack / "results" / "run2_17_motion_renderer_proof_result.json")
+    run218_evidence = read_json(pack / "run2_18_multimodal_evidence_expansion.json")
+    run218_memory = read_json(pack / "run2_18_design_memory_expansion.json")
+    run218_gates = read_json(pack / "run2_18_workflow_gate_expansion.json")
+    run218_result = read_json(pack / "results" / "run2_18_thickness_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -296,6 +300,10 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
             {
                 "label": "2.15 layout module selector",
                 "body": "Run 2.15 is data/workflow-only: it adds selector sources, layout module memory, and selector gates before the next four-arm rerun.",
+            },
+            {
+                "label": "2.18 data/workflow thickness",
+                "body": "Run 2.18 is not a new PPT. It expands derived evidence, executable memory, and workflow gates so the next rerun has thicker inputs before native code generation.",
             },
             {
                 "label": "2.17 delivery truth",
@@ -340,6 +348,14 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run217MotionProof": run217_motion_proof,
         "run217MotionProofHtmlHref": local_output_href(run217_motion_proof, "html", repo_root, out),
         "run217MotionProofManifestHref": local_output_href(run217_motion_proof, "manifest", repo_root, out),
+        "run218EvidenceStatus": run218_evidence.get("status", ""),
+        "run218EvidenceRecords": run218_evidence.get("records", []),
+        "run218MemoryStatus": run218_memory.get("status", ""),
+        "run218MemoryExpansions": run218_memory.get("memory_expansions", []),
+        "run218GateStatus": run218_gates.get("status", ""),
+        "run218WorkflowGates": run218_gates.get("gates", []),
+        "run218ResultStatus": run218_result.get("status", ""),
+        "run218Result": run218_result,
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -899,6 +915,54 @@ def build_html(data: dict[str, Any]) -> str:
       </article>`;
     }}
 
+    function run218EvidenceCard(record) {{
+      return `<article class="dataCard">
+        <h4>${{escapeHtml(record.record_id)}}</h4>
+        ${{chipList([record.source_family, ...(record.modality_mix || [])])}}
+        ${{detailBlock("Commercial usecases", record.commercial_usecase_ids)}}
+        ${{detailBlock("Source ids", record.source_ids)}}
+        ${{detailBlock("Source locator", record.source_locator)}}
+        ${{detailBlock("Observed method", record.observed_design_method)}}
+        ${{detailBlock("Business requirement", record.business_requirement)}}
+        ${{detailBlock("Generation constraint", record.derived_generation_constraint)}}
+        ${{detailBlock("Memory targets", record.memory_targets)}}
+        ${{detailBlock("Workflow targets", record.workflow_gate_targets)}}
+        ${{detailBlock("Bad control probe", record.bad_control_probe)}}
+        ${{detailBlock("Anti-copy boundary", record.anti_copy_boundary)}}
+      </article>`;
+    }}
+
+    function run218MemoryCard(memory) {{
+      return `<article class="dataCard">
+        <h4>${{escapeHtml(memory.memory_id)}}</h4>
+        ${{chipList([memory.memory_family, ...(memory.slide_roles || [])])}}
+        ${{detailBlock("Evidence records", memory.evidence_record_ids)}}
+        ${{detailBlock("Composition", memory.composition_contract)}}
+        ${{detailBlock("Typography", memory.typography_contract)}}
+        ${{detailBlock("Spacing", memory.spacing_contract)}}
+        ${{detailBlock("Motion/sequence", memory.motion_or_sequence_contract)}}
+        ${{detailBlock("Proof object", memory.proof_object_contract)}}
+        ${{detailBlock("Code binding", memory.code_generation_binding)}}
+        ${{detailBlock("Trace fields", memory.trace_fields_required)}}
+        ${{detailBlock("Negative control", memory.negative_control_failure)}}
+      </article>`;
+    }}
+
+    function run218GateCard(gate) {{
+      return `<article class="dataCard">
+        <h4>${{escapeHtml(gate.gate_id)}}</h4>
+        ${{chipList([gate.required_before_next_rerun ? "required before rerun" : "optional"])}}
+        ${{detailBlock("Evidence records", gate.evidence_record_ids)}}
+        ${{detailBlock("Memory ids", gate.memory_ids)}}
+        ${{detailBlock("Selection rules", gate.selection_rules)}}
+        ${{detailBlock("Rejection rules", gate.rejection_rules)}}
+        ${{detailBlock("Trace fields", gate.trace_fields)}}
+        ${{detailBlock("QA probe", gate.qa_probe)}}
+        ${{detailBlock("Bad control probe", gate.bad_control_probe)}}
+        ${{detailBlock("Release boundary", gate.release_boundary)}}
+      </article>`;
+    }}
+
     function run217ArmAuditCard(arm) {{
       const motion = arm.motion || {{}};
       return `<article class="dataCard">
@@ -1041,6 +1105,10 @@ def build_html(data: dict[str, Any]) -> str:
       const run215SelectorSources = (refs.run215SelectorSources || []).map(run215SelectorSourceCard).join("");
       const run215SelectorModules = (refs.run215SelectorModules || []).map(run215SelectorModuleCard).join("");
       const run215SelectorGates = (refs.run215SelectorGates || []).map(run215SelectorGateCard).join("");
+      const run218Evidence = (refs.run218EvidenceRecords || []).map(run218EvidenceCard).join("");
+      const run218Memory = (refs.run218MemoryExpansions || []).map(run218MemoryCard).join("");
+      const run218Gates = (refs.run218WorkflowGates || []).map(run218GateCard).join("");
+      const run218Result = refs.run218Result || {{}};
       const run217Audit = refs.run217MotionAudit || {{}};
       const run217DeliveryTruth = run217Audit.delivery_truth || {{}};
       const run217RendererGap = run217Audit.motion_renderer_gap || {{}};
@@ -1065,6 +1133,31 @@ def build_html(data: dict[str, Any]) -> str:
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Why 2.8 still looks close to 2.7</h3><p>The current bottleneck is visual primitive quality, not trace plumbing.</p></div></div>
           <div class="dataGrid">${{diagnosis}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.18 thickness pack</h3><p>Latest data/workflow thickness layer: not a new PPT, but the required evidence, memory, and gate inputs for the next four-arm rerun.</p></div><span class="pill">${{escapeHtml(refs.run218ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Run boundary</h4>
+              ${{detailBlock("Status", run218Result.status)}}
+              ${{detailBlock("Latest generated PPT", run218Result.latest_generated_ppt_run || "2.16")}}
+              ${{detailBlock("Creates new PPT deck", run218Result.creates_new_ppt_deck)}}
+              ${{detailBlock("Next action", run218Result.next_required_action)}}
+              ${{detailBlock("Artifact counts", run218Result.artifact_counts)}}
+            </article>
+          </div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.18 multimodal evidence expansion</h3><p>${{escapeHtml(refs.run218EvidenceStatus)}}. Derived commercial usecase, tutorial, video, audio, transcript, image-reference, and interaction observations; raw media stays forbidden.</p></div><span class="pill">${{(refs.run218EvidenceRecords || []).length}} records</span></div>
+          <div class="dataGrid">${{run218Evidence}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.18 design memory expansion</h3><p>${{escapeHtml(refs.run218MemoryStatus)}}. Converts thick evidence into composition, typography, spacing, sequence, proof-object, code, and trace contracts.</p></div><span class="pill">${{(refs.run218MemoryExpansions || []).length}} memories</span></div>
+          <div class="dataGrid">${{run218Memory}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.18 workflow gate expansion</h3><p>${{escapeHtml(refs.run218GateStatus)}}. Required-before-rerun gates bind evidence, memory, selection rules, rejection rules, QA probes, and bad-control failure probes.</p></div><span class="pill">${{(refs.run218WorkflowGates || []).length}} gates</span></div>
+          <div class="dataGrid">${{run218Gates}}</div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.17 motion delivery audit</h3><p>HTML viewer is static. This section separates static editable PPT delivery from real Keynote or public-video motion rendering.</p></div><span class="pill">${{escapeHtml(refs.run217MotionAuditStatus || "missing")}}</span></div>

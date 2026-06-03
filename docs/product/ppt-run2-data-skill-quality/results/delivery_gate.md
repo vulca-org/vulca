@@ -1,8 +1,22 @@
 # Delivery Gate
 
-Status: motion-renderer-proof-public-blocked.
+Status: run2_18-thickness-pack-public-blocked.
 
 Public publishing is blocked until native render or cross-platform render inspection passes, motion/render support is proven, and human approval is recorded.
+
+## Run 2.18 Thickness Pack
+
+Run 2.18 is data/workflow-only and does not create PPTX artifacts. It defines the evidence, memory, and workflow gates that the next four-arm rerun must consume.
+
+| Check | Result |
+| --- | --- |
+| Evidence expansion | `run2_18_multimodal_evidence_expansion.json` with 8 derived records |
+| Design memory expansion | `run2_18_design_memory_expansion.json` with 6 executable memories |
+| Workflow gate expansion | `run2_18_workflow_gate_expansion.json` with 6 gates |
+| Latest generated PPT | Run 2.16 |
+| Public gate | blocked until next rerun, native/cross-platform render inspection, motion/video proof, source-boundary review, and human approval |
+
+Result report: `docs/product/ppt-run2-data-skill-quality/results/run2_18_thickness_result.md`.
 
 ## Run 2.17 Motion Renderer Proof
 

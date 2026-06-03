@@ -1,6 +1,28 @@
 # Comparison Report
 
-Status: motion-renderer-proof-public-blocked.
+Status: run2_18-thickness-pack-public-blocked.
+
+Prior delivery status: motion-renderer-proof-public-blocked.
+
+Run 2.18 is the latest data/workflow thickness layer. It does not generate a new four-arm PPT and does not advance to Run 3.0. It adds eight derived multimodal evidence records, six design-memory expansions, and six workflow gates before the next generated rerun.
+
+The Run 2.18 result is `run2_18_thickness_pack_ready_public_blocked`: the next full-skill arm must consume `run2_18_multimodal_evidence_expansion.json`, `run2_18_design_memory_expansion.json`, and `run2_18_workflow_gate_expansion.json` before native PPT code generation. Public release remains blocked.
+
+| Artifact | Status | Result |
+| --- | --- | --- |
+| `run2_18_multimodal_evidence_expansion.json` | generated | machine-readable derived evidence expansion |
+| `run2_18_design_memory_expansion.json` | generated | machine-readable executable memory expansion |
+| `run2_18_workflow_gate_expansion.json` | generated | machine-readable workflow gate expansion |
+| `run2_18_thickness_result.json` | generated | machine-readable Run 2.18 result |
+| `run2_18_thickness_result.md` | generated | human-readable Run 2.18 result |
+
+## Run 2.18 Findings
+
+- Run 2.18 thickens data, design memory, and workflow gates.
+- It intentionally creates no `ppt-run2-18-*` output.
+- Run 2.16 remains the latest generated PPT.
+- Run 2.17 remains the latest delivery and motion-boundary proof.
+- Do not advance to Run 3.0.
 
 Run 2.17 now has a separate motion renderer proof. It does not generate a new four-arm PPT and does not claim Keynote animation. It creates a local HTML motion proof for three minimum scenes: `cover_attention_reset`, `before_after_reveal`, and `climax_scale_emphasis`.
 

@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "status": "run2_18_design_memory_expansion_ready",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "public_ready": false,
+  "creates_new_ppt_deck": false,
+  "derived_from": [
+    "run2_18_multimodal_evidence_expansion.json"
+  ],
+  "memory_policy": {
+    "purpose": "convert thick derived evidence into executable code-generation memory before the next four-arm rerun",
+    "raw_media": "forbidden",
+    "public_release": "blocked"
+  },
+  "memory_expansions": [
+    {
+      "memory_id": "memory_2_18_launch_identity_field",
+      "memory_family": "launch_identity_field",
+      "slide_roles": ["cover", "setup"],
+      "evidence_record_ids": [
+        "thick_2_18_figma_launch_identity_system",
+        "thick_2_18_duarte_slide_design_method"
+      ],
+      "composition_contract": "Use one dominant promise field, one generated platform motif, and one controlled proof cue; reject equal feature panels.",
+      "typography_contract": "Headline must fit as one primary sentence with a secondary source-boundary caption hidden or minimized outside the public read.",
+      "spacing_contract": "Protect a large quiet field around the promise and keep product-family cues in a single controlled edge zone.",
+      "motion_or_sequence_contract": "Optional attention reset only: reveal promise first, then platform motif, then small proof cue.",
+      "proof_object_contract": "Generated native platform motif or product-route object; no source brand mark or copied event asset.",
+      "code_generation_binding": "native PPT code must call a launch identity field module before drawing cover/setup slides.",
+      "trace_fields_required": [
+        "run2_18_evidence_record_ids",
+        "run2_18_memory_ids",
+        "run2_18_identity_field_gate_id",
+        "run2_18_anti_copy_boundary"
+      ],
+      "negative_control_failure": "bad control fails when the same sources produce equal boxes, feature catalogs, or visible workflow notes.",
+      "release_boundary": "public_blocked until source-brand sanitization and human cover review pass"
+    },
+    {
+      "memory_id": "memory_2_18_product_surface_theater",
+      "memory_family": "product_surface_theater",
+      "slide_roles": ["proof", "contrast", "close"],
+      "evidence_record_ids": [
+        "thick_2_18_figma_design_to_production_surface",
+        "thick_2_18_apple_liquid_glass_motion_surface"
+      ],
+      "composition_contract": "Largest visual zone is an original native product surface; method, trace, and caveat labels stay on a narrow secondary rail.",
+      "typography_contract": "Product-state labels use short verbs and nouns; no paragraphs inside the surface.",
+      "spacing_contract": "Surface must have a protected inspection area, a separate annotation gutter, and enough edge padding to avoid dashboard density.",
+      "motion_or_sequence_contract": "Use a bounded before-state to resolved-state sequence with reduced-motion fallback.",
+      "proof_object_contract": "Editable native product surface with state markers, not a raster screenshot or generic rectangle stack.",
+      "code_generation_binding": "native PPT code must bind selected surface state, annotation rail, and proof object geometry before rendering.",
+      "trace_fields_required": [
+        "run2_18_product_surface_memory_id",
+        "run2_18_surface_originality_probe",
+        "run2_18_editable_object_count",
+        "run2_18_motion_fallback"
+      ],
+      "negative_control_failure": "bad control fails if it replaces product theater with checklists, UI copies, or flat card grids.",
+      "release_boundary": "public_blocked until editable-object QA and product-surface originality review pass"
+    },
+    {
+      "memory_id": "memory_2_18_demo_sequence_route",
+      "memory_family": "demo_sequence_route",
+      "slide_roles": ["contrast", "proof", "climax"],
+      "evidence_record_ids": [
+        "thick_2_18_stripe_keynote_business_demo",
+        "thick_2_18_google_cloud_ai_platform_climax"
+      ],
+      "composition_contract": "Sequence is command, route, progress evidence, resolved state; only one path may be primary.",
+      "typography_contract": "Each state label is short and action-led; detailed explanation routes to notes or trace.",
+      "spacing_contract": "Keep path spacing consistent and reserve the resolved state as the largest endpoint.",
+      "motion_or_sequence_contract": "Ordered reveal metadata is required for each state even when the generated PPT remains static.",
+      "proof_object_contract": "Native state objects and path markers; no keynote frame, no copied product UI, no feature list.",
+      "code_generation_binding": "native PPT code must generate sequence states from explicit state data and record reveal order in trace.",
+      "trace_fields_required": [
+        "run2_18_sequence_state_ids",
+        "run2_18_reveal_order",
+        "run2_18_demo_source_boundary",
+        "run2_18_resolved_state_probe"
+      ],
+      "negative_control_failure": "bad control fails if it names capabilities without command-route-result order.",
+      "release_boundary": "public_blocked until sequence order, source claim mapping, and human review pass"
+    },
+    {
+      "memory_id": "memory_2_18_metric_climax_object",
+      "memory_family": "metric_climax_object",
+      "slide_roles": ["climax"],
+      "evidence_record_ids": [
+        "thick_2_18_stripe_metric_climax",
+        "thick_2_18_google_cloud_ai_platform_climax"
+      ],
+      "composition_contract": "One outcome object owns the climax; support evidence sits below or in trace, never as competing primary metrics.",
+      "typography_contract": "Metric or outcome wording must be source-backed, large enough for thumbnail read, and limited to one first-read object.",
+      "spacing_contract": "Use a clear stage field with generous margin and no dense table adjacent to the primary object.",
+      "motion_or_sequence_contract": "Optional scale emphasis on the outcome object; reduced-motion state must preserve the same hierarchy.",
+      "proof_object_contract": "Editable native metric or outcome object with caveat rail; no invented figures.",
+      "code_generation_binding": "native PPT code must require a verified outcome label and block rendering when metric provenance is absent.",
+      "trace_fields_required": [
+        "run2_18_metric_source_ids",
+        "run2_18_metric_verification_status",
+        "run2_18_deleted_or_routed_content",
+        "run2_18_climax_object_probe"
+      ],
+      "negative_control_failure": "bad control fails if it creates multiple equal metrics, small tables, or unverified scale claims.",
+      "release_boundary": "public_blocked until exact claim verification and human approval pass"
+    },
+    {
+      "memory_id": "memory_2_18_material_depth_motion",
+      "memory_family": "material_depth_motion",
+      "slide_roles": ["cover", "proof", "climax"],
+      "evidence_record_ids": [
+        "thick_2_18_apple_liquid_glass_motion_surface"
+      ],
+      "composition_contract": "Depth may support product evidence but cannot become decoration; foreground content remains the main read.",
+      "typography_contract": "All text over material surfaces must meet contrast and size checks before aesthetic effects are accepted.",
+      "spacing_contract": "Layered surfaces need protected content zones, highlight margins, and no overlap with primary text.",
+      "motion_or_sequence_contract": "Motion is bounded to attention reset, state reveal, or climax emphasis; reduced-motion fallback is mandatory.",
+      "proof_object_contract": "Native layered surface or generated SVG-like object that supports a product state.",
+      "code_generation_binding": "native PPT code must record material layer count, contrast probe, and fallback when depth is simplified.",
+      "trace_fields_required": [
+        "run2_18_material_depth_memory_id",
+        "run2_18_contrast_probe",
+        "run2_18_layer_count",
+        "run2_18_reduced_motion_fallback"
+      ],
+      "negative_control_failure": "bad control fails when glass-like decoration appears without product evidence, contrast proof, or fallback.",
+      "release_boundary": "public_blocked until native render inspection and motion fallback review pass"
+    },
+    {
+      "memory_id": "memory_2_18_typographic_whitespace_system",
+      "memory_family": "typographic_whitespace_system",
+      "slide_roles": ["cover", "setup", "contrast", "proof", "climax", "close"],
+      "evidence_record_ids": [
+        "thick_2_18_duarte_slide_design_method",
+        "thick_2_18_whitespace_powerpoint_method",
+        "thick_2_18_figma_launch_identity_system"
+      ],
+      "composition_contract": "Every slide declares one claim, one proof object, and one reading route before visual styling.",
+      "typography_contract": "Type hierarchy is selected before palette: first-read claim, proof label, caveat, trace label.",
+      "spacing_contract": "Generator must choose macro zone, margin, gutter, and max visible word budget before drawing.",
+      "motion_or_sequence_contract": "Motion cannot compensate for weak reading order; sequence metadata must reinforce the declared route.",
+      "proof_object_contract": "Proof object has a protected area and cannot be replaced by decorative panels.",
+      "code_generation_binding": "native PPT code must receive spacing tokens and density budget as required inputs for every slide.",
+      "trace_fields_required": [
+        "run2_18_spacing_token_set",
+        "run2_18_visible_word_budget",
+        "run2_18_claim_proof_route",
+        "run2_18_density_gate_id"
+      ],
+      "negative_control_failure": "bad control fails if it only changes colors, fonts, or box counts without enforcing hierarchy and spacing.",
+      "release_boundary": "public_blocked until layout geometry QA and human thumbnail review pass"
+    }
+  ]
+}
