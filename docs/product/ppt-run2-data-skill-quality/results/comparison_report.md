@@ -1,10 +1,29 @@
 # Comparison Report
 
-Status: selector-data-workflow-ready-public-blocked. Latest generated rerun status remains rerun-completed-public-blocked.
+Status: rerun-completed-public-blocked.
 
-Run 2.15 is the latest reviewed internal data/workflow result. It does not generate a new deck. It adds a layout module selector layer that the next four-arm rerun must use before native PPT code generation.
+Run 2.16 is the latest reviewed generated PPT result. It reruns the four-arm experiment after Run 2.15 by executing the Run 2.15 layout selector sources, layout module memory, and selector gate matrix before native PPT code generation.
 
-The Run 2.15 result is `selector_data_workflow_ready_public_blocked`: selector sources, layout module memory, and selector gate matrix now define how slide role, text burden, trace visibility, and product-theater need should select modules. It still does not prove public-video-grade output because the selector has not yet driven a generated four-arm rerun.
+The Run 2.16 result is `selector_gate_matrix_executed_before_native_ppt_generation`: the full arm records selected layout module ids, selector gate ids, hidden trace policy, text resilience result, product surface probe, metric reveal climax probe, and actual native Run 2.16 module calls. It still does not prove public-video-grade quality because visual review, native render inspection, real product/demo media handling, and human approval remain incomplete.
+
+| Artifact | Status | Result |
+| --- | --- | --- |
+| `run2_16_selector_rerun_result.json` | generated | selector-backed Run 2.16 rerun result |
+| `run2_16_selector_rerun_result.md` | generated | human-readable result |
+| `run2-16-four-arm-contact-sheet.png` | generated local output | four-arm comparison |
+| `ppt-run-viewer.html` | generated local output | latest generated deck is Run 2.16 |
+
+## Run 2.16 Findings
+
+- `prompt_only`: remains isolated from Run 2.15 selector data, Run 2.10 aesthetic shell, skill workflow, and trace contract.
+- `run1_5_skill`: remains the prior baseline and forbids Run 2.15 selector inputs and Run 2.10 aesthetic inputs.
+- `run2_16_full_skill`: best internal arm for proving the data/workflow selector can actually drive code-generated PPT rather than only sitting in docs.
+- `bad_selector_memory`: confirms that selector sources alone cannot claim layout module memory or selector gate execution.
+- Public release remains blocked. Do not advance to Run 3.0.
+
+Run 2.15 is the selector data/workflow result that Run 2.16 consumes. It does not generate a new deck. It adds a layout module selector layer that the generated rerun must use before native PPT code generation.
+
+The Run 2.15 result is `selector_data_workflow_ready_public_blocked`: selector sources, layout module memory, and selector gate matrix define how slide role, text burden, trace visibility, and product-theater need should select modules. Run 2.16 is the generated rerun that consumes these inputs.
 
 | Artifact | Status | Result |
 | --- | --- | --- |
@@ -17,10 +36,10 @@ The Run 2.15 result is `selector_data_workflow_ready_public_blocked`: selector s
 
 - It is data/workflow-only; no `ppt-run2-15-*` output exists.
 - It turns Run 2.14 aesthetic recovery into reusable selector obligations instead of another hand-coded styling pass.
-- The next four-arm rerun must record `run2_15_selected_layout_module_ids`, selector gate ids, trace visibility policy, text resilience result, and bad-control probe.
+- Run 2.16 records `run2_15_selected_layout_module_ids`, selector gate ids, trace visibility policy, text resilience result, and bad-control probe.
 - Public release remains blocked. Do not advance to Run 3.0.
 
-Run 2.14 is the latest reviewed generated PPT result. It reruns the four-arm experiment after Run 2.13 by combining the Run 2.10 visual-system aesthetic shell with the Run 2.13 thick-data trace core.
+Run 2.14 is the prior reviewed generated PPT result. It reruns the four-arm experiment after Run 2.13 by combining the Run 2.10 visual-system aesthetic shell with the Run 2.13 thick-data trace core.
 
 The Run 2.14 result is `2_10_aesthetic_shell_recovered_with_2_13_trace_core_hidden_from_slide_surface`: the full arm records actual native module calls, keeps Run 2.12 evidence/memory/workflow ids in trace, and stops showing workflow machinery as the public slide surface. It still does not prove public-video-grade quality because the editorial layouts are partly hardcoded, dynamic text-length robustness is unproven, and no human release approval is recorded.
 
@@ -29,7 +48,7 @@ The Run 2.14 result is `2_10_aesthetic_shell_recovered_with_2_13_trace_core_hidd
 | `run2_14_aesthetic_trace_rerun_result.json` | generated | trace-backed Run 2.14 rerun result |
 | `run2_14_aesthetic_trace_rerun_result.md` | generated | human-readable result |
 | `run2-14-four-arm-contact-sheet.png` | generated local output | four-arm comparison |
-| `ppt-run-viewer.html` | generated local output | latest generated deck remains Run 2.14 |
+| `ppt-run-viewer.html` | generated local output | viewer records Run 2.14 as prior generated rerun |
 
 ## Run 2.14 Findings
 

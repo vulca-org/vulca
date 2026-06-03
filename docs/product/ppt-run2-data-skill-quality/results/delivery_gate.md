@@ -1,12 +1,29 @@
 # Delivery Gate
 
-Status: selector-data-workflow-ready-public-blocked.
+Status: rerun-completed-public-blocked.
 
 Public publishing is blocked until native render or cross-platform render inspection passes and human approval is recorded.
 
+## Run 2.16 Arm Artifacts
+
+Run 2.16 is the latest generated same-stage selector-driven rerun. It uses Run 2.15 selector sources, layout module memory, and selector gate matrix for the full arm, while the negative control keeps selector sources but forbids selector module memory and gate matrix.
+
+| Arm | PPTX | Contact sheet | Trace manifest | Delivery QA |
+| --- | --- | --- | --- | --- |
+| `prompt_only` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-16-prompt-only/output/ppt-run2-16-prompt-only.pptx` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-16-prompt-only/preview/contact-sheet.png` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-16-prompt-only/trace_manifest.json` | `internal-demo-ok-public-blocked` |
+| `run1_5_skill` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-16-run1-5-skill/output/ppt-run2-16-run1-5-skill.pptx` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-16-run1-5-skill/preview/contact-sheet.png` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-16-run1-5-skill/trace_manifest.json` | `internal-demo-ok-public-blocked` |
+| `run2_16_full_skill` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-16-full-vulca/output/ppt-run2-16-full-vulca.pptx` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-16-full-vulca/preview/contact-sheet.png` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-16-full-vulca/trace_manifest.json` | `internal-demo-ok-public-blocked` |
+| `bad_selector_memory` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-16-bad-selector-memory/output/ppt-run2-16-bad-selector-memory.pptx` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-16-bad-selector-memory/preview/contact-sheet.png` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-16-bad-selector-memory/trace_manifest.json` | `internal-demo-ok-public-blocked` |
+
+Combined local comparison sheet: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-16-four-arm-contact-sheet.png`.
+
+Full-skill series comparison sheet: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png`.
+
+Delivery QA report: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-16-delivery-qa-report.md`.
+
 ## Run 2.15 Layout Selector Artifacts
 
-Run 2.15 is data/workflow-only and does not create PPTX artifacts. It defines the layout selector that must drive the next four-arm rerun.
+Run 2.15 is data/workflow-only and does not create PPTX artifacts. It defines the layout selector that drives the Run 2.16 four-arm rerun.
 
 | Artifact | Path | Gate |
 | --- | --- | --- |
@@ -267,8 +284,11 @@ Combined local comparison sheet: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/p
 | Run 2.14 visible-workflow negative control remains isolated from Run 2.10 aesthetic shell inputs | pass for `bad_visible_workflow_memory` |
 | Run 2.14 public slide surface hides workflow machinery while keeping manifest trace | pass for `manifest_only_trace_public_surface` |
 | Run 2.15 selector source, memory, and gate artifacts exist | pass for `run2_15_layout_selector_*` artifacts |
-| Run 2.15 creates no new PPT outputs | pass; next generated deck remains Run 2.14 |
-| Run 2.15 selector gate required before next four-arm rerun | pass for `run2_15_selector_gate_matrix_must_drive_next_four_arm_rerun` |
+| Run 2.15 creates no new PPT outputs | pass; Run 2.16 is the generated rerun that consumes it |
+| Run 2.15 selector gate required before next four-arm rerun | pass; Run 2.16 full arm records selected module ids and selector gate ids |
+| Run 2.16 selector-driven four-arm rerun exists | pass for `run2-16-four-arm-contact-sheet` and `ppt-run2-16-*` arms |
+| Run 2.16 full-arm trace includes Run 2.15 selected layout module ids and selector gate ids | pass for local Run 2.16 full arm |
+| Run 2.16 bad selector control remains isolated from selector module memory and gate matrix | pass for `bad_selector_memory` |
 | Native visual components visible | pass for local Run 2.3 full arm |
 | Run 2.4 motion grammar contract exists | pass for `video_demo_beat_map.json`, `motion_learning_targets.json`, and `presentation_sequence_components.json` |
 | Motion target ids and sequence component ids visible in regenerated deck trace | pass for local Run 2.4 full and bad-memory arms |
@@ -278,10 +298,10 @@ Combined local comparison sheet: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/p
 | Production reference ids and visual production module ids visible in regenerated deck trace | pass for local Run 2.5 full arm; production references only for bad-memory arm |
 | Public-video-grade visual proof completed | blocked |
 
-Delivery status remains `selector-data-workflow-ready-public-blocked`. Run 2.15 defines the selector data/workflow layer that must drive the next four-arm rerun. The latest generated deck remains Run 2.14. The work is still not public release evidence because native render inspection, human approval, source-brand sanitization approval, finished motion/render support, selector-driven rerun evidence, and a stronger public-demo visual pass are missing.
+Delivery status remains `rerun-completed-public-blocked`. Run 2.16 proves the Run 2.15 selector data/workflow layer can drive the next generated four-arm rerun. The work is still not public release evidence because native render inspection, human approval, source-brand sanitization approval, finished motion/render support, real product/demo media handling, and a stronger public-demo visual pass are missing.
 
 ## Release Decision Thresholds
 
 - `internal only`: any generated arm, trace manifest, runtime isolation record, native PPT check, layout geometry check, render check, provenance note, editability check, or human approval is missing.
-- `demo candidate`: all four next-rerun arms exist, trace manifests pass contract review, runtime isolation is recorded, native PPT and layout geometry checks pass, render inspection is complete, and the full arm proves Run 2.15 selector-gate execution, aesthetic-shell recovery, hidden workflow trace, actual native module-call trace, legibility, source-brand sanitization, and public-demo visual quality.
+- `demo candidate`: all four Run 2.16 arms exist, trace manifests pass contract review, runtime isolation is recorded, native PPT and layout geometry checks pass, render inspection is complete, and the full arm proves Run 2.15 selector-gate execution, aesthetic-shell recovery, hidden workflow trace, actual native module-call trace, legibility, source-brand sanitization, and public-demo visual quality.
 - `public blocked`: the current external status until human approval explicitly records that the generated deck, trace manifest, provenance, and render inspection are acceptable.

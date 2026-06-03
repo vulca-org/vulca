@@ -450,6 +450,17 @@ EXPECTED_RUN2_15_TRACE_FIELDS = {
     "run2_15_metric_reveal_climax_probe",
     "run2_15_bad_selector_control_probe",
 }
+EXPECTED_RUN2_16_TRACE_FIELDS = {
+    "run2_16_aesthetic_source_run_id",
+    "run2_16_aesthetic_shell_input_ids",
+    "run2_16_selector_input_ids",
+    "run2_16_selector_execution_status",
+    "run2_16_surface_policy",
+    "run2_16_visible_workflow_suppression",
+    "run2_16_visual_delta_from_run2_13",
+    "run2_16_code_module_ids",
+    "run2_16_bad_control_probe",
+}
 EXPECTED_RUN2_6_USECASE_FIELDS = {
     "id",
     "source_ids",
@@ -3157,6 +3168,135 @@ def test_run2_15_layout_selector_artifacts_define_reusable_workflow() -> None:
         assert gate["bad_control_probe"]
 
 
+def test_run2_16_generator_uses_run2_15_selector_before_native_ppt_code() -> None:
+    script_path = ROOT / "scripts" / "generate_ppt_run2_16_selector_rerun_arms.mjs"
+    assert script_path.exists(), "missing Run 2.16 selector-driven rerun generator"
+    body = script_path.read_text(encoding="utf-8")
+    arm_order = ["prompt_only", "run1_5_skill", "run2_16_full_skill", "bad_selector_memory"]
+
+    def arm_block(arm_id: str) -> str:
+        start = body.index(f'armId: "{arm_id}"')
+        next_starts = [body.find(f'armId: "{next_arm}"', start + 1) for next_arm in arm_order]
+        next_starts = [index for index in next_starts if index > start]
+        end = min(next_starts) if next_starts else len(body)
+        return body[start:end]
+
+    def section(block: str, start_marker: str, end_marker: str) -> str:
+        start = block.index(start_marker)
+        end = block.index(end_marker, start)
+        return block[start:end]
+
+    run2_15_selector_inputs = [
+        "run2_15_layout_selector_sources.json",
+        "run2_15_layout_module_memory.json",
+        "run2_15_layout_selector_gate_matrix.json",
+    ]
+    run2_14_aesthetic_inputs = [
+        "run2_10_visual_system_sources.json",
+        "run2_10_visual_system_memory.json",
+        "run2_10_visual_system_gate_matrix.json",
+    ]
+
+    assert_contains(
+        body,
+        [
+            "prompt_only",
+            "run1_5_skill",
+            "run2_16_full_skill",
+            "bad_selector_memory",
+            "validateRun215SelectorSchemas",
+            "assertArmInputBoundaries",
+            "readRun216SelectorJsonForArm",
+            "selectRun215LayoutModulesForSlide",
+            "assertRun216SelectorGateSelfCheck",
+            "drawRun216EditorialCoverField",
+            "drawRun216ProductTheaterStage",
+            "drawRun216BeforeAfterRoute",
+            "drawRun216MetricRevealStage",
+            "drawRun216QuietReleaseHandoff",
+            "drawRun216DenseEvidenceCompression",
+            "manifest_viewer_qa_only_for_public_surface",
+            "selector_gate_matrix_executed_before_native_ppt_generation",
+        ],
+    )
+
+    prompt_allowed = section(arm_block("prompt_only"), "allowed:", "forbidden:")
+    prompt_forbidden = section(arm_block("prompt_only"), "forbidden:", "palette:")
+    run1_allowed = section(arm_block("run1_5_skill"), "allowed:", "forbidden:")
+    run1_forbidden = section(arm_block("run1_5_skill"), "forbidden:", "palette:")
+    full_allowed = section(arm_block("run2_16_full_skill"), "allowed:", "forbidden:")
+    full_forbidden = section(arm_block("run2_16_full_skill"), "forbidden:", "palette:")
+    bad_allowed = section(arm_block("bad_selector_memory"), "allowed:", "forbidden:")
+    bad_forbidden = section(arm_block("bad_selector_memory"), "forbidden:", "palette:")
+
+    for term in [*run2_15_selector_inputs, *run2_14_aesthetic_inputs]:
+        assert term not in prompt_allowed
+        assert term in prompt_forbidden
+        assert term not in run1_allowed
+        assert term in run1_forbidden
+        assert term in full_allowed
+        assert term not in full_forbidden
+
+    assert "run2_15_layout_selector_sources.json" in bad_allowed
+    assert "run2_15_layout_module_memory.json" not in bad_allowed
+    assert "run2_15_layout_selector_gate_matrix.json" not in bad_allowed
+    assert "run2_15_layout_module_memory.json" in bad_forbidden
+    assert "run2_15_layout_selector_gate_matrix.json" in bad_forbidden
+
+    assert 'const fullRun216 = arm.armId === "run2_16_full_skill";' in body
+    for field in EXPECTED_RUN2_15_TRACE_FIELDS:
+        assert re.search(fr"{field}:\s*fullRun216\s*\?", body), field
+    for function_name in [
+        "drawRun216EditorialCoverField",
+        "drawRun216ProductTheaterStage",
+        "drawRun216BeforeAfterRoute",
+        "drawRun216MetricRevealStage",
+        "drawRun216QuietReleaseHandoff",
+        "drawRun216DenseEvidenceCompression",
+    ]:
+        assert f'registerRun216Module(metrics, "{function_name}")' in body
+    assert "throw new Error(`${arm.armId} input boundary does not permit reading ${relPath}`)" in body
+    assert "run2_15_layout_module_memory.json" in arm_block("bad_selector_memory")
+    assert "run2_15_layout_selector_gate_matrix.json" in arm_block("bad_selector_memory")
+
+
+def test_run2_16_selector_runtime_guards_block_bad_arm_and_select_gates() -> None:
+    node_script = """
+import fs from "node:fs";
+import path from "node:path";
+const mod = await import("./scripts/generate_ppt_run2_16_selector_rerun_arms.mjs");
+const badArm = mod.armSpecs.find((arm) => arm.armId === "bad_selector_memory");
+const fullArm = mod.armSpecs.find((arm) => arm.armId === "run2_16_full_skill");
+let blocked = false;
+try {
+  mod.readRun216SelectorJsonForArm(badArm, mod.RUN2_16_INPUTS.selectorGateMatrix);
+} catch (error) {
+  blocked = String(error.message).includes("input boundary does not permit reading");
+}
+if (!blocked) throw new Error("bad selector arm was able to read selector gate matrix");
+const root = process.cwd();
+const sources = JSON.parse(fs.readFileSync(path.join(root, mod.RUN2_16_INPUTS.selectorSources), "utf8"));
+const memory = JSON.parse(fs.readFileSync(path.join(root, mod.RUN2_16_INPUTS.selectorMemory), "utf8"));
+const gates = JSON.parse(fs.readFileSync(path.join(root, mod.RUN2_16_INPUTS.selectorGateMatrix), "utf8"));
+mod.validateRun215SelectorSchemas(sources, memory, gates);
+const climax = mod.selectRun215LayoutModulesForSlide("climax", memory, gates);
+const moduleIds = climax.modules.map((item) => item.module_id);
+const gateIds = climax.gates.map((item) => item.gate_id);
+if (!moduleIds.includes("module_2_15_metric_reveal_stage")) throw new Error("climax did not select metric reveal module");
+if (!gateIds.includes("gate_2_15_metric_reveal_climax")) throw new Error("climax did not consume metric reveal gate");
+if (!fullArm.allowed.includes(mod.RUN2_16_INPUTS.selectorGateMatrix)) throw new Error("full arm does not allow selector gate matrix");
+"""
+    completed = subprocess.run(
+        ["node", "--input-type=module", "-e", node_script],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        timeout=20,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+
+
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
     layout_dir = tmp_path / "layout"
     layout_dir.mkdir()
@@ -3336,6 +3476,7 @@ def test_run2_results_reviewed_and_public_blocked() -> None:
     assert EXPECTED_RUN2_13_TRACE_FIELDS <= set(trace_contract["per_slide_required_fields"])
     assert EXPECTED_RUN2_14_TRACE_FIELDS <= set(trace_contract["per_slide_required_fields"])
     assert EXPECTED_RUN2_15_TRACE_FIELDS <= set(trace_contract["per_slide_required_fields"])
+    assert EXPECTED_RUN2_16_TRACE_FIELDS <= set(trace_contract["per_slide_required_fields"])
     assert trace_contract["native_ppt_thresholds"]["full_slide_rasterized_allowed"] is False
 
 
@@ -3819,7 +3960,7 @@ def test_run2_15_records_layout_selector_data_workflow_result() -> None:
         readme,
         [
             "Run 2.15 intentionally adds no new `ppt-run2-15-*` output folders",
-            "latest generated internal result is Run 2.14",
+            "Run 2.16 is the selector-driven generated rerun that consumes the Run 2.15 artifacts",
         ],
     )
     assert_contains(
@@ -3833,7 +3974,59 @@ def test_run2_15_records_layout_selector_data_workflow_result() -> None:
         delivery,
         [
             "Run 2.15 is data/workflow-only and does not create PPTX artifacts",
-            "The latest generated deck remains Run 2.14",
+            "Run 2.16 is the generated rerun that consumes it",
+        ],
+    )
+
+
+def test_run2_16_records_selector_driven_rerun_result() -> None:
+    result = (PACK / "results" / "run2_16_selector_rerun_result.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_16_selector_rerun_result.json")
+
+    assert result_json["status"] == "rerun_completed_public_blocked"
+    assert result_json["public_ready"] is False
+    assert result_json["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert result_json["rerun"]["status"] == "completed"
+    assert result_json["rerun"]["best_internal_arm"] == "run2_16_full_skill"
+    assert result_json["rerun"]["generated_outputs_committed"] is False
+    assert "run2-16-four-arm-contact-sheet.png" in result_json["rerun"]["combined_contact_sheet"]
+    assert "run2-full-skill-series-horizontal.png" in result_json["rerun"]["full_skill_series_sheet"]
+    assert result_json["rerun"]["html_viewer"].endswith("/ppt-run-viewer.html")
+    assert result_json["qa_summary"]["trace_truthfulness_guard"].startswith("passed")
+    assert result_json["qa_summary"]["case_pack_validator"] == "passed with --profile run2"
+    assert result_json["control_boundary"]["bad_selector_memory"].startswith(
+        "selector_sources_without_module_memory_or_gate_matrix"
+    )
+    assert_contains(
+        json.dumps(result_json["actual_full_arm_modules_by_role"]),
+        [
+            "drawRun216EditorialCoverField",
+            "drawRun216ProductTheaterStage",
+            "drawRun216BeforeAfterRoute",
+            "drawRun216MetricRevealStage",
+            "drawRun216QuietReleaseHandoff",
+            "drawRun216DenseEvidenceCompression",
+        ],
+    )
+    assert_contains(
+        json.dumps(result_json["selector_learning"]),
+        [
+            "run2_15_layout_selector_sources.json",
+            "run2_15_layout_module_memory.json",
+            "run2_15_layout_selector_gate_matrix.json",
+            "selector_gate_matrix_executed_before_native_ppt_generation",
+            "bad_selector_memory",
+        ],
+    )
+    assert_contains(
+        result,
+        [
+            "Run 2.16",
+            "selector-driven",
+            "run2_15_layout_selector_gate_matrix.json",
+            "HTML viewer",
+            "public blocked",
+            "Do not advance to Run 3.0",
         ],
     )
 
@@ -3886,6 +4079,11 @@ def test_ppt_run_html_viewer_builder_tracks_latest_outputs() -> None:
             "ppt-run2-14-run1-5-skill",
             "ppt-run2-14-full-vulca",
             "ppt-run2-14-bad-visible-workflow-memory",
+            "Run 2.16",
+            "ppt-run2-16-prompt-only",
+            "ppt-run2-16-run1-5-skill",
+            "ppt-run2-16-full-vulca",
+            "ppt-run2-16-bad-selector-memory",
             "Full skill series",
             "Data / Skill",
             "renderData",

@@ -183,6 +183,17 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ArmSpec("bad_visible_workflow_memory", "Bad visible workflow", "ppt-run2-14-bad-visible-workflow-memory", "negative"),
         ),
     ),
+    RunSpec(
+        "2.16",
+        "Run 2.16",
+        "run2-16-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-16-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-16-run1-5-skill", "baseline"),
+            ArmSpec("run2_16_full_skill", "Run 2.16 full", "ppt-run2-16-full-vulca", "full"),
+            ArmSpec("bad_selector_memory", "Bad selector memory", "ppt-run2-16-bad-selector-memory", "negative"),
+        ),
+    ),
 )
 
 
