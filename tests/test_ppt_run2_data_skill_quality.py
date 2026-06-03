@@ -3613,6 +3613,149 @@ def test_ppt_run_html_viewer_embeds_run2_20_trace_effectiveness_audit() -> None:
     )
 
 
+def test_run2_21_builder_writes_visual_decision_memory_artifacts(tmp_path: Path) -> None:
+    script_path = ROOT / "scripts" / "build_ppt_run2_21_visual_decision_memory.py"
+    assert script_path.exists(), "missing Run 2.21 visual-decision memory builder"
+
+    result_json = tmp_path / "run2_21_visual_decision_memory_result.json"
+    result_md = tmp_path / "run2_21_visual_decision_memory_result.md"
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(script_path),
+            "--out-dir",
+            str(tmp_path),
+            "--result-json",
+            str(result_json),
+            "--result-md",
+            str(result_md),
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        timeout=20,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    decision_memory = load_json(tmp_path / "run2_21_visual_decision_memory.json")
+    selector_gates = load_json(tmp_path / "run2_21_per_role_selector_gates.json")
+    rejection_matrix = load_json(tmp_path / "run2_21_evidence_rejection_matrix.json")
+    result = load_json(result_json)
+
+    assert decision_memory["status"] == "run2_21_visual_decision_memory_ready_public_blocked"
+    assert decision_memory["creates_new_ppt_deck"] is False
+    assert decision_memory["derived_from"] == [
+        "run2_18_multimodal_evidence_expansion.json",
+        "run2_18_design_memory_expansion.json",
+        "run2_18_workflow_gate_expansion.json",
+        "results/run2_20_trace_effectiveness_audit.json",
+    ]
+    assert len(decision_memory["visual_decision_memory"]) == 6
+    all_evidence_ids = {record["record_id"] for record in load_json(PACK / "run2_18_multimodal_evidence_expansion.json")["records"]}
+    for record in decision_memory["visual_decision_memory"]:
+        assert record["role"] in {"cover", "setup", "contrast", "proof", "climax", "close"}
+        assert record["primary_evidence_id"] in all_evidence_ids
+        assert 1 <= len(record["secondary_evidence_ids"]) <= 2
+        assert set(record["secondary_evidence_ids"]).issubset(all_evidence_ids)
+        rejected_ids = {item["evidence_id"] for item in record["rejected_evidence"]}
+        assert rejected_ids
+        assert rejected_ids.isdisjoint({record["primary_evidence_id"], *record["secondary_evidence_ids"]})
+        assert {record["primary_evidence_id"], *record["secondary_evidence_ids"], *rejected_ids} == all_evidence_ids
+        assert all(item["reason"] for item in record["rejected_evidence"])
+        assert record["selected_memory_ids"]
+        assert record["selected_gate_ids"]
+        for field in [
+            "typography_decision",
+            "spacing_decision",
+            "composition_decision",
+            "proof_object_decision",
+            "code_generation_obligation",
+            "visual_quality_risk",
+            "source_boundary",
+        ]:
+            assert record[field], f"{record['decision_id']} missing {field}"
+
+    assert selector_gates["status"] == "run2_21_per_role_selector_gates_ready_public_blocked"
+    assert len(selector_gates["gates"]) == 6
+    for gate in selector_gates["gates"]:
+        assert gate["required_primary_evidence_count"] == 1
+        assert gate["max_secondary_evidence_count"] == 2
+        assert gate["required_visual_decision_memory_id"].startswith("vdm_2_21_")
+        assert "run2_21_primary_evidence_id" in gate["required_trace_fields"]
+        assert "run2_21_rejected_evidence_reasons" in gate["required_trace_fields"]
+        assert gate["public_surface_policy"] == "trace_suppressed_from_public_slide_surface"
+        assert gate["release_boundary"].startswith("public_blocked")
+
+    assert rejection_matrix["status"] == "run2_21_evidence_rejection_matrix_ready_public_blocked"
+    assert len(rejection_matrix["role_records"]) == 6
+    for role_record in rejection_matrix["role_records"]:
+        assert role_record["all_evidence_accounted_for"] is True
+        assert role_record["primary_evidence_id"] in all_evidence_ids
+        assert role_record["rejected_evidence"]
+        assert all(item["reason"] for item in role_record["rejected_evidence"])
+
+    assert result["status"] == "run2_21_visual_decision_memory_ready_public_blocked"
+    assert result["creates_new_ppt_deck"] is False
+    assert result["delivery_artifacts"] == {
+        "pptx_paths": [],
+        "rendered_slide_paths": [],
+        "contact_sheet_paths": [],
+        "html_motion_renderer_paths": [],
+    }
+    assert result["public_ready"] is False
+    assert result["next_required_action"].startswith("consume_run2_21_visual_decision_memory")
+    assert not list(tmp_path.glob("*.pptx"))
+
+
+def test_run2_21_records_visual_decision_memory_result() -> None:
+    result = (PACK / "results" / "run2_21_visual_decision_memory_result.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_21_visual_decision_memory_result.json")
+    decision_memory = load_json(PACK / "run2_21_visual_decision_memory.json")
+    selector_gates = load_json(PACK / "run2_21_per_role_selector_gates.json")
+    rejection_matrix = load_json(PACK / "run2_21_evidence_rejection_matrix.json")
+
+    assert result_json["status"] == "run2_21_visual_decision_memory_ready_public_blocked"
+    assert result_json["source_audit_run"] == "2.20"
+    assert result_json["creates_new_ppt_deck"] is False
+    assert result_json["delivery_artifacts"]["pptx_paths"] == []
+    assert result_json["delivery_artifacts"]["rendered_slide_paths"] == []
+    assert result_json["artifact_counts"] == {
+        "visual_decision_memory": 6,
+        "per_role_selector_gates": 6,
+        "evidence_rejection_records": 6,
+    }
+    assert len(decision_memory["visual_decision_memory"]) == 6
+    assert len(selector_gates["gates"]) == 6
+    assert len(rejection_matrix["role_records"]) == 6
+    assert_contains(
+        result,
+        [
+            "Run 2.21",
+            "visual-decision memory",
+            "per-role selector",
+            "evidence rejection matrix",
+            "Run 2.20",
+            "public blocked",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_embeds_run2_21_visual_decision_memory() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "run2_21_visual_decision_memory.json",
+            "run2_21_per_role_selector_gates.json",
+            "run2_21_evidence_rejection_matrix.json",
+            "run2_21_visual_decision_memory_result.json",
+            "Run 2.21 visual-decision memory",
+        ],
+    )
+
+
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
     layout_dir = tmp_path / "layout"
     layout_dir.mkdir()

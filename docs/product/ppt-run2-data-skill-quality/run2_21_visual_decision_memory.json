@@ -1,0 +1,325 @@
+{
+  "schema_version": "ppt_run2_visual_decision_memory.v1",
+  "status": "run2_21_visual_decision_memory_ready_public_blocked",
+  "run_id": "2.21",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "public_ready": false,
+  "creates_new_ppt_deck": false,
+  "derived_from": [
+    "run2_18_multimodal_evidence_expansion.json",
+    "run2_18_design_memory_expansion.json",
+    "run2_18_workflow_gate_expansion.json",
+    "results/run2_20_trace_effectiveness_audit.json"
+  ],
+  "quality_target": "make visual decisions explicit before another generated rerun",
+  "visual_decision_memory": [
+    {
+      "decision_id": "vdm_2_21_cover",
+      "role": "cover",
+      "slide_index": 1,
+      "primary_evidence_id": "thick_2_18_figma_launch_identity_system",
+      "secondary_evidence_ids": [
+        "thick_2_18_duarte_slide_design_method",
+        "thick_2_18_whitespace_powerpoint_method"
+      ],
+      "rejected_evidence": [
+        {
+          "evidence_id": "thick_2_18_figma_design_to_production_surface",
+          "reason": "Product-surface evidence is held back until an inspectable workflow surface is the main proof object."
+        },
+        {
+          "evidence_id": "thick_2_18_stripe_keynote_business_demo",
+          "reason": "Business-demo evidence is held back until the slide needs sequence or outcome proof."
+        },
+        {
+          "evidence_id": "thick_2_18_stripe_metric_climax",
+          "reason": "Held for climax so metric evidence does not compete with this slide's primary read."
+        },
+        {
+          "evidence_id": "thick_2_18_apple_liquid_glass_motion_surface",
+          "reason": "Material-depth evidence is held back to avoid decorative premium effects without product proof."
+        },
+        {
+          "evidence_id": "thick_2_18_google_cloud_ai_platform_climax",
+          "reason": "AI platform climax evidence is held back to avoid generic capability claims on this slide."
+        }
+      ],
+      "selected_memory_ids": [
+        "memory_2_18_launch_identity_field",
+        "memory_2_18_typographic_whitespace_system"
+      ],
+      "selected_gate_ids": [
+        "gate_2_18_identity_field_selection",
+        "gate_2_18_density_and_anti_copy_selection"
+      ],
+      "typography_decision": "One short launch promise owns first read; secondary evidence appears only as a compact proof caption.",
+      "spacing_decision": "Reserve a large promise field, protect wide outer margins, and keep source-boundary text outside the hero read.",
+      "composition_decision": "Use one identity motif plus one proof cue; reject equal feature cards and visible workflow machinery.",
+      "proof_object_decision": "Generated native platform motif, not source brand marks or copied event imagery.",
+      "code_generation_obligation": "Next generated rerun must call drawRun219LaunchIdentityField only after binding vdm_2_21_cover and gate_2_21_cover_selector.",
+      "required_code_module_ids": [
+        "drawRun219LaunchIdentityField"
+      ],
+      "visual_quality_risk": "The cover can still become a brand-pastiche unless source-boundary notes stay out of the public surface.",
+      "source_boundary": "Use derived observations only; no raw media, copied layouts, source screenshots, brand marks, or transcript text.",
+      "release_boundary": "public_blocked_until_visual_human_review_native_render_review_and_source_boundary_review"
+    },
+    {
+      "decision_id": "vdm_2_21_setup",
+      "role": "setup",
+      "slide_index": 2,
+      "primary_evidence_id": "thick_2_18_google_cloud_ai_platform_climax",
+      "secondary_evidence_ids": [
+        "thick_2_18_figma_launch_identity_system",
+        "thick_2_18_figma_design_to_production_surface"
+      ],
+      "rejected_evidence": [
+        {
+          "evidence_id": "thick_2_18_stripe_keynote_business_demo",
+          "reason": "Business-demo evidence is held back until the slide needs sequence or outcome proof."
+        },
+        {
+          "evidence_id": "thick_2_18_stripe_metric_climax",
+          "reason": "Held for climax so metric evidence does not compete with this slide's primary read."
+        },
+        {
+          "evidence_id": "thick_2_18_apple_liquid_glass_motion_surface",
+          "reason": "Material-depth evidence is held back to avoid decorative premium effects without product proof."
+        },
+        {
+          "evidence_id": "thick_2_18_duarte_slide_design_method",
+          "reason": "Held as editorial method background; rejected here because a concrete product or business source is stronger."
+        },
+        {
+          "evidence_id": "thick_2_18_whitespace_powerpoint_method",
+          "reason": "Applied as a global spacing method only when selected; rejected here to keep the role-specific evidence narrow."
+        }
+      ],
+      "selected_memory_ids": [
+        "memory_2_18_launch_identity_field",
+        "memory_2_18_demo_sequence_route"
+      ],
+      "selected_gate_ids": [
+        "gate_2_18_usecase_source_selection",
+        "gate_2_18_identity_field_selection"
+      ],
+      "typography_decision": "Name the business pressure first, then use one capability phrase and one product consequence label.",
+      "spacing_decision": "Separate pressure, capability, and product consequence into three macro zones with no dense text blocks.",
+      "composition_decision": "Turn AI capability into a visible workflow map, not a model list or feature pile.",
+      "proof_object_decision": "Native workflow map with one routed product consequence.",
+      "code_generation_obligation": "Next generated rerun must call drawRun219ProductSurfaceTheater, drawRun219DemoSequenceRoute only after binding vdm_2_21_setup and gate_2_21_setup_selector.",
+      "required_code_module_ids": [
+        "drawRun219ProductSurfaceTheater",
+        "drawRun219DemoSequenceRoute"
+      ],
+      "visual_quality_risk": "Setup can look generic if the capability label is not tied to a visible workflow state.",
+      "source_boundary": "Use derived observations only; no raw media, copied layouts, source screenshots, brand marks, or transcript text.",
+      "release_boundary": "public_blocked_until_visual_human_review_native_render_review_and_source_boundary_review"
+    },
+    {
+      "decision_id": "vdm_2_21_contrast",
+      "role": "contrast",
+      "slide_index": 3,
+      "primary_evidence_id": "thick_2_18_stripe_keynote_business_demo",
+      "secondary_evidence_ids": [
+        "thick_2_18_figma_design_to_production_surface",
+        "thick_2_18_duarte_slide_design_method"
+      ],
+      "rejected_evidence": [
+        {
+          "evidence_id": "thick_2_18_figma_launch_identity_system",
+          "reason": "Rejected for this role so primary and secondary evidence stay specific and inspectable."
+        },
+        {
+          "evidence_id": "thick_2_18_stripe_metric_climax",
+          "reason": "Held for climax so metric evidence does not compete with this slide's primary read."
+        },
+        {
+          "evidence_id": "thick_2_18_apple_liquid_glass_motion_surface",
+          "reason": "Material-depth evidence is held back to avoid decorative premium effects without product proof."
+        },
+        {
+          "evidence_id": "thick_2_18_google_cloud_ai_platform_climax",
+          "reason": "AI platform climax evidence is held back to avoid generic capability claims on this slide."
+        },
+        {
+          "evidence_id": "thick_2_18_whitespace_powerpoint_method",
+          "reason": "Applied as a global spacing method only when selected; rejected here to keep the role-specific evidence narrow."
+        }
+      ],
+      "selected_memory_ids": [
+        "memory_2_18_demo_sequence_route",
+        "memory_2_18_product_surface_theater"
+      ],
+      "selected_gate_ids": [
+        "gate_2_18_demo_sequence_selection",
+        "gate_2_18_product_surface_theater_selection"
+      ],
+      "typography_decision": "Use action-led labels for before, route, and resolved state; explanations route to notes.",
+      "spacing_decision": "Keep before and after asymmetric: before is compressed, route is narrow, resolved state is dominant.",
+      "composition_decision": "Stage contrast as one transition path instead of a side-by-side diagnostic table.",
+      "proof_object_decision": "Native ordered state route with a dominant resolved endpoint.",
+      "code_generation_obligation": "Next generated rerun must call drawRun219DemoSequenceRoute only after binding vdm_2_21_contrast and gate_2_21_contrast_selector.",
+      "required_code_module_ids": [
+        "drawRun219DemoSequenceRoute"
+      ],
+      "visual_quality_risk": "The contrast slide can collapse back to equal panels if primary/secondary state weights are not enforced.",
+      "source_boundary": "Use derived observations only; no raw media, copied layouts, source screenshots, brand marks, or transcript text.",
+      "release_boundary": "public_blocked_until_visual_human_review_native_render_review_and_source_boundary_review"
+    },
+    {
+      "decision_id": "vdm_2_21_proof",
+      "role": "proof",
+      "slide_index": 4,
+      "primary_evidence_id": "thick_2_18_figma_design_to_production_surface",
+      "secondary_evidence_ids": [
+        "thick_2_18_apple_liquid_glass_motion_surface",
+        "thick_2_18_stripe_keynote_business_demo"
+      ],
+      "rejected_evidence": [
+        {
+          "evidence_id": "thick_2_18_figma_launch_identity_system",
+          "reason": "Rejected for this role so primary and secondary evidence stay specific and inspectable."
+        },
+        {
+          "evidence_id": "thick_2_18_stripe_metric_climax",
+          "reason": "Held for climax so metric evidence does not compete with this slide's primary read."
+        },
+        {
+          "evidence_id": "thick_2_18_google_cloud_ai_platform_climax",
+          "reason": "AI platform climax evidence is held back to avoid generic capability claims on this slide."
+        },
+        {
+          "evidence_id": "thick_2_18_duarte_slide_design_method",
+          "reason": "Held as editorial method background; rejected here because a concrete product or business source is stronger."
+        },
+        {
+          "evidence_id": "thick_2_18_whitespace_powerpoint_method",
+          "reason": "Applied as a global spacing method only when selected; rejected here to keep the role-specific evidence narrow."
+        }
+      ],
+      "selected_memory_ids": [
+        "memory_2_18_product_surface_theater",
+        "memory_2_18_material_depth_motion"
+      ],
+      "selected_gate_ids": [
+        "gate_2_18_product_surface_theater_selection",
+        "gate_2_18_density_and_anti_copy_selection"
+      ],
+      "typography_decision": "Short product-state labels only; no paragraph text inside the surface.",
+      "spacing_decision": "Largest area belongs to the product surface, with an annotation rail and protected inspection gutter.",
+      "composition_decision": "Use a native editable product theater surface with one readable operational state.",
+      "proof_object_decision": "Editable native product surface and secondary rail; no screenshots or copied UI chrome.",
+      "code_generation_obligation": "Next generated rerun must call drawRun219ProductSurfaceTheater, drawRun219DensityGate only after binding vdm_2_21_proof and gate_2_21_proof_selector.",
+      "required_code_module_ids": [
+        "drawRun219ProductSurfaceTheater",
+        "drawRun219DensityGate"
+      ],
+      "visual_quality_risk": "Depth treatment can become decoration if it is not attached to product evidence.",
+      "source_boundary": "Use derived observations only; no raw media, copied layouts, source screenshots, brand marks, or transcript text.",
+      "release_boundary": "public_blocked_until_visual_human_review_native_render_review_and_source_boundary_review"
+    },
+    {
+      "decision_id": "vdm_2_21_climax",
+      "role": "climax",
+      "slide_index": 5,
+      "primary_evidence_id": "thick_2_18_stripe_metric_climax",
+      "secondary_evidence_ids": [
+        "thick_2_18_google_cloud_ai_platform_climax",
+        "thick_2_18_apple_liquid_glass_motion_surface"
+      ],
+      "rejected_evidence": [
+        {
+          "evidence_id": "thick_2_18_figma_launch_identity_system",
+          "reason": "Rejected for this role so primary and secondary evidence stay specific and inspectable."
+        },
+        {
+          "evidence_id": "thick_2_18_figma_design_to_production_surface",
+          "reason": "Product-surface evidence is held back until an inspectable workflow surface is the main proof object."
+        },
+        {
+          "evidence_id": "thick_2_18_stripe_keynote_business_demo",
+          "reason": "Rejected for this role so primary and secondary evidence stay specific and inspectable."
+        },
+        {
+          "evidence_id": "thick_2_18_duarte_slide_design_method",
+          "reason": "Held as editorial method background; rejected here because a concrete product or business source is stronger."
+        },
+        {
+          "evidence_id": "thick_2_18_whitespace_powerpoint_method",
+          "reason": "Applied as a global spacing method only when selected; rejected here to keep the role-specific evidence narrow."
+        }
+      ],
+      "selected_memory_ids": [
+        "memory_2_18_metric_climax_object",
+        "memory_2_18_material_depth_motion"
+      ],
+      "selected_gate_ids": [
+        "gate_2_18_metric_climax_selection",
+        "gate_2_18_demo_sequence_selection"
+      ],
+      "typography_decision": "One source-backed outcome phrase is the only first-read object; caveats route below or to trace.",
+      "spacing_decision": "Use a stage field with generous margin; no adjacent dense table or competing metric cluster.",
+      "composition_decision": "Make one outcome object own the slide and suppress all secondary proof into a quiet layer.",
+      "proof_object_decision": "Editable outcome object with caveat rail and no invented figures.",
+      "code_generation_obligation": "Next generated rerun must call drawRun219MetricClimaxObject only after binding vdm_2_21_climax and gate_2_21_climax_selector.",
+      "required_code_module_ids": [
+        "drawRun219MetricClimaxObject"
+      ],
+      "visual_quality_risk": "Climax can overclaim if the outcome label is not source-bounded and human reviewed.",
+      "source_boundary": "Use derived observations only; no raw media, copied layouts, source screenshots, brand marks, or transcript text.",
+      "release_boundary": "public_blocked_until_visual_human_review_native_render_review_and_source_boundary_review"
+    },
+    {
+      "decision_id": "vdm_2_21_close",
+      "role": "close",
+      "slide_index": 6,
+      "primary_evidence_id": "thick_2_18_duarte_slide_design_method",
+      "secondary_evidence_ids": [
+        "thick_2_18_whitespace_powerpoint_method",
+        "thick_2_18_figma_launch_identity_system"
+      ],
+      "rejected_evidence": [
+        {
+          "evidence_id": "thick_2_18_figma_design_to_production_surface",
+          "reason": "Product-surface evidence is held back until an inspectable workflow surface is the main proof object."
+        },
+        {
+          "evidence_id": "thick_2_18_stripe_keynote_business_demo",
+          "reason": "Business-demo evidence is held back until the slide needs sequence or outcome proof."
+        },
+        {
+          "evidence_id": "thick_2_18_stripe_metric_climax",
+          "reason": "Held for climax so metric evidence does not compete with this slide's primary read."
+        },
+        {
+          "evidence_id": "thick_2_18_apple_liquid_glass_motion_surface",
+          "reason": "Material-depth evidence is held back to avoid decorative premium effects without product proof."
+        },
+        {
+          "evidence_id": "thick_2_18_google_cloud_ai_platform_climax",
+          "reason": "AI platform climax evidence is held back to avoid generic capability claims on this slide."
+        }
+      ],
+      "selected_memory_ids": [
+        "memory_2_18_typographic_whitespace_system",
+        "memory_2_18_launch_identity_field"
+      ],
+      "selected_gate_ids": [
+        "gate_2_18_density_and_anti_copy_selection",
+        "gate_2_18_usecase_source_selection"
+      ],
+      "typography_decision": "One quiet handoff sentence plus one release boundary label; no retrospective checklist.",
+      "spacing_decision": "Keep the close sparse with a single next-step field and a separate blocked-release rail.",
+      "composition_decision": "End with a deliberate handoff state, not a summary dashboard.",
+      "proof_object_decision": "Native handoff field with public-blocked marker and next-run instruction.",
+      "code_generation_obligation": "Next generated rerun must call drawRun219QuietReleaseHandoff only after binding vdm_2_21_close and gate_2_21_close_selector.",
+      "required_code_module_ids": [
+        "drawRun219QuietReleaseHandoff"
+      ],
+      "visual_quality_risk": "Close can feel bureaucratic if the release gate becomes the main visual story.",
+      "source_boundary": "Use derived observations only; no raw media, copied layouts, source screenshots, brand marks, or transcript text.",
+      "release_boundary": "public_blocked_until_visual_human_review_native_render_review_and_source_boundary_review"
+    }
+  ]
+}

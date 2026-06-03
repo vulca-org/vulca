@@ -1,10 +1,29 @@
 # Comparison Report
 
-Status: run2_20-trace-effectiveness-audit-public-blocked.
+Status: run2_21-visual-decision-memory-public-blocked.
 
 Prior delivery status: motion-renderer-proof-public-blocked.
 
 Prior data/workflow status: run2_18-thickness-pack-public-blocked.
+
+Run 2.21 is the latest data/workflow-only layer. It creates no new PPT deck and does not advance to Run 3.0. It converts Run 2.20's trace-effectiveness finding into per-role visual-decision memory, selector gates, and explicit evidence rejection reasons.
+
+The Run 2.21 result is `run2_21_visual_decision_memory_ready_public_blocked`: the next generated rerun must consume `run2_21_visual_decision_memory.json`, `run2_21_per_role_selector_gates.json`, and `run2_21_evidence_rejection_matrix.json` before native PPT drawing.
+
+| Artifact | Status | Result |
+| --- | --- | --- |
+| `run2_21_visual_decision_memory.json` | generated | one primary evidence id, secondary evidence ids, rejected evidence reasons, and visual decisions per role |
+| `run2_21_per_role_selector_gates.json` | generated | role gates for the next generated rerun |
+| `run2_21_evidence_rejection_matrix.json` | generated | all Run 2.18 evidence accounted for per role |
+| `run2_21_visual_decision_memory_result.json` | generated | machine-readable Run 2.21 result |
+| `run2_21_visual_decision_memory_result.md` | generated | human-readable Run 2.21 result |
+
+## Run 2.21 Findings
+
+- Run 2.21 narrows each slide role to exactly one primary evidence id and at most two secondary ids.
+- Every non-selected Run 2.18 evidence id now has a rejection reason per role.
+- The next generated rerun has a stricter pre-code gate than Run 2.19.
+- Public release remains blocked. Do not advance to Run 3.0.
 
 Run 2.20 is the latest audit-only layer. It creates no new PPT deck and does not advance to Run 3.0. It verifies that Run 2.19 selected all Run 2.18 evidence, memory, and workflow gates in the full-arm trace while preserving the evidence-only `bad_thickness_memory` boundary.
 

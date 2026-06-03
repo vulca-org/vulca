@@ -1,0 +1,212 @@
+{
+  "schema_version": "ppt_run2_evidence_rejection_matrix.v1",
+  "status": "run2_21_evidence_rejection_matrix_ready_public_blocked",
+  "run_id": "2.21",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "public_ready": false,
+  "creates_new_ppt_deck": false,
+  "evidence_inventory": [
+    "thick_2_18_figma_launch_identity_system",
+    "thick_2_18_figma_design_to_production_surface",
+    "thick_2_18_stripe_keynote_business_demo",
+    "thick_2_18_stripe_metric_climax",
+    "thick_2_18_apple_liquid_glass_motion_surface",
+    "thick_2_18_google_cloud_ai_platform_climax",
+    "thick_2_18_duarte_slide_design_method",
+    "thick_2_18_whitespace_powerpoint_method"
+  ],
+  "role_records": [
+    {
+      "role": "cover",
+      "visual_decision_memory_id": "vdm_2_21_cover",
+      "primary_evidence_id": "thick_2_18_figma_launch_identity_system",
+      "secondary_evidence_ids": [
+        "thick_2_18_duarte_slide_design_method",
+        "thick_2_18_whitespace_powerpoint_method"
+      ],
+      "rejected_evidence": [
+        {
+          "evidence_id": "thick_2_18_figma_design_to_production_surface",
+          "reason": "Product-surface evidence is held back until an inspectable workflow surface is the main proof object."
+        },
+        {
+          "evidence_id": "thick_2_18_stripe_keynote_business_demo",
+          "reason": "Business-demo evidence is held back until the slide needs sequence or outcome proof."
+        },
+        {
+          "evidence_id": "thick_2_18_stripe_metric_climax",
+          "reason": "Held for climax so metric evidence does not compete with this slide's primary read."
+        },
+        {
+          "evidence_id": "thick_2_18_apple_liquid_glass_motion_surface",
+          "reason": "Material-depth evidence is held back to avoid decorative premium effects without product proof."
+        },
+        {
+          "evidence_id": "thick_2_18_google_cloud_ai_platform_climax",
+          "reason": "AI platform climax evidence is held back to avoid generic capability claims on this slide."
+        }
+      ],
+      "all_evidence_accounted_for": true
+    },
+    {
+      "role": "setup",
+      "visual_decision_memory_id": "vdm_2_21_setup",
+      "primary_evidence_id": "thick_2_18_google_cloud_ai_platform_climax",
+      "secondary_evidence_ids": [
+        "thick_2_18_figma_launch_identity_system",
+        "thick_2_18_figma_design_to_production_surface"
+      ],
+      "rejected_evidence": [
+        {
+          "evidence_id": "thick_2_18_stripe_keynote_business_demo",
+          "reason": "Business-demo evidence is held back until the slide needs sequence or outcome proof."
+        },
+        {
+          "evidence_id": "thick_2_18_stripe_metric_climax",
+          "reason": "Held for climax so metric evidence does not compete with this slide's primary read."
+        },
+        {
+          "evidence_id": "thick_2_18_apple_liquid_glass_motion_surface",
+          "reason": "Material-depth evidence is held back to avoid decorative premium effects without product proof."
+        },
+        {
+          "evidence_id": "thick_2_18_duarte_slide_design_method",
+          "reason": "Held as editorial method background; rejected here because a concrete product or business source is stronger."
+        },
+        {
+          "evidence_id": "thick_2_18_whitespace_powerpoint_method",
+          "reason": "Applied as a global spacing method only when selected; rejected here to keep the role-specific evidence narrow."
+        }
+      ],
+      "all_evidence_accounted_for": true
+    },
+    {
+      "role": "contrast",
+      "visual_decision_memory_id": "vdm_2_21_contrast",
+      "primary_evidence_id": "thick_2_18_stripe_keynote_business_demo",
+      "secondary_evidence_ids": [
+        "thick_2_18_figma_design_to_production_surface",
+        "thick_2_18_duarte_slide_design_method"
+      ],
+      "rejected_evidence": [
+        {
+          "evidence_id": "thick_2_18_figma_launch_identity_system",
+          "reason": "Rejected for this role so primary and secondary evidence stay specific and inspectable."
+        },
+        {
+          "evidence_id": "thick_2_18_stripe_metric_climax",
+          "reason": "Held for climax so metric evidence does not compete with this slide's primary read."
+        },
+        {
+          "evidence_id": "thick_2_18_apple_liquid_glass_motion_surface",
+          "reason": "Material-depth evidence is held back to avoid decorative premium effects without product proof."
+        },
+        {
+          "evidence_id": "thick_2_18_google_cloud_ai_platform_climax",
+          "reason": "AI platform climax evidence is held back to avoid generic capability claims on this slide."
+        },
+        {
+          "evidence_id": "thick_2_18_whitespace_powerpoint_method",
+          "reason": "Applied as a global spacing method only when selected; rejected here to keep the role-specific evidence narrow."
+        }
+      ],
+      "all_evidence_accounted_for": true
+    },
+    {
+      "role": "proof",
+      "visual_decision_memory_id": "vdm_2_21_proof",
+      "primary_evidence_id": "thick_2_18_figma_design_to_production_surface",
+      "secondary_evidence_ids": [
+        "thick_2_18_apple_liquid_glass_motion_surface",
+        "thick_2_18_stripe_keynote_business_demo"
+      ],
+      "rejected_evidence": [
+        {
+          "evidence_id": "thick_2_18_figma_launch_identity_system",
+          "reason": "Rejected for this role so primary and secondary evidence stay specific and inspectable."
+        },
+        {
+          "evidence_id": "thick_2_18_stripe_metric_climax",
+          "reason": "Held for climax so metric evidence does not compete with this slide's primary read."
+        },
+        {
+          "evidence_id": "thick_2_18_google_cloud_ai_platform_climax",
+          "reason": "AI platform climax evidence is held back to avoid generic capability claims on this slide."
+        },
+        {
+          "evidence_id": "thick_2_18_duarte_slide_design_method",
+          "reason": "Held as editorial method background; rejected here because a concrete product or business source is stronger."
+        },
+        {
+          "evidence_id": "thick_2_18_whitespace_powerpoint_method",
+          "reason": "Applied as a global spacing method only when selected; rejected here to keep the role-specific evidence narrow."
+        }
+      ],
+      "all_evidence_accounted_for": true
+    },
+    {
+      "role": "climax",
+      "visual_decision_memory_id": "vdm_2_21_climax",
+      "primary_evidence_id": "thick_2_18_stripe_metric_climax",
+      "secondary_evidence_ids": [
+        "thick_2_18_google_cloud_ai_platform_climax",
+        "thick_2_18_apple_liquid_glass_motion_surface"
+      ],
+      "rejected_evidence": [
+        {
+          "evidence_id": "thick_2_18_figma_launch_identity_system",
+          "reason": "Rejected for this role so primary and secondary evidence stay specific and inspectable."
+        },
+        {
+          "evidence_id": "thick_2_18_figma_design_to_production_surface",
+          "reason": "Product-surface evidence is held back until an inspectable workflow surface is the main proof object."
+        },
+        {
+          "evidence_id": "thick_2_18_stripe_keynote_business_demo",
+          "reason": "Rejected for this role so primary and secondary evidence stay specific and inspectable."
+        },
+        {
+          "evidence_id": "thick_2_18_duarte_slide_design_method",
+          "reason": "Held as editorial method background; rejected here because a concrete product or business source is stronger."
+        },
+        {
+          "evidence_id": "thick_2_18_whitespace_powerpoint_method",
+          "reason": "Applied as a global spacing method only when selected; rejected here to keep the role-specific evidence narrow."
+        }
+      ],
+      "all_evidence_accounted_for": true
+    },
+    {
+      "role": "close",
+      "visual_decision_memory_id": "vdm_2_21_close",
+      "primary_evidence_id": "thick_2_18_duarte_slide_design_method",
+      "secondary_evidence_ids": [
+        "thick_2_18_whitespace_powerpoint_method",
+        "thick_2_18_figma_launch_identity_system"
+      ],
+      "rejected_evidence": [
+        {
+          "evidence_id": "thick_2_18_figma_design_to_production_surface",
+          "reason": "Product-surface evidence is held back until an inspectable workflow surface is the main proof object."
+        },
+        {
+          "evidence_id": "thick_2_18_stripe_keynote_business_demo",
+          "reason": "Business-demo evidence is held back until the slide needs sequence or outcome proof."
+        },
+        {
+          "evidence_id": "thick_2_18_stripe_metric_climax",
+          "reason": "Held for climax so metric evidence does not compete with this slide's primary read."
+        },
+        {
+          "evidence_id": "thick_2_18_apple_liquid_glass_motion_surface",
+          "reason": "Material-depth evidence is held back to avoid decorative premium effects without product proof."
+        },
+        {
+          "evidence_id": "thick_2_18_google_cloud_ai_platform_climax",
+          "reason": "AI platform climax evidence is held back to avoid generic capability claims on this slide."
+        }
+      ],
+      "all_evidence_accounted_for": true
+    }
+  ]
+}

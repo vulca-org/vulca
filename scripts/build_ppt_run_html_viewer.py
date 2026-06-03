@@ -286,6 +286,10 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run218_result = read_json(pack / "results" / "run2_18_thickness_result.json")
     run219_result = read_json(pack / "results" / "run2_19_thickness_rerun_result.json")
     run220_trace_audit = read_json(pack / "results" / "run2_20_trace_effectiveness_audit.json")
+    run221_decision_memory = read_json(pack / "run2_21_visual_decision_memory.json")
+    run221_selector_gates = read_json(pack / "run2_21_per_role_selector_gates.json")
+    run221_rejection_matrix = read_json(pack / "run2_21_evidence_rejection_matrix.json")
+    run221_result = read_json(pack / "results" / "run2_21_visual_decision_memory_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -377,6 +381,14 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run219Result": run219_result,
         "run220TraceAuditStatus": run220_trace_audit.get("status", ""),
         "run220TraceAudit": run220_trace_audit,
+        "run221DecisionMemoryStatus": run221_decision_memory.get("status", ""),
+        "run221DecisionMemory": run221_decision_memory.get("visual_decision_memory", []),
+        "run221SelectorGateStatus": run221_selector_gates.get("status", ""),
+        "run221SelectorGates": run221_selector_gates.get("gates", []),
+        "run221RejectionMatrixStatus": run221_rejection_matrix.get("status", ""),
+        "run221RejectionRecords": run221_rejection_matrix.get("role_records", []),
+        "run221ResultStatus": run221_result.get("status", ""),
+        "run221Result": run221_result,
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -984,6 +996,46 @@ def build_html(data: dict[str, Any]) -> str:
       </article>`;
     }}
 
+    function run221DecisionMemoryCard(record) {{
+      return `<article class="dataCard">
+        <h4>${{escapeHtml(record.decision_id)}}</h4>
+        ${{chipList([record.role, record.primary_evidence_id].filter(Boolean))}}
+        ${{detailBlock("Secondary evidence", record.secondary_evidence_ids)}}
+        ${{detailBlock("Selected memory", record.selected_memory_ids)}}
+        ${{detailBlock("Selected gates", record.selected_gate_ids)}}
+        ${{detailBlock("Typography decision", record.typography_decision)}}
+        ${{detailBlock("Spacing decision", record.spacing_decision)}}
+        ${{detailBlock("Composition decision", record.composition_decision)}}
+        ${{detailBlock("Proof object", record.proof_object_decision)}}
+        ${{detailBlock("Code obligation", record.code_generation_obligation)}}
+        ${{detailBlock("Risk", record.visual_quality_risk)}}
+      </article>`;
+    }}
+
+    function run221SelectorGateCard(gate) {{
+      return `<article class="dataCard">
+        <h4>${{escapeHtml(gate.gate_id)}}</h4>
+        ${{chipList([gate.role, gate.required_visual_decision_memory_id].filter(Boolean))}}
+        ${{detailBlock("Primary evidence count", gate.required_primary_evidence_count)}}
+        ${{detailBlock("Max secondary evidence", gate.max_secondary_evidence_count)}}
+        ${{detailBlock("Required code modules", gate.required_code_module_ids)}}
+        ${{detailBlock("Trace fields", gate.required_trace_fields)}}
+        ${{detailBlock("Public surface", gate.public_surface_policy)}}
+        ${{detailBlock("Pass/fail", gate.pass_fail_checks)}}
+        ${{detailBlock("Release boundary", gate.release_boundary)}}
+      </article>`;
+    }}
+
+    function run221RejectionRecordCard(record) {{
+      return `<article class="dataCard">
+        <h4>${{escapeHtml(record.role)}}</h4>
+        ${{chipList([record.visual_decision_memory_id, record.primary_evidence_id].filter(Boolean))}}
+        ${{detailBlock("Secondary evidence", record.secondary_evidence_ids)}}
+        ${{detailBlock("Rejected evidence", (record.rejected_evidence || []).map((item) => `${{item.evidence_id}}: ${{item.reason}}`))}}
+        ${{detailBlock("All evidence accounted for", record.all_evidence_accounted_for)}}
+      </article>`;
+    }}
+
     function run217ArmAuditCard(arm) {{
       const motion = arm.motion || {{}};
       return `<article class="dataCard">
@@ -1160,6 +1212,10 @@ def build_html(data: dict[str, Any]) -> str:
       const run219Rerun = run219Result.rerun || {{}};
       const run219Inputs = run219Result.input_chain || {{}};
       const run219Control = run219Result.control_boundary || {{}};
+      const run221Result = refs.run221Result || {{}};
+      const run221DecisionMemory = (refs.run221DecisionMemory || []).map(run221DecisionMemoryCard).join("");
+      const run221SelectorGates = (refs.run221SelectorGates || []).map(run221SelectorGateCard).join("");
+      const run221RejectionRecords = (refs.run221RejectionRecords || []).map(run221RejectionRecordCard).join("");
       const run217Audit = refs.run217MotionAudit || {{}};
       const run217DeliveryTruth = run217Audit.delivery_truth || {{}};
       const run217RendererGap = run217Audit.motion_renderer_gap || {{}};
@@ -1184,6 +1240,31 @@ def build_html(data: dict[str, Any]) -> str:
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Why 2.8 still looks close to 2.7</h3><p>The current bottleneck is visual primitive quality, not trace plumbing.</p></div></div>
           <div class="dataGrid">${{diagnosis}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.21 visual-decision memory</h3><p>Data-only layer: turns Run 2.20 trace effectiveness into per-role primary evidence, secondary evidence, and explicit rejection reasons before another generated rerun.</p></div><span class="pill">${{escapeHtml(refs.run221ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Run boundary</h4>
+              ${{detailBlock("Status", run221Result.status)}}
+              ${{detailBlock("Creates new PPT deck", run221Result.creates_new_ppt_deck)}}
+              ${{detailBlock("Source audit run", run221Result.source_audit_run)}}
+              ${{detailBlock("Artifact counts", run221Result.artifact_counts)}}
+              ${{detailBlock("Next action", run221Result.next_required_action)}}
+            </article>
+          </div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.21 visual decision memory records</h3><p>${{escapeHtml(refs.run221DecisionMemoryStatus)}}. Each role has one primary evidence id, limited secondary evidence, and concrete typography, spacing, composition, proof-object, and code obligations.</p></div><span class="pill">${{(refs.run221DecisionMemory || []).length}} records</span></div>
+          <div class="dataGrid">${{run221DecisionMemory}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.21 per-role selector gates</h3><p>${{escapeHtml(refs.run221SelectorGateStatus)}}. These gates must be consumed before the next native PPT generation pass.</p></div><span class="pill">${{(refs.run221SelectorGates || []).length}} gates</span></div>
+          <div class="dataGrid">${{run221SelectorGates}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.21 evidence rejection matrix</h3><p>${{escapeHtml(refs.run221RejectionMatrixStatus)}}. Every Run 2.18 evidence id is primary, secondary, or explicitly rejected for each slide role.</p></div><span class="pill">${{(refs.run221RejectionRecords || []).length}} roles</span></div>
+          <div class="dataGrid">${{run221RejectionRecords}}</div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.19 thickness rerun result</h3><p>Generated four-arm rerun that consumes the Run 2.18 thickness pack before native PPT code generation. It stays in the same five-layer loop and does not advance to Run 3.0.</p></div><span class="pill">${{escapeHtml(refs.run219ResultStatus || "missing")}}</span></div>

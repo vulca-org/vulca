@@ -1,8 +1,22 @@
 # Delivery Gate
 
-Status: run2_20-trace-effectiveness-audit-public-blocked.
+Status: run2_21-visual-decision-memory-public-blocked.
 
 Public publishing is blocked until native render or cross-platform render inspection passes, motion/render support is proven, and human approval is recorded.
+
+## Run 2.21 Visual-Decision Memory
+
+Run 2.21 is data/workflow-only and does not create PPTX artifacts. It defines role-specific visual-decision memory and selector gates that the next generated rerun must consume.
+
+| Check | Result |
+| --- | --- |
+| Visual-decision memory records | 6 role records |
+| Per-role selector gates | 6 gates |
+| Evidence rejection matrix | all 8 Run 2.18 evidence records accounted for per role |
+| Generated PPT | none |
+| Public gate | blocked until next generated rerun consumes these selectors and human review passes |
+
+Result report: `docs/product/ppt-run2-data-skill-quality/results/run2_21_visual_decision_memory_result.md`.
 
 ## Run 2.20 Trace Effectiveness Audit
 
