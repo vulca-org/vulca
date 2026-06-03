@@ -1,0 +1,523 @@
+{
+  "schema_version": "ppt_run2_selector_effectiveness_audit.v1",
+  "run_id": "2.23",
+  "status": "run2_23_selector_effectiveness_audit_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "source_generated_run": "2.22",
+  "comparison_baseline_run": "2.19",
+  "source_selector_layer": "2.21",
+  "creates_new_ppt_deck": false,
+  "public_ready": false,
+  "input_chain": {
+    "visual_decision_memory": "docs/product/ppt-run2-data-skill-quality/run2_21_visual_decision_memory.json",
+    "selector_gates": "docs/product/ppt-run2-data-skill-quality/run2_21_per_role_selector_gates.json",
+    "evidence_rejection_matrix": "docs/product/ppt-run2-data-skill-quality/run2_21_evidence_rejection_matrix.json",
+    "run2_22_full_trace_manifest": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-22-full-vulca/trace_manifest.json",
+    "run2_22_bad_selector_trace_manifest": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-22-bad-selector-memory/trace_manifest.json",
+    "run2_19_baseline_trace_manifest": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-19-full-vulca/trace_manifest.json"
+  },
+  "source_inventory": {
+    "run2_21_visual_decision_memory_records": 6,
+    "run2_21_selector_gates": 6,
+    "run2_21_rejection_records": 6,
+    "run2_22_full_trace_slides": 6,
+    "run2_19_baseline_trace_slides": 6
+  },
+  "workflow_inventory": {
+    "full_arm_slide_count": 6,
+    "selector_gate_trace_slides": 6,
+    "visual_decision_memory_trace_slides": 6,
+    "selected_code_module_count": 4,
+    "roles_with_code_module_delta": 6
+  },
+  "selector_effectiveness": {
+    "full_arm": {
+      "arm_id": "run2_22_full_selector_memory",
+      "slide_count": 6,
+      "visual_decision_memory_records_selected": 6,
+      "selector_gates_selected": 6,
+      "selected_visual_decision_memory_ids": [
+        "vdm_2_21_climax",
+        "vdm_2_21_close",
+        "vdm_2_21_contrast",
+        "vdm_2_21_cover",
+        "vdm_2_21_proof",
+        "vdm_2_21_setup"
+      ],
+      "selected_selector_gate_ids": [
+        "gate_2_21_climax_selector",
+        "gate_2_21_close_selector",
+        "gate_2_21_contrast_selector",
+        "gate_2_21_cover_selector",
+        "gate_2_21_proof_selector",
+        "gate_2_21_setup_selector"
+      ],
+      "selected_primary_evidence_ids": [
+        "thick_2_18_duarte_slide_design_method",
+        "thick_2_18_figma_design_to_production_surface",
+        "thick_2_18_figma_launch_identity_system",
+        "thick_2_18_google_cloud_ai_platform_climax",
+        "thick_2_18_stripe_keynote_business_demo",
+        "thick_2_18_stripe_metric_climax"
+      ],
+      "selected_secondary_evidence_ids": [
+        "thick_2_18_apple_liquid_glass_motion_surface",
+        "thick_2_18_duarte_slide_design_method",
+        "thick_2_18_figma_design_to_production_surface",
+        "thick_2_18_figma_launch_identity_system",
+        "thick_2_18_google_cloud_ai_platform_climax",
+        "thick_2_18_stripe_keynote_business_demo",
+        "thick_2_18_whitespace_powerpoint_method"
+      ],
+      "selected_code_module_ids": [
+        "drawRun222CinematicSelectorField",
+        "drawRun222ClimaxEditorialStage",
+        "drawRun222EvidenceRoute",
+        "drawRun222ProductTheaterSurface"
+      ],
+      "role_records": [
+        {
+          "slide_id": "slide_01",
+          "role": "cover",
+          "visual_decision_memory_id": "vdm_2_21_cover",
+          "primary_evidence_id": "thick_2_18_figma_launch_identity_system",
+          "secondary_evidence_ids": [
+            "thick_2_18_duarte_slide_design_method",
+            "thick_2_18_whitespace_powerpoint_method"
+          ],
+          "secondary_evidence_count": 2,
+          "rejected_evidence_ids": [
+            "thick_2_18_apple_liquid_glass_motion_surface",
+            "thick_2_18_figma_design_to_production_surface",
+            "thick_2_18_google_cloud_ai_platform_climax",
+            "thick_2_18_stripe_keynote_business_demo",
+            "thick_2_18_stripe_metric_climax"
+          ],
+          "rejected_evidence_count": 5,
+          "selector_gate_id": "gate_2_21_cover_selector",
+          "required_code_module_ids": [
+            "drawRun222CinematicSelectorField"
+          ],
+          "actual_code_module_ids": [
+            "drawRun222CinematicSelectorField",
+            "drawRun222EvidenceRoute"
+          ],
+          "baseline_run2_19_code_module_ids": [
+            "drawRun219LaunchIdentityField",
+            "drawRun219DemoSequenceRoute"
+          ],
+          "code_module_delta": [
+            "drawRun222CinematicSelectorField",
+            "drawRun222EvidenceRoute"
+          ],
+          "selector_execution_status": "selector_memory_executed_before_native_ppt_generation",
+          "public_surface_policy": "trace_suppressed_from_public_slide_surface",
+          "status": "pass",
+          "reason": "primary=thick_2_18_figma_launch_identity_system; secondary=2; rejected=5; module_delta_from_run2_19=True"
+        },
+        {
+          "slide_id": "slide_02",
+          "role": "setup",
+          "visual_decision_memory_id": "vdm_2_21_setup",
+          "primary_evidence_id": "thick_2_18_google_cloud_ai_platform_climax",
+          "secondary_evidence_ids": [
+            "thick_2_18_figma_launch_identity_system",
+            "thick_2_18_figma_design_to_production_surface"
+          ],
+          "secondary_evidence_count": 2,
+          "rejected_evidence_ids": [
+            "thick_2_18_apple_liquid_glass_motion_surface",
+            "thick_2_18_duarte_slide_design_method",
+            "thick_2_18_stripe_keynote_business_demo",
+            "thick_2_18_stripe_metric_climax",
+            "thick_2_18_whitespace_powerpoint_method"
+          ],
+          "rejected_evidence_count": 5,
+          "selector_gate_id": "gate_2_21_setup_selector",
+          "required_code_module_ids": [
+            "drawRun222CinematicSelectorField",
+            "drawRun222ProductTheaterSurface"
+          ],
+          "actual_code_module_ids": [
+            "drawRun222CinematicSelectorField",
+            "drawRun222ProductTheaterSurface",
+            "drawRun222EvidenceRoute"
+          ],
+          "baseline_run2_19_code_module_ids": [
+            "drawRun219ProductSurfaceTheater",
+            "drawRun219DemoSequenceRoute"
+          ],
+          "code_module_delta": [
+            "drawRun222CinematicSelectorField",
+            "drawRun222EvidenceRoute",
+            "drawRun222ProductTheaterSurface"
+          ],
+          "selector_execution_status": "selector_memory_executed_before_native_ppt_generation",
+          "public_surface_policy": "trace_suppressed_from_public_slide_surface",
+          "status": "pass",
+          "reason": "primary=thick_2_18_google_cloud_ai_platform_climax; secondary=2; rejected=5; module_delta_from_run2_19=True"
+        },
+        {
+          "slide_id": "slide_03",
+          "role": "contrast",
+          "visual_decision_memory_id": "vdm_2_21_contrast",
+          "primary_evidence_id": "thick_2_18_stripe_keynote_business_demo",
+          "secondary_evidence_ids": [
+            "thick_2_18_figma_design_to_production_surface",
+            "thick_2_18_duarte_slide_design_method"
+          ],
+          "secondary_evidence_count": 2,
+          "rejected_evidence_ids": [
+            "thick_2_18_apple_liquid_glass_motion_surface",
+            "thick_2_18_figma_launch_identity_system",
+            "thick_2_18_google_cloud_ai_platform_climax",
+            "thick_2_18_stripe_metric_climax",
+            "thick_2_18_whitespace_powerpoint_method"
+          ],
+          "rejected_evidence_count": 5,
+          "selector_gate_id": "gate_2_21_contrast_selector",
+          "required_code_module_ids": [
+            "drawRun222CinematicSelectorField",
+            "drawRun222EvidenceRoute"
+          ],
+          "actual_code_module_ids": [
+            "drawRun222CinematicSelectorField",
+            "drawRun222EvidenceRoute"
+          ],
+          "baseline_run2_19_code_module_ids": [
+            "drawRun219LaunchIdentityField",
+            "drawRun219DemoSequenceRoute"
+          ],
+          "code_module_delta": [
+            "drawRun222CinematicSelectorField",
+            "drawRun222EvidenceRoute"
+          ],
+          "selector_execution_status": "selector_memory_executed_before_native_ppt_generation",
+          "public_surface_policy": "trace_suppressed_from_public_slide_surface",
+          "status": "pass",
+          "reason": "primary=thick_2_18_stripe_keynote_business_demo; secondary=2; rejected=5; module_delta_from_run2_19=True"
+        },
+        {
+          "slide_id": "slide_04",
+          "role": "proof",
+          "visual_decision_memory_id": "vdm_2_21_proof",
+          "primary_evidence_id": "thick_2_18_figma_design_to_production_surface",
+          "secondary_evidence_ids": [
+            "thick_2_18_apple_liquid_glass_motion_surface",
+            "thick_2_18_stripe_keynote_business_demo"
+          ],
+          "secondary_evidence_count": 2,
+          "rejected_evidence_ids": [
+            "thick_2_18_duarte_slide_design_method",
+            "thick_2_18_figma_launch_identity_system",
+            "thick_2_18_google_cloud_ai_platform_climax",
+            "thick_2_18_stripe_metric_climax",
+            "thick_2_18_whitespace_powerpoint_method"
+          ],
+          "rejected_evidence_count": 5,
+          "selector_gate_id": "gate_2_21_proof_selector",
+          "required_code_module_ids": [
+            "drawRun222ProductTheaterSurface",
+            "drawRun222EvidenceRoute"
+          ],
+          "actual_code_module_ids": [
+            "drawRun222ProductTheaterSurface",
+            "drawRun222EvidenceRoute"
+          ],
+          "baseline_run2_19_code_module_ids": [
+            "drawRun219ProductSurfaceTheater",
+            "drawRun219DensityGate"
+          ],
+          "code_module_delta": [
+            "drawRun222EvidenceRoute",
+            "drawRun222ProductTheaterSurface"
+          ],
+          "selector_execution_status": "selector_memory_executed_before_native_ppt_generation",
+          "public_surface_policy": "trace_suppressed_from_public_slide_surface",
+          "status": "pass",
+          "reason": "primary=thick_2_18_figma_design_to_production_surface; secondary=2; rejected=5; module_delta_from_run2_19=True"
+        },
+        {
+          "slide_id": "slide_05",
+          "role": "climax",
+          "visual_decision_memory_id": "vdm_2_21_climax",
+          "primary_evidence_id": "thick_2_18_stripe_metric_climax",
+          "secondary_evidence_ids": [
+            "thick_2_18_google_cloud_ai_platform_climax",
+            "thick_2_18_apple_liquid_glass_motion_surface"
+          ],
+          "secondary_evidence_count": 2,
+          "rejected_evidence_ids": [
+            "thick_2_18_duarte_slide_design_method",
+            "thick_2_18_figma_design_to_production_surface",
+            "thick_2_18_figma_launch_identity_system",
+            "thick_2_18_stripe_keynote_business_demo",
+            "thick_2_18_whitespace_powerpoint_method"
+          ],
+          "rejected_evidence_count": 5,
+          "selector_gate_id": "gate_2_21_climax_selector",
+          "required_code_module_ids": [
+            "drawRun222ClimaxEditorialStage"
+          ],
+          "actual_code_module_ids": [
+            "drawRun222ClimaxEditorialStage"
+          ],
+          "baseline_run2_19_code_module_ids": [
+            "drawRun219MetricClimaxObject",
+            "drawRun219QuietReleaseHandoff"
+          ],
+          "code_module_delta": [
+            "drawRun222ClimaxEditorialStage"
+          ],
+          "selector_execution_status": "selector_memory_executed_before_native_ppt_generation",
+          "public_surface_policy": "trace_suppressed_from_public_slide_surface",
+          "status": "pass",
+          "reason": "primary=thick_2_18_stripe_metric_climax; secondary=2; rejected=5; module_delta_from_run2_19=True"
+        },
+        {
+          "slide_id": "slide_06",
+          "role": "close",
+          "visual_decision_memory_id": "vdm_2_21_close",
+          "primary_evidence_id": "thick_2_18_duarte_slide_design_method",
+          "secondary_evidence_ids": [
+            "thick_2_18_whitespace_powerpoint_method",
+            "thick_2_18_figma_launch_identity_system"
+          ],
+          "secondary_evidence_count": 2,
+          "rejected_evidence_ids": [
+            "thick_2_18_apple_liquid_glass_motion_surface",
+            "thick_2_18_figma_design_to_production_surface",
+            "thick_2_18_google_cloud_ai_platform_climax",
+            "thick_2_18_stripe_keynote_business_demo",
+            "thick_2_18_stripe_metric_climax"
+          ],
+          "rejected_evidence_count": 5,
+          "selector_gate_id": "gate_2_21_close_selector",
+          "required_code_module_ids": [
+            "drawRun222CinematicSelectorField",
+            "drawRun222EvidenceRoute"
+          ],
+          "actual_code_module_ids": [
+            "drawRun222CinematicSelectorField",
+            "drawRun222EvidenceRoute"
+          ],
+          "baseline_run2_19_code_module_ids": [
+            "drawRun219LaunchIdentityField",
+            "drawRun219QuietReleaseHandoff"
+          ],
+          "code_module_delta": [
+            "drawRun222CinematicSelectorField",
+            "drawRun222EvidenceRoute"
+          ],
+          "selector_execution_status": "selector_memory_executed_before_native_ppt_generation",
+          "public_surface_policy": "trace_suppressed_from_public_slide_surface",
+          "status": "pass",
+          "reason": "primary=thick_2_18_duarte_slide_design_method; secondary=2; rejected=5; module_delta_from_run2_19=True"
+        }
+      ],
+      "all_slides_have_selector_gate_and_code": true,
+      "primary_evidence_per_slide_all": true,
+      "secondary_evidence_within_cap_all": true,
+      "rejection_reasons_present_all": true,
+      "public_surface_policy_suppressed_all": true
+    },
+    "comparison_to_run2_19": {
+      "baseline_arm_id": "run2_19_full_skill",
+      "roles_with_code_module_delta": 6,
+      "interpretation": "Run 2.22 full arm uses selector-memory-specific code modules instead of reusing the Run 2.19 thickness modules."
+    }
+  },
+  "control_boundary": {
+    "prompt_only": {
+      "arm_id": "prompt_only",
+      "forbids_run2_21_selector_memory": true,
+      "selected_selector_gate_ids": []
+    },
+    "run1_5_skill": {
+      "arm_id": "run1_5_skill",
+      "forbids_run2_21_selector_memory": true,
+      "selected_selector_gate_ids": []
+    },
+    "bad_selector_memory": {
+      "arm_id": "bad_selector_memory",
+      "decision_memory_only": true,
+      "blocks_selector_gates": true,
+      "blocks_rejection_matrix": true,
+      "selected_decision_memory_ids": [
+        "decision_memory_only_without_selector_gate_for_climax",
+        "decision_memory_only_without_selector_gate_for_close",
+        "decision_memory_only_without_selector_gate_for_contrast",
+        "decision_memory_only_without_selector_gate_for_cover",
+        "decision_memory_only_without_selector_gate_for_proof",
+        "decision_memory_only_without_selector_gate_for_setup"
+      ],
+      "selected_selector_gate_ids": [],
+      "selected_rejected_evidence_reasons": [],
+      "selected_code_module_ids": []
+    }
+  },
+  "negative_control_checks": [
+    {
+      "arm_role": "prompt_only",
+      "forbidden_fields": [
+        "run2_21_visual_decision_memory",
+        "run2_21_selector_gates"
+      ],
+      "observed_boundary": "prompt-only arm has no Run 2.21 selector trace",
+      "status": "pass"
+    },
+    {
+      "arm_role": "run1_5_skill",
+      "forbidden_fields": [
+        "run2_21_visual_decision_memory",
+        "run2_21_selector_gates"
+      ],
+      "observed_boundary": "Run 1.5 skill arm has no Run 2.21 selector trace",
+      "status": "pass"
+    },
+    {
+      "arm_role": "bad_selector_memory",
+      "forbidden_fields": [
+        "run2_21_per_role_selector_gates",
+        "run2_21_evidence_rejection_matrix",
+        "run2_22_code_module_ids"
+      ],
+      "observed_boundary": "decision_memory_only_without_selector_gates_or_rejection_matrix",
+      "status": "pass"
+    }
+  ],
+  "chain_records": [
+    {
+      "chain_id": "cover_run2_23_selector_effectiveness",
+      "run_id": "2.23",
+      "slide_roles": [
+        "cover"
+      ],
+      "required_code_module_ids": [
+        "drawRun222CinematicSelectorField"
+      ],
+      "actual_code_module_ids": [
+        "drawRun222CinematicSelectorField",
+        "drawRun222EvidenceRoute"
+      ],
+      "status": "pass",
+      "reason": "vdm_2_21_cover selected thick_2_18_figma_launch_identity_system; rejected 5 evidence records; Run 2.19 module delta count 2.",
+      "next_fix": "human_visual_review_then_deepen_typography_spacing_climax"
+    },
+    {
+      "chain_id": "setup_run2_23_selector_effectiveness",
+      "run_id": "2.23",
+      "slide_roles": [
+        "setup"
+      ],
+      "required_code_module_ids": [
+        "drawRun222CinematicSelectorField",
+        "drawRun222ProductTheaterSurface"
+      ],
+      "actual_code_module_ids": [
+        "drawRun222CinematicSelectorField",
+        "drawRun222ProductTheaterSurface",
+        "drawRun222EvidenceRoute"
+      ],
+      "status": "pass",
+      "reason": "vdm_2_21_setup selected thick_2_18_google_cloud_ai_platform_climax; rejected 5 evidence records; Run 2.19 module delta count 3.",
+      "next_fix": "human_visual_review_then_deepen_typography_spacing_climax"
+    },
+    {
+      "chain_id": "contrast_run2_23_selector_effectiveness",
+      "run_id": "2.23",
+      "slide_roles": [
+        "contrast"
+      ],
+      "required_code_module_ids": [
+        "drawRun222CinematicSelectorField",
+        "drawRun222EvidenceRoute"
+      ],
+      "actual_code_module_ids": [
+        "drawRun222CinematicSelectorField",
+        "drawRun222EvidenceRoute"
+      ],
+      "status": "pass",
+      "reason": "vdm_2_21_contrast selected thick_2_18_stripe_keynote_business_demo; rejected 5 evidence records; Run 2.19 module delta count 2.",
+      "next_fix": "human_visual_review_then_deepen_typography_spacing_climax"
+    },
+    {
+      "chain_id": "proof_run2_23_selector_effectiveness",
+      "run_id": "2.23",
+      "slide_roles": [
+        "proof"
+      ],
+      "required_code_module_ids": [
+        "drawRun222ProductTheaterSurface",
+        "drawRun222EvidenceRoute"
+      ],
+      "actual_code_module_ids": [
+        "drawRun222ProductTheaterSurface",
+        "drawRun222EvidenceRoute"
+      ],
+      "status": "pass",
+      "reason": "vdm_2_21_proof selected thick_2_18_figma_design_to_production_surface; rejected 5 evidence records; Run 2.19 module delta count 2.",
+      "next_fix": "human_visual_review_then_deepen_typography_spacing_climax"
+    },
+    {
+      "chain_id": "climax_run2_23_selector_effectiveness",
+      "run_id": "2.23",
+      "slide_roles": [
+        "climax"
+      ],
+      "required_code_module_ids": [
+        "drawRun222ClimaxEditorialStage"
+      ],
+      "actual_code_module_ids": [
+        "drawRun222ClimaxEditorialStage"
+      ],
+      "status": "pass",
+      "reason": "vdm_2_21_climax selected thick_2_18_stripe_metric_climax; rejected 5 evidence records; Run 2.19 module delta count 1.",
+      "next_fix": "human_visual_review_then_deepen_typography_spacing_climax"
+    },
+    {
+      "chain_id": "close_run2_23_selector_effectiveness",
+      "run_id": "2.23",
+      "slide_roles": [
+        "close"
+      ],
+      "required_code_module_ids": [
+        "drawRun222CinematicSelectorField",
+        "drawRun222EvidenceRoute"
+      ],
+      "actual_code_module_ids": [
+        "drawRun222CinematicSelectorField",
+        "drawRun222EvidenceRoute"
+      ],
+      "status": "pass",
+      "reason": "vdm_2_21_close selected thick_2_18_duarte_slide_design_method; rejected 5 evidence records; Run 2.19 module delta count 2.",
+      "next_fix": "human_visual_review_then_deepen_typography_spacing_climax"
+    }
+  ],
+  "gap_records": [
+    {
+      "gap_id": "gap_2_23_trace_effectiveness_not_human_visual_quality",
+      "status": "public_blocked",
+      "finding": "Run 2.23 proves selector-memory execution in trace, but does not prove the public-facing visual delta is good enough.",
+      "next_fix": "Human-review Run 2.22 against Run 2.19 and decide whether to thicken typography, spacing, and climax editorial composition before another rerun."
+    },
+    {
+      "gap_id": "gap_2_23_native_motion_still_unproven",
+      "status": "public_blocked",
+      "finding": "The selector audit checks native PPT code paths, not native animation XML or a publishable motion/video render.",
+      "next_fix": "Keep motion and public-video delivery blocked until a native or cross-platform render proof passes."
+    }
+  ],
+  "gate_summary": {
+    "selector_memory_gate": "pass_internal_only",
+    "bad_control_gate": "pass",
+    "visual_delta_gate": "trace_proven_human_visual_review_required",
+    "visual_quality_gate": "needs_human_review_public_blocked",
+    "public_release_gate": "blocked",
+    "proven": "Run 2.22 full arm contains selector gate, visual-decision memory, rejection-matrix, and code-module trace on all six slides.",
+    "weak": "Trace proves the data path, not that the visual result is already public-video-grade.",
+    "blocked": "Public release remains blocked pending human visual review, native render inspection, motion/video proof, and source-boundary approval.",
+    "summary": "Run 2.23 selector effectiveness audit confirms data/workflow execution, preserves the bad_selector_memory boundary, and keeps public release blocked."
+  },
+  "next_required_action": "human_review_run2_22_visual_delta_then_thicken_typography_spacing_climax_if_needed"
+}

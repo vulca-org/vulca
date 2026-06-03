@@ -1,8 +1,22 @@
 # Delivery Gate
 
-Status: run2_22-selector-rerun-public-blocked.
+Status: run2_23-selector-effectiveness-audit-public-blocked.
 
 Public publishing is blocked until native render or cross-platform render inspection passes, motion/render support is proven, and human approval is recorded.
+
+## Run 2.23 Selector Effectiveness Audit
+
+Run 2.23 is audit-only and does not create PPTX artifacts. It checks whether Run 2.22 consumed Run 2.21 visual-decision memory, selector gates, and evidence rejection matrix before native PPT code generation, using Run 2.19 as the comparison baseline.
+
+| Check | Result |
+| --- | --- |
+| Full arm selector gate and code trace | all six Run 2.22 slides pass |
+| Primary evidence and rejection reasons | present on all six Run 2.22 slides |
+| Code-module delta from Run 2.19 | six roles differ |
+| Bad selector control | decision-memory-only; no selector gate, rejection matrix, or code-module ids |
+| Public gate | blocked because selector effectiveness is not public visual-quality proof |
+
+Result report: `docs/product/ppt-run2-data-skill-quality/results/run2_23_selector_effectiveness_audit.md`.
 
 ## Run 2.22 Arm Artifacts
 

@@ -3947,6 +3947,116 @@ def test_ppt_run_html_viewer_mentions_run2_22_generated_rerun() -> None:
     )
 
 
+def test_run2_23_selector_effectiveness_audit_compares_2_19_and_2_22(tmp_path: Path) -> None:
+    script_path = ROOT / "scripts" / "audit_ppt_run2_23_selector_effectiveness.py"
+    assert script_path.exists(), "missing Run 2.23 selector effectiveness audit script"
+
+    result_json = tmp_path / "run2_23_selector_effectiveness_audit.json"
+    result_md = tmp_path / "run2_23_selector_effectiveness_audit.md"
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(script_path),
+            "--result-json",
+            str(result_json),
+            "--result-md",
+            str(result_md),
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        timeout=20,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    audit = load_json(result_json)
+    report = result_md.read_text(encoding="utf-8")
+
+    assert audit["status"] == "run2_23_selector_effectiveness_audit_public_blocked"
+    assert audit["run_id"] == "2.23"
+    assert audit["source_generated_run"] == "2.22"
+    assert audit["comparison_baseline_run"] == "2.19"
+    assert audit["source_selector_layer"] == "2.21"
+    assert audit["creates_new_ppt_deck"] is False
+    assert audit["public_ready"] is False
+    assert audit["stage_policy"] == "repeat_same_five_layers_not_run3"
+
+    selector = audit["selector_effectiveness"]
+    assert selector["full_arm"]["arm_id"] == "run2_22_full_selector_memory"
+    assert selector["full_arm"]["slide_count"] == 6
+    assert selector["full_arm"]["visual_decision_memory_records_selected"] == 6
+    assert selector["full_arm"]["selector_gates_selected"] == 6
+    assert selector["full_arm"]["all_slides_have_selector_gate_and_code"] is True
+    assert selector["full_arm"]["primary_evidence_per_slide_all"] is True
+    assert selector["full_arm"]["secondary_evidence_within_cap_all"] is True
+    assert selector["full_arm"]["rejection_reasons_present_all"] is True
+    assert selector["full_arm"]["public_surface_policy_suppressed_all"] is True
+    assert selector["comparison_to_run2_19"]["roles_with_code_module_delta"] >= 5
+    assert len(selector["full_arm"]["role_records"]) == 6
+
+    bad = audit["control_boundary"]["bad_selector_memory"]
+    assert bad["decision_memory_only"] is True
+    assert bad["blocks_selector_gates"] is True
+    assert bad["blocks_rejection_matrix"] is True
+    assert bad["selected_selector_gate_ids"] == []
+    assert bad["selected_rejected_evidence_reasons"] == []
+    assert bad["selected_code_module_ids"] == []
+
+    assert len(audit["chain_records"]) == 6
+    assert audit["gate_summary"]["selector_memory_gate"] == "pass_internal_only"
+    assert audit["gate_summary"]["public_release_gate"] == "blocked"
+    assert_contains(
+        report,
+        [
+            "Run 2.23",
+            "selector effectiveness",
+            "Run 2.22",
+            "Run 2.19",
+            "bad_selector_memory",
+            "public blocked",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_run2_23_records_selector_effectiveness_audit_result() -> None:
+    result = (PACK / "results" / "run2_23_selector_effectiveness_audit.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_23_selector_effectiveness_audit.json")
+
+    assert result_json["status"] == "run2_23_selector_effectiveness_audit_public_blocked"
+    assert result_json["source_generated_run"] == "2.22"
+    assert result_json["comparison_baseline_run"] == "2.19"
+    assert result_json["creates_new_ppt_deck"] is False
+    assert result_json["selector_effectiveness"]["full_arm"]["all_slides_have_selector_gate_and_code"] is True
+    assert result_json["control_boundary"]["bad_selector_memory"]["decision_memory_only"] is True
+    assert result_json["next_required_action"].startswith("human_review_run2_22_visual_delta")
+    assert_contains(
+        result,
+        [
+            "Run 2.23",
+            "selector effectiveness",
+            "Run 2.22",
+            "Run 2.19",
+            "bad_selector_memory",
+            "public blocked",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_embeds_run2_23_selector_effectiveness_audit() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "run2_23_selector_effectiveness_audit.json",
+            "Run 2.23 selector effectiveness audit",
+            "selector effectiveness",
+            "bad_selector_memory",
+        ],
+    )
+
+
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
     layout_dir = tmp_path / "layout"
     layout_dir.mkdir()

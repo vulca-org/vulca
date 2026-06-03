@@ -1,6 +1,6 @@
 # PPT Run 2.0 Data Skill Quality
 
-Status: run2_22-selector-rerun-public-blocked.
+Status: run2_23-selector-effectiveness-audit-public-blocked.
 
 Run 2.5 does not move to a new stage. It repeats and thickens the same five fixed PPT product layers before the next generation pass:
 
@@ -42,11 +42,13 @@ Run 2.0 does not claim post-training or fine-tuning. It tests runtime case-pack-
 
 `results/run2_19_thickness_rerun_result.json` records that the Run 2.18 thickness pack has now been consumed by a same-stage four-arm rerun. Run 2.19 creates `ppt-run2-19-*` decks, selects Run 2.18 evidence/memory/gate ids in trace, and keeps public release blocked. It still does not advance to Run 3.0.
 
-`results/run2_20_trace_effectiveness_audit.json` is the latest audit-only layer. It creates no new deck. It checks whether Run 2.19 actually selected all Run 2.18 evidence, memory, and gates, verifies the evidence-only `bad_thickness_memory` boundary, and records the next thickening target: visual-decision memory and multimodal examples.
+`results/run2_20_trace_effectiveness_audit.json` is a prior audit-only layer. It creates no new deck. It checks whether Run 2.19 actually selected all Run 2.18 evidence, memory, and gates, verifies the evidence-only `bad_thickness_memory` boundary, and records the next thickening target: visual-decision memory and multimodal examples.
 
 `run2_21_visual_decision_memory.json`, `run2_21_per_role_selector_gates.json`, and `run2_21_evidence_rejection_matrix.json` are the latest data/workflow-only layer. They convert Run 2.20's broad trace effectiveness result into per-role primary evidence, secondary evidence, rejected-evidence reasons, visual decisions, and selector gates for the next generated rerun.
 
 `results/run2_22_selector_rerun_result.json` records that the Run 2.21 visual-decision memory, selector gates, and evidence rejection matrix have now been consumed by a same-stage four-arm generated rerun. Run 2.22 creates `ppt-run2-22-*` decks, records selector decisions in trace, keeps selector trace off the public slide surface, and keeps public release blocked.
+
+`results/run2_23_selector_effectiveness_audit.json` is the latest audit-only layer. It creates no new deck. It checks whether Run 2.22 actually used Run 2.21 visual-decision memory, selector gates, evidence rejection reasons, and selector-specific code modules before native PPT generation; it compares that path against Run 2.19 and verifies the `bad_selector_memory` boundary.
 
 Generation must follow `generation_protocol.md`: separate arm runtimes, no cross-arm context leakage, native PPT object checks, and layout geometry QA before scoring.
 

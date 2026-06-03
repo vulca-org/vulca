@@ -302,6 +302,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run221_rejection_matrix = read_json(pack / "run2_21_evidence_rejection_matrix.json")
     run221_result = read_json(pack / "results" / "run2_21_visual_decision_memory_result.json")
     run222_result = read_json(pack / "results" / "run2_22_selector_rerun_result.json")
+    run223_selector_audit = read_json(pack / "results" / "run2_23_selector_effectiveness_audit.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -403,6 +404,8 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run221Result": run221_result,
         "run222ResultStatus": run222_result.get("status", ""),
         "run222Result": run222_result,
+        "run223SelectorAuditStatus": run223_selector_audit.get("status", ""),
+        "run223SelectorAudit": run223_selector_audit,
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -1109,7 +1112,11 @@ def build_html(data: dict[str, Any]) -> str:
 
     function renderAudit() {{
       const refs = DATA.references || {{}};
-      const audit = (refs.run220TraceAudit && refs.run220TraceAudit.status) ? refs.run220TraceAudit : (refs.run211Audit || {{}});
+      const audit = (refs.run223SelectorAudit && refs.run223SelectorAudit.status)
+        ? refs.run223SelectorAudit
+        : (refs.run220TraceAudit && refs.run220TraceAudit.status)
+          ? refs.run220TraceAudit
+          : (refs.run211Audit || {{}});
       if (!audit.status) {{
         content.innerHTML = `<div class="empty">No Data/Workflow Audit is embedded in this viewer.</div>`;
         return;
@@ -1127,7 +1134,11 @@ def build_html(data: dict[str, Any]) -> str:
       const chains = (audit.chain_records && audit.chain_records.length) ? audit.chain_records : roleTraceRecords;
       const sourceInventory = audit.source_inventory || ((audit.trace_effectiveness || {{}}).inventory || {{}});
       const workflowInventory = audit.workflow_inventory || (((audit.trace_effectiveness || {{}}).full_arm || {{}}));
-      const auditTitle = audit.run_id === "2.20" ? "Run 2.20 trace effectiveness audit (audit-only layer)" : "Data/Workflow Audit";
+      const auditTitle = audit.run_id === "2.23"
+        ? "Run 2.23 selector effectiveness audit (audit-only layer)"
+        : audit.run_id === "2.20"
+          ? "Run 2.20 trace effectiveness audit (audit-only layer)"
+          : "Data/Workflow Audit";
       const chainRows = (chains || []).map((chain) => `<tr>
         <td>${{escapeHtml(chain.chain_id)}}</td>
         <td>${{escapeHtml(chain.run_id)}}</td>

@@ -1,10 +1,28 @@
 # Comparison Report
 
-Status: run2_22-selector-rerun-public-blocked.
+Status: run2_23-selector-effectiveness-audit-public-blocked.
 
 Prior delivery status: motion-renderer-proof-public-blocked.
 
 Prior data/workflow status: run2_18-thickness-pack-public-blocked.
+
+Run 2.23 is the latest audit-only layer. It creates no new PPT deck, compares the Run 2.22 full arm against Run 2.19, and verifies that `bad_selector_memory` remains decision-memory-only. Run 2.22 remains the latest generated four-arm PPT rerun.
+
+The Run 2.23 result is `run2_23_selector_effectiveness_audit_public_blocked`: selector effectiveness passes internally, but visual quality and public release remain blocked.
+
+| Artifact | Status | Result |
+| --- | --- | --- |
+| `run2_23_selector_effectiveness_audit.json` | generated | machine-readable Run 2.23 selector-effectiveness audit |
+| `run2_23_selector_effectiveness_audit.md` | generated | human-readable Run 2.23 selector-effectiveness audit |
+| `ppt-run-viewer.html` | regenerated local output | Data/Workflow Audit tab defaults to Run 2.23 |
+
+## Run 2.23 Findings
+
+- Run 2.22 full arm has selector gate, visual-decision memory, primary evidence, rejection reasons, and code-module trace on all six slides.
+- Six Run 2.22 roles have a code-module delta from Run 2.19, so this is not just the old thickness path relabeled.
+- `bad_selector_memory` has decision-memory-only trace and no selector gate, rejection matrix, or code module ids.
+- This proves selector/data/workflow execution, not public-video-grade visual quality.
+- Public release remains blocked. Do not advance to Run 3.0.
 
 Run 2.22 is the latest generated four-arm PPT rerun. It consumes Run 2.21 visual-decision memory, selector gates, and evidence rejection matrix before native PPT code generation and does not advance to Run 3.0.
 
