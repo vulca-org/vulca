@@ -1,10 +1,32 @@
 # Comparison Report
 
-Status: run2_18-thickness-pack-public-blocked.
+Status: run2_19-thickness-rerun-public-blocked.
 
 Prior delivery status: motion-renderer-proof-public-blocked.
 
-Run 2.18 is the latest data/workflow thickness layer. It does not generate a new four-arm PPT and does not advance to Run 3.0. It adds eight derived multimodal evidence records, six design-memory expansions, and six workflow gates before the next generated rerun.
+Prior data/workflow status: run2_18-thickness-pack-public-blocked.
+
+Run 2.19 is the latest generated four-arm PPT rerun. It consumes the Run 2.18 data/workflow thickness layer before native PPT code generation and does not advance to Run 3.0.
+
+The Run 2.19 result is `thickness_pack_executed_before_native_ppt_generation`: the full arm records selected Run 2.18 evidence ids, memory ids, gate ids, bad-control probes, release boundaries, Run 2.19 code module ids, thickness status, and visual delta from Run 2.16. Public release remains blocked.
+
+| Artifact | Status | Result |
+| --- | --- | --- |
+| `run2_19_thickness_rerun_result.json` | generated | machine-readable Run 2.19 rerun result |
+| `run2_19_thickness_rerun_result.md` | generated | human-readable Run 2.19 rerun result |
+| `run2-19-four-arm-contact-sheet.png` | generated local output | four-arm comparison |
+| `run2-full-skill-series-horizontal.png` | regenerated local output | full-skill series through Run 2.19 |
+| `ppt-run-viewer.html` | regenerated local output | latest generated deck is Run 2.19 |
+
+## Run 2.19 Findings
+
+- `prompt_only`: remains isolated from Run 2.18 thickness data, skill workflow, and trace contract.
+- `run1_5_skill`: remains the prior baseline and forbids Run 2.18 thickness inputs.
+- `run2_19_full_skill`: best internal arm for proving the Run 2.18 thickness pack can drive code-generated PPT.
+- `bad_thickness_memory`: confirms that evidence-only access cannot claim design memory or workflow gate execution.
+- Public release remains blocked. Do not advance to Run 3.0.
+
+Run 2.18 is the latest data/workflow thickness layer. It does not generate a new four-arm PPT and does not advance to Run 3.0. It adds eight derived multimodal evidence records, six design-memory expansions, and six workflow gates before the Run 2.19 generated rerun.
 
 The Run 2.18 result is `run2_18_thickness_pack_ready_public_blocked`: the next full-skill arm must consume `run2_18_multimodal_evidence_expansion.json`, `run2_18_design_memory_expansion.json`, and `run2_18_workflow_gate_expansion.json` before native PPT code generation. Public release remains blocked.
 
@@ -20,7 +42,7 @@ The Run 2.18 result is `run2_18_thickness_pack_ready_public_blocked`: the next f
 
 - Run 2.18 thickens data, design memory, and workflow gates.
 - It intentionally creates no `ppt-run2-18-*` output.
-- Run 2.16 remains the latest generated PPT.
+- Run 2.19 is now the generated PPT that consumes this thickness pack.
 - Run 2.17 remains the latest delivery and motion-boundary proof.
 - Do not advance to Run 3.0.
 

@@ -587,6 +587,16 @@ RUN2_18_WORKFLOW_GATE_FIELDS = {
     "bad_control_probe",
     "release_boundary",
 }
+EXPECTED_RUN2_19_TRACE_FIELDS = {
+    "run2_18_selected_evidence_ids",
+    "run2_18_selected_memory_ids",
+    "run2_18_selected_gate_ids",
+    "run2_18_bad_control_probe",
+    "run2_18_release_boundary",
+    "run2_19_code_module_ids",
+    "run2_19_trace_thickness_status",
+    "run2_19_visual_delta_from_run2_16",
+}
 
 
 def load_json(path: Path) -> dict:
@@ -3341,6 +3351,170 @@ if (!fullArm.allowed.includes(mod.RUN2_16_INPUTS.selectorGateMatrix)) throw new 
     )
 
     assert completed.returncode == 0, completed.stderr
+
+
+def test_run2_19_generator_consumes_run2_18_thickness_pack_before_native_ppt_code() -> None:
+    script_path = ROOT / "scripts" / "generate_ppt_run2_19_thickness_rerun_arms.mjs"
+    assert script_path.exists(), "missing Run 2.19 thickness rerun generator"
+    body = script_path.read_text(encoding="utf-8")
+    arm_order = ["prompt_only", "run1_5_skill", "run2_19_full_skill", "bad_thickness_memory"]
+
+    def arm_block(arm_id: str) -> str:
+        start = body.index(f'armId: "{arm_id}"')
+        next_starts = [body.find(f'armId: "{next_arm}"', start + 1) for next_arm in arm_order]
+        next_starts = [index for index in next_starts if index > start]
+        end = min(next_starts) if next_starts else len(body)
+        return body[start:end]
+
+    def section(block: str, start_marker: str, end_marker: str) -> str:
+        start = block.index(start_marker)
+        end = block.index(end_marker, start)
+        return block[start:end]
+
+    run2_18_inputs = [
+        "run2_18_multimodal_evidence_expansion.json",
+        "run2_18_design_memory_expansion.json",
+        "run2_18_workflow_gate_expansion.json",
+    ]
+
+    assert_contains(
+        body,
+        [
+            "prompt_only",
+            "run1_5_skill",
+            "run2_19_full_skill",
+            "bad_thickness_memory",
+            "validateRun218ThicknessSchemas",
+            "assertArmInputBoundaries",
+            "readRun219ThicknessJsonForArm",
+            "selectRun218ThicknessForSlide",
+            "assertRun219ThicknessGateSelfCheck",
+            "drawRun219LaunchIdentityField",
+            "drawRun219ProductSurfaceTheater",
+            "drawRun219DemoSequenceRoute",
+            "drawRun219MetricClimaxObject",
+            "drawRun219DensityGate",
+            "thickness_pack_executed_before_native_ppt_generation",
+        ],
+    )
+
+    prompt_allowed = section(arm_block("prompt_only"), "allowed:", "forbidden:")
+    prompt_forbidden = section(arm_block("prompt_only"), "forbidden:", "palette:")
+    run1_allowed = section(arm_block("run1_5_skill"), "allowed:", "forbidden:")
+    run1_forbidden = section(arm_block("run1_5_skill"), "forbidden:", "palette:")
+    full_allowed = section(arm_block("run2_19_full_skill"), "allowed:", "forbidden:")
+    full_forbidden = section(arm_block("run2_19_full_skill"), "forbidden:", "palette:")
+    bad_allowed = section(arm_block("bad_thickness_memory"), "allowed:", "forbidden:")
+    bad_forbidden = section(arm_block("bad_thickness_memory"), "forbidden:", "palette:")
+
+    for term in run2_18_inputs:
+        assert term not in prompt_allowed
+        assert term in prompt_forbidden
+        assert term not in run1_allowed
+        assert term in run1_forbidden
+        assert term in full_allowed
+        assert term not in full_forbidden
+
+    assert "run2_18_multimodal_evidence_expansion.json" in bad_allowed
+    assert "run2_18_design_memory_expansion.json" not in bad_allowed
+    assert "run2_18_workflow_gate_expansion.json" not in bad_allowed
+    assert "run2_18_design_memory_expansion.json" in bad_forbidden
+    assert "run2_18_workflow_gate_expansion.json" in bad_forbidden
+
+    assert 'const fullRun219 = arm.armId === "run2_19_full_skill";' in body
+    for field in EXPECTED_RUN2_19_TRACE_FIELDS:
+        assert re.search(fr"{field}:\s*fullRun219\s*\?", body), field
+    for function_name in [
+        "drawRun219LaunchIdentityField",
+        "drawRun219ProductSurfaceTheater",
+        "drawRun219DemoSequenceRoute",
+        "drawRun219MetricClimaxObject",
+        "drawRun219DensityGate",
+    ]:
+        assert f'registerRun219Module(metrics, "{function_name}")' in body
+
+
+def test_run2_19_thickness_runtime_guards_block_bad_arm_and_select_gates() -> None:
+    node_script = """
+import fs from "node:fs";
+import path from "node:path";
+const mod = await import("./scripts/generate_ppt_run2_19_thickness_rerun_arms.mjs");
+const badArm = mod.armSpecs.find((arm) => arm.armId === "bad_thickness_memory");
+const fullArm = mod.armSpecs.find((arm) => arm.armId === "run2_19_full_skill");
+let blocked = false;
+try {
+  mod.readRun219ThicknessJsonForArm(badArm, mod.RUN2_19_INPUTS.workflowGates);
+} catch (error) {
+  blocked = String(error.message).includes("input boundary does not permit reading");
+}
+if (!blocked) throw new Error("bad thickness arm was able to read workflow gates");
+const root = process.cwd();
+const evidence = JSON.parse(fs.readFileSync(path.join(root, mod.RUN2_19_INPUTS.evidence), "utf8"));
+const memory = JSON.parse(fs.readFileSync(path.join(root, mod.RUN2_19_INPUTS.memory), "utf8"));
+const gates = JSON.parse(fs.readFileSync(path.join(root, mod.RUN2_19_INPUTS.workflowGates), "utf8"));
+mod.validateRun218ThicknessSchemas(evidence, memory, gates);
+const climax = mod.selectRun218ThicknessForSlide("climax", evidence, memory, gates);
+const memoryIds = climax.memories.map((item) => item.memory_id);
+const gateIds = climax.gates.map((item) => item.gate_id);
+if (!memoryIds.includes("memory_2_18_metric_climax_object")) throw new Error("climax did not select metric climax memory");
+if (!gateIds.includes("gate_2_18_metric_climax_selection")) throw new Error("climax did not consume metric climax gate");
+if (!fullArm.allowed.includes(mod.RUN2_19_INPUTS.workflowGates)) throw new Error("full arm does not allow Run 2.18 workflow gates");
+"""
+    completed = subprocess.run(
+        ["node", "--input-type=module", "-e", node_script],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        timeout=20,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+
+
+def test_run2_19_records_thickness_rerun_result() -> None:
+    result = (PACK / "results" / "run2_19_thickness_rerun_result.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_19_thickness_rerun_result.json")
+
+    assert result_json["status"] == "rerun_completed_public_blocked"
+    assert result_json["public_ready"] is False
+    assert result_json["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert result_json["run_id"] == "2.19"
+    assert result_json["rerun"]["best_internal_arm"] == "run2_19_full_skill"
+    assert result_json["rerun"]["best_internal_arm_verdict"] == "thickness_pack_executed_before_native_ppt_generation"
+    assert result_json["input_chain"]["evidence"] == "docs/product/ppt-run2-data-skill-quality/run2_18_multimodal_evidence_expansion.json"
+    assert result_json["input_chain"]["memory"] == "docs/product/ppt-run2-data-skill-quality/run2_18_design_memory_expansion.json"
+    assert result_json["input_chain"]["workflow_gates"] == "docs/product/ppt-run2-data-skill-quality/run2_18_workflow_gate_expansion.json"
+    assert result_json["control_boundary"]["bad_thickness_memory"].startswith("evidence_only")
+    assert result_json["rerun"]["combined_contact_sheet"].endswith("run2-19-four-arm-contact-sheet.png")
+    assert result_json["rerun"]["full_skill_series_sheet"].endswith("run2-full-skill-series-horizontal.png")
+    assert result_json["rerun"]["generated_outputs_committed"] is False
+    assert_contains(
+        result,
+        [
+            "Run 2.19",
+            "Run 2.18 thickness pack",
+            "four-arm rerun",
+            "bad_thickness_memory",
+            "public blocked",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_mentions_run2_19_generated_rerun() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "Run 2.19",
+            "ppt-run2-19-prompt-only",
+            "ppt-run2-19-run1-5-skill",
+            "ppt-run2-19-full-vulca",
+            "ppt-run2-19-bad-thickness-memory",
+            "run2_19_thickness_rerun_result.json",
+        ],
+    )
 
 
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:

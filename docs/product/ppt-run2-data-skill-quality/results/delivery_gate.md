@@ -1,19 +1,36 @@
 # Delivery Gate
 
-Status: run2_18-thickness-pack-public-blocked.
+Status: run2_19-thickness-rerun-public-blocked.
 
 Public publishing is blocked until native render or cross-platform render inspection passes, motion/render support is proven, and human approval is recorded.
 
+## Run 2.19 Arm Artifacts
+
+Run 2.19 is the latest generated same-stage thickness rerun. It uses Run 2.18 evidence, design memory, and workflow gates for the full arm, while the negative control keeps evidence only and forbids the Run 2.18 memory/gate layer.
+
+| Arm | PPTX | Contact sheet | Trace manifest | Delivery QA |
+| --- | --- | --- | --- | --- |
+| `prompt_only` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-19-prompt-only/output/ppt-run2-19-prompt-only.pptx` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-19-prompt-only/preview/contact-sheet.png` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-19-prompt-only/trace_manifest.json` | `internal-demo-ok-public-blocked` |
+| `run1_5_skill` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-19-run1-5-skill/output/ppt-run2-19-run1-5-skill.pptx` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-19-run1-5-skill/preview/contact-sheet.png` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-19-run1-5-skill/trace_manifest.json` | `internal-demo-ok-public-blocked` |
+| `run2_19_full_skill` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-19-full-vulca/output/ppt-run2-19-full-vulca.pptx` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-19-full-vulca/preview/contact-sheet.png` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-19-full-vulca/trace_manifest.json` | `internal-demo-ok-public-blocked` |
+| `bad_thickness_memory` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-19-bad-thickness-memory/output/ppt-run2-19-bad-thickness-memory.pptx` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-19-bad-thickness-memory/preview/contact-sheet.png` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-19-bad-thickness-memory/trace_manifest.json` | `internal-demo-ok-public-blocked` |
+
+Combined local comparison sheet: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-19-four-arm-contact-sheet.png`.
+
+Full-skill series comparison sheet: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png`.
+
+Result report: `docs/product/ppt-run2-data-skill-quality/results/run2_19_thickness_rerun_result.md`.
+
 ## Run 2.18 Thickness Pack
 
-Run 2.18 is data/workflow-only and does not create PPTX artifacts. It defines the evidence, memory, and workflow gates that the next four-arm rerun must consume.
+Run 2.18 is data/workflow-only and does not create PPTX artifacts. It defines the evidence, memory, and workflow gates that Run 2.19 consumes.
 
 | Check | Result |
 | --- | --- |
 | Evidence expansion | `run2_18_multimodal_evidence_expansion.json` with 8 derived records |
 | Design memory expansion | `run2_18_design_memory_expansion.json` with 6 executable memories |
 | Workflow gate expansion | `run2_18_workflow_gate_expansion.json` with 6 gates |
-| Latest generated PPT | Run 2.16 |
+| Latest generated PPT | Run 2.19 |
 | Public gate | blocked until next rerun, native/cross-platform render inspection, motion/video proof, source-boundary review, and human approval |
 
 Result report: `docs/product/ppt-run2-data-skill-quality/results/run2_18_thickness_result.md`.
@@ -341,10 +358,10 @@ Combined local comparison sheet: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/p
 | Production reference ids and visual production module ids visible in regenerated deck trace | pass for local Run 2.5 full arm; production references only for bad-memory arm |
 | Public-video-grade visual proof completed | blocked |
 
-Delivery status remains `rerun-completed-public-blocked`. Run 2.16 proves the Run 2.15 selector data/workflow layer can drive the next generated four-arm rerun. The work is still not public release evidence because native render inspection, human approval, source-brand sanitization approval, finished motion/render support, real product/demo media handling, and a stronger public-demo visual pass are missing.
+Delivery status remains `rerun-completed-public-blocked`. Run 2.19 proves the Run 2.18 thickness pack can drive the generated four-arm rerun. The work is still not public release evidence because native render inspection, human approval, source-brand sanitization approval, finished motion/render support, real product/demo media handling, and a stronger public-demo visual pass are missing.
 
 ## Release Decision Thresholds
 
 - `internal only`: any generated arm, trace manifest, runtime isolation record, native PPT check, layout geometry check, render check, provenance note, editability check, or human approval is missing.
-- `demo candidate`: all four Run 2.16 arms exist, trace manifests pass contract review, runtime isolation is recorded, native PPT and layout geometry checks pass, render inspection is complete, and the full arm proves Run 2.15 selector-gate execution, aesthetic-shell recovery, hidden workflow trace, actual native module-call trace, legibility, source-brand sanitization, and public-demo visual quality.
+- `demo candidate`: all four Run 2.19 arms exist, trace manifests pass contract review, runtime isolation is recorded, native PPT and layout geometry checks pass, render inspection is complete, and the full arm proves Run 2.18 evidence/memory/gate execution, hidden workflow trace, actual native module-call trace, legibility, source-brand sanitization, and public-demo visual quality.
 - `public blocked`: the current external status until human approval explicitly records that the generated deck, trace manifest, provenance, and render inspection are acceptable.

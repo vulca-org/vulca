@@ -194,6 +194,17 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ArmSpec("bad_selector_memory", "Bad selector memory", "ppt-run2-16-bad-selector-memory", "negative"),
         ),
     ),
+    RunSpec(
+        "2.19",
+        "Run 2.19",
+        "run2-19-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-19-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-19-run1-5-skill", "baseline"),
+            ArmSpec("run2_19_full_skill", "Run 2.19 full", "ppt-run2-19-full-vulca", "full"),
+            ArmSpec("bad_thickness_memory", "Bad thickness memory", "ppt-run2-19-bad-thickness-memory", "negative"),
+        ),
+    ),
 )
 
 
@@ -273,6 +284,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run218_memory = read_json(pack / "run2_18_design_memory_expansion.json")
     run218_gates = read_json(pack / "run2_18_workflow_gate_expansion.json")
     run218_result = read_json(pack / "results" / "run2_18_thickness_result.json")
+    run219_result = read_json(pack / "results" / "run2_19_thickness_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -303,7 +315,11 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
             },
             {
                 "label": "2.18 data/workflow thickness",
-                "body": "Run 2.18 is not a new PPT. It expands derived evidence, executable memory, and workflow gates so the next rerun has thicker inputs before native code generation.",
+                "body": "Run 2.18 is not a new PPT. It expands derived evidence, executable memory, and workflow gates that Run 2.19 consumes before native code generation.",
+            },
+            {
+                "label": "2.19 generated thickness rerun",
+                "body": "Run 2.19 is the generated four-arm proof that the Run 2.18 thickness pack is selected in trace before native PPT code writes the slides.",
             },
             {
                 "label": "2.17 delivery truth",
@@ -356,6 +372,8 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run218WorkflowGates": run218_gates.get("gates", []),
         "run218ResultStatus": run218_result.get("status", ""),
         "run218Result": run218_result,
+        "run219ResultStatus": run219_result.get("status", ""),
+        "run219Result": run219_result,
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -1109,6 +1127,10 @@ def build_html(data: dict[str, Any]) -> str:
       const run218Memory = (refs.run218MemoryExpansions || []).map(run218MemoryCard).join("");
       const run218Gates = (refs.run218WorkflowGates || []).map(run218GateCard).join("");
       const run218Result = refs.run218Result || {{}};
+      const run219Result = refs.run219Result || {{}};
+      const run219Rerun = run219Result.rerun || {{}};
+      const run219Inputs = run219Result.input_chain || {{}};
+      const run219Control = run219Result.control_boundary || {{}};
       const run217Audit = refs.run217MotionAudit || {{}};
       const run217DeliveryTruth = run217Audit.delivery_truth || {{}};
       const run217RendererGap = run217Audit.motion_renderer_gap || {{}};
@@ -1133,6 +1155,32 @@ def build_html(data: dict[str, Any]) -> str:
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Why 2.8 still looks close to 2.7</h3><p>The current bottleneck is visual primitive quality, not trace plumbing.</p></div></div>
           <div class="dataGrid">${{diagnosis}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.19 thickness rerun result</h3><p>Generated four-arm rerun that consumes the Run 2.18 thickness pack before native PPT code generation. It stays in the same five-layer loop and does not advance to Run 3.0.</p></div><span class="pill">${{escapeHtml(refs.run219ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Rerun proof</h4>
+              ${{detailBlock("Best internal arm", run219Rerun.best_internal_arm)}}
+              ${{detailBlock("Verdict", run219Rerun.best_internal_arm_verdict)}}
+              ${{detailBlock("Four-arm sheet", run219Rerun.combined_contact_sheet)}}
+              ${{detailBlock("Full-skill series", run219Rerun.full_skill_series_sheet)}}
+            </article>
+            <article class="dataCard">
+              <h4>Input chain</h4>
+              ${{detailBlock("Evidence", run219Inputs.evidence)}}
+              ${{detailBlock("Memory", run219Inputs.memory)}}
+              ${{detailBlock("Workflow gates", run219Inputs.workflow_gates)}}
+              ${{detailBlock("Stage policy", run219Result.stage_policy)}}
+            </article>
+            <article class="dataCard">
+              <h4>Control boundary</h4>
+              ${{detailBlock("Control arm", "bad_thickness_memory")}}
+              ${{detailBlock("Negative control", run219Control.bad_thickness_memory)}}
+              ${{detailBlock("Public ready", run219Result.public_ready)}}
+              ${{detailBlock("Release boundary", run219Result.release_boundary)}}
+            </article>
+          </div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.18 thickness pack</h3><p>Latest data/workflow thickness layer: not a new PPT, but the required evidence, memory, and gate inputs for the next four-arm rerun.</p></div><span class="pill">${{escapeHtml(refs.run218ResultStatus || "missing")}}</span></div>
