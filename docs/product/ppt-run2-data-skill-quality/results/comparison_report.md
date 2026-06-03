@@ -1,8 +1,26 @@
 # Comparison Report
 
-Status: rerun-reviewed-public-blocked.
+Status: data-workflow-audited-public-blocked.
 
-Run 2.10 is the latest reviewed internal result. It reran the four-arm experiment as a same-stage visual-system pass, adding Run 2.10 visual-system sources, visual-system memory, and a visual-system gate matrix on top of the Run 2.9 visual-primitive loop without advancing to Run 3.0:
+Run 2.11 is the latest reviewed audit result. It does not generate a new deck. It audits whether Runs 2.7-2.10 actually closed the product loop from source observations to memory, workflow gates, required modules, actual trace evidence, and control boundaries.
+
+The audit result is `weak_pass_internal_only`: the traceable workflow exists for Runs 2.8, 2.9, and 2.10, but the underlying multimodal tutorial/video database is still too compact to justify another visual rerun as a learning-quality claim. The next required action is to add richer tutorial/video decomposition records and convert them into stricter workflow gates before the next four-arm PPT rerun.
+
+| Artifact | Status | Result |
+| --- | --- | --- |
+| `run2_11_data_workflow_audit.json` | generated | trace-grounded audit chains for Runs 2.8, 2.9, and 2.10 |
+| `run2_11_data_workflow_audit.md` | generated | human-readable audit result |
+| HTML viewer `Data/Workflow Audit` tab | generated | internal inspection surface |
+
+## Run 2.11 Findings
+
+- Run 2.8 has source-record-to-decomposition-to-memory-to-gate-to-code trace closure for the audited cover chain.
+- Run 2.9 has visual-primitive-to-visual-module-to-gate-to-code trace closure for the audited cover chain.
+- Run 2.10 has visual-system-source-to-memory-to-gate-to-code trace closure for the audited cover chain.
+- Prompt-only, Run 1.5, and negative-control arms preserve full-arm-only field boundaries.
+- The weak point is data depth: the multimodal tutorial/video records are structurally valid but still compact derived observations, not thick enough to support a stronger learning-quality claim.
+
+Run 2.10 is the latest reviewed generated PPT result. It reran the four-arm experiment as a same-stage visual-system pass, adding Run 2.10 visual-system sources, visual-system memory, and a visual-system gate matrix on top of the Run 2.9 visual-primitive loop without advancing to Run 3.0:
 
 - `run2_10_visual_system_sources.json` turns tutorial and commercial-case observations into derived visual-system source records.
 - `run2_10_visual_system_memory.json` binds those records to executable visual-system contracts: editorial cinema, product theater, typographic field, kinetic demo, and non-rectangular proof.

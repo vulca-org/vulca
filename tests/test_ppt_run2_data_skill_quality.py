@@ -2728,7 +2728,7 @@ def test_run2_results_reviewed_and_public_blocked() -> None:
     delivery = (PACK / "results" / "delivery_gate.md").read_text(encoding="utf-8")
     trace_contract = load_json(PACK / "results" / "trace_manifest_contract.json")
 
-    assert_contains(comparison, ["Status", "rerun-reviewed-public-blocked"])
+    assert_contains(comparison, ["Status", "data-workflow-audited-public-blocked"])
     assert_contains(comparison, ["prompt_only", "run1_5_skill", "run2_skill", "bad_aesthetic_memory"])
     assert_contains(
         comparison,

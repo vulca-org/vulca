@@ -1,8 +1,18 @@
 # Delivery Gate
 
-Status: rerun-reviewed-public-blocked.
+Status: data-workflow-audited-public-blocked.
 
 Public publishing is blocked until native render or cross-platform render inspection passes and human approval is recorded.
+
+## Run 2.11 Data/Workflow Audit Artifacts
+
+Run 2.11 is audit-only and does not create new PPTX artifacts.
+
+| Artifact | Path | Gate |
+| --- | --- | --- |
+| Audit JSON | `docs/product/ppt-run2-data-skill-quality/results/run2_11_data_workflow_audit.json` | `weak_pass_internal_only_public_blocked` |
+| Audit report | `docs/product/ppt-run2-data-skill-quality/results/run2_11_data_workflow_audit.md` | `weak_pass_internal_only_public_blocked` |
+| HTML viewer tab | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run-viewer.html` | `internal-demo-ok-public-blocked` |
 
 ## Run 2.10 Arm Artifacts
 
@@ -189,6 +199,10 @@ Combined local comparison sheet: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/p
 | Run 2.10 code module trace comes from actual native visual-system module calls | pass for local Run 2.10 full arm; intentionally absent for controls |
 | Run 2.10 shape/text budgets and sameness probes are enforced | pass for local Run 2.10 full arm |
 | Run 2.10 comparison images exist | pass for `run2-10-four-arm-contact-sheet` and `run2-full-skill-series-horizontal` |
+| Run 2.11 data/workflow audit artifact exists | pass for `run2_11_data_workflow_audit.json` |
+| Run 2.11 audit chains cover Runs 2.8, 2.9, and 2.10 | pass for trace-grounded audit chains |
+| Run 2.11 control-boundary checks represented | pass for prompt-only, Run 1.5, and negative-control boundaries |
+| Run 2.11 viewer audit tab renders | pass for `Data/Workflow Audit` tab |
 | Native visual components visible | pass for local Run 2.3 full arm |
 | Run 2.4 motion grammar contract exists | pass for `video_demo_beat_map.json`, `motion_learning_targets.json`, and `presentation_sequence_components.json` |
 | Motion target ids and sequence component ids visible in regenerated deck trace | pass for local Run 2.4 full and bad-memory arms |
@@ -198,7 +212,7 @@ Combined local comparison sheet: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/p
 | Production reference ids and visual production module ids visible in regenerated deck trace | pass for local Run 2.5 full arm; production references only for bad-memory arm |
 | Public-video-grade visual proof completed | blocked |
 
-Delivery status remains `rerun-reviewed-public-blocked`. The regenerated Run 2.10 arms were built locally, structurally checked, trace-reviewed, browser-viewer checked, and Gemini-reviewed as a same-stage visual-system pass. The work is still not public release evidence because native render inspection, human approval, source-brand sanitization approval, finished motion/render support, and a stronger public-demo visual pass are missing.
+Delivery status remains `data-workflow-audited-public-blocked`. Run 2.11 audits the data/workflow chain and adds a viewer tab, but it does not create new PPTX artifacts. The regenerated Run 2.10 arms remain the latest generated decks; they were built locally, structurally checked, trace-reviewed, browser-viewer checked, and Gemini-reviewed as a same-stage visual-system pass. The work is still not public release evidence because native render inspection, human approval, source-brand sanitization approval, finished motion/render support, and a stronger public-demo visual pass are missing.
 
 ## Release Decision Thresholds
 
