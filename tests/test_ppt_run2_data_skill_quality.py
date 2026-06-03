@@ -1618,6 +1618,7 @@ def test_run2_11_data_workflow_audit_artifact_has_required_chains() -> None:
 
 def test_run2_11_audit_references_existing_data_memory_gate_and_trace_fields() -> None:
     audit = load_json(PACK / "results" / "run2_11_data_workflow_audit.json")
+    workflow = load_json(PACK / "skill_workflow.json")
     run27_sources = load_json(PACK / "run2_7_multimodal_source_records.json")
     run28_decomp = load_json(PACK / "run2_8_tutorial_decomposition.json")
     run28_memory = load_json(PACK / "run2_8_executable_design_memory.json")
@@ -1628,6 +1629,20 @@ def test_run2_11_audit_references_existing_data_memory_gate_and_trace_fields() -
     run210_sources = load_json(PACK / "run2_10_visual_system_sources.json")
     run210_memory = load_json(PACK / "run2_10_visual_system_memory.json")
     run210_gate = load_json(PACK / "run2_10_visual_system_gate_matrix.json")
+
+    assert audit["source_inventory"] == {
+        "run2_7_source_records": len(run27_sources["records"]),
+        "run2_8_tutorial_decomposition_units": len(run28_decomp["units"]),
+        "run2_9_visual_primitives": len(run29_primitives["primitive_repairs"]),
+        "run2_10_visual_system_sources": len(run210_sources["sources"]),
+        "run2_10_visual_system_memory_records": len(run210_memory["visual_systems"]),
+    }
+    assert audit["workflow_inventory"] == {
+        "skill_workflow_stages": len(workflow["stages"]),
+        "run2_8_workflow_gates": len(run28_gate["gates"]),
+        "run2_9_visual_gates": len(run29_gate["gates"]),
+        "run2_10_visual_system_gates": len(run210_gate["gates"]),
+    }
 
     known_source_ids = {record["id"] for record in run27_sources["records"]}
     known_decomposition_ids = {unit["id"] for unit in run28_decomp["units"]}
