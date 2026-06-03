@@ -165,7 +165,10 @@ RUN_SPECS: tuple[RunSpec, ...] = (
 
 
 def rel(path: Path, base: Path) -> str:
-    return path.relative_to(base).as_posix()
+    try:
+        return path.relative_to(base).as_posix()
+    except ValueError:
+        return path.resolve().as_posix()
 
 
 def read_json(path: Path) -> dict[str, Any]:
@@ -217,6 +220,7 @@ def build_reference_data(repo_root: Path) -> dict[str, Any]:
     run210_sources = read_json(pack / "run2_10_visual_system_sources.json")
     run210_memory = read_json(pack / "run2_10_visual_system_memory.json")
     run210_gate_matrix = read_json(pack / "run2_10_visual_system_gate_matrix.json")
+    run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
     skill_markdown = read_text(pack / "vulca_ppt_skill.md")
@@ -261,6 +265,7 @@ def build_reference_data(repo_root: Path) -> dict[str, Any]:
         "run210VisualSystems": run210_memory.get("visual_systems", []),
         "run210GateStatus": run210_gate_matrix.get("status", ""),
         "run210VisualGates": run210_gate_matrix.get("gates", []),
+        "run211Audit": run211_audit,
         "workflowStatus": workflow.get("status", ""),
         "workflowStages": workflow.get("stages", []),
         "skillMarkdown": skill_markdown,
@@ -375,6 +380,13 @@ def build_html(data: dict[str, Any]) -> str:
     .chip {{ display: inline-flex; align-items: center; min-height: 22px; padding: 2px 7px; border: 1px solid #d8d5ce; border-radius: 999px; background: #f7f6f1; color: #343841; font-size: 11px; overflow-wrap: anywhere; }}
     .dataList {{ margin: 0; padding-left: 18px; color: var(--muted); font-size: 12px; line-height: 1.45; }}
     .dataPre {{ margin: 0; max-height: 420px; overflow: auto; white-space: pre-wrap; color: #2a2e35; font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; padding: 14px; }}
+    .auditGrid {{ display: grid; grid-template-columns: minmax(320px, 0.8fr) minmax(560px, 1.4fr); gap: 16px; max-width: 1480px; }}
+    .auditTable {{ width: 100%; border-collapse: collapse; font-size: 12px; }}
+    .auditTable th, .auditTable td {{ border-top: 1px solid #ddd8cf; padding: 8px; text-align: left; vertical-align: top; }}
+    .auditTable th {{ color: var(--muted); font-size: 10px; text-transform: uppercase; }}
+    .statusPass {{ color: var(--green); font-weight: 800; }}
+    .statusWeak {{ color: #a16600; font-weight: 800; }}
+    .statusMissing, .statusBlocked {{ color: var(--accent); font-weight: 800; }}
     .empty {{ padding: 40px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; color: var(--muted); }}
     .modal {{ position: fixed; inset: 0; z-index: 20; display: none; align-items: center; justify-content: center; background: rgba(12, 14, 17, 0.86); padding: 22px; }}
     .modal.open {{ display: flex; }}
@@ -391,6 +403,7 @@ def build_html(data: dict[str, Any]) -> str:
       .seriesGrid {{ min-width: 0; flex-direction: column; }}
       .seriesCard {{ width: 100%; }}
       .sheetPanel {{ min-width: 0; }}
+      .auditGrid {{ grid-template-columns: minmax(0, 1fr); }}
     }}
   </style>
 </head>
@@ -415,6 +428,7 @@ def build_html(data: dict[str, Any]) -> str:
         <button class="seg" data-view="series">Full series</button>
         <button class="seg" data-view="sheet">Sheets</button>
         <button class="seg" data-view="data">Data / Skill</button>
+        <button class="seg" data-view="audit">Data/Workflow Audit</button>
       </div>
     </nav>
     <main class="content" id="content"></main>
@@ -721,6 +735,91 @@ def build_html(data: dict[str, Any]) -> str:
       </article>`;
     }}
 
+    function auditStatusClass(status) {{
+      const value = safe(status).toLowerCase();
+      if (value.includes("pass")) return "statusPass";
+      if (value.includes("weak")) return "statusWeak";
+      if (value.includes("missing")) return "statusMissing";
+      if (value.includes("blocked")) return "statusBlocked";
+      return "";
+    }}
+
+    function auditInventoryCard(title, value, note) {{
+      const rows = value && typeof value === "object" && !Array.isArray(value)
+        ? Object.entries(value).map(([key, count]) => `<p><strong>${{escapeHtml(key)}}</strong>: ${{escapeHtml(count)}}</p>`).join("")
+        : `<p>${{escapeHtml(value || "No inventory recorded.")}}</p>`;
+      return `<article class="dataCard">
+        <h4>${{escapeHtml(title)}}</h4>
+        ${{rows}}
+        ${{note ? `<p>${{escapeHtml(note)}}</p>` : ""}}
+      </article>`;
+    }}
+
+    function renderAudit() {{
+      const audit = (DATA.references || {{}}).run211Audit || {{}};
+      if (!audit.status) {{
+        content.innerHTML = `<div class="empty">No Data/Workflow Audit is embedded in this viewer.</div>`;
+        return;
+      }}
+      const chainRows = (audit.chain_records || []).map((chain) => `<tr>
+        <td>${{escapeHtml(chain.chain_id)}}</td>
+        <td>${{escapeHtml(chain.run_id)}}</td>
+        <td>${{chipList(chain.slide_roles)}}</td>
+        <td>${{listBlock(chain.required_code_module_ids)}}</td>
+        <td>${{listBlock(chain.actual_code_module_ids)}}</td>
+        <td><span class="${{auditStatusClass(chain.status)}}">${{escapeHtml(chain.status)}}</span>${{detailBlock("Reason", chain.reason)}}</td>
+        <td>${{escapeHtml(chain.next_fix)}}</td>
+      </tr>`).join("");
+      const controlRows = (audit.negative_control_checks || []).map((check) => `<tr>
+        <td>${{escapeHtml(check.arm_role)}}</td>
+        <td>${{listBlock(check.forbidden_fields)}}</td>
+        <td>${{escapeHtml(check.observed_boundary)}}</td>
+        <td><span class="${{auditStatusClass(check.status)}}">${{escapeHtml(check.status)}}</span></td>
+      </tr>`).join("");
+      const gate = audit.gate_summary || {{}};
+      const proven = gate.proven || gate.trace_grounded_pass_chains || gate.data_workflow_chain_gate || "";
+      const weak = gate.weak || gate.weaknesses || gate.summary || "";
+      const blocked = gate.blocked || gate.public_release_gate || "";
+      content.innerHTML = `<div class="sectionHeader">
+        <div><h2>Data/Workflow Audit</h2><div class="summary">${{escapeHtml(audit.stage_policy || "Run 2.11 same-stage audit")}}</div></div>
+        <span class="pill ${{auditStatusClass(audit.status)}}">${{escapeHtml(audit.status)}}</span>
+      </div>
+      <div class="dataStack">
+        <section class="auditGrid">
+          <div class="dataBand">
+            <div class="dataBandHead"><div><h3>Inventories</h3><p>Counts of source, memory, workflow, and gate material checked by the audit.</p></div></div>
+            <div class="dataGrid">
+              ${{auditInventoryCard("Source inventory", audit.source_inventory, "Data artifacts available before the next rerun.")}}
+              ${{auditInventoryCard("Workflow inventory", audit.workflow_inventory, "Workflow gates and stage records available before the next rerun.")}}
+            </div>
+          </div>
+          <div class="dataBand">
+            <div class="dataBandHead"><div><h3>Gaps Before Next Rerun</h3><p>${{escapeHtml(gate.summary || "")}}</p></div></div>
+            <div class="dataGrid">
+              <article class="dataCard"><h4>Proven</h4><p>${{escapeHtml(proven || "No proven gate summary recorded.")}}</p></article>
+              <article class="dataCard"><h4>Weak</h4><p>${{escapeHtml(weak || "No weak gate summary recorded.")}}</p></article>
+              <article class="dataCard"><h4>Blocked</h4><p>${{escapeHtml(blocked || "No blocked gate summary recorded.")}}</p></article>
+              <article class="dataCard"><h4>Next required action</h4><p>${{escapeHtml(audit.next_required_action || "No next action recorded.")}}</p></article>
+            </div>
+          </div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Source-to-slide chains</h3><p>Trace-grounded path from data records and gates to actual code module evidence.</p></div><span class="pill">${{(audit.chain_records || []).length}} chains</span></div>
+          <table class="auditTable">
+            <thead><tr><th>Chain</th><th>Run</th><th>Slide roles</th><th>Required modules</th><th>Actual modules</th><th>Status / reason</th><th>Next fix</th></tr></thead>
+            <tbody>${{chainRows}}</tbody>
+          </table>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Control boundaries</h3><p>Negative-control checks that keep prompt-only and non-skill arms from claiming data or workflow evidence.</p></div><span class="pill">${{(audit.negative_control_checks || []).length}} checks</span></div>
+          <table class="auditTable">
+            <thead><tr><th>Arm</th><th>Forbidden fields</th><th>Observed boundary</th><th>Status</th></tr></thead>
+            <tbody>${{controlRows}}</tbody>
+          </table>
+        </section>
+      </div>`;
+    }}
+
     function renderData() {{
       const refs = DATA.references || {{}};
       const diagnosis = (refs.diagnosis || []).map((item) => `<article class="dataCard"><h4>${{escapeHtml(item.label)}}</h4><p>${{escapeHtml(item.body)}}</p></article>`).join("");
@@ -810,6 +909,7 @@ def build_html(data: dict[str, Any]) -> str:
       if (selectedView === "series") renderSeries();
       else if (selectedView === "sheet") renderSheets();
       else if (selectedView === "data") renderData();
+      else if (selectedView === "audit") renderAudit();
       else renderFour();
     }}
 
