@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import re
 import subprocess
+import sys
 from pathlib import Path
 
 from scripts.check_ppt_layout_quality import check_layout, write_report
@@ -334,6 +335,26 @@ EXPECTED_RUN2_10_TRACE_FIELDS = {
     "run2_10_public_demo_first_read_probe",
     "run2_10_shape_count_budget",
     "run2_10_asymmetry_whitespace_rule",
+}
+EXPECTED_RUN2_11_AUDIT_FIELDS = {
+    "schema_version",
+    "status",
+    "stage_policy",
+    "audit_scope",
+    "source_inventory",
+    "workflow_inventory",
+    "chain_records",
+    "arm_trace_evidence",
+    "negative_control_checks",
+    "gate_summary",
+    "next_required_action",
+}
+EXPECTED_RUN2_11_CHAIN_STATUSES = {"pass", "weak", "missing", "blocked"}
+EXPECTED_RUN2_11_RUN_IDS = {"2.8", "2.9", "2.10"}
+EXPECTED_RUN2_11_CONTROL_ARMS = {
+    "prompt_only",
+    "run1_5_skill",
+    "negative_control",
 }
 EXPECTED_RUN2_6_USECASE_FIELDS = {
     "id",
@@ -1487,6 +1508,200 @@ def test_run2_10_has_visual_system_sources_memory_and_gate_matrix() -> None:
         assert workflow_stage_ids.index(stage_id) < workflow_stage_ids.index("generate_code_first_ppt")
     assert workflow_stage_ids.index(run2_10_stages[0]) < workflow_stage_ids.index(run2_10_stages[1])
     assert workflow_stage_ids.index(run2_10_stages[1]) < workflow_stage_ids.index(run2_10_stages[2])
+
+
+def test_run2_11_data_workflow_audit_artifact_has_required_chains() -> None:
+    audit_path = PACK / "results" / "run2_11_data_workflow_audit.json"
+    assert audit_path.exists(), "missing Run 2.11 data/workflow audit"
+
+    audit = load_json(audit_path)
+    assert EXPECTED_RUN2_11_AUDIT_FIELDS <= set(audit)
+    assert audit["status"] == "run2_11_data_workflow_audit_public_blocked"
+    assert audit["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert audit["audit_scope"]["creates_new_ppt_deck"] is False
+    assert audit["audit_scope"]["primary_quality_target"] == "data_workflow_evidence"
+
+    chains = audit["chain_records"]
+    assert chains, "audit must contain source-to-trace chains"
+
+    run28_decomposition_units_by_id = {
+        unit["id"]: unit for unit in load_json(PACK / "run2_8_tutorial_decomposition.json")["units"]
+    }
+    trace_fields_by_run = {
+        "2.8": {
+            "decomposition_ids": "run2_8_decomposition_unit_ids",
+            "memory_ids": "run2_8_memory_binding_ids",
+            "gate_ids": "run2_8_gate_matrix_ids",
+            "code_ids": "run2_8_code_binding_ids",
+        },
+        "2.9": {
+            "decomposition_ids": "run2_9_visual_primitive_ids",
+            "memory_ids": "run2_9_visual_module_ids",
+            "gate_ids": "run2_9_gate_matrix_ids",
+            "code_ids": "run2_9_code_module_ids",
+        },
+        "2.10": {
+            "source_ids": "run2_10_visual_system_source_ids",
+            "memory_ids": "run2_10_visual_system_memory_ids",
+            "gate_ids": "run2_10_gate_matrix_ids",
+            "code_ids": "run2_10_code_module_ids",
+        },
+    }
+    required_non_empty_chain_fields_by_run = {
+        "2.8": {"source_ids", "decomposition_ids", "memory_ids", "gate_ids"},
+        "2.9": {"decomposition_ids", "memory_ids", "gate_ids"},
+        "2.10": {"source_ids", "memory_ids", "gate_ids"},
+    }
+    collected_run_ids = set()
+    for chain in chains:
+        assert {
+            "chain_id",
+            "run_id",
+            "layer",
+            "source_ids",
+            "decomposition_ids",
+            "memory_ids",
+            "gate_ids",
+            "required_code_module_ids",
+            "actual_code_module_ids",
+            "slide_roles",
+            "trace_manifest_paths",
+            "control_boundary",
+            "status",
+            "reason",
+            "next_fix",
+        } <= set(chain), chain.get("chain_id")
+        assert chain["status"] in EXPECTED_RUN2_11_CHAIN_STATUSES
+        assert chain["run_id"] in EXPECTED_RUN2_11_RUN_IDS
+        collected_run_ids.add(chain["run_id"])
+        if chain["status"] in {"weak", "missing", "blocked"}:
+            assert chain["next_fix"], chain["chain_id"]
+        if chain["status"] == "pass":
+            assert chain["required_code_module_ids"], chain["chain_id"]
+            assert chain["actual_code_module_ids"], chain["chain_id"]
+            assert set(chain["required_code_module_ids"]) <= set(chain["actual_code_module_ids"])
+            for field in required_non_empty_chain_fields_by_run[chain["run_id"]]:
+                assert chain[field], f"{chain['chain_id']} missing {field}"
+            assert chain["trace_manifest_paths"], chain["chain_id"]
+            trace_values = {
+                chain_field: set()
+                for chain_field in trace_fields_by_run[chain["run_id"]]
+            }
+            for relative_path in chain["trace_manifest_paths"]:
+                trace_path = ROOT / relative_path
+                assert trace_path.exists(), relative_path
+                trace = load_json(trace_path)
+                for slide in trace.get("slides", []):
+                    for chain_field, trace_field in trace_fields_by_run[chain["run_id"]].items():
+                        trace_values[chain_field].update(slide.get(trace_field, []))
+            for chain_field, actual_ids_from_trace in trace_values.items():
+                if chain_field == "code_ids":
+                    continue
+                assert set(chain[chain_field]) <= actual_ids_from_trace
+            if chain["run_id"] == "2.8":
+                source_record_ids_from_decomposition = {
+                    source_record_id
+                    for decomposition_id in chain["decomposition_ids"]
+                    for source_record_id in run28_decomposition_units_by_id[decomposition_id][
+                        "source_record_ids"
+                    ]
+                }
+                assert set(chain["source_ids"]) <= source_record_ids_from_decomposition
+            assert set(chain["actual_code_module_ids"]) <= trace_values["code_ids"]
+            assert set(chain["required_code_module_ids"]) <= trace_values["code_ids"]
+
+    assert EXPECTED_RUN2_11_RUN_IDS <= collected_run_ids
+    assert any(chain["run_id"] == "2.8" and chain["status"] == "pass" for chain in chains)
+    assert any(chain["run_id"] == "2.9" and chain["status"] == "pass" for chain in chains)
+    assert any(chain["run_id"] == "2.10" and chain["status"] == "pass" for chain in chains)
+
+
+def test_run2_11_audit_references_existing_data_memory_gate_and_trace_fields() -> None:
+    audit = load_json(PACK / "results" / "run2_11_data_workflow_audit.json")
+    run27_sources = load_json(PACK / "run2_7_multimodal_source_records.json")
+    run28_decomp = load_json(PACK / "run2_8_tutorial_decomposition.json")
+    run28_memory = load_json(PACK / "run2_8_executable_design_memory.json")
+    run28_gate = load_json(PACK / "run2_8_workflow_gate_matrix.json")
+    run29_primitives = load_json(PACK / "run2_9_visual_primitive_repair.json")
+    run29_modules = load_json(PACK / "run2_9_executable_visual_modules.json")
+    run29_gate = load_json(PACK / "run2_9_visual_gate_matrix.json")
+    run210_sources = load_json(PACK / "run2_10_visual_system_sources.json")
+    run210_memory = load_json(PACK / "run2_10_visual_system_memory.json")
+    run210_gate = load_json(PACK / "run2_10_visual_system_gate_matrix.json")
+
+    known_source_ids = {record["id"] for record in run27_sources["records"]}
+    known_decomposition_ids = {unit["id"] for unit in run28_decomp["units"]}
+    known_memory_ids = {binding["id"] for binding in run28_memory["bindings"]}
+    known_gate_ids = {gate["id"] for gate in run28_gate["gates"]}
+    known_run29_primitive_ids = {item["id"] for item in run29_primitives["primitive_repairs"]}
+    known_run29_module_ids = {item["id"] for item in run29_modules["modules"]}
+    known_run29_gate_ids = {gate["id"] for gate in run29_gate["gates"]}
+    known_run210_source_ids = {item["id"] for item in run210_sources["sources"]}
+    known_run210_memory_ids = {item["visual_system_id"] for item in run210_memory["visual_systems"]}
+    known_run210_gate_ids = {gate["id"] for gate in run210_gate["gates"]}
+
+    for chain in audit["chain_records"]:
+        if chain["run_id"] == "2.8":
+            assert set(chain["source_ids"]) <= known_source_ids
+            assert set(chain["decomposition_ids"]) <= known_decomposition_ids
+            assert set(chain["memory_ids"]) <= known_memory_ids
+            assert set(chain["gate_ids"]) <= known_gate_ids
+        elif chain["run_id"] == "2.9":
+            assert chain["source_ids"] == []
+            assert set(chain["decomposition_ids"]) <= known_run29_primitive_ids
+            assert set(chain["memory_ids"]) <= known_run29_module_ids
+            assert set(chain["gate_ids"]) <= known_run29_gate_ids
+        elif chain["run_id"] == "2.10":
+            assert set(chain["source_ids"]) <= known_run210_source_ids
+            assert chain["decomposition_ids"] == []
+            assert set(chain["memory_ids"]) <= known_run210_memory_ids
+            assert set(chain["gate_ids"]) <= known_run210_gate_ids
+
+
+def test_run2_11_audit_records_trace_evidence_and_control_boundaries() -> None:
+    audit = load_json(PACK / "results" / "run2_11_data_workflow_audit.json")
+
+    trace_evidence = audit["arm_trace_evidence"]
+    assert {"run2_8_full_skill", "run2_9_full_skill", "run2_10_full_skill"} <= set(trace_evidence)
+
+    assert trace_evidence["run2_8_full_skill"]["trace_origin"] == "actual_native_module_calls"
+    assert trace_evidence["run2_9_full_skill"]["trace_origin"] == "actual_native_visual_module_calls"
+    assert trace_evidence["run2_10_full_skill"]["trace_origin"] == "actual_native_visual_module_calls"
+
+    controls = audit["negative_control_checks"]
+    control_arms = {item["arm_role"] for item in controls}
+    assert EXPECTED_RUN2_11_CONTROL_ARMS <= control_arms
+    for check in controls:
+        assert check["status"] in {"pass", "weak", "missing", "blocked"}
+        assert check["forbidden_fields"]
+        assert check["observed_boundary"]
+
+
+def test_run2_11_audit_is_embedded_in_html_viewer(tmp_path: Path) -> None:
+    presentations_dir = tmp_path / "presentations"
+    presentations_dir.mkdir()
+    out = presentations_dir / "ppt-run-viewer.html"
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "scripts/build_ppt_run_html_viewer.py",
+            "--presentations-dir",
+            str(presentations_dir),
+            "--out",
+            str(out),
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        timeout=20,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    body = out.read_text(encoding="utf-8")
+    assert "Data/Workflow Audit" in body
+    assert 'data-view="audit"' in body
+    assert "run2_11_data_workflow_audit_public_blocked" in body
+    assert "Source-to-slide chains" in body
 
 
 def test_run2_four_arm_isolation_mentions_multimodal_and_target_boundaries() -> None:
