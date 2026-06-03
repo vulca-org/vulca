@@ -245,6 +245,9 @@ def build_reference_data(repo_root: Path) -> dict[str, Any]:
     run212_evidence = read_json(pack / "run2_12_thick_multimodal_evidence.json")
     run212_memory = read_json(pack / "run2_12_design_memory_seed.json")
     run212_gate_seed = read_json(pack / "run2_12_workflow_gate_seed.json")
+    run215_sources = read_json(pack / "run2_15_layout_selector_sources.json")
+    run215_memory = read_json(pack / "run2_15_layout_module_memory.json")
+    run215_gate_matrix = read_json(pack / "run2_15_layout_selector_gate_matrix.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -268,6 +271,10 @@ def build_reference_data(repo_root: Path) -> dict[str, Any]:
             {
                 "label": "2.13 thick-data rerun guard",
                 "body": "Run 2.13 must prove the Run 2.12 evidence, memory seeds, and workflow gate seeds changed the native PPT generation path; evidence-only negative control should remain weaker.",
+            },
+            {
+                "label": "2.15 layout module selector",
+                "body": "Run 2.15 is data/workflow-only: it adds selector sources, layout module memory, and selector gates before the next four-arm rerun.",
             },
         ],
         "sources": sources.get("sources", []),
@@ -296,6 +303,19 @@ def build_reference_data(repo_root: Path) -> dict[str, Any]:
         "run212MemorySeeds": run212_memory.get("memory_seeds", []),
         "run212GateStatus": run212_gate_seed.get("status", ""),
         "run212WorkflowGateSeeds": run212_gate_seed.get("gates", []),
+        "run215SelectorSourceStatus": run215_sources.get("status", ""),
+        "run215SelectorSources": run215_sources.get("records", []),
+        "run215SelectorMemoryStatus": run215_memory.get("status", ""),
+        "run215SelectorModules": run215_memory.get("modules", []),
+        "run215SelectorGateStatus": run215_gate_matrix.get("status", ""),
+        "run215SelectorGates": run215_gate_matrix.get("gates", []),
+        "selectorLayer": {
+            "label": "Run 2.15 selector",
+            "summary": "layout module selector before the next four-arm rerun",
+            "sources": run215_sources,
+            "memory": run215_memory,
+            "gateMatrix": run215_gate_matrix,
+        },
         "run211Audit": run211_audit,
         "workflowStatus": workflow.get("status", ""),
         "workflowStages": workflow.get("stages", []),
@@ -801,6 +821,53 @@ def build_html(data: dict[str, Any]) -> str:
       </article>`;
     }}
 
+    function run215SelectorSourceCard(record) {{
+      return `<article class="dataCard">
+        <h4>${{escapeHtml(record.record_id)}}</h4>
+        ${{chipList([record.source_family, ...(record.derived_from_run_ids || [])])}}
+        ${{detailBlock("Commercial need", record.commercial_need)}}
+        ${{detailBlock("Design observation", record.design_observation)}}
+        ${{detailBlock("Selector obligation", record.layout_selector_obligation)}}
+        ${{detailBlock("Typography", record.typography_obligation)}}
+        ${{detailBlock("Spacing", record.spacing_obligation)}}
+        ${{detailBlock("Product theater", record.product_theater_obligation)}}
+        ${{detailBlock("Trace visibility", record.trace_visibility_obligation)}}
+        ${{detailBlock("Anti-copy boundary", record.anti_copy_boundary)}}
+      </article>`;
+    }}
+
+    function run215SelectorModuleCard(module) {{
+      return `<article class="dataCard">
+        <h4>${{escapeHtml(module.module_id)}}</h4>
+        ${{chipList([module.module_family, ...(module.slide_roles || [])])}}
+        ${{detailBlock("Source records", module.source_record_ids)}}
+        ${{detailBlock("Selection trigger", module.selection_trigger)}}
+        ${{detailBlock("Composition", module.composition_contract)}}
+        ${{detailBlock("Typography", module.typography_contract)}}
+        ${{detailBlock("Spacing", module.spacing_contract)}}
+        ${{detailBlock("Trace visibility", module.trace_visibility_contract)}}
+        ${{detailBlock("Fallback", module.fallback_contract)}}
+        ${{detailBlock("Native obligations", module.native_ppt_obligations)}}
+        ${{detailBlock("Forbidden patterns", module.forbidden_patterns)}}
+      </article>`;
+    }}
+
+    function run215SelectorGateCard(gate) {{
+      return `<article class="dataCard">
+        <h4>${{escapeHtml(gate.gate_id)}}</h4>
+        ${{chipList([gate.slide_role])}}
+        ${{detailBlock("Candidate modules", gate.candidate_module_ids)}}
+        ${{detailBlock("Required inputs", gate.required_selector_inputs)}}
+        ${{detailBlock("Selection rules", gate.selection_rules)}}
+        ${{detailBlock("Rejection rules", gate.rejection_rules)}}
+        ${{detailBlock("Trace fields", gate.trace_fields)}}
+        ${{detailBlock("Layout budget", gate.layout_budget)}}
+        ${{detailBlock("Text resilience probe", gate.text_resilience_probe)}}
+        ${{detailBlock("Product surface probe", gate.product_surface_probe)}}
+        ${{detailBlock("Bad control probe", gate.bad_control_probe)}}
+      </article>`;
+    }}
+
     function stageCard(stage) {{
       return `<article class="dataCard">
         <h4>${{String(stage.order || "").padStart(2, "0")}} / ${{escapeHtml(stage.id)}}</h4>
@@ -913,6 +980,9 @@ def build_html(data: dict[str, Any]) -> str:
       const run212Evidence = (refs.run212ThickEvidenceRecords || []).map(run212EvidenceCard).join("");
       const run212MemorySeeds = (refs.run212MemorySeeds || []).map(run212MemorySeedCard).join("");
       const run212WorkflowGates = (refs.run212WorkflowGateSeeds || []).map(run212WorkflowGateCard).join("");
+      const run215SelectorSources = (refs.run215SelectorSources || []).map(run215SelectorSourceCard).join("");
+      const run215SelectorModules = (refs.run215SelectorModules || []).map(run215SelectorModuleCard).join("");
+      const run215SelectorGates = (refs.run215SelectorGates || []).map(run215SelectorGateCard).join("");
       const stages = (refs.workflowStages || []).map(stageCard).join("");
       const skill = escapeHtml(refs.skillMarkdown || "Missing vulca_ppt_skill.md");
 
@@ -980,6 +1050,18 @@ def build_html(data: dict[str, Any]) -> str:
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.12 workflow gate seeds</h3><p>${{escapeHtml(refs.run212GateStatus)}}. These are required before the Run 2.13 four-arm rerun and define what trace fields and failure probes must appear.</p></div><span class="pill">${{(refs.run212WorkflowGateSeeds || []).length}} gates</span></div>
           <div class="dataGrid">${{run212WorkflowGates}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.15 selector sources</h3><p>${{escapeHtml(refs.run215SelectorSourceStatus)}}. These derived records convert the Run 2.14 aesthetic recovery into layout module selector obligations.</p></div><span class="pill">${{(refs.run215SelectorSources || []).length}} sources</span></div>
+          <div class="dataGrid">${{run215SelectorSources}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.15 layout module memory</h3><p>${{escapeHtml(refs.run215SelectorMemoryStatus)}}. This is the layout module selector target layer: editorial cover, product theater, before/after route, metric reveal, quiet handoff, and dense evidence compression.</p></div><span class="pill">${{(refs.run215SelectorModules || []).length}} modules</span></div>
+          <div class="dataGrid">${{run215SelectorModules}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.15 selector gate matrix</h3><p>${{escapeHtml(refs.run215SelectorGateStatus)}}. These gates require text resilience, hidden trace, product theater realism, and bad-control boundaries before the next four-arm rerun.</p></div><span class="pill">${{(refs.run215SelectorGates || []).length}} gates</span></div>
+          <div class="dataGrid">${{run215SelectorGates}}</div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Skill workflow stages</h3><p>${{escapeHtml(refs.workflowStatus)}}. This is the ordered product loop, not a one-off prompt.</p></div><span class="pill">${{(refs.workflowStages || []).length}} stages</span></div>

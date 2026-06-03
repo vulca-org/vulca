@@ -134,6 +134,7 @@ Required gates:
 - `gate_2_15_text_resilience`
 - `gate_2_15_trace_hidden_from_surface`
 - `gate_2_15_product_theater_realism`
+- `gate_2_15_metric_reveal_climax`
 - `gate_2_15_bad_selector_control_boundary`
 
 ## Workflow Contract

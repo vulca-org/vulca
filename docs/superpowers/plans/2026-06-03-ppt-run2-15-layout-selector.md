@@ -102,6 +102,7 @@ def test_run2_15_layout_selector_artifacts_define_reusable_workflow() -> None:
         "gate_2_15_text_resilience",
         "gate_2_15_trace_hidden_from_surface",
         "gate_2_15_product_theater_realism",
+        "gate_2_15_metric_reveal_climax",
         "gate_2_15_bad_selector_control_boundary",
     }
     gate_ids = {gate["gate_id"] for gate in gate_records}
@@ -241,7 +242,7 @@ Create `run2_15_layout_selector_gate_matrix.json` with this shape and at least f
 }
 ```
 
-Add the four remaining gates named in the design spec.
+Add the five remaining gates named in the design spec.
 
 - [ ] **Step 4: Run the focused artifact test**
 
@@ -371,7 +372,7 @@ What changed:
 
 - Added selector source records.
 - Added executable layout module memory.
-- Added a selector gate matrix for role, text resilience, hidden trace, product theater realism, and bad-control boundaries.
+- Added a selector gate matrix for role, text resilience, hidden trace, product theater realism, metric reveal climax, and bad-control boundaries.
 
 Conclusion: Run 2.15 prepares the next generation pass but does not generate PPT. It remains public blocked. Do not advance to Run 3.0.
 ```

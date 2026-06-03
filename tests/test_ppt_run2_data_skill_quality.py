@@ -440,6 +440,16 @@ EXPECTED_RUN2_14_TRACE_FIELDS = {
     "run2_14_code_module_ids",
     "run2_14_bad_control_probe",
 }
+EXPECTED_RUN2_15_TRACE_FIELDS = {
+    "run2_15_selected_layout_module_ids",
+    "run2_15_selector_gate_ids",
+    "run2_15_trace_visibility_policy",
+    "run2_15_text_resilience_result",
+    "run2_15_trace_hidden_result",
+    "run2_15_product_surface_probe",
+    "run2_15_metric_reveal_climax_probe",
+    "run2_15_bad_selector_control_probe",
+}
 EXPECTED_RUN2_6_USECASE_FIELDS = {
     "id",
     "source_ids",
@@ -2103,13 +2113,14 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
         "select_run2_10_visual_system_sources",
         "compile_run2_10_visual_system_memory",
         "apply_run2_10_visual_system_gate_matrix",
+        "apply_run2_15_layout_selector_gate_matrix",
         "generate_code_first_ppt",
         "run_structural_and_aesthetic_qa",
         "recommend_repairs",
         "refresh_trace_qa_outcomes",
         "emit_release_decision",
     ]
-    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 28))
+    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 29))
     assert workflow["repair_triggers"]
     workflow_text = json.dumps(workflow)
     assert "multimodal_database.json" in workflow_text
@@ -2135,6 +2146,9 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
     assert "run2_10_visual_system_sources.json" in workflow_text
     assert "run2_10_visual_system_memory.json" in workflow_text
     assert "run2_10_visual_system_gate_matrix.json" in workflow_text
+    assert "run2_15_layout_selector_sources.json" in workflow_text
+    assert "run2_15_layout_module_memory.json" in workflow_text
+    assert "run2_15_layout_selector_gate_matrix.json" in workflow_text
     assert "aesthetic_benchmark_bank.json" in workflow_text
     assert "workflow_decision_policy.json" in workflow_text
     assert "visual_repair_policy.json" in workflow_text
@@ -2151,6 +2165,7 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
     assert_contains(workflow_text, ["schema validation", "aesthetic memory constraints"])
     assert_contains(workflow_text, ["provenance metadata", "copyright boundary"])
     assert_contains(workflow_text, ["visual system", "sameness failure", "asymmetry", "whitespace"])
+    assert_contains(workflow_text, ["layout module selector", "text resilience", "trace visibility", "product theater realism"])
     assert "public_blocked" in workflow["release_decisions"]
     assert "public_ready" not in workflow["release_decisions"]
     assert "automated repair without human gate" not in normalize(json.dumps(workflow))
@@ -3042,6 +3057,106 @@ def test_run2_14_generator_hides_trace_inside_210_aesthetic_shell() -> None:
     assert "drawRun214QuietReleaseHandoff" in close_block
 
 
+def test_run2_15_layout_selector_artifacts_define_reusable_workflow() -> None:
+    sources = load_json(PACK / "run2_15_layout_selector_sources.json")
+    memory = load_json(PACK / "run2_15_layout_module_memory.json")
+    gates = load_json(PACK / "run2_15_layout_selector_gate_matrix.json")
+    trace_contract = load_json(PACK / "results" / "trace_manifest_contract.json")
+
+    assert sources["status"] == "run2_15_layout_selector_sources_ready"
+    assert memory["status"] == "run2_15_layout_module_memory_ready"
+    assert gates["status"] == "run2_15_layout_selector_gate_matrix_ready"
+
+    source_records = sources["records"]
+    memory_records = memory["modules"]
+    gate_records = gates["gates"]
+
+    assert len(source_records) >= 6
+    assert len(memory_records) >= 6
+    assert len(gate_records) >= 5
+
+    required_source_fields = {
+        "record_id",
+        "source_family",
+        "derived_from_run_ids",
+        "modality_mix",
+        "commercial_need",
+        "design_observation",
+        "layout_selector_obligation",
+        "typography_obligation",
+        "spacing_obligation",
+        "product_theater_obligation",
+        "motion_beat_obligation",
+        "trace_visibility_obligation",
+        "anti_copy_boundary",
+    }
+    for record in source_records:
+        assert required_source_fields <= record.keys()
+        assert record["anti_copy_boundary"]
+        assert record["layout_selector_obligation"]
+        assert not record.get("raw_media_path")
+        assert not record.get("copied_source_layout")
+
+    source_ids = {record["record_id"] for record in source_records}
+    required_module_families = {
+        "editorial_cover_field",
+        "product_theater_stage",
+        "before_after_route",
+        "metric_reveal_stage",
+        "quiet_release_handoff",
+        "dense_evidence_compression",
+    }
+    module_families = {module["module_family"] for module in memory_records}
+    assert required_module_families <= module_families
+
+    required_memory_fields = {
+        "module_id",
+        "module_family",
+        "slide_roles",
+        "source_record_ids",
+        "selection_trigger",
+        "composition_contract",
+        "typography_contract",
+        "spacing_contract",
+        "asset_contract",
+        "trace_visibility_contract",
+        "fallback_contract",
+        "native_ppt_obligations",
+        "forbidden_patterns",
+    }
+    for module in memory_records:
+        assert required_memory_fields <= module.keys()
+        assert set(module["source_record_ids"]) <= source_ids
+        assert module["slide_roles"]
+        assert module["trace_visibility_contract"] == "manifest_viewer_qa_only_for_public_surface"
+        assert module["native_ppt_obligations"]
+
+    module_ids = {module["module_id"] for module in memory_records}
+    required_gate_ids = {
+        "gate_2_15_role_to_module_selection",
+        "gate_2_15_text_resilience",
+        "gate_2_15_trace_hidden_from_surface",
+        "gate_2_15_product_theater_realism",
+        "gate_2_15_metric_reveal_climax",
+        "gate_2_15_bad_selector_control_boundary",
+    }
+    gate_ids = {gate["gate_id"] for gate in gate_records}
+    assert required_gate_ids <= gate_ids
+    trace_fields = set(trace_contract["per_slide_required_fields"])
+    assert EXPECTED_RUN2_15_TRACE_FIELDS <= trace_fields
+
+    for gate in gate_records:
+        assert set(gate["candidate_module_ids"]) <= module_ids
+        assert gate["required_selector_inputs"]
+        assert gate["selection_rules"]
+        assert gate["rejection_rules"]
+        assert gate["trace_fields"]
+        assert set(gate["trace_fields"]) <= trace_fields
+        assert "run2_15_selected_layout_module_ids" in gate["trace_fields"]
+        assert gate["text_resilience_probe"]
+        assert gate["bad_control_probe"]
+
+
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
     layout_dir = tmp_path / "layout"
     layout_dir.mkdir()
@@ -3220,6 +3335,7 @@ def test_run2_results_reviewed_and_public_blocked() -> None:
     assert "theme_policy_id" in trace_contract["per_slide_required_fields"]
     assert EXPECTED_RUN2_13_TRACE_FIELDS <= set(trace_contract["per_slide_required_fields"])
     assert EXPECTED_RUN2_14_TRACE_FIELDS <= set(trace_contract["per_slide_required_fields"])
+    assert EXPECTED_RUN2_15_TRACE_FIELDS <= set(trace_contract["per_slide_required_fields"])
     assert trace_contract["native_ppt_thresholds"]["full_slide_rasterized_allowed"] is False
 
 
@@ -3656,6 +3772,86 @@ def test_run2_14_records_aesthetic_trace_rerun_result() -> None:
             "Do not advance to Run 3.0",
         ],
     )
+
+
+def test_run2_15_records_layout_selector_data_workflow_result() -> None:
+    result = (PACK / "results" / "run2_15_layout_selector_result.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_15_layout_selector_result.json")
+    readme = (PACK / "results" / "README.md").read_text(encoding="utf-8")
+    comparison = (PACK / "results" / "comparison_report.md").read_text(encoding="utf-8")
+    delivery = (PACK / "results" / "delivery_gate.md").read_text(encoding="utf-8")
+
+    assert result_json["status"] == "selector_data_workflow_ready_public_blocked"
+    assert result_json["public_ready"] is False
+    assert result_json["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert result_json["run_id"] == "2.15"
+    assert result_json["creates_new_ppt_outputs"] is False
+    assert result_json["next_generation_gate"] == "run2_15_selector_gate_matrix_must_drive_next_four_arm_rerun"
+    assert_contains(
+        json.dumps(result_json["selector_artifacts"]),
+        [
+            "run2_15_layout_selector_sources.json",
+            "run2_15_layout_module_memory.json",
+            "run2_15_layout_selector_gate_matrix.json",
+        ],
+    )
+    assert_contains(
+        json.dumps(result_json["learning"]),
+        [
+            "layout module selector",
+            "text resilience",
+            "trace hidden from public slide surface",
+            "product theater realism",
+        ],
+    )
+    assert_contains(
+        result,
+        [
+            "Run 2.15",
+            "layout module selector",
+            "data/workflow-only",
+            "public blocked",
+            "Do not advance to Run 3.0",
+        ],
+    )
+    assert "ppt-run2-15-" not in json.dumps(result_json)
+    assert_contains(
+        readme,
+        [
+            "Run 2.15 intentionally adds no new `ppt-run2-15-*` output folders",
+            "latest generated internal result is Run 2.14",
+        ],
+    )
+    assert_contains(
+        comparison,
+        [
+            "It does not generate a new deck",
+            "latest reviewed generated PPT result",
+        ],
+    )
+    assert_contains(
+        delivery,
+        [
+            "Run 2.15 is data/workflow-only and does not create PPTX artifacts",
+            "The latest generated deck remains Run 2.14",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_mentions_run2_15_selector_artifacts() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "run2_15_layout_selector_sources.json",
+            "run2_15_layout_module_memory.json",
+            "run2_15_layout_selector_gate_matrix.json",
+            "Run 2.15 selector",
+            "layout module selector",
+        ],
+    )
+    assert "ppt-run2-15-" not in script
 
 
 def test_ppt_run_html_viewer_builder_tracks_latest_outputs() -> None:

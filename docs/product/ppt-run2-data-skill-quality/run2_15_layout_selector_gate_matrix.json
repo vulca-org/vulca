@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "status": "run2_15_layout_selector_gate_matrix_ready",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "gates": [
+    {
+      "gate_id": "gate_2_15_role_to_module_selection",
+      "slide_role": "all",
+      "candidate_module_ids": [
+        "module_2_15_editorial_cover_field",
+        "module_2_15_product_theater_stage",
+        "module_2_15_before_after_route",
+        "module_2_15_metric_reveal_stage",
+        "module_2_15_quiet_release_handoff",
+        "module_2_15_dense_evidence_compression"
+      ],
+      "required_selector_inputs": ["slide_role", "content_burden", "commercial_need", "trace_visibility_policy"],
+      "selection_rules": ["cover selects editorial_cover_field", "proof selects product_theater_stage", "climax selects metric_reveal_stage", "close selects quiet_release_handoff"],
+      "rejection_rules": ["reject equal-card grid when an editorial module is available", "reject visible workflow machinery on public surface"],
+      "trace_fields": ["run2_15_selected_layout_module_ids", "run2_15_selector_gate_ids", "run2_15_trace_visibility_policy"],
+      "layout_budget": {"max_visible_workflow_objects": 0, "max_equal_cards": 3},
+      "text_resilience_probe": "module declares fallback when headline or support copy exceeds budget",
+      "product_surface_probe": "product/demo state must be native/sanitized/generated rather than copied source media",
+      "bad_control_probe": "bad selector arm may read source data but must not read selector gate matrix"
+    },
+    {
+      "gate_id": "gate_2_15_text_resilience",
+      "slide_role": "all",
+      "candidate_module_ids": [
+        "module_2_15_editorial_cover_field",
+        "module_2_15_product_theater_stage",
+        "module_2_15_before_after_route",
+        "module_2_15_metric_reveal_stage",
+        "module_2_15_quiet_release_handoff",
+        "module_2_15_dense_evidence_compression"
+      ],
+      "required_selector_inputs": ["headline_word_count", "support_word_count", "evidence_record_count"],
+      "selection_rules": ["switch to dense_evidence_compression when text exceeds module budget", "split content before generation if compression still fails"],
+      "rejection_rules": ["reject shrinking text below readable size", "reject hidden overflow and clipped labels"],
+      "trace_fields": ["run2_15_selected_layout_module_ids", "run2_15_text_resilience_result", "run2_15_selector_gate_ids"],
+      "layout_budget": {"max_support_words": 34, "max_visible_evidence_labels": 5},
+      "text_resilience_probe": "long content must trigger compression or split, not smaller typography",
+      "product_surface_probe": "product surface cannot be sacrificed to fit paragraphs",
+      "bad_control_probe": "bad selector arm lacks text fallback and should expose microtype or overcrowding risk"
+    },
+    {
+      "gate_id": "gate_2_15_trace_hidden_from_surface",
+      "slide_role": "all",
+      "candidate_module_ids": [
+        "module_2_15_editorial_cover_field",
+        "module_2_15_product_theater_stage",
+        "module_2_15_before_after_route",
+        "module_2_15_metric_reveal_stage",
+        "module_2_15_quiet_release_handoff",
+        "module_2_15_dense_evidence_compression"
+      ],
+      "required_selector_inputs": ["trace_visibility_policy", "public_surface_flag", "diagnostic_mode_flag"],
+      "selection_rules": ["public slides use manifest_viewer_qa_only_for_public_surface", "diagnostic slides may expose workflow only in internal viewer areas"],
+      "rejection_rules": ["reject visible workflow gate rails on public slides", "reject trace fields as slide copy"],
+      "trace_fields": ["run2_15_selected_layout_module_ids", "run2_15_trace_visibility_policy", "run2_15_trace_hidden_result"],
+      "layout_budget": {"max_visible_workflow_objects": 0, "max_trace_footer_words": 8},
+      "text_resilience_probe": "trace details are not allowed to consume visible text budget",
+      "product_surface_probe": "product proof remains primary when trace is hidden",
+      "bad_control_probe": "bad selector arm may show workflow machinery and should score lower on public-demo surface"
+    },
+    {
+      "gate_id": "gate_2_15_product_theater_realism",
+      "slide_role": "setup_or_proof",
+      "candidate_module_ids": [
+        "module_2_15_product_theater_stage",
+        "module_2_15_dense_evidence_compression"
+      ],
+      "required_selector_inputs": ["product_state_available", "demo_sequence_need", "asset_provenance_policy"],
+      "selection_rules": ["use product_theater_stage when a native/sanitized product state can be drawn", "fallback to dense_evidence_compression when product state cannot be represented safely"],
+      "rejection_rules": ["reject copied screenshots", "reject flat rectangle pretending to be product realism"],
+      "trace_fields": ["run2_15_selected_layout_module_ids", "run2_15_product_surface_probe", "run2_15_selector_gate_ids"],
+      "layout_budget": {"min_product_canvas_share": 0.28, "max_product_labels": 4},
+      "text_resilience_probe": "product labels stay compact and do not become paragraphs",
+      "product_surface_probe": "native product surface or generated abstraction must visibly carry the proof",
+      "bad_control_probe": "bad selector arm may use generic rectangles and should fail product realism probe"
+    },
+    {
+      "gate_id": "gate_2_15_metric_reveal_climax",
+      "slide_role": "climax",
+      "candidate_module_ids": [
+        "module_2_15_metric_reveal_stage",
+        "module_2_15_dense_evidence_compression"
+      ],
+      "required_selector_inputs": ["primary_metric_available", "climax_need", "outcome_priority", "content_burden"],
+      "selection_rules": ["use metric_reveal_stage when one outcome can own the climax", "fallback to dense_evidence_compression when multiple metrics compete"],
+      "rejection_rules": ["reject dashboard-style climax", "reject unranked metric lists", "reject climax slides with visible workflow machinery"],
+      "trace_fields": ["run2_15_selected_layout_module_ids", "run2_15_selector_gate_ids", "run2_15_metric_reveal_climax_probe"],
+      "layout_budget": {"min_hero_canvas_share": 0.33, "max_climax_metrics": 1},
+      "text_resilience_probe": "climax uses one metric phrase and one consequence line; extra proof routes to trace",
+      "product_surface_probe": "metric reveal should connect to a visible product/system state when possible",
+      "bad_control_probe": "bad selector arm may turn climax into a dashboard or metric list and should fail this probe"
+    },
+    {
+      "gate_id": "gate_2_15_bad_selector_control_boundary",
+      "slide_role": "all",
+      "candidate_module_ids": [
+        "module_2_15_editorial_cover_field",
+        "module_2_15_product_theater_stage",
+        "module_2_15_before_after_route",
+        "module_2_15_metric_reveal_stage",
+        "module_2_15_quiet_release_handoff",
+        "module_2_15_dense_evidence_compression"
+      ],
+      "required_selector_inputs": ["arm_id", "allowed_inputs", "forbidden_inputs"],
+      "selection_rules": ["full arm may read sources, memory, and gate matrix", "bad selector control may read sources only"],
+      "rejection_rules": ["reject bad selector control if it reads layout module memory", "reject bad selector control if it reads selector gate matrix"],
+      "trace_fields": ["run2_15_selected_layout_module_ids", "run2_15_selector_gate_ids", "run2_15_bad_selector_control_probe"],
+      "layout_budget": {"max_control_full_arm_fields": 0},
+      "text_resilience_probe": "bad control should not inherit full-arm text fallback rules",
+      "product_surface_probe": "bad control should not inherit full-arm product theater obligations",
+      "bad_control_probe": "negative control must prove selector memory and gate matrix add value beyond source observations"
+    }
+  ]
+}
