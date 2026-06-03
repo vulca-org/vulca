@@ -356,6 +356,67 @@ EXPECTED_RUN2_11_CONTROL_ARMS = {
     "run1_5_skill",
     "negative_control",
 }
+EXPECTED_RUN2_12_EVIDENCE_IDS = {
+    "thick_2_12_figma_platform_launch_arc",
+    "thick_2_12_figma_design_to_code_surface",
+    "thick_2_12_stripe_agentic_commerce_demo",
+    "thick_2_12_stripe_product_keynote_metric_reframe",
+    "thick_2_12_present_partners_whitespace_hierarchy",
+    "thick_2_12_slidecow_powerpoint_whitespace",
+}
+EXPECTED_RUN2_12_MEMORY_IDS = {
+    "memory_2_12_launch_arc_to_six_slide_route",
+    "memory_2_12_product_demo_sequence_pacing",
+    "memory_2_12_typographic_whitespace_system",
+    "memory_2_12_metric_to_climax_object",
+}
+EXPECTED_RUN2_12_GATE_IDS = {
+    "gate_2_12_evidence_source_integrity",
+    "gate_2_12_memory_selection_before_generation",
+    "gate_2_12_visual_density_and_whitespace",
+    "gate_2_12_demo_sequence_climax",
+}
+EXPECTED_RUN2_12_EVIDENCE_FIELDS = {
+    "id",
+    "source_ids",
+    "source_urls",
+    "verified_accessed_on",
+    "source_role",
+    "modality_mix",
+    "segment_locator",
+    "frame_or_visual_observations",
+    "spoken_or_text_claim_paraphrases",
+    "derived_design_method",
+    "native_ppt_code_obligations",
+    "workflow_gate_obligations",
+    "memory_seed_targets",
+    "anti_copy_boundary",
+    "qa_probe",
+    "release_boundary",
+}
+EXPECTED_RUN2_12_MEMORY_FIELDS = {
+    "id",
+    "evidence_record_ids",
+    "memory_type",
+    "applies_to_slide_roles",
+    "design_constraints",
+    "native_ppt_contract",
+    "required_trace_fields",
+    "failure_probe",
+    "qa_probe",
+    "release_boundary",
+}
+EXPECTED_RUN2_12_GATE_FIELDS = {
+    "id",
+    "gate_type",
+    "evidence_record_ids",
+    "memory_seed_ids",
+    "slide_roles",
+    "pass_fail_checks",
+    "required_before_next_rerun",
+    "trace_fields",
+    "release_boundary",
+}
 EXPECTED_RUN2_6_USECASE_FIELDS = {
     "id",
     "source_ids",
@@ -1719,6 +1780,99 @@ def test_run2_11_audit_is_embedded_in_html_viewer(tmp_path: Path) -> None:
     assert "Source-to-slide chains" in body
 
 
+def test_run2_12_has_thick_multimodal_evidence_records() -> None:
+    evidence_path = PACK / "run2_12_thick_multimodal_evidence.json"
+    assert evidence_path.exists(), "missing Run 2.12 thick multimodal evidence"
+
+    evidence = load_json(evidence_path)
+    sources = load_json(PACK / "sources.json")
+    source_ids = {source["id"] for source in sources["sources"]}
+    source_urls = {source["id"]: source["url"] for source in sources["sources"]}
+
+    assert evidence["status"] == "run2_12_thick_multimodal_evidence_public_blocked"
+    assert evidence["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert evidence["audit_response_to"] == "run2_11_data_workflow_chain_gate"
+    assert evidence["storage_policy"]["raw_media"] == "forbidden"
+    assert evidence["run_scope"]["creates_new_ppt_deck"] is False
+
+    records = evidence["records"]
+    assert EXPECTED_RUN2_12_EVIDENCE_IDS <= {record["id"] for record in records}
+    covered_modalities = {modality for record in records for modality in record["modality_mix"]}
+    assert EXPECTED_MULTIMODAL_MODALITIES <= covered_modalities
+
+    for record in records:
+        assert EXPECTED_RUN2_12_EVIDENCE_FIELDS <= set(record), record["id"]
+        assert record["source_ids"]
+        assert set(record["source_ids"]) <= source_ids
+        assert record["source_urls"]
+        assert record["verified_accessed_on"] == "2026-06-03"
+        assert set(record["modality_mix"]) <= EXPECTED_MULTIMODAL_MODALITIES
+        assert len(record["frame_or_visual_observations"]) >= 2
+        assert len(record["spoken_or_text_claim_paraphrases"]) >= 1
+        assert len(record["native_ppt_code_obligations"]) >= 2
+        assert len(record["workflow_gate_obligations"]) >= 2
+        assert record["memory_seed_targets"]
+        assert_contains(record["anti_copy_boundary"], ["do not copy"])
+        assert_contains(record["release_boundary"], ["public_blocked"])
+        for source_url in record["source_urls"]:
+            assert source_url["source_id"] in record["source_ids"]
+            assert source_url["url"] == source_urls[source_url["source_id"]]
+            assert source_url["retrieval_status"] == "verified_public_page"
+        locator = record["segment_locator"]
+        assert {"locator_type", "public_locator", "derived_only_note"} <= set(locator)
+        assert_contains(locator["derived_only_note"], ["derived", "no raw media"])
+
+
+def test_run2_12_memory_and_workflow_gate_seeds_are_referentially_integrated() -> None:
+    evidence = load_json(PACK / "run2_12_thick_multimodal_evidence.json")
+    memory = load_json(PACK / "run2_12_design_memory_seed.json")
+    gate_seed = load_json(PACK / "run2_12_workflow_gate_seed.json")
+    workflow = load_json(PACK / "skill_workflow.json")
+    trace_contract = load_json(PACK / "results" / "trace_manifest_contract.json")
+
+    evidence_ids = {record["id"] for record in evidence["records"]}
+    memory_ids = {record["id"] for record in memory["memory_seeds"]}
+    trace_fields = set(trace_contract["per_slide_required_fields"])
+
+    assert memory["status"] == "run2_12_design_memory_seed_public_blocked"
+    assert memory["derived_from"] == "run2_12_thick_multimodal_evidence.json"
+    assert memory["run_scope"]["creates_new_ppt_deck"] is False
+    assert EXPECTED_RUN2_12_MEMORY_IDS <= memory_ids
+    for record in memory["memory_seeds"]:
+        assert EXPECTED_RUN2_12_MEMORY_FIELDS <= set(record), record["id"]
+        assert set(record["evidence_record_ids"]) <= evidence_ids
+        assert set(record["applies_to_slide_roles"]) <= EXPECTED_RHYTHM_ROLES
+        assert record["design_constraints"]
+        assert_contains(json.dumps(record["native_ppt_contract"]), ["native", "editable"])
+        assert set(record["required_trace_fields"]) <= trace_fields
+        assert_contains(record["release_boundary"], ["public_blocked"])
+
+    assert gate_seed["status"] == "run2_12_workflow_gate_seed_public_blocked"
+    assert gate_seed["gate_policy"] == "required_before_next_four_arm_rerun"
+    assert gate_seed["run_scope"]["creates_new_ppt_deck"] is False
+    assert EXPECTED_RUN2_12_GATE_IDS <= {gate["id"] for gate in gate_seed["gates"]}
+    for gate in gate_seed["gates"]:
+        assert EXPECTED_RUN2_12_GATE_FIELDS <= set(gate), gate["id"]
+        assert set(gate["evidence_record_ids"]) <= evidence_ids
+        assert set(gate["memory_seed_ids"]) <= memory_ids
+        assert set(gate["slide_roles"]) <= EXPECTED_RHYTHM_ROLES
+        assert gate["pass_fail_checks"]
+        assert gate["required_before_next_rerun"] is True
+        assert set(gate["trace_fields"]) <= trace_fields
+        assert_contains(gate["release_boundary"], ["public_blocked"])
+
+    workflow_text = json.dumps(workflow)
+    assert_contains(
+        workflow_text,
+        [
+            "run2_12_thick_multimodal_evidence.json",
+            "run2_12_design_memory_seed.json",
+            "run2_12_workflow_gate_seed.json",
+            "required before next four-arm rerun",
+        ],
+    )
+
+
 def test_run2_four_arm_isolation_mentions_multimodal_and_target_boundaries() -> None:
     prompt_only = (PACK / "generation_briefs" / "prompt_only.md").read_text(encoding="utf-8")
     run1_5 = (PACK / "generation_briefs" / "run1_5_skill.md").read_text(encoding="utf-8")
@@ -2743,7 +2897,16 @@ def test_run2_results_reviewed_and_public_blocked() -> None:
     delivery = (PACK / "results" / "delivery_gate.md").read_text(encoding="utf-8")
     trace_contract = load_json(PACK / "results" / "trace_manifest_contract.json")
 
-    assert_contains(comparison, ["Status", "data-workflow-audited-public-blocked"])
+    assert_contains(comparison, ["Status", "data-thickened-public-blocked"])
+    assert_contains(
+        comparison,
+        [
+            "Run 2.12",
+            "run2_12_thick_multimodal_evidence.json",
+            "run2_12_design_memory_seed.json",
+            "run2_12_workflow_gate_seed.json",
+        ],
+    )
     assert_contains(comparison, ["prompt_only", "run1_5_skill", "run2_skill", "bad_aesthetic_memory"])
     assert_contains(
         comparison,

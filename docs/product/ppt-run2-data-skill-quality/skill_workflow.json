@@ -574,6 +574,12 @@
   ],
   "repair_triggers": [
     {
+      "id": "run2_12_thick_data_required_before_next_rerun",
+      "trigger": "Run 2.11 data_workflow_chain_gate is weak_pass_internal_only or the multimodal tutorial/video database is too compact for a learning-quality claim",
+      "recommendation": "require run2_12_thick_multimodal_evidence.json, run2_12_design_memory_seed.json, and run2_12_workflow_gate_seed.json before next four-arm rerun",
+      "human_gate": "required before next four-arm rerun"
+    },
+    {
       "id": "trace_qa_pending",
       "trigger": "per-slide structural_qa or aesthetic_qa remains pending after validation",
       "recommendation": "run the trace QA refresh step before scoring or winner claims",

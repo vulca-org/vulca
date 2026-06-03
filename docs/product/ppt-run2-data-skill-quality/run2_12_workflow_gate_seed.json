@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "status": "run2_12_workflow_gate_seed_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "derived_from": [
+    "run2_12_thick_multimodal_evidence.json",
+    "run2_12_design_memory_seed.json"
+  ],
+  "gate_policy": "required_before_next_four_arm_rerun",
+  "run_scope": {
+    "run_id": "2.12",
+    "creates_new_ppt_deck": false,
+    "primary_quality_target": "workflow_gate_seed_for_next_rerun"
+  },
+  "gates": [
+    {
+      "id": "gate_2_12_evidence_source_integrity",
+      "gate_type": "source_to_evidence_integrity",
+      "evidence_record_ids": [
+        "thick_2_12_figma_platform_launch_arc",
+        "thick_2_12_figma_design_to_code_surface",
+        "thick_2_12_stripe_agentic_commerce_demo",
+        "thick_2_12_stripe_product_keynote_metric_reframe",
+        "thick_2_12_present_partners_whitespace_hierarchy",
+        "thick_2_12_slidecow_powerpoint_whitespace"
+      ],
+      "memory_seed_ids": [
+        "memory_2_12_launch_arc_to_six_slide_route",
+        "memory_2_12_product_demo_sequence_pacing",
+        "memory_2_12_typographic_whitespace_system",
+        "memory_2_12_metric_to_climax_object"
+      ],
+      "slide_roles": ["cover", "setup", "contrast", "proof", "climax", "close"],
+      "pass_fail_checks": [
+        "Every Run 2.12 evidence record references source ids present in sources.json.",
+        "Every evidence record stores URL metadata and paraphrased observations only.",
+        "Every evidence record has verified_accessed_on set before use in a rerun.",
+        "No raw media, screenshots, audio, transcript excerpts, source layouts, logos, or source prose are stored."
+      ],
+      "required_before_next_rerun": true,
+      "trace_fields": [
+        "run2_7_source_record_ids",
+        "asset_provenance",
+        "release_gate_inputs"
+      ],
+      "release_boundary": "public_blocked_until_source_integrity_and_human_review"
+    },
+    {
+      "id": "gate_2_12_memory_selection_before_generation",
+      "gate_type": "memory_selection_ordering",
+      "evidence_record_ids": [
+        "thick_2_12_figma_platform_launch_arc",
+        "thick_2_12_figma_design_to_code_surface",
+        "thick_2_12_stripe_agentic_commerce_demo"
+      ],
+      "memory_seed_ids": [
+        "memory_2_12_launch_arc_to_six_slide_route",
+        "memory_2_12_product_demo_sequence_pacing"
+      ],
+      "slide_roles": ["cover", "setup", "proof", "climax", "close"],
+      "pass_fail_checks": [
+        "Each target slide selects evidence ids before selecting memory seed ids.",
+        "Each selected memory seed defines a native PPT contract before code generation.",
+        "Generation is blocked when memory selection is missing or only present in prose."
+      ],
+      "required_before_next_rerun": true,
+      "trace_fields": [
+        "run2_10_visual_system_source_ids",
+        "run2_10_visual_system_memory_ids",
+        "run2_10_code_module_ids",
+        "release_gate_inputs"
+      ],
+      "release_boundary": "public_blocked_until_memory_selection_gate_and_trace_review"
+    },
+    {
+      "id": "gate_2_12_visual_density_and_whitespace",
+      "gate_type": "typography_spacing_density_gate",
+      "evidence_record_ids": [
+        "thick_2_12_present_partners_whitespace_hierarchy",
+        "thick_2_12_slidecow_powerpoint_whitespace",
+        "thick_2_12_stripe_product_keynote_metric_reframe"
+      ],
+      "memory_seed_ids": [
+        "memory_2_12_typographic_whitespace_system",
+        "memory_2_12_metric_to_climax_object"
+      ],
+      "slide_roles": ["cover", "contrast", "proof", "climax", "close"],
+      "pass_fail_checks": [
+        "Type roles and spacing tokens are selected before native layout code runs.",
+        "Density counts remain within the selected memory seed budget.",
+        "Layout geometry checks confirm margins, gutters, and text boxes do not collapse.",
+        "Equal report cards and dense paragraph blocks fail the gate."
+      ],
+      "required_before_next_rerun": true,
+      "trace_fields": [
+        "typography_system_id",
+        "spacing_token_set_id",
+        "density_counts",
+        "layout_geometry_checks"
+      ],
+      "release_boundary": "public_blocked_until_spacing_density_gate_and_native_render_review"
+    },
+    {
+      "id": "gate_2_12_demo_sequence_climax",
+      "gate_type": "demo_sequence_and_climax_gate",
+      "evidence_record_ids": [
+        "thick_2_12_stripe_agentic_commerce_demo",
+        "thick_2_12_figma_design_to_code_surface",
+        "thick_2_12_stripe_product_keynote_metric_reframe"
+      ],
+      "memory_seed_ids": [
+        "memory_2_12_product_demo_sequence_pacing",
+        "memory_2_12_metric_to_climax_object"
+      ],
+      "slide_roles": ["proof", "climax"],
+      "pass_fail_checks": [
+        "Demo slides declare ordered reveal steps before rendering sequence objects.",
+        "The climax slide has one resolved state or metric object with protected canvas share.",
+        "The gate fails if the demo is a row of screenshots, copied UI, or equal storyboard boxes.",
+        "Routed detail is recorded in trace fields instead of crowding the visible canvas."
+      ],
+      "required_before_next_rerun": true,
+      "trace_fields": [
+        "ordered_reveal_steps",
+        "deleted_or_routed_content",
+        "run2_10_shape_count_budget",
+        "run2_10_asymmetry_whitespace_rule"
+      ],
+      "release_boundary": "public_blocked_until_demo_sequence_gate_and_human_visual_review"
+    }
+  ]
+}

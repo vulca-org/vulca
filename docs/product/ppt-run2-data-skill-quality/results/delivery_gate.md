@@ -1,8 +1,19 @@
 # Delivery Gate
 
-Status: data-workflow-audited-public-blocked.
+Status: data-thickened-public-blocked.
 
 Public publishing is blocked until native render or cross-platform render inspection passes and human approval is recorded.
+
+## Run 2.12 Data Thickening Artifacts
+
+Run 2.12 is data/workflow-thickening only and does not create new PPTX artifacts.
+
+| Artifact | Path | Gate |
+| --- | --- | --- |
+| Thick multimodal evidence | `docs/product/ppt-run2-data-skill-quality/run2_12_thick_multimodal_evidence.json` | `thick_data_seed_pass_internal_only_public_blocked` |
+| Design memory seed | `docs/product/ppt-run2-data-skill-quality/run2_12_design_memory_seed.json` | `thick_data_seed_pass_internal_only_public_blocked` |
+| Workflow gate seed | `docs/product/ppt-run2-data-skill-quality/run2_12_workflow_gate_seed.json` | `required_before_next_four_arm_rerun` |
+| Result report | `docs/product/ppt-run2-data-skill-quality/results/run2_12_data_thickening_result.md` | `internal_only_public_blocked` |
 
 ## Run 2.11 Data/Workflow Audit Artifacts
 
@@ -203,6 +214,10 @@ Combined local comparison sheet: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/p
 | Run 2.11 audit chains cover Runs 2.8, 2.9, and 2.10 | pass for trace-grounded audit chains |
 | Run 2.11 control-boundary checks represented | pass for prompt-only, Run 1.5, and negative-control boundaries |
 | Run 2.11 viewer audit tab renders | pass for `Data/Workflow Audit` tab |
+| Run 2.12 thick multimodal evidence exists | pass for `run2_12_thick_multimodal_evidence.json` |
+| Run 2.12 design memory seed exists | pass for `run2_12_design_memory_seed.json` |
+| Run 2.12 workflow gate seed exists | pass for `run2_12_workflow_gate_seed.json` |
+| Run 2.12 thick-data gate required before next four-arm rerun | pass for `skill_workflow.json` repair trigger |
 | Native visual components visible | pass for local Run 2.3 full arm |
 | Run 2.4 motion grammar contract exists | pass for `video_demo_beat_map.json`, `motion_learning_targets.json`, and `presentation_sequence_components.json` |
 | Motion target ids and sequence component ids visible in regenerated deck trace | pass for local Run 2.4 full and bad-memory arms |
@@ -212,7 +227,7 @@ Combined local comparison sheet: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/p
 | Production reference ids and visual production module ids visible in regenerated deck trace | pass for local Run 2.5 full arm; production references only for bad-memory arm |
 | Public-video-grade visual proof completed | blocked |
 
-Delivery status remains `data-workflow-audited-public-blocked`. Run 2.11 audits the data/workflow chain and adds a viewer tab, but it does not create new PPTX artifacts. The regenerated Run 2.10 arms remain the latest generated decks; they were built locally, structurally checked, trace-reviewed, browser-viewer checked, and Gemini-reviewed as a same-stage visual-system pass. The work is still not public release evidence because native render inspection, human approval, source-brand sanitization approval, finished motion/render support, and a stronger public-demo visual pass are missing.
+Delivery status remains `data-thickened-public-blocked`. Run 2.12 thickens the data/workflow chain and adds required gate seeds before the next four-arm rerun, but it does not create new PPTX artifacts. The regenerated Run 2.10 arms remain the latest generated decks; they were built locally, structurally checked, trace-reviewed, browser-viewer checked, and Gemini-reviewed as a same-stage visual-system pass. The work is still not public release evidence because native render inspection, human approval, source-brand sanitization approval, finished motion/render support, and a stronger public-demo visual pass are missing.
 
 ## Release Decision Thresholds
 

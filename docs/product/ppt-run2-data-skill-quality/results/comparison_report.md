@@ -1,8 +1,27 @@
 # Comparison Report
 
-Status: data-workflow-audited-public-blocked.
+Status: data-thickened-public-blocked.
 
-Run 2.11 is the latest reviewed audit result. It does not generate a new deck. It audits whether Runs 2.7-2.10 actually closed the product loop from source observations to memory, workflow gates, required modules, actual trace evidence, and control boundaries.
+Run 2.12 is the latest reviewed internal result. It does not generate a new deck. It thickens the evidence, memory, and workflow gate inputs that must be used before the next four-arm rerun.
+
+The Run 2.12 result is `thick_data_seed_pass_internal_only_public_blocked`: the data layer is stronger than Run 2.11 because it now has verified public source URLs, access dates, modality mixes, segment locators, paraphrased visual observations, native PPT obligations, and workflow gate obligations. It still does not prove visual improvement because no PPT was generated.
+
+| Artifact | Status | Result |
+| --- | --- | --- |
+| `run2_12_thick_multimodal_evidence.json` | generated | thicker real-case/tutorial/video evidence records |
+| `run2_12_design_memory_seed.json` | generated | executable memory seeds derived from thick evidence |
+| `run2_12_workflow_gate_seed.json` | generated | required gates before next four-arm rerun |
+| `run2_12_data_thickening_result.md` | generated | human-readable result |
+
+## Run 2.12 Findings
+
+- The source layer now separates verified public URL metadata from derived observations.
+- Evidence records cover commercial platform launch, commercial product keynote/demo, whitespace and hierarchy tutorial, and PowerPoint-specific whitespace teaching.
+- Design memory seeds convert the thicker data into launch arc, demo sequence, typography/spacing, and metric-climax obligations.
+- Workflow gates now require these seeds before the next four-arm rerun.
+- Public release remains blocked because this pass creates no new PPTX and proves no visual improvement by itself.
+
+Run 2.11 remains the latest audit result. It does not generate a new deck. It audits whether Runs 2.7-2.10 actually closed the product loop from source observations to memory, workflow gates, required modules, actual trace evidence, and control boundaries.
 
 The audit result is `weak_pass_internal_only`: the traceable workflow exists for Runs 2.8, 2.9, and 2.10, but the underlying multimodal tutorial/video database is still too compact to justify another visual rerun as a learning-quality claim. The next required action is to add richer tutorial/video decomposition records and convert them into stricter workflow gates before the next four-arm PPT rerun.
 

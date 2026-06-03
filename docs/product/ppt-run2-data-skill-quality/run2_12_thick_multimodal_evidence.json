@@ -1,0 +1,323 @@
+{
+  "schema_version": 1,
+  "status": "run2_12_thick_multimodal_evidence_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "audit_response_to": "run2_11_data_workflow_chain_gate",
+  "run_scope": {
+    "run_id": "2.12",
+    "creates_new_ppt_deck": false,
+    "primary_quality_target": "data_workflow_thickening",
+    "next_rerun_policy": "Use these records only after memory and workflow gates pass; do not claim visual improvement from data records alone."
+  },
+  "storage_policy": {
+    "default": "derived_observations_only",
+    "raw_media": "forbidden",
+    "copyright_boundary": "Store URLs, short source metadata, paraphrased observations, and generator obligations only; do not store copied video, audio, frames, screenshots, source layouts, transcripts, logos, or source prose."
+  },
+  "records": [
+    {
+      "id": "thick_2_12_figma_platform_launch_arc",
+      "source_ids": [
+        "figma_config_2025_platform_launch",
+        "figma_config_2025_recap"
+      ],
+      "source_urls": [
+        {
+          "source_id": "figma_config_2025_platform_launch",
+          "url": "https://www.figma.com/blog/config-2025-press-release/",
+          "retrieval_status": "verified_public_page"
+        },
+        {
+          "source_id": "figma_config_2025_recap",
+          "url": "https://www.figma.com/blog/config-2025-recap/",
+          "retrieval_status": "verified_public_page"
+        }
+      ],
+      "verified_accessed_on": "2026-06-03",
+      "source_role": "real_commercial_platform_launch_case",
+      "modality_mix": ["text", "image_reference", "interaction"],
+      "segment_locator": {
+        "locator_type": "public_page_sections",
+        "public_locator": "Config 2025 launch announcement and recap sections covering product expansion, design-to-production workflow, and Figma Slides.",
+        "derived_only_note": "Use derived launch-arc observations only; no raw media, screenshots, product UI, brand marks, or source copy."
+      },
+      "frame_or_visual_observations": [
+        "The commercial launch bundles multiple products, but the story should reduce breadth into a single platform arc before showing individual features.",
+        "A design-to-production claim becomes more legible when each product surface is treated as one stage in a workflow, not as a row of equal feature cards.",
+        "The public launch context creates a strong need for a first-read headline that explains why the platform expansion matters before any feature labels appear."
+      ],
+      "spoken_or_text_claim_paraphrases": [
+        "Paraphrased claim: the platform is expanding so more roles can move from idea to built product inside one design environment.",
+        "Paraphrased claim: design quality and craft remain differentiators as more people participate in software creation."
+      ],
+      "derived_design_method": "Compress a multi-product platform announcement into a six-slide route: promise, workflow tension, product-system proof, traceability proof, one climax object, and release gate.",
+      "native_ppt_code_obligations": [
+        "Create editable native stage labels for the six-slide route instead of copying launch imagery.",
+        "Render product surfaces as original neutral native shapes with traceable source ids, not source UI screenshots.",
+        "Reserve the cover for one launch promise plus one visual workflow cue."
+      ],
+      "workflow_gate_obligations": [
+        "Every selected launch-arc slide must record source ids and memory seed ids before generation.",
+        "The gate must fail if feature breadth is rendered as equal dashboard cards.",
+        "The gate must keep source-brand imitation public blocked."
+      ],
+      "memory_seed_targets": [
+        "memory_2_12_launch_arc_to_six_slide_route",
+        "memory_2_12_typographic_whitespace_system"
+      ],
+      "anti_copy_boundary": "Do not copy Figma visuals, UI, product names as design marks, screenshots, event graphics, source layout, or source prose.",
+      "qa_probe": "At contact-sheet scale, the deck should read as an original platform launch argument before feature names are readable.",
+      "release_boundary": "public_blocked_until_thick_data_gate_native_render_and_human_review"
+    },
+    {
+      "id": "thick_2_12_figma_design_to_code_surface",
+      "source_ids": [
+        "figma_config_2025_platform_launch",
+        "figma_slides_product",
+        "figma_slides_help"
+      ],
+      "source_urls": [
+        {
+          "source_id": "figma_config_2025_platform_launch",
+          "url": "https://www.figma.com/blog/config-2025-press-release/",
+          "retrieval_status": "verified_public_page"
+        },
+        {
+          "source_id": "figma_slides_product",
+          "url": "https://www.figma.com/slides/",
+          "retrieval_status": "verified_public_page"
+        },
+        {
+          "source_id": "figma_slides_help",
+          "url": "https://help.figma.com/hc/en-us/articles/24170630629911-Explore-Figma-Slides",
+          "retrieval_status": "verified_public_page"
+        }
+      ],
+      "verified_accessed_on": "2026-06-03",
+      "source_role": "presentation_product_workflow_reference",
+      "modality_mix": ["text", "image_reference", "interaction"],
+      "segment_locator": {
+        "locator_type": "public_product_and_help_sections",
+        "public_locator": "Figma Slides product/help pages and Config launch product list.",
+        "derived_only_note": "Use derived workflow observations only; no raw media, source screenshots, interface copies, or source prose."
+      },
+      "frame_or_visual_observations": [
+        "Presentation tooling is positioned as a collaborative workflow surface, so the output deck should show editable structure rather than a static image composition.",
+        "A workflow-oriented slide can expose the decision chain as selected memory, selected gate, and generated native object without turning into a text-heavy diagram.",
+        "Interactive presentation surfaces suggest a product-theater composition: one large editable surface, sparse surrounding labels, and a visible handoff state."
+      ],
+      "spoken_or_text_claim_paraphrases": [
+        "Paraphrased claim: presentation creation is part of a collaborative design workflow, not a separate export-only task."
+      ],
+      "derived_design_method": "Represent PPT generation as a visible native-object workflow with a large product surface, a small decision rail, and an explicit handoff gate.",
+      "native_ppt_code_obligations": [
+        "Generate the product theater surface from editable PPT shapes and text.",
+        "Expose selected memory and gate ids as small native labels, not as a full report table.",
+        "Use an interaction-handoff object on the close slide to show what the user can do next."
+      ],
+      "workflow_gate_obligations": [
+        "The gate must fail if the product surface is raster-only.",
+        "The gate must require editable native text and shape counts before claiming product integration.",
+        "The gate must record source boundary checks for presentation-product references."
+      ],
+      "memory_seed_targets": [
+        "memory_2_12_launch_arc_to_six_slide_route",
+        "memory_2_12_product_demo_sequence_pacing"
+      ],
+      "anti_copy_boundary": "Do not copy Figma UI, slide templates, screenshots, icons, product marks, help prose, or layout patterns.",
+      "qa_probe": "The full arm should show a native product workflow surface that is visibly editable and original.",
+      "release_boundary": "public_blocked_until_thick_data_gate_native_render_and_human_review"
+    },
+    {
+      "id": "thick_2_12_stripe_agentic_commerce_demo",
+      "source_ids": [
+        "stripe_sessions_2025_product_keynote"
+      ],
+      "source_urls": [
+        {
+          "source_id": "stripe_sessions_2025_product_keynote",
+          "url": "https://stripe.com/gb/sessions/2025/product-keynote",
+          "retrieval_status": "verified_public_page"
+        }
+      ],
+      "verified_accessed_on": "2026-06-03",
+      "source_role": "real_commercial_product_demo_video_transcript_reference",
+      "modality_mix": ["video", "audio", "transcript", "interaction", "text"],
+      "segment_locator": {
+        "locator_type": "public_transcript_demo_sequence",
+        "public_locator": "Product keynote transcript section around the Order Intents command-line demo and multi-site agent purchase demonstration.",
+        "derived_only_note": "Use derived demo-pacing observations only; no raw media, video frames, audio, screenshots, or transcript text."
+      },
+      "frame_or_visual_observations": [
+        "The demo creates tension by starting from a command/action, then externalizes invisible agent work as visible progress.",
+        "The strongest sequence beat is not a static screenshot; it is the transition from setup to autonomous work to completed purchase state.",
+        "A live-demo imperfection can become a credibility beat if the slide system preserves the sequence and does not over-polish the proof."
+      ],
+      "spoken_or_text_claim_paraphrases": [
+        "Paraphrased claim: agentic commerce is easier to understand when viewers see the agent perform a concrete purchase workflow.",
+        "Paraphrased claim: the valuable shift is completing multiple external actions without leaving the current context."
+      ],
+      "derived_design_method": "Turn a product demo into four native sequence states: command, agent route, progress evidence, and resolved state, with the climax reserved for the resolved state.",
+      "native_ppt_code_obligations": [
+        "Draw the demo sequence as editable native state objects with ordered reveal ids.",
+        "Use a visible progress path instead of a row of screenshots.",
+        "Keep labels short and delay explanation until after the state transition is legible."
+      ],
+      "workflow_gate_obligations": [
+        "The gate must require ordered reveal steps for any demo-sequence slide.",
+        "The gate must fail if the demo is represented as equal cards without a climax state.",
+        "The gate must require a release-boundary note when public transcript/video material is referenced."
+      ],
+      "memory_seed_targets": [
+        "memory_2_12_product_demo_sequence_pacing",
+        "memory_2_12_metric_to_climax_object"
+      ],
+      "anti_copy_boundary": "Do not copy Stripe video frames, screenshots, transcript text, logos, event graphics, UI, demo products, or source stage composition.",
+      "qa_probe": "At thumbnail scale, the audience should see a sequence building toward one resolved product state.",
+      "release_boundary": "public_blocked_until_thick_data_gate_native_render_and_human_review"
+    },
+    {
+      "id": "thick_2_12_stripe_product_keynote_metric_reframe",
+      "source_ids": [
+        "stripe_sessions_2025_product_keynote"
+      ],
+      "source_urls": [
+        {
+          "source_id": "stripe_sessions_2025_product_keynote",
+          "url": "https://stripe.com/gb/sessions/2025/product-keynote",
+          "retrieval_status": "verified_public_page"
+        }
+      ],
+      "verified_accessed_on": "2026-06-03",
+      "source_role": "commercial_keynote_metric_proof_reference",
+      "modality_mix": ["text", "transcript", "audio", "video"],
+      "segment_locator": {
+        "locator_type": "public_transcript_metric_and_product_launch_sections",
+        "public_locator": "Product keynote transcript sections that combine business-scale context, product launches, and concrete demo outcomes.",
+        "derived_only_note": "Use derived metric-framing observations only; no raw media, transcript excerpts, screenshots, or source visuals."
+      },
+      "frame_or_visual_observations": [
+        "Metric proof should be staged as one dominant change, not as a dense table of product claims.",
+        "A product keynote can combine scale, launch breadth, and demo proof by making the metric the frame and the product state the object.",
+        "The proof slide needs a clear route from metric to action to business implication."
+      ],
+      "spoken_or_text_claim_paraphrases": [
+        "Paraphrased claim: scale matters because it allows a product platform to create network-level benefits and practical gains.",
+        "Paraphrased claim: product launches become credible when business-scale context connects to a specific workflow demonstration."
+      ],
+      "derived_design_method": "Convert numeric or business-scale proof into one large native metric object with a routed product implication and a secondary caveat rail.",
+      "native_ppt_code_obligations": [
+        "Use one large editable metric object with controlled line breaks.",
+        "Route proof details into small secondary labels or notes instead of visible tables.",
+        "Bind the metric object to a climax or proof slide gate before rendering."
+      ],
+      "workflow_gate_obligations": [
+        "The gate must fail if more than one primary metric competes for first read.",
+        "The gate must enforce a maximum visible-word budget on metric proof slides.",
+        "The gate must require a trace field for deleted or routed content."
+      ],
+      "memory_seed_targets": [
+        "memory_2_12_metric_to_climax_object",
+        "memory_2_12_typographic_whitespace_system"
+      ],
+      "anti_copy_boundary": "Do not copy Stripe transcript text, exact stage visuals, source charts, logos, event graphics, or product UI.",
+      "qa_probe": "The proof slide should read as one designed business delta, not a facts-and-figures report page.",
+      "release_boundary": "public_blocked_until_thick_data_gate_native_render_and_human_review"
+    },
+    {
+      "id": "thick_2_12_present_partners_whitespace_hierarchy",
+      "source_ids": [
+        "present_partners_whitespace"
+      ],
+      "source_urls": [
+        {
+          "source_id": "present_partners_whitespace",
+          "url": "https://present.partners/resources/white-space-visual-hierarchy-slides",
+          "retrieval_status": "verified_public_page"
+        }
+      ],
+      "verified_accessed_on": "2026-06-03",
+      "source_role": "presentation_design_tutorial_reference",
+      "modality_mix": ["text", "image_reference"],
+      "segment_locator": {
+        "locator_type": "public_article_sections",
+        "public_locator": "White space, visual hierarchy, macro/micro spacing, and high-stakes presentation sections.",
+        "derived_only_note": "Use derived hierarchy and spacing observations only; no raw media, screenshots, diagrams, or source prose."
+      },
+      "frame_or_visual_observations": [
+        "Macro whitespace separates slide regions so the audience can infer hierarchy before reading.",
+        "Micro whitespace protects labels and dense proof from turning into texture.",
+        "High-stakes presentation design should align every spacing decision with the business action being requested."
+      ],
+      "spoken_or_text_claim_paraphrases": [
+        "Paraphrased claim: white space and hierarchy work together to reduce clutter and direct attention.",
+        "Paraphrased claim: spacing should clarify the message, not merely decorate the slide."
+      ],
+      "derived_design_method": "Define a two-level spacing system: macro canvas zones for story structure and micro spacing tokens for labels, rails, and proof marks.",
+      "native_ppt_code_obligations": [
+        "Encode macro and micro spacing as numeric layout tokens before drawing slide objects.",
+        "Use type size, contrast, and placement to create reading order before color accents are applied.",
+        "Fail the slide when equal containers consume the canvas without a dominant zone."
+      ],
+      "workflow_gate_obligations": [
+        "The gate must require selected spacing tokens before generation.",
+        "The gate must check contact-sheet first-read hierarchy.",
+        "The gate must block report-like equal-card layouts for proof and climax roles."
+      ],
+      "memory_seed_targets": [
+        "memory_2_12_typographic_whitespace_system",
+        "memory_2_12_launch_arc_to_six_slide_route"
+      ],
+      "anti_copy_boundary": "Do not copy article diagrams, screenshots, exact prose, source examples, brand marks, or layouts.",
+      "qa_probe": "The slide should pass a squint-level hierarchy check: one dominant zone, one secondary proof path, and readable spacing.",
+      "release_boundary": "public_blocked_until_thick_data_gate_native_render_and_human_review"
+    },
+    {
+      "id": "thick_2_12_slidecow_powerpoint_whitespace",
+      "source_ids": [
+        "slidecow_whitespace_powerpoint_tutorial"
+      ],
+      "source_urls": [
+        {
+          "source_id": "slidecow_whitespace_powerpoint_tutorial",
+          "url": "https://www.slidecow.com/powerpoint-tutorials/white-space-powerpoint-design/",
+          "retrieval_status": "verified_public_page"
+        }
+      ],
+      "verified_accessed_on": "2026-06-03",
+      "source_role": "powerpoint_specific_design_tutorial_reference",
+      "modality_mix": ["text", "image_reference", "video", "audio"],
+      "segment_locator": {
+        "locator_type": "public_tutorial_sections_and_video_reference",
+        "public_locator": "PowerPoint whitespace explanation and video tutorial section.",
+        "derived_only_note": "Use derived PowerPoint-specific whitespace observations only; no raw media, video frames, screenshots, or source prose."
+      },
+      "frame_or_visual_observations": [
+        "Whitespace should be treated as an active layout object with measurable distance from shapes and labels.",
+        "A blank region can carry hierarchy if it separates the proof object from the explanatory guide.",
+        "PowerPoint-specific implementation matters because the same design rule must become coordinates, gaps, and editable objects."
+      ],
+      "spoken_or_text_claim_paraphrases": [
+        "Paraphrased claim: whitespace is not wasted space; it helps transform dense slides into cleaner communication.",
+        "Paraphrased claim: a slide does not need to be filled with text and graphics to make its point."
+      ],
+      "derived_design_method": "Translate whitespace teaching into native PPT coordinate obligations: minimum margins, guide-to-object gaps, and protected quiet zones.",
+      "native_ppt_code_obligations": [
+        "Set minimum margin and gutter tokens before shape placement.",
+        "Record whitespace budget in trace fields through density counts and layout geometry checks.",
+        "Render guide objects as optional native helpers, not copied tutorial arrows."
+      ],
+      "workflow_gate_obligations": [
+        "The gate must fail if margins collapse below the selected spacing token set.",
+        "The gate must require layout geometry checks before internal demo scoring.",
+        "The gate must preserve source-boundary language for PowerPoint tutorial references."
+      ],
+      "memory_seed_targets": [
+        "memory_2_12_typographic_whitespace_system"
+      ],
+      "anti_copy_boundary": "Do not copy tutorial video, screenshots, arrows, diagrams, source prose, downloadable assets, or brand marks.",
+      "qa_probe": "The native PPT output should show measurable whitespace as a designed element, not leftover blankness.",
+      "release_boundary": "public_blocked_until_thick_data_gate_native_render_and_human_review"
+    }
+  ]
+}
