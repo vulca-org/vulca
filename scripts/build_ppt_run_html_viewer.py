@@ -205,6 +205,17 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ArmSpec("bad_thickness_memory", "Bad thickness memory", "ppt-run2-19-bad-thickness-memory", "negative"),
         ),
     ),
+    RunSpec(
+        "2.22",
+        "Run 2.22",
+        "run2-22-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-22-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-22-run1-5-skill", "baseline"),
+            ArmSpec("run2_22_full_selector_memory", "Run 2.22 full", "ppt-run2-22-full-vulca", "full"),
+            ArmSpec("bad_selector_memory", "Bad selector memory", "ppt-run2-22-bad-selector-memory", "negative"),
+        ),
+    ),
 )
 
 
@@ -290,6 +301,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run221_selector_gates = read_json(pack / "run2_21_per_role_selector_gates.json")
     run221_rejection_matrix = read_json(pack / "run2_21_evidence_rejection_matrix.json")
     run221_result = read_json(pack / "results" / "run2_21_visual_decision_memory_result.json")
+    run222_result = read_json(pack / "results" / "run2_22_selector_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -389,6 +401,8 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run221RejectionRecords": run221_rejection_matrix.get("role_records", []),
         "run221ResultStatus": run221_result.get("status", ""),
         "run221Result": run221_result,
+        "run222ResultStatus": run222_result.get("status", ""),
+        "run222Result": run222_result,
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -1216,6 +1230,10 @@ def build_html(data: dict[str, Any]) -> str:
       const run221DecisionMemory = (refs.run221DecisionMemory || []).map(run221DecisionMemoryCard).join("");
       const run221SelectorGates = (refs.run221SelectorGates || []).map(run221SelectorGateCard).join("");
       const run221RejectionRecords = (refs.run221RejectionRecords || []).map(run221RejectionRecordCard).join("");
+      const run222Result = refs.run222Result || {{}};
+      const run222Rerun = run222Result.rerun || {{}};
+      const run222Inputs = run222Result.input_chain || {{}};
+      const run222Control = run222Result.control_boundary || {{}};
       const run217Audit = refs.run217MotionAudit || {{}};
       const run217DeliveryTruth = run217Audit.delivery_truth || {{}};
       const run217RendererGap = run217Audit.motion_renderer_gap || {{}};
@@ -1240,6 +1258,32 @@ def build_html(data: dict[str, Any]) -> str:
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Why 2.8 still looks close to 2.7</h3><p>The current bottleneck is visual primitive quality, not trace plumbing.</p></div></div>
           <div class="dataGrid">${{diagnosis}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.22 selector-memory rerun result</h3><p>Generated four-arm rerun that consumes Run 2.21 visual-decision memory, selector gates, and rejection matrix before native PPT code generation. It stays in the same five-layer loop and does not advance to Run 3.0.</p></div><span class="pill">${{escapeHtml(refs.run222ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Rerun proof</h4>
+              ${{detailBlock("Best internal arm", run222Rerun.best_internal_arm)}}
+              ${{detailBlock("Verdict", run222Rerun.best_internal_arm_verdict)}}
+              ${{detailBlock("Four-arm sheet", run222Rerun.combined_contact_sheet)}}
+              ${{detailBlock("Full-skill series", run222Rerun.full_skill_series_sheet)}}
+            </article>
+            <article class="dataCard">
+              <h4>Input chain</h4>
+              ${{detailBlock("Visual decision memory", run222Inputs.visual_decision_memory)}}
+              ${{detailBlock("Selector gates", run222Inputs.selector_gates)}}
+              ${{detailBlock("Rejection matrix", run222Inputs.rejection_matrix)}}
+              ${{detailBlock("Stage policy", run222Result.stage_policy)}}
+            </article>
+            <article class="dataCard">
+              <h4>Control boundary</h4>
+              ${{detailBlock("Control arm", "bad_selector_memory")}}
+              ${{detailBlock("Negative control", run222Control.bad_selector_memory)}}
+              ${{detailBlock("Public ready", run222Result.public_ready)}}
+              ${{detailBlock("Release boundary", run222Result.release_boundary)}}
+            </article>
+          </div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.21 visual-decision memory</h3><p>Data-only layer: turns Run 2.20 trace effectiveness into per-role primary evidence, secondary evidence, and explicit rejection reasons before another generated rerun.</p></div><span class="pill">${{escapeHtml(refs.run221ResultStatus || "missing")}}</span></div>

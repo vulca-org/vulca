@@ -597,6 +597,16 @@ EXPECTED_RUN2_19_TRACE_FIELDS = {
     "run2_19_trace_thickness_status",
     "run2_19_visual_delta_from_run2_16",
 }
+EXPECTED_RUN2_22_TRACE_FIELDS = {
+    "run2_21_visual_decision_memory_id",
+    "run2_21_primary_evidence_id",
+    "run2_21_secondary_evidence_ids",
+    "run2_21_rejected_evidence_reasons",
+    "run2_21_selector_gate_id",
+    "run2_21_visual_decision_delta",
+    "run2_22_selector_execution_status",
+    "run2_22_code_module_ids",
+}
 
 
 def load_json(path: Path) -> dict:
@@ -3752,6 +3762,187 @@ def test_ppt_run_html_viewer_embeds_run2_21_visual_decision_memory() -> None:
             "run2_21_evidence_rejection_matrix.json",
             "run2_21_visual_decision_memory_result.json",
             "Run 2.21 visual-decision memory",
+        ],
+    )
+
+
+def test_run2_22_generator_consumes_run2_21_selector_memory_before_native_ppt_code() -> None:
+    script_path = ROOT / "scripts" / "generate_ppt_run2_22_selector_memory_arms.mjs"
+    assert script_path.exists(), "missing Run 2.22 selector-memory rerun generator"
+    body = script_path.read_text(encoding="utf-8")
+    arm_order = ["prompt_only", "run1_5_skill", "run2_22_full_selector_memory", "bad_selector_memory"]
+
+    def arm_block(arm_id: str) -> str:
+        start = body.index(f'armId: "{arm_id}"')
+        next_starts = [body.find(f'armId: "{next_arm}"', start + 1) for next_arm in arm_order]
+        next_starts = [index for index in next_starts if index > start]
+        end = min(next_starts) if next_starts else len(body)
+        return body[start:end]
+
+    def section(block: str, start_marker: str, end_marker: str) -> str:
+        start = block.index(start_marker)
+        end = block.index(end_marker, start)
+        return block[start:end]
+
+    run2_21_inputs = [
+        "run2_21_visual_decision_memory.json",
+        "run2_21_per_role_selector_gates.json",
+        "run2_21_evidence_rejection_matrix.json",
+    ]
+
+    assert_contains(
+        body,
+        [
+            "prompt_only",
+            "run1_5_skill",
+            "run2_22_full_selector_memory",
+            "bad_selector_memory",
+            "validateRun221SelectorSchemas",
+            "assertArmInputBoundaries",
+            "readRun222SelectorJsonForArm",
+            "selectRun221ForSlide",
+            "assertRun222SelectorGateSelfCheck",
+            "drawRun222CinematicSelectorField",
+            "drawRun222ProductTheaterSurface",
+            "drawRun222EvidenceRoute",
+            "drawRun222ClimaxEditorialStage",
+            "selector_memory_executed_before_native_ppt_generation",
+        ],
+    )
+
+    prompt_allowed = section(arm_block("prompt_only"), "allowed:", "forbidden:")
+    prompt_forbidden = section(arm_block("prompt_only"), "forbidden:", "palette:")
+    run1_allowed = section(arm_block("run1_5_skill"), "allowed:", "forbidden:")
+    run1_forbidden = section(arm_block("run1_5_skill"), "forbidden:", "palette:")
+    full_allowed = section(arm_block("run2_22_full_selector_memory"), "allowed:", "forbidden:")
+    full_forbidden = section(arm_block("run2_22_full_selector_memory"), "forbidden:", "palette:")
+    bad_allowed = section(arm_block("bad_selector_memory"), "allowed:", "forbidden:")
+    bad_forbidden = section(arm_block("bad_selector_memory"), "forbidden:", "palette:")
+
+    for term in run2_21_inputs:
+        assert term not in prompt_allowed
+        assert term in prompt_forbidden
+        assert term not in run1_allowed
+        assert term in run1_forbidden
+        assert term in full_allowed
+        assert term not in full_forbidden
+
+    assert "run2_21_visual_decision_memory.json" in bad_allowed
+    assert "run2_21_per_role_selector_gates.json" not in bad_allowed
+    assert "run2_21_evidence_rejection_matrix.json" not in bad_allowed
+    assert "run2_21_per_role_selector_gates.json" in bad_forbidden
+    assert "run2_21_evidence_rejection_matrix.json" in bad_forbidden
+
+    assert 'const fullRun222 = arm.armId === "run2_22_full_selector_memory";' in body
+    for field in EXPECTED_RUN2_22_TRACE_FIELDS:
+        assert re.search(fr"{field}:\s*fullRun222\s*\?", body), field
+    for function_name in [
+        "drawRun222CinematicSelectorField",
+        "drawRun222ProductTheaterSurface",
+        "drawRun222EvidenceRoute",
+        "drawRun222ClimaxEditorialStage",
+    ]:
+        assert f'registerRun222Module(metrics, "{function_name}")' in body
+
+
+def test_run2_22_selector_runtime_guards_block_bad_arm_and_select_role_memory() -> None:
+    node_script = """
+import fs from "node:fs";
+import path from "node:path";
+const mod = await import("./scripts/generate_ppt_run2_22_selector_memory_arms.mjs");
+const badArm = mod.armSpecs.find((arm) => arm.armId === "bad_selector_memory");
+const fullArm = mod.armSpecs.find((arm) => arm.armId === "run2_22_full_selector_memory");
+let blocked = false;
+try {
+  mod.readRun222SelectorJsonForArm(badArm, mod.RUN2_22_INPUTS.selectorGates);
+} catch (error) {
+  blocked = String(error.message).includes("input boundary does not permit reading");
+}
+if (!blocked) throw new Error("bad selector arm was able to read Run 2.21 selector gates");
+let rejectionBlocked = false;
+try {
+  mod.readRun222SelectorJsonForArm(badArm, mod.RUN2_22_INPUTS.rejectionMatrix);
+} catch (error) {
+  rejectionBlocked = String(error.message).includes("input boundary does not permit reading");
+}
+if (!rejectionBlocked) throw new Error("bad selector arm was able to read Run 2.21 rejection matrix");
+const badTrace = mod.traceFor(badArm);
+for (const slide of badTrace.slides) {
+  if (slide.run2_21_selector_gate_id) throw new Error("bad selector trace leaked selector gate id");
+  if ((slide.run2_21_rejected_evidence_reasons || []).length) throw new Error("bad selector trace leaked rejection reasons");
+  if ((slide.run2_22_code_module_ids || []).length) throw new Error("bad selector trace leaked Run 2.22 code modules");
+}
+const root = process.cwd();
+const decisionMemory = JSON.parse(fs.readFileSync(path.join(root, mod.RUN2_22_INPUTS.decisionMemory), "utf8"));
+const selectorGates = JSON.parse(fs.readFileSync(path.join(root, mod.RUN2_22_INPUTS.selectorGates), "utf8"));
+const rejectionMatrix = JSON.parse(fs.readFileSync(path.join(root, mod.RUN2_22_INPUTS.rejectionMatrix), "utf8"));
+mod.validateRun221SelectorSchemas(decisionMemory, selectorGates, rejectionMatrix);
+const cover = mod.selectRun221ForSlide("cover", decisionMemory, selectorGates, rejectionMatrix);
+if (cover.decision.decision_id !== "vdm_2_21_cover") throw new Error("cover did not select the Run 2.21 cover memory");
+if (cover.gate.gate_id !== "gate_2_21_cover_selector") throw new Error("cover did not select the Run 2.21 cover selector gate");
+if (cover.decision.primary_evidence_id !== cover.rejection.primary_evidence_id) throw new Error("cover primary evidence mismatch");
+if (!fullArm.allowed.includes(mod.RUN2_22_INPUTS.rejectionMatrix)) throw new Error("full arm does not allow Run 2.21 rejection matrix");
+"""
+    completed = subprocess.run(
+        ["node", "--input-type=module", "-e", node_script],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        timeout=20,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+
+
+def test_run2_22_records_selector_rerun_result() -> None:
+    result = (PACK / "results" / "run2_22_selector_rerun_result.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_22_selector_rerun_result.json")
+
+    assert result_json["status"] == "rerun_completed_public_blocked"
+    assert result_json["public_ready"] is False
+    assert result_json["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert result_json["run_id"] == "2.22"
+    assert result_json["rerun"]["best_internal_arm"] == "run2_22_full_selector_memory"
+    assert result_json["rerun"]["best_internal_arm_verdict"] == "selector_memory_executed_before_native_ppt_generation"
+    assert result_json["input_chain"]["visual_decision_memory"] == "docs/product/ppt-run2-data-skill-quality/run2_21_visual_decision_memory.json"
+    assert result_json["input_chain"]["selector_gates"] == "docs/product/ppt-run2-data-skill-quality/run2_21_per_role_selector_gates.json"
+    assert result_json["input_chain"]["rejection_matrix"] == "docs/product/ppt-run2-data-skill-quality/run2_21_evidence_rejection_matrix.json"
+    assert result_json["control_boundary"]["bad_selector_memory"].startswith("decision_memory_only")
+    assert result_json["remaining_public_release_gates"] == [
+        "human_visual_review",
+        "native_or_cross_platform_render_inspection",
+        "motion_or_video_review",
+        "source_boundary_review",
+        "human_release_approval",
+    ]
+    assert result_json["rerun"]["combined_contact_sheet"].endswith("run2-22-four-arm-contact-sheet.png")
+    assert result_json["rerun"]["full_skill_series_sheet"].endswith("run2-full-skill-series-horizontal.png")
+    assert result_json["rerun"]["generated_outputs_committed"] is False
+    assert_contains(
+        result,
+        [
+            "Run 2.22",
+            "Run 2.21 visual-decision memory",
+            "four-arm rerun",
+            "bad_selector_memory",
+            "public blocked",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_mentions_run2_22_generated_rerun() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "Run 2.22",
+            "ppt-run2-22-prompt-only",
+            "ppt-run2-22-run1-5-skill",
+            "ppt-run2-22-full-vulca",
+            "ppt-run2-22-bad-selector-memory",
+            "run2_22_selector_rerun_result.json",
         ],
     )
 

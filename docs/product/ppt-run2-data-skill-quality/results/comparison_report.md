@@ -1,10 +1,30 @@
 # Comparison Report
 
-Status: run2_21-visual-decision-memory-public-blocked.
+Status: run2_22-selector-rerun-public-blocked.
 
 Prior delivery status: motion-renderer-proof-public-blocked.
 
 Prior data/workflow status: run2_18-thickness-pack-public-blocked.
+
+Run 2.22 is the latest generated four-arm PPT rerun. It consumes Run 2.21 visual-decision memory, selector gates, and evidence rejection matrix before native PPT code generation and does not advance to Run 3.0.
+
+The Run 2.22 result is `selector_memory_executed_before_native_ppt_generation`: the full arm records visual-decision memory ids, primary evidence ids, secondary evidence ids, rejected evidence reasons, selector gate ids, selector execution status, and actual code module ids per slide. Public release remains blocked.
+
+| Artifact | Status | Result |
+| --- | --- | --- |
+| `run2_22_selector_rerun_result.json` | generated | machine-readable Run 2.22 rerun result |
+| `run2_22_selector_rerun_result.md` | generated | human-readable Run 2.22 rerun result |
+| `run2-22-four-arm-contact-sheet.png` | generated local output | four-arm comparison |
+| `run2-full-skill-series-horizontal.png` | regenerated local output | full-skill series through Run 2.22 |
+| `ppt-run-viewer.html` | regenerated local output | latest generated deck is Run 2.22 |
+
+## Run 2.22 Findings
+
+- `prompt_only`: remains isolated from Run 2.21 selector memory and skill workflow.
+- `run1_5_skill`: remains the prior baseline and forbids Run 2.21 selector inputs.
+- `run2_22_full_selector_memory`: best internal arm for proving Run 2.21 selector memory can drive code-generated PPT.
+- `bad_selector_memory`: confirms that decision-memory labels alone cannot claim selector gate or rejection-matrix execution.
+- Public release remains blocked. Do not advance to Run 3.0.
 
 Run 2.21 is the latest data/workflow-only layer. It creates no new PPT deck and does not advance to Run 3.0. It converts Run 2.20's trace-effectiveness finding into per-role visual-decision memory, selector gates, and explicit evidence rejection reasons.
 
@@ -42,7 +62,7 @@ The Run 2.20 result is `run2_20_trace_effectiveness_audit_public_blocked`: trace
 - This is a trace-effectiveness pass, not a public visual-quality pass.
 - Public release remains blocked. Do not advance to Run 3.0.
 
-Run 2.19 is the latest generated four-arm PPT rerun. It consumes the Run 2.18 data/workflow thickness layer before native PPT code generation and does not advance to Run 3.0.
+Run 2.19 is a prior generated four-arm PPT rerun. It consumes the Run 2.18 data/workflow thickness layer before native PPT code generation and does not advance to Run 3.0.
 
 The Run 2.19 result is `thickness_pack_executed_before_native_ppt_generation`: the full arm records selected Run 2.18 evidence ids, memory ids, gate ids, bad-control probes, release boundaries, Run 2.19 code module ids, thickness status, and visual delta from Run 2.16. Public release remains blocked.
 
@@ -51,8 +71,8 @@ The Run 2.19 result is `thickness_pack_executed_before_native_ppt_generation`: t
 | `run2_19_thickness_rerun_result.json` | generated | machine-readable Run 2.19 rerun result |
 | `run2_19_thickness_rerun_result.md` | generated | human-readable Run 2.19 rerun result |
 | `run2-19-four-arm-contact-sheet.png` | generated local output | four-arm comparison |
-| `run2-full-skill-series-horizontal.png` | regenerated local output | full-skill series through Run 2.19 |
-| `ppt-run-viewer.html` | regenerated local output | latest generated deck is Run 2.19 |
+| `run2-full-skill-series-horizontal.png` | regenerated local output | full-skill series through Run 2.19 at that stage |
+| `ppt-run-viewer.html` | regenerated local output | viewer latest was Run 2.19 at that stage |
 
 ## Run 2.19 Findings
 
@@ -116,7 +136,7 @@ The Run 2.17 result is `motion_delivery_audit_public_blocked`: the editable stat
 - Keynote readout for the current PPTX files is `static_editable_slides_only`.
 - The next required proof is `run2_17_motion_renderer_proof`, not a new 3.0 stage.
 
-Run 2.16 is the latest reviewed generated PPT result. It reruns the four-arm experiment after Run 2.15 by executing the Run 2.15 layout selector sources, layout module memory, and selector gate matrix before native PPT code generation.
+Run 2.16 is a prior reviewed generated PPT result. It reruns the four-arm experiment after Run 2.15 by executing the Run 2.15 layout selector sources, layout module memory, and selector gate matrix before native PPT code generation.
 
 The Run 2.16 result is `selector_gate_matrix_executed_before_native_ppt_generation`: the full arm records selected layout module ids, selector gate ids, hidden trace policy, text resilience result, product surface probe, metric reveal climax probe, and actual native Run 2.16 module calls. It still does not prove public-video-grade quality because visual review, native render inspection, real product/demo media handling, and human approval remain incomplete.
 
@@ -125,7 +145,7 @@ The Run 2.16 result is `selector_gate_matrix_executed_before_native_ppt_generati
 | `run2_16_selector_rerun_result.json` | generated | selector-backed Run 2.16 rerun result |
 | `run2_16_selector_rerun_result.md` | generated | human-readable result |
 | `run2-16-four-arm-contact-sheet.png` | generated local output | four-arm comparison |
-| `ppt-run-viewer.html` | generated local output | latest generated deck is Run 2.16 |
+| `ppt-run-viewer.html` | generated local output | viewer latest was Run 2.16 at that stage |
 
 ## Run 2.16 Findings
 

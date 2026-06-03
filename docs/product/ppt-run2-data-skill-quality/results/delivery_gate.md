@@ -1,8 +1,25 @@
 # Delivery Gate
 
-Status: run2_21-visual-decision-memory-public-blocked.
+Status: run2_22-selector-rerun-public-blocked.
 
 Public publishing is blocked until native render or cross-platform render inspection passes, motion/render support is proven, and human approval is recorded.
+
+## Run 2.22 Arm Artifacts
+
+Run 2.22 is the latest generated same-stage selector-memory rerun. It uses Run 2.21 visual-decision memory, selector gates, and evidence rejection matrix for the full arm, while the negative control reads decision memory only and forbids selector gates plus rejection matrix.
+
+| Arm | PPTX | Contact sheet | Trace manifest | Delivery QA |
+| --- | --- | --- | --- | --- |
+| `prompt_only` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-22-prompt-only/output/ppt-run2-22-prompt-only.pptx` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-22-prompt-only/preview/contact-sheet.png` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-22-prompt-only/trace_manifest.json` | `internal-demo-ok-public-blocked` |
+| `run1_5_skill` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-22-run1-5-skill/output/ppt-run2-22-run1-5-skill.pptx` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-22-run1-5-skill/preview/contact-sheet.png` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-22-run1-5-skill/trace_manifest.json` | `internal-demo-ok-public-blocked` |
+| `run2_22_full_selector_memory` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-22-full-vulca/output/ppt-run2-22-full-vulca.pptx` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-22-full-vulca/preview/contact-sheet.png` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-22-full-vulca/trace_manifest.json` | `internal-demo-ok-public-blocked` |
+| `bad_selector_memory` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-22-bad-selector-memory/output/ppt-run2-22-bad-selector-memory.pptx` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-22-bad-selector-memory/preview/contact-sheet.png` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-22-bad-selector-memory/trace_manifest.json` | `internal-demo-ok-public-blocked` |
+
+Combined local comparison sheet: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-22-four-arm-contact-sheet.png`.
+
+Full-skill series comparison sheet: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png`.
+
+Result report: `docs/product/ppt-run2-data-skill-quality/results/run2_22_selector_rerun_result.md`.
 
 ## Run 2.21 Visual-Decision Memory
 
@@ -35,7 +52,7 @@ Result report: `docs/product/ppt-run2-data-skill-quality/results/run2_20_trace_e
 
 ## Run 2.19 Arm Artifacts
 
-Run 2.19 is the latest generated same-stage thickness rerun. It uses Run 2.18 evidence, design memory, and workflow gates for the full arm, while the negative control keeps evidence only and forbids the Run 2.18 memory/gate layer.
+Run 2.19 is a prior generated same-stage thickness rerun. It uses Run 2.18 evidence, design memory, and workflow gates for the full arm, while the negative control keeps evidence only and forbids the Run 2.18 memory/gate layer.
 
 | Arm | PPTX | Contact sheet | Trace manifest | Delivery QA |
 | --- | --- | --- | --- | --- |
@@ -95,7 +112,7 @@ Result report: `docs/product/ppt-run2-data-skill-quality/results/run2_17_motion_
 
 ## Run 2.16 Arm Artifacts
 
-Run 2.16 is the latest generated same-stage selector-driven rerun. It uses Run 2.15 selector sources, layout module memory, and selector gate matrix for the full arm, while the negative control keeps selector sources but forbids selector module memory and gate matrix.
+Run 2.16 is a prior generated same-stage selector-driven rerun. It uses Run 2.15 selector sources, layout module memory, and selector gate matrix for the full arm, while the negative control keeps selector sources but forbids selector module memory and gate matrix.
 
 | Arm | PPTX | Contact sheet | Trace manifest | Delivery QA |
 | --- | --- | --- | --- | --- |
@@ -123,7 +140,7 @@ Run 2.15 is data/workflow-only and does not create PPTX artifacts. It defines th
 
 ## Run 2.14 Arm Artifacts
 
-Run 2.14 is the latest generated same-stage aesthetic-trace rerun. It uses Run 2.12 thick data/workflow inputs plus Run 2.10 visual-system aesthetic inputs for the full arm, while the negative control keeps Run 2.12 data/workflow without the Run 2.10 aesthetic shell.
+Run 2.14 is a prior generated same-stage aesthetic-trace rerun. It uses Run 2.12 thick data/workflow inputs plus Run 2.10 visual-system aesthetic inputs for the full arm, while the negative control keeps Run 2.12 data/workflow without the Run 2.10 aesthetic shell.
 
 | Arm | PPTX | Contact sheet | Trace manifest | Delivery QA |
 | --- | --- | --- | --- | --- |
@@ -174,7 +191,7 @@ Run 2.11 is audit-only and does not create new PPTX artifacts.
 
 ## Run 2.10 Arm Artifacts
 
-Run 2.10 is the latest internal same-stage visual-system result. It uses `run2_10_visual_system_sources.json`, `run2_10_visual_system_memory.json`, and `run2_10_visual_system_gate_matrix.json` and keeps the external state public blocked.
+Run 2.10 is a prior internal same-stage visual-system result. It uses `run2_10_visual_system_sources.json`, `run2_10_visual_system_memory.json`, and `run2_10_visual_system_gate_matrix.json` and keeps the external state public blocked.
 
 | Arm | PPTX | Contact sheet | Trace manifest | Delivery QA |
 | --- | --- | --- | --- | --- |
@@ -219,7 +236,7 @@ Full-skill series comparison sheet: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef
 
 ## Run 2.7 Arm Artifacts
 
-Run 2.7 is the latest internal same-stage data/workflow thickening result. It uses `run2_7_commercial_usecase.json`, `run2_7_multimodal_source_records.json`, `run2_7_design_memory.json`, and `run2_7_workflow_policy.json` and keeps the external state public blocked.
+Run 2.7 is a prior internal same-stage data/workflow thickening result. It uses `run2_7_commercial_usecase.json`, `run2_7_multimodal_source_records.json`, `run2_7_design_memory.json`, and `run2_7_workflow_policy.json` and keeps the external state public blocked.
 
 | Arm | PPTX | Contact sheet | Trace manifest | Delivery QA |
 | --- | --- | --- | --- | --- |
