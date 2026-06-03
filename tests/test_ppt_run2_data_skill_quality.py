@@ -3517,6 +3517,102 @@ def test_ppt_run_html_viewer_mentions_run2_19_generated_rerun() -> None:
     )
 
 
+def test_run2_20_trace_effectiveness_audit_script_computes_2_19_data_use(tmp_path: Path) -> None:
+    script_path = ROOT / "scripts" / "audit_ppt_run2_20_trace_effectiveness.py"
+    assert script_path.exists(), "missing Run 2.20 trace effectiveness audit script"
+
+    result_json = tmp_path / "run2_20_trace_effectiveness_audit.json"
+    result_md = tmp_path / "run2_20_trace_effectiveness_audit.md"
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(script_path),
+            "--result-json",
+            str(result_json),
+            "--result-md",
+            str(result_md),
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        timeout=20,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    audit = load_json(result_json)
+    report = result_md.read_text(encoding="utf-8")
+
+    assert audit["status"] == "run2_20_trace_effectiveness_audit_public_blocked"
+    assert audit["run_id"] == "2.20"
+    assert audit["source_generated_run"] == "2.19"
+    assert audit["creates_new_ppt_deck"] is False
+    assert audit["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert audit["public_ready"] is False
+
+    coverage = audit["trace_effectiveness"]
+    assert coverage["full_arm"]["slide_count"] == 6
+    assert coverage["full_arm"]["evidence_records_selected"] == coverage["inventory"]["run2_18_evidence_records"] == 8
+    assert coverage["full_arm"]["memory_records_selected"] == coverage["inventory"]["run2_18_memory_records"] == 6
+    assert coverage["full_arm"]["workflow_gates_selected"] == coverage["inventory"]["run2_18_workflow_gates"] == 6
+    assert coverage["full_arm"]["all_slides_have_memory_gate_and_code"] is True
+    assert coverage["full_arm"]["layout_budget_passed_all_slides"] is True
+    assert coverage["full_arm"]["selected_code_module_count"] >= 5
+    assert not coverage["full_arm"]["unused_evidence_record_ids"]
+    assert not coverage["full_arm"]["unused_memory_ids"]
+    assert not coverage["full_arm"]["unused_gate_ids"]
+
+    bad = audit["control_boundary"]["bad_thickness_memory"]
+    assert bad["uses_evidence_only"] is True
+    assert bad["selected_evidence_slide_count"] == 6
+    assert bad["selected_memory_ids"] == []
+    assert bad["selected_workflow_gate_ids"] == []
+    assert bad["selected_code_module_ids"] == []
+    assert audit["gate_summary"]["data_workflow_trace_effectiveness_gate"] == "pass_internal_only"
+    assert audit["gate_summary"]["public_release_gate"] == "blocked"
+    assert "Run 2.20" in report
+    assert "trace effectiveness" in report
+    assert "Run 2.19" in report
+    assert "public blocked" in report
+
+
+def test_run2_20_records_trace_effectiveness_audit_result() -> None:
+    result = (PACK / "results" / "run2_20_trace_effectiveness_audit.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_20_trace_effectiveness_audit.json")
+
+    assert result_json["status"] == "run2_20_trace_effectiveness_audit_public_blocked"
+    assert result_json["source_generated_run"] == "2.19"
+    assert result_json["creates_new_ppt_deck"] is False
+    assert result_json["trace_effectiveness"]["full_arm"]["all_slides_have_memory_gate_and_code"] is True
+    assert result_json["control_boundary"]["bad_thickness_memory"]["uses_evidence_only"] is True
+    assert result_json["next_required_action"].startswith("thicken_visual_decision")
+    assert_contains(
+        result,
+        [
+            "Run 2.20",
+            "trace effectiveness",
+            "Run 2.19",
+            "Run 2.18 thickness pack",
+            "bad_thickness_memory",
+            "public blocked",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_embeds_run2_20_trace_effectiveness_audit() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "run2_20_trace_effectiveness_audit.json",
+            "Run 2.20 trace effectiveness audit",
+            "trace effectiveness",
+            "bad_thickness_memory",
+        ],
+    )
+
+
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
     layout_dir = tmp_path / "layout"
     layout_dir.mkdir()

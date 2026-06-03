@@ -1,6 +1,6 @@
 # PPT Run 2.0 Data Skill Quality
 
-Status: run2_19-thickness-rerun-public-blocked.
+Status: run2_20-trace-effectiveness-audit-public-blocked.
 
 Run 2.5 does not move to a new stage. It repeats and thickens the same five fixed PPT product layers before the next generation pass:
 
@@ -41,6 +41,8 @@ Run 2.0 does not claim post-training or fine-tuning. It tests runtime case-pack-
 `run2_18_multimodal_evidence_expansion.json`, `run2_18_design_memory_expansion.json`, and `run2_18_workflow_gate_expansion.json` are the latest data/workflow thickness layer. Run 2.18 creates no new `ppt-run2-18-*` deck. It expands real commercial usecases, tutorial/video/design references, design memory, and workflow gates so Run 2.19 can select evidence, memory, gates, bad-control probes, and release boundaries before native PPT code generation.
 
 `results/run2_19_thickness_rerun_result.json` records that the Run 2.18 thickness pack has now been consumed by a same-stage four-arm rerun. Run 2.19 creates `ppt-run2-19-*` decks, selects Run 2.18 evidence/memory/gate ids in trace, and keeps public release blocked. It still does not advance to Run 3.0.
+
+`results/run2_20_trace_effectiveness_audit.json` is the latest audit-only layer. It creates no new deck. It checks whether Run 2.19 actually selected all Run 2.18 evidence, memory, and gates, verifies the evidence-only `bad_thickness_memory` boundary, and records the next thickening target: visual-decision memory and multimodal examples.
 
 Generation must follow `generation_protocol.md`: separate arm runtimes, no cross-arm context leakage, native PPT object checks, and layout geometry QA before scoring.
 

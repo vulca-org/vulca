@@ -1,0 +1,200 @@
+{
+  "schema_version": "ppt_run2_trace_effectiveness_audit.v1",
+  "run_id": "2.20",
+  "status": "run2_20_trace_effectiveness_audit_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "source_generated_run": "2.19",
+  "source_thickness_layer": "2.18",
+  "creates_new_ppt_deck": false,
+  "public_ready": false,
+  "input_chain": {
+    "evidence": "docs/product/ppt-run2-data-skill-quality/run2_18_multimodal_evidence_expansion.json",
+    "memory": "docs/product/ppt-run2-data-skill-quality/run2_18_design_memory_expansion.json",
+    "workflow_gates": "docs/product/ppt-run2-data-skill-quality/run2_18_workflow_gate_expansion.json",
+    "full_trace_manifest": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-19-full-vulca/trace_manifest.json",
+    "bad_control_trace_manifest": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-19-bad-thickness-memory/trace_manifest.json"
+  },
+  "trace_effectiveness": {
+    "inventory": {
+      "run2_18_evidence_records": 8,
+      "run2_18_memory_records": 6,
+      "run2_18_workflow_gates": 6
+    },
+    "full_arm": {
+      "arm_id": "run2_19_full_skill",
+      "slide_count": 6,
+      "evidence_records_selected": 8,
+      "memory_records_selected": 6,
+      "workflow_gates_selected": 6,
+      "selected_code_module_count": 6,
+      "selected_evidence_record_ids": [
+        "thick_2_18_apple_liquid_glass_motion_surface",
+        "thick_2_18_duarte_slide_design_method",
+        "thick_2_18_figma_design_to_production_surface",
+        "thick_2_18_figma_launch_identity_system",
+        "thick_2_18_google_cloud_ai_platform_climax",
+        "thick_2_18_stripe_keynote_business_demo",
+        "thick_2_18_stripe_metric_climax",
+        "thick_2_18_whitespace_powerpoint_method"
+      ],
+      "selected_memory_ids": [
+        "memory_2_18_demo_sequence_route",
+        "memory_2_18_launch_identity_field",
+        "memory_2_18_material_depth_motion",
+        "memory_2_18_metric_climax_object",
+        "memory_2_18_product_surface_theater",
+        "memory_2_18_typographic_whitespace_system"
+      ],
+      "selected_workflow_gate_ids": [
+        "gate_2_18_demo_sequence_selection",
+        "gate_2_18_density_and_anti_copy_selection",
+        "gate_2_18_identity_field_selection",
+        "gate_2_18_metric_climax_selection",
+        "gate_2_18_product_surface_theater_selection",
+        "gate_2_18_usecase_source_selection"
+      ],
+      "selected_code_module_ids": [
+        "drawRun219DemoSequenceRoute",
+        "drawRun219DensityGate",
+        "drawRun219LaunchIdentityField",
+        "drawRun219MetricClimaxObject",
+        "drawRun219ProductSurfaceTheater",
+        "drawRun219QuietReleaseHandoff"
+      ],
+      "unused_evidence_record_ids": [],
+      "unused_memory_ids": [],
+      "unused_gate_ids": [],
+      "all_slides_have_memory_gate_and_code": true,
+      "layout_budget_passed_all_slides": true,
+      "role_records": [
+        {
+          "slide_id": "slide_01",
+          "role": "cover",
+          "evidence_count": 7,
+          "memory_count": 3,
+          "workflow_gate_count": 5,
+          "code_module_ids": [
+            "drawRun219LaunchIdentityField",
+            "drawRun219DemoSequenceRoute"
+          ],
+          "layout_budget_passed": true,
+          "visual_delta_from_run2_16": "Run 2.19 uses Run 2.18 launch identity evidence and memory to make one promise field own the cover."
+        },
+        {
+          "slide_id": "slide_02",
+          "role": "setup",
+          "evidence_count": 4,
+          "memory_count": 2,
+          "workflow_gate_count": 3,
+          "code_module_ids": [
+            "drawRun219ProductSurfaceTheater",
+            "drawRun219DemoSequenceRoute"
+          ],
+          "layout_budget_passed": true,
+          "visual_delta_from_run2_16": "Run 2.19 binds workflow thickness to composition rules before native code generation."
+        },
+        {
+          "slide_id": "slide_03",
+          "role": "contrast",
+          "evidence_count": 7,
+          "memory_count": 3,
+          "workflow_gate_count": 5,
+          "code_module_ids": [
+            "drawRun219LaunchIdentityField",
+            "drawRun219DemoSequenceRoute"
+          ],
+          "layout_budget_passed": true,
+          "visual_delta_from_run2_16": "Run 2.19 turns before/after into a demo sequence route selected from Run 2.18 memory."
+        },
+        {
+          "slide_id": "slide_04",
+          "role": "proof",
+          "evidence_count": 7,
+          "memory_count": 4,
+          "workflow_gate_count": 5,
+          "code_module_ids": [
+            "drawRun219ProductSurfaceTheater",
+            "drawRun219DensityGate"
+          ],
+          "layout_budget_passed": true,
+          "visual_delta_from_run2_16": "Run 2.19 gives the product surface the proof role while keeping trace ids off the public surface."
+        },
+        {
+          "slide_id": "slide_05",
+          "role": "climax",
+          "evidence_count": 8,
+          "memory_count": 4,
+          "workflow_gate_count": 6,
+          "code_module_ids": [
+            "drawRun219MetricClimaxObject",
+            "drawRun219QuietReleaseHandoff"
+          ],
+          "layout_budget_passed": true,
+          "visual_delta_from_run2_16": "Run 2.19 selects the metric climax memory and gate so one outcome object owns the stage."
+        },
+        {
+          "slide_id": "slide_06",
+          "role": "close",
+          "evidence_count": 6,
+          "memory_count": 2,
+          "workflow_gate_count": 4,
+          "code_module_ids": [
+            "drawRun219LaunchIdentityField",
+            "drawRun219QuietReleaseHandoff"
+          ],
+          "layout_budget_passed": true,
+          "visual_delta_from_run2_16": "Run 2.19 keeps public release blocked while presenting a quiet handoff."
+        }
+      ]
+    }
+  },
+  "control_boundary": {
+    "prompt_only": {
+      "arm_id": "prompt_only",
+      "forbids_run2_18_thickness_pack": true,
+      "selected_run2_18_ids": []
+    },
+    "run1_5_skill": {
+      "arm_id": "run1_5_skill",
+      "forbids_run2_18_thickness_pack": true,
+      "selected_run2_18_ids": []
+    },
+    "bad_thickness_memory": {
+      "arm_id": "bad_thickness_memory",
+      "uses_evidence_only": true,
+      "selected_evidence_slide_count": 6,
+      "selected_evidence_ids": [
+        "thick_2_18_duarte_slide_design_method",
+        "thick_2_18_figma_design_to_production_surface",
+        "thick_2_18_figma_launch_identity_system",
+        "thick_2_18_stripe_keynote_business_demo",
+        "thick_2_18_stripe_metric_climax"
+      ],
+      "selected_memory_ids": [],
+      "selected_workflow_gate_ids": [],
+      "selected_code_module_ids": []
+    }
+  },
+  "gap_records": [
+    {
+      "gap_id": "gap_2_20_trace_effectiveness_not_visual_quality",
+      "status": "weak_public_blocked",
+      "finding": "Run 2.19 proves data-to-trace execution, but the audit does not prove public-video-grade visual quality.",
+      "next_fix": "Add thicker visual-decision memory: typography consequences, spacing decisions, product-surface editorial composition, and climax object composition before another generated rerun."
+    },
+    {
+      "gap_id": "gap_2_20_data_selection_too_broad_on_some_roles",
+      "status": "weak",
+      "finding": "Several full-arm slides select many Run 2.18 evidence records, which proves coverage but can blur which source changed which visual decision.",
+      "next_fix": "Add stricter per-role selector gates that require one primary evidence record, one secondary evidence record, and explicit rejection reasons for unused evidence."
+    }
+  ],
+  "gate_summary": {
+    "data_workflow_trace_effectiveness_gate": "pass_internal_only",
+    "bad_control_gate": "pass",
+    "visual_quality_gate": "weak_public_blocked",
+    "public_release_gate": "blocked",
+    "summary": "Run 2.20 confirms that Run 2.19 consumed the full Run 2.18 thickness pack and preserved the evidence-only negative control, but public release remains blocked."
+  },
+  "next_required_action": "thicken_visual_decision_memory_and_multimodal_examples_before_next_generated_rerun"
+}

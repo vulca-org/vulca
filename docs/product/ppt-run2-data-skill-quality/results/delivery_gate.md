@@ -1,8 +1,23 @@
 # Delivery Gate
 
-Status: run2_19-thickness-rerun-public-blocked.
+Status: run2_20-trace-effectiveness-audit-public-blocked.
 
 Public publishing is blocked until native render or cross-platform render inspection passes, motion/render support is proven, and human approval is recorded.
+
+## Run 2.20 Trace Effectiveness Audit
+
+Run 2.20 is audit-only and does not create PPTX artifacts. It checks the Run 2.19 full-arm trace against the Run 2.18 thickness pack and verifies that `bad_thickness_memory` stays evidence-only.
+
+| Check | Result |
+| --- | --- |
+| Full arm selected Run 2.18 evidence | 8 / 8 records |
+| Full arm selected Run 2.18 design memory | 6 / 6 records |
+| Full arm selected Run 2.18 workflow gates | 6 / 6 gates |
+| Full arm slide trace | all six slides have memory, gate, and code-module trace |
+| Bad thickness control | evidence-only; no memory, gate, or code-module ids |
+| Public gate | blocked because trace effectiveness is not public visual-quality proof |
+
+Result report: `docs/product/ppt-run2-data-skill-quality/results/run2_20_trace_effectiveness_audit.md`.
 
 ## Run 2.19 Arm Artifacts
 

@@ -285,6 +285,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run218_gates = read_json(pack / "run2_18_workflow_gate_expansion.json")
     run218_result = read_json(pack / "results" / "run2_18_thickness_result.json")
     run219_result = read_json(pack / "results" / "run2_19_thickness_rerun_result.json")
+    run220_trace_audit = read_json(pack / "results" / "run2_20_trace_effectiveness_audit.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -374,6 +375,8 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run218Result": run218_result,
         "run219ResultStatus": run219_result.get("status", ""),
         "run219Result": run219_result,
+        "run220TraceAuditStatus": run220_trace_audit.get("status", ""),
+        "run220TraceAudit": run220_trace_audit,
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -1039,12 +1042,27 @@ def build_html(data: dict[str, Any]) -> str:
     }}
 
     function renderAudit() {{
-      const audit = (DATA.references || {{}}).run211Audit || {{}};
+      const refs = DATA.references || {{}};
+      const audit = (refs.run220TraceAudit && refs.run220TraceAudit.status) ? refs.run220TraceAudit : (refs.run211Audit || {{}});
       if (!audit.status) {{
         content.innerHTML = `<div class="empty">No Data/Workflow Audit is embedded in this viewer.</div>`;
         return;
       }}
-      const chainRows = (audit.chain_records || []).map((chain) => `<tr>
+      const roleTraceRecords = (((audit.trace_effectiveness || {{}}).full_arm || {{}}).role_records || []).map((role) => ({{
+        chain_id: `${{role.role}}_run2_20_trace_effectiveness`,
+        run_id: "2.20",
+        slide_roles: [role.role],
+        required_code_module_ids: role.code_module_ids || [],
+        actual_code_module_ids: role.code_module_ids || [],
+        status: role.layout_budget_passed ? "pass" : "blocked",
+        reason: `evidence=${{role.evidence_count}}, memory=${{role.memory_count}}, gates=${{role.workflow_gate_count}}; ${{role.visual_delta_from_run2_16 || "no visual delta recorded"}}`,
+        next_fix: role.layout_budget_passed ? "thicken_visual_decision_memory" : "repair_layout_budget",
+      }}));
+      const chains = (audit.chain_records && audit.chain_records.length) ? audit.chain_records : roleTraceRecords;
+      const sourceInventory = audit.source_inventory || ((audit.trace_effectiveness || {{}}).inventory || {{}});
+      const workflowInventory = audit.workflow_inventory || (((audit.trace_effectiveness || {{}}).full_arm || {{}}));
+      const auditTitle = audit.run_id === "2.20" ? "Run 2.20 trace effectiveness audit (audit-only layer)" : "Data/Workflow Audit";
+      const chainRows = (chains || []).map((chain) => `<tr>
         <td>${{escapeHtml(chain.chain_id)}}</td>
         <td>${{escapeHtml(chain.run_id)}}</td>
         <td>${{chipList(chain.slide_roles)}}</td>
@@ -1053,7 +1071,18 @@ def build_html(data: dict[str, Any]) -> str:
         <td><span class="${{auditStatusClass(chain.status)}}">${{escapeHtml(chain.status)}}</span>${{detailBlock("Reason", chain.reason)}}</td>
         <td>${{escapeHtml(chain.next_fix)}}</td>
       </tr>`).join("");
-      const controlRows = (audit.negative_control_checks || []).map((check) => `<tr>
+      const controlChecks = (audit.negative_control_checks && audit.negative_control_checks.length)
+        ? audit.negative_control_checks
+        : Object.entries(audit.control_boundary || {{}}).map(([arm, boundary]) => ({{
+            arm_role: arm,
+            forbidden_fields: [
+              boundary.forbids_run2_18_thickness_pack ? "run2_18_thickness_pack" : "",
+              boundary.uses_evidence_only ? "run2_18_design_memory_and_workflow_gates" : "",
+            ].filter(Boolean),
+            observed_boundary: JSON.stringify(boundary),
+            status: boundary.uses_evidence_only || boundary.forbids_run2_18_thickness_pack ? "pass" : "weak",
+          }}));
+      const controlRows = (controlChecks || []).map((check) => `<tr>
         <td>${{escapeHtml(check.arm_role)}}</td>
         <td>${{listBlock(check.forbidden_fields)}}</td>
         <td>${{escapeHtml(check.observed_boundary)}}</td>
@@ -1064,7 +1093,7 @@ def build_html(data: dict[str, Any]) -> str:
       const weak = gate.weak || gate.weaknesses || gate.summary || "";
       const blocked = gate.blocked || gate.public_release_gate || "";
       content.innerHTML = `<div class="sectionHeader">
-        <div><h2>Data/Workflow Audit</h2><div class="summary">${{escapeHtml(audit.stage_policy || "Run 2.11 same-stage audit")}}</div></div>
+        <div><h2>${{auditTitle}}</h2><div class="summary">${{escapeHtml(audit.stage_policy || "same-stage audit")}}</div></div>
         <span class="pill ${{auditStatusClass(audit.status)}}">${{escapeHtml(audit.status)}}</span>
       </div>
       <div class="dataStack">
@@ -1072,8 +1101,8 @@ def build_html(data: dict[str, Any]) -> str:
           <div class="dataBand">
             <div class="dataBandHead"><div><h3>Inventories</h3><p>Counts of source, memory, workflow, and gate material checked by the audit.</p></div></div>
             <div class="dataGrid">
-              ${{auditInventoryCard("Source inventory", audit.source_inventory, "Data artifacts available before the next rerun.")}}
-              ${{auditInventoryCard("Workflow inventory", audit.workflow_inventory, "Workflow gates and stage records available before the next rerun.")}}
+              ${{auditInventoryCard("Source inventory", sourceInventory, "Data artifacts checked by this audit.")}}
+              ${{auditInventoryCard("Workflow inventory", workflowInventory, "Trace, module, and gate material checked by this audit.")}}
             </div>
           </div>
           <div class="dataBand">
@@ -1087,7 +1116,7 @@ def build_html(data: dict[str, Any]) -> str:
           </div>
         </section>
         <section class="dataBand">
-          <div class="dataBandHead"><div><h3>Source-to-slide chains</h3><p>Trace-grounded path from data records and gates to actual code module evidence.</p></div><span class="pill">${{(audit.chain_records || []).length}} chains</span></div>
+          <div class="dataBandHead"><div><h3>Source-to-slide chains</h3><p>Trace-grounded path from data records and gates to actual code module evidence.</p></div><span class="pill">${{(chains || []).length}} chains</span></div>
           <table class="auditTable">
             <thead><tr><th>Chain</th><th>Run</th><th>Slide roles</th><th>Required modules</th><th>Actual modules</th><th>Status / reason</th><th>Next fix</th></tr></thead>
             <tbody>${{chainRows}}</tbody>

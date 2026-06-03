@@ -1,10 +1,27 @@
 # Comparison Report
 
-Status: run2_19-thickness-rerun-public-blocked.
+Status: run2_20-trace-effectiveness-audit-public-blocked.
 
 Prior delivery status: motion-renderer-proof-public-blocked.
 
 Prior data/workflow status: run2_18-thickness-pack-public-blocked.
+
+Run 2.20 is the latest audit-only layer. It creates no new PPT deck and does not advance to Run 3.0. It verifies that Run 2.19 selected all Run 2.18 evidence, memory, and workflow gates in the full-arm trace while preserving the evidence-only `bad_thickness_memory` boundary.
+
+The Run 2.20 result is `run2_20_trace_effectiveness_audit_public_blocked`: trace effectiveness passes internally, but visual quality and public release remain blocked.
+
+| Artifact | Status | Result |
+| --- | --- | --- |
+| `run2_20_trace_effectiveness_audit.json` | generated | machine-readable Run 2.20 trace-effectiveness audit |
+| `run2_20_trace_effectiveness_audit.md` | generated | human-readable Run 2.20 trace-effectiveness audit |
+| `ppt-run-viewer.html` | regenerated local output | Data/Workflow Audit tab defaults to Run 2.20 |
+
+## Run 2.20 Findings
+
+- Run 2.19 full arm selects all Run 2.18 evidence, memory, and workflow gates across six slides.
+- `bad_thickness_memory` remains evidence-only and has no selected memory, workflow gate, or code module ids.
+- This is a trace-effectiveness pass, not a public visual-quality pass.
+- Public release remains blocked. Do not advance to Run 3.0.
 
 Run 2.19 is the latest generated four-arm PPT rerun. It consumes the Run 2.18 data/workflow thickness layer before native PPT code generation and does not advance to Run 3.0.
 
