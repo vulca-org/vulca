@@ -241,7 +241,15 @@ def build_arm(base: Path, out: Path, spec: ArmSpec) -> dict[str, Any] | None:
     }
 
 
-def build_reference_data(repo_root: Path) -> dict[str, Any]:
+def local_output_href(result: dict[str, Any], key: str, repo_root: Path, out: Path) -> str:
+    raw = str((result.get("local_outputs") or {}).get(key) or "")
+    if not raw:
+        return ""
+    path = (repo_root / raw).resolve()
+    return rel(path, out.parent) if path.exists() else raw
+
+
+def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) -> dict[str, Any]:
     pack = repo_root / PACK_REL
     sources = read_json(pack / "sources.json")
     decomposition = read_json(pack / "run2_8_tutorial_decomposition.json")
@@ -260,6 +268,7 @@ def build_reference_data(repo_root: Path) -> dict[str, Any]:
     run215_memory = read_json(pack / "run2_15_layout_module_memory.json")
     run215_gate_matrix = read_json(pack / "run2_15_layout_selector_gate_matrix.json")
     run217_motion_audit = read_json(pack / "results" / "run2_17_motion_delivery_audit.json")
+    run217_motion_proof = read_json(pack / "results" / "run2_17_motion_renderer_proof_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -327,6 +336,10 @@ def build_reference_data(repo_root: Path) -> dict[str, Any]:
         "run215SelectorGates": run215_gate_matrix.get("gates", []),
         "run217MotionAuditStatus": run217_motion_audit.get("status", ""),
         "run217MotionAudit": run217_motion_audit,
+        "run217MotionProofStatus": run217_motion_proof.get("status", ""),
+        "run217MotionProof": run217_motion_proof,
+        "run217MotionProofHtmlHref": local_output_href(run217_motion_proof, "html", repo_root, out),
+        "run217MotionProofManifestHref": local_output_href(run217_motion_proof, "manifest", repo_root, out),
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -365,7 +378,7 @@ def build_data(presentations_dir: Path, out: Path) -> dict[str, Any]:
         "runs": runs,
         "latestRunId": runs[-1]["id"] if runs else "",
         "generatedFrom": "scripts/build_ppt_run_html_viewer.py",
-        "references": build_reference_data(repo_root),
+        "references": build_reference_data(repo_root, presentations_dir, out),
     }
 
 
@@ -903,6 +916,16 @@ def build_html(data: dict[str, Any]) -> str:
       </article>`;
     }}
 
+    function run217ProofSceneCard(scene) {{
+      return `<article class="dataCard">
+        <h4>${{escapeHtml(scene.scene_id)}}</h4>
+        ${{chipList([scene.role, scene.public_release_gate].filter(Boolean))}}
+        ${{detailBlock("Source motion contracts", scene.source_motion_contract_ids)}}
+        ${{detailBlock("Animation steps", scene.animation_steps)}}
+        ${{detailBlock("Reduced motion fallback", scene.reduced_motion_fallback)}}
+      </article>`;
+    }}
+
     function stageCard(stage) {{
       return `<article class="dataCard">
         <h4>${{String(stage.order || "").padStart(2, "0")}} / ${{escapeHtml(stage.id)}}</h4>
@@ -1022,6 +1045,15 @@ def build_html(data: dict[str, Any]) -> str:
       const run217DeliveryTruth = run217Audit.delivery_truth || {{}};
       const run217RendererGap = run217Audit.motion_renderer_gap || {{}};
       const run217ArmAudits = (run217Audit.arm_audits || []).map(run217ArmAuditCard).join("");
+      const run217Proof = refs.run217MotionProof || {{}};
+      const run217ProofBoundary = run217Proof.delivery_boundary || {{}};
+      const run217ProofScenes = (run217Proof.scenes || []).map(run217ProofSceneCard).join("");
+      const proofHtmlLink = refs.run217MotionProofHtmlHref
+        ? `<a href="${{escapeHtml(refs.run217MotionProofHtmlHref)}}" target="_blank" rel="noreferrer">run2-17-motion-renderer-proof.html</a>`
+        : "";
+      const proofManifestLink = refs.run217MotionProofManifestHref
+        ? `<a href="${{escapeHtml(refs.run217MotionProofManifestHref)}}" target="_blank" rel="noreferrer">run2-17-motion-renderer-proof-manifest.json</a>`
+        : "";
       const stages = (refs.workflowStages || []).map(stageCard).join("");
       const skill = escapeHtml(refs.skillMarkdown || "Missing vulca_ppt_skill.md");
 
@@ -1055,6 +1087,21 @@ def build_html(data: dict[str, Any]) -> str:
             </article>
           </div>
           <div class="dataGrid">${{run217ArmAudits}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.17 motion renderer proof</h3><p>A separate HTML motion renderer proof for cover, before/after, and climax. It is not Keynote animation and it does not replace the editable static PPT.</p></div><span class="pill">${{escapeHtml(refs.run217MotionProofStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Proof output</h4>
+              ${{detailBlock("Motion proof role", run217ProofBoundary.motion_proof_role || "separate_html_motion_renderer")}}
+              ${{detailBlock("Static PPT role", run217ProofBoundary.static_ppt_role)}}
+              ${{detailBlock("Native animation claim", run217ProofBoundary.native_pptx_animation_claim || "not_claimed")}}
+              ${{detailBlock("Keynote animation claim", run217ProofBoundary.keynote_animation_claim || "not_claimed")}}
+              <p>${{proofHtmlLink}}</p>
+              <p>${{proofManifestLink}}</p>
+            </article>
+          </div>
+          <div class="dataGrid">${{run217ProofScenes}}</div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Source URLs</h3><p>Reference identities stored in sources.json. These links are for inspection; copied media, layouts, transcripts, and brand marks remain forbidden.</p></div><span class="pill">${{(refs.sources || []).length}} sources</span></div>

@@ -1,6 +1,23 @@
 # Comparison Report
 
-Status: motion-delivery-audit-public-blocked.
+Status: motion-renderer-proof-public-blocked.
+
+Run 2.17 now has a separate motion renderer proof. It does not generate a new four-arm PPT and does not claim Keynote animation. It creates a local HTML motion proof for three minimum scenes: `cover_attention_reset`, `before_after_reveal`, and `climax_scale_emphasis`.
+
+The Run 2.17 proof result is `motion_renderer_proof_created_public_blocked`: static PPT remains the editable product output, and the motion proof is a separate HTML renderer path. Public release remains blocked until human review, video export gate, and native/cross-platform inspection pass.
+
+| Artifact | Status | Result |
+| --- | --- | --- |
+| `run2_17_motion_renderer_proof_result.json` | generated | machine-readable separate HTML motion renderer proof |
+| `run2_17_motion_renderer_proof_result.md` | generated | human-readable proof result |
+| `run2-17-motion-renderer-proof.html` | generated local output | cover/before-after/climax motion proof |
+
+## Run 2.17 Motion Proof Findings
+
+- The proof is a separate HTML motion renderer, not Keynote animation.
+- It covers the minimum three scenes required by the delivery audit: cover, before/after, and climax.
+- Each scene records source motion contract ids, animation steps, and reduced-motion fallback.
+- Public release remains blocked. Do not advance to Run 3.0.
 
 Run 2.17 is the latest delivery audit. It does not generate a new four-arm PPT. It audits the Run 2.16 PPTX files and confirms that the HTML viewer is static, the current PPTX files contain no transition/timing/animation/audio/video XML, and Keynote will show static editable slides unless a later renderer adds native animation.
 

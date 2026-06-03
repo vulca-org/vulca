@@ -1,8 +1,23 @@
 # Delivery Gate
 
-Status: motion-delivery-audit-public-blocked.
+Status: motion-renderer-proof-public-blocked.
 
 Public publishing is blocked until native render or cross-platform render inspection passes, motion/render support is proven, and human approval is recorded.
+
+## Run 2.17 Motion Renderer Proof
+
+Run 2.17 now includes a separate HTML motion renderer proof. It is not a new PPT deck and it does not claim Keynote animation.
+
+| Check | Result |
+| --- | --- |
+| Motion proof output | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-17-motion-renderer-proof.html` |
+| Manifest | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-17-motion-renderer-proof-manifest.json` |
+| Scene coverage | cover attention reset; before/after reveal; climax scale emphasis |
+| Static PPT role | editable product output |
+| Keynote animation claim | not claimed |
+| Public gate | blocked until human review, video export gate, and native/cross-platform inspection |
+
+Result report: `docs/product/ppt-run2-data-skill-quality/results/run2_17_motion_renderer_proof_result.md`.
 
 ## Run 2.17 Motion Delivery Audit
 

@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "status": "motion_renderer_proof_created_public_blocked",
+  "public_ready": false,
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "run_id": "2.17-motion-proof",
+  "source_generated_run_id": "2.16",
+  "source_audit": "run2_17_motion_delivery_audit.json",
+  "delivery_boundary": {
+    "static_ppt_role": "editable_product_output",
+    "motion_proof_role": "separate_html_motion_renderer",
+    "native_pptx_animation_claim": "not_claimed",
+    "keynote_animation_claim": "not_claimed",
+    "boundary_id": "not_pptx_not_keynote_animation"
+  },
+  "local_outputs": {
+    "html": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-17-motion-renderer-proof.html",
+    "manifest": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-17-motion-renderer-proof-manifest.json"
+  },
+  "scenes": [
+    {
+      "scene_id": "cover_attention_reset",
+      "role": "cover",
+      "title": "Data becomes a presentation system",
+      "subtitle": "One field appears before proof density.",
+      "source_motion_contract_ids": [
+        "beat_opening_scale_reset",
+        "motion_target_opening_attention_reset",
+        "sequence_component_opening_reset"
+      ],
+      "animation_steps": [
+        "hold a quiet field",
+        "bring in the claim",
+        "settle on one proof object"
+      ],
+      "reduced_motion_fallback": "show final claim and proof object without movement",
+      "accent": "#e84d2a",
+      "public_release_gate": "blocked_until_human_review_and_video_export_gate"
+    },
+    {
+      "scene_id": "before_after_reveal",
+      "role": "before_after",
+      "title": "Before becomes after through memory",
+      "subtitle": "The route moves from weak prompt output to selected module output.",
+      "source_motion_contract_ids": [
+        "beat_before_after_transformation",
+        "motion_target_before_after_reveal",
+        "sequence_component_before_after_reveal"
+      ],
+      "animation_steps": [
+        "show before state",
+        "move through selector memory",
+        "resolve to after state"
+      ],
+      "reduced_motion_fallback": "show before, selector, and after states at once",
+      "accent": "#2d6cdf",
+      "public_release_gate": "blocked_until_human_review_and_video_export_gate"
+    },
+    {
+      "scene_id": "climax_scale_emphasis",
+      "role": "climax",
+      "title": "The climax becomes one object",
+      "subtitle": "The metric enlarges after proof is understood.",
+      "source_motion_contract_ids": [
+        "beat_climax_scale_up",
+        "motion_target_climax_scale_emphasis",
+        "sequence_component_climax_scale"
+      ],
+      "animation_steps": [
+        "dim surrounding proof",
+        "scale the outcome object",
+        "hold on the release gate"
+      ],
+      "reduced_motion_fallback": "show enlarged outcome and release gate without scaling",
+      "accent": "#13a678",
+      "public_release_gate": "blocked_until_human_review_and_video_export_gate"
+    }
+  ],
+  "qa_summary": {
+    "scene_count": "passed: cover, before/after, and climax proof scenes generated",
+    "motion_boundary": "passed: motion proof is separate HTML and does not claim Keynote animation",
+    "reduced_motion": "passed: CSS prefers-reduced-motion fallback included",
+    "public_release_gate": "blocked pending human review, video export gate, and native render inspection"
+  }
+}

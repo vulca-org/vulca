@@ -3389,7 +3389,18 @@ def test_run2_results_reviewed_and_public_blocked() -> None:
     delivery = (PACK / "results" / "delivery_gate.md").read_text(encoding="utf-8")
     trace_contract = load_json(PACK / "results" / "trace_manifest_contract.json")
 
-    assert_contains(comparison, ["Status", "motion-delivery-audit-public-blocked"])
+    assert_contains(comparison, ["Status", "motion-renderer-proof-public-blocked"])
+    assert_contains(
+        comparison,
+        [
+            "Run 2.17 Motion Proof",
+            "run2_17_motion_renderer_proof_result.json",
+            "separate HTML motion renderer",
+            "cover_attention_reset",
+            "before_after_reveal",
+            "climax_scale_emphasis",
+        ],
+    )
     assert_contains(
         comparison,
         [
@@ -4087,6 +4098,69 @@ def test_run2_17_records_motion_delivery_audit() -> None:
     )
 
 
+def test_run2_17_records_motion_renderer_proof_contract() -> None:
+    result = (PACK / "results" / "run2_17_motion_renderer_proof_result.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_17_motion_renderer_proof_result.json")
+
+    assert result_json["status"] == "motion_renderer_proof_created_public_blocked"
+    assert result_json["public_ready"] is False
+    assert result_json["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert result_json["source_generated_run_id"] == "2.16"
+    assert result_json["source_audit"] == "run2_17_motion_delivery_audit.json"
+    assert result_json["delivery_boundary"]["static_ppt_role"] == "editable_product_output"
+    assert result_json["delivery_boundary"]["motion_proof_role"] == "separate_html_motion_renderer"
+    assert result_json["delivery_boundary"]["native_pptx_animation_claim"] == "not_claimed"
+    assert result_json["delivery_boundary"]["keynote_animation_claim"] == "not_claimed"
+    assert result_json["local_outputs"]["html"].endswith("run2-17-motion-renderer-proof.html")
+    assert result_json["local_outputs"]["manifest"].endswith("run2-17-motion-renderer-proof-manifest.json")
+
+    scenes = result_json["scenes"]
+    assert [scene["scene_id"] for scene in scenes] == [
+        "cover_attention_reset",
+        "before_after_reveal",
+        "climax_scale_emphasis",
+    ]
+    for scene in scenes:
+        assert scene["source_motion_contract_ids"]
+        assert scene["animation_steps"]
+        assert scene["reduced_motion_fallback"]
+        assert scene["public_release_gate"] == "blocked_until_human_review_and_video_export_gate"
+
+    assert_contains(
+        result,
+        [
+            "Run 2.17 motion renderer proof",
+            "separate HTML motion renderer",
+            "not Keynote animation",
+            "cover_attention_reset",
+            "before_after_reveal",
+            "climax_scale_emphasis",
+            "public blocked",
+        ],
+    )
+
+
+def test_run2_17_motion_renderer_proof_script_is_code_generated_and_bounded() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run2_17_motion_renderer_proof.py").read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "run2-17-motion-renderer-proof.html",
+            "run2-17-motion-renderer-proof-manifest.json",
+            "cover_attention_reset",
+            "before_after_reveal",
+            "climax_scale_emphasis",
+            "not_pptx_not_keynote_animation",
+            "prefers-reduced-motion",
+            "Play",
+            "Pause",
+            "Restart",
+        ],
+    )
+    assert ".pptx" not in script.lower()
+
+
 def test_ppt_run_html_viewer_mentions_run2_15_selector_artifacts() -> None:
     script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
 
@@ -4117,6 +4191,22 @@ def test_ppt_run_html_viewer_mentions_run2_17_motion_delivery_audit() -> None:
         ],
     )
     assert "ppt-run2-17-" not in script
+
+
+def test_ppt_run_html_viewer_mentions_run2_17_motion_renderer_proof() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "run2_17_motion_renderer_proof_result.json",
+            "Run 2.17 motion renderer proof",
+            "run2-17-motion-renderer-proof.html",
+            "separate_html_motion_renderer",
+            "not_claimed",
+        ],
+    )
+    assert "Run 2.17" not in script.split("RUN_SPECS", 1)[1].split("def rel", 1)[0]
 
 
 def test_ppt_run_html_viewer_builder_tracks_latest_outputs() -> None:
