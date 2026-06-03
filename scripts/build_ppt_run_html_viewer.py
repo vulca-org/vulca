@@ -161,6 +161,17 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ArmSpec("bad_visual_system_memory", "Bad visual system", "ppt-run2-10-bad-visual-system-memory", "negative"),
         ),
     ),
+    RunSpec(
+        "2.13",
+        "Run 2.13",
+        "run2-13-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-13-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-13-run1-5-skill", "baseline"),
+            ArmSpec("run2_13_full_skill", "Run 2.13 full", "ppt-run2-13-full-vulca", "full"),
+            ArmSpec("bad_thick_data_memory", "Bad thick data memory", "ppt-run2-13-bad-thick-data-memory", "negative"),
+        ),
+    ),
 )
 
 
@@ -220,6 +231,9 @@ def build_reference_data(repo_root: Path) -> dict[str, Any]:
     run210_sources = read_json(pack / "run2_10_visual_system_sources.json")
     run210_memory = read_json(pack / "run2_10_visual_system_memory.json")
     run210_gate_matrix = read_json(pack / "run2_10_visual_system_gate_matrix.json")
+    run212_evidence = read_json(pack / "run2_12_thick_multimodal_evidence.json")
+    run212_memory = read_json(pack / "run2_12_design_memory_seed.json")
+    run212_gate_seed = read_json(pack / "run2_12_workflow_gate_seed.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -241,8 +255,8 @@ def build_reference_data(repo_root: Path) -> dict[str, Any]:
                 "body": "The next rerun must upgrade visual primitives: product-surface composition, asymmetry, depth, editorial spread, motion beats, and a non-dashboard climax.",
             },
             {
-                "label": "2.10 visual-system guard",
-                "body": "Run 2.10 is a same-stage thickening pass that must prove structural asymmetry, visible whitespace, product theater, non-rectangular proof paths, and a shape-count budget rather than another palette swap.",
+                "label": "2.13 thick-data rerun guard",
+                "body": "Run 2.13 must prove the Run 2.12 evidence, memory seeds, and workflow gate seeds changed the native PPT generation path; evidence-only negative control should remain weaker.",
             },
         ],
         "sources": sources.get("sources", []),
@@ -265,6 +279,12 @@ def build_reference_data(repo_root: Path) -> dict[str, Any]:
         "run210VisualSystems": run210_memory.get("visual_systems", []),
         "run210GateStatus": run210_gate_matrix.get("status", ""),
         "run210VisualGates": run210_gate_matrix.get("gates", []),
+        "run212EvidenceStatus": run212_evidence.get("status", ""),
+        "run212ThickEvidenceRecords": run212_evidence.get("records", []),
+        "run212MemoryStatus": run212_memory.get("status", ""),
+        "run212MemorySeeds": run212_memory.get("memory_seeds", []),
+        "run212GateStatus": run212_gate_seed.get("status", ""),
+        "run212WorkflowGateSeeds": run212_gate_seed.get("gates", []),
         "run211Audit": run211_audit,
         "workflowStatus": workflow.get("status", ""),
         "workflowStages": workflow.get("stages", []),
@@ -725,6 +745,51 @@ def build_html(data: dict[str, Any]) -> str:
       </article>`;
     }}
 
+    function run212EvidenceCard(record) {{
+      const urls = (record.source_urls || []).map((item) => item.url).filter(Boolean);
+      return `<article class="dataCard">
+        <h4>${{escapeHtml(record.id)}}</h4>
+        ${{chipList(record.modality_mix)}}
+        ${{detailBlock("Source role", record.source_role)}}
+        ${{detailBlock("Source ids", record.source_ids)}}
+        ${{detailBlock("Source URLs", urls)}}
+        ${{detailBlock("Segment locator", record.segment_locator)}}
+        ${{detailBlock("Derived design method", record.derived_design_method)}}
+        ${{detailBlock("Native PPT obligations", record.native_ppt_code_obligations)}}
+        ${{detailBlock("Workflow gate obligations", record.workflow_gate_obligations)}}
+        ${{detailBlock("Memory targets", record.memory_seed_targets)}}
+        ${{detailBlock("Anti-copy boundary", record.anti_copy_boundary)}}
+      </article>`;
+    }}
+
+    function run212MemorySeedCard(seed) {{
+      const contract = seed.native_ppt_contract || {{}};
+      return `<article class="dataCard">
+        <h4>${{escapeHtml(seed.id)}}</h4>
+        ${{chipList(seed.applies_to_slide_roles)}}
+        ${{detailBlock("Evidence records", seed.evidence_record_ids)}}
+        ${{detailBlock("Memory type", seed.memory_type)}}
+        ${{detailBlock("Design constraints", seed.design_constraints)}}
+        ${{detailBlock("Code binding hint", contract.code_binding_hint)}}
+        ${{detailBlock("Required before render", contract.required_before_render)}}
+        ${{detailBlock("Required trace fields", seed.required_trace_fields)}}
+        ${{detailBlock("Failure probe", seed.failure_probe)}}
+      </article>`;
+    }}
+
+    function run212WorkflowGateCard(gate) {{
+      return `<article class="dataCard">
+        <h4>${{escapeHtml(gate.id)}}</h4>
+        ${{chipList([gate.gate_type, gate.required_before_next_rerun ? "required before rerun" : ""].filter(Boolean))}}
+        ${{detailBlock("Slide roles", gate.slide_roles)}}
+        ${{detailBlock("Evidence records", gate.evidence_record_ids)}}
+        ${{detailBlock("Memory seeds", gate.memory_seed_ids)}}
+        ${{detailBlock("Pass/fail checks", gate.pass_fail_checks)}}
+        ${{detailBlock("Trace fields", gate.trace_fields)}}
+        ${{detailBlock("Release boundary", gate.release_boundary)}}
+      </article>`;
+    }}
+
     function stageCard(stage) {{
       return `<article class="dataCard">
         <h4>${{String(stage.order || "").padStart(2, "0")}} / ${{escapeHtml(stage.id)}}</h4>
@@ -834,6 +899,9 @@ def build_html(data: dict[str, Any]) -> str:
       const run210Sources = (refs.run210VisualSystemSources || []).map(run210SourceCard).join("");
       const run210Systems = (refs.run210VisualSystems || []).map(run210VisualSystemCard).join("");
       const run210Gates = (refs.run210VisualGates || []).map(run210VisualGateCard).join("");
+      const run212Evidence = (refs.run212ThickEvidenceRecords || []).map(run212EvidenceCard).join("");
+      const run212MemorySeeds = (refs.run212MemorySeeds || []).map(run212MemorySeedCard).join("");
+      const run212WorkflowGates = (refs.run212WorkflowGateSeeds || []).map(run212WorkflowGateCard).join("");
       const stages = (refs.workflowStages || []).map(stageCard).join("");
       const skill = escapeHtml(refs.skillMarkdown || "Missing vulca_ppt_skill.md");
 
@@ -889,6 +957,18 @@ def build_html(data: dict[str, Any]) -> str:
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.10 visual-system gate matrix</h3><p>${{escapeHtml(refs.run210GateStatus)}}. Per-role gates require actual drawRun210 module calls, shape budgets, and sameness failure probes against Run 2.9.</p></div><span class="pill">${{(refs.run210VisualGates || []).length}} gates</span></div>
           <div class="dataGrid">${{run210Gates}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.12 thick multimodal evidence</h3><p>${{escapeHtml(refs.run212EvidenceStatus)}}. This is the real usecase/tutorial/video/audio-derived evidence layer used by Run 2.13; raw media and copied source visuals remain forbidden.</p></div><span class="pill">${{(refs.run212ThickEvidenceRecords || []).length}} records</span></div>
+          <div class="dataGrid">${{run212Evidence}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.12 design memory seeds</h3><p>${{escapeHtml(refs.run212MemoryStatus)}}. These memory seeds translate thick evidence into native PPT contracts and code binding hints.</p></div><span class="pill">${{(refs.run212MemorySeeds || []).length}} seeds</span></div>
+          <div class="dataGrid">${{run212MemorySeeds}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.12 workflow gate seeds</h3><p>${{escapeHtml(refs.run212GateStatus)}}. These are required before the Run 2.13 four-arm rerun and define what trace fields and failure probes must appear.</p></div><span class="pill">${{(refs.run212WorkflowGateSeeds || []).length}} gates</span></div>
+          <div class="dataGrid">${{run212WorkflowGates}}</div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Skill workflow stages</h3><p>${{escapeHtml(refs.workflowStatus)}}. This is the ordered product loop, not a one-off prompt.</p></div><span class="pill">${{(refs.workflowStages || []).length}} stages</span></div>

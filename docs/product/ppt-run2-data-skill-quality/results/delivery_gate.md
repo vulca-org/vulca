@@ -1,8 +1,23 @@
 # Delivery Gate
 
-Status: data-thickened-public-blocked.
+Status: rerun-completed-public-blocked.
 
 Public publishing is blocked until native render or cross-platform render inspection passes and human approval is recorded.
+
+## Run 2.13 Arm Artifacts
+
+Run 2.13 is the latest internal same-stage thick-data rerun. It uses `run2_12_thick_multimodal_evidence.json`, `run2_12_design_memory_seed.json`, and `run2_12_workflow_gate_seed.json` and keeps the external state public blocked.
+
+| Arm | PPTX | Contact sheet | Trace manifest | Delivery QA |
+| --- | --- | --- | --- | --- |
+| `prompt_only` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-13-prompt-only/output/ppt-run2-13-prompt-only.pptx` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-13-prompt-only/preview/contact-sheet.png` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-13-prompt-only/trace_manifest.json` | `internal-demo-ok-public-blocked` |
+| `run1_5_skill` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-13-run1-5-skill/output/ppt-run2-13-run1-5-skill.pptx` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-13-run1-5-skill/preview/contact-sheet.png` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-13-run1-5-skill/trace_manifest.json` | `internal-demo-ok-public-blocked` |
+| `run2_13_full_skill` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-13-full-vulca/output/ppt-run2-13-full-vulca.pptx` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-13-full-vulca/preview/contact-sheet.png` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-13-full-vulca/trace_manifest.json` | `internal-demo-ok-public-blocked` |
+| `bad_thick_data_memory` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-13-bad-thick-data-memory/output/ppt-run2-13-bad-thick-data-memory.pptx` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-13-bad-thick-data-memory/preview/contact-sheet.png` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-13-bad-thick-data-memory/trace_manifest.json` | `internal-demo-ok-public-blocked` |
+
+Combined local comparison sheet: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-13-four-arm-contact-sheet.png`.
+
+Full-skill series comparison sheet: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png`.
 
 ## Run 2.12 Data Thickening Artifacts
 
@@ -218,6 +233,9 @@ Combined local comparison sheet: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/p
 | Run 2.12 design memory seed exists | pass for `run2_12_design_memory_seed.json` |
 | Run 2.12 workflow gate seed exists | pass for `run2_12_workflow_gate_seed.json` |
 | Run 2.12 thick-data gate required before next four-arm rerun | pass for `skill_workflow.json` repair trigger |
+| Run 2.13 thick-data four-arm rerun exists | pass for `run2-13-four-arm-contact-sheet` and `ppt-run2-13-*` arms |
+| Run 2.13 full-arm trace includes Run 2.12 evidence, memory, workflow, and code module ids | pass for local Run 2.13 full arm |
+| Run 2.13 evidence-only negative control remains isolated from memory/workflow/code ids | pass for `bad_thick_data_memory` |
 | Native visual components visible | pass for local Run 2.3 full arm |
 | Run 2.4 motion grammar contract exists | pass for `video_demo_beat_map.json`, `motion_learning_targets.json`, and `presentation_sequence_components.json` |
 | Motion target ids and sequence component ids visible in regenerated deck trace | pass for local Run 2.4 full and bad-memory arms |

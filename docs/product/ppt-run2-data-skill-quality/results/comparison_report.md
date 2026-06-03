@@ -1,8 +1,27 @@
 # Comparison Report
 
-Status: data-thickened-public-blocked.
+Status: rerun-completed-public-blocked.
 
-Run 2.12 is the latest reviewed internal result. It does not generate a new deck. It thickens the evidence, memory, and workflow gate inputs that must be used before the next four-arm rerun.
+Run 2.13 is the latest reviewed internal result. It reruns the four-arm experiment after Run 2.12 data thickening, using `run2_12_thick_multimodal_evidence.json`, `run2_12_design_memory_seed.json`, and `run2_12_workflow_gate_seed.json` as mandatory full-arm inputs.
+
+The Run 2.13 result is `thick_data_memory_and_workflow_visible_but_not_public_release_ready`: the full arm now records actual native thick-data module calls and the evidence-only negative control remains isolated. It still does not prove public-video-grade quality because thumbnail text/readability risk remains and no human release approval is recorded.
+
+| Artifact | Status | Result |
+| --- | --- | --- |
+| `run2_13_thick_data_rerun_result.json` | generated | trace-backed Run 2.13 rerun result |
+| `run2_13_thick_data_rerun_result.md` | generated | human-readable result |
+| `run2-13-four-arm-contact-sheet.png` | generated local output | four-arm comparison |
+| `ppt-run-viewer.html` | generated local output | latest viewer now points to Run 2.13 |
+
+## Run 2.13 Findings
+
+- `prompt_only`: remains isolated from Run 2.12 evidence, memory seed, workflow gate, skill workflow, and trace contract inputs.
+- `run1_5_skill`: remains the prior baseline and forbids Run 2.12 full-arm inputs.
+- `run2_13_full_skill`: best internal arm for proving that thick evidence, design memory seeds, workflow gate seeds, and native code modules are connected in the generated PPT loop.
+- `bad_thick_data_memory`: confirms that evidence alone is insufficient; without design memory and workflow gates, the output collapses toward shallow grids and checklist rhythm.
+- Gemini artifact review judged the full arm more asymmetrical, route-driven, and distinct from controls, but still flagged small-text/truncation risk. Public release remains blocked. Do not advance to Run 3.0.
+
+Run 2.12 was the prior reviewed internal result. It does not generate a new deck. It thickens the evidence, memory, and workflow gate inputs that must be used before the next four-arm rerun.
 
 The Run 2.12 result is `thick_data_seed_pass_internal_only_public_blocked`: the data layer is stronger than Run 2.11 because it now has verified public source URLs, access dates, modality mixes, segment locators, paraphrased visual observations, native PPT obligations, and workflow gate obligations. It still does not prove visual improvement because no PPT was generated.
 

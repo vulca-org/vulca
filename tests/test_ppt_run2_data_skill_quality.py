@@ -417,6 +417,17 @@ EXPECTED_RUN2_12_GATE_FIELDS = {
     "trace_fields",
     "release_boundary",
 }
+EXPECTED_RUN2_13_TRACE_FIELDS = {
+    "run2_12_evidence_record_ids",
+    "run2_12_memory_seed_ids",
+    "run2_12_workflow_gate_ids",
+    "run2_12_code_module_ids",
+    "run2_12_density_whitespace_gate",
+    "run2_12_demo_sequence_gate",
+    "run2_12_climax_object_gate",
+    "run2_13_visual_delta_from_run2_10",
+    "run2_13_negative_control_probe",
+}
 EXPECTED_RUN2_6_USECASE_FIELDS = {
     "id",
     "source_ids",
@@ -2805,6 +2816,111 @@ def test_run2_10_generator_uses_visual_system_modules_and_preserves_boundaries()
     assert "drawRun210KineticSequence" in climax_block
 
 
+def test_run2_13_generator_uses_thick_data_seeds_and_preserves_boundaries() -> None:
+    script_path = ROOT / "scripts" / "generate_ppt_run2_13_thick_data_arms.mjs"
+    assert script_path.exists(), "missing Run 2.13 thick-data generator"
+    body = script_path.read_text(encoding="utf-8")
+    arm_order = ["prompt_only", "run1_5_skill", "run2_13_full_skill", "bad_thick_data_memory"]
+
+    def arm_block(arm_id: str) -> str:
+        start = body.index(f'armId: "{arm_id}"')
+        next_starts = [body.find(f'armId: "{next_arm}"', start + 1) for next_arm in arm_order]
+        next_starts = [index for index in next_starts if index > start]
+        end = min(next_starts) if next_starts else len(body)
+        return body[start:end]
+
+    def section(block: str, start_marker: str, end_marker: str) -> str:
+        start = block.index(start_marker)
+        end = block.index(end_marker, start)
+        return block[start:end]
+
+    restricted_run2_12_inputs = [
+        "run2_12_thick_multimodal_evidence.json",
+        "run2_12_design_memory_seed.json",
+        "run2_12_workflow_gate_seed.json",
+    ]
+
+    assert_contains(
+        body,
+        [
+            "prompt_only",
+            "run1_5_skill",
+            "run2_13_full_skill",
+            "bad_thick_data_memory",
+            "drawRun213LaunchArcRoute",
+            "drawRun213TypeWhitespaceSystem",
+            "drawRun213ProductDemoSequence",
+            "drawRun213MetricClimaxObject",
+            "drawRun213WorkflowGateRail",
+            "run213MemorySeedsByRole",
+            "assertRun213ThickDataGateSelfCheck",
+            "registerRun213Module",
+            "run2_12_code_module_ids",
+            "run2_12_density_whitespace_gate",
+            "run2_12_demo_sequence_gate",
+            "run2_12_climax_object_gate",
+        ],
+    )
+
+    prompt_allowed = section(arm_block("prompt_only"), "allowed:", "forbidden:")
+    prompt_forbidden = section(arm_block("prompt_only"), "forbidden:", "palette:")
+    run1_allowed = section(arm_block("run1_5_skill"), "allowed:", "forbidden:")
+    run1_forbidden = section(arm_block("run1_5_skill"), "forbidden:", "palette:")
+    full_allowed = section(arm_block("run2_13_full_skill"), "allowed:", "forbidden:")
+    full_forbidden = section(arm_block("run2_13_full_skill"), "forbidden:", "palette:")
+    bad_allowed = section(arm_block("bad_thick_data_memory"), "allowed:", "forbidden:")
+    bad_forbidden = section(arm_block("bad_thick_data_memory"), "forbidden:", "palette:")
+
+    for term in restricted_run2_12_inputs:
+        assert term not in prompt_allowed
+        assert term in prompt_forbidden
+        assert term not in run1_allowed
+        assert term in run1_forbidden
+        assert term in full_allowed
+        assert term not in full_forbidden
+
+    assert "run2_12_thick_multimodal_evidence.json" in bad_allowed
+    assert "run2_12_design_memory_seed.json" not in bad_allowed
+    assert "run2_12_workflow_gate_seed.json" not in bad_allowed
+    assert "skill_workflow.json" not in bad_allowed
+    assert "run2_12_design_memory_seed.json" in bad_forbidden
+    assert "run2_12_workflow_gate_seed.json" in bad_forbidden
+    assert "skill_workflow.json" in bad_forbidden
+    assert 'const fullRun213 = arm.armId === "run2_13_full_skill";' in body
+    for field in EXPECTED_RUN2_13_TRACE_FIELDS:
+        assert re.search(fr"{field}:\s*fullRun213\s*\?", body), field
+    assert "const actualCodeModuleIds = Array.from(roleMetrics.visualModuleIds);" in body
+    assert "run2_12_code_module_ids: fullRun213" in body
+    for function_name in [
+        "drawRun213LaunchArcRoute",
+        "drawRun213TypeWhitespaceSystem",
+        "drawRun213ProductDemoSequence",
+        "drawRun213MetricClimaxObject",
+        "drawRun213WorkflowGateRail",
+    ]:
+        assert f'registerRun213Module(metrics, "{function_name}")' in body
+    render_start = body.index("function renderRun213FullSlide")
+    setup_start = body.index('} else if (spec.role === "setup")', render_start)
+    contrast_start = body.index('} else if (spec.role === "contrast")', render_start)
+    proof_start = body.index('} else if (spec.role === "proof")', render_start)
+    climax_start = body.index('} else if (spec.role === "climax")', render_start)
+    close_start = body.index('} else {', climax_start)
+    cover_block = body[render_start:setup_start]
+    setup_block = body[setup_start:contrast_start]
+    proof_block = body[proof_start:climax_start]
+    climax_block = body[climax_start:close_start]
+    close_block = body[close_start:]
+    assert "drawRun213LaunchArcRoute" in cover_block
+    assert "drawRun213TypeWhitespaceSystem" in cover_block
+    assert "drawRun213LaunchArcRoute" in setup_block
+    assert "drawRun213WorkflowGateRail" in setup_block
+    assert "drawRun213ProductDemoSequence" in proof_block
+    assert "drawRun213WorkflowGateRail" in proof_block
+    assert "drawRun213MetricClimaxObject" in climax_block
+    assert "drawRun213ProductDemoSequence" in climax_block
+    assert "drawRun213WorkflowGateRail" in close_block
+
+
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
     layout_dir = tmp_path / "layout"
     layout_dir.mkdir()
@@ -2897,7 +3013,16 @@ def test_run2_results_reviewed_and_public_blocked() -> None:
     delivery = (PACK / "results" / "delivery_gate.md").read_text(encoding="utf-8")
     trace_contract = load_json(PACK / "results" / "trace_manifest_contract.json")
 
-    assert_contains(comparison, ["Status", "data-thickened-public-blocked"])
+    assert_contains(comparison, ["Status", "rerun-completed-public-blocked"])
+    assert_contains(
+        comparison,
+        [
+            "Run 2.13",
+            "run2_13_full_skill",
+            "run2_12_thick_multimodal_evidence.json",
+            "bad_thick_data_memory",
+        ],
+    )
     assert_contains(
         comparison,
         [
@@ -2955,6 +3080,10 @@ def test_run2_results_reviewed_and_public_blocked() -> None:
         delivery,
         ["Run 2.10", "run2-10-four-arm-contact-sheet", "actual native visual-system module calls"],
     )
+    assert_contains(
+        delivery,
+        ["Run 2.13", "run2-13-four-arm-contact-sheet", "Run 2.13 full-arm trace includes Run 2.12 evidence"],
+    )
     assert_contains(delivery, ["Run 2.2", "run2-2-four-arm-contact-sheet", "public-video-grade visual proof"])
     assert trace_contract["required_output_name"] == "trace_manifest.json"
     assert "aesthetic_move_ids" in trace_contract["per_slide_required_fields"]
@@ -2968,6 +3097,7 @@ def test_run2_results_reviewed_and_public_blocked() -> None:
     assert "commercial_usecase_id" in trace_contract["per_slide_required_fields"]
     assert "aesthetic_benchmark_ids" in trace_contract["per_slide_required_fields"]
     assert "theme_policy_id" in trace_contract["per_slide_required_fields"]
+    assert EXPECTED_RUN2_13_TRACE_FIELDS <= set(trace_contract["per_slide_required_fields"])
     assert trace_contract["native_ppt_thresholds"]["full_slide_rasterized_allowed"] is False
 
 
@@ -3307,6 +3437,56 @@ def test_run2_10_records_visual_system_rerun_result() -> None:
     )
 
 
+def test_run2_13_records_thick_data_rerun_result() -> None:
+    result = (PACK / "results" / "run2_13_thick_data_rerun_result.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_13_thick_data_rerun_result.json")
+
+    assert result_json["status"] == "rerun_completed_public_blocked"
+    assert result_json["public_ready"] is False
+    assert result_json["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert result_json["rerun"]["status"] == "completed"
+    assert result_json["rerun"]["best_internal_arm"] == "run2_13_full_skill"
+    assert result_json["rerun"]["generated_outputs_committed"] is False
+    assert "run2-13-four-arm-contact-sheet.png" in result_json["rerun"]["combined_contact_sheet"]
+    assert "run2-full-skill-series-horizontal.png" in result_json["rerun"]["full_skill_series_sheet"]
+    assert result_json["rerun"]["html_viewer"].endswith("/ppt-run-viewer.html")
+    assert result_json["qa_summary"]["trace_truthfulness_guard"].startswith("passed")
+    assert result_json["qa_summary"]["case_pack_validator"] == "passed with --profile run2"
+    assert result_json["control_boundary"]["bad_thick_data_memory"].startswith(
+        "commercial_case_plus_thick_evidence_only"
+    )
+    assert_contains(
+        json.dumps(result_json["actual_full_arm_modules_by_role"]),
+        [
+            "drawRun213LaunchArcRoute",
+            "drawRun213TypeWhitespaceSystem",
+            "drawRun213ProductDemoSequence",
+            "drawRun213MetricClimaxObject",
+            "drawRun213WorkflowGateRail",
+        ],
+    )
+    assert_contains(
+        json.dumps(result_json["thick_data_learning"]),
+        [
+            "run2_12_thick_multimodal_evidence.json",
+            "run2_12_design_memory_seed.json",
+            "run2_12_workflow_gate_seed.json",
+            "evidence_only_negative_control",
+        ],
+    )
+    assert_contains(
+        result,
+        [
+            "Run 2.13",
+            "thick data",
+            "run2_12_thick_multimodal_evidence.json",
+            "HTML viewer",
+            "public blocked",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
 def test_ppt_run_html_viewer_builder_tracks_latest_outputs() -> None:
     script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
 
@@ -3329,6 +3509,11 @@ def test_ppt_run_html_viewer_builder_tracks_latest_outputs() -> None:
             "ppt-run2-10-run1-5-skill",
             "ppt-run2-10-full-vulca",
             "ppt-run2-10-bad-visual-system-memory",
+            "Run 2.13",
+            "ppt-run2-13-prompt-only",
+            "ppt-run2-13-run1-5-skill",
+            "ppt-run2-13-full-vulca",
+            "ppt-run2-13-bad-thick-data-memory",
             "Full skill series",
             "Data / Skill",
             "renderData",
@@ -3344,10 +3529,16 @@ def test_ppt_run_html_viewer_builder_tracks_latest_outputs() -> None:
             "run2_10_visual_system_sources.json",
             "run2_10_visual_system_memory.json",
             "run2_10_visual_system_gate_matrix.json",
+            "run2_12_thick_multimodal_evidence.json",
+            "run2_12_design_memory_seed.json",
+            "run2_12_workflow_gate_seed.json",
             "Run 2.9 visual primitive repair",
             "Run 2.10 visual-system sources",
             "Run 2.10 visual-system memory",
             "Run 2.10 visual-system gate matrix",
+            "Run 2.12 thick multimodal evidence",
+            "Run 2.12 design memory seeds",
+            "Run 2.12 workflow gate seeds",
             "vulca_ppt_skill.md",
             "Why 2.8 still looks close to 2.7",
         ],

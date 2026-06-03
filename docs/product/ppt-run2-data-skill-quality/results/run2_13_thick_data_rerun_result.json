@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "status": "rerun_completed_public_blocked",
+  "public_ready": false,
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "run_id": "2.13",
+  "rerun": {
+    "status": "completed",
+    "best_internal_arm": "run2_13_full_skill",
+    "best_internal_arm_verdict": "thick_data_memory_and_workflow_visible_but_not_public_release_ready",
+    "generated_outputs_committed": false,
+    "combined_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-13-four-arm-contact-sheet.png",
+    "full_skill_series_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png",
+    "html_viewer": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run-viewer.html"
+  },
+  "input_chain": {
+    "usecase": "docs/product/ppt-run2-data-skill-quality/commercial_case.md",
+    "thick_evidence": "docs/product/ppt-run2-data-skill-quality/run2_12_thick_multimodal_evidence.json",
+    "design_memory": "docs/product/ppt-run2-data-skill-quality/run2_12_design_memory_seed.json",
+    "workflow_gate": "docs/product/ppt-run2-data-skill-quality/run2_12_workflow_gate_seed.json",
+    "generator": "scripts/generate_ppt_run2_13_thick_data_arms.mjs",
+    "viewer": "scripts/build_ppt_run_html_viewer.py"
+  },
+  "actual_full_arm_modules_by_role": {
+    "cover": ["drawRun213TypeWhitespaceSystem", "drawRun213LaunchArcRoute"],
+    "setup": ["drawRun213LaunchArcRoute", "drawRun213WorkflowGateRail"],
+    "contrast": ["drawRun213LaunchArcRoute", "drawRun213WorkflowGateRail"],
+    "proof": ["drawRun213WorkflowGateRail", "drawRun213ProductDemoSequence"],
+    "climax": ["drawRun213MetricClimaxObject", "drawRun213ProductDemoSequence"],
+    "close": ["drawRun213TypeWhitespaceSystem", "drawRun213WorkflowGateRail"]
+  },
+  "control_boundary": {
+    "prompt_only": "commercial_case_only; forbids Run 2.12 thick evidence, memory seed, workflow gate, skill workflow, and trace contract",
+    "run1_5_skill": "commercial_case_plus_run1_5_only; forbids Run 2.12 thick evidence, memory seed, workflow gate, skill workflow, and trace contract",
+    "bad_thick_data_memory": "commercial_case_plus_thick_evidence_only; forbids run2_12_design_memory_seed.json, run2_12_workflow_gate_seed.json, skill_workflow.json, and trace_manifest_contract.json"
+  },
+  "thick_data_learning": [
+    "run2_12_thick_multimodal_evidence.json is now visible in the Run 2.13 full-arm trace as run2_12_evidence_record_ids.",
+    "run2_12_design_memory_seed.json is now visible in the Run 2.13 full-arm trace as run2_12_memory_seed_ids.",
+    "run2_12_workflow_gate_seed.json is now visible in the Run 2.13 full-arm trace as run2_12_workflow_gate_ids and gate-specific trace fields.",
+    "evidence_only_negative_control remains isolated: bad_thick_data_memory records negative_control_evidence_record_ids but no run2_12_memory_seed_ids or run2_12_code_module_ids."
+  ],
+  "qa_summary": {
+    "trace_truthfulness_guard": "passed: full arm trace records actual native thick-data module calls from rendered slide metrics",
+    "arm_isolation_guard": "passed",
+    "case_pack_validator": "passed with --profile run2",
+    "html_viewer_check": "passed: latestRunId is 2.13 and Data / Skill embeds Run 2.12 evidence, memory seeds, and workflow gate seeds",
+    "gemini_artifact_review": "passed with caveats: Gemini saw full arm as more asymmetrical and route-driven than controls, but flagged small text/truncation risk in thumbnails"
+  },
+  "not_public_ready_reasons": [
+    "Gemini and local thumbnail review still flag small text/readability risk on some full-arm slides.",
+    "No human release approval has been recorded.",
+    "The output proves data/workflow propagation better than final public-video-grade presentation polish."
+  ],
+  "next_required_action": "tighten Run 2.13 full-arm typography and thumbnail legibility while preserving the Run 2.12 data-memory-workflow trace chain; do not advance to Run 3.0 yet."
+}
