@@ -18,6 +18,15 @@ PPTX_REQUIRED_ENTRIES = [
 ]
 
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
+PPTX_MOTION_TAGS = {
+    "transition_tags": "<p:transition",
+    "timing_tags": "<p:timing",
+    "animation_tags": "<p:anim",
+    "parallel_timeline_tags": "<p:par",
+    "sequence_timeline_tags": "<p:seq",
+    "audio_tags": "<p:audio",
+    "video_tags": "<p:video",
+}
 
 
 @dataclass(frozen=True)
@@ -77,6 +86,12 @@ def inspect_pptx(path: Path, issues: list[DeliveryIssue]) -> dict[str, Any]:
         "slide_count": 0,
         "media_entries": [],
         "required_entries": {},
+        "motion": {
+            "has_motion_xml": False,
+            "scan_scope": "motion_xml_tag_presence_only_not_playback_verification",
+            "slides_with_motion_xml": [],
+            **{key: 0 for key in PPTX_MOTION_TAGS},
+        },
     }
     if not path.exists():
         issues.append(error("missing_pptx", f"PPTX does not exist: {path}"))
@@ -108,6 +123,31 @@ def inspect_pptx(path: Path, issues: list[DeliveryIssue]) -> dict[str, Any]:
                     warning(
                         "embedded_media_present",
                         f"PPTX contains {len(media_entries)} ppt/media entry; inspect provenance and editability.",
+                    )
+                )
+
+            motion = dict(checks["motion"])
+            slides_with_motion_xml: list[int] = []
+            for slide_number in slide_numbers:
+                slide_name = f"ppt/slides/slide{slide_number}.xml"
+                slide_xml = archive.read(slide_name).decode("utf-8", errors="ignore")
+                slide_has_motion = False
+                for key, tag in PPTX_MOTION_TAGS.items():
+                    count = slide_xml.count(tag)
+                    motion[key] += count
+                    slide_has_motion = slide_has_motion or count > 0
+                if slide_has_motion:
+                    slides_with_motion_xml.append(slide_number)
+
+            motion["slides_with_motion_xml"] = slides_with_motion_xml
+            motion["has_motion_xml"] = bool(slides_with_motion_xml)
+            checks["motion"] = motion
+            if not motion["has_motion_xml"]:
+                issues.append(
+                    warning(
+                        "pptx_static_no_animation",
+                        "PPTX contains no transition, timing, animation, audio, or video XML; "
+                        "Keynote and PowerPoint will open static slides unless a later renderer adds animation.",
                     )
                 )
     except zipfile.BadZipFile:
@@ -259,6 +299,8 @@ def write_markdown_report(results: list[DeliveryResult], out_path: str | Path) -
                 f"- Slide count: `{result.checks.get('slide_count', 0)}`",
                 f"- Layout file count: `{result.checks.get('layout_file_count', 0)}`",
                 f"- Media entries: `{len(result.checks.get('media_entries', []))}`",
+                f"- Motion XML present: `{result.checks.get('motion', {}).get('has_motion_xml')}`",
+                f"- Slides with motion XML: `{result.checks.get('motion', {}).get('slides_with_motion_xml', [])}`",
                 f"- Human review required: `{result.checks.get('human_review_required')}`",
                 "",
                 "### Renderer Availability",

@@ -259,6 +259,7 @@ def build_reference_data(repo_root: Path) -> dict[str, Any]:
     run215_sources = read_json(pack / "run2_15_layout_selector_sources.json")
     run215_memory = read_json(pack / "run2_15_layout_module_memory.json")
     run215_gate_matrix = read_json(pack / "run2_15_layout_selector_gate_matrix.json")
+    run217_motion_audit = read_json(pack / "results" / "run2_17_motion_delivery_audit.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -286,6 +287,10 @@ def build_reference_data(repo_root: Path) -> dict[str, Any]:
             {
                 "label": "2.15 layout module selector",
                 "body": "Run 2.15 is data/workflow-only: it adds selector sources, layout module memory, and selector gates before the next four-arm rerun.",
+            },
+            {
+                "label": "2.17 delivery truth",
+                "body": "Run 2.17 is audit-only: HTML viewer is static, current PPTX files have no native animation XML, and Keynote readout is static editable slides until a renderer proof exists.",
             },
         ],
         "sources": sources.get("sources", []),
@@ -320,6 +325,8 @@ def build_reference_data(repo_root: Path) -> dict[str, Any]:
         "run215SelectorModules": run215_memory.get("modules", []),
         "run215SelectorGateStatus": run215_gate_matrix.get("status", ""),
         "run215SelectorGates": run215_gate_matrix.get("gates", []),
+        "run217MotionAuditStatus": run217_motion_audit.get("status", ""),
+        "run217MotionAudit": run217_motion_audit,
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -879,6 +886,23 @@ def build_html(data: dict[str, Any]) -> str:
       </article>`;
     }}
 
+    function run217ArmAuditCard(arm) {{
+      const motion = arm.motion || {{}};
+      return `<article class="dataCard">
+        <h4>${{escapeHtml(arm.arm_id || arm.slug)}}</h4>
+        ${{chipList([arm.delivery_gate, arm.keynote_readout].filter(Boolean))}}
+        ${{detailBlock("PPTX", arm.pptx_path)}}
+        ${{detailBlock("Slides", arm.slide_count)}}
+        ${{detailBlock("Media entries", arm.media_entry_count)}}
+        ${{detailBlock("Motion XML present", motion.has_motion_xml)}}
+        ${{detailBlock("Slides with motion XML", motion.slides_with_motion_xml)}}
+        ${{detailBlock("Transition tags", motion.transition_tags)}}
+        ${{detailBlock("Timing tags", motion.timing_tags)}}
+        ${{detailBlock("Animation tags", motion.animation_tags)}}
+        ${{detailBlock("Keynote readout", arm.keynote_readout)}}
+      </article>`;
+    }}
+
     function stageCard(stage) {{
       return `<article class="dataCard">
         <h4>${{String(stage.order || "").padStart(2, "0")}} / ${{escapeHtml(stage.id)}}</h4>
@@ -994,6 +1018,10 @@ def build_html(data: dict[str, Any]) -> str:
       const run215SelectorSources = (refs.run215SelectorSources || []).map(run215SelectorSourceCard).join("");
       const run215SelectorModules = (refs.run215SelectorModules || []).map(run215SelectorModuleCard).join("");
       const run215SelectorGates = (refs.run215SelectorGates || []).map(run215SelectorGateCard).join("");
+      const run217Audit = refs.run217MotionAudit || {{}};
+      const run217DeliveryTruth = run217Audit.delivery_truth || {{}};
+      const run217RendererGap = run217Audit.motion_renderer_gap || {{}};
+      const run217ArmAudits = (run217Audit.arm_audits || []).map(run217ArmAuditCard).join("");
       const stages = (refs.workflowStages || []).map(stageCard).join("");
       const skill = escapeHtml(refs.skillMarkdown || "Missing vulca_ppt_skill.md");
 
@@ -1005,6 +1033,28 @@ def build_html(data: dict[str, Any]) -> str:
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Why 2.8 still looks close to 2.7</h3><p>The current bottleneck is visual primitive quality, not trace plumbing.</p></div></div>
           <div class="dataGrid">${{diagnosis}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.17 motion delivery audit</h3><p>HTML viewer is static. This section separates static editable PPT delivery from real Keynote or public-video motion rendering.</p></div><span class="pill">${{escapeHtml(refs.run217MotionAuditStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Delivery truth</h4>
+              ${{detailBlock("HTML viewer mode", run217DeliveryTruth.html_viewer_mode || "static_slide_preview_only")}}
+              ${{detailBlock("PPTX editability", run217DeliveryTruth.pptx_editability_status)}}
+              ${{detailBlock("Native PPT animation", run217DeliveryTruth.native_ppt_animation_status)}}
+              ${{detailBlock("Keynote expected behavior", run217DeliveryTruth.keynote_expected_behavior)}}
+              ${{detailBlock("Storyboard status", run217DeliveryTruth.motion_storyboard_status)}}
+            </article>
+            <article class="dataCard">
+              <h4>Renderer gap</h4>
+              ${{detailBlock("Next run", run217RendererGap.next_run_recommendation)}}
+              ${{detailBlock("Static PPT role", run217RendererGap.keep_static_ppt_as)}}
+              ${{detailBlock("Public video path", run217RendererGap.public_video_path)}}
+              ${{detailBlock("Minimum proof slides", run217RendererGap.minimum_proof_slides)}}
+              ${{detailBlock("Blocking questions", run217RendererGap.blocking_questions)}}
+            </article>
+          </div>
+          <div class="dataGrid">${{run217ArmAudits}}</div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Source URLs</h3><p>Reference identities stored in sources.json. These links are for inspection; copied media, layouts, transcripts, and brand marks remain forbidden.</p></div><span class="pill">${{(refs.sources || []).length}} sources</span></div>

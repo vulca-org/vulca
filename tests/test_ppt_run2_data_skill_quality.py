@@ -3389,7 +3389,17 @@ def test_run2_results_reviewed_and_public_blocked() -> None:
     delivery = (PACK / "results" / "delivery_gate.md").read_text(encoding="utf-8")
     trace_contract = load_json(PACK / "results" / "trace_manifest_contract.json")
 
-    assert_contains(comparison, ["Status", "rerun-completed-public-blocked"])
+    assert_contains(comparison, ["Status", "motion-delivery-audit-public-blocked"])
+    assert_contains(
+        comparison,
+        [
+            "Run 2.17",
+            "run2_17_motion_delivery_audit.json",
+            "HTML viewer is static",
+            "Keynote readout",
+        ],
+    )
+    assert_contains(comparison, ["Run 2.16", "latest reviewed generated PPT result"])
     assert_contains(
         comparison,
         [
@@ -4031,6 +4041,52 @@ def test_run2_16_records_selector_driven_rerun_result() -> None:
     )
 
 
+def test_run2_17_records_motion_delivery_audit() -> None:
+    result = (PACK / "results" / "run2_17_motion_delivery_audit.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_17_motion_delivery_audit.json")
+
+    assert result_json["status"] == "motion_delivery_audit_public_blocked"
+    assert result_json["public_ready"] is False
+    assert result_json["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert result_json["source_generated_run_id"] == "2.16"
+    assert result_json["delivery_truth"]["html_viewer_mode"] == "static_slide_preview_only"
+    assert result_json["delivery_truth"]["keynote_expected_behavior"] == "editable_static_slides_no_native_animation"
+    assert result_json["delivery_truth"]["native_ppt_animation_status"] == "absent_in_current_pptx"
+    assert result_json["delivery_truth"]["motion_xml_scan_scope"] == "tag_presence_only_not_playback_verification"
+    assert result_json["motion_renderer_gap"]["next_run_recommendation"] == "run2_17_motion_renderer_proof"
+    assert result_json["motion_renderer_gap"]["keep_static_ppt_as"] == "editable_product_output"
+    assert result_json["motion_renderer_gap"]["public_video_path"] == "separate_html_or_video_motion_renderer_until_pptx_animation_is_verified"
+
+    arm_audits = result_json["arm_audits"]
+    assert {arm["arm_id"] for arm in arm_audits} == {
+        "prompt_only",
+        "run1_5_skill",
+        "run2_16_full_skill",
+        "bad_selector_memory",
+    }
+    for arm in arm_audits:
+        assert arm["pptx_path"].endswith(".pptx")
+        assert "ppt-run2-16" in arm["pptx_path"]
+        assert arm["slide_count"] == 6
+        assert arm["media_entry_count"] == 0
+        assert arm["motion"]["has_motion_xml"] is False
+        assert arm["motion"]["scan_scope"] == "motion_xml_tag_presence_only_not_playback_verification"
+        assert arm["motion"]["slides_with_motion_xml"] == []
+        assert arm["keynote_readout"] == "static_editable_slides_only"
+
+    assert_contains(
+        result,
+        [
+            "Run 2.17",
+            "HTML viewer is static",
+            "Keynote",
+            "no transition/timing/animation",
+            "Run 2.16",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
 def test_ppt_run_html_viewer_mentions_run2_15_selector_artifacts() -> None:
     script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
 
@@ -4045,6 +4101,22 @@ def test_ppt_run_html_viewer_mentions_run2_15_selector_artifacts() -> None:
         ],
     )
     assert "ppt-run2-15-" not in script
+
+
+def test_ppt_run_html_viewer_mentions_run2_17_motion_delivery_audit() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "run2_17_motion_delivery_audit.json",
+            "Run 2.17 motion delivery audit",
+            "HTML viewer is static",
+            "Keynote readout",
+            "static_slide_preview_only",
+        ],
+    )
+    assert "ppt-run2-17-" not in script
 
 
 def test_ppt_run_html_viewer_builder_tracks_latest_outputs() -> None:

@@ -1,6 +1,23 @@
 # Comparison Report
 
-Status: rerun-completed-public-blocked.
+Status: motion-delivery-audit-public-blocked.
+
+Run 2.17 is the latest delivery audit. It does not generate a new four-arm PPT. It audits the Run 2.16 PPTX files and confirms that the HTML viewer is static, the current PPTX files contain no transition/timing/animation/audio/video XML, and Keynote will show static editable slides unless a later renderer adds native animation.
+
+The Run 2.17 result is `motion_delivery_audit_public_blocked`: the editable static PPT remains the product output, while public-video-grade motion now requires a separate renderer proof for cover, before/after, and climax slides. Do not advance to Run 3.0.
+
+| Artifact | Status | Result |
+| --- | --- | --- |
+| `run2_17_motion_delivery_audit.json` | generated | machine-readable static-vs-motion delivery audit |
+| `run2_17_motion_delivery_audit.md` | generated | human-readable delivery audit |
+| `ppt-run-viewer.html` | generated local output | Data/Skill tab embeds Run 2.17 motion delivery audit |
+
+## Run 2.17 Findings
+
+- HTML viewer is a static slide/contact-sheet preview surface.
+- All four Run 2.16 PPTX files have six slides, zero embedded media entries, and zero motion XML tags.
+- Keynote readout for the current PPTX files is `static_editable_slides_only`.
+- The next required proof is `run2_17_motion_renderer_proof`, not a new 3.0 stage.
 
 Run 2.16 is the latest reviewed generated PPT result. It reruns the four-arm experiment after Run 2.15 by executing the Run 2.15 layout selector sources, layout module memory, and selector gate matrix before native PPT code generation.
 

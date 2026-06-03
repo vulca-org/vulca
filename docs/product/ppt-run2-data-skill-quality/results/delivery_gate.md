@@ -1,8 +1,22 @@
 # Delivery Gate
 
-Status: rerun-completed-public-blocked.
+Status: motion-delivery-audit-public-blocked.
 
-Public publishing is blocked until native render or cross-platform render inspection passes and human approval is recorded.
+Public publishing is blocked until native render or cross-platform render inspection passes, motion/render support is proven, and human approval is recorded.
+
+## Run 2.17 Motion Delivery Audit
+
+Run 2.17 does not create a new deck. It audits the Run 2.16 PPTX delivery layer.
+
+| Check | Result |
+| --- | --- |
+| HTML viewer | static slide/contact-sheet preview only |
+| PPTX editability | editable native static shapes |
+| Native PPT animation | absent in current PPTX |
+| Keynote readout | static editable slides only |
+| Next proof | `run2_17_motion_renderer_proof` for cover, before/after, and climax |
+
+Result report: `docs/product/ppt-run2-data-skill-quality/results/run2_17_motion_delivery_audit.md`.
 
 ## Run 2.16 Arm Artifacts
 

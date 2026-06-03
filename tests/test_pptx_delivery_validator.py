@@ -12,13 +12,27 @@ from scripts.validate_pptx_delivery import validate_delivery, write_markdown_rep
 PNG_1X1 = b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde"
 
 
-def write_tiny_pptx(path: Path, *, slide_count: int = 2, include_media: bool = False) -> None:
+def write_tiny_pptx(
+    path: Path,
+    *,
+    slide_count: int = 2,
+    include_media: bool = False,
+    motion_slide_numbers: set[int] | None = None,
+) -> None:
+    motion_slides = motion_slide_numbers or set()
     with zipfile.ZipFile(path, "w") as archive:
         archive.writestr("[Content_Types].xml", "<Types/>")
         archive.writestr("ppt/presentation.xml", "<p:presentation/>")
         archive.writestr("ppt/_rels/presentation.xml.rels", "<Relationships/>")
         for index in range(1, slide_count + 1):
-            archive.writestr(f"ppt/slides/slide{index}.xml", "<p:sld/>")
+            slide_xml = (
+                "<p:sld><p:transition/><p:timing><p:tnLst><p:par><p:seq>"
+                "<p:cTn/><p:anim/></p:seq></p:par></p:tnLst></p:timing>"
+                "<p:audio/><p:video/></p:sld>"
+                if index in motion_slides
+                else "<p:sld/>"
+            )
+            archive.writestr(f"ppt/slides/slide{index}.xml", slide_xml)
         if include_media:
             archive.writestr("ppt/media/image1.png", PNG_1X1)
 
@@ -63,7 +77,41 @@ def test_valid_delivery_is_internal_demo_ready(tmp_path: Path) -> None:
     assert result.checks["slide_count"] == 2
     assert result.checks["layout_file_count"] == 2
     assert result.checks["contact_sheet"] == {"width": 1, "height": 1}
+    assert result.checks["motion"]["has_motion_xml"] is False
+    assert result.checks["motion"]["scan_scope"] == "motion_xml_tag_presence_only_not_playback_verification"
+    assert result.checks["motion"]["slides_with_motion_xml"] == []
     assert any(issue.code == "native_renderer_unverified" for issue in result.issues)
+    assert any(issue.code == "pptx_static_no_animation" for issue in result.issues)
+
+
+def test_delivery_audit_detects_pptx_animation_xml(tmp_path: Path) -> None:
+    pptx = tmp_path / "deck.pptx"
+    layout_dir = tmp_path / "layout"
+    contact_sheet = tmp_path / "contact-sheet.png"
+    write_tiny_pptx(pptx, slide_count=3, motion_slide_numbers={2})
+    write_layout_dir(layout_dir, slide_count=3)
+    write_png(contact_sheet)
+
+    result = validate_delivery(
+        pptx_path=pptx,
+        layout_dir=layout_dir,
+        contact_sheet_path=contact_sheet,
+        label="Tiny animated deck",
+        renderer_paths={"libreoffice": None, "powerpoint": None, "keynote": None},
+    )
+
+    motion = result.checks["motion"]
+    assert motion["has_motion_xml"] is True
+    assert motion["scan_scope"] == "motion_xml_tag_presence_only_not_playback_verification"
+    assert motion["slides_with_motion_xml"] == [2]
+    assert motion["transition_tags"] == 1
+    assert motion["timing_tags"] == 1
+    assert motion["animation_tags"] == 1
+    assert motion["parallel_timeline_tags"] == 1
+    assert motion["sequence_timeline_tags"] == 1
+    assert motion["audio_tags"] == 1
+    assert motion["video_tags"] == 1
+    assert not any(issue.code == "pptx_static_no_animation" for issue in result.issues)
 
 
 def test_missing_contact_sheet_blocks_delivery(tmp_path: Path) -> None:

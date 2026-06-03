@@ -1,6 +1,6 @@
 # PPT Run 2.0 Data Skill Quality
 
-Status: run2_10-visual-system-thickening-public-blocked.
+Status: run2_17-motion-delivery-audit-public-blocked.
 
 Run 2.5 does not move to a new stage. It repeats and thickens the same five fixed PPT product layers before the next generation pass:
 
@@ -33,6 +33,8 @@ Run 2.0 does not claim post-training or fine-tuning. It tests runtime case-pack-
 `run2_9_visual_primitive_repair.json`, `run2_9_executable_visual_modules.json`, and `run2_9_visual_gate_matrix.json` are the Run 2.9 visual-primitive layer. They respond to the Run 2.8 visual diagnosis: the traceable data-to-code path works, but the deck still reads as boxes, cards, equal panels, and engineering-report composition. Run 2.9 converts that diagnosis into executable visual primitives: editorial spread, product surface depth, motion storyboard, climax stage, and typographic field. The Run 2.9 rerun now calls the corresponding `drawRun29...` native modules and records actual code module ids in trace.
 
 `run2_10_visual_system_sources.json`, `run2_10_visual_system_memory.json`, and `run2_10_visual_system_gate_matrix.json` are the Run 2.10 visual-system layer. They respond to the Run 2.9 limitation: the full arm wins the four-arm test, but Runs 2.7-2.9 still share a similar rectangle-led visual family. Run 2.10 must force structural asymmetry, visible whitespace, product-theater composition, non-rectangular proof paths, kinetic sequence objects, and shape-count budgets before native PPT code generation. A Run 2.10 improvement is creditable only when the output is visually distinct from Run 2.9, not merely recolored or filled with more boxes.
+
+`results/run2_17_motion_delivery_audit.json` is the current delivery-truth layer. It does not create a new `ppt-run2-17-*` deck. It audits the Run 2.16 PPTX outputs and records that the HTML viewer is static, the current PPTX files have no transition/timing/animation/audio/video XML, and Keynote will show static editable slides until a renderer proof is built.
 
 Generation must follow `generation_protocol.md`: separate arm runtimes, no cross-arm context leakage, native PPT object checks, and layout geometry QA before scoring.
 
