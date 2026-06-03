@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "rerun_completed_public_blocked",
+  "public_ready": false,
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "run_id": "2.14",
+  "rerun": {
+    "status": "completed",
+    "best_internal_arm": "run2_14_full_skill",
+    "best_internal_arm_verdict": "2_10_aesthetic_shell_recovered_with_2_13_trace_core_hidden_from_slide_surface",
+    "generated_outputs_committed": false,
+    "combined_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-14-four-arm-contact-sheet.png",
+    "full_skill_series_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png",
+    "html_viewer": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run-viewer.html"
+  },
+  "input_chain": {
+    "usecase": "docs/product/ppt-run2-data-skill-quality/commercial_case.md",
+    "thick_evidence": "docs/product/ppt-run2-data-skill-quality/run2_12_thick_multimodal_evidence.json",
+    "design_memory": "docs/product/ppt-run2-data-skill-quality/run2_12_design_memory_seed.json",
+    "workflow_gate": "docs/product/ppt-run2-data-skill-quality/run2_12_workflow_gate_seed.json",
+    "aesthetic_shell_sources": "docs/product/ppt-run2-data-skill-quality/run2_10_visual_system_sources.json",
+    "aesthetic_shell_memory": "docs/product/ppt-run2-data-skill-quality/run2_10_visual_system_memory.json",
+    "aesthetic_shell_gate": "docs/product/ppt-run2-data-skill-quality/run2_10_visual_system_gate_matrix.json",
+    "generator": "scripts/generate_ppt_run2_14_aesthetic_trace_arms.mjs",
+    "viewer": "scripts/build_ppt_run_html_viewer.py"
+  },
+  "actual_full_arm_modules_by_role": {
+    "cover": ["drawRun214PresentationShell", "drawRun214HiddenWorkflowRoute"],
+    "setup": ["drawRun214CinematicProductTheater", "drawRun214HiddenWorkflowRoute"],
+    "contrast": ["drawRun214PresentationShell", "drawRun214HiddenWorkflowRoute"],
+    "proof": ["drawRun214CinematicProductTheater", "drawRun214HiddenWorkflowRoute"],
+    "climax": ["drawRun214MetricRevealStage", "drawRun214QuietReleaseHandoff"],
+    "close": ["drawRun214PresentationShell", "drawRun214QuietReleaseHandoff"]
+  },
+  "control_boundary": {
+    "prompt_only": "commercial_case_only; forbids Run 2.12 thick evidence, Run 2.10 aesthetic shell inputs, skill workflow, and trace contract",
+    "run1_5_skill": "commercial_case_plus_run1_5_only; forbids Run 2.12 thick evidence, Run 2.10 aesthetic shell inputs, skill workflow, and trace contract",
+    "bad_visible_workflow_memory": "run2_12_data_workflow_without_run2_10_aesthetic_shell; allows thick evidence, design memory seed, and workflow gate seed, but forbids Run 2.10 visual-system sources, memory, and gate matrix"
+  },
+  "aesthetic_trace_learning": [
+    "2.10 visual system aesthetic shell is now reused as an explicit full-arm input instead of being treated as a lost older style.",
+    "2.13 thick data trace core remains present through Run 2.12 evidence, memory, workflow gate ids, and actual code module ids.",
+    "manifest_only_trace_public_surface keeps workflow evidence in trace_manifest.json and viewer metadata rather than visible slide machinery.",
+    "workflow_hidden_from_slide_surface is the key visual correction: the deck presents editorial composition while QA keeps the proof chain inspectable.",
+    "The bad visible-workflow control shows that Run 2.12 data/workflow without the Run 2.10 aesthetic shell still collapses toward beige boxes and checklist rhythm."
+  ],
+  "qa_summary": {
+    "trace_truthfulness_guard": "passed: full arm trace records actual native Run 2.14 module calls from rendered slide metrics",
+    "arm_isolation_guard": "passed",
+    "layout_budget_guard": "passed for all Run 2.14 full-arm slides",
+    "case_pack_validator": "passed with --profile run2",
+    "html_viewer_check": "passed: latestRunId is 2.14 and viewer registers prompt-only, Run 1.5, full, and bad visible-workflow arms",
+    "gemini_artifact_review": "passed with caveats: Gemini judged Run 2.14 full as recovering the Run 2.10 editorial shell and hiding raw workflow machinery, but flagged dynamic text-length fragility and diagnostic-loss risk"
+  },
+  "not_public_ready_reasons": [
+    "The deck is presentation-first again, but the editorial layouts are still partly hardcoded and may be fragile under long or unpredictable user content.",
+    "No human release approval has been recorded.",
+    "The product surface still needs stronger layout module selection, typography resilience, and real product/demo image handling before public-video-grade release."
+  ],
+  "next_required_action": "continue the same five-layer loop by turning Run 2.14 aesthetic recovery into reusable layout-module selection, stronger typography/spacing constraints, and robust product-theater components; do not advance to Run 3.0 yet."
+}

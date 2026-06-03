@@ -4,9 +4,24 @@ Status: rerun-completed-public-blocked.
 
 Public publishing is blocked until native render or cross-platform render inspection passes and human approval is recorded.
 
+## Run 2.14 Arm Artifacts
+
+Run 2.14 is the latest internal same-stage aesthetic-trace rerun. It uses Run 2.12 thick data/workflow inputs plus Run 2.10 visual-system aesthetic inputs for the full arm, while the negative control keeps Run 2.12 data/workflow without the Run 2.10 aesthetic shell.
+
+| Arm | PPTX | Contact sheet | Trace manifest | Delivery QA |
+| --- | --- | --- | --- | --- |
+| `prompt_only` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-14-prompt-only/output/ppt-run2-14-prompt-only.pptx` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-14-prompt-only/preview/contact-sheet.png` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-14-prompt-only/trace_manifest.json` | `internal-demo-ok-public-blocked` |
+| `run1_5_skill` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-14-run1-5-skill/output/ppt-run2-14-run1-5-skill.pptx` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-14-run1-5-skill/preview/contact-sheet.png` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-14-run1-5-skill/trace_manifest.json` | `internal-demo-ok-public-blocked` |
+| `run2_14_full_skill` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-14-full-vulca/output/ppt-run2-14-full-vulca.pptx` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-14-full-vulca/preview/contact-sheet.png` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-14-full-vulca/trace_manifest.json` | `internal-demo-ok-public-blocked` |
+| `bad_visible_workflow_memory` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-14-bad-visible-workflow-memory/output/ppt-run2-14-bad-visible-workflow-memory.pptx` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-14-bad-visible-workflow-memory/preview/contact-sheet.png` | `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-14-bad-visible-workflow-memory/trace_manifest.json` | `internal-demo-ok-public-blocked` |
+
+Combined local comparison sheet: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-14-four-arm-contact-sheet.png`.
+
+Full-skill series comparison sheet: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png`.
+
 ## Run 2.13 Arm Artifacts
 
-Run 2.13 is the latest internal same-stage thick-data rerun. It uses `run2_12_thick_multimodal_evidence.json`, `run2_12_design_memory_seed.json`, and `run2_12_workflow_gate_seed.json` and keeps the external state public blocked.
+Run 2.13 is the prior internal same-stage thick-data rerun. It uses `run2_12_thick_multimodal_evidence.json`, `run2_12_design_memory_seed.json`, and `run2_12_workflow_gate_seed.json` and keeps the external state public blocked.
 
 | Arm | PPTX | Contact sheet | Trace manifest | Delivery QA |
 | --- | --- | --- | --- | --- |
@@ -236,6 +251,10 @@ Combined local comparison sheet: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/p
 | Run 2.13 thick-data four-arm rerun exists | pass for `run2-13-four-arm-contact-sheet` and `ppt-run2-13-*` arms |
 | Run 2.13 full-arm trace includes Run 2.12 evidence, memory, workflow, and code module ids | pass for local Run 2.13 full arm |
 | Run 2.13 evidence-only negative control remains isolated from memory/workflow/code ids | pass for `bad_thick_data_memory` |
+| Run 2.14 aesthetic-trace four-arm rerun exists | pass for `run2-14-four-arm-contact-sheet` and `ppt-run2-14-*` arms |
+| Run 2.14 full-arm trace includes Run 2.10 aesthetic shell and Run 2.12 data/workflow trace ids | pass for local Run 2.14 full arm |
+| Run 2.14 visible-workflow negative control remains isolated from Run 2.10 aesthetic shell inputs | pass for `bad_visible_workflow_memory` |
+| Run 2.14 public slide surface hides workflow machinery while keeping manifest trace | pass for `manifest_only_trace_public_surface` |
 | Native visual components visible | pass for local Run 2.3 full arm |
 | Run 2.4 motion grammar contract exists | pass for `video_demo_beat_map.json`, `motion_learning_targets.json`, and `presentation_sequence_components.json` |
 | Motion target ids and sequence component ids visible in regenerated deck trace | pass for local Run 2.4 full and bad-memory arms |
@@ -245,10 +264,10 @@ Combined local comparison sheet: `outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/p
 | Production reference ids and visual production module ids visible in regenerated deck trace | pass for local Run 2.5 full arm; production references only for bad-memory arm |
 | Public-video-grade visual proof completed | blocked |
 
-Delivery status remains `data-thickened-public-blocked`. Run 2.12 thickens the data/workflow chain and adds required gate seeds before the next four-arm rerun, but it does not create new PPTX artifacts. The regenerated Run 2.10 arms remain the latest generated decks; they were built locally, structurally checked, trace-reviewed, browser-viewer checked, and Gemini-reviewed as a same-stage visual-system pass. The work is still not public release evidence because native render inspection, human approval, source-brand sanitization approval, finished motion/render support, and a stronger public-demo visual pass are missing.
+Delivery status remains `aesthetic-trace-rerun-public-blocked`. Run 2.14 combines the Run 2.10 aesthetic shell with the Run 2.13 thick-data trace core and updates the HTML viewer to latest `2.14`. The work is still not public release evidence because native render inspection, human approval, source-brand sanitization approval, finished motion/render support, reusable layout-module selection, and a stronger public-demo visual pass are missing.
 
 ## Release Decision Thresholds
 
 - `internal only`: any generated arm, trace manifest, runtime isolation record, native PPT check, layout geometry check, render check, provenance note, editability check, or human approval is missing.
-- `demo candidate`: all four Run 2.10 arms exist, trace manifests pass contract review, runtime isolation is recorded, native PPT and layout geometry checks pass, render inspection is complete, and the Run 2.10 full arm passes human review for visual-system execution, actual native module-call trace, visual gate matrix execution, legibility, source-brand sanitization, and public-demo visual quality.
+- `demo candidate`: all four Run 2.14 arms exist, trace manifests pass contract review, runtime isolation is recorded, native PPT and layout geometry checks pass, render inspection is complete, and the Run 2.14 full arm passes human review for aesthetic-shell recovery, hidden workflow trace, actual native module-call trace, legibility, source-brand sanitization, and public-demo visual quality.
 - `public blocked`: the current external status until human approval explicitly records that the generated deck, trace manifest, provenance, and render inspection are acceptable.

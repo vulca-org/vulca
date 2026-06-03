@@ -428,6 +428,18 @@ EXPECTED_RUN2_13_TRACE_FIELDS = {
     "run2_13_visual_delta_from_run2_10",
     "run2_13_negative_control_probe",
 }
+EXPECTED_RUN2_14_TRACE_FIELDS = {
+    "run2_12_evidence_record_ids",
+    "run2_12_memory_seed_ids",
+    "run2_12_workflow_gate_ids",
+    "run2_14_aesthetic_source_run_id",
+    "run2_14_aesthetic_shell_input_ids",
+    "run2_14_surface_policy",
+    "run2_14_visible_workflow_suppression",
+    "run2_14_visual_delta_from_run2_13",
+    "run2_14_code_module_ids",
+    "run2_14_bad_control_probe",
+}
 EXPECTED_RUN2_6_USECASE_FIELDS = {
     "id",
     "source_ids",
@@ -2921,6 +2933,115 @@ def test_run2_13_generator_uses_thick_data_seeds_and_preserves_boundaries() -> N
     assert "drawRun213WorkflowGateRail" in close_block
 
 
+def test_run2_14_generator_hides_trace_inside_210_aesthetic_shell() -> None:
+    script_path = ROOT / "scripts" / "generate_ppt_run2_14_aesthetic_trace_arms.mjs"
+    assert script_path.exists(), "missing Run 2.14 aesthetic-trace generator"
+    body = script_path.read_text(encoding="utf-8")
+    arm_order = ["prompt_only", "run1_5_skill", "run2_14_full_skill", "bad_visible_workflow_memory"]
+
+    def arm_block(arm_id: str) -> str:
+        start = body.index(f'armId: "{arm_id}"')
+        next_starts = [body.find(f'armId: "{next_arm}"', start + 1) for next_arm in arm_order]
+        next_starts = [index for index in next_starts if index > start]
+        end = min(next_starts) if next_starts else len(body)
+        return body[start:end]
+
+    def section(block: str, start_marker: str, end_marker: str) -> str:
+        start = block.index(start_marker)
+        end = block.index(end_marker, start)
+        return block[start:end]
+
+    run2_12_inputs = [
+        "run2_12_thick_multimodal_evidence.json",
+        "run2_12_design_memory_seed.json",
+        "run2_12_workflow_gate_seed.json",
+    ]
+    run2_10_aesthetic_inputs = [
+        "run2_10_visual_system_sources.json",
+        "run2_10_visual_system_memory.json",
+        "run2_10_visual_system_gate_matrix.json",
+    ]
+
+    assert_contains(
+        body,
+        [
+            "prompt_only",
+            "run1_5_skill",
+            "run2_14_full_skill",
+            "bad_visible_workflow_memory",
+            "drawRun214PresentationShell",
+            "drawRun214CinematicProductTheater",
+            "drawRun214HiddenWorkflowRoute",
+            "drawRun214MetricRevealStage",
+            "drawRun214QuietReleaseHandoff",
+            "assertRun214AestheticTraceGateSelfCheck",
+            "registerRun214Module",
+            "manifest_only_trace_public_surface",
+            "visible_workflow_suppression",
+            "run2_14_code_module_ids",
+        ],
+    )
+
+    prompt_allowed = section(arm_block("prompt_only"), "allowed:", "forbidden:")
+    prompt_forbidden = section(arm_block("prompt_only"), "forbidden:", "palette:")
+    run1_allowed = section(arm_block("run1_5_skill"), "allowed:", "forbidden:")
+    run1_forbidden = section(arm_block("run1_5_skill"), "forbidden:", "palette:")
+    full_allowed = section(arm_block("run2_14_full_skill"), "allowed:", "forbidden:")
+    full_forbidden = section(arm_block("run2_14_full_skill"), "forbidden:", "palette:")
+    bad_allowed = section(arm_block("bad_visible_workflow_memory"), "allowed:", "forbidden:")
+    bad_forbidden = section(arm_block("bad_visible_workflow_memory"), "forbidden:", "palette:")
+
+    for term in [*run2_12_inputs, *run2_10_aesthetic_inputs]:
+        assert term not in prompt_allowed
+        assert term in prompt_forbidden
+        assert term not in run1_allowed
+        assert term in run1_forbidden
+
+    for term in [*run2_12_inputs, *run2_10_aesthetic_inputs]:
+        assert term in full_allowed
+        assert term not in full_forbidden
+
+    for term in run2_12_inputs:
+        assert term in bad_allowed
+        assert term not in bad_forbidden
+    for term in run2_10_aesthetic_inputs:
+        assert term not in bad_allowed
+        assert term in bad_forbidden
+
+    assert 'const fullRun214 = arm.armId === "run2_14_full_skill";' in body
+    for field in EXPECTED_RUN2_14_TRACE_FIELDS:
+        assert re.search(fr"{field}:\s*fullRun214\s*\?", body), field
+    assert "const actualCodeModuleIds = Array.from(roleMetrics.visualModuleIds);" in body
+    assert "run2_14_code_module_ids: fullRun214" in body
+    for function_name in [
+        "drawRun214PresentationShell",
+        "drawRun214CinematicProductTheater",
+        "drawRun214HiddenWorkflowRoute",
+        "drawRun214MetricRevealStage",
+        "drawRun214QuietReleaseHandoff",
+    ]:
+        assert f'registerRun214Module(metrics, "{function_name}")' in body
+    render_start = body.index("function renderRun214FullSlide")
+    setup_start = body.index('} else if (spec.role === "setup")', render_start)
+    contrast_start = body.index('} else if (spec.role === "contrast")', render_start)
+    proof_start = body.index('} else if (spec.role === "proof")', render_start)
+    climax_start = body.index('} else if (spec.role === "climax")', render_start)
+    close_start = body.index('} else {', climax_start)
+    cover_block = body[render_start:setup_start]
+    setup_block = body[setup_start:contrast_start]
+    proof_block = body[proof_start:climax_start]
+    climax_block = body[climax_start:close_start]
+    close_block = body[close_start:]
+    assert "drawRun214PresentationShell" in cover_block
+    assert "drawRun214HiddenWorkflowRoute" in cover_block
+    assert "drawRun214CinematicProductTheater" in setup_block
+    assert "drawRun214HiddenWorkflowRoute" in setup_block
+    assert "drawRun214CinematicProductTheater" in proof_block
+    assert "drawRun214HiddenWorkflowRoute" in proof_block
+    assert "drawRun214MetricRevealStage" in climax_block
+    assert "drawRun214QuietReleaseHandoff" in close_block
+
+
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
     layout_dir = tmp_path / "layout"
     layout_dir.mkdir()
@@ -3098,6 +3219,7 @@ def test_run2_results_reviewed_and_public_blocked() -> None:
     assert "aesthetic_benchmark_ids" in trace_contract["per_slide_required_fields"]
     assert "theme_policy_id" in trace_contract["per_slide_required_fields"]
     assert EXPECTED_RUN2_13_TRACE_FIELDS <= set(trace_contract["per_slide_required_fields"])
+    assert EXPECTED_RUN2_14_TRACE_FIELDS <= set(trace_contract["per_slide_required_fields"])
     assert trace_contract["native_ppt_thresholds"]["full_slide_rasterized_allowed"] is False
 
 
@@ -3487,6 +3609,55 @@ def test_run2_13_records_thick_data_rerun_result() -> None:
     )
 
 
+def test_run2_14_records_aesthetic_trace_rerun_result() -> None:
+    result = (PACK / "results" / "run2_14_aesthetic_trace_rerun_result.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_14_aesthetic_trace_rerun_result.json")
+
+    assert result_json["status"] == "rerun_completed_public_blocked"
+    assert result_json["public_ready"] is False
+    assert result_json["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert result_json["rerun"]["status"] == "completed"
+    assert result_json["rerun"]["best_internal_arm"] == "run2_14_full_skill"
+    assert result_json["rerun"]["generated_outputs_committed"] is False
+    assert "run2-14-four-arm-contact-sheet.png" in result_json["rerun"]["combined_contact_sheet"]
+    assert "run2-full-skill-series-horizontal.png" in result_json["rerun"]["full_skill_series_sheet"]
+    assert result_json["rerun"]["html_viewer"].endswith("/ppt-run-viewer.html")
+    assert result_json["qa_summary"]["trace_truthfulness_guard"].startswith("passed")
+    assert result_json["qa_summary"]["case_pack_validator"] == "passed with --profile run2"
+    assert result_json["control_boundary"]["bad_visible_workflow_memory"].startswith(
+        "run2_12_data_workflow_without_run2_10_aesthetic_shell"
+    )
+    assert_contains(
+        json.dumps(result_json["actual_full_arm_modules_by_role"]),
+        [
+            "drawRun214PresentationShell",
+            "drawRun214CinematicProductTheater",
+            "drawRun214HiddenWorkflowRoute",
+            "drawRun214MetricRevealStage",
+            "drawRun214QuietReleaseHandoff",
+        ],
+    )
+    assert_contains(
+        json.dumps(result_json["aesthetic_trace_learning"]),
+        [
+            "2.10 visual system aesthetic shell",
+            "2.13 thick data trace core",
+            "manifest_only_trace_public_surface",
+            "workflow_hidden_from_slide_surface",
+        ],
+    )
+    assert_contains(
+        result,
+        [
+            "Run 2.14",
+            "2.10 visual system aesthetic",
+            "2.13 thick data trace",
+            "public blocked",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
 def test_ppt_run_html_viewer_builder_tracks_latest_outputs() -> None:
     script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
 
@@ -3514,6 +3685,11 @@ def test_ppt_run_html_viewer_builder_tracks_latest_outputs() -> None:
             "ppt-run2-13-run1-5-skill",
             "ppt-run2-13-full-vulca",
             "ppt-run2-13-bad-thick-data-memory",
+            "Run 2.14",
+            "ppt-run2-14-prompt-only",
+            "ppt-run2-14-run1-5-skill",
+            "ppt-run2-14-full-vulca",
+            "ppt-run2-14-bad-visible-workflow-memory",
             "Full skill series",
             "Data / Skill",
             "renderData",

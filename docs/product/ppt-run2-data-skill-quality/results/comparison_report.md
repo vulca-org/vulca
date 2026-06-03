@@ -2,7 +2,26 @@
 
 Status: rerun-completed-public-blocked.
 
-Run 2.13 is the latest reviewed internal result. It reruns the four-arm experiment after Run 2.12 data thickening, using `run2_12_thick_multimodal_evidence.json`, `run2_12_design_memory_seed.json`, and `run2_12_workflow_gate_seed.json` as mandatory full-arm inputs.
+Run 2.14 is the latest reviewed internal result. It reruns the four-arm experiment after Run 2.13 by combining the Run 2.10 visual-system aesthetic shell with the Run 2.13 thick-data trace core.
+
+The Run 2.14 result is `2_10_aesthetic_shell_recovered_with_2_13_trace_core_hidden_from_slide_surface`: the full arm records actual native module calls, keeps Run 2.12 evidence/memory/workflow ids in trace, and stops showing workflow machinery as the public slide surface. It still does not prove public-video-grade quality because the editorial layouts are partly hardcoded, dynamic text-length robustness is unproven, and no human release approval is recorded.
+
+| Artifact | Status | Result |
+| --- | --- | --- |
+| `run2_14_aesthetic_trace_rerun_result.json` | generated | trace-backed Run 2.14 rerun result |
+| `run2_14_aesthetic_trace_rerun_result.md` | generated | human-readable result |
+| `run2-14-four-arm-contact-sheet.png` | generated local output | four-arm comparison |
+| `ppt-run-viewer.html` | generated local output | latest viewer now points to Run 2.14 |
+
+## Run 2.14 Findings
+
+- `prompt_only`: remains isolated from Run 2.12 data/workflow and Run 2.10 visual-system aesthetic inputs.
+- `run1_5_skill`: remains the prior baseline and forbids Run 2.12/Run 2.10 full-arm inputs.
+- `run2_14_full_skill`: best internal arm for proving that data/workflow trace can stay truthful while the public slide surface returns to editorial presentation.
+- `bad_visible_workflow_memory`: confirms that Run 2.12 data/workflow without the Run 2.10 aesthetic shell still tends toward beige box/checklist output.
+- Gemini artifact review judged the full arm as recovering the 2.10 editorial shell and hiding raw workflow machinery, but flagged text-length fragility and possible diagnostic-loss risk. Public release remains blocked. Do not advance to Run 3.0.
+
+Run 2.13 was the prior reviewed internal generated result. It reran the four-arm experiment after Run 2.12 data thickening, using `run2_12_thick_multimodal_evidence.json`, `run2_12_design_memory_seed.json`, and `run2_12_workflow_gate_seed.json` as mandatory full-arm inputs.
 
 The Run 2.13 result is `thick_data_memory_and_workflow_visible_but_not_public_release_ready`: the full arm now records actual native thick-data module calls and the evidence-only negative control remains isolated. It still does not prove public-video-grade quality because thumbnail text/readability risk remains and no human release approval is recorded.
 
@@ -11,7 +30,7 @@ The Run 2.13 result is `thick_data_memory_and_workflow_visible_but_not_public_re
 | `run2_13_thick_data_rerun_result.json` | generated | trace-backed Run 2.13 rerun result |
 | `run2_13_thick_data_rerun_result.md` | generated | human-readable result |
 | `run2-13-four-arm-contact-sheet.png` | generated local output | four-arm comparison |
-| `ppt-run-viewer.html` | generated local output | latest viewer now points to Run 2.13 |
+| `ppt-run-viewer.html` | generated local output | viewer records Run 2.13 as prior generated rerun |
 
 ## Run 2.13 Findings
 
