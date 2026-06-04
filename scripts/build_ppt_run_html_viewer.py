@@ -303,6 +303,10 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run221_result = read_json(pack / "results" / "run2_21_visual_decision_memory_result.json")
     run222_result = read_json(pack / "results" / "run2_22_selector_rerun_result.json")
     run223_selector_audit = read_json(pack / "results" / "run2_23_selector_effectiveness_audit.json")
+    run224_content_memory = read_json(pack / "run2_24_single_usecase_content_memory.json")
+    run224_visual_assets = read_json(pack / "run2_24_visual_evidence_asset_memory.json")
+    run224_workflow_gates = read_json(pack / "run2_24_content_visual_workflow_gates.json")
+    run224_result = read_json(pack / "results" / "run2_24_single_usecase_thickening_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -406,6 +410,16 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run222Result": run222_result,
         "run223SelectorAuditStatus": run223_selector_audit.get("status", ""),
         "run223SelectorAudit": run223_selector_audit,
+        "run224ContentMemoryStatus": run224_content_memory.get("status", ""),
+        "run224ContentMemory": run224_content_memory.get("slide_content_memory", []),
+        "run224SelectedUsecase": run224_content_memory.get("selected_usecase", {}),
+        "run224StoryPolicy": run224_content_memory.get("story_policy", {}),
+        "run224VisualAssetStatus": run224_visual_assets.get("status", ""),
+        "run224VisualAssets": run224_visual_assets.get("visual_evidence_assets", []),
+        "run224WorkflowGateStatus": run224_workflow_gates.get("status", ""),
+        "run224WorkflowGates": run224_workflow_gates.get("gates", []),
+        "run224ResultStatus": run224_result.get("status", ""),
+        "run224Result": run224_result,
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -1053,6 +1067,46 @@ def build_html(data: dict[str, Any]) -> str:
       </article>`;
     }}
 
+    function run224ContentMemoryCard(record) {{
+      return `<article class="dataCard">
+        <h4>${{escapeHtml(record.content_memory_id)}}</h4>
+        ${{chipList([record.role, record.selected_usecase_id].filter(Boolean))}}
+        ${{detailBlock("Headline", record.headline)}}
+        ${{detailBlock("Support line", record.support_line)}}
+        ${{detailBlock("Business proof points", record.business_proof_points)}}
+        ${{detailBlock("Visual evidence slots", record.visual_evidence_slot_ids)}}
+        ${{detailBlock("Density contract", record.content_density_contract)}}
+        ${{detailBlock("Trace fields", record.trace_fields_required)}}
+        ${{detailBlock("Forbidden materials", record.forbidden_source_materials)}}
+      </article>`;
+    }}
+
+    function run224VisualAssetCard(asset) {{
+      return `<article class="dataCard">
+        <h4>${{escapeHtml(asset.asset_id)}}</h4>
+        ${{chipList([asset.role, asset.asset_type].filter(Boolean))}}
+        ${{detailBlock("Content payload", asset.content_payload)}}
+        ${{detailBlock("Native PPT strategy", asset.native_ppt_strategy)}}
+        ${{detailBlock("Visual density role", asset.visual_density_role)}}
+        ${{detailBlock("Source boundary", asset.source_boundary)}}
+        ${{detailBlock("QA probe", asset.qa_probe)}}
+      </article>`;
+    }}
+
+    function run224WorkflowGateCard(gate) {{
+      return `<article class="dataCard">
+        <h4>${{escapeHtml(gate.gate_id)}}</h4>
+        ${{chipList([gate.role, gate.selected_usecase_id, gate.public_release_gate].filter(Boolean))}}
+        ${{detailBlock("Content memory", gate.required_content_memory_id)}}
+        ${{detailBlock("Min business proof points", gate.min_business_proof_points)}}
+        ${{detailBlock("Min visual evidence slots", gate.min_visual_evidence_slots)}}
+        ${{detailBlock("Forbid cross-case story", gate.forbid_cross_case_primary_story)}}
+        ${{detailBlock("Trace fields", gate.required_trace_fields)}}
+        ${{detailBlock("Pass/fail checks", gate.pass_fail_checks)}}
+        ${{detailBlock("Bad control probe", gate.bad_control_probe)}}
+      </article>`;
+    }}
+
     function run217ArmAuditCard(arm) {{
       const motion = arm.motion || {{}};
       return `<article class="dataCard">
@@ -1245,6 +1299,13 @@ def build_html(data: dict[str, Any]) -> str:
       const run222Rerun = run222Result.rerun || {{}};
       const run222Inputs = run222Result.input_chain || {{}};
       const run222Control = run222Result.control_boundary || {{}};
+      const run224Result = refs.run224Result || {{}};
+      const run224OutputChain = run224Result.output_chain || {{}};
+      const run224SelectedUsecase = refs.run224SelectedUsecase || {{}};
+      const run224StoryPolicy = refs.run224StoryPolicy || {{}};
+      const run224ContentMemory = (refs.run224ContentMemory || []).map(run224ContentMemoryCard).join("");
+      const run224VisualAssets = (refs.run224VisualAssets || []).map(run224VisualAssetCard).join("");
+      const run224WorkflowGates = (refs.run224WorkflowGates || []).map(run224WorkflowGateCard).join("");
       const run217Audit = refs.run217MotionAudit || {{}};
       const run217DeliveryTruth = run217Audit.delivery_truth || {{}};
       const run217RendererGap = run217Audit.motion_renderer_gap || {{}};
@@ -1269,6 +1330,46 @@ def build_html(data: dict[str, Any]) -> str:
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Why 2.8 still looks close to 2.7</h3><p>The current bottleneck is visual primitive quality, not trace plumbing.</p></div></div>
           <div class="dataGrid">${{diagnosis}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.24 single-usecase content + visual evidence</h3><p>Data/workflow-only layer: locks one commercial story and adds visible business content plus native visual evidence slots before the next generated rerun. It does not create a PPT deck or advance to Run 3.0.</p></div><span class="pill">${{escapeHtml(refs.run224ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Selected usecase</h4>
+              ${{detailBlock("Usecase id", run224SelectedUsecase.id)}}
+              ${{detailBlock("Audience", run224SelectedUsecase.audience)}}
+              ${{detailBlock("Business decision", run224SelectedUsecase.business_decision)}}
+              ${{detailBlock("Deck mission", run224SelectedUsecase.deck_mission)}}
+              ${{detailBlock("QA probe", run224SelectedUsecase.qa_probe)}}
+            </article>
+            <article class="dataCard">
+              <h4>Story policy</h4>
+              ${{detailBlock("Single primary usecase", run224StoryPolicy.single_primary_usecase)}}
+              ${{detailBlock("Supporting references only", run224StoryPolicy.supporting_references_only)}}
+              ${{detailBlock("Forbid cross-case primary story", run224StoryPolicy.forbid_cross_case_primary_story)}}
+              ${{detailBlock("Reason", run224StoryPolicy.reason)}}
+            </article>
+            <article class="dataCard">
+              <h4>Run boundary</h4>
+              ${{detailBlock("Creates new PPT deck", run224Result.creates_new_ppt_deck)}}
+              ${{detailBlock("Public ready", run224Result.public_ready)}}
+              ${{detailBlock("Artifact counts", run224Result.artifact_counts)}}
+              ${{detailBlock("Output chain", run224OutputChain)}}
+              ${{detailBlock("Next action", run224Result.next_required_action)}}
+            </article>
+          </div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.24 content memory</h3><p>${{escapeHtml(refs.run224ContentMemoryStatus)}}. Each slide role now has concrete headline, supporting line, business proof points, visual evidence slot ids, and content density gates.</p></div><span class="pill">${{(refs.run224ContentMemory || []).length}} records</span></div>
+          <div class="dataGrid">${{run224ContentMemory}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.24 visual evidence asset memory</h3><p>${{escapeHtml(refs.run224VisualAssetStatus)}}. These are native-PPT visual evidence instructions, not copied screenshots, video frames, source layouts, or brand marks.</p></div><span class="pill">${{(refs.run224VisualAssets || []).length}} assets</span></div>
+          <div class="dataGrid">${{run224VisualAssets}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.24 content/visual workflow gates</h3><p>${{escapeHtml(refs.run224WorkflowGateStatus)}}. These gates must be consumed before the next native PPT generation pass.</p></div><span class="pill">${{(refs.run224WorkflowGates || []).length}} gates</span></div>
+          <div class="dataGrid">${{run224WorkflowGates}}</div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.22 selector-memory rerun result</h3><p>Generated four-arm rerun that consumes Run 2.21 visual-decision memory, selector gates, and rejection matrix before native PPT code generation. It stays in the same five-layer loop and does not advance to Run 3.0.</p></div><span class="pill">${{escapeHtml(refs.run222ResultStatus || "missing")}}</span></div>

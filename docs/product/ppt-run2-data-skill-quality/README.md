@@ -1,6 +1,6 @@
 # PPT Run 2.0 Data Skill Quality
 
-Status: run2_23-selector-effectiveness-audit-public-blocked.
+Status: run2_24-single-usecase-content-visual-evidence-public-blocked.
 
 Run 2.5 does not move to a new stage. It repeats and thickens the same five fixed PPT product layers before the next generation pass:
 
@@ -49,6 +49,8 @@ Run 2.0 does not claim post-training or fine-tuning. It tests runtime case-pack-
 `results/run2_22_selector_rerun_result.json` records that the Run 2.21 visual-decision memory, selector gates, and evidence rejection matrix have now been consumed by a same-stage four-arm generated rerun. Run 2.22 creates `ppt-run2-22-*` decks, records selector decisions in trace, keeps selector trace off the public slide surface, and keeps public release blocked.
 
 `results/run2_23_selector_effectiveness_audit.json` is the latest audit-only layer. It creates no new deck. It checks whether Run 2.22 actually used Run 2.21 visual-decision memory, selector gates, evidence rejection reasons, and selector-specific code modules before native PPT generation; it compares that path against Run 2.19 and verifies the `bad_selector_memory` boundary.
+
+`run2_24_single_usecase_content_memory.json`, `run2_24_visual_evidence_asset_memory.json`, and `run2_24_content_visual_workflow_gates.json` are the latest data/workflow-only thickening layer. They lock the next rerun to `usecase_design_to_production_platform_launch`, add six role-specific content memory records, add twelve native-PPT visual evidence asset instructions, and require content/visual density gates before native PPT generation.
 
 Generation must follow `generation_protocol.md`: separate arm runtimes, no cross-arm context leakage, native PPT object checks, and layout geometry QA before scoring.
 

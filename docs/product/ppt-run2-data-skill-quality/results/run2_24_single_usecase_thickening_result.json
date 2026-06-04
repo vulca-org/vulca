@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "run_id": "2.24",
+  "status": "run2_24_single_usecase_content_visual_evidence_ready_public_blocked",
+  "source_audit_run": "2.23",
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "narrative_usecase_id": "usecase_ai_design_to_production_platform_launch",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "public_ready": false,
+  "creates_new_ppt_deck": false,
+  "input_chain": {
+    "commercial_usecase_bank": "docs/product/ppt-run2-data-skill-quality/commercial_usecase_bank.json",
+    "narrative_usecase": "docs/product/ppt-run2-data-skill-quality/run2_7_commercial_usecase.json",
+    "multimodal_source_records": "docs/product/ppt-run2-data-skill-quality/run2_7_multimodal_source_records.json",
+    "selector_effectiveness_audit": "docs/product/ppt-run2-data-skill-quality/results/run2_23_selector_effectiveness_audit.json"
+  },
+  "output_chain": {
+    "content_memory": "docs/product/ppt-run2-data-skill-quality/run2_24_single_usecase_content_memory.json",
+    "visual_evidence_asset_memory": "docs/product/ppt-run2-data-skill-quality/run2_24_visual_evidence_asset_memory.json",
+    "content_visual_workflow_gates": "docs/product/ppt-run2-data-skill-quality/run2_24_content_visual_workflow_gates.json"
+  },
+  "artifact_counts": {
+    "slide_content_memory": 6,
+    "visual_evidence_assets": 12,
+    "content_visual_workflow_gates": 6
+  },
+  "delivery_artifacts": {
+    "pptx_paths": [],
+    "rendered_slide_paths": [],
+    "contact_sheet_paths": [],
+    "html_motion_renderer_paths": []
+  },
+  "public_release_gate": "blocked",
+  "release_boundary": "public_blocked_until_next_generated_rerun_consumes_run2_24_pack_native_render_review_and_human_approval",
+  "next_required_action": "consume_run2_24_single_usecase_pack_before_next_generated_rerun"
+}

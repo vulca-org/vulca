@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "workflow_type": "declarative_skill_director",
-  "status": "run2_18_thickness_pack_directed_public_blocked",
+  "status": "run2_24_single_usecase_content_visual_evidence_directed_public_blocked",
   "stage_policy": "repeat_same_five_layers_not_run3",
   "five_layer_loop": [
     "real_commercial_case",
@@ -645,9 +645,61 @@
         "negative control may read evidence but not design memory or workflow gates",
         "Run 2.18 is not a new PPT output and does not advance to Run 3.0"
       ]
+    },
+    {
+      "id": "lock_run2_24_single_usecase_content_memory",
+      "order": 32,
+      "layer": "real_commercial_case",
+      "inputs": [
+        "commercial_usecase_bank.json",
+        "run2_7_commercial_usecase.json",
+        "results/run2_23_selector_effectiveness_audit.json"
+      ],
+      "outputs": ["run2_24_single_usecase_content_memory.json"],
+      "gates": [
+        "one primary commercial usecase is selected before the next rerun",
+        "each slide role has headline, support line, business proof points, and visual evidence slot ids",
+        "cross-case primary story mixing is forbidden"
+      ]
+    },
+    {
+      "id": "compile_run2_24_visual_evidence_asset_memory",
+      "order": 33,
+      "layer": "evidence_aesthetic_asset_memory",
+      "inputs": ["run2_24_single_usecase_content_memory.json"],
+      "outputs": ["run2_24_visual_evidence_asset_memory.json"],
+      "gates": [
+        "at least two native-PPT visual evidence assets exist for each slide role",
+        "raw screenshots, video frames, copied layouts, brand marks, audio, and transcript text remain forbidden",
+        "visual evidence assets carry business content, not only workflow symbols"
+      ]
+    },
+    {
+      "id": "apply_run2_24_content_visual_workflow_gates",
+      "order": 34,
+      "layer": "skill_workflow",
+      "inputs": [
+        "run2_24_single_usecase_content_memory.json",
+        "run2_24_visual_evidence_asset_memory.json"
+      ],
+      "outputs": [
+        "run2_24_content_visual_workflow_gates.json",
+        "results/run2_24_single_usecase_thickening_result.json"
+      ],
+      "gates": [
+        "next generated rerun must record run2_24_selected_usecase_id, content memory id, visual evidence slot ids, and density gate id",
+        "negative control may receive the usecase label but not content memory, visual evidence assets, or density gates",
+        "Run 2.24 is not a new PPT output and does not advance to Run 3.0"
+      ]
     }
   ],
   "repair_triggers": [
+    {
+      "id": "run2_24_single_usecase_pack_required_before_next_rerun",
+      "trigger": "Run 2.23 proved selector execution but Run 2.22 still reads as sparse workflow symbols instead of one thick commercial case",
+      "recommendation": "require run2_24_single_usecase_content_memory.json, run2_24_visual_evidence_asset_memory.json, and run2_24_content_visual_workflow_gates.json before the next generated rerun",
+      "human_gate": "required before next generated rerun"
+    },
     {
       "id": "run2_18_thickness_pack_required_before_next_rerun",
       "trigger": "The latest generated output still depends on thin source-to-memory selection or the next quality target is data/workflow thickness rather than visual polish",

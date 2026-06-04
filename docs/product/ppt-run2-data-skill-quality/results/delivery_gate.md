@@ -1,8 +1,23 @@
 # Delivery Gate
 
-Status: run2_23-selector-effectiveness-audit-public-blocked.
+Status: run2_24-single-usecase-content-visual-evidence-public-blocked.
 
 Public publishing is blocked until native render or cross-platform render inspection passes, motion/render support is proven, and human approval is recorded.
+
+## Run 2.24 Single-Usecase Content + Visual Evidence
+
+Run 2.24 is data/workflow-only and does not create PPTX artifacts. It locks the next rerun to `usecase_design_to_production_platform_launch`, adds content memory, adds native visual evidence asset instructions, and adds content/visual workflow gates.
+
+| Check | Result |
+| --- | --- |
+| Selected primary usecase | `usecase_design_to_production_platform_launch` |
+| Content memory | 6 role records |
+| Visual evidence assets | 12 native-PPT instruction records |
+| Workflow gates | 6 content/visual density gates |
+| Generated PPT | none |
+| Public gate | blocked until next generated rerun, native render review, source-boundary review, and human approval |
+
+Result report: `docs/product/ppt-run2-data-skill-quality/results/run2_24_single_usecase_thickening_result.md`.
 
 ## Run 2.23 Selector Effectiveness Audit
 

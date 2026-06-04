@@ -1,10 +1,30 @@
 # Comparison Report
 
-Status: run2_23-selector-effectiveness-audit-public-blocked.
+Status: run2_24-single-usecase-content-visual-evidence-public-blocked.
 
 Prior delivery status: motion-renderer-proof-public-blocked.
 
 Prior data/workflow status: run2_18-thickness-pack-public-blocked.
+
+Run 2.24 is the latest data/workflow-only layer. It creates no new PPT deck and locks the next rerun to `usecase_design_to_production_platform_launch`, with richer content memory and visual evidence asset instructions.
+
+The Run 2.24 result is `run2_24_single_usecase_content_visual_evidence_ready_public_blocked`: single-usecase content and visual-evidence thickness is ready for the next generated rerun, but public release remains blocked.
+
+| Artifact | Status | Result |
+| --- | --- | --- |
+| `run2_24_single_usecase_content_memory.json` | generated | six role-specific content memory records |
+| `run2_24_visual_evidence_asset_memory.json` | generated | twelve native-PPT visual evidence asset instructions |
+| `run2_24_content_visual_workflow_gates.json` | generated | six content/visual density gates |
+| `run2_24_single_usecase_thickening_result.json` | generated | machine-readable Run 2.24 result |
+| `run2_24_single_usecase_thickening_result.md` | generated | human-readable Run 2.24 result |
+| `ppt-run-viewer.html` | regenerated local output | Data / Skill tab includes Run 2.24 |
+
+## Run 2.24 Findings
+
+- The next rerun must use one primary commercial story instead of mixing Figma, Stripe, Google, and Duarte references as competing slide-role stories.
+- Every slide role now has a headline, support line, at least two business proof points, and at least two visual evidence slots.
+- The visual evidence layer is native-PPT instruction only; raw source screenshots, video frames, copied layouts, brand marks, audio, and transcripts remain forbidden.
+- Public release remains blocked. Do not advance to Run 3.0.
 
 Run 2.23 is the latest audit-only layer. It creates no new PPT deck, compares the Run 2.22 full arm against Run 2.19, and verifies that `bad_selector_memory` remains decision-memory-only. Run 2.22 remains the latest generated four-arm PPT rerun.
 

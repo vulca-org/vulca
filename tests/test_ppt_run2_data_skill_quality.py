@@ -1806,11 +1806,12 @@ def test_run2_11_audit_references_existing_data_memory_gate_and_trace_fields() -
         "run2_10_visual_system_memory_records": len(run210_memory["visual_systems"]),
     }
     assert audit["workflow_inventory"] == {
-        "skill_workflow_stages": len(workflow["stages"]),
+        "skill_workflow_stages": 31,
         "run2_8_workflow_gates": len(run28_gate["gates"]),
         "run2_9_visual_gates": len(run29_gate["gates"]),
         "run2_10_visual_system_gates": len(run210_gate["gates"]),
     }
+    assert audit["workflow_inventory"]["skill_workflow_stages"] <= len(workflow["stages"])
 
     known_source_ids = {record["id"] for record in run27_sources["records"]}
     known_decomposition_ids = {unit["id"] for unit in run28_decomp["units"]}
@@ -2196,8 +2197,11 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
         "expand_run2_18_multimodal_evidence",
         "expand_run2_18_design_memory",
         "apply_run2_18_workflow_gate_expansion",
+        "lock_run2_24_single_usecase_content_memory",
+        "compile_run2_24_visual_evidence_asset_memory",
+        "apply_run2_24_content_visual_workflow_gates",
     ]
-    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 32))
+    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 35))
     assert workflow["repair_triggers"]
     workflow_text = json.dumps(workflow)
     assert "multimodal_database.json" in workflow_text
@@ -2223,6 +2227,9 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
     assert "run2_10_visual_system_sources.json" in workflow_text
     assert "run2_10_visual_system_memory.json" in workflow_text
     assert "run2_10_visual_system_gate_matrix.json" in workflow_text
+    assert "run2_24_single_usecase_content_memory.json" in workflow_text
+    assert "run2_24_visual_evidence_asset_memory.json" in workflow_text
+    assert "run2_24_content_visual_workflow_gates.json" in workflow_text
     assert "run2_15_layout_selector_sources.json" in workflow_text
     assert "run2_15_layout_module_memory.json" in workflow_text
     assert "run2_15_layout_selector_gate_matrix.json" in workflow_text
@@ -4057,6 +4064,164 @@ def test_ppt_run_html_viewer_embeds_run2_23_selector_effectiveness_audit() -> No
     )
 
 
+def test_run2_24_builder_writes_single_usecase_content_visual_evidence_pack(tmp_path: Path) -> None:
+    script_path = ROOT / "scripts" / "build_ppt_run2_24_single_usecase_content_evidence.py"
+    assert script_path.exists(), "missing Run 2.24 single-usecase content/evidence builder"
+
+    result_json = tmp_path / "run2_24_single_usecase_thickening_result.json"
+    result_md = tmp_path / "run2_24_single_usecase_thickening_result.md"
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(script_path),
+            "--out-dir",
+            str(tmp_path),
+            "--result-json",
+            str(result_json),
+            "--result-md",
+            str(result_md),
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        timeout=20,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    content_memory = load_json(tmp_path / "run2_24_single_usecase_content_memory.json")
+    visual_assets = load_json(tmp_path / "run2_24_visual_evidence_asset_memory.json")
+    workflow_gates = load_json(tmp_path / "run2_24_content_visual_workflow_gates.json")
+    result = load_json(result_json)
+    report = result_md.read_text(encoding="utf-8")
+
+    assert result["status"] == "run2_24_single_usecase_content_visual_evidence_ready_public_blocked"
+    assert result["run_id"] == "2.24"
+    assert result["source_audit_run"] == "2.23"
+    assert result["selected_usecase_id"] == "usecase_design_to_production_platform_launch"
+    assert result["creates_new_ppt_deck"] is False
+    assert result["public_ready"] is False
+    assert result["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert result["next_required_action"].startswith("consume_run2_24_single_usecase_pack")
+    assert result["delivery_artifacts"] == {
+        "pptx_paths": [],
+        "rendered_slide_paths": [],
+        "contact_sheet_paths": [],
+        "html_motion_renderer_paths": [],
+    }
+
+    assert content_memory["status"] == "run2_24_single_usecase_content_memory_ready_public_blocked"
+    assert content_memory["selected_usecase"]["id"] == "usecase_design_to_production_platform_launch"
+    assert content_memory["story_policy"]["single_primary_usecase"] is True
+    assert len(content_memory["slide_content_memory"]) == 6
+    for record in content_memory["slide_content_memory"]:
+        assert record["role"] in {"cover", "setup", "contrast", "proof", "climax", "close"}
+        assert record["content_memory_id"].startswith("content_2_24_")
+        assert record["headline"]
+        assert record["support_line"]
+        assert len(record["business_proof_points"]) >= 2
+        assert len(record["visual_evidence_slot_ids"]) >= 2
+        assert record["trace_fields_required"] == [
+            "run2_24_selected_usecase_id",
+            "run2_24_content_memory_id",
+            "run2_24_visual_evidence_slot_ids",
+            "run2_24_content_density_gate_id",
+        ]
+        assert "screenshots" in record["forbidden_source_materials"]
+        assert "brand marks" in record["forbidden_source_materials"]
+
+    assert visual_assets["status"] == "run2_24_visual_evidence_asset_memory_ready_public_blocked"
+    assert visual_assets["storage_policy"]["raw_media"] == "forbidden"
+    assert len(visual_assets["visual_evidence_assets"]) == 12
+    for asset in visual_assets["visual_evidence_assets"]:
+        assert asset["asset_id"].startswith("asset_2_24_")
+        assert asset["role"] in {"cover", "setup", "contrast", "proof", "climax", "close"}
+        assert asset["native_ppt_strategy"]
+        assert asset["content_payload"]
+        assert asset["source_boundary"].startswith("Derived")
+        assert asset["public_surface_allowed"] is True
+
+    assert workflow_gates["status"] == "run2_24_content_visual_workflow_gates_ready_public_blocked"
+    assert len(workflow_gates["gates"]) == 6
+    for gate in workflow_gates["gates"]:
+        assert gate["selected_usecase_id"] == "usecase_design_to_production_platform_launch"
+        assert gate["min_business_proof_points"] >= 2
+        assert gate["min_visual_evidence_slots"] >= 2
+        assert gate["forbid_cross_case_primary_story"] is True
+        assert "run2_24_selected_usecase_id" in gate["required_trace_fields"]
+        assert gate["public_release_gate"] == "blocked"
+
+    assert_contains(
+        report,
+        [
+            "Run 2.24",
+            "single usecase",
+            "content memory",
+            "visual evidence",
+            "public blocked",
+            "Do not advance to Run 3.0",
+        ],
+    )
+    assert not list(tmp_path.glob("*.pptx"))
+
+
+def test_run2_24_records_single_usecase_content_visual_evidence_pack() -> None:
+    result = (PACK / "results" / "run2_24_single_usecase_thickening_result.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_24_single_usecase_thickening_result.json")
+    content_memory = load_json(PACK / "run2_24_single_usecase_content_memory.json")
+    visual_assets = load_json(PACK / "run2_24_visual_evidence_asset_memory.json")
+    workflow_gates = load_json(PACK / "run2_24_content_visual_workflow_gates.json")
+    workflow = load_json(PACK / "skill_workflow.json")
+
+    assert result_json["status"] == "run2_24_single_usecase_content_visual_evidence_ready_public_blocked"
+    assert result_json["selected_usecase_id"] == "usecase_design_to_production_platform_launch"
+    assert result_json["creates_new_ppt_deck"] is False
+    assert result_json["public_ready"] is False
+    assert result_json["artifact_counts"] == {
+        "slide_content_memory": 6,
+        "visual_evidence_assets": 12,
+        "content_visual_workflow_gates": 6,
+    }
+    assert content_memory["story_policy"]["single_primary_usecase"] is True
+    assert len(content_memory["slide_content_memory"]) == 6
+    assert len(visual_assets["visual_evidence_assets"]) == 12
+    assert len(workflow_gates["gates"]) == 6
+    assert workflow["status"] == "run2_24_single_usecase_content_visual_evidence_directed_public_blocked"
+    assert {stage["id"] for stage in workflow["stages"]} >= {
+        "lock_run2_24_single_usecase_content_memory",
+        "compile_run2_24_visual_evidence_asset_memory",
+        "apply_run2_24_content_visual_workflow_gates",
+    }
+    assert any(
+        trigger["id"] == "run2_24_single_usecase_pack_required_before_next_rerun"
+        for trigger in workflow["repair_triggers"]
+    )
+    assert_contains(
+        result,
+        [
+            "Run 2.24",
+            "usecase_design_to_production_platform_launch",
+            "content memory",
+            "visual evidence",
+            "public blocked",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_embeds_run2_24_single_usecase_content_visual_evidence_pack() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "run2_24_single_usecase_content_memory.json",
+            "run2_24_visual_evidence_asset_memory.json",
+            "run2_24_content_visual_workflow_gates.json",
+            "run2_24_single_usecase_thickening_result.json",
+            "Run 2.24 single-usecase content + visual evidence",
+        ],
+    )
+
+
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
     layout_dir = tmp_path / "layout"
     layout_dir.mkdir()
@@ -5008,7 +5173,7 @@ def test_run2_18_records_thickness_result_and_no_new_ppt_output() -> None:
         ],
     )
 
-    assert workflow["status"] == "run2_18_thickness_pack_directed_public_blocked"
+    assert workflow["status"] == "run2_24_single_usecase_content_visual_evidence_directed_public_blocked"
     assert {stage["id"] for stage in workflow["stages"]} >= {
         "expand_run2_18_multimodal_evidence",
         "expand_run2_18_design_memory",
