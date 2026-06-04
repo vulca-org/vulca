@@ -4544,6 +4544,197 @@ def test_ppt_run_html_viewer_embeds_run2_26_visual_module_quality_audit() -> Non
     )
 
 
+def test_run2_27_generator_consumes_run2_26_audit_before_native_ppt_code() -> None:
+    script_path = ROOT / "scripts" / "generate_ppt_run2_27_content_surface_thickening_arms.mjs"
+    assert script_path.exists(), "missing Run 2.27 content surface thickening generator"
+    body = script_path.read_text(encoding="utf-8")
+    arm_order = [
+        "prompt_only",
+        "run1_5_skill",
+        "run2_27_full_content_surface_thickening",
+        "bad_surface_thickening_memory",
+    ]
+
+    def arm_block(arm_id: str) -> str:
+        start = body.index(f'armId: "{arm_id}"')
+        next_starts = [body.find(f'armId: "{next_arm}"', start + 1) for next_arm in arm_order]
+        next_starts = [index for index in next_starts if index > start]
+        end = min(next_starts) if next_starts else len(body)
+        return body[start:end]
+
+    def section(block: str, start_marker: str, end_marker: str) -> str:
+        start = block.index(start_marker)
+        end = block.index(end_marker, start)
+        return block[start:end]
+
+    required_inputs = [
+        "run2_24_single_usecase_content_memory.json",
+        "run2_24_visual_evidence_asset_memory.json",
+        "run2_24_content_visual_workflow_gates.json",
+        "run2_26_visual_module_quality_audit.json",
+    ]
+
+    assert_contains(
+        body,
+        [
+            "validateRun226VisualModuleAudit",
+            "loadRun227ContractData",
+            "drawRun227ContentEvidenceSurface",
+            "run227ContentEvidenceSurfaceGeometry",
+            "run2_27_content_surface_thickening_execution_status",
+            "run2_27_code_module_ids",
+            "thicken_drawRun225ContentEvidenceSurface_before_run2_27_rerun",
+            "run2_26_visual_module_quality_audit_public_blocked",
+        ],
+    )
+
+    prompt_allowed = section(arm_block("prompt_only"), "allowed:", "forbidden:")
+    prompt_forbidden = section(arm_block("prompt_only"), "forbidden:", "palette:")
+    run1_allowed = section(arm_block("run1_5_skill"), "allowed:", "forbidden:")
+    run1_forbidden = section(arm_block("run1_5_skill"), "forbidden:", "palette:")
+    full_allowed = section(arm_block("run2_27_full_content_surface_thickening"), "allowed:", "forbidden:")
+    full_forbidden = section(arm_block("run2_27_full_content_surface_thickening"), "forbidden:", "palette:")
+    bad_allowed = section(arm_block("bad_surface_thickening_memory"), "allowed:", "forbidden:")
+    bad_forbidden = section(arm_block("bad_surface_thickening_memory"), "forbidden:", "palette:")
+
+    for term in required_inputs:
+        assert term not in prompt_allowed
+        assert term in prompt_forbidden
+        assert term not in run1_allowed
+        assert term in run1_forbidden
+        assert term in full_allowed
+        assert term not in full_forbidden
+        assert term not in bad_allowed
+        assert term in bad_forbidden
+
+    assert 'const fullRun227 = arm.armId === "run2_27_full_content_surface_thickening";' in body
+    assert 'registerRun227Module(metrics, "drawRun227ContentEvidenceSurface")' in body
+    for field in [
+        "run2_26_source_audit_status",
+        "run2_26_roles_with_compressed_proof_surface",
+        "run2_27_content_surface_thickening_execution_status",
+        "run2_27_required_code_module_ids",
+        "run2_27_code_module_ids",
+    ]:
+        assert re.search(fr"{field}:\s*fullRun227\s*\?", body), field
+
+
+def test_run2_27_surface_geometry_shows_all_proof_points_without_compression() -> None:
+    node_script = """
+const mod = await import("./scripts/generate_ppt_run2_27_content_surface_thickening_arms.mjs");
+for (const width of [540, 604, 760, 870]) {
+  const geom = mod.run227ContentEvidenceSurfaceGeometry({ x: 0, y: 0, w: width, h: 360 });
+  if (geom.proofPoint.count !== 3) throw new Error(`Run 2.27 must show all three proof points for ${width}, got ${geom.proofPoint.count}`);
+  if (geom.proofPoint.compress !== false) throw new Error(`Run 2.27 must not compress proof copy for ${width}`);
+  if (geom.proofPoint.w < 280) throw new Error(`Run 2.27 proof row width too small for ${width}: ${geom.proofPoint.w}`);
+  if (geom.proofPoint.h < 32) throw new Error(`Run 2.27 proof row height too short for ${width}: ${geom.proofPoint.h}`);
+  if (geom.assetCard.w < 132) throw new Error(`Run 2.27 asset card width too small for ${width}: ${geom.assetCard.w}`);
+}
+const compact = mod.run227ContentEvidenceSurfaceGeometry({ x: 0, y: 0, w: 540, h: 342 });
+if (compact.mode !== "compact-thick") throw new Error(`540px surface should use compact-thick geometry: ${compact.mode}`);
+if (compact.proofPoint.y < compact.headline.y + compact.headline.h + 12) throw new Error("proof rows collide with headline in compact-thick geometry");
+"""
+    completed = subprocess.run(
+        ["node", "--input-type=module", "-e", node_script],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        timeout=20,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+
+
+def test_run2_27_runtime_guards_block_bad_arm_and_select_audit_targets() -> None:
+    node_script = """
+const mod = await import("./scripts/generate_ppt_run2_27_content_surface_thickening_arms.mjs");
+const badArm = mod.armSpecs.find((arm) => arm.armId === "bad_surface_thickening_memory");
+const fullArm = mod.armSpecs.find((arm) => arm.armId === "run2_27_full_content_surface_thickening");
+for (const input of mod.RUN2_27_DATA_INPUTS) {
+  let blocked = false;
+  try {
+    mod.readRun227PackJsonForArm(badArm, input);
+  } catch (error) {
+    blocked = String(error.message).includes("input boundary does not permit reading");
+  }
+  if (!blocked) throw new Error(`bad surface-thickening arm was able to read ${input}`);
+}
+const audit = mod.loadRun226VisualModuleAudit(fullArm);
+if (audit.quality_summary.top_next_module_to_thicken !== "drawRun225ContentEvidenceSurface") throw new Error("Run 2.27 loaded wrong audit target");
+if (!audit.quality_summary.roles_with_compressed_proof_surface.includes("setup")) throw new Error("Run 2.27 audit target missing setup");
+const badTrace = mod.traceFor(badArm);
+for (const slide of badTrace.slides) {
+  if (slide.run2_26_source_audit_status) throw new Error("bad control trace leaked Run 2.26 audit");
+  if ((slide.run2_27_code_module_ids || []).length) throw new Error("bad control trace leaked Run 2.27 code modules");
+}
+const fullTrace = mod.traceFor(fullArm);
+if (fullTrace.source_audit_run_id !== "2.26") throw new Error("full trace did not bind Run 2.26 audit");
+for (const slide of fullTrace.slides) {
+  if (slide.role === "setup" || slide.role === "contrast" || slide.role === "close") {
+    if (!slide.run2_27_required_code_module_ids.includes("drawRun227ContentEvidenceSurface")) throw new Error(`${slide.role} missing thickened surface requirement`);
+    if (!slide.run2_27_code_module_ids.includes("drawRun227ContentEvidenceSurface")) throw new Error(`${slide.role} missing thickened surface trace`);
+  }
+}
+"""
+    completed = subprocess.run(
+        ["node", "--input-type=module", "-e", node_script],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        timeout=20,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+
+
+def test_run2_27_records_content_surface_thickening_rerun_result() -> None:
+    result = (PACK / "results" / "run2_27_content_surface_thickening_rerun_result.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_27_content_surface_thickening_rerun_result.json")
+
+    assert result_json["status"] == "run2_27_content_surface_thickening_rerun_public_blocked"
+    assert result_json["public_ready"] is False
+    assert result_json["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert result_json["source_audit_run_id"] == "2.26"
+    assert result_json["rerun"]["best_internal_arm"] == "run2_27_full_content_surface_thickening"
+    assert result_json["rerun"]["best_internal_arm_verdict"] == "run2_26_audit_target_executed_before_native_ppt_generation"
+    assert result_json["quality_delta"]["target_module"] == "drawRun225ContentEvidenceSurface"
+    assert result_json["quality_delta"]["replacement_module"] == "drawRun227ContentEvidenceSurface"
+    assert result_json["quality_delta"]["roles_with_compressed_proof_surface_after"] == []
+    assert result_json["visual_quality_boundary"] == (
+        "content_surface_thickening_proof_only_not_public_video_grade_aesthetic_or_human_release_approval"
+    )
+    assert result_json["rerun"]["combined_contact_sheet"].endswith("run2-27-four-arm-contact-sheet.png")
+    assert result_json["rerun"]["full_skill_series_sheet"].endswith("run2-full-skill-series-horizontal.png")
+    assert_contains(
+        result,
+        [
+            "Run 2.27",
+            "Run 2.26 visual module quality audit",
+            "drawRun227ContentEvidenceSurface",
+            "four-arm rerun",
+            "public blocked",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_mentions_run2_27_content_surface_thickening_rerun() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "Run 2.27",
+            "ppt-run2-27-prompt-only",
+            "ppt-run2-27-run1-5-skill",
+            "ppt-run2-27-full-vulca",
+            "ppt-run2-27-bad-surface-thickening-memory",
+            "run2_27_content_surface_thickening_rerun_result.json",
+            "drawRun227ContentEvidenceSurface",
+        ],
+    )
+
+
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
     layout_dir = tmp_path / "layout"
     layout_dir.mkdir()

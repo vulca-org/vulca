@@ -232,6 +232,22 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ),
         ),
     ),
+    RunSpec(
+        "2.27",
+        "Run 2.27",
+        "run2-27-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-27-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-27-run1-5-skill", "baseline"),
+            ArmSpec("run2_27_full_content_surface_thickening", "Run 2.27 full", "ppt-run2-27-full-vulca", "full"),
+            ArmSpec(
+                "bad_surface_thickening_memory",
+                "Bad surface-thickening memory",
+                "ppt-run2-27-bad-surface-thickening-memory",
+                "negative",
+            ),
+        ),
+    ),
 )
 
 
@@ -325,6 +341,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run224_result = read_json(pack / "results" / "run2_24_single_usecase_thickening_result.json")
     run225_result = read_json(pack / "results" / "run2_25_single_usecase_rerun_result.json")
     run226_visual_module_audit = read_json(pack / "results" / "run2_26_visual_module_quality_audit.json")
+    run227_result = read_json(pack / "results" / "run2_27_content_surface_thickening_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -442,6 +459,8 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run225Result": run225_result,
         "run226VisualModuleAuditStatus": run226_visual_module_audit.get("status", ""),
         "run226VisualModuleAudit": run226_visual_module_audit,
+        "run227ResultStatus": run227_result.get("status", ""),
+        "run227Result": run227_result,
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -1352,6 +1371,11 @@ def build_html(data: dict[str, Any]) -> str:
         ${{detailBlock("Why", item.why)}}
         ${{detailBlock("Next contract", item.next_contract)}}
       </article>`).join("");
+      const run227Result = refs.run227Result || {{}};
+      const run227Rerun = run227Result.rerun || {{}};
+      const run227Inputs = run227Result.input_chain || {{}};
+      const run227Delta = run227Result.quality_delta || {{}};
+      const run227Control = run227Result.control_boundary || {{}};
       const run217Audit = refs.run217MotionAudit || {{}};
       const run217DeliveryTruth = run217Audit.delivery_truth || {{}};
       const run217RendererGap = run217Audit.motion_renderer_gap || {{}};
@@ -1469,6 +1493,43 @@ def build_html(data: dict[str, Any]) -> str:
           </div>
           <div class="dataGrid">${{run226Recommendations}}</div>
           <div class="dataGrid">${{run226RoleRecords}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.27 content surface thickening rerun</h3><p>Generated four-arm rerun that consumes the Run 2.26 audit target before native PPT code generation. The visual delta is narrow: replace drawRun225ContentEvidenceSurface with drawRun227ContentEvidenceSurface so setup, contrast, and close can show three proof rows without compressed proof-surface carryover.</p></div><span class="pill">${{escapeHtml(refs.run227ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Rerun proof</h4>
+              ${{detailBlock("Source audit run", run227Result.source_audit_run_id)}}
+              ${{detailBlock("Best internal arm", run227Rerun.best_internal_arm)}}
+              ${{detailBlock("Verdict", run227Rerun.best_internal_arm_verdict)}}
+              ${{detailBlock("Four-arm sheet", run227Rerun.combined_contact_sheet)}}
+              ${{detailBlock("Full-skill series", run227Rerun.full_skill_series_sheet)}}
+            </article>
+            <article class="dataCard">
+              <h4>Input chain</h4>
+              ${{detailBlock("Content memory", run227Inputs.content_memory)}}
+              ${{detailBlock("Visual evidence asset memory", run227Inputs.visual_evidence_asset_memory)}}
+              ${{detailBlock("Content/visual workflow gates", run227Inputs.content_visual_workflow_gates)}}
+              ${{detailBlock("Visual module quality audit", run227Inputs.visual_module_quality_audit)}}
+              ${{detailBlock("Stage policy", run227Result.stage_policy)}}
+            </article>
+            <article class="dataCard">
+              <h4>Quality delta</h4>
+              ${{detailBlock("Target module", run227Delta.target_module)}}
+              ${{detailBlock("Replacement module", run227Delta.replacement_module || "drawRun227ContentEvidenceSurface")}}
+              ${{detailBlock("Roles compressed before", run227Delta.roles_with_compressed_proof_surface_before)}}
+              ${{detailBlock("Roles compressed after", run227Delta.roles_with_compressed_proof_surface_after)}}
+              ${{detailBlock("Required visible proof rows", run227Delta.required_visible_proof_points_per_target_role)}}
+              ${{detailBlock("Visual quality boundary", run227Result.visual_quality_boundary)}}
+            </article>
+            <article class="dataCard">
+              <h4>Control boundary</h4>
+              ${{detailBlock("Negative control", run227Control.bad_surface_thickening_memory)}}
+              ${{detailBlock("Prompt only", run227Control.prompt_only)}}
+              ${{detailBlock("Run 1.5", run227Control.run1_5_skill)}}
+              ${{detailBlock("Public ready", run227Result.public_ready)}}
+            </article>
+          </div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.22 selector-memory rerun result</h3><p>Generated four-arm rerun that consumes Run 2.21 visual-decision memory, selector gates, and rejection matrix before native PPT code generation. It stays in the same five-layer loop and does not advance to Run 3.0.</p></div><span class="pill">${{escapeHtml(refs.run222ResultStatus || "missing")}}</span></div>
