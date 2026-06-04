@@ -1,0 +1,372 @@
+{
+  "schema_version": "ppt_run2_presentation_synthesis_audit.v1",
+  "run_id": "2.30",
+  "status": "run2_30_presentation_synthesis_audit_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "source_generated_run": "2.29",
+  "comparison_baseline_run": "2.28",
+  "source_synthesis_layer": "2.29",
+  "creates_new_ppt_deck": false,
+  "public_ready": false,
+  "issue_categories": [
+    "data_workflow_trace_closure",
+    "presentation_surface_strength",
+    "spine_readability",
+    "climax_visual_consistency"
+  ],
+  "input_chain": {
+    "run2_29_result": "docs/product/ppt-run2-data-skill-quality/results/run2_29_presentation_synthesis_rerun_result.json",
+    "run2_29_presentation_synthesis_memory": "docs/product/ppt-run2-data-skill-quality/run2_29_presentation_synthesis_memory.json",
+    "run2_29_full_trace_manifest": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-29-full-vulca/trace_manifest.json",
+    "run2_29_bad_trace_manifest": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-29-bad-presentation-synthesis-memory/trace_manifest.json",
+    "run2_29_full_layout_dir": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-29-full-vulca/layout/final",
+    "run2_29_full_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-29-full-vulca/preview/contact-sheet.png",
+    "run2_29_four_arm_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-29-four-arm-contact-sheet.png",
+    "run2_28_full_trace_manifest": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-28-full-vulca/trace_manifest.json",
+    "run2_28_full_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-28-full-vulca/preview/contact-sheet.png",
+    "run2_28_four_arm_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-28-four-arm-contact-sheet.png"
+  },
+  "no_new_deck_proof": {
+    "presentations_dir": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations",
+    "forbidden_run2_30_output_glob": "*2-30*",
+    "matched_run2_30_outputs": [],
+    "new_pptx_created": false,
+    "status": "pass"
+  },
+  "trace_closure": {
+    "full_arm": {
+      "arm_id": "run2_29_full_presentation_synthesis",
+      "slide_count": 6,
+      "presentation_synthesis_records_selected": 6,
+      "compressed_evidence_spine_modules_called": 6,
+      "presentation_first_execution_status_slides": 6,
+      "run2_28_chain_fields_preserved": 6
+    },
+    "bad_control": {
+      "arm_id": "bad_presentation_synthesis_memory",
+      "slide_count": 6,
+      "presentation_synthesis_fields_leaked": 0
+    }
+  },
+  "comparison_to_run2_28": {
+    "audit_table_demoted_to_secondary_spine": true,
+    "full_chain_preserved_in_trace": true,
+    "primary_surface_delta": "four_column_audit_table_to_presentation_first_surface",
+    "baseline_full_arm_id": "run2_28_full_evidence_chain",
+    "current_full_arm_id": "run2_29_full_presentation_synthesis"
+  },
+  "quality_summary": {
+    "presentation_synthesis_gate": "pass_internal_only",
+    "public_release_gate": "blocked",
+    "roles_with_dense_spine_text": [
+      "cover",
+      "setup",
+      "contrast",
+      "proof",
+      "climax",
+      "close"
+    ],
+    "roles_with_climax_style_shift": [
+      "climax"
+    ],
+    "top_next_layer_to_thicken": "spine_readability_and_climax_consistency",
+    "reason": "Run 2.29 successfully demotes the Run 2.28 four-column audit table into a secondary compressed evidence spine, while preserving the full chain in trace. The next quality jump should improve spine readability and normalize the climax visual system before another rerun."
+  },
+  "role_records": [
+    {
+      "slide_id": "slide_01",
+      "role": "cover",
+      "layout_path": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-29-full-vulca/layout/final/slide-01.layout.json",
+      "run2_28_native_surface_module_id": "drawRun228EvidenceChainSurface",
+      "run2_29_presentation_module_id": "drawRun229EditorialLaunchFrame",
+      "run2_29_required_code_module_ids": [
+        "drawRun229EditorialLaunchFrame",
+        "drawRun229CompressedEvidenceSpine"
+      ],
+      "run2_29_code_module_ids": [
+        "drawRun229EditorialLaunchFrame",
+        "drawRun229CompressedEvidenceSpine"
+      ],
+      "baseline_run2_28_code_module_ids": [
+        "drawRun228EvidenceChainSurface"
+      ],
+      "presentation_first_surface": {
+        "status": "pass",
+        "execution_status": "presentation_first_surface_rendered_with_secondary_evidence_spine",
+        "public_surface_mode": "presentation_first_launch_frame_with_secondary_evidence_spine",
+        "module_called": true,
+        "hero_object_canvas_share": 0.191
+      },
+      "evidence_spine": {
+        "compressed_spine_module_called": true,
+        "spine_text_box_count": 11,
+        "min_spine_font_size": 6.6,
+        "dense_spine_text": true
+      },
+      "trace_closure": {
+        "run2_28_chain_preserved": true,
+        "synthesis_record_selected": true,
+        "trace_surface_mode": "manifest_and_html_viewer_full_chain_visible",
+        "full_chain_visible_in_trace": true,
+        "bad_control_leaked_field_count": 0
+      },
+      "issue_categories": [
+        "spine_readability"
+      ],
+      "status": "pass_internal_only_needs_next_thickening",
+      "recommended_next_action": "thicken spine readability and normalize climax visual consistency"
+    },
+    {
+      "slide_id": "slide_02",
+      "role": "setup",
+      "layout_path": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-29-full-vulca/layout/final/slide-02.layout.json",
+      "run2_28_native_surface_module_id": "drawRun228EvidenceChainSurface",
+      "run2_29_presentation_module_id": "drawRun229AsymmetricProblemFrame",
+      "run2_29_required_code_module_ids": [
+        "drawRun229AsymmetricProblemFrame",
+        "drawRun229CompressedEvidenceSpine"
+      ],
+      "run2_29_code_module_ids": [
+        "drawRun229AsymmetricProblemFrame",
+        "drawRun229CompressedEvidenceSpine"
+      ],
+      "baseline_run2_28_code_module_ids": [
+        "drawRun228EvidenceChainSurface"
+      ],
+      "presentation_first_surface": {
+        "status": "pass",
+        "execution_status": "presentation_first_surface_rendered_with_secondary_evidence_spine",
+        "public_surface_mode": "presentation_first_problem_scene_with_secondary_evidence_spine",
+        "module_called": true,
+        "hero_object_canvas_share": 0.188
+      },
+      "evidence_spine": {
+        "compressed_spine_module_called": true,
+        "spine_text_box_count": 11,
+        "min_spine_font_size": 6.6,
+        "dense_spine_text": true
+      },
+      "trace_closure": {
+        "run2_28_chain_preserved": true,
+        "synthesis_record_selected": true,
+        "trace_surface_mode": "manifest_and_html_viewer_full_chain_visible",
+        "full_chain_visible_in_trace": true,
+        "bad_control_leaked_field_count": 0
+      },
+      "issue_categories": [
+        "spine_readability"
+      ],
+      "status": "pass_internal_only_needs_next_thickening",
+      "recommended_next_action": "thicken spine readability and normalize climax visual consistency"
+    },
+    {
+      "slide_id": "slide_03",
+      "role": "contrast",
+      "layout_path": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-29-full-vulca/layout/final/slide-03.layout.json",
+      "run2_28_native_surface_module_id": "drawRun228EvidenceChainSurface",
+      "run2_29_presentation_module_id": "drawRun229BeforeAfterEditorialSpread",
+      "run2_29_required_code_module_ids": [
+        "drawRun229BeforeAfterEditorialSpread",
+        "drawRun229CompressedEvidenceSpine"
+      ],
+      "run2_29_code_module_ids": [
+        "drawRun229BeforeAfterEditorialSpread",
+        "drawRun229CompressedEvidenceSpine"
+      ],
+      "baseline_run2_28_code_module_ids": [
+        "drawRun228EvidenceChainSurface"
+      ],
+      "presentation_first_surface": {
+        "status": "pass",
+        "execution_status": "presentation_first_surface_rendered_with_secondary_evidence_spine",
+        "public_surface_mode": "presentation_first_asymmetric_before_after_with_secondary_evidence_spine",
+        "module_called": true,
+        "hero_object_canvas_share": 0.209
+      },
+      "evidence_spine": {
+        "compressed_spine_module_called": true,
+        "spine_text_box_count": 11,
+        "min_spine_font_size": 6.6,
+        "dense_spine_text": true
+      },
+      "trace_closure": {
+        "run2_28_chain_preserved": true,
+        "synthesis_record_selected": true,
+        "trace_surface_mode": "manifest_and_html_viewer_full_chain_visible",
+        "full_chain_visible_in_trace": true,
+        "bad_control_leaked_field_count": 0
+      },
+      "issue_categories": [
+        "spine_readability"
+      ],
+      "status": "pass_internal_only_needs_next_thickening",
+      "recommended_next_action": "thicken spine readability and normalize climax visual consistency"
+    },
+    {
+      "slide_id": "slide_04",
+      "role": "proof",
+      "layout_path": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-29-full-vulca/layout/final/slide-04.layout.json",
+      "run2_28_native_surface_module_id": "drawRun228EvidenceChainSurface",
+      "run2_29_presentation_module_id": "drawRun229ProductProofTheater",
+      "run2_29_required_code_module_ids": [
+        "drawRun229ProductProofTheater",
+        "drawRun229CompressedEvidenceSpine"
+      ],
+      "run2_29_code_module_ids": [
+        "drawRun229ProductProofTheater",
+        "drawRun229CompressedEvidenceSpine"
+      ],
+      "baseline_run2_28_code_module_ids": [
+        "drawRun228EvidenceChainSurface"
+      ],
+      "presentation_first_surface": {
+        "status": "pass",
+        "execution_status": "presentation_first_surface_rendered_with_secondary_evidence_spine",
+        "public_surface_mode": "presentation_first_product_proof_theater_with_secondary_evidence_spine",
+        "module_called": true,
+        "hero_object_canvas_share": 0.372
+      },
+      "evidence_spine": {
+        "compressed_spine_module_called": true,
+        "spine_text_box_count": 11,
+        "min_spine_font_size": 6.6,
+        "dense_spine_text": true
+      },
+      "trace_closure": {
+        "run2_28_chain_preserved": true,
+        "synthesis_record_selected": true,
+        "trace_surface_mode": "manifest_and_html_viewer_full_chain_visible",
+        "full_chain_visible_in_trace": true,
+        "bad_control_leaked_field_count": 0
+      },
+      "issue_categories": [
+        "spine_readability"
+      ],
+      "status": "pass_internal_only_needs_next_thickening",
+      "recommended_next_action": "thicken spine readability and normalize climax visual consistency"
+    },
+    {
+      "slide_id": "slide_05",
+      "role": "climax",
+      "layout_path": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-29-full-vulca/layout/final/slide-05.layout.json",
+      "run2_28_native_surface_module_id": "drawRun228ClimaxEvidenceObject",
+      "run2_29_presentation_module_id": "drawRun229HeroProofScene",
+      "run2_29_required_code_module_ids": [
+        "drawRun229HeroProofScene",
+        "drawRun229CompressedEvidenceSpine"
+      ],
+      "run2_29_code_module_ids": [
+        "drawRun229HeroProofScene",
+        "drawRun229ClimaxProofObject",
+        "drawRun229CompressedEvidenceSpine"
+      ],
+      "baseline_run2_28_code_module_ids": [
+        "drawRun228ClimaxEvidenceObject",
+        "drawRun228ClimaxProofObject"
+      ],
+      "presentation_first_surface": {
+        "status": "pass",
+        "execution_status": "presentation_first_surface_rendered_with_secondary_evidence_spine",
+        "public_surface_mode": "presentation_first_hero_proof_scene_with_secondary_evidence_spine",
+        "module_called": true,
+        "hero_object_canvas_share": 0.826
+      },
+      "evidence_spine": {
+        "compressed_spine_module_called": true,
+        "spine_text_box_count": 13,
+        "min_spine_font_size": 6.6,
+        "dense_spine_text": true
+      },
+      "trace_closure": {
+        "run2_28_chain_preserved": true,
+        "synthesis_record_selected": true,
+        "trace_surface_mode": "manifest_and_html_viewer_full_chain_visible",
+        "full_chain_visible_in_trace": true,
+        "bad_control_leaked_field_count": 0
+      },
+      "issue_categories": [
+        "spine_readability",
+        "climax_visual_consistency"
+      ],
+      "status": "pass_internal_only_needs_next_thickening",
+      "recommended_next_action": "thicken spine readability and normalize climax visual consistency"
+    },
+    {
+      "slide_id": "slide_06",
+      "role": "close",
+      "layout_path": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-29-full-vulca/layout/final/slide-06.layout.json",
+      "run2_28_native_surface_module_id": "drawRun228WorkflowTracePanel",
+      "run2_29_presentation_module_id": "drawRun229DecisionHandoff",
+      "run2_29_required_code_module_ids": [
+        "drawRun229DecisionHandoff",
+        "drawRun229CompressedEvidenceSpine"
+      ],
+      "run2_29_code_module_ids": [
+        "drawRun229DecisionHandoff",
+        "drawRun229CompressedEvidenceSpine"
+      ],
+      "baseline_run2_28_code_module_ids": [
+        "drawRun228WorkflowTracePanel",
+        "drawRun228EvidenceChainSurface"
+      ],
+      "presentation_first_surface": {
+        "status": "pass",
+        "execution_status": "presentation_first_surface_rendered_with_secondary_evidence_spine",
+        "public_surface_mode": "presentation_first_release_handoff_with_secondary_evidence_spine",
+        "module_called": true,
+        "hero_object_canvas_share": 0.309
+      },
+      "evidence_spine": {
+        "compressed_spine_module_called": true,
+        "spine_text_box_count": 11,
+        "min_spine_font_size": 6.6,
+        "dense_spine_text": true
+      },
+      "trace_closure": {
+        "run2_28_chain_preserved": true,
+        "synthesis_record_selected": true,
+        "trace_surface_mode": "manifest_and_html_viewer_full_chain_visible",
+        "full_chain_visible_in_trace": true,
+        "bad_control_leaked_field_count": 0
+      },
+      "issue_categories": [
+        "spine_readability"
+      ],
+      "status": "pass_internal_only_needs_next_thickening",
+      "recommended_next_action": "thicken spine readability and normalize climax visual consistency"
+    }
+  ],
+  "module_recommendations": [
+    {
+      "target": "drawRun229CompressedEvidenceSpine",
+      "priority": 1,
+      "issue": "spine text falls below readable presentation size and is dense across all roles",
+      "affected_roles": [
+        "cover",
+        "setup",
+        "contrast",
+        "proof",
+        "climax",
+        "close"
+      ],
+      "required_next_delta": "convert the spine into fewer visible labels plus expandable/viewer-only details"
+    },
+    {
+      "target": "drawRun229HeroProofScene",
+      "priority": 2,
+      "issue": "the climax creates useful emphasis but shifts too far from the light editorial system",
+      "affected_roles": [
+        "climax"
+      ],
+      "required_next_delta": "keep climax emphasis while aligning surface rhythm, typography, and palette with the rest of the deck"
+    }
+  ],
+  "remaining_public_release_gates": [
+    "human_visual_review",
+    "native_or_cross_platform_render_inspection",
+    "motion_or_video_review",
+    "source_boundary_review",
+    "human_release_approval"
+  ],
+  "next_required_action": "thicken_run2_29_spine_readability_and_climax_consistency_before_run2_31_rerun"
+}

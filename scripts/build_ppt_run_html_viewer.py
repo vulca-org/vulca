@@ -378,6 +378,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run228_result = read_json(pack / "results" / "run2_28_evidence_chain_rerun_result.json")
     run229_synthesis_memory = read_json(pack / "run2_29_presentation_synthesis_memory.json")
     run229_result = read_json(pack / "results" / "run2_29_presentation_synthesis_rerun_result.json")
+    run230_audit = read_json(pack / "results" / "run2_30_presentation_synthesis_audit.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -505,6 +506,8 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run229SynthesisMemory": run229_synthesis_memory,
         "run229ResultStatus": run229_result.get("status", ""),
         "run229Result": run229_result,
+        "run230AuditStatus": run230_audit.get("status", ""),
+        "run230Audit": run230_audit,
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -1452,6 +1455,23 @@ def build_html(data: dict[str, Any]) -> str:
         ${{detailBlock("Compressed evidence spine", record.visible_on_slide_evidence_spine_steps)}}
         ${{detailBlock("Chain compression policy", record.chain_compression_policy)}}
       </article>`).join("");
+      const run230Audit = refs.run230Audit || {{}};
+      const run230Summary = run230Audit.quality_summary || {{}};
+      const run230Trace = run230Audit.trace_closure || {{}};
+      const run230TraceFull = run230Trace.full_arm || {{}};
+      const run230TraceBad = run230Trace.bad_control || {{}};
+      const run230Comparison = run230Audit.comparison_to_run2_28 || {{}};
+      const run230NoNewDeck = run230Audit.no_new_deck_proof || {{}};
+      const run230RoleCards = (run230Audit.role_records || []).map((record) => `<article class="dataCard">
+        <h4>${{escapeHtml(record.role)}} / ${{escapeHtml(record.run2_29_presentation_module_id)}}</h4>
+        ${{detailBlock("Run 2.28 source module", record.run2_28_native_surface_module_id)}}
+        ${{detailBlock("Presentation-first surface", (record.presentation_first_surface || {{}}).status)}}
+        ${{detailBlock("Compressed evidence spine called", (record.evidence_spine || {{}}).compressed_spine_module_called)}}
+        ${{detailBlock("Min spine font size", (record.evidence_spine || {{}}).min_spine_font_size)}}
+        ${{detailBlock("Run 2.28 chain preserved", (record.trace_closure || {{}}).run2_28_chain_preserved)}}
+        ${{detailBlock("Issue categories", record.issue_categories)}}
+        ${{detailBlock("Recommended next action", record.recommended_next_action)}}
+      </article>`).join("");
       const run217Audit = refs.run217MotionAudit || {{}};
       const run217DeliveryTruth = run217Audit.delivery_truth || {{}};
       const run217RendererGap = run217Audit.motion_renderer_gap || {{}};
@@ -1688,6 +1708,44 @@ def build_html(data: dict[str, Any]) -> str:
             </article>
           </div>
           <div class="dataGrid">${{run229RecordCards}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.30 presentation synthesis audit</h3><p>Audit-only layer over Run 2.29. It creates no new PPT deck; it checks whether the Run 2.28 four-column audit table was demoted into a secondary compressed evidence spine, whether the full chain stayed preserved in trace, and which layer should be thickened before Run 2.31.</p></div><span class="pill">${{escapeHtml(refs.run230AuditStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Audit boundary</h4>
+              ${{detailBlock("Source generated run", run230Audit.source_generated_run)}}
+              ${{detailBlock("Comparison baseline run", run230Audit.comparison_baseline_run)}}
+              ${{detailBlock("Creates new PPT deck", run230Audit.creates_new_ppt_deck)}}
+              ${{detailBlock("Public ready", run230Audit.public_ready)}}
+              ${{detailBlock("No-new-deck status", run230NoNewDeck.status)}}
+            </article>
+            <article class="dataCard">
+              <h4>Trace closure</h4>
+              ${{detailBlock("Full arm", run230TraceFull.arm_id)}}
+              ${{detailBlock("Synthesis records selected", run230TraceFull.presentation_synthesis_records_selected)}}
+              ${{detailBlock("Compressed spine modules called", run230TraceFull.compressed_evidence_spine_modules_called)}}
+              ${{detailBlock("Run 2.28 chain fields preserved", run230TraceFull.run2_28_chain_fields_preserved)}}
+              ${{detailBlock("Bad-control leaks", run230TraceBad.presentation_synthesis_fields_leaked)}}
+            </article>
+            <article class="dataCard">
+              <h4>2.28 -> 2.29 comparison</h4>
+              ${{detailBlock("audit_table_demoted_to_secondary_spine", run230Comparison.audit_table_demoted_to_secondary_spine)}}
+              ${{detailBlock("full_chain_preserved_in_trace", run230Comparison.full_chain_preserved_in_trace)}}
+              ${{detailBlock("Primary surface delta", run230Comparison.primary_surface_delta)}}
+              ${{detailBlock("Baseline full arm", run230Comparison.baseline_full_arm_id)}}
+              ${{detailBlock("Current full arm", run230Comparison.current_full_arm_id)}}
+            </article>
+            <article class="dataCard">
+              <h4>Quality summary</h4>
+              ${{detailBlock("presentation_synthesis_gate", run230Summary.presentation_synthesis_gate)}}
+              ${{detailBlock("Public release gate", run230Summary.public_release_gate)}}
+              ${{detailBlock("Top next layer", run230Summary.top_next_layer_to_thicken || "spine_readability_and_climax_consistency")}}
+              ${{detailBlock("Dense spine roles", run230Summary.roles_with_dense_spine_text)}}
+              ${{detailBlock("Climax style-shift roles", run230Summary.roles_with_climax_style_shift)}}
+            </article>
+          </div>
+          <div class="dataGrid">${{run230RoleCards}}</div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.22 selector-memory rerun result</h3><p>Generated four-arm rerun that consumes Run 2.21 visual-decision memory, selector gates, and rejection matrix before native PPT code generation. It stays in the same five-layer loop and does not advance to Run 3.0.</p></div><span class="pill">${{escapeHtml(refs.run222ResultStatus || "missing")}}</span></div>

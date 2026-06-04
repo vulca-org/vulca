@@ -5047,6 +5047,116 @@ def test_ppt_run_html_viewer_mentions_run2_29_presentation_synthesis_rerun() -> 
     )
 
 
+def test_run2_30_presentation_synthesis_audit_scores_run2_29_outputs(tmp_path: Path) -> None:
+    script_path = ROOT / "scripts" / "audit_ppt_run2_30_presentation_synthesis.py"
+    assert script_path.exists(), "missing Run 2.30 presentation-synthesis audit script"
+
+    result_json = tmp_path / "run2_30_presentation_synthesis_audit.json"
+    result_md = tmp_path / "run2_30_presentation_synthesis_audit.md"
+    subprocess.run(
+        [
+            sys.executable,
+            str(script_path),
+            "--result-json",
+            str(result_json),
+            "--result-md",
+            str(result_md),
+        ],
+        cwd=ROOT,
+        check=True,
+    )
+
+    audit = load_json(result_json)
+    assert audit["schema_version"] == "ppt_run2_presentation_synthesis_audit.v1"
+    assert audit["run_id"] == "2.30"
+    assert audit["status"] == "run2_30_presentation_synthesis_audit_public_blocked"
+    assert audit["source_generated_run"] == "2.29"
+    assert audit["comparison_baseline_run"] == "2.28"
+    assert audit["source_synthesis_layer"] == "2.29"
+    assert audit["creates_new_ppt_deck"] is False
+    assert audit["public_ready"] is False
+    assert audit["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert audit["input_chain"]["run2_29_full_trace_manifest"].endswith("ppt-run2-29-full-vulca/trace_manifest.json")
+    assert audit["input_chain"]["run2_29_bad_trace_manifest"].endswith(
+        "ppt-run2-29-bad-presentation-synthesis-memory/trace_manifest.json"
+    )
+    assert audit["input_chain"]["run2_28_full_trace_manifest"].endswith("ppt-run2-28-full-vulca/trace_manifest.json")
+    assert audit["no_new_deck_proof"]["new_pptx_created"] is False
+    assert audit["no_new_deck_proof"]["status"] == "pass"
+
+    trace = audit["trace_closure"]
+    assert trace["full_arm"]["arm_id"] == "run2_29_full_presentation_synthesis"
+    assert trace["full_arm"]["slide_count"] == 6
+    assert trace["full_arm"]["presentation_synthesis_records_selected"] == 6
+    assert trace["full_arm"]["compressed_evidence_spine_modules_called"] == 6
+    assert trace["full_arm"]["presentation_first_execution_status_slides"] == 6
+    assert trace["full_arm"]["run2_28_chain_fields_preserved"] == 6
+    assert trace["bad_control"]["arm_id"] == "bad_presentation_synthesis_memory"
+    assert trace["bad_control"]["presentation_synthesis_fields_leaked"] == 0
+
+    comparison = audit["comparison_to_run2_28"]
+    assert comparison["audit_table_demoted_to_secondary_spine"] is True
+    assert comparison["full_chain_preserved_in_trace"] is True
+    assert comparison["primary_surface_delta"] == "four_column_audit_table_to_presentation_first_surface"
+
+    summary = audit["quality_summary"]
+    assert summary["presentation_synthesis_gate"] == "pass_internal_only"
+    assert summary["public_release_gate"] == "blocked"
+    assert summary["top_next_layer_to_thicken"] == "spine_readability_and_climax_consistency"
+    assert set(summary["roles_with_dense_spine_text"]) == {"cover", "setup", "contrast", "proof", "climax", "close"}
+    assert summary["roles_with_climax_style_shift"] == ["climax"]
+
+    assert len(audit["role_records"]) == 6
+    for record in audit["role_records"]:
+        assert record["presentation_first_surface"]["status"] == "pass"
+        assert record["trace_closure"]["run2_28_chain_preserved"] is True
+        assert record["trace_closure"]["synthesis_record_selected"] is True
+        assert record["evidence_spine"]["compressed_spine_module_called"] is True
+        assert record["evidence_spine"]["min_spine_font_size"] < 8
+        assert "spine_readability" in record["issue_categories"]
+
+
+def test_run2_30_records_presentation_synthesis_audit_result() -> None:
+    result = (PACK / "results" / "run2_30_presentation_synthesis_audit.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_30_presentation_synthesis_audit.json")
+
+    assert result_json["status"] == "run2_30_presentation_synthesis_audit_public_blocked"
+    assert result_json["source_generated_run"] == "2.29"
+    assert result_json["comparison_baseline_run"] == "2.28"
+    assert result_json["quality_summary"]["top_next_layer_to_thicken"] == "spine_readability_and_climax_consistency"
+    assert result_json["next_required_action"] == "thicken_run2_29_spine_readability_and_climax_consistency_before_run2_31_rerun"
+    assert_contains(
+        result,
+        [
+            "Run 2.30 Presentation Synthesis Audit",
+            "audit-only",
+            "2.29",
+            "2.28",
+            "compressed evidence spine",
+            "presentation-first surface",
+            "spine_readability_and_climax_consistency",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_embeds_run2_30_presentation_synthesis_audit() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "run2_30_presentation_synthesis_audit.json",
+            "Run 2.30 presentation synthesis audit",
+            "audit_table_demoted_to_secondary_spine",
+            "spine_readability_and_climax_consistency",
+            "presentation_synthesis_gate",
+            "full_chain_preserved_in_trace",
+            "creates no new PPT deck",
+        ],
+    )
+
+
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
     layout_dir = tmp_path / "layout"
     layout_dir.mkdir()
