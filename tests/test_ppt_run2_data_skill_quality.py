@@ -4735,6 +4735,158 @@ def test_ppt_run_html_viewer_mentions_run2_27_content_surface_thickening_rerun()
     )
 
 
+def test_run2_28_evidence_chain_view_model_binds_source_data_workflow_and_slide_surface() -> None:
+    model = load_json(PACK / "run2_28_evidence_chain_view_model.json")
+    source_records = load_json(PACK / "run2_7_multimodal_source_records.json")
+    content_memory = load_json(PACK / "run2_24_single_usecase_content_memory.json")
+    workflow_gates = load_json(PACK / "run2_24_content_visual_workflow_gates.json")
+
+    assert model["status"] == "run2_28_evidence_chain_view_model_ready_public_blocked"
+    assert model["selected_usecase_id"] == "usecase_design_to_production_platform_launch"
+    assert model["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert model["source_layer"] == "run2_7_multimodal_source_records.json"
+    assert model["content_layer"] == "run2_24_single_usecase_content_memory.json"
+    assert model["workflow_layer"] == "run2_24_content_visual_workflow_gates.json"
+
+    source_ids = {record["id"] for record in source_records["records"]}
+    content_by_role = {record["role"]: record for record in content_memory["slide_content_memory"]}
+    gate_by_role = {gate["role"]: gate for gate in workflow_gates["gates"]}
+    chains = model["slide_evidence_chains"]
+
+    assert [chain["role"] for chain in chains] == ["cover", "setup", "contrast", "proof", "climax", "close"]
+    for chain in chains:
+        role = chain["role"]
+        content = content_by_role[role]
+        gate = gate_by_role[role]
+
+        assert chain["content_memory_id"] == content["content_memory_id"]
+        assert chain["workflow_gate_id"] == gate["gate_id"]
+        assert set(chain["visual_evidence_slot_ids"]) == set(content["visual_evidence_slot_ids"])
+        assert set(chain["multimodal_source_record_ids"]) <= source_ids
+        assert chain["extracted_design_rule"]
+        assert chain["workflow_decision"]
+        assert chain["native_ppt_surface_instruction"]
+        assert chain["viewer_inspection_prompt"]
+        assert chain["negative_control_failure_mode"]
+        assert set(chain["required_trace_fields"]) >= {
+            "run2_28_evidence_chain_id",
+            "run2_28_multimodal_source_record_ids",
+            "run2_28_extracted_design_rule",
+            "run2_28_workflow_decision",
+            "run2_28_native_surface_module_id",
+        }
+
+    assert model["viewer_contract"]["show_chain_in_html_viewer"] is True
+    assert model["viewer_contract"]["chain_order"] == [
+        "source evidence",
+        "extracted design rule",
+        "workflow decision",
+        "generated slide surface",
+    ]
+    assert model["public_release_gate"] == "blocked"
+
+
+def test_run2_28_generator_consumes_evidence_chain_before_native_ppt_code() -> None:
+    script_path = ROOT / "scripts" / "generate_ppt_run2_28_evidence_chain_arms.mjs"
+    assert script_path.exists(), "missing Run 2.28 evidence-chain generator"
+    body = script_path.read_text(encoding="utf-8")
+    arm_order = [
+        "prompt_only",
+        "run1_5_skill",
+        "run2_28_full_evidence_chain",
+        "bad_evidence_chain_memory",
+    ]
+
+    def arm_block(arm_id: str) -> str:
+        start = body.index(f'armId: "{arm_id}"')
+        next_starts = [body.find(f'armId: "{next_arm}"', start + 1) for next_arm in arm_order]
+        next_starts = [index for index in next_starts if index > start]
+        end = min(next_starts) if next_starts else len(body)
+        return body[start:end]
+
+    def section(block: str, start_marker: str, end_marker: str) -> str:
+        start = block.index(start_marker)
+        end = block.index(end_marker, start)
+        return block[start:end]
+
+    required_inputs = [
+        "run2_28_evidence_chain_view_model.json",
+        "run2_24_single_usecase_content_memory.json",
+        "run2_24_visual_evidence_asset_memory.json",
+        "run2_24_content_visual_workflow_gates.json",
+        "run2_27_content_surface_thickening_rerun_result.json",
+    ]
+
+    assert_contains(
+        body,
+        [
+            "validateRun228EvidenceChainViewModel",
+            "loadRun228ContractData",
+            "drawRun228EvidenceChainSurface",
+            "drawRun228WorkflowTracePanel",
+            "run228EvidenceChainSurfaceGeometry",
+            "run2_28_evidence_chain_execution_status",
+            "run2_28_native_surface_module_id",
+            "source evidence",
+            "extracted design rule",
+            "workflow decision",
+            "generated slide surface",
+        ],
+    )
+
+    prompt_allowed = section(arm_block("prompt_only"), "allowed:", "forbidden:")
+    prompt_forbidden = section(arm_block("prompt_only"), "forbidden:", "palette:")
+    run1_allowed = section(arm_block("run1_5_skill"), "allowed:", "forbidden:")
+    run1_forbidden = section(arm_block("run1_5_skill"), "forbidden:", "palette:")
+    full_allowed = section(arm_block("run2_28_full_evidence_chain"), "allowed:", "forbidden:")
+    full_forbidden = section(arm_block("run2_28_full_evidence_chain"), "forbidden:", "palette:")
+    bad_allowed = section(arm_block("bad_evidence_chain_memory"), "allowed:", "forbidden:")
+    bad_forbidden = section(arm_block("bad_evidence_chain_memory"), "forbidden:", "palette:")
+
+    for term in required_inputs:
+        assert term not in prompt_allowed
+        assert term in prompt_forbidden
+        assert term not in run1_allowed
+        assert term in run1_forbidden
+        assert term in full_allowed
+        assert term not in full_forbidden
+        assert term not in bad_allowed
+        assert term in bad_forbidden
+
+    assert 'const fullRun228 = arm.armId === "run2_28_full_evidence_chain";' in body
+    assert 'registerRun228Module(metrics, "drawRun228EvidenceChainSurface")' in body
+    for field in [
+        "run2_28_evidence_chain_id",
+        "run2_28_multimodal_source_record_ids",
+        "run2_28_extracted_design_rule",
+        "run2_28_workflow_decision",
+        "run2_28_native_surface_module_id",
+        "run2_28_evidence_chain_execution_status",
+    ]:
+        assert re.search(fr"{field}:\s*fullRun228\s*\?", body), field
+
+
+def test_ppt_run_html_viewer_mentions_run2_28_evidence_chain_rerun() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "Run 2.28",
+            "ppt-run2-28-prompt-only",
+            "ppt-run2-28-run1-5-skill",
+            "ppt-run2-28-full-vulca",
+            "ppt-run2-28-bad-evidence-chain-memory",
+            "run2_28_evidence_chain_view_model.json",
+            "run2_28_evidence_chain_rerun_result.json",
+            "source evidence",
+            "extracted design rule",
+            "workflow decision",
+            "generated slide surface",
+        ],
+    )
+
+
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
     layout_dir = tmp_path / "layout"
     layout_dir.mkdir()

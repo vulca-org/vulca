@@ -248,6 +248,22 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ),
         ),
     ),
+    RunSpec(
+        "2.28",
+        "Run 2.28",
+        "run2-28-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-28-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-28-run1-5-skill", "baseline"),
+            ArmSpec("run2_28_full_evidence_chain", "Run 2.28 full", "ppt-run2-28-full-vulca", "full"),
+            ArmSpec(
+                "bad_evidence_chain_memory",
+                "Bad evidence-chain memory",
+                "ppt-run2-28-bad-evidence-chain-memory",
+                "negative",
+            ),
+        ),
+    ),
 )
 
 
@@ -342,6 +358,8 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run225_result = read_json(pack / "results" / "run2_25_single_usecase_rerun_result.json")
     run226_visual_module_audit = read_json(pack / "results" / "run2_26_visual_module_quality_audit.json")
     run227_result = read_json(pack / "results" / "run2_27_content_surface_thickening_rerun_result.json")
+    run228_evidence_chain = read_json(pack / "run2_28_evidence_chain_view_model.json")
+    run228_result = read_json(pack / "results" / "run2_28_evidence_chain_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -461,6 +479,10 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run226VisualModuleAudit": run226_visual_module_audit,
         "run227ResultStatus": run227_result.get("status", ""),
         "run227Result": run227_result,
+        "run228EvidenceChainStatus": run228_evidence_chain.get("status", ""),
+        "run228EvidenceChain": run228_evidence_chain,
+        "run228ResultStatus": run228_result.get("status", ""),
+        "run228Result": run228_result,
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -1376,6 +1398,21 @@ def build_html(data: dict[str, Any]) -> str:
       const run227Inputs = run227Result.input_chain || {{}};
       const run227Delta = run227Result.quality_delta || {{}};
       const run227Control = run227Result.control_boundary || {{}};
+      const run228EvidenceChain = refs.run228EvidenceChain || {{}};
+      const run228Chains = run228EvidenceChain.slide_evidence_chains || [];
+      const run228Result = refs.run228Result || {{}};
+      const run228Rerun = run228Result.rerun || {{}};
+      const run228Inputs = run228Result.input_chain || {{}};
+      const run228Delta = run228Result.evidence_chain_delta || {{}};
+      const run228Control = run228Result.control_boundary || {{}};
+      const run228ChainCards = run228Chains.map((chain) => `<article class="dataCard">
+        <h4>${{escapeHtml(chain.slide_index)}}. ${{escapeHtml(chain.role)}}</h4>
+        ${{detailBlock("source evidence", chain.source_evidence_summary)}}
+        ${{detailBlock("extracted design rule", chain.extracted_design_rule)}}
+        ${{detailBlock("workflow decision", chain.workflow_decision)}}
+        ${{detailBlock("generated slide surface", chain.generated_slide_surface)}}
+        ${{detailBlock("native module", chain.native_surface_module_id)}}
+      </article>`).join("");
       const run217Audit = refs.run217MotionAudit || {{}};
       const run217DeliveryTruth = run217Audit.delivery_truth || {{}};
       const run217RendererGap = run217Audit.motion_renderer_gap || {{}};
@@ -1530,6 +1567,42 @@ def build_html(data: dict[str, Any]) -> str:
               ${{detailBlock("Public ready", run227Result.public_ready)}}
             </article>
           </div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.28 evidence-chain rerun</h3><p>Generated four-arm rerun that consumes the Run 2.28 evidence-chain view model before native PPT code generation. This makes the data learning path visible: source evidence -> extracted design rule -> workflow decision -> generated slide surface.</p></div><span class="pill">${{escapeHtml(refs.run228ResultStatus || refs.run228EvidenceChainStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Rerun proof</h4>
+              ${{detailBlock("Evidence chain status", refs.run228EvidenceChainStatus)}}
+              ${{detailBlock("Best internal arm", run228Rerun.best_internal_arm)}}
+              ${{detailBlock("Verdict", run228Rerun.best_internal_arm_verdict)}}
+              ${{detailBlock("Four-arm sheet", run228Rerun.combined_contact_sheet)}}
+              ${{detailBlock("Full-skill series", run228Rerun.full_skill_series_sheet)}}
+            </article>
+            <article class="dataCard">
+              <h4>Input chain</h4>
+              ${{detailBlock("Evidence chain view model", run228Inputs.evidence_chain_view_model || "run2_28_evidence_chain_view_model.json")}}
+              ${{detailBlock("Content memory", run228Inputs.content_memory)}}
+              ${{detailBlock("Visual evidence asset memory", run228Inputs.visual_evidence_asset_memory)}}
+              ${{detailBlock("Content/visual workflow gates", run228Inputs.content_visual_workflow_gates)}}
+              ${{detailBlock("Prior rerun result", run228Inputs.prior_rerun_result)}}
+            </article>
+            <article class="dataCard">
+              <h4>Evidence-chain delta</h4>
+              ${{detailBlock("Chain order", run228Delta.chain_order || ["source evidence", "extracted design rule", "workflow decision", "generated slide surface"])}}
+              ${{detailBlock("Replacement focus", run228Delta.replacement_focus)}}
+              ${{detailBlock("Visible chain steps", run228Delta.required_visible_chain_steps_per_full_slide)}}
+              ${{detailBlock("Public ready", run228Result.public_ready)}}
+            </article>
+            <article class="dataCard">
+              <h4>Control boundary</h4>
+              ${{detailBlock("Negative control", run228Control.bad_evidence_chain_memory)}}
+              ${{detailBlock("Prompt only", run228Control.prompt_only)}}
+              ${{detailBlock("Run 1.5", run228Control.run1_5_skill)}}
+              ${{detailBlock("Stage policy", run228Result.stage_policy || run228EvidenceChain.stage_policy)}}
+            </article>
+          </div>
+          <div class="dataGrid">${{run228ChainCards}}</div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.22 selector-memory rerun result</h3><p>Generated four-arm rerun that consumes Run 2.21 visual-decision memory, selector gates, and rejection matrix before native PPT code generation. It stays in the same five-layer loop and does not advance to Run 3.0.</p></div><span class="pill">${{escapeHtml(refs.run222ResultStatus || "missing")}}</span></div>
