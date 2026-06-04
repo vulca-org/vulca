@@ -433,6 +433,11 @@ function evidenceLabel(asset) {
   return String(asset?.asset_type ?? asset?.slot_id ?? "visual evidence").replaceAll("_", " ");
 }
 
+function compactText(value, max = 74) {
+  const textValue = String(value ?? "").trim();
+  return textValue.length > max ? `${textValue.slice(0, max - 1).trim()}...` : textValue;
+}
+
 function proofFooter(slide, arm, selection) {
   const hint = selection?.gate?.gate_id ?? "no Run 2.24 density gate";
   text(slide, `generation gate: ${hint}`, 66, 628, 830, 28, {
@@ -529,44 +534,100 @@ function drawRun225SelectedRouteMap(slide, arm, spec, selection, metrics, opts =
   registerGate(metrics, 1);
 }
 
+function run225ContentEvidenceSurfaceGeometry({ x, y, w, h }) {
+  const mode = w < 640 ? "compact" : w <= 700 ? "medium" : "wide";
+  const panel = { x, y, w: Math.max(1, w - 64), h: Math.max(1, h - 44) };
+  const shadow = { x: x + 58, y: y + 42, w: Math.max(1, w - 20), h: Math.max(1, h - 26) };
+  const backdrop = { x: x + 24, y: y + 20, w: Math.max(1, w - 12), h: Math.max(1, h - 18) };
+
+  if (mode === "compact") {
+    const railW = Math.max(176, Math.min(210, w - 270));
+    const railX = x + Math.max(230, w - railW - 36);
+    const railH = Math.max(96, Math.min(h - 86, 132));
+    const proofY = y + Math.min(158, Math.max(116, h - 64));
+    return {
+      mode,
+      shadow,
+      backdrop,
+      panel,
+      headline: { x: x + 30, y: y + 28, w: Math.max(180, Math.min(240, railX - x - 52)), h: 48, fontSize: 18 },
+      proofPoint: { x: x + 30, y: proofY, w: Math.max(150, Math.min(w - 112, 360)), h: 28, fontSize: 9, stepY: 36, count: 1, compress: true },
+      rail: { x: railX, y: y + 30, w: railW, h: railH },
+      railTitle: { x: railX + 18, y: y + 48, w: Math.max(140, railW - 36), h: 18 },
+      assetCard: { x: railX + 18, y: y + 78, w: Math.max(140, railW - 36), h: 34, stepY: 46 },
+    };
+  }
+
+  const railX = x + w - 330;
+  const medium = mode === "medium";
+  return {
+    mode,
+    shadow,
+    backdrop,
+    panel,
+    headline: { x: x + 30, y: y + 28, w: Math.max(220, w - 430), h: medium ? 96 : 54, fontSize: 25 },
+    proofPoint: {
+      x: x + 66,
+      y: y + (medium ? 150 : 110),
+      w: Math.max(150, w - 488),
+      h: medium ? 44 : 36,
+      fontSize: 11,
+      stepY: medium ? 60 : 58,
+      count: medium ? 2 : 3,
+      compress: medium,
+    },
+    proofMarker: { x: x + 32, y: y + (medium ? 152 : 112), w: 18, h: 18, stepY: medium ? 60 : 58 },
+    rail: { x: railX, y: y + 30, w: 232, h: Math.max(96, h - 112) },
+    railTitle: { x: railX + 22, y: y + 52, w: 184, h: 18 },
+    assetCard: { x: railX + 22, y: y + 94, w: 176, h: 54, stepY: 92 },
+  };
+}
+
 function drawRun225ContentEvidenceSurface(slide, arm, spec, selection, metrics, opts = {}) {
   registerRun225Module(metrics, "drawRun225ContentEvidenceSurface");
   const x = opts.x ?? 96;
   const y = opts.y ?? 126;
   const w = opts.w ?? 870;
   const h = opts.h ?? 368;
+  const geom = run225ContentEvidenceSurfaceGeometry({ x, y, w, h });
   moduleLabel(slide, x, y - 38, "content memory + visual evidence surface", arm);
-  rect(slide, x + 58, y + 42, w - 20, h - 26, "#dfe9ec", colorLine("#dfe9ec", 1));
-  rect(slide, x + 24, y + 20, w - 12, h - 18, arm.palette.surface ?? C.fog, colorLine("#c9d3d7", 1));
-  rect(slide, x, y, w - 64, h - 44, C.white, colorLine(arm.palette.accent, 2));
-  text(slide, selection.content.headline, x + 30, y + 28, w - 430, 54, {
-    fontSize: 25,
+  rect(slide, geom.shadow.x, geom.shadow.y, geom.shadow.w, geom.shadow.h, "#dfe9ec", colorLine("#dfe9ec", 1));
+  rect(slide, geom.backdrop.x, geom.backdrop.y, geom.backdrop.w, geom.backdrop.h, arm.palette.surface ?? C.fog, colorLine("#c9d3d7", 1));
+  rect(slide, geom.panel.x, geom.panel.y, geom.panel.w, geom.panel.h, C.white, colorLine(arm.palette.accent, 2));
+  text(slide, selection.content.headline, geom.headline.x, geom.headline.y, geom.headline.w, geom.headline.h, {
+    fontSize: geom.headline.fontSize,
     title: true,
     bold: true,
     color: arm.palette.title,
   });
   registerText(metrics, selection.content.headline);
-  selection.content.business_proof_points.slice(0, 3).forEach((point, index) => {
-    const py = y + 112 + index * 58;
-    rect(slide, x + 32, py, 18, 18, index === 0 ? arm.palette.proof ?? C.signal : arm.palette.accent2);
-    text(slide, point, x + 66, py - 2, w - 488, 36, {
-      fontSize: 11,
+  selection.content.business_proof_points.slice(0, geom.proofPoint.count).forEach((point, index) => {
+    const py = geom.proofPoint.y + index * geom.proofPoint.stepY;
+    const marker = geom.proofMarker ?? {
+      x: geom.proofPoint.x,
+      y: py + 1,
+      w: 14,
+      h: 14,
+      stepY: geom.proofPoint.stepY,
+    };
+    rect(slide, marker.x, marker.y + index * (marker.stepY ?? 0), marker.w, marker.h, index === 0 ? arm.palette.proof ?? C.signal : arm.palette.accent2);
+    text(slide, geom.proofPoint.compress ? compactText(point) : point, geom.mode === "compact" ? geom.proofPoint.x + 24 : geom.proofPoint.x, py - 2, geom.proofPoint.w, geom.proofPoint.h, {
+      fontSize: geom.proofPoint.fontSize,
       color: arm.palette.muted,
     });
     registerText(metrics, point);
   });
-  const railX = x + w - 330;
-  rect(slide, railX, y + 30, 232, h - 112, "#f4f7f7", colorLine("#ccd6da", 1));
-  text(slide, "native visual evidence", railX + 22, y + 52, 184, 18, {
+  rect(slide, geom.rail.x, geom.rail.y, geom.rail.w, geom.rail.h, "#f4f7f7", colorLine("#ccd6da", 1));
+  text(slide, "native visual evidence", geom.railTitle.x, geom.railTitle.y, geom.railTitle.w, geom.railTitle.h, {
     fontSize: 10,
     mono: true,
     bold: true,
     color: arm.palette.accent,
   });
   selection.assets.slice(0, 2).forEach((asset, index) => {
-    const ay = y + 94 + index * 92;
-    rect(slide, railX + 22, ay, 176, 54, index === 0 ? arm.palette.proof ?? C.signal : C.white, colorLine(index === 0 ? arm.palette.proof ?? C.signal : "#cad2d8", 1));
-    text(slide, evidenceLabel(asset), railX + 36, ay + 13, 150, 22, {
+    const ay = geom.assetCard.y + index * geom.assetCard.stepY;
+    rect(slide, geom.assetCard.x, ay, geom.assetCard.w, geom.assetCard.h, index === 0 ? arm.palette.proof ?? C.signal : C.white, colorLine(index === 0 ? arm.palette.proof ?? C.signal : "#cad2d8", 1));
+    text(slide, evidenceLabel(asset), geom.assetCard.x + 14, ay + (geom.mode === "compact" ? 10 : 13), Math.max(120, geom.assetCard.w - 28), 22, {
       fontSize: 10,
       bold: true,
       title: true,
@@ -1336,6 +1397,7 @@ export {
   readRun225PackJsonForArm,
   registerRun225Module,
   run225RequiredModulesByRole,
+  run225ContentEvidenceSurfaceGeometry,
   selectRun224ForSlide,
   traceFor,
   validateRun224SingleUsecaseSchemas,

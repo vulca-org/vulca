@@ -4355,6 +4355,38 @@ if (!fullArm.allowed.includes(mod.RUN2_25_INPUTS.visualAssets)) throw new Error(
     assert completed.returncode == 0, completed.stderr
 
 
+def test_run2_25_content_evidence_surface_geometry_prevents_crushed_text() -> None:
+    node_script = """
+const mod = await import("./scripts/generate_ppt_run2_25_single_usecase_arms.mjs");
+for (const width of [458, 552, 760, 870]) {
+  const geom = mod.run225ContentEvidenceSurfaceGeometry({ x: 0, y: 0, w: width, h: 242 });
+  if (geom.headline.w < 180) throw new Error(`headline width crushed for ${width}: ${geom.headline.w}`);
+  if (geom.proofPoint.w < 150) throw new Error(`proof point width crushed for ${width}: ${geom.proofPoint.w}`);
+  if (geom.rail.w < 176) throw new Error(`visual rail width crushed for ${width}: ${geom.rail.w}`);
+  if (geom.assetCard.w < 140) throw new Error(`asset card width crushed for ${width}: ${geom.assetCard.w}`);
+}
+const medium = mod.run225ContentEvidenceSurfaceGeometry({ x: 0, y: 0, w: 640, h: 346 });
+if (medium.mode !== "medium") throw new Error(`640px surface should use medium geometry: ${medium.mode}`);
+if (medium.headline.h < 92) throw new Error(`medium headline height too short: ${medium.headline.h}`);
+if (medium.proofPoint.y < medium.headline.y + medium.headline.h + 16) throw new Error("medium proof points collide with headline");
+if (medium.proofPoint.compress !== true) throw new Error("medium proof points should use compressed copy");
+if (medium.proofPoint.count !== 2) throw new Error(`medium surface should show two proof points, got ${medium.proofPoint.count}`);
+const compact = mod.run225ContentEvidenceSurfaceGeometry({ x: 0, y: 0, w: 458, h: 242 });
+if (compact.mode !== "compact") throw new Error("458px surface should use compact geometry");
+const wide = mod.run225ContentEvidenceSurfaceGeometry({ x: 0, y: 0, w: 870, h: 368 });
+if (wide.mode !== "wide") throw new Error("870px surface should use wide geometry");
+"""
+    completed = subprocess.run(
+        ["node", "--input-type=module", "-e", node_script],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        timeout=20,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+
+
 def test_run2_25_records_single_usecase_generated_rerun_result() -> None:
     result = (PACK / "results" / "run2_25_single_usecase_rerun_result.md").read_text(encoding="utf-8")
     result_json = load_json(PACK / "results" / "run2_25_single_usecase_rerun_result.json")
