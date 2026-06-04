@@ -5290,6 +5290,126 @@ def test_ppt_run_html_viewer_mentions_run2_31_spine_climax_repair_rerun() -> Non
     )
 
 
+def test_run2_32_spine_climax_repair_audit_scores_run2_31_outputs(tmp_path: Path) -> None:
+    script_path = ROOT / "scripts" / "audit_ppt_run2_32_spine_climax_repair.py"
+    assert script_path.exists(), "missing Run 2.32 spine/climax repair audit script"
+
+    result_json = tmp_path / "run2_32_spine_climax_repair_audit.json"
+    result_md = tmp_path / "run2_32_spine_climax_repair_audit.md"
+    subprocess.run(
+        [
+            sys.executable,
+            str(script_path),
+            "--result-json",
+            str(result_json),
+            "--result-md",
+            str(result_md),
+        ],
+        cwd=ROOT,
+        check=True,
+    )
+
+    audit = load_json(result_json)
+    assert audit["schema_version"] == "ppt_run2_spine_climax_repair_audit.v1"
+    assert audit["run_id"] == "2.32"
+    assert audit["status"] == "run2_32_spine_climax_repair_audit_public_blocked"
+    assert audit["source_generated_run"] == "2.31"
+    assert audit["source_audit_run"] == "2.30"
+    assert audit["source_repair_run"] == "2.31"
+    assert audit["creates_new_ppt_deck"] is False
+    assert audit["public_ready"] is False
+    assert audit["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert audit["input_chain"]["run2_31_full_trace_manifest"].endswith("ppt-run2-31-full-vulca/trace_manifest.json")
+    assert audit["input_chain"]["run2_31_bad_trace_manifest"].endswith(
+        "ppt-run2-31-bad-spine-climax-repair-memory/trace_manifest.json"
+    )
+    assert audit["input_chain"]["run2_30_presentation_synthesis_audit"].endswith(
+        "run2_30_presentation_synthesis_audit.json"
+    )
+    assert audit["input_chain"]["run2_31_spine_climax_repair_rerun_result"].endswith(
+        "run2_31_spine_climax_repair_rerun_result.json"
+    )
+    assert audit["no_new_deck_proof"]["new_pptx_created"] is False
+    assert audit["no_new_deck_proof"]["status"] == "pass"
+
+    trace = audit["trace_closure"]
+    assert trace["full_arm"]["arm_id"] == "run2_31_full_spine_climax_repair"
+    assert trace["full_arm"]["slide_count"] == 6
+    assert trace["full_arm"]["run2_30_audit_consumed_slides"] == 6
+    assert trace["full_arm"]["repair_execution_status_slides"] == 6
+    assert trace["full_arm"]["readable_evidence_spine_modules_called"] == 6
+    assert trace["full_arm"]["climax_style_policy_slides"] == 6
+    assert trace["bad_control"]["arm_id"] == "bad_spine_climax_repair_memory"
+    assert trace["bad_control"]["repair_fields_leaked"] == 0
+
+    repair = audit["repair_verification"]
+    assert repair["spine_font_target_met_by_contract"] is True
+    assert repair["spine_min_font_size_target"] >= 8
+    assert repair["climax_style_policy_enforced"] is True
+    assert repair["climax_hero_object_canvas_share"] > 0.5
+    assert repair["repair_target_closed"] is True
+
+    summary = audit["quality_summary"]
+    assert summary["repair_gate"] == "pass_internal_only"
+    assert summary["public_release_gate"] == "blocked"
+    assert summary["top_next_layer_to_thicken"] == "main_surface_information_density_and_visual_evidence_realism"
+    assert set(summary["roles_with_low_visual_evidence_density"]) == {"cover", "setup", "contrast", "close"}
+    assert "spine_readability_and_climax_consistency" in summary["closed_target_layers"]
+
+    assert len(audit["role_records"]) == 6
+    climax_records = [record for record in audit["role_records"] if record["role"] == "climax"]
+    assert len(climax_records) == 1
+    for record in audit["role_records"]:
+        assert record["repair_trace_closure"]["run2_30_audit_status_present"] is True
+        assert record["spine_repair"]["readable_spine_module_called"] is True
+        assert record["spine_repair"]["spine_min_font_size_target"] >= 8
+        assert record["climax_repair"]["climax_style_policy"] == "high_contrast_climax_with_shared_light_editorial_frame"
+    assert climax_records[0]["climax_repair"]["hero_object_canvas_share"] > 0.5
+
+
+def test_run2_32_records_spine_climax_repair_audit_result() -> None:
+    result = (PACK / "results" / "run2_32_spine_climax_repair_audit.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_32_spine_climax_repair_audit.json")
+
+    assert result_json["status"] == "run2_32_spine_climax_repair_audit_public_blocked"
+    assert result_json["source_generated_run"] == "2.31"
+    assert result_json["quality_summary"]["top_next_layer_to_thicken"] == (
+        "main_surface_information_density_and_visual_evidence_realism"
+    )
+    assert result_json["next_required_action"] == (
+        "thicken_run2_31_main_surface_information_density_and_visual_evidence_realism_before_run2_33_rerun"
+    )
+    assert_contains(
+        result,
+        [
+            "Run 2.32 Spine/Climax Repair Audit",
+            "audit-only",
+            "2.31",
+            "2.30",
+            "drawRun231ReadableEvidenceSpine",
+            "drawRun231HeroProofScene",
+            "main_surface_information_density_and_visual_evidence_realism",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_embeds_run2_32_spine_climax_repair_audit() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "run2_32_spine_climax_repair_audit.json",
+            "Run 2.32 spine/climax repair audit",
+            "repair_target_closed",
+            "main_surface_information_density_and_visual_evidence_realism",
+            "roles_with_low_visual_evidence_density",
+            "creates no new PPT deck",
+        ],
+    )
+
+
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
     layout_dir = tmp_path / "layout"
     layout_dir.mkdir()

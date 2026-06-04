@@ -396,6 +396,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run229_result = read_json(pack / "results" / "run2_29_presentation_synthesis_rerun_result.json")
     run230_audit = read_json(pack / "results" / "run2_30_presentation_synthesis_audit.json")
     run231_result = read_json(pack / "results" / "run2_31_spine_climax_repair_rerun_result.json")
+    run232_audit = read_json(pack / "results" / "run2_32_spine_climax_repair_audit.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -527,6 +528,8 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run230Audit": run230_audit,
         "run231ResultStatus": run231_result.get("status", ""),
         "run231Result": run231_result,
+        "run232AuditStatus": run232_audit.get("status", ""),
+        "run232Audit": run232_audit,
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -1496,6 +1499,24 @@ def build_html(data: dict[str, Any]) -> str:
       const run231Inputs = run231Result.input_chain || {{}};
       const run231Delta = run231Result.quality_delta || {{}};
       const run231Control = run231Result.control_boundary || {{}};
+      const run232Audit = refs.run232Audit || {{}};
+      const run232Trace = run232Audit.trace_closure || {{}};
+      const run232TraceFull = run232Trace.full_arm || {{}};
+      const run232TraceBad = run232Trace.bad_control || {{}};
+      const run232Repair = run232Audit.repair_verification || {{}};
+      const run232Summary = run232Audit.quality_summary || {{}};
+      const run232Inputs = run232Audit.input_chain || {{}};
+      const run232RoleCards = (run232Audit.role_records || []).map((record) => `<article class="dataCard">
+        <h4>${{escapeHtml(record.role)}} / ${{escapeHtml(record.run2_31_presentation_module_id)}}</h4>
+        ${{detailBlock("Run 2.30 audit status present", (record.repair_trace_closure || {{}}).run2_30_audit_status_present)}}
+        ${{detailBlock("Spine module called", (record.spine_repair || {{}}).readable_spine_module_called)}}
+        ${{detailBlock("Spine min target", (record.spine_repair || {{}}).spine_min_font_size_target)}}
+        ${{detailBlock("Measured min spine", (record.spine_repair || {{}}).measured_min_spine_font_size)}}
+        ${{detailBlock("Climax policy", (record.climax_repair || {{}}).climax_style_policy)}}
+        ${{detailBlock("Visual evidence objects", (record.main_surface_density || {{}}).visual_evidence_objects)}}
+        ${{detailBlock("Issue categories", record.issue_categories)}}
+        ${{detailBlock("Recommended next action", record.recommended_next_action)}}
+      </article>`).join("");
       const run217Audit = refs.run217MotionAudit || {{}};
       const run217DeliveryTruth = run217Audit.delivery_truth || {{}};
       const run217RendererGap = run217Audit.motion_renderer_gap || {{}};
@@ -1809,6 +1830,52 @@ def build_html(data: dict[str, Any]) -> str:
               ${{detailBlock("Stage policy", run231Result.stage_policy)}}
             </article>
           </div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.32 spine/climax repair audit</h3><p>Audit-only layer over Run 2.31. It creates no new PPT deck; it checks whether the Run 2.30 spine_readability_and_climax_consistency target is closed, then moves the next thickness target to main_surface_information_density_and_visual_evidence_realism.</p></div><span class="pill">${{escapeHtml(refs.run232AuditStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Audit boundary</h4>
+              ${{detailBlock("Source generated run", run232Audit.source_generated_run)}}
+              ${{detailBlock("Source audit run", run232Audit.source_audit_run)}}
+              ${{detailBlock("Creates new PPT deck", run232Audit.creates_new_ppt_deck)}}
+              ${{detailBlock("Public ready", run232Audit.public_ready)}}
+              ${{detailBlock("Stage policy", run232Audit.stage_policy)}}
+            </article>
+            <article class="dataCard">
+              <h4>Input chain</h4>
+              ${{detailBlock("Run 2.30 audit", run232Inputs.run2_30_presentation_synthesis_audit || "run2_30_presentation_synthesis_audit.json")}}
+              ${{detailBlock("Run 2.31 result", run232Inputs.run2_31_spine_climax_repair_rerun_result || "run2_31_spine_climax_repair_rerun_result.json")}}
+              ${{detailBlock("Full trace manifest", run232Inputs.run2_31_full_trace_manifest)}}
+              ${{detailBlock("Bad trace manifest", run232Inputs.run2_31_bad_trace_manifest)}}
+              ${{detailBlock("Full contact sheet", run232Inputs.run2_31_full_contact_sheet)}}
+            </article>
+            <article class="dataCard">
+              <h4>Repair verification</h4>
+              ${{detailBlock("repair_target_closed", run232Repair.repair_target_closed)}}
+              ${{detailBlock("Spine min target", run232Repair.spine_min_font_size_target)}}
+              ${{detailBlock("Measured min spine", run232Repair.measured_min_spine_font_size)}}
+              ${{detailBlock("Climax policy enforced", run232Repair.climax_style_policy_enforced)}}
+              ${{detailBlock("Climax hero share", run232Repair.climax_hero_object_canvas_share)}}
+            </article>
+            <article class="dataCard">
+              <h4>Trace closure</h4>
+              ${{detailBlock("Full arm", run232TraceFull.arm_id)}}
+              ${{detailBlock("Run 2.30 audit consumed slides", run232TraceFull.run2_30_audit_consumed_slides)}}
+              ${{detailBlock("Repair execution status slides", run232TraceFull.repair_execution_status_slides)}}
+              ${{detailBlock("Readable spine modules called", run232TraceFull.readable_evidence_spine_modules_called)}}
+              ${{detailBlock("Bad-control repair leaks", run232TraceBad.repair_fields_leaked)}}
+            </article>
+            <article class="dataCard">
+              <h4>Quality summary</h4>
+              ${{detailBlock("Repair gate", run232Summary.repair_gate)}}
+              ${{detailBlock("Public release gate", run232Summary.public_release_gate)}}
+              ${{detailBlock("Closed target layers", run232Summary.closed_target_layers)}}
+              ${{detailBlock("roles_with_low_visual_evidence_density", run232Summary.roles_with_low_visual_evidence_density)}}
+              ${{detailBlock("Top next layer", run232Summary.top_next_layer_to_thicken || "main_surface_information_density_and_visual_evidence_realism")}}
+            </article>
+          </div>
+          <div class="dataGrid">${{run232RoleCards}}</div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.22 selector-memory rerun result</h3><p>Generated four-arm rerun that consumes Run 2.21 visual-decision memory, selector gates, and rejection matrix before native PPT code generation. It stays in the same five-layer loop and does not advance to Run 3.0.</p></div><span class="pill">${{escapeHtml(refs.run222ResultStatus || "missing")}}</span></div>
