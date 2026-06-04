@@ -324,6 +324,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run224_workflow_gates = read_json(pack / "run2_24_content_visual_workflow_gates.json")
     run224_result = read_json(pack / "results" / "run2_24_single_usecase_thickening_result.json")
     run225_result = read_json(pack / "results" / "run2_25_single_usecase_rerun_result.json")
+    run226_visual_module_audit = read_json(pack / "results" / "run2_26_visual_module_quality_audit.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -439,6 +440,8 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run224Result": run224_result,
         "run225ResultStatus": run225_result.get("status", ""),
         "run225Result": run225_result,
+        "run226VisualModuleAuditStatus": run226_visual_module_audit.get("status", ""),
+        "run226VisualModuleAudit": run226_visual_module_audit,
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -1329,6 +1332,26 @@ def build_html(data: dict[str, Any]) -> str:
       const run225Rerun = run225Result.rerun || {{}};
       const run225Inputs = run225Result.input_chain || {{}};
       const run225Control = run225Result.control_boundary || {{}};
+      const run226Audit = refs.run226VisualModuleAudit || {{}};
+      const run226Summary = run226Audit.quality_summary || {{}};
+      const run226NoNewDeckProof = run226Audit.no_new_deck_proof || {{}};
+      const run226RoleRecords = (run226Audit.role_records || []).map((record) => `<article class="dataCard">
+        <h4>${{escapeHtml(record.role)}}</h4>
+        ${{chipList([record.status, ...((record.issue_categories || []))].filter(Boolean))}}
+        ${{detailBlock("Module ids", record.module_ids)}}
+        ${{detailBlock("Geometry", record.geometry)}}
+        ${{detailBlock("Content density", record.content_density)}}
+        ${{detailBlock("Visual evidence visibility", record.visual_evidence_visibility)}}
+        ${{detailBlock("Composition hierarchy", record.composition_hierarchy)}}
+        ${{detailBlock("Recommended next action", record.recommended_next_action)}}
+      </article>`).join("");
+      const run226Recommendations = (run226Audit.module_recommendations || []).map((item) => `<article class="dataCard">
+        <h4>${{escapeHtml(item.module_id)}}</h4>
+        ${{detailBlock("Priority", item.priority)}}
+        ${{detailBlock("Issue categories", item.issue_categories)}}
+        ${{detailBlock("Why", item.why)}}
+        ${{detailBlock("Next contract", item.next_contract)}}
+      </article>`).join("");
       const run217Audit = refs.run217MotionAudit || {{}};
       const run217DeliveryTruth = run217Audit.delivery_truth || {{}};
       const run217RendererGap = run217Audit.motion_renderer_gap || {{}};
@@ -1420,6 +1443,32 @@ def build_html(data: dict[str, Any]) -> str:
               ${{detailBlock("Public ready", run225Result.public_ready)}}
             </article>
           </div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.26 visual module quality audit</h3><p>Audit-only layer over Run 2.25 full skill output. It checks layout_geometry, content_density, visual_evidence_visibility, composition_hierarchy, and climax_impact before deciding what to thicken next.</p></div><span class="pill">${{escapeHtml(refs.run226VisualModuleAuditStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Quality summary</h4>
+              ${{detailBlock("Module quality gate", run226Summary.module_quality_gate)}}
+              ${{detailBlock("Public release gate", run226Summary.public_release_gate)}}
+              ${{detailBlock("roles_with_visible_layout_defects", run226Summary.roles_with_visible_layout_defects)}}
+              ${{detailBlock("roles_with_compressed_proof_surface", run226Summary.roles_with_compressed_proof_surface)}}
+              ${{detailBlock("Top next module", run226Summary.top_next_module_to_thicken || "drawRun225ContentEvidenceSurface")}}
+              ${{detailBlock("Reason", run226Summary.reason)}}
+            </article>
+            <article class="dataCard">
+              <h4>Input chain</h4>
+              ${{detailBlock("Source generated run", run226Audit.source_generated_run)}}
+              ${{detailBlock("Trace manifest", (run226Audit.input_chain || {{}}).full_arm_trace_manifest)}}
+              ${{detailBlock("Layout directory", (run226Audit.input_chain || {{}}).full_arm_layout_dir)}}
+              ${{detailBlock("no_new_deck_proof", run226NoNewDeckProof)}}
+              ${{detailBlock("Stage policy", run226Audit.stage_policy)}}
+              ${{detailBlock("Creates new PPT deck", run226Audit.creates_new_ppt_deck)}}
+              ${{detailBlock("Next required action", run226Audit.next_required_action)}}
+            </article>
+          </div>
+          <div class="dataGrid">${{run226Recommendations}}</div>
+          <div class="dataGrid">${{run226RoleRecords}}</div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.22 selector-memory rerun result</h3><p>Generated four-arm rerun that consumes Run 2.21 visual-decision memory, selector gates, and rejection matrix before native PPT code generation. It stays in the same five-layer loop and does not advance to Run 3.0.</p></div><span class="pill">${{escapeHtml(refs.run222ResultStatus || "missing")}}</span></div>

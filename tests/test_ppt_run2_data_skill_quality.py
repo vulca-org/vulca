@@ -4434,6 +4434,116 @@ def test_ppt_run_html_viewer_mentions_run2_25_generated_rerun() -> None:
     )
 
 
+def test_run2_26_visual_module_quality_audit_scores_run2_25_outputs(tmp_path: Path) -> None:
+    script_path = ROOT / "scripts" / "audit_ppt_run2_26_visual_module_quality.py"
+    assert script_path.exists(), "missing Run 2.26 visual module quality audit script"
+
+    result_json = tmp_path / "run2_26_visual_module_quality_audit.json"
+    result_md = tmp_path / "run2_26_visual_module_quality_audit.md"
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(script_path),
+            "--result-json",
+            str(result_json),
+            "--result-md",
+            str(result_md),
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        timeout=20,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    audit = load_json(result_json)
+    report = result_md.read_text(encoding="utf-8")
+
+    assert audit["status"] == "run2_26_visual_module_quality_audit_public_blocked"
+    assert audit["run_id"] == "2.26"
+    assert audit["source_generated_run"] == "2.25"
+    assert audit["creates_new_ppt_deck"] is False
+    assert audit["public_ready"] is False
+    assert audit["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert audit["input_chain"]["run2_25_full_trace_manifest"].endswith("ppt-run2-25-full-vulca/trace_manifest.json")
+    assert audit["input_chain"]["run2_25_full_layout_dir"].endswith("ppt-run2-25-full-vulca/layout/final")
+    assert audit["no_new_deck_proof"]["status"] == "pass"
+    assert audit["no_new_deck_proof"]["matched_run2_26_outputs"] == []
+    assert audit["no_new_deck_proof"]["new_pptx_created"] is False
+    assert audit["quality_summary"]["module_quality_gate"] == "pass_internal_only"
+    assert audit["quality_summary"]["public_release_gate"] == "blocked"
+    assert audit["quality_summary"]["top_next_module_to_thicken"] == "drawRun225ContentEvidenceSurface"
+    assert audit["quality_summary"]["roles_with_visible_layout_defects"] == []
+    assert audit["quality_summary"]["roles_with_compressed_proof_surface"]
+    assert audit["issue_categories"] == [
+        "layout_geometry",
+        "content_density",
+        "visual_evidence_visibility",
+        "composition_hierarchy",
+        "climax_impact",
+    ]
+    assert len(audit["role_records"]) == 6
+    for record in audit["role_records"]:
+        assert record["role"] in {"cover", "setup", "contrast", "proof", "climax", "close"}
+        assert record["geometry"]["crushed_text_box_count"] == 0
+        assert record["geometry"]["max_line_count"] <= 14
+        assert record["content_density"]["visual_evidence_slot_count"] >= 2
+        assert record["visual_evidence_visibility"]["trace_slots_present"] is True
+        assert record["status"] in {"pass_internal_only", "needs_next_module_thickening"}
+        assert record["recommended_next_action"]
+
+    assert_contains(
+        report,
+        [
+            "Run 2.26",
+            "visual module quality",
+            "Run 2.25",
+            "drawRun225ContentEvidenceSurface",
+            "public blocked",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_run2_26_records_visual_module_quality_audit_result() -> None:
+    result = (PACK / "results" / "run2_26_visual_module_quality_audit.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_26_visual_module_quality_audit.json")
+
+    assert result_json["status"] == "run2_26_visual_module_quality_audit_public_blocked"
+    assert result_json["source_generated_run"] == "2.25"
+    assert result_json["creates_new_ppt_deck"] is False
+    assert result_json["public_ready"] is False
+    assert result_json["no_new_deck_proof"]["status"] == "pass"
+    assert result_json["no_new_deck_proof"]["matched_run2_26_outputs"] == []
+    assert result_json["no_new_deck_proof"]["new_pptx_created"] is False
+    assert result_json["quality_summary"]["top_next_module_to_thicken"] == "drawRun225ContentEvidenceSurface"
+    assert result_json["next_required_action"].startswith("thicken_drawRun225ContentEvidenceSurface")
+    assert_contains(
+        result,
+        [
+            "Run 2.26",
+            "visual module quality",
+            "Run 2.25",
+            "public blocked",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_embeds_run2_26_visual_module_quality_audit() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "run2_26_visual_module_quality_audit.json",
+            "Run 2.26 visual module quality audit",
+            "drawRun225ContentEvidenceSurface",
+            "roles_with_compressed_proof_surface",
+            "no_new_deck_proof",
+        ],
+    )
+
+
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
     layout_dir = tmp_path / "layout"
     layout_dir.mkdir()
