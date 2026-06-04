@@ -4887,6 +4887,166 @@ def test_ppt_run_html_viewer_mentions_run2_28_evidence_chain_rerun() -> None:
     )
 
 
+def test_run2_29_presentation_synthesis_memory_compresses_evidence_chain_without_dropping_trace() -> None:
+    memory = load_json(PACK / "run2_29_presentation_synthesis_memory.json")
+    evidence_chain = load_json(PACK / "run2_28_evidence_chain_view_model.json")
+    prior_result = load_json(PACK / "results" / "run2_28_evidence_chain_rerun_result.json")
+
+    assert memory["status"] == "run2_29_presentation_synthesis_memory_ready_public_blocked"
+    assert memory["selected_usecase_id"] == "usecase_design_to_production_platform_launch"
+    assert memory["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert memory["source_evidence_chain_layer"] == "run2_28_evidence_chain_view_model.json"
+    assert memory["prior_rerun_result"] == "run2_28_evidence_chain_rerun_result.json"
+    assert prior_result["status"] == "run2_28_evidence_chain_rerun_public_blocked"
+    assert memory["surface_policy"]["primary_reader_experience"] == "presentation_first_surface"
+    assert memory["surface_policy"]["secondary_reviewer_experience"] == "compressed_evidence_spine"
+    assert memory["surface_policy"]["forbidden_primary_surface"] == "four_column_audit_table"
+
+    chains_by_role = {chain["role"]: chain for chain in evidence_chain["slide_evidence_chains"]}
+    records = memory["slide_synthesis_records"]
+    assert [record["role"] for record in records] == ["cover", "setup", "contrast", "proof", "climax", "close"]
+    assert {record["evidence_chain_id"] for record in records} == {
+        chain["evidence_chain_id"] for chain in evidence_chain["slide_evidence_chains"]
+    }
+
+    required_trace_fields = {
+        "run2_28_evidence_chain_id",
+        "run2_28_multimodal_source_record_ids",
+        "run2_28_extracted_design_rule",
+        "run2_28_workflow_decision",
+        "run2_28_native_surface_module_id",
+        "run2_29_synthesis_record_id",
+        "run2_29_public_surface_mode",
+        "run2_29_trace_surface_mode",
+        "run2_29_presentation_module_id",
+        "run2_29_chain_compression_policy",
+    }
+    for record in records:
+        chain = chains_by_role[record["role"]]
+        assert record["evidence_chain_id"] == chain["evidence_chain_id"]
+        assert record["source_native_surface_module_id"] == chain["native_surface_module_id"]
+        assert record["trace_surface_mode"] == "manifest_and_html_viewer_full_chain_visible"
+        assert record["presentation_module_id"].startswith("drawRun229")
+        assert record["visible_on_slide_evidence_spine_steps"] == [
+            "source evidence",
+            "extracted design rule",
+            "workflow decision",
+            "generated slide surface",
+        ]
+        assert "do_not_render_four_column_audit_table_as_primary_surface" in record["chain_compression_policy"]
+        assert "make_evidence_chain_secondary_to_editorial_claim_and_proof_object" in record["chain_compression_policy"]
+        assert set(record["preserved_trace_fields"]) >= required_trace_fields
+        assert record["primary_slide_surface_contract"]
+        assert record["reviewer_inspection_prompt"]
+
+    assert memory["public_release_gate"] == "blocked"
+
+
+def test_run2_29_generator_consumes_presentation_synthesis_before_native_ppt_code() -> None:
+    script_path = ROOT / "scripts" / "generate_ppt_run2_29_presentation_synthesis_arms.mjs"
+    assert script_path.exists(), "missing Run 2.29 presentation-synthesis generator"
+    body = script_path.read_text(encoding="utf-8")
+    arm_order = [
+        "prompt_only",
+        "run1_5_skill",
+        "run2_29_full_presentation_synthesis",
+        "bad_presentation_synthesis_memory",
+    ]
+
+    def arm_block(arm_id: str) -> str:
+        start = body.index(f'armId: "{arm_id}"')
+        next_starts = [body.find(f'armId: "{next_arm}"', start + 1) for next_arm in arm_order]
+        next_starts = [index for index in next_starts if index > start]
+        end = min(next_starts) if next_starts else len(body)
+        return body[start:end]
+
+    def section(block: str, start_marker: str, end_marker: str) -> str:
+        start = block.index(start_marker)
+        end = block.index(end_marker, start)
+        return block[start:end]
+
+    required_inputs = [
+        "run2_29_presentation_synthesis_memory.json",
+        "run2_28_evidence_chain_view_model.json",
+        "run2_24_single_usecase_content_memory.json",
+        "run2_24_visual_evidence_asset_memory.json",
+        "run2_24_content_visual_workflow_gates.json",
+        "run2_28_evidence_chain_rerun_result.json",
+    ]
+
+    assert_contains(
+        body,
+        [
+            "validateRun229PresentationSynthesisMemory",
+            "loadRun229ContractData",
+            "drawRun229CompressedEvidenceSpine",
+            "drawRun229EditorialLaunchFrame",
+            "drawRun229HeroProofScene",
+            "drawRun229DecisionHandoff",
+            "run2_29_presentation_synthesis_execution_status",
+            "run2_29_public_surface_mode",
+            "run2_29_trace_surface_mode",
+            "run2_29_presentation_module_id",
+            "presentation_first_surface_rendered_with_secondary_evidence_spine",
+            "do_not_render_four_column_audit_table_as_primary_surface",
+            "compressed evidence spine",
+            "presentation-first surface",
+        ],
+    )
+
+    prompt_allowed = section(arm_block("prompt_only"), "allowed:", "forbidden:")
+    prompt_forbidden = section(arm_block("prompt_only"), "forbidden:", "palette:")
+    run1_allowed = section(arm_block("run1_5_skill"), "allowed:", "forbidden:")
+    run1_forbidden = section(arm_block("run1_5_skill"), "forbidden:", "palette:")
+    full_allowed = section(arm_block("run2_29_full_presentation_synthesis"), "allowed:", "forbidden:")
+    full_forbidden = section(arm_block("run2_29_full_presentation_synthesis"), "forbidden:", "palette:")
+    bad_allowed = section(arm_block("bad_presentation_synthesis_memory"), "allowed:", "forbidden:")
+    bad_forbidden = section(arm_block("bad_presentation_synthesis_memory"), "forbidden:", "palette:")
+
+    for term in required_inputs:
+        assert term not in prompt_allowed
+        assert term in prompt_forbidden
+        assert term not in run1_allowed
+        assert term in run1_forbidden
+        assert term in full_allowed
+        assert term not in full_forbidden
+        assert term not in bad_allowed
+        assert term in bad_forbidden
+
+    assert 'const fullRun229 = arm.armId === "run2_29_full_presentation_synthesis";' in body
+    assert 'registerRun229Module(metrics, "drawRun229CompressedEvidenceSpine")' in body
+    for field in [
+        "run2_29_synthesis_record_id",
+        "run2_29_public_surface_mode",
+        "run2_29_trace_surface_mode",
+        "run2_29_presentation_module_id",
+        "run2_29_chain_compression_policy",
+        "run2_29_presentation_synthesis_execution_status",
+    ]:
+        assert re.search(fr"{field}:\s*fullRun229\s*\?", body), field
+
+
+def test_ppt_run_html_viewer_mentions_run2_29_presentation_synthesis_rerun() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "Run 2.29",
+            "ppt-run2-29-prompt-only",
+            "ppt-run2-29-run1-5-skill",
+            "ppt-run2-29-full-vulca",
+            "ppt-run2-29-bad-presentation-synthesis-memory",
+            "run2_29_presentation_synthesis_memory.json",
+            "run2_29_presentation_synthesis_rerun_result.json",
+            "presentation-first surface",
+            "compressed evidence spine",
+            "four-column audit table",
+            "manifest_and_html_viewer_full_chain_visible",
+        ],
+    )
+
+
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
     layout_dir = tmp_path / "layout"
     layout_dir.mkdir()

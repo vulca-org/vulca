@@ -1,0 +1,239 @@
+{
+  "schema_version": 1,
+  "status": "run2_29_presentation_synthesis_memory_ready_public_blocked",
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "source_evidence_chain_layer": "run2_28_evidence_chain_view_model.json",
+  "prior_rerun_result": "run2_28_evidence_chain_rerun_result.json",
+  "surface_policy": {
+    "primary_reader_experience": "presentation_first_surface",
+    "secondary_reviewer_experience": "compressed_evidence_spine",
+    "forbidden_primary_surface": "four_column_audit_table",
+    "reason": "Run 2.28 proved traceability but made the audit table dominate the deck surface. Run 2.29 keeps the same evidence chain and compresses it into a provenance rail so the first read is an editorial presentation."
+  },
+  "viewer_contract": {
+    "show_presentation_synthesis_in_html_viewer": true,
+    "trace_surface_mode": "manifest_and_html_viewer_full_chain_visible",
+    "chain_order": [
+      "source evidence",
+      "extracted design rule",
+      "workflow decision",
+      "generated slide surface"
+    ],
+    "reviewer_prompt": "Inspect whether every Run 2.29 full slide keeps the 2.28 chain in trace while using a presentation-first surface on the slide itself."
+  },
+  "slide_synthesis_records": [
+    {
+      "synthesis_record_id": "synthesis_2_29_cover",
+      "role": "cover",
+      "evidence_chain_id": "chain_2_28_cover",
+      "source_native_surface_module_id": "drawRun228EvidenceChainSurface",
+      "presentation_module_id": "drawRun229EditorialLaunchFrame",
+      "public_surface_mode": "presentation_first_launch_frame_with_secondary_evidence_spine",
+      "trace_surface_mode": "manifest_and_html_viewer_full_chain_visible",
+      "primary_slide_surface_contract": "Lead with one large launch promise, one product-system stage, and a small provenance rail that proves the data-to-code path without reading like an audit form.",
+      "chain_compression_policy": [
+        "do_not_render_four_column_audit_table_as_primary_surface",
+        "make_evidence_chain_secondary_to_editorial_claim_and_proof_object",
+        "show_only_short_step_labels_and_one_source_bound_detail_on_slide",
+        "preserve_full_chain_in_trace_manifest_and_html_viewer"
+      ],
+      "visible_on_slide_evidence_spine_steps": [
+        "source evidence",
+        "extracted design rule",
+        "workflow decision",
+        "generated slide surface"
+      ],
+      "preserved_trace_fields": [
+        "run2_28_evidence_chain_id",
+        "run2_28_multimodal_source_record_ids",
+        "run2_28_extracted_design_rule",
+        "run2_28_workflow_decision",
+        "run2_28_native_surface_module_id",
+        "run2_29_synthesis_record_id",
+        "run2_29_public_surface_mode",
+        "run2_29_trace_surface_mode",
+        "run2_29_presentation_module_id",
+        "run2_29_chain_compression_policy"
+      ],
+      "reviewer_inspection_prompt": "Does the cover first read as a product launch frame before the reviewer notices the evidence spine?"
+    },
+    {
+      "synthesis_record_id": "synthesis_2_29_setup",
+      "role": "setup",
+      "evidence_chain_id": "chain_2_28_setup",
+      "source_native_surface_module_id": "drawRun228EvidenceChainSurface",
+      "presentation_module_id": "drawRun229AsymmetricProblemFrame",
+      "public_surface_mode": "presentation_first_problem_scene_with_secondary_evidence_spine",
+      "trace_surface_mode": "manifest_and_html_viewer_full_chain_visible",
+      "primary_slide_surface_contract": "Use a large problem claim and a collapsing prompt-only path, then keep the evidence chain as a small right-side provenance rail.",
+      "chain_compression_policy": [
+        "do_not_render_four_column_audit_table_as_primary_surface",
+        "make_evidence_chain_secondary_to_editorial_claim_and_proof_object",
+        "show_only_short_step_labels_and_one_source_bound_detail_on_slide",
+        "preserve_full_chain_in_trace_manifest_and_html_viewer"
+      ],
+      "visible_on_slide_evidence_spine_steps": [
+        "source evidence",
+        "extracted design rule",
+        "workflow decision",
+        "generated slide surface"
+      ],
+      "preserved_trace_fields": [
+        "run2_28_evidence_chain_id",
+        "run2_28_multimodal_source_record_ids",
+        "run2_28_extracted_design_rule",
+        "run2_28_workflow_decision",
+        "run2_28_native_surface_module_id",
+        "run2_29_synthesis_record_id",
+        "run2_29_public_surface_mode",
+        "run2_29_trace_surface_mode",
+        "run2_29_presentation_module_id",
+        "run2_29_chain_compression_policy"
+      ],
+      "reviewer_inspection_prompt": "Does the setup show why prompt-only fails without turning the slide into a workflow table?"
+    },
+    {
+      "synthesis_record_id": "synthesis_2_29_contrast",
+      "role": "contrast",
+      "evidence_chain_id": "chain_2_28_contrast",
+      "source_native_surface_module_id": "drawRun228EvidenceChainSurface",
+      "presentation_module_id": "drawRun229BeforeAfterEditorialSpread",
+      "public_surface_mode": "presentation_first_asymmetric_before_after_with_secondary_evidence_spine",
+      "trace_surface_mode": "manifest_and_html_viewer_full_chain_visible",
+      "primary_slide_surface_contract": "Make the weak prompt thumbnail visibly smaller and let the selected evidence route own the main field; keep chain proof as a thin rail.",
+      "chain_compression_policy": [
+        "do_not_render_four_column_audit_table_as_primary_surface",
+        "make_evidence_chain_secondary_to_editorial_claim_and_proof_object",
+        "show_only_short_step_labels_and_one_source_bound_detail_on_slide",
+        "preserve_full_chain_in_trace_manifest_and_html_viewer"
+      ],
+      "visible_on_slide_evidence_spine_steps": [
+        "source evidence",
+        "extracted design rule",
+        "workflow decision",
+        "generated slide surface"
+      ],
+      "preserved_trace_fields": [
+        "run2_28_evidence_chain_id",
+        "run2_28_multimodal_source_record_ids",
+        "run2_28_extracted_design_rule",
+        "run2_28_workflow_decision",
+        "run2_28_native_surface_module_id",
+        "run2_29_synthesis_record_id",
+        "run2_29_public_surface_mode",
+        "run2_29_trace_surface_mode",
+        "run2_29_presentation_module_id",
+        "run2_29_chain_compression_policy"
+      ],
+      "reviewer_inspection_prompt": "Does the contrast make the selected workflow feel materially stronger than prompt-only at thumbnail size?"
+    },
+    {
+      "synthesis_record_id": "synthesis_2_29_proof",
+      "role": "proof",
+      "evidence_chain_id": "chain_2_28_proof",
+      "source_native_surface_module_id": "drawRun228EvidenceChainSurface",
+      "presentation_module_id": "drawRun229ProductProofTheater",
+      "public_surface_mode": "presentation_first_product_proof_theater_with_secondary_evidence_spine",
+      "trace_surface_mode": "manifest_and_html_viewer_full_chain_visible",
+      "primary_slide_surface_contract": "Use a product proof theater: central editable surface, three visible proof obligations, and a secondary provenance spine.",
+      "chain_compression_policy": [
+        "do_not_render_four_column_audit_table_as_primary_surface",
+        "make_evidence_chain_secondary_to_editorial_claim_and_proof_object",
+        "show_only_short_step_labels_and_one_source_bound_detail_on_slide",
+        "preserve_full_chain_in_trace_manifest_and_html_viewer"
+      ],
+      "visible_on_slide_evidence_spine_steps": [
+        "source evidence",
+        "extracted design rule",
+        "workflow decision",
+        "generated slide surface"
+      ],
+      "preserved_trace_fields": [
+        "run2_28_evidence_chain_id",
+        "run2_28_multimodal_source_record_ids",
+        "run2_28_extracted_design_rule",
+        "run2_28_workflow_decision",
+        "run2_28_native_surface_module_id",
+        "run2_29_synthesis_record_id",
+        "run2_29_public_surface_mode",
+        "run2_29_trace_surface_mode",
+        "run2_29_presentation_module_id",
+        "run2_29_chain_compression_policy"
+      ],
+      "reviewer_inspection_prompt": "Can the proof slide be understood as product evidence first and workflow lineage second?"
+    },
+    {
+      "synthesis_record_id": "synthesis_2_29_climax",
+      "role": "climax",
+      "evidence_chain_id": "chain_2_28_climax",
+      "source_native_surface_module_id": "drawRun228ClimaxEvidenceObject",
+      "presentation_module_id": "drawRun229HeroProofScene",
+      "public_surface_mode": "presentation_first_hero_proof_scene_with_secondary_evidence_spine",
+      "trace_surface_mode": "manifest_and_html_viewer_full_chain_visible",
+      "primary_slide_surface_contract": "Keep one large generated proof object as the room-owning climax; move lineage into a compact provenance rail.",
+      "chain_compression_policy": [
+        "do_not_render_four_column_audit_table_as_primary_surface",
+        "make_evidence_chain_secondary_to_editorial_claim_and_proof_object",
+        "show_only_short_step_labels_and_one_source_bound_detail_on_slide",
+        "preserve_full_chain_in_trace_manifest_and_html_viewer"
+      ],
+      "visible_on_slide_evidence_spine_steps": [
+        "source evidence",
+        "extracted design rule",
+        "workflow decision",
+        "generated slide surface"
+      ],
+      "preserved_trace_fields": [
+        "run2_28_evidence_chain_id",
+        "run2_28_multimodal_source_record_ids",
+        "run2_28_extracted_design_rule",
+        "run2_28_workflow_decision",
+        "run2_28_native_surface_module_id",
+        "run2_29_synthesis_record_id",
+        "run2_29_public_surface_mode",
+        "run2_29_trace_surface_mode",
+        "run2_29_presentation_module_id",
+        "run2_29_chain_compression_policy"
+      ],
+      "reviewer_inspection_prompt": "Does the climax feel like one decisive proof scene rather than another evidence dashboard?"
+    },
+    {
+      "synthesis_record_id": "synthesis_2_29_close",
+      "role": "close",
+      "evidence_chain_id": "chain_2_28_close",
+      "source_native_surface_module_id": "drawRun228WorkflowTracePanel",
+      "presentation_module_id": "drawRun229DecisionHandoff",
+      "public_surface_mode": "presentation_first_release_handoff_with_secondary_evidence_spine",
+      "trace_surface_mode": "manifest_and_html_viewer_full_chain_visible",
+      "primary_slide_surface_contract": "Close with a release decision and traceable handoff object; show the evidence chain as compact provenance, not the whole composition.",
+      "chain_compression_policy": [
+        "do_not_render_four_column_audit_table_as_primary_surface",
+        "make_evidence_chain_secondary_to_editorial_claim_and_proof_object",
+        "show_only_short_step_labels_and_one_source_bound_detail_on_slide",
+        "preserve_full_chain_in_trace_manifest_and_html_viewer"
+      ],
+      "visible_on_slide_evidence_spine_steps": [
+        "source evidence",
+        "extracted design rule",
+        "workflow decision",
+        "generated slide surface"
+      ],
+      "preserved_trace_fields": [
+        "run2_28_evidence_chain_id",
+        "run2_28_multimodal_source_record_ids",
+        "run2_28_extracted_design_rule",
+        "run2_28_workflow_decision",
+        "run2_28_native_surface_module_id",
+        "run2_29_synthesis_record_id",
+        "run2_29_public_surface_mode",
+        "run2_29_trace_surface_mode",
+        "run2_29_presentation_module_id",
+        "run2_29_chain_compression_policy"
+      ],
+      "reviewer_inspection_prompt": "Does the close communicate the release gate first while preserving reviewer traceability?"
+    }
+  ],
+  "public_release_gate": "blocked",
+  "release_boundary": "public_blocked_until_visual_human_review_native_render_review_motion_review_source_boundary_review_and_human_approval"
+}

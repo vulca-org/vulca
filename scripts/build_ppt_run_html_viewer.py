@@ -264,6 +264,22 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ),
         ),
     ),
+    RunSpec(
+        "2.29",
+        "Run 2.29",
+        "run2-29-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-29-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-29-run1-5-skill", "baseline"),
+            ArmSpec("run2_29_full_presentation_synthesis", "Run 2.29 full", "ppt-run2-29-full-vulca", "full"),
+            ArmSpec(
+                "bad_presentation_synthesis_memory",
+                "Bad presentation-synthesis memory",
+                "ppt-run2-29-bad-presentation-synthesis-memory",
+                "negative",
+            ),
+        ),
+    ),
 )
 
 
@@ -360,6 +376,8 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run227_result = read_json(pack / "results" / "run2_27_content_surface_thickening_rerun_result.json")
     run228_evidence_chain = read_json(pack / "run2_28_evidence_chain_view_model.json")
     run228_result = read_json(pack / "results" / "run2_28_evidence_chain_rerun_result.json")
+    run229_synthesis_memory = read_json(pack / "run2_29_presentation_synthesis_memory.json")
+    run229_result = read_json(pack / "results" / "run2_29_presentation_synthesis_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -483,6 +501,10 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run228EvidenceChain": run228_evidence_chain,
         "run228ResultStatus": run228_result.get("status", ""),
         "run228Result": run228_result,
+        "run229SynthesisMemoryStatus": run229_synthesis_memory.get("status", ""),
+        "run229SynthesisMemory": run229_synthesis_memory,
+        "run229ResultStatus": run229_result.get("status", ""),
+        "run229Result": run229_result,
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -1413,6 +1435,23 @@ def build_html(data: dict[str, Any]) -> str:
         ${{detailBlock("generated slide surface", chain.generated_slide_surface)}}
         ${{detailBlock("native module", chain.native_surface_module_id)}}
       </article>`).join("");
+      const run229SynthesisMemory = refs.run229SynthesisMemory || {{}};
+      const run229Records = run229SynthesisMemory.slide_synthesis_records || [];
+      const run229Result = refs.run229Result || {{}};
+      const run229Rerun = run229Result.rerun || {{}};
+      const run229Inputs = run229Result.input_chain || {{}};
+      const run229Delta = run229Result.presentation_synthesis_delta || {{}};
+      const run229Control = run229Result.control_boundary || {{}};
+      const run229Policy = run229SynthesisMemory.surface_policy || {{}};
+      const run229RecordCards = run229Records.map((record) => `<article class="dataCard">
+        <h4>${{escapeHtml(record.role)}} / ${{escapeHtml(record.presentation_module_id)}}</h4>
+        ${{detailBlock("Evidence chain id", record.evidence_chain_id)}}
+        ${{detailBlock("Public surface mode", record.public_surface_mode)}}
+        ${{detailBlock("Trace surface mode", record.trace_surface_mode || "manifest_and_html_viewer_full_chain_visible")}}
+        ${{detailBlock("Primary contract", record.primary_slide_surface_contract)}}
+        ${{detailBlock("Compressed evidence spine", record.visible_on_slide_evidence_spine_steps)}}
+        ${{detailBlock("Chain compression policy", record.chain_compression_policy)}}
+      </article>`).join("");
       const run217Audit = refs.run217MotionAudit || {{}};
       const run217DeliveryTruth = run217Audit.delivery_truth || {{}};
       const run217RendererGap = run217Audit.motion_renderer_gap || {{}};
@@ -1603,6 +1642,52 @@ def build_html(data: dict[str, Any]) -> str:
             </article>
           </div>
           <div class="dataGrid">${{run228ChainCards}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.29 presentation-synthesis rerun</h3><p>Generated four-arm rerun that consumes Run 2.29 presentation synthesis memory, the Run 2.28 evidence-chain view model, Run 2.24 content/visual/workflow memory, and the Run 2.28 rerun result before native PPT code generation. This changes the public slide surface from a four-column audit table into a presentation-first surface with a compressed evidence spine.</p></div><span class="pill">${{escapeHtml(refs.run229ResultStatus || refs.run229SynthesisMemoryStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Rerun proof</h4>
+              ${{detailBlock("Synthesis memory status", refs.run229SynthesisMemoryStatus)}}
+              ${{detailBlock("Best internal arm", run229Rerun.best_internal_arm)}}
+              ${{detailBlock("Verdict", run229Rerun.best_internal_arm_verdict)}}
+              ${{detailBlock("Four-arm sheet", run229Rerun.combined_contact_sheet)}}
+              ${{detailBlock("Full-skill series", run229Rerun.full_skill_series_sheet)}}
+            </article>
+            <article class="dataCard">
+              <h4>Input chain</h4>
+              ${{detailBlock("Presentation synthesis memory", run229Inputs.presentation_synthesis_memory || "run2_29_presentation_synthesis_memory.json")}}
+              ${{detailBlock("Evidence chain view model", run229Inputs.evidence_chain_view_model || "run2_28_evidence_chain_view_model.json")}}
+              ${{detailBlock("Content memory", run229Inputs.content_memory)}}
+              ${{detailBlock("Visual evidence asset memory", run229Inputs.visual_evidence_asset_memory)}}
+              ${{detailBlock("Content/visual workflow gates", run229Inputs.content_visual_workflow_gates)}}
+              ${{detailBlock("Prior rerun result", run229Inputs.prior_rerun_result || "run2_28_evidence_chain_rerun_result.json")}}
+            </article>
+            <article class="dataCard">
+              <h4>Surface policy</h4>
+              ${{detailBlock("Primary reader experience", run229Policy.primary_reader_experience || "presentation-first surface")}}
+              ${{detailBlock("Secondary reviewer experience", run229Policy.secondary_reviewer_experience || "compressed evidence spine")}}
+              ${{detailBlock("Forbidden primary surface", run229Policy.forbidden_primary_surface || "four-column audit table")}}
+              ${{detailBlock("Trace mode", (run229SynthesisMemory.viewer_contract || {{}}).trace_surface_mode || "manifest_and_html_viewer_full_chain_visible")}}
+            </article>
+            <article class="dataCard">
+              <h4>Presentation-synthesis delta</h4>
+              ${{detailBlock("Replacement focus", run229Delta.replacement_focus)}}
+              ${{detailBlock("Primary surface mode", run229Delta.primary_surface_mode || "presentation-first surface")}}
+              ${{detailBlock("Secondary surface mode", run229Delta.secondary_surface_mode || "compressed evidence spine")}}
+              ${{detailBlock("Forbidden primary surface", run229Delta.forbidden_primary_surface || "four-column audit table")}}
+              ${{detailBlock("Visible chain steps", run229Delta.required_visible_chain_steps_per_full_slide)}}
+              ${{detailBlock("Public ready", run229Result.public_ready)}}
+            </article>
+            <article class="dataCard">
+              <h4>Control boundary</h4>
+              ${{detailBlock("Negative control", run229Control.bad_presentation_synthesis_memory)}}
+              ${{detailBlock("Prompt only", run229Control.prompt_only)}}
+              ${{detailBlock("Run 1.5", run229Control.run1_5_skill)}}
+              ${{detailBlock("Stage policy", run229Result.stage_policy || run229SynthesisMemory.stage_policy)}}
+            </article>
+          </div>
+          <div class="dataGrid">${{run229RecordCards}}</div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.22 selector-memory rerun result</h3><p>Generated four-arm rerun that consumes Run 2.21 visual-decision memory, selector gates, and rejection matrix before native PPT code generation. It stays in the same five-layer loop and does not advance to Run 3.0.</p></div><span class="pill">${{escapeHtml(refs.run222ResultStatus || "missing")}}</span></div>
