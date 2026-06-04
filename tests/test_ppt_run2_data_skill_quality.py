@@ -6,6 +6,9 @@ import subprocess
 import sys
 from pathlib import Path
 
+from PIL import Image
+
+from scripts.build_ppt_contact_sheet import build_contact_sheet
 from scripts.check_ppt_layout_quality import check_layout, write_report
 from scripts.validate_ppt_case_pack import validate_case_pack
 
@@ -4222,6 +4225,183 @@ def test_ppt_run_html_viewer_embeds_run2_24_single_usecase_content_visual_eviden
     )
 
 
+def test_run2_25_generator_consumes_run2_24_pack_before_native_ppt_code() -> None:
+    script_path = ROOT / "scripts" / "generate_ppt_run2_25_single_usecase_arms.mjs"
+    assert script_path.exists(), "missing Run 2.25 single-usecase rerun generator"
+    body = script_path.read_text(encoding="utf-8")
+    arm_order = [
+        "prompt_only",
+        "run1_5_skill",
+        "run2_25_full_single_usecase_content_visual",
+        "bad_content_visual_memory",
+    ]
+
+    def arm_block(arm_id: str) -> str:
+        start = body.index(f'armId: "{arm_id}"')
+        next_starts = [body.find(f'armId: "{next_arm}"', start + 1) for next_arm in arm_order]
+        next_starts = [index for index in next_starts if index > start]
+        end = min(next_starts) if next_starts else len(body)
+        return body[start:end]
+
+    def section(block: str, start_marker: str, end_marker: str) -> str:
+        start = block.index(start_marker)
+        end = block.index(end_marker, start)
+        return block[start:end]
+
+    run2_24_inputs = [
+        "run2_24_single_usecase_content_memory.json",
+        "run2_24_visual_evidence_asset_memory.json",
+        "run2_24_content_visual_workflow_gates.json",
+    ]
+
+    assert_contains(
+        body,
+        [
+            "validateRun224SingleUsecaseSchemas",
+            "assertRun225ArmInputBoundaries",
+            "readRun225PackJsonForArm",
+            "selectRun224ForSlide",
+            "assertRun225ContentVisualGateSelfCheck",
+            "drawRun225LaunchField",
+            "drawRun225SelectedRouteMap",
+            "drawRun225ContentEvidenceSurface",
+            "drawRun225ClimaxProofObject",
+            "run2_24_pack_executed_before_native_ppt_generation",
+        ],
+    )
+
+    prompt_allowed = section(arm_block("prompt_only"), "allowed:", "forbidden:")
+    prompt_forbidden = section(arm_block("prompt_only"), "forbidden:", "palette:")
+    run1_allowed = section(arm_block("run1_5_skill"), "allowed:", "forbidden:")
+    run1_forbidden = section(arm_block("run1_5_skill"), "forbidden:", "palette:")
+    full_allowed = section(arm_block("run2_25_full_single_usecase_content_visual"), "allowed:", "forbidden:")
+    full_forbidden = section(arm_block("run2_25_full_single_usecase_content_visual"), "forbidden:", "palette:")
+    bad_allowed = section(arm_block("bad_content_visual_memory"), "allowed:", "forbidden:")
+    bad_forbidden = section(arm_block("bad_content_visual_memory"), "forbidden:", "palette:")
+
+    for term in run2_24_inputs:
+        assert term not in prompt_allowed
+        assert term in prompt_forbidden
+        assert term not in run1_allowed
+        assert term in run1_forbidden
+        assert term in full_allowed
+        assert term not in full_forbidden
+        assert term not in bad_allowed
+        assert term in bad_forbidden
+
+    assert 'const fullRun225 = arm.armId === "run2_25_full_single_usecase_content_visual";' in body
+    for field in [
+        "run2_24_selected_usecase_id",
+        "run2_24_content_memory_id",
+        "run2_24_visual_evidence_slot_ids",
+        "run2_24_content_density_gate_id",
+        "run2_25_content_visual_execution_status",
+        "run2_25_code_module_ids",
+    ]:
+        assert re.search(fr"{field}:\s*fullRun225\s*\?", body), field
+    for function_name in [
+        "drawRun225LaunchField",
+        "drawRun225SelectedRouteMap",
+        "drawRun225ContentEvidenceSurface",
+        "drawRun225ClimaxProofObject",
+    ]:
+        assert f'registerRun225Module(metrics, "{function_name}")' in body
+
+
+def test_run2_25_runtime_guards_block_bad_arm_and_select_single_usecase_pack() -> None:
+    node_script = """
+const mod = await import("./scripts/generate_ppt_run2_25_single_usecase_arms.mjs");
+const badArm = mod.armSpecs.find((arm) => arm.armId === "bad_content_visual_memory");
+const fullArm = mod.armSpecs.find((arm) => arm.armId === "run2_25_full_single_usecase_content_visual");
+for (const input of mod.RUN2_25_DATA_INPUTS) {
+  let blocked = false;
+  try {
+    mod.readRun225PackJsonForArm(badArm, input);
+  } catch (error) {
+    blocked = String(error.message).includes("input boundary does not permit reading");
+  }
+  if (!blocked) throw new Error(`bad content/visual arm was able to read ${input}`);
+}
+const badTrace = mod.traceFor(badArm);
+for (const slide of badTrace.slides) {
+  if (slide.run2_24_content_memory_id) throw new Error("bad control trace leaked Run 2.24 content memory id");
+  if ((slide.run2_24_visual_evidence_slot_ids || []).length) throw new Error("bad control trace leaked Run 2.24 visual evidence slots");
+  if (slide.run2_24_content_density_gate_id) throw new Error("bad control trace leaked Run 2.24 density gate");
+  if ((slide.run2_25_code_module_ids || []).length) throw new Error("bad control trace leaked Run 2.25 code modules");
+}
+const fullTrace = mod.traceFor(fullArm);
+if (fullTrace.selected_usecase_id !== "usecase_design_to_production_platform_launch") throw new Error("full trace did not lock the selected usecase");
+for (const slide of fullTrace.slides) {
+  if (slide.run2_24_selected_usecase_id !== "usecase_design_to_production_platform_launch") throw new Error(`slide ${slide.slide_id} selected the wrong usecase`);
+  if (!slide.run2_24_content_memory_id.startsWith("content_2_24_")) throw new Error(`slide ${slide.slide_id} missing content memory`);
+  if ((slide.run2_24_visual_evidence_slot_ids || []).length < 2) throw new Error(`slide ${slide.slide_id} missing visual evidence slots`);
+  if (!slide.run2_24_content_density_gate_id.startsWith("gate_2_24_")) throw new Error(`slide ${slide.slide_id} missing density gate`);
+  if (slide.run2_25_content_visual_execution_status !== "run2_24_pack_executed_before_native_ppt_generation") throw new Error(`slide ${slide.slide_id} missing execution status`);
+  if ((slide.run2_25_code_module_ids || []).length === 0) throw new Error(`slide ${slide.slide_id} missing code module ids`);
+}
+const selected = mod.selectRun224ForSlide("climax", mod.loadRun225ContractData(fullArm));
+if (selected.content.content_memory_id !== "content_2_24_climax") throw new Error("climax did not select Run 2.24 content memory");
+if (selected.assets.length < 2) throw new Error("climax did not select visual evidence assets");
+if (!fullArm.allowed.includes(mod.RUN2_25_INPUTS.visualAssets)) throw new Error("full arm does not allow Run 2.24 visual assets");
+"""
+    completed = subprocess.run(
+        ["node", "--input-type=module", "-e", node_script],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        timeout=20,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+
+
+def test_run2_25_records_single_usecase_generated_rerun_result() -> None:
+    result = (PACK / "results" / "run2_25_single_usecase_rerun_result.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_25_single_usecase_rerun_result.json")
+
+    assert result_json["status"] == "run2_25_single_usecase_rerun_public_blocked"
+    assert result_json["public_ready"] is False
+    assert result_json["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert result_json["run_id"] == "2.25"
+    assert result_json["selected_usecase_id"] == "usecase_design_to_production_platform_launch"
+    assert result_json["rerun"]["best_internal_arm"] == "run2_25_full_single_usecase_content_visual"
+    assert result_json["rerun"]["best_internal_arm_verdict"] == "run2_24_pack_executed_before_native_ppt_generation"
+    assert result_json["input_chain"]["content_memory"] == "docs/product/ppt-run2-data-skill-quality/run2_24_single_usecase_content_memory.json"
+    assert result_json["input_chain"]["visual_evidence_asset_memory"] == "docs/product/ppt-run2-data-skill-quality/run2_24_visual_evidence_asset_memory.json"
+    assert result_json["input_chain"]["content_visual_workflow_gates"] == "docs/product/ppt-run2-data-skill-quality/run2_24_content_visual_workflow_gates.json"
+    assert result_json["control_boundary"]["bad_content_visual_memory"].startswith("selected_usecase_label_only")
+    assert result_json["rerun"]["combined_contact_sheet"].endswith("run2-25-four-arm-contact-sheet.png")
+    assert result_json["rerun"]["full_skill_series_sheet"].endswith("run2-full-skill-series-horizontal.png")
+    assert result_json["rerun"]["generated_outputs_committed"] is False
+    assert_contains(
+        result,
+        [
+            "Run 2.25",
+            "Run 2.24 single-usecase content memory",
+            "four-arm rerun",
+            "bad_content_visual_memory",
+            "public blocked",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_mentions_run2_25_generated_rerun() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "Run 2.25",
+            "ppt-run2-25-prompt-only",
+            "ppt-run2-25-run1-5-skill",
+            "ppt-run2-25-full-vulca",
+            "ppt-run2-25-bad-content-visual-memory",
+            "run2_25_single_usecase_rerun_result.json",
+        ],
+    )
+
+
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
     layout_dir = tmp_path / "layout"
     layout_dir.mkdir()
@@ -4293,6 +4473,21 @@ def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> N
 
     assert report == {"layout_files": 2, "layout_errors": 2, "layout_warnings": 2}
     assert "text-overlap" in out_path.read_text(encoding="utf-8")
+
+
+def test_ppt_contact_sheet_supports_custom_labels(tmp_path: Path) -> None:
+    first = tmp_path / "first.png"
+    second = tmp_path / "second.png"
+    out = tmp_path / "sheet.png"
+    Image.new("RGB", (160, 90), "#ffffff").save(first)
+    Image.new("RGB", (160, 90), "#111318").save(second)
+
+    build_contact_sheet([first, second], out, "Two arm sheet", cols=2, labels=["Prompt-only", "Full arm"])
+
+    assert out.exists()
+    sheet = Image.open(out)
+    assert sheet.size[0] > 0
+    assert sheet.size[1] > 0
 
 
 def test_run2_bad_aesthetic_memory_has_structured_replacement() -> None:

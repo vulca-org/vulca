@@ -216,6 +216,22 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ArmSpec("bad_selector_memory", "Bad selector memory", "ppt-run2-22-bad-selector-memory", "negative"),
         ),
     ),
+    RunSpec(
+        "2.25",
+        "Run 2.25",
+        "run2-25-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-25-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-25-run1-5-skill", "baseline"),
+            ArmSpec("run2_25_full_single_usecase_content_visual", "Run 2.25 full", "ppt-run2-25-full-vulca", "full"),
+            ArmSpec(
+                "bad_content_visual_memory",
+                "Bad content/visual memory",
+                "ppt-run2-25-bad-content-visual-memory",
+                "negative",
+            ),
+        ),
+    ),
 )
 
 
@@ -307,6 +323,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run224_visual_assets = read_json(pack / "run2_24_visual_evidence_asset_memory.json")
     run224_workflow_gates = read_json(pack / "run2_24_content_visual_workflow_gates.json")
     run224_result = read_json(pack / "results" / "run2_24_single_usecase_thickening_result.json")
+    run225_result = read_json(pack / "results" / "run2_25_single_usecase_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -420,6 +437,8 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run224WorkflowGates": run224_workflow_gates.get("gates", []),
         "run224ResultStatus": run224_result.get("status", ""),
         "run224Result": run224_result,
+        "run225ResultStatus": run225_result.get("status", ""),
+        "run225Result": run225_result,
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -1306,6 +1325,10 @@ def build_html(data: dict[str, Any]) -> str:
       const run224ContentMemory = (refs.run224ContentMemory || []).map(run224ContentMemoryCard).join("");
       const run224VisualAssets = (refs.run224VisualAssets || []).map(run224VisualAssetCard).join("");
       const run224WorkflowGates = (refs.run224WorkflowGates || []).map(run224WorkflowGateCard).join("");
+      const run225Result = refs.run225Result || {{}};
+      const run225Rerun = run225Result.rerun || {{}};
+      const run225Inputs = run225Result.input_chain || {{}};
+      const run225Control = run225Result.control_boundary || {{}};
       const run217Audit = refs.run217MotionAudit || {{}};
       const run217DeliveryTruth = run217Audit.delivery_truth || {{}};
       const run217RendererGap = run217Audit.motion_renderer_gap || {{}};
@@ -1370,6 +1393,33 @@ def build_html(data: dict[str, Any]) -> str:
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.24 content/visual workflow gates</h3><p>${{escapeHtml(refs.run224WorkflowGateStatus)}}. These gates must be consumed before the next native PPT generation pass.</p></div><span class="pill">${{(refs.run224WorkflowGates || []).length}} gates</span></div>
           <div class="dataGrid">${{run224WorkflowGates}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.25 single-usecase generated rerun</h3><p>Generated four-arm rerun that consumes Run 2.24 content memory, visual evidence asset memory, and workflow gates before native PPT code generation. It stays in the same five-layer loop and does not advance to Run 3.0.</p></div><span class="pill">${{escapeHtml(refs.run225ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Rerun proof</h4>
+              ${{detailBlock("Selected usecase", run225Result.selected_usecase_id)}}
+              ${{detailBlock("Best internal arm", run225Rerun.best_internal_arm)}}
+              ${{detailBlock("Verdict", run225Rerun.best_internal_arm_verdict)}}
+              ${{detailBlock("Four-arm sheet", run225Rerun.combined_contact_sheet)}}
+              ${{detailBlock("Full-skill series", run225Rerun.full_skill_series_sheet)}}
+            </article>
+            <article class="dataCard">
+              <h4>Input chain</h4>
+              ${{detailBlock("Content memory", run225Inputs.content_memory)}}
+              ${{detailBlock("Visual evidence asset memory", run225Inputs.visual_evidence_asset_memory)}}
+              ${{detailBlock("Content/visual workflow gates", run225Inputs.content_visual_workflow_gates)}}
+              ${{detailBlock("Stage policy", run225Result.stage_policy)}}
+            </article>
+            <article class="dataCard">
+              <h4>Control boundary</h4>
+              ${{detailBlock("Negative control", run225Control.bad_content_visual_memory)}}
+              ${{detailBlock("Prompt only", run225Control.prompt_only)}}
+              ${{detailBlock("Run 1.5", run225Control.run1_5_skill)}}
+              ${{detailBlock("Public ready", run225Result.public_ready)}}
+            </article>
+          </div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.22 selector-memory rerun result</h3><p>Generated four-arm rerun that consumes Run 2.21 visual-decision memory, selector gates, and rejection matrix before native PPT code generation. It stays in the same five-layer loop and does not advance to Run 3.0.</p></div><span class="pill">${{escapeHtml(refs.run222ResultStatus || "missing")}}</span></div>

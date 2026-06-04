@@ -19,9 +19,11 @@ def load_font(size: int, *, bold: bool = False) -> ImageFont.ImageFont:
     return ImageFont.load_default()
 
 
-def build_contact_sheet(slides: list[Path], out: Path, title: str, *, cols: int = 3) -> None:
+def build_contact_sheet(slides: list[Path], out: Path, title: str, *, cols: int = 3, labels: list[str] | None = None) -> None:
     if not slides:
         raise ValueError("at least one slide PNG is required")
+    if labels is not None and len(labels) != len(slides):
+        raise ValueError("--labels count must match slide PNG count")
 
     thumb_w, thumb_h = 640, 360
     margin = 28
@@ -48,7 +50,8 @@ def build_contact_sheet(slides: list[Path], out: Path, title: str, *, cols: int 
         frame.paste(src, ((thumb_w - src.width) // 2, (thumb_h - src.height) // 2))
         sheet.paste(frame, (x, y))
         draw.rectangle((x, y, x + thumb_w, y + thumb_h), outline="#c8c4b8", width=1)
-        draw.text((x, y + thumb_h + 7), f"Slide {idx + 1:02d}", fill="#626a73", font=label_font)
+        label = labels[idx] if labels is not None else f"Slide {idx + 1:02d}"
+        draw.text((x, y + thumb_h + 7), label, fill="#626a73", font=label_font)
 
     out.parent.mkdir(parents=True, exist_ok=True)
     sheet.save(out)
@@ -59,13 +62,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--out", required=True, type=Path)
     parser.add_argument("--title", required=True)
     parser.add_argument("--cols", type=int, default=3)
+    parser.add_argument("--labels", nargs="*", default=None)
     parser.add_argument("slides", nargs="+", type=Path)
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
-    build_contact_sheet(args.slides, args.out, args.title, cols=max(1, args.cols))
+    build_contact_sheet(args.slides, args.out, args.title, cols=max(1, args.cols), labels=args.labels)
     print(f"created contact sheet: {args.out}")
     return 0
 
