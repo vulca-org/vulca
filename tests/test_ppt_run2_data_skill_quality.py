@@ -5157,6 +5157,139 @@ def test_ppt_run_html_viewer_embeds_run2_30_presentation_synthesis_audit() -> No
     )
 
 
+def test_run2_31_generator_consumes_run2_30_audit_before_native_ppt_code() -> None:
+    script_path = ROOT / "scripts" / "generate_ppt_run2_31_spine_climax_repair_arms.mjs"
+    assert script_path.exists(), "missing Run 2.31 spine/climax repair generator"
+    body = script_path.read_text(encoding="utf-8")
+    arm_order = [
+        "prompt_only",
+        "run1_5_skill",
+        "run2_31_full_spine_climax_repair",
+        "bad_spine_climax_repair_memory",
+    ]
+
+    def arm_block(arm_id: str) -> str:
+        start = body.index(f'armId: "{arm_id}"')
+        next_starts = [body.find(f'armId: "{next_arm}"', start + 1) for next_arm in arm_order]
+        next_starts = [index for index in next_starts if index > start]
+        end = min(next_starts) if next_starts else len(body)
+        return body[start:end]
+
+    def section(block: str, start_marker: str, end_marker: str) -> str:
+        start = block.index(start_marker)
+        end = block.index(end_marker, start)
+        return block[start:end]
+
+    required_inputs = [
+        "run2_30_presentation_synthesis_audit.json",
+        "run2_29_presentation_synthesis_memory.json",
+        "run2_28_evidence_chain_view_model.json",
+        "run2_24_single_usecase_content_memory.json",
+        "run2_24_visual_evidence_asset_memory.json",
+        "run2_24_content_visual_workflow_gates.json",
+        "run2_29_presentation_synthesis_rerun_result.json",
+    ]
+
+    assert_contains(
+        body,
+        [
+            "validateRun230PresentationSynthesisAudit",
+            "loadRun231ContractData",
+            "drawRun231ReadableEvidenceSpine",
+            "drawRun231HeroProofScene",
+            "spine_readability_and_climax_consistency",
+            "run2_30_source_audit_status",
+            "run2_30_top_next_layer_to_thicken",
+            "run2_31_spine_min_font_size_target",
+            "run2_31_climax_style_policy",
+            "run2_31_spine_climax_repair_execution_status",
+            "spine_readability_and_climax_consistency_repaired_before_native_ppt_generation",
+        ],
+    )
+
+    prompt_allowed = section(arm_block("prompt_only"), "allowed:", "forbidden:")
+    prompt_forbidden = section(arm_block("prompt_only"), "forbidden:", "palette:")
+    run1_allowed = section(arm_block("run1_5_skill"), "allowed:", "forbidden:")
+    run1_forbidden = section(arm_block("run1_5_skill"), "forbidden:", "palette:")
+    full_allowed = section(arm_block("run2_31_full_spine_climax_repair"), "allowed:", "forbidden:")
+    full_forbidden = section(arm_block("run2_31_full_spine_climax_repair"), "forbidden:", "palette:")
+    bad_allowed = section(arm_block("bad_spine_climax_repair_memory"), "allowed:", "forbidden:")
+    bad_forbidden = section(arm_block("bad_spine_climax_repair_memory"), "forbidden:", "palette:")
+
+    for term in required_inputs:
+        assert term not in prompt_allowed
+        assert term in prompt_forbidden
+        assert term not in run1_allowed
+        assert term in run1_forbidden
+        assert term in full_allowed
+        assert term not in full_forbidden
+        assert term not in bad_allowed
+        assert term in bad_forbidden
+
+    assert 'const fullRun231 = arm.armId === "run2_31_full_spine_climax_repair";' in body
+    assert 'registerRun231Module(metrics, "drawRun231ReadableEvidenceSpine")' in body
+    for field in [
+        "run2_30_source_audit_status",
+        "run2_30_top_next_layer_to_thicken",
+        "run2_31_spine_min_font_size_target",
+        "run2_31_climax_style_policy",
+        "run2_31_spine_climax_repair_execution_status",
+    ]:
+        assert re.search(fr"{field}:\s*fullRun231\s*\?", body), field
+
+
+def test_run2_31_records_spine_climax_repair_rerun_result() -> None:
+    result = (PACK / "results" / "run2_31_spine_climax_repair_rerun_result.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_31_spine_climax_repair_rerun_result.json")
+
+    assert result_json["status"] == "run2_31_spine_climax_repair_rerun_public_blocked"
+    assert result_json["source_audit_run_id"] == "2.30"
+    assert result_json["input_chain"]["presentation_synthesis_audit"].endswith(
+        "run2_30_presentation_synthesis_audit.json"
+    )
+    assert result_json["rerun"]["best_internal_arm"] == "run2_31_full_spine_climax_repair"
+    assert result_json["rerun"]["best_internal_arm_verdict"] == (
+        "spine_readability_and_climax_consistency_repaired_before_native_ppt_generation"
+    )
+    assert result_json["quality_delta"]["target_layer"] == "spine_readability_and_climax_consistency"
+    assert result_json["quality_delta"]["spine_min_font_size_target"] >= 8
+    assert result_json["quality_delta"]["climax_style_policy"] == "high_contrast_climax_with_shared_light_editorial_frame"
+    assert result_json["rerun"]["combined_contact_sheet"].endswith("run2-31-four-arm-contact-sheet.png")
+    assert result_json["rerun"]["full_skill_series_sheet"].endswith("run2-full-skill-series-horizontal.png")
+    assert_contains(
+        result,
+        [
+            "Run 2.31",
+            "Run 2.30 presentation synthesis audit",
+            "drawRun231ReadableEvidenceSpine",
+            "drawRun231HeroProofScene",
+            "spine_readability_and_climax_consistency",
+            "four-arm rerun",
+            "public blocked",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_mentions_run2_31_spine_climax_repair_rerun() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "Run 2.31",
+            "ppt-run2-31-prompt-only",
+            "ppt-run2-31-run1-5-skill",
+            "ppt-run2-31-full-vulca",
+            "ppt-run2-31-bad-spine-climax-repair-memory",
+            "run2_31_spine_climax_repair_rerun_result.json",
+            "drawRun231ReadableEvidenceSpine",
+            "drawRun231HeroProofScene",
+            "spine_readability_and_climax_consistency",
+        ],
+    )
+
+
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
     layout_dir = tmp_path / "layout"
     layout_dir.mkdir()

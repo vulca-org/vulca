@@ -280,6 +280,22 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ),
         ),
     ),
+    RunSpec(
+        "2.31",
+        "Run 2.31",
+        "run2-31-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-31-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-31-run1-5-skill", "baseline"),
+            ArmSpec("run2_31_full_spine_climax_repair", "Run 2.31 full", "ppt-run2-31-full-vulca", "full"),
+            ArmSpec(
+                "bad_spine_climax_repair_memory",
+                "Bad spine/climax memory",
+                "ppt-run2-31-bad-spine-climax-repair-memory",
+                "negative",
+            ),
+        ),
+    ),
 )
 
 
@@ -379,6 +395,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run229_synthesis_memory = read_json(pack / "run2_29_presentation_synthesis_memory.json")
     run229_result = read_json(pack / "results" / "run2_29_presentation_synthesis_rerun_result.json")
     run230_audit = read_json(pack / "results" / "run2_30_presentation_synthesis_audit.json")
+    run231_result = read_json(pack / "results" / "run2_31_spine_climax_repair_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -508,6 +525,8 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run229Result": run229_result,
         "run230AuditStatus": run230_audit.get("status", ""),
         "run230Audit": run230_audit,
+        "run231ResultStatus": run231_result.get("status", ""),
+        "run231Result": run231_result,
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -1472,6 +1491,11 @@ def build_html(data: dict[str, Any]) -> str:
         ${{detailBlock("Issue categories", record.issue_categories)}}
         ${{detailBlock("Recommended next action", record.recommended_next_action)}}
       </article>`).join("");
+      const run231Result = refs.run231Result || {{}};
+      const run231Rerun = run231Result.rerun || {{}};
+      const run231Inputs = run231Result.input_chain || {{}};
+      const run231Delta = run231Result.quality_delta || {{}};
+      const run231Control = run231Result.control_boundary || {{}};
       const run217Audit = refs.run217MotionAudit || {{}};
       const run217DeliveryTruth = run217Audit.delivery_truth || {{}};
       const run217RendererGap = run217Audit.motion_renderer_gap || {{}};
@@ -1746,6 +1770,45 @@ def build_html(data: dict[str, Any]) -> str:
             </article>
           </div>
           <div class="dataGrid">${{run230RoleCards}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.31 spine/climax repair rerun</h3><p>Generated four-arm rerun that consumes the Run 2.30 presentation synthesis audit before native PPT code generation. The repair is narrow: drawRun231ReadableEvidenceSpine raises the evidence-spine readability target, and drawRun231HeroProofScene normalizes the climax into a shared light editorial frame.</p></div><span class="pill">${{escapeHtml(refs.run231ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Rerun proof</h4>
+              ${{detailBlock("Source audit run", run231Result.source_audit_run_id)}}
+              ${{detailBlock("Best internal arm", run231Rerun.best_internal_arm)}}
+              ${{detailBlock("Verdict", run231Rerun.best_internal_arm_verdict)}}
+              ${{detailBlock("Four-arm sheet", run231Rerun.combined_contact_sheet)}}
+              ${{detailBlock("Full-skill series", run231Rerun.full_skill_series_sheet)}}
+            </article>
+            <article class="dataCard">
+              <h4>Input chain</h4>
+              ${{detailBlock("Presentation synthesis audit", run231Inputs.presentation_synthesis_audit || "run2_30_presentation_synthesis_audit.json")}}
+              ${{detailBlock("Presentation synthesis memory", run231Inputs.presentation_synthesis_memory || "run2_29_presentation_synthesis_memory.json")}}
+              ${{detailBlock("Evidence chain view model", run231Inputs.evidence_chain_view_model || "run2_28_evidence_chain_view_model.json")}}
+              ${{detailBlock("Content memory", run231Inputs.content_memory)}}
+              ${{detailBlock("Visual evidence asset memory", run231Inputs.visual_evidence_asset_memory)}}
+              ${{detailBlock("Content/visual workflow gates", run231Inputs.content_visual_workflow_gates)}}
+              ${{detailBlock("Prior rerun result", run231Inputs.prior_rerun_result || "run2_29_presentation_synthesis_rerun_result.json")}}
+            </article>
+            <article class="dataCard">
+              <h4>Quality delta</h4>
+              ${{detailBlock("Target layer", run231Delta.target_layer || "spine_readability_and_climax_consistency")}}
+              ${{detailBlock("Repair modules", run231Delta.repair_modules || ["drawRun231ReadableEvidenceSpine", "drawRun231HeroProofScene"])}}
+              ${{detailBlock("Spine min font target", run231Delta.spine_min_font_size_target)}}
+              ${{detailBlock("Climax style policy", run231Delta.climax_style_policy || "high_contrast_climax_with_shared_light_editorial_frame")}}
+              ${{detailBlock("Replacement focus", run231Delta.replacement_focus)}}
+              ${{detailBlock("Public ready", run231Result.public_ready)}}
+            </article>
+            <article class="dataCard">
+              <h4>Control boundary</h4>
+              ${{detailBlock("Negative control", run231Control.bad_spine_climax_repair_memory)}}
+              ${{detailBlock("Prompt only", run231Control.prompt_only)}}
+              ${{detailBlock("Run 1.5", run231Control.run1_5_skill)}}
+              ${{detailBlock("Stage policy", run231Result.stage_policy)}}
+            </article>
+          </div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.22 selector-memory rerun result</h3><p>Generated four-arm rerun that consumes Run 2.21 visual-decision memory, selector gates, and rejection matrix before native PPT code generation. It stays in the same five-layer loop and does not advance to Run 3.0.</p></div><span class="pill">${{escapeHtml(refs.run222ResultStatus || "missing")}}</span></div>
