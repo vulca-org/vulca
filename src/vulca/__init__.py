@@ -55,7 +55,7 @@ except ImportError:
 
 # Layers module (v0.7.0) — conditional import
 try:
-    from vulca.layers import LayerInfo, LayerResult, LayeredArtwork
+    from vulca.layers.types import LayerInfo, LayerResult, LayeredArtwork
     _LAYERS_AVAILABLE = True
 except ImportError:
     _LAYERS_AVAILABLE = False
