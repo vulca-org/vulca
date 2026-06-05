@@ -7862,6 +7862,151 @@ def test_ppt_run_html_viewer_mentions_run2_47_composition_grammar_rerun() -> Non
     )
 
 
+def test_run2_48_composition_grammar_effectiveness_audit_compares_2_47_to_bad_and_2_44(
+    tmp_path: Path,
+) -> None:
+    script_path = ROOT / "scripts" / "audit_ppt_run2_48_composition_grammar_effectiveness.py"
+    result_json = tmp_path / "run2_48_composition_grammar_effectiveness_audit.json"
+    result_md = tmp_path / "run2_48_composition_grammar_effectiveness_audit.md"
+    presentations = ROOT / "outputs" / "019e7d9c-532a-70b3-8892-fa3ae42baef2" / "presentations"
+    pptx_before = sorted(path.name for path in presentations.glob("*2-48*.pptx"))
+
+    assert script_path.exists(), "missing Run 2.48 composition grammar effectiveness audit script"
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(script_path),
+            "--result-json",
+            str(result_json),
+            "--result-md",
+            str(result_md),
+        ],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    pptx_after = sorted(path.name for path in presentations.glob("*2-48*.pptx"))
+    audit = load_json(result_json)
+    report = result_md.read_text(encoding="utf-8")
+
+    assert "run2_48_composition_grammar_effectiveness_audit_public_blocked" in completed.stdout
+    assert pptx_before == pptx_after == []
+    assert audit["run_id"] == "2.48"
+    assert audit["status"] == "run2_48_composition_grammar_effectiveness_audit_public_blocked"
+    assert audit["source_generated_run"] == "2.47"
+    assert audit["source_composition_memory_run"] == "2.46"
+    assert audit["comparison_prior_generated_run"] == "2.44"
+    assert audit["creates_new_ppt_deck"] is False
+    assert audit["public_ready"] is False
+    assert audit["composition_grammar_trace_effectiveness"]["full_arm"][
+        "all_slides_have_grammar_decomposition_gate_and_slot_replacement"
+    ] is True
+    assert audit["composition_grammar_trace_effectiveness"]["full_arm"][
+        "slides_with_run2_46_visual_object_grammar_id"
+    ] == 6
+    assert audit["composition_grammar_trace_effectiveness"]["full_arm"][
+        "slides_with_run2_47_scene_objects"
+    ] == 6
+    assert audit["composition_grammar_trace_effectiveness"]["full_arm"][
+        "slides_without_run2_44_slots"
+    ] == 6
+    assert audit["composition_grammar_trace_effectiveness"]["bad_control"][
+        "missing_composition_grammar_boundary_passed"
+    ] is True
+    assert audit["composition_grammar_trace_effectiveness"]["bad_control"][
+        "slides_without_run2_46_grammar"
+    ] == 6
+    assert audit["composition_grammar_trace_effectiveness"]["bad_control"][
+        "slides_with_run2_44_slots"
+    ] == 6
+    assert audit["visual_effectiveness_assessment"]["composition_grammar_delta_from_run2_44"] == (
+        "proven_internal_only"
+    )
+    assert audit["visual_effectiveness_assessment"]["visual_quality_gate"] == "blocked"
+    assert audit["visual_effectiveness_assessment"]["public_video_grade_visual_quality"] is False
+    assert audit["delivery_artifacts"]["pptx_paths"] == []
+    assert_contains(
+        report,
+        [
+            "Run 2.48 Composition Grammar Effectiveness Audit",
+            "No Run 2.48 PPTX",
+            "consumes Run 2.46",
+            "slot-based geometry replaced",
+            "not public-video-grade",
+            "Run 2.49",
+        ],
+    )
+
+
+def test_run2_48_records_composition_grammar_effectiveness_audit_result() -> None:
+    result = (PACK / "results" / "run2_48_composition_grammar_effectiveness_audit.md").read_text(
+        encoding="utf-8"
+    )
+    result_json = load_json(
+        PACK / "results" / "run2_48_composition_grammar_effectiveness_audit.json"
+    )
+
+    assert result_json["status"] == "run2_48_composition_grammar_effectiveness_audit_public_blocked"
+    assert result_json["source_generated_run"] == "2.47"
+    assert result_json["source_composition_memory_run"] == "2.46"
+    assert result_json["comparison_prior_generated_run"] == "2.44"
+    assert result_json["delivery_artifacts"]["pptx_paths"] == []
+    assert result_json["gate_summary"]["grammar_consumption_gate"] == "pass_internal_only"
+    assert result_json["gate_summary"]["bad_control_gate"] == "pass"
+    assert result_json["gate_summary"]["public_release_gate"] == "blocked"
+    assert result_json["visual_effectiveness_assessment"]["root_cause_primary"] == (
+        "run2_47_composition_grammar_consumed_but_visual_editorial_quality_still_not_public_grade"
+    )
+    assert result_json["visual_effectiveness_assessment"]["top_next_layer_to_thicken"] == (
+        "readability_content_density_and_editorial_renderer_repair"
+    )
+    assert_contains(
+        result,
+        [
+            "Run 2.48 is audit-only",
+            "full arm is structurally stronger",
+            "public release gate",
+            "readability",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_embeds_run2_48_composition_grammar_effectiveness_audit() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+    viewer = (
+        ROOT
+        / "outputs"
+        / "019e7d9c-532a-70b3-8892-fa3ae42baef2"
+        / "presentations"
+        / "ppt-run-viewer.html"
+    ).read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "run2_48_composition_grammar_effectiveness_audit.json",
+            "Run 2.48 composition grammar effectiveness audit",
+            "run248AuditStatus",
+            "visual object grammar",
+            "readability_content_density_and_editorial_renderer_repair",
+        ],
+    )
+    assert_contains(
+        viewer,
+        [
+            '"latestRunId": "2.47"',
+            "Run 2.48 composition grammar effectiveness audit",
+            "run2_48_composition_grammar_effectiveness_audit.json",
+            "visual object grammar",
+            "No Run 2.48 PPTX/download",
+            "public-video-grade",
+        ],
+    )
+    assert "ppt-run2-48" not in viewer
+
+
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
     layout_dir = tmp_path / "layout"
     layout_dir.mkdir()

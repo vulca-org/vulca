@@ -572,6 +572,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run246_gates = read_json(pack / "run2_46_composition_workflow_gates.json")
     run246_result = read_json(pack / "results" / "run2_46_multimodal_composition_memory_result.json")
     run247_result = read_json(pack / "results" / "run2_47_composition_grammar_rerun_result.json")
+    run248_audit = read_json(pack / "results" / "run2_48_composition_grammar_effectiveness_audit.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -777,6 +778,9 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run247SourceDataStatus": (run247_result.get("quality_delta") or {}).get(
             "source_data_status", "run2_46_composition_grammar_consumed_before_native_ppt_drawing"
         ),
+        "run248AuditStatus": run248_audit.get("status", ""),
+        "run248Audit": run248_audit,
+        "run248AuditPath": "run2_48_composition_grammar_effectiveness_audit.json",
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -1966,6 +1970,20 @@ def build_html(data: dict[str, Any]) -> str:
         ${{detailBlock("Required trace fields", gate.required_trace_fields)}}
         ${{detailBlock("Pass/fail checks", gate.pass_fail_checks)}}
       </article>`).join("");
+      const run247Result = refs.run247Result || {{}};
+      const run247Rerun = run247Result.rerun || {{}};
+      const run247Inputs = run247Result.input_chain || {{}};
+      const run247Delta = run247Result.quality_delta || {{}};
+      const run247Control = run247Result.control_boundary || {{}};
+      const run248Audit = refs.run248Audit || {{}};
+      const run248Inputs = run248Audit.input_chain || {{}};
+      const run248Trace = run248Audit.composition_grammar_trace_effectiveness || {{}};
+      const run248Full = run248Trace.full_arm || {{}};
+      const run248Bad = run248Trace.bad_control || {{}};
+      const run248Prior = run248Trace.prior_run2_44 || {{}};
+      const run248Visual = run248Audit.visual_effectiveness_assessment || {{}};
+      const run248Content = run248Visual.content_density_diagnosis || {{}};
+      const run248Gate = run248Audit.gate_summary || {{}};
       const run243SemanticAssetCards = (refs.run243SemanticVisualAssets || []).map((record) => `<article class="dataCard">
         <h4>${{escapeHtml(record.role)}} / ${{escapeHtml(record.source_run2_41_surface_type)}}</h4>
         ${{detailBlock("Semantic asset id", record.semantic_asset_id)}}
@@ -3002,6 +3020,98 @@ def build_html(data: dict[str, Any]) -> str:
           <div class="dataGrid">${{run246GrammarCards}}</div>
           <div class="dataBandSubhead"><h4>Composition workflow gates</h4><p>Run 2.47 must bind these gate ids before native PPT drawing; slot-based geometry alone should fail.</p></div>
           <div class="dataGrid">${{run246GateCards}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.47 composition grammar rerun</h3><p>Generated four-arm rerun that consumes Run 2.46 visual object grammar before native PPT code generation. It proves the full arm leaves slot-based geometry while the bad control falls back to Run 2.44 slots.</p></div><span class="pill">${{escapeHtml(refs.run247ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Rerun proof</h4>
+              ${{detailBlock("Result", refs.run247ResultPath || "run2_47_composition_grammar_rerun_result.json")}}
+              ${{detailBlock("Best internal arm", run247Rerun.best_internal_arm || "run2_47_full_composition_grammar_compiler")}}
+              ${{detailBlock("Target layer", run247Delta.target_layer || "composition_grammar_binding")}}
+              ${{detailBlock("Source data status", run247Delta.source_data_status || "run2_46_composition_grammar_consumed_before_native_ppt_drawing")}}
+              ${{detailBlock("Four-arm sheet", run247Rerun.combined_contact_sheet || "run2-47-four-arm-contact-sheet.png")}}
+              ${{detailBlock("Full-skill series", run247Rerun.full_skill_series_sheet || "run2-full-skill-series-horizontal.png")}}
+            </article>
+            <article class="dataCard">
+              <h4>Consumed input chain</h4>
+              ${{detailBlock("Composition decomposition", run247Inputs.multimodal_composition_decomposition || "run2_46_multimodal_composition_decomposition.json")}}
+              ${{detailBlock("Visual object grammar", run247Inputs.visual_object_grammar_memory || "run2_46_visual_object_grammar_memory.json")}}
+              ${{detailBlock("Composition workflow gates", run247Inputs.composition_workflow_gates || "run2_46_composition_workflow_gates.json")}}
+              ${{detailBlock("Run 2.46 result", run247Inputs.run2_46_result || "run2_46_multimodal_composition_memory_result.json")}}
+            </article>
+            <article class="dataCard">
+              <h4>Trace delta</h4>
+              ${{detailBlock("Full slides with grammar ids", run247Delta.full_slides_with_run2_46_visual_object_grammar_id)}}
+              ${{detailBlock("Full slides with slot-based geometry replaced", run247Delta.full_slides_with_slot_based_geometry_replaced)}}
+              ${{detailBlock("Full slides without Run 2.44 slots", run247Delta.full_slides_without_run2_44_geometry_slots)}}
+              ${{detailBlock("Bad control without grammar", run247Delta.bad_control_slides_without_run2_46_grammar)}}
+              ${{detailBlock("Bad control with Run 2.44 slots", run247Delta.bad_control_slides_with_run2_44_geometry_slots)}}
+            </article>
+            <article class="dataCard">
+              <h4>Control boundary</h4>
+              ${{detailBlock("Bad missing grammar", run247Control.bad_run2_46_missing_composition_grammar)}}
+              ${{detailBlock("Prompt-only", run247Control.prompt_only)}}
+              ${{detailBlock("Run 1.5", run247Control.run1_5_skill)}}
+              ${{detailBlock("Next required action", run247Result.next_required_action || "audit_run2_47_composition_grammar_against_visual_quality_then_continue_data_workflow_thickening_or_renderer_repair")}}
+            </article>
+          </div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.48 composition grammar effectiveness audit</h3><p>Audit-only layer over Run 2.47. It confirms visual object grammar consumption, compares against Run 2.44 slots and the bad control, then blocks public-video-grade release until readability and editorial renderer repair. No Run 2.48 PPTX/download is created; latest generated deck remains Run 2.47.</p></div><span class="pill">${{escapeHtml(refs.run248AuditStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Audit boundary</h4>
+              ${{detailBlock("Result", refs.run248AuditPath || "run2_48_composition_grammar_effectiveness_audit.json")}}
+              ${{detailBlock("Source generated run", run248Audit.source_generated_run)}}
+              ${{detailBlock("Source composition memory run", run248Audit.source_composition_memory_run)}}
+              ${{detailBlock("Comparison prior generated run", run248Audit.comparison_prior_generated_run)}}
+              ${{detailBlock("Creates new PPT deck", run248Audit.creates_new_ppt_deck)}}
+              ${{detailBlock("Public ready", run248Audit.public_ready)}}
+            </article>
+            <article class="dataCard">
+              <h4>Input chain checked</h4>
+              ${{detailBlock("Run 2.47 full trace", run248Inputs.run2_47_full_trace_manifest)}}
+              ${{detailBlock("Run 2.47 bad trace", run248Inputs.run2_47_bad_trace_manifest)}}
+              ${{detailBlock("Run 2.47 result", run248Inputs.run2_47_rerun_result)}}
+              ${{detailBlock("Run 2.46 grammar", run248Inputs.run2_46_visual_object_grammar_memory)}}
+              ${{detailBlock("Run 2.44 prior trace", run248Inputs.run2_44_full_trace_manifest)}}
+            </article>
+            <article class="dataCard">
+              <h4>Trace effectiveness</h4>
+              ${{detailBlock("Composition grammar consumed", run248Trace.composition_grammar_consumed)}}
+              ${{detailBlock("Full slides with grammar ids", run248Full.slides_with_run2_46_visual_object_grammar_id)}}
+              ${{detailBlock("Full slides with scene objects", run248Full.slides_with_run2_47_scene_objects)}}
+              ${{detailBlock("Full slides without Run 2.44 slots", run248Full.slides_without_run2_44_slots)}}
+              ${{detailBlock("Bad control without grammar", run248Bad.slides_without_run2_46_grammar)}}
+              ${{detailBlock("Bad control with Run 2.44 slots", run248Bad.slides_with_run2_44_slots)}}
+              ${{detailBlock("Prior Run 2.44 slots", run248Prior.slides_with_run2_44_slots)}}
+            </article>
+            <article class="dataCard">
+              <h4>Visual effectiveness gate</h4>
+              ${{detailBlock("Compiler kind", run248Visual.composition_compiler_kind || "visual_object_grammar_composed_object_scene")}}
+              ${{detailBlock("Delta from Run 2.44", run248Visual.composition_grammar_delta_from_run2_44)}}
+              ${{detailBlock("Visual quality gate", run248Visual.visual_quality_gate)}}
+              ${{detailBlock("Public-video-grade", run248Visual.public_video_grade_visual_quality)}}
+              ${{detailBlock("Root cause", run248Visual.root_cause_primary)}}
+              ${{detailBlock("Next layer", run248Visual.top_next_layer_to_thicken || "readability_content_density_and_editorial_renderer_repair")}}
+            </article>
+            <article class="dataCard">
+              <h4>Content density diagnosis</h4>
+              ${{detailBlock("Average visible words", run248Content.average_visible_words_per_slide)}}
+              ${{detailBlock("Average text boxes", run248Content.average_text_boxes_per_slide)}}
+              ${{detailBlock("Rich-density slides", run248Content.slides_with_rich_text_density)}}
+              ${{detailBlock("Interpretation", run248Content.interpretation)}}
+            </article>
+            <article class="dataCard">
+              <h4>Release gate</h4>
+              ${{detailBlock("Grammar consumption gate", run248Gate.grammar_consumption_gate)}}
+              ${{detailBlock("Bad control gate", run248Gate.bad_control_gate)}}
+              ${{detailBlock("Visual effectiveness gate", run248Gate.visual_effectiveness_gate)}}
+              ${{detailBlock("Public release gate", run248Gate.public_release_gate)}}
+              ${{detailBlock("Next required action", run248Audit.next_required_action || "build_run2_49_readability_content_density_and_editorial_renderer_repair_before_rerun")}}
+            </article>
+          </div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.22 selector-memory rerun result</h3><p>Generated four-arm rerun that consumes Run 2.21 visual-decision memory, selector gates, and rejection matrix before native PPT code generation. It stays in the same five-layer loop and does not advance to Run 3.0.</p></div><span class="pill">${{escapeHtml(refs.run222ResultStatus || "missing")}}</span></div>

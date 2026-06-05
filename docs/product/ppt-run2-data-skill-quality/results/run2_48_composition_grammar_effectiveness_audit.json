@@ -1,0 +1,291 @@
+{
+  "schema_version": "ppt_run2_composition_grammar_effectiveness_audit.v1",
+  "run_id": "2.48",
+  "status": "run2_48_composition_grammar_effectiveness_audit_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "source_generated_run": "2.47",
+  "source_composition_memory_run": "2.46",
+  "comparison_prior_generated_run": "2.44",
+  "creates_new_ppt_deck": false,
+  "public_ready": false,
+  "input_chain": {
+    "run2_47_full_trace_manifest": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-47-full-vulca/trace_manifest.json",
+    "run2_47_bad_trace_manifest": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-47-bad-missing-composition-grammar/trace_manifest.json",
+    "run2_47_rerun_result": "docs/product/ppt-run2-data-skill-quality/results/run2_47_composition_grammar_rerun_result.json",
+    "run2_46_multimodal_composition_decomposition": "docs/product/ppt-run2-data-skill-quality/run2_46_multimodal_composition_decomposition.json",
+    "run2_46_visual_object_grammar_memory": "docs/product/ppt-run2-data-skill-quality/run2_46_visual_object_grammar_memory.json",
+    "run2_46_composition_workflow_gates": "docs/product/ppt-run2-data-skill-quality/run2_46_composition_workflow_gates.json",
+    "run2_44_full_trace_manifest": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-44-full-vulca/trace_manifest.json",
+    "run2_47_four_arm_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-47-four-arm-contact-sheet.png",
+    "run2_full_skill_series_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png"
+  },
+  "source_inventory": {
+    "run2_46_multimodal_composition_decomposition_records": 6,
+    "run2_46_visual_object_grammar_records": 6,
+    "run2_46_composition_workflow_gates": 6,
+    "run2_47_full_trace_slides": 6,
+    "run2_47_bad_trace_slides": 6,
+    "run2_44_prior_trace_slides": 6
+  },
+  "composition_grammar_trace_effectiveness": {
+    "composition_grammar_consumed": true,
+    "full_arm": {
+      "arm_id": "run2_47_full_composition_grammar_compiler",
+      "slide_count": 6,
+      "slides_with_run2_46_visual_object_grammar_id": 6,
+      "slides_with_run2_46_multimodal_composition_decomposition_id": 6,
+      "slides_with_run2_46_composition_gate_id": 6,
+      "slides_with_slot_based_geometry_replaced": 6,
+      "slides_with_run2_47_scene_objects": 6,
+      "slides_without_run2_44_slots": 6,
+      "all_slides_have_grammar_decomposition_gate_and_slot_replacement": true,
+      "role_records": [
+        {
+          "slide_id": "slide_01",
+          "role": "cover",
+          "title": "Composition grammar replaces the slot scene.",
+          "run2_46_visual_object_grammar_id": "visual_object_grammar_2_46_cover",
+          "run2_46_multimodal_composition_decomposition_id": "composition_decomposition_2_46_cover",
+          "run2_46_composition_gate_id": "gate_2_46_cover_composition_quality",
+          "run2_47_primary_composition_kind": "poster_scene_depth",
+          "run2_47_scene_object_count": 3,
+          "run2_44_slots_in_full": 0,
+          "run2_44_slots_in_bad_control": 3,
+          "run2_44_slots_in_prior_full": 3,
+          "full_binding_passed": true,
+          "bad_control_boundary_passed": true,
+          "quality_checks": [
+            "main object reads before labels at contact-sheet scale",
+            "supporting objects are visibly secondary",
+            "no three-equal-card layout",
+            "buyer decision is visible without trace terminology"
+          ],
+          "motion_or_sequence_implication": "Preserve a reveal order: primary object first, support evidence second, release/state cue third.",
+          "content_density": {
+            "visible_words": 69,
+            "text_density_tier": "rich",
+            "text_box_count": 9,
+            "proof_objects": 3,
+            "prior_visible_words": 110,
+            "prior_text_box_count": 12
+          },
+          "interpretation": "Run 2.47 changes the compiler path from Run 2.44 slots to a composed visual-object scene, but the public surface still needs readability, content-evidence density, and editorial renderer repair."
+        },
+        {
+          "slide_id": "slide_02",
+          "role": "setup",
+          "title": "A weak deck is now a storyboard problem.",
+          "run2_46_visual_object_grammar_id": "visual_object_grammar_2_46_setup",
+          "run2_46_multimodal_composition_decomposition_id": "composition_decomposition_2_46_setup",
+          "run2_46_composition_gate_id": "gate_2_46_setup_composition_quality",
+          "run2_47_primary_composition_kind": "failure_to_route_storyboard",
+          "run2_47_scene_object_count": 3,
+          "run2_44_slots_in_full": 0,
+          "run2_44_slots_in_bad_control": 3,
+          "run2_44_slots_in_prior_full": 3,
+          "full_binding_passed": true,
+          "bad_control_boundary_passed": true,
+          "quality_checks": [
+            "failure state and selected route are asymmetrical",
+            "route object is larger and calmer than failure object",
+            "storyboard path is visible without workflow jargon",
+            "spacing keeps the route from reading as another block"
+          ],
+          "motion_or_sequence_implication": "Preserve a reveal order: primary object first, support evidence second, release/state cue third.",
+          "content_density": {
+            "visible_words": 75,
+            "text_density_tier": "rich",
+            "text_box_count": 9,
+            "proof_objects": 3,
+            "prior_visible_words": 108,
+            "prior_text_box_count": 12
+          },
+          "interpretation": "Run 2.47 changes the compiler path from Run 2.44 slots to a composed visual-object scene, but the public surface still needs readability, content-evidence density, and editorial renderer repair."
+        },
+        {
+          "slide_id": "slide_03",
+          "role": "contrast",
+          "title": "The after state gets object gravity.",
+          "run2_46_visual_object_grammar_id": "visual_object_grammar_2_46_contrast",
+          "run2_46_multimodal_composition_decomposition_id": "composition_decomposition_2_46_contrast",
+          "run2_46_composition_gate_id": "gate_2_46_contrast_composition_quality",
+          "run2_47_primary_composition_kind": "asymmetric_before_after_delta",
+          "run2_47_scene_object_count": 3,
+          "run2_44_slots_in_full": 0,
+          "run2_44_slots_in_bad_control": 3,
+          "run2_44_slots_in_prior_full": 3,
+          "full_binding_passed": true,
+          "bad_control_boundary_passed": true,
+          "quality_checks": [
+            "after state dominates before state",
+            "delta is visible as a business consequence",
+            "comparison is not two equal cards",
+            "support text does not compete with the after object"
+          ],
+          "motion_or_sequence_implication": "Preserve a reveal order: primary object first, support evidence second, release/state cue third.",
+          "content_density": {
+            "visible_words": 75,
+            "text_density_tier": "rich",
+            "text_box_count": 9,
+            "proof_objects": 3,
+            "prior_visible_words": 103,
+            "prior_text_box_count": 12
+          },
+          "interpretation": "Run 2.47 changes the compiler path from Run 2.44 slots to a composed visual-object scene, but the public surface still needs readability, content-evidence density, and editorial renderer repair."
+        },
+        {
+          "slide_id": "slide_04",
+          "role": "proof",
+          "title": "The product surface behaves like a working room.",
+          "run2_46_visual_object_grammar_id": "visual_object_grammar_2_46_proof",
+          "run2_46_multimodal_composition_decomposition_id": "composition_decomposition_2_46_proof",
+          "run2_46_composition_gate_id": "gate_2_46_proof_composition_quality",
+          "run2_47_primary_composition_kind": "active_product_surface",
+          "run2_47_scene_object_count": 3,
+          "run2_44_slots_in_full": 0,
+          "run2_44_slots_in_bad_control": 3,
+          "run2_44_slots_in_prior_full": 3,
+          "full_binding_passed": true,
+          "bad_control_boundary_passed": true,
+          "quality_checks": [
+            "active lane is visually dominant",
+            "product proof objects are inspectable",
+            "table-like repetition is suppressed",
+            "public surface hides database and gate terminology"
+          ],
+          "motion_or_sequence_implication": "Preserve a reveal order: primary object first, support evidence second, release/state cue third.",
+          "content_density": {
+            "visible_words": 66,
+            "text_density_tier": "rich",
+            "text_box_count": 9,
+            "proof_objects": 3,
+            "prior_visible_words": 116,
+            "prior_text_box_count": 13
+          },
+          "interpretation": "Run 2.47 changes the compiler path from Run 2.44 slots to a composed visual-object scene, but the public surface still needs readability, content-evidence density, and editorial renderer repair."
+        },
+        {
+          "slide_id": "slide_05",
+          "role": "climax",
+          "title": "One result object owns the public demo.",
+          "run2_46_visual_object_grammar_id": "visual_object_grammar_2_46_climax",
+          "run2_46_multimodal_composition_decomposition_id": "composition_decomposition_2_46_climax",
+          "run2_46_composition_gate_id": "gate_2_46_climax_composition_quality",
+          "run2_47_primary_composition_kind": "cinematic_result_object",
+          "run2_47_scene_object_count": 3,
+          "run2_44_slots_in_full": 0,
+          "run2_44_slots_in_bad_control": 3,
+          "run2_44_slots_in_prior_full": 3,
+          "full_binding_passed": true,
+          "bad_control_boundary_passed": true,
+          "quality_checks": [
+            "one object owns the climax",
+            "supporting proof does not split attention",
+            "object feels like a publishable result, not a slot",
+            "motion beat can be described without needing copied video frames"
+          ],
+          "motion_or_sequence_implication": "Preserve a reveal order: primary object first, support evidence second, release/state cue third.",
+          "content_density": {
+            "visible_words": 65,
+            "text_density_tier": "rich",
+            "text_box_count": 8,
+            "proof_objects": 3,
+            "prior_visible_words": 101,
+            "prior_text_box_count": 11
+          },
+          "interpretation": "Run 2.47 changes the compiler path from Run 2.44 slots to a composed visual-object scene, but the public surface still needs readability, content-evidence density, and editorial renderer repair."
+        },
+        {
+          "slide_id": "slide_06",
+          "role": "close",
+          "title": "The handoff is a composed release state.",
+          "run2_46_visual_object_grammar_id": "visual_object_grammar_2_46_close",
+          "run2_46_multimodal_composition_decomposition_id": "composition_decomposition_2_46_close",
+          "run2_46_composition_gate_id": "gate_2_46_close_composition_quality",
+          "run2_47_primary_composition_kind": "decision_room_handoff",
+          "run2_47_scene_object_count": 3,
+          "run2_44_slots_in_full": 0,
+          "run2_44_slots_in_bad_control": 3,
+          "run2_44_slots_in_prior_full": 3,
+          "full_binding_passed": true,
+          "bad_control_boundary_passed": true,
+          "quality_checks": [
+            "handoff path is visible as one decision scene",
+            "release blocked state is clear but not visually dominant",
+            "next action is inspectable",
+            "close does not collapse into a table or list"
+          ],
+          "motion_or_sequence_implication": "Preserve a reveal order: primary object first, support evidence second, release/state cue third.",
+          "content_density": {
+            "visible_words": 72,
+            "text_density_tier": "rich",
+            "text_box_count": 9,
+            "proof_objects": 3,
+            "prior_visible_words": 111,
+            "prior_text_box_count": 12
+          },
+          "interpretation": "Run 2.47 changes the compiler path from Run 2.44 slots to a composed visual-object scene, but the public surface still needs readability, content-evidence density, and editorial renderer repair."
+        }
+      ]
+    },
+    "bad_control": {
+      "arm_id": "bad_run2_46_missing_composition_grammar",
+      "slide_count": 6,
+      "missing_composition_grammar_boundary_passed": true,
+      "slides_without_run2_46_grammar": 6,
+      "slides_with_run2_44_slots": 6,
+      "slides_with_slot_based_primary_kind": 6
+    },
+    "prior_run2_44": {
+      "arm_id": "run2_44_full_semantic_geometry_compiler",
+      "slide_count": 6,
+      "slides_with_run2_44_slots": 6,
+      "compiler_kind": "slot_based_semantic_geometry"
+    }
+  },
+  "visual_effectiveness_assessment": {
+    "composition_compiler_kind": "visual_object_grammar_composed_object_scene",
+    "prior_compiler_kind": "slot_based_semantic_geometry",
+    "composition_grammar_delta_from_run2_44": "proven_internal_only",
+    "public_video_grade_visual_quality": false,
+    "visual_quality_gate": "blocked",
+    "root_cause_primary": "run2_47_composition_grammar_consumed_but_visual_editorial_quality_still_not_public_grade",
+    "root_cause_secondary": [
+      "Run 2.47 consumes Run 2.46 grammar and removes Run 2.44 slot geometry, so the data/workflow path is not the main failure anymore.",
+      "The contact sheet shows a real structural delta, but some text is too small or clipped at review scale.",
+      "Trace content density is rich by word count, yet the visual evidence is still abstract and not inspectable enough as commercial proof.",
+      "The output still reads as an internal product-system presentation rather than a polished public-video-grade keynote."
+    ],
+    "content_density_diagnosis": {
+      "average_visible_words_per_slide": 70.3,
+      "average_text_boxes_per_slide": 8.8,
+      "slides_with_rich_text_density": 6,
+      "interpretation": "The issue is not raw word count. It is the hierarchy and inspectability of commercial evidence, visual proof objects, and readable editorial surfaces."
+    },
+    "public_video_blockers": [
+      "contact_sheet_scale_text_readability_and_slide_title_clipping",
+      "commercial_proof_objects_not_yet_inspectable_enough",
+      "editorial_composition_more_structured_than_prior_but_not_yet_premium",
+      "motion_or_sequence_rules_stored_in_trace_but_not_delivered_as_native_animation"
+    ],
+    "top_next_layer_to_thicken": "readability_content_density_and_editorial_renderer_repair",
+    "why_user_still_sees_simple_design": "The grammar changed layout structure, but the renderer still translates that grammar into native PPT shape scenes with limited photographic/product specificity, limited large-readable proof surfaces, and no delivered motion."
+  },
+  "delivery_artifacts": {
+    "pptx_paths": [],
+    "rendered_slide_paths": [],
+    "contact_sheet_paths": [
+      "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-47-four-arm-contact-sheet.png",
+      "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png"
+    ]
+  },
+  "gate_summary": {
+    "grammar_consumption_gate": "pass_internal_only",
+    "bad_control_gate": "pass",
+    "visual_effectiveness_gate": "blocked",
+    "public_release_gate": "blocked",
+    "summary": "Run 2.48 confirms that Run 2.47 consumes visual object grammar and beats the bad missing-grammar control structurally, but public release stays blocked until readability, content-evidence density, and editorial renderer quality are repaired."
+  },
+  "next_required_action": "build_run2_49_readability_content_density_and_editorial_renderer_repair_before_rerun",
+  "release_boundary": "public_blocked_until_run2_49_repairs_readability_content_density_editorial_renderer_and_then_reruns_four_arms"
+}
