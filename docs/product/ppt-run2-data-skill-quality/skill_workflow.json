@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "workflow_type": "declarative_skill_director",
-  "status": "run2_24_single_usecase_content_visual_evidence_directed_public_blocked",
+  "status": "run2_35_visual_evidence_realism_workflow_directed_public_blocked",
   "stage_policy": "repeat_same_five_layers_not_run3",
   "five_layer_loop": [
     "real_commercial_case",
@@ -15,9 +15,19 @@
       "id": "read_commercial_case",
       "order": 1,
       "layer": "real_commercial_case",
-      "inputs": ["commercial_case.md"],
-      "outputs": ["audience", "decision", "failed_deck_definition", "six_slide_path"],
-      "gates": ["case is concrete", "public-demo failure mode is named"]
+      "inputs": [
+        "commercial_case.md"
+      ],
+      "outputs": [
+        "audience",
+        "decision",
+        "failed_deck_definition",
+        "six_slide_path"
+      ],
+      "gates": [
+        "case is concrete",
+        "public-demo failure mode is named"
+      ]
     },
     {
       "id": "compile_multimodal_database",
@@ -58,8 +68,18 @@
       "id": "compile_evidence_memory",
       "order": 3,
       "layer": "tutorial_case_video_data",
-      "inputs": ["multimodal_database.json", "source_cards/", "video_cards/", "evidence_memory.json"],
-      "outputs": ["claim ids", "allowed use rules", "source boundaries", "multimodal anchor references"],
+      "inputs": [
+        "multimodal_database.json",
+        "source_cards/",
+        "video_cards/",
+        "evidence_memory.json"
+      ],
+      "outputs": [
+        "claim ids",
+        "allowed use rules",
+        "source boundaries",
+        "multimodal anchor references"
+      ],
       "gates": [
         "every claim traces to a card",
         "multimodal anchors are derived observations only",
@@ -161,24 +181,56 @@
       "id": "select_slide_archetypes",
       "order": 7,
       "layer": "skill_workflow",
-      "inputs": ["narrative_spine.json", "slide_archetypes.json", "aesthetic_memory_v2.json"],
-      "outputs": ["slide role map", "selected aesthetic move ids", "selected aesthetic memory v2 ids", "deletion or routing plan"],
-      "gates": ["six-slide path preserved", "visual climax and close are distinct", "each main slide has a selected production aesthetic contract"]
+      "inputs": [
+        "narrative_spine.json",
+        "slide_archetypes.json",
+        "aesthetic_memory_v2.json"
+      ],
+      "outputs": [
+        "slide role map",
+        "selected aesthetic move ids",
+        "selected aesthetic memory v2 ids",
+        "deletion or routing plan"
+      ],
+      "gates": [
+        "six-slide path preserved",
+        "visual climax and close are distinct",
+        "each main slide has a selected production aesthetic contract"
+      ]
     },
     {
       "id": "select_commercial_usecase",
       "order": 8,
       "layer": "skill_workflow",
-      "inputs": ["commercial_case.md", "commercial_usecase_bank.json"],
-      "outputs": ["commercial_usecase_id", "usecase slide arc", "usecase QA probe"],
-      "gates": ["selected usecase references valid sources", "selected usecase is concrete", "source-brand imitation remains forbidden"]
+      "inputs": [
+        "commercial_case.md",
+        "commercial_usecase_bank.json"
+      ],
+      "outputs": [
+        "commercial_usecase_id",
+        "usecase slide arc",
+        "usecase QA probe"
+      ],
+      "gates": [
+        "selected usecase references valid sources",
+        "selected usecase is concrete",
+        "source-brand imitation remains forbidden"
+      ]
     },
     {
       "id": "select_aesthetic_benchmarks",
       "order": 9,
       "layer": "skill_workflow",
-      "inputs": ["aesthetic_benchmark_bank.json", "commercial_usecase_id", "workflow_decision_policy.json"],
-      "outputs": ["aesthetic_benchmark_ids", "benchmark validation probes", "anti-copy rules"],
+      "inputs": [
+        "aesthetic_benchmark_bank.json",
+        "commercial_usecase_id",
+        "workflow_decision_policy.json"
+      ],
+      "outputs": [
+        "aesthetic_benchmark_ids",
+        "benchmark validation probes",
+        "anti-copy rules"
+      ],
       "gates": [
         "selected benchmarks reference valid sources",
         "benchmark rules are derived observations only",
@@ -189,8 +241,17 @@
       "id": "select_theme_typography_spacing_policy",
       "order": 10,
       "layer": "skill_workflow",
-      "inputs": ["workflow_decision_policy.json", "commercial_usecase_id", "aesthetic_benchmark_ids"],
-      "outputs": ["theme_policy_id", "typography_system_id", "spacing_token_set_id", "workflow decision ids"],
+      "inputs": [
+        "workflow_decision_policy.json",
+        "commercial_usecase_id",
+        "aesthetic_benchmark_ids"
+      ],
+      "outputs": [
+        "theme_policy_id",
+        "typography_system_id",
+        "spacing_token_set_id",
+        "workflow decision ids"
+      ],
       "gates": [
         "theme policy is original and source-brand sanitized",
         "typography system defines visible hierarchy before code generation",
@@ -209,7 +270,11 @@
         "typography_system_id",
         "spacing_token_set_id"
       ],
-      "outputs": ["visual_repair_policy_ids", "visual_delta_from_run2_5", "visual_repair_validation_probe"],
+      "outputs": [
+        "visual_repair_policy_ids",
+        "visual_delta_from_run2_5",
+        "visual_repair_validation_probe"
+      ],
       "gates": [
         "Run 2.6R visual repair remains public blocked until review",
         "visual repair remains same-stage and not Run 3.0",
@@ -538,7 +603,12 @@
         "visual repair validation probe",
         "asset memory"
       ],
-      "outputs": ["editable PPTX", "preview PNGs", "layout JSON", "trace_manifest.json"],
+      "outputs": [
+        "editable PPTX",
+        "preview PNGs",
+        "layout JSON",
+        "trace_manifest.json"
+      ],
       "gates": [
         "core text is native",
         "component ids are recorded",
@@ -571,8 +641,20 @@
       "id": "run_structural_and_aesthetic_qa",
       "order": 25,
       "layer": "rerun_and_evaluation",
-      "inputs": ["PPTX", "layout JSON", "contact sheet", "aesthetic_rubric.md", "trace_manifest.json"],
-      "outputs": ["delivery report", "layout report", "Gemini artifact review", "score table", "visual validation outcome"],
+      "inputs": [
+        "PPTX",
+        "layout JSON",
+        "contact sheet",
+        "aesthetic_rubric.md",
+        "trace_manifest.json"
+      ],
+      "outputs": [
+        "delivery report",
+        "layout report",
+        "Gemini artifact review",
+        "score table",
+        "visual validation outcome"
+      ],
       "gates": [
         "structural QA passes",
         "layout errors are zero",
@@ -590,32 +672,73 @@
       "id": "recommend_repairs",
       "order": 26,
       "layer": "skill_workflow",
-      "inputs": ["delivery report", "layout report", "Gemini review", "visual validation outcome", "human visual notes"],
-      "outputs": ["repair recommendations", "blocked release reasons"],
-      "gates": ["repair remains recommendation-only until accepted", "no automated public-ready promotion"]
+      "inputs": [
+        "delivery report",
+        "layout report",
+        "Gemini review",
+        "visual validation outcome",
+        "human visual notes"
+      ],
+      "outputs": [
+        "repair recommendations",
+        "blocked release reasons"
+      ],
+      "gates": [
+        "repair remains recommendation-only until accepted",
+        "no automated public-ready promotion"
+      ]
     },
     {
       "id": "refresh_trace_qa_outcomes",
       "order": 27,
       "layer": "rerun_and_evaluation",
-      "inputs": ["trace_manifest.json", "delivery report", "layout report", "visual validation outcome"],
-      "outputs": ["post-QA trace manifest", "backup manifest", "dry-run diff"],
-      "gates": ["refresh is atomic", "backup exists before overwrite", "public gate remains blocked without render and human approval"]
+      "inputs": [
+        "trace_manifest.json",
+        "delivery report",
+        "layout report",
+        "visual validation outcome"
+      ],
+      "outputs": [
+        "post-QA trace manifest",
+        "backup manifest",
+        "dry-run diff"
+      ],
+      "gates": [
+        "refresh is atomic",
+        "backup exists before overwrite",
+        "public gate remains blocked without render and human approval"
+      ]
     },
     {
       "id": "emit_release_decision",
       "order": 28,
       "layer": "rerun_and_evaluation",
-      "inputs": ["post-QA trace manifest", "native render result", "human approval record"],
-      "outputs": ["internal_only or public_blocked decision"],
-      "gates": ["native render passed before demo candidate", "human approval recorded before public-ready claim"]
+      "inputs": [
+        "post-QA trace manifest",
+        "native render result",
+        "human approval record"
+      ],
+      "outputs": [
+        "internal_only or public_blocked decision"
+      ],
+      "gates": [
+        "native render passed before demo candidate",
+        "human approval recorded before public-ready claim"
+      ]
     },
     {
       "id": "expand_run2_18_multimodal_evidence",
       "order": 29,
       "layer": "multimodal_data",
-      "inputs": ["sources.json", "run2_12_thick_multimodal_evidence.json", "run2_15_layout_selector_sources.json", "human thickness priority"],
-      "outputs": ["run2_18_multimodal_evidence_expansion.json"],
+      "inputs": [
+        "sources.json",
+        "run2_12_thick_multimodal_evidence.json",
+        "run2_15_layout_selector_sources.json",
+        "human thickness priority"
+      ],
+      "outputs": [
+        "run2_18_multimodal_evidence_expansion.json"
+      ],
       "gates": [
         "derived observations only",
         "raw media, copied layouts, full transcripts, and brand marks remain forbidden",
@@ -626,8 +749,12 @@
       "id": "expand_run2_18_design_memory",
       "order": 30,
       "layer": "design_memory",
-      "inputs": ["run2_18_multimodal_evidence_expansion.json"],
-      "outputs": ["run2_18_design_memory_expansion.json"],
+      "inputs": [
+        "run2_18_multimodal_evidence_expansion.json"
+      ],
+      "outputs": [
+        "run2_18_design_memory_expansion.json"
+      ],
       "gates": [
         "each memory binds evidence ids to composition, typography, spacing, motion or sequence, proof object, code-generation binding, and required trace fields",
         "negative-control failure is explicit",
@@ -638,8 +765,14 @@
       "id": "apply_run2_18_workflow_gate_expansion",
       "order": 31,
       "layer": "skill_workflow",
-      "inputs": ["run2_18_multimodal_evidence_expansion.json", "run2_18_design_memory_expansion.json"],
-      "outputs": ["run2_18_workflow_gate_expansion.json", "results/run2_18_thickness_result.json"],
+      "inputs": [
+        "run2_18_multimodal_evidence_expansion.json",
+        "run2_18_design_memory_expansion.json"
+      ],
+      "outputs": [
+        "run2_18_workflow_gate_expansion.json",
+        "results/run2_18_thickness_result.json"
+      ],
       "gates": [
         "next four-arm rerun must select Run 2.18 evidence, memory, and gates before native PPT code generation",
         "negative control may read evidence but not design memory or workflow gates",
@@ -655,7 +788,9 @@
         "run2_7_commercial_usecase.json",
         "results/run2_23_selector_effectiveness_audit.json"
       ],
-      "outputs": ["run2_24_single_usecase_content_memory.json"],
+      "outputs": [
+        "run2_24_single_usecase_content_memory.json"
+      ],
       "gates": [
         "one primary commercial usecase is selected before the next rerun",
         "each slide role has headline, support line, business proof points, and visual evidence slot ids",
@@ -666,8 +801,12 @@
       "id": "compile_run2_24_visual_evidence_asset_memory",
       "order": 33,
       "layer": "evidence_aesthetic_asset_memory",
-      "inputs": ["run2_24_single_usecase_content_memory.json"],
-      "outputs": ["run2_24_visual_evidence_asset_memory.json"],
+      "inputs": [
+        "run2_24_single_usecase_content_memory.json"
+      ],
+      "outputs": [
+        "run2_24_visual_evidence_asset_memory.json"
+      ],
       "gates": [
         "at least two native-PPT visual evidence assets exist for each slide role",
         "raw screenshots, video frames, copied layouts, brand marks, audio, and transcript text remain forbidden",
@@ -690,6 +829,60 @@
         "next generated rerun must record run2_24_selected_usecase_id, content memory id, visual evidence slot ids, and density gate id",
         "negative control may receive the usecase label but not content memory, visual evidence assets, or density gates",
         "Run 2.24 is not a new PPT output and does not advance to Run 3.0"
+      ]
+    },
+    {
+      "id": "compile_run2_35_visual_evidence_asset_realism_memory",
+      "order": 35,
+      "layer": "evidence_aesthetic_asset_memory",
+      "inputs": [
+        "results/run2_34_main_surface_visual_evidence_audit.json",
+        "run2_24_visual_evidence_asset_memory.json",
+        "run2_24_single_usecase_content_memory.json",
+        "sources.json"
+      ],
+      "outputs": [
+        "run2_35_visual_evidence_asset_realism_memory.json"
+      ],
+      "gates": [
+        "each Run 2.24 visual evidence asset becomes a usecase-specific product or business state",
+        "generic block diagrams and equal-weight placeholder rectangles are forbidden",
+        "raw media, copied screenshots, source layouts, brand marks, audio, and transcript text remain forbidden"
+      ]
+    },
+    {
+      "id": "compile_run2_35_editorial_composition_memory",
+      "order": 36,
+      "layer": "design_memory",
+      "inputs": [
+        "results/run2_34_main_surface_visual_evidence_audit.json",
+        "run2_35_visual_evidence_asset_realism_memory.json"
+      ],
+      "outputs": [
+        "run2_35_editorial_composition_memory.json"
+      ],
+      "gates": [
+        "cover, setup, contrast, and close repair weak editorial anchors",
+        "each role defines a first-read anchor object and hero canvas share target",
+        "right-side evidence spine remains reviewer context, not the main public surface"
+      ]
+    },
+    {
+      "id": "apply_run2_35_visual_evidence_workflow_gates",
+      "order": 37,
+      "layer": "skill_workflow",
+      "inputs": [
+        "run2_35_visual_evidence_asset_realism_memory.json",
+        "run2_35_editorial_composition_memory.json"
+      ],
+      "outputs": [
+        "run2_35_visual_evidence_workflow_gates.json",
+        "results/run2_35_visual_evidence_realism_workflow_result.json"
+      ],
+      "gates": [
+        "Run 2.36 must consume Run 2.35 realism memory, editorial composition memory, and gates before native PPT generation",
+        "negative control may receive the usecase label but not Run 2.35 memory or gate ids",
+        "Run 2.35 is not a new PPT output and does not advance to Run 3.0"
       ]
     }
   ],
@@ -747,7 +940,17 @@
       "trigger": "outcome slide repeats setup or proof grid without a larger justified object",
       "recommendation": "revise the climax archetype so the strongest supported delta gets the largest field",
       "human_gate": "required before public-facing polish"
+    },
+    {
+      "id": "run2_35_visual_evidence_realism_required_before_run2_36_rerun",
+      "trigger": "Run 2.34 found that Run 2.33 passes contract-only visual evidence counts but still uses schematic evidence and weak editorial anchors",
+      "recommendation": "require run2_35_visual_evidence_asset_realism_memory.json, run2_35_editorial_composition_memory.json, and run2_35_visual_evidence_workflow_gates.json before Run 2.36 four-arm rerun",
+      "human_gate": "required before Run 2.36 generated rerun"
     }
   ],
-  "release_decisions": ["internal_only", "demo_candidate_blocked", "public_blocked"]
+  "release_decisions": [
+    "internal_only",
+    "demo_candidate_blocked",
+    "public_blocked"
+  ]
 }

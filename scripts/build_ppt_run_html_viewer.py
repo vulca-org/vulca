@@ -420,6 +420,10 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run232_audit = read_json(pack / "results" / "run2_32_spine_climax_repair_audit.json")
     run233_result = read_json(pack / "results" / "run2_33_main_surface_visual_evidence_rerun_result.json")
     run234_audit = read_json(pack / "results" / "run2_34_main_surface_visual_evidence_audit.json")
+    run235_realism_memory = read_json(pack / "run2_35_visual_evidence_asset_realism_memory.json")
+    run235_composition_memory = read_json(pack / "run2_35_editorial_composition_memory.json")
+    run235_workflow_gates = read_json(pack / "run2_35_visual_evidence_workflow_gates.json")
+    run235_result = read_json(pack / "results" / "run2_35_visual_evidence_realism_workflow_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -557,6 +561,14 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run233Result": run233_result,
         "run234AuditStatus": run234_audit.get("status", ""),
         "run234Audit": run234_audit,
+        "run235RealismMemoryStatus": run235_realism_memory.get("status", ""),
+        "run235RealismMemory": run235_realism_memory.get("visual_evidence_asset_realism_records", []),
+        "run235CompositionMemoryStatus": run235_composition_memory.get("status", ""),
+        "run235CompositionMemory": run235_composition_memory.get("editorial_composition_records", []),
+        "run235WorkflowGateStatus": run235_workflow_gates.get("status", ""),
+        "run235WorkflowGates": run235_workflow_gates.get("gates", []),
+        "run235ResultStatus": run235_result.get("status", ""),
+        "run235Result": run235_result,
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -1244,6 +1256,48 @@ def build_html(data: dict[str, Any]) -> str:
       </article>`;
     }}
 
+    function run235RealismMemoryCard(record) {{
+      return `<article class="dataCard">
+        <h4>${{escapeHtml(record.realism_memory_id)}}</h4>
+        ${{chipList([record.role, record.selected_usecase_id].filter(Boolean))}}
+        ${{detailBlock("Product evidence object", record.usecase_specific_visual_evidence_object)}}
+        ${{detailBlock("Observable product state", record.observable_product_state)}}
+        ${{detailBlock("Business caption", record.business_context_caption)}}
+        ${{detailBlock("Audience question", record.audience_question_answered)}}
+        ${{detailBlock("Native PPT realism strategy", record.native_ppt_realism_strategy)}}
+        ${{detailBlock("Anti-schematic constraints", record.anti_schematic_constraints)}}
+        ${{detailBlock("Source boundary", record.source_boundary)}}
+      </article>`;
+    }}
+
+    function run235CompositionMemoryCard(record) {{
+      return `<article class="dataCard">
+        <h4>${{escapeHtml(record.composition_memory_id)}}</h4>
+        ${{chipList([record.role, record.repairs_run2_34_weak_editorial_anchor ? "repairs weak anchor" : "preserves anchor"].filter(Boolean))}}
+        ${{detailBlock("Editorial anchor object", record.editorial_anchor_object)}}
+        ${{detailBlock("Hero canvas share target", record.hero_canvas_share_target)}}
+        ${{detailBlock("Composition obligations", record.composition_obligations)}}
+        ${{detailBlock("Typography obligations", record.typography_obligations)}}
+        ${{detailBlock("Spacing obligations", record.spacing_obligations)}}
+        ${{detailBlock("Forbidden patterns", record.forbidden_patterns)}}
+        ${{detailBlock("QA probe", record.qa_probe)}}
+      </article>`;
+    }}
+
+    function run235WorkflowGateCard(gate) {{
+      return `<article class="dataCard">
+        <h4>${{escapeHtml(gate.gate_id)}}</h4>
+        ${{chipList([gate.role, gate.next_rerun_contract, gate.public_release_gate].filter(Boolean))}}
+        ${{detailBlock("Required realism memory", gate.required_realism_memory_ids)}}
+        ${{detailBlock("Required composition memory", gate.required_editorial_composition_memory_id)}}
+        ${{detailBlock("Min realistic visual evidence objects", gate.min_realistic_visual_evidence_objects)}}
+        ${{detailBlock("Forbid generic block diagrams", gate.forbid_generic_block_diagrams)}}
+        ${{detailBlock("Trace fields", gate.required_trace_fields)}}
+        ${{detailBlock("Pass/fail checks", gate.pass_fail_checks)}}
+        ${{detailBlock("Bad control probe", gate.bad_control_probe)}}
+      </article>`;
+    }}
+
     function run217ArmAuditCard(arm) {{
       const motion = arm.motion || {{}};
       return `<article class="dataCard">
@@ -1568,6 +1622,13 @@ def build_html(data: dict[str, Any]) -> str:
         ${{detailBlock("Issue categories", record.issue_categories)}}
         ${{detailBlock("Recommended next action", record.recommended_next_action)}}
       </article>`).join("");
+      const run235Result = refs.run235Result || {{}};
+      const run235Inputs = run235Result.input_chain || {{}};
+      const run235Output = run235Result.output_chain || {{}};
+      const run235Quality = run235Result.quality_contract || {{}};
+      const run235RealismMemory = (refs.run235RealismMemory || []).map(run235RealismMemoryCard).join("");
+      const run235CompositionMemory = (refs.run235CompositionMemory || []).map(run235CompositionMemoryCard).join("");
+      const run235WorkflowGates = (refs.run235WorkflowGates || []).map(run235WorkflowGateCard).join("");
       const run217Audit = refs.run217MotionAudit || {{}};
       const run217DeliveryTruth = run217Audit.delivery_truth || {{}};
       const run217RendererGap = run217Audit.motion_renderer_gap || {{}};
@@ -2021,6 +2082,54 @@ def build_html(data: dict[str, Any]) -> str:
             </article>
           </div>
           <div class="dataGrid">${{run234RoleCards}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.35 visual evidence realism workflow</h3><p>Data/workflow-only layer after Run 2.34. It creates no new PPT deck; it converts the target usecase_specific_visual_evidence_asset_realism_and_editorial_composition into required realism memory, editorial composition memory, and workflow gates that Run 2.36 must consume before any native PPT rerun.</p></div><span class="pill">${{escapeHtml(refs.run235ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Run boundary</h4>
+              ${{detailBlock("Target layer", run235Result.target_layer || "usecase_specific_visual_evidence_asset_realism_and_editorial_composition")}}
+              ${{detailBlock("Creates new PPT deck", run235Result.creates_new_ppt_deck)}}
+              ${{detailBlock("Public ready", run235Result.public_ready)}}
+              ${{detailBlock("Public release gate", run235Result.public_release_gate)}}
+              ${{detailBlock("Artifact counts", run235Result.artifact_counts)}}
+              ${{detailBlock("Next action", run235Result.next_required_action || "consume_run2_35_visual_evidence_realism_workflow_before_run2_36_rerun")}}
+            </article>
+            <article class="dataCard">
+              <h4>Input chain</h4>
+              ${{detailBlock("Run 2.34 audit", run235Inputs.main_surface_visual_evidence_audit || "run2_34_main_surface_visual_evidence_audit.json")}}
+              ${{detailBlock("Content memory", run235Inputs.content_memory)}}
+              ${{detailBlock("Visual evidence asset memory", run235Inputs.visual_evidence_asset_memory)}}
+              ${{detailBlock("Sources", run235Inputs.sources)}}
+              ${{detailBlock("Commercial usecase bank", run235Inputs.commercial_usecase_bank)}}
+            </article>
+            <article class="dataCard">
+              <h4>Output chain</h4>
+              ${{detailBlock("Visual evidence asset realism memory", run235Output.visual_evidence_asset_realism_memory || "run2_35_visual_evidence_asset_realism_memory.json")}}
+              ${{detailBlock("Editorial composition memory", run235Output.editorial_composition_memory || "run2_35_editorial_composition_memory.json")}}
+              ${{detailBlock("Visual evidence workflow gates", run235Output.visual_evidence_workflow_gates || "run2_35_visual_evidence_workflow_gates.json")}}
+              ${{detailBlock("Result", "run2_35_visual_evidence_realism_workflow_result.json")}}
+            </article>
+            <article class="dataCard">
+              <h4>Run 2.36 contract</h4>
+              ${{detailBlock("Must consume before rerun", ["run2_35_visual_evidence_asset_realism_memory.json", "run2_35_editorial_composition_memory.json", "run2_35_visual_evidence_workflow_gates.json"])}}
+              ${{detailBlock("Negative control rule", "bad arm may receive the usecase label, but not Run 2.35 memory ids, composition memory, or gate ids")}}
+              ${{detailBlock("Quality contract", run235Quality)}}
+              ${{detailBlock("Release boundary", run235Result.release_boundary)}}
+            </article>
+          </div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.35 visual evidence asset realism memory</h3><p>${{escapeHtml(refs.run235RealismMemoryStatus)}}. Each Run 2.24 visual slot becomes a usecase-specific product or business state, not a generic block diagram or evidence token.</p></div><span class="pill">${{(refs.run235RealismMemory || []).length}} records</span></div>
+          <div class="dataGrid">${{run235RealismMemory}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.35 editorial composition memory</h3><p>${{escapeHtml(refs.run235CompositionMemoryStatus)}}. Each role gets a first-read anchor object, hero canvas share target, typography/spacing obligations, and explicit forbidden schematic patterns.</p></div><span class="pill">${{(refs.run235CompositionMemory || []).length}} records</span></div>
+          <div class="dataGrid">${{run235CompositionMemory}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.35 visual evidence workflow gates</h3><p>${{escapeHtml(refs.run235WorkflowGateStatus)}}. These are required-before-rerun gates for Run 2.36, including trace fields and negative-control probes.</p></div><span class="pill">${{(refs.run235WorkflowGates || []).length}} gates</span></div>
+          <div class="dataGrid">${{run235WorkflowGates}}</div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.22 selector-memory rerun result</h3><p>Generated four-arm rerun that consumes Run 2.21 visual-decision memory, selector gates, and rejection matrix before native PPT code generation. It stays in the same five-layer loop and does not advance to Run 3.0.</p></div><span class="pill">${{escapeHtml(refs.run222ResultStatus || "missing")}}</span></div>
