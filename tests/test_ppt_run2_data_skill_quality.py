@@ -8175,6 +8175,33 @@ def test_ppt_run_html_viewer_embeds_run2_49_data_only_repair_pack() -> None:
     assert "ppt-run2-49" not in viewer
 
 
+def test_ppt_run_html_viewer_surfaces_latest_data_workflow_repair_first() -> None:
+    viewer = (
+        ROOT
+        / "outputs"
+        / "019e7d9c-532a-70b3-8892-fa3ae42baef2"
+        / "presentations"
+        / "ppt-run-viewer.html"
+    ).read_text(encoding="utf-8")
+
+    latest_heading = "Latest data/workflow repair"
+    historical_heading = "Why 2.8 still looks close to 2.7"
+    assert latest_heading in viewer
+    assert viewer.index(latest_heading) < viewer.index(historical_heading)
+    assert_contains(
+        viewer,
+        [
+            "Run 2.49 readability/content density/editorial renderer repair",
+            "consume_run2_49_before_run2_50_four_arm_rerun",
+            "Data-only, no new PPT deck",
+            ".dataBandHead .pill",
+            "text-overflow: ellipsis",
+            "Visual/data split",
+        ],
+    )
+    assert 'title="${escapeHtml(refs.run249ResultStatus || "missing")}"' in viewer
+
+
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
     layout_dir = tmp_path / "layout"
     layout_dir.mkdir()

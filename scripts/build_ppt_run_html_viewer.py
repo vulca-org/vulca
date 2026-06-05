@@ -904,6 +904,8 @@ def build_html(data: dict[str, Any]) -> str:
     .dataStack {{ display: grid; gap: 16px; max-width: 1480px; }}
     .dataBand {{ background: var(--panel); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }}
     .dataBandHead {{ display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; padding: 14px 16px; border-bottom: 1px solid var(--line); background: #fbfaf7; }}
+    .dataBandHead > div {{ flex: 1; min-width: 0; }}
+    .dataBandHead .pill {{ max-width: min(460px, 42vw); overflow: hidden; text-overflow: ellipsis; }}
     .dataBandHead h3 {{ margin: 0; font-size: 16px; }}
     .dataBandHead p {{ margin: 4px 0 0; color: var(--muted); font-size: 12px; line-height: 1.45; }}
     .dataBandSubhead {{ padding: 14px 16px 0; border-top: 1px solid #e6e0d7; }}
@@ -2086,6 +2088,37 @@ def build_html(data: dict[str, Any]) -> str:
         <span class="pill">${{escapeHtml(refs.packPath || "case pack")}}</span>
       </div>
       <div class="dataStack">
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Latest data/workflow repair</h3><p>Run 2.49 is the current product-learning state: it is data/workflow-only, and the next visible proof must be a Run 2.50 generated four-arm rerun that consumes this repair pack.</p></div><span class="pill" title="${{escapeHtml(refs.run249ResultStatus || "missing")}}">${{escapeHtml(refs.run249ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Run 2.49 repair pack</h4>
+              ${{detailBlock("Run", "Run 2.49 readability/content density/editorial renderer repair")}}
+              ${{detailBlock("Boundary", "Data-only, no new PPT deck")}}
+              ${{detailBlock("Target layer", run249Result.target_layer || "readability_content_density_and_editorial_renderer_repair")}}
+              ${{detailBlock("Next required action", run249Result.next_required_action || "consume_run2_49_before_run2_50_four_arm_rerun")}}
+            </article>
+            <article class="dataCard">
+              <h4>What it fixes</h4>
+              ${{detailBlock("Readability", run249RepairContract.readability)}}
+              ${{detailBlock("Content evidence density", run249RepairContract["content evidence density"])}}
+              ${{detailBlock("Editorial renderer", run249RepairContract["editorial renderer"])}}
+              ${{detailBlock("Release boundary", run249Result.release_boundary)}}
+            </article>
+            <article class="dataCard">
+              <h4>Artifacts to inspect</h4>
+              ${{detailBlock("Readability memory", run249Outputs.readability_memory || "run2_49_readability_memory.json")}}
+              ${{detailBlock("Content evidence density memory", run249Outputs.content_evidence_density_memory || "run2_49_content_evidence_density_memory.json")}}
+              ${{detailBlock("Editorial renderer workflow gates", run249Outputs.editorial_renderer_workflow_gates || "run2_49_editorial_renderer_workflow_gates.json")}}
+            </article>
+            <article class="dataCard">
+              <h4>Visual/data split</h4>
+              ${{detailBlock("Generated visual latest", "Run 2.47")}}
+              ${{detailBlock("Reason", "Run 2.48 and Run 2.49 are audit/data-workflow layers, so they must not create PPT files.")}}
+              ${{detailBlock("Proof target", "Run 2.50 must show whether the new data/workflow changes the visible slides.")}}
+            </article>
+          </div>
+        </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Why 2.8 still looks close to 2.7</h3><p>The current bottleneck is visual primitive quality, not trace plumbing.</p></div></div>
           <div class="dataGrid">${{diagnosis}}</div>
