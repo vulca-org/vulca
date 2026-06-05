@@ -296,6 +296,27 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ),
         ),
     ),
+    RunSpec(
+        "2.33",
+        "Run 2.33",
+        "run2-33-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-33-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-33-run1-5-skill", "baseline"),
+            ArmSpec(
+                "run2_33_full_main_surface_visual_evidence",
+                "Run 2.33 full",
+                "ppt-run2-33-full-vulca",
+                "full",
+            ),
+            ArmSpec(
+                "bad_main_surface_visual_evidence_memory",
+                "Bad main-surface visual-evidence",
+                "ppt-run2-33-bad-main-surface-visual-evidence-memory",
+                "negative",
+            ),
+        ),
+    ),
 )
 
 
@@ -397,6 +418,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run230_audit = read_json(pack / "results" / "run2_30_presentation_synthesis_audit.json")
     run231_result = read_json(pack / "results" / "run2_31_spine_climax_repair_rerun_result.json")
     run232_audit = read_json(pack / "results" / "run2_32_spine_climax_repair_audit.json")
+    run233_result = read_json(pack / "results" / "run2_33_main_surface_visual_evidence_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -530,6 +552,8 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run231Result": run231_result,
         "run232AuditStatus": run232_audit.get("status", ""),
         "run232Audit": run232_audit,
+        "run233ResultStatus": run233_result.get("status", ""),
+        "run233Result": run233_result,
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -1517,6 +1541,11 @@ def build_html(data: dict[str, Any]) -> str:
         ${{detailBlock("Issue categories", record.issue_categories)}}
         ${{detailBlock("Recommended next action", record.recommended_next_action)}}
       </article>`).join("");
+      const run233Result = refs.run233Result || {{}};
+      const run233Rerun = run233Result.rerun || {{}};
+      const run233Inputs = run233Result.input_chain || {{}};
+      const run233Delta = run233Result.quality_delta || {{}};
+      const run233Control = run233Result.control_boundary || {{}};
       const run217Audit = refs.run217MotionAudit || {{}};
       const run217DeliveryTruth = run217Audit.delivery_truth || {{}};
       const run217RendererGap = run217Audit.motion_renderer_gap || {{}};
@@ -1876,6 +1905,48 @@ def build_html(data: dict[str, Any]) -> str:
             </article>
           </div>
           <div class="dataGrid">${{run232RoleCards}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.33 main-surface visual-evidence rerun</h3><p>Generated four-arm rerun that consumes the Run 2.32 spine/climax repair audit before native PPT code generation. The target layer is main_surface_information_density_and_visual_evidence_realism, implemented through drawRun233MainSurfaceEvidenceLayer and drawRun233VisualEvidenceStoryboard.</p></div><span class="pill">${{escapeHtml(refs.run233ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Rerun proof</h4>
+              ${{detailBlock("Source audit run", run233Result.source_audit_run_id)}}
+              ${{detailBlock("Best internal arm", run233Rerun.best_internal_arm)}}
+              ${{detailBlock("Verdict", run233Rerun.best_internal_arm_verdict)}}
+              ${{detailBlock("Four-arm sheet", run233Rerun.combined_contact_sheet)}}
+              ${{detailBlock("Full-skill series", run233Rerun.full_skill_series_sheet)}}
+            </article>
+            <article class="dataCard">
+              <h4>Input chain</h4>
+              ${{detailBlock("Run 2.32 spine/climax repair audit", run233Inputs.spine_climax_repair_audit || "run2_32_spine_climax_repair_audit.json")}}
+              ${{detailBlock("Run 2.31 repair rerun", run233Inputs.spine_climax_repair_rerun_result || "run2_31_spine_climax_repair_rerun_result.json")}}
+              ${{detailBlock("Run 2.30 presentation synthesis audit", run233Inputs.presentation_synthesis_audit || "run2_30_presentation_synthesis_audit.json")}}
+              ${{detailBlock("Run 2.29 presentation synthesis memory", run233Inputs.presentation_synthesis_memory || "run2_29_presentation_synthesis_memory.json")}}
+              ${{detailBlock("Evidence chain view model", run233Inputs.evidence_chain_view_model || "run2_28_evidence_chain_view_model.json")}}
+              ${{detailBlock("Content memory", run233Inputs.content_memory)}}
+              ${{detailBlock("Visual evidence asset memory", run233Inputs.visual_evidence_asset_memory)}}
+              ${{detailBlock("Content/visual workflow gates", run233Inputs.content_visual_workflow_gates)}}
+            </article>
+            <article class="dataCard">
+              <h4>Quality delta</h4>
+              ${{detailBlock("Target layer", run233Delta.target_layer || "main_surface_information_density_and_visual_evidence_realism")}}
+              ${{detailBlock("Repair modules", run233Delta.repair_modules || ["drawRun233MainSurfaceEvidenceLayer", "drawRun233VisualEvidenceStoryboard"])}}
+              ${{detailBlock("Preserved modules", run233Delta.preserved_modules)}}
+              ${{detailBlock("Visual evidence min target", run233Delta.visual_evidence_object_min_target)}}
+              ${{detailBlock("Source repair target closed", run233Delta.source_repair_target_closed)}}
+              ${{detailBlock("Replacement focus", run233Delta.replacement_focus)}}
+              ${{detailBlock("Public ready", run233Result.public_ready)}}
+            </article>
+            <article class="dataCard">
+              <h4>Control boundary</h4>
+              ${{detailBlock("Negative control", run233Control.bad_main_surface_visual_evidence_memory)}}
+              ${{detailBlock("Prompt only", run233Control.prompt_only)}}
+              ${{detailBlock("Run 1.5", run233Control.run1_5_skill)}}
+              ${{detailBlock("Stage policy", run233Result.stage_policy)}}
+              ${{detailBlock("Release boundary", run233Result.release_boundary)}}
+            </article>
+          </div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.22 selector-memory rerun result</h3><p>Generated four-arm rerun that consumes Run 2.21 visual-decision memory, selector gates, and rejection matrix before native PPT code generation. It stays in the same five-layer loop and does not advance to Run 3.0.</p></div><span class="pill">${{escapeHtml(refs.run222ResultStatus || "missing")}}</span></div>
