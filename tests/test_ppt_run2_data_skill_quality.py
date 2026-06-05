@@ -6081,6 +6081,142 @@ def test_ppt_run_html_viewer_mentions_run2_36_visual_evidence_realism_rerun() ->
     )
 
 
+def test_run2_37_visual_quality_audit_scores_run2_36_outputs(tmp_path: Path) -> None:
+    script_path = ROOT / "scripts" / "audit_ppt_run2_37_visual_quality.py"
+    assert script_path.exists(), "missing Run 2.37 visual-quality audit script"
+
+    result_json = tmp_path / "run2_37_visual_quality_audit.json"
+    result_md = tmp_path / "run2_37_visual_quality_audit.md"
+    subprocess.run(
+        [
+            sys.executable,
+            str(script_path),
+            "--result-json",
+            str(result_json),
+            "--result-md",
+            str(result_md),
+        ],
+        cwd=ROOT,
+        check=True,
+    )
+
+    audit = load_json(result_json)
+    assert audit["schema_version"] == "ppt_run2_visual_quality_audit.v1"
+    assert audit["run_id"] == "2.37"
+    assert audit["status"] == "run2_37_visual_quality_audit_public_blocked"
+    assert audit["source_generated_run"] == "2.36"
+    assert audit["source_data_workflow_run"] == "2.35"
+    assert audit["creates_new_ppt_deck"] is False
+    assert audit["public_ready"] is False
+    assert audit["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert audit["input_chain"]["run2_36_full_trace_manifest"].endswith("ppt-run2-36-full-vulca/trace_manifest.json")
+    assert audit["input_chain"]["run2_36_bad_trace_manifest"].endswith(
+        "ppt-run2-36-bad-visual-evidence-realism-memory/trace_manifest.json"
+    )
+    assert audit["input_chain"]["run2_36_rerun_result"].endswith(
+        "run2_36_visual_evidence_realism_rerun_result.json"
+    )
+    assert audit["input_chain"]["run2_35_visual_evidence_realism_workflow_result"].endswith(
+        "run2_35_visual_evidence_realism_workflow_result.json"
+    )
+    assert audit["input_chain"]["run2_36_four_arm_contact_sheet"].endswith("run2-36-four-arm-contact-sheet.png")
+    assert audit["no_new_deck_proof"]["new_pptx_created"] is False
+    assert audit["no_new_deck_proof"]["status"] == "pass"
+
+    trace = audit["trace_closure"]
+    assert trace["full_arm"]["arm_id"] == "run2_36_full_visual_evidence_realism"
+    assert trace["full_arm"]["slide_count"] == 6
+    assert trace["full_arm"]["run2_35_workflow_consumed_slides"] == 6
+    assert trace["full_arm"]["realism_ids_bound_slides"] == 6
+    assert trace["full_arm"]["required_run236_modules_called_slides"] == 6
+    assert trace["bad_control"]["arm_id"] == "bad_visual_evidence_realism_memory"
+    assert trace["bad_control"]["visual_evidence_realism_fields_leaked"] == 0
+
+    assessment = audit["visual_quality_assessment"]
+    assert assessment["data_consumption_gate"] == "pass_internal_only"
+    assert assessment["workflow_proof_gate"] == "pass_internal_only"
+    assert assessment["design_quality_gate"] == "blocked"
+    assert assessment["public_video_readiness"] == "blocked"
+    assert assessment["root_cause_primary"] == "visual_module_language_too_repetitive_and_card_like"
+    assert assessment["repeated_layout_signature_count"] == 6
+    assert assessment["unique_layout_signature_count"] == 1
+    assert assessment["top_next_layer_to_thicken"] == "public_video_grade_slide_direction_and_per_slide_visual_recipe"
+    assert set(assessment["roles_with_repetitive_card_layout"]) == {
+        "cover",
+        "setup",
+        "contrast",
+        "proof",
+        "climax",
+        "close",
+    }
+    assert set(assessment["roles_with_insufficient_public_aesthetic"]) == {
+        "cover",
+        "setup",
+        "contrast",
+        "proof",
+        "climax",
+        "close",
+    }
+
+    assert len(audit["role_records"]) == 6
+    for record in audit["role_records"]:
+        assert record["run2_36_data_consumed"] is True
+        assert record["workflow_gate_exposed"] is True
+        assert record["public_video_grade"] is False
+        assert "repetitive_card_grid_language" in record["aesthetic_failure_reasons"]
+        assert "drawRun236RealisticProductState" in record["run2_36_code_module_ids"]
+        assert record["layout_signature"] == "editorial_anchor_object+two_product_state_cards+gate_ribbon"
+
+
+def test_run2_37_records_visual_quality_audit_result() -> None:
+    result = (PACK / "results" / "run2_37_visual_quality_audit.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_37_visual_quality_audit.json")
+
+    assert result_json["status"] == "run2_37_visual_quality_audit_public_blocked"
+    assert result_json["source_generated_run"] == "2.36"
+    assert result_json["user_feedback"] == "Run 2.36 effect feels visually average"
+    assert result_json["visual_quality_assessment"]["design_quality_gate"] == "blocked"
+    assert result_json["visual_quality_assessment"]["top_next_layer_to_thicken"] == (
+        "public_video_grade_slide_direction_and_per_slide_visual_recipe"
+    )
+    assert result_json["next_required_action"] == (
+        "build_run2_38_public_video_grade_visual_direction_memory_and_workflow_gates"
+    )
+    assert_contains(
+        result,
+        [
+            "Run 2.37 Visual Quality Audit",
+            "visually average",
+            "audit-only",
+            "2.36",
+            "2.35",
+            "data consumption passes",
+            "design quality is blocked",
+            "visual_module_language_too_repetitive_and_card_like",
+            "public_video_grade_slide_direction_and_per_slide_visual_recipe",
+            "Run 2.38 data/workflow",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_embeds_run2_37_visual_quality_audit() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "run2_37_visual_quality_audit.json",
+            "Run 2.37 visual quality audit",
+            "visual_module_language_too_repetitive_and_card_like",
+            "public_video_grade_slide_direction_and_per_slide_visual_recipe",
+            "roles_with_repetitive_card_layout",
+            "roles_with_insufficient_public_aesthetic",
+            "Run 2.38 data/workflow",
+        ],
+    )
+
+
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
     layout_dir = tmp_path / "layout"
     layout_dir.mkdir()

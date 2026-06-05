@@ -446,6 +446,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run235_workflow_gates = read_json(pack / "run2_35_visual_evidence_workflow_gates.json")
     run235_result = read_json(pack / "results" / "run2_35_visual_evidence_realism_workflow_result.json")
     run236_result = read_json(pack / "results" / "run2_36_visual_evidence_realism_rerun_result.json")
+    run237_audit = read_json(pack / "results" / "run2_37_visual_quality_audit.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -593,6 +594,8 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run235Result": run235_result,
         "run236ResultStatus": run236_result.get("status", ""),
         "run236Result": run236_result,
+        "run237AuditStatus": run237_audit.get("status", ""),
+        "run237Audit": run237_audit,
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -1658,6 +1661,24 @@ def build_html(data: dict[str, Any]) -> str:
       const run236Inputs = run236Result.input_chain || {{}};
       const run236Delta = run236Result.quality_delta || {{}};
       const run236Control = run236Result.control_boundary || {{}};
+      const run237Audit = refs.run237Audit || {{}};
+      const run237Inputs = run237Audit.input_chain || {{}};
+      const run237Trace = run237Audit.trace_closure || {{}};
+      const run237TraceFull = run237Trace.full_arm || {{}};
+      const run237TraceBad = run237Trace.bad_control || {{}};
+      const run237Assessment = run237Audit.visual_quality_assessment || {{}};
+      const run237Delivery = run237Audit.delivery_check || {{}};
+      const run237RoleCards = (run237Audit.role_records || []).map((record) => `<article class="dataCard">
+        <h4>${{escapeHtml(record.role)}} / visual quality</h4>
+        ${{detailBlock("Layout signature", record.layout_signature)}}
+        ${{detailBlock("Run 2.36 data consumed", record.run2_36_data_consumed)}}
+        ${{detailBlock("Workflow gate exposed", record.workflow_gate_exposed)}}
+        ${{detailBlock("Public video grade", record.public_video_grade)}}
+        ${{detailBlock("Hero object share", record.hero_object_canvas_share)}}
+        ${{detailBlock("Visual evidence objects", record.realistic_visual_evidence_objects)}}
+        ${{detailBlock("Failure reasons", record.aesthetic_failure_reasons)}}
+        ${{detailBlock("Recommended next action", record.recommended_next_action)}}
+      </article>`).join("");
       const run217Audit = refs.run217MotionAudit || {{}};
       const run217DeliveryTruth = run217Audit.delivery_truth || {{}};
       const run217RendererGap = run217Audit.motion_renderer_gap || {{}};
@@ -2198,6 +2219,57 @@ def build_html(data: dict[str, Any]) -> str:
               ${{detailBlock("Release boundary", run236Result.release_boundary || "Do not advance to Run 3.0 before Run 2.36 is audited")}}
             </article>
           </div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.37 visual quality audit</h3><p>Audit-only layer over Run 2.36. It creates no new PPT deck; it explains why data consumption passes but design quality is still blocked. Root cause: visual_module_language_too_repetitive_and_card_like.</p></div><span class="pill">${{escapeHtml(refs.run237AuditStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Audit boundary</h4>
+              ${{detailBlock("Result", "run2_37_visual_quality_audit.json")}}
+              ${{detailBlock("Source generated run", run237Audit.source_generated_run)}}
+              ${{detailBlock("Source data/workflow run", run237Audit.source_data_workflow_run)}}
+              ${{detailBlock("Creates new PPT deck", run237Audit.creates_new_ppt_deck)}}
+              ${{detailBlock("Public ready", run237Audit.public_ready)}}
+              ${{detailBlock("Stage policy", run237Audit.stage_policy)}}
+            </article>
+            <article class="dataCard">
+              <h4>Input chain</h4>
+              ${{detailBlock("Run 2.36 result", run237Inputs.run2_36_rerun_result || "run2_36_visual_evidence_realism_rerun_result.json")}}
+              ${{detailBlock("Run 2.35 workflow result", run237Inputs.run2_35_visual_evidence_realism_workflow_result || "run2_35_visual_evidence_realism_workflow_result.json")}}
+              ${{detailBlock("Full trace manifest", run237Inputs.run2_36_full_trace_manifest)}}
+              ${{detailBlock("Bad trace manifest", run237Inputs.run2_36_bad_trace_manifest)}}
+              ${{detailBlock("Four-arm contact sheet", run237Inputs.run2_36_four_arm_contact_sheet)}}
+              ${{detailBlock("Full-skill series", run237Inputs.run2_full_skill_series_sheet)}}
+            </article>
+            <article class="dataCard">
+              <h4>Trace closure</h4>
+              ${{detailBlock("Full arm", run237TraceFull.arm_id)}}
+              ${{detailBlock("Run 2.35 consumed slides", run237TraceFull.run2_35_workflow_consumed_slides)}}
+              ${{detailBlock("Realism ids bound slides", run237TraceFull.realism_ids_bound_slides)}}
+              ${{detailBlock("Required Run 2.36 modules called", run237TraceFull.required_run236_modules_called_slides)}}
+              ${{detailBlock("Bad-control Run 2.35 leaks", run237TraceBad.visual_evidence_realism_fields_leaked)}}
+            </article>
+            <article class="dataCard">
+              <h4>Visual quality assessment</h4>
+              ${{detailBlock("Data consumption gate", run237Assessment.data_consumption_gate)}}
+              ${{detailBlock("Workflow proof gate", run237Assessment.workflow_proof_gate)}}
+              ${{detailBlock("Design quality gate", run237Assessment.design_quality_gate)}}
+              ${{detailBlock("Public video readiness", run237Assessment.public_video_readiness)}}
+              ${{detailBlock("Root cause", run237Assessment.root_cause_primary || "visual_module_language_too_repetitive_and_card_like")}}
+              ${{detailBlock("Repeated layout signature count", run237Assessment.repeated_layout_signature_count)}}
+              ${{detailBlock("Unique layout signature count", run237Assessment.unique_layout_signature_count)}}
+            </article>
+            <article class="dataCard">
+              <h4>Next data/workflow target</h4>
+              ${{detailBlock("Top next layer", run237Assessment.top_next_layer_to_thicken || "public_video_grade_slide_direction_and_per_slide_visual_recipe")}}
+              ${{detailBlock("roles_with_repetitive_card_layout", run237Assessment.roles_with_repetitive_card_layout)}}
+              ${{detailBlock("roles_with_insufficient_public_aesthetic", run237Assessment.roles_with_insufficient_public_aesthetic)}}
+              ${{detailBlock("Run 2.38 data/workflow", run237Audit.next_required_action || "build_run2_38_public_video_grade_visual_direction_memory_and_workflow_gates")}}
+              ${{detailBlock("Delivery gate", run237Delivery.delivery_gate)}}
+              ${{detailBlock("Static/no animation", run237Delivery.static_no_animation)}}
+            </article>
+          </div>
+          <div class="dataGrid">${{run237RoleCards}}</div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.22 selector-memory rerun result</h3><p>Generated four-arm rerun that consumes Run 2.21 visual-decision memory, selector gates, and rejection matrix before native PPT code generation. It stays in the same five-layer loop and does not advance to Run 3.0.</p></div><span class="pill">${{escapeHtml(refs.run222ResultStatus || "missing")}}</span></div>
