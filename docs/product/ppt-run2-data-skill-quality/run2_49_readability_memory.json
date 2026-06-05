@@ -1,0 +1,213 @@
+{
+  "schema_version": "ppt_run2_readability_memory.v1",
+  "status": "run2_49_readability_memory_ready_public_blocked",
+  "run_id": "2.49",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "public_ready": false,
+  "creates_new_ppt_deck": false,
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "source_audit_run": "2.48",
+  "source_generated_run": "2.47",
+  "source_composition_memory_run": "2.46",
+  "target_layer": "readability_content_density_and_editorial_renderer_repair",
+  "readability_records": [
+    {
+      "readability_memory_id": "readability_memory_2_49_cover",
+      "readability_gate_id": "gate_2_49_cover_contact_sheet_scale_readability",
+      "role": "cover",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.48",
+      "source_generated_run": "2.47",
+      "source_composition_memory_run": "2.46",
+      "source_run2_46_visual_object_grammar_id": "visual_object_grammar_2_46_cover",
+      "source_run2_24_content_memory_id": "content_2_24_cover",
+      "source_content_density_diagnosis": {
+        "average_visible_words_per_slide": 70.3,
+        "average_text_boxes_per_slide": 8.8,
+        "slides_with_rich_text_density": 6,
+        "interpretation": "The issue is not raw word count. It is the hierarchy and inspectability of commercial evidence, visual proof objects, and readable editorial surfaces."
+      },
+      "readability_goal": "launch promise must read at contact-sheet scale before system proof labels",
+      "min_contact_sheet_title_px": 28,
+      "min_body_font_px": 16,
+      "max_headline_words": 7,
+      "max_support_words": 18,
+      "min_text_contrast_ratio": 4.5,
+      "forbid_title_clipping": true,
+      "forbid_micro_labels_as_primary_evidence": true,
+      "forbid_trace_terms_on_public_surface": true,
+      "required_readability_checks": [
+        "title remains legible at 25 percent contact-sheet scale",
+        "headline fits the intended title box without clipping",
+        "support copy does not overlap the primary visual object",
+        "public slide text hides run ids, memory ids, gate ids, and database terms"
+      ],
+      "next_rerun_obligation": "must_be_consumed_before_run2_50_four_arm_rerun"
+    },
+    {
+      "readability_memory_id": "readability_memory_2_49_setup",
+      "readability_gate_id": "gate_2_49_setup_contact_sheet_scale_readability",
+      "role": "setup",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.48",
+      "source_generated_run": "2.47",
+      "source_composition_memory_run": "2.46",
+      "source_run2_46_visual_object_grammar_id": "visual_object_grammar_2_46_setup",
+      "source_run2_24_content_memory_id": "content_2_24_setup",
+      "source_content_density_diagnosis": {
+        "average_visible_words_per_slide": 70.3,
+        "average_text_boxes_per_slide": 8.8,
+        "slides_with_rich_text_density": 6,
+        "interpretation": "The issue is not raw word count. It is the hierarchy and inspectability of commercial evidence, visual proof objects, and readable editorial surfaces."
+      },
+      "readability_goal": "failure and selected route must be readable without workflow terminology",
+      "min_contact_sheet_title_px": 24,
+      "min_body_font_px": 16,
+      "max_headline_words": 8,
+      "max_support_words": 20,
+      "min_text_contrast_ratio": 4.5,
+      "forbid_title_clipping": true,
+      "forbid_micro_labels_as_primary_evidence": true,
+      "forbid_trace_terms_on_public_surface": true,
+      "required_readability_checks": [
+        "title remains legible at 25 percent contact-sheet scale",
+        "headline fits the intended title box without clipping",
+        "support copy does not overlap the primary visual object",
+        "public slide text hides run ids, memory ids, gate ids, and database terms"
+      ],
+      "next_rerun_obligation": "must_be_consumed_before_run2_50_four_arm_rerun"
+    },
+    {
+      "readability_memory_id": "readability_memory_2_49_contrast",
+      "readability_gate_id": "gate_2_49_contrast_contact_sheet_scale_readability",
+      "role": "contrast",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.48",
+      "source_generated_run": "2.47",
+      "source_composition_memory_run": "2.46",
+      "source_run2_46_visual_object_grammar_id": "visual_object_grammar_2_46_contrast",
+      "source_run2_24_content_memory_id": "content_2_24_contrast",
+      "source_content_density_diagnosis": {
+        "average_visible_words_per_slide": 70.3,
+        "average_text_boxes_per_slide": 8.8,
+        "slides_with_rich_text_density": 6,
+        "interpretation": "The issue is not raw word count. It is the hierarchy and inspectability of commercial evidence, visual proof objects, and readable editorial surfaces."
+      },
+      "readability_goal": "before/after delta must show business consequence, not equal cards",
+      "min_contact_sheet_title_px": 24,
+      "min_body_font_px": 16,
+      "max_headline_words": 8,
+      "max_support_words": 18,
+      "min_text_contrast_ratio": 4.5,
+      "forbid_title_clipping": true,
+      "forbid_micro_labels_as_primary_evidence": true,
+      "forbid_trace_terms_on_public_surface": true,
+      "required_readability_checks": [
+        "title remains legible at 25 percent contact-sheet scale",
+        "headline fits the intended title box without clipping",
+        "support copy does not overlap the primary visual object",
+        "public slide text hides run ids, memory ids, gate ids, and database terms"
+      ],
+      "next_rerun_obligation": "must_be_consumed_before_run2_50_four_arm_rerun"
+    },
+    {
+      "readability_memory_id": "readability_memory_2_49_proof",
+      "readability_gate_id": "gate_2_49_proof_contact_sheet_scale_readability",
+      "role": "proof",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.48",
+      "source_generated_run": "2.47",
+      "source_composition_memory_run": "2.46",
+      "source_run2_46_visual_object_grammar_id": "visual_object_grammar_2_46_proof",
+      "source_run2_24_content_memory_id": "content_2_24_proof",
+      "source_content_density_diagnosis": {
+        "average_visible_words_per_slide": 70.3,
+        "average_text_boxes_per_slide": 8.8,
+        "slides_with_rich_text_density": 6,
+        "interpretation": "The issue is not raw word count. It is the hierarchy and inspectability of commercial evidence, visual proof objects, and readable editorial surfaces."
+      },
+      "readability_goal": "active product surface must expose proof objects without becoming a table",
+      "min_contact_sheet_title_px": 22,
+      "min_body_font_px": 16,
+      "max_headline_words": 9,
+      "max_support_words": 22,
+      "min_text_contrast_ratio": 4.5,
+      "forbid_title_clipping": true,
+      "forbid_micro_labels_as_primary_evidence": true,
+      "forbid_trace_terms_on_public_surface": true,
+      "required_readability_checks": [
+        "title remains legible at 25 percent contact-sheet scale",
+        "headline fits the intended title box without clipping",
+        "support copy does not overlap the primary visual object",
+        "public slide text hides run ids, memory ids, gate ids, and database terms"
+      ],
+      "next_rerun_obligation": "must_be_consumed_before_run2_50_four_arm_rerun"
+    },
+    {
+      "readability_memory_id": "readability_memory_2_49_climax",
+      "readability_gate_id": "gate_2_49_climax_contact_sheet_scale_readability",
+      "role": "climax",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.48",
+      "source_generated_run": "2.47",
+      "source_composition_memory_run": "2.46",
+      "source_run2_46_visual_object_grammar_id": "visual_object_grammar_2_46_climax",
+      "source_run2_24_content_memory_id": "content_2_24_climax",
+      "source_content_density_diagnosis": {
+        "average_visible_words_per_slide": 70.3,
+        "average_text_boxes_per_slide": 8.8,
+        "slides_with_rich_text_density": 6,
+        "interpretation": "The issue is not raw word count. It is the hierarchy and inspectability of commercial evidence, visual proof objects, and readable editorial surfaces."
+      },
+      "readability_goal": "result object must own the frame and still carry concrete proof",
+      "min_contact_sheet_title_px": 30,
+      "min_body_font_px": 16,
+      "max_headline_words": 6,
+      "max_support_words": 16,
+      "min_text_contrast_ratio": 4.5,
+      "forbid_title_clipping": true,
+      "forbid_micro_labels_as_primary_evidence": true,
+      "forbid_trace_terms_on_public_surface": true,
+      "required_readability_checks": [
+        "title remains legible at 25 percent contact-sheet scale",
+        "headline fits the intended title box without clipping",
+        "support copy does not overlap the primary visual object",
+        "public slide text hides run ids, memory ids, gate ids, and database terms"
+      ],
+      "next_rerun_obligation": "must_be_consumed_before_run2_50_four_arm_rerun"
+    },
+    {
+      "readability_memory_id": "readability_memory_2_49_close",
+      "readability_gate_id": "gate_2_49_close_contact_sheet_scale_readability",
+      "role": "close",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_audit_run": "2.48",
+      "source_generated_run": "2.47",
+      "source_composition_memory_run": "2.46",
+      "source_run2_46_visual_object_grammar_id": "visual_object_grammar_2_46_close",
+      "source_run2_24_content_memory_id": "content_2_24_close",
+      "source_content_density_diagnosis": {
+        "average_visible_words_per_slide": 70.3,
+        "average_text_boxes_per_slide": 8.8,
+        "slides_with_rich_text_density": 6,
+        "interpretation": "The issue is not raw word count. It is the hierarchy and inspectability of commercial evidence, visual proof objects, and readable editorial surfaces."
+      },
+      "readability_goal": "handoff decision must be clear while release remains blocked",
+      "min_contact_sheet_title_px": 23,
+      "min_body_font_px": 16,
+      "max_headline_words": 8,
+      "max_support_words": 20,
+      "min_text_contrast_ratio": 4.5,
+      "forbid_title_clipping": true,
+      "forbid_micro_labels_as_primary_evidence": true,
+      "forbid_trace_terms_on_public_surface": true,
+      "required_readability_checks": [
+        "title remains legible at 25 percent contact-sheet scale",
+        "headline fits the intended title box without clipping",
+        "support copy does not overlap the primary visual object",
+        "public slide text hides run ids, memory ids, gate ids, and database terms"
+      ],
+      "next_rerun_obligation": "must_be_consumed_before_run2_50_four_arm_rerun"
+    }
+  ]
+}

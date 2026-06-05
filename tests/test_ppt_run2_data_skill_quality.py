@@ -8016,6 +8016,165 @@ def test_ppt_run_html_viewer_embeds_run2_48_composition_grammar_effectiveness_au
     assert "ppt-run2-48" not in viewer
 
 
+def test_run2_49_builder_creates_readability_content_density_renderer_repair_pack(
+    tmp_path: Path,
+) -> None:
+    script_path = ROOT / "scripts" / "build_ppt_run2_49_readability_content_density_renderer_repair.py"
+    result_json = tmp_path / "run2_49_readability_content_density_renderer_repair_result.json"
+    result_md = tmp_path / "run2_49_readability_content_density_renderer_repair_result.md"
+    presentations = ROOT / "outputs" / "019e7d9c-532a-70b3-8892-fa3ae42baef2" / "presentations"
+    pptx_before = sorted(path.name for path in presentations.glob("*2-49*.pptx"))
+
+    assert script_path.exists(), "missing Run 2.49 readability/content-density builder"
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(script_path),
+            "--out-dir",
+            str(tmp_path),
+            "--result-json",
+            str(result_json),
+            "--result-md",
+            str(result_md),
+        ],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    pptx_after = sorted(path.name for path in presentations.glob("*2-49*.pptx"))
+    result = load_json(result_json)
+    readability = load_json(tmp_path / "run2_49_readability_memory.json")
+    density = load_json(tmp_path / "run2_49_content_evidence_density_memory.json")
+    gates = load_json(tmp_path / "run2_49_editorial_renderer_workflow_gates.json")
+    report = result_md.read_text(encoding="utf-8")
+
+    assert "run2_49_readability_content_density_renderer_repair_ready_public_blocked" in completed.stdout
+    assert pptx_before == pptx_after == []
+    assert result["run_id"] == "2.49"
+    assert result["status"] == "run2_49_readability_content_density_renderer_repair_ready_public_blocked"
+    assert result["source_audit_run"] == "2.48"
+    assert result["source_generated_run"] == "2.47"
+    assert result["source_composition_memory_run"] == "2.46"
+    assert result["target_layer"] == "readability_content_density_and_editorial_renderer_repair"
+    assert result["creates_new_ppt_deck"] is False
+    assert result["public_ready"] is False
+    assert result["next_required_action"] == "consume_run2_49_before_run2_50_four_arm_rerun"
+    assert result["delivery_artifacts"]["pptx_paths"] == []
+
+    assert readability["status"] == "run2_49_readability_memory_ready_public_blocked"
+    assert density["status"] == "run2_49_content_evidence_density_memory_ready_public_blocked"
+    assert gates["status"] == "run2_49_editorial_renderer_workflow_gates_ready_public_blocked"
+    assert len(readability["readability_records"]) == 6
+    assert len(density["content_evidence_density_records"]) == 6
+    assert len(gates["editorial_renderer_workflow_gates"]) == 6
+
+    for record in readability["readability_records"]:
+        assert record["min_contact_sheet_title_px"] >= 22
+        assert record["max_headline_words"] <= 9
+        assert record["forbid_title_clipping"] is True
+        assert "contact_sheet_scale" in record["readability_gate_id"]
+    for record in density["content_evidence_density_records"]:
+        assert record["min_specific_business_evidence_objects"] >= 3
+        assert record["min_inspectable_visual_proof_objects"] >= 2
+        assert "generic abstract proof" in record["forbidden_evidence_substitutes"]
+    for gate in gates["editorial_renderer_workflow_gates"]:
+        assert gate["next_rerun_contract"] == "must_be_consumed_before_run2_50_four_arm_rerun"
+        assert gate["forbid_square_block_grid_as_primary_surface"] is True
+        assert gate["min_non_square_surface_ratio_variants"] >= 2
+        assert gate["require_contact_sheet_readability"] is True
+        assert gate["require_inspectable_business_evidence"] is True
+        assert {
+            "run2_49_readability_memory_id",
+            "run2_49_content_evidence_density_memory_id",
+            "run2_49_editorial_renderer_gate_id",
+            "run2_49_renderer_contract_id",
+        } <= set(gate["required_trace_fields"])
+
+    assert_contains(
+        report,
+        [
+            "Run 2.49",
+            "data/workflow-only",
+            "readability",
+            "content evidence density",
+            "editorial renderer",
+            "Run 2.50",
+        ],
+    )
+
+
+def test_run2_49_records_result_and_extends_skill_workflow() -> None:
+    result = load_json(PACK / "results" / "run2_49_readability_content_density_renderer_repair_result.json")
+    readability = load_json(PACK / "run2_49_readability_memory.json")
+    density = load_json(PACK / "run2_49_content_evidence_density_memory.json")
+    gates = load_json(PACK / "run2_49_editorial_renderer_workflow_gates.json")
+    workflow = load_json(PACK / "skill_workflow.json")
+    workflow_stage_ids = [stage["id"] for stage in workflow["stages"]]
+
+    assert result["status"] == "run2_49_readability_content_density_renderer_repair_ready_public_blocked"
+    assert result["output_chain"]["readability_memory"].endswith("run2_49_readability_memory.json")
+    assert result["output_chain"]["content_evidence_density_memory"].endswith(
+        "run2_49_content_evidence_density_memory.json"
+    )
+    assert result["output_chain"]["editorial_renderer_workflow_gates"].endswith(
+        "run2_49_editorial_renderer_workflow_gates.json"
+    )
+    assert result["artifact_counts"] == {
+        "readability_records": 6,
+        "content_evidence_density_records": 6,
+        "editorial_renderer_workflow_gates": 6,
+    }
+    assert readability["source_audit_run"] == "2.48"
+    assert density["source_audit_run"] == "2.48"
+    assert gates["source_audit_run"] == "2.48"
+    assert "compile_run2_49_readability_memory" in workflow_stage_ids
+    assert "compile_run2_49_content_evidence_density_memory" in workflow_stage_ids
+    assert "apply_run2_49_editorial_renderer_workflow_gates" in workflow_stage_ids
+    assert workflow_stage_ids.index("compile_run2_49_readability_memory") < workflow_stage_ids.index(
+        "compile_run2_49_content_evidence_density_memory"
+    )
+    assert workflow_stage_ids.index("compile_run2_49_content_evidence_density_memory") < workflow_stage_ids.index(
+        "apply_run2_49_editorial_renderer_workflow_gates"
+    )
+
+
+def test_ppt_run_html_viewer_embeds_run2_49_data_only_repair_pack() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+    viewer = (
+        ROOT
+        / "outputs"
+        / "019e7d9c-532a-70b3-8892-fa3ae42baef2"
+        / "presentations"
+        / "ppt-run-viewer.html"
+    ).read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "run2_49_readability_content_density_renderer_repair_result.json",
+            "run249ResultStatus",
+            "Run 2.49 readability/content density/editorial renderer repair",
+            "Data-only Run",
+            "consume_run2_49_before_run2_50_four_arm_rerun",
+        ],
+    )
+    assert_contains(
+        viewer,
+        [
+            '"latestRunId": "2.47"',
+            "Run 2.49 readability/content density/editorial renderer repair",
+            "Data-only Run",
+            "run2_49_readability_memory.json",
+            "run2_49_content_evidence_density_memory.json",
+            "run2_49_editorial_renderer_workflow_gates.json",
+            "Run 2.50",
+        ],
+    )
+    assert "ppt-run2-49" not in viewer
+
+
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
     layout_dir = tmp_path / "layout"
     layout_dir.mkdir()

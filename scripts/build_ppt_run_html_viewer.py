@@ -573,6 +573,12 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run246_result = read_json(pack / "results" / "run2_46_multimodal_composition_memory_result.json")
     run247_result = read_json(pack / "results" / "run2_47_composition_grammar_rerun_result.json")
     run248_audit = read_json(pack / "results" / "run2_48_composition_grammar_effectiveness_audit.json")
+    run249_readability = read_json(pack / "run2_49_readability_memory.json")
+    run249_density = read_json(pack / "run2_49_content_evidence_density_memory.json")
+    run249_gates = read_json(pack / "run2_49_editorial_renderer_workflow_gates.json")
+    run249_result = read_json(
+        pack / "results" / "run2_49_readability_content_density_renderer_repair_result.json"
+    )
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -781,6 +787,14 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run248AuditStatus": run248_audit.get("status", ""),
         "run248Audit": run248_audit,
         "run248AuditPath": "run2_48_composition_grammar_effectiveness_audit.json",
+        "run249ReadabilityStatus": run249_readability.get("status", ""),
+        "run249ReadabilityRecords": run249_readability.get("readability_records", []),
+        "run249DensityStatus": run249_density.get("status", ""),
+        "run249DensityRecords": run249_density.get("content_evidence_density_records", []),
+        "run249GateStatus": run249_gates.get("status", ""),
+        "run249Gates": run249_gates.get("editorial_renderer_workflow_gates", []),
+        "run249ResultStatus": run249_result.get("status", ""),
+        "run249Result": run249_result,
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -1984,6 +1998,43 @@ def build_html(data: dict[str, Any]) -> str:
       const run248Visual = run248Audit.visual_effectiveness_assessment || {{}};
       const run248Content = run248Visual.content_density_diagnosis || {{}};
       const run248Gate = run248Audit.gate_summary || {{}};
+      const run249Result = refs.run249Result || {{}};
+      const run249Inputs = run249Result.input_chain || {{}};
+      const run249Outputs = run249Result.output_chain || {{}};
+      const run249Counts = run249Result.artifact_counts || {{}};
+      const run249RepairContract = run249Result.repair_contract || {{}};
+      const run249ReadabilityCards = (refs.run249ReadabilityRecords || []).map((record) => `<article class="dataCard">
+        <h4>${{escapeHtml(record.role)}} / readability</h4>
+        ${{detailBlock("Readability memory id", record.readability_memory_id)}}
+        ${{detailBlock("Gate id", record.readability_gate_id)}}
+        ${{detailBlock("Goal", record.readability_goal)}}
+        ${{detailBlock("Min contact-sheet title px", record.min_contact_sheet_title_px)}}
+        ${{detailBlock("Max headline words", record.max_headline_words)}}
+        ${{detailBlock("Forbid title clipping", record.forbid_title_clipping)}}
+        ${{detailBlock("Checks", record.required_readability_checks)}}
+      </article>`).join("");
+      const run249DensityCards = (refs.run249DensityRecords || []).map((record) => `<article class="dataCard">
+        <h4>${{escapeHtml(record.role)}} / content evidence density</h4>
+        ${{detailBlock("Density memory id", record.content_evidence_density_memory_id)}}
+        ${{detailBlock("Required readability", record.required_readability_memory_id)}}
+        ${{detailBlock("Min specific business evidence objects", record.min_specific_business_evidence_objects)}}
+        ${{detailBlock("Min inspectable proof objects", record.min_inspectable_visual_proof_objects)}}
+        ${{detailBlock("Evidence object contract", record.evidence_object_contract)}}
+        ${{detailBlock("Inspectable proof objects", record.inspectable_visual_proof_object_contract)}}
+        ${{detailBlock("Forbidden substitutes", record.forbidden_evidence_substitutes)}}
+      </article>`).join("");
+      const run249GateCards = (refs.run249Gates || []).map((gate) => `<article class="dataCard">
+        <h4>${{escapeHtml(gate.role)}} / editorial renderer</h4>
+        ${{detailBlock("Gate id", gate.gate_id)}}
+        ${{detailBlock("Renderer contract id", gate.renderer_contract_id)}}
+        ${{detailBlock("Surface contract", gate.surface_contract)}}
+        ${{detailBlock("Forbid square block grid", gate.forbid_square_block_grid_as_primary_surface)}}
+        ${{detailBlock("Non-square ratio variants", gate.min_non_square_surface_ratio_variants)}}
+        ${{detailBlock("Require contact-sheet readability", gate.require_contact_sheet_readability)}}
+        ${{detailBlock("Require inspectable business evidence", gate.require_inspectable_business_evidence)}}
+        ${{detailBlock("Next rerun contract", gate.next_rerun_contract)}}
+        ${{detailBlock("Trace fields", gate.required_trace_fields)}}
+      </article>`).join("");
       const run243SemanticAssetCards = (refs.run243SemanticVisualAssets || []).map((record) => `<article class="dataCard">
         <h4>${{escapeHtml(record.role)}} / ${{escapeHtml(record.source_run2_41_surface_type)}}</h4>
         ${{detailBlock("Semantic asset id", record.semantic_asset_id)}}
@@ -3112,6 +3163,48 @@ def build_html(data: dict[str, Any]) -> str:
               ${{detailBlock("Next required action", run248Audit.next_required_action || "build_run2_49_readability_content_density_and_editorial_renderer_repair_before_rerun")}}
             </article>
           </div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.49 readability/content density/editorial renderer repair</h3><p>Data-only Run over Run 2.48. It creates readability memory, content evidence density memory, and editorial renderer workflow gates, then blocks any new visual-quality claim until Run 2.50 consumes them in a generated four-arm rerun.</p></div><span class="pill">${{escapeHtml(refs.run249ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Data-only Run boundary</h4>
+              ${{detailBlock("Result", "run2_49_readability_content_density_renderer_repair_result.json")}}
+              ${{detailBlock("Creates new PPT deck", run249Result.creates_new_ppt_deck)}}
+              ${{detailBlock("Public ready", run249Result.public_ready)}}
+              ${{detailBlock("Target layer", run249Result.target_layer || "readability_content_density_and_editorial_renderer_repair")}}
+              ${{detailBlock("Next required action", run249Result.next_required_action || "consume_run2_49_before_run2_50_four_arm_rerun")}}
+            </article>
+            <article class="dataCard">
+              <h4>Input chain</h4>
+              ${{detailBlock("Run 2.48 audit", run249Inputs.composition_grammar_effectiveness_audit || "run2_48_composition_grammar_effectiveness_audit.json")}}
+              ${{detailBlock("Run 2.46 visual object grammar", run249Inputs.visual_object_grammar_memory || "run2_46_visual_object_grammar_memory.json")}}
+              ${{detailBlock("Run 2.46 composition gates", run249Inputs.composition_workflow_gates || "run2_46_composition_workflow_gates.json")}}
+              ${{detailBlock("Run 2.24 single-usecase content", run249Inputs.single_usecase_content_memory || "run2_24_single_usecase_content_memory.json")}}
+            </article>
+            <article class="dataCard">
+              <h4>Output chain</h4>
+              ${{detailBlock("Readability memory", run249Outputs.readability_memory || "run2_49_readability_memory.json")}}
+              ${{detailBlock("Content evidence density memory", run249Outputs.content_evidence_density_memory || "run2_49_content_evidence_density_memory.json")}}
+              ${{detailBlock("Editorial renderer workflow gates", run249Outputs.editorial_renderer_workflow_gates || "run2_49_editorial_renderer_workflow_gates.json")}}
+              ${{detailBlock("Readability records", run249Counts.readability_records)}}
+              ${{detailBlock("Content evidence density records", run249Counts.content_evidence_density_records)}}
+              ${{detailBlock("Editorial renderer workflow gates", run249Counts.editorial_renderer_workflow_gates)}}
+            </article>
+            <article class="dataCard">
+              <h4>Repair contract</h4>
+              ${{detailBlock("Readability", run249RepairContract.readability)}}
+              ${{detailBlock("Content evidence density", run249RepairContract["content evidence density"])}}
+              ${{detailBlock("Editorial renderer", run249RepairContract["editorial renderer"])}}
+              ${{detailBlock("Release boundary", run249Result.release_boundary)}}
+            </article>
+          </div>
+          <div class="dataBandSubhead"><h4>Readability memory</h4><p>${{escapeHtml(refs.run249ReadabilityStatus)}}. These gates turn the previous vague readability complaint into title size, headline length, clipping, contrast, and contact-sheet checks.</p></div>
+          <div class="dataGrid">${{run249ReadabilityCards}}</div>
+          <div class="dataBandSubhead"><h4>Content evidence density memory</h4><p>${{escapeHtml(refs.run249DensityStatus)}}. These records require concrete business evidence objects and inspectable proof objects instead of generic abstract proof.</p></div>
+          <div class="dataGrid">${{run249DensityCards}}</div>
+          <div class="dataBandSubhead"><h4>Editorial renderer workflow gates</h4><p>${{escapeHtml(refs.run249GateStatus)}}. Run 2.50 must bind these renderer contracts before native PPT drawing, including non-square surfaces and no square block grid as the primary visual surface.</p></div>
+          <div class="dataGrid">${{run249GateCards}}</div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.22 selector-memory rerun result</h3><p>Generated four-arm rerun that consumes Run 2.21 visual-decision memory, selector gates, and rejection matrix before native PPT code generation. It stays in the same five-layer loop and does not advance to Run 3.0.</p></div><span class="pill">${{escapeHtml(refs.run222ResultStatus || "missing")}}</span></div>

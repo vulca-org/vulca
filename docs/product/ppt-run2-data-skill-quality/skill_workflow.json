@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "workflow_type": "declarative_skill_director",
-  "status": "run2_43_visual_asset_semantics_workflow_directed_public_blocked",
+  "status": "run2_49_readability_content_density_renderer_workflow_directed_public_blocked",
   "stage_policy": "repeat_same_five_layers_not_run3",
   "five_layer_loop": [
     "real_commercial_case",
@@ -990,6 +990,61 @@
         "negative control may receive Run 2.41 surface names but not Run 2.43 semantic asset ids or gate ids",
         "Run 2.43 is not a new PPT output and does not advance to Run 3.0"
       ]
+    },
+    {
+      "id": "compile_run2_49_readability_memory",
+      "order": 44,
+      "layer": "readability_memory",
+      "inputs": [
+        "results/run2_48_composition_grammar_effectiveness_audit.json",
+        "run2_46_visual_object_grammar_memory.json",
+        "run2_24_single_usecase_content_memory.json"
+      ],
+      "outputs": [
+        "run2_49_readability_memory.json"
+      ],
+      "gates": [
+        "each slide role defines a contact-sheet-scale readability gate before Run 2.50 generation",
+        "title text must not clip and must stay readable at contact-sheet scale",
+        "public slide text must hide run ids, memory ids, gate ids, and database terms"
+      ]
+    },
+    {
+      "id": "compile_run2_49_content_evidence_density_memory",
+      "order": 45,
+      "layer": "content_evidence_density_memory",
+      "inputs": [
+        "run2_49_readability_memory.json",
+        "run2_46_visual_object_grammar_memory.json",
+        "run2_24_single_usecase_content_memory.json"
+      ],
+      "outputs": [
+        "run2_49_content_evidence_density_memory.json"
+      ],
+      "gates": [
+        "each role requires at least three specific business evidence objects",
+        "each role requires at least two inspectable visual proof objects",
+        "generic abstract proof, empty square grids, and trace-only badges cannot count as business evidence"
+      ]
+    },
+    {
+      "id": "apply_run2_49_editorial_renderer_workflow_gates",
+      "order": 46,
+      "layer": "skill_workflow",
+      "inputs": [
+        "run2_49_readability_memory.json",
+        "run2_49_content_evidence_density_memory.json",
+        "run2_46_composition_workflow_gates.json"
+      ],
+      "outputs": [
+        "run2_49_editorial_renderer_workflow_gates.json",
+        "results/run2_49_readability_content_density_renderer_repair_result.json"
+      ],
+      "gates": [
+        "Run 2.50 must consume Run 2.49 readability memory, content evidence density memory, and renderer gates before native PPT generation",
+        "negative control may receive Run 2.46 composition grammar but not Run 2.49 readability, density, or renderer ids",
+        "Run 2.49 is not a new PPT output and does not advance to Run 3.0"
+      ]
     }
   ],
   "repair_triggers": [
@@ -1064,6 +1119,12 @@
       "trigger": "Run 2.42 found that Run 2.41 proves content and visual asset thickness but still feels simple because the named surfaces are schematic native shapes rather than semantic product or scene assets",
       "recommendation": "require run2_43_semantic_visual_asset_memory.json, run2_43_editorial_composition_typography_memory.json, and run2_43_visual_asset_semantics_workflow_gates.json before Run 2.44 four-arm rerun",
       "human_gate": "required before Run 2.44 generated rerun"
+    },
+    {
+      "id": "run2_49_readability_density_renderer_required_before_run2_50_rerun",
+      "trigger": "Run 2.48 found that Run 2.47 consumes composition grammar but still lacks contact-sheet readability, concrete content evidence density, and public-grade editorial renderer quality",
+      "recommendation": "require run2_49_readability_memory.json, run2_49_content_evidence_density_memory.json, and run2_49_editorial_renderer_workflow_gates.json before Run 2.50 four-arm rerun",
+      "human_gate": "required before Run 2.50 generated rerun"
     }
   ],
   "release_decisions": [
