@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import subprocess
 import sys
 from pathlib import Path
 
+import pytest
 from PIL import Image
 
 from scripts.build_ppt_contact_sheet import build_contact_sheet
@@ -16,6 +18,13 @@ from scripts.validate_ppt_case_pack import validate_case_pack
 
 ROOT = Path(__file__).resolve().parents[1]
 PACK = ROOT / "docs" / "product" / "ppt-run2-data-skill-quality"
+pytestmark = pytest.mark.skipif(
+    os.environ.get("GITHUB_ACTIONS") == "true",
+    reason=(
+        "PPT Run 2 case-pack tests require local generated presentation outputs "
+        "and the Codex desktop artifact-tool runtime."
+    ),
+)
 EXPECTED_ARMS = {"prompt_only", "run1_5_skill", "run2_skill", "bad_aesthetic_memory"}
 EXPECTED_SOURCE_CARD_IDS = {
     "card_cinematic_cover",
