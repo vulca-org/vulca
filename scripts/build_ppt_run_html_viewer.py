@@ -317,6 +317,27 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ),
         ),
     ),
+    RunSpec(
+        "2.36",
+        "Run 2.36",
+        "run2-36-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-36-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-36-run1-5-skill", "baseline"),
+            ArmSpec(
+                "run2_36_full_visual_evidence_realism",
+                "Run 2.36 full",
+                "ppt-run2-36-full-vulca",
+                "full",
+            ),
+            ArmSpec(
+                "bad_visual_evidence_realism_memory",
+                "Bad visual-evidence realism",
+                "ppt-run2-36-bad-visual-evidence-realism-memory",
+                "negative",
+            ),
+        ),
+    ),
 )
 
 
@@ -424,6 +445,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run235_composition_memory = read_json(pack / "run2_35_editorial_composition_memory.json")
     run235_workflow_gates = read_json(pack / "run2_35_visual_evidence_workflow_gates.json")
     run235_result = read_json(pack / "results" / "run2_35_visual_evidence_realism_workflow_result.json")
+    run236_result = read_json(pack / "results" / "run2_36_visual_evidence_realism_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -569,6 +591,8 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run235WorkflowGates": run235_workflow_gates.get("gates", []),
         "run235ResultStatus": run235_result.get("status", ""),
         "run235Result": run235_result,
+        "run236ResultStatus": run236_result.get("status", ""),
+        "run236Result": run236_result,
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -1629,6 +1653,11 @@ def build_html(data: dict[str, Any]) -> str:
       const run235RealismMemory = (refs.run235RealismMemory || []).map(run235RealismMemoryCard).join("");
       const run235CompositionMemory = (refs.run235CompositionMemory || []).map(run235CompositionMemoryCard).join("");
       const run235WorkflowGates = (refs.run235WorkflowGates || []).map(run235WorkflowGateCard).join("");
+      const run236Result = refs.run236Result || {{}};
+      const run236Rerun = run236Result.rerun || {{}};
+      const run236Inputs = run236Result.input_chain || {{}};
+      const run236Delta = run236Result.quality_delta || {{}};
+      const run236Control = run236Result.control_boundary || {{}};
       const run217Audit = refs.run217MotionAudit || {{}};
       const run217DeliveryTruth = run217Audit.delivery_truth || {{}};
       const run217RendererGap = run217Audit.motion_renderer_gap || {{}};
@@ -2130,6 +2159,45 @@ def build_html(data: dict[str, Any]) -> str:
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.35 visual evidence workflow gates</h3><p>${{escapeHtml(refs.run235WorkflowGateStatus)}}. These are required-before-rerun gates for Run 2.36, including trace fields and negative-control probes.</p></div><span class="pill">${{(refs.run235WorkflowGates || []).length}} gates</span></div>
           <div class="dataGrid">${{run235WorkflowGates}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.36 visual evidence realism rerun</h3><p>Generated four-arm rerun that consumes Run 2.35 visual evidence realism workflow before native PPT code generation. Target: usecase_specific_visual_evidence_asset_realism_and_editorial_composition.</p></div><span class="pill">${{escapeHtml(refs.run236ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Rerun proof</h4>
+              ${{detailBlock("Result", "run2_36_visual_evidence_realism_rerun_result.json")}}
+              ${{detailBlock("Best internal arm", run236Rerun.best_internal_arm || "run2_36_full_visual_evidence_realism")}}
+              ${{detailBlock("Verdict", run236Rerun.best_internal_arm_verdict || "usecase_specific_visual_evidence_asset_realism_and_editorial_composition_consumed_before_native_ppt_generation")}}
+              ${{detailBlock("Four-arm sheet", run236Rerun.combined_contact_sheet || "run2-36-four-arm-contact-sheet.png")}}
+              ${{detailBlock("Full-skill series", run236Rerun.full_skill_series_sheet || "run2-full-skill-series-horizontal.png")}}
+            </article>
+            <article class="dataCard">
+              <h4>Input chain</h4>
+              ${{detailBlock("Run 2.34 audit", run236Inputs.main_surface_visual_evidence_audit || "run2_34_main_surface_visual_evidence_audit.json")}}
+              ${{detailBlock("Run 2.33 prior rerun", run236Inputs.prior_main_surface_visual_evidence_rerun || "run2_33_main_surface_visual_evidence_rerun_result.json")}}
+              ${{detailBlock("Run 2.35 workflow result", run236Inputs.visual_evidence_realism_workflow_result || "run2_35_visual_evidence_realism_workflow_result.json")}}
+              ${{detailBlock("Run 2.35 realism memory", run236Inputs.visual_evidence_asset_realism_memory || "run2_35_visual_evidence_asset_realism_memory.json")}}
+              ${{detailBlock("Run 2.35 composition memory", run236Inputs.editorial_composition_memory || "run2_35_editorial_composition_memory.json")}}
+              ${{detailBlock("Run 2.35 workflow gates", run236Inputs.visual_evidence_workflow_gates || "run2_35_visual_evidence_workflow_gates.json")}}
+            </article>
+            <article class="dataCard">
+              <h4>Quality delta</h4>
+              ${{detailBlock("Target layer", run236Delta.target_layer || "usecase_specific_visual_evidence_asset_realism_and_editorial_composition")}}
+              ${{detailBlock("Required modules", run236Delta.required_modules || ["drawRun236RealisticProductState", "drawRun236EditorialAnchorObject", "drawRun236RealismGateRibbon"])}}
+              ${{detailBlock("Realism records", run236Delta.visual_evidence_asset_realism_records)}}
+              ${{detailBlock("Composition records", run236Delta.editorial_composition_records)}}
+              ${{detailBlock("Workflow gates", run236Delta.workflow_gates)}}
+            </article>
+            <article class="dataCard">
+              <h4>Control boundary</h4>
+              ${{detailBlock("Prompt-only arm", "ppt-run2-36-prompt-only")}}
+              ${{detailBlock("Run 1.5 arm", "ppt-run2-36-run1-5-skill")}}
+              ${{detailBlock("Full arm", "ppt-run2-36-full-vulca")}}
+              ${{detailBlock("Bad memory arm", "ppt-run2-36-bad-visual-evidence-realism-memory")}}
+              ${{detailBlock("Negative-control rule", run236Control.negative_control_rule || "bad arm may receive the usecase label, but not Run 2.35 realism ids, composition ids, gate ids, or execution status")}}
+              ${{detailBlock("Release boundary", run236Result.release_boundary || "Do not advance to Run 3.0 before Run 2.36 is audited")}}
+            </article>
+          </div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.22 selector-memory rerun result</h3><p>Generated four-arm rerun that consumes Run 2.21 visual-decision memory, selector gates, and rejection matrix before native PPT code generation. It stays in the same five-layer loop and does not advance to Run 3.0.</p></div><span class="pill">${{escapeHtml(refs.run222ResultStatus || "missing")}}</span></div>

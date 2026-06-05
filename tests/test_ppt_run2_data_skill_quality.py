@@ -5905,6 +5905,182 @@ def test_ppt_run_html_viewer_loads_run2_35_reference_data(tmp_path: Path) -> Non
     } <= set(refs["run235WorkflowGates"][0]["required_trace_fields"])
 
 
+def test_run2_36_generator_consumes_run2_35_realism_workflow_before_native_ppt_code() -> None:
+    script_path = ROOT / "scripts" / "generate_ppt_run2_36_visual_evidence_realism_arms.mjs"
+    assert script_path.exists(), "missing Run 2.36 visual-evidence realism generator"
+    body = script_path.read_text(encoding="utf-8")
+    arm_order = [
+        "prompt_only",
+        "run1_5_skill",
+        "run2_36_full_visual_evidence_realism",
+        "bad_visual_evidence_realism_memory",
+    ]
+
+    def arm_block(arm_id: str) -> str:
+        start = body.index(f'armId: "{arm_id}"')
+        next_starts = [body.find(f'armId: "{next_arm}"', start + 1) for next_arm in arm_order]
+        next_starts = [index for index in next_starts if index > start]
+        end = min(next_starts) if next_starts else len(body)
+        return body[start:end]
+
+    def section(block: str, start_marker: str, end_marker: str) -> str:
+        start = block.index(start_marker)
+        end = block.index(end_marker, start)
+        return block[start:end]
+
+    required_inputs = [
+        "run2_35_visual_evidence_asset_realism_memory.json",
+        "run2_35_editorial_composition_memory.json",
+        "run2_35_visual_evidence_workflow_gates.json",
+        "run2_35_visual_evidence_realism_workflow_result.json",
+        "run2_34_main_surface_visual_evidence_audit.json",
+        "run2_33_main_surface_visual_evidence_rerun_result.json",
+    ]
+
+    assert_contains(
+        body,
+        [
+            "validateRun235VisualEvidenceRealismWorkflow",
+            "loadRun236ContractData",
+            "drawRun236RealisticProductState",
+            "drawRun236EditorialAnchorObject",
+            "drawRun236RealismGateRibbon",
+            "usecase_specific_visual_evidence_asset_realism_and_editorial_composition",
+            "run2_35_visual_evidence_asset_realism_ids",
+            "run2_35_editorial_composition_memory_id",
+            "run2_35_realism_gate_id",
+            "run2_35_observable_product_state",
+            "run2_35_hero_canvas_share_target",
+            "run2_35_visual_evidence_realism_execution_status",
+            "usecase_specific_visual_evidence_asset_realism_and_editorial_composition_consumed_before_native_ppt_generation",
+        ],
+    )
+
+    prompt_allowed = section(arm_block("prompt_only"), "allowed:", "forbidden:")
+    prompt_forbidden = section(arm_block("prompt_only"), "forbidden:", "palette:")
+    run1_allowed = section(arm_block("run1_5_skill"), "allowed:", "forbidden:")
+    run1_forbidden = section(arm_block("run1_5_skill"), "forbidden:", "palette:")
+    full_allowed = section(arm_block("run2_36_full_visual_evidence_realism"), "allowed:", "forbidden:")
+    full_forbidden = section(arm_block("run2_36_full_visual_evidence_realism"), "forbidden:", "palette:")
+    bad_allowed = section(arm_block("bad_visual_evidence_realism_memory"), "allowed:", "forbidden:")
+    bad_forbidden = section(arm_block("bad_visual_evidence_realism_memory"), "forbidden:", "palette:")
+
+    for term in required_inputs:
+        assert term not in prompt_allowed
+        assert term in prompt_forbidden
+        assert term not in run1_allowed
+        assert term in run1_forbidden
+        assert term in full_allowed
+        assert term not in full_forbidden
+        assert term not in bad_allowed
+        assert term in bad_forbidden
+
+    assert 'const fullRun236 = arm.armId === "run2_36_full_visual_evidence_realism";' in body
+    assert 'registerRun236Module(metrics, "drawRun236RealisticProductState")' in body
+    for field in [
+        "run2_35_visual_evidence_asset_realism_ids",
+        "run2_35_editorial_composition_memory_id",
+        "run2_35_realism_gate_id",
+        "run2_35_observable_product_state",
+        "run2_35_hero_canvas_share_target",
+        "run2_35_visual_evidence_realism_execution_status",
+    ]:
+        assert re.search(fr"{field}:\s*fullRun236\s*\?", body), field
+
+
+def test_run2_36_records_visual_evidence_realism_rerun_result() -> None:
+    result = (PACK / "results" / "run2_36_visual_evidence_realism_rerun_result.md").read_text(
+        encoding="utf-8"
+    )
+    result_json = load_json(PACK / "results" / "run2_36_visual_evidence_realism_rerun_result.json")
+    presentations = ROOT / "outputs" / "019e7d9c-532a-70b3-8892-fa3ae42baef2" / "presentations"
+    full_trace = load_json(presentations / "ppt-run2-36-full-vulca" / "trace_manifest.json")
+    bad_trace = load_json(
+        presentations / "ppt-run2-36-bad-visual-evidence-realism-memory" / "trace_manifest.json"
+    )
+
+    assert result_json["status"] == "run2_36_visual_evidence_realism_rerun_public_blocked"
+    assert result_json["source_data_workflow_run_id"] == "2.35"
+    assert result_json["input_chain"]["visual_evidence_asset_realism_memory"].endswith(
+        "run2_35_visual_evidence_asset_realism_memory.json"
+    )
+    assert result_json["input_chain"]["editorial_composition_memory"].endswith(
+        "run2_35_editorial_composition_memory.json"
+    )
+    assert result_json["input_chain"]["visual_evidence_workflow_gates"].endswith(
+        "run2_35_visual_evidence_workflow_gates.json"
+    )
+    assert result_json["rerun"]["best_internal_arm"] == "run2_36_full_visual_evidence_realism"
+    assert result_json["rerun"]["best_internal_arm_verdict"] == (
+        "usecase_specific_visual_evidence_asset_realism_and_editorial_composition_consumed_before_native_ppt_generation"
+    )
+    assert result_json["quality_delta"]["target_layer"] == (
+        "usecase_specific_visual_evidence_asset_realism_and_editorial_composition"
+    )
+    assert result_json["quality_delta"]["run2_35_realism_records_consumed"] == 12
+    assert result_json["quality_delta"]["run2_35_composition_records_consumed"] == 6
+    assert result_json["quality_delta"]["run2_35_workflow_gates_consumed"] == 6
+    assert result_json["rerun"]["combined_contact_sheet"].endswith("run2-36-four-arm-contact-sheet.png")
+    assert result_json["rerun"]["full_skill_series_sheet"].endswith("run2-full-skill-series-horizontal.png")
+
+    assert full_trace["arm_id"] == "run2_36_full_visual_evidence_realism"
+    assert full_trace["run2_35_workflow_status"] == "run2_35_visual_evidence_realism_workflow_ready_public_blocked"
+    assert len(full_trace["slides"]) == 6
+    for slide in full_trace["slides"]:
+        assert len(slide["run2_35_visual_evidence_asset_realism_ids"]) >= 2
+        assert slide["run2_35_editorial_composition_memory_id"].startswith("composition_2_35_")
+        assert slide["run2_35_realism_gate_id"].startswith("gate_2_35_")
+        assert slide["run2_35_observable_product_state"]
+        assert slide["run2_35_hero_canvas_share_target"] >= 0.35
+        assert slide["run2_35_visual_evidence_realism_execution_status"] == (
+            "usecase_specific_visual_evidence_asset_realism_and_editorial_composition_consumed_before_native_ppt_generation"
+        )
+        assert slide["layout_metrics"]["realistic_visual_evidence_objects"] >= 2
+        assert slide["layout_metrics"]["hero_object_canvas_share"] >= 0.35
+        assert "drawRun236RealisticProductState" in slide["run2_36_code_module_ids"]
+        assert "drawRun236EditorialAnchorObject" in slide["run2_36_code_module_ids"]
+        assert "drawRun236RealismGateRibbon" in slide["run2_36_code_module_ids"]
+
+    assert bad_trace["arm_id"] == "bad_visual_evidence_realism_memory"
+    for slide in bad_trace["slides"]:
+        assert slide["run2_35_visual_evidence_asset_realism_ids"] == []
+        assert slide["run2_35_editorial_composition_memory_id"] == ""
+        assert slide["run2_35_realism_gate_id"] == ""
+
+    assert_contains(
+        result,
+        [
+            "Run 2.36",
+            "Run 2.35 visual evidence realism workflow",
+            "drawRun236RealisticProductState",
+            "drawRun236EditorialAnchorObject",
+            "usecase_specific_visual_evidence_asset_realism_and_editorial_composition",
+            "four-arm rerun",
+            "public blocked",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_mentions_run2_36_visual_evidence_realism_rerun() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "Run 2.36",
+            "ppt-run2-36-prompt-only",
+            "ppt-run2-36-run1-5-skill",
+            "ppt-run2-36-full-vulca",
+            "ppt-run2-36-bad-visual-evidence-realism-memory",
+            "run2_36_visual_evidence_realism_rerun_result.json",
+            "drawRun236RealisticProductState",
+            "drawRun236EditorialAnchorObject",
+            "usecase_specific_visual_evidence_asset_realism_and_editorial_composition",
+        ],
+    )
+
+
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
     layout_dir = tmp_path / "layout"
     layout_dir.mkdir()
