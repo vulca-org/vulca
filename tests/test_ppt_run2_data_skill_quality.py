@@ -6587,7 +6587,7 @@ def test_ppt_run_html_viewer_generated_includes_run2_39() -> None:
     )
 
 
-def test_ppt_run_html_viewer_generated_latest_run2_40() -> None:
+def test_ppt_run_html_viewer_generated_latest_run2_41() -> None:
     viewer = (
         ROOT
         / "outputs"
@@ -6599,7 +6599,7 @@ def test_ppt_run_html_viewer_generated_latest_run2_40() -> None:
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.40"',
+            '"latestRunId": "2.41"',
             "Run 2.40",
             "run2-40-four-arm-contact-sheet.png",
             "ppt-run2-40-prompt-only",
@@ -6607,6 +6607,13 @@ def test_ppt_run_html_viewer_generated_latest_run2_40() -> None:
             "ppt-run2-40-full-vulca",
             "ppt-run2-40-bad-trace-visible-visual-compiler",
             "run2_40_visual_compiler_rerun_result.json",
+            "Run 2.41",
+            "run2-41-four-arm-contact-sheet.png",
+            "ppt-run2-41-prompt-only",
+            "ppt-run2-41-run1-5-skill",
+            "ppt-run2-41-full-vulca",
+            "ppt-run2-41-bad-thin-content-visual-asset-compiler",
+            "run2_41_content_visual_asset_compiler_rerun_result.json",
         ],
     )
 
@@ -6742,6 +6749,136 @@ def test_ppt_run_html_viewer_mentions_run2_40_visual_compiler() -> None:
             "same_run2_38_run2_39_data_no_database_expansion",
             "drawRun240EditorialPoster",
             "drawRun240CinematicResult",
+        ],
+    )
+
+
+def test_run2_41_generator_thickens_content_and_visual_assets_without_database_expansion() -> None:
+    script_path = ROOT / "scripts" / "generate_ppt_run2_41_content_visual_asset_arms.mjs"
+    assert script_path.exists(), "missing Run 2.41 content/visual asset compiler generator"
+    body = script_path.read_text(encoding="utf-8")
+
+    assert_sequence(
+        body,
+        [
+            'armId: "prompt_only"',
+            'armId: "run1_5_skill"',
+            'armId: "run2_41_full_content_visual_asset_compiler"',
+            'armId: "bad_thin_content_visual_asset_compiler"',
+        ],
+    )
+    assert_contains(
+        body,
+        [
+            "run2_40_visual_compiler_rerun_result.json",
+            "run2_39_public_video_visual_direction_rerun_result.json",
+            "run2_38_public_video_slide_direction_memory.json",
+            "commercial_usecase_bank.json",
+            "sources.json",
+            "contentVisualAssetCompilerTransform",
+            "validateRun241ContentVisualAssetCompiler",
+            "same_database_no_workflow_expansion_content_visual_asset_compiler",
+            "visual_asset_surface_from_existing_sources_not_copied_media",
+            "public_surface_machinery_hidden",
+            "visible_business_detail_count",
+            "visual_asset_surface_count",
+            "editorial_scene_depth_score",
+            "drawRun241MarketScenePoster",
+            "drawRun241FailureStoryboard",
+            "drawRun241BeforeAfterBusinessCase",
+            "drawRun241ProductUiEvidenceScene",
+            "drawRun241CinematicLaunchMoment",
+            "drawRun241ReviewDecisionRoom",
+        ],
+    )
+
+
+def test_run2_41_records_content_visual_asset_compiler_rerun_result() -> None:
+    result = (PACK / "results" / "run2_41_content_visual_asset_compiler_rerun_result.md").read_text(
+        encoding="utf-8"
+    )
+    result_json = load_json(PACK / "results" / "run2_41_content_visual_asset_compiler_rerun_result.json")
+    presentations = ROOT / "outputs" / "019e7d9c-532a-70b3-8892-fa3ae42baef2" / "presentations"
+    full_trace = load_json(presentations / "ppt-run2-41-full-vulca" / "trace_manifest.json")
+    bad_trace = load_json(presentations / "ppt-run2-41-bad-thin-content-visual-asset-compiler" / "trace_manifest.json")
+
+    assert result_json["status"] == "run2_41_content_visual_asset_compiler_rerun_public_blocked"
+    assert result_json["source_generated_run_id"] == "2.40"
+    assert result_json["database_expansion"] is False
+    assert result_json["workflow_expansion"] is False
+    assert result_json["input_chain"]["run2_40_rerun_result"].endswith("run2_40_visual_compiler_rerun_result.json")
+    assert result_json["rerun"]["best_internal_arm"] == "run2_41_full_content_visual_asset_compiler"
+    assert result_json["rerun"]["best_internal_arm_verdict"] == (
+        "content_visual_asset_compiler_thickens_public_surface_without_database_or_workflow_expansion"
+    )
+    assert result_json["quality_delta"]["target_layer"] == "content_visual_asset_composition_thickness"
+    assert result_json["quality_delta"]["source_data_status"] == "same_database_no_workflow_expansion_content_visual_asset_compiler"
+    assert result_json["quality_delta"]["new_database_records_added"] == 0
+    assert result_json["quality_delta"]["new_workflow_gates_added"] == 0
+    assert result_json["quality_delta"]["full_slides_with_visible_business_detail_count_min_5"] == 6
+    assert result_json["quality_delta"]["full_slides_with_visual_asset_surface_count_min_3"] == 6
+    assert result_json["quality_delta"]["full_slides_with_machinery_hidden"] == 6
+    assert result_json["rerun"]["combined_contact_sheet"].endswith("run2-41-four-arm-contact-sheet.png")
+    assert result_json["rerun"]["full_skill_series_sheet"].endswith("run2-full-skill-series-horizontal.png")
+
+    assert full_trace["arm_id"] == "run2_41_full_content_visual_asset_compiler"
+    assert full_trace["run2_41_content_visual_asset_compiler_status"] == "same_database_content_visual_asset_compiler_applied"
+    assert full_trace["run2_40_source_rerun_status"] == "run2_40_visual_compiler_rerun_public_blocked"
+    assert len(full_trace["slides"]) == 6
+    for slide in full_trace["slides"]:
+        assert slide["run2_41_public_surface_machinery_hidden"] is True
+        assert slide["run2_41_visible_business_detail_count"] >= 5
+        assert slide["run2_41_visual_asset_surface_count"] >= 3
+        assert slide["run2_41_editorial_scene_depth_score"] >= 0.7
+        assert slide["run2_41_content_scene_payload"]
+        assert slide["run2_41_visual_asset_surface_types"]
+        assert slide["layout_metrics"]["presentation_surface_weight"] >= 0.72
+        assert slide["layout_metrics"]["text_density_tier"] in {"medium", "rich"}
+        assert slide["layout_metrics"]["trace_panel_visible"] is False
+        assert len(slide["run2_41_code_module_ids"]) == 1
+        assert slide["run2_41_code_module_ids"][0].startswith("drawRun241")
+
+    assert bad_trace["arm_id"] == "bad_thin_content_visual_asset_compiler"
+    assert bad_trace["workflow_expansion"] is False
+    for slide in bad_trace["slides"]:
+        assert slide["run2_41_public_surface_machinery_hidden"] is True
+        assert slide["run2_41_visible_machinery_terms"] == 0
+        assert slide["run2_41_visible_business_detail_count"] <= 2
+        assert slide["run2_41_visual_asset_surface_count"] <= 1
+        assert slide["run2_41_editorial_scene_depth_score"] < 0.5
+        assert slide["layout_metrics"]["trace_panel_visible"] is False
+
+    assert_contains(
+        result,
+        [
+            "Run 2.41",
+            "content visual asset compiler",
+            "same database",
+            "no workflow expansion",
+            "drawRun241MarketScenePoster",
+            "drawRun241CinematicLaunchMoment",
+            "public blocked",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_mentions_run2_41_content_visual_asset_compiler() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "Run 2.41",
+            "ppt-run2-41-prompt-only",
+            "ppt-run2-41-run1-5-skill",
+            "ppt-run2-41-full-vulca",
+            "ppt-run2-41-bad-thin-content-visual-asset-compiler",
+            "run2_41_content_visual_asset_compiler_rerun_result.json",
+            "content_visual_asset_composition_thickness",
+            "same_database_no_workflow_expansion_content_visual_asset_compiler",
+            "drawRun241MarketScenePoster",
+            "drawRun241CinematicLaunchMoment",
         ],
     )
 

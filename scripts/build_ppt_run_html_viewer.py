@@ -380,6 +380,27 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ),
         ),
     ),
+    RunSpec(
+        "2.41",
+        "Run 2.41",
+        "run2-41-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-41-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-41-run1-5-skill", "baseline"),
+            ArmSpec(
+                "run2_41_full_content_visual_asset_compiler",
+                "Run 2.41 full",
+                "ppt-run2-41-full-vulca",
+                "full",
+            ),
+            ArmSpec(
+                "bad_thin_content_visual_asset_compiler",
+                "Bad thin content/visual asset",
+                "ppt-run2-41-bad-thin-content-visual-asset-compiler",
+                "negative",
+            ),
+        ),
+    ),
 )
 
 
@@ -495,6 +516,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run238_result = read_json(pack / "results" / "run2_38_public_video_visual_direction_workflow_result.json")
     run239_result = read_json(pack / "results" / "run2_39_public_video_visual_direction_rerun_result.json")
     run240_result = read_json(pack / "results" / "run2_40_visual_compiler_rerun_result.json")
+    run241_result = read_json(pack / "results" / "run2_41_content_visual_asset_compiler_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -657,6 +679,8 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run239Result": run239_result,
         "run240ResultStatus": run240_result.get("status", ""),
         "run240Result": run240_result,
+        "run241ResultStatus": run241_result.get("status", ""),
+        "run241Result": run241_result,
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -1783,6 +1807,11 @@ def build_html(data: dict[str, Any]) -> str:
       const run240Inputs = run240Result.input_chain || {{}};
       const run240Delta = run240Result.quality_delta || {{}};
       const run240Control = run240Result.control_boundary || {{}};
+      const run241Result = refs.run241Result || {{}};
+      const run241Rerun = run241Result.rerun || {{}};
+      const run241Inputs = run241Result.input_chain || {{}};
+      const run241Delta = run241Result.quality_delta || {{}};
+      const run241Control = run241Result.control_boundary || {{}};
       const run217Audit = refs.run217MotionAudit || {{}};
       const run217DeliveryTruth = run217Audit.delivery_truth || {{}};
       const run217RendererGap = run217Audit.motion_renderer_gap || {{}};
@@ -2491,6 +2520,49 @@ def build_html(data: dict[str, Any]) -> str:
               ${{detailBlock("Bad same-data arm", "ppt-run2-40-bad-trace-visible-visual-compiler")}}
               ${{detailBlock("Bad same-data rule", run240Control.bad_trace_visible_visual_compiler || "same data, but trace/gate/memory/module terms stay visible")}}
               ${{detailBlock("Release boundary", run240Result.release_boundary || "Do not advance to Run 3.0 before Run 2.40 is audited")}}
+            </article>
+          </div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.41 content visual asset compiler rerun</h3><p>Generated four-arm rerun that uses the same database and no workflow expansion after Run 2.40. Target: content_visual_asset_composition_thickness.</p></div><span class="pill">${{escapeHtml(refs.run241ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Rerun proof</h4>
+              ${{detailBlock("Result", "run2_41_content_visual_asset_compiler_rerun_result.json")}}
+              ${{detailBlock("Best internal arm", run241Rerun.best_internal_arm || "run2_41_full_content_visual_asset_compiler")}}
+              ${{detailBlock("Verdict", run241Rerun.best_internal_arm_verdict || "content_visual_asset_compiler_thickens_public_surface_without_database_or_workflow_expansion")}}
+              ${{detailBlock("Four-arm sheet", run241Rerun.combined_contact_sheet || "run2-41-four-arm-contact-sheet.png")}}
+              ${{detailBlock("Full-skill series", run241Rerun.full_skill_series_sheet || "run2-full-skill-series-horizontal.png")}}
+            </article>
+            <article class="dataCard">
+              <h4>Same database inputs</h4>
+              ${{detailBlock("Run 2.40 result", run241Inputs.run2_40_rerun_result || "run2_40_visual_compiler_rerun_result.json")}}
+              ${{detailBlock("Run 2.39 result", run241Inputs.run2_39_rerun_result || "run2_39_public_video_visual_direction_rerun_result.json")}}
+              ${{detailBlock("Direction memory", run241Inputs.public_video_slide_direction_memory || "run2_38_public_video_slide_direction_memory.json")}}
+              ${{detailBlock("Recipe memory", run241Inputs.per_slide_visual_recipe_memory || "run2_38_per_slide_visual_recipe_memory.json")}}
+              ${{detailBlock("Workflow gates", run241Inputs.public_video_workflow_gates || "run2_38_public_video_workflow_gates.json")}}
+              ${{detailBlock("Commercial usecase bank", run241Inputs.commercial_usecase_bank || "commercial_usecase_bank.json")}}
+              ${{detailBlock("Sources", run241Inputs.sources || "sources.json")}}
+            </article>
+            <article class="dataCard">
+              <h4>Content/visual asset compiler</h4>
+              ${{detailBlock("Target layer", run241Delta.target_layer || "content_visual_asset_composition_thickness")}}
+              ${{detailBlock("Source data status", run241Delta.source_data_status || "same_database_no_workflow_expansion_content_visual_asset_compiler")}}
+              ${{detailBlock("Compiler policy", run241Delta.content_visual_asset_compiler_policy || "visual_asset_surface_from_existing_sources_not_copied_media")}}
+              ${{detailBlock("New database records", run241Delta.new_database_records_added)}}
+              ${{detailBlock("New workflow gates", run241Delta.new_workflow_gates_added)}}
+              ${{detailBlock("Slides with >=5 business details", run241Delta.full_slides_with_visible_business_detail_count_min_5)}}
+              ${{detailBlock("Slides with >=3 visual asset surfaces", run241Delta.full_slides_with_visual_asset_surface_count_min_3)}}
+              ${{detailBlock("Required modules", run241Delta.repair_modules || ["drawRun241MarketScenePoster", "drawRun241FailureStoryboard", "drawRun241BeforeAfterBusinessCase", "drawRun241ProductUiEvidenceScene", "drawRun241CinematicLaunchMoment", "drawRun241ReviewDecisionRoom"])}}
+            </article>
+            <article class="dataCard">
+              <h4>Control boundary</h4>
+              ${{detailBlock("Prompt-only arm", "ppt-run2-41-prompt-only")}}
+              ${{detailBlock("Run 1.5 arm", "ppt-run2-41-run1-5-skill")}}
+              ${{detailBlock("Full arm", "ppt-run2-41-full-vulca")}}
+              ${{detailBlock("Bad thin arm", "ppt-run2-41-bad-thin-content-visual-asset-compiler")}}
+              ${{detailBlock("Bad thin rule", run241Control.bad_thin_content_visual_asset_compiler || "same database, hidden machinery, but thin business details and visual asset surfaces")}}
+              ${{detailBlock("Release boundary", run241Result.release_boundary || "Do not advance to Run 3.0 before Run 2.41 is audited")}}
             </article>
           </div>
         </section>
