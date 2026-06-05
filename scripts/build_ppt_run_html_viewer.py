@@ -443,6 +443,27 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ),
         ),
     ),
+    RunSpec(
+        "2.50",
+        "Run 2.50",
+        "run2-50-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-50-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-50-run1-5-skill", "baseline"),
+            ArmSpec(
+                "run2_50_full_readability_density_renderer",
+                "Run 2.50 full",
+                "ppt-run2-50-full-vulca",
+                "full",
+            ),
+            ArmSpec(
+                "bad_run2_49_missing_repair_pack",
+                "Bad missing Run 2.49 repair pack",
+                "ppt-run2-50-bad-missing-run2-49-repair-pack",
+                "negative",
+            ),
+        ),
+    ),
 )
 
 
@@ -579,6 +600,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run249_result = read_json(
         pack / "results" / "run2_49_readability_content_density_renderer_repair_result.json"
     )
+    run250_result = read_json(pack / "results" / "run2_50_readability_density_renderer_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -795,6 +817,12 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run249Gates": run249_gates.get("editorial_renderer_workflow_gates", []),
         "run249ResultStatus": run249_result.get("status", ""),
         "run249Result": run249_result,
+        "run250ResultStatus": run250_result.get("status", ""),
+        "run250Result": run250_result,
+        "run250ResultPath": "run2_50_readability_density_renderer_rerun_result.json",
+        "run250TargetLayer": (run250_result.get("quality_delta") or {}).get(
+            "target_layer", "readability_content_density_and_editorial_renderer_binding"
+        ),
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -875,8 +903,10 @@ def build_html(data: dict[str, Any]) -> str:
     .statusbar {{ display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }}
     .pill {{ display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: 999px; background: var(--panel); border: 1px solid var(--line); font-size: 12px; color: var(--muted); white-space: nowrap; }}
     .pill.strong {{ background: var(--dark); border-color: var(--dark); color: #fff; }}
-    .toolbar {{ display: flex; align-items: center; gap: 18px; padding: 12px 22px; border-bottom: 1px solid var(--line); background: #fbfaf7; overflow-x: auto; }}
+    .toolbar {{ display: flex; align-items: center; gap: 18px; padding: 12px 22px; border-bottom: 1px solid var(--line); background: #fbfaf7; overflow: hidden; }}
     .versionRail, .viewRail {{ display: flex; gap: 8px; align-items: center; }}
+    .versionRail {{ flex: 1 1 auto; min-width: 0; overflow-x: auto; padding-bottom: 2px; }}
+    .viewRail {{ flex: 0 0 auto; }}
     .railLabel {{ font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; }}
     .seg {{ height: 34px; border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 6px; padding: 0 12px; cursor: pointer; white-space: nowrap; }}
     .seg.active {{ background: var(--dark); color: #fff; border-color: var(--dark); }}
@@ -2005,6 +2035,10 @@ def build_html(data: dict[str, Any]) -> str:
       const run249Outputs = run249Result.output_chain || {{}};
       const run249Counts = run249Result.artifact_counts || {{}};
       const run249RepairContract = run249Result.repair_contract || {{}};
+      const run250Result = refs.run250Result || {{}};
+      const run250Inputs = run250Result.input_chain || {{}};
+      const run250Rerun = run250Result.rerun || {{}};
+      const run250Quality = run250Result.quality_delta || {{}};
       const run249ReadabilityCards = (refs.run249ReadabilityRecords || []).map((record) => `<article class="dataCard">
         <h4>${{escapeHtml(record.role)}} / readability</h4>
         ${{detailBlock("Readability memory id", record.readability_memory_id)}}
@@ -2089,7 +2123,32 @@ def build_html(data: dict[str, Any]) -> str:
       </div>
       <div class="dataStack">
         <section class="dataBand">
-          <div class="dataBandHead"><div><h3>Latest data/workflow repair</h3><p>Run 2.49 is the current product-learning state: it is data/workflow-only, and the next visible proof must be a Run 2.50 generated four-arm rerun that consumes this repair pack.</p></div><span class="pill" title="${{escapeHtml(refs.run249ResultStatus || "missing")}}">${{escapeHtml(refs.run249ResultStatus || "missing")}}</span></div>
+          <div class="dataBandHead"><div><h3>Latest generated repair proof</h3><p>Run 2.50 is the current generated visual proof: it consumes the Run 2.49 readability, content evidence density, and editorial renderer repair pack before native PPT drawing.</p></div><span class="pill" title="${{escapeHtml(refs.run250ResultStatus || "missing")}}">${{escapeHtml(refs.run250ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Run 2.50 generated result</h4>
+              ${{detailBlock("Result", refs.run250ResultPath || "run2_50_readability_density_renderer_rerun_result.json")}}
+              ${{detailBlock("Best arm", run250Rerun.best_internal_arm || "run2_50_full_readability_density_renderer")}}
+              ${{detailBlock("Target layer", run250Quality.target_layer || refs.run250TargetLayer)}}
+              ${{detailBlock("Contact sheet", run250Rerun.combined_contact_sheet || "run2-50-four-arm-contact-sheet.png")}}
+            </article>
+            <article class="dataCard">
+              <h4>2.49 pack consumed</h4>
+              ${{detailBlock("Readability ids", run250Quality.full_slides_with_run2_49_readability_memory_id)}}
+              ${{detailBlock("Content density ids", run250Quality.full_slides_with_run2_49_content_evidence_density_memory_id)}}
+              ${{detailBlock("Renderer gate ids", run250Quality.full_slides_with_run2_49_editorial_renderer_gate_id)}}
+              ${{detailBlock("Business evidence pass", run250Quality.full_slides_with_business_evidence_density_pass)}}
+            </article>
+            <article class="dataCard">
+              <h4>Negative control</h4>
+              ${{detailBlock("Bad arm", "bad_run2_49_missing_repair_pack")}}
+              ${{detailBlock("Missing repair pack slides", run250Quality.bad_control_slides_without_run2_49_repair_pack)}}
+              ${{detailBlock("Boundary", "Run 2.47 may be visible, but no Run 2.49 ids can be bound.")}}
+            </article>
+          </div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Latest data/workflow repair</h3><p>Run 2.49 remains the latest data/workflow repair pack; Run 2.50 is the generated proof that consumes it and exposes the consumption in trace.</p></div><span class="pill" title="${{escapeHtml(refs.run249ResultStatus || "missing")}}">${{escapeHtml(refs.run249ResultStatus || "missing")}}</span></div>
           <div class="dataGrid">
             <article class="dataCard">
               <h4>Run 2.49 repair pack</h4>
@@ -2113,9 +2172,9 @@ def build_html(data: dict[str, Any]) -> str:
             </article>
             <article class="dataCard">
               <h4>Visual/data split</h4>
-              ${{detailBlock("Generated visual latest", "Run 2.47")}}
-              ${{detailBlock("Reason", "Run 2.48 and Run 2.49 are audit/data-workflow layers, so they must not create PPT files.")}}
-              ${{detailBlock("Proof target", "Run 2.50 must show whether the new data/workflow changes the visible slides.")}}
+              ${{detailBlock("Generated visual latest", "Run 2.50")}}
+              ${{detailBlock("Reason", "Run 2.48 and Run 2.49 are audit/data-workflow layers; Run 2.50 is the generated proof layer.")}}
+              ${{detailBlock("Proof result", "Run 2.50 binds Run 2.49 ids before native PPT drawing.")}}
             </article>
           </div>
         </section>
@@ -3061,7 +3120,7 @@ def build_html(data: dict[str, Any]) -> str:
             </article>
           </div>
         </section>
-        <!-- Run 2.46 is data/workflow-only; latestRunId advances after generated Run 2.47. -->
+        <!-- Run 2.46 is data/workflow-only; generated proof advances through Run 2.47 and Run 2.50. -->
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.46 multimodal composition memory</h3><p>Data/workflow-only layer over Run 2.45. It turns slot-based failure into multimodal composition decomposition, visual object grammar, and composition gates that must be consumed before Run 2.47.</p></div><span class="pill">${{escapeHtml(refs.run246ResultStatus || "missing")}}</span></div>
           <div class="dataGrid">
@@ -3142,7 +3201,7 @@ def build_html(data: dict[str, Any]) -> str:
           </div>
         </section>
         <section class="dataBand">
-          <div class="dataBandHead"><div><h3>Run 2.48 composition grammar effectiveness audit</h3><p>Audit-only layer over Run 2.47. It confirms visual object grammar consumption, compares against Run 2.44 slots and the bad control, then blocks public-video-grade release until readability and editorial renderer repair. No Run 2.48 PPTX/download is created; latest generated deck remains Run 2.47.</p></div><span class="pill">${{escapeHtml(refs.run248AuditStatus || "missing")}}</span></div>
+          <div class="dataBandHead"><div><h3>Run 2.48 composition grammar effectiveness audit</h3><p>Audit-only layer over Run 2.47. It confirms visual object grammar consumption, compares against Run 2.44 slots and the bad control, then blocks public-video-grade release until readability and editorial renderer repair. No Run 2.48 PPTX/download is created; the next generated proof layer is Run 2.50.</p></div><span class="pill">${{escapeHtml(refs.run248AuditStatus || "missing")}}</span></div>
           <div class="dataGrid">
             <article class="dataCard">
               <h4>Audit boundary</h4>
@@ -3238,6 +3297,32 @@ def build_html(data: dict[str, Any]) -> str:
           <div class="dataGrid">${{run249DensityCards}}</div>
           <div class="dataBandSubhead"><h4>Editorial renderer workflow gates</h4><p>${{escapeHtml(refs.run249GateStatus)}}. Run 2.50 must bind these renderer contracts before native PPT drawing, including non-square surfaces and no square block grid as the primary visual surface.</p></div>
           <div class="dataGrid">${{run249GateCards}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.50 readability density renderer rerun</h3><p>Generated four-arm rerun over Run 2.49. The full arm binds readability ids, content evidence density ids, and renderer gate ids before native PPT drawing; the bad control intentionally lacks the repair pack.</p></div><span class="pill">${{escapeHtml(refs.run250ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Input chain</h4>
+              ${{detailBlock("Run 2.49 result", run250Inputs.run2_49_result || "run2_49_readability_content_density_renderer_repair_result.json")}}
+              ${{detailBlock("Readability memory", run250Inputs.run2_49_readability_memory || "run2_49_readability_memory.json")}}
+              ${{detailBlock("Content evidence density", run250Inputs.run2_49_content_evidence_density_memory || "run2_49_content_evidence_density_memory.json")}}
+              ${{detailBlock("Renderer gates", run250Inputs.run2_49_editorial_renderer_workflow_gates || "run2_49_editorial_renderer_workflow_gates.json")}}
+            </article>
+            <article class="dataCard">
+              <h4>Generated proof</h4>
+              ${{detailBlock("Best arm", run250Rerun.best_internal_arm)}}
+              ${{detailBlock("Verdict", run250Rerun.best_internal_arm_verdict)}}
+              ${{detailBlock("Four-arm sheet", run250Rerun.combined_contact_sheet)}}
+              ${{detailBlock("Full-series sheet", run250Rerun.full_skill_series_sheet)}}
+            </article>
+            <article class="dataCard">
+              <h4>Trace delta</h4>
+              ${{detailBlock("Readability ids", run250Quality.full_slides_with_run2_49_readability_memory_id)}}
+              ${{detailBlock("Density ids", run250Quality.full_slides_with_run2_49_content_evidence_density_memory_id)}}
+              ${{detailBlock("Renderer gate ids", run250Quality.full_slides_with_run2_49_editorial_renderer_gate_id)}}
+              ${{detailBlock("Non-square surfaces", run250Quality.full_slides_with_non_square_renderer_surface)}}
+            </article>
+          </div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.22 selector-memory rerun result</h3><p>Generated four-arm rerun that consumes Run 2.21 visual-decision memory, selector gates, and rejection matrix before native PPT code generation. It stays in the same five-layer loop and does not advance to Run 3.0.</p></div><span class="pill">${{escapeHtml(refs.run222ResultStatus || "missing")}}</span></div>
@@ -3467,6 +3552,8 @@ def build_html(data: dict[str, Any]) -> str:
       else if (selectedView === "data") renderData();
       else if (selectedView === "audit") renderAudit();
       else renderFour();
+      content.scrollTop = 0;
+      content.scrollLeft = 0;
     }}
 
     function openModal(src, title) {{

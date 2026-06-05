@@ -2230,8 +2230,11 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
         "compile_run2_43_semantic_visual_asset_memory",
         "compile_run2_43_editorial_composition_typography_memory",
         "apply_run2_43_visual_asset_semantics_workflow_gates",
+        "compile_run2_49_readability_memory",
+        "compile_run2_49_content_evidence_density_memory",
+        "apply_run2_49_editorial_renderer_workflow_gates",
     ]
-    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 44))
+    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 47))
     assert workflow["repair_triggers"]
     workflow_text = json.dumps(workflow)
     assert "multimodal_database.json" in workflow_text
@@ -4221,7 +4224,7 @@ def test_run2_24_records_single_usecase_content_visual_evidence_pack() -> None:
     assert len(content_memory["slide_content_memory"]) == 6
     assert len(visual_assets["visual_evidence_assets"]) == 12
     assert len(workflow_gates["gates"]) == 6
-    assert workflow["status"] == "run2_43_visual_asset_semantics_workflow_directed_public_blocked"
+    assert workflow["status"] == "run2_49_readability_content_density_renderer_workflow_directed_public_blocked"
     assert {stage["id"] for stage in workflow["stages"]} >= {
         "lock_run2_24_single_usecase_content_memory",
         "compile_run2_24_visual_evidence_asset_memory",
@@ -5871,7 +5874,7 @@ def test_run2_35_records_visual_evidence_realism_workflow_result() -> None:
     assert len(realism_memory["visual_evidence_asset_realism_records"]) == 12
     assert len(composition_memory["editorial_composition_records"]) == 6
     assert len(workflow_gates["gates"]) == 6
-    assert workflow["status"] == "run2_43_visual_asset_semantics_workflow_directed_public_blocked"
+    assert workflow["status"] == "run2_49_readability_content_density_renderer_workflow_directed_public_blocked"
     assert {stage["id"] for stage in workflow["stages"]} >= {
         "compile_run2_35_visual_evidence_asset_realism_memory",
         "compile_run2_35_editorial_composition_memory",
@@ -6602,7 +6605,7 @@ def test_ppt_run_html_viewer_generated_includes_run2_39() -> None:
     )
 
 
-def test_ppt_run_html_viewer_generated_latest_run2_47() -> None:
+def test_ppt_run_html_viewer_generated_latest_run2_50() -> None:
     viewer = (
         ROOT
         / "outputs"
@@ -6635,7 +6638,7 @@ def test_ppt_run_html_viewer_generated_latest_run2_47() -> None:
             "ppt-run2-44-full-vulca",
             "ppt-run2-44-bad-run2-43-name-only-geometry",
             "run2_44_semantic_geometry_rerun_result.json",
-            '"latestRunId": "2.47"',
+            '"latestRunId": "2.50"',
             "Run 2.47",
             "run2-47-four-arm-contact-sheet.png",
             "ppt-run2-47-prompt-only",
@@ -6643,6 +6646,13 @@ def test_ppt_run_html_viewer_generated_latest_run2_47() -> None:
             "ppt-run2-47-full-vulca",
             "ppt-run2-47-bad-missing-composition-grammar",
             "run2_47_composition_grammar_rerun_result.json",
+            "Run 2.50",
+            "run2-50-four-arm-contact-sheet.png",
+            "ppt-run2-50-prompt-only",
+            "ppt-run2-50-run1-5-skill",
+            "ppt-run2-50-full-vulca",
+            "ppt-run2-50-bad-missing-run2-49-repair-pack",
+            "run2_50_readability_density_renderer_rerun_result.json",
         ],
     )
 
@@ -7161,7 +7171,7 @@ def test_run2_43_records_visual_asset_semantics_workflow_result() -> None:
     assert result_json["next_required_action"] == (
         "consume_run2_43_visual_asset_semantics_workflow_before_run2_44_rerun"
     )
-    assert workflow["status"] == "run2_43_visual_asset_semantics_workflow_directed_public_blocked"
+    assert workflow["status"] == "run2_49_readability_content_density_renderer_workflow_directed_public_blocked"
     assert {stage["id"] for stage in workflow["stages"]} >= {
         "compile_run2_43_semantic_visual_asset_memory",
         "compile_run2_43_editorial_composition_typography_memory",
@@ -7563,7 +7573,7 @@ def test_ppt_run_html_viewer_embeds_run2_45_semantic_geometry_effectiveness_audi
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.47"',
+            '"latestRunId": "2.50"',
             "Run 2.45 semantic geometry effectiveness audit",
             "run2_45_semantic_geometry_effectiveness_audit.json",
             "slot_based_semantic_geometry",
@@ -7716,13 +7726,13 @@ def test_ppt_run_html_viewer_embeds_run2_46_multimodal_composition_memory() -> N
             "run2_46_visual_object_grammar_memory.json",
             "run2_46_composition_workflow_gates.json",
             "consume_run2_46_multimodal_composition_memory_before_run2_47_rerun",
-            "latestRunId advances after generated Run 2.47",
+            "generated proof advances through Run 2.47 and Run 2.50",
         ],
     )
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.47"',
+            '"latestRunId": "2.50"',
             "Run 2.46 multimodal composition memory",
             "run2_46_multimodal_composition_memory_result.json",
             "visual object grammar",
@@ -7863,7 +7873,7 @@ def test_ppt_run_html_viewer_mentions_run2_47_composition_grammar_rerun() -> Non
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.47"',
+            '"latestRunId": "2.50"',
             "Run 2.47",
             "run2_47_composition_grammar_rerun_result.json",
             "visual object grammar",
@@ -8005,7 +8015,7 @@ def test_ppt_run_html_viewer_embeds_run2_48_composition_grammar_effectiveness_au
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.47"',
+            '"latestRunId": "2.50"',
             "Run 2.48 composition grammar effectiveness audit",
             "run2_48_composition_grammar_effectiveness_audit.json",
             "visual object grammar",
@@ -8163,7 +8173,7 @@ def test_ppt_run_html_viewer_embeds_run2_49_data_only_repair_pack() -> None:
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.47"',
+            '"latestRunId": "2.50"',
             "Run 2.49 readability/content density/editorial renderer repair",
             "Data-only Run",
             "run2_49_readability_memory.json",
@@ -8200,6 +8210,131 @@ def test_ppt_run_html_viewer_surfaces_latest_data_workflow_repair_first() -> Non
         ],
     )
     assert 'title="${escapeHtml(refs.run249ResultStatus || "missing")}"' in viewer
+
+
+def test_run2_50_generator_consumes_run2_49_repair_pack() -> None:
+    script_path = ROOT / "scripts" / "generate_ppt_run2_50_readability_density_renderer_arms.mjs"
+    assert script_path.exists(), "missing Run 2.50 readability/content-density renderer generator"
+    body = script_path.read_text(encoding="utf-8")
+
+    assert_contains(
+        body,
+        [
+            "run2_49_readability_memory.json",
+            "run2_49_content_evidence_density_memory.json",
+            "run2_49_editorial_renderer_workflow_gates.json",
+            "run2_49_readability_memory_id",
+            "run2_49_content_evidence_density_memory_id",
+            "run2_49_editorial_renderer_gate_id",
+            "run2_49_renderer_contract_id",
+            "run2_49_business_evidence_density_status",
+            "bad_run2_49_missing_repair_pack",
+            "drawRun250EditorialEvidenceScene",
+        ],
+    )
+
+
+def test_run2_50_records_readability_density_renderer_rerun_result() -> None:
+    result = (PACK / "results" / "run2_50_readability_density_renderer_rerun_result.md").read_text(
+        encoding="utf-8"
+    )
+    result_json = load_json(PACK / "results" / "run2_50_readability_density_renderer_rerun_result.json")
+    presentations = ROOT / "outputs" / "019e7d9c-532a-70b3-8892-fa3ae42baef2" / "presentations"
+    full_trace = load_json(presentations / "ppt-run2-50-full-vulca" / "trace_manifest.json")
+    bad_trace = load_json(presentations / "ppt-run2-50-bad-missing-run2-49-repair-pack" / "trace_manifest.json")
+
+    assert result_json["status"] == "run2_50_readability_density_renderer_rerun_public_blocked"
+    assert result_json["source_repair_run_id"] == "2.49"
+    assert result_json["source_generated_run_id"] == "2.47"
+    assert result_json["rerun"]["best_internal_arm"] == "run2_50_full_readability_density_renderer"
+    assert result_json["quality_delta"]["target_layer"] == "readability_content_density_and_editorial_renderer_binding"
+    assert result_json["quality_delta"]["full_slides_with_run2_49_readability_memory_id"] == 6
+    assert result_json["quality_delta"]["full_slides_with_run2_49_content_evidence_density_memory_id"] == 6
+    assert result_json["quality_delta"]["full_slides_with_run2_49_editorial_renderer_gate_id"] == 6
+    assert result_json["quality_delta"]["full_slides_with_business_evidence_density_pass"] == 6
+    assert result_json["quality_delta"]["bad_control_slides_without_run2_49_repair_pack"] == 6
+    assert result_json["rerun"]["combined_contact_sheet"].endswith("run2-50-four-arm-contact-sheet.png")
+
+    assert full_trace["arm_id"] == "run2_50_full_readability_density_renderer"
+    assert full_trace["run2_50_readability_density_renderer_status"] == (
+        "run2_49_repair_pack_consumed_before_native_ppt_drawing"
+    )
+    assert len(full_trace["slides"]) == 6
+    for slide in full_trace["slides"]:
+        assert slide["run2_49_readability_memory_id"].startswith("readability_memory_2_49_")
+        assert slide["run2_49_content_evidence_density_memory_id"].startswith("content_evidence_density_2_49_")
+        assert slide["run2_49_editorial_renderer_gate_id"].startswith("gate_2_49_")
+        assert slide["run2_49_renderer_contract_id"].startswith("renderer_contract_2_49_")
+        assert slide["run2_49_contact_sheet_readability_status"] == "pass_internal"
+        assert slide["run2_49_business_evidence_density_status"] == "pass_internal"
+        assert len(slide["run2_49_business_evidence_objects"]) >= 3
+        assert len(slide["run2_49_inspectable_proof_objects"]) >= 2
+        assert slide["run2_49_non_square_surface_ratio_variants"] >= 2
+        assert slide["run2_50_primary_surface_kind"] != "square_block_grid"
+        assert slide["layout_metrics"]["proof_objects"] >= 2
+        assert slide["layout_metrics"]["visible_words"] >= 70
+        assert slide["run2_50_code_module_ids"][0].startswith("drawRun250")
+
+    assert bad_trace["arm_id"] == "bad_run2_49_missing_repair_pack"
+    for slide in bad_trace["slides"]:
+        assert slide["run2_49_readability_memory_id"] == ""
+        assert slide["run2_49_content_evidence_density_memory_id"] == ""
+        assert slide["run2_49_editorial_renderer_gate_id"] == ""
+        assert slide["run2_49_business_evidence_density_status"] == "fail_missing_run2_49"
+
+    assert_contains(
+        result,
+        [
+            "Run 2.50 Readability Density Renderer Rerun",
+            "consumes Run 2.49",
+            "readability",
+            "content evidence density",
+            "editorial renderer",
+            "bad_run2_49_missing_repair_pack",
+            "public blocked",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_mentions_run2_50_readability_density_renderer_rerun() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+    viewer = (
+        ROOT
+        / "outputs"
+        / "019e7d9c-532a-70b3-8892-fa3ae42baef2"
+        / "presentations"
+        / "ppt-run-viewer.html"
+    ).read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "Run 2.50",
+            "ppt-run2-50-prompt-only",
+            "ppt-run2-50-run1-5-skill",
+            "ppt-run2-50-full-vulca",
+            "ppt-run2-50-bad-missing-run2-49-repair-pack",
+            "run2_50_readability_density_renderer_rerun_result.json",
+            "Latest generated repair proof",
+            "run250ResultStatus",
+            "readability_content_density_and_editorial_renderer_binding",
+        ],
+    )
+    assert_contains(
+        viewer,
+        [
+            '"latestRunId": "2.50"',
+            "Run 2.50",
+            "run2-50-four-arm-contact-sheet.png",
+            "ppt-run2-50-prompt-only",
+            "ppt-run2-50-run1-5-skill",
+            "ppt-run2-50-full-vulca",
+            "ppt-run2-50-bad-missing-run2-49-repair-pack",
+            "Latest generated repair proof",
+            "Run 2.50 readability density renderer rerun",
+            "run2_50_readability_density_renderer_rerun_result.json",
+        ],
+    )
 
 
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
@@ -9168,7 +9303,7 @@ def test_run2_18_records_thickness_result_and_no_new_ppt_output() -> None:
         ],
     )
 
-    assert workflow["status"] == "run2_43_visual_asset_semantics_workflow_directed_public_blocked"
+    assert workflow["status"] == "run2_49_readability_content_density_renderer_workflow_directed_public_blocked"
     assert {stage["id"] for stage in workflow["stages"]} >= {
         "expand_run2_18_multimodal_evidence",
         "expand_run2_18_design_memory",
