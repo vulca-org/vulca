@@ -7413,6 +7413,148 @@ def test_ppt_run_html_viewer_mentions_run2_44_semantic_geometry_rerun() -> None:
     )
 
 
+def test_run2_45_semantic_geometry_effectiveness_audit_compares_2_44_to_controls(tmp_path: Path) -> None:
+    script_path = ROOT / "scripts" / "audit_ppt_run2_45_semantic_geometry_effectiveness.py"
+    assert script_path.exists(), "missing Run 2.45 semantic geometry effectiveness audit script"
+    result_json = tmp_path / "run2_45_semantic_geometry_effectiveness_audit.json"
+    result_md = tmp_path / "run2_45_semantic_geometry_effectiveness_audit.md"
+    presentations_dir = (
+        ROOT
+        / "outputs"
+        / "019e7d9c-532a-70b3-8892-fa3ae42baef2"
+        / "presentations"
+    )
+    before_pptx = sorted(path.relative_to(ROOT).as_posix() for path in presentations_dir.rglob("*2-45*.pptx"))
+
+    subprocess.run(
+        [
+            sys.executable,
+            str(script_path),
+            "--result-json",
+            str(result_json),
+            "--result-md",
+            str(result_md),
+        ],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    after_pptx = sorted(path.relative_to(ROOT).as_posix() for path in presentations_dir.rglob("*2-45*.pptx"))
+    audit = load_json(result_json)
+    report = result_md.read_text(encoding="utf-8")
+
+    assert before_pptx == []
+    assert after_pptx == []
+    assert audit["run_id"] == "2.45"
+    assert audit["status"] == "run2_45_semantic_geometry_effectiveness_audit_public_blocked"
+    assert audit["source_generated_run"] == "2.44"
+    assert audit["source_workflow_run"] == "2.43"
+    assert audit["creates_new_ppt_deck"] is False
+    assert audit["public_ready"] is False
+    assert audit["input_chain"]["run2_44_full_trace_manifest"].endswith(
+        "ppt-run2-44-full-vulca/trace_manifest.json"
+    )
+    assert audit["input_chain"]["run2_44_bad_trace_manifest"].endswith(
+        "ppt-run2-44-bad-run2-43-name-only-geometry/trace_manifest.json"
+    )
+    assert audit["input_chain"]["run2_44_rerun_result"].endswith(
+        "run2_44_semantic_geometry_rerun_result.json"
+    )
+
+    trace = audit["semantic_geometry_trace_effectiveness"]
+    assert trace["dataflow_bug_fixed"] is True
+    assert trace["full_arm"]["all_slides_have_semantic_ids_memory_gate_and_geometry"] is True
+    assert trace["full_arm"]["slides_with_run2_43_semantic_asset_ids"] == 6
+    assert trace["full_arm"]["slides_with_data_bound_geometry"] == 6
+    assert trace["bad_control"]["name_only_boundary_passed"] is True
+    assert trace["bad_control"]["slides_without_semantic_asset_ids"] == 6
+    assert trace["bad_control"]["slides_without_data_bound_geometry"] == 6
+
+    visual = audit["visual_effectiveness_assessment"]
+    assert visual["composition_compiler_kind"] == "slot_based_semantic_geometry"
+    assert visual["slot_based_geometry_slides"] == 6
+    assert visual["dataflow_fix_visual_delta_from_bad_control"] == "proven_internal_only"
+    assert visual["public_video_grade_visual_quality"] is False
+    assert visual["visual_quality_gate"] == "blocked"
+    assert visual["root_cause_primary"] == "run2_44_dataflow_fixed_but_composition_compiler_still_slot_based"
+    assert visual["top_next_layer_to_thicken"] == "multimodal_composition_memory_and_visual_object_grammar"
+
+    assert audit["gate_summary"]["dataflow_gate"] == "pass_internal_only"
+    assert audit["gate_summary"]["composition_quality_gate"] == "blocked"
+    assert audit["next_required_action"] == (
+        "build_run2_46_multimodal_composition_memory_and_workflow_thickening"
+    )
+    assert_contains(
+        report,
+        [
+            "Run 2.45 Semantic Geometry Effectiveness Audit",
+            "dataflow bug is fixed",
+            "slot-based semantic geometry",
+            "not public-video-grade",
+            "Run 2.46",
+        ],
+    )
+
+
+def test_run2_45_records_semantic_geometry_effectiveness_audit_result() -> None:
+    result = (PACK / "results" / "run2_45_semantic_geometry_effectiveness_audit.md").read_text(
+        encoding="utf-8"
+    )
+    result_json = load_json(PACK / "results" / "run2_45_semantic_geometry_effectiveness_audit.json")
+
+    assert result_json["status"] == "run2_45_semantic_geometry_effectiveness_audit_public_blocked"
+    assert result_json["source_generated_run"] == "2.44"
+    assert result_json["semantic_geometry_trace_effectiveness"]["dataflow_bug_fixed"] is True
+    assert result_json["visual_effectiveness_assessment"]["visual_quality_gate"] == "blocked"
+    assert result_json["visual_effectiveness_assessment"]["top_next_layer_to_thicken"] == (
+        "multimodal_composition_memory_and_visual_object_grammar"
+    )
+    assert result_json["delivery_artifacts"]["pptx_paths"] == []
+    assert_contains(
+        result,
+        [
+            "Run 2.45 Semantic Geometry Effectiveness Audit",
+            "audit-only",
+            "dataflow bug is fixed",
+            "composition compiler is still slot-based",
+            "Run 2.46",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_embeds_run2_45_semantic_geometry_effectiveness_audit() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+    viewer = (
+        ROOT
+        / "outputs"
+        / "019e7d9c-532a-70b3-8892-fa3ae42baef2"
+        / "presentations"
+        / "ppt-run-viewer.html"
+    ).read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "run2_45_semantic_geometry_effectiveness_audit.json",
+            "Run 2.45 semantic geometry effectiveness audit",
+            "dataflow_bug_fixed",
+            "slot_based_semantic_geometry",
+            "build_run2_46_multimodal_composition_memory_and_workflow_thickening",
+        ],
+    )
+    assert_contains(
+        viewer,
+        [
+            '"latestRunId": "2.44"',
+            "Run 2.45 semantic geometry effectiveness audit",
+            "run2_45_semantic_geometry_effectiveness_audit.json",
+            "slot_based_semantic_geometry",
+        ],
+    )
+
+
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
     layout_dir = tmp_path / "layout"
     layout_dir.mkdir()

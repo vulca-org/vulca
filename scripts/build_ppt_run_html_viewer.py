@@ -545,6 +545,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run243_result = read_json(pack / "results" / "run2_43_visual_asset_semantics_workflow_result.json")
     run244_dataflow_audit = read_json(pack / "results" / "run2_44_dataflow_readiness_audit.json")
     run244_result = read_json(pack / "results" / "run2_44_semantic_geometry_rerun_result.json")
+    run245_audit = read_json(pack / "results" / "run2_45_semantic_geometry_effectiveness_audit.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -729,6 +730,8 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run244DataflowAudit": run244_dataflow_audit,
         "run244ResultStatus": run244_result.get("status", ""),
         "run244Result": run244_result,
+        "run245AuditStatus": run245_audit.get("status", ""),
+        "run245Audit": run245_audit,
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -1880,6 +1883,13 @@ def build_html(data: dict[str, Any]) -> str:
       const run244RerunInputs = run244Result.input_chain || {{}};
       const run244Delta = run244Result.quality_delta || {{}};
       const run244Control = run244Result.control_boundary || {{}};
+      const run245Audit = refs.run245Audit || {{}};
+      const run245Inputs = run245Audit.input_chain || {{}};
+      const run245Trace = run245Audit.semantic_geometry_trace_effectiveness || {{}};
+      const run245Full = run245Trace.full_arm || {{}};
+      const run245Bad = run245Trace.bad_control || {{}};
+      const run245Visual = run245Audit.visual_effectiveness_assessment || {{}};
+      const run245Gate = run245Audit.gate_summary || {{}};
       const run243SemanticAssetCards = (refs.run243SemanticVisualAssets || []).map((record) => `<article class="dataCard">
         <h4>${{escapeHtml(record.role)}} / ${{escapeHtml(record.source_run2_41_surface_type)}}</h4>
         ${{detailBlock("Semantic asset id", record.semantic_asset_id)}}
@@ -2828,6 +2838,48 @@ def build_html(data: dict[str, Any]) -> str:
               ${{detailBlock("Bad name-only arm", "ppt-run2-44-bad-run2-43-name-only-geometry")}}
               ${{detailBlock("Bad name-only rule", run244Control.bad_run2_43_name_only_geometry || "surface names only, no semantic asset ids, no gate id, no data-bound geometry")}}
               ${{detailBlock("Release boundary", run244Result.release_boundary || "Do not advance to Run 3.0 before Run 2.44 is audited")}}
+            </article>
+          </div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.45 semantic geometry effectiveness audit</h3><p>Audit-only layer over Run 2.44. It confirms the dataflow bug is fixed, then blocks visual quality because the compiler remains slot_based_semantic_geometry.</p></div><span class="pill">${{escapeHtml(refs.run245AuditStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Audit boundary</h4>
+              ${{detailBlock("Result", "run2_45_semantic_geometry_effectiveness_audit.json")}}
+              ${{detailBlock("Source generated run", run245Audit.source_generated_run)}}
+              ${{detailBlock("Source workflow run", run245Audit.source_workflow_run)}}
+              ${{detailBlock("Creates new PPT deck", run245Audit.creates_new_ppt_deck)}}
+              ${{detailBlock("Public ready", run245Audit.public_ready)}}
+              ${{detailBlock("Next required action", run245Audit.next_required_action || "build_run2_46_multimodal_composition_memory_and_workflow_thickening")}}
+            </article>
+            <article class="dataCard">
+              <h4>Input chain</h4>
+              ${{detailBlock("Run 2.44 full trace", run245Inputs.run2_44_full_trace_manifest)}}
+              ${{detailBlock("Run 2.44 bad trace", run245Inputs.run2_44_bad_trace_manifest)}}
+              ${{detailBlock("Run 2.44 result", run245Inputs.run2_44_rerun_result)}}
+              ${{detailBlock("Run 2.43 semantic memory", run245Inputs.run2_43_semantic_visual_asset_memory)}}
+              ${{detailBlock("Run 2.43 gates", run245Inputs.run2_43_visual_asset_semantics_workflow_gates)}}
+              ${{detailBlock("Run 2.44 four-arm sheet", run245Inputs.run2_44_four_arm_contact_sheet)}}
+            </article>
+            <article class="dataCard">
+              <h4>Trace effectiveness</h4>
+              ${{detailBlock("Dataflow bug fixed", run245Trace.dataflow_bug_fixed)}}
+              ${{detailBlock("Full arm", run245Full.arm_id)}}
+              ${{detailBlock("Slides with semantic asset ids", run245Full.slides_with_run2_43_semantic_asset_ids)}}
+              ${{detailBlock("Slides with data-bound geometry", run245Full.slides_with_data_bound_geometry)}}
+              ${{detailBlock("All slides have ids/memory/gate/geometry", run245Full.all_slides_have_semantic_ids_memory_gate_and_geometry)}}
+              ${{detailBlock("Bad control name-only boundary", run245Bad.name_only_boundary_passed)}}
+            </article>
+            <article class="dataCard">
+              <h4>Visual effectiveness</h4>
+              ${{detailBlock("Composition compiler kind", run245Visual.composition_compiler_kind || "slot_based_semantic_geometry")}}
+              ${{detailBlock("Slot-based geometry slides", run245Visual.slot_based_geometry_slides)}}
+              ${{detailBlock("Visual delta from bad control", run245Visual.dataflow_fix_visual_delta_from_bad_control)}}
+              ${{detailBlock("Visual quality gate", run245Visual.visual_quality_gate)}}
+              ${{detailBlock("Root cause", run245Visual.root_cause_primary || "run2_44_dataflow_fixed_but_composition_compiler_still_slot_based")}}
+              ${{detailBlock("Next layer", run245Visual.top_next_layer_to_thicken || "multimodal_composition_memory_and_visual_object_grammar")}}
+              ${{detailBlock("Gate summary", run245Gate.summary)}}
             </article>
           </div>
         </section>
