@@ -338,6 +338,27 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ),
         ),
     ),
+    RunSpec(
+        "2.39",
+        "Run 2.39",
+        "run2-39-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-39-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-39-run1-5-skill", "baseline"),
+            ArmSpec(
+                "run2_39_full_public_video_visual_direction",
+                "Run 2.39 full",
+                "ppt-run2-39-full-vulca",
+                "full",
+            ),
+            ArmSpec(
+                "bad_public_video_visual_direction_memory",
+                "Bad public-video visual direction",
+                "ppt-run2-39-bad-public-video-visual-direction-memory",
+                "negative",
+            ),
+        ),
+    ),
 )
 
 
@@ -451,6 +472,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run238_recipe_memory = read_json(pack / "run2_38_per_slide_visual_recipe_memory.json")
     run238_workflow_gates = read_json(pack / "run2_38_public_video_workflow_gates.json")
     run238_result = read_json(pack / "results" / "run2_38_public_video_visual_direction_workflow_result.json")
+    run239_result = read_json(pack / "results" / "run2_39_public_video_visual_direction_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -609,6 +631,8 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run238WorkflowGateContract": run238_workflow_gates.get("visual_rhythm_diversity_contract", {}),
         "run238ResultStatus": run238_result.get("status", ""),
         "run238Result": run238_result,
+        "run239ResultStatus": run239_result.get("status", ""),
+        "run239Result": run239_result,
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -1725,6 +1749,11 @@ def build_html(data: dict[str, Any]) -> str:
         ${{detailBlock("Next rerun contract", gate.next_rerun_contract)}}
         ${{detailBlock("Pass/fail checks", gate.pass_fail_checks)}}
       </article>`).join("");
+      const run239Result = refs.run239Result || {{}};
+      const run239Rerun = run239Result.rerun || {{}};
+      const run239Inputs = run239Result.input_chain || {{}};
+      const run239Delta = run239Result.quality_delta || {{}};
+      const run239Control = run239Result.control_boundary || {{}};
       const run217Audit = refs.run217MotionAudit || {{}};
       const run217DeliveryTruth = run217Audit.delivery_truth || {{}};
       const run217RendererGap = run217Audit.motion_renderer_gap || {{}};
@@ -2356,6 +2385,46 @@ def build_html(data: dict[str, Any]) -> str:
           <div class="dataGrid">${{run238DirectionCards}}</div>
           <div class="dataGrid">${{run238RecipeCards}}</div>
           <div class="dataGrid">${{run238GateCards}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.39 public-video visual direction rerun</h3><p>Generated four-arm rerun that consumes the Run 2.38 public-video visual direction workflow before native PPT code generation. Target: public_video_grade_slide_direction_and_per_slide_visual_recipe.</p></div><span class="pill">${{escapeHtml(refs.run239ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Rerun proof</h4>
+              ${{detailBlock("Result", "run2_39_public_video_visual_direction_rerun_result.json")}}
+              ${{detailBlock("Best internal arm", run239Rerun.best_internal_arm || "run2_39_full_public_video_visual_direction")}}
+              ${{detailBlock("Verdict", run239Rerun.best_internal_arm_verdict || "public_video_grade_slide_direction_and_per_slide_visual_recipe_consumed_before_native_ppt_generation")}}
+              ${{detailBlock("Four-arm sheet", run239Rerun.combined_contact_sheet || "run2-39-four-arm-contact-sheet.png")}}
+              ${{detailBlock("Full-skill series", run239Rerun.full_skill_series_sheet || "run2-full-skill-series-horizontal.png")}}
+            </article>
+            <article class="dataCard">
+              <h4>Input chain</h4>
+              ${{detailBlock("Run 2.37 audit", run239Inputs.visual_quality_audit || "run2_37_visual_quality_audit.json")}}
+              ${{detailBlock("Run 2.36 result", run239Inputs.visual_evidence_realism_rerun_result || "run2_36_visual_evidence_realism_rerun_result.json")}}
+              ${{detailBlock("Run 2.38 workflow", run239Inputs.public_video_visual_direction_workflow_result || "run2_38_public_video_visual_direction_workflow_result.json")}}
+              ${{detailBlock("Direction memory", run239Inputs.public_video_slide_direction_memory || "run2_38_public_video_slide_direction_memory.json")}}
+              ${{detailBlock("Recipe memory", run239Inputs.per_slide_visual_recipe_memory || "run2_38_per_slide_visual_recipe_memory.json")}}
+              ${{detailBlock("Workflow gates", run239Inputs.public_video_workflow_gates || "run2_38_public_video_workflow_gates.json")}}
+            </article>
+            <article class="dataCard">
+              <h4>Quality delta</h4>
+              ${{detailBlock("Target layer", run239Delta.target_layer || "public_video_grade_slide_direction_and_per_slide_visual_recipe")}}
+              ${{detailBlock("Run 2.38 direction records consumed", run239Delta.run2_38_direction_records_consumed)}}
+              ${{detailBlock("Run 2.38 recipe records consumed", run239Delta.run2_38_recipe_records_consumed)}}
+              ${{detailBlock("Run 2.38 workflow gates consumed", run239Delta.run2_38_workflow_gates_consumed)}}
+              ${{detailBlock("Unique visual rhythms", run239Delta.unique_visual_rhythms)}}
+              ${{detailBlock("Required modules", run239Delta.repair_modules || ["drawRun239LaunchPosterStage", "drawRun239FailurePathScene", "drawRun239AsymmetricBeforeAfterState", "drawRun239ProductWorkflowSurface", "drawRun239CinematicClimaxObject", "drawRun239DecisionHandoffPath"])}}
+            </article>
+            <article class="dataCard">
+              <h4>Control boundary</h4>
+              ${{detailBlock("Prompt-only arm", "ppt-run2-39-prompt-only")}}
+              ${{detailBlock("Run 1.5 arm", "ppt-run2-39-run1-5-skill")}}
+              ${{detailBlock("Full arm", "ppt-run2-39-full-vulca")}}
+              ${{detailBlock("Bad memory arm", "ppt-run2-39-bad-public-video-visual-direction-memory")}}
+              ${{detailBlock("Bad control rule", run239Control.bad_public_video_visual_direction_memory || "selected usecase label only, no Run 2.38 public-video direction memory")}}
+              ${{detailBlock("Release boundary", run239Result.release_boundary || "Do not advance to Run 3.0 before Run 2.39 is audited")}}
+            </article>
+          </div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.22 selector-memory rerun result</h3><p>Generated four-arm rerun that consumes Run 2.21 visual-decision memory, selector gates, and rejection matrix before native PPT code generation. It stays in the same five-layer loop and does not advance to Run 3.0.</p></div><span class="pill">${{escapeHtml(refs.run222ResultStatus || "missing")}}</span></div>

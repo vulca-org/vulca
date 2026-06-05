@@ -627,6 +627,14 @@ def assert_contains(body: str, terms: list[str]) -> None:
         assert normalize(term) in normalized, f"missing term: {term!r}"
 
 
+def assert_sequence(body: str, terms: list[str]) -> None:
+    cursor = -1
+    for term in terms:
+        index = body.find(term, cursor + 1)
+        assert index != -1, f"missing sequence term: {term!r}"
+        cursor = index
+
+
 def assert_mentions_any(body: str, terms: set[str]) -> None:
     normalized = normalize(body)
     assert any(normalize(term) in normalized for term in terms), f"missing one of: {sorted(terms)!r}"
@@ -6388,6 +6396,194 @@ def test_ppt_run_html_viewer_embeds_run2_38_public_video_visual_direction_workfl
             "visual_rhythm_diversity_contract",
             "must_be_consumed_before_run2_39_four_arm_rerun",
             "Run 2.39 four-arm rerun",
+        ],
+    )
+
+
+def test_run2_39_generator_consumes_run2_38_public_video_workflow_before_native_ppt_code() -> None:
+    script_path = ROOT / "scripts" / "generate_ppt_run2_39_public_video_visual_direction_arms.mjs"
+    assert script_path.exists(), "missing Run 2.39 public-video visual-direction generator"
+    body = script_path.read_text(encoding="utf-8")
+
+    assert_sequence(
+        body,
+        [
+            'armId: "prompt_only"',
+            'armId: "run1_5_skill"',
+            'armId: "run2_39_full_public_video_visual_direction"',
+            'armId: "bad_public_video_visual_direction_memory"',
+        ],
+    )
+    assert_contains(
+        body,
+        [
+            "run2_38_public_video_slide_direction_memory.json",
+            "run2_38_per_slide_visual_recipe_memory.json",
+            "run2_38_public_video_workflow_gates.json",
+            "run2_38_public_video_visual_direction_workflow_result.json",
+            "run2_37_visual_quality_audit.json",
+            "run2_36_visual_evidence_realism_rerun_result.json",
+            "validateRun238PublicVideoWorkflow",
+            "loadRun239ContractData",
+            "drawRun239LaunchPosterStage",
+            "drawRun239FailurePathScene",
+            "drawRun239AsymmetricBeforeAfterState",
+            "drawRun239ProductWorkflowSurface",
+            "drawRun239CinematicClimaxObject",
+            "drawRun239DecisionHandoffPath",
+            "public_video_grade_slide_direction_and_per_slide_visual_recipe_consumed_before_native_ppt_generation",
+            "visual_rhythm_diversity_contract",
+            "run2_38_visual_direction_memory_id",
+            "run2_38_per_slide_visual_recipe_id",
+            "run2_38_visual_rhythm_id",
+            "run2_38_layout_signature_target",
+            "run2_38_public_video_execution_status",
+        ],
+    )
+    assert 'const fullRun239 = arm.armId === "run2_39_full_public_video_visual_direction";' in body
+    assert 'registerRun239Module(metrics, "drawRun239LaunchPosterStage")' in body
+    assert 'registerRun239Module(metrics, "drawRun239CinematicClimaxObject")' in body
+    allowed_section = body[body.index('armId: "run2_39_full_public_video_visual_direction"') : body.index('armId: "bad_public_video_visual_direction_memory"')]
+    for filename in [
+        "run2_38_public_video_slide_direction_memory.json",
+        "run2_38_per_slide_visual_recipe_memory.json",
+        "run2_38_public_video_workflow_gates.json",
+        "run2_38_public_video_visual_direction_workflow_result.json",
+    ]:
+        assert filename in allowed_section
+    bad_section = body[body.index('armId: "bad_public_video_visual_direction_memory"') :]
+    for filename in [
+        "run2_38_public_video_slide_direction_memory.json",
+        "run2_38_per_slide_visual_recipe_memory.json",
+        "run2_38_public_video_workflow_gates.json",
+        "run2_38_public_video_visual_direction_workflow_result.json",
+    ]:
+        assert filename in bad_section
+
+
+def test_run2_39_records_public_video_visual_direction_rerun_result() -> None:
+    result = (PACK / "results" / "run2_39_public_video_visual_direction_rerun_result.md").read_text(
+        encoding="utf-8"
+    )
+    result_json = load_json(PACK / "results" / "run2_39_public_video_visual_direction_rerun_result.json")
+    presentations = ROOT / "outputs" / "019e7d9c-532a-70b3-8892-fa3ae42baef2" / "presentations"
+    full_trace = load_json(presentations / "ppt-run2-39-full-vulca" / "trace_manifest.json")
+    bad_trace = load_json(
+        presentations / "ppt-run2-39-bad-public-video-visual-direction-memory" / "trace_manifest.json"
+    )
+
+    assert result_json["status"] == "run2_39_public_video_visual_direction_rerun_public_blocked"
+    assert result_json["source_data_workflow_run_id"] == "2.38"
+    assert result_json["input_chain"]["public_video_slide_direction_memory"].endswith(
+        "run2_38_public_video_slide_direction_memory.json"
+    )
+    assert result_json["input_chain"]["per_slide_visual_recipe_memory"].endswith(
+        "run2_38_per_slide_visual_recipe_memory.json"
+    )
+    assert result_json["input_chain"]["public_video_workflow_gates"].endswith(
+        "run2_38_public_video_workflow_gates.json"
+    )
+    assert result_json["input_chain"]["visual_quality_audit"].endswith("run2_37_visual_quality_audit.json")
+    assert result_json["rerun"]["best_internal_arm"] == "run2_39_full_public_video_visual_direction"
+    assert result_json["rerun"]["best_internal_arm_verdict"] == (
+        "public_video_grade_slide_direction_and_per_slide_visual_recipe_consumed_before_native_ppt_generation"
+    )
+    assert result_json["quality_delta"]["target_layer"] == (
+        "public_video_grade_slide_direction_and_per_slide_visual_recipe"
+    )
+    assert result_json["quality_delta"]["run2_38_direction_records_consumed"] == 6
+    assert result_json["quality_delta"]["run2_38_recipe_records_consumed"] == 6
+    assert result_json["quality_delta"]["run2_38_workflow_gates_consumed"] == 6
+    assert result_json["quality_delta"]["unique_visual_rhythms"] == 6
+    assert result_json["rerun"]["combined_contact_sheet"].endswith("run2-39-four-arm-contact-sheet.png")
+    assert result_json["rerun"]["full_skill_series_sheet"].endswith("run2-full-skill-series-horizontal.png")
+
+    assert full_trace["arm_id"] == "run2_39_full_public_video_visual_direction"
+    assert full_trace["run2_38_workflow_gate_status"] == "run2_38_public_video_workflow_gates_ready_public_blocked"
+    assert len(full_trace["slides"]) == 6
+    rhythms = {slide["run2_38_visual_rhythm_id"] for slide in full_trace["slides"]}
+    assert rhythms == {
+        "poster_reveal",
+        "failure_path_scene",
+        "asymmetric_before_after",
+        "product_workflow_surface",
+        "cinematic_climax_object",
+        "decision_handoff_path",
+    }
+    for slide in full_trace["slides"]:
+        assert slide["run2_38_visual_direction_memory_id"].startswith("direction_2_38_")
+        assert slide["run2_38_per_slide_visual_recipe_id"].startswith("recipe_2_38_")
+        assert slide["run2_38_layout_signature_target"]
+        assert slide["run2_38_public_video_scene_type"]
+        assert slide["run2_38_first_read_object"]
+        assert slide["run2_38_public_video_execution_status"] == (
+            "public_video_grade_slide_direction_and_per_slide_visual_recipe_consumed_before_native_ppt_generation"
+        )
+        assert slide["layout_metrics"]["primary_visual_weight"] >= 0.55
+        assert slide["layout_metrics"]["run2_36_dominant_layout_signature_reused"] is False
+        assert len(slide["run2_39_code_module_ids"]) == 1
+        assert slide["run2_39_code_module_ids"][0].startswith("drawRun239")
+
+    assert bad_trace["arm_id"] == "bad_public_video_visual_direction_memory"
+    for slide in bad_trace["slides"]:
+        assert slide["run2_38_visual_direction_memory_id"] == ""
+        assert slide["run2_38_per_slide_visual_recipe_id"] == ""
+        assert slide["run2_38_visual_rhythm_id"] == ""
+
+    assert_contains(
+        result,
+        [
+            "Run 2.39",
+            "Run 2.38 public-video visual direction workflow",
+            "drawRun239LaunchPosterStage",
+            "drawRun239CinematicClimaxObject",
+            "public_video_grade_slide_direction_and_per_slide_visual_recipe",
+            "four-arm rerun",
+            "public blocked",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_mentions_run2_39_public_video_visual_direction_rerun() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "Run 2.39",
+            "ppt-run2-39-prompt-only",
+            "ppt-run2-39-run1-5-skill",
+            "ppt-run2-39-full-vulca",
+            "ppt-run2-39-bad-public-video-visual-direction-memory",
+            "run2_39_public_video_visual_direction_rerun_result.json",
+            "drawRun239LaunchPosterStage",
+            "drawRun239CinematicClimaxObject",
+            "public_video_grade_slide_direction_and_per_slide_visual_recipe",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_generated_latest_run2_39() -> None:
+    viewer = (
+        ROOT
+        / "outputs"
+        / "019e7d9c-532a-70b3-8892-fa3ae42baef2"
+        / "presentations"
+        / "ppt-run-viewer.html"
+    ).read_text(encoding="utf-8")
+
+    assert_contains(
+        viewer,
+        [
+            '"latestRunId": "2.39"',
+            "Run 2.39",
+            "run2-39-four-arm-contact-sheet.png",
+            "ppt-run2-39-prompt-only",
+            "ppt-run2-39-run1-5-skill",
+            "ppt-run2-39-full-vulca",
+            "ppt-run2-39-bad-public-video-visual-direction-memory",
+            "run2_39_public_video_visual_direction_rerun_result.json",
         ],
     )
 
