@@ -401,6 +401,27 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ),
         ),
     ),
+    RunSpec(
+        "2.44",
+        "Run 2.44",
+        "run2-44-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-44-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-44-run1-5-skill", "baseline"),
+            ArmSpec(
+                "run2_44_full_semantic_geometry_compiler",
+                "Run 2.44 full",
+                "ppt-run2-44-full-vulca",
+                "full",
+            ),
+            ArmSpec(
+                "bad_run2_43_name_only_geometry",
+                "Bad Run 2.43 name-only geometry",
+                "ppt-run2-44-bad-run2-43-name-only-geometry",
+                "negative",
+            ),
+        ),
+    ),
 )
 
 
@@ -523,6 +544,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run243_workflow_gates = read_json(pack / "run2_43_visual_asset_semantics_workflow_gates.json")
     run243_result = read_json(pack / "results" / "run2_43_visual_asset_semantics_workflow_result.json")
     run244_dataflow_audit = read_json(pack / "results" / "run2_44_dataflow_readiness_audit.json")
+    run244_result = read_json(pack / "results" / "run2_44_semantic_geometry_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -705,6 +727,8 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run243Result": run243_result,
         "run244DataflowAuditStatus": run244_dataflow_audit.get("status", ""),
         "run244DataflowAudit": run244_dataflow_audit,
+        "run244ResultStatus": run244_result.get("status", ""),
+        "run244Result": run244_result,
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -1851,6 +1875,11 @@ def build_html(data: dict[str, Any]) -> str:
       const run244Inputs = run244Audit.input_chain || {{}};
       const run244Findings = run244Audit.dataflow_findings || {{}};
       const run244NextGate = run244Audit.next_rerun_gate || {{}};
+      const run244Result = refs.run244Result || {{}};
+      const run244Rerun = run244Result.rerun || {{}};
+      const run244RerunInputs = run244Result.input_chain || {{}};
+      const run244Delta = run244Result.quality_delta || {{}};
+      const run244Control = run244Result.control_boundary || {{}};
       const run243SemanticAssetCards = (refs.run243SemanticVisualAssets || []).map((record) => `<article class="dataCard">
         <h4>${{escapeHtml(record.role)}} / ${{escapeHtml(record.source_run2_41_surface_type)}}</h4>
         ${{detailBlock("Semantic asset id", record.semantic_asset_id)}}
@@ -2760,6 +2789,45 @@ def build_html(data: dict[str, Any]) -> str:
               ${{detailBlock("Visual geometry must be data-bound", run244NextGate.visual_geometry_must_be_data_bound)}}
               ${{detailBlock("Required trace fields", run244NextGate.required_trace_fields)}}
               ${{detailBlock("Next required action", run244Audit.next_required_action || "build_run2_44_generator_that_consumes_run2_43_memory_for_visual_geometry_before_render")}}
+            </article>
+          </div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.44 semantic geometry rerun</h3><p>Generated four-arm rerun that consumes Run 2.43 before drawing native PPT geometry. Target: semantic_visual_asset_geometry_binding.</p></div><span class="pill">${{escapeHtml(refs.run244ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Rerun proof</h4>
+              ${{detailBlock("Result", "run2_44_semantic_geometry_rerun_result.json")}}
+              ${{detailBlock("Best internal arm", run244Rerun.best_internal_arm || "run2_44_full_semantic_geometry_compiler")}}
+              ${{detailBlock("Verdict", run244Rerun.best_internal_arm_verdict || "Run 2.43 semantic workflow now drives native PPT geometry before drawing")}}
+              ${{detailBlock("Four-arm sheet", run244Rerun.combined_contact_sheet || "run2-44-four-arm-contact-sheet.png")}}
+              ${{detailBlock("Full-skill series", run244Rerun.full_skill_series_sheet || "run2-full-skill-series-horizontal.png")}}
+            </article>
+            <article class="dataCard">
+              <h4>Consumed input chain</h4>
+              ${{detailBlock("Run 2.43 workflow result", run244RerunInputs.run2_43_workflow_result || "run2_43_visual_asset_semantics_workflow_result.json")}}
+              ${{detailBlock("Semantic visual asset memory", run244RerunInputs.semantic_visual_asset_memory || "run2_43_semantic_visual_asset_memory.json")}}
+              ${{detailBlock("Editorial composition typography memory", run244RerunInputs.editorial_composition_typography_memory || "run2_43_editorial_composition_typography_memory.json")}}
+              ${{detailBlock("Visual asset semantics workflow gates", run244RerunInputs.visual_asset_semantics_workflow_gates || "run2_43_visual_asset_semantics_workflow_gates.json")}}
+              ${{detailBlock("Preflight audit", run244RerunInputs.run2_44_dataflow_readiness_audit || "run2_44_dataflow_readiness_audit.json")}}
+            </article>
+            <article class="dataCard">
+              <h4>Geometry binding result</h4>
+              ${{detailBlock("Target layer", run244Delta.target_layer || "semantic_visual_asset_geometry_binding")}}
+              ${{detailBlock("Source data status", run244Delta.source_data_status || "run2_43_workflow_consumed_for_data_bound_geometry")}}
+              ${{detailBlock("Geometry source", run244Delta.run2_44_geometry_source || "run2_43_semantic_visual_asset_memory+run2_43_editorial_composition_typography_memory+run2_43_visual_asset_semantics_workflow_gates")}}
+              ${{detailBlock("Slides with semantic asset ids", run244Delta.full_slides_with_run2_43_semantic_asset_ids)}}
+              ${{detailBlock("Slides with data-bound geometry", run244Delta.full_slides_with_data_bound_geometry)}}
+              ${{detailBlock("Required modules", run244Delta.repair_modules || ["drawRun244CoverSemanticGeometry", "drawRun244SetupSemanticGeometry", "drawRun244ContrastSemanticGeometry", "drawRun244ProofSemanticGeometry", "drawRun244ClimaxSemanticGeometry", "drawRun244CloseSemanticGeometry"])}}
+            </article>
+            <article class="dataCard">
+              <h4>Control boundary</h4>
+              ${{detailBlock("Prompt-only arm", "ppt-run2-44-prompt-only")}}
+              ${{detailBlock("Run 1.5 arm", "ppt-run2-44-run1-5-skill")}}
+              ${{detailBlock("Full arm", "ppt-run2-44-full-vulca")}}
+              ${{detailBlock("Bad name-only arm", "ppt-run2-44-bad-run2-43-name-only-geometry")}}
+              ${{detailBlock("Bad name-only rule", run244Control.bad_run2_43_name_only_geometry || "surface names only, no semantic asset ids, no gate id, no data-bound geometry")}}
+              ${{detailBlock("Release boundary", run244Result.release_boundary || "Do not advance to Run 3.0 before Run 2.44 is audited")}}
             </article>
           </div>
         </section>

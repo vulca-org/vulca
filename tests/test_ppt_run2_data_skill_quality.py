@@ -6593,7 +6593,7 @@ def test_ppt_run_html_viewer_generated_includes_run2_39() -> None:
     )
 
 
-def test_ppt_run_html_viewer_generated_latest_run2_41() -> None:
+def test_ppt_run_html_viewer_generated_latest_run2_44() -> None:
     viewer = (
         ROOT
         / "outputs"
@@ -6605,7 +6605,7 @@ def test_ppt_run_html_viewer_generated_latest_run2_41() -> None:
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.41"',
+            '"latestRunId": "2.44"',
             "Run 2.40",
             "run2-40-four-arm-contact-sheet.png",
             "ppt-run2-40-prompt-only",
@@ -6620,6 +6620,13 @@ def test_ppt_run_html_viewer_generated_latest_run2_41() -> None:
             "ppt-run2-41-full-vulca",
             "ppt-run2-41-bad-thin-content-visual-asset-compiler",
             "run2_41_content_visual_asset_compiler_rerun_result.json",
+            "Run 2.44",
+            "run2-44-four-arm-contact-sheet.png",
+            "ppt-run2-44-prompt-only",
+            "ppt-run2-44-run1-5-skill",
+            "ppt-run2-44-full-vulca",
+            "ppt-run2-44-bad-run2-43-name-only-geometry",
+            "run2_44_semantic_geometry_rerun_result.json",
         ],
     )
 
@@ -7273,6 +7280,135 @@ def test_ppt_run_html_viewer_embeds_run2_44_dataflow_readiness_audit() -> None:
             "run2_41_visual_geometry_is_hardcoded",
             "run2_43_builder_reads_multimodal_source_records",
             "build_run2_44_generator_that_consumes_run2_43_memory_for_visual_geometry_before_render",
+        ],
+    )
+
+
+def test_run2_44_generator_consumes_run2_43_workflow_for_geometry() -> None:
+    script_path = ROOT / "scripts" / "generate_ppt_run2_44_semantic_geometry_arms.mjs"
+    assert script_path.exists(), "missing Run 2.44 semantic geometry generator"
+    body = script_path.read_text(encoding="utf-8")
+
+    assert_contains(
+        body,
+        [
+            "run2_43_semantic_visual_asset_memory.json",
+            "run2_43_editorial_composition_typography_memory.json",
+            "run2_43_visual_asset_semantics_workflow_gates.json",
+            "run2_44_dataflow_readiness_audit.json",
+            "readRun244PackJsonForArm",
+            "validateRun244SemanticGeometryCompiler",
+            "semanticGeometryTransform",
+            "layoutFromRun243Memory",
+            "drawRun244SemanticGeometryRail",
+            "run2_43_semantic_visual_asset_ids",
+            "run2_43_editorial_typography_memory_id",
+            "run2_43_visual_asset_semantics_gate_id",
+            "run2_44_geometry_source",
+            "run2_44_data_bound_geometry",
+        ],
+    )
+
+
+def test_run2_44_records_semantic_geometry_rerun_result() -> None:
+    result = (PACK / "results" / "run2_44_semantic_geometry_rerun_result.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_44_semantic_geometry_rerun_result.json")
+    full_trace = load_json(
+        ROOT
+        / "outputs"
+        / "019e7d9c-532a-70b3-8892-fa3ae42baef2"
+        / "presentations"
+        / "ppt-run2-44-full-vulca"
+        / "trace_manifest.json"
+    )
+    bad_trace = load_json(
+        ROOT
+        / "outputs"
+        / "019e7d9c-532a-70b3-8892-fa3ae42baef2"
+        / "presentations"
+        / "ppt-run2-44-bad-run2-43-name-only-geometry"
+        / "trace_manifest.json"
+    )
+
+    assert result_json["status"] == "run2_44_semantic_geometry_rerun_public_blocked"
+    assert result_json["source_data_workflow_run_id"] == "2.43"
+    assert result_json["source_dataflow_audit_run_id"] == "2.44-preflight"
+    assert result_json["rerun"]["best_internal_arm"] == "run2_44_full_semantic_geometry_compiler"
+    assert result_json["quality_delta"]["target_layer"] == "semantic_visual_asset_geometry_binding"
+    assert result_json["quality_delta"]["full_slides_with_run2_43_semantic_asset_ids"] == 6
+    assert result_json["quality_delta"]["full_slides_with_data_bound_geometry"] == 6
+    assert result_json["input_chain"]["semantic_visual_asset_memory"].endswith(
+        "run2_43_semantic_visual_asset_memory.json"
+    )
+    assert result_json["input_chain"]["editorial_composition_typography_memory"].endswith(
+        "run2_43_editorial_composition_typography_memory.json"
+    )
+    assert result_json["input_chain"]["visual_asset_semantics_workflow_gates"].endswith(
+        "run2_43_visual_asset_semantics_workflow_gates.json"
+    )
+
+    assert full_trace["arm_id"] == "run2_44_full_semantic_geometry_compiler"
+    assert full_trace["run2_44_semantic_geometry_status"] == (
+        "run2_43_workflow_consumed_for_data_bound_geometry"
+    )
+    assert full_trace["source_data_workflow_run_id"] == "2.43"
+    assert len(full_trace["slides"]) == 6
+    for slide in full_trace["slides"]:
+        assert len(slide["run2_43_semantic_visual_asset_ids"]) == 3
+        assert all(asset_id.startswith("semantic_asset_2_43_") for asset_id in slide["run2_43_semantic_visual_asset_ids"])
+        assert slide["run2_43_editorial_typography_memory_id"].startswith("editorial_typography_2_43_")
+        assert slide["run2_43_visual_asset_semantics_gate_id"].startswith("gate_2_43_")
+        assert slide["run2_43_visual_asset_semantics_execution_status"] == (
+            "consumed_before_native_ppt_drawing"
+        )
+        assert slide["run2_43_source_boundary_status"] == "derived_only_no_copied_media"
+        assert slide["run2_44_data_bound_geometry"] is True
+        assert slide["run2_44_geometry_source"] == (
+            "run2_43_semantic_visual_asset_memory+run2_43_editorial_composition_typography_memory+run2_43_visual_asset_semantics_workflow_gates"
+        )
+        assert slide["run2_44_layout_signature_target"]
+        assert len(slide["run2_44_semantic_asset_geometry_slots"]) == 3
+        assert all(slot["asset_id"].startswith("semantic_asset_2_43_") for slot in slide["run2_44_semantic_asset_geometry_slots"])
+        assert len(slide["run2_44_code_module_ids"]) == 1
+        assert slide["run2_44_code_module_ids"][0].startswith("drawRun244")
+
+    assert bad_trace["arm_id"] == "bad_run2_43_name_only_geometry"
+    assert bad_trace["run2_44_semantic_geometry_status"] == "run2_43_names_only_geometry_control"
+    for slide in bad_trace["slides"]:
+        assert slide["run2_43_semantic_visual_asset_ids"] == []
+        assert slide["run2_43_editorial_typography_memory_id"] == ""
+        assert slide["run2_43_visual_asset_semantics_gate_id"] == ""
+        assert slide["run2_43_visual_asset_semantics_execution_status"] == "not_consumed_name_only_control"
+        assert slide["run2_44_data_bound_geometry"] is False
+        assert slide["run2_44_semantic_asset_geometry_slots"] == []
+
+    assert_contains(
+        result,
+        [
+            "Run 2.44 Semantic Geometry Rerun",
+            "consumes Run 2.43",
+            "semantic visual asset ids",
+            "data-bound geometry",
+            "bad_run2_43_name_only_geometry",
+            "public blocked",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_mentions_run2_44_semantic_geometry_rerun() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "Run 2.44",
+            "ppt-run2-44-prompt-only",
+            "ppt-run2-44-run1-5-skill",
+            "ppt-run2-44-full-vulca",
+            "ppt-run2-44-bad-run2-43-name-only-geometry",
+            "run2_44_semantic_geometry_rerun_result.json",
+            "semantic_visual_asset_geometry_binding",
+            "run2_43_workflow_consumed_for_data_bound_geometry",
         ],
     )
 
