@@ -6593,7 +6593,7 @@ def test_ppt_run_html_viewer_generated_includes_run2_39() -> None:
     )
 
 
-def test_ppt_run_html_viewer_generated_latest_run2_44() -> None:
+def test_ppt_run_html_viewer_generated_latest_run2_47() -> None:
     viewer = (
         ROOT
         / "outputs"
@@ -6605,7 +6605,6 @@ def test_ppt_run_html_viewer_generated_latest_run2_44() -> None:
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.44"',
             "Run 2.40",
             "run2-40-four-arm-contact-sheet.png",
             "ppt-run2-40-prompt-only",
@@ -6627,6 +6626,14 @@ def test_ppt_run_html_viewer_generated_latest_run2_44() -> None:
             "ppt-run2-44-full-vulca",
             "ppt-run2-44-bad-run2-43-name-only-geometry",
             "run2_44_semantic_geometry_rerun_result.json",
+            '"latestRunId": "2.47"',
+            "Run 2.47",
+            "run2-47-four-arm-contact-sheet.png",
+            "ppt-run2-47-prompt-only",
+            "ppt-run2-47-run1-5-skill",
+            "ppt-run2-47-full-vulca",
+            "ppt-run2-47-bad-missing-composition-grammar",
+            "run2_47_composition_grammar_rerun_result.json",
         ],
     )
 
@@ -7547,7 +7554,7 @@ def test_ppt_run_html_viewer_embeds_run2_45_semantic_geometry_effectiveness_audi
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.44"',
+            '"latestRunId": "2.47"',
             "Run 2.45 semantic geometry effectiveness audit",
             "run2_45_semantic_geometry_effectiveness_audit.json",
             "slot_based_semantic_geometry",
@@ -7700,15 +7707,156 @@ def test_ppt_run_html_viewer_embeds_run2_46_multimodal_composition_memory() -> N
             "run2_46_visual_object_grammar_memory.json",
             "run2_46_composition_workflow_gates.json",
             "consume_run2_46_multimodal_composition_memory_before_run2_47_rerun",
-            "latestRunId remains 2.44",
+            "latestRunId advances after generated Run 2.47",
         ],
     )
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.44"',
+            '"latestRunId": "2.47"',
             "Run 2.46 multimodal composition memory",
             "run2_46_multimodal_composition_memory_result.json",
+            "visual object grammar",
+        ],
+    )
+
+
+def test_run2_47_generator_consumes_run2_46_composition_grammar() -> None:
+    script_path = ROOT / "scripts" / "generate_ppt_run2_47_composition_grammar_arms.mjs"
+    assert script_path.exists(), "missing Run 2.47 composition grammar generator"
+    body = script_path.read_text(encoding="utf-8")
+
+    assert_contains(
+        body,
+        [
+            "run2_46_multimodal_composition_decomposition.json",
+            "run2_46_visual_object_grammar_memory.json",
+            "run2_46_composition_workflow_gates.json",
+            "run2_46_multimodal_composition_memory_result.json",
+            "readRun247PackJsonForArm",
+            "validateRun247CompositionGrammarCompiler",
+            "compositionGrammarTransform",
+            "drawRun247ComposedObjectScene",
+            "run2_46_visual_object_grammar_id",
+            "run2_46_multimodal_composition_decomposition_id",
+            "run2_46_composition_gate_id",
+            "run2_46_slot_based_geometry_replaced",
+            "run2_46_source_boundary_status",
+            "bad_run2_46_missing_composition_grammar",
+        ],
+    )
+
+
+def test_run2_47_records_composition_grammar_rerun_result() -> None:
+    result = (PACK / "results" / "run2_47_composition_grammar_rerun_result.md").read_text(
+        encoding="utf-8"
+    )
+    result_json = load_json(PACK / "results" / "run2_47_composition_grammar_rerun_result.json")
+    full_trace = load_json(
+        ROOT
+        / "outputs"
+        / "019e7d9c-532a-70b3-8892-fa3ae42baef2"
+        / "presentations"
+        / "ppt-run2-47-full-vulca"
+        / "trace_manifest.json"
+    )
+    bad_trace = load_json(
+        ROOT
+        / "outputs"
+        / "019e7d9c-532a-70b3-8892-fa3ae42baef2"
+        / "presentations"
+        / "ppt-run2-47-bad-missing-composition-grammar"
+        / "trace_manifest.json"
+    )
+
+    assert result_json["status"] == "run2_47_composition_grammar_rerun_public_blocked"
+    assert result_json["source_composition_memory_run_id"] == "2.46"
+    assert result_json["source_generated_run_id"] == "2.44"
+    assert result_json["rerun"]["best_internal_arm"] == "run2_47_full_composition_grammar_compiler"
+    assert result_json["quality_delta"]["target_layer"] == "composition_grammar_binding"
+    assert result_json["quality_delta"]["full_slides_with_run2_46_visual_object_grammar_id"] == 6
+    assert result_json["quality_delta"]["full_slides_with_slot_based_geometry_replaced"] == 6
+    assert result_json["quality_delta"]["bad_control_slides_without_run2_46_grammar"] == 6
+    assert result_json["input_chain"]["visual_object_grammar_memory"].endswith(
+        "run2_46_visual_object_grammar_memory.json"
+    )
+    assert result_json["input_chain"]["composition_workflow_gates"].endswith(
+        "run2_46_composition_workflow_gates.json"
+    )
+
+    assert full_trace["arm_id"] == "run2_47_full_composition_grammar_compiler"
+    assert full_trace["run2_47_composition_grammar_status"] == (
+        "run2_46_composition_grammar_consumed_before_native_ppt_drawing"
+    )
+    assert full_trace["source_composition_memory_run_id"] == "2.46"
+    assert len(full_trace["slides"]) == 6
+    for slide in full_trace["slides"]:
+        assert slide["run2_46_visual_object_grammar_id"].startswith("visual_object_grammar_2_46_")
+        assert slide["run2_46_multimodal_composition_decomposition_id"].startswith(
+            "composition_decomposition_2_46_"
+        )
+        assert slide["run2_46_composition_gate_id"].startswith("gate_2_46_")
+        assert slide["run2_46_slot_based_geometry_replaced"] is True
+        assert slide["run2_46_source_boundary_status"] == "derived_only_no_copied_media"
+        assert slide["run2_47_primary_composition_kind"] != "slot_based_semantic_geometry"
+        assert len(slide["run2_47_visual_object_scene_objects"]) >= 3
+        assert slide["run2_44_semantic_asset_geometry_slots"] == []
+        assert len(slide["run2_47_code_module_ids"]) == 1
+        assert slide["run2_47_code_module_ids"][0].startswith("drawRun247")
+
+    assert bad_trace["arm_id"] == "bad_run2_46_missing_composition_grammar"
+    assert bad_trace["run2_47_composition_grammar_status"] == (
+        "run2_44_geometry_present_but_run2_46_composition_grammar_missing"
+    )
+    for slide in bad_trace["slides"]:
+        assert slide["run2_46_visual_object_grammar_id"] == ""
+        assert slide["run2_46_multimodal_composition_decomposition_id"] == ""
+        assert slide["run2_46_composition_gate_id"] == ""
+        assert slide["run2_46_slot_based_geometry_replaced"] is False
+        assert len(slide["run2_44_semantic_asset_geometry_slots"]) == 3
+
+    assert_contains(
+        result,
+        [
+            "Run 2.47 Composition Grammar Rerun",
+            "consumes Run 2.46",
+            "visual object grammar",
+            "slot-based geometry replaced",
+            "bad_run2_46_missing_composition_grammar",
+            "public blocked",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_mentions_run2_47_composition_grammar_rerun() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+    viewer = (
+        ROOT
+        / "outputs"
+        / "019e7d9c-532a-70b3-8892-fa3ae42baef2"
+        / "presentations"
+        / "ppt-run-viewer.html"
+    ).read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "Run 2.47",
+            "ppt-run2-47-prompt-only",
+            "ppt-run2-47-run1-5-skill",
+            "ppt-run2-47-full-vulca",
+            "ppt-run2-47-bad-missing-composition-grammar",
+            "run2_47_composition_grammar_rerun_result.json",
+            "composition_grammar_binding",
+            "run2_46_composition_grammar_consumed_before_native_ppt_drawing",
+        ],
+    )
+    assert_contains(
+        viewer,
+        [
+            '"latestRunId": "2.47"',
+            "Run 2.47",
+            "run2_47_composition_grammar_rerun_result.json",
             "visual object grammar",
         ],
     )

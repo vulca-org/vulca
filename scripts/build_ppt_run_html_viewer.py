@@ -422,6 +422,27 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ),
         ),
     ),
+    RunSpec(
+        "2.47",
+        "Run 2.47",
+        "run2-47-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-47-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-47-run1-5-skill", "baseline"),
+            ArmSpec(
+                "run2_47_full_composition_grammar_compiler",
+                "Run 2.47 full",
+                "ppt-run2-47-full-vulca",
+                "full",
+            ),
+            ArmSpec(
+                "bad_run2_46_missing_composition_grammar",
+                "Bad missing composition grammar",
+                "ppt-run2-47-bad-missing-composition-grammar",
+                "negative",
+            ),
+        ),
+    ),
 )
 
 
@@ -550,6 +571,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run246_grammar = read_json(pack / "run2_46_visual_object_grammar_memory.json")
     run246_gates = read_json(pack / "run2_46_composition_workflow_gates.json")
     run246_result = read_json(pack / "results" / "run2_46_multimodal_composition_memory_result.json")
+    run247_result = read_json(pack / "results" / "run2_47_composition_grammar_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -746,6 +768,15 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run246CompositionWorkflowGates": run246_gates.get("composition_workflow_gates", []),
         "run246ResultStatus": run246_result.get("status", ""),
         "run246Result": run246_result,
+        "run247ResultStatus": run247_result.get("status", ""),
+        "run247Result": run247_result,
+        "run247ResultPath": "run2_47_composition_grammar_rerun_result.json",
+        "run247TargetLayer": (run247_result.get("quality_delta") or {}).get(
+            "target_layer", "composition_grammar_binding"
+        ),
+        "run247SourceDataStatus": (run247_result.get("quality_delta") or {}).get(
+            "source_data_status", "run2_46_composition_grammar_consumed_before_native_ppt_drawing"
+        ),
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -2928,7 +2959,7 @@ def build_html(data: dict[str, Any]) -> str:
             </article>
           </div>
         </section>
-        <!-- Run 2.46 is data/workflow-only; latestRunId remains 2.44 because no new PPT deck is generated. -->
+        <!-- Run 2.46 is data/workflow-only; latestRunId advances after generated Run 2.47. -->
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.46 multimodal composition memory</h3><p>Data/workflow-only layer over Run 2.45. It turns slot-based failure into multimodal composition decomposition, visual object grammar, and composition gates that must be consumed before Run 2.47.</p></div><span class="pill">${{escapeHtml(refs.run246ResultStatus || "missing")}}</span></div>
           <div class="dataGrid">

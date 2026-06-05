@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "run_id": "2.47",
+  "status": "run2_47_composition_grammar_rerun_public_blocked",
+  "public_ready": false,
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "source_composition_memory_run_id": "2.46",
+  "source_generated_run_id": "2.44",
+  "source_workflow_run_id": "2.43",
+  "database_expansion": false,
+  "workflow_expansion": false,
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "input_chain": {
+    "run2_46_result": "docs/product/ppt-run2-data-skill-quality/results/run2_46_multimodal_composition_memory_result.json",
+    "multimodal_composition_decomposition": "docs/product/ppt-run2-data-skill-quality/run2_46_multimodal_composition_decomposition.json",
+    "visual_object_grammar_memory": "docs/product/ppt-run2-data-skill-quality/run2_46_visual_object_grammar_memory.json",
+    "composition_workflow_gates": "docs/product/ppt-run2-data-skill-quality/run2_46_composition_workflow_gates.json",
+    "semantic_visual_asset_memory": "docs/product/ppt-run2-data-skill-quality/run2_43_semantic_visual_asset_memory.json",
+    "editorial_composition_typography_memory": "docs/product/ppt-run2-data-skill-quality/run2_43_editorial_composition_typography_memory.json",
+    "visual_asset_semantics_workflow_gates": "docs/product/ppt-run2-data-skill-quality/run2_43_visual_asset_semantics_workflow_gates.json",
+    "run2_44_result": "docs/product/ppt-run2-data-skill-quality/results/run2_44_semantic_geometry_rerun_result.json",
+    "run2_44_full_trace": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-44-full-vulca/trace_manifest.json",
+    "commercial_usecase_bank": "docs/product/ppt-run2-data-skill-quality/commercial_usecase_bank.json",
+    "sources": "docs/product/ppt-run2-data-skill-quality/sources.json"
+  },
+  "rerun": {
+    "generator": "scripts/generate_ppt_run2_47_composition_grammar_arms.mjs",
+    "arms": [
+      "prompt_only",
+      "run1_5_skill",
+      "run2_47_full_composition_grammar_compiler",
+      "bad_run2_46_missing_composition_grammar"
+    ],
+    "best_internal_arm": "run2_47_full_composition_grammar_compiler",
+    "best_internal_arm_verdict": "Run 2.46 visual object grammar now drives composed native PPT scenes before drawing",
+    "combined_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-47-four-arm-contact-sheet.png",
+    "full_skill_series_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png",
+    "generated_outputs_committed": false
+  },
+  "quality_delta": {
+    "target_layer": "composition_grammar_binding",
+    "source_data_status": "run2_46_composition_grammar_consumed_before_native_ppt_drawing",
+    "full_slides_with_run2_46_visual_object_grammar_id": 6,
+    "full_slides_with_run2_46_composition_gate_id": 6,
+    "full_slides_with_slot_based_geometry_replaced": 6,
+    "full_slides_without_run2_44_geometry_slots": 6,
+    "bad_control_slides_without_run2_46_grammar": 6,
+    "bad_control_slides_with_run2_44_geometry_slots": 6,
+    "repair_modules": [
+      "drawRun247CoverComposition",
+      "drawRun247SetupComposition",
+      "drawRun247ContrastComposition",
+      "drawRun247ProofComposition",
+      "drawRun247ClimaxComposition",
+      "drawRun247CloseComposition"
+    ]
+  },
+  "control_boundary": {
+    "bad_run2_46_missing_composition_grammar": "may see Run 2.44 semantic geometry slots, but must not bind Run 2.46 visual object grammar, decomposition, or composition gate ids",
+    "prompt_only": "commercial_case_only_no_run2_46_composition_grammar",
+    "run1_5_skill": "prior_baseline_no_run2_46_composition_grammar"
+  },
+  "visual_quality_boundary": "composition grammar consumption proof only; public video-grade aesthetics, native motion, and human release approval remain blocked",
+  "remaining_public_release_gates": [
+    "human_visual_review",
+    "native_or_cross_platform_render_inspection",
+    "motion_or_video_review",
+    "source_boundary_review",
+    "human_release_approval"
+  ],
+  "release_boundary": "public_blocked_until_visual_human_review_native_render_review_motion_review_source_boundary_review_and_human_approval",
+  "next_required_action": "audit_run2_47_composition_grammar_against_visual_quality_then_continue_data_workflow_thickening_or_renderer_repair"
+}
