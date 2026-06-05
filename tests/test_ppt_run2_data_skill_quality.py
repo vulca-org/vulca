@@ -7179,6 +7179,104 @@ def test_ppt_run_html_viewer_embeds_run2_43_visual_asset_semantics_workflow() ->
     )
 
 
+def test_run2_44_dataflow_readiness_audit_flags_current_consumption_bug(tmp_path: Path) -> None:
+    script_path = ROOT / "scripts" / "audit_ppt_run2_44_dataflow_readiness.py"
+    assert script_path.exists(), "missing Run 2.44 dataflow readiness audit script"
+    result_json = tmp_path / "run2_44_dataflow_readiness_audit.json"
+    result_md = tmp_path / "run2_44_dataflow_readiness_audit.md"
+
+    subprocess.run(
+        [
+            sys.executable,
+            str(script_path),
+            "--result-json",
+            str(result_json),
+            "--result-md",
+            str(result_md),
+        ],
+        cwd=ROOT,
+        check=True,
+    )
+
+    audit = load_json(result_json)
+    assert audit["schema_version"] == "ppt_run2_dataflow_readiness_audit.v1"
+    assert audit["run_id"] == "2.44-preflight"
+    assert audit["status"] == "run2_44_dataflow_readiness_blocked"
+    assert audit["bug_confirmed"] is True
+    assert audit["not_a_run2_44_output"] is True
+    assert audit["risk_priority"] == "high"
+    assert audit["creates_new_ppt_deck"] is False
+    assert audit["public_ready"] is False
+    assert audit["latest_visible_ppt_run"] == "2.41"
+    assert audit["latest_workflow_run"] == "2.43"
+    assert audit["root_cause_primary"] == "latest_visible_ppt_does_not_consume_latest_run2_43_workflow"
+
+    flow = audit["dataflow_findings"]
+    assert flow["run2_43_consumed_by_latest_visible_ppt"] is False
+    assert flow["run2_41_generator_reads_run2_38_data"] is True
+    assert flow["run2_41_generator_reads_run2_43_data"] is False
+    assert flow["run2_41_trace_has_run2_38_direction_and_recipe_ids"] is True
+    assert flow["run2_41_trace_has_run2_38_gate_ids"] is False
+    assert flow["run2_41_trace_has_run2_43_ids"] is False
+    assert flow["run2_41_data_drives_text_and_trace"] is True
+    assert flow["run2_41_visual_geometry_is_hardcoded"] is True
+    assert flow["run2_43_semantic_memory_is_hardcoded_from_prior_trace"] is True
+    assert flow["run2_43_builder_reads_multimodal_source_records"] is False
+
+    next_gate = audit["next_rerun_gate"]
+    assert next_gate["required_before_run2_44_generator"] == [
+        "run2_43_semantic_visual_asset_memory.json",
+        "run2_43_editorial_composition_typography_memory.json",
+        "run2_43_visual_asset_semantics_workflow_gates.json",
+    ]
+    assert "run2_43_semantic_visual_asset_ids" in next_gate["required_trace_fields"]
+    assert next_gate["generator_must_fail_if_run2_43_not_consumed"] is True
+    assert audit["next_required_action"] == (
+        "build_run2_44_generator_that_consumes_run2_43_memory_for_visual_geometry_before_render"
+    )
+
+
+def test_run2_44_dataflow_readiness_audit_result_is_recorded() -> None:
+    result = (PACK / "results" / "run2_44_dataflow_readiness_audit.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_44_dataflow_readiness_audit.json")
+
+    assert result_json["status"] == "run2_44_dataflow_readiness_blocked"
+    assert result_json["bug_confirmed"] is True
+    assert result_json["not_a_run2_44_output"] is True
+    assert result_json["risk_priority"] == "high"
+    assert result_json["root_cause_primary"] == "latest_visible_ppt_does_not_consume_latest_run2_43_workflow"
+    assert result_json["dataflow_findings"]["run2_41_visual_geometry_is_hardcoded"] is True
+    assert result_json["dataflow_findings"]["run2_43_builder_reads_multimodal_source_records"] is False
+    assert_contains(
+        result,
+        [
+            "Run 2.44 Dataflow Readiness Audit",
+            "bug confirmed",
+            "not a generated Run 2.44 output",
+            "high-priority technical debt",
+            "latest visible PPT does not consume Run 2.43",
+            "data drives text and trace more than visual geometry",
+            "Run 2.44 generator must fail if Run 2.43 memory is not consumed",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_embeds_run2_44_dataflow_readiness_audit() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "run2_44_dataflow_readiness_audit.json",
+            "Run 2.44 dataflow readiness audit",
+            "latest_visible_ppt_does_not_consume_latest_run2_43_workflow",
+            "run2_41_visual_geometry_is_hardcoded",
+            "run2_43_builder_reads_multimodal_source_records",
+            "build_run2_44_generator_that_consumes_run2_43_memory_for_visual_geometry_before_render",
+        ],
+    )
+
+
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
     layout_dir = tmp_path / "layout"
     layout_dir.mkdir()

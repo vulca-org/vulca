@@ -522,6 +522,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run243_editorial_typography_memory = read_json(pack / "run2_43_editorial_composition_typography_memory.json")
     run243_workflow_gates = read_json(pack / "run2_43_visual_asset_semantics_workflow_gates.json")
     run243_result = read_json(pack / "results" / "run2_43_visual_asset_semantics_workflow_result.json")
+    run244_dataflow_audit = read_json(pack / "results" / "run2_44_dataflow_readiness_audit.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -702,6 +703,8 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run243NextRerunContract": run243_workflow_gates.get("next_rerun_contract", ""),
         "run243ResultStatus": run243_result.get("status", ""),
         "run243Result": run243_result,
+        "run244DataflowAuditStatus": run244_dataflow_audit.get("status", ""),
+        "run244DataflowAudit": run244_dataflow_audit,
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -1844,6 +1847,10 @@ def build_html(data: dict[str, Any]) -> str:
       const run243Inputs = run243Result.input_chain || {{}};
       const run243Outputs = run243Result.output_chain || {{}};
       const run243Counts = run243Result.artifact_counts || {{}};
+      const run244Audit = refs.run244DataflowAudit || {{}};
+      const run244Inputs = run244Audit.input_chain || {{}};
+      const run244Findings = run244Audit.dataflow_findings || {{}};
+      const run244NextGate = run244Audit.next_rerun_gate || {{}};
       const run243SemanticAssetCards = (refs.run243SemanticVisualAssets || []).map((record) => `<article class="dataCard">
         <h4>${{escapeHtml(record.role)}} / ${{escapeHtml(record.source_run2_41_surface_type)}}</h4>
         ${{detailBlock("Semantic asset id", record.semantic_asset_id)}}
@@ -2715,6 +2722,46 @@ def build_html(data: dict[str, Any]) -> str:
           <div class="dataGrid">${{run243EditorialCards}}</div>
           <div class="dataBandSubhead"><h4>Workflow gates</h4><p>Run 2.44 must bind these ids in trace before native PPT drawing; bad control can reuse names but not this memory.</p></div>
           <div class="dataGrid">${{run243GateCards}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.44 dataflow readiness audit</h3><p>Preflight audit for the suspected bug: current visible slides do not consume the latest workflow, and current data use affects text/trace more than visual geometry.</p></div><span class="pill">${{escapeHtml(refs.run244DataflowAuditStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Bug classification</h4>
+              ${{detailBlock("Result", "run2_44_dataflow_readiness_audit.json")}}
+              ${{detailBlock("Bug confirmed", run244Audit.bug_confirmed)}}
+              ${{detailBlock("Not a generated Run 2.44 output", run244Audit.not_a_run2_44_output)}}
+              ${{detailBlock("Risk priority", run244Audit.risk_priority)}}
+              ${{detailBlock("Latest visible PPT run", run244Audit.latest_visible_ppt_run)}}
+              ${{detailBlock("Latest workflow run", run244Audit.latest_workflow_run)}}
+              ${{detailBlock("Root cause", run244Audit.root_cause_primary || "latest_visible_ppt_does_not_consume_latest_run2_43_workflow")}}
+              ${{detailBlock("Classification", run244Audit.classification)}}
+            </article>
+            <article class="dataCard">
+              <h4>Dataflow findings</h4>
+              ${{detailBlock("Run 2.43 consumed by latest visible PPT", run244Findings.run2_43_consumed_by_latest_visible_ppt)}}
+              ${{detailBlock("Run 2.41 reads Run 2.38 data", run244Findings.run2_41_generator_reads_run2_38_data)}}
+              ${{detailBlock("Run 2.41 reads Run 2.43 data", run244Findings.run2_41_generator_reads_run2_43_data)}}
+              ${{detailBlock("Run 2.41 visual geometry is hardcoded", run244Findings.run2_41_visual_geometry_is_hardcoded)}}
+              ${{detailBlock("Run 2.43 reads multimodal source records", run244Findings.run2_43_builder_reads_multimodal_source_records)}}
+            </article>
+            <article class="dataCard">
+              <h4>Input chain checked</h4>
+              ${{detailBlock("Run 2.41 generator", run244Inputs.run2_41_generator)}}
+              ${{detailBlock("Run 2.41 trace", run244Inputs.run2_41_full_trace_manifest)}}
+              ${{detailBlock("Run 2.43 workflow result", run244Inputs.run2_43_workflow_result)}}
+              ${{detailBlock("Run 2.43 semantic memory", run244Inputs.run2_43_semantic_visual_asset_memory)}}
+              ${{detailBlock("Run 2.43 gates", run244Inputs.run2_43_visual_asset_semantics_workflow_gates)}}
+            </article>
+            <article class="dataCard">
+              <h4>Next rerun gate</h4>
+              ${{detailBlock("Required before Run 2.44 generator", run244NextGate.required_before_run2_44_generator)}}
+              ${{detailBlock("Generator must fail if Run 2.43 not consumed", run244NextGate.generator_must_fail_if_run2_43_not_consumed)}}
+              ${{detailBlock("Visual geometry must be data-bound", run244NextGate.visual_geometry_must_be_data_bound)}}
+              ${{detailBlock("Required trace fields", run244NextGate.required_trace_fields)}}
+              ${{detailBlock("Next required action", run244Audit.next_required_action || "build_run2_44_generator_that_consumes_run2_43_memory_for_visual_geometry_before_render")}}
+            </article>
+          </div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.22 selector-memory rerun result</h3><p>Generated four-arm rerun that consumes Run 2.21 visual-decision memory, selector gates, and rejection matrix before native PPT code generation. It stays in the same five-layer loop and does not advance to Run 3.0.</p></div><span class="pill">${{escapeHtml(refs.run222ResultStatus || "missing")}}</span></div>
