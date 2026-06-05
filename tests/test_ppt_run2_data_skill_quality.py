@@ -6564,7 +6564,7 @@ def test_ppt_run_html_viewer_mentions_run2_39_public_video_visual_direction_reru
     )
 
 
-def test_ppt_run_html_viewer_generated_latest_run2_39() -> None:
+def test_ppt_run_html_viewer_generated_includes_run2_39() -> None:
     viewer = (
         ROOT
         / "outputs"
@@ -6576,7 +6576,6 @@ def test_ppt_run_html_viewer_generated_latest_run2_39() -> None:
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.39"',
             "Run 2.39",
             "run2-39-four-arm-contact-sheet.png",
             "ppt-run2-39-prompt-only",
@@ -6584,6 +6583,165 @@ def test_ppt_run_html_viewer_generated_latest_run2_39() -> None:
             "ppt-run2-39-full-vulca",
             "ppt-run2-39-bad-public-video-visual-direction-memory",
             "run2_39_public_video_visual_direction_rerun_result.json",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_generated_latest_run2_40() -> None:
+    viewer = (
+        ROOT
+        / "outputs"
+        / "019e7d9c-532a-70b3-8892-fa3ae42baef2"
+        / "presentations"
+        / "ppt-run-viewer.html"
+    ).read_text(encoding="utf-8")
+
+    assert_contains(
+        viewer,
+        [
+            '"latestRunId": "2.40"',
+            "Run 2.40",
+            "run2-40-four-arm-contact-sheet.png",
+            "ppt-run2-40-prompt-only",
+            "ppt-run2-40-run1-5-skill",
+            "ppt-run2-40-full-vulca",
+            "ppt-run2-40-bad-trace-visible-visual-compiler",
+            "run2_40_visual_compiler_rerun_result.json",
+        ],
+    )
+
+
+def test_run2_40_generator_uses_same_data_with_hidden_trace_visual_compiler() -> None:
+    script_path = ROOT / "scripts" / "generate_ppt_run2_40_visual_compiler_arms.mjs"
+    assert script_path.exists(), "missing Run 2.40 visual compiler generator"
+    body = script_path.read_text(encoding="utf-8")
+
+    assert_sequence(
+        body,
+        [
+            'armId: "prompt_only"',
+            'armId: "run1_5_skill"',
+            'armId: "run2_40_full_visual_compiler"',
+            'armId: "bad_trace_visible_visual_compiler"',
+        ],
+    )
+    assert_contains(
+        body,
+        [
+            "run2_39_public_video_visual_direction_rerun_result.json",
+            "run2_38_public_video_slide_direction_memory.json",
+            "run2_38_per_slide_visual_recipe_memory.json",
+            "run2_38_public_video_workflow_gates.json",
+            "visualCompilerTransform",
+            "validateRun240SameDataVisualCompiler",
+            "same_run2_38_run2_39_data_no_database_expansion",
+            "trace_to_hidden_constraints_public_surface_composition",
+            "public_surface_machinery_hidden",
+            "drawRun240EditorialPoster",
+            "drawRun240UsecaseScene",
+            "drawRun240TransformationSpread",
+            "drawRun240ProductMoment",
+            "drawRun240CinematicResult",
+            "drawRun240DecisionScene",
+            "run2_40_visual_compiler_policy",
+            "run2_40_public_surface_machinery_hidden",
+            "run2_40_visible_machinery_terms",
+        ],
+    )
+    full_section = body[
+        body.index('armId: "run2_40_full_visual_compiler"') : body.index('armId: "bad_trace_visible_visual_compiler"')
+    ]
+    bad_section = body[body.index('armId: "bad_trace_visible_visual_compiler"') :]
+    for filename in [
+        "run2_39_public_video_visual_direction_rerun_result.json",
+        "run2_38_public_video_slide_direction_memory.json",
+        "run2_38_per_slide_visual_recipe_memory.json",
+        "run2_38_public_video_workflow_gates.json",
+    ]:
+        assert filename in full_section
+        assert filename in bad_section
+
+
+def test_run2_40_records_same_data_visual_compiler_rerun_result() -> None:
+    result = (PACK / "results" / "run2_40_visual_compiler_rerun_result.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_40_visual_compiler_rerun_result.json")
+    presentations = ROOT / "outputs" / "019e7d9c-532a-70b3-8892-fa3ae42baef2" / "presentations"
+    full_trace = load_json(presentations / "ppt-run2-40-full-vulca" / "trace_manifest.json")
+    bad_trace = load_json(presentations / "ppt-run2-40-bad-trace-visible-visual-compiler" / "trace_manifest.json")
+
+    assert result_json["status"] == "run2_40_visual_compiler_rerun_public_blocked"
+    assert result_json["source_data_workflow_run_id"] == "2.38"
+    assert result_json["source_generated_run_id"] == "2.39"
+    assert result_json["database_expansion"] is False
+    assert result_json["input_chain"]["run2_39_rerun_result"].endswith(
+        "run2_39_public_video_visual_direction_rerun_result.json"
+    )
+    assert result_json["rerun"]["best_internal_arm"] == "run2_40_full_visual_compiler"
+    assert result_json["rerun"]["best_internal_arm_verdict"] == (
+        "same_run2_38_run2_39_data_no_database_expansion_visual_compiler_improves_public_surface"
+    )
+    assert result_json["quality_delta"]["target_layer"] == "visual_compiler_hidden_trace_public_composition"
+    assert result_json["quality_delta"]["same_data_control"] is True
+    assert result_json["quality_delta"]["new_database_records_added"] == 0
+    assert result_json["quality_delta"]["public_surface_machinery_hidden_slides"] == 6
+    assert result_json["rerun"]["combined_contact_sheet"].endswith("run2-40-four-arm-contact-sheet.png")
+    assert result_json["rerun"]["full_skill_series_sheet"].endswith("run2-full-skill-series-horizontal.png")
+
+    assert full_trace["arm_id"] == "run2_40_full_visual_compiler"
+    assert full_trace["run2_40_visual_compiler_status"] == "same_data_visual_compiler_applied"
+    assert full_trace["run2_39_source_rerun_status"] == "run2_39_public_video_visual_direction_rerun_public_blocked"
+    assert len(full_trace["slides"]) == 6
+    for slide in full_trace["slides"]:
+        assert slide["run2_38_visual_direction_memory_id"].startswith("direction_2_38_")
+        assert slide["run2_38_per_slide_visual_recipe_id"].startswith("recipe_2_38_")
+        assert slide["run2_40_visual_compiler_policy"] == "trace_to_hidden_constraints_public_surface_composition"
+        assert slide["run2_40_public_surface_machinery_hidden"] is True
+        assert slide["run2_40_visible_machinery_terms"] == 0
+        assert slide["layout_metrics"]["presentation_surface_weight"] >= 0.7
+        assert slide["layout_metrics"]["trace_panel_visible"] is False
+        assert slide["layout_metrics"]["gate_ribbon_visible"] is False
+        assert len(slide["run2_40_code_module_ids"]) == 1
+        assert slide["run2_40_code_module_ids"][0].startswith("drawRun240")
+
+    assert bad_trace["arm_id"] == "bad_trace_visible_visual_compiler"
+    assert bad_trace["run2_40_visual_compiler_status"] == "same_data_trace_visible_control"
+    for slide in bad_trace["slides"]:
+        assert slide["run2_38_visual_direction_memory_id"].startswith("direction_2_38_")
+        assert slide["run2_40_public_surface_machinery_hidden"] is False
+        assert slide["run2_40_visible_machinery_terms"] >= 3
+        assert slide["layout_metrics"]["trace_panel_visible"] is True
+
+    assert_contains(
+        result,
+        [
+            "Run 2.40",
+            "same Run 2.38 and Run 2.39 data",
+            "visual compiler",
+            "trace_to_hidden_constraints_public_surface_composition",
+            "drawRun240EditorialPoster",
+            "drawRun240CinematicResult",
+            "public blocked",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_mentions_run2_40_visual_compiler() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "Run 2.40",
+            "ppt-run2-40-prompt-only",
+            "ppt-run2-40-run1-5-skill",
+            "ppt-run2-40-full-vulca",
+            "ppt-run2-40-bad-trace-visible-visual-compiler",
+            "run2_40_visual_compiler_rerun_result.json",
+            "visual_compiler_hidden_trace_public_composition",
+            "same_run2_38_run2_39_data_no_database_expansion",
+            "drawRun240EditorialPoster",
+            "drawRun240CinematicResult",
         ],
     )
 

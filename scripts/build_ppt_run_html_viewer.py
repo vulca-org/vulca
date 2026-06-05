@@ -359,6 +359,27 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ),
         ),
     ),
+    RunSpec(
+        "2.40",
+        "Run 2.40",
+        "run2-40-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-40-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-40-run1-5-skill", "baseline"),
+            ArmSpec(
+                "run2_40_full_visual_compiler",
+                "Run 2.40 full",
+                "ppt-run2-40-full-vulca",
+                "full",
+            ),
+            ArmSpec(
+                "bad_trace_visible_visual_compiler",
+                "Bad trace-visible visual compiler",
+                "ppt-run2-40-bad-trace-visible-visual-compiler",
+                "negative",
+            ),
+        ),
+    ),
 )
 
 
@@ -473,6 +494,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run238_workflow_gates = read_json(pack / "run2_38_public_video_workflow_gates.json")
     run238_result = read_json(pack / "results" / "run2_38_public_video_visual_direction_workflow_result.json")
     run239_result = read_json(pack / "results" / "run2_39_public_video_visual_direction_rerun_result.json")
+    run240_result = read_json(pack / "results" / "run2_40_visual_compiler_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -633,6 +655,8 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run238Result": run238_result,
         "run239ResultStatus": run239_result.get("status", ""),
         "run239Result": run239_result,
+        "run240ResultStatus": run240_result.get("status", ""),
+        "run240Result": run240_result,
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -1754,6 +1778,11 @@ def build_html(data: dict[str, Any]) -> str:
       const run239Inputs = run239Result.input_chain || {{}};
       const run239Delta = run239Result.quality_delta || {{}};
       const run239Control = run239Result.control_boundary || {{}};
+      const run240Result = refs.run240Result || {{}};
+      const run240Rerun = run240Result.rerun || {{}};
+      const run240Inputs = run240Result.input_chain || {{}};
+      const run240Delta = run240Result.quality_delta || {{}};
+      const run240Control = run240Result.control_boundary || {{}};
       const run217Audit = refs.run217MotionAudit || {{}};
       const run217DeliveryTruth = run217Audit.delivery_truth || {{}};
       const run217RendererGap = run217Audit.motion_renderer_gap || {{}};
@@ -2423,6 +2452,45 @@ def build_html(data: dict[str, Any]) -> str:
               ${{detailBlock("Bad memory arm", "ppt-run2-39-bad-public-video-visual-direction-memory")}}
               ${{detailBlock("Bad control rule", run239Control.bad_public_video_visual_direction_memory || "selected usecase label only, no Run 2.38 public-video direction memory")}}
               ${{detailBlock("Release boundary", run239Result.release_boundary || "Do not advance to Run 3.0 before Run 2.39 is audited")}}
+            </article>
+          </div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.40 same-data visual compiler rerun</h3><p>Generated four-arm rerun that uses the same Run 2.38 and Run 2.39 data with no database expansion. Target: visual_compiler_hidden_trace_public_composition.</p></div><span class="pill">${{escapeHtml(refs.run240ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Rerun proof</h4>
+              ${{detailBlock("Result", "run2_40_visual_compiler_rerun_result.json")}}
+              ${{detailBlock("Best internal arm", run240Rerun.best_internal_arm || "run2_40_full_visual_compiler")}}
+              ${{detailBlock("Verdict", run240Rerun.best_internal_arm_verdict || "same_run2_38_run2_39_data_no_database_expansion_visual_compiler_improves_public_surface")}}
+              ${{detailBlock("Four-arm sheet", run240Rerun.combined_contact_sheet || "run2-40-four-arm-contact-sheet.png")}}
+              ${{detailBlock("Full-skill series", run240Rerun.full_skill_series_sheet || "run2-full-skill-series-horizontal.png")}}
+            </article>
+            <article class="dataCard">
+              <h4>Same-data inputs</h4>
+              ${{detailBlock("Run 2.39 result", run240Inputs.run2_39_rerun_result || "run2_39_public_video_visual_direction_rerun_result.json")}}
+              ${{detailBlock("Direction memory", run240Inputs.public_video_slide_direction_memory || "run2_38_public_video_slide_direction_memory.json")}}
+              ${{detailBlock("Recipe memory", run240Inputs.per_slide_visual_recipe_memory || "run2_38_per_slide_visual_recipe_memory.json")}}
+              ${{detailBlock("Workflow gates", run240Inputs.public_video_workflow_gates || "run2_38_public_video_workflow_gates.json")}}
+              ${{detailBlock("Database expansion", run240Result.database_expansion)}}
+              ${{detailBlock("Source data status", run240Delta.source_data_status || "same_run2_38_run2_39_data_no_database_expansion")}}
+            </article>
+            <article class="dataCard">
+              <h4>Visual compiler</h4>
+              ${{detailBlock("Target layer", run240Delta.target_layer || "visual_compiler_hidden_trace_public_composition")}}
+              ${{detailBlock("Policy", run240Delta.visual_compiler_policy || "trace_to_hidden_constraints_public_surface_composition")}}
+              ${{detailBlock("New database records", run240Delta.new_database_records_added)}}
+              ${{detailBlock("Hidden machinery slides", run240Delta.public_surface_machinery_hidden_slides)}}
+              ${{detailBlock("Required modules", run240Delta.repair_modules || ["drawRun240EditorialPoster", "drawRun240UsecaseScene", "drawRun240TransformationSpread", "drawRun240ProductMoment", "drawRun240CinematicResult", "drawRun240DecisionScene"])}}
+            </article>
+            <article class="dataCard">
+              <h4>Control boundary</h4>
+              ${{detailBlock("Prompt-only arm", "ppt-run2-40-prompt-only")}}
+              ${{detailBlock("Run 1.5 arm", "ppt-run2-40-run1-5-skill")}}
+              ${{detailBlock("Full arm", "ppt-run2-40-full-vulca")}}
+              ${{detailBlock("Bad same-data arm", "ppt-run2-40-bad-trace-visible-visual-compiler")}}
+              ${{detailBlock("Bad same-data rule", run240Control.bad_trace_visible_visual_compiler || "same data, but trace/gate/memory/module terms stay visible")}}
+              ${{detailBlock("Release boundary", run240Result.release_boundary || "Do not advance to Run 3.0 before Run 2.40 is audited")}}
             </article>
           </div>
         </section>
