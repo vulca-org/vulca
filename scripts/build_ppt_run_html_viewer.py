@@ -419,6 +419,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run231_result = read_json(pack / "results" / "run2_31_spine_climax_repair_rerun_result.json")
     run232_audit = read_json(pack / "results" / "run2_32_spine_climax_repair_audit.json")
     run233_result = read_json(pack / "results" / "run2_33_main_surface_visual_evidence_rerun_result.json")
+    run234_audit = read_json(pack / "results" / "run2_34_main_surface_visual_evidence_audit.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -554,6 +555,8 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run232Audit": run232_audit,
         "run233ResultStatus": run233_result.get("status", ""),
         "run233Result": run233_result,
+        "run234AuditStatus": run234_audit.get("status", ""),
+        "run234Audit": run234_audit,
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -1546,6 +1549,25 @@ def build_html(data: dict[str, Any]) -> str:
       const run233Inputs = run233Result.input_chain || {{}};
       const run233Delta = run233Result.quality_delta || {{}};
       const run233Control = run233Result.control_boundary || {{}};
+      const run234Audit = refs.run234Audit || {{}};
+      const run234Inputs = run234Audit.input_chain || {{}};
+      const run234Trace = run234Audit.trace_closure || {{}};
+      const run234TraceFull = run234Trace.full_arm || {{}};
+      const run234TraceBad = run234Trace.bad_control || {{}};
+      const run234Verification = run234Audit.main_surface_verification || {{}};
+      const run234Summary = run234Audit.quality_summary || {{}};
+      const run234RoleCards = (run234Audit.role_records || []).map((record) => `<article class="dataCard">
+        <h4>${{escapeHtml(record.role)}} / ${{escapeHtml(record.run2_33_presentation_module_id)}}</h4>
+        ${{detailBlock("Run 2.32 audit status present", (record.main_surface_trace_closure || {{}}).run2_32_audit_status_present)}}
+        ${{detailBlock("Execution status present", (record.main_surface_trace_closure || {{}}).execution_status_present)}}
+        ${{detailBlock("Main surface layer called", (record.main_surface_modules || {{}}).main_surface_evidence_layer_called)}}
+        ${{detailBlock("Storyboard called", (record.main_surface_modules || {{}}).visual_evidence_storyboard_called)}}
+        ${{detailBlock("Visual evidence objects", (record.main_surface_density || {{}}).visual_evidence_objects)}}
+        ${{detailBlock("Schematic visual evidence", (record.visual_evidence_realism || {{}}).schematic_visual_evidence)}}
+        ${{detailBlock("Hero object share", (record.editorial_composition || {{}}).hero_object_canvas_share)}}
+        ${{detailBlock("Issue categories", record.issue_categories)}}
+        ${{detailBlock("Recommended next action", record.recommended_next_action)}}
+      </article>`).join("");
       const run217Audit = refs.run217MotionAudit || {{}};
       const run217DeliveryTruth = run217Audit.delivery_truth || {{}};
       const run217RendererGap = run217Audit.motion_renderer_gap || {{}};
@@ -1947,6 +1969,58 @@ def build_html(data: dict[str, Any]) -> str:
               ${{detailBlock("Release boundary", run233Result.release_boundary)}}
             </article>
           </div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.34 main-surface visual-evidence audit</h3><p>Audit-only layer over Run 2.33. It creates no new PPT deck; it checks whether main_surface_visual_evidence_gate passes internally, then sends the next thickness target to usecase_specific_visual_evidence_asset_realism_and_editorial_composition in Run 2.35 data/workflow.</p></div><span class="pill">${{escapeHtml(refs.run234AuditStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Audit boundary</h4>
+              ${{detailBlock("Source generated run", run234Audit.source_generated_run)}}
+              ${{detailBlock("Source audit run", run234Audit.source_audit_run)}}
+              ${{detailBlock("Creates new PPT deck", run234Audit.creates_new_ppt_deck)}}
+              ${{detailBlock("Public ready", run234Audit.public_ready)}}
+              ${{detailBlock("Stage policy", run234Audit.stage_policy)}}
+            </article>
+            <article class="dataCard">
+              <h4>Input chain</h4>
+              ${{detailBlock("Run 2.33 result", run234Inputs.run2_33_rerun_result || "run2_33_main_surface_visual_evidence_rerun_result.json")}}
+              ${{detailBlock("Run 2.32 audit", run234Inputs.run2_32_spine_climax_repair_audit || "run2_32_spine_climax_repair_audit.json")}}
+              ${{detailBlock("Full trace manifest", run234Inputs.run2_33_full_trace_manifest)}}
+              ${{detailBlock("Bad trace manifest", run234Inputs.run2_33_bad_trace_manifest)}}
+              ${{detailBlock("Full contact sheet", run234Inputs.run2_33_full_contact_sheet)}}
+              ${{detailBlock("Delivery validation", run234Inputs.run2_33_delivery_validation)}}
+            </article>
+            <article class="dataCard">
+              <h4>Main-surface verification</h4>
+              ${{detailBlock("source_audit_target", run234Verification.source_audit_target)}}
+              ${{detailBlock("source_rerun_verdict", run234Verification.source_rerun_verdict)}}
+              ${{detailBlock("visual_evidence_object_target_met", run234Verification.visual_evidence_object_target_met)}}
+              ${{detailBlock("main_surface_modules_called_by_contract", run234Verification.main_surface_modules_called_by_contract)}}
+              ${{detailBlock("delivery_gate", run234Verification.delivery_gate)}}
+              ${{detailBlock("static_no_animation", run234Verification.static_no_animation)}}
+              ${{detailBlock("human_review_required", run234Verification.human_review_required)}}
+            </article>
+            <article class="dataCard">
+              <h4>Trace closure</h4>
+              ${{detailBlock("Full arm", run234TraceFull.arm_id)}}
+              ${{detailBlock("Run 2.32 audit consumed slides", run234TraceFull.run2_32_audit_consumed_slides)}}
+              ${{detailBlock("Main-surface execution status slides", run234TraceFull.main_surface_execution_status_slides)}}
+              ${{detailBlock("Main-surface layer modules called", run234TraceFull.main_surface_evidence_layer_modules_called)}}
+              ${{detailBlock("Storyboard modules called", run234TraceFull.visual_evidence_storyboard_modules_called)}}
+              ${{detailBlock("Bad-control main-surface leaks", run234TraceBad.main_surface_fields_leaked)}}
+            </article>
+            <article class="dataCard">
+              <h4>Quality summary</h4>
+              ${{detailBlock("main_surface_visual_evidence_gate", run234Summary.main_surface_visual_evidence_gate)}}
+              ${{detailBlock("Public release gate", run234Summary.public_release_gate)}}
+              ${{detailBlock("Closed target layers", run234Summary.closed_target_layers)}}
+              ${{detailBlock("roles_with_weak_editorial_anchor", run234Summary.roles_with_weak_editorial_anchor)}}
+              ${{detailBlock("roles_with_schematic_visual_evidence", run234Summary.roles_with_schematic_visual_evidence)}}
+              ${{detailBlock("Top next layer", run234Summary.top_next_layer_to_thicken || "usecase_specific_visual_evidence_asset_realism_and_editorial_composition")}}
+              ${{detailBlock("Next required action", run234Audit.next_required_action || "Run 2.35 data/workflow")}}
+            </article>
+          </div>
+          <div class="dataGrid">${{run234RoleCards}}</div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.22 selector-memory rerun result</h3><p>Generated four-arm rerun that consumes Run 2.21 visual-decision memory, selector gates, and rejection matrix before native PPT code generation. It stays in the same five-layer loop and does not advance to Run 3.0.</p></div><span class="pill">${{escapeHtml(refs.run222ResultStatus || "missing")}}</span></div>

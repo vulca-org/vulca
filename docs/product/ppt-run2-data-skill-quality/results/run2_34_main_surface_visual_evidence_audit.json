@@ -1,0 +1,487 @@
+{
+  "schema_version": "ppt_run2_main_surface_visual_evidence_audit.v1",
+  "run_id": "2.34",
+  "status": "run2_34_main_surface_visual_evidence_audit_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "source_generated_run": "2.33",
+  "source_audit_run": "2.32",
+  "source_rerun_run": "2.33",
+  "creates_new_ppt_deck": false,
+  "public_ready": false,
+  "issue_categories": [
+    "main_surface_visual_evidence_closure",
+    "visual_evidence_asset_realism",
+    "editorial_composition_strength",
+    "motion_or_video_delivery",
+    "public_release_gate"
+  ],
+  "input_chain": {
+    "run2_33_full_trace_manifest": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-33-full-vulca/trace_manifest.json",
+    "run2_33_bad_trace_manifest": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-33-bad-main-surface-visual-evidence-memory/trace_manifest.json",
+    "run2_33_rerun_result": "docs/product/ppt-run2-data-skill-quality/results/run2_33_main_surface_visual_evidence_rerun_result.json",
+    "run2_32_spine_climax_repair_audit": "docs/product/ppt-run2-data-skill-quality/results/run2_32_spine_climax_repair_audit.json",
+    "run2_33_full_layout_dir": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-33-full-vulca/layout/final",
+    "run2_33_full_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-33-full-vulca/preview/contact-sheet.png",
+    "run2_33_four_arm_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-33-four-arm-contact-sheet.png",
+    "run2_33_delivery_validation": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-33-full-vulca/qa/delivery-validation.json",
+    "source_audit_target": "main_surface_information_density_and_visual_evidence_realism",
+    "source_rerun_verdict": "main_surface_information_density_and_visual_evidence_realism_thickened_before_native_ppt_generation"
+  },
+  "no_new_deck_proof": {
+    "presentations_dir": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations",
+    "forbidden_run2_34_output_glob": "*2-34*",
+    "matched_run2_34_outputs": [],
+    "new_pptx_created": false,
+    "status": "pass"
+  },
+  "trace_closure": {
+    "full_arm": {
+      "arm_id": "run2_33_full_main_surface_visual_evidence",
+      "slide_count": 6,
+      "run2_32_audit_consumed_slides": 6,
+      "main_surface_execution_status_slides": 6,
+      "main_surface_evidence_layer_modules_called": 6,
+      "visual_evidence_storyboard_modules_called": 6,
+      "visual_evidence_object_target_slides": 6
+    },
+    "bad_control": {
+      "arm_id": "bad_main_surface_visual_evidence_memory",
+      "slide_count": 6,
+      "main_surface_fields_leaked": 0
+    }
+  },
+  "main_surface_verification": {
+    "source_audit_target": "main_surface_information_density_and_visual_evidence_realism",
+    "source_rerun_verdict": "main_surface_information_density_and_visual_evidence_realism_thickened_before_native_ppt_generation",
+    "closure_basis": "contract_only_module_calls_trace_fields_and_visual_object_counts_not_public_semantic_quality",
+    "visual_evidence_object_target_met": true,
+    "main_surface_modules_called_by_contract": true,
+    "delivery_gate": "internal-demo-ok-public-blocked",
+    "static_no_animation": true,
+    "human_review_required": true,
+    "media_entry_count": 0,
+    "native_render_verified": false
+  },
+  "quality_summary": {
+    "main_surface_visual_evidence_gate": "pass_internal_only",
+    "public_release_gate": "blocked",
+    "closed_target_layers": [
+      "main_surface_information_density_and_visual_evidence_realism"
+    ],
+    "closed_target_layers_basis": "internal_contract_only_not_public_video_grade_or_semantic_evidence_quality",
+    "roles_with_weak_editorial_anchor": [
+      "cover",
+      "setup",
+      "contrast",
+      "close"
+    ],
+    "roles_with_schematic_visual_evidence": [
+      "cover",
+      "setup",
+      "contrast",
+      "proof",
+      "climax",
+      "close"
+    ],
+    "top_next_layer_to_thicken": "usecase_specific_visual_evidence_asset_realism_and_editorial_composition",
+    "reason": "Run 2.33 closes the contract-only quantitative main-surface visual-evidence target internally: each slide calls the main-surface evidence layer and storyboard modules, preserves the Run 2.32 audit target, and renders at least two visual evidence objects. It still remains public-blocked because the evidence is mostly schematic native PPT structure, several roles have weak editorial anchors, and the PPTX is static with no motion/video delivery."
+  },
+  "role_records": [
+    {
+      "slide_id": "slide_01",
+      "role": "cover",
+      "title": "Design memory becomes a launch system.",
+      "run2_33_presentation_module_id": "drawRun233EditorialLaunchFrame",
+      "run2_33_required_code_module_ids": [
+        "drawRun233EditorialLaunchFrame",
+        "drawRun233MainSurfaceEvidenceLayer",
+        "drawRun233ReadableEvidenceSpine"
+      ],
+      "run2_33_code_module_ids": [
+        "drawRun233EditorialLaunchFrame",
+        "drawRun233ReadableEvidenceSpine",
+        "drawRun233MainSurfaceEvidenceLayer",
+        "drawRun233VisualEvidenceStoryboard"
+      ],
+      "main_surface_trace_closure": {
+        "run2_32_audit_status_present": true,
+        "run2_32_top_next_layer": "main_surface_information_density_and_visual_evidence_realism",
+        "execution_status_present": true,
+        "required_trace_fields_present": true
+      },
+      "main_surface_modules": {
+        "main_surface_evidence_layer_called": true,
+        "visual_evidence_storyboard_called": true,
+        "readable_evidence_spine_preserved": true
+      },
+      "main_surface_density": {
+        "visible_words": 105,
+        "proof_objects": 3,
+        "content_cards": 2,
+        "visual_evidence_objects": 3,
+        "visual_evidence_object_min_target": 2,
+        "visual_evidence_object_target_met": true
+      },
+      "visual_evidence_realism": {
+        "asset_ids": [
+          "asset_2_24_cover_launch_field",
+          "asset_2_24_cover_case_badge"
+        ],
+        "media_entries_in_pptx": 0,
+        "schematic_visual_evidence": true,
+        "needs_usecase_specific_asset_realism": true
+      },
+      "editorial_composition": {
+        "hero_object_canvas_share": 0.191,
+        "weak_editorial_anchor": true,
+        "needs_stronger_climax_or_product_stage": true
+      },
+      "bad_control_leaked_field_count": 0,
+      "issue_categories": [
+        "visual_evidence_asset_realism",
+        "editorial_composition_strength"
+      ],
+      "status": "pass_internal_only_needs_next_data_workflow_thickening",
+      "recommended_next_action": "thicken visual evidence asset realism and editorial composition in Run 2.35 data/workflow"
+    },
+    {
+      "slide_id": "slide_02",
+      "role": "setup",
+      "title": "Prompt-only decks lose the product thread.",
+      "run2_33_presentation_module_id": "drawRun233AsymmetricProblemFrame",
+      "run2_33_required_code_module_ids": [
+        "drawRun233AsymmetricProblemFrame",
+        "drawRun233MainSurfaceEvidenceLayer",
+        "drawRun233ReadableEvidenceSpine"
+      ],
+      "run2_33_code_module_ids": [
+        "drawRun233AsymmetricProblemFrame",
+        "drawRun233ReadableEvidenceSpine",
+        "drawRun233MainSurfaceEvidenceLayer",
+        "drawRun233VisualEvidenceStoryboard"
+      ],
+      "main_surface_trace_closure": {
+        "run2_32_audit_status_present": true,
+        "run2_32_top_next_layer": "main_surface_information_density_and_visual_evidence_realism",
+        "execution_status_present": true,
+        "required_trace_fields_present": true
+      },
+      "main_surface_modules": {
+        "main_surface_evidence_layer_called": true,
+        "visual_evidence_storyboard_called": true,
+        "readable_evidence_spine_preserved": true
+      },
+      "main_surface_density": {
+        "visible_words": 144,
+        "proof_objects": 4,
+        "content_cards": 5,
+        "visual_evidence_objects": 3,
+        "visual_evidence_object_min_target": 2,
+        "visual_evidence_object_target_met": true
+      },
+      "visual_evidence_realism": {
+        "asset_ids": [
+          "asset_2_24_setup_prompt_loss",
+          "asset_2_24_setup_selected_route"
+        ],
+        "media_entries_in_pptx": 0,
+        "schematic_visual_evidence": true,
+        "needs_usecase_specific_asset_realism": true
+      },
+      "editorial_composition": {
+        "hero_object_canvas_share": 0.188,
+        "weak_editorial_anchor": true,
+        "needs_stronger_climax_or_product_stage": true
+      },
+      "bad_control_leaked_field_count": 0,
+      "issue_categories": [
+        "visual_evidence_asset_realism",
+        "editorial_composition_strength"
+      ],
+      "status": "pass_internal_only_needs_next_data_workflow_thickening",
+      "recommended_next_action": "thicken visual evidence asset realism and editorial composition in Run 2.35 data/workflow"
+    },
+    {
+      "slide_id": "slide_03",
+      "role": "contrast",
+      "title": "The same brief changes when evidence is selected first.",
+      "run2_33_presentation_module_id": "drawRun233BeforeAfterEditorialSpread",
+      "run2_33_required_code_module_ids": [
+        "drawRun233BeforeAfterEditorialSpread",
+        "drawRun233MainSurfaceEvidenceLayer",
+        "drawRun233ReadableEvidenceSpine"
+      ],
+      "run2_33_code_module_ids": [
+        "drawRun233BeforeAfterEditorialSpread",
+        "drawRun233ReadableEvidenceSpine",
+        "drawRun233MainSurfaceEvidenceLayer",
+        "drawRun233VisualEvidenceStoryboard"
+      ],
+      "main_surface_trace_closure": {
+        "run2_32_audit_status_present": true,
+        "run2_32_top_next_layer": "main_surface_information_density_and_visual_evidence_realism",
+        "execution_status_present": true,
+        "required_trace_fields_present": true
+      },
+      "main_surface_modules": {
+        "main_surface_evidence_layer_called": true,
+        "visual_evidence_storyboard_called": true,
+        "readable_evidence_spine_preserved": true
+      },
+      "main_surface_density": {
+        "visible_words": 112,
+        "proof_objects": 3,
+        "content_cards": 2,
+        "visual_evidence_objects": 3,
+        "visual_evidence_object_min_target": 2,
+        "visual_evidence_object_target_met": true
+      },
+      "visual_evidence_realism": {
+        "asset_ids": [
+          "asset_2_24_contrast_prompt_thumbnail",
+          "asset_2_24_contrast_selected_thumbnail"
+        ],
+        "media_entries_in_pptx": 0,
+        "schematic_visual_evidence": true,
+        "needs_usecase_specific_asset_realism": true
+      },
+      "editorial_composition": {
+        "hero_object_canvas_share": 0.209,
+        "weak_editorial_anchor": true,
+        "needs_stronger_climax_or_product_stage": true
+      },
+      "bad_control_leaked_field_count": 0,
+      "issue_categories": [
+        "visual_evidence_asset_realism",
+        "editorial_composition_strength"
+      ],
+      "status": "pass_internal_only_needs_next_data_workflow_thickening",
+      "recommended_next_action": "thicken visual evidence asset realism and editorial composition in Run 2.35 data/workflow"
+    },
+    {
+      "slide_id": "slide_04",
+      "role": "proof",
+      "title": "Content memory gives every slide a job.",
+      "run2_33_presentation_module_id": "drawRun233ProductProofTheater",
+      "run2_33_required_code_module_ids": [
+        "drawRun233ProductProofTheater",
+        "drawRun233MainSurfaceEvidenceLayer",
+        "drawRun233ReadableEvidenceSpine"
+      ],
+      "run2_33_code_module_ids": [
+        "drawRun233ProductProofTheater",
+        "drawRun233ReadableEvidenceSpine",
+        "drawRun233MainSurfaceEvidenceLayer",
+        "drawRun233VisualEvidenceStoryboard"
+      ],
+      "main_surface_trace_closure": {
+        "run2_32_audit_status_present": true,
+        "run2_32_top_next_layer": "main_surface_information_density_and_visual_evidence_realism",
+        "execution_status_present": true,
+        "required_trace_fields_present": true
+      },
+      "main_surface_modules": {
+        "main_surface_evidence_layer_called": true,
+        "visual_evidence_storyboard_called": true,
+        "readable_evidence_spine_preserved": true
+      },
+      "main_surface_density": {
+        "visible_words": 149,
+        "proof_objects": 4,
+        "content_cards": 5,
+        "visual_evidence_objects": 5,
+        "visual_evidence_object_min_target": 2,
+        "visual_evidence_object_target_met": true
+      },
+      "visual_evidence_realism": {
+        "asset_ids": [
+          "asset_2_24_proof_content_memory_surface",
+          "asset_2_24_proof_visual_asset_rail"
+        ],
+        "media_entries_in_pptx": 0,
+        "schematic_visual_evidence": true,
+        "needs_usecase_specific_asset_realism": true
+      },
+      "editorial_composition": {
+        "hero_object_canvas_share": 0.372,
+        "weak_editorial_anchor": false,
+        "needs_stronger_climax_or_product_stage": false
+      },
+      "bad_control_leaked_field_count": 0,
+      "issue_categories": [
+        "visual_evidence_asset_realism"
+      ],
+      "status": "pass_internal_only_needs_next_data_workflow_thickening",
+      "recommended_next_action": "thicken visual evidence asset realism and editorial composition in Run 2.35 data/workflow"
+    },
+    {
+      "slide_id": "slide_05",
+      "role": "climax",
+      "title": "One generated proof object owns the room.",
+      "run2_33_presentation_module_id": "drawRun233HeroProofScene",
+      "run2_33_required_code_module_ids": [
+        "drawRun233HeroProofScene",
+        "drawRun233MainSurfaceEvidenceLayer",
+        "drawRun233ReadableEvidenceSpine"
+      ],
+      "run2_33_code_module_ids": [
+        "drawRun233HeroProofScene",
+        "drawRun233ReadableEvidenceSpine",
+        "drawRun233MainSurfaceEvidenceLayer",
+        "drawRun233VisualEvidenceStoryboard"
+      ],
+      "main_surface_trace_closure": {
+        "run2_32_audit_status_present": true,
+        "run2_32_top_next_layer": "main_surface_information_density_and_visual_evidence_realism",
+        "execution_status_present": true,
+        "required_trace_fields_present": true
+      },
+      "main_surface_modules": {
+        "main_surface_evidence_layer_called": true,
+        "visual_evidence_storyboard_called": true,
+        "readable_evidence_spine_preserved": true
+      },
+      "main_surface_density": {
+        "visible_words": 133,
+        "proof_objects": 4,
+        "content_cards": 2,
+        "visual_evidence_objects": 5,
+        "visual_evidence_object_min_target": 2,
+        "visual_evidence_object_target_met": true
+      },
+      "visual_evidence_realism": {
+        "asset_ids": [
+          "asset_2_24_climax_hero_result",
+          "asset_2_24_climax_density_annotation"
+        ],
+        "media_entries_in_pptx": 0,
+        "schematic_visual_evidence": true,
+        "needs_usecase_specific_asset_realism": true
+      },
+      "editorial_composition": {
+        "hero_object_canvas_share": 0.829,
+        "weak_editorial_anchor": false,
+        "needs_stronger_climax_or_product_stage": false
+      },
+      "bad_control_leaked_field_count": 0,
+      "issue_categories": [
+        "visual_evidence_asset_realism"
+      ],
+      "status": "pass_internal_only_needs_next_data_workflow_thickening",
+      "recommended_next_action": "thicken visual evidence asset realism and editorial composition in Run 2.35 data/workflow"
+    },
+    {
+      "slide_id": "slide_06",
+      "role": "close",
+      "title": "The handoff is blocked until the proof survives review.",
+      "run2_33_presentation_module_id": "drawRun233DecisionHandoff",
+      "run2_33_required_code_module_ids": [
+        "drawRun233DecisionHandoff",
+        "drawRun233MainSurfaceEvidenceLayer",
+        "drawRun233ReadableEvidenceSpine"
+      ],
+      "run2_33_code_module_ids": [
+        "drawRun233DecisionHandoff",
+        "drawRun233ReadableEvidenceSpine",
+        "drawRun233MainSurfaceEvidenceLayer",
+        "drawRun233VisualEvidenceStoryboard"
+      ],
+      "main_surface_trace_closure": {
+        "run2_32_audit_status_present": true,
+        "run2_32_top_next_layer": "main_surface_information_density_and_visual_evidence_realism",
+        "execution_status_present": true,
+        "required_trace_fields_present": true
+      },
+      "main_surface_modules": {
+        "main_surface_evidence_layer_called": true,
+        "visual_evidence_storyboard_called": true,
+        "readable_evidence_spine_preserved": true
+      },
+      "main_surface_density": {
+        "visible_words": 120,
+        "proof_objects": 3,
+        "content_cards": 2,
+        "visual_evidence_objects": 3,
+        "visual_evidence_object_min_target": 2,
+        "visual_evidence_object_target_met": true
+      },
+      "visual_evidence_realism": {
+        "asset_ids": [
+          "asset_2_24_close_release_gate",
+          "asset_2_24_close_trace_handoff"
+        ],
+        "media_entries_in_pptx": 0,
+        "schematic_visual_evidence": true,
+        "needs_usecase_specific_asset_realism": true
+      },
+      "editorial_composition": {
+        "hero_object_canvas_share": 0.309,
+        "weak_editorial_anchor": true,
+        "needs_stronger_climax_or_product_stage": true
+      },
+      "bad_control_leaked_field_count": 0,
+      "issue_categories": [
+        "visual_evidence_asset_realism",
+        "editorial_composition_strength"
+      ],
+      "status": "pass_internal_only_needs_next_data_workflow_thickening",
+      "recommended_next_action": "thicken visual evidence asset realism and editorial composition in Run 2.35 data/workflow"
+    }
+  ],
+  "audit_method": {
+    "schematic_visual_evidence_rule": "pptx_media_entry_count_equals_zero_so_visual_evidence_is_native_schematic_not_real_or_high_fidelity_media",
+    "weak_editorial_anchor_rule": "hero_object_canvas_share_below_0_35",
+    "quantity_gate_rule": "each_full_slide_calls_drawRun233MainSurfaceEvidenceLayer_and_drawRun233VisualEvidenceStoryboard_and_has_visual_evidence_objects_greater_or_equal_to_target",
+    "public_quality_boundary": "audit_does_not_claim_public_video_grade_aesthetic_or_semantic_visual_evidence_quality"
+  },
+  "module_recommendations": [
+    {
+      "target": "usecase_specific_visual_evidence_asset_realism_and_editorial_composition",
+      "priority": 1,
+      "issue": "visual evidence objects are traceable but still schematic rather than usecase-specific product or business evidence",
+      "affected_roles": [
+        "cover",
+        "setup",
+        "contrast",
+        "proof",
+        "climax",
+        "close"
+      ],
+      "required_next_delta": "Run 2.35 data/workflow should expand visual evidence asset memory with richer product states, case-specific proof captions, and native drawing instructions that avoid generic block diagrams."
+    },
+    {
+      "target": "usecase_specific_visual_evidence_asset_realism_and_editorial_composition",
+      "priority": 2,
+      "issue": "cover, setup, contrast, and close do not yet have a strong enough editorial anchor at thumbnail scale",
+      "affected_roles": [
+        "cover",
+        "setup",
+        "contrast",
+        "close"
+      ],
+      "required_next_delta": "Run 2.35 data/workflow should add editorial composition obligations before the next generated rerun: larger product/result objects, clearer hierarchy, and fewer equal-weight schematic panels."
+    },
+    {
+      "target": "motion_or_video_delivery",
+      "priority": 3,
+      "issue": "delivery validator confirms static PPTX output with no transition, timing, animation, audio, or video XML",
+      "affected_roles": [
+        "cover",
+        "setup",
+        "contrast",
+        "proof",
+        "climax",
+        "close"
+      ],
+      "required_next_delta": "keep public release blocked until a later motion/video proof or native-render review exists"
+    }
+  ],
+  "remaining_public_release_gates": [
+    "human_visual_review",
+    "native_or_cross_platform_render_inspection",
+    "motion_or_video_review",
+    "source_boundary_review",
+    "human_release_approval"
+  ],
+  "next_required_action": "thicken_run2_33_visual_evidence_asset_realism_and_editorial_composition_before_run2_35_data_workflow"
+}

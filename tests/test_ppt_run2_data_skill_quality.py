@@ -5559,6 +5559,144 @@ def test_ppt_run_html_viewer_mentions_run2_33_main_surface_visual_evidence_rerun
     )
 
 
+def test_run2_34_main_surface_visual_evidence_audit_scores_run2_33_outputs(tmp_path: Path) -> None:
+    script_path = ROOT / "scripts" / "audit_ppt_run2_34_main_surface_visual_evidence.py"
+    assert script_path.exists(), "missing Run 2.34 main-surface visual-evidence audit script"
+
+    result_json = tmp_path / "run2_34_main_surface_visual_evidence_audit.json"
+    result_md = tmp_path / "run2_34_main_surface_visual_evidence_audit.md"
+    subprocess.run(
+        [
+            sys.executable,
+            str(script_path),
+            "--result-json",
+            str(result_json),
+            "--result-md",
+            str(result_md),
+        ],
+        cwd=ROOT,
+        check=True,
+    )
+
+    audit = load_json(result_json)
+    assert audit["schema_version"] == "ppt_run2_main_surface_visual_evidence_audit.v1"
+    assert audit["run_id"] == "2.34"
+    assert audit["status"] == "run2_34_main_surface_visual_evidence_audit_public_blocked"
+    assert audit["source_generated_run"] == "2.33"
+    assert audit["source_audit_run"] == "2.32"
+    assert audit["source_rerun_run"] == "2.33"
+    assert audit["creates_new_ppt_deck"] is False
+    assert audit["public_ready"] is False
+    assert audit["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert audit["input_chain"]["run2_33_full_trace_manifest"].endswith("ppt-run2-33-full-vulca/trace_manifest.json")
+    assert audit["input_chain"]["run2_33_bad_trace_manifest"].endswith(
+        "ppt-run2-33-bad-main-surface-visual-evidence-memory/trace_manifest.json"
+    )
+    assert audit["input_chain"]["run2_33_rerun_result"].endswith(
+        "run2_33_main_surface_visual_evidence_rerun_result.json"
+    )
+    assert audit["input_chain"]["run2_32_spine_climax_repair_audit"].endswith(
+        "run2_32_spine_climax_repair_audit.json"
+    )
+    assert audit["no_new_deck_proof"]["new_pptx_created"] is False
+    assert audit["no_new_deck_proof"]["status"] == "pass"
+
+    trace = audit["trace_closure"]
+    assert trace["full_arm"]["arm_id"] == "run2_33_full_main_surface_visual_evidence"
+    assert trace["full_arm"]["slide_count"] == 6
+    assert trace["full_arm"]["run2_32_audit_consumed_slides"] == 6
+    assert trace["full_arm"]["main_surface_execution_status_slides"] == 6
+    assert trace["full_arm"]["main_surface_evidence_layer_modules_called"] == 6
+    assert trace["full_arm"]["visual_evidence_storyboard_modules_called"] == 6
+    assert trace["full_arm"]["visual_evidence_object_target_slides"] == 6
+    assert trace["bad_control"]["arm_id"] == "bad_main_surface_visual_evidence_memory"
+    assert trace["bad_control"]["main_surface_fields_leaked"] == 0
+
+    verification = audit["main_surface_verification"]
+    assert verification["source_audit_target"] == "main_surface_information_density_and_visual_evidence_realism"
+    assert verification["source_rerun_verdict"] == (
+        "main_surface_information_density_and_visual_evidence_realism_thickened_before_native_ppt_generation"
+    )
+    assert verification["visual_evidence_object_target_met"] is True
+    assert verification["main_surface_modules_called_by_contract"] is True
+    assert verification["delivery_gate"] == "internal-demo-ok-public-blocked"
+    assert verification["static_no_animation"] is True
+    assert verification["human_review_required"] is True
+
+    summary = audit["quality_summary"]
+    assert summary["main_surface_visual_evidence_gate"] == "pass_internal_only"
+    assert summary["public_release_gate"] == "blocked"
+    assert "main_surface_information_density_and_visual_evidence_realism" in summary["closed_target_layers"]
+    assert summary["top_next_layer_to_thicken"] == (
+        "usecase_specific_visual_evidence_asset_realism_and_editorial_composition"
+    )
+    assert set(summary["roles_with_weak_editorial_anchor"]) == {"cover", "setup", "contrast", "close"}
+    assert set(summary["roles_with_schematic_visual_evidence"]) == {
+        "cover",
+        "setup",
+        "contrast",
+        "proof",
+        "climax",
+        "close",
+    }
+
+    assert len(audit["role_records"]) == 6
+    for record in audit["role_records"]:
+        assert record["main_surface_trace_closure"]["run2_32_audit_status_present"] is True
+        assert record["main_surface_trace_closure"]["execution_status_present"] is True
+        assert record["main_surface_modules"]["main_surface_evidence_layer_called"] is True
+        assert record["main_surface_modules"]["visual_evidence_storyboard_called"] is True
+        assert record["main_surface_density"]["visual_evidence_objects"] >= 2
+        assert record["main_surface_density"]["visual_evidence_object_target_met"] is True
+        assert record["visual_evidence_realism"]["schematic_visual_evidence"] is True
+        assert record["bad_control_leaked_field_count"] == 0
+
+
+def test_run2_34_records_main_surface_visual_evidence_audit_result() -> None:
+    result = (PACK / "results" / "run2_34_main_surface_visual_evidence_audit.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_34_main_surface_visual_evidence_audit.json")
+
+    assert result_json["status"] == "run2_34_main_surface_visual_evidence_audit_public_blocked"
+    assert result_json["source_generated_run"] == "2.33"
+    assert result_json["quality_summary"]["top_next_layer_to_thicken"] == (
+        "usecase_specific_visual_evidence_asset_realism_and_editorial_composition"
+    )
+    assert result_json["next_required_action"] == (
+        "thicken_run2_33_visual_evidence_asset_realism_and_editorial_composition_before_run2_35_data_workflow"
+    )
+    assert_contains(
+        result,
+        [
+            "Run 2.34 Main Surface Visual Evidence Audit",
+            "audit-only",
+            "2.33",
+            "2.32",
+            "drawRun233MainSurfaceEvidenceLayer",
+            "drawRun233VisualEvidenceStoryboard",
+            "usecase_specific_visual_evidence_asset_realism_and_editorial_composition",
+            "Run 2.35 data/workflow",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_embeds_run2_34_main_surface_visual_evidence_audit() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "run2_34_main_surface_visual_evidence_audit.json",
+            "Run 2.34 main-surface visual-evidence audit",
+            "creates no new PPT deck",
+            "main_surface_visual_evidence_gate",
+            "roles_with_schematic_visual_evidence",
+            "usecase_specific_visual_evidence_asset_realism_and_editorial_composition",
+            "Run 2.35 data/workflow",
+        ],
+    )
+
+
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
     layout_dir = tmp_path / "layout"
     layout_dir.mkdir()
