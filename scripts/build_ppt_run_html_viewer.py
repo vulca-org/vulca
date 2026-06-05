@@ -546,6 +546,10 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run244_dataflow_audit = read_json(pack / "results" / "run2_44_dataflow_readiness_audit.json")
     run244_result = read_json(pack / "results" / "run2_44_semantic_geometry_rerun_result.json")
     run245_audit = read_json(pack / "results" / "run2_45_semantic_geometry_effectiveness_audit.json")
+    run246_decomposition = read_json(pack / "run2_46_multimodal_composition_decomposition.json")
+    run246_grammar = read_json(pack / "run2_46_visual_object_grammar_memory.json")
+    run246_gates = read_json(pack / "run2_46_composition_workflow_gates.json")
+    run246_result = read_json(pack / "results" / "run2_46_multimodal_composition_memory_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -732,6 +736,16 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run244Result": run244_result,
         "run245AuditStatus": run245_audit.get("status", ""),
         "run245Audit": run245_audit,
+        "run246DecompositionStatus": run246_decomposition.get("status", ""),
+        "run246CompositionDecomposition": run246_decomposition.get(
+            "multimodal_composition_decomposition_records", []
+        ),
+        "run246GrammarStatus": run246_grammar.get("status", ""),
+        "run246VisualObjectGrammar": run246_grammar.get("visual_object_grammar_records", []),
+        "run246GateStatus": run246_gates.get("status", ""),
+        "run246CompositionWorkflowGates": run246_gates.get("composition_workflow_gates", []),
+        "run246ResultStatus": run246_result.get("status", ""),
+        "run246Result": run246_result,
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -1890,6 +1904,37 @@ def build_html(data: dict[str, Any]) -> str:
       const run245Bad = run245Trace.bad_control || {{}};
       const run245Visual = run245Audit.visual_effectiveness_assessment || {{}};
       const run245Gate = run245Audit.gate_summary || {{}};
+      const run246Result = refs.run246Result || {{}};
+      const run246Inputs = run246Result.input_chain || {{}};
+      const run246Outputs = run246Result.output_chain || {{}};
+      const run246Counts = run246Result.artifact_counts || {{}};
+      const run246DecompositionCards = (refs.run246CompositionDecomposition || []).map((record) => `<article class="dataCard">
+        <h4>${{escapeHtml(record.role)}} / ${{escapeHtml(record.composition_move)}}</h4>
+        ${{detailBlock("Decomposition id", record.decomposition_id)}}
+        ${{detailBlock("Multimodal sources", record.multimodal_source_record_ids)}}
+        ${{detailBlock("Modalities", record.modalities)}}
+        ${{detailBlock("Slot failure", record.slot_based_failure_mode)}}
+        ${{detailBlock("Native PPT implications", record.native_ppt_composition_implications)}}
+        ${{detailBlock("Source boundary", record.source_boundary_rules)}}
+      </article>`).join("");
+      const run246GrammarCards = (refs.run246VisualObjectGrammar || []).map((record) => `<article class="dataCard">
+        <h4>${{escapeHtml(record.role)}} / visual object grammar</h4>
+        ${{detailBlock("Grammar id", record.visual_object_grammar_id)}}
+        ${{detailBlock("Required decomposition", record.required_decomposition_id)}}
+        ${{detailBlock("Required semantic assets", record.required_run2_43_semantic_visual_asset_ids)}}
+        ${{detailBlock("Replaces Run 2.44 slot geometry", record.replaces_run2_44_slot_based_geometry)}}
+        ${{detailBlock("Visual object grammar", record.visual_object_grammar)}}
+        ${{detailBlock("Composition quality checks", record.composition_quality_checks)}}
+      </article>`).join("");
+      const run246GateCards = (refs.run246CompositionWorkflowGates || []).map((gate) => `<article class="dataCard">
+        <h4>${{escapeHtml(gate.role)}} / ${{escapeHtml(gate.gate_id)}}</h4>
+        ${{detailBlock("Required grammar", gate.required_visual_object_grammar_id)}}
+        ${{detailBlock("Required decomposition", gate.required_multimodal_composition_decomposition_id)}}
+        ${{detailBlock("Forbid slot-based primary surface", gate.forbid_slot_based_geometry_as_primary_surface)}}
+        ${{detailBlock("Require multimodal decomposition", gate.require_multimodal_composition_decomposition)}}
+        ${{detailBlock("Required trace fields", gate.required_trace_fields)}}
+        ${{detailBlock("Pass/fail checks", gate.pass_fail_checks)}}
+      </article>`).join("");
       const run243SemanticAssetCards = (refs.run243SemanticVisualAssets || []).map((record) => `<article class="dataCard">
         <h4>${{escapeHtml(record.role)}} / ${{escapeHtml(record.source_run2_41_surface_type)}}</h4>
         ${{detailBlock("Semantic asset id", record.semantic_asset_id)}}
@@ -2882,6 +2927,50 @@ def build_html(data: dict[str, Any]) -> str:
               ${{detailBlock("Gate summary", run245Gate.summary)}}
             </article>
           </div>
+        </section>
+        <!-- Run 2.46 is data/workflow-only; latestRunId remains 2.44 because no new PPT deck is generated. -->
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.46 multimodal composition memory</h3><p>Data/workflow-only layer over Run 2.45. It turns slot-based failure into multimodal composition decomposition, visual object grammar, and composition gates that must be consumed before Run 2.47.</p></div><span class="pill">${{escapeHtml(refs.run246ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Workflow boundary</h4>
+              ${{detailBlock("Result", "run2_46_multimodal_composition_memory_result.json")}}
+              ${{detailBlock("Creates new PPT deck", run246Result.creates_new_ppt_deck)}}
+              ${{detailBlock("Public ready", run246Result.public_ready)}}
+              ${{detailBlock("Target layer", run246Result.target_layer || "multimodal_composition_memory_and_visual_object_grammar")}}
+              ${{detailBlock("Next required action", run246Result.next_required_action || "consume_run2_46_multimodal_composition_memory_before_run2_47_rerun")}}
+            </article>
+            <article class="dataCard">
+              <h4>Input chain</h4>
+              ${{detailBlock("Run 2.45 audit", run246Inputs.semantic_geometry_effectiveness_audit)}}
+              ${{detailBlock("Multimodal source records", run246Inputs.multimodal_source_records)}}
+              ${{detailBlock("Run 2.43 semantic memory", run246Inputs.semantic_visual_asset_memory)}}
+              ${{detailBlock("Run 2.43 typography memory", run246Inputs.editorial_composition_typography_memory)}}
+              ${{detailBlock("Run 2.43 gates", run246Inputs.visual_asset_semantics_workflow_gates)}}
+            </article>
+            <article class="dataCard">
+              <h4>Output chain</h4>
+              ${{detailBlock("Multimodal composition decomposition", run246Outputs.multimodal_composition_decomposition || "run2_46_multimodal_composition_decomposition.json")}}
+              ${{detailBlock("Visual object grammar memory", run246Outputs.visual_object_grammar_memory || "run2_46_visual_object_grammar_memory.json")}}
+              ${{detailBlock("Composition workflow gates", run246Outputs.composition_workflow_gates || "run2_46_composition_workflow_gates.json")}}
+              ${{detailBlock("Decomposition records", run246Counts.multimodal_composition_decomposition_records)}}
+              ${{detailBlock("Grammar records", run246Counts.visual_object_grammar_records)}}
+              ${{detailBlock("Workflow gates", run246Counts.composition_workflow_gates)}}
+            </article>
+            <article class="dataCard">
+              <h4>Gate purpose</h4>
+              ${{detailBlock("Decomposition status", refs.run246DecompositionStatus)}}
+              ${{detailBlock("Grammar status", refs.run246GrammarStatus)}}
+              ${{detailBlock("Gate status", refs.run246GateStatus)}}
+              ${{detailBlock("Release boundary", run246Result.release_boundary)}}
+            </article>
+          </div>
+          <div class="dataBandSubhead"><h4>Multimodal composition decomposition</h4><p>Role-level composition moves derived from source-safe tutorial/video/case records, not copied layouts or media.</p></div>
+          <div class="dataGrid">${{run246DecompositionCards}}</div>
+          <div class="dataBandSubhead"><h4>Visual object grammar</h4><p>Per-role grammar that replaces Run 2.44 slot geometry with composed object scenes.</p></div>
+          <div class="dataGrid">${{run246GrammarCards}}</div>
+          <div class="dataBandSubhead"><h4>Composition workflow gates</h4><p>Run 2.47 must bind these gate ids before native PPT drawing; slot-based geometry alone should fail.</p></div>
+          <div class="dataGrid">${{run246GateCards}}</div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.22 selector-memory rerun result</h3><p>Generated four-arm rerun that consumes Run 2.21 visual-decision memory, selector gates, and rejection matrix before native PPT code generation. It stays in the same five-layer loop and does not advance to Run 3.0.</p></div><span class="pill">${{escapeHtml(refs.run222ResultStatus || "missing")}}</span></div>

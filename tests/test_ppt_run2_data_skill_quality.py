@@ -7555,6 +7555,165 @@ def test_ppt_run_html_viewer_embeds_run2_45_semantic_geometry_effectiveness_audi
     )
 
 
+def test_run2_46_builder_writes_multimodal_composition_memory_pack(tmp_path: Path) -> None:
+    script_path = ROOT / "scripts" / "build_ppt_run2_46_multimodal_composition_memory.py"
+    assert script_path.exists(), "missing Run 2.46 multimodal composition memory builder"
+    result_json = tmp_path / "run2_46_multimodal_composition_memory_result.json"
+    result_md = tmp_path / "run2_46_multimodal_composition_memory_result.md"
+
+    subprocess.run(
+        [
+            sys.executable,
+            str(script_path),
+            "--out-dir",
+            str(tmp_path),
+            "--result-json",
+            str(result_json),
+            "--result-md",
+            str(result_md),
+        ],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    result = load_json(result_json)
+    decomposition = load_json(tmp_path / "run2_46_multimodal_composition_decomposition.json")
+    grammar = load_json(tmp_path / "run2_46_visual_object_grammar_memory.json")
+    gates = load_json(tmp_path / "run2_46_composition_workflow_gates.json")
+    report = result_md.read_text(encoding="utf-8")
+
+    assert result["run_id"] == "2.46"
+    assert result["status"] == "run2_46_multimodal_composition_memory_ready_public_blocked"
+    assert result["source_audit_run"] == "2.45"
+    assert result["source_generated_run"] == "2.44"
+    assert result["source_workflow_run"] == "2.43"
+    assert result["creates_new_ppt_deck"] is False
+    assert result["target_layer"] == "multimodal_composition_memory_and_visual_object_grammar"
+    assert result["artifact_counts"] == {
+        "multimodal_composition_decomposition_records": 6,
+        "visual_object_grammar_records": 6,
+        "composition_workflow_gates": 6,
+    }
+    assert result["next_required_action"] == "consume_run2_46_multimodal_composition_memory_before_run2_47_rerun"
+
+    assert decomposition["schema_version"] == "ppt_run2_multimodal_composition_decomposition.v1"
+    assert decomposition["status"] == "run2_46_multimodal_composition_decomposition_ready_public_blocked"
+    assert len(decomposition["multimodal_composition_decomposition_records"]) == 6
+    for record in decomposition["multimodal_composition_decomposition_records"]:
+        assert record["decomposition_id"].startswith("composition_decomposition_2_46_")
+        assert record["source_audit_root_cause"] == "run2_44_dataflow_fixed_but_composition_compiler_still_slot_based"
+        assert record["slot_based_failure_mode"] == "semantic_objects_bound_to_geometry_slots"
+        assert len(record["multimodal_source_record_ids"]) >= 1
+        assert record["composition_move"] in {
+            "poster_scene_depth",
+            "failure_to_route_storyboard",
+            "asymmetric_before_after_delta",
+            "active_product_surface",
+            "cinematic_result_object",
+            "decision_room_handoff",
+        }
+        assert "do not copy" in " ".join(record["source_boundary_rules"]).lower()
+        assert len(record["native_ppt_composition_implications"]) >= 3
+
+    assert grammar["schema_version"] == "ppt_run2_visual_object_grammar_memory.v1"
+    assert grammar["status"] == "run2_46_visual_object_grammar_memory_ready_public_blocked"
+    assert len(grammar["visual_object_grammar_records"]) == 6
+    for record in grammar["visual_object_grammar_records"]:
+        assert record["visual_object_grammar_id"].startswith("visual_object_grammar_2_46_")
+        assert record["required_decomposition_id"].startswith("composition_decomposition_2_46_")
+        assert record["required_run2_43_editorial_typography_memory_id"].startswith("editorial_typography_2_43_")
+        assert len(record["required_run2_43_semantic_visual_asset_ids"]) == 3
+        assert record["replaces_run2_44_slot_based_geometry"] is True
+        assert len(record["visual_object_grammar"]) >= 4
+        assert len(record["composition_quality_checks"]) >= 4
+        assert "run2_46_visual_object_grammar_id" in record["required_trace_fields"]
+
+    assert gates["schema_version"] == "ppt_run2_composition_workflow_gates.v1"
+    assert gates["status"] == "run2_46_composition_workflow_gates_ready_public_blocked"
+    assert gates["next_rerun_contract"] == "must_be_consumed_before_run2_47_four_arm_rerun"
+    assert len(gates["composition_workflow_gates"]) == 6
+    for gate in gates["composition_workflow_gates"]:
+        assert gate["gate_id"].startswith("gate_2_46_")
+        assert gate["required_visual_object_grammar_id"].startswith("visual_object_grammar_2_46_")
+        assert gate["forbid_slot_based_geometry_as_primary_surface"] is True
+        assert gate["require_multimodal_composition_decomposition"] is True
+        assert "run2_46_visual_object_grammar_id" in gate["required_trace_fields"]
+        assert "run2_46_composition_gate_id" in gate["required_trace_fields"]
+
+    assert_contains(
+        report,
+        [
+            "Run 2.46 Multimodal Composition Memory",
+            "audit-only",
+            "multimodal composition decomposition",
+            "visual object grammar",
+            "must be consumed before Run 2.47",
+        ],
+    )
+
+
+def test_run2_46_records_multimodal_composition_memory_result() -> None:
+    result = (PACK / "results" / "run2_46_multimodal_composition_memory_result.md").read_text(
+        encoding="utf-8"
+    )
+    result_json = load_json(PACK / "results" / "run2_46_multimodal_composition_memory_result.json")
+
+    assert (PACK / "run2_46_multimodal_composition_decomposition.json").exists()
+    assert (PACK / "run2_46_visual_object_grammar_memory.json").exists()
+    assert (PACK / "run2_46_composition_workflow_gates.json").exists()
+    assert result_json["status"] == "run2_46_multimodal_composition_memory_ready_public_blocked"
+    assert result_json["creates_new_ppt_deck"] is False
+    assert result_json["source_audit_run"] == "2.45"
+    assert result_json["artifact_counts"]["visual_object_grammar_records"] == 6
+    assert result_json["output_chain"]["visual_object_grammar_memory"].endswith(
+        "run2_46_visual_object_grammar_memory.json"
+    )
+    assert_contains(
+        result,
+        [
+            "Run 2.46 Multimodal Composition Memory",
+            "slot-based",
+            "visual object grammar",
+            "Run 2.47",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_embeds_run2_46_multimodal_composition_memory() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+    viewer = (
+        ROOT
+        / "outputs"
+        / "019e7d9c-532a-70b3-8892-fa3ae42baef2"
+        / "presentations"
+        / "ppt-run-viewer.html"
+    ).read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "run2_46_multimodal_composition_memory_result.json",
+            "Run 2.46 multimodal composition memory",
+            "run2_46_multimodal_composition_decomposition.json",
+            "run2_46_visual_object_grammar_memory.json",
+            "run2_46_composition_workflow_gates.json",
+            "consume_run2_46_multimodal_composition_memory_before_run2_47_rerun",
+            "latestRunId remains 2.44",
+        ],
+    )
+    assert_contains(
+        viewer,
+        [
+            '"latestRunId": "2.44"',
+            "Run 2.46 multimodal composition memory",
+            "run2_46_multimodal_composition_memory_result.json",
+            "visual object grammar",
+        ],
+    )
+
+
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
     layout_dir = tmp_path / "layout"
     layout_dir.mkdir()
