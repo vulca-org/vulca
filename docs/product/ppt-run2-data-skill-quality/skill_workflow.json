@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "workflow_type": "declarative_skill_director",
-  "status": "run2_38_public_video_visual_direction_workflow_directed_public_blocked",
+  "status": "run2_43_visual_asset_semantics_workflow_directed_public_blocked",
   "stage_policy": "repeat_same_five_layers_not_run3",
   "five_layer_loop": [
     "real_commercial_case",
@@ -937,6 +937,59 @@
         "negative control may receive the usecase label but not Run 2.38 direction or recipe ids",
         "Run 2.38 is not a new PPT output and does not advance to Run 3.0"
       ]
+    },
+    {
+      "id": "compile_run2_43_semantic_visual_asset_memory",
+      "order": 41,
+      "layer": "semantic_visual_asset_memory",
+      "inputs": [
+        "results/run2_42_content_visual_asset_quality_audit.json",
+        "results/run2_41_content_visual_asset_compiler_rerun_result.json",
+        "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-41-full-vulca/trace_manifest.json",
+        "commercial_usecase_bank.json"
+      ],
+      "outputs": [
+        "run2_43_semantic_visual_asset_memory.json"
+      ],
+      "gates": [
+        "each Run 2.41 named visual asset surface becomes a usecase-specific semantic visual asset",
+        "generic placeholders, equal rectangles, and schematic native shape-only surfaces are forbidden",
+        "raw tutorial media, copied screenshots, source layouts, brand marks, audio, and transcript text remain forbidden"
+      ]
+    },
+    {
+      "id": "compile_run2_43_editorial_composition_typography_memory",
+      "order": 42,
+      "layer": "editorial_composition_typography_memory",
+      "inputs": [
+        "run2_43_semantic_visual_asset_memory.json"
+      ],
+      "outputs": [
+        "run2_43_editorial_composition_typography_memory.json"
+      ],
+      "gates": [
+        "each role defines a first-read semantic object, typography hierarchy, layout signature, and depth rule",
+        "three semantic assets must not become equal cards",
+        "public first read excludes trace ids, run ids, gate names, and database terms"
+      ]
+    },
+    {
+      "id": "apply_run2_43_visual_asset_semantics_workflow_gates",
+      "order": 43,
+      "layer": "skill_workflow",
+      "inputs": [
+        "run2_43_semantic_visual_asset_memory.json",
+        "run2_43_editorial_composition_typography_memory.json"
+      ],
+      "outputs": [
+        "run2_43_visual_asset_semantics_workflow_gates.json",
+        "results/run2_43_visual_asset_semantics_workflow_result.json"
+      ],
+      "gates": [
+        "Run 2.44 must consume Run 2.43 semantic visual assets, editorial typography memory, and gates before native PPT generation",
+        "negative control may receive Run 2.41 surface names but not Run 2.43 semantic asset ids or gate ids",
+        "Run 2.43 is not a new PPT output and does not advance to Run 3.0"
+      ]
     }
   ],
   "repair_triggers": [
@@ -1005,6 +1058,12 @@
       "trigger": "Run 2.37 found that Run 2.36 proves data consumption but stays visually average because all six slides share one card-like layout signature",
       "recommendation": "require run2_38_public_video_slide_direction_memory.json, run2_38_per_slide_visual_recipe_memory.json, and run2_38_public_video_workflow_gates.json before Run 2.39 four-arm rerun",
       "human_gate": "required before Run 2.39 generated rerun"
+    },
+    {
+      "id": "run2_43_visual_asset_semantics_required_before_run2_44_rerun",
+      "trigger": "Run 2.42 found that Run 2.41 proves content and visual asset thickness but still feels simple because the named surfaces are schematic native shapes rather than semantic product or scene assets",
+      "recommendation": "require run2_43_semantic_visual_asset_memory.json, run2_43_editorial_composition_typography_memory.json, and run2_43_visual_asset_semantics_workflow_gates.json before Run 2.44 four-arm rerun",
+      "human_gate": "required before Run 2.44 generated rerun"
     }
   ],
   "release_decisions": [

@@ -2218,8 +2218,11 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
         "compile_run2_38_public_video_slide_direction_memory",
         "compile_run2_38_per_slide_visual_recipe_memory",
         "apply_run2_38_public_video_workflow_gates",
+        "compile_run2_43_semantic_visual_asset_memory",
+        "compile_run2_43_editorial_composition_typography_memory",
+        "apply_run2_43_visual_asset_semantics_workflow_gates",
     ]
-    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 41))
+    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 44))
     assert workflow["repair_triggers"]
     workflow_text = json.dumps(workflow)
     assert "multimodal_database.json" in workflow_text
@@ -2233,6 +2236,9 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
     assert "visual_production_modules.json" in workflow_text
     assert "commercial_usecase_bank.json" in workflow_text
     assert "run2_7_commercial_usecase.json" in workflow_text
+    assert "run2_43_semantic_visual_asset_memory.json" in workflow_text
+    assert "run2_43_editorial_composition_typography_memory.json" in workflow_text
+    assert "run2_43_visual_asset_semantics_workflow_gates.json" in workflow_text
     assert "run2_7_multimodal_source_records.json" in workflow_text
     assert "run2_7_design_memory.json" in workflow_text
     assert "run2_7_workflow_policy.json" in workflow_text
@@ -4206,7 +4212,7 @@ def test_run2_24_records_single_usecase_content_visual_evidence_pack() -> None:
     assert len(content_memory["slide_content_memory"]) == 6
     assert len(visual_assets["visual_evidence_assets"]) == 12
     assert len(workflow_gates["gates"]) == 6
-    assert workflow["status"] == "run2_38_public_video_visual_direction_workflow_directed_public_blocked"
+    assert workflow["status"] == "run2_43_visual_asset_semantics_workflow_directed_public_blocked"
     assert {stage["id"] for stage in workflow["stages"]} >= {
         "lock_run2_24_single_usecase_content_memory",
         "compile_run2_24_visual_evidence_asset_memory",
@@ -5856,7 +5862,7 @@ def test_run2_35_records_visual_evidence_realism_workflow_result() -> None:
     assert len(realism_memory["visual_evidence_asset_realism_records"]) == 12
     assert len(composition_memory["editorial_composition_records"]) == 6
     assert len(workflow_gates["gates"]) == 6
-    assert workflow["status"] == "run2_38_public_video_visual_direction_workflow_directed_public_blocked"
+    assert workflow["status"] == "run2_43_visual_asset_semantics_workflow_directed_public_blocked"
     assert {stage["id"] for stage in workflow["stages"]} >= {
         "compile_run2_35_visual_evidence_asset_realism_memory",
         "compile_run2_35_editorial_composition_memory",
@@ -7006,6 +7012,173 @@ def test_ppt_run_html_viewer_embeds_run2_42_content_visual_asset_quality_audit()
     )
 
 
+def test_run2_43_builder_writes_visual_asset_semantics_workflow_pack(tmp_path: Path) -> None:
+    script_path = ROOT / "scripts" / "build_ppt_run2_43_visual_asset_semantics_workflow.py"
+    assert script_path.exists(), "missing Run 2.43 visual asset semantics workflow script"
+    result_json = tmp_path / "run2_43_visual_asset_semantics_workflow_result.json"
+    result_md = tmp_path / "run2_43_visual_asset_semantics_workflow_result.md"
+
+    subprocess.run(
+        [
+            sys.executable,
+            str(script_path),
+            "--out-dir",
+            str(tmp_path),
+            "--result-json",
+            str(result_json),
+            "--result-md",
+            str(result_md),
+        ],
+        cwd=ROOT,
+        check=True,
+    )
+
+    semantic_memory_path = tmp_path / "run2_43_semantic_visual_asset_memory.json"
+    editorial_memory_path = tmp_path / "run2_43_editorial_composition_typography_memory.json"
+    workflow_gates_path = tmp_path / "run2_43_visual_asset_semantics_workflow_gates.json"
+    assert semantic_memory_path.exists()
+    assert editorial_memory_path.exists()
+    assert workflow_gates_path.exists()
+
+    result = load_json(result_json)
+    assert result["schema_version"] == "ppt_run2_visual_asset_semantics_workflow_result.v1"
+    assert result["run_id"] == "2.43"
+    assert result["status"] == "run2_43_visual_asset_semantics_workflow_ready_public_blocked"
+    assert result["source_audit_run"] == "2.42"
+    assert result["source_generated_run"] == "2.41"
+    assert result["source_prior_generated_run"] == "2.40"
+    assert result["creates_new_ppt_deck"] is False
+    assert result["public_ready"] is False
+    assert result["target_layer"] == (
+        "usecase_specific_visual_asset_semantics_editorial_composition_and_typography_hierarchy"
+    )
+    assert result["next_required_action"] == (
+        "consume_run2_43_visual_asset_semantics_workflow_before_run2_44_rerun"
+    )
+    assert result["output_chain"]["semantic_visual_asset_memory"].endswith(
+        "run2_43_semantic_visual_asset_memory.json"
+    )
+    assert result["output_chain"]["editorial_composition_typography_memory"].endswith(
+        "run2_43_editorial_composition_typography_memory.json"
+    )
+    assert result["output_chain"]["visual_asset_semantics_workflow_gates"].endswith(
+        "run2_43_visual_asset_semantics_workflow_gates.json"
+    )
+    assert result["artifact_counts"]["semantic_visual_asset_records"] == 18
+    assert result["artifact_counts"]["editorial_composition_typography_records"] == 6
+    assert result["artifact_counts"]["workflow_gates"] == 6
+
+    semantic_memory = load_json(semantic_memory_path)
+    assert semantic_memory["status"] == "run2_43_semantic_visual_asset_memory_ready_public_blocked"
+    assert semantic_memory["source_boundary"]["copied_screenshots"] == "forbidden"
+    assert semantic_memory["source_boundary"]["raw_tutorial_or_video_media"] == "forbidden"
+    semantic_records = semantic_memory["semantic_visual_asset_records"]
+    assert len(semantic_records) == 18
+    for record in semantic_records:
+        assert record["semantic_asset_id"].startswith("semantic_asset_2_43_")
+        assert record["source_audit_run"] == "2.42"
+        assert record["source_generated_run"] == "2.41"
+        assert record["source_run2_41_surface_type"]
+        assert record["usecase_specific_semantic_object"]
+        assert record["observable_scene_evidence"]
+        assert record["allowed_native_ppt_representation"]
+        assert "generic placeholder" in record["forbidden_schematic_substitutes"]
+        assert "copied screenshots/source media" in record["forbidden_schematic_substitutes"]
+        assert "no copied screenshots/source media" in record["source_boundary_note"]
+
+    editorial_memory = load_json(editorial_memory_path)
+    assert editorial_memory["status"] == (
+        "run2_43_editorial_composition_typography_memory_ready_public_blocked"
+    )
+    editorial_records = editorial_memory["editorial_composition_typography_records"]
+    assert len(editorial_records) == 6
+    for record in editorial_records:
+        assert record["editorial_typography_memory_id"].startswith("editorial_typography_2_43_")
+        assert len(record["required_semantic_asset_ids"]) == 3
+        assert len(record["typography_hierarchy_rules"]) >= 3
+        assert len(record["editorial_composition_rules"]) >= 3
+        assert record["climax_or_scene_depth_rule"]
+
+    gates = load_json(workflow_gates_path)
+    assert gates["status"] == "run2_43_visual_asset_semantics_workflow_gates_ready_public_blocked"
+    assert gates["next_rerun_contract"] == "must_be_consumed_before_run2_44_four_arm_rerun"
+    gate_records = gates["visual_asset_semantics_workflow_gates"]
+    assert len(gate_records) == 6
+    for gate in gate_records:
+        assert len(gate["required_semantic_asset_ids"]) == 3
+        assert gate["required_editorial_typography_memory_id"].startswith("editorial_typography_2_43_")
+        assert gate["forbid_generic_placeholder_assets"] is True
+        assert gate["forbid_schematic_native_shape_only_surface"] is True
+        assert gate["forbid_copied_source_media"] is True
+        assert set(gate["required_trace_fields"]) >= {
+            "run2_43_semantic_visual_asset_ids",
+            "run2_43_editorial_typography_memory_id",
+            "run2_43_visual_asset_semantics_gate_id",
+            "run2_43_visual_asset_semantics_execution_status",
+        }
+
+
+def test_run2_43_records_visual_asset_semantics_workflow_result() -> None:
+    result = (PACK / "results" / "run2_43_visual_asset_semantics_workflow_result.md").read_text(
+        encoding="utf-8"
+    )
+    result_json = load_json(PACK / "results" / "run2_43_visual_asset_semantics_workflow_result.json")
+    workflow = load_json(PACK / "skill_workflow.json")
+
+    assert (PACK / "run2_43_semantic_visual_asset_memory.json").exists()
+    assert (PACK / "run2_43_editorial_composition_typography_memory.json").exists()
+    assert (PACK / "run2_43_visual_asset_semantics_workflow_gates.json").exists()
+    assert result_json["status"] == "run2_43_visual_asset_semantics_workflow_ready_public_blocked"
+    assert result_json["source_audit_run"] == "2.42"
+    assert result_json["source_generated_run"] == "2.41"
+    assert result_json["source_prior_generated_run"] == "2.40"
+    assert result_json["target_layer"] == (
+        "usecase_specific_visual_asset_semantics_editorial_composition_and_typography_hierarchy"
+    )
+    assert result_json["next_required_action"] == (
+        "consume_run2_43_visual_asset_semantics_workflow_before_run2_44_rerun"
+    )
+    assert workflow["status"] == "run2_43_visual_asset_semantics_workflow_directed_public_blocked"
+    assert {stage["id"] for stage in workflow["stages"]} >= {
+        "compile_run2_43_semantic_visual_asset_memory",
+        "compile_run2_43_editorial_composition_typography_memory",
+        "apply_run2_43_visual_asset_semantics_workflow_gates",
+    }
+    assert any(
+        trigger["id"] == "run2_43_visual_asset_semantics_required_before_run2_44_rerun"
+        for trigger in workflow["repair_triggers"]
+    )
+    assert_contains(
+        result,
+        [
+            "Run 2.43 Visual Asset Semantics Workflow",
+            "data/workflow-only",
+            "Run 2.42",
+            "semantic visual assets",
+            "editorial composition",
+            "typography hierarchy",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_embeds_run2_43_visual_asset_semantics_workflow() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "run2_43_visual_asset_semantics_workflow_result.json",
+            "Run 2.43 visual asset semantics workflow",
+            "run2_43_semantic_visual_asset_memory.json",
+            "run2_43_editorial_composition_typography_memory.json",
+            "run2_43_visual_asset_semantics_workflow_gates.json",
+            "usecase_specific_visual_asset_semantics_editorial_composition_and_typography_hierarchy",
+            "consume_run2_43_visual_asset_semantics_workflow_before_run2_44_rerun",
+        ],
+    )
+
+
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
     layout_dir = tmp_path / "layout"
     layout_dir.mkdir()
@@ -7972,7 +8145,7 @@ def test_run2_18_records_thickness_result_and_no_new_ppt_output() -> None:
         ],
     )
 
-    assert workflow["status"] == "run2_38_public_video_visual_direction_workflow_directed_public_blocked"
+    assert workflow["status"] == "run2_43_visual_asset_semantics_workflow_directed_public_blocked"
     assert {stage["id"] for stage in workflow["stages"]} >= {
         "expand_run2_18_multimodal_evidence",
         "expand_run2_18_design_memory",

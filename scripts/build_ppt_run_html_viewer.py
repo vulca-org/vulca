@@ -518,6 +518,10 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run240_result = read_json(pack / "results" / "run2_40_visual_compiler_rerun_result.json")
     run241_result = read_json(pack / "results" / "run2_41_content_visual_asset_compiler_rerun_result.json")
     run242_audit = read_json(pack / "results" / "run2_42_content_visual_asset_quality_audit.json")
+    run243_semantic_memory = read_json(pack / "run2_43_semantic_visual_asset_memory.json")
+    run243_editorial_typography_memory = read_json(pack / "run2_43_editorial_composition_typography_memory.json")
+    run243_workflow_gates = read_json(pack / "run2_43_visual_asset_semantics_workflow_gates.json")
+    run243_result = read_json(pack / "results" / "run2_43_visual_asset_semantics_workflow_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -684,6 +688,20 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run241Result": run241_result,
         "run242AuditStatus": run242_audit.get("status", ""),
         "run242Audit": run242_audit,
+        "run243SemanticAssetMemoryStatus": run243_semantic_memory.get("status", ""),
+        "run243SemanticVisualAssets": run243_semantic_memory.get("semantic_visual_asset_records", []),
+        "run243SourceBoundary": run243_semantic_memory.get("source_boundary", {}),
+        "run243EditorialTypographyMemoryStatus": run243_editorial_typography_memory.get("status", ""),
+        "run243EditorialTypographyMemory": run243_editorial_typography_memory.get(
+            "editorial_composition_typography_records", []
+        ),
+        "run243WorkflowGateStatus": run243_workflow_gates.get("status", ""),
+        "run243VisualAssetSemanticsWorkflowGates": run243_workflow_gates.get(
+            "visual_asset_semantics_workflow_gates", []
+        ),
+        "run243NextRerunContract": run243_workflow_gates.get("next_rerun_contract", ""),
+        "run243ResultStatus": run243_result.get("status", ""),
+        "run243Result": run243_result,
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -795,6 +813,9 @@ def build_html(data: dict[str, Any]) -> str:
     .dataBandHead {{ display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; padding: 14px 16px; border-bottom: 1px solid var(--line); background: #fbfaf7; }}
     .dataBandHead h3 {{ margin: 0; font-size: 16px; }}
     .dataBandHead p {{ margin: 4px 0 0; color: var(--muted); font-size: 12px; line-height: 1.45; }}
+    .dataBandSubhead {{ padding: 14px 16px 0; border-top: 1px solid #e6e0d7; }}
+    .dataBandSubhead h4 {{ margin: 0; font-size: 13px; }}
+    .dataBandSubhead p {{ margin: 4px 0 0; color: var(--muted); font-size: 12px; line-height: 1.45; }}
     .dataGrid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; padding: 14px; }}
     .dataCard {{ border: 1px solid #d8d5ce; border-radius: 8px; background: #fff; padding: 12px; display: grid; gap: 9px; align-content: start; min-width: 0; }}
     .dataCard h4 {{ margin: 0; font-size: 14px; line-height: 1.25; overflow-wrap: anywhere; }}
@@ -1819,6 +1840,40 @@ def build_html(data: dict[str, Any]) -> str:
       const run242Inputs = run242Audit.input_chain || {{}};
       const run242Trace = run242Audit.trace_closure || {{}};
       const run242Assessment = run242Audit.visual_quality_assessment || {{}};
+      const run243Result = refs.run243Result || {{}};
+      const run243Inputs = run243Result.input_chain || {{}};
+      const run243Outputs = run243Result.output_chain || {{}};
+      const run243Counts = run243Result.artifact_counts || {{}};
+      const run243SemanticAssetCards = (refs.run243SemanticVisualAssets || []).map((record) => `<article class="dataCard">
+        <h4>${{escapeHtml(record.role)}} / ${{escapeHtml(record.source_run2_41_surface_type)}}</h4>
+        ${{detailBlock("Semantic asset id", record.semantic_asset_id)}}
+        ${{detailBlock("Usecase object", record.usecase_specific_semantic_object)}}
+        ${{detailBlock("Observable scene evidence", record.observable_scene_evidence)}}
+        ${{detailBlock("Allowed native PPT representation", record.allowed_native_ppt_representation)}}
+        ${{detailBlock("Forbidden substitutes", record.forbidden_schematic_substitutes)}}
+        ${{detailBlock("Source boundary", record.source_boundary_note)}}
+      </article>`).join("");
+      const run243EditorialCards = (refs.run243EditorialTypographyMemory || []).map((record) => `<article class="dataCard">
+        <h4>${{escapeHtml(record.role)}} / editorial typography</h4>
+        ${{detailBlock("Memory id", record.editorial_typography_memory_id)}}
+        ${{detailBlock("Semantic assets", record.required_semantic_asset_ids)}}
+        ${{detailBlock("First-read scene object", record.first_read_scene_object)}}
+        ${{detailBlock("Layout signature target", record.layout_signature_target)}}
+        ${{detailBlock("Primary visual weight", record.primary_visual_weight_target)}}
+        ${{detailBlock("Typography hierarchy", record.typography_hierarchy_rules)}}
+        ${{detailBlock("Editorial composition", record.editorial_composition_rules)}}
+        ${{detailBlock("Scene depth rule", record.climax_or_scene_depth_rule)}}
+      </article>`).join("");
+      const run243GateCards = (refs.run243VisualAssetSemanticsWorkflowGates || []).map((gate) => `<article class="dataCard">
+        <h4>${{escapeHtml(gate.role)}} / ${{escapeHtml(gate.gate_id)}}</h4>
+        ${{detailBlock("Semantic assets", gate.required_semantic_asset_ids)}}
+        ${{detailBlock("Editorial typography memory", gate.required_editorial_typography_memory_id)}}
+        ${{detailBlock("Min semantic visual assets", gate.min_semantic_visual_assets)}}
+        ${{detailBlock("Forbid generic placeholders", gate.forbid_generic_placeholder_assets)}}
+        ${{detailBlock("Forbid schematic shape-only surface", gate.forbid_schematic_native_shape_only_surface)}}
+        ${{detailBlock("Next rerun contract", gate.next_rerun_contract)}}
+        ${{detailBlock("Pass/fail checks", gate.pass_fail_checks)}}
+      </article>`).join("");
       const run217Audit = refs.run217MotionAudit || {{}};
       const run217DeliveryTruth = run217Audit.delivery_truth || {{}};
       const run217RendererGap = run217Audit.motion_renderer_gap || {{}};
@@ -2613,6 +2668,53 @@ def build_html(data: dict[str, Any]) -> str:
               ${{detailBlock("Why still simple", run242Assessment.why_user_still_sees_simple_design)}}
             </article>
           </div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.43 visual asset semantics workflow</h3><p>Data/workflow-only layer over Run 2.42. It creates no new PPT deck; it turns Run 2.41's named visual asset surfaces into semantic visual assets, editorial composition, typography hierarchy, and next-rerun gates.</p></div><span class="pill">${{escapeHtml(refs.run243ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Workflow boundary</h4>
+              ${{detailBlock("Result", "run2_43_visual_asset_semantics_workflow_result.json")}}
+              ${{detailBlock("Source audit run", run243Result.source_audit_run)}}
+              ${{detailBlock("Source generated run", run243Result.source_generated_run)}}
+              ${{detailBlock("Creates new PPT deck", run243Result.creates_new_ppt_deck)}}
+              ${{detailBlock("Public ready", run243Result.public_ready)}}
+              ${{detailBlock("Target layer", run243Result.target_layer || "usecase_specific_visual_asset_semantics_editorial_composition_and_typography_hierarchy")}}
+              ${{detailBlock("Next required action", run243Result.next_required_action || "consume_run2_43_visual_asset_semantics_workflow_before_run2_44_rerun")}}
+            </article>
+            <article class="dataCard">
+              <h4>Input chain</h4>
+              ${{detailBlock("Run 2.42 audit", run243Inputs.content_visual_asset_quality_audit)}}
+              ${{detailBlock("Run 2.41 full trace", run243Inputs.run2_41_full_trace_manifest)}}
+              ${{detailBlock("Run 2.41 result", run243Inputs.run2_41_rerun_result)}}
+              ${{detailBlock("Run 2.40 result", run243Inputs.run2_40_rerun_result)}}
+              ${{detailBlock("Commercial usecase bank", run243Inputs.commercial_usecase_bank)}}
+            </article>
+            <article class="dataCard">
+              <h4>Output chain</h4>
+              ${{detailBlock("Semantic visual asset memory", run243Outputs.semantic_visual_asset_memory || "run2_43_semantic_visual_asset_memory.json")}}
+              ${{detailBlock("Editorial composition typography memory", run243Outputs.editorial_composition_typography_memory || "run2_43_editorial_composition_typography_memory.json")}}
+              ${{detailBlock("Visual asset semantics workflow gates", run243Outputs.visual_asset_semantics_workflow_gates || "run2_43_visual_asset_semantics_workflow_gates.json")}}
+              ${{detailBlock("Semantic asset records", run243Counts.semantic_visual_asset_records)}}
+              ${{detailBlock("Editorial typography records", run243Counts.editorial_composition_typography_records)}}
+              ${{detailBlock("Workflow gates", run243Counts.workflow_gates)}}
+            </article>
+            <article class="dataCard">
+              <h4>Storage/source boundary</h4>
+              ${{detailBlock("Allowed storage", (refs.run243SourceBoundary || {{}}).allowed_storage)}}
+              ${{detailBlock("Copied screenshots", (refs.run243SourceBoundary || {{}}).copied_screenshots)}}
+              ${{detailBlock("Raw tutorial or video media", (refs.run243SourceBoundary || {{}}).raw_tutorial_or_video_media)}}
+              ${{detailBlock("Source layouts", (refs.run243SourceBoundary || {{}}).source_layouts)}}
+              ${{detailBlock("Brand marks", (refs.run243SourceBoundary || {{}}).brand_marks)}}
+              ${{detailBlock("Next rerun contract", refs.run243NextRerunContract || "must_be_consumed_before_run2_44_four_arm_rerun")}}
+            </article>
+          </div>
+          <div class="dataBandSubhead"><h4>Semantic visual assets</h4><p>Each Run 2.41 named surface becomes a concrete usecase-specific object that native PPT code must render without copied media.</p></div>
+          <div class="dataGrid">${{run243SemanticAssetCards}}</div>
+          <div class="dataBandSubhead"><h4>Editorial composition + typography memory</h4><p>Each role gets first-read object, hierarchy, spacing, and scene-depth obligations before code generation.</p></div>
+          <div class="dataGrid">${{run243EditorialCards}}</div>
+          <div class="dataBandSubhead"><h4>Workflow gates</h4><p>Run 2.44 must bind these ids in trace before native PPT drawing; bad control can reuse names but not this memory.</p></div>
+          <div class="dataGrid">${{run243GateCards}}</div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.22 selector-memory rerun result</h3><p>Generated four-arm rerun that consumes Run 2.21 visual-decision memory, selector gates, and rejection matrix before native PPT code generation. It stays in the same five-layer loop and does not advance to Run 3.0.</p></div><span class="pill">${{escapeHtml(refs.run222ResultStatus || "missing")}}</span></div>

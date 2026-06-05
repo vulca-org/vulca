@@ -1,0 +1,289 @@
+{
+  "schema_version": "ppt_run2_editorial_composition_typography_memory.v1",
+  "status": "run2_43_editorial_composition_typography_memory_ready_public_blocked",
+  "run_id": "2.43",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "public_ready": false,
+  "creates_new_ppt_deck": false,
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "source_semantic_visual_asset_memory": "run2_43_semantic_visual_asset_memory.json",
+  "target_layer": "usecase_specific_visual_asset_semantics_editorial_composition_and_typography_hierarchy",
+  "editorial_composition_typography_records": [
+    {
+      "editorial_typography_memory_id": "editorial_typography_2_43_cover",
+      "role": "cover",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_semantic_asset_ids": [
+        "semantic_asset_2_43_cover_1",
+        "semantic_asset_2_43_cover_2",
+        "semantic_asset_2_43_cover_3"
+      ],
+      "first_read_scene_object": "one oversized generated launch deck emerging from a memory-control field",
+      "visual_rhythm_id": "poster_reveal",
+      "layout_signature_target": "poster_scene_with_one_generated_deck_hero",
+      "primary_visual_weight_target": 0.66,
+      "typography_hierarchy_rules": [
+        "Use one dominant claim that explains the commercial scene, not a workflow label.",
+        "Use one concrete scene or object label tied to the selected usecase.",
+        "Keep proof captions short and subordinate to the main visual object.",
+        "Keep run ids, trace ids, gate names, and database terms out of the public first-read surface."
+      ],
+      "editorial_composition_rules": [
+        "One semantic asset must own the first read before supporting assets appear.",
+        "Layer foreground, midground, and background so the slide reads as a scene, not a grid.",
+        "Use supporting rails only when they explain the hero object.",
+        "Make the semantic assets visibly different in shape, scale, and purpose."
+      ],
+      "spacing_depth_rules": [
+        "Protect the hero object with whitespace on at least two sides.",
+        "Avoid distributing the three semantic assets as equal cards.",
+        "Use overlap, crop, or scale contrast to create depth while keeping text legible."
+      ],
+      "climax_or_scene_depth_rule": "Use foreground deck hero, midground memory controls, and background market cue so the cover reads as a launch scene.",
+      "public_surface_forbidden_patterns": [
+        "schematic native shape-only surface",
+        "generic placeholder blocks",
+        "equal feature-card grid",
+        "workflow report panel",
+        "copied screenshots/source media"
+      ],
+      "required_trace_fields": [
+        "run2_43_editorial_typography_memory_id",
+        "run2_43_layout_signature_target",
+        "run2_43_primary_visual_weight_target",
+        "run2_43_visual_asset_semantics_execution_status"
+      ],
+      "qa_probe": "A reviewer should be able to name the slide's main semantic object and typography hierarchy without reading the trace manifest."
+    },
+    {
+      "editorial_typography_memory_id": "editorial_typography_2_43_setup",
+      "role": "setup",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_semantic_asset_ids": [
+        "semantic_asset_2_43_setup_1",
+        "semantic_asset_2_43_setup_2",
+        "semantic_asset_2_43_setup_3"
+      ],
+      "first_read_scene_object": "prompt-only failure path collapsing into a smaller unreviewable slide surface",
+      "visual_rhythm_id": "failure_path_scene",
+      "layout_signature_target": "failure_storyboard_to_selected_route",
+      "primary_visual_weight_target": 0.58,
+      "typography_hierarchy_rules": [
+        "Use one dominant claim that explains the commercial scene, not a workflow label.",
+        "Use one concrete scene or object label tied to the selected usecase.",
+        "Keep proof captions short and subordinate to the main visual object.",
+        "Keep run ids, trace ids, gate names, and database terms out of the public first-read surface."
+      ],
+      "editorial_composition_rules": [
+        "One semantic asset must own the first read before supporting assets appear.",
+        "Layer foreground, midground, and background so the slide reads as a scene, not a grid.",
+        "Use supporting rails only when they explain the hero object.",
+        "Make the semantic assets visibly different in shape, scale, and purpose."
+      ],
+      "spacing_depth_rules": [
+        "Protect the hero object with whitespace on at least two sides.",
+        "Avoid distributing the three semantic assets as equal cards.",
+        "Use overlap, crop, or scale contrast to create depth while keeping text legible."
+      ],
+      "climax_or_scene_depth_rule": "Make the failure path visibly collapse before the selected route appears as the stable object.",
+      "public_surface_forbidden_patterns": [
+        "schematic native shape-only surface",
+        "generic placeholder blocks",
+        "equal feature-card grid",
+        "workflow report panel",
+        "copied screenshots/source media"
+      ],
+      "required_trace_fields": [
+        "run2_43_editorial_typography_memory_id",
+        "run2_43_layout_signature_target",
+        "run2_43_primary_visual_weight_target",
+        "run2_43_visual_asset_semantics_execution_status"
+      ],
+      "qa_probe": "A reviewer should be able to name the slide's main semantic object and typography hierarchy without reading the trace manifest."
+    },
+    {
+      "editorial_typography_memory_id": "editorial_typography_2_43_contrast",
+      "role": "contrast",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_semantic_asset_ids": [
+        "semantic_asset_2_43_contrast_1",
+        "semantic_asset_2_43_contrast_2",
+        "semantic_asset_2_43_contrast_3"
+      ],
+      "first_read_scene_object": "large after-state product surface dwarfing a small prompt-only before thumbnail",
+      "visual_rhythm_id": "asymmetric_before_after",
+      "layout_signature_target": "small_before_large_after_semantic_product_state",
+      "primary_visual_weight_target": 0.64,
+      "typography_hierarchy_rules": [
+        "Use one dominant claim that explains the commercial scene, not a workflow label.",
+        "Use one concrete scene or object label tied to the selected usecase.",
+        "Keep proof captions short and subordinate to the main visual object.",
+        "Keep run ids, trace ids, gate names, and database terms out of the public first-read surface."
+      ],
+      "editorial_composition_rules": [
+        "One semantic asset must own the first read before supporting assets appear.",
+        "Layer foreground, midground, and background so the slide reads as a scene, not a grid.",
+        "Use supporting rails only when they explain the hero object.",
+        "Make the semantic assets visibly different in shape, scale, and purpose."
+      ],
+      "spacing_depth_rules": [
+        "Protect the hero object with whitespace on at least two sides.",
+        "Avoid distributing the three semantic assets as equal cards.",
+        "Use overlap, crop, or scale contrast to create depth while keeping text legible."
+      ],
+      "climax_or_scene_depth_rule": "The after-state object must dwarf the before-state object and carry the clearest business delta.",
+      "public_surface_forbidden_patterns": [
+        "schematic native shape-only surface",
+        "generic placeholder blocks",
+        "equal feature-card grid",
+        "workflow report panel",
+        "copied screenshots/source media"
+      ],
+      "required_trace_fields": [
+        "run2_43_editorial_typography_memory_id",
+        "run2_43_layout_signature_target",
+        "run2_43_primary_visual_weight_target",
+        "run2_43_visual_asset_semantics_execution_status"
+      ],
+      "qa_probe": "A reviewer should be able to name the slide's main semantic object and typography hierarchy without reading the trace manifest."
+    },
+    {
+      "editorial_typography_memory_id": "editorial_typography_2_43_proof",
+      "role": "proof",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_semantic_asset_ids": [
+        "semantic_asset_2_43_proof_1",
+        "semantic_asset_2_43_proof_2",
+        "semantic_asset_2_43_proof_3"
+      ],
+      "first_read_scene_object": "working product console that maps slide roles to visual decisions and proof objects",
+      "visual_rhythm_id": "product_workflow_surface",
+      "layout_signature_target": "working_product_surface_with_active_decision_lane",
+      "primary_visual_weight_target": 0.6,
+      "typography_hierarchy_rules": [
+        "Use one dominant claim that explains the commercial scene, not a workflow label.",
+        "Use one concrete scene or object label tied to the selected usecase.",
+        "Keep proof captions short and subordinate to the main visual object.",
+        "Keep run ids, trace ids, gate names, and database terms out of the public first-read surface."
+      ],
+      "editorial_composition_rules": [
+        "One semantic asset must own the first read before supporting assets appear.",
+        "Layer foreground, midground, and background so the slide reads as a scene, not a grid.",
+        "Use supporting rails only when they explain the hero object.",
+        "Make the semantic assets visibly different in shape, scale, and purpose."
+      ],
+      "spacing_depth_rules": [
+        "Protect the hero object with whitespace on at least two sides.",
+        "Avoid distributing the three semantic assets as equal cards.",
+        "Use overlap, crop, or scale contrast to create depth while keeping text legible."
+      ],
+      "climax_or_scene_depth_rule": "One active decision lane must sit above quieter rows so the proof feels like product evidence, not a table.",
+      "public_surface_forbidden_patterns": [
+        "schematic native shape-only surface",
+        "generic placeholder blocks",
+        "equal feature-card grid",
+        "workflow report panel",
+        "copied screenshots/source media"
+      ],
+      "required_trace_fields": [
+        "run2_43_editorial_typography_memory_id",
+        "run2_43_layout_signature_target",
+        "run2_43_primary_visual_weight_target",
+        "run2_43_visual_asset_semantics_execution_status"
+      ],
+      "qa_probe": "A reviewer should be able to name the slide's main semantic object and typography hierarchy without reading the trace manifest."
+    },
+    {
+      "editorial_typography_memory_id": "editorial_typography_2_43_climax",
+      "role": "climax",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_semantic_asset_ids": [
+        "semantic_asset_2_43_climax_1",
+        "semantic_asset_2_43_climax_2",
+        "semantic_asset_2_43_climax_3"
+      ],
+      "first_read_scene_object": "one cinematic generated deck object with visible before, memory, and release state fused together",
+      "visual_rhythm_id": "cinematic_climax_object",
+      "layout_signature_target": "single_cinematic_result_object_with_supporting_proof_rail",
+      "primary_visual_weight_target": 0.78,
+      "typography_hierarchy_rules": [
+        "Use one dominant claim that explains the commercial scene, not a workflow label.",
+        "Use one concrete scene or object label tied to the selected usecase.",
+        "Keep proof captions short and subordinate to the main visual object.",
+        "Keep run ids, trace ids, gate names, and database terms out of the public first-read surface."
+      ],
+      "editorial_composition_rules": [
+        "One semantic asset must own the first read before supporting assets appear.",
+        "Layer foreground, midground, and background so the slide reads as a scene, not a grid.",
+        "Use supporting rails only when they explain the hero object.",
+        "Make the semantic assets visibly different in shape, scale, and purpose."
+      ],
+      "spacing_depth_rules": [
+        "Protect the hero object with whitespace on at least two sides.",
+        "Avoid distributing the three semantic assets as equal cards.",
+        "Use overlap, crop, or scale contrast to create depth while keeping text legible."
+      ],
+      "climax_or_scene_depth_rule": "The result object must carry the slide; supporting proof stays below or behind it.",
+      "public_surface_forbidden_patterns": [
+        "schematic native shape-only surface",
+        "generic placeholder blocks",
+        "equal feature-card grid",
+        "workflow report panel",
+        "copied screenshots/source media"
+      ],
+      "required_trace_fields": [
+        "run2_43_editorial_typography_memory_id",
+        "run2_43_layout_signature_target",
+        "run2_43_primary_visual_weight_target",
+        "run2_43_visual_asset_semantics_execution_status"
+      ],
+      "qa_probe": "A reviewer should be able to name the slide's main semantic object and typography hierarchy without reading the trace manifest."
+    },
+    {
+      "editorial_typography_memory_id": "editorial_typography_2_43_close",
+      "role": "close",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "required_semantic_asset_ids": [
+        "semantic_asset_2_43_close_1",
+        "semantic_asset_2_43_close_2",
+        "semantic_asset_2_43_close_3"
+      ],
+      "first_read_scene_object": "inspectable next-run handoff path with one clear decision gate and one public-blocked state",
+      "visual_rhythm_id": "decision_handoff_path",
+      "layout_signature_target": "decision_room_handoff_with_one_release_boundary",
+      "primary_visual_weight_target": 0.56,
+      "typography_hierarchy_rules": [
+        "Use one dominant claim that explains the commercial scene, not a workflow label.",
+        "Use one concrete scene or object label tied to the selected usecase.",
+        "Keep proof captions short and subordinate to the main visual object.",
+        "Keep run ids, trace ids, gate names, and database terms out of the public first-read surface."
+      ],
+      "editorial_composition_rules": [
+        "One semantic asset must own the first read before supporting assets appear.",
+        "Layer foreground, midground, and background so the slide reads as a scene, not a grid.",
+        "Use supporting rails only when they explain the hero object.",
+        "Make the semantic assets visibly different in shape, scale, and purpose."
+      ],
+      "spacing_depth_rules": [
+        "Protect the hero object with whitespace on at least two sides.",
+        "Avoid distributing the three semantic assets as equal cards.",
+        "Use overlap, crop, or scale contrast to create depth while keeping text legible."
+      ],
+      "climax_or_scene_depth_rule": "The decision handoff owns the first read, with release states as supporting proof rather than a checklist.",
+      "public_surface_forbidden_patterns": [
+        "schematic native shape-only surface",
+        "generic placeholder blocks",
+        "equal feature-card grid",
+        "workflow report panel",
+        "copied screenshots/source media"
+      ],
+      "required_trace_fields": [
+        "run2_43_editorial_typography_memory_id",
+        "run2_43_layout_signature_target",
+        "run2_43_primary_visual_weight_target",
+        "run2_43_visual_asset_semantics_execution_status"
+      ],
+      "qa_probe": "A reviewer should be able to name the slide's main semantic object and typography hierarchy without reading the trace manifest."
+    }
+  ]
+}
