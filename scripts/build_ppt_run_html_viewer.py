@@ -517,6 +517,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run239_result = read_json(pack / "results" / "run2_39_public_video_visual_direction_rerun_result.json")
     run240_result = read_json(pack / "results" / "run2_40_visual_compiler_rerun_result.json")
     run241_result = read_json(pack / "results" / "run2_41_content_visual_asset_compiler_rerun_result.json")
+    run242_audit = read_json(pack / "results" / "run2_42_content_visual_asset_quality_audit.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -681,6 +682,8 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run240Result": run240_result,
         "run241ResultStatus": run241_result.get("status", ""),
         "run241Result": run241_result,
+        "run242AuditStatus": run242_audit.get("status", ""),
+        "run242Audit": run242_audit,
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -1812,6 +1815,10 @@ def build_html(data: dict[str, Any]) -> str:
       const run241Inputs = run241Result.input_chain || {{}};
       const run241Delta = run241Result.quality_delta || {{}};
       const run241Control = run241Result.control_boundary || {{}};
+      const run242Audit = refs.run242Audit || {{}};
+      const run242Inputs = run242Audit.input_chain || {{}};
+      const run242Trace = run242Audit.trace_closure || {{}};
+      const run242Assessment = run242Audit.visual_quality_assessment || {{}};
       const run217Audit = refs.run217MotionAudit || {{}};
       const run217DeliveryTruth = run217Audit.delivery_truth || {{}};
       const run217RendererGap = run217Audit.motion_renderer_gap || {{}};
@@ -2563,6 +2570,47 @@ def build_html(data: dict[str, Any]) -> str:
               ${{detailBlock("Bad thin arm", "ppt-run2-41-bad-thin-content-visual-asset-compiler")}}
               ${{detailBlock("Bad thin rule", run241Control.bad_thin_content_visual_asset_compiler || "same database, hidden machinery, but thin business details and visual asset surfaces")}}
               ${{detailBlock("Release boundary", run241Result.release_boundary || "Do not advance to Run 3.0 before Run 2.41 is audited")}}
+            </article>
+          </div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.42 content visual asset quality audit</h3><p>Audit-only layer over Run 2.41. It creates no new PPT deck; it verifies that content/visual asset thickness improved while design quality remains blocked by schematic visual assets.</p></div><span class="pill">${{escapeHtml(refs.run242AuditStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Audit boundary</h4>
+              ${{detailBlock("Result", "run2_42_content_visual_asset_quality_audit.json")}}
+              ${{detailBlock("Source generated run", run242Audit.source_generated_run)}}
+              ${{detailBlock("Source prior generated run", run242Audit.source_prior_generated_run)}}
+              ${{detailBlock("Creates new PPT deck", run242Audit.creates_new_ppt_deck)}}
+              ${{detailBlock("Public ready", run242Audit.public_ready)}}
+              ${{detailBlock("Next required action", run242Audit.next_required_action || "build_run2_43_visual_asset_semantics_editorial_composition_workflow")}}
+            </article>
+            <article class="dataCard">
+              <h4>Input chain</h4>
+              ${{detailBlock("Run 2.41 full trace", run242Inputs.run2_41_full_trace_manifest)}}
+              ${{detailBlock("Run 2.41 bad trace", run242Inputs.run2_41_bad_trace_manifest)}}
+              ${{detailBlock("Run 2.41 result", run242Inputs.run2_41_rerun_result)}}
+              ${{detailBlock("Run 2.40 result", run242Inputs.run2_40_rerun_result)}}
+              ${{detailBlock("Run 2.41 four-arm sheet", run242Inputs.run2_41_four_arm_contact_sheet)}}
+              ${{detailBlock("Full skill series", run242Inputs.run2_full_skill_series_sheet)}}
+            </article>
+            <article class="dataCard">
+              <h4>Trace closure</h4>
+              ${{detailBlock("Full arm", (run242Trace.full_arm || {{}}).arm_id)}}
+              ${{detailBlock("Compiler applied slides", (run242Trace.full_arm || {{}}).content_visual_asset_compiler_applied_slides)}}
+              ${{detailBlock(">=5 business detail slides", (run242Trace.full_arm || {{}}).visible_business_detail_min5_slides)}}
+              ${{detailBlock(">=3 visual asset surface slides", (run242Trace.full_arm || {{}}).visual_asset_surface_min3_slides)}}
+              ${{detailBlock("Bad thin control slides", (run242Trace.bad_control || {{}}).thin_content_control_slides)}}
+              ${{detailBlock("Bad machinery leaks", (run242Trace.bad_control || {{}}).machinery_leak_slides)}}
+            </article>
+            <article class="dataCard">
+              <h4>Quality assessment</h4>
+              ${{detailBlock("Content visual asset gate", run242Assessment.content_visual_asset_gate)}}
+              ${{detailBlock("Delta from bad control", run242Assessment.content_visual_asset_thickness_delta_from_bad_control)}}
+              ${{detailBlock("Design quality gate", run242Assessment.design_quality_gate)}}
+              ${{detailBlock("Root cause", run242Assessment.root_cause_primary || "visual_asset_surfaces_are_still_schematic_native_shapes_not_true_product_or_scene_assets")}}
+              ${{detailBlock("Next layer", run242Assessment.top_next_layer_to_thicken || "usecase_specific_visual_asset_semantics_editorial_composition_and_typography_hierarchy")}}
+              ${{detailBlock("Why still simple", run242Assessment.why_user_still_sees_simple_design)}}
             </article>
           </div>
         </section>

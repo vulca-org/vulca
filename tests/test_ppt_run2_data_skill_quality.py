@@ -6883,6 +6883,129 @@ def test_ppt_run_html_viewer_mentions_run2_41_content_visual_asset_compiler() ->
     )
 
 
+def test_run2_42_content_visual_asset_quality_audit_scores_run2_41_outputs(tmp_path: Path) -> None:
+    script_path = ROOT / "scripts" / "audit_ppt_run2_42_content_visual_asset_quality.py"
+    assert script_path.exists(), "missing Run 2.42 content/visual asset quality audit script"
+    result_json = tmp_path / "run2_42_content_visual_asset_quality_audit.json"
+    result_md = tmp_path / "run2_42_content_visual_asset_quality_audit.md"
+
+    subprocess.run(
+        [
+            sys.executable,
+            str(script_path),
+            "--result-json",
+            str(result_json),
+            "--result-md",
+            str(result_md),
+        ],
+        cwd=ROOT,
+        check=True,
+    )
+
+    audit = load_json(result_json)
+    assert audit["schema_version"] == "ppt_run2_content_visual_asset_quality_audit.v1"
+    assert audit["run_id"] == "2.42"
+    assert audit["status"] == "run2_42_content_visual_asset_quality_audit_public_blocked"
+    assert audit["source_generated_run"] == "2.41"
+    assert audit["source_prior_generated_run"] == "2.40"
+    assert audit["creates_new_ppt_deck"] is False
+    assert audit["public_ready"] is False
+    assert audit["no_new_deck_proof"]["status"] == "pass"
+    assert audit["no_new_deck_proof"]["new_pptx_created"] is False
+
+    assert audit["input_chain"]["run2_41_full_trace_manifest"].endswith("ppt-run2-41-full-vulca/trace_manifest.json")
+    assert audit["input_chain"]["run2_41_bad_trace_manifest"].endswith(
+        "ppt-run2-41-bad-thin-content-visual-asset-compiler/trace_manifest.json"
+    )
+    assert audit["input_chain"]["run2_41_rerun_result"].endswith(
+        "run2_41_content_visual_asset_compiler_rerun_result.json"
+    )
+    assert audit["input_chain"]["run2_40_rerun_result"].endswith("run2_40_visual_compiler_rerun_result.json")
+
+    trace = audit["trace_closure"]
+    assert trace["full_arm"]["arm_id"] == "run2_41_full_content_visual_asset_compiler"
+    assert trace["full_arm"]["slide_count"] == 6
+    assert trace["full_arm"]["content_visual_asset_compiler_applied_slides"] == 6
+    assert trace["full_arm"]["visible_business_detail_min5_slides"] == 6
+    assert trace["full_arm"]["visual_asset_surface_min3_slides"] == 6
+    assert trace["full_arm"]["machinery_hidden_slides"] == 6
+    assert trace["bad_control"]["arm_id"] == "bad_thin_content_visual_asset_compiler"
+    assert trace["bad_control"]["thin_content_control_slides"] == 6
+    assert trace["bad_control"]["machinery_leak_slides"] == 0
+
+    assessment = audit["visual_quality_assessment"]
+    assert assessment["content_visual_asset_gate"] == "pass_internal_only"
+    assert assessment["same_database_control_gate"] == "pass_internal_only"
+    assert assessment["design_quality_gate"] == "blocked"
+    assert assessment["public_video_readiness"] == "blocked"
+    assert assessment["root_cause_primary"] == (
+        "visual_asset_surfaces_are_still_schematic_native_shapes_not_true_product_or_scene_assets"
+    )
+    assert assessment["top_next_layer_to_thicken"] == (
+        "usecase_specific_visual_asset_semantics_editorial_composition_and_typography_hierarchy"
+    )
+    assert assessment["content_visual_asset_thickness_delta_from_bad_control"] == "proven"
+
+    assert len(audit["role_records"]) == 6
+    for record in audit["role_records"]:
+        assert record["run2_41_data_consumed"] is True
+        assert record["content_visual_asset_thickness_passed"] is True
+        assert record["bad_control_boundary_passed"] is True
+        assert record["public_video_grade"] is False
+        assert record["full_arm_metrics"]["visible_business_detail_count"] >= 5
+        assert record["full_arm_metrics"]["visual_asset_surface_count"] >= 3
+        assert record["bad_control_metrics"]["visible_business_detail_count"] <= 2
+        assert record["bad_control_metrics"]["visual_asset_surface_count"] <= 1
+        assert "visual_asset_surface_is_named_but_not_semantically_rendered_enough" in record["aesthetic_failure_reasons"]
+
+
+def test_run2_42_records_content_visual_asset_quality_audit_result() -> None:
+    result = (PACK / "results" / "run2_42_content_visual_asset_quality_audit.md").read_text(encoding="utf-8")
+    result_json = load_json(PACK / "results" / "run2_42_content_visual_asset_quality_audit.json")
+
+    assert result_json["status"] == "run2_42_content_visual_asset_quality_audit_public_blocked"
+    assert result_json["source_generated_run"] == "2.41"
+    assert result_json["source_prior_generated_run"] == "2.40"
+    assert result_json["visual_quality_assessment"]["content_visual_asset_gate"] == "pass_internal_only"
+    assert result_json["visual_quality_assessment"]["design_quality_gate"] == "blocked"
+    assert result_json["visual_quality_assessment"]["top_next_layer_to_thicken"] == (
+        "usecase_specific_visual_asset_semantics_editorial_composition_and_typography_hierarchy"
+    )
+    assert result_json["next_required_action"] == (
+        "build_run2_43_visual_asset_semantics_editorial_composition_workflow"
+    )
+    assert_contains(
+        result,
+        [
+            "Run 2.42 Content Visual Asset Quality Audit",
+            "audit-only",
+            "Run 2.41",
+            "content visual asset thickness passes",
+            "design quality is blocked",
+            "visual_asset_surfaces_are_still_schematic_native_shapes_not_true_product_or_scene_assets",
+            "usecase_specific_visual_asset_semantics_editorial_composition_and_typography_hierarchy",
+            "Run 2.43 data/workflow",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_embeds_run2_42_content_visual_asset_quality_audit() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "run2_42_content_visual_asset_quality_audit.json",
+            "Run 2.42 content visual asset quality audit",
+            "visual_asset_surfaces_are_still_schematic_native_shapes_not_true_product_or_scene_assets",
+            "usecase_specific_visual_asset_semantics_editorial_composition_and_typography_hierarchy",
+            "content_visual_asset_thickness_delta_from_bad_control",
+            "build_run2_43_visual_asset_semantics_editorial_composition_workflow",
+        ],
+    )
+
+
 def test_ppt_layout_quality_checker_flags_geometry_failures(tmp_path: Path) -> None:
     layout_dir = tmp_path / "layout"
     layout_dir.mkdir()
