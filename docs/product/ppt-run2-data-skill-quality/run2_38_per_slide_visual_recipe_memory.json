@@ -1,0 +1,235 @@
+{
+  "schema_version": "ppt_run2_per_slide_visual_recipe_memory.v1",
+  "status": "run2_38_per_slide_visual_recipe_memory_ready_public_blocked",
+  "run_id": "2.38",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "public_ready": false,
+  "creates_new_ppt_deck": false,
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "source_audit_run": "2.37",
+  "source_direction_memory": "run2_38_public_video_slide_direction_memory.json",
+  "per_slide_visual_recipe_records": [
+    {
+      "recipe_memory_id": "recipe_2_38_cover",
+      "role": "cover",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_direction_memory_id": "direction_2_38_cover",
+      "visual_rhythm_id": "poster_reveal",
+      "layout_signature_target": "poster_scale_launch_object_with_memory_halo",
+      "forbid_run2_36_dominant_layout_signature": "editorial_anchor_object+two_product_state_cards+gate_ribbon",
+      "show_workflow_gate_as_public_ribbon": false,
+      "primary_visual_weight_target": 0.64,
+      "typography_recipe": [
+        "Use one short poster headline, one product-state label, and one small release boundary line.",
+        "Keep trace terms off the first-read surface; put provenance in hidden trace fields."
+      ],
+      "spacing_recipe": [
+        "Reserve the center-right 60 percent for the launch object.",
+        "Give the hero object open space on the top and right edges."
+      ],
+      "visual_evidence_recipe": [
+        "Show a single deck canvas with three attached memory-control markers.",
+        "Avoid multiple equal cards; one product object must own the frame."
+      ],
+      "motion_beat_recipe": "slow poster reveal: memory markers settle after the launch object is already readable",
+      "native_ppt_code_obligations": [
+        "Call drawRun239LaunchPosterStage before any generic product card surface is drawn.",
+        "Store workflow gate evidence in trace fields, not as a public ribbon.",
+        "Render one dominant first-read object before any supporting rails.",
+        "Keep the output editable native PPT shapes and text."
+      ],
+      "required_trace_fields": [
+        "run2_38_per_slide_visual_recipe_id",
+        "run2_38_layout_signature_target",
+        "run2_38_primary_visual_weight_target",
+        "run2_38_public_video_execution_status"
+      ],
+      "qa_probe": "The slide should fail if it could be mistaken for the Run 2.36 dark-card plus gate-ribbon layout."
+    },
+    {
+      "recipe_memory_id": "recipe_2_38_setup",
+      "role": "setup",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_direction_memory_id": "direction_2_38_setup",
+      "visual_rhythm_id": "failure_path_scene",
+      "layout_signature_target": "diagonal_failure_path_to_selected_route",
+      "forbid_run2_36_dominant_layout_signature": "editorial_anchor_object+two_product_state_cards+gate_ribbon",
+      "show_workflow_gate_as_public_ribbon": false,
+      "primary_visual_weight_target": 0.56,
+      "typography_recipe": [
+        "Use a problem headline with one concrete failure label per broken step.",
+        "Make the selected route label larger than the failed prompt fragments."
+      ],
+      "spacing_recipe": [
+        "Compress failure fragments into a left-down diagonal.",
+        "Protect the selected route with a clean arrival zone, not a grid."
+      ],
+      "visual_evidence_recipe": [
+        "Draw the weak prompt output as a small unstable surface.",
+        "Draw the selected route as a stable product path, not another card row."
+      ],
+      "motion_beat_recipe": "failure fragments fade downward; selected route locks into place",
+      "native_ppt_code_obligations": [
+        "Call drawRun239FailurePathScene before any generic product card surface is drawn.",
+        "Store workflow gate evidence in trace fields, not as a public ribbon.",
+        "Render one dominant first-read object before any supporting rails.",
+        "Keep the output editable native PPT shapes and text."
+      ],
+      "required_trace_fields": [
+        "run2_38_per_slide_visual_recipe_id",
+        "run2_38_layout_signature_target",
+        "run2_38_primary_visual_weight_target",
+        "run2_38_public_video_execution_status"
+      ],
+      "qa_probe": "The slide should fail if it could be mistaken for the Run 2.36 dark-card plus gate-ribbon layout."
+    },
+    {
+      "recipe_memory_id": "recipe_2_38_contrast",
+      "role": "contrast",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_direction_memory_id": "direction_2_38_contrast",
+      "visual_rhythm_id": "asymmetric_before_after",
+      "layout_signature_target": "small_before_large_after_product_state",
+      "forbid_run2_36_dominant_layout_signature": "editorial_anchor_object+two_product_state_cards+gate_ribbon",
+      "show_workflow_gate_as_public_ribbon": false,
+      "primary_visual_weight_target": 0.62,
+      "typography_recipe": [
+        "Use Before and After as state labels, not equal section headers.",
+        "Give the after state one larger outcome caption tied to the usecase."
+      ],
+      "spacing_recipe": [
+        "Before thumbnail occupies less than one quarter of the canvas.",
+        "After state occupies the dominant reading path with a clear edge gap."
+      ],
+      "visual_evidence_recipe": [
+        "Before state must look generic and intentionally underpowered.",
+        "After state must show selected usecase, visual memory, and output surface in one product object."
+      ],
+      "motion_beat_recipe": "before state recedes; after state scales in as the selected evidence route appears",
+      "native_ppt_code_obligations": [
+        "Call drawRun239AsymmetricBeforeAfterState before any generic product card surface is drawn.",
+        "Store workflow gate evidence in trace fields, not as a public ribbon.",
+        "Render one dominant first-read object before any supporting rails.",
+        "Keep the output editable native PPT shapes and text."
+      ],
+      "required_trace_fields": [
+        "run2_38_per_slide_visual_recipe_id",
+        "run2_38_layout_signature_target",
+        "run2_38_primary_visual_weight_target",
+        "run2_38_public_video_execution_status"
+      ],
+      "qa_probe": "The slide should fail if it could be mistaken for the Run 2.36 dark-card plus gate-ribbon layout."
+    },
+    {
+      "recipe_memory_id": "recipe_2_38_proof",
+      "role": "proof",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_direction_memory_id": "direction_2_38_proof",
+      "visual_rhythm_id": "product_workflow_surface",
+      "layout_signature_target": "product_console_with_selected_recipe_lane",
+      "forbid_run2_36_dominant_layout_signature": "editorial_anchor_object+two_product_state_cards+gate_ribbon",
+      "show_workflow_gate_as_public_ribbon": false,
+      "primary_visual_weight_target": 0.58,
+      "typography_recipe": [
+        "Use a product-console label and three compact column labels.",
+        "Use one highlighted selected lane, not six identical cards."
+      ],
+      "spacing_recipe": [
+        "Use a broad horizontal console with one selected lane expanded.",
+        "Keep reviewer metadata as quiet badges around the console."
+      ],
+      "visual_evidence_recipe": [
+        "Show slide role, visual rhythm, and recipe binding in a product-like surface.",
+        "Make one selected row visibly active so it reads as an app state."
+      ],
+      "motion_beat_recipe": "selected recipe lane expands while inactive lanes stay compressed",
+      "native_ppt_code_obligations": [
+        "Call drawRun239ProductWorkflowSurface before any generic product card surface is drawn.",
+        "Store workflow gate evidence in trace fields, not as a public ribbon.",
+        "Render one dominant first-read object before any supporting rails.",
+        "Keep the output editable native PPT shapes and text."
+      ],
+      "required_trace_fields": [
+        "run2_38_per_slide_visual_recipe_id",
+        "run2_38_layout_signature_target",
+        "run2_38_primary_visual_weight_target",
+        "run2_38_public_video_execution_status"
+      ],
+      "qa_probe": "The slide should fail if it could be mistaken for the Run 2.36 dark-card plus gate-ribbon layout."
+    },
+    {
+      "recipe_memory_id": "recipe_2_38_climax",
+      "role": "climax",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_direction_memory_id": "direction_2_38_climax",
+      "visual_rhythm_id": "cinematic_climax_object",
+      "layout_signature_target": "single_cinematic_result_object_with_quiet_release_boundary",
+      "forbid_run2_36_dominant_layout_signature": "editorial_anchor_object+two_product_state_cards+gate_ribbon",
+      "show_workflow_gate_as_public_ribbon": false,
+      "primary_visual_weight_target": 0.76,
+      "typography_recipe": [
+        "Use one cinematic claim and one small release boundary label.",
+        "Do not show workflow field names on the public first-read surface."
+      ],
+      "spacing_recipe": [
+        "Let the result object occupy most of the canvas with a stage-like margin.",
+        "Push all secondary proof into a low-contrast rail."
+      ],
+      "visual_evidence_recipe": [
+        "The result object must be a single visual climax, not a cluster of proof cards.",
+        "Fuse generated deck, selected memory, and review state into one object."
+      ],
+      "motion_beat_recipe": "single result object enters last and holds; supporting evidence stays quiet",
+      "native_ppt_code_obligations": [
+        "Call drawRun239CinematicClimaxObject before any generic product card surface is drawn.",
+        "Store workflow gate evidence in trace fields, not as a public ribbon.",
+        "Render one dominant first-read object before any supporting rails.",
+        "Keep the output editable native PPT shapes and text."
+      ],
+      "required_trace_fields": [
+        "run2_38_per_slide_visual_recipe_id",
+        "run2_38_layout_signature_target",
+        "run2_38_primary_visual_weight_target",
+        "run2_38_public_video_execution_status"
+      ],
+      "qa_probe": "The slide should fail if it could be mistaken for the Run 2.36 dark-card plus gate-ribbon layout."
+    },
+    {
+      "recipe_memory_id": "recipe_2_38_close",
+      "role": "close",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_direction_memory_id": "direction_2_38_close",
+      "visual_rhythm_id": "decision_handoff_path",
+      "layout_signature_target": "quiet_handoff_path_with_single_decision_gate",
+      "forbid_run2_36_dominant_layout_signature": "editorial_anchor_object+two_product_state_cards+gate_ribbon",
+      "show_workflow_gate_as_public_ribbon": false,
+      "primary_visual_weight_target": 0.55,
+      "typography_recipe": [
+        "Use a decision headline and three path labels.",
+        "Keep the blocked release state explicit but visually quiet."
+      ],
+      "spacing_recipe": [
+        "Use one clean path from memory to rerun to review.",
+        "Avoid a checklist surface; the path is the proof object."
+      ],
+      "visual_evidence_recipe": [
+        "Show one future rerun contract as an inspectable launch path.",
+        "Keep gate markers small and semantic rather than ribbon-like."
+      ],
+      "motion_beat_recipe": "path draws left to right; release boundary appears as the final stop",
+      "native_ppt_code_obligations": [
+        "Call drawRun239DecisionHandoffPath before any generic product card surface is drawn.",
+        "Store workflow gate evidence in trace fields, not as a public ribbon.",
+        "Render one dominant first-read object before any supporting rails.",
+        "Keep the output editable native PPT shapes and text."
+      ],
+      "required_trace_fields": [
+        "run2_38_per_slide_visual_recipe_id",
+        "run2_38_layout_signature_target",
+        "run2_38_primary_visual_weight_target",
+        "run2_38_public_video_execution_status"
+      ],
+      "qa_probe": "The slide should fail if it could be mistaken for the Run 2.36 dark-card plus gate-ribbon layout."
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "workflow_type": "declarative_skill_director",
-  "status": "run2_35_visual_evidence_realism_workflow_directed_public_blocked",
+  "status": "run2_38_public_video_visual_direction_workflow_directed_public_blocked",
   "stage_policy": "repeat_same_five_layers_not_run3",
   "five_layer_loop": [
     "real_commercial_case",
@@ -884,6 +884,59 @@
         "negative control may receive the usecase label but not Run 2.35 memory or gate ids",
         "Run 2.35 is not a new PPT output and does not advance to Run 3.0"
       ]
+    },
+    {
+      "id": "compile_run2_38_public_video_slide_direction_memory",
+      "order": 38,
+      "layer": "public_video_visual_direction_memory",
+      "inputs": [
+        "results/run2_37_visual_quality_audit.json",
+        "results/run2_36_visual_evidence_realism_rerun_result.json",
+        "commercial_usecase_bank.json",
+        "sources.json"
+      ],
+      "outputs": [
+        "run2_38_public_video_slide_direction_memory.json"
+      ],
+      "gates": [
+        "each slide role receives a unique public-video visual rhythm",
+        "Run 2.36 dominant card layout is explicitly rejected",
+        "product-platform proof objects replace generic cards and audit ribbons"
+      ]
+    },
+    {
+      "id": "compile_run2_38_per_slide_visual_recipe_memory",
+      "order": 39,
+      "layer": "per_slide_visual_recipe_memory",
+      "inputs": [
+        "run2_38_public_video_slide_direction_memory.json"
+      ],
+      "outputs": [
+        "run2_38_per_slide_visual_recipe_memory.json"
+      ],
+      "gates": [
+        "each role defines layout signature, typography, spacing, visual evidence, and motion beat obligations",
+        "workflow gates are stored in trace, not shown as public ribbon composition",
+        "all six layout signatures must be unique before the next rerun"
+      ]
+    },
+    {
+      "id": "apply_run2_38_public_video_workflow_gates",
+      "order": 40,
+      "layer": "skill_workflow",
+      "inputs": [
+        "run2_38_public_video_slide_direction_memory.json",
+        "run2_38_per_slide_visual_recipe_memory.json"
+      ],
+      "outputs": [
+        "run2_38_public_video_workflow_gates.json",
+        "results/run2_38_public_video_visual_direction_workflow_result.json"
+      ],
+      "gates": [
+        "Run 2.39 must consume Run 2.38 visual direction memory, visual recipe memory, and gates before native PPT generation",
+        "negative control may receive the usecase label but not Run 2.38 direction or recipe ids",
+        "Run 2.38 is not a new PPT output and does not advance to Run 3.0"
+      ]
     }
   ],
   "repair_triggers": [
@@ -946,6 +999,12 @@
       "trigger": "Run 2.34 found that Run 2.33 passes contract-only visual evidence counts but still uses schematic evidence and weak editorial anchors",
       "recommendation": "require run2_35_visual_evidence_asset_realism_memory.json, run2_35_editorial_composition_memory.json, and run2_35_visual_evidence_workflow_gates.json before Run 2.36 four-arm rerun",
       "human_gate": "required before Run 2.36 generated rerun"
+    },
+    {
+      "id": "run2_38_public_video_direction_required_before_run2_39_rerun",
+      "trigger": "Run 2.37 found that Run 2.36 proves data consumption but stays visually average because all six slides share one card-like layout signature",
+      "recommendation": "require run2_38_public_video_slide_direction_memory.json, run2_38_per_slide_visual_recipe_memory.json, and run2_38_public_video_workflow_gates.json before Run 2.39 four-arm rerun",
+      "human_gate": "required before Run 2.39 generated rerun"
     }
   ],
   "release_decisions": [

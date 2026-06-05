@@ -2207,8 +2207,11 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
         "compile_run2_35_visual_evidence_asset_realism_memory",
         "compile_run2_35_editorial_composition_memory",
         "apply_run2_35_visual_evidence_workflow_gates",
+        "compile_run2_38_public_video_slide_direction_memory",
+        "compile_run2_38_per_slide_visual_recipe_memory",
+        "apply_run2_38_public_video_workflow_gates",
     ]
-    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 38))
+    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 41))
     assert workflow["repair_triggers"]
     workflow_text = json.dumps(workflow)
     assert "multimodal_database.json" in workflow_text
@@ -4195,7 +4198,7 @@ def test_run2_24_records_single_usecase_content_visual_evidence_pack() -> None:
     assert len(content_memory["slide_content_memory"]) == 6
     assert len(visual_assets["visual_evidence_assets"]) == 12
     assert len(workflow_gates["gates"]) == 6
-    assert workflow["status"] == "run2_35_visual_evidence_realism_workflow_directed_public_blocked"
+    assert workflow["status"] == "run2_38_public_video_visual_direction_workflow_directed_public_blocked"
     assert {stage["id"] for stage in workflow["stages"]} >= {
         "lock_run2_24_single_usecase_content_memory",
         "compile_run2_24_visual_evidence_asset_memory",
@@ -4203,6 +4206,9 @@ def test_run2_24_records_single_usecase_content_visual_evidence_pack() -> None:
         "compile_run2_35_visual_evidence_asset_realism_memory",
         "compile_run2_35_editorial_composition_memory",
         "apply_run2_35_visual_evidence_workflow_gates",
+        "compile_run2_38_public_video_slide_direction_memory",
+        "compile_run2_38_per_slide_visual_recipe_memory",
+        "apply_run2_38_public_video_workflow_gates",
     }
     assert any(
         trigger["id"] == "run2_24_single_usecase_pack_required_before_next_rerun"
@@ -5842,11 +5848,14 @@ def test_run2_35_records_visual_evidence_realism_workflow_result() -> None:
     assert len(realism_memory["visual_evidence_asset_realism_records"]) == 12
     assert len(composition_memory["editorial_composition_records"]) == 6
     assert len(workflow_gates["gates"]) == 6
-    assert workflow["status"] == "run2_35_visual_evidence_realism_workflow_directed_public_blocked"
+    assert workflow["status"] == "run2_38_public_video_visual_direction_workflow_directed_public_blocked"
     assert {stage["id"] for stage in workflow["stages"]} >= {
         "compile_run2_35_visual_evidence_asset_realism_memory",
         "compile_run2_35_editorial_composition_memory",
         "apply_run2_35_visual_evidence_workflow_gates",
+        "compile_run2_38_public_video_slide_direction_memory",
+        "compile_run2_38_per_slide_visual_recipe_memory",
+        "apply_run2_38_public_video_workflow_gates",
     }
     assert any(
         trigger["id"] == "run2_35_visual_evidence_realism_required_before_run2_36_rerun"
@@ -6213,6 +6222,172 @@ def test_ppt_run_html_viewer_embeds_run2_37_visual_quality_audit() -> None:
             "roles_with_repetitive_card_layout",
             "roles_with_insufficient_public_aesthetic",
             "Run 2.38 data/workflow",
+        ],
+    )
+
+
+def test_run2_38_builder_writes_public_video_visual_direction_workflow_pack(tmp_path: Path) -> None:
+    script_path = ROOT / "scripts" / "build_ppt_run2_38_public_video_visual_direction_workflow.py"
+    assert script_path.exists(), "missing Run 2.38 public-video visual-direction workflow builder"
+
+    result_json = tmp_path / "run2_38_public_video_visual_direction_workflow_result.json"
+    result_md = tmp_path / "run2_38_public_video_visual_direction_workflow_result.md"
+    subprocess.run(
+        [
+            sys.executable,
+            str(script_path),
+            "--out-dir",
+            str(tmp_path),
+            "--result-json",
+            str(result_json),
+            "--result-md",
+            str(result_md),
+        ],
+        cwd=ROOT,
+        check=True,
+    )
+
+    result = load_json(result_json)
+    direction_memory = load_json(tmp_path / "run2_38_public_video_slide_direction_memory.json")
+    recipe_memory = load_json(tmp_path / "run2_38_per_slide_visual_recipe_memory.json")
+    workflow_gates = load_json(tmp_path / "run2_38_public_video_workflow_gates.json")
+
+    assert result["status"] == "run2_38_public_video_visual_direction_workflow_ready_public_blocked"
+    assert result["run_id"] == "2.38"
+    assert result["source_audit_run"] == "2.37"
+    assert result["source_generated_run"] == "2.36"
+    assert result["creates_new_ppt_deck"] is False
+    assert result["public_ready"] is False
+    assert result["target_layer"] == "public_video_grade_slide_direction_and_per_slide_visual_recipe"
+    assert result["input_chain"]["visual_quality_audit"].endswith("run2_37_visual_quality_audit.json")
+    assert result["input_chain"]["visual_evidence_realism_rerun_result"].endswith(
+        "run2_36_visual_evidence_realism_rerun_result.json"
+    )
+    assert result["artifact_counts"] == {
+        "public_video_slide_direction_records": 6,
+        "per_slide_visual_recipe_records": 6,
+        "public_video_workflow_gates": 6,
+    }
+    assert result["delivery_artifacts"]["pptx_paths"] == []
+    assert result["next_required_action"] == (
+        "consume_run2_38_public_video_visual_direction_workflow_before_run2_39_rerun"
+    )
+
+    assert direction_memory["status"] == "run2_38_public_video_slide_direction_memory_ready_public_blocked"
+    assert direction_memory["source_user_feedback"] == "Run 2.36 effect feels visually average"
+    direction_records = direction_memory["public_video_slide_direction_records"]
+    assert [record["role"] for record in direction_records] == ["cover", "setup", "contrast", "proof", "climax", "close"]
+    assert {record["visual_rhythm_id"] for record in direction_records} == {
+        "poster_reveal",
+        "failure_path_scene",
+        "asymmetric_before_after",
+        "product_workflow_surface",
+        "cinematic_climax_object",
+        "decision_handoff_path",
+    }
+    assert {record["public_video_scene_type"] for record in direction_records} == {
+        "launch_poster",
+        "failure_scene",
+        "before_after_product_state",
+        "product_workflow_surface",
+        "cinematic_climax_object",
+        "decision_handoff_path",
+    }
+    for record in direction_records:
+        assert record["source_audit_finding"] == "visual_module_language_too_repetitive_and_card_like"
+        assert record["first_read_object"]
+        assert record["commercial_story_payload"]["specific_business_object"]
+        assert record["commercial_story_payload"]["viewer_takeaway"]
+        assert "same_visual_module_signature_across_all_roles" in record["forbidden_visible_patterns"]
+        assert "audit ribbon as public composition" in record["forbidden_visible_patterns"]
+        assert "run2_38_visual_direction_memory_id" in record["required_trace_fields"]
+        assert "run2_38_public_video_execution_status" in record["required_trace_fields"]
+        assert len(record["public_video_grade_acceptance_checks"]) >= 4
+
+    assert recipe_memory["status"] == "run2_38_per_slide_visual_recipe_memory_ready_public_blocked"
+    recipe_records = recipe_memory["per_slide_visual_recipe_records"]
+    assert [record["role"] for record in recipe_records] == ["cover", "setup", "contrast", "proof", "climax", "close"]
+    assert len({record["layout_signature_target"] for record in recipe_records}) == 6
+    for record in recipe_records:
+        assert record["forbid_run2_36_dominant_layout_signature"] == (
+            "editorial_anchor_object+two_product_state_cards+gate_ribbon"
+        )
+        assert record["show_workflow_gate_as_public_ribbon"] is False
+        assert record["primary_visual_weight_target"] >= 0.55
+        assert record["typography_recipe"]
+        assert record["spacing_recipe"]
+        assert record["visual_evidence_recipe"]
+        assert record["motion_beat_recipe"]
+        assert "run2_38_per_slide_visual_recipe_id" in record["required_trace_fields"]
+
+    assert workflow_gates["status"] == "run2_38_public_video_workflow_gates_ready_public_blocked"
+    assert workflow_gates["visual_rhythm_diversity_contract"]["min_unique_visual_rhythms"] == 6
+    assert workflow_gates["visual_rhythm_diversity_contract"]["max_repeated_layout_signature_allowed"] == 1
+    for gate in workflow_gates["gates"]:
+        assert gate["forbid_run2_36_dominant_layout_signature"] is True
+        assert gate["required_public_video_slide_direction_memory_id"].startswith("direction_2_38_")
+        assert gate["required_per_slide_visual_recipe_memory_id"].startswith("recipe_2_38_")
+        assert gate["next_rerun_contract"] == "must_be_consumed_before_run2_39_four_arm_rerun"
+        assert "The generated slide must use the Run 2.38 per-slide recipe before native PPT drawing." in gate["pass_fail_checks"]
+        assert "The public surface must not expose workflow gates as audit ribbons." in gate["pass_fail_checks"]
+
+
+def test_run2_38_records_public_video_visual_direction_workflow_result() -> None:
+    result = (PACK / "results" / "run2_38_public_video_visual_direction_workflow_result.md").read_text(
+        encoding="utf-8"
+    )
+    result_json = load_json(PACK / "results" / "run2_38_public_video_visual_direction_workflow_result.json")
+    direction_memory = load_json(PACK / "run2_38_public_video_slide_direction_memory.json")
+    recipe_memory = load_json(PACK / "run2_38_per_slide_visual_recipe_memory.json")
+    workflow_gates = load_json(PACK / "run2_38_public_video_workflow_gates.json")
+    workflow = load_json(PACK / "skill_workflow.json")
+
+    assert result_json["status"] == "run2_38_public_video_visual_direction_workflow_ready_public_blocked"
+    assert result_json["source_audit_run"] == "2.37"
+    assert result_json["target_layer"] == "public_video_grade_slide_direction_and_per_slide_visual_recipe"
+    assert result_json["artifact_counts"]["public_video_slide_direction_records"] == 6
+    assert result_json["artifact_counts"]["per_slide_visual_recipe_records"] == 6
+    assert result_json["artifact_counts"]["public_video_workflow_gates"] == 6
+    assert result_json["next_required_action"] == (
+        "consume_run2_38_public_video_visual_direction_workflow_before_run2_39_rerun"
+    )
+    assert len(direction_memory["public_video_slide_direction_records"]) == 6
+    assert len(recipe_memory["per_slide_visual_recipe_records"]) == 6
+    assert len(workflow_gates["gates"]) == 6
+    assert "compile_run2_38_public_video_slide_direction_memory" in {stage["id"] for stage in workflow["stages"]}
+    assert "apply_run2_38_public_video_workflow_gates" in {stage["id"] for stage in workflow["stages"]}
+    assert_contains(
+        result,
+        [
+            "Run 2.38 Public Video Visual Direction Workflow",
+            "data/workflow-only",
+            "Run 2.37",
+            "visual_module_language_too_repetitive_and_card_like",
+            "public_video_grade_slide_direction_and_per_slide_visual_recipe",
+            "run2_38_public_video_slide_direction_memory.json",
+            "run2_38_per_slide_visual_recipe_memory.json",
+            "run2_38_public_video_workflow_gates.json",
+            "Run 2.39 four-arm rerun",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_embeds_run2_38_public_video_visual_direction_workflow() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "run2_38_public_video_visual_direction_workflow_result.json",
+            "Run 2.38 public-video visual direction workflow",
+            "run2_38_public_video_slide_direction_memory.json",
+            "run2_38_per_slide_visual_recipe_memory.json",
+            "run2_38_public_video_workflow_gates.json",
+            "public_video_grade_slide_direction_and_per_slide_visual_recipe",
+            "visual_rhythm_diversity_contract",
+            "must_be_consumed_before_run2_39_four_arm_rerun",
+            "Run 2.39 four-arm rerun",
         ],
     )
 
@@ -7183,7 +7358,7 @@ def test_run2_18_records_thickness_result_and_no_new_ppt_output() -> None:
         ],
     )
 
-    assert workflow["status"] == "run2_35_visual_evidence_realism_workflow_directed_public_blocked"
+    assert workflow["status"] == "run2_38_public_video_visual_direction_workflow_directed_public_blocked"
     assert {stage["id"] for stage in workflow["stages"]} >= {
         "expand_run2_18_multimodal_evidence",
         "expand_run2_18_design_memory",

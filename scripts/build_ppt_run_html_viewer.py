@@ -447,6 +447,10 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run235_result = read_json(pack / "results" / "run2_35_visual_evidence_realism_workflow_result.json")
     run236_result = read_json(pack / "results" / "run2_36_visual_evidence_realism_rerun_result.json")
     run237_audit = read_json(pack / "results" / "run2_37_visual_quality_audit.json")
+    run238_direction_memory = read_json(pack / "run2_38_public_video_slide_direction_memory.json")
+    run238_recipe_memory = read_json(pack / "run2_38_per_slide_visual_recipe_memory.json")
+    run238_workflow_gates = read_json(pack / "run2_38_public_video_workflow_gates.json")
+    run238_result = read_json(pack / "results" / "run2_38_public_video_visual_direction_workflow_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -596,6 +600,15 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run236Result": run236_result,
         "run237AuditStatus": run237_audit.get("status", ""),
         "run237Audit": run237_audit,
+        "run238DirectionMemoryStatus": run238_direction_memory.get("status", ""),
+        "run238DirectionMemory": run238_direction_memory.get("public_video_slide_direction_records", []),
+        "run238RecipeMemoryStatus": run238_recipe_memory.get("status", ""),
+        "run238RecipeMemory": run238_recipe_memory.get("per_slide_visual_recipe_records", []),
+        "run238WorkflowGateStatus": run238_workflow_gates.get("status", ""),
+        "run238WorkflowGates": run238_workflow_gates.get("gates", []),
+        "run238WorkflowGateContract": run238_workflow_gates.get("visual_rhythm_diversity_contract", {}),
+        "run238ResultStatus": run238_result.get("status", ""),
+        "run238Result": run238_result,
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -1679,6 +1692,39 @@ def build_html(data: dict[str, Any]) -> str:
         ${{detailBlock("Failure reasons", record.aesthetic_failure_reasons)}}
         ${{detailBlock("Recommended next action", record.recommended_next_action)}}
       </article>`).join("");
+      const run238Result = refs.run238Result || {{}};
+      const run238Inputs = run238Result.input_chain || {{}};
+      const run238Output = run238Result.output_chain || {{}};
+      const run238Counts = run238Result.artifact_counts || {{}};
+      const run238Contract = refs.run238WorkflowGateContract || {{}};
+      const run238DirectionCards = (refs.run238DirectionMemory || []).map((record) => `<article class="dataCard">
+        <h4>${{escapeHtml(record.role)}} / ${{escapeHtml(record.visual_rhythm_id)}}</h4>
+        ${{detailBlock("Scene type", record.public_video_scene_type)}}
+        ${{detailBlock("First-read object", record.first_read_object)}}
+        ${{detailBlock("Specific business object", (record.commercial_story_payload || {{}}).specific_business_object)}}
+        ${{detailBlock("Viewer takeaway", (record.commercial_story_payload || {{}}).viewer_takeaway)}}
+        ${{detailBlock("Required code modules", record.required_code_modules)}}
+        ${{detailBlock("Forbidden patterns", record.forbidden_visible_patterns)}}
+      </article>`).join("");
+      const run238RecipeCards = (refs.run238RecipeMemory || []).map((record) => `<article class="dataCard">
+        <h4>${{escapeHtml(record.role)}} / recipe</h4>
+        ${{detailBlock("Layout signature target", record.layout_signature_target)}}
+        ${{detailBlock("Forbid Run 2.36 signature", record.forbid_run2_36_dominant_layout_signature)}}
+        ${{detailBlock("Public gate ribbon", record.show_workflow_gate_as_public_ribbon)}}
+        ${{detailBlock("Primary visual weight target", record.primary_visual_weight_target)}}
+        ${{detailBlock("Typography recipe", record.typography_recipe)}}
+        ${{detailBlock("Spacing recipe", record.spacing_recipe)}}
+        ${{detailBlock("Motion beat", record.motion_beat_recipe)}}
+      </article>`).join("");
+      const run238GateCards = (refs.run238WorkflowGates || []).map((gate) => `<article class="dataCard">
+        <h4>${{escapeHtml(gate.role)}} / ${{escapeHtml(gate.gate_id)}}</h4>
+        ${{detailBlock("Direction memory", gate.required_public_video_slide_direction_memory_id)}}
+        ${{detailBlock("Recipe memory", gate.required_per_slide_visual_recipe_memory_id)}}
+        ${{detailBlock("Visual rhythm", gate.required_visual_rhythm_id)}}
+        ${{detailBlock("Layout signature target", gate.required_layout_signature_target)}}
+        ${{detailBlock("Next rerun contract", gate.next_rerun_contract)}}
+        ${{detailBlock("Pass/fail checks", gate.pass_fail_checks)}}
+      </article>`).join("");
       const run217Audit = refs.run217MotionAudit || {{}};
       const run217DeliveryTruth = run217Audit.delivery_truth || {{}};
       const run217RendererGap = run217Audit.motion_renderer_gap || {{}};
@@ -2270,6 +2316,46 @@ def build_html(data: dict[str, Any]) -> str:
             </article>
           </div>
           <div class="dataGrid">${{run237RoleCards}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.38 public-video visual direction workflow</h3><p>Data/workflow-only layer after Run 2.37. It creates no new PPT deck; it turns public_video_grade_slide_direction_and_per_slide_visual_recipe into direction memory, per-slide recipes, and workflow gates that must_be_consumed_before_run2_39_four_arm_rerun.</p></div><span class="pill">${{escapeHtml(refs.run238ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Run boundary</h4>
+              ${{detailBlock("Result", "run2_38_public_video_visual_direction_workflow_result.json")}}
+              ${{detailBlock("Source audit run", run238Result.source_audit_run)}}
+              ${{detailBlock("Source generated run", run238Result.source_generated_run)}}
+              ${{detailBlock("Target layer", run238Result.target_layer || "public_video_grade_slide_direction_and_per_slide_visual_recipe")}}
+              ${{detailBlock("Creates new PPT deck", run238Result.creates_new_ppt_deck)}}
+              ${{detailBlock("Public ready", run238Result.public_ready)}}
+              ${{detailBlock("Next action", run238Result.next_required_action || "Run 2.39 four-arm rerun")}}
+            </article>
+            <article class="dataCard">
+              <h4>Input chain</h4>
+              ${{detailBlock("Run 2.37 audit", run238Inputs.visual_quality_audit || "run2_37_visual_quality_audit.json")}}
+              ${{detailBlock("Run 2.36 result", run238Inputs.visual_evidence_realism_rerun_result || "run2_36_visual_evidence_realism_rerun_result.json")}}
+              ${{detailBlock("Run 2.35 workflow", run238Inputs.visual_evidence_realism_workflow_result || "run2_35_visual_evidence_realism_workflow_result.json")}}
+              ${{detailBlock("Commercial usecase bank", run238Inputs.commercial_usecase_bank)}}
+              ${{detailBlock("Sources", run238Inputs.sources)}}
+            </article>
+            <article class="dataCard">
+              <h4>Output chain</h4>
+              ${{detailBlock("Direction memory", run238Output.public_video_slide_direction_memory || "run2_38_public_video_slide_direction_memory.json")}}
+              ${{detailBlock("Recipe memory", run238Output.per_slide_visual_recipe_memory || "run2_38_per_slide_visual_recipe_memory.json")}}
+              ${{detailBlock("Workflow gates", run238Output.public_video_workflow_gates || "run2_38_public_video_workflow_gates.json")}}
+              ${{detailBlock("Artifact counts", run238Counts)}}
+            </article>
+            <article class="dataCard">
+              <h4>visual_rhythm_diversity_contract</h4>
+              ${{detailBlock("Min unique visual rhythms", run238Contract.min_unique_visual_rhythms)}}
+              ${{detailBlock("Max repeated layout signature allowed", run238Contract.max_repeated_layout_signature_allowed)}}
+              ${{detailBlock("Forbidden dominant layout signature", run238Contract.forbidden_dominant_layout_signature)}}
+              ${{detailBlock("Required by", "Run 2.39 four-arm rerun")}}
+            </article>
+          </div>
+          <div class="dataGrid">${{run238DirectionCards}}</div>
+          <div class="dataGrid">${{run238RecipeCards}}</div>
+          <div class="dataGrid">${{run238GateCards}}</div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.22 selector-memory rerun result</h3><p>Generated four-arm rerun that consumes Run 2.21 visual-decision memory, selector gates, and rejection matrix before native PPT code generation. It stays in the same five-layer loop and does not advance to Run 3.0.</p></div><span class="pill">${{escapeHtml(refs.run222ResultStatus || "missing")}}</span></div>
