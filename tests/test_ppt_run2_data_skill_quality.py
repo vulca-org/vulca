@@ -8244,6 +8244,44 @@ def test_ppt_run_html_viewer_embeds_run2_49_data_only_repair_pack() -> None:
     assert "ppt-run2-49" not in viewer
 
 
+def test_ppt_run_html_viewer_embeds_run2_51_data_workflow_repair_pack() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+    viewer = (
+        ROOT
+        / "outputs"
+        / "019e7d9c-532a-70b3-8892-fa3ae42baef2"
+        / "presentations"
+        / "ppt-run-viewer.html"
+    ).read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "run2_51_editorial_copy_memory.json",
+            "run2_51_shape_text_socket_memory.json",
+            "run2_51_renderer_archetype_workflow_gates.json",
+            "run251ResultStatus",
+            "Run 2.51 is the current data/workflow repair layer",
+            "visual validation waits for the next generated rerun",
+        ],
+    )
+    assert_contains(
+        viewer,
+        [
+            '"latestRunId": "2.50"',
+            "Run 2.51 is the current data/workflow repair layer",
+            "run2_51_editorial_shape_text_repair_result.json",
+            "run2_51_editorial_copy_memory.json",
+            "run2_51_shape_text_socket_memory.json",
+            "run2_51_renderer_archetype_workflow_gates.json",
+            "Data/workflow-only, no new PPT deck",
+            "Visual validation",
+            "Deferred to generated rerun",
+        ],
+    )
+    assert "ppt-run2-51" not in viewer
+
+
 def test_ppt_run_html_viewer_surfaces_latest_data_workflow_repair_first() -> None:
     viewer = (
         ROOT
@@ -8260,15 +8298,16 @@ def test_ppt_run_html_viewer_surfaces_latest_data_workflow_repair_first() -> Non
     assert_contains(
         viewer,
         [
-            "Run 2.49 readability/content density/editorial renderer repair",
-            "consume_run2_49_before_run2_50_four_arm_rerun",
-            "Data-only, no new PPT deck",
+            "Run 2.51 is the current data/workflow repair layer",
+            "consume_run2_51_before_run2_52_four_arm_rerun",
+            "Data/workflow-only, no new PPT deck",
+            "Run 2.49 readability/content density repair",
             ".dataBandHead .pill",
             "text-overflow: ellipsis",
-            "Visual/data split",
+            "Renderer archetype workflow gates",
         ],
     )
-    assert 'title="${escapeHtml(refs.run249ResultStatus || "missing")}"' in viewer
+    assert 'title="${escapeHtml(refs.run251ResultStatus || "missing")}"' in viewer
 
 
 def test_run2_50_generator_consumes_run2_49_repair_pack() -> None:

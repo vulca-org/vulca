@@ -601,6 +601,10 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         pack / "results" / "run2_49_readability_content_density_renderer_repair_result.json"
     )
     run250_result = read_json(pack / "results" / "run2_50_readability_density_renderer_rerun_result.json")
+    run251_copy_memory = read_json(pack / "run2_51_editorial_copy_memory.json")
+    run251_socket_memory = read_json(pack / "run2_51_shape_text_socket_memory.json")
+    run251_gates = read_json(pack / "run2_51_renderer_archetype_workflow_gates.json")
+    run251_result = read_json(pack / "results" / "run2_51_editorial_shape_text_repair_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -823,6 +827,15 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run250TargetLayer": (run250_result.get("quality_delta") or {}).get(
             "target_layer", "readability_content_density_and_editorial_renderer_binding"
         ),
+        "run251CopyMemoryStatus": run251_copy_memory.get("status", ""),
+        "run251CopyRecords": run251_copy_memory.get("editorial_copy_records", []),
+        "run251SocketMemoryStatus": run251_socket_memory.get("status", ""),
+        "run251SocketRecords": run251_socket_memory.get("shape_text_socket_records", []),
+        "run251GateStatus": run251_gates.get("status", ""),
+        "run251Gates": run251_gates.get("renderer_archetype_workflow_gates", []),
+        "run251ResultStatus": run251_result.get("status", ""),
+        "run251Result": run251_result,
+        "run251ResultPath": "run2_51_editorial_shape_text_repair_result.json",
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -2039,6 +2052,32 @@ def build_html(data: dict[str, Any]) -> str:
       const run250Inputs = run250Result.input_chain || {{}};
       const run250Rerun = run250Result.rerun || {{}};
       const run250Quality = run250Result.quality_delta || {{}};
+      const run251Result = refs.run251Result || {{}};
+      const run251CopyCards = (refs.run251CopyRecords || []).map((record) => `
+        <article class="dataCard">
+          <h4>${{escapeHtml(record.role)}} editorial copy</h4>
+          ${{detailBlock("Headline", record.public_surface_copy_bundle?.headline)}}
+          ${{detailBlock("Subline", record.public_surface_copy_bundle?.subline)}}
+          ${{detailBlock("Proof nuggets", record.public_surface_copy_bundle?.proof_nuggets)}}
+          ${{detailBlock("Business claim", record.business_claim_preservation_check)}}
+          ${{detailBlock("Next rerun", record.next_rerun_obligation)}}
+        </article>`).join("");
+      const run251SocketCards = (refs.run251SocketRecords || []).map((record) => `
+        <article class="dataCard">
+          <h4>${{escapeHtml(record.role)}} sockets</h4>
+          ${{detailBlock("Archetype", record.primary_archetype)}}
+          ${{detailBlock("Shape primitives", record.shape_primitives)}}
+          ${{detailBlock("Socket count", (record.socket_contracts || []).length)}}
+          ${{detailBlock("Geometry constraints", record.geometry_constraints)}}
+        </article>`).join("");
+      const run251GateCards = (refs.run251Gates || []).map((gate) => `
+        <article class="dataCard">
+          <h4>${{escapeHtml(gate.role)}} archetype gate</h4>
+          ${{detailBlock("Gate", gate.gate_id)}}
+          ${{detailBlock("Primary archetype", gate.primary_archetype)}}
+          ${{detailBlock("Trace fields", gate.required_trace_fields)}}
+          ${{detailBlock("Bad control", gate.bad_control_probe)}}
+        </article>`).join("");
       const run249ReadabilityCards = (refs.run249ReadabilityRecords || []).map((record) => `<article class="dataCard">
         <h4>${{escapeHtml(record.role)}} / readability</h4>
         ${{detailBlock("Readability memory id", record.readability_memory_id)}}
@@ -2148,7 +2187,35 @@ def build_html(data: dict[str, Any]) -> str:
           </div>
         </section>
         <section class="dataBand">
-          <div class="dataBandHead"><div><h3>Latest data/workflow repair</h3><p>Run 2.49 remains the latest data/workflow repair pack; Run 2.50 is the generated proof that consumes it and exposes the consumption in trace.</p></div><span class="pill" title="${{escapeHtml(refs.run249ResultStatus || "missing")}}">${{escapeHtml(refs.run249ResultStatus || "missing")}}</span></div>
+          <div class="dataBandHead"><div><h3>Latest data/workflow repair</h3><p>Run 2.51 is the current data/workflow repair layer: it prepares editorial public copy, semantic shape text sockets, and renderer archetype workflow gates. It creates no PPT deck; visual validation waits for the next generated rerun.</p></div><span class="pill" title="${{escapeHtml(refs.run251ResultStatus || "missing")}}">${{escapeHtml(refs.run251ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Run 2.51 repair pack</h4>
+              ${{detailBlock("Result", refs.run251ResultPath || "run2_51_editorial_shape_text_repair_result.json")}}
+              ${{detailBlock("Editorial copy", "run2_51_editorial_copy_memory.json")}}
+              ${{detailBlock("Shape text sockets", "run2_51_shape_text_socket_memory.json")}}
+              ${{detailBlock("Renderer archetype workflow gates", "run2_51_renderer_archetype_workflow_gates.json")}}
+              ${{detailBlock("Boundary", "Data/workflow-only, no new PPT deck")}}
+              ${{detailBlock("Target layer", run251Result.target_layer || "editorial_copy_and_shape_text_socket_repair")}}
+              ${{detailBlock("Next required action", run251Result.next_required_action || "consume_run2_51_before_run2_52_four_arm_rerun")}}
+            </article>
+            <article class="dataCard">
+              <h4>What it fixes</h4>
+              ${{detailBlock("Editorial copy", run251Result.repair_contract?.["editorial copy"])}}
+              ${{detailBlock("Shape text sockets", run251Result.repair_contract?.["shape text sockets"])}}
+              ${{detailBlock("Renderer archetypes", run251Result.repair_contract?.["renderer archetypes"])}}
+              ${{detailBlock("Visual validation", "Deferred to generated rerun")}}
+            </article>
+          </div>
+          <div class="dataBandSubhead"><h4>Editorial copy memory</h4><p>${{escapeHtml(refs.run251CopyMemoryStatus)}}. Raw evidence is rewritten into short public-facing display copy with word and character budgets.</p></div>
+          <div class="dataGrid">${{run251CopyCards}}</div>
+          <div class="dataBandSubhead"><h4>Shape text socket memory</h4><p>${{escapeHtml(refs.run251SocketMemoryStatus)}}. Each role has a dominant archetype, semantic primitives, and text sockets before generation.</p></div>
+          <div class="dataGrid">${{run251SocketCards}}</div>
+          <div class="dataBandSubhead"><h4>Renderer archetype workflow gates</h4><p>${{escapeHtml(refs.run251GateStatus)}}. The next generated full arm must bind these gates, while the bad control must fail without them.</p></div>
+          <div class="dataGrid">${{run251GateCards}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.49 readability/content density repair</h3><p>Run 2.49 remains the earlier readability/content density/editorial renderer repair pack; Run 2.50 is the generated proof that consumes it and exposes the consumption in trace.</p></div><span class="pill" title="${{escapeHtml(refs.run249ResultStatus || "missing")}}">${{escapeHtml(refs.run249ResultStatus || "missing")}}</span></div>
           <div class="dataGrid">
             <article class="dataCard">
               <h4>Run 2.49 repair pack</h4>
