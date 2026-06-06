@@ -8413,7 +8413,8 @@ def test_run2_51_builder_creates_editorial_copy_shape_socket_repair_pack(tmp_pat
     assert {record["role"] for record in copy_memory["editorial_copy_records"]} == EXPECTED_RUN2_51_ROLES
     assert {record["role"] for record in socket_memory["shape_text_socket_records"]} == EXPECTED_RUN2_51_ROLES
     assert {record["role"] for record in gates["renderer_archetype_workflow_gates"]} == EXPECTED_RUN2_51_ROLES
-    for bundle in copy_memory["editorial_copy_records"]:
+    for record in copy_memory["editorial_copy_records"]:
+        bundle = record["public_surface_copy_bundle"]
         assert EXPECTED_RUN2_51_COPY_BUNDLE_KEYS <= set(bundle)
         assert word_count(bundle["headline"]) <= 7
         assert word_count(bundle["subline"]) <= 18
@@ -8438,6 +8439,30 @@ def test_run2_51_builder_creates_editorial_copy_shape_socket_repair_pack(tmp_pat
             "Run 2.52",
         ],
     )
+
+
+def test_run2_51_builder_rejects_malformed_run2_50_source() -> None:
+    from scripts import build_ppt_run2_51_editorial_copy_shape_sockets as run251_builder
+
+    run249_result = load_json(PACK / "results" / "run2_49_readability_content_density_renderer_repair_result.json")
+    run249_readability = load_json(PACK / "run2_49_readability_memory.json")
+    run249_density = load_json(PACK / "run2_49_content_evidence_density_memory.json")
+    run249_gates = load_json(PACK / "run2_49_editorial_renderer_workflow_gates.json")
+    run250_result = load_json(PACK / "results" / "run2_50_readability_density_renderer_rerun_result.json")
+
+    wrong_layer = json.loads(json.dumps(run250_result))
+    wrong_layer["quality_delta"]["target_layer"] = "wrong_layer"
+    with pytest.raises(ValueError, match="target_layer"):
+        run251_builder.validate_inputs(
+            run249_result, run249_readability, run249_density, run249_gates, wrong_layer
+        )
+
+    wrong_modules = json.loads(json.dumps(run250_result))
+    wrong_modules["quality_delta"]["repair_modules"] = ["only_one"]
+    with pytest.raises(ValueError, match="repair_modules"):
+        run251_builder.validate_inputs(
+            run249_result, run249_readability, run249_density, run249_gates, wrong_modules
+        )
 
 
 def test_ppt_run_html_viewer_mentions_run2_50_readability_density_renderer_rerun() -> None:
