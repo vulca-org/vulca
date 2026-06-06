@@ -2308,6 +2308,9 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
         "compile_run2_51_editorial_copy_memory",
         "compile_run2_51_shape_text_socket_memory",
         "apply_run2_51_renderer_archetype_workflow_gates",
+        "compile_run2_53_product_surface_scene_memory",
+        "compile_run2_53_business_visual_evidence_memory",
+        "apply_run2_53_scene_renderer_workflow_gates",
     ]
     assert [stage["order"] for stage in workflow["stages"]] == list(range(1, len(workflow["stages"]) + 1))
     assert workflow["repair_triggers"]
@@ -4299,7 +4302,7 @@ def test_run2_24_records_single_usecase_content_visual_evidence_pack() -> None:
     assert len(content_memory["slide_content_memory"]) == 6
     assert len(visual_assets["visual_evidence_assets"]) == 12
     assert len(workflow_gates["gates"]) == 6
-    assert workflow["status"] == "run2_49_readability_content_density_renderer_workflow_directed_public_blocked"
+    assert workflow["status"] == "run2_53_product_surface_scene_workflow_directed_public_blocked"
     assert {stage["id"] for stage in workflow["stages"]} >= {
         "lock_run2_24_single_usecase_content_memory",
         "compile_run2_24_visual_evidence_asset_memory",
@@ -5949,7 +5952,7 @@ def test_run2_35_records_visual_evidence_realism_workflow_result() -> None:
     assert len(realism_memory["visual_evidence_asset_realism_records"]) == 12
     assert len(composition_memory["editorial_composition_records"]) == 6
     assert len(workflow_gates["gates"]) == 6
-    assert workflow["status"] == "run2_49_readability_content_density_renderer_workflow_directed_public_blocked"
+    assert workflow["status"] == "run2_53_product_surface_scene_workflow_directed_public_blocked"
     assert {stage["id"] for stage in workflow["stages"]} >= {
         "compile_run2_35_visual_evidence_asset_realism_memory",
         "compile_run2_35_editorial_composition_memory",
@@ -7246,7 +7249,7 @@ def test_run2_43_records_visual_asset_semantics_workflow_result() -> None:
     assert result_json["next_required_action"] == (
         "consume_run2_43_visual_asset_semantics_workflow_before_run2_44_rerun"
     )
-    assert workflow["status"] == "run2_49_readability_content_density_renderer_workflow_directed_public_blocked"
+    assert workflow["status"] == "run2_53_product_surface_scene_workflow_directed_public_blocked"
     assert {stage["id"] for stage in workflow["stages"]} >= {
         "compile_run2_43_semantic_visual_asset_memory",
         "compile_run2_43_editorial_composition_typography_memory",
@@ -9980,7 +9983,7 @@ def test_run2_18_records_thickness_result_and_no_new_ppt_output() -> None:
         ],
     )
 
-    assert workflow["status"] == "run2_49_readability_content_density_renderer_workflow_directed_public_blocked"
+    assert workflow["status"] == "run2_53_product_surface_scene_workflow_directed_public_blocked"
     assert {stage["id"] for stage in workflow["stages"]} >= {
         "expand_run2_18_multimodal_evidence",
         "expand_run2_18_design_memory",
