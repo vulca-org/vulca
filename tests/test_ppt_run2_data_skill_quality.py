@@ -370,6 +370,23 @@ EXPECTED_RUN2_51_TRACE_FIELDS = {
     "run2_51_equal_card_cluster_count",
     "run2_51_semantic_primitive_count",
 }
+EXPECTED_RUN2_52_TRACE_FIELDS = {
+    "run2_51_editorial_copy_memory_id",
+    "run2_51_shape_text_socket_memory_id",
+    "run2_51_renderer_archetype_gate_id",
+    "run2_51_primary_archetype",
+    "run2_51_public_surface_copy_status",
+    "run2_51_text_socket_placement_status",
+    "run2_51_shape_vocabulary_status",
+    "run2_51_character_fit_status",
+    "run2_51_forbidden_surface_terms_count",
+    "run2_51_equal_card_cluster_count",
+    "run2_51_semantic_primitive_count",
+    "run2_52_code_module_ids",
+    "run2_52_primary_surface_kind",
+    "run2_52_socket_bound_public_text_elements",
+    "run2_52_shape_primitive_count",
+}
 EXPECTED_RUN2_51_FORBIDDEN_PUBLIC_TERMS = {
     "run2",
     "memory",
@@ -8608,6 +8625,141 @@ def test_run2_51_builder_rejects_malformed_run2_50_source() -> None:
         run251_builder.validate_inputs(
             run249_result, run249_readability, run249_density, run249_gates, wrong_modules
         )
+
+
+def test_run2_52_generator_consumes_run2_51_editorial_socket_pack() -> None:
+    script_path = ROOT / "scripts" / "generate_ppt_run2_52_editorial_socket_renderer_arms.mjs"
+    assert script_path.exists(), "missing Run 2.52 editorial socket renderer generator"
+    body = script_path.read_text(encoding="utf-8")
+
+    assert_contains(
+        body,
+        [
+            "run2_51_editorial_shape_text_repair_result.json",
+            "run2_51_editorial_copy_memory.json",
+            "run2_51_shape_text_socket_memory.json",
+            "run2_51_renderer_archetype_workflow_gates.json",
+            "run2_51_editorial_copy_memory_id",
+            "run2_51_shape_text_socket_memory_id",
+            "run2_51_renderer_archetype_gate_id",
+            "run2_51_primary_archetype",
+            "run2_51_public_surface_copy_status",
+            "run2_51_text_socket_placement_status",
+            "bad_run2_51_missing_editorial_socket_pack",
+            "drawRun252EditorialSocketScene",
+            "run2_51_editorial_socket_pack_consumed_before_native_ppt_drawing",
+        ],
+    )
+
+
+def test_run2_52_records_editorial_socket_renderer_rerun_result() -> None:
+    result_md = (PACK / "results" / "run2_52_editorial_socket_renderer_rerun_result.md").read_text(
+        encoding="utf-8"
+    )
+    result_json = load_json(PACK / "results" / "run2_52_editorial_socket_renderer_rerun_result.json")
+    presentations = ROOT / "outputs" / "019e7d9c-532a-70b3-8892-fa3ae42baef2" / "presentations"
+    full_trace = load_json(presentations / "ppt-run2-52-full-vulca" / "trace_manifest.json")
+    bad_trace = load_json(
+        presentations / "ppt-run2-52-bad-missing-run2-51-editorial-socket-pack" / "trace_manifest.json"
+    )
+
+    assert result_json["run_id"] == "2.52"
+    assert result_json["status"] == "run2_52_editorial_socket_renderer_rerun_public_blocked"
+    assert result_json["source_repair_run_id"] == "2.51"
+    assert result_json["source_generated_run_id"] == "2.50"
+    assert result_json["rerun"]["best_internal_arm"] == "run2_52_full_editorial_socket_renderer"
+    assert result_json["quality_delta"]["target_layer"] == (
+        "editorial_copy_shape_text_socket_and_renderer_archetype_binding"
+    )
+    assert result_json["quality_delta"]["source_data_status"] == (
+        "run2_51_editorial_socket_pack_consumed_before_native_ppt_drawing"
+    )
+    assert result_json["quality_delta"]["full_slides_with_run2_51_editorial_copy_memory_id"] == 6
+    assert result_json["quality_delta"]["full_slides_with_run2_51_shape_text_socket_memory_id"] == 6
+    assert result_json["quality_delta"]["full_slides_with_run2_51_renderer_archetype_gate_id"] == 6
+    assert result_json["quality_delta"]["full_slides_with_socket_bound_public_text"] == 6
+    assert result_json["quality_delta"]["bad_control_slides_without_run2_51_pack"] == 6
+    assert result_json["rerun"]["combined_contact_sheet"].endswith("run2-52-four-arm-contact-sheet.png")
+
+    assert full_trace["arm_id"] == "run2_52_full_editorial_socket_renderer"
+    assert full_trace["run2_52_editorial_socket_renderer_status"] == (
+        "run2_51_editorial_socket_pack_consumed_before_native_ppt_drawing"
+    )
+    assert len(full_trace["slides"]) == 6
+    for slide in full_trace["slides"]:
+        assert EXPECTED_RUN2_52_TRACE_FIELDS <= set(slide)
+        assert slide["run2_51_editorial_copy_memory_id"].startswith("editorial_copy_2_51_")
+        assert slide["run2_51_shape_text_socket_memory_id"].startswith("shape_text_socket_2_51_")
+        assert slide["run2_51_renderer_archetype_gate_id"].startswith("gate_2_51_")
+        assert slide["run2_51_public_surface_copy_status"] == "pass_internal"
+        assert slide["run2_51_text_socket_placement_status"] == "pass_internal"
+        assert slide["run2_51_shape_vocabulary_status"] == "pass_internal"
+        assert slide["run2_51_character_fit_status"] == "pass_internal"
+        assert slide["run2_51_forbidden_surface_terms_count"] == 0
+        assert slide["run2_51_equal_card_cluster_count"] <= 1
+        assert slide["run2_51_semantic_primitive_count"] >= 3
+        assert slide["run2_52_socket_bound_public_text_elements"] >= 4
+        assert slide["run2_52_shape_primitive_count"] >= 3
+        assert slide["run2_52_primary_surface_kind"] != "square_block_grid"
+        assert slide["layout_metrics"]["visible_words"] >= 48
+        assert slide["layout_metrics"]["proof_objects"] >= 2
+        assert slide["run2_52_code_module_ids"][0].startswith("drawRun252")
+
+    assert bad_trace["arm_id"] == "bad_run2_51_missing_editorial_socket_pack"
+    for slide in bad_trace["slides"]:
+        assert slide["run2_51_editorial_copy_memory_id"] == ""
+        assert slide["run2_51_shape_text_socket_memory_id"] == ""
+        assert slide["run2_51_renderer_archetype_gate_id"] == ""
+        assert slide["run2_51_public_surface_copy_status"] == "fail_missing_run2_51"
+
+    assert_contains(
+        result_md,
+        [
+            "Run 2.52 Editorial Socket Renderer Rerun",
+            "consumes Run 2.51",
+            "editorial copy",
+            "shape text sockets",
+            "renderer archetype",
+            "bad_run2_51_missing_editorial_socket_pack",
+            "public blocked",
+        ],
+    )
+
+
+def test_run2_52_generator_rejects_malformed_run2_51_source() -> None:
+    script_path = ROOT / "scripts" / "generate_ppt_run2_52_editorial_socket_renderer_arms.mjs"
+    body = script_path.read_text(encoding="utf-8")
+
+    assert "validateRun252RepairPack" in body
+    assert "Run 2.52 must consume Run 2.51 repair result" in body
+    assert "Run 2.52 editorial copy status mismatch" in body
+    assert "Run 2.52 socket status mismatch" in body
+    assert "Run 2.52 renderer archetype gate status mismatch" in body
+    assert "consumer_contract.next_generated_run" in body
+    assert "must_bind_before_public_text" in body
+    assert "missing role contract" in body
+
+
+def test_run2_52_bad_control_trace_does_not_leak_run2_51_fields() -> None:
+    presentations = ROOT / "outputs" / "019e7d9c-532a-70b3-8892-fa3ae42baef2" / "presentations"
+    bad_trace = load_json(
+        presentations / "ppt-run2-52-bad-missing-run2-51-editorial-socket-pack" / "trace_manifest.json"
+    )
+
+    for slide in bad_trace["slides"]:
+        leaked_values = [
+            value
+            for key, value in slide.items()
+            if key.startswith("run2_51_")
+            and key not in {
+                "run2_51_editorial_copy_memory_id",
+                "run2_51_shape_text_socket_memory_id",
+                "run2_51_renderer_archetype_gate_id",
+                "run2_51_public_surface_copy_status",
+            }
+            and value not in ("", 0, [], False, None, "fail_missing_run2_51")
+        ]
+        assert leaked_values == []
 
 
 def test_ppt_run_html_viewer_mentions_run2_50_readability_density_renderer_rerun() -> None:
