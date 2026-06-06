@@ -464,6 +464,27 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ),
         ),
     ),
+    RunSpec(
+        "2.52",
+        "Run 2.52",
+        "run2-52-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-52-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-52-run1-5-skill", "baseline"),
+            ArmSpec(
+                "run2_52_full_editorial_socket_renderer",
+                "Run 2.52 full",
+                "ppt-run2-52-full-vulca",
+                "full",
+            ),
+            ArmSpec(
+                "bad_run2_51_missing_editorial_socket_pack",
+                "Bad missing socket pack",
+                "ppt-run2-52-bad-missing-run2-51-editorial-socket-pack",
+                "negative",
+            ),
+        ),
+    ),
 )
 
 
@@ -605,6 +626,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run251_socket_memory = read_json(pack / "run2_51_shape_text_socket_memory.json")
     run251_gates = read_json(pack / "run2_51_renderer_archetype_workflow_gates.json")
     run251_result = read_json(pack / "results" / "run2_51_editorial_shape_text_repair_result.json")
+    run252_result = read_json(pack / "results" / "run2_52_editorial_socket_renderer_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -836,6 +858,15 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run251ResultStatus": run251_result.get("status", ""),
         "run251Result": run251_result,
         "run251ResultPath": "run2_51_editorial_shape_text_repair_result.json",
+        "run252ResultStatus": run252_result.get("status", ""),
+        "run252Result": run252_result,
+        "run252ResultPath": "run2_52_editorial_socket_renderer_rerun_result.json",
+        "run252TargetLayer": (run252_result.get("quality_delta") or {}).get(
+            "target_layer", "editorial_copy_shape_text_socket_and_renderer_archetype_binding"
+        ),
+        "run252SourceDataStatus": (run252_result.get("quality_delta") or {}).get(
+            "source_data_status", "run2_51_editorial_socket_pack_consumed_before_native_ppt_drawing"
+        ),
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -2053,6 +2084,11 @@ def build_html(data: dict[str, Any]) -> str:
       const run250Rerun = run250Result.rerun || {{}};
       const run250Quality = run250Result.quality_delta || {{}};
       const run251Result = refs.run251Result || {{}};
+      const run252Result = refs.run252Result || {{}};
+      const run252Inputs = run252Result.input_chain || {{}};
+      const run252Rerun = run252Result.rerun || {{}};
+      const run252Quality = run252Result.quality_delta || {{}};
+      const run252Control = run252Result.control_boundary || {{}};
       const run251CopyCards = (refs.run251CopyRecords || []).map((record) => `
         <article class="dataCard">
           <h4>${{escapeHtml(record.role)}} editorial copy</h4>
@@ -2162,32 +2198,42 @@ def build_html(data: dict[str, Any]) -> str:
       </div>
       <div class="dataStack">
         <section class="dataBand">
-          <div class="dataBandHead"><div><h3>Latest generated repair proof</h3><p>Run 2.50 is the current generated visual proof: it consumes the Run 2.49 readability, content evidence density, and editorial renderer repair pack before native PPT drawing.</p></div><span class="pill" title="${{escapeHtml(refs.run250ResultStatus || "missing")}}">${{escapeHtml(refs.run250ResultStatus || "missing")}}</span></div>
+          <div class="dataBandHead"><div><h3>Latest generated repair proof</h3><p>Run 2.52 is the current generated visual proof: it consumes Run 2.51 editorial copy memory, shape text socket memory, and renderer archetype workflow gates before native PPT drawing.</p></div><span class="pill" title="${{escapeHtml(refs.run252ResultStatus || "missing")}}">${{escapeHtml(refs.run252ResultStatus || "missing")}}</span></div>
           <div class="dataGrid">
             <article class="dataCard">
-              <h4>Run 2.50 generated result</h4>
-              ${{detailBlock("Result", refs.run250ResultPath || "run2_50_readability_density_renderer_rerun_result.json")}}
-              ${{detailBlock("Best arm", run250Rerun.best_internal_arm || "run2_50_full_readability_density_renderer")}}
-              ${{detailBlock("Target layer", run250Quality.target_layer || refs.run250TargetLayer)}}
-              ${{detailBlock("Contact sheet", run250Rerun.combined_contact_sheet || "run2-50-four-arm-contact-sheet.png")}}
+              <h4>Run 2.52 generated result</h4>
+              ${{detailBlock("Result", refs.run252ResultPath || "run2_52_editorial_socket_renderer_rerun_result.json")}}
+              ${{detailBlock("Best arm", run252Rerun.best_internal_arm || "run2_52_full_editorial_socket_renderer")}}
+              ${{detailBlock("Target layer", run252Quality.target_layer || refs.run252TargetLayer)}}
+              ${{detailBlock("Source data status", run252Quality.source_data_status || refs.run252SourceDataStatus)}}
+              ${{detailBlock("Contact sheet", run252Rerun.combined_contact_sheet || "run2-52-four-arm-contact-sheet.png")}}
             </article>
             <article class="dataCard">
-              <h4>2.49 pack consumed</h4>
-              ${{detailBlock("Readability ids", run250Quality.full_slides_with_run2_49_readability_memory_id)}}
-              ${{detailBlock("Content density ids", run250Quality.full_slides_with_run2_49_content_evidence_density_memory_id)}}
-              ${{detailBlock("Renderer gate ids", run250Quality.full_slides_with_run2_49_editorial_renderer_gate_id)}}
-              ${{detailBlock("Business evidence pass", run250Quality.full_slides_with_business_evidence_density_pass)}}
+              <h4>2.51 pack consumed</h4>
+              ${{detailBlock("Editorial copy ids", run252Quality.full_slides_with_run2_51_editorial_copy_memory_id)}}
+              ${{detailBlock("Shape text socket ids", run252Quality.full_slides_with_run2_51_shape_text_socket_memory_id)}}
+              ${{detailBlock("Renderer gate ids", run252Quality.full_slides_with_run2_51_renderer_archetype_gate_id)}}
+              ${{detailBlock("Socket-bound public text", run252Quality.full_slides_with_socket_bound_public_text)}}
+              ${{detailBlock("Repair modules", run252Quality.repair_modules)}}
+            </article>
+            <article class="dataCard">
+              <h4>Consumed input chain</h4>
+              ${{detailBlock("Run 2.51 result", run252Inputs.run2_51_result || "run2_51_editorial_shape_text_repair_result.json")}}
+              ${{detailBlock("Editorial copy", run252Inputs.run2_51_editorial_copy_memory || "run2_51_editorial_copy_memory.json")}}
+              ${{detailBlock("Shape text sockets", run252Inputs.run2_51_shape_text_socket_memory || "run2_51_shape_text_socket_memory.json")}}
+              ${{detailBlock("Renderer gates", run252Inputs.run2_51_renderer_archetype_workflow_gates || "run2_51_renderer_archetype_workflow_gates.json")}}
+              ${{detailBlock("Source generated run", run252Inputs.run2_50_result || "run2_50_readability_density_renderer_rerun_result.json")}}
             </article>
             <article class="dataCard">
               <h4>Negative control</h4>
-              ${{detailBlock("Bad arm", "bad_run2_49_missing_repair_pack")}}
-              ${{detailBlock("Missing repair pack slides", run250Quality.bad_control_slides_without_run2_49_repair_pack)}}
-              ${{detailBlock("Boundary", "Run 2.47 may be visible, but no Run 2.49 ids can be bound.")}}
+              ${{detailBlock("Bad arm", "bad_run2_51_missing_editorial_socket_pack")}}
+              ${{detailBlock("Missing Run 2.51 pack slides", run252Quality.bad_control_slides_without_run2_51_pack)}}
+              ${{detailBlock("Boundary", run252Control.bad_run2_51_missing_editorial_socket_pack || "Bad control may reuse Run 2.50 traces, but cannot bind Run 2.51 copy, socket, or gate ids.")}}
             </article>
           </div>
         </section>
         <section class="dataBand">
-          <div class="dataBandHead"><div><h3>Latest data/workflow repair</h3><p>Run 2.51 is the current data/workflow repair layer: it prepares editorial public copy, semantic shape text sockets, and renderer archetype workflow gates. It creates no PPT deck; visual validation waits for the next generated rerun.</p></div><span class="pill" title="${{escapeHtml(refs.run251ResultStatus || "missing")}}">${{escapeHtml(refs.run251ResultStatus || "missing")}}</span></div>
+          <div class="dataBandHead"><div><h3>Latest data/workflow repair</h3><p>Run 2.51 is data/workflow-only: it prepares editorial public copy, semantic shape text sockets, and renderer archetype workflow gates. It creates no PPT deck; Run 2.52 is the generated rerun that consumes it.</p></div><span class="pill" title="${{escapeHtml(refs.run251ResultStatus || "missing")}}">${{escapeHtml(refs.run251ResultStatus || "missing")}}</span></div>
           <div class="dataGrid">
             <article class="dataCard">
               <h4>Run 2.51 repair pack</h4>
@@ -2239,9 +2285,10 @@ def build_html(data: dict[str, Any]) -> str:
             </article>
             <article class="dataCard">
               <h4>Visual/data split</h4>
-              ${{detailBlock("Generated visual latest", "Run 2.50")}}
-              ${{detailBlock("Reason", "Run 2.48 and Run 2.49 are audit/data-workflow layers; Run 2.50 is the generated proof layer.")}}
-              ${{detailBlock("Proof result", "Run 2.50 binds Run 2.49 ids before native PPT drawing.")}}
+              ${{detailBlock("Latest generated proof", "Run 2.52")}}
+              ${{detailBlock("Source generated baseline", "Run 2.50")}}
+              ${{detailBlock("Reason", "Run 2.49 and Run 2.51 are data-workflow layers; Run 2.52 is the latest generated proof layer.")}}
+              ${{detailBlock("Proof result", "Run 2.52 binds Run 2.51 ids before native PPT drawing.")}}
             </article>
           </div>
         </section>

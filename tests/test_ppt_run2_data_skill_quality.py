@@ -9912,6 +9912,32 @@ def test_ppt_run_html_viewer_builder_tracks_latest_outputs() -> None:
     )
 
 
+def test_ppt_run_html_viewer_mentions_run2_51_to_run2_52_consumption_chain() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "Run 2.52",
+            "ppt-run2-52-prompt-only",
+            "ppt-run2-52-run1-5-skill",
+            "ppt-run2-52-full-vulca",
+            "ppt-run2-52-bad-missing-run2-51-editorial-socket-pack",
+            "run2-52-four-arm-contact-sheet.png",
+            "run2_52_editorial_socket_renderer_rerun_result.json",
+            "run2_51_editorial_copy_memory.json",
+            "run2_51_shape_text_socket_memory.json",
+            "run2_51_renderer_archetype_workflow_gates.json",
+            "run2_51_editorial_shape_text_repair_result.json",
+            "Run 2.51 is data/workflow-only",
+            "run2_51_editorial_socket_pack_consumed_before_native_ppt_drawing",
+            "bad_run2_51_missing_editorial_socket_pack",
+        ],
+    )
+    assert "Run 2.51" not in script.split("RUN_SPECS", 1)[1].split("def rel", 1)[0]
+    assert "ppt-run2-51-" not in script
+
+
 def test_run2_audit_records_trace_and_native_render_blockers() -> None:
     audit = (PACK / "results" / "audit_review.md").read_text(encoding="utf-8")
     audit_json = load_json(PACK / "results" / "audit_review.json")
