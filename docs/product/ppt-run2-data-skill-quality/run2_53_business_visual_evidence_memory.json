@@ -1,0 +1,188 @@
+{
+  "schema_version": "ppt_run2_business_visual_evidence_memory.v1",
+  "status": "run2_53_business_visual_evidence_memory_ready_public_blocked",
+  "run_id": "2.53",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "public_ready": false,
+  "creates_new_ppt_deck": false,
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "source_repair_run_id": "2.51",
+  "source_generated_run_id": "2.52",
+  "target_layer": "product_surface_scene_and_business_visual_evidence_repair",
+  "business_visual_evidence_records": [
+    {
+      "id": "business_visual_evidence_2_53_cover",
+      "role": "cover",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_run_ids": [
+        "2.51",
+        "2.52"
+      ],
+      "required_product_surface_scene_id": "product_surface_scene_2_53_cover",
+      "required_editorial_copy_memory_id": "editorial_copy_2_51_cover",
+      "observable_business_object": "editable launch deck preview on a presentation workbench",
+      "reader_question_answered": "What product is being launched, and why should a buyer believe it is more than prompt-only slides?",
+      "business_claim_to_make_visible": "The product can convert design evidence into an editable launch presentation.",
+      "minimum_visual_specificity_checks": [
+        "names a concrete product or business object before drawing",
+        "uses at least three role-specific surface slots",
+        "anchors proof copy to visible object regions instead of detached cards",
+        "forbids generic geometric diagram as the primary visual answer"
+      ],
+      "source_boundary": {
+        "derived_observations_only": true,
+        "raw_media_copied": false,
+        "source_layout_copied": false,
+        "source_brand_identity_copied": false
+      },
+      "bad_control_probe": "Bad control fails if it can satisfy the slide with generic blocks and no inspectable product object.",
+      "visual_validation_deferred_to_generated_rerun": true,
+      "next_rerun_obligation": "must_be_consumed_before_run2_54_four_arm_rerun"
+    },
+    {
+      "id": "business_visual_evidence_2_53_setup",
+      "role": "setup",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_run_ids": [
+        "2.51",
+        "2.52"
+      ],
+      "required_product_surface_scene_id": "product_surface_scene_2_53_setup",
+      "required_editorial_copy_memory_id": "editorial_copy_2_51_setup",
+      "observable_business_object": "prompt-to-production route board with broken prompt-only path",
+      "reader_question_answered": "Where does the old path fail, and what concrete route replaces it?",
+      "business_claim_to_make_visible": "The setup slide explains the commercial failure and the selected correction route.",
+      "minimum_visual_specificity_checks": [
+        "names a concrete product or business object before drawing",
+        "uses at least three role-specific surface slots",
+        "anchors proof copy to visible object regions instead of detached cards",
+        "forbids generic geometric diagram as the primary visual answer"
+      ],
+      "source_boundary": {
+        "derived_observations_only": true,
+        "raw_media_copied": false,
+        "source_layout_copied": false,
+        "source_brand_identity_copied": false
+      },
+      "bad_control_probe": "Bad control fails if it can satisfy the slide with generic blocks and no inspectable product object.",
+      "visual_validation_deferred_to_generated_rerun": true,
+      "next_rerun_obligation": "must_be_consumed_before_run2_54_four_arm_rerun"
+    },
+    {
+      "id": "business_visual_evidence_2_53_contrast",
+      "role": "contrast",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_run_ids": [
+        "2.51",
+        "2.52"
+      ],
+      "required_product_surface_scene_id": "product_surface_scene_2_53_contrast",
+      "required_editorial_copy_memory_id": "editorial_copy_2_51_contrast",
+      "observable_business_object": "before and after deck previews with a visible business delta",
+      "reader_question_answered": "What changed on the actual presentation surface, and what business consequence does it create?",
+      "business_claim_to_make_visible": "The contrast slide must make the improvement legible as a business outcome.",
+      "minimum_visual_specificity_checks": [
+        "names a concrete product or business object before drawing",
+        "uses at least three role-specific surface slots",
+        "anchors proof copy to visible object regions instead of detached cards",
+        "forbids generic geometric diagram as the primary visual answer"
+      ],
+      "source_boundary": {
+        "derived_observations_only": true,
+        "raw_media_copied": false,
+        "source_layout_copied": false,
+        "source_brand_identity_copied": false
+      },
+      "bad_control_probe": "Bad control fails if it can satisfy the slide with generic blocks and no inspectable product object.",
+      "visual_validation_deferred_to_generated_rerun": true,
+      "next_rerun_obligation": "must_be_consumed_before_run2_54_four_arm_rerun"
+    },
+    {
+      "id": "business_visual_evidence_2_53_proof",
+      "role": "proof",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_run_ids": [
+        "2.51",
+        "2.52"
+      ],
+      "required_product_surface_scene_id": "product_surface_scene_2_53_proof",
+      "required_editorial_copy_memory_id": "editorial_copy_2_51_proof",
+      "observable_business_object": "editable proof workspace with scene, copy, and renderer lanes",
+      "reader_question_answered": "Can the viewer inspect how evidence becomes an editable presentation object?",
+      "business_claim_to_make_visible": "The proof slide shows how evidence becomes a working presentation surface.",
+      "minimum_visual_specificity_checks": [
+        "names a concrete product or business object before drawing",
+        "uses at least three role-specific surface slots",
+        "anchors proof copy to visible object regions instead of detached cards",
+        "forbids generic geometric diagram as the primary visual answer"
+      ],
+      "source_boundary": {
+        "derived_observations_only": true,
+        "raw_media_copied": false,
+        "source_layout_copied": false,
+        "source_brand_identity_copied": false
+      },
+      "bad_control_probe": "Bad control fails if it can satisfy the slide with generic blocks and no inspectable product object.",
+      "visual_validation_deferred_to_generated_rerun": true,
+      "next_rerun_obligation": "must_be_consumed_before_run2_54_four_arm_rerun"
+    },
+    {
+      "id": "business_visual_evidence_2_53_climax",
+      "role": "climax",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_run_ids": [
+        "2.51",
+        "2.52"
+      ],
+      "required_product_surface_scene_id": "product_surface_scene_2_53_climax",
+      "required_editorial_copy_memory_id": "editorial_copy_2_51_climax",
+      "observable_business_object": "large generated deck result object with attached proof tags",
+      "reader_question_answered": "What is the strongest generated result, and which visible evidence makes it credible?",
+      "business_claim_to_make_visible": "The climax slide must focus attention on the generated result and its evidence.",
+      "minimum_visual_specificity_checks": [
+        "names a concrete product or business object before drawing",
+        "uses at least three role-specific surface slots",
+        "anchors proof copy to visible object regions instead of detached cards",
+        "forbids generic geometric diagram as the primary visual answer"
+      ],
+      "source_boundary": {
+        "derived_observations_only": true,
+        "raw_media_copied": false,
+        "source_layout_copied": false,
+        "source_brand_identity_copied": false
+      },
+      "bad_control_probe": "Bad control fails if it can satisfy the slide with generic blocks and no inspectable product object.",
+      "visual_validation_deferred_to_generated_rerun": true,
+      "next_rerun_obligation": "must_be_consumed_before_run2_54_four_arm_rerun"
+    },
+    {
+      "id": "business_visual_evidence_2_53_close",
+      "role": "close",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_run_ids": [
+        "2.51",
+        "2.52"
+      ],
+      "required_product_surface_scene_id": "product_surface_scene_2_53_close",
+      "required_editorial_copy_memory_id": "editorial_copy_2_51_close",
+      "observable_business_object": "release gate decision wall with next rerun handoff",
+      "reader_question_answered": "What can ship later, what remains blocked, and what must Run 2.54 consume?",
+      "business_claim_to_make_visible": "The close slide turns evaluation into a clear release decision.",
+      "minimum_visual_specificity_checks": [
+        "names a concrete product or business object before drawing",
+        "uses at least three role-specific surface slots",
+        "anchors proof copy to visible object regions instead of detached cards",
+        "forbids generic geometric diagram as the primary visual answer"
+      ],
+      "source_boundary": {
+        "derived_observations_only": true,
+        "raw_media_copied": false,
+        "source_layout_copied": false,
+        "source_brand_identity_copied": false
+      },
+      "bad_control_probe": "Bad control fails if it can satisfy the slide with generic blocks and no inspectable product object.",
+      "visual_validation_deferred_to_generated_rerun": true,
+      "next_rerun_obligation": "must_be_consumed_before_run2_54_four_arm_rerun"
+    }
+  ]
+}

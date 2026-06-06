@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "workflow_type": "declarative_skill_director",
-  "status": "run2_49_readability_content_density_renderer_workflow_directed_public_blocked",
+  "status": "run2_53_product_surface_scene_workflow_directed_public_blocked",
   "stage_policy": "repeat_same_five_layers_not_run3",
   "five_layer_loop": [
     "real_commercial_case",
@@ -1100,6 +1100,74 @@
         "bad control must fail without Run 2.51 ids",
         "visual validation remains deferred until generated rerun"
       ]
+    },
+    {
+      "id": "compile_run2_53_product_surface_scene_memory",
+      "order": 50,
+      "layer": "evidence_aesthetic_asset_memory",
+      "inputs": [
+        "run2_52_editorial_socket_renderer_rerun_result.json",
+        "ppt-run2-52-full-vulca/trace_manifest.json",
+        "run2_51_shape_text_socket_memory.json"
+      ],
+      "outputs": [
+        "product surface scene ids",
+        "role-specific product or business objects",
+        "surface slot obligations",
+        "generic geometry negative rules"
+      ],
+      "gates": [
+        "every role names one primary product or business object",
+        "every role has at least three surface slots",
+        "generic geometric diagram is forbidden as the primary answer"
+      ],
+      "visual_validation_deferred_to_generated_rerun": true,
+      "creates_new_ppt_deck": false
+    },
+    {
+      "id": "compile_run2_53_business_visual_evidence_memory",
+      "order": 51,
+      "layer": "evidence_aesthetic_asset_memory",
+      "inputs": [
+        "run2_53_product_surface_scene_memory.json",
+        "run2_51_editorial_copy_memory.json"
+      ],
+      "outputs": [
+        "business visual evidence ids",
+        "reader question contracts",
+        "minimum visual specificity checks",
+        "source boundary checks"
+      ],
+      "gates": [
+        "every evidence record binds a product surface scene",
+        "every evidence record binds Run 2.51 editorial copy",
+        "raw media and source layout copying remain false"
+      ],
+      "visual_validation_deferred_to_generated_rerun": true,
+      "creates_new_ppt_deck": false
+    },
+    {
+      "id": "apply_run2_53_scene_renderer_workflow_gates",
+      "order": 52,
+      "layer": "skill_workflow",
+      "inputs": [
+        "run2_53_product_surface_scene_memory.json",
+        "run2_53_business_visual_evidence_memory.json",
+        "run2_51_renderer_archetype_workflow_gates.json"
+      ],
+      "outputs": [
+        "scene renderer gate ids",
+        "Run 2.54 trace field requirements",
+        "native drawing binding contract",
+        "bad-control failure probe"
+      ],
+      "gates": [
+        "Run 2.54 must bind scene/evidence/gate ids before native drawing",
+        "primary product or business object must be trace-reported",
+        "forbidden generic geometry count must be zero"
+      ],
+      "visual_validation_deferred_to_generated_rerun": true,
+      "creates_new_ppt_deck": false
     }
   ],
   "repair_triggers": [
