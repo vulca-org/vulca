@@ -2233,7 +2233,7 @@ def build_html(data: dict[str, Any]) -> str:
           </div>
         </section>
         <section class="dataBand">
-          <div class="dataBandHead"><div><h3>Latest data/workflow repair</h3><p>Run 2.51 is data/workflow-only: it prepares editorial public copy, semantic shape text sockets, and renderer archetype workflow gates. It creates no PPT deck; Run 2.52 is the generated rerun that consumes it.</p></div><span class="pill" title="${{escapeHtml(refs.run251ResultStatus || "missing")}}">${{escapeHtml(refs.run251ResultStatus || "missing")}}</span></div>
+          <div class="dataBandHead"><div><h3>Latest data/workflow repair</h3><p>Run 2.51 is the current data/workflow repair layer. Run 2.51 is data/workflow-only: it prepares editorial public copy, semantic shape text sockets, and renderer archetype workflow gates. It creates no PPT deck; visual validation waits for the next generated rerun. Run 2.52 is the generated rerun that consumes it.</p></div><span class="pill" title="${{escapeHtml(refs.run251ResultStatus || "missing")}}">${{escapeHtml(refs.run251ResultStatus || "missing")}}</span></div>
           <div class="dataGrid">
             <article class="dataCard">
               <h4>Run 2.51 repair pack</h4>
