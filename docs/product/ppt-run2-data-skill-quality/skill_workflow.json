@@ -1045,6 +1045,61 @@
         "negative control may receive Run 2.46 composition grammar but not Run 2.49 readability, density, or renderer ids",
         "Run 2.49 is not a new PPT output and does not advance to Run 3.0"
       ]
+    },
+    {
+      "id": "compile_run2_51_editorial_copy_memory",
+      "order": 51,
+      "layer": "evidence_aesthetic_asset_memory",
+      "inputs": [
+        "run2_49_readability_memory.json",
+        "run2_49_content_evidence_density_memory.json",
+        "results/run2_50_readability_density_renderer_rerun_result.json"
+      ],
+      "outputs": [
+        "run2_51_editorial_copy_memory.json"
+      ],
+      "gates": [
+        "public copy respects word and character budgets",
+        "raw workflow terms are absent from public copy",
+        "raw evidence remains available in trace-only fields",
+        "visual validation is deferred to generated rerun"
+      ]
+    },
+    {
+      "id": "compile_run2_51_shape_text_socket_memory",
+      "order": 52,
+      "layer": "evidence_aesthetic_asset_memory",
+      "inputs": [
+        "run2_51_editorial_copy_memory.json",
+        "run2_49_editorial_renderer_workflow_gates.json"
+      ],
+      "outputs": [
+        "run2_51_shape_text_socket_memory.json"
+      ],
+      "gates": [
+        "each role has one primary archetype",
+        "each role has at least four socket contracts",
+        "each socket owns a shape id and character budget",
+        "semantic primitives include explicit geometry constraints"
+      ]
+    },
+    {
+      "id": "apply_run2_51_renderer_archetype_workflow_gates",
+      "order": 53,
+      "layer": "skill_workflow",
+      "inputs": [
+        "run2_51_editorial_copy_memory.json",
+        "run2_51_shape_text_socket_memory.json"
+      ],
+      "outputs": [
+        "run2_51_renderer_archetype_workflow_gates.json"
+      ],
+      "gates": [
+        "next generated full arm must bind Run 2.51 copy ids",
+        "next generated full arm must bind Run 2.51 socket ids",
+        "bad control must fail without Run 2.51 ids",
+        "visual validation remains deferred until generated rerun"
+      ]
     }
   ],
   "repair_triggers": [

@@ -2280,8 +2280,11 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
         "compile_run2_49_readability_memory",
         "compile_run2_49_content_evidence_density_memory",
         "apply_run2_49_editorial_renderer_workflow_gates",
+        "compile_run2_51_editorial_copy_memory",
+        "compile_run2_51_shape_text_socket_memory",
+        "apply_run2_51_renderer_archetype_workflow_gates",
     ]
-    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 47))
+    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 47)) + [51, 52, 53]
     assert workflow["repair_triggers"]
     workflow_text = json.dumps(workflow)
     assert "multimodal_database.json" in workflow_text
@@ -8189,11 +8192,20 @@ def test_run2_49_records_result_and_extends_skill_workflow() -> None:
     assert "compile_run2_49_readability_memory" in workflow_stage_ids
     assert "compile_run2_49_content_evidence_density_memory" in workflow_stage_ids
     assert "apply_run2_49_editorial_renderer_workflow_gates" in workflow_stage_ids
+    assert "compile_run2_51_editorial_copy_memory" in workflow_stage_ids
+    assert "compile_run2_51_shape_text_socket_memory" in workflow_stage_ids
+    assert "apply_run2_51_renderer_archetype_workflow_gates" in workflow_stage_ids
     assert workflow_stage_ids.index("compile_run2_49_readability_memory") < workflow_stage_ids.index(
         "compile_run2_49_content_evidence_density_memory"
     )
     assert workflow_stage_ids.index("compile_run2_49_content_evidence_density_memory") < workflow_stage_ids.index(
         "apply_run2_49_editorial_renderer_workflow_gates"
+    )
+    assert workflow_stage_ids.index("compile_run2_51_editorial_copy_memory") < workflow_stage_ids.index(
+        "compile_run2_51_shape_text_socket_memory"
+    )
+    assert workflow_stage_ids.index("compile_run2_51_shape_text_socket_memory") < workflow_stage_ids.index(
+        "apply_run2_51_renderer_archetype_workflow_gates"
     )
 
 
@@ -8510,6 +8522,28 @@ def test_run2_51_records_editorial_copy_shape_socket_repair_pack() -> None:
         assert gate["max_equal_card_clusters"] <= 1
         assert gate["min_semantic_primitives"] >= 3
         assert gate["visual_validation_deferred_to_generated_rerun"] is True
+
+
+def test_run2_51_extends_skill_workflow_without_claiming_generated_deck() -> None:
+    workflow = load_json(PACK / "skill_workflow.json")
+    result = load_json(PACK / "results" / "run2_51_editorial_shape_text_repair_result.json")
+    workflow_stage_ids = [stage["id"] for stage in workflow["stages"]]
+    stage_by_id = {stage["id"]: stage for stage in workflow["stages"]}
+
+    assert result["creates_new_ppt_deck"] is False
+    assert result["visual_validation_deferred_to_generated_rerun"] is True
+    assert "compile_run2_51_editorial_copy_memory" in workflow_stage_ids
+    assert "compile_run2_51_shape_text_socket_memory" in workflow_stage_ids
+    assert "apply_run2_51_renderer_archetype_workflow_gates" in workflow_stage_ids
+    assert workflow_stage_ids.index("compile_run2_51_editorial_copy_memory") < workflow_stage_ids.index(
+        "compile_run2_51_shape_text_socket_memory"
+    )
+    assert workflow_stage_ids.index("compile_run2_51_shape_text_socket_memory") < workflow_stage_ids.index(
+        "apply_run2_51_renderer_archetype_workflow_gates"
+    )
+    assert stage_by_id["compile_run2_51_editorial_copy_memory"]["order"] == 51
+    assert stage_by_id["compile_run2_51_shape_text_socket_memory"]["order"] == 52
+    assert stage_by_id["apply_run2_51_renderer_archetype_workflow_gates"]["order"] == 53
 
 
 def test_run2_51_builder_rejects_malformed_run2_50_source() -> None:
