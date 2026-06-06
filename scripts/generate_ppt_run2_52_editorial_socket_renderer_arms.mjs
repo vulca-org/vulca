@@ -542,6 +542,8 @@ function validateRun252RepairPack(data) {
   assertSelectedUsecase(run251Sockets?.selected_usecase_id, "run2_51_shape_text_socket_memory");
   assertSelectedUsecase(run251Gates?.selected_usecase_id, "run2_51_renderer_archetype_workflow_gates");
   assertSelectedUsecase(run250Result?.selected_usecase_id, "run2_50_result");
+  assertSelectedUsecase(run250FullTrace?.selected_usecase_id, "run2_50_full_trace");
+  assertSelectedUsecase(run250BadTrace?.selected_usecase_id, "run2_50_bad_trace");
 
   if (!Array.isArray(run251Copy?.editorial_copy_records) || run251Copy.editorial_copy_records.length !== 6) throw new Error("Run 2.52 requires six Run 2.51 copy records");
   if (!Array.isArray(run251Sockets?.shape_text_socket_records) || run251Sockets.shape_text_socket_records.length !== 6) throw new Error("Run 2.52 requires six Run 2.51 socket records");
