@@ -8286,7 +8286,7 @@ def test_ppt_run_html_viewer_embeds_run2_51_data_workflow_repair_pack() -> None:
             "run2_51_shape_text_socket_memory.json",
             "run2_51_renderer_archetype_workflow_gates.json",
             "run251ResultStatus",
-            "Run 2.51 is the current data/workflow repair layer",
+            "Run 2.51 remains the prior data/workflow repair layer",
             "visual validation waits for the next generated rerun",
         ],
     )
@@ -8294,7 +8294,7 @@ def test_ppt_run_html_viewer_embeds_run2_51_data_workflow_repair_pack() -> None:
         viewer,
         [
             '"latestRunId": "2.52"',
-            "Run 2.51 is the current data/workflow repair layer",
+            "Run 2.51 remains the prior data/workflow repair layer",
             "run2_51_editorial_shape_text_repair_result.json",
             "run2_51_editorial_copy_memory.json",
             "run2_51_shape_text_socket_memory.json",
@@ -8323,16 +8323,17 @@ def test_ppt_run_html_viewer_surfaces_latest_data_workflow_repair_first() -> Non
     assert_contains(
         viewer,
         [
-            "Run 2.51 is the current data/workflow repair layer",
-            "consume_run2_51_before_run2_52_four_arm_rerun",
+            "Run 2.53 product-surface scene repair",
+            "consume_run2_53_before_run2_54_four_arm_rerun",
             "Data/workflow-only, no new PPT deck",
+            "Run 2.51 remains the prior data/workflow repair layer",
             "Run 2.49 readability/content density repair",
             ".dataBandHead .pill",
             "text-overflow: ellipsis",
-            "Renderer archetype workflow gates",
+            "Scene renderer workflow gates",
         ],
     )
-    assert 'title="${escapeHtml(refs.run251ResultStatus || "missing")}"' in viewer
+    assert 'title="${escapeHtml(refs.run253ResultStatus || "missing")}"' in viewer
 
 
 def test_run2_50_generator_consumes_run2_49_repair_pack() -> None:

@@ -627,6 +627,10 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run251_gates = read_json(pack / "run2_51_renderer_archetype_workflow_gates.json")
     run251_result = read_json(pack / "results" / "run2_51_editorial_shape_text_repair_result.json")
     run252_result = read_json(pack / "results" / "run2_52_editorial_socket_renderer_rerun_result.json")
+    run253_scene_memory = read_json(pack / "run2_53_product_surface_scene_memory.json")
+    run253_evidence_memory = read_json(pack / "run2_53_business_visual_evidence_memory.json")
+    run253_gates = read_json(pack / "run2_53_scene_renderer_workflow_gates.json")
+    run253_result = read_json(pack / "results" / "run2_53_product_surface_scene_repair_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -867,6 +871,15 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run252SourceDataStatus": (run252_result.get("quality_delta") or {}).get(
             "source_data_status", "run2_51_editorial_socket_pack_consumed_before_native_ppt_drawing"
         ),
+        "run253ProductSurfaceSceneStatus": run253_scene_memory.get("status", ""),
+        "run253ProductSurfaceScenes": run253_scene_memory.get("product_surface_scene_records", []),
+        "run253BusinessVisualEvidenceStatus": run253_evidence_memory.get("status", ""),
+        "run253BusinessVisualEvidence": run253_evidence_memory.get("business_visual_evidence_records", []),
+        "run253SceneRendererGateStatus": run253_gates.get("status", ""),
+        "run253SceneRendererGates": run253_gates.get("scene_renderer_workflow_gates", []),
+        "run253ResultStatus": run253_result.get("status", ""),
+        "run253Result": run253_result,
+        "run253ResultPath": "run2_53_product_surface_scene_repair_result.json",
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -2089,6 +2102,37 @@ def build_html(data: dict[str, Any]) -> str:
       const run252Rerun = run252Result.rerun || {{}};
       const run252Quality = run252Result.quality_delta || {{}};
       const run252Control = run252Result.control_boundary || {{}};
+      const run253Result = refs.run253Result || {{}};
+      const run253Outputs = run253Result.output_chain || {{}};
+      const run253Counts = run253Result.artifact_counts || {{}};
+      const run253RepairContract = run253Result.repair_contract || {{}};
+      const run253SceneCards = (refs.run253ProductSurfaceScenes || []).map((record) => `
+        <article class="dataCard">
+          <h4>${{escapeHtml(record.role)}} product surface scene</h4>
+          ${{detailBlock("Scene id", record.id)}}
+          ${{detailBlock("Object", record.primary_product_or_business_object)}}
+          ${{detailBlock("Surface slots", record.surface_slots)}}
+          ${{detailBlock("Forbidden patterns", record.forbidden_patterns)}}
+          ${{detailBlock("Next rerun", record.next_rerun_obligation)}}
+        </article>`).join("");
+      const run253EvidenceCards = (refs.run253BusinessVisualEvidence || []).map((record) => `
+        <article class="dataCard">
+          <h4>${{escapeHtml(record.role)}} business visual evidence</h4>
+          ${{detailBlock("Evidence id", record.id)}}
+          ${{detailBlock("Required scene", record.required_product_surface_scene_id)}}
+          ${{detailBlock("Observable business object", record.observable_business_object)}}
+          ${{detailBlock("Reader question", record.reader_question_answered)}}
+          ${{detailBlock("Specificity checks", record.minimum_visual_specificity_checks)}}
+        </article>`).join("");
+      const run253GateCards = (refs.run253SceneRendererGates || []).map((gate) => `
+        <article class="dataCard">
+          <h4>${{escapeHtml(gate.role)}} scene renderer gate</h4>
+          ${{detailBlock("Gate", gate.id)}}
+          ${{detailBlock("Required scene", gate.required_product_surface_scene_id)}}
+          ${{detailBlock("Required evidence", gate.required_business_visual_evidence_id)}}
+          ${{detailBlock("Next generated run", gate.consumer_contract?.next_generated_run)}}
+          ${{detailBlock("Trace fields", gate.required_trace_fields)}}
+        </article>`).join("");
       const run251CopyCards = (refs.run251CopyRecords || []).map((record) => `
         <article class="dataCard">
           <h4>${{escapeHtml(record.role)}} editorial copy</h4>
@@ -2233,7 +2277,36 @@ def build_html(data: dict[str, Any]) -> str:
           </div>
         </section>
         <section class="dataBand">
-          <div class="dataBandHead"><div><h3>Latest data/workflow repair</h3><p>Run 2.51 is the current data/workflow repair layer. Run 2.51 is data/workflow-only: it prepares editorial public copy, semantic shape text sockets, and renderer archetype workflow gates. It creates no PPT deck; visual validation waits for the next generated rerun. Run 2.52 is the generated rerun that consumes it.</p></div><span class="pill" title="${{escapeHtml(refs.run251ResultStatus || "missing")}}">${{escapeHtml(refs.run251ResultStatus || "missing")}}</span></div>
+          <div class="dataBandHead"><div><h3>Latest data/workflow repair</h3><p>Run 2.53 product-surface scene repair is data/workflow-only: it adds product surface scene memory, business visual evidence memory, and scene renderer workflow gates. It creates no PPT deck; Run 2.54 must consume this pack before native drawing.</p></div><span class="pill" title="${{escapeHtml(refs.run253ResultStatus || "missing")}}">${{escapeHtml(refs.run253ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Run 2.53 repair pack</h4>
+              ${{detailBlock("Result", refs.run253ResultPath || "run2_53_product_surface_scene_repair_result.json")}}
+              ${{detailBlock("Product surface scenes", run253Outputs.product_surface_scene_memory || "run2_53_product_surface_scene_memory.json")}}
+              ${{detailBlock("Business visual evidence", run253Outputs.business_visual_evidence_memory || "run2_53_business_visual_evidence_memory.json")}}
+              ${{detailBlock("Scene renderer workflow gates", run253Outputs.scene_renderer_workflow_gates || "run2_53_scene_renderer_workflow_gates.json")}}
+              ${{detailBlock("Boundary", "Data/workflow-only, no new PPT deck")}}
+              ${{detailBlock("Target layer", run253Result.target_layer || "product_surface_scene_and_business_visual_evidence_repair")}}
+              ${{detailBlock("Next required action", run253Result.next_required_action || "consume_run2_53_before_run2_54_four_arm_rerun")}}
+            </article>
+            <article class="dataCard">
+              <h4>What it fixes</h4>
+              ${{detailBlock("Product surface scene", run253RepairContract["product surface scene"])}}
+              ${{detailBlock("Business visual evidence", run253RepairContract["business visual evidence"])}}
+              ${{detailBlock("Scene renderer gates", run253RepairContract["scene renderer gates"])}}
+              ${{detailBlock("Records", run253Counts)}}
+              ${{detailBlock("Visual validation", "Deferred to Run 2.54 generated rerun")}}
+            </article>
+          </div>
+          <div class="dataBandSubhead"><h4>Product surface scene memory</h4><p>${{escapeHtml(refs.run253ProductSurfaceSceneStatus)}}. Each slide role must render an inspectable product or business object, not a generic geometric diagram.</p></div>
+          <div class="dataGrid">${{run253SceneCards}}</div>
+          <div class="dataBandSubhead"><h4>Business visual evidence memory</h4><p>${{escapeHtml(refs.run253BusinessVisualEvidenceStatus)}}. Each record names the observable business object and the reader question the visual must answer.</p></div>
+          <div class="dataGrid">${{run253EvidenceCards}}</div>
+          <div class="dataBandSubhead"><h4>Scene renderer workflow gates</h4><p>${{escapeHtml(refs.run253SceneRendererGateStatus)}}. The next generated full arm must bind these gates before native drawing; the bad control must fail without them.</p></div>
+          <div class="dataGrid">${{run253GateCards}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Prior data/workflow repair</h3><p>Run 2.51 remains the prior data/workflow repair layer. Run 2.51 is data/workflow-only: it prepares editorial public copy, semantic shape text sockets, and renderer archetype workflow gates. It creates no PPT deck; visual validation waits for the next generated rerun that consumes it.</p></div><span class="pill" title="${{escapeHtml(refs.run251ResultStatus || "missing")}}">${{escapeHtml(refs.run251ResultStatus || "missing")}}</span></div>
           <div class="dataGrid">
             <article class="dataCard">
               <h4>Run 2.51 repair pack</h4>

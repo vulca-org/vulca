@@ -1,6 +1,6 @@
 # Results
 
-Status: run2_52-editorial-socket-renderer-rerun-public-blocked.
+Status: run2_53-product-surface-scene-repair-public-blocked.
 
 ## Latest Generated Result: Run 2.52
 
@@ -8,9 +8,15 @@ Run 2.52 is the latest generated PPT rerun. It consumes the Run 2.51 editorial c
 
 Current gate: `run2_51_editorial_socket_pack_consumed_before_native_ppt_drawing`. The full-skill arm records Run 2.51 copy ids, socket ids, renderer gate ids, public-copy binding status, shape primitive counts, and medium-density visible text on all six slides. The negative control can reuse Run 2.50 traces but must not bind Run 2.51 copy/socket/gate fields. Public release remains blocked because this proves data/workflow consumption and visible information density, not final public-video-grade aesthetics.
 
-## Latest Data/Workflow Thickness Layer: Run 2.51
+## Latest Data/Workflow Thickness Layer: Run 2.53
 
-Run 2.51 is the latest data/workflow-only repair layer. It creates no new PPT output and does not advance to Run 3.0. It turns the Run 2.50 readability/density result into six editorial copy records, six shape text socket records, and six renderer archetype workflow gates.
+Run 2.53 is the latest data/workflow-only repair layer. It creates no new PPT output and does not advance to Run 3.0. It adds six product surface scene records, six business visual evidence records, and six scene renderer workflow gates for the next generated rerun.
+
+Current data/workflow gate: `run2_53_product_surface_scene_repair_ready_public_blocked`. Run 2.54 must consume `run2_53_product_surface_scene_memory.json`, `run2_53_business_visual_evidence_memory.json`, and `run2_53_scene_renderer_workflow_gates.json` before native PPT drawing.
+
+## Prior Data/Workflow Thickness Layer: Run 2.51
+
+Run 2.51 is the prior data/workflow-only repair layer. It creates no new PPT output and does not advance to Run 3.0. It turns the Run 2.50 readability/density result into six editorial copy records, six shape text socket records, and six renderer archetype workflow gates.
 
 Current data/workflow gate: `run2_51_editorial_shape_text_repair_ready_public_blocked`. Run 2.52 now consumes `run2_51_editorial_copy_memory.json`, `run2_51_shape_text_socket_memory.json`, and `run2_51_renderer_archetype_workflow_gates.json` before native PPT drawing.
 
