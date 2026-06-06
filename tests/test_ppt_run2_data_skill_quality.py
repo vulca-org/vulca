@@ -8843,7 +8843,7 @@ def test_run2_53_builds_product_surface_scene_repair_pack() -> None:
         role = evidence["role"]
         assert evidence["id"] == f"business_visual_evidence_2_53_{role}"
         assert evidence["required_product_surface_scene_id"] == scene_by_role[role]["id"]
-        assert evidence["required_editorial_copy_memory_id"] == run251_copy_by_role[role]["id"]
+        assert evidence["required_editorial_copy_memory_id"] == run251_copy_by_role[role]["copy_memory_id"]
         assert evidence["observable_business_object"]
         assert evidence["reader_question_answered"]
         assert len(evidence["minimum_visual_specificity_checks"]) >= 3
@@ -8855,7 +8855,7 @@ def test_run2_53_builds_product_surface_scene_repair_pack() -> None:
         assert gate["id"] == f"scene_renderer_gate_2_53_{role}"
         assert gate["required_product_surface_scene_id"] == scene_by_role[role]["id"]
         assert gate["required_business_visual_evidence_id"] == f"business_visual_evidence_2_53_{role}"
-        assert gate["required_run2_51_renderer_archetype_gate_id"] == run251_gate_by_role[role]["id"]
+        assert gate["required_run2_51_renderer_archetype_gate_id"] == run251_gate_by_role[role]["gate_id"]
         assert gate["consumer_contract"]["next_generated_run"] == "2.54"
         assert gate["consumer_contract"]["must_bind_before_native_drawing"] is True
         assert set(gate["required_trace_fields"]) == EXPECTED_RUN2_53_TRACE_FIELDS
@@ -8877,8 +8877,8 @@ def test_run2_53_builds_product_surface_scene_repair_pack() -> None:
 def test_run2_53_extends_skill_workflow_without_claiming_generated_deck() -> None:
     workflow = load_json(PACK / "skill_workflow.json")
     result = load_json(PACK / "results" / "run2_53_product_surface_scene_repair_result.json")
-    stage_ids = [stage["id"] for stage in workflow["workflow"]["stages"]]
-    stage_by_id = {stage["id"]: stage for stage in workflow["workflow"]["stages"]}
+    stage_ids = [stage["id"] for stage in workflow["stages"]]
+    stage_by_id = {stage["id"]: stage for stage in workflow["stages"]}
 
     assert result["creates_new_ppt_deck"] is False
     assert result["visual_validation_deferred_to_generated_rerun"] is True
