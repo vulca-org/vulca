@@ -349,6 +349,36 @@ EXPECTED_RUN2_10_TRACE_FIELDS = {
     "run2_10_shape_count_budget",
     "run2_10_asymmetry_whitespace_rule",
 }
+EXPECTED_RUN2_51_ROLES = {"cover", "setup", "contrast", "proof", "climax", "close"}
+EXPECTED_RUN2_51_COPY_BUNDLE_KEYS = {
+    "headline",
+    "subline",
+    "proof_nuggets",
+    "annotations",
+    "state_labels",
+}
+EXPECTED_RUN2_51_TRACE_FIELDS = {
+    "run2_51_editorial_copy_memory_id",
+    "run2_51_shape_text_socket_memory_id",
+    "run2_51_renderer_archetype_gate_id",
+    "run2_51_primary_archetype",
+    "run2_51_public_surface_copy_status",
+    "run2_51_text_socket_placement_status",
+    "run2_51_shape_vocabulary_status",
+    "run2_51_character_fit_status",
+    "run2_51_forbidden_surface_terms_count",
+    "run2_51_equal_card_cluster_count",
+    "run2_51_semantic_primitive_count",
+}
+EXPECTED_RUN2_51_FORBIDDEN_PUBLIC_TERMS = {
+    "run2",
+    "memory",
+    "workflow gate",
+    "trace",
+    "audit",
+    "negative control",
+    "public blocked",
+}
 EXPECTED_RUN2_11_AUDIT_FIELDS = {
     "schema_version",
     "status",
@@ -647,6 +677,23 @@ def assert_sequence(body: str, terms: list[str]) -> None:
 def assert_mentions_any(body: str, terms: set[str]) -> None:
     normalized = normalize(body)
     assert any(normalize(term) in normalized for term in terms), f"missing one of: {sorted(terms)!r}"
+
+
+def word_count(value: str) -> int:
+    return len([part for part in re.split(r"\s+", value.strip()) if part])
+
+
+def public_text_values(bundle: dict[str, object]) -> list[str]:
+    values: list[str] = []
+    for key in ("headline", "subline"):
+        value = bundle.get(key)
+        if isinstance(value, str):
+            values.append(value)
+    for key in ("proof_nuggets", "annotations", "state_labels"):
+        items = bundle.get(key)
+        if isinstance(items, list):
+            values.extend(str(item) for item in items)
+    return values
 
 
 def iter_string_values(value: object):
@@ -8292,6 +8339,103 @@ def test_run2_50_records_readability_density_renderer_rerun_result() -> None:
             "editorial renderer",
             "bad_run2_49_missing_repair_pack",
             "public blocked",
+        ],
+    )
+
+
+def test_run2_51_builder_creates_editorial_copy_shape_socket_repair_pack(tmp_path: Path) -> None:
+    script_path = ROOT / "scripts" / "build_ppt_run2_51_editorial_copy_shape_sockets.py"
+    result_json = tmp_path / "run2_51_editorial_shape_text_repair_result.json"
+    result_md = tmp_path / "run2_51_editorial_shape_text_repair_result.md"
+    presentations = ROOT / "outputs" / "019e7d9c-532a-70b3-8892-fa3ae42baef2" / "presentations"
+    pptx_before = sorted(path.name for path in presentations.glob("*2-51*.pptx"))
+
+    assert script_path.exists(), "missing Run 2.51 editorial copy/shape socket builder"
+    body = script_path.read_text(encoding="utf-8")
+    body_lower = body.lower()
+    for forbidden in (
+        "presentation_artifact_tool",
+        "pptxgen",
+        "slide.shapes",
+        "from pptx",
+        "import pptx",
+        "Presentation(",
+    ):
+        if forbidden == "Presentation(":
+            assert forbidden not in body
+        else:
+            assert forbidden.lower() not in body_lower
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(script_path),
+            "--out-dir",
+            str(tmp_path),
+            "--result-json",
+            str(result_json),
+            "--result-md",
+            str(result_md),
+        ],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    pptx_after = sorted(path.name for path in presentations.glob("*2-51*.pptx"))
+    result = load_json(result_json)
+    copy_memory = load_json(tmp_path / "run2_51_editorial_copy_memory.json")
+    socket_memory = load_json(tmp_path / "run2_51_shape_text_socket_memory.json")
+    gates = load_json(tmp_path / "run2_51_renderer_archetype_workflow_gates.json")
+    report = result_md.read_text(encoding="utf-8")
+
+    assert "run2_51_editorial_shape_text_repair_ready_public_blocked" in completed.stdout
+    assert pptx_before == pptx_after == []
+    assert result["run_id"] == "2.51"
+    assert result["status"] == "run2_51_editorial_shape_text_repair_ready_public_blocked"
+    assert result["source_data_workflow_run"] == "2.49"
+    assert result["source_generated_run"] == "2.50"
+    assert result["target_layer"] == "editorial_copy_and_shape_text_socket_repair"
+    assert result["creates_new_ppt_deck"] is False
+    assert result["visual_validation_deferred_to_generated_rerun"] is True
+    assert result["public_ready"] is False
+    assert result["next_required_action"] == "consume_run2_51_before_run2_52_four_arm_rerun"
+    assert result["delivery_artifacts"]["pptx_paths"] == []
+    assert result["artifact_counts"] == {
+        "editorial_copy_records": 6,
+        "shape_text_socket_records": 6,
+        "renderer_archetype_workflow_gates": 6,
+    }
+
+    assert copy_memory["status"] == "run2_51_editorial_copy_memory_ready_public_blocked"
+    assert socket_memory["status"] == "run2_51_shape_text_socket_memory_ready_public_blocked"
+    assert gates["status"] == "run2_51_renderer_archetype_workflow_gates_ready_public_blocked"
+    assert {record["role"] for record in copy_memory["editorial_copy_records"]} == EXPECTED_RUN2_51_ROLES
+    assert {record["role"] for record in socket_memory["shape_text_socket_records"]} == EXPECTED_RUN2_51_ROLES
+    assert {record["role"] for record in gates["renderer_archetype_workflow_gates"]} == EXPECTED_RUN2_51_ROLES
+    for bundle in copy_memory["editorial_copy_records"]:
+        assert EXPECTED_RUN2_51_COPY_BUNDLE_KEYS <= set(bundle)
+        assert word_count(bundle["headline"]) <= 7
+        assert word_count(bundle["subline"]) <= 18
+        public_values = public_text_values(bundle)
+        assert public_values
+        for value in public_values:
+            normalized_value = normalize(value)
+            for forbidden_term in EXPECTED_RUN2_51_FORBIDDEN_PUBLIC_TERMS:
+                assert normalize(forbidden_term) not in normalized_value
+    for gate in gates["renderer_archetype_workflow_gates"]:
+        assert EXPECTED_RUN2_51_TRACE_FIELDS <= set(gate["required_trace_fields"])
+
+    assert_contains(
+        report,
+        [
+            "Run 2.51",
+            "data/workflow-only",
+            "editorial copy",
+            "shape text sockets",
+            "visual validation is deferred",
+            "deferred visual validation",
+            "Run 2.52",
         ],
     )
 
