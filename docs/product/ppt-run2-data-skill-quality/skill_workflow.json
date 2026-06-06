@@ -1048,7 +1048,7 @@
     },
     {
       "id": "compile_run2_51_editorial_copy_memory",
-      "order": 51,
+      "order": 47,
       "layer": "evidence_aesthetic_asset_memory",
       "inputs": [
         "run2_49_readability_memory.json",
@@ -1067,7 +1067,7 @@
     },
     {
       "id": "compile_run2_51_shape_text_socket_memory",
-      "order": 52,
+      "order": 48,
       "layer": "evidence_aesthetic_asset_memory",
       "inputs": [
         "run2_51_editorial_copy_memory.json",
@@ -1085,7 +1085,7 @@
     },
     {
       "id": "apply_run2_51_renderer_archetype_workflow_gates",
-      "order": 53,
+      "order": 49,
       "layer": "skill_workflow",
       "inputs": [
         "run2_51_editorial_copy_memory.json",

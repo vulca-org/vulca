@@ -2284,7 +2284,7 @@ def test_run2_skill_workflow_is_declarative_and_gated() -> None:
         "compile_run2_51_shape_text_socket_memory",
         "apply_run2_51_renderer_archetype_workflow_gates",
     ]
-    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, 47)) + [51, 52, 53]
+    assert [stage["order"] for stage in workflow["stages"]] == list(range(1, len(workflow["stages"]) + 1))
     assert workflow["repair_triggers"]
     workflow_text = json.dumps(workflow)
     assert "multimodal_database.json" in workflow_text
@@ -8580,9 +8580,9 @@ def test_run2_51_extends_skill_workflow_without_claiming_generated_deck() -> Non
     assert workflow_stage_ids.index("compile_run2_51_shape_text_socket_memory") < workflow_stage_ids.index(
         "apply_run2_51_renderer_archetype_workflow_gates"
     )
-    assert stage_by_id["compile_run2_51_editorial_copy_memory"]["order"] == 51
-    assert stage_by_id["compile_run2_51_shape_text_socket_memory"]["order"] == 52
-    assert stage_by_id["apply_run2_51_renderer_archetype_workflow_gates"]["order"] == 53
+    assert stage_by_id["compile_run2_51_editorial_copy_memory"]["order"] == 47
+    assert stage_by_id["compile_run2_51_shape_text_socket_memory"]["order"] == 48
+    assert stage_by_id["apply_run2_51_renderer_archetype_workflow_gates"]["order"] == 49
 
 
 def test_run2_51_builder_rejects_malformed_run2_50_source() -> None:
