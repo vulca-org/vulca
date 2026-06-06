@@ -1,16 +1,34 @@
 # Results
 
-Status: run2_24-single-usecase-content-visual-evidence-public-blocked.
+Status: run2_52-editorial-socket-renderer-rerun-public-blocked.
 
-## Latest Generated Result: Run 2.22
+## Latest Generated Result: Run 2.52
 
-Run 2.22 is the latest generated PPT rerun. It consumes `run2_21_visual_decision_memory.json`, `run2_21_per_role_selector_gates.json`, and `run2_21_evidence_rejection_matrix.json` before native PPT code generation, then updates the HTML viewer to latest `2.22`.
+Run 2.52 is the latest generated PPT rerun. It consumes the Run 2.51 editorial copy memory, shape text socket memory, and renderer archetype workflow gates before native PPT code generation, then regenerates the four-arm contact sheet and the full-skill series sheet.
+
+Current gate: `run2_51_editorial_socket_pack_consumed_before_native_ppt_drawing`. The full-skill arm records Run 2.51 copy ids, socket ids, renderer gate ids, public-copy binding status, shape primitive counts, and medium-density visible text on all six slides. The negative control can reuse Run 2.50 traces but must not bind Run 2.51 copy/socket/gate fields. Public release remains blocked because this proves data/workflow consumption and visible information density, not final public-video-grade aesthetics.
+
+## Latest Data/Workflow Thickness Layer: Run 2.51
+
+Run 2.51 is the latest data/workflow-only repair layer. It creates no new PPT output and does not advance to Run 3.0. It turns the Run 2.50 readability/density result into six editorial copy records, six shape text socket records, and six renderer archetype workflow gates.
+
+Current data/workflow gate: `run2_51_editorial_shape_text_repair_ready_public_blocked`. Run 2.52 now consumes `run2_51_editorial_copy_memory.json`, `run2_51_shape_text_socket_memory.json`, and `run2_51_renderer_archetype_workflow_gates.json` before native PPT drawing.
+
+## Prior Generated Result: Run 2.50
+
+Run 2.50 is the prior generated PPT rerun. It is still the source generated run for Run 2.52, but Run 2.52 adds an explicit Run 2.51 editorial/socket/gate consumption proof on top of it.
+
+Current gate: `run2_50_readability_density_renderer_rerun_public_blocked`. Run 2.50 remains useful as the source generated baseline and bad-control comparison; it is no longer the latest generated result.
+
+## Prior Generated Result: Run 2.22
+
+Run 2.22 is a prior generated PPT rerun. It consumes `run2_21_visual_decision_memory.json`, `run2_21_per_role_selector_gates.json`, and `run2_21_evidence_rejection_matrix.json` before native PPT code generation, then updates the HTML viewer to latest `2.22`.
 
 Current gate: `selector_memory_executed_before_native_ppt_generation`. The full-skill arm records the visual-decision memory id, primary evidence id, secondary ids, rejected evidence reasons, selector gate id, selector execution status, and actual Run 2.22 code module ids per slide. Public release remains blocked because visual human review, native/cross-platform render inspection, motion/video review, source-boundary review, and human approval are still missing.
 
-## Latest Data/Workflow Thickness Layer: Run 2.24
+## Prior Data/Workflow Thickness Layer: Run 2.24
 
-Run 2.24 is the latest data/workflow-only layer. It creates no new PPT output and does not advance to Run 3.0. It locks the next rerun to `usecase_design_to_production_platform_launch`, then adds six content memory records, twelve native-PPT visual evidence asset instructions, and six content/visual workflow gates.
+Run 2.24 is a prior data/workflow-only layer. It creates no new PPT output and does not advance to Run 3.0. It locks the next rerun to `usecase_design_to_production_platform_launch`, then adds six content memory records, twelve native-PPT visual evidence asset instructions, and six content/visual workflow gates.
 
 Current data/workflow gate: `run2_24_single_usecase_content_visual_evidence_ready_public_blocked`. The next generated rerun must consume `run2_24_single_usecase_content_memory.json`, `run2_24_visual_evidence_asset_memory.json`, and `run2_24_content_visual_workflow_gates.json` before native PPT generation.
 

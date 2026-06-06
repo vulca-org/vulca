@@ -559,6 +559,9 @@ function validateRun252RepairPack(data) {
     assertSelectedUsecase(socket.selected_usecase_id, `run2_51_socket_record_${role}`);
     assertSelectedUsecase(gate.selected_usecase_id, `run2_51_gate_record_${role}`);
     assertPublicCopyBundle(copy, role);
+    if ((copy.raw_evidence_inputs?.business_proof_points ?? []).length < 2) {
+      throw new Error(`Run 2.52 requires at least two business proof points for ${role}`);
+    }
     if (socket.required_editorial_copy_memory_id !== copy.copy_memory_id) {
       throw new Error(`Run 2.52 socket/editorial copy mismatch for ${role}`);
     }
@@ -654,6 +657,37 @@ function drawPromptMiniDeck(slide, x, y, w, h, fill, accent) {
   rect(slide, x + w - 76, y + 24, 48, 62, "#edf1f3", colorLine("#d5dde1", 1));
 }
 
+function evidenceStripLines(selection) {
+  return (selection.copy.raw_evidence_inputs?.business_proof_points ?? [])
+    .slice(0, 2)
+    .map((line) => compactText(line, 118));
+}
+
+function drawEditorialEvidenceStrip(slide, arm, selection, metrics, x, y, w, opts = {}) {
+  const lines = evidenceStripLines(selection);
+  const dark = opts.dark === true;
+  const fill = dark ? "#17212c" : "#ffffff";
+  const border = dark ? "#3d5262" : "#d8e0e5";
+  const labelColor = dark ? "#8fd6e5" : arm.palette.proof;
+  const textColor = dark ? "#e8f0f4" : C.ink;
+  rect(slide, x, y, w, 96, fill, colorLine(border, 1));
+  text(slide, opts.label ?? "commercial proof", x + 16, y + 12, w - 32, 14, {
+    fontSize: 8.5,
+    mono: true,
+    bold: true,
+    color: labelColor,
+  });
+  lines.forEach((line, index) => {
+    socketText(slide, metrics, line, x + 16, y + 32 + index * 28, w - 32, 24, {
+      fontSize: opts.fontSize ?? 9.6,
+      color: textColor,
+      max: 118,
+    });
+  });
+  registerProof(metrics, lines.length);
+  registerZones(metrics, 6);
+}
+
 function drawCoverPosterStage(slide, arm, selection, metrics) {
   const p = selection.publicCopy;
   rect(slide, 82, 122, 710, 394, "#111820", colorLine("#111820", 1));
@@ -684,6 +718,7 @@ function drawCoverPosterStage(slide, arm, selection, metrics) {
     });
   });
   rect(slide, 828, 340, 312, 18, arm.palette.accent2, colorLine("transparent", 0));
+  drawEditorialEvidenceStrip(slide, arm, selection, metrics, 830, 454, 314, { label: "buyer proof" });
   registerPresentationSurface(metrics, 82, 122, 710, 394, 0.58);
   registerProof(metrics, 3);
   registerZones(metrics, 5);
@@ -715,6 +750,7 @@ function drawSetupRouteMap(slide, arm, selection, metrics) {
   rect(slide, 860, 408, 170, 64, "#fff8e4", colorLine("#e7c76d", 1));
   socketText(slide, metrics, p.annotations[1], 884, 430, 118, 24, { fontSize: 11, bold: true, color: "#6b5522", max: 42 });
   rect(slide, 1040, 214, 48, 48, arm.palette.proof, colorLine("transparent", 0));
+  drawEditorialEvidenceStrip(slide, arm, selection, metrics, 82, 300, 386, { label: "decision evidence" });
   registerPresentationSurface(metrics, 548, 202, 486, 270, 0.44);
   registerProof(metrics, 3);
   registerZones(metrics, 5);
@@ -732,6 +768,7 @@ function drawContrastBeforeAfterLens(slide, arm, selection, metrics) {
   socketText(slide, metrics, p.proof_nuggets[2], 722, 382, 214, 30, { fontSize: 12, bold: true, color: arm.palette.proof, max: 54 });
   socketText(slide, metrics, p.annotations[0], 532, 456, 144, 26, { fontSize: 10, mono: true, color: arm.palette.muted, max: 42 });
   socketText(slide, metrics, p.annotations[1], 892, 534, 160, 26, { fontSize: 10, mono: true, color: arm.palette.muted, max: 42 });
+  drawEditorialEvidenceStrip(slide, arm, selection, metrics, 80, 298, 386, { label: "comparison evidence" });
   registerPresentationSurface(metrics, 728, 134, 390, 390, 0.5);
   registerProof(metrics, 3);
   registerZones(metrics, 4);
@@ -751,6 +788,7 @@ function drawProofWorkspaceSurface(slide, arm, selection, metrics) {
   }
   socketText(slide, metrics, p.annotations[0], 520, 160, 170, 18, { fontSize: 10, bold: true, mono: true, color: C.white, max: 42 });
   socketText(slide, metrics, p.annotations[1], 820, 468, 150, 24, { fontSize: 10, bold: true, color: arm.palette.proof, max: 42 });
+  drawEditorialEvidenceStrip(slide, arm, selection, metrics, 78, 306, 330, { label: "proof evidence", fontSize: 9.2 });
   registerPresentationSurface(metrics, 454, 118, 630, 404, 0.56);
   registerProof(metrics, 4);
   registerZones(metrics, 5);
@@ -781,6 +819,7 @@ function drawClimaxExplodedHeroObject(slide, arm, selection, metrics) {
   });
   socketText(slide, metrics, p.annotations[0], 120, 522, 190, 28, { fontSize: 11, bold: true, mono: true, color: C.cyan, max: 42 });
   socketText(slide, metrics, p.annotations[1], 342, 522, 160, 28, { fontSize: 11, bold: true, mono: true, color: C.cyan, max: 42 });
+  drawEditorialEvidenceStrip(slide, arm, selection, metrics, 112, 272, 300, { dark: true, label: "launch evidence", fontSize: 9 });
   registerPresentationSurface(metrics, 516, 210, 468, 192, 0.42);
   registerProof(metrics, 3);
   registerZones(metrics, 5);
@@ -807,6 +846,7 @@ function drawCloseDecisionRoom(slide, arm, selection, metrics) {
   socketText(slide, metrics, p.annotations[1], 734, 464, 140, 20, { fontSize: 10, bold: true, color: C.ink, max: 42 });
   drawPathSegment(slide, 964, 474, 86, 7, arm.palette.proof);
   ellipse(slide, 1048, 458, 36, 36, arm.palette.proof, colorLine("transparent", 0));
+  drawEditorialEvidenceStrip(slide, arm, selection, metrics, 82, 300, 360, { label: "decision evidence" });
   registerPresentationSurface(metrics, 520, 126, 516, 302, 0.44);
   registerProof(metrics, 3);
   registerZones(metrics, 5);
