@@ -387,6 +387,14 @@ EXPECTED_RUN2_52_TRACE_FIELDS = {
     "run2_52_socket_bound_public_text_elements",
     "run2_52_shape_primitive_count",
 }
+EXPECTED_RUN2_53_TRACE_FIELDS = {
+    "run2_53_product_surface_scene_id",
+    "run2_53_business_visual_evidence_id",
+    "run2_53_scene_renderer_gate_id",
+    "run2_53_primary_product_or_business_object",
+    "run2_53_visual_specificity_status",
+    "run2_53_forbidden_generic_geometry_count",
+}
 EXPECTED_RUN2_51_FORBIDDEN_PUBLIC_TERMS = {
     "run2",
     "memory",
@@ -8773,6 +8781,195 @@ def test_run2_52_bad_control_trace_does_not_leak_run2_51_fields() -> None:
             and value not in ("", 0, [], False, None, "fail_missing_run2_51")
         ]
         assert leaked_values == []
+
+
+def test_run2_53_builds_product_surface_scene_repair_pack() -> None:
+    script_path = ROOT / "scripts" / "build_ppt_run2_53_product_surface_scene_repair.py"
+    assert script_path.exists()
+
+    result_md = (PACK / "results" / "run2_53_product_surface_scene_repair_result.md").read_text(
+        encoding="utf-8"
+    )
+    result = load_json(PACK / "results" / "run2_53_product_surface_scene_repair_result.json")
+    scene_memory = load_json(PACK / "run2_53_product_surface_scene_memory.json")
+    evidence_memory = load_json(PACK / "run2_53_business_visual_evidence_memory.json")
+    gates = load_json(PACK / "run2_53_scene_renderer_workflow_gates.json")
+    run251_copy = load_json(PACK / "run2_51_editorial_copy_memory.json")
+    run251_gates = load_json(PACK / "run2_51_renderer_archetype_workflow_gates.json")
+
+    assert result["run_id"] == "2.53"
+    assert result["status"] == "run2_53_product_surface_scene_repair_ready_public_blocked"
+    assert result["public_ready"] is False
+    assert result["creates_new_ppt_deck"] is False
+    assert result["selected_usecase_id"] == "usecase_design_to_production_platform_launch"
+    assert result["source_repair_run_id"] == "2.51"
+    assert result["source_generated_run_id"] == "2.52"
+    assert result["target_layer"] == "product_surface_scene_and_business_visual_evidence_repair"
+    assert result["next_required_action"] == "consume_run2_53_before_run2_54_four_arm_rerun"
+    assert result["artifact_counts"] == {
+        "product_surface_scene_records": 6,
+        "business_visual_evidence_records": 6,
+        "scene_renderer_workflow_gates": 6,
+    }
+
+    assert scene_memory["status"] == "run2_53_product_surface_scene_memory_ready_public_blocked"
+    assert evidence_memory["status"] == "run2_53_business_visual_evidence_memory_ready_public_blocked"
+    assert gates["status"] == "run2_53_scene_renderer_workflow_gates_ready_public_blocked"
+
+    scene_records = scene_memory["product_surface_scene_records"]
+    evidence_records = evidence_memory["business_visual_evidence_records"]
+    gate_records = gates["scene_renderer_workflow_gates"]
+    assert {record["role"] for record in scene_records} == EXPECTED_RUN2_51_ROLES
+    assert {record["role"] for record in evidence_records} == EXPECTED_RUN2_51_ROLES
+    assert {record["role"] for record in gate_records} == EXPECTED_RUN2_51_ROLES
+
+    run251_copy_by_role = {record["role"]: record for record in run251_copy["editorial_copy_records"]}
+    run251_gate_by_role = {gate["role"]: gate for gate in run251_gates["renderer_archetype_workflow_gates"]}
+    scene_by_role = {record["role"]: record for record in scene_records}
+
+    for scene in scene_records:
+        role = scene["role"]
+        assert scene["id"] == f"product_surface_scene_2_53_{role}"
+        assert scene["selected_usecase_id"] == "usecase_design_to_production_platform_launch"
+        assert scene["source_run_ids"] == ["2.51", "2.52"]
+        assert scene["must_render_product_or_business_object"] is True
+        assert len(scene["surface_slots"]) >= 3
+        assert "generic geometric diagram" in scene["forbidden_patterns"]
+        assert "evidence card only" in scene["forbidden_patterns"]
+        assert "floating annotation card" in scene["forbidden_patterns"]
+        assert scene["next_rerun_obligation"] == "must_be_consumed_before_run2_54_four_arm_rerun"
+
+    for evidence in evidence_records:
+        role = evidence["role"]
+        assert evidence["id"] == f"business_visual_evidence_2_53_{role}"
+        assert evidence["required_product_surface_scene_id"] == scene_by_role[role]["id"]
+        assert evidence["required_editorial_copy_memory_id"] == run251_copy_by_role[role]["id"]
+        assert evidence["observable_business_object"]
+        assert evidence["reader_question_answered"]
+        assert len(evidence["minimum_visual_specificity_checks"]) >= 3
+        assert evidence["source_boundary"]["raw_media_copied"] is False
+        assert evidence["source_boundary"]["source_layout_copied"] is False
+
+    for gate in gate_records:
+        role = gate["role"]
+        assert gate["id"] == f"scene_renderer_gate_2_53_{role}"
+        assert gate["required_product_surface_scene_id"] == scene_by_role[role]["id"]
+        assert gate["required_business_visual_evidence_id"] == f"business_visual_evidence_2_53_{role}"
+        assert gate["required_run2_51_renderer_archetype_gate_id"] == run251_gate_by_role[role]["id"]
+        assert gate["consumer_contract"]["next_generated_run"] == "2.54"
+        assert gate["consumer_contract"]["must_bind_before_native_drawing"] is True
+        assert set(gate["required_trace_fields"]) == EXPECTED_RUN2_53_TRACE_FIELDS
+
+    assert_contains(
+        result_md,
+        [
+            "Run 2.53 Product Surface Scene Repair",
+            "data/workflow-only",
+            "product surface scene",
+            "business visual evidence",
+            "Run 2.54",
+            "public blocked",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_run2_53_extends_skill_workflow_without_claiming_generated_deck() -> None:
+    workflow = load_json(PACK / "skill_workflow.json")
+    result = load_json(PACK / "results" / "run2_53_product_surface_scene_repair_result.json")
+    stage_ids = [stage["id"] for stage in workflow["workflow"]["stages"]]
+    stage_by_id = {stage["id"]: stage for stage in workflow["workflow"]["stages"]}
+
+    assert result["creates_new_ppt_deck"] is False
+    assert result["visual_validation_deferred_to_generated_rerun"] is True
+    assert "compile_run2_53_product_surface_scene_memory" in stage_ids
+    assert "compile_run2_53_business_visual_evidence_memory" in stage_ids
+    assert "apply_run2_53_scene_renderer_workflow_gates" in stage_ids
+    assert stage_ids.index("compile_run2_53_product_surface_scene_memory") < stage_ids.index(
+        "compile_run2_53_business_visual_evidence_memory"
+    )
+    assert stage_ids.index("compile_run2_53_business_visual_evidence_memory") < stage_ids.index(
+        "apply_run2_53_scene_renderer_workflow_gates"
+    )
+    assert stage_by_id["compile_run2_53_product_surface_scene_memory"]["order"] == 50
+    assert stage_by_id["compile_run2_53_business_visual_evidence_memory"]["order"] == 51
+    assert stage_by_id["apply_run2_53_scene_renderer_workflow_gates"]["order"] == 52
+
+
+def test_run2_53_builder_rejects_malformed_run2_52_source() -> None:
+    from scripts import build_ppt_run2_53_product_surface_scene_repair as run253_builder
+
+    run252_result = load_json(PACK / "results" / "run2_52_editorial_socket_renderer_rerun_result.json")
+    run252_trace = load_json(
+        ROOT
+        / "outputs"
+        / "019e7d9c-532a-70b3-8892-fa3ae42baef2"
+        / "presentations"
+        / "ppt-run2-52-full-vulca"
+        / "trace_manifest.json"
+    )
+    run251_copy = load_json(PACK / "run2_51_editorial_copy_memory.json")
+    run251_socket = load_json(PACK / "run2_51_shape_text_socket_memory.json")
+    run251_gates = load_json(PACK / "run2_51_renderer_archetype_workflow_gates.json")
+
+    malformed_result = json.loads(json.dumps(run252_result))
+    malformed_result["quality_delta"]["source_data_status"] = "wrong_source"
+    with pytest.raises(ValueError, match="source_data_status"):
+        run253_builder.validate_inputs(
+            malformed_result,
+            run252_trace,
+            run251_copy,
+            run251_socket,
+            run251_gates,
+        )
+
+    malformed_result = json.loads(json.dumps(run252_result))
+    malformed_result["quality_delta"]["full_slides_with_run2_51_editorial_copy_memory_id"] = 5
+    with pytest.raises(ValueError, match="editorial copy"):
+        run253_builder.validate_inputs(
+            malformed_result,
+            run252_trace,
+            run251_copy,
+            run251_socket,
+            run251_gates,
+        )
+
+
+def test_ppt_run_html_viewer_mentions_run2_53_product_surface_scene_repair() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+    viewer = (
+        ROOT
+        / "outputs"
+        / "019e7d9c-532a-70b3-8892-fa3ae42baef2"
+        / "presentations"
+        / "ppt-run-viewer.html"
+    ).read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "run2_53_product_surface_scene_memory.json",
+            "run2_53_business_visual_evidence_memory.json",
+            "run2_53_scene_renderer_workflow_gates.json",
+            "run253ResultStatus",
+            "Run 2.53 product-surface scene repair",
+            "data/workflow-only",
+            "consume_run2_53_before_run2_54_four_arm_rerun",
+        ],
+    )
+    assert_contains(
+        viewer,
+        [
+            '"latestRunId": "2.52"',
+            "Run 2.53 product-surface scene repair",
+            "run2_53_product_surface_scene_memory.json",
+            "run2_53_business_visual_evidence_memory.json",
+            "run2_53_scene_renderer_workflow_gates.json",
+            "Run 2.54",
+        ],
+    )
+    assert "Run 2.53" not in script.split("RUN_SPECS", 1)[1].split("def rel", 1)[0]
+    assert "ppt-run2-53-" not in script
 
 
 def test_ppt_run_html_viewer_mentions_run2_50_readability_density_renderer_rerun() -> None:
