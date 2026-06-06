@@ -8441,6 +8441,77 @@ def test_run2_51_builder_creates_editorial_copy_shape_socket_repair_pack(tmp_pat
     )
 
 
+def test_run2_51_records_editorial_copy_shape_socket_repair_pack() -> None:
+    result = load_json(PACK / "results" / "run2_51_editorial_shape_text_repair_result.json")
+    copy_memory = load_json(PACK / "run2_51_editorial_copy_memory.json")
+    socket_memory = load_json(PACK / "run2_51_shape_text_socket_memory.json")
+    gates = load_json(PACK / "run2_51_renderer_archetype_workflow_gates.json")
+
+    assert result["status"] == "run2_51_editorial_shape_text_repair_ready_public_blocked"
+    assert result["visual_validation_deferred_to_generated_rerun"] is True
+    assert result["output_chain"] == {
+        "editorial_copy_memory": "docs/product/ppt-run2-data-skill-quality/run2_51_editorial_copy_memory.json",
+        "shape_text_socket_memory": "docs/product/ppt-run2-data-skill-quality/run2_51_shape_text_socket_memory.json",
+        "renderer_archetype_workflow_gates": "docs/product/ppt-run2-data-skill-quality/run2_51_renderer_archetype_workflow_gates.json",
+    }
+    assert copy_memory["schema_version"] == "ppt_run2_editorial_copy_memory.v1"
+    assert socket_memory["schema_version"] == "ppt_run2_shape_text_socket_memory.v1"
+    assert gates["schema_version"] == "ppt_run2_renderer_archetype_workflow_gates.v1"
+    assert copy_memory["source_generated_run"] == "2.50"
+    assert socket_memory["source_generated_run"] == "2.50"
+    assert gates["source_generated_run"] == "2.50"
+    assert len(copy_memory["editorial_copy_records"]) == 6
+    assert len(socket_memory["shape_text_socket_records"]) == 6
+    assert len(gates["renderer_archetype_workflow_gates"]) == 6
+
+    for record in copy_memory["editorial_copy_records"]:
+        bundle = record["public_surface_copy_bundle"]
+        assert set(bundle) == EXPECTED_RUN2_51_COPY_BUNDLE_KEYS
+        assert word_count(bundle["headline"]) <= 7
+        assert len(bundle["headline"]) <= 48
+        assert word_count(bundle["subline"]) <= 18
+        assert len(bundle["subline"]) <= 120
+        for value in bundle["proof_nuggets"]:
+            assert word_count(value) <= 8
+            assert len(value) <= 54
+        for value in bundle["annotations"]:
+            assert word_count(value) <= 6
+            assert len(value) <= 42
+        for value in bundle["state_labels"]:
+            assert word_count(value) <= 4
+            assert len(value) <= 28
+        for text in public_text_values(bundle):
+            lowered = normalize(text)
+            assert not any(normalize(term) in lowered for term in EXPECTED_RUN2_51_FORBIDDEN_PUBLIC_TERMS)
+        assert record["visual_validation_deferred_to_generated_rerun"] is True
+        assert record["next_rerun_obligation"] == "must_be_consumed_before_run2_52_four_arm_rerun"
+
+    for record in socket_memory["shape_text_socket_records"]:
+        assert len(record["socket_contracts"]) >= 4
+        assert len(record["shape_primitives"]) >= 3
+        assert len(record["geometry_constraints"]) >= 3
+        assert record["primary_archetype"]
+        assert record["forbidden_layout_patterns"]
+        assert record["proof_socket_ids"]
+        for socket in record["socket_contracts"]:
+            assert socket["owning_shape_id"]
+            assert socket["placement_rule"]
+            assert socket["character_budget"] > 0
+            assert socket["max_lines"] >= 1
+            assert socket["overflow_policy"] in {"shrink_to_fit", "wrap_within_socket", "reject_and_recompile"}
+
+    for gate in gates["renderer_archetype_workflow_gates"]:
+        assert set(gate["required_trace_fields"]) == EXPECTED_RUN2_51_TRACE_FIELDS
+        assert gate["consumer_contract"]["next_generated_run"] == "2.52"
+        assert gate["consumer_contract"]["must_bind_before_public_text"] is True
+        assert set(gate["consumer_contract"]["required_trace_fields"]) == EXPECTED_RUN2_51_TRACE_FIELDS
+        assert gate["next_rerun_contract"] == "must_be_consumed_before_run2_52_four_arm_rerun"
+        assert gate["forbid_square_block_grid_as_primary_surface"] is True
+        assert gate["max_equal_card_clusters"] <= 1
+        assert gate["min_semantic_primitives"] >= 3
+        assert gate["visual_validation_deferred_to_generated_rerun"] is True
+
+
 def test_run2_51_builder_rejects_malformed_run2_50_source() -> None:
     from scripts import build_ppt_run2_51_editorial_copy_shape_sockets as run251_builder
 
