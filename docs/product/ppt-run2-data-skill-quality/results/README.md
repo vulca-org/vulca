@@ -14,6 +14,8 @@ Run 2.53 is the latest data/workflow-only repair layer. It creates no new PPT ou
 
 Current data/workflow gate: `run2_53_product_surface_scene_repair_ready_public_blocked`. Run 2.54 must consume `run2_53_product_surface_scene_memory.json`, `run2_53_business_visual_evidence_memory.json`, and `run2_53_scene_renderer_workflow_gates.json` before native PPT drawing.
 
+Viewer default note: `latestRunId` remains `2.52` because Run 2.53 is not a generated PPT run. Do not point the default generated deck selector to `2.53`; the next generated default should be Run 2.54 after it consumes the Run 2.53 pack.
+
 ## Prior Data/Workflow Thickness Layer: Run 2.51
 
 Run 2.51 is the prior data/workflow-only repair layer. It creates no new PPT output and does not advance to Run 3.0. It turns the Run 2.50 readability/density result into six editorial copy records, six shape text socket records, and six renderer archetype workflow gates.
