@@ -491,6 +491,29 @@ function countForbiddenSurfaceTerms(copyRecord) {
   return (copyRecord.forbidden_surface_terms ?? []).filter((term) => haystack.includes(String(term).toLowerCase())).length;
 }
 
+function assertSelectedUsecase(value, label) {
+  if (value !== selectedUsecaseId) {
+    throw new Error(`Run 2.52 selected usecase mismatch in ${label}`);
+  }
+}
+
+function assertPublicCopyBundle(copy, role) {
+  const bundle = copy.public_surface_copy_bundle;
+  if (!bundle || typeof bundle !== "object") {
+    throw new Error(`Run 2.52 public copy bundle missing for ${role}`);
+  }
+  for (const key of ["headline", "subline"]) {
+    if (typeof bundle[key] !== "string" || !bundle[key].trim()) {
+      throw new Error(`Run 2.52 public copy ${key} missing for ${role}`);
+    }
+  }
+  for (const key of ["proof_nuggets", "annotations", "state_labels"]) {
+    if (!Array.isArray(bundle[key]) || !bundle[key].length || !bundle[key].every((item) => typeof item === "string" && item.trim())) {
+      throw new Error(`Run 2.52 public copy ${key} malformed for ${role}`);
+    }
+  }
+}
+
 function validateRun252RepairPack(data) {
   const {
     run251Result,
@@ -514,6 +537,11 @@ function validateRun252RepairPack(data) {
   if (!Array.isArray(sources?.sources) || sources.sources.length < 4) throw new Error("Run 2.52 missing sources");
   const usecase = (commercialUsecaseBank?.usecases ?? []).find((item) => item.id === selectedUsecaseId);
   if (!usecase) throw new Error("Run 2.52 missing selected commercial usecase");
+  assertSelectedUsecase(run251Result?.selected_usecase_id, "run2_51_result");
+  assertSelectedUsecase(run251Copy?.selected_usecase_id, "run2_51_editorial_copy_memory");
+  assertSelectedUsecase(run251Sockets?.selected_usecase_id, "run2_51_shape_text_socket_memory");
+  assertSelectedUsecase(run251Gates?.selected_usecase_id, "run2_51_renderer_archetype_workflow_gates");
+  assertSelectedUsecase(run250Result?.selected_usecase_id, "run2_50_result");
 
   if (!Array.isArray(run251Copy?.editorial_copy_records) || run251Copy.editorial_copy_records.length !== 6) throw new Error("Run 2.52 requires six Run 2.51 copy records");
   if (!Array.isArray(run251Sockets?.shape_text_socket_records) || run251Sockets.shape_text_socket_records.length !== 6) throw new Error("Run 2.52 requires six Run 2.51 socket records");
@@ -525,6 +553,10 @@ function validateRun252RepairPack(data) {
     const gate = run251Gates.renderer_archetype_workflow_gates.find((record) => record.role === role);
     const priorTraceSlide = (run250FullTrace.slides ?? []).find((slide) => slide.role === role);
     if (!copy || !socket || !gate || !priorTraceSlide) throw new Error(`Run 2.52 missing role contract for ${role}`);
+    assertSelectedUsecase(copy.selected_usecase_id, `run2_51_copy_record_${role}`);
+    assertSelectedUsecase(socket.selected_usecase_id, `run2_51_socket_record_${role}`);
+    assertSelectedUsecase(gate.selected_usecase_id, `run2_51_gate_record_${role}`);
+    assertPublicCopyBundle(copy, role);
     if (socket.required_editorial_copy_memory_id !== copy.copy_memory_id) {
       throw new Error(`Run 2.52 socket/editorial copy mismatch for ${role}`);
     }
