@@ -234,6 +234,8 @@ const armSpecs = [
       "run2_51_text_socket_placement_status",
       "run2_51_shape_vocabulary_status",
       "run2_51_character_fit_status",
+      "run2_51_forbidden_surface_terms_count",
+      "run2_51_equal_card_cluster_count",
       "run2_51_semantic_primitive_count",
       "drawRun252EditorialSocketScene",
     ],
