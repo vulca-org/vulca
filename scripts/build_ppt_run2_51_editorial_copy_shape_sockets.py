@@ -611,7 +611,8 @@ def write_markdown(path: Path, result: dict[str, Any]) -> None:
                 "",
                 "Status: data/workflow-only repair pack, public blocked.",
                 "",
-                "Run 2.51 creates editorial copy and shape text sockets only; visual validation is deferred.",
+                "Run 2.51 creates editorial copy, shape text sockets, and renderer archetype workflow gates; "
+                "visual validation is deferred.",
                 "",
                 "This data/workflow-only pack converts internal evidence into editorial copy, shape text sockets, and renderer archetype gates.",
                 "",

@@ -8483,6 +8483,7 @@ def test_run2_51_builder_creates_editorial_copy_shape_socket_repair_pack(tmp_pat
         [
             "Run 2.51",
             "data/workflow-only",
+            "Run 2.51 creates editorial copy, shape text sockets, and renderer archetype workflow gates",
             "editorial copy",
             "shape text sockets",
             "visual validation is deferred",
