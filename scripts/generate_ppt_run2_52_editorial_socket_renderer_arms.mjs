@@ -1132,39 +1132,58 @@ function buildRun252FourArmSheet(built) {
 }
 
 function buildFullSkillSeriesSheet() {
-  const fullSlugs = [
-    "ppt-run2-full-vulca",
-    "ppt-run2-1-full-vulca",
-    "ppt-run2-2-full-vulca",
-    "ppt-run2-3-full-vulca",
-    "ppt-run2-4-full-vulca",
-    "ppt-run2-5-full-vulca",
-    "ppt-run2-6-full-vulca",
-    "ppt-run2-6r-full-vulca",
-    "ppt-run2-7-full-vulca",
-    "ppt-run2-8-full-vulca",
-    "ppt-run2-9-full-vulca",
-    "ppt-run2-10-full-vulca",
-    "ppt-run2-13-full-vulca",
-    "ppt-run2-14-full-vulca",
-    "ppt-run2-16-full-vulca",
-    "ppt-run2-19-full-vulca",
-    "ppt-run2-22-full-vulca",
-    "ppt-run2-25-full-vulca",
-    "ppt-run2-33-full-vulca",
-    "ppt-run2-36-full-vulca",
-    "ppt-run2-39-full-vulca",
-    "ppt-run2-41-full-vulca",
-    "ppt-run2-44-full-vulca",
-    "ppt-run2-47-full-vulca",
-    "ppt-run2-50-full-vulca",
-    "ppt-run2-52-full-vulca",
+  const fullItems = [
+    ["Run 2.0", "ppt-run2-full-vulca"],
+    ["Run 2.1", "ppt-run2-1-full-vulca"],
+    ["Run 2.2", "ppt-run2-2-full-vulca"],
+    ["Run 2.3", "ppt-run2-3-full-vulca"],
+    ["Run 2.4", "ppt-run2-4-full-vulca"],
+    ["Run 2.5", "ppt-run2-5-full-vulca"],
+    ["Run 2.6", "ppt-run2-6-full-vulca"],
+    ["Run 2.6R", "ppt-run2-6r-full-vulca"],
+    ["Run 2.7", "ppt-run2-7-full-vulca"],
+    ["Run 2.8", "ppt-run2-8-full-vulca"],
+    ["Run 2.9", "ppt-run2-9-full-vulca"],
+    ["Run 2.10", "ppt-run2-10-full-vulca"],
+    ["Run 2.13", "ppt-run2-13-full-vulca"],
+    ["Run 2.14", "ppt-run2-14-full-vulca"],
+    ["Run 2.16", "ppt-run2-16-full-vulca"],
+    ["Run 2.19", "ppt-run2-19-full-vulca"],
+    ["Run 2.22", "ppt-run2-22-full-vulca"],
+    ["Run 2.25", "ppt-run2-25-full-vulca"],
+    ["Run 2.27", "ppt-run2-27-full-vulca"],
+    ["Run 2.28", "ppt-run2-28-full-vulca"],
+    ["Run 2.29", "ppt-run2-29-full-vulca"],
+    ["Run 2.31", "ppt-run2-31-full-vulca"],
+    ["Run 2.33", "ppt-run2-33-full-vulca"],
+    ["Run 2.36", "ppt-run2-36-full-vulca"],
+    ["Run 2.39", "ppt-run2-39-full-vulca"],
+    ["Run 2.40", "ppt-run2-40-full-vulca"],
+    ["Run 2.41", "ppt-run2-41-full-vulca"],
+    ["Run 2.44", "ppt-run2-44-full-vulca"],
+    ["Run 2.47", "ppt-run2-47-full-vulca"],
+    ["Run 2.50", "ppt-run2-50-full-vulca"],
+    ["Run 2.52", "ppt-run2-52-full-vulca"],
   ];
-  const sheets = fullSlugs
-    .map((slug) => path.join(outRoot, slug, "preview", "contact-sheet.png"))
-    .filter((file) => fs.existsSync(file));
-  if (!sheets.length) return "";
-  return buildNamedContactSheet(path.join(outRoot, "run2-full-skill-series-horizontal.png"), "Run 2 full-skill series", sheets, sheets.length);
+  const items = fullItems
+    .map(([label, slug]) => [label, path.join(outRoot, slug, "preview", "contact-sheet.png")])
+    .filter(([, file]) => fs.existsSync(file));
+  if (!items.length) return "";
+  const out = path.join(outRoot, "run2-full-skill-series-horizontal.png");
+  const args = [
+    path.join(root, "scripts", "build_ppt_full_skill_series_sheet.py"),
+    "--out",
+    out,
+    "--title",
+    "Run 2 full-skill series",
+    "--item-width",
+    "420",
+  ];
+  for (const [label, file] of items) {
+    args.push("--item", `${label}=${file}`);
+  }
+  execFileSync("python3", args, { cwd: root, stdio: "pipe" });
+  return out;
 }
 
 async function buildArm(arm) {
