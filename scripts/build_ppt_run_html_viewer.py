@@ -697,6 +697,10 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run254_result = read_json(pack / "results" / "run2_54_product_surface_scene_rerun_result.json")
     run255_result = read_json(pack / "results" / "run2_55_text_shape_integration_rerun_result.json")
     run256_result = read_json(pack / "results" / "run2_56_role_renderer_split_rerun_result.json")
+    run257_capability_memory = read_json(pack / "run2_57_product_capability_memory.json")
+    run257_message_contracts = read_json(pack / "run2_57_slide_message_contracts.json")
+    run257_workflow_gates = read_json(pack / "run2_57_content_workflow_gates.json")
+    run257_result = read_json(pack / "results" / "run2_57_product_capability_content_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -972,6 +976,27 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         ),
         "run256SourceDataStatus": (run256_result.get("quality_delta") or {}).get(
             "source_data_status", "run2_55_text_shape_integration_consumed_before_role_renderer_redraw"
+        ),
+        "run257ProductCapabilityStatus": run257_capability_memory.get("status", ""),
+        "run257ProductCapabilities": run257_capability_memory.get("product_capability_records", []),
+        "run257ProductLogicRelations": run257_capability_memory.get("product_logic_relation_records", []),
+        "run257CompetitorBoundaries": run257_capability_memory.get("competitor_boundary_records", []),
+        "run257SlideMessageContractStatus": run257_message_contracts.get("status", ""),
+        "run257SlideMessageContracts": run257_message_contracts.get("slide_message_contracts", []),
+        "run257ContentWorkflowGateStatus": run257_workflow_gates.get("status", ""),
+        "run257ContentWorkflowGates": run257_workflow_gates.get("content_workflow_gates", []),
+        "run257NextGeneratedRunContract": run257_workflow_gates.get("next_generated_run_contract", {}),
+        "run257ResultStatus": run257_result.get("status", ""),
+        "run257Result": run257_result,
+        "run257ResultPath": "run2_57_product_capability_content_result.json",
+        "run257ProductCapabilityPath": "run2_57_product_capability_memory.json",
+        "run257SlideMessageContractsPath": "run2_57_slide_message_contracts.json",
+        "run257ContentWorkflowGatesPath": "run2_57_content_workflow_gates.json",
+        "run257TargetLayer": (run257_result.get("quality_delta") or {}).get(
+            "target_layer", "product_capability_narrative_and_content_specificity"
+        ),
+        "run257SourceDataStatus": (run257_result.get("quality_delta") or {}).get(
+            "source_data_status", "run2_56_role_renderer_split_rerun_public_blocked"
         ),
         "selectorLayer": {
             "label": "Run 2.15 selector",
@@ -2214,6 +2239,58 @@ def build_html(data: dict[str, Any]) -> str:
       const run256Rerun = run256Result.rerun || {{}};
       const run256Quality = run256Result.quality_delta || {{}};
       const run256Control = run256Result.control_boundary || {{}};
+      const run257Result = refs.run257Result || {{}};
+      const run257Inputs = run257Result.input_chain || {{}};
+      const run257Outputs = run257Result.output_chain || {{}};
+      const run257Counts = run257Result.artifact_counts || {{}};
+      const run257Quality = run257Result.quality_delta || {{}};
+      const run257GenerationBoundary = run257Result.generation_boundary || {{}};
+      const run257RepairContract = run257Result.repair_contract || {{}};
+      const run257NextGeneratedRunContract = refs.run257NextGeneratedRunContract || {{}};
+      const run257CapabilityCards = (refs.run257ProductCapabilities || []).map((record) => `
+        <article class="dataCard">
+          <h4>${{escapeHtml(record.capability_layer)}} capability</h4>
+          ${{detailBlock("Capability id", record.id)}}
+          ${{detailBlock("Claim", record.plain_language_claim)}}
+          ${{detailBlock("Visible PPT obligation", record.visible_ppt_obligation)}}
+          ${{detailBlock("Trace obligation", record.trace_obligation)}}
+          ${{detailBlock("Why it matters", record.why_it_matters)}}
+        </article>`).join("");
+      const run257LogicCards = (refs.run257ProductLogicRelations || []).map((record) => `
+        <article class="dataCard">
+          <h4>${{escapeHtml(record.relation_type)}} relation</h4>
+          ${{detailBlock("Relation id", record.id)}}
+          ${{detailBlock("From", record.from_capability_id)}}
+          ${{detailBlock("To", record.to_capability_id)}}
+          ${{detailBlock("Must be visible as", record.must_be_visible_as)}}
+        </article>`).join("");
+      const run257CompetitorCards = (refs.run257CompetitorBoundaries || []).map((record) => `
+        <article class="dataCard">
+          <h4>${{escapeHtml(record.competitor_boundary_id)}} boundary</h4>
+          ${{detailBlock("Competitor pattern", record.competitor_pattern)}}
+          ${{detailBlock("Vulca difference", record.vulca_difference)}}
+          ${{detailBlock("Slide obligation", record.slide_obligation)}}
+        </article>`).join("");
+      const run257MessageCards = (refs.run257SlideMessageContracts || []).map((contract) => `
+        <article class="dataCard">
+          <h4>${{escapeHtml(contract.role)}} message contract</h4>
+          ${{detailBlock("Contract id", contract.contract_id)}}
+          ${{detailBlock("Reader question", contract.reader_question)}}
+          ${{detailBlock("Required answer", contract.required_answer)}}
+          ${{detailBlock("Visible product object", contract.visible_product_object)}}
+          ${{detailBlock("Required product terms", contract.required_product_terms)}}
+          ${{detailBlock("Minimum specific units", contract.minimum_specific_content_units)}}
+        </article>`).join("");
+      const run257GateCards = (refs.run257ContentWorkflowGates || []).map((gate) => `
+        <article class="dataCard">
+          <h4>${{escapeHtml(gate.gate_id)}} gate</h4>
+          ${{detailBlock("Type", gate.gate_type)}}
+          ${{detailBlock("Purpose", gate.purpose)}}
+          ${{detailBlock("Pass/fail checks", gate.pass_fail_checks)}}
+          ${{detailBlock("Bad control probe", gate.bad_control_probe)}}
+          ${{detailBlock("Next generated run", gate.consumer_contract?.next_generated_run)}}
+          ${{detailBlock("Trace fields", gate.required_trace_fields)}}
+        </article>`).join("");
       const run253SceneCards = (refs.run253ProductSurfaceScenes || []).map((record) => `
         <article class="dataCard">
           <h4>${{escapeHtml(record.role)}} product surface scene</h4>
@@ -2393,7 +2470,61 @@ def build_html(data: dict[str, Any]) -> str:
           </div>
         </section>
         <section class="dataBand">
-          <div class="dataBandHead"><div><h3>Latest data/workflow repair</h3><p>Run 2.53 product-surface scene repair is data/workflow-only: it adds product surface scene memory, business visual evidence memory, and scene renderer workflow gates. It creates no PPT deck; Run 2.54 must consume this pack before native drawing.</p></div><span class="pill" title="${{escapeHtml(refs.run253ResultStatus || "missing")}}">${{escapeHtml(refs.run253ResultStatus || "missing")}}</span></div>
+          <div class="dataBandHead"><div><h3>Latest data/workflow repair: Run 2.57 product capability content layer</h3><p>Run 2.57 is data/workflow-only. It adds product capability memory, slide message contracts, and content workflow gates. Next generated run 2.58 must consume this layer so it can explain the product instead of only varying the visual surface.</p></div><span class="pill" title="${{escapeHtml(refs.run257ResultStatus || "missing")}}">${{escapeHtml(refs.run257ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Run 2.57 result</h4>
+              ${{detailBlock("Result", refs.run257ResultPath || "run2_57_product_capability_content_result.json")}}
+              ${{detailBlock("Target layer", run257Quality.target_layer || refs.run257TargetLayer)}}
+              ${{detailBlock("Source data status", run257Quality.source_data_status || refs.run257SourceDataStatus)}}
+              ${{detailBlock("Generated PPT", "No PPT deck generated in Run 2.57")}}
+              ${{detailBlock("Boundary", run257GenerationBoundary.reason || "Data/workflow-only, no new PPT deck")}}
+              ${{detailBlock("Latest generated run", run257GenerationBoundary.latest_generated_run_id || "2.56")}}
+              ${{detailBlock("Next generated run", run257NextGeneratedRunContract.run_id || "2.58")}}
+            </article>
+            <article class="dataCard">
+              <h4>Content artifacts</h4>
+              ${{detailBlock("Product capability memory", refs.run257ProductCapabilityPath || "run2_57_product_capability_memory.json")}}
+              ${{detailBlock("Slide message contracts", refs.run257SlideMessageContractsPath || "run2_57_slide_message_contracts.json")}}
+              ${{detailBlock("Content workflow gates", refs.run257ContentWorkflowGatesPath || "run2_57_content_workflow_gates.json")}}
+              ${{detailBlock("Output chain", run257Outputs)}}
+            </article>
+            <article class="dataCard">
+              <h4>What it fixes</h4>
+              ${{detailBlock("Product capability", run257RepairContract["product capability"])}}
+              ${{detailBlock("Slide message contracts", run257RepairContract["slide message contracts"])}}
+              ${{detailBlock("Content workflow gates", run257RepairContract["content workflow gates"])}}
+              ${{detailBlock("Counts", run257Counts)}}
+            </article>
+            <article class="dataCard">
+              <h4>Next generated proof</h4>
+              ${{detailBlock("Run", run257NextGeneratedRunContract.run_id || "2.58")}}
+              ${{detailBlock("Must consume", run257NextGeneratedRunContract.must_consume)}}
+              ${{detailBlock("Bad control", run257NextGeneratedRunContract.bad_control_arm || "bad_run2_56_without_product_capability_content")}}
+              ${{detailBlock("Required trace fields", run257NextGeneratedRunContract.required_trace_fields)}}
+              ${{detailBlock("Full arm status", run257NextGeneratedRunContract.full_arm_pass_status)}}
+            </article>
+            <article class="dataCard">
+              <h4>Input chain</h4>
+              ${{detailBlock("Run 2.56 result", run257Inputs.run2_56_result || "run2_56_role_renderer_split_rerun_result.json")}}
+              ${{detailBlock("Run 2.56 full trace", run257Inputs.run2_56_full_trace || "ppt-run2-56-full-vulca/trace_manifest.json")}}
+              ${{detailBlock("Usecase bank", run257Inputs.commercial_usecase_bank || "commercial_usecase_bank.json")}}
+              ${{detailBlock("Sources", run257Inputs.sources || "sources.json")}}
+            </article>
+          </div>
+          <div class="dataBandSubhead"><h4>Product capability memory</h4><p>${{escapeHtml(refs.run257ProductCapabilityStatus)}}. These records explain the actual product: input, understanding, code-generated editable PPT generation, comparison, verification, output, and repair loop.</p></div>
+          <div class="dataGrid">${{run257CapabilityCards}}</div>
+          <div class="dataBandSubhead"><h4>Product logic relations</h4><p>These relations make the product mechanism visible instead of leaving it as a generic design claim.</p></div>
+          <div class="dataGrid">${{run257LogicCards}}</div>
+          <div class="dataBandSubhead"><h4>Competitor boundaries</h4><p>These records force the next deck to explain how Vulca differs from prompt-only generation, image generation, templates, design editors, and office-native copilots.</p></div>
+          <div class="dataGrid">${{run257CompetitorCards}}</div>
+          <div class="dataBandSubhead"><h4>Slide message contracts</h4><p>${{escapeHtml(refs.run257SlideMessageContractStatus)}}. Every role must answer a reader question with concrete product terms and a visible product object.</p></div>
+          <div class="dataGrid">${{run257MessageCards}}</div>
+          <div class="dataBandSubhead"><h4>Content workflow gates</h4><p>${{escapeHtml(refs.run257ContentWorkflowGateStatus)}}. Generic claims, wrong output claims, and missing 2.57-to-2.58 handoff must fail before renderer execution.</p></div>
+          <div class="dataGrid">${{run257GateCards}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Prior product-surface data/workflow repair</h3><p>Run 2.53 product-surface scene repair is data/workflow-only: it adds product surface scene memory, business visual evidence memory, and scene renderer workflow gates. It creates no PPT deck; Run 2.54 consumes this pack before native drawing.</p></div><span class="pill" title="${{escapeHtml(refs.run253ResultStatus || "missing")}}">${{escapeHtml(refs.run253ResultStatus || "missing")}}</span></div>
           <div class="dataGrid">
             <article class="dataCard">
               <h4>Run 2.53 repair pack</h4>

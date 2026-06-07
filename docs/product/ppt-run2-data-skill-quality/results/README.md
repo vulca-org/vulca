@@ -1,6 +1,6 @@
 # Results
 
-Status: run2_56-role-renderer-split-rerun-public-blocked.
+Status: run2_57-product-capability-content-ready-public-blocked.
 
 ## Latest Generated Result: Run 2.56
 
@@ -8,9 +8,17 @@ Run 2.56 is the latest generated PPT rerun. It consumes the Run 2.55 text-shape-
 
 Current gate: `run2_55_text_shape_integration_consumed_before_role_renderer_redraw`. The full-skill arm keeps the Run 2.55 text-shape pass and adds Run 2.56 trace fields for role renderer id, composition family, layout signature, visual sameness bucket, anchor region, role-specific geometry count, text collision risk, overflow risk, and archetype binding status. The negative control can reuse Run 2.55 traces but must fail role-renderer split with `reused_run2_55_stage_side_template`. Public release remains blocked because this proves measurable renderer variation, not final public-video-grade aesthetics.
 
-## Latest Data/Workflow Thickness Layer: Run 2.53
+## Latest Data/Workflow Content Layer: Run 2.57
 
-Run 2.53 is the latest data/workflow-only repair layer. It creates no new PPT output and does not advance to Run 3.0. It adds six product surface scene records, six business visual evidence records, and six scene renderer workflow gates for the next generated rerun.
+Run 2.57 is the latest data/workflow-only content layer. It creates no new PPT output and does not advance to Run 3.0. It adds product capability memory, slide message contracts, and content workflow gates so the next generated run can explain Vulca's product logic instead of only changing visual surfaces.
+
+Current data/workflow gate: `run2_57_product_capability_content_ready_public_blocked`. Run 2.58 must consume `run2_57_product_capability_memory.json`, `run2_57_slide_message_contracts.json`, and `run2_57_content_workflow_gates.json` before native PPT drawing. The required product output wording is `code-generated editable PPT`; image generation is allowed only for backgrounds or illustrations.
+
+Viewer default note: `latestRunId` remains `2.56` because Run 2.57 is data/workflow-only. The Data/Skill tab exposes the 2.57 product content layer and the 2.58 next-generated-run contract.
+
+## Prior Data/Workflow Thickness Layer: Run 2.53
+
+Run 2.53 is the prior product-surface data/workflow-only repair layer. It creates no new PPT output and does not advance to Run 3.0. It adds six product surface scene records, six business visual evidence records, and six scene renderer workflow gates for the next generated rerun.
 
 Current data/workflow gate: `run2_53_product_surface_scene_repair_ready_public_blocked`. Run 2.54 must consume `run2_53_product_surface_scene_memory.json`, `run2_53_business_visual_evidence_memory.json`, and `run2_53_scene_renderer_workflow_gates.json` before native PPT drawing.
 

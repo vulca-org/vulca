@@ -431,6 +431,33 @@ EXPECTED_RUN2_56_TRACE_FIELDS = {
     "run2_56_distinct_role_surface_status",
     "run2_56_role_archetype_binding_status",
 }
+EXPECTED_RUN2_57_CAPABILITY_LAYERS = {
+    "input_layer",
+    "understanding_layer",
+    "generation_layer",
+    "comparison_layer",
+    "verification_layer",
+    "output_layer",
+    "repair_loop",
+}
+EXPECTED_RUN2_57_TRACE_FIELDS = {
+    "run2_57_product_capability_ids",
+    "run2_57_slide_message_contract_id",
+    "run2_57_content_workflow_gate_id",
+    "run2_57_product_logic_relation_ids",
+    "run2_57_competitor_boundary_ids",
+    "run2_57_content_specificity_status",
+    "run2_57_reader_question_answered_status",
+    "run2_57_generic_claim_count",
+    "run2_57_required_product_terms_rendered",
+}
+EXPECTED_RUN2_57_COMPETITOR_BOUNDARIES = {
+    "prompt_only_slide_generator",
+    "image_generator",
+    "template_slide_tool",
+    "design_editor",
+    "office_copilot",
+}
 EXPECTED_RUN2_51_FORBIDDEN_PUBLIC_TERMS = {
     "run2",
     "memory",
@@ -9473,6 +9500,157 @@ def test_ppt_run_html_viewer_mentions_run2_56_role_renderer_split_rerun() -> Non
             "run2_56_role_renderer_split_rerun_result.json",
         ],
     )
+
+
+def test_run2_57_records_product_capability_content_layer() -> None:
+    result_md = (PACK / "results" / "run2_57_product_capability_content_result.md").read_text(
+        encoding="utf-8"
+    )
+    result = load_json(PACK / "results" / "run2_57_product_capability_content_result.json")
+    capability_memory = load_json(PACK / "run2_57_product_capability_memory.json")
+    message_contracts = load_json(PACK / "run2_57_slide_message_contracts.json")
+    workflow_gates = load_json(PACK / "run2_57_content_workflow_gates.json")
+
+    assert result["run_id"] == "2.57"
+    assert result["status"] == "run2_57_product_capability_content_ready_public_blocked"
+    assert result["public_ready"] is False
+    assert result["selected_usecase_id"] == "usecase_design_to_production_platform_launch"
+    assert result["source_generated_run_id"] == "2.56"
+    assert result["database_expansion"] is True
+    assert result["workflow_expansion"] is True
+    assert result["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert result["generation_boundary"]["creates_new_ppt_deck"] is False
+    assert result["generation_boundary"]["latest_generated_run_id"] == "2.56"
+    assert result["quality_delta"]["target_layer"] == "product_capability_narrative_and_content_specificity"
+    assert result["quality_delta"]["source_data_status"] == "run2_56_role_renderer_split_rerun_public_blocked"
+    assert result["quality_delta"]["slides_requiring_product_content_repair"] >= 4
+    assert result["next_required_action"] == (
+        "run2_58_generate_four_arm_ppt_consuming_run2_57_product_content_layer"
+    )
+    assert set(result["output_chain"]) == {
+        "product_capability_memory",
+        "slide_message_contracts",
+        "content_workflow_gates",
+    }
+
+    assert capability_memory["status"] == "run2_57_product_capability_memory_ready_public_blocked"
+    capability_records = capability_memory["product_capability_records"]
+    capability_ids = {record["id"] for record in capability_records}
+    assert {record["capability_layer"] for record in capability_records} == EXPECTED_RUN2_57_CAPABILITY_LAYERS
+    assert len(capability_records) == 7
+    for record in capability_records:
+        assert record["plain_language_claim"]
+        assert record["visible_ppt_obligation"]
+        assert record["why_it_matters"]
+        assert record["workflow_contract"]
+        assert record["next_renderer_obligation"]
+        assert record["trace_obligation"] in EXPECTED_RUN2_57_TRACE_FIELDS
+
+    logic_records = capability_memory["product_logic_relation_records"]
+    assert len(logic_records) >= 6
+    for relation in logic_records:
+        assert relation["from_capability_id"] in capability_ids
+        assert relation["to_capability_id"] in capability_ids
+        assert relation["relation_type"]
+        assert relation["must_be_visible_as"]
+
+    competitor_records = capability_memory["competitor_boundary_records"]
+    assert {record["competitor_boundary_id"] for record in competitor_records} == (
+        EXPECTED_RUN2_57_COMPETITOR_BOUNDARIES
+    )
+    for record in competitor_records:
+        assert "code-generated editable PPT" in record["vulca_difference"]
+        assert record["slide_obligation"]
+
+    assert message_contracts["status"] == "run2_57_slide_message_contracts_ready_public_blocked"
+    slide_contracts = message_contracts["slide_message_contracts"]
+    assert {contract["role"] for contract in slide_contracts} == EXPECTED_RUN2_51_ROLES
+    for contract in slide_contracts:
+        assert contract["contract_id"].startswith("message_contract_2_57_")
+        assert contract["reader_question"]
+        assert contract["required_answer"]
+        assert contract["visible_product_object"]
+        assert len(contract["required_product_terms"]) >= 3
+        assert contract["minimum_specific_content_units"] >= 5
+        assert set(contract["source_capability_ids"]) <= capability_ids
+        assert contract["forbidden_empty_claims"]
+        assert contract["next_renderer_obligation"]["required_trace_fields"] == sorted(
+            EXPECTED_RUN2_57_TRACE_FIELDS
+        )
+
+    assert workflow_gates["status"] == "run2_57_content_workflow_gates_ready_public_blocked"
+    gates = workflow_gates["content_workflow_gates"]
+    assert len(gates) >= 5
+    for gate in gates:
+        assert gate["gate_id"].startswith("gate_2_57_")
+        assert gate["gate_type"]
+        assert gate["pass_fail_checks"]
+        assert gate["bad_control_probe"]
+        assert set(gate["required_trace_fields"]) <= EXPECTED_RUN2_57_TRACE_FIELDS
+        assert gate["consumer_contract"]["next_generated_run"] == "2.58"
+    assert set(workflow_gates["next_generated_run_contract"]["required_trace_fields"]) == (
+        EXPECTED_RUN2_57_TRACE_FIELDS
+    )
+    assert workflow_gates["next_generated_run_contract"]["bad_control_arm"] == (
+        "bad_run2_56_without_product_capability_content"
+    )
+
+    assert_contains(
+        result_md,
+        [
+            "Run 2.57 Product Capability Content Layer",
+            "data/workflow-only",
+            "code-generated editable PPT",
+            "product capability",
+            "slide message contracts",
+            "content workflow gates",
+            "Run 2.58",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_mentions_run2_57_product_capability_content_layer() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+    viewer = (
+        ROOT
+        / "outputs"
+        / "019e7d9c-532a-70b3-8892-fa3ae42baef2"
+        / "presentations"
+        / "ppt-run-viewer.html"
+    ).read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "Run 2.57",
+            "run2_57_product_capability_content_result.json",
+            "run2_57_product_capability_memory.json",
+            "run2_57_slide_message_contracts.json",
+            "run2_57_content_workflow_gates.json",
+            "run257ProductCapabilityStatus",
+            "run257SlideMessageContractStatus",
+            "run257ContentWorkflowGateStatus",
+            "product_capability_narrative_and_content_specificity",
+        ],
+    )
+    assert_contains(
+        viewer,
+        [
+            '"latestRunId": "2.56"',
+            "Run 2.57 product capability content layer",
+            "run2_57_product_capability_content_result.json",
+            "run2_57_product_capability_memory.json",
+            "run2_57_slide_message_contracts.json",
+            "run2_57_content_workflow_gates.json",
+            "No PPT deck generated in Run 2.57",
+            "code-generated editable PPT",
+            "Next generated run",
+            "2.58",
+        ],
+    )
+    assert "ppt-run2-57-" not in script
+    assert "ppt-run2-57-" not in viewer
 
 
 def test_ppt_run_html_viewer_mentions_run2_50_readability_density_renderer_rerun() -> None:

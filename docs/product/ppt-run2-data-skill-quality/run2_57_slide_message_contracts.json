@@ -1,0 +1,314 @@
+{
+  "schema_version": 1,
+  "run_id": "2.57",
+  "status": "run2_57_slide_message_contracts_ready_public_blocked",
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "source_generated_run_id": "2.56",
+  "target_layer": "slide_message_contracts_for_product_capability_narrative",
+  "global_contract": {
+    "minimum_specific_content_units_per_slide": 5,
+    "minimum_required_product_terms_per_slide": 3,
+    "generic_claim_policy": "A slide fails if it only says the workflow is better without naming product input, mechanism, generated output, comparison, verification, or repair behavior.",
+    "output_claim_policy": "The product must be described as code-generated editable PPT. Image generation is allowed only for backgrounds or illustrations.",
+    "next_generated_run": "2.58"
+  },
+  "slide_message_contracts": [
+    {
+      "role": "cover",
+      "contract_id": "message_contract_2_57_cover",
+      "reader_question": "What is Vulca and what concrete product output does this deck demonstrate?",
+      "required_answer": "Vulca converts a real commercial brief plus selected multimodal tutorial and case data into a code-generated editable PPT deck with trace, QA, and review artifacts.",
+      "visible_product_object": "input-to-output product surface showing commercial brief, selected source pack, generated deck preview, trace manifest, and release gate",
+      "source_capability_ids": [
+        "capability_input_layer",
+        "capability_generation_layer",
+        "capability_output_layer"
+      ],
+      "required_product_terms": [
+        "real commercial brief",
+        "multimodal source database",
+        "code-generated editable PPT",
+        "trace manifest"
+      ],
+      "must_say": [
+        "the main output is editable PPT, not only an image",
+        "the deck is generated from a selected source pack and workflow",
+        "public release is blocked until QA and human review pass"
+      ],
+      "forbidden_empty_claims": [
+        "design decks people can judge",
+        "evidence becomes design"
+      ],
+      "minimum_specific_content_units": 5,
+      "next_renderer_obligation": {
+        "surface": "product_launch_cover_surface",
+        "visible_sections": [
+          "brief",
+          "data",
+          "workflow",
+          "generated PPT",
+          "release gate"
+        ],
+        "required_trace_fields": [
+          "run2_57_competitor_boundary_ids",
+          "run2_57_content_specificity_status",
+          "run2_57_content_workflow_gate_id",
+          "run2_57_generic_claim_count",
+          "run2_57_product_capability_ids",
+          "run2_57_product_logic_relation_ids",
+          "run2_57_reader_question_answered_status",
+          "run2_57_required_product_terms_rendered",
+          "run2_57_slide_message_contract_id"
+        ]
+      }
+    },
+    {
+      "role": "setup",
+      "contract_id": "message_contract_2_57_setup",
+      "reader_question": "How does Vulca transform raw business and tutorial material into design instructions?",
+      "required_answer": "The system selects a usecase and allowed source pack, derives product capability memory, then turns it into per-slide message contracts and workflow gates before generation.",
+      "visible_product_object": "source-to-memory pipeline with selected usecase id, allowed source records, capability graph, and slide contract cards",
+      "source_capability_ids": [
+        "capability_input_layer",
+        "capability_understanding_layer",
+        "capability_repair_loop"
+      ],
+      "required_product_terms": [
+        "usecase selector",
+        "source-boundary notes",
+        "product capability memory",
+        "slide message contract"
+      ],
+      "must_say": [
+        "tutorials and videos are not copied into slides",
+        "derived observations become product memory and gates",
+        "weak content is repaired by adding stricter contracts"
+      ],
+      "forbidden_empty_claims": [
+        "workflow changes the surface",
+        "better aesthetics from data"
+      ],
+      "minimum_specific_content_units": 5,
+      "next_renderer_obligation": {
+        "surface": "source_pack_to_memory_map",
+        "visible_sections": [
+          "selected usecase",
+          "source pack",
+          "derived memory",
+          "message contracts",
+          "workflow gates"
+        ],
+        "required_trace_fields": [
+          "run2_57_competitor_boundary_ids",
+          "run2_57_content_specificity_status",
+          "run2_57_content_workflow_gate_id",
+          "run2_57_generic_claim_count",
+          "run2_57_product_capability_ids",
+          "run2_57_product_logic_relation_ids",
+          "run2_57_reader_question_answered_status",
+          "run2_57_required_product_terms_rendered",
+          "run2_57_slide_message_contract_id"
+        ]
+      }
+    },
+    {
+      "role": "contrast",
+      "contract_id": "message_contract_2_57_contrast",
+      "reader_question": "Why is this different from prompt-only, image-only, template, design-editor, or office-copilot slide creation?",
+      "required_answer": "Vulca is differentiated by the case database, skill workflow, bad-control comparison, trace manifest, and code-generated editable PPT output, not by simply producing a nicer-looking slide.",
+      "visible_product_object": "competitor boundary matrix with five alternatives and the specific Vulca mechanism each lacks",
+      "source_capability_ids": [
+        "capability_comparison_layer",
+        "capability_generation_layer",
+        "capability_verification_layer"
+      ],
+      "required_product_terms": [
+        "bad control",
+        "competitor boundary",
+        "trace manifest",
+        "code-generated editable PPT"
+      ],
+      "must_say": [
+        "prompt-only lacks repeatable source-bound workflow",
+        "image generation is not the main product output",
+        "template and editor tools do not prove a case-pack-to-code path"
+      ],
+      "forbidden_empty_claims": [
+        "AI-generated presentation with high quality",
+        "evidence becomes design"
+      ],
+      "minimum_specific_content_units": 5,
+      "next_renderer_obligation": {
+        "surface": "five_boundary_comparison_lens",
+        "visible_sections": [
+          "prompt-only",
+          "image generator",
+          "template tool",
+          "design editor",
+          "office copilot"
+        ],
+        "required_trace_fields": [
+          "run2_57_competitor_boundary_ids",
+          "run2_57_content_specificity_status",
+          "run2_57_content_workflow_gate_id",
+          "run2_57_generic_claim_count",
+          "run2_57_product_capability_ids",
+          "run2_57_product_logic_relation_ids",
+          "run2_57_reader_question_answered_status",
+          "run2_57_required_product_terms_rendered",
+          "run2_57_slide_message_contract_id"
+        ]
+      }
+    },
+    {
+      "role": "proof",
+      "contract_id": "message_contract_2_57_proof",
+      "reader_question": "How do we know the product really used the data and workflow instead of producing another direct deck?",
+      "required_answer": "Each full-arm slide must carry capability ids, message contract id, workflow gate id, competitor boundary ids, content specificity status, and required product terms in trace before native PPT drawing.",
+      "visible_product_object": "trace and QA inspection board with full-arm pass fields and bad-control failure fields",
+      "source_capability_ids": [
+        "capability_comparison_layer",
+        "capability_verification_layer",
+        "capability_repair_loop"
+      ],
+      "required_product_terms": [
+        "trace field",
+        "content workflow gate",
+        "reader question",
+        "bad control"
+      ],
+      "must_say": [
+        "trace fields prove the full arm consumed the content layer",
+        "the bad control can see Run 2.56 but cannot use Run 2.57",
+        "generic claims fail before renderer execution"
+      ],
+      "forbidden_empty_claims": [
+        "workflow changes the surface",
+        "public-video-grade output without release approval"
+      ],
+      "minimum_specific_content_units": 5,
+      "next_renderer_obligation": {
+        "surface": "qa_trace_manifest_board",
+        "visible_sections": [
+          "capability ids",
+          "message contract",
+          "workflow gate",
+          "bad control",
+          "content specificity"
+        ],
+        "required_trace_fields": [
+          "run2_57_competitor_boundary_ids",
+          "run2_57_content_specificity_status",
+          "run2_57_content_workflow_gate_id",
+          "run2_57_generic_claim_count",
+          "run2_57_product_capability_ids",
+          "run2_57_product_logic_relation_ids",
+          "run2_57_reader_question_answered_status",
+          "run2_57_required_product_terms_rendered",
+          "run2_57_slide_message_contract_id"
+        ]
+      }
+    },
+    {
+      "role": "climax",
+      "contract_id": "message_contract_2_57_climax",
+      "reader_question": "What is the strongest product moment the public demo should remember?",
+      "required_answer": "The strongest moment is a real brief becoming an editable PPT system: data, memory, workflow gates, code modules, preview, trace, and QA all shown as one product operating loop.",
+      "visible_product_object": "large product operating-loop stage with brief, database, design memory, code renderer, editable PPT preview, trace, and review gate",
+      "source_capability_ids": [
+        "capability_input_layer",
+        "capability_generation_layer",
+        "capability_output_layer",
+        "capability_verification_layer"
+      ],
+      "required_product_terms": [
+        "design memory",
+        "code renderer",
+        "editable PPT preview",
+        "QA gate"
+      ],
+      "must_say": [
+        "the system is an operating loop, not a one-shot deck writer",
+        "code generation owns the editable slide structure",
+        "QA and release gates remain visible at the climax"
+      ],
+      "forbidden_empty_claims": [
+        "better aesthetics from data",
+        "design decks people can judge"
+      ],
+      "minimum_specific_content_units": 6,
+      "next_renderer_obligation": {
+        "surface": "product_operating_loop_climax_stage",
+        "visible_sections": [
+          "brief",
+          "database",
+          "memory",
+          "code renderer",
+          "PPT preview",
+          "QA gate"
+        ],
+        "required_trace_fields": [
+          "run2_57_competitor_boundary_ids",
+          "run2_57_content_specificity_status",
+          "run2_57_content_workflow_gate_id",
+          "run2_57_generic_claim_count",
+          "run2_57_product_capability_ids",
+          "run2_57_product_logic_relation_ids",
+          "run2_57_reader_question_answered_status",
+          "run2_57_required_product_terms_rendered",
+          "run2_57_slide_message_contract_id"
+        ]
+      }
+    },
+    {
+      "role": "close",
+      "contract_id": "message_contract_2_57_close",
+      "reader_question": "What should happen next before we claim this product is publishable?",
+      "required_answer": "Run 2.57 is a content-layer repair only; Run 2.58 must generate a new four-arm PPT that consumes the content contracts, then pass visual review, native render inspection, source-boundary review, and human approval.",
+      "visible_product_object": "release decision wall with current latest generated run, new content layer, next generated run, blocked gates, and human review status",
+      "source_capability_ids": [
+        "capability_output_layer",
+        "capability_verification_layer",
+        "capability_repair_loop"
+      ],
+      "required_product_terms": [
+        "Run 2.57 content layer",
+        "Run 2.58 generated proof",
+        "human visual review",
+        "source-boundary review"
+      ],
+      "must_say": [
+        "2.57 creates no new PPT deck",
+        "2.58 must consume the content layer before native drawing",
+        "public release remains blocked until review gates pass"
+      ],
+      "forbidden_empty_claims": [
+        "public-video-grade output without release approval",
+        "AI-generated presentation with high quality"
+      ],
+      "minimum_specific_content_units": 5,
+      "next_renderer_obligation": {
+        "surface": "release_gate_decision_wall",
+        "visible_sections": [
+          "latest generated 2.56",
+          "content layer 2.57",
+          "next generated 2.58",
+          "blocked gates",
+          "approval state"
+        ],
+        "required_trace_fields": [
+          "run2_57_competitor_boundary_ids",
+          "run2_57_content_specificity_status",
+          "run2_57_content_workflow_gate_id",
+          "run2_57_generic_claim_count",
+          "run2_57_product_capability_ids",
+          "run2_57_product_logic_relation_ids",
+          "run2_57_reader_question_answered_status",
+          "run2_57_required_product_terms_rendered",
+          "run2_57_slide_message_contract_id"
+        ]
+      }
+    }
+  ],
+  "release_boundary": "public_blocked_until_run2_58_consumes_contracts_and_passes_visual_human_review"
+}

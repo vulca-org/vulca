@@ -1,8 +1,10 @@
 # PPT Run 2.0 Data Skill Quality
 
-Status: run2_56-role-renderer-split-rerun-public-blocked.
+Status: run2_57-product-capability-content-ready-public-blocked.
 
 Current generated result: Run 2.56 consumes Run 2.55 before native PPT redraw, then proves six role-specific renderer ids and six unique layout signatures in the full arm while the bad control reuses the Run 2.55 single-template surface.
+
+Current data/workflow content layer: Run 2.57 creates no new PPT deck. It adds `run2_57_product_capability_memory.json`, `run2_57_slide_message_contracts.json`, and `run2_57_content_workflow_gates.json` so Run 2.58 can explain Vulca as a product, not only improve visual variation. The layer requires concrete product capability claims, slide reader questions, code-generated editable PPT wording, competitor boundaries, and generic-claim rejection before native PPT drawing.
 
 Run 2.5 does not move to a new stage. It repeats and thickens the same five fixed PPT product layers before the next generation pass:
 
