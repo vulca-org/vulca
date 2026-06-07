@@ -357,6 +357,23 @@ EXPECTED_RUN2_51_COPY_BUNDLE_KEYS = {
     "annotations",
     "state_labels",
 }
+EXPECTED_RUN2_61_ROLES = {"cover", "setup", "contrast", "proof", "climax", "close"}
+EXPECTED_RUN2_61_CARRIER_TYPES = {
+    "product_surface",
+    "operating_loop",
+    "before_after_delta",
+    "workspace_inspection",
+    "climax_result_object",
+    "release_handoff",
+}
+EXPECTED_RUN2_61_REQUIRED_COPY_UNITS = {
+    "headline",
+    "subhead",
+    "proof_badges",
+    "annotations",
+    "state_labels",
+    "speaker_note",
+}
 EXPECTED_RUN2_51_TRACE_FIELDS = {
     "run2_51_editorial_copy_memory_id",
     "run2_51_shape_text_socket_memory_id",
@@ -10216,6 +10233,99 @@ def test_run2_60_records_content_aware_composition_rerun_result() -> None:
     )
 
 
+def test_run2_61_records_narrative_proof_dataset() -> None:
+    narrative = load_json(PACK / "run2_61_narrative_proof_dataset.json")
+    selector = load_json(PACK / "run2_61_story_to_visual_carrier_selector.json")
+    fusion = load_json(PACK / "run2_61_text_socket_fusion_contracts.json")
+    source_policy = load_json(PACK / "run2_61_source_to_public_proof_policy.json")
+    gates = load_json(PACK / "run2_61_narrative_workflow_gates.json")
+    result = load_json(PACK / "results" / "run2_61_narrative_proof_dataset_result.json")
+    result_md = (PACK / "results" / "run2_61_narrative_proof_dataset_result.md").read_text(
+        encoding="utf-8"
+    )
+
+    assert narrative["status"] == "run2_61_narrative_proof_dataset_ready_public_blocked"
+    assert selector["status"] == "run2_61_story_to_visual_carrier_selector_ready_public_blocked"
+    assert fusion["status"] == "run2_61_text_socket_fusion_contracts_ready_public_blocked"
+    assert source_policy["status"] == "run2_61_source_to_public_proof_policy_ready_public_blocked"
+    assert gates["status"] == "run2_61_narrative_workflow_gates_ready_public_blocked"
+    assert result["run_id"] == "2.61"
+    assert result["generation_boundary"]["creates_new_ppt_deck"] is False
+
+    narrative_records = narrative["narrative_proof_records"]
+    selector_records = selector["story_to_visual_carrier_records"]
+    fusion_records = fusion["text_socket_fusion_contracts"]
+    gate_records = gates["narrative_workflow_gates"]
+
+    assert {record["role"] for record in narrative_records} == EXPECTED_RUN2_61_ROLES
+    assert {record["role"] for record in selector_records} == EXPECTED_RUN2_61_ROLES
+    assert {record["role"] for record in fusion_records} == EXPECTED_RUN2_61_ROLES
+    assert {record["role"] for record in gate_records} == EXPECTED_RUN2_61_ROLES
+
+    selector_by_role = {record["role"]: record for record in selector_records}
+    fusion_by_role = {record["role"]: record for record in fusion_records}
+    gate_by_role = {record["role"]: record for record in gate_records}
+
+    for record in narrative_records:
+        assert record["narrative_proof_id"].startswith("narrative_proof_2_61_")
+        assert record["selected_usecase_id"] == "usecase_design_to_production_platform_launch"
+        assert record["reader_question"]
+        assert record["required_answer"]
+        assert record["business_action"]
+        assert record["public_takeaway"]
+        assert set(record["copy_units"]) == EXPECTED_RUN2_61_REQUIRED_COPY_UNITS
+        assert len(record["source_refs"]) >= 2
+        assert len(record["proof_payload"]["secondary_evidence_objects"]) >= 2
+        assert record["proof_payload"]["product_mechanism"]
+        assert record["proof_payload"]["business_consequence"]
+        assert record["public_proof_replacement"]["replacement_type"] in {
+            "source_pack_object",
+            "inspection_board",
+            "before_after_route_break",
+            "native_editable_proxy",
+            "operating_loop_proxy",
+            "release_gate_proxy",
+        }
+        assert record["density_budget"]["minimum_public_proof_objects"] >= 2
+        assert record["density_budget"]["minimum_socket_bound_copy_units"] >= 4
+        assert record["density_budget"]["maximum_free_floating_labels"] <= 2
+        assert record["bad_control_probe"].startswith("fail_if_")
+        assert record["next_rerun_obligation"] == "must_be_consumed_before_run2_62_four_arm_rerun"
+
+        selected = selector_by_role[record["role"]]
+        fused = fusion_by_role[record["role"]]
+        gate = gate_by_role[record["role"]]
+        assert selected["source_narrative_proof_id"] == record["narrative_proof_id"]
+        assert selected["selected_layout_module_id"].startswith("module_2_15_")
+        assert selected["selected_socket_memory_id"].startswith("shape_text_socket_2_51_")
+        assert selected["visual_carrier_type"] in EXPECTED_RUN2_61_CARRIER_TYPES
+        assert selected["visual_weight_requirement"]["minimum_primary_carrier_area_pct"] >= 30
+        assert fused["source_narrative_proof_id"] == record["narrative_proof_id"]
+        assert fused["source_socket_memory_id"] == selected["selected_socket_memory_id"]
+        assert {binding["copy_unit_key"] for binding in fused["socket_bindings"]} >= {
+            "headline",
+            "subhead",
+            "proof_badges",
+            "annotations",
+            "state_labels",
+        }
+        assert gate["source_narrative_proof_id"] == record["narrative_proof_id"]
+        assert gate["next_run_required_trace_fields"] == [
+            "run2_61_narrative_proof_id",
+            "run2_61_visual_carrier_selector_id",
+            "run2_61_text_socket_fusion_contract_id",
+            "run2_61_public_proof_replacement_id",
+            "run2_61_narrative_workflow_gate_id",
+        ]
+
+    assert source_policy["policy_id"] == "run2_61_source_to_public_proof_policy"
+    assert "copy_source_slide_or_video_frame" in source_policy["forbidden_source_copying_behaviors"]
+    assert "native_editable_proxy_object" in source_policy["allowed_source_abstraction_types"]
+    assert result["next_required_action"] == "run2_62_generate_four_arm_ppt_consuming_run2_61_narrative_proof_dataset"
+    assert "Run 2.61 Narrative Proof Dataset" in result_md
+    assert "Do not advance to Run 3.0" in result_md
+
+
 def test_ppt_run_html_viewer_mentions_run2_60_content_aware_composition_rerun() -> None:
     script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
     viewer = (
@@ -10241,6 +10351,36 @@ def test_ppt_run_html_viewer_mentions_run2_60_content_aware_composition_rerun() 
     ]
     assert_contains(script, required_terms[:-2])
     assert_contains(viewer, required_terms)
+
+
+def test_ppt_run_html_viewer_mentions_run2_61_narrative_proof_dataset() -> None:
+    viewer_script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+    viewer_html = (
+        ROOT
+        / "outputs"
+        / "019e7d9c-532a-70b3-8892-fa3ae42baef2"
+        / "presentations"
+        / "ppt-run-viewer.html"
+    ).read_text(encoding="utf-8")
+    for body in (viewer_script, viewer_html):
+        assert_contains(
+            body,
+            [
+                "Run 2.61 narrative proof dataset",
+                "Why 2.60 felt thin",
+                "Per-slide narrative proof table",
+                "Visual carrier selector",
+                "Text socket fusion",
+                "Public proof replacement",
+                "run2_61_narrative_proof_dataset.json",
+                "run2_61_story_to_visual_carrier_selector.json",
+                "run2_61_text_socket_fusion_contracts.json",
+                "run2_61_source_to_public_proof_policy.json",
+                "run2_61_narrative_workflow_gates.json",
+                "run2_62_generate_four_arm_ppt_consuming_run2_61_narrative_proof_dataset",
+                '"latestRunId": "2.60"',
+            ],
+        )
 
 
 def test_ppt_run_html_viewer_mentions_run2_50_readability_density_renderer_rerun() -> None:
