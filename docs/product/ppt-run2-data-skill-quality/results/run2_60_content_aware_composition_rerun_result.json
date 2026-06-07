@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "run_id": "2.60",
+  "status": "run2_60_content_aware_composition_rerun_public_blocked",
+  "public_ready": false,
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "source_repair_run_id": "2.59",
+  "source_generated_run_id": "2.58",
+  "database_expansion": false,
+  "workflow_expansion": true,
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "input_chain": {
+    "run2_59_result": "docs/product/ppt-run2-data-skill-quality/results/run2_59_content_aware_composition_compiler_result.json",
+    "run2_59_content_contracts": "docs/product/ppt-run2-data-skill-quality/run2_59_content_composition_contracts.json",
+    "run2_59_layout_capacity_model": "docs/product/ppt-run2-data-skill-quality/run2_59_layout_capacity_model.json",
+    "run2_59_content_to_layout_selector": "docs/product/ppt-run2-data-skill-quality/run2_59_content_to_layout_selector.json",
+    "run2_59_public_surface_trace_policy": "docs/product/ppt-run2-data-skill-quality/run2_59_public_surface_trace_policy.json",
+    "run2_59_composition_workflow_gates": "docs/product/ppt-run2-data-skill-quality/run2_59_composition_workflow_gates.json",
+    "run2_58_result": "docs/product/ppt-run2-data-skill-quality/results/run2_58_product_content_contract_rerun_result.json",
+    "run2_58_full_trace": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-58-full-vulca/trace_manifest.json",
+    "commercial_usecase_bank": "docs/product/ppt-run2-data-skill-quality/commercial_usecase_bank.json",
+    "sources": "docs/product/ppt-run2-data-skill-quality/sources.json"
+  },
+  "rerun": {
+    "generator": "scripts/generate_ppt_run2_60_content_aware_composition_arms.mjs",
+    "arms": [
+      "prompt_only",
+      "run1_5_skill",
+      "run2_60_full_content_aware_composition",
+      "bad_run2_58_without_run2_59_composition_compiler"
+    ],
+    "best_internal_arm": "run2_60_full_content_aware_composition",
+    "best_internal_arm_verdict": "Run 2.59 content composition contracts, layout capacity, selector, public/trace policy, and workflow gates are consumed before native PPT drawing.",
+    "combined_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-60-four-arm-contact-sheet.png",
+    "full_skill_series_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png",
+    "generated_outputs_committed": false
+  },
+  "quality_delta": {
+    "target_layer": "content_aware_composition_compiler_consumed",
+    "source_data_status": "run2_59_composition_compiler_consumed_before_native_ppt_drawing",
+    "full_slides_with_run2_59_content_contracts": 6,
+    "full_slides_with_layout_capacity_fit": 6,
+    "full_slides_with_public_trace_split": 6,
+    "full_slides_without_layout_collision": 6,
+    "bad_control_slides_without_run2_59_compiler": 6,
+    "repair_modules": [
+      "drawRun260EditorialCoverField",
+      "drawRun260ProductTheaterStage",
+      "drawRun260BeforeAfterRoute",
+      "drawRun260DenseEvidenceCompression",
+      "drawRun260MetricRevealStage",
+      "drawRun260QuietReleaseHandoff"
+    ]
+  },
+  "control_boundary": {
+    "bad_run2_58_without_run2_59_composition_compiler": "may see Run 2.58 generated result and trace, but must not use Run 2.59 content contracts, layout capacity, selector, trace policy, or composition workflow gates",
+    "prompt_only": "commercial_case_only_no_run2_59_composition_compiler",
+    "run1_5_skill": "prior_baseline_no_run2_59_composition_compiler"
+  },
+  "visual_quality_boundary": "Run 2.60 proves content-aware composition compiler consumption; public-video-grade aesthetics, native motion, and human release approval remain blocked.",
+  "remaining_public_release_gates": [
+    "human_visual_review",
+    "native_or_cross_platform_render_inspection",
+    "motion_or_video_review",
+    "source_boundary_review",
+    "human_release_approval"
+  ],
+  "release_boundary": "public_blocked_until_visual_human_review_native_render_review_motion_review_source_boundary_review_and_human_approval",
+  "next_required_action": "audit_run2_60_composition_compiler_consumption_then_continue_same_five_layers_do_not_advance_to_run3"
+}

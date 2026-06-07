@@ -10,6 +10,7 @@ from typing import Any
 
 DEFAULT_THREAD_ID = "019e7d9c-532a-70b3-8892-fa3ae42baef2"
 PACK_REL = Path("docs") / "product" / "ppt-run2-data-skill-quality"
+LATEST_RUN_PAYLOAD_HINT = '"latestRunId": "2.60"'
 
 
 @dataclass(frozen=True)
@@ -569,6 +570,27 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ),
         ),
     ),
+    RunSpec(
+        "2.60",
+        "Run 2.60",
+        "run2-60-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-60-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-60-run1-5-skill", "baseline"),
+            ArmSpec(
+                "run2_60_full_content_aware_composition",
+                "Run 2.60 full",
+                "ppt-run2-60-full-vulca",
+                "full",
+            ),
+            ArmSpec(
+                "bad_run2_58_without_run2_59_composition_compiler",
+                "Bad missing Run 2.59 compiler",
+                "ppt-run2-60-bad-without-composition-compiler",
+                "negative",
+            ),
+        ),
+    ),
 )
 
 
@@ -730,6 +752,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run259_trace_policy = read_json(pack / "run2_59_public_surface_trace_policy.json")
     run259_gates = read_json(pack / "run2_59_composition_workflow_gates.json")
     run259_result = read_json(pack / "results" / "run2_59_content_aware_composition_compiler_result.json")
+    run260_result = read_json(pack / "results" / "run2_60_content_aware_composition_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -1072,6 +1095,19 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
             "fixes_failure_mode",
             "content_thickness_and_layout_module_memory_not_bound_before_native_ppt_drawing",
         ),
+        "run260ResultStatus": run260_result.get("status", ""),
+        "run260Result": run260_result,
+        "run260ResultPath": "run2_60_content_aware_composition_rerun_result.json",
+        "run260TargetLayer": (run260_result.get("quality_delta") or {}).get(
+            "target_layer", "content_aware_composition_compiler_consumed"
+        ),
+        "run260SourceDataStatus": (run260_result.get("quality_delta") or {}).get(
+            "source_data_status", "run2_59_composition_compiler_consumed_before_native_ppt_drawing"
+        ),
+        "run260GeneratorPath": "scripts/generate_ppt_run2_60_content_aware_composition_arms.mjs",
+        "run260FullTracePath": "ppt-run2-60-full-vulca/trace_manifest.json",
+        "run260BadTracePath": "ppt-run2-60-bad-without-composition-compiler/trace_manifest.json",
+        "run260FourArmSheetPath": "run2-60-four-arm-contact-sheet.png",
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -2339,6 +2375,11 @@ def build_html(data: dict[str, Any]) -> str:
           ${{detailBlock("License / usage note", record.license_or_usage_note)}}
           ${{detailBlock("do not copy source assets", record.do_not_copy_source_assets)}}
         </article>`).join("");
+      const run260Result = refs.run260Result || {{}};
+      const run260Inputs = run260Result.input_chain || {{}};
+      const run260Rerun = run260Result.rerun || {{}};
+      const run260Quality = run260Result.quality_delta || {{}};
+      const run260Control = run260Result.control_boundary || {{}};
       const run259Result = refs.run259Result || {{}};
       const run259Quality = run259Result.quality_delta || {{}};
       const run259GenerationBoundary = run259Result.generation_boundary || {{}};
@@ -2571,7 +2612,44 @@ def build_html(data: dict[str, Any]) -> str:
       </div>
       <div class="dataStack">
         <section class="dataBand">
-          <div class="dataBandHead"><div><h3>Latest generated repair proof</h3><p>Run 2.58 is the current generated product-content proof: it consumes the Run 2.57 product capability content layer, keeps the Run 2.56 role-renderer pass, and forces every slide to answer a concrete product reader question.</p></div><span class="pill" title="${{escapeHtml(refs.run258ResultStatus || "missing")}}">${{escapeHtml(refs.run258ResultStatus || "missing")}}</span></div>
+          <div class="dataBandHead"><div><h3>Latest generated repair proof</h3><p>Run 2.60 is the current generated proof: the full arm consumes Run 2.59 before native PPT drawing, so the content-aware composition compiler consumed status is visible in both slide trace and result metadata.</p></div><span class="pill" title="${{escapeHtml(refs.run260ResultStatus || "missing")}}">${{escapeHtml(refs.run260ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Run 2.60 generated result</h4>
+              ${{detailBlock("Result", refs.run260ResultPath || "run2_60_content_aware_composition_rerun_result.json")}}
+              ${{detailBlock("Best arm", run260Rerun.best_internal_arm || "run2_60_full_content_aware_composition")}}
+              ${{detailBlock("Target layer", run260Quality.target_layer || refs.run260TargetLayer)}}
+              ${{detailBlock("Source data status", run260Quality.source_data_status || refs.run260SourceDataStatus)}}
+              ${{detailBlock("Contact sheet", run260Rerun.combined_contact_sheet || "run2-60-four-arm-contact-sheet.png")}}
+            </article>
+            <article class="dataCard">
+              <h4>Run 2.59 consumed by generator</h4>
+              ${{detailBlock("Content contracts", run260Inputs.run2_59_content_contracts || "run2_59_content_composition_contracts.json")}}
+              ${{detailBlock("Layout capacity model", run260Inputs.run2_59_layout_capacity_model || "run2_59_layout_capacity_model.json")}}
+              ${{detailBlock("Content-to-layout selector", run260Inputs.run2_59_content_to_layout_selector || "run2_59_content_to_layout_selector.json")}}
+              ${{detailBlock("Public slide / trace viewer split", run260Inputs.run2_59_public_surface_trace_policy || "run2_59_public_surface_trace_policy.json")}}
+              ${{detailBlock("Composition workflow gates", run260Inputs.run2_59_composition_workflow_gates || "run2_59_composition_workflow_gates.json")}}
+            </article>
+            <article class="dataCard">
+              <h4>Consumption trace metrics</h4>
+              ${{detailBlock("Content contracts bound", run260Quality.full_slides_with_run2_59_content_contracts)}}
+              ${{detailBlock("Layout capacity fit", run260Quality.full_slides_with_layout_capacity_fit)}}
+              ${{detailBlock("Public/trace split", run260Quality.full_slides_with_public_trace_split)}}
+              ${{detailBlock("No layout collision", run260Quality.full_slides_without_layout_collision)}}
+              ${{detailBlock("Bad-control failures", run260Quality.bad_control_slides_without_run2_59_compiler)}}
+            </article>
+            <article class="dataCard">
+              <h4>2.60 trace surfaces</h4>
+              ${{detailBlock("Generator", refs.run260GeneratorPath || "scripts/generate_ppt_run2_60_content_aware_composition_arms.mjs")}}
+              ${{detailBlock("Full trace", refs.run260FullTracePath || "ppt-run2-60-full-vulca/trace_manifest.json")}}
+              ${{detailBlock("Bad trace", refs.run260BadTracePath || "ppt-run2-60-bad-without-composition-compiler/trace_manifest.json")}}
+              ${{detailBlock("Four-arm sheet", refs.run260FourArmSheetPath || "run2-60-four-arm-contact-sheet.png")}}
+              ${{detailBlock("Negative boundary", run260Control.bad_run2_58_without_run2_59_composition_compiler)}}
+            </article>
+          </div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.58 product-content proof</h3><p>Run 2.58 remains the previous generated product-content proof: it consumes the Run 2.57 product capability content layer, keeps the Run 2.56 role-renderer pass, and forces every slide to answer a concrete product reader question.</p></div><span class="pill" title="${{escapeHtml(refs.run258ResultStatus || "missing")}}">${{escapeHtml(refs.run258ResultStatus || "missing")}}</span></div>
           <div class="dataGrid">
             <article class="dataCard">
               <h4>Run 2.58 generated result</h4>

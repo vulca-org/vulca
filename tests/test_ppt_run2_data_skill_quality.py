@@ -501,6 +501,21 @@ EXPECTED_RUN2_59_TRACE_FIELDS = {
     "run2_59_public_surface_trace_policy_id",
     "run2_59_composition_gate_id",
 }
+EXPECTED_RUN2_60_TRACE_FIELDS = {
+    "run2_59_content_contract_id",
+    "run2_59_layout_module_id",
+    "run2_59_content_burden_level",
+    "run2_59_capacity_fit_status",
+    "run2_59_public_visible_word_budget",
+    "run2_59_trace_only_detail_count",
+    "run2_59_public_surface_trace_policy_id",
+    "run2_59_composition_gate_id",
+    "run2_60_code_module_ids",
+    "run2_60_public_trace_split_status",
+    "run2_60_over_capacity_fallback_status",
+    "run2_60_layout_collision_status",
+    "run2_60_content_aware_composition_status",
+}
 EXPECTED_RUN2_51_FORBIDDEN_PUBLIC_TERMS = {
     "run2",
     "memory",
@@ -6822,7 +6837,7 @@ def test_ppt_run_html_viewer_generated_latest_run2_50() -> None:
             "ppt-run2-44-full-vulca",
             "ppt-run2-44-bad-run2-43-name-only-geometry",
             "run2_44_semantic_geometry_rerun_result.json",
-            '"latestRunId": "2.58"',
+            '"latestRunId": "2.60"',
             "Run 2.47",
             "run2-47-four-arm-contact-sheet.png",
             "ppt-run2-47-prompt-only",
@@ -7757,7 +7772,7 @@ def test_ppt_run_html_viewer_embeds_run2_45_semantic_geometry_effectiveness_audi
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.58"',
+            '"latestRunId": "2.60"',
             "Run 2.45 semantic geometry effectiveness audit",
             "run2_45_semantic_geometry_effectiveness_audit.json",
             "slot_based_semantic_geometry",
@@ -7916,7 +7931,7 @@ def test_ppt_run_html_viewer_embeds_run2_46_multimodal_composition_memory() -> N
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.58"',
+            '"latestRunId": "2.60"',
             "Run 2.46 multimodal composition memory",
             "run2_46_multimodal_composition_memory_result.json",
             "visual object grammar",
@@ -8057,7 +8072,7 @@ def test_ppt_run_html_viewer_mentions_run2_47_composition_grammar_rerun() -> Non
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.58"',
+            '"latestRunId": "2.60"',
             "Run 2.47",
             "run2_47_composition_grammar_rerun_result.json",
             "visual object grammar",
@@ -8199,7 +8214,7 @@ def test_ppt_run_html_viewer_embeds_run2_48_composition_grammar_effectiveness_au
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.58"',
+            '"latestRunId": "2.60"',
             "Run 2.48 composition grammar effectiveness audit",
             "run2_48_composition_grammar_effectiveness_audit.json",
             "visual object grammar",
@@ -8366,7 +8381,7 @@ def test_ppt_run_html_viewer_embeds_run2_49_data_only_repair_pack() -> None:
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.58"',
+            '"latestRunId": "2.60"',
             "Run 2.49 readability/content density/editorial renderer repair",
             "Data-only Run",
             "run2_49_readability_memory.json",
@@ -8402,7 +8417,7 @@ def test_ppt_run_html_viewer_embeds_run2_51_data_workflow_repair_pack() -> None:
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.58"',
+            '"latestRunId": "2.60"',
             "Run 2.51 remains the prior data/workflow repair layer",
             "run2_51_editorial_shape_text_repair_result.json",
             "run2_51_editorial_copy_memory.json",
@@ -9070,7 +9085,7 @@ def test_ppt_run_html_viewer_mentions_run2_53_product_surface_scene_repair() -> 
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.58"',
+            '"latestRunId": "2.60"',
             "Run 2.53 product-surface scene repair",
             "run2_53_product_surface_scene_memory.json",
             "run2_53_business_visual_evidence_memory.json",
@@ -9241,7 +9256,7 @@ def test_ppt_run_html_viewer_mentions_run2_54_product_surface_scene_rerun() -> N
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.58"',
+            '"latestRunId": "2.60"',
             "Run 2.54",
             "run2-54-four-arm-contact-sheet.png",
             "ppt-run2-54-full-vulca",
@@ -9391,7 +9406,7 @@ def test_ppt_run_html_viewer_mentions_run2_55_text_shape_integration_rerun() -> 
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.58"',
+            '"latestRunId": "2.60"',
             "Run 2.55",
             "run2-55-four-arm-contact-sheet.png",
             "ppt-run2-55-full-vulca",
@@ -9535,7 +9550,7 @@ def test_ppt_run_html_viewer_mentions_run2_56_role_renderer_split_rerun() -> Non
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.58"',
+            '"latestRunId": "2.60"',
             "Run 2.56",
             "run2-56-four-arm-contact-sheet.png",
             "ppt-run2-56-full-vulca",
@@ -9680,7 +9695,7 @@ def test_ppt_run_html_viewer_mentions_run2_57_product_capability_content_layer()
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.58"',
+            '"latestRunId": "2.60"',
             "Run 2.57 product capability content layer",
             "run2_57_product_capability_content_result.json",
             "run2_57_product_capability_memory.json",
@@ -9836,7 +9851,7 @@ def test_ppt_run_html_viewer_mentions_run2_58_product_content_contract_rerun() -
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.58"',
+            '"latestRunId": "2.60"',
             "Run 2.58",
             "run2-58-four-arm-contact-sheet.png",
             "ppt-run2-58-full-vulca",
@@ -10080,12 +10095,152 @@ def test_ppt_run_html_viewer_mentions_run2_59_content_aware_composition_compiler
     ]
     viewer_terms = [
         *script_terms,
-        '"latestRunId": "2.58"',
+        '"latestRunId": "2.60"',
     ]
     assert_contains(script, script_terms)
     assert_contains(viewer, viewer_terms)
     assert "ppt-run2-59-" not in script
     assert "ppt-run2-59-" not in viewer
+
+
+def test_run2_60_generator_consumes_run2_59_composition_compiler() -> None:
+    script_path = ROOT / "scripts" / "generate_ppt_run2_60_content_aware_composition_arms.mjs"
+    assert script_path.exists(), "missing Run 2.60 content-aware composition generator"
+    body = script_path.read_text(encoding="utf-8")
+
+    assert_contains(
+        body,
+        [
+            "run2_59_content_composition_contracts.json",
+            "run2_59_layout_capacity_model.json",
+            "run2_59_content_to_layout_selector.json",
+            "run2_59_public_surface_trace_policy.json",
+            "run2_59_composition_workflow_gates.json",
+            "run2_58_product_content_contract_rerun_result.json",
+            "ppt-run2-58-full-vulca/trace_manifest.json",
+            "drawRun260ContentAwareComposition",
+            "drawRun260EditorialCoverField",
+            "drawRun260ProductTheaterStage",
+            "drawRun260BeforeAfterRoute",
+            "drawRun260DenseEvidenceCompression",
+            "drawRun260MetricRevealStage",
+            "drawRun260QuietReleaseHandoff",
+            "bad_run2_58_without_run2_59_composition_compiler",
+            "run2_59_composition_compiler_consumed_before_native_ppt_drawing",
+            "public_visible_word_budget_exceeds_selected_layout_capacity",
+        ],
+    )
+    assert "Run 2.60 must consume Run 2.59 content composition contracts" in body
+    assert "Run 2.60 must compare against Run 2.58 full trace" in body
+
+
+def test_run2_60_records_content_aware_composition_rerun_result() -> None:
+    result_md = (PACK / "results" / "run2_60_content_aware_composition_rerun_result.md").read_text(
+        encoding="utf-8"
+    )
+    result = load_json(PACK / "results" / "run2_60_content_aware_composition_rerun_result.json")
+    presentations = ROOT / "outputs" / "019e7d9c-532a-70b3-8892-fa3ae42baef2" / "presentations"
+    full_trace = load_json(presentations / "ppt-run2-60-full-vulca" / "trace_manifest.json")
+    bad_trace = load_json(
+        presentations / "ppt-run2-60-bad-without-composition-compiler" / "trace_manifest.json"
+    )
+
+    assert result["run_id"] == "2.60"
+    assert result["status"] == "run2_60_content_aware_composition_rerun_public_blocked"
+    assert result["public_ready"] is False
+    assert result["selected_usecase_id"] == "usecase_design_to_production_platform_launch"
+    assert result["source_repair_run_id"] == "2.59"
+    assert result["source_generated_run_id"] == "2.58"
+    assert result["rerun"]["best_internal_arm"] == "run2_60_full_content_aware_composition"
+    assert result["quality_delta"]["target_layer"] == "content_aware_composition_compiler_consumed"
+    assert result["quality_delta"]["source_data_status"] == (
+        "run2_59_composition_compiler_consumed_before_native_ppt_drawing"
+    )
+    assert result["quality_delta"]["full_slides_with_run2_59_content_contracts"] == 6
+    assert result["quality_delta"]["full_slides_with_layout_capacity_fit"] == 6
+    assert result["quality_delta"]["full_slides_with_public_trace_split"] == 6
+    assert result["quality_delta"]["full_slides_without_layout_collision"] == 6
+    assert result["quality_delta"]["bad_control_slides_without_run2_59_compiler"] == 6
+    assert result["rerun"]["combined_contact_sheet"].endswith("run2-60-four-arm-contact-sheet.png")
+    assert result["rerun"]["full_skill_series_sheet"].endswith("run2-full-skill-series-horizontal.png")
+    assert "public_blocked" in result["release_boundary"]
+
+    assert full_trace["arm_id"] == "run2_60_full_content_aware_composition"
+    assert full_trace["run2_60_content_aware_composition_status"] == (
+        "run2_59_composition_compiler_consumed_before_native_ppt_drawing"
+    )
+    assert full_trace["source_repair_run_id"] == "2.59"
+    assert full_trace["source_generated_run_id"] == "2.58"
+    assert len(full_trace["slides"]) == 6
+    for slide in full_trace["slides"]:
+        assert set(EXPECTED_RUN2_59_TRACE_FIELDS) <= set(slide)
+        assert set(EXPECTED_RUN2_60_TRACE_FIELDS) <= set(slide)
+        assert slide["run2_59_content_contract_id"].startswith("content_contract_2_59_")
+        assert slide["run2_59_layout_module_id"] in EXPECTED_RUN2_59_LAYOUT_MODULE_IDS
+        assert slide["run2_59_capacity_fit_status"] in {
+            "pass_after_trace_separation",
+            "requires_dense_evidence_compression",
+        }
+        assert slide["run2_59_public_visible_word_budget"] <= 74
+        assert slide["run2_59_trace_only_detail_count"] >= 2
+        assert slide["run2_60_public_trace_split_status"] == "pass_internal"
+        assert slide["run2_60_over_capacity_fallback_status"] in {
+            "pass_no_over_capacity",
+            "pass_fallback_recorded",
+        }
+        assert slide["run2_60_layout_collision_status"] == "pass_internal"
+        assert slide["run2_60_content_aware_composition_status"] == "pass_internal"
+        assert "drawRun260ContentAwareComposition" in slide["run2_60_code_module_ids"]
+        assert slide["layout_metrics"]["visible_words"] <= 96
+
+    assert bad_trace["arm_id"] == "bad_run2_58_without_run2_59_composition_compiler"
+    for slide in bad_trace["slides"]:
+        assert slide["run2_59_content_contract_id"] == ""
+        assert slide["run2_59_layout_module_id"] == ""
+        assert slide["run2_59_capacity_fit_status"] == "fail_missing_run2_59"
+        assert slide["run2_60_public_trace_split_status"] == "fail_missing_run2_59_composition_compiler"
+        assert slide["run2_60_layout_collision_status"] == "risk_reuses_run2_58_renderer"
+
+    assert_contains(
+        result_md,
+        [
+            "Run 2.60 Content-Aware Composition Rerun",
+            "consumes Run 2.59",
+            "layout capacity model",
+            "content-to-layout selector",
+            "public slide / trace viewer split",
+            "bad_run2_58_without_run2_59_composition_compiler",
+            "public blocked",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_mentions_run2_60_content_aware_composition_rerun() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+    viewer = (
+        ROOT
+        / "outputs"
+        / "019e7d9c-532a-70b3-8892-fa3ae42baef2"
+        / "presentations"
+        / "ppt-run-viewer.html"
+    ).read_text(encoding="utf-8")
+
+    required_terms = [
+        "Run 2.60",
+        "ppt-run2-60-prompt-only",
+        "ppt-run2-60-run1-5-skill",
+        "ppt-run2-60-full-vulca",
+        "ppt-run2-60-bad-without-composition-compiler",
+        "run2-60-four-arm-contact-sheet.png",
+        "run2_60_content_aware_composition_rerun_result.json",
+        "run2_59_composition_compiler_consumed_before_native_ppt_drawing",
+        '"latestRunId": "2.60"',
+        "Run 2.60 generated result",
+        "content-aware composition compiler consumed",
+    ]
+    assert_contains(script, required_terms[:-2])
+    assert_contains(viewer, required_terms)
 
 
 def test_ppt_run_html_viewer_mentions_run2_50_readability_density_renderer_rerun() -> None:
@@ -10115,7 +10270,7 @@ def test_ppt_run_html_viewer_mentions_run2_50_readability_density_renderer_rerun
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.58"',
+            '"latestRunId": "2.60"',
             "Run 2.50",
             "run2-50-four-arm-contact-sheet.png",
             "ppt-run2-50-prompt-only",
@@ -11250,13 +11405,13 @@ def test_ppt_run_html_viewer_cli_defaults_are_repo_relative(tmp_path: Path) -> N
 
     assert result.returncode == 0, result.stderr
     payload = json.loads(result.stdout)
-    assert payload["latest"] == "2.58"
+    assert payload["latest"] == "2.60"
     assert payload["runs"] >= 30
     assert out.exists()
     assert_contains(
         out.read_text(encoding="utf-8"),
         [
-            '"latestRunId": "2.58"',
+            '"latestRunId": "2.60"',
             "Run 2.58 experiment lab",
             "Open-source slide-code learning map",
         ],
