@@ -4,6 +4,7 @@
   "status": "run2_61_source_to_public_proof_policy_ready_public_blocked",
   "policy_id": "run2_61_source_to_public_proof_policy",
   "allowed_source_abstraction_types": [
+    "native_editable_proxy",
     "native_editable_proxy_object",
     "source_pack_object",
     "inspection_board",

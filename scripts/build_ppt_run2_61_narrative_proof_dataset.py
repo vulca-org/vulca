@@ -275,6 +275,16 @@ def key_record(records: list[dict[str, Any]], field: str, value: str, key: str) 
     raise ValueError(f"missing {key} record with {field}={value}")
 
 
+def unique_strings(values: list[str]) -> list[str]:
+    seen: set[str] = set()
+    unique: list[str] = []
+    for value in values:
+        if value not in seen:
+            seen.add(value)
+            unique.append(value)
+    return unique
+
+
 def assert_no_run261_deck_artifacts() -> None:
     if not PRESENTATIONS_DIR.exists():
         return
@@ -460,7 +470,9 @@ def copy_units(spec: dict[str, Any], message: dict[str, Any], composition: dict[
     return {
         "headline": spec["public_takeaway"],
         "subhead": message["required_answer"],
-        "proof_badges": composition["evidence_chips"] + [spec["secondary_evidence_objects"][0]],
+        "proof_badges": unique_strings(
+            composition["evidence_chips"] + [spec["secondary_evidence_objects"][0]]
+        ),
         "annotations": [
             spec["product_mechanism"],
             spec["business_consequence"],
@@ -678,6 +690,7 @@ def build_source_policy() -> dict[str, Any]:
         "status": "run2_61_source_to_public_proof_policy_ready_public_blocked",
         "policy_id": "run2_61_source_to_public_proof_policy",
         "allowed_source_abstraction_types": [
+            "native_editable_proxy",
             "native_editable_proxy_object",
             "source_pack_object",
             "inspection_board",
