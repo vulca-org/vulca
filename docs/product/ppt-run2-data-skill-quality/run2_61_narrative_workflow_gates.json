@@ -1,0 +1,242 @@
+{
+  "schema_version": "ppt_run2_narrative_workflow_gates.v1",
+  "run_id": "2.61",
+  "status": "run2_61_narrative_workflow_gates_ready_public_blocked",
+  "narrative_workflow_gates": [
+    {
+      "gate_id": "gate_2_61_cover_narrative_proof_fusion",
+      "role": "cover",
+      "source_narrative_proof_id": "narrative_proof_2_61_cover",
+      "source_visual_carrier_selector_id": "visual_carrier_selector_2_61_cover",
+      "source_text_socket_fusion_contract_id": "text_socket_fusion_2_61_cover",
+      "source_public_proof_replacement_id": "public_proof_replacement_2_61_cover",
+      "required_checks": [
+        "reader_question_answered",
+        "business_action_present",
+        "proof_payload_specific",
+        "visual_carrier_selected",
+        "required_copy_units_socket_bound",
+        "public_proof_replacement_present",
+        "bad_control_probe_defined"
+      ],
+      "next_run_required_trace_fields": [
+        "run2_61_narrative_proof_id",
+        "run2_61_visual_carrier_selector_id",
+        "run2_61_text_socket_fusion_contract_id",
+        "run2_61_public_proof_replacement_id",
+        "run2_61_narrative_workflow_gate_id"
+      ],
+      "next_generated_run_contract": {
+        "run_id": "2.62",
+        "required_trace_fields": [
+          "run2_61_narrative_proof_id",
+          "run2_61_visual_carrier_selector_id",
+          "run2_61_text_socket_fusion_contract_id",
+          "run2_61_public_proof_replacement_id",
+          "run2_61_narrative_workflow_gate_id"
+        ],
+        "bad_control_arm": "bad_run2_60_without_run2_61_narrative_proof_dataset",
+        "full_arm_pass_status": "run2_61_narrative_proof_dataset_consumed_before_native_ppt_drawing"
+      },
+      "bad_control_probe": "fail_if_cover_renders_claim_without_narrative_proof_and_socket_fusion"
+    },
+    {
+      "gate_id": "gate_2_61_setup_narrative_proof_fusion",
+      "role": "setup",
+      "source_narrative_proof_id": "narrative_proof_2_61_setup",
+      "source_visual_carrier_selector_id": "visual_carrier_selector_2_61_setup",
+      "source_text_socket_fusion_contract_id": "text_socket_fusion_2_61_setup",
+      "source_public_proof_replacement_id": "public_proof_replacement_2_61_setup",
+      "required_checks": [
+        "reader_question_answered",
+        "business_action_present",
+        "proof_payload_specific",
+        "visual_carrier_selected",
+        "required_copy_units_socket_bound",
+        "public_proof_replacement_present",
+        "bad_control_probe_defined"
+      ],
+      "next_run_required_trace_fields": [
+        "run2_61_narrative_proof_id",
+        "run2_61_visual_carrier_selector_id",
+        "run2_61_text_socket_fusion_contract_id",
+        "run2_61_public_proof_replacement_id",
+        "run2_61_narrative_workflow_gate_id"
+      ],
+      "next_generated_run_contract": {
+        "run_id": "2.62",
+        "required_trace_fields": [
+          "run2_61_narrative_proof_id",
+          "run2_61_visual_carrier_selector_id",
+          "run2_61_text_socket_fusion_contract_id",
+          "run2_61_public_proof_replacement_id",
+          "run2_61_narrative_workflow_gate_id"
+        ],
+        "bad_control_arm": "bad_run2_60_without_run2_61_narrative_proof_dataset",
+        "full_arm_pass_status": "run2_61_narrative_proof_dataset_consumed_before_native_ppt_drawing"
+      },
+      "bad_control_probe": "fail_if_setup_renders_claim_without_narrative_proof_and_socket_fusion"
+    },
+    {
+      "gate_id": "gate_2_61_contrast_narrative_proof_fusion",
+      "role": "contrast",
+      "source_narrative_proof_id": "narrative_proof_2_61_contrast",
+      "source_visual_carrier_selector_id": "visual_carrier_selector_2_61_contrast",
+      "source_text_socket_fusion_contract_id": "text_socket_fusion_2_61_contrast",
+      "source_public_proof_replacement_id": "public_proof_replacement_2_61_contrast",
+      "required_checks": [
+        "reader_question_answered",
+        "business_action_present",
+        "proof_payload_specific",
+        "visual_carrier_selected",
+        "required_copy_units_socket_bound",
+        "public_proof_replacement_present",
+        "bad_control_probe_defined"
+      ],
+      "next_run_required_trace_fields": [
+        "run2_61_narrative_proof_id",
+        "run2_61_visual_carrier_selector_id",
+        "run2_61_text_socket_fusion_contract_id",
+        "run2_61_public_proof_replacement_id",
+        "run2_61_narrative_workflow_gate_id"
+      ],
+      "next_generated_run_contract": {
+        "run_id": "2.62",
+        "required_trace_fields": [
+          "run2_61_narrative_proof_id",
+          "run2_61_visual_carrier_selector_id",
+          "run2_61_text_socket_fusion_contract_id",
+          "run2_61_public_proof_replacement_id",
+          "run2_61_narrative_workflow_gate_id"
+        ],
+        "bad_control_arm": "bad_run2_60_without_run2_61_narrative_proof_dataset",
+        "full_arm_pass_status": "run2_61_narrative_proof_dataset_consumed_before_native_ppt_drawing"
+      },
+      "bad_control_probe": "fail_if_contrast_renders_claim_without_narrative_proof_and_socket_fusion"
+    },
+    {
+      "gate_id": "gate_2_61_proof_narrative_proof_fusion",
+      "role": "proof",
+      "source_narrative_proof_id": "narrative_proof_2_61_proof",
+      "source_visual_carrier_selector_id": "visual_carrier_selector_2_61_proof",
+      "source_text_socket_fusion_contract_id": "text_socket_fusion_2_61_proof",
+      "source_public_proof_replacement_id": "public_proof_replacement_2_61_proof",
+      "required_checks": [
+        "reader_question_answered",
+        "business_action_present",
+        "proof_payload_specific",
+        "visual_carrier_selected",
+        "required_copy_units_socket_bound",
+        "public_proof_replacement_present",
+        "bad_control_probe_defined"
+      ],
+      "next_run_required_trace_fields": [
+        "run2_61_narrative_proof_id",
+        "run2_61_visual_carrier_selector_id",
+        "run2_61_text_socket_fusion_contract_id",
+        "run2_61_public_proof_replacement_id",
+        "run2_61_narrative_workflow_gate_id"
+      ],
+      "next_generated_run_contract": {
+        "run_id": "2.62",
+        "required_trace_fields": [
+          "run2_61_narrative_proof_id",
+          "run2_61_visual_carrier_selector_id",
+          "run2_61_text_socket_fusion_contract_id",
+          "run2_61_public_proof_replacement_id",
+          "run2_61_narrative_workflow_gate_id"
+        ],
+        "bad_control_arm": "bad_run2_60_without_run2_61_narrative_proof_dataset",
+        "full_arm_pass_status": "run2_61_narrative_proof_dataset_consumed_before_native_ppt_drawing"
+      },
+      "bad_control_probe": "fail_if_proof_renders_claim_without_narrative_proof_and_socket_fusion"
+    },
+    {
+      "gate_id": "gate_2_61_climax_narrative_proof_fusion",
+      "role": "climax",
+      "source_narrative_proof_id": "narrative_proof_2_61_climax",
+      "source_visual_carrier_selector_id": "visual_carrier_selector_2_61_climax",
+      "source_text_socket_fusion_contract_id": "text_socket_fusion_2_61_climax",
+      "source_public_proof_replacement_id": "public_proof_replacement_2_61_climax",
+      "required_checks": [
+        "reader_question_answered",
+        "business_action_present",
+        "proof_payload_specific",
+        "visual_carrier_selected",
+        "required_copy_units_socket_bound",
+        "public_proof_replacement_present",
+        "bad_control_probe_defined"
+      ],
+      "next_run_required_trace_fields": [
+        "run2_61_narrative_proof_id",
+        "run2_61_visual_carrier_selector_id",
+        "run2_61_text_socket_fusion_contract_id",
+        "run2_61_public_proof_replacement_id",
+        "run2_61_narrative_workflow_gate_id"
+      ],
+      "next_generated_run_contract": {
+        "run_id": "2.62",
+        "required_trace_fields": [
+          "run2_61_narrative_proof_id",
+          "run2_61_visual_carrier_selector_id",
+          "run2_61_text_socket_fusion_contract_id",
+          "run2_61_public_proof_replacement_id",
+          "run2_61_narrative_workflow_gate_id"
+        ],
+        "bad_control_arm": "bad_run2_60_without_run2_61_narrative_proof_dataset",
+        "full_arm_pass_status": "run2_61_narrative_proof_dataset_consumed_before_native_ppt_drawing"
+      },
+      "bad_control_probe": "fail_if_climax_renders_claim_without_narrative_proof_and_socket_fusion"
+    },
+    {
+      "gate_id": "gate_2_61_close_narrative_proof_fusion",
+      "role": "close",
+      "source_narrative_proof_id": "narrative_proof_2_61_close",
+      "source_visual_carrier_selector_id": "visual_carrier_selector_2_61_close",
+      "source_text_socket_fusion_contract_id": "text_socket_fusion_2_61_close",
+      "source_public_proof_replacement_id": "public_proof_replacement_2_61_close",
+      "required_checks": [
+        "reader_question_answered",
+        "business_action_present",
+        "proof_payload_specific",
+        "visual_carrier_selected",
+        "required_copy_units_socket_bound",
+        "public_proof_replacement_present",
+        "bad_control_probe_defined"
+      ],
+      "next_run_required_trace_fields": [
+        "run2_61_narrative_proof_id",
+        "run2_61_visual_carrier_selector_id",
+        "run2_61_text_socket_fusion_contract_id",
+        "run2_61_public_proof_replacement_id",
+        "run2_61_narrative_workflow_gate_id"
+      ],
+      "next_generated_run_contract": {
+        "run_id": "2.62",
+        "required_trace_fields": [
+          "run2_61_narrative_proof_id",
+          "run2_61_visual_carrier_selector_id",
+          "run2_61_text_socket_fusion_contract_id",
+          "run2_61_public_proof_replacement_id",
+          "run2_61_narrative_workflow_gate_id"
+        ],
+        "bad_control_arm": "bad_run2_60_without_run2_61_narrative_proof_dataset",
+        "full_arm_pass_status": "run2_61_narrative_proof_dataset_consumed_before_native_ppt_drawing"
+      },
+      "bad_control_probe": "fail_if_close_renders_claim_without_narrative_proof_and_socket_fusion"
+    }
+  ],
+  "next_generated_run_contract": {
+    "run_id": "2.62",
+    "required_trace_fields": [
+      "run2_61_narrative_proof_id",
+      "run2_61_visual_carrier_selector_id",
+      "run2_61_text_socket_fusion_contract_id",
+      "run2_61_public_proof_replacement_id",
+      "run2_61_narrative_workflow_gate_id"
+    ],
+    "bad_control_arm": "bad_run2_60_without_run2_61_narrative_proof_dataset",
+    "full_arm_pass_status": "run2_61_narrative_proof_dataset_consumed_before_native_ppt_drawing"
+  },
+  "next_required_action": "run2_62_generate_four_arm_ppt_consuming_run2_61_narrative_proof_dataset"
+}

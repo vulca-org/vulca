@@ -1,0 +1,849 @@
+{
+  "schema_version": "ppt_run2_narrative_proof_dataset.v1",
+  "run_id": "2.61",
+  "status": "run2_61_narrative_proof_dataset_ready_public_blocked",
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "source_generated_run_id": "2.60",
+  "creates_new_ppt_deck": false,
+  "latest_generated_run_id": "2.60",
+  "source_inputs": {
+    "run2_8_tutorial_decomposition": "run2_8_tutorial_decomposition.json",
+    "run2_12_thick_multimodal_evidence": "run2_12_thick_multimodal_evidence.json",
+    "run2_18_multimodal_evidence_expansion": "run2_18_multimodal_evidence_expansion.json",
+    "run2_15_layout_module_memory": "run2_15_layout_module_memory.json",
+    "run2_51_shape_text_socket_memory": "run2_51_shape_text_socket_memory.json",
+    "run2_57_slide_message_contracts": "run2_57_slide_message_contracts.json",
+    "run2_59_content_composition_contracts": "run2_59_content_composition_contracts.json",
+    "run2_59_content_to_layout_selector": "run2_59_content_to_layout_selector.json"
+  },
+  "trace_fields_for_next_rerun": [
+    "run2_61_narrative_proof_id",
+    "run2_61_visual_carrier_selector_id",
+    "run2_61_text_socket_fusion_contract_id",
+    "run2_61_public_proof_replacement_id",
+    "run2_61_narrative_workflow_gate_id"
+  ],
+  "narrative_proof_records": [
+    {
+      "narrative_proof_id": "narrative_proof_2_61_cover",
+      "role": "cover",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_generated_run_id": "2.60",
+      "source_run_ids": [
+        "2.8",
+        "2.12",
+        "2.18",
+        "2.15",
+        "2.51",
+        "2.57",
+        "2.59"
+      ],
+      "reader_question": "What is Vulca and what concrete product output does this deck demonstrate?",
+      "required_answer": "Vulca turns a real commercial brief plus selected source data into a code-generated editable PPT deck with traceable proof.",
+      "business_action": "Position the product as an evidence-to-editable-PPT workflow.",
+      "public_takeaway": "A real brief becomes editable PPT proof.",
+      "proof_payload": {
+        "primary_evidence_object": "input-to-output product surface",
+        "secondary_evidence_objects": [
+          "commercial brief card",
+          "source pack object",
+          "generated PPT preview"
+        ],
+        "product_mechanism": "brief, source pack, memory, code, and PPT output are shown as one native product path",
+        "business_consequence": "buyers can judge a repeatable workflow instead of a one-off pretty slide",
+        "before_state": "prompt-only deck with weak provenance",
+        "after_state": "editable PPT generated from selected case data",
+        "what_the_viewer_should_notice": "the main visual object demonstrates the business action before small labels are read"
+      },
+      "copy_units": {
+        "headline": "A real brief becomes editable PPT proof.",
+        "subhead": "Vulca converts a real commercial brief plus selected multimodal tutorial and case data into a code-generated editable PPT deck with trace, QA, and review artifacts.",
+        "proof_badges": [
+          "real commercial brief",
+          "multimodal source database",
+          "commercial brief card"
+        ],
+        "annotations": [
+          "brief, source pack, memory, code, and PPT output are shown as one native product path",
+          "buyers can judge a repeatable workflow instead of a one-off pretty slide"
+        ],
+        "state_labels": [
+          "before: prompt-only deck with weak provenance",
+          "after: editable PPT generated from selected case data"
+        ],
+        "speaker_note": "Say that the slide is not an image-generation demo; the product output is code-generated editable PPT with traceable inputs."
+      },
+      "source_refs": [
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_8_tutorial_decomposition",
+          "source_record_id": "decomp_2_8_design_first_code_second_pipeline",
+          "path": "run2_8_tutorial_decomposition.json",
+          "role": "cover"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_12_thick_multimodal_evidence",
+          "source_record_id": "thick_2_12_figma_platform_launch_arc",
+          "path": "run2_12_thick_multimodal_evidence.json",
+          "role": "cover"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_18_multimodal_evidence_expansion",
+          "source_record_id": "thick_2_18_figma_launch_identity_system",
+          "path": "run2_18_multimodal_evidence_expansion.json",
+          "role": "cover"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_15_layout_module_memory",
+          "source_record_id": "module_2_15_editorial_cover_field",
+          "path": "run2_15_layout_module_memory.json",
+          "role": "cover"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_51_shape_text_socket_memory",
+          "source_record_id": "shape_text_socket_2_51_cover",
+          "path": "run2_51_shape_text_socket_memory.json",
+          "role": "cover"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_57_slide_message_contracts",
+          "source_record_id": "message_contract_2_57_cover",
+          "path": "run2_57_slide_message_contracts.json",
+          "role": "cover"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_59_content_composition_contracts",
+          "source_record_id": "content_contract_2_59_cover",
+          "path": "run2_59_content_composition_contracts.json",
+          "role": "cover"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_59_content_to_layout_selector",
+          "source_record_id": "content_contract_2_59_cover",
+          "path": "run2_59_content_to_layout_selector.json",
+          "role": "cover"
+        }
+      ],
+      "trace_only_payload": [
+        "full source record inventory",
+        "raw tutorial decomposition fields",
+        "complete workflow gate details",
+        "all prior-run trace ids"
+      ],
+      "public_proof_replacement": {
+        "replacement_id": "public_proof_replacement_2_61_cover",
+        "replacement_type": "source_pack_object",
+        "replacement_rule": "render a native editable proxy that shows the product action without copying source visuals or leaking raw trace"
+      },
+      "density_budget": {
+        "maximum_public_visible_words": 86,
+        "minimum_public_proof_objects": 2,
+        "maximum_trace_placeholders": 1,
+        "minimum_visual_carrier_area_pct": 30,
+        "maximum_free_floating_labels": 2,
+        "minimum_socket_bound_copy_units": 4
+      },
+      "forbidden_surface_terms": [
+        "run2",
+        "trace manifest",
+        "workflow gate",
+        "schema id",
+        "raw source inventory"
+      ],
+      "bad_control_probe": "fail_if_cover_renders_claim_without_narrative_proof_and_socket_fusion",
+      "next_rerun_obligation": "must_be_consumed_before_run2_62_four_arm_rerun"
+    },
+    {
+      "narrative_proof_id": "narrative_proof_2_61_setup",
+      "role": "setup",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_generated_run_id": "2.60",
+      "source_run_ids": [
+        "2.8",
+        "2.12",
+        "2.18",
+        "2.15",
+        "2.51",
+        "2.57",
+        "2.59"
+      ],
+      "reader_question": "How does Vulca transform raw business and tutorial material into design instructions?",
+      "required_answer": "The system selects allowed source records, extracts design rules, creates capability memory, and resolves slide contracts before native drawing.",
+      "business_action": "Stage the data-to-memory compiler as the product's first operating step.",
+      "public_takeaway": "Sources become design decisions before drawing.",
+      "proof_payload": {
+        "primary_evidence_object": "source-to-memory compiler stage",
+        "secondary_evidence_objects": [
+          "allowed source pack",
+          "design rule extraction",
+          "message contract"
+        ],
+        "product_mechanism": "tutorial, case, and multimodal records are reduced into explicit memory and gate objects",
+        "business_consequence": "the deck can explain why a visual decision was chosen",
+        "before_state": "raw tutorials sit outside the product",
+        "after_state": "source rules are compiled into selectable memory",
+        "what_the_viewer_should_notice": "the main visual object demonstrates the business action before small labels are read"
+      },
+      "copy_units": {
+        "headline": "Sources become design decisions before drawing.",
+        "subhead": "The system selects a usecase and allowed source pack, derives product capability memory, then turns it into per-slide message contracts and workflow gates before generation.",
+        "proof_badges": [
+          "allowed source pack",
+          "product capability memory",
+          "slide message contract",
+          "allowed source pack"
+        ],
+        "annotations": [
+          "tutorial, case, and multimodal records are reduced into explicit memory and gate objects",
+          "the deck can explain why a visual decision was chosen"
+        ],
+        "state_labels": [
+          "before: raw tutorials sit outside the product",
+          "after: source rules are compiled into selectable memory"
+        ],
+        "speaker_note": "Keep the public slide as a pipeline story. Move raw audit detail to the viewer so the slide does not become a compliance checklist."
+      },
+      "source_refs": [
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_8_tutorial_decomposition",
+          "source_record_id": "decomp_2_8_type_hierarchy_readability_stack",
+          "path": "run2_8_tutorial_decomposition.json",
+          "role": "setup"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_12_thick_multimodal_evidence",
+          "source_record_id": "thick_2_12_figma_design_to_code_surface",
+          "path": "run2_12_thick_multimodal_evidence.json",
+          "role": "setup"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_18_multimodal_evidence_expansion",
+          "source_record_id": "thick_2_18_figma_design_to_production_surface",
+          "path": "run2_18_multimodal_evidence_expansion.json",
+          "role": "setup"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_15_layout_module_memory",
+          "source_record_id": "module_2_15_product_theater_stage",
+          "path": "run2_15_layout_module_memory.json",
+          "role": "setup"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_51_shape_text_socket_memory",
+          "source_record_id": "shape_text_socket_2_51_setup",
+          "path": "run2_51_shape_text_socket_memory.json",
+          "role": "setup"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_57_slide_message_contracts",
+          "source_record_id": "message_contract_2_57_setup",
+          "path": "run2_57_slide_message_contracts.json",
+          "role": "setup"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_59_content_composition_contracts",
+          "source_record_id": "content_contract_2_59_setup",
+          "path": "run2_59_content_composition_contracts.json",
+          "role": "setup"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_59_content_to_layout_selector",
+          "source_record_id": "content_contract_2_59_setup",
+          "path": "run2_59_content_to_layout_selector.json",
+          "role": "setup"
+        }
+      ],
+      "trace_only_payload": [
+        "full source record inventory",
+        "raw tutorial decomposition fields",
+        "complete workflow gate details",
+        "all prior-run trace ids"
+      ],
+      "public_proof_replacement": {
+        "replacement_id": "public_proof_replacement_2_61_setup",
+        "replacement_type": "native_editable_proxy",
+        "replacement_rule": "render a native editable proxy that shows the product action without copying source visuals or leaking raw trace"
+      },
+      "density_budget": {
+        "maximum_public_visible_words": 86,
+        "minimum_public_proof_objects": 2,
+        "maximum_trace_placeholders": 1,
+        "minimum_visual_carrier_area_pct": 30,
+        "maximum_free_floating_labels": 2,
+        "minimum_socket_bound_copy_units": 4
+      },
+      "forbidden_surface_terms": [
+        "run2",
+        "trace manifest",
+        "workflow gate",
+        "schema id",
+        "raw source inventory"
+      ],
+      "bad_control_probe": "fail_if_setup_renders_claim_without_narrative_proof_and_socket_fusion",
+      "next_rerun_obligation": "must_be_consumed_before_run2_62_four_arm_rerun"
+    },
+    {
+      "narrative_proof_id": "narrative_proof_2_61_contrast",
+      "role": "contrast",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_generated_run_id": "2.60",
+      "source_run_ids": [
+        "2.8",
+        "2.12",
+        "2.18",
+        "2.15",
+        "2.51",
+        "2.57",
+        "2.59"
+      ],
+      "reader_question": "Why is this different from prompt-only, image-only, template, design-editor, or office-copilot slide creation?",
+      "required_answer": "Vulca binds usecase data, design memory, layout capacity, text sockets, and QA gates before generating editable PPT objects.",
+      "business_action": "Show the competitor path breaking at the missing compiler turn.",
+      "public_takeaway": "The difference is mechanism, not taste.",
+      "proof_payload": {
+        "primary_evidence_object": "before-after route break",
+        "secondary_evidence_objects": [
+          "prompt-only output",
+          "missing compiler turn",
+          "Vulca editable PPT route"
+        ],
+        "product_mechanism": "the prompt-only path lacks source memory, carrier selection, and socket-bound copy",
+        "business_consequence": "the buyer sees a system boundary rather than a subjective style comparison",
+        "before_state": "generic deck from a prompt",
+        "after_state": "source-bound generated PPT with visible decision route",
+        "what_the_viewer_should_notice": "the main visual object demonstrates the business action before small labels are read"
+      },
+      "copy_units": {
+        "headline": "The difference is mechanism, not taste.",
+        "subhead": "Vulca is differentiated by the case database, skill workflow, bad-control comparison, trace manifest, and code-generated editable PPT output, not by simply producing a nicer-looking slide.",
+        "proof_badges": [
+          "bad control",
+          "competitor boundary",
+          "trace manifest",
+          "prompt-only output"
+        ],
+        "annotations": [
+          "the prompt-only path lacks source memory, carrier selection, and socket-bound copy",
+          "the buyer sees a system boundary rather than a subjective style comparison"
+        ],
+        "state_labels": [
+          "before: generic deck from a prompt",
+          "after: source-bound generated PPT with visible decision route"
+        ],
+        "speaker_note": "Do not render another table. Show the competitor path breaking at the missing data/workflow point, then route to Vulca's editable PPT proof."
+      },
+      "source_refs": [
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_8_tutorial_decomposition",
+          "source_record_id": "decomp_2_8_makeover_split_text_into_visual_steps",
+          "path": "run2_8_tutorial_decomposition.json",
+          "role": "contrast"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_12_thick_multimodal_evidence",
+          "source_record_id": "thick_2_12_present_partners_whitespace_hierarchy",
+          "path": "run2_12_thick_multimodal_evidence.json",
+          "role": "contrast"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_18_multimodal_evidence_expansion",
+          "source_record_id": "thick_2_18_duarte_slide_design_method",
+          "path": "run2_18_multimodal_evidence_expansion.json",
+          "role": "contrast"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_15_layout_module_memory",
+          "source_record_id": "module_2_15_before_after_route",
+          "path": "run2_15_layout_module_memory.json",
+          "role": "contrast"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_51_shape_text_socket_memory",
+          "source_record_id": "shape_text_socket_2_51_contrast",
+          "path": "run2_51_shape_text_socket_memory.json",
+          "role": "contrast"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_57_slide_message_contracts",
+          "source_record_id": "message_contract_2_57_contrast",
+          "path": "run2_57_slide_message_contracts.json",
+          "role": "contrast"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_59_content_composition_contracts",
+          "source_record_id": "content_contract_2_59_contrast",
+          "path": "run2_59_content_composition_contracts.json",
+          "role": "contrast"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_59_content_to_layout_selector",
+          "source_record_id": "content_contract_2_59_contrast",
+          "path": "run2_59_content_to_layout_selector.json",
+          "role": "contrast"
+        }
+      ],
+      "trace_only_payload": [
+        "full source record inventory",
+        "raw tutorial decomposition fields",
+        "complete workflow gate details",
+        "all prior-run trace ids"
+      ],
+      "public_proof_replacement": {
+        "replacement_id": "public_proof_replacement_2_61_contrast",
+        "replacement_type": "before_after_route_break",
+        "replacement_rule": "render a native editable proxy that shows the product action without copying source visuals or leaking raw trace"
+      },
+      "density_budget": {
+        "maximum_public_visible_words": 86,
+        "minimum_public_proof_objects": 2,
+        "maximum_trace_placeholders": 1,
+        "minimum_visual_carrier_area_pct": 30,
+        "maximum_free_floating_labels": 2,
+        "minimum_socket_bound_copy_units": 4
+      },
+      "forbidden_surface_terms": [
+        "run2",
+        "trace manifest",
+        "workflow gate",
+        "schema id",
+        "raw source inventory"
+      ],
+      "bad_control_probe": "fail_if_contrast_renders_claim_without_narrative_proof_and_socket_fusion",
+      "next_rerun_obligation": "must_be_consumed_before_run2_62_four_arm_rerun"
+    },
+    {
+      "narrative_proof_id": "narrative_proof_2_61_proof",
+      "role": "proof",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_generated_run_id": "2.60",
+      "source_run_ids": [
+        "2.8",
+        "2.12",
+        "2.18",
+        "2.15",
+        "2.51",
+        "2.57",
+        "2.59"
+      ],
+      "reader_question": "How do we know the product really used the data and workflow instead of producing another direct deck?",
+      "required_answer": "The output carries narrative proof ids, visual carrier ids, socket fusion ids, proof replacements, and workflow gate ids in trace.",
+      "business_action": "Expose a reviewable proof surface without dumping raw trace onto the public slide.",
+      "public_takeaway": "Trace becomes inspectable product proof.",
+      "proof_payload": {
+        "primary_evidence_object": "inspection board with compact proof objects",
+        "secondary_evidence_objects": [
+          "narrative proof id",
+          "socket fusion id",
+          "public proof replacement"
+        ],
+        "product_mechanism": "public proof objects point to trace-only records that remain inspectable in the viewer",
+        "business_consequence": "reviewers can audit the pipeline without turning the slide into a compliance report",
+        "before_state": "raw trace text competes with the main message",
+        "after_state": "public proof object links to detailed trace",
+        "what_the_viewer_should_notice": "the main visual object demonstrates the business action before small labels are read"
+      },
+      "copy_units": {
+        "headline": "Trace becomes inspectable product proof.",
+        "subhead": "Each full-arm slide must carry capability ids, message contract id, workflow gate id, competitor boundary ids, content specificity status, and required product terms in trace before native PPT drawing.",
+        "proof_badges": [
+          "capability ids",
+          "message contract id",
+          "workflow gate id",
+          "narrative proof id"
+        ],
+        "annotations": [
+          "public proof objects point to trace-only records that remain inspectable in the viewer",
+          "reviewers can audit the pipeline without turning the slide into a compliance report"
+        ],
+        "state_labels": [
+          "before: raw trace text competes with the main message",
+          "after: public proof object links to detailed trace"
+        ],
+        "speaker_note": "Show enough proof for trust, but keep raw field enumeration in the viewer where reviewers can inspect it."
+      },
+      "source_refs": [
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_8_tutorial_decomposition",
+          "source_record_id": "decomp_2_8_source_brand_sanitized_case_evidence",
+          "path": "run2_8_tutorial_decomposition.json",
+          "role": "proof"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_12_thick_multimodal_evidence",
+          "source_record_id": "thick_2_12_figma_design_to_code_surface",
+          "path": "run2_12_thick_multimodal_evidence.json",
+          "role": "proof"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_18_multimodal_evidence_expansion",
+          "source_record_id": "thick_2_18_figma_design_to_production_surface",
+          "path": "run2_18_multimodal_evidence_expansion.json",
+          "role": "proof"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_15_layout_module_memory",
+          "source_record_id": "module_2_15_dense_evidence_compression",
+          "path": "run2_15_layout_module_memory.json",
+          "role": "proof"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_51_shape_text_socket_memory",
+          "source_record_id": "shape_text_socket_2_51_proof",
+          "path": "run2_51_shape_text_socket_memory.json",
+          "role": "proof"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_57_slide_message_contracts",
+          "source_record_id": "message_contract_2_57_proof",
+          "path": "run2_57_slide_message_contracts.json",
+          "role": "proof"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_59_content_composition_contracts",
+          "source_record_id": "content_contract_2_59_proof",
+          "path": "run2_59_content_composition_contracts.json",
+          "role": "proof"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_59_content_to_layout_selector",
+          "source_record_id": "content_contract_2_59_proof",
+          "path": "run2_59_content_to_layout_selector.json",
+          "role": "proof"
+        }
+      ],
+      "trace_only_payload": [
+        "full source record inventory",
+        "raw tutorial decomposition fields",
+        "complete workflow gate details",
+        "all prior-run trace ids"
+      ],
+      "public_proof_replacement": {
+        "replacement_id": "public_proof_replacement_2_61_proof",
+        "replacement_type": "inspection_board",
+        "replacement_rule": "render a native editable proxy that shows the product action without copying source visuals or leaking raw trace"
+      },
+      "density_budget": {
+        "maximum_public_visible_words": 86,
+        "minimum_public_proof_objects": 2,
+        "maximum_trace_placeholders": 1,
+        "minimum_visual_carrier_area_pct": 30,
+        "maximum_free_floating_labels": 2,
+        "minimum_socket_bound_copy_units": 4
+      },
+      "forbidden_surface_terms": [
+        "run2",
+        "trace manifest",
+        "workflow gate",
+        "schema id",
+        "raw source inventory"
+      ],
+      "bad_control_probe": "fail_if_proof_renders_claim_without_narrative_proof_and_socket_fusion",
+      "next_rerun_obligation": "must_be_consumed_before_run2_62_four_arm_rerun"
+    },
+    {
+      "narrative_proof_id": "narrative_proof_2_61_climax",
+      "role": "climax",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_generated_run_id": "2.60",
+      "source_run_ids": [
+        "2.8",
+        "2.12",
+        "2.18",
+        "2.15",
+        "2.51",
+        "2.57",
+        "2.59"
+      ],
+      "reader_question": "What is the strongest product moment the public demo should remember?",
+      "required_answer": "A source-bound product loop creates an editable PPT preview, with code generation, design memory, and QA evidence orbiting one result object.",
+      "business_action": "Make the generated PPT result object own the frame.",
+      "public_takeaway": "One generated result owns the product moment.",
+      "proof_payload": {
+        "primary_evidence_object": "editable PPT preview hero object",
+        "secondary_evidence_objects": [
+          "design memory route",
+          "code renderer tag",
+          "QA gate tag"
+        ],
+        "product_mechanism": "the source memory and code path converge into one editable native PPT preview",
+        "business_consequence": "the product feels like an operating system for presentation generation",
+        "before_state": "separate proof tags and disconnected diagrams",
+        "after_state": "one generated result object with attached proof",
+        "what_the_viewer_should_notice": "the main visual object demonstrates the business action before small labels are read"
+      },
+      "copy_units": {
+        "headline": "One generated result owns the product moment.",
+        "subhead": "The strongest moment is a real brief becoming an editable PPT system: data, memory, workflow gates, code modules, preview, trace, and QA all shown as one product operating loop.",
+        "proof_badges": [
+          "design memory",
+          "code renderer",
+          "design memory route"
+        ],
+        "annotations": [
+          "the source memory and code path converge into one editable native PPT preview",
+          "the product feels like an operating system for presentation generation"
+        ],
+        "state_labels": [
+          "before: separate proof tags and disconnected diagrams",
+          "after: one generated result object with attached proof"
+        ],
+        "speaker_note": "This slide should be the least report-like: one product loop, one remembered claim, no raw trace checklist on the public surface."
+      },
+      "source_refs": [
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_8_tutorial_decomposition",
+          "source_record_id": "decomp_2_8_climax_object_scale_and_pause",
+          "path": "run2_8_tutorial_decomposition.json",
+          "role": "climax"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_12_thick_multimodal_evidence",
+          "source_record_id": "thick_2_12_stripe_product_keynote_metric_reframe",
+          "path": "run2_12_thick_multimodal_evidence.json",
+          "role": "climax"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_18_multimodal_evidence_expansion",
+          "source_record_id": "thick_2_18_google_cloud_ai_platform_climax",
+          "path": "run2_18_multimodal_evidence_expansion.json",
+          "role": "climax"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_15_layout_module_memory",
+          "source_record_id": "module_2_15_metric_reveal_stage",
+          "path": "run2_15_layout_module_memory.json",
+          "role": "climax"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_51_shape_text_socket_memory",
+          "source_record_id": "shape_text_socket_2_51_climax",
+          "path": "run2_51_shape_text_socket_memory.json",
+          "role": "climax"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_57_slide_message_contracts",
+          "source_record_id": "message_contract_2_57_climax",
+          "path": "run2_57_slide_message_contracts.json",
+          "role": "climax"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_59_content_composition_contracts",
+          "source_record_id": "content_contract_2_59_climax",
+          "path": "run2_59_content_composition_contracts.json",
+          "role": "climax"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_59_content_to_layout_selector",
+          "source_record_id": "content_contract_2_59_climax",
+          "path": "run2_59_content_to_layout_selector.json",
+          "role": "climax"
+        }
+      ],
+      "trace_only_payload": [
+        "full source record inventory",
+        "raw tutorial decomposition fields",
+        "complete workflow gate details",
+        "all prior-run trace ids"
+      ],
+      "public_proof_replacement": {
+        "replacement_id": "public_proof_replacement_2_61_climax",
+        "replacement_type": "operating_loop_proxy",
+        "replacement_rule": "render a native editable proxy that shows the product action without copying source visuals or leaking raw trace"
+      },
+      "density_budget": {
+        "maximum_public_visible_words": 86,
+        "minimum_public_proof_objects": 2,
+        "maximum_trace_placeholders": 1,
+        "minimum_visual_carrier_area_pct": 30,
+        "maximum_free_floating_labels": 2,
+        "minimum_socket_bound_copy_units": 4
+      },
+      "forbidden_surface_terms": [
+        "run2",
+        "trace manifest",
+        "workflow gate",
+        "schema id",
+        "raw source inventory"
+      ],
+      "bad_control_probe": "fail_if_climax_renders_claim_without_narrative_proof_and_socket_fusion",
+      "next_rerun_obligation": "must_be_consumed_before_run2_62_four_arm_rerun"
+    },
+    {
+      "narrative_proof_id": "narrative_proof_2_61_close",
+      "role": "close",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_generated_run_id": "2.60",
+      "source_run_ids": [
+        "2.8",
+        "2.12",
+        "2.18",
+        "2.15",
+        "2.51",
+        "2.57",
+        "2.59"
+      ],
+      "reader_question": "What should happen next before we claim this product is publishable?",
+      "required_answer": "Run 2.61 prepares the next proof layer; Run 2.62 must consume it, generate a new four-arm comparison, and pass visual, trace, source-boundary, and human review.",
+      "business_action": "Close with a release gate and the next concrete rerun.",
+      "public_takeaway": "The next proof is generated, not claimed.",
+      "proof_payload": {
+        "primary_evidence_object": "release handoff gate",
+        "secondary_evidence_objects": [
+          "Run 2.61 data layer",
+          "Run 2.62 rerun",
+          "human review gate"
+        ],
+        "product_mechanism": "the narrative proof dataset becomes a required consumer contract for the next PPT generator",
+        "business_consequence": "the demo stays credible by showing the remaining gate instead of overclaiming",
+        "before_state": "public release claimed from a thin proof",
+        "after_state": "next proof waits for generated comparison and review",
+        "what_the_viewer_should_notice": "the main visual object demonstrates the business action before small labels are read"
+      },
+      "copy_units": {
+        "headline": "The next proof is generated, not claimed.",
+        "subhead": "Run 2.57 is a content-layer repair only; Run 2.58 must generate a new four-arm PPT that consumes the content contracts, then pass visual review, native render inspection, source-boundary review, and human approval.",
+        "proof_badges": [
+          "Run 2.58 latest proof",
+          "Run 2.59 compiler",
+          "Run 2.60 next rerun",
+          "Run 2.61 data layer"
+        ],
+        "annotations": [
+          "the narrative proof dataset becomes a required consumer contract for the next PPT generator",
+          "the demo stays credible by showing the remaining gate instead of overclaiming"
+        ],
+        "state_labels": [
+          "before: public release claimed from a thin proof",
+          "after: next proof waits for generated comparison and review"
+        ],
+        "speaker_note": "Close calmly: the next action is a generated rerun that consumes the compiler, not a claim of public readiness."
+      },
+      "source_refs": [
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_8_tutorial_decomposition",
+          "source_record_id": "decomp_2_8_source_brand_sanitized_case_evidence",
+          "path": "run2_8_tutorial_decomposition.json",
+          "role": "close"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_12_thick_multimodal_evidence",
+          "source_record_id": "thick_2_12_slidecow_powerpoint_whitespace",
+          "path": "run2_12_thick_multimodal_evidence.json",
+          "role": "close"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_18_multimodal_evidence_expansion",
+          "source_record_id": "thick_2_18_whitespace_powerpoint_method",
+          "path": "run2_18_multimodal_evidence_expansion.json",
+          "role": "close"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_15_layout_module_memory",
+          "source_record_id": "module_2_15_quiet_release_handoff",
+          "path": "run2_15_layout_module_memory.json",
+          "role": "close"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_51_shape_text_socket_memory",
+          "source_record_id": "shape_text_socket_2_51_close",
+          "path": "run2_51_shape_text_socket_memory.json",
+          "role": "close"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_57_slide_message_contracts",
+          "source_record_id": "message_contract_2_57_close",
+          "path": "run2_57_slide_message_contracts.json",
+          "role": "close"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_59_content_composition_contracts",
+          "source_record_id": "content_contract_2_59_close",
+          "path": "run2_59_content_composition_contracts.json",
+          "role": "close"
+        },
+        {
+          "source_type": "prior_run",
+          "source_id": "run2_59_content_to_layout_selector",
+          "source_record_id": "content_contract_2_59_close",
+          "path": "run2_59_content_to_layout_selector.json",
+          "role": "close"
+        }
+      ],
+      "trace_only_payload": [
+        "full source record inventory",
+        "raw tutorial decomposition fields",
+        "complete workflow gate details",
+        "all prior-run trace ids"
+      ],
+      "public_proof_replacement": {
+        "replacement_id": "public_proof_replacement_2_61_close",
+        "replacement_type": "release_gate_proxy",
+        "replacement_rule": "render a native editable proxy that shows the product action without copying source visuals or leaking raw trace"
+      },
+      "density_budget": {
+        "maximum_public_visible_words": 86,
+        "minimum_public_proof_objects": 2,
+        "maximum_trace_placeholders": 1,
+        "minimum_visual_carrier_area_pct": 30,
+        "maximum_free_floating_labels": 2,
+        "minimum_socket_bound_copy_units": 4
+      },
+      "forbidden_surface_terms": [
+        "run2",
+        "trace manifest",
+        "workflow gate",
+        "schema id",
+        "raw source inventory"
+      ],
+      "bad_control_probe": "fail_if_close_renders_claim_without_narrative_proof_and_socket_fusion",
+      "next_rerun_obligation": "must_be_consumed_before_run2_62_four_arm_rerun"
+    }
+  ],
+  "next_required_action": "run2_62_generate_four_arm_ppt_consuming_run2_61_narrative_proof_dataset"
+}

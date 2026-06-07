@@ -1,0 +1,110 @@
+{
+  "schema_version": "ppt_run2_story_to_visual_carrier_selector.v1",
+  "run_id": "2.61",
+  "status": "run2_61_story_to_visual_carrier_selector_ready_public_blocked",
+  "story_to_visual_carrier_records": [
+    {
+      "selector_id": "visual_carrier_selector_2_61_cover",
+      "role": "cover",
+      "source_narrative_proof_id": "narrative_proof_2_61_cover",
+      "selected_layout_module_id": "module_2_15_editorial_cover_field",
+      "selected_socket_memory_id": "shape_text_socket_2_51_cover",
+      "visual_carrier_type": "product_surface",
+      "carrier_reason": "selected by business action, proof payload, existing Run 2.15 layout capacity, and Run 2.51 socket availability",
+      "visual_weight_requirement": {
+        "minimum_primary_carrier_area_pct": 30,
+        "maximum_equal_card_clusters": 1,
+        "must_show_business_action": true
+      },
+      "text_socket_requirement": "all public copy units must bind to Run 2.61 socket fusion contract",
+      "fallback_if_over_capacity": "split proof payload to viewer and preserve the dominant visual carrier",
+      "bad_control_probe": "fail_if_cover_uses_generic_workflow_diagram_without_visual_carrier_selector"
+    },
+    {
+      "selector_id": "visual_carrier_selector_2_61_setup",
+      "role": "setup",
+      "source_narrative_proof_id": "narrative_proof_2_61_setup",
+      "selected_layout_module_id": "module_2_15_product_theater_stage",
+      "selected_socket_memory_id": "shape_text_socket_2_51_setup",
+      "visual_carrier_type": "operating_loop",
+      "carrier_reason": "selected by business action, proof payload, existing Run 2.15 layout capacity, and Run 2.51 socket availability",
+      "visual_weight_requirement": {
+        "minimum_primary_carrier_area_pct": 30,
+        "maximum_equal_card_clusters": 1,
+        "must_show_business_action": true
+      },
+      "text_socket_requirement": "all public copy units must bind to Run 2.61 socket fusion contract",
+      "fallback_if_over_capacity": "split proof payload to viewer and preserve the dominant visual carrier",
+      "bad_control_probe": "fail_if_setup_uses_generic_workflow_diagram_without_visual_carrier_selector"
+    },
+    {
+      "selector_id": "visual_carrier_selector_2_61_contrast",
+      "role": "contrast",
+      "source_narrative_proof_id": "narrative_proof_2_61_contrast",
+      "selected_layout_module_id": "module_2_15_before_after_route",
+      "selected_socket_memory_id": "shape_text_socket_2_51_contrast",
+      "visual_carrier_type": "before_after_delta",
+      "carrier_reason": "selected by business action, proof payload, existing Run 2.15 layout capacity, and Run 2.51 socket availability",
+      "visual_weight_requirement": {
+        "minimum_primary_carrier_area_pct": 30,
+        "maximum_equal_card_clusters": 1,
+        "must_show_business_action": true
+      },
+      "text_socket_requirement": "all public copy units must bind to Run 2.61 socket fusion contract",
+      "fallback_if_over_capacity": "split proof payload to viewer and preserve the dominant visual carrier",
+      "bad_control_probe": "fail_if_contrast_uses_generic_workflow_diagram_without_visual_carrier_selector"
+    },
+    {
+      "selector_id": "visual_carrier_selector_2_61_proof",
+      "role": "proof",
+      "source_narrative_proof_id": "narrative_proof_2_61_proof",
+      "selected_layout_module_id": "module_2_15_dense_evidence_compression",
+      "selected_socket_memory_id": "shape_text_socket_2_51_proof",
+      "visual_carrier_type": "workspace_inspection",
+      "carrier_reason": "selected by business action, proof payload, existing Run 2.15 layout capacity, and Run 2.51 socket availability",
+      "visual_weight_requirement": {
+        "minimum_primary_carrier_area_pct": 30,
+        "maximum_equal_card_clusters": 1,
+        "must_show_business_action": true
+      },
+      "text_socket_requirement": "all public copy units must bind to Run 2.61 socket fusion contract",
+      "fallback_if_over_capacity": "split proof payload to viewer and preserve the dominant visual carrier",
+      "bad_control_probe": "fail_if_proof_uses_generic_workflow_diagram_without_visual_carrier_selector"
+    },
+    {
+      "selector_id": "visual_carrier_selector_2_61_climax",
+      "role": "climax",
+      "source_narrative_proof_id": "narrative_proof_2_61_climax",
+      "selected_layout_module_id": "module_2_15_metric_reveal_stage",
+      "selected_socket_memory_id": "shape_text_socket_2_51_climax",
+      "visual_carrier_type": "climax_result_object",
+      "carrier_reason": "selected by business action, proof payload, existing Run 2.15 layout capacity, and Run 2.51 socket availability",
+      "visual_weight_requirement": {
+        "minimum_primary_carrier_area_pct": 30,
+        "maximum_equal_card_clusters": 1,
+        "must_show_business_action": true
+      },
+      "text_socket_requirement": "all public copy units must bind to Run 2.61 socket fusion contract",
+      "fallback_if_over_capacity": "split proof payload to viewer and preserve the dominant visual carrier",
+      "bad_control_probe": "fail_if_climax_uses_generic_workflow_diagram_without_visual_carrier_selector"
+    },
+    {
+      "selector_id": "visual_carrier_selector_2_61_close",
+      "role": "close",
+      "source_narrative_proof_id": "narrative_proof_2_61_close",
+      "selected_layout_module_id": "module_2_15_quiet_release_handoff",
+      "selected_socket_memory_id": "shape_text_socket_2_51_close",
+      "visual_carrier_type": "release_handoff",
+      "carrier_reason": "selected by business action, proof payload, existing Run 2.15 layout capacity, and Run 2.51 socket availability",
+      "visual_weight_requirement": {
+        "minimum_primary_carrier_area_pct": 30,
+        "maximum_equal_card_clusters": 1,
+        "must_show_business_action": true
+      },
+      "text_socket_requirement": "all public copy units must bind to Run 2.61 socket fusion contract",
+      "fallback_if_over_capacity": "split proof payload to viewer and preserve the dominant visual carrier",
+      "bad_control_probe": "fail_if_close_uses_generic_workflow_diagram_without_visual_carrier_selector"
+    }
+  ],
+  "next_required_action": "run2_62_generate_four_arm_ppt_consuming_run2_61_narrative_proof_dataset"
+}

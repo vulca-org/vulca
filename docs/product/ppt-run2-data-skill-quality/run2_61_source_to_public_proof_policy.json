@@ -1,0 +1,32 @@
+{
+  "schema_version": "ppt_run2_source_to_public_proof_policy.v1",
+  "run_id": "2.61",
+  "status": "run2_61_source_to_public_proof_policy_ready_public_blocked",
+  "policy_id": "run2_61_source_to_public_proof_policy",
+  "allowed_source_abstraction_types": [
+    "native_editable_proxy_object",
+    "source_pack_object",
+    "inspection_board",
+    "before_after_route_break",
+    "operating_loop_proxy",
+    "release_gate_proxy"
+  ],
+  "forbidden_source_copying_behaviors": [
+    "copy_source_slide_or_video_frame",
+    "copy_source_brand_visual_system",
+    "copy_source_transcript_prose",
+    "store_copyrighted_frame_as_reusable_asset"
+  ],
+  "public_replacement_rules": [
+    "replace raw source inventory with a compact source pack object",
+    "replace full workflow gate list with one pass/fail inspection board",
+    "replace raw competitor prose with one before-after route break",
+    "replace real screenshots with native editable proxy objects"
+  ],
+  "trace_only_retention_rules": [
+    "keep raw source ids in trace manifests and viewer diagnostics",
+    "keep workflow gate details outside public slide text",
+    "keep source URLs in attribution fields"
+  ],
+  "next_required_action": "run2_62_generate_four_arm_ppt_consuming_run2_61_narrative_proof_dataset"
+}

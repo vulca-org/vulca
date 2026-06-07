@@ -1,0 +1,625 @@
+{
+  "schema_version": "ppt_run2_text_socket_fusion_contracts.v1",
+  "run_id": "2.61",
+  "status": "run2_61_text_socket_fusion_contracts_ready_public_blocked",
+  "trace_fields_for_next_rerun": [
+    "run2_61_narrative_proof_id",
+    "run2_61_visual_carrier_selector_id",
+    "run2_61_text_socket_fusion_contract_id",
+    "run2_61_public_proof_replacement_id",
+    "run2_61_narrative_workflow_gate_id"
+  ],
+  "text_socket_fusion_contracts": [
+    {
+      "fusion_contract_id": "text_socket_fusion_2_61_cover",
+      "role": "cover",
+      "source_narrative_proof_id": "narrative_proof_2_61_cover",
+      "source_visual_carrier_selector_id": "visual_carrier_selector_2_61_cover",
+      "source_socket_memory_id": "shape_text_socket_2_51_cover",
+      "source_copy_units": {
+        "headline": "A real brief becomes editable PPT proof.",
+        "subhead": "Vulca converts a real commercial brief plus selected multimodal tutorial and case data into a code-generated editable PPT deck with trace, QA, and review artifacts.",
+        "proof_badges": [
+          "real commercial brief",
+          "multimodal source database",
+          "commercial brief card"
+        ],
+        "annotations": [
+          "brief, source pack, memory, code, and PPT output are shown as one native product path",
+          "buyers can judge a repeatable workflow instead of a one-off pretty slide"
+        ],
+        "state_labels": [
+          "before: prompt-only deck with weak provenance",
+          "after: editable PPT generated from selected case data"
+        ],
+        "speaker_note": "Say that the slide is not an image-generation demo; the product output is code-generated editable PPT with traceable inputs."
+      },
+      "socket_bindings": [
+        {
+          "copy_unit_key": "headline",
+          "socket_id": "socket_2_61_cover_headline",
+          "owning_shape_role": "primary_carrier",
+          "character_budget": 64,
+          "max_lines": 2,
+          "minimum_font_size": 24,
+          "placement_rule": "bind headline to the primary_carrier and reject detached labels",
+          "failure_status": "fail_missing_headline_socket"
+        },
+        {
+          "copy_unit_key": "subhead",
+          "socket_id": "socket_2_61_cover_subhead",
+          "owning_shape_role": "support_surface",
+          "character_budget": 160,
+          "max_lines": 3,
+          "minimum_font_size": 13,
+          "placement_rule": "bind subhead to the support_surface and reject detached labels",
+          "failure_status": "fail_missing_subhead_socket"
+        },
+        {
+          "copy_unit_key": "proof_badges",
+          "socket_id": "socket_2_61_cover_proof_badges",
+          "owning_shape_role": "proof_object",
+          "character_budget": 120,
+          "max_lines": 3,
+          "minimum_font_size": 10,
+          "placement_rule": "bind proof_badges to the proof_object and reject detached labels",
+          "failure_status": "fail_missing_proof_badges_socket"
+        },
+        {
+          "copy_unit_key": "annotations",
+          "socket_id": "socket_2_61_cover_annotations",
+          "owning_shape_role": "annotation_callout",
+          "character_budget": 180,
+          "max_lines": 4,
+          "minimum_font_size": 9,
+          "placement_rule": "bind annotations to the annotation_callout and reject detached labels",
+          "failure_status": "fail_missing_annotations_socket"
+        },
+        {
+          "copy_unit_key": "state_labels",
+          "socket_id": "socket_2_61_cover_state_labels",
+          "owning_shape_role": "state_marker",
+          "character_budget": 96,
+          "max_lines": 2,
+          "minimum_font_size": 9,
+          "placement_rule": "bind state_labels to the state_marker and reject detached labels",
+          "failure_status": "fail_missing_state_labels_socket"
+        },
+        {
+          "copy_unit_key": "speaker_note",
+          "socket_id": "socket_2_61_cover_speaker_note",
+          "owning_shape_role": "speaker_note_channel",
+          "character_budget": 220,
+          "max_lines": 4,
+          "minimum_font_size": 8,
+          "placement_rule": "bind speaker_note to the speaker_note_channel and reject detached labels",
+          "failure_status": "fail_missing_speaker_note_socket"
+        }
+      ],
+      "fit_rules": {
+        "reject_if_any_required_copy_unit_is_unbound": true,
+        "reject_if_public_words_exceed_budget": true,
+        "reject_if_more_than_two_free_floating_labels": true
+      },
+      "overflow_behavior": "move raw detail to viewer and preserve public proof replacement",
+      "surface_terms_policy": "public copy must avoid run ids, raw trace names, schema ids, and source brand names",
+      "trace_fields_for_next_rerun": [
+        "run2_61_narrative_proof_id",
+        "run2_61_visual_carrier_selector_id",
+        "run2_61_text_socket_fusion_contract_id",
+        "run2_61_public_proof_replacement_id",
+        "run2_61_narrative_workflow_gate_id"
+      ]
+    },
+    {
+      "fusion_contract_id": "text_socket_fusion_2_61_setup",
+      "role": "setup",
+      "source_narrative_proof_id": "narrative_proof_2_61_setup",
+      "source_visual_carrier_selector_id": "visual_carrier_selector_2_61_setup",
+      "source_socket_memory_id": "shape_text_socket_2_51_setup",
+      "source_copy_units": {
+        "headline": "Sources become design decisions before drawing.",
+        "subhead": "The system selects a usecase and allowed source pack, derives product capability memory, then turns it into per-slide message contracts and workflow gates before generation.",
+        "proof_badges": [
+          "allowed source pack",
+          "product capability memory",
+          "slide message contract",
+          "allowed source pack"
+        ],
+        "annotations": [
+          "tutorial, case, and multimodal records are reduced into explicit memory and gate objects",
+          "the deck can explain why a visual decision was chosen"
+        ],
+        "state_labels": [
+          "before: raw tutorials sit outside the product",
+          "after: source rules are compiled into selectable memory"
+        ],
+        "speaker_note": "Keep the public slide as a pipeline story. Move raw audit detail to the viewer so the slide does not become a compliance checklist."
+      },
+      "socket_bindings": [
+        {
+          "copy_unit_key": "headline",
+          "socket_id": "socket_2_61_setup_headline",
+          "owning_shape_role": "primary_carrier",
+          "character_budget": 64,
+          "max_lines": 2,
+          "minimum_font_size": 24,
+          "placement_rule": "bind headline to the primary_carrier and reject detached labels",
+          "failure_status": "fail_missing_headline_socket"
+        },
+        {
+          "copy_unit_key": "subhead",
+          "socket_id": "socket_2_61_setup_subhead",
+          "owning_shape_role": "support_surface",
+          "character_budget": 160,
+          "max_lines": 3,
+          "minimum_font_size": 13,
+          "placement_rule": "bind subhead to the support_surface and reject detached labels",
+          "failure_status": "fail_missing_subhead_socket"
+        },
+        {
+          "copy_unit_key": "proof_badges",
+          "socket_id": "socket_2_61_setup_proof_badges",
+          "owning_shape_role": "proof_object",
+          "character_budget": 120,
+          "max_lines": 3,
+          "minimum_font_size": 10,
+          "placement_rule": "bind proof_badges to the proof_object and reject detached labels",
+          "failure_status": "fail_missing_proof_badges_socket"
+        },
+        {
+          "copy_unit_key": "annotations",
+          "socket_id": "socket_2_61_setup_annotations",
+          "owning_shape_role": "annotation_callout",
+          "character_budget": 180,
+          "max_lines": 4,
+          "minimum_font_size": 9,
+          "placement_rule": "bind annotations to the annotation_callout and reject detached labels",
+          "failure_status": "fail_missing_annotations_socket"
+        },
+        {
+          "copy_unit_key": "state_labels",
+          "socket_id": "socket_2_61_setup_state_labels",
+          "owning_shape_role": "state_marker",
+          "character_budget": 96,
+          "max_lines": 2,
+          "minimum_font_size": 9,
+          "placement_rule": "bind state_labels to the state_marker and reject detached labels",
+          "failure_status": "fail_missing_state_labels_socket"
+        },
+        {
+          "copy_unit_key": "speaker_note",
+          "socket_id": "socket_2_61_setup_speaker_note",
+          "owning_shape_role": "speaker_note_channel",
+          "character_budget": 220,
+          "max_lines": 4,
+          "minimum_font_size": 8,
+          "placement_rule": "bind speaker_note to the speaker_note_channel and reject detached labels",
+          "failure_status": "fail_missing_speaker_note_socket"
+        }
+      ],
+      "fit_rules": {
+        "reject_if_any_required_copy_unit_is_unbound": true,
+        "reject_if_public_words_exceed_budget": true,
+        "reject_if_more_than_two_free_floating_labels": true
+      },
+      "overflow_behavior": "move raw detail to viewer and preserve public proof replacement",
+      "surface_terms_policy": "public copy must avoid run ids, raw trace names, schema ids, and source brand names",
+      "trace_fields_for_next_rerun": [
+        "run2_61_narrative_proof_id",
+        "run2_61_visual_carrier_selector_id",
+        "run2_61_text_socket_fusion_contract_id",
+        "run2_61_public_proof_replacement_id",
+        "run2_61_narrative_workflow_gate_id"
+      ]
+    },
+    {
+      "fusion_contract_id": "text_socket_fusion_2_61_contrast",
+      "role": "contrast",
+      "source_narrative_proof_id": "narrative_proof_2_61_contrast",
+      "source_visual_carrier_selector_id": "visual_carrier_selector_2_61_contrast",
+      "source_socket_memory_id": "shape_text_socket_2_51_contrast",
+      "source_copy_units": {
+        "headline": "The difference is mechanism, not taste.",
+        "subhead": "Vulca is differentiated by the case database, skill workflow, bad-control comparison, trace manifest, and code-generated editable PPT output, not by simply producing a nicer-looking slide.",
+        "proof_badges": [
+          "bad control",
+          "competitor boundary",
+          "trace manifest",
+          "prompt-only output"
+        ],
+        "annotations": [
+          "the prompt-only path lacks source memory, carrier selection, and socket-bound copy",
+          "the buyer sees a system boundary rather than a subjective style comparison"
+        ],
+        "state_labels": [
+          "before: generic deck from a prompt",
+          "after: source-bound generated PPT with visible decision route"
+        ],
+        "speaker_note": "Do not render another table. Show the competitor path breaking at the missing data/workflow point, then route to Vulca's editable PPT proof."
+      },
+      "socket_bindings": [
+        {
+          "copy_unit_key": "headline",
+          "socket_id": "socket_2_61_contrast_headline",
+          "owning_shape_role": "primary_carrier",
+          "character_budget": 64,
+          "max_lines": 2,
+          "minimum_font_size": 24,
+          "placement_rule": "bind headline to the primary_carrier and reject detached labels",
+          "failure_status": "fail_missing_headline_socket"
+        },
+        {
+          "copy_unit_key": "subhead",
+          "socket_id": "socket_2_61_contrast_subhead",
+          "owning_shape_role": "support_surface",
+          "character_budget": 160,
+          "max_lines": 3,
+          "minimum_font_size": 13,
+          "placement_rule": "bind subhead to the support_surface and reject detached labels",
+          "failure_status": "fail_missing_subhead_socket"
+        },
+        {
+          "copy_unit_key": "proof_badges",
+          "socket_id": "socket_2_61_contrast_proof_badges",
+          "owning_shape_role": "proof_object",
+          "character_budget": 120,
+          "max_lines": 3,
+          "minimum_font_size": 10,
+          "placement_rule": "bind proof_badges to the proof_object and reject detached labels",
+          "failure_status": "fail_missing_proof_badges_socket"
+        },
+        {
+          "copy_unit_key": "annotations",
+          "socket_id": "socket_2_61_contrast_annotations",
+          "owning_shape_role": "annotation_callout",
+          "character_budget": 180,
+          "max_lines": 4,
+          "minimum_font_size": 9,
+          "placement_rule": "bind annotations to the annotation_callout and reject detached labels",
+          "failure_status": "fail_missing_annotations_socket"
+        },
+        {
+          "copy_unit_key": "state_labels",
+          "socket_id": "socket_2_61_contrast_state_labels",
+          "owning_shape_role": "state_marker",
+          "character_budget": 96,
+          "max_lines": 2,
+          "minimum_font_size": 9,
+          "placement_rule": "bind state_labels to the state_marker and reject detached labels",
+          "failure_status": "fail_missing_state_labels_socket"
+        },
+        {
+          "copy_unit_key": "speaker_note",
+          "socket_id": "socket_2_61_contrast_speaker_note",
+          "owning_shape_role": "speaker_note_channel",
+          "character_budget": 220,
+          "max_lines": 4,
+          "minimum_font_size": 8,
+          "placement_rule": "bind speaker_note to the speaker_note_channel and reject detached labels",
+          "failure_status": "fail_missing_speaker_note_socket"
+        }
+      ],
+      "fit_rules": {
+        "reject_if_any_required_copy_unit_is_unbound": true,
+        "reject_if_public_words_exceed_budget": true,
+        "reject_if_more_than_two_free_floating_labels": true
+      },
+      "overflow_behavior": "move raw detail to viewer and preserve public proof replacement",
+      "surface_terms_policy": "public copy must avoid run ids, raw trace names, schema ids, and source brand names",
+      "trace_fields_for_next_rerun": [
+        "run2_61_narrative_proof_id",
+        "run2_61_visual_carrier_selector_id",
+        "run2_61_text_socket_fusion_contract_id",
+        "run2_61_public_proof_replacement_id",
+        "run2_61_narrative_workflow_gate_id"
+      ]
+    },
+    {
+      "fusion_contract_id": "text_socket_fusion_2_61_proof",
+      "role": "proof",
+      "source_narrative_proof_id": "narrative_proof_2_61_proof",
+      "source_visual_carrier_selector_id": "visual_carrier_selector_2_61_proof",
+      "source_socket_memory_id": "shape_text_socket_2_51_proof",
+      "source_copy_units": {
+        "headline": "Trace becomes inspectable product proof.",
+        "subhead": "Each full-arm slide must carry capability ids, message contract id, workflow gate id, competitor boundary ids, content specificity status, and required product terms in trace before native PPT drawing.",
+        "proof_badges": [
+          "capability ids",
+          "message contract id",
+          "workflow gate id",
+          "narrative proof id"
+        ],
+        "annotations": [
+          "public proof objects point to trace-only records that remain inspectable in the viewer",
+          "reviewers can audit the pipeline without turning the slide into a compliance report"
+        ],
+        "state_labels": [
+          "before: raw trace text competes with the main message",
+          "after: public proof object links to detailed trace"
+        ],
+        "speaker_note": "Show enough proof for trust, but keep raw field enumeration in the viewer where reviewers can inspect it."
+      },
+      "socket_bindings": [
+        {
+          "copy_unit_key": "headline",
+          "socket_id": "socket_2_61_proof_headline",
+          "owning_shape_role": "primary_carrier",
+          "character_budget": 64,
+          "max_lines": 2,
+          "minimum_font_size": 24,
+          "placement_rule": "bind headline to the primary_carrier and reject detached labels",
+          "failure_status": "fail_missing_headline_socket"
+        },
+        {
+          "copy_unit_key": "subhead",
+          "socket_id": "socket_2_61_proof_subhead",
+          "owning_shape_role": "support_surface",
+          "character_budget": 160,
+          "max_lines": 3,
+          "minimum_font_size": 13,
+          "placement_rule": "bind subhead to the support_surface and reject detached labels",
+          "failure_status": "fail_missing_subhead_socket"
+        },
+        {
+          "copy_unit_key": "proof_badges",
+          "socket_id": "socket_2_61_proof_proof_badges",
+          "owning_shape_role": "proof_object",
+          "character_budget": 120,
+          "max_lines": 3,
+          "minimum_font_size": 10,
+          "placement_rule": "bind proof_badges to the proof_object and reject detached labels",
+          "failure_status": "fail_missing_proof_badges_socket"
+        },
+        {
+          "copy_unit_key": "annotations",
+          "socket_id": "socket_2_61_proof_annotations",
+          "owning_shape_role": "annotation_callout",
+          "character_budget": 180,
+          "max_lines": 4,
+          "minimum_font_size": 9,
+          "placement_rule": "bind annotations to the annotation_callout and reject detached labels",
+          "failure_status": "fail_missing_annotations_socket"
+        },
+        {
+          "copy_unit_key": "state_labels",
+          "socket_id": "socket_2_61_proof_state_labels",
+          "owning_shape_role": "state_marker",
+          "character_budget": 96,
+          "max_lines": 2,
+          "minimum_font_size": 9,
+          "placement_rule": "bind state_labels to the state_marker and reject detached labels",
+          "failure_status": "fail_missing_state_labels_socket"
+        },
+        {
+          "copy_unit_key": "speaker_note",
+          "socket_id": "socket_2_61_proof_speaker_note",
+          "owning_shape_role": "speaker_note_channel",
+          "character_budget": 220,
+          "max_lines": 4,
+          "minimum_font_size": 8,
+          "placement_rule": "bind speaker_note to the speaker_note_channel and reject detached labels",
+          "failure_status": "fail_missing_speaker_note_socket"
+        }
+      ],
+      "fit_rules": {
+        "reject_if_any_required_copy_unit_is_unbound": true,
+        "reject_if_public_words_exceed_budget": true,
+        "reject_if_more_than_two_free_floating_labels": true
+      },
+      "overflow_behavior": "move raw detail to viewer and preserve public proof replacement",
+      "surface_terms_policy": "public copy must avoid run ids, raw trace names, schema ids, and source brand names",
+      "trace_fields_for_next_rerun": [
+        "run2_61_narrative_proof_id",
+        "run2_61_visual_carrier_selector_id",
+        "run2_61_text_socket_fusion_contract_id",
+        "run2_61_public_proof_replacement_id",
+        "run2_61_narrative_workflow_gate_id"
+      ]
+    },
+    {
+      "fusion_contract_id": "text_socket_fusion_2_61_climax",
+      "role": "climax",
+      "source_narrative_proof_id": "narrative_proof_2_61_climax",
+      "source_visual_carrier_selector_id": "visual_carrier_selector_2_61_climax",
+      "source_socket_memory_id": "shape_text_socket_2_51_climax",
+      "source_copy_units": {
+        "headline": "One generated result owns the product moment.",
+        "subhead": "The strongest moment is a real brief becoming an editable PPT system: data, memory, workflow gates, code modules, preview, trace, and QA all shown as one product operating loop.",
+        "proof_badges": [
+          "design memory",
+          "code renderer",
+          "design memory route"
+        ],
+        "annotations": [
+          "the source memory and code path converge into one editable native PPT preview",
+          "the product feels like an operating system for presentation generation"
+        ],
+        "state_labels": [
+          "before: separate proof tags and disconnected diagrams",
+          "after: one generated result object with attached proof"
+        ],
+        "speaker_note": "This slide should be the least report-like: one product loop, one remembered claim, no raw trace checklist on the public surface."
+      },
+      "socket_bindings": [
+        {
+          "copy_unit_key": "headline",
+          "socket_id": "socket_2_61_climax_headline",
+          "owning_shape_role": "primary_carrier",
+          "character_budget": 64,
+          "max_lines": 2,
+          "minimum_font_size": 24,
+          "placement_rule": "bind headline to the primary_carrier and reject detached labels",
+          "failure_status": "fail_missing_headline_socket"
+        },
+        {
+          "copy_unit_key": "subhead",
+          "socket_id": "socket_2_61_climax_subhead",
+          "owning_shape_role": "support_surface",
+          "character_budget": 160,
+          "max_lines": 3,
+          "minimum_font_size": 13,
+          "placement_rule": "bind subhead to the support_surface and reject detached labels",
+          "failure_status": "fail_missing_subhead_socket"
+        },
+        {
+          "copy_unit_key": "proof_badges",
+          "socket_id": "socket_2_61_climax_proof_badges",
+          "owning_shape_role": "proof_object",
+          "character_budget": 120,
+          "max_lines": 3,
+          "minimum_font_size": 10,
+          "placement_rule": "bind proof_badges to the proof_object and reject detached labels",
+          "failure_status": "fail_missing_proof_badges_socket"
+        },
+        {
+          "copy_unit_key": "annotations",
+          "socket_id": "socket_2_61_climax_annotations",
+          "owning_shape_role": "annotation_callout",
+          "character_budget": 180,
+          "max_lines": 4,
+          "minimum_font_size": 9,
+          "placement_rule": "bind annotations to the annotation_callout and reject detached labels",
+          "failure_status": "fail_missing_annotations_socket"
+        },
+        {
+          "copy_unit_key": "state_labels",
+          "socket_id": "socket_2_61_climax_state_labels",
+          "owning_shape_role": "state_marker",
+          "character_budget": 96,
+          "max_lines": 2,
+          "minimum_font_size": 9,
+          "placement_rule": "bind state_labels to the state_marker and reject detached labels",
+          "failure_status": "fail_missing_state_labels_socket"
+        },
+        {
+          "copy_unit_key": "speaker_note",
+          "socket_id": "socket_2_61_climax_speaker_note",
+          "owning_shape_role": "speaker_note_channel",
+          "character_budget": 220,
+          "max_lines": 4,
+          "minimum_font_size": 8,
+          "placement_rule": "bind speaker_note to the speaker_note_channel and reject detached labels",
+          "failure_status": "fail_missing_speaker_note_socket"
+        }
+      ],
+      "fit_rules": {
+        "reject_if_any_required_copy_unit_is_unbound": true,
+        "reject_if_public_words_exceed_budget": true,
+        "reject_if_more_than_two_free_floating_labels": true
+      },
+      "overflow_behavior": "move raw detail to viewer and preserve public proof replacement",
+      "surface_terms_policy": "public copy must avoid run ids, raw trace names, schema ids, and source brand names",
+      "trace_fields_for_next_rerun": [
+        "run2_61_narrative_proof_id",
+        "run2_61_visual_carrier_selector_id",
+        "run2_61_text_socket_fusion_contract_id",
+        "run2_61_public_proof_replacement_id",
+        "run2_61_narrative_workflow_gate_id"
+      ]
+    },
+    {
+      "fusion_contract_id": "text_socket_fusion_2_61_close",
+      "role": "close",
+      "source_narrative_proof_id": "narrative_proof_2_61_close",
+      "source_visual_carrier_selector_id": "visual_carrier_selector_2_61_close",
+      "source_socket_memory_id": "shape_text_socket_2_51_close",
+      "source_copy_units": {
+        "headline": "The next proof is generated, not claimed.",
+        "subhead": "Run 2.57 is a content-layer repair only; Run 2.58 must generate a new four-arm PPT that consumes the content contracts, then pass visual review, native render inspection, source-boundary review, and human approval.",
+        "proof_badges": [
+          "Run 2.58 latest proof",
+          "Run 2.59 compiler",
+          "Run 2.60 next rerun",
+          "Run 2.61 data layer"
+        ],
+        "annotations": [
+          "the narrative proof dataset becomes a required consumer contract for the next PPT generator",
+          "the demo stays credible by showing the remaining gate instead of overclaiming"
+        ],
+        "state_labels": [
+          "before: public release claimed from a thin proof",
+          "after: next proof waits for generated comparison and review"
+        ],
+        "speaker_note": "Close calmly: the next action is a generated rerun that consumes the compiler, not a claim of public readiness."
+      },
+      "socket_bindings": [
+        {
+          "copy_unit_key": "headline",
+          "socket_id": "socket_2_61_close_headline",
+          "owning_shape_role": "primary_carrier",
+          "character_budget": 64,
+          "max_lines": 2,
+          "minimum_font_size": 24,
+          "placement_rule": "bind headline to the primary_carrier and reject detached labels",
+          "failure_status": "fail_missing_headline_socket"
+        },
+        {
+          "copy_unit_key": "subhead",
+          "socket_id": "socket_2_61_close_subhead",
+          "owning_shape_role": "support_surface",
+          "character_budget": 160,
+          "max_lines": 3,
+          "minimum_font_size": 13,
+          "placement_rule": "bind subhead to the support_surface and reject detached labels",
+          "failure_status": "fail_missing_subhead_socket"
+        },
+        {
+          "copy_unit_key": "proof_badges",
+          "socket_id": "socket_2_61_close_proof_badges",
+          "owning_shape_role": "proof_object",
+          "character_budget": 120,
+          "max_lines": 3,
+          "minimum_font_size": 10,
+          "placement_rule": "bind proof_badges to the proof_object and reject detached labels",
+          "failure_status": "fail_missing_proof_badges_socket"
+        },
+        {
+          "copy_unit_key": "annotations",
+          "socket_id": "socket_2_61_close_annotations",
+          "owning_shape_role": "annotation_callout",
+          "character_budget": 180,
+          "max_lines": 4,
+          "minimum_font_size": 9,
+          "placement_rule": "bind annotations to the annotation_callout and reject detached labels",
+          "failure_status": "fail_missing_annotations_socket"
+        },
+        {
+          "copy_unit_key": "state_labels",
+          "socket_id": "socket_2_61_close_state_labels",
+          "owning_shape_role": "state_marker",
+          "character_budget": 96,
+          "max_lines": 2,
+          "minimum_font_size": 9,
+          "placement_rule": "bind state_labels to the state_marker and reject detached labels",
+          "failure_status": "fail_missing_state_labels_socket"
+        },
+        {
+          "copy_unit_key": "speaker_note",
+          "socket_id": "socket_2_61_close_speaker_note",
+          "owning_shape_role": "speaker_note_channel",
+          "character_budget": 220,
+          "max_lines": 4,
+          "minimum_font_size": 8,
+          "placement_rule": "bind speaker_note to the speaker_note_channel and reject detached labels",
+          "failure_status": "fail_missing_speaker_note_socket"
+        }
+      ],
+      "fit_rules": {
+        "reject_if_any_required_copy_unit_is_unbound": true,
+        "reject_if_public_words_exceed_budget": true,
+        "reject_if_more_than_two_free_floating_labels": true
+      },
+      "overflow_behavior": "move raw detail to viewer and preserve public proof replacement",
+      "surface_terms_policy": "public copy must avoid run ids, raw trace names, schema ids, and source brand names",
+      "trace_fields_for_next_rerun": [
+        "run2_61_narrative_proof_id",
+        "run2_61_visual_carrier_selector_id",
+        "run2_61_text_socket_fusion_contract_id",
+        "run2_61_public_proof_replacement_id",
+        "run2_61_narrative_workflow_gate_id"
+      ]
+    }
+  ],
+  "next_required_action": "run2_62_generate_four_arm_ppt_consuming_run2_61_narrative_proof_dataset"
+}
