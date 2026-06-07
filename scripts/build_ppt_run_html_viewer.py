@@ -548,6 +548,27 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ),
         ),
     ),
+    RunSpec(
+        "2.58",
+        "Run 2.58",
+        "run2-58-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-58-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-58-run1-5-skill", "baseline"),
+            ArmSpec(
+                "run2_58_full_product_content_contract",
+                "Run 2.58 full",
+                "ppt-run2-58-full-vulca",
+                "full",
+            ),
+            ArmSpec(
+                "bad_run2_56_without_product_capability_content",
+                "Bad missing Run 2.57 content",
+                "ppt-run2-58-bad-without-product-capability-content",
+                "negative",
+            ),
+        ),
+    ),
 )
 
 
@@ -701,6 +722,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run257_message_contracts = read_json(pack / "run2_57_slide_message_contracts.json")
     run257_workflow_gates = read_json(pack / "run2_57_content_workflow_gates.json")
     run257_result = read_json(pack / "results" / "run2_57_product_capability_content_result.json")
+    run258_result = read_json(pack / "results" / "run2_58_product_content_contract_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -997,6 +1019,15 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         ),
         "run257SourceDataStatus": (run257_result.get("quality_delta") or {}).get(
             "source_data_status", "run2_56_role_renderer_split_rerun_public_blocked"
+        ),
+        "run258ResultStatus": run258_result.get("status", ""),
+        "run258Result": run258_result,
+        "run258ResultPath": "run2_58_product_content_contract_rerun_result.json",
+        "run258TargetLayer": (run258_result.get("quality_delta") or {}).get(
+            "target_layer", "product_capability_content_contract_binding"
+        ),
+        "run258SourceDataStatus": (run258_result.get("quality_delta") or {}).get(
+            "source_data_status", "run2_57_product_capability_content_consumed_before_native_ppt_drawing"
         ),
         "selectorLayer": {
             "label": "Run 2.15 selector",
@@ -2247,6 +2278,11 @@ def build_html(data: dict[str, Any]) -> str:
       const run257GenerationBoundary = run257Result.generation_boundary || {{}};
       const run257RepairContract = run257Result.repair_contract || {{}};
       const run257NextGeneratedRunContract = refs.run257NextGeneratedRunContract || {{}};
+      const run258Result = refs.run258Result || {{}};
+      const run258Inputs = run258Result.input_chain || {{}};
+      const run258Rerun = run258Result.rerun || {{}};
+      const run258Quality = run258Result.quality_delta || {{}};
+      const run258Control = run258Result.control_boundary || {{}};
       const run257CapabilityCards = (refs.run257ProductCapabilities || []).map((record) => `
         <article class="dataCard">
           <h4>${{escapeHtml(record.capability_layer)}} capability</h4>
@@ -2427,8 +2463,38 @@ def build_html(data: dict[str, Any]) -> str:
       </div>
       <div class="dataStack">
         <section class="dataBand">
-          <div class="dataBandHead"><div><h3>Latest generated repair proof</h3><p>Run 2.56 is the current generated visual proof: it consumes the Run 2.55 text-shape rerun, then redraws each narrative role through a distinct renderer and layout signature.</p></div><span class="pill" title="${{escapeHtml(refs.run256ResultStatus || "missing")}}">${{escapeHtml(refs.run256ResultStatus || "missing")}}</span></div>
+          <div class="dataBandHead"><div><h3>Latest generated repair proof</h3><p>Run 2.58 is the current generated product-content proof: it consumes the Run 2.57 product capability content layer, keeps the Run 2.56 role-renderer pass, and forces every slide to answer a concrete product reader question.</p></div><span class="pill" title="${{escapeHtml(refs.run258ResultStatus || "missing")}}">${{escapeHtml(refs.run258ResultStatus || "missing")}}</span></div>
           <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Run 2.58 generated result</h4>
+              ${{detailBlock("Result", refs.run258ResultPath || "run2_58_product_content_contract_rerun_result.json")}}
+              ${{detailBlock("Best arm", run258Rerun.best_internal_arm || "run2_58_full_product_content_contract")}}
+              ${{detailBlock("Target layer", run258Quality.target_layer || refs.run258TargetLayer)}}
+              ${{detailBlock("Source data status", run258Quality.source_data_status || refs.run258SourceDataStatus)}}
+              ${{detailBlock("Contact sheet", run258Rerun.combined_contact_sheet || "run2-58-four-arm-contact-sheet.png")}}
+            </article>
+            <article class="dataCard">
+              <h4>Product-content binding metrics</h4>
+              ${{detailBlock("Capability ids", run258Quality.full_slides_with_run2_57_capability_ids)}}
+              ${{detailBlock("Message contracts", run258Quality.full_slides_with_message_contracts)}}
+              ${{detailBlock("Workflow gates", run258Quality.full_slides_with_content_workflow_gates)}}
+              ${{detailBlock("Reader question pass", run258Quality.full_slides_with_reader_question_answered)}}
+              ${{detailBlock("Zero generic claims", run258Quality.full_slides_with_zero_generic_claims)}}
+            </article>
+            <article class="dataCard">
+              <h4>Consumed 2.57 content chain</h4>
+              ${{detailBlock("Run 2.57 result", run258Inputs.run2_57_result || "run2_57_product_capability_content_result.json")}}
+              ${{detailBlock("Product capability memory", run258Inputs.run2_57_product_capability_memory || "run2_57_product_capability_memory.json")}}
+              ${{detailBlock("Slide message contracts", run258Inputs.run2_57_slide_message_contracts || "run2_57_slide_message_contracts.json")}}
+              ${{detailBlock("Content workflow gates", run258Inputs.run2_57_content_workflow_gates || "run2_57_content_workflow_gates.json")}}
+              ${{detailBlock("Run 2.56 full trace", run258Inputs.run2_56_full_trace || "ppt-run2-56-full-vulca/trace_manifest.json")}}
+            </article>
+            <article class="dataCard">
+              <h4>2.58 negative control</h4>
+              ${{detailBlock("Bad arm", "bad_run2_56_without_product_capability_content")}}
+              ${{detailBlock("Missing-content slides", run258Quality.bad_control_slides_without_run2_57_content)}}
+              ${{detailBlock("Boundary", run258Control.bad_run2_56_without_product_capability_content || "Bad control may see Run 2.56 visual proof, but cannot use Run 2.57 product capability content contracts.")}}
+            </article>
             <article class="dataCard">
               <h4>Run 2.56 generated result</h4>
               ${{detailBlock("Result", refs.run256ResultPath || "run2_56_role_renderer_split_rerun_result.json")}}

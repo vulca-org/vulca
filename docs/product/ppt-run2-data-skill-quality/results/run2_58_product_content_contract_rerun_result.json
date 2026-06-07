@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "run_id": "2.58",
+  "status": "run2_58_product_content_contract_rerun_public_blocked",
+  "public_ready": false,
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "source_repair_run_id": "2.57",
+  "source_generated_run_id": "2.56",
+  "database_expansion": false,
+  "workflow_expansion": true,
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "input_chain": {
+    "run2_57_result": "docs/product/ppt-run2-data-skill-quality/results/run2_57_product_capability_content_result.json",
+    "run2_57_product_capability_memory": "docs/product/ppt-run2-data-skill-quality/run2_57_product_capability_memory.json",
+    "run2_57_slide_message_contracts": "docs/product/ppt-run2-data-skill-quality/run2_57_slide_message_contracts.json",
+    "run2_57_content_workflow_gates": "docs/product/ppt-run2-data-skill-quality/run2_57_content_workflow_gates.json",
+    "run2_56_result": "docs/product/ppt-run2-data-skill-quality/results/run2_56_role_renderer_split_rerun_result.json",
+    "run2_56_full_trace": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-56-full-vulca/trace_manifest.json",
+    "commercial_usecase_bank": "docs/product/ppt-run2-data-skill-quality/commercial_usecase_bank.json",
+    "sources": "docs/product/ppt-run2-data-skill-quality/sources.json"
+  },
+  "rerun": {
+    "generator": "scripts/generate_ppt_run2_58_product_content_contract_arms.mjs",
+    "arms": [
+      "prompt_only",
+      "run1_5_skill",
+      "run2_58_full_product_content_contract",
+      "bad_run2_56_without_product_capability_content"
+    ],
+    "best_internal_arm": "run2_58_full_product_content_contract",
+    "best_internal_arm_verdict": "Run 2.57 product capability content contracts are consumed before native PPT drawing, forcing each slide to answer a product reader question with concrete product terms.",
+    "combined_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-58-four-arm-contact-sheet.png",
+    "full_skill_series_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png",
+    "generated_outputs_committed": false
+  },
+  "quality_delta": {
+    "target_layer": "product_capability_content_contract_binding",
+    "source_data_status": "run2_57_product_capability_content_consumed_before_native_ppt_drawing",
+    "full_slides_with_run2_57_capability_ids": 6,
+    "full_slides_with_message_contracts": 6,
+    "full_slides_with_content_workflow_gates": 6,
+    "full_slides_with_reader_question_answered": 6,
+    "full_slides_with_zero_generic_claims": 6,
+    "full_slides_with_code_generated_ppt_claim": 6,
+    "bad_control_slides_without_run2_57_content": 6,
+    "repair_modules": [
+      "drawRun258CapabilityLaunchSurface",
+      "drawRun258SourceToMemoryPipeline",
+      "drawRun258CompetitorBoundaryMatrix",
+      "drawRun258TraceQaInspectionBoard",
+      "drawRun258OperatingLoopClimax",
+      "drawRun258ReleaseDecisionWall"
+    ]
+  },
+  "control_boundary": {
+    "bad_run2_56_without_product_capability_content": "may see Run 2.56 generated result and trace, including role-renderer pass, but must not use Run 2.57 product capability memory, slide message contracts, or content workflow gates",
+    "prompt_only": "commercial_case_only_no_run2_57_product_content_layer",
+    "run1_5_skill": "prior_baseline_no_run2_57_product_content_layer"
+  },
+  "visual_quality_boundary": "Run 2.58 improves product content specificity and product logic explanation; public-video-grade aesthetics, native motion, and human release approval remain blocked.",
+  "remaining_public_release_gates": [
+    "human_visual_review",
+    "native_or_cross_platform_render_inspection",
+    "motion_or_video_review",
+    "source_boundary_review",
+    "human_release_approval"
+  ],
+  "release_boundary": "public_blocked_until_visual_human_review_native_render_review_motion_review_source_boundary_review_and_human_approval",
+  "next_required_action": "audit_run2_58_product_content_contract_against_visible_story_quality_then_continue_same_five_layers"
+}

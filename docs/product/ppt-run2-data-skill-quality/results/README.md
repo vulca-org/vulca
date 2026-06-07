@@ -1,12 +1,12 @@
 # Results
 
-Status: run2_57-product-capability-content-ready-public-blocked.
+Status: run2_58-product-content-contract-rerun-public-blocked.
 
-## Latest Generated Result: Run 2.56
+## Latest Generated Result: Run 2.58
 
-Run 2.56 is the latest generated PPT rerun. It consumes the Run 2.55 text-shape-integration rerun before native PPT redraw, then splits the full arm into six role-specific renderers: cover poster stage, setup route map, contrast before/after lens, proof workspace surface, climax editorial hero, and close decision wall.
+Run 2.58 is the latest generated PPT rerun. It consumes the Run 2.57 product capability content layer before native PPT drawing, keeps the Run 2.56 role-renderer pass, then binds product capability ids, slide message contracts, content workflow gates, reader-question pass status, zero generic claims, and concrete product terms on every full-arm slide.
 
-Current gate: `run2_55_text_shape_integration_consumed_before_role_renderer_redraw`. The full-skill arm keeps the Run 2.55 text-shape pass and adds Run 2.56 trace fields for role renderer id, composition family, layout signature, visual sameness bucket, anchor region, role-specific geometry count, text collision risk, overflow risk, and archetype binding status. The negative control can reuse Run 2.55 traces but must fail role-renderer split with `reused_run2_55_stage_side_template`. Public release remains blocked because this proves measurable renderer variation, not final public-video-grade aesthetics.
+Current gate: `run2_57_product_capability_content_consumed_before_native_ppt_drawing`. The full-skill arm records Run 2.57 capability ids, message contract ids, content workflow gate ids, product logic relation ids, competitor boundary ids, content-specificity status, reader-question status, generic-claim count, and visible product-term count. The negative control can reuse Run 2.56 visual proof but must fail without Run 2.57 product content contracts. Public release remains blocked because this proves product-content binding, not final public-video-grade aesthetics.
 
 ## Latest Data/Workflow Content Layer: Run 2.57
 
@@ -14,7 +14,13 @@ Run 2.57 is the latest data/workflow-only content layer. It creates no new PPT o
 
 Current data/workflow gate: `run2_57_product_capability_content_ready_public_blocked`. Run 2.58 must consume `run2_57_product_capability_memory.json`, `run2_57_slide_message_contracts.json`, and `run2_57_content_workflow_gates.json` before native PPT drawing. The required product output wording is `code-generated editable PPT`; image generation is allowed only for backgrounds or illustrations.
 
-Viewer default note: `latestRunId` remains `2.56` because Run 2.57 is data/workflow-only. The Data/Skill tab exposes the 2.57 product content layer and the 2.58 next-generated-run contract.
+Viewer default note: `latestRunId` is now `2.58` because Run 2.58 is the generated PPT rerun that consumes the Run 2.57 content layer.
+
+## Prior Generated Result: Run 2.56
+
+Run 2.56 is the prior generated PPT rerun. It consumes the Run 2.55 text-shape-integration rerun before native PPT redraw, then splits the full arm into six role-specific renderers: cover poster stage, setup route map, contrast before/after lens, proof workspace surface, climax editorial hero, and close decision wall.
+
+Current gate: `run2_55_text_shape_integration_consumed_before_role_renderer_redraw`. The full-skill arm keeps the Run 2.55 text-shape pass and adds Run 2.56 trace fields for role renderer id, composition family, layout signature, visual sameness bucket, anchor region, role-specific geometry count, text collision risk, overflow risk, and archetype binding status. The negative control can reuse Run 2.55 traces but must fail role-renderer split with `reused_run2_55_stage_side_template`. Public release remains blocked because this proves measurable renderer variation, not final public-video-grade aesthetics.
 
 ## Prior Data/Workflow Thickness Layer: Run 2.53
 
@@ -22,7 +28,7 @@ Run 2.53 is the prior product-surface data/workflow-only repair layer. It create
 
 Current data/workflow gate: `run2_53_product_surface_scene_repair_ready_public_blocked`. Run 2.54 must consume `run2_53_product_surface_scene_memory.json`, `run2_53_business_visual_evidence_memory.json`, and `run2_53_scene_renderer_workflow_gates.json` before native PPT drawing.
 
-Viewer default note: `latestRunId` is now `2.56` because Run 2.56 is the generated PPT rerun that consumes the Run 2.55 generated result. Run 2.53 remains a data/workflow-only layer, not a generated deck selector target.
+Viewer historical note: Run 2.53 remains a data/workflow-only layer, not a generated deck selector target.
 
 ## Prior Generated Result: Run 2.55
 
@@ -193,13 +199,13 @@ Local pilot arms from Run 2.0 through Run 2.22 were generated under `outputs/019
 
 Generated decks, contact sheets, previews, trace manifests, layout JSON, and delivery reports remain local under `outputs/` unless the user explicitly approves release packaging. Run 2.15 intentionally adds no new `ppt-run2-15-*` output folders; Run 2.16 is the selector-driven generated rerun that consumes the Run 2.15 artifacts. Run 2.18 and Run 2.21 intentionally add no new output folders; Run 2.19 consumes the Run 2.18 thickness artifacts, and Run 2.22 consumes the Run 2.21 selector-memory artifacts.
 
-The latest generated internal result is Run 2.22, a same-stage selector-memory rerun after Run 2.21. Run 2.11, Run 2.12, Run 2.15, Run 2.17, Run 2.18, Run 2.20, and Run 2.21 do not create new PPTX artifacts; they audit, thicken, and bind the data/workflow chain that generated runs consume.
+The latest generated internal result is Run 2.58, a same-stage product-content rerun after the Run 2.57 data/workflow content layer. Run 2.11, Run 2.12, Run 2.15, Run 2.17, Run 2.18, Run 2.20, Run 2.21, and Run 2.57 do not create new PPTX artifacts; they audit, thicken, and bind the data/workflow chain that generated runs consume.
 
 Run 2.18 is the latest data/workflow-only layer. It creates `run2_18_multimodal_evidence_expansion.json`, `run2_18_design_memory_expansion.json`, and `run2_18_workflow_gate_expansion.json`. Run 2.19 is the generated proof that these artifacts can drive a four-arm PPT rerun with selected evidence/memory/gate ids, hidden trace, product theater, metric climax, and bad thickness-control gates.
 
 Run 2.14 uses `run2_12_thick_multimodal_evidence.json`, `run2_12_design_memory_seed.json`, `run2_12_workflow_gate_seed.json`, `run2_10_visual_system_sources.json`, `run2_10_visual_system_memory.json`, and `run2_10_visual_system_gate_matrix.json`, then calls the `drawRun214...` native modules in `ppt-run2-14-full-vulca`. The required comparison images are `run2-14-four-arm-contact-sheet` and `run2-full-skill-series-horizontal`.
 
-`run2_14_full_skill` is the prior aesthetic-recovery arm. It keeps data/workflow trace truthfulness while hiding visible workflow machinery from the public slide surface. The `bad_visible_workflow_memory` negative control confirms that Run 2.12 data/workflow without the Run 2.10 aesthetic shell still trends toward beige box/checklist output. Run 2.22 supersedes it as the latest generated selector-memory proof, but public release remains blocked pending native render inspection, source-brand sanitization review, Gemini and human visual review, real product/demo media handling, motion/render support, and human approval.
+`run2_14_full_skill` is the prior aesthetic-recovery arm. It keeps data/workflow trace truthfulness while hiding visible workflow machinery from the public slide surface. The `bad_visible_workflow_memory` negative control confirms that Run 2.12 data/workflow without the Run 2.10 aesthetic shell still trends toward beige box/checklist output. Run 2.58 supersedes it as the latest generated product-content proof, but public release remains blocked pending native render inspection, source-brand sanitization review, Gemini and human visual review, real product/demo media handling, motion/render support, and human approval.
 
 Run 2.13 uses `run2_12_thick_multimodal_evidence.json`, `run2_12_design_memory_seed.json`, and `run2_12_workflow_gate_seed.json`, then calls the `drawRun213...` native modules in `ppt-run2-13-full-vulca`. The required comparison images are `run2-13-four-arm-contact-sheet` and `run2-full-skill-series-horizontal`.
 
