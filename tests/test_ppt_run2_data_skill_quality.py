@@ -407,6 +407,17 @@ EXPECTED_RUN2_54_TRACE_FIELDS = {
     "run2_54_product_surface_slots_rendered",
     "run2_54_business_visual_evidence_objects",
 }
+EXPECTED_RUN2_55_TRACE_FIELDS = {
+    "run2_55_code_module_ids",
+    "run2_55_text_shape_integration_status",
+    "run2_55_primary_layout_strategy",
+    "run2_55_named_text_containers_rendered",
+    "run2_55_non_rectangular_shape_families_rendered",
+    "run2_55_text_shape_binding_pairs",
+    "run2_55_text_overflow_risk_count",
+    "run2_55_equal_rectangle_cluster_count",
+    "run2_55_editorial_hierarchy_levels",
+}
 EXPECTED_RUN2_51_FORBIDDEN_PUBLIC_TERMS = {
     "run2",
     "memory",
@@ -6728,7 +6739,7 @@ def test_ppt_run_html_viewer_generated_latest_run2_50() -> None:
             "ppt-run2-44-full-vulca",
             "ppt-run2-44-bad-run2-43-name-only-geometry",
             "run2_44_semantic_geometry_rerun_result.json",
-            '"latestRunId": "2.54"',
+            '"latestRunId": "2.55"',
             "Run 2.47",
             "run2-47-four-arm-contact-sheet.png",
             "ppt-run2-47-prompt-only",
@@ -7663,7 +7674,7 @@ def test_ppt_run_html_viewer_embeds_run2_45_semantic_geometry_effectiveness_audi
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.54"',
+            '"latestRunId": "2.55"',
             "Run 2.45 semantic geometry effectiveness audit",
             "run2_45_semantic_geometry_effectiveness_audit.json",
             "slot_based_semantic_geometry",
@@ -7822,7 +7833,7 @@ def test_ppt_run_html_viewer_embeds_run2_46_multimodal_composition_memory() -> N
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.54"',
+            '"latestRunId": "2.55"',
             "Run 2.46 multimodal composition memory",
             "run2_46_multimodal_composition_memory_result.json",
             "visual object grammar",
@@ -7963,7 +7974,7 @@ def test_ppt_run_html_viewer_mentions_run2_47_composition_grammar_rerun() -> Non
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.54"',
+            '"latestRunId": "2.55"',
             "Run 2.47",
             "run2_47_composition_grammar_rerun_result.json",
             "visual object grammar",
@@ -8105,7 +8116,7 @@ def test_ppt_run_html_viewer_embeds_run2_48_composition_grammar_effectiveness_au
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.54"',
+            '"latestRunId": "2.55"',
             "Run 2.48 composition grammar effectiveness audit",
             "run2_48_composition_grammar_effectiveness_audit.json",
             "visual object grammar",
@@ -8272,7 +8283,7 @@ def test_ppt_run_html_viewer_embeds_run2_49_data_only_repair_pack() -> None:
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.54"',
+            '"latestRunId": "2.55"',
             "Run 2.49 readability/content density/editorial renderer repair",
             "Data-only Run",
             "run2_49_readability_memory.json",
@@ -8308,7 +8319,7 @@ def test_ppt_run_html_viewer_embeds_run2_51_data_workflow_repair_pack() -> None:
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.54"',
+            '"latestRunId": "2.55"',
             "Run 2.51 remains the prior data/workflow repair layer",
             "run2_51_editorial_shape_text_repair_result.json",
             "run2_51_editorial_copy_memory.json",
@@ -8976,7 +8987,7 @@ def test_ppt_run_html_viewer_mentions_run2_53_product_surface_scene_repair() -> 
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.54"',
+            '"latestRunId": "2.55"',
             "Run 2.53 product-surface scene repair",
             "run2_53_product_surface_scene_memory.json",
             "run2_53_business_visual_evidence_memory.json",
@@ -9147,12 +9158,162 @@ def test_ppt_run_html_viewer_mentions_run2_54_product_surface_scene_rerun() -> N
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.54"',
+            '"latestRunId": "2.55"',
             "Run 2.54",
             "run2-54-four-arm-contact-sheet.png",
             "ppt-run2-54-full-vulca",
             "Run 2.53 product-surface scene repair",
             "run2_54_product_surface_scene_rerun_result.json",
+        ],
+    )
+
+
+def test_run2_55_generator_consumes_run2_54_and_repairs_text_shape_integration() -> None:
+    script_path = ROOT / "scripts" / "generate_ppt_run2_55_text_shape_integration_arms.mjs"
+    assert script_path.exists(), "missing Run 2.55 text-shape integration generator"
+    body = script_path.read_text(encoding="utf-8")
+
+    assert_contains(
+        body,
+        [
+            "run2_54_product_surface_scene_rerun_result.json",
+            "ppt-run2-54-full-vulca/trace_manifest.json",
+            "run2_53_product_surface_scene_memory.json",
+            "run2_53_business_visual_evidence_memory.json",
+            "drawRun255TextShapeIntegration",
+            "text_shape_integration_and_shape_vocabulary_repair",
+            "bad_run2_54_without_text_shape_integration",
+            "run2_54_product_surface_scene_status",
+            "run2_55_text_shape_integration_status",
+            "run2_55_non_rectangular_shape_families_rendered",
+            "run2_55_text_shape_binding_pairs",
+        ],
+    )
+    assert "Run 2.55 must consume Run 2.54 generated result" in body
+    assert "Run 2.55 must compare against Run 2.54 full trace" in body
+    assert "equal rectangle cluster" in body
+
+
+def test_run2_55_records_text_shape_integration_rerun_result() -> None:
+    result_md = (PACK / "results" / "run2_55_text_shape_integration_rerun_result.md").read_text(
+        encoding="utf-8"
+    )
+    result = load_json(PACK / "results" / "run2_55_text_shape_integration_rerun_result.json")
+    presentations = ROOT / "outputs" / "019e7d9c-532a-70b3-8892-fa3ae42baef2" / "presentations"
+    full_trace = load_json(presentations / "ppt-run2-55-full-vulca" / "trace_manifest.json")
+    bad_trace = load_json(
+        presentations / "ppt-run2-55-bad-without-text-shape-integration" / "trace_manifest.json"
+    )
+
+    assert result["run_id"] == "2.55"
+    assert result["status"] == "run2_55_text_shape_integration_rerun_public_blocked"
+    assert result["selected_usecase_id"] == "usecase_design_to_production_platform_launch"
+    assert result["source_repair_run_id"] == "2.53"
+    assert result["source_generated_run_id"] == "2.54"
+    assert result["rerun"]["best_internal_arm"] == "run2_55_full_text_shape_integration"
+    assert result["quality_delta"]["target_layer"] == "text_shape_integration_and_shape_vocabulary_repair"
+    assert result["quality_delta"]["source_data_status"] == (
+        "run2_54_product_surface_scene_rerun_consumed_before_text_shape_redraw"
+    )
+    assert result["quality_delta"]["full_slides_with_named_text_containers"] == 6
+    assert result["quality_delta"]["full_slides_with_non_rectangular_shape_families"] == 6
+    assert result["quality_delta"]["full_slides_with_text_shape_binding_pairs"] == 6
+    assert result["quality_delta"]["full_slides_without_text_overflow_risk"] == 6
+    assert result["quality_delta"]["full_slides_without_equal_rectangle_clusters"] == 6
+    assert result["quality_delta"]["bad_control_slides_without_text_shape_integration"] == 6
+    assert result["rerun"]["combined_contact_sheet"].endswith("run2-55-four-arm-contact-sheet.png")
+    assert result["rerun"]["full_skill_series_sheet"].endswith("run2-full-skill-series-horizontal.png")
+
+    assert full_trace["arm_id"] == "run2_55_full_text_shape_integration"
+    assert full_trace["run2_55_text_shape_integration_status"] == (
+        "run2_54_product_surface_scene_rerun_consumed_before_text_shape_redraw"
+    )
+    assert full_trace["source_repair_run_id"] == "2.53"
+    assert full_trace["source_generated_run_id"] == "2.54"
+    assert len(full_trace["slides"]) == 6
+    layout_strategies = {slide["run2_55_primary_layout_strategy"] for slide in full_trace["slides"]}
+    assert len(layout_strategies) >= 4
+    for slide in full_trace["slides"]:
+        assert set(EXPECTED_RUN2_54_TRACE_FIELDS) <= set(slide)
+        assert set(EXPECTED_RUN2_55_TRACE_FIELDS) <= set(slide)
+        assert slide["run2_53_product_surface_scene_id"].startswith("product_surface_scene_2_53_")
+        assert slide["run2_54_product_surface_slots_rendered"] >= 3
+        assert slide["run2_55_text_shape_integration_status"] == "pass_internal"
+        assert slide["run2_55_named_text_containers_rendered"] >= 4
+        assert slide["run2_55_non_rectangular_shape_families_rendered"] >= 3
+        assert slide["run2_55_text_shape_binding_pairs"] >= 4
+        assert slide["run2_55_text_overflow_risk_count"] == 0
+        assert slide["run2_55_equal_rectangle_cluster_count"] == 0
+        assert slide["run2_55_editorial_hierarchy_levels"] >= 4
+        assert "drawRun255TextShapeIntegration" in slide["run2_55_code_module_ids"]
+        assert slide["layout_metrics"]["text_box_count"] >= 7
+        assert slide["layout_metrics"]["visible_words"] >= 64
+
+    assert bad_trace["arm_id"] == "bad_run2_54_without_text_shape_integration"
+    for slide in bad_trace["slides"]:
+        assert slide["run2_53_product_surface_scene_id"].startswith("product_surface_scene_2_53_")
+        assert slide["run2_55_text_shape_integration_status"] == "fail_missing_text_shape_integration"
+        assert slide["run2_55_non_rectangular_shape_families_rendered"] <= 1
+        assert slide["run2_55_equal_rectangle_cluster_count"] >= 1
+
+    assert_contains(
+        result_md,
+        [
+            "Run 2.55 Text Shape Integration Rerun",
+            "consumes Run 2.54",
+            "named text containers",
+            "non-rectangular shape families",
+            "bad_run2_54_without_text_shape_integration",
+            "public blocked",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_run2_55_generator_rejects_malformed_run2_54_source() -> None:
+    script_path = ROOT / "scripts" / "generate_ppt_run2_55_text_shape_integration_arms.mjs"
+    body = script_path.read_text(encoding="utf-8")
+
+    assert "validateRun255TextShapeInputs" in body
+    assert "Run 2.55 must consume Run 2.54 generated result" in body
+    assert "Run 2.55 must compare against Run 2.54 full trace" in body
+    assert "Run 2.55 requires six Run 2.54 full trace slides" in body
+    assert "Run 2.55 missing Run 2.53 product surface scene id" in body
+    assert "equal rectangle cluster" in body
+
+
+def test_ppt_run_html_viewer_mentions_run2_55_text_shape_integration_rerun() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+    viewer = (
+        ROOT
+        / "outputs"
+        / "019e7d9c-532a-70b3-8892-fa3ae42baef2"
+        / "presentations"
+        / "ppt-run-viewer.html"
+    ).read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "Run 2.55",
+            "ppt-run2-55-prompt-only",
+            "ppt-run2-55-run1-5-skill",
+            "ppt-run2-55-full-vulca",
+            "ppt-run2-55-bad-without-text-shape-integration",
+            "run2-55-four-arm-contact-sheet.png",
+            "run2_55_text_shape_integration_rerun_result.json",
+            "run2_54_product_surface_scene_rerun_consumed_before_text_shape_redraw",
+        ],
+    )
+    assert_contains(
+        viewer,
+        [
+            '"latestRunId": "2.55"',
+            "Run 2.55",
+            "run2-55-four-arm-contact-sheet.png",
+            "ppt-run2-55-full-vulca",
+            "Run 2.55 generated result",
+            "run2_55_text_shape_integration_rerun_result.json",
         ],
     )
 
@@ -9184,7 +9345,7 @@ def test_ppt_run_html_viewer_mentions_run2_50_readability_density_renderer_rerun
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.54"',
+            '"latestRunId": "2.55"',
             "Run 2.50",
             "run2-50-four-arm-contact-sheet.png",
             "ppt-run2-50-prompt-only",
