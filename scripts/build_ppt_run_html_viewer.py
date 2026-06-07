@@ -781,6 +781,9 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run261_gates = read_json(pack / "run2_61_narrative_workflow_gates.json")
     run261_result = read_json(pack / "results" / "run2_61_narrative_proof_dataset_result.json")
     run262_result = read_json(pack / "results" / "run2_62_narrative_proof_rerun_result.json")
+    run263_audit = read_json(
+        pack / "results" / "run2_63_narrative_proof_consumption_effectiveness_audit.json"
+    )
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -1168,6 +1171,16 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run262FullTracePath": "ppt-run2-62-full-vulca/trace_manifest.json",
         "run262BadTracePath": "ppt-run2-62-bad-without-narrative-proof/trace_manifest.json",
         "run262FourArmSheetPath": "run2-62-four-arm-contact-sheet.png",
+        "run263AuditStatus": run263_audit.get("status", ""),
+        "run263Audit": run263_audit,
+        "run263AuditPath": "run2_63_narrative_proof_consumption_effectiveness_audit.json",
+        "run263RootCauseLayer": (run263_audit.get("root_cause_assessment") or {}).get(
+            "primary_layer", "renderer_composition_grammar"
+        ),
+        "run263NextRequiredAction": run263_audit.get(
+            "next_required_action",
+            "build_run2_64_renderer_composition_repair_for_dynamic_sockets_and_semantic_diagrams_before_rerun",
+        ),
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -2463,6 +2476,21 @@ def build_html(data: dict[str, Any]) -> str:
       const run262Rerun = run262Result.rerun || {{}};
       const run262Quality = run262Result.quality_delta || {{}};
       const run262Control = run262Result.control_boundary || {{}};
+      const run263Audit = refs.run263Audit || {{}};
+      const run263Data = run263Audit.data_consumption_assessment || {{}};
+      const run263Renderer = run263Audit.renderer_effectiveness_assessment || {{}};
+      const run263Root = run263Audit.root_cause_assessment || {{}};
+      const run263Gate = run263Audit.gate_summary || {{}};
+      const run263RoleCards = (run263Data.role_records || []).map((record) => `
+        <article class="dataCard">
+          <h4>${{escapeHtml(record.role)}} / ${{escapeHtml(record.product_system_surface_kind)}}</h4>
+          ${{detailBlock("2.61 contracts bound", record.run2_61_contracts_bound)}}
+          ${{detailBlock("Socket bindings", record.run2_62_socket_binding_count)}}
+          ${{detailBlock("Proof objects", record.run2_62_public_proof_object_count)}}
+          ${{detailBlock("Visible words", record.visible_words)}}
+          ${{detailBlock("Text boxes", record.text_box_count)}}
+          ${{detailBlock("Repair requirement", record.role_specific_repair_requirement)}}
+        </article>`).join("");
       const run261SelectorByRole = Object.fromEntries((refs.run261SelectorRecords || []).map((record) => [record.role, record]));
       const run261FusionByRole = Object.fromEntries((refs.run261FusionRecords || []).map((record) => [record.role, record]));
       const run261GateByRole = Object.fromEntries((refs.run261WorkflowGates || []).map((gate) => [gate.role, gate]));
@@ -2776,6 +2804,44 @@ def build_html(data: dict[str, Any]) -> str:
         <span class="pill">${{escapeHtml(refs.packPath || "case pack")}}</span>
       </div>
       <div class="dataStack">
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.63 narrative proof effectiveness audit</h3><p>Run 2.63 is audit-only: it confirms Run 2.62 consumes Run 2.61, then isolates the remaining blocker as renderer_composition_grammar rather than missing raw data or workflow consumption. Primary explicit blocker: static_socket_plan_repeated_on_every_slide.</p></div><span class="pill" title="${{escapeHtml(refs.run263AuditStatus || "missing")}}">${{escapeHtml(refs.run263AuditStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Audit boundary</h4>
+              ${{detailBlock("Result", refs.run263AuditPath || "run2_63_narrative_proof_consumption_effectiveness_audit.json")}}
+              ${{detailBlock("Creates new PPT deck", run263Audit.creates_new_ppt_deck)}}
+              ${{detailBlock("Source generated run", run263Audit.source_generated_run)}}
+              ${{detailBlock("Source data run", run263Audit.source_data_run)}}
+              ${{detailBlock("Next required action", run263Audit.next_required_action || refs.run263NextRequiredAction)}}
+            </article>
+            <article class="dataCard">
+              <h4>Data consumption verdict</h4>
+              ${{detailBlock("Run 2.61 data consumed", run263Data.run2_61_data_consumed)}}
+              ${{detailBlock("2.61 contracts", run263Data.full_slides_with_run2_61_contracts)}}
+              ${{detailBlock("Socket bindings", run263Data.full_slides_with_socket_bindings)}}
+              ${{detailBlock("Public proof objects", run263Data.full_slides_with_public_proof_objects)}}
+              ${{detailBlock("Bad control missing 2.61", run263Data.bad_control_without_run2_61_contracts)}}
+            </article>
+            <article class="dataCard">
+              <h4>Root cause</h4>
+              ${{detailBlock("Primary layer", run263Root.primary_layer || refs.run263RootCauseLayer)}}
+              ${{detailBlock("Not primary layer", run263Root.not_primary_layer)}}
+              ${{detailBlock("Root cause", run263Root.root_cause_primary)}}
+              ${{detailBlock("Renderer blockers", run263Root.renderer_blockers)}}
+            </article>
+            <article class="dataCard">
+              <h4>Renderer gate</h4>
+              ${{detailBlock("Data gate", run263Gate.data_consumption_gate)}}
+              ${{detailBlock("Renderer effectiveness", run263Gate.renderer_effectiveness_gate)}}
+              ${{detailBlock("Public release", run263Gate.public_release_gate)}}
+              ${{detailBlock("Artifact findings", run263Renderer.artifact_review_findings)}}
+              ${{detailBlock("Why not more raw data", run263Renderer.why_more_raw_data_is_not_the_next_move)}}
+            </article>
+          </div>
+          <div class="dataBandSubhead"><h4>Run 2.63 role repair targets</h4><p>Each role already has trace-specific data. Run 2.64 should repair how those role-specific carriers become dynamic sockets, semantic diagrams, text-fit gates, and proof objects.</p></div>
+          <div class="dataGrid expandedGrid">${{run263RoleCards}}</div>
+        </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.62 generated narrative proof consumption</h3><p>Run 2.62 is the current generated proof: the full arm consumes Run 2.61 narrative proof records, visual carrier selectors, text socket fusion contracts, public proof replacements, and workflow gates before native PPT drawing.</p></div><span class="pill" title="${{escapeHtml(refs.run262ResultStatus || "missing")}}">${{escapeHtml(refs.run262ResultStatus || "missing")}}</span></div>
           <div class="dataGrid">

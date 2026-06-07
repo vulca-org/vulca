@@ -1,0 +1,226 @@
+{
+  "schema_version": "ppt_run2_narrative_proof_consumption_effectiveness_audit.v1",
+  "run_id": "2.63",
+  "status": "run2_63_narrative_proof_consumption_effectiveness_audit_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "source_generated_run": "2.62",
+  "source_data_run": "2.61",
+  "creates_new_ppt_deck": false,
+  "public_ready": false,
+  "input_chain": {
+    "run2_62_full_trace_manifest": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-62-full-vulca/trace_manifest.json",
+    "run2_62_bad_trace_manifest": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-62-bad-without-narrative-proof/trace_manifest.json",
+    "run2_62_rerun_result": "docs/product/ppt-run2-data-skill-quality/results/run2_62_narrative_proof_rerun_result.json",
+    "run2_61_narrative_proof_dataset": "docs/product/ppt-run2-data-skill-quality/run2_61_narrative_proof_dataset.json",
+    "run2_61_story_to_visual_carrier_selector": "docs/product/ppt-run2-data-skill-quality/run2_61_story_to_visual_carrier_selector.json",
+    "run2_61_text_socket_fusion_contracts": "docs/product/ppt-run2-data-skill-quality/run2_61_text_socket_fusion_contracts.json",
+    "run2_61_source_to_public_proof_policy": "docs/product/ppt-run2-data-skill-quality/run2_61_source_to_public_proof_policy.json",
+    "run2_61_narrative_workflow_gates": "docs/product/ppt-run2-data-skill-quality/run2_61_narrative_workflow_gates.json",
+    "run2_62_four_arm_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-62-four-arm-contact-sheet.png",
+    "run2_62_full_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-62-full-vulca/preview/contact-sheet.png",
+    "run2_full_skill_series_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png"
+  },
+  "source_inventory": {
+    "run2_61_narrative_records": 6,
+    "run2_61_visual_carrier_records": 6,
+    "run2_61_text_socket_contracts": 6,
+    "run2_61_source_policy_rules": 0,
+    "run2_61_narrative_workflow_gates": 6,
+    "run2_62_full_trace_slides": 6,
+    "run2_62_bad_trace_slides": 6
+  },
+  "data_consumption_assessment": {
+    "run2_61_data_consumed": true,
+    "bad_control_boundary_passed": true,
+    "full_arm_id": "run2_62_full_narrative_proof",
+    "bad_control_arm_id": "bad_run2_60_without_run2_61_narrative_proof_dataset",
+    "full_slides_with_run2_61_contracts": 6,
+    "full_slides_with_socket_bindings": 6,
+    "full_slides_with_public_proof_objects": 6,
+    "full_slides_with_required_answer_visible": 6,
+    "bad_control_without_run2_61_contracts": 6,
+    "distinct_product_surface_kinds_in_trace": [
+      "before_after_delta",
+      "climax_result_object",
+      "operating_loop",
+      "product_surface",
+      "release_handoff",
+      "workspace_inspection"
+    ],
+    "role_records": [
+      {
+        "slide_id": "slide_01",
+        "role": "cover",
+        "title": "A real brief becomes editable PPT proof.",
+        "product_system_surface_kind": "product_surface",
+        "run2_61_contracts_bound": true,
+        "run2_62_socket_binding_count": 6,
+        "run2_62_public_proof_object_count": 11,
+        "run2_62_required_answer_visible": "pass_internal",
+        "visible_words": 65,
+        "text_box_count": 16,
+        "zones": 8,
+        "bad_control_missing_run2_61": true,
+        "renderer_blockers": [
+          "static_socket_plan_repeated_on_every_slide",
+          "generic_native_shape_grammar_collapses_role_specific_visual_carriers",
+          "text_fit_and_wrapping_not_trace_gated",
+          "semantic_diagram_labels_not_bound_to_active_slide_proof"
+        ],
+        "role_specific_repair_requirement": "replace repeated socket legend with a role-specific source-pack hero object and visible proof chain.",
+        "interpretation": "The slide carries Run 2.61 narrative proof, carrier, socket, replacement, and gate ids, so the next repair should target how the renderer turns those ids into role-specific visual objects and text sockets."
+      },
+      {
+        "slide_id": "slide_02",
+        "role": "setup",
+        "title": "Sources compile into design memory before drawing.",
+        "product_system_surface_kind": "operating_loop",
+        "run2_61_contracts_bound": true,
+        "run2_62_socket_binding_count": 6,
+        "run2_62_public_proof_object_count": 7,
+        "run2_62_required_answer_visible": "pass_internal",
+        "visible_words": 58,
+        "text_box_count": 17,
+        "zones": 8,
+        "bad_control_missing_run2_61": true,
+        "renderer_blockers": [
+          "static_socket_plan_repeated_on_every_slide",
+          "generic_native_shape_grammar_collapses_role_specific_visual_carriers",
+          "text_fit_and_wrapping_not_trace_gated",
+          "semantic_diagram_labels_not_bound_to_active_slide_proof"
+        ],
+        "role_specific_repair_requirement": "draw the source-to-memory operating loop as one semantic system instead of six equal cards.",
+        "interpretation": "The slide carries Run 2.61 narrative proof, carrier, socket, replacement, and gate ids, so the next repair should target how the renderer turns those ids into role-specific visual objects and text sockets."
+      },
+      {
+        "slide_id": "slide_03",
+        "role": "contrast",
+        "title": "The difference is mechanism, not taste.",
+        "product_system_surface_kind": "before_after_delta",
+        "run2_61_contracts_bound": true,
+        "run2_62_socket_binding_count": 6,
+        "run2_62_public_proof_object_count": 7,
+        "run2_62_required_answer_visible": "pass_internal",
+        "visible_words": 58,
+        "text_box_count": 14,
+        "zones": 8,
+        "bad_control_missing_run2_61": true,
+        "renderer_blockers": [
+          "static_socket_plan_repeated_on_every_slide",
+          "generic_native_shape_grammar_collapses_role_specific_visual_carriers",
+          "text_fit_and_wrapping_not_trace_gated",
+          "semantic_diagram_labels_not_bound_to_active_slide_proof"
+        ],
+        "role_specific_repair_requirement": "make before/after labels and connector copy text-fit gated so mechanism contrast cannot truncate.",
+        "interpretation": "The slide carries Run 2.61 narrative proof, carrier, socket, replacement, and gate ids, so the next repair should target how the renderer turns those ids into role-specific visual objects and text sockets."
+      },
+      {
+        "slide_id": "slide_04",
+        "role": "proof",
+        "title": "Trace proves the data path was used.",
+        "product_system_surface_kind": "workspace_inspection",
+        "run2_61_contracts_bound": true,
+        "run2_62_socket_binding_count": 6,
+        "run2_62_public_proof_object_count": 7,
+        "run2_62_required_answer_visible": "pass_internal",
+        "visible_words": 60,
+        "text_box_count": 20,
+        "zones": 8,
+        "bad_control_missing_run2_61": true,
+        "renderer_blockers": [
+          "static_socket_plan_repeated_on_every_slide",
+          "generic_native_shape_grammar_collapses_role_specific_visual_carriers",
+          "text_fit_and_wrapping_not_trace_gated",
+          "semantic_diagram_labels_not_bound_to_active_slide_proof"
+        ],
+        "role_specific_repair_requirement": "turn the inspection board into a readable proof workspace with active source, gate, and output panes.",
+        "interpretation": "The slide carries Run 2.61 narrative proof, carrier, socket, replacement, and gate ids, so the next repair should target how the renderer turns those ids into role-specific visual objects and text sockets."
+      },
+      {
+        "slide_id": "slide_05",
+        "role": "climax",
+        "title": "The product moment is the operating loop.",
+        "product_system_surface_kind": "climax_result_object",
+        "run2_61_contracts_bound": true,
+        "run2_62_socket_binding_count": 6,
+        "run2_62_public_proof_object_count": 7,
+        "run2_62_required_answer_visible": "pass_internal",
+        "visible_words": 56,
+        "text_box_count": 16,
+        "zones": 8,
+        "bad_control_missing_run2_61": true,
+        "renderer_blockers": [
+          "static_socket_plan_repeated_on_every_slide",
+          "generic_native_shape_grammar_collapses_role_specific_visual_carriers",
+          "text_fit_and_wrapping_not_trace_gated",
+          "semantic_diagram_labels_not_bound_to_active_slide_proof"
+        ],
+        "role_specific_repair_requirement": "make the editable PPT preview the dominant object with code-generated surface details, not a generic circle.",
+        "interpretation": "The slide carries Run 2.61 narrative proof, carrier, socket, replacement, and gate ids, so the next repair should target how the renderer turns those ids into role-specific visual objects and text sockets."
+      },
+      {
+        "slide_id": "slide_06",
+        "role": "close",
+        "title": "Generated proof exists; release remains gated.",
+        "product_system_surface_kind": "release_handoff",
+        "run2_61_contracts_bound": true,
+        "run2_62_socket_binding_count": 6,
+        "run2_62_public_proof_object_count": 7,
+        "run2_62_required_answer_visible": "pass_internal",
+        "visible_words": 74,
+        "text_box_count": 18,
+        "zones": 8,
+        "bad_control_missing_run2_61": true,
+        "renderer_blockers": [
+          "static_socket_plan_repeated_on_every_slide",
+          "generic_native_shape_grammar_collapses_role_specific_visual_carriers",
+          "text_fit_and_wrapping_not_trace_gated",
+          "semantic_diagram_labels_not_bound_to_active_slide_proof"
+        ],
+        "role_specific_repair_requirement": "make the release handoff dynamic: gates, evidence, output, and next repair step should occupy distinct zones.",
+        "interpretation": "The slide carries Run 2.61 narrative proof, carrier, socket, replacement, and gate ids, so the next repair should target how the renderer turns those ids into role-specific visual objects and text sockets."
+      }
+    ]
+  },
+  "renderer_effectiveness_assessment": {
+    "trace_has_role_specific_surface_kinds": true,
+    "public_surface_still_not_video_grade": true,
+    "average_visible_words_per_slide": 61.8,
+    "average_text_boxes_per_slide": 16.8,
+    "artifact_review_status": "advisory_not_human_confirmed",
+    "artifact_review_findings": [
+      "static socket plan appears repeated across all six slides",
+      "slide 03 shows visible text truncation in a dark diagram block",
+      "node and proof diagrams are clean but still rely on generic boxes and circles",
+      "composition rhythm is more consistent than the bad arm but not yet a high-aesthetic public presentation"
+    ],
+    "why_more_raw_data_is_not_the_next_move": "The trace already shows six role-specific narrative records, carriers, socket contracts, public proof replacements, and gates. The failure happens after consumption, when those contracts are translated into repeated native PPT components."
+  },
+  "root_cause_assessment": {
+    "primary_layer": "renderer_composition_grammar",
+    "not_primary_layer": "raw_data_or_workflow_consumption",
+    "root_cause_primary": "run2_62_consumes_narrative_proof_but_renderer_composition_grammar_collapses_it_into_generic_static_blocks",
+    "renderer_blockers": [
+      "static_socket_plan_repeated_on_every_slide",
+      "generic_native_shape_grammar_collapses_role_specific_visual_carriers",
+      "text_fit_and_wrapping_not_trace_gated",
+      "semantic_diagram_labels_not_bound_to_active_slide_proof"
+    ],
+    "required_repair_primitives": [
+      "dynamic_socket_plan_component",
+      "role_specific_semantic_diagram_renderer",
+      "text_fit_and_wrap_gate_before_export",
+      "proof_object_to_visual_object_binding",
+      "contact_sheet_sameness_score_before_acceptance"
+    ]
+  },
+  "gate_summary": {
+    "data_consumption_gate": "pass_internal",
+    "bad_control_gate": "pass",
+    "renderer_effectiveness_gate": "blocked",
+    "public_release_gate": "blocked",
+    "summary": "Run 2.63 confirms Run 2.62 consumes Run 2.61 correctly. The next repair should change renderer/composition behavior, especially dynamic sockets, semantic diagrams, and text-fit gates, before another four-arm rerun."
+  },
+  "next_required_action": "build_run2_64_renderer_composition_repair_for_dynamic_sockets_and_semantic_diagrams_before_rerun",
+  "release_boundary": "public_blocked_until_run2_64_repairs_renderer_composition_grammar_and_reruns_four_arms"
+}

@@ -548,6 +548,12 @@ EXPECTED_RUN2_62_TRACE_FIELDS = {
     "run2_62_public_proof_object_count",
     "run2_62_required_answer_visible",
 }
+EXPECTED_RUN2_63_RENDERER_BLOCKERS = {
+    "static_socket_plan_repeated_on_every_slide",
+    "generic_native_shape_grammar_collapses_role_specific_visual_carriers",
+    "text_fit_and_wrapping_not_trace_gated",
+    "semantic_diagram_labels_not_bound_to_active_slide_proof",
+}
 EXPECTED_RUN2_51_FORBIDDEN_PUBLIC_TERMS = {
     "run2",
     "memory",
@@ -10511,6 +10517,73 @@ def test_ppt_run_html_viewer_mentions_run2_62_narrative_proof_rerun() -> None:
         "Run 2.62 generated narrative proof consumption",
     ]
     assert_contains(script, required_terms[:-2])
+    assert_contains(viewer, required_terms)
+
+
+def test_run2_63_audits_narrative_proof_consumption_effectiveness() -> None:
+    audit_md = (
+        PACK / "results" / "run2_63_narrative_proof_consumption_effectiveness_audit.md"
+    ).read_text(encoding="utf-8")
+    audit = load_json(
+        PACK / "results" / "run2_63_narrative_proof_consumption_effectiveness_audit.json"
+    )
+
+    assert audit["run_id"] == "2.63"
+    assert audit["status"] == (
+        "run2_63_narrative_proof_consumption_effectiveness_audit_public_blocked"
+    )
+    assert audit["creates_new_ppt_deck"] is False
+    assert audit["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert audit["source_generated_run"] == "2.62"
+    assert audit["source_data_run"] == "2.61"
+    assert audit["data_consumption_assessment"]["run2_61_data_consumed"] is True
+    assert audit["data_consumption_assessment"]["full_slides_with_run2_61_contracts"] == 6
+    assert audit["data_consumption_assessment"]["full_slides_with_socket_bindings"] == 6
+    assert audit["data_consumption_assessment"]["bad_control_without_run2_61_contracts"] == 6
+    assert audit["root_cause_assessment"]["primary_layer"] == "renderer_composition_grammar"
+    assert audit["root_cause_assessment"]["not_primary_layer"] == "raw_data_or_workflow_consumption"
+    assert set(audit["root_cause_assessment"]["renderer_blockers"]) >= (
+        EXPECTED_RUN2_63_RENDERER_BLOCKERS
+    )
+    assert audit["gate_summary"]["data_consumption_gate"] == "pass_internal"
+    assert audit["gate_summary"]["renderer_effectiveness_gate"] == "blocked"
+    assert audit["gate_summary"]["public_release_gate"] == "blocked"
+    assert audit["next_required_action"] == (
+        "build_run2_64_renderer_composition_repair_for_dynamic_sockets_and_semantic_diagrams_before_rerun"
+    )
+
+    assert_contains(
+        audit_md,
+        [
+            "Run 2.63 Narrative Proof Consumption Effectiveness Audit",
+            "2.62 consumes 2.61",
+            "renderer/composition grammar",
+            "static socket plan",
+            "text fit",
+            "Run 2.64",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_mentions_run2_63_consumption_effectiveness_audit() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+    viewer = (
+        ROOT
+        / "outputs"
+        / "019e7d9c-532a-70b3-8892-fa3ae42baef2"
+        / "presentations"
+        / "ppt-run-viewer.html"
+    ).read_text(encoding="utf-8")
+
+    required_terms = [
+        "Run 2.63 narrative proof effectiveness audit",
+        "run2_63_narrative_proof_consumption_effectiveness_audit.json",
+        "renderer_composition_grammar",
+        "static_socket_plan_repeated_on_every_slide",
+        "build_run2_64_renderer_composition_repair_for_dynamic_sockets_and_semantic_diagrams_before_rerun",
+    ]
+    assert_contains(script, required_terms)
     assert_contains(viewer, required_terms)
 
 
