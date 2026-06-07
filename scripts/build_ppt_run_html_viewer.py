@@ -724,6 +724,12 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run257_result = read_json(pack / "results" / "run2_57_product_capability_content_result.json")
     run258_result = read_json(pack / "results" / "run2_58_product_content_contract_rerun_result.json")
     run258_open_source_research = read_json(pack / "run2_58_open_source_slide_code_research.json")
+    run259_contracts = read_json(pack / "run2_59_content_composition_contracts.json")
+    run259_capacity = read_json(pack / "run2_59_layout_capacity_model.json")
+    run259_selector = read_json(pack / "run2_59_content_to_layout_selector.json")
+    run259_trace_policy = read_json(pack / "run2_59_public_surface_trace_policy.json")
+    run259_gates = read_json(pack / "run2_59_composition_workflow_gates.json")
+    run259_result = read_json(pack / "results" / "run2_59_content_aware_composition_compiler_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -1040,6 +1046,32 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run258BadTracePath": "ppt-run2-58-bad-without-product-capability-content/trace_manifest.json",
         "run258FullDeckSourcePath": "ppt-run2-58-full-vulca/slides/deck-source.mjs",
         "run258FourArmSheetPath": "run2-58-four-arm-contact-sheet.png",
+        "run259ResultStatus": run259_result.get("status", ""),
+        "run259Result": run259_result,
+        "run259ResultPath": "run2_59_content_aware_composition_compiler_result.json",
+        "run259ContentCompositionStatus": run259_contracts.get("status", ""),
+        "run259ContentContracts": run259_contracts.get("content_composition_contracts", []),
+        "run259ContentContractsPath": "run2_59_content_composition_contracts.json",
+        "run259LayoutCapacityStatus": run259_capacity.get("status", ""),
+        "run259LayoutCapacityRecords": run259_capacity.get("layout_capacity_records", []),
+        "run259LayoutCapacityPath": "run2_59_layout_capacity_model.json",
+        "run259ContentSelectorStatus": run259_selector.get("status", ""),
+        "run259SelectorRecords": run259_selector.get("content_to_layout_selection_records", []),
+        "run259ContentSelectorPath": "run2_59_content_to_layout_selector.json",
+        "run259TracePolicyStatus": run259_trace_policy.get("status", ""),
+        "run259PublicTracePolicy": run259_trace_policy,
+        "run259TracePolicyPath": "run2_59_public_surface_trace_policy.json",
+        "run259WorkflowGateStatus": run259_gates.get("status", ""),
+        "run259WorkflowGates": run259_gates.get("composition_workflow_gates", []),
+        "run259WorkflowGatesPath": "run2_59_composition_workflow_gates.json",
+        "run259NextGeneratedRunContract": run259_gates.get("next_generated_run_contract", {}),
+        "run259TargetLayer": (run259_result.get("quality_delta") or {}).get(
+            "target_layer", "content_aware_composition_compiler"
+        ),
+        "run259FailureMode": (run259_result.get("quality_delta") or {}).get(
+            "fixes_failure_mode",
+            "content_thickness_and_layout_module_memory_not_bound_before_native_ppt_drawing",
+        ),
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -2307,6 +2339,58 @@ def build_html(data: dict[str, Any]) -> str:
           ${{detailBlock("License / usage note", record.license_or_usage_note)}}
           ${{detailBlock("do not copy source assets", record.do_not_copy_source_assets)}}
         </article>`).join("");
+      const run259Result = refs.run259Result || {{}};
+      const run259Quality = run259Result.quality_delta || {{}};
+      const run259GenerationBoundary = run259Result.generation_boundary || {{}};
+      const run259Next = refs.run259NextGeneratedRunContract || {{}};
+      const run259TracePolicy = refs.run259PublicTracePolicy || {{}};
+      const run259PublicSurface = run259TracePolicy.public_slide_surface || {{}};
+      const run259TraceSurface = run259TracePolicy.trace_viewer_surface || {{}};
+      const run259ContractCards = (refs.run259ContentContracts || []).map((record) => `
+        <article class="dataCard">
+          <h4>${{escapeHtml(record.role)}} content contract</h4>
+          ${{detailBlock("Contract id", record.content_contract_id)}}
+          ${{detailBlock("Source message contract", record.source_message_contract_id)}}
+          ${{detailBlock("Public claim", record.public_claim)}}
+          ${{detailBlock("Primary proof object", record.primary_proof_object)}}
+          ${{detailBlock("Evidence chips", record.evidence_chips)}}
+          ${{detailBlock("Trace-only details", record.trace_only_details)}}
+          ${{detailBlock("Max public visible words", record.max_public_visible_words)}}
+        </article>`).join("");
+      const run259CapacityCards = (refs.run259LayoutCapacityRecords || []).map((record) => `
+        <article class="dataCard">
+          <h4>${{escapeHtml(record.module_family)}} capacity</h4>
+          ${{detailBlock("Layout module", record.layout_module_id)}}
+          ${{detailBlock("Source memory", record.source_layout_module_memory)}}
+          ${{detailBlock("Max title lines", record.max_title_lines)}}
+          ${{detailBlock("Max visible words", record.max_visible_words)}}
+          ${{detailBlock("Max evidence chips", record.max_evidence_chips)}}
+          ${{detailBlock("Primary object area min pct", record.primary_object_area_min_pct)}}
+          ${{detailBlock("Spacing rule", record.spacing_rule)}}
+          ${{detailBlock("Forbidden patterns", record.forbidden_patterns)}}
+        </article>`).join("");
+      const run259SelectorCards = (refs.run259SelectorRecords || []).map((record) => `
+        <article class="dataCard">
+          <h4>${{escapeHtml(record.role)}} layout selection</h4>
+          ${{detailBlock("Content contract", record.content_contract_id)}}
+          ${{detailBlock("Selected layout module", record.selected_layout_module_id)}}
+          ${{detailBlock("Content burden", record.content_burden_level)}}
+          ${{detailBlock("Proof object type", record.proof_object_type)}}
+          ${{detailBlock("Public visible word budget", record.public_visible_word_budget)}}
+          ${{detailBlock("Capacity fit status", record.capacity_fit_status)}}
+          ${{detailBlock("Selection reason", record.selection_reason)}}
+          ${{detailBlock("Fallback route", record.fallback_route)}}
+        </article>`).join("");
+      const run259GateCards = (refs.run259WorkflowGates || []).map((gate) => `
+        <article class="dataCard">
+          <h4>${{escapeHtml(gate.role)}} composition gate</h4>
+          ${{detailBlock("Gate id", gate.gate_id)}}
+          ${{detailBlock("Content contract", gate.content_contract_id)}}
+          ${{detailBlock("Selected layout module", gate.selected_layout_module_id)}}
+          ${{detailBlock("Pass/fail checks", gate.pass_fail_checks)}}
+          ${{detailBlock("Bad control probe", gate.bad_control_probe)}}
+          ${{detailBlock("Required trace fields", gate.required_trace_fields)}}
+        </article>`).join("");
       const run257CapabilityCards = (refs.run257ProductCapabilities || []).map((record) => `
         <article class="dataCard">
           <h4>${{escapeHtml(record.capability_layer)}} capability</h4>
@@ -2598,6 +2682,52 @@ def build_html(data: dict[str, Any]) -> str:
           </div>
           <div class="dataBandSubhead"><h4>Open-source references</h4><p>PptxGenJS, Slidev, Marp, reveal.js, and SlideCoder are references for code patterns and workflow structure. Use them to learn implementation patterns; do not copy source assets, demo decks, or template layouts.</p></div>
           <div class="dataGrid">${{run258OpenSourceCards}}</div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Next data/workflow repair: Run 2.59 content-aware composition compiler</h3><p>Run 2.59 fixes the current failure mode: content_thickness_and_layout_module_memory_not_bound_before_native_ppt_drawing. It does not create a new PPT deck; it defines how content burden, layout capacity, and the public slide / trace viewer split must be compiled before Run 2.60 native drawing.</p></div><span class="pill" title="${{escapeHtml(refs.run259ResultStatus || "missing")}}">${{escapeHtml(refs.run259ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Run 2.59 compiler result</h4>
+              ${{detailBlock("Result", refs.run259ResultPath || "run2_59_content_aware_composition_compiler_result.json")}}
+              ${{detailBlock("Target layer", run259Quality.target_layer || refs.run259TargetLayer)}}
+              ${{detailBlock("Failure mode fixed", run259Quality.fixes_failure_mode || refs.run259FailureMode)}}
+              ${{detailBlock("Creates new PPT deck", run259GenerationBoundary.creates_new_ppt_deck)}}
+              ${{detailBlock("Latest generated run", run259GenerationBoundary.latest_generated_run_id || "2.58")}}
+              ${{detailBlock("Next required action", run259Result.next_required_action || "run2_60_generate_four_arm_ppt_consuming_run2_59_composition_compiler")}}
+            </article>
+            <article class="dataCard">
+              <h4>Compiler artifacts</h4>
+              ${{detailBlock("Content contracts", refs.run259ContentContractsPath || "run2_59_content_composition_contracts.json")}}
+              ${{detailBlock("Layout capacity model", refs.run259LayoutCapacityPath || "run2_59_layout_capacity_model.json")}}
+              ${{detailBlock("Content to layout selector", refs.run259ContentSelectorPath || "run2_59_content_to_layout_selector.json")}}
+              ${{detailBlock("Public surface trace policy", refs.run259TracePolicyPath || "run2_59_public_surface_trace_policy.json")}}
+              ${{detailBlock("Composition workflow gates", refs.run259WorkflowGatesPath || "run2_59_composition_workflow_gates.json")}}
+            </article>
+            <article class="dataCard">
+              <h4>public slide / trace viewer split</h4>
+              ${{detailBlock("Policy id", run259TracePolicy.policy_id)}}
+              ${{detailBlock("Public allowed", run259PublicSurface.allowed_content)}}
+              ${{detailBlock("Public forbidden", run259PublicSurface.forbidden_content)}}
+              ${{detailBlock("Viewer allowed", run259TraceSurface.allowed_content)}}
+              ${{detailBlock("Visual requirement", run259PublicSurface.visual_requirement)}}
+            </article>
+            <article class="dataCard">
+              <h4>Run 2.60 consumer contract</h4>
+              ${{detailBlock("Run", run259Next.run_id || "2.60")}}
+              ${{detailBlock("Required trace fields", run259Next.required_trace_fields)}}
+              ${{detailBlock("Bad control arm", run259Next.bad_control_arm || "bad_run2_58_without_run2_59_composition_compiler")}}
+              ${{detailBlock("Full arm pass status", run259Next.full_arm_pass_status || "run2_59_composition_compiler_consumed_before_native_ppt_drawing")}}
+              ${{detailBlock("Next action", run259Result.next_required_action || "run2_60_generate_four_arm_ppt_consuming_run2_59_composition_compiler")}}
+            </article>
+          </div>
+          <div class="dataBandSubhead"><h4>Content composition contracts</h4><p>${{escapeHtml(refs.run259ContentCompositionStatus)}}. Each role now separates public claim, proof object, evidence chips, trace-only details, speaker note, and visible word budget.</p></div>
+          <div class="dataGrid">${{run259ContractCards}}</div>
+          <div class="dataBandSubhead"><h4>Layout capacity model</h4><p>${{escapeHtml(refs.run259LayoutCapacityStatus)}}. Run 2.15 layout modules now have max title lines, visible word budgets, evidence chip limits, primary object area requirements, and forbidden patterns.</p></div>
+          <div class="dataGrid">${{run259CapacityCards}}</div>
+          <div class="dataBandSubhead"><h4>Content-to-layout selector</h4><p>${{escapeHtml(refs.run259ContentSelectorStatus)}}. Run 2.60 must select layout from role, content burden, proof object type, and rhythm position before native PPT drawing.</p></div>
+          <div class="dataGrid">${{run259SelectorCards}}</div>
+          <div class="dataBandSubhead"><h4>Composition workflow gates</h4><p>${{escapeHtml(refs.run259WorkflowGateStatus)}}. Bad controls must fail if they reuse Run 2.58 renderers without the 2.59 compiler trace fields.</p></div>
+          <div class="dataGrid">${{run259GateCards}}</div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Latest data/workflow repair: Run 2.57 product capability content layer</h3><p>Run 2.57 is data/workflow-only. It adds product capability memory, slide message contracts, and content workflow gates. Next generated run 2.58 must consume this layer so it can explain the product instead of only varying the visual surface.</p></div><span class="pill" title="${{escapeHtml(refs.run257ResultStatus || "missing")}}">${{escapeHtml(refs.run257ResultStatus || "missing")}}</span></div>

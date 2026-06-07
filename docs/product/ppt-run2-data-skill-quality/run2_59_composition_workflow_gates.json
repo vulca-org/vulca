@@ -1,0 +1,76 @@
+{
+  "schema_version": "1.0",
+  "run_id": "2.59",
+  "status": "run2_59_composition_workflow_gates_ready_public_blocked",
+  "composition_workflow_gates": [
+    {
+      "role": "cover",
+      "gate_id": "gate_2_59_cover_composition_capacity",
+      "content_contract_id": "content_contract_2_59_cover",
+      "selected_layout_module_id": "module_2_15_editorial_cover_field",
+      "required_trace_fields": ["run2_59_content_contract_id", "run2_59_layout_module_id", "run2_59_content_burden_level", "run2_59_capacity_fit_status", "run2_59_public_visible_word_budget", "run2_59_trace_only_detail_count", "run2_59_public_surface_trace_policy_id", "run2_59_composition_gate_id"],
+      "pass_fail_checks": ["public claim fits in two title lines", "primary proof object owns at least 36 percent of canvas", "trace inventory absent from public slide"],
+      "bad_control_probe": "bad arm uses 2.58 cover renderer without content-aware capacity selection"
+    },
+    {
+      "role": "setup",
+      "gate_id": "gate_2_59_setup_pipeline_capacity",
+      "content_contract_id": "content_contract_2_59_setup",
+      "selected_layout_module_id": "module_2_15_product_theater_stage",
+      "required_trace_fields": ["run2_59_content_contract_id", "run2_59_layout_module_id", "run2_59_content_burden_level", "run2_59_capacity_fit_status", "run2_59_public_visible_word_budget", "run2_59_trace_only_detail_count", "run2_59_public_surface_trace_policy_id", "run2_59_composition_gate_id"],
+      "pass_fail_checks": ["source inventory is trace-only", "pipeline object is visually dominant", "evidence chips are capped at three"],
+      "bad_control_probe": "bad arm renders raw source and gate cards as public slide clutter"
+    },
+    {
+      "role": "contrast",
+      "gate_id": "gate_2_59_contrast_route_capacity",
+      "content_contract_id": "content_contract_2_59_contrast",
+      "selected_layout_module_id": "module_2_15_before_after_route",
+      "required_trace_fields": ["run2_59_content_contract_id", "run2_59_layout_module_id", "run2_59_content_burden_level", "run2_59_capacity_fit_status", "run2_59_public_visible_word_budget", "run2_59_trace_only_detail_count", "run2_59_public_surface_trace_policy_id", "run2_59_composition_gate_id"],
+      "pass_fail_checks": ["comparison is an asymmetric route", "competitor prose moves to viewer", "bad-control turn point is visible"],
+      "bad_control_probe": "bad arm repeats a matrix/table comparison without a route turn point"
+    },
+    {
+      "role": "proof",
+      "gate_id": "gate_2_59_proof_dense_compression",
+      "content_contract_id": "content_contract_2_59_proof",
+      "selected_layout_module_id": "module_2_15_dense_evidence_compression",
+      "required_trace_fields": ["run2_59_content_contract_id", "run2_59_layout_module_id", "run2_59_content_burden_level", "run2_59_capacity_fit_status", "run2_59_public_visible_word_budget", "run2_59_trace_only_detail_count", "run2_59_public_surface_trace_policy_id", "run2_59_composition_gate_id"],
+      "pass_fail_checks": ["trace proof is grouped into chips", "full field inventory is in viewer", "no hidden overflow or title collision"],
+      "bad_control_probe": "bad arm dumps field inventory onto public slide or omits trace proof"
+    },
+    {
+      "role": "climax",
+      "gate_id": "gate_2_59_climax_hero_capacity",
+      "content_contract_id": "content_contract_2_59_climax",
+      "selected_layout_module_id": "module_2_15_metric_reveal_stage",
+      "required_trace_fields": ["run2_59_content_contract_id", "run2_59_layout_module_id", "run2_59_content_burden_level", "run2_59_capacity_fit_status", "run2_59_public_visible_word_budget", "run2_59_trace_only_detail_count", "run2_59_public_surface_trace_policy_id", "run2_59_composition_gate_id"],
+      "pass_fail_checks": ["operating-loop object is the hero", "public visible words stay low", "raw QA gate details are trace-only"],
+      "bad_control_probe": "bad arm turns climax into a dashboard or checklist instead of product moment"
+    },
+    {
+      "role": "close",
+      "gate_id": "gate_2_59_close_quiet_handoff",
+      "content_contract_id": "content_contract_2_59_close",
+      "selected_layout_module_id": "module_2_15_quiet_release_handoff",
+      "required_trace_fields": ["run2_59_content_contract_id", "run2_59_layout_module_id", "run2_59_content_burden_level", "run2_59_capacity_fit_status", "run2_59_public_visible_word_budget", "run2_59_trace_only_detail_count", "run2_59_public_surface_trace_policy_id", "run2_59_composition_gate_id"],
+      "pass_fail_checks": ["close is low-density", "release checklist is externalized", "next Run 2.60 handoff is visible"],
+      "bad_control_probe": "bad arm repeats release checklist cards on the public close"
+    }
+  ],
+  "next_generated_run_contract": {
+    "run_id": "2.60",
+    "required_trace_fields": [
+      "run2_59_content_contract_id",
+      "run2_59_layout_module_id",
+      "run2_59_content_burden_level",
+      "run2_59_capacity_fit_status",
+      "run2_59_public_visible_word_budget",
+      "run2_59_trace_only_detail_count",
+      "run2_59_public_surface_trace_policy_id",
+      "run2_59_composition_gate_id"
+    ],
+    "bad_control_arm": "bad_run2_58_without_run2_59_composition_compiler",
+    "full_arm_pass_status": "run2_59_composition_compiler_consumed_before_native_ppt_drawing"
+  }
+}

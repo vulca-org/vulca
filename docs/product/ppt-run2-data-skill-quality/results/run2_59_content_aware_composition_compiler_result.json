@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.0",
+  "run_id": "2.59",
+  "status": "run2_59_content_aware_composition_compiler_ready_public_blocked",
+  "public_ready": false,
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "source_layout_run_id": "2.15",
+  "source_content_run_id": "2.57",
+  "source_generated_run_id": "2.58",
+  "generation_boundary": {
+    "creates_new_ppt_deck": false,
+    "latest_generated_run_id": "2.58",
+    "reason": "Run 2.59 is a data/workflow-only compiler layer. It prepares Run 2.60 to bind content capacity, layout module selection, and public-vs-trace separation before native PPT drawing."
+  },
+  "quality_delta": {
+    "target_layer": "content_aware_composition_compiler",
+    "fixes_failure_mode": "content_thickness_and_layout_module_memory_not_bound_before_native_ppt_drawing",
+    "content_contract_records": 6,
+    "layout_capacity_records": 6,
+    "content_to_layout_selection_records": 6,
+    "composition_workflow_gates": 6,
+    "public_trace_split_policy": "run2_59_public_slide_trace_viewer_split"
+  },
+  "output_chain": [
+    "content_composition_contracts",
+    "layout_capacity_model",
+    "content_to_layout_selector",
+    "public_surface_trace_policy",
+    "composition_workflow_gates"
+  ],
+  "input_chain": {
+    "run2_15_layout_module_memory": "run2_15_layout_module_memory.json",
+    "run2_57_slide_message_contracts": "run2_57_slide_message_contracts.json",
+    "run2_57_content_workflow_gates": "run2_57_content_workflow_gates.json",
+    "run2_58_result": "run2_58_product_content_contract_rerun_result.json",
+    "run2_58_full_trace": "ppt-run2-58-full-vulca/trace_manifest.json"
+  },
+  "remaining_public_release_gates": [
+    "run2_60_generated_rerun",
+    "visual_human_review",
+    "native_render_review",
+    "motion_review",
+    "source_boundary_review",
+    "human_release_approval"
+  ],
+  "release_boundary": "public_blocked_until_run2_60_consumes_run2_59_and_passes_review",
+  "next_required_action": "run2_60_generate_four_arm_ppt_consuming_run2_59_composition_compiler"
+}

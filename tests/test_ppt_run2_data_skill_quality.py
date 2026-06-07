@@ -483,6 +483,24 @@ EXPECTED_RUN2_58_OPEN_SOURCE_REFERENCE_IDS = {
     "revealjs",
     "slidecoder",
 }
+EXPECTED_RUN2_59_LAYOUT_MODULE_IDS = {
+    "module_2_15_editorial_cover_field",
+    "module_2_15_product_theater_stage",
+    "module_2_15_before_after_route",
+    "module_2_15_metric_reveal_stage",
+    "module_2_15_quiet_release_handoff",
+    "module_2_15_dense_evidence_compression",
+}
+EXPECTED_RUN2_59_TRACE_FIELDS = {
+    "run2_59_content_contract_id",
+    "run2_59_layout_module_id",
+    "run2_59_content_burden_level",
+    "run2_59_capacity_fit_status",
+    "run2_59_public_visible_word_budget",
+    "run2_59_trace_only_detail_count",
+    "run2_59_public_surface_trace_policy_id",
+    "run2_59_composition_gate_id",
+}
 EXPECTED_RUN2_51_FORBIDDEN_PUBLIC_TERMS = {
     "run2",
     "memory",
@@ -9901,6 +9919,173 @@ def test_ppt_run_html_viewer_surfaces_run2_58_experiment_lab_and_open_source_map
     ]
     assert_contains(script, required_terms)
     assert_contains(viewer, required_terms)
+
+
+def test_run2_59_records_content_aware_composition_compiler() -> None:
+    contracts = load_json(PACK / "run2_59_content_composition_contracts.json")
+    capacity = load_json(PACK / "run2_59_layout_capacity_model.json")
+    selector = load_json(PACK / "run2_59_content_to_layout_selector.json")
+    trace_policy = load_json(PACK / "run2_59_public_surface_trace_policy.json")
+    gates = load_json(PACK / "run2_59_composition_workflow_gates.json")
+    result_md = (PACK / "results" / "run2_59_content_aware_composition_compiler_result.md").read_text(
+        encoding="utf-8"
+    )
+    result = load_json(PACK / "results" / "run2_59_content_aware_composition_compiler_result.json")
+
+    assert result["run_id"] == "2.59"
+    assert result["status"] == "run2_59_content_aware_composition_compiler_ready_public_blocked"
+    assert result["public_ready"] is False
+    assert result["selected_usecase_id"] == "usecase_design_to_production_platform_launch"
+    assert result["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert result["generation_boundary"]["creates_new_ppt_deck"] is False
+    assert result["generation_boundary"]["latest_generated_run_id"] == "2.58"
+    assert result["quality_delta"]["target_layer"] == "content_aware_composition_compiler"
+    assert result["quality_delta"]["fixes_failure_mode"] == (
+        "content_thickness_and_layout_module_memory_not_bound_before_native_ppt_drawing"
+    )
+    assert result["next_required_action"] == (
+        "run2_60_generate_four_arm_ppt_consuming_run2_59_composition_compiler"
+    )
+    assert set(result["output_chain"]) == {
+        "content_composition_contracts",
+        "layout_capacity_model",
+        "content_to_layout_selector",
+        "public_surface_trace_policy",
+        "composition_workflow_gates",
+    }
+
+    contract_records = contracts["content_composition_contracts"]
+    capacity_records = capacity["layout_capacity_records"]
+    selector_records = selector["content_to_layout_selection_records"]
+    gate_records = gates["composition_workflow_gates"]
+    capacity_by_module = {record["layout_module_id"]: record for record in capacity_records}
+    contract_by_id = {record["content_contract_id"]: record for record in contract_records}
+
+    assert contracts["status"] == "run2_59_content_composition_contracts_ready_public_blocked"
+    assert {record["role"] for record in contract_records} == EXPECTED_RUN2_51_ROLES
+    for record in contract_records:
+        assert record["content_contract_id"].startswith("content_contract_2_59_")
+        assert record["source_message_contract_id"].startswith("message_contract_2_57_")
+        assert record["public_claim"]
+        assert record["primary_proof_object"]
+        assert 1 <= len(record["evidence_chips"]) <= 3
+        assert len(record["trace_only_details"]) >= 2
+        assert record["max_public_visible_words"] <= 74
+        assert set(record["required_trace_fields_for_run2_60"]) == EXPECTED_RUN2_59_TRACE_FIELDS
+
+    assert capacity["status"] == "run2_59_layout_capacity_model_ready_public_blocked"
+    assert {record["layout_module_id"] for record in capacity_records} == EXPECTED_RUN2_59_LAYOUT_MODULE_IDS
+    for record in capacity_records:
+        assert record["source_layout_module_memory"] == "run2_15_layout_module_memory.json"
+        assert 1 <= record["max_title_lines"] <= 3
+        assert 44 <= record["max_visible_words"] <= 96
+        assert 1 <= record["max_evidence_chips"] <= 4
+        assert record["primary_object_area_min_pct"] >= 20
+        assert record["spacing_rule"]
+        assert record["forbidden_patterns"]
+        assert record["fallback_if_over_capacity"]
+        assert record["overflow_failure_behavior"]["if_public_words_exceed_capacity"] in {
+            "move_detail_to_trace_viewer",
+            "switch_to_dense_evidence_compression",
+            "split_content_before_generation",
+        }
+        assert record["overflow_failure_behavior"]["run2_60_must_fail_without_fallback"] is True
+
+    assert selector["status"] == "run2_59_content_to_layout_selector_ready_public_blocked"
+    assert {record["role"] for record in selector_records} == EXPECTED_RUN2_51_ROLES
+    assert {record["selected_layout_module_id"] for record in selector_records} <= EXPECTED_RUN2_59_LAYOUT_MODULE_IDS
+    assert any(record["capacity_fit_status"] == "requires_dense_evidence_compression" for record in selector_records)
+    for record in selector_records:
+        contract = contract_by_id[record["content_contract_id"]]
+        selected_capacity = capacity_by_module[record["selected_layout_module_id"]]
+        assert record["role"] == contract["role"]
+        assert record["content_burden_level"] in {"low", "medium", "high", "climax"}
+        assert record["capacity_fit_status"] in {
+            "pass_internal",
+            "pass_after_trace_separation",
+            "requires_dense_evidence_compression",
+        }
+        assert record["public_visible_word_budget"] <= selected_capacity["max_visible_words"]
+        assert record["public_visible_word_budget"] <= contract["max_public_visible_words"]
+        assert record["selection_reason"]
+        assert record["fallback_route"]
+        assert set(record["required_trace_fields_for_run2_60"]) == EXPECTED_RUN2_59_TRACE_FIELDS
+        assert record["over_capacity_behavior"]["trigger"] == (
+            "public_visible_word_budget_exceeds_selected_layout_capacity"
+        )
+        assert record["over_capacity_behavior"]["required_action"] in {
+            "move_trace_only_details_to_viewer",
+            "switch_to_dense_evidence_compression",
+            "split_content_before_generation",
+        }
+        assert record["over_capacity_behavior"]["run2_60_trace_must_record_fallback"] is True
+
+    assert trace_policy["status"] == "run2_59_public_surface_trace_policy_ready_public_blocked"
+    assert trace_policy["policy_id"] == "run2_59_public_slide_trace_viewer_split"
+    assert "reader_question" in trace_policy["public_slide_surface"]["allowed_content"]
+    assert "workflow_gate_raw_checklist" in trace_policy["public_slide_surface"]["forbidden_content"]
+    assert "workflow_gate_raw_checklist" in trace_policy["trace_viewer_surface"]["allowed_content"]
+    assert trace_policy["run2_60_consumer_obligation"]["must_keep_latest_generated_run_id"] == "2.58_until_2.60_exists"
+
+    assert gates["status"] == "run2_59_composition_workflow_gates_ready_public_blocked"
+    assert {record["role"] for record in gate_records} == EXPECTED_RUN2_51_ROLES
+    for gate in gate_records:
+        assert gate["gate_id"].startswith("gate_2_59_")
+        assert gate["content_contract_id"] in contract_by_id
+        assert gate["selected_layout_module_id"] in capacity_by_module
+        assert set(gate["required_trace_fields"]) == EXPECTED_RUN2_59_TRACE_FIELDS
+        assert gate["pass_fail_checks"]
+        assert gate["bad_control_probe"]
+    assert set(gates["next_generated_run_contract"]["required_trace_fields"]) == EXPECTED_RUN2_59_TRACE_FIELDS
+    assert gates["next_generated_run_contract"]["run_id"] == "2.60"
+    assert gates["next_generated_run_contract"]["bad_control_arm"] == (
+        "bad_run2_58_without_run2_59_composition_compiler"
+    )
+
+    assert_contains(
+        result_md,
+        [
+            "Run 2.59 Content-Aware Composition Compiler",
+            "data/workflow-only",
+            "content-aware composition",
+            "layout capacity model",
+            "public slide / trace viewer split",
+            "Run 2.60",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_mentions_run2_59_content_aware_composition_compiler() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+    viewer = (
+        ROOT
+        / "outputs"
+        / "019e7d9c-532a-70b3-8892-fa3ae42baef2"
+        / "presentations"
+        / "ppt-run-viewer.html"
+    ).read_text(encoding="utf-8")
+
+    script_terms = [
+        "Run 2.59 content-aware composition compiler",
+        "run2_59_content_composition_contracts.json",
+        "run2_59_layout_capacity_model.json",
+        "run2_59_content_to_layout_selector.json",
+        "run2_59_public_surface_trace_policy.json",
+        "run2_59_composition_workflow_gates.json",
+        "run2_59_content_aware_composition_compiler_result.json",
+        "content_thickness_and_layout_module_memory_not_bound_before_native_ppt_drawing",
+        "public slide / trace viewer split",
+        "run2_60_generate_four_arm_ppt_consuming_run2_59_composition_compiler",
+    ]
+    viewer_terms = [
+        *script_terms,
+        '"latestRunId": "2.58"',
+    ]
+    assert_contains(script, script_terms)
+    assert_contains(viewer, viewer_terms)
+    assert "ppt-run2-59-" not in script
+    assert "ppt-run2-59-" not in viewer
 
 
 def test_ppt_run_html_viewer_mentions_run2_50_readability_density_renderer_rerun() -> None:

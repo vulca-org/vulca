@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.0",
+  "run_id": "2.59",
+  "status": "run2_59_layout_capacity_model_ready_public_blocked",
+  "source_layout_module_memory": "run2_15_layout_module_memory.json",
+  "layout_capacity_records": [
+    {
+      "layout_module_id": "module_2_15_editorial_cover_field",
+      "source_layout_module_memory": "run2_15_layout_module_memory.json",
+      "module_family": "editorial_cover_field",
+      "max_title_lines": 2,
+      "max_visible_words": 62,
+      "max_evidence_chips": 2,
+      "primary_object_area_min_pct": 36,
+      "spacing_rule": "one large typographic field plus one asymmetric native proof object; avoid equal-card grids",
+      "forbidden_patterns": ["equal_card_grid", "visible_workflow_gate_rail", "microtype_trace_list"],
+      "fallback_if_over_capacity": "switch to dense evidence compression or move detail to trace viewer",
+      "overflow_failure_behavior": {
+        "if_public_words_exceed_capacity": "switch_to_dense_evidence_compression",
+        "run2_60_must_fail_without_fallback": true
+      }
+    },
+    {
+      "layout_module_id": "module_2_15_product_theater_stage",
+      "source_layout_module_memory": "run2_15_layout_module_memory.json",
+      "module_family": "product_theater_stage",
+      "max_title_lines": 2,
+      "max_visible_words": 72,
+      "max_evidence_chips": 3,
+      "primary_object_area_min_pct": 38,
+      "spacing_rule": "one product/system state owns the slide with secondary labels around it",
+      "forbidden_patterns": ["workflow_checklist_as_main_visual", "flat_rectangle_only_product", "raw_source_inventory"],
+      "fallback_if_over_capacity": "compress evidence chips and move raw source inventory to viewer",
+      "overflow_failure_behavior": {
+        "if_public_words_exceed_capacity": "move_detail_to_trace_viewer",
+        "run2_60_must_fail_without_fallback": true
+      }
+    },
+    {
+      "layout_module_id": "module_2_15_before_after_route",
+      "source_layout_module_memory": "run2_15_layout_module_memory.json",
+      "module_family": "before_after_route",
+      "max_title_lines": 2,
+      "max_visible_words": 78,
+      "max_evidence_chips": 3,
+      "primary_object_area_min_pct": 32,
+      "spacing_rule": "asymmetric route with one visible turn point; break equal-column symmetry",
+      "forbidden_patterns": ["two_equal_tables", "comparison_paragraphs", "unranked_matrix_rows"],
+      "fallback_if_over_capacity": "show route plus three chips; move competitor prose to trace viewer",
+      "overflow_failure_behavior": {
+        "if_public_words_exceed_capacity": "move_detail_to_trace_viewer",
+        "run2_60_must_fail_without_fallback": true
+      }
+    },
+    {
+      "layout_module_id": "module_2_15_metric_reveal_stage",
+      "source_layout_module_memory": "run2_15_layout_module_memory.json",
+      "module_family": "metric_reveal_stage",
+      "max_title_lines": 2,
+      "max_visible_words": 58,
+      "max_evidence_chips": 2,
+      "primary_object_area_min_pct": 42,
+      "spacing_rule": "hero object owns at least one third of the canvas; support text stays minimal",
+      "forbidden_patterns": ["dashboard_climax", "small_multiples_climax", "trace_checklist_climax"],
+      "fallback_if_over_capacity": "choose the operating-loop object and move remaining proof to viewer",
+      "overflow_failure_behavior": {
+        "if_public_words_exceed_capacity": "move_detail_to_trace_viewer",
+        "run2_60_must_fail_without_fallback": true
+      }
+    },
+    {
+      "layout_module_id": "module_2_15_quiet_release_handoff",
+      "source_layout_module_memory": "run2_15_layout_module_memory.json",
+      "module_family": "quiet_release_handoff",
+      "max_title_lines": 2,
+      "max_visible_words": 52,
+      "max_evidence_chips": 3,
+      "primary_object_area_min_pct": 30,
+      "spacing_rule": "large calm field with one handoff object and no release checklist table",
+      "forbidden_patterns": ["release_checklist_slide", "qa_table_close", "dense_footer_notes"],
+      "fallback_if_over_capacity": "externalize release reasons to viewer and keep the public close low-density",
+      "overflow_failure_behavior": {
+        "if_public_words_exceed_capacity": "move_detail_to_trace_viewer",
+        "run2_60_must_fail_without_fallback": true
+      }
+    },
+    {
+      "layout_module_id": "module_2_15_dense_evidence_compression",
+      "source_layout_module_memory": "run2_15_layout_module_memory.json",
+      "module_family": "dense_evidence_compression",
+      "max_title_lines": 3,
+      "max_visible_words": 96,
+      "max_evidence_chips": 4,
+      "primary_object_area_min_pct": 22,
+      "spacing_rule": "compress evidence into grouped chips and one dominant read path; avoid repeated cards",
+      "forbidden_patterns": ["hidden_overflow_text", "unbounded_card_repetition", "shrunk_paragraph_stack"],
+      "fallback_if_over_capacity": "split content before Run 2.60 generation rather than shrinking text",
+      "overflow_failure_behavior": {
+        "if_public_words_exceed_capacity": "split_content_before_generation",
+        "run2_60_must_fail_without_fallback": true
+      }
+    }
+  ]
+}

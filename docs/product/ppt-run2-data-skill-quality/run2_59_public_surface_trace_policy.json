@@ -1,0 +1,52 @@
+{
+  "schema_version": "1.0",
+  "run_id": "2.59",
+  "status": "run2_59_public_surface_trace_policy_ready_public_blocked",
+  "policy_id": "run2_59_public_slide_trace_viewer_split",
+  "rationale": "Run 2.58 made product content visible but kept too much QA and trace material on the public slide surface. Run 2.59 separates persuasive public composition from inspectable trace evidence.",
+  "public_slide_surface": {
+    "purpose": "public demo deck and video-facing explanation",
+    "allowed_content": [
+      "reader_question",
+      "public_claim",
+      "primary_proof_object",
+      "two_or_three_evidence_chips",
+      "short_speaker-facing cue"
+    ],
+    "forbidden_content": [
+      "workflow_gate_raw_checklist",
+      "full_trace_field_inventory",
+      "source_record_inventory",
+      "competitor_matrix_long_prose",
+      "release_gate_raw_checklist"
+    ],
+    "visual_requirement": "one dominant read path, bounded visible word count, no title collision, no overflow, no repeated equal-card layout across adjacent slides"
+  },
+  "trace_viewer_surface": {
+    "purpose": "reviewer-facing proof in HTML viewer, result docs, and trace manifest",
+    "allowed_content": [
+      "workflow_gate_raw_checklist",
+      "full_trace_field_inventory",
+      "source_record_inventory",
+      "bad_control_failure_fields",
+      "capacity_fit_status",
+      "layout_module_selection_reason",
+      "release_gate_raw_checklist"
+    ],
+    "visual_requirement": "dense inspection is allowed in viewer, not on public slides"
+  },
+  "run2_60_consumer_obligation": {
+    "must_keep_latest_generated_run_id": "2.58_until_2.60_exists",
+    "must_write_trace_fields": [
+      "run2_59_content_contract_id",
+      "run2_59_layout_module_id",
+      "run2_59_content_burden_level",
+      "run2_59_capacity_fit_status",
+      "run2_59_public_visible_word_budget",
+      "run2_59_trace_only_detail_count",
+      "run2_59_public_surface_trace_policy_id",
+      "run2_59_composition_gate_id"
+    ],
+    "must_fail_bad_control": "bad_run2_58_without_run2_59_composition_compiler"
+  }
+}
