@@ -10257,6 +10257,11 @@ def test_run2_61_records_narrative_proof_dataset() -> None:
     fusion_records = fusion["text_socket_fusion_contracts"]
     gate_records = gates["narrative_workflow_gates"]
 
+    assert len(narrative_records) == len(EXPECTED_RUN2_61_ROLES)
+    assert len(selector_records) == len(EXPECTED_RUN2_61_ROLES)
+    assert len(fusion_records) == len(EXPECTED_RUN2_61_ROLES)
+    assert len(gate_records) == len(EXPECTED_RUN2_61_ROLES)
+
     assert {record["role"] for record in narrative_records} == EXPECTED_RUN2_61_ROLES
     assert {record["role"] for record in selector_records} == EXPECTED_RUN2_61_ROLES
     assert {record["role"] for record in fusion_records} == EXPECTED_RUN2_61_ROLES
