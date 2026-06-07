@@ -784,6 +784,11 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run263_audit = read_json(
         pack / "results" / "run2_63_narrative_proof_consumption_effectiveness_audit.json"
     )
+    run264_dynamic_socket = read_json(pack / "run2_64_dynamic_socket_renderer_memory.json")
+    run264_semantic_diagram = read_json(pack / "run2_64_semantic_diagram_renderer_memory.json")
+    run264_text_fit = read_json(pack / "run2_64_text_fit_renderer_gates.json")
+    run264_dry_run = read_json(pack / "run2_64_renderer_dry_run_binding_matrix.json")
+    run264_result = read_json(pack / "results" / "run2_64_renderer_composition_repair_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -1181,6 +1186,23 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
             "next_required_action",
             "build_run2_64_renderer_composition_repair_for_dynamic_sockets_and_semantic_diagrams_before_rerun",
         ),
+        "run264DynamicSocketStatus": run264_dynamic_socket.get("status", ""),
+        "run264DynamicSocketRecords": run264_dynamic_socket.get("dynamic_socket_renderer_records", []),
+        "run264DynamicSocketPath": "run2_64_dynamic_socket_renderer_memory.json",
+        "run264SemanticDiagramStatus": run264_semantic_diagram.get("status", ""),
+        "run264SemanticDiagramRecords": run264_semantic_diagram.get(
+            "semantic_diagram_renderer_records", []
+        ),
+        "run264SemanticDiagramPath": "run2_64_semantic_diagram_renderer_memory.json",
+        "run264TextFitStatus": run264_text_fit.get("status", ""),
+        "run264TextFitRecords": run264_text_fit.get("text_fit_renderer_gates", []),
+        "run264TextFitPath": "run2_64_text_fit_renderer_gates.json",
+        "run264DryRunStatus": run264_dry_run.get("status", ""),
+        "run264DryRunRecords": run264_dry_run.get("dry_run_binding_records", []),
+        "run264DryRunPath": "run2_64_renderer_dry_run_binding_matrix.json",
+        "run264ResultStatus": run264_result.get("status", ""),
+        "run264Result": run264_result,
+        "run264ResultPath": "run2_64_renderer_composition_repair_result.json",
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -2491,6 +2513,30 @@ def build_html(data: dict[str, Any]) -> str:
           ${{detailBlock("Text boxes", record.text_box_count)}}
           ${{detailBlock("Repair requirement", record.role_specific_repair_requirement)}}
         </article>`).join("");
+      const run264Result = refs.run264Result || {{}};
+      const run264Quality = run264Result.quality_delta || {{}};
+      const run264Next = run264Result.next_generated_run_contract || {{}};
+      const run264DynamicByRole = Object.fromEntries((refs.run264DynamicSocketRecords || []).map((record) => [record.role, record]));
+      const run264SemanticByRole = Object.fromEntries((refs.run264SemanticDiagramRecords || []).map((record) => [record.role, record]));
+      const run264TextFitByRole = Object.fromEntries((refs.run264TextFitRecords || []).map((record) => [record.role, record]));
+      const run264DryRunByRole = Object.fromEntries((refs.run264DryRunRecords || []).map((record) => [record.role, record]));
+      const run264RoleCards = (refs.run264DynamicSocketRecords || []).map((record) => {{
+        const semantic = run264SemanticByRole[record.role] || {{}};
+        const textFit = run264TextFitByRole[record.role] || {{}};
+        const dryRun = run264DryRunByRole[record.role] || {{}};
+        return `<article class="dataCard">
+          <h4>${{escapeHtml(record.role)}} / ${{escapeHtml(semantic.semantic_diagram_type || "semantic diagram")}}</h4>
+          ${{detailBlock("Dynamic socket renderer", record.dynamic_socket_renderer_id)}}
+          ${{detailBlock("Static socket plan replaced", record.static_socket_plan_replaced)}}
+          ${{detailBlock("Active copy units", record.active_copy_unit_keys)}}
+          ${{detailBlock("Semantic diagram renderer", semantic.semantic_diagram_renderer_id)}}
+          ${{detailBlock("Visual carrier", semantic.source_visual_carrier_type)}}
+          ${{detailBlock("Text-fit gate", textFit.text_fit_gate_id)}}
+          ${{detailBlock("Runtime boundary", textFit.runtime_claim_boundary)}}
+          ${{detailBlock("Dry-run ready", dryRun.ready_for_run2_65_consumption)}}
+          ${{detailBlock("Orphan sockets", dryRun.orphan_socket_count)}}
+        </article>`;
+      }}).join("");
       const run261SelectorByRole = Object.fromEntries((refs.run261SelectorRecords || []).map((record) => [record.role, record]));
       const run261FusionByRole = Object.fromEntries((refs.run261FusionRecords || []).map((record) => [record.role, record]));
       const run261GateByRole = Object.fromEntries((refs.run261WorkflowGates || []).map((gate) => [gate.role, gate]));
@@ -2804,6 +2850,43 @@ def build_html(data: dict[str, Any]) -> str:
         <span class="pill">${{escapeHtml(refs.packPath || "case pack")}}</span>
       </div>
       <div class="dataStack">
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.64 renderer composition repair</h3><p>Run 2.64 is data/workflow-only, not a generated deck; the latest generated PPT remains Run 2.62. This layer turns the Run 2.63 renderer_composition_grammar root cause into dynamic socket, semantic diagram, text-fit, and dry-run binding contracts for the next generated rerun.</p></div><span class="pill" title="${{escapeHtml(refs.run264ResultStatus || "missing")}}">${{escapeHtml(refs.run264ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Repair result</h4>
+              ${{detailBlock("Result", refs.run264ResultPath || "run2_64_renderer_composition_repair_result.json")}}
+              ${{detailBlock("Creates new PPT deck", run264Result.creates_new_ppt_deck)}}
+              ${{detailBlock("Target layer", run264Quality.target_layer)}}
+              ${{detailBlock("Repairs blockers", run264Quality.repairs_blockers)}}
+              ${{detailBlock("Next action", run264Result.next_required_action || "run2_65_generate_four_arm_ppt_consuming_run2_64_renderer_composition_repair")}}
+            </article>
+            <article class="dataCard">
+              <h4>Output artifacts</h4>
+              ${{detailBlock("Dynamic socket", refs.run264DynamicSocketPath || "run2_64_dynamic_socket_renderer_memory.json")}}
+              ${{detailBlock("Semantic diagram", refs.run264SemanticDiagramPath || "run2_64_semantic_diagram_renderer_memory.json")}}
+              ${{detailBlock("Text-fit gates", refs.run264TextFitPath || "run2_64_text_fit_renderer_gates.json")}}
+              ${{detailBlock("Dry-run matrix", refs.run264DryRunPath || "run2_64_renderer_dry_run_binding_matrix.json")}}
+            </article>
+            <article class="dataCard">
+              <h4>Repair counts</h4>
+              ${{detailBlock("Dynamic socket records", run264Quality.dynamic_socket_records)}}
+              ${{detailBlock("Semantic diagram records", run264Quality.semantic_diagram_records)}}
+              ${{detailBlock("Text-fit gates", run264Quality.text_fit_gates)}}
+              ${{detailBlock("Dry-run roles ready", run264Quality.dry_run_roles_ready)}}
+              ${{detailBlock("Runtime boundary", run264Quality.runtime_claim_boundary)}}
+            </article>
+            <article class="dataCard">
+              <h4>Run 2.65 contract</h4>
+              ${{detailBlock("Run", run264Next.run_id || "2.65")}}
+              ${{detailBlock("Required trace fields", run264Next.required_trace_fields)}}
+              ${{detailBlock("Bad control", run264Next.bad_control_arm)}}
+              ${{detailBlock("Full pass status", run264Next.full_arm_pass_status)}}
+            </article>
+          </div>
+          <div class="dataBandSubhead"><h4>Run 2.64 role-level renderer contracts</h4><p>Each role now has active socket bindings, a semantic diagram recipe, a text-fit preflight gate, and a dry-run binding record. Runtime truncation and collision claims remain blocked until Run 2.65 render trace verifies them.</p></div>
+          <div class="dataGrid expandedGrid">${{run264RoleCards}}</div>
+        </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.63 narrative proof effectiveness audit</h3><p>Run 2.63 is audit-only: it confirms Run 2.62 consumes Run 2.61, then isolates the remaining blocker as renderer_composition_grammar rather than missing raw data or workflow consumption. Primary explicit blocker: static_socket_plan_repeated_on_every_slide.</p></div><span class="pill" title="${{escapeHtml(refs.run263AuditStatus || "missing")}}">${{escapeHtml(refs.run263AuditStatus || "missing")}}</span></div>
           <div class="dataGrid">

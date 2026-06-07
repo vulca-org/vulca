@@ -1,0 +1,340 @@
+{
+  "schema_version": "ppt_run2_semantic_diagram_renderer_memory.v1",
+  "run_id": "2.64",
+  "status": "run2_64_semantic_diagram_renderer_memory_ready_public_blocked",
+  "source_audit_run": "2.63",
+  "source_data_run": "2.61",
+  "semantic_diagram_renderer_records": [
+    {
+      "semantic_diagram_renderer_id": "semantic_diagram_renderer_2_64_cover",
+      "role": "cover",
+      "source_run2_63_blockers": [
+        "generic_native_shape_grammar_collapses_role_specific_visual_carriers",
+        "semantic_diagram_labels_not_bound_to_active_slide_proof",
+        "static_socket_plan_repeated_on_every_slide",
+        "text_fit_and_wrapping_not_trace_gated"
+      ],
+      "source_visual_carrier_selector_id": "visual_carrier_selector_2_61_cover",
+      "source_visual_carrier_type": "product_surface",
+      "source_layout_module_id": "module_2_15_editorial_cover_field",
+      "semantic_diagram_type": "source_pack_to_editable_ppt_object",
+      "native_ppt_composition_recipe": [
+        "one dominant source-pack object with nested input, memory, code, and editable PPT states",
+        "socket labels attach to the object surface instead of a repeated legend",
+        "proof badges sit as inspected chips on the object edge"
+      ],
+      "proof_object_bindings": [
+        {
+          "proof_object_binding_id": "proof_object_binding_2_64_cover_1",
+          "copy_unit_key": "proof_badges",
+          "source_socket_id": "socket_2_61_cover_proof_badges",
+          "visual_object_role": "proof_object",
+          "semantic_binding_rule": "the proof object must be visually attached to the role-specific diagram object, not rendered as a detached generic badge"
+        },
+        {
+          "proof_object_binding_id": "proof_object_binding_2_64_cover_2",
+          "copy_unit_key": "annotations",
+          "source_socket_id": "socket_2_61_cover_annotations",
+          "visual_object_role": "annotation_callout",
+          "semantic_binding_rule": "the proof object must be visually attached to the role-specific diagram object, not rendered as a detached generic badge"
+        },
+        {
+          "proof_object_binding_id": "proof_object_binding_2_64_cover_3",
+          "copy_unit_key": "state_labels",
+          "source_socket_id": "socket_2_61_cover_state_labels",
+          "visual_object_role": "state_marker",
+          "semantic_binding_rule": "the proof object must be visually attached to the role-specific diagram object, not rendered as a detached generic badge"
+        }
+      ],
+      "forbid_generic_repeated_shape_system": true,
+      "forbid_equal_card_cluster_as_primary_surface": true,
+      "required_visual_difference_from_run2_62": "the role-specific diagram type must be visible before reading text",
+      "bad_control_probe": "fail_if_cover_uses_generic_boxes_without_semantic_diagram_binding",
+      "required_trace_fields_for_run2_65": [
+        "run2_64_dynamic_socket_renderer_id",
+        "run2_64_semantic_diagram_renderer_id",
+        "run2_64_text_fit_gate_id",
+        "run2_64_renderer_dry_run_binding_id",
+        "run2_64_dynamic_socket_plan_status",
+        "run2_64_semantic_diagram_binding_status",
+        "run2_64_text_fit_preflight_status"
+      ]
+    },
+    {
+      "semantic_diagram_renderer_id": "semantic_diagram_renderer_2_64_setup",
+      "role": "setup",
+      "source_run2_63_blockers": [
+        "generic_native_shape_grammar_collapses_role_specific_visual_carriers",
+        "semantic_diagram_labels_not_bound_to_active_slide_proof",
+        "static_socket_plan_repeated_on_every_slide",
+        "text_fit_and_wrapping_not_trace_gated"
+      ],
+      "source_visual_carrier_selector_id": "visual_carrier_selector_2_61_setup",
+      "source_visual_carrier_type": "operating_loop",
+      "source_layout_module_id": "module_2_15_product_theater_stage",
+      "semantic_diagram_type": "source_to_memory_operating_loop",
+      "native_ppt_composition_recipe": [
+        "draw a single operating loop with directional source, memory, gate, and renderer stages",
+        "group sockets by loop stage rather than equal card rows",
+        "use one active proof lane for the selected commercial brief"
+      ],
+      "proof_object_bindings": [
+        {
+          "proof_object_binding_id": "proof_object_binding_2_64_setup_1",
+          "copy_unit_key": "proof_badges",
+          "source_socket_id": "socket_2_61_setup_proof_badges",
+          "visual_object_role": "proof_object",
+          "semantic_binding_rule": "the proof object must be visually attached to the role-specific diagram object, not rendered as a detached generic badge"
+        },
+        {
+          "proof_object_binding_id": "proof_object_binding_2_64_setup_2",
+          "copy_unit_key": "annotations",
+          "source_socket_id": "socket_2_61_setup_annotations",
+          "visual_object_role": "annotation_callout",
+          "semantic_binding_rule": "the proof object must be visually attached to the role-specific diagram object, not rendered as a detached generic badge"
+        },
+        {
+          "proof_object_binding_id": "proof_object_binding_2_64_setup_3",
+          "copy_unit_key": "state_labels",
+          "source_socket_id": "socket_2_61_setup_state_labels",
+          "visual_object_role": "state_marker",
+          "semantic_binding_rule": "the proof object must be visually attached to the role-specific diagram object, not rendered as a detached generic badge"
+        }
+      ],
+      "forbid_generic_repeated_shape_system": true,
+      "forbid_equal_card_cluster_as_primary_surface": true,
+      "required_visual_difference_from_run2_62": "the role-specific diagram type must be visible before reading text",
+      "bad_control_probe": "fail_if_setup_uses_generic_boxes_without_semantic_diagram_binding",
+      "required_trace_fields_for_run2_65": [
+        "run2_64_dynamic_socket_renderer_id",
+        "run2_64_semantic_diagram_renderer_id",
+        "run2_64_text_fit_gate_id",
+        "run2_64_renderer_dry_run_binding_id",
+        "run2_64_dynamic_socket_plan_status",
+        "run2_64_semantic_diagram_binding_status",
+        "run2_64_text_fit_preflight_status"
+      ]
+    },
+    {
+      "semantic_diagram_renderer_id": "semantic_diagram_renderer_2_64_contrast",
+      "role": "contrast",
+      "source_run2_63_blockers": [
+        "generic_native_shape_grammar_collapses_role_specific_visual_carriers",
+        "semantic_diagram_labels_not_bound_to_active_slide_proof",
+        "static_socket_plan_repeated_on_every_slide",
+        "text_fit_and_wrapping_not_trace_gated"
+      ],
+      "source_visual_carrier_selector_id": "visual_carrier_selector_2_61_contrast",
+      "source_visual_carrier_type": "before_after_delta",
+      "source_layout_module_id": "module_2_15_before_after_route",
+      "semantic_diagram_type": "before_after_mechanism_delta",
+      "native_ppt_composition_recipe": [
+        "use asymmetric before/after surfaces with one mechanism connector",
+        "bind the connector label to a text-fit checked socket",
+        "show proof delta as generated PPT state rather than abstract comparison copy"
+      ],
+      "proof_object_bindings": [
+        {
+          "proof_object_binding_id": "proof_object_binding_2_64_contrast_1",
+          "copy_unit_key": "proof_badges",
+          "source_socket_id": "socket_2_61_contrast_proof_badges",
+          "visual_object_role": "proof_object",
+          "semantic_binding_rule": "the proof object must be visually attached to the role-specific diagram object, not rendered as a detached generic badge"
+        },
+        {
+          "proof_object_binding_id": "proof_object_binding_2_64_contrast_2",
+          "copy_unit_key": "annotations",
+          "source_socket_id": "socket_2_61_contrast_annotations",
+          "visual_object_role": "annotation_callout",
+          "semantic_binding_rule": "the proof object must be visually attached to the role-specific diagram object, not rendered as a detached generic badge"
+        },
+        {
+          "proof_object_binding_id": "proof_object_binding_2_64_contrast_3",
+          "copy_unit_key": "state_labels",
+          "source_socket_id": "socket_2_61_contrast_state_labels",
+          "visual_object_role": "state_marker",
+          "semantic_binding_rule": "the proof object must be visually attached to the role-specific diagram object, not rendered as a detached generic badge"
+        }
+      ],
+      "forbid_generic_repeated_shape_system": true,
+      "forbid_equal_card_cluster_as_primary_surface": true,
+      "required_visual_difference_from_run2_62": "the role-specific diagram type must be visible before reading text",
+      "bad_control_probe": "fail_if_contrast_uses_generic_boxes_without_semantic_diagram_binding",
+      "required_trace_fields_for_run2_65": [
+        "run2_64_dynamic_socket_renderer_id",
+        "run2_64_semantic_diagram_renderer_id",
+        "run2_64_text_fit_gate_id",
+        "run2_64_renderer_dry_run_binding_id",
+        "run2_64_dynamic_socket_plan_status",
+        "run2_64_semantic_diagram_binding_status",
+        "run2_64_text_fit_preflight_status"
+      ]
+    },
+    {
+      "semantic_diagram_renderer_id": "semantic_diagram_renderer_2_64_proof",
+      "role": "proof",
+      "source_run2_63_blockers": [
+        "generic_native_shape_grammar_collapses_role_specific_visual_carriers",
+        "semantic_diagram_labels_not_bound_to_active_slide_proof",
+        "static_socket_plan_repeated_on_every_slide",
+        "text_fit_and_wrapping_not_trace_gated"
+      ],
+      "source_visual_carrier_selector_id": "visual_carrier_selector_2_61_proof",
+      "source_visual_carrier_type": "workspace_inspection",
+      "source_layout_module_id": "module_2_15_dense_evidence_compression",
+      "semantic_diagram_type": "inspection_workspace_board",
+      "native_ppt_composition_recipe": [
+        "render a workspace board with source, gate, trace, and output panes",
+        "make each pane carry one proof object binding",
+        "avoid equal summary cards when the role is inspection"
+      ],
+      "proof_object_bindings": [
+        {
+          "proof_object_binding_id": "proof_object_binding_2_64_proof_1",
+          "copy_unit_key": "proof_badges",
+          "source_socket_id": "socket_2_61_proof_proof_badges",
+          "visual_object_role": "proof_object",
+          "semantic_binding_rule": "the proof object must be visually attached to the role-specific diagram object, not rendered as a detached generic badge"
+        },
+        {
+          "proof_object_binding_id": "proof_object_binding_2_64_proof_2",
+          "copy_unit_key": "annotations",
+          "source_socket_id": "socket_2_61_proof_annotations",
+          "visual_object_role": "annotation_callout",
+          "semantic_binding_rule": "the proof object must be visually attached to the role-specific diagram object, not rendered as a detached generic badge"
+        },
+        {
+          "proof_object_binding_id": "proof_object_binding_2_64_proof_3",
+          "copy_unit_key": "state_labels",
+          "source_socket_id": "socket_2_61_proof_state_labels",
+          "visual_object_role": "state_marker",
+          "semantic_binding_rule": "the proof object must be visually attached to the role-specific diagram object, not rendered as a detached generic badge"
+        }
+      ],
+      "forbid_generic_repeated_shape_system": true,
+      "forbid_equal_card_cluster_as_primary_surface": true,
+      "required_visual_difference_from_run2_62": "the role-specific diagram type must be visible before reading text",
+      "bad_control_probe": "fail_if_proof_uses_generic_boxes_without_semantic_diagram_binding",
+      "required_trace_fields_for_run2_65": [
+        "run2_64_dynamic_socket_renderer_id",
+        "run2_64_semantic_diagram_renderer_id",
+        "run2_64_text_fit_gate_id",
+        "run2_64_renderer_dry_run_binding_id",
+        "run2_64_dynamic_socket_plan_status",
+        "run2_64_semantic_diagram_binding_status",
+        "run2_64_text_fit_preflight_status"
+      ]
+    },
+    {
+      "semantic_diagram_renderer_id": "semantic_diagram_renderer_2_64_climax",
+      "role": "climax",
+      "source_run2_63_blockers": [
+        "generic_native_shape_grammar_collapses_role_specific_visual_carriers",
+        "semantic_diagram_labels_not_bound_to_active_slide_proof",
+        "static_socket_plan_repeated_on_every_slide",
+        "text_fit_and_wrapping_not_trace_gated"
+      ],
+      "source_visual_carrier_selector_id": "visual_carrier_selector_2_61_climax",
+      "source_visual_carrier_type": "climax_result_object",
+      "source_layout_module_id": "module_2_15_metric_reveal_stage",
+      "semantic_diagram_type": "editable_ppt_preview_hero_object",
+      "native_ppt_composition_recipe": [
+        "make the editable PPT preview the largest visual object",
+        "draw code-generated slide details inside the hero object",
+        "place proof sockets as surface annotations instead of separate badges"
+      ],
+      "proof_object_bindings": [
+        {
+          "proof_object_binding_id": "proof_object_binding_2_64_climax_1",
+          "copy_unit_key": "proof_badges",
+          "source_socket_id": "socket_2_61_climax_proof_badges",
+          "visual_object_role": "proof_object",
+          "semantic_binding_rule": "the proof object must be visually attached to the role-specific diagram object, not rendered as a detached generic badge"
+        },
+        {
+          "proof_object_binding_id": "proof_object_binding_2_64_climax_2",
+          "copy_unit_key": "annotations",
+          "source_socket_id": "socket_2_61_climax_annotations",
+          "visual_object_role": "annotation_callout",
+          "semantic_binding_rule": "the proof object must be visually attached to the role-specific diagram object, not rendered as a detached generic badge"
+        },
+        {
+          "proof_object_binding_id": "proof_object_binding_2_64_climax_3",
+          "copy_unit_key": "state_labels",
+          "source_socket_id": "socket_2_61_climax_state_labels",
+          "visual_object_role": "state_marker",
+          "semantic_binding_rule": "the proof object must be visually attached to the role-specific diagram object, not rendered as a detached generic badge"
+        }
+      ],
+      "forbid_generic_repeated_shape_system": true,
+      "forbid_equal_card_cluster_as_primary_surface": true,
+      "required_visual_difference_from_run2_62": "the role-specific diagram type must be visible before reading text",
+      "bad_control_probe": "fail_if_climax_uses_generic_boxes_without_semantic_diagram_binding",
+      "required_trace_fields_for_run2_65": [
+        "run2_64_dynamic_socket_renderer_id",
+        "run2_64_semantic_diagram_renderer_id",
+        "run2_64_text_fit_gate_id",
+        "run2_64_renderer_dry_run_binding_id",
+        "run2_64_dynamic_socket_plan_status",
+        "run2_64_semantic_diagram_binding_status",
+        "run2_64_text_fit_preflight_status"
+      ]
+    },
+    {
+      "semantic_diagram_renderer_id": "semantic_diagram_renderer_2_64_close",
+      "role": "close",
+      "source_run2_63_blockers": [
+        "generic_native_shape_grammar_collapses_role_specific_visual_carriers",
+        "semantic_diagram_labels_not_bound_to_active_slide_proof",
+        "static_socket_plan_repeated_on_every_slide",
+        "text_fit_and_wrapping_not_trace_gated"
+      ],
+      "source_visual_carrier_selector_id": "visual_carrier_selector_2_61_close",
+      "source_visual_carrier_type": "release_handoff",
+      "source_layout_module_id": "module_2_15_quiet_release_handoff",
+      "semantic_diagram_type": "release_handoff_chain",
+      "native_ppt_composition_recipe": [
+        "draw a release handoff route from evidence to output to next repair",
+        "separate blocked gate, passed data gate, and next generated rerun",
+        "keep internal run ids trace-visible but not dominant public copy"
+      ],
+      "proof_object_bindings": [
+        {
+          "proof_object_binding_id": "proof_object_binding_2_64_close_1",
+          "copy_unit_key": "proof_badges",
+          "source_socket_id": "socket_2_61_close_proof_badges",
+          "visual_object_role": "proof_object",
+          "semantic_binding_rule": "the proof object must be visually attached to the role-specific diagram object, not rendered as a detached generic badge"
+        },
+        {
+          "proof_object_binding_id": "proof_object_binding_2_64_close_2",
+          "copy_unit_key": "annotations",
+          "source_socket_id": "socket_2_61_close_annotations",
+          "visual_object_role": "annotation_callout",
+          "semantic_binding_rule": "the proof object must be visually attached to the role-specific diagram object, not rendered as a detached generic badge"
+        },
+        {
+          "proof_object_binding_id": "proof_object_binding_2_64_close_3",
+          "copy_unit_key": "state_labels",
+          "source_socket_id": "socket_2_61_close_state_labels",
+          "visual_object_role": "state_marker",
+          "semantic_binding_rule": "the proof object must be visually attached to the role-specific diagram object, not rendered as a detached generic badge"
+        }
+      ],
+      "forbid_generic_repeated_shape_system": true,
+      "forbid_equal_card_cluster_as_primary_surface": true,
+      "required_visual_difference_from_run2_62": "the role-specific diagram type must be visible before reading text",
+      "bad_control_probe": "fail_if_close_uses_generic_boxes_without_semantic_diagram_binding",
+      "required_trace_fields_for_run2_65": [
+        "run2_64_dynamic_socket_renderer_id",
+        "run2_64_semantic_diagram_renderer_id",
+        "run2_64_text_fit_gate_id",
+        "run2_64_renderer_dry_run_binding_id",
+        "run2_64_dynamic_socket_plan_status",
+        "run2_64_semantic_diagram_binding_status",
+        "run2_64_text_fit_preflight_status"
+      ]
+    }
+  ],
+  "next_required_action": "run2_65_generate_four_arm_ppt_consuming_run2_64_renderer_composition_repair"
+}

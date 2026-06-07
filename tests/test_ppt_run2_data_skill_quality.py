@@ -554,6 +554,15 @@ EXPECTED_RUN2_63_RENDERER_BLOCKERS = {
     "text_fit_and_wrapping_not_trace_gated",
     "semantic_diagram_labels_not_bound_to_active_slide_proof",
 }
+EXPECTED_RUN2_64_TRACE_FIELDS = {
+    "run2_64_dynamic_socket_renderer_id",
+    "run2_64_semantic_diagram_renderer_id",
+    "run2_64_text_fit_gate_id",
+    "run2_64_renderer_dry_run_binding_id",
+    "run2_64_dynamic_socket_plan_status",
+    "run2_64_semantic_diagram_binding_status",
+    "run2_64_text_fit_preflight_status",
+}
 EXPECTED_RUN2_51_FORBIDDEN_PUBLIC_TERMS = {
     "run2",
     "memory",
@@ -10582,6 +10591,101 @@ def test_ppt_run_html_viewer_mentions_run2_63_consumption_effectiveness_audit() 
         "renderer_composition_grammar",
         "static_socket_plan_repeated_on_every_slide",
         "build_run2_64_renderer_composition_repair_for_dynamic_sockets_and_semantic_diagrams_before_rerun",
+    ]
+    assert_contains(script, required_terms)
+    assert_contains(viewer, required_terms)
+
+
+def test_run2_64_records_renderer_composition_repair_contract() -> None:
+    dynamic_socket = load_json(PACK / "run2_64_dynamic_socket_renderer_memory.json")
+    semantic_diagram = load_json(PACK / "run2_64_semantic_diagram_renderer_memory.json")
+    text_fit = load_json(PACK / "run2_64_text_fit_renderer_gates.json")
+    dry_run = load_json(PACK / "run2_64_renderer_dry_run_binding_matrix.json")
+    result = load_json(PACK / "results" / "run2_64_renderer_composition_repair_result.json")
+    result_md = (PACK / "results" / "run2_64_renderer_composition_repair_result.md").read_text(
+        encoding="utf-8"
+    )
+
+    assert dynamic_socket["status"] == "run2_64_dynamic_socket_renderer_memory_ready_public_blocked"
+    assert semantic_diagram["status"] == "run2_64_semantic_diagram_renderer_memory_ready_public_blocked"
+    assert text_fit["status"] == "run2_64_text_fit_renderer_gates_ready_public_blocked"
+    assert dry_run["status"] == "run2_64_renderer_dry_run_binding_matrix_ready_public_blocked"
+    assert result["run_id"] == "2.64"
+    assert result["status"] == "run2_64_renderer_composition_repair_ready_public_blocked"
+    assert result["creates_new_ppt_deck"] is False
+    assert result["source_audit_run"] == "2.63"
+    assert result["source_generated_run"] == "2.62"
+    assert result["quality_delta"]["target_layer"] == "renderer_composition_grammar_repair_contract"
+    assert set(result["quality_delta"]["repairs_blockers"]) >= EXPECTED_RUN2_63_RENDERER_BLOCKERS
+    assert result["next_required_action"] == (
+        "run2_65_generate_four_arm_ppt_consuming_run2_64_renderer_composition_repair"
+    )
+
+    dynamic_records = dynamic_socket["dynamic_socket_renderer_records"]
+    diagram_records = semantic_diagram["semantic_diagram_renderer_records"]
+    text_gate_records = text_fit["text_fit_renderer_gates"]
+    dry_records = dry_run["dry_run_binding_records"]
+    assert {record["role"] for record in dynamic_records} == EXPECTED_RUN2_61_ROLES
+    assert {record["role"] for record in diagram_records} == EXPECTED_RUN2_61_ROLES
+    assert {record["role"] for record in text_gate_records} == EXPECTED_RUN2_61_ROLES
+    assert {record["role"] for record in dry_records} == EXPECTED_RUN2_61_ROLES
+
+    for record in dynamic_records:
+        assert record["source_run2_63_blockers"] == sorted(EXPECTED_RUN2_63_RENDERER_BLOCKERS)
+        assert record["static_socket_plan_replaced"] is True
+        assert set(record["active_copy_unit_keys"]) == EXPECTED_RUN2_61_REQUIRED_COPY_UNITS
+        assert len(record["active_socket_bindings"]) == len(EXPECTED_RUN2_61_REQUIRED_COPY_UNITS)
+        assert set(record["required_trace_fields_for_run2_65"]) == EXPECTED_RUN2_64_TRACE_FIELDS
+
+    for record in diagram_records:
+        assert record["source_visual_carrier_type"] in EXPECTED_RUN2_61_CARRIER_TYPES
+        assert record["forbid_generic_repeated_shape_system"] is True
+        assert len(record["proof_object_bindings"]) >= 3
+        assert set(record["required_trace_fields_for_run2_65"]) == EXPECTED_RUN2_64_TRACE_FIELDS
+
+    for record in text_gate_records:
+        assert record["runtime_claim_boundary"] == "must_be_verified_by_run2_65_render_trace"
+        assert record["preflight_gate_status"] == "metadata_gate_only_not_runtime_proof"
+        assert record["forbid_ellipsis_or_clipped_public_copy"] is True
+        assert set(record["required_trace_fields_for_run2_65"]) == EXPECTED_RUN2_64_TRACE_FIELDS
+
+    for record in dry_records:
+        assert record["all_required_copy_units_bound"] is True
+        assert record["orphan_socket_count"] == 0
+        assert record["unbound_copy_unit_count"] == 0
+        assert record["ready_for_run2_65_consumption"] is True
+
+    assert_contains(
+        result_md,
+        [
+            "Run 2.64 Renderer Composition Repair",
+            "dynamic socket",
+            "semantic diagram",
+            "text-fit",
+            "dry-run binding matrix",
+            "Run 2.65",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_mentions_run2_64_renderer_composition_repair() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+    viewer = (
+        ROOT
+        / "outputs"
+        / "019e7d9c-532a-70b3-8892-fa3ae42baef2"
+        / "presentations"
+        / "ppt-run-viewer.html"
+    ).read_text(encoding="utf-8")
+
+    required_terms = [
+        "Run 2.64 renderer composition repair",
+        "run2_64_dynamic_socket_renderer_memory.json",
+        "run2_64_semantic_diagram_renderer_memory.json",
+        "run2_64_text_fit_renderer_gates.json",
+        "run2_64_renderer_dry_run_binding_matrix.json",
+        "run2_65_generate_four_arm_ppt_consuming_run2_64_renderer_composition_repair",
     ]
     assert_contains(script, required_terms)
     assert_contains(viewer, required_terms)

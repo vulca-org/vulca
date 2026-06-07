@@ -1,0 +1,53 @@
+{
+  "schema_version": "ppt_run2_renderer_composition_repair_result.v1",
+  "run_id": "2.64",
+  "status": "run2_64_renderer_composition_repair_ready_public_blocked",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "source_audit_run": "2.63",
+  "source_generated_run": "2.62",
+  "source_data_run": "2.61",
+  "creates_new_ppt_deck": false,
+  "public_ready": false,
+  "input_chain": {
+    "run2_63_audit": "docs/product/ppt-run2-data-skill-quality/results/run2_63_narrative_proof_consumption_effectiveness_audit.json",
+    "run2_61_text_socket_fusion_contracts": "docs/product/ppt-run2-data-skill-quality/run2_61_text_socket_fusion_contracts.json",
+    "run2_61_story_to_visual_carrier_selector": "docs/product/ppt-run2-data-skill-quality/run2_61_story_to_visual_carrier_selector.json",
+    "run2_61_narrative_workflow_gates": "docs/product/ppt-run2-data-skill-quality/run2_61_narrative_workflow_gates.json"
+  },
+  "output_chain": {
+    "dynamic_socket_renderer_memory": "run2_64_dynamic_socket_renderer_memory.json",
+    "semantic_diagram_renderer_memory": "run2_64_semantic_diagram_renderer_memory.json",
+    "text_fit_renderer_gates": "run2_64_text_fit_renderer_gates.json",
+    "renderer_dry_run_binding_matrix": "run2_64_renderer_dry_run_binding_matrix.json"
+  },
+  "quality_delta": {
+    "target_layer": "renderer_composition_grammar_repair_contract",
+    "repairs_blockers": [
+      "generic_native_shape_grammar_collapses_role_specific_visual_carriers",
+      "semantic_diagram_labels_not_bound_to_active_slide_proof",
+      "static_socket_plan_repeated_on_every_slide",
+      "text_fit_and_wrapping_not_trace_gated"
+    ],
+    "dynamic_socket_records": 6,
+    "semantic_diagram_records": 6,
+    "text_fit_gates": 6,
+    "dry_run_roles_ready": 6,
+    "runtime_claim_boundary": "text_fit_and_collision_must_be_verified_by_run2_65_render_trace"
+  },
+  "next_generated_run_contract": {
+    "run_id": "2.65",
+    "required_trace_fields": [
+      "run2_64_dynamic_socket_renderer_id",
+      "run2_64_semantic_diagram_renderer_id",
+      "run2_64_text_fit_gate_id",
+      "run2_64_renderer_dry_run_binding_id",
+      "run2_64_dynamic_socket_plan_status",
+      "run2_64_semantic_diagram_binding_status",
+      "run2_64_text_fit_preflight_status"
+    ],
+    "bad_control_arm": "bad_run2_64_without_renderer_composition_repair",
+    "full_arm_pass_status": "run2_64_renderer_composition_repair_consumed_before_native_ppt_drawing"
+  },
+  "next_required_action": "run2_65_generate_four_arm_ppt_consuming_run2_64_renderer_composition_repair",
+  "release_boundary": "public_blocked_until_run2_65_consumes_run2_64_and_proves_runtime_text_fit_and_visual_delta"
+}
