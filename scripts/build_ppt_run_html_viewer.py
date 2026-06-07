@@ -10,7 +10,7 @@ from typing import Any
 
 DEFAULT_THREAD_ID = "019e7d9c-532a-70b3-8892-fa3ae42baef2"
 PACK_REL = Path("docs") / "product" / "ppt-run2-data-skill-quality"
-LATEST_RUN_PAYLOAD_HINT = '"latestRunId": "2.60"'
+LATEST_RUN_PAYLOAD_HINT = '"latestRunId": "2.62"'
 
 
 @dataclass(frozen=True)
@@ -591,6 +591,27 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ),
         ),
     ),
+    RunSpec(
+        "2.62",
+        "Run 2.62",
+        "run2-62-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-62-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-62-run1-5-skill", "baseline"),
+            ArmSpec(
+                "run2_62_full_narrative_proof",
+                "Run 2.62 full",
+                "ppt-run2-62-full-vulca",
+                "full",
+            ),
+            ArmSpec(
+                "bad_run2_60_without_run2_61_narrative_proof_dataset",
+                "Bad missing Run 2.61 proof",
+                "ppt-run2-62-bad-without-narrative-proof",
+                "negative",
+            ),
+        ),
+    ),
 )
 
 
@@ -759,6 +780,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run261_source_policy = read_json(pack / "run2_61_source_to_public_proof_policy.json")
     run261_gates = read_json(pack / "run2_61_narrative_workflow_gates.json")
     run261_result = read_json(pack / "results" / "run2_61_narrative_proof_dataset_result.json")
+    run262_result = read_json(pack / "results" / "run2_62_narrative_proof_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -1133,6 +1155,19 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run261WorkflowGates": run261_gates.get("narrative_workflow_gates", []),
         "run261WorkflowGatesPath": "run2_61_narrative_workflow_gates.json",
         "run261NextGeneratedRunContract": run261_gates.get("next_generated_run_contract", {}),
+        "run262ResultStatus": run262_result.get("status", ""),
+        "run262Result": run262_result,
+        "run262ResultPath": "run2_62_narrative_proof_rerun_result.json",
+        "run262TargetLayer": (run262_result.get("quality_delta") or {}).get(
+            "target_layer", "run2_61_narrative_proof_dataset_consumed"
+        ),
+        "run262SourceDataStatus": (run262_result.get("quality_delta") or {}).get(
+            "source_data_status", "run2_61_narrative_proof_dataset_consumed_before_native_ppt_drawing"
+        ),
+        "run262GeneratorPath": "scripts/generate_ppt_run2_62_narrative_proof_arms.mjs",
+        "run262FullTracePath": "ppt-run2-62-full-vulca/trace_manifest.json",
+        "run262BadTracePath": "ppt-run2-62-bad-without-narrative-proof/trace_manifest.json",
+        "run262FourArmSheetPath": "run2-62-four-arm-contact-sheet.png",
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -2423,6 +2458,11 @@ def build_html(data: dict[str, Any]) -> str:
       const run261Boundary = run261Result.generation_boundary || {{}};
       const run261Policy = refs.run261SourcePolicy || {{}};
       const run261Next = refs.run261NextGeneratedRunContract || {{}};
+      const run262Result = refs.run262Result || {{}};
+      const run262Inputs = run262Result.input_chain || {{}};
+      const run262Rerun = run262Result.rerun || {{}};
+      const run262Quality = run262Result.quality_delta || {{}};
+      const run262Control = run262Result.control_boundary || {{}};
       const run261SelectorByRole = Object.fromEntries((refs.run261SelectorRecords || []).map((record) => [record.role, record]));
       const run261FusionByRole = Object.fromEntries((refs.run261FusionRecords || []).map((record) => [record.role, record]));
       const run261GateByRole = Object.fromEntries((refs.run261WorkflowGates || []).map((gate) => [gate.role, gate]));
@@ -2737,7 +2777,44 @@ def build_html(data: dict[str, Any]) -> str:
       </div>
       <div class="dataStack">
         <section class="dataBand">
-          <div class="dataBandHead"><div><h3>Latest generated repair proof</h3><p>Run 2.60 is the current generated proof: the full arm consumes Run 2.59 before native PPT drawing, so the content-aware composition compiler consumed status is visible in both slide trace and result metadata.</p></div><span class="pill" title="${{escapeHtml(refs.run260ResultStatus || "missing")}}">${{escapeHtml(refs.run260ResultStatus || "missing")}}</span></div>
+          <div class="dataBandHead"><div><h3>Run 2.62 generated narrative proof consumption</h3><p>Run 2.62 is the current generated proof: the full arm consumes Run 2.61 narrative proof records, visual carrier selectors, text socket fusion contracts, public proof replacements, and workflow gates before native PPT drawing.</p></div><span class="pill" title="${{escapeHtml(refs.run262ResultStatus || "missing")}}">${{escapeHtml(refs.run262ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Run 2.62 generated result</h4>
+              ${{detailBlock("Result", refs.run262ResultPath || "run2_62_narrative_proof_rerun_result.json")}}
+              ${{detailBlock("Best arm", run262Rerun.best_internal_arm || "run2_62_full_narrative_proof")}}
+              ${{detailBlock("Target layer", run262Quality.target_layer || refs.run262TargetLayer)}}
+              ${{detailBlock("Source data status", run262Quality.source_data_status || refs.run262SourceDataStatus)}}
+              ${{detailBlock("Contact sheet", run262Rerun.combined_contact_sheet || "run2-62-four-arm-contact-sheet.png")}}
+            </article>
+            <article class="dataCard">
+              <h4>Run 2.61 consumed by generator</h4>
+              ${{detailBlock("Narrative proof dataset", run262Inputs.run2_61_narrative_proof_dataset || "run2_61_narrative_proof_dataset.json")}}
+              ${{detailBlock("Visual carrier selector", run262Inputs.run2_61_visual_carrier_selector || "run2_61_story_to_visual_carrier_selector.json")}}
+              ${{detailBlock("Text socket fusion", run262Inputs.run2_61_text_socket_fusion || "run2_61_text_socket_fusion_contracts.json")}}
+              ${{detailBlock("Source policy", run262Inputs.run2_61_source_policy || "run2_61_source_to_public_proof_policy.json")}}
+              ${{detailBlock("Narrative workflow gates", run262Inputs.run2_61_workflow_gates || "run2_61_narrative_workflow_gates.json")}}
+            </article>
+            <article class="dataCard">
+              <h4>Consumption trace metrics</h4>
+              ${{detailBlock("Slides with 2.61 contracts", run262Quality.full_slides_with_run2_61_contracts)}}
+              ${{detailBlock("Slides with socket bindings", run262Quality.full_slides_with_socket_bindings)}}
+              ${{detailBlock("Slides with public proof replacement", run262Quality.full_slides_with_public_proof_replacements)}}
+              ${{detailBlock("Required answers visible", run262Quality.full_slides_with_required_answers_visible)}}
+              ${{detailBlock("Bad-control failures", run262Quality.bad_control_slides_without_run2_61_contracts)}}
+            </article>
+            <article class="dataCard">
+              <h4>2.62 trace surfaces</h4>
+              ${{detailBlock("Generator", refs.run262GeneratorPath || "scripts/generate_ppt_run2_62_narrative_proof_arms.mjs")}}
+              ${{detailBlock("Full trace", refs.run262FullTracePath || "ppt-run2-62-full-vulca/trace_manifest.json")}}
+              ${{detailBlock("Bad trace", refs.run262BadTracePath || "ppt-run2-62-bad-without-narrative-proof/trace_manifest.json")}}
+              ${{detailBlock("Four-arm sheet", refs.run262FourArmSheetPath || "run2-62-four-arm-contact-sheet.png")}}
+              ${{detailBlock("Negative boundary", run262Control.bad_run2_60_without_run2_61_narrative_proof_dataset)}}
+            </article>
+          </div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Previous generated repair proof</h3><p>Run 2.60 consumes Run 2.59 before native PPT drawing, so the content-aware composition compiler consumed status is visible in both slide trace and result metadata.</p></div><span class="pill" title="${{escapeHtml(refs.run260ResultStatus || "missing")}}">${{escapeHtml(refs.run260ResultStatus || "missing")}}</span></div>
           <div class="dataGrid">
             <article class="dataCard">
               <h4>Run 2.60 generated result</h4>
