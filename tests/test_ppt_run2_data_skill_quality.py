@@ -6728,7 +6728,7 @@ def test_ppt_run_html_viewer_generated_latest_run2_50() -> None:
             "ppt-run2-44-full-vulca",
             "ppt-run2-44-bad-run2-43-name-only-geometry",
             "run2_44_semantic_geometry_rerun_result.json",
-            '"latestRunId": "2.52"',
+            '"latestRunId": "2.54"',
             "Run 2.47",
             "run2-47-four-arm-contact-sheet.png",
             "ppt-run2-47-prompt-only",
@@ -7663,7 +7663,7 @@ def test_ppt_run_html_viewer_embeds_run2_45_semantic_geometry_effectiveness_audi
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.52"',
+            '"latestRunId": "2.54"',
             "Run 2.45 semantic geometry effectiveness audit",
             "run2_45_semantic_geometry_effectiveness_audit.json",
             "slot_based_semantic_geometry",
@@ -7822,7 +7822,7 @@ def test_ppt_run_html_viewer_embeds_run2_46_multimodal_composition_memory() -> N
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.52"',
+            '"latestRunId": "2.54"',
             "Run 2.46 multimodal composition memory",
             "run2_46_multimodal_composition_memory_result.json",
             "visual object grammar",
@@ -7963,7 +7963,7 @@ def test_ppt_run_html_viewer_mentions_run2_47_composition_grammar_rerun() -> Non
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.52"',
+            '"latestRunId": "2.54"',
             "Run 2.47",
             "run2_47_composition_grammar_rerun_result.json",
             "visual object grammar",
@@ -8105,7 +8105,7 @@ def test_ppt_run_html_viewer_embeds_run2_48_composition_grammar_effectiveness_au
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.52"',
+            '"latestRunId": "2.54"',
             "Run 2.48 composition grammar effectiveness audit",
             "run2_48_composition_grammar_effectiveness_audit.json",
             "visual object grammar",
@@ -8272,7 +8272,7 @@ def test_ppt_run_html_viewer_embeds_run2_49_data_only_repair_pack() -> None:
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.52"',
+            '"latestRunId": "2.54"',
             "Run 2.49 readability/content density/editorial renderer repair",
             "Data-only Run",
             "run2_49_readability_memory.json",
@@ -8308,7 +8308,7 @@ def test_ppt_run_html_viewer_embeds_run2_51_data_workflow_repair_pack() -> None:
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.52"',
+            '"latestRunId": "2.54"',
             "Run 2.51 remains the prior data/workflow repair layer",
             "run2_51_editorial_shape_text_repair_result.json",
             "run2_51_editorial_copy_memory.json",
@@ -8976,7 +8976,7 @@ def test_ppt_run_html_viewer_mentions_run2_53_product_surface_scene_repair() -> 
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.52"',
+            '"latestRunId": "2.54"',
             "Run 2.53 product-surface scene repair",
             "run2_53_product_surface_scene_memory.json",
             "run2_53_business_visual_evidence_memory.json",
@@ -9184,7 +9184,7 @@ def test_ppt_run_html_viewer_mentions_run2_50_readability_density_renderer_rerun
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.52"',
+            '"latestRunId": "2.54"',
             "Run 2.50",
             "run2-50-four-arm-contact-sheet.png",
             "ppt-run2-50-prompt-only",
