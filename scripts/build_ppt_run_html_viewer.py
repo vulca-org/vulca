@@ -723,6 +723,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run257_workflow_gates = read_json(pack / "run2_57_content_workflow_gates.json")
     run257_result = read_json(pack / "results" / "run2_57_product_capability_content_result.json")
     run258_result = read_json(pack / "results" / "run2_58_product_content_contract_rerun_result.json")
+    run258_open_source_research = read_json(pack / "run2_58_open_source_slide_code_research.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -1029,6 +1030,16 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run258SourceDataStatus": (run258_result.get("quality_delta") or {}).get(
             "source_data_status", "run2_57_product_capability_content_consumed_before_native_ppt_drawing"
         ),
+        "run258OpenSourceResearchStatus": run258_open_source_research.get("status", ""),
+        "run258OpenSourceResearch": run258_open_source_research,
+        "run258OpenSourceReferences": run258_open_source_research.get("open_source_reference_records", []),
+        "run258OpenSourceUsePolicy": run258_open_source_research.get("usage_boundary", {}),
+        "run258OpenSourceResearchPath": "run2_58_open_source_slide_code_research.json",
+        "run258GeneratorPath": "scripts/generate_ppt_run2_58_product_content_contract_arms.mjs",
+        "run258FullTracePath": "ppt-run2-58-full-vulca/trace_manifest.json",
+        "run258BadTracePath": "ppt-run2-58-bad-without-product-capability-content/trace_manifest.json",
+        "run258FullDeckSourcePath": "ppt-run2-58-full-vulca/slides/deck-source.mjs",
+        "run258FourArmSheetPath": "run2-58-four-arm-contact-sheet.png",
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -2283,6 +2294,19 @@ def build_html(data: dict[str, Any]) -> str:
       const run258Rerun = run258Result.rerun || {{}};
       const run258Quality = run258Result.quality_delta || {{}};
       const run258Control = run258Result.control_boundary || {{}};
+      const run258OpenSourceUsePolicy = refs.run258OpenSourceUsePolicy || {{}};
+      const run258OpenSourceCards = (refs.run258OpenSourceReferences || []).map((record) => `
+        <article class="dataCard">
+          <h4>${{escapeHtml(record.label)}} code reference</h4>
+          <p><a href="${{escapeHtml(record.source_url || "#")}}" target="_blank" rel="noreferrer">${{escapeHtml(record.source_url || "source missing")}}</a></p>
+          ${{detailBlock("Source type", record.source_type)}}
+          ${{detailBlock("What to learn", record.what_to_learn)}}
+          ${{detailBlock("Learnable code patterns", record.learnable_code_patterns)}}
+          ${{detailBlock("Product relevance", record.product_relevance)}}
+          ${{detailBlock("Integration boundary", record.integration_boundary)}}
+          ${{detailBlock("License / usage note", record.license_or_usage_note)}}
+          ${{detailBlock("do not copy source assets", record.do_not_copy_source_assets)}}
+        </article>`).join("");
       const run257CapabilityCards = (refs.run257ProductCapabilities || []).map((record) => `
         <article class="dataCard">
           <h4>${{escapeHtml(record.capability_layer)}} capability</h4>
@@ -2534,6 +2558,46 @@ def build_html(data: dict[str, Any]) -> str:
               ${{detailBlock("Contact sheet", run255Rerun.combined_contact_sheet || "run2-55-four-arm-contact-sheet.png")}}
             </article>
           </div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.58 experiment lab</h3><p>This is the current product experiment surface: inspect the generated result, the code generator, the full/bad traces, and the open-source slide-code learning map in one place.</p></div><span class="pill" title="${{escapeHtml(refs.run258OpenSourceResearchStatus || "missing")}}">${{escapeHtml(refs.run258OpenSourceResearchStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Generated proof to inspect</h4>
+              ${{detailBlock("Generated result", refs.run258ResultPath || "run2_58_product_content_contract_rerun_result.json")}}
+              ${{detailBlock("Generator source", refs.run258GeneratorPath || "scripts/generate_ppt_run2_58_product_content_contract_arms.mjs")}}
+              ${{detailBlock("Full arm trace", refs.run258FullTracePath || "ppt-run2-58-full-vulca/trace_manifest.json")}}
+              ${{detailBlock("Bad control trace", refs.run258BadTracePath || "ppt-run2-58-bad-without-product-capability-content/trace_manifest.json")}}
+              ${{detailBlock("Full deck source", refs.run258FullDeckSourcePath || "ppt-run2-58-full-vulca/slides/deck-source.mjs")}}
+              ${{detailBlock("Four-arm contact sheet", refs.run258FourArmSheetPath || "run2-58-four-arm-contact-sheet.png")}}
+            </article>
+            <article class="dataCard">
+              <h4>What this experiment proves</h4>
+              ${{detailBlock("Code-generated editable PPT", "Run 2.58 still generates editable PPTX with native code, not flat images.")}}
+              ${{detailBlock("Data consumed", run258Quality.source_data_status || refs.run258SourceDataStatus)}}
+              ${{detailBlock("Reader-question slides", run258Quality.full_slides_with_reader_question_answered)}}
+              ${{detailBlock("Product terms visible", run258Quality.full_slides_with_code_generated_ppt_claim)}}
+              ${{detailBlock("Bad control failure", run258Quality.bad_control_slides_without_run2_57_content)}}
+            </article>
+            <article class="dataCard">
+              <h4>Open-source slide-code learning map</h4>
+              ${{detailBlock("Research file", refs.run258OpenSourceResearchPath || "run2_58_open_source_slide_code_research.json")}}
+              ${{detailBlock("Learning mode", run258OpenSourceUsePolicy.learning_mode || "runtime_learning_only")}}
+              ${{detailBlock("do not copy source assets", run258OpenSourceUsePolicy.do_not_copy_source_assets)}}
+              ${{detailBlock("Do not copy brand/template layouts", run258OpenSourceUsePolicy.do_not_copy_brand_or_template_layouts)}}
+              ${{detailBlock("Rewrite boundary", run258OpenSourceUsePolicy.rewrite_as_vulca_native_artifact_tool_modules)}}
+              ${{detailBlock("Reason", run258OpenSourceUsePolicy.reason)}}
+            </article>
+            <article class="dataCard">
+              <h4>How to use GitHub code</h4>
+              ${{detailBlock("Learn", "APIs, object models, theme/component boundaries, export paths, runtime motion boundaries, and RAG-to-layout planning.")}}
+              ${{detailBlock("Do not copy", "source assets, demo decks, visual identity, brand marks, or template layouts.")}}
+              ${{detailBlock("Vulca translation", "Convert learnings into design memory and native artifact-tool modules before code-generated editable PPT rendering.")}}
+              ${{detailBlock("Next workflow", "Run 2.59 should prove each slide role used at least one concrete code-pattern memory record.")}}
+            </article>
+          </div>
+          <div class="dataBandSubhead"><h4>Open-source references</h4><p>PptxGenJS, Slidev, Marp, reveal.js, and SlideCoder are references for code patterns and workflow structure. Use them to learn implementation patterns; do not copy source assets, demo decks, or template layouts.</p></div>
+          <div class="dataGrid">${{run258OpenSourceCards}}</div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Latest data/workflow repair: Run 2.57 product capability content layer</h3><p>Run 2.57 is data/workflow-only. It adds product capability memory, slide message contracts, and content workflow gates. Next generated run 2.58 must consume this layer so it can explain the product instead of only varying the visual surface.</p></div><span class="pill" title="${{escapeHtml(refs.run257ResultStatus || "missing")}}">${{escapeHtml(refs.run257ResultStatus || "missing")}}</span></div>
@@ -4109,7 +4173,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--presentations-dir",
         type=Path,
-        default=Path("outputs") / DEFAULT_THREAD_ID / "presentations",
+        default=None,
     )
     parser.add_argument("--out", type=Path, default=None)
     return parser.parse_args()
@@ -4117,7 +4181,9 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
-    presentations_dir = args.presentations_dir.resolve()
+    repo_root = Path(__file__).resolve().parents[1]
+    default_presentations_dir = repo_root / "outputs" / DEFAULT_THREAD_ID / "presentations"
+    presentations_dir = (args.presentations_dir or default_presentations_dir).resolve()
     out = args.out.resolve() if args.out else presentations_dir / "ppt-run-viewer.html"
     data = build_data(presentations_dir, out)
     out.parent.mkdir(parents=True, exist_ok=True)

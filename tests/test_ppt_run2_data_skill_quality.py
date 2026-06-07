@@ -476,6 +476,13 @@ EXPECTED_RUN2_58_TRACE_FIELDS = {
     "run2_58_proof_object_count",
     "run2_58_bad_control_boundary_status",
 }
+EXPECTED_RUN2_58_OPEN_SOURCE_REFERENCE_IDS = {
+    "pptxgenjs",
+    "slidev",
+    "marp",
+    "revealjs",
+    "slidecoder",
+}
 EXPECTED_RUN2_51_FORBIDDEN_PUBLIC_TERMS = {
     "run2",
     "memory",
@@ -9822,6 +9829,80 @@ def test_ppt_run_html_viewer_mentions_run2_58_product_content_contract_rerun() -
     )
 
 
+def test_run2_58_records_open_source_slide_code_learning_map() -> None:
+    research = load_json(PACK / "run2_58_open_source_slide_code_research.json")
+
+    assert research["status"] == "run2_58_open_source_slide_code_research_ready_public_blocked"
+    assert research["selected_usecase_id"] == "usecase_design_to_production_platform_launch"
+    assert research["usage_boundary"]["learning_mode"] == "runtime_learning_only"
+    assert research["usage_boundary"]["do_not_copy_source_assets"] is True
+    assert research["usage_boundary"]["do_not_copy_brand_or_template_layouts"] is True
+    assert research["usage_boundary"]["rewrite_as_vulca_native_artifact_tool_modules"] is True
+
+    records = research["open_source_reference_records"]
+    assert {record["id"] for record in records} == EXPECTED_RUN2_58_OPEN_SOURCE_REFERENCE_IDS
+    for record in records:
+        assert record["label"]
+        assert record["source_url"].startswith(("https://github.com/", "https://sli.dev/", "https://marp.app/"))
+        assert record["source_type"] in {
+            "pptx_generation_library",
+            "slide_as_code_framework",
+            "html_slide_runtime",
+            "research_codebase",
+        }
+        assert record["what_to_learn"]
+        assert len(record["learnable_code_patterns"]) >= 3
+        assert record["integration_boundary"]
+        assert record["license_or_usage_note"]
+        assert record["product_relevance"]
+        assert record["do_not_copy_source_assets"] is True
+
+    serialized = json.dumps(research, ensure_ascii=False)
+    assert_contains(
+        serialized,
+        [
+            "PptxGenJS",
+            "Slidev",
+            "Marp",
+            "reveal.js",
+            "SlideCoder",
+            "code-generated editable PPT",
+            "do_not_copy_source_assets",
+            "runtime_learning_only",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_surfaces_run2_58_experiment_lab_and_open_source_map() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+    viewer = (
+        ROOT
+        / "outputs"
+        / "019e7d9c-532a-70b3-8892-fa3ae42baef2"
+        / "presentations"
+        / "ppt-run-viewer.html"
+    ).read_text(encoding="utf-8")
+
+    required_terms = [
+        "Run 2.58 experiment lab",
+        "run2_58_product_content_contract_rerun_result.json",
+        "generate_ppt_run2_58_product_content_contract_arms.mjs",
+        "ppt-run2-58-full-vulca/trace_manifest.json",
+        "run2-58-four-arm-contact-sheet.png",
+        "Open-source slide-code learning map",
+        "run2_58_open_source_slide_code_research.json",
+        "PptxGenJS",
+        "Slidev",
+        "Marp",
+        "reveal.js",
+        "SlideCoder",
+        "do not copy source assets",
+        "code-generated editable PPT",
+    ]
+    assert_contains(script, required_terms)
+    assert_contains(viewer, required_terms)
+
+
 def test_ppt_run_html_viewer_mentions_run2_50_readability_density_renderer_rerun() -> None:
     script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
     viewer = (
@@ -10970,6 +11051,32 @@ def test_ppt_run_html_viewer_builder_tracks_latest_outputs() -> None:
             "Why 2.8 still looks close to 2.7",
         ],
     )
+
+
+def test_ppt_run_html_viewer_cli_defaults_are_repo_relative(tmp_path: Path) -> None:
+    out = tmp_path / "viewer.html"
+    result = subprocess.run(
+        [sys.executable, str(ROOT / "scripts" / "build_ppt_run_html_viewer.py"), "--out", str(out)],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
+    payload = json.loads(result.stdout)
+    assert payload["latest"] == "2.58"
+    assert payload["runs"] >= 30
+    assert out.exists()
+    assert_contains(
+        out.read_text(encoding="utf-8"),
+        [
+            '"latestRunId": "2.58"',
+            "Run 2.58 experiment lab",
+            "Open-source slide-code learning map",
+        ],
+    )
+    assert not (tmp_path / "outputs").exists()
 
 
 def test_ppt_run_html_viewer_mentions_run2_51_to_run2_52_consumption_chain() -> None:
