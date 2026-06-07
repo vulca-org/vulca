@@ -753,6 +753,12 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run259_gates = read_json(pack / "run2_59_composition_workflow_gates.json")
     run259_result = read_json(pack / "results" / "run2_59_content_aware_composition_compiler_result.json")
     run260_result = read_json(pack / "results" / "run2_60_content_aware_composition_rerun_result.json")
+    run261_narrative = read_json(pack / "run2_61_narrative_proof_dataset.json")
+    run261_selector = read_json(pack / "run2_61_story_to_visual_carrier_selector.json")
+    run261_fusion = read_json(pack / "run2_61_text_socket_fusion_contracts.json")
+    run261_source_policy = read_json(pack / "run2_61_source_to_public_proof_policy.json")
+    run261_gates = read_json(pack / "run2_61_narrative_workflow_gates.json")
+    run261_result = read_json(pack / "results" / "run2_61_narrative_proof_dataset_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -1108,6 +1114,25 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run260FullTracePath": "ppt-run2-60-full-vulca/trace_manifest.json",
         "run260BadTracePath": "ppt-run2-60-bad-without-composition-compiler/trace_manifest.json",
         "run260FourArmSheetPath": "run2-60-four-arm-contact-sheet.png",
+        "run261ResultStatus": run261_result.get("status", ""),
+        "run261Result": run261_result,
+        "run261ResultPath": "run2_61_narrative_proof_dataset_result.json",
+        "run261NarrativeStatus": run261_narrative.get("status", ""),
+        "run261NarrativeRecords": run261_narrative.get("narrative_proof_records", []),
+        "run261NarrativePath": "run2_61_narrative_proof_dataset.json",
+        "run261SelectorStatus": run261_selector.get("status", ""),
+        "run261SelectorRecords": run261_selector.get("story_to_visual_carrier_records", []),
+        "run261SelectorPath": "run2_61_story_to_visual_carrier_selector.json",
+        "run261FusionStatus": run261_fusion.get("status", ""),
+        "run261FusionRecords": run261_fusion.get("text_socket_fusion_contracts", []),
+        "run261FusionPath": "run2_61_text_socket_fusion_contracts.json",
+        "run261SourcePolicyStatus": run261_source_policy.get("status", ""),
+        "run261SourcePolicy": run261_source_policy,
+        "run261SourcePolicyPath": "run2_61_source_to_public_proof_policy.json",
+        "run261WorkflowGateStatus": run261_gates.get("status", ""),
+        "run261WorkflowGates": run261_gates.get("narrative_workflow_gates", []),
+        "run261WorkflowGatesPath": "run2_61_narrative_workflow_gates.json",
+        "run261NextGeneratedRunContract": run261_gates.get("next_generated_run_contract", {}),
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -2380,6 +2405,36 @@ def build_html(data: dict[str, Any]) -> str:
       const run260Rerun = run260Result.rerun || {{}};
       const run260Quality = run260Result.quality_delta || {{}};
       const run260Control = run260Result.control_boundary || {{}};
+      const run261Result = refs.run261Result || {{}};
+      const run261Quality = run261Result.quality_delta || {{}};
+      const run261Boundary = run261Result.generation_boundary || {{}};
+      const run261Policy = refs.run261SourcePolicy || {{}};
+      const run261Next = refs.run261NextGeneratedRunContract || {{}};
+      const run261NarrativeCards = (refs.run261NarrativeRecords || []).map((record) => `
+        <article class="dataCard">
+          <h4>${{escapeHtml(record.role || "")}} narrative proof</h4>
+          ${{detailBlock("Reader question", record.reader_question)}}
+          ${{detailBlock("Required answer", record.required_answer)}}
+          ${{detailBlock("Business action", record.business_action)}}
+          ${{detailBlock("Primary proof", (record.proof_payload || {{}}).primary_evidence_object)}}
+          ${{detailBlock("Public replacement", (record.public_proof_replacement || {{}}).replacement_type)}}
+        </article>`).join("");
+      const run261SelectorCards = (refs.run261SelectorRecords || []).map((record) => `
+        <article class="dataCard">
+          <h4>${{escapeHtml(record.role || "")}} visual carrier</h4>
+          ${{detailBlock("Carrier", record.visual_carrier_type)}}
+          ${{detailBlock("Layout module", record.selected_layout_module_id)}}
+          ${{detailBlock("Socket memory", record.selected_socket_memory_id)}}
+          ${{detailBlock("Reason", record.carrier_reason)}}
+        </article>`).join("");
+      const run261FusionCards = (refs.run261FusionRecords || []).map((record) => `
+        <article class="dataCard">
+          <h4>${{escapeHtml(record.role || "")}} text socket fusion</h4>
+          ${{detailBlock("Fusion contract", record.fusion_contract_id)}}
+          ${{detailBlock("Source socket memory", record.source_socket_memory_id)}}
+          ${{detailBlock("Socket count", (record.socket_bindings || []).length)}}
+          ${{detailBlock("Overflow", record.overflow_behavior)}}
+        </article>`).join("");
       const run259Result = refs.run259Result || {{}};
       const run259Quality = run259Result.quality_delta || {{}};
       const run259GenerationBoundary = run259Result.generation_boundary || {{}};
@@ -2647,6 +2702,46 @@ def build_html(data: dict[str, Any]) -> str:
               ${{detailBlock("Negative boundary", run260Control.bad_run2_58_without_run2_59_composition_compiler)}}
             </article>
           </div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.61 narrative proof dataset</h3><p>Why 2.60 felt thin: the generated deck consumed compressed claims, but did not directly bind thick source data, text sockets, visual carriers, and public proof replacements. Run 2.61 repairs that data/workflow layer before any Run 2.62 deck generation.</p></div><span class="pill" title="${{escapeHtml(refs.run261ResultStatus || "missing")}}">${{escapeHtml(refs.run261ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Layer boundary</h4>
+              ${{detailBlock("Result", refs.run261ResultPath || "run2_61_narrative_proof_dataset_result.json")}}
+              ${{detailBlock("Creates new PPT deck", run261Boundary.creates_new_ppt_deck)}}
+              ${{detailBlock("Latest generated run", run261Boundary.latest_generated_run_id || "2.60")}}
+              ${{detailBlock("Target layer", run261Quality.target_layer)}}
+              ${{detailBlock("Next action", run261Result.next_required_action || "run2_62_generate_four_arm_ppt_consuming_run2_61_narrative_proof_dataset")}}
+            </article>
+            <article class="dataCard">
+              <h4>Artifacts</h4>
+              ${{detailBlock("Narrative proof", refs.run261NarrativePath || "run2_61_narrative_proof_dataset.json")}}
+              ${{detailBlock("Visual carrier selector", refs.run261SelectorPath || "run2_61_story_to_visual_carrier_selector.json")}}
+              ${{detailBlock("Text socket fusion", refs.run261FusionPath || "run2_61_text_socket_fusion_contracts.json")}}
+              ${{detailBlock("Source policy", refs.run261SourcePolicyPath || "run2_61_source_to_public_proof_policy.json")}}
+              ${{detailBlock("Workflow gates", refs.run261WorkflowGatesPath || "run2_61_narrative_workflow_gates.json")}}
+            </article>
+            <article class="dataCard">
+              <h4>Public proof replacement</h4>
+              ${{detailBlock("Policy id", run261Policy.policy_id)}}
+              ${{detailBlock("Allowed abstractions", run261Policy.allowed_source_abstraction_types)}}
+              ${{detailBlock("Forbidden copying", run261Policy.forbidden_source_copying_behaviors)}}
+            </article>
+            <article class="dataCard">
+              <h4>Next Run 2.62 contract</h4>
+              ${{detailBlock("Run", run261Next.run_id || "2.62")}}
+              ${{detailBlock("Required trace fields", run261Next.required_trace_fields)}}
+              ${{detailBlock("Bad control", run261Next.bad_control_arm || "bad_run2_60_without_run2_61_narrative_proof_dataset")}}
+              ${{detailBlock("Full pass status", run261Next.full_arm_pass_status || "run2_61_narrative_proof_dataset_consumed_before_native_ppt_drawing")}}
+            </article>
+          </div>
+          <div class="dataBandSubhead"><h4>Per-slide narrative proof table</h4><p>${{escapeHtml(refs.run261NarrativeStatus)}}. Each role now carries reader question, required answer, business action, proof payload, copy units, source refs, and public proof replacement.</p></div>
+          <div class="dataGrid">${{run261NarrativeCards}}</div>
+          <div class="dataBandSubhead"><h4>Visual carrier selector</h4><p>${{escapeHtml(refs.run261SelectorStatus)}}. Each role selects a visual carrier from business action, proof payload, Run 2.15 layout memory, and Run 2.51 socket availability.</p></div>
+          <div class="dataGrid">${{run261SelectorCards}}</div>
+          <div class="dataBandSubhead"><h4>Text socket fusion</h4><p>${{escapeHtml(refs.run261FusionStatus)}}. Required copy units must bind to sockets before Run 2.62 native PPT drawing.</p></div>
+          <div class="dataGrid">${{run261FusionCards}}</div>
         </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.58 product-content proof</h3><p>Run 2.58 remains the previous generated product-content proof: it consumes the Run 2.57 product capability content layer, keeps the Run 2.56 role-renderer pass, and forces every slide to answer a concrete product reader question.</p></div><span class="pill" title="${{escapeHtml(refs.run258ResultStatus || "missing")}}">${{escapeHtml(refs.run258ResultStatus || "missing")}}</span></div>
