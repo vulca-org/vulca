@@ -10376,6 +10376,11 @@ def test_ppt_run_html_viewer_mentions_run2_61_narrative_proof_dataset() -> None:
                 "Per-slide narrative proof table",
                 "Visual carrier selector",
                 "Text socket fusion",
+                "Run 2.61 expanded role contracts",
+                "2.61 consumption contract",
+                "Socket plan",
+                "Trace gate",
+                "maximum_public_visible_words",
                 "Public proof replacement",
                 "run2_61_narrative_proof_dataset.json",
                 "run2_61_story_to_visual_carrier_selector.json",
@@ -10386,6 +10391,15 @@ def test_ppt_run_html_viewer_mentions_run2_61_narrative_proof_dataset() -> None:
                 '"latestRunId": "2.60"',
             ],
         )
+    assert_contains(
+        viewer_html,
+        [
+            "input-to-output product surface",
+            "socket_2_61_cover_headline",
+            "gate_2_61_cover_narrative_proof_fusion",
+            "fail_if_cover_renders_claim_without_narrative_proof_and_socket_fusion",
+        ],
+    )
 
 
 def test_ppt_run_html_viewer_mentions_run2_50_readability_density_renderer_rerun() -> None:

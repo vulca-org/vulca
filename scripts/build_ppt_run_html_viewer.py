@@ -1257,6 +1257,19 @@ def build_html(data: dict[str, Any]) -> str:
     .dataCard p {{ margin: 0; color: var(--muted); font-size: 12px; line-height: 1.45; overflow-wrap: anywhere; }}
     .dataCard a {{ color: var(--blue); text-decoration: none; overflow-wrap: anywhere; }}
     .dataCard a:hover {{ text-decoration: underline; }}
+    .expandedGrid {{ grid-template-columns: repeat(auto-fit, minmax(440px, 1fr)); }}
+    .run261Contract {{ gap: 12px; }}
+    .contractHeader {{ display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; border-bottom: 1px solid #e8e4dc; padding-bottom: 8px; }}
+    .contractHeader h4 {{ font-size: 15px; }}
+    .contractHeader .roleTag {{ flex: 0 0 auto; border: 1px solid #ddd6ca; border-radius: 999px; padding: 4px 8px; background: #f7f4ec; color: var(--muted); font-size: 10px; font-weight: 800; text-transform: uppercase; }}
+    .contractRoute {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }}
+    .routeStep {{ border: 1px solid #e0d9cf; border-radius: 7px; padding: 8px; background: #fbfaf7; }}
+    .routeStep b {{ display: block; margin-bottom: 3px; font-size: 11px; }}
+    .routeStep span {{ display: block; color: var(--muted); font-size: 11px; line-height: 1.35; overflow-wrap: anywhere; }}
+    .socketPlan {{ margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }}
+    .socketPlan li {{ border: 1px solid #e0d9cf; border-radius: 7px; padding: 7px; background: #fffdf8; color: var(--muted); font-size: 11px; line-height: 1.35; overflow-wrap: anywhere; }}
+    .socketPlan strong {{ color: var(--ink); }}
+    .traceGate {{ border-left: 3px solid var(--accent); padding-left: 9px; }}
     .dataLabel {{ color: var(--muted); font-size: 10px; font-weight: 800; letter-spacing: 0; text-transform: uppercase; }}
     .chipRow {{ display: flex; flex-wrap: wrap; gap: 5px; }}
     .chip {{ display: inline-flex; align-items: center; min-height: 22px; padding: 2px 7px; border: 1px solid #d8d5ce; border-radius: 999px; background: #f7f6f1; color: #343841; font-size: 11px; overflow-wrap: anywhere; }}
@@ -2410,6 +2423,63 @@ def build_html(data: dict[str, Any]) -> str:
       const run261Boundary = run261Result.generation_boundary || {{}};
       const run261Policy = refs.run261SourcePolicy || {{}};
       const run261Next = refs.run261NextGeneratedRunContract || {{}};
+      const run261SelectorByRole = Object.fromEntries((refs.run261SelectorRecords || []).map((record) => [record.role, record]));
+      const run261FusionByRole = Object.fromEntries((refs.run261FusionRecords || []).map((record) => [record.role, record]));
+      const run261GateByRole = Object.fromEntries((refs.run261WorkflowGates || []).map((gate) => [gate.role, gate]));
+      const run261ExpandedRoleCards = (refs.run261NarrativeRecords || []).map((record) => {{
+        const selector = run261SelectorByRole[record.role] || {{}};
+        const fusion = run261FusionByRole[record.role] || {{}};
+        const gate = run261GateByRole[record.role] || {{}};
+        const proof = record.proof_payload || {{}};
+        const copy = record.copy_units || {{}};
+        const replacement = record.public_proof_replacement || {{}};
+        const density = record.density_budget || {{}};
+        const sockets = (fusion.socket_bindings || []).map((socket) => `
+          <li>
+            <strong>${{escapeHtml(socket.copy_unit_key || "")}}</strong>
+            <span> -> ${{escapeHtml(socket.owning_shape_role || "")}} / ${{escapeHtml(socket.socket_id || "")}}</span><br>
+            <span>${{escapeHtml(socket.character_budget || "")}} chars, ${{escapeHtml(socket.max_lines || "")}} lines, min ${{escapeHtml(socket.minimum_font_size || "")}}px. ${{escapeHtml(socket.placement_rule || "")}}</span>
+          </li>`).join("");
+        const socketPlan = sockets
+          ? `<div><div class="dataLabel">Socket plan</div><ul class="socketPlan">${{sockets}}</ul></div>`
+          : "";
+        return `<article class="dataCard run261Contract">
+          <div class="contractHeader">
+            <h4>${{escapeHtml(record.role || "")}} / 2.61 consumption contract</h4>
+            <span class="roleTag">${{escapeHtml(record.source_generated_run_id || "2.60")}} -> 2.62</span>
+          </div>
+          <div class="contractRoute">
+            <div class="routeStep"><b>Question</b><span>${{escapeHtml(record.reader_question || "")}}</span></div>
+            <div class="routeStep"><b>Answer</b><span>${{escapeHtml(record.required_answer || "")}}</span></div>
+            <div class="routeStep"><b>Business action</b><span>${{escapeHtml(record.business_action || "")}}</span></div>
+            <div class="routeStep"><b>Visual carrier</b><span>${{escapeHtml(selector.visual_carrier_type || "")}} / ${{escapeHtml(selector.selected_layout_module_id || "")}}</span></div>
+          </div>
+          ${{detailBlock("Narrative proof id", record.narrative_proof_id)}}
+          ${{detailBlock("Public headline", copy.headline)}}
+          ${{detailBlock("Public subhead", copy.subhead)}}
+          ${{detailBlock("Proof badges", copy.proof_badges)}}
+          ${{detailBlock("Primary evidence object", proof.primary_evidence_object)}}
+          ${{detailBlock("Secondary evidence objects", proof.secondary_evidence_objects)}}
+          ${{detailBlock("Product mechanism", proof.product_mechanism)}}
+          ${{detailBlock("Business consequence", proof.business_consequence)}}
+          ${{detailBlock("Before / after", [proof.before_state, proof.after_state].filter(Boolean))}}
+          ${{detailBlock("Viewer notice", proof.what_the_viewer_should_notice)}}
+          ${{detailBlock("Public proof replacement", `${{replacement.replacement_type || ""}}: ${{replacement.replacement_rule || ""}}`)}}
+          ${{detailBlock("Visual weight requirement", selector.visual_weight_requirement)}}
+          ${{detailBlock("Text socket requirement", selector.text_socket_requirement)}}
+          ${{socketPlan}}
+          ${{detailBlock("maximum_public_visible_words", density.maximum_public_visible_words)}}
+          ${{detailBlock("minimum_public_proof_objects", density.minimum_public_proof_objects)}}
+          ${{detailBlock("minimum_socket_bound_copy_units", density.minimum_socket_bound_copy_units)}}
+          <div class="traceGate">
+            ${{detailBlock("Trace gate", gate.gate_id)}}
+            ${{detailBlock("Required checks", gate.required_checks)}}
+            ${{detailBlock("Next trace fields", gate.next_run_required_trace_fields)}}
+            ${{detailBlock("Bad control probe", gate.bad_control_probe)}}
+          </div>
+          ${{detailBlock("Source refs", (record.source_refs || []).map((source) => `${{source.source_id}} / ${{source.source_record_id}}`))}}
+        </article>`;
+      }}).join("");
       const run261NarrativeCards = (refs.run261NarrativeRecords || []).map((record) => `
         <article class="dataCard">
           <h4>${{escapeHtml(record.role || "")}} narrative proof</h4>
@@ -2736,6 +2806,8 @@ def build_html(data: dict[str, Any]) -> str:
               ${{detailBlock("Full pass status", run261Next.full_arm_pass_status || "run2_61_narrative_proof_dataset_consumed_before_native_ppt_drawing")}}
             </article>
           </div>
+          <div class="dataBandSubhead"><h4>Run 2.61 expanded role contracts</h4><p>One card per slide role, joining narrative proof, visual carrier selector, socket fusion, density budget, public-proof replacement, source refs, and the trace gate that Run 2.62 must consume.</p></div>
+          <div class="dataGrid expandedGrid">${{run261ExpandedRoleCards}}</div>
           <div class="dataBandSubhead"><h4>Per-slide narrative proof table</h4><p>${{escapeHtml(refs.run261NarrativeStatus)}}. Each role now carries reader question, required answer, business action, proof payload, copy units, source refs, and public proof replacement.</p></div>
           <div class="dataGrid">${{run261NarrativeCards}}</div>
           <div class="dataBandSubhead"><h4>Visual carrier selector</h4><p>${{escapeHtml(refs.run261SelectorStatus)}}. Each role selects a visual carrier from business action, proof payload, Run 2.15 layout memory, and Run 2.51 socket availability.</p></div>
