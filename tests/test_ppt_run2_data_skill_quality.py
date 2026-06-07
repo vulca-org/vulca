@@ -418,6 +418,19 @@ EXPECTED_RUN2_55_TRACE_FIELDS = {
     "run2_55_equal_rectangle_cluster_count",
     "run2_55_editorial_hierarchy_levels",
 }
+EXPECTED_RUN2_56_TRACE_FIELDS = {
+    "run2_56_code_module_ids",
+    "run2_56_role_renderer_id",
+    "run2_56_composition_family",
+    "run2_56_layout_signature",
+    "run2_56_visual_sameness_bucket",
+    "run2_56_primary_anchor_region",
+    "run2_56_role_specific_geometry_count",
+    "run2_56_text_collision_risk_count",
+    "run2_56_text_overflow_risk_count",
+    "run2_56_distinct_role_surface_status",
+    "run2_56_role_archetype_binding_status",
+}
 EXPECTED_RUN2_51_FORBIDDEN_PUBLIC_TERMS = {
     "run2",
     "memory",
@@ -6739,7 +6752,7 @@ def test_ppt_run_html_viewer_generated_latest_run2_50() -> None:
             "ppt-run2-44-full-vulca",
             "ppt-run2-44-bad-run2-43-name-only-geometry",
             "run2_44_semantic_geometry_rerun_result.json",
-            '"latestRunId": "2.55"',
+            '"latestRunId": "2.56"',
             "Run 2.47",
             "run2-47-four-arm-contact-sheet.png",
             "ppt-run2-47-prompt-only",
@@ -7674,7 +7687,7 @@ def test_ppt_run_html_viewer_embeds_run2_45_semantic_geometry_effectiveness_audi
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.55"',
+            '"latestRunId": "2.56"',
             "Run 2.45 semantic geometry effectiveness audit",
             "run2_45_semantic_geometry_effectiveness_audit.json",
             "slot_based_semantic_geometry",
@@ -7833,7 +7846,7 @@ def test_ppt_run_html_viewer_embeds_run2_46_multimodal_composition_memory() -> N
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.55"',
+            '"latestRunId": "2.56"',
             "Run 2.46 multimodal composition memory",
             "run2_46_multimodal_composition_memory_result.json",
             "visual object grammar",
@@ -7974,7 +7987,7 @@ def test_ppt_run_html_viewer_mentions_run2_47_composition_grammar_rerun() -> Non
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.55"',
+            '"latestRunId": "2.56"',
             "Run 2.47",
             "run2_47_composition_grammar_rerun_result.json",
             "visual object grammar",
@@ -8116,7 +8129,7 @@ def test_ppt_run_html_viewer_embeds_run2_48_composition_grammar_effectiveness_au
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.55"',
+            '"latestRunId": "2.56"',
             "Run 2.48 composition grammar effectiveness audit",
             "run2_48_composition_grammar_effectiveness_audit.json",
             "visual object grammar",
@@ -8283,7 +8296,7 @@ def test_ppt_run_html_viewer_embeds_run2_49_data_only_repair_pack() -> None:
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.55"',
+            '"latestRunId": "2.56"',
             "Run 2.49 readability/content density/editorial renderer repair",
             "Data-only Run",
             "run2_49_readability_memory.json",
@@ -8319,7 +8332,7 @@ def test_ppt_run_html_viewer_embeds_run2_51_data_workflow_repair_pack() -> None:
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.55"',
+            '"latestRunId": "2.56"',
             "Run 2.51 remains the prior data/workflow repair layer",
             "run2_51_editorial_shape_text_repair_result.json",
             "run2_51_editorial_copy_memory.json",
@@ -8987,7 +9000,7 @@ def test_ppt_run_html_viewer_mentions_run2_53_product_surface_scene_repair() -> 
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.55"',
+            '"latestRunId": "2.56"',
             "Run 2.53 product-surface scene repair",
             "run2_53_product_surface_scene_memory.json",
             "run2_53_business_visual_evidence_memory.json",
@@ -9158,7 +9171,7 @@ def test_ppt_run_html_viewer_mentions_run2_54_product_surface_scene_rerun() -> N
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.55"',
+            '"latestRunId": "2.56"',
             "Run 2.54",
             "run2-54-four-arm-contact-sheet.png",
             "ppt-run2-54-full-vulca",
@@ -9308,12 +9321,156 @@ def test_ppt_run_html_viewer_mentions_run2_55_text_shape_integration_rerun() -> 
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.55"',
+            '"latestRunId": "2.56"',
             "Run 2.55",
             "run2-55-four-arm-contact-sheet.png",
             "ppt-run2-55-full-vulca",
             "Run 2.55 generated result",
             "run2_55_text_shape_integration_rerun_result.json",
+        ],
+    )
+
+
+def test_run2_56_generator_consumes_run2_55_and_splits_role_renderers() -> None:
+    script_path = ROOT / "scripts" / "generate_ppt_run2_56_role_renderer_split_arms.mjs"
+    assert script_path.exists(), "missing Run 2.56 role-renderer split generator"
+    body = script_path.read_text(encoding="utf-8")
+
+    assert_contains(
+        body,
+        [
+            "run2_55_text_shape_integration_rerun_result.json",
+            "ppt-run2-55-full-vulca/trace_manifest.json",
+            "run2_51_shape_text_socket_memory.json",
+            "drawRun256CoverPosterStage",
+            "drawRun256SetupRouteMap",
+            "drawRun256ContrastBeforeAfterLens",
+            "drawRun256ProofWorkspaceSurface",
+            "drawRun256ClimaxEditorialHero",
+            "drawRun256CloseDecisionWall",
+            "role_specific_renderer_variation_and_layout_qa",
+            "bad_run2_55_reused_single_template",
+            "run2_56_layout_signature",
+            "run2_56_text_collision_risk_count",
+        ],
+    )
+    assert "Run 2.56 must consume Run 2.55 generated result" in body
+    assert "Run 2.56 must compare against Run 2.55 full trace" in body
+    assert "six unique role renderer ids" in body
+
+
+def test_run2_56_records_role_renderer_split_rerun_result() -> None:
+    result_md = (PACK / "results" / "run2_56_role_renderer_split_rerun_result.md").read_text(
+        encoding="utf-8"
+    )
+    result = load_json(PACK / "results" / "run2_56_role_renderer_split_rerun_result.json")
+    presentations = ROOT / "outputs" / "019e7d9c-532a-70b3-8892-fa3ae42baef2" / "presentations"
+    full_trace = load_json(presentations / "ppt-run2-56-full-vulca" / "trace_manifest.json")
+    bad_trace = load_json(
+        presentations / "ppt-run2-56-bad-reused-single-template" / "trace_manifest.json"
+    )
+
+    assert result["run_id"] == "2.56"
+    assert result["status"] == "run2_56_role_renderer_split_rerun_public_blocked"
+    assert result["selected_usecase_id"] == "usecase_design_to_production_platform_launch"
+    assert result["source_repair_run_id"] == "2.53"
+    assert result["source_generated_run_id"] == "2.55"
+    assert result["rerun"]["best_internal_arm"] == "run2_56_full_role_renderer_split"
+    assert result["quality_delta"]["target_layer"] == "role_specific_renderer_variation_and_layout_qa"
+    assert result["quality_delta"]["source_data_status"] == (
+        "run2_55_text_shape_integration_consumed_before_role_renderer_redraw"
+    )
+    assert result["quality_delta"]["full_slides_with_unique_role_renderer"] == 6
+    assert result["quality_delta"]["full_slides_with_unique_layout_signature"] == 6
+    assert result["quality_delta"]["full_slides_with_role_archetype_binding"] == 6
+    assert result["quality_delta"]["full_slides_without_text_collision_risk"] == 6
+    assert result["quality_delta"]["full_slides_without_text_overflow_risk"] == 6
+    assert result["quality_delta"]["bad_control_slides_with_reused_run2_55_template"] == 6
+    assert result["rerun"]["combined_contact_sheet"].endswith("run2-56-four-arm-contact-sheet.png")
+    assert result["rerun"]["full_skill_series_sheet"].endswith("run2-full-skill-series-horizontal.png")
+
+    assert full_trace["arm_id"] == "run2_56_full_role_renderer_split"
+    assert full_trace["run2_56_role_renderer_split_status"] == (
+        "run2_55_text_shape_integration_consumed_before_role_renderer_redraw"
+    )
+    assert full_trace["source_repair_run_id"] == "2.53"
+    assert full_trace["source_generated_run_id"] == "2.55"
+    assert len(full_trace["slides"]) == 6
+    renderer_ids = {slide["run2_56_role_renderer_id"] for slide in full_trace["slides"]}
+    layout_signatures = {slide["run2_56_layout_signature"] for slide in full_trace["slides"]}
+    sameness_buckets = {slide["run2_56_visual_sameness_bucket"] for slide in full_trace["slides"]}
+    anchor_regions = {slide["run2_56_primary_anchor_region"] for slide in full_trace["slides"]}
+    assert len(renderer_ids) == 6
+    assert len(layout_signatures) == 6
+    assert len(sameness_buckets) == 6
+    assert len(anchor_regions) >= 5
+
+    for slide in full_trace["slides"]:
+        assert set(EXPECTED_RUN2_54_TRACE_FIELDS) <= set(slide)
+        assert set(EXPECTED_RUN2_55_TRACE_FIELDS) <= set(slide)
+        assert set(EXPECTED_RUN2_56_TRACE_FIELDS) <= set(slide)
+        assert slide["run2_55_text_shape_integration_status"] == "pass_internal"
+        assert slide["run2_56_distinct_role_surface_status"] == "pass_internal"
+        assert slide["run2_56_role_archetype_binding_status"] == "pass_internal"
+        assert slide["run2_56_role_specific_geometry_count"] >= 5
+        assert slide["run2_56_text_collision_risk_count"] == 0
+        assert slide["run2_56_text_overflow_risk_count"] == 0
+        assert slide["run2_56_role_renderer_id"] in slide["run2_56_code_module_ids"]
+        assert slide["layout_metrics"]["zones"] >= 6
+
+    assert bad_trace["arm_id"] == "bad_run2_55_reused_single_template"
+    for slide in bad_trace["slides"]:
+        assert slide["run2_55_text_shape_integration_status"] == "pass_internal"
+        assert slide["run2_56_distinct_role_surface_status"] == "fail_reused_single_template"
+        assert slide["run2_56_layout_signature"] == "reused_run2_55_stage_side_template"
+        assert slide["run2_56_role_renderer_id"] == "drawRun255TextShapeIntegration"
+
+    assert_contains(
+        result_md,
+        [
+            "Run 2.56 Role Renderer Split Rerun",
+            "consumes Run 2.55",
+            "six unique role renderer ids",
+            "six unique layout signatures",
+            "bad_run2_55_reused_single_template",
+            "public blocked",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_mentions_run2_56_role_renderer_split_rerun() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+    viewer = (
+        ROOT
+        / "outputs"
+        / "019e7d9c-532a-70b3-8892-fa3ae42baef2"
+        / "presentations"
+        / "ppt-run-viewer.html"
+    ).read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "Run 2.56",
+            "ppt-run2-56-prompt-only",
+            "ppt-run2-56-run1-5-skill",
+            "ppt-run2-56-full-vulca",
+            "ppt-run2-56-bad-reused-single-template",
+            "run2-56-four-arm-contact-sheet.png",
+            "run2_56_role_renderer_split_rerun_result.json",
+            "run2_55_text_shape_integration_consumed_before_role_renderer_redraw",
+        ],
+    )
+    assert_contains(
+        viewer,
+        [
+            '"latestRunId": "2.56"',
+            "Run 2.56",
+            "run2-56-four-arm-contact-sheet.png",
+            "ppt-run2-56-full-vulca",
+            "Run 2.56 generated result",
+            "run2_56_role_renderer_split_rerun_result.json",
         ],
     )
 
@@ -9345,7 +9502,7 @@ def test_ppt_run_html_viewer_mentions_run2_50_readability_density_renderer_rerun
     assert_contains(
         viewer,
         [
-            '"latestRunId": "2.55"',
+            '"latestRunId": "2.56"',
             "Run 2.50",
             "run2-50-four-arm-contact-sheet.png",
             "ppt-run2-50-prompt-only",

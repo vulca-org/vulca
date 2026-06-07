@@ -527,6 +527,27 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ),
         ),
     ),
+    RunSpec(
+        "2.56",
+        "Run 2.56",
+        "run2-56-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-56-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-56-run1-5-skill", "baseline"),
+            ArmSpec(
+                "run2_56_full_role_renderer_split",
+                "Run 2.56 full",
+                "ppt-run2-56-full-vulca",
+                "full",
+            ),
+            ArmSpec(
+                "bad_run2_55_reused_single_template",
+                "Bad reused Run 2.55 single template",
+                "ppt-run2-56-bad-reused-single-template",
+                "negative",
+            ),
+        ),
+    ),
 )
 
 
@@ -675,6 +696,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run253_result = read_json(pack / "results" / "run2_53_product_surface_scene_repair_result.json")
     run254_result = read_json(pack / "results" / "run2_54_product_surface_scene_rerun_result.json")
     run255_result = read_json(pack / "results" / "run2_55_text_shape_integration_rerun_result.json")
+    run256_result = read_json(pack / "results" / "run2_56_role_renderer_split_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -941,6 +963,15 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         ),
         "run255SourceDataStatus": (run255_result.get("quality_delta") or {}).get(
             "source_data_status", "run2_54_product_surface_scene_rerun_consumed_before_text_shape_redraw"
+        ),
+        "run256ResultStatus": run256_result.get("status", ""),
+        "run256Result": run256_result,
+        "run256ResultPath": "run2_56_role_renderer_split_rerun_result.json",
+        "run256TargetLayer": (run256_result.get("quality_delta") or {}).get(
+            "target_layer", "role_specific_renderer_variation_and_layout_qa"
+        ),
+        "run256SourceDataStatus": (run256_result.get("quality_delta") or {}).get(
+            "source_data_status", "run2_55_text_shape_integration_consumed_before_role_renderer_redraw"
         ),
         "selectorLayer": {
             "label": "Run 2.15 selector",
@@ -2178,6 +2209,11 @@ def build_html(data: dict[str, Any]) -> str:
       const run255Rerun = run255Result.rerun || {{}};
       const run255Quality = run255Result.quality_delta || {{}};
       const run255Control = run255Result.control_boundary || {{}};
+      const run256Result = refs.run256Result || {{}};
+      const run256Inputs = run256Result.input_chain || {{}};
+      const run256Rerun = run256Result.rerun || {{}};
+      const run256Quality = run256Result.quality_delta || {{}};
+      const run256Control = run256Result.control_boundary || {{}};
       const run253SceneCards = (refs.run253ProductSurfaceScenes || []).map((record) => `
         <article class="dataCard">
           <h4>${{escapeHtml(record.role)}} product surface scene</h4>
@@ -2314,8 +2350,38 @@ def build_html(data: dict[str, Any]) -> str:
       </div>
       <div class="dataStack">
         <section class="dataBand">
-          <div class="dataBandHead"><div><h3>Latest generated repair proof</h3><p>Run 2.55 is the current generated visual proof: it consumes the Run 2.54 product-surface rerun, then redraws with named text containers, non-rectangular shape families, and text-shape binding pairs.</p></div><span class="pill" title="${{escapeHtml(refs.run255ResultStatus || "missing")}}">${{escapeHtml(refs.run255ResultStatus || "missing")}}</span></div>
+          <div class="dataBandHead"><div><h3>Latest generated repair proof</h3><p>Run 2.56 is the current generated visual proof: it consumes the Run 2.55 text-shape rerun, then redraws each narrative role through a distinct renderer and layout signature.</p></div><span class="pill" title="${{escapeHtml(refs.run256ResultStatus || "missing")}}">${{escapeHtml(refs.run256ResultStatus || "missing")}}</span></div>
           <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Run 2.56 generated result</h4>
+              ${{detailBlock("Result", refs.run256ResultPath || "run2_56_role_renderer_split_rerun_result.json")}}
+              ${{detailBlock("Best arm", run256Rerun.best_internal_arm || "run2_56_full_role_renderer_split")}}
+              ${{detailBlock("Target layer", run256Quality.target_layer || refs.run256TargetLayer)}}
+              ${{detailBlock("Source data status", run256Quality.source_data_status || refs.run256SourceDataStatus)}}
+              ${{detailBlock("Contact sheet", run256Rerun.combined_contact_sheet || "run2-56-four-arm-contact-sheet.png")}}
+            </article>
+            <article class="dataCard">
+              <h4>Role-renderer split metrics</h4>
+              ${{detailBlock("Unique renderer ids", run256Quality.full_slides_with_unique_role_renderer)}}
+              ${{detailBlock("Unique layout signatures", run256Quality.full_slides_with_unique_layout_signature)}}
+              ${{detailBlock("Archetype binding pass", run256Quality.full_slides_with_role_archetype_binding)}}
+              ${{detailBlock("No text collision risk", run256Quality.full_slides_without_text_collision_risk)}}
+              ${{detailBlock("No overflow risk", run256Quality.full_slides_without_text_overflow_risk)}}
+            </article>
+            <article class="dataCard">
+              <h4>Consumed input chain</h4>
+              ${{detailBlock("Run 2.55 result", run256Inputs.run2_55_result || "run2_55_text_shape_integration_rerun_result.json")}}
+              ${{detailBlock("Run 2.55 full trace", run256Inputs.run2_55_full_trace || "ppt-run2-55-full-vulca/trace_manifest.json")}}
+              ${{detailBlock("Run 2.51 copy memory", run256Inputs.run2_51_editorial_copy_memory || "run2_51_editorial_copy_memory.json")}}
+              ${{detailBlock("Run 2.51 socket memory", run256Inputs.run2_51_shape_text_socket_memory || "run2_51_shape_text_socket_memory.json")}}
+              ${{detailBlock("Run 2.53 scene gates", run256Inputs.run2_53_scene_renderer_workflow_gates || "run2_53_scene_renderer_workflow_gates.json")}}
+            </article>
+            <article class="dataCard">
+              <h4>Negative control</h4>
+              ${{detailBlock("Bad arm", "bad_run2_55_reused_single_template")}}
+              ${{detailBlock("Reused-template slides", run256Quality.bad_control_slides_with_reused_run2_55_template)}}
+              ${{detailBlock("Boundary", run256Control.bad_run2_55_reused_single_template || "Bad control may reuse Run 2.55 trace, but cannot use Run 2.56 role renderer modules.")}}
+            </article>
             <article class="dataCard">
               <h4>Run 2.55 generated result</h4>
               ${{detailBlock("Result", refs.run255ResultPath || "run2_55_text_shape_integration_rerun_result.json")}}
@@ -2323,28 +2389,6 @@ def build_html(data: dict[str, Any]) -> str:
               ${{detailBlock("Target layer", run255Quality.target_layer || refs.run255TargetLayer)}}
               ${{detailBlock("Source data status", run255Quality.source_data_status || refs.run255SourceDataStatus)}}
               ${{detailBlock("Contact sheet", run255Rerun.combined_contact_sheet || "run2-55-four-arm-contact-sheet.png")}}
-            </article>
-            <article class="dataCard">
-              <h4>Text-shape repair metrics</h4>
-              ${{detailBlock("Named text containers", run255Quality.full_slides_with_named_text_containers)}}
-              ${{detailBlock("Non-rectangular families", run255Quality.full_slides_with_non_rectangular_shape_families)}}
-              ${{detailBlock("Text-shape binding pairs", run255Quality.full_slides_with_text_shape_binding_pairs)}}
-              ${{detailBlock("No overflow risk", run255Quality.full_slides_without_text_overflow_risk)}}
-              ${{detailBlock("No equal rectangle clusters", run255Quality.full_slides_without_equal_rectangle_clusters)}}
-            </article>
-            <article class="dataCard">
-              <h4>Consumed input chain</h4>
-              ${{detailBlock("Run 2.54 result", run255Inputs.run2_54_result || "run2_54_product_surface_scene_rerun_result.json")}}
-              ${{detailBlock("Run 2.54 full trace", run255Inputs.run2_54_full_trace || "ppt-run2-54-full-vulca/trace_manifest.json")}}
-              ${{detailBlock("Run 2.53 result", run255Inputs.run2_53_result || "run2_53_product_surface_scene_repair_result.json")}}
-              ${{detailBlock("Product surface scenes", run255Inputs.run2_53_product_surface_scene_memory || "run2_53_product_surface_scene_memory.json")}}
-              ${{detailBlock("Business visual evidence", run255Inputs.run2_53_business_visual_evidence_memory || "run2_53_business_visual_evidence_memory.json")}}
-            </article>
-            <article class="dataCard">
-              <h4>Negative control</h4>
-              ${{detailBlock("Bad arm", "bad_run2_54_without_text_shape_integration")}}
-              ${{detailBlock("Failed text-shape slides", run255Quality.bad_control_slides_without_text_shape_integration)}}
-              ${{detailBlock("Boundary", run255Control.bad_run2_54_without_text_shape_integration || "Bad control may reuse Run 2.54 trace, but cannot use Run 2.55 text-shape integration module.")}}
             </article>
           </div>
         </section>
@@ -2430,10 +2474,10 @@ def build_html(data: dict[str, Any]) -> str:
             </article>
             <article class="dataCard">
               <h4>Visual/data split</h4>
-              ${{detailBlock("Latest generated proof", "Run 2.55")}}
-              ${{detailBlock("Source generated baseline", "Run 2.54")}}
-              ${{detailBlock("Reason", "Run 2.49, Run 2.51, and Run 2.53 are data-workflow layers; Run 2.54 proved product-surface scene consumption; Run 2.55 proves text-shape integration.")}}
-              ${{detailBlock("Proof result", "Run 2.55 binds Run 2.54 generated trace before native text-shape redraw.")}}
+              ${{detailBlock("Latest generated proof", "Run 2.56")}}
+              ${{detailBlock("Source generated baseline", "Run 2.55")}}
+              ${{detailBlock("Reason", "Run 2.51 and Run 2.53 are data-workflow layers; Run 2.55 proved text-shape integration; Run 2.56 tests whether each role gets a distinct renderer instead of a reused template.")}}
+              ${{detailBlock("Proof result", "Run 2.56 binds Run 2.55 generated trace before native role-renderer redraw.")}}
             </article>
           </div>
         </section>

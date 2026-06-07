@@ -1,12 +1,12 @@
 # Results
 
-Status: run2_55-text-shape-integration-rerun-public-blocked.
+Status: run2_56-role-renderer-split-rerun-public-blocked.
 
-## Latest Generated Result: Run 2.55
+## Latest Generated Result: Run 2.56
 
-Run 2.55 is the latest generated PPT rerun. It consumes the Run 2.54 product-surface-scene rerun before native PPT redraw, then repairs the text/shape integration layer: named text containers, non-rectangular shape families, text-shape binding pairs, editorial hierarchy, and equal-rectangle-cluster avoidance.
+Run 2.56 is the latest generated PPT rerun. It consumes the Run 2.55 text-shape-integration rerun before native PPT redraw, then splits the full arm into six role-specific renderers: cover poster stage, setup route map, contrast before/after lens, proof workspace surface, climax editorial hero, and close decision wall.
 
-Current gate: `run2_54_product_surface_scene_rerun_consumed_before_text_shape_redraw`. The full-skill arm keeps the Run 2.53 scene/evidence/gate fields from Run 2.54 and adds Run 2.55 trace fields for named text containers, non-rectangular shape families, text-shape binding pairs, text overflow risk, equal rectangle clusters, and editorial hierarchy levels. The negative control can reuse Run 2.54 traces but must fail text-shape integration. Public release remains blocked because this proves measurable renderer repair, not final public-video-grade aesthetics.
+Current gate: `run2_55_text_shape_integration_consumed_before_role_renderer_redraw`. The full-skill arm keeps the Run 2.55 text-shape pass and adds Run 2.56 trace fields for role renderer id, composition family, layout signature, visual sameness bucket, anchor region, role-specific geometry count, text collision risk, overflow risk, and archetype binding status. The negative control can reuse Run 2.55 traces but must fail role-renderer split with `reused_run2_55_stage_side_template`. Public release remains blocked because this proves measurable renderer variation, not final public-video-grade aesthetics.
 
 ## Latest Data/Workflow Thickness Layer: Run 2.53
 
@@ -14,7 +14,13 @@ Run 2.53 is the latest data/workflow-only repair layer. It creates no new PPT ou
 
 Current data/workflow gate: `run2_53_product_surface_scene_repair_ready_public_blocked`. Run 2.54 must consume `run2_53_product_surface_scene_memory.json`, `run2_53_business_visual_evidence_memory.json`, and `run2_53_scene_renderer_workflow_gates.json` before native PPT drawing.
 
-Viewer default note: `latestRunId` is now `2.55` because Run 2.55 is the generated PPT rerun that consumes the Run 2.54 generated result. Run 2.53 remains a data/workflow-only layer, not a generated deck selector target.
+Viewer default note: `latestRunId` is now `2.56` because Run 2.56 is the generated PPT rerun that consumes the Run 2.55 generated result. Run 2.53 remains a data/workflow-only layer, not a generated deck selector target.
+
+## Prior Generated Result: Run 2.55
+
+Run 2.55 is the prior generated PPT rerun. It consumes the Run 2.54 product-surface-scene rerun before native PPT redraw, then repairs the text/shape integration layer: named text containers, non-rectangular shape families, text-shape binding pairs, editorial hierarchy, and equal-rectangle-cluster avoidance.
+
+Current gate: `run2_54_product_surface_scene_rerun_consumed_before_text_shape_redraw`. The full-skill arm keeps the Run 2.53 scene/evidence/gate fields from Run 2.54 and adds Run 2.55 trace fields for named text containers, non-rectangular shape families, text-shape binding pairs, text overflow risk, equal rectangle clusters, and editorial hierarchy levels. The negative control can reuse Run 2.54 traces but must fail text-shape integration.
 
 ## Prior Generated Result: Run 2.54
 

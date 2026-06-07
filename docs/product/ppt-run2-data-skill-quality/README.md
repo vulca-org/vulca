@@ -1,6 +1,8 @@
 # PPT Run 2.0 Data Skill Quality
 
-Status: run2_24-single-usecase-content-visual-evidence-public-blocked.
+Status: run2_56-role-renderer-split-rerun-public-blocked.
+
+Current generated result: Run 2.56 consumes Run 2.55 before native PPT redraw, then proves six role-specific renderer ids and six unique layout signatures in the full arm while the bad control reuses the Run 2.55 single-template surface.
 
 Run 2.5 does not move to a new stage. It repeats and thickens the same five fixed PPT product layers before the next generation pass:
 

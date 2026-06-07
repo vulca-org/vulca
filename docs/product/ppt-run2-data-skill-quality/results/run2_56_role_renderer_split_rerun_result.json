@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "run_id": "2.56",
+  "status": "run2_56_role_renderer_split_rerun_public_blocked",
+  "public_ready": false,
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "source_repair_run_id": "2.53",
+  "source_generated_run_id": "2.55",
+  "database_expansion": false,
+  "workflow_expansion": true,
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "input_chain": {
+    "run2_51_editorial_copy_memory": "docs/product/ppt-run2-data-skill-quality/run2_51_editorial_copy_memory.json",
+    "run2_51_shape_text_socket_memory": "docs/product/ppt-run2-data-skill-quality/run2_51_shape_text_socket_memory.json",
+    "run2_53_result": "docs/product/ppt-run2-data-skill-quality/results/run2_53_product_surface_scene_repair_result.json",
+    "run2_53_product_surface_scene_memory": "docs/product/ppt-run2-data-skill-quality/run2_53_product_surface_scene_memory.json",
+    "run2_53_business_visual_evidence_memory": "docs/product/ppt-run2-data-skill-quality/run2_53_business_visual_evidence_memory.json",
+    "run2_53_scene_renderer_workflow_gates": "docs/product/ppt-run2-data-skill-quality/run2_53_scene_renderer_workflow_gates.json",
+    "run2_55_result": "docs/product/ppt-run2-data-skill-quality/results/run2_55_text_shape_integration_rerun_result.json",
+    "run2_55_full_trace": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-55-full-vulca/trace_manifest.json",
+    "commercial_usecase_bank": "docs/product/ppt-run2-data-skill-quality/commercial_usecase_bank.json",
+    "sources": "docs/product/ppt-run2-data-skill-quality/sources.json"
+  },
+  "rerun": {
+    "generator": "scripts/generate_ppt_run2_56_role_renderer_split_arms.mjs",
+    "arms": [
+      "prompt_only",
+      "run1_5_skill",
+      "run2_56_full_role_renderer_split",
+      "bad_run2_55_reused_single_template"
+    ],
+    "best_internal_arm": "run2_56_full_role_renderer_split",
+    "best_internal_arm_verdict": "Run 2.55 text-shape output is consumed, then each narrative role is redrawn through a distinct renderer and layout signature",
+    "combined_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-56-four-arm-contact-sheet.png",
+    "full_skill_series_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png",
+    "generated_outputs_committed": false
+  },
+  "quality_delta": {
+    "target_layer": "role_specific_renderer_variation_and_layout_qa",
+    "source_data_status": "run2_55_text_shape_integration_consumed_before_role_renderer_redraw",
+    "full_slides_with_unique_role_renderer": 6,
+    "full_slides_with_unique_layout_signature": 6,
+    "full_slides_with_role_archetype_binding": 6,
+    "full_slides_without_text_collision_risk": 6,
+    "full_slides_without_text_overflow_risk": 6,
+    "bad_control_slides_with_reused_run2_55_template": 6,
+    "repair_modules": [
+      "drawRun256CoverPosterStage",
+      "drawRun256SetupRouteMap",
+      "drawRun256ContrastBeforeAfterLens",
+      "drawRun256ProofWorkspaceSurface",
+      "drawRun256ClimaxEditorialHero",
+      "drawRun256CloseDecisionWall"
+    ]
+  },
+  "control_boundary": {
+    "bad_run2_55_reused_single_template": "may see Run 2.55 generated result and trace, including Run 2.55 text-shape pass, but must not use Run 2.56 role renderer modules or unique layout signatures",
+    "prompt_only": "commercial_case_only_no_run2_55_or_role_renderer_split",
+    "run1_5_skill": "prior_baseline_no_run2_55_or_role_renderer_split"
+  },
+  "visual_quality_boundary": "Run 2.56 repairs measurable role-renderer sameness; public video-grade aesthetics, native motion, and human release approval remain blocked",
+  "remaining_public_release_gates": [
+    "human_visual_review",
+    "native_or_cross_platform_render_inspection",
+    "motion_or_video_review",
+    "source_boundary_review",
+    "human_release_approval"
+  ],
+  "release_boundary": "public_blocked_until_visual_human_review_native_render_review_motion_review_source_boundary_review_and_human_approval",
+  "next_required_action": "audit_run2_56_role_renderer_split_against_visible_content_quality_then_continue_same_five_layers"
+}
