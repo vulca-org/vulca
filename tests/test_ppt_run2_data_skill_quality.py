@@ -395,6 +395,18 @@ EXPECTED_RUN2_53_TRACE_FIELDS = {
     "run2_53_visual_specificity_status",
     "run2_53_forbidden_generic_geometry_count",
 }
+EXPECTED_RUN2_54_TRACE_FIELDS = {
+    "run2_53_product_surface_scene_id",
+    "run2_53_business_visual_evidence_id",
+    "run2_53_scene_renderer_gate_id",
+    "run2_53_primary_product_or_business_object",
+    "run2_53_visual_specificity_status",
+    "run2_53_forbidden_generic_geometry_count",
+    "run2_54_code_module_ids",
+    "run2_54_primary_surface_kind",
+    "run2_54_product_surface_slots_rendered",
+    "run2_54_business_visual_evidence_objects",
+}
 EXPECTED_RUN2_51_FORBIDDEN_PUBLIC_TERMS = {
     "run2",
     "memory",
@@ -8974,6 +8986,175 @@ def test_ppt_run_html_viewer_mentions_run2_53_product_surface_scene_repair() -> 
     )
     assert "Run 2.53" not in script.split("RUN_SPECS", 1)[1].split("def rel", 1)[0]
     assert "ppt-run2-53-" not in script
+
+
+def test_run2_54_generator_consumes_run2_53_product_surface_scene_pack() -> None:
+    script_path = ROOT / "scripts" / "generate_ppt_run2_54_product_surface_scene_arms.mjs"
+    assert script_path.exists(), "missing Run 2.54 product-surface-scene generator"
+    body = script_path.read_text(encoding="utf-8")
+
+    assert_contains(
+        body,
+        [
+            "run2_53_product_surface_scene_repair_result.json",
+            "run2_53_product_surface_scene_memory.json",
+            "run2_53_business_visual_evidence_memory.json",
+            "run2_53_scene_renderer_workflow_gates.json",
+            "run2_53_product_surface_scene_id",
+            "run2_53_business_visual_evidence_id",
+            "run2_53_scene_renderer_gate_id",
+            "bad_run2_53_missing_product_surface_scene_pack",
+            "drawRun254ProductSurfaceScene",
+            "run2_53_product_surface_scene_pack_consumed_before_native_ppt_drawing",
+        ],
+    )
+    assert "Run 2.54 must consume Run 2.53 repair result" in body
+    assert "must_bind_before_native_drawing" in body
+
+
+def test_run2_54_records_product_surface_scene_rerun_result() -> None:
+    result_md = (PACK / "results" / "run2_54_product_surface_scene_rerun_result.md").read_text(
+        encoding="utf-8"
+    )
+    result = load_json(PACK / "results" / "run2_54_product_surface_scene_rerun_result.json")
+    presentations = ROOT / "outputs" / "019e7d9c-532a-70b3-8892-fa3ae42baef2" / "presentations"
+    full_trace = load_json(presentations / "ppt-run2-54-full-vulca" / "trace_manifest.json")
+    bad_trace = load_json(
+        presentations / "ppt-run2-54-bad-missing-run2-53-product-surface-scene-pack" / "trace_manifest.json"
+    )
+
+    assert result["run_id"] == "2.54"
+    assert result["status"] == "run2_54_product_surface_scene_rerun_public_blocked"
+    assert result["selected_usecase_id"] == "usecase_design_to_production_platform_launch"
+    assert result["source_repair_run_id"] == "2.53"
+    assert result["source_generated_run_id"] == "2.52"
+    assert result["rerun"]["best_internal_arm"] == "run2_54_full_product_surface_scene"
+    assert result["quality_delta"]["target_layer"] == "product_surface_scene_and_business_visual_evidence_binding"
+    assert result["quality_delta"]["source_data_status"] == (
+        "run2_53_product_surface_scene_pack_consumed_before_native_ppt_drawing"
+    )
+    assert result["quality_delta"]["full_slides_with_run2_53_product_surface_scene_id"] == 6
+    assert result["quality_delta"]["full_slides_with_run2_53_business_visual_evidence_id"] == 6
+    assert result["quality_delta"]["full_slides_with_run2_53_scene_renderer_gate_id"] == 6
+    assert result["quality_delta"]["full_slides_without_forbidden_generic_geometry"] == 6
+    assert result["quality_delta"]["bad_control_slides_without_run2_53_pack"] == 6
+    assert result["rerun"]["combined_contact_sheet"].endswith("run2-54-four-arm-contact-sheet.png")
+    assert result["rerun"]["full_skill_series_sheet"].endswith("run2-full-skill-series-horizontal.png")
+
+    assert full_trace["arm_id"] == "run2_54_full_product_surface_scene"
+    assert full_trace["run2_54_product_surface_scene_status"] == (
+        "run2_53_product_surface_scene_pack_consumed_before_native_ppt_drawing"
+    )
+    assert full_trace["source_repair_run_id"] == "2.53"
+    assert full_trace["source_generated_run_id"] == "2.52"
+    assert len(full_trace["slides"]) == 6
+    for slide in full_trace["slides"]:
+        assert set(EXPECTED_RUN2_54_TRACE_FIELDS) <= set(slide)
+        assert slide["run2_53_product_surface_scene_id"].startswith("product_surface_scene_2_53_")
+        assert slide["run2_53_business_visual_evidence_id"].startswith("business_visual_evidence_2_53_")
+        assert slide["run2_53_scene_renderer_gate_id"].startswith("scene_renderer_gate_2_53_")
+        assert slide["run2_53_primary_product_or_business_object"]
+        assert slide["run2_53_visual_specificity_status"] == "pass_internal"
+        assert slide["run2_53_forbidden_generic_geometry_count"] == 0
+        assert slide["run2_54_product_surface_slots_rendered"] >= 3
+        assert slide["run2_54_business_visual_evidence_objects"] >= 1
+        assert slide["run2_54_primary_surface_kind"] != "square_block_grid"
+        assert "drawRun254ProductSurfaceScene" in slide["run2_54_code_module_ids"]
+        assert slide["layout_metrics"]["visible_words"] >= 50
+
+    assert bad_trace["arm_id"] == "bad_run2_53_missing_product_surface_scene_pack"
+    for slide in bad_trace["slides"]:
+        assert slide["run2_53_product_surface_scene_id"] == ""
+        assert slide["run2_53_business_visual_evidence_id"] == ""
+        assert slide["run2_53_scene_renderer_gate_id"] == ""
+        assert slide["run2_53_visual_specificity_status"] == "fail_missing_run2_53"
+
+    assert_contains(
+        result_md,
+        [
+            "Run 2.54 Product Surface Scene Rerun",
+            "consumes Run 2.53",
+            "product surface scene",
+            "business visual evidence",
+            "bad_run2_53_missing_product_surface_scene_pack",
+            "public blocked",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_run2_54_generator_rejects_malformed_run2_53_source() -> None:
+    script_path = ROOT / "scripts" / "generate_ppt_run2_54_product_surface_scene_arms.mjs"
+    body = script_path.read_text(encoding="utf-8")
+
+    assert "validateRun254RepairPack" in body
+    assert "Run 2.54 must consume Run 2.53 repair result" in body
+    assert "Run 2.54 product surface scene status mismatch" in body
+    assert "Run 2.54 business visual evidence status mismatch" in body
+    assert "Run 2.54 scene renderer gate status mismatch" in body
+    assert "must_bind_before_native_drawing" in body
+    assert "missing role contract" in body
+
+
+def test_run2_54_bad_control_trace_does_not_leak_run2_53_fields() -> None:
+    presentations = ROOT / "outputs" / "019e7d9c-532a-70b3-8892-fa3ae42baef2" / "presentations"
+    bad_trace = load_json(
+        presentations / "ppt-run2-54-bad-missing-run2-53-product-surface-scene-pack" / "trace_manifest.json"
+    )
+
+    for slide in bad_trace["slides"]:
+        leaked_values = [
+            value
+            for key, value in slide.items()
+            if key.startswith("run2_53_")
+            and key
+            not in {
+                "run2_53_product_surface_scene_id",
+                "run2_53_business_visual_evidence_id",
+                "run2_53_scene_renderer_gate_id",
+                "run2_53_primary_product_or_business_object",
+                "run2_53_visual_specificity_status",
+                "run2_53_forbidden_generic_geometry_count",
+            }
+            and value not in ("", 0, [], False, None, "fail_missing_run2_53")
+        ]
+        assert leaked_values == []
+
+
+def test_ppt_run_html_viewer_mentions_run2_54_product_surface_scene_rerun() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+    viewer = (
+        ROOT
+        / "outputs"
+        / "019e7d9c-532a-70b3-8892-fa3ae42baef2"
+        / "presentations"
+        / "ppt-run-viewer.html"
+    ).read_text(encoding="utf-8")
+
+    assert_contains(
+        script,
+        [
+            "Run 2.54",
+            "ppt-run2-54-prompt-only",
+            "ppt-run2-54-run1-5-skill",
+            "ppt-run2-54-full-vulca",
+            "ppt-run2-54-bad-missing-run2-53-product-surface-scene-pack",
+            "run2-54-four-arm-contact-sheet.png",
+            "run2_54_product_surface_scene_rerun_result.json",
+            "run2_53_product_surface_scene_pack_consumed_before_native_ppt_drawing",
+        ],
+    )
+    assert_contains(
+        viewer,
+        [
+            '"latestRunId": "2.54"',
+            "Run 2.54",
+            "run2-54-four-arm-contact-sheet.png",
+            "ppt-run2-54-full-vulca",
+            "Run 2.53 product-surface scene repair",
+            "run2_54_product_surface_scene_rerun_result.json",
+        ],
+    )
 
 
 def test_ppt_run_html_viewer_mentions_run2_50_readability_density_renderer_rerun() -> None:
