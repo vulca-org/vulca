@@ -58,7 +58,7 @@ def test_run2_61_static_contract_is_ci_visible() -> None:
     assert_contains(
         viewer,
         [
-            'LATEST_RUN_PAYLOAD_HINT = \'"latestRunId": "2.65"\'',
+            'LATEST_RUN_PAYLOAD_HINT = \'"latestRunId": "2.67"\'',
             "Run 2.61 narrative proof dataset",
             "run2_61_narrative_proof_dataset.json",
             "run2_61_story_to_visual_carrier_selector.json",

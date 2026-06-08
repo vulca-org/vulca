@@ -10,7 +10,7 @@ from typing import Any
 
 DEFAULT_THREAD_ID = "019e7d9c-532a-70b3-8892-fa3ae42baef2"
 PACK_REL = Path("docs") / "product" / "ppt-run2-data-skill-quality"
-LATEST_RUN_PAYLOAD_HINT = '"latestRunId": "2.65"'
+LATEST_RUN_PAYLOAD_HINT = '"latestRunId": "2.67"'
 
 
 @dataclass(frozen=True)
@@ -633,6 +633,27 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ),
         ),
     ),
+    RunSpec(
+        "2.67",
+        "Run 2.67",
+        "run2-67-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-67-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-67-run1-5-skill", "baseline"),
+            ArmSpec(
+                "run2_67_full_reference_first_design_grammar",
+                "Run 2.67 full",
+                "ppt-run2-67-full-vulca",
+                "full",
+            ),
+            ArmSpec(
+                "bad_run2_65_without_run2_66_reference_first_grammar",
+                "Bad missing Run 2.66 reference grammar",
+                "ppt-run2-67-bad-without-reference-first-grammar",
+                "negative",
+            ),
+        ),
+    ),
 )
 
 
@@ -816,6 +837,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run266_art_direction = read_json(pack / "run2_66_slide_art_direction_contracts.json")
     run266_workflow_gates = read_json(pack / "run2_66_reference_first_workflow_gates.json")
     run266_result = read_json(pack / "results" / "run2_66_reference_first_redesign_result.json")
+    run267_result = read_json(pack / "results" / "run2_67_reference_first_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -1259,6 +1281,20 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run266WorkflowGateStatus": run266_workflow_gates.get("status", ""),
         "run266WorkflowGates": run266_workflow_gates,
         "run266WorkflowGatesPath": "run2_66_reference_first_workflow_gates.json",
+        "run267ResultStatus": run267_result.get("status", ""),
+        "run267Result": run267_result,
+        "run267ResultPath": "run2_67_reference_first_rerun_result.json",
+        "run267TargetLayer": (run267_result.get("quality_delta") or {}).get(
+            "target_layer", "run2_66_reference_first_public_surface_art_direction_consumed"
+        ),
+        "run267SourceDataStatus": (run267_result.get("quality_delta") or {}).get(
+            "source_data_status",
+            "run2_66_reference_first_design_grammar_consumed_before_native_ppt_drawing",
+        ),
+        "run267GeneratorPath": "scripts/generate_ppt_run2_67_reference_first_arms.mjs",
+        "run267FullTracePath": "ppt-run2-67-full-vulca/trace_manifest.json",
+        "run267BadTracePath": "ppt-run2-67-bad-without-reference-first-grammar/trace_manifest.json",
+        "run267FourArmSheetPath": "run2-67-four-arm-contact-sheet.png",
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -2584,6 +2620,11 @@ def build_html(data: dict[str, Any]) -> str:
       const run266ArtDirection = refs.run266ArtDirection || {{}};
       const run266WorkflowGates = refs.run266WorkflowGates || {{}};
       const run266Next = run266WorkflowGates.next_generated_run_contract || {{}};
+      const run267Result = refs.run267Result || {{}};
+      const run267Rerun = run267Result.rerun || {{}};
+      const run267Inputs = run267Result.input_chain || {{}};
+      const run267Quality = run267Result.quality_delta || {{}};
+      const run267Control = run267Result.control_boundary || {{}};
       const run266ArtDirectionByRole = Object.fromEntries((run266ArtDirection.slide_art_direction_contracts || []).map((record) => [record.role, record]));
       const run266GrammarCards = (run266DesignGrammar.role_design_grammar_records || []).map((record) => {{
         const art = run266ArtDirectionByRole[record.role] || {{}};
@@ -2933,6 +2974,60 @@ def build_html(data: dict[str, Any]) -> str:
         <span class="pill">${{escapeHtml(refs.packPath || "case pack")}}</span>
       </div>
       <div class="dataStack">
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.67 generated reference-first rerun</h3><p>Run 2.67 is the generated four-arm proof that consumes Run 2.66 reference-first design grammar and slide art-direction contracts before native PPT drawing. This is the first run after the 2.66 diagnosis where the main viewer moves past Run 2.65.</p></div><span class="pill" title="${{escapeHtml(refs.run267ResultStatus || "missing")}}">${{escapeHtml(refs.run267ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Run 2.67 Reference-First Rerun</h4>
+              ${{detailBlock("Result", refs.run267ResultPath || "run2_67_reference_first_rerun_result.json")}}
+              ${{detailBlock("Generator", refs.run267GeneratorPath || "scripts/generate_ppt_run2_67_reference_first_arms.mjs")}}
+              ${{detailBlock("Best internal arm", run267Rerun.best_internal_arm)}}
+              ${{detailBlock("Public ready", run267Result.public_ready)}}
+              ${{detailBlock("Release boundary", run267Result.release_boundary)}}
+            </article>
+            <article class="dataCard">
+              <h4>Generated outputs</h4>
+              ${{detailBlock("Four-arm sheet", refs.run267FourArmSheetPath || "run2-67-four-arm-contact-sheet.png")}}
+              ${{detailBlock("Full trace", refs.run267FullTracePath || "ppt-run2-67-full-vulca/trace_manifest.json")}}
+              ${{detailBlock("Bad trace", refs.run267BadTracePath || "ppt-run2-67-bad-without-reference-first-grammar/trace_manifest.json")}}
+              ${{detailBlock("Full skill series", run267Rerun.full_skill_series_sheet)}}
+            </article>
+            <article class="dataCard">
+              <h4>Quality delta</h4>
+              ${{detailBlock("Target layer", refs.run267TargetLayer || run267Quality.target_layer)}}
+              ${{detailBlock("Source data status", refs.run267SourceDataStatus || run267Quality.source_data_status)}}
+              ${{detailBlock("2.66 grammar slides", run267Quality.full_slides_with_run2_66_reference_grammar)}}
+              ${{detailBlock("Reference archetypes", run267Quality.full_slides_with_reference_archetypes)}}
+              ${{detailBlock("Public-surface gates", run267Quality.full_slides_with_public_surface_aesthetic_gate)}}
+              ${{detailBlock("Visible trace terms removed", run267Quality.full_slides_with_visible_trace_terms_removed)}}
+            </article>
+            <article class="dataCard">
+              <h4>Control boundary</h4>
+              ${{detailBlock("Prompt-only boundary", run267Control.prompt_only)}}
+              ${{detailBlock("Run 1.5 boundary", run267Control.run1_5_skill)}}
+              ${{detailBlock("Bad control", run267Control.bad_run2_65_without_run2_66_reference_first_grammar)}}
+              ${{detailBlock("Bad control missing 2.66", run267Quality.bad_control_slides_without_run2_66_reference_grammar)}}
+            </article>
+          </div>
+          <div class="dataBandSubhead"><h4>Run 2.67 input chain</h4><p>The full arm consumes the Run 2.66 failure audit, design grammar, art direction, and workflow gates before drawing. The bad arm can see Run 2.65, but not the Run 2.66 reference-first grammar.</p></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Run 2.66 source layer</h4>
+              ${{detailBlock("2.66 result", run267Inputs.run2_66_result)}}
+              ${{detailBlock("Failure audit", run267Inputs.run2_66_failure_audit)}}
+              ${{detailBlock("Design grammar", run267Inputs.run2_66_design_grammar)}}
+              ${{detailBlock("Art direction", run267Inputs.run2_66_art_direction)}}
+              ${{detailBlock("Workflow gates", run267Inputs.run2_66_workflow_gates)}}
+            </article>
+            <article class="dataCard">
+              <h4>Comparison source</h4>
+              ${{detailBlock("Run 2.65 result", run267Inputs.run2_65_result)}}
+              ${{detailBlock("Run 2.65 full trace", run267Inputs.run2_65_full_trace)}}
+              ${{detailBlock("Commercial usecase bank", run267Inputs.commercial_usecase_bank)}}
+              ${{detailBlock("Sources", run267Inputs.sources)}}
+            </article>
+          </div>
+        </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.66 reference-first redesign</h3><p>Run 2.66 is data/workflow-only. It records why Run 2.65 still reads as an engineering proof, then turns public product keynote and product-demo references into stricter art-direction grammar for the next generated rerun.</p></div><span class="pill" title="${{escapeHtml(refs.run266ResultStatus || "missing")}}">${{escapeHtml(refs.run266ResultStatus || "missing")}}</span></div>
           <div class="dataGrid">
