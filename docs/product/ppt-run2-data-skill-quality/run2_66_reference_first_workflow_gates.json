@@ -1,0 +1,41 @@
+{
+  "schema_version": "ppt_run2_66_reference_first_workflow_gates.v1",
+  "status": "run2_66_reference_first_workflow_gates_ready_public_blocked",
+  "run_id": "2.66",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "source_generated_run": "2.65",
+  "bad_control_arm": "bad_run2_65_without_run2_66_reference_first_grammar",
+  "required_trace_fields_for_run2_67": [
+    "run2_66_reference_archetype_id",
+    "run2_66_public_first_read_object",
+    "run2_66_layout_archetype",
+    "run2_66_art_direction_contract_id",
+    "run2_66_public_surface_aesthetic_gate_status",
+    "run2_66_scene_specific_business_object_count",
+    "run2_66_visible_trace_term_count",
+    "run2_66_non_card_visual_region_count"
+  ],
+  "next_generated_run_contract": {
+    "run_id": "2.67",
+    "must_consume_before_native_ppt_drawing": true,
+    "full_arm_pass_status": "run2_66_reference_first_design_grammar_consumed_before_native_ppt_drawing",
+    "bad_control_arm": "bad_run2_65_without_run2_66_reference_first_grammar",
+    "required_trace_fields": [
+      "run2_66_reference_archetype_id",
+      "run2_66_public_first_read_object",
+      "run2_66_layout_archetype",
+      "run2_66_art_direction_contract_id",
+      "run2_66_public_surface_aesthetic_gate_status",
+      "run2_66_scene_specific_business_object_count",
+      "run2_66_visible_trace_term_count",
+      "run2_66_non_card_visual_region_count"
+    ]
+  },
+  "pass_fail_checks": [
+    "Every full-arm slide binds one Run 2.66 reference archetype before drawing.",
+    "Every full-arm slide binds one Run 2.66 art direction contract before writing public copy.",
+    "Visible trace term count is zero on the public slide canvas.",
+    "Each slide has at least three non-card visual regions and four scene-specific content units.",
+    "Bad control fails if it lacks Run 2.66 reference-first grammar ids."
+  ]
+}

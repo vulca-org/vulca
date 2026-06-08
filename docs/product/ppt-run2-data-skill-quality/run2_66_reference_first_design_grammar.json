@@ -1,0 +1,326 @@
+{
+  "schema_version": "ppt_run2_66_reference_first_design_grammar.v1",
+  "status": "run2_66_reference_first_design_grammar_ready_public_blocked",
+  "run_id": "2.66",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "public_ready": false,
+  "creates_new_ppt_deck": false,
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "source_generated_run": "2.65",
+  "raw_media_policy": "forbidden_reference_analysis_only",
+  "reference_records": [
+    {
+      "reference_id": "stripe_sessions_2025_product_keynote",
+      "title": "Stripe Sessions 2025 Product Keynote",
+      "url": "https://stripe.com/gb/sessions/2025/product-keynote",
+      "reference_type": "product_keynote_with_live_demo_and_platform_story",
+      "verified_on": "2026-06-08",
+      "derived_observation": "A strong product keynote ties launches to a business platform shift, demo sequence, and concrete product proof instead of showing internal process panels."
+    },
+    {
+      "reference_id": "figma_demo_platform_overview",
+      "title": "Figma on-demand product demos",
+      "url": "https://www.figma.com/demo/",
+      "reference_type": "product_platform_demo_library",
+      "verified_on": "2026-06-08",
+      "derived_observation": "The public page groups demos by audience outcome and product surface, not by trace metadata."
+    },
+    {
+      "reference_id": "figma_config_2026_opening_keynote",
+      "title": "Config 2026 Opening Keynote",
+      "url": "https://config.figma.com/san-francisco/session/829e6ced-3257-4f5c-b675-aa72f4d1f98f/",
+      "reference_type": "design_product_launch_keynote",
+      "verified_on": "2026-06-08",
+      "derived_observation": "The public promise is framed as rethinking product development and product-building roles; the slide grammar should make the audience see a launch moment first."
+    },
+    {
+      "reference_id": "figma_config_2024_slides_keynote",
+      "title": "Config 2024 Figma Slides keynote moment",
+      "url": "https://www.figma.com/blog/whats-happening-at-config-2024/",
+      "reference_type": "presentation_product_launch_inside_keynote",
+      "verified_on": "2026-06-08",
+      "derived_observation": "Figma Slides became a product reveal because the keynote itself used the product; the demo surface and story were one object."
+    },
+    {
+      "reference_id": "apple_liquid_glass_newsroom",
+      "title": "Apple Liquid Glass design language launch",
+      "url": "https://www.apple.com/newsroom/2025/06/apple-introduces-a-delightful-and-elegant-new-software-design/",
+      "reference_type": "design_language_launch_reference",
+      "verified_on": "2026-06-08",
+      "derived_observation": "A design-language launch is led by sensory product experience and hierarchy, not explanatory grids."
+    }
+  ],
+  "role_design_grammar_records": [
+    {
+      "reference_archetype_id": "reference_first_archetype_2_66_cover",
+      "role": "cover",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_reference_ids": [
+        "stripe_sessions_2025_product_keynote",
+        "figma_demo_platform_overview",
+        "figma_config_2026_opening_keynote",
+        "figma_config_2024_slides_keynote"
+      ],
+      "layout_archetype": "cinematic_product_reveal",
+      "public_first_read_object": "one finished launch deck emerging from a real brief and source memory",
+      "composition_lock": "product_object_first_then_supporting_system",
+      "scene_specific_business_objects": [
+        "launch deck",
+        "brief capsule",
+        "source memory field",
+        "code rail"
+      ],
+      "composition_contract": {
+        "forbid_rect_ellipse_only_primary_surface": true,
+        "forbid_bottom_socket_legend_as_primary_information": true,
+        "forbid_trace_terms_on_public_surface": true,
+        "max_visible_trace_terms": 0,
+        "min_depth_layers": 4,
+        "min_scene_specific_business_objects": 3,
+        "min_non_card_visual_regions": 3,
+        "must_have_one_dominant_public_object": true,
+        "must_read_without_data_skill_panel": true
+      },
+      "native_ppt_required_modules": [
+        "drawRun267CinematicDeckReveal",
+        "drawRun267SourceMemoryField",
+        "drawRun267EditableDeckSurface",
+        "drawRun267QuietTraceAnnotation"
+      ],
+      "bad_control_probe": "fail_if_cover_uses_run2_65_renderer_shapes_without_reference_first_archetype",
+      "required_trace_fields_for_run2_67": [
+        "run2_66_reference_archetype_id",
+        "run2_66_public_first_read_object",
+        "run2_66_layout_archetype",
+        "run2_66_art_direction_contract_id",
+        "run2_66_public_surface_aesthetic_gate_status"
+      ]
+    },
+    {
+      "reference_archetype_id": "reference_first_archetype_2_66_setup",
+      "role": "setup",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_reference_ids": [
+        "stripe_sessions_2025_product_keynote",
+        "figma_demo_platform_overview",
+        "figma_config_2026_opening_keynote",
+        "figma_config_2024_slides_keynote"
+      ],
+      "layout_archetype": "operating_loop_stage",
+      "public_first_read_object": "a design-to-code operating stage with one visible handoff path",
+      "composition_lock": "stage_depth_path_not_equal_node_grid",
+      "scene_specific_business_objects": [
+        "source wall",
+        "memory compiler",
+        "skill workflow",
+        "code generator"
+      ],
+      "composition_contract": {
+        "forbid_rect_ellipse_only_primary_surface": true,
+        "forbid_bottom_socket_legend_as_primary_information": true,
+        "forbid_trace_terms_on_public_surface": true,
+        "max_visible_trace_terms": 0,
+        "min_depth_layers": 4,
+        "min_scene_specific_business_objects": 3,
+        "min_non_card_visual_regions": 3,
+        "must_have_one_dominant_public_object": true,
+        "must_read_without_data_skill_panel": true
+      },
+      "native_ppt_required_modules": [
+        "drawRun267LayeredOperatingStage",
+        "drawRun267SourceWall",
+        "drawRun267CompilerPath",
+        "drawRun267OutcomePreview"
+      ],
+      "bad_control_probe": "fail_if_setup_uses_run2_65_renderer_shapes_without_reference_first_archetype",
+      "required_trace_fields_for_run2_67": [
+        "run2_66_reference_archetype_id",
+        "run2_66_public_first_read_object",
+        "run2_66_layout_archetype",
+        "run2_66_art_direction_contract_id",
+        "run2_66_public_surface_aesthetic_gate_status"
+      ]
+    },
+    {
+      "reference_archetype_id": "reference_first_archetype_2_66_contrast",
+      "role": "contrast",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_reference_ids": [
+        "stripe_sessions_2025_product_keynote",
+        "figma_demo_platform_overview",
+        "figma_config_2026_opening_keynote",
+        "figma_config_2024_slides_keynote"
+      ],
+      "layout_archetype": "before_after_theater",
+      "public_first_read_object": "large after-state deck surface overpowering the small prompt-only result",
+      "composition_lock": "asymmetric_theater_with_after_state_dominance",
+      "scene_specific_business_objects": [
+        "before thumbnail",
+        "after stage",
+        "difference lens",
+        "proof marker"
+      ],
+      "composition_contract": {
+        "forbid_rect_ellipse_only_primary_surface": true,
+        "forbid_bottom_socket_legend_as_primary_information": true,
+        "forbid_trace_terms_on_public_surface": true,
+        "max_visible_trace_terms": 0,
+        "min_depth_layers": 4,
+        "min_scene_specific_business_objects": 3,
+        "min_non_card_visual_regions": 3,
+        "must_have_one_dominant_public_object": true,
+        "must_read_without_data_skill_panel": true
+      },
+      "native_ppt_required_modules": [
+        "drawRun267BeforeAfterTheater",
+        "drawRun267AfterStateHeroSurface",
+        "drawRun267DifferenceLens",
+        "drawRun267ProofMarker"
+      ],
+      "bad_control_probe": "fail_if_contrast_uses_run2_65_renderer_shapes_without_reference_first_archetype",
+      "required_trace_fields_for_run2_67": [
+        "run2_66_reference_archetype_id",
+        "run2_66_public_first_read_object",
+        "run2_66_layout_archetype",
+        "run2_66_art_direction_contract_id",
+        "run2_66_public_surface_aesthetic_gate_status"
+      ]
+    },
+    {
+      "reference_archetype_id": "reference_first_archetype_2_66_proof",
+      "role": "proof",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_reference_ids": [
+        "stripe_sessions_2025_product_keynote",
+        "figma_demo_platform_overview",
+        "figma_config_2026_opening_keynote",
+        "figma_config_2024_slides_keynote"
+      ],
+      "layout_archetype": "inspectable_product_workspace",
+      "public_first_read_object": "review workspace where a user can inspect source, decision, output, and gate",
+      "composition_lock": "workspace_scene_with_real_product_panes",
+      "scene_specific_business_objects": [
+        "source pane",
+        "decision pane",
+        "output pane",
+        "release gate"
+      ],
+      "composition_contract": {
+        "forbid_rect_ellipse_only_primary_surface": true,
+        "forbid_bottom_socket_legend_as_primary_information": true,
+        "forbid_trace_terms_on_public_surface": true,
+        "max_visible_trace_terms": 0,
+        "min_depth_layers": 4,
+        "min_scene_specific_business_objects": 3,
+        "min_non_card_visual_regions": 3,
+        "must_have_one_dominant_public_object": true,
+        "must_read_without_data_skill_panel": true
+      },
+      "native_ppt_required_modules": [
+        "drawRun267InspectableWorkspace",
+        "drawRun267SourcePane",
+        "drawRun267DecisionPane",
+        "drawRun267ReleaseGate"
+      ],
+      "bad_control_probe": "fail_if_proof_uses_run2_65_renderer_shapes_without_reference_first_archetype",
+      "required_trace_fields_for_run2_67": [
+        "run2_66_reference_archetype_id",
+        "run2_66_public_first_read_object",
+        "run2_66_layout_archetype",
+        "run2_66_art_direction_contract_id",
+        "run2_66_public_surface_aesthetic_gate_status"
+      ]
+    },
+    {
+      "reference_archetype_id": "reference_first_archetype_2_66_climax",
+      "role": "climax",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_reference_ids": [
+        "stripe_sessions_2025_product_keynote",
+        "figma_demo_platform_overview",
+        "figma_config_2026_opening_keynote",
+        "figma_config_2024_slides_keynote"
+      ],
+      "layout_archetype": "hero_product_surface_demo",
+      "public_first_read_object": "one high-fidelity editable PPT preview with data and code visibly embedded",
+      "composition_lock": "hero_surface_demo_with_depth_and_craft",
+      "scene_specific_business_objects": [
+        "editable slide canvas",
+        "code strip",
+        "data trace drawer",
+        "review status"
+      ],
+      "composition_contract": {
+        "forbid_rect_ellipse_only_primary_surface": true,
+        "forbid_bottom_socket_legend_as_primary_information": true,
+        "forbid_trace_terms_on_public_surface": true,
+        "max_visible_trace_terms": 0,
+        "min_depth_layers": 4,
+        "min_scene_specific_business_objects": 3,
+        "min_non_card_visual_regions": 3,
+        "must_have_one_dominant_public_object": true,
+        "must_read_without_data_skill_panel": true
+      },
+      "native_ppt_required_modules": [
+        "drawRun267HeroEditableSurface",
+        "drawRun267CodeStrip",
+        "drawRun267DataTraceDrawer",
+        "drawRun267ReviewStatus"
+      ],
+      "bad_control_probe": "fail_if_climax_uses_run2_65_renderer_shapes_without_reference_first_archetype",
+      "required_trace_fields_for_run2_67": [
+        "run2_66_reference_archetype_id",
+        "run2_66_public_first_read_object",
+        "run2_66_layout_archetype",
+        "run2_66_art_direction_contract_id",
+        "run2_66_public_surface_aesthetic_gate_status"
+      ]
+    },
+    {
+      "reference_archetype_id": "reference_first_archetype_2_66_close",
+      "role": "close",
+      "selected_usecase_id": "usecase_design_to_production_platform_launch",
+      "source_reference_ids": [
+        "stripe_sessions_2025_product_keynote",
+        "figma_demo_platform_overview",
+        "figma_config_2026_opening_keynote",
+        "figma_config_2024_slides_keynote"
+      ],
+      "layout_archetype": "release_decision_map",
+      "public_first_read_object": "clear decision map showing generated proof, blocked release, and next rerun",
+      "composition_lock": "decision_map_with_one_dominant_next_action",
+      "scene_specific_business_objects": [
+        "generated proof",
+        "human review",
+        "public gate",
+        "next run"
+      ],
+      "composition_contract": {
+        "forbid_rect_ellipse_only_primary_surface": true,
+        "forbid_bottom_socket_legend_as_primary_information": true,
+        "forbid_trace_terms_on_public_surface": true,
+        "max_visible_trace_terms": 0,
+        "min_depth_layers": 4,
+        "min_scene_specific_business_objects": 3,
+        "min_non_card_visual_regions": 3,
+        "must_have_one_dominant_public_object": true,
+        "must_read_without_data_skill_panel": true
+      },
+      "native_ppt_required_modules": [
+        "drawRun267ReleaseDecisionMap",
+        "drawRun267HumanReviewGate",
+        "drawRun267NextRunTarget",
+        "drawRun267PublicReadinessMeter"
+      ],
+      "bad_control_probe": "fail_if_close_uses_run2_65_renderer_shapes_without_reference_first_archetype",
+      "required_trace_fields_for_run2_67": [
+        "run2_66_reference_archetype_id",
+        "run2_66_public_first_read_object",
+        "run2_66_layout_archetype",
+        "run2_66_art_direction_contract_id",
+        "run2_66_public_surface_aesthetic_gate_status"
+      ]
+    }
+  ],
+  "source_boundary": "Derived observations only; no copied screenshots, source layouts, brand marks, video frames, audio, transcripts, or proprietary assets."
+}

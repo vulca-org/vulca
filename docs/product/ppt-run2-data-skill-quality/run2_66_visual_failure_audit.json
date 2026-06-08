@@ -1,0 +1,24 @@
+{
+  "schema_version": "ppt_run2_66_visual_failure_audit.v1",
+  "status": "run2_66_visual_failure_audit_ready_public_blocked",
+  "run_id": "2.66",
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "public_ready": false,
+  "creates_new_ppt_deck": false,
+  "source_generated_run": "2.65",
+  "failure_layer": "public_surface_art_direction_not_renderer_contracts",
+  "root_causes": [
+    "engineering_proof_surface_dominates_public_surface",
+    "reference_data_reduced_to_trace_contracts",
+    "renderer_shape_vocabulary_too_primitive",
+    "public_story_lacks_scene_specific_business_evidence",
+    "tests_measure_trace_not_public_video_aesthetic_grade"
+  ],
+  "not_primary_causes": [
+    "run2_64_data_not_consumed",
+    "missing_four_arm_comparison",
+    "missing_trace_manifest"
+  ],
+  "blocked_next_action": "do_not_tune_run2_65_rectangles",
+  "required_repair": "compile reference-first art direction and layout grammar before any new native PPT drawing"
+}

@@ -10822,6 +10822,130 @@ def test_ppt_run_html_viewer_mentions_run2_65_renderer_composition_rerun() -> No
     assert_contains(viewer, required_terms)
 
 
+def test_run2_66_records_reference_first_redesign_contract() -> None:
+    failure_audit = load_json(PACK / "run2_66_visual_failure_audit.json")
+    design_grammar = load_json(PACK / "run2_66_reference_first_design_grammar.json")
+    art_direction = load_json(PACK / "run2_66_slide_art_direction_contracts.json")
+    workflow_gates = load_json(PACK / "run2_66_reference_first_workflow_gates.json")
+    result = load_json(PACK / "results" / "run2_66_reference_first_redesign_result.json")
+    result_md = (PACK / "results" / "run2_66_reference_first_redesign_result.md").read_text(
+        encoding="utf-8"
+    )
+
+    assert failure_audit["status"] == "run2_66_visual_failure_audit_ready_public_blocked"
+    assert failure_audit["source_generated_run"] == "2.65"
+    assert failure_audit["failure_layer"] == "public_surface_art_direction_not_renderer_contracts"
+    assert {
+        "engineering_proof_surface_dominates_public_surface",
+        "reference_data_reduced_to_trace_contracts",
+        "renderer_shape_vocabulary_too_primitive",
+        "public_story_lacks_scene_specific_business_evidence",
+        "tests_measure_trace_not_public_video_aesthetic_grade",
+    } <= set(failure_audit["root_causes"])
+    assert failure_audit["blocked_next_action"] == "do_not_tune_run2_65_rectangles"
+
+    assert design_grammar["status"] == "run2_66_reference_first_design_grammar_ready_public_blocked"
+    assert design_grammar["run_id"] == "2.66"
+    assert design_grammar["source_generated_run"] == "2.65"
+    assert design_grammar["stage_policy"] == "repeat_same_five_layers_not_run3"
+    assert design_grammar["raw_media_policy"] == "forbidden_reference_analysis_only"
+    assert len(design_grammar["reference_records"]) >= 5
+    assert len(design_grammar["role_design_grammar_records"]) == 6
+    assert {
+        "stripe_sessions_2025_product_keynote",
+        "figma_demo_platform_overview",
+        "figma_config_2026_opening_keynote",
+        "figma_config_2024_slides_keynote",
+    } <= {record["reference_id"] for record in design_grammar["reference_records"]}
+
+    for record in design_grammar["role_design_grammar_records"]:
+        assert record["reference_archetype_id"].startswith("reference_first_archetype_2_66_")
+        assert record["role"] in EXPECTED_RUN2_61_ROLES
+        assert len(record["source_reference_ids"]) >= 3
+        assert record["public_first_read_object"]
+        assert record["layout_archetype"] in {
+            "cinematic_product_reveal",
+            "operating_loop_stage",
+            "before_after_theater",
+            "inspectable_product_workspace",
+            "hero_product_surface_demo",
+            "release_decision_map",
+        }
+        assert record["composition_contract"]["forbid_rect_ellipse_only_primary_surface"] is True
+        assert record["composition_contract"]["forbid_bottom_socket_legend_as_primary_information"] is True
+        assert record["composition_contract"]["min_depth_layers"] >= 4
+        assert record["composition_contract"]["min_scene_specific_business_objects"] >= 3
+        assert record["composition_contract"]["max_visible_trace_terms"] == 0
+        assert len(record["native_ppt_required_modules"]) >= 4
+
+    assert art_direction["status"] == "run2_66_slide_art_direction_contracts_ready_public_blocked"
+    assert len(art_direction["slide_art_direction_contracts"]) == 6
+    for contract in art_direction["slide_art_direction_contracts"]:
+        assert contract["role"] in EXPECTED_RUN2_61_ROLES
+        assert contract["content_strategy"]["min_scene_specific_content_units"] >= 4
+        assert contract["copy_strategy"]["public_copy_mode"] == "reader_outcome_first"
+        assert contract["visual_strategy"]["must_show_product_or_business_scene"] is True
+        assert contract["qa_contract"]["human_review_question"] == (
+            "Would this read as a public product/keynote slide without seeing trace metadata?"
+        )
+
+    assert workflow_gates["status"] == "run2_66_reference_first_workflow_gates_ready_public_blocked"
+    assert workflow_gates["next_generated_run_contract"]["run_id"] == "2.67"
+    assert workflow_gates["next_generated_run_contract"]["must_consume_before_native_ppt_drawing"] is True
+    assert workflow_gates["bad_control_arm"] == "bad_run2_65_without_run2_66_reference_first_grammar"
+    assert set(workflow_gates["required_trace_fields_for_run2_67"]) >= {
+        "run2_66_reference_archetype_id",
+        "run2_66_public_first_read_object",
+        "run2_66_layout_archetype",
+        "run2_66_art_direction_contract_id",
+        "run2_66_public_surface_aesthetic_gate_status",
+    }
+
+    assert result["run_id"] == "2.66"
+    assert result["status"] == "run2_66_reference_first_redesign_ready_public_blocked"
+    assert result["creates_new_ppt_deck"] is False
+    assert result["source_generated_run"] == "2.65"
+    assert result["quality_delta"]["target_layer"] == "reference_first_public_surface_art_direction"
+    assert result["quality_delta"]["role_design_grammar_records"] == 6
+    assert result["next_required_action"] == (
+        "run2_67_generate_four_arm_ppt_consuming_run2_66_reference_first_design_grammar"
+    )
+    assert_contains(
+        result_md,
+        [
+            "Run 2.66 Reference-First Redesign",
+            "does not generate a new PPT",
+            "reference-first design grammar",
+            "public surface art direction",
+            "Run 2.67",
+            "Do not advance to Run 3.0",
+        ],
+    )
+
+
+def test_ppt_run_html_viewer_mentions_run2_66_reference_first_redesign() -> None:
+    script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
+    viewer = (
+        ROOT
+        / "outputs"
+        / "019e7d9c-532a-70b3-8892-fa3ae42baef2"
+        / "presentations"
+        / "ppt-run-viewer.html"
+    ).read_text(encoding="utf-8")
+
+    required_terms = [
+        "Run 2.66 reference-first redesign",
+        "run2_66_visual_failure_audit.json",
+        "run2_66_reference_first_design_grammar.json",
+        "run2_66_slide_art_direction_contracts.json",
+        "run2_66_reference_first_workflow_gates.json",
+        "run2_67_generate_four_arm_ppt_consuming_run2_66_reference_first_design_grammar",
+        '"latestRunId": "2.65"',
+    ]
+    assert_contains(script, required_terms[:-1])
+    assert_contains(viewer, required_terms)
+
+
 def test_ppt_run_html_viewer_mentions_run2_50_readability_density_renderer_rerun() -> None:
     script = (ROOT / "scripts" / "build_ppt_run_html_viewer.py").read_text(encoding="utf-8")
     viewer = (
