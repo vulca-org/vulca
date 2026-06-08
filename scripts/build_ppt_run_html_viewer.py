@@ -10,7 +10,7 @@ from typing import Any
 
 DEFAULT_THREAD_ID = "019e7d9c-532a-70b3-8892-fa3ae42baef2"
 PACK_REL = Path("docs") / "product" / "ppt-run2-data-skill-quality"
-LATEST_RUN_PAYLOAD_HINT = '"latestRunId": "2.68"'
+LATEST_RUN_PAYLOAD_HINT = '"latestRunId": "2.69"'
 
 
 @dataclass(frozen=True)
@@ -675,6 +675,27 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ),
         ),
     ),
+    RunSpec(
+        "2.69",
+        "Run 2.69",
+        "run2-69-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-69-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-69-run1-5-skill", "baseline"),
+            ArmSpec(
+                "run2_69_full_public_content_fill",
+                "Run 2.69 full",
+                "ppt-run2-69-full-vulca",
+                "full",
+            ),
+            ArmSpec(
+                "bad_run2_68_without_public_content_fill",
+                "Bad missing Run 2.69 content fill",
+                "ppt-run2-69-bad-without-public-content-fill",
+                "negative",
+            ),
+        ),
+    ),
 )
 
 
@@ -860,6 +881,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run266_result = read_json(pack / "results" / "run2_66_reference_first_redesign_result.json")
     run267_result = read_json(pack / "results" / "run2_67_reference_first_rerun_result.json")
     run268_result = read_json(pack / "results" / "run2_68_targeted_debug_rerun_result.json")
+    run269_result = read_json(pack / "results" / "run2_69_public_content_fill_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -1331,6 +1353,20 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run268FullTracePath": "ppt-run2-68-full-vulca/trace_manifest.json",
         "run268BadTracePath": "ppt-run2-68-bad-without-targeted-debug/trace_manifest.json",
         "run268FourArmSheetPath": "run2-68-four-arm-contact-sheet.png",
+        "run269ResultStatus": run269_result.get("status", ""),
+        "run269Result": run269_result,
+        "run269ResultPath": "run2_69_public_content_fill_rerun_result.json",
+        "run269TargetLayer": (run269_result.get("quality_delta") or {}).get(
+            "target_layer", "run2_68_public_content_slot_fill"
+        ),
+        "run269SourceDataStatus": (run269_result.get("quality_delta") or {}).get(
+            "source_data_status",
+            "run2_68_generated_result_and_trace_consumed_before_public_content_fill",
+        ),
+        "run269GeneratorPath": "scripts/generate_ppt_run2_69_public_content_fill_arms.mjs",
+        "run269FullTracePath": "ppt-run2-69-full-vulca/trace_manifest.json",
+        "run269BadTracePath": "ppt-run2-69-bad-without-public-content-fill/trace_manifest.json",
+        "run269FourArmSheetPath": "run2-69-four-arm-contact-sheet.png",
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -2667,6 +2703,12 @@ def build_html(data: dict[str, Any]) -> str:
       const run268Quality = run268Result.quality_delta || {{}};
       const run268Control = run268Result.control_boundary || {{}};
       const run268DebugScope = run268Result.debug_scope || {{}};
+      const run269Result = refs.run269Result || {{}};
+      const run269Rerun = run269Result.rerun || {{}};
+      const run269Inputs = run269Result.input_chain || {{}};
+      const run269Quality = run269Result.quality_delta || {{}};
+      const run269Control = run269Result.control_boundary || {{}};
+      const run269CleanupScope = run269Result.public_cleanup_scope || {{}};
       const run266ArtDirectionByRole = Object.fromEntries((run266ArtDirection.slide_art_direction_contracts || []).map((record) => [record.role, record]));
       const run266GrammarCards = (run266DesignGrammar.role_design_grammar_records || []).map((record) => {{
         const art = run266ArtDirectionByRole[record.role] || {{}};
@@ -3016,6 +3058,55 @@ def build_html(data: dict[str, Any]) -> str:
         <span class="pill">${{escapeHtml(refs.packPath || "case pack")}}</span>
       </div>
       <div class="dataStack">
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.69 public content fill rerun</h3><p>Run 2.69 consumes the Run 2.68 generated deck and trace, then fills visual boxes with public-facing product copy. This answers the current problem: the shapes should not remain generic boxes or internal debug labels.</p></div><span class="pill" title="${{escapeHtml(refs.run269ResultStatus || "missing")}}">${{escapeHtml(refs.run269ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Run 2.69 Public Content Fill</h4>
+              ${{detailBlock("Result", refs.run269ResultPath || "run2_69_public_content_fill_rerun_result.json")}}
+              ${{detailBlock("Generator", refs.run269GeneratorPath || "scripts/generate_ppt_run2_69_public_content_fill_arms.mjs")}}
+              ${{detailBlock("Best internal arm", run269Rerun.best_internal_arm)}}
+              ${{detailBlock("Public ready", run269Result.public_ready)}}
+              ${{detailBlock("Release boundary", run269Result.release_boundary)}}
+            </article>
+            <article class="dataCard">
+              <h4>Generated outputs</h4>
+              ${{detailBlock("Four-arm sheet", refs.run269FourArmSheetPath || "run2-69-four-arm-contact-sheet.png")}}
+              ${{detailBlock("Full trace", refs.run269FullTracePath || "ppt-run2-69-full-vulca/trace_manifest.json")}}
+              ${{detailBlock("Bad trace", refs.run269BadTracePath || "ppt-run2-69-bad-without-public-content-fill/trace_manifest.json")}}
+              ${{detailBlock("Full skill series", run269Rerun.full_skill_series_sheet)}}
+            </article>
+            <article class="dataCard">
+              <h4>Cleanup scope</h4>
+              ${{detailBlock("Content roles", run269CleanupScope.content_roles)}}
+              ${{detailBlock("Public copy policy", run269CleanupScope.public_copy_policy)}}
+              ${{detailBlock("Fill visual boxes", "every visible container needs a business-facing label or proof object")}}
+              ${{detailBlock("Remove debug copy", "no debug fix or targeted debug text on public slides")}}
+            </article>
+            <article class="dataCard">
+              <h4>Quality delta</h4>
+              ${{detailBlock("Target layer", refs.run269TargetLayer || run269Quality.target_layer)}}
+              ${{detailBlock("Source data status", refs.run269SourceDataStatus || run269Quality.source_data_status)}}
+              ${{detailBlock("Slides with content slots", run269Quality.full_slides_with_public_content_slots)}}
+              ${{detailBlock("Slides without debug terms", run269Quality.full_slides_without_visible_debug_terms)}}
+              ${{detailBlock("Slides with visual labels", run269Quality.full_slides_with_visual_slot_labels)}}
+            </article>
+            <article class="dataCard">
+              <h4>Control boundary</h4>
+              ${{detailBlock("Prompt-only boundary", run269Control.prompt_only)}}
+              ${{detailBlock("Run 1.5 boundary", run269Control.run1_5_skill)}}
+              ${{detailBlock("Bad control", run269Control.bad_run2_68_without_public_content_fill)}}
+              ${{detailBlock("Bad missing content fill", run269Quality.bad_control_slides_without_public_content_fill)}}
+            </article>
+            <article class="dataCard">
+              <h4>Input chain</h4>
+              ${{detailBlock("2.68 result", run269Inputs.run2_68_result)}}
+              ${{detailBlock("2.68 full trace", run269Inputs.run2_68_full_trace)}}
+              ${{detailBlock("2.66 design grammar", run269Inputs.run2_66_design_grammar)}}
+              ${{detailBlock("2.66 art direction", run269Inputs.run2_66_art_direction)}}
+            </article>
+          </div>
+        </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.68 targeted renderer debug rerun</h3><p>Run 2.68 consumes the Run 2.67 generated deck and fixes the renderer layer where S02 became a node diagram, S04 had proof/workspace layout issues, and S06 became a random node graph.</p></div><span class="pill" title="${{escapeHtml(refs.run268ResultStatus || "missing")}}">${{escapeHtml(refs.run268ResultStatus || "missing")}}</span></div>
           <div class="dataGrid">
