@@ -10,7 +10,7 @@ from typing import Any
 
 DEFAULT_THREAD_ID = "019e7d9c-532a-70b3-8892-fa3ae42baef2"
 PACK_REL = Path("docs") / "product" / "ppt-run2-data-skill-quality"
-LATEST_RUN_PAYLOAD_HINT = '"latestRunId": "2.67"'
+LATEST_RUN_PAYLOAD_HINT = '"latestRunId": "2.68"'
 
 
 @dataclass(frozen=True)
@@ -654,6 +654,27 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ),
         ),
     ),
+    RunSpec(
+        "2.68",
+        "Run 2.68",
+        "run2-68-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-68-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-68-run1-5-skill", "baseline"),
+            ArmSpec(
+                "run2_68_full_targeted_debug_repair",
+                "Run 2.68 full",
+                "ppt-run2-68-full-vulca",
+                "full",
+            ),
+            ArmSpec(
+                "bad_run2_67_without_targeted_debug_repair",
+                "Bad missing Run 2.68 targeted debug",
+                "ppt-run2-68-bad-without-targeted-debug",
+                "negative",
+            ),
+        ),
+    ),
 )
 
 
@@ -838,6 +859,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run266_workflow_gates = read_json(pack / "run2_66_reference_first_workflow_gates.json")
     run266_result = read_json(pack / "results" / "run2_66_reference_first_redesign_result.json")
     run267_result = read_json(pack / "results" / "run2_67_reference_first_rerun_result.json")
+    run268_result = read_json(pack / "results" / "run2_68_targeted_debug_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -1295,6 +1317,20 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run267FullTracePath": "ppt-run2-67-full-vulca/trace_manifest.json",
         "run267BadTracePath": "ppt-run2-67-bad-without-reference-first-grammar/trace_manifest.json",
         "run267FourArmSheetPath": "run2-67-four-arm-contact-sheet.png",
+        "run268ResultStatus": run268_result.get("status", ""),
+        "run268Result": run268_result,
+        "run268ResultPath": "run2_68_targeted_debug_rerun_result.json",
+        "run268TargetLayer": (run268_result.get("quality_delta") or {}).get(
+            "target_layer", "run2_67_targeted_renderer_debug_repair"
+        ),
+        "run268SourceDataStatus": (run268_result.get("quality_delta") or {}).get(
+            "source_data_status",
+            "run2_68_targeted_debug_repair_consumed_before_native_ppt_drawing",
+        ),
+        "run268GeneratorPath": "scripts/generate_ppt_run2_68_targeted_debug_arms.mjs",
+        "run268FullTracePath": "ppt-run2-68-full-vulca/trace_manifest.json",
+        "run268BadTracePath": "ppt-run2-68-bad-without-targeted-debug/trace_manifest.json",
+        "run268FourArmSheetPath": "run2-68-four-arm-contact-sheet.png",
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -2625,6 +2661,12 @@ def build_html(data: dict[str, Any]) -> str:
       const run267Inputs = run267Result.input_chain || {{}};
       const run267Quality = run267Result.quality_delta || {{}};
       const run267Control = run267Result.control_boundary || {{}};
+      const run268Result = refs.run268Result || {{}};
+      const run268Rerun = run268Result.rerun || {{}};
+      const run268Inputs = run268Result.input_chain || {{}};
+      const run268Quality = run268Result.quality_delta || {{}};
+      const run268Control = run268Result.control_boundary || {{}};
+      const run268DebugScope = run268Result.debug_scope || {{}};
       const run266ArtDirectionByRole = Object.fromEntries((run266ArtDirection.slide_art_direction_contracts || []).map((record) => [record.role, record]));
       const run266GrammarCards = (run266DesignGrammar.role_design_grammar_records || []).map((record) => {{
         const art = run266ArtDirectionByRole[record.role] || {{}};
@@ -2974,6 +3016,55 @@ def build_html(data: dict[str, Any]) -> str:
         <span class="pill">${{escapeHtml(refs.packPath || "case pack")}}</span>
       </div>
       <div class="dataStack">
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.68 targeted renderer debug rerun</h3><p>Run 2.68 consumes the Run 2.67 generated deck and fixes the renderer layer where S02 became a node diagram, S04 had proof/workspace layout issues, and S06 became a random node graph.</p></div><span class="pill" title="${{escapeHtml(refs.run268ResultStatus || "missing")}}">${{escapeHtml(refs.run268ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Run 2.68 Targeted Debug</h4>
+              ${{detailBlock("Result", refs.run268ResultPath || "run2_68_targeted_debug_rerun_result.json")}}
+              ${{detailBlock("Generator", refs.run268GeneratorPath || "scripts/generate_ppt_run2_68_targeted_debug_arms.mjs")}}
+              ${{detailBlock("Best internal arm", run268Rerun.best_internal_arm)}}
+              ${{detailBlock("Public ready", run268Result.public_ready)}}
+              ${{detailBlock("Release boundary", run268Result.release_boundary)}}
+            </article>
+            <article class="dataCard">
+              <h4>Generated outputs</h4>
+              ${{detailBlock("Four-arm sheet", refs.run268FourArmSheetPath || "run2-68-four-arm-contact-sheet.png")}}
+              ${{detailBlock("Full trace", refs.run268FullTracePath || "ppt-run2-68-full-vulca/trace_manifest.json")}}
+              ${{detailBlock("Bad trace", refs.run268BadTracePath || "ppt-run2-68-bad-without-targeted-debug/trace_manifest.json")}}
+              ${{detailBlock("Full skill series", run268Rerun.full_skill_series_sheet)}}
+            </article>
+            <article class="dataCard">
+              <h4>Debug scope</h4>
+              ${{detailBlock("Source generated run", run268Result.source_generated_run_id)}}
+              ${{detailBlock("Source design run", run268Result.source_design_run_id)}}
+              ${{detailBlock("Target roles", run268DebugScope.targeted_roles)}}
+              ${{detailBlock("Bug ids", run268DebugScope.bug_ids)}}
+            </article>
+            <article class="dataCard">
+              <h4>Quality delta</h4>
+              ${{detailBlock("Target layer", refs.run268TargetLayer || run268Quality.target_layer)}}
+              ${{detailBlock("Source data status", refs.run268SourceDataStatus || run268Quality.source_data_status)}}
+              ${{detailBlock("Targeted roles fixed", run268Quality.targeted_debug_roles_fixed)}}
+              ${{detailBlock("Text overlap pass", run268Quality.full_slides_with_text_overlap_risk_removed)}}
+              ${{detailBlock("Debug modules present", run268Quality.full_slides_with_debug_renderer_modules)}}
+            </article>
+            <article class="dataCard">
+              <h4>Control boundary</h4>
+              ${{detailBlock("Prompt-only boundary", run268Control.prompt_only)}}
+              ${{detailBlock("Run 1.5 boundary", run268Control.run1_5_skill)}}
+              ${{detailBlock("Bad control", run268Control.bad_run2_67_without_targeted_debug_repair)}}
+              ${{detailBlock("Bad control missing debug", run268Quality.bad_control_slides_without_targeted_debug_repair)}}
+            </article>
+            <article class="dataCard">
+              <h4>Input chain</h4>
+              ${{detailBlock("2.67 result", run268Inputs.run2_67_result)}}
+              ${{detailBlock("2.67 full trace", run268Inputs.run2_67_full_trace)}}
+              ${{detailBlock("2.66 design grammar", run268Inputs.run2_66_design_grammar)}}
+              ${{detailBlock("2.66 art direction", run268Inputs.run2_66_art_direction)}}
+            </article>
+          </div>
+        </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.67 generated reference-first rerun</h3><p>Run 2.67 is the generated four-arm proof that consumes Run 2.66 reference-first design grammar and slide art-direction contracts before native PPT drawing. This is the first run after the 2.66 diagnosis where the main viewer moves past Run 2.65.</p></div><span class="pill" title="${{escapeHtml(refs.run267ResultStatus || "missing")}}">${{escapeHtml(refs.run267ResultStatus || "missing")}}</span></div>
           <div class="dataGrid">

@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "run_id": "2.68",
+  "status": "run2_68_targeted_debug_rerun_public_blocked",
+  "public_ready": false,
+  "selected_usecase_id": "usecase_design_to_production_platform_launch",
+  "source_design_run_id": "2.66",
+  "source_generated_run_id": "2.67",
+  "database_expansion": false,
+  "workflow_expansion": true,
+  "stage_policy": "repeat_same_five_layers_not_run3",
+  "debug_scope": {
+    "source_run_id": "2.67",
+    "target_layer": "run2_67_targeted_renderer_debug_repair",
+    "targeted_roles": [
+      "setup",
+      "proof",
+      "close"
+    ],
+    "bug_ids": {
+      "setup": "operating_stage_was_node_diagram",
+      "proof": "proof_title_body_overlap_and_wireframe_workspace",
+      "close": "release_map_was_random_node_graph"
+    }
+  },
+  "input_chain": {
+    "run2_67_result": "docs/product/ppt-run2-data-skill-quality/results/run2_67_reference_first_rerun_result.json",
+    "run2_67_full_trace": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-67-full-vulca/trace_manifest.json",
+    "run2_66_result": "docs/product/ppt-run2-data-skill-quality/results/run2_66_reference_first_redesign_result.json",
+    "run2_66_failure_audit": "docs/product/ppt-run2-data-skill-quality/run2_66_visual_failure_audit.json",
+    "run2_66_design_grammar": "docs/product/ppt-run2-data-skill-quality/run2_66_reference_first_design_grammar.json",
+    "run2_66_art_direction": "docs/product/ppt-run2-data-skill-quality/run2_66_slide_art_direction_contracts.json",
+    "run2_66_workflow_gates": "docs/product/ppt-run2-data-skill-quality/run2_66_reference_first_workflow_gates.json",
+    "run2_65_result": "docs/product/ppt-run2-data-skill-quality/results/run2_65_renderer_composition_rerun_result.json",
+    "run2_65_full_trace": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run2-65-full-vulca/trace_manifest.json",
+    "commercial_usecase_bank": "docs/product/ppt-run2-data-skill-quality/commercial_usecase_bank.json",
+    "sources": "docs/product/ppt-run2-data-skill-quality/sources.json"
+  },
+  "rerun": {
+    "generator": "scripts/generate_ppt_run2_68_targeted_debug_arms.mjs",
+    "arms": [
+      "prompt_only",
+      "run1_5_skill",
+      "run2_68_full_targeted_debug_repair",
+      "bad_run2_67_without_targeted_debug_repair"
+    ],
+    "best_internal_arm": "run2_68_full_targeted_debug_repair",
+    "best_internal_arm_verdict": "Run 2.67 generated output is consumed, then S02, S04, and S06 receive targeted renderer repairs before native PPT drawing.",
+    "combined_contact_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-68-four-arm-contact-sheet.png",
+    "full_skill_series_sheet": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/run2-full-skill-series-horizontal.png",
+    "generated_outputs_committed": false
+  },
+  "quality_delta": {
+    "target_layer": "run2_67_targeted_renderer_debug_repair",
+    "source_data_status": "run2_68_targeted_debug_repair_consumed_before_native_ppt_drawing",
+    "full_slides_with_run2_66_reference_grammar": 6,
+    "full_slides_with_reference_archetypes": 6,
+    "full_slides_with_public_surface_aesthetic_gate": 6,
+    "full_slides_with_visible_trace_terms_removed": 6,
+    "full_slides_with_scene_business_objects": 6,
+    "full_slides_with_depth_layers": 6,
+    "targeted_debug_roles_fixed": 3,
+    "full_slides_with_text_overlap_risk_removed": 6,
+    "full_slides_with_debug_renderer_modules": 3,
+    "bad_control_slides_without_targeted_debug_repair": 3,
+    "repair_modules": [
+      "drawRun268ReferenceFirstCinematicDeckReveal",
+      "drawRun268LayeredOperatingStageDebug",
+      "drawRun268ReferenceFirstBeforeAfterTheater",
+      "drawRun268InspectableWorkspaceDebug",
+      "drawRun268ReferenceFirstHeroProductSurfaceDemo",
+      "drawRun268ReleaseDecisionBoardDebug"
+    ]
+  },
+  "control_boundary": {
+    "bad_run2_67_without_targeted_debug_repair": "may see Run 2.67 generated result and trace, but must not use the Run 2.68 targeted renderer debug repair modules",
+    "prompt_only": "commercial_case_only_no_run2_67_or_run2_68_targeted_debug",
+    "run1_5_skill": "prior_baseline_no_run2_67_or_run2_68_targeted_debug"
+  },
+  "visual_quality_boundary": "Run 2.68 is an internal generated rerun for visual review; public release remains blocked until human review approves the rendered deck.",
+  "remaining_public_release_gates": [
+    "human_visual_review",
+    "native_or_cross_platform_render_inspection",
+    "source_boundary_review",
+    "human_release_approval"
+  ],
+  "release_boundary": "public_blocked_until_human_visual_review_native_render_review_source_boundary_review_and_human_approval",
+  "next_required_action": "human_review_run2_68_targeted_debug_output_then_decide_whether_more_data_workflow_debug_is_needed"
+}
