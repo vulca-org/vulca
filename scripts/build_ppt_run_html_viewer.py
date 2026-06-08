@@ -10,7 +10,7 @@ from typing import Any
 
 DEFAULT_THREAD_ID = "019e7d9c-532a-70b3-8892-fa3ae42baef2"
 PACK_REL = Path("docs") / "product" / "ppt-run2-data-skill-quality"
-LATEST_RUN_PAYLOAD_HINT = '"latestRunId": "2.62"'
+LATEST_RUN_PAYLOAD_HINT = '"latestRunId": "2.65"'
 
 
 @dataclass(frozen=True)
@@ -612,6 +612,27 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ),
         ),
     ),
+    RunSpec(
+        "2.65",
+        "Run 2.65",
+        "run2-65-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-65-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-65-run1-5-skill", "baseline"),
+            ArmSpec(
+                "run2_65_full_renderer_composition_repair",
+                "Run 2.65 full",
+                "ppt-run2-65-full-vulca",
+                "full",
+            ),
+            ArmSpec(
+                "bad_run2_64_without_renderer_composition_repair",
+                "Bad missing Run 2.64 renderer repair",
+                "ppt-run2-65-bad-without-renderer-composition-repair",
+                "negative",
+            ),
+        ),
+    ),
 )
 
 
@@ -789,6 +810,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run264_text_fit = read_json(pack / "run2_64_text_fit_renderer_gates.json")
     run264_dry_run = read_json(pack / "run2_64_renderer_dry_run_binding_matrix.json")
     run264_result = read_json(pack / "results" / "run2_64_renderer_composition_repair_result.json")
+    run265_result = read_json(pack / "results" / "run2_65_renderer_composition_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -1203,6 +1225,20 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run264ResultStatus": run264_result.get("status", ""),
         "run264Result": run264_result,
         "run264ResultPath": "run2_64_renderer_composition_repair_result.json",
+        "run265ResultStatus": run265_result.get("status", ""),
+        "run265Result": run265_result,
+        "run265ResultPath": "run2_65_renderer_composition_rerun_result.json",
+        "run265TargetLayer": (run265_result.get("quality_delta") or {}).get(
+            "target_layer", "run2_64_renderer_composition_repair_consumed"
+        ),
+        "run265SourceDataStatus": (run265_result.get("quality_delta") or {}).get(
+            "source_data_status",
+            "run2_64_renderer_composition_repair_consumed_before_native_ppt_drawing",
+        ),
+        "run265GeneratorPath": "scripts/generate_ppt_run2_65_renderer_composition_arms.mjs",
+        "run265FullTracePath": "ppt-run2-65-full-vulca/trace_manifest.json",
+        "run265BadTracePath": "ppt-run2-65-bad-without-renderer-composition-repair/trace_manifest.json",
+        "run265FourArmSheetPath": "run2-65-four-arm-contact-sheet.png",
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -2516,6 +2552,11 @@ def build_html(data: dict[str, Any]) -> str:
       const run264Result = refs.run264Result || {{}};
       const run264Quality = run264Result.quality_delta || {{}};
       const run264Next = run264Result.next_generated_run_contract || {{}};
+      const run265Result = refs.run265Result || {{}};
+      const run265Rerun = run265Result.rerun || {{}};
+      const run265Inputs = run265Result.input_chain || {{}};
+      const run265Quality = run265Result.quality_delta || {{}};
+      const run265Control = run265Result.control_boundary || {{}};
       const run264DynamicByRole = Object.fromEntries((refs.run264DynamicSocketRecords || []).map((record) => [record.role, record]));
       const run264SemanticByRole = Object.fromEntries((refs.run264SemanticDiagramRecords || []).map((record) => [record.role, record]));
       const run264TextFitByRole = Object.fromEntries((refs.run264TextFitRecords || []).map((record) => [record.role, record]));
@@ -2851,7 +2892,61 @@ def build_html(data: dict[str, Any]) -> str:
       </div>
       <div class="dataStack">
         <section class="dataBand">
-          <div class="dataBandHead"><div><h3>Run 2.64 renderer composition repair</h3><p>Run 2.64 is data/workflow-only, not a generated deck; the latest generated PPT remains Run 2.62. This layer turns the Run 2.63 renderer_composition_grammar root cause into dynamic socket, semantic diagram, text-fit, and dry-run binding contracts for the next generated rerun.</p></div><span class="pill" title="${{escapeHtml(refs.run264ResultStatus || "missing")}}">${{escapeHtml(refs.run264ResultStatus || "missing")}}</span></div>
+          <div class="dataBandHead"><div><h3>Run 2.65 generated renderer composition rerun</h3><p>Run 2.65 is the generated four-arm proof that consumes Run 2.64 renderer composition repair before native PPT drawing. It tests whether dynamic sockets, semantic diagrams, text-fit runtime gates, and dry-run bindings improve the final visible PPT instead of only adding documentation.</p></div><span class="pill" title="${{escapeHtml(refs.run265ResultStatus || "missing")}}">${{escapeHtml(refs.run265ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Run 2.65 Renderer Composition Rerun</h4>
+              ${{detailBlock("Result", refs.run265ResultPath || "run2_65_renderer_composition_rerun_result.json")}}
+              ${{detailBlock("Generator", refs.run265GeneratorPath || "scripts/generate_ppt_run2_65_renderer_composition_arms.mjs")}}
+              ${{detailBlock("Best internal arm", run265Rerun.best_internal_arm)}}
+              ${{detailBlock("Public ready", run265Result.public_ready)}}
+              ${{detailBlock("Release boundary", run265Result.release_boundary)}}
+            </article>
+            <article class="dataCard">
+              <h4>Visible outputs</h4>
+              ${{detailBlock("Four-arm sheet", refs.run265FourArmSheetPath || "run2-65-four-arm-contact-sheet.png")}}
+              ${{detailBlock("Full trace", refs.run265FullTracePath || "ppt-run2-65-full-vulca/trace_manifest.json")}}
+              ${{detailBlock("Bad trace", refs.run265BadTracePath || "ppt-run2-65-bad-without-renderer-composition-repair/trace_manifest.json")}}
+              ${{detailBlock("Full skill series", run265Rerun.full_skill_series_sheet)}}
+            </article>
+            <article class="dataCard">
+              <h4>2.64 consumption</h4>
+              ${{detailBlock("Target layer", refs.run265TargetLayer || run265Quality.target_layer)}}
+              ${{detailBlock("Source data status", refs.run265SourceDataStatus || run265Quality.source_data_status)}}
+              ${{detailBlock("Run 2.64 contracts", run265Quality.full_slides_with_run2_64_contracts)}}
+              ${{detailBlock("Dynamic sockets", run265Quality.full_slides_with_dynamic_sockets)}}
+              ${{detailBlock("Semantic diagrams", run265Quality.full_slides_with_semantic_diagrams)}}
+              ${{detailBlock("Text-fit runtime pass", run265Quality.full_slides_with_text_fit_runtime_pass)}}
+            </article>
+            <article class="dataCard">
+              <h4>Controls</h4>
+              ${{detailBlock("Prompt-only boundary", run265Control.prompt_only)}}
+              ${{detailBlock("Run 1.5 boundary", run265Control.run1_5_skill)}}
+              ${{detailBlock("Bad control", run265Control.bad_run2_64_without_renderer_composition_repair)}}
+              ${{detailBlock("Bad control missing 2.64", run265Quality.bad_control_slides_without_run2_64_contracts)}}
+            </article>
+          </div>
+          <div class="dataBandSubhead"><h4>Run 2.65 input chain</h4><p>The generated deck is allowed to use the Run 2.64 repair artifacts plus the earlier Run 2.62/2.61 proof chain. Raw tutorial media and copied layouts remain out of bounds.</p></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Renderer repair inputs</h4>
+              ${{detailBlock("Run 2.64 result", run265Inputs.run2_64_result)}}
+              ${{detailBlock("Dynamic socket", run265Inputs.run2_64_dynamic_socket)}}
+              ${{detailBlock("Semantic diagram", run265Inputs.run2_64_semantic_diagram)}}
+              ${{detailBlock("Text-fit", run265Inputs.run2_64_text_fit)}}
+              ${{detailBlock("Dry-run", run265Inputs.run2_64_dry_run)}}
+            </article>
+            <article class="dataCard">
+              <h4>Prior proof chain</h4>
+              ${{detailBlock("Run 2.62 result", run265Inputs.run2_62_result)}}
+              ${{detailBlock("Run 2.62 full trace", run265Inputs.run2_62_full_trace)}}
+              ${{detailBlock("Run 2.61 fusion", run265Inputs.run2_61_text_socket_fusion)}}
+              ${{detailBlock("Commercial usecase bank", run265Inputs.commercial_usecase_bank)}}
+            </article>
+          </div>
+        </section>
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.64 renderer composition repair</h3><p>Run 2.64 is data/workflow-only, not a generated deck. Run 2.65 now consumes this layer to test whether the renderer_composition_grammar fix creates a visible output delta, not just richer documentation.</p></div><span class="pill" title="${{escapeHtml(refs.run264ResultStatus || "missing")}}">${{escapeHtml(refs.run264ResultStatus || "missing")}}</span></div>
           <div class="dataGrid">
             <article class="dataCard">
               <h4>Repair result</h4>
