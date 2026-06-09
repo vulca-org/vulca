@@ -99,6 +99,7 @@ RUN2_73_REQUIRED_FILES = [
     "results/run2_74_visual_quality_evaluation.json",
     "results/run2_75_renderer_repair_rerun_result.json",
     "results/run2_76_visual_quality_evaluation.json",
+    "run2_76_visual_grammar_renderer_repair_plan.json",
 ]
 
 
@@ -494,6 +495,50 @@ RUN2_76_PRODUCT_FEEL_DELTA_VALUES = {"improved_but_wireframe", "partial", "not_i
 RUN2_76_PAGE_DIFFERENTIATION_VALUES = {"improved", "same", "weaker"}
 RUN2_76_TEXT_BINDING_DELTA_VALUES = {"slightly_stronger_but_small", "partial", "weak"}
 RUN2_76_PUBLIC_VIDEO_DIRECTION_VALUES = {"no", "partial", "yes"}
+RUN2_76_K1_REPAIR_PLAN_STATUS = "run2_76_visual_grammar_renderer_repair_plan_ready_public_blocked"
+RUN2_76_K1_REPAIR_PLAN_CONSUMED_SOURCE_PATHS = {
+    "docs/product/ppt-run2-data-skill-quality/results/run2_76_visual_quality_evaluation.json",
+    "docs/product/ppt-run2-data-skill-quality/results/run2_75_renderer_repair_rerun_result.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_visual_grammar_modules.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_renderer_adapter_contracts.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_text_binding_strategy.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_scene_plan_expansion.json",
+}
+RUN2_76_K1_RENDERER_CAPABILITIES = {
+    "hero crop",
+    "editorial mask",
+    "asymmetric foreground/background depth",
+    "larger proof object",
+    "fewer but more meaningful labels",
+    "scene-specific connectors",
+    "non-grid evidence arrangement",
+}
+RUN2_76_K1_FORBIDDEN_RENDERER_FALLBACKS = {
+    "debug-like outlines",
+    "uniform small label wall",
+    "same product window skeleton on every page",
+    "schematic blueprint as final visual unless it is the actual proof object",
+}
+RUN2_76_K1_PAGE_REPAIR_FIELDS = [
+    "role",
+    "slide_index",
+    "visual_grammar_module",
+    "source_j_assessment",
+    "current_failure",
+    "target_scene_direction",
+    "visual_grammar_change",
+    "renderer_change",
+    "text_binding_adjustment",
+    "must_preserve_from_2_75",
+    "must_remove_from_2_75",
+    "acceptance_checks",
+]
+RUN2_76_K1_ACCEPTANCE_CHECK_KEYS = {
+    "page_differentiation_check",
+    "wireframe_reduction_check",
+    "renderer_capability_check",
+    "no_renderer_rerun_in_k1",
+}
 
 
 @dataclass(frozen=True)
@@ -5160,6 +5205,256 @@ def validate_run2_76_visual_quality_root_cause_summary(label: str, value: Any, e
         validate_string_list(f"{label}.secondary_layers", secondary, errors)
 
 
+def validate_run2_76_visual_grammar_renderer_repair_plan(pack_dir: Path, errors: list[str]) -> None:
+    data = load_json(pack_dir / "run2_76_visual_grammar_renderer_repair_plan.json", errors)
+    if not isinstance(data, dict):
+        return
+    label = "run2_76_visual_grammar_renderer_repair_plan"
+    require_keys(
+        label,
+        data,
+        [
+            "artifact_id",
+            "part",
+            "run_id",
+            "status",
+            "stage_policy",
+            "creates_new_ppt_deck",
+            "starts_renderer_rerun",
+            "updates_html_viewer",
+            "public_release_started",
+            "public_ready",
+            "quality_claim_boundary",
+            "consumed_sources",
+            "source_j_evaluation",
+            "source_run2_75_renderer_repair",
+            "source_trace",
+            "global_repair_strategy",
+            "page_repair_plans",
+            "next_required_action",
+        ],
+        errors,
+    )
+    if data.get("artifact_id") != label:
+        errors.append(f"{label}.artifact_id must be {label}")
+    if data.get("part") != "Part K1":
+        errors.append(f"{label}.part must be Part K1")
+    if data.get("run_id") != "2.76":
+        errors.append(f"{label}.run_id must be 2.76")
+    if data.get("status") != RUN2_76_K1_REPAIR_PLAN_STATUS:
+        errors.append(f"{label}.status must be {RUN2_76_K1_REPAIR_PLAN_STATUS}")
+    if data.get("stage_policy") != "part_k1_repair_contract_only_no_renderer_rerun_no_public_release":
+        errors.append(f"{label}.stage_policy must be part_k1_repair_contract_only_no_renderer_rerun_no_public_release")
+    if data.get("creates_new_ppt_deck") is not False:
+        errors.append(f"{label}.creates_new_ppt_deck must be false")
+    if data.get("starts_renderer_rerun") is not False:
+        errors.append(f"{label}.starts_renderer_rerun must be false")
+    if data.get("updates_html_viewer") is not False:
+        errors.append(f"{label}.updates_html_viewer must be false")
+    if data.get("public_release_started") is not False:
+        errors.append(f"{label}.public_release_started must be false")
+    if data.get("public_ready") is not False:
+        errors.append(f"{label}.public_ready must be false")
+    if data.get("quality_claim_boundary") != "part_k1_repair_contract_only_no_renderer_rerun_no_public_release":
+        errors.append(f"{label}.quality_claim_boundary must be part_k1_repair_contract_only_no_renderer_rerun_no_public_release")
+    validate_exact_string_set(f"{label}.consumed_sources", data.get("consumed_sources", []), RUN2_76_K1_REPAIR_PLAN_CONSUMED_SOURCE_PATHS, errors)
+    validate_run2_76_k1_source_j_evaluation(f"{label}.source_j_evaluation", data.get("source_j_evaluation", {}), errors)
+    validate_run2_76_k1_source_run2_75(
+        f"{label}.source_run2_75_renderer_repair",
+        data.get("source_run2_75_renderer_repair", {}),
+        errors,
+    )
+    validate_run2_76_k1_source_trace(f"{label}.source_trace", data.get("source_trace", {}), errors)
+    validate_run2_76_k1_global_repair_strategy(
+        f"{label}.global_repair_strategy",
+        data.get("global_repair_strategy", {}),
+        errors,
+    )
+    validate_run2_76_k1_page_repair_plans(f"{label}.page_repair_plans", data.get("page_repair_plans", []), errors)
+    if data.get("next_required_action") != "part_k2_renderer_rerun_from_visual_grammar_renderer_repair_plan":
+        errors.append(f"{label}.next_required_action must be part_k2_renderer_rerun_from_visual_grammar_renderer_repair_plan")
+
+
+def validate_run2_76_k1_source_j_evaluation(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(
+        label,
+        value,
+        [
+            "source_path",
+            "status",
+            "top_blocker",
+            "primary_layer_to_fix",
+            "secondary_layers",
+            "next_required_action",
+        ],
+        errors,
+    )
+    if value.get("source_path") != "docs/product/ppt-run2-data-skill-quality/results/run2_76_visual_quality_evaluation.json":
+        errors.append(f"{label}.source_path must reference run2_76_visual_quality_evaluation.json")
+    if value.get("status") != RUN2_76_VISUAL_QUALITY_EVALUATION_STATUS:
+        errors.append(f"{label}.status must be {RUN2_76_VISUAL_QUALITY_EVALUATION_STATUS}")
+    if value.get("top_blocker") != "wireframe_blueprint_aesthetic_and_repeated_product_surfaces_still_read_as_internal_engineering_diagrams":
+        errors.append(f"{label}.top_blocker must match Run 2.76 visual quality top blocker")
+    if value.get("primary_layer_to_fix") != "visual_grammar_and_renderer":
+        errors.append(f"{label}.primary_layer_to_fix must be visual_grammar_and_renderer")
+    if "secondary_layers" in value:
+        validate_string_list(f"{label}.secondary_layers", value["secondary_layers"], errors)
+        if set(value["secondary_layers"]) != {"text_binding"}:
+            errors.append(f"{label}.secondary_layers must include only text_binding")
+    if value.get("next_required_action") != "part_k_visual_grammar_and_renderer_repair_from_j_evaluation":
+        errors.append(f"{label}.next_required_action must be part_k_visual_grammar_and_renderer_repair_from_j_evaluation")
+
+
+def validate_run2_76_k1_source_run2_75(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(label, value, ["source_path", "status", "public_ready"], errors)
+    if value.get("source_path") != "docs/product/ppt-run2-data-skill-quality/results/run2_75_renderer_repair_rerun_result.json":
+        errors.append(f"{label}.source_path must reference run2_75_renderer_repair_rerun_result.json")
+    if value.get("status") != RUN2_75_RENDERER_REPAIR_STATUS:
+        errors.append(f"{label}.status must be {RUN2_75_RENDERER_REPAIR_STATUS}")
+    if value.get("public_ready") is not False:
+        errors.append(f"{label}.public_ready must be false")
+
+
+def validate_run2_76_k1_source_trace(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    expected = {
+        "visual_grammar_modules": "docs/product/ppt-run2-data-skill-quality/run2_73_visual_grammar_modules.json",
+        "renderer_adapter_contracts": "docs/product/ppt-run2-data-skill-quality/run2_73_renderer_adapter_contracts.json",
+        "text_binding_strategy": "docs/product/ppt-run2-data-skill-quality/run2_73_text_binding_strategy.json",
+        "scene_plan_expansion": "docs/product/ppt-run2-data-skill-quality/run2_73_scene_plan_expansion.json",
+    }
+    require_keys(label, value, list(expected), errors)
+    for key, expected_path in expected.items():
+        if value.get(key) != expected_path:
+            errors.append(f"{label}.{key} must be {expected_path}")
+
+
+def validate_run2_76_k1_global_repair_strategy(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(
+        label,
+        value,
+        [
+            "from_failure_mode",
+            "target_shift",
+            "primary_layers_to_fix",
+            "secondary_layers_to_fix",
+            "not_data_layer_reason",
+            "page_differentiation_mandates",
+            "renderer_capabilities_required",
+            "forbidden_renderer_fallbacks",
+            "quality_gate",
+        ],
+        errors,
+    )
+    for key in ["from_failure_mode", "target_shift", "not_data_layer_reason", "quality_gate"]:
+        if key in value:
+            require_non_empty_string(f"{label}.{key}", value[key], errors)
+    if value.get("primary_layers_to_fix") != ["visual_grammar", "renderer"]:
+        errors.append(f"{label}.primary_layers_to_fix must be visual_grammar, renderer")
+    if value.get("secondary_layers_to_fix") != ["text_binding"]:
+        errors.append(f"{label}.secondary_layers_to_fix must be text_binding")
+    if "page_differentiation_mandates" in value:
+        validate_string_list(f"{label}.page_differentiation_mandates", value["page_differentiation_mandates"], errors)
+    validate_exact_string_set(
+        f"{label}.renderer_capabilities_required",
+        value.get("renderer_capabilities_required", []),
+        RUN2_76_K1_RENDERER_CAPABILITIES,
+        errors,
+    )
+    validate_exact_string_set(
+        f"{label}.forbidden_renderer_fallbacks",
+        value.get("forbidden_renderer_fallbacks", []),
+        RUN2_76_K1_FORBIDDEN_RENDERER_FALLBACKS,
+        errors,
+    )
+
+
+def validate_run2_76_k1_page_repair_plans(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_list(label, value, errors):
+        return
+    roles: list[str] = []
+    target_scene_directions: set[str] = set()
+    for index, record in enumerate(value):
+        record_label = f"{label}[{index}]"
+        if not isinstance(record, dict):
+            errors.append(f"{record_label} must be an object")
+            continue
+        require_keys(record_label, record, RUN2_76_K1_PAGE_REPAIR_FIELDS, errors)
+        role = record.get("role")
+        expected_role = RUN2_73_VISUAL_GRAMMAR_ROLES[index] if index < len(RUN2_73_VISUAL_GRAMMAR_ROLES) else None
+        if role != expected_role:
+            errors.append(f"{record_label}.role must be {expected_role}")
+        if isinstance(role, str):
+            roles.append(role)
+        if "slide_index" in record and require_integer(f"{record_label}.slide_index", record["slide_index"], errors):
+            if record["slide_index"] != index + 1:
+                errors.append(f"{record_label}.slide_index must be {index + 1}")
+        if role in RUN2_73_VISUAL_GRAMMAR_PAGE_MODULE_MAP:
+            expected_module = RUN2_73_VISUAL_GRAMMAR_PAGE_MODULE_MAP[role]
+            if record.get("visual_grammar_module") != expected_module:
+                errors.append(f"{record_label}.visual_grammar_module must be {expected_module} for {role}")
+        for key in [
+            "current_failure",
+            "target_scene_direction",
+            "visual_grammar_change",
+            "renderer_change",
+            "text_binding_adjustment",
+        ]:
+            if key in record:
+                require_non_empty_string(f"{record_label}.{key}", record[key], errors)
+        target = record.get("target_scene_direction")
+        if isinstance(target, str) and target.strip():
+            if target in target_scene_directions:
+                errors.append(f"{record_label}.target_scene_direction duplicates {target}")
+            target_scene_directions.add(target)
+        validate_string_list(f"{record_label}.must_preserve_from_2_75", record.get("must_preserve_from_2_75", []), errors)
+        if validate_string_list(f"{record_label}.must_remove_from_2_75", record.get("must_remove_from_2_75", []), errors):
+            if not (set(record["must_remove_from_2_75"]) & RUN2_76_K1_FORBIDDEN_RENDERER_FALLBACKS):
+                errors.append(f"{record_label}.must_remove_from_2_75 must include a forbidden 2.75 renderer fallback")
+        validate_run2_76_k1_page_source_j_assessment(
+            f"{record_label}.source_j_assessment",
+            record.get("source_j_assessment", {}),
+            errors,
+        )
+        validate_run2_76_k1_acceptance_checks(
+            f"{record_label}.acceptance_checks",
+            record.get("acceptance_checks", {}),
+            errors,
+        )
+    if roles != RUN2_73_VISUAL_GRAMMAR_ROLES:
+        errors.append(f"{label} roles must be {', '.join(RUN2_73_VISUAL_GRAMMAR_ROLES)}")
+    if len(target_scene_directions) != 6:
+        errors.append(f"{label}.target_scene_direction values must be unique across six pages")
+
+
+def validate_run2_76_k1_page_source_j_assessment(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(label, value, ["root_cause_layer", "repair_instruction"], errors)
+    if "root_cause_layer" in value:
+        validate_choice(f"{label}.root_cause_layer", value["root_cause_layer"], RUN2_74_VISUAL_QUALITY_ROOT_CAUSE_LAYERS, errors)
+    if "repair_instruction" in value:
+        require_non_empty_string(f"{label}.repair_instruction", value["repair_instruction"], errors)
+
+
+def validate_run2_76_k1_acceptance_checks(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(label, value, sorted(RUN2_76_K1_ACCEPTANCE_CHECK_KEYS), errors)
+    for key in ["page_differentiation_check", "wireframe_reduction_check", "renderer_capability_check"]:
+        if key in value:
+            require_non_empty_string(f"{label}.{key}", value[key], errors)
+    if value.get("no_renderer_rerun_in_k1") is not True:
+        errors.append(f"{label}.no_renderer_rerun_in_k1 must be true")
+
+
 def validate_run1_design_memory_observations(observations: list[Any], errors: list[str]) -> None:
     required = ["id", "source_ids", "principle", "code_generation_rule", "do_not_copy"]
     seen_ids: set[str] = set()
@@ -5377,6 +5672,7 @@ def validate_case_pack(pack_dir: str | Path, profile: str = "default") -> Valida
             validate_run2_74_visual_quality_evaluation(root, errors)
             validate_run2_75_renderer_repair_rerun_result(root, errors)
             validate_run2_76_visual_quality_evaluation(root, errors)
+            validate_run2_76_visual_grammar_renderer_repair_plan(root, errors)
         return ValidationResult(not errors, errors)
 
     validate_sources(root, errors)

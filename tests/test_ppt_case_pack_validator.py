@@ -1497,6 +1497,10 @@ def write_run2_memory_files(pack: Path) -> None:
         json.dumps(valid_run2_76_visual_quality_evaluation(), indent=2),
         encoding="utf-8",
     )
+    (pack / "run2_76_visual_grammar_renderer_repair_plan.json").write_text(
+        json.dumps(valid_run2_76_visual_grammar_renderer_repair_plan(), indent=2),
+        encoding="utf-8",
+    )
 
 
 def valid_run2_66_reference_first_design_grammar() -> dict:
@@ -2425,6 +2429,122 @@ def valid_run2_76_visual_quality_evaluation() -> dict:
     }
 
 
+def valid_run2_76_visual_grammar_renderer_repair_plan() -> dict:
+    roles = ["cover", "setup", "contrast", "proof", "climax", "close"]
+    module_by_role = {
+        "cover": "product_reveal",
+        "setup": "hero_field",
+        "contrast": "before_after_theater",
+        "proof": "evidence_workspace",
+        "climax": "product_reveal",
+        "close": "decision_map",
+    }
+    target_by_role = {
+        "cover": "finished product hero emerging from source memory",
+        "setup": "source-to-memory transformation field",
+        "contrast": "asymmetric before-after product theater",
+        "proof": "evidence inspection scene with active proof lane",
+        "climax": "completion reveal of editable PPT result",
+        "close": "decision / release gate handoff map",
+    }
+    return {
+        "artifact_id": "run2_76_visual_grammar_renderer_repair_plan",
+        "part": "Part K1",
+        "schema_version": "ppt_run2_76_visual_grammar_renderer_repair_plan.v1",
+        "run_id": "2.76",
+        "status": "run2_76_visual_grammar_renderer_repair_plan_ready_public_blocked",
+        "stage_policy": "part_k1_repair_contract_only_no_renderer_rerun_no_public_release",
+        "creates_new_ppt_deck": False,
+        "starts_renderer_rerun": False,
+        "updates_html_viewer": False,
+        "public_release_started": False,
+        "public_ready": False,
+        "quality_claim_boundary": "part_k1_repair_contract_only_no_renderer_rerun_no_public_release",
+        "consumed_sources": [
+            "docs/product/ppt-run2-data-skill-quality/results/run2_76_visual_quality_evaluation.json",
+            "docs/product/ppt-run2-data-skill-quality/results/run2_75_renderer_repair_rerun_result.json",
+            "docs/product/ppt-run2-data-skill-quality/run2_73_visual_grammar_modules.json",
+            "docs/product/ppt-run2-data-skill-quality/run2_73_renderer_adapter_contracts.json",
+            "docs/product/ppt-run2-data-skill-quality/run2_73_text_binding_strategy.json",
+            "docs/product/ppt-run2-data-skill-quality/run2_73_scene_plan_expansion.json",
+        ],
+        "source_j_evaluation": {
+            "source_path": "docs/product/ppt-run2-data-skill-quality/results/run2_76_visual_quality_evaluation.json",
+            "status": "run2_76_visual_quality_evaluation_public_blocked",
+            "top_blocker": "wireframe_blueprint_aesthetic_and_repeated_product_surfaces_still_read_as_internal_engineering_diagrams",
+            "primary_layer_to_fix": "visual_grammar_and_renderer",
+            "secondary_layers": ["text_binding"],
+            "next_required_action": "part_k_visual_grammar_and_renderer_repair_from_j_evaluation",
+        },
+        "source_run2_75_renderer_repair": {
+            "source_path": "docs/product/ppt-run2-data-skill-quality/results/run2_75_renderer_repair_rerun_result.json",
+            "status": "run2_75_renderer_repair_rerun_generated_public_blocked",
+            "public_ready": False,
+        },
+        "source_trace": {
+            "visual_grammar_modules": "docs/product/ppt-run2-data-skill-quality/run2_73_visual_grammar_modules.json",
+            "renderer_adapter_contracts": "docs/product/ppt-run2-data-skill-quality/run2_73_renderer_adapter_contracts.json",
+            "text_binding_strategy": "docs/product/ppt-run2-data-skill-quality/run2_73_text_binding_strategy.json",
+            "scene_plan_expansion": "docs/product/ppt-run2-data-skill-quality/run2_73_scene_plan_expansion.json",
+        },
+        "global_repair_strategy": {
+            "from_failure_mode": "wireframe blueprint aesthetic and repeated product surfaces",
+            "target_shift": "public-video presentation scene with differentiated page rhythm",
+            "primary_layers_to_fix": ["visual_grammar", "renderer"],
+            "secondary_layers_to_fix": ["text_binding"],
+            "not_data_layer_reason": "data inputs are present; visible failure is visual grammar and renderer expression",
+            "page_differentiation_mandates": [
+                "cover and climax must not both read as product surface diagrams",
+                "setup must not borrow proof workspace structure",
+                "proof must become an evidence inspection scene rather than a grid",
+                "close must resolve as a decision / release gate rather than a summary page",
+            ],
+            "renderer_capabilities_required": [
+                "hero crop",
+                "editorial mask",
+                "asymmetric foreground/background depth",
+                "larger proof object",
+                "fewer but more meaningful labels",
+                "scene-specific connectors",
+                "non-grid evidence arrangement",
+            ],
+            "forbidden_renderer_fallbacks": [
+                "debug-like outlines",
+                "uniform small label wall",
+                "same product window skeleton on every page",
+                "schematic blueprint as final visual unless it is the actual proof object",
+            ],
+            "quality_gate": "K2 may start a renderer rerun only after every page has a unique target scene direction.",
+        },
+        "page_repair_plans": [
+            {
+                "role": role,
+                "slide_index": index,
+                "visual_grammar_module": module_by_role[role],
+                "source_j_assessment": {
+                    "root_cause_layer": "visual_grammar",
+                    "repair_instruction": "Break repeated wireframe surfaces and add public-facing product context.",
+                },
+                "current_failure": "too close to repeated wireframe product surface",
+                "target_scene_direction": target_by_role[role],
+                "visual_grammar_change": "differentiate scene-specific primary structure",
+                "renderer_change": "use hero crop, editorial mask, scene-specific connectors, and non-grid evidence arrangement",
+                "text_binding_adjustment": "use fewer but more meaningful labels attached to scene objects",
+                "must_preserve_from_2_75": ["expected visual grammar module", "stronger connector binding"],
+                "must_remove_from_2_75": ["debug-like outlines", "uniform small label wall"],
+                "acceptance_checks": {
+                    "page_differentiation_check": "target scene direction is unique",
+                    "wireframe_reduction_check": "no debug-like outlines or uniform small label wall",
+                    "renderer_capability_check": "uses at least one required renderer capability",
+                    "no_renderer_rerun_in_k1": True,
+                },
+            }
+            for index, role in enumerate(roles, start=1)
+        ],
+        "next_required_action": "part_k2_renderer_rerun_from_visual_grammar_renderer_repair_plan",
+    }
+
+
 def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     pack = tmp_path / "pack"
     write_pack(pack)
@@ -2457,6 +2577,7 @@ def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     assert "missing required file: results/run2_74_visual_quality_evaluation.json" in result.errors
     assert "missing required file: results/run2_75_renderer_repair_rerun_result.json" in result.errors
     assert "missing required file: results/run2_76_visual_quality_evaluation.json" in result.errors
+    assert "missing required file: run2_76_visual_grammar_renderer_repair_plan.json" in result.errors
 
 
 def test_run2_profile_requires_visual_repair_policy_file(tmp_path: Path) -> None:
@@ -2898,6 +3019,68 @@ def test_run2_profile_rejects_part_j_public_release_or_missing_gemini(tmp_path: 
     )
     assert (
         "run2_76_visual_quality_evaluation.role_assessments[0].root_cause_layer must be one of content, renderer, text_binding, visual_grammar"
+        in result.errors
+    )
+
+
+def test_run2_profile_rejects_k1_repair_plan_rerun_scope_or_weak_differentiation(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    plan_path = pack / "run2_76_visual_grammar_renderer_repair_plan.json"
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    plan["public_ready"] = True
+    plan["starts_renderer_rerun"] = True
+    plan["updates_html_viewer"] = True
+    plan["consumed_sources"] = plan["consumed_sources"][1:]
+    plan["source_j_evaluation"]["status"] = "pass"
+    plan["global_repair_strategy"]["primary_layers_to_fix"] = ["data"]
+    plan["global_repair_strategy"]["renderer_capabilities_required"].remove("hero crop")
+    plan["page_repair_plans"][0]["visual_grammar_module"] = "hero_field"
+    plan["page_repair_plans"][0]["target_scene_direction"] = plan["page_repair_plans"][1]["target_scene_direction"]
+    plan["page_repair_plans"][0]["must_remove_from_2_75"] = []
+    plan["page_repair_plans"][0]["acceptance_checks"].pop("wireframe_reduction_check")
+    plan_path.write_text(json.dumps(plan, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "run2_76_visual_grammar_renderer_repair_plan.public_ready must be false" in result.errors
+    assert "run2_76_visual_grammar_renderer_repair_plan.starts_renderer_rerun must be false" in result.errors
+    assert "run2_76_visual_grammar_renderer_repair_plan.updates_html_viewer must be false" in result.errors
+    assert (
+        "run2_76_visual_grammar_renderer_repair_plan.consumed_sources missing value: docs/product/ppt-run2-data-skill-quality/results/run2_76_visual_quality_evaluation.json"
+        in result.errors
+    )
+    assert (
+        "run2_76_visual_grammar_renderer_repair_plan.source_j_evaluation.status must be run2_76_visual_quality_evaluation_public_blocked"
+        in result.errors
+    )
+    assert (
+        "run2_76_visual_grammar_renderer_repair_plan.global_repair_strategy.primary_layers_to_fix must be visual_grammar, renderer"
+        in result.errors
+    )
+    assert (
+        "run2_76_visual_grammar_renderer_repair_plan.global_repair_strategy.renderer_capabilities_required missing value: hero crop"
+        in result.errors
+    )
+    assert (
+        "run2_76_visual_grammar_renderer_repair_plan.page_repair_plans[0].visual_grammar_module must be product_reveal for cover"
+        in result.errors
+    )
+    assert (
+        "run2_76_visual_grammar_renderer_repair_plan.page_repair_plans[1].target_scene_direction duplicates source-to-memory transformation field"
+        in result.errors
+    )
+    assert (
+        "run2_76_visual_grammar_renderer_repair_plan.page_repair_plans[0].must_remove_from_2_75 must be a non-empty list"
+        in result.errors
+    )
+    assert (
+        "run2_76_visual_grammar_renderer_repair_plan.page_repair_plans[0].acceptance_checks missing key: wireframe_reduction_check"
         in result.errors
     )
 

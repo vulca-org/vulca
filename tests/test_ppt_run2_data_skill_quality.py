@@ -677,6 +677,42 @@ EXPECTED_RUN2_J_ROOT_CAUSE_LAYERS = {
     "text_binding",
     "content",
 }
+EXPECTED_RUN2_K1_REPAIR_PLAN = (
+    PACK / "run2_76_visual_grammar_renderer_repair_plan.json"
+)
+EXPECTED_RUN2_K1_REQUIRED_INPUTS = [
+    "docs/product/ppt-run2-data-skill-quality/results/run2_76_visual_quality_evaluation.json",
+    "docs/product/ppt-run2-data-skill-quality/results/run2_75_renderer_repair_rerun_result.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_visual_grammar_modules.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_renderer_adapter_contracts.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_text_binding_strategy.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_scene_plan_expansion.json",
+]
+EXPECTED_RUN2_K1_PAGE_REPAIR_FIELDS = {
+    "current_failure",
+    "target_scene_direction",
+    "visual_grammar_change",
+    "renderer_change",
+    "text_binding_adjustment",
+    "must_preserve_from_2_75",
+    "must_remove_from_2_75",
+    "acceptance_checks",
+}
+EXPECTED_RUN2_K1_RENDERER_CAPABILITIES = {
+    "hero crop",
+    "editorial mask",
+    "asymmetric foreground/background depth",
+    "larger proof object",
+    "fewer but more meaningful labels",
+    "scene-specific connectors",
+    "non-grid evidence arrangement",
+}
+EXPECTED_RUN2_K1_FORBIDDEN_PATTERNS = {
+    "debug-like outlines",
+    "uniform small label wall",
+    "same product window skeleton on every page",
+    "schematic blueprint as final visual unless it is the actual proof object",
+}
 EXPECTED_RUN2_9_VISUAL_PRIMITIVE_IDS = {
     "primitive_2_9_editorial_spread_composition",
     "primitive_2_9_product_surface_depth",
@@ -3516,6 +3552,81 @@ def test_run2_76_records_visual_quality_evaluation_result() -> None:
     assert audit["viewer_comparison_closure"]["viewer_latest_run_id"] == "2.75"
     assert len(audit["role_assessments"]) == 6
     assert "wireframe blueprint aesthetic" in report
+
+
+def test_run2_76_visual_grammar_renderer_repair_plan_consumes_j_without_rerun() -> None:
+    plan = load_json(EXPECTED_RUN2_K1_REPAIR_PLAN)
+    j_evaluation = load_json(EXPECTED_RUN2_J_RESULT)
+    run275 = load_json(EXPECTED_RUN2_I_RESULT)
+
+    assert plan["artifact_id"] == "run2_76_visual_grammar_renderer_repair_plan"
+    assert plan["part"] == "Part K1"
+    assert plan["status"] == "run2_76_visual_grammar_renderer_repair_plan_ready_public_blocked"
+    assert plan["creates_new_ppt_deck"] is False
+    assert plan["starts_renderer_rerun"] is False
+    assert plan["updates_html_viewer"] is False
+    assert plan["public_release_started"] is False
+    assert plan["public_ready"] is False
+    assert plan["quality_claim_boundary"] == "part_k1_repair_contract_only_no_renderer_rerun_no_public_release"
+    assert plan["consumed_sources"] == EXPECTED_RUN2_K1_REQUIRED_INPUTS
+
+    source_j = plan["source_j_evaluation"]
+    assert source_j["source_path"].endswith("run2_76_visual_quality_evaluation.json")
+    assert source_j["status"] == j_evaluation["status"]
+    assert source_j["top_blocker"] == j_evaluation["visual_quality_assessment"]["top_blocker"]
+    assert source_j["primary_layer_to_fix"] == j_evaluation["root_cause_summary"]["primary_layer"]
+    assert source_j["secondary_layers"] == j_evaluation["root_cause_summary"]["secondary_layers"]
+    assert source_j["next_required_action"] == "part_k_visual_grammar_and_renderer_repair_from_j_evaluation"
+
+    source_run275 = plan["source_run2_75_renderer_repair"]
+    assert source_run275["source_path"].endswith("run2_75_renderer_repair_rerun_result.json")
+    assert source_run275["status"] == run275["status"]
+    assert source_run275["public_ready"] is False
+
+    strategy = plan["global_repair_strategy"]
+    assert "wireframe blueprint aesthetic" in strategy["from_failure_mode"]
+    assert "public-video presentation scene" in strategy["target_shift"]
+    assert strategy["primary_layers_to_fix"] == ["visual_grammar", "renderer"]
+    assert strategy["secondary_layers_to_fix"] == ["text_binding"]
+    assert "data" in strategy["not_data_layer_reason"]
+    assert EXPECTED_RUN2_K1_RENDERER_CAPABILITIES <= set(strategy["renderer_capabilities_required"])
+    assert EXPECTED_RUN2_K1_FORBIDDEN_PATTERNS <= set(strategy["forbidden_renderer_fallbacks"])
+
+    page_plans = plan["page_repair_plans"]
+    assert [record["role"] for record in page_plans] == EXPECTED_RUN2_74_SLIDE_STORY_ROLES
+    assert [record["slide_index"] for record in page_plans] == [1, 2, 3, 4, 5, 6]
+    assert len({record["target_scene_direction"] for record in page_plans}) == 6
+    j_by_role = {record["role"]: record for record in j_evaluation["role_assessments"]}
+
+    for record in page_plans:
+        role = record["role"]
+        assert record["visual_grammar_module"] == EXPECTED_RUN2_E_PAGE_MODULE_MAP[role]
+        assert EXPECTED_RUN2_K1_PAGE_REPAIR_FIELDS <= set(record)
+        assert record["source_j_assessment"]["root_cause_layer"] == j_by_role[role]["root_cause_layer"]
+        assert record["source_j_assessment"]["repair_instruction"] == j_by_role[role]["repair_instruction"]
+        assert record["current_failure"]
+        assert record["target_scene_direction"]
+        assert record["visual_grammar_change"]
+        assert record["renderer_change"]
+        assert record["text_binding_adjustment"]
+        assert record["must_preserve_from_2_75"]
+        assert record["must_remove_from_2_75"]
+        assert EXPECTED_RUN2_K1_FORBIDDEN_PATTERNS & set(record["must_remove_from_2_75"])
+        checks = record["acceptance_checks"]
+        assert checks["page_differentiation_check"]
+        assert checks["wireframe_reduction_check"]
+        assert checks["renderer_capability_check"]
+        assert checks["no_renderer_rerun_in_k1"] is True
+
+    by_role = {record["role"]: record for record in page_plans}
+    assert by_role["cover"]["target_scene_direction"] != by_role["climax"]["target_scene_direction"]
+    assert "finished product hero" in by_role["cover"]["target_scene_direction"]
+    assert "completion reveal" in by_role["climax"]["target_scene_direction"]
+    assert "proof workspace" in " ".join(by_role["setup"]["must_remove_from_2_75"])
+    assert "evidence inspection scene" in by_role["proof"]["target_scene_direction"]
+    assert "non-grid evidence arrangement" in by_role["proof"]["renderer_change"]
+    assert "decision / release gate" in by_role["close"]["target_scene_direction"]
+    assert plan["next_required_action"] == "part_k2_renderer_rerun_from_visual_grammar_renderer_repair_plan"
 
 
 def test_run2_7_has_serializable_design_memory() -> None:

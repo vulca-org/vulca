@@ -1,0 +1,354 @@
+{
+  "artifact_id": "run2_76_visual_grammar_renderer_repair_plan",
+  "part": "Part K1",
+  "schema_version": "ppt_run2_76_visual_grammar_renderer_repair_plan.v1",
+  "run_id": "2.76",
+  "status": "run2_76_visual_grammar_renderer_repair_plan_ready_public_blocked",
+  "stage_policy": "part_k1_repair_contract_only_no_renderer_rerun_no_public_release",
+  "creates_new_ppt_deck": false,
+  "starts_renderer_rerun": false,
+  "updates_html_viewer": false,
+  "public_release_started": false,
+  "public_ready": false,
+  "quality_claim_boundary": "part_k1_repair_contract_only_no_renderer_rerun_no_public_release",
+  "consumed_sources": [
+    "docs/product/ppt-run2-data-skill-quality/results/run2_76_visual_quality_evaluation.json",
+    "docs/product/ppt-run2-data-skill-quality/results/run2_75_renderer_repair_rerun_result.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_visual_grammar_modules.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_renderer_adapter_contracts.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_text_binding_strategy.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_scene_plan_expansion.json"
+  ],
+  "source_j_evaluation": {
+    "source_path": "docs/product/ppt-run2-data-skill-quality/results/run2_76_visual_quality_evaluation.json",
+    "status": "run2_76_visual_quality_evaluation_public_blocked",
+    "top_blocker": "wireframe_blueprint_aesthetic_and_repeated_product_surfaces_still_read_as_internal_engineering_diagrams",
+    "global_delta_vs_2_73": "product_surface_up_page_differentiation_down_public_readiness_still_blocked",
+    "primary_layer_to_fix": "visual_grammar_and_renderer",
+    "secondary_layers": [
+      "text_binding"
+    ],
+    "not_primary_layer": "data_absence",
+    "next_required_action": "part_k_visual_grammar_and_renderer_repair_from_j_evaluation",
+    "role_assessment_summary": [
+      {
+        "role": "cover",
+        "root_cause_layer": "renderer",
+        "page_differentiation_delta": "weaker",
+        "repair_instruction": "Replace the repeated wireframe deck surface with a more inspectable finished product hero and fewer debug-colored markers."
+      },
+      {
+        "role": "setup",
+        "root_cause_layer": "visual_grammar",
+        "page_differentiation_delta": "weaker",
+        "repair_instruction": "Make the hero field visually distinct from product reveal pages; the route should drive a larger and more legible destination state."
+      },
+      {
+        "role": "contrast",
+        "root_cause_layer": "visual_grammar",
+        "page_differentiation_delta": "same",
+        "repair_instruction": "Keep the seam but reduce debug-lens feeling; make before and after product states visibly different at thumbnail scale."
+      },
+      {
+        "role": "proof",
+        "root_cause_layer": "renderer",
+        "page_differentiation_delta": "weaker",
+        "repair_instruction": "Turn the workspace into source, output, and review objects with readable labels, not repeated thin UI cards."
+      },
+      {
+        "role": "climax",
+        "root_cause_layer": "visual_grammar",
+        "page_differentiation_delta": "weaker",
+        "repair_instruction": "Differentiate climax from cover with scale, richer product content, and a decisive completion moment."
+      },
+      {
+        "role": "close",
+        "root_cause_layer": "text_binding",
+        "page_differentiation_delta": "same",
+        "repair_instruction": "Keep decision nodes but enlarge labels and make the release decision visually dominant."
+      }
+    ]
+  },
+  "source_run2_75_renderer_repair": {
+    "source_path": "docs/product/ppt-run2-data-skill-quality/results/run2_75_renderer_repair_rerun_result.json",
+    "status": "run2_75_renderer_repair_rerun_generated_public_blocked",
+    "public_ready": false,
+    "public_release_started": false,
+    "preserve_signals": [
+      "pages_with_concrete_product_surface",
+      "pages_with_stronger_connector_or_edge_binding",
+      "expected_visual_grammar_mapping",
+      "required_text_socket_usage"
+    ],
+    "repair_gap_from_j": "2.75 increased product-surface detail but repeated the same wireframe product-window skeleton across core pages."
+  },
+  "source_trace": {
+    "visual_grammar_modules": "docs/product/ppt-run2-data-skill-quality/run2_73_visual_grammar_modules.json",
+    "renderer_adapter_contracts": "docs/product/ppt-run2-data-skill-quality/run2_73_renderer_adapter_contracts.json",
+    "text_binding_strategy": "docs/product/ppt-run2-data-skill-quality/run2_73_text_binding_strategy.json",
+    "scene_plan_expansion": "docs/product/ppt-run2-data-skill-quality/run2_73_scene_plan_expansion.json"
+  },
+  "global_repair_strategy": {
+    "from_failure_mode": "wireframe blueprint aesthetic and repeated product surfaces",
+    "target_shift": "public-video presentation scene with differentiated page rhythm",
+    "primary_layers_to_fix": [
+      "visual_grammar",
+      "renderer"
+    ],
+    "secondary_layers_to_fix": [
+      "text_binding"
+    ],
+    "not_data_layer_reason": "The required data, scene plan, visual grammar, renderer adapter, and text sockets are present; the visible failure is visual grammar differentiation and renderer expression.",
+    "page_differentiation_mandates": [
+      "cover and climax must not both read as product surface diagrams",
+      "setup must not borrow proof workspace structure",
+      "proof must become an evidence inspection scene rather than a grid",
+      "close must resolve as a decision / release gate rather than a summary page"
+    ],
+    "renderer_capabilities_required": [
+      "hero crop",
+      "editorial mask",
+      "asymmetric foreground/background depth",
+      "larger proof object",
+      "fewer but more meaningful labels",
+      "scene-specific connectors",
+      "non-grid evidence arrangement"
+    ],
+    "forbidden_renderer_fallbacks": [
+      "debug-like outlines",
+      "uniform small label wall",
+      "same product window skeleton on every page",
+      "schematic blueprint as final visual unless it is the actual proof object"
+    ],
+    "quality_gate": "K2 may start a renderer rerun only if every page has a distinct target scene direction and explicit removal rules for 2.75 wireframe artifacts."
+  },
+  "page_repair_plans": [
+    {
+      "role": "cover",
+      "slide_index": 1,
+      "visual_grammar_module": "product_reveal",
+      "source_bindings": {
+        "j_role_assessment": "run2_76_visual_quality_evaluation.role_assessments[cover]",
+        "scene_expansion_id": "scene_expansion_2_73_cover",
+        "renderer_adapter_id": "renderer_adapter_2_73_cover",
+        "text_binding_id": "text_binding_2_73_cover"
+      },
+      "source_j_assessment": {
+        "root_cause_layer": "renderer",
+        "repair_instruction": "Replace the repeated wireframe deck surface with a more inspectable finished product hero and fewer debug-colored markers."
+      },
+      "current_failure": "The cover has more surface detail than 2.73 but still opens as a thin product surface diagram with debug-like red markers.",
+      "target_scene_direction": "finished product hero emerging from source memory",
+      "visual_grammar_change": "Keep product_reveal, but shift from diagrammatic product window to a cropped launch-deck hero object emerging from a softer memory field.",
+      "renderer_change": "Use hero crop, editorial mask, asymmetric foreground/background depth, and a larger foreground product object with only edge-bound proof markers.",
+      "text_binding_adjustment": "Keep the headline in a negative-space pocket and reduce proof labels to two or three meaningful edge attachments.",
+      "must_preserve_from_2_75": [
+        "concrete product surface",
+        "stronger connector or edge binding",
+        "source trace terms absent from canvas"
+      ],
+      "must_remove_from_2_75": [
+        "debug-like outlines",
+        "uniform small label wall",
+        "same product window skeleton on every page"
+      ],
+      "acceptance_checks": {
+        "page_differentiation_check": "Cover reads as an opening finished product hero, not a smaller version of the climax product reveal.",
+        "wireframe_reduction_check": "No debug-colored outline language, repeated micro-panels, or thin schematic shell dominates the first read.",
+        "renderer_capability_check": "Uses hero crop and editorial mask with foreground/background depth.",
+        "no_renderer_rerun_in_k1": true
+      }
+    },
+    {
+      "role": "setup",
+      "slide_index": 2,
+      "visual_grammar_module": "hero_field",
+      "source_bindings": {
+        "j_role_assessment": "run2_76_visual_quality_evaluation.role_assessments[setup]",
+        "scene_expansion_id": "scene_expansion_2_73_setup",
+        "renderer_adapter_id": "renderer_adapter_2_73_setup",
+        "text_binding_id": "text_binding_2_73_setup"
+      },
+      "source_j_assessment": {
+        "root_cause_layer": "visual_grammar",
+        "repair_instruction": "Make the hero field visually distinct from product reveal pages; the route should drive a larger and more legible destination state."
+      },
+      "current_failure": "The setup route is present, but the destination object and thin labels make it feel close to product reveal and proof workspace pages.",
+      "target_scene_direction": "source-to-memory transformation field with one visible route bend",
+      "visual_grammar_change": "Strengthen hero_field as a transformation landscape: entry fragments, memory condenser, and destination proof object must have unequal scale and one clear route bend.",
+      "renderer_change": "Use an editorial mask for the source side, asymmetric foreground/background depth for the destination side, and scene-specific connectors along the field route.",
+      "text_binding_adjustment": "Replace scattered small annotations with one route label, one destination label, and one viewer-note overflow path.",
+      "must_preserve_from_2_75": [
+        "field route binding",
+        "destination product object",
+        "required text sockets"
+      ],
+      "must_remove_from_2_75": [
+        "proof workspace resemblance",
+        "uniform small label wall",
+        "same product window skeleton on every page"
+      ],
+      "acceptance_checks": {
+        "page_differentiation_check": "Setup reads as transformation before rendering, not as proof workspace or product reveal.",
+        "wireframe_reduction_check": "Source fragments and route bend use masks and depth instead of thin debug outlines.",
+        "renderer_capability_check": "Uses editorial mask and scene-specific connectors along the field route.",
+        "no_renderer_rerun_in_k1": true
+      }
+    },
+    {
+      "role": "contrast",
+      "slide_index": 3,
+      "visual_grammar_module": "before_after_theater",
+      "source_bindings": {
+        "j_role_assessment": "run2_76_visual_quality_evaluation.role_assessments[contrast]",
+        "scene_expansion_id": "scene_expansion_2_73_contrast",
+        "renderer_adapter_id": "renderer_adapter_2_73_contrast",
+        "text_binding_id": "text_binding_2_73_contrast"
+      },
+      "source_j_assessment": {
+        "root_cause_layer": "visual_grammar",
+        "repair_instruction": "Keep the seam but reduce debug-lens feeling; make before and after product states visibly different at thumbnail scale."
+      },
+      "current_failure": "The comparison seam is distinct, but the before/after states still feel like a schematic diagram study.",
+      "target_scene_direction": "asymmetric before-after product theater with after-state dominance",
+      "visual_grammar_change": "Keep before_after_theater, but make the after surface a foreground scene and reduce the seam to a supporting route-break lens.",
+      "renderer_change": "Use asymmetric foreground/background depth, scene-specific connectors, and fewer but more meaningful labels attached to the after object.",
+      "text_binding_adjustment": "Move delta copy to connector endpoints and route secondary detail to viewer notes instead of listing mechanism labels.",
+      "must_preserve_from_2_75": [
+        "clear before-after contrast",
+        "comparison seam",
+        "mechanism delta"
+      ],
+      "must_remove_from_2_75": [
+        "debug-like outlines",
+        "uniform small label wall",
+        "schematic blueprint as final visual unless it is the actual proof object"
+      ],
+      "acceptance_checks": {
+        "page_differentiation_check": "Contrast reads as a stage comparison, not a balanced two-card matrix.",
+        "wireframe_reduction_check": "The seam is not the dominant debug object; before and after product states carry the argument.",
+        "renderer_capability_check": "Uses asymmetric foreground/background depth and scene-specific connectors.",
+        "no_renderer_rerun_in_k1": true
+      }
+    },
+    {
+      "role": "proof",
+      "slide_index": 4,
+      "visual_grammar_module": "evidence_workspace",
+      "source_bindings": {
+        "j_role_assessment": "run2_76_visual_quality_evaluation.role_assessments[proof]",
+        "scene_expansion_id": "scene_expansion_2_73_proof",
+        "renderer_adapter_id": "renderer_adapter_2_73_proof",
+        "text_binding_id": "text_binding_2_73_proof"
+      },
+      "source_j_assessment": {
+        "root_cause_layer": "renderer",
+        "repair_instruction": "Turn the workspace into source, output, and review objects with readable labels, not repeated thin UI cards."
+      },
+      "current_failure": "The proof page is more populated than 2.73 but still resembles a repeated thin-card QA grid.",
+      "target_scene_direction": "evidence inspection scene with a larger active proof object",
+      "visual_grammar_change": "Keep evidence_workspace, but make one angled inspection workbench and active lane the primary structure instead of a grid of equal proof cards.",
+      "renderer_change": "Use a larger proof object, non-grid evidence arrangement, scene-specific connectors, and fewer but more meaningful labels pinned to the active lane.",
+      "text_binding_adjustment": "Enlarge the decision/output labels and move secondary proof detail into viewer notes or metadata.",
+      "must_preserve_from_2_75": [
+        "source output review objects",
+        "evidence rail binding",
+        "bad-control boundary"
+      ],
+      "must_remove_from_2_75": [
+        "uniform small label wall",
+        "same product window skeleton on every page",
+        "schematic blueprint as final visual unless it is the actual proof object"
+      ],
+      "acceptance_checks": {
+        "page_differentiation_check": "Proof reads as an evidence inspection scene, not a grid, dashboard, or setup field.",
+        "wireframe_reduction_check": "The active proof object is larger than secondary labels and avoids repeated thin card shells.",
+        "renderer_capability_check": "Uses larger proof object and non-grid evidence arrangement.",
+        "no_renderer_rerun_in_k1": true
+      }
+    },
+    {
+      "role": "climax",
+      "slide_index": 5,
+      "visual_grammar_module": "product_reveal",
+      "source_bindings": {
+        "j_role_assessment": "run2_76_visual_quality_evaluation.role_assessments[climax]",
+        "scene_expansion_id": "scene_expansion_2_73_climax",
+        "renderer_adapter_id": "renderer_adapter_2_73_climax",
+        "text_binding_id": "text_binding_2_73_climax"
+      },
+      "source_j_assessment": {
+        "root_cause_layer": "visual_grammar",
+        "repair_instruction": "Differentiate climax from cover with scale, richer product content, and a decisive completion moment."
+      },
+      "current_failure": "The climax is denser than 2.73 but still too similar to the cover and lacks a finished reveal moment.",
+      "target_scene_direction": "completion reveal of editable PPT result with full-frame payoff",
+      "visual_grammar_change": "Keep product_reveal, but differentiate from cover by making the result object larger, more complete, and visually fused with source memory, code, and QA proof.",
+      "renderer_change": "Use hero crop, asymmetric foreground/background depth, larger product surface, and fewer but more meaningful labels orbiting behind the result.",
+      "text_binding_adjustment": "Keep only completion and editability labels on canvas; route proof detail to viewer notes or metadata.",
+      "must_preserve_from_2_75": [
+        "concrete product surface",
+        "higher visual density",
+        "public polish not claimed"
+      ],
+      "must_remove_from_2_75": [
+        "debug-like outlines",
+        "same product window skeleton on every page",
+        "uniform small label wall"
+      ],
+      "acceptance_checks": {
+        "page_differentiation_check": "Climax reads as a completion reveal, not as a second cover product diagram.",
+        "wireframe_reduction_check": "The editable result owns the frame and does not expose a schematic skeleton as the final visual.",
+        "renderer_capability_check": "Uses hero crop and asymmetric foreground/background depth with a larger result object.",
+        "no_renderer_rerun_in_k1": true
+      }
+    },
+    {
+      "role": "close",
+      "slide_index": 6,
+      "visual_grammar_module": "decision_map",
+      "source_bindings": {
+        "j_role_assessment": "run2_76_visual_quality_evaluation.role_assessments[close]",
+        "scene_expansion_id": "scene_expansion_2_73_close",
+        "renderer_adapter_id": "renderer_adapter_2_73_close",
+        "text_binding_id": "text_binding_2_73_close"
+      },
+      "source_j_assessment": {
+        "root_cause_layer": "text_binding",
+        "repair_instruction": "Keep decision nodes but enlarge labels and make the release decision visually dominant."
+      },
+      "current_failure": "The close is distinct but still feels like a small-label summary map rather than a decision moment.",
+      "target_scene_direction": "decision / release gate handoff map with one dominant blocked-public branch",
+      "visual_grammar_change": "Keep decision_map, but make the release gate and next-run branch the primary scene instead of a distributed summary of labels.",
+      "renderer_change": "Use scene-specific connectors, larger decision nodes, editorial mask around the blocked public branch, and fewer but more meaningful labels.",
+      "text_binding_adjustment": "Enlarge the release gate label and next-action label; move release checklist detail into viewer notes.",
+      "must_preserve_from_2_75": [
+        "decision nodes",
+        "connector endpoint binding",
+        "public blocked boundary"
+      ],
+      "must_remove_from_2_75": [
+        "uniform small label wall",
+        "schematic blueprint as final visual unless it is the actual proof object",
+        "same product window skeleton on every page"
+      ],
+      "acceptance_checks": {
+        "page_differentiation_check": "Close reads as a decision / release gate, not a generic summary page.",
+        "wireframe_reduction_check": "The route and gate carry the scene; small labels do not become a wall.",
+        "renderer_capability_check": "Uses scene-specific connectors and fewer but more meaningful labels.",
+        "no_renderer_rerun_in_k1": true
+      }
+    }
+  ],
+  "contract_acceptance_summary": {
+    "six_roles_covered": true,
+    "target_scene_directions_unique": true,
+    "cover_and_climax_differentiated": true,
+    "setup_not_proof_workspace": true,
+    "proof_not_grid": true,
+    "close_is_decision_release_gate": true,
+    "renderer_rerun_started": false,
+    "public_release_started": false
+  },
+  "next_required_action": "part_k2_renderer_rerun_from_visual_grammar_renderer_repair_plan"
+}
