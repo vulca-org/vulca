@@ -1469,6 +1469,18 @@ def write_run2_memory_files(pack: Path) -> None:
         json.dumps(valid_run2_73_renderer_adapter_contracts(), indent=2),
         encoding="utf-8",
     )
+    (pack / "run2_74_slide_story.json").write_text(
+        json.dumps(valid_run2_74_slide_story(), indent=2),
+        encoding="utf-8",
+    )
+    (pack / "run2_74_content_quality_audit.json").write_text(
+        json.dumps(valid_run2_74_content_quality_audit(), indent=2),
+        encoding="utf-8",
+    )
+    (pack / "run2_73_text_binding_strategy.json").write_text(
+        json.dumps(valid_run2_73_text_binding_strategy(), indent=2),
+        encoding="utf-8",
+    )
 
 
 def valid_run2_66_reference_first_design_grammar() -> dict:
@@ -1823,6 +1835,197 @@ def valid_run2_73_renderer_adapter_contracts() -> dict:
     }
 
 
+def valid_run2_74_slide_story() -> dict:
+    roles = ["cover", "setup", "contrast", "proof", "climax", "close"]
+    return {
+        "artifact_id": "run2_74_slide_story",
+        "slides": [
+            {
+                "slide_id": f"slide_story_2_74_{role}",
+                "role": role,
+                "slide_index": index,
+                "on_canvas_copy": {
+                    "headline": f"{role} headline",
+                    "supporting_line": f"{role} supporting copy",
+                    "proof_labels": ["proof one", "proof two", "proof three"],
+                },
+                "speaker_note_or_viewer_route": {
+                    "speaker_note": f"{role} speaker note",
+                    "viewer_only": [f"{role} viewer metadata"],
+                },
+                "text_budget": {
+                    "max_public_words": 42,
+                    "max_proof_labels": 3,
+                    "density_reason": "Fixture budget.",
+                },
+            }
+            for index, role in enumerate(roles, start=1)
+        ],
+    }
+
+
+def valid_run2_74_content_quality_audit() -> dict:
+    roles = ["cover", "setup", "contrast", "proof", "climax", "close"]
+    return {
+        "artifact_id": "run2_74_content_quality_audit",
+        "slide_quality_audits": [
+            {
+                "audit_id": f"content_qa_2_74_{role}",
+                "role": role,
+                "source_slide_story_id": f"slide_story_2_74_{role}",
+                "approved_content_units": [f"{role}_headline", f"{role}_supporting"],
+                "scene_compiler_constraints": ["keep text bound to visual objects"],
+            }
+            for role in roles
+        ],
+    }
+
+
+def valid_run2_73_text_binding_strategy() -> dict:
+    roles = ["cover", "setup", "contrast", "proof", "climax", "close"]
+    module_by_role = {
+        "cover": "product_reveal",
+        "setup": "hero_field",
+        "contrast": "before_after_theater",
+        "proof": "evidence_workspace",
+        "climax": "product_reveal",
+        "close": "decision_map",
+    }
+    forbidden_patterns = [
+        "empty text box",
+        "generic rectangle label",
+        "duplicated headline/supporting copy",
+        "text floating without bound visual object",
+        "all slides using the same text layout",
+    ]
+
+    def socket(role: str, suffix: str, binding_role: str, target: str) -> dict:
+        return {
+            "socket_id": f"{role}_{suffix}_socket",
+            "binding_role": binding_role,
+            "bound_visual_object_type": target,
+            "bound_source_artifact": "run2_73_renderer_adapter_contracts",
+            "bound_source_id": f"renderer_adapter_2_73_{role}",
+            "bound_source_path": f"adapter_scene_records.{role}",
+            "binding_rationale": "Text inherits position from a named visual object, not a generic box.",
+            "capacity": {
+                "max_words": 8 if binding_role == "headline" else 14,
+                "max_lines": 2,
+                "hierarchy_level": "h1" if binding_role == "headline" else binding_role,
+                "allowed_font_scale": {"min": 0.72, "max": 1.0},
+                "overflow_behavior": "truncate_with_route_to_viewer",
+            },
+        }
+
+    return {
+        "artifact_id": "run2_73_text_binding_strategy",
+        "part": "Part F",
+        "schema_version": "ppt_run2_73_text_binding_strategy.v1",
+        "status": "run2_73_text_binding_strategy_ready_public_blocked",
+        "stage_policy": "part_f_text_binding_strategy_only_no_renderer_rerun_no_public_release",
+        "source_scene_plan_expansion": "run2_73_scene_plan_expansion.json",
+        "source_renderer_adapter_contracts": "run2_73_renderer_adapter_contracts.json",
+        "source_visual_grammar_modules": "run2_73_visual_grammar_modules.json",
+        "source_slide_story": "run2_74_slide_story.json",
+        "source_content_quality_audit": "run2_74_content_quality_audit.json",
+        "source_inputs": [
+            {
+                "path": "docs/product/ppt-run2-data-skill-quality/run2_73_scene_plan_expansion.json",
+                "available": True,
+                "use_in_this_artifact": "D2 semantic components and visual containers.",
+            },
+            {
+                "path": "docs/product/ppt-run2-data-skill-quality/run2_73_renderer_adapter_contracts.json",
+                "available": True,
+                "use_in_this_artifact": "E2 adapter scenes and visual grammar binding.",
+            },
+            {
+                "path": "docs/product/ppt-run2-data-skill-quality/run2_73_visual_grammar_modules.json",
+                "available": True,
+                "use_in_this_artifact": "Part E text-to-structure grammar.",
+            },
+            {
+                "path": "docs/product/ppt-run2-data-skill-quality/run2_74_slide_story.json",
+                "available": True,
+                "use_in_this_artifact": "Run 2.74 text budgets and on-canvas copy roles.",
+            },
+            {
+                "path": "docs/product/ppt-run2-data-skill-quality/run2_74_content_quality_audit.json",
+                "available": True,
+                "use_in_this_artifact": "Run 2.74 content quality constraints.",
+            },
+        ],
+        "artifact_scope": {
+            "starts": ["bind_copy_roles_to_visual_sockets"],
+            "does_not_start": ["renderer_rerun", "pptx_output", "html_viewer", "public_release"],
+        },
+        "execution_guard": {
+            "mode": "text_binding_strategy_only",
+            "rendering_subprocesses_allowed": False,
+            "forbidden_invocations": ["renderer_rerun", "pptx_output", "html_viewer", "public_release"],
+        },
+        "global_text_binding_contract": {
+            "must_bind_text_to_visual_object": True,
+            "must_define_socket_capacity_before_render": True,
+            "must_route_overflow_off_canvas": True,
+            "must_preserve_distinct_layout_signature_per_role": True,
+        },
+        "global_forbidden_text_patterns": forbidden_patterns,
+        "page_text_binding_records": [
+            {
+                "text_binding_id": f"text_binding_2_73_{role}",
+                "role": role,
+                "slide_index": index,
+                "layout_signature": f"{role}_text_socket_layout",
+                "source_expansion_id": f"scene_expansion_2_73_{role}",
+                "source_adapter_scene_id": f"renderer_adapter_2_73_{role}",
+                "source_visual_grammar_module": module_by_role[role],
+                "source_slide_story_id": f"slide_story_2_74_{role}",
+                "source_content_audit_id": f"content_qa_2_74_{role}",
+                "text_socket_strategy": {
+                    "headline_socket": socket(role, "headline", "headline", "negative space pocket"),
+                    "proof_label_sockets": [
+                        socket(role, "proof_a", "proof_label", "evidence rail"),
+                        socket(role, "proof_b", "proof_label", "connector endpoint"),
+                    ],
+                    "supporting_copy_socket": socket(role, "supporting_copy", "supporting_copy", "field route"),
+                    "callout_sockets": [
+                        socket(role, "callout_a", "callout", "product edge"),
+                        socket(role, "callout_b", "callout", "decision node"),
+                    ],
+                    "viewer_note_socket": socket(role, "viewer_note", "viewer_note", "connector endpoint"),
+                },
+                "overflow_policy": {
+                    "max_canvas_words": 30,
+                    "max_proof_labels_on_canvas": 3,
+                    "route_excess_to": ["speaker_note", "html_viewer_metadata"],
+                    "never_create_empty_text_box": True,
+                },
+                "text_routing": {
+                    "canvas_text": ["headline_socket", "supporting_copy_socket", "proof_label_sockets"],
+                    "speaker_note_text": ["viewer_note_socket"],
+                    "html_viewer_metadata": ["overflow_payload", "source_trace"],
+                },
+                "forbidden_text_patterns": forbidden_patterns,
+            }
+            for index, role in enumerate(roles, start=1)
+        ],
+        "traceability_summary": {
+            "page_text_binding_count": 6,
+            "socket_count": 42,
+            "layout_signature_count": 6,
+            "sources_consumed": [
+                "run2_73_scene_plan_expansion.json",
+                "run2_73_renderer_adapter_contracts.json",
+                "run2_73_visual_grammar_modules.json",
+                "run2_74_slide_story.json",
+                "run2_74_content_quality_audit.json",
+            ],
+        },
+        "next_required_action": "part_g_renderer_rerun_from_validated_text_binding_strategy",
+    }
+
+
 def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     pack = tmp_path / "pack"
     write_pack(pack)
@@ -1850,6 +2053,7 @@ def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     assert "missing required file: results/trace_manifest_contract.json" in result.errors
     assert "missing required file: run2_73_visual_grammar_modules.json" in result.errors
     assert "missing required file: run2_73_renderer_adapter_contracts.json" in result.errors
+    assert "missing required file: run2_73_text_binding_strategy.json" in result.errors
 
 
 def test_run2_profile_requires_visual_repair_policy_file(tmp_path: Path) -> None:
@@ -2024,6 +2228,58 @@ def test_run2_profile_rejects_renderer_adapter_source_trace_mismatch(tmp_path: P
     )
     assert (
         "run2_73_renderer_adapter_contracts.traceability_summary.sources_consumed missing value: run2_73_scene_plan_expansion.json"
+        in result.errors
+    )
+
+
+def test_run2_profile_rejects_text_binding_unbound_socket_and_renderer_scope(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    strategy_path = pack / "run2_73_text_binding_strategy.json"
+    strategy = json.loads(strategy_path.read_text(encoding="utf-8"))
+    strategy["stage_policy"] = "part_f_text_binding_strategy_and_renderer_rerun"
+    strategy["artifact_scope"]["does_not_start"].remove("renderer_rerun")
+    strategy["execution_guard"]["rendering_subprocesses_allowed"] = True
+    strategy["global_forbidden_text_patterns"].remove("empty text box")
+    first_record = strategy["page_text_binding_records"][0]
+    first_record["text_socket_strategy"]["headline_socket"]["bound_source_id"] = "missing_visual_binding"
+    first_record["text_socket_strategy"]["headline_socket"]["capacity"]["max_words"] = 0
+    first_record["text_socket_strategy"]["headline_socket"]["bound_visual_object_type"] = "upper left"
+    strategy_path.write_text(json.dumps(strategy, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert (
+        "run2_73_text_binding_strategy.stage_policy must be part_f_text_binding_strategy_only_no_renderer_rerun_no_public_release"
+        in result.errors
+    )
+    assert (
+        "run2_73_text_binding_strategy.artifact_scope.does_not_start must include renderer_rerun"
+        in result.errors
+    )
+    assert (
+        "run2_73_text_binding_strategy.execution_guard.rendering_subprocesses_allowed must be false"
+        in result.errors
+    )
+    assert (
+        "run2_73_text_binding_strategy.global_forbidden_text_patterns missing value: empty text box"
+        in result.errors
+    )
+    assert (
+        "run2_73_text_binding_strategy.page_text_binding_records[0].text_socket_strategy.headline_socket.bound_visual_object_type must be one of comparison seam, connector endpoint, decision node, evidence rail, field route, negative space pocket, product edge"
+        in result.errors
+    )
+    assert (
+        "run2_73_text_binding_strategy.page_text_binding_records[0].text_socket_strategy.headline_socket.bound_source_id references unknown D2/E2 binding: missing_visual_binding"
+        in result.errors
+    )
+    assert (
+        "run2_73_text_binding_strategy.page_text_binding_records[0].text_socket_strategy.headline_socket.capacity.max_words must be greater than 0"
         in result.errors
     )
 

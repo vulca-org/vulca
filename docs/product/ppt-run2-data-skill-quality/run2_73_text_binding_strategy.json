@@ -1,0 +1,1431 @@
+{
+  "artifact_id": "run2_73_text_binding_strategy",
+  "part": "Part F",
+  "schema_version": "ppt_run2_73_text_binding_strategy.v1",
+  "status": "run2_73_text_binding_strategy_ready_public_blocked",
+  "stage_policy": "part_f_text_binding_strategy_only_no_renderer_rerun_no_public_release",
+  "source_scene_plan_expansion": "run2_73_scene_plan_expansion.json",
+  "source_renderer_adapter_contracts": "run2_73_renderer_adapter_contracts.json",
+  "source_visual_grammar_modules": "run2_73_visual_grammar_modules.json",
+  "source_slide_story": "run2_74_slide_story.json",
+  "source_content_quality_audit": "run2_74_content_quality_audit.json",
+  "source_inputs": [
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/run2_73_scene_plan_expansion.json",
+      "available": true,
+      "use_in_this_artifact": "Provide D2 semantic components, visual containers, and expanded renderer binding IDs for text sockets."
+    },
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/run2_73_renderer_adapter_contracts.json",
+      "available": true,
+      "use_in_this_artifact": "Provide E2 adapter scene IDs, visual grammar binding, and renderer adapter manifest IDs."
+    },
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/run2_73_visual_grammar_modules.json",
+      "available": true,
+      "use_in_this_artifact": "Provide Part E visual structure terms and non-card grammar modules."
+    },
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/run2_74_slide_story.json",
+      "available": true,
+      "use_in_this_artifact": "Provide on-canvas copy roles, text budgets, and speaker/viewer routing intent."
+    },
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/run2_74_content_quality_audit.json",
+      "available": true,
+      "use_in_this_artifact": "Provide content quality watch items and approved content unit boundaries."
+    }
+  ],
+  "artifact_scope": {
+    "starts": [
+      "bind_copy_roles_to_visual_sockets",
+      "define_capacity_and_overflow_routes_before_rendering"
+    ],
+    "does_not_start": [
+      "renderer_rerun",
+      "pptx_output",
+      "html_viewer",
+      "public_release"
+    ]
+  },
+  "execution_guard": {
+    "mode": "text_binding_strategy_only",
+    "rendering_subprocesses_allowed": false,
+    "allowed_side_effects": [
+      "read_run2_73_scene_plan_expansion_json",
+      "read_run2_73_renderer_adapter_contracts_json",
+      "read_run2_73_visual_grammar_modules_json",
+      "read_run2_74_slide_story_json",
+      "read_run2_74_content_quality_audit_json",
+      "write_run2_73_text_binding_strategy_json"
+    ],
+    "forbidden_invocations": [
+      "renderer_rerun",
+      "pptx_output",
+      "html_viewer",
+      "public_release"
+    ],
+    "forbidden_runtime_imports": [
+      "importlib",
+      "playwright",
+      "pptx",
+      "runpy",
+      "selenium",
+      "subprocess",
+      "webbrowser"
+    ],
+    "forbidden_dynamic_import_calls": [
+      "__import__",
+      "eval",
+      "exec"
+    ]
+  },
+  "global_text_binding_contract": {
+    "must_bind_text_to_visual_object": true,
+    "must_define_socket_capacity_before_render": true,
+    "must_route_overflow_off_canvas": true,
+    "must_preserve_distinct_layout_signature_per_role": true
+  },
+  "global_forbidden_text_patterns": [
+    "empty text box",
+    "generic rectangle label",
+    "duplicated headline/supporting copy",
+    "text floating without bound visual object",
+    "all slides using the same text layout"
+  ],
+  "page_text_binding_records": [
+    {
+      "text_binding_id": "text_binding_2_73_cover",
+      "role": "cover",
+      "slide_index": 1,
+      "layout_signature": "cover_product_edge_headline_with_orbital_proof_labels",
+      "source_expansion_id": "scene_expansion_2_73_cover",
+      "source_adapter_scene_id": "renderer_adapter_2_73_cover",
+      "source_visual_grammar_module": "product_reveal",
+      "source_slide_story_id": "slide_story_2_74_cover",
+      "source_content_audit_id": "content_qa_2_74_cover",
+      "text_socket_strategy": {
+        "headline_socket": {
+          "socket_id": "cover_headline_socket",
+          "binding_role": "headline",
+          "bound_visual_object_type": "negative space pocket",
+          "bound_source_artifact": "run2_73_renderer_adapter_contracts",
+          "bound_source_id": "renderer_adapter_2_73_cover",
+          "bound_source_path": "adapter_scene_records.cover.visual_grammar_binding.main_structure",
+          "text_source": {
+            "source_artifact": "run2_74_slide_story",
+            "source_field": "on_canvas_copy.headline",
+            "copy_preview": "A real brief becomes editable PPT proof."
+          },
+          "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+          "capacity": {
+            "max_words": 9,
+            "max_lines": 2,
+            "hierarchy_level": "h1",
+            "allowed_font_scale": {
+              "min": 0.82,
+              "max": 1.0
+            },
+            "overflow_behavior": "truncate_with_route_to_viewer"
+          }
+        },
+        "proof_label_sockets": [
+          {
+            "socket_id": "cover_proof_label_1_socket",
+            "binding_role": "proof_label",
+            "bound_visual_object_type": "product edge",
+            "bound_source_artifact": "run2_73_scene_plan_expansion",
+            "bound_source_id": "cover_proof_panel",
+            "bound_source_path": "scene_structures.cover.semantic_components.proof_panel",
+            "text_source": {
+              "source_artifact": "run2_74_slide_story",
+              "source_field": "on_canvas_copy.proof_labels[0]",
+              "copy_preview": "commercial brief"
+            },
+            "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+            "capacity": {
+              "max_words": 5,
+              "max_lines": 1,
+              "hierarchy_level": "proof_label",
+              "allowed_font_scale": {
+                "min": 0.62,
+                "max": 0.78
+              },
+              "overflow_behavior": "route_to_html_viewer_metadata"
+            }
+          },
+          {
+            "socket_id": "cover_proof_label_2_socket",
+            "binding_role": "proof_label",
+            "bound_visual_object_type": "evidence rail",
+            "bound_source_artifact": "run2_73_scene_plan_expansion",
+            "bound_source_id": "cover_evidence_marks",
+            "bound_source_path": "scene_structures.cover.semantic_components.evidence_marks",
+            "text_source": {
+              "source_artifact": "run2_74_slide_story",
+              "source_field": "on_canvas_copy.proof_labels[1]",
+              "copy_preview": "source memory"
+            },
+            "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+            "capacity": {
+              "max_words": 5,
+              "max_lines": 1,
+              "hierarchy_level": "proof_label",
+              "allowed_font_scale": {
+                "min": 0.62,
+                "max": 0.78
+              },
+              "overflow_behavior": "route_to_html_viewer_metadata"
+            }
+          }
+        ],
+        "supporting_copy_socket": {
+          "socket_id": "cover_supporting_copy_socket",
+          "binding_role": "supporting_copy",
+          "bound_visual_object_type": "field route",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "bound_source_id": "cover_supporting_copy",
+          "bound_source_path": "scene_structures.cover.semantic_components.supporting_copy",
+          "text_source": {
+            "source_artifact": "run2_74_slide_story",
+            "source_field": "on_canvas_copy.supporting_line",
+            "copy_preview": "Commercial brief, curated source memory, and code-generated editable PPT appear as one product path."
+          },
+          "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+          "capacity": {
+            "max_words": 18,
+            "max_lines": 3,
+            "hierarchy_level": "supporting_copy",
+            "allowed_font_scale": {
+              "min": 0.72,
+              "max": 0.9
+            },
+            "overflow_behavior": "truncate_with_route_to_viewer"
+          }
+        },
+        "callout_sockets": [
+          {
+            "socket_id": "cover_callout_claim_socket",
+            "binding_role": "callout",
+            "bound_visual_object_type": "product edge",
+            "bound_source_artifact": "run2_73_scene_plan_expansion",
+            "bound_source_id": "cover_claim_container_expanded",
+            "bound_source_path": "scene_structures.cover.visual_containers.claim_container_expanded",
+            "text_source": {
+              "source_artifact": "run2_74_content_quality_audit",
+              "source_field": "scene_compiler_constraints[0]",
+              "copy_preview": "claim anchor"
+            },
+            "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+            "capacity": {
+              "max_words": 7,
+              "max_lines": 2,
+              "hierarchy_level": "callout",
+              "allowed_font_scale": {
+                "min": 0.58,
+                "max": 0.72
+              },
+              "overflow_behavior": "route_to_html_viewer_metadata"
+            }
+          },
+          {
+            "socket_id": "cover_callout_route_socket",
+            "binding_role": "callout",
+            "bound_visual_object_type": "connector endpoint",
+            "bound_source_artifact": "run2_73_scene_plan_expansion",
+            "bound_source_id": "cover_route_marker_container_expanded",
+            "bound_source_path": "scene_structures.cover.visual_containers.route_marker_container_expanded",
+            "text_source": {
+              "source_artifact": "run2_74_slide_story",
+              "source_field": "speaker_note_or_viewer_route.viewer_only",
+              "copy_preview": "viewer route"
+            },
+            "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+            "capacity": {
+              "max_words": 7,
+              "max_lines": 2,
+              "hierarchy_level": "callout",
+              "allowed_font_scale": {
+                "min": 0.58,
+                "max": 0.72
+              },
+              "overflow_behavior": "route_to_html_viewer_metadata"
+            }
+          }
+        ],
+        "viewer_note_socket": {
+          "socket_id": "cover_viewer_note_socket",
+          "binding_role": "viewer_note",
+          "bound_visual_object_type": "connector endpoint",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "bound_source_id": "cover_viewer_note_route",
+          "bound_source_path": "scene_structures.cover.semantic_components.viewer_note_route",
+          "text_source": {
+            "source_artifact": "run2_74_slide_story",
+            "source_field": "speaker_note_or_viewer_route.speaker_note",
+            "copy_preview": "State that this is not an image-only demo; the product promise is editable PPT with inspectable inputs."
+          },
+          "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+          "capacity": {
+            "max_words": 18,
+            "max_lines": 3,
+            "hierarchy_level": "viewer_note",
+            "allowed_font_scale": {
+              "min": 0.62,
+              "max": 0.8
+            },
+            "overflow_behavior": "route_to_speaker_note"
+          }
+        }
+      },
+      "overflow_policy": {
+        "max_canvas_words": 42,
+        "max_proof_labels_on_canvas": 3,
+        "route_excess_to": [
+          "speaker_note",
+          "html_viewer_metadata"
+        ],
+        "never_create_empty_text_box": true,
+        "if_socket_overflows": "shorten on-canvas copy first, then route full text to speaker note and HTML metadata."
+      },
+      "text_routing": {
+        "canvas_text": [
+          "headline_socket",
+          "supporting_copy_socket",
+          "proof_label_sockets",
+          "callout_sockets"
+        ],
+        "speaker_note_text": [
+          "viewer_note_socket",
+          "overflowed_supporting_copy",
+          "full_speaker_note"
+        ],
+        "html_viewer_metadata": [
+          "overflow_payload",
+          "source_trace",
+          "socket_capacity_report"
+        ]
+      },
+      "forbidden_text_patterns": [
+        "empty text box",
+        "generic rectangle label",
+        "duplicated headline/supporting copy",
+        "text floating without bound visual object",
+        "all slides using the same text layout"
+      ]
+    },
+    {
+      "text_binding_id": "text_binding_2_73_setup",
+      "role": "setup",
+      "slide_index": 2,
+      "layout_signature": "setup_source_field_route_with_condenser_labels",
+      "source_expansion_id": "scene_expansion_2_73_setup",
+      "source_adapter_scene_id": "renderer_adapter_2_73_setup",
+      "source_visual_grammar_module": "hero_field",
+      "source_slide_story_id": "slide_story_2_74_setup",
+      "source_content_audit_id": "content_qa_2_74_setup",
+      "text_socket_strategy": {
+        "headline_socket": {
+          "socket_id": "setup_headline_socket",
+          "binding_role": "headline",
+          "bound_visual_object_type": "field route",
+          "bound_source_artifact": "run2_73_renderer_adapter_contracts",
+          "bound_source_id": "renderer_adapter_2_73_setup",
+          "bound_source_path": "adapter_scene_records.setup.visual_grammar_binding.main_structure",
+          "text_source": {
+            "source_artifact": "run2_74_slide_story",
+            "source_field": "on_canvas_copy.headline",
+            "copy_preview": "Sources become product memory before drawing."
+          },
+          "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+          "capacity": {
+            "max_words": 9,
+            "max_lines": 2,
+            "hierarchy_level": "h1",
+            "allowed_font_scale": {
+              "min": 0.82,
+              "max": 1.0
+            },
+            "overflow_behavior": "truncate_with_route_to_viewer"
+          }
+        },
+        "proof_label_sockets": [
+          {
+            "socket_id": "setup_proof_label_1_socket",
+            "binding_role": "proof_label",
+            "bound_visual_object_type": "evidence rail",
+            "bound_source_artifact": "run2_73_scene_plan_expansion",
+            "bound_source_id": "setup_proof_panel",
+            "bound_source_path": "scene_structures.setup.semantic_components.proof_panel",
+            "text_source": {
+              "source_artifact": "run2_74_slide_story",
+              "source_field": "on_canvas_copy.proof_labels[0]",
+              "copy_preview": "source pack"
+            },
+            "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+            "capacity": {
+              "max_words": 5,
+              "max_lines": 1,
+              "hierarchy_level": "proof_label",
+              "allowed_font_scale": {
+                "min": 0.62,
+                "max": 0.78
+              },
+              "overflow_behavior": "route_to_html_viewer_metadata"
+            }
+          },
+          {
+            "socket_id": "setup_proof_label_2_socket",
+            "binding_role": "proof_label",
+            "bound_visual_object_type": "connector endpoint",
+            "bound_source_artifact": "run2_73_scene_plan_expansion",
+            "bound_source_id": "setup_evidence_marks",
+            "bound_source_path": "scene_structures.setup.semantic_components.evidence_marks",
+            "text_source": {
+              "source_artifact": "run2_74_slide_story",
+              "source_field": "on_canvas_copy.proof_labels[1]",
+              "copy_preview": "capability memory"
+            },
+            "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+            "capacity": {
+              "max_words": 5,
+              "max_lines": 1,
+              "hierarchy_level": "proof_label",
+              "allowed_font_scale": {
+                "min": 0.62,
+                "max": 0.78
+              },
+              "overflow_behavior": "route_to_html_viewer_metadata"
+            }
+          }
+        ],
+        "supporting_copy_socket": {
+          "socket_id": "setup_supporting_copy_socket",
+          "binding_role": "supporting_copy",
+          "bound_visual_object_type": "field route",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "bound_source_id": "setup_supporting_copy",
+          "bound_source_path": "scene_structures.setup.semantic_components.supporting_copy",
+          "text_source": {
+            "source_artifact": "run2_74_slide_story",
+            "source_field": "on_canvas_copy.supporting_line",
+            "copy_preview": "Allowed source observations become capability memory, message obligations, and proof objects."
+          },
+          "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+          "capacity": {
+            "max_words": 18,
+            "max_lines": 3,
+            "hierarchy_level": "supporting_copy",
+            "allowed_font_scale": {
+              "min": 0.72,
+              "max": 0.9
+            },
+            "overflow_behavior": "truncate_with_route_to_viewer"
+          }
+        },
+        "callout_sockets": [
+          {
+            "socket_id": "setup_callout_claim_socket",
+            "binding_role": "callout",
+            "bound_visual_object_type": "connector endpoint",
+            "bound_source_artifact": "run2_73_scene_plan_expansion",
+            "bound_source_id": "setup_claim_container_expanded",
+            "bound_source_path": "scene_structures.setup.visual_containers.claim_container_expanded",
+            "text_source": {
+              "source_artifact": "run2_74_content_quality_audit",
+              "source_field": "scene_compiler_constraints[0]",
+              "copy_preview": "claim anchor"
+            },
+            "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+            "capacity": {
+              "max_words": 7,
+              "max_lines": 2,
+              "hierarchy_level": "callout",
+              "allowed_font_scale": {
+                "min": 0.58,
+                "max": 0.72
+              },
+              "overflow_behavior": "route_to_html_viewer_metadata"
+            }
+          },
+          {
+            "socket_id": "setup_callout_route_socket",
+            "binding_role": "callout",
+            "bound_visual_object_type": "negative space pocket",
+            "bound_source_artifact": "run2_73_scene_plan_expansion",
+            "bound_source_id": "setup_route_marker_container_expanded",
+            "bound_source_path": "scene_structures.setup.visual_containers.route_marker_container_expanded",
+            "text_source": {
+              "source_artifact": "run2_74_slide_story",
+              "source_field": "speaker_note_or_viewer_route.viewer_only",
+              "copy_preview": "viewer route"
+            },
+            "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+            "capacity": {
+              "max_words": 7,
+              "max_lines": 2,
+              "hierarchy_level": "callout",
+              "allowed_font_scale": {
+                "min": 0.58,
+                "max": 0.72
+              },
+              "overflow_behavior": "route_to_html_viewer_metadata"
+            }
+          }
+        ],
+        "viewer_note_socket": {
+          "socket_id": "setup_viewer_note_socket",
+          "binding_role": "viewer_note",
+          "bound_visual_object_type": "connector endpoint",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "bound_source_id": "setup_viewer_note_route",
+          "bound_source_path": "scene_structures.setup.semantic_components.viewer_note_route",
+          "text_source": {
+            "source_artifact": "run2_74_slide_story",
+            "source_field": "speaker_note_or_viewer_route.speaker_note",
+            "copy_preview": "Explain that tutorials and videos guide decisions only after they are converted into original product memory."
+          },
+          "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+          "capacity": {
+            "max_words": 18,
+            "max_lines": 3,
+            "hierarchy_level": "viewer_note",
+            "allowed_font_scale": {
+              "min": 0.62,
+              "max": 0.8
+            },
+            "overflow_behavior": "route_to_speaker_note"
+          }
+        }
+      },
+      "overflow_policy": {
+        "max_canvas_words": 42,
+        "max_proof_labels_on_canvas": 3,
+        "route_excess_to": [
+          "speaker_note",
+          "html_viewer_metadata"
+        ],
+        "never_create_empty_text_box": true,
+        "if_socket_overflows": "shorten on-canvas copy first, then route full text to speaker note and HTML metadata."
+      },
+      "text_routing": {
+        "canvas_text": [
+          "headline_socket",
+          "supporting_copy_socket",
+          "proof_label_sockets",
+          "callout_sockets"
+        ],
+        "speaker_note_text": [
+          "viewer_note_socket",
+          "overflowed_supporting_copy",
+          "full_speaker_note"
+        ],
+        "html_viewer_metadata": [
+          "overflow_payload",
+          "source_trace",
+          "socket_capacity_report"
+        ]
+      },
+      "forbidden_text_patterns": [
+        "empty text box",
+        "generic rectangle label",
+        "duplicated headline/supporting copy",
+        "text floating without bound visual object",
+        "all slides using the same text layout"
+      ]
+    },
+    {
+      "text_binding_id": "text_binding_2_73_contrast",
+      "role": "contrast",
+      "slide_index": 3,
+      "layout_signature": "contrast_comparison_seam_with_opposed_label_rails",
+      "source_expansion_id": "scene_expansion_2_73_contrast",
+      "source_adapter_scene_id": "renderer_adapter_2_73_contrast",
+      "source_visual_grammar_module": "before_after_theater",
+      "source_slide_story_id": "slide_story_2_74_contrast",
+      "source_content_audit_id": "content_qa_2_74_contrast",
+      "text_socket_strategy": {
+        "headline_socket": {
+          "socket_id": "contrast_headline_socket",
+          "binding_role": "headline",
+          "bound_visual_object_type": "comparison seam",
+          "bound_source_artifact": "run2_73_renderer_adapter_contracts",
+          "bound_source_id": "renderer_adapter_2_73_contrast",
+          "bound_source_path": "adapter_scene_records.contrast.visual_grammar_binding.main_structure",
+          "text_source": {
+            "source_artifact": "run2_74_slide_story",
+            "source_field": "on_canvas_copy.headline",
+            "copy_preview": "The difference is mechanism, not taste."
+          },
+          "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+          "capacity": {
+            "max_words": 9,
+            "max_lines": 2,
+            "hierarchy_level": "h1",
+            "allowed_font_scale": {
+              "min": 0.82,
+              "max": 1.0
+            },
+            "overflow_behavior": "truncate_with_route_to_viewer"
+          }
+        },
+        "proof_label_sockets": [
+          {
+            "socket_id": "contrast_proof_label_1_socket",
+            "binding_role": "proof_label",
+            "bound_visual_object_type": "comparison seam",
+            "bound_source_artifact": "run2_73_scene_plan_expansion",
+            "bound_source_id": "contrast_proof_panel",
+            "bound_source_path": "scene_structures.contrast.semantic_components.proof_panel",
+            "text_source": {
+              "source_artifact": "run2_74_slide_story",
+              "source_field": "on_canvas_copy.proof_labels[0]",
+              "copy_preview": "source memory"
+            },
+            "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+            "capacity": {
+              "max_words": 5,
+              "max_lines": 1,
+              "hierarchy_level": "proof_label",
+              "allowed_font_scale": {
+                "min": 0.62,
+                "max": 0.78
+              },
+              "overflow_behavior": "route_to_html_viewer_metadata"
+            }
+          },
+          {
+            "socket_id": "contrast_proof_label_2_socket",
+            "binding_role": "proof_label",
+            "bound_visual_object_type": "evidence rail",
+            "bound_source_artifact": "run2_73_scene_plan_expansion",
+            "bound_source_id": "contrast_evidence_marks",
+            "bound_source_path": "scene_structures.contrast.semantic_components.evidence_marks",
+            "text_source": {
+              "source_artifact": "run2_74_slide_story",
+              "source_field": "on_canvas_copy.proof_labels[1]",
+              "copy_preview": "proof routing"
+            },
+            "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+            "capacity": {
+              "max_words": 5,
+              "max_lines": 1,
+              "hierarchy_level": "proof_label",
+              "allowed_font_scale": {
+                "min": 0.62,
+                "max": 0.78
+              },
+              "overflow_behavior": "route_to_html_viewer_metadata"
+            }
+          }
+        ],
+        "supporting_copy_socket": {
+          "socket_id": "contrast_supporting_copy_socket",
+          "binding_role": "supporting_copy",
+          "bound_visual_object_type": "negative space pocket",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "bound_source_id": "contrast_supporting_copy",
+          "bound_source_path": "scene_structures.contrast.semantic_components.supporting_copy",
+          "text_source": {
+            "source_artifact": "run2_74_slide_story",
+            "source_field": "on_canvas_copy.supporting_line",
+            "copy_preview": "Vulca binds source memory, proof routing, design moves, and editable output before the deck is claimed."
+          },
+          "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+          "capacity": {
+            "max_words": 18,
+            "max_lines": 3,
+            "hierarchy_level": "supporting_copy",
+            "allowed_font_scale": {
+              "min": 0.72,
+              "max": 0.9
+            },
+            "overflow_behavior": "truncate_with_route_to_viewer"
+          }
+        },
+        "callout_sockets": [
+          {
+            "socket_id": "contrast_callout_claim_socket",
+            "binding_role": "callout",
+            "bound_visual_object_type": "comparison seam",
+            "bound_source_artifact": "run2_73_scene_plan_expansion",
+            "bound_source_id": "contrast_claim_container_expanded",
+            "bound_source_path": "scene_structures.contrast.visual_containers.claim_container_expanded",
+            "text_source": {
+              "source_artifact": "run2_74_content_quality_audit",
+              "source_field": "scene_compiler_constraints[0]",
+              "copy_preview": "claim anchor"
+            },
+            "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+            "capacity": {
+              "max_words": 7,
+              "max_lines": 2,
+              "hierarchy_level": "callout",
+              "allowed_font_scale": {
+                "min": 0.58,
+                "max": 0.72
+              },
+              "overflow_behavior": "route_to_html_viewer_metadata"
+            }
+          },
+          {
+            "socket_id": "contrast_callout_route_socket",
+            "binding_role": "callout",
+            "bound_visual_object_type": "connector endpoint",
+            "bound_source_artifact": "run2_73_scene_plan_expansion",
+            "bound_source_id": "contrast_route_marker_container_expanded",
+            "bound_source_path": "scene_structures.contrast.visual_containers.route_marker_container_expanded",
+            "text_source": {
+              "source_artifact": "run2_74_slide_story",
+              "source_field": "speaker_note_or_viewer_route.viewer_only",
+              "copy_preview": "viewer route"
+            },
+            "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+            "capacity": {
+              "max_words": 7,
+              "max_lines": 2,
+              "hierarchy_level": "callout",
+              "allowed_font_scale": {
+                "min": 0.58,
+                "max": 0.72
+              },
+              "overflow_behavior": "route_to_html_viewer_metadata"
+            }
+          }
+        ],
+        "viewer_note_socket": {
+          "socket_id": "contrast_viewer_note_socket",
+          "binding_role": "viewer_note",
+          "bound_visual_object_type": "connector endpoint",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "bound_source_id": "contrast_viewer_note_route",
+          "bound_source_path": "scene_structures.contrast.semantic_components.viewer_note_route",
+          "text_source": {
+            "source_artifact": "run2_74_slide_story",
+            "source_field": "speaker_note_or_viewer_route.speaker_note",
+            "copy_preview": "Name prompt-only and image-only paths as missing mechanism, not as inferior style by default."
+          },
+          "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+          "capacity": {
+            "max_words": 18,
+            "max_lines": 3,
+            "hierarchy_level": "viewer_note",
+            "allowed_font_scale": {
+              "min": 0.62,
+              "max": 0.8
+            },
+            "overflow_behavior": "route_to_speaker_note"
+          }
+        }
+      },
+      "overflow_policy": {
+        "max_canvas_words": 42,
+        "max_proof_labels_on_canvas": 3,
+        "route_excess_to": [
+          "speaker_note",
+          "html_viewer_metadata"
+        ],
+        "never_create_empty_text_box": true,
+        "if_socket_overflows": "shorten on-canvas copy first, then route full text to speaker note and HTML metadata."
+      },
+      "text_routing": {
+        "canvas_text": [
+          "headline_socket",
+          "supporting_copy_socket",
+          "proof_label_sockets",
+          "callout_sockets"
+        ],
+        "speaker_note_text": [
+          "viewer_note_socket",
+          "overflowed_supporting_copy",
+          "full_speaker_note"
+        ],
+        "html_viewer_metadata": [
+          "overflow_payload",
+          "source_trace",
+          "socket_capacity_report"
+        ]
+      },
+      "forbidden_text_patterns": [
+        "empty text box",
+        "generic rectangle label",
+        "duplicated headline/supporting copy",
+        "text floating without bound visual object",
+        "all slides using the same text layout"
+      ]
+    },
+    {
+      "text_binding_id": "text_binding_2_73_proof",
+      "role": "proof",
+      "slide_index": 4,
+      "layout_signature": "proof_evidence_rail_with_inspection_callouts",
+      "source_expansion_id": "scene_expansion_2_73_proof",
+      "source_adapter_scene_id": "renderer_adapter_2_73_proof",
+      "source_visual_grammar_module": "evidence_workspace",
+      "source_slide_story_id": "slide_story_2_74_proof",
+      "source_content_audit_id": "content_qa_2_74_proof",
+      "text_socket_strategy": {
+        "headline_socket": {
+          "socket_id": "proof_headline_socket",
+          "binding_role": "headline",
+          "bound_visual_object_type": "evidence rail",
+          "bound_source_artifact": "run2_73_renderer_adapter_contracts",
+          "bound_source_id": "renderer_adapter_2_73_proof",
+          "bound_source_path": "adapter_scene_records.proof.visual_grammar_binding.main_structure",
+          "text_source": {
+            "source_artifact": "run2_74_slide_story",
+            "source_field": "on_canvas_copy.headline",
+            "copy_preview": "Proof stays inspectable without taking over the slide."
+          },
+          "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+          "capacity": {
+            "max_words": 9,
+            "max_lines": 2,
+            "hierarchy_level": "h1",
+            "allowed_font_scale": {
+              "min": 0.82,
+              "max": 1.0
+            },
+            "overflow_behavior": "truncate_with_route_to_viewer"
+          }
+        },
+        "proof_label_sockets": [
+          {
+            "socket_id": "proof_proof_label_1_socket",
+            "binding_role": "proof_label",
+            "bound_visual_object_type": "evidence rail",
+            "bound_source_artifact": "run2_73_scene_plan_expansion",
+            "bound_source_id": "proof_proof_panel",
+            "bound_source_path": "scene_structures.proof.semantic_components.proof_panel",
+            "text_source": {
+              "source_artifact": "run2_74_slide_story",
+              "source_field": "on_canvas_copy.proof_labels[0]",
+              "copy_preview": "capability bound"
+            },
+            "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+            "capacity": {
+              "max_words": 5,
+              "max_lines": 1,
+              "hierarchy_level": "proof_label",
+              "allowed_font_scale": {
+                "min": 0.62,
+                "max": 0.78
+              },
+              "overflow_behavior": "route_to_html_viewer_metadata"
+            }
+          },
+          {
+            "socket_id": "proof_proof_label_2_socket",
+            "binding_role": "proof_label",
+            "bound_visual_object_type": "connector endpoint",
+            "bound_source_artifact": "run2_73_scene_plan_expansion",
+            "bound_source_id": "proof_evidence_marks",
+            "bound_source_path": "scene_structures.proof.semantic_components.evidence_marks",
+            "text_source": {
+              "source_artifact": "run2_74_slide_story",
+              "source_field": "on_canvas_copy.proof_labels[1]",
+              "copy_preview": "contract matched"
+            },
+            "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+            "capacity": {
+              "max_words": 5,
+              "max_lines": 1,
+              "hierarchy_level": "proof_label",
+              "allowed_font_scale": {
+                "min": 0.62,
+                "max": 0.78
+              },
+              "overflow_behavior": "route_to_html_viewer_metadata"
+            }
+          }
+        ],
+        "supporting_copy_socket": {
+          "socket_id": "proof_supporting_copy_socket",
+          "binding_role": "supporting_copy",
+          "bound_visual_object_type": "field route",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "bound_source_id": "proof_supporting_copy",
+          "bound_source_path": "scene_structures.proof.semantic_components.supporting_copy",
+          "text_source": {
+            "source_artifact": "run2_74_slide_story",
+            "source_field": "on_canvas_copy.supporting_line",
+            "copy_preview": "Compact proof markers show that the workflow consumed content, contracts, and comparison boundaries."
+          },
+          "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+          "capacity": {
+            "max_words": 18,
+            "max_lines": 3,
+            "hierarchy_level": "supporting_copy",
+            "allowed_font_scale": {
+              "min": 0.72,
+              "max": 0.9
+            },
+            "overflow_behavior": "truncate_with_route_to_viewer"
+          }
+        },
+        "callout_sockets": [
+          {
+            "socket_id": "proof_callout_claim_socket",
+            "binding_role": "callout",
+            "bound_visual_object_type": "evidence rail",
+            "bound_source_artifact": "run2_73_scene_plan_expansion",
+            "bound_source_id": "proof_claim_container_expanded",
+            "bound_source_path": "scene_structures.proof.visual_containers.claim_container_expanded",
+            "text_source": {
+              "source_artifact": "run2_74_content_quality_audit",
+              "source_field": "scene_compiler_constraints[0]",
+              "copy_preview": "claim anchor"
+            },
+            "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+            "capacity": {
+              "max_words": 7,
+              "max_lines": 2,
+              "hierarchy_level": "callout",
+              "allowed_font_scale": {
+                "min": 0.58,
+                "max": 0.72
+              },
+              "overflow_behavior": "route_to_html_viewer_metadata"
+            }
+          },
+          {
+            "socket_id": "proof_callout_route_socket",
+            "binding_role": "callout",
+            "bound_visual_object_type": "connector endpoint",
+            "bound_source_artifact": "run2_73_scene_plan_expansion",
+            "bound_source_id": "proof_route_marker_container_expanded",
+            "bound_source_path": "scene_structures.proof.visual_containers.route_marker_container_expanded",
+            "text_source": {
+              "source_artifact": "run2_74_slide_story",
+              "source_field": "speaker_note_or_viewer_route.viewer_only",
+              "copy_preview": "viewer route"
+            },
+            "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+            "capacity": {
+              "max_words": 7,
+              "max_lines": 2,
+              "hierarchy_level": "callout",
+              "allowed_font_scale": {
+                "min": 0.58,
+                "max": 0.72
+              },
+              "overflow_behavior": "route_to_html_viewer_metadata"
+            }
+          }
+        ],
+        "viewer_note_socket": {
+          "socket_id": "proof_viewer_note_socket",
+          "binding_role": "viewer_note",
+          "bound_visual_object_type": "connector endpoint",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "bound_source_id": "proof_viewer_note_route",
+          "bound_source_path": "scene_structures.proof.semantic_components.viewer_note_route",
+          "text_source": {
+            "source_artifact": "run2_74_slide_story",
+            "source_field": "speaker_note_or_viewer_route.speaker_note",
+            "copy_preview": "Explain that raw proof stays inspectable off-canvas so the public slide remains readable."
+          },
+          "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+          "capacity": {
+            "max_words": 18,
+            "max_lines": 3,
+            "hierarchy_level": "viewer_note",
+            "allowed_font_scale": {
+              "min": 0.62,
+              "max": 0.8
+            },
+            "overflow_behavior": "route_to_speaker_note"
+          }
+        }
+      },
+      "overflow_policy": {
+        "max_canvas_words": 42,
+        "max_proof_labels_on_canvas": 3,
+        "route_excess_to": [
+          "speaker_note",
+          "html_viewer_metadata"
+        ],
+        "never_create_empty_text_box": true,
+        "if_socket_overflows": "shorten on-canvas copy first, then route full text to speaker note and HTML metadata."
+      },
+      "text_routing": {
+        "canvas_text": [
+          "headline_socket",
+          "supporting_copy_socket",
+          "proof_label_sockets",
+          "callout_sockets"
+        ],
+        "speaker_note_text": [
+          "viewer_note_socket",
+          "overflowed_supporting_copy",
+          "full_speaker_note"
+        ],
+        "html_viewer_metadata": [
+          "overflow_payload",
+          "source_trace",
+          "socket_capacity_report"
+        ]
+      },
+      "forbidden_text_patterns": [
+        "empty text box",
+        "generic rectangle label",
+        "duplicated headline/supporting copy",
+        "text floating without bound visual object",
+        "all slides using the same text layout"
+      ]
+    },
+    {
+      "text_binding_id": "text_binding_2_73_climax",
+      "role": "climax",
+      "slide_index": 5,
+      "layout_signature": "climax_product_edge_headline_with_result_perimeter_labels",
+      "source_expansion_id": "scene_expansion_2_73_climax",
+      "source_adapter_scene_id": "renderer_adapter_2_73_climax",
+      "source_visual_grammar_module": "product_reveal",
+      "source_slide_story_id": "slide_story_2_74_climax",
+      "source_content_audit_id": "content_qa_2_74_climax",
+      "text_socket_strategy": {
+        "headline_socket": {
+          "socket_id": "climax_headline_socket",
+          "binding_role": "headline",
+          "bound_visual_object_type": "product edge",
+          "bound_source_artifact": "run2_73_renderer_adapter_contracts",
+          "bound_source_id": "renderer_adapter_2_73_climax",
+          "bound_source_path": "adapter_scene_records.climax.visual_grammar_binding.main_structure",
+          "text_source": {
+            "source_artifact": "run2_74_slide_story",
+            "source_field": "on_canvas_copy.headline",
+            "copy_preview": "One editable result owns the product moment."
+          },
+          "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+          "capacity": {
+            "max_words": 9,
+            "max_lines": 2,
+            "hierarchy_level": "h1",
+            "allowed_font_scale": {
+              "min": 0.82,
+              "max": 1.0
+            },
+            "overflow_behavior": "truncate_with_route_to_viewer"
+          }
+        },
+        "proof_label_sockets": [
+          {
+            "socket_id": "climax_proof_label_1_socket",
+            "binding_role": "proof_label",
+            "bound_visual_object_type": "product edge",
+            "bound_source_artifact": "run2_73_scene_plan_expansion",
+            "bound_source_id": "climax_proof_panel",
+            "bound_source_path": "scene_structures.climax.semantic_components.proof_panel",
+            "text_source": {
+              "source_artifact": "run2_74_slide_story",
+              "source_field": "on_canvas_copy.proof_labels[0]",
+              "copy_preview": "design memory"
+            },
+            "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+            "capacity": {
+              "max_words": 5,
+              "max_lines": 1,
+              "hierarchy_level": "proof_label",
+              "allowed_font_scale": {
+                "min": 0.62,
+                "max": 0.78
+              },
+              "overflow_behavior": "route_to_html_viewer_metadata"
+            }
+          },
+          {
+            "socket_id": "climax_proof_label_2_socket",
+            "binding_role": "proof_label",
+            "bound_visual_object_type": "evidence rail",
+            "bound_source_artifact": "run2_73_scene_plan_expansion",
+            "bound_source_id": "climax_evidence_marks",
+            "bound_source_path": "scene_structures.climax.semantic_components.evidence_marks",
+            "text_source": {
+              "source_artifact": "run2_74_slide_story",
+              "source_field": "on_canvas_copy.proof_labels[1]",
+              "copy_preview": "mapped design moves"
+            },
+            "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+            "capacity": {
+              "max_words": 5,
+              "max_lines": 1,
+              "hierarchy_level": "proof_label",
+              "allowed_font_scale": {
+                "min": 0.62,
+                "max": 0.78
+              },
+              "overflow_behavior": "route_to_html_viewer_metadata"
+            }
+          }
+        ],
+        "supporting_copy_socket": {
+          "socket_id": "climax_supporting_copy_socket",
+          "binding_role": "supporting_copy",
+          "bound_visual_object_type": "negative space pocket",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "bound_source_id": "climax_supporting_copy",
+          "bound_source_path": "scene_structures.climax.semantic_components.supporting_copy",
+          "text_source": {
+            "source_artifact": "run2_74_slide_story",
+            "source_field": "on_canvas_copy.supporting_line",
+            "copy_preview": "Design memory, mapped design moves, code generation, and proof converge into one editable PPT preview."
+          },
+          "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+          "capacity": {
+            "max_words": 18,
+            "max_lines": 3,
+            "hierarchy_level": "supporting_copy",
+            "allowed_font_scale": {
+              "min": 0.72,
+              "max": 0.9
+            },
+            "overflow_behavior": "truncate_with_route_to_viewer"
+          }
+        },
+        "callout_sockets": [
+          {
+            "socket_id": "climax_callout_claim_socket",
+            "binding_role": "callout",
+            "bound_visual_object_type": "product edge",
+            "bound_source_artifact": "run2_73_scene_plan_expansion",
+            "bound_source_id": "climax_claim_container_expanded",
+            "bound_source_path": "scene_structures.climax.visual_containers.claim_container_expanded",
+            "text_source": {
+              "source_artifact": "run2_74_content_quality_audit",
+              "source_field": "scene_compiler_constraints[0]",
+              "copy_preview": "claim anchor"
+            },
+            "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+            "capacity": {
+              "max_words": 7,
+              "max_lines": 2,
+              "hierarchy_level": "callout",
+              "allowed_font_scale": {
+                "min": 0.58,
+                "max": 0.72
+              },
+              "overflow_behavior": "route_to_html_viewer_metadata"
+            }
+          },
+          {
+            "socket_id": "climax_callout_route_socket",
+            "binding_role": "callout",
+            "bound_visual_object_type": "connector endpoint",
+            "bound_source_artifact": "run2_73_scene_plan_expansion",
+            "bound_source_id": "climax_route_marker_container_expanded",
+            "bound_source_path": "scene_structures.climax.visual_containers.route_marker_container_expanded",
+            "text_source": {
+              "source_artifact": "run2_74_slide_story",
+              "source_field": "speaker_note_or_viewer_route.viewer_only",
+              "copy_preview": "viewer route"
+            },
+            "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+            "capacity": {
+              "max_words": 7,
+              "max_lines": 2,
+              "hierarchy_level": "callout",
+              "allowed_font_scale": {
+                "min": 0.58,
+                "max": 0.72
+              },
+              "overflow_behavior": "route_to_html_viewer_metadata"
+            }
+          }
+        ],
+        "viewer_note_socket": {
+          "socket_id": "climax_viewer_note_socket",
+          "binding_role": "viewer_note",
+          "bound_visual_object_type": "connector endpoint",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "bound_source_id": "climax_viewer_note_route",
+          "bound_source_path": "scene_structures.climax.semantic_components.viewer_note_route",
+          "text_source": {
+            "source_artifact": "run2_74_slide_story",
+            "source_field": "speaker_note_or_viewer_route.speaker_note",
+            "copy_preview": "Keep this slide cinematic and least report-like; proof should orbit the result, not compete with it."
+          },
+          "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+          "capacity": {
+            "max_words": 18,
+            "max_lines": 3,
+            "hierarchy_level": "viewer_note",
+            "allowed_font_scale": {
+              "min": 0.62,
+              "max": 0.8
+            },
+            "overflow_behavior": "route_to_speaker_note"
+          }
+        }
+      },
+      "overflow_policy": {
+        "max_canvas_words": 42,
+        "max_proof_labels_on_canvas": 3,
+        "route_excess_to": [
+          "speaker_note",
+          "html_viewer_metadata"
+        ],
+        "never_create_empty_text_box": true,
+        "if_socket_overflows": "shorten on-canvas copy first, then route full text to speaker note and HTML metadata."
+      },
+      "text_routing": {
+        "canvas_text": [
+          "headline_socket",
+          "supporting_copy_socket",
+          "proof_label_sockets",
+          "callout_sockets"
+        ],
+        "speaker_note_text": [
+          "viewer_note_socket",
+          "overflowed_supporting_copy",
+          "full_speaker_note"
+        ],
+        "html_viewer_metadata": [
+          "overflow_payload",
+          "source_trace",
+          "socket_capacity_report"
+        ]
+      },
+      "forbidden_text_patterns": [
+        "empty text box",
+        "generic rectangle label",
+        "duplicated headline/supporting copy",
+        "text floating without bound visual object",
+        "all slides using the same text layout"
+      ]
+    },
+    {
+      "text_binding_id": "text_binding_2_73_close",
+      "role": "close",
+      "slide_index": 6,
+      "layout_signature": "close_decision_node_with_quiet_route_labels",
+      "source_expansion_id": "scene_expansion_2_73_close",
+      "source_adapter_scene_id": "renderer_adapter_2_73_close",
+      "source_visual_grammar_module": "decision_map",
+      "source_slide_story_id": "slide_story_2_74_close",
+      "source_content_audit_id": "content_qa_2_74_close",
+      "text_socket_strategy": {
+        "headline_socket": {
+          "socket_id": "close_headline_socket",
+          "binding_role": "headline",
+          "bound_visual_object_type": "decision node",
+          "bound_source_artifact": "run2_73_renderer_adapter_contracts",
+          "bound_source_id": "renderer_adapter_2_73_close",
+          "bound_source_path": "adapter_scene_records.close.visual_grammar_binding.main_structure",
+          "text_source": {
+            "source_artifact": "run2_74_slide_story",
+            "source_field": "on_canvas_copy.headline",
+            "copy_preview": "The next proof is generated, not claimed."
+          },
+          "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+          "capacity": {
+            "max_words": 9,
+            "max_lines": 2,
+            "hierarchy_level": "h1",
+            "allowed_font_scale": {
+              "min": 0.82,
+              "max": 1.0
+            },
+            "overflow_behavior": "truncate_with_route_to_viewer"
+          }
+        },
+        "proof_label_sockets": [
+          {
+            "socket_id": "close_proof_label_1_socket",
+            "binding_role": "proof_label",
+            "bound_visual_object_type": "decision node",
+            "bound_source_artifact": "run2_73_scene_plan_expansion",
+            "bound_source_id": "close_proof_panel",
+            "bound_source_path": "scene_structures.close.semantic_components.proof_panel",
+            "text_source": {
+              "source_artifact": "run2_74_slide_story",
+              "source_field": "on_canvas_copy.proof_labels[0]",
+              "copy_preview": "story ready"
+            },
+            "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+            "capacity": {
+              "max_words": 5,
+              "max_lines": 1,
+              "hierarchy_level": "proof_label",
+              "allowed_font_scale": {
+                "min": 0.62,
+                "max": 0.78
+              },
+              "overflow_behavior": "route_to_html_viewer_metadata"
+            }
+          },
+          {
+            "socket_id": "close_proof_label_2_socket",
+            "binding_role": "proof_label",
+            "bound_visual_object_type": "evidence rail",
+            "bound_source_artifact": "run2_73_scene_plan_expansion",
+            "bound_source_id": "close_evidence_marks",
+            "bound_source_path": "scene_structures.close.semantic_components.evidence_marks",
+            "text_source": {
+              "source_artifact": "run2_74_slide_story",
+              "source_field": "on_canvas_copy.proof_labels[1]",
+              "copy_preview": "generated proof next"
+            },
+            "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+            "capacity": {
+              "max_words": 5,
+              "max_lines": 1,
+              "hierarchy_level": "proof_label",
+              "allowed_font_scale": {
+                "min": 0.62,
+                "max": 0.78
+              },
+              "overflow_behavior": "route_to_html_viewer_metadata"
+            }
+          }
+        ],
+        "supporting_copy_socket": {
+          "socket_id": "close_supporting_copy_socket",
+          "binding_role": "supporting_copy",
+          "bound_visual_object_type": "field route",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "bound_source_id": "close_supporting_copy",
+          "bound_source_path": "scene_structures.close.semantic_components.supporting_copy",
+          "text_source": {
+            "source_artifact": "run2_74_slide_story",
+            "source_field": "on_canvas_copy.supporting_line",
+            "copy_preview": "This story becomes input for the next generated deck, then waits for review before release."
+          },
+          "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+          "capacity": {
+            "max_words": 18,
+            "max_lines": 3,
+            "hierarchy_level": "supporting_copy",
+            "allowed_font_scale": {
+              "min": 0.72,
+              "max": 0.9
+            },
+            "overflow_behavior": "truncate_with_route_to_viewer"
+          }
+        },
+        "callout_sockets": [
+          {
+            "socket_id": "close_callout_claim_socket",
+            "binding_role": "callout",
+            "bound_visual_object_type": "decision node",
+            "bound_source_artifact": "run2_73_scene_plan_expansion",
+            "bound_source_id": "close_claim_container_expanded",
+            "bound_source_path": "scene_structures.close.visual_containers.claim_container_expanded",
+            "text_source": {
+              "source_artifact": "run2_74_content_quality_audit",
+              "source_field": "scene_compiler_constraints[0]",
+              "copy_preview": "claim anchor"
+            },
+            "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+            "capacity": {
+              "max_words": 7,
+              "max_lines": 2,
+              "hierarchy_level": "callout",
+              "allowed_font_scale": {
+                "min": 0.58,
+                "max": 0.72
+              },
+              "overflow_behavior": "route_to_html_viewer_metadata"
+            }
+          },
+          {
+            "socket_id": "close_callout_route_socket",
+            "binding_role": "callout",
+            "bound_visual_object_type": "connector endpoint",
+            "bound_source_artifact": "run2_73_scene_plan_expansion",
+            "bound_source_id": "close_route_marker_container_expanded",
+            "bound_source_path": "scene_structures.close.visual_containers.route_marker_container_expanded",
+            "text_source": {
+              "source_artifact": "run2_74_slide_story",
+              "source_field": "speaker_note_or_viewer_route.viewer_only",
+              "copy_preview": "viewer route"
+            },
+            "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+            "capacity": {
+              "max_words": 7,
+              "max_lines": 2,
+              "hierarchy_level": "callout",
+              "allowed_font_scale": {
+                "min": 0.58,
+                "max": 0.72
+              },
+              "overflow_behavior": "route_to_html_viewer_metadata"
+            }
+          }
+        ],
+        "viewer_note_socket": {
+          "socket_id": "close_viewer_note_socket",
+          "binding_role": "viewer_note",
+          "bound_visual_object_type": "connector endpoint",
+          "bound_source_artifact": "run2_73_scene_plan_expansion",
+          "bound_source_id": "close_viewer_note_route",
+          "bound_source_path": "scene_structures.close.semantic_components.viewer_note_route",
+          "text_source": {
+            "source_artifact": "run2_74_slide_story",
+            "source_field": "speaker_note_or_viewer_route.speaker_note",
+            "copy_preview": "Name the remaining gate calmly: generated proof, visual review, native inspection, source-boundary review, and human approval."
+          },
+          "binding_rationale": "Socket position inherits from a named visual object and source ID; it is not a free-floating text box.",
+          "capacity": {
+            "max_words": 18,
+            "max_lines": 3,
+            "hierarchy_level": "viewer_note",
+            "allowed_font_scale": {
+              "min": 0.62,
+              "max": 0.8
+            },
+            "overflow_behavior": "route_to_speaker_note"
+          }
+        }
+      },
+      "overflow_policy": {
+        "max_canvas_words": 42,
+        "max_proof_labels_on_canvas": 3,
+        "route_excess_to": [
+          "speaker_note",
+          "html_viewer_metadata"
+        ],
+        "never_create_empty_text_box": true,
+        "if_socket_overflows": "shorten on-canvas copy first, then route full text to speaker note and HTML metadata."
+      },
+      "text_routing": {
+        "canvas_text": [
+          "headline_socket",
+          "supporting_copy_socket",
+          "proof_label_sockets",
+          "callout_sockets"
+        ],
+        "speaker_note_text": [
+          "viewer_note_socket",
+          "overflowed_supporting_copy",
+          "full_speaker_note"
+        ],
+        "html_viewer_metadata": [
+          "overflow_payload",
+          "source_trace",
+          "socket_capacity_report"
+        ]
+      },
+      "forbidden_text_patterns": [
+        "empty text box",
+        "generic rectangle label",
+        "duplicated headline/supporting copy",
+        "text floating without bound visual object",
+        "all slides using the same text layout"
+      ]
+    }
+  ],
+  "traceability_summary": {
+    "page_text_binding_count": 6,
+    "socket_count": 42,
+    "layout_signature_count": 6,
+    "sources_consumed": [
+      "run2_73_scene_plan_expansion.json",
+      "run2_73_renderer_adapter_contracts.json",
+      "run2_73_visual_grammar_modules.json",
+      "run2_74_slide_story.json",
+      "run2_74_content_quality_audit.json"
+    ]
+  },
+  "next_required_action": "part_g_renderer_rerun_from_validated_text_binding_strategy"
+}

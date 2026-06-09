@@ -94,6 +94,7 @@ RUN2_8_REQUIRED_FILES = [
 RUN2_73_REQUIRED_FILES = [
     "run2_73_visual_grammar_modules.json",
     "run2_73_renderer_adapter_contracts.json",
+    "run2_73_text_binding_strategy.json",
 ]
 
 
@@ -338,6 +339,79 @@ RUN2_73_RENDERER_ADAPTER_SOURCE_FILES = {
     "run2_73_scene_plan_expansion.json",
     "run2_73_renderer_input_validation.json",
     "run2_73_visual_grammar_modules.json",
+}
+RUN2_73_TEXT_BINDING_STAGE_POLICY = (
+    "part_f_text_binding_strategy_only_no_renderer_rerun_no_public_release"
+)
+RUN2_73_TEXT_BINDING_STATUS = "run2_73_text_binding_strategy_ready_public_blocked"
+RUN2_73_TEXT_BINDING_NEXT_REQUIRED_ACTION = "part_g_renderer_rerun_from_validated_text_binding_strategy"
+RUN2_73_TEXT_BINDING_SOURCE_POINTERS = {
+    "source_scene_plan_expansion": "run2_73_scene_plan_expansion.json",
+    "source_renderer_adapter_contracts": "run2_73_renderer_adapter_contracts.json",
+    "source_visual_grammar_modules": "run2_73_visual_grammar_modules.json",
+    "source_slide_story": "run2_74_slide_story.json",
+    "source_content_quality_audit": "run2_74_content_quality_audit.json",
+}
+RUN2_73_TEXT_BINDING_SOURCE_PATHS = {
+    "docs/product/ppt-run2-data-skill-quality/run2_73_scene_plan_expansion.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_renderer_adapter_contracts.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_visual_grammar_modules.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_74_slide_story.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_74_content_quality_audit.json",
+}
+RUN2_73_TEXT_BINDING_SOURCE_FILES = {
+    "run2_73_scene_plan_expansion.json",
+    "run2_73_renderer_adapter_contracts.json",
+    "run2_73_visual_grammar_modules.json",
+    "run2_74_slide_story.json",
+    "run2_74_content_quality_audit.json",
+}
+RUN2_73_TEXT_BINDING_REQUIRED_SOCKETS = {
+    "headline_socket",
+    "proof_label_sockets",
+    "supporting_copy_socket",
+    "callout_sockets",
+    "viewer_note_socket",
+}
+RUN2_73_TEXT_BINDING_VISUAL_OBJECT_TYPES = {
+    "product edge",
+    "field route",
+    "comparison seam",
+    "evidence rail",
+    "decision node",
+    "negative space pocket",
+    "connector endpoint",
+}
+RUN2_73_TEXT_BINDING_ROLES = {
+    "headline",
+    "proof_label",
+    "supporting_copy",
+    "callout",
+    "viewer_note",
+}
+RUN2_73_TEXT_BINDING_HIERARCHY_LEVELS = {
+    "h1",
+    "h2",
+    "proof_label",
+    "supporting_copy",
+    "callout",
+    "viewer_note",
+}
+RUN2_73_TEXT_BINDING_OVERFLOW_BEHAVIORS = {
+    "truncate_with_route_to_viewer",
+    "route_to_speaker_note",
+    "route_to_html_viewer_metadata",
+}
+RUN2_73_TEXT_BINDING_SOURCE_ARTIFACTS = {
+    "run2_73_scene_plan_expansion",
+    "run2_73_renderer_adapter_contracts",
+}
+RUN2_73_TEXT_BINDING_FORBIDDEN_PATTERNS = {
+    "empty text box",
+    "generic rectangle label",
+    "duplicated headline/supporting copy",
+    "text floating without bound visual object",
+    "all slides using the same text layout",
 }
 
 
@@ -3360,6 +3434,554 @@ def validate_run2_73_renderer_adapter_trace_summary(value: Any, errors: list[str
         errors.append("run2_73_renderer_adapter_contracts.traceability_summary missing key: sources_consumed")
 
 
+def validate_run2_73_text_binding_strategy(pack_dir: Path, errors: list[str]) -> None:
+    data = load_json(pack_dir / "run2_73_text_binding_strategy.json", errors)
+    require_keys(
+        "run2_73_text_binding_strategy.json",
+        data,
+        [
+            "artifact_id",
+            "part",
+            "schema_version",
+            "status",
+            "stage_policy",
+            "source_scene_plan_expansion",
+            "source_renderer_adapter_contracts",
+            "source_visual_grammar_modules",
+            "source_slide_story",
+            "source_content_quality_audit",
+            "source_inputs",
+            "artifact_scope",
+            "execution_guard",
+            "global_text_binding_contract",
+            "global_forbidden_text_patterns",
+            "page_text_binding_records",
+            "traceability_summary",
+            "next_required_action",
+        ],
+        errors,
+    )
+    if data.get("artifact_id") != "run2_73_text_binding_strategy":
+        errors.append("run2_73_text_binding_strategy.artifact_id must be run2_73_text_binding_strategy")
+    if data.get("part") != "Part F":
+        errors.append("run2_73_text_binding_strategy.part must be Part F")
+    if "schema_version" in data:
+        require_non_empty_string("run2_73_text_binding_strategy.schema_version", data["schema_version"], errors)
+    if data.get("status") != RUN2_73_TEXT_BINDING_STATUS:
+        errors.append(f"run2_73_text_binding_strategy.status must be {RUN2_73_TEXT_BINDING_STATUS}")
+    if data.get("stage_policy") != RUN2_73_TEXT_BINDING_STAGE_POLICY:
+        errors.append(
+            "run2_73_text_binding_strategy.stage_policy must be "
+            f"{RUN2_73_TEXT_BINDING_STAGE_POLICY}"
+        )
+    for key, expected in RUN2_73_TEXT_BINDING_SOURCE_POINTERS.items():
+        if data.get(key) != expected:
+            errors.append(f"run2_73_text_binding_strategy.{key} must be {expected}")
+
+    validate_run2_73_text_binding_source_inputs(data.get("source_inputs", []), errors)
+    validate_run2_73_text_binding_scope(data.get("artifact_scope", {}), errors)
+    validate_run2_73_text_binding_execution_guard(data.get("execution_guard", {}), errors)
+    validate_run2_73_text_binding_global_contract(data.get("global_text_binding_contract", {}), errors)
+    validate_exact_string_set(
+        "run2_73_text_binding_strategy.global_forbidden_text_patterns",
+        data.get("global_forbidden_text_patterns", []),
+        RUN2_73_TEXT_BINDING_FORBIDDEN_PATTERNS,
+        errors,
+    )
+
+    scene_by_role = collect_run2_73_role_records(
+        pack_dir,
+        "run2_73_scene_plan_expansion.json",
+        "scene_structures",
+        "role",
+        "expansion_id",
+        errors,
+    )
+    adapter_by_role = collect_run2_73_role_records(
+        pack_dir,
+        "run2_73_renderer_adapter_contracts.json",
+        "adapter_scene_records",
+        "role",
+        "adapter_scene_id",
+        errors,
+    )
+    grammar_by_role = collect_run2_73_role_records(
+        pack_dir,
+        "run2_73_visual_grammar_modules.json",
+        "page_type_to_visual_grammar",
+        "page_type",
+        "page_type",
+        errors,
+    )
+    story_by_role = collect_run2_73_role_records(
+        pack_dir,
+        "run2_74_slide_story.json",
+        "slides",
+        "role",
+        "slide_id",
+        errors,
+    )
+    audit_by_role = collect_run2_73_role_records(
+        pack_dir,
+        "run2_74_content_quality_audit.json",
+        "slide_quality_audits",
+        "role",
+        "audit_id",
+        errors,
+    )
+    known_binding_ids_by_role = collect_run2_73_text_binding_source_ids(scene_by_role, adapter_by_role)
+
+    validate_run2_73_text_binding_records(
+        data.get("page_text_binding_records", []),
+        scene_by_role,
+        adapter_by_role,
+        grammar_by_role,
+        story_by_role,
+        audit_by_role,
+        known_binding_ids_by_role,
+        errors,
+    )
+    validate_run2_73_text_binding_trace_summary(data.get("traceability_summary", {}), errors)
+    if data.get("next_required_action") != RUN2_73_TEXT_BINDING_NEXT_REQUIRED_ACTION:
+        errors.append(
+            "run2_73_text_binding_strategy.next_required_action must be "
+            f"{RUN2_73_TEXT_BINDING_NEXT_REQUIRED_ACTION}"
+        )
+
+
+def validate_run2_73_text_binding_source_inputs(value: Any, errors: list[str]) -> None:
+    if not require_non_empty_list("run2_73_text_binding_strategy.source_inputs", value, errors):
+        return
+    source_paths: set[str] = set()
+    for index, source in enumerate(value):
+        label = f"run2_73_text_binding_strategy.source_inputs[{index}]"
+        if not isinstance(source, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        require_keys(label, source, ["path", "available", "use_in_this_artifact"], errors)
+        if "path" in source and require_non_empty_string(f"{label}.path", source["path"], errors):
+            source_paths.add(source["path"])
+        if "available" in source and type(source["available"]) is not bool:
+            errors.append(f"{label}.available must be a boolean")
+        if "use_in_this_artifact" in source:
+            require_non_empty_string(f"{label}.use_in_this_artifact", source["use_in_this_artifact"], errors)
+    for source_path in sorted(RUN2_73_TEXT_BINDING_SOURCE_PATHS - source_paths):
+        errors.append(f"run2_73_text_binding_strategy.source_inputs missing path: {source_path}")
+
+
+def validate_run2_73_text_binding_scope(value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict("run2_73_text_binding_strategy.artifact_scope", value, errors):
+        return
+    if "starts" in value:
+        validate_string_list("run2_73_text_binding_strategy.artifact_scope.starts", value["starts"], errors)
+    does_not_start = value.get("does_not_start", [])
+    if validate_string_list("run2_73_text_binding_strategy.artifact_scope.does_not_start", does_not_start, errors):
+        actual_scope = set(does_not_start)
+        for item in sorted(RUN2_73_VISUAL_GRAMMAR_FORBIDDEN_SCOPE - actual_scope):
+            errors.append(
+                "run2_73_text_binding_strategy.artifact_scope.does_not_start "
+                f"must include {item}"
+            )
+
+
+def validate_run2_73_text_binding_execution_guard(value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict("run2_73_text_binding_strategy.execution_guard", value, errors):
+        return
+    if value.get("mode") != "text_binding_strategy_only":
+        errors.append("run2_73_text_binding_strategy.execution_guard.mode must be text_binding_strategy_only")
+    if value.get("rendering_subprocesses_allowed") is not False:
+        errors.append("run2_73_text_binding_strategy.execution_guard.rendering_subprocesses_allowed must be false")
+    if "allowed_side_effects" in value:
+        validate_string_list(
+            "run2_73_text_binding_strategy.execution_guard.allowed_side_effects",
+            value["allowed_side_effects"],
+            errors,
+        )
+    if "forbidden_invocations" in value:
+        validate_exact_string_set(
+            "run2_73_text_binding_strategy.execution_guard.forbidden_invocations",
+            value["forbidden_invocations"],
+            RUN2_73_VISUAL_GRAMMAR_FORBIDDEN_SCOPE,
+            errors,
+        )
+    else:
+        errors.append("run2_73_text_binding_strategy.execution_guard missing key: forbidden_invocations")
+    for key in ["forbidden_runtime_imports", "forbidden_dynamic_import_calls"]:
+        if key in value:
+            validate_string_list(f"run2_73_text_binding_strategy.execution_guard.{key}", value[key], errors)
+
+
+def validate_run2_73_text_binding_global_contract(value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict("run2_73_text_binding_strategy.global_text_binding_contract", value, errors):
+        return
+    for key in [
+        "must_bind_text_to_visual_object",
+        "must_define_socket_capacity_before_render",
+        "must_route_overflow_off_canvas",
+        "must_preserve_distinct_layout_signature_per_role",
+    ]:
+        if value.get(key) is not True:
+            errors.append(f"run2_73_text_binding_strategy.global_text_binding_contract.{key} must be true")
+
+
+def collect_run2_73_text_binding_source_ids(
+    scene_by_role: dict[str, dict[str, Any]],
+    adapter_by_role: dict[str, dict[str, Any]],
+) -> dict[str, set[str]]:
+    ids_by_role: dict[str, set[str]] = {}
+    for role in RUN2_73_VISUAL_GRAMMAR_ROLES:
+        ids: set[str] = set()
+        scene = scene_by_role.get(role, {})
+        adapter = adapter_by_role.get(role, {})
+        for key in ["expansion_id"]:
+            value = scene.get(key)
+            if isinstance(value, str):
+                ids.add(value)
+        for component in scene.get("semantic_components", {}).values():
+            if isinstance(component, dict) and isinstance(component.get("component_id"), str):
+                ids.add(component["component_id"])
+        for container in scene.get("visual_containers", []):
+            if isinstance(container, dict) and isinstance(container.get("container_id"), str):
+                ids.add(container["container_id"])
+        for binding in scene.get("expanded_renderer_action_bindings", []):
+            if isinstance(binding, dict) and isinstance(binding.get("binding_id"), str):
+                ids.add(binding["binding_id"])
+        if isinstance(adapter.get("adapter_scene_id"), str):
+            ids.add(adapter["adapter_scene_id"])
+        manifest = adapter.get("renderer_adapter_manifest", {})
+        if isinstance(manifest, dict):
+            for key in ["semantic_component_ids", "visual_container_ids", "expanded_renderer_binding_ids"]:
+                values = manifest.get(key, [])
+                if isinstance(values, list):
+                    ids.update(value for value in values if isinstance(value, str))
+        ids_by_role[role] = ids
+    return ids_by_role
+
+
+def validate_run2_73_text_binding_records(
+    value: Any,
+    scene_by_role: dict[str, dict[str, Any]],
+    adapter_by_role: dict[str, dict[str, Any]],
+    grammar_by_role: dict[str, dict[str, Any]],
+    story_by_role: dict[str, dict[str, Any]],
+    audit_by_role: dict[str, dict[str, Any]],
+    known_binding_ids_by_role: dict[str, set[str]],
+    errors: list[str],
+) -> None:
+    if not require_non_empty_list("run2_73_text_binding_strategy.page_text_binding_records", value, errors):
+        return
+    roles: list[str] = []
+    layout_signatures: set[str] = set()
+    for index, record in enumerate(value):
+        label = f"run2_73_text_binding_strategy.page_text_binding_records[{index}]"
+        if not isinstance(record, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        require_keys(
+            label,
+            record,
+            [
+                "text_binding_id",
+                "role",
+                "slide_index",
+                "layout_signature",
+                "source_expansion_id",
+                "source_adapter_scene_id",
+                "source_visual_grammar_module",
+                "source_slide_story_id",
+                "source_content_audit_id",
+                "text_socket_strategy",
+                "overflow_policy",
+                "text_routing",
+                "forbidden_text_patterns",
+            ],
+            errors,
+        )
+        role = record.get("role")
+        role_is_known = validate_choice(f"{label}.role", role, set(RUN2_73_VISUAL_GRAMMAR_ROLES), errors)
+        if role_is_known:
+            roles.append(role)
+            expected_slide_index = RUN2_73_VISUAL_GRAMMAR_ROLES.index(role) + 1
+            if record.get("text_binding_id") != f"text_binding_2_73_{role}":
+                errors.append(f"{label}.text_binding_id must be text_binding_2_73_{role}")
+            if record.get("slide_index") != expected_slide_index:
+                errors.append(f"{label}.slide_index must be {expected_slide_index}")
+            layout_signature = record.get("layout_signature")
+            if require_non_empty_string(f"{label}.layout_signature", layout_signature, errors):
+                if layout_signature in layout_signatures:
+                    errors.append(f"{label}.layout_signature duplicates {layout_signature}")
+                layout_signatures.add(layout_signature)
+            validate_run2_73_text_binding_record_sources(
+                label,
+                record,
+                role,
+                scene_by_role,
+                adapter_by_role,
+                grammar_by_role,
+                story_by_role,
+                audit_by_role,
+                errors,
+            )
+            validate_run2_73_text_socket_strategy(
+                f"{label}.text_socket_strategy",
+                record.get("text_socket_strategy", {}),
+                known_binding_ids_by_role.get(role, set()),
+                errors,
+            )
+        validate_run2_73_text_binding_overflow_policy(
+            f"{label}.overflow_policy",
+            record.get("overflow_policy", {}),
+            errors,
+        )
+        validate_run2_73_text_binding_routing(f"{label}.text_routing", record.get("text_routing", {}), errors)
+        if "forbidden_text_patterns" in record:
+            validate_exact_string_set(
+                f"{label}.forbidden_text_patterns",
+                record["forbidden_text_patterns"],
+                RUN2_73_TEXT_BINDING_FORBIDDEN_PATTERNS,
+                errors,
+            )
+    if roles != RUN2_73_VISUAL_GRAMMAR_ROLES:
+        errors.append(
+            "run2_73_text_binding_strategy.page_text_binding_records roles must be "
+            f"{', '.join(RUN2_73_VISUAL_GRAMMAR_ROLES)}"
+        )
+    if len(layout_signatures) != 6:
+        errors.append("run2_73_text_binding_strategy.page_text_binding_records must contain 6 distinct layout signatures")
+
+
+def validate_run2_73_text_binding_record_sources(
+    label: str,
+    record: dict[str, Any],
+    role: str,
+    scene_by_role: dict[str, dict[str, Any]],
+    adapter_by_role: dict[str, dict[str, Any]],
+    grammar_by_role: dict[str, dict[str, Any]],
+    story_by_role: dict[str, dict[str, Any]],
+    audit_by_role: dict[str, dict[str, Any]],
+    errors: list[str],
+) -> None:
+    scene = scene_by_role.get(role, {})
+    adapter = adapter_by_role.get(role, {})
+    grammar = grammar_by_role.get(role, {})
+    story = story_by_role.get(role, {})
+    audit = audit_by_role.get(role, {})
+    if scene and record.get("source_expansion_id") != scene.get("expansion_id"):
+        errors.append(f"{label}.source_expansion_id must match D2 scene expansion id for {role}")
+    if adapter and record.get("source_adapter_scene_id") != adapter.get("adapter_scene_id"):
+        errors.append(f"{label}.source_adapter_scene_id must match E2 adapter scene id for {role}")
+    expected_module = (
+        adapter.get("visual_grammar_binding", {}).get("module_id")
+        if isinstance(adapter.get("visual_grammar_binding"), dict)
+        else grammar.get("primary_visual_grammar_module")
+    )
+    if isinstance(expected_module, str) and record.get("source_visual_grammar_module") != expected_module:
+        errors.append(f"{label}.source_visual_grammar_module must match Part E/E2 module for {role}")
+    if story and record.get("source_slide_story_id") != story.get("slide_id"):
+        errors.append(f"{label}.source_slide_story_id must match Run 2.74 slide story id for {role}")
+    if audit and record.get("source_content_audit_id") != audit.get("audit_id"):
+        errors.append(f"{label}.source_content_audit_id must match Run 2.74 content audit id for {role}")
+
+
+def validate_run2_73_text_socket_strategy(
+    label: str,
+    value: Any,
+    known_binding_ids: set[str],
+    errors: list[str],
+) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    for key in sorted(RUN2_73_TEXT_BINDING_REQUIRED_SOCKETS - set(value)):
+        errors.append(f"{label} missing key: {key}")
+    if "headline_socket" in value:
+        validate_run2_73_text_socket(f"{label}.headline_socket", value["headline_socket"], known_binding_ids, errors)
+    if "supporting_copy_socket" in value:
+        validate_run2_73_text_socket(
+            f"{label}.supporting_copy_socket",
+            value["supporting_copy_socket"],
+            known_binding_ids,
+            errors,
+        )
+    if "viewer_note_socket" in value:
+        validate_run2_73_text_socket(
+            f"{label}.viewer_note_socket",
+            value["viewer_note_socket"],
+            known_binding_ids,
+            errors,
+        )
+    for socket_list_key in ["proof_label_sockets", "callout_sockets"]:
+        sockets = value.get(socket_list_key, [])
+        if not require_non_empty_list(f"{label}.{socket_list_key}", sockets, errors):
+            continue
+        if len(sockets) < 2:
+            errors.append(f"{label}.{socket_list_key} must contain at least 2 sockets")
+        for index, socket in enumerate(sockets):
+            validate_run2_73_text_socket(
+                f"{label}.{socket_list_key}[{index}]",
+                socket,
+                known_binding_ids,
+                errors,
+            )
+
+
+def validate_run2_73_text_socket(
+    label: str,
+    value: Any,
+    known_binding_ids: set[str],
+    errors: list[str],
+) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(
+        label,
+        value,
+        [
+            "socket_id",
+            "binding_role",
+            "bound_visual_object_type",
+            "bound_source_artifact",
+            "bound_source_id",
+            "bound_source_path",
+            "capacity",
+        ],
+        errors,
+    )
+    for key in ["socket_id", "bound_source_path"]:
+        if key in value:
+            require_non_empty_string(f"{label}.{key}", value[key], errors)
+    if "binding_role" in value:
+        validate_choice(f"{label}.binding_role", value["binding_role"], RUN2_73_TEXT_BINDING_ROLES, errors)
+    if "bound_visual_object_type" in value:
+        validate_choice(
+            f"{label}.bound_visual_object_type",
+            value["bound_visual_object_type"],
+            RUN2_73_TEXT_BINDING_VISUAL_OBJECT_TYPES,
+            errors,
+        )
+    if "bound_source_artifact" in value:
+        validate_choice(
+            f"{label}.bound_source_artifact",
+            value["bound_source_artifact"],
+            RUN2_73_TEXT_BINDING_SOURCE_ARTIFACTS,
+            errors,
+        )
+    if "bound_source_id" in value and require_non_empty_string(f"{label}.bound_source_id", value["bound_source_id"], errors):
+        if value["bound_source_id"] not in known_binding_ids:
+            errors.append(f"{label}.bound_source_id references unknown D2/E2 binding: {value['bound_source_id']}")
+    if "capacity" in value:
+        validate_run2_73_text_socket_capacity(f"{label}.capacity", value["capacity"], errors)
+
+
+def validate_run2_73_text_socket_capacity(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(
+        label,
+        value,
+        ["max_words", "max_lines", "hierarchy_level", "allowed_font_scale", "overflow_behavior"],
+        errors,
+    )
+    for key in ["max_words", "max_lines"]:
+        if key in value and require_integer(f"{label}.{key}", value[key], errors) and value[key] <= 0:
+            errors.append(f"{label}.{key} must be greater than 0")
+    if "hierarchy_level" in value:
+        validate_choice(f"{label}.hierarchy_level", value["hierarchy_level"], RUN2_73_TEXT_BINDING_HIERARCHY_LEVELS, errors)
+    if "overflow_behavior" in value:
+        validate_choice(
+            f"{label}.overflow_behavior",
+            value["overflow_behavior"],
+            RUN2_73_TEXT_BINDING_OVERFLOW_BEHAVIORS,
+            errors,
+        )
+    font_scale = value.get("allowed_font_scale")
+    if require_non_empty_dict(f"{label}.allowed_font_scale", font_scale, errors):
+        for key in ["min", "max"]:
+            if key not in font_scale:
+                errors.append(f"{label}.allowed_font_scale missing key: {key}")
+                continue
+            if not isinstance(font_scale[key], int | float) or isinstance(font_scale[key], bool):
+                errors.append(f"{label}.allowed_font_scale.{key} must be a number")
+            elif font_scale[key] <= 0:
+                errors.append(f"{label}.allowed_font_scale.{key} must be greater than 0")
+        if (
+            isinstance(font_scale.get("min"), int | float)
+            and not isinstance(font_scale.get("min"), bool)
+            and isinstance(font_scale.get("max"), int | float)
+            and not isinstance(font_scale.get("max"), bool)
+            and font_scale["max"] < font_scale["min"]
+        ):
+            errors.append(f"{label}.allowed_font_scale.max must be greater than or equal to min")
+
+
+def validate_run2_73_text_binding_overflow_policy(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(
+        label,
+        value,
+        ["max_canvas_words", "max_proof_labels_on_canvas", "route_excess_to", "never_create_empty_text_box"],
+        errors,
+    )
+    for key in ["max_canvas_words", "max_proof_labels_on_canvas"]:
+        if key in value and require_integer(f"{label}.{key}", value[key], errors) and value[key] <= 0:
+            errors.append(f"{label}.{key} must be greater than 0")
+    if "route_excess_to" in value:
+        validate_exact_string_set(f"{label}.route_excess_to", value["route_excess_to"], {"speaker_note", "html_viewer_metadata"}, errors)
+    if value.get("never_create_empty_text_box") is not True:
+        errors.append(f"{label}.never_create_empty_text_box must be true")
+
+
+def validate_run2_73_text_binding_routing(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    expected_keys = {"canvas_text", "speaker_note_text", "html_viewer_metadata"}
+    actual_keys = set(value)
+    for key in sorted(expected_keys - actual_keys):
+        errors.append(f"{label} missing key: {key}")
+    for key in sorted(actual_keys - expected_keys):
+        errors.append(f"{label} has unexpected key: {key}")
+    for key in sorted(expected_keys & actual_keys):
+        validate_string_list(f"{label}.{key}", value[key], errors)
+    if "canvas_text" in value and isinstance(value["canvas_text"], list):
+        for required in ["headline_socket", "supporting_copy_socket"]:
+            if required not in value["canvas_text"]:
+                errors.append(f"{label}.canvas_text missing value: {required}")
+    if "speaker_note_text" in value and isinstance(value["speaker_note_text"], list):
+        if "viewer_note_socket" not in value["speaker_note_text"]:
+            errors.append(f"{label}.speaker_note_text missing value: viewer_note_socket")
+    if "html_viewer_metadata" in value and isinstance(value["html_viewer_metadata"], list):
+        if "overflow_payload" not in value["html_viewer_metadata"]:
+            errors.append(f"{label}.html_viewer_metadata missing value: overflow_payload")
+
+
+def validate_run2_73_text_binding_trace_summary(value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict("run2_73_text_binding_strategy.traceability_summary", value, errors):
+        return
+    expected_counts = {
+        "page_text_binding_count": 6,
+        "layout_signature_count": 6,
+    }
+    for key, expected in expected_counts.items():
+        if value.get(key) != expected:
+            errors.append(f"run2_73_text_binding_strategy.traceability_summary.{key} must be {expected}")
+    if "socket_count" in value and require_integer(
+        "run2_73_text_binding_strategy.traceability_summary.socket_count",
+        value["socket_count"],
+        errors,
+    ):
+        if value["socket_count"] < 36:
+            errors.append("run2_73_text_binding_strategy.traceability_summary.socket_count must be at least 36")
+    if "sources_consumed" in value:
+        validate_exact_string_set(
+            "run2_73_text_binding_strategy.traceability_summary.sources_consumed",
+            value["sources_consumed"],
+            RUN2_73_TEXT_BINDING_SOURCE_FILES,
+            errors,
+        )
+    else:
+        errors.append("run2_73_text_binding_strategy.traceability_summary missing key: sources_consumed")
+
+
 def validate_run1_design_memory_observations(observations: list[Any], errors: list[str]) -> None:
     required = ["id", "source_ids", "principle", "code_generation_rule", "do_not_copy"]
     seen_ids: set[str] = set()
@@ -3572,6 +4194,7 @@ def validate_case_pack(pack_dir: str | Path, profile: str = "default") -> Valida
             )
             validate_run2_73_visual_grammar_modules(root, errors)
             validate_run2_73_renderer_adapter_contracts(root, errors)
+            validate_run2_73_text_binding_strategy(root, errors)
         return ValidationResult(not errors, errors)
 
     validate_sources(root, errors)

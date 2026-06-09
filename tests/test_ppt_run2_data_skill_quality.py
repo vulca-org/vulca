@@ -590,6 +590,33 @@ EXPECTED_RUN2_E2_STAGE_POLICY = (
     "part_e2_renderer_adapter_contracts_only_no_renderer_rerun_no_public_release"
 )
 EXPECTED_RUN2_E2_NEXT_REQUIRED_ACTION = "renderer_execute_from_d2_d3_e_adapter_manifest"
+EXPECTED_RUN2_F_STAGE_POLICY = (
+    "part_f_text_binding_strategy_only_no_renderer_rerun_no_public_release"
+)
+EXPECTED_RUN2_F_NEXT_REQUIRED_ACTION = "part_g_renderer_rerun_from_validated_text_binding_strategy"
+EXPECTED_RUN2_F_REQUIRED_SOCKET_KEYS = {
+    "headline_socket",
+    "proof_label_sockets",
+    "supporting_copy_socket",
+    "callout_sockets",
+    "viewer_note_socket",
+}
+EXPECTED_RUN2_F_BOUND_VISUAL_OBJECT_TYPES = {
+    "product edge",
+    "field route",
+    "comparison seam",
+    "evidence rail",
+    "decision node",
+    "negative space pocket",
+    "connector endpoint",
+}
+EXPECTED_RUN2_F_FORBIDDEN_TEXT_PATTERNS = {
+    "empty text box",
+    "generic rectangle label",
+    "duplicated headline/supporting copy",
+    "text floating without bound visual object",
+    "all slides using the same text layout",
+}
 EXPECTED_RUN2_9_VISUAL_PRIMITIVE_IDS = {
     "primitive_2_9_editorial_spread_composition",
     "primitive_2_9_product_surface_depth",
@@ -2813,6 +2840,165 @@ def test_run2_73_renderer_adapter_contracts_bind_d2_d3_and_part_e() -> None:
         "run2_73_visual_grammar_modules.json",
     ]
     assert adapter["next_required_action"] == EXPECTED_RUN2_E2_NEXT_REQUIRED_ACTION
+
+
+def test_run2_73_text_binding_strategy_binds_copy_to_visual_sockets() -> None:
+    from scripts.build_ppt_run2_73_text_binding_strategy import (
+        FORBIDDEN_DYNAMIC_IMPORT_CALLS as TEXT_FORBIDDEN_DYNAMIC_IMPORT_CALLS,
+        FORBIDDEN_RUNTIME_IMPORTS as TEXT_FORBIDDEN_RUNTIME_IMPORTS,
+    )
+
+    expansion = load_json(PACK / "run2_73_scene_plan_expansion.json")
+    adapter = load_json(PACK / "run2_73_renderer_adapter_contracts.json")
+    story = load_json(PACK / "run2_74_slide_story.json")
+    audit = load_json(PACK / "run2_74_content_quality_audit.json")
+    strategy = load_json(PACK / "run2_73_text_binding_strategy.json")
+
+    assert strategy["artifact_id"] == "run2_73_text_binding_strategy"
+    assert strategy["part"] == "Part F"
+    assert strategy["status"] == "run2_73_text_binding_strategy_ready_public_blocked"
+    assert strategy["stage_policy"] == EXPECTED_RUN2_F_STAGE_POLICY
+    assert strategy["source_scene_plan_expansion"] == "run2_73_scene_plan_expansion.json"
+    assert strategy["source_renderer_adapter_contracts"] == "run2_73_renderer_adapter_contracts.json"
+    assert strategy["source_slide_story"] == "run2_74_slide_story.json"
+    assert strategy["source_content_quality_audit"] == "run2_74_content_quality_audit.json"
+    assert EXPECTED_RUN2_E_FORBIDDEN_SCOPE <= set(strategy["artifact_scope"]["does_not_start"])
+    assert EXPECTED_RUN2_F_FORBIDDEN_TEXT_PATTERNS <= set(
+        strategy["global_forbidden_text_patterns"]
+    )
+
+    guard = strategy["execution_guard"]
+    assert guard["mode"] == "text_binding_strategy_only"
+    assert guard["rendering_subprocesses_allowed"] is False
+    assert set(guard["forbidden_invocations"]) == EXPECTED_RUN2_E_FORBIDDEN_SCOPE
+    assert set(guard["forbidden_runtime_imports"]) == TEXT_FORBIDDEN_RUNTIME_IMPORTS
+    assert set(guard["forbidden_dynamic_import_calls"]) == TEXT_FORBIDDEN_DYNAMIC_IMPORT_CALLS
+
+    script_path = ROOT / "scripts" / "build_ppt_run2_73_text_binding_strategy.py"
+    script_tree = ast.parse(script_path.read_text())
+    script_imports = set()
+    script_calls = set()
+    for node in ast.walk(script_tree):
+        if isinstance(node, ast.Import):
+            script_imports |= {alias.name.split(".")[0] for alias in node.names}
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            script_imports.add(node.module.split(".")[0])
+        elif isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+            script_calls.add(node.func.id)
+    assert not TEXT_FORBIDDEN_RUNTIME_IMPORTS & script_imports
+    assert not TEXT_FORBIDDEN_DYNAMIC_IMPORT_CALLS & script_calls
+
+    source_paths = {source["path"] for source in strategy["source_inputs"]}
+    assert {
+        "docs/product/ppt-run2-data-skill-quality/run2_73_scene_plan_expansion.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_73_renderer_adapter_contracts.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_73_visual_grammar_modules.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_74_slide_story.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_74_content_quality_audit.json",
+    } <= source_paths
+
+    d2_by_role = {record["role"]: record for record in expansion["scene_structures"]}
+    e2_by_role = {record["role"]: record for record in adapter["adapter_scene_records"]}
+    story_by_role = {record["role"]: record for record in story["slides"]}
+    audit_by_role = {record["role"]: record for record in audit["slide_quality_audits"]}
+
+    records = strategy["page_text_binding_records"]
+    assert [record["role"] for record in records] == EXPECTED_RUN2_74_SLIDE_STORY_ROLES
+    assert [record["slide_index"] for record in records] == [1, 2, 3, 4, 5, 6]
+    assert len({record["layout_signature"] for record in records}) == 6
+
+    for record in records:
+        role = record["role"]
+        d2 = d2_by_role[role]
+        e2 = e2_by_role[role]
+        story_record = story_by_role[role]
+        audit_record = audit_by_role[role]
+        known_binding_ids = {
+            e2["adapter_scene_id"],
+            d2["expansion_id"],
+            *e2["renderer_adapter_manifest"]["semantic_component_ids"],
+            *e2["renderer_adapter_manifest"]["visual_container_ids"],
+            *e2["renderer_adapter_manifest"]["expanded_renderer_binding_ids"],
+        }
+
+        assert record["text_binding_id"] == f"text_binding_2_73_{role}"
+        assert record["source_expansion_id"] == d2["expansion_id"]
+        assert record["source_adapter_scene_id"] == e2["adapter_scene_id"]
+        assert record["source_slide_story_id"] == story_record["slide_id"]
+        assert record["source_content_audit_id"] == audit_record["audit_id"]
+        assert record["source_visual_grammar_module"] == e2["visual_grammar_binding"]["module_id"]
+        assert EXPECTED_RUN2_F_REQUIRED_SOCKET_KEYS <= set(record["text_socket_strategy"])
+
+        socket_objects = [
+            record["text_socket_strategy"]["headline_socket"],
+            record["text_socket_strategy"]["supporting_copy_socket"],
+            record["text_socket_strategy"]["viewer_note_socket"],
+            *record["text_socket_strategy"]["proof_label_sockets"],
+            *record["text_socket_strategy"]["callout_sockets"],
+        ]
+        assert len(record["text_socket_strategy"]["proof_label_sockets"]) >= 2
+        assert len(record["text_socket_strategy"]["callout_sockets"]) >= 2
+
+        for socket in socket_objects:
+            assert socket["bound_visual_object_type"] in EXPECTED_RUN2_F_BOUND_VISUAL_OBJECT_TYPES
+            assert socket["bound_source_id"] in known_binding_ids
+            assert socket["bound_source_artifact"] in {
+                "run2_73_scene_plan_expansion",
+                "run2_73_renderer_adapter_contracts",
+            }
+            assert socket["binding_role"] in {
+                "headline",
+                "proof_label",
+                "supporting_copy",
+                "callout",
+                "viewer_note",
+            }
+            capacity = socket["capacity"]
+            assert type(capacity["max_words"]) is int and capacity["max_words"] > 0
+            assert type(capacity["max_lines"]) is int and capacity["max_lines"] > 0
+            assert capacity["hierarchy_level"] in {
+                "h1",
+                "h2",
+                "proof_label",
+                "supporting_copy",
+                "callout",
+                "viewer_note",
+            }
+            assert set(capacity["allowed_font_scale"]) == {"min", "max"}
+            assert capacity["allowed_font_scale"]["min"] > 0
+            assert capacity["allowed_font_scale"]["max"] >= capacity["allowed_font_scale"]["min"]
+            assert capacity["overflow_behavior"] in {
+                "truncate_with_route_to_viewer",
+                "route_to_speaker_note",
+                "route_to_html_viewer_metadata",
+            }
+
+        routing = record["text_routing"]
+        assert set(routing) == {"canvas_text", "speaker_note_text", "html_viewer_metadata"}
+        assert "headline_socket" in routing["canvas_text"]
+        assert "supporting_copy_socket" in routing["canvas_text"]
+        assert "viewer_note_socket" in routing["speaker_note_text"]
+        assert "overflow_payload" in routing["html_viewer_metadata"]
+
+        overflow = record["overflow_policy"]
+        assert overflow["max_canvas_words"] <= story_record["text_budget"]["max_public_words"]
+        assert overflow["max_proof_labels_on_canvas"] <= story_record["text_budget"]["max_proof_labels"]
+        assert overflow["route_excess_to"] == ["speaker_note", "html_viewer_metadata"]
+        assert overflow["never_create_empty_text_box"] is True
+        assert EXPECTED_RUN2_F_FORBIDDEN_TEXT_PATTERNS <= set(record["forbidden_text_patterns"])
+
+    summary = strategy["traceability_summary"]
+    assert summary["page_text_binding_count"] == 6
+    assert summary["socket_count"] >= 36
+    assert summary["layout_signature_count"] == 6
+    assert summary["sources_consumed"] == [
+        "run2_73_scene_plan_expansion.json",
+        "run2_73_renderer_adapter_contracts.json",
+        "run2_73_visual_grammar_modules.json",
+        "run2_74_slide_story.json",
+        "run2_74_content_quality_audit.json",
+    ]
+    assert strategy["next_required_action"] == EXPECTED_RUN2_F_NEXT_REQUIRED_ACTION
 
 
 def test_run2_7_has_serializable_design_memory() -> None:
