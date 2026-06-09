@@ -91,6 +91,10 @@ RUN2_8_REQUIRED_FILES = [
     "results/trace_manifest_contract.json",
 ]
 
+RUN2_73_REQUIRED_FILES = [
+    "run2_73_visual_grammar_modules.json",
+]
+
 
 RUN1_5_REQUIRED_MEMORY_FIELDS = [
     "evidence_id",
@@ -276,6 +280,44 @@ RUN2_8_WORKFLOW_STAGE_INPUTS = {
     },
 }
 RUN2_8_CODE_BINDING_TERMS = {"fontSize", "bbox", "spacing", "heroObject", "beforeAfter", "workflowGate"}
+RUN2_73_VISUAL_GRAMMAR_STAGE_POLICY = (
+    "part_e_visual_grammar_modules_only_no_renderer_rerun_no_public_release"
+)
+RUN2_73_VISUAL_GRAMMAR_STATUS = "run2_73_visual_grammar_modules_ready_public_blocked"
+RUN2_73_VISUAL_GRAMMAR_ROLES = ["cover", "setup", "contrast", "proof", "climax", "close"]
+RUN2_73_VISUAL_GRAMMAR_MODULE_IDS = {
+    "hero_field",
+    "before_after_theater",
+    "evidence_workspace",
+    "product_reveal",
+    "decision_map",
+}
+RUN2_73_VISUAL_GRAMMAR_PAGE_MODULE_MAP = {
+    "cover": "product_reveal",
+    "setup": "hero_field",
+    "contrast": "before_after_theater",
+    "proof": "evidence_workspace",
+    "climax": "product_reveal",
+    "close": "decision_map",
+}
+RUN2_73_VISUAL_GRAMMAR_SOURCE_PATHS = {
+    "docs/product/ppt-run2-data-skill-quality/run2_66_reference_first_design_grammar.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_43_semantic_visual_asset_memory.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_46_visual_object_grammar_memory.json",
+}
+RUN2_73_VISUAL_GRAMMAR_FORBIDDEN_SCOPE = {
+    "renderer_rerun",
+    "pptx_output",
+    "html_viewer",
+    "public_release",
+}
+RUN2_73_VISUAL_GRAMMAR_SUCCESS_FLAGS = {
+    "every_page_has_non_rectangular_or_non_card_main_structure",
+    "every_main_structure_serves_content",
+    "all_requested_modules_defined",
+    "no_module_depends_on_copied_source_media",
+    "public_surface_trace_terms_hidden",
+}
 
 
 @dataclass(frozen=True)
@@ -292,7 +334,7 @@ def required_files_for_profile(profile: str) -> list[str]:
     if profile == "run1_5":
         return [*REQUIRED_FILES, *RUN1_5_REQUIRED_FILES]
     if profile == "run2":
-        return [*RUN2_REQUIRED_FILES, *RUN2_8_REQUIRED_FILES]
+        return [*RUN2_REQUIRED_FILES, *RUN2_8_REQUIRED_FILES, *RUN2_73_REQUIRED_FILES]
     raise ValueError(f"unknown case-pack profile: {profile}")
 
 
@@ -2437,6 +2479,490 @@ def validate_run2_8_workflow_gate_matrix(
             validate_run2_8_release_boundary(f"{label}.public_release_gate", gate["public_release_gate"], errors)
 
 
+def resolve_run2_source_input_path(pack_dir: Path, source_path: str) -> Path:
+    pack_prefix = "docs/product/ppt-run2-data-skill-quality/"
+    if source_path.startswith(pack_prefix):
+        return pack_dir / source_path.removeprefix(pack_prefix)
+    return pack_dir / source_path
+
+
+def collect_run2_record_ids(
+    pack_dir: Path,
+    source_path: str,
+    record_key: str,
+    id_key: str,
+    errors: list[str],
+) -> set[str]:
+    path = resolve_run2_source_input_path(pack_dir, source_path)
+    if not path.exists():
+        errors.append(f"run2_73_visual_grammar_modules source input missing: {source_path}")
+        return set()
+    data = load_json(path, errors)
+    records = data.get(record_key, [])
+    if not require_non_empty_list(f"{path.name}.{record_key}", records, errors):
+        return set()
+    ids: set[str] = set()
+    for index, record in enumerate(records):
+        label = f"{path.name}.{record_key}[{index}]"
+        if not isinstance(record, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        record_id = record.get(id_key)
+        if require_non_empty_string(f"{label}.{id_key}", record_id, errors):
+            if record_id in ids:
+                errors.append(f"{label}.{id_key} duplicates {record_id}")
+            ids.add(record_id)
+    return ids
+
+
+def validate_run2_73_visual_grammar_modules(pack_dir: Path, errors: list[str]) -> None:
+    data = load_json(pack_dir / "run2_73_visual_grammar_modules.json", errors)
+    require_keys(
+        "run2_73_visual_grammar_modules.json",
+        data,
+        [
+            "artifact_id",
+            "part",
+            "schema_version",
+            "status",
+            "selected_usecase_id",
+            "objective",
+            "artifact_scope",
+            "source_inputs",
+            "stage_policy",
+            "global_visual_grammar_contract",
+            "page_type_to_visual_grammar",
+            "visual_grammar_modules",
+            "module_geometry_blueprints",
+            "module_selection_rules",
+            "coverage_matrix",
+            "success_criteria_check",
+            "traceability_summary",
+        ],
+        errors,
+    )
+    if data.get("artifact_id") != "run2_73_visual_grammar_modules":
+        errors.append("run2_73_visual_grammar_modules.artifact_id must be run2_73_visual_grammar_modules")
+    if data.get("part") != "Part E":
+        errors.append("run2_73_visual_grammar_modules.part must be Part E")
+    if "schema_version" in data:
+        require_non_empty_string("run2_73_visual_grammar_modules.schema_version", data["schema_version"], errors)
+    if data.get("status") != RUN2_73_VISUAL_GRAMMAR_STATUS:
+        errors.append(f"run2_73_visual_grammar_modules.status must be {RUN2_73_VISUAL_GRAMMAR_STATUS}")
+    if data.get("stage_policy") != RUN2_73_VISUAL_GRAMMAR_STAGE_POLICY:
+        errors.append(
+            "run2_73_visual_grammar_modules.stage_policy must be "
+            f"{RUN2_73_VISUAL_GRAMMAR_STAGE_POLICY}"
+        )
+
+    scope = data.get("artifact_scope")
+    if require_non_empty_dict("run2_73_visual_grammar_modules.artifact_scope", scope, errors):
+        does_not_start = scope.get("does_not_start", [])
+        if validate_string_list("run2_73_visual_grammar_modules.artifact_scope.does_not_start", does_not_start, errors):
+            actual_scope = set(does_not_start)
+            for item in sorted(RUN2_73_VISUAL_GRAMMAR_FORBIDDEN_SCOPE - actual_scope):
+                errors.append(
+                    "run2_73_visual_grammar_modules.artifact_scope.does_not_start "
+                    f"must include {item}"
+                )
+
+    source_inputs = data.get("source_inputs", [])
+    if validate_run2_73_visual_grammar_source_inputs(source_inputs, errors):
+        source_paths = {
+            source.get("path")
+            for source in source_inputs
+            if isinstance(source, dict) and isinstance(source.get("path"), str)
+        }
+        for source_path in sorted(RUN2_73_VISUAL_GRAMMAR_SOURCE_PATHS - source_paths):
+            errors.append(f"run2_73_visual_grammar_modules.source_inputs missing path: {source_path}")
+
+    source_reference_ids = collect_run2_record_ids(
+        pack_dir,
+        "docs/product/ppt-run2-data-skill-quality/run2_66_reference_first_design_grammar.json",
+        "role_design_grammar_records",
+        "reference_archetype_id",
+        errors,
+    )
+    source_semantic_asset_ids = collect_run2_record_ids(
+        pack_dir,
+        "docs/product/ppt-run2-data-skill-quality/run2_43_semantic_visual_asset_memory.json",
+        "semantic_visual_asset_records",
+        "semantic_asset_id",
+        errors,
+    )
+    source_object_grammar_ids = collect_run2_record_ids(
+        pack_dir,
+        "docs/product/ppt-run2-data-skill-quality/run2_46_visual_object_grammar_memory.json",
+        "visual_object_grammar_records",
+        "visual_object_grammar_id",
+        errors,
+    )
+
+    validate_run2_73_visual_grammar_pages(
+        data.get("page_type_to_visual_grammar", []),
+        source_reference_ids,
+        source_semantic_asset_ids,
+        source_object_grammar_ids,
+        errors,
+    )
+    validate_run2_73_visual_grammar_module_records(data.get("visual_grammar_modules", []), errors)
+    validate_run2_73_visual_grammar_blueprints(data.get("module_geometry_blueprints", []), errors)
+    validate_run2_73_visual_grammar_selection_rules(data.get("module_selection_rules", []), errors)
+    validate_run2_73_visual_grammar_coverage(
+        data.get("coverage_matrix", {}),
+        source_reference_ids,
+        source_semantic_asset_ids,
+        source_object_grammar_ids,
+        errors,
+    )
+    validate_run2_73_visual_grammar_success(data.get("success_criteria_check", {}), errors)
+    validate_run2_73_visual_grammar_trace_summary(data.get("traceability_summary", {}), errors)
+
+
+def validate_run2_73_visual_grammar_source_inputs(value: Any, errors: list[str]) -> bool:
+    if not require_non_empty_list("run2_73_visual_grammar_modules.source_inputs", value, errors):
+        return False
+    ok = True
+    for index, source in enumerate(value):
+        label = f"run2_73_visual_grammar_modules.source_inputs[{index}]"
+        if not isinstance(source, dict):
+            errors.append(f"{label} must be an object")
+            ok = False
+            continue
+        require_keys(label, source, ["path", "required", "available", "record_count", "id_field", "use_in_this_artifact"], errors)
+        if "path" in source:
+            ok = require_non_empty_string(f"{label}.path", source["path"], errors) and ok
+        for key in ["required", "available"]:
+            if key in source and type(source[key]) is not bool:
+                errors.append(f"{label}.{key} must be a boolean")
+                ok = False
+        if "record_count" in source and not require_integer(f"{label}.record_count", source["record_count"], errors):
+            ok = False
+    return ok
+
+
+def validate_run2_73_visual_grammar_pages(
+    value: Any,
+    source_reference_ids: set[str],
+    source_semantic_asset_ids: set[str],
+    source_object_grammar_ids: set[str],
+    errors: list[str],
+) -> None:
+    if not require_non_empty_list("run2_73_visual_grammar_modules.page_type_to_visual_grammar", value, errors):
+        return
+    roles: list[str] = []
+    for index, page in enumerate(value):
+        label = f"run2_73_visual_grammar_modules.page_type_to_visual_grammar[{index}]"
+        if not isinstance(page, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        require_keys(
+            label,
+            page,
+            [
+                "page_type",
+                "slide_index",
+                "visual_role",
+                "primary_visual_grammar_module",
+                "module_variant",
+                "source_reference_archetype_id",
+                "source_visual_object_grammar_id",
+                "source_semantic_asset_ids",
+                "main_structure",
+                "draw_order",
+                "forbidden_fallbacks",
+                "success_probe",
+            ],
+            errors,
+        )
+        role = page.get("page_type")
+        module_id = page.get("primary_visual_grammar_module")
+        if "page_type" in page and validate_choice(f"{label}.page_type", role, set(RUN2_73_VISUAL_GRAMMAR_ROLES), errors):
+            roles.append(role)
+        if "slide_index" in page:
+            require_integer(f"{label}.slide_index", page["slide_index"], errors)
+        if "primary_visual_grammar_module" in page:
+            validate_choice(
+                f"{label}.primary_visual_grammar_module",
+                module_id,
+                RUN2_73_VISUAL_GRAMMAR_MODULE_IDS,
+                errors,
+            )
+            if isinstance(role, str) and role in RUN2_73_VISUAL_GRAMMAR_PAGE_MODULE_MAP:
+                expected = RUN2_73_VISUAL_GRAMMAR_PAGE_MODULE_MAP[role]
+                if module_id != expected:
+                    errors.append(f"{label}.primary_visual_grammar_module must be {expected}")
+        if "source_reference_archetype_id" in page:
+            source_id = page["source_reference_archetype_id"]
+            if require_non_empty_string(f"{label}.source_reference_archetype_id", source_id, errors):
+                if source_id not in source_reference_ids:
+                    errors.append(f"{label}.source_reference_archetype_id references unknown source archetype: {source_id}")
+        if "source_visual_object_grammar_id" in page:
+            grammar_id = page["source_visual_object_grammar_id"]
+            if require_non_empty_string(f"{label}.source_visual_object_grammar_id", grammar_id, errors):
+                if grammar_id not in source_object_grammar_ids:
+                    errors.append(f"{label}.source_visual_object_grammar_id references unknown visual object grammar: {grammar_id}")
+        if "source_semantic_asset_ids" in page:
+            validate_known_string_references(
+                f"{label}.source_semantic_asset_ids",
+                page["source_semantic_asset_ids"],
+                source_semantic_asset_ids,
+                "semantic visual asset",
+                errors,
+            )
+            if isinstance(page["source_semantic_asset_ids"], list) and len(page["source_semantic_asset_ids"]) < 3:
+                errors.append(f"{label}.source_semantic_asset_ids must contain at least 3 assets")
+        main_structure = page.get("main_structure")
+        if "main_structure" in page and require_non_empty_dict(f"{label}.main_structure", main_structure, errors):
+            require_non_empty_string(f"{label}.main_structure.name", main_structure.get("name"), errors)
+            basis = main_structure.get("non_rectangular_or_non_card_basis", [])
+            if validate_string_list(f"{label}.main_structure.non_rectangular_or_non_card_basis", basis, errors):
+                if len(basis) < 3:
+                    errors.append(f"{label}.main_structure.non_rectangular_or_non_card_basis must contain at least 3 reasons")
+            require_non_empty_string(
+                f"{label}.main_structure.serves_content_by",
+                main_structure.get("serves_content_by"),
+                errors,
+            )
+        for list_key in ["draw_order", "forbidden_fallbacks"]:
+            if list_key in page:
+                validate_string_list(f"{label}.{list_key}", page[list_key], errors)
+                if list_key == "draw_order" and isinstance(page[list_key], list) and len(page[list_key]) < 3:
+                    errors.append(f"{label}.draw_order must contain at least 3 steps")
+        if "success_probe" in page:
+            require_non_empty_string(f"{label}.success_probe", page["success_probe"], errors)
+    if roles != RUN2_73_VISUAL_GRAMMAR_ROLES:
+        errors.append(
+            "run2_73_visual_grammar_modules.page_type_to_visual_grammar page roles must be "
+            f"{', '.join(RUN2_73_VISUAL_GRAMMAR_ROLES)}"
+        )
+
+
+def validate_run2_73_visual_grammar_module_records(value: Any, errors: list[str]) -> None:
+    if not require_non_empty_list("run2_73_visual_grammar_modules.visual_grammar_modules", value, errors):
+        return
+    module_ids: set[str] = set()
+    for index, module in enumerate(value):
+        label = f"run2_73_visual_grammar_modules.visual_grammar_modules[{index}]"
+        if not isinstance(module, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        require_keys(
+            label,
+            module,
+            ["module_id", "display_name", "use_when", "primary_structure", "how_to_draw", "content_service", "native_ppt_primitives", "avoid"],
+            errors,
+        )
+        module_id = module.get("module_id")
+        if "module_id" in module and validate_choice(f"{label}.module_id", module_id, RUN2_73_VISUAL_GRAMMAR_MODULE_IDS, errors):
+            if module_id in module_ids:
+                errors.append(f"{label}.module_id duplicates {module_id}")
+            module_ids.add(module_id)
+        for key in ["display_name", "primary_structure", "content_service"]:
+            if key in module:
+                require_non_empty_string(f"{label}.{key}", module[key], errors)
+        for key in ["use_when", "native_ppt_primitives", "avoid"]:
+            if key in module:
+                validate_string_list(f"{label}.{key}", module[key], errors)
+        if "how_to_draw" in module:
+            if validate_string_list(f"{label}.how_to_draw", module["how_to_draw"], errors) and len(module["how_to_draw"]) < 3:
+                errors.append(f"{label}.how_to_draw must contain at least 3 steps")
+    if module_ids != RUN2_73_VISUAL_GRAMMAR_MODULE_IDS:
+        missing = RUN2_73_VISUAL_GRAMMAR_MODULE_IDS - module_ids
+        extra = module_ids - RUN2_73_VISUAL_GRAMMAR_MODULE_IDS
+        for module_id in sorted(missing):
+            errors.append(f"run2_73_visual_grammar_modules.visual_grammar_modules missing module: {module_id}")
+        for module_id in sorted(extra):
+            errors.append(f"run2_73_visual_grammar_modules.visual_grammar_modules has unexpected module: {module_id}")
+
+
+def validate_run2_73_visual_grammar_blueprints(value: Any, errors: list[str]) -> None:
+    if not require_non_empty_list("run2_73_visual_grammar_modules.module_geometry_blueprints", value, errors):
+        return
+    module_ids: set[str] = set()
+    for index, blueprint in enumerate(value):
+        label = f"run2_73_visual_grammar_modules.module_geometry_blueprints[{index}]"
+        if not isinstance(blueprint, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        require_keys(
+            label,
+            blueprint,
+            [
+                "module_id",
+                "coordinate_system",
+                "primary_structure_is_not",
+                "primary_structure_is",
+                "native_ppt_shape_plan",
+                "content_attachment_points",
+            ],
+            errors,
+        )
+        module_id = blueprint.get("module_id")
+        if "module_id" in blueprint and validate_choice(f"{label}.module_id", module_id, RUN2_73_VISUAL_GRAMMAR_MODULE_IDS, errors):
+            if module_id in module_ids:
+                errors.append(f"{label}.module_id duplicates {module_id}")
+            module_ids.add(module_id)
+        if blueprint.get("coordinate_system") != "normalized_16_9_canvas_0_100":
+            errors.append(f"{label}.coordinate_system must be normalized_16_9_canvas_0_100")
+        for key in ["primary_structure_is_not", "primary_structure_is"]:
+            if key in blueprint:
+                require_non_empty_string(f"{label}.{key}", blueprint[key], errors)
+        if "content_attachment_points" in blueprint:
+            validate_string_list(f"{label}.content_attachment_points", blueprint["content_attachment_points"], errors)
+        shape_plan = blueprint.get("native_ppt_shape_plan", [])
+        if not require_non_empty_list(f"{label}.native_ppt_shape_plan", shape_plan, errors):
+            continue
+        if len(shape_plan) < 3:
+            errors.append(f"{label}.native_ppt_shape_plan must contain at least 3 shapes")
+        has_why_not_card = False
+        for shape_index, shape in enumerate(shape_plan):
+            shape_label = f"{label}.native_ppt_shape_plan[{shape_index}]"
+            if not isinstance(shape, dict):
+                errors.append(f"{shape_label} must be an object")
+                continue
+            require_keys(shape_label, shape, ["shape_id", "primitive", "semantic_role"], errors)
+            for key in ["shape_id", "primitive", "semantic_role"]:
+                if key in shape:
+                    require_non_empty_string(f"{shape_label}.{key}", shape[key], errors)
+            if "why_not_card" in shape:
+                has_why_not_card = require_non_empty_string(f"{shape_label}.why_not_card", shape["why_not_card"], errors) or has_why_not_card
+        if not has_why_not_card:
+            errors.append(f"{label}.native_ppt_shape_plan must include at least one why_not_card explanation")
+    if module_ids != RUN2_73_VISUAL_GRAMMAR_MODULE_IDS:
+        for module_id in sorted(RUN2_73_VISUAL_GRAMMAR_MODULE_IDS - module_ids):
+            errors.append(f"run2_73_visual_grammar_modules.module_geometry_blueprints missing module: {module_id}")
+
+
+def validate_run2_73_visual_grammar_selection_rules(value: Any, errors: list[str]) -> None:
+    if not require_non_empty_list("run2_73_visual_grammar_modules.module_selection_rules", value, errors):
+        return
+    selected_modules: set[str] = set()
+    selected_module_by_role: dict[str, str] = {}
+    for index, rule in enumerate(value):
+        label = f"run2_73_visual_grammar_modules.module_selection_rules[{index}]"
+        if not isinstance(rule, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        require_keys(label, rule, ["rule_id", "condition", "select_module", "applies_to_page_types"], errors)
+        for key in ["rule_id", "condition"]:
+            if key in rule:
+                require_non_empty_string(f"{label}.{key}", rule[key], errors)
+        if "select_module" in rule:
+            module_id = rule["select_module"]
+            if validate_choice(f"{label}.select_module", module_id, RUN2_73_VISUAL_GRAMMAR_MODULE_IDS, errors):
+                selected_modules.add(module_id)
+        if "applies_to_page_types" in rule:
+            validate_known_string_references(
+                f"{label}.applies_to_page_types",
+                rule["applies_to_page_types"],
+                set(RUN2_73_VISUAL_GRAMMAR_ROLES),
+                "Part E page role",
+                errors,
+            )
+            if isinstance(rule.get("select_module"), str) and isinstance(rule["applies_to_page_types"], list):
+                for role_index, role in enumerate(rule["applies_to_page_types"]):
+                    if not isinstance(role, str) or role not in RUN2_73_VISUAL_GRAMMAR_PAGE_MODULE_MAP:
+                        continue
+                    expected_module = RUN2_73_VISUAL_GRAMMAR_PAGE_MODULE_MAP[role]
+                    if rule["select_module"] != expected_module:
+                        errors.append(
+                            f"{label}.applies_to_page_types[{role_index}] "
+                            f"must select {expected_module} for {role}"
+                        )
+                    if role in selected_module_by_role:
+                        errors.append(f"{label}.applies_to_page_types[{role_index}] duplicates page role: {role}")
+                    selected_module_by_role[role] = rule["select_module"]
+    if len(value) != 5:
+        errors.append("run2_73_visual_grammar_modules.module_selection_rules must contain 5 rules")
+    if selected_modules != RUN2_73_VISUAL_GRAMMAR_MODULE_IDS:
+        for module_id in sorted(RUN2_73_VISUAL_GRAMMAR_MODULE_IDS - selected_modules):
+            errors.append(f"run2_73_visual_grammar_modules.module_selection_rules missing module: {module_id}")
+    if selected_module_by_role != RUN2_73_VISUAL_GRAMMAR_PAGE_MODULE_MAP:
+        for role in RUN2_73_VISUAL_GRAMMAR_ROLES:
+            if role not in selected_module_by_role:
+                errors.append(f"run2_73_visual_grammar_modules.module_selection_rules missing page role: {role}")
+
+
+def validate_run2_73_visual_grammar_coverage(
+    value: Any,
+    source_reference_ids: set[str],
+    source_semantic_asset_ids: set[str],
+    source_object_grammar_ids: set[str],
+    errors: list[str],
+) -> None:
+    if not require_non_empty_dict("run2_73_visual_grammar_modules.coverage_matrix", value, errors):
+        return
+    if "page_roles_covered" in value:
+        validate_exact_string_set(
+            "run2_73_visual_grammar_modules.coverage_matrix.page_roles_covered",
+            value["page_roles_covered"],
+            set(RUN2_73_VISUAL_GRAMMAR_ROLES),
+            errors,
+        )
+    if "modules_covered" in value:
+        validate_exact_string_set(
+            "run2_73_visual_grammar_modules.coverage_matrix.modules_covered",
+            value["modules_covered"],
+            RUN2_73_VISUAL_GRAMMAR_MODULE_IDS,
+            errors,
+        )
+    if "source_reference_archetype_ids_covered" in value:
+        validate_known_string_references(
+            "run2_73_visual_grammar_modules.coverage_matrix.source_reference_archetype_ids_covered",
+            value["source_reference_archetype_ids_covered"],
+            source_reference_ids,
+            "source archetype",
+            errors,
+        )
+    if "source_visual_object_grammar_ids_covered" in value:
+        validate_known_string_references(
+            "run2_73_visual_grammar_modules.coverage_matrix.source_visual_object_grammar_ids_covered",
+            value["source_visual_object_grammar_ids_covered"],
+            source_object_grammar_ids,
+            "visual object grammar",
+            errors,
+        )
+    if "source_semantic_asset_ids_covered" in value:
+        validate_known_string_references(
+            "run2_73_visual_grammar_modules.coverage_matrix.source_semantic_asset_ids_covered",
+            value["source_semantic_asset_ids_covered"],
+            source_semantic_asset_ids,
+            "semantic visual asset",
+            errors,
+        )
+
+
+def validate_run2_73_visual_grammar_success(value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict("run2_73_visual_grammar_modules.success_criteria_check", value, errors):
+        return
+    for flag in sorted(RUN2_73_VISUAL_GRAMMAR_SUCCESS_FLAGS):
+        if value.get(flag) is not True:
+            errors.append(f"run2_73_visual_grammar_modules.success_criteria_check.{flag} must be true")
+
+
+def validate_run2_73_visual_grammar_trace_summary(value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict("run2_73_visual_grammar_modules.traceability_summary", value, errors):
+        return
+    expected_counts = {
+        "page_type_count": 6,
+        "visual_grammar_module_count": 5,
+        "semantic_asset_count_bound": 18,
+        "reference_archetype_count_bound": 6,
+        "visual_object_grammar_count_bound": 6,
+    }
+    for key, expected in expected_counts.items():
+        if key in value and value[key] != expected:
+            errors.append(f"run2_73_visual_grammar_modules.traceability_summary.{key} must be {expected}")
+    if "primary_structure_policy" in value:
+        validate_string_mentions(
+            "run2_73_visual_grammar_modules.traceability_summary.primary_structure_policy",
+            value["primary_structure_policy"],
+            ["non_rectangular", "proof_object"],
+            errors,
+        )
+
+
 def validate_run1_design_memory_observations(observations: list[Any], errors: list[str]) -> None:
     required = ["id", "source_ids", "principle", "code_generation_rule", "do_not_copy"]
     seen_ids: set[str] = set()
@@ -2647,6 +3173,7 @@ def validate_case_pack(pack_dir: str | Path, profile: str = "default") -> Valida
                 trace_fields,
                 errors,
             )
+            validate_run2_73_visual_grammar_modules(root, errors)
         return ValidationResult(not errors, errors)
 
     validate_sources(root, errors)

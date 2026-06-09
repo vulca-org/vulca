@@ -565,6 +565,27 @@ EXPECTED_RUN2_D3_FORBIDDEN_RUNTIME_IMPORTS = {
     "webbrowser",
 }
 EXPECTED_RUN2_D3_FORBIDDEN_DYNAMIC_IMPORT_CALLS = {"__import__", "eval", "exec"}
+EXPECTED_RUN2_E_VISUAL_GRAMMAR_MODULE_IDS = {
+    "hero_field",
+    "before_after_theater",
+    "evidence_workspace",
+    "product_reveal",
+    "decision_map",
+}
+EXPECTED_RUN2_E_PAGE_MODULE_MAP = {
+    "cover": "product_reveal",
+    "setup": "hero_field",
+    "contrast": "before_after_theater",
+    "proof": "evidence_workspace",
+    "climax": "product_reveal",
+    "close": "decision_map",
+}
+EXPECTED_RUN2_E_FORBIDDEN_SCOPE = {
+    "renderer_rerun",
+    "pptx_output",
+    "html_viewer",
+    "public_release",
+}
 EXPECTED_RUN2_9_VISUAL_PRIMITIVE_IDS = {
     "primitive_2_9_editorial_spread_composition",
     "primitive_2_9_product_surface_depth",
@@ -2565,6 +2586,112 @@ def test_run2_73_renderer_input_validation_blocks_bad_scene_inputs() -> None:
     assert bad_result["traceability_summary"]["blocking_issue_count"] >= len(
         EXPECTED_RUN2_D3_BLOCKING_ISSUE_IDS
     )
+
+
+def test_run2_73_visual_grammar_modules_define_part_e_non_card_layer() -> None:
+    modules = load_json(PACK / "run2_73_visual_grammar_modules.json")
+    design_grammar = load_json(PACK / "run2_66_reference_first_design_grammar.json")
+    semantic_assets = load_json(PACK / "run2_43_semantic_visual_asset_memory.json")
+    object_grammar = load_json(PACK / "run2_46_visual_object_grammar_memory.json")
+
+    assert modules["artifact_id"] == "run2_73_visual_grammar_modules"
+    assert modules["part"] == "Part E"
+    assert modules["status"] == "run2_73_visual_grammar_modules_ready_public_blocked"
+    assert modules["stage_policy"] == (
+        "part_e_visual_grammar_modules_only_no_renderer_rerun_no_public_release"
+    )
+    assert EXPECTED_RUN2_E_FORBIDDEN_SCOPE <= set(modules["artifact_scope"]["does_not_start"])
+
+    source_paths = {source["path"] for source in modules["source_inputs"]}
+    assert {
+        "docs/product/ppt-run2-data-skill-quality/run2_66_reference_first_design_grammar.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_43_semantic_visual_asset_memory.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_46_visual_object_grammar_memory.json",
+    } <= source_paths
+
+    page_mappings = modules["page_type_to_visual_grammar"]
+    assert [record["page_type"] for record in page_mappings] == EXPECTED_RUN2_74_SLIDE_STORY_ROLES
+    assert {
+        record["page_type"]: record["primary_visual_grammar_module"]
+        for record in page_mappings
+    } == EXPECTED_RUN2_E_PAGE_MODULE_MAP
+
+    source_reference_ids = {
+        record["reference_archetype_id"]
+        for record in design_grammar["role_design_grammar_records"]
+    }
+    source_object_grammar_ids = {
+        record["visual_object_grammar_id"]
+        for record in object_grammar["visual_object_grammar_records"]
+    }
+    source_semantic_asset_ids = {
+        record["semantic_asset_id"]
+        for record in semantic_assets["semantic_visual_asset_records"]
+    }
+
+    for page in page_mappings:
+        role = page["page_type"]
+        assert page["source_reference_archetype_id"] in source_reference_ids
+        assert page["source_visual_object_grammar_id"] in source_object_grammar_ids
+        assert set(page["source_semantic_asset_ids"]) <= source_semantic_asset_ids
+        assert len(page["source_semantic_asset_ids"]) == 3
+        assert page["main_structure"]["name"]
+        assert len(page["main_structure"]["non_rectangular_or_non_card_basis"]) >= 3
+        assert page["main_structure"]["serves_content_by"]
+        assert len(page["draw_order"]) >= 3
+        assert page["success_probe"]
+        assert page["primary_visual_grammar_module"] in EXPECTED_RUN2_E_VISUAL_GRAMMAR_MODULE_IDS
+        assert role in page["source_reference_archetype_id"]
+
+    visual_modules = modules["visual_grammar_modules"]
+    assert {module["module_id"] for module in visual_modules} == (
+        EXPECTED_RUN2_E_VISUAL_GRAMMAR_MODULE_IDS
+    )
+    for module in visual_modules:
+        assert len(module["how_to_draw"]) >= 3
+        assert module["content_service"]
+        assert module["native_ppt_primitives"]
+        assert module["avoid"]
+
+    blueprints = modules["module_geometry_blueprints"]
+    assert {blueprint["module_id"] for blueprint in blueprints} == (
+        EXPECTED_RUN2_E_VISUAL_GRAMMAR_MODULE_IDS
+    )
+    for blueprint in blueprints:
+        assert blueprint["coordinate_system"] == "normalized_16_9_canvas_0_100"
+        assert blueprint["primary_structure_is_not"]
+        assert blueprint["primary_structure_is"]
+        assert len(blueprint["native_ppt_shape_plan"]) >= 3
+        assert any("why_not_card" in shape for shape in blueprint["native_ppt_shape_plan"])
+        assert all(shape["semantic_role"] for shape in blueprint["native_ppt_shape_plan"])
+        assert blueprint["content_attachment_points"]
+
+    selection_rules = modules["module_selection_rules"]
+    assert len(selection_rules) == 5
+    assert {rule["select_module"] for rule in selection_rules} == (
+        EXPECTED_RUN2_E_VISUAL_GRAMMAR_MODULE_IDS
+    )
+    selected_module_by_role = {
+        role: rule["select_module"]
+        for rule in selection_rules
+        for role in rule["applies_to_page_types"]
+    }
+    assert selected_module_by_role == EXPECTED_RUN2_E_PAGE_MODULE_MAP
+    assert set(modules["coverage_matrix"]["page_roles_covered"]) == set(
+        EXPECTED_RUN2_74_SLIDE_STORY_ROLES
+    )
+    assert set(modules["coverage_matrix"]["modules_covered"]) == (
+        EXPECTED_RUN2_E_VISUAL_GRAMMAR_MODULE_IDS
+    )
+    assert modules["success_criteria_check"] == {
+        "every_page_has_non_rectangular_or_non_card_main_structure": True,
+        "every_main_structure_serves_content": True,
+        "all_requested_modules_defined": True,
+        "no_module_depends_on_copied_source_media": True,
+        "public_surface_trace_terms_hidden": True,
+    }
+    assert modules["traceability_summary"]["page_type_count"] == 6
+    assert modules["traceability_summary"]["visual_grammar_module_count"] == 5
 
 
 def test_run2_7_has_serializable_design_memory() -> None:

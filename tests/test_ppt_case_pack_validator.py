@@ -1441,6 +1441,252 @@ def write_run2_memory_files(pack: Path) -> None:
         ),
         encoding="utf-8",
     )
+    (pack / "run2_66_reference_first_design_grammar.json").write_text(
+        json.dumps(valid_run2_66_reference_first_design_grammar(), indent=2),
+        encoding="utf-8",
+    )
+    (pack / "run2_43_semantic_visual_asset_memory.json").write_text(
+        json.dumps(valid_run2_43_semantic_visual_asset_memory(), indent=2),
+        encoding="utf-8",
+    )
+    (pack / "run2_46_visual_object_grammar_memory.json").write_text(
+        json.dumps(valid_run2_46_visual_object_grammar_memory(), indent=2),
+        encoding="utf-8",
+    )
+    (pack / "run2_73_visual_grammar_modules.json").write_text(
+        json.dumps(valid_run2_73_visual_grammar_modules(), indent=2),
+        encoding="utf-8",
+    )
+
+
+def valid_run2_66_reference_first_design_grammar() -> dict:
+    roles = ["cover", "setup", "contrast", "proof", "climax", "close"]
+    return {
+        "schema_version": "ppt_run2_66_reference_first_design_grammar.v1",
+        "status": "run2_66_reference_first_design_grammar_ready_public_blocked",
+        "role_design_grammar_records": [
+            {
+                "reference_archetype_id": f"reference_first_archetype_2_66_{role}",
+                "role": role,
+            }
+            for role in roles
+        ],
+    }
+
+
+def valid_run2_43_semantic_visual_asset_memory() -> dict:
+    roles = ["cover", "setup", "contrast", "proof", "climax", "close"]
+    return {
+        "schema_version": "ppt_run2_semantic_visual_asset_memory.v1",
+        "status": "run2_43_semantic_visual_asset_memory_ready_public_blocked",
+        "semantic_visual_asset_records": [
+            {
+                "semantic_asset_id": f"semantic_asset_2_43_{role}_{index}",
+                "role": role,
+            }
+            for role in roles
+            for index in range(1, 4)
+        ],
+    }
+
+
+def valid_run2_46_visual_object_grammar_memory() -> dict:
+    roles = ["cover", "setup", "contrast", "proof", "climax", "close"]
+    return {
+        "schema_version": "ppt_run2_visual_object_grammar_memory.v1",
+        "status": "run2_46_visual_object_grammar_memory_ready_public_blocked",
+        "visual_object_grammar_records": [
+            {
+                "visual_object_grammar_id": f"visual_object_grammar_2_46_{role}",
+                "role": role,
+            }
+            for role in roles
+        ],
+    }
+
+
+def valid_run2_73_visual_grammar_modules() -> dict:
+    roles = ["cover", "setup", "contrast", "proof", "climax", "close"]
+    module_by_role = {
+        "cover": "product_reveal",
+        "setup": "hero_field",
+        "contrast": "before_after_theater",
+        "proof": "evidence_workspace",
+        "climax": "product_reveal",
+        "close": "decision_map",
+    }
+    modules = [
+        "hero_field",
+        "before_after_theater",
+        "evidence_workspace",
+        "product_reveal",
+        "decision_map",
+    ]
+    return {
+        "artifact_id": "run2_73_visual_grammar_modules",
+        "part": "Part E",
+        "schema_version": "ppt_run2_73_visual_grammar_modules.v1",
+        "status": "run2_73_visual_grammar_modules_ready_public_blocked",
+        "selected_usecase_id": "usecase_design_to_production_platform_launch",
+        "objective": "Assign each page role a content-serving non-card visual grammar.",
+        "artifact_scope": {
+            "starts": ["map_page_roles_to_advanced_visual_grammar"],
+            "does_not_start": ["renderer_rerun", "pptx_output", "html_viewer", "public_release"],
+            "quality_gate": "Every page role has a non-card primary structure.",
+        },
+        "source_inputs": [
+            {
+                "path": "docs/product/ppt-run2-data-skill-quality/run2_66_reference_first_design_grammar.json",
+                "required": True,
+                "available": True,
+                "record_count": 6,
+                "id_field": "role_design_grammar_records[].reference_archetype_id",
+                "use_in_this_artifact": "Source layout archetype.",
+            },
+            {
+                "path": "docs/product/ppt-run2-data-skill-quality/run2_43_semantic_visual_asset_memory.json",
+                "required": True,
+                "available": True,
+                "record_count": 18,
+                "id_field": "semantic_visual_asset_records[].semantic_asset_id",
+                "use_in_this_artifact": "Source semantic objects.",
+            },
+            {
+                "path": "docs/product/ppt-run2-data-skill-quality/run2_46_visual_object_grammar_memory.json",
+                "required": True,
+                "available": True,
+                "record_count": 6,
+                "id_field": "visual_object_grammar_records[].visual_object_grammar_id",
+                "use_in_this_artifact": "Source object grammar.",
+            },
+        ],
+        "stage_policy": "part_e_visual_grammar_modules_only_no_renderer_rerun_no_public_release",
+        "global_visual_grammar_contract": {
+            "must_do": ["draw the primary structure before labels"],
+            "must_not_do": ["use three equal feature cards as the primary structure"],
+            "minimum_non_card_signals_per_page": ["dominant composed object", "connective structure"],
+        },
+        "page_type_to_visual_grammar": [
+            {
+                "page_type": role,
+                "slide_index": index,
+                "visual_role": f"{role}_visual_role",
+                "primary_visual_grammar_module": module_by_role[role],
+                "module_variant": f"{role}_variant",
+                "source_reference_archetype_id": f"reference_first_archetype_2_66_{role}",
+                "source_visual_object_grammar_id": f"visual_object_grammar_2_46_{role}",
+                "source_semantic_asset_ids": [
+                    f"semantic_asset_2_43_{role}_1",
+                    f"semantic_asset_2_43_{role}_2",
+                    f"semantic_asset_2_43_{role}_3",
+                ],
+                "main_structure": {
+                    "name": f"{role}_non_card_structure",
+                    "non_rectangular_or_non_card_basis": [
+                        "freeform field or route carries hierarchy",
+                        "support objects attach to the structure",
+                        "labels sit in negative space rather than cards",
+                    ],
+                    "serves_content_by": "The structure carries the proof object.",
+                },
+                "draw_order": [
+                    "draw the primary structure",
+                    "attach the proof object",
+                    "add labels after the structure reads",
+                ],
+                "forbidden_fallbacks": ["three equal cards", "generic dashboard grid"],
+                "success_probe": "The structure reads before labels.",
+            }
+            for index, role in enumerate(roles, start=1)
+        ],
+        "visual_grammar_modules": [
+            {
+                "module_id": module,
+                "display_name": module.replace("_", " ").title(),
+                "use_when": ["the page needs this grammar"],
+                "primary_structure": "A non-card structure that carries the content.",
+                "how_to_draw": [
+                    "draw a non-rectangular primary structure",
+                    "attach semantic objects to the structure",
+                    "place text after the visual read",
+                ],
+                "content_service": "The structure explains the content.",
+                "native_ppt_primitives": ["freeform path", "mask", "connector"],
+                "avoid": ["equal cards", "generic grid"],
+            }
+            for module in modules
+        ],
+        "module_geometry_blueprints": [
+            {
+                "module_id": module,
+                "coordinate_system": "normalized_16_9_canvas_0_100",
+                "primary_structure_is_not": "a card or rectangle",
+                "primary_structure_is": "a non-card path, field, theater, workspace, reveal, or map",
+                "native_ppt_shape_plan": [
+                    {
+                        "shape_id": f"{module}_shape_1",
+                        "primitive": "freeform_closed_path",
+                        "path_hint": "M 5 70 C 30 40, 70 50, 95 20",
+                        "semantic_role": "primary content carrier",
+                        "why_not_card": "curved path and attachment points prevent a card read",
+                    },
+                    {
+                        "shape_id": f"{module}_shape_2",
+                        "primitive": "connector",
+                        "path_hint": "C 20 60, 50 45, 80 30",
+                        "semantic_role": "content connection",
+                    },
+                    {
+                        "shape_id": f"{module}_shape_3",
+                        "primitive": "attached_surface",
+                        "bounds_hint": "x=60 y=30 w=20 h=14",
+                        "semantic_role": "proof object",
+                    },
+                ],
+                "content_attachment_points": ["proof object attaches to primary structure"],
+            }
+            for module in modules
+        ],
+        "module_selection_rules": [
+            {
+                "rule_id": f"select_{module}",
+                "condition": f"Page requires {module}.",
+                "select_module": module,
+                "applies_to_page_types": [
+                    role for role, role_module in module_by_role.items() if role_module == module
+                ],
+            }
+            for module in modules
+        ],
+        "coverage_matrix": {
+            "page_roles_covered": roles,
+            "modules_covered": modules,
+            "source_reference_archetype_ids_covered": [
+                f"reference_first_archetype_2_66_{role}" for role in roles
+            ],
+            "source_visual_object_grammar_ids_covered": [
+                f"visual_object_grammar_2_46_{role}" for role in roles
+            ],
+            "source_semantic_asset_ids_covered": [
+                f"semantic_asset_2_43_{role}_{index}" for role in roles for index in range(1, 4)
+            ],
+        },
+        "success_criteria_check": {
+            "every_page_has_non_rectangular_or_non_card_main_structure": True,
+            "every_main_structure_serves_content": True,
+            "all_requested_modules_defined": True,
+            "no_module_depends_on_copied_source_media": True,
+            "public_surface_trace_terms_hidden": True,
+        },
+        "traceability_summary": {
+            "page_type_count": 6,
+            "visual_grammar_module_count": 5,
+            "semantic_asset_count_bound": 18,
+            "reference_archetype_count_bound": 6,
+            "visual_object_grammar_count_bound": 6,
+            "primary_structure_policy": "non_rectangular_or_non_card_structure_must_carry_page_proof_object",
+        },
+    }
 
 
 def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
@@ -1468,6 +1714,7 @@ def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     assert "missing required file: run2_8_executable_design_memory.json" in result.errors
     assert "missing required file: run2_8_workflow_gate_matrix.json" in result.errors
     assert "missing required file: results/trace_manifest_contract.json" in result.errors
+    assert "missing required file: run2_73_visual_grammar_modules.json" in result.errors
 
 
 def test_run2_profile_requires_visual_repair_policy_file(tmp_path: Path) -> None:
@@ -1513,6 +1760,59 @@ def test_run2_profile_rejects_invalid_visual_repair_policy(tmp_path: Path) -> No
     assert "visual_repair_policy.repairs[2].native_ppt_requirements must mention editable" in result.errors
     assert "visual_repair_policy.repairs[3].qa_probe must mention contact sheet" in result.errors
     assert "visual_repair_policy.repairs[4].release_boundary must keep public_blocked status" in result.errors
+
+
+def test_run2_profile_rejects_visual_grammar_renderer_release_scope(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    modules_path = pack / "run2_73_visual_grammar_modules.json"
+    modules = json.loads(modules_path.read_text(encoding="utf-8"))
+    modules["stage_policy"] = "part_e_visual_grammar_modules_and_renderer_rerun"
+    modules["artifact_scope"]["does_not_start"].remove("renderer_rerun")
+    modules["success_criteria_check"]["every_main_structure_serves_content"] = False
+    modules_path.write_text(json.dumps(modules, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert (
+        "run2_73_visual_grammar_modules.stage_policy must be part_e_visual_grammar_modules_only_no_renderer_rerun_no_public_release"
+        in result.errors
+    )
+    assert (
+        "run2_73_visual_grammar_modules.artifact_scope.does_not_start must include renderer_rerun"
+        in result.errors
+    )
+    assert (
+        "run2_73_visual_grammar_modules.success_criteria_check.every_main_structure_serves_content must be true"
+        in result.errors
+    )
+
+
+def test_run2_profile_rejects_visual_grammar_selection_rule_mismatch(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    modules_path = pack / "run2_73_visual_grammar_modules.json"
+    modules = json.loads(modules_path.read_text(encoding="utf-8"))
+    modules["module_selection_rules"][0]["select_module"] = "hero_field"
+    modules["module_selection_rules"][0]["applies_to_page_types"] = ["cover"]
+    modules_path.write_text(json.dumps(modules, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert (
+        "run2_73_visual_grammar_modules.module_selection_rules[0].applies_to_page_types[0] "
+        "must select product_reveal for cover"
+    ) in result.errors
 
 
 def test_run2_profile_rejects_run2_7_unknown_visual_repair_policy_id(tmp_path: Path) -> None:
