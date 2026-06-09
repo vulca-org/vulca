@@ -736,6 +736,7 @@ async def layers_split(
         image_path: Path to the image file.
         output_dir: Output directory (default: image parent/layers).
         mode: "regenerate" (img2img), "extract" (color-range), "vlm" (VLM masks),
+              "palette" (provider-generated color-coded ownership masks),
               "sam3" (SAM3, GPU), "orchestrated" (YOLO26 + Grounding DINO + SAM +
               SegFormer face-parsing; SOTA — requires plan_path).
         provider: Image provider for regenerate/vlm modes.
@@ -850,6 +851,12 @@ async def layers_split(
     elif mode == "vlm":
         from vulca.layers.split import split_vlm
         results = await split_vlm(
+            image_path, layers, output_dir=out,
+            provider=provider,
+        )
+    elif mode == "palette":
+        from vulca.layers.palette_mask import split_palette
+        results = await split_palette(
             image_path, layers, output_dir=out,
             provider=provider,
         )
