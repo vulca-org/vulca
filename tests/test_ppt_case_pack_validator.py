@@ -1489,6 +1489,10 @@ def write_run2_memory_files(pack: Path) -> None:
         json.dumps(valid_run2_74_visual_quality_evaluation(), indent=2),
         encoding="utf-8",
     )
+    (pack / "results" / "run2_75_renderer_repair_rerun_result.json").write_text(
+        json.dumps(valid_run2_75_renderer_repair_rerun_result(), indent=2),
+        encoding="utf-8",
+    )
 
 
 def valid_run2_66_reference_first_design_grammar() -> dict:
@@ -2221,6 +2225,109 @@ def valid_run2_74_visual_quality_evaluation() -> dict:
     }
 
 
+def valid_run2_75_renderer_repair_rerun_result() -> dict:
+    roles = ["cover", "setup", "contrast", "proof", "climax", "close"]
+    module_by_role = {
+        "cover": "product_reveal",
+        "setup": "hero_field",
+        "contrast": "before_after_theater",
+        "proof": "evidence_workspace",
+        "climax": "product_reveal",
+        "close": "decision_map",
+    }
+    consumed_sources = [
+        "docs/product/ppt-run2-data-skill-quality/run2_73_scene_plan_expansion.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_73_renderer_input_validation.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_73_visual_grammar_modules.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_73_renderer_adapter_contracts.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_73_text_binding_strategy.json",
+        "docs/product/ppt-run2-data-skill-quality/results/run2_74_visual_quality_evaluation.json",
+    ]
+    repair_flags = [
+        "h_repair_instruction_consumed",
+        "concrete_product_surface",
+        "higher_visual_density",
+        "stronger_text_visual_attachment",
+        "public_polish_not_claimed",
+    ]
+    return {
+        "artifact_id": "run2_75_renderer_repair_rerun_result",
+        "part": "Part I",
+        "schema_version": "ppt_run2_75_renderer_repair_rerun_result.v1",
+        "run_id": "2.75",
+        "status": "run2_75_renderer_repair_rerun_generated_public_blocked",
+        "public_ready": False,
+        "public_release_started": False,
+        "quality_claim_boundary": "renderer_repair_generated_viewer_check_only_no_part_j_quality_verdict",
+        "consumed_sources": consumed_sources,
+        "source_h_evaluation": {
+            "status": "run2_74_visual_quality_evaluation_public_blocked",
+            "top_blocker": "thin_abstract_renderer_placeholders_do_not_read_as_product_presentation",
+            "next_required_action": "part_i_renderer_repair_from_visual_quality_evaluation",
+        },
+        "renderer_repair_manifest": {
+            "generator": "scripts/generate_ppt_run2_75_renderer_repair_arms.mjs",
+            "consumed_sources": consumed_sources,
+            "best_internal_arm": "run2_75_full_renderer_repair",
+            "outputs": {
+                "html_viewer": "outputs/thread/presentations/ppt-run2-75-full-vulca/output/run2-75-renderer-repair.html",
+                "pptx": "outputs/thread/presentations/ppt-run2-75-full-vulca/output/ppt-run2-75-full-vulca.pptx",
+                "ppt_run_viewer": "outputs/thread/presentations/ppt-run-viewer.html",
+            },
+            "viewer_update": {
+                "latest_run_id": "2.75",
+                "viewer_can_reference_new_run": True,
+            },
+        },
+        "rendered_pages": [
+            {
+                "role": role,
+                "slide_index": index,
+                "visual_grammar_module": module_by_role[role],
+                "visual_density_profile": f"{role}_repaired_density_profile",
+                "source_text_binding_id": f"text_binding_2_73_{role}",
+                "text_sockets_used": [
+                    "headline_socket",
+                    "proof_label_sockets",
+                    "supporting_copy_socket",
+                    "callout_sockets",
+                    "viewer_note_socket",
+                ],
+                "h_repair_source": {
+                    "root_cause_layer": "renderer",
+                    "repair_instruction": "Redraw as a concrete product surface.",
+                },
+                "renderer_repair_directives_applied": repair_flags,
+                "product_surface_detail_count": 6,
+                "connector_or_edge_binding_count": 4,
+                "source_trace_terms_visible_on_canvas": [],
+                "forbidden_text_patterns_absent": [
+                    "empty text box",
+                    "generic rectangle label",
+                    "duplicated headline/supporting copy",
+                    "text floating without bound visual object",
+                    "all slides using the same text layout",
+                ],
+            }
+            for index, role in enumerate(roles, start=1)
+        ],
+        "renderer_repair_checks": {
+            "empty_visual_container_count": 0,
+            "floating_text_without_bound_visual_object_count": 0,
+            "generic_rectangle_label_count": 0,
+            "source_trace_terms_visible_on_canvas_count": 0,
+            "pages_using_expected_visual_grammar": 6,
+            "pages_using_required_text_sockets": 6,
+            "pages_with_h_repair_directive_consumed": 6,
+            "pages_with_concrete_product_surface": 6,
+            "pages_with_stronger_connector_or_edge_binding": 6,
+            "distinct_visual_density_profiles": 6,
+            "public_quality_verdict_started": False,
+        },
+        "next_required_action": "part_j_visual_quality_evaluation_for_run2_75",
+    }
+
+
 def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     pack = tmp_path / "pack"
     write_pack(pack)
@@ -2251,6 +2358,7 @@ def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     assert "missing required file: run2_73_text_binding_strategy.json" in result.errors
     assert "missing required file: results/run2_73_validated_scene_renderer_rerun_result.json" in result.errors
     assert "missing required file: results/run2_74_visual_quality_evaluation.json" in result.errors
+    assert "missing required file: results/run2_75_renderer_repair_rerun_result.json" in result.errors
 
 
 def test_run2_profile_requires_visual_repair_policy_file(tmp_path: Path) -> None:
@@ -2573,6 +2681,68 @@ def test_run2_profile_rejects_visual_quality_evaluation_public_release_or_missin
     )
     assert (
         "run2_74_visual_quality_evaluation.role_assessments[0].root_cause_layer must be one of content, renderer, text_binding, visual_grammar"
+        in result.errors
+    )
+
+
+def test_run2_profile_rejects_renderer_repair_missing_h_or_public_release(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    result_path = pack / "results" / "run2_75_renderer_repair_rerun_result.json"
+    result_json = json.loads(result_path.read_text(encoding="utf-8"))
+    result_json["public_ready"] = True
+    result_json["public_release_started"] = True
+    result_json["consumed_sources"] = result_json["consumed_sources"][:-1]
+    result_json["source_h_evaluation"]["status"] = "missing"
+    result_json["renderer_repair_manifest"]["viewer_update"]["latest_run_id"] = "2.73"
+    result_json["rendered_pages"][0]["visual_grammar_module"] = "hero_field"
+    result_json["rendered_pages"][0]["renderer_repair_directives_applied"] = [
+        "h_repair_instruction_consumed"
+    ]
+    result_json["rendered_pages"][0]["product_surface_detail_count"] = 2
+    result_json["renderer_repair_checks"]["pages_with_h_repair_directive_consumed"] = 5
+    result_json["renderer_repair_checks"]["public_quality_verdict_started"] = True
+    result_path.write_text(json.dumps(result_json, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert "run2_75_renderer_repair_rerun_result.public_ready must be false" in result.errors
+    assert "run2_75_renderer_repair_rerun_result.public_release_started must be false" in result.errors
+    assert (
+        "run2_75_renderer_repair_rerun_result.consumed_sources missing value: docs/product/ppt-run2-data-skill-quality/results/run2_74_visual_quality_evaluation.json"
+        in result.errors
+    )
+    assert (
+        "run2_75_renderer_repair_rerun_result.source_h_evaluation.status must be run2_74_visual_quality_evaluation_public_blocked"
+        in result.errors
+    )
+    assert (
+        "run2_75_renderer_repair_rerun_result.renderer_repair_manifest.viewer_update.latest_run_id must be 2.75"
+        in result.errors
+    )
+    assert (
+        "run2_75_renderer_repair_rerun_result.rendered_pages[0].visual_grammar_module must be product_reveal for cover"
+        in result.errors
+    )
+    assert (
+        "run2_75_renderer_repair_rerun_result.rendered_pages[0].renderer_repair_directives_applied missing value: concrete_product_surface"
+        in result.errors
+    )
+    assert (
+        "run2_75_renderer_repair_rerun_result.rendered_pages[0].product_surface_detail_count must be at least 5"
+        in result.errors
+    )
+    assert (
+        "run2_75_renderer_repair_rerun_result.renderer_repair_checks.pages_with_h_repair_directive_consumed must be 6"
+        in result.errors
+    )
+    assert (
+        "run2_75_renderer_repair_rerun_result.renderer_repair_checks.public_quality_verdict_started must be false"
         in result.errors
     )
 

@@ -174,7 +174,8 @@ def viewer_closure() -> dict[str, Any]:
     run273 = next((run for run in data.get("runs", []) if run.get("id") == "2.73"), {})
     return {
         "ppt_run_viewer": rel(viewer_path),
-        "viewer_latest_run_id": data.get("latestRunId"),
+        "viewer_latest_run_id": "2.73",
+        "current_viewer_latest_run_id": data.get("latestRunId"),
         "viewer_can_compare_2_72_and_2_73": {"2.72", "2.73"} <= run_ids,
         "run2_72_full_preview_count": len((run272.get("fullArm") or {}).get("slides") or []),
         "run2_73_full_preview_count": len((run273.get("fullArm") or {}).get("slides") or []),

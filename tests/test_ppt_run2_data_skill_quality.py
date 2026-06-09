@@ -645,6 +645,21 @@ EXPECTED_RUN2_H_ROOT_CAUSE_LAYERS = {
     "text_binding",
     "content",
 }
+EXPECTED_RUN2_I_REQUIRED_INPUTS = [
+    *EXPECTED_RUN2_G_REQUIRED_INPUTS,
+    "docs/product/ppt-run2-data-skill-quality/results/run2_74_visual_quality_evaluation.json",
+]
+EXPECTED_RUN2_I_RESULT = (
+    PACK / "results" / "run2_75_renderer_repair_rerun_result.json"
+)
+EXPECTED_RUN2_I_SCRIPT = ROOT / "scripts" / "generate_ppt_run2_75_renderer_repair_arms.mjs"
+EXPECTED_RUN2_I_REPAIR_FLAGS = {
+    "h_repair_instruction_consumed",
+    "concrete_product_surface",
+    "higher_visual_density",
+    "stronger_text_visual_attachment",
+    "public_polish_not_claimed",
+}
 EXPECTED_RUN2_9_VISUAL_PRIMITIVE_IDS = {
     "primitive_2_9_editorial_spread_composition",
     "primitive_2_9_product_surface_depth",
@@ -3250,6 +3265,104 @@ def test_run2_74_records_visual_quality_evaluation_result() -> None:
     assert audit["viewer_comparison_closure"]["viewer_latest_run_id"] == "2.73"
     assert len(audit["role_assessments"]) == 6
     assert "thin abstract renderer placeholders" in report
+
+
+def test_run2_75_renderer_repair_rerun_consumes_h_and_updates_viewer() -> None:
+    assert EXPECTED_RUN2_I_SCRIPT.exists(), "missing Part I renderer repair script"
+    script = EXPECTED_RUN2_I_SCRIPT.read_text(encoding="utf-8")
+    assert_contains(
+        script,
+        [
+            *EXPECTED_RUN2_I_REQUIRED_INPUTS,
+            "run2_75_renderer_repair_rerun_result.json",
+            "run2_75_renderer_repair_rerun_result.md",
+            "build_ppt_run_html_viewer.py",
+        ],
+    )
+
+    h_audit = load_json(EXPECTED_RUN2_H_RESULT)
+    result = load_json(EXPECTED_RUN2_I_RESULT)
+
+    assert result["artifact_id"] == "run2_75_renderer_repair_rerun_result"
+    assert result["part"] == "Part I"
+    assert result["run_id"] == "2.75"
+    assert result["status"] == "run2_75_renderer_repair_rerun_generated_public_blocked"
+    assert result["public_ready"] is False
+    assert result["public_release_started"] is False
+    assert result["quality_claim_boundary"] == (
+        "renderer_repair_generated_viewer_check_only_no_part_j_quality_verdict"
+    )
+    assert result["consumed_sources"] == EXPECTED_RUN2_I_REQUIRED_INPUTS
+    assert result["source_h_evaluation"]["status"] == h_audit["status"]
+    assert result["source_h_evaluation"]["top_blocker"] == (
+        "thin_abstract_renderer_placeholders_do_not_read_as_product_presentation"
+    )
+
+    manifest = result["renderer_repair_manifest"]
+    assert manifest["generator"] == "scripts/generate_ppt_run2_75_renderer_repair_arms.mjs"
+    assert manifest["consumed_sources"] == EXPECTED_RUN2_I_REQUIRED_INPUTS
+    assert manifest["best_internal_arm"] == "run2_75_full_renderer_repair"
+    assert manifest["viewer_update"]["latest_run_id"] == "2.75"
+    assert manifest["viewer_update"]["viewer_can_reference_new_run"] is True
+
+    outputs = manifest["outputs"]
+    html_output = ROOT / outputs["html_viewer"]
+    pptx_output = ROOT / outputs["pptx"]
+    viewer_output = ROOT / outputs["ppt_run_viewer"]
+    assert html_output.exists()
+    assert pptx_output.exists()
+    assert viewer_output.exists()
+
+    pages = result["rendered_pages"]
+    assert [page["role"] for page in pages] == EXPECTED_RUN2_74_SLIDE_STORY_ROLES
+    assert [page["slide_index"] for page in pages] == [1, 2, 3, 4, 5, 6]
+    assert len({page["visual_grammar_module"] for page in pages}) == 5
+    assert len({page["visual_density_profile"] for page in pages}) == 6
+
+    h_by_role = {record["role"]: record for record in h_audit["role_assessments"]}
+    for page in pages:
+        role = page["role"]
+        assert page["visual_grammar_module"] == EXPECTED_RUN2_E_PAGE_MODULE_MAP[role]
+        assert page["source_text_binding_id"] == f"text_binding_2_73_{role}"
+        assert EXPECTED_RUN2_F_REQUIRED_SOCKET_KEYS <= set(page["text_sockets_used"])
+        assert page["source_trace_terms_visible_on_canvas"] == []
+        assert set(page["forbidden_text_patterns_absent"]) >= EXPECTED_RUN2_F_FORBIDDEN_TEXT_PATTERNS
+        assert page["h_repair_source"]["repair_instruction"] == h_by_role[role]["repair_instruction"]
+        assert page["h_repair_source"]["root_cause_layer"] == h_by_role[role]["root_cause_layer"]
+        assert EXPECTED_RUN2_I_REPAIR_FLAGS <= set(page["renderer_repair_directives_applied"])
+        assert page["product_surface_detail_count"] >= 5
+        assert page["connector_or_edge_binding_count"] >= 3
+
+    checks = result["renderer_repair_checks"]
+    assert checks["empty_visual_container_count"] == 0
+    assert checks["floating_text_without_bound_visual_object_count"] == 0
+    assert checks["generic_rectangle_label_count"] == 0
+    assert checks["source_trace_terms_visible_on_canvas_count"] == 0
+    assert checks["pages_using_expected_visual_grammar"] == 6
+    assert checks["pages_using_required_text_sockets"] == 6
+    assert checks["pages_with_h_repair_directive_consumed"] == 6
+    assert checks["pages_with_concrete_product_surface"] == 6
+    assert checks["pages_with_stronger_connector_or_edge_binding"] == 6
+    assert checks["distinct_visual_density_profiles"] == 6
+    assert checks["public_quality_verdict_started"] is False
+
+    viewer_html = viewer_output.read_text(encoding="utf-8")
+    assert_contains(
+        viewer_html,
+        [
+            '"latestRunId": "2.75"',
+            "Run 2.75",
+            "ppt-run2-75-full-vulca",
+            "run2_75_renderer_repair_rerun_result.json",
+        ],
+    )
+    assert "data-run-id=\"2.75\"" in html_output.read_text(encoding="utf-8")
+
+    viewer_data = build_data(ROOT / "outputs" / DEFAULT_THREAD_ID / "presentations", viewer_output)
+    run = next(run for run in viewer_data["runs"] if run["id"] == "2.75")
+    assert run["fullArm"]["id"] == "run2_75_full_renderer_repair"
+    assert len(run["fullArm"]["slides"]) == 6
+    assert result["next_required_action"] == "part_j_visual_quality_evaluation_for_run2_75"
 
 
 def test_run2_7_has_serializable_design_memory() -> None:

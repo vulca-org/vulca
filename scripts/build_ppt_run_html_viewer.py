@@ -10,7 +10,7 @@ from typing import Any
 
 DEFAULT_THREAD_ID = "019e7d9c-532a-70b3-8892-fa3ae42baef2"
 PACK_REL = Path("docs") / "product" / "ppt-run2-data-skill-quality"
-LATEST_RUN_PAYLOAD_HINT = '"latestRunId": "2.73"'
+LATEST_RUN_PAYLOAD_HINT = '"latestRunId": "2.75"'
 
 
 @dataclass(frozen=True)
@@ -780,6 +780,27 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ),
         ),
     ),
+    RunSpec(
+        "2.75",
+        "Run 2.75",
+        "run2-75-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-75-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-75-run1-5-skill", "baseline"),
+            ArmSpec(
+                "run2_75_full_renderer_repair",
+                "Run 2.75 full",
+                "ppt-run2-75-full-vulca",
+                "full",
+            ),
+            ArmSpec(
+                "bad_run2_75_without_h_repair",
+                "Bad missing Run 2.75 H repair",
+                "ppt-run2-75-bad-without-h-repair",
+                "negative",
+            ),
+        ),
+    ),
 )
 
 
@@ -970,6 +991,8 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run271_result = read_json(pack / "results" / "run2_71_component_semantics_rerun_result.json")
     run272_result = read_json(pack / "results" / "run2_72_shape_bound_text_rerun_result.json")
     run273_result = read_json(pack / "results" / "run2_73_validated_scene_renderer_rerun_result.json")
+    run274_visual_quality = read_json(pack / "results" / "run2_74_visual_quality_evaluation.json")
+    run275_result = read_json(pack / "results" / "run2_75_renderer_repair_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -1506,6 +1529,18 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run273FullTracePath": "ppt-run2-73-full-vulca/trace_manifest.json",
         "run273BadTracePath": "ppt-run2-73-bad-without-text-binding/trace_manifest.json",
         "run273FourArmSheetPath": "run2-73-four-arm-contact-sheet.png",
+        "run274VisualQualityStatus": run274_visual_quality.get("status", ""),
+        "run274VisualQuality": run274_visual_quality,
+        "run274VisualQualityPath": "run2_74_visual_quality_evaluation.json",
+        "run275ResultStatus": run275_result.get("status", ""),
+        "run275Result": run275_result,
+        "run275ResultPath": "run2_75_renderer_repair_rerun_result.json",
+        "run275TargetLayer": "renderer_repair_from_run2_74_visual_quality_evaluation",
+        "run275SourceDataStatus": "run2_75_consumes_a_f_plus_h_before_native_ppt_drawing",
+        "run275GeneratorPath": "scripts/generate_ppt_run2_75_renderer_repair_arms.mjs",
+        "run275FullTracePath": "ppt-run2-75-full-vulca/trace_manifest.json",
+        "run275BadTracePath": "ppt-run2-75-bad-without-h-repair/trace_manifest.json",
+        "run275FourArmSheetPath": "run2-75-four-arm-contact-sheet.png",
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -2870,6 +2905,13 @@ def build_html(data: dict[str, Any]) -> str:
       const run273Manifest = run273Result.rerun_manifest || {{}};
       const run273Outputs = run273Manifest.outputs || {{}};
       const run273Checks = run273Result.render_quality_checks || {{}};
+      const run274VisualQuality = refs.run274VisualQuality || {{}};
+      const run274Assessment = run274VisualQuality.visual_quality_assessment || {{}};
+      const run275Result = refs.run275Result || {{}};
+      const run275Manifest = run275Result.renderer_repair_manifest || {{}};
+      const run275Outputs = run275Manifest.outputs || {{}};
+      const run275Checks = run275Result.renderer_repair_checks || {{}};
+      const run275HSource = run275Result.source_h_evaluation || {{}};
       const run266ArtDirectionByRole = Object.fromEntries((run266ArtDirection.slide_art_direction_contracts || []).map((record) => [record.role, record]));
       const run266GrammarCards = (run266DesignGrammar.role_design_grammar_records || []).map((record) => {{
         const art = run266ArtDirectionByRole[record.role] || {{}};
@@ -3219,6 +3261,44 @@ def build_html(data: dict[str, Any]) -> str:
         <span class="pill">${{escapeHtml(refs.packPath || "case pack")}}</span>
       </div>
       <div class="dataStack">
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.75 renderer repair rerun</h3><p>Run 2.75 is the Part I renderer repair pass. It consumes the 2.73 A-F renderer inputs plus the Part H visual-quality evaluation, then redraws the full arm with concrete product surfaces and stronger connector/edge bindings. Public quality judgment remains blocked until Part J.</p></div><span class="pill" title="${{escapeHtml(refs.run275ResultStatus || "missing")}}">${{escapeHtml(refs.run275ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Run 2.75 Renderer Repair</h4>
+              ${{detailBlock("Result", refs.run275ResultPath || "run2_75_renderer_repair_rerun_result.json")}}
+              ${{detailBlock("Generator", refs.run275GeneratorPath || "scripts/generate_ppt_run2_75_renderer_repair_arms.mjs")}}
+              ${{detailBlock("Best internal arm", run275Manifest.best_internal_arm)}}
+              ${{detailBlock("Public ready", run275Result.public_ready)}}
+              ${{detailBlock("Boundary", run275Result.quality_claim_boundary)}}
+            </article>
+            <article class="dataCard">
+              <h4>Viewer Outputs</h4>
+              ${{detailBlock("Four-arm sheet", refs.run275FourArmSheetPath || "run2-75-four-arm-contact-sheet.png")}}
+              ${{detailBlock("Full trace", refs.run275FullTracePath || "ppt-run2-75-full-vulca/trace_manifest.json")}}
+              ${{detailBlock("Bad trace", refs.run275BadTracePath || "ppt-run2-75-bad-without-h-repair/trace_manifest.json")}}
+              ${{detailBlock("Standalone HTML", run275Outputs.html_viewer)}}
+              ${{detailBlock("PPTX", run275Outputs.pptx)}}
+            </article>
+            <article class="dataCard">
+              <h4>H Repair Source</h4>
+              ${{detailBlock("H result", refs.run274VisualQualityPath || "run2_74_visual_quality_evaluation.json")}}
+              ${{detailBlock("H status", refs.run274VisualQualityStatus || run274VisualQuality.status)}}
+              ${{detailBlock("Global delta", run274Assessment.global_delta_vs_2_72)}}
+              ${{detailBlock("Top blocker", run275HSource.top_blocker || run274Assessment.top_blocker)}}
+              ${{detailBlock("Primary layer", run275HSource.primary_layer)}}
+            </article>
+            <article class="dataCard">
+              <h4>Repair Checks</h4>
+              ${{detailBlock("Expected visual grammar pages", run275Checks.pages_using_expected_visual_grammar)}}
+              ${{detailBlock("Required text socket pages", run275Checks.pages_using_required_text_sockets)}}
+              ${{detailBlock("H repair directives consumed", run275Checks.pages_with_h_repair_directive_consumed)}}
+              ${{detailBlock("Concrete product surfaces", run275Checks.pages_with_concrete_product_surface)}}
+              ${{detailBlock("Connector/edge bindings", run275Checks.pages_with_stronger_connector_or_edge_binding)}}
+              ${{detailBlock("Public quality verdict started", run275Checks.public_quality_verdict_started)}}
+            </article>
+          </div>
+        </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.73 validated scene renderer rerun</h3><p>Run 2.73 is the formal renderer rerun over A-F: D2 scene plan expansion, D3 input validation, Part E visual grammar, E2 adapter contracts, and Part F text binding strategy are consumed before native PPT and HTML viewer output. Visual quality judgment remains blocked until Part H.</p></div><span class="pill" title="${{escapeHtml(refs.run273ResultStatus || "missing")}}">${{escapeHtml(refs.run273ResultStatus || "missing")}}</span></div>
           <div class="dataGrid">

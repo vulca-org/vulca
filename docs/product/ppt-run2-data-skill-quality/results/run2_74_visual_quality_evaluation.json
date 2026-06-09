@@ -26,6 +26,7 @@
   "viewer_comparison_closure": {
     "ppt_run_viewer": "outputs/019e7d9c-532a-70b3-8892-fa3ae42baef2/presentations/ppt-run-viewer.html",
     "viewer_latest_run_id": "2.73",
+    "current_viewer_latest_run_id": "2.75",
     "viewer_can_compare_2_72_and_2_73": true,
     "run2_72_full_preview_count": 6,
     "run2_73_full_preview_count": 6,
