@@ -440,6 +440,47 @@ EXPECTED_RUN2_74_APPROVED_CONTENT_UNIT_FIELDS = {
     "on_canvas_copy",
     "delete_or_note_route",
 }
+EXPECTED_RUN2_D1_SCENE_PLAN_FIELDS = {
+    "scene_id",
+    "slide_index",
+    "role",
+    "source_slide_story_id",
+    "source_content_qa_id",
+    "content_units",
+    "proof_object",
+    "visual_role",
+    "layout_intent",
+    "renderer_action_bindings",
+    "off_canvas_routes",
+    "renderer_execution_boundary",
+}
+EXPECTED_RUN2_D1_LAYOUT_INTENT_FIELDS = {
+    "first_read",
+    "main_visual",
+    "information_containers",
+    "chrome",
+    "must_delete",
+    "scene_question",
+    "rhythm_intent",
+}
+EXPECTED_RUN2_D1_RENDERER_BINDING_FIELDS = {
+    "binding_id",
+    "source_rule_ids",
+    "principles",
+    "design_moves",
+    "renderer_action_types",
+    "renderer_action_ids",
+    "applies_to_scene_questions",
+    "acceptance_checks",
+}
+EXPECTED_RUN2_D1_SCHEMA_REQUIRED_FIELDS = {
+    "content_units",
+    "proof_object",
+    "visual_role",
+    "layout_intent",
+    "renderer_action_bindings",
+    "off_canvas_routes",
+}
 EXPECTED_RUN2_9_VISUAL_PRIMITIVE_IDS = {
     "primitive_2_9_editorial_spread_composition",
     "primitive_2_9_product_surface_depth",
@@ -1021,6 +1062,20 @@ def assert_mentions_any(body: str, terms: set[str]) -> None:
 
 def word_count(value: str) -> int:
     return len([part for part in re.split(r"\s+", value.strip()) if part])
+
+
+def nested_keys(value: object) -> set[str]:
+    if isinstance(value, dict):
+        keys = set(value)
+        for child in value.values():
+            keys |= nested_keys(child)
+        return keys
+    if isinstance(value, list):
+        keys: set[str] = set()
+        for child in value:
+            keys |= nested_keys(child)
+        return keys
+    return set()
 
 
 def public_text_values(bundle: dict[str, object]) -> list[str]:
@@ -1961,6 +2016,165 @@ def test_run2_74_content_quality_audit_checks_slide_story_quality() -> None:
     assert summary["blocking_issue_count"] == 0
     assert summary["approved_for_next_stage"] == "part_d_scene_compiler_inputs_only"
     assert audit["next_required_action"] == "part_d_scene_compiler_from_c1_c2_c3_and_b2"
+
+
+def test_run2_73_scene_compiler_contracts_merge_b2_and_c_content_units() -> None:
+    design_moves = load_json(PACK / "run2_73_tutorial_to_design_moves.json")
+    claim_graph = load_json(PACK / "run2_74_product_claim_graph.json")
+    story = load_json(PACK / "run2_74_slide_story.json")
+    audit = load_json(PACK / "run2_74_content_quality_audit.json")
+    scene_contract = load_json(PACK / "run2_73_scene_compiler_contracts.json")
+
+    story_by_role = {slide["role"]: slide for slide in story["slides"]}
+    audit_by_role = {record["role"]: record for record in audit["slide_quality_audits"]}
+    design_rule_by_id = {rule["rule_id"]: rule for rule in design_moves["tutorial_rule_mappings"]}
+    renderer_action_types = set(design_moves["renderer_action_vocabulary"])
+    route_terms = {
+        term.lower()
+        for term in claim_graph["public_surface_routing"]["viewer_or_note_only_terms"]
+    }
+
+    assert scene_contract["artifact_id"] == "run2_73_scene_compiler_contracts"
+    assert scene_contract["part"] == "Part D1"
+    assert scene_contract["status"] == "run2_73_scene_compiler_contracts_public_blocked"
+    assert scene_contract["stage_policy"] == "part_d1_scene_compiler_contract_only"
+    assert scene_contract["source_design_moves"] == "run2_73_tutorial_to_design_moves.json"
+    assert scene_contract["source_product_claim_graph"] == "run2_74_product_claim_graph.json"
+    assert scene_contract["source_slide_story"] == "run2_74_slide_story.json"
+    assert scene_contract["source_content_quality_audit"] == "run2_74_content_quality_audit.json"
+    assert scene_contract["artifact_scope"]["does_not_start"] == [
+        "renderer_rerun",
+        "pptx_output",
+        "html_viewer",
+        "public_release",
+    ]
+    assert scene_contract["scene_structure_schema"]["required_scene_fields"] == sorted(
+        EXPECTED_RUN2_D1_SCHEMA_REQUIRED_FIELDS
+    )
+    assert (
+        scene_contract["scene_structure_schema"]["content_unit_source"]
+        == "slide_quality_audits[*].approved_content_units"
+    )
+    assert scene_contract["renderer_execution_contract"][
+        "must_execute_scene_plan_before_shape_generation"
+    ] is True
+    assert scene_contract["renderer_execution_contract"][
+        "must_not_directly_draw_placeholder_boxes"
+    ] is True
+
+    forbidden_root_keys = {
+        "layout_geometry",
+        "pptx_output",
+        "html_viewer",
+        "slide_shapes",
+        "shape_rectangles",
+        "direct_shape_plan",
+    }
+    assert not forbidden_root_keys & set(scene_contract)
+
+    forbidden_scene_keys = {
+        "layout_geometry",
+        "pptx_output",
+        "html_viewer",
+        "slide_shapes",
+        "shape_rectangles",
+        "direct_shape_plan",
+        "x",
+        "y",
+        "w",
+        "h",
+        "width",
+        "height",
+        "left",
+        "top",
+        "x_pct",
+        "y_pct",
+        "width_pct",
+        "height_pct",
+    }
+    scenes = scene_contract["scene_plans"]
+    assert [scene["role"] for scene in scenes] == EXPECTED_RUN2_74_SLIDE_STORY_ROLES
+    assert [scene["slide_index"] for scene in scenes] == [1, 2, 3, 4, 5, 6]
+
+    for scene in scenes:
+        role = scene["role"]
+        source_slide = story_by_role[role]
+        source_audit = audit_by_role[role]
+        units = source_audit["approved_content_units"]
+
+        assert EXPECTED_RUN2_D1_SCENE_PLAN_FIELDS <= set(scene), role
+        assert not forbidden_scene_keys & nested_keys(scene)
+        assert scene["scene_id"] == f"scene_compiler_2_73_{role}"
+        assert scene["source_slide_story_id"] == source_slide["slide_id"]
+        assert scene["source_content_qa_id"] == source_audit["audit_id"]
+        assert "main_claim" not in source_audit
+        assert "proof_object" not in source_audit
+        assert scene["content_units"] == units
+
+        assert scene["proof_object"]["primary"] == units["proof_object"]
+        assert scene["proof_object"]["evidence"] == source_slide["proof_object"]["evidence"]
+        assert scene["proof_object"]["business_logic"] == units["business_logic"]
+        assert scene["visual_role"] == units["visual_role"]
+
+        layout = scene["layout_intent"]
+        assert EXPECTED_RUN2_D1_LAYOUT_INTENT_FIELDS <= set(layout), role
+        assert layout["first_read"] == units["on_canvas_copy"]["headline"]
+        assert layout["main_visual"] == units["proof_object"]
+        assert layout["scene_question"] == source_slide["handoff_to_scene_compiler"][
+            "required_scene_question"
+        ]
+        assert layout["information_containers"]
+        assert layout["chrome"]
+        assert layout["must_delete"] == units["delete_or_note_route"]["must_delete_from_canvas"]
+        assert {item["container_role"] for item in layout["information_containers"]} >= {
+            "claim_container",
+            "proof_container",
+        }
+        assert all(item["chrome_role"] for item in layout["chrome"])
+
+        assert scene["off_canvas_routes"] == units["delete_or_note_route"]
+        on_canvas_text = json.dumps(units["on_canvas_copy"], ensure_ascii=False).lower()
+        assert not any(term in on_canvas_text for term in route_terms)
+
+        assert scene["renderer_action_bindings"]
+        for binding in scene["renderer_action_bindings"]:
+            assert EXPECTED_RUN2_D1_RENDERER_BINDING_FIELDS <= set(binding), binding[
+                "binding_id"
+            ]
+            assert set(binding["source_rule_ids"]) <= set(design_rule_by_id)
+            assert set(binding["renderer_action_types"]) <= renderer_action_types
+            assert binding["design_moves"]
+            assert binding["applies_to_scene_questions"]
+            assert binding["acceptance_checks"]
+
+            source_actions = [
+                action
+                for rule_id in binding["source_rule_ids"]
+                for action in design_rule_by_id[rule_id]["renderer_actions"]
+            ]
+            assert set(binding["renderer_action_ids"]) <= {
+                action["action_id"] for action in source_actions
+            }
+            assert set(binding["renderer_action_types"]) <= {
+                action["action_type"] for action in source_actions
+            }
+
+        boundary = scene["renderer_execution_boundary"]
+        assert boundary["must_use_scene_plan"] is True
+        assert boundary["must_not_read_content_from_c3_record_top_level"] is True
+        assert boundary["must_not_draw_generic_boxes"] is True
+
+    summary = scene_contract["traceability_summary"]
+    assert summary["slide_count"] == 6
+    assert summary["scene_count"] == 6
+    assert summary["approved_content_units_source"] == (
+        "run2_74_content_quality_audit.json:slide_quality_audits[*].approved_content_units"
+    )
+    assert set(summary["design_rule_ids_bound"]) <= set(design_rule_by_id)
+    assert summary["renderer_action_type_count"] >= 6
+    assert scene_contract["next_required_action"] == (
+        "part_d2_renderer_execute_scene_plan_not_direct_boxes"
+    )
 
 
 def test_run2_7_has_serializable_design_memory() -> None:
