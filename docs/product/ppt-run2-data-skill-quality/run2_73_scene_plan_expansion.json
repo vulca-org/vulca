@@ -1,0 +1,3633 @@
+{
+  "artifact_id": "run2_73_scene_plan_expansion",
+  "part": "Part D2",
+  "schema_version": "1.0",
+  "status": "run2_73_scene_plan_expansion_public_blocked",
+  "stage_policy": "part_d2_scene_plan_expansion_only",
+  "source_scene_compiler_contracts": "run2_73_scene_compiler_contracts.json",
+  "source_design_moves": "run2_73_tutorial_to_design_moves.json",
+  "source_inputs": [
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/run2_73_scene_compiler_contracts.json",
+      "available": true,
+      "use_in_this_artifact": "Expand D1 scene plans into renderer-ready semantic components."
+    },
+    {
+      "path": "docs/product/ppt-run2-data-skill-quality/run2_73_tutorial_to_design_moves.json",
+      "available": true,
+      "use_in_this_artifact": "Expand D1 scene plans into renderer-ready semantic components."
+    }
+  ],
+  "artifact_scope": {
+    "starts": [
+      "expand_d1_contract_into_renderer_ready_scene_structure",
+      "bind_visual_containers_to_content_or_semantic_roles"
+    ],
+    "does_not_start": [
+      "part_d3_renderer_input_validation",
+      "renderer_rerun",
+      "pptx_output",
+      "html_viewer",
+      "public_release"
+    ]
+  },
+  "component_schema": {
+    "required_components": [
+      "evidence_marks",
+      "hero_object",
+      "proof_panel",
+      "supporting_copy",
+      "viewer_note_route"
+    ],
+    "allowed_element_types": [
+      "shape",
+      "text",
+      "connector",
+      "image",
+      "svg"
+    ],
+    "component_keys_are_semantic_not_geometry": true,
+    "image_policy": "allowed_only_for_non_source_renderer_assets_after_d3_validation"
+  },
+  "renderer_ready_contract": {
+    "no_empty_boxes": true,
+    "every_visual_container_bound": true,
+    "geometry_resolution_deferred": true,
+    "must_preserve_d1_off_canvas_routes": true
+  },
+  "scene_structures": [
+    {
+      "expansion_id": "scene_expansion_2_73_cover",
+      "source_scene_id": "scene_compiler_2_73_cover",
+      "slide_index": 1,
+      "role": "cover",
+      "semantic_components": {
+        "hero_object": {
+          "component_id": "cover_hero_object",
+          "component_role": "hero_object",
+          "element_type": "svg",
+          "content_binding": {
+            "source": "scene_plan.proof_object.primary",
+            "value": "input-to-output product surface"
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.visual_role",
+            "value": "opening product path"
+          },
+          "renderer_target": {
+            "target_component_id": "cover_hero_object",
+            "target_element_type": "svg",
+            "target_semantic_role": "opening product path"
+          },
+          "empty_box_policy": "forbidden",
+          "source_scene_plan_fields": [
+            "proof_object.primary",
+            "visual_role",
+            "layout_intent.main_visual"
+          ]
+        },
+        "proof_panel": {
+          "component_id": "cover_proof_panel",
+          "component_role": "proof_panel",
+          "element_type": "shape",
+          "content_binding": {
+            "source": "scene_plan.proof_object",
+            "value": {
+              "primary": "input-to-output product surface",
+              "evidence": [
+                "commercial brief card",
+                "allowed source memory",
+                "editable PPT preview",
+                "review boundary"
+              ],
+              "business_logic": "The product is credible only if the viewer can connect the real brief, allowed memory, generated editable output, and review boundary in one glance.",
+              "why_this_proves_the_claim": "The viewer sees the business input and editable output in one path, so the claim is not just a style promise."
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.layout_intent.information_containers",
+            "value": "proof_panel"
+          },
+          "renderer_target": {
+            "target_component_id": "cover_proof_panel",
+            "target_element_type": "shape",
+            "target_semantic_role": "proof_panel"
+          },
+          "empty_box_policy": "forbidden",
+          "source_scene_plan_fields": [
+            "proof_object",
+            "layout_intent.information_containers"
+          ]
+        },
+        "supporting_copy": {
+          "component_id": "cover_supporting_copy",
+          "component_role": "supporting_copy",
+          "element_type": "text",
+          "content_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": {
+              "headline": "A real brief becomes editable PPT proof.",
+              "supporting_line": "Commercial brief, curated source memory, and code-generated editable PPT appear as one product path.",
+              "proof_labels": [
+                "commercial brief",
+                "source memory",
+                "editable PPT",
+                "review boundary"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": "supporting_copy"
+          },
+          "renderer_target": {
+            "target_component_id": "cover_supporting_copy",
+            "target_element_type": "text",
+            "target_semantic_role": "supporting_copy"
+          },
+          "empty_box_policy": "forbidden",
+          "source_scene_plan_fields": [
+            "content_units.on_canvas_copy",
+            "layout_intent.first_read"
+          ]
+        },
+        "evidence_marks": {
+          "component_id": "cover_evidence_marks",
+          "component_role": "evidence_marks",
+          "element_type": "connector",
+          "content_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy.proof_labels",
+            "value": [
+              "commercial brief",
+              "source memory",
+              "editable PPT",
+              "review boundary"
+            ]
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.proof_object.evidence",
+            "value": "evidence_marks"
+          },
+          "renderer_target": {
+            "target_component_id": "cover_evidence_marks",
+            "target_element_type": "connector",
+            "target_semantic_role": "evidence_marks"
+          },
+          "empty_box_policy": "forbidden",
+          "source_scene_plan_fields": [
+            "content_units.on_canvas_copy.proof_labels",
+            "proof_object.evidence"
+          ]
+        },
+        "viewer_note_route": {
+          "component_id": "cover_viewer_note_route",
+          "component_role": "viewer_note_route",
+          "element_type": "text",
+          "content_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": {
+              "must_delete_from_canvas": [
+                "decorative hero with no product object",
+                "source screenshots",
+                "full-slide raster output",
+                "full proof field list"
+              ],
+              "speaker_note": "State that this is not an image-only demo; the product promise is editable PPT with inspectable inputs.",
+              "viewer_only": [
+                "raw source records",
+                "review metadata",
+                "full proof field list"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": "viewer_note_route"
+          },
+          "renderer_target": {
+            "target_component_id": "cover_viewer_note_route",
+            "target_element_type": "text",
+            "target_semantic_role": "viewer_note_route"
+          },
+          "empty_box_policy": "forbidden",
+          "source_scene_plan_fields": [
+            "off_canvas_routes",
+            "layout_intent.must_delete"
+          ]
+        }
+      },
+      "visual_containers": [
+        {
+          "container_id": "cover_hero_object_container",
+          "container_type": "component_container",
+          "bound_component_id": "cover_hero_object",
+          "content_binding": {
+            "source": "scene_plan.proof_object.primary",
+            "value": "input-to-output product surface"
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.visual_role",
+            "value": "opening product path"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "cover_proof_panel_container",
+          "container_type": "component_container",
+          "bound_component_id": "cover_proof_panel",
+          "content_binding": {
+            "source": "scene_plan.proof_object",
+            "value": {
+              "primary": "input-to-output product surface",
+              "evidence": [
+                "commercial brief card",
+                "allowed source memory",
+                "editable PPT preview",
+                "review boundary"
+              ],
+              "business_logic": "The product is credible only if the viewer can connect the real brief, allowed memory, generated editable output, and review boundary in one glance.",
+              "why_this_proves_the_claim": "The viewer sees the business input and editable output in one path, so the claim is not just a style promise."
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.layout_intent.information_containers",
+            "value": "proof_panel"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "cover_supporting_copy_container",
+          "container_type": "component_container",
+          "bound_component_id": "cover_supporting_copy",
+          "content_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": {
+              "headline": "A real brief becomes editable PPT proof.",
+              "supporting_line": "Commercial brief, curated source memory, and code-generated editable PPT appear as one product path.",
+              "proof_labels": [
+                "commercial brief",
+                "source memory",
+                "editable PPT",
+                "review boundary"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": "supporting_copy"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "cover_evidence_marks_container",
+          "container_type": "component_container",
+          "bound_component_id": "cover_evidence_marks",
+          "content_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy.proof_labels",
+            "value": [
+              "commercial brief",
+              "source memory",
+              "editable PPT",
+              "review boundary"
+            ]
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.proof_object.evidence",
+            "value": "evidence_marks"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "cover_viewer_note_route_container",
+          "container_type": "component_container",
+          "bound_component_id": "cover_viewer_note_route",
+          "content_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": {
+              "must_delete_from_canvas": [
+                "decorative hero with no product object",
+                "source screenshots",
+                "full-slide raster output",
+                "full proof field list"
+              ],
+              "speaker_note": "State that this is not an image-only demo; the product promise is editable PPT with inspectable inputs.",
+              "viewer_only": [
+                "raw source records",
+                "review metadata",
+                "full proof field list"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": "viewer_note_route"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "cover_claim_container_expanded",
+          "container_type": "information_container",
+          "bound_component_id": "cover_supporting_copy",
+          "source_d1_container_id": "cover_claim_container",
+          "content_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": {
+              "headline": "A real brief becomes editable PPT proof.",
+              "supporting_line": "Commercial brief, curated source memory, and code-generated editable PPT appear as one product path.",
+              "proof_labels": [
+                "commercial brief",
+                "source memory",
+                "editable PPT",
+                "review boundary"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": "supporting_copy"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "cover_proof_container_expanded",
+          "container_type": "information_container",
+          "bound_component_id": "cover_proof_panel",
+          "source_d1_container_id": "cover_proof_container",
+          "content_binding": {
+            "source": "scene_plan.proof_object",
+            "value": {
+              "primary": "input-to-output product surface",
+              "evidence": [
+                "commercial brief card",
+                "allowed source memory",
+                "editable PPT preview",
+                "review boundary"
+              ],
+              "business_logic": "The product is credible only if the viewer can connect the real brief, allowed memory, generated editable output, and review boundary in one glance.",
+              "why_this_proves_the_claim": "The viewer sees the business input and editable output in one path, so the claim is not just a style promise."
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.layout_intent.information_containers",
+            "value": "proof_panel"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "cover_route_marker_container_expanded",
+          "container_type": "information_container",
+          "bound_component_id": "cover_viewer_note_route",
+          "source_d1_container_id": "cover_route_marker_container",
+          "content_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": {
+              "must_delete_from_canvas": [
+                "decorative hero with no product object",
+                "source screenshots",
+                "full-slide raster output",
+                "full proof field list"
+              ],
+              "speaker_note": "State that this is not an image-only demo; the product promise is editable PPT with inspectable inputs.",
+              "viewer_only": [
+                "raw source records",
+                "review metadata",
+                "full proof field list"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": "viewer_note_route"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "cover_scene_frame_expanded",
+          "container_type": "chrome",
+          "bound_component_id": "cover_hero_object",
+          "source_d1_chrome_id": "cover_scene_frame",
+          "content_binding": {
+            "source": "scene_plan.proof_object.primary",
+            "value": "input-to-output product surface"
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.layout_intent.chrome",
+            "value": "scene_frame"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "cover_note_viewer_affordance_expanded",
+          "container_type": "chrome",
+          "bound_component_id": "cover_viewer_note_route",
+          "source_d1_chrome_id": "cover_route_affordance",
+          "content_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": {
+              "must_delete_from_canvas": [
+                "decorative hero with no product object",
+                "source screenshots",
+                "full-slide raster output",
+                "full proof field list"
+              ],
+              "speaker_note": "State that this is not an image-only demo; the product promise is editable PPT with inspectable inputs.",
+              "viewer_only": [
+                "raw source records",
+                "review metadata",
+                "full proof field list"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.layout_intent.chrome",
+            "value": "note_viewer_affordance"
+          },
+          "empty_box_policy": "forbidden"
+        }
+      ],
+      "expanded_renderer_action_bindings": [
+        {
+          "binding_id": "cover_hero_object_expanded_binding",
+          "target_component_key": "hero_object",
+          "target_component_id": "cover_hero_object",
+          "component_element_type": "svg",
+          "source_d1_binding_id": "cover_b2_scene_binding",
+          "source_b2_rule_ids": [
+            "vh_01_primary_subject_first_read",
+            "ws_01_create_outer_breathing_room",
+            "kr_04_hold_visual_before_explanation",
+            "mp_01_object_before_label"
+          ],
+          "source_b2_action_ids": [
+            "vh_01_a1",
+            "vh_01_a2",
+            "vh_01_a3",
+            "ws_01_a1",
+            "mp_01_a1",
+            "mp_01_a2"
+          ],
+          "source_b2_action_types": [
+            "add_animation",
+            "select_element",
+            "set_geometry",
+            "set_style"
+          ],
+          "design_moves": [
+            "Scale and anchor the primary subject, then reduce nearby competitors.",
+            "Constrain content to a safe area and reserve a clear empty zone.",
+            "Create an initial visual-only beat, then reveal explanation text.",
+            "Animate the visual first, then fade in its label after a short delay."
+          ],
+          "layout_intent_binding": "main_visual",
+          "renderer_resolution_policy": {
+            "geometry_resolution": "defer_to_renderer",
+            "must_not_create_empty_box": true,
+            "must_bind_to_component_before_action": true
+          }
+        },
+        {
+          "binding_id": "cover_proof_panel_expanded_binding",
+          "target_component_key": "proof_panel",
+          "target_component_id": "cover_proof_panel",
+          "component_element_type": "shape",
+          "source_d1_binding_id": "cover_b2_scene_binding",
+          "source_b2_rule_ids": [
+            "vh_01_primary_subject_first_read",
+            "ws_01_create_outer_breathing_room",
+            "kr_04_hold_visual_before_explanation",
+            "mp_01_object_before_label"
+          ],
+          "source_b2_action_ids": [
+            "vh_01_a2",
+            "vh_01_a3",
+            "ws_01_a1",
+            "ws_01_a2"
+          ],
+          "source_b2_action_types": [
+            "distribute_spacing",
+            "set_geometry",
+            "set_style"
+          ],
+          "design_moves": [
+            "Scale and anchor the primary subject, then reduce nearby competitors.",
+            "Constrain content to a safe area and reserve a clear empty zone.",
+            "Create an initial visual-only beat, then reveal explanation text.",
+            "Animate the visual first, then fade in its label after a short delay."
+          ],
+          "layout_intent_binding": "information_containers",
+          "renderer_resolution_policy": {
+            "geometry_resolution": "defer_to_renderer",
+            "must_not_create_empty_box": true,
+            "must_bind_to_component_before_action": true
+          }
+        },
+        {
+          "binding_id": "cover_supporting_copy_expanded_binding",
+          "target_component_key": "supporting_copy",
+          "target_component_id": "cover_supporting_copy",
+          "component_element_type": "text",
+          "source_d1_binding_id": "cover_b2_scene_binding",
+          "source_b2_rule_ids": [
+            "vh_01_primary_subject_first_read",
+            "ws_01_create_outer_breathing_room",
+            "kr_04_hold_visual_before_explanation",
+            "mp_01_object_before_label"
+          ],
+          "source_b2_action_ids": [
+            "vh_01_a3",
+            "kr_04_a1",
+            "kr_04_a2",
+            "mp_01_a1",
+            "mp_01_a2"
+          ],
+          "source_b2_action_types": [
+            "add_animation",
+            "hide_element",
+            "set_style",
+            "set_timing"
+          ],
+          "design_moves": [
+            "Scale and anchor the primary subject, then reduce nearby competitors.",
+            "Constrain content to a safe area and reserve a clear empty zone.",
+            "Create an initial visual-only beat, then reveal explanation text.",
+            "Animate the visual first, then fade in its label after a short delay."
+          ],
+          "layout_intent_binding": "first_read",
+          "renderer_resolution_policy": {
+            "geometry_resolution": "defer_to_renderer",
+            "must_not_create_empty_box": true,
+            "must_bind_to_component_before_action": true
+          }
+        },
+        {
+          "binding_id": "cover_evidence_marks_expanded_binding",
+          "target_component_key": "evidence_marks",
+          "target_component_id": "cover_evidence_marks",
+          "component_element_type": "connector",
+          "source_d1_binding_id": "cover_b2_scene_binding",
+          "source_b2_rule_ids": [
+            "vh_01_primary_subject_first_read",
+            "ws_01_create_outer_breathing_room",
+            "kr_04_hold_visual_before_explanation",
+            "mp_01_object_before_label"
+          ],
+          "source_b2_action_ids": [
+            "ws_01_a2",
+            "kr_04_a2",
+            "mp_01_a1",
+            "mp_01_a2"
+          ],
+          "source_b2_action_types": [
+            "add_animation",
+            "distribute_spacing",
+            "set_timing"
+          ],
+          "design_moves": [
+            "Scale and anchor the primary subject, then reduce nearby competitors.",
+            "Constrain content to a safe area and reserve a clear empty zone.",
+            "Create an initial visual-only beat, then reveal explanation text.",
+            "Animate the visual first, then fade in its label after a short delay."
+          ],
+          "layout_intent_binding": "information_containers",
+          "renderer_resolution_policy": {
+            "geometry_resolution": "defer_to_renderer",
+            "must_not_create_empty_box": true,
+            "must_bind_to_component_before_action": true
+          }
+        },
+        {
+          "binding_id": "cover_viewer_note_route_expanded_binding",
+          "target_component_key": "viewer_note_route",
+          "target_component_id": "cover_viewer_note_route",
+          "component_element_type": "text",
+          "source_d1_binding_id": "cover_b2_scene_binding",
+          "source_b2_rule_ids": [
+            "vh_01_primary_subject_first_read",
+            "ws_01_create_outer_breathing_room",
+            "kr_04_hold_visual_before_explanation",
+            "mp_01_object_before_label"
+          ],
+          "source_b2_action_ids": [
+            "vh_01_a3",
+            "kr_04_a1",
+            "kr_04_a2"
+          ],
+          "source_b2_action_types": [
+            "hide_element",
+            "set_style",
+            "set_timing"
+          ],
+          "design_moves": [
+            "Scale and anchor the primary subject, then reduce nearby competitors.",
+            "Constrain content to a safe area and reserve a clear empty zone.",
+            "Create an initial visual-only beat, then reveal explanation text.",
+            "Animate the visual first, then fade in its label after a short delay."
+          ],
+          "layout_intent_binding": "off_canvas_routes",
+          "renderer_resolution_policy": {
+            "geometry_resolution": "defer_to_renderer",
+            "must_not_create_empty_box": true,
+            "must_bind_to_component_before_action": true
+          }
+        }
+      ],
+      "off_canvas_contract": {
+        "must_delete_from_canvas": [
+          "decorative hero with no product object",
+          "source screenshots",
+          "full-slide raster output",
+          "full proof field list"
+        ],
+        "speaker_note": "State that this is not an image-only demo; the product promise is editable PPT with inspectable inputs.",
+        "viewer_only": [
+          "raw source records",
+          "review metadata",
+          "full proof field list"
+        ]
+      },
+      "renderer_ready_boundary": {
+        "is_renderer_ready_json": true,
+        "must_not_render_ppt": true,
+        "must_validate_before_d3": true,
+        "geometry_resolution_deferred": true
+      }
+    },
+    {
+      "expansion_id": "scene_expansion_2_73_setup",
+      "source_scene_id": "scene_compiler_2_73_setup",
+      "slide_index": 2,
+      "role": "setup",
+      "semantic_components": {
+        "hero_object": {
+          "component_id": "setup_hero_object",
+          "component_role": "hero_object",
+          "element_type": "connector",
+          "content_binding": {
+            "source": "scene_plan.proof_object.primary",
+            "value": "source-to-memory compiler stage"
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.visual_role",
+            "value": "compiler path"
+          },
+          "renderer_target": {
+            "target_component_id": "setup_hero_object",
+            "target_element_type": "connector",
+            "target_semantic_role": "compiler path"
+          },
+          "empty_box_policy": "forbidden",
+          "source_scene_plan_fields": [
+            "proof_object.primary",
+            "visual_role",
+            "layout_intent.main_visual"
+          ]
+        },
+        "proof_panel": {
+          "component_id": "setup_proof_panel",
+          "component_role": "proof_panel",
+          "element_type": "shape",
+          "content_binding": {
+            "source": "scene_plan.proof_object",
+            "value": {
+              "primary": "source-to-memory compiler stage",
+              "evidence": [
+                "allowed source pack",
+                "capability memory",
+                "message obligation",
+                "proof object"
+              ],
+              "business_logic": "A deck can only explain its design decisions if source material is compiled into product memory and obligations before drawing starts.",
+              "why_this_proves_the_claim": "The slide shows the mechanism that turns source inputs into obligations, so design choices have upstream reasons."
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.layout_intent.information_containers",
+            "value": "proof_panel"
+          },
+          "renderer_target": {
+            "target_component_id": "setup_proof_panel",
+            "target_element_type": "shape",
+            "target_semantic_role": "proof_panel"
+          },
+          "empty_box_policy": "forbidden",
+          "source_scene_plan_fields": [
+            "proof_object",
+            "layout_intent.information_containers"
+          ]
+        },
+        "supporting_copy": {
+          "component_id": "setup_supporting_copy",
+          "component_role": "supporting_copy",
+          "element_type": "text",
+          "content_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": {
+              "headline": "Sources become product memory before drawing.",
+              "supporting_line": "Allowed source observations become capability memory, message obligations, and proof objects.",
+              "proof_labels": [
+                "source pack",
+                "capability memory",
+                "message obligation",
+                "proof object"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": "supporting_copy"
+          },
+          "renderer_target": {
+            "target_component_id": "setup_supporting_copy",
+            "target_element_type": "text",
+            "target_semantic_role": "supporting_copy"
+          },
+          "empty_box_policy": "forbidden",
+          "source_scene_plan_fields": [
+            "content_units.on_canvas_copy",
+            "layout_intent.first_read"
+          ]
+        },
+        "evidence_marks": {
+          "component_id": "setup_evidence_marks",
+          "component_role": "evidence_marks",
+          "element_type": "connector",
+          "content_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy.proof_labels",
+            "value": [
+              "source pack",
+              "capability memory",
+              "message obligation",
+              "proof object"
+            ]
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.proof_object.evidence",
+            "value": "evidence_marks"
+          },
+          "renderer_target": {
+            "target_component_id": "setup_evidence_marks",
+            "target_element_type": "connector",
+            "target_semantic_role": "evidence_marks"
+          },
+          "empty_box_policy": "forbidden",
+          "source_scene_plan_fields": [
+            "content_units.on_canvas_copy.proof_labels",
+            "proof_object.evidence"
+          ]
+        },
+        "viewer_note_route": {
+          "component_id": "setup_viewer_note_route",
+          "component_role": "viewer_note_route",
+          "element_type": "text",
+          "content_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": {
+              "must_delete_from_canvas": [
+                "raw tutorial transcript",
+                "copied tutorial frame",
+                "dense audit checklist",
+                "full source lineage"
+              ],
+              "speaker_note": "Explain that tutorials and videos guide decisions only after they are converted into original product memory.",
+              "viewer_only": [
+                "source audit gaps",
+                "blocked weak sources",
+                "full source lineage"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": "viewer_note_route"
+          },
+          "renderer_target": {
+            "target_component_id": "setup_viewer_note_route",
+            "target_element_type": "text",
+            "target_semantic_role": "viewer_note_route"
+          },
+          "empty_box_policy": "forbidden",
+          "source_scene_plan_fields": [
+            "off_canvas_routes",
+            "layout_intent.must_delete"
+          ]
+        }
+      },
+      "visual_containers": [
+        {
+          "container_id": "setup_hero_object_container",
+          "container_type": "component_container",
+          "bound_component_id": "setup_hero_object",
+          "content_binding": {
+            "source": "scene_plan.proof_object.primary",
+            "value": "source-to-memory compiler stage"
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.visual_role",
+            "value": "compiler path"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "setup_proof_panel_container",
+          "container_type": "component_container",
+          "bound_component_id": "setup_proof_panel",
+          "content_binding": {
+            "source": "scene_plan.proof_object",
+            "value": {
+              "primary": "source-to-memory compiler stage",
+              "evidence": [
+                "allowed source pack",
+                "capability memory",
+                "message obligation",
+                "proof object"
+              ],
+              "business_logic": "A deck can only explain its design decisions if source material is compiled into product memory and obligations before drawing starts.",
+              "why_this_proves_the_claim": "The slide shows the mechanism that turns source inputs into obligations, so design choices have upstream reasons."
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.layout_intent.information_containers",
+            "value": "proof_panel"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "setup_supporting_copy_container",
+          "container_type": "component_container",
+          "bound_component_id": "setup_supporting_copy",
+          "content_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": {
+              "headline": "Sources become product memory before drawing.",
+              "supporting_line": "Allowed source observations become capability memory, message obligations, and proof objects.",
+              "proof_labels": [
+                "source pack",
+                "capability memory",
+                "message obligation",
+                "proof object"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": "supporting_copy"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "setup_evidence_marks_container",
+          "container_type": "component_container",
+          "bound_component_id": "setup_evidence_marks",
+          "content_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy.proof_labels",
+            "value": [
+              "source pack",
+              "capability memory",
+              "message obligation",
+              "proof object"
+            ]
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.proof_object.evidence",
+            "value": "evidence_marks"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "setup_viewer_note_route_container",
+          "container_type": "component_container",
+          "bound_component_id": "setup_viewer_note_route",
+          "content_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": {
+              "must_delete_from_canvas": [
+                "raw tutorial transcript",
+                "copied tutorial frame",
+                "dense audit checklist",
+                "full source lineage"
+              ],
+              "speaker_note": "Explain that tutorials and videos guide decisions only after they are converted into original product memory.",
+              "viewer_only": [
+                "source audit gaps",
+                "blocked weak sources",
+                "full source lineage"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": "viewer_note_route"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "setup_claim_container_expanded",
+          "container_type": "information_container",
+          "bound_component_id": "setup_supporting_copy",
+          "source_d1_container_id": "setup_claim_container",
+          "content_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": {
+              "headline": "Sources become product memory before drawing.",
+              "supporting_line": "Allowed source observations become capability memory, message obligations, and proof objects.",
+              "proof_labels": [
+                "source pack",
+                "capability memory",
+                "message obligation",
+                "proof object"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": "supporting_copy"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "setup_proof_container_expanded",
+          "container_type": "information_container",
+          "bound_component_id": "setup_proof_panel",
+          "source_d1_container_id": "setup_proof_container",
+          "content_binding": {
+            "source": "scene_plan.proof_object",
+            "value": {
+              "primary": "source-to-memory compiler stage",
+              "evidence": [
+                "allowed source pack",
+                "capability memory",
+                "message obligation",
+                "proof object"
+              ],
+              "business_logic": "A deck can only explain its design decisions if source material is compiled into product memory and obligations before drawing starts.",
+              "why_this_proves_the_claim": "The slide shows the mechanism that turns source inputs into obligations, so design choices have upstream reasons."
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.layout_intent.information_containers",
+            "value": "proof_panel"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "setup_route_marker_container_expanded",
+          "container_type": "information_container",
+          "bound_component_id": "setup_viewer_note_route",
+          "source_d1_container_id": "setup_route_marker_container",
+          "content_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": {
+              "must_delete_from_canvas": [
+                "raw tutorial transcript",
+                "copied tutorial frame",
+                "dense audit checklist",
+                "full source lineage"
+              ],
+              "speaker_note": "Explain that tutorials and videos guide decisions only after they are converted into original product memory.",
+              "viewer_only": [
+                "source audit gaps",
+                "blocked weak sources",
+                "full source lineage"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": "viewer_note_route"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "setup_scene_frame_expanded",
+          "container_type": "chrome",
+          "bound_component_id": "setup_hero_object",
+          "source_d1_chrome_id": "setup_scene_frame",
+          "content_binding": {
+            "source": "scene_plan.proof_object.primary",
+            "value": "source-to-memory compiler stage"
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.layout_intent.chrome",
+            "value": "scene_frame"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "setup_note_viewer_affordance_expanded",
+          "container_type": "chrome",
+          "bound_component_id": "setup_viewer_note_route",
+          "source_d1_chrome_id": "setup_route_affordance",
+          "content_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": {
+              "must_delete_from_canvas": [
+                "raw tutorial transcript",
+                "copied tutorial frame",
+                "dense audit checklist",
+                "full source lineage"
+              ],
+              "speaker_note": "Explain that tutorials and videos guide decisions only after they are converted into original product memory.",
+              "viewer_only": [
+                "source audit gaps",
+                "blocked weak sources",
+                "full source lineage"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.layout_intent.chrome",
+            "value": "note_viewer_affordance"
+          },
+          "empty_box_policy": "forbidden"
+        }
+      ],
+      "expanded_renderer_action_bindings": [
+        {
+          "binding_id": "setup_hero_object_expanded_binding",
+          "target_component_key": "hero_object",
+          "target_component_id": "setup_hero_object",
+          "component_element_type": "connector",
+          "source_d1_binding_id": "setup_b2_scene_binding",
+          "source_b2_rule_ids": [
+            "kr_01_one_idea_per_build",
+            "ws_03_consolidate_labels",
+            "vh_05_labels_follow_visuals",
+            "mp_05_motion_follows_causal_or_reading_flow"
+          ],
+          "source_b2_action_ids": [
+            "ws_03_a3",
+            "mp_05_a1"
+          ],
+          "source_b2_action_types": [
+            "add_animation",
+            "set_geometry"
+          ],
+          "design_moves": [
+            "Split dense content into ordered build steps.",
+            "Group repeated labels, keep one legend, and reveal detail labels only when needed.",
+            "Hide labels on the first build, then reveal them after primary visual focus is established.",
+            "Set motion paths and reveal order to follow the conceptual flow."
+          ],
+          "layout_intent_binding": "main_visual",
+          "renderer_resolution_policy": {
+            "geometry_resolution": "defer_to_renderer",
+            "must_not_create_empty_box": true,
+            "must_bind_to_component_before_action": true
+          }
+        },
+        {
+          "binding_id": "setup_proof_panel_expanded_binding",
+          "target_component_key": "proof_panel",
+          "target_component_id": "setup_proof_panel",
+          "component_element_type": "shape",
+          "source_d1_binding_id": "setup_b2_scene_binding",
+          "source_b2_rule_ids": [
+            "kr_01_one_idea_per_build",
+            "ws_03_consolidate_labels",
+            "vh_05_labels_follow_visuals",
+            "mp_05_motion_follows_causal_or_reading_flow"
+          ],
+          "source_b2_action_ids": [
+            "ws_03_a1",
+            "ws_03_a3"
+          ],
+          "source_b2_action_types": [
+            "group_elements",
+            "set_geometry"
+          ],
+          "design_moves": [
+            "Split dense content into ordered build steps.",
+            "Group repeated labels, keep one legend, and reveal detail labels only when needed.",
+            "Hide labels on the first build, then reveal them after primary visual focus is established.",
+            "Set motion paths and reveal order to follow the conceptual flow."
+          ],
+          "layout_intent_binding": "information_containers",
+          "renderer_resolution_policy": {
+            "geometry_resolution": "defer_to_renderer",
+            "must_not_create_empty_box": true,
+            "must_bind_to_component_before_action": true
+          }
+        },
+        {
+          "binding_id": "setup_supporting_copy_expanded_binding",
+          "target_component_key": "supporting_copy",
+          "target_component_id": "setup_supporting_copy",
+          "component_element_type": "text",
+          "source_d1_binding_id": "setup_b2_scene_binding",
+          "source_b2_rule_ids": [
+            "kr_01_one_idea_per_build",
+            "ws_03_consolidate_labels",
+            "vh_05_labels_follow_visuals",
+            "mp_05_motion_follows_causal_or_reading_flow"
+          ],
+          "source_b2_action_ids": [
+            "kr_01_a1",
+            "kr_01_a2",
+            "vh_05_a1",
+            "vh_05_a2",
+            "mp_05_a1",
+            "mp_05_a2"
+          ],
+          "source_b2_action_types": [
+            "add_animation",
+            "add_reveal_step",
+            "hide_element",
+            "set_timing"
+          ],
+          "design_moves": [
+            "Split dense content into ordered build steps.",
+            "Group repeated labels, keep one legend, and reveal detail labels only when needed.",
+            "Hide labels on the first build, then reveal them after primary visual focus is established.",
+            "Set motion paths and reveal order to follow the conceptual flow."
+          ],
+          "layout_intent_binding": "first_read",
+          "renderer_resolution_policy": {
+            "geometry_resolution": "defer_to_renderer",
+            "must_not_create_empty_box": true,
+            "must_bind_to_component_before_action": true
+          }
+        },
+        {
+          "binding_id": "setup_evidence_marks_expanded_binding",
+          "target_component_key": "evidence_marks",
+          "target_component_id": "setup_evidence_marks",
+          "component_element_type": "connector",
+          "source_d1_binding_id": "setup_b2_scene_binding",
+          "source_b2_rule_ids": [
+            "kr_01_one_idea_per_build",
+            "ws_03_consolidate_labels",
+            "vh_05_labels_follow_visuals",
+            "mp_05_motion_follows_causal_or_reading_flow"
+          ],
+          "source_b2_action_ids": [
+            "kr_01_a1",
+            "kr_01_a2",
+            "ws_03_a1",
+            "vh_05_a2",
+            "mp_05_a1",
+            "mp_05_a2"
+          ],
+          "source_b2_action_types": [
+            "add_animation",
+            "add_reveal_step",
+            "group_elements",
+            "set_timing"
+          ],
+          "design_moves": [
+            "Split dense content into ordered build steps.",
+            "Group repeated labels, keep one legend, and reveal detail labels only when needed.",
+            "Hide labels on the first build, then reveal them after primary visual focus is established.",
+            "Set motion paths and reveal order to follow the conceptual flow."
+          ],
+          "layout_intent_binding": "information_containers",
+          "renderer_resolution_policy": {
+            "geometry_resolution": "defer_to_renderer",
+            "must_not_create_empty_box": true,
+            "must_bind_to_component_before_action": true
+          }
+        },
+        {
+          "binding_id": "setup_viewer_note_route_expanded_binding",
+          "target_component_key": "viewer_note_route",
+          "target_component_id": "setup_viewer_note_route",
+          "component_element_type": "text",
+          "source_d1_binding_id": "setup_b2_scene_binding",
+          "source_b2_rule_ids": [
+            "kr_01_one_idea_per_build",
+            "ws_03_consolidate_labels",
+            "vh_05_labels_follow_visuals",
+            "mp_05_motion_follows_causal_or_reading_flow"
+          ],
+          "source_b2_action_ids": [
+            "kr_01_a2",
+            "ws_03_a2",
+            "vh_05_a1"
+          ],
+          "source_b2_action_types": [
+            "hide_element",
+            "remove_element",
+            "set_timing"
+          ],
+          "design_moves": [
+            "Split dense content into ordered build steps.",
+            "Group repeated labels, keep one legend, and reveal detail labels only when needed.",
+            "Hide labels on the first build, then reveal them after primary visual focus is established.",
+            "Set motion paths and reveal order to follow the conceptual flow."
+          ],
+          "layout_intent_binding": "off_canvas_routes",
+          "renderer_resolution_policy": {
+            "geometry_resolution": "defer_to_renderer",
+            "must_not_create_empty_box": true,
+            "must_bind_to_component_before_action": true
+          }
+        }
+      ],
+      "off_canvas_contract": {
+        "must_delete_from_canvas": [
+          "raw tutorial transcript",
+          "copied tutorial frame",
+          "dense audit checklist",
+          "full source lineage"
+        ],
+        "speaker_note": "Explain that tutorials and videos guide decisions only after they are converted into original product memory.",
+        "viewer_only": [
+          "source audit gaps",
+          "blocked weak sources",
+          "full source lineage"
+        ]
+      },
+      "renderer_ready_boundary": {
+        "is_renderer_ready_json": true,
+        "must_not_render_ppt": true,
+        "must_validate_before_d3": true,
+        "geometry_resolution_deferred": true
+      }
+    },
+    {
+      "expansion_id": "scene_expansion_2_73_contrast",
+      "source_scene_id": "scene_compiler_2_73_contrast",
+      "slide_index": 3,
+      "role": "contrast",
+      "semantic_components": {
+        "hero_object": {
+          "component_id": "contrast_hero_object",
+          "component_role": "hero_object",
+          "element_type": "shape",
+          "content_binding": {
+            "source": "scene_plan.proof_object.primary",
+            "value": "before-after route break"
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.visual_role",
+            "value": "route comparison"
+          },
+          "renderer_target": {
+            "target_component_id": "contrast_hero_object",
+            "target_element_type": "shape",
+            "target_semantic_role": "route comparison"
+          },
+          "empty_box_policy": "forbidden",
+          "source_scene_plan_fields": [
+            "proof_object.primary",
+            "visual_role",
+            "layout_intent.main_visual"
+          ]
+        },
+        "proof_panel": {
+          "component_id": "contrast_proof_panel",
+          "component_role": "proof_panel",
+          "element_type": "shape",
+          "content_binding": {
+            "source": "scene_plan.proof_object",
+            "value": {
+              "primary": "before-after route break",
+              "evidence": [
+                "prompt-only route",
+                "missing compiler turn",
+                "Vulca route",
+                "editable destination"
+              ],
+              "business_logic": "The product difference is credible when the alternate path fails at a named missing mechanism and the Vulca path continues to editable output.",
+              "why_this_proves_the_claim": "The contrast is a system boundary, not a beauty contest."
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.layout_intent.information_containers",
+            "value": "proof_panel"
+          },
+          "renderer_target": {
+            "target_component_id": "contrast_proof_panel",
+            "target_element_type": "shape",
+            "target_semantic_role": "proof_panel"
+          },
+          "empty_box_policy": "forbidden",
+          "source_scene_plan_fields": [
+            "proof_object",
+            "layout_intent.information_containers"
+          ]
+        },
+        "supporting_copy": {
+          "component_id": "contrast_supporting_copy",
+          "component_role": "supporting_copy",
+          "element_type": "text",
+          "content_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": {
+              "headline": "The difference is mechanism, not taste.",
+              "supporting_line": "Vulca binds source memory, proof routing, design moves, and editable output before the deck is claimed.",
+              "proof_labels": [
+                "source memory",
+                "proof routing",
+                "design moves",
+                "editable output"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": "supporting_copy"
+          },
+          "renderer_target": {
+            "target_component_id": "contrast_supporting_copy",
+            "target_element_type": "text",
+            "target_semantic_role": "supporting_copy"
+          },
+          "empty_box_policy": "forbidden",
+          "source_scene_plan_fields": [
+            "content_units.on_canvas_copy",
+            "layout_intent.first_read"
+          ]
+        },
+        "evidence_marks": {
+          "component_id": "contrast_evidence_marks",
+          "component_role": "evidence_marks",
+          "element_type": "connector",
+          "content_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy.proof_labels",
+            "value": [
+              "source memory",
+              "proof routing",
+              "design moves",
+              "editable output"
+            ]
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.proof_object.evidence",
+            "value": "evidence_marks"
+          },
+          "renderer_target": {
+            "target_component_id": "contrast_evidence_marks",
+            "target_element_type": "connector",
+            "target_semantic_role": "evidence_marks"
+          },
+          "empty_box_policy": "forbidden",
+          "source_scene_plan_fields": [
+            "content_units.on_canvas_copy.proof_labels",
+            "proof_object.evidence"
+          ]
+        },
+        "viewer_note_route": {
+          "component_id": "contrast_viewer_note_route",
+          "component_role": "viewer_note_route",
+          "element_type": "text",
+          "content_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": {
+              "must_delete_from_canvas": [
+                "five-row text matrix",
+                "subjective style ranking",
+                "template gallery",
+                "raw comparison fields"
+              ],
+              "speaker_note": "Name prompt-only and image-only paths as missing mechanism, not as inferior style by default.",
+              "viewer_only": [
+                "competitor boundary ids",
+                "bad-control details",
+                "raw comparison fields"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": "viewer_note_route"
+          },
+          "renderer_target": {
+            "target_component_id": "contrast_viewer_note_route",
+            "target_element_type": "text",
+            "target_semantic_role": "viewer_note_route"
+          },
+          "empty_box_policy": "forbidden",
+          "source_scene_plan_fields": [
+            "off_canvas_routes",
+            "layout_intent.must_delete"
+          ]
+        }
+      },
+      "visual_containers": [
+        {
+          "container_id": "contrast_hero_object_container",
+          "container_type": "component_container",
+          "bound_component_id": "contrast_hero_object",
+          "content_binding": {
+            "source": "scene_plan.proof_object.primary",
+            "value": "before-after route break"
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.visual_role",
+            "value": "route comparison"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "contrast_proof_panel_container",
+          "container_type": "component_container",
+          "bound_component_id": "contrast_proof_panel",
+          "content_binding": {
+            "source": "scene_plan.proof_object",
+            "value": {
+              "primary": "before-after route break",
+              "evidence": [
+                "prompt-only route",
+                "missing compiler turn",
+                "Vulca route",
+                "editable destination"
+              ],
+              "business_logic": "The product difference is credible when the alternate path fails at a named missing mechanism and the Vulca path continues to editable output.",
+              "why_this_proves_the_claim": "The contrast is a system boundary, not a beauty contest."
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.layout_intent.information_containers",
+            "value": "proof_panel"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "contrast_supporting_copy_container",
+          "container_type": "component_container",
+          "bound_component_id": "contrast_supporting_copy",
+          "content_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": {
+              "headline": "The difference is mechanism, not taste.",
+              "supporting_line": "Vulca binds source memory, proof routing, design moves, and editable output before the deck is claimed.",
+              "proof_labels": [
+                "source memory",
+                "proof routing",
+                "design moves",
+                "editable output"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": "supporting_copy"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "contrast_evidence_marks_container",
+          "container_type": "component_container",
+          "bound_component_id": "contrast_evidence_marks",
+          "content_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy.proof_labels",
+            "value": [
+              "source memory",
+              "proof routing",
+              "design moves",
+              "editable output"
+            ]
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.proof_object.evidence",
+            "value": "evidence_marks"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "contrast_viewer_note_route_container",
+          "container_type": "component_container",
+          "bound_component_id": "contrast_viewer_note_route",
+          "content_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": {
+              "must_delete_from_canvas": [
+                "five-row text matrix",
+                "subjective style ranking",
+                "template gallery",
+                "raw comparison fields"
+              ],
+              "speaker_note": "Name prompt-only and image-only paths as missing mechanism, not as inferior style by default.",
+              "viewer_only": [
+                "competitor boundary ids",
+                "bad-control details",
+                "raw comparison fields"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": "viewer_note_route"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "contrast_claim_container_expanded",
+          "container_type": "information_container",
+          "bound_component_id": "contrast_supporting_copy",
+          "source_d1_container_id": "contrast_claim_container",
+          "content_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": {
+              "headline": "The difference is mechanism, not taste.",
+              "supporting_line": "Vulca binds source memory, proof routing, design moves, and editable output before the deck is claimed.",
+              "proof_labels": [
+                "source memory",
+                "proof routing",
+                "design moves",
+                "editable output"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": "supporting_copy"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "contrast_proof_container_expanded",
+          "container_type": "information_container",
+          "bound_component_id": "contrast_proof_panel",
+          "source_d1_container_id": "contrast_proof_container",
+          "content_binding": {
+            "source": "scene_plan.proof_object",
+            "value": {
+              "primary": "before-after route break",
+              "evidence": [
+                "prompt-only route",
+                "missing compiler turn",
+                "Vulca route",
+                "editable destination"
+              ],
+              "business_logic": "The product difference is credible when the alternate path fails at a named missing mechanism and the Vulca path continues to editable output.",
+              "why_this_proves_the_claim": "The contrast is a system boundary, not a beauty contest."
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.layout_intent.information_containers",
+            "value": "proof_panel"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "contrast_route_marker_container_expanded",
+          "container_type": "information_container",
+          "bound_component_id": "contrast_viewer_note_route",
+          "source_d1_container_id": "contrast_route_marker_container",
+          "content_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": {
+              "must_delete_from_canvas": [
+                "five-row text matrix",
+                "subjective style ranking",
+                "template gallery",
+                "raw comparison fields"
+              ],
+              "speaker_note": "Name prompt-only and image-only paths as missing mechanism, not as inferior style by default.",
+              "viewer_only": [
+                "competitor boundary ids",
+                "bad-control details",
+                "raw comparison fields"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": "viewer_note_route"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "contrast_scene_frame_expanded",
+          "container_type": "chrome",
+          "bound_component_id": "contrast_hero_object",
+          "source_d1_chrome_id": "contrast_scene_frame",
+          "content_binding": {
+            "source": "scene_plan.proof_object.primary",
+            "value": "before-after route break"
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.layout_intent.chrome",
+            "value": "scene_frame"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "contrast_note_viewer_affordance_expanded",
+          "container_type": "chrome",
+          "bound_component_id": "contrast_viewer_note_route",
+          "source_d1_chrome_id": "contrast_route_affordance",
+          "content_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": {
+              "must_delete_from_canvas": [
+                "five-row text matrix",
+                "subjective style ranking",
+                "template gallery",
+                "raw comparison fields"
+              ],
+              "speaker_note": "Name prompt-only and image-only paths as missing mechanism, not as inferior style by default.",
+              "viewer_only": [
+                "competitor boundary ids",
+                "bad-control details",
+                "raw comparison fields"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.layout_intent.chrome",
+            "value": "note_viewer_affordance"
+          },
+          "empty_box_policy": "forbidden"
+        }
+      ],
+      "expanded_renderer_action_bindings": [
+        {
+          "binding_id": "contrast_hero_object_expanded_binding",
+          "target_component_key": "hero_object",
+          "target_component_id": "contrast_hero_object",
+          "component_element_type": "shape",
+          "source_d1_binding_id": "contrast_b2_scene_binding",
+          "source_b2_rule_ids": [
+            "kr_03_before_after_contrast",
+            "vh_02_remove_competing_frames",
+            "ws_02_delete_redundant_boxes",
+            "mp_03_stagger_dependencies"
+          ],
+          "source_b2_action_ids": [
+            "kr_03_a2",
+            "kr_03_a3",
+            "vh_02_a2"
+          ],
+          "source_b2_action_types": [
+            "set_geometry",
+            "set_style"
+          ],
+          "design_moves": [
+            "Build a side-by-side or slide-pair comparison with matched scale and labels.",
+            "Delete or fade secondary boxes, borders, and card shells around non-primary content.",
+            "Remove card shells and redundant frames while preserving the content hierarchy.",
+            "Stagger callouts, arrows, and labels by small intervals after the anchor object."
+          ],
+          "layout_intent_binding": "main_visual",
+          "renderer_resolution_policy": {
+            "geometry_resolution": "defer_to_renderer",
+            "must_not_create_empty_box": true,
+            "must_bind_to_component_before_action": true
+          }
+        },
+        {
+          "binding_id": "contrast_proof_panel_expanded_binding",
+          "target_component_key": "proof_panel",
+          "target_component_id": "contrast_proof_panel",
+          "component_element_type": "shape",
+          "source_d1_binding_id": "contrast_b2_scene_binding",
+          "source_b2_rule_ids": [
+            "kr_03_before_after_contrast",
+            "vh_02_remove_competing_frames",
+            "ws_02_delete_redundant_boxes",
+            "mp_03_stagger_dependencies"
+          ],
+          "source_b2_action_ids": [
+            "kr_03_a1",
+            "kr_03_a2",
+            "kr_03_a3",
+            "vh_02_a2",
+            "ws_02_a2"
+          ],
+          "source_b2_action_types": [
+            "align_elements",
+            "create_comparison_layout",
+            "set_geometry",
+            "set_style"
+          ],
+          "design_moves": [
+            "Build a side-by-side or slide-pair comparison with matched scale and labels.",
+            "Delete or fade secondary boxes, borders, and card shells around non-primary content.",
+            "Remove card shells and redundant frames while preserving the content hierarchy.",
+            "Stagger callouts, arrows, and labels by small intervals after the anchor object."
+          ],
+          "layout_intent_binding": "information_containers",
+          "renderer_resolution_policy": {
+            "geometry_resolution": "defer_to_renderer",
+            "must_not_create_empty_box": true,
+            "must_bind_to_component_before_action": true
+          }
+        },
+        {
+          "binding_id": "contrast_supporting_copy_expanded_binding",
+          "target_component_key": "supporting_copy",
+          "target_component_id": "contrast_supporting_copy",
+          "component_element_type": "text",
+          "source_d1_binding_id": "contrast_b2_scene_binding",
+          "source_b2_rule_ids": [
+            "kr_03_before_after_contrast",
+            "vh_02_remove_competing_frames",
+            "ws_02_delete_redundant_boxes",
+            "mp_03_stagger_dependencies"
+          ],
+          "source_b2_action_ids": [
+            "vh_02_a2",
+            "mp_03_a1",
+            "mp_03_a2"
+          ],
+          "source_b2_action_types": [
+            "add_reveal_step",
+            "set_style",
+            "set_timing"
+          ],
+          "design_moves": [
+            "Build a side-by-side or slide-pair comparison with matched scale and labels.",
+            "Delete or fade secondary boxes, borders, and card shells around non-primary content.",
+            "Remove card shells and redundant frames while preserving the content hierarchy.",
+            "Stagger callouts, arrows, and labels by small intervals after the anchor object."
+          ],
+          "layout_intent_binding": "first_read",
+          "renderer_resolution_policy": {
+            "geometry_resolution": "defer_to_renderer",
+            "must_not_create_empty_box": true,
+            "must_bind_to_component_before_action": true
+          }
+        },
+        {
+          "binding_id": "contrast_evidence_marks_expanded_binding",
+          "target_component_key": "evidence_marks",
+          "target_component_id": "contrast_evidence_marks",
+          "component_element_type": "connector",
+          "source_d1_binding_id": "contrast_b2_scene_binding",
+          "source_b2_rule_ids": [
+            "kr_03_before_after_contrast",
+            "vh_02_remove_competing_frames",
+            "ws_02_delete_redundant_boxes",
+            "mp_03_stagger_dependencies"
+          ],
+          "source_b2_action_ids": [
+            "kr_03_a1",
+            "ws_02_a2",
+            "mp_03_a1",
+            "mp_03_a2"
+          ],
+          "source_b2_action_types": [
+            "add_reveal_step",
+            "align_elements",
+            "create_comparison_layout",
+            "set_timing"
+          ],
+          "design_moves": [
+            "Build a side-by-side or slide-pair comparison with matched scale and labels.",
+            "Delete or fade secondary boxes, borders, and card shells around non-primary content.",
+            "Remove card shells and redundant frames while preserving the content hierarchy.",
+            "Stagger callouts, arrows, and labels by small intervals after the anchor object."
+          ],
+          "layout_intent_binding": "information_containers",
+          "renderer_resolution_policy": {
+            "geometry_resolution": "defer_to_renderer",
+            "must_not_create_empty_box": true,
+            "must_bind_to_component_before_action": true
+          }
+        },
+        {
+          "binding_id": "contrast_viewer_note_route_expanded_binding",
+          "target_component_key": "viewer_note_route",
+          "target_component_id": "contrast_viewer_note_route",
+          "component_element_type": "text",
+          "source_d1_binding_id": "contrast_b2_scene_binding",
+          "source_b2_rule_ids": [
+            "kr_03_before_after_contrast",
+            "vh_02_remove_competing_frames",
+            "ws_02_delete_redundant_boxes",
+            "mp_03_stagger_dependencies"
+          ],
+          "source_b2_action_ids": [
+            "vh_02_a1",
+            "vh_02_a2",
+            "ws_02_a1",
+            "mp_03_a2"
+          ],
+          "source_b2_action_types": [
+            "remove_element",
+            "set_style",
+            "set_timing"
+          ],
+          "design_moves": [
+            "Build a side-by-side or slide-pair comparison with matched scale and labels.",
+            "Delete or fade secondary boxes, borders, and card shells around non-primary content.",
+            "Remove card shells and redundant frames while preserving the content hierarchy.",
+            "Stagger callouts, arrows, and labels by small intervals after the anchor object."
+          ],
+          "layout_intent_binding": "off_canvas_routes",
+          "renderer_resolution_policy": {
+            "geometry_resolution": "defer_to_renderer",
+            "must_not_create_empty_box": true,
+            "must_bind_to_component_before_action": true
+          }
+        }
+      ],
+      "off_canvas_contract": {
+        "must_delete_from_canvas": [
+          "five-row text matrix",
+          "subjective style ranking",
+          "template gallery",
+          "raw comparison fields"
+        ],
+        "speaker_note": "Name prompt-only and image-only paths as missing mechanism, not as inferior style by default.",
+        "viewer_only": [
+          "competitor boundary ids",
+          "bad-control details",
+          "raw comparison fields"
+        ]
+      },
+      "renderer_ready_boundary": {
+        "is_renderer_ready_json": true,
+        "must_not_render_ppt": true,
+        "must_validate_before_d3": true,
+        "geometry_resolution_deferred": true
+      }
+    },
+    {
+      "expansion_id": "scene_expansion_2_73_proof",
+      "source_scene_id": "scene_compiler_2_73_proof",
+      "slide_index": 4,
+      "role": "proof",
+      "semantic_components": {
+        "hero_object": {
+          "component_id": "proof_hero_object",
+          "component_role": "hero_object",
+          "element_type": "svg",
+          "content_binding": {
+            "source": "scene_plan.proof_object.primary",
+            "value": "compact inspection board"
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.visual_role",
+            "value": "inspection board"
+          },
+          "renderer_target": {
+            "target_component_id": "proof_hero_object",
+            "target_element_type": "svg",
+            "target_semantic_role": "inspection board"
+          },
+          "empty_box_policy": "forbidden",
+          "source_scene_plan_fields": [
+            "proof_object.primary",
+            "visual_role",
+            "layout_intent.main_visual"
+          ]
+        },
+        "proof_panel": {
+          "component_id": "proof_proof_panel",
+          "component_role": "proof_panel",
+          "element_type": "shape",
+          "content_binding": {
+            "source": "scene_plan.proof_object",
+            "value": {
+              "primary": "compact inspection board",
+              "evidence": [
+                "capability binding",
+                "contract match",
+                "content check",
+                "bad-control failure"
+              ],
+              "business_logic": "Trust improves when public proof is readable but still points to off-canvas records that can be inspected.",
+              "why_this_proves_the_claim": "The slide shows enough proof to trust the workflow while routing raw evidence to the viewer."
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.layout_intent.information_containers",
+            "value": "proof_panel"
+          },
+          "renderer_target": {
+            "target_component_id": "proof_proof_panel",
+            "target_element_type": "shape",
+            "target_semantic_role": "proof_panel"
+          },
+          "empty_box_policy": "forbidden",
+          "source_scene_plan_fields": [
+            "proof_object",
+            "layout_intent.information_containers"
+          ]
+        },
+        "supporting_copy": {
+          "component_id": "proof_supporting_copy",
+          "component_role": "supporting_copy",
+          "element_type": "text",
+          "content_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": {
+              "headline": "Proof stays inspectable without taking over the slide.",
+              "supporting_line": "Compact proof markers show that the workflow consumed content, contracts, and comparison boundaries.",
+              "proof_labels": [
+                "capability bound",
+                "contract matched",
+                "content checked",
+                "bad control failed"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": "supporting_copy"
+          },
+          "renderer_target": {
+            "target_component_id": "proof_supporting_copy",
+            "target_element_type": "text",
+            "target_semantic_role": "supporting_copy"
+          },
+          "empty_box_policy": "forbidden",
+          "source_scene_plan_fields": [
+            "content_units.on_canvas_copy",
+            "layout_intent.first_read"
+          ]
+        },
+        "evidence_marks": {
+          "component_id": "proof_evidence_marks",
+          "component_role": "evidence_marks",
+          "element_type": "connector",
+          "content_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy.proof_labels",
+            "value": [
+              "capability bound",
+              "contract matched",
+              "content checked",
+              "bad control failed"
+            ]
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.proof_object.evidence",
+            "value": "evidence_marks"
+          },
+          "renderer_target": {
+            "target_component_id": "proof_evidence_marks",
+            "target_element_type": "connector",
+            "target_semantic_role": "evidence_marks"
+          },
+          "empty_box_policy": "forbidden",
+          "source_scene_plan_fields": [
+            "content_units.on_canvas_copy.proof_labels",
+            "proof_object.evidence"
+          ]
+        },
+        "viewer_note_route": {
+          "component_id": "proof_viewer_note_route",
+          "component_role": "viewer_note_route",
+          "element_type": "text",
+          "content_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": {
+              "must_delete_from_canvas": [
+                "schema report",
+                "raw proof list",
+                "oversized compliance table",
+                "bad-control comparison details"
+              ],
+              "speaker_note": "Explain that raw proof stays inspectable off-canvas so the public slide remains readable.",
+              "viewer_only": [
+                "reader question records",
+                "off-canvas proof obligations",
+                "bad-control comparison details"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": "viewer_note_route"
+          },
+          "renderer_target": {
+            "target_component_id": "proof_viewer_note_route",
+            "target_element_type": "text",
+            "target_semantic_role": "viewer_note_route"
+          },
+          "empty_box_policy": "forbidden",
+          "source_scene_plan_fields": [
+            "off_canvas_routes",
+            "layout_intent.must_delete"
+          ]
+        }
+      },
+      "visual_containers": [
+        {
+          "container_id": "proof_hero_object_container",
+          "container_type": "component_container",
+          "bound_component_id": "proof_hero_object",
+          "content_binding": {
+            "source": "scene_plan.proof_object.primary",
+            "value": "compact inspection board"
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.visual_role",
+            "value": "inspection board"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "proof_proof_panel_container",
+          "container_type": "component_container",
+          "bound_component_id": "proof_proof_panel",
+          "content_binding": {
+            "source": "scene_plan.proof_object",
+            "value": {
+              "primary": "compact inspection board",
+              "evidence": [
+                "capability binding",
+                "contract match",
+                "content check",
+                "bad-control failure"
+              ],
+              "business_logic": "Trust improves when public proof is readable but still points to off-canvas records that can be inspected.",
+              "why_this_proves_the_claim": "The slide shows enough proof to trust the workflow while routing raw evidence to the viewer."
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.layout_intent.information_containers",
+            "value": "proof_panel"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "proof_supporting_copy_container",
+          "container_type": "component_container",
+          "bound_component_id": "proof_supporting_copy",
+          "content_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": {
+              "headline": "Proof stays inspectable without taking over the slide.",
+              "supporting_line": "Compact proof markers show that the workflow consumed content, contracts, and comparison boundaries.",
+              "proof_labels": [
+                "capability bound",
+                "contract matched",
+                "content checked",
+                "bad control failed"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": "supporting_copy"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "proof_evidence_marks_container",
+          "container_type": "component_container",
+          "bound_component_id": "proof_evidence_marks",
+          "content_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy.proof_labels",
+            "value": [
+              "capability bound",
+              "contract matched",
+              "content checked",
+              "bad control failed"
+            ]
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.proof_object.evidence",
+            "value": "evidence_marks"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "proof_viewer_note_route_container",
+          "container_type": "component_container",
+          "bound_component_id": "proof_viewer_note_route",
+          "content_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": {
+              "must_delete_from_canvas": [
+                "schema report",
+                "raw proof list",
+                "oversized compliance table",
+                "bad-control comparison details"
+              ],
+              "speaker_note": "Explain that raw proof stays inspectable off-canvas so the public slide remains readable.",
+              "viewer_only": [
+                "reader question records",
+                "off-canvas proof obligations",
+                "bad-control comparison details"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": "viewer_note_route"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "proof_claim_container_expanded",
+          "container_type": "information_container",
+          "bound_component_id": "proof_supporting_copy",
+          "source_d1_container_id": "proof_claim_container",
+          "content_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": {
+              "headline": "Proof stays inspectable without taking over the slide.",
+              "supporting_line": "Compact proof markers show that the workflow consumed content, contracts, and comparison boundaries.",
+              "proof_labels": [
+                "capability bound",
+                "contract matched",
+                "content checked",
+                "bad control failed"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": "supporting_copy"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "proof_proof_container_expanded",
+          "container_type": "information_container",
+          "bound_component_id": "proof_proof_panel",
+          "source_d1_container_id": "proof_proof_container",
+          "content_binding": {
+            "source": "scene_plan.proof_object",
+            "value": {
+              "primary": "compact inspection board",
+              "evidence": [
+                "capability binding",
+                "contract match",
+                "content check",
+                "bad-control failure"
+              ],
+              "business_logic": "Trust improves when public proof is readable but still points to off-canvas records that can be inspected.",
+              "why_this_proves_the_claim": "The slide shows enough proof to trust the workflow while routing raw evidence to the viewer."
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.layout_intent.information_containers",
+            "value": "proof_panel"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "proof_route_marker_container_expanded",
+          "container_type": "information_container",
+          "bound_component_id": "proof_viewer_note_route",
+          "source_d1_container_id": "proof_route_marker_container",
+          "content_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": {
+              "must_delete_from_canvas": [
+                "schema report",
+                "raw proof list",
+                "oversized compliance table",
+                "bad-control comparison details"
+              ],
+              "speaker_note": "Explain that raw proof stays inspectable off-canvas so the public slide remains readable.",
+              "viewer_only": [
+                "reader question records",
+                "off-canvas proof obligations",
+                "bad-control comparison details"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": "viewer_note_route"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "proof_scene_frame_expanded",
+          "container_type": "chrome",
+          "bound_component_id": "proof_hero_object",
+          "source_d1_chrome_id": "proof_scene_frame",
+          "content_binding": {
+            "source": "scene_plan.proof_object.primary",
+            "value": "compact inspection board"
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.layout_intent.chrome",
+            "value": "scene_frame"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "proof_note_viewer_affordance_expanded",
+          "container_type": "chrome",
+          "bound_component_id": "proof_viewer_note_route",
+          "source_d1_chrome_id": "proof_route_affordance",
+          "content_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": {
+              "must_delete_from_canvas": [
+                "schema report",
+                "raw proof list",
+                "oversized compliance table",
+                "bad-control comparison details"
+              ],
+              "speaker_note": "Explain that raw proof stays inspectable off-canvas so the public slide remains readable.",
+              "viewer_only": [
+                "reader question records",
+                "off-canvas proof obligations",
+                "bad-control comparison details"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.layout_intent.chrome",
+            "value": "note_viewer_affordance"
+          },
+          "empty_box_policy": "forbidden"
+        }
+      ],
+      "expanded_renderer_action_bindings": [
+        {
+          "binding_id": "proof_hero_object_expanded_binding",
+          "target_component_key": "hero_object",
+          "target_component_id": "proof_hero_object",
+          "component_element_type": "svg",
+          "source_d1_binding_id": "proof_b2_scene_binding",
+          "source_b2_rule_ids": [
+            "vh_01_primary_subject_first_read",
+            "kr_01_one_idea_per_build",
+            "ws_04_align_to_fewer_axes",
+            "mp_01_object_before_label"
+          ],
+          "source_b2_action_ids": [
+            "vh_01_a1",
+            "vh_01_a2",
+            "vh_01_a3",
+            "mp_01_a1",
+            "mp_01_a2"
+          ],
+          "source_b2_action_types": [
+            "add_animation",
+            "select_element",
+            "set_geometry",
+            "set_style"
+          ],
+          "design_moves": [
+            "Scale and anchor the primary subject, then reduce nearby competitors.",
+            "Split dense content into ordered build steps.",
+            "Align blocks to shared edges and normalize gutters.",
+            "Animate the visual first, then fade in its label after a short delay."
+          ],
+          "layout_intent_binding": "main_visual",
+          "renderer_resolution_policy": {
+            "geometry_resolution": "defer_to_renderer",
+            "must_not_create_empty_box": true,
+            "must_bind_to_component_before_action": true
+          }
+        },
+        {
+          "binding_id": "proof_proof_panel_expanded_binding",
+          "target_component_key": "proof_panel",
+          "target_component_id": "proof_proof_panel",
+          "component_element_type": "shape",
+          "source_d1_binding_id": "proof_b2_scene_binding",
+          "source_b2_rule_ids": [
+            "vh_01_primary_subject_first_read",
+            "kr_01_one_idea_per_build",
+            "ws_04_align_to_fewer_axes",
+            "mp_01_object_before_label"
+          ],
+          "source_b2_action_ids": [
+            "vh_01_a2",
+            "vh_01_a3",
+            "ws_04_a1",
+            "ws_04_a2"
+          ],
+          "source_b2_action_types": [
+            "align_elements",
+            "distribute_spacing",
+            "set_geometry",
+            "set_style"
+          ],
+          "design_moves": [
+            "Scale and anchor the primary subject, then reduce nearby competitors.",
+            "Split dense content into ordered build steps.",
+            "Align blocks to shared edges and normalize gutters.",
+            "Animate the visual first, then fade in its label after a short delay."
+          ],
+          "layout_intent_binding": "information_containers",
+          "renderer_resolution_policy": {
+            "geometry_resolution": "defer_to_renderer",
+            "must_not_create_empty_box": true,
+            "must_bind_to_component_before_action": true
+          }
+        },
+        {
+          "binding_id": "proof_supporting_copy_expanded_binding",
+          "target_component_key": "supporting_copy",
+          "target_component_id": "proof_supporting_copy",
+          "component_element_type": "text",
+          "source_d1_binding_id": "proof_b2_scene_binding",
+          "source_b2_rule_ids": [
+            "vh_01_primary_subject_first_read",
+            "kr_01_one_idea_per_build",
+            "ws_04_align_to_fewer_axes",
+            "mp_01_object_before_label"
+          ],
+          "source_b2_action_ids": [
+            "vh_01_a3",
+            "kr_01_a1",
+            "kr_01_a2",
+            "mp_01_a1",
+            "mp_01_a2"
+          ],
+          "source_b2_action_types": [
+            "add_animation",
+            "add_reveal_step",
+            "set_style",
+            "set_timing"
+          ],
+          "design_moves": [
+            "Scale and anchor the primary subject, then reduce nearby competitors.",
+            "Split dense content into ordered build steps.",
+            "Align blocks to shared edges and normalize gutters.",
+            "Animate the visual first, then fade in its label after a short delay."
+          ],
+          "layout_intent_binding": "first_read",
+          "renderer_resolution_policy": {
+            "geometry_resolution": "defer_to_renderer",
+            "must_not_create_empty_box": true,
+            "must_bind_to_component_before_action": true
+          }
+        },
+        {
+          "binding_id": "proof_evidence_marks_expanded_binding",
+          "target_component_key": "evidence_marks",
+          "target_component_id": "proof_evidence_marks",
+          "component_element_type": "connector",
+          "source_d1_binding_id": "proof_b2_scene_binding",
+          "source_b2_rule_ids": [
+            "vh_01_primary_subject_first_read",
+            "kr_01_one_idea_per_build",
+            "ws_04_align_to_fewer_axes",
+            "mp_01_object_before_label"
+          ],
+          "source_b2_action_ids": [
+            "kr_01_a1",
+            "kr_01_a2",
+            "ws_04_a1",
+            "ws_04_a2",
+            "mp_01_a1",
+            "mp_01_a2"
+          ],
+          "source_b2_action_types": [
+            "add_animation",
+            "add_reveal_step",
+            "align_elements",
+            "distribute_spacing",
+            "set_timing"
+          ],
+          "design_moves": [
+            "Scale and anchor the primary subject, then reduce nearby competitors.",
+            "Split dense content into ordered build steps.",
+            "Align blocks to shared edges and normalize gutters.",
+            "Animate the visual first, then fade in its label after a short delay."
+          ],
+          "layout_intent_binding": "information_containers",
+          "renderer_resolution_policy": {
+            "geometry_resolution": "defer_to_renderer",
+            "must_not_create_empty_box": true,
+            "must_bind_to_component_before_action": true
+          }
+        },
+        {
+          "binding_id": "proof_viewer_note_route_expanded_binding",
+          "target_component_key": "viewer_note_route",
+          "target_component_id": "proof_viewer_note_route",
+          "component_element_type": "text",
+          "source_d1_binding_id": "proof_b2_scene_binding",
+          "source_b2_rule_ids": [
+            "vh_01_primary_subject_first_read",
+            "kr_01_one_idea_per_build",
+            "ws_04_align_to_fewer_axes",
+            "mp_01_object_before_label"
+          ],
+          "source_b2_action_ids": [
+            "vh_01_a3",
+            "kr_01_a2"
+          ],
+          "source_b2_action_types": [
+            "set_style",
+            "set_timing"
+          ],
+          "design_moves": [
+            "Scale and anchor the primary subject, then reduce nearby competitors.",
+            "Split dense content into ordered build steps.",
+            "Align blocks to shared edges and normalize gutters.",
+            "Animate the visual first, then fade in its label after a short delay."
+          ],
+          "layout_intent_binding": "off_canvas_routes",
+          "renderer_resolution_policy": {
+            "geometry_resolution": "defer_to_renderer",
+            "must_not_create_empty_box": true,
+            "must_bind_to_component_before_action": true
+          }
+        }
+      ],
+      "off_canvas_contract": {
+        "must_delete_from_canvas": [
+          "schema report",
+          "raw proof list",
+          "oversized compliance table",
+          "bad-control comparison details"
+        ],
+        "speaker_note": "Explain that raw proof stays inspectable off-canvas so the public slide remains readable.",
+        "viewer_only": [
+          "reader question records",
+          "off-canvas proof obligations",
+          "bad-control comparison details"
+        ]
+      },
+      "renderer_ready_boundary": {
+        "is_renderer_ready_json": true,
+        "must_not_render_ppt": true,
+        "must_validate_before_d3": true,
+        "geometry_resolution_deferred": true
+      }
+    },
+    {
+      "expansion_id": "scene_expansion_2_73_climax",
+      "source_scene_id": "scene_compiler_2_73_climax",
+      "slide_index": 5,
+      "role": "climax",
+      "semantic_components": {
+        "hero_object": {
+          "component_id": "climax_hero_object",
+          "component_role": "hero_object",
+          "element_type": "svg",
+          "content_binding": {
+            "source": "scene_plan.proof_object.primary",
+            "value": "editable PPT preview hero object"
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.visual_role",
+            "value": "hero editable result"
+          },
+          "renderer_target": {
+            "target_component_id": "climax_hero_object",
+            "target_element_type": "svg",
+            "target_semantic_role": "hero editable result"
+          },
+          "empty_box_policy": "forbidden",
+          "source_scene_plan_fields": [
+            "proof_object.primary",
+            "visual_role",
+            "layout_intent.main_visual"
+          ]
+        },
+        "proof_panel": {
+          "component_id": "climax_proof_panel",
+          "component_role": "proof_panel",
+          "element_type": "shape",
+          "content_binding": {
+            "source": "scene_plan.proof_object",
+            "value": {
+              "primary": "editable PPT preview hero object",
+              "evidence": [
+                "design memory route",
+                "code renderer tag",
+                "editable preview",
+                "QA proof tag"
+              ],
+              "business_logic": "The product becomes memorable when the user sees the operating loop converge into one editable artifact rather than disconnected process cards.",
+              "why_this_proves_the_claim": "The product moment is a generated editable result with proof attached, not a set of disconnected diagrams."
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.layout_intent.information_containers",
+            "value": "proof_panel"
+          },
+          "renderer_target": {
+            "target_component_id": "climax_proof_panel",
+            "target_element_type": "shape",
+            "target_semantic_role": "proof_panel"
+          },
+          "empty_box_policy": "forbidden",
+          "source_scene_plan_fields": [
+            "proof_object",
+            "layout_intent.information_containers"
+          ]
+        },
+        "supporting_copy": {
+          "component_id": "climax_supporting_copy",
+          "component_role": "supporting_copy",
+          "element_type": "text",
+          "content_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": {
+              "headline": "One editable result owns the product moment.",
+              "supporting_line": "Design memory, mapped design moves, code generation, and proof converge into one editable PPT preview.",
+              "proof_labels": [
+                "design memory",
+                "mapped design moves",
+                "editable preview",
+                "QA proof"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": "supporting_copy"
+          },
+          "renderer_target": {
+            "target_component_id": "climax_supporting_copy",
+            "target_element_type": "text",
+            "target_semantic_role": "supporting_copy"
+          },
+          "empty_box_policy": "forbidden",
+          "source_scene_plan_fields": [
+            "content_units.on_canvas_copy",
+            "layout_intent.first_read"
+          ]
+        },
+        "evidence_marks": {
+          "component_id": "climax_evidence_marks",
+          "component_role": "evidence_marks",
+          "element_type": "connector",
+          "content_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy.proof_labels",
+            "value": [
+              "design memory",
+              "mapped design moves",
+              "editable preview",
+              "QA proof"
+            ]
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.proof_object.evidence",
+            "value": "evidence_marks"
+          },
+          "renderer_target": {
+            "target_component_id": "climax_evidence_marks",
+            "target_element_type": "connector",
+            "target_semantic_role": "evidence_marks"
+          },
+          "empty_box_policy": "forbidden",
+          "source_scene_plan_fields": [
+            "content_units.on_canvas_copy.proof_labels",
+            "proof_object.evidence"
+          ]
+        },
+        "viewer_note_route": {
+          "component_id": "climax_viewer_note_route",
+          "component_role": "viewer_note_route",
+          "element_type": "text",
+          "content_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": {
+              "must_delete_from_canvas": [
+                "separate report cards",
+                "small disconnected diagram",
+                "generic launch slogan",
+                "internal QA criteria"
+              ],
+              "speaker_note": "Keep this slide cinematic and least report-like; proof should orbit the result, not compete with it.",
+              "viewer_only": [
+                "full product term list",
+                "source refs",
+                "internal QA criteria"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": "viewer_note_route"
+          },
+          "renderer_target": {
+            "target_component_id": "climax_viewer_note_route",
+            "target_element_type": "text",
+            "target_semantic_role": "viewer_note_route"
+          },
+          "empty_box_policy": "forbidden",
+          "source_scene_plan_fields": [
+            "off_canvas_routes",
+            "layout_intent.must_delete"
+          ]
+        }
+      },
+      "visual_containers": [
+        {
+          "container_id": "climax_hero_object_container",
+          "container_type": "component_container",
+          "bound_component_id": "climax_hero_object",
+          "content_binding": {
+            "source": "scene_plan.proof_object.primary",
+            "value": "editable PPT preview hero object"
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.visual_role",
+            "value": "hero editable result"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "climax_proof_panel_container",
+          "container_type": "component_container",
+          "bound_component_id": "climax_proof_panel",
+          "content_binding": {
+            "source": "scene_plan.proof_object",
+            "value": {
+              "primary": "editable PPT preview hero object",
+              "evidence": [
+                "design memory route",
+                "code renderer tag",
+                "editable preview",
+                "QA proof tag"
+              ],
+              "business_logic": "The product becomes memorable when the user sees the operating loop converge into one editable artifact rather than disconnected process cards.",
+              "why_this_proves_the_claim": "The product moment is a generated editable result with proof attached, not a set of disconnected diagrams."
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.layout_intent.information_containers",
+            "value": "proof_panel"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "climax_supporting_copy_container",
+          "container_type": "component_container",
+          "bound_component_id": "climax_supporting_copy",
+          "content_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": {
+              "headline": "One editable result owns the product moment.",
+              "supporting_line": "Design memory, mapped design moves, code generation, and proof converge into one editable PPT preview.",
+              "proof_labels": [
+                "design memory",
+                "mapped design moves",
+                "editable preview",
+                "QA proof"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": "supporting_copy"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "climax_evidence_marks_container",
+          "container_type": "component_container",
+          "bound_component_id": "climax_evidence_marks",
+          "content_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy.proof_labels",
+            "value": [
+              "design memory",
+              "mapped design moves",
+              "editable preview",
+              "QA proof"
+            ]
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.proof_object.evidence",
+            "value": "evidence_marks"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "climax_viewer_note_route_container",
+          "container_type": "component_container",
+          "bound_component_id": "climax_viewer_note_route",
+          "content_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": {
+              "must_delete_from_canvas": [
+                "separate report cards",
+                "small disconnected diagram",
+                "generic launch slogan",
+                "internal QA criteria"
+              ],
+              "speaker_note": "Keep this slide cinematic and least report-like; proof should orbit the result, not compete with it.",
+              "viewer_only": [
+                "full product term list",
+                "source refs",
+                "internal QA criteria"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": "viewer_note_route"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "climax_claim_container_expanded",
+          "container_type": "information_container",
+          "bound_component_id": "climax_supporting_copy",
+          "source_d1_container_id": "climax_claim_container",
+          "content_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": {
+              "headline": "One editable result owns the product moment.",
+              "supporting_line": "Design memory, mapped design moves, code generation, and proof converge into one editable PPT preview.",
+              "proof_labels": [
+                "design memory",
+                "mapped design moves",
+                "editable preview",
+                "QA proof"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": "supporting_copy"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "climax_proof_container_expanded",
+          "container_type": "information_container",
+          "bound_component_id": "climax_proof_panel",
+          "source_d1_container_id": "climax_proof_container",
+          "content_binding": {
+            "source": "scene_plan.proof_object",
+            "value": {
+              "primary": "editable PPT preview hero object",
+              "evidence": [
+                "design memory route",
+                "code renderer tag",
+                "editable preview",
+                "QA proof tag"
+              ],
+              "business_logic": "The product becomes memorable when the user sees the operating loop converge into one editable artifact rather than disconnected process cards.",
+              "why_this_proves_the_claim": "The product moment is a generated editable result with proof attached, not a set of disconnected diagrams."
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.layout_intent.information_containers",
+            "value": "proof_panel"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "climax_route_marker_container_expanded",
+          "container_type": "information_container",
+          "bound_component_id": "climax_viewer_note_route",
+          "source_d1_container_id": "climax_route_marker_container",
+          "content_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": {
+              "must_delete_from_canvas": [
+                "separate report cards",
+                "small disconnected diagram",
+                "generic launch slogan",
+                "internal QA criteria"
+              ],
+              "speaker_note": "Keep this slide cinematic and least report-like; proof should orbit the result, not compete with it.",
+              "viewer_only": [
+                "full product term list",
+                "source refs",
+                "internal QA criteria"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": "viewer_note_route"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "climax_scene_frame_expanded",
+          "container_type": "chrome",
+          "bound_component_id": "climax_hero_object",
+          "source_d1_chrome_id": "climax_scene_frame",
+          "content_binding": {
+            "source": "scene_plan.proof_object.primary",
+            "value": "editable PPT preview hero object"
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.layout_intent.chrome",
+            "value": "scene_frame"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "climax_note_viewer_affordance_expanded",
+          "container_type": "chrome",
+          "bound_component_id": "climax_viewer_note_route",
+          "source_d1_chrome_id": "climax_route_affordance",
+          "content_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": {
+              "must_delete_from_canvas": [
+                "separate report cards",
+                "small disconnected diagram",
+                "generic launch slogan",
+                "internal QA criteria"
+              ],
+              "speaker_note": "Keep this slide cinematic and least report-like; proof should orbit the result, not compete with it.",
+              "viewer_only": [
+                "full product term list",
+                "source refs",
+                "internal QA criteria"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.layout_intent.chrome",
+            "value": "note_viewer_affordance"
+          },
+          "empty_box_policy": "forbidden"
+        }
+      ],
+      "expanded_renderer_action_bindings": [
+        {
+          "binding_id": "climax_hero_object_expanded_binding",
+          "target_component_key": "hero_object",
+          "target_component_id": "climax_hero_object",
+          "component_element_type": "svg",
+          "source_d1_binding_id": "climax_b2_scene_binding",
+          "source_b2_rule_ids": [
+            "vh_01_primary_subject_first_read",
+            "ws_01_create_outer_breathing_room",
+            "kr_04_hold_visual_before_explanation",
+            "mp_04_pause_after_major_reveal"
+          ],
+          "source_b2_action_ids": [
+            "vh_01_a1",
+            "vh_01_a2",
+            "vh_01_a3",
+            "ws_01_a1"
+          ],
+          "source_b2_action_types": [
+            "select_element",
+            "set_geometry",
+            "set_style"
+          ],
+          "design_moves": [
+            "Scale and anchor the primary subject, then reduce nearby competitors.",
+            "Constrain content to a safe area and reserve a clear empty zone.",
+            "Create an initial visual-only beat, then reveal explanation text.",
+            "Hold after revealing the main result before adding labels or secondary evidence."
+          ],
+          "layout_intent_binding": "main_visual",
+          "renderer_resolution_policy": {
+            "geometry_resolution": "defer_to_renderer",
+            "must_not_create_empty_box": true,
+            "must_bind_to_component_before_action": true
+          }
+        },
+        {
+          "binding_id": "climax_proof_panel_expanded_binding",
+          "target_component_key": "proof_panel",
+          "target_component_id": "climax_proof_panel",
+          "component_element_type": "shape",
+          "source_d1_binding_id": "climax_b2_scene_binding",
+          "source_b2_rule_ids": [
+            "vh_01_primary_subject_first_read",
+            "ws_01_create_outer_breathing_room",
+            "kr_04_hold_visual_before_explanation",
+            "mp_04_pause_after_major_reveal"
+          ],
+          "source_b2_action_ids": [
+            "vh_01_a2",
+            "vh_01_a3",
+            "ws_01_a1",
+            "ws_01_a2"
+          ],
+          "source_b2_action_types": [
+            "distribute_spacing",
+            "set_geometry",
+            "set_style"
+          ],
+          "design_moves": [
+            "Scale and anchor the primary subject, then reduce nearby competitors.",
+            "Constrain content to a safe area and reserve a clear empty zone.",
+            "Create an initial visual-only beat, then reveal explanation text.",
+            "Hold after revealing the main result before adding labels or secondary evidence."
+          ],
+          "layout_intent_binding": "information_containers",
+          "renderer_resolution_policy": {
+            "geometry_resolution": "defer_to_renderer",
+            "must_not_create_empty_box": true,
+            "must_bind_to_component_before_action": true
+          }
+        },
+        {
+          "binding_id": "climax_supporting_copy_expanded_binding",
+          "target_component_key": "supporting_copy",
+          "target_component_id": "climax_supporting_copy",
+          "component_element_type": "text",
+          "source_d1_binding_id": "climax_b2_scene_binding",
+          "source_b2_rule_ids": [
+            "vh_01_primary_subject_first_read",
+            "ws_01_create_outer_breathing_room",
+            "kr_04_hold_visual_before_explanation",
+            "mp_04_pause_after_major_reveal"
+          ],
+          "source_b2_action_ids": [
+            "vh_01_a3",
+            "kr_04_a1",
+            "kr_04_a2",
+            "mp_04_a1",
+            "mp_04_a2"
+          ],
+          "source_b2_action_types": [
+            "hide_element",
+            "set_style",
+            "set_timing"
+          ],
+          "design_moves": [
+            "Scale and anchor the primary subject, then reduce nearby competitors.",
+            "Constrain content to a safe area and reserve a clear empty zone.",
+            "Create an initial visual-only beat, then reveal explanation text.",
+            "Hold after revealing the main result before adding labels or secondary evidence."
+          ],
+          "layout_intent_binding": "first_read",
+          "renderer_resolution_policy": {
+            "geometry_resolution": "defer_to_renderer",
+            "must_not_create_empty_box": true,
+            "must_bind_to_component_before_action": true
+          }
+        },
+        {
+          "binding_id": "climax_evidence_marks_expanded_binding",
+          "target_component_key": "evidence_marks",
+          "target_component_id": "climax_evidence_marks",
+          "component_element_type": "connector",
+          "source_d1_binding_id": "climax_b2_scene_binding",
+          "source_b2_rule_ids": [
+            "vh_01_primary_subject_first_read",
+            "ws_01_create_outer_breathing_room",
+            "kr_04_hold_visual_before_explanation",
+            "mp_04_pause_after_major_reveal"
+          ],
+          "source_b2_action_ids": [
+            "ws_01_a2",
+            "kr_04_a2",
+            "mp_04_a1",
+            "mp_04_a2"
+          ],
+          "source_b2_action_types": [
+            "distribute_spacing",
+            "set_timing"
+          ],
+          "design_moves": [
+            "Scale and anchor the primary subject, then reduce nearby competitors.",
+            "Constrain content to a safe area and reserve a clear empty zone.",
+            "Create an initial visual-only beat, then reveal explanation text.",
+            "Hold after revealing the main result before adding labels or secondary evidence."
+          ],
+          "layout_intent_binding": "information_containers",
+          "renderer_resolution_policy": {
+            "geometry_resolution": "defer_to_renderer",
+            "must_not_create_empty_box": true,
+            "must_bind_to_component_before_action": true
+          }
+        },
+        {
+          "binding_id": "climax_viewer_note_route_expanded_binding",
+          "target_component_key": "viewer_note_route",
+          "target_component_id": "climax_viewer_note_route",
+          "component_element_type": "text",
+          "source_d1_binding_id": "climax_b2_scene_binding",
+          "source_b2_rule_ids": [
+            "vh_01_primary_subject_first_read",
+            "ws_01_create_outer_breathing_room",
+            "kr_04_hold_visual_before_explanation",
+            "mp_04_pause_after_major_reveal"
+          ],
+          "source_b2_action_ids": [
+            "vh_01_a3",
+            "kr_04_a1",
+            "kr_04_a2",
+            "mp_04_a1",
+            "mp_04_a2"
+          ],
+          "source_b2_action_types": [
+            "hide_element",
+            "set_style",
+            "set_timing"
+          ],
+          "design_moves": [
+            "Scale and anchor the primary subject, then reduce nearby competitors.",
+            "Constrain content to a safe area and reserve a clear empty zone.",
+            "Create an initial visual-only beat, then reveal explanation text.",
+            "Hold after revealing the main result before adding labels or secondary evidence."
+          ],
+          "layout_intent_binding": "off_canvas_routes",
+          "renderer_resolution_policy": {
+            "geometry_resolution": "defer_to_renderer",
+            "must_not_create_empty_box": true,
+            "must_bind_to_component_before_action": true
+          }
+        }
+      ],
+      "off_canvas_contract": {
+        "must_delete_from_canvas": [
+          "separate report cards",
+          "small disconnected diagram",
+          "generic launch slogan",
+          "internal QA criteria"
+        ],
+        "speaker_note": "Keep this slide cinematic and least report-like; proof should orbit the result, not compete with it.",
+        "viewer_only": [
+          "full product term list",
+          "source refs",
+          "internal QA criteria"
+        ]
+      },
+      "renderer_ready_boundary": {
+        "is_renderer_ready_json": true,
+        "must_not_render_ppt": true,
+        "must_validate_before_d3": true,
+        "geometry_resolution_deferred": true
+      }
+    },
+    {
+      "expansion_id": "scene_expansion_2_73_close",
+      "source_scene_id": "scene_compiler_2_73_close",
+      "slide_index": 6,
+      "role": "close",
+      "semantic_components": {
+        "hero_object": {
+          "component_id": "close_hero_object",
+          "component_role": "hero_object",
+          "element_type": "shape",
+          "content_binding": {
+            "source": "scene_plan.proof_object.primary",
+            "value": "release handoff gate"
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.visual_role",
+            "value": "quiet release decision wall"
+          },
+          "renderer_target": {
+            "target_component_id": "close_hero_object",
+            "target_element_type": "shape",
+            "target_semantic_role": "quiet release decision wall"
+          },
+          "empty_box_policy": "forbidden",
+          "source_scene_plan_fields": [
+            "proof_object.primary",
+            "visual_role",
+            "layout_intent.main_visual"
+          ]
+        },
+        "proof_panel": {
+          "component_id": "close_proof_panel",
+          "component_role": "proof_panel",
+          "element_type": "shape",
+          "content_binding": {
+            "source": "scene_plan.proof_object",
+            "value": {
+              "primary": "release handoff gate",
+              "evidence": [
+                "content story ready",
+                "next generated proof",
+                "human review",
+                "source-boundary review"
+              ],
+              "business_logic": "Credibility is preserved when the deck names the next proof and review gate instead of turning content readiness into a release claim.",
+              "why_this_proves_the_claim": "The close is credible because it names the remaining proof instead of claiming release."
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.layout_intent.information_containers",
+            "value": "proof_panel"
+          },
+          "renderer_target": {
+            "target_component_id": "close_proof_panel",
+            "target_element_type": "shape",
+            "target_semantic_role": "proof_panel"
+          },
+          "empty_box_policy": "forbidden",
+          "source_scene_plan_fields": [
+            "proof_object",
+            "layout_intent.information_containers"
+          ]
+        },
+        "supporting_copy": {
+          "component_id": "close_supporting_copy",
+          "component_role": "supporting_copy",
+          "element_type": "text",
+          "content_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": {
+              "headline": "The next proof is generated, not claimed.",
+              "supporting_line": "This story becomes input for the next generated deck, then waits for review before release.",
+              "proof_labels": [
+                "story ready",
+                "generated proof next",
+                "human review",
+                "release blocked"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": "supporting_copy"
+          },
+          "renderer_target": {
+            "target_component_id": "close_supporting_copy",
+            "target_element_type": "text",
+            "target_semantic_role": "supporting_copy"
+          },
+          "empty_box_policy": "forbidden",
+          "source_scene_plan_fields": [
+            "content_units.on_canvas_copy",
+            "layout_intent.first_read"
+          ]
+        },
+        "evidence_marks": {
+          "component_id": "close_evidence_marks",
+          "component_role": "evidence_marks",
+          "element_type": "connector",
+          "content_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy.proof_labels",
+            "value": [
+              "story ready",
+              "generated proof next",
+              "human review",
+              "release blocked"
+            ]
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.proof_object.evidence",
+            "value": "evidence_marks"
+          },
+          "renderer_target": {
+            "target_component_id": "close_evidence_marks",
+            "target_element_type": "connector",
+            "target_semantic_role": "evidence_marks"
+          },
+          "empty_box_policy": "forbidden",
+          "source_scene_plan_fields": [
+            "content_units.on_canvas_copy.proof_labels",
+            "proof_object.evidence"
+          ]
+        },
+        "viewer_note_route": {
+          "component_id": "close_viewer_note_route",
+          "component_role": "viewer_note_route",
+          "element_type": "text",
+          "content_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": {
+              "must_delete_from_canvas": [
+                "launch celebration",
+                "public-ready claim",
+                "dense run history",
+                "full release checklist"
+              ],
+              "speaker_note": "Name the remaining gate calmly: generated proof, visual review, native inspection, source-boundary review, and human approval.",
+              "viewer_only": [
+                "run-specific handoff ids",
+                "full release checklist",
+                "human approval notes"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": "viewer_note_route"
+          },
+          "renderer_target": {
+            "target_component_id": "close_viewer_note_route",
+            "target_element_type": "text",
+            "target_semantic_role": "viewer_note_route"
+          },
+          "empty_box_policy": "forbidden",
+          "source_scene_plan_fields": [
+            "off_canvas_routes",
+            "layout_intent.must_delete"
+          ]
+        }
+      },
+      "visual_containers": [
+        {
+          "container_id": "close_hero_object_container",
+          "container_type": "component_container",
+          "bound_component_id": "close_hero_object",
+          "content_binding": {
+            "source": "scene_plan.proof_object.primary",
+            "value": "release handoff gate"
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.visual_role",
+            "value": "quiet release decision wall"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "close_proof_panel_container",
+          "container_type": "component_container",
+          "bound_component_id": "close_proof_panel",
+          "content_binding": {
+            "source": "scene_plan.proof_object",
+            "value": {
+              "primary": "release handoff gate",
+              "evidence": [
+                "content story ready",
+                "next generated proof",
+                "human review",
+                "source-boundary review"
+              ],
+              "business_logic": "Credibility is preserved when the deck names the next proof and review gate instead of turning content readiness into a release claim.",
+              "why_this_proves_the_claim": "The close is credible because it names the remaining proof instead of claiming release."
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.layout_intent.information_containers",
+            "value": "proof_panel"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "close_supporting_copy_container",
+          "container_type": "component_container",
+          "bound_component_id": "close_supporting_copy",
+          "content_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": {
+              "headline": "The next proof is generated, not claimed.",
+              "supporting_line": "This story becomes input for the next generated deck, then waits for review before release.",
+              "proof_labels": [
+                "story ready",
+                "generated proof next",
+                "human review",
+                "release blocked"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": "supporting_copy"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "close_evidence_marks_container",
+          "container_type": "component_container",
+          "bound_component_id": "close_evidence_marks",
+          "content_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy.proof_labels",
+            "value": [
+              "story ready",
+              "generated proof next",
+              "human review",
+              "release blocked"
+            ]
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.proof_object.evidence",
+            "value": "evidence_marks"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "close_viewer_note_route_container",
+          "container_type": "component_container",
+          "bound_component_id": "close_viewer_note_route",
+          "content_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": {
+              "must_delete_from_canvas": [
+                "launch celebration",
+                "public-ready claim",
+                "dense run history",
+                "full release checklist"
+              ],
+              "speaker_note": "Name the remaining gate calmly: generated proof, visual review, native inspection, source-boundary review, and human approval.",
+              "viewer_only": [
+                "run-specific handoff ids",
+                "full release checklist",
+                "human approval notes"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": "viewer_note_route"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "close_claim_container_expanded",
+          "container_type": "information_container",
+          "bound_component_id": "close_supporting_copy",
+          "source_d1_container_id": "close_claim_container",
+          "content_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": {
+              "headline": "The next proof is generated, not claimed.",
+              "supporting_line": "This story becomes input for the next generated deck, then waits for review before release.",
+              "proof_labels": [
+                "story ready",
+                "generated proof next",
+                "human review",
+                "release blocked"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.content_units.on_canvas_copy",
+            "value": "supporting_copy"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "close_proof_container_expanded",
+          "container_type": "information_container",
+          "bound_component_id": "close_proof_panel",
+          "source_d1_container_id": "close_proof_container",
+          "content_binding": {
+            "source": "scene_plan.proof_object",
+            "value": {
+              "primary": "release handoff gate",
+              "evidence": [
+                "content story ready",
+                "next generated proof",
+                "human review",
+                "source-boundary review"
+              ],
+              "business_logic": "Credibility is preserved when the deck names the next proof and review gate instead of turning content readiness into a release claim.",
+              "why_this_proves_the_claim": "The close is credible because it names the remaining proof instead of claiming release."
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.layout_intent.information_containers",
+            "value": "proof_panel"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "close_route_marker_container_expanded",
+          "container_type": "information_container",
+          "bound_component_id": "close_viewer_note_route",
+          "source_d1_container_id": "close_route_marker_container",
+          "content_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": {
+              "must_delete_from_canvas": [
+                "launch celebration",
+                "public-ready claim",
+                "dense run history",
+                "full release checklist"
+              ],
+              "speaker_note": "Name the remaining gate calmly: generated proof, visual review, native inspection, source-boundary review, and human approval.",
+              "viewer_only": [
+                "run-specific handoff ids",
+                "full release checklist",
+                "human approval notes"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": "viewer_note_route"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "close_scene_frame_expanded",
+          "container_type": "chrome",
+          "bound_component_id": "close_hero_object",
+          "source_d1_chrome_id": "close_scene_frame",
+          "content_binding": {
+            "source": "scene_plan.proof_object.primary",
+            "value": "release handoff gate"
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.layout_intent.chrome",
+            "value": "scene_frame"
+          },
+          "empty_box_policy": "forbidden"
+        },
+        {
+          "container_id": "close_note_viewer_affordance_expanded",
+          "container_type": "chrome",
+          "bound_component_id": "close_viewer_note_route",
+          "source_d1_chrome_id": "close_route_affordance",
+          "content_binding": {
+            "source": "scene_plan.off_canvas_routes",
+            "value": {
+              "must_delete_from_canvas": [
+                "launch celebration",
+                "public-ready claim",
+                "dense run history",
+                "full release checklist"
+              ],
+              "speaker_note": "Name the remaining gate calmly: generated proof, visual review, native inspection, source-boundary review, and human approval.",
+              "viewer_only": [
+                "run-specific handoff ids",
+                "full release checklist",
+                "human approval notes"
+              ]
+            }
+          },
+          "semantic_role_binding": {
+            "source": "scene_plan.layout_intent.chrome",
+            "value": "note_viewer_affordance"
+          },
+          "empty_box_policy": "forbidden"
+        }
+      ],
+      "expanded_renderer_action_bindings": [
+        {
+          "binding_id": "close_hero_object_expanded_binding",
+          "target_component_key": "hero_object",
+          "target_component_id": "close_hero_object",
+          "component_element_type": "shape",
+          "source_d1_binding_id": "close_b2_scene_binding",
+          "source_b2_rule_ids": [
+            "kr_05_state_change_by_duplication",
+            "ws_05_reduce_background_noise",
+            "vh_03_z_order_guides_attention",
+            "mp_05_motion_follows_causal_or_reading_flow"
+          ],
+          "source_b2_action_ids": [
+            "ws_05_a1",
+            "ws_05_a2",
+            "vh_03_a1",
+            "vh_03_a2",
+            "mp_05_a1"
+          ],
+          "source_b2_action_types": [
+            "add_animation",
+            "reorder_element",
+            "set_style"
+          ],
+          "design_moves": [
+            "Duplicate the slide and change one state variable per duplicate.",
+            "Fade, blur, or remove low-value background decoration.",
+            "Bring primary subject and active annotation forward; push context, shadows, and background back.",
+            "Set motion paths and reveal order to follow the conceptual flow."
+          ],
+          "layout_intent_binding": "main_visual",
+          "renderer_resolution_policy": {
+            "geometry_resolution": "defer_to_renderer",
+            "must_not_create_empty_box": true,
+            "must_bind_to_component_before_action": true
+          }
+        },
+        {
+          "binding_id": "close_proof_panel_expanded_binding",
+          "target_component_key": "proof_panel",
+          "target_component_id": "close_proof_panel",
+          "component_element_type": "shape",
+          "source_d1_binding_id": "close_b2_scene_binding",
+          "source_b2_rule_ids": [
+            "kr_05_state_change_by_duplication",
+            "ws_05_reduce_background_noise",
+            "vh_03_z_order_guides_attention",
+            "mp_05_motion_follows_causal_or_reading_flow"
+          ],
+          "source_b2_action_ids": [
+            "ws_05_a1",
+            "ws_05_a2"
+          ],
+          "source_b2_action_types": [
+            "set_style"
+          ],
+          "design_moves": [
+            "Duplicate the slide and change one state variable per duplicate.",
+            "Fade, blur, or remove low-value background decoration.",
+            "Bring primary subject and active annotation forward; push context, shadows, and background back.",
+            "Set motion paths and reveal order to follow the conceptual flow."
+          ],
+          "layout_intent_binding": "information_containers",
+          "renderer_resolution_policy": {
+            "geometry_resolution": "defer_to_renderer",
+            "must_not_create_empty_box": true,
+            "must_bind_to_component_before_action": true
+          }
+        },
+        {
+          "binding_id": "close_supporting_copy_expanded_binding",
+          "target_component_key": "supporting_copy",
+          "target_component_id": "close_supporting_copy",
+          "component_element_type": "text",
+          "source_d1_binding_id": "close_b2_scene_binding",
+          "source_b2_rule_ids": [
+            "kr_05_state_change_by_duplication",
+            "ws_05_reduce_background_noise",
+            "vh_03_z_order_guides_attention",
+            "mp_05_motion_follows_causal_or_reading_flow"
+          ],
+          "source_b2_action_ids": [
+            "ws_05_a1",
+            "ws_05_a2",
+            "mp_05_a1",
+            "mp_05_a2"
+          ],
+          "source_b2_action_types": [
+            "add_animation",
+            "add_reveal_step",
+            "set_style"
+          ],
+          "design_moves": [
+            "Duplicate the slide and change one state variable per duplicate.",
+            "Fade, blur, or remove low-value background decoration.",
+            "Bring primary subject and active annotation forward; push context, shadows, and background back.",
+            "Set motion paths and reveal order to follow the conceptual flow."
+          ],
+          "layout_intent_binding": "first_read",
+          "renderer_resolution_policy": {
+            "geometry_resolution": "defer_to_renderer",
+            "must_not_create_empty_box": true,
+            "must_bind_to_component_before_action": true
+          }
+        },
+        {
+          "binding_id": "close_evidence_marks_expanded_binding",
+          "target_component_key": "evidence_marks",
+          "target_component_id": "close_evidence_marks",
+          "component_element_type": "connector",
+          "source_d1_binding_id": "close_b2_scene_binding",
+          "source_b2_rule_ids": [
+            "kr_05_state_change_by_duplication",
+            "ws_05_reduce_background_noise",
+            "vh_03_z_order_guides_attention",
+            "mp_05_motion_follows_causal_or_reading_flow"
+          ],
+          "source_b2_action_ids": [
+            "mp_05_a1",
+            "mp_05_a2"
+          ],
+          "source_b2_action_types": [
+            "add_animation",
+            "add_reveal_step"
+          ],
+          "design_moves": [
+            "Duplicate the slide and change one state variable per duplicate.",
+            "Fade, blur, or remove low-value background decoration.",
+            "Bring primary subject and active annotation forward; push context, shadows, and background back.",
+            "Set motion paths and reveal order to follow the conceptual flow."
+          ],
+          "layout_intent_binding": "information_containers",
+          "renderer_resolution_policy": {
+            "geometry_resolution": "defer_to_renderer",
+            "must_not_create_empty_box": true,
+            "must_bind_to_component_before_action": true
+          }
+        },
+        {
+          "binding_id": "close_viewer_note_route_expanded_binding",
+          "target_component_key": "viewer_note_route",
+          "target_component_id": "close_viewer_note_route",
+          "component_element_type": "text",
+          "source_d1_binding_id": "close_b2_scene_binding",
+          "source_b2_rule_ids": [
+            "kr_05_state_change_by_duplication",
+            "ws_05_reduce_background_noise",
+            "vh_03_z_order_guides_attention",
+            "mp_05_motion_follows_causal_or_reading_flow"
+          ],
+          "source_b2_action_ids": [
+            "kr_05_a1",
+            "kr_05_a2",
+            "ws_05_a1",
+            "ws_05_a2",
+            "vh_03_a1",
+            "vh_03_a2"
+          ],
+          "source_b2_action_types": [
+            "duplicate_slide",
+            "reorder_element",
+            "set_style",
+            "set_transition"
+          ],
+          "design_moves": [
+            "Duplicate the slide and change one state variable per duplicate.",
+            "Fade, blur, or remove low-value background decoration.",
+            "Bring primary subject and active annotation forward; push context, shadows, and background back.",
+            "Set motion paths and reveal order to follow the conceptual flow."
+          ],
+          "layout_intent_binding": "off_canvas_routes",
+          "renderer_resolution_policy": {
+            "geometry_resolution": "defer_to_renderer",
+            "must_not_create_empty_box": true,
+            "must_bind_to_component_before_action": true
+          }
+        }
+      ],
+      "off_canvas_contract": {
+        "must_delete_from_canvas": [
+          "launch celebration",
+          "public-ready claim",
+          "dense run history",
+          "full release checklist"
+        ],
+        "speaker_note": "Name the remaining gate calmly: generated proof, visual review, native inspection, source-boundary review, and human approval.",
+        "viewer_only": [
+          "run-specific handoff ids",
+          "full release checklist",
+          "human approval notes"
+        ]
+      },
+      "renderer_ready_boundary": {
+        "is_renderer_ready_json": true,
+        "must_not_render_ppt": true,
+        "must_validate_before_d3": true,
+        "geometry_resolution_deferred": true
+      }
+    }
+  ],
+  "traceability_summary": {
+    "scene_count": 6,
+    "component_count": 30,
+    "expanded_renderer_binding_count": 30,
+    "source_scene_compiler_contracts": "run2_73_scene_compiler_contracts.json",
+    "element_types_used": [
+      "connector",
+      "shape",
+      "svg",
+      "text"
+    ],
+    "empty_visual_container_count": 0
+  },
+  "next_required_action": "part_d3_renderer_input_validation"
+}

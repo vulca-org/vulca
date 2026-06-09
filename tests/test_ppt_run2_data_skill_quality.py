@@ -481,6 +481,48 @@ EXPECTED_RUN2_D1_SCHEMA_REQUIRED_FIELDS = {
     "renderer_action_bindings",
     "off_canvas_routes",
 }
+EXPECTED_RUN2_D2_COMPONENT_KEYS = {
+    "hero_object",
+    "proof_panel",
+    "supporting_copy",
+    "evidence_marks",
+    "viewer_note_route",
+}
+EXPECTED_RUN2_D2_ALLOWED_ELEMENT_TYPES = {"shape", "text", "connector", "image", "svg"}
+EXPECTED_RUN2_D2_SCENE_STRUCTURE_FIELDS = {
+    "expansion_id",
+    "source_scene_id",
+    "slide_index",
+    "role",
+    "semantic_components",
+    "visual_containers",
+    "expanded_renderer_action_bindings",
+    "off_canvas_contract",
+    "renderer_ready_boundary",
+}
+EXPECTED_RUN2_D2_COMPONENT_FIELDS = {
+    "component_id",
+    "component_role",
+    "element_type",
+    "content_binding",
+    "semantic_role_binding",
+    "renderer_target",
+    "empty_box_policy",
+    "source_scene_plan_fields",
+}
+EXPECTED_RUN2_D2_EXPANDED_BINDING_FIELDS = {
+    "binding_id",
+    "target_component_key",
+    "target_component_id",
+    "component_element_type",
+    "source_d1_binding_id",
+    "source_b2_rule_ids",
+    "source_b2_action_ids",
+    "source_b2_action_types",
+    "design_moves",
+    "layout_intent_binding",
+    "renderer_resolution_policy",
+}
 EXPECTED_RUN2_9_VISUAL_PRIMITIVE_IDS = {
     "primitive_2_9_editorial_spread_composition",
     "primitive_2_9_product_surface_depth",
@@ -2175,6 +2217,159 @@ def test_run2_73_scene_compiler_contracts_merge_b2_and_c_content_units() -> None
     assert scene_contract["next_required_action"] == (
         "part_d2_renderer_execute_scene_plan_not_direct_boxes"
     )
+
+
+def test_run2_73_scene_plan_expansion_builds_renderer_ready_structures() -> None:
+    scene_contract = load_json(PACK / "run2_73_scene_compiler_contracts.json")
+    expansion = load_json(PACK / "run2_73_scene_plan_expansion.json")
+
+    scenes_by_role = {scene["role"]: scene for scene in scene_contract["scene_plans"]}
+    allowed_types = EXPECTED_RUN2_D2_ALLOWED_ELEMENT_TYPES
+
+    assert expansion["artifact_id"] == "run2_73_scene_plan_expansion"
+    assert expansion["part"] == "Part D2"
+    assert expansion["status"] == "run2_73_scene_plan_expansion_public_blocked"
+    assert expansion["stage_policy"] == "part_d2_scene_plan_expansion_only"
+    assert expansion["source_scene_compiler_contracts"] == "run2_73_scene_compiler_contracts.json"
+    assert expansion["artifact_scope"]["does_not_start"] == [
+        "part_d3_renderer_input_validation",
+        "renderer_rerun",
+        "pptx_output",
+        "html_viewer",
+        "public_release",
+    ]
+    assert expansion["component_schema"]["required_components"] == sorted(
+        EXPECTED_RUN2_D2_COMPONENT_KEYS
+    )
+    assert set(expansion["component_schema"]["allowed_element_types"]) == allowed_types
+    assert expansion["renderer_ready_contract"]["no_empty_boxes"] is True
+    assert expansion["renderer_ready_contract"]["every_visual_container_bound"] is True
+    assert expansion["renderer_ready_contract"]["geometry_resolution_deferred"] is True
+
+    forbidden_keys = {
+        "layout_geometry",
+        "pptx_output",
+        "html_viewer",
+        "slide_shapes",
+        "shape_rectangles",
+        "direct_shape_plan",
+        "x",
+        "y",
+        "w",
+        "h",
+        "width",
+        "height",
+        "left",
+        "top",
+        "x_pct",
+        "y_pct",
+        "width_pct",
+        "height_pct",
+    }
+    assert not forbidden_keys & nested_keys(expansion)
+
+    structures = expansion["scene_structures"]
+    assert [structure["role"] for structure in structures] == EXPECTED_RUN2_74_SLIDE_STORY_ROLES
+    assert [structure["slide_index"] for structure in structures] == [1, 2, 3, 4, 5, 6]
+
+    for structure in structures:
+        role = structure["role"]
+        source_scene = scenes_by_role[role]
+        source_binding = source_scene["renderer_action_bindings"][0]
+        source_action_ids = set(source_binding["renderer_action_ids"])
+        source_action_types = set(source_binding["renderer_action_types"])
+
+        assert EXPECTED_RUN2_D2_SCENE_STRUCTURE_FIELDS <= set(structure), role
+        assert structure["expansion_id"] == f"scene_expansion_2_73_{role}"
+        assert structure["source_scene_id"] == source_scene["scene_id"]
+        assert structure["off_canvas_contract"] == source_scene["off_canvas_routes"]
+
+        components = structure["semantic_components"]
+        assert set(components) == EXPECTED_RUN2_D2_COMPONENT_KEYS
+        component_ids = {component["component_id"] for component in components.values()}
+        element_types = {component["element_type"] for component in components.values()}
+        assert element_types <= allowed_types
+        assert {"shape", "text", "connector"} <= element_types
+
+        for key, component in components.items():
+            assert EXPECTED_RUN2_D2_COMPONENT_FIELDS <= set(component), key
+            assert component["component_id"].startswith(f"{role}_")
+            assert component["component_role"] == key
+            assert component["empty_box_policy"] == "forbidden"
+            assert component["source_scene_plan_fields"]
+            assert component["renderer_target"]["target_component_id"] == component["component_id"]
+            assert component["renderer_target"]["target_element_type"] == component["element_type"]
+            assert component["content_binding"]["source"]
+            assert component["content_binding"]["value"] or component["semantic_role_binding"]["value"]
+
+        assert components["hero_object"]["content_binding"]["value"] == source_scene[
+            "proof_object"
+        ]["primary"]
+        assert components["supporting_copy"]["content_binding"]["value"] == source_scene[
+            "content_units"
+        ]["on_canvas_copy"]
+        assert components["viewer_note_route"]["content_binding"]["value"] == source_scene[
+            "off_canvas_routes"
+        ]
+
+        for container in structure["visual_containers"]:
+            assert container["container_id"].startswith(f"{role}_")
+            assert container["bound_component_id"] in component_ids
+            assert container["container_type"] in {
+                "component_container",
+                "information_container",
+                "chrome",
+            }
+            assert container["empty_box_policy"] == "forbidden"
+            assert container["content_binding"]["value"] or container["semantic_role_binding"]["value"]
+
+        bindings = structure["expanded_renderer_action_bindings"]
+        assert len(bindings) >= len(EXPECTED_RUN2_D2_COMPONENT_KEYS)
+        assert {binding["target_component_key"] for binding in bindings} == (
+            EXPECTED_RUN2_D2_COMPONENT_KEYS
+        )
+
+        covered_action_ids = set()
+        for binding in bindings:
+            assert EXPECTED_RUN2_D2_EXPANDED_BINDING_FIELDS <= set(binding), binding[
+                "binding_id"
+            ]
+            assert binding["target_component_id"] in component_ids
+            assert (
+                binding["component_element_type"]
+                == components[binding["target_component_key"]]["element_type"]
+            )
+            assert binding["source_d1_binding_id"] == source_binding["binding_id"]
+            assert set(binding["source_b2_action_ids"]) <= source_action_ids
+            assert set(binding["source_b2_action_types"]) <= source_action_types
+            assert binding["source_b2_action_ids"]
+            assert binding["design_moves"]
+            assert binding["layout_intent_binding"] in {
+                "first_read",
+                "main_visual",
+                "information_containers",
+                "chrome",
+                "must_delete",
+                "off_canvas_routes",
+            }
+            assert binding["renderer_resolution_policy"]["geometry_resolution"] == (
+                "defer_to_renderer"
+            )
+            assert binding["renderer_resolution_policy"]["must_not_create_empty_box"] is True
+            covered_action_ids |= set(binding["source_b2_action_ids"])
+
+        assert source_action_ids <= covered_action_ids
+        boundary = structure["renderer_ready_boundary"]
+        assert boundary["is_renderer_ready_json"] is True
+        assert boundary["must_not_render_ppt"] is True
+        assert boundary["must_validate_before_d3"] is True
+
+    summary = expansion["traceability_summary"]
+    assert summary["scene_count"] == 6
+    assert summary["component_count"] == 30
+    assert summary["source_scene_compiler_contracts"] == "run2_73_scene_compiler_contracts.json"
+    assert summary["empty_visual_container_count"] == 0
+    assert expansion["next_required_action"] == "part_d3_renderer_input_validation"
 
 
 def test_run2_7_has_serializable_design_memory() -> None:
