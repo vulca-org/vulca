@@ -10,7 +10,7 @@ from typing import Any
 
 DEFAULT_THREAD_ID = "019e7d9c-532a-70b3-8892-fa3ae42baef2"
 PACK_REL = Path("docs") / "product" / "ppt-run2-data-skill-quality"
-LATEST_RUN_PAYLOAD_HINT = '"latestRunId": "2.72"'
+LATEST_RUN_PAYLOAD_HINT = '"latestRunId": "2.73"'
 
 
 @dataclass(frozen=True)
@@ -759,6 +759,27 @@ RUN_SPECS: tuple[RunSpec, ...] = (
             ),
         ),
     ),
+    RunSpec(
+        "2.73",
+        "Run 2.73",
+        "run2-73-four-arm-contact-sheet.png",
+        (
+            ArmSpec("prompt_only", "Prompt only", "ppt-run2-73-prompt-only", "control"),
+            ArmSpec("run1_5_skill", "Run 1.5 baseline", "ppt-run2-73-run1-5-skill", "baseline"),
+            ArmSpec(
+                "run2_73_full_validated_scene_renderer",
+                "Run 2.73 full",
+                "ppt-run2-73-full-vulca",
+                "full",
+            ),
+            ArmSpec(
+                "bad_run2_73_without_text_binding",
+                "Bad missing Run 2.73 text binding",
+                "ppt-run2-73-bad-without-text-binding",
+                "negative",
+            ),
+        ),
+    ),
 )
 
 
@@ -948,6 +969,7 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
     run270_result = read_json(pack / "results" / "run2_70_high_fidelity_mock_content_rerun_result.json")
     run271_result = read_json(pack / "results" / "run2_71_component_semantics_rerun_result.json")
     run272_result = read_json(pack / "results" / "run2_72_shape_bound_text_rerun_result.json")
+    run273_result = read_json(pack / "results" / "run2_73_validated_scene_renderer_rerun_result.json")
     run211_audit = read_json(pack / "results" / "run2_11_data_workflow_audit.json")
     workflow = read_json(pack / "skill_workflow.json")
     source_records = read_json(pack / "run2_7_multimodal_source_records.json")
@@ -1475,6 +1497,15 @@ def build_reference_data(repo_root: Path, presentations_dir: Path, out: Path) ->
         "run272FullTracePath": "ppt-run2-72-full-vulca/trace_manifest.json",
         "run272BadTracePath": "ppt-run2-72-bad-without-shape-bound-text/trace_manifest.json",
         "run272FourArmSheetPath": "run2-72-four-arm-contact-sheet.png",
+        "run273ResultStatus": run273_result.get("status", ""),
+        "run273Result": run273_result,
+        "run273ResultPath": "run2_73_validated_scene_renderer_rerun_result.json",
+        "run273TargetLayer": "validated_scene_renderer_consumes_d2_d3_e_e2_f",
+        "run273SourceDataStatus": "run2_73_a_f_inputs_consumed_before_native_ppt_drawing",
+        "run273GeneratorPath": "scripts/generate_ppt_run2_73_validated_scene_renderer_arms.mjs",
+        "run273FullTracePath": "ppt-run2-73-full-vulca/trace_manifest.json",
+        "run273BadTracePath": "ppt-run2-73-bad-without-text-binding/trace_manifest.json",
+        "run273FourArmSheetPath": "run2-73-four-arm-contact-sheet.png",
         "selectorLayer": {
             "label": "Run 2.15 selector",
             "summary": "layout module selector before the next four-arm rerun",
@@ -2835,6 +2866,10 @@ def build_html(data: dict[str, Any]) -> str:
       const run272Quality = run272Result.quality_delta || {{}};
       const run272Control = run272Result.control_boundary || {{}};
       const run272ShapeScope = run272Result.shape_bound_text_scope || {{}};
+      const run273Result = refs.run273Result || {{}};
+      const run273Manifest = run273Result.rerun_manifest || {{}};
+      const run273Outputs = run273Manifest.outputs || {{}};
+      const run273Checks = run273Result.render_quality_checks || {{}};
       const run266ArtDirectionByRole = Object.fromEntries((run266ArtDirection.slide_art_direction_contracts || []).map((record) => [record.role, record]));
       const run266GrammarCards = (run266DesignGrammar.role_design_grammar_records || []).map((record) => {{
         const art = run266ArtDirectionByRole[record.role] || {{}};
@@ -3184,6 +3219,43 @@ def build_html(data: dict[str, Any]) -> str:
         <span class="pill">${{escapeHtml(refs.packPath || "case pack")}}</span>
       </div>
       <div class="dataStack">
+        <section class="dataBand">
+          <div class="dataBandHead"><div><h3>Run 2.73 validated scene renderer rerun</h3><p>Run 2.73 is the formal renderer rerun over A-F: D2 scene plan expansion, D3 input validation, Part E visual grammar, E2 adapter contracts, and Part F text binding strategy are consumed before native PPT and HTML viewer output. Visual quality judgment remains blocked until Part H.</p></div><span class="pill" title="${{escapeHtml(refs.run273ResultStatus || "missing")}}">${{escapeHtml(refs.run273ResultStatus || "missing")}}</span></div>
+          <div class="dataGrid">
+            <article class="dataCard">
+              <h4>Run 2.73 Validated Scene Renderer</h4>
+              ${{detailBlock("Result", refs.run273ResultPath || "run2_73_validated_scene_renderer_rerun_result.json")}}
+              ${{detailBlock("Generator", refs.run273GeneratorPath || "scripts/generate_ppt_run2_73_validated_scene_renderer_arms.mjs")}}
+              ${{detailBlock("Best internal arm", run273Manifest.best_internal_arm)}}
+              ${{detailBlock("Public ready", run273Result.public_ready)}}
+              ${{detailBlock("Boundary", run273Result.quality_claim_boundary)}}
+            </article>
+            <article class="dataCard">
+              <h4>Generated outputs</h4>
+              ${{detailBlock("Four-arm sheet", refs.run273FourArmSheetPath || "run2-73-four-arm-contact-sheet.png")}}
+              ${{detailBlock("Full trace", refs.run273FullTracePath || "ppt-run2-73-full-vulca/trace_manifest.json")}}
+              ${{detailBlock("Bad trace", refs.run273BadTracePath || "ppt-run2-73-bad-without-text-binding/trace_manifest.json")}}
+              ${{detailBlock("Standalone HTML", run273Outputs.html_viewer)}}
+              ${{detailBlock("PPTX", run273Outputs.pptx)}}
+            </article>
+            <article class="dataCard">
+              <h4>A-F consumed sources</h4>
+              ${{detailBlock("D2", "run2_73_scene_plan_expansion.json")}}
+              ${{detailBlock("D3", "run2_73_renderer_input_validation.json")}}
+              ${{detailBlock("E", "run2_73_visual_grammar_modules.json")}}
+              ${{detailBlock("E2", "run2_73_renderer_adapter_contracts.json")}}
+              ${{detailBlock("F", "run2_73_text_binding_strategy.json")}}
+            </article>
+            <article class="dataCard">
+              <h4>Part G render checks</h4>
+              ${{detailBlock("Expected visual grammar pages", run273Checks.pages_using_expected_visual_grammar)}}
+              ${{detailBlock("Required text socket pages", run273Checks.pages_using_required_text_sockets)}}
+              ${{detailBlock("Distinct text layouts", run273Checks.distinct_text_layout_signatures)}}
+              ${{detailBlock("Empty visual containers", run273Checks.empty_visual_container_count)}}
+              ${{detailBlock("Trace terms on canvas", run273Checks.source_trace_terms_visible_on_canvas_count)}}
+            </article>
+          </div>
+        </section>
         <section class="dataBand">
           <div class="dataBandHead"><div><h3>Run 2.72 shape-bound text rerun</h3><p>Run 2.72 consumes the Run 2.71 component semantics deck and trace, then fixes the remaining mismatch bug: component-level labels must record a component bbox, a text bbox, and a pass that proves the text box is inside the matching shape bounds.</p></div><span class="pill" title="${{escapeHtml(refs.run272ResultStatus || "missing")}}">${{escapeHtml(refs.run272ResultStatus || "missing")}}</span></div>
           <div class="dataGrid">

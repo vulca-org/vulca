@@ -95,6 +95,7 @@ RUN2_73_REQUIRED_FILES = [
     "run2_73_visual_grammar_modules.json",
     "run2_73_renderer_adapter_contracts.json",
     "run2_73_text_binding_strategy.json",
+    "results/run2_73_validated_scene_renderer_rerun_result.json",
 ]
 
 
@@ -412,6 +413,28 @@ RUN2_73_TEXT_BINDING_FORBIDDEN_PATTERNS = {
     "duplicated headline/supporting copy",
     "text floating without bound visual object",
     "all slides using the same text layout",
+}
+RUN2_73_VALIDATED_RENDERER_STATUS = "run2_73_validated_scene_renderer_rerun_generated_public_blocked"
+RUN2_73_VALIDATED_RENDERER_CONSUMED_SOURCE_PATHS = {
+    "docs/product/ppt-run2-data-skill-quality/run2_73_scene_plan_expansion.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_renderer_input_validation.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_visual_grammar_modules.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_renderer_adapter_contracts.json",
+    "docs/product/ppt-run2-data-skill-quality/run2_73_text_binding_strategy.json",
+}
+RUN2_73_VALIDATED_RENDERER_REQUIRED_OUTPUTS = {
+    "html_viewer",
+    "pptx",
+    "ppt_run_viewer",
+}
+RUN2_73_VALIDATED_RENDERER_REQUIRED_CHECKS = {
+    "empty_visual_container_count": 0,
+    "floating_text_without_bound_visual_object_count": 0,
+    "generic_rectangle_label_count": 0,
+    "source_trace_terms_visible_on_canvas_count": 0,
+    "distinct_text_layout_signatures": 6,
+    "pages_using_expected_visual_grammar": 6,
+    "pages_using_required_text_sockets": 6,
 }
 
 
@@ -3982,6 +4005,325 @@ def validate_run2_73_text_binding_trace_summary(value: Any, errors: list[str]) -
         errors.append("run2_73_text_binding_strategy.traceability_summary missing key: sources_consumed")
 
 
+def collect_run2_73_validated_renderer_known_binding_ids(
+    scene: dict[str, Any],
+    adapter: dict[str, Any],
+) -> set[str]:
+    known: set[str] = set()
+    for value in [scene.get("expansion_id"), adapter.get("adapter_scene_id")]:
+        if isinstance(value, str) and value:
+            known.add(value)
+    semantic_components = scene.get("semantic_components", {})
+    if isinstance(semantic_components, dict):
+        for component in semantic_components.values():
+            if isinstance(component, dict):
+                for key in ["component_id", "target_component_id"]:
+                    value = component.get(key)
+                    if isinstance(value, str) and value:
+                        known.add(value)
+    visual_containers = scene.get("visual_containers", [])
+    if isinstance(visual_containers, list):
+        for container in visual_containers:
+            if isinstance(container, dict):
+                for key in ["container_id", "bound_component_id"]:
+                    value = container.get(key)
+                    if isinstance(value, str) and value:
+                        known.add(value)
+    expanded_bindings = scene.get("expanded_renderer_action_bindings", [])
+    if isinstance(expanded_bindings, list):
+        for binding in expanded_bindings:
+            if isinstance(binding, dict):
+                for key in ["binding_id", "target_component_id"]:
+                    value = binding.get(key)
+                    if isinstance(value, str) and value:
+                        known.add(value)
+    manifest = adapter.get("renderer_adapter_manifest", {})
+    if isinstance(manifest, dict):
+        for key in ["semantic_component_ids", "visual_container_ids", "expanded_renderer_binding_ids"]:
+            values = manifest.get(key, [])
+            if isinstance(values, list):
+                known.update(value for value in values if isinstance(value, str) and value)
+    return known
+
+
+def validate_run2_73_validated_scene_renderer_result(pack_dir: Path, errors: list[str]) -> None:
+    data = load_json(pack_dir / "results" / "run2_73_validated_scene_renderer_rerun_result.json", errors)
+    if not isinstance(data, dict):
+        return
+    label = "run2_73_validated_scene_renderer_rerun_result"
+    require_keys(
+        label,
+        data,
+        [
+            "artifact_id",
+            "part",
+            "run_id",
+            "status",
+            "public_ready",
+            "public_release_started",
+            "quality_claim_boundary",
+            "consumed_sources",
+            "rerun_manifest",
+            "rendered_pages",
+            "render_quality_checks",
+        ],
+        errors,
+    )
+    if data.get("artifact_id") != "run2_73_validated_scene_renderer_rerun_result":
+        errors.append(f"{label}.artifact_id must be run2_73_validated_scene_renderer_rerun_result")
+    if data.get("part") != "Part G":
+        errors.append(f"{label}.part must be Part G")
+    if data.get("run_id") != "2.73":
+        errors.append(f"{label}.run_id must be 2.73")
+    if data.get("status") != RUN2_73_VALIDATED_RENDERER_STATUS:
+        errors.append(f"{label}.status must be {RUN2_73_VALIDATED_RENDERER_STATUS}")
+    if data.get("public_ready") is not False:
+        errors.append(f"{label}.public_ready must be false")
+    if data.get("public_release_started") is not False:
+        errors.append(f"{label}.public_release_started must be false")
+    if data.get("quality_claim_boundary") != "generated_viewer_check_only_no_part_h_quality_verdict":
+        errors.append(f"{label}.quality_claim_boundary must be generated_viewer_check_only_no_part_h_quality_verdict")
+    if "consumed_sources" in data:
+        validate_exact_string_set(
+            f"{label}.consumed_sources",
+            data["consumed_sources"],
+            RUN2_73_VALIDATED_RENDERER_CONSUMED_SOURCE_PATHS,
+            errors,
+        )
+    manifest = data.get("rerun_manifest", {})
+    validate_run2_73_validated_renderer_manifest(f"{label}.rerun_manifest", manifest, errors)
+
+    scene_by_role = collect_run2_73_role_records(
+        pack_dir,
+        "run2_73_scene_plan_expansion.json",
+        "scene_structures",
+        "role",
+        "expansion_id",
+        errors,
+    )
+    adapter_by_role = collect_run2_73_role_records(
+        pack_dir,
+        "run2_73_renderer_adapter_contracts.json",
+        "adapter_scene_records",
+        "role",
+        "adapter_scene_id",
+        errors,
+    )
+    text_by_role = collect_run2_73_role_records(
+        pack_dir,
+        "run2_73_text_binding_strategy.json",
+        "page_text_binding_records",
+        "role",
+        "text_binding_id",
+        errors,
+    )
+    validate_run2_73_validated_renderer_pages(
+        f"{label}.rendered_pages",
+        data.get("rendered_pages", []),
+        scene_by_role,
+        adapter_by_role,
+        text_by_role,
+        errors,
+    )
+    validate_run2_73_validated_renderer_checks(
+        f"{label}.render_quality_checks",
+        data.get("render_quality_checks", {}),
+        errors,
+    )
+
+
+def validate_run2_73_validated_renderer_manifest(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    require_keys(label, value, ["generator", "consumed_sources", "best_internal_arm", "outputs", "viewer_update"], errors)
+    if value.get("generator") != "scripts/generate_ppt_run2_73_validated_scene_renderer_arms.mjs":
+        errors.append(f"{label}.generator must be scripts/generate_ppt_run2_73_validated_scene_renderer_arms.mjs")
+    if "consumed_sources" in value:
+        validate_exact_string_set(
+            f"{label}.consumed_sources",
+            value["consumed_sources"],
+            RUN2_73_VALIDATED_RENDERER_CONSUMED_SOURCE_PATHS,
+            errors,
+        )
+    if value.get("best_internal_arm") != "run2_73_full_validated_scene_renderer":
+        errors.append(f"{label}.best_internal_arm must be run2_73_full_validated_scene_renderer")
+    outputs = value.get("outputs", {})
+    if require_non_empty_dict(f"{label}.outputs", outputs, errors):
+        for key in sorted(RUN2_73_VALIDATED_RENDERER_REQUIRED_OUTPUTS - set(outputs)):
+            errors.append(f"{label}.outputs missing key: {key}")
+        for key in sorted(RUN2_73_VALIDATED_RENDERER_REQUIRED_OUTPUTS & set(outputs)):
+            require_non_empty_string(f"{label}.outputs.{key}", outputs[key], errors)
+    viewer_update = value.get("viewer_update", {})
+    if require_non_empty_dict(f"{label}.viewer_update", viewer_update, errors):
+        if viewer_update.get("latest_run_id") != "2.73":
+            errors.append(f"{label}.viewer_update.latest_run_id must be 2.73")
+        if viewer_update.get("viewer_can_reference_new_run") is not True:
+            errors.append(f"{label}.viewer_update.viewer_can_reference_new_run must be true")
+
+
+def validate_run2_73_validated_renderer_pages(
+    label: str,
+    value: Any,
+    scene_by_role: dict[str, dict[str, Any]],
+    adapter_by_role: dict[str, dict[str, Any]],
+    text_by_role: dict[str, dict[str, Any]],
+    errors: list[str],
+) -> None:
+    if not require_non_empty_list(label, value, errors):
+        return
+    roles: list[str] = []
+    layout_signatures: set[str] = set()
+    for index, page in enumerate(value):
+        page_label = f"{label}[{index}]"
+        if not isinstance(page, dict):
+            errors.append(f"{page_label} must be an object")
+            continue
+        require_keys(
+            page_label,
+            page,
+            [
+                "role",
+                "slide_index",
+                "visual_grammar_module",
+                "layout_signature",
+                "source_text_binding_id",
+                "text_sockets_used",
+                "text_socket_bindings",
+                "visual_containers",
+                "source_trace_terms_visible_on_canvas",
+                "forbidden_text_patterns_absent",
+            ],
+            errors,
+        )
+        role = page.get("role")
+        if isinstance(role, str):
+            roles.append(role)
+        if "slide_index" in page and require_integer(f"{page_label}.slide_index", page["slide_index"], errors):
+            if page["slide_index"] != index + 1:
+                errors.append(f"{page_label}.slide_index must be {index + 1}")
+        if role in RUN2_73_VISUAL_GRAMMAR_PAGE_MODULE_MAP:
+            expected_module = RUN2_73_VISUAL_GRAMMAR_PAGE_MODULE_MAP[role]
+            if page.get("visual_grammar_module") != expected_module:
+                errors.append(f"{page_label}.visual_grammar_module must be {expected_module} for {role}")
+        if isinstance(page.get("layout_signature"), str) and page["layout_signature"]:
+            layout_signatures.add(page["layout_signature"])
+        text_record = text_by_role.get(role, {}) if isinstance(role, str) else {}
+        if text_record and page.get("source_text_binding_id") != text_record.get("text_binding_id"):
+            errors.append(f"{page_label}.source_text_binding_id must match Part F text binding id for {role}")
+        if "text_sockets_used" in page:
+            validate_exact_string_set(
+                f"{page_label}.text_sockets_used",
+                page["text_sockets_used"],
+                RUN2_73_TEXT_BINDING_REQUIRED_SOCKETS,
+                errors,
+            )
+        scene = scene_by_role.get(role, {}) if isinstance(role, str) else {}
+        adapter = adapter_by_role.get(role, {}) if isinstance(role, str) else {}
+        known_binding_ids = collect_run2_73_validated_renderer_known_binding_ids(scene, adapter)
+        validate_run2_73_validated_renderer_socket_bindings(
+            f"{page_label}.text_socket_bindings",
+            page.get("text_socket_bindings", []),
+            known_binding_ids,
+            errors,
+        )
+        validate_run2_73_validated_renderer_visual_containers(
+            f"{page_label}.visual_containers",
+            page.get("visual_containers", []),
+            errors,
+        )
+        if "source_trace_terms_visible_on_canvas" in page:
+            visible = page["source_trace_terms_visible_on_canvas"]
+            if not isinstance(visible, list):
+                errors.append(f"{page_label}.source_trace_terms_visible_on_canvas must be a list")
+            elif any(not isinstance(item, str) for item in visible):
+                errors.append(f"{page_label}.source_trace_terms_visible_on_canvas must contain only strings")
+            elif visible:
+                errors.append(f"{page_label}.source_trace_terms_visible_on_canvas must be empty")
+        if "forbidden_text_patterns_absent" in page:
+            validate_exact_string_set(
+                f"{page_label}.forbidden_text_patterns_absent",
+                page["forbidden_text_patterns_absent"],
+                RUN2_73_TEXT_BINDING_FORBIDDEN_PATTERNS,
+                errors,
+            )
+    if roles != RUN2_73_VISUAL_GRAMMAR_ROLES:
+        errors.append(f"{label} roles must be {', '.join(RUN2_73_VISUAL_GRAMMAR_ROLES)}")
+    if len(layout_signatures) != 6:
+        errors.append(f"{label} must contain 6 distinct layout signatures")
+
+
+def validate_run2_73_validated_renderer_socket_bindings(
+    label: str,
+    value: Any,
+    known_binding_ids: set[str],
+    errors: list[str],
+) -> None:
+    if not require_non_empty_list(label, value, errors):
+        return
+    socket_keys: set[str] = set()
+    for index, binding in enumerate(value):
+        binding_label = f"{label}[{index}]"
+        if not isinstance(binding, dict):
+            errors.append(f"{binding_label} must be an object")
+            continue
+        require_keys(binding_label, binding, ["socket_id", "socket_key", "bound_visual_object_type", "bound_source_id", "capacity"], errors)
+        if "socket_id" in binding:
+            require_non_empty_string(f"{binding_label}.socket_id", binding["socket_id"], errors)
+        if "socket_key" in binding:
+            validate_choice(f"{binding_label}.socket_key", binding["socket_key"], RUN2_73_TEXT_BINDING_REQUIRED_SOCKETS, errors)
+            if isinstance(binding.get("socket_key"), str):
+                socket_keys.add(binding["socket_key"])
+        if "bound_visual_object_type" in binding:
+            validate_choice(
+                f"{binding_label}.bound_visual_object_type",
+                binding["bound_visual_object_type"],
+                RUN2_73_TEXT_BINDING_VISUAL_OBJECT_TYPES,
+                errors,
+            )
+        if "bound_source_id" in binding and require_non_empty_string(f"{binding_label}.bound_source_id", binding["bound_source_id"], errors):
+            if binding["bound_source_id"] not in known_binding_ids:
+                errors.append(f"{binding_label}.bound_source_id references unknown D2/E2 binding: {binding['bound_source_id']}")
+        if "capacity" in binding:
+            validate_run2_73_text_socket_capacity(f"{binding_label}.capacity", binding["capacity"], errors)
+    for key in sorted(RUN2_73_TEXT_BINDING_REQUIRED_SOCKETS - socket_keys):
+        errors.append(f"{label} missing socket key: {key}")
+
+
+def validate_run2_73_validated_renderer_visual_containers(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_list(label, value, errors):
+        return
+    for index, container in enumerate(value):
+        container_label = f"{label}[{index}]"
+        if not isinstance(container, dict):
+            errors.append(f"{container_label} must be an object")
+            continue
+        require_keys(container_label, container, ["container_id", "visual_object_type", "bound_text_socket_ids", "empty"], errors)
+        if "container_id" in container:
+            require_non_empty_string(f"{container_label}.container_id", container["container_id"], errors)
+        if "visual_object_type" in container:
+            validate_choice(
+                f"{container_label}.visual_object_type",
+                container["visual_object_type"],
+                RUN2_73_TEXT_BINDING_VISUAL_OBJECT_TYPES,
+                errors,
+            )
+        if "bound_text_socket_ids" in container:
+            require_non_empty_list(f"{container_label}.bound_text_socket_ids", container["bound_text_socket_ids"], errors)
+        if container.get("empty") is not False:
+            errors.append(f"{container_label}.empty must be false")
+
+
+def validate_run2_73_validated_renderer_checks(label: str, value: Any, errors: list[str]) -> None:
+    if not require_non_empty_dict(label, value, errors):
+        return
+    for key, expected in RUN2_73_VALIDATED_RENDERER_REQUIRED_CHECKS.items():
+        if key not in value:
+            errors.append(f"{label} missing key: {key}")
+            continue
+        if require_integer(f"{label}.{key}", value[key], errors) and value[key] != expected:
+            errors.append(f"{label}.{key} must be {expected}")
+
+
 def validate_run1_design_memory_observations(observations: list[Any], errors: list[str]) -> None:
     required = ["id", "source_ids", "principle", "code_generation_rule", "do_not_copy"]
     seen_ids: set[str] = set()
@@ -4195,6 +4537,7 @@ def validate_case_pack(pack_dir: str | Path, profile: str = "default") -> Valida
             validate_run2_73_visual_grammar_modules(root, errors)
             validate_run2_73_renderer_adapter_contracts(root, errors)
             validate_run2_73_text_binding_strategy(root, errors)
+            validate_run2_73_validated_scene_renderer_result(root, errors)
         return ValidationResult(not errors, errors)
 
     validate_sources(root, errors)

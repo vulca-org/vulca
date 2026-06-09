@@ -1481,6 +1481,10 @@ def write_run2_memory_files(pack: Path) -> None:
         json.dumps(valid_run2_73_text_binding_strategy(), indent=2),
         encoding="utf-8",
     )
+    (pack / "results" / "run2_73_validated_scene_renderer_rerun_result.json").write_text(
+        json.dumps(valid_run2_73_validated_scene_renderer_rerun_result(), indent=2),
+        encoding="utf-8",
+    )
 
 
 def valid_run2_66_reference_first_design_grammar() -> dict:
@@ -2026,6 +2030,116 @@ def valid_run2_73_text_binding_strategy() -> dict:
     }
 
 
+def valid_run2_73_validated_scene_renderer_rerun_result() -> dict:
+    roles = ["cover", "setup", "contrast", "proof", "climax", "close"]
+    module_by_role = {
+        "cover": "product_reveal",
+        "setup": "hero_field",
+        "contrast": "before_after_theater",
+        "proof": "evidence_workspace",
+        "climax": "product_reveal",
+        "close": "decision_map",
+    }
+    consumed_sources = [
+        "docs/product/ppt-run2-data-skill-quality/run2_73_scene_plan_expansion.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_73_renderer_input_validation.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_73_visual_grammar_modules.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_73_renderer_adapter_contracts.json",
+        "docs/product/ppt-run2-data-skill-quality/run2_73_text_binding_strategy.json",
+    ]
+    forbidden_patterns = [
+        "empty text box",
+        "generic rectangle label",
+        "duplicated headline/supporting copy",
+        "text floating without bound visual object",
+        "all slides using the same text layout",
+    ]
+
+    def binding(role: str, key: str, target: str) -> dict:
+        return {
+            "socket_id": f"{role}_{key}",
+            "socket_key": key,
+            "bound_visual_object_type": target,
+            "bound_source_id": f"renderer_adapter_2_73_{role}",
+            "capacity": {
+                "max_words": 10,
+                "max_lines": 2,
+                "hierarchy_level": "h1" if key == "headline_socket" else "callout",
+                "allowed_font_scale": {"min": 0.72, "max": 1.0},
+                "overflow_behavior": "truncate_with_route_to_viewer",
+            },
+        }
+
+    return {
+        "artifact_id": "run2_73_validated_scene_renderer_rerun_result",
+        "part": "Part G",
+        "run_id": "2.73",
+        "status": "run2_73_validated_scene_renderer_rerun_generated_public_blocked",
+        "public_ready": False,
+        "public_release_started": False,
+        "quality_claim_boundary": "generated_viewer_check_only_no_part_h_quality_verdict",
+        "consumed_sources": consumed_sources,
+        "rerun_manifest": {
+            "generator": "scripts/generate_ppt_run2_73_validated_scene_renderer_arms.mjs",
+            "consumed_sources": consumed_sources,
+            "best_internal_arm": "run2_73_full_validated_scene_renderer",
+            "outputs": {
+                "html_viewer": "outputs/thread/presentations/ppt-run2-73-full-vulca/output/run2-73-validated-scene-renderer.html",
+                "pptx": "outputs/thread/presentations/ppt-run2-73-full-vulca/output/ppt-run2-73-full-vulca.pptx",
+                "ppt_run_viewer": "outputs/thread/presentations/ppt-run-viewer.html",
+            },
+            "viewer_update": {
+                "latest_run_id": "2.73",
+                "viewer_can_reference_new_run": True,
+            },
+        },
+        "rendered_pages": [
+            {
+                "role": role,
+                "slide_index": index,
+                "visual_grammar_module": module_by_role[role],
+                "layout_signature": f"{role}_validated_scene_renderer",
+                "source_text_binding_id": f"text_binding_2_73_{role}",
+                "text_sockets_used": [
+                    "headline_socket",
+                    "proof_label_sockets",
+                    "supporting_copy_socket",
+                    "callout_sockets",
+                    "viewer_note_socket",
+                ],
+                "text_socket_bindings": [
+                    binding(role, "headline_socket", "negative space pocket"),
+                    binding(role, "proof_label_sockets", "evidence rail"),
+                    binding(role, "supporting_copy_socket", "field route"),
+                    binding(role, "callout_sockets", "product edge"),
+                    binding(role, "viewer_note_socket", "connector endpoint"),
+                ],
+                "visual_containers": [
+                    {
+                        "container_id": f"{role}_main_structure",
+                        "visual_object_type": "product edge",
+                        "bound_text_socket_ids": [f"{role}_headline_socket"],
+                        "empty": False,
+                    }
+                ],
+                "source_trace_terms_visible_on_canvas": [],
+                "forbidden_text_patterns_absent": forbidden_patterns,
+            }
+            for index, role in enumerate(roles, start=1)
+        ],
+        "render_quality_checks": {
+            "empty_visual_container_count": 0,
+            "floating_text_without_bound_visual_object_count": 0,
+            "generic_rectangle_label_count": 0,
+            "source_trace_terms_visible_on_canvas_count": 0,
+            "distinct_text_layout_signatures": 6,
+            "pages_using_expected_visual_grammar": 6,
+            "pages_using_required_text_sockets": 6,
+        },
+        "next_required_action": "part_h_visual_quality_evaluation",
+    }
+
+
 def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     pack = tmp_path / "pack"
     write_pack(pack)
@@ -2054,6 +2168,7 @@ def test_run2_profile_requires_data_skill_quality_files(tmp_path: Path) -> None:
     assert "missing required file: run2_73_visual_grammar_modules.json" in result.errors
     assert "missing required file: run2_73_renderer_adapter_contracts.json" in result.errors
     assert "missing required file: run2_73_text_binding_strategy.json" in result.errors
+    assert "missing required file: results/run2_73_validated_scene_renderer_rerun_result.json" in result.errors
 
 
 def test_run2_profile_requires_visual_repair_policy_file(tmp_path: Path) -> None:
@@ -2280,6 +2395,57 @@ def test_run2_profile_rejects_text_binding_unbound_socket_and_renderer_scope(tmp
     )
     assert (
         "run2_73_text_binding_strategy.page_text_binding_records[0].text_socket_strategy.headline_socket.capacity.max_words must be greater than 0"
+        in result.errors
+    )
+
+
+def test_run2_profile_rejects_validated_scene_renderer_bad_manifest_or_release_scope(tmp_path: Path) -> None:
+    pack = tmp_path / "pack"
+    write_pack(pack)
+    write_run2_required_files(pack)
+    write_run2_source_card(pack)
+    write_run2_video_card(pack)
+    write_run2_memory_files(pack)
+    result_path = pack / "results" / "run2_73_validated_scene_renderer_rerun_result.json"
+    result_json = json.loads(result_path.read_text(encoding="utf-8"))
+    result_json["public_release_started"] = True
+    result_json["consumed_sources"] = result_json["consumed_sources"][:-1]
+    result_json["rerun_manifest"]["viewer_update"]["viewer_can_reference_new_run"] = False
+    result_json["rendered_pages"][0]["visual_grammar_module"] = "hero_field"
+    result_json["rendered_pages"][0]["text_socket_bindings"][0]["bound_source_id"] = "missing_binding"
+    result_json["rendered_pages"][0]["visual_containers"][0]["empty"] = True
+    result_json["render_quality_checks"]["empty_visual_container_count"] = 1
+    result_path.write_text(json.dumps(result_json, indent=2), encoding="utf-8")
+
+    result = validate_case_pack(pack, profile="run2")
+
+    assert result.ok is False
+    assert (
+        "run2_73_validated_scene_renderer_rerun_result.public_release_started must be false"
+        in result.errors
+    )
+    assert (
+        "run2_73_validated_scene_renderer_rerun_result.consumed_sources missing value: docs/product/ppt-run2-data-skill-quality/run2_73_text_binding_strategy.json"
+        in result.errors
+    )
+    assert (
+        "run2_73_validated_scene_renderer_rerun_result.rerun_manifest.viewer_update.viewer_can_reference_new_run must be true"
+        in result.errors
+    )
+    assert (
+        "run2_73_validated_scene_renderer_rerun_result.rendered_pages[0].visual_grammar_module must be product_reveal for cover"
+        in result.errors
+    )
+    assert (
+        "run2_73_validated_scene_renderer_rerun_result.rendered_pages[0].text_socket_bindings[0].bound_source_id references unknown D2/E2 binding: missing_binding"
+        in result.errors
+    )
+    assert (
+        "run2_73_validated_scene_renderer_rerun_result.rendered_pages[0].visual_containers[0].empty must be false"
+        in result.errors
+    )
+    assert (
+        "run2_73_validated_scene_renderer_rerun_result.render_quality_checks.empty_visual_container_count must be 0"
         in result.errors
     )
 
